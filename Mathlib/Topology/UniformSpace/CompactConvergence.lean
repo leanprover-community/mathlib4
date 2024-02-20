@@ -173,10 +173,9 @@ theorem nhds_compactConvergence :
     @nhds _ compactConvergenceTopology f = (compactConvergenceFilterBasis f).filter := by
   rw [TopologicalSpace.nhds_mkOfNhds_filterBasis] <;> rintro g - ⟨⟨K, V⟩, ⟨hK, hV⟩, rfl⟩
   · exact self_mem_compactConvNhd g hV
-  · obtain ⟨V', hV', h₁, h₂⟩ := compactConvNhd_nhd_basis g hV
-    exact
-      ⟨compactConvNhd K V' g, ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, compactConvNhd_mono g h₁, fun g' hg' =>
-        ⟨compactConvNhd K V' g', ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, h₂ g' hg'⟩⟩
+  · obtain ⟨V', hV', _, h₂⟩ := compactConvNhd_nhd_basis g hV
+    exact ⟨compactConvNhd K V' g, ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, fun g' hg' =>
+      ⟨compactConvNhd K V' g', ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, h₂ g' hg'⟩⟩
 #align continuous_map.nhds_compact_convergence ContinuousMap.nhds_compactConvergence
 
 theorem hasBasis_nhds_compactConvergence :
@@ -271,7 +270,7 @@ theorem compactOpen_eq_compactConvergence :
   · refine' fun X hX => isOpen_iff_forall_mem_open.mpr fun f hf => _
     have hXf : X ∈ (compactConvergenceFilterBasis f).filter := by
       rw [← nhds_compactConvergence]
-      exact @IsOpen.mem_nhds C(α, β) compactConvergenceTopology _ _ hX hf
+      exact @IsOpen.mem_nhds C(α, β) _ _ compactConvergenceTopology hX hf
     obtain ⟨-, ⟨⟨K, V⟩, ⟨hK, hV⟩, rfl⟩, hXf⟩ := hXf
     obtain ⟨ι, hι, C, hC, U, hU, h₁, h₂⟩ := iInter_compactOpen_gen_subset_compactConvNhd f hK hV
     haveI := hι

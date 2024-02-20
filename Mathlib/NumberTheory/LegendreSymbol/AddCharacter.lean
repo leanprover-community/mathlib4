@@ -98,8 +98,8 @@ open Multiplicative
 /-- Define coercion to a function so that it includes the move from `R` to `Multiplicative R`.
 After we have proved the API lemmas below, we don't need to worry about writing `ofAdd a`
 when we want to apply an additive character. -/
-instance instFunLike : FunLike (AddChar R R') R fun _ ↦ R' :=
-  inferInstanceAs (FunLike (Multiplicative R →* R') R fun _ ↦ R')
+instance instFunLike : FunLike (AddChar R R') R R' :=
+  inferInstanceAs (FunLike (Multiplicative R →* R') R R')
 #noalign add_char.has_coe_to_fun
 
 theorem coe_to_fun_apply (ψ : AddChar R R') (a : R) : ψ a = ψ.toMonoidHom (ofAdd a) :=
@@ -190,7 +190,7 @@ def IsNontrivial (ψ : AddChar R R') : Prop :=
 /-- An additive character is nontrivial iff it is not the trivial character. -/
 theorem isNontrivial_iff_ne_trivial (ψ : AddChar R R') : IsNontrivial ψ ↔ ψ ≠ 1 := by
   refine' not_forall.symm.trans (Iff.not _)
-  rw [FunLike.ext_iff]
+  rw [DFunLike.ext_iff]
   rfl
 #align add_char.is_nontrivial_iff_ne_trivial AddChar.isNontrivial_iff_ne_trivial
 

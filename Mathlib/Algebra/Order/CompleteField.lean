@@ -150,11 +150,11 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
   refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
   · rw [mem_setOf_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
-    refine ⟨q₁, q - q₁, by rwa [coe_mem_cutMap_iff], ?_, add_sub_cancel'_right _ _⟩
+    refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel'_right _ _⟩
     · norm_cast
       rw [coe_mem_cutMap_iff]
       exact mod_cast sub_lt_comm.mp hq₁q
-  · rintro _ ⟨_, _, ⟨qa, ha, rfl⟩, ⟨qb, hb, rfl⟩, rfl⟩
+  · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
     -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
     refine' ⟨qa + qb, _, by beta_reduce; norm_cast⟩
     rw [mem_setOf_eq, cast_add]
@@ -295,9 +295,8 @@ def inducedAddHom : α →+ β :=
 @[simps!]
 def inducedOrderRingHom : α →+*o β :=
   { AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero (inducedAddHom α β) (by
-      suffices : ∀ x, 0 < x → inducedAddHom α β (x * x)
-          = inducedAddHom α β x * inducedAddHom α β x
-      · intro x
+      suffices ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x by
+        intro x
         obtain h | rfl | h := lt_trichotomy x 0
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]

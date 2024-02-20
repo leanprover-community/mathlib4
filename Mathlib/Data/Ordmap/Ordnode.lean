@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
-import Mathlib.Init.Data.Nat.Bitwise
+import Mathlib.Data.Option.Basic
 
 #align_import data.ordmap.ordnode from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -596,7 +596,7 @@ Case conversion may be inaccurate. Consider using '#align ordnode.map Ordnode.ma
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
      partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
-     partition (λ x : ℕ, x - 2) {1, 2, 4} = precondition violation -/
+     partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)
@@ -882,7 +882,7 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
         have := Nat.le_succ_of_le h
         let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s <<< 1)
         (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
-        termination_by ofAscListAux₁ l => l.length
+        termination_by l => l.length
 #align ordnode.of_asc_list_aux₁ Ordnode.ofAscListAux₁
 
 /-- Auxiliary definition for `ofAscList`. -/
@@ -893,7 +893,7 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
     | (r, ⟨ys, h⟩) =>
       have := Nat.lt_succ_of_le h
       ofAscListAux₂ ys (link l x r) (s <<< 1)
-      termination_by ofAscListAux₂ l => l.length
+      termination_by l => l.length
 #align ordnode.of_asc_list_aux₂ Ordnode.ofAscListAux₂
 
 /-- O(n). Build a set from a list which is already sorted. Performs no comparisons.

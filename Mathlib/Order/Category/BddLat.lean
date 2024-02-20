@@ -27,6 +27,7 @@ open CategoryTheory
 
 /-- The category of bounded lattices with bounded lattice morphisms. -/
 structure BddLat where
+  /-- The underlying lattice of a bounded lattice. -/
   toLat : Lat
   [isBoundedOrder : BoundedOrder toLat]
 #align BddLat BddLat
@@ -64,14 +65,14 @@ instance : LargeCategory.{u} BddLat where
   assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
 -- Porting note: added.
-instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (BoundedLatticeHom X Y) X (fun _ => Y) from inferInstance
+instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (BoundedLatticeHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory BddLat where
   forget :=
   { obj := (↑)
-    map := FunLike.coe }
-  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
+    map := DFunLike.coe }
+  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
 instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
   forget₂ :=

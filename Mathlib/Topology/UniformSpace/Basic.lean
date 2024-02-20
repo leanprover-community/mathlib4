@@ -7,6 +7,7 @@ import Mathlib.Order.Filter.SmallSets
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.NhdsSet
+import Mathlib.Algebra.Group.Defs
 
 #align_import topology.uniform_space.basic from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
@@ -114,12 +115,9 @@ The formalization uses the books:
 But it makes a more systematic use of the filter library.
 -/
 
-set_option autoImplicit true
-
-
 open Set Filter Topology
 
-universe ua ub uc ud
+universe u v ua ub uc ud
 
 /-!
 ### Relations, seen as `Set (α × α)`
@@ -831,8 +829,8 @@ theorem IsCompact.nhdsSet_basis_uniformity {p : ι → Prop} {s : ι → Set (α
   refine' ⟨fun U => _⟩
   simp only [mem_nhdsSet_iff_forall, (nhds_basis_uniformity' hU).mem_iff, iUnion₂_subset_iff]
   refine' ⟨fun H => _, fun ⟨i, hpi, hi⟩ x hx => ⟨i, hpi, hi x hx⟩⟩
-  replace H : ∀ x ∈ K, ∃ i : { i // p i }, ball x (s i ○ s i) ⊆ U
-  · intro x hx
+  replace H : ∀ x ∈ K, ∃ i : { i // p i }, ball x (s i ○ s i) ⊆ U := by
+    intro x hx
     rcases H x hx with ⟨i, hpi, hi⟩
     rcases comp_mem_uniformity_sets (hU.mem_of_mem hpi) with ⟨t, ht_mem, ht⟩
     rcases hU.mem_iff.1 ht_mem with ⟨j, hpj, hj⟩
@@ -932,8 +930,8 @@ theorem nhdset_of_mem_uniformity {d : Set (α × α)} (s : Set (α × α)) (hd :
 theorem nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
   intro V V_in
   rcases comp_symm_mem_uniformity_sets V_in with ⟨w, w_in, w_symm, w_sub⟩
-  have : ball x w ×ˢ ball x w ∈ 𝓝 (x, x)
-  · rw [nhds_prod_eq]
+  have : ball x w ×ˢ ball x w ∈ 𝓝 (x, x) := by
+    rw [nhds_prod_eq]
     exact prod_mem_prod (ball_mem_nhds x w_in) (ball_mem_nhds x w_in)
   apply mem_of_superset this
   rintro ⟨u, v⟩ ⟨u_in, v_in⟩
@@ -1215,7 +1213,7 @@ instance : Inf (UniformSpace α) :=
       refl := le_inf u₁.refl u₂.refl
       symm := u₁.symm.inf u₂.symm
       comp := (lift'_inf_le _ _ _).trans <| inf_le_inf u₁.comp u₂.comp }
-    (u₁.toTopologicalSpace ⊓ u₂.toTopologicalSpace) <| fun _ => by
+    (u₁.toTopologicalSpace ⊓ u₂.toTopologicalSpace) fun _ => by
       rw [@nhds_inf _ u₁.toTopologicalSpace u₂.toTopologicalSpace, @nhds_eq_comap_uniformity _ u₁,
         @nhds_eq_comap_uniformity _ u₂, comap_inf]; rfl⟩
 
@@ -1260,7 +1258,9 @@ instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
 #align inhabited_uniform_space_core inhabitedUniformSpaceCore
 
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
-  is the inverse image in the filter sense of the induced function `α × α → β × β`. -/
+  is the inverse image in the filter sense of the induced function `α × α → β × β`.
+  See note [reducible non-instances]. -/
+@[reducible]
 def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α :=
   .ofNhdsEqComap
     { uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
@@ -1572,10 +1572,10 @@ section Prod
 instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd
 
--- check the above produces no diamond
+-- check the above produces no diamond for `simp` and typeclass search
 example [UniformSpace α] [UniformSpace β] :
-    (instTopologicalSpaceProd : TopologicalSpace (α × β)) = UniformSpace.toTopologicalSpace :=
-  rfl
+    (instTopologicalSpaceProd : TopologicalSpace (α × β)) = UniformSpace.toTopologicalSpace := by
+  with_reducible_and_instances rfl
 
 theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
@@ -1810,12 +1810,12 @@ theorem isOpen_of_uniformity_sum_aux {s : Set (Sum α β)}
       { p : (α ⊕ β) × (α ⊕ β) | p.1 = x → p.2 ∈ s } ∈ (@UniformSpace.Core.sum α β _ _).uniformity) :
     IsOpen s := by
   constructor
-  · refine' (@isOpen_iff_mem_nhds α _ _).2 fun a ha => mem_nhds_uniformity_iff_right.2 _
+  · refine (isOpen_iff_mem_nhds (X := α)).2 fun a ha ↦ mem_nhds_uniformity_iff_right.2 ?_
     rcases mem_map_iff_exists_image.1 (hs _ ha).1 with ⟨t, ht, st⟩
     refine' mem_of_superset ht _
     rintro p pt rfl
     exact st ⟨_, pt, rfl⟩ rfl
-  · refine' (@isOpen_iff_mem_nhds β _ _).2 fun b hb => mem_nhds_uniformity_iff_right.2 _
+  · refine (@isOpen_iff_mem_nhds (X := β)).2 fun b hb ↦ mem_nhds_uniformity_iff_right.2 ?_
     rcases mem_map_iff_exists_image.1 (hs _ hb).2 with ⟨t, ht, st⟩
     refine' mem_of_superset ht _
     rintro p pt rfl
@@ -1993,7 +1993,7 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
     have B : {z | (g x, g z) ∈ t} ∈ 𝓝 x := (hg x hx).preimage_mem_nhds (mem_nhds_left (g x) ht)
     rcases _root_.mem_nhds_iff.1 (inter_mem A B) with ⟨u, hu, u_open, xu⟩
     refine ⟨u, u_open, xu, fun y hy ↦ ?_⟩
-    have I1 : (f y, f x) ∈ t :=  (htsymm.mk_mem_comm).2 (hu hy).1
+    have I1 : (f y, f x) ∈ t := (htsymm.mk_mem_comm).2 (hu hy).1
     have I2 : (g x, g y) ∈ t := (hu hy).2
     rw [hfg hx] at I1
     exact htr (prod_mk_mem_compRel I1 I2)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Data.Polynomial.Eval
-import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 #align_import algebra.linear_recurrence from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
@@ -160,7 +160,7 @@ theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSol
   set u' : ↥E.solSpace := ⟨u, hu⟩
   set v' : ↥E.solSpace := ⟨v, hv⟩
   change u'.val = v'.val
-  suffices h' : u' = v'; exact h' ▸ rfl
+  suffices h' : u' = v' from h' ▸ rfl
   rw [← E.toInit.toEquiv.apply_eq_iff_eq, LinearEquiv.coe_toEquiv]
   ext x
   exact mod_cast h (mem_range.mpr x.2)
