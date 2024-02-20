@@ -672,8 +672,7 @@ lemma cfc_neg (a : A) (f : R → R) : cfc a (fun x ↦ - (f x)) = - (cfc a f) :=
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply a f, ← map_neg, cfc_apply ..]
     congr
-  · classical
-    obtain (ha | hf) := Decidable.not_and_iff_or_not _ _ |>.mp h
+  · obtain (ha | hf) := not_and_or.mp h
     · simp [cfc_apply_of_not a ha]
     · rw [cfc_apply_of_not' a hf, cfc_apply_of_not', neg_zero]
       exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
