@@ -34,10 +34,10 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 open scoped BigOperators
 
-variable {R L M ι ι' ιM ιM' : Type*}
+variable {R L M ι ιM : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-variable [Fintype ι] [Fintype ιM] [Fintype ι'] [Fintype ιM']
+variable [Fintype ι] [Fintype ιM]
 
 namespace LieAlgebra
 
@@ -45,8 +45,7 @@ local notation "φ" => LieModule.toEndomorphism R L M
 
 section basic
 
-variable [DecidableEq ιM] [DecidableEq ιM']
-variable (b : Basis ι R L) (bₘ : Basis ιM R M) (b' : Basis ι' R L) (bₘ' : Basis ιM' R M)
+variable [DecidableEq ιM] (b : Basis ι R L) (bₘ : Basis ιM R M)
 
 open LieModule LinearMap MvPolynomial in
 /-- Let `M` be a Lie module of a Lie algebra `L` over `R`,
@@ -129,9 +128,8 @@ end basic
 
 section module
 
-variable [DecidableEq ιM] [DecidableEq ιM'] [Nontrivial R] [Module.Finite R M] [Module.Free R M]
-variable (b : Basis ι R L) (bₘ : Basis ιM R M) (b' : Basis ι' R L) (bₘ' : Basis ιM' R M)
-variable (x : L)
+variable [DecidableEq ιM] [Nontrivial R] [Module.Finite R M] [Module.Free R M]
+variable (b : Basis ι R L) (bₘ : Basis ιM R M) (x : L)
 
 @[simp]
 lemma lieCharpoly_map :
@@ -146,7 +144,7 @@ lemma lieCharpoly_eval (i : ℕ) :
 end module
 
 variable [DecidableEq ι] [DecidableEq ιM] [Nontrivial R] [Module.Finite R L] [Module.Free R L]
-variable (b : Basis ι R L) (b' : Basis ι R L) (bₘ : Basis ιM R L) (x : L)
+variable (b : Basis ι R L) (bₘ : Basis ιM R L) (x : L)
 
 open Module.Free
 
