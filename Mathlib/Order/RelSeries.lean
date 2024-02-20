@@ -394,7 +394,7 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 lemma head_eraseLast (p : RelSeries r) : p.eraseLast.head = p.head := rfl
 
 lemma last_eraseLast (p : RelSeries r) :
-  p.eraseLast.last = p ⟨p.length.pred, lt_of_le_of_lt (Nat.pred_le _) Nat.le.refl⟩ := rfl
+    p.eraseLast.last = p ⟨p.length.pred, lt_of_le_of_lt (Nat.pred_le _) Nat.le.refl⟩ := rfl
 
 
 /--
