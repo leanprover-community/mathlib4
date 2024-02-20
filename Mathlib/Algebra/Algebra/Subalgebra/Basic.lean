@@ -626,14 +626,12 @@ def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 #align alg_hom.range_restrict AlgHom.rangeRestrict
 
-theorem rangeRestrict_surjective (f : A →ₐ[R] B):
-    Function.Surjective (f.rangeRestrict) :=
-  fun ⟨_y, hy⟩ =>
+theorem rangeRestrict_surjective (f : A →ₐ[R] B) :
+    Function.Surjective (f.rangeRestrict) := fun ⟨_y, hy⟩ =>
   let ⟨x, hx⟩ := hy
   ⟨x, SetCoe.ext hx⟩
 
-theorem ker_rangeRestrict (f : A →ₐ[R] B) :
-    RingHom.ker f.rangeRestrict = RingHom.ker f :=
+theorem ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
   Ideal.ext fun _ ↦ Subtype.ext_iff
 
 /-- The equalizer of two R-algebra homomorphisms -/
