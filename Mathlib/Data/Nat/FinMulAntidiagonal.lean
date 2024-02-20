@@ -3,7 +3,7 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-
+import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Logic.Embedding.Basic
 
@@ -20,56 +20,66 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 (`card_pair_lcm_eq`)
 -/
 
+/-- The set of divisors of a positive natural number.
+This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
+def PNat.divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
+  (Nat.divisorsAntidiagonal n).attach.map
+    ⟨fun x =>
+      (⟨x.val.1, Nat.pos_of_mem_divisors <| Nat.fst_mem_divisors_of_mem_antidiagonal x.prop⟩,
+      ⟨x.val.2, Nat.pos_of_mem_divisors <| Nat.snd_mem_divisors_of_mem_antidiagonal x.prop⟩),
+    fun _ _ h => Subtype.ext <| Prod.ext (congr_arg (·.1.val) h) (congr_arg (·.2.val) h)⟩
+
+@[simp]
+theorem PNat.mem_divisorsAntidiagonal {n : ℕ+} (x : ℕ+ × ℕ+) :
+    x ∈ PNat.divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
+  simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
+    Prod.ext_iff, true_and, ←PNat.coe_inj, Subtype.exists]
+  aesop
+
+instance PNat.instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
+  antidiagonal n := PNat.divisorsAntidiagonal (Additive.toMul n) |>.map
+    (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
+  mem_antidiagonal {n a} := by
+    obtain ⟨a₁, a₂⟩ := a
+    revert n a₁ a₂
+    simp_rw [Additive.ofMul.surjective.forall, ←ofMul_mul, Additive.ofMul.injective.eq_iff]
+    simp
+
 namespace Nat
 
 open BigOperators Finset ArithmeticFunction
-
 /--
   The `Finset` of all `d`-tuples of natural numbers whose product is `n`. Defined to be `∅` when
-  `n=0`.
-  -/
+  `n=0`. -/
 def finMulAntidiagonal (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
-  aux d n
-where
-  /-- Auxiliary construction for `finMulAntidiagonal` that bundles a proof of lawfulness
-  (`mem_finMulAntidiagonal`), as this is needed to invoke `disjiUnion`. Using `Finset.disjiUnion`
-  makes this computationally much more efficient than using `Finset.biUnion`. -/
-  aux (d : ℕ) (n : ℕ) : {s : Finset (Fin d → ℕ) // ∀ f, f ∈ s ↔ ∏ i, f i = n ∧ n ≠ 0} :=
-    match d with
-    | 0 =>
-      if h : n = 1 then
-        ⟨{1}, by simp [h]; exact List.ofFn_inj.mp rfl⟩
-      else
-        ⟨∅, by simp [Ne.symm h]⟩
-    | d + 1 =>
-      { val := (divisorsAntidiagonal n).disjiUnion
-          (fun ab => (aux d ab.2).1.map {
-              toFun := Fin.cons (ab.1)
-              inj' := Fin.cons_right_injective _ })
-          (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij <| by
-            simp_rw [Finset.mem_map, Function.Embedding.coeFn_mk] at hti htj
-            obtain ⟨ai, hai, hij'⟩ := hti
-            obtain ⟨aj, haj, rfl⟩ := htj
-            rw [Fin.cons_eq_cons] at hij'
-            ext
-            · exact hij'.1
-            · obtain ⟨-, rfl⟩ := hij'
-              rw [← (aux d i.2).prop ai |>.mp hai |>.1, ← (aux d j.2).prop ai |>.mp haj |>.1])
-        property := fun f => by
-          simp_rw [mem_disjiUnion, mem_divisorsAntidiagonal, mem_map, Function.Embedding.coeFn_mk,
-            Prod.exists, (aux d _).prop, Fin.prod_univ_succ]
-          constructor
-          · rintro ⟨a, b, ⟨rfl, hab⟩, g, ⟨rfl, hb⟩, rfl⟩
-            simp only [Fin.cons_zero, Fin.cons_succ]
-            exact (true_and_iff (a * ∏ x : Fin d, g x ≠ 0)).mpr hab
-          · intro ⟨rfl, hf⟩
-            exact ⟨_, _, ⟨rfl, hf⟩, _, ⟨rfl, by exact right_ne_zero_of_mul hf⟩,
-              Fin.cons_self_tail f⟩}
+  if hn : 0 < n then
+    (Finset.finAntidiagonal d (Additive.ofMul (show ℕ+ from ⟨n, hn⟩))).map <|
+      .arrowCongrRight <| Additive.toMul.toEmbedding.trans <| .subtype _
+  else
+    ∅
 
 @[simp]
 theorem mem_finMulAntidiagonal {d n : ℕ} {f : (Fin d) → ℕ} :
-    f ∈ finMulAntidiagonal d n ↔ ∏ i, f i = n ∧ n ≠ 0 :=
-  (finMulAntidiagonal.aux d n).prop f
+    f ∈ finMulAntidiagonal d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by
+  unfold finMulAntidiagonal
+  split_ifs with h
+  · simp only [mem_map, ne_eq]
+    constructor
+    · rintro ⟨a, ha_mem, ha⟩
+      rw [@Finset.mem_finAntidiagonal _ _ _ PNat.instHasAntidiagonal] at ha_mem
+      subst ha
+      simp
+      apply_fun Additive.toMul at ha_mem
+      apply_fun Subtype.val at ha_mem
+      simp only [toMul_sum, toMul_ofMul] at ha_mem
+      constructor
+      · convert ha_mem
+        sorry
+      · omega
+    · rintro ⟨rfl, h⟩
+      sorry
+  · simp only [not_lt, nonpos_iff_eq_zero] at h
+    simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
 
 @[simp]
 theorem finMulAntidiagonal_zero {d : ℕ} :
