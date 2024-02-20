@@ -372,3 +372,12 @@ theorem foo1_lin : Lin (foo1 : α → α) := silentSorry
 theorem foo2_lin : Lin (foo2 : α → α) := silentSorry
 
 example : Con (fun x : α => foo1 (foo2 x)) := by fun_prop
+
+
+def foo3 (x : α) := x + x
+example : Con (fun x : α => foo3 x) := by fun_prop [foo3]
+
+def myUncurry (f : α → β → γ) : α×β → γ := fun (x,y) => f x y
+def diag (f : α → α → α) (x : α) := f x x
+theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
+  fun_prop [diag,myUncurry]

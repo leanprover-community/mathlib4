@@ -370,7 +370,7 @@ def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
 /-- Get candidate theorems from the local context for function property `funPropDecl` and
 function `funName`. -/
 def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
-    (mainArgs : Array Nat) (appliedArgs : Nat) : MetaM (Array FunctionTheorem) := do
+    (mainArgs : Array Nat) (appliedArgs : Nat) : FunPropM (Array FunctionTheorem) := do
 
   let mut thms : Array FunctionTheorem := #[]
   let lctx ← getLCtx
@@ -384,7 +384,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f defaultUnfoldPred {zeta:=false} | return none
+      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta:=false} | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
       unless isOrderedSubsetOf mainArgs fData.mainArgs do return none

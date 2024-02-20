@@ -10,6 +10,8 @@ import Mathlib.Tactic.FunProp.Core
 ## `funProp` tactic syntax
 -/
 
+#check Nat
+
 namespace Mathlib
 open Lean Meta Elab Tactic
 
@@ -18,7 +20,7 @@ namespace Meta.FunProp
 open Lean.Parser.Tactic
 
 /-- Tactic to prove function properties -/
-syntax (name := funPropTacStx) "fun_prop" (discharger)? : tactic
+syntax (name := funPropTacStx) "fun_prop" (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
@@ -29,7 +31,7 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
 def funPropTac : Tactic
-  | `(tactic| fun_prop $[$d]?) => do
+  | `(tactic| fun_prop $[$d]? $[[$names,*]]?) => do
 
     let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
       match d with
@@ -39,11 +41,19 @@ def funPropTac : Tactic
         | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
         | _ => pure emptyDischarge
 
+    let namesToUnfold : Array Name :=
+      match names with
+      | none => #[]
+      | .some ns => ns.getElems.map (fun n => n.getId)
+
+    let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
+
     let goal ← getMainGoal
     goal.withContext do
       let goalType ← goal.getType
 
-      let (.some r, _) ← funProp goalType {disch := disch} |>.run {}
+      let cfg : Config := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
+      let (.some r, _) ← funProp goalType cfg |>.run {}
         | throwError "funProp was unable to prove `{← Meta.ppExpr goalType}`"
 
       goal.assign r.proof
