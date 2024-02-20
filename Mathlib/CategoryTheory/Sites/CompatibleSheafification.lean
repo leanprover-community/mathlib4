@@ -2,14 +2,11 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.compatible_sheafification
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+
+#align_import category_theory.sites.compatible_sheafification from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -152,7 +149,8 @@ variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
 @[simp]
 theorem sheafifyCompIso_inv_eq_sheafifyLift :
     (J.sheafifyCompIso F P).inv =
-      J.sheafifyLift (whiskerRight (J.toSheafify P) F) ((J.sheafify_isSheaf _).comp _) := by
+      J.sheafifyLift (whiskerRight (J.toSheafify P) F)
+        (HasSheafCompose.isSheaf _ ((J.sheafify_isSheaf _))) := by
   apply J.sheafifyLift_unique
   rw [Iso.comp_inv_eq]
   simp

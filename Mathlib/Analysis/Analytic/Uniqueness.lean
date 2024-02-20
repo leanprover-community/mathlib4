@@ -2,15 +2,12 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.analytic.uniqueness
-! leanprover-community/mathlib commit a3209ddf94136d36e5e5c624b10b2a347cc9d090
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.NormedSpace.Completion
+
+#align_import analysis.analytic.uniqueness from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
 
 /-!
 # Uniqueness principle for analytic functions
@@ -20,8 +17,8 @@ in `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`.
 -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open Set
 
@@ -39,8 +36,8 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     that its limit points in `U` still belong to it, from which the inclusion `U ⊆ u` will follow
     by connectedness. -/
   let u := {x | f =ᶠ[𝓝 x] 0}
-  suffices main : closure u ∩ U ⊆ u
-  · have Uu : U ⊆ u :=
+  suffices main : closure u ∩ U ⊆ u by
+    have Uu : U ⊆ u :=
       hU.subset_of_closure_inter_subset isOpen_setOf_eventually_nhds ⟨z₀, h₀, hfz₀⟩ main
     intro z hz
     simpa using mem_of_mem_nhds (Uu hz)

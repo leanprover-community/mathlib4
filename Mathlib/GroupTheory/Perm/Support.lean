@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
-
-! This file was ported from Lean 3 source module group_theory.perm.support
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.Perm.Basic
+
+#align_import group_theory.perm.support from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 /-!
 # support of a permutation
 
@@ -31,7 +28,7 @@ open Equiv Finset
 
 namespace Equiv.Perm
 
-variable {α : Type _}
+variable {α : Type*}
 
 section Disjoint
 
@@ -132,20 +129,21 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
     exact (h _ (List.mem_cons_self _ _)).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
 #align equiv.perm.disjoint_prod_right Equiv.Perm.disjoint_prod_right
 
+open scoped List in
 theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disjoint) (hp : l₁ ~ l₂) :
     l₁.prod = l₂.prod :=
   hp.prod_eq' <| hl.imp Disjoint.commute
 #align equiv.perm.disjoint_prod_perm Equiv.Perm.disjoint_prod_perm
 
 theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ l)
-     (h2 : l.Pairwise Disjoint) : l.Nodup := by
+    (h2 : l.Pairwise Disjoint) : l.Nodup := by
   refine' List.Pairwise.imp_of_mem _ h2
   intro τ σ h_mem _ h_disjoint _
   subst τ
   suffices (σ : Perm α) = 1 by
     rw [this] at h_mem
     exact h1 h_mem
-  exact ext fun a => (or_self_iff _).mp (h_disjoint a)
+  exact ext fun a => or_self_iff.mp (h_disjoint a)
 #align equiv.perm.nodup_of_pairwise_disjoint Equiv.Perm.nodup_of_pairwise_disjoint
 
 theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
@@ -441,7 +439,7 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
   refine' ⟨fun h => _, fun h => support_swap h⟩
-  by_contra'
+  by_contra!
   rw [← this] at h
   simp only [swap_self, support_refl, pair_eq_singleton] at h
   have : x ∈ ∅ := by
@@ -539,7 +537,7 @@ theorem support_le_prod_of_mem {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwi
 
 section ExtendDomain
 
-variable {β : Type _} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
+variable {β : Type*} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
 
 @[simp]
 theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
@@ -638,7 +636,7 @@ theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := b
 
 theorem Disjoint.card_support_mul (h : Disjoint f g) :
     (f * g).support.card = f.support.card + g.support.card := by
-  rw [← Finset.card_disjoint_union]
+  rw [← Finset.card_union_of_disjoint]
   · congr
     ext
     simp [h.support_mul]
@@ -660,7 +658,7 @@ end support
 
 @[simp]
 theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
-    ((f.subtypePerm h : Perm { x // x ∈ s }).support)  =
+    ((f.subtypePerm h : Perm { x // x ∈ s }).support) =
     (s.attach.filter ((fun x => decide (f x ≠ x))) : Finset { x // x ∈ s }) := by
   ext
   simp [Subtype.ext_iff]

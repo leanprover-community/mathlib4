@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Weiser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.algebra.subalgebra.pointwise
-! leanprover-community/mathlib commit b2c707cd190a58ea0565c86695a19e99ccecc215
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import algebra.algebra.subalgebra.pointwise from "leanprover-community/mathlib"@"b2c707cd190a58ea0565c86695a19e99ccecc215"
 
 /-!
 # Pointwise actions on subalgebras.
@@ -25,7 +22,7 @@ namespace Subalgebra
 
 section Pointwise
 
-variable {R : Type _} {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem mul_toSubmodule_le (S T : Subalgebra R A) :
     (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
@@ -48,7 +45,7 @@ theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra
 #align subalgebra.mul_self Subalgebra.mul_self
 
 /-- When `A` is commutative, `Subalgebra.mul_toSubmodule_le` is strict. -/
-theorem mul_toSubmodule {R : Type _} {A : Type _} [CommSemiring R] [CommSemiring A] [Algebra R A]
+theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S T : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule T)
         = Subalgebra.toSubmodule (S ⊔ T) := by
   refine' le_antisymm (mul_toSubmodule_le _ _) _
@@ -68,7 +65,7 @@ theorem mul_toSubmodule {R : Type _} {A : Type _} [CommSemiring R] [CommSemiring
     mul_self, mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this
 #align subalgebra.mul_to_submodule Subalgebra.mul_toSubmodule
 
-variable {R' : Type _} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R A]
+variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R A]
 
 /-- The action on a subalgebra corresponding to applying the action to every element.
 
@@ -103,7 +100,7 @@ theorem pointwise_smul_toSubmodule (m : R') (S : Subalgebra R A) :
 #align subalgebra.pointwise_smul_to_submodule Subalgebra.pointwise_smul_toSubmodule
 
 @[simp]
-theorem pointwise_smul_toSubring {R' R A : Type _} [Semiring R'] [CommRing R] [Ring A]
+theorem pointwise_smul_toSubring {R' R A : Type*} [Semiring R'] [CommRing R] [Ring A]
     [MulSemiringAction R' A] [Algebra R A] [SMulCommClass R' R A] (m : R') (S : Subalgebra R A) :
     (m • S).toSubring = m • S.toSubring :=
   rfl

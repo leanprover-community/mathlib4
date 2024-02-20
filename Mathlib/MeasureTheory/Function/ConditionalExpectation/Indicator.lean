@@ -2,13 +2,10 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.conditional_expectation.indicator
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+
+#align_import measure_theory.function.conditional_expectation.indicator from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 
@@ -35,7 +32,7 @@ open scoped NNReal ENNReal Topology BigOperators MeasureTheory
 
 namespace MeasureTheory
 
-variable {α 𝕜 E : Type _} {m m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {α 𝕜 E : Type*} {m m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] {μ : Measure α} {f : α → E} {s : Set α}
 
 theorem condexp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict s] 0) :
@@ -125,8 +122,8 @@ theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
   · intro t ht _
     rw [← integrable_indicator_iff (hm _ ht), Set.indicator_indicator, Set.inter_comm, ←
       Set.indicator_indicator]
-    suffices h_int_restrict : Integrable (t.indicator ((μ.restrict s)[f|m])) (μ.restrict s)
-    · rw [integrable_indicator_iff (hm _ hs_m), IntegrableOn]
+    suffices h_int_restrict : Integrable (t.indicator ((μ.restrict s)[f|m])) (μ.restrict s) by
+      rw [integrable_indicator_iff (hm _ hs_m), IntegrableOn]
       rw [integrable_indicator_iff (hm _ ht), IntegrableOn] at h_int_restrict ⊢
       exact h_int_restrict
     exact integrable_condexp.indicator (hm _ ht)

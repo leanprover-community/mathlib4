@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Mon.limits
-! leanprover-community/mathlib commit c43486ecf2a5a17479a32ce09e4818924145e90e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Group.Pi
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.GroupTheory.Submonoid.Operations
+
+#align_import algebra.category.Mon.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
 
 /-!
 # The category of (commutative) (additive) monoids has all limits
@@ -106,7 +103,7 @@ noncomputable def limitCone (F : J ⥤ MonCatMax.{u,v}) : Cone F :=
 @[to_additive "(Internal use only; use the limits API.)"]
 noncomputable def limitConeIsLimit (F : J ⥤ MonCatMax.{u,v}) : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget MonCatMax) (Types.limitConeIsLimit.{v,u} _)
-    (fun s => ⟨⟨_, ?_⟩, ?_⟩) (fun s => rfl) <;>
+    (fun s => { toFun := _, map_one' := ?_, map_mul' := ?_ }) (fun s => rfl) <;>
   aesop_cat
 #align Mon.has_limits.limit_cone_is_limit MonCat.HasLimits.limitConeIsLimit
 #align AddMon.has_limits.limit_cone_is_limit AddMonCat.HasLimits.limitConeIsLimit

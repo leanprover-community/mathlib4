@@ -2,17 +2,14 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.over.basic
-! leanprover-community/mathlib commit 15db1b4f26ba89c6eb0c78b0a44c7e779a788e29
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
+
+#align_import category_theory.limits.constructions.over.basic from "leanprover-community/mathlib"@"15db1b4f26ba89c6eb0c78b0a44c7e779a788e29"
 
 /-!
 # Limits in the over category

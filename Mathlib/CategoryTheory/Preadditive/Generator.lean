@@ -2,14 +2,11 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.preadditive.generator
-! leanprover-community/mathlib commit 09f981f72d43749f1fa072deade828d9c1e185bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+
+#align_import category_theory.preadditive.generator from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 
 /-!
 # Separators in preadditive categories

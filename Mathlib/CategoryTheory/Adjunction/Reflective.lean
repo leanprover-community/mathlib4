@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.adjunction.reflective
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.EpiMono
+
+#align_import category_theory.adjunction.reflective from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Reflective functors
@@ -170,21 +167,21 @@ Functor.essImage.unit_isIso X.property
 /-- The counit isomorphism of the equivalence `D ≌ i.EssImageSubcategory` given
 by `equivEssImageOfReflective` when the functor `i` is reflective. -/
 def equivEssImageOfReflective_counitIso_app [Reflective i] (X : Functor.EssImageSubcategory i) :
-  ((Functor.essImageInclusion i ⋙ leftAdjoint i) ⋙ Functor.toEssImage i).obj X ≅ X := by
+    ((Functor.essImageInclusion i ⋙ leftAdjoint i) ⋙ Functor.toEssImage i).obj X ≅ X := by
   refine' Iso.symm (@asIso _ _ X _ ((ofRightAdjoint i).unit.app X.obj) ?_)
   refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
   dsimp
   exact inferInstance
 
 lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
-  (X : Functor.EssImageSubcategory i) :
+    (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
     inv (NatTrans.app (ofRightAdjoint i).unit X.obj) := by
     simp [equivEssImageOfReflective_counitIso_app, asIso]
     rfl
 
 lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
-  (X : Functor.EssImageSubcategory i) :
+    (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).inv =
     (NatTrans.app (ofRightAdjoint i).unit X.obj) := rfl
 

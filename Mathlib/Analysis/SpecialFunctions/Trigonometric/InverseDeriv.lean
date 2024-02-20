@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.inverse_deriv
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+
+#align_import analysis.special_functions.trigonometric.inverse_deriv from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # derivatives of the inverse trigonometric functions
@@ -42,8 +39,8 @@ theorem deriv_arcsin_aux {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
   cases' h₂.lt_or_lt with h₂ h₂
   · have : 0 < sqrt (1 - x ^ 2) := sqrt_pos.2 (by nlinarith [h₁, h₂])
     simp only [← cos_arcsin, one_div] at this ⊢
-    exact ⟨sinLocalHomeomorph.hasStrictDerivAt_symm ⟨h₁, h₂⟩ this.ne' (hasStrictDerivAt_sin _),
-      sinLocalHomeomorph.contDiffAt_symm_deriv this.ne' ⟨h₁, h₂⟩ (hasDerivAt_sin _)
+    exact ⟨sinPartialHomeomorph.hasStrictDerivAt_symm ⟨h₁, h₂⟩ this.ne' (hasStrictDerivAt_sin _),
+      sinPartialHomeomorph.contDiffAt_symm_deriv this.ne' ⟨h₁, h₂⟩ (hasDerivAt_sin _)
         contDiff_sin.contDiffAt⟩
   · have : 1 - x ^ 2 < 0 := by nlinarith [h₂]
     rw [sqrt_eq_zero'.2 this.le, div_zero]
@@ -191,7 +188,7 @@ theorem contDiffOn_arccos {n : ℕ∞} : ContDiffOn ℝ n arccos {-1, 1}ᶜ :=
 theorem contDiffAt_arccos_iff {x : ℝ} {n : ℕ∞} :
     ContDiffAt ℝ n arccos x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 := by
   refine' Iff.trans ⟨fun h => _, fun h => _⟩ contDiffAt_arcsin_iff <;>
-    simpa [arccos] using (@contDiffAt_const _ _ _ _ _ _ _ _ _ _ (π / 2)).sub h
+    simpa [arccos] using (contDiffAt_const (c := π / 2)).sub h
 #align real.cont_diff_at_arccos_iff Real.contDiffAt_arccos_iff
 
 end Arccos

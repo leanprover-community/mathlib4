@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.limits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.AffineScheme
+
+#align_import algebraic_geometry.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # (Co)Limits of Schemes
@@ -26,6 +23,8 @@ We construct various limits and colimits in the category of schemes.
 * Coproducts exists (and the forgetful functors preserve them).
 
 -/
+
+suppress_compilation
 
 set_option linter.uppercaseLean3 false
 
@@ -88,7 +87,7 @@ instance : IsEmpty Scheme.empty.carrier :=
   show IsEmpty PEmpty by infer_instance
 
 instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUnit)).carrier :=
-  ⟨PrimeSpectrum.pUnit⟩
+  inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 #align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_punit_isEmpty
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
@@ -97,7 +96,7 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
   · apply openEmbedding_of_continuous_injective_open
     · continuity
     · rintro (i : X.carrier); exact isEmptyElim i
-    · intro U _; convert isOpen_empty (α := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
+    · intro U _; convert isOpen_empty (X := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
       exact fun x => isEmptyElim (show X.carrier from x.choose)
   · rintro (i : X.carrier); exact isEmptyElim i
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersion_of_isEmpty
@@ -105,8 +104,8 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
     IsIso f := by
   haveI : IsEmpty X.carrier := ⟨fun x => isEmptyElim (show Y.carrier from f.1.base x)⟩
-  have : Epi f.1.base
-  · rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier)
+  have : Epi f.1.base := by
+    rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier)
     exact isEmptyElim x
   apply IsOpenImmersion.to_iso
 #align algebraic_geometry.is_iso_of_is_empty AlgebraicGeometry.isIso_of_isEmpty

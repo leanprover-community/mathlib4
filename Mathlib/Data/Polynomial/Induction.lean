@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.induction
-! leanprover-community/mathlib commit 63417e01fbc711beaf25fa73b6edb395c0cfddd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Data.Polynomial.Basic
+
+#align_import data.polynomial.induction from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
 /-!
 # Induction on polynomials
@@ -77,7 +74,7 @@ variable {f : R[X]} {I : Ideal R[X]}
 the ideal spanned by the coefficients of the polynomial. -/
 theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
     Ideal.span { g | ∃ i, g = C (f.coeff i) } ≤ I := by
-  simp (config := { singlePass := true }) only [@eq_comm _ _ (C _)]
+  simp only [@eq_comm _ _ (C _)]
   exact (Ideal.span_le.trans range_subset_iff).mpr cf
 set_option linter.uppercaseLean3 false in
 #align polynomial.span_le_of_C_coeff_mem Polynomial.span_le_of_C_coeff_mem

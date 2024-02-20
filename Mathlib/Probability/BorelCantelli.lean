@@ -2,21 +2,18 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module probability.borel_cantelli
-! leanprover-community/mathlib commit 2f8347015b12b0864dfaf366ec4909eb70c78740
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Martingale.BorelCantelli
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.Independence.Basic
 
+#align_import probability.borel_cantelli from "leanprover-community/mathlib"@"2f8347015b12b0864dfaf366ec4909eb70c78740"
+
 /-!
 
 # The second Borel-Cantelli lemma
 
-This file contains the second Borel-Cantelli lemma which states that, given a sequence of
+This file contains the *second Borel-Cantelli lemma* which states that, given a sequence of
 independent sets `(sₙ)` in a probability space, if `∑ n, μ sₙ = ∞`, then the limsup of `sₙ` has
 measure 1. We employ a proof using Lévy's generalized Borel-Cantelli by choosing an appropriate
 filtration.
@@ -25,6 +22,8 @@ filtration.
 
 - `ProbabilityTheory.measure_limsup_eq_one`: the second Borel-Cantelli lemma.
 
+**Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
+in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
 -/
 
 
@@ -34,11 +33,11 @@ open MeasureTheory ProbabilityTheory MeasurableSpace TopologicalSpace
 
 namespace ProbabilityTheory
 
-variable {Ω : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ]
+variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ]
 
 section BorelCantelli
 
-variable {ι β : Type _} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddCommGroup β]
+variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddCommGroup β]
   [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
 theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))

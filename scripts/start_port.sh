@@ -26,12 +26,14 @@ case $mathlib4_path in
 esac
 
 MATHLIB3PORT_BASE_URL=https://raw.githubusercontent.com/leanprover-community/mathlib3port/master
+LEAN3PORT_BASE_URL=https://raw.githubusercontent.com/leanprover-community/lean3port/master
 PORT_STATUS_YAML=https://raw.githubusercontent.com/wiki/leanprover-community/mathlib/mathlib4-port-status.md
 
 # process path name
 mathlib4_mod=$(basename $(echo "$mathlib4_path" | tr / .) .lean)
 mathlib4_mod_tail=${mathlib4_mod#Mathlib.}
 mathlib3port_url=$MATHLIB3PORT_BASE_URL/${1/#Mathlib/Mathbin}
+lean3port_url=$LEAN3PORT_BASE_URL/${1/#Mathlib/Leanbin}
 
 # start the port from the latest master
 git fetch
@@ -54,7 +56,7 @@ echo "Downloading latest version from mathlib3port"
     cd $GIT_WORK_TREE;
     # download the file, but don't commit it yet
     mkdir -p "$(dirname "$mathlib4_path")"
-    curl --silent --show-error --fail -o "$mathlib4_path" "$mathlib3port_url"
+    curl --silent --show-error --fail -o "$mathlib4_path" "$lean3port_url" || curl --silent --show-error --fail -o "$mathlib4_path" "$mathlib3port_url"
 )
 
 # Empty commit with nice title. Used by gh and hub to suggest PR title.
@@ -69,6 +71,7 @@ echo "Applying automated fixes"
 
 pushd $GIT_WORK_TREE;
 sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
+sed -i 's/Leanbin\./Mathlib\./g' "$mathlib4_path"
 sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/.ENNReal/g}' "$mathlib4_path"
 
 python3 "$root_path/scripts/fix-line-breaks.py" "$mathlib4_path" "$mathlib4_path.tmp"

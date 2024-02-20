@@ -2,15 +2,13 @@
 Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.nat.nth
-! leanprover-community/mathlib commit 7fdd4f3746cb059edfdb5d52cba98f66fce418c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Count
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Order.OrderIsoNat
+
+#align_import data.nat.nth from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
 
 /-!
 # The `n`th Number Satisfying a Predicate
@@ -286,12 +284,12 @@ theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a
   cases' (setOf p).finite_or_infinite with hf hf
   · rcases exists_lt_card_finite_nth_eq hf ha with ⟨n, hn, rfl⟩
     cases' lt_or_le (k + 1) hf.toFinset.card with hk hk
-    · rwa [(nth_strictMonoOn hf).lt_iff_lt hn hk, lt_succ_iff,
+    · rwa [(nth_strictMonoOn hf).lt_iff_lt hn hk, Nat.lt_succ_iff,
         ← (nth_strictMonoOn hf).le_iff_le hn (k.lt_succ_self.trans hk)] at h
     · rw [nth_of_card_le _ hk] at h
       exact absurd h (zero_le _).not_lt
   · rcases subset_range_nth ha with ⟨n, rfl⟩
-    rwa [nth_lt_nth hf, lt_succ_iff, ← nth_le_nth hf] at h
+    rwa [nth_lt_nth hf, Nat.lt_succ_iff, ← nth_le_nth hf] at h
 #align nat.le_nth_of_lt_nth_succ Nat.le_nth_of_lt_nth_succ
 
 section Count

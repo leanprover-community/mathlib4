@@ -2,16 +2,13 @@
 Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
-
-! This file was ported from Lean 3 source module data.pnat.factors
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Multiset.Sort
+
+#align_import data.pnat.factors from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Prime factors of nonzero naturals
@@ -25,13 +22,13 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
 
--- Porting note: `deriving` contained
--- Inhabited, CanonicallyOrderedAddMonoid, DistribLattice, SemilatticeSup, OrderBot, Sub, OrderedSub
+-- Porting note: `deriving` contained Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
+-- SemilatticeSup, OrderBot, Sub, OrderedSub
 /-- The type of multisets of prime numbers.  Unique factorization
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddMonoid, DistribLattice,
+  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
 #align prime_multiset PrimeMultiset
 
@@ -216,7 +213,6 @@ theorem prod_ofPNatList (l : List ℕ+) (h) : (ofPNatList l h).prod = l.prod := 
 /-- The product map gives a homomorphism from the additive monoid
 of multisets to the multiplicative monoid ℕ+. -/
 theorem prod_zero : (0 : PrimeMultiset).prod = 1 := by
-  dsimp [Prod]
   exact Multiset.prod_zero
 #align prime_multiset.prod_zero PrimeMultiset.prod_zero
 
@@ -226,12 +222,10 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
   exact Multiset.prod_add _ _
 #align prime_multiset.prod_add PrimeMultiset.prod_add
 
--- Porting note: Need to replace ^ with Pow.pow to get the original mathlib statement
-theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = Pow.pow u.prod d := by
-  induction' d with n ih
-  · rfl
-  · have : ∀ n' : ℕ, Pow.pow (prod u) n' = Monoid.npow n' (prod u) := fun _ ↦ rfl
-    rw [succ_nsmul, prod_add, ih, this, this, Monoid.npow_succ, mul_comm]
+theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
+  induction d with
+  | zero => simp only [Nat.zero_eq, zero_nsmul, pow_zero, prod_zero]
+  | succ n ih => rw [succ_nsmul, prod_add, ih, pow_succ, mul_comm]
 #align prime_multiset.prod_smul PrimeMultiset.prod_smul
 
 end PrimeMultiset
@@ -307,7 +301,7 @@ theorem factorMultiset_mul (n m : ℕ+) :
 #align pnat.factor_multiset_mul PNat.factorMultiset_mul
 
 theorem factorMultiset_pow (n : ℕ+) (m : ℕ) :
-    factorMultiset (Pow.pow n m ) = m • factorMultiset n := by
+    factorMultiset (n ^ m) = m • factorMultiset n := by
   let u := factorMultiset n
   have : n = u.prod := (prod_factorMultiset n).symm
   rw [this, ← PrimeMultiset.prod_smul]
@@ -393,7 +387,7 @@ theorem factorMultiset_lcm (m n : ℕ+) :
 /-- The number of occurrences of p in the factor multiset of m
  is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :
-    Pow.pow (p : ℕ+) k ∣ m ↔ k ≤ m.factorMultiset.count p := by
+    (p : ℕ+) ^ k ∣ m ↔ k ≤ m.factorMultiset.count p := by
   intros
   rw [Multiset.le_count_iff_replicate_le, ← factorMultiset_le_iff, factorMultiset_pow,
     factorMultiset_ofPrime]

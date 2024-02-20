@@ -2,17 +2,13 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
-
-! This file was ported from Lean 3 source module category_theory.types
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Data.Set.Defs
+
+#align_import category_theory.types from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # The category `Type`.
@@ -131,8 +127,17 @@ def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
 -- porting note: added this simp lemma
 @[simp]
 lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
-  {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
+    {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
+
+variable (J)
+
+/-- The functor which sends a functor to types to its sections. -/
+@[simps]
+def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
+  obj F := F.sections
+  map {F G} φ x := ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+    (congr_fun (φ.naturality f) (x.1 j)).symm.trans (by simp [x.2 f])⟩
 
 end Functor
 
@@ -159,6 +164,11 @@ theorem naturality (f : X ⟶ Y) (x : F.obj X) : σ.app Y ((F.map f) x) = (G.map
 theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
   rfl
 #align category_theory.functor_to_types.comp CategoryTheory.FunctorToTypes.comp
+
+@[simp]
+theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
+    F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
+  aesop_cat
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
@@ -216,8 +226,8 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
 instance uliftFunctorFull : Full.{u} uliftFunctor where preimage f x := (f (ULift.up x)).down
 #align category_theory.ulift_functor_full CategoryTheory.uliftFunctorFull
 
-instance uliftFunctor_faithful : Faithful uliftFunctor
-    where map_injective {_X} {_Y} f g p :=
+instance uliftFunctor_faithful : Faithful uliftFunctor where
+  map_injective {_X} {_Y} f g p :=
     funext fun x =>
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
 #align category_theory.ulift_functor_faithful CategoryTheory.uliftFunctor_faithful
@@ -382,8 +392,8 @@ theorem isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.
     IsIso.of_iso (Equiv.ofBijective f b).toIso
 #align category_theory.is_iso_iff_bijective CategoryTheory.isIso_iff_bijective
 
-instance : SplitEpiCategory (Type u)
-    where isSplitEpi_of_epi f hf :=
+instance : SplitEpiCategory (Type u) where
+  isSplitEpi_of_epi f hf :=
     IsSplitEpi.mk' <|
       { section_ := Function.surjInv <| (epi_iff_surjective f).1 hf
         id := funext <| Function.rightInverse_surjInv <| (epi_iff_surjective f).1 hf }
@@ -391,7 +401,7 @@ instance : SplitEpiCategory (Type u)
 end CategoryTheory
 
 -- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
--- (In this order the proofs are handled by `obviously`.)
+-- (In this order the proofs are handled by `aesop_cat`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]

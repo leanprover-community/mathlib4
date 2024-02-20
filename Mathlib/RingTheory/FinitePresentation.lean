@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.finite_presentation
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.Ideal.QuotientOperations
+
+#align_import ring_theory.finite_presentation from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -27,6 +24,8 @@ In this file we define several notions of finiteness that are common in commutat
   all of these express that some object is finitely presented *as algebra* over some base ring.
 
 -/
+
+set_option autoImplicit true
 
 open Function (Surjective)
 
@@ -87,17 +86,17 @@ theorem equiv (hfp : FinitePresentation R A) (e : A ≃ₐ[R] B) : FinitePresent
   constructor
   · rw [AlgHom.coe_comp]
     exact Function.Surjective.comp e.surjective hf.1
-  suffices hker : (RingHom.ker (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom) = RingHom.ker f.toRingHom
-  · rw [hker]
+  suffices (RingHom.ker (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom) = RingHom.ker f.toRingHom by
+    rw [this]
     exact hf.2
-  · have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp (e.toRingEquiv : A ≃+* B)
-      f.toRingHom := by
-      have h : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom =
-        e.toAlgHom.toRingHom.comp f.toRingHom := rfl
-      have h1 : ↑e.toRingEquiv = e.toAlgHom.toRingHom := rfl
-      rw [h, h1]
-    rw [RingHom.ker_eq_comap_bot, hco, ← Ideal.comap_comap, ← RingHom.ker_eq_comap_bot,
-      RingHom.ker_coe_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
+  have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp (e.toRingEquiv : A ≃+* B)
+    f.toRingHom := by
+    have h : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom =
+      e.toAlgHom.toRingHom.comp f.toRingHom := rfl
+    have h1 : ↑e.toRingEquiv = e.toAlgHom.toRingHom := rfl
+    rw [h, h1]
+  rw [RingHom.ker_eq_comap_bot, hco, ← Ideal.comap_comap, ← RingHom.ker_eq_comap_bot,
+    RingHom.ker_coe_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
 #align algebra.finite_presentation.equiv Algebra.FinitePresentation.equiv
 
 variable (R)
@@ -158,7 +157,7 @@ theorem iff :
 variables are indexed by a fintype by a finitely generated ideal. -/
 theorem iff_quotient_mvPolynomial' :
     FinitePresentation R A ↔
-      ∃ (ι : Type _) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
+      ∃ (ι : Type*) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
         Surjective f ∧ f.toRingHom.ker.FG := by
   constructor
   · rintro ⟨n, f, hfs, hfk⟩
@@ -400,7 +399,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is of `RingHom.FinitePresentation` if `B` is finitely presented as
 `A`-algebra. -/
@@ -476,7 +475,7 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type _} [CommRing R]
+variable {R A B C : Type*} [CommRing R]
 
 variable [CommRing A] [CommRing B] [CommRing C]
 

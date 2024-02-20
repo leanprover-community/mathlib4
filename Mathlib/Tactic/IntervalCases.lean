@@ -5,33 +5,25 @@ Authors: Scott Morrison, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.FinCases
-import Mathlib.Data.Set.Intervals.Basic
 
 /-!
 # Case bash on variables in finite intervals
 
 This file provides the tactic `interval_cases`. `interval_cases n` will:
-1. inspect hypotheses looking for lower and upper bounds of the form `a ≤ n` and `n < b`
-   (in `ℕ`, `ℤ`, `ℕ+`, bounds of the form `a < n` and `n ≤ b` are also allowed),
-   and also makes use of lower and upper bounds found via `le_top` and `bot_le`
-   (so for example if `n : ℕ`, then the bound `0 ≤ n` is automatically found).
+1. inspect hypotheses looking for lower and upper bounds of the form `a ≤ n` or `a < n` and `n < b`
+   or `n ≤ b`, including the bound `0 ≤ n` for `n : ℕ` automatically.
 2. call `fin_cases` on the synthesised hypothesis `n ∈ Set.Ico a b`,
    assuming an appropriate `Fintype` instance can be found for the type of `n`.
 
-The variable `n` can belong to any type `α`, with the following restrictions:
-* only bounds on which `expr.to_rat` succeeds will be considered "explicit" (TODO: generalise this?)
-* an instance of `DecidableEq α` is available,
-* an explicit lower bound can be found among the hypotheses, or from `bot_le n`,
-* an explicit upper bound can be found among the hypotheses, or from `le_top n`,
-* if multiple bounds are located, an instance of `LinearOrder α` is available, and
-* an instance of `Fintype Set.Ico l u` is available for the relevant bounds.
+Currently, `n` must be of type `ℕ` or `ℤ` (TODO: generalize).
 
 You can also explicitly specify a lower and upper bound to use, as `interval_cases using hl hu`,
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
 
-set_option linter.unusedVariables false
+set_option autoImplicit true
+
 -- In this file we would like to be able to use multi-character auto-implicits.
 set_option relaxedAutoImplicit true
 

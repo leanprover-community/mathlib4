@@ -2,13 +2,10 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.real.pi.bounds
-! leanprover-community/mathlib commit 402f8982dddc1864bd703da2d6e2ee304a866973
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+
+#align_import data.real.pi.bounds from "leanprover-community/mathlib"@"402f8982dddc1864bd703da2d6e2ee304a866973"
 
 /-!
 # Pi
@@ -21,8 +18,6 @@ numerical bounds on `π` such as `pi_gt_314`and `pi_lt_315` (more precise versio
 See also `Mathlib/Data/Real/Pi/Leibniz.lean` and `Mathlib/Data/Real/Pi/Wallis.lean` for infinite
 formulas for `π`.
 -/
-
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 -- Porting note: needed to add a lot of type ascriptions for lean to interpret numbers as reals.
 
@@ -50,11 +45,11 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     · rw [div_le_iff']
       · refine' le_trans pi_le_four _
         simp only [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, mul_one]
-        apply pow_le_pow; norm_num; apply le_add_of_nonneg_left; apply Nat.zero_le
+        apply pow_le_pow_right; norm_num; apply le_add_of_nonneg_left; apply Nat.zero_le
       · apply pow_pos; norm_num
     apply add_le_add_left; rw [div_le_div_right]
     rw [le_div_iff, ← mul_pow]
-    refine' le_trans _ (le_of_eq (one_pow 3)); apply pow_le_pow_of_le_left
+    refine' le_trans _ (le_of_eq (one_pow 3)); apply pow_le_pow_left
     · apply le_of_lt; apply mul_pos; apply div_pos pi_pos; apply pow_pos; norm_num; apply pow_pos
       norm_num
     rw [← le_div_iff]
@@ -89,7 +84,7 @@ theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtT
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
   rw [sqrt_le_left (div_nonneg c.cast_nonneg d.cast_nonneg), div_pow,
     add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff hb' (pow_pos hd' _)]
-  exact_mod_cast h
+  exact mod_cast h
 #align real.sqrt_two_add_series_step_up Real.sqrtTwoAddSeries_step_up
 
 section Tactic
@@ -143,7 +138,7 @@ theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
   rw [div_pow, add_div_eq_mul_add_div _ _ (ne_of_gt hd'), div_le_div_iff (pow_pos hb' _) hd']
-  exact_mod_cast h
+  exact mod_cast h
 #align real.sqrt_two_add_series_step_down Real.sqrtTwoAddSeries_step_down
 
 section Tactic

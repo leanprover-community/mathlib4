@@ -2,16 +2,13 @@
 Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
-
-! This file was ported from Lean 3 source module algebra.category.Mon.filtered_colimits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.Limits.Types
+
+#align_import algebra.category.Mon.filtered_colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
@@ -83,7 +80,7 @@ variable [IsFiltered J]
   "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to
   define the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
 noncomputable instance colimitOne :
-  One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.Nonempty.some,1⟩
+  One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
 #align Mon.filtered_colimits.colimit_has_one MonCat.FilteredColimits.colimitOne
 #align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
 
@@ -123,7 +120,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
   cases' x with j₁ x; cases' y with j₂ y; cases' x' with j₃ x'
   obtain ⟨l, f, g, hfg⟩ := hxx'
-  simp at hfg
+  simp? at hfg says simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.leftToMax j₁ j₂) (IsFiltered.rightToMax j₁ j₂)
       (IsFiltered.rightToMax j₃ j₂) (IsFiltered.leftToMax j₃ j₂) f g
@@ -148,7 +145,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
   cases' y with j₁ y; cases' x with j₂ x; cases' y' with j₃ y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
-  simp at hfg
+  simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.rightToMax j₂ j₁) (IsFiltered.leftToMax j₂ j₁)
       (IsFiltered.leftToMax j₂ j₃) (IsFiltered.rightToMax j₂ j₃) f g
@@ -304,7 +301,7 @@ The only thing left to see is that it is a monoid homomorphism.
 def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
   toFun := (Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).desc ((forget MonCat).mapCocone t)
   map_one' := by
-    rw [colimit_one_eq F IsFiltered.Nonempty.some]
+    rw [colimit_one_eq F IsFiltered.nonempty.some]
     exact MonoidHom.map_one _
   map_mul' x y := by
     refine Quot.induction_on₂ x y ?_
@@ -315,7 +312,8 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j)]
     dsimp [Types.colimitCoconeIsColimit]
-    rw [MonoidHom.map_mul]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [MonoidHom.map_mul]
     -- Porting note : `rw` can't see through coercion is actually forgetful functor,
     -- so can't rewrite `t.w_apply`
     congr 1 <;>
@@ -332,7 +330,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   uniq t m h := MonoidHom.ext fun y => congr_fun
       ((Types.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
         ((forget MonCat).map m)
-        fun j => funext fun x => FunLike.congr_fun (i := MonCat.Hom_FunLike _ _) (h j) x) y
+        fun j => funext fun x => DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
 #align Mon.filtered_colimits.colimit_cocone_is_colimit MonCat.FilteredColimits.colimitCoconeIsColimit
 #align AddMon.filtered_colimits.colimit_cocone_is_colimit AddMonCat.FilteredColimits.colimitCoconeIsColimit
 
@@ -368,7 +366,7 @@ noncomputable abbrev M : MonCat.{max v u} :=
 #align AddCommMon.filtered_colimits.M AddCommMonCat.FilteredColimits.M
 
 @[to_additive]
-noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F):=
+noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with
     mul_comm := fun x y => by
       refine Quot.induction_on₂ x y ?_
@@ -407,15 +405,15 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
       ((forget₂ CommMonCat MonCat.{max v u}).mapCocone t)
   fac t j :=
-    FunLike.coe_injective (i := CommMonCat.Hom_FunLike _ _) <|
+    DFunLike.coe_injective (i := CommMonCat.instFunLike _ _) <|
       (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).fac
         ((forget CommMonCat).mapCocone t) j
   uniq t m h :=
-    FunLike.coe_injective (i := CommMonCat.Hom_FunLike _ _) <|
+    DFunLike.coe_injective (i := CommMonCat.instFunLike _ _) <|
       (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
         ((forget CommMonCat.{max v u}).mapCocone t)
         ((forget CommMonCat.{max v u}).map m) fun j => funext fun x =>
-          FunLike.congr_fun (i := CommMonCat.Hom_FunLike _ _) (h j) x
+          DFunLike.congr_fun (i := CommMonCat.instFunLike _ _) (h j) x
 #align CommMon.filtered_colimits.colimit_cocone_is_colimit CommMonCat.FilteredColimits.colimitCoconeIsColimit
 #align AddCommMon.filtered_colimits.colimit_cocone_is_colimit AddCommMonCat.FilteredColimits.colimitCoconeIsColimit
 

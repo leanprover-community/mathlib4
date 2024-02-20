@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module geometry.euclidean.angle.sphere
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 import Mathlib.Geometry.Euclidean.Circumcenter
+
+#align_import geometry.euclidean.angle.sphere from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Angles in circles and sphere.
@@ -27,7 +24,7 @@ open scoped EuclideanGeometry Real RealInnerProductSpace ComplexConjugate
 
 namespace Orientation
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 variable [Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
@@ -75,7 +72,7 @@ end Orientation
 
 namespace EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
@@ -258,7 +255,7 @@ namespace Triangle
 
 open EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
@@ -272,8 +269,8 @@ theorem inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_circumcenter (
       o.rotation (π / 2 : ℝ) (t.points i₃ -ᵥ t.points i₁) +ᵥ
         midpoint ℝ (t.points i₁) (t.points i₃) = t.circumcenter :=
   Sphere.inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_center (t.mem_circumsphere _)
-    (t.mem_circumsphere _) (t.mem_circumsphere _) (t.Independent.injective.ne h₁₂)
-    (t.Independent.injective.ne h₁₃) (t.Independent.injective.ne h₂₃)
+    (t.mem_circumsphere _) (t.mem_circumsphere _) (t.independent.injective.ne h₁₂)
+    (t.independent.injective.ne h₁₃) (t.independent.injective.ne h₂₃)
 #align affine.triangle.inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_circumcenter Affine.Triangle.inv_tan_div_two_smul_rotation_pi_div_two_vadd_midpoint_eq_circumcenter
 
 /-- The circumradius of a triangle may be expressed explicitly as half the length of a side
@@ -283,8 +280,8 @@ theorem dist_div_sin_oangle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : dist (t.points i₁) (t.points i₃) /
       |Real.Angle.sin (∡ (t.points i₁) (t.points i₂) (t.points i₃))| / 2 = t.circumradius :=
   Sphere.dist_div_sin_oangle_div_two_eq_radius (t.mem_circumsphere _) (t.mem_circumsphere _)
-    (t.mem_circumsphere _) (t.Independent.injective.ne h₁₂) (t.Independent.injective.ne h₁₃)
-    (t.Independent.injective.ne h₂₃)
+    (t.mem_circumsphere _) (t.independent.injective.ne h₁₂) (t.independent.injective.ne h₁₃)
+    (t.independent.injective.ne h₂₃)
 #align affine.triangle.dist_div_sin_oangle_div_two_eq_circumradius Affine.Triangle.dist_div_sin_oangle_div_two_eq_circumradius
 
 /-- Twice the circumradius of a triangle may be expressed explicitly as the length of a side
@@ -294,8 +291,8 @@ theorem dist_div_sin_oangle_eq_two_mul_circumradius (t : Triangle ℝ P) {i₁ i
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) : dist (t.points i₁) (t.points i₃) /
       |Real.Angle.sin (∡ (t.points i₁) (t.points i₂) (t.points i₃))| = 2 * t.circumradius :=
   Sphere.dist_div_sin_oangle_eq_two_mul_radius (t.mem_circumsphere _) (t.mem_circumsphere _)
-    (t.mem_circumsphere _) (t.Independent.injective.ne h₁₂) (t.Independent.injective.ne h₁₃)
-    (t.Independent.injective.ne h₂₃)
+    (t.mem_circumsphere _) (t.independent.injective.ne h₁₂) (t.independent.injective.ne h₁₃)
+    (t.independent.injective.ne h₂₃)
 #align affine.triangle.dist_div_sin_oangle_eq_two_mul_circumradius Affine.Triangle.dist_div_sin_oangle_eq_two_mul_circumradius
 
 /-- The circumsphere of a triangle may be expressed explicitly in terms of two points and the
@@ -340,7 +337,7 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
     rw [affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃, h₁, h₂, h₃,
       collinear_iff_of_two_zsmul_oangle_eq h, ←
       affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃]
-    exact t.Independent
+    exact t.independent
   let t' : Triangle ℝ P := ⟨t'p, ha⟩
   have h₁' : t'.points i₁ = t.points i₁ := h₁
   have h₂' : t'.points i₂ = p := h₂
@@ -358,7 +355,7 @@ end Affine
 
 namespace EuclideanGeometry
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation

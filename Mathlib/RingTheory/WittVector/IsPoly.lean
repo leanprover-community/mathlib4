@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.is_poly
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.Data.MvPolynomial.Funext
+
+#align_import ring_theory.witt_vector.is_poly from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 /-!
 # The `is_poly` predicate
 
@@ -76,7 +73,7 @@ Any lemma doing "ring equation rewriting" with polynomial functions should be ta
 ```lean
 @[ghost_simps]
 lemma bind₁_frobenius_poly_wittPolynomial (n : ℕ) :
-  bind₁ (frobenius_poly p) (wittPolynomial p ℤ n) = (wittPolynomial p ℤ (n+1))
+    bind₁ (frobenius_poly p) (wittPolynomial p ℤ n) = (wittPolynomial p ℤ (n+1))
 ```
 
 Proofs of identities between polynomial functions will often follow the pattern
@@ -97,7 +94,7 @@ namespace WittVector
 
 universe u
 
-variable {p : ℕ} {R S : Type u} {σ idx : Type _} [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type u} {σ idx : Type*} [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -243,7 +240,8 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), _⟩⟩
   intros
   funext n
-  simp only [peval, aeval_bind₁, Function.comp, hh, hf, hg, uncurry]
+  simp (config := { unfoldPartialApp := true }) only [peval, aeval_bind₁, Function.comp, hh, hf, hg,
+    uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
   fin_cases i <;>
@@ -274,7 +272,7 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x 
   obtain ⟨φ, hf⟩ := hf
   refine' ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), _⟩⟩
   intros; funext n
-  simp only [hf, peval, uncurry, aeval_bind₁]
+  simp (config := { unfoldPartialApp := true }) only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩;
   fin_cases i <;>
@@ -327,12 +325,12 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0
-    simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), MulZeroClass.mul_zero,
+    simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
   · rw [Finset.mem_range]
     -- porting note: was `decide`
-    simp only [add_pos_iff, or_true, not_true, pow_zero, map_one, ge_iff_le, nonpos_iff_eq_zero,
-      tsub_zero, one_mul, gt_iff_lt, IsEmpty.forall_iff]
+    intro h
+    simp only [add_pos_iff, zero_lt_one, or_true, not_true_eq_false] at h
 #align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
@@ -437,7 +435,7 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   -- so that applications do not have to worry about the universe issue
   obtain ⟨φ, hf⟩ := hf
   ext n
-  simp only [map_coeff, hf, map_aeval, peval, uncurry]
+  simp (config := { unfoldPartialApp := true }) only [map_coeff, hf, map_aeval, peval, uncurry]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   try ext ⟨i, k⟩; fin_cases i
   all_goals simp only [map_coeff, Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
@@ -452,7 +450,7 @@ end IsPoly₂
 attribute [ghost_simps] AlgHom.map_zero AlgHom.map_one AlgHom.map_add AlgHom.map_mul AlgHom.map_sub
   AlgHom.map_neg AlgHom.id_apply map_natCast RingHom.map_zero RingHom.map_one RingHom.map_mul
   RingHom.map_add RingHom.map_sub RingHom.map_neg RingHom.id_apply mul_add add_mul add_zero zero_add
-  mul_one one_mul MulZeroClass.mul_zero MulZeroClass.zero_mul Nat.succ_ne_zero add_tsub_cancel_right
+  mul_one one_mul mul_zero zero_mul Nat.succ_ne_zero add_tsub_cancel_right
   Nat.succ_eq_add_one if_true eq_self_iff_true if_false forall_true_iff forall₂_true_iff
   forall₃_true_iff
 

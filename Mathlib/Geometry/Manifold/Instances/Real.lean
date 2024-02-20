@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module geometry.manifold.instances.real
-! leanprover-community/mathlib commit 6a033cb3d188a12ca5c509b33e2eaac1c61916cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import geometry.manifold.instances.real from "leanprover-community/mathlib"@"6a033cb3d188a12ca5c509b33e2eaac1c61916cd"
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -169,7 +166,7 @@ scoped[Manifold]
 `EuclideanHalfSpace 1`.
 -/
 def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
-    LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+    PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
@@ -177,7 +174,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   map_source' := by simp only [imp_self, sub_lt_sub_iff_right, mem_setOf_eq, forall_true_iff]
   map_target' := by
     simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
-    dsimp at hz; linarith
+    linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
@@ -198,13 +195,13 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuous_toFun := by
+  continuousOn_toFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have : Continuous fun (z : ℝ) (_ : Fin 1) => z - x :=
       Continuous.sub (continuous_pi fun _ => continuous_id) continuous_const
     exact this.comp continuous_subtype_val
-  continuous_invFun := by
+  continuousOn_invFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have A : Continuous fun z : ℝ => min (z + x) y :=
@@ -217,7 +214,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
 `EuclideanHalfSpace 1`.
 -/
 def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
-    LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+    PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | x < z.val }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
@@ -226,7 +223,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   map_source' := by simp only [imp_self, mem_setOf_eq, sub_lt_sub_iff_left, forall_true_iff]
   map_target' := by
     simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
-    dsimp at hz; linarith
+    linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
@@ -247,13 +244,13 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuous_toFun := by
+  continuousOn_toFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have : Continuous fun (z : ℝ) (_ : Fin 1) => y - z :=
       continuous_const.sub (continuous_pi fun _ => continuous_id)
     exact this.comp continuous_subtype_val
-  continuous_invFun := by
+  continuousOn_invFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have A : Continuous fun z : ℝ => max (y - z) x :=

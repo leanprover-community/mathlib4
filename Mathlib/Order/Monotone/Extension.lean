@@ -2,13 +2,10 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.monotone.extension
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+#align_import order.monotone.extension from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # Extension of a monotone function from a set to the whole space
@@ -20,7 +17,7 @@ monotone extension to the whole space.
 
 open Set
 
-variable {α β : Type _} [LinearOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
+variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
   {a b : α}
 
 /-- If a function is monotone and is bounded on a set `s`, then it admits a monotone extension to
@@ -29,7 +26,7 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     (hu : BddAbove (f '' s)) : ∃ g : α → β, Monotone g ∧ EqOn f g s := by
   classical
     /- The extension is defined by `f x = f a` for `x ≤ a`, and `f x` is the supremum of the values
-      of `f`  to the left of `x` for `x ≥ a`. -/
+      of `f` to the left of `x` for `x ≥ a`. -/
     rcases hl with ⟨a, ha⟩
     have hu' : ∀ x, BddAbove (f '' (Iic x ∩ s)) := fun x =>
       hu.mono (image_subset _ (inter_subset_right _ _))

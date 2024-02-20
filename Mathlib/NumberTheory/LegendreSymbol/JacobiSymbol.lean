@@ -2,13 +2,10 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.legendre_symbol.jacobi_symbol
-! leanprover-community/mathlib commit 74a27133cf29446a0983779e37c8f829a85368f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+
+#align_import number_theory.legendre_symbol.jacobi_symbol from "leanprover-community/mathlib"@"74a27133cf29446a0983779e37c8f829a85368f3"
 
 /-!
 # The Jacobi Symbol
@@ -119,7 +116,8 @@ theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legen
 theorem mul_right' (a : ℤ) {b₁ b₂ : ℕ} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
     J(a | b₁ * b₂) = J(a | b₁) * J(a | b₂) := by
   rw [jacobiSym, ((perm_factors_mul hb₁ hb₂).pmap _).prod_eq, List.pmap_append, List.prod_append]
-  exacts [rfl, fun p hp => (List.mem_append.mp hp).elim prime_of_mem_factors prime_of_mem_factors]
+  case h => exact fun p hp => (List.mem_append.mp hp).elim prime_of_mem_factors prime_of_mem_factors
+  case _ => rfl
 #align jacobi_sym.mul_right' jacobiSym.mul_right'
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
@@ -182,7 +180,7 @@ protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0
 /-- The symbol `J(a | b)` vanishes if and only if `b ≠ 0` and `a` and `b` are not coprime. -/
 theorem eq_zero_iff {a : ℤ} {b : ℕ} : J(a | b) = 0 ↔ b ≠ 0 ∧ a.gcd b ≠ 1 :=
   ⟨fun h => by
-    cases' eq_or_ne b 0 with hb hb
+    rcases eq_or_ne b 0 with hb | hb
     · rw [hb, zero_right] at h; cases h
     exact ⟨hb, mt jacobiSym.ne_zero <| Classical.not_not.2 h⟩, fun ⟨hb, h⟩ => by
     rw [← neZero_iff] at hb; exact eq_zero_iff_not_coprime.2 h⟩
@@ -210,7 +208,7 @@ theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
   induction' e with e ih
   · rw [Nat.pow_zero, _root_.pow_zero, one_right]
   · cases' eq_zero_or_neZero b with hb
-    · rw [hb, zero_pow (succ_pos e), zero_right, one_pow]
+    · rw [hb, zero_pow e.succ_ne_zero, zero_right, one_pow]
     · rw [_root_.pow_succ, _root_.pow_succ, mul_right, ih]
 #align jacobi_sym.pow_right jacobiSym.pow_right
 
@@ -274,7 +272,7 @@ theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
 
 /-- If `J(a | n) = -1`, then `n` has a prime divisor `p` such that `J(a | p) = -1`. -/
 theorem eq_neg_one_at_prime_divisor_of_eq_neg_one {a : ℤ} {n : ℕ} (h : J(a | n) = -1) :
-    ∃ (p : ℕ) (_ : p.Prime), p ∣ n ∧ J(a | p) = -1 := by
+    ∃ p : ℕ, p.Prime ∧ p ∣ n ∧ J(a | p) = -1 := by
   have hn₀ : n ≠ 0 := by
     rintro rfl
     rw [zero_right, eq_neg_self_iff] at h
@@ -324,8 +322,8 @@ namespace jacobiSym
 
 /-- If `χ` is a multiplicative function such that `J(a | p) = χ p` for all odd primes `p`,
 then `J(a | b)` equals `χ b` for all odd natural numbers `b`. -/
-theorem value_at (a : ℤ) {R : Type _} [CommSemiring R] (χ : R →* ℤ)
-    (hp : ∀ (p : ℕ) (pp : p.Prime) (_ : p ≠ 2), @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
+theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
+    (hp : ∀ (p : ℕ) (pp : p.Prime), p ≠ 2 → @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
     J(a | b) = χ b := by
   conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, χ.map_list_prod]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _ fun _ => prime_of_mem_factors]
@@ -414,7 +412,7 @@ end qrSign
 
 namespace jacobiSym
 
-/-- The Law of Quadratic Reciprocity for the Jacobi symbol, version with `qrSign` -/
+/-- The **Law of Quadratic Reciprocity for the Jacobi symbol**, version with `qrSign` -/
 theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = qrSign b a * J(b | a) := by
   -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
@@ -469,8 +467,8 @@ theorem quadratic_reciprocity_three_mod_four {a b : ℕ} (ha : a % 4 = 3) (hb : 
 /-- The Jacobi symbol `J(a | b)` depends only on `b` mod `4*a` (version for `a : ℕ`). -/
 theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a)) := by
   rcases eq_or_ne a 0 with (rfl | ha₀)
-  · rw [MulZeroClass.mul_zero, mod_zero]
-  have hb' : Odd (b % (4 * a)) := hb.mod_even (Even.mul_right (by norm_num) _)
+  · rw [mul_zero, mod_zero]
+  have hb' : Odd (b % (4 * a)) := hb.mod_even (Even.mul_right (by decide) _)
   rcases exists_eq_pow_mul_and_not_dvd ha₀ 2 (by norm_num) with ⟨e, a', ha₁', ha₂⟩
   have ha₁ := odd_iff.mpr (two_dvd_ne_zero.mp ha₁')
   nth_rw 2 [ha₂]; nth_rw 1 [ha₂]
@@ -482,7 +480,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
     rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]
   · rw [mod_left ↑(b % _), mod_left b, Int.coe_nat_mod, Int.emod_emod_of_dvd b]
     simp only [ha₂, Nat.cast_mul, ← mul_assoc]
-    exact dvd_mul_left (a' : ℤ) (↑4 * ↑(2 ^ e))
+    apply dvd_mul_left
   -- porting note: In mathlib3, it was written `cases' e`. In Lean 4, this resulted in the choice
   -- of a name other than e (for the case distinction of line 482) so we indicate the name
   -- to use explicitly.
@@ -495,7 +493,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
 theorem mod_right (a : ℤ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * a.natAbs)) := by
   cases' Int.natAbs_eq a with ha ha <;> nth_rw 2 [ha] <;> nth_rw 1 [ha]
   · exact mod_right' a.natAbs hb
-  · have hb' : Odd (b % (4 * a.natAbs)) := hb.mod_even (Even.mul_right (by norm_num) _)
+  · have hb' : Odd (b % (4 * a.natAbs)) := hb.mod_even (Even.mul_right (by decide) _)
     rw [jacobiSym.neg _ hb, jacobiSym.neg _ hb', mod_right' _ hb, χ₄_nat_mod_four,
       χ₄_nat_mod_four (b % (4 * _)), mod_mod_of_dvd b (dvd_mul_right 4 _)]
 #align jacobi_sym.mod_right jacobiSym.mod_right

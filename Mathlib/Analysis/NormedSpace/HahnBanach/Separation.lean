@@ -2,16 +2,13 @@
 Copyright (c) 2022 Bhavik Mehta All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed_space.hahn_banach.separation
-! leanprover-community/mathlib commit 915591b2bb3ea303648db07284a161a7f2a9e3d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
+import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+#align_import analysis.normed_space.hahn_banach.separation from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Separation Hahn-Banach theorem
@@ -42,7 +39,7 @@ open Set
 
 open Pointwise
 
-variable {𝕜 E : Type _}
+variable {𝕜 E : Type*}
 
 /-- Given a set `s` which is a convex neighbourhood of `0` and a point `x₀` outside of it, there is
 a continuous linear functional `f` separating `x₀` and `s`, in the sense that it sends `x₀` to 1 and
@@ -51,14 +48,14 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [Topologi
     [Module ℝ E] [ContinuousSMul ℝ E] {s : Set E} (hs₀ : (0 : E) ∈ s) (hs₁ : Convex ℝ s)
     (hs₂ : IsOpen s) {x₀ : E} (hx₀ : x₀ ∉ s) : ∃ f : E →L[ℝ] ℝ, f x₀ = 1 ∧ ∀ x ∈ s, f x < 1 := by
   let f : E →ₗ.[ℝ] ℝ := LinearPMap.mkSpanSingleton x₀ 1 (ne_of_mem_of_not_mem hs₀ hx₀).symm
-  have :=  exists_extension_of_le_sublinear f (gauge s) (fun c hc => gauge_smul_of_nonneg hc.le)
+  have := exists_extension_of_le_sublinear f (gauge s) (fun c hc => gauge_smul_of_nonneg hc.le)
     (gauge_add_le hs₁ <| absorbent_nhds_zero <| hs₂.mem_nhds hs₀) ?_
   obtain ⟨φ, hφ₁, hφ₂⟩ := this
   have hφ₃ : φ x₀ = 1 := by
     rw [← f.domain.coe_mk x₀ (Submodule.mem_span_singleton_self _), hφ₁,
       LinearPMap.mkSpanSingleton'_apply_self]
   have hφ₄ : ∀ x ∈ s, φ x < 1 := fun x hx =>
-    (hφ₂ x).trans_lt (gauge_lt_one_of_mem_of_open hs₂ hx)
+    (hφ₂ x).trans_lt (gauge_lt_one_of_mem_of_isOpen hs₂ hx)
   · refine' ⟨⟨φ, _⟩, hφ₃, hφ₄⟩
     refine'
       φ.continuous_of_nonzero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩)

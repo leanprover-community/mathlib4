@@ -2,17 +2,14 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.properties
-! leanprover-community/mathlib commit 88474d1b5af6d37c2ab728b757771bced7f5194c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.RingTheory.LocalProperties
+
+#align_import algebraic_geometry.properties from "leanprover-community/mathlib"@"88474d1b5af6d37c2ab728b757771bced7f5194c"
 
 /-!
 # Basic properties of schemes
@@ -92,12 +89,12 @@ theorem isReducedOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersi
       Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReducedOfOpenImmersion
 
-set_option maxHeartbeats 300000 in
 instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
   apply (config := { allowSynthFailures := true }) isReducedOfStalkIsReduced
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
+  rw [show (Scheme.Spec.obj <| op R).presheaf = (Spec.structureSheaf R).presheaf from rfl]
   exact isReduced_of_injective (StructureSheaf.stalkIso R x).hom
     (StructureSheaf.stalkIso R x).commRingCatIsoToRingEquiv.injective
 
@@ -218,7 +215,7 @@ instance [h : IsIntegral X] : IsDomain (X.presheaf.obj (op ⊤)) :=
 instance (priority := 900) isReducedOfIsIntegral [IsIntegral X] : IsReduced X := by
   constructor
   intro U
-  cases' U.1.eq_empty_or_nonempty with h h
+  rcases U.1.eq_empty_or_nonempty with h | h
   · have : U = ⊥ := SetLike.ext' h
     haveI := CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty this)
     change _root_.IsReduced (X.sheaf.val.obj (op U))
@@ -244,7 +241,7 @@ instance is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrie
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
   apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
-  · exact e.symm.commRingCatIsoToRingEquiv.isDomain _
+  · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
   · apply X.toLocallyRingedSpace.component_nontrivial
   · apply X.toLocallyRingedSpace.component_nontrivial
   · ext x
@@ -265,7 +262,7 @@ theorem isIntegralOfIsIrreducibleIsReduced [IsReduced X] [H : IrreducibleSpace X
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
     refine' ⟨fun {a b} e => _⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
-    by_contra' h
+    by_contra! h
     obtain ⟨_, ⟨x, hx₁, rfl⟩, ⟨x, hx₂, e'⟩⟩ :=
       nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
     replace e' := Subtype.eq e'
@@ -295,7 +292,7 @@ theorem isIntegralOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmers
     apply (config := { allowSynthFailures := true }) IsIntegral.component_integral
     refine' ⟨⟨_, _, hU.some.prop, rfl⟩⟩
   exact (asIso <| f.1.c.app (op <| H.base_open.isOpenMap.functor.obj U) :
-    Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.isDomain _
+    Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
 #align algebraic_geometry.is_integral_of_open_immersion AlgebraicGeometry.isIntegralOfOpenImmersion
 
 instance {R : CommRingCat} [H : IsDomain R] :
@@ -307,8 +304,8 @@ instance {R : CommRingCat} [IsDomain R] : IsIntegral (Scheme.Spec.obj <| op R) :
 
 theorem affine_isIntegral_iff (R : CommRingCat) :
     IsIntegral (Scheme.Spec.obj <| op R) ↔ IsDomain R :=
-  ⟨fun _ => RingEquiv.isDomain ((Scheme.Spec.obj <| op R).presheaf.obj (op ⊤))
-    (asIso <| toSpecΓ R).commRingCatIsoToRingEquiv, fun _ => inferInstance⟩
+  ⟨fun _ => MulEquiv.isDomain ((Scheme.Spec.obj <| op R).presheaf.obj (op ⊤))
+    (asIso <| toSpecΓ R).commRingCatIsoToRingEquiv.toMulEquiv, fun _ => inferInstance⟩
 #align algebraic_geometry.affine_is_integral_iff AlgebraicGeometry.affine_isIntegral_iff
 
 theorem isIntegralOfIsAffineIsDomain [IsAffine X] [Nonempty X.carrier]

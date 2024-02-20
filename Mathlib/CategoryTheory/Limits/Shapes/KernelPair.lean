@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.kernel_pair
-! leanprover-community/mathlib commit f6bab67886fb92c3e2f539cc90a83815f69a189d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+
+#align_import category_theory.limits.shapes.kernel_pair from "leanprover-community/mathlib"@"f6bab67886fb92c3e2f539cc90a83815f69a189d"
 
 /-!
 # Kernel pairs
@@ -67,7 +64,7 @@ instance : Subsingleton (IsKernelPair f a b) :=
     cases Q
     congr ⟩
 
-/-- If `f` is a monomorphism, then `(𝟙 _, 𝟙 _)`  is a kernel pair for `f`. -/
+/-- If `f` is a monomorphism, then `(𝟙 _, 𝟙 _)` is a kernel pair for `f`. -/
 theorem id_of_mono [Mono f] : IsKernelPair f (𝟙 _) (𝟙 _) :=
   ⟨⟨rfl⟩, ⟨PullbackCone.isLimitMkIdId _⟩⟩
 #align category_theory.is_kernel_pair.id_of_mono CategoryTheory.IsKernelPair.id_of_mono
@@ -88,12 +85,12 @@ noncomputable def lift {S : C} (k : IsKernelPair f a b) (p q : S ⟶ X) (w : p �
 
 @[reassoc (attr := simp)]
 lemma lift_fst {S : C} (k : IsKernelPair f a b) (p q : S ⟶ X) (w : p ≫ f = q ≫ f) :
-  k.lift p q w ≫ a = p :=
+    k.lift p q w ≫ a = p :=
   PullbackCone.IsLimit.lift_fst _ _ _ _
 
 @[reassoc (attr := simp)]
 lemma lift_snd {S : C} (k : IsKernelPair f a b) (p q : S ⟶ X) (w : p ≫ f = q ≫ f) :
-  k.lift p q w ≫ b = q :=
+    k.lift p q w ≫ b = q :=
   PullbackCone.IsLimit.lift_snd _ _ _ _
 
 /--

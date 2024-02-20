@@ -2,14 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.absolute_value
-! leanprover-community/mathlib commit ab0a2959c83b06280ef576bc830d4aa5fe8c8e61
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.LinearAlgebra.Matrix.Determinant
+
+#align_import linear_algebra.matrix.absolute_value from "leanprover-community/mathlib"@"ab0a2959c83b06280ef576bc830d4aa5fe8c8e61"
 
 /-!
 # Absolute values and matrices
@@ -36,9 +33,9 @@ namespace Matrix
 
 open Equiv Finset
 
-variable {R S : Type _} [CommRing R] [Nontrivial R] [LinearOrderedCommRing S]
+variable {R S : Type*} [CommRing R] [Nontrivial R] [LinearOrderedCommRing S]
 
-variable {n : Type _} [Fintype n] [DecidableEq n]
+variable {n : Type*} [Fintype n] [DecidableEq n]
 
 theorem det_le {A : Matrix n n R} {abv : AbsoluteValue R S} {x : S} (hx : ∀ i j, abv (A i j) ≤ x) :
     abv A.det ≤ Nat.factorial (Fintype.card n) • x ^ Fintype.card n :=
@@ -55,7 +52,7 @@ theorem det_le {A : Matrix n n R} {abv : AbsoluteValue R S} {x : S} (hx : ∀ i 
       rw [sum_const, Finset.card_univ, Fintype.card_perm]
 #align matrix.det_le Matrix.det_le
 
-theorem det_sum_le {ι : Type _} (s : Finset ι) {A : ι → Matrix n n R} {abv : AbsoluteValue R S}
+theorem det_sum_le {ι : Type*} (s : Finset ι) {A : ι → Matrix n n R} {abv : AbsoluteValue R S}
     {x : S} (hx : ∀ k i j, abv (A k i j) ≤ x) :
     abv (det (∑ k in s, A k)) ≤
       Nat.factorial (Fintype.card n) • (Finset.card s • x) ^ Fintype.card n :=
@@ -67,7 +64,7 @@ theorem det_sum_le {ι : Type _} (s : Finset ι) {A : ι → Matrix n n R} {abv 
       _ = s.card • x := sum_const _
 #align matrix.det_sum_le Matrix.det_sum_le
 
-theorem det_sum_smul_le {ι : Type _} (s : Finset ι) {c : ι → R} {A : ι → Matrix n n R}
+theorem det_sum_smul_le {ι : Type*} (s : Finset ι) {c : ι → R} {A : ι → Matrix n n R}
     {abv : AbsoluteValue R S} {x : S} (hx : ∀ k i j, abv (A k i j) ≤ x) {y : S}
     (hy : ∀ k, abv (c k) ≤ y) :
     abv (det (∑ k in s, c k • A k)) ≤

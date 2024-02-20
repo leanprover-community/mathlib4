@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.function.floor
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+#align_import measure_theory.function.floor from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Measurability of `⌊x⌋` etc
@@ -22,7 +19,7 @@ open Set
 
 section FloorRing
 
-variable {α R : Type _} [MeasurableSpace α] [LinearOrderedRing R] [FloorRing R] [TopologicalSpace R]
+variable {α R : Type*} [MeasurableSpace α] [LinearOrderedRing R] [FloorRing R] [TopologicalSpace R]
   [OrderTopology R] [MeasurableSpace R]
 
 theorem Int.measurable_floor [OpensMeasurableSpace R] : Measurable (Int.floor : R → ℤ) :=
@@ -69,12 +66,12 @@ end FloorRing
 
 section FloorSemiring
 
-variable {α R : Type _} [MeasurableSpace α] [LinearOrderedSemiring R] [FloorSemiring R]
+variable {α R : Type*} [MeasurableSpace α] [LinearOrderedSemiring R] [FloorSemiring R]
   [TopologicalSpace R] [OrderTopology R] [MeasurableSpace R] [OpensMeasurableSpace R] {f : α → R}
 
 theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
   measurable_to_countable fun n => by
-    cases' eq_or_ne ⌊n⌋₊ 0 with h h <;> simp_all [h, Nat.preimage_floor_of_ne_zero]
+    rcases eq_or_ne ⌊n⌋₊ 0 with h | h <;> simp [h, Nat.preimage_floor_of_ne_zero, -floor_eq_zero]
 #align nat.measurable_floor Nat.measurable_floor
 
 @[measurability]
@@ -84,7 +81,7 @@ theorem Measurable.nat_floor (hf : Measurable f) : Measurable fun x => ⌊f x⌋
 
 theorem Nat.measurable_ceil : Measurable (Nat.ceil : R → ℕ) :=
   measurable_to_countable fun n => by
-    cases' eq_or_ne ⌈n⌉₊ 0 with h h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero]
+    rcases eq_or_ne ⌈n⌉₊ 0 with h | h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero, -ceil_eq_zero]
 #align nat.measurable_ceil Nat.measurable_ceil
 
 @[measurability]

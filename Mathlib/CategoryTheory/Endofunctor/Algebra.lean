@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Rob Lewis, Joseph Hua
-
-! This file was ported from Lean 3 source module category_theory.endofunctor.algebra
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.endofunctor.algebra from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -233,7 +230,8 @@ def strInv : A.1 ⟶ F.obj A.1 :=
 
 #align category_theory.endofunctor.algebra.initial.str_inv CategoryTheory.Endofunctor.Algebra.Initial.strInv
 
-theorem left_inv' : ⟨strInv h ≫ A.str, by rw [←Category.assoc, F.map_comp, strInv, ←Hom.h]⟩ = 𝟙 A :=
+theorem left_inv' :
+    ⟨strInv h ≫ A.str, by rw [← Category.assoc, F.map_comp, strInv, ← Hom.h]⟩ = 𝟙 A :=
   Limits.IsInitial.hom_ext h _ (𝟙 A)
 #align category_theory.endofunctor.algebra.initial.left_inv' CategoryTheory.Endofunctor.Algebra.Initial.left_inv'
 
@@ -333,7 +331,7 @@ theorem id_f : (𝟙 _ : V ⟶ V).1 = 𝟙 V.1 :=
   rfl
 #align category_theory.endofunctor.coalgebra.id_f CategoryTheory.Endofunctor.Coalgebra.id_f
 
-variable  (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
+variable (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
 
 @[simp]
 theorem comp_eq_comp : Coalgebra.Hom.comp f g = f ≫ g :=
@@ -358,7 +356,7 @@ def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.hom = h.hom ≫ V₁
   inv :=
     { f := h.inv
       h := by
-        rw [h.eq_inv_comp, ←Category.assoc, ← w, Category.assoc, ← F.map_comp]
+        rw [h.eq_inv_comp, ← Category.assoc, ← w, Category.assoc, ← F.map_comp]
         simp only [Iso.hom_inv_id, Functor.map_id, Category.comp_id] }
 #align category_theory.endofunctor.coalgebra.iso_mk CategoryTheory.Endofunctor.Coalgebra.isoMk
 

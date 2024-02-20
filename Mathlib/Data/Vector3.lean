@@ -2,15 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.vector3
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Fin2
-import Mathlib.Init.Align
+import Mathlib.Init.Logic
 import Mathlib.Mathport.Notation
+import Mathlib.Tactic.TypeStar
+
+#align_import data.vector3 from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`
@@ -25,7 +23,7 @@ open Fin2 Nat
 
 universe u
 
-variable {α : Type _} {m n : ℕ}
+variable {α : Type*} {m n : ℕ}
 
 /-- Alternate definition of `Vector` based on `Fin2`. -/
 def Vector3 (α : Type u) (n : ℕ) : Type u :=
@@ -71,6 +69,7 @@ scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofEl
 end
 
 -- Overloading the usual `::` notation for `List.cons` with `Vector3.cons`.
+@[inherit_doc]
 scoped notation a " :: " b => cons a b
 
 @[simp]

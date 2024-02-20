@@ -2,15 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module representation_theory.maschke
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+
+#align_import representation_theory.maschke from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Maschke's theorem
@@ -20,7 +16,7 @@ in the formulation that every submodule of a `k[G]` module has a complement,
 when `k` is a field with `Invertible (Fintype.card G : k)`.
 
 We do the core computation in greater generality.
-For any `[CommRing k]` in which  `[Invertible (Fintype.card G : k)]`,
+For any `[CommRing k]` in which `[Invertible (Fintype.card G : k)]`,
 and a `k[G]`-linear map `i : V → W` which admits a `k`-linear retraction `π`,
 we produce a `k[G]`-linear retraction by
 taking the average over `G` of the conjugates of `π`.
@@ -71,7 +67,7 @@ variable (π : W →ₗ[k] V)
 
 /-- We define the conjugate of `π` by `g`, as a `k`-linear map. -/
 def conjugate (g : G) : W →ₗ[k] V :=
-  .comp (.comp (GroupSmul.linearMap k V g⁻¹) π) (GroupSmul.linearMap k W g)
+  .comp (.comp (GroupSMul.linearMap k V g⁻¹) π) (GroupSMul.linearMap k W g)
 #align linear_map.conjugate LinearMap.conjugate
 
 theorem conjugate_apply (g : G) (v : W) :
@@ -158,8 +154,8 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
     ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id := by
   obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
     simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
-  refine ⟨φ.equivariantProjection G, FunLike.ext _ _ ?_⟩
-  exact φ.equivariantProjection_condition G _ <| FunLike.congr_fun hφ
+  refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
+  exact φ.equivariantProjection_condition G _ <| DFunLike.congr_fun hφ
 #align monoid_algebra.exists_left_inverse_of_injective MonoidAlgebra.exists_leftInverse_of_injective
 
 namespace Submodule
@@ -169,7 +165,7 @@ theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
   have : IsScalarTower k (MonoidAlgebra k G) p := p.isScalarTower'
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   refine ⟨LinearMap.ker f, LinearMap.isCompl_of_proj ?_⟩
-  exact FunLike.congr_fun hf
+  exact DFunLike.congr_fun hf
 #align monoid_algebra.submodule.exists_is_compl MonoidAlgebra.Submodule.exists_isCompl
 
 /-- This also implies an instance `IsSemisimpleModule (MonoidAlgebra k G) V`. -/

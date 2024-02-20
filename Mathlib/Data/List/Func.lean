@@ -2,13 +2,10 @@
 Copyright (c) 2019 Seul Baek. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Seul Baek
-
-! This file was ported from Lean 3 source module data.list.func
-! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import data.list.func from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
 /-!
 # Lists as Functions
@@ -109,10 +106,9 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
     · simp [Nat.le_add_right]
       exact Nat.succ_le_succ (Nat.zero_le _)
   | m + 1, [] => by
-    have := @length_set m []
     simp [set, length, @length_set m, Nat.zero_max]
   | m + 1, _ :: as => by
-    simp [set, length, @length_set m, Nat.max_succ_succ]
+    simp [set, length, @length_set m, Nat.succ_max_succ]
 #align list.func.length_set List.Func.length_set
 
 -- porting note : @[simp] has been removed since `#lint` says this is
@@ -174,20 +170,16 @@ theorem get_set_eq_of_ne {a : α} :
     contradiction
     cases as <;> simp only [set, get, get_nil]
   | as, k + 1, m, h1 => by
-    -- porting note : I somewhat rearranged the case split
-    cases as <;> cases m
-    case nil =>
-      simp only [set, get]
-    case nil m =>
-      have h3 : get m (nil {k ↦ a}) = default := by
-        rw [get_set_eq_of_ne k m, get_nil]
-        intro hc
-        apply h1
-        simp [hc]
-      apply h3
-    case zero =>
-      simp only [set, get]
-    case _ _ m =>
+    -- porting note: I somewhat rearranged the case split
+    match as, m with
+    | as, 0 => cases as <;> simp only [set, get]
+    | [], m+1 =>
+      show get m (nil {k ↦ a}) = default
+      rw [get_set_eq_of_ne k m, get_nil]
+      intro hc
+      apply h1
+      simp [hc]
+    | _::_, m+1 =>
       apply get_set_eq_of_ne k m
       intro hc
       apply h1
@@ -309,7 +301,7 @@ theorem length_pointwise {f : α → β → γ} :
   | _ :: as, [] => by
     simp only [pointwise, length, length_map, max_eq_left (Nat.zero_le (length as + 1))]
   | _ :: as, _ :: bs => by
-    simp only [pointwise, length, Nat.max_succ_succ, @length_pointwise _ as bs]
+    simp only [pointwise, length, Nat.succ_max_succ, @length_pointwise _ as bs]
 #align list.func.length_pointwise List.Func.length_pointwise
 
 end Func
@@ -381,14 +373,14 @@ theorem length_sub [Zero α] [Sub α] {xs ys : List α} :
 #align list.func.length_sub List.Func.length_sub
 
 @[simp]
-theorem nil_sub {α : Type _} [AddGroup α] (as : List α) : sub [] as = neg as := by
+theorem nil_sub {α : Type*} [AddGroup α] (as : List α) : sub [] as = neg as := by
   rw [sub, @nil_pointwise _ _ _ ⟨0⟩ ⟨0⟩]
   congr with x
   exact zero_sub x
 #align list.func.nil_sub List.Func.nil_sub
 
 @[simp]
-theorem sub_nil {α : Type _} [AddGroup α] (as : List α) : sub as [] = as := by
+theorem sub_nil {α : Type*} [AddGroup α] (as : List α) : sub as [] = as := by
   rw [sub, @pointwise_nil _ _ _ ⟨0⟩ ⟨0⟩]
   apply Eq.trans _ (map_id as)
   congr with x

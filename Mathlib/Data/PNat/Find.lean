@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.pnat.find
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Basic
+
+#align_import data.pnat.find from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Explicit least witnesses to existentials on positive natural numbers
@@ -28,8 +25,6 @@ instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (
     Subtype.exists.trans <| by
       simp_rw [mk_coe, @exists_comm (_ < _) (_ = _), exists_prop, exists_eq_left']
 #align pnat.decidable_pred_exists_nat PNat.decidablePredExistsNat
-
---include h
 
 /-- The `PNat` version of `Nat.findX` -/
 protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by

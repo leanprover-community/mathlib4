@@ -2,13 +2,10 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.plus
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
+
+#align_import category_theory.sites.plus from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -278,14 +275,11 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
 
 theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by
   rw [Presheaf.isSheaf_iff_multiequalizer] at hP
-  suffices : ∀ X, IsIso ((J.toPlus P).app X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ X, IsIso ((J.toPlus P).app X) from NatIso.isIso_of_isIso_app _
   intro X
-  dsimp
-  suffices : IsIso (colimit.ι (J.diagram P X.unop) (op ⊤))
-  · apply IsIso.comp_isIso
-  suffices : ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f)
-  · apply isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop)
+  suffices IsIso (colimit.ι (J.diagram P X.unop) (op ⊤)) from IsIso.comp_isIso
+  suffices ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f) from
+    isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop) _
   intro S T e
   have : S.unop.toMultiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.toMultiequalizer P :=
     Multiequalizer.hom_ext _ _ _ (fun II => by dsimp; simp)

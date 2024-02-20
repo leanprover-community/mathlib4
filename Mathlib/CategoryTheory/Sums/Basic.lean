@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.sums.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EqToHom
+
+#align_import category_theory.sums.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Binary disjoint unions of categories
@@ -60,6 +57,14 @@ instance sum : Category.{v₁} (Sum C D) where
     | inl X, inl Y, inl Z, inl W => Category.assoc f g h
     | inr X, inr Y, inr Z, inr W => Category.assoc f g h
 #align category_theory.sum CategoryTheory.sum
+
+@[aesop norm -10 destruct (rule_sets [CategoryTheory])]
+theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False := by
+  cases f
+
+@[aesop norm -10 destruct (rule_sets [CategoryTheory])]
+theorem hom_inr_inl_false {X : C} {Y : D} (f : Sum.inr X ⟶ Sum.inl Y) : False := by
+  cases f
 
 /- Porting note: seems similar to Mathlib4#1036 issue so marked as nolint  -/
 @[simp, nolint simpComm]
@@ -139,15 +144,11 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 
 namespace Swap
 
-/- Porting note: had to manually call `cases f` for `f : PEmpty` -/
-
 /-- `swap` gives an equivalence between `C ⊕ D` and `D ⊕ C`. -/
 def equivalence : Sum C D ≌ Sum D C :=
   Equivalence.mk (swap C D) (swap D C)
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-      (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
-    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-      (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
+    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
+    (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
 instance isEquivalence : IsEquivalence (swap C D) :=
@@ -179,17 +180,11 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
     match X, Y, f with
     | inl X, inl Y, f => F.map f
     | inr X, inr Y, f => G.map f
-  map_id := @fun X => by cases X <;> aesop_cat_nonterminal; erw [F.map_id]; rfl; erw [G.map_id]; rfl
+  map_id := @fun X => by cases X <;> (erw [Functor.map_id]; rfl)
   map_comp := @fun X Y Z f g =>
     match X, Y, Z, f, g with
-    | inl X, inl Y, inl Z, f, g => by
-      aesop_cat_nonterminal <;>
-      erw [F.map_comp] <;>
-      rfl
-    | inr X, inr Y, inr Z, f, g => by
-      aesop_cat_nonterminal <;>
-      erw [G.map_comp] <;>
-      rfl
+    | inl X, inl Y, inl Z, f, g => by erw [F.map_comp]; rfl
+    | inr X, inr Y, inr Z, f, g => by erw [G.map_comp]; rfl
 #align category_theory.functor.sum CategoryTheory.Functor.sum
 
 @[simp]
@@ -227,8 +222,8 @@ def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H 
     | inr X => β.app X
   naturality X Y f :=
     match X, Y, f with
-    | inl X, inl Y, f => by aesop_cat_nonterminal <;> erw [α.naturality] <;> rfl
-    | inr X, inr Y, f => by aesop_cat_nonterminal <;> erw [β.naturality] <;> rfl
+    | inl X, inl Y, f => by erw [α.naturality]; rfl
+    | inr X, inr Y, f => by erw [β.naturality]; rfl
 #align category_theory.nat_trans.sum CategoryTheory.NatTrans.sum
 
 @[simp]

@@ -2,13 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-! This file was ported from Lean 3 source module ring_theory.localization.ideal
-! leanprover-community/mathlib commit e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import ring_theory.localization.ideal from "leanprover-community/mathlib"@"e7f0ddbf65bd7181a85edb74b64bdc35ba4bdc74"
 
 /-!
 # Ideals in localizations of commutative rings
@@ -24,7 +22,7 @@ namespace IsLocalization
 
 section CommSemiring
 
-variable {R : Type _} [CommSemiring R] (M : Submonoid R) (S : Type _) [CommSemiring S]
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
 
 variable [Algebra R S] [IsLocalization M S]
 
@@ -165,7 +163,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 
 variable [Algebra R S] [IsLocalization M S]
 

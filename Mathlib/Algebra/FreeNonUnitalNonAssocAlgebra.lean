@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.free_non_unital_non_assoc_algebra
-! leanprover-community/mathlib commit 2f1a4aff21c9aadf7cfb96911734754d6c228029
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Free
 import Mathlib.Algebra.MonoidAlgebra.Basic
+
+#align_import algebra.free_non_unital_non_assoc_algebra from "leanprover-community/mathlib"@"2f1a4aff21c9aadf7cfb96911734754d6c228029"
 
 /-!
 # Free algebras

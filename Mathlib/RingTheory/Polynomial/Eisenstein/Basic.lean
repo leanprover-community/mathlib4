@@ -2,14 +2,11 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.eisenstein.basic
-! leanprover-community/mathlib commit 2032a878972d5672e7c27c957e7a6e297b044973
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+
+#align_import ring_theory.polynomial.eisenstein.basic from "leanprover-community/mathlib"@"2032a878972d5672e7c27c957e7a6e297b044973"
 
 /-!
 # Eisenstein polynomials
@@ -67,7 +64,7 @@ variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]} (hf : f.IsWeaklyEisenstein
 
 
 theorem map {A : Type v} [CommRing A] (φ : R →+* A) : (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
-  refine' (IsWeaklyEisensteinAt_iff _ _).2 fun hn => _
+  refine' (isWeaklyEisensteinAt_iff _ _).2 fun hn => _
   rw [coeff_map]
   exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn (natDegree_map_le _ _)))
 #align polynomial.is_weakly_eisenstein_at.map Polynomial.IsWeaklyEisensteinAt.map
@@ -160,7 +157,7 @@ end IsWeaklyEisensteinAt
 
 section ScaleRoots
 
-variable {A : Type _} [CommRing R] [CommRing A]
+variable {A : Type*} [CommRing R] [CommRing A]
 
 theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by

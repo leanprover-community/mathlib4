@@ -2,11 +2,6 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.closed.ideal
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Subterminal
+
+#align_import category_theory.closed.ideal from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Exponential ideals
@@ -132,10 +129,10 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
   let ε : i ⋙ L ⟶ 𝟭 D := ir.counit
   apply ExponentialIdeal.mk'
   intro B A
-  let q : i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B
-  apply CartesianClosed.curry (ir.homEquiv _ _ _)
-  apply _ ≫ (ir.homEquiv _ _).symm ((exp.ev A).app (i.obj B))
-  refine' prodComparison L A _ ≫ Limits.prod.map (𝟙 _) (ε.app _) ≫ inv (prodComparison _ _ _)
+  let q : i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B := by
+    apply CartesianClosed.curry (ir.homEquiv _ _ _)
+    apply _ ≫ (ir.homEquiv _ _).symm ((exp.ev A).app (i.obj B))
+    exact prodComparison L A _ ≫ Limits.prod.map (𝟙 _) (ε.app _) ≫ inv (prodComparison _ _ _)
   have : η.app (A ⟹ i.obj B) ≫ q = 𝟙 (A ⟹ i.obj B) := by
     dsimp
     rw [← curry_natural_left, curry_eq_iff, uncurry_id_eq_ev, ← ir.homEquiv_naturality_left,
@@ -206,9 +203,6 @@ noncomputable def bijection (A B : C) (X : D) :
 
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
-  -- Porting note: added
-  have : PreservesLimits i := (Adjunction.ofRightAdjoint i).rightAdjointPreservesLimits
-  have := preservesSmallestLimitsOfPreservesLimits i
   dsimp [bijection]
   -- Porting note: added
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
@@ -219,8 +213,7 @@ theorem bijection_symm_apply_id (A B : C) :
   dsimp only [Functor.comp_obj]
   rw [prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
     ← Adjunction.eq_homEquiv_apply, Adjunction.homEquiv_unit, Iso.comp_inv_eq, assoc]
-  -- Porting note: rw became erw
-  erw [PreservesLimitPair.iso_hom i ((leftAdjoint i).obj A) ((leftAdjoint i).obj B)]
+  rw [PreservesLimitPair.iso_hom i ((leftAdjoint i).obj A) ((leftAdjoint i).obj B)]
   apply prod.hom_ext
   · rw [Limits.prod.map_fst, assoc, assoc, prodComparison_fst, ← i.map_comp, prodComparison_fst]
     apply (Adjunction.ofRightAdjoint i).unit.naturality

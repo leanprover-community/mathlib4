@@ -2,16 +2,13 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module representation_theory.fdRep
-! leanprover-community/mathlib commit 19a70dceb9dff0994b92d2dd049de7d84d28112b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.RepresentationTheory.Basic
+
+#align_import representation_theory.fdRep from "leanprover-community/mathlib"@"19a70dceb9dff0994b92d2dd049de7d84d28112b"
 
 /-!
 # `FdRep k G` is the category of finite dimensional `k`-linear representations of `G`.
@@ -37,6 +34,7 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 -/
 
+suppress_compilation
 
 universe u
 
@@ -105,8 +103,8 @@ def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
   ⟨FGModuleCat.of k V, ρ⟩
 #align fdRep.of FdRep.of
 
-instance : HasForget₂ (FdRep k G) (Rep k G)
-    where forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
+instance : HasForget₂ (FdRep k G) (Rep k G) where
+  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
 
 theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl

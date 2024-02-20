@@ -2,15 +2,12 @@
 Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.frobenius_fraction_field
-! leanprover-community/mathlib commit cead93130da7100f8a9fe22ee210f7636a91168f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.WittVector.DiscreteValuationRing
+
+#align_import ring_theory.witt_vector.frobenius_fraction_field from "leanprover-community/mathlib"@"cead93130da7100f8a9fe22ee210f7636a91168f"
 
 /-!
 # Solving equations about the Frobenius map on the field of fractions of `𝕎 k`
@@ -28,7 +25,7 @@ The construction proceeds by recursively defining a sequence of coefficients as 
 polynomial equation in `k`. We must define these as generic polynomials using Witt vector API
 (`WittVector.wittMul`, `wittPolynomial`) to show that they satisfy the desired equation.
 
-Preliminary work is done in the dependency `ring_theory.witt_vector.mul_coeff`
+Preliminary work is done in the dependency `RingTheory.WittVector.MulCoeff`
 to isolate the `n+1`st coefficients of `x` and `y` in the `n+1`st coefficient of `x*y`.
 
 This construction is described in Dupuis, Lewis, and Macbeth,
@@ -36,7 +33,7 @@ This construction is described in Dupuis, Lewis, and Macbeth,
 We approximately follow an approach sketched on MathOverflow:
 <https://mathoverflow.net/questions/62468/about-frobenius-of-witt-vectors>
 
-The result is a dependency for the proof of `witt_vector.isocrystal_classification`,
+The result is a dependency for the proof of `WittVector.isocrystal_classification`,
 the classification of one-dimensional isocrystals over an algebraically closed field.
 -/
 
@@ -57,7 +54,7 @@ namespace RecursionMain
 
 The first coefficient of our solution vector is easy to define below.
 In this section we focus on the recursive case.
-The goal is to turn `witt_poly_prod n` into a univariate polynomial
+The goal is to turn `WittVector.wittPolyProd n` into a univariate polynomial
 whose variable represents the `n`th coefficient of `x` in `x * a`.
 
 -/
@@ -65,7 +62,7 @@ whose variable represents the `n`th coefficient of `x` in `x * a`.
 
 section CommRing
 
-variable {k : Type _} [CommRing k] [CharP k p]
+variable {k : Type*} [CommRing k] [CharP k p]
 
 open Polynomial
 
@@ -90,19 +87,19 @@ theorem succNthDefiningPoly_degree [IsDomain k] (n : ℕ) (a₁ a₂ : 𝕎 k) (
       (p : WithBot ℕ) := by
     rw [degree_sub_eq_left_of_degree_lt, this]
     rw [this, degree_mul, degree_C, degree_X, add_zero]
-    · exact_mod_cast hp.out.one_lt
+    · exact mod_cast hp.out.one_lt
     · exact pow_ne_zero _ ha₂
   rw [succNthDefiningPoly, degree_add_eq_left_of_degree_lt, this]
   apply lt_of_le_of_lt degree_C_le
   rw [this]
-  exact_mod_cast hp.out.pos
+  exact mod_cast hp.out.pos
 #align witt_vector.recursion_main.succ_nth_defining_poly_degree WittVector.RecursionMain.succNthDefiningPoly_degree
 
 end CommRing
 
 section IsAlgClosed
 
-variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
+variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
 theorem root_exists (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ∃ b : k, (succNthDefiningPoly p n a₁ a₂ bs).IsRoot b :=
@@ -146,7 +143,7 @@ end RecursionMain
 
 namespace RecursionBase
 
-variable {k : Type _} [Field k] [IsAlgClosed k]
+variable {k : Type*} [Field k] [IsAlgClosed k]
 
 theorem solution_pow (a₁ a₂ : 𝕎 k) : ∃ x : k, x ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
   IsAlgClosed.exists_pow_nat_eq _ <|
@@ -172,7 +169,7 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
   · simpa [ha₁, ha₂] using _root_.div_eq_zero_iff.mp this.symm
   · -- Porting note: was
     -- linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
-    exact tsub_pos_of_lt hp.out.one_lt
+    exact Nat.sub_ne_zero_of_lt hp.out.one_lt
 #align witt_vector.recursion_base.solution_nonzero WittVector.RecursionBase.solution_nonzero
 
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
@@ -197,7 +194,7 @@ section FrobeniusRotation
 
 section IsAlgClosed
 
-variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
+variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
 /-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`.
 -/
@@ -208,8 +205,8 @@ noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coef
 decreasing_by apply Fin.is_lt
 #align witt_vector.frobenius_rotation_coeff WittVector.frobeniusRotationCoeff
 
-/-- For nonzero `a₁` and `a₂`, `frobenius_rotation a₁ a₂` is a Witt vector that satisfies the
-equation `frobenius (frobenius_rotation a₁ a₂) * a₁ = (frobenius_rotation a₁ a₂) * a₂`.
+/-- For nonzero `a₁` and `a₂`, `frobeniusRotation a₁ a₂` is a Witt vector that satisfies the
+equation `frobenius (frobeniusRotation a₁ a₂) * a₁ = (frobeniusRotation a₁ a₂) * a₂`.
 -/
 def frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) : 𝕎 k :=
   WittVector.mk p (frobeniusRotationCoeff p ha₁ ha₂)
@@ -275,8 +272,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
 #align witt_vector.exists_frobenius_solution_fraction_ring_aux WittVector.exists_frobenius_solution_fractionRing_aux
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
-    ∃ (b : FractionRing (𝕎 k)) (hb : b ≠ 0) (m : ℤ),
-      φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
+    ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
   refine' Localization.induction_on a _
   rintro ⟨r, q, hq⟩ hrq

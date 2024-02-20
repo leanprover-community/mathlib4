@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.regular
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.GaloisConnection
+
+#align_import order.heyting.regular from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
 /-!
 # Heyting regular elements
@@ -33,7 +30,7 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 open Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Heyting
 
@@ -119,7 +116,7 @@ namespace Regular
 
 theorem prop : ∀ a : Regular α, IsRegular a.val := Subtype.prop
 
-instance : Coe (Regular α) α := ⟨Regular.val⟩
+instance : CoeOut (Regular α) α := ⟨Regular.val⟩
 
 theorem coe_injective : Injective ((↑) : Regular α → α) :=
   Subtype.coe_injective

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.algebra.module.strong_topology
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.UniformConvergence
+
+#align_import topology.algebra.module.strong_topology from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
 /-!
 # Strong topologies on the space of continuous linear maps
@@ -65,7 +62,7 @@ namespace ContinuousLinearMap
 
 section General
 
-variable {𝕜₁ 𝕜₂ : Type _} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E E' F F' : Type _}
+variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E E' F F' : Type*}
   [AddCommGroup E] [Module 𝕜₁ E] [AddCommGroup E'] [Module ℝ E'] [AddCommGroup F] [Module 𝕜₂ F]
   [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace E] [TopologicalSpace E'] (F)
 
@@ -78,7 +75,7 @@ topological vector space. -/
 def strongTopology [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
     TopologicalSpace (E →SL[σ] F) :=
   (@UniformOnFun.topologicalSpace E F (TopologicalAddGroup.toUniformSpace F) 𝔖).induced
-    (FunLike.coe : (E →SL[σ] F) → (E →ᵤ[𝔖] F))
+    (DFunLike.coe : (E →SL[σ] F) → (E →ᵤ[𝔖] F))
 #align continuous_linear_map.strong_topology ContinuousLinearMap.strongTopology
 
 /-- The uniform structure associated with `ContinuousLinearMap.strongTopology`. We make sure
@@ -86,7 +83,7 @@ that this has nice definitional properties. -/
 def strongUniformity [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     UniformSpace (E →SL[σ] F) :=
   @UniformSpace.replaceTopology _ (strongTopology σ F 𝔖)
-    ((UniformOnFun.uniformSpace E F 𝔖).comap (FunLike.coe : (E →SL[σ] F) → (E →ᵤ[𝔖] F)))
+    ((UniformOnFun.uniformSpace E F 𝔖).comap (DFunLike.coe : (E →SL[σ] F) → (E →ᵤ[𝔖] F)))
     (by rw [strongTopology, UniformAddGroup.toUniformSpace_eq]; rfl)
 #align continuous_linear_map.strong_uniformity ContinuousLinearMap.strongUniformity
 
@@ -99,24 +96,23 @@ theorem strongUniformity_topology_eq [UniformSpace F] [UniformAddGroup F] (𝔖 
 theorem strongUniformity.uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F]
     (𝔖 : Set (Set E)) :
     @UniformEmbedding (E →SL[σ] F) (E →ᵤ[𝔖] F) (strongUniformity σ F 𝔖)
-      (UniformOnFun.uniformSpace E F 𝔖) FunLike.coe :=
+      (UniformOnFun.uniformSpace E F 𝔖) DFunLike.coe :=
   letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
-  ⟨⟨rfl⟩, FunLike.coe_injective⟩
+  ⟨⟨rfl⟩, DFunLike.coe_injective⟩
 #align continuous_linear_map.strong_uniformity.uniform_embedding_coe_fn ContinuousLinearMap.strongUniformity.uniformEmbedding_coeFn
 
 theorem strongTopology.embedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     @Embedding (E →SL[σ] F) (E →ᵤ[𝔖] F) (strongTopology σ F 𝔖)
-    (UniformOnFun.topologicalSpace E F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ FunLike.coe) :=
+    (UniformOnFun.topologicalSpace E F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
   @UniformEmbedding.embedding _ _ (_root_.id _) _ _ (strongUniformity.uniformEmbedding_coeFn _ _ _)
 #align continuous_linear_map.strong_topology.embedding_coe_fn ContinuousLinearMap.strongTopology.embedding_coeFn
 
 theorem strongUniformity.uniformAddGroup [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     @UniformAddGroup (E →SL[σ] F) (strongUniformity σ F 𝔖) _ := by
   letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
-  rw [strongUniformity, UniformSpace.replaceTopology_eq]
   let φ : (E →SL[σ] F) →+ E →ᵤ[𝔖] F :=
-    ⟨⟨(FunLike.coe : (E →SL[σ] F) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
-  exact uniformAddGroup_comap φ
+    ⟨⟨(DFunLike.coe : (E →SL[σ] F) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
+  exact (strongUniformity.uniformEmbedding_coeFn _ _ _).uniformAddGroup φ
 #align continuous_linear_map.strong_uniformity.uniform_add_group ContinuousLinearMap.strongUniformity.uniformAddGroup
 
 theorem strongTopology.topologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F]
@@ -139,21 +135,18 @@ theorem strongTopology.t2Space [TopologicalSpace F] [TopologicalAddGroup F] [T2S
 
 theorem strongTopology.continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] (𝔖 : Set (Set E))
-    (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖)
     (h𝔖₃ : ∀ S ∈ 𝔖, Bornology.IsVonNBounded 𝕜₁ S) :
     @ContinuousSMul 𝕜₂ (E →SL[σ] F) _ _ (strongTopology σ F 𝔖) := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
   letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
-  let φ : (E →SL[σ] F) →ₗ[𝕜₂] E →ᵤ[𝔖] F :=
-    ⟨⟨(FunLike.coe : (E →SL[σ] F) → E → F), fun _ _ => rfl⟩, fun _ _ => rfl⟩
-  exact
-    UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜₂ E F (E →SL[σ] F) h𝔖₁ h𝔖₂ φ ⟨rfl⟩
-      fun u s hs => (h𝔖₃ s hs).image u
+  let φ : (E →SL[σ] F) →ₗ[𝕜₂] E → F := ⟨⟨DFunLike.coe, fun _ _ => rfl⟩, fun _ _ => rfl⟩
+  exact UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜₂ E F (E →SL[σ] F) φ ⟨rfl⟩
+    fun u s hs => (h𝔖₃ s hs).image u
 #align continuous_linear_map.strong_topology.has_continuous_smul ContinuousLinearMap.strongTopology.continuousSMul
 
 theorem strongTopology.hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalAddGroup F]
-    {ι : Type _} (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
+    {ι : Type*} (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (@nhds (E →SL[σ] F) (strongTopology σ F 𝔖) 0).HasBasis
       (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
@@ -164,7 +157,7 @@ theorem strongTopology.hasBasis_nhds_zero_of_basis [TopologicalSpace F] [Topolog
   -- `letI`) so that Lean doesn't try to use the product topology
   letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
   rw [(strongTopology.embedding_coeFn σ F 𝔖).toInducing.nhds_eq_comap]
-  exact (UniformOnFun.hasBasis_nhds_zero_of_basis 𝔖 h𝔖₁ h𝔖₂ h).comap FunLike.coe
+  exact (UniformOnFun.hasBasis_nhds_zero_of_basis 𝔖 h𝔖₁ h𝔖₂ h).comap DFunLike.coe
 #align continuous_linear_map.strong_topology.has_basis_nhds_zero_of_basis ContinuousLinearMap.strongTopology.hasBasis_nhds_zero_of_basis
 
 theorem strongTopology.hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F]
@@ -175,13 +168,33 @@ theorem strongTopology.hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGr
   strongTopology.hasBasis_nhds_zero_of_basis σ F 𝔖 h𝔖₁ h𝔖₂ (𝓝 0).basis_sets
 #align continuous_linear_map.strong_topology.has_basis_nhds_zero ContinuousLinearMap.strongTopology.hasBasis_nhds_zero
 
+theorem strongTopology.uniformContinuousConstSMul (M : Type*)
+    [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    @UniformContinuousConstSMul M (E →SL[σ] F) (strongUniformity σ F 𝔖) _ :=
+  let _ := strongUniformity σ F 𝔖
+  (strongUniformity.uniformEmbedding_coeFn σ F 𝔖).toUniformInducing.uniformContinuousConstSMul
+    fun _ _ ↦ rfl
+
+theorem strongTopology.continuousConstSMul (M : Type*)
+    [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    @ContinuousConstSMul M (E →SL[σ] F) (strongTopology σ F 𝔖) _ :=
+  let _ := TopologicalAddGroup.toUniformSpace F
+  have _ : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  let _ := strongUniformity σ F 𝔖
+  have _ := uniformContinuousConstSMul_of_continuousConstSMul M F
+  have _ := strongTopology.uniformContinuousConstSMul σ F M 𝔖
+  inferInstance
+
 end General
 
 section BoundedSets
 
-variable {𝕜₁ 𝕜₂ : Type _} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂} {E E' F F' : Type _}
-  [AddCommGroup E] [Module 𝕜₁ E] [AddCommGroup E'] [Module ℝ E'] [AddCommGroup F] [Module 𝕜₂ F]
-  [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace E]
+variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
+  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E E' F F' G : Type*} [AddCommGroup E]
+  [Module 𝕜₁ E] [AddCommGroup E'] [Module ℝ E'] [AddCommGroup F] [Module 𝕜₂ F] [AddCommGroup F']
+  [Module ℝ F'] [AddCommGroup G] [Module 𝕜₃ G] [TopologicalSpace E]
 
 /-- The topology of bounded convergence on `E →L[𝕜] F`. This coincides with the topology induced by
 the operator norm when `E` and `F` are normed spaces. -/
@@ -195,9 +208,7 @@ instance topologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F] :
 
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
     [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
-  strongTopology.continuousSMul σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
-    ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
-    (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union) fun _ hs => hs
+  strongTopology.continuousSMul σ F { S | Bornology.IsVonNBounded 𝕜₁ S } fun _ hs => hs
 
 instance uniformSpace [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
   strongUniformity σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
@@ -212,7 +223,7 @@ instance [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E]
       Set.mem_sUnion_of_mem (Set.mem_singleton x) (Bornology.isVonNBounded_singleton x))
 
 protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalAddGroup F]
-    {ι : Type _} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
+    {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (𝓝 (0 : E →SL[σ] F)).HasBasis (fun Si : Set E × ι => Bornology.IsVonNBounded 𝕜₁ Si.1 ∧ p Si.2)
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
   strongTopology.hasBasis_nhds_zero_of_basis σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
@@ -227,7 +238,76 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
   ContinuousLinearMap.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 #align continuous_linear_map.has_basis_nhds_zero ContinuousLinearMap.hasBasis_nhds_zero
 
+instance uniformContinuousConstSMul
+    {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] :
+    UniformContinuousConstSMul M (E →SL[σ] F) :=
+  strongTopology.uniformContinuousConstSMul σ F _ _
+
+instance continuousConstSMul {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] :
+    ContinuousConstSMul M (E →SL[σ] F) :=
+  strongTopology.continuousConstSMul σ F _ _
+
+variable (G) [TopologicalSpace F] [TopologicalSpace G]
+
+/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map.
+Note that in non-normed space it is not always true that composition is continuous
+in both variables, so we have to fix one of them. -/
+@[simps]
+def precomp [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
+    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G
+    where
+  toFun f := f.comp L
+  map_add' f g := add_comp f g L
+  map_smul' a f := smul_comp a f L
+  cont := by
+    letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
+    haveI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
+    rw [(strongTopology.embedding_coeFn _ _ _).continuous_iff]
+    -- Porting note: without this, the following doesn't work
+    change Continuous ((λ f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
+    exact (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
+        (strongTopology.embedding_coeFn _ _ _).continuous
+#align continuous_linear_map.precomp ContinuousLinearMap.precomp
+
+variable (E) {G}
+
+/-- Post-composition by a *fixed* continuous linear map as a continuous linear map.
+Note that in non-normed space it is not always true that composition is continuous
+in both variables, so we have to fix one of them. -/
+@[simps]
+def postcomp [TopologicalAddGroup F] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
+    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G
+    where
+  toFun f := L.comp f
+  map_add' := comp_add L
+  map_smul' := comp_smulₛₗ L
+  cont := by
+    letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
+    haveI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
+    letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
+    haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+    rw [(strongTopology.embedding_coeFn _ _ _).continuous_iff]
+    exact
+      (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
+        (strongTopology.embedding_coeFn _ _ _).continuous
+#align continuous_linear_map.postcomp ContinuousLinearMap.postcomp
+
 end BoundedSets
+
+section BilinearMaps
+
+variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+  [AddCommGroup G] [Module 𝕜 G]
+  [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+
+/-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
+def toLinearMap₂ (L : E →L[𝕜] F →L[𝕜] G) : E →ₗ[𝕜] F →ₗ[𝕜] G := (coeLM 𝕜).comp L.toLinearMap
+
+end BilinearMaps
 
 end ContinuousLinearMap
 
@@ -237,8 +317,8 @@ namespace ContinuousLinearEquiv
 
 section Semilinear
 
-variable {𝕜 : Type _} {𝕜₂ : Type _} {𝕜₃ : Type _} {𝕜₄ : Type _} {E : Type _} {F : Type _}
-  {G : Type _} {H : Type _} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
+variable {𝕜 : Type*} {𝕜₂ : Type*} {𝕜₃ : Type*} {𝕜₄ : Type*} {E : Type*} {F : Type*}
+  {G : Type*} {H : Type*} [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [AddCommGroup H]
   [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NontriviallyNormedField 𝕜₄] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜₃ G] [Module 𝕜₄ H]
   [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G] [TopologicalSpace H]
@@ -247,62 +327,55 @@ variable {𝕜 : Type _} {𝕜₂ : Type _} {𝕜₃ : Type _} {𝕜₄ : Type _
   {σ₃₄ : 𝕜₃ →+* 𝕜₄} {σ₄₃ : 𝕜₄ →+* 𝕜₃} {σ₂₄ : 𝕜₂ →+* 𝕜₄} {σ₁₄ : 𝕜 →+* 𝕜₄} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂] [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-  [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+  [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
+  [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₁]
 
 /-- A pair of continuous (semi)linear equivalences generates a (semi)linear equivalence between the
 spaces of continuous (semi)linear maps. -/
 @[simps]
-def arrowCongrₛₗ (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) : (E →SL[σ₁₄] H) ≃ₛₗ[σ₄₃] F →SL[σ₂₃] G :=
-  { e₁₂.arrowCongrEquiv e₄₃ with
+def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) :
+    (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
+{ e₁₂.arrowCongrEquiv e₄₃ with
     -- given explicitly to help `simps`
     toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
     -- given explicitly to help `simps`
     invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
     map_add' := fun f g => by simp only [add_comp, comp_add]
-    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ] }
-#align continuous_linear_equiv.arrow_congrₛₗ ContinuousLinearEquiv.arrowCongrₛₗ
-#align continuous_linear_equiv.arrow_congrₛₗ_apply ContinuousLinearEquiv.arrowCongrₛₗ_apply
-#align continuous_linear_equiv.arrow_congrₛₗ_symm_apply ContinuousLinearEquiv.arrowCongrₛₗ_symm_apply
-
-variable [RingHomIsometric σ₂₁]
-
-theorem arrowCongrₛₗ_continuous (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) :
-    Continuous (id (e₁₂.arrowCongrₛₗ e₄₃ : (E →SL[σ₁₄] H) ≃ₛₗ[σ₄₃] F →SL[σ₂₃] G)) := by
-  apply continuous_of_continuousAt_zero
-  show Filter.Tendsto _ _ _
-  simp_rw [(arrowCongrₛₗ e₁₂ e₄₃).map_zero]
-  rw [ContinuousLinearMap.hasBasis_nhds_zero.tendsto_iff ContinuousLinearMap.hasBasis_nhds_zero]
-  rintro ⟨sF, sG⟩ ⟨h1 : Bornology.IsVonNBounded 𝕜₂ sF, h2 : sG ∈ nhds (0 : G)⟩
-  dsimp
-  refine' ⟨(e₁₂.symm '' sF, e₄₃ ⁻¹' sG), ⟨h1.image (e₁₂.symm : F →SL[σ₂₁] E), _⟩, fun _ h _ hx =>
-    h _ (Set.mem_image_of_mem _ hx)⟩
-  apply e₄₃.continuous.continuousAt
-  simpa using h2
-#align continuous_linear_equiv.arrow_congrₛₗ_continuous ContinuousLinearEquiv.arrowCongrₛₗ_continuous
-
-variable [RingHomIsometric σ₁₂]
-
-/-- A pair of continuous (semi)linear equivalences generates a continuous (semi)linear equivalence
-between the spaces of continuous (semi)linear maps. -/
-@[simps! apply symm_apply toLinearEquiv]
-def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) : (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
-  { e₁₂.arrowCongrₛₗ e₄₃ with
-    continuous_toFun := e₁₂.arrowCongrₛₗ_continuous e₄₃
-    continuous_invFun := e₁₂.symm.arrowCongrₛₗ_continuous e₄₃.symm }
+    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ]
+    continuous_toFun := ((postcomp F e₄₃.toContinuousLinearMap).comp
+      (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
+    continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp
+      (postcomp F e₄₃.symm.toContinuousLinearMap)).continuous }
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.arrow_congrSL ContinuousLinearEquiv.arrowCongrSL
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.arrow_congrSL_apply ContinuousLinearEquiv.arrowCongrSL_apply
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_equiv.arrow_congrSL_symm_apply ContinuousLinearEquiv.arrowCongrSL_symm_apply
+
+-- Porting note: the following two lemmas were autogenerated by `simps` in Lean3, but this is
+-- no longer the case. The first one can already be proven by `simp`, but the second can't.
+
+theorem arrowCongrSL_toLinearEquiv_apply (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
+    (L : E →SL[σ₁₄] H) : (e₁₂.arrowCongrSL e₄₃).toLinearEquiv L =
+      (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E)) :=
+  rfl
 set_option linter.uppercaseLean3 false in
-#align continuous_linear_equiv.arrow_congrSL_to_linear_equiv ContinuousLinearEquiv.arrowCongrSL_toLinearEquiv
+#align continuous_linear_equiv.arrow_congrSL_to_linear_equiv_apply ContinuousLinearEquiv.arrowCongrSL_toLinearEquiv_apply
+
+@[simp]
+theorem arrowCongrSL_toLinearEquiv_symm_apply (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
+    (L : F →SL[σ₂₃] G) : (e₁₂.arrowCongrSL e₄₃).toLinearEquiv.symm L =
+      (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F)) :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align continuous_linear_equiv.arrow_congrSL_to_linear_equiv_symm_apply ContinuousLinearEquiv.arrowCongrSL_toLinearEquiv_symm_apply
 
 end Semilinear
 
 section Linear
 
-variable {𝕜 : Type _} {E : Type _} {F : Type _} {G : Type _} {H : Type _} [AddCommGroup E]
+variable {𝕜 : Type*} {E : Type*} {F : Type*} {G : Type*} {H : Type*} [AddCommGroup E]
   [AddCommGroup F] [AddCommGroup G] [AddCommGroup H] [NontriviallyNormedField 𝕜] [Module 𝕜 E]
   [Module 𝕜 F] [Module 𝕜 G] [Module 𝕜 H] [TopologicalSpace E] [TopologicalSpace F]
   [TopologicalSpace G] [TopologicalSpace H] [TopologicalAddGroup G] [TopologicalAddGroup H]

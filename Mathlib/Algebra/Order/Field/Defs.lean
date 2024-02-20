@@ -2,15 +2,11 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.field.defs
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Order.Ring.Defs
+
+#align_import algebra.order.field.defs from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
 /-!
 # Linear ordered (semi)fields
@@ -33,14 +29,14 @@ For olean caching reasons, this file is separate to the main file,
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
-class LinearOrderedSemifield (α : Type _) extends LinearOrderedCommSemiring α, Semifield α
+class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
 #align linear_ordered_semifield LinearOrderedSemifield
 
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
-class LinearOrderedField (α : Type _) extends LinearOrderedCommRing α, Field α
+class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 #align linear_ordered_field LinearOrderedField
 
 -- See note [lower instance priority]

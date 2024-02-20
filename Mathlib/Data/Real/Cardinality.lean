@@ -2,16 +2,13 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module data.real.cardinality
-! leanprover-community/mathlib commit 7e7aaccf9b0182576cabdde36cf1b5ad3585b70d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Rat.Denumerable
 import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.SetTheory.Cardinal.Continuum
+
+#align_import data.real.cardinality from "leanprover-community/mathlib"@"7e7aaccf9b0182576cabdde36cf1b5ad3585b70d"
 
 /-!
 # The cardinality of the reals
@@ -95,7 +92,7 @@ theorem cantorFunctionAux_succ (f : ℕ → Bool) :
 
 theorem summable_cantor_function (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
     Summable (cantorFunctionAux c f) := by
-  apply (summable_geometric_of_lt_1 h1 h2).summable_of_eq_zero_or_self
+  apply (summable_geometric_of_lt_one h1 h2).summable_of_eq_zero_or_self
   intro n; cases h : f n <;> simp [h]
 #align cardinal.summable_cantor_function Cardinal.summable_cantor_function
 
@@ -151,7 +148,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
       rwa [sub_pos]
     convert this
     · rw [cantorFunction_succ _ (le_of_lt h1) h3, div_eq_mul_inv, ←
-        tsum_geometric_of_lt_1 (le_of_lt h1) h3]
+        tsum_geometric_of_lt_one (le_of_lt h1) h3]
       apply zero_add
     · refine' (tsum_eq_single 0 _).trans _
       · intro n hn

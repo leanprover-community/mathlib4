@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module data.mv_polynomial.expand
-! leanprover-community/mathlib commit 5da451b4c96b4c2e122c0325a7fce17d62ee46c6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Monad
+
+#align_import data.mv_polynomial.expand from "leanprover-community/mathlib"@"5da451b4c96b4c2e122c0325a7fce17d62ee46c6"
 
 /-!
 ## Expand multivariate polynomials
@@ -27,7 +24,7 @@ open BigOperators
 
 namespace MvPolynomial
 
-variable {σ τ R S : Type _} [CommSemiring R] [CommSemiring S]
+variable {σ τ R S : Type*} [CommSemiring R] [CommSemiring S]
 
 /-- Expand the polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 
@@ -57,7 +54,7 @@ theorem expand_monomial (p : ℕ) (d : σ →₀ ℕ) (r : R) :
 
 theorem expand_one_apply (f : MvPolynomial σ R) : expand 1 f = f := by
   simp only [expand, pow_one, eval₂Hom_eq_bind₂, bind₂_C_left, RingHom.toMonoidHom_eq_coe,
-    RingHom.coe_monoidHom_id, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.id_apply]
+    RingHom.coe_monoidHom_id, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.id_apply, RingHom.id_apply]
 #align mv_polynomial.expand_one_apply MvPolynomial.expand_one_apply
 
 @[simp]

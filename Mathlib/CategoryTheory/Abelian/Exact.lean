@@ -2,11 +2,6 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Adam Topaz, Johan Commelin, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.abelian.exact
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Tactic.TFAE
+
+#align_import category_theory.abelian.exact from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Exact sequences in abelian categories
@@ -70,9 +67,9 @@ theorem exact_iff : Exact f g ↔ f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f 
   constructor
   · exact fun h ↦ ⟨h.1, kernel_comp_cokernel f g h⟩
   · refine fun h ↦ ⟨h.1, ?_⟩
-    suffices hl :
-      IsLimit (KernelFork.ofι (imageSubobject f).arrow (imageSubobject_arrow_comp_eq_zero h.1))
-    · have : imageToKernel f g h.1 = (hl.conePointUniqueUpToIso (limit.isLimit _)).hom ≫
+    suffices hl : IsLimit
+        (KernelFork.ofι (imageSubobject f).arrow (imageSubobject_arrow_comp_eq_zero h.1)) by
+      have : imageToKernel f g h.1 = (hl.conePointUniqueUpToIso (limit.isLimit _)).hom ≫
           (kernelSubobjectIso _).inv := by ext; simp
       rw [this]
       infer_instance

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.simplicial_complex.basic
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.LinearAlgebra.AffineSpace.Independent
+
+#align_import analysis.convex.simplicial_complex.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Simplicial complexes
@@ -48,7 +45,7 @@ Simplicial complexes can be generalized to affine spaces once `ConvexHull` has b
 
 open Finset Set
 
-variable (𝕜 E : Type _) {ι : Type _} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜 E : Type*) {ι : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Geometry
 
@@ -82,8 +79,8 @@ def space (K : SimplicialComplex 𝕜 E) : Set E :=
 #align geometry.simplicial_complex.space Geometry.SimplicialComplex.space
 
 -- Porting note: Expanded `∃ s ∈ K.faces` to get the type to match more closely with Lean 3
-theorem mem_space_iff : x ∈ K.space ↔ ∃ (s : _) (_ : s ∈ K.faces), x ∈ convexHull 𝕜 (s : Set E) :=
-  mem_iUnion₂
+theorem mem_space_iff : x ∈ K.space ↔ ∃ s ∈ K.faces, x ∈ convexHull 𝕜 (s : Set E) := by
+  simp [space]
 #align geometry.simplicial_complex.mem_space_iff Geometry.SimplicialComplex.mem_space_iff
 
 -- Porting note: Original proof was `:= subset_biUnion_of_mem hs`
@@ -110,7 +107,7 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
     Disjoint (convexHull 𝕜 (s : Set E)) (convexHull 𝕜 ↑t) ∨
       ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u := by
   classical
-  by_contra' h
+  by_contra! h
   refine' h.2 (s ∩ t) (K.down_closed hs (inter_subset_left _ _) fun hst => h.1 <|
     disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans _) _
   · rw [← coe_inter, hst, coe_empty, convexHull_empty]
@@ -121,8 +118,8 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
 /-- Construct a simplicial complex by removing the empty face for you. -/
 @[simps]
 def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent 𝕜 ((↑) : s → E))
-    (down_closed : ∀ s ∈ faces, ∀ (t) (_ : t ⊆ s), t ∈ faces)
-    (inter_subset_convexHull : ∀ (s) (_ : s ∈ faces) (t) (_ : t ∈ faces),
+    (down_closed : ∀ s ∈ faces, ∀ t ⊆ s, t ∈ faces)
+    (inter_subset_convexHull : ∀ᵉ (s ∈ faces) (t ∈ faces),
       convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)) :
     SimplicialComplex 𝕜 E where
   faces := faces \ {∅}

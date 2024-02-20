@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.ideal.associated_prime
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Noetherian
+
+#align_import ring_theory.ideal.associated_prime from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 
@@ -37,7 +34,7 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 -/
 
 
-variable {R : Type _} [CommRing R] (I J : Ideal R) (M : Type _) [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the annihilator of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
@@ -53,7 +50,7 @@ def associatedPrimes : Set (Ideal R) :=
 
 variable {I J M R}
 
-variable {M' : Type _} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
+variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M')
 
 theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 #align associate_primes.mem_iff AssociatePrimes.mem_iff
@@ -149,8 +146,8 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
     apply hJ.1
     rwa [Submodule.span_singleton_eq_bot.mpr rfl, Submodule.annihilator_bot] at e
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mkₐ_surjective R _ x
-  replace e : ∀ {y}, y ∈ J ↔ x * y ∈ I
-  · intro y
+  replace e : ∀ {y}, y ∈ J ↔ x * y ∈ I := by
+    intro y
     rw [e, Submodule.mem_annihilator_span_singleton, ← map_smul, smul_eq_mul, mul_comm,
       Ideal.Quotient.mkₐ_eq_mk, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero]
   apply le_antisymm

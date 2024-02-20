@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.adjunction.fully_faithful
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Yoneda
+
+#align_import category_theory.adjunction.fully_faithful from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # Adjoints of fully faithful functors
@@ -94,7 +91,7 @@ by L whiskered with the counit. -/
 @[simp]
 theorem inv_map_unit {X : C} [IsIso (h.unit.app X)] :
     inv (L.map (h.unit.app X)) = h.counit.app (L.obj X) :=
-  IsIso.inv_eq_of_hom_inv_id h.left_triangle_components
+  IsIso.inv_eq_of_hom_inv_id (h.left_triangle_components X)
 #align category_theory.inv_map_unit CategoryTheory.inv_map_unit
 
 /-- If the unit is an isomorphism, bundle one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
@@ -109,7 +106,7 @@ by R whiskered with the unit. -/
 @[simp]
 theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
     inv (R.map (h.counit.app X)) = h.unit.app (R.obj X) :=
-  IsIso.inv_eq_of_inv_hom_id h.right_triangle_components
+  IsIso.inv_eq_of_inv_hom_id (h.right_triangle_components X)
 #align category_theory.inv_counit_map CategoryTheory.inv_counit_map
 
 /-- If the counit of an is an isomorphism, one has an isomorphism `(R ⋙ L ⋙ R) ≅ R`. -/
@@ -120,8 +117,8 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_R_unit_iso_of_is_iso_counit CategoryTheory.whiskerLeftRUnitIsoOfIsIsoCounit
 
 /-- If the unit is an isomorphism, then the left adjoint is full-/
-noncomputable def lFullOfUnitIsIso [IsIso h.unit] : Full L
-    where preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
+noncomputable def lFullOfUnitIsIso [IsIso h.unit] : Full L where
+  preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 set_option linter.uppercaseLean3 false in
 #align category_theory.L_full_of_unit_is_iso CategoryTheory.lFullOfUnitIsIso
 
@@ -134,8 +131,8 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.L_faithful_of_unit_is_iso CategoryTheory.L_faithful_of_unit_isIso
 
 /-- If the counit is an isomorphism, then the right adjoint is full-/
-noncomputable def rFullOfCounitIsIso [IsIso h.counit] : Full R
-    where preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
+noncomputable def rFullOfCounitIsIso [IsIso h.counit] : Full R where
+  preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_full_of_counit_is_iso CategoryTheory.rFullOfCounitIsIso
 
@@ -215,9 +212,9 @@ def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' �
         simpa [Trans.trans] using (comm1.inv.naturality_assoc f _).symm
       homEquiv_naturality_right := fun {X Y' Y} f g => by
         apply iC.map_injective
-        suffices : R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g)
-        · simp [Trans.trans, this]
-        · apply comm2.hom.naturality g }
+        suffices R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g) by
+          simp [Trans.trans, this]
+        apply comm2.hom.naturality g }
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 end CategoryTheory

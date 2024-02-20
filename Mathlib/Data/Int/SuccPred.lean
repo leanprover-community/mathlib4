@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.int.succ_pred
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.SuccPred
+
+#align_import data.int.succ_pred from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Successors and predecessors of integers
@@ -76,26 +73,26 @@ instance : IsPredArchimedean ℤ :=
 /-! ### Covering relation -/
 
 
-protected theorem covby_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
-  succ_eq_iff_covby.symm
-#align int.covby_iff_succ_eq Int.covby_iff_succ_eq
+protected theorem covBy_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
+  succ_eq_iff_covBy.symm
+#align int.covby_iff_succ_eq Int.covBy_iff_succ_eq
 
 @[simp]
-theorem sub_one_covby (z : ℤ) : z - 1 ⋖ z := by rw [Int.covby_iff_succ_eq, sub_add_cancel]
-#align int.sub_one_covby Int.sub_one_covby
+theorem sub_one_covBy (z : ℤ) : z - 1 ⋖ z := by rw [Int.covBy_iff_succ_eq, sub_add_cancel]
+#align int.sub_one_covby Int.sub_one_covBy
 
 @[simp]
-theorem covby_add_one (z : ℤ) : z ⋖ z + 1 :=
-  Int.covby_iff_succ_eq.mpr rfl
-#align int.covby_add_one Int.covby_add_one
+theorem covBy_add_one (z : ℤ) : z ⋖ z + 1 :=
+  Int.covBy_iff_succ_eq.mpr rfl
+#align int.covby_add_one Int.covBy_add_one
 
 end Int
 
 @[simp, norm_cast]
-theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
-  rw [Nat.covby_iff_succ_eq, Int.covby_iff_succ_eq]
+theorem Nat.cast_int_covBy_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
+  rw [Nat.covBy_iff_succ_eq, Int.covBy_iff_succ_eq]
   exact Int.coe_nat_inj'
-#align nat.cast_int_covby_iff Nat.cast_int_covby_iff
+#align nat.cast_int_covby_iff Nat.cast_int_covBy_iff
 
-alias Nat.cast_int_covby_iff ↔ _ Covby.cast_int
-#align covby.cast_int Covby.cast_int
+alias ⟨_, CovBy.cast_int⟩ := Nat.cast_int_covBy_iff
+#align covby.cast_int CovBy.cast_int

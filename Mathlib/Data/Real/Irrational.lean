@@ -2,17 +2,14 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.real.irrational
-! leanprover-community/mathlib commit 7e7aaccf9b0182576cabdde36cf1b5ad3585b70d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Real.Sqrt
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.IntervalCases
+
+#align_import data.real.irrational from "leanprover-community/mathlib"@"7e7aaccf9b0182576cabdde36cf1b5ad3585b70d"
 
 /-!
 # Irrational real numbers
@@ -83,10 +80,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
   subst m
-  have : y ≠ 0 := by
-    rintro rfl
-    rw [zero_pow hnpos] at hm
-    exact hm rfl
+  have : y ≠ 0 := by rintro rfl; rw [zero_pow hnpos.ne'] at hm; exact hm rfl
   erw [multiplicity.pow' (Nat.prime_iff_prime_int.1 hp.1) (finite_int_iff.2 ⟨hp.1.ne_one, this⟩),
     Nat.mul_mod_right] at hv
   exact hv rfl
@@ -172,7 +166,7 @@ theorem ne_nat (h : Irrational x) (m : ℕ) : x ≠ m :=
   h.ne_int m
 #align irrational.ne_nat Irrational.ne_nat
 
-theorem ne_zero (h : Irrational x) : x ≠ 0 := by exact_mod_cast h.ne_nat 0
+theorem ne_zero (h : Irrational x) : x ≠ 0 := mod_cast h.ne_nat 0
 #align irrational.ne_zero Irrational.ne_zero
 
 theorem ne_one (h : Irrational x) : x ≠ 1 := by simpa only [Nat.cast_one] using h.ne_nat 1

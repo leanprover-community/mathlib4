@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
-
-! This file was ported from Lean 3 source module combinatorics.young.semistandard_tableau
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Young.YoungDiagram
+
+#align_import combinatorics.young.semistandard_tableau from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Semistandard Young tableaux
@@ -66,13 +63,13 @@ structure Ssyt (μ : YoungDiagram) where
 
 namespace Ssyt
 
-instance funLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ fun _ ↦ ℕ → ℕ where
+instance instFunLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ (ℕ → ℕ) where
   coe := Ssyt.entry
   coe_injective' T T' h := by
     cases T
     cases T'
     congr
-#align ssyt.fun_like Ssyt.funLike
+#align ssyt.fun_like Ssyt.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply `CoeFun.coe` directly. -/
 instance {μ : YoungDiagram} : CoeFun (Ssyt μ) fun _ ↦ ℕ → ℕ → ℕ :=
@@ -85,7 +82,7 @@ theorem to_fun_eq_coe {μ : YoungDiagram} {T : Ssyt μ} : T.entry = (T : ℕ →
 
 @[ext]
 theorem ext {μ : YoungDiagram} {T T' : Ssyt μ} (h : ∀ i j, T i j = T' i j) : T = T' :=
-  FunLike.ext T T' fun _ ↦ by
+  DFunLike.ext T T' fun _ ↦ by
     funext
     apply h
 #align ssyt.ext Ssyt.ext
@@ -108,7 +105,7 @@ theorem coe_copy {μ : YoungDiagram} (T : Ssyt μ) (entry' : ℕ → ℕ → ℕ
 
 theorem copy_eq {μ : YoungDiagram} (T : Ssyt μ) (entry' : ℕ → ℕ → ℕ) (h : entry' = T) :
     T.copy entry' h = T :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align ssyt.copy_eq Ssyt.copy_eq
 
 theorem row_weak {μ : YoungDiagram} (T : Ssyt μ) {i j1 j2 : ℕ} (hj : j1 < j2)

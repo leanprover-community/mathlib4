@@ -2,13 +2,10 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.qpf.multivariate.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
+
+#align_import data.qpf.multivariate.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Multivariate quotients of polynomial functors.
@@ -85,17 +82,17 @@ open MvFunctor
 
 /-- Multivariate quotients of polynomial functors.
 -/
-class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type _) [MvFunctor F] where
+class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type*) [MvFunctor F] where
   P : MvPFunctor.{u} n
-  abs : ∀ {α}, P.Obj α → F α
-  repr : ∀ {α}, F α → P.Obj α
+  abs : ∀ {α}, P α → F α
+  repr : ∀ {α}, F α → P α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
-  abs_map : ∀ {α β} (f : α ⟹ β) (p : P.Obj α), abs (f <$$> p) = f <$$> abs p
+  abs_map : ∀ {α β} (f : α ⟹ β) (p : P α), abs (f <$$> p) = f <$$> abs p
 #align mvqpf MvQPF
 
 namespace MvQPF
 
-variable {n : ℕ} {F : TypeVec.{u} n → Type _} [MvFunctor F] [q : MvQPF F]
+variable {n : ℕ} {F : TypeVec.{u} n → Type*} [MvFunctor F] [q : MvQPF F]
 
 open MvFunctor (LiftP LiftR)
 
@@ -136,7 +133,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
     · rw [← hy, ← abs_repr y, h, ← abs_map]; rfl
     intro i j
     apply (f i j).property
-  rintro ⟨a, f, h₀, h₁⟩; dsimp at *
+  rintro ⟨a, f, h₀, h₁⟩
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 #align mvqpf.liftp_iff MvQPF.liftP_iff
@@ -199,7 +196,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     refine' (mem_supp x _ u).mp hh _ _ hu
   rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ i u usuppx
-    rcases(mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+    rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
     rw [← f'ieq]
     apply h'
   intro h'
@@ -219,12 +216,12 @@ def IsUniform : Prop :=
 
 /-- does `abs` preserve `liftp`? -/
 def LiftPPreservation : Prop :=
-  ∀ ⦃α : TypeVec n⦄ (p : ∀ ⦃i⦄, α i → Prop) (x : q.P.Obj α), LiftP p (abs x) ↔ LiftP p x
+  ∀ ⦃α : TypeVec n⦄ (p : ∀ ⦃i⦄, α i → Prop) (x : q.P α), LiftP p (abs x) ↔ LiftP p x
 #align mvqpf.liftp_preservation MvQPF.LiftPPreservation
 
 /-- does `abs` preserve `supp`? -/
 def SuppPreservation : Prop :=
-  ∀ ⦃α⦄ (x : q.P.Obj α), supp (abs x) = supp x
+  ∀ ⦃α⦄ (x : q.P α), supp (abs x) = supp x
 #align mvqpf.supp_preservation MvQPF.SuppPreservation
 
 theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.P.A) (f : q.P.B a ⟹ α) :

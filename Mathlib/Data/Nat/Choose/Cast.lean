@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.nat.choose.cast
-! leanprover-community/mathlib commit bb168510ef455e9280a152e7f31673cabd3d7496
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Factorial.Cast
+
+#align_import data.nat.choose.cast from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
 /-!
 # Cast of binomial coefficients
@@ -21,7 +18,7 @@ of characteristic `0`.
 
 open Nat
 
-variable (K : Type _) [DivisionRing K] [CharZero K]
+variable (K : Type*) [DivisionRing K] [CharZero K]
 
 namespace Nat
 
@@ -35,11 +32,11 @@ theorem cast_add_choose {a b : ℕ} : ((a + b).choose a : K) = (a + b)! / (a ! *
   rw [cast_choose K (_root_.le_add_right le_rfl), add_tsub_cancel_left]
 #align nat.cast_add_choose Nat.cast_add_choose
 
-theorem cast_choose_eq_pochhammer_div (a b : ℕ) :
-    (a.choose b : K) = (pochhammer K b).eval ↑(a - (b - 1)) / b ! := by
+theorem cast_choose_eq_ascPochhammer_div (a b : ℕ) :
+    (a.choose b : K) = (ascPochhammer K b).eval ↑(a - (b - 1)) / b ! := by
   rw [eq_div_iff_mul_eq (cast_ne_zero.2 b.factorial_ne_zero : (b ! : K) ≠ 0), ← cast_mul,
     mul_comm, ← descFactorial_eq_factorial_mul_choose, ← cast_descFactorial]
-#align nat.cast_choose_eq_pochhammer_div Nat.cast_choose_eq_pochhammer_div
+#align nat.cast_choose_eq_pochhammer_div Nat.cast_choose_eq_ascPochhammer_div
 
 theorem cast_choose_two (a : ℕ) : (a.choose 2 : K) = a * (a - 1) / 2 := by
   rw [← cast_descFactorial_two, descFactorial_eq_factorial_mul_choose, factorial_two, mul_comm,

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.hall.basic
-! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.Data.Rel
+
+#align_import combinatorics.hall.basic from "leanprover-community/mathlib"@"8195826f5c428fc283510bc67303dd4472d78498"
 
 /-!
 # Hall's Marriage Theorem
@@ -159,7 +156,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
   · -- The reverse direction is a straightforward cardinality argument
     rintro ⟨f, hf₁, hf₂⟩ s
     rw [← Finset.card_image_of_injective s hf₁]
-    apply Finset.card_le_of_subset
+    apply Finset.card_le_card
     intro
     rw [Finset.mem_image, Finset.mem_biUnion]
     rintro ⟨x, hx, rfl⟩
