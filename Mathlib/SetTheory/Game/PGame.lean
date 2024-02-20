@@ -566,7 +566,7 @@ theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏
   exact fun h₃ => h₂ (h₃.trans h₁)
 #align pgame.lf_of_le_of_lf SetTheory.PGame.lf_of_le_of_lf
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
 
 @[trans]
@@ -575,7 +575,7 @@ theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏
   exact fun h₃ => h₁ (h₂.trans h₃)
 #align pgame.lf_of_lf_of_le SetTheory.PGame.lf_of_lf_of_le
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 
 alias _root_.LE.le.trans_lf := lf_of_le_of_lf

@@ -249,7 +249,7 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
   · trans ζ₂ <;> assumption
 #align arithcc.state_eq.trans Arithcc.StateEq.trans
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
   ⟨@StateEq.trans _⟩
 
@@ -261,7 +261,7 @@ protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : Sta
   trans ζ₂ <;> assumption
 #align arithcc.state_eq_state_eq_rs.trans Arithcc.StateEqStateEqRs.trans
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
   ⟨@StateEqStateEqRs.trans _⟩
 

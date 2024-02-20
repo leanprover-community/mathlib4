@@ -58,7 +58,7 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGroupCat :=
 instance (M : SemiNormedGroupCat) : SeminormedAddCommGroup M :=
   M.str
 
--- Porting Note: added
+-- Porting note (#10754): added instance
 instance funLike {V W : SemiNormedGroupCat} : FunLike (V ⟶ W) V W where
   coe := (forget SemiNormedGroupCat).map
   coe_injective' := fun f g h => by cases f; cases g; congr
@@ -148,7 +148,7 @@ instance : LargeCategory.{u} SemiNormedGroupCat₁ where
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
   comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
--- Porting Note: Added
+-- Porting note (#10754): added instance
 instance instFunLike (X Y : SemiNormedGroupCat₁) : FunLike (X ⟶ Y) X Y where
   coe f := f.1.toFun
   coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
@@ -165,7 +165,7 @@ instance : ConcreteCategory.{u} SemiNormedGroupCat₁ where
       map := fun f => f }
   forget_faithful := { }
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance toAddMonoidHomClass {V W : SemiNormedGroupCat₁} : AddMonoidHomClass (V ⟶ W) V W where
   map_add f := f.1.map_add'
   map_zero f := (AddMonoidHom.mk' f.1 f.1.map_add').map_zero
