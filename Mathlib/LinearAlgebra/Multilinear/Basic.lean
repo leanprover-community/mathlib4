@@ -1041,8 +1041,8 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     · exact Function.apply_update c f i f₀ j
 
 /--
-Let `M₁ᵢ` and `M₁ᵢ'` be two families of `R`-modules and `M₂` an `R`-module. Let us denote `Π i, M₁ᵢ` and `Π i, M₁ᵢ'` by `M` and
-`M'` respectively.
+Let `M₁ᵢ` and `M₁ᵢ'` be two families of `R`-modules and `M₂` an `R`-module.
+Let us denote `Π i, M₁ᵢ` and `Π i, M₁ᵢ'` by `M` and `M'` respectively.
 If `g` is a multilinear map `M' → M₂`, then `g` can be reinterpreted as a multilinear
 map of multilinear map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` by `(fᵢ) ↦ v ↦ g(fᵢ vᵢ)`.
 -/
