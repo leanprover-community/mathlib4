@@ -1492,7 +1492,7 @@ theorem cast_sub [Ring α] (m n) : ((m - n : ZNum) : α) = m - n := by simp [sub
 @[norm_cast] -- @[simp] -- Porting note: simp can prove this
 theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
   | (n + 1 : ℕ) => rfl
-  | 0 => by rw [Int.cast_neg, Int.cast_zero]
+  | 0 => by rw [Int.cast_neg]
   | -[n+1] => (zneg_zneg _).symm
 #align znum.neg_of_int ZNum.neg_of_int
 

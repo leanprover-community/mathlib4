@@ -104,7 +104,7 @@ end
 theorem ascPochhammer_eval_cast (n k : ℕ) :
     (((ascPochhammer ℕ n).eval k : ℕ) : S) = ((ascPochhammer S n).eval k : S) := by
   rw [← ascPochhammer_map (algebraMap ℕ S), eval_map, ← eq_natCast (algebraMap ℕ S),
-      eval₂_at_nat_cast,Nat.cast_id, eq_natCast]
+      eval₂_at_nat_cast,Nat.cast_id]
 #align pochhammer_eval_cast ascPochhammer_eval_cast
 
 theorem ascPochhammer_eval_zero {n : ℕ} : (ascPochhammer S n).eval 0 = if n = 0 then 1 else 0 := by

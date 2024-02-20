@@ -501,7 +501,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
         exact lt_of_le_of_lt (le_add_right _ _) this
       · simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e') omega_pos).2
           (nat_cast_le.2 n'.pos)
-    · rw [ee, ← add_assoc, ← mul_add, ← Nat.cast_add]
+    · rw [ee, ← add_assoc, ← mul_add]
 #align onote.repr_add ONote.repr_add
 
 theorem sub_nfBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow (o₁ - o₂) b

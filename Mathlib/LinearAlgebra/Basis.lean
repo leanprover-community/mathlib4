@@ -848,7 +848,7 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
         map_smul' := fun c y => ?_ }⟩
     · simp [Finsupp.add_apply, add_smul]
     · simp only [Finsupp.coe_smul, Pi.smul_apply, RingHom.id_apply]
-      rw [← smul_assoc, smul_eq_mul]
+      rw [← smul_assoc]
     · refine' smul_left_injective _ nz _
       simp only [Finsupp.single_eq_same]
       exact (w (f default • x)).choose_spec

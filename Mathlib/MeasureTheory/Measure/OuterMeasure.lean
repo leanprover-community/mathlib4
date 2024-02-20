@@ -404,7 +404,7 @@ theorem sSup_apply (ms : Set (OuterMeasure α)) (s : Set α) :
 
 @[simp]
 theorem iSup_apply {ι} (f : ι → OuterMeasure α) (s : Set α) : (⨆ i : ι, f i) s = ⨆ i, f i s := by
-  rw [iSup, sSup_apply, iSup_range, iSup]
+  rw [iSup, sSup_apply, iSup_range]
 #align measure_theory.outer_measure.supr_apply MeasureTheory.OuterMeasure.iSup_apply
 
 @[norm_cast]
