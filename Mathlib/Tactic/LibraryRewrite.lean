@@ -40,16 +40,6 @@ instance : LT RewriteLemma := ⟨fun a b => RewriteLemma.lt a b⟩
 instance (a b : RewriteLemma) : Decidable (a < b) :=
   inferInstanceAs (Decidable (RewriteLemma.lt a b))
 
-/-- Add red and green highlighting to the two sides of the equality.
-Red for the side that matches the clicked expression, and green for what will replace it. -/
-def RewriteLemma.diffs (rwLemma : RewriteLemma) : Lean.AssocList SubExpr.Pos Widget.DiffTag :=
-  let eqnPos := rwLemma.numParams.fold (init := SubExpr.Pos.root) fun _ => .pushBindingBody
-  let lhsPos := eqnPos.pushAppFn.pushAppArg
-  let rhsPos := eqnPos.pushAppArg
-  let (lhsPos, rhsPos) := if rwLemma.symm then (rhsPos, lhsPos) else (lhsPos, rhsPos)
-  .cons rhsPos .wasInserted <|
-    .cons lhsPos .wasDeleted .nil
-
 /-- Similar to `Name.isBlackListed`. -/
 def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
   (match cinfo with
@@ -183,18 +173,6 @@ def findPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
 
 open Widget ProofWidgets Jsx
 
-def addDiffs (diffs : AssocList SubExpr.Pos DiffTag)
-    (code : CodeWithInfos) : CodeWithInfos :=
-  code.map fun info =>
-    match diffs.find? info.subexprPos with
-      | some diff => { info with diffStatus? := some diff }
-      |    none   =>   info
-
-def renderWithDiffs (n : Name) (diffs : AssocList SubExpr.Pos DiffTag) : MetaM Html := do
-  let ci ← getConstInfo n
-  let e := addDiffs diffs (← Widget.ppExprTagged ci.type)
-  return <InteractiveCode fmt={e} />
-
 structure RewriteApplication extends RewriteLemma where
   tactic : String
   replacement : CodeWithInfos
@@ -258,18 +236,17 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
 
 
 def renderResults (results : Array (Array RewriteApplication)) (isEverything : Bool)
-    (range : Lsp.Range) (doc : FileWorker.EditableDocument) : MetaM Html := do
-  let htmls ← results.mapM renderBlock
+    (range : Lsp.Range) (doc : FileWorker.EditableDocument) : Html :=
+  let htmls := results.map renderBlock
   let htmls := htmls.concatMap (#[·, <hr/>])
   let title := s! "{if isEverything then "All" else "Some"} rewrite suggestions:"
-  return <details «open»={true}>
-      <summary className="mv2 pointer"> {.text title}</summary>
-      {.element "div" #[] htmls}
-    </details>
+  (<details «open»={true}>
+    <summary className="mv2 pointer"> {.text title}</summary>
+    {.element "div" #[] htmls}
+  </details>)
 where
-  renderBlock (results : Array RewriteApplication) : MetaM Html := do
-    let htmls ← results.mapM fun rw => do
-      -- let lemmaType ← renderWithDiffs rw.name rw.diffs
+  renderBlock (results : Array RewriteApplication) : Html :=
+    .element "ul" #[] $ results.map fun rw =>
       let replacement := <p> <InteractiveCode fmt={rw.replacement} /> </p>
       let extraGoals := rw.extraGoals.map
         (<p> <strong «class»="goal-vdash">⊢ </strong> <InteractiveCode fmt={·} /> </p>)
@@ -278,8 +255,7 @@ where
             #[.text s! "{rw.name}"]} </p>
       let left := Html.element "div" #[("id", "left")] (#[replacement] ++ extraGoals)
       let right := Html.element "div" #[("id", "rigth")] #[button]
-      return <li> <div «id»="container"> {left} {right} </div> </li>
-    return .element "ul" #[] htmls
+      (<li> <div «id»="container"> {left} {right} </div> </li>)
 
 /-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
@@ -352,7 +328,7 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
         (max := props.factor * 1000) (maxTotal := props.factor * 10000)
       if results.isEmpty then
         return <p> No applicable rewrite lemmata found. </p>
-      renderResults (results.map (·.1)) isEverything props.replaceRange doc
+      return renderResults (results.map (·.1)) isEverything props.replaceRange doc
 
 @[widget_module]
 def LibraryRewrite : Component InteractiveTacticProps :=
