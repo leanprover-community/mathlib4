@@ -26,7 +26,7 @@ instance : HasInstance (DecidableEq (Finset (Finset ℕ))) :=
   ⟨q(inferInstanceAs <| DecidableEq (Finset (Finset ℕ)))⟩
 
 open Qq Lean
-/-- `Finset α` can be converted to an expr only if there is some way to find `DeciableEq α`. -/
+/-- `Finset α` can be converted to an expr only if there is some way to find `DecidableEq α`. -/
 unsafe nonrec instance Finset.toExpr
     {α : Type u} [ToLevel.{u}] [ToExpr α] [HasInstance (DecidableEq α)] : ToExpr (Finset α) :=
   have u' : Level := ToLevel.toLevel.{u}
