@@ -1584,6 +1584,11 @@ theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
   rfl
 #align uniformity_prod uniformity_prod
 
+instance [UniformSpace α] [IsCountablyGenerated (𝓤 α)]
+    [UniformSpace β] [IsCountablyGenerated (𝓤 β)] : IsCountablyGenerated (𝓤 (α × β)) := by
+  rw [uniformity_prod]
+  infer_instance
+
 theorem uniformity_prod_eq_comap_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
       comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
@@ -1799,6 +1804,11 @@ theorem Sum.uniformity : 𝓤 (α ⊕ β) = map (Prod.map inl inl) (𝓤 α) ⊔
 
 lemma uniformContinuous_inl : UniformContinuous (Sum.inl : α → α ⊕ β) := le_sup_left
 lemma uniformContinuous_inr : UniformContinuous (Sum.inr : β → α ⊕ β) := le_sup_right
+
+instance [IsCountablyGenerated (𝓤 α)] [IsCountablyGenerated (𝓤 β)] :
+    IsCountablyGenerated (𝓤 (α ⊕ β)) := by
+  rw [Sum.uniformity]
+  infer_instance
 
 end Sum
 
