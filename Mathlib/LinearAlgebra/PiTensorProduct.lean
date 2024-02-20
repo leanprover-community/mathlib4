@@ -452,42 +452,40 @@ variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
 variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
 
 /--
-let `sᵢ` and `tᵢ` be family of `R`-modules and a family `fᵢ` of `R`-linear maps `sᵢ → tᵢ`, then
-there is an induced map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
+Let `sᵢ` and `tᵢ` be two families of `R`-modules.
+Let `f` be a family of `R`-linear maps between `sᵢ` and `tᵢ`, i.e. `f : Πᵢ sᵢ → tᵢ`,
+then there is an induced map `⨂ᵢ sᵢ → ⨂ᵢ tᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
 
 This is `TensorProduct.map` for an arbitrary family of modules.
 -/
 def map (f : Π i, s i →ₗ[R] t i) : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
   lift <| (tprod R).compLinearMap f
 
-@[simp] lemma map_tprod (f : Π i, s i →ₗ[R] t i) (x : ∀ i, s i) :
+@[simp] lemma map_apply_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
     map f (tprod R x) = tprod R fun i ↦ f i (x i) :=
   lift.tprod _
 
 /--
-Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
-
-let `sᵢ` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ` be a family of `R`-linear map, then
-`⨂ᵢ fᵢ` induces an `R`-linear map `F` between `R`-tensors `⨂ᵢ sᵢ` and `⨂ᵢ tᵢ` by
-`F(⨂ aᵢ) = ⨂ f(aᵢ)`.
-
-Furthermore, the map `⨂ᵢ fᵢ ↦ F` is `R`-linear as well.
+Let `sᵢ` and `tᵢ` be families of `R`-modules.
+Then there is an `R`=linear map between `⨂ᵢ Hom(sᵢ, tᵢ)` and `Hom(⨂ᵢ sᵢ, ⨂ tᵢ)` defined by
+`⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ fᵢ aᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
+
+Note that `PiTensorProduct.piTensorHomMap (tprod R f)` is equal to `PiTensorProduct.map f`.
 -/
 def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
   toFun φ := lift <| lift (MultilinearMap.piLinearMap <| tprod R) φ
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-@[simp] lemma piTensorHomMap_tprod_tprod (f : ∀ i, s i →ₗ[R] t i) (x : ∀ i, s i) :
+@[simp] lemma piTensorHomMap_apply_tprod_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
     piTensorHomMap (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by
   simp [piTensorHomMap]
 
 /--
-let `sᵢ`, `tᵢ` and `tᵢ'` be family of `R`-modules and a family `fᵢ` of `R`-linear maps
-`sᵢ → tᵢ → tᵢ'`, then there is an induced map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ → ⨂ᵢ tᵢ'` by
-`⨂ aᵢ ↦ ⨂ bᵢ ↦ ⨂ fᵢ aᵢ bᵢ`.
+Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, i.e. `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
+element of `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))` defined by `⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
 This is `TensorProduct.map` for two arbitrary families of modules.
 -/
@@ -495,18 +493,14 @@ def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=
   lift <| LinearMap.compMultilinearMap piTensorHomMap <| (tprod R).compLinearMap f
 
-lemma map₂_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : ∀ i, s i) (y : ∀ i, t i) :
+lemma map₂_apply_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : Π i, s i) (y : Π i, t i) :
     map₂ f (tprod R x) (tprod R y) = tprod R fun i ↦ f i (x i) (y i) := by
   simp [map₂]
 
 /--
-Arbitrary tensor product of linear maps to linear maps between arbitrary tensor products:
-
-let `sᵢ` `tᵢ'` and `tᵢ` be family of `R`-modules and `fᵢ : sᵢ → tᵢ → tᵢ'` be a family of
-`R`-linear map, then `⨂ᵢ fᵢ` induces an `R`-linear map `F : ⨂ᵢ sᵢ → ⨂ᵢ tᵢ ⊗ᵢ tᵢ'` by
-`F(⨂ aᵢ, ⨂ bᵢ) = ⨂ f(aᵢ, bᵢ)`.
-
-Furthermore, the map `⨂ᵢ fᵢ ↦ F` is `R`-linear as well.
+Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.
+Then there is an linear map from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))`
+defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for two arbitrary families of modules.
 -/
@@ -517,7 +511,7 @@ def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
   map_add' x y := by dsimp; ext; simp
   map_smul' r x := by dsimp; ext; simp
 
-@[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
+@[simp] lemma piTensorHomMap₂_apply_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
     piTensorHomMap₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
   simp [piTensorHomMap₂]
