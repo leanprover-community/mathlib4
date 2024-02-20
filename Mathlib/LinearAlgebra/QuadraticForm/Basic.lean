@@ -579,8 +579,8 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(B.restrictScalars₂ S S).compr₂ f, fun x y => by
-      simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₂_apply]⟩
+    ⟨(B.restrictScalars₁₂ S S).compr₂ f, fun x y => by
+      simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₁₂_apply]⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
 
 end Comp

@@ -210,7 +210,7 @@ theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
 
 section restrictScalars
 
-variable (R' S' : Type _)
+variable (R' S' : Type*)
 
 variable [Semiring R'] [Semiring S'] [Module R' M] [Module S' N] [Module R' Pₗ] [Module S' Pₗ]
 
@@ -222,7 +222,7 @@ variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
 
 /-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
 then the restriction of scalars is a `R'`-`S'` bilinear map.-/
-def restrictScalars₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
+def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
   LinearMap.mk₂' R' S'
     (fun x y ↦ B x y)
     (by intros; simp only [map_add, LinearMap.add_apply])
@@ -231,17 +231,17 @@ def restrictScalars₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →�
     (fun _ x ↦ (B x).map_smul_of_tower _)
 
 @[simp]
-theorem restrictScalars₂_apply (B : M →ₗ[R] N →ₗ[S] Pₗ) (x : M) (y : N) :
-    B.restrictScalars₂ R' S' x y = B x y := rfl
+theorem restrictScalars₁₂_apply (B : M →ₗ[R] N →ₗ[S] Pₗ) (x : M) (y : N) :
+    B.restrictScalars₁₂ R' S' x y = B x y := rfl
 
-theorem restrictScalars₂_injective : Function.Injective
-    (LinearMap.restrictScalars₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
+theorem restrictScalars₁₂_injective : Function.Injective
+    (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
   fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
 
 @[simp]
-theorem restrictScalars₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
-    B.restrictScalars₂ R' S' = B'.restrictScalars₂ R' S' ↔ B = B' :=
-  (restrictScalars₂_injective R' S').eq_iff
+theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
+    B.restrictScalars₁₂ R' S' = B'.restrictScalars₁₂ R' S' ↔ B = B' :=
+  (restrictScalars₁₂_injective R' S').eq_iff
 
 end restrictScalars
 
