@@ -133,19 +133,60 @@ protected theorem ae_eq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) 
 end UnifTight
 
 
+--XXX: this proof is rather hacked together, should be cleaned up
+--     probably belongs in `Mathlib.Data.ENNReal.Operations`
+theorem _root_.ENNReal.add_sub_add_comm {a b c d : ENNReal}
+      (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) (hd : d ≠ ∞)
+      (hac : c ≤ a) (hbd : d ≤ b) :
+    (a + b) - (c + d) = (a - c) + (b - d) := by
+  apply calc
+    _ = _ := (ENNReal.ofReal_toReal _).symm
+    _ = _ := ?cast_goal
+    _ = _ := (ENNReal.ofReal_toReal _)
+  case cast_goal =>
+    rw [ENNReal.ofReal_eq_ofReal_iff toReal_nonneg toReal_nonneg]
+    repeat rw [ENNReal.toReal_add ?_, ENNReal.toReal_sub_of_le ?_ ?_]
+    linarith
+    repeat tauto
+    exact add_le_add hac hbd
+    repeat aesop
+  aesop
+  aesop
+
+
+/-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
+integral over any measurable set. -/
+theorem exists_measurable_le_set_lintegral_eq_of_integrable {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
+    ∃ (g : α → ℝ≥0∞), Measurable g ∧ g ≤ f ∧ ∀ (s : Set α) (_hms : MeasurableSet s),
+      ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
+  obtain ⟨g, hmg, hgf, hifg⟩ := exists_measurable_le_lintegral_eq (μ := μ) f
+  use g, hmg, hgf
+  intro s hms
+  have hisf := (lintegral_add_compl (μ := μ) f hms).symm
+  have hisg := (lintegral_add_compl (μ := μ) g hms).symm
+  have := hisg ▸ hisf ▸ hifg
+  have hisfg := hisf ▸ tsub_self (∫⁻ a, f a ∂μ)
+  rw (config := { occs := .pos [2] }) [this] at hisfg
+  replace hisf := add_ne_top.mp (hisf ▸ hf)
+  replace hisg := add_ne_top.mp (hisg ▸ hifg ▸ hf)
+  replace hisfg := _root_.ENNReal.add_sub_add_comm
+    hisf.1 hisf.2 hisg.1 hisg.2 (lintegral_mono hgf) (lintegral_mono hgf) ▸ hisfg
+  replace hisfg := (add_eq_zero.mp hisfg).left
+  replace hisfg := tsub_eq_zero_iff_le.mp hisfg
+  replace hisfg := le_antisymm hisfg (lintegral_mono hgf)
+  use hisfg
+
 /-- Core lemma to be used in `MeasureTheory.Memℒp.snorm_indicator_compl_le`. -/
 theorem lintegral_indicator_compl_le
-    {g : α → ℝ≥0∞} (haemg : AEMeasurable g μ) (hg : ∫⁻ a, g a ∂μ ≠ ∞)
+    {g : α → ℝ≥0∞} (hg : ∫⁻ a, g a ∂μ ≠ ∞)
     {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧
       ∫⁻ a in sᶜ, g a ∂μ ≤ ε := by
+  -- come up with a measurable replacement `f` for `g`
+  obtain ⟨f, hmf, _hfg, hsgf⟩ := exists_measurable_le_set_lintegral_eq_of_integrable hg
   replace hg := lt_top_iff_ne_top.mpr hg
-  -- come up with an a.e. equal measurable replacement `f` for `g`
-  have hmf := haemg.measurable_mk
-  have hgf := haemg.ae_eq_mk
-  set f := haemg.mk
   have hf := calc
-    ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := (lintegral_congr_ae hgf).symm
+    ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := μ.restrict_univ ▸ (hsgf univ (by measurability)).symm
     _            < ∞ := hg
   have hmeas_lt : ∀ M : ℕ, MeasurableSet { x | f x < 1 / (↑M + 1) } := by
     intro M
@@ -194,7 +235,7 @@ theorem lintegral_indicator_compl_le
     _ < ∞ := by apply div_lt_top hf.ne (by norm_num)
   set s := { x | 1 / (↑M + 1) ≤ f x }
   -- replace `f` by `g`
-  rw [← lintegral_congr_ae hgf.indicator, lintegral_indicator _ hms.compl] at hM
+  rw [lintegral_indicator _ hms.compl, ← hsgf sᶜ hms.compl] at hM
   -- fulfill the goal
   use s, hms, hμs, hM
 
@@ -202,8 +243,7 @@ theorem lintegral_indicator_compl_le
 theorem Memℒp.snorm_indicator_compl_le (hp_top : p ≠ ∞)
     {f : α → β} (hf : Memℒp f p μ)
     {ε : ℝ≥0∞} (hε : 0 < ε) :
-    ∃ (s : Set α) (_ : MeasurableSet s) (_ : μ s < ∞),
-      snorm (sᶜ.indicator f) p μ ≤ ε := by
+    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ snorm (sᶜ.indicator f) p μ ≤ ε := by
   -- The proof unwraps `Memℒp f p μ` and applies the analogous result for `lintegral`.
   by_cases hfinε : ε ≠ ∞; swap -- first take care of `ε = ∞`
   · rw [not_ne_iff.mp hfinε]; exact ⟨∅, by measurability⟩
@@ -214,23 +254,18 @@ theorem Memℒp.snorm_indicator_compl_le (hp_top : p ≠ ∞)
     calc
       snorm f p μ = snorm f 0 μ := by congr
       _           = 0           := snorm_exponent_zero
-      _           ≤ ε   := zero_le _
+      _           ≤ ε           := zero_le _
   -- do some arithmetic that will come in useful
   have hrp_pos : 0 < p.toReal := ENNReal.toReal_pos hp_nz hp_top
   have hirp_pos : 0 < 1 / p.toReal := div_pos (by norm_num) hrp_pos
-  have hεp : 0 < ε ^ p.toReal := ENNReal.rpow_pos hε hfinε --simp only [Real.rpow_pos_of_pos, hε]
+  have hεp : 0 < ε ^ p.toReal := ENNReal.rpow_pos hε hfinε
   -- decode Memℒp into a.e. strong measurability and finite snorm
-  obtain ⟨haesmf, hsnf⟩ := hf
+  obtain ⟨_haesmf, hsnf⟩ := hf
   -- transform snorm to lintegral
   rw [snorm_eq_lintegral_rpow_nnnorm hp_nz hp_top] at hsnf
   replace hsnf := (rpow_lt_top_iff_of_pos hirp_pos).mp hsnf
-  -- get a.e. measurability for the integrand
-  -- XXX: Why does `AEStronglyMeasurable.ennnorm` only give the weaker AEMeasurable?
-  --      It would make sense to me to use `haesmf.ennnorm.aemeasurable` below.
-  have haemnf := haesmf.ennnorm
-  have haemnpf := haemnf.pow_const p.toReal
   -- use core result for lintegral (needs only AEMeasurable), the target estimate will be in `hsfε`
-  obtain ⟨s, hms, hμs, hsfε⟩ := lintegral_indicator_compl_le haemnpf hsnf.ne hεp
+  obtain ⟨s, hms, hμs, hsfε⟩ := lintegral_indicator_compl_le hsnf.ne hεp
   rw [← lintegral_indicator _ hms.compl] at hsfε
   use s, hms, hμs
   -- move indicator through function compositions, XXX: is this simp-able?
