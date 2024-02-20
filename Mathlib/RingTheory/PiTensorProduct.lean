@@ -68,16 +68,16 @@ lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
   simp only [LinearMap.smul_apply, lmul_tprod_tprod]
 
 lemma zero_lmul (x : ⨂[R] i, A i) : lmul 0 x = 0 := by
-  induction' x using PiTensorProduct.induction_on <;> simp
+  induction x using PiTensorProduct.induction_on <;> simp
 
 lemma lmul_zero (x : ⨂[R] i, A i) : lmul x 0 = 0 := by
-  induction' x using PiTensorProduct.induction_on <;> simp
+  induction x using PiTensorProduct.induction_on <;> simp
 
 lemma lmul_add (x y z : ⨂[R] i, A i) : lmul x (y + z) = lmul x y + lmul x z := by
-  induction' x using PiTensorProduct.induction_on <;> simp
+  induction x using PiTensorProduct.induction_on <;> simp
 
 lemma add_lmul (x y z : ⨂[R] i, A i) : lmul (x + y) z = lmul x z + lmul y z := by
-  induction' x using PiTensorProduct.induction_on <;> simp
+  induction x using PiTensorProduct.induction_on <;> simp
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := mul
@@ -95,14 +95,14 @@ variable [CommSemiring R] [∀ i, NonAssocSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
 lemma one_lmul (x : ⨂[R] i, A i) : lmul (tprod R 1) x = x := by
-  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
-  · simp
-  · simp only [map_add, hx₁, hx₂]
+  induction x using PiTensorProduct.induction_on with
+  | C1 => simp
+  | Cp h1 h2 => simp [map_add, h1, h2]
 
 lemma lmul_one (x : ⨂[R] i, A i) : lmul x (tprod R 1) = x := by
-  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
-  · simp
-  · simp only [map_add, LinearMap.add_apply, hx₁, hx₂]
+  induction x using PiTensorProduct.induction_on with
+  | C1 => simp
+  | Cp h1 h2 => simp [h1, h2]
 
 instance nonAssocSemiring : NonAssocSemiring (⨂[R] i, A i) where
   __ := nonUnitalNonAssocSemiring
@@ -117,16 +117,21 @@ variable [CommSemiring R] [∀ i, NonUnitalSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
 lemma lmul_assoc (x y z : ⨂[R] i, A i) : lmul (lmul x y) z = lmul x (lmul y z) := by
-  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
-  · induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂
-    · induction' z using PiTensorProduct.induction_on with rz z z₁ z₂ hz₁ hz₂
-      · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, mul_assoc]
-      · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, map_add] at hz₁ hz₂ ⊢
-        rw [hz₁, hz₂]
-    · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply] at hy₁ hy₂ ⊢
-      rw [hy₁, hy₂]
-  · simp only [map_add, LinearMap.add_apply] at hx₁ hx₂ ⊢
-    rw [hx₁, hx₂]
+  induction x using PiTensorProduct.induction_on with  -- rx x x₁ x₂ hx₁ hx₂
+  | C1 =>
+    induction y using PiTensorProduct.induction_on with
+    | C1 =>
+      induction z using PiTensorProduct.induction_on with
+      | C1 => simp [mul_assoc]
+      | Cp hz1 hz2 =>
+        simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, map_add] at hz1 hz2 ⊢
+        rw [hz1, hz2]
+    | Cp hy1 hy2 =>
+      simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply] at hy1 hy2 ⊢
+      rw [hy1, hy2]
+  | Cp hx1 hx2 =>
+    simp only [map_add, LinearMap.add_apply] at hx1 hx2 ⊢
+    rw [hx1, hx2]
 
 instance nonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
   __ := nonUnitalNonAssocSemiring
@@ -174,7 +179,7 @@ lemma algebraMap_apply (r : R) (i : ι) [DecidableEq ι] :
   congr
 
 /--
-the map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
+The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 -/
 @[simps]
 def fromComponentAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
@@ -198,14 +203,18 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
   toFun := lift f
   map_one' := show lift f (tprod R 1) = 1 by simp [one]
   map_mul' x y := show lift f (x * y) = lift f x * lift f y by
-    induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
-    · induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂
-      · simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, tprod_mul_tprod, map_smul,
+    induction x using PiTensorProduct.induction_on with
+    | C1 =>
+      induction y using PiTensorProduct.induction_on with
+      | C1 =>
+        simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, tprod_mul_tprod, map_smul,
           lift.tprod, mul]
-      · simp only [Algebra.smul_mul_assoc, map_smul, lift.tprod, map_add] at hy₁ hy₂ ⊢
-        rw [mul_add, map_add, smul_add, hy₁, hy₂, mul_add, smul_add]
-    · simp only [map_add] at hx₁ hx₂ ⊢
-      rw [add_mul, map_add, hx₁, hx₂, add_mul]
+      | Cp hy1 hy2 =>
+        simp only [Algebra.smul_mul_assoc, map_smul, lift.tprod, map_add] at hy1 hy2 ⊢
+        rw [mul_add, map_add, smul_add, hy1, hy2, mul_add, smul_add]
+    | Cp hx1 hx2 =>
+      simp only [map_add] at hx1 hx2 ⊢
+      rw [add_mul, map_add, hx1, hx2, add_mul]
   map_zero' := by simp only [map_zero]
   map_add' x y := by simp only [map_add]
   commutes' r := show lift f (r • tprod R 1) = _ by
@@ -228,15 +237,19 @@ noncomputable section CommSemiring
 variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
 
 lemma lmul_comm (x y : ⨂[R] i, A i) : lmul x y = lmul y x :=  by
-  induction' x using PiTensorProduct.induction_on with rx x x₁ x₂ hx₁ hx₂
-  · induction' y using PiTensorProduct.induction_on with ry y y₁ y₂ hy₁ hy₂
-    · simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod]
+  induction x using PiTensorProduct.induction_on with
+  | C1 =>
+    induction y using PiTensorProduct.induction_on with
+    | C1 =>
+      simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod]
       rw [smul_comm, mul_comm]
-    · simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply,
-        smul_add] at hy₁ hy₂ ⊢
-      rw [hy₁, hy₂]
-  · simp only [map_add, LinearMap.add_apply] at hx₁ hx₂ ⊢
-    rw [hx₁, hx₂]
+    | Cp hy1 hy2 =>
+      simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply, smul_add] at hy1 hy2
+        ⊢
+      rw [hy1, hy2]
+  | Cp hx1 hx2 =>
+    simp only [map_add, LinearMap.add_apply] at hx1 hx2 ⊢
+    rw [hx1, hx2]
 
 instance commSemiring : CommSemiring (⨂[R] i, A i) where
   __ := semiring
