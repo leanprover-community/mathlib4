@@ -13,7 +13,7 @@ import Mathlib.Topology.Metrizable.Uniformity
 
 In this file we prove that a completely metrizable topological space is a Baire space.
 Since `Mathlib` does not have the notion of a completely metrizable topological space yet,
-we state it for a complete unifiorm space with countably generated uniformity filter.
+we state it for a complete uniform space with countably generated uniformity filter.
 -/
 
 open Filter EMetric Set
@@ -24,7 +24,7 @@ variable {X : Type*} [UniformSpace X] [CompleteSpace X] [(𝓤 X).IsCountablyGen
 /-- **First Baire theorem**: a completely metrizable topological space has Baire property.
 
 Since `Mathlib` does not have the notion of a completely metrizable topological space yet,
-we state it for a complete unifiorm space with countably generated uniformity filter. -/
+we state it for a complete uniform space with countably generated uniformity filter. -/
 instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : BaireSpace X := by
   let _ := UniformSpace.pseudoMetricSpace X
   refine' ⟨fun f ho hd => _⟩
