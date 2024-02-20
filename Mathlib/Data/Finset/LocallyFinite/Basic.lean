@@ -312,14 +312,6 @@ def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : 
   Set.fintypeSubset (Set.Icc a b) fun _ hx => ⟨ha hx, hb hx⟩
 #align set.fintype_of_mem_bounds Set.fintypeOfMemBounds
 
--- TODO: move to `Order/LocallyFinite`
-theorem _root_.BddBelow.finite_of_bddAbove {s : Set α} (h₀ : BddBelow s) (h₁ : BddAbove s) :
-    s.Finite :=
-  let ⟨a, ha⟩ := h₀
-  let ⟨b, hb⟩ := h₁
-  (Set.finite_Icc a b).subset fun _x hx ↦ ⟨ha hx, hb hx⟩
-#align bdd_below.finite_of_bdd_above BddBelow.finite_of_bddAbove
-
 section Filter
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
