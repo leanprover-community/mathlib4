@@ -20,7 +20,8 @@ namespace Meta.FunProp
 open Lean.Parser.Tactic
 
 /-- Tactic to prove function properties -/
-syntax (name := funPropTacStx) "fun_prop" (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
+syntax (name := funPropTacStx)
+  "fun_prop" (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
