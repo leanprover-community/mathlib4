@@ -1,10 +1,5 @@
 import Mathlib
 
-elab "build_cache" : command => Lean.Elab.Command.liftTermElabM do
-  _ ← Mathlib.Tactic.LibraryRewrite.getRewriteLemmas
-
-build_cache
-
 example : 4 = 2+2 := by
   rw??
 
