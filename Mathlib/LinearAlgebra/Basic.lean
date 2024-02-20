@@ -567,20 +567,24 @@ theorem submoduleImage_apply_of_le {M' : Type*} [AddCommGroup M'] [Module R M']
 
 end Image
 
+section rangeRestrict
+
+variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂)
+
+@[simp] theorem range_rangeRestrict : range f.rangeRestrict = ⊤ := by simp [f.range_codRestrict _]
+#align linear_map.range_range_restrict LinearMap.range_rangeRestrict
+
+theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
+  rw [← range_eq_top, range_rangeRestrict]
+
+@[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
+#align linear_map.ker_range_restrict LinearMap.ker_rangeRestrict
+
+end rangeRestrict
+
 end Semiring
 
 end LinearMap
-
-@[simp]
-theorem LinearMap.range_rangeRestrict [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
-    [Module R M₂] (f : M →ₗ[R] M₂) : range f.rangeRestrict = ⊤ := by simp [f.range_codRestrict _]
-#align linear_map.range_range_restrict LinearMap.range_rangeRestrict
-
-@[simp]
-theorem LinearMap.ker_rangeRestrict [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M]
-    [Module R M₂] (f : M →ₗ[R] M₂) : ker f.rangeRestrict = ker f :=
-  LinearMap.ker_codRestrict _ _ _
-#align linear_map.ker_range_restrict LinearMap.ker_rangeRestrict
 
 /-! ### Linear equivalences -/
 
