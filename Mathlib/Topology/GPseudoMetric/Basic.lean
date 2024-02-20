@@ -3,8 +3,8 @@ Copyright (c) 2024 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent
 -/
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.NeZero
+import Mathlib.Data.Set.Lattice
 import Mathlib.Topology.GPseudoMetric.IsOrderedAddCommMonoid
 
 /-!
@@ -28,13 +28,9 @@ Additional useful definitions:
 - `closedBall gdist x δ`: the set of points with distance to x less than or equal to δ
 - `sphere gdist x δ`: the set of points with distance to x equal to δ
 
-## Implementation notes
-
 -/
 
 open Set
-open scoped BigOperators
-
 
 /-- generic Pseudo metrics
 a generic pseudo metric is a distance function `gdist : α → α → β`

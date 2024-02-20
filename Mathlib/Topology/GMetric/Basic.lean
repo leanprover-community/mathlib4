@@ -54,5 +54,3 @@ instance : GMetricClass (GMetric α β) α β where
   eq_of_dist_eq_zero := GMetric.eq_of_dist_eq_zero
 
 variable {T:Type*} [FunLike T α (α → β)] [GMetricClass T α β] (gdist : T)
-
-#lint
