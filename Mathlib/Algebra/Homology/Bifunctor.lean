@@ -96,7 +96,8 @@ namespace HomologicalComplex
 
 variable {I₁ I₂ J : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
   [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
-  (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂)
+  (K₁ L₁ : HomologicalComplex C₁ c₁) (K₂ L₂ : HomologicalComplex C₂ c₂)
+  (f₁ : K₁ ⟶ L₁) (f₂ : K₂ ⟶ L₂)
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
   (c : ComplexShape J) [TotalComplexShape c₁ c₂ c]
 
@@ -104,13 +105,66 @@ variable {I₁ I₂ J : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I
 a total complex. -/
 abbrev HasMapBifunctor := (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).HasTotal c
 
-variable [HasMapBifunctor K₁ K₂ F c] [DecidableEq J]
+variable [HasMapBifunctor K₁ K₂ F c] [HasMapBifunctor L₁ L₂ F c] [DecidableEq J]
 
 /-- Given `K₁ : HomologicalComplex C₁ c₁`, `K₂ : HomologicalComplex C₂ c₂`,
 a bifunctor `F : C₁ ⥤ C₂ ⥤ D` and a complex shape `ComplexShape J` such that we have
 `[TotalComplexShape c₁ c₂ c]`, this `mapBifunctor K₁ K₂ F c : HomologicalComplex D c`
 is the total complex of the bicomplex obtained by applying `F` to `K₁` and `K₂`. -/
-noncomputable abbrev mapBifunctor : HomologicalComplex D c :=
+noncomputable def mapBifunctor : HomologicalComplex D c :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).total c
+
+/-- The inclusion of a summand of `(mapBifunctor K₁ K₂ F c).X j`. -/
+noncomputable def ιMapBifunctor
+    (i₁ : I₁) (i₂ : I₂) (j : J) (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
+    (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
+  (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).ιTotal c i₁ i₂ j h
+
+section
+
+variable {K₁ K₂ F c}
+variable {A : D} {j : J}
+  (f : ∀ (i₁ : I₁) (i₂ : I₂) (_ : ComplexShape.π c₁ c₂ c (i₁, i₂) = j),
+    (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ A)
+
+/-- Constructor for morphisms from `(mapBifunctor K₁ K₂ F c).X j`. -/
+noncomputable def mapBifunctorDesc : (mapBifunctor K₁ K₂ F c).X j ⟶ A :=
+  HomologicalComplex₂.totalDesc _ f
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctorDesc
+    (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
+    ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ mapBifunctorDesc f = f i₁ i₂ h := by
+  simp [ιMapBifunctor, mapBifunctorDesc]
+
+end
+
+variable {K₁ K₂ F c} in
+@[ext]
+lemma mapBifunctor_hom_ext {A : D} {j : J}
+    {f g : (mapBifunctor K₁ K₂ F c).X j ⟶ A}
+    (h : ∀ (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j),
+      ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ f = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ g) : f = g :=
+  HomologicalComplex₂.total.hom_ext _ h
+
+section
+
+variable {K₁ K₂ L₁ L₂}
+
+/-- The morphism `mapBifunctor K₁ K₂ F c ⟶ mapBifunctor L₁ L₂ F c` induced by
+morphisms of complexes `K₁ ⟶ L₁` and `K₂ ⟶ L₂`. -/
+noncomputable def mapBifunctorMap : mapBifunctor K₁ K₂ F c ⟶ mapBifunctor L₁ L₂ F c :=
+  HomologicalComplex₂.total.map (((F.mapBifunctorHomologicalComplex c₁ c₂).map f₁).app K₂ ≫
+    ((F.mapBifunctorHomologicalComplex c₁ c₂).obj L₁).map f₂) c
+
+@[reassoc (attr := simp)]
+lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
+    (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
+    ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ (mapBifunctorMap f₁ f₂ F c).f j =
+      (F.map (f₁.f i₁)).app (K₂.X i₂) ≫ (F.obj (L₁.X i₁)).map (f₂.f i₂) ≫
+        ιMapBifunctor L₁ L₂ F c i₁ i₂ j h := by
+  simp [mapBifunctorMap, ιMapBifunctor]
+
+end
 
 end HomologicalComplex
