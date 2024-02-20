@@ -271,14 +271,14 @@ example (x y : ℕ) : x + id y = y + id x := by ring!
 example (x : ℕ) (h : x * 2 > 5): x + x > 5 := by ring; assumption -- suggests ring_nf
 ```
 -/
-macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | try_this ring_nf
+macro (name := ring) "ring" cfg:(config)? : tactic =>
+  `(tactic| first | ring1 $(cfg)?| try_this ring_nf
   "\n\nThe `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
   \nNote that `ring` works primarily in *commutative* rings. \
   If you have a noncommutative ring, abelian group or module, consider using \
   `noncomm_ring`, `abel` or `module` instead.")
-@[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | try_this ring_nf!
+@[inherit_doc ring] macro "ring!" cfg:(config)? : tactic =>
+  `(tactic| first | ring1! $(cfg)? | try_this ring_nf!
   "\n\nThe `ring!` tactic failed to close the goal. Use `ring_nf!` to obtain a normal form.
   \nNote that `ring!` works primarily in *commutative* rings. \
   If you have a noncommutative ring, abelian group or module, consider using \
