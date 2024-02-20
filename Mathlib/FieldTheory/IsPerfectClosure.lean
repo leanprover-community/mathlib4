@@ -15,9 +15,10 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 
 ## Main definitions
 
-- `pNilradical`: the `p`-nilradical of a ring is an ideal consists of elements `x` such that
-  `x ^ p ^ n = 0` for some `n` (`mem_pNilradical`). It is equal to the nilradical if `p > 1`
-  (`pNilradical_eq_nilradical`), otherwise it is equal to zero (`pNilradical_eq_bot`).
+- `pNilradical`: given a natural number `p`, the `p`-nilradical of a ring is defined to be the
+  nilradical if `p > 1` (`pNilradical_eq_nilradical`), and defined to be the zero ideal if `p ≤ 1`
+  (`pNilradical_eq_bot'`). Equivalently, it is the ideal consisting of elements `x` such that
+  `x ^ p ^ n = 0` for some `n` (`mem_pNilradical`).
 
 - `IsPRadical`: a ring homomorphism `i : K →+* L` of characteristic `p` rings is called `p`-radical,
   if or any element `x` of `L` there is `n : ℕ` such that `x ^ (p ^ n)` is contained in `K`,
@@ -61,16 +62,17 @@ open FiniteDimensional Polynomial IntermediateField Field
 
 noncomputable section
 
-/-- The `p`-nilradical of a ring is an ideal consists of elements `x` such that `x ^ p ^ n = 0`
-for some `n` (`mem_pNilradical`). It is equal to the nilradical if `p > 1`
-(`pNilradical_eq_nilradical`), otherwise it is equal to zero (`pNilradical_eq_bot`). -/
+/-- Given a natural number `p`, the `p`-nilradical of a ring is defined to be the
+nilradical if `p > 1` (`pNilradical_eq_nilradical`), and defined to be the zero ideal if `p ≤ 1`
+(`pNilradical_eq_bot'`). Equivalently, it is the ideal consisting of elements `x` such that
+`x ^ p ^ n = 0` for some `n` (`mem_pNilradical`). -/
 def pNilradical (R : Type*) [CommSemiring R] (p : ℕ) : Ideal R := if 1 < p then nilradical R else ⊥
 
 theorem pNilradical_eq_nilradical {R : Type*} [CommSemiring R] {p : ℕ} (hp : 1 < p) :
-    pNilradical R p = nilradical R := by simp_rw [pNilradical, hp, ite_true]
+    pNilradical R p = nilradical R := by rw [pNilradical, if_pos hp]
 
 theorem pNilradical_eq_bot {R : Type*} [CommSemiring R] {p : ℕ} (hp : ¬ 1 < p) :
-    pNilradical R p = ⊥ := by simp_rw [pNilradical, hp, ite_false]
+    pNilradical R p = ⊥ := by rw [pNilradical, if_neg hp]
 
 theorem pNilradical_eq_bot' {R : Type*} [CommSemiring R] {p : ℕ} (hp : p ≤ 1) :
     pNilradical R p = ⊥ := pNilradical_eq_bot (not_lt.2 hp)
@@ -137,10 +139,8 @@ theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
 
 variable (K) in
 instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
-  pow_mem' x := ⟨0, x, by rw [RingHom.id_apply, pow_zero, pow_one]⟩
-  ker_le' x h := by
-    rw [RingHom.mem_ker, RingHom.id_apply] at h
-    exact h ▸ Ideal.zero_mem _
+  pow_mem' x := ⟨0, x, by simp⟩
+  ker_le' x h := by convert Ideal.zero_mem _
 
 /-- Composition of `p`-radical ring homomorphisms is also `p`-radical. -/
 theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
@@ -162,19 +162,10 @@ a perfect closure of `K` if the following conditions are satisfied:
 In this case the kernel of `i` is equal to the `p`-nilradical of `K`
 (see `IsPerfectClosure.ker_eq`). -/
 @[mk_iff]
-class IsPerfectClosure : Prop where
+class IsPerfectClosure extends IsPRadical i p : Prop where
   [perfectRing' : PerfectRing L p]
-  [isPRadical' : IsPRadical i p]
 
-/- Marked as instance, so `IsPerfectClosure` can be deduced automatically from `PerfectRing` and
-`IsPRadical`. Will it impact performance? -/
-attribute [instance] IsPerfectClosure.mk
-
-theorem IsPerfectClosure.perfectRing [IsPerfectClosure i p] :
-    PerfectRing L p := perfectRing' i
-
-instance IsPerfectClosure.isPRadical [IsPerfectClosure i p] :
-    IsPRadical i p := isPRadical'
+theorem IsPerfectClosure.perfectRing [IsPerfectClosure i p] : PerfectRing L p := perfectRing' i
 
 /-- If `i : K →+* L` is a ring homomorphism of exponential characteristic `p` rings, such that `L`
 is perfect, then the `p`-nilradical of `K` is contained in the kernel of `i`. -/
@@ -186,13 +177,11 @@ theorem RingHom.pNilradical_le_ker_of_perfectRing [PerfectRing L p] :
     map_zero, map_zero] at h
 
 theorem IsPerfectClosure.ker_eq [IsPerfectClosure i p] : RingHom.ker i = pNilradical K p :=
-  isPRadical'.ker_le'.antisymm (haveI := perfectRing i p; i.pNilradical_le_ker_of_perfectRing p)
+  toIsPRadical.ker_le'.antisymm (haveI := perfectRing i p; i.pNilradical_le_ker_of_perfectRing p)
 
 /-- A perfect ring is its perfect closure. -/
 instance IsPerfectClosure.self_of_perfect [PerfectRing M p] :
     IsPerfectClosure (RingHom.id M) p where
-  isPRadical'.pow_mem' x := ⟨0, x, by simp⟩
-  isPRadical'.ker_le' x hx := by convert Ideal.zero_mem _
 
 section PerfectRing.lift
 
@@ -479,8 +468,7 @@ instance isPRadical : IsPRadical (PerfectClosure.of K p) p where
     exact mem_pNilradical.2 ⟨n, h⟩
 
 /-- The absolute perfect closure `PerfectClosure` is a perfect closure. -/
-instance isPerfectClosure :
-    IsPerfectClosure (PerfectClosure.of K p) p := inferInstance
+instance isPerfectClosure : IsPerfectClosure (PerfectClosure.of K p) p where
 
 end PerfectClosure
 
@@ -502,7 +490,7 @@ instance IsPurelyInseparable.isPRadical [IsPurelyInseparable K L] :
 /-- If `L` is a perfect field of characteristic `p`, then the (relative) perfect closure
 `perfectClosure K L` is a perfect closure of `K`. -/
 instance perfectClosure.isPerfectClosure [ExpChar L p] [PerfectRing L p] :
-    IsPerfectClosure (algebraMap K (perfectClosure K L)) p := inferInstance
+    IsPerfectClosure (algebraMap K (perfectClosure K L)) p where
 
 end Field
 
