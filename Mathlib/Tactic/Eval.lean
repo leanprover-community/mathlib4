@@ -37,7 +37,7 @@ unsafe def elabEvalExpr : Lean.Elab.Term.TermElab
 | `(term| eval% $stx) => fun exp => do
   let e ← Lean.Elab.Term.elabTermAndSynthesize stx exp
   let e ← instantiateMVars e
-  let ee ← Elab.Term.elabTerm (← `(Lean.toExpr $(← e.toSyntax))) (some q(Expr))
+  let ee ← Meta.mkAppM ``Lean.toExpr #[e]
   Lean.Meta.evalExpr Expr q(Expr) ee (safety := .unsafe)
 | _ => fun _ => Elab.throwUnsupportedSyntax
 
