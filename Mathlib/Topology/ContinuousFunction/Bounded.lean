@@ -124,7 +124,7 @@ theorem eq_of_empty [h : IsEmpty α] (f g : α →ᵇ β) : f = g :=
 #align bounded_continuous_function.eq_of_empty BoundedContinuousFunction.eq_of_empty
 
 /-- A continuous function with an explicit bound is a bounded continuous function. -/
-def mkOfBound (f : C(α, β)) (C : ℝ) (h : ∀ x y : α, dist (f x) (f y) ≤ C) : α →ᵇ β :=
+abbrev mkOfBound (f : C(α, β)) (C : ℝ) (h : ∀ x y : α, dist (f x) (f y) ≤ C) : α →ᵇ β :=
   ⟨f, ⟨C, h⟩⟩
 #align bounded_continuous_function.mk_of_bound BoundedContinuousFunction.mkOfBound
 
@@ -876,8 +876,9 @@ theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
 
 /-- Constructing a bounded continuous function from a uniformly bounded continuous
 function taking values in a normed group. -/
-def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [SeminormedAddCommGroup β]
-    (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
+abbrev ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
+    [SeminormedAddCommGroup β] (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
+    α →ᵇ β :=
   ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
 #align bounded_continuous_function.of_normed_add_comm_group BoundedContinuousFunction.ofNormedAddCommGroup
 
@@ -1242,6 +1243,9 @@ theorem coe_mul (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
 theorem mul_apply (f g : α →ᵇ R) (x : α) : (f * g) x = f x * g x := rfl
 #align bounded_continuous_function.mul_apply BoundedContinuousFunction.mul_apply
 
+theorem mul_compContinuous (f g : α →ᵇ R) [TopologicalSpace γ] (h : C(γ, α)) :
+    (g * f).compContinuous h = g.compContinuous h * f.compContinuous h := rfl
+
 instance : NonUnitalRing (α →ᵇ R) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
@@ -1474,6 +1478,9 @@ theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) := rfl
 theorem star_apply (f : α →ᵇ β) (x : α) : star f x = star (f x) := rfl
 #align bounded_continuous_function.star_apply BoundedContinuousFunction.star_apply
 
+theorem star_compContinuous (f : α →ᵇ β) [TopologicalSpace γ] (h : C(γ, α)) :
+    (star f).compContinuous h = star (f.compContinuous h) := rfl
+
 instance : NormedStarGroup (α →ᵇ β) where
   norm_star f := by simp only [norm_eq, star_apply, norm_star]
 
@@ -1644,5 +1651,28 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end
+
+section compContinuous_algebra
+
+/-!
+### Algebraic versions of `BoundedContinuousFunction.compContinuous
+
+Fill as needed!
+-/
+
+variable [TopologicalSpace β] [TopologicalSpace γ]
+
+@[simps]
+def compContinuousStarAlgHom (𝕜 : Type*) [NormedField 𝕜] [NormedRing α] [NormedAlgebra 𝕜 α]
+    [StarAddMonoid α] [NormedStarGroup α] (f : C(β, γ)) : (γ →ᵇ α) →⋆ₐ[𝕜] (β →ᵇ α) where
+  toFun φ := φ.compContinuous f
+  map_one' := one_compContinuous f
+  map_mul' _ _ := mul_compContinuous _ _ f
+  map_zero' := zero_compContinuous f
+  map_add' _ _ := add_compContinuous _ _ f
+  commutes' _ := rfl
+  map_star' _ := star_compContinuous _ f
+
+end compContinuous_algebra
 
 end BoundedContinuousFunction
