@@ -435,7 +435,7 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤)) := by
   have := congr_app ΓSpec.adjunction.left_triangle X
   dsimp at this
-  -- Porting Notes: Slightly changed some rewrites.
+  -- Porting note: Slightly changed some rewrites.
   -- Originally:
   --  rw [← is_iso.eq_comp_inv] at this
   --  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,

@@ -42,7 +42,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 -- constructors
 /-- `pure a` is the computation that immediately terminates with result `a`. -/
--- porting notes: `return` is reserved, so changed to `pure`
+-- Porting note: `return` is reserved, so changed to `pure`
 def pure (a : α) : Computation α :=
   ⟨Stream'.const (some a), fun _ _ => id⟩
 #align computation.return Computation.pure
@@ -750,7 +750,7 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
   · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_ret Computation.bind_pure
 
--- porting notes: used to use `rw [bind_pure]`
+-- Porting note: used to use `rw [bind_pure]`
 @[simp]
 theorem bind_pure' (s : Computation α) : bind s pure = s := by
   apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure) ∧ c₂ = s
@@ -1175,7 +1175,7 @@ theorem liftRel_pure_right (R : α → β → Prop) (ca : Computation α) (b : �
     LiftRel R ca (pure b) ↔ ∃ a, a ∈ ca ∧ R a b := by rw [LiftRel.swap, liftRel_pure_left]
 #align computation.lift_rel_return_right Computation.liftRel_pure_right
 
--- porting notes: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
+-- Porting note: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
 -- a general invariant on `LiftRel`
 @[simp, nolint simpNF]
 theorem liftRel_pure (R : α → β → Prop) (a : α) (b : β) :
@@ -1222,7 +1222,7 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
   intros a b h; exact ⟨f1 a, ⟨ret_mem _, @h2 a b h⟩⟩
 #align computation.lift_rel_map Computation.liftRel_map
 
--- porting notes: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
+-- Porting note: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
 theorem map_congr {s1 s2 : Computation α} {f : α → β}
     (h1 : s1 ~ s2) : map f s1 ~ map f s2 := by
   rw [← lift_eq_iff_equiv]
