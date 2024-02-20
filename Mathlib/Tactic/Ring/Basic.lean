@@ -813,6 +813,7 @@ into a sum of monomials.
 partial def evalPowNat (char : ℕ) (rα : Option (Q(Ring $α))) (cpα : Option (Q(CharP $α $char)))
     {a : Q($α)} (va : ExSum sα a) (n : Q(ℕ)) :
     Lean.Core.CoreM <| Result (ExSum sα) q($a ^ $n) := do
+  -- TODO: we could add a rule `(x + y)^n = x^n + y^n` if the characteristic is a prime `p ∣ n`.
   let nn := n.natLit!
   if nn = 1 then
     return ⟨_, va, (q(pow_one $a) : Expr)⟩
