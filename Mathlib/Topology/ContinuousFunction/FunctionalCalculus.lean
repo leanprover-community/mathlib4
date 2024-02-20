@@ -355,11 +355,13 @@ lemma cfc_one (ha : p a := by cfc_tac) : cfc a (1 : R → R) = 1 :=
 lemma cfc_one' (ha : p a := by cfc_tac) : cfc a (fun _ : R ↦ 1) = 1 :=
   cfc_one R a
 
+@[simp]
 lemma cfc_zero : cfc a (0 : R → R) = 0 := by
   by_cases ha : p a
   · exact cfc_apply a (0 : R → R) ▸ map_zero (cfcSpec ha)
   · rw [cfc_apply_of_not a ha]
 
+@[simp]
 lemma cfc_zero' : cfc a (fun _ : R ↦ 0) = 0 :=
   cfc_zero R a
 
