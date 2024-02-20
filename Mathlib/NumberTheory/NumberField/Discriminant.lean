@@ -149,13 +149,11 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
         div_pow, inv_eq_one_div, div_pow, one_pow, zpow_coe_nat]
       ring
 
-/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
-attribute [-instance] FractionalIdeal.commSemiring in
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
       |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
-  obtain ⟨_, h_mem, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K 1
+  obtain ⟨_, h_mem, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K ↑1
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   refine ⟨a, ne_zero_of_map h_nz, ?_⟩
   simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
@@ -300,10 +298,8 @@ theorem rank_le_rankOfDiscrBdd :
       exact le_trans (by norm_num) (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h_nz))
   · exact le_max_of_le_left h
 
-/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
-attribute [-instance] FractionalIdeal.commSemiring in
 /-- If `|discr K| ≤ N` then the Minkowski bound of `K` is less than `boundOfDiscrBdd`. -/
-theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K 1 < boundOfDiscBdd N := by
+theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBdd N := by
   have : boundOfDiscBdd N - 1 < boundOfDiscBdd N := by norm_num
   refine lt_of_le_of_lt ?_ (coe_lt_coe.mpr this)
   rw [minkowskiBound, volume_fundamentalDomain_fractionalIdealLatticeBasis, boundOfDiscBdd,
@@ -325,8 +321,6 @@ theorem natDegree_le_rankOfDiscrBdd {a : K} (ha : a ∈ 𝓞 K) (h : ℚ⟮a⟯ 
 
 variable (N)
 
-/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
-attribute [-instance] FractionalIdeal.commSemiring in
 theorem finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -343,7 +337,7 @@ theorem finite_of_discr_bdd_of_isReal :
   simp_rw [Set.mem_iUnion]
   haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
-  suffices minkowskiBound K 1 < (convexBodyLTFactor K) * B by
+  suffices minkowskiBound K ↑1 < (convexBodyLTFactor K) * B by
     obtain ⟨x, hx, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isReal K hw₀ this
     refine ⟨x, ⟨⟨minpoly ℤ x, ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
     · exact natDegree_le_rankOfDiscrBdd hK₂ hx hx₁
@@ -369,8 +363,6 @@ theorem finite_of_discr_bdd_of_isReal :
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
   simp_rw [ENNReal.coe_one, one_mul]
 
-/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
-attribute [-instance] FractionalIdeal.commSemiring in
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -387,7 +379,7 @@ theorem finite_of_discr_bdd_of_isComplex :
   simp_rw [Set.mem_iUnion]
   haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
-  suffices minkowskiBound K 1 < (convexBodyLT'Factor K) * boundOfDiscBdd N by
+  suffices minkowskiBound K ↑1 < (convexBodyLT'Factor K) * boundOfDiscBdd N by
     obtain ⟨x, hx, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isComplex K hw₀ this
     refine ⟨x, ⟨⟨minpoly ℤ x, ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
     · exact natDegree_le_rankOfDiscrBdd hK₂ hx hx₁
