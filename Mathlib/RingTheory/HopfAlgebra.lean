@@ -28,12 +28,11 @@ agree then the antipodes must also agree).
 * If H is commutative then S is necessarily a bijection (and I guess its square must be the
 identity?)
 
-References for these facts: Christian Kassel "Quantum Groups" (Springer GTM), around Prop III.3.1,
-Theorem III.3.4 etc.
-
 ## References
 
 * <https://en.wikipedia.org/wiki/Hopf_algebra>
+* [C. Kassel, *Quantum Groups* (§III.3)][Kassel1995]
+
 
 -/
 
@@ -46,12 +45,12 @@ map `S` (the antipode of the Hopf algebra) satisfying the antipode axioms. -/
 class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
     Bialgebra R A where
   /-- The antipode of the Hopf algebra -/
-  S : A →ₗ[R] A
+  antipode : A →ₗ[R] A
   /-- The antipode axioms for a Hopf algebra -/
   mul_rTensor_comul :
-    LinearMap.mul' R A ∘ₗ S.rTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
+    LinearMap.mul' R A ∘ₗ antipode.rTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
   mul_lTensor_comul :
-    LinearMap.mul' R A ∘ₗ S.lTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
+    LinearMap.mul' R A ∘ₗ antipode.lTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
 
 namespace HopfAlgebra
 
@@ -59,18 +58,15 @@ variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R 
 
 @[simp]
 theorem mul_rTensor_comul_apply (a : A) :
-    LinearMap.mul' R A (S.rTensor A (Coalgebra.comul a)) = algebraMap R A (Coalgebra.counit a) :=
+    LinearMap.mul' R A (antipode.rTensor A (Coalgebra.comul a)) =
+    algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_rTensor_comul a
 
 @[simp]
 theorem mul_lTensor_comul_apply (a : A) :
-    LinearMap.mul' R A (S.lTensor A (Coalgebra.comul a)) = algebraMap R A (Coalgebra.counit a) :=
+    LinearMap.mul' R A (antipode.lTensor A (Coalgebra.comul a)) =
+    algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_lTensor_comul a
-
-variable (R A)
-
-/-- `antipode R A : A →ₗ[R] A` is the antipode map on an `R`-Hopf algebra `A`. -/
-def antipode : A →ₗ[R] A := HopfAlgebra.S
 
 end HopfAlgebra
 
@@ -85,11 +81,11 @@ namespace CommSemiring
 /-- Every commutative (semi)ring is a Hopf algebra over itself -/
 noncomputable
 instance toHopfAlgebra : HopfAlgebra R R where
-  S := .id
+  antipode := .id
   mul_rTensor_comul := by ext; simp
   mul_lTensor_comul := by ext; simp
 
 @[simp]
-theorem antipode_apply (r : R) : antipode R R r = r := rfl
+theorem antipode_eq_id : antipode (R := R) (A := R) = .id := rfl
 
 end CommSemiring
