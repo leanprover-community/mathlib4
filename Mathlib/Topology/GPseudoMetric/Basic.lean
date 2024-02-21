@@ -17,24 +17,25 @@ respects sensible assumptions about interactions between `+` and `≤`.
 
 ## Main Definitions
 
-- `GPseudoMetric α β`: a structure containing a distance function on `α` with codomain `β`,
+- `GPseudoMetric α β`: A structure containing a distance function on `α` with codomain `β`,
 which may be equal to 0 for non-equal elements. the distance function is 0 for equal elements,
 is commutative in its arguments, and satisifies the triangle inequality.
-- `GPseudoMetricClass α β`: the class of types of generic pseudo metrics on `α` to `β`.
+- `GPseudoMetricClass α β`: The class of types of generic pseudo metrics on `α` to `β`.
 
 Additional useful definitions:
 
-- `ball gdist x δ`: the set of points with distance to x strictly less than δ
-- `closedBall gdist x δ`: the set of points with distance to x less than or equal to δ
-- `sphere gdist x δ`: the set of points with distance to x equal to δ
+- `ball gdist x δ`: The set of points with distance to x strictly less than δ
+- `closedBall gdist x δ`: The set of points with distance to x less than or equal to δ
+- `sphere gdist x δ`: The set of points with distance to x equal to δ
 
 -/
 
 open Set
 
-/-- generic Pseudo metrics
-a generic pseudo metric is a distance function `gdist : α → α → β`
-which is zero for identical elements, for which the arguments commute, and for which the triangle
+/-- Generic pseudo metrics
+
+A generic pseudo metric is a distance function `gdist : α → α → β`, which is zero for
+identical elements, for which the arguments commute, and for which the triangle
 inequality holds. As opposed to a classical pseudo metric, the codomain of this distance
 function is not necessarily ℝ (or ℝ≥0∞), and as a result does not endow α with a uniform
 space.
@@ -42,7 +43,7 @@ space.
 structure GPseudoMetric
     (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
     where
-  /--distance function on α with values in β -/
+  /-- A distance function on α with values in β -/
   toFun (x y : α):β
   gdist_self : ∀ x : α, toFun x x = 0
   comm' : ∀ x y : α, toFun x y = toFun y x
@@ -60,7 +61,7 @@ instance : FunLike (GPseudoMetric α β) α (α → β) where
   coe := GPseudoMetric.toFun
   coe_injective' := by apply GPseudoMetric.ext
 
-/-- class for types of pseudo metric functions on α with values in β -/
+/-- A class for types of pseudo metric functions on α with values in β -/
 class GPseudoMetricClass (T : Type*) (α β : outParam Type*) [LinearOrder β] [AddCommMonoid β]
     [IsOrderedAddCommMonoid β] [FunLike T α (α → β)] : Prop :=
   gdist_self : ∀ (gdist:T), ∀ x: α, gdist x x = 0
@@ -72,7 +73,7 @@ instance: GPseudoMetricClass (GPseudoMetric α β) α β where
   comm' := GPseudoMetric.comm'
   triangle' := GPseudoMetric.triangle'
 
-section
+
 variable {T:Type*} [FunLike T α (α → β)] [GPseudoMetricClass T α β] (gdist:T)
 
 
@@ -117,8 +118,12 @@ theorem gdist_nonneg {x y : α} : 0 ≤ gdist x y := by
   exact nonneg_add_self_iff.mp this
 
 
-namespace GMetricSpace
+namespace GMetric
+
+
 section non_cancel
+
+
 variable {x y z : α} {δ ε ε₁ ε₂ : β} {s : Set α}
 
 /-- `ball gdist x ε` is the set of all points `y` with `gdist y x < ε` -/

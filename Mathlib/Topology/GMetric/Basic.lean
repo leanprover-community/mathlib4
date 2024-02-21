@@ -8,13 +8,13 @@ import Mathlib.Topology.GPseudoMetric.Basic
 /-!
 # General Metric Spaces
 
-this file defines Generic Metrics, which are a generalisation of Metrics and Extended
+This file defines Generic Metrics, which are a generalisation of Metrics and Extended
 Metrics. In this case, the codomain can be any linearly ordered (additive) commutative monoid,
 rather than only ℝ or ℝ≥0∞.
 
 ## Main Definitions
 
-- `GMetric α β`: a distance function on `α` with codomain `β`, which returns 0
+- `GMetric α β`: A distance function on `α` with codomain `β`, which returns 0
 iff the arguments are equal.
 
 ## Implementation Notes
@@ -37,7 +37,7 @@ theorem GMetric.ext {gdist₁ gdist₂ : GMetric α β} (h : gdist₁.toFun = gd
     gdist₁ = gdist₂ := by
   cases gdist₁; cases gdist₂; congr; ext1; assumption
 
-/-- the class of types that are generalised metrics on α to β-/
+/-- The class of types that are generalised metrics on α to β -/
 class GMetricClass
     (T:Type*) (α β :outParam Type*) [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
     [FunLike T α (α → β)] extends GPseudoMetricClass T α β : Prop where
@@ -52,5 +52,3 @@ instance : GMetricClass (GMetric α β) α β where
   comm' := fun x => x.comm'
   triangle' := fun x => x.triangle'
   eq_of_dist_eq_zero := GMetric.eq_of_dist_eq_zero
-
-variable {T:Type*} [FunLike T α (α → β)] [GMetricClass T α β] (gdist : T)
