@@ -25,10 +25,13 @@ We prove various versions of the formula for the Gaussian integral:
 We also prove, more generally, that the Fourier transform of the Gaussian is another Gaussian:
 
 * `integral_cexp_quadratic`: general formula for `∫ (x : ℝ), exp (b * x ^ 2 + c * x + d)`
-* `fourier_transform_gaussian`: for all complex `b` and `t` with `0 < re b`, we have
+* `fourierIntegral_gaussian`: for all complex `b` and `t` with `0 < re b`, we have
   `∫ x:ℝ, exp (I * t * x) * exp (-b * x^2) = (π / b) ^ (1 / 2) * exp (-t ^ 2 / (4 * b))`.
-* `fourier_transform_gaussian_pi`: a variant with `b` and `t` scaled to give a more symmetric
+* `fourierIntegral_gaussian_pi`: a variant with `b` and `t` scaled to give a more symmetric
   statement, and formulated in terms of the Fourier transform operator `𝓕`.
+
+We also give versions of these formulas in finite-dimensional inner product spaces, see
+`integral_cexp_neg_mul_sq_norm_add` and `fourierIntegral_gaussian_innerProductSpace`.
 
 As an application, in `Real.tsum_exp_neg_mul_int_sq` and `Complex.tsum_exp_neg_mul_int_sq`, we use
 Poisson summation to prove the identity
@@ -709,7 +712,7 @@ theorem integral_cexp_neg_mul_sq_norm_add
   let e := (stdOrthonormalBasis ℝ V).repr.symm
   rw [← e.measurePreserving.integral_comp e.toHomeomorph.measurableEmbedding]
   convert integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
-    hb c (e.symm w) <;> simp
+    hb c (e.symm w) <;> simp [LinearIsometryEquiv.inner_map_eq_flip]
 
 theorem integral_cexp_neg_mul_sq_norm (hb : 0 < b.re) :
     ∫ v : V, cexp (- b * ‖v‖^2) = (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) := by
