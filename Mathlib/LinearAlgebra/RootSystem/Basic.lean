@@ -129,6 +129,13 @@ lemma reflection_dualMap_eq_coreflection :
   ext n m
   simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
 
+lemma isCrystallographic_iff :
+    P.IsCrystallographic ↔ ∀ i j, ∃ (z : ℤ), z = P.pairing i j := by
+  rw [IsCrystallographic]
+  refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
+  · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
+  · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
+
 variable [Finite ι]
 
 lemma eq_of_pairing_pairing_eq_two [NoZeroSMulDivisors ℤ M] (i j : ι)
