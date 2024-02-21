@@ -172,7 +172,15 @@ def findPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
   visit e .root #[]
 
 
+
 open Widget ProofWidgets Jsx
+
+def RewriteLemma.pattern (rwLemma : RewriteLemma) : MetaM CodeWithInfos := do
+  let cinfo ← getConstInfo rwLemma.name
+  forallTelescope cinfo.type fun _ e => do
+    let some (lhs, rhs) := matchEqn? e | throwError "Expected equation, not {indentExpr e}"
+    let side := if rwLemma.symm then rhs else lhs
+    ppExprTagged side
 
 structure RewriteApplication extends RewriteLemma where
   tactic : String
@@ -180,13 +188,9 @@ structure RewriteApplication extends RewriteLemma where
   extraGoals : Array CodeWithInfos
 
 /-- Return `e` as a string for pasting into the editor. -/
-def toReadableString (e : Expr) : MetaM String :=
+def toPasteString (e : Expr) : MetaM String :=
   withOptions (·.setBool ``pp.universes false) do
-    return toString $ Format.pretty (← ppExpr e)
-
-def mkMap (k v : String) : Json :=
-  let map : RBMap String String compare := RBMap.empty.insert k v
-  toJson map
+    return Format.pretty (← ppExpr e)
 
 def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
     MetaM (Option RewriteApplication) := do
@@ -211,9 +215,9 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
         if (← mvarId.getDecl).userName.hasMacroScopes then
           mvarId.setUserName `«_»
         let extraGoal ← instantiateMVars (← mvarId.getType)
-        extraGoals := extraGoals.push (← Widget.ppExprTagged extraGoal)
+        extraGoals := extraGoals.push (← ppExprTagged extraGoal)
 
-  let replacement ← Widget.ppExprTagged (← instantiateMVars rhs)
+  let replacement ← ppExprTagged (← instantiateMVars rhs)
   let lemmaApplication ← instantiateMVars (mkAppN thm mvars)
 
   let location ← (do match loc.loc with
@@ -228,29 +232,34 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
     | some pos =>
       if positions.size == 1 then "" else
         s! " (config := \{ occs := .pos [{pos+1}]})"
-  let tactic := s! "rw{cfg} [{symm}{← toReadableString lemmaApplication}]{location}"
+  let tactic := s! "rw{cfg} [{symm}{← toPasteString lemmaApplication}]{location}"
   return some { rwLemma with tactic, extraGoals, replacement }
 
 
-def renderResults (results : Array (Array RewriteApplication)) (isEverything : Bool)
+def renderResults (results : Array (CodeWithInfos × Array RewriteApplication)) (isEverything : Bool)
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) : Html :=
-  let htmls := results.map renderBlock
-  let htmls := htmls.concatMap (#[·, <hr/>])
-  let title := s! "{if isEverything then "All" else "Some"} rewrite suggestions:"
-  (<details «open»={true}>
+  let htmls := results.map (fun (t, arr) => renderBlock t arr)
+  let title := s! "{if isEverything then "All" else "Some"} rewrite suggestions:";
+  <details «open»={true}>
     <summary className="mv2 pointer"> {.text title}</summary>
-    {.element "div" #[] htmls}
-  </details>)
+    {.element "div" #[("style", json% {"margin-left" : "4px"})] htmls}
+  </details>
 where
-  renderBlock (results : Array RewriteApplication) : Html :=
-    .element "div" #[] $ results.map fun rw =>
-      let button := Html.ofComponent MakeEditLink
-            (.ofReplaceRange doc.meta range rw.tactic none)
-            #[.text s! "{rw.name}"]
-      let replacement := <InteractiveCode fmt={rw.replacement} />
-      let extraGoals := rw.extraGoals.concatMap
-        (#[<br/>, <strong «class»="goal-vdash">⊢ </strong>, <InteractiveCode fmt={·} />])
-      .element "p" #[] (#[replacement] ++ extraGoals ++ #[<br/>, button])
+  renderBlock (title : CodeWithInfos) (results : Array RewriteApplication) : Html :=
+    let core := .element "div" #[("style", json% {"margin-left" : "4px"})] <|
+      results.map fun rw =>
+        let button := Html.ofComponent MakeEditLink
+              (.ofReplaceRange doc.meta range rw.tactic none)
+              #[.text s! "{rw.name}"]
+        let replacement := <InteractiveCode fmt={rw.replacement}/>
+        let extraGoals := rw.extraGoals.concatMap
+          (#[<br/>, <strong «class»="goal-vdash">⊢ </strong>, <InteractiveCode fmt={·}/>])
+        .element "p" #[] (#[replacement] ++ extraGoals ++ #[<br/>, button]);
+    <details «open»={true}>
+      <summary className="mv2 pointer"> {.text "Pattern "} <InteractiveCode fmt={title}/> </summary>
+      <hr/>
+      {core}
+    </details>
 
 /-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
@@ -268,23 +277,27 @@ structure InteractiveTacticProps extends PanelWidgetProps where
 deriving RpcEncodable
 
 @[specialize]
-def filterLemmata {α β} (ass : Array (Array α × Nat)) (f : α → MetaM (Option β))
-  (maxTotal := 10000) (max := 1000) : MetaM (Array (Array β × Nat) × Bool) :=
+def filterLemmata (ass : Array (Array RewriteLemma × Nat)) (loc : SubExpr.GoalsLocation)
+    (maxTotal := 10000) (max := 1000) :
+    MetaM (Array (CodeWithInfos × Array RewriteApplication) × Bool) :=
   let maxTotal := maxTotal * 1000
   let max := max * 1000
+  let filter a currHeartbeats :=
+    withTheReader Core.Context ({· with
+      initHeartbeats := currHeartbeats
+      maxHeartbeats := max }) do
+        withoutCatchingRuntimeEx (rewriteCall loc a)
+
   withCatchingRuntimeEx do
   let startHeartbeats ← IO.getNumHeartbeats
   let mut currHeartbeats := startHeartbeats
   let mut bss := #[]
   let mut isEverything := true
-  for (as, n) in ass do
+  for (as, _n) in ass do
     let mut bs := #[]
     for a in as do
       try
-        if let some b ← withTheReader Core.Context ({· with
-            initHeartbeats := currHeartbeats
-            maxHeartbeats := max }) do
-              withoutCatchingRuntimeEx (f a) then
+        if let some b ← filter a currHeartbeats then
           bs := bs.push b
       catch _ =>
         isEverything := false
@@ -293,8 +306,9 @@ def filterLemmata {α β} (ass : Array (Array α × Nat)) (f : α → MetaM (Opt
       if currHeartbeats - startHeartbeats > maxTotal then
         break
 
-    unless bs.isEmpty do
-      bss := bss.push (bs, n)
+    if h : bs.size ≥ 1 then do
+      let pattern ← bs[0].pattern
+      bss := bss.push (pattern, bs)
     if currHeartbeats - startHeartbeats > maxTotal then
       return (bss, false)
   return (bss, isEverything)
@@ -319,11 +333,11 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
       let rwLemmas ← getCandidates subExpr
       if rwLemmas.isEmpty then
         return <p> No rewrite lemmata found. </p>
-      let (results, isEverything) ← filterLemmata rwLemmas (rewriteCall loc)
+      let (results, isEverything) ← filterLemmata rwLemmas loc
         (max := props.factor * 1000) (maxTotal := props.factor * 10000)
       if results.isEmpty then
         return <p> No applicable rewrite lemmata found. </p>
-      return renderResults (results.map (·.1)) isEverything props.replaceRange doc
+      return renderResults results isEverything props.replaceRange doc
 
 @[widget_module]
 def LibraryRewrite : Component InteractiveTacticProps :=
