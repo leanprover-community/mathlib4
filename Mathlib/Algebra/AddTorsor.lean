@@ -191,7 +191,7 @@ namespace Set
 
 open Pointwise
 
--- Porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 --@[simp]
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
