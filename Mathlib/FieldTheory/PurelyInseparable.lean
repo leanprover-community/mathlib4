@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.Algebra.CharP.IntermediateField
 
 /-!
 
@@ -358,30 +359,6 @@ def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
 alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
 
 end map
-
--- TODO: move to suitable location
-instance IntermediateField.charZero [CharZero F] (L : IntermediateField F E) :
-    CharZero L := charZero_of_injective_algebraMap (algebraMap F _).injective
-
--- TODO: move to suitable location
-instance IntermediateField.charP (p : ℕ) [CharP F p] (L : IntermediateField F E) :
-    CharP L p := charP_of_injective_algebraMap (algebraMap F _).injective p
-
--- TODO: move to suitable location
-instance IntermediateField.expChar (p : ℕ) [ExpChar F p] (L : IntermediateField F E) :
-    ExpChar L p := expChar_of_injective_algebraMap (algebraMap F _).injective p
-
--- TODO: move to suitable location
-instance IntermediateField.charZero' [CharZero E] (L : IntermediateField F E) :
-    CharZero L := (algebraMap _ E).charZero
-
--- TODO: move to suitable location
-instance IntermediateField.charP' (p : ℕ) [CharP E p] (L : IntermediateField F E) :
-    CharP L p := RingHom.charP _ (algebraMap _ E).injective p
-
--- TODO: move to suitable location
-instance IntermediateField.expChar' (p : ℕ) [ExpChar E p] (L : IntermediateField F E) :
-    ExpChar L p := RingHom.expChar _ (algebraMap _ E).injective p
 
 /-- If `E` is a perfect field of characteristic `p`, then the (relative) perfect closure
 `perfectClosure F E` is perfect. -/
