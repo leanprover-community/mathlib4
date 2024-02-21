@@ -20,7 +20,7 @@ respects sensible assumptions about interactions between `+` and `≤`.
 - `GPseudoMetric α β`: A structure containing a distance function on `α` with codomain `β`,
 which may be equal to 0 for non-equal elements. the distance function is 0 for equal elements,
 is commutative in its arguments, and satisifies the triangle inequality.
-- `GPseudoMetricClass α β`: the class of types of generic pseudo metrics on `α` to `β`.
+- `GPseudoMetricClass α β`: The class of types of generic pseudo metrics on `α` to `β`.
 
 Additional useful definitions:
 
@@ -33,8 +33,9 @@ Additional useful definitions:
 open Set
 
 /-- Generic pseudo metrics
-A generic pseudo metric is a distance function `gdist : α → α → β`
-which is zero for identical elements, for which the arguments commute, and for which the triangle
+
+A generic pseudo metric is a distance function `gdist : α → α → β`, which is zero for
+identical elements, for which the arguments commute, and for which the triangle
 inequality holds. As opposed to a classical pseudo metric, the codomain of this distance
 function is not necessarily ℝ (or ℝ≥0∞), and as a result does not endow α with a uniform
 space.
