@@ -419,7 +419,7 @@ lemma zmultiplesHom_symm_apply (f : ℤ →+ α) : (zmultiplesHom α).symm f = f
 #align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
 
 @[to_additive existing (attr := simp)]
-lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) :zpowersHom α x n = x ^ toAdd n := rfl
+lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ toAdd n := rfl
 #align zpowers_hom_apply zpowersHom_apply
 
 @[to_additive existing (attr := simp)]

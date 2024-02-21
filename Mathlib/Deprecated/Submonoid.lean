@@ -338,7 +338,7 @@ theorem closure_mono {s t : Set M} (h : s ⊆ t) : Closure s ⊆ Closure t :=
 theorem closure_singleton {x : M} : Closure ({x} : Set M) = powers x :=
   Set.eq_of_subset_of_subset
       (closure_subset (powers.isSubmonoid x) <| Set.singleton_subset_iff.2 <| powers.self_mem) <|
-    IsSubmonoid.power_subset (closure.isSubmonoid _) <|
+    IsSubmonoid.powers_subset (closure.isSubmonoid _) <|
       Set.singleton_subset_iff.1 <| subset_closure
 #align monoid.closure_singleton Monoid.closure_singleton
 #align add_monoid.closure_singleton AddMonoid.closure_singleton
