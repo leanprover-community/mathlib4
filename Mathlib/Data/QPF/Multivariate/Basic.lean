@@ -284,3 +284,11 @@ theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := b
 #align mvqpf.liftp_preservation_iff_uniform MvQPF.liftpPreservation_iff_uniform
 
 end MvQPF
+
+/-- Every polynomial functor is a (trivial) QPF -/
+instance MvPFunctor.instMvQPFObj {n} (P : MvPFunctor n) : MvQPF P where
+  P := P
+  abs := id
+  repr := id
+  abs_repr := by intros; rfl
+  abs_map := by intros; rfl
