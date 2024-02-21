@@ -437,7 +437,7 @@ Topology:
     dual space: 'NormedSpace.Dual'
     Riesz representation theorem: 'InnerProductSpace.toDual'
     inner product space $l^2$: 'lp.instInnerProductSpace'
-    completeness of $l^2$: 'lp.instCompleteSpace'
+    completeness of $l^2$: 'lp.completeSpace'
     inner product space $L^2$: 'MeasureTheory.L2.innerProductSpace'
     completeness of $L^2$: 'MeasureTheory.Lp.instCompleteSpace'
     Hilbert bases: 'HilbertBasis' # the document specifies "in the separable case" but we don't require this
