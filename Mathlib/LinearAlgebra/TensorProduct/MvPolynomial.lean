@@ -42,7 +42,6 @@ end
 
 
 -- DOES NOT WORK YET
-#exit
 
 section MonoidAlgebra
 
@@ -59,7 +58,7 @@ noncomputable example : Semiring ((MonoidAlgebra R α) ⊗[R] N) := inferInstanc
 
 noncomputable example : Algebra R ((MonoidAlgebra R α) ⊗[R] N) := inferInstance
 
-#check Finsupp.rTensor (R := R) (ι := α) (M := R) (N := N)
+#check TensorProduct.finsuppLeft (R := R) (ι := α) (M := R) (N := N)
 
 variable {α R N}
 
@@ -67,12 +66,15 @@ noncomputable def MonoidAlgebra.AlgEquiv
   {N' : Type*} [Semiring N'] [Algebra R N'] (e : N ≃ₐ[R] N') :
     MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra N' α := {
   Finsupp.mapRange.linearEquiv e.toLinearEquiv with
-  map_mul' := sorry
+  map_mul' := fun x y => by
+    simp
+    ext
+    sorry
   commutes' := sorry  }
 
 noncomputable def MonoidAlgebra.rTensorEquiv :
     (MonoidAlgebra R α) ⊗[R] N ≃ₗ[R] MonoidAlgebra N α :=
-  (Finsupp.rTensor (R := R) (ι := α) (M := R) (N := N)).trans
+  (TensorProduct.finsuppLeft (R := R) (ι := α) (M := R) (N := N)).trans
     (MonoidAlgebra.AlgEquiv (α := α) (Algebra.TensorProduct.lid R N)).toLinearEquiv
 
 example (f g : (MonoidAlgebra R α) ⊗[R] N) :
