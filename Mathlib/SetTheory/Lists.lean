@@ -83,7 +83,7 @@ def toList : ∀ {b}, Lists' α b → List (Lists α)
   | _, cons' a l => ⟨_, a⟩ :: l.toList
 #align lists'.to_list Lists'.toList
 
--- Porting notes (#10618): removed @[simp]
+-- Porting note (#10618): removed @[simp]
 -- simp can prove this: by simp only [@Lists'.toList, @Sigma.eta]
 theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by simp
 #align lists'.to_list_cons Lists'.toList_cons

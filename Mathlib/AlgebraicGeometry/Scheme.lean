@@ -59,7 +59,7 @@ def Hom (X Y : Scheme) : Type* :=
 instance : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
 
--- porting note: added to ease automation
+-- porting note (#10688): added to ease automation
 @[continuity]
 lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
