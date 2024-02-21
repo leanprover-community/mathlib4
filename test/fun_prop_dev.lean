@@ -119,7 +119,9 @@ instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
-attribute [fun_prop_coe] ConHom.toFun
+#eval Lean.Elab.Command.liftTermElabM do
+  Std.Tactic.Coe.registerCoercion ``ConHom.toFun
+    (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
@@ -237,7 +239,6 @@ example (f : α → Nat → Nat → β) (hf : Con f) (i j) : Con (fun x => f x (
 
 example (f : α → β → γ → δ) (hf : ∀ y, Con fun (x,z) => f x y z) : Con f := by fun_prop
 example (f : α → β → γ → δ) (hf : ∀ y, Con fun (x,z) => f x y z) : Con f := by fun_prop
-
 
 example (f : α → β ->> γ) (hf : Con f) (y) : Con (fun x => f x y) := by fun_prop
 example (f : α → β ->> γ) (hf : Con f) : Con (fun x y => f x y) := by fun_prop
