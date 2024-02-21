@@ -130,7 +130,8 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
     exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 #align is_cyclic_of_order_of_eq_card isCyclic_of_orderOf_eq_card
 #align is_add_cyclic_of_order_of_eq_card isAddCyclic_of_addOrderOf_eq_card
-/- 2024-02-21 -/ @[deprecated] alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
+/- 2024-02-21 -/ @[deprecated] alias isAddCyclic_of_orderOf_eq_card :=
+  isAddCyclic_of_addOrderOf_eq_card
 
 /-- A finite group of prime order is cyclic. -/
 @[to_additive "A finite group of prime order is cyclic."]
