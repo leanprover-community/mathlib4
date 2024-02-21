@@ -246,18 +246,19 @@ def renderResults (results : Array (CodeWithInfos × Array RewriteApplication)) 
   </details>
 where
   renderBlock (title : CodeWithInfos) (results : Array RewriteApplication) : Html :=
-    let core := .element "div" #[("style", json% {"margin-left" : "4px"})] <|
+    let core :=
+      .element "ul" #[] <|--#[("style", json% {"margin-left" : "4px"})] <|
       results.map fun rw =>
+        let replacement := .text rw.replacement.stripTags -- < InteractiveCode fmt={rw.replacement}/>
         let button := Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic none)
-              #[.text s! "{rw.name}"]
-        let replacement := <InteractiveCode fmt={rw.replacement}/>
+              #[replacement] -- #[.text s! "{rw.name}"]
         let extraGoals := rw.extraGoals.concatMap
-          (#[<br/>, <strong «class»="goal-vdash">⊢ </strong>, <InteractiveCode fmt={·}/>])
-        .element "p" #[] (#[replacement] ++ extraGoals ++ #[<br/>, button]);
+          (#[<br/>, <strong «class»="goal-vdash">⊢ </strong>, <InteractiveCode fmt={·}/>]);
+        <li> {.element "p" #[] (#[button] ++ extraGoals)} </li>;
     <details «open»={true}>
       <summary className="mv2 pointer"> {.text "Pattern "} <InteractiveCode fmt={title}/> </summary>
-      <hr/>
+      -- < hr/>
       {core}
     </details>
 
