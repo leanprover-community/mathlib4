@@ -90,6 +90,7 @@ structure RingConfig where
   char : ℕ := 0
   deriving Inhabited, BEq, Repr
 
+/-- Parse the `config` argument to the `ring1` and `ring` tactic into a `RingConfig` structure. -/
 declare_config_elab elabRingConfig RingConfig
 
 /-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
