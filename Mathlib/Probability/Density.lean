@@ -175,10 +175,10 @@ theorem withDensity_pdf_le_map {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Me
   withDensity_rnDeriv_le _ _
 
 theorem set_lintegral_pdf_le_map {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
-    (μ : Measure E := by volume_tac) {s : Set E} (hs : MeasurableSet s) :
+    (μ : Measure E := by volume_tac) (s : Set E) :
     ∫⁻ x in s, pdf X ℙ μ x ∂μ ≤ map X ℙ s := by
   apply (withDensity_apply_le _ s).trans
-  exact withDensity_pdf_le_map _ _ _ s hs
+  exact withDensity_pdf_le_map _ _ _ s
 
 theorem map_eq_withDensity_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] :

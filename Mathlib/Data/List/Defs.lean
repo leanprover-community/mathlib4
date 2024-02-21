@@ -21,7 +21,7 @@ proofs about these definitions, those are contained in other files in `Data.List
 
 set_option autoImplicit true
 
--- Porting notes
+-- Porting note
 -- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
 -- These have been annotated with `#align`s
 -- To make this easier for review, the `#align`s have been placed in order of occurrence
@@ -500,7 +500,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 #align list.to_chunks_aux List.toChunksAux
 #align list.to_chunks List.toChunks
 
--- porting notes -- was `unsafe` but removed for Lean 4 port
+-- porting note -- was `unsafe` but removed for Lean 4 port
 -- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/

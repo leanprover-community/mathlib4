@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Pointwise.SMul
 # Pointwise actions of linear maps
 -/
 
-open Pointwise
+open Set Pointwise
 
 variable {R S : Type*} (M M₁ M₂ N : Type*)
 variable [Semiring R] [Semiring S] (σ : R →+* S)
@@ -26,24 +26,16 @@ variable {F : Type*} (h : F)
 -- TODO: when lean4#3107 is fixed, mark this as `@[simp]`.
 theorem image_smul_setₛₗ [FunLike F M N] [SemilinearMapClass F σ M N] (c : R) (s : Set M) :
     h '' (c • s) = σ c • h '' s := by
-  apply Set.Subset.antisymm
-  · rintro x ⟨y, ⟨z, zs, rfl⟩, rfl⟩
-    exact ⟨h z, Set.mem_image_of_mem _ zs, (map_smulₛₗ _ _ _).symm⟩
-  · rintro x ⟨y, ⟨z, hz, rfl⟩, rfl⟩
-    exact (Set.mem_image _ _ _).2 ⟨c • z, Set.smul_mem_smul_set hz, map_smulₛₗ _ _ _⟩
+  simp only [← image_smul, image_image, map_smulₛₗ h]
 #align image_smul_setₛₗ image_smul_setₛₗ
 
 theorem preimage_smul_setₛₗ [FunLike F M N] [SemilinearMapClass F σ M N] {c : R} (hc : IsUnit c)
     (s : Set N) :
     h ⁻¹' (σ c • s) = c • h ⁻¹' s := by
-  apply Set.Subset.antisymm
-  · rintro x ⟨y, ys, hy⟩
-    refine' ⟨(hc.unit.inv : R) • x, _, _⟩
-    · simp only [← hy, smul_smul, Set.mem_preimage, Units.inv_eq_val_inv, map_smulₛₗ h, ← map_mul,
-        IsUnit.val_inv_mul, one_smul, map_one, ys]
-    · simp only [smul_smul, IsUnit.mul_val_inv, one_smul, Units.inv_eq_val_inv]
-  · rintro x ⟨y, hy, rfl⟩
-    refine' ⟨h y, hy, by simp only [RingHom.id_apply, map_smulₛₗ h]⟩
+  lift c to Rˣ using hc
+  calc h ⁻¹' ((Units.map (σ : R →* S) c) • s)
+      = (σ (c⁻¹).1 • h ·) ⁻¹' s := by rw [← preimage_smul_inv]; rfl
+    _ = c • h ⁻¹' s := by simp only [← map_smulₛₗ h, ← preimage_smul_inv]; rfl
 #align preimage_smul_setₛₗ preimage_smul_setₛₗ
 
 variable (R)
