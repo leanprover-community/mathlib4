@@ -13,12 +13,40 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 /-!
 # Results on finitely supported functions.
 
-* `finsuppTensorFinsupp`, the tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
-
 * `Finsupp.rTensor`, the tensor product of `i →₀ M` and `N` is linearly equivalent to `i →₀ M ⊗[R] N`
 
 * `Finsupp.lTensor`, the tensor product of `M` and `i →₀ N` is linearly equivalent to `i →₀ M ⊗[R] N`
 
+* `Finsupp.rTensor'`, if `M` is an `S`-module, then the tensor product of `i →₀ M` and `N` is `S`-linearly equivalent to `i →₀ M ⊗[R] N`
+
+* `finsuppTensorFinsupp`, the tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
+
+## Case of MvPolynomial
+
+These functions apply to `MvPolynomial`, one can define
+```
+noncomputable def MvPolynomial.rTensor' :
+    MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
+  Finsupp.rTensor'
+
+noncomputable def MvPolynomial.rTensor :
+    MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
+  (MvPolynomial.rTensor' σ (S := R) (N := N) (R := R)).trans
+    (Finsupp.mapRange.linearEquiv (TensorProduct.lid R N))
+```
+
+## Case of `Polynomial`
+
+`Polynomial` is a structure containing a `Finsupp`, so these functions
+can't be applied directly to `Polynomial`.
+
+Some linear equivs need to be added to mathlib for that.
+
+## TODO
+
+* generalize to `MonoidAlgebra`, `AlgHom `
+
+* reprove `Finsupp.rTensor'` using existing heterobasic version of `TensorProduct.congr`
 -/
 
 
@@ -33,37 +61,9 @@ open Set LinearMap Submodule
 variable {R : Type u} {M : Type v} {N : Type w}
   [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
-section
-
-variable {ι : Type*} [DecidableEq ι]
-
--- Generalizes `Finsupp.sum_smul_index`
-lemma Finsupp.sum_smul_index₁' {R M N : Type*} [Semiring R]
-    [AddCommMonoid M] [Module R M] [AddCommMonoid N]
-    {f : ι →₀ M} {r : R} {g : ι → M → N}
-    (h0 : ∀ i ∈ f.support, g i 0 = 0) :
-    (Finsupp.sum (r • f) g) = Finsupp.sum f (fun i m => g i (r • m)) := by
-  apply symm
-  rw [Finsupp.sum, Finsupp.sum_of_support_subset _ Finsupp.support_smul _ h0]
-  apply Finset.sum_congr rfl
-  · intro i _
-    simp only [Finsupp.coe_smul, Pi.smul_apply]
-
-lemma Finsupp.sum_smul_index₁'' {R M N : Type*} [Semiring R]
-    [AddCommMonoid M] [Module R M] [AddCommMonoid N]
-    {f : ι →₀ M} {r : R} {g : ι → M → N}
-    (h0 : ∀ i, g i 0 = 0) :
-    (Finsupp.sum (r • f) g) = Finsupp.sum f (fun i m => g i (r • m)) :=
-  Finsupp.sum_smul_index₁' (fun i _ => h0 i)
-
-end
-
 section TensorProduct
 
--- open TensorProduct
-
 open TensorProduct
-
 
 variable {ι : Type*} [DecidableEq ι]
 
@@ -136,31 +136,34 @@ lemma Finsupp.lTensor_symm_apply_single (i : ι) (m : M) (n : N) :
 variable {S : Type*} [CommSemiring S] [Algebra R S]
   [Module S M] [IsScalarTower R S M]
 
-lemma Finsupp.sum_smul_tmul₁ (s : S) (p : ι →₀ M) (n : N) :
-    (Finsupp.sum (s • p) fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) =
-      Finsupp.sum p fun i m ↦ Finsupp.single i (s • m ⊗ₜ[R] n) := by
-  rw [Finsupp.sum_smul_index₁']
-  rfl
-  intro i _
-  simp only [zero_tmul, single_zero]
+lemma Finsupp.rTensor_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
+    Finsupp.rTensor (s • t) = s • Finsupp.rTensor t := by
+  induction t using TensorProduct.induction_on with
+  | zero => simp
+  | add x y hx hy =>
+    simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply] at hx hy ⊢
+    simp only [smul_add, map_add, hx, hy]
+  | tmul p n =>
+    simp only [TensorProduct.smul_tmul', rTensor_apply_tmul]
+    rw [Finsupp.smul_sum]
+    simp only [smul_single]
+    apply Finsupp.sum_smul_index'
+    simp
 
 /-- When `M` is also an `S`-module, then `Finsupp.rTensor R M N``
   is an `S`-linear equiv -/
 noncomputable def Finsupp.rTensor' :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ (M ⊗[R] N) := {
   Finsupp.rTensor with
-  map_smul' := fun s t ↦ by
-    induction t using TensorProduct.induction_on with
-    | zero => simp
-    | add x y hx hy =>
-      simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply] at hx hy ⊢
-      simp only [smul_add, map_add, hx, hy]
-    | tmul p n =>
-      simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply]
-      simp only [TensorProduct.smul_tmul', rTensor_apply_tmul]
-      rw [Finsupp.smul_sum]
-      simp only [smul_single]
-      rw [Finsupp.sum_smul_tmul₁] }
+  map_smul' := Finsupp.rTensor_smul' }
+
+/- -- TODO : reprove using the existing heterobasic lemmas
+noncomputable example :
+    (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ (M ⊗[R] N) := by
+  have f : (⨁ (i₁ : ι), M) ⊗[R] N ≃ₗ[S] ⨁ (i : ι), M ⊗[R] N := sorry
+  exact (TensorProduct.AlgebraTensorModule.congr
+    (finsuppLEquivDirectSum S M ι) (LinearEquiv.refl R N)).trans
+    (f.trans (finsuppLEquivDirectSum S (M ⊗[R] N) ι).symm) -/
 
 open scoped Classical in
 -- `noncomputable` is a performance workaround for mathlib4#7103
@@ -173,16 +176,16 @@ noncomputable def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommSemiring R] [
 #align finsupp_tensor_finsupp finsuppTensorFinsupp
 
 @[simp]
-theorem finsuppTensorFinsupp_single (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] (i : ι) (m : M) (k : κ) (n : N) :
+theorem finsuppTensorFinsupp_single (R M N ι κ : Sort _) [CommSemiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (i : ι) (m : M) (k : κ) (n : N) :
     finsuppTensorFinsupp R M N ι κ (Finsupp.single i m ⊗ₜ Finsupp.single k n) =
       Finsupp.single (i, k) (m ⊗ₜ n) :=
   by classical simp [finsuppTensorFinsupp]
 #align finsupp_tensor_finsupp_single finsuppTensorFinsupp_single
 
 @[simp]
-theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] (f : ι →₀ M) (g : κ →₀ N) (i : ι) (k : κ) :
+theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommSemiring R] [AddCommMonoid M] [Module R M]
+    [AddCommMonoid N] [Module R N] (f : ι →₀ M) (g : κ →₀ N) (i : ι) (k : κ) :
     finsuppTensorFinsupp R M N ι κ (f ⊗ₜ g) (i, k) = f i ⊗ₜ g k := by
   apply Finsupp.induction_linear f
   · simp
@@ -204,15 +207,15 @@ theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommG
 #align finsupp_tensor_finsupp_apply finsuppTensorFinsupp_apply
 
 @[simp]
-theorem finsuppTensorFinsupp_symm_single (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M]
-    [Module R M] [AddCommGroup N] [Module R N] (i : ι × κ) (m : M) (n : N) :
+theorem finsuppTensorFinsupp_symm_single (R M N ι κ : Sort _) [CommSemiring R] [AddCommMonoid M]
+    [Module R M] [AddCommMonoid N] [Module R N] (i : ι × κ) (m : M) (n : N) :
     (finsuppTensorFinsupp R M N ι κ).symm (Finsupp.single i (m ⊗ₜ n)) =
       Finsupp.single i.1 m ⊗ₜ Finsupp.single i.2 n :=
   Prod.casesOn i fun _ _ =>
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsupp_single _ _ _ _ _ _ _ _ _).symm
 #align finsupp_tensor_finsupp_symm_single finsuppTensorFinsupp_symm_single
 
-variable (S : Type*) [CommRing S] (α β : Type*)
+variable (S : Type*) [CommSemiring S] (α β : Type*)
 
 /-- A variant of `finsuppTensorFinsupp` where both modules are the ground ring. -/
 def finsuppTensorFinsupp' : (α →₀ S) ⊗[S] (β →₀ S) ≃ₗ[S] α × β →₀ S :=
