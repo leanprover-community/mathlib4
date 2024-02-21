@@ -72,7 +72,7 @@ protected theorem withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
   rw [kernel.withDensity_apply κ hf, withDensity_apply' _ s]
 #align probability_theory.kernel.with_density_apply' ProbabilityTheory.kernel.withDensity_apply'
 
-nonrec lemma kernel.withDensity_absolutelyContinuous [IsSFiniteKernel κ]
+nonrec lemma withDensity_absolutelyContinuous [IsSFiniteKernel κ]
     (f : α → β → ℝ≥0∞) (a : α) :
     kernel.withDensity κ f a ≪ κ a := by
   by_cases hf : Measurable (Function.uncurry f)
