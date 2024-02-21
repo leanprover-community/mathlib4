@@ -59,8 +59,8 @@ set_option linter.uppercaseLean3 false in
 -- Porting note : failed to derive `category`
 instance : Category (OpensLeCover U) := FullSubcategory.category _
 
-instance [Inhabited ι] : Inhabited (OpensLeCover U) :=
-  ⟨⟨⊥, default, bot_le⟩⟩
+instance [h : Nonempty ι] : Inhabited (OpensLeCover U) :=
+  ⟨⟨⊥, let ⟨i⟩ := h; ⟨i, bot_le⟩⟩⟩
 
 namespace OpensLeCover
 

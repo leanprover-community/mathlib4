@@ -615,6 +615,33 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
     exact ⟨_, this⟩
 
+lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+    (hT₂ : T₂ ∈ distTriang C) (e : Arrow.mk T₁.mor₁ ≅ Arrow.mk T₂.mor₁) :
+    ∃ (e' : T₁ ≅ T₂), e'.hom.hom₁ = e.hom.left ∧ e'.hom.hom₂ = e.hom.right := by
+  let φ := completeDistinguishedTriangleMorphism T₁ T₂ hT₁ hT₂ e.hom.left e.hom.right e.hom.w.symm
+  have : IsIso φ.hom₁ := by dsimp; infer_instance
+  have : IsIso φ.hom₂ := by dsimp; infer_instance
+  have : IsIso φ.hom₃ := isIso₃_of_isIso₁₂ φ hT₁ hT₂ inferInstance inferInstance
+  have : IsIso φ := by
+    apply Triangle.isIso_of_isIsos
+    all_goals infer_instance
+  exact ⟨asIso φ, by simp, by simp⟩
+
+/-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
+when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₂ : T₁.obj₂ ≅ T₂.obj₂`. -/
+@[simps! hom_hom₁ hom_hom₂ inv_hom₁ inv_hom₂]
+def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+    (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₂ : T₁.obj₂ ≅ T₂.obj₂)
+    (comm : T₁.mor₁ ≫ e₂.hom = e₁.hom ≫ T₂.mor₁) : T₁ ≅ T₂ := by
+  have h := exists_iso_of_arrow_iso T₁ T₂ hT₁ hT₂ (Arrow.isoMk e₁ e₂ comm.symm)
+  exact Triangle.isoMk _ _ e₁ e₂ (Triangle.π₃.mapIso h.choose) comm (by
+    have eq := h.choose_spec.2
+    dsimp at eq ⊢
+    conv_rhs => rw [← eq, ← TriangleMorphism.comm₂]) (by
+    have eq := h.choose_spec.1
+    dsimp at eq ⊢
+    conv_lhs => rw [← eq, TriangleMorphism.comm₃])
+
 end Pretriangulated
 
 end CategoryTheory
