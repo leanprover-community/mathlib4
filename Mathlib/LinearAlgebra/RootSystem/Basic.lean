@@ -49,14 +49,30 @@ lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
 lemma ne_zero' [CharZero R] : (P.coroot i : N) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
 
+@[simp]
+lemma root_coroot_eq_pairing (j : ι) :
+    P.toLin (P.root i) (P.coroot j) = P.pairing i j :=
+  rfl
+
+lemma coroot_root_eq_pairing (j : ι) :
+    P.toLin.flip (P.coroot i) (P.root j) = P.pairing j i := by
+  simp
+
+@[simp]
+lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
+
 lemma coroot_root_two :
-    (P.toLin.flip (P.coroot i)) (P.root i) = 2 := by
-  rw [LinearMap.flip_apply, P.root_coroot_two i]
+    P.toLin.flip (P.coroot i) (P.root i) = 2 := by
+  simp
 
 @[simp] lemma flip_flip : P.flip.flip = P := rfl
 
 lemma reflection_apply (x : M) :
     P.reflection i x = x - (P.toLin x (P.coroot i)) • P.root i :=
+  rfl
+
+lemma reflection_apply_root (j : ι) :
+    P.reflection i (P.root j) = P.root j - (P.pairing j i) • P.root i :=
   rfl
 
 @[simp]
@@ -121,15 +137,15 @@ roots. The proof depends crucially on the fact that there are finitely-many root
 Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI.
 See also `RootPairing.injOn_dualMap_subtype_span_root_coroot` for a more useful restatement. -/
 lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
-    (h : ∀ k, P.toLin (P.root k) (P.coroot i) = P.toLin (P.root k) (P.coroot j)) :
+    (h : ∀ k, P.pairing k i = P.pairing k j) :
     i = j := by
   set α := P.root i
   set β := P.root j
   set sα : M ≃ₗ[R] M := P.reflection i
   set sβ : M ≃ₗ[R] M := P.reflection j
   set sαβ : M ≃ₗ[R] M := sβ.trans sα
-  have hα : sα β = β - (2 : R) • α := by rw [P.reflection_apply, h j, P.root_coroot_two j]
-  have hβ : sβ α = α - (2 : R) • β := by rw [P.reflection_apply, ← h i, P.root_coroot_two i]
+  have hα : sα β = β - (2 : R) • α := by rw [P.reflection_apply_root, h j, P.pairing_same j]
+  have hβ : sβ α = α - (2 : R) • β := by rw [P.reflection_apply_root, ← h i, P.pairing_same i]
   have hb : BijOn sαβ (range P.root) (range P.root) :=
     (P.bijOn_reflection_root i).comp (P.bijOn_reflection_root j)
   set f : ℕ → M := fun n ↦ β + (2 * n : ℤ) • (α - β)
