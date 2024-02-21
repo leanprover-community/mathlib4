@@ -97,12 +97,12 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   normalize_gcd := by intros; rfl
   normalize_lcm := by intros; rfl
 
--- Porting notes (#10618): simpNF lint: simp can prove this @[simp]
+-- Porting note (#10618): simpNF lint: simp can prove this @[simp]
 theorem gcd_eq : gcd x y = unit :=
   rfl
 #align punit.gcd_eq PUnit.gcd_eq
 
--- Porting notes (#10618): simpNF lint: simp can prove this @[simp]
+-- Porting note (#10618): simpNF lint: simp can prove this @[simp]
 theorem lcm_eq : lcm x y = unit :=
   rfl
 #align punit.lcm_eq PUnit.lcm_eq
