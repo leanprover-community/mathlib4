@@ -100,7 +100,12 @@ structure LawverePresentation (S : Type u) where
 
 namespace LawverePresentation
 
-variable {S : Type*} (P : LawverePresentation S)
+variable {S S' : Type*} (P : LawverePresentation S) (P' : LawverePresentation S')
+
+structure Morphism where
+  obj : ProdWord S → ProdWord S'
+  map : {X Y : ProdWord S} → LawvereWord P.hom X Y → LawvereWord P'.hom (obj X) (obj Y)
+  rel : {X Y : ProdWord S} → (f g : LawvereWord P.hom X Y) → P.rel f g → P'.rel (map f) (map g)
 
 def lawvereTheory : LawvereTheory S where
   hom X Y := Quotient (LawvereSetoid P.rel X Y)
