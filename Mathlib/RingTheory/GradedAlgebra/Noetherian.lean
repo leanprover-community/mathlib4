@@ -755,7 +755,7 @@ lemma kth_degree_eq_span (k : ℕ) :
 end finite_module_over_degree_zero_subring
 
 open finite_module_over_degree_zero_subring in
-instance (k : ℕ) : Module.Finite (𝒜 0) (ℳ k) :=
+instance finite_module_over_degree_zero_subring (k : ℕ) : Module.Finite (𝒜 0) (ℳ k) :=
   ⟨Set.Finite.toFinset
     (generatingSet_is_finite
       (GradedRing.HomogeneousGeneratingSetOf.Irrelevant 𝒜)

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.FGModuleCat.Kernels
 import Mathlib.RingTheory.Noetherian
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # The category of finitely generated modules over a Noetherian ring is abelian.
@@ -58,5 +59,21 @@ noncomputable instance : Abelian (FGModuleCat R) where
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
   has_cokernels := hasCokernels_fgModuleCat
+
+section exact
+
+open CategoryTheory
+
+variable {A B C : FGModuleCat R} (f : A ⟶ B) (g : B ⟶ C)
+
+open LinearMap
+
+theorem exact_iff : Exact f g ↔ LinearMap.range f = LinearMap.ker g := by
+  rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
+  exact
+    ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
+      ⟨range_le_ker_iff.1 <| le_of_eq h, ker_le_range_iff.1 <| le_of_eq h.symm⟩⟩
+
+end exact
 
 end FGModuleCat
