@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
@@ -1017,7 +1018,7 @@ section
 variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Given an element `x` of a module `M` over `R`, the natural map from
-    `R` to scalar multiples of `x`.-/
+    `R` to scalar multiples of `x`. See also `LinearMap.ringLmapEquivSelf`. -/
 @[simps!]
 def toSpanSingleton (x : M) : R →ₗ[R] M :=
   LinearMap.id.smulRight x
@@ -1040,6 +1041,19 @@ theorem toSpanSingleton_zero : toSpanSingleton R M 0 = 0 := by
   ext
   simp
 #align linear_map.to_span_singleton_zero LinearMap.toSpanSingleton_zero
+
+variable {R M}
+
+theorem toSpanSingleton_isIdempotentElem_iff {e : R} :
+    IsIdempotentElem (toSpanSingleton R R e) ↔ IsIdempotentElem e := by
+  simp_rw [IsIdempotentElem, ext_iff, mul_apply, toSpanSingleton_apply, smul_eq_mul, mul_assoc]
+  exact ⟨fun h ↦ by conv_rhs => rw [← one_mul e, ← h, one_mul], fun h _ ↦ by rw [h]⟩
+
+theorem isIdempotentElem_apply_one_iff {f : Module.End R R} :
+    IsIdempotentElem (f 1) ↔ IsIdempotentElem f := by
+  rw [IsIdempotentElem, ← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, IsIdempotentElem, ext_iff]
+  simp_rw [mul_apply]
+  exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
 
 end
 

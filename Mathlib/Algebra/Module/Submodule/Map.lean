@@ -36,8 +36,6 @@ variable [Semiring R] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable {σ₂₁ : R₂ →+* R}
-variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (p p' : Submodule R M) (q q' : Submodule R₂ M₂)
 variable {x : M}
@@ -142,6 +140,7 @@ end
 
 section SemilinearMap
 
+variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- The pushforward of a submodule by an injective linear map is
@@ -392,16 +391,22 @@ end SemilinearMap
 
 section OrderIso
 
-variable {F : Type*} [EquivLike F M M₂] [SemilinearEquivClass F σ₁₂ M M₂]
+variable [RingHomSurjective σ₁₂] {F : Type*}
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
 @[simps symm_apply apply]
-def orderIsoMapComap (f : F) : Submodule R M ≃o Submodule R₂ M₂ where
+def orderIsoMapComapOfBijective [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+    (f : F) (hf : Bijective f) : Submodule R M ≃o Submodule R₂ M₂ where
   toFun := map f
   invFun := comap f
-  left_inv := comap_map_eq_of_injective (EquivLike.injective f)
-  right_inv := map_comap_eq_of_surjective (EquivLike.surjective f)
-  map_rel_iff' := map_le_map_iff_of_injective (EquivLike.injective f) _ _
+  left_inv := comap_map_eq_of_injective hf.injective
+  right_inv := map_comap_eq_of_surjective hf.surjective
+  map_rel_iff' := map_le_map_iff_of_injective hf.injective _ _
+
+/-- A linear isomorphism induces an order isomorphism of submodules. -/
+@[simps! symm_apply apply]
+def orderIsoMapComap [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂] (f : F) :
+    Submodule R M ≃o Submodule R₂ M₂ := orderIsoMapComapOfBijective f (EquivLike.bijective f)
 #align submodule.order_iso_map_comap Submodule.orderIsoMapComap
 
 end OrderIso

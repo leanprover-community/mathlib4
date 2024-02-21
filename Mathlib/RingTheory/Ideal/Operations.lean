@@ -48,6 +48,10 @@ def annihilator (N : Submodule R M) : Ideal R :=
   LinearMap.ker (LinearMap.lsmul R N)
 #align submodule.annihilator Submodule.annihilator
 
+variable (R M) in
+/-- `Module.annihilator R M` is the ideal of all elements `r : R` such that `r • M = 0`. -/
+nonrec abbrev _root_.Module.annihilator : Ideal R := annihilator (⊤ : Submodule R M)
+
 variable {I J : Ideal R} {N P : Submodule R M}
 
 theorem mem_annihilator {r} : r ∈ N.annihilator ↔ ∀ n ∈ N, r • n = (0 : M) :=
