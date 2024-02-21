@@ -713,7 +713,7 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
-instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S where
+instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) : MulOneClass S where
   one_mul := fun ⟨_, _⟩ => Subtype.ext (one_mul _)
   mul_one := fun ⟨_, _⟩ => Subtype.ext (mul_one _)
 #align submonoid.to_mul_one_class Submonoid.toMulOneClass

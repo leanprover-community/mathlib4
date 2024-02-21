@@ -200,6 +200,34 @@ end SubsemiringClass
 
 end SubsemiringClass
 
+section AddSubmonoidWithOne
+
+variable (R : Type*) [AddMonoidWithOne R]
+
+structure AddSubmonoidWithOne extends AddSubmonoid R where
+  one_mem' : (1 : R) ∈ carrier
+
+instance : SetLike (AddSubmonoidWithOne R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+theorem AddSubmonoidWithOne.natCast_mem {R : Type*} [AddMonoidWithOne R]
+    (s : AddSubmonoidWithOne R) (n : ℕ) : (n : R) ∈ s := by
+  induction' n with n ih
+  · rw [Nat.cast_zero]; apply s.zero_mem
+  · simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one]
+    apply s.add_mem ih s.one_mem'
+
+instance AddSubmonoidWithOne.toAddMonoidWithOne {R : Type*} [AddMonoidWithOne R]
+    (s : AddSubmonoidWithOne R) : AddMonoidWithOne s :=
+ { AddSubmonoid.toAddMonoid s.toAddSubmonoid with
+    one := ⟨_, one_mem' s⟩
+    natCast := fun n => ⟨n, AddSubmonoidWithOne.natCast_mem s n⟩
+    natCast_zero := Subtype.ext Nat.cast_zero
+    natCast_succ := fun _ => Subtype.ext (Nat.cast_succ _) }
+
+end AddSubmonoidWithOne
+
 variable [NonAssocSemiring S] [NonAssocSemiring T]
 
 /-- A subsemiring of a semiring `R` is a subset `s` that is both a multiplicative and an additive
@@ -219,7 +247,26 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance : SubsemiringClass (Subsemiring R) R where
+def addSubmonoidWithOne {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) : AddSubmonoidWithOne R :=
+  { s with }
+
+def nonUnitalSubsemiring {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) :
+    NonUnitalSubsemiring R :=
+  { s with }
+
+variable (s : Subsemiring R)
+
+/-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
+instance toNonAssocSemiring : NonAssocSemiring s :=
+  { s.nonUnitalSubsemiring.toNonUnitalNonAssocSemiring, s.toSubmonoid.toMulOneClass,
+    s.addSubmonoidWithOne.toAddMonoidWithOne with }
+#align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
+
+instance : SetLike (Subsemiring R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+instance (priority := 75) : SubsemiringClass (Subsemiring R) R where
   zero_mem := zero_mem'
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
@@ -384,16 +431,6 @@ protected theorem sum_mem (s : Subsemiring R) {ι : Type*} {t : Finset ι} {f : 
   sum_mem h
 #align subsemiring.sum_mem Subsemiring.sum_mem
 
-attribute [-instance] SubsemiringClass.toNonAssocSemiring
-#synth AddMonoidWithOne s
-#synth MulZeroClass s
-#synth NonUnitalNonAssocSemiring s
-
-/-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
-instance toNonAssocSemiring : NonAssocSemiring s :=
-  { AddSubmonoid.toAddMonoid s, Submonoid.toMulOneClass s with }
-#align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
-
 @[simp, norm_cast]
 theorem coe_one : ((1 : s) : R) = (1 : R) :=
   rfl
@@ -458,13 +495,23 @@ theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
 
 /-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
 instance toOrderedSemiring {R} [OrderedSemiring R] (s : Subsemiring R) : OrderedSemiring s :=
-  SubsemiringClass.toOrderedSemiring _
+  { toSemiring _, AddSubmonoid.toOrderedAddCommMonoid s.toAddSubmonoid with
+    zero_le_one := zero_le_one (α := R)
+    mul_le_mul_of_nonneg_left :=
+      fun _ _ _ h h0 => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h h0
+    mul_le_mul_of_nonneg_right :=
+      fun _ _ _ h h0 => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h h0 }
 #align subsemiring.to_ordered_semiring Subsemiring.toOrderedSemiring
 
 /-- A subsemiring of a `StrictOrderedSemiring` is a `StrictOrderedSemiring`. -/
 instance toStrictOrderedSemiring {R} [StrictOrderedSemiring R] (s : Subsemiring R) :
     StrictOrderedSemiring s :=
-  SubsemiringClass.toStrictOrderedSemiring _
+  { toOrderedSemiring _ with
+    le_of_add_le_add_left := fun _ _ _ h => le_of_add_le_add_left h
+    mul_lt_mul_of_pos_left :=
+      fun _ _ _ h h0 => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h h0
+    mul_lt_mul_of_pos_right :=
+      fun _ _ _ h h0 => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h h0 }
 #align subsemiring.to_strict_ordered_semiring Subsemiring.toStrictOrderedSemiring
 
 /-- A subsemiring of an `OrderedCommSemiring` is an `OrderedCommSemiring`. -/
@@ -482,13 +529,13 @@ instance toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] (s : Subs
 /-- A subsemiring of a `LinearOrderedSemiring` is a `LinearOrderedSemiring`. -/
 instance toLinearOrderedSemiring {R} [LinearOrderedSemiring R] (s : Subsemiring R) :
     LinearOrderedSemiring s :=
-  { toStrictOrderedSemiring _, SubsemiringClass.toLinearOrderedSemiring _ with }
+  { toStrictOrderedSemiring _, AddSubmonoid.toLinearOrderedAddCommMonoid s.toAddSubmonoid with }
 #align subsemiring.to_linear_ordered_semiring Subsemiring.toLinearOrderedSemiring
 
 /-- A subsemiring of a `LinearOrderedCommSemiring` is a `LinearOrderedCommSemiring`. -/
 instance toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] (s : Subsemiring R) :
     LinearOrderedCommSemiring s :=
-  SubsemiringClass.toLinearOrderedCommSemiring _
+  { toLinearOrderedSemiring _, toOrderedCommSemiring _ with }
 #align subsemiring.to_linear_ordered_comm_semiring Subsemiring.toLinearOrderedCommSemiring
 
 protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=

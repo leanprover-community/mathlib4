@@ -149,11 +149,24 @@ instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : NonUnitalSubringClass (NonUnitalSubring R) R where
+instance (priority := 75) : NonUnitalSubringClass (NonUnitalSubring R) R where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
   neg_mem {s} := s.neg_mem'
+
+/-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
+instance (priority := 100) toNonUnitalNonAssocRing (s : NonUnitalSubring R): NonUnitalNonAssocRing s :=
+  { s.toAddSubgroup.toAddCommGroup, s.toNonUnitalSubsemiring.toNonUnitalNonAssocSemiring with }
+
+/-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
+instance (priority := 100) toNonUnitalRing {R} [NonUnitalRing R] (s : NonUnitalSubring R) : NonUnitalRing s :=
+  { s.toNonUnitalNonAssocRing, s.toNonUnitalSubsemiring.toNonUnitalSemiring with }
+
+/-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
+instance (priority := 100) toNonUnitalCommRing {R} [NonUnitalCommRing R]
+    (s : NonUnitalSubring R) : NonUnitalRing s :=
+  { s.toNonUnitalRing, s.toNonUnitalSubsemiring.toNonUnitalCommSemiring with }
 
 theorem mem_carrier {s : NonUnitalSubring R} {x : R} : x ∈ s.toNonUnitalSubsemiring ↔ x ∈ s :=
   Iff.rfl
@@ -298,12 +311,6 @@ protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSu
     {ι : Type*} {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
   sum_mem h
 
-/-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
-instance toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
-    NonUnitalRing s where
-  mul_assoc := mul_assoc
-#print toNonUnitalRing
-
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
 
@@ -325,11 +332,6 @@ theorem val_zero : ((0 : s) : R) = 0 :=
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
   simp
-
-/-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
-instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
-    NonUnitalCommRing s where
-  mul_comm := mul_comm
 
 /-! ## Partial order -/
 
