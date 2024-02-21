@@ -864,7 +864,6 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
-import Mathlib.Analysis.NormedSpace.ROrCLike
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.NormedSpace.LpEquiv
 import Mathlib.Analysis.NormedSpace.MStructure
@@ -954,8 +953,8 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
-import Mathlib.Analysis.SpecificLimits.ROrCLike
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Analysis.SpecificLimits.ROrCLike
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
@@ -1703,8 +1702,6 @@ import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
-import Mathlib.Data.ROrCLike.Basic
-import Mathlib.Data.ROrCLike.Lemmas
 import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
