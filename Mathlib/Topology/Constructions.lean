@@ -635,6 +635,27 @@ theorem ContinuousAt.prod_map' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf :
   hf.fst'.prod hg.snd'
 #align continuous_at.prod_map' ContinuousAt.prod_map'
 
+theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
+    (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
+    ContinuousAt (fun x ↦ f (g x, h x)) x :=
+  ContinuousAt.comp hf (hg.prod hh)
+
+theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X} {y : Y × Z}
+    (hf : ContinuousAt f y) (hg : ContinuousAt g x) (hh : ContinuousAt h x) (e : (g x, h x) = y) :
+    ContinuousAt (fun x ↦ f (g x, h x)) x := by
+  rw [←e] at hf
+  exact hf.comp₂ hg hh
+
+/-- Continuous functions on products are continuous in their first argument -/
+theorem Continuous.along_fst {f : X × Y → Z} (hf : Continuous f) {y : Y} :
+    Continuous fun x ↦ f (x, y) :=
+  hf.comp (continuous_id.prod_mk continuous_const)
+
+/-- Continuous functions on products are continuous in their second argument -/
+theorem Continuous.along_snd {f : X × Y → Z} (hf : Continuous f) {x : X} :
+    Continuous fun y ↦ f (x, y) :=
+  hf.comp (continuous_const.prod_mk continuous_id)
+
 -- todo: reformulate using `Set.image2`
 -- todo: prove a version of `generateFrom_union` with `image2 (∩) s t` in the LHS and use it here
 theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : Set (Set Y)}
