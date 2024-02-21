@@ -59,7 +59,7 @@ universe u v w
 
 noncomputable section
 
-open DirectSum
+open DirectSum TensorProduct
 
 open Set LinearMap Submodule
 
@@ -68,20 +68,20 @@ variable {R : Type u} {M : Type v} {N : Type w}
 
 section TensorProduct
 
-open TensorProduct
+namespace TensorProduct
 
 variable {ι : Type*} [DecidableEq ι]
 
 /-- The tensor product of `i →₀ M` and `N` is linearly equivalent to `i →₀ M ⊗[R] N` -/
-noncomputable def TensorProduct.finsuppLeft :
+noncomputable def finsuppLeft :
     (ι →₀ M) ⊗[R] N ≃ₗ[R] ι →₀ (M ⊗[R] N) :=
-  (TensorProduct.congr (finsuppLEquivDirectSum R M ι) (LinearEquiv.refl R N)).trans
-    ((TensorProduct.directSumLeft R (fun _ : ι => M) N).trans
+  (congr (finsuppLEquivDirectSum R M ι) (LinearEquiv.refl R N)).trans
+    ((directSumLeft R (fun _ : ι => M) N).trans
       (finsuppLEquivDirectSum R (M ⊗[R] N) ι).symm)
 
-lemma TensorProduct.finsuppLeft_apply_tmul (p : ι →₀ M) (n : N) :
-    TensorProduct.finsuppLeft (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) := by
-  simp [TensorProduct.finsuppLeft]
+lemma finsuppLeft_apply_tmul (p : ι →₀ M) (n : N) :
+    finsuppLeft (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) := by
+  simp only [finsuppLeft, LinearEquiv.trans_apply, congr_tmul, LinearEquiv.refl_apply]
   conv_lhs => rw [← Finsupp.sum_single p]
   rw [LinearEquiv.symm_apply_eq]
   simp only [map_finsupp_sum]
@@ -91,9 +91,9 @@ lemma TensorProduct.finsuppLeft_apply_tmul (p : ι →₀ M) (n : N) :
   simp only [directSumLeft_symm_lof_tmul]
   simp only [Finsupp.sum, sum_tmul]
 
-lemma TensorProduct.finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
-    TensorProduct.finsuppLeft (p ⊗ₜ[R] n) i = p i ⊗ₜ[R] n := by
-  rw [TensorProduct.finsuppLeft_apply_tmul]
+lemma finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
+    finsuppLeft (p ⊗ₜ[R] n) i = p i ⊗ₜ[R] n := by
+  rw [finsuppLeft_apply_tmul]
   simp only [Finsupp.sum_apply]
   conv_rhs => rw [← Finsupp.single_eq_same (a := i) (b := p i ⊗ₜ[R] n)]
   apply Finsupp.sum_eq_single i
@@ -102,28 +102,21 @@ lemma TensorProduct.finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : 
     simp
 
 
-lemma TensorProduct.finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
-    TensorProduct.finsuppLeft.symm (Finsupp.single i (m ⊗ₜ[R] n)) =
+lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
+    finsuppLeft.symm (Finsupp.single i (m ⊗ₜ[R] n)) =
       Finsupp.single i m ⊗ₜ[R] n := by
-  simp [TensorProduct.finsuppLeft, Finsupp.lsum]
+  simp [finsuppLeft, Finsupp.lsum]
 
 /-- The tensor product of `M` and `i →₀ N` is linearly equivalent to `i →₀ M ⊗[R] N` -/
-noncomputable def TensorProduct.finsuppRight₀ :
+noncomputable def finsuppRight :
     M ⊗[R] (ι →₀ N) ≃ₗ[R] ι →₀ (M ⊗[R] N) :=
-  ((TensorProduct.comm R _ _).trans
-    (TensorProduct.finsuppLeft (ι := ι) (M := N) (N := M) (R := R))).trans
-      (Finsupp.mapRange.linearEquiv (TensorProduct.comm R _ _))
-
-/-- The tensor product of `M` and `i →₀ N` is linearly equivalent to `i →₀ M ⊗[R] N` -/
-noncomputable def TensorProduct.finsuppRight :
-    M ⊗[R] (ι →₀ N) ≃ₗ[R] ι →₀ (M ⊗[R] N) :=
-  (TensorProduct.congr (LinearEquiv.refl R M) (finsuppLEquivDirectSum R N ι)).trans
-    ((TensorProduct.directSumRight R M (fun _ : ι => N)).trans
+  (congr (LinearEquiv.refl R M) (finsuppLEquivDirectSum R N ι)).trans
+    ((directSumRight R M (fun _ : ι => N)).trans
       (finsuppLEquivDirectSum R (M ⊗[R] N) ι).symm)
 
-lemma TensorProduct.finsuppRight_apply_tmul (m : M) (p : ι →₀ N) :
-    TensorProduct.finsuppRight (m ⊗ₜ[R] p) = p.sum (fun i n ↦ Finsupp.single i (m ⊗ₜ[R] n)) := by
-  simp [TensorProduct.finsuppRight]
+lemma finsuppRight_apply_tmul (m : M) (p : ι →₀ N) :
+    finsuppRight (m ⊗ₜ[R] p) = p.sum (fun i n ↦ Finsupp.single i (m ⊗ₜ[R] n)) := by
+  simp [finsuppRight]
   conv_lhs => rw [← Finsupp.sum_single p]
   rw [LinearEquiv.symm_apply_eq]
   simp only [map_finsupp_sum]
@@ -133,42 +126,44 @@ lemma TensorProduct.finsuppRight_apply_tmul (m : M) (p : ι →₀ N) :
   simp only [directSumRight_symm_lof_tmul]
   simp only [Finsupp.sum, tmul_sum]
 
-lemma TensorProduct.finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
-    TensorProduct.finsuppLeft.symm (Finsupp.single i (m ⊗ₜ[R] n)) =
+lemma finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
+    finsuppLeft.symm (Finsupp.single i (m ⊗ₜ[R] n)) =
       Finsupp.single i m ⊗ₜ[R] n := by
-  simp [TensorProduct.finsuppLeft, Finsupp.lsum]
+  simp [finsuppLeft, Finsupp.lsum]
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
   [Module S M] [IsScalarTower R S M]
 
-lemma TensorProduct.finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
-    TensorProduct.finsuppLeft (s • t) = s • TensorProduct.finsuppLeft t := by
+lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
+    finsuppLeft (s • t) = s • finsuppLeft t := by
   induction t using TensorProduct.induction_on with
   | zero => simp
   | add x y hx hy =>
     simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply] at hx hy ⊢
     simp only [smul_add, map_add, hx, hy]
   | tmul p n =>
-    simp only [TensorProduct.smul_tmul', rTensor_apply_tmul]
+    simp only [smul_tmul', finsuppLeft_apply_tmul]
     rw [Finsupp.smul_sum]
-    simp only [smul_single]
+    simp only [Finsupp.smul_single]
     apply Finsupp.sum_smul_index'
     simp
 
 /-- When `M` is also an `S`-module, then `TensorProduct.finsuppLeft R M N``
   is an `S`-linear equiv -/
-noncomputable def TensorProduct.finsuppLeft' :
+noncomputable def finsuppLeft' :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ (M ⊗[R] N) := {
-  TensorProduct.finsuppLeft with
-  map_smul' := TensorProduct.finsuppLeft_smul' }
+  finsuppLeft with
+  map_smul' := finsuppLeft_smul' }
 
 /- -- TODO : reprove using the existing heterobasic lemmas
 noncomputable example :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ (M ⊗[R] N) := by
   have f : (⨁ (i₁ : ι), M) ⊗[R] N ≃ₗ[S] ⨁ (i : ι), M ⊗[R] N := sorry
-  exact (TensorProduct.AlgebraTensorModule.congr
+  exact (AlgebraTensorModule.congr
     (finsuppLEquivDirectSum S M ι) (LinearEquiv.refl R N)).trans
     (f.trans (finsuppLEquivDirectSum S (M ⊗[R] N) ι).symm) -/
+
+end TensorProduct
 
 open scoped Classical in
 -- `noncomputable` is a performance workaround for mathlib4#7103
