@@ -3,8 +3,9 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.Data.List.Indexes
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
@@ -110,7 +111,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
   right_inv x := by
-    refine Subtype.ext (List.ext_get ?_ <| fun n hn1 _ => List.get_ofFn _ _)
+    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
     simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
@@ -196,11 +197,11 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
     · set x := _; set y := _
       change r (Fin.append p q x) (Fin.append p q y)
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-        i.2.trans <| by linarith!⟩
-      · ext; dsimp; rw [Nat.add_sub_cancel']; exact hi
+          i.2.trans <| by linarith!⟩ := by
+        ext; dsimp; rw [Nat.add_sub_cancel']; exact hi
       have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
-        (by exact i.2)⟩
-      · ext
+          (by exact i.2)⟩ := by
+        ext
         dsimp
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
           Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
@@ -226,13 +227,13 @@ def map (p : RelSeries r)
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
 `aᵢ -r→ a -r→ a_ᵢ₊₁`, then
-`a₀ -r→ a₁ -r→ ... -r→ a_i -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
+`a₀ -r→ a₁ -r→ ... -r→ aᵢ -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
 is another `r`-series
 -/
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
-  toFun :=  (Fin.castSucc i.succ).insertNth a p
+  toFun := (Fin.castSucc i.succ).insertNth a p
   step m := by
     set x := _; set y := _; change r x y
     obtain hm | hm | hm := lt_trichotomy m.1 i.1

@@ -3,10 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Data.LazyList
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Stream.Init
+import Std.Data.LazyList
 import Mathlib.Data.Seq.Computation
 
 #align_import data.seq.seq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
@@ -1034,7 +1031,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
-  -- Porting note: Was `simp [bind, map]`.
+  -- porting note (#10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
   simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]

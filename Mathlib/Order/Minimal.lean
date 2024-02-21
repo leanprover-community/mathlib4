@@ -162,11 +162,11 @@ theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
 
 -- porting note: new theorem
 theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
-  sep_eq_self_iff_mem_true.2 <| fun _ _ _ _ => symm
+  sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
 -- porting note: new theorem
 theorem minimals_of_symm [IsSymm α r] : minimals r s = s :=
-  sep_eq_self_iff_mem_true.2 <| fun _ _ _ _ => symm
+  sep_eq_self_iff_mem_true.2 fun _ _ _ _ => symm
 
 theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
   rw [minimals_of_symm, maximals_of_symm]

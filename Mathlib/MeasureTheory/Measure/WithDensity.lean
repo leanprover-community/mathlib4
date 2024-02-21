@@ -89,7 +89,7 @@ theorem withDensity_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) :
 
 lemma withDensity_mono {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) :
     μ.withDensity f ≤ μ.withDensity g := by
-  intro s hs
+  refine le_iff.2 fun s hs ↦ ?_
   rw [withDensity_apply _ hs, withDensity_apply _ hs]
   refine set_lintegral_mono_ae' hs ?_
   filter_upwards [hfg] with x h_le using fun _ ↦ h_le
@@ -295,7 +295,7 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
       rw [ae_restrict_iff' A]
       filter_upwards [hg']
       intro a ha h'a
-      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using h'a
+      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, ENNReal.coe_eq_zero] using h'a
       rw [ha this]
     · filter_upwards [ae_restrict_mem A.compl]
       intro x hx
@@ -540,7 +540,7 @@ lemma SigmaFinite.withDensity [SigmaFinite μ] {f : α → ℝ≥0} (hf : AEMeas
         norm_cast
         exact (hs i).2.2 x hxs
   _ = i * μ (s i) := by rw [set_lintegral_const]
-  _ < ⊤ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
+  _ < ∞ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
 
 lemma SigmaFinite.withDensity_of_ne_top' [SigmaFinite μ] {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_top : ∀ x, f x ≠ ∞) :

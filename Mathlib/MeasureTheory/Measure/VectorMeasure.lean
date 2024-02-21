@@ -500,7 +500,7 @@ theorem toSignedMeasure_sub_apply {μ ν : Measure α} [IsFiniteMeasure μ] [IsF
     {i : Set α} (hi : MeasurableSet i) :
     (μ.toSignedMeasure - ν.toSignedMeasure) i = (μ i).toReal - (ν i).toReal := by
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
-    Measure.toSignedMeasure_apply_measurable hi, sub_eq_add_neg]
+    Measure.toSignedMeasure_apply_measurable hi]
 #align measure_theory.measure.to_signed_measure_sub_apply MeasureTheory.Measure.toSignedMeasure_sub_apply
 
 end Measure
@@ -1409,7 +1409,7 @@ theorem toSignedMeasure_toMeasureOfZeroLE :
       ((le_restrict_univ_iff_le _ _).2 (zero_le_toSignedMeasure μ)) = μ := by
   refine' Measure.ext fun i hi => _
   lift μ i to ℝ≥0 using (measure_lt_top _ _).ne with m hm
-  rw [SignedMeasure.toMeasureOfZeroLE_apply _ _ _ hi, coe_eq_coe]
+  rw [SignedMeasure.toMeasureOfZeroLE_apply _ _ _ hi, ENNReal.coe_inj]
   congr
   simp [hi, ← hm]
 #align measure_theory.measure.to_signed_measure_to_measure_of_zero_le MeasureTheory.Measure.toSignedMeasure_toMeasureOfZeroLE

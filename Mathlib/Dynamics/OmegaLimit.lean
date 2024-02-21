@@ -44,13 +44,13 @@ section omegaLimit
 
 variable {τ : Type*} {α : Type*} {β : Type*} {ι : Type*}
 
-/-- The ω-limit of a set `s` under `ϕ` with respect to a filter `f` is
-    ⋂ u ∈ f, cl (ϕ u s). -/
+/-- The ω-limit of a set `s` under `ϕ` with respect to a filter `f` is `⋂ u ∈ f, cl (ϕ u s)`. -/
 def omegaLimit [TopologicalSpace β] (f : Filter τ) (ϕ : τ → α → β) (s : Set α) : Set β :=
   ⋂ u ∈ f, closure (image2 ϕ u s)
 #align omega_limit omegaLimit
 
 -- mathport name: omega_limit
+@[inherit_doc]
 scoped[omegaLimit] notation "ω" => omegaLimit
 
 -- mathport name: omega_limit.atTop
@@ -134,11 +134,11 @@ theorem mem_omegaLimit_iff_frequently (y : β) :
   simp_rw [frequently_iff, omegaLimit_def, mem_iInter, mem_closure_iff_nhds]
   constructor
   · intro h _ hn _ hu
-    rcases h _ hu _ hn with ⟨_, _, _, _, ht, hx, hϕtx⟩
-    exact ⟨_, ht, _, hx, by rwa [mem_preimage, hϕtx]⟩
+    rcases h _ hu _ hn with ⟨_, _, _, ht, _, hx, rfl⟩
+    exact ⟨_, ht, _, hx, by rwa [mem_preimage]⟩
   · intro h _ hu _ hn
     rcases h _ hn hu with ⟨_, ht, _, hx, hϕtx⟩
-    exact ⟨_, hϕtx, _, _, ht, hx, rfl⟩
+    exact ⟨_, hϕtx, _, ht, _, hx, rfl⟩
 #align mem_omega_limit_iff_frequently mem_omegaLimit_iff_frequently
 
 /-- An element `y` is in the ω-limit set of `s` w.r.t. `f` if the
@@ -391,7 +391,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)
-  rcases l₃ with ⟨ϕra, ho, ⟨_, _, hr, ha, hϕra⟩⟩
+  rcases l₃ with ⟨ϕra, ho, ⟨_, hr, _, ha, hϕra⟩⟩
   exact ⟨_, hr, ϕra, ⟨_, ha, hϕra⟩, ho₁ ho⟩
 #align flow.omega_limit_omega_limit Flow.omegaLimit_omegaLimit
 

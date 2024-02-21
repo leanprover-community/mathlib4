@@ -5,7 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Data.Set.Finite
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import order.partial_sups from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -179,7 +180,7 @@ theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ 
   simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f n
 #align partial_sups_eq_bsupr partialSups_eq_biSup
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 #align supr_partial_sups_eq iSup_partialSups_eq
