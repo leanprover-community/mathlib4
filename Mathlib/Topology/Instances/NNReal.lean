@@ -88,7 +88,7 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
 
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
 @[simps (config := .asFn)]
-noncomputable def ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
+noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
