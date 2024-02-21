@@ -668,8 +668,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
 
 /-- In a real inner product space, the complex exponential of minus the square of the norm plus
 a scalar product is integrable. Useful when discussing the Fourier transform of a Gaussian. -/
-theorem integrable_cexp_neg_mul_sq_norm_add
-     (hb : 0 < b.re) (c : ℂ) (w : V) :
+theorem integrable_cexp_neg_mul_sq_norm_add (hb : 0 < b.re) (c : ℂ) (w : V) :
     Integrable (fun (v : V) ↦ cexp (-b * ‖v‖^2 + c * ⟪w, v⟫)) := by
   let e := (stdOrthonormalBasis ℝ V).repr.symm
   rw [← e.measurePreserving.integrable_comp_emb e.toHomeomorph.measurableEmbedding]

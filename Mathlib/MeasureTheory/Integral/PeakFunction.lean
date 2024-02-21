@@ -353,8 +353,8 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
       tendsto_const_nhds.congr (fun n ↦ (hiφ n).symm)
     have C : ∀ᶠ (i : ℕ) in atTop, AEStronglyMeasurable (fun x ↦ φ i x) (μ.restrict s) := by
       apply eventually_of_forall (fun n ↦ ((I n).const_mul _).aestronglyMeasurable)
-    exact tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet hs.measurableSet
-      (Subset.rfl) (self_mem_nhdsWithin)
+    exact tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto hs.measurableSet
+      hs.measurableSet (Subset.rfl) (self_mem_nhdsWithin)
       hs.measure_lt_top.ne (eventually_of_forall hnφ) A B C hmg hcg
   convert this
   simp_rw [← smul_smul, integral_smul]
