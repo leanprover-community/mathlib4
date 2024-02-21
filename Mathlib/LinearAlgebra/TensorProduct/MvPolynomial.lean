@@ -31,7 +31,7 @@ variable {S : Type*} [CommSemiring S] [Algebra R S]
 
 noncomputable def MvPolynomial.rTensor' :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
-  Finsupp.rTensor'
+  TensorProduct.finsuppLeft'
 
 noncomputable def MvPolynomial.rTensor :
     MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N := by

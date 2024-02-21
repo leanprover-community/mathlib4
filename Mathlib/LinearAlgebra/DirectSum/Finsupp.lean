@@ -101,7 +101,6 @@ lemma finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
   · intro _
     simp
 
-
 lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
     finsuppLeft.symm (Finsupp.single i (m ⊗ₜ[R] n)) =
       Finsupp.single i m ⊗ₜ[R] n := by
