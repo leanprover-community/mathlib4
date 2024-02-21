@@ -582,7 +582,7 @@ theorem _root_.fourier_transform_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
   have h : (-↑π * b).re < 0 := by
     simpa only [neg_mul, neg_re, re_ofReal_mul, neg_lt_zero] using mul_pos pi_pos hb
   ext1 t
-  simp_rw [fourierIntegral_eq_integral_exp_smul, smul_eq_mul, ← Complex.exp_add, ← add_assoc]
+  simp_rw [fourierIntegral_real_eq_integral_exp_smul, smul_eq_mul, ← Complex.exp_add, ← add_assoc]
   have (x : ℝ) : ↑(-2 * π * x * t) * I + -π * b * x ^ 2 + 2 * π * c * x =
     -π * b * x ^ 2 + (-2 * π * I * t + 2 * π * c) * x + 0 := by push_cast; ring
   simp_rw [this, integral_cexp_quadratic h, neg_mul, neg_neg]
@@ -596,7 +596,7 @@ theorem _root_.fourier_transform_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     ring
 
 theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
-    (𝓕 fun x ↦ cexp (-π * b * x ^ 2)) =
+    (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
     fun t : ℝ ↦ 1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using fourier_transform_gaussian_pi' hb 0
 #align fourier_transform_gaussian_pi fourier_transform_gaussian_pi
