@@ -78,13 +78,12 @@ theorem restrict_apply (ht : MeasurableSet t) : μ.restrict s t = μ (t ∩ s) :
 
 /-- Restriction of a measure to a subset is monotone both in set and in measure. -/
 theorem restrict_mono' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ ⦃μ ν : Measure α⦄ (hs : s ≤ᵐ[μ] s')
-    (hμν : μ ≤ ν) : μ.restrict s ≤ ν.restrict s' := fun t ht =>
-  calc
+    (hμν : μ ≤ ν) : μ.restrict s ≤ ν.restrict s' :=
+  Measure.le_iff.2 fun t ht => calc
     μ.restrict s t = μ (t ∩ s) := restrict_apply ht
     _ ≤ μ (t ∩ s') := (measure_mono_ae <| hs.mono fun _x hx ⟨hxt, hxs⟩ => ⟨hxt, hx hxs⟩)
     _ ≤ ν (t ∩ s') := (le_iff'.1 hμν (t ∩ s'))
     _ = ν.restrict s' t := (restrict_apply ht).symm
-
 #align measure_theory.measure.restrict_mono' MeasureTheory.Measure.restrict_mono'
 
 /-- Restriction of a measure to a subset is monotone both in set and in measure. -/
@@ -117,8 +116,8 @@ theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ 
     measure_congr ((ae_eq_refl t).inter hs.toMeasurable_ae_eq)]
 #align measure_theory.measure.restrict_apply₀' MeasureTheory.Measure.restrict_apply₀'
 
-theorem restrict_le_self : μ.restrict s ≤ μ := fun t ht =>
-  calc
+theorem restrict_le_self : μ.restrict s ≤ μ :=
+  Measure.le_iff.2 fun t ht => calc
     μ.restrict s t = μ (t ∩ s) := restrict_apply ht
     _ ≤ μ t := measure_mono <| inter_subset_left t s
 #align measure_theory.measure.restrict_le_self MeasureTheory.Measure.restrict_le_self
@@ -299,10 +298,9 @@ theorem restrict_compl_add_restrict (hs : MeasurableSet s) : μ.restrict sᶜ + 
   by rw [add_comm, restrict_add_restrict_compl hs]
 #align measure_theory.measure.restrict_compl_add_restrict MeasureTheory.Measure.restrict_compl_add_restrict
 
-theorem restrict_union_le (s s' : Set α) : μ.restrict (s ∪ s') ≤ μ.restrict s + μ.restrict s' := by
-  intro t ht
-  suffices μ (t ∩ s ∪ t ∩ s') ≤ μ (t ∩ s) + μ (t ∩ s') by simpa [ht, inter_union_distrib_left]
-  apply measure_union_le
+theorem restrict_union_le (s s' : Set α) : μ.restrict (s ∪ s') ≤ μ.restrict s + μ.restrict s' :=
+  le_iff.2 fun t ht ↦ by
+    simpa [ht, inter_union_distrib_left] using measure_union_le (t ∩ s) (t ∩ s')
 #align measure_theory.measure.restrict_union_le MeasureTheory.Measure.restrict_union_le
 
 theorem restrict_iUnion_apply_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AEDisjoint μ on s))
@@ -385,7 +383,6 @@ theorem restrict_union_congr :
       simp only [restrict_apply, hu, hu.diff hm, hν, ← inter_comm t, inter_diff_assoc]
     _ = ν (US ∪ u ∩ t) := (measure_add_diff hm _)
     _ = ν (u ∩ s ∪ u ∩ t) := Eq.symm <| measure_union_congr_of_subset hsub hν.le Subset.rfl le_rfl
-
 #align measure_theory.measure.restrict_union_congr MeasureTheory.Measure.restrict_union_congr
 
 theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
@@ -541,10 +538,8 @@ theorem restrict_iUnion [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjo
 #align measure_theory.measure.restrict_Union MeasureTheory.Measure.restrict_iUnion
 
 theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
-    μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) := by
-  intro t ht
-  suffices μ (⋃ i, t ∩ s i) ≤ ∑' i, μ (t ∩ s i) by simpa [ht, inter_iUnion]
-  apply measure_iUnion_le
+    μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
+  le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_iUnion_le (t ∩ s ·)
 #align measure_theory.measure.restrict_Union_le MeasureTheory.Measure.restrict_iUnion_le
 
 end Measure
