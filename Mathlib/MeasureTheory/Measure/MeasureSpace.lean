@@ -2126,11 +2126,8 @@ nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻
 
 lemma comap_add (μ ν : Measure β) : (μ + ν).comap f = μ.comap f + ν.comap f := by
   ext s hs
-  rw [← Measure.comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
-    _root_.map_add]
-  simp only [Measure.add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply]
-  rw [← Measure.comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
-    ← Measure.comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs]
+  simp only [← comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
+    _root_.map_add, add_apply]
 
 end MeasurableEmbedding
 
