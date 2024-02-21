@@ -604,7 +604,7 @@ section Ring
 
 variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S) (x y : R)
 
--- Porting note: `simp` can now prove that, so we remove the `@[simp]` tag
+-- Porting note (#10618): `simp` can now prove that, so we remove the `@[simp]` tag
 theorem map_neg_one : f (-1) = -1 :=
   f.map_one ▸ f.map_neg 1
 #align ring_equiv.map_neg_one RingEquiv.map_neg_one

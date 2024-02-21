@@ -933,8 +933,8 @@ theorem wcovBy_span_singleton_sup (x : V) (p : Submodule K V) : WCovBy p ((K ∙
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
   rcases eq_or_ne c 0 with rfl | hc
   · simp [hz] at hyp
-  · have : x ∈ q
-    · rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
+  · have : x ∈ q := by
+      rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
     simp [hpq.le, this]
 
 /-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `CovBy` version. -/
@@ -998,7 +998,7 @@ theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M
     exact mem_span_singleton
 #align linear_map.span_singleton_eq_range LinearMap.span_singleton_eq_range
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem toSpanSingleton_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 #align linear_map.to_span_singleton_one LinearMap.toSpanSingleton_one

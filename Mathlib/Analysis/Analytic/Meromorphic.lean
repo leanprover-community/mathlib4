@@ -45,8 +45,8 @@ lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
   rcases hg with ⟨n, hg⟩
   refine ⟨max m n, ?_⟩
   have : (fun z ↦ (z - x) ^ max m n • (f + g) z) = fun z ↦ (z - x) ^ (max m n - m) •
-    ((z - x) ^ m • f z) + (z - x) ^ (max m n - n) • ((z - x) ^ n • g z)
-  · simp_rw [← mul_smul, ← pow_add, Nat.sub_add_cancel (Nat.le_max_left _ _),
+      ((z - x) ^ m • f z) + (z - x) ^ (max m n - n) • ((z - x) ^ n • g z) := by
+    simp_rw [← mul_smul, ← pow_add, Nat.sub_add_cancel (Nat.le_max_left _ _),
       Nat.sub_add_cancel (Nat.le_max_right _ _), Pi.add_apply, smul_add]
   rw [this]
   exact ((((analyticAt_id 𝕜 x).sub analyticAt_const).pow _).smul hf).add
@@ -114,8 +114,8 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
     rcases eq_or_ne z x with rfl | hz_ne
     · simp only [sub_self, pow_succ, zero_mul, zero_smul]
     · simp_rw [smul_eq_mul] at hfg ⊢
-      have aux1 : f z ≠ 0
-      · have : (z - x) ^ n * g z ≠ 0 := mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz_ne)) hg_ne'
+      have aux1 : f z ≠ 0 := by
+        have : (z - x) ^ n * g z ≠ 0 := mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz_ne)) hg_ne'
         rw [← hfg, mul_ne_zero_iff] at this
         exact this.2
       field_simp [sub_ne_zero.mpr hz_ne]
@@ -184,8 +184,8 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
   · obtain ⟨m, h⟩ := WithTop.ne_top_iff_exists.mp h
     rw [← h, WithTop.map_coe, ← WithTop.coe_nat, ← WithTop.coe_sub, WithTop.coe_inj]
     obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := (AnalyticAt.order_eq_nat_iff _ _).mp h.symm
-    replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z
-    · rw [eventually_nhdsWithin_iff]
+    replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
+      rw [eventually_nhdsWithin_iff]
       filter_upwards [hg_eq] with z hg_eq hz
       rwa [← smul_right_inj <| zpow_ne_zero _ (sub_ne_zero.mpr hz), ← mul_smul,
       ← zpow_add₀ (sub_ne_zero.mpr hz), ← add_sub_assoc, add_sub_cancel', zpow_ofNat, zpow_ofNat]

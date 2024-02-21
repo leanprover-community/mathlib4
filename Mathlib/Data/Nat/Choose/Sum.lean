@@ -196,8 +196,8 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
       (∏ i in range (n + 1), f i (n + 1 - i) ^ n.choose i) *
         ∏ i in range (n + 1), f (i + 1) (n - i) ^ n.choose i := by
   have A : (∏ i in range (n + 1), f (i + 1) (n - i) ^ (n.choose (i + 1))) * f 0 (n + 1) =
-    ∏ i in range (n + 1), f i (n + 1 - i) ^ (n.choose i)
-  · rw [prod_range_succ, prod_range_succ']
+      ∏ i in range (n + 1), f i (n + 1 - i) ^ (n.choose i) := by
+    rw [prod_range_succ, prod_range_succ']
     simp
   rw [prod_range_succ']
   simpa [Nat.choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _
