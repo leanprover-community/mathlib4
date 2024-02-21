@@ -76,13 +76,13 @@ lemma comm₁ (j : J) :
   dsimp [ιMapBifunctor, mapBifunctor, mapBifunctorMap]
   simp? [h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
     simp only [HomologicalComplex₂.ιTotal_map, Functor.mapBifunctorHomologicalComplex_obj_obj_X_X,
-      HomologicalComplex₂.total_X, Functor.mapBifunctorHomologicalComplex_obj_obj_toGradedObject,
-      comp_f, Functor.mapBifunctorHomologicalComplex_map_app_f_f, h₁.comm i₁,
-      dNext_eq_dFrom_fromNext, dFrom, fromNext, AddMonoidHom.mk'_apply, prevD_eq_toPrev_dTo,
-      toPrev, dTo, Functor.map_add, Functor.map_comp, NatTrans.app_add, NatTrans.comp_app,
-      Functor.mapBifunctorHomologicalComplex_obj_map_f_f, Preadditive.add_comp, Category.assoc,
-      Preadditive.comp_add, HomologicalComplex₂.ι_D₁_assoc, GradedObject.mapBifunctor_obj_obj,
-      HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
+    HomologicalComplex₂.total_X, Functor.mapBifunctorHomologicalComplex_obj_obj_toGradedObject,
+    comp_f, Functor.mapBifunctorHomologicalComplex_map_app_f_f, h₁.comm i₁,
+    dNext_eq_dFrom_fromNext, dFrom, fromNext, AddMonoidHom.mk'_apply, prevD_eq_toPrev_dTo,
+    toPrev, dTo, Functor.map_add, Functor.map_comp, NatTrans.app_add, NatTrans.comp_app,
+    Functor.mapBifunctorHomologicalComplex_obj_map_f_f, Preadditive.add_comp, assoc,
+    Preadditive.comp_add, HomologicalComplex₂.ι_D₁_assoc, GradedObject.mapBifunctor_obj_obj,
+    HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
   have : ∀ {X Y : D} (a b c d e f : X ⟶ Y), a = c → b = e → f = -d →
       a + b = c + d + (e + f) := by rintro X Y a b _ d _ _ rfl rfl rfl; abel
   apply this
