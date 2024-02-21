@@ -195,6 +195,7 @@ initialize lawvereAttr :
   let sortNames ← LawvereM.sortNames
   let sortTypeName := n ++ "SortType"
   let opFamilyName := n ++ "OpType"
+  let relFamilyName := n ++ "RelProp"
   let ops ← LawvereM.operations
   let opIdents : Array Ident := ops.map fun op => mkIdent op.name.getString
   let opTypes : Array (TSyntax `term) ← ops.mapM fun ⟨_, inputs, output⟩ => do
@@ -205,6 +206,10 @@ initialize lawvereAttr :
         init
     let output := mkIdent (sortTypeName ++ sortNames[output]!)
     `($(mkIdent opFamilyName) $input (ProdWord.of $output))
+  let axioms ← LawvereM.axioms
+  let relIdents : Array Ident := axioms.map fun axm => mkIdent axm.name.getString
+  let relTypes : Array (TSyntax `term) ← axioms.mapM fun axm => do
+    _
   liftCommandElabM <| do
     elabCommand <| ← `(command|
 inductive $(mkIdent sortTypeName) where
@@ -215,4 +220,10 @@ deriving Fintype
 inductive $(mkIdent opFamilyName) :
     ProdWord $(mkIdent sortTypeName) → ProdWord $(mkIdent sortTypeName) → Type where
   $[| $opIdents:ident : $opTypes:term]*
+)
+    elabCommand <| ← `(command|
+inductive $(mkIdent relFamilyName) :
+    {X Y : ProdWord $(mkIdent sortTypeName)} →
+      LawvereWord $(mkIdent opFamilyName) X Y →
+      LawvereWord $(mkIdent opFamilyName) X Y → Prop where
 )
