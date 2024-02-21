@@ -8,6 +8,7 @@ import Mathlib.Data.ENNReal.Real
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.GPseudoMetric.Basic
 
 #align_import topology.metric_space.emetric_space from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -47,6 +48,7 @@ theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α
 #align uniformity_dist_of_mem_uniformity uniformity_dist_of_mem_uniformity
 
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
+@[ext]
 class EDist (α : Type*) where
   edist : α → α → ℝ≥0∞
 #align has_edist EDist
@@ -89,6 +91,17 @@ attribute [instance] PseudoEMetricSpace.toUniformSpace
 
 /- Pseudoemetric spaces are less common than metric spaces. Therefore, we work in a dedicated
 namespace, while notions associated to metric spaces are mostly in the root namespace. -/
+
+/-- Two pseudo emetric space structures with the same edistance function coincide. -/
+@[ext]
+theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
+    (h : m.toEDist = m'.toEDist) : m = m' := by
+  cases' m with ed  _ _ _ U hU
+  cases' m' with ed' _ _ _ U' hU'
+  obtain rfl : ed = ed' := h
+  congr
+  · exact UniformSpace.ext (hU.trans hU'.symm)
+
 variable [PseudoEMetricSpace α]
 
 export PseudoEMetricSpace (edist_self edist_comm edist_triangle)
@@ -1014,6 +1027,11 @@ end EMetric
 class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 #align emetric_space EMetricSpace
+
+@[ext]
+theorem EMetricSpace.ext {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) :
+    m = m' := by
+  cases m; cases m'; congr; ext1; assumption
 
 variable {γ : Type w} [EMetricSpace γ]
 
