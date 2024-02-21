@@ -1,19 +1,50 @@
+/-
+Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.MeasureTheory.Integral.PeakFunction
 
+/-!
+# Fourier inversion formula
+
+In a finite-dimensional real inner product space, we show the Fourier inversion formula, i.e.,
+`𝓕⁻ (𝓕 f) v = f v` if `f` and `𝓕 f` are integrable, and `f` is continuous at `v`. This is proved
+in `Real.fourier_inversion`.
+
+We use the following proof. A naïve computation gives
+`𝓕⁻ (𝓕 f) v
+= ∫_w exp (2 I π ⟪w, v⟫) 𝓕 f (w) dw
+= ∫_w exp (2 I π ⟪w, v⟫) ∫ x, exp (-2 I π ⟪w, x⟫) f x dx) dw
+= ∫_x (∫_ w, exp (2 I π ⟪w, v - x⟫ dw) f x dx `
+
+However, the Fubini step does not make sense for lack of integrability, and the middle integral
+`∫_ w, exp (2 I π ⟪w, v - x⟫ dw` (which one would like to be a Dirac at `v - x`) is not defined.
+To gain integrability, one multiplies with a Gaussian function `exp (-c⁻¹ ‖w‖^2)`, with a large
+(but finite) `c`. As this function converges pointwise to `1` when `c → ∞`, we get
+`∫_w exp (2 I π ⟪w, v⟫) 𝓕 f (w) dw = lim_c ∫_w exp (-c⁻¹ ‖w‖^2 + 2 I π ⟪w, v⟫) 𝓕 f (w) dw`.
+One can perform Fubini on the right hand side for fixed `c`, writing the integral as
+`∫_x (∫_w exp (-c⁻¹‖w‖^2 + 2 I π ⟪w, v - x⟫ dw)) f x dx`.
+The middle factor is the Fourier transform of a more and more flat function
+(converging to the constant `1`), hence it becomes more and more concentrated, around the
+point `v`. (Morally, it converges to the Dirac at `v - x`). Moreover, it has integral one.
+Therefore, multiplying by `f` and integrating, one gets a term converging to `f v` as `c → ∞`.
+Since it also converges to `𝓕⁻ (𝓕 f) v`, this proves the result.
+
+To check the concentration property of the middle factor and the fact that it has integral one, we
+rely on the explicit computation of the Fourier transform of Gaussians.
+-/
+
 variable {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
   [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
-  [NormedAddCommGroup E] [NormedSpace ℂ E]
+  [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
 
 open Filter MeasureTheory Complex FiniteDimensional Metric Real Bornology
 
 open scoped Topology FourierTransform RealInnerProductSpace BigOperators
 
-variable {f : V → E}
-
-local notation "e" => Real.fourierChar
-
-namespace InnerFourier
+namespace Real
 
 lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
     Tendsto (fun (c : ℝ) ↦ (∫ v : V, Complex.exp (- c⁻¹ * ‖v‖^2) • f v))
@@ -36,13 +67,13 @@ lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
 
 variable [CompleteSpace E]
 
-lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕ᵢ f)) (v : V) :
+lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕 f)) (v : V) :
     Tendsto (fun (c : ℝ) ↦
       ∫ w : V, ((π * c) ^ (finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * c * ‖v - w‖ ^ 2)) • f w)
-    atTop (𝓝 (𝓕ᵢ⁻ (𝓕ᵢ f) v)) := by
+    atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
   have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖^2 + 2 * π * Complex.I * ⟪v, w⟫)
-       • (𝓕ᵢ f) w)) atTop (𝓝 (𝓕ᵢ⁻ (𝓕ᵢ f) v)) := by
-    have : Integrable (fun w ↦ e[⟪w, v⟫] • (𝓕ᵢ f) w) := by
+       • (𝓕 f) w)) atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
+    have : Integrable (fun w ↦ e[⟪w, v⟫] • (𝓕 f) w) := by
       have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
       simpa using
         (VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar B v).1 h'f
@@ -53,8 +84,8 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
       ring
     · simp [fourierIntegralInv_eq]
   have B : Tendsto (fun (c : ℝ) ↦ (∫ w : V,
-        𝓕ᵢ (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * Complex.I * ⟪v, w⟫)) w • f w)) atTop
-      (𝓝 (𝓕ᵢ⁻ (𝓕ᵢ f) v)) := by
+        𝓕 (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * Complex.I * ⟪v, w⟫)) w • f w)) atTop
+      (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     apply A.congr'
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     have I : Integrable (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * Complex.I * ⟪v, w⟫)) :=
@@ -117,9 +148,12 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
       ← rpow_nat_cast, ← rpow_mul hc.le, mul_assoc]
     norm_num
 
-theorem fourier_inversion (hf : Integrable f) (h'f : Integrable (𝓕ᵢ f)) {v : V}
-    (hv : ContinuousAt f v) : 𝓕ᵢ⁻ (𝓕ᵢ f) v = f v :=
+/-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
+space is integrable, and its Fourier transform `𝓕 f` is also integrable, then `𝓕⁻ (𝓕 f) = f` at
+continuity points of `f`. -/
+theorem fourier_inversion (hf : Integrable f) (h'f : Integrable (𝓕 f)) {v : V}
+    (hv : ContinuousAt f v) : 𝓕⁻ (𝓕 f) v = f v :=
   tendsto_nhds_unique (tendsto_integral_gaussian_smul hf h'f v)
     (tendsto_integral_gaussian_smul' hf hv)
 
-end InnerFourier
+end Real
