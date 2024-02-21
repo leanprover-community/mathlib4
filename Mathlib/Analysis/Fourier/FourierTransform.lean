@@ -40,7 +40,8 @@ In namespace `Fourier`, we consider the more familiar special case when `V = W =
 multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped with a measure).
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
-`e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)`.
+`e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)` (for which we
+introduce the notation `𝐞` in the locale `FourierTransform`).
 
 Another familiar case (which generalize the previous one) is when `V = W` is an inner product space
 over `ℝ` and `L` is the scalar product. We introduce two notations `𝓕` for the Fourier transform in
@@ -299,14 +300,14 @@ def fourierChar : Multiplicative ℝ →* 𝕊 where
   map_mul' x y := by simp only; rw [toAdd_mul, mul_add, expMapCircle_add]
 #align real.fourier_char Real.fourierChar
 
-scoped[FourierTransform] notation "e" => Real.fourierChar
+local notation "𝐞" => Real.fourierChar
 
-theorem fourierChar_apply (x : ℝ) : e[x] = Complex.exp (↑(2 * π * x) * Complex.I) :=
+theorem fourierChar_apply (x : ℝ) : 𝐞[x] = Complex.exp (↑(2 * π * x) * Complex.I) :=
   by rfl
 #align real.fourier_char_apply Real.fourierChar_apply
 
 @[continuity]
-theorem continuous_fourierChar : Continuous e :=
+theorem continuous_fourierChar : Continuous 𝐞 :=
   (map_continuous expMapCircle).comp (continuous_const.mul continuous_toAdd)
 #align real.continuous_fourier_char Real.continuous_fourierChar
 
@@ -344,14 +345,14 @@ def fourierIntegralInv (f : V → E) (w : V) : E :=
 @[inherit_doc] scoped[FourierTransform] notation "𝓕⁻" => Real.fourierIntegralInv
 
 lemma fourierIntegral_eq (f : V → E) (w : V) :
-    𝓕 f w = ∫ v, e[-⟪v, w⟫] • f v := rfl
+    𝓕 f w = ∫ v, 𝐞[-⟪v, w⟫] • f v := rfl
 
 lemma fourierIntegral_eq' (f : V → E) (w : V) :
     𝓕 f w = ∫ v, Complex.exp ((↑(-2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
   simp_rw [fourierIntegral_eq, Real.fourierChar_apply, mul_neg, neg_mul]
 
 lemma fourierIntegralInv_eq (f : V → E) (w : V) :
-    𝓕⁻ f w = ∫ v, e[⟪v, w⟫] • f v := by
+    𝓕⁻ f w = ∫ v, 𝐞[⟪v, w⟫] • f v := by
   simp [fourierIntegralInv, VectorFourier.fourierIntegral]
 
 lemma fourierIntegralInv_eq' (f : V → E) (w : V) :
@@ -372,14 +373,19 @@ lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V →
     𝓕⁻ (f ∘ A) w = (𝓕⁻ f) (A w) := by
   simp [fourierIntegralInv_eq_fourierIntegral_neg, fourierIntegral_comp_linearIsometry]
 
-theorem fourierIntegral_real_def (f : ℝ → E) (w : ℝ) :
+theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
     fourierIntegral f w = ∫ v : ℝ, fourierChar[-(v * w)] • f v :=
   rfl
-#align real.fourier_integral_def Real.fourierIntegral_real_def
+#align real.fourier_integral_def Real.fourierIntegral_real_eq
+
+@[deprecated] alias fourierIntegral_def := fourierIntegral_real_eq -- deprecated on 2024-02-21
 
 theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
-  simp_rw [fourierIntegral_real_def, Real.fourierChar_apply, mul_neg, neg_mul, mul_assoc]
+  simp_rw [fourierIntegral_real_eq, Real.fourierChar_apply, mul_neg, neg_mul, mul_assoc]
 #align real.fourier_integral_eq_integral_exp_smul Real.fourierIntegral_real_eq_integral_exp_smul
+
+@[deprecated] alias fourierIntegral_eq_integral_exp_smul :=
+  fourierIntegral_real_eq_integral_exp_smul -- deprecated on 2024-02-21
 
 end Real
