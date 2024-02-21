@@ -45,25 +45,6 @@ open scoped Real Topology FourierTransform RealInnerProductSpace BigOperators
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
-section
-
-variable {𝕜 : Type*} [IsROrC 𝕜]
-
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
-
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-/- To move close to `inner_map_map`. -/
-/-- The adjoint of a linear isometric equivalence is its inverse. -/
-@[simp]
-theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E) (y : E') :
-    ⟪f x, y⟫_𝕜 = ⟪x, f.symm y⟫_𝕜 := by
-  conv_lhs => rw [← f.apply_symm_apply y, f.inner_map_map]
-
-end
-
 theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p) :
     (fun x : ℝ => exp (- b * x ^ p)) =o[atTop] fun x : ℝ => exp (-x) := by
   rw [isLittleO_exp_comp_exp_comp]

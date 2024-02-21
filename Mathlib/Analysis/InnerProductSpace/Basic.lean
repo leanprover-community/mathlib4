@@ -1270,6 +1270,11 @@ theorem LinearIsometryEquiv.inner_map_map (f : E ≃ₗᵢ[𝕜] E') (x y : E) :
   f.toLinearIsometry.inner_map_map x y
 #align linear_isometry_equiv.inner_map_map LinearIsometryEquiv.inner_map_map
 
+/-- The adjoint of a linear isometric equivalence is its inverse. -/
+theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E) (y : E') :
+    ⟪f x, y⟫_𝕜 = ⟪x, f.symm y⟫_𝕜 := by
+  conv_lhs => rw [← f.apply_symm_apply y, f.inner_map_map]
+
 /-- A linear map that preserves the inner product is a linear isometry. -/
 def LinearMap.isometryOfInner (f : E →ₗ[𝕜] E') (h : ∀ x y, ⟪f x, f y⟫ = ⟪x, y⟫) : E →ₗᵢ[𝕜] E' :=
   ⟨f, fun x => by simp only [@norm_eq_sqrt_inner 𝕜, h]⟩
