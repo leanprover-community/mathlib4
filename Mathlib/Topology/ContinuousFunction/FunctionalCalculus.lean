@@ -369,8 +369,6 @@ lemma cfc_mul (f g : R → R)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
     cfc a (fun x ↦ f x * g x) = cfc a f * cfc a g := by
-  have : ContinuousOn f (spectrum R a) := hf -- hack
-  have : ContinuousOn g (spectrum R a) := hg -- hack
   by_cases ha : p a
   · rw [cfc_apply a f, cfc_apply a g, ← map_mul, cfc_apply a _]
     congr
@@ -379,7 +377,6 @@ lemma cfc_mul (f g : R → R)
 lemma cfc_pow (f : R → R) (n : ℕ) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)  :
     cfc a (fun x ↦ (f x) ^ n) = cfc a f ^ n := by
-  have : ContinuousOn f (spectrum R a) := hf -- hack
   rw [cfc_apply a f, ← map_pow, cfc_apply a _]
   congr
 
@@ -387,8 +384,6 @@ lemma cfc_add (f g : R → R)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
     cfc a (fun x ↦ f x + g x) = cfc a f + cfc a g := by
-  have : ContinuousOn f (spectrum R a) := hf -- hack
-  have : ContinuousOn g (spectrum R a) := hg -- hack
   by_cases ha : p a
   · rw [cfc_apply a f, cfc_apply a g, ← map_add, cfc_apply a _]
     congr
@@ -398,7 +393,6 @@ lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
     (s : S) (f : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc a (fun x ↦ s • f x) = s • cfc a f := by
-  have : ContinuousOn f (spectrum R a) := hf -- hack
   by_cases ha : p a
   · rw [cfc_apply a f, cfc_apply a _]
     simp_rw [← Pi.smul_def, ← smul_one_smul R s _]
@@ -452,7 +446,6 @@ lemma cfc_eval_C (r : R) (ha : p a := by cfc_tac) :
 lemma cfc_map_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc a (fun x ↦ q.eval (f x)) = aeval (cfc a f) q := by
-  have : ContinuousOn f (spectrum R a) := hf -- hack
   induction q using Polynomial.induction_on with
   | h_C r => simp [cfc_const a r]
   | h_add q₁ q₂ hq₁ hq₂ =>
@@ -562,11 +555,9 @@ noncomputable def cfc_units (a : A) (f : R → R) (hf' : ∀ x ∈ spectrum R a,
   val := cfc a f
   inv := cfc a (fun x ↦ (f x)⁻¹)
   val_inv := by
-    have : ContinuousOn f (spectrum R a) := hf -- hack
     rw [← cfc_mul .., ← cfc_one R a]
     exact cfc_congr a fun _ _ ↦ by aesop
   inv_val := by
-    have : ContinuousOn f (spectrum R a) := hf -- hack
     rw [← cfc_mul .., ← cfc_one R a]
     exact cfc_congr a fun _ _ ↦ by aesop
 
@@ -597,7 +588,6 @@ lemma cfc_map_div (a : A) (f g : R → R) (hg' : ∀ x ∈ spectrum R a, g x ≠
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
     cfc a (fun x ↦ f x / g x) = cfc a f * Ring.inverse (cfc a g) := by
   simp only [div_eq_mul_inv]
-  have : ContinuousOn g (spectrum R a) := hg -- hack
   rw [cfc_mul .., cfc_inv a g hg']
 
 variable [UniqueContinuousFunctionalCalculus R A]
@@ -656,8 +646,6 @@ lemma cfc_sub (a : A) (f g : R → R)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
     cfc a (fun x ↦ f x - g x) = cfc a f - cfc a g := by
-  have : ContinuousOn f (spectrum R a) := hf -- hack
-  have : ContinuousOn g (spectrum R a) := hg -- hack
   by_cases ha : p a
   · rw [cfc_apply a f, cfc_apply a g, ← map_sub, cfc_apply ..]
     congr
