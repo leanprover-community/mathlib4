@@ -300,7 +300,7 @@ def fourierChar : Multiplicative ℝ →* 𝕊 where
   map_mul' x y := by simp only; rw [toAdd_mul, mul_add, expMapCircle_add]
 #align real.fourier_char Real.fourierChar
 
-local notation "𝐞" => Real.fourierChar
+@[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
 
 theorem fourierChar_apply (x : ℝ) : 𝐞[x] = Complex.exp (↑(2 * π * x) * Complex.I) :=
   by rfl

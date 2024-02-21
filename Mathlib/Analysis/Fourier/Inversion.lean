@@ -36,13 +36,13 @@ To check the concentration property of the middle factor and the fact that it ha
 rely on the explicit computation of the Fourier transform of Gaussians.
 -/
 
+open Filter MeasureTheory Complex FiniteDimensional Metric Real Bornology
+
+open scoped Topology FourierTransform RealInnerProductSpace
+
 variable {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
   [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
   [NormedAddCommGroup E] [NormedSpace ℂ E] {f : V → E}
-
-open Filter MeasureTheory Complex FiniteDimensional Metric Real Bornology
-
-open scoped Topology FourierTransform RealInnerProductSpace BigOperators
 
 namespace Real
 
@@ -58,11 +58,11 @@ lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
     exact AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable (by continuity)) hf.1
   · filter_upwards [Ici_mem_atTop (0 : ℝ)] with c (hc : 0 ≤ c)
     apply eventually_of_forall (fun v ↦ ?_)
-    simp only [ofReal_inv, neg_mul, norm_smul, norm_eq_abs, abs_exp]
+    simp only [ofReal_inv, neg_mul, norm_smul, Complex.norm_eq_abs]
     norm_cast
     conv_rhs => rw [← one_mul (‖f v‖)]
     gcongr
-    simp only [Real.exp_le_one_iff, Left.neg_nonpos_iff]
+    simp only [abs_exp, exp_le_one_iff, Left.neg_nonpos_iff]
     positivity
 
 variable [CompleteSpace E]
@@ -95,7 +95,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
   apply B.congr'
   filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
   congr with w
-  rw [GaussianFourier.fourierTransform_gaussian_innerProductSpace' (by simpa)]
+  rw [fourierIntegral_gaussian_innerProductSpace' (by simpa)]
   congr
   · simp
   · simp; ring
