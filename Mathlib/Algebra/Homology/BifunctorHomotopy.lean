@@ -19,13 +19,6 @@ the morphism `f₂` in `HomologicalComplex C c₂` (TODO).
 
 open CategoryTheory Category Limits
 
-lemma ComplexShape.prev_eq_self {ι : Type*} (c : ComplexShape ι) (i : ι)
-    (h : ¬ c.Rel (c.prev i) i) : c.prev i = i :=
-  dif_neg (by
-    rintro ⟨j, hj⟩
-    obtain rfl := c.prev_eq' hj
-    exact h hj)
-
 variable {C₁ C₂ D I₁ I₂ J : Type*} [Category C₁] [Category C₂] [Category D]
   [Preadditive C₁] [Preadditive C₂] [Preadditive D]
   {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
@@ -84,9 +77,9 @@ lemma comm₁ (j : J) :
   simp? [h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
     simp only [HomologicalComplex₂.ιTotal_map, Functor.mapBifunctorHomologicalComplex_obj_obj_X_X,
       HomologicalComplex₂.total_X, Functor.mapBifunctorHomologicalComplex_obj_obj_toGradedObject,
-      comp_f, Functor.mapBifunctorHomologicalComplex_map_app_f_f, h₁.comm i₁, dNext_eq_dFrom_fromNext,
-      dFrom, fromNext, AddMonoidHom.mk'_apply, prevD_eq_toPrev_dTo, toPrev, dTo, Functor.map_add,
-      Functor.map_comp, NatTrans.app_add, NatTrans.comp_app,
+      comp_f, Functor.mapBifunctorHomologicalComplex_map_app_f_f, h₁.comm i₁,
+      dNext_eq_dFrom_fromNext, dFrom, fromNext, AddMonoidHom.mk'_apply, prevD_eq_toPrev_dTo,
+      toPrev, dTo, Functor.map_add, Functor.map_comp, NatTrans.app_add, NatTrans.comp_app,
       Functor.mapBifunctorHomologicalComplex_obj_map_f_f, Preadditive.add_comp, Category.assoc,
       Preadditive.comp_add, HomologicalComplex₂.ι_D₁_assoc, GradedObject.mapBifunctor_obj_obj,
       HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
