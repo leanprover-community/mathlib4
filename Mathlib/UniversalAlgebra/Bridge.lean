@@ -8,3 +8,5 @@ class AA (X Y : Type*) where
 
 #check AA.SortType.Y
 --#eval lawvere_context% AA
+
+#eval lawvere_context% AA
