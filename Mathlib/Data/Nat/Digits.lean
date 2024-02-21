@@ -90,7 +90,7 @@ theorem digits_zero (b : ℕ) : digits b 0 = [] := by
   rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 #align nat.digits_zero Nat.digits_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
 #align nat.digits_zero_zero Nat.digits_zero_zero
@@ -110,7 +110,7 @@ theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 #align nat.digits_one Nat.digits_one
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 #align nat.digits_one_succ Nat.digits_one_succ
