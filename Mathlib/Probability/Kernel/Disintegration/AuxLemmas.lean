@@ -40,3 +40,20 @@ lemma measurableSet_tendsto_fun {β γ ι : Type*} [MeasurableSpace β]
     rw [tendsto_iff_dist_tendsto_zero]
   rw [this]
   exact measurableSet_tendsto_nhds (fun n ↦ (hf n).dist hg) 0
+
+lemma Measure.iInf_Iic_gt_prod {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
+    {s : Set α} (hs : MeasurableSet s) (t : ℚ) :
+    ⨅ r : { r' : ℚ // t < r' }, ρ (s ×ˢ Iic (r : ℝ)) = ρ (s ×ˢ Iic (t : ℝ)) := by
+  rw [← measure_iInter_eq_iInf]
+  · rw [← prod_iInter]
+    congr with x : 1
+    simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
+    refine ⟨fun h ↦ ?_, fun h a hta ↦ h.trans ?_⟩
+    · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
+      exact mod_cast htq
+    · exact mod_cast hta.le
+  · exact fun _ => hs.prod measurableSet_Iic
+  · refine Monotone.directed_ge fun r r' hrr' ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, ?_⟩)
+    refine Iic_subset_Iic.mpr ?_
+    exact mod_cast hrr'
+  · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩

@@ -211,21 +211,21 @@ section StandardBorel
 
 noncomputable
 def kernel.condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : kernel (α × γ) ℝ :=
-  cdfKernel _ (isKernelCDF_mLimsupCDF κ)
+  cdfKernel _ (isKernelCDF_kernelCDF κ)
 
 instance (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : IsMarkovKernel (kernel.condKernelReal κ) := by
   unfold kernel.condKernelReal; infer_instance
 
 lemma kernel.eq_compProd_condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
     κ = kernel.fst κ ⊗ₖ kernel.condKernelReal κ :=
-  kernel.eq_compProd_cdfKernel (isKernelCDF_mLimsupCDF κ)
+  kernel.eq_compProd_cdfKernel (isKernelCDF_kernelCDF κ)
 
 noncomputable
 def condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel κ] : kernel (α × γ) Ω :=
   let f := measurableEmbedding_real Ω
   let hf := measurableEmbedding_measurableEmbedding_real Ω
   let κ' := kernel.map κ (Prod.map (id : γ → γ) f) (measurable_id.prod_map hf.measurable)
-  condKernelBorelSnd κ (isKernelCDF_mLimsupCDF κ')
+  condKernelBorelSnd κ (isKernelCDF_kernelCDF κ')
 
 instance instIsMarkovKernel_condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel κ] :
     IsMarkovKernel (condKernelBorel κ) := by

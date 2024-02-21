@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 import Mathlib.Probability.Kernel.MeasureCompProd
-import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 /-!
 
