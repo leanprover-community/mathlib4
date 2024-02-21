@@ -8,15 +8,15 @@ import Mathlib.Algebra.Order.Monoid.Defs
 /-!
 # IsOrderedAddCommMonoid mixin
 
-this file defines a mixin class for combining kinds orderings and kinds of AddCommMonoid.
-this allows for previously undefined combinations like combining CompleteLinearOrder and
-AddCommMonoid, preventing the need for defining increasingly complex combinations of the two.
+This file defines a mixin class for combining kinds orderings and kinds of AddCommMonoid.
+This allows for previously undefined combinations like combining `CompleteLinearOrder` and
+`AddCommMonoid`, preventing the need for defining increasingly complex combinations of the two.
 
 ## Main Definitions:
 
-- `IsOrderedAddCommMonoid α`: a mixin for `PartialOrder α` and a
+- `IsOrderedAddCommMonoid α`: A mixin for `PartialOrder α` and a
 `AddCommMonoid α` such that weak inequalities are maintained under adding constants.
-- `IsOrderedCancelAddCommMonoid α`: mixin for `PartialOrder α` and a
+- `IsOrderedCancelAddCommMonoid α`: A mixin for `PartialOrder α` and a
 `AddCommMonoid α` such that weak inequalities are maintained under both adding and
 cancelling out the adding of constants.
 
@@ -28,15 +28,15 @@ given `IsOrderedAddCommMonoid α` and `LinearOrder α`
 given `IsOrderedCancelAddCommMonoid α` and `LinearOrder α`
 -/
 
-/--mixin for saying adding a constant does not change weak inequality-/
+/-- Mixin for saying adding a constant does not change weak inequality -/
 class IsOrderedAddCommMonoid (α : Type*) [PartialOrder α] [AddCommMonoid α] : Prop where
   /- Adding a constant on the left does not change the order -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c, c + a ≤ c + b
 
-/--mixin for saying removing the adding of a constant does not change weak inequality-/
+/-- Mixin for saying removing the adding of a constant does not change weak inequality -/
 class IsOrderedCancelAddCommMonoid
   (α :Type*) [PartialOrder α] [AddCommMonoid α] extends IsOrderedAddCommMonoid α : Prop where
-  /- Removing the adding of a constant on the left does not change the order-/
+  /- Removing the adding of a constant on the left does not change the order -/
   protected le_of_add_le_add_left : ∀ (a b c : α), a + b ≤ a + c → b ≤ c
 
 instance (α : Type*) [h1: LinearOrder α] [h2: AddCommMonoid α] [h3:IsOrderedAddCommMonoid α] :
