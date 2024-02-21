@@ -117,7 +117,9 @@ def getFunctionData? (f : Expr)
     else
       pure false
 
-  let .forallE xName xType _ _ ← inferType f | throwError "fun_prop bug: function expected"
+  let .forallE xName xType _ _ ← whnf (← inferType f)
+    | throwError "fun_prop bug: function expected, \
+                  got `{← ppExpr f} : {← ppExpr (← inferType f)}`"
   withLocalDeclD xName xType fun x => do
     let fx' ← Mor.whnfPred (f.beta #[x]).eta unfold cfg
     let f' ← mkLambdaFVars #[x] fx'
