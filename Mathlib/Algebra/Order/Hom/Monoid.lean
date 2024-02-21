@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
-import Mathlib.Data.Pi.Algebra
 import Mathlib.Order.Hom.Basic
 
 #align_import algebra.order.hom.monoid from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
@@ -21,12 +20,6 @@ This file defines morphisms between (additive) ordered monoids.
 * `OrderAddMonoidHom`: Ordered additive monoid homomorphisms.
 * `OrderMonoidHom`: Ordered monoid homomorphisms.
 * `OrderMonoidWithZeroHom`: Ordered monoid with zero homomorphisms.
-
-## Typeclasses
-
-* `OrderAddMonoidHomClass`
-* `OrderMonoidHomClass`
-* `OrderMonoidWithZeroHomClass`
 
 ## Notation
 
@@ -47,6 +40,15 @@ between ordered groups) given only a proof that multiplication is preserved,
 Implicit `{}` brackets are often used instead of type class `[]` brackets. This is done when the
 instances can be inferred because they are implicit arguments to the type `OrderMonoidHom`. When
 they can be inferred from the type it is faster to use this method than to use type class inference.
+
+### Removed typeclasses
+
+This file used to define typeclasses for order-preserving (additive) monoid homomorphisms:
+`OrderAddMonoidHomClass`, `OrderMonoidHomClass`, and `OrderMonoidWithZeroHomClass`.
+
+In #10544 we migrated from these typeclasses
+to assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N ]`,
+making some definitions and lemmas irrelevant.
 
 ## Tags
 
@@ -78,19 +80,6 @@ structure OrderAddMonoidHom (α β : Type*) [Preorder α] [Preorder β] [AddZero
 /-- Infix notation for `OrderAddMonoidHom`. -/
 infixr:25 " →+o " => OrderAddMonoidHom
 
-section
-
-/-- `OrderAddMonoidHomClass F α β` states that `F` is a type of ordered monoid homomorphisms.
-
-You should also extend this typeclass when you extend `OrderAddMonoidHom`. -/
-class OrderAddMonoidHomClass (F α β : Type*) [Preorder α] [Preorder β]
-  [AddZeroClass α] [AddZeroClass β] [FunLike F α β] extends AddMonoidHomClass F α β : Prop where
-  /-- An `OrderAddMonoidHom` is a monotone function. -/
-  monotone (f : F) : Monotone f
-#align order_add_monoid_hom_class OrderAddMonoidHomClass
-
-end
-
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end AddMonoid
 
@@ -114,43 +103,22 @@ structure OrderMonoidHom (α β : Type*) [Preorder α] [Preorder β] [MulOneClas
 /-- Infix notation for `OrderMonoidHom`. -/
 infixr:25 " →*o " => OrderMonoidHom
 
-section
-
-/-- `OrderMonoidHomClass F α β` states that `F` is a type of ordered monoid homomorphisms.
-
-You should also extend this typeclass when you extend `OrderMonoidHom`. -/
-@[to_additive]
-class OrderMonoidHomClass (F α β : Type*) [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β]
-  [FunLike F α β] extends MonoidHomClass F α β : Prop where
-  /-- An `OrderMonoidHom` is a monotone function. -/
-  monotone (f : F) : Monotone f
-#align order_monoid_hom_class OrderMonoidHomClass
-
-end
-
 variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
 
-/-- Turn an element of a type `F` satisfying `OrderMonoidHomClass F α β` into an actual
-`OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
+/-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F α β`
+into an actual `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
 @[to_additive (attr := coe)
   "Turn an element of a type `F` satisfying `OrderAddMonoidHomClass F α β` into an actual
   `OrderAddMonoidHom`. This is declared as the default coercion from `F` to `α →+o β`."]
-def OrderMonoidHomClass.toOrderMonoidHom [OrderMonoidHomClass F α β] (f : F) : α →*o β :=
-  { (f : α →* β) with monotone' := monotone f }
-
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) OrderMonoidHomClass.toOrderHomClass [OrderMonoidHomClass F α β] :
-    OrderHomClass F α β :=
-  { ‹OrderMonoidHomClass F α β› with map_rel := OrderMonoidHomClass.monotone }
-#align order_monoid_hom_class.to_order_hom_class OrderMonoidHomClass.toOrderHomClass
-#align order_add_monoid_hom_class.to_order_hom_class OrderAddMonoidHomClass.toOrderHomClass
+def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
+    α →*o β :=
+  { (f : α →* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
 @[to_additive "Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
   `OrderAddMonoidHomClass.toOrderAddMonoidHom`"]
-instance [OrderMonoidHomClass F α β] : CoeTC F (α →*o β) :=
+instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
 end Monoid
@@ -179,47 +147,31 @@ infixr:25 " →*₀o " => OrderMonoidWithZeroHom
 
 section
 
-/-- `OrderMonoidWithZeroHomClass F α β` states that `F` is a type of
-ordered monoid with zero homomorphisms.
-
-You should also extend this typeclass when you extend `OrderMonoidWithZeroHom`. -/
-class OrderMonoidWithZeroHomClass (F α β : Type*) [Preorder α] [Preorder β]
-  [MulZeroOneClass α] [MulZeroOneClass β] [FunLike F α β]
-  extends MonoidWithZeroHomClass F α β : Prop where
-  /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
-  monotone (f : F) : Monotone f
-#align order_monoid_with_zero_hom_class OrderMonoidWithZeroHomClass
-
 variable [FunLike F α β]
 
-/-- Turn an element of a type `F` satisfying `OrderMonoidWithZeroHomClass F α β` into an actual
-`OrderMonoidWithZeroHom`. This is declared as the default coercion from `F` to `α →+*₀o β`. -/
+/-- Turn an element of a type `F`
+satisfying `OrderHomClass F α β` and `MonoidWithZeroHomClass F α β`
+into an actual `OrderMonoidWithZeroHom`.
+This is declared as the default coercion from `F` to `α →+*₀o β`. -/
 @[coe]
-def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderMonoidWithZeroHomClass F α β]
-    (f : F) : α →*₀o β :=
-{ (f : α →*₀ β) with monotone' := monotone f }
+def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderHomClass F α β]
+    [MonoidWithZeroHomClass F α β] (f : F) : α →*₀o β :=
+{ (f : α →*₀ β) with monotone' := OrderHomClass.monotone f }
 
 end
 
 variable [FunLike F α β]
 
--- See note [lower instance priority]
-instance (priority := 100) OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
-    {_ : Preorder α} {_ : Preorder β} {_ : MulZeroOneClass α} {_ : MulZeroOneClass β}
-    [OrderMonoidWithZeroHomClass F α β] : OrderMonoidHomClass F α β :=
-  { ‹OrderMonoidWithZeroHomClass F α β› with }
-#align order_monoid_with_zero_hom_class.to_order_monoid_hom_class OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
-
-instance [OrderMonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
+instance [OrderHomClass F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
   ⟨OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom⟩
 
 end MonoidWithZero
 
-section OrderedAddCommMonoid
+section OrderedZero
 
 variable [FunLike F α β]
-variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [OrderAddMonoidHomClass F α β] (f : F)
-  {a : α}
+variable [Preorder α] [Zero α] [Preorder β] [Zero β] [OrderHomClass F α β]
+  [ZeroHomClass F α β] (f : F) {a : α}
 
 /-- See also `NonnegHomClass.apply_nonneg`. -/
 theorem map_nonneg (ha : 0 ≤ a) : 0 ≤ f a := by
@@ -232,7 +184,7 @@ theorem map_nonpos (ha : a ≤ 0) : f a ≤ 0 := by
   exact OrderHomClass.mono _ ha
 #align map_nonpos map_nonpos
 
-end OrderedAddCommMonoid
+end OrderedZero
 
 section OrderedAddCommGroup
 
@@ -299,10 +251,13 @@ instance : FunLike (α →*o β) α β where
     congr
 
 @[to_additive]
-instance : OrderMonoidHomClass (α →*o β) α β where
+instance : OrderHomClass (α →*o β) α β where
+  map_rel f _ _ h := f.monotone' h
+
+@[to_additive]
+instance : MonoidHomClass (α →*o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
-  monotone f := f.monotone'
 
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
@@ -586,11 +541,13 @@ instance : FunLike (α →*₀o β) α β where
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
 
-instance : OrderMonoidWithZeroHomClass (α →*₀o β) α β where
+instance : MonoidWithZeroHomClass (α →*₀o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_zero f := f.map_zero'
-  monotone f := f.monotone'
+
+instance : OrderHomClass (α →*₀o β) α β where
+  map_rel f _ _ h := f.monotone' h
 
 -- Other lemmas should be accessed through the `FunLike` API
 @[ext]
@@ -766,3 +723,11 @@ theorem toOrderMonoidHom_eq_coe (f : α →*₀o β) : f.toOrderMonoidHom = f :=
 end LinearOrderedCommMonoidWithZero
 
 end OrderMonoidWithZeroHom
+
+/- See module docstring for details. -/
+#noalign order_add_monoid_hom_class
+#noalign order_monoid_hom_class
+#noalign order_monoid_hom_class.to_order_hom_class
+#noalign order_add_monoid_hom_class.to_order_hom_class
+#noalign order_monoid_with_zero_hom_class
+#noalign order_monoid_with_zero_hom_class.to_order_monoid_hom_class
