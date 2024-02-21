@@ -34,9 +34,10 @@ We build a basic API using dot notation around these notions, and we prove that
 * `indicator s (λ _, y)` is lower semicontinuous when `s` is open and `0 ≤ y`, or when `s` is closed
   and `y ≤ 0`;
 * continuous functions are lower semicontinuous;
-* composition with a continuous monotone functions maps lower semicontinuous functions to lower
+* left composition with a continuous monotone functions maps lower semicontinuous functions to lower
   semicontinuous functions. If the function is anti-monotone, it instead maps lower semicontinuous
   functions to upper semicontinuous functions;
+* right composition with continuous functions preserves lower and upper semicontinuity;
 * a sum of two (or finitely many) lower semicontinuous functions is lower semicontinuous;
 * a supremum of a family of lower semicontinuous functions is lower semicontinuous;
 * An infinite sum of `ℝ≥0∞`-valued lower semicontinuous functions is lower semicontinuous.
@@ -381,6 +382,8 @@ variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
 
+variable {ι : Type*} [TopologicalSpace ι]
+
 theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
     LowerSemicontinuousWithinAt (g ∘ f) s x := by
@@ -434,6 +437,15 @@ theorem Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α →
     (hf : LowerSemicontinuous f) (gmon : Antitone g) : UpperSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_lowerSemicontinuousAt_antitone (hf x) gmon
 #align continuous.comp_lower_semicontinuous_antitone Continuous.comp_lowerSemicontinuous_antitone
+
+theorem LowerSemicontinuousAt.comp {f : α → β} {g : ι → α} {x : ι}
+    (hf : LowerSemicontinuousAt f (g x)) (hg : ContinuousAt g x) :
+    LowerSemicontinuousAt (fun x ↦ f (g x)) x :=
+  fun _ lt ↦ hg.eventually (hf _ lt)
+
+theorem LowerSemicontinuous.comp {f : α → β} {g : ι → α}
+    (hf : LowerSemicontinuous f) (hg : Continuous g) : LowerSemicontinuous fun x ↦ f (g x) :=
+  fun x ↦ (hf (g x)).comp hg.continuousAt
 
 end
 
@@ -946,6 +958,8 @@ variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 
 variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
 
+variable {ι : Type*} [TopologicalSpace ι]
+
 theorem ContinuousAt.comp_upperSemicontinuousWithinAt {g : γ → δ} {f : α → γ}
     (hg : ContinuousAt g (f x)) (hf : UpperSemicontinuousWithinAt f s x) (gmon : Monotone g) :
     UpperSemicontinuousWithinAt (g ∘ f) s x :=
@@ -988,6 +1002,15 @@ theorem Continuous.comp_upperSemicontinuous_antitone {g : γ → δ} {f : α →
     (hf : UpperSemicontinuous f) (gmon : Antitone g) : LowerSemicontinuous (g ∘ f) := fun x =>
   hg.continuousAt.comp_upperSemicontinuousAt_antitone (hf x) gmon
 #align continuous.comp_upper_semicontinuous_antitone Continuous.comp_upperSemicontinuous_antitone
+
+theorem UpperSemicontinuousAt.comp {f : α → β} {g : ι → α} {x : ι}
+    (hf : UpperSemicontinuousAt f (g x)) (hg : ContinuousAt g x) :
+    UpperSemicontinuousAt (fun x ↦ f (g x)) x :=
+  fun _ lt ↦ hg.eventually (hf _ lt)
+
+theorem UpperSemicontinuous.comp {f : α → β} {g : ι → α}
+    (hf : UpperSemicontinuous f) (hg : Continuous g) : UpperSemicontinuous fun x ↦ f (g x) :=
+  fun x ↦ (hf (g x)).comp hg.continuousAt
 
 end
 
