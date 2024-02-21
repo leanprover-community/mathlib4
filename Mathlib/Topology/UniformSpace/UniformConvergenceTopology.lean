@@ -135,7 +135,7 @@ uniform convergence
 
 noncomputable section
 
-open Topology Classical Uniformity Filter
+open scoped Topology Classical Uniformity
 
 open Set Filter
 
@@ -699,6 +699,11 @@ theorem uniformContinuous_eval_of_mem {x : α} (hxs : x ∈ s) (hs : s ∈ 𝔖)
     (UniformOnFun.uniformContinuous_restrict α β 𝔖 hs)
 #align uniform_on_fun.uniform_continuous_eval_of_mem UniformOnFun.uniformContinuous_eval_of_mem
 
+theorem uniformContinuous_eval_of_mem_sUnion {x : α} (hx : x ∈ ⋃₀ 𝔖) :
+    UniformContinuous ((Function.eval x : (α → β) → β) ∘ toFun 𝔖) :=
+  let ⟨_s, hs, hxs⟩ := hx
+  uniformContinuous_eval_of_mem _ _ hxs hs
+
 variable {β} {𝔖}
 
 /-- If `u` is a family of uniform structures on `γ`, then
@@ -854,6 +859,31 @@ protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (
     UniformOnFun.tendsto_iff_tendstoUniformlyOn, UniformFun.tendsto_iff_tendstoUniformly,
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X]
   rfl
+
+instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) where
+  complete {F} hF := by
+    have := hF.1
+    have : ∀ x : α, ∃ y : β, x ∈ ⋃₀ 𝔖 → Tendsto (toFun 𝔖 · x) F (𝓝 y) := fun x ↦
+      if hx : x ∈ ⋃₀ 𝔖 then
+        let ⟨y, hy⟩ := CompleteSpace.complete (hF.map (uniformContinuous_eval_of_mem_sUnion _ _ hx))
+        ⟨y, fun _ ↦ hy⟩
+      else
+        let ⟨f⟩ := hF.1.nonempty
+        ⟨f x, (absurd · hx)⟩
+    choose g hg using this
+    use ofFun 𝔖 g
+    rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn, toFun_ofFun]
+    intro s hs
+    rw [tendstoUniformlyOn_iff_tendsto, uniformity_hasBasis_closed.tendsto_right_iff]
+    rintro U ⟨hU, hUc⟩
+    
+    -- rcases F.basis_sets.prod_self.mem_iff.1
+    --   (hF.2 <| (UniformFun.hasBasis_uniformity _ _).mem_of_mem hU) with ⟨V, hV, HVU⟩
+    -- use V, hV
+    -- rintro ⟨f, x⟩ (hf : f ∈ V)
+    -- refine hUc.mem_of_tendsto ((hg x).prod_mk_nhds tendsto_const_nhds) ?_
+    -- filter_upwards [hV] with g' hg'
+    -- exact HVU (mk_mem_prod hg' hf) _
 
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] β × γ` and `(α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] γ)`. -/
