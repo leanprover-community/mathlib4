@@ -95,17 +95,12 @@ def LawvereSetoid {S : Type u} {op : ProdWord S → ProdWord S → Type v}
   iseqv := ⟨LawvereRel.rfl, LawvereRel.symm, LawvereRel.trans⟩
 
 structure LawverePresentation (S : Type u) where
-  hom : ProdWord S → S → Type v
+  hom : ProdWord S → ProdWord S → Type v
   rel : {X Y : ProdWord S} → LawvereWord hom X Y → LawvereWord hom X Y → Prop
 
 namespace LawverePresentation
 
-variable {S S' : Type*} (P : LawverePresentation S) (P' : LawverePresentation S')
-
-structure Morphism  where
-  map {X : ProdWord S} {Y : S} : P.hom X Y → Q.hom X Y
-  map_rel {X Y : ProdWord S} (f g : LawvereWord P.hom X Y) :
-    P.rel f g → Q.rel (f.map map) (g.map map)
+variable {S : Type*} (P : LawverePresentation S)
 
 def lawvereTheory : LawvereTheory S where
   hom X Y := Quotient (LawvereSetoid P.rel X Y)
