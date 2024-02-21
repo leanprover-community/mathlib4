@@ -1271,7 +1271,7 @@ theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f)
     simp only [Pi.zero_apply, ofReal_eq_zero]
   · exact (ENNReal.measurable_ofReal.comp_aemeasurable hfi.1.aemeasurable)
 
-lemma ae_eq_of_integral_eq_of_ae_le {f g : α → ℝ} (hf : Integrable f μ)
+lemma ae_eq_of_ae_le_of_integral_eq {f g : α → ℝ} (hf : Integrable f μ)
     (hg : Integrable g μ) (h_le : f ≤ᵐ[μ] g) (h_eq : ∫ a, f a ∂μ = ∫ a, g a ∂μ) :
     f =ᵐ[μ] g := by
   suffices g - f =ᵐ[μ] 0 by
