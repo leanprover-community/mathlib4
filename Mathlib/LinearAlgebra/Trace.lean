@@ -123,6 +123,12 @@ theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
   simp
 #align linear_map.trace_conj LinearMap.trace_conj
 
+@[simp]
+lemma trace_lie {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f g : Module.End R M) :
+    trace R M ⁅f, g⁆ = 0 := by
+  rw [Ring.lie_def, map_sub, trace_mul_comm]
+  exact sub_self _
+
 end
 
 section

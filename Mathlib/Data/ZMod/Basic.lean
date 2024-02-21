@@ -133,7 +133,7 @@ theorem ringChar_zmod_n (n : ℕ) : ringChar (ZMod n) = n := by
   exact ZMod.charP n
 #align zmod.ring_char_zmod_n ZMod.ringChar_zmod_n
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem nat_cast_self (n : ℕ) : (n : ZMod n) = 0 :=
   CharP.cast_eq_zero (ZMod n) n
 #align zmod.nat_cast_self ZMod.nat_cast_self
@@ -853,6 +853,18 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
     left_inv := inv.1
     right_inv := inv.2 }
 #align zmod.chinese_remainder ZMod.chineseRemainder
+
+lemma subsingleton_iff {n : ℕ} : Subsingleton (ZMod n) ↔ n = 1 := by
+  constructor
+  · obtain (_ | _ | n) := n
+    · simpa [ZMod] using not_subsingleton _
+    · simp [ZMod]
+    · simpa [ZMod] using not_subsingleton _
+  · rintro rfl
+    infer_instance
+
+lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
+  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 -- todo: this can be made a `Unique` instance.
 instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=

@@ -43,6 +43,8 @@ theorem coe_expand : (expand R p : R[X] → R[X]) = eval₂ C (X ^ p) :=
 
 variable {R}
 
+theorem expand_eq_comp_X_pow {f : R[X]} : expand R p f = f.comp (X ^ p) := rfl
+
 theorem expand_eq_sum {f : R[X]} : expand R p f = f.sum fun e a => C a * (X ^ p) ^ e := by
   simp [expand, eval₂]
 #align polynomial.expand_eq_sum Polynomial.expand_eq_sum
@@ -219,6 +221,10 @@ theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
     _ ≤ n * p := mul_le_mul_of_nonneg_left (show 1 ≤ p from hp.bot_lt) (zero_le n)
 #align polynomial.coeff_contract Polynomial.coeff_contract
 
+theorem map_contract {p : ℕ} (hp : p ≠ 0) {f : R →+* S} {q : R[X]} :
+    (q.contract p).map f = (q.map f).contract p := ext fun n ↦ by
+  simp only [coeff_map, coeff_contract hp]
+
 theorem contract_expand {f : R[X]} (hp : p ≠ 0) : contract p (expand R p f) = f := by
   ext
   simp [coeff_contract hp, coeff_expand hp.bot_lt, Nat.mul_div_cancel _ hp.bot_lt]
@@ -274,6 +280,25 @@ theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
 end ExpChar
 
 end CommSemiring
+
+section rootMultiplicity
+
+variable {R : Type u} [CommRing R] {p n : ℕ} [ExpChar R p] {f : R[X]} {r : R}
+
+theorem rootMultiplicity_expand_pow :
+    (expand R (p ^ n) f).rootMultiplicity r = p ^ n * f.rootMultiplicity (r ^ p ^ n) := by
+  obtain rfl | h0 := eq_or_ne f 0; · simp
+  obtain ⟨g, hg, ndvd⟩ := f.exists_eq_pow_rootMultiplicity_mul_and_not_dvd h0 (r ^ p ^ n)
+  rw [dvd_iff_isRoot, ← eval_X (x := r), ← eval_pow, ← isRoot_comp, ← expand_eq_comp_X_pow] at ndvd
+  conv_lhs => rw [hg, map_mul, map_pow, map_sub, expand_X, expand_C, map_pow, ← sub_pow_expChar_pow,
+    ← pow_mul, mul_comm, rootMultiplicity_mul_X_sub_C_pow (expand_ne_zero (expChar_pow_pos R p n)
+      |>.mpr <| right_ne_zero_of_mul <| hg ▸ h0), rootMultiplicity_eq_zero ndvd, zero_add]
+
+theorem rootMultiplicity_expand :
+    (expand R p f).rootMultiplicity r = p * f.rootMultiplicity (r ^ p) := by
+  rw [← pow_one p, rootMultiplicity_expand_pow]
+
+end rootMultiplicity
 
 section IsDomain
 

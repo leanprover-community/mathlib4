@@ -256,18 +256,18 @@ theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring �
 
 theorem fromBlocks_mulVec [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
     (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : Sum l m → α) :
-    mulVec (fromBlocks A B C D) x =
-      Sum.elim (mulVec A (x ∘ Sum.inl) + mulVec B (x ∘ Sum.inr))
-        (mulVec C (x ∘ Sum.inl) + mulVec D (x ∘ Sum.inr)) := by
+    (fromBlocks A B C D) *ᵥ x =
+      Sum.elim (A *ᵥ (x ∘ Sum.inl) + B *ᵥ (x ∘ Sum.inr))
+        (C *ᵥ (x ∘ Sum.inl) + D *ᵥ (x ∘ Sum.inr)) := by
   ext i
   cases i <;> simp [mulVec, dotProduct]
 #align matrix.from_blocks_mul_vec Matrix.fromBlocks_mulVec
 
 theorem vecMul_fromBlocks [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
     (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : Sum n o → α) :
-    vecMul x (fromBlocks A B C D) =
-      Sum.elim (vecMul (x ∘ Sum.inl) A + vecMul (x ∘ Sum.inr) C)
-        (vecMul (x ∘ Sum.inl) B + vecMul (x ∘ Sum.inr) D) := by
+    x ᵥ* fromBlocks A B C D =
+      Sum.elim ((x ∘ Sum.inl) ᵥ* A + (x ∘ Sum.inr) ᵥ* C)
+        ((x ∘ Sum.inl) ᵥ* B + (x ∘ Sum.inr) ᵥ* D) := by
   ext i
   cases i <;> simp [vecMul, dotProduct]
 #align matrix.vec_mul_from_blocks Matrix.vecMul_fromBlocks
