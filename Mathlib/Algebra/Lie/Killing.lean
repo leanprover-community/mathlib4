@@ -537,6 +537,8 @@ lemma rootSpaceProductNegSelf_zero_eq_bot :
     simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
   simp
 
+variable {K H L}
+
 /-- The contrapositive of this result is very useful, taking `x` to be the element of `H`
 corresponding to a root `α` under the identification between `H` and `H^*` provided by the Killing
 form. -/
@@ -550,6 +552,15 @@ lemma eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf [CharZero K]
     obtain ⟨a, b, hb, hab⟩ := exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero L α β hα hβ
     simpa [hαx, hb.ne'] using hab _ hx
   simpa using hx
+
+-- When `α ≠ 0`, this can be upgraded to `IsCompl`; moreover these complements are orthogonal with
+-- respect to the Killing form. TODO prove this!
+lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot [CharZero K] (α : weight K H L) :
+    LinearMap.ker (weight.toLinear K H L α) ⊓ (rootSpaceProductNegSelf (α : H → K)).range = ⊥ := by
+  rw [LieIdeal.coe_to_lieSubalgebra_to_submodule, LieModuleHom.coeSubmodule_range]
+  refine (Submodule.eq_bot_iff _).mpr fun x ⟨hαx, hx⟩ ↦ ?_
+  replace hαx : (α : H → K) x = 0 := by simpa using hαx
+  exact eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf x α hαx hx
 
 end LieAlgebra.IsKilling
 
