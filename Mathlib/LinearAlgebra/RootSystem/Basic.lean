@@ -131,21 +131,16 @@ lemma reflection_dualMap_eq_coreflection :
 
 variable [Finite ι]
 
-/-- Even though the roots may not span, coroots are distinguished by their pairing with the
-roots. The proof depends crucially on the fact that there are finitely-many roots.
-
-Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI.
-See also `RootPairing.injOn_dualMap_subtype_span_root_coroot` for a more useful restatement. -/
-lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
-    (h : ∀ k, P.pairing k i = P.pairing k j) :
+lemma eq_of_pairing_pairing_eq_two [NoZeroSMulDivisors ℤ M] (i j : ι)
+    (hij : P.pairing i j = 2) (hji : P.pairing j i = 2) :
     i = j := by
   set α := P.root i
   set β := P.root j
   set sα : M ≃ₗ[R] M := P.reflection i
   set sβ : M ≃ₗ[R] M := P.reflection j
   set sαβ : M ≃ₗ[R] M := sβ.trans sα
-  have hα : sα β = β - (2 : R) • α := by rw [P.reflection_apply_root, h j, P.pairing_same j]
-  have hβ : sβ α = α - (2 : R) • β := by rw [P.reflection_apply_root, ← h i, P.pairing_same i]
+  have hα : sα β = β - (2 : R) • α := by rw [P.reflection_apply_root, hji]
+  have hβ : sβ α = α - (2 : R) • β := by rw [P.reflection_apply_root, hij]
   have hb : BijOn sαβ (range P.root) (range P.root) :=
     (P.bijOn_reflection_root i).comp (P.bijOn_reflection_root j)
   set f : ℕ → M := fun n ↦ β + (2 * n : ℤ) • (α - β)
@@ -165,11 +160,17 @@ lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
     sub_eq_zero] at hnm
   linarith [hnm.resolve_right (P.root.injective.ne this)]
 
+/-- Even though the roots may not span, coroots are distinguished by their pairing with the
+roots. The proof depends crucially on the fact that there are finitely-many roots.
+
+Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI. -/
 lemma injOn_dualMap_subtype_span_root_coroot [NoZeroSMulDivisors ℤ M] :
     InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ P.toLin.flip) (range P.coroot) := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
   congr
-  refine P.eq_of_forall_coroot_root_eq i j fun k ↦ ?_
+  suffices ∀ k, P.pairing k i = P.pairing k j from
+    P.eq_of_pairing_pairing_eq_two i j (by simp [← this i]) (by simp [this j])
+  intro k
   simpa using LinearMap.congr_fun hij ⟨P.root k, Submodule.subset_span (mem_range_self k)⟩
 
 /-- In characteristic zero if there is no torsion, the correspondence between roots and coroots is
