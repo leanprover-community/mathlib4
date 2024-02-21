@@ -204,6 +204,7 @@ section AddSubmonoidWithOne
 
 variable (R : Type*) [AddMonoidWithOne R]
 
+/-- An additive submonoid with the condition that unit also lies in the set. -/
 structure AddSubmonoidWithOne extends AddSubmonoid R where
   one_mem' : (1 : R) ∈ carrier
 
@@ -247,9 +248,11 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+/-- Construct a `AddSubmonoidWithOne` from a `Subsemiring` -/
 def addSubmonoidWithOne {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) : AddSubmonoidWithOne R :=
   { s with }
 
+/-- Construct a `NonUnitalSubsemiring` from a `Subsemiring` -/
 def nonUnitalSubsemiring {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) :
     NonUnitalSubsemiring R :=
   { s with }
