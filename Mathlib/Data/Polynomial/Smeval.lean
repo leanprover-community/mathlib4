@@ -264,33 +264,13 @@ end NatPowAssoc
 
 section Algebra
 
-theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := by
-  refine funext ?_
-  intro
+theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
+    (x : S) (p : R[X]) : aeval x p = p.smeval x := by
   rw [aeval_def, eval₂_def, Algebra.algebraMap_eq_smul_one', smeval_def]
   simp only [Algebra.smul_mul_assoc, one_mul]
   exact rfl
 
-/-- `Polynomial.smeval` as an algebra map. -/
-def smeval.algebraMap (R : Type*) [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    (x : S) : R[X] →ₐ[R] S where
-  toFun := fun p => p.smeval x
-  map_one' := by simp only [smeval_one, pow_zero, one_smul]
-  map_mul' p q := smeval_mul R p q x
-  map_zero' := by simp only [smeval_zero]
-  map_add' := fun p q => smeval_add R p q x
-  commutes' r := by
-    dsimp only
-    rw [← C_eq_algebraMap, Algebra.algebraMap_eq_smul_one, smeval_C, pow_zero]
-
-theorem smeval.algebraMap.apply {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    (x : S) (p : R[X]) : smeval.algebraMap R x p = p.smeval x := rfl
-
-theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
-    (x : S) : Polynomial.aeval x = smeval.algebraMap R x := by
-  ext
-  simp only [aeval, smeval.algebraMap, eval₂AlgHom'_apply, eval₂_X, AlgHom.coe_mk, RingHom.coe_mk,
-    MonoidHom.coe_mk, OneHom.coe_mk, smeval_X, pow_one]
+theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
+    (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p
 
 end Algebra
