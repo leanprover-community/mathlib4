@@ -278,6 +278,14 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
+      - name: Check for guard or guard_msgs
+        if: always()
+        run: |
+          if grep -r -n --include=Mathlib/\*.lean -e '#guard' . ; then
+            echo "Error: #guard and #guard_msgs should only be used in test/"
+            exit 1
+          fi
+
       - name: lint mathlib
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v2
