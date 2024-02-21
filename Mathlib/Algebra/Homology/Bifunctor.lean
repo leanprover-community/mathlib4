@@ -111,41 +111,26 @@ variable [HasMapBifunctor K₁ K₂ F c] [HasMapBifunctor L₁ L₂ F c] [Decida
 a bifunctor `F : C₁ ⥤ C₂ ⥤ D` and a complex shape `ComplexShape J` such that we have
 `[TotalComplexShape c₁ c₂ c]`, this `mapBifunctor K₁ K₂ F c : HomologicalComplex D c`
 is the total complex of the bicomplex obtained by applying `F` to `K₁` and `K₂`. -/
-noncomputable def mapBifunctor : HomologicalComplex D c :=
+noncomputable abbrev mapBifunctor : HomologicalComplex D c :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).total c
 
 /-- The inclusion of a summand of `(mapBifunctor K₁ K₂ F c).X j`. -/
-noncomputable def ιMapBifunctor
+noncomputable abbrev ιMapBifunctor
     (i₁ : I₁) (i₂ : I₂) (j : J) (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
     (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).ιTotal c i₁ i₂ j h
 
-section
+noncomputable abbrev ιMapBifunctorOrZero (i₁ : I₁) (i₂ : I₂) (j : J) :
+    (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
+  (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).ιTotalOrZero c i₁ i₂ j
 
-variable {K₁ K₂ F c}
-variable {A : D} {j : J}
-  (f : ∀ (i₁ : I₁) (i₂ : I₂) (_ : ComplexShape.π c₁ c₂ c (i₁, i₂) = j),
-    (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ A)
+lemma ιMapBifunctorOrZero_eq (i₁ : I₁) (i₂ : I₂) (j : J)
+    (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
+    ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h := dif_pos h
 
-/-- Constructor for morphisms from `(mapBifunctor K₁ K₂ F c).X j`. -/
-noncomputable def mapBifunctorDesc : (mapBifunctor K₁ K₂ F c).X j ⟶ A :=
-  HomologicalComplex₂.totalDesc _ f
-
-@[reassoc (attr := simp)]
-lemma ι_mapBifunctorDesc
-    (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
-    ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ mapBifunctorDesc f = f i₁ i₂ h := by
-  simp [ιMapBifunctor, mapBifunctorDesc]
-
-end
-
-variable {K₁ K₂ F c} in
-@[ext]
-lemma mapBifunctor_hom_ext {A : D} {j : J}
-    {f g : (mapBifunctor K₁ K₂ F c).X j ⟶ A}
-    (h : ∀ (i₁ : I₁) (i₂ : I₂) (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j),
-      ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ f = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ g) : f = g :=
-  HomologicalComplex₂.total.hom_ext _ h
+lemma ιMapBifunctorOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (j : J)
+    (h : ComplexShape.π c₁ c₂ c (i₁, i₂) ≠ j) :
+    ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = 0 := dif_neg h
 
 section
 
@@ -163,7 +148,7 @@ lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
     ιMapBifunctor K₁ K₂ F c i₁ i₂ j h ≫ (mapBifunctorMap f₁ f₂ F c).f j =
       (F.map (f₁.f i₁)).app (K₂.X i₂) ≫ (F.obj (L₁.X i₁)).map (f₂.f i₂) ≫
         ιMapBifunctor L₁ L₂ F c i₁ i₂ j h := by
-  simp [mapBifunctorMap, ιMapBifunctor]
+  simp [mapBifunctorMap]
 
 end
 
