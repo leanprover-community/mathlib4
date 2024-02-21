@@ -70,6 +70,16 @@ instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
+instance kernel.instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    CovariantClass (kernel α β) (kernel α β) (· + ·) (· ≤ ·) :=
+  ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
+
+noncomputable
+instance kernel.instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    OrderBot (kernel α β) where
+  bot := 0
+  bot_le κ a := by simp only [ZeroMemClass.coe_zero, Pi.zero_apply, Measure.zero_le]
+
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace kernel
