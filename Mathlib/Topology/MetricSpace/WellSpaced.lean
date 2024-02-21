@@ -643,7 +643,6 @@ def IsUniformlyDiscrete (s : Set α) : Prop :=
 
 /-- A structure recording a radius which has a finite covering radius. -/
 structure IsRelativelyDenseWith (s : Set α) (R : ℝ≥0∞) : Prop :=
-  -- REqCoveringRadius : s.CoveringRadius ≤ R
   isCovering : s.IsCovering R
   RBounded : R < ∞
 
