@@ -122,7 +122,7 @@ theorem isSubmonoid_iUnion_of_directed {ι : Type*} [hι : Nonempty ι] {s : ι 
 section powers
 
 /-- The set of natural number powers `1, x, x², ...` of an element `x` of a monoid. -/
-@[to_additive multiples
+@[to_additive
       "The set of natural number multiples `0, x, 2x, ...` of an element `x` of an `AddMonoid`."]
 def powers (x : M) : Set M :=
   { y | ∃ n : ℕ, x ^ n = y }
@@ -215,13 +215,14 @@ theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n 
 #align is_submonoid.pow_mem IsSubmonoid.pow_mem
 
 /-- The set of natural number powers of an element of a submonoid is a subset of the submonoid. -/
-@[to_additive IsAddSubmonoid.multiples_subset
+@[to_additive
       "The set of natural number multiples of an element of an `AddSubmonoid` is a subset of
       the `AddSubmonoid`."]
-theorem IsSubmonoid.power_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
+theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
-#align is_submonoid.power_subset IsSubmonoid.power_subset
+#align is_submonoid.power_subset IsSubmonoid.powers_subset
 #align is_add_submonoid.multiples_subset IsAddSubmonoid.multiples_subset
+/- 2024-02-21 -/ @[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 
