@@ -116,6 +116,7 @@ theorem cond_toMeasurable_eq :
   · simp [hnt]
   · simp [Measure.restrict_toMeasurable hnt]
 
+variable {μ} in
 lemma cond_absolutelyContinuous : μ[|s] ≪ μ :=
   smul_absolutelyContinuous.trans restrict_le_self.absolutelyContinuous
 
