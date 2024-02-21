@@ -511,6 +511,11 @@ theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×�
     exact mem_image_of_mem _ h2x.1
 #align set.diag_image Set.diag_image
 
+theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
+  simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
+
+theorem diagonal_eq_univ [Subsingleton α] : diagonal α = univ := diagonal_eq_univ_iff.2 ‹_›
+
 end Diagonal
 
 end Set
