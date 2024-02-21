@@ -13,13 +13,18 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 /-!
 # Results on finitely supported functions.
 
-* `Finsupp.rTensor`, the tensor product of `i →₀ M` and `N` is linearly equivalent to `i →₀ M ⊗[R] N`
+* `Finsupp.rTensor`, the tensor product of `i →₀ M` and `N`
+  is linearly equivalent to `i →₀ M ⊗[R] N`
 
-* `Finsupp.lTensor`, the tensor product of `M` and `i →₀ N` is linearly equivalent to `i →₀ M ⊗[R] N`
+* `Finsupp.lTensor`, the tensor product of `M` and `i →₀ N`
+  is linearly equivalent to `i →₀ M ⊗[R] N`
 
-* `Finsupp.rTensor'`, if `M` is an `S`-module, then the tensor product of `i →₀ M` and `N` is `S`-linearly equivalent to `i →₀ M ⊗[R] N`
+* `Finsupp.rTensor'`, if `M` is an `S`-module,
+  then the tensor product of `i →₀ M` and `N` is `S`-linearly equivalent
+  to `i →₀ M ⊗[R] N`
 
-* `finsuppTensorFinsupp`, the tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
+* `finsuppTensorFinsupp`, the tensor product of `ι →₀ M` and `κ →₀ N`
+  is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
 
 ## Case of MvPolynomial
 
@@ -176,7 +181,8 @@ noncomputable def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommSemiring R] [
 #align finsupp_tensor_finsupp finsuppTensorFinsupp
 
 @[simp]
-theorem finsuppTensorFinsupp_single (R M N ι κ : Sort _) [CommSemiring R] [AddCommMonoid M] [Module R M]
+theorem finsuppTensorFinsupp_single (R M N ι κ : Sort _)
+    [CommSemiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] (i : ι) (m : M) (k : κ) (n : N) :
     finsuppTensorFinsupp R M N ι κ (Finsupp.single i m ⊗ₜ Finsupp.single k n) =
       Finsupp.single (i, k) (m ⊗ₜ n) :=
@@ -184,7 +190,8 @@ theorem finsuppTensorFinsupp_single (R M N ι κ : Sort _) [CommSemiring R] [Add
 #align finsupp_tensor_finsupp_single finsuppTensorFinsupp_single
 
 @[simp]
-theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommSemiring R] [AddCommMonoid M] [Module R M]
+theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _)
+    [CommSemiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid N] [Module R N] (f : ι →₀ M) (g : κ →₀ N) (i : ι) (k : κ) :
     finsuppTensorFinsupp R M N ι κ (f ⊗ₜ g) (i, k) = f i ⊗ₜ g k := by
   apply Finsupp.induction_linear f

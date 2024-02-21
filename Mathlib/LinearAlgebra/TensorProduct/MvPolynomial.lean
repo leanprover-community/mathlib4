@@ -40,6 +40,10 @@ noncomputable def MvPolynomial.rTensor :
 
 end
 
+
+-- DOES NOT WORK YET
+#exit
+
 section MonoidAlgebra
 
 open TensorProduct
@@ -59,7 +63,8 @@ noncomputable example : Algebra R ((MonoidAlgebra R α) ⊗[R] N) := inferInstan
 
 variable {α R N}
 
-noncomputable def MonoidAlgebra.AlgEquiv {N' : Type*} [Semiring N'] [Algebra R N'] (e : N ≃ₐ[R] N') :
+noncomputable def MonoidAlgebra.AlgEquiv
+  {N' : Type*} [Semiring N'] [Algebra R N'] (e : N ≃ₐ[R] N') :
     MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra N' α := {
   Finsupp.mapRange.linearEquiv e.toLinearEquiv with
   map_mul' := sorry
@@ -71,7 +76,8 @@ noncomputable def MonoidAlgebra.rTensorEquiv :
     (MonoidAlgebra.AlgEquiv (α := α) (Algebra.TensorProduct.lid R N)).toLinearEquiv
 
 example (f g : (MonoidAlgebra R α) ⊗[R] N) :
-    MonoidAlgebra.rTensorEquiv (N := N) (R := R) (f * g) = MonoidAlgebra.rTensorEquiv f * MonoidAlgebra.rTensorEquiv g := by
+    MonoidAlgebra.rTensorEquiv (N := N) (R := R) (f * g) =
+      MonoidAlgebra.rTensorEquiv f * MonoidAlgebra.rTensorEquiv g := by
   induction f using TensorProduct.induction_on with
   | zero => simp only [zero_mul, LinearEquiv.map_zero]
   | tmul f n => sorry
