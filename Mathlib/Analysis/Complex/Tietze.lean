@@ -33,8 +33,8 @@ theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E
 instance Complex.instTietzeExtension : TietzeExtension ℂ :=
   TietzeExtension.of_tvs ℝ
 
-instance (priority := 900) ROrCLike.instTietzeExtension {𝕜 : Type*} [ROrCLike 𝕜] : TietzeExtension 𝕜 :=
-  TietzeExtension.of_tvs ℝ
+instance (priority := 900) ROrCLike.instTietzeExtension {𝕜 : Type*} [ROrCLike 𝕜] :
+    TietzeExtension 𝕜 := TietzeExtension.of_tvs ℝ
 
 instance ROrCLike.instTietzeExtensionTVS {𝕜 : Type v} [ROrCLike 𝕜] {E : Type w}
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]

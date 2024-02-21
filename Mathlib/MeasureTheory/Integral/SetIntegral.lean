@@ -1202,7 +1202,8 @@ theorem integral_conj {f : α → 𝕜} : ∫ a, conj (f a) ∂μ = conj (∫ a,
 #align integral_conj integral_conj
 
 theorem integral_coe_re_add_coe_im {f : α → 𝕜} (hf : Integrable f μ) :
-    ∫ x, (ROrCLike.re (f x) : 𝕜) ∂μ + (∫ x, (ROrCLike.im (f x) : 𝕜) ∂μ) * ROrCLike.I = ∫ x, f x ∂μ := by
+    ∫ x, (ROrCLike.re (f x) : 𝕜) ∂μ + (∫ x, (ROrCLike.im (f x) : 𝕜) ∂μ) * ROrCLike.I =
+      ∫ x, f x ∂μ := by
   rw [mul_comm, ← smul_eq_mul, ← integral_smul, ← integral_add]
   · congr
     ext1 x

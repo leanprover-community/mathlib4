@@ -280,7 +280,8 @@ end L2
 
 section InnerContinuous
 
-variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] {𝕜 : Type*} [ROrCLike 𝕜]
+variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] {𝕜 : Type*}
+  [ROrCLike 𝕜]
 
 variable (μ : Measure α) [IsFiniteMeasure μ]
 

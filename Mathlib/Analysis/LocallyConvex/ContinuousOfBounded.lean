@@ -120,8 +120,8 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
       rw [← hy]
       refine' (bE1 (n + 1)).2.smul_mem _ hx
       have h' : 0 < (n : ℝ) + 1 := n.cast_add_one_pos
-      rw [norm_inv, ← Nat.cast_one, ← Nat.cast_add, ROrCLike.norm_natCast, Nat.cast_add, Nat.cast_one,
-        inv_le h' zero_lt_one]
+      rw [norm_inv, ← Nat.cast_one, ← Nat.cast_add, ROrCLike.norm_natCast, Nat.cast_add,
+        Nat.cast_one, inv_le h' zero_lt_one]
       simp
     intro n hn
     -- The converse direction follows from continuity of the scalar multiplication

@@ -36,7 +36,8 @@ end ROrCLike
 
 section ROrCLikeComposition
 
-variable {α 𝕜 : Type*} [ROrCLike 𝕜] {m : MeasurableSpace α} {f : α → 𝕜} {μ : MeasureTheory.Measure α}
+variable {α 𝕜 : Type*} [ROrCLike 𝕜] {m : MeasurableSpace α} {f : α → 𝕜}
+  {μ : MeasureTheory.Measure α}
 
 @[measurability]
 theorem Measurable.re (hf : Measurable f) : Measurable fun x => ROrCLike.re (f x) :=

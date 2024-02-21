@@ -1133,7 +1133,8 @@ theorem _root_.MeasureTheory.Memℒp.ofReal {f : α → ℝ} (hf : Memℒp f p �
 #align measure_theory.mem_ℒp.of_real MeasureTheory.Memℒp.ofReal
 
 theorem _root_.MeasureTheory.memℒp_re_im_iff {f : α → K} :
-    Memℒp (fun x => ROrCLike.re (f x)) p μ ∧ Memℒp (fun x => ROrCLike.im (f x)) p μ ↔ Memℒp f p μ := by
+    Memℒp (fun x ↦ ROrCLike.re (f x)) p μ ∧ Memℒp (fun x ↦ ROrCLike.im (f x)) p μ ↔
+      Memℒp f p μ := by
   refine' ⟨_, fun hf => ⟨hf.re, hf.im⟩⟩
   rintro ⟨hre, him⟩
   convert MeasureTheory.Memℒp.add (E := K) hre.ofReal (him.ofReal.const_mul ROrCLike.I)
