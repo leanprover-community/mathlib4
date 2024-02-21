@@ -1617,6 +1617,7 @@ instance instIsRefl [MeasurableSpace α] : IsRefl (Measure α) (· ≪ ·) :=
   ⟨fun _ => AbsolutelyContinuous.rfl⟩
 #align measure_theory.measure.absolutely_continuous.is_refl MeasureTheory.Measure.AbsolutelyContinuous.instIsRefl
 
+@[simp]
 protected lemma zero (μ : Measure α) : 0 ≪ μ := fun s _ ↦ by simp
 
 @[trans]
@@ -2122,6 +2123,11 @@ nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻
     μ.map f s ≤ μ.map f t := measure_mono hst
     _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
 #align measurable_embedding.map_apply MeasurableEmbedding.map_apply
+
+lemma comap_add (μ ν : Measure β) : (μ + ν).comap f = μ.comap f + ν.comap f := by
+  ext s hs
+  simp only [← comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
+    _root_.map_add, add_apply]
 
 end MeasurableEmbedding
 
