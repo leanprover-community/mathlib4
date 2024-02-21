@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 
+## Usage:
+## From the command-line, run `./Mathlib/lint_hash_commands.sh` or
+## `./Mathlib/lint_hash_commands.sh anything` if you want a progress report.
+## It runs Lean on a file with `import Mathlib`, so it is a good idea to have
+## working `.olean`s.
+##
+## The output is a list of locations in `Mathlib/*.lean` files beginning with
+## `<#cmd>`, where `<#cmd>` is a command beginning with `#`.
+##
+## *The script does *not* create new files nor does it modify/erase existing ones.*
+
 ## create a list of all the `#`-commands
 getHashCommands () {
-  >&2 printf $'Learning `#`-commands\n'
   printf $'import Mathlib\n#help command\n' |
     lake env lean --stdin |
     sed -n 's=^syntax "\(#[^"]*\)".*=^\1=p' |
@@ -18,12 +28,13 @@ getHashCommands () {
 ## * are not inside a comment block.
 awk -v csvcmds="$( getHashCommands )" \
   -v con=$( git ls-files 'Mathlib/*.lean' | wc -l ) \
+  -v verbose="${1}" \
  'function perr(msg) { print msg | "cat >&2"; close("cat >&2") }
   BEGIN{
     incomment=0
     split(csvcmds, cmds, ",")
     msg=""
-    print "Sniffing `#`-commands"
+    if(verbose != "") { print "Sniffing `#`-commands" }
   }
   ## lines that begin with `/-` are labeled as `incomment`
   /^\/-/ { incomment=1 }
@@ -36,10 +47,10 @@ awk -v csvcmds="$( getHashCommands )" \
     } }
   (FNR == 1) {
     con--
-    if(con % 100 == 0) perr(sprintf("%5s files to go", con))
+    if(verbose != "" && con % 100 == 0) perr(sprintf("%5s files to go", con))
   } END{
     if (msg != "") {
-      printf("\nThe following `#`-command should not be present:\n\n%s", msg)
+      printf("The following `#`-command should not be present:\n\n%s", msg)
       exit 1
   }
 }' $( git ls-files 'Mathlib/*.lean' )
