@@ -227,7 +227,7 @@ def to_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
 def iterate_equiv {Γ' : Type*} [PartialOrder Γ'] :
-     HahnSeries Γ (HahnSeries Γ' R) ≃ HahnSeries (Γ ×ₗ Γ') R where
+    HahnSeries Γ (HahnSeries Γ' R) ≃ HahnSeries (Γ ×ₗ Γ') R where
   toFun := of_iterate
   invFun := to_iterate
   left_inv := congrFun rfl
