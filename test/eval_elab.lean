@@ -13,8 +13,6 @@ section from_zulip
 /--
 error: failed to synthesize instance
   Lean.ToExpr (Finset (Finset ℕ))
----
-error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
 -/
 #guard_msgs in
 #check eval% Finset.powerset ({1, 2, 3} : Finset ℕ)
