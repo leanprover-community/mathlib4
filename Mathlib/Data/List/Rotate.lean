@@ -130,7 +130,7 @@ theorem length_rotate (l : List α) (n : ℕ) : (l.rotate n).length = l.length :
   rw [rotate_eq_rotate', length_rotate']
 #align list.length_rotate List.length_rotate
 
--- porting note: todo: add `@[simp]`
+@[simp]
 theorem rotate_replicate (a : α) (n : ℕ) (k : ℕ) : (replicate n a).rotate k = replicate n a :=
   eq_replicate.2 ⟨by rw [length_rotate, length_replicate], fun b hb =>
     eq_of_mem_replicate <| mem_rotate.1 hb⟩
@@ -337,7 +337,7 @@ theorem rotate_eq_iff {l l' : List α} {n : ℕ} :
     l.rotate n = l' ↔ l = l'.rotate (l'.length - n % l'.length) := by
   rw [← @rotate_eq_rotate _ l _ n, rotate_rotate, ← rotate_mod l', add_mod]
   rcases l'.length.zero_le.eq_or_lt with hl | hl
-  · rw [eq_nil_of_length_eq_zero hl.symm, rotate_nil, rotate_eq_nil_iff]
+  · rw [eq_nil_of_length_eq_zero hl.symm, rotate_nil]
   · rcases (Nat.zero_le (n % l'.length)).eq_or_lt with hn | hn
     · simp [← hn]
     · rw [mod_eq_of_lt (tsub_lt_self hl hn), tsub_add_cancel_of_le (α := ℕ), mod_self, rotate_zero]

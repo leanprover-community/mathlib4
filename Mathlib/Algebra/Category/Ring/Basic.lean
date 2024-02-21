@@ -75,14 +75,20 @@ instance instSemiring (X : SemiRingCat) : Semiring X := X.str
 
 instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
 
--- Porting note: added
+instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible and instance
+  -- transparency. It seems that `(CategoryTheory.forget SemiRingCat).toPrefunctor` is not
+  -- unfolding during unification
+  ConcreteCategory.instFunLike
+
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : SemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
@@ -195,14 +201,18 @@ instance instRing (X : RingCat) : Ring X := X.str
 
 instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
 
--- Porting note: added
+instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : RingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
@@ -297,14 +307,18 @@ instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
 instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X :=
   X.str
 
--- Porting note: added
+instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommSemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
@@ -413,14 +427,18 @@ instance instCommRing (X : CommRingCat) : CommRing X := X.str
 
 instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
 
--- Porting note: added
+instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
@@ -434,6 +452,21 @@ def of (R : Type u) [CommRing R] : CommRingCat :=
   Bundled.of R
 set_option linter.uppercaseLean3 false in
 #align CommRing.of CommRingCat.of
+
+instance instFunLike' {X : Type*} [CommRing X] {Y : CommRingCat} :
+    FunLike (CommRingCat.of X ⟶ Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+instance instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] :
+    FunLike (X ⟶ CommRingCat.of Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
+
+instance instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] :
+    FunLike (CommRingCat.of X ⟶ CommRingCat.of Y) X Y :=
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
+  ConcreteCategory.instFunLike
 
 /-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
 def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
@@ -513,28 +546,14 @@ end RingEquiv
 namespace CategoryTheory.Iso
 
 /-- Build a `RingEquiv` from an isomorphism in the category `RingCat`. -/
-def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y
-    where
-  toFun := i.hom
-  invFun := i.inv
-  -- Porting note: All these proofs were much easier in lean3.
-  left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
-  right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
-  map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
-  map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
+def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y :=
+  RingEquiv.ofHomInv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.Ring_iso_to_ring_equiv CategoryTheory.Iso.ringCatIsoToRingEquiv
 
 /-- Build a `RingEquiv` from an isomorphism in the category `CommRingCat`. -/
-def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
-    where
-  toFun := i.hom
-  invFun := i.inv
-  -- Porting note: All these proofs were much easier in lean3.
-  left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
-  right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
-  map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
-  map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
+def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y :=
+  RingEquiv.ofHomInv i.hom i.inv i.hom_inv_id i.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv CategoryTheory.Iso.commRingCatIsoToRingEquiv
 

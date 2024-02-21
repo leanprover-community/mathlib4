@@ -11,6 +11,7 @@ import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Finset.PiAntidiagonal
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -182,7 +183,7 @@ theorem coeff_comp_monomial (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n
   LinearMap.ext <| coeff_monomial_same n
 #align mv_power_series.coeff_comp_monomial MvPowerSeries.coeff_comp_monomial
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 :=
   rfl
@@ -499,13 +500,13 @@ theorem constantCoeff_comp_C : (constantCoeff σ R).comp (C σ R) = RingHom.id R
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.constant_coeff_comp_C MvPowerSeries.constantCoeff_comp_C
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem constantCoeff_zero : constantCoeff σ R 0 = 0 :=
   rfl
 #align mv_power_series.constant_coeff_zero MvPowerSeries.constantCoeff_zero
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
   rfl
@@ -524,7 +525,7 @@ theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
   h.map _
 #align mv_power_series.is_unit_constant_coeff MvPowerSeries.isUnit_constantCoeff
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem coeff_smul (f : MvPowerSeries σ R) (n) (a : R) : coeff _ n (a • f) = a * coeff _ n f :=
   rfl
@@ -677,7 +678,7 @@ def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
   ∑ m in Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
 #align mv_power_series.trunc_fun MvPowerSeries.truncFun
 
-theorem coeff_truncFun [DecidableEq σ] (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (truncFun n φ).coeff m = if m < n then coeff R m φ else 0 := by
   classical
   simp [truncFun, MvPolynomial.coeff_sum]
@@ -812,6 +813,50 @@ set_option linter.uppercaseLean3 false in
 
 end Semiring
 
+section CommSemiring
+
+open Finset.HasAntidiagonal Finset
+
+variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+
+/-- Coefficients of a product of power series -/
+theorem coeff_prod [DecidableEq σ]
+    (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
+    coeff R d (∏ j in s, f j) =
+      ∑ l in piAntidiagonal s d,
+        ∏ i in s, coeff R (l i) (f i) := by
+  induction s using Finset.induction_on generalizing d with
+  | empty =>
+    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, piAntidiagonal_empty]
+    split_ifs
+    · simp only [card_singleton, Nat.cast_one]
+    · simp only [card_empty, Nat.cast_zero]
+  | @insert a s ha ih =>
+    rw [piAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
+    · apply Finset.sum_congr rfl
+      · simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
+        rintro u v rfl
+        rw [ih, Finset.mul_sum, ← Finset.sum_attach]
+        apply Finset.sum_congr rfl
+        simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+          Subtype.forall]
+        rintro x -
+        rw [Finset.prod_congr rfl]
+        intro i hi
+        rw [Function.update_noteq]
+        exact ne_of_mem_of_not_mem hi ha
+    · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
+        disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
+        exists_prop, not_exists, not_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+        Prod.forall, Prod.mk.injEq]
+      rintro u v rfl u' v' huv h k - l - hkl
+      obtain rfl : u' = u := by
+        simpa only [Finsupp.coe_update, Function.update_same] using DFunLike.congr_fun hkl a
+      simp only [add_right_inj] at huv
+      exact h rfl huv.symm
+
+end CommSemiring
+
 section Ring
 
 variable [Ring R]
@@ -831,7 +876,7 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
     else
       -a *
         ∑ x in antidiagonal n, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
-termination_by _ n => n
+termination_by n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
 theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPowerSeries σ R) :
@@ -981,7 +1026,7 @@ theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 #align mv_power_series.zero_inv MvPowerSeries.zero_inv
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
@@ -1568,13 +1613,13 @@ theorem constantCoeff_comp_C : (constantCoeff R).comp (C R) = RingHom.id R :=
 set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_comp_C PowerSeries.constantCoeff_comp_C
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem constantCoeff_zero : constantCoeff R 0 = 0 :=
   rfl
 #align power_series.constant_coeff_zero PowerSeries.constantCoeff_zero
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem constantCoeff_one : constantCoeff R 1 = 1 :=
   rfl
@@ -1878,7 +1923,7 @@ theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
   rw [trunc, Ico_zero_eq_range, sum_range_succ, trunc, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
-  rw [lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
+  rw [Nat.lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
   intros
   rw [coeff_trunc]
   split_ifs with h
@@ -2013,6 +2058,28 @@ set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_X_mul_shift PowerSeries.sub_const_eq_X_mul_shift
 
 end Ring
+
+section CommSemiring
+
+open Finset.HasAntidiagonal Finset
+
+variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+
+/-- Coefficients of a product of power series -/
+theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
+    coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
+  simp only [coeff]
+  convert MvPowerSeries.coeff_prod _ _ _
+  rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
+  intro x _
+  apply prod_congr rfl
+  intro i _
+  congr 2
+  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
+    Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
+    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+
+end CommSemiring
 
 section CommRing
 
@@ -2208,7 +2275,7 @@ theorem zero_inv : (0 : PowerSeries k)⁻¹ = 0 :=
   MvPowerSeries.zero_inv
 #align power_series.zero_inv PowerSeries.zero_inv
 
--- Porting note: simp can prove this.
+-- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem invOfUnit_eq (φ : PowerSeries k) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
@@ -2288,7 +2355,8 @@ variable [Semiring R] {φ : R⟦X⟧}
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
   refine' not_iff_not.mp _
   push_neg
-  simp [PowerSeries.ext_iff]
+  -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
+  simp [PowerSeries.ext_iff, (coeff R _).map_zero]
 #align power_series.exists_coeff_ne_zero_iff_ne_zero PowerSeries.exists_coeff_ne_zero_iff_ne_zero
 
 /-- The order of a formal power series `φ` is the greatest `n : PartENat`
@@ -2383,7 +2451,7 @@ theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
     order φ = n ↔ coeff R n φ ≠ 0 ∧ ∀ i, i < n → coeff R i φ = 0 := by
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
-  · simpa using (PartENat.natCast_ne_top _).symm
+  · simpa [(coeff R _).map_zero] using (PartENat.natCast_ne_top _).symm
   simp [order, dif_neg hφ, Nat.find_eq_iff]
 #align power_series.order_eq_nat PowerSeries.order_eq_nat
 
@@ -2480,8 +2548,7 @@ theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monom
 with any other power series is `0`. -/
 theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order) :
     coeff R n (φ * ψ) = 0 := by
-  suffices : coeff R n (φ * ψ) = ∑ p in antidiagonal n, 0
-  rw [this, Finset.sum_const_zero]
+  suffices coeff R n (φ * ψ) = ∑ p in antidiagonal n, 0 by rw [this, Finset.sum_const_zero]
   rw [coeff_mul]
   apply Finset.sum_congr rfl
   intro x hx

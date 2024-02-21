@@ -618,7 +618,7 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     let p := @Quotient.exists_rep PSet _ F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
-    have I := fun x => allDefinable (F x)
+    have I : (x : ZFSet) → Definable (Nat.add n 0) (F x) := fun x => allDefinable (F x)
     refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
     · dsimp [Arity.Equiv]
       intro x y h
@@ -1330,7 +1330,7 @@ theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by sim
    suggests it shouldn't be. -/
 @[nolint unusedArguments]
 noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
-    Definable 1 fun y => pair y (f y) :=
+    Definable 1 fun (y : ZFSet) => pair y (f y) :=
   @Classical.allDefinable 1 _
 #align Set.map_definable_aux ZFSet.mapDefinableAux
 
@@ -1370,7 +1370,7 @@ theorem map_isFunc {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
 members of `x` are all `Hereditarily p`. -/
 def Hereditarily (p : ZFSet → Prop) (x : ZFSet) : Prop :=
   p x ∧ ∀ y ∈ x, Hereditarily p y
-termination_by _ => x
+termination_by x
 #align Set.hereditarily ZFSet.Hereditarily
 
 section Hereditarily

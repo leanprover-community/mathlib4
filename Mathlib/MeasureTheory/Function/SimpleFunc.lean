@@ -79,23 +79,23 @@ theorem measurableSet_fiber (f : α →ₛ β) (x : β) : MeasurableSet (f ⁻¹
   f.measurableSet_fiber' x
 #align measure_theory.simple_func.measurable_set_fiber MeasureTheory.SimpleFunc.measurableSet_fiber
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem apply_mk (f : α → β) (h h') (x : α) : SimpleFunc.mk f h h' x = f x :=
   rfl
 #align measure_theory.simple_func.apply_mk MeasureTheory.SimpleFunc.apply_mk
 
-/-- Simple function defined on the empty type. -/
-def ofIsEmpty [IsEmpty α] : α →ₛ β where
-  toFun := isEmptyElim
-  measurableSet_fiber' x := Subsingleton.measurableSet
-  finite_range' := by simp [range_eq_empty]
-#align measure_theory.simple_func.of_is_empty MeasureTheory.SimpleFunc.ofIsEmpty
-
 /-- Simple function defined on a finite type. -/
-def ofFintype [Fintype α] [MeasurableSingletonClass α] (f : α → β) : α →ₛ β where
+def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →ₛ β where
   toFun := f
-  measurableSet_fiber' x := Finite.measurableSet (toFinite (f ⁻¹' {x}))
+  measurableSet_fiber' x := (toFinite (f ⁻¹' {x})).measurableSet
   finite_range' := Set.finite_range f
+
+@[deprecated] -- Since 2024/02/05
+alias ofFintype := ofFinite
+
+/-- Simple function defined on the empty type. -/
+def ofIsEmpty [IsEmpty α] : α →ₛ β := ofFinite isEmptyElim
+#align measure_theory.simple_func.of_is_empty MeasureTheory.SimpleFunc.ofIsEmpty
 
 /-- Range of a simple function `α →ₛ β` as a `Finset β`. -/
 protected def range (f : α →ₛ β) : Finset β :=

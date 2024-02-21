@@ -191,7 +191,7 @@ namespace Set
 
 open Pointwise
 
--- Porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 --@[simp]
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
@@ -248,9 +248,6 @@ section comm
 
 variable {G : Type*} {P : Type*} [AddCommGroup G] [AddTorsor G P]
 
--- Porting note: Removed:
--- include G
-
 /-- Cancellation subtracting the results of two subtractions. -/
 @[simp]
 theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ -ᵥ p₁) = p₁ -ᵥ p₂ := by
@@ -287,7 +284,7 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
-  nonempty := Prod.Nonempty
+  nonempty := Prod.instNonempty
   vsub_vadd' _ _ := Prod.ext (vsub_vadd _ _) (vsub_vadd _ _)
   vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
 
@@ -355,9 +352,6 @@ end Pi
 namespace Equiv
 
 variable {G : Type*} {P : Type*} [AddGroup G] [AddTorsor G P]
-
--- Porting note: Removed:
--- include G
 
 /-- `v ↦ v +ᵥ p` as an equivalence. -/
 def vaddConst (p : P) : G ≃ P where
@@ -480,9 +474,6 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bi
   rw [pointReflection_apply, eq_comm, eq_vadd_iff_vsub_eq, ← neg_vsub_eq_vsub_rev,
     neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
 #align equiv.point_reflection_fixed_iff_of_injective_bit0 Equiv.pointReflection_fixed_iff_of_injective_bit0
-
--- Porting note: Removed:
--- omit G
 
 -- Porting note: need this to calm down CI
 theorem injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]
