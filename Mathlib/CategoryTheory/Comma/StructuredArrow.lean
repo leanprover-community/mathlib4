@@ -459,7 +459,7 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
   right := 𝟙 _
 #align category_theory.costructured_arrow.hom_mk CategoryTheory.CostructuredArrow.homMk
 
-/- Porting note : it appears the simp lemma is not getting generated but the linter
+/- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp can prove this -/
 attribute [-simp, nolint simpNF] homMk_right_down_down
 

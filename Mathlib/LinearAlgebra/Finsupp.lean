@@ -916,7 +916,7 @@ theorem domLCongr_symm {α₁ α₂ : Type*} (f : α₁ ≃ α₂) :
   LinearEquiv.ext fun _ => rfl
 #align finsupp.dom_lcongr_symm Finsupp.domLCongr_symm
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp

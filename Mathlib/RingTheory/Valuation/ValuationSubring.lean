@@ -307,7 +307,7 @@ instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
 #align valuation_subring.of_prime_algebra ValuationSubring.ofPrimeAlgebra
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    -- Porting note: added instance
+    -- porting note (#10754): added instance
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
   IsScalarTower.subalgebra' A K K

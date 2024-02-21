@@ -188,7 +188,7 @@ theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
     zero_div, Complex.exp_zero]
 #align fourier_eval_zero fourier_eval_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fourier_apply, one_zsmul]
 #align fourier_one fourier_one
 
