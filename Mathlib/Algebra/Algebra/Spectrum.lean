@@ -462,6 +462,10 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
 the spectrum of `a` restricts via a function `f : S → R` if `f` is a left inverse of
 `algebraMap R S`, and `f` is a right inverse of `algebraMap R S` on `spectrum S a`.
 
+For example, when `f = Complex.re` (so `S := ℂ` and `R := ℝ`), `SpectrumRestricts a f` means that
+the `ℂ`-spectrum of `a` is contained within `ℝ`. This arises naturally when `a` is selfadjoint
+and `A` is a C⋆-algebra.
+
 This is the property allows us to restrict a continuous functional calculus over `S` to a
 continuous functional calculus over `R`. -/
 structure SpectrumRestricts {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
