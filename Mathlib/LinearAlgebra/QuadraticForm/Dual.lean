@@ -35,7 +35,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 /-- The symmetric bilinear form on `Module.Dual R M × M` defined as
 `B (f, x) (g, y) = f y + g x`. -/
 @[simps!]
-def dualProd : (Module.Dual R M × M) →ₗ[R] (Module.Dual R M × M) →ₗ[R] R :=
+def dualProd : LinearMap.BilinForm R (Module.Dual R M × M) :=
     (applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M) +
       ((applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M)).flip
 #align bilin_form.dual_prod LinearMap.dualProd

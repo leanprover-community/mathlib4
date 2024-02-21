@@ -332,15 +332,16 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
   refine' ⟨hM, fun x hx => _⟩
-  simp only [QuadraticForm.PosDef, ne_eq, toQuadraticForm', LinearMap.toQuadraticForm_apply,
-    toLinearMap₂'_apply'] at hMq
+  simp only [QuadraticForm.PosDef, ne_eq, toQuadraticForm',
+    LinearMap.BilinForm.toQuadraticForm_apply, toLinearMap₂'_apply'] at hMq
   apply hMq x hx
 #align matrix.pos_def_of_to_quadratic_form' Matrix.PosDef.of_toQuadraticForm'
 
 theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
     M.toQuadraticForm'.PosDef := by
   intro x hx
-  simp only [Matrix.toQuadraticForm', LinearMap.toQuadraticForm_apply, toLinearMap₂'_apply']
+  simp only [Matrix.toQuadraticForm', LinearMap.BilinForm.toQuadraticForm_apply,
+    toLinearMap₂'_apply']
   apply hM.2 x hx
 #align matrix.pos_def_to_quadratic_form' Matrix.PosDef.toQuadraticForm'
 

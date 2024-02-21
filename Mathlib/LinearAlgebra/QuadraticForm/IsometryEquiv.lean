@@ -163,7 +163,7 @@ noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
 
 variable [FiniteDimensional K V]
 
-open LinearMap
+open LinearMap.BilinForm
 
 theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → K, Equivalent Q (weightedSumSquares K w) :=
