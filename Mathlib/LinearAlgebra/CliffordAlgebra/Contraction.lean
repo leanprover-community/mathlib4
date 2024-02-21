@@ -42,6 +42,7 @@ Within this file, we use the local notation
 
 -/
 
+open LinearMap (BilinForm)
 
 universe u1 u2 u3
 
@@ -242,12 +243,12 @@ local infixl:70 "⌊" => contractRight
 
 /-- Auxiliary construction for `CliffordAlgebra.changeForm` -/
 @[simps!]
-def changeFormAux (B : M →ₗ[R] M →ₗ[R] R) : M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
+def changeFormAux (B : BilinForm R M) : M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   haveI v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
   v_mul - contractLeft ∘ₗ B
 #align clifford_algebra.change_form_aux CliffordAlgebra.changeFormAux
 
-theorem changeFormAux_changeFormAux (B : M →ₗ[R] M →ₗ[R] R) (v : M) (x : CliffordAlgebra Q) :
+theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlgebra Q) :
     changeFormAux Q B v (changeFormAux Q B v x) = (Q v - B v v) • x := by
   simp only [changeFormAux_apply_apply]
   rw [mul_sub, ← mul_assoc, ι_sq_scalar, map_sub, contractLeft_ι_mul, ← sub_add, sub_sub_sub_comm,
@@ -256,7 +257,7 @@ theorem changeFormAux_changeFormAux (B : M →ₗ[R] M →ₗ[R] R) (v : M) (x :
 
 variable {Q}
 
-variable {Q' Q'' : QuadraticForm R M} {B B' : M →ₗ[R] M →ₗ[R] R}
+variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
 
 variable (h : B.toQuadraticForm = Q' - Q) (h' : B'.toQuadraticForm = Q'' - Q')
 
@@ -274,7 +275,7 @@ def changeForm (h : B.toQuadraticForm = Q' - Q) : CliffordAlgebra Q →ₗ[R] Cl
 #align clifford_algebra.change_form CliffordAlgebra.changeForm
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
-theorem changeForm.zero_proof : (0 : M →ₗ[R] M →ₗ[R] R).toQuadraticForm = Q - Q :=
+theorem changeForm.zero_proof : (0 : BilinForm R M).toQuadraticForm = Q - Q :=
   (sub_self _).symm
 #align clifford_algebra.change_form.zero_proof CliffordAlgebra.changeForm.zero_proof
 

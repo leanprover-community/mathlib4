@@ -52,7 +52,7 @@ This disproves a weaker version of `QuadraticForm.associated_left_inverse`.
 -/
 theorem LinearMap.not_injOn_toQuadraticForm_isSymm.{u} :
     ¬∀ {R M : Type u} [CommSemiring R] [AddCommMonoid M], ∀ [Module R M],
-      Set.InjOn (toQuadraticForm : (M →ₗ[R] M →ₗ[R] R) → QuadraticForm R M) {B | B.IsSymm} := by
+      Set.InjOn (toQuadraticForm : BilinForm R M → QuadraticForm R M) {B | B.IsSymm} := by
   intro h
   let F := ULift.{u} (ZMod 2)
   apply B_ne_zero F

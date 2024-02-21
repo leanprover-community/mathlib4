@@ -21,6 +21,7 @@ universe uR uA uM₁ uM₂
 variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 open TensorProduct
+open LinearMap (BilinForm)
 
 namespace QuadraticForm
 
@@ -46,8 +47,8 @@ noncomputable def tensorDistrib :
   let toQ := LinearMap.toQuadraticFormLinearMap A A (M₁ ⊗[R] M₂)
   let tmulB := LinearMap.BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
   let toB := AlgebraTensorModule.map
-      (QuadraticForm.associated : QuadraticForm A M₁ →ₗ[A] (M₁ →ₗ[A] M₁ →ₗ[A] A))
-      (QuadraticForm.associated : QuadraticForm R M₂ →ₗ[R] (M₂ →ₗ[R] M₂ →ₗ[R] R))
+      (QuadraticForm.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
+      (QuadraticForm.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)
   toQ ∘ₗ tmulB ∘ₗ toB
 
 -- TODO: make the RHS `MulOpposite.op (Q₂ m₂) • Q₁ m₁` so that this has a nicer defeq for
