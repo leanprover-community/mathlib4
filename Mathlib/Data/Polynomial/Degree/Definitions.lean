@@ -866,12 +866,12 @@ theorem leadingCoeff_C (a : R) : leadingCoeff (C a) = a :=
   leadingCoeff_monomial a 0
 #align polynomial.leading_coeff_C Polynomial.leadingCoeff_C
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X_pow (n : ℕ) : leadingCoeff ((X : R[X]) ^ n) = 1 := by
   simpa only [C_1, one_mul] using leadingCoeff_C_mul_X_pow (1 : R) n
 #align polynomial.leading_coeff_X_pow Polynomial.leadingCoeff_X_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X : leadingCoeff (X : R[X]) = 1 := by
   simpa only [pow_one] using @leadingCoeff_X_pow R _ 1
 #align polynomial.leading_coeff_X Polynomial.leadingCoeff_X
@@ -886,7 +886,7 @@ theorem monic_X : Monic (X : R[X]) :=
   leadingCoeff_X
 #align polynomial.monic_X Polynomial.monic_X
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
   leadingCoeff_C 1
 #align polynomial.leading_coeff_one Polynomial.leadingCoeff_one
