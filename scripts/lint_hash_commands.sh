@@ -29,7 +29,7 @@ getHashCommands () {
 awk -v csvcmds="$( getHashCommands )" \
   -v con=$( git ls-files 'Mathlib/*.lean' | wc -l ) \
   -v verbose="${1}" \
- 'function perr(msg) { print msg | "cat >&2"; close("cat >&2") }
+ 'function perr(errMsg) { print errMsg | "cat >&2"; close("cat >&2") }
   BEGIN{
     incomment=0
     split(csvcmds, cmds, ",")
