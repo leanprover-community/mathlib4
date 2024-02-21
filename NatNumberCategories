@@ -1,0 +1,416 @@
+/-
+Copyright (c) 2024 Colin Jones. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Author: Colin Jones
+-/
+import Mathlib
+
+/-!
+# NumCategories.lean
+
+This file defines abundant, semi-perfect, deficient, and weird numbers and formalizes their
+  relations with prime and perfect numbers. This file also includes a few proofs on the
+  `Nat.properDivisors` and `Nat.divisors`.
+
+## Main Definitions
+Let `n : ℕ`. All the following definitions are in the Nat namespace.
+* `Abundant` a natural number `n` is abundant if the sum of its proper divisors are greater than
+  itself and it is greater than zero
+* `SemiPerfect` a natural number `n` is semi-perfect if a subset of its proper divisors equals
+  itself and it is greater than zero
+* `Deficient` a natural number `n` is deficient if the sum of its proper divisors is less than
+  itself and it is greater than zero
+* `WeirdNumber` a natural number is weird if it is both abundant and not semi-perfect
+
+## Main Results
+* `divisors_eq_proper_union_self` the `Finset` that is `Nat.divisors` is equal to the union of
+  `Nat.properDivisors` and the number itself
+* `deficient_or_perfect_or_abundant` any natural number greater than zero is either deficient,
+  perfect, or abundant
+* `prime_deficient` all prime natural numbers are deficient
+* `prime_pow_deficient` any power of a prime number is deficient
+
+## Implementation Details
+* Zero is not included in any of the definitions and these definitions only apply to natural
+  numbers greater than zero.
+
+## References
+* Prielipp, Robert W. “PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS.”
+  The Mathematics Teacher, vol. 63, no. 8, 1970, pp. 692–96. JSTOR,
+  http://www.jstor.org/stable/27958492. Accessed 21 Feb. 2024.
+* Special thanks to Ruben Van de Velde and Timo Carlin-Burns on Zulip for help on the
+  `prime_pow_deficient` proof.
+
+
+## Tags
+abundant deficient weird semiperfect
+
+-/
+
+open Nat BigOperators Finset
+
+set_option maxRecDepth 1000000
+
+namespace Nat
+
+variable (n m k : ℕ)
+
+/-- `n : ℕ` is Abundant if and only if the sum of the proper divisors of `n` is greater than `n`
+  and `n` is positive. -/
+def Nat.Abundant (n : ℕ) : Prop := ∑ i in Nat.properDivisors n, i > n ∧ 0 < n
+
+/-- `n : ℕ` is SemiPerfect if and only if there exists a subset of the proper divisors of n such
+  that the sum of that subset is equal to `n` and `n` is positive -/
+def Nat.SemiPerfect (n : ℕ) : Prop :=
+  ∃ s : Finset ℕ, s ∈ Finset.powerset (Nat.properDivisors n) ∧ ∑ i in s, i = n ∧ 0 < n
+
+/-- `n : ℕ` is a weird number if and only if it is both abundant and semi-perfect -/
+def Nat.WeirdNumber (n : ℕ) : Prop := Nat.Abundant n ∧ ¬ Nat.SemiPerfect n
+
+/--  `n : ℕ` is Deficient if and only if the sum of the proper divisors of `n` is less than `n`
+  and `n` is positive -/
+def Nat.Deficient (n : ℕ) : Prop := ∑ i in Nat.properDivisors n, i < n ∧ 0 < n
+
+theorem not_semiperfect_iff_forall :
+  (¬ Nat.SemiPerfect n) ↔ ∀ (s : Finset ℕ), s ∈ Finset.powerset (Nat.properDivisors n)
+  → (∑ i in s, i ≠ n ∨ 0 ≥ n) := by
+  dsimp [Nat.SemiPerfect]; rw [not_exists]; constructor;
+  intro h s;
+  have hs : ¬(s ∈ powerset (properDivisors n) ∧ ∑ i in s, i = n ∧ 0 < n) := by apply h s
+  rw [not_and, not_and_or, not_lt] at hs; exact hs
+  intro h x;
+  rw [not_and, not_and_or, not_lt]; exact fun a => h x a
+
+lemma Nat.deficient_iff_lt_proper_divisors_2n :
+  Nat.Deficient n ↔ ∑ i in Nat.properDivisors n, i + n < 2*n ∧ 0 < n := by
+  rw [Nat.two_mul, Nat.add_lt_add_iff_right]; rfl
+
+lemma Nat.abundant_iff_gt_proper_divisors_2n :
+  Nat.Abundant n ↔ ∑ i in Nat.properDivisors n, i + n > 2*n ∧ 0 < n := by
+  rw [Nat.two_mul, gt_iff_lt, Nat.add_lt_add_iff_right]; rfl
+
+lemma Nat.deficient_iff_lt_divisors :
+  Nat.Deficient n ↔ ∑ i in Nat.divisors n, i < 2*n ∧ 0 < n := by
+  rw [sum_divisors_eq_sum_properDivisors_add_self]
+  exact Nat.deficient_iff_lt_proper_divisors_2n n
+
+lemma Nat.abundant_iff_gt_divisors :
+  Nat.Abundant n ↔ ∑ i in Nat.divisors n, i > 2*n ∧ 0 < n := by
+  rw [sum_divisors_eq_sum_properDivisors_add_self]
+  exact Nat.abundant_iff_gt_proper_divisors_2n n
+
+theorem one_deficient : Nat.Deficient 1 := by
+  dsimp [Nat.Deficient]
+  norm_num
+
+theorem two_deficient : Nat.Deficient 2 := by
+  dsimp [Nat.Deficient]
+  norm_num
+
+theorem three_deficient : Nat.Deficient 3 := by
+  dsimp [Nat.Deficient]
+  norm_num
+
+theorem six_perfect : Nat.Perfect 6 := by
+  dsimp [Nat.Perfect]
+  rw [show properDivisors 6 = {1, 2, 3} by rfl]
+  norm_num
+
+theorem twelve_abundant : Nat.Abundant 12 := by
+  dsimp [Nat.Abundant]
+  rw [show properDivisors 12 = {1,2,3,4,6} by rfl]
+  norm_num
+
+theorem seventy_weird : Nat.WeirdNumber 70 := by
+  dsimp [Nat.WeirdNumber, Nat.Abundant]
+  rw [not_semiperfect_iff_forall]
+  have div70 : properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} := by rfl
+  constructor
+  · constructor
+    rw [div70]
+    repeat norm_num
+  · rw [div70]
+    intro s hs
+    left
+    fin_cases hs <;> decide
+
+/- ### END OF SPECIFIC EXAMPLES ### -/
+
+theorem divisor_subseteq_mul (hn : 0 < n) (hm : 0 < m) :
+  Nat.divisors n ∪ Nat.divisors m ⊆ Nat.divisors (n*m) := by
+  have nm_ne_zero : n*m ≠ 0 := by
+    simp_all only [ne_eq, _root_.mul_eq_zero]
+    rw [not_or]
+    constructor
+    exact Nat.pos_iff_ne_zero.mp hn
+    exact Nat.pos_iff_ne_zero.mp hm
+  refine subset_iff.mpr ?_
+  intro a ha
+  have ha' : a ∈ divisors n ∨ a ∈ divisors m := by
+    simp_all only [mem_union, mem_divisors, ne_eq]
+  rcases ha' with hn1 | hm1
+  · have han : a ∣ n := by
+      simp_all only [mem_union, mem_divisors, ne_eq]
+    refine mem_divisors.mpr ?inl.a
+    constructor
+    exact Nat.dvd_trans han (Exists.intro m rfl)
+    assumption
+  · have ham : a ∣ m := by
+      simp_all only [mem_union, mem_divisors, ne_eq]
+    refine mem_divisors.mpr ?inr.a
+    constructor
+    exact Dvd.dvd.mul_left ham n
+    assumption
+
+theorem prop_divisors_subseteq_mul (hn : 0 < n) (hm : 0 < m) :
+  Nat.properDivisors n ∪ Nat.properDivisors m ⊆ Nat.properDivisors (n*m) := by
+  refine subset_iff.mpr ?_
+  rintro a ha
+  have ha' : a ∈ properDivisors n ∨ a ∈ properDivisors m := by
+    simp_all only [gt_iff_lt, le_mul_iff_one_le_right,
+      le_mul_iff_one_le_left, mem_union, mem_properDivisors]
+  rcases ha' with hn1 | hm1
+  · have han : a ∣ n := by
+      simp_all only [mem_properDivisors, and_self]
+    refine mem_properDivisors.mpr ?_
+    constructor
+    exact Dvd.dvd.mul_right han m
+    refine lt_mul_of_lt_of_one_le ?_ hm
+    simp_all only [gt_iff_lt, le_mul_iff_one_le_right, mem_properDivisors, true_and, ne_eq]
+  · have ham : a ∣ m := by
+      simp_all only [gt_iff_lt, le_mul_iff_one_le_right, mem_properDivisors]
+    refine mem_properDivisors.mpr ?_
+    constructor
+    exact Dvd.dvd.mul_left ham n
+    refine lt_mul_of_one_le_of_lt hn ?_
+    simp_all only [gt_iff_lt, le_mul_iff_one_le_right, le_mul_iff_one_le_left, mem_properDivisors,
+       true_and, ne_eq]
+
+lemma divisors_eq_proper_union_self (hn : 0 < n) :
+  Nat.divisors n = Nat.properDivisors n ∪ {n} := by
+    dsimp [divisors, properDivisors]
+    ext a; simp [*]
+    constructor
+    rintro ⟨⟨h1, h2⟩, h3⟩
+    by_cases hn : a ≠ n
+    left
+    repeat constructor
+    · assumption
+    · refine (LE.le.gt_iff_ne ?_).mpr (id (Ne.symm hn))
+      exact lt_succ.mp h2
+    · exact h3
+    repeat tauto
+    aesop
+    linarith
+
+lemma deficient_not_abundant_or_perfect (hn : 0 < n) :
+  Nat.Deficient n ↔ ¬ (Nat.Abundant n ∨ Nat.Perfect n) := by
+    rw [not_or]; dsimp [Nat.Deficient, Nat.Abundant, Nat.Perfect];
+    constructor; rintro ⟨h1, h2⟩; rw [not_and_or, not_and_or]
+    · constructor;
+      left; exact Nat.lt_asymm h1; left; exact Nat.ne_of_lt h1
+    · rintro ⟨h1, h2⟩;
+      rw [not_and_or] at h1; rw [not_and_or] at h2
+      constructor
+      have f1 : ¬∑ i in properDivisors n, i > n := by
+        rcases h1 with w1 | w2; assumption; contradiction
+      have f2 : ¬∑ i in properDivisors n, i = n := by
+        rcases h2 with w1 | w2; assumption; contradiction
+      rw [not_lt] at f1; rw [← ne_eq] at f2
+      exact lt_of_le_of_ne f1 f2
+      exact hn
+
+lemma perfect_not_abundant_or_deficient (hn : 0 < n) :
+  Nat.Perfect n ↔ ¬ (Nat.Abundant n ∨ Nat.Deficient n) := by
+    rw [Iff.comm, ← not_iff];
+    dsimp [Nat.Abundant, Nat.Perfect, Nat.Deficient]
+    rintro ⟨h1, h2⟩
+    have f1 : ∑ i in properDivisors n, i > n ∧ 0 < n ↔ ∑ i in properDivisors n, i > n := by
+      exact and_iff_left hn
+    have f2 : ∑ i in properDivisors n, i < n ∧ 0 < n ↔ ∑ i in properDivisors n, i < n := by
+      exact and_iff_left hn
+    have f3 : ∑ i in properDivisors n, i = n ∧ 0 < n ↔ ∑ i in properDivisors n, i = n := by
+      exact and_iff_left hn
+    rw [f1, f2, f3, lt_or_lt_iff_ne] at h1; rw [f1, f2, f3, lt_or_lt_iff_ne] at h2
+    have h1' : ∑ i in properDivisors n, i ≠ n → ∑ i in properDivisors n, i = n := by
+      exact fun a => h1 (id (Ne.symm a))
+    have h2' : ∑ i in properDivisors n, i = n → ∑ i in properDivisors n, i ≠ n := by
+      exact fun a => (h2 (h1 (h2 a)) (id a.symm)).elim
+    by_cases hP : ∑ i in properDivisors n, i = n
+    have contra1 := by apply h2' hP; exact hP
+    exact contra1
+    have contra2 := by apply h1' hP
+    rw [← ne_eq] at hP
+    contradiction
+
+lemma abundant_not_perfect_or_deficient (hn : 0 < n) :
+  Nat.Abundant n ↔ ¬ (Nat.Perfect n ∨ Nat.Deficient n) := by
+    rw [not_or]; dsimp [Nat.Deficient, Nat.Abundant, Nat.Perfect];
+    constructor; rintro ⟨h1, h2⟩; rw [not_and_or, not_and_or]
+    · constructor;
+      left; exact Nat.ne_of_gt h1; left; exact Nat.lt_asymm h1
+    · rintro ⟨h1, h2⟩;
+      rw [not_and_or] at h1; rw [not_and_or] at h2
+      constructor
+      rcases h1 with w1 | w2; rcases h2 with f1 | f2
+      rw [← ne_eq] at w1; rw [not_lt] at f1
+      exact Nat.lt_of_le_of_ne f1 (id (Ne.symm w1))
+      repeat contradiction
+      exact hn
+
+theorem deficient_or_perfect_or_abundant (hn : 0 < n) :
+  Nat.Deficient n ∨ Nat.Abundant n ∨ Nat.Perfect n := by
+    dsimp [Nat.Deficient, Nat.Perfect, Nat.Abundant]
+    by_contra hc
+    rw [not_or, not_or] at hc
+    rcases hc with ⟨hc1, ⟨hc2, hc3⟩⟩
+    have f1 : ∑ i in properDivisors n, i > n ∧ 0 < n ↔ ∑ i in properDivisors n, i > n := by
+      exact and_iff_left hn
+    have f2 : ∑ i in properDivisors n, i < n ∧ 0 < n ↔ ∑ i in properDivisors n, i < n := by
+      exact and_iff_left hn
+    have f3 : ∑ i in properDivisors n, i = n ∧ 0 < n ↔ ∑ i in properDivisors n, i = n := by
+      exact and_iff_left hn
+    rw [f1] at hc2; rw [f2] at hc1; rw [f3] at hc3
+    rw [not_lt] at hc1; rw [not_lt] at hc2
+    have f4 : ∑ i in properDivisors n, i = n := by exact le_antisymm hc2 hc1
+    contradiction
+
+theorem perfect_semiPerfect : Nat.Perfect n → Nat.SemiPerfect n := by
+  intro h; obtain ⟨h1, h2⟩ := h; use properDivisors n;
+  constructor; exact mem_powerset_self (properDivisors n)
+  constructor <;> assumption
+
+theorem prime_not_abundant (h : Nat.Prime n) : ¬ Nat.Abundant n := by
+  intro h1
+  have h3 : ∑ i in properDivisors n, i = 1 := by exact sum_properDivisors_eq_one_iff_prime.mpr h
+  have h4 : n > 1 := by exact Prime.one_lt h
+  have h5 : ∑ i in properDivisors n, i > 1 := by exact Nat.lt_trans h4 h1.1
+  have h6 : 1 > 1 := by
+    calc
+      1 = ∑ i in properDivisors n, i := by apply Eq.symm h3
+      _ > 1 := by rel [h5]
+  contradiction
+
+theorem prime_not_weird (h : Nat.Prime n) : ¬ Nat.WeirdNumber n := by
+  simp only [Nat.WeirdNumber, not_and_or]
+  left
+  exact prime_not_abundant n h
+
+theorem not_semiPerfect_not_perfect : ¬ Nat.SemiPerfect n → ¬ Nat.Perfect n := by
+  rw [not_imp_not]; exact perfect_semiPerfect n
+
+theorem prime_not_semiPerfect (h : Nat.Prime n) : ¬ Nat.SemiPerfect n := by
+  rw [not_semiperfect_iff_forall]
+  have h1 : powerset (properDivisors n) = {∅, {1}} := by rw [Prime.properDivisors h]; exact rfl
+  have h2 : n > 1 := by exact Prime.one_lt h
+  rw [h1]; rintro s hs; have hs' : s = ∅ ∨ s = {1} := by exact List.mem_pair.mp hs
+  rcases hs' with hs1 | hs2
+  <;> {left; repeat (first | simp [hs1]; linarith | simp [hs2]; linarith)}
+
+theorem prime_not_perfect (h : Nat.Prime n) : ¬ Nat.Perfect n := by
+  have h1 : ¬ Nat.SemiPerfect n := by exact prime_not_semiPerfect n h
+  exact not_semiPerfect_not_perfect n h1
+
+theorem prime_deficient (h : Nat.Prime n) : Nat.Deficient n := by
+  refine (deficient_not_abundant_or_perfect n ?hn).mpr ?_
+  exact Prime.pos h; rw [not_or]
+  constructor
+  · exact prime_not_abundant n h
+  · exact prime_not_perfect n h
+
+theorem exists_infinite_deficients : ∃ d, n ≤ d ∧ Nat.Deficient d := by
+  obtain ⟨p, ⟨h1, h2⟩⟩ := exists_infinite_primes n
+  have Deficientp : Nat.Deficient p := by exact prime_deficient p h2
+  use p
+
+theorem prime_pow_deficient (h : Nat.Prime n) : Nat.Deficient (n^m) := by
+  constructor
+  have m_zeroOrGt : m = 0 ∨ m > 0 := by exact Nat.eq_zero_or_pos m
+  obtain hL | hR := m_zeroOrGt
+  rw [hL, Nat.pow_zero]; exact le.refl
+  have n_geTwo : 2 ≤ n := by exact Prime.two_le h
+  have n_gtOne : 1 < n := by exact n_geTwo
+  have m_neq_zero : m ≠ 0 := by linarith
+  have n_gt_one : n > 1 := by linarith
+  have hp : Nat.Prime n → Nat.properDivisors (n^m) = Finset.image (n ^ ·) (Finset.range m) := by
+    intro n_prime
+    have h1 x : x ∣ n ^ m ↔ ∃ k ≤ m, x = n ^ k := Nat.dvd_prime_pow n_prime
+    have h2 k : n ^ k < n ^ m ↔ k < m := pow_lt_pow_iff_right n_prime.one_lt
+    unhygienic ext
+    simp_all only [Nat.mem_properDivisors, Finset.mem_image, Finset.mem_range]
+    apply Iff.intro
+    · intro a_1
+      unhygienic with_reducible aesop_destruct_products
+      aesop_subst right_1
+      simp_all only
+      (have fwd : w ≤ m := le_of_lt right)
+      simp_all [fwd]
+      apply Exists.intro
+      apply And.intro
+      on_goal 2 => apply Eq.refl
+      simp_all only
+    · intro a_1
+      unhygienic with_reducible aesop_destruct_products
+      aesop_subst right
+      simp_all only [and_true]
+      (have fwd : w ≤ m := le_of_lt left)
+      apply Exists.intro
+      apply And.intro
+      on_goal 2 => apply Eq.refl
+      simp_all only
+  have hw : ∑ i in image (fun x => n ^ x) (range m), i = ∑ i in range m, n^i := by
+    rw [Finset.sum_image]
+    rintro x hx y hy hnxy
+    by_contra hc
+    have hxy : x < y ∨ x > y := by exact Ne.lt_or_lt hc
+    rcases hxy with hxy1 | hxy2
+    have hn1 : n^x < n^y := by exact (pow_lt_pow_iff_right n_gtOne).mpr hxy1
+    linarith
+    have hn2 : n^x > n^y := by exact (pow_lt_pow_iff_right n_gtOne).mpr hxy2
+    linarith
+  -- with credit to Timo Carlin-Burns & Ruben Van de Velde
+  have hq : ∑ i in range m, n ^ i = (n^m - 1) / (n - 1) := by
+    refine Nat.geomSum_eq ?_ _
+    exact n_geTwo
+  rw [hp, hw, hq]
+  have hr : 1 < n ^ m := by
+    refine Nat.one_lt_pow m n m_neq_zero n_gt_one
+  calc
+    (n^m - 1) / (n - 1) ≤ (n^m - 1) := by exact Nat.div_le_self (n ^ m - 1) (n - 1)
+    _                   < n^m := by rw [tsub_lt_self_iff]; norm_num; exact lt_of_succ_lt hr
+  exact h
+  exact pos_pow_of_pos m (Prime.pos h)
+
+theorem exists_infinite_even_deficients : ∃ d, n ≤ d ∧ Nat.Deficient d ∧ Even d := by
+  use 2^(n+1)
+  constructor
+  · rw [Nat.le_iff_lt_or_eq]
+    left
+    calc
+      n ≤ 2*n := by linarith
+      _ < 2*(2^n) := by rel [show n < 2^n by exact Nat.lt_two_pow n]
+      _ = 2^(n+1) := by rw [Nat.pow_succ']
+  · constructor
+    · refine prime_pow_deficient 2 (n + 1) prime_two
+    · refine even_pow.mpr ?h.right.right.a
+      constructor
+      · exact even_iff.mpr rfl
+      · exact succ_ne_zero n
+
+theorem exists_infinite_odd_deficients : ∃ d, n ≤ d ∧ Nat.Deficient d ∧ Odd d := by
+  use 3^(n+1)
+  constructor
+  have nlttwo : n < 2^(n+1) := by
+    calc
+    n ≤ 2*n := by linarith
+    _ < 2*(2^n) := by rel [show n < 2^n by exact Nat.lt_two_pow n]
+    _ = 2^(n+1) := by rw [Nat.pow_succ']
+  have twoltthree : 2^(n+1) ≤ 3^(n+1) := by
+    refine (Nat.pow_le_pow_iff_left (succ_ne_zero n)).mpr ?_; norm_num
+  linarith
+  constructor
+  · refine prime_pow_deficient 3 (n + 1) prime_three
+  · refine Odd.pow ?_
+    exact odd_iff.mpr rfl
+
+end Nat
