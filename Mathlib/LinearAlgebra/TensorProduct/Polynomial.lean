@@ -8,6 +8,15 @@ import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
+/-! # Tensor products of a polynomial ring
+
+Adaptations of `TensorProduct.finsuppLeft` when the `Finsupp` is a `Polynomial`.
+
+It is messy because `Polynomial` is not a `Finsupp`…
+I believe most of this file should go elsewhere,
+and maybe the small stuff that remains could be deleted.
+
+-/
 open TensorProduct LinearMap
 
 universe u v w
@@ -72,9 +81,9 @@ def Polynomial.toFinsuppLinearEquiv : S[X] ≃ₗ[S] (ℕ →₀ S) := {
 noncomputable def Polynomial.rTensorEquiv :
     Polynomial R ⊗[R] N ≃ₗ[R] ℕ →₀ N :=
   (LinearEquiv.rTensor N Polynomial.toFinsuppLinearEquiv).trans
-    (Finsupp.rTensor.trans
+    (TensorProduct.finsuppLeft.trans
       (Finsupp.mapRange.linearEquiv (TensorProduct.lid R N)))
 
 noncomputable def Polynomial.rTensor' :
     Polynomial S ⊗[R] N ≃ₗ[S] ℕ →₀ (S ⊗[R] N) :=
-  (LinearEquiv.rTensor' N Polynomial.toFinsuppLinearEquiv).trans Finsupp.rTensor'
+  (LinearEquiv.rTensor' N Polynomial.toFinsuppLinearEquiv).trans TensorProduct.finsuppLeft'
