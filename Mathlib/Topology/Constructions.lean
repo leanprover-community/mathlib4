@@ -643,7 +643,7 @@ theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x :
 theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X} {y : Y × Z}
     (hf : ContinuousAt f y) (hg : ContinuousAt g x) (hh : ContinuousAt h x) (e : (g x, h x) = y) :
     ContinuousAt (fun x ↦ f (g x, h x)) x := by
-  rw [←e] at hf
+  rw [← e] at hf
   exact hf.comp₂ hg hh
 
 /-- Continuous functions on products are continuous in their first argument -/
