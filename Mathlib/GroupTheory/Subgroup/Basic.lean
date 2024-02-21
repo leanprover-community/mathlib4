@@ -416,7 +416,7 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subgroup.mem_carrier Subgroup.mem_carrier
@@ -2584,7 +2584,7 @@ theorem normalClosure_eq_self (H : Subgroup G) [H.Normal] : normalClosure ↑H =
   le_antisymm (normalClosure_le_normal rfl.subset) le_normalClosure
 #align subgroup.normal_closure_eq_self Subgroup.normalClosure_eq_self
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem normalClosure_idempotent : normalClosure ↑(normalClosure s) = normalClosure s :=
   normalClosure_eq_self _
 #align subgroup.normal_closure_idempotent Subgroup.normalClosure_idempotent
@@ -2640,7 +2640,7 @@ theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
   le_antisymm H.normalCore_le (normal_le_normalCore.mpr le_rfl)
 #align subgroup.normal_core_eq_self Subgroup.normalCore_eq_self
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
 #align subgroup.normal_core_idempotent Subgroup.normalCore_idempotent

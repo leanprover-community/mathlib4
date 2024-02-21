@@ -21,7 +21,7 @@ namespace List
 
 attribute [simp] join
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 #align list.join_singleton List.join_singleton

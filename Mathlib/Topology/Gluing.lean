@@ -252,7 +252,7 @@ theorem image_inter (i j : D.J) :
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨⟨⟩⟩ | ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
     · exact ⟨inv (D.f i i) x₁, by
-        -- Porting note: was `simp [eq₁]`
+        -- porting note (#10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         rw [TopCat.comp_app]
         erw [CategoryTheory.IsIso.inv_hom_id_apply]
