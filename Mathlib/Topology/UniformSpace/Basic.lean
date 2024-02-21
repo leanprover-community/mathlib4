@@ -675,6 +675,10 @@ theorem UniformSpace.isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) :
   hV.preimage <| continuous_const.prod_mk continuous_id
 #align uniform_space.is_open_ball UniformSpace.isOpen_ball
 
+theorem UniformSpace.isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) :
+    IsClosed (ball x V) :=
+  hV.preimage <| continuous_const.prod_mk continuous_id
+
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
   cases' p with x y
