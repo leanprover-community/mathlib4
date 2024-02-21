@@ -263,11 +263,12 @@ macro_rules
 -- if `fun_prop` is good enough, we'll just use that everywhere instead of this, but right now
 -- there are still a few rough edges. See #10724
 /-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
-specifically concerning coninuity of the functions involved. -/
+specifically concerning continuity of the functions involved. -/
 syntax (name := cfcContTac) "cfc_cont_tac" : tactic
 macro_rules
   | `(tactic| cfc_cont_tac) => `(tactic| try (first | fun_prop (disch := aesop) | assumption))
 
+open Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` applied to bare functions.
 When either `a` does not satisfy the predicate `p` (i.e., `a` is not `IsStarNormal`,
 `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when `f : R → R` is
@@ -276,9 +277,8 @@ not continuous on the spectrum of `a`, then `cfc a f` returns the junk value `0`
 This is the primary declaration intended for widespread use of the continuous functional calculus,
 and all the API applies to this declaration. For more information, see the module documentation
 for `Topology.ContinuousFunction.FunctionalCalculus`. -/
-noncomputable irreducible_def cfc (a : A) (f : R → R) : A := by
-  classical
-  exact if h : p a ∧ ContinuousOn f (spectrum R a)
+noncomputable irreducible_def cfc (a : A) (f : R → R) : A :=
+  if h : p a ∧ ContinuousOn f (spectrum R a)
     then cfcSpec h.1 ⟨_, h.2.restrict⟩
     else 0
 
@@ -293,11 +293,11 @@ lemma cfc_apply_of_not_and {f : R → R} (ha : ¬ (p a ∧ ContinuousOn f (spect
     cfc a f = 0 := by
   rw [cfc_def, dif_neg ha]
 
-lemma cfc_apply_of_not {f : R → R} (ha : ¬ p a) :
+lemma cfc_apply_of_not_predicate {f : R → R} (ha : ¬ p a) :
     cfc a f = 0 := by
   rw [cfc_def, dif_neg (not_and_of_not_left _ ha)]
 
-lemma cfc_apply_of_not' {f : R → R} (hf : ¬ ContinuousOn f (spectrum R a)) :
+lemma cfc_apply_of_not_continuous {f : R → R} (hf : ¬ ContinuousOn f (spectrum R a)) :
     cfc a f = 0 := by
   rw [cfc_def, dif_neg (not_and_of_not_right _ hf)]
 
@@ -350,7 +350,7 @@ variable (R)
 lemma cfc_one (ha : p a := by cfc_tac) : cfc a (1 : R → R) = 1 :=
   cfc_apply a (1 : R → R) ▸ map_one (cfcSpec (show p a from ha))
 
-lemma cfc_one' (ha : p a := by cfc_tac) : cfc a (fun _ : R ↦ 1) = 1 :=
+lemma cfc_const_one (ha : p a := by cfc_tac) : cfc a (fun _ : R ↦ 1) = 1 :=
   cfc_one R a
 
 @[simp]
@@ -360,7 +360,7 @@ lemma cfc_zero : cfc a (0 : R → R) = 0 := by
   · rw [cfc_apply_of_not a ha]
 
 @[simp]
-lemma cfc_zero' : cfc a (fun _ : R ↦ 0) = 0 :=
+lemma cfc_const_zero : cfc a (fun _ : R ↦ 0) = 0 :=
   cfc_zero R a
 
 variable {R}
