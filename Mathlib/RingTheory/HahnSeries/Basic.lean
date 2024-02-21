@@ -121,7 +121,7 @@ theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :
 #align hahn_series.support_eq_empty_iff HahnSeries.support_eq_empty_iff
 
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
-def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
+def ofIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
     HahnSeries (Γ ×ₗ Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
@@ -139,7 +139,7 @@ def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries �
       exact (x.coeff a).isPWO_support'
 
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
-def to_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
+def toIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
     HahnSeries Γ (HahnSeries Γ' R) where
   coeff := fun g => {
     coeff := fun g' => coeff x (g, g')
@@ -168,10 +168,11 @@ def to_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R
     exact Set.PartiallyWellOrderedOn.imageProdLex x.isPWO_support'
 
 /-- The equivalence between iterated Hahn series and Hahn series on the lex product. -/
-def iterate_equiv {Γ' : Type*} [PartialOrder Γ'] :
+@[simps?]
+def iterateEquiv {Γ' : Type*} [PartialOrder Γ'] :
     HahnSeries Γ (HahnSeries Γ' R) ≃ HahnSeries (Γ ×ₗ Γ') R where
-  toFun := of_iterate
-  invFun := to_iterate
+  toFun := ofIterate
+  invFun := toIterate
   left_inv := congrFun rfl
   right_inv := congrFun rfl
 
