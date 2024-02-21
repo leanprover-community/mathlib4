@@ -3,7 +3,7 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.star.unitary from "leanprover-community/mathlib"@"247a102b14f3cebfee126293341af5f6bed00237"
@@ -135,9 +135,18 @@ def toUnits : unitary R →* Rˣ
   map_mul' _ _ := Units.ext rfl
 #align unitary.to_units unitary.toUnits
 
-theorem to_units_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
+theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
   Subtype.ext <| Units.ext_iff.mp h
-#align unitary.to_units_injective unitary.to_units_injective
+#align unitary.to_units_injective unitary.toUnits_injective
+
+instance instIsStarNormal (u : unitary R) : IsStarNormal u where
+  star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm
+
+instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
+  star_comm_self := congr(Subtype.val $(star_comm_self' u))
+
+lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStarNormal u :=
+  coe_isStarNormal ⟨u, hu⟩
 
 end Monoid
 

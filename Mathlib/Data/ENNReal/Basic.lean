@@ -384,8 +384,8 @@ alias ⟨_, coe_le_coe_of_le⟩ := coe_le_coe
 attribute [gcongr] ENNReal.coe_le_coe_of_le
 
 -- Needed until `@[gcongr]` accepts iff statements
-alias ⟨_, coe_lt_coe_of_le⟩ := coe_lt_coe
-attribute [gcongr] ENNReal.coe_lt_coe_of_le
+alias ⟨_, coe_lt_coe_of_lt⟩ := coe_lt_coe
+attribute [gcongr] ENNReal.coe_lt_coe_of_lt
 
 theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 #align ennreal.coe_mono ENNReal.coe_mono
