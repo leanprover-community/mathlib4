@@ -1306,9 +1306,9 @@ instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
 
 end Seminormed
 
-instance [NormedRing R] : NormedRing (α →ᵇ R) :=
-  { show Ring (α →ᵇ R) from inferInstance,  -- porting note: this was not present in the original
-    BoundedContinuousFunction.nonUnitalNormedRing with }
+instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
+  __ := instRing
+  __ := instNonUnitalNormedRing
 
 end NormedRing
 
