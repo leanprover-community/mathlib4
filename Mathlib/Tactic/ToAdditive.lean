@@ -945,6 +945,8 @@ def nameDict : String → List String
   | "rootable"    => ["divisible"]
   | "commute"     => ["add", "Commute"]
   | "semiconj"    => ["add", "Semiconj"]
+  | "zpowers"     => ["zmultiples"]
+  | "powers"      => ["multiples"]
   | x             => [x]
 
 /--
