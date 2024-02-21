@@ -463,7 +463,8 @@ lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z
 /-- The natural isomorphism between `𝕜` satisfying `ROrCLike 𝕜` and `ℂ` when
 `ROrCLike.im ROrCLike.I = 1`. -/
 @[simps]
-def _root_.ROrCLike.complexRingEquiv {𝕜 : Type*} [ROrCLike 𝕜] (h : im (I : 𝕜) = 1) : 𝕜 ≃+* ℂ where
+def _root_.ROrCLike.complexRingEquiv {𝕜 : Type*} [ROrCLike 𝕜]
+    (h : ROrCLike.im (ROrCLike.I : 𝕜) = 1) : 𝕜 ≃+* ℂ where
   toFun x := ROrCLike.re x + ROrCLike.im x * I
   invFun x := re x + im x * ROrCLike.I
   left_inv x := by simp
