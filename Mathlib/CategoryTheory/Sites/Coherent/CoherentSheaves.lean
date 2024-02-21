@@ -31,7 +31,7 @@ lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
   · intro hP B α _ X π h
     simp only [coherentTopology, Presieve.isSheaf_coverage] at hP
     apply hP
-    refine ⟨α, inferInstance, X, π, rfl, h⟩
+    exact ⟨α, inferInstance, X, π, rfl, h⟩
   · intro h
     simp only [coherentTopology, Presieve.isSheaf_coverage]
     rintro B S ⟨α, _, X, π, rfl, hS⟩

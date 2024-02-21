@@ -188,7 +188,7 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
-    refine' ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
+    exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
 #align vitali.exists_disjoint_subfamily_covering_enlargment_closed_ball Vitali.exists_disjoint_subfamily_covering_enlargment_closedBall
 
 /-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with

@@ -536,7 +536,7 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
   · exact ⟨_, hN _ _ hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
+    exact ⟨_, hadd _ _ _ _ Cx Cy⟩
 
 theorem disjoint_iff_coe_toSubmodule :
     Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := by

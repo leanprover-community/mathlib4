@@ -1597,9 +1597,9 @@ theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 
     rw [← Ne, ← one_le_iff_ne_zero] at ha hb
     constructor
     · rw [← mul_one a]
-      refine' (mul_le_mul' le_rfl hb).trans_lt h
+      exact (mul_le_mul' le_rfl hb).trans_lt h
     · rw [← one_mul b]
-      refine' (mul_le_mul' ha le_rfl).trans_lt h
+      exact (mul_le_mul' ha le_rfl).trans_lt h
   rintro (rfl | rfl | ⟨ha, hb⟩) <;> simp only [*, mul_lt_aleph0, aleph0_pos, zero_mul, mul_zero]
 #align cardinal.mul_lt_aleph_0_iff Cardinal.mul_lt_aleph0_iff
 

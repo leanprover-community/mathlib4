@@ -292,7 +292,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
   obtain ⟨p, hp⟩ := h₁
   refine' ⟨PID, ⟨Ideal.span {p}, ⟨_, _⟩, _⟩⟩
   · rw [Submodule.ne_bot_iff]
-    refine' ⟨p, Ideal.mem_span_singleton.mpr (dvd_refl p), hp.ne_zero⟩
+    exact ⟨p, Ideal.mem_span_singleton.mpr (dvd_refl p), hp.ne_zero⟩
   · rwa [Ideal.span_singleton_prime hp.ne_zero, ← UniqueFactorizationMonoid.irreducible_iff_prime]
   · intro I
     rw [← Submodule.IsPrincipal.span_singleton_generator I]

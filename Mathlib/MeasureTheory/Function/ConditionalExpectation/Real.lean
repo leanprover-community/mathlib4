@@ -145,7 +145,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   by_cases hnm : m ≤ m0
   swap
   · simp_rw [condexp_of_not_le hnm, Pi.zero_apply, abs_zero]
-    refine' eventually_of_forall fun _ => R.coe_nonneg
+    exact eventually_of_forall fun _ => R.coe_nonneg
   by_cases hfint : Integrable f μ
   swap
   · simp_rw [condexp_undef hfint]

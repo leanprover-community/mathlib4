@@ -228,7 +228,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         intro IH <;>
         simp only [parallel.aux2]
       · rcases IH with ⟨c', cl, ac⟩
-        refine' ⟨c', List.Mem.tail _ cl, ac⟩
+        exact ⟨c', List.Mem.tail _ cl, ac⟩
       · induction' h : destruct c with a c' <;> simp only [rmap]
         · refine' ⟨c, List.mem_cons_self _ _, _⟩
           rw [destruct_eq_pure h]

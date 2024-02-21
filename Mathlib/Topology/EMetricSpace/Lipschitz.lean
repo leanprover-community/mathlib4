@@ -443,7 +443,7 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
     _ ≤ K * (δ + δ) + ε / 2 + K * δ := by
       gcongr
       · refine (hb b hbt).edist_le_mul_of_le has (hs' hx') ?_
-        refine (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
+        exact (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
       · exact hby
       · exact (hb y hy).edist_le_mul_of_le (hs' hx') hx ((edist_comm _ _).trans_le hxx'.le)
     _ = δ * ↑(3 * K) + ε / 2 := by push_cast; ring

@@ -93,13 +93,13 @@ theorem partialSections.directed :
     have : ιA f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_left
       rw [Finset.mem_image]
-      refine' ⟨f, hf, rfl⟩
+      exact ⟨f, hf, rfl⟩
     exact hu this
   · rintro u hu f hf
     have : ιB f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_right
       rw [Finset.mem_image]
-      refine' ⟨f, hf, rfl⟩
+      exact ⟨f, hf, rfl⟩
     exact hu this
 #align Top.partial_sections.directed TopCat.partialSections.directed
 

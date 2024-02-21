@@ -395,7 +395,7 @@ theorem Memℒp.snorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf :
   refine' ⟨δ, hδpos, fun s hs hμs => _⟩
   convert hδ s hs hμs using 1
   rw [snorm_indicator_eq_snorm_restrict hs, snorm_indicator_eq_snorm_restrict hs]
-  refine' snorm_congr_ae heq.restrict
+  exact snorm_congr_ae heq.restrict
 #align measure_theory.mem_ℒp.snorm_indicator_le MeasureTheory.Memℒp.snorm_indicator_le
 
 /-- A constant function is uniformly integrable. -/

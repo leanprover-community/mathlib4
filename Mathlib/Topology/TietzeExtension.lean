@@ -431,7 +431,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : X →ᵇ ℝ) {t : S
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ t) ∧ g ∘ e = f := by
   cases isEmpty_or_nonempty X
   · rcases hne with ⟨c, hc⟩
-    refine' ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
+    exact ⟨const Y c, fun _ => hc, funext fun x => isEmptyElim x⟩
   rcases exists_extension_forall_exists_le_ge_of_closedEmbedding f he with ⟨g, hg, hgf⟩
   refine' ⟨g, fun y => _, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩

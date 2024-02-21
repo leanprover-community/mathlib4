@@ -515,7 +515,7 @@ theorem tendsto_normalize_iff_tendsto {γ : Type*} {F : Filter γ} {μs : γ →
   · rintro ⟨normalized_lim, mass_lim⟩
     exact tendsto_of_tendsto_normalize_testAgainstNN_of_tendsto_mass normalized_lim mass_lim
   · intro μs_lim
-    refine' ⟨tendsto_normalize_of_tendsto μs_lim nonzero, μs_lim.mass⟩
+    exact ⟨tendsto_normalize_of_tendsto μs_lim nonzero, μs_lim.mass⟩
 #align measure_theory.finite_measure.tendsto_normalize_iff_tendsto MeasureTheory.FiniteMeasure.tendsto_normalize_iff_tendsto
 
 end FiniteMeasure --namespace

@@ -2928,7 +2928,7 @@ theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
     simp only [decide_eq_true_eq, add_right_inj]
-    refine' (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
+    exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 #align multiset.rel.countp_eq Multiset.Rel.countP_eq
 
 end Rel

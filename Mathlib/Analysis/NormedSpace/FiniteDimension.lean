@@ -217,7 +217,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
       apply A.symm.lipschitz
     apply (LAsymm.comp hg).weaken
     rw [lipschitzExtensionConstant, ← mul_assoc]
-    refine' mul_le_mul' (le_max_left _ _) le_rfl
+    exact mul_le_mul' (le_max_left _ _) le_rfl
   · intro x hx
     have : A (f x) = g x := gs hx
     simp only [(· ∘ ·), ← this, A.symm_apply_apply]
@@ -425,7 +425,7 @@ theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : 
       ext x
       simp [h]
     have : FiniteDimensional 𝕜 (⊤ : Submodule 𝕜 E) := by rwa [this]
-    refine' Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
+    exact Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
   obtain ⟨x, xR, hx⟩ : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y : E, y ∈ F → 1 ≤ ‖x - y‖ :=
     riesz_lemma_of_norm_lt hc hR Fclosed this
   have hx' : ∀ y : E, y ∈ F → 1 ≤ ‖y - x‖ := by

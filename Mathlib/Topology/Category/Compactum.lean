@@ -270,7 +270,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Finish
   apply claim4.finiteInter_mem T
   intro t ht
-  refine' finiteInterClosure.basic (@hT t ht)
+  exact finiteInterClosure.basic (@hT t ht)
 
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]

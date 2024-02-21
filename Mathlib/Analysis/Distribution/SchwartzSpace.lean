@@ -841,7 +841,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         refine' le_add_of_nonneg_right _
         specialize hg_upper' 0
         rw [norm_zero] at hg_upper'
-        refine' nonneg_of_mul_nonneg_left hg_upper' (by positivity)
+        exact nonneg_of_mul_nonneg_left hg_upper' (by positivity)
       let k' := kg * (k + l * n)
       use Finset.Iic (k', n), (1 + Cg) ^ (k + l * n) * ((C + 1) ^ n * n ! * 2 ^ k'), by positivity
       intro f x

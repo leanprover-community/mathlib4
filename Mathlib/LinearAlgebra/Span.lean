@@ -699,7 +699,7 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {C : ∀ x, (x �
   · exact ⟨_, hp _ _ hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
+    exact ⟨_, hadd _ _ _ _ Cx Cy⟩
 #align submodule.supr_induction' Submodule.iSup_induction'
 
 theorem singleton_span_isCompactElement (x : M) :
@@ -839,7 +839,7 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
   simp [SetLike.le_def]; intro xx yy hxx hyy
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
-  refine' mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
+  exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
 #align submodule.prod_sup_prod Submodule.prod_sup_prod
 
 end AddCommMonoid

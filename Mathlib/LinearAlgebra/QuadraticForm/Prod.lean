@@ -167,7 +167,7 @@ theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
   constructor
   · rintro ⟨⟨hle₁, hle₂⟩, ha⟩
     obtain ⟨ha₁, ha₂⟩ := anisotropic_of_prod ha
-    refine' ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
+    exact ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
   · rintro ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
     refine' ⟨⟨hle₁, hle₂⟩, _⟩
     rintro ⟨x₁, x₂⟩ (hx : Q₁ x₁ + Q₂ x₂ = 0)

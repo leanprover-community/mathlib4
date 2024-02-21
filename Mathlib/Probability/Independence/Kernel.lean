@@ -639,7 +639,7 @@ theorem iIndepSets.iIndep [IsMarkovKernel κ] (m : ι → MeasurableSpace Ω)
     · have h_le_p : ∀ i ∈ S, m i ≤ m_p := by
         intros n hn
         rw [hS_eq_generate, h_generate n]
-        refine le_generateFrom_piiUnionInter (S : Set ι) hn
+        exact le_generateFrom_piiUnionInter (S : Set ι) hn
       have h_S_f : ∀ i ∈ S, MeasurableSet[m_p] (f i) :=
         fun i hi ↦ (h_le_p i hi) (f i) (hf_m_S i hi)
       exact S.measurableSet_biInter h_S_f

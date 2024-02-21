@@ -256,7 +256,7 @@ theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}
     apply hst.1
     rw [Set.image2_singleton_right] at h
     replace h := (hf b).isBounded_preimage h
-    refine' h.subset (subset_preimage_image _ _)
+    exact h.subset (subset_preimage_image _ _)
   exact mt (IsBounded.subset · (image2_subset subset_rfl (singleton_subset_iff.mpr hb))) this
 #align antilipschitz_with.bounded_of_image2_left AntilipschitzWith.isBounded_of_image2_left
 

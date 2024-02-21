@@ -295,7 +295,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
   refine' Subset.antisymm (convexHull_min _ _) _
   · intro x hx
     obtain ⟨i, hi⟩ := Set.mem_range.mp hx
-    refine' ⟨{i}, Function.const ι (1 : R), by simp, by simp, by simp [hi]⟩
+    exact ⟨{i}, Function.const ι (1 : R), by simp, by simp, by simp [hi]⟩
   · rintro x ⟨s, w, hw₀, hw₁, rfl⟩ y ⟨s', w', hw₀', hw₁', rfl⟩ a b ha hb hab
     let W : ι → R := fun i => (if i ∈ s then a * w i else 0) + if i ∈ s' then b * w' i else 0
     have hW₁ : (s ∪ s').sum W = 1 := by

@@ -231,7 +231,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
     exact hfx
   nth_rw 2 [this.symm]
   refine' Tendsto.min tendsto_const_nhds _
-  refine' Tendsto.div tendsto_const_nhds h_tendsto.norm hfx0
+  exact Tendsto.div tendsto_const_nhds h_tendsto.norm hfx0
 #align measure_theory.strongly_measurable.tendsto_approx_bounded_of_norm_le MeasureTheory.StronglyMeasurable.tendsto_approxBounded_of_norm_le
 
 theorem tendsto_approxBounded_ae {β} {f : α → β} [NormedAddCommGroup β] [NormedSpace ℝ β]

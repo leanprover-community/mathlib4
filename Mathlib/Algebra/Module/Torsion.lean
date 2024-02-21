@@ -858,7 +858,7 @@ theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
     obtain ⟨n, hn⟩ := @h x
-    refine' ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
+    exact ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
 #align add_monoid.is_torsion_iff_is_torsion_nat AddMonoid.isTorsion_iff_isTorsion_nat
 
 theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :

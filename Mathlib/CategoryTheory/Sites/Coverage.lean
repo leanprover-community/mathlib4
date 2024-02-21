@@ -338,7 +338,7 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
       · apply H; assumption
       · intro Z g _
         obtain ⟨R, hR1, hR2⟩ := K.pullback g _ hT1
-        refine ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
+        exact ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
     | top => intros; simpa using Presieve.isSheafFor_top_sieve _
     | transitive X R S _ _ H1 H2 =>
       intro Y f

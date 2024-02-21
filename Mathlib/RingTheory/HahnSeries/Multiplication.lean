@@ -244,7 +244,7 @@ theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     constructor
     · rintro ⟨rfl, _, h1⟩
       rw [add_comm] at h1
-      refine' ⟨rfl, add_right_cancel h1⟩
+      exact ⟨rfl, add_right_cancel h1⟩
     · rintro ⟨rfl, rfl⟩
       exact ⟨rfl, by simp [hx], add_comm _ _⟩
   · simp
@@ -271,7 +271,7 @@ theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
       Set.mem_setOf_eq]
     constructor
     · rintro ⟨_, rfl, h1⟩
-      refine' ⟨add_right_cancel h1, rfl⟩
+      exact ⟨add_right_cancel h1, rfl⟩
     · rintro ⟨rfl, rfl⟩
       simp [hx]
   · simp
@@ -536,7 +536,7 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
     obtain ⟨_, hi, _, hj, rfl⟩ := support_mul_subset_add_support ((mem_support _ _).2 hg)
     obtain ⟨i, _, rfl⟩ := support_embDomain_subset hi
     obtain ⟨j, _, rfl⟩ := support_embDomain_subset hj
-    refine' ⟨i + j, hf i j⟩
+    exact ⟨i + j, hf i j⟩
 #align hahn_series.emb_domain_mul HahnSeries.embDomain_mul
 
 theorem embDomain_one [NonAssocSemiring R] (f : Γ ↪o Γ') (hf : f 0 = 0) :

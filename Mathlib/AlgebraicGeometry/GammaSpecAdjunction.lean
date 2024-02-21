@@ -254,7 +254,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     -- realize it is useful
     have := IsLocalization.map_units (R := Γ.obj (op X)) S s
     dsimp at this ⊢
-    refine ht.mul <| this.map _
+    exact ht.mul <| this.map _
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toΓSpec
 
 theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ Γ.obj (op X)}

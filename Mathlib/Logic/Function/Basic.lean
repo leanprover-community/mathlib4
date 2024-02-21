@@ -1047,17 +1047,17 @@ theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.
   -- TODO: mathlib3 uses `eq_rec_on_bijective`, difference in elaboration here
   -- due to `@[macro_inline]` possibly?
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mp_bijective eq_mp_bijective
 
 theorem eq_mpr_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mpr h) := by
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mpr_bijective eq_mpr_bijective
 
 theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast h) := by
   cases h
-  refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
+  exact ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align cast_bijective cast_bijective
 
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and

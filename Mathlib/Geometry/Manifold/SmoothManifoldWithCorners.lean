@@ -1230,7 +1230,7 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
   rw [f.extend_coord_change_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
   refine' I.image_mem_nhdsWithin _
-  refine' (PartialHomeomorph.open_source _).mem_nhds hx
+  exact (PartialHomeomorph.open_source _).mem_nhds hx
 #align local_homeomorph.extend_coord_change_source_mem_nhds_within PartialHomeomorph.extend_coord_change_source_mem_nhdsWithin
 
 theorem extend_coord_change_source_mem_nhdsWithin' {x : M} (hxf : x ∈ f.source)

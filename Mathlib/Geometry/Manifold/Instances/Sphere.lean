@@ -175,7 +175,7 @@ theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
     nlinarith
   have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine' (contDiff_const.smul contDiff_id).add _
-    refine' (h₀.sub contDiff_const).smul contDiff_const
+    exact (h₀.sub contDiff_const).smul contDiff_const
   exact h₁.smul h₂
 #align cont_diff_stereo_inv_fun_aux contDiff_stereoInvFunAux
 

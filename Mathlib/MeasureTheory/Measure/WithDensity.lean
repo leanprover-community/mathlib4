@@ -177,7 +177,7 @@ theorem withDensity_tsum {f : ℕ → α → ℝ≥0∞} (h : ∀ i, Measurable 
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
   change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i : ℕ, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
-  refine' lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
+  exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 #align measure_theory.with_density_tsum MeasureTheory.withDensity_tsum
 
 theorem withDensity_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
@@ -560,7 +560,7 @@ lemma SigmaFinite.withDensity_of_ne_top [SigmaFinite μ] {f : α → ℝ≥0∞}
 
 lemma SigmaFinite.withDensity_ofReal [SigmaFinite μ] {f : α → ℝ} (hf : AEMeasurable f μ) :
     SigmaFinite (μ.withDensity (fun x ↦ ENNReal.ofReal (f x))) := by
-  refine SigmaFinite.withDensity_of_ne_top hf.ennreal_ofReal (ae_of_all _ (by simp))
+  exact SigmaFinite.withDensity_of_ne_top hf.ennreal_ofReal (ae_of_all _ (by simp))
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
 

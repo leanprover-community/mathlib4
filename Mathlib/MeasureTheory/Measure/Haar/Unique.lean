@@ -223,7 +223,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             simp only [mem_prod, H, true_and]
             apply subset_closure
             simp only [mem_image, mem_prod, Prod.exists]
-            refine ⟨y * x, x, ⟨hxy, H⟩, by group⟩
+            exact ⟨y * x, x, ⟨hxy, H⟩, by group⟩
           simp [this]
         apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
         exact (isClosed_tsupport g).prod isClosed_closure

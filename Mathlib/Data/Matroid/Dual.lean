@@ -101,7 +101,7 @@ section dual
       refine hI.mem_of_insert_indep ⟨hB₁.subset_ground he, heX⟩
         (hB₁.indep.subset (insert_subset he ?_))
       refine (subset_union_of_subset_right (subset_diff.mpr ⟨hIB',?_⟩) _).trans hI'B₁
-      refine disjoint_of_subset_left hI.subset disjoint_sdiff_left
+      exact disjoint_of_subset_left hI.subset disjoint_sdiff_left
 
     subst this
 

@@ -215,7 +215,7 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
   · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
   · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
     apply mem_iUnion₂.mpr
-    refine' ⟨y, hys, hyx.le⟩
+    exact ⟨y, hys, hyx.le⟩
 #align is_glb.bUnion_Ici_eq_Ioi IsGLB.biUnion_Ici_eq_Ioi
 
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
@@ -223,7 +223,7 @@ theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
   · apply mem_iUnion₂.mpr
-    refine' ⟨a, a_mem, hx⟩
+    exact ⟨a, a_mem, hx⟩
 #align is_glb.bUnion_Ici_eq_Ici IsGLB.biUnion_Ici_eq_Ici
 
 theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_not_mem : a ∉ s) :

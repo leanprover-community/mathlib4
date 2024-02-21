@@ -1005,7 +1005,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
     refine' mem_nhdsWithin_insert.mpr ⟨this, _⟩
     refine' (continuousWithinAt_id.prod hg.continuousWithinAt).preimage_mem_nhdsWithin' _
     rw [← nhdsWithin_le_iff] at hst hv ⊢
-    refine' (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
+    exact (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
   · intro z hz
     have := hvf' (z, g z) hz.1
     refine' this.comp _ (hasFDerivAt_prod_mk_right _ _).hasFDerivWithinAt _
@@ -1670,7 +1670,7 @@ theorem iteratedFDerivWithin_const_smul_apply (hf : ContDiffOn 𝕜 i f s) (hu :
 theorem iteratedFDeriv_const_smul_apply {x : E} (hf : ContDiff 𝕜 i f) :
     iteratedFDeriv 𝕜 i (a • f) x = a • iteratedFDeriv 𝕜 i f x := by
   simp_rw [← contDiffOn_univ, ← iteratedFDerivWithin_univ] at *
-  refine' iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
+  exact iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
 #align iterated_fderiv_const_smul_apply iteratedFDeriv_const_smul_apply
 
 end ConstSMul

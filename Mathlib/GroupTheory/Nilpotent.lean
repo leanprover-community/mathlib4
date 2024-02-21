@@ -220,7 +220,7 @@ theorem nilpotent_iff_finite_ascending_central_series :
     IsNilpotent G ↔ ∃ n : ℕ, ∃ H : ℕ → Subgroup G, IsAscendingCentralSeries H ∧ H n = ⊤ := by
   constructor
   · rintro ⟨n, nH⟩
-    refine' ⟨_, _, upperCentralSeries_isAscendingCentralSeries G, nH⟩
+    exact ⟨_, _, upperCentralSeries_isAscendingCentralSeries G, nH⟩
   · rintro ⟨n, H, hH, hn⟩
     use n
     rw [eq_top_iff, ← hn]

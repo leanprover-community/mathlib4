@@ -264,7 +264,7 @@ theorem sup_exists :
   classical
   induction' H using Finset.induction with h' H' nmf h''
   · obtain ⟨S, f⟩ := sup_objs_exists O
-    refine' ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
+    exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
     refine' ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), _⟩
@@ -739,7 +739,7 @@ theorem inf_exists :
   classical
   induction' H using Finset.induction with h' H' nmf h''
   · obtain ⟨S, f⟩ := inf_objs_exists O
-    refine' ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
+    exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
     refine' ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, _⟩

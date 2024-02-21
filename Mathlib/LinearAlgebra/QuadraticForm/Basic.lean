@@ -1230,7 +1230,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
   obtain rfl | hB₁ := eq_or_ne B 0
   · let b := FiniteDimensional.finBasis K V
     rw [hd] at b
-    refine' ⟨b, fun i j _ => rfl⟩
+    exact ⟨b, fun i j _ => rfl⟩
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
   rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
     finrank_span_singleton (ne_zero_of_not_isOrtho_self x hx)] at hd

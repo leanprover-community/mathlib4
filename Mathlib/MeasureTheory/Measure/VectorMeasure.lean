@@ -160,7 +160,7 @@ theorem hasSum_of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : �
     simp only [exists_prop, Set.mem_iUnion, Option.mem_def]
     constructor
     · intro hy
-      refine' ⟨x, (Encodable.decode₂_is_partial_inv _ _).2 rfl, hy⟩
+      exact ⟨x, (Encodable.decode₂_is_partial_inv _ _).2 rfl, hy⟩
     · rintro ⟨b, hb₁, hb₂⟩
       rw [Encodable.decode₂_is_partial_inv _ _] at hb₁
       rwa [← Encodable.encode_injective hb₁]

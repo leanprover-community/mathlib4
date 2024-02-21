@@ -1801,7 +1801,7 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (_ : l₂'.length = l₂.length),
       stepAux (write l₂ q) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂' R')) =
       stepAux q v (Tape.mk' (L'.append (List.reverseAux l₂ l₁)) R') by
-    refine' this [] _ _ ((enc b).2.trans (enc a).2.symm)
+    exact this [] _ _ ((enc b).2.trans (enc a).2.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction' l₂ with a l₂ IH generalizing l₁ l₂'
@@ -1936,7 +1936,7 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
     | load a q IH =>
       unfold writes at hw ⊢
       replace IH := IH hs hw
-      refine' ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
+      exact ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
     | branch p q₁ q₂ IH₁ IH₂ =>
       unfold writes at hw ⊢
       simp only [Finset.mem_union] at hw ⊢

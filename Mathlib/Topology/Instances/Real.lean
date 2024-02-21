@@ -145,7 +145,7 @@ instance : CompleteSpace ℝ := by
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
-  refine' this.imp fun N hN n hn => hε (hN n hn)
+  exact this.imp fun N hN n hn => hε (hN n hn)
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo

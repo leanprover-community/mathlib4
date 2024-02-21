@@ -417,7 +417,7 @@ theorem LinearOrder.convexOn_of_lt (hs : Convex 𝕜 s)
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    refine' this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
+    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
   exact hf hx hy h ha hb hab
 #align linear_order.convex_on_of_lt LinearOrder.convexOn_of_lt
 
@@ -447,7 +447,7 @@ theorem LinearOrder.strictConvexOn_of_lt (hs : Convex 𝕜 s)
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    refine' this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
+    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
   exact hf hx hy h ha hb hab
 #align linear_order.strict_convex_on_of_lt LinearOrder.strictConvexOn_of_lt
 

@@ -1180,7 +1180,7 @@ theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.ra
   · apply memℓp_infty
     use C
     rintro _ ⟨a, rfl⟩
-    refine' norm_apply_le_of_tendsto (eventually_of_forall hCF) hf a
+    exact norm_apply_le_of_tendsto (eventually_of_forall hCF) hf a
   · apply memℓp_gen'
     exact sum_rpow_le_of_tendsto hp.ne (eventually_of_forall hCF) hf
 #align lp.mem_ℓp_of_tendsto lp.memℓp_of_tendsto

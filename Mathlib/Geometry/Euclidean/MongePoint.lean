@@ -619,7 +619,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
     fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
       <;> simp (config := {decide := true}) at hi₁₂ hi₁₃ hi₂₃ ⊢
   rw [hui, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton]
-  refine' vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
+  exact vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 #align affine.triangle.altitude_replace_orthocenter_eq_affine_span Affine.Triangle.altitude_replace_orthocenter_eq_affineSpan
 
 /-- Suppose we are given a triangle `t₁`, and replace one of its

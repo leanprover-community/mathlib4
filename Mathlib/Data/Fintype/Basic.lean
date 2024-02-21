@@ -97,7 +97,7 @@ theorem coe_eq_univ : (s : Set α) = Set.univ ↔ s = univ := by rw [← coe_uni
 
 theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
-  refine' eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
+  exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
 #align finset.nonempty.eq_univ Finset.Nonempty.eq_univ
 
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by

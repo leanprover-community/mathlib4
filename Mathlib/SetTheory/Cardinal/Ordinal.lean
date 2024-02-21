@@ -603,7 +603,7 @@ theorem mul_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (h1 : a < c) (h2 : b
 theorem mul_le_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) : a * b ≤ max a b := by
   convert mul_le_mul' (le_max_left a b) (le_max_right a b) using 1
   rw [mul_eq_self]
-  refine' h.trans (le_max_left a b)
+  exact h.trans (le_max_left a b)
 #align cardinal.mul_le_max_of_aleph_0_le_left Cardinal.mul_le_max_of_aleph0_le_left
 
 theorem mul_eq_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) (h' : b ≠ 0) :
