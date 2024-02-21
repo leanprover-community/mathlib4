@@ -87,7 +87,7 @@ In the long term is may be possible to replace `Real.exp` and `Complex.exp` with
 
 namespace NormedSpace
 
-open Filter IsROrC ContinuousMultilinearMap NormedField Asymptotics
+open Filter ROrCLike ContinuousMultilinearMap NormedField Asymptotics
 
 open scoped Nat Topology BigOperators ENNReal
 
@@ -402,11 +402,11 @@ theorem exp_add_of_mem_ball [CharZero 𝕂] {x y : 𝔸}
 
 end AnyFieldCommAlgebra
 
-section IsROrC
+section ROrCLike
 
 section AnyAlgebra
 
-variable (𝕂 𝔸 𝔹 : Type*) [IsROrC 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable (𝕂 𝔸 𝔹 : Type*) [ROrCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 
 variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
 
@@ -602,7 +602,7 @@ end AnyAlgebra
 
 section DivisionAlgebra
 
-variable {𝕂 𝔸 : Type*} [IsROrC 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [ROrCLike 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 
 variable (𝕂)
 
@@ -645,7 +645,7 @@ end DivisionAlgebra
 
 section CommAlgebra
 
-variable {𝕂 𝔸 : Type*} [IsROrC 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [ROrCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `exp 𝕂 (x+y) = (exp 𝕂 x) * (exp 𝕂 y)`. -/
@@ -662,7 +662,7 @@ theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp 𝕂 (∑ i in s, f
 
 end CommAlgebra
 
-end IsROrC
+end ROrCLike
 
 end Normed
 

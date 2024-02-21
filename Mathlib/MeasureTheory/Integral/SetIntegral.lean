@@ -1089,7 +1089,7 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 
 open scoped ComplexConjugate
 
-variable {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
+variable {μ : Measure α} {𝕜 : Type*} [ROrCLike 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
@@ -1184,41 +1184,41 @@ end ContinuousLinearEquiv
 
 @[norm_cast]
 theorem integral_ofReal {f : α → ℝ} : ∫ a, (f a : 𝕜) ∂μ = ↑(∫ a, f a ∂μ) :=
-  (@IsROrC.ofRealLI 𝕜 _).integral_comp_comm f
+  (@ROrCLike.ofRealLI 𝕜 _).integral_comp_comm f
 #align integral_of_real integral_ofReal
 
 theorem integral_re {f : α → 𝕜} (hf : Integrable f μ) :
-    ∫ a, IsROrC.re (f a) ∂μ = IsROrC.re (∫ a, f a ∂μ) :=
-  (@IsROrC.reCLM 𝕜 _).integral_comp_comm hf
+    ∫ a, ROrCLike.re (f a) ∂μ = ROrCLike.re (∫ a, f a ∂μ) :=
+  (@ROrCLike.reCLM 𝕜 _).integral_comp_comm hf
 #align integral_re integral_re
 
 theorem integral_im {f : α → 𝕜} (hf : Integrable f μ) :
-    ∫ a, IsROrC.im (f a) ∂μ = IsROrC.im (∫ a, f a ∂μ) :=
-  (@IsROrC.imCLM 𝕜 _).integral_comp_comm hf
+    ∫ a, ROrCLike.im (f a) ∂μ = ROrCLike.im (∫ a, f a ∂μ) :=
+  (@ROrCLike.imCLM 𝕜 _).integral_comp_comm hf
 #align integral_im integral_im
 
 theorem integral_conj {f : α → 𝕜} : ∫ a, conj (f a) ∂μ = conj (∫ a, f a ∂μ) :=
-  (@IsROrC.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
+  (@ROrCLike.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
 #align integral_conj integral_conj
 
 theorem integral_coe_re_add_coe_im {f : α → 𝕜} (hf : Integrable f μ) :
-    ∫ x, (IsROrC.re (f x) : 𝕜) ∂μ + (∫ x, (IsROrC.im (f x) : 𝕜) ∂μ) * IsROrC.I = ∫ x, f x ∂μ := by
+    ∫ x, (ROrCLike.re (f x) : 𝕜) ∂μ + (∫ x, (ROrCLike.im (f x) : 𝕜) ∂μ) * ROrCLike.I = ∫ x, f x ∂μ := by
   rw [mul_comm, ← smul_eq_mul, ← integral_smul, ← integral_add]
   · congr
     ext1 x
-    rw [smul_eq_mul, mul_comm, IsROrC.re_add_im]
+    rw [smul_eq_mul, mul_comm, ROrCLike.re_add_im]
   · exact hf.re.ofReal
-  · exact hf.im.ofReal.smul (𝕜 := 𝕜) (β := 𝕜) IsROrC.I
+  · exact hf.im.ofReal.smul (𝕜 := 𝕜) (β := 𝕜) ROrCLike.I
 #align integral_coe_re_add_coe_im integral_coe_re_add_coe_im
 
 theorem integral_re_add_im {f : α → 𝕜} (hf : Integrable f μ) :
-    ((∫ x, IsROrC.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x, IsROrC.im (f x) ∂μ : ℝ) * IsROrC.I =
+    ((∫ x, ROrCLike.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x, ROrCLike.im (f x) ∂μ : ℝ) * ROrCLike.I =
       ∫ x, f x ∂μ := by
   rw [← integral_ofReal, ← integral_ofReal, integral_coe_re_add_coe_im hf]
 #align integral_re_add_im integral_re_add_im
 
 theorem set_integral_re_add_im {f : α → 𝕜} {i : Set α} (hf : IntegrableOn f i μ) :
-    ((∫ x in i, IsROrC.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x in i, IsROrC.im (f x) ∂μ : ℝ) * IsROrC.I =
+    ((∫ x in i, ROrCLike.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x in i, ROrCLike.im (f x) ∂μ : ℝ) * ROrCLike.I =
       ∫ x in i, f x ∂μ :=
   integral_re_add_im hf
 #align set_integral_re_add_im set_integral_re_add_im
@@ -1249,7 +1249,7 @@ theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : α → E} {g : α
   Prod.ext (fst_integral this) (snd_integral this)
 #align integral_pair integral_pair
 
-theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
+theorem integral_smul_const {𝕜 : Type*} [ROrCLike 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
     (f : α → 𝕜) (c : E) :
     ∫ x, f x • c ∂μ = (∫ x, f x ∂μ) • c := by
   by_cases hf : Integrable f μ

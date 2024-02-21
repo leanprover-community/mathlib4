@@ -53,7 +53,7 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 -/
 
 
-open Filter IsROrC ContinuousMultilinearMap NormedField NormedSpace Asymptotics
+open Filter ROrCLike ContinuousMultilinearMap NormedField NormedSpace Asymptotics
 
 open scoped Nat Topology BigOperators ENNReal
 
@@ -153,9 +153,9 @@ theorem hasDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝕂).radius)
 
 end deriv
 
-section IsROrCAnyAlgebra
+section ROrCLikeAnyAlgebra
 
-variable {𝕂 𝔸 : Type*} [IsROrC 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [ROrCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero. -/
@@ -169,11 +169,11 @@ theorem hasFDerivAt_exp_zero : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸)
   hasStrictFDerivAt_exp_zero.hasFDerivAt
 #align has_fderiv_at_exp_zero hasFDerivAt_exp_zero
 
-end IsROrCAnyAlgebra
+end ROrCLikeAnyAlgebra
 
-section IsROrCCommAlgebra
+section ROrCLikeCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [IsROrC 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [ROrCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict
 Fréchet derivative `exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x`. -/
@@ -187,11 +187,11 @@ theorem hasFDerivAt_exp {x : 𝔸} : HasFDerivAt (exp 𝕂) (exp 𝕂 x • (1 :
   hasStrictFDerivAt_exp.hasFDerivAt
 #align has_fderiv_at_exp hasFDerivAt_exp
 
-end IsROrCCommAlgebra
+end ROrCLikeCommAlgebra
 
 section DerivROrC
 
-variable {𝕂 : Type*} [IsROrC 𝕂]
+variable {𝕂 : Type*} [ROrCLike 𝕂]
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `exp 𝕂 x` at any point
 `x`. -/
@@ -363,9 +363,9 @@ theorem hasDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕂)
 
 end MemBall
 
-section IsROrC
+section ROrCLike
 
-variable [IsROrC 𝕂]
+variable [ROrCLike 𝕂]
 
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
 
@@ -427,6 +427,6 @@ theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 #align has_deriv_at_exp_smul_const' hasDerivAt_exp_smul_const'
 
-end IsROrC
+end ROrCLike
 
 end exp_smul

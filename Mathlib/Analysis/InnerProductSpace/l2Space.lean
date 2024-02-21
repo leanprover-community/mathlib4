@@ -82,7 +82,7 @@ Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric is
 -/
 
 
-open IsROrC Submodule Filter
+open ROrCLike Submodule Filter
 
 open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
 
@@ -90,7 +90,7 @@ noncomputable section
 
 variable {ι : Type*}
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}
+variable {𝕜 : Type*} [ROrCLike 𝕜] {E : Type*}
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [cplt : CompleteSpace E]
 
@@ -129,13 +129,13 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
           funext i
           rw [norm_sq_eq_inner (𝕜 := 𝕜)]
           -- porting note: `simp` couldn't do this anymore
-        _ = re (∑' i, ⟪f i, f i⟫) := (IsROrC.reCLM.map_tsum ?_).symm
+        _ = re (∑' i, ⟪f i, f i⟫) := (ROrCLike.reCLM.map_tsum ?_).symm
       · norm_num
       · exact summable_inner f f
     conj_symm := fun f g => by
       calc
         conj _ = conj (∑' i, ⟪g i, f i⟫) := by congr
-        _ = ∑' i, conj ⟪g i, f i⟫ := IsROrC.conjCLE.map_tsum
+        _ = ∑' i, conj ⟪g i, f i⟫ := ROrCLike.conjCLE.map_tsum
         _ = ∑' i, ⟪f i, g i⟫ := by simp only [inner_conj_symm]
         _ = _ := by congr
     add_left := fun f₁ f₂ g => by

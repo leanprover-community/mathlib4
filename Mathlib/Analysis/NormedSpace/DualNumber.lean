@@ -27,7 +27,7 @@ open TrivSqZeroExt
 
 variable (𝕜 : Type*) {R : Type*}
 
-variable [IsROrC 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
+variable [ROrCLike 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
 
 variable [TopologicalRing R] [CompleteSpace R] [T2Space R]
 

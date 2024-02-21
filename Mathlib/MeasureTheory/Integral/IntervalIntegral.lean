@@ -612,25 +612,25 @@ nonrec theorem integral_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Norm
 #align interval_integral.integral_smul intervalIntegral.integral_smul
 
 @[simp]
-nonrec theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
+nonrec theorem integral_smul_const {𝕜 : Type*} [ROrCLike 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
     ∫ x in a..b, f x • c ∂μ = (∫ x in a..b, f x ∂μ) • c := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_smul_const, smul_assoc]
 #align interval_integral.integral_smul_const intervalIntegral.integral_smul_const
 
 @[simp]
-theorem integral_const_mul {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_const_mul {𝕜 : Type*} [ROrCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, r * f x ∂μ = r * ∫ x in a..b, f x ∂μ :=
   integral_smul r f
 #align interval_integral.integral_const_mul intervalIntegral.integral_const_mul
 
 @[simp]
-theorem integral_mul_const {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_mul_const {𝕜 : Type*} [ROrCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, f x * r ∂μ = (∫ x in a..b, f x ∂μ) * r := by
   simpa only [mul_comm r] using integral_const_mul r f
 #align interval_integral.integral_mul_const intervalIntegral.integral_mul_const
 
 @[simp]
-theorem integral_div {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_div {𝕜 : Type*} [ROrCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, f x / r ∂μ = (∫ x in a..b, f x ∂μ) / r := by
   simpa only [div_eq_mul_inv] using integral_mul_const r⁻¹ f
 #align interval_integral.integral_div intervalIntegral.integral_div
@@ -654,20 +654,20 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 end Basic
 
 -- porting note: TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
-nonrec theorem _root_.IsROrC.interval_integral_ofReal {𝕜 : Type*} [IsROrC 𝕜] {a b : ℝ}
+nonrec theorem _root_.ROrCLike.interval_integral_ofReal {𝕜 : Type*} [ROrCLike 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
-  simp only [intervalIntegral, integral_ofReal, IsROrC.ofReal_sub]
+  simp only [intervalIntegral, integral_ofReal, ROrCLike.ofReal_sub]
 
 nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
     (∫ x in a..b, (f x : ℂ) ∂μ) = ↑(∫ x in a..b, f x ∂μ) :=
-  IsROrC.interval_integral_ofReal
+  ROrCLike.interval_integral_ofReal
 #align interval_integral.integral_of_real intervalIntegral.integral_ofReal
 
 section ContinuousLinearMap
 
 variable {a b : ℝ} {μ : Measure ℝ} {f : ℝ → E}
 
-variable [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [ROrCLike 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open ContinuousLinearMap
 

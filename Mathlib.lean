@@ -624,7 +624,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
-import Mathlib.Analysis.Calculus.ContDiff.IsROrC
+import Mathlib.Analysis.Calculus.ContDiff.ROrCLike
 import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
@@ -864,7 +864,7 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
-import Mathlib.Analysis.NormedSpace.IsROrC
+import Mathlib.Analysis.NormedSpace.ROrCLike
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.NormedSpace.LpEquiv
 import Mathlib.Analysis.NormedSpace.MStructure
@@ -954,7 +954,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
-import Mathlib.Analysis.SpecificLimits.IsROrC
+import Mathlib.Analysis.SpecificLimits.ROrCLike
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.Subadditive
 import Mathlib.Analysis.SumIntegralComparisons
@@ -1703,8 +1703,8 @@ import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
-import Mathlib.Data.IsROrC.Basic
-import Mathlib.Data.IsROrC.Lemmas
+import Mathlib.Data.ROrCLike.Basic
+import Mathlib.Data.ROrCLike.Lemmas
 import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
@@ -2720,7 +2720,7 @@ import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Arctan
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
-import Mathlib.MeasureTheory.Function.SpecialFunctions.IsROrC
+import Mathlib.MeasureTheory.Function.SpecialFunctions.ROrCLike
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp

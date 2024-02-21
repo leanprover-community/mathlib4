@@ -690,9 +690,9 @@ theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α
   simp only [ENNReal.toReal_div, ENNReal.one_toReal, ENNReal.toReal_ofNat]
 #align matrix.frobenius_nnnorm_one Matrix.frobenius_nnnorm_one
 
-section IsROrC
+section ROrCLike
 
-variable [IsROrC α]
+variable [ROrCLike α]
 
 theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [frobenius_nnnorm_def, Matrix.mul_apply]
@@ -703,7 +703,7 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
   have :=
     @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j => star (A i j))
       ((WithLp.equiv 2 <| _ → α).symm fun k => B k j)
-  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, IsROrC.inner_apply, starRingEnd_apply,
+  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, ROrCLike.inner_apply, starRingEnd_apply,
     Pi.nnnorm_def, PiLp.nnnorm_eq_of_L2, star_star, nnnorm_star, NNReal.sqrt_eq_rpow,
     NNReal.rpow_two] using this
 #align matrix.frobenius_nnnorm_mul Matrix.frobenius_nnnorm_mul
@@ -732,7 +732,7 @@ def frobeniusNormedAlgebra [DecidableEq m] [NormedField R] [NormedAlgebra R α] 
   { Matrix.frobeniusNormedSpace, Matrix.instAlgebra with }
 #align matrix.frobenius_normed_algebra Matrix.frobeniusNormedAlgebra
 
-end IsROrC
+end ROrCLike
 
 end frobenius
 

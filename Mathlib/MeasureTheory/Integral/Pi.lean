@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.Constructions.Prod.Integral
 
 open BigOperators Fintype MeasureTheory MeasureTheory.Measure
 
-variable {𝕜 : Type*} [IsROrC 𝕜]
+variable {𝕜 : Type*} [ROrCLike 𝕜]
 
 /-- A version of **Fubini's theorem** in `n` variables, for a natural number `n`. -/
 theorem MeasureTheory.integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Type*}

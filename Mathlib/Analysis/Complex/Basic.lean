@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Exponential
-import Mathlib.Data.IsROrC.Basic
+import Mathlib.Data.ROrCLike.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
 
@@ -32,7 +32,7 @@ They are bundled versions of the real part, the imaginary part, the embedding of
 the complex conjugate as continuous `ℝ`-linear maps. The last two are also bundled as linear
 isometries in `ofRealLI` and `conjLIE`.
 
-We also register the fact that `ℂ` is an `IsROrC` field.
+We also register the fact that `ℂ` is an `ROrCLike` field.
 -/
 
 
@@ -421,7 +421,7 @@ theorem ofRealCLM_apply (x : ℝ) : ofRealCLM x = x :=
   rfl
 #align complex.of_real_clm_apply Complex.ofRealCLM_apply
 
-noncomputable instance : IsROrC ℂ where
+noncomputable instance : ROrCLike ℂ where
   re := ⟨⟨Complex.re, Complex.zero_re⟩, Complex.add_re⟩
   im := ⟨⟨Complex.im, Complex.zero_im⟩, Complex.add_im⟩
   I := Complex.I
@@ -440,53 +440,53 @@ noncomputable instance : IsROrC ℂ where
   toPartialOrder := Complex.partialOrder
   le_iff_re_im := Iff.rfl
 
-theorem _root_.IsROrC.re_eq_complex_re : ⇑(IsROrC.re : ℂ →+ ℝ) = Complex.re :=
+theorem _root_.ROrCLike.re_eq_complex_re : ⇑(ROrCLike.re : ℂ →+ ℝ) = Complex.re :=
   rfl
-#align is_R_or_C.re_eq_complex_re IsROrC.re_eq_complex_re
+#align is_R_or_C.re_eq_complex_re ROrCLike.re_eq_complex_re
 
-theorem _root_.IsROrC.im_eq_complex_im : ⇑(IsROrC.im : ℂ →+ ℝ) = Complex.im :=
+theorem _root_.ROrCLike.im_eq_complex_im : ⇑(ROrCLike.im : ℂ →+ ℝ) = Complex.im :=
   rfl
-#align is_R_or_C.im_eq_complex_im IsROrC.im_eq_complex_im
+#align is_R_or_C.im_eq_complex_im ROrCLike.im_eq_complex_im
 
 -- TODO: Replace `mul_conj` and `conj_mul` once `norm` has replaced `abs`
-lemma mul_conj' (z : ℂ) : z * conj z = ‖z‖ ^ 2 := IsROrC.mul_conj z
-lemma conj_mul' (z : ℂ) : conj z * z = ‖z‖ ^ 2 := IsROrC.conj_mul z
+lemma mul_conj' (z : ℂ) : z * conj z = ‖z‖ ^ 2 := ROrCLike.mul_conj z
+lemma conj_mul' (z : ℂ) : conj z * z = ‖z‖ ^ 2 := ROrCLike.conj_mul z
 
-lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z := IsROrC.inv_eq_conj hz
+lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z := ROrCLike.inv_eq_conj hz
 
 lemma exists_norm_eq_mul_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ ‖z‖ = c * z :=
-  IsROrC.exists_norm_eq_mul_self _
+  ROrCLike.exists_norm_eq_mul_self _
 
 lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z :=
-  IsROrC.exists_norm_mul_eq_self _
+  ROrCLike.exists_norm_mul_eq_self _
 
-/-- The natural isomorphism between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
-`IsROrC.im IsROrC.I = 1`. -/
+/-- The natural isomorphism between `𝕜` satisfying `ROrCLike 𝕜` and `ℂ` when
+`ROrCLike.im ROrCLike.I = 1`. -/
 @[simps]
-def _root_.IsROrC.complexRingEquiv {𝕜 : Type*} [IsROrC 𝕜] (h : IsROrC.im (IsROrC.I : 𝕜) = 1) :
+def _root_.ROrCLike.complexRingEquiv {𝕜 : Type*} [ROrCLike 𝕜] (h : ROrCLike.im (ROrCLike.I : 𝕜) = 1) :
     𝕜 ≃+* ℂ where
-  toFun x := IsROrC.re x + IsROrC.im x * I
-  invFun x := re x + im x * IsROrC.I
+  toFun x := ROrCLike.re x + ROrCLike.im x * I
+  invFun x := re x + im x * ROrCLike.I
   left_inv x := by simp
   right_inv x := by simp [h]
   map_add' x y := by simp only [map_add, ofReal_add]; ring
   map_mul' x y := by
-    simp only [IsROrC.mul_re, ofReal_sub, ofReal_mul, IsROrC.mul_im, ofReal_add]
+    simp only [ROrCLike.mul_re, ofReal_sub, ofReal_mul, ROrCLike.mul_im, ofReal_add]
     ring_nf
     rw [I_sq]
     ring
 
-/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `IsROrC 𝕜` and `ℂ` when
-`IsROrC.im IsROrC.I = 1`. -/
+/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `ROrCLike 𝕜` and `ℂ` when
+`ROrCLike.im ROrCLike.I = 1`. -/
 @[simps]
-def _root_.IsROrC.complexLinearIsometryEquiv {𝕜 : Type*} [IsROrC 𝕜]
-    (h : IsROrC.im (IsROrC.I : 𝕜) = 1) : 𝕜 ≃ₗᵢ[ℝ] ℂ where
-  map_smul' _ _ := by simp [IsROrC.smul_re, IsROrC.smul_im, ofReal_mul]; ring
+def _root_.ROrCLike.complexLinearIsometryEquiv {𝕜 : Type*} [ROrCLike 𝕜]
+    (h : ROrCLike.im (ROrCLike.I : 𝕜) = 1) : 𝕜 ≃ₗᵢ[ℝ] ℂ where
+  map_smul' _ _ := by simp [ROrCLike.smul_re, ROrCLike.smul_im, ofReal_mul]; ring
   norm_map' _ := by
-    rw [← sq_eq_sq (by positivity) (by positivity), ← normSq_eq_norm_sq, ← IsROrC.normSq_eq_def',
-      IsROrC.normSq_apply]
+    rw [← sq_eq_sq (by positivity) (by positivity), ← normSq_eq_norm_sq, ← ROrCLike.normSq_eq_def',
+      ROrCLike.normSq_apply]
     simp [normSq_add]
-  __ := IsROrC.complexRingEquiv h
+  __ := ROrCLike.complexRingEquiv h
 
 section ComplexOrder
 
@@ -510,73 +510,73 @@ end ComplexOrder
 
 end Complex
 
-namespace IsROrC
+namespace ROrCLike
 
 open ComplexConjugate
 
-local notation "reC" => @IsROrC.re ℂ _
-local notation "imC" => @IsROrC.im ℂ _
-local notation "IC" => @IsROrC.I ℂ _
-local notation "norm_sqC" => @IsROrC.normSq ℂ _
+local notation "reC" => @ROrCLike.re ℂ _
+local notation "imC" => @ROrCLike.im ℂ _
+local notation "IC" => @ROrCLike.I ℂ _
+local notation "norm_sqC" => @ROrCLike.normSq ℂ _
 
 @[simp]
 theorem re_to_complex {x : ℂ} : reC x = x.re :=
   rfl
-#align is_R_or_C.re_to_complex IsROrC.re_to_complex
+#align is_R_or_C.re_to_complex ROrCLike.re_to_complex
 
 @[simp]
 theorem im_to_complex {x : ℂ} : imC x = x.im :=
   rfl
-#align is_R_or_C.im_to_complex IsROrC.im_to_complex
+#align is_R_or_C.im_to_complex ROrCLike.im_to_complex
 
 @[simp]
 theorem I_to_complex : IC = Complex.I :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align is_R_or_C.I_to_complex IsROrC.I_to_complex
+#align is_R_or_C.I_to_complex ROrCLike.I_to_complex
 
 @[simp]
 theorem normSq_to_complex {x : ℂ} : norm_sqC x = Complex.normSq x :=
   rfl
-#align is_R_or_C.norm_sq_to_complex IsROrC.normSq_to_complex
+#align is_R_or_C.norm_sq_to_complex ROrCLike.normSq_to_complex
 
 section tsum
 
-variable {α : Type*} (𝕜 : Type*) [IsROrC 𝕜]
+variable {α : Type*} (𝕜 : Type*) [ROrCLike 𝕜]
 
 @[simp]
 theorem hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
   conjCLE.hasSum
-#align is_R_or_C.has_sum_conj IsROrC.hasSum_conj
+#align is_R_or_C.has_sum_conj ROrCLike.hasSum_conj
 
 theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
   conjCLE.hasSum'
-#align is_R_or_C.has_sum_conj' IsROrC.hasSum_conj'
+#align is_R_or_C.has_sum_conj' ROrCLike.hasSum_conj'
 
 @[simp]
 theorem summable_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Summable f :=
   summable_star_iff
-#align is_R_or_C.summable_conj IsROrC.summable_conj
+#align is_R_or_C.summable_conj ROrCLike.summable_conj
 
 variable {𝕜}
 
 theorem conj_tsum (f : α → 𝕜) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   tsum_star
-#align is_R_or_C.conj_tsum IsROrC.conj_tsum
+#align is_R_or_C.conj_tsum ROrCLike.conj_tsum
 
 variable (𝕜)
 
 @[simp, norm_cast]
 theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)) x ↔ HasSum f x :=
-  ⟨fun h => by simpa only [IsROrC.reCLM_apply, IsROrC.ofReal_re] using reCLM.hasSum h,
+  ⟨fun h => by simpa only [ROrCLike.reCLM_apply, ROrCLike.ofReal_re] using reCLM.hasSum h,
     ofRealCLM.hasSum⟩
-#align is_R_or_C.has_sum_of_real IsROrC.hasSum_ofReal
+#align is_R_or_C.has_sum_of_real ROrCLike.hasSum_ofReal
 
 @[simp, norm_cast]
 theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : 𝕜)) ↔ Summable f :=
-  ⟨fun h => by simpa only [IsROrC.reCLM_apply, IsROrC.ofReal_re] using reCLM.summable h,
+  ⟨fun h => by simpa only [ROrCLike.reCLM_apply, ROrCLike.ofReal_re] using reCLM.summable h,
     ofRealCLM.summable⟩
-#align is_R_or_C.summable_of_real IsROrC.summable_ofReal
+#align is_R_or_C.summable_of_real ROrCLike.summable_ofReal
 
 @[norm_cast]
 theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, (f a : 𝕜) := by
@@ -584,23 +584,23 @@ theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, (f a 
   · exact ContinuousLinearMap.map_tsum ofRealCLM h
   · rw [tsum_eq_zero_of_not_summable h,
       tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
-#align is_R_or_C.of_real_tsum IsROrC.ofReal_tsum
+#align is_R_or_C.of_real_tsum ROrCLike.ofReal_tsum
 
 theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => re (f x)) (re x) :=
   reCLM.hasSum h
-#align is_R_or_C.has_sum_re IsROrC.hasSum_re
+#align is_R_or_C.has_sum_re ROrCLike.hasSum_re
 
 theorem hasSum_im {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => im (f x)) (im x) :=
   imCLM.hasSum h
-#align is_R_or_C.has_sum_im IsROrC.hasSum_im
+#align is_R_or_C.has_sum_im ROrCLike.hasSum_im
 
 theorem re_tsum {f : α → 𝕜} (h : Summable f) : re (∑' a, f a) = ∑' a, re (f a) :=
   reCLM.map_tsum h
-#align is_R_or_C.re_tsum IsROrC.re_tsum
+#align is_R_or_C.re_tsum ROrCLike.re_tsum
 
 theorem im_tsum {f : α → 𝕜} (h : Summable f) : im (∑' a, f a) = ∑' a, im (f a) :=
   imCLM.map_tsum h
-#align is_R_or_C.im_tsum IsROrC.im_tsum
+#align is_R_or_C.im_tsum ROrCLike.im_tsum
 
 variable {𝕜}
 
@@ -610,16 +610,16 @@ theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
   rintro ⟨h₁, h₂⟩
   simpa only [re_add_im] using
     ((hasSum_ofReal 𝕜).mpr h₁).add (((hasSum_ofReal 𝕜).mpr h₂).mul_right I)
-#align is_R_or_C.has_sum_iff IsROrC.hasSum_iff
+#align is_R_or_C.has_sum_iff ROrCLike.hasSum_iff
 
 end tsum
 
-end IsROrC
+end ROrCLike
 
 namespace Complex
 
 /-!
-We have to repeat the lemmas about `IsROrC.re` and `IsROrC.im` as they are not syntactic
+We have to repeat the lemmas about `ROrCLike.re` and `ROrCLike.im` as they are not syntactic
 matches for `Complex.re` and `Complex.im`.
 
 We do not have this problem with `ofReal` and `conj`, although we repeat them anyway for
@@ -633,58 +633,58 @@ variable {α : Type*}
 
 open ComplexConjugate
 
--- Porting note: @[simp] unneeded due to `IsROrC.hasSum_conj`
+-- Porting note: @[simp] unneeded due to `ROrCLike.hasSum_conj`
 theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
-  IsROrC.hasSum_conj _
+  ROrCLike.hasSum_conj _
 #align complex.has_sum_conj Complex.hasSum_conj
 
 theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
-  IsROrC.hasSum_conj' _
+  ROrCLike.hasSum_conj' _
 #align complex.has_sum_conj' Complex.hasSum_conj'
 
--- Porting note: @[simp] unneeded due to `IsROrC.summable_conj`
+-- Porting note: @[simp] unneeded due to `ROrCLike.summable_conj`
 theorem summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
-  IsROrC.summable_conj _
+  ROrCLike.summable_conj _
 #align complex.summable_conj Complex.summable_conj
 
 theorem conj_tsum (f : α → ℂ) : conj (∑' a, f a) = ∑' a, conj (f a) :=
-  IsROrC.conj_tsum _
+  ROrCLike.conj_tsum _
 #align complex.conj_tsum Complex.conj_tsum
 
 @[simp, norm_cast]
 theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : ℂ)) x ↔ HasSum f x :=
-  IsROrC.hasSum_ofReal _
+  ROrCLike.hasSum_ofReal _
 #align complex.has_sum_of_real Complex.hasSum_ofReal
 
 @[simp, norm_cast]
 theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : ℂ)) ↔ Summable f :=
-  IsROrC.summable_ofReal _
+  ROrCLike.summable_ofReal _
 #align complex.summable_of_real Complex.summable_ofReal
 
 @[norm_cast]
 theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, ↑(f a) :=
-  IsROrC.ofReal_tsum _ _
+  ROrCLike.ofReal_tsum _ _
 #align complex.of_real_tsum Complex.ofReal_tsum
 
 theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).re) x.re :=
-  IsROrC.hasSum_re _ h
+  ROrCLike.hasSum_re _ h
 #align complex.has_sum_re Complex.hasSum_re
 
 theorem hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).im) x.im :=
-  IsROrC.hasSum_im _ h
+  ROrCLike.hasSum_im _ h
 #align complex.has_sum_im Complex.hasSum_im
 
 theorem re_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).re = ∑' a, (f a).re :=
-  IsROrC.re_tsum _ h
+  ROrCLike.re_tsum _ h
 #align complex.re_tsum Complex.re_tsum
 
 theorem im_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).im = ∑' a, (f a).im :=
-  IsROrC.im_tsum _ h
+  ROrCLike.im_tsum _ h
 #align complex.im_tsum Complex.im_tsum
 
 theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
     HasSum f c ↔ HasSum (fun x => (f x).re) c.re ∧ HasSum (fun x => (f x).im) c.im :=
-  IsROrC.hasSum_iff _ _
+  ROrCLike.hasSum_iff _ _
 #align complex.has_sum_iff Complex.hasSum_iff
 
 end tsum

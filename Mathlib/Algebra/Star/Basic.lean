@@ -419,9 +419,9 @@ theorem RingHom.star_apply {S : Type*} [NonAssocSemiring S] (f : S →+* R) (s :
 alias Complex.conj_conj := starRingEnd_self_apply
 #align complex.conj_conj Complex.conj_conj
 
-alias IsROrC.conj_conj := starRingEnd_self_apply
+alias ROrCLike.conj_conj := starRingEnd_self_apply
 set_option linter.uppercaseLean3 false in
-#align is_R_or_C.conj_conj IsROrC.conj_conj
+#align is_R_or_C.conj_conj ROrCLike.conj_conj
 
 open scoped ComplexConjugate
 

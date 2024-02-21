@@ -59,7 +59,7 @@ open TopologicalSpace MeasureTheory Filter Metric
 
 open scoped Topology Filter
 
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [ROrCLike 𝕜] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type*}
   [NormedAddCommGroup H] [NormedSpace 𝕜 H]
 

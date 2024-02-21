@@ -816,7 +816,7 @@ section Comp
 
 variable (𝕜)
 
-variable [IsROrC 𝕜]
+variable [ROrCLike 𝕜]
 
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 
@@ -901,7 +901,7 @@ section Derivatives
 
 variable (𝕜)
 
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [ROrCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
@@ -1034,7 +1034,7 @@ def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
 
 variable (𝕜 E F)
 
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [ROrCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a linear map. -/
 def toBoundedContinuousFunctionLM : 𝓢(E, F) →ₗ[𝕜] E →ᵇ F where
@@ -1124,7 +1124,7 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   ext; rfl
 
 variable (𝕜 E F)
-variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [ROrCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 linear map. -/

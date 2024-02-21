@@ -50,11 +50,11 @@ Unbounded operators, closed operators
 
 noncomputable section
 
-open IsROrC
+open ROrCLike
 
 open scoped ComplexConjugate Classical
 
-variable {𝕜 E F G : Type*} [IsROrC 𝕜]
+variable {𝕜 E F G : Type*} [ROrCLike 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 

@@ -17,11 +17,11 @@ with this order `ℂ` is a `StrictOrderedCommRing` and the coercion `(↑) : ℝ
 embedding.
 
 This file only provides `Complex.partialOrder` and lemmas about it. Further structural classes are
-provided by `Mathlib/Data/IsROrC/Basic.lean` as
+provided by `Mathlib/Data/ROrCLike/Basic.lean` as
 
-* `IsROrC.toStrictOrderedCommRing`
-* `IsROrC.toStarOrderedRing`
-* `IsROrC.toOrderedSMul`
+* `ROrCLike.toStrictOrderedCommRing`
+* `ROrCLike.toStarOrderedRing`
+* `ROrCLike.toOrderedSMul`
 
 These are all only available with `open scoped ComplexOrder`.
 -/

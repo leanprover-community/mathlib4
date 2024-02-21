@@ -259,8 +259,8 @@ theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π /
   -- Assume now `b > 0`. Then both sides are non-negative and their squares agree.
   refine' (sq_eq_sq _ (sqrt_nonneg _)).1 _
   · exact integral_nonneg fun x => (exp_pos _).le
-  rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, ← integral_ofReal,
-    sq_sqrt (div_pos pi_pos hb).le, ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
+  rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, ROrCLike.algebraMap_eq_ofReal, ← integral_ofReal,
+    sq_sqrt (div_pos pi_pos hb).le, ← ROrCLike.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
   convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) with _ x
   rw [ofReal_exp, ofReal_mul, ofReal_pow, ofReal_neg]
 #align integral_gaussian integral_gaussian
@@ -303,8 +303,8 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     have : ∀ x : ℝ, cexp (-(1 : ℂ) * (x : ℂ) ^ 2) = exp (-(1 : ℝ) * x ^ 2) := by
       intro x
       simp only [ofReal_exp, neg_mul, one_mul, ofReal_neg, ofReal_pow]
-    simp_rw [this, ← coe_algebraMap, IsROrC.algebraMap_eq_ofReal, integral_ofReal,
-      ← IsROrC.algebraMap_eq_ofReal, coe_algebraMap]
+    simp_rw [this, ← coe_algebraMap, ROrCLike.algebraMap_eq_ofReal, integral_ofReal,
+      ← ROrCLike.algebraMap_eq_ofReal, coe_algebraMap]
     conv_rhs =>
       congr
       · rw [← ofReal_one, ← ofReal_div]
@@ -357,7 +357,7 @@ theorem integral_gaussian_Ioi (b : ℝ) :
   · rw [integral_undef, sqrt_eq_zero_of_nonpos, zero_div]
     exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
-  rw [← IsROrC.ofReal_inj (K := ℂ), ← integral_ofReal, ← IsROrC.algebraMap_eq_ofReal,
+  rw [← ROrCLike.ofReal_inj (K := ℂ), ← integral_ofReal, ← ROrCLike.algebraMap_eq_ofReal,
     coe_algebraMap]
   convert integral_gaussian_complex_Ioi (by rwa [ofReal_re] : 0 < (b : ℂ).re)
   · simp
