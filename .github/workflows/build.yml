@@ -199,12 +199,6 @@ jobs:
         run: |
           ! grep --after-context=1 "stdout:" stdout.log
 
-      - name: find `#`-commands
-        id: hash_commands
-        run: |
-          chmod u+x scripts/lint_hash_commands.sh
-          ./scripts/lint_hash_commands.sh
-
       - name: build library_search cache
         run: lake build -KCI MathlibExtras
 
@@ -235,6 +229,12 @@ jobs:
             # and if we find " Building Mathlib" in that file we kill `lake build`, and error.
             lake build > tmp & tail --pid=$! -n +1 -F tmp | (! (grep -m 1 " Building Mathlib" && kill $! ))
           fi
+
+      - name: find `#`-commands
+        id: hash_commands
+        run: |
+          chmod u+x scripts/lint_hash_commands.sh
+          ./scripts/lint_hash_commands.sh
 
       - name: build archive
         id: archive
