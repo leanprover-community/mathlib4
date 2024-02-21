@@ -196,6 +196,12 @@ jobs:
         run: |
           ! grep --after-context=1 "stdout:" stdout.log
 
+      - name: find `#`-commands
+        id: hash_commands
+        run: |
+          chmod u+x scripts/lint_hash_commands.sh
+          ./scripts/lint_hash_commands.sh
+
       - name: build library_search cache
         run: lake build -KCI MathlibExtras
 
