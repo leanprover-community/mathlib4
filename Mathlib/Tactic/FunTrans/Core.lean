@@ -125,7 +125,7 @@ def tryTheoremWithHint (e : Expr) (thmOrigin : FunProp.Origin) (hint : Array (Na
   return (← r.addExtraArgs extraArgs)
 
 
-def tryTheorem? (e : Expr) (thmOrigin : FunProp.Origin) : SimpM (Option Simp.Result) := 
+def tryTheorem? (e : Expr) (thmOrigin : FunProp.Origin) : SimpM (Option Simp.Result) :=
   tryTheoremWithHint e thmOrigin #[]
 
 
@@ -477,27 +477,33 @@ def morphismGuard (fData : FunProp.FunctionData) : MetaM Bool := do
 def constAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.FunctionData) : SimpM (Option Simp.Result) := do
   trace[Meta.Tactic.fun_trans.step] "const app case on {← ppExpr e}"
 
-  let .some funName ← fData.getFnConstName? | throwError "fun_trans bug: incorrectly calling constAppCase!"
+  let .some funName ← fData.getFnConstName?
+    | throwError "fun_trans bug: incorrectly calling constAppCase!"
 
-  let thms ← getTheoremsForFunction funName funTransDecl.funTransName e.getAppNumArgs fData.mainArgs
-  trace[Meta.Tactic.fun_trans] "candidate theorems for {funName}: {thms.map fun thm => thm.thmOrigin.name}"
+  let thms ←
+    getTheoremsForFunction funName funTransDecl.funTransName e.getAppNumArgs fData.mainArgs
+  trace[Meta.Tactic.fun_trans]
+    "candidate theorems for {funName}: {thms.map fun thm => thm.thmOrigin.name}"
   if let .some r ← tryTheorems funTransDecl e fData thms then
     return r
 
   let thms ← getLocalTheorems funTransDecl (.decl funName) fData.mainArgs e.getAppNumArgs
-  trace[Meta.Tactic.fun_trans] "candidate local theorems for {funName}: {thms.map fun thm => thm.thmOrigin.name}"
+  trace[Meta.Tactic.fun_trans]
+    "candidate local theorems for {funName}: {thms.map fun thm => thm.thmOrigin.name}"
   if let .some r ← tryTheorems funTransDecl e fData thms then
     return r
 
-  if ← morphismGuard fData then
-    if let .some r ← applyMorTheorems funTransDecl e fData then
-      return r
-
-  -- if let .some (f,g) ← fData.nontrivialDecomposition then
-  --   return ← applyCompRule funTransDecl e f g
-  -- else
-  if let .some r ← applyFVarTheorems e then
+  -- if ← morphismGuard fData then
+  if let .some r ← applyMorTheorems funTransDecl e fData then
     return r
+
+  if let .some (f,g) ← fData.nontrivialDecomposition then
+    -- if ← morphismGuard fData then
+      if let .some r ← applyCompRule funTransDecl e f g then
+        return r
+  else
+    if let .some r ← applyFVarTheorems e then
+      return r
 
   return none
 
@@ -509,7 +515,10 @@ partial def funTrans (e : Expr) : SimpM Simp.Step := do
 
   let .some (funTransDecl, f) ← getFunTrans? e | return .continue
 
-  trace[Meta.Tactic.fun_trans.step] s!"runing fun_trans on {← ppExpr e}"
+  if e.approxDepth > 30 then
+    throwError "fun_trans, expression is too deep({e.approxDepth})\n{← ppExpr e}"
+
+  trace[Meta.Tactic.fun_trans] s!"runing fun_trans on {← ppExpr e}"
 
   -- bubble leading lets infront of function transformationx
   if f.isLet then
