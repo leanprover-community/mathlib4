@@ -276,9 +276,9 @@ where
       let button := <p> {Html.ofComponent MakeEditLink
             (.ofReplaceRange doc.meta range rw.tactic none)
             #[.text s! "{rw.name}"]} </p>
-      let left := Html.element "div" #[("id", "left")] (#[replacement] ++ extraGoals)
-      let right := Html.element "div" #[("id", "rigth")] #[button]
-      return <li> <div «id»="container"> {left} {right} </div> </li>
+      let left := Html.element "div" #[("width":"50%"), ("display":"inline-block")] (#[replacement] ++ extraGoals)
+      let right := Html.element "div" #[("width":"50%"), ("display":"inline-block")] #[button]
+      return <li> <div style={json% {width: "100%", overflow: "hidden", display: "inline-flex"}}> {left} {right} </div> </li>
     return .element "ul" #[] htmls
 
 /-- Return all potenital rewrite lemmata -/
