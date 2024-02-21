@@ -130,7 +130,7 @@ theorem image_norm_nonempty {S : AddSubgroup M} (x : M ⧸ S) :
 #align image_norm_nonempty image_norm_nonempty
 
 theorem bddBelow_image_norm (s : Set M) : BddBelow (norm '' s) :=
-  ⟨0, ball_image_iff.2 fun _ _ ↦ norm_nonneg _⟩
+  ⟨0, forall_mem_image.2 fun _ _ ↦ norm_nonneg _⟩
 #align bdd_below_image_norm bddBelow_image_norm
 
 theorem isGLB_quotient_norm {S : AddSubgroup M} (x : M ⧸ S) :
@@ -168,7 +168,7 @@ theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
 
 /-- The quotient norm is nonnegative. -/
 theorem quotient_norm_nonneg (S : AddSubgroup M) (x : M ⧸ S) : 0 ≤ ‖x‖ :=
-  Real.sInf_nonneg _ <| ball_image_iff.2 fun _ _ ↦ norm_nonneg _
+  Real.sInf_nonneg _ <| forall_mem_image.2 fun _ _ ↦ norm_nonneg _
 #align quotient_norm_nonneg quotient_norm_nonneg
 
 /-- The quotient norm is nonnegative. -/
@@ -186,7 +186,7 @@ theorem quotient_norm_eq_zero_iff (S : AddSubgroup M) (m : M) :
 
 theorem QuotientAddGroup.norm_lt_iff {S : AddSubgroup M} {x : M ⧸ S} {r : ℝ} :
     ‖x‖ < r ↔ ∃ m : M, ↑m = x ∧ ‖m‖ < r := by
-  rw [isGLB_lt_iff (isGLB_quotient_norm _), bex_image_iff]
+  rw [isGLB_lt_iff (isGLB_quotient_norm _), exists_mem_image]
   rfl
 
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`

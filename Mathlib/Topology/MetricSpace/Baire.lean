@@ -203,7 +203,7 @@ an index set which is a countable set in any type. -/
 theorem dense_biInter_of_isOpen {S : Set α} {f : α → Set X} (ho : ∀ s ∈ S, IsOpen (f s))
     (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s)) : Dense (⋂ s ∈ S, f s) := by
   rw [← sInter_image]
-  refine dense_sInter_of_isOpen ?_ (hS.image _) ?_ <;> rwa [ball_image_iff]
+  refine dense_sInter_of_isOpen ?_ (hS.image _) ?_ <;> rwa [forall_mem_image]
 #align dense_bInter_of_open dense_biInter_of_isOpen
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with

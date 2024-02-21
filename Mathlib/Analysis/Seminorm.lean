@@ -590,7 +590,7 @@ protected theorem coe_sSup_eq' {s : Set <| Seminorm 𝕜 E}
 
 protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
     BddAbove s ↔ BddAbove ((↑) '' s : Set (E → ℝ)) :=
-  ⟨fun ⟨q, hq⟩ => ⟨q, ball_image_of_ball fun p hp => hq hp⟩, fun H =>
+  ⟨fun ⟨q, hq⟩ => ⟨q, forall_mem_image.2 fun p hp => hq hp⟩, fun H =>
     ⟨sSup s, fun p hp x => by
       dsimp
       rw [Seminorm.coe_sSup_eq' H, iSup_apply]

@@ -163,7 +163,7 @@ def Filter.ofCountableUnion (p : Set α → Prop)
     (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
   refine .ofCountableInter {s | p sᶜ} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
   · rw [mem_setOf_eq, compl_sInter]
-    exact hUnion _ (hSc.image _) (ball_image_iff.2 hSp)
+    exact hUnion _ (hSc.image _) (forall_mem_image.2 hSp)
   · exact hmono _ ht _ (compl_subset_compl.2 hsub)
 
 instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :

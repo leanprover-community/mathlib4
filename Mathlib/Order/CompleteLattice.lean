@@ -1900,12 +1900,12 @@ instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLat
   __ := Prod.infSet α β
   le_sSup _ _ hab := ⟨le_sSup <| mem_image_of_mem _ hab, le_sSup <| mem_image_of_mem _ hab⟩
   sSup_le _ _ h :=
-    ⟨sSup_le <| ball_image_of_ball fun p hp => (h p hp).1,
-      sSup_le <| ball_image_of_ball fun p hp => (h p hp).2⟩
+    ⟨sSup_le <| forall_mem_image.2 fun p hp => (h p hp).1,
+      sSup_le <| forall_mem_image.2 fun p hp => (h p hp).2⟩
   sInf_le _ _ hab := ⟨sInf_le <| mem_image_of_mem _ hab, sInf_le <| mem_image_of_mem _ hab⟩
   le_sInf _ _ h :=
-    ⟨le_sInf <| ball_image_of_ball fun p hp => (h p hp).1,
-      le_sInf <| ball_image_of_ball fun p hp => (h p hp).2⟩
+    ⟨le_sInf <| forall_mem_image.2 fun p hp => (h p hp).1,
+      le_sInf <| forall_mem_image.2 fun p hp => (h p hp).2⟩
 
 end Prod
 

@@ -221,27 +221,29 @@ theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective 
   ⟨fun ⟨_, hb, Eq⟩ => hf Eq ▸ hb, mem_image_of_mem f⟩
 #align function.injective.mem_set_image Function.Injective.mem_set_image
 
-theorem ball_image_iff {f : α → β} {s : Set α} {p : β → Prop} :
-    (∀ y ∈ f '' s, p y) ↔ ∀ x ∈ s, p (f x) := by simp
-#align set.ball_image_iff Set.ball_image_iff
+theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
+    (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
+#align set.ball_image_iff Set.forall_mem_image
 
-theorem ball_image_of_ball {f : α → β} {s : Set α} {p : β → Prop} (h : ∀ x ∈ s, p (f x)) :
-    ∀ y ∈ f '' s, p y :=
-  ball_image_iff.2 h
+theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
+    (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
+#align set.bex_image_iff Set.exists_mem_image
+
+-- 2024-02-21
+@[deprecated] alias ball_image_iff := forall_mem_image
+@[deprecated] alias bex_image_iff := exists_mem_image
+@[deprecated] alias ⟨_, ball_image_of_ball⟩ := forall_mem_image
+
 #align set.ball_image_of_ball Set.ball_image_of_ball
 
-theorem bex_image_iff {f : α → β} {s : Set α} {p : β → Prop} :
-    (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
-#align set.bex_image_iff Set.bex_image_iff
-
+@[deprecated forall_mem_image]
 theorem mem_image_elim {f : α → β} {s : Set α} {C : β → Prop} (h : ∀ x : α, x ∈ s → C (f x)) :
-    ∀ {y : β}, y ∈ f '' s → C y
-  | _, ⟨a, a_in, rfl⟩ => h a a_in
+    ∀ {y : β}, y ∈ f '' s → C y := forall_mem_image.2 h _
 #align set.mem_image_elim Set.mem_image_elim
 
+@[deprecated forall_mem_image]
 theorem mem_image_elim_on {f : α → β} {s : Set α} {C : β → Prop} {y : β} (h_y : y ∈ f '' s)
-    (h : ∀ x : α, x ∈ s → C (f x)) : C y :=
-  mem_image_elim h h_y
+    (h : ∀ x : α, x ∈ s → C (f x)) : C y := forall_mem_image.2 h _ h_y
 #align set.mem_image_elim_on Set.mem_image_elim_on
 
 -- Porting note: used to be `safe`
@@ -269,9 +271,7 @@ theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) 
 lemma image_mono (h : s ⊆ t) : f '' s ⊆ f '' t := by
   rintro - ⟨a, ha, rfl⟩; exact mem_image_of_mem f (h ha)
 
-theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) :=
-  Subset.antisymm (ball_image_of_ball fun _ ha => mem_image_of_mem _ <| mem_image_of_mem _ ha)
-    (ball_image_of_ball <| ball_image_of_ball fun _ ha => mem_image_of_mem _ ha)
+theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) := by aesop
 #align set.image_comp Set.image_comp
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by ext; simp
@@ -487,7 +487,7 @@ instance (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) :=
 /-- image and preimage are a Galois connection -/
 @[simp]
 theorem image_subset_iff {s : Set α} {t : Set β} {f : α → β} : f '' s ⊆ t ↔ s ⊆ f ⁻¹' t :=
-  ball_image_iff
+  forall_mem_image
 #align set.image_subset_iff Set.image_subset_iff
 
 theorem image_preimage_subset (f : α → β) (s : Set β) : f '' (f ⁻¹' s) ⊆ s :=
@@ -727,9 +727,7 @@ theorem Nonempty.preimage' {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : 
   ⟨x, Set.mem_preimage.2 <| hx.symm ▸ hy⟩
 #align set.nonempty.preimage' Set.Nonempty.preimage'
 
-theorem range_comp (g : α → β) (f : ι → α) : range (g ∘ f) = g '' range f :=
-  Subset.antisymm (forall_range_iff.mpr fun _ => mem_image_of_mem g (mem_range_self _))
-    (ball_image_iff.mpr <| forall_range_iff.mpr mem_range_self)
+theorem range_comp (g : α → β) (f : ι → α) : range (g ∘ f) = g '' range f := by aesop
 #align set.range_comp Set.range_comp
 
 theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=

@@ -36,7 +36,7 @@ theorem flag_last (b : Basis (Fin n) R M) : b.flag (.last n) = ⊤ := by
 
 theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
     b.flag k ≤ p ↔ ∀ i : Fin n, i.castSucc < k → b i ∈ p :=
-  span_le.trans ball_image_iff
+  span_le.trans forall_mem_image
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.succ = (R ∙ b k) ⊔ b.flag k.castSucc := by

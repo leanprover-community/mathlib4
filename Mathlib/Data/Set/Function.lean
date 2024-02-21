@@ -672,7 +672,7 @@ theorem InjOn.comp (hg : InjOn g t) (hf : InjOn f s) (h : MapsTo f s t) : InjOn 
 #align set.inj_on.comp Set.InjOn.comp
 
 lemma InjOn.image_of_comp (h : InjOn (g ∘ f) s) : InjOn g (f '' s) :=
-  ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy heq ↦ congr_arg f <| h hx hy heq
+  forall_mem_image.2 fun _x hx ↦ forall_mem_image.2 fun _y hy heq ↦ congr_arg f <| h hx hy heq
 
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
     ∀ n, InjOn f^[n] s
@@ -780,9 +780,9 @@ lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
   · rintro ⟨f, hf⟩
     rw [hf]
     exact InjOn.image_of_comp <| injOn_id _
-  · have : ∀ x ∈ Prod.fst '' s, ∃ y, (x, y) ∈ s := ball_image_iff.2 fun (x, y) h ↦ ⟨y, h⟩
+  · have : ∀ x ∈ Prod.fst '' s, ∃ y, (x, y) ∈ s := forall_mem_image.2 fun (x, y) h ↦ ⟨y, h⟩
     choose! f hf using this
-    rw [ball_image_iff] at hf
+    rw [forall_mem_image] at hf
     use f
     rw [graphOn, image_image, EqOn.image_eq_self]
     exact fun x hx ↦ h (hf x hx) hx rfl

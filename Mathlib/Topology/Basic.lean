@@ -137,7 +137,7 @@ theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
 theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite)
     (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
-  sInter_image f s ▸ (hs.image _).isOpen_sInter (ball_image_iff.2 h)
+  sInter_image f s ▸ (hs.image _).isOpen_sInter (forall_mem_image.2 h)
 #align is_open_bInter Set.Finite.isOpen_biInter
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :

@@ -539,7 +539,7 @@ theorem WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded (f : G →
     (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔
       ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p (f x) < r := by
-  simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.ball_image_iff]
+  simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.forall_mem_image]
 
 set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_finset_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded
@@ -571,7 +571,7 @@ set_option linter.uppercaseLean3 false in
 theorem WithSeminorms.image_isVonNBounded_iff_seminorm_bounded (f : G → E) {s : Set G}
     (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∀ i : ι, ∃ r > 0, ∀ x ∈ s, p i (f x) < r := by
-  simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.ball_image_iff]
+  simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.forall_mem_image]
 
 set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_seminorm_bounded

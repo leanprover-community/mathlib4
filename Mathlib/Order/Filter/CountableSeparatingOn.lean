@@ -120,7 +120,7 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
     (hpq : ∀ U, q U → ∃ V, p V ∧ (↑) ⁻¹' V = U) : HasCountableSeparatingOn α p t := by
   rcases h.1 with ⟨S, hSc, hSq, hS⟩
   choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
-  refine ⟨⟨V '' S, hSc.image _, ball_image_iff.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
+  refine ⟨⟨V '' S, hSc.image _, forall_mem_image.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
   refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_)
   rw [← hV U hU]
   exact h _ (mem_image_of_mem _ hU)

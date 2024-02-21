@@ -186,7 +186,7 @@ protected alias ⟨_, iInter⟩ := absorbs_iInter
 
 lemma _root_.Set.Finite.absorbs_biInter {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set α} :
     Absorbs G₀ (⋂ i ∈ I, s i) t ↔ ∀ i ∈ I, Absorbs G₀ (s i) t := by
-  simpa only [sInter_image, ball_image_iff] using (hI.image s).absorbs_sInter
+  simpa only [sInter_image, forall_mem_image] using (hI.image s).absorbs_sInter
 
 protected alias ⟨_, biInter⟩ := Set.Finite.absorbs_biInter
 

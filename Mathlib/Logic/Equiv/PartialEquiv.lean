@@ -343,11 +343,11 @@ theorem image_source_eq_target : e '' e.source = e.target :=
 #align local_equiv.image_source_eq_target PartialEquiv.image_source_eq_target
 
 theorem forall_mem_target {p : β → Prop} : (∀ y ∈ e.target, p y) ↔ ∀ x ∈ e.source, p (e x) := by
-  rw [← image_source_eq_target, ball_image_iff]
+  rw [← image_source_eq_target, forall_mem_image]
 #align local_equiv.forall_mem_target PartialEquiv.forall_mem_target
 
 theorem exists_mem_target {p : β → Prop} : (∃ y ∈ e.target, p y) ↔ ∃ x ∈ e.source, p (e x) := by
-  rw [← image_source_eq_target, bex_image_iff]
+  rw [← image_source_eq_target, exists_mem_image]
 #align local_equiv.exists_mem_target PartialEquiv.exists_mem_target
 
 /-- We say that `t : Set β` is an image of `s : Set α` under a partial equivalence if

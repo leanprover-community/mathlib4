@@ -143,7 +143,7 @@ theorem cutMap_nonempty (a : α) : (cutMap β a).Nonempty :=
 
 theorem cutMap_bddAbove (a : α) : BddAbove (cutMap β a) := by
   obtain ⟨q, hq⟩ := exists_rat_gt a
-  exact ⟨q, ball_image_iff.2 fun r hr => mod_cast (hq.trans' hr).le⟩
+  exact ⟨q, forall_mem_image.2 fun r hr => mod_cast (hq.trans' hr).le⟩
 #align linear_ordered_field.cut_map_bdd_above LinearOrderedField.cutMap_bddAbove
 
 theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b := by

@@ -537,12 +537,12 @@ theorem le_ciInf_iff [Nonempty ι] {f : ι → α} {a : α} (hf : BddBelow (rang
 
 theorem ciSup_set_le_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : s.Nonempty)
     (hf : BddAbove (f '' s)) : ⨆ i : s, f i ≤ a ↔ ∀ i ∈ s, f i ≤ a :=
-  (isLUB_le_iff <| isLUB_ciSup_set hf hs).trans ball_image_iff
+  (isLUB_le_iff <| isLUB_ciSup_set hf hs).trans forall_mem_image
 #align csupr_set_le_iff ciSup_set_le_iff
 
 theorem le_ciInf_set_iff {ι : Type*} {s : Set ι} {f : ι → α} {a : α} (hs : s.Nonempty)
     (hf : BddBelow (f '' s)) : (a ≤ ⨅ i : s, f i) ↔ ∀ i ∈ s, a ≤ f i :=
-  (le_isGLB_iff <| isGLB_ciInf_set hf hs).trans ball_image_iff
+  (le_isGLB_iff <| isGLB_ciInf_set hf hs).trans forall_mem_image
 #align le_cinfi_set_iff le_ciInf_set_iff
 
 theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=

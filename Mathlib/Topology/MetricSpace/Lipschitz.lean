@@ -132,7 +132,7 @@ theorem mapsTo_ball (hf : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ) :
 def toLocallyBoundedMap (f : α → β) (hf : LipschitzWith K f) : LocallyBoundedMap α β :=
   LocallyBoundedMap.ofMapBounded f fun _s hs =>
     let ⟨C, hC⟩ := Metric.isBounded_iff.1 hs
-    Metric.isBounded_iff.2 ⟨K * C, ball_image_iff.2 fun _x hx => ball_image_iff.2 fun _y hy =>
+    Metric.isBounded_iff.2 ⟨K * C, forall_mem_image.2 fun _x hx => forall_mem_image.2 fun _y hy =>
       hf.dist_le_mul_of_le (hC hx hy)⟩
 #align lipschitz_with.to_locally_bounded_map LipschitzWith.toLocallyBoundedMap
 
@@ -155,8 +155,8 @@ theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s)
 theorem diam_image_le (hf : LipschitzWith K f) (s : Set α) (hs : IsBounded s) :
     Metric.diam (f '' s) ≤ K * Metric.diam s :=
   Metric.diam_le_of_forall_dist_le (mul_nonneg K.coe_nonneg Metric.diam_nonneg) <|
-    ball_image_iff.2 fun _x hx =>
-      ball_image_iff.2 fun _y hy => hf.dist_le_mul_of_le <| Metric.dist_le_diam_of_mem hs hx hy
+    forall_mem_image.2 fun _x hx =>
+      forall_mem_image.2 fun _y hy => hf.dist_le_mul_of_le <| Metric.dist_le_diam_of_mem hs hx hy
 #align lipschitz_with.diam_image_le LipschitzWith.diam_image_le
 
 protected theorem dist_left (y : α) : LipschitzWith 1 (dist · y) :=
