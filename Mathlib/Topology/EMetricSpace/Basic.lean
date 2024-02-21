@@ -48,6 +48,7 @@ theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α
 #align uniformity_dist_of_mem_uniformity uniformity_dist_of_mem_uniformity
 
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
+@[ext]
 class EDist (α : Type*) where
   edist : α → α → ℝ≥0∞
 #align has_edist EDist
@@ -90,6 +91,17 @@ attribute [instance] PseudoEMetricSpace.toUniformSpace
 
 /- Pseudoemetric spaces are less common than metric spaces. Therefore, we work in a dedicated
 namespace, while notions associated to metric spaces are mostly in the root namespace. -/
+
+/-- Two pseudo emetric space structures with the same edistance function coincide. -/
+@[ext]
+theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
+    (h : m.toEDist = m'.toEDist) : m = m' := by
+  cases' m with ed  _ _ _ U hU
+  cases' m' with ed' _ _ _ U' hU'
+  obtain rfl : ed = ed' := h
+  congr
+  · exact UniformSpace.ext (hU.trans hU'.symm)
+
 variable [PseudoEMetricSpace α]
 
 export PseudoEMetricSpace (edist_self edist_comm edist_triangle)
@@ -871,8 +883,8 @@ theorem secondCountable_of_almost_dense_set
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :
     SecondCountableTopology α := by
   suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α
-  have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedBall x ε
-  · simpa only [univ_subset_iff] using hs
+  have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedBall x ε := by
+    simpa only [univ_subset_iff] using hs
   rcases subset_countable_closure_of_almost_dense_set (univ : Set α) this with ⟨t, -, htc, ht⟩
   exact ⟨⟨t, htc, fun x => ht (mem_univ x)⟩⟩
 #align emetric.second_countable_of_almost_dense_set EMetric.secondCountable_of_almost_dense_set
@@ -1015,6 +1027,11 @@ end EMetric
 class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 #align emetric_space EMetricSpace
+
+@[ext]
+theorem EMetricSpace.ext {α : Type*} {m m' : EMetricSpace α} (h : m.toEDist = m'.toEDist) :
+    m = m' := by
+  cases m; cases m'; congr; ext1; assumption
 
 variable {γ : Type w} [EMetricSpace γ]
 

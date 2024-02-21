@@ -415,8 +415,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf :
     · rw [mem_torsionBySet_iff] at hx ⊢
       rintro ⟨a, ha⟩
       rw [smul_smul]
-      suffices : a * μ i ∈ ⨅ i ∈ S, p i
-      exact hx ⟨_, this⟩
+      suffices a * μ i ∈ ⨅ i ∈ S, p i from hx ⟨_, this⟩
       rw [mem_iInf]
       intro j
       rw [mem_iInf]
@@ -623,7 +622,7 @@ theorem mem_torsion'_iff (x : M) : x ∈ torsion' R M S ↔ ∃ a : S, a • x =
   Iff.rfl
 #align submodule.mem_torsion'_iff Submodule.mem_torsion'_iff
 
--- @[simp] Porting note : simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem mem_torsion_iff (x : M) : x ∈ torsion R M ↔ ∃ a : R⁰, a • x = 0 :=
   Iff.rfl
 #align submodule.mem_torsion_iff Submodule.mem_torsion_iff
@@ -662,7 +661,7 @@ theorem torsion'_torsion'_eq_top : torsion' R (torsion' R M S) S = ⊤ :=
 
 /-- The torsion submodule of the torsion submodule (viewed as a module) is the full
 torsion module. -/
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem torsion_torsion_eq_top : torsion R (torsion R M) = ⊤ :=
   torsion'_torsion'_eq_top R⁰
 #align submodule.torsion_torsion_eq_top Submodule.torsion_torsion_eq_top

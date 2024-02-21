@@ -43,8 +43,8 @@ lemma hasSum_taylorSeries_on_ball :
   · obtain ⟨r', h₁, h₂⟩ := exists_between (Metric.mem_ball'.mp hz)
     exact ⟨r', h₂, Metric.pos_of_mem_ball h₁, Metric.mem_ball'.mpr h₁⟩
   lift r' to NNReal using hr'₀.le
-  have hz' : z - c ∈ EMetric.ball 0 r'
-  · rw [Metric.emetric_ball_nnreal]
+  have hz' : z - c ∈ EMetric.ball 0 r' := by
+    rw [Metric.emetric_ball_nnreal]
     exact mem_ball_zero_iff.mpr hzr'
   have H := (hf.mono <| Metric.closedBall_subset_ball hr').hasFPowerSeriesOnBall hr'₀
       |>.hasSum_iteratedFDeriv hz'

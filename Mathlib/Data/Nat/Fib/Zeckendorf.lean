@@ -152,8 +152,8 @@ lemma zeckendorf_sum_fib : ∀ {l}, IsZeckendorfRep l → zeckendorf (l.map fib)
       mem_singleton, or_imp, forall_and, forall_eq, zero_add] at hl
     rw [← chain'_iff_pairwise] at hl
     have ha : 0 < a := hl.1.2.trans_lt' zero_lt_two
-    suffices h : greatestFib (fib a + sum (map fib l)) = a
-    · simp only [map, List.sum_cons, add_pos_iff, fib_pos.2 ha, true_or, zeckendorf_of_pos, h,
+    suffices h : greatestFib (fib a + sum (map fib l)) = a by
+      simp only [map, List.sum_cons, add_pos_iff, fib_pos.2 ha, true_or, zeckendorf_of_pos, h,
       add_tsub_cancel_left, zeckendorf_sum_fib hl.2]
     simp only [add_comm, add_assoc, greatestFib, findGreatest_eq_iff, ne_eq, ha.ne',
       not_false_eq_true, le_add_iff_nonneg_left, _root_.zero_le, forall_true_left, not_le, true_and]
