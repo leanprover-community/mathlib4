@@ -860,8 +860,8 @@ theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (h
     ∃ s : Set α, s.Countable ∧ ⋃ x ∈ s, f x = univ := by
   rcases isOpen_iUnion_countable (fun x => interior (f x)) fun x => isOpen_interior with
     ⟨s, hsc, hsU⟩
-  suffices : ⋃ x ∈ s, interior (f x) = univ
-  exact ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
+  suffices ⋃ x ∈ s, interior (f x) = univ from
+    ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
   simp only [hsU, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
 #align topological_space.countable_cover_nhds TopologicalSpace.countable_cover_nhds

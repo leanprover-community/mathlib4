@@ -145,7 +145,7 @@ theorem modOf_apply_add_self (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g) (d + g) 
   modOf_apply_of_exists_add _ _ _ ⟨_, add_comm _ _⟩
 #align add_monoid_algebra.mod_of_apply_add_self AddMonoidAlgebra.modOf_apply_add_self
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem modOf_apply_self_add (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g) (g + d) = 0 :=
   modOf_apply_of_exists_add _ _ _ ⟨_, rfl⟩
 #align add_monoid_algebra.mod_of_apply_self_add AddMonoidAlgebra.modOf_apply_self_add
