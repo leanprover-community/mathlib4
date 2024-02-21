@@ -89,7 +89,7 @@ theorem withDensity_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) :
 
 lemma withDensity_mono {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) :
     μ.withDensity f ≤ μ.withDensity g := by
-  intro s hs
+  refine le_iff.2 fun s hs ↦ ?_
   rw [withDensity_apply _ hs, withDensity_apply _ hs]
   refine set_lintegral_mono_ae' hs ?_
   filter_upwards [hfg] with x h_le using fun _ ↦ h_le
