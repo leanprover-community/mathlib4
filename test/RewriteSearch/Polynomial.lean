@@ -7,7 +7,7 @@ set_option autoImplicit true
 
 open Polynomial
 
-/-- info: Try this: rw [@natDegree_sub, @sub_eq_neg_add, @natDegree_add_C, @natDegree_neg] -/
+/-- info: Try this: rw [@natDegree_sub, @sub_eq_add_neg, @natDegree_C_add, @natDegree_neg] -/
 #guard_msgs in
 example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
     natDegree (p - C a) = natDegree p := by

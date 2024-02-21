@@ -207,7 +207,7 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   convert this.comp (φ.rightFun φ.pt) ((hasStrictFDerivAt_const _ _).prod (hasStrictFDerivAt_id _))
   -- porting note: added parentheses to help `simp`
   simp only [ContinuousLinearMap.ext_iff, (ContinuousLinearMap.comp_apply)] at hg'inv hg'invf ⊢
-  -- porting note: was `simp [ContinuousLinearEquiv.eq_symm_apply]`;
+  -- porting note (#10745): was `simp [ContinuousLinearEquiv.eq_symm_apply]`;
   -- both `simp` and `rw` fail here, `erw` works
   intro x
   erw [ContinuousLinearEquiv.eq_symm_apply]

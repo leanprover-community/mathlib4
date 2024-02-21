@@ -681,8 +681,8 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a 
   · rw [dif_pos h₁, dif_pos h₂]
     cases h (h₂.symm.trans h₁)
   · rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
-  · rw [dif_neg h₁, dif_neg h₁, dif_pos h₂]
-  · rw [dif_neg h₁, dif_neg h₁, dif_neg h₂]
+  · rw [dif_neg h₁, dif_neg h₁]
+  · rw [dif_neg h₁, dif_neg h₁]
 #align function.update_comm Function.update_comm
 
 @[simp]
@@ -796,6 +796,20 @@ theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ �
 #align function.bijective.comp_right Function.Bijective.comp_right
 
 end Extend
+
+namespace FactorsThrough
+
+protected theorem rfl {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
+
+theorem comp_left {f : α → β} {g : α → γ}  (h : FactorsThrough g f) (g' : γ → δ) :
+    FactorsThrough (g' ∘ g) f := fun _x _y hxy ↦
+  congr_arg g' (h hxy)
+
+theorem comp_right {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : δ → α) :
+    FactorsThrough (g ∘ g') (f ∘ g') := fun _x _y hxy ↦
+  h hxy
+
+end FactorsThrough
 
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
   rfl

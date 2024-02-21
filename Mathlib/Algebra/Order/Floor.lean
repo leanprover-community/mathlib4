@@ -285,7 +285,7 @@ theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
 #align nat.lt_ceil Nat.lt_ceil
 
--- porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem add_one_le_ceil_iff : n + 1 ≤ ⌈a⌉₊ ↔ (n : α) < a := by
   rw [← Nat.lt_ceil, Nat.add_one_le_iff]
@@ -1008,7 +1008,7 @@ theorem fract_ofNat (n : ℕ) [n.AtLeastTwo] :
     fract ((no_index (OfNat.ofNat n)) : α) = 0 :=
   fract_natCast n
 
--- porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem fract_floor (a : α) : fract (⌊a⌋ : α) = 0 :=
   fract_intCast _
@@ -1149,8 +1149,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
-  replace hn : 0 < (n : k)
-  · norm_cast
+  replace hn : 0 < (n : k) := by norm_cast
   have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
     intros l hl
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
@@ -1628,9 +1627,6 @@ namespace Nat
 variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
--- Porting note: no longer needed
--- include β
-
 theorem floor_congr (h : ∀ n : ℕ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
   have h₀ : 0 ≤ a ↔ 0 ≤ b := by simpa only [cast_zero] using h 0
   obtain ha | ha := lt_or_le a 0
@@ -1656,9 +1652,6 @@ namespace Int
 
 variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
-
--- Porting note: no longer needed
--- include β
 
 theorem floor_congr (h : ∀ n : ℤ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋ = ⌊b⌋ :=
   (le_floor.2 <| (h _).1 <| floor_le _).antisymm <| le_floor.2 <| (h _).2 <| floor_le _
@@ -1686,9 +1679,6 @@ namespace Int
 
 variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
-
--- Porting note: no longer needed
--- include β
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
   have H : f 2 = 2 := map_natCast f 2
@@ -1736,21 +1726,27 @@ theorem Nat.ceil_int : (Nat.ceil : ℤ → ℕ) = Int.toNat :=
 
 variable {a : α}
 
-theorem Nat.cast_floor_eq_int_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
+theorem Int.ofNat_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
   rw [← Int.floor_toNat, Int.toNat_of_nonneg (Int.floor_nonneg.2 ha)]
-#align nat.cast_floor_eq_int_floor Nat.cast_floor_eq_int_floor
+#align nat.cast_floor_eq_int_floor Int.ofNat_floor_eq_floor
 
-theorem Nat.cast_floor_eq_cast_int_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
-  rw [← Nat.cast_floor_eq_int_floor ha, Int.cast_ofNat]
-#align nat.cast_floor_eq_cast_int_floor Nat.cast_floor_eq_cast_int_floor
-
-theorem Nat.cast_ceil_eq_int_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
+theorem Int.ofNat_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
   rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
-#align nat.cast_ceil_eq_int_ceil Nat.cast_ceil_eq_int_ceil
+#align nat.cast_ceil_eq_int_ceil Int.ofNat_ceil_eq_ceil
 
-theorem Nat.cast_ceil_eq_cast_int_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
-  rw [← Nat.cast_ceil_eq_int_ceil ha, Int.cast_ofNat]
-#align nat.cast_ceil_eq_cast_int_ceil Nat.cast_ceil_eq_cast_int_ceil
+theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
+  rw [← Int.ofNat_floor_eq_floor ha, Int.cast_ofNat]
+#align nat.cast_floor_eq_cast_int_floor natCast_floor_eq_intCast_floor
+
+theorem natCast_ceil_eq_intCast_ceil  (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
+  rw [← Int.ofNat_ceil_eq_ceil ha, Int.cast_ofNat]
+#align nat.cast_ceil_eq_cast_int_ceil natCast_ceil_eq_intCast_ceil
+
+-- 2024-02-14
+@[deprecated] alias Nat.cast_floor_eq_int_floor := Int.ofNat_floor_eq_floor
+@[deprecated] alias Nat.cast_ceil_eq_int_ceil := Int.ofNat_ceil_eq_ceil
+@[deprecated] alias Nat.cast_floor_eq_cast_int_floor := natCast_floor_eq_intCast_floor
+@[deprecated] alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
 
 end FloorRingToSemiring
 

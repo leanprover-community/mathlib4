@@ -491,8 +491,8 @@ noncomputable def GammaSeq (s : ℝ) (n : ℕ) :=
 
 /-- Euler's limit formula for the real Gamma function. -/
 theorem GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) := by
-  suffices : Tendsto ((↑) ∘ GammaSeq s : ℕ → ℂ) atTop (𝓝 <| Complex.Gamma s)
-  exact (Complex.continuous_re.tendsto (Complex.Gamma ↑s)).comp this
+  suffices Tendsto ((↑) ∘ GammaSeq s : ℕ → ℂ) atTop (𝓝 <| Complex.Gamma s) by
+    exact (Complex.continuous_re.tendsto (Complex.Gamma ↑s)).comp this
   convert Complex.GammaSeq_tendsto_Gamma s
   ext1 n
   dsimp only [GammaSeq, Function.comp_apply, Complex.GammaSeq]
@@ -539,7 +539,7 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
   induction n generalizing s with
   | zero =>
     rw [Nat.cast_zero, neg_lt_zero] at hs
-    suffices : ∀ m : ℕ, s ≠ -↑m; exact (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
+    suffices ∀ m : ℕ, s ≠ -↑m from (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
     rintro m rfl
     apply hs.not_le
     simp

@@ -318,8 +318,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
     (h_pi : ∀ b ∈ s, IsPiSystem (g b)) (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b ∈ s, g b)) :
     ∃ (T : Finset β) (f : β → Set α), ↑T ⊆ s ∧ (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
   have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
-    suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b
-    · rwa [h1]
+    suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
     ext x
     simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists, Subtype.coe_mk]
     rfl
@@ -452,8 +451,8 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
   split_ifs with hn1 hn2 h
   · refine' hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => _)
     rw [h_inter_eq] at h_nonempty
-    suffices h_empty : ⋂ i ∈ p1 ∪ p2, g i = ∅
-    exact (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
+    suffices h_empty : ⋂ i ∈ p1 ∪ p2, g i = ∅ from
+      (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
     refine' le_antisymm (Set.iInter_subset_of_subset n _) (Set.empty_subset _)
     refine' Set.iInter_subset_of_subset hn _
     simp_rw [if_pos hn1, if_pos hn2]
@@ -508,7 +507,7 @@ theorem measurableSet_iSup_of_mem_piiUnionInter (m : ι → MeasurableSpace α) 
     MeasurableSet[⨆ i ∈ S, m i] t := by
   rcases ht with ⟨pt, hpt, ft, ht_m, rfl⟩
   refine' pt.measurableSet_biInter fun i hi => _
-  suffices h_le : m i ≤ ⨆ i ∈ S, m i; exact h_le (ft i) (ht_m i hi)
+  suffices h_le : m i ≤ ⨆ i ∈ S, m i from h_le (ft i) (ht_m i hi)
   have hi' : i ∈ S := hpt hi
   exact le_iSup₂ (f := fun i (_ : i ∈ S) => m i) i hi'
 #align measurable_set_supr_of_mem_pi_Union_Inter measurableSet_iSup_of_mem_piiUnionInter

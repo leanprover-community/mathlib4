@@ -272,7 +272,7 @@ theorem aemeasurable_restrict_iff_comap_subtype {s : Set α} (hs : MeasurableSet
   rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).aemeasurable_map_iff]
 #align ae_measurable_restrict_iff_comap_subtype aemeasurable_restrict_iff_comap_subtype
 
-@[to_additive] -- @[to_additive (attr := simp)] -- Porting note: simp can prove this
+@[to_additive] -- @[to_additive (attr := simp)] -- Porting note (#10618): simp can prove this
 theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
   measurable_one.aemeasurable
 #align ae_measurable_one aemeasurable_one
@@ -412,6 +412,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
     refine measurable_generateFrom fun s hs ↦ .of_subtype_image ?_
     rw [preimage_comp, Subtype.image_preimage_coe]
     convert (hTm s hs).diff hvm using 1
+    rw [inter_comm]
     refine Set.ext fun x ↦ and_congr_left fun hxv ↦ ⟨fun hx ↦ ?_, fun hx ↦ hTf s hs hx⟩
     exact by_contra fun hx' ↦ hxv <| mem_biUnion hs ⟨hUf s hs hx, hx'⟩
 

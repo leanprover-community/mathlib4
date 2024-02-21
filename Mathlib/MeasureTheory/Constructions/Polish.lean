@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 import Mathlib.Data.Real.Cardinality
-import Mathlib.Topology.Perfect
+import Mathlib.Topology.MetricSpace.Perfect
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 #align_import measure_theory.constructions.polish from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
@@ -589,7 +589,7 @@ if and only if the intesection with `Set.range f` is measurable. -/
 theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Y} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
-  rw [hf.measurableSet_preimage_iff_preimage_val,
+  rw [hf.measurableSet_preimage_iff_preimage_val, inter_comm,
     ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
 #align measurable.measurable_set_preimage_iff_inter_range Measurable.measurableSet_preimage_iff_inter_range
 
