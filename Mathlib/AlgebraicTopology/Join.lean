@@ -110,10 +110,8 @@ def join (S T : (WithInitial SimplexCategory)ᵒᵖ ⥤  Type u) :
 def join.map {S1 T1 S2 T2: (WithInitial SimplexCategory)ᵒᵖ ⥤  Type u} (η : S1 ⟶ S2)
     (ε : T1 ⟶ T2) : join S1 T1 ⟶ join S2 T2 where
   app X := fun (s : JoinStruct S1 T1 (len (Opposite.unop X))) =>
-    match s with
-    | JoinStruct.comp i s =>
-      JoinStruct.comp i ((η.app (Opposite.op (mk i.val))) s.1,
-         (ε.app (Opposite.op (mk i.rev.val))) s.2 )
+      JoinStruct.comp s.1 ((η.app (Opposite.op (mk s.1.val))) s.2.1,
+         (ε.app (Opposite.op (mk s.1.rev.val))) s.2.2 )
   naturality := by
     intro X Y f
     cases X
@@ -136,6 +134,11 @@ def join.map {S1 T1 S2 T2: (WithInitial SimplexCategory)ᵒᵖ ⥤  Type u} (η 
 
 def join.func :
     (((WithInitial SimplexCategory)ᵒᵖ ⥤  Type u) × ((WithInitial SimplexCategory)ᵒᵖ ⥤  Type u))
-       ⥤  ((WithInitial SimplexCategory)ᵒᵖ ⥤  Type u) where
+    ⥤  ((WithInitial SimplexCategory)ᵒᵖ ⥤  Type u) where
   obj S := join S.1 S.2
   map η := join.map η.1 η.2
+
+def join.fun_terminal :  ((WithTerminal (SimplexCategory)ᵒᵖ ⥤  Type u) × (WithTerminal (SimplexCategory)ᵒᵖ ⥤  Type u))
+    ⥤  ((WithInitial SimplexCategory)ᵒᵖ ⥤  Type u)  := sorry
+
+def join.fun_augmented : SSet.Augmented × SSet.Augmented ⥤ SSet.Augmented := by
