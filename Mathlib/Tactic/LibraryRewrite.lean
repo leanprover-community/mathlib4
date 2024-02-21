@@ -53,6 +53,7 @@ def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
     | .str _ "noConfusionType" => true
     | _ => false)
   || name.isInternalDetail
+  || (`Mathlib).isPrefixOf name
   || isAuxRecursor env name
   || isNoConfusion env name
   || isMatcherCore env name
