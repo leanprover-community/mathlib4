@@ -183,7 +183,7 @@ variable (R : Type u) [CommRing R]
 
 -- ACL
 -- Why is it necessary to add this instance ?
-
+/-- instance that a direct sum of tensor products is an add comm group -/
 noncomputable local instance (ι : Type v)
     (M : ι → Type w) [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)]
     (I : Ideal R) :
