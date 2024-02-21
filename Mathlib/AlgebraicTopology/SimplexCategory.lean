@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.WithTerminal
 
 #align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
@@ -863,6 +864,435 @@ theorem factorThruImage_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : �
 #align simplex_category.factor_thru_image_eq SimplexCategory.factorThruImage_eq
 
 end EpiMono
+
+namespace WithInitial
+open WithInitial
+
+def len (X : WithInitial SimplexCategory) : ℕ :=
+  match X with
+  | star => 0
+  | of x => Nat.succ x.len
+
+def mk (i : ℕ) : WithInitial SimplexCategory :=
+  match i with
+  | Nat.zero => star
+  | Nat.succ x => of (SimplexCategory.mk x)
+
+lemma len_mk (i : ℕ) : len (mk i) = i := by
+  match i with
+  | Nat.zero => rfl
+  | Nat.succ x => rfl
+
+def toOrderHom {X Y : WithInitial SimplexCategory} (f : X ⟶ Y) : Fin (len X) →o Fin (len Y) :=
+  match X, Y, f with
+  | of _, of _, f => f.toOrderHom
+  | star, of x, _ => (OrderEmbedding.ofIsEmpty.toOrderHom :  (Fin 0) →o (Fin (len (of x))))
+  | star, star, _ => OrderHom.id
+
+lemma toOrderHom_id {Z : WithInitial SimplexCategory} : toOrderHom (𝟙 Z) = OrderHom.id := by
+  match Z with
+  | of z => rfl
+  | star => rfl
+
+lemma toOrderHom_comp {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g : Y ⟶ Z):
+    toOrderHom (f ≫ g) = (toOrderHom g).comp (toOrderHom f) := by
+  match X, Y, Z, f, g with
+  | star, star, star, f, g => rfl
+  | star, star, of z, f, g => rfl
+  | star, of y, of z, f, g =>
+    apply OrderHom.ext
+    exact List.ofFn_inj.mp rfl
+  | of x, of y, of z, f, g => rfl
+
+def homMk {n m : ℕ} (f : Fin n →o Fin m) : mk n ⟶ mk m :=
+  match n, m, f with
+  | Nat.zero, Nat.zero, _ => 𝟙 star
+  | Nat.zero, Nat.succ m', _ => starInitial.to (mk (Nat.succ m'))
+  | Nat.succ _, Nat.succ _, f => SimplexCategory.Hom.mk f
+  | Nat.succ _, Nat.zero, f =>  Fin.elim0 (f 0)
+
+lemma homMk_id {n  : ℕ}: homMk (OrderHom.id ) = 𝟙 (mk n) :=
+  match n with
+  | Nat.zero => rfl
+  | Nat.succ _ => rfl
+
+lemma homMk_comp {n m r : ℕ} (f : Fin n →o Fin m) (g : Fin m →o Fin r) :
+    (homMk f) ≫ (homMk g) = homMk (g.comp f) := by
+  match n, m, r, f, g with
+  | Nat.zero, Nat.zero, Nat.zero, f, g => rfl
+  | Nat.zero, Nat.zero, Nat.succ _, f, g => rfl
+  | Nat.zero, Nat.succ _, Nat.succ _, f, g => rfl
+  | Nat.succ _, Nat.succ _, Nat.succ _, f, g => rfl
+  | Nat.zero, Nat.succ _, Nat.zero, f, g => rfl
+  | Nat.succ _, Nat.zero, Nat.zero, f, g => exact Fin.elim0 (f 0)
+  | Nat.succ _, Nat.succ _, Nat.zero, f, g => exact Fin.elim0 (g 0)
+  | Nat.succ _, Nat.zero, Nat.succ _, f, g => exact Fin.elim0 (f 0)
+
+def rev : WithInitial SimplexCategory ⥤ WithInitial SimplexCategory where
+  obj := fun X => X
+  map {X Y} f :=
+     match X, Y, f with
+     | of _, of _, f =>
+       homMk {
+        toFun := fun a => (f.toOrderHom a.rev).rev
+        monotone' := by
+          let hf := f.toOrderHom.monotone'
+          aesop_cat
+       }
+     | star, of y, _ => starInitial.to (of y)
+     | star, star, _ => 𝟙 star
+  map_id := by
+    intro Z
+    match Z with
+    | star => rfl
+    | of z =>
+      simp [homMk_id, homMk]
+      change _= Hom.mk (OrderHom.id)
+      apply congrArg
+      apply OrderHom.ext
+      funext a
+      change  (a).rev.rev =a
+      exact Fin.rev_rev a
+  map_comp := by
+    intro X Y Z f g
+    match X, Y, Z, f, g with
+    | star, star, star, f, g => rfl
+    | star, star, of z, f, g => rfl
+    | star, of y, of z, f, g => rfl
+    | of x, of y, of z, f, g =>
+      simp
+      rw [homMk_comp]
+      apply congrArg
+      apply OrderHom.ext
+      funext a
+      simp
+      rw [show Hom.toOrderHom (f ≫ g) = (Hom.toOrderHom g).comp (Hom.toOrderHom f) by rfl]
+      rfl
+
+lemma rev_castIso {n m : ℕ} (h : n = m ) : homMk (Fin.castIso h : Fin n →o Fin m) =
+    rev.map (homMk (Fin.castIso h : Fin n →o Fin m)) := by
+  match n, m with
+  | Nat.zero, Nat.zero => rfl
+  | Nat.succ n, Nat.succ m =>
+     simp [homMk]
+     unfold rev mk homMk
+     simp
+     apply congrArg
+     apply OrderHom.ext
+     funext a
+     change _ = Fin.rev (Fin.cast h (Fin.rev a))
+     rw [Fin.eq_iff_veq]
+     have h2 : n=m :=  Nat.succ_inj.mp h
+     simp [← h2]
+     rw [tsub_tsub_cancel_of_le a.is_le]
+
+lemma rev_toOrderHom {X Y : WithInitial SimplexCategory} (f : X ⟶ Y) (a : Fin (len X)):
+    toOrderHom (rev.map f) a  = ((toOrderHom f) a.rev).rev := by
+  match X, Y, f with
+  | of _, of _, f => rfl
+  | star, of y, _ => exact Fin.elim0 a
+  | star, star, _ => exact Fin.elim0 a
+
+@[simp]
+def nat {n : ℕ} (k : Option (Fin (n))) : Fin (Nat.succ (n)) :=
+  match k with
+  | some k => k.castSucc
+  | none => Fin.last n
+
+lemma nat_true {n : ℕ} :
+    nat (Fin.find (fun (_ : Fin n) => True)) = 0 := by
+  match n with
+  | Nat.zero => rfl
+  | Nat.succ n =>
+    have h : Fin.find (fun (_ : Fin (Nat.succ n)) => True) = some (0 : Fin (Nat.succ n)) := by
+      rw [Fin.find_eq_some_iff]
+      simp
+    rw [h]
+    rfl
+
+lemma nat_rev {n : ℕ} (p : Fin n → Prop) [DecidablePred p]
+  (hp : (i : Fin n) → (j : Fin n) → i ≤ j → p i → p j)
+  : (nat (Fin.find p)).rev =
+    (nat (Fin.find (fun (a : Fin n) => ¬ p a.rev ))) := by
+  let k := Fin.find p
+  have  hk : Fin.find p = k := rfl
+  rw [hk]
+  match k with
+  | none =>
+     rw [Fin.find_eq_none_iff] at hk
+     simp [hk]
+     change _ = nat (Fin.find (fun (_ : Fin n) => True))
+     rw [nat_true]
+  | some k =>
+    rw [Fin.find_eq_some_iff] at hk
+    match k with
+    | ⟨ Nat.zero, hx ⟩ =>
+      have h :  (Fin.find fun a => ¬p (Fin.rev a)) = none := by
+        rw [Fin.find_eq_none_iff]
+        intro i
+        simp
+        refine hp ⟨ Nat.zero, hx ⟩ (Fin.rev i) ?_ hk.left
+        rw [Fin.le_def]
+        exact Nat.zero_le ↑(Fin.rev i)
+      rw [h]
+      simp [nat]
+    | ⟨Nat.succ k, hx⟩ =>
+      change  (⟨Nat.succ k, hx⟩ : Fin n).castSucc.rev =_
+      let xn : Fin n :=  ⟨k, Nat.lt_of_succ_lt hx ⟩
+      have h : (Fin.find fun a => ¬p (Fin.rev a)) = some xn.rev := by
+        rw [Fin.find_eq_some_iff]
+        simp
+        apply And.intro
+        by_contra hn
+        exact Nat.not_succ_le_self k (hk.right xn hn)
+        intro j hj
+        rw [← Fin.rev_rev j, Fin.rev_le_rev]
+        have hl := (hp ⟨Nat.succ k, hx⟩ (Fin.rev j)).mt
+        simp  at hl
+        exact Fin.succ_le_succ_iff.mp (hl hk.left hj)
+      rw [h]
+      ext
+      simp only [Fin.castSucc_mk, Fin.val_rev, Nat.succ_sub_succ_eq_sub, nat, Fin.coe_castSucc]
+
+
+
+def preimageInitialSegmentObj {X Y : WithInitial SimplexCategory} (f : X ⟶ Y)
+    (i : Fin (Nat.succ (len Y))) : Option (Fin (len X)) :=
+  Fin.find (fun a => i ≤ (toOrderHom f a).castSucc)
+
+lemma fin_eq_to_val {n : ℕ} {i j : Fin n}  (h : i = j) : i.val = j.val := by rw [h]
+
+lemma fin_eq_to_rev {n : ℕ} {i j : Fin n}  (h : i = j) : i.rev.val = j.rev.val := by rw [h]
+
+lemma nat_id {Z : WithInitial SimplexCategory} (i : Fin (Nat.succ (len Z)))
+    (k : Option (Fin (len Z))) (hk : k = (preimageInitialSegmentObj (𝟙 Z) i)) :
+    nat k = i := by
+  symm at hk
+  simp [preimageInitialSegmentObj,toOrderHom_id] at hk
+  match k with
+  | some x =>
+    rw [Fin.find_eq_some_iff] at hk
+    let hkr := hk.right ⟨i, Nat.lt_of_le_of_lt hk.left x.prop ⟩
+    simp at hkr
+    simp [Fin.eq_iff_veq]
+    exact Nat.le_antisymm hkr hk.left
+  | none =>
+    rw [Fin.find_eq_none_iff] at hk
+    simp only [nat, add_right_eq_self]
+    match Z with
+    | star =>
+      ext
+      simp_all only [Fin.coe_fin_one]
+    | of z =>
+      have h1 := hk (Fin.last (z.len))
+      ext
+      simp  [Fin.lt_def] at h1
+      exact Nat.le_antisymm h1 (Fin.is_le i)
+
+lemma nat_id_val {Z : WithInitial SimplexCategory} (i : Fin (Nat.succ (len Z)))
+    (k : Option (Fin (len Z))) (hk : k = (preimageInitialSegmentObj (𝟙 Z) i)) :
+    (nat k).val = i.val := by
+  rw [nat_id i k hk]
+
+
+
+lemma preimageInitialSegmentObj_rev {X Y : WithInitial SimplexCategory} (f : X ⟶ Y)
+    (i : Fin (Nat.succ (len Y))) :
+    preimageInitialSegmentObj (rev.map f) i.rev
+    = Fin.find (fun a => ¬ i ≤ (toOrderHom f a.rev).castSucc) := by
+  let p  (a : Fin (len X)) := Fin.rev i ≤ Fin.castSucc ((toOrderHom (rev.toPrefunctor.map f)) a)
+  let q (a : Fin (len X)) := ¬ i ≤ (toOrderHom f a.rev).castSucc
+  have h : p = q := by
+    funext a
+    simp [toOrderHom, rev, homMk]
+    match X, Y, f with
+    | of _, of _, f =>
+      change i.rev ≤ Fin.castSucc (Fin.rev ((Hom.toOrderHom f) (Fin.rev a))) ↔ _
+      rw [← Fin.rev_succ, Fin.rev_le_rev]
+      rfl
+    | star, of y, _ => exact Fin.elim0 a
+    | star, star, _ => exact Fin.elim0 a
+  change Fin.find p =Fin.find q
+  simp only [h, ge_iff_le]
+
+lemma preimageInitialSegmentObj_neg_negRev  {X Y : WithInitial SimplexCategory} (f : X ⟶ Y)
+    (i : Fin (Nat.succ (len Y))) : (nat (preimageInitialSegmentObj f i)).rev =
+    (nat (preimageInitialSegmentObj (rev.map f) i.rev)) := by
+  rw [preimageInitialSegmentObj_rev]
+  let p : Fin (len X) → Prop := (fun a => i ≤ (toOrderHom f a).castSucc)
+  change (nat (Fin.find p)).rev= nat ((Fin.find (fun (a : Fin (len X)) => ¬ p a.rev )))
+  refine nat_rev p ?_
+  intro m n h hm
+  exact hm.trans ((toOrderHom f).monotone' h)
+
+lemma preimageInitialSegmentObj_neg_negRev_val  {X Y : WithInitial SimplexCategory} (f : X ⟶ Y)
+    (i : Fin (Nat.succ (len Y))) : (nat (preimageInitialSegmentObj f i)).rev.val =
+    (nat (preimageInitialSegmentObj (rev.map f) i.rev)).val := by
+  have h := preimageInitialSegmentObj_neg_negRev f i
+  rw [Fin.eq_iff_veq] at h
+  exact h
+/-- This lemma is essentially pasting of pullbacks. -/
+lemma preimageInitialSegmentObj_comp  {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (i : Fin (Nat.succ (len Z)))  (k : Option (Fin (len Y))) (hk : k = (preimageInitialSegmentObj g i)) :
+   preimageInitialSegmentObj f (nat k) = preimageInitialSegmentObj (f ≫ g) i := by
+  symm at hk
+  simp [preimageInitialSegmentObj,toOrderHom_id] at hk
+  match k with
+  | some x =>
+    rw [Fin.find_eq_some_iff] at hk
+    simp [preimageInitialSegmentObj, toOrderHom_comp]
+    let k2 := (Fin.find fun a ↦ x ≤ (toOrderHom f) a)
+    have hk2 : (Fin.find fun a ↦ x ≤ (toOrderHom f) a) =k2  := rfl
+    rw [hk2]
+    match k2 with
+    | some x2 =>
+      symm
+      rw [Fin.find_eq_some_iff]
+      rw [Fin.find_eq_some_iff] at hk2
+      apply And.intro
+      · exact hk.left.trans ((toOrderHom g).monotone' hk2.left )
+      · intro j hj
+        exact hk2.right j (hk.right ((toOrderHom f) j) hj)
+    | none =>
+      symm
+      rw [Fin.find_eq_none_iff]
+      rw [Fin.find_eq_none_iff] at hk2
+      intro j
+      simp
+      by_contra hn
+      simp at hn
+      exact hk2 j (hk.right ((toOrderHom f) j) hn )
+  | none =>
+    rw [Fin.find_eq_none_iff] at hk
+    have h1 : preimageInitialSegmentObj (f ≫ g) i = none := by
+      simp [preimageInitialSegmentObj]
+      rw [Fin.find_eq_none_iff, toOrderHom_comp]
+      exact fun i ↦ hk ((toOrderHom f) i)
+    rw [h1]
+    simp [preimageInitialSegmentObj]
+    rw [Fin.find_eq_none_iff]
+    intro i
+    intro a
+    have  := Fin.castSucc_lt_last ((toOrderHom f) i)
+    simp_all  [lt_self_iff_false]
+
+lemma nat_comp  {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (i : Fin (Nat.succ (len Z)))  :
+    nat (preimageInitialSegmentObj f (nat (preimageInitialSegmentObj g i)))
+    = nat (preimageInitialSegmentObj (f ≫ g) i) := by
+  apply congrArg
+
+  exact preimageInitialSegmentObj_comp f g i (preimageInitialSegmentObj g i) (by rfl)
+
+
+def map₀ {X : WithInitial SimplexCategory} (k : Option (Fin (len X))) :
+    Fin (nat k).val →o Fin (len X) := Fin.castLEEmb (Fin.is_le (nat k))
+
+lemma LEcond₂ {X Y : WithInitial SimplexCategory} {f : X ⟶ Y} {i : Fin (Nat.succ (len Y))} (k : Option (Fin (len X)))
+    (hk : k = (preimageInitialSegmentObj f i)) (a : Fin (nat k)) :
+    (toOrderHom f).comp (map₀ k) a < i.val :=
+  match k with
+  | some x =>
+    Nat.not_le.mp (((Fin.find_eq_some_iff.mp hk.symm).right
+      (((map₀ (some x)) a))).mt (Fin.not_le.mpr a.prop))
+  | none =>
+    Nat.not_le.mp (Fin.find_eq_none_iff.mp hk.symm a)
+
+def map₁ {X Y : WithInitial SimplexCategory} (f : X ⟶ Y) (i :  Fin (Nat.succ (len Y))) :
+    mk (nat (preimageInitialSegmentObj f i)).val ⟶ mk i.val :=
+  homMk {
+    toFun := fun a => ⟨(toOrderHom f).comp (map₀ (preimageInitialSegmentObj f i)) a,
+      LEcond₂ (preimageInitialSegmentObj f i) (by rfl) a⟩
+    monotone' := by
+      intro a b h
+      apply (toOrderHom f).monotone'
+      apply (map₀ (preimageInitialSegmentObj f i)).monotone'
+      exact h
+  }
+
+def revMap₁ {X Y : WithInitial SimplexCategory} (f : X ⟶ Y) (i :  Fin (Nat.succ (len Y))) :
+    mk (nat (preimageInitialSegmentObj f i)).rev.val ⟶ mk i.rev.val :=
+  rev.map ((homMk (Fin.castIso (preimageInitialSegmentObj_neg_negRev_val f i))) ≫
+     (map₁ (rev.map f) i.rev))
+
+lemma map₁_comp {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (i : Fin (Nat.succ (len Z)))  :
+    map₁ (f ≫ g) i
+    = (homMk (Fin.castIso (fin_eq_to_val (nat_comp f g i)).symm)) ≫
+        map₁ f (nat (preimageInitialSegmentObj g i)) ≫ map₁ g i
+      := by
+  match X, Y, Z, f, g with
+  | star, star, star, f, g => rfl
+  | star, star, of z, f, g => rfl
+  | star, of y, of z, f, g => rfl
+  | of x, of y, of z, f, g =>
+     simp [map₁]
+     rw [homMk_comp, homMk_comp]
+     rfl
+
+lemma revMap₁_comp {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g : Y ⟶ Z)
+    (i : Fin (Nat.succ (len Z)))  :
+    revMap₁ (f ≫ g) i
+    = (homMk (Fin.castIso (fin_eq_to_rev (nat_comp f g i)).symm)) ≫
+        revMap₁ f (nat (preimageInitialSegmentObj g i)) ≫ revMap₁ g i
+      := by
+  match X, Y, Z, f, g with
+  | star, star, star, f, g => rfl
+  | star, star, of z, f, g => rfl
+  | star, of y, of z, f, g => rfl
+  | of x, of y, of z, f, g =>
+     rw [rev_castIso]
+     simp [revMap₁]
+     repeat rw [← rev.map_comp]
+     apply congrArg
+     simp [map₁]
+     repeat rw [homMk_comp]
+     rfl
+
+lemma map₁_id {Z : WithInitial SimplexCategory} (i  : Fin (Nat.succ (len Z))) :
+    (homMk (Fin.castIso (fin_eq_to_val (nat_id i (preimageInitialSegmentObj (𝟙 Z) i) (by rfl))).symm)) ≫ (map₁ (𝟙 Z) i) =
+    𝟙 (mk i.val)  := by
+  simp [map₁]
+  rw [homMk_comp,←  homMk_id]
+  match Z with
+  | star => rfl
+  | of z => rfl
+
+lemma revMap₁_id {Z : WithInitial SimplexCategory} (i  : Fin (Nat.succ (len Z))) :
+    (homMk (Fin.castIso (fin_eq_to_rev (nat_id i (preimageInitialSegmentObj (𝟙 Z) i) (by rfl))).symm)) ≫ (revMap₁ (𝟙 Z) i) =
+    𝟙 (mk i.rev.val)  := by
+  rw [rev_castIso]
+  simp [revMap₁]
+  repeat rw [← rev.map_comp]
+  change _ = 𝟙 (rev.obj ((mk i.rev.val)))
+  rw [← rev.map_id (mk i.rev.val)]
+  apply congrArg
+  simp [map₁]
+  repeat rw [homMk_comp]
+  rw [← homMk_id]
+  match Z with
+  | star => rfl
+  | of x => rfl
+
+
+
+lemma preimageInitialSegmentObj_eq_val { X Y: WithInitial SimplexCategory} ( f g : X ⟶ Y) (h : f=g)
+    (i: Fin (Nat.succ (len Y))):
+    (nat (preimageInitialSegmentObj f i)).val = (nat (preimageInitialSegmentObj g i)).val := by
+  rw [h]
+
+lemma map₁_eq { X Y: WithInitial SimplexCategory} ( f g : X ⟶ Y) (h : f=g) (i : ℕ) :
+    map₁ f i = (homMk (Fin.castIso (preimageInitialSegmentObj_eq_val f g h i))) ≫ (map₁ g i)  := by
+  match X, Y, f, g with
+  | star, star, f, _ => rfl
+  | star, of y, f, _=> rfl
+  | of x, of y, f, g =>
+    simp only [nat, Fin.val_nat_cast, map₁, OrderHom.comp_coe, Function.comp_apply]
+    rw [homMk_comp]
+    simp only [nat, Fin.val_nat_cast, h, map₀, OrderHomClass.coe_coe]
+    rfl
+
+end WithInitial
 
 /-- This functor `SimplexCategory ⥤ Cat` sends `[n]` (for `n : ℕ`)
 to the category attached to the ordered set `{0, 1, ..., n}` -/
