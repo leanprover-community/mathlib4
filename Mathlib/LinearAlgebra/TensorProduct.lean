@@ -7,7 +7,6 @@ import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.Tactic.SuppressCompilation
-import Mathlib.Data.Finsupp.Basic
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
@@ -473,32 +472,6 @@ theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     · simp
     · simp [Finset.sum_insert has, tmul_add, ih]
 #align tensor_product.tmul_sum TensorProduct.tmul_sum
-
-theorem finsupp_sum_tmul {α : Type*} [DecidableEq α] (f : α →₀ M) (n : N) :
-    Finsupp.sum f (fun _ m => m) ⊗ₜ[R] n = Finsupp.sum f (fun _ m => m ⊗ₜ[R] n) := by
-  rw [Finsupp.sum, Finsupp.sum_of_support_subset, sum_tmul]
-  rfl
-  intro _ _; simp only [zero_tmul]
-
-theorem finsupp_sum_map_tmul {α : Type*} [DecidableEq α]
-    (f : α →₀ M) (g : α → M → P) (h : ∀ a ∈ f.support, g a 0 = 0) (n : N) :
-    Finsupp.sum f g ⊗ₜ[R] n = Finsupp.sum f (fun a m => (g a m) ⊗ₜ[R] n) := by
-  rw [Finsupp.sum, Finsupp.sum_of_support_subset, sum_tmul]
-  rfl
-  intro i hi; rw [h i hi, zero_tmul]
-
-theorem finsupp_tmul_sum {α : Type*} [DecidableEq α] (m : M) (f : α →₀ N) :
-    m ⊗ₜ[R] Finsupp.sum f (fun _ n => n) = Finsupp.sum f (fun _ n => m ⊗ₜ[R] n) := by
-  rw [Finsupp.sum, Finsupp.sum_of_support_subset, tmul_sum]
-  rfl
-  intro _ _; simp only [tmul_zero]
-
-theorem finsupp_sum_tmul_map {α : Type*} [DecidableEq α]
-    (m : M) (f : α →₀ N) (g : α → N → P) (h : ∀ a ∈ f.support, g a 0 = 0) :
-    m ⊗ₜ[R] Finsupp.sum f g = Finsupp.sum f (fun a n => m ⊗ₜ[R] (g a n)) := by
-  rw [Finsupp.sum, Finsupp.sum_of_support_subset, tmul_sum]
-  rfl
-  intro i hi; rw [h i hi, tmul_zero]
 
 end
 
