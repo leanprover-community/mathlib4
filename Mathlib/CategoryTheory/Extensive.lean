@@ -564,8 +564,8 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
         exact dif_neg j.prop }
   let e' : c.pt ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
     hc.coconePointUniqueUpToIso (getColimitCocone _).2 ≪≫ e
-  have : coprod.inl ≫ e'.inv = c.ι.app ⟨i⟩
-  · simp only [Iso.trans_inv, coprod.desc_comp, colimit.ι_desc, BinaryCofan.mk_pt,
+  have : coprod.inl ≫ e'.inv = c.ι.app ⟨i⟩ := by
+    simp only [Iso.trans_inv, coprod.desc_comp, colimit.ι_desc, BinaryCofan.mk_pt,
       BinaryCofan.ι_app_left, BinaryCofan.mk_inl]
     exact colimit.comp_coconePointUniqueUpToIso_inv _ _
   clear_value e'
@@ -606,8 +606,8 @@ lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [
   suffices IsColimit (Cofan.mk _ ((fun _ ↦ pullback.fst) : (a : α) → pullback f (π a) ⟶ _)) by
     change IsIso (this.coconePointUniqueUpToIso (getColimitCocone _).2).inv
     infer_instance
-  let : IsColimit (Cofan.mk X π)
-  · refine @IsColimit.ofPointIso (t := Cofan.mk X π) (P := coproductIsCoproduct Z) ?_
+  let this : IsColimit (Cofan.mk X π) := by
+    refine @IsColimit.ofPointIso (t := Cofan.mk X π) (P := coproductIsCoproduct Z) ?_
     convert hπ
     simp [coproductIsCoproduct]
   refine (FinitaryPreExtensive.isUniversal_finiteCoproducts this
