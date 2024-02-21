@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Wrenna Robson. All rights reserved.
+Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson, Newell Jensen
 -/
@@ -10,21 +10,21 @@ import Mathlib.Topology.MetricSpace.Basic
 /-!
 # Well-spaced point sets.
 
-This file defines point sets that are *well-spaced*.
+This file defines point sets that are *well-spaced*, in some sense.  This includes points sets such
+as Delone sets and Meyer sets, which find applications in Quasicrystals and Coding Theory.
 
 ## Main definitions
 
 * `Set.einfsep`: Extended infimum separation of a set.
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
-* `Set.isPacking`: ε-packings.
-* `Set.isCovering`: ε-coverings.
-* `Set.isNet`: ε-nets.
 * `Set.uniformlyDiscrete`: Uniformly discrete point sets.
 * `Set.relativelyDense`: Relatively dense point sets.
 * `Set.Delone`: Delone point sets.
 * `Set.Meyer`: Meyer point sets.
 
 ## Implementation notes
+
+TODO - update this section.
 
 We define the extended infimum separation of a set.  This is approximately dual to the diameter
 of a set, but where the extended diameter of a set is the supremum of the extended distance between
@@ -35,7 +35,8 @@ We also define the infimum separation as the cast of the extended infimum separa
 This is the infimum of the distance between distinct elements of the set when in a pseudometric
 space.
 
-All lemmas and definitions are in the `Set` namespace to give access to dot notation.
+All lemmas and definitions are in the `Set` namespace, where possible, to give access to dot
+notation.
 
 !-/
 
@@ -606,51 +607,81 @@ instance [PseudoMetricSpace α] [BoundedDist α] : BoundedEDist α where
 
 variable [PseudoEMetricSpace α]
 
-/-- The packing radius is half of the smallest distance between distinct members of `s`. -/
-noncomputable def packingRadius (s : Set α) : ℝ≥0∞ :=
+/-- The packing radius is half of the smallest distance between distinct members of the set. -/
+noncomputable def PackingRadius (s : Set α) : ℝ≥0∞ :=
   sSup fun r => s.PairwiseDisjoint (EMetric.ball · r)
 
-lemma packingRadius_eq_half_einfsep (s : Set α) : s.packingRadius = s.einfsep / 2 := sorry
+-- lemma packing_radius_eq_half_einfsep (s : Set α) : s.PackingRadius = s.einfsep / 2 := sorry
 
-/-- The covering radius is the smallest distance such that every point of `s` is within this
-distance of at least one point in `s`. -/
-noncomputable def coveringRadius (s : Set α) : ℝ≥0∞ :=
-  sInf fun r => (EMetric.closedBall . r) '' s = univ
+/-- The covering radius is the smallest distance such that every point of the set is within this
+distance of at least one point in the set. -/
+noncomputable def CoveringRadius (s : Set α) : ℝ≥0∞ :=
+  sInf fun r => (EMetric.closedBall · r) '' s = univ
 
 -- lemma coveringRadius_eq_something (infEDist? something not defined which should be?)
 
 /-- An ε-packing is a set with packing radius ≥ ε / 2. -/
-def isPacking (s : Set α) (ε : ℝ≥0∞) := ε ≤ 2 * (s.packingRadius)
+def IsPacking (s : Set α) (ε : ℝ≥0∞) : Prop :=
+  ε ≤ 2 * (s.PackingRadius)
 
 /-- An ε-covering is a set with covering radius ≤ ε. -/
-def isCovering (s : Set α) (ε : ℝ≥0∞) := s.coveringRadius ≤ ε
+def IsCovering (s : Set α) (ε : ℝ≥0∞) : Prop :=
+  s.CoveringRadius ≤ ε
 
 /-- An ε-net is a set that is both an ε-packing and an ε-covering. -/
-def isNet (s : Set α) (e : ℝ≥0∞) := s.isPacking e ∧ s.isCovering e
+def IsNet (s : Set α) (ε : ℝ≥0∞) : Prop :=
+  s.IsPacking ε ∧ s.IsCovering ε
+
+/-- A structure recording a radius which has a nonzero packing radius. -/
+structure IsUniformlyDiscreteWith (s : Set α) (r : ℝ≥0∞) : Prop :=
+  isPacking : s.IsPacking (2 * r)
+  rPos : 0 < r
 
 /-- A set is uniformly discrete if it has a nonzero packing radius. -/
-def uniformlyDiscrete (s : Set α) := 0 < s.packingRadius
+def IsUniformlyDiscrete (s : Set α) : Prop :=
+  ∃ r, IsUniformlyDiscreteWith s r
+
+/-- A structure recording a radius which has a finite covering radius. -/
+structure IsRelativelyDenseWith (s : Set α) (R : ℝ≥0∞) : Prop :=
+  -- REqCoveringRadius : s.CoveringRadius ≤ R
+  isCovering : s.IsCovering R
+  RBounded : R < ∞
 
 /-- A set is relatively dense if it has a finite covering radius. -/
-def relativelyDense (s : Set α) := s.coveringRadius < ∞
+def IsRelativelyDense (s : Set α) : Prop :=
+  ∃ R, IsRelativelyDenseWith s R
+
+/-- A structure recording that a set is a Delone set if it is both uniformly discrete and
+relatively dense.
+
+Delone sets are also known as (r, R)-sets, where r and R are equal to the packing radius and
+covering radius, respectively. -/
+structure IsDeloneWith (s : Set α) (r R : ℝ≥0∞) : Prop :=
+  UnifDiscrete : IsUniformlyDiscreteWith s r
+  RelDense : IsRelativelyDenseWith s R
 
 /-- A set that is uniformly discrete and relatively dense is a Delone set. -/
-def Delone (s : Set α) := s.uniformlyDiscrete ∧ s.relativelyDense
+def IsDelone (s : Set α) : Prop :=
+  ∃ r R, IsDeloneWith s r R
 
-lemma uniformlyDiscrete_of_isPacking_pos (s : Set α) (e : ℝ≥0∞) (e_pos : 0 < e)
-    (h : s.isPacking e) : s.uniformlyDiscrete := (ENNReal.mul_pos_iff.mp (h.trans_lt' e_pos)).2
+lemma uniformly_discrete_of_is_packing_pos (s : Set α) (ε : ℝ≥0∞) (ε_pos : 0 < ε)
+    (h : s.IsPacking ε) : s.IsUniformlyDiscrete := sorry
 
-lemma relativelyDense_of_isCovering_finite (s : Set α) (e : ℝ≥0∞) (e_finite : e < ∞)
-    (h : s.isCovering e) : s.relativelyDense := h.trans_lt e_finite
+lemma relatively_dense_of_is_covering_finite (s : Set α) (ε : ℝ≥0∞) (ε_finite : ε < ∞)
+    (h : s.IsCovering ε) : s.IsRelativelyDense := sorry
 
-lemma delone_of_isNet_pos_finite (s : Set α) (e : ℝ≥0∞) (e_pos : 0 < e) (e_finite : e < ∞)
-    (h : s.isNet e) : s.Delone :=
-  ⟨s.uniformlyDiscrete_of_isPacking_pos _ e_pos h.1,
-  s.relativelyDense_of_isCovering_finite _ e_finite h.2⟩
+lemma delone_of_isNet_pos_finite (s : Set α) (ε : ℝ≥0∞) (ε_pos : 0 < ε) (ε_finite : ε < ∞)
+    (h : s.IsNet ε) : s.IsDelone := sorry
 
 open scoped Pointwise
 
-/-- A set that is relatively dense and `s - s` is uniformly discerete is a Meyer set. -/
-def Meyer (s : Set α) [Sub α] := s.relativelyDense ∧ (s - s).uniformlyDiscrete
+/-- A set that is relatively dense and whose pointwise difference is uniformly discrete
+is a Meyer set. -/
+structure IsMeyerWith [Sub α] (s : Set α) (r R : ℝ≥0∞) : Prop :=
+  InterPointsUnifDiscrete : IsUniformlyDiscreteWith (s - s) r
+  RelDense : IsRelativelyDenseWith s R
+
+def IsMeyer [Sub α] (s : Set α) : Prop :=
+  ∃ r R, @IsMeyerWith _ _ _ s r R
 
 end Set
