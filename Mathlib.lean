@@ -876,6 +876,7 @@ import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Analysis.NormedSpace.QuaternionExponential
+import Mathlib.Analysis.NormedSpace.ROrCLike
 import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
@@ -1965,6 +1966,8 @@ import Mathlib.Data.QPF.Multivariate.Constructions.Quot
 import Mathlib.Data.QPF.Multivariate.Constructions.Sigma
 import Mathlib.Data.QPF.Univariate.Basic
 import Mathlib.Data.Quot
+import Mathlib.Data.ROrCLike.Basic
+import Mathlib.Data.ROrCLike.Lemmas
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Data.Rat.Cast.Defs
