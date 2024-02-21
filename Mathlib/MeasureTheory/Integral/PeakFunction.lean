@@ -7,6 +7,8 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import measure_theory.integral.peak_function from "leanprover-community/mathlib"@"13b0d72fd8533ba459ac66e9a885e35ffabb32b2"
 
@@ -20,7 +22,7 @@ functions are also called approximations of unity, or approximations of identity
 
 ## Main results
 
-* `tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt`: If a sequence of peak
+* `tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto`: If a sequence of peak
   functions `φᵢ` converges uniformly to zero away from a point `x₀`, and
   `g` is integrable and continuous at `x₀`, then `∫ φᵢ • g` converges to `g x₀`.
 * `tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`:
@@ -28,6 +30,11 @@ functions are also called approximations of unity, or approximations of identity
   then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
   concentrating around `x₀`. Therefore, `∫ (c x) ^ n * g / ∫ (c x) ^ n` converges to `g x₀`
   if `g` is continuous on `s`.
+* `tendsto_integral_comp_smul_smul_of_integrable`:
+  If a nonnegative function `φ` has integral one and decays quickly enough at infinity,
+  then its renormalizations `x ↦ c ^ d * φ (c • x)` form a sequence of peak functions as `c → ∞`.
+  Therefore, `∫ (c ^ d * φ (c • x)) • g x` converges to `g 0` as `c → ∞` if `g` is continuous
+  at `0` and integrable.
 
 Note that there are related results about convolution with respect to peak functions in the file
 `Analysis.Convolution`, such as `convolution_tendsto_right` there.
@@ -404,9 +411,14 @@ open FiniteDimensional Bornology
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
 
-theorem glouk {φ : F → ℝ} (hφ : ∀ x, 0 ≤ φ x) (h'φ : ∫ x, φ x ∂μ = 1)
+/-- Consider a nonnegative function `φ` with integral one, decaying quickly enough at infinity.
+Then suitable renormalizations of `φ` form a sequence of peak functions around the origin:
+`∫ (c ^ d * φ (c • x)) • g x` converges to `g 0` as `c → ∞` if `g` is continuous at `0`
+and integrable. -/
+theorem tendsto_integral_comp_smul_smul_of_integrable
+    {φ : F → ℝ} (hφ : ∀ x, 0 ≤ φ x) (h'φ : ∫ x, φ x ∂μ = 1)
     (h : Tendsto (fun x ↦ ‖x‖ ^ finrank ℝ F * φ x) (cobounded F) (𝓝 0))
-    (g : F → E) (hg : Integrable g μ) (h'g : ContinuousAt g 0) :
+    {g : F → E} (hg : Integrable g μ) (h'g : ContinuousAt g 0) :
     Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • x)) • g x ∂μ) atTop (𝓝 (g 0)) := by
   have I : Integrable φ μ := (integrable_of_integral_eq_one h'φ)
   apply tendsto_integral_peak_smul_of_integrable_of_tendsto (t := closedBall 0 1) (x₀ := 0)
@@ -417,15 +429,33 @@ theorem glouk {φ : F → ℝ} (hφ : ∀ x, 0 ≤ φ x) (h'φ : ∫ x, φ x ∂
   · intro u u_open hu
     apply tendstoUniformlyOn_iff.2 (fun ε εpos ↦ ?_)
     obtain ⟨δ, δpos, h'u⟩ : ∃ δ > 0, ball 0 δ ⊆ u := Metric.isOpen_iff.1 u_open _ hu
-    obtain ⟨M, hM⟩ : ∃ M, ∀ ⦃x : F⦄, x ∈ (closedBall 0 M)ᶜ →
-        ‖x‖ ^ finrank ℝ F * φ x < δ ^ finrank ℝ E * ε := by
-      simpa using (hasBasis_cobounded_compl_closedBall (0 : F)).eventually_iff.1
-        ((tendsto_order.1 h).2 (δ ^ finrank ℝ E * ε) (by positivity))
-    filter_upwards [Ici_mem_atTop (M / δ)] with c (hc : M / δ ≤ c) x hx
-    simp [abs_of_nonneg (hφ _)]
-    have : c • x ∈ (closedBall 0 M)ᶜ := sorry
-    have Z := hM this
-
+    obtain ⟨M, Mpos, hM⟩ : ∃ M > 0, ∀ ⦃x : F⦄, x ∈ (closedBall 0 M)ᶜ →
+        ‖x‖ ^ finrank ℝ F * φ x < δ ^ finrank ℝ F * ε := by
+      rcases (hasBasis_cobounded_compl_closedBall (0 : F)).eventually_iff.1
+        ((tendsto_order.1 h).2 (δ ^ finrank ℝ F * ε) (by positivity)) with ⟨M, -, hM⟩
+      refine ⟨max M 1, zero_lt_one.trans_le (le_max_right _ _), fun x hx ↦ hM ?_⟩
+      simp only [mem_compl_iff, mem_closedBall, dist_zero_right, le_max_iff, not_or, not_le] at hx
+      simpa using hx.1
+    filter_upwards [Ioi_mem_atTop (M / δ)] with c (hc : M / δ < c) x hx
+    have cpos : 0 < c := lt_trans (by positivity) hc
+    suffices c ^ finrank ℝ F * φ (c • x) < ε by simpa [abs_of_nonneg (hφ _), abs_of_nonneg cpos.le]
+    have hδx : δ ≤ ‖x‖ := by
+      have : x ∈ (ball 0 δ)ᶜ := fun h ↦ hx (h'u h)
+      simpa only [mem_compl_iff, mem_ball, dist_zero_right, not_lt]
+    suffices δ ^ finrank ℝ F * (c ^ finrank ℝ F * φ (c • x)) < δ ^ finrank ℝ F * ε by
+      rwa [mul_lt_mul_iff_of_pos_left (by positivity)] at this
+    calc
+      δ ^ finrank ℝ F * (c ^ finrank ℝ F * φ (c • x))
+      _ ≤ ‖x‖ ^ finrank ℝ F * (c ^ finrank ℝ F * φ (c • x)) := by
+        gcongr; exact mul_nonneg (by positivity) (hφ _)
+      _ = ‖c • x‖ ^ finrank ℝ F * φ (c • x) := by
+        simp [norm_smul, abs_of_pos cpos, mul_pow]; ring
+      _ < δ ^ finrank ℝ F * ε := by
+        apply hM
+        rw [div_lt_iff δpos] at hc
+        simp only [mem_compl_iff, mem_closedBall, dist_zero_right, norm_smul, Real.norm_eq_abs,
+          abs_of_nonneg cpos.le, not_le, gt_iff_lt]
+        exact hc.trans_le (by gcongr)
   · have : Tendsto (fun c ↦ ∫ (x : F) in closedBall 0 c, φ x ∂μ) atTop (𝓝 1) := by
       rw [← h'φ]
       exact (aecover_closedBall tendsto_id).integral_tendsto_of_countably_generated I
@@ -436,3 +466,29 @@ theorem glouk {φ : F → ℝ} (hφ : ∀ x, 0 ≤ φ x) (h'φ : ∫ x, φ x ∂
     simp [abs_of_nonneg hc.le]
   · filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
     exact (I.comp_smul hc.ne').aestronglyMeasurable.const_mul _
+  · exact hg
+  · exact h'g
+
+/-- Consider a nonnegative function `φ` with integral one, decaying quickly enough at infinity.
+Then suitable renormalizations of `φ` form a sequence of peak functions around any point:
+`∫ (c ^ d * φ (c • (x₀ - x)) • g x` converges to `g x₀` as `c → ∞` if `g` is continuous at `x₀`
+and integrable. -/
+theorem tendsto_integral_comp_smul_smul_of_integrable'
+    {φ : F → ℝ} (hφ : ∀ x, 0 ≤ φ x) (h'φ : ∫ x, φ x ∂μ = 1)
+    (h : Tendsto (fun x ↦ ‖x‖ ^ finrank ℝ F * φ x) (cobounded F) (𝓝 0))
+    {g : F → E} {x₀ : F} (hg : Integrable g μ) (h'g : ContinuousAt g x₀) :
+    Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • (x₀ - x))) • g x ∂μ)
+      atTop (𝓝 (g x₀)) := by
+  let f := fun x ↦ g (x₀ - x)
+  have If : Integrable f μ := by simpa [sub_eq_add_neg] using (hg.comp_add_left x₀).comp_neg
+  have : Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • x)) • f x ∂μ)
+      atTop (𝓝 (f 0)) := by
+    apply tendsto_integral_comp_smul_smul_of_integrable hφ h'φ h If
+    have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
+    have B : ContinuousAt (fun x ↦ x₀ - x) 0 := Continuous.continuousAt (by continuity)
+    exact A.comp B
+  simp only [sub_zero] at this
+  convert this using 2 with c
+  conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)
+    (f := fun x ↦ (c ^ finrank ℝ F * φ (c • x)) • g (x₀ - x)), ← integral_neg_eq_self]
+  simp [smul_sub, sub_eq_add_neg]

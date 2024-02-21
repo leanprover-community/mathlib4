@@ -728,6 +728,16 @@ theorem integral_cexp_neg_mul_sq_norm (hb : 0 < b.re) :
     ∫ v : V, cexp (- b * ‖v‖^2) = (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) := by
   simpa using integral_cexp_neg_mul_sq_norm_add hb 0 (0 : V)
 
+theorem integral_rexp_neg_mul_sq_norm {b : ℝ} (hb : 0 < b) :
+    ∫ v : V, rexp (- b * ‖v‖^2) = (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℝ) := by
+  rw [← ofReal_inj]
+  convert integral_cexp_neg_mul_sq_norm (show 0 < (b : ℂ).re from hb) (V := V)
+  · change ofRealLI (∫ (v : V), rexp (-b * ‖v‖ ^ 2)) = ∫ (v : V), cexp (-↑b * ↑‖v‖ ^ 2)
+    rw [← ofRealLI.integral_comp_comm]
+    simp [ofRealLI]
+  · rw [← ofReal_div, ofReal_cpow (by positivity)]
+    simp
+
 theorem fourierTransform_gaussian_innerProductSpace' (hb : 0 < b.re) (x w : V) :
     𝓕ᵢ (fun v ↦ cexp (- b * ‖v‖^2 + 2 * π * Complex.I * ⟪x, v⟫)) w =
       (π / b) ^ (FiniteDimensional.finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * ‖x - w‖ ^ 2 / b) := by
