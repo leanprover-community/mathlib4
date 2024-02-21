@@ -67,7 +67,7 @@ instance toAddMonoidHomClass {V W : SemiNormedGroupCat} : AddMonoidHomClass (V �
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
--- Porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma ext {M N : SemiNormedGroupCat} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
   DFunLike.ext _ _ h

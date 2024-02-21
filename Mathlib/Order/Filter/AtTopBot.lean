@@ -1371,11 +1371,19 @@ theorem tendsto_atTop_atTop_of_monotone [Preorder α] [Preorder β] {f : α → 
       mem_of_superset (mem_atTop a) fun _a' ha' => le_trans ha (hf ha')
 #align filter.tendsto_at_top_at_top_of_monotone Filter.tendsto_atTop_atTop_of_monotone
 
+theorem tendsto_atTop_atBot_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
+    (h : ∀ b, ∃ a, f a ≤ b) : Tendsto f atTop atBot :=
+  @tendsto_atTop_atTop_of_monotone _ βᵒᵈ _ _ _ hf h
+
 theorem tendsto_atBot_atBot_of_monotone [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (h : ∀ b, ∃ a, f a ≤ b) : Tendsto f atBot atBot :=
   tendsto_iInf.2 fun b => tendsto_principal.2 <|
     let ⟨a, ha⟩ := h b; mem_of_superset (mem_atBot a) fun _a' ha' => le_trans (hf ha') ha
 #align filter.tendsto_at_bot_at_bot_of_monotone Filter.tendsto_atBot_atBot_of_monotone
+
+theorem tendsto_atBot_atTop_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
+    (h : ∀ b, ∃ a, b ≤ f a) : Tendsto f atBot atTop :=
+  @tendsto_atBot_atBot_of_monotone _ βᵒᵈ _ _ _ hf h
 
 theorem tendsto_atTop_atTop_iff_of_monotone [Nonempty α] [SemilatticeSup α] [Preorder β] {f : α → β}
     (hf : Monotone f) : Tendsto f atTop atTop ↔ ∀ b : β, ∃ a : α, b ≤ f a :=
@@ -1383,11 +1391,19 @@ theorem tendsto_atTop_atTop_iff_of_monotone [Nonempty α] [SemilatticeSup α] [P
     ⟨fun h => h a (le_refl a), fun h _a' ha' => le_trans h <| hf ha'⟩
 #align filter.tendsto_at_top_at_top_iff_of_monotone Filter.tendsto_atTop_atTop_iff_of_monotone
 
+theorem tendsto_atTop_atBot_iff_of_antitone [Nonempty α] [SemilatticeSup α] [Preorder β] {f : α → β}
+    (hf : Antitone f) : Tendsto f atTop atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
+  @tendsto_atTop_atTop_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
+
 theorem tendsto_atBot_atBot_iff_of_monotone [Nonempty α] [SemilatticeInf α] [Preorder β] {f : α → β}
     (hf : Monotone f) : Tendsto f atBot atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
   tendsto_atBot_atBot.trans <| forall_congr' fun _ => exists_congr fun a =>
     ⟨fun h => h a (le_refl a), fun h _a' ha' => le_trans (hf ha') h⟩
 #align filter.tendsto_at_bot_at_bot_iff_of_monotone Filter.tendsto_atBot_atBot_iff_of_monotone
+
+theorem tendsto_atBot_atTop_iff_of_antitone [Nonempty α] [SemilatticeInf α] [Preorder β] {f : α → β}
+    (hf : Antitone f) : Tendsto f atBot atTop ↔ ∀ b : β, ∃ a : α, b ≤ f a :=
+  @tendsto_atBot_atBot_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
 
 alias _root_.Monotone.tendsto_atTop_atTop := tendsto_atTop_atTop_of_monotone
 #align monotone.tendsto_at_top_at_top Monotone.tendsto_atTop_atTop
