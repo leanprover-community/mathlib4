@@ -8,7 +8,7 @@ import Mathlib.Data.ENNReal.Real
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Topology.GPseudoMetricSpace.Basic
+import Mathlib.Topology.GPseudoMetric.Basic
 
 #align_import topology.metric_space.emetric_space from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -53,12 +53,6 @@ class EDist (α : Type*) where
 #align has_edist EDist
 
 export EDist (edist)
-
-instance: IsOrderedAddCommMonoid ℝ≥0∞ where
-  add_le_add_left := fun _ _ a_1 c ↦ add_le_add_left a_1 c
-
-instance [EDist α] : GDist α ℝ≥0∞ where
-  gdist := EDist.edist
 
 /-- Creating a uniform space from an extended distance. -/
 def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
