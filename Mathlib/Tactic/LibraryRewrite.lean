@@ -176,7 +176,6 @@ open Widget ProofWidgets Jsx
 structure RewriteApplication extends RewriteLemma where
   tactic : String
   replacement : CodeWithInfos
-  -- lemmaWithInfos : CodeWithInfos
   extraGoals : Array CodeWithInfos
 
 /-- Return `e` as a string for pasting into the editor. -/
@@ -214,9 +213,7 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
         extraGoals := extraGoals.push (← Widget.ppExprTagged extraGoal)
 
   let replacement ← Widget.ppExprTagged (← instantiateMVars rhs)
-  -- let lemmaWithInfos := match ← Widget.ppExprTagged thm with
-  --   | .tag lemmaInfo _ => .tag lemmaInfo (.text (toString rwLemma.name))
-  --   | _ => .text (toString rwLemma.name)
+  let lemmaApplication ← instantiateMVars (mkAppN thm mvars)
 
   let location ← (do match loc.loc with
     | .hyp fvarId
@@ -230,8 +227,7 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
     | some pos =>
       if positions.size == 1 then "" else
         s! " (config := \{ occs := .pos [{pos+1}]})"
-  let lemmaApplication ← toReadableString (← instantiateMVars (mkAppN thm mvars))
-  let tactic := s! "rw{cfg} [{symm}{lemmaApplication}]{location}"
+  let tactic := s! "rw{cfg} [{symm}{← toReadableString lemmaApplication}]{location}"
   return some { rwLemma with tactic, extraGoals, replacement }
 
 
@@ -246,16 +242,14 @@ def renderResults (results : Array (Array RewriteApplication)) (isEverything : B
   </details>)
 where
   renderBlock (results : Array RewriteApplication) : Html :=
-    .element "ul" #[] $ results.map fun rw =>
-      let replacement := <p> <InteractiveCode fmt={rw.replacement} /> </p>
-      let extraGoals := rw.extraGoals.map
-        (<p> <strong «class»="goal-vdash">⊢ </strong> <InteractiveCode fmt={·} /> </p>)
-      let button := <p> {Html.ofComponent MakeEditLink
+    .element "div" #[] $ results.map fun rw =>
+      let button := Html.ofComponent MakeEditLink
             (.ofReplaceRange doc.meta range rw.tactic none)
-            #[.text s! "{rw.name}"]} </p>
-      let left := Html.element "div" #[("style", json% {width:"50%", display:"inline-block"})] (#[replacement] ++ extraGoals)
-      let right := Html.element "div" #[("style", json% {width:"50%", display:"inline-block"})] #[button]
-      (<li> <div style={json% {width: "100%", overflow: "hidden", display: "inline-flex"}}> {left} {right} </div> </li>)
+            #[.text s! "{rw.name}"]
+      let replacement := <InteractiveCode fmt={rw.replacement} />
+      let extraGoals := rw.extraGoals.concatMap
+        (#[<br/>, <strong «class»="goal-vdash">⊢ </strong>, <InteractiveCode fmt={·} />])
+      .element "p" #[] (#[replacement] ++ extraGoals ++ #[<br/>, button])
 
 /-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
