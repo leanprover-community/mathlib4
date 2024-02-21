@@ -50,6 +50,9 @@ function, such that `(ofCurried F) (Fin2.elim0 ::: α₁ ::: ... ::: αₙ) = F 
 def ofCurried {n} (F : TypeFun.CurriedTypeFun n) : TypeFun n :=
   fun α => (go F) (fun i => α i.rev)
 where
+  /-- Convert a curried type function `F : Type u → ... → Type u → Type v` into an uncurried type
+  function, *while also reversing the argument order*!
+  That is, `(ofCurried.go F) (Fin2.elim0 ::: α₁ ::: ... ::: αₙ) = F αₙ ... α₁` -/
   go : {n : Nat} → TypeFun.CurriedTypeFun n → TypeFun n
   | 0,    F, _ => F.down
   | 1,    F, α => F (α .fz)
