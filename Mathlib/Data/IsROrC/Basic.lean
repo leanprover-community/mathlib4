@@ -181,7 +181,7 @@ theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
 #align is_R_or_C.of_real_inj IsROrC.ofReal_inj
 
 set_option linter.deprecated false in
-@[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
+@[deprecated, isROrC_simps] -- porting note (#10618): was `simp` but `simp` can prove it
 theorem bit0_re (z : K) : re (bit0 z) = bit0 (re z) :=
   map_bit0 _ _
 #align is_R_or_C.bit0_re IsROrC.bit0_re
@@ -192,7 +192,7 @@ theorem bit1_re (z : K) : re (bit1 z) = bit1 (re z) := by simp only [bit1, map_a
 #align is_R_or_C.bit1_re IsROrC.bit1_re
 
 set_option linter.deprecated false in
-@[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
+@[deprecated, isROrC_simps] -- porting note (#10618): was `simp` but `simp` can prove it
 theorem bit0_im (z : K) : im (bit0 z) = bit0 (im z) :=
   map_bit0 _ _
 #align is_R_or_C.bit0_im IsROrC.bit0_im
@@ -331,7 +331,7 @@ theorem I_im' (z : K) : im (I : K) * im z = im z := by rw [mul_comm, I_im]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.I_im' IsROrC.I_im'
 
-@[isROrC_simps] -- porting note: was `simp`
+@[isROrC_simps] -- porting note (#10618): was `simp`
 theorem I_mul_re (z : K) : re (I * z) = -im z := by
   simp only [I_re, zero_sub, I_im', zero_mul, mul_re]
 set_option linter.uppercaseLean3 false in
@@ -369,13 +369,13 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
 #align is_R_or_C.conj_of_real IsROrC.conj_ofReal
 
 set_option linter.deprecated false in
-@[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
+@[deprecated, isROrC_simps] -- porting note (#10618): was `simp` but `simp` can prove it
 theorem conj_bit0 (z : K) : conj (bit0 z) = bit0 (conj z) :=
   map_bit0 _ _
 #align is_R_or_C.conj_bit0 IsROrC.conj_bit0
 
 set_option linter.deprecated false in
-@[deprecated, isROrC_simps] -- porting note: was `simp` but `simp` can prove it
+@[deprecated, isROrC_simps] -- porting note (#10618): was `simp` but `simp` can prove it
 theorem conj_bit1 (z : K) : conj (bit1 z) = bit1 (conj z) :=
   map_bit1 _ _
 #align is_R_or_C.conj_bit1 IsROrC.conj_bit1
@@ -495,7 +495,7 @@ theorem normSq_nonneg (z : K) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 #align is_R_or_C.norm_sq_nonneg IsROrC.normSq_nonneg
 
-@[isROrC_simps] -- porting note: was `simp`
+@[isROrC_simps] -- porting note (#10618): was `simp`
 theorem normSq_eq_zero {z : K} : normSq z = 0 ↔ z = 0 :=
   map_eq_zero _
 #align is_R_or_C.norm_sq_eq_zero IsROrC.normSq_eq_zero
@@ -514,7 +514,7 @@ theorem normSq_conj (z : K) : normSq (conj z) = normSq z := by
   simp only [normSq_apply, neg_mul, mul_neg, neg_neg, isROrC_simps]
 #align is_R_or_C.norm_sq_conj IsROrC.normSq_conj
 
-@[isROrC_simps] -- porting note: was `simp`
+@[isROrC_simps] -- porting note (#10618): was `simp`
 theorem normSq_mul (z w : K) : normSq (z * w) = normSq z * normSq w :=
   map_mul _ z w
 #align is_R_or_C.norm_sq_mul IsROrC.normSq_mul
@@ -586,7 +586,7 @@ theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / n
     isROrC_simps]
 #align is_R_or_C.div_im IsROrC.div_im
 
-@[isROrC_simps] -- porting note: was `simp`
+@[isROrC_simps] -- porting note (#10618): was `simp`
 theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align is_R_or_C.conj_inv IsROrC.conj_inv
@@ -636,17 +636,17 @@ theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_ne
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.div_I IsROrC.div_I
 
-@[isROrC_simps] -- porting note: was `simp`
+@[isROrC_simps] -- porting note (#10618): was `simp`
 theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 #align is_R_or_C.norm_sq_inv IsROrC.normSq_inv
 
-@[isROrC_simps] -- porting note: was `simp`
+@[isROrC_simps] -- porting note (#10618): was `simp`
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 #align is_R_or_C.norm_sq_div IsROrC.normSq_div
 
-@[isROrC_simps] -- porting note: was `simp`
+@[isROrC_simps] -- porting note (#10618): was `simp`
 theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 #align is_R_or_C.norm_conj IsROrC.norm_conj
 
@@ -1136,7 +1136,7 @@ theorem ofRealCLM_apply : (ofRealCLM : ℝ → K) = ofReal :=
   rfl
 #align is_R_or_C.of_real_clm_apply IsROrC.ofRealCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
   ofRealLI.continuous
 #align is_R_or_C.continuous_of_real IsROrC.continuous_ofReal

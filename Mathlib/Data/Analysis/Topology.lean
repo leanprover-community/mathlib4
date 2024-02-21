@@ -60,7 +60,7 @@ variable (F : Ctop α σ)
 instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 #align ctop.coe_mk Ctop.coe_mk
 
@@ -278,6 +278,6 @@ def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
 
 instance [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
   ⟨fun {f} F x h hF ↦ by
-    suffices : f = ⊥; exact absurd this h
+    suffices f = ⊥ from absurd this h
     rw [← F.eq, eq_bot_iff]
     exact λ s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩

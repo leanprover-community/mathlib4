@@ -81,14 +81,14 @@ instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
   -- unfolding during unification
   ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : SemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
@@ -205,14 +205,14 @@ instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : RingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
@@ -311,14 +311,14 @@ instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommSemiRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
@@ -431,14 +431,14 @@ instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 -- porting note: added
