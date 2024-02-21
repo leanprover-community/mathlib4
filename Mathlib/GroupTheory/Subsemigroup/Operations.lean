@@ -583,6 +583,17 @@ namespace Subsemigroup
 
 variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
 
+/-- A subsemigroup inherits a multiplication. -/
+@[to_additive]
+instance mul : Mul S :=
+  ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
+
+/-- A subsemigroup of a semigroup is a semigroup. -/
+@[to_additive]
+instance toSemigroup {G : Type*} [Semigroup G] (S : Subsemigroup G) : Semigroup S where
+  toMul := mul S
+  mul_assoc := fun _ _ _ => Subtype.ext <| mul_assoc _ _ _
+
 /-- The top subsemigroup is isomorphic to the semigroup. -/
 @[to_additive (attr := simps)
   "The top additive subsemigroup is isomorphic to the additive semigroup."]

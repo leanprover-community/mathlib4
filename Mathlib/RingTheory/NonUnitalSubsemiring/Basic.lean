@@ -111,7 +111,14 @@ instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
+variable (s : NonUnitalSubsemiring R)
+#synth Semigroup s
+
+instance (priority := 100) toNonUnitalNonAssocSemiring (s : NonUnitalSubsemiring R) :
+    NonUnitalNonAssocSemiring s :=
+  { s.toAddSubmonoid.toAddCommMonoid, s.toSubsemigroup with }
+
+instance  (priority := 75) : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
   zero_mem {s} := AddSubmonoid.zero_mem' s.toAddSubmonoid
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   mul_mem {s} := mul_mem' s

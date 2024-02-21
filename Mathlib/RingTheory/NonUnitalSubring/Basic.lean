@@ -302,6 +302,7 @@ protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSu
 instance toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
     NonUnitalRing s where
   mul_assoc := mul_assoc
+#print toNonUnitalRing
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
