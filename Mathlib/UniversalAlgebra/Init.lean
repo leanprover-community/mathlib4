@@ -1,5 +1,6 @@
 import Lean
 import Mathlib.Tactic
+import Mathlib.UniversalAlgebra.Presentation
 
 open Lean Meta Elab Command
 
@@ -193,4 +194,25 @@ initialize lawvereAttr :
     TagAttribute ← registerTagAttribute `lawvere "Lawvere" fun n => MetaM.run' <| runLawvereM n do
   let sortNames ← LawvereM.sortNames
   let sortTypeName := n ++ "SortType"
-  liftCommandElabM <| mkFiniteType sortTypeName sortNames
+  let opFamilyName := n ++ "OpType"
+  let ops ← LawvereM.operations
+  let opIdents : Array Ident := ops.map fun op => mkIdent op.name.getString
+  let opTypes : Array (TSyntax `term) ← ops.mapM fun ⟨_, inputs, output⟩ => do
+    let init : TSyntax `term ← `(ProdWord.nil)
+    let input : TSyntax `term ←
+      inputs.foldrM
+        (fun n t => `(ProdWord.prod (ProdWord.of $(mkIdent <| sortTypeName ++ sortNames[n]!)) $t))
+        init
+    let output := mkIdent (sortTypeName ++ sortNames[output]!)
+    `($(mkIdent opFamilyName) $input (ProdWord.of $output))
+  liftCommandElabM <| do
+    elabCommand <| ← `(command|
+inductive $(mkIdent sortTypeName) where
+  $[| $(sortNames.map mkIdent):ident]*
+deriving Fintype
+)
+    elabCommand <| ← `(command|
+inductive $(mkIdent opFamilyName) :
+    ProdWord $(mkIdent sortTypeName) → ProdWord $(mkIdent sortTypeName) → Type where
+  $[| $opIdents:ident : $opTypes:term]*
+)
