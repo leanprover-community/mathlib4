@@ -181,6 +181,16 @@ open DirectSum LinearMap Submodule
 
 variable (R : Type u) [CommRing R]
 
+-- ACL
+-- Why is it necessary to add this instance ?
+
+noncomputable local instance (ι : Type v)
+    (M : ι → Type w) [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)]
+    (I : Ideal R) :
+    AddCommGroup (⨁ i, ↥I ⊗[R] M i) :=
+  instAddCommGroupDirectSumToAddCommMonoid fun i ↦ ↥I ⊗[R] M i
+
+-- endACL
 /-- A direct sum of flat `R`-modules is flat. -/
 instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup (M i)]
     [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))] : Flat R (⨁ i, M i) := by
@@ -198,6 +208,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   rw [← Equiv.injective_comp (TensorProduct.directSumRight _ _ _).symm.toEquiv]
   rw [LinearEquiv.coe_toEquiv, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
   rw [LinearEquiv.coe_toEquiv, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
+  --
   rw [← psi_def, injective_iff_map_eq_zero ((η₁.comp ρ).comp ψ)]
   have h₁ : ∀ (i : ι), (π i).comp ((η₁.comp ρ).comp ψ) = (η i).comp ((φ i).comp (τ i)) := by
     intro i
@@ -220,7 +231,11 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   have h₃ := h₂ hI
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, AddEquivClass.map_eq_zero_iff,
     h₃, LinearMap.map_eq_zero_iff] at f
+  --
+  rw [_root_.map_zero]
+  --
   simp [f]
+
 
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
