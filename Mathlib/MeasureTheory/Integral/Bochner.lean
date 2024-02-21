@@ -1018,6 +1018,36 @@ theorem tendsto_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : 
 set_option linter.uppercaseLean3 false in
 #align measure_theory.tendsto_integral_of_L1 MeasureTheory.tendsto_integral_of_L1
 
+/-- If `F i → f` in `L1`, then `∫ x, F i x ∂μ → ∫ x, f x ∂μ`. -/
+lemma tendsto_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G} {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0)) :
+    Tendsto (fun i ↦ ∫ x, F i x ∂μ) l (𝓝 (∫ x, f x ∂μ)) := by
+  refine tendsto_integral_of_L1 f hfi hFi ?_
+  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
+  exact hF
+
+/-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
+lemma tendsto_set_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
+    {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖₊ ∂μ) l (𝓝 0))
+    (s : Set α) :
+    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
+  refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
+  · filter_upwards [hFi] with i hi using hi.restrict
+  · simp_rw [← snorm_one_eq_lintegral_nnnorm] at hF ⊢
+    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le')
+      (fun _ ↦ snorm_mono_measure _ Measure.restrict_le_self)
+
+/-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
+lemma tendsto_set_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
+    {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0))
+    (s : Set α) :
+    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
+  refine tendsto_set_integral_of_L1 f hfi hFi ?_ s
+  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
+  exact hF
+
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
   We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
