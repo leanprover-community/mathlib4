@@ -145,12 +145,12 @@ theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
 #align nnrat.coe_ne_zero NNRat.coe_ne_zero
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align nnrat.coe_le_coe NNRat.coe_le_coe
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
