@@ -504,7 +504,7 @@ lemma key_lemma :
   by_cases ineq : d ≤ i
   · rw [if_pos ineq, if_pos ineq, if_neg (by linarith), if_neg (by linarith), sub_zero, add_zero]
     have := μ.alternating_sum_apply_eq_zero_of_zero_zero_of_length6' _
-    (anExactSeq_exact ℳ x deg_x i ineq) (isZero_zero _) (isZero_zero _)
+      (anExactSeq_exact ℳ x deg_x i ineq) (isZero_zero _) (isZero_zero _)
     simp only [ComposableArrows.obj', Fin.mk_one, anExactSeq_obj, ComposableArrows.Precomp.obj_one,
       Fin.zero_eta, ComposableArrows.precomp_obj, ComposableArrows.Precomp.obj_zero,
       ComposableArrows.Precomp.obj_succ, ComposableArrows.mk₁_obj, ComposableArrows.Mk₁.obj] at this
