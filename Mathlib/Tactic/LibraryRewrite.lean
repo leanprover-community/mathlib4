@@ -253,9 +253,9 @@ where
       let button := <p> {Html.ofComponent MakeEditLink
             (.ofReplaceRange doc.meta range rw.tactic none)
             #[.text s! "{rw.name}"]} </p>
-      let left := Html.element "div" #[("id", "left")] (#[replacement] ++ extraGoals)
-      let right := Html.element "div" #[("id", "rigth")] #[button]
-      (<li> <div «id»="container"> {left} {right} </div> </li>)
+      let left := Html.element "div" #[("style", json% {width:"50%", display:"inline-block"})] (#[replacement] ++ extraGoals)
+      let right := Html.element "div" #[("style", json% {width:"50%", display:"inline-block"})] #[button]
+      (<li> <div style={json% {width: "100%", overflow: "hidden", display: "inline-flex"}}> {left} {right} </div> </li>)
 
 /-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
