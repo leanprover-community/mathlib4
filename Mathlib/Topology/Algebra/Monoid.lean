@@ -28,7 +28,7 @@ open Classical Topology BigOperators Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
   @continuous_const _ _ _ _ 1
 #align continuous_one continuous_one
