@@ -237,8 +237,8 @@ lemma law_of_total_probability {Y : Ω → α} (hY : Measurable Y) (μ : Measure
       rw [← measure_biUnion_finset _ fun _ _ ↦ (hY (.singleton _)).inter hE, this]
       aesop (add simp [PairwiseDisjoint, Set.Pairwise, Function.onFun, disjoint_left])
     _ = _ := by
-      simp only [Measure.coe_finset_sum, smul_toOuterMeasure, OuterMeasure.coe_smul, Finset.sum_apply,
-        Pi.smul_apply, smul_eq_mul]
+      simp only [Measure.coe_finset_sum, smul_toOuterMeasure, OuterMeasure.coe_smul,
+        Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter _ (hY (.singleton _))]
 
 end ProbabilityTheory
