@@ -48,7 +48,6 @@ This is because these shapes show up in the proofs that forgetful functors of al
 All of the above API, except for the `bowtie` and the `tulip`, is also provided for cofiltered
 categories.
 
-
 ## See also
 In `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit` we show that filtered colimits
 commute with finite limits.
