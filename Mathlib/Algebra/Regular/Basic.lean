@@ -280,11 +280,11 @@ theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRe
 
 @[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
   nth_rw 1 [← mul_zero b]
-  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, mul_zero]⟩
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha]⟩
 
 @[simp] lemma IsRightRegular.mul_right_eq_zero_iff (hb : IsRightRegular b) : a * b = 0 ↔ a = 0 := by
   nth_rw 1 [← zero_mul b]
-  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, zero_mul]⟩
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha]⟩
 
 end MulZeroClass
 
