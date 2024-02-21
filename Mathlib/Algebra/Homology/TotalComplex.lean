@@ -243,6 +243,14 @@ noncomputable abbrev ιTotalOrZero (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁�
     (K.X i₁).X i₂ ⟶ (K.total c₁₂).X i₁₂ :=
   K.toGradedObject.ιMapObjOrZero (ComplexShape.π c₁ c₂ c₁₂) ⟨i₁, i₂⟩ i₁₂
 
+lemma ιTotalOrZero_eq (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
+    (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
+    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = K.ιTotal c₁₂ i₁ i₂ i₁₂ h := dif_pos h
+
+lemma ιTotalOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
+    (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) ≠ i₁₂) :
+    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ = 0 := dif_neg h
+
 section
 
 variable {c₁₂}
