@@ -779,6 +779,20 @@ noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [Full F] [Faithful 
   ofFullyFaithfullyEssSurj F.toEssImage
 #align category_theory.equivalence.fully_faithful_to_ess_image CategoryTheory.Equivalence.fullyFaithfulToEssImage
 
+/-- The equivalence between isomorphisms that occur across an equivalence
+of categories. -/
+@[simps!]
+def isoEquiv (e : C ≌ D) (X : C) (Y : D) :
+    (e.functor.obj X ≅ Y) ≃ (X ≅ e.inverse.obj Y) where
+  toFun f := e.unitIso.app X ≪≫ e.inverse.mapIso f
+  invFun f := e.functor.mapIso f ≪≫ e.counitIso.app Y
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
+lemma mapIso_isoEquiv (e : C ≌ D) {X Y} (f : e.functor.obj X ≅ Y) :
+    e.functor.mapIso (e.isoEquiv X Y f) = f ≪≫ (e.counitIso.app Y).symm := by
+  aesop_cat
+
 end Equivalence
 
 namespace Iso

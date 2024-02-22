@@ -903,27 +903,6 @@ lemma monoidalAdjoint_obj [IsLeftAdjoint F.toFunctor] (X : D) :
 lemma monoidalAdjoint_map [IsLeftAdjoint F.toFunctor] {X Y} (f : X ⟶ Y) :
     (monoidalAdjoint F).map f = (IsLeftAdjoint.right F.toFunctor).map f := rfl
 
-/-
-TODO: Find a better home for this
-Maybe define it as
-  .trans (isoEquivOfFullyFaithful e.inverse)
-         (Iso.isoCongr_left (e.unitIso.app X).symm)
-or in terms of the core groupoid?
--/
-/-- The equivalence between isomorphisms that occur across an equivalence
-of categories. -/
-@[simps!]
-def Equivalence.isoEquiv (e : C ≌ D) (X : C) (Y : D) :
-    (e.functor.obj X ≅ Y) ≃ (X ≅ e.inverse.obj Y) where
-  toFun f := e.unitIso.app X ≪≫ e.inverse.mapIso f
-  invFun f := e.functor.mapIso f ≪≫ e.counitIso.app Y
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
-
-lemma Equivalence.mapIso_isoEquiv (e : C ≌ D) {X Y} (f : e.functor.obj X ≅ Y) :
-    e.functor.mapIso (e.isoEquiv X Y f) = f ≪≫ (e.counitIso.app Y).symm := by
-  aesop_cat
-
 /-- If a monoidal functor `F` is an equivalence of categories then its inverse is also monoidal. -/
 def monoidalInverse (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
     MonoidalFunctor D C :=
