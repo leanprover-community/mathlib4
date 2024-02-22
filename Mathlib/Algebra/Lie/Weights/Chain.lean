@@ -176,8 +176,8 @@ lemma trace_toEndomorphism_weightSpaceChain_eq_zero
   · rw [LieModuleHom.map_add, LieHom.map_add, map_add, h₁, h₂, zero_add]
 
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
-`I = (rootSpaceProductNegSelf α).range` of `H`, we may find an integral linear combination between
-`α` and any weight `χ` of a representation.
+`I = (rootSpaceProductNegSelf α).range` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
+integral linear combination between `α` and any weight `χ` of a representation.
 
 This is Proposition 4.4 from [carter2005] and is a key step in the proof that the roots of a
 semisimple Lie algebra form a root system. It shows that the restriction of `α` to `I` vanishes iff
