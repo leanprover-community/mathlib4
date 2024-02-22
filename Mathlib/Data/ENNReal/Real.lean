@@ -670,8 +670,8 @@ section Sub
 --     can't go in `Mathlib.Data.ENNReal.Operations` because of
 --     dependence on `ofReal_eq_ofReal_iff`
 protected theorem add_sub_add_comm {a b c d : ENNReal}
-      (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) (hd : d ≠ ∞)
-      (hac : c ≤ a) (hbd : d ≤ b) :
+    (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) (hd : d ≠ ∞)
+    (hac : c ≤ a) (hbd : d ≤ b) :
     (a + b) - (c + d) = (a - c) + (b - d) := by
   apply calc
     a + b - (c + d) = .ofReal (a + b - (c + d)).toReal := (ofReal_toReal _).symm
