@@ -639,6 +639,12 @@ def IsUnit [Monoid M] (a : M) : Prop :=
 #align is_unit IsUnit
 #align is_add_unit IsAddUnit
 
+@[to_additive]
+lemma isUnit_iff_exists [Monoid M] {x : M} : IsUnit x ↔ ∃ b, x * b = 1 ∧ b * x = 1 := by
+  refine ⟨fun ⟨u, hu⟩ => ?_, fun ⟨b, h1b, h2b⟩ => ⟨⟨x, b, h1b, h2b⟩, rfl⟩⟩
+  subst x
+  exact ⟨u.inv, u.val_inv, u.inv_val⟩
+
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
   ⟨⟨a, a, Subsingleton.elim _ _, Subsingleton.elim _ _⟩, rfl⟩
