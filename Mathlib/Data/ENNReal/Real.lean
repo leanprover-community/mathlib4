@@ -664,17 +664,6 @@ theorem iSup_coe_nat : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
 
 end iSup
 
-section Sub
-
--- TODO: move this proof
-protected theorem add_sub_add_comm {a b c d : ℝ≥0∞} (hc : c ≠ ∞) (hd : d ≠ ∞)
-    (hac : c ≤ a) (hbd : d ≤ b) : (a + b) - (c + d) = (a - c) + (b - d) := by
-  refine add_tsub_add_le_tsub_add_tsub.antisymm ?_
-  apply le_sub_of_add_le_left (add_ne_top.2 ⟨hc, hd⟩)
-  rw [add_add_add_comm, add_tsub_cancel_of_le hac, add_tsub_cancel_of_le hbd]
-
-end Sub
-
 end ENNReal
 
 namespace Mathlib.Meta.Positivity
