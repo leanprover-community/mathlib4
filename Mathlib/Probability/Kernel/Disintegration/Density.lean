@@ -788,14 +788,14 @@ lemma tendsto_density_atTop_ae_of_antitone (hκν : kernel.fst κ ≤ ν) [IsFin
             simp only [lintegral_const, one_mul]
             exact measure_lt_top _ _
    -- it suffices to show that the limit `F` is 0 a.e.
-  suffices ∀ᵐ t ∂(ν a), F t = 0 by
+  suffices F=ᵐ[ν a] 0 by
     filter_upwards [this] with t ht_eq
+    simp only [Pi.zero_apply] at ht_eq
     rw [← ht_eq]
     exact hF_tendsto t
   -- since `F` is nonnegative, proving that its integral is 0 is sufficient to get that
   -- `F` is 0 a.e.
-  suffices ∀ᵐ (t : γ) ∂(ν a), 0 = F t by filter_upwards [this] with a ha; simp [ha]
-  refine ae_eq_of_integral_eq_of_ae_le (integrable_const _) hF_int  (ae_of_all _ hF_nonneg) ?_
+  rw [← integral_eq_zero_iff_of_nonneg hF_nonneg hF_int]
   have h_integral : Tendsto (fun m : ℕ ↦ ∫ t, kernel.density κ ν a t (s m) ∂(ν a)) atTop
       (𝓝 (∫ t, F t ∂(ν a))) := by
     refine integral_tendsto_of_tendsto_of_antitone ?_ hF_int ?_ ?_
@@ -803,10 +803,9 @@ lemma tendsto_density_atTop_ae_of_antitone (hκν : kernel.fst κ ≤ ν) [IsFin
     · exact ae_of_all _ h_anti
     · exact ae_of_all _ hF_tendsto
   have h_integral' : Tendsto (fun m : ℕ ↦ ∫ t, kernel.density κ ν a t (s m) ∂(ν a)) atTop
-      (𝓝 (∫ _, 0 ∂(ν a))) := by
-    simp only [integral_zero]
+      (𝓝 0) := by
     exact tendsto_integral_density_of_antitone hκν a s hs hs_iInter hs_meas
-  exact (tendsto_nhds_unique h_integral h_integral').symm
+  exact tendsto_nhds_unique h_integral h_integral'
 
 section UnivFst
 
@@ -953,13 +952,13 @@ lemma tendsto_density_atTop_ae_of_monotone [IsFiniteKernel κ]
             exact hF_le_one _
       _ < ⊤ := by simp only [lintegral_const, measure_univ, one_mul, measure_lt_top]
    -- it suffices to show that the limit `F` is 1 a.e.
-  suffices ∀ᵐ t ∂(ν a), F t = 1 by
+  suffices F =ᵐ[ν a] (fun _ ↦ 1) by
     filter_upwards [this] with t ht_eq
     rw [← ht_eq]
     exact hF_tendsto t
   -- since `F` is at most 1, proving that its integral is the same as the integral of 1 will tell
   -- us that `F` is 1 a.e.
-  refine ae_eq_of_integral_eq_of_ae_le hF_int (integrable_const _) (ae_of_all _ hF_le_one) ?_
+  rw [← integral_eq_iff_of_ae_le hF_int (integrable_const _) (ae_of_all _ hF_le_one)]
   have h_integral : Tendsto (fun m : ℕ ↦ ∫ t, kernel.density κ ν a t (s m) ∂(ν a)) atTop
       (𝓝 (∫ t, F t ∂(ν a))) := by
     refine integral_tendsto_of_tendsto_of_monotone ?_ hF_int ?_ ?_

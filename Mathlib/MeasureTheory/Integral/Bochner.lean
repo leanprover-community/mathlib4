@@ -1302,20 +1302,6 @@ theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f)
   · exact (ENNReal.measurable_ofReal.comp_aemeasurable hfi.1.aemeasurable)
 #align measure_theory.integral_eq_zero_iff_of_nonneg_ae MeasureTheory.integral_eq_zero_iff_of_nonneg_ae
 
-lemma ae_eq_of_integral_eq_of_ae_le {f g : α → ℝ} (hf : Integrable f μ)
-    (hg : Integrable g μ) (h_le : f ≤ᵐ[μ] g) (h_eq : ∫ a, f a ∂μ = ∫ a, g a ∂μ) :
-    f =ᵐ[μ] g := by
-  suffices g - f =ᵐ[μ] 0 by
-    filter_upwards [this] with a ha
-    symm
-    simpa only [Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using ha
-  have h_eq' : ∫ a, (g - f) a ∂μ = 0 := by
-    simp_rw [Pi.sub_apply]
-    rwa [integral_sub hg hf, sub_eq_zero, eq_comm]
-  rwa [integral_eq_zero_iff_of_nonneg_ae _ (hg.sub hf)] at h_eq'
-  filter_upwards [h_le] with a ha
-  simpa
-
 theorem integral_eq_zero_iff_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi : Integrable f μ) :
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
   integral_eq_zero_iff_of_nonneg_ae (eventually_of_forall hf) hfi
