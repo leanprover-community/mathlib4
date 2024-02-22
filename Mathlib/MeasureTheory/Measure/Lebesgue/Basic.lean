@@ -377,7 +377,9 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
 /-- A transvection preserves Lebesgue measure. -/
 theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionStruct ι ℝ) :
     MeasurePreserving (toLin' t.toMatrix) := by
-  /- We use `lmarginal` to conveniently use Fubini's theorem. -/
+  /- We use `lmarginal` to conveniently use Fubini's theorem.
+    Along the coordinate where there is a shearing, it acts like a
+    translation, and therefore preserves Lebesgue. -/
   have ht : Measurable (toLin' t.toMatrix) :=
     (toLin' t.toMatrix).continuous_of_finiteDimensional.measurable
   refine ⟨ht, ?_⟩
