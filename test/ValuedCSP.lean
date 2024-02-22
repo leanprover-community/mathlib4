@@ -25,7 +25,8 @@ def ValuedCSP.binaryTerm {D C : Type} [OrderedAddCommMonoid C]
 
 -- ## Example: minimize `|x| + |y|` where `x` and `y` are rational numbers
 
-private def absRat : (Fin 1 → ℚ) → ℚ := Function.OfArity.uncurry abs
+private def absRat : (Fin 1 → ℚ) → ℚ :=
+  Function.OfArity.uncurry (@abs ℚ Rat.instLatticeRat Rat.addGroup)
 
 private def exampleAbs : Σ (n : ℕ), (Fin n → ℚ) → ℚ := ⟨1, absRat⟩
 
@@ -44,6 +45,7 @@ example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] 
   rw [ValuedCSP.Instance.evalSolution, exampleFiniteValuedInstance]
   convert_to 0 ≤ |s 0| + |s 1|
   · simp [ValuedCSP.unaryTerm, ValuedCSP.Term.evalSolution, Function.OfArity.uncurry]
+    rfl
   positivity
 
 -- ## Example: `B ≠ A ≠ C ≠ D ≠ B ≠ C` with three available labels (i.e., 3-coloring of K₄⁻)
@@ -65,7 +67,8 @@ instance crispCodomain : LinearOrderedAddCommMonoid Bool where
   add_comm := Bool.or_comm
   add_le_add_left := Bool_add_le_add_left
 
-private def beqBool : (Fin 2 → Fin 3) → Bool := Function.OfArity.uncurry BEq.beq
+private def beqBool : (Fin 2 → Fin 3) → Bool :=
+  Function.OfArity.uncurry (fun (a b : Fin 3) => a == b)
 
 private def exampleEquality : Σ (n : ℕ), (Fin n → Fin 3) → Bool := ⟨2, beqBool⟩
 
