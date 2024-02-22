@@ -125,11 +125,8 @@ def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
       fun f g h ↦ propext ⟨fun ⟨b, hb⟩ ↦ ⟨b, this f g b h hb⟩, fun ⟨b, hb⟩ ↦ ⟨b, h.trans hb⟩⟩
     exact fun f g b hfg hf ↦ (hfg.symm).trans hf
 
--- golfing suggestions welcome!
-theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant := by
-  use b
-  have : f = (fun _ ↦ b) := funext h
-  rw [this]
+theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant :=
+  ⟨b, eventually_of_forall (fun x ↦ h x)⟩
 
 @[simp]
 theorem isConstant_coe_const {l : Filter α} {b : β} : (fun _ : α ↦ b : Germ l β).IsConstant := by
@@ -280,11 +277,18 @@ theorem Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' : Filter
     {φ : α → β} (hφ : Tendsto φ l l') : (f ∘ φ : Germ l γ) = g ∘ φ :=
   EventuallyEq.germ_eq (h.comp_tendsto hφ)
 
+lemma isConstant_comp_tendsto {lc : Filter γ} {g : γ → α}
+    (hf : (f : Germ l β).IsConstant) (hg : Tendsto g lc l) : IsConstant (f ∘ g : Germ lc β ) := by
+  rcases hf with ⟨b, hb⟩
+  exact ⟨b, hb.comp_tendsto hg⟩
+
 /-- If a germ `f : Germ l β` is constant, where `l : Filter α`,
 and a function `g : γ → α` tends to `l` along `lc : Filter γ`,
 the germ of the composition `f ∘ g` is also constant. -/
-proof_wanted isConstant_compTendsto {f : Germ l β} {lc : Filter γ} {g : γ → α}
-    (_hf : (f : Germ l β).IsConstant) (_hg : Tendsto g lc l) : (f.compTendsto g _hg).IsConstant
+lemma isConstant_compTendsto {f : Germ l β} {lc : Filter γ} {g : γ → α}
+    (hf : f.IsConstant) (hg : Tendsto g lc l) : (f.compTendsto g hg).IsConstant := by
+  rcases Quotient.exists_rep f with ⟨f, rfl⟩
+  exact isConstant_comp_tendsto hf hg
 
 @[simp, norm_cast]
 theorem const_inj [NeBot l] {a b : β} : (↑a : Germ l β) = ↑b ↔ a = b :=

@@ -19,15 +19,15 @@ with respect to the neighbourhood filter `𝓝 x`.
 * `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the neighbourhood
 filter at `x`. This is the common value of all representatives of `φ` at `x`.
 * `Filter.Germ.valueOrderRingHom` and friends: the map `Germ (𝓝 x) E → E` is a
-monoid homomorphism, 𝕜-module homomorphism, ring homomorphism, monotone ring homeomorphism
+monoid homomorphism, 𝕜-module homomorphism, ring homomorphism, monotone ring homomorphism
 
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
 `A : set X`, build a new predicate on germs `restrict_germ_predicate P A` such that
 `(∀ x, restrict_germ_predicate P A x f) ↔ ∀ᶠ x near A, P x f`;
 `forall_restrict_germ_predicate_iff` is this equivalence.
 
-* `Filter.Germ.sliceLeft,sliceRight`: map the germ of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to
-the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`..
+* `Filter.Germ.sliceLeft, sliceRight`: map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y`
+to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
 * `eq_of_germ_isConstant`: if each germ of `f : X → Y` is constant and `X` is pre-connected,
 `f` is constant.
 -/
@@ -52,8 +52,8 @@ theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
-/-- The map `Germ (𝓝 x) E → E` as a monoid homeomorphism -/
-@[to_additive "The map `Germ (𝓝 x) E → E` as an additive monoid homeomorphism"]
+/-- The map `Germ (𝓝 x) E → E` as a monoid homomorphism -/
+@[to_additive "The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism"]
 def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E where
   toFun := Filter.Germ.value
   map_one' := rfl
@@ -64,11 +64,11 @@ def valueₗ {X 𝕜 E : Type*} [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E
     {x : X} : Germ (𝓝 x) E →ₗ[𝕜] E :=
   { Filter.Germ.valueAddHom with map_smul' := fun _ φ ↦ Germ.inductionOn φ fun _ ↦ rfl }
 
-/-- The map `Germ (𝓝 x) E → E` as a ring homeomorphism -/
+/-- The map `Germ (𝓝 x) E → E` as a ring homomorphism -/
 def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →+* E :=
   { Filter.Germ.valueMulHom, Filter.Germ.valueAddHom with }
 
-/-- The map `Germ (𝓝 x) E → E` as a monotone ring homeomorphism -/
+/-- The map `Germ (𝓝 x) E → E` as a monotone ring homomorphism -/
 def valueOrderRingHom {X E : Type*} [OrderedSemiring E] [TopologicalSpace X] {x : X} :
     Germ (𝓝 x) E →+*o E where
   __ := Filter.Germ.valueRingHom
@@ -127,7 +127,7 @@ theorem forall_restrictGermPredicate_of_forall
 end RestrictGermPredicate
 
 namespace Filter.Germ
-/-- Map the germ at of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to the corresponding germ
+/-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
   of functions `X → Z` at `x ∈ X` -/
 def sliceLeft [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.1) Z :=
   P.compTendsto (Prod.mk · p.2) (Continuous.Prod.mk_left p.2).continuousAt
@@ -137,7 +137,7 @@ theorem sliceLeft_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceLeft = fun x' ↦ f (x', y) :=
   rfl
 
-/-- Map the germ at of functions `X × Y → Z` at `p=(x,y) ∈ X × Y` to the corresponding germ
+/-- Map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y` to the corresponding germ
   of functions `Y → Z` at `y ∈ Y` -/
 def sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (𝓝 p.2) Z :=
   P.compTendsto (Prod.mk p.1) (Continuous.Prod.mk p.1).continuousAt
@@ -146,6 +146,11 @@ def sliceRight [TopologicalSpace Y] {p : X × Y} (P : Germ (𝓝 p) Z) : Germ (�
 theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
     (↑f : Germ (𝓝 (x, y)) Z).sliceRight = fun y' ↦ f (x, y') :=
   rfl
+
+lemma isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
+    (hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
+    ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant :=
+  isConstant_comp_tendsto hf continuousAt_subtype_val
 
 end Filter.Germ
 
@@ -162,11 +167,6 @@ private lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (�
   rw [mem_preimage, this]
   exact ha
 
--- should follow from `isConstant_compTendsto` specialised to the neigbourhood filter
-proof_wanted isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
-  (_hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
-    ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant
-
 -- move to `LocallyConstant/Basic.lean` once proven
 proof_wanted IsLocallyConstant.of_comp_of_inducing
   {f : X → Y} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
@@ -176,7 +176,7 @@ proof_wanted IsLocallyConstant.of_comp_of_inducing
 proof_wanted IsLocallyConstant.of_germ_isConstantOn_of_preconnected {s : Set X} [TopologicalSpace Y]
     (_hs : IsPreconnected s) (_h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) : IsLocallyConstant f
 
-theorem eq_of_germ_isConstant [i: PreconnectedSpace X]
+theorem eq_of_germ_isConstant [i : PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' :=
   (IsLocallyConstant.of_germ_isConstant h).apply_eq_of_isPreconnected
     (preconnectedSpace_iff_univ.mp i) (by trivial) (by trivial)
