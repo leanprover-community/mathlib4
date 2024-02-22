@@ -146,7 +146,7 @@ theorem mem_zpowers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ
   simp_rw [zpowers_eq_top_of_prime_card h hg, Subgroup.mem_top]
 
 @[to_additive mem_multiples_of_prime_card]
-theorem mem_powers_of_prime_card {G : Type u} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
+theorem mem_powers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
     (h : Fintype.card G = p) {g g' : G} (hg : g ≠ 1) : g' ∈ Submonoid.powers g := by
   rw [mem_powers_iff_mem_zpowers]
   exact mem_zpowers_of_prime_card h hg
