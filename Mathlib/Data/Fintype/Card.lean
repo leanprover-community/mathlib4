@@ -538,6 +538,8 @@ theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
   card_eq_zero_iff.2 ‹_›
 #align fintype.card_eq_zero Fintype.card_eq_zero
 
+alias Fintype.card_of_isEmpty := Fintype.card_eq_zero
+
 theorem card_eq_one_iff_nonempty_unique : card α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h =>
     let ⟨d, h⟩ := Fintype.card_eq_one_iff.mp h

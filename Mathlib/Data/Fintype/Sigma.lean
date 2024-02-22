@@ -19,7 +19,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type*}
+variable {ι α β γ : Type*} {κ : ι → Type*} [∀ i, Fintype (κ i)]
 
 open Finset Function
 
@@ -36,3 +36,15 @@ instance PSigma.fintype {α : Type*} {β : α → Type*} [Fintype α] [∀ a, Fi
     Fintype (Σ'a, β a) :=
   Fintype.ofEquiv _ (Equiv.psigmaEquivSigma _).symm
 #align psigma.fintype PSigma.fintype
+
+lemma Set.biUnion_finsetSigma_univ (s : Finset ι) (f : Sigma κ → Set α) :
+    ⋃ ij ∈ s.sigma fun _ ↦ Finset.univ, f ij = ⋃ i ∈ s, ⋃ j, f ⟨i, j⟩ := by aesop
+
+lemma Set.biUnion_finsetSigma_univ' (s : Finset ι) (f : ∀ i, κ i → Set α) :
+    ⋃ i ∈ s, ⋃ j, f i j = ⋃ ij ∈ s.sigma fun _ ↦ Finset.univ, f ij.1 ij.2 := by aesop
+
+lemma Set.biInter_finsetSigma_univ (s : Finset ι) (f : Sigma κ → Set α) :
+    ⋂ ij ∈ s.sigma fun _ ↦ Finset.univ, f ij = ⋂ i ∈ s, ⋂ j, f ⟨i, j⟩ := by aesop
+
+lemma Set.biInter_finsetSigma_univ' (s : Finset ι) (f : ∀ i, κ i → Set α) :
+    ⋂ i ∈ s, ⋂ j, f i j = ⋂ ij ∈ s.sigma fun _ ↦ Finset.univ, f ij.1 ij.2 := by aesop
