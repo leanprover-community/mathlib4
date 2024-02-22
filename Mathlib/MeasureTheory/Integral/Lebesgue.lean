@@ -1334,6 +1334,11 @@ theorem lintegral_add_compl (f : α → ℝ≥0∞) {A : Set α} (hA : Measurabl
   rw [← lintegral_add_measure, Measure.restrict_add_restrict_compl hA]
 #align measure_theory.lintegral_add_compl MeasureTheory.lintegral_add_compl
 
+theorem set_lintegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
+    (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
+    ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
+  rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
+
 theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
     ∫⁻ x, max (f x) (g x) ∂μ =
       ∫⁻ x in { x | f x ≤ g x }, g x ∂μ + ∫⁻ x in { x | g x < f x }, f x ∂μ := by
@@ -1496,26 +1501,17 @@ theorem exists_measurable_le_set_lintegral_eq_of_integrable {f : α → ℝ≥0�
       ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
   obtain ⟨g, hmg, hgf, hifg⟩ := exists_measurable_le_lintegral_eq (μ := μ) f
   use g, hmg, hgf
-  intro s hms
-  have hisf := (lintegral_add_compl (μ := μ) f hms).symm
-  have hisg := (lintegral_add_compl (μ := μ) g hms).symm
-  have := hisg ▸ hisf ▸ hifg
-  have hisfg := hisf ▸ tsub_self (∫⁻ a, f a ∂μ)
-  rw (config := { occs := .pos [2] }) [this] at hisfg
-  replace hisg := add_ne_top.mp (hisg ▸ hifg ▸ hf)
-  replace hisfg := ENNReal.add_sub_add_comm
-    hisg.1 hisg.2 (lintegral_mono hgf) (lintegral_mono hgf) ▸ hisfg
-  replace hisfg := (add_eq_zero.mp hisfg).left
-  replace hisfg := tsub_eq_zero_iff_le.mp hisfg
-  replace hisfg := le_antisymm hisfg (lintegral_mono hgf)
-  use hisfg
+  refine fun s hms ↦ le_antisymm ?_ (lintegral_mono hgf)
+  rw [← compl_compl s, set_lintegral_compl hms.compl, set_lintegral_compl hms.compl, hifg]
+  · gcongr; apply hgf
+  · rw [hifg] at hf
+    exact ne_top_of_le_ne_top hf (set_lintegral_le_lintegral _ _)
+  · exact ne_top_of_le_ne_top hf (set_lintegral_le_lintegral _ _)
 
 /-- Core lemma to be used in `MeasureTheory.Memℒp.snorm_indicator_compl_le`. -/
-theorem lintegral_indicator_compl_le
-    {g : α → ℝ≥0∞} (hg : ∫⁻ a, g a ∂μ ≠ ∞)
+theorem exists_lintegral_indicator_compl_le {g : α → ℝ≥0∞} (hg : ∫⁻ a, g a ∂μ ≠ ∞)
     {ε : ℝ≥0∞} (hε : 0 < ε) :
-    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧
-      ∫⁻ a in sᶜ, g a ∂μ ≤ ε := by
+    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, g a ∂μ ≤ ε := by
   -- come up with a measurable replacement `f` for `g`
   obtain ⟨f, hmf, _hfg, hsgf⟩ := exists_measurable_le_set_lintegral_eq_of_integrable hg
   replace hg := lt_top_iff_ne_top.mpr hg
