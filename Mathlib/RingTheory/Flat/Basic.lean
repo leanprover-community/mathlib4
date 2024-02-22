@@ -187,6 +187,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   classical
   rw [iff_rTensor_injective]
   intro I hI
+  letI : ∀ i, AddCommGroup (↥I ⊗[R] (M i)) := fun i ↦ TensorProduct.addCommGroup
   rw [← Equiv.comp_injective _ (TensorProduct.lid R (⨁ i, M i)).toEquiv]
   set η₁ := TensorProduct.lid R (⨁ i, M i)
   set η := (fun i ↦ TensorProduct.lid R (M i))
