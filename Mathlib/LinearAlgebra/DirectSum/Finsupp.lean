@@ -16,6 +16,9 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 * `TensorProduct.finsuppLeft`, the tensor product of `i →₀ M` and `N`
   is linearly equivalent to `i →₀ M ⊗[R] N`
 
+* `TensorProduct.finsuppScalarLeft`, the tensor product of `i →₀ R` and `N`
+  is linearly equivalent to `i →₀ N`
+
 * `TensorProduct.finsuppRight`, the tensor product of `M` and `i →₀ N`
   is linearly equivalent to `i →₀ M ⊗[R] N`
 
@@ -36,9 +39,8 @@ noncomputable def MvPolynomial.rTensor' :
 
 noncomputable def MvPolynomial.rTensor :
     MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
-  (MvPolynomial.rTensor' σ (S := R) (N := N) (R := R)).trans
-    (Finsupp.mapRange.linearEquiv (TensorProduct.lid R N))
-```
+  TensorProduct.finsuppScalarLeft
+ ```
 
 ## Case of `Polynomial`
 
@@ -154,6 +156,10 @@ noncomputable def finsuppLeft' :
   finsuppLeft with
   map_smul' := finsuppLeft_smul' }
 
+lemma finsuppLeft'_apply (x : (ι →₀ M) ⊗[R] N) :
+    finsuppLeft' (S := S) x = finsuppLeft x :=
+  rfl
+
 /- -- TODO : reprove using the existing heterobasic lemmas
 noncomputable example :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ (M ⊗[R] N) := by
@@ -161,6 +167,35 @@ noncomputable example :
   exact (AlgebraTensorModule.congr
     (finsuppLEquivDirectSum S M ι) (LinearEquiv.refl R N)).trans
     (f.trans (finsuppLEquivDirectSum S (M ⊗[R] N) ι).symm) -/
+
+/-- The tensor product of `i →₀ R` and `N` is linearly equivalent to `i →₀ N` -/
+noncomputable def finsuppScalarLeft :
+    (ι →₀ R) ⊗[R] N ≃ₗ[R] ι →₀ N :=
+  finsuppLeft.trans (Finsupp.mapRange.linearEquiv (TensorProduct.lid R N))
+
+lemma finsuppScalarLeft_apply_tmul_apply (p : ι →₀ R) (n : N) (i : ι) :
+    finsuppScalarLeft (p ⊗ₜ[R] n) i = (p i) • n := by
+  simp only [finsuppScalarLeft, LinearEquiv.trans_apply, finsuppLeft_apply_tmul,
+    Finsupp.mapRange.linearEquiv_apply, Finsupp.mapRange.linearMap_apply, LinearEquiv.coe_coe,
+    Finsupp.mapRange_apply, Finsupp.sum_apply]
+  apply symm
+  rw [← LinearEquiv.symm_apply_eq, lid_symm_apply]
+  rw [Finsupp.sum_eq_single i (fun _ _ => Finsupp.single_eq_of_ne) (fun _ => by simp)]
+  simp only [Finsupp.single_eq_same]
+  rw [tmul_smul, smul_tmul', smul_eq_mul, mul_one]
+
+lemma finsuppScalarLeft_apply_tmul (p : ι →₀ R) (n : N) :
+    finsuppScalarLeft (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m • n)) := by
+  ext i
+  rw [finsuppScalarLeft_apply_tmul_apply]
+  simp only [Finsupp.sum_apply]
+  rw [Finsupp.sum_eq_single i (fun _ _ => Finsupp.single_eq_of_ne) (fun _ => by simp)]
+  simp only [Finsupp.single_eq_same]
+
+lemma finsuppScalarLeft_symm_apply_single (i : ι) (n : N) :
+    finsuppScalarLeft.symm (Finsupp.single i n) =
+      (Finsupp.single i 1) ⊗ₜ[R] n := by
+  simp [finsuppScalarLeft, finsuppLeft_symm_apply_single]
 
 end TensorProduct
 

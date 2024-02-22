@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.TensorProduct.MvPolynomial
 
 /-! # Tensor products of a polynomial ring
 
@@ -72,18 +73,52 @@ noncomputable def LinearEquiv.rTensor'
   (LinearEquiv.rTensor P (e.restrictScalars R)) with
   map_smul' := (LinearEquiv.rTensor_isLinearMap' P e).map_smul }
 
+lemma LinearEquiv.rTensor'_apply
+    [Module S M] [IsScalarTower R S M] [Module S N] [IsScalarTower R S N]
+    (P : Type*) [AddCommMonoid P] [Module R P] (e : M ≃ₗ[S] N)
+    (mp : M ⊗[R] P) :
+    LinearEquiv.rTensor' P e mp = LinearEquiv.rTensor P (e.restrictScalars R) mp := rfl
+
 open Polynomial
 
 def Polynomial.toFinsuppLinearEquiv : S[X] ≃ₗ[S] (ℕ →₀ S) := {
   Polynomial.toFinsuppIso S  with
   map_smul' := fun r p => by simp }
 
-noncomputable def Polynomial.rTensorEquiv :
+noncomputable def Polynomial.rTensor :
     Polynomial R ⊗[R] N ≃ₗ[R] ℕ →₀ N :=
-  (LinearEquiv.rTensor N Polynomial.toFinsuppLinearEquiv).trans
-    (TensorProduct.finsuppLeft.trans
-      (Finsupp.mapRange.linearEquiv (TensorProduct.lid R N)))
+  (LinearEquiv.rTensor N Polynomial.toFinsuppLinearEquiv).trans TensorProduct.finsuppScalarLeft
+
+lemma Polynomial.rTensor_apply_tmul_apply (p : Polynomial R) (n : N) (i : ℕ) :
+    Polynomial.rTensor (p ⊗ₜ[R] n) i = (coeff p i) • n := by
+  simp only [rTensor, LinearEquiv.trans_apply]
+  simp only [LinearEquiv.rTensor, congr_tmul, LinearEquiv.refl_apply]
+  rw [finsuppScalarLeft_apply_tmul_apply _ n i]
+  rfl
+
+lemma Polynomial.rTensor_apply_tmul (p : Polynomial R) (n : N) :
+    Polynomial.rTensor (p ⊗ₜ[R] n) = p.sum (fun i r => Finsupp.single i (r • n)) := by
+  ext i
+  rw [Polynomial.rTensor_apply_tmul_apply]
+  rw [Polynomial.sum_def]
+  rw [Finset.sum_apply']
+  rw [Finset.sum_eq_single i]
+  · simp only [Finsupp.single_eq_same]
+  · exact fun _ _ => Finsupp.single_eq_of_ne
+  · intro h
+    simp only [mem_support_iff, ne_eq, not_not] at h
+    rw [h, zero_smul, Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply]
 
 noncomputable def Polynomial.rTensor' :
     Polynomial S ⊗[R] N ≃ₗ[S] ℕ →₀ (S ⊗[R] N) :=
   (LinearEquiv.rTensor' N Polynomial.toFinsuppLinearEquiv).trans TensorProduct.finsuppLeft'
+
+lemma Polynomial.rTensor'_apply_tmul_apply (p : Polynomial S) (n : N) (i : ℕ) :
+    Polynomial.rTensor' (p ⊗ₜ[R] n) i = (coeff p i) ⊗ₜ[R] n := by
+  simp only [rTensor', LinearEquiv.trans_apply, finsuppLeft'_apply]
+  simp only [LinearEquiv.rTensor'_apply, LinearEquiv.rTensor, congr_tmul,
+    LinearEquiv.restrictScalars_apply, LinearEquiv.refl_apply]
+  simp only [toFinsuppLinearEquiv, RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+    Equiv.invFun_as_coe, LinearEquiv.coe_mk, toFinsuppIso_apply]
+  rw [finsuppLeft_apply_tmul_apply]
+  rfl
