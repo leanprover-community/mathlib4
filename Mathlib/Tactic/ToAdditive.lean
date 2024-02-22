@@ -1131,7 +1131,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
-    warnAttr stx Std.Tactic.symmExt (·.values.contains ·) thisAttr `symm src tgt
+    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
     warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
     warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
