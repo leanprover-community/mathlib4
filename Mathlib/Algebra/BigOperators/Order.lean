@@ -685,6 +685,7 @@ end StrictOrderedCommSemiring
 section LinearOrderedCommSemiring
 variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
 
+/-- **Cauchy-Schwarz inequality** for finsets. -/
 lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → α) :
     (∑ i in s, f i * g i) ^ 2 ≤ (∑ i in s, f i ^ 2) * ∑ i in s, g i ^ 2 := by
   nontriviality α
@@ -803,6 +804,9 @@ theorem IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S)
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
+--  2024-02-14
+@[deprecated] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
+
 nonrec theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i in s, f i) = ∏ i in s, abv (f i) :=
@@ -816,3 +820,43 @@ theorem IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedC
 #align is_absolute_value.map_prod IsAbsoluteValue.map_prod
 
 end AbsoluteValue
+
+namespace Mathlib.Meta.Positivity
+open Qq Lean Meta Finset
+
+/-- The `positivity` extension which proves that `∑ i in s, f i` is nonnegative if `f` is, and
+positive if each `f i` is and `s` is nonempty.
+
+TODO: The following example does not work
+```
+example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum f := by positivity
+```
+because `compareHyp` can't look for assumptions behind binders.
+-/
+@[positivity Finset.sum _ _]
+def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
+  match e with
+  | ~q(@Finset.sum _ $ι $instα $s $f) =>
+    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
+    have body : Q($α) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    let p_pos : Option Q(0 < $e) := ← (do
+      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+      let .some ps ← proveFinsetNonempty s | pure none
+      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
+      assertInstancesCommute
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
+      return some q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps))
+    -- Try to show that the sum is positive
+    if let some p_pos := p_pos then
+      return .positive p_pos
+    -- Fall back to showing that the sum is nonnegative
+    else
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      assertInstancesCommute
+      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
+  | _ => throwError "not Finset.sum"
+
+end Mathlib.Meta.Positivity
