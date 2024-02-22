@@ -602,4 +602,18 @@ theorem tail_neg (a : Fin n.succ → α) : vecTail (-a) = -vecTail a :=
 
 end Neg
 
+lemma fin_two_column_zero (a b c d : α) :
+    (fun i => ![![a, b], ![c, d]] i 0) = (fun i => ![a, c] i) := by
+  ext i
+  match i with
+  | 0 => rfl
+  | 1 => rfl
+
+lemma fin_two_column_one (a b c d : α) :
+    (fun i => ![![a, b], ![c, d]] i 1) = (fun i => ![b, d] i) := by
+  ext i
+  match i with
+  | 0 => rfl
+  | 1 => rfl
+
 end Matrix

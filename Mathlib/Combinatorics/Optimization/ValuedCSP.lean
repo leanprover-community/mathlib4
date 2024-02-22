@@ -32,20 +32,6 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 
 -/
 
-lemma column_of_2x2_left {α : Type*} (a b c d : α) :
-    (fun i => ![![a, b], ![c, d]] i 0) = (fun i => ![a, c] i) := by
-  ext i
-  fin_cases i <;> rfl
-
-lemma column_of_2x2_right {α : Type*} (a b c d : α) :
-    (fun i => ![![a, b], ![c, d]] i 1) = (fun i => ![b, d] i) := by
-  ext i
-  fin_cases i <;> rfl
-
-lemma univ_sum_2x2_aux {α β : Type*} {f : (Fin 2 → α) → β} [AddCommMonoid β] {a b c d : α} :
-    Finset.univ.sum (fun i => f (![![a, b], ![c, d]] i)) = f ![a, b] + f ![c, d] :=
-  Fin.sum_univ_two _
-
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`.
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
 `Real`, `NNReal`, `EReal`, `ENNReal`, and tuples made of any of those types. -/
@@ -139,6 +125,10 @@ def FractionalOperation.IsSymmetricFractionalPolymorphismFor
     (ω : FractionalOperation D m) (Γ : ValuedCSP D C) : Prop :=
   ω.IsFractionalPolymorphismFor Γ ∧ ω.IsSymmetric
 
+lemma Finset.univ_sum_fin_two_aux {f : (Fin 2 → D) → C} {a b c d : D} :
+    Finset.univ.sum (fun i => f (![![a, b], ![c, d]] i)) = f ![a, b] + f ![c, d] :=
+  Fin.sum_univ_two _
+
 variable {C : Type*} [OrderedCancelAddCommMonoid C]
 
 lemma Function.HasMaxCutPropertyAt.rows_lt_aux
@@ -159,7 +149,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
   apply asymm
   obtain ⟨o, in_omega, rfl⟩ := rin
   show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
-  rw [column_of_2x2_left, column_of_2x2_right]
+  rw [Matrix.fin_two_column_zero, Matrix.fin_two_column_one]
   exact symmega ![a, b] ![b, a] (List.Perm.swap b a []) o in_omega
 
 lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
@@ -169,7 +159,7 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
   intro contr
   obtain ⟨a, b, hab, mcfab⟩ := mcf
   specialize contr ![![a, b], ![b, a]]
-  rw [univ_sum_2x2_aux, ← mcfab.left, ← two_nsmul] at contr
+  rw [Finset.univ_sum_fin_two_aux, ← mcfab.left, ← two_nsmul] at contr
   have sharp :
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
