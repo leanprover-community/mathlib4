@@ -197,6 +197,8 @@ def LinearMap.dualMap (f : M₁ →ₗ[R] M₂) : Dual R M₂ →ₗ[R] Dual R M
   Module.Dual.transpose (R := R) f
 #align linear_map.dual_map LinearMap.dualMap
 
+lemma LinearMap.dualMap_eq_lcomp (f : M₁ →ₗ[R] M₂) : f.dualMap = f.lcomp R := rfl
+
 -- Porting note: with reducible def need to specify some parameters to transpose explicitly
 theorem LinearMap.dualMap_def (f : M₁ →ₗ[R] M₂) : f.dualMap = Module.Dual.transpose (R := R) f :=
   rfl
@@ -263,6 +265,21 @@ theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommGroup M₃] [Module R M
     (g : M₂ ≃ₗ[R] M₃) : g.dualMap.trans f.dualMap = (f.trans g).dualMap :=
   rfl
 #align linear_equiv.dual_map_trans LinearEquiv.dualMap_trans
+
+@[simp]
+lemma Dual.apply_one_mul_eq (f : Dual R R) (r : R) :
+    f 1 * r = f r := by
+  conv_rhs => rw [← mul_one r, ← smul_eq_mul]
+  rw [map_smul, smul_eq_mul, mul_comm]
+
+@[simp]
+lemma LinearMap.range_dualMap_dual_eq_span_singleton (f : Dual R M₁) :
+    range f.dualMap = R ∙ f := by
+  ext m
+  rw [Submodule.mem_span_singleton]
+  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r 1, ?_⟩, fun ⟨r, hr⟩ ↦ ⟨r • LinearMap.id, ?_⟩⟩
+  · ext; simp [dualMap_apply', ← hr]
+  · ext; simp [dualMap_apply', ← hr]
 
 end DualMap
 
