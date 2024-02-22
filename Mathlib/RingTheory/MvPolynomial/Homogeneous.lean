@@ -56,8 +56,8 @@ def IsHomogeneous [CommSemiring R] (φ : MvPolynomial σ R) (n : ℕ) :=
 
 variable [CommSemiring R]
 
-theorem totalDegree_eq_weightedTotalDegree (φ : MvPolynomial σ R) :
-    φ.totalDegree = weightedTotalDegree (1 : σ → ℕ) φ := by
+theorem weightedTotalDegree_one (φ : MvPolynomial σ R) :
+    weightedTotalDegree (1 : σ → ℕ) φ = φ.totalDegree := by
   simp only [totalDegree, weightedTotalDegree, weightedDegree, LinearMap.toAddMonoidHom_coe,
     Finsupp.total, Pi.one_apply, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
     id.def, Algebra.id.smul_eq_mul, mul_one]
@@ -83,6 +83,10 @@ def homogeneousSubmodule (n : ℕ) : Submodule R (MvPolynomial σ R) where
     · exact ha h
     · exact hb h
 #align mv_polynomial.homogeneous_submodule MvPolynomial.homogeneousSubmodule
+
+@[simp]
+lemma weightedHomogeneousSubmodule_one (n : ℕ) :
+    weightedHomogeneousSubmodule R 1 n = homogeneousSubmodule σ R n := rfl
 
 variable {σ R}
 
@@ -119,14 +123,14 @@ theorem isHomogeneous_monomial (d : σ →₀ ℕ) (r : R) (n : ℕ) (hn : degre
 
 variable (σ)
 
-theorem isHomogeneous_of_totalDegree_zero_iff {p : MvPolynomial σ R} :
+theorem totalDegree_zero_iff_isHomogeneous {p : MvPolynomial σ R} :
     p.totalDegree = 0 ↔ IsHomogeneous p 0 := by
-  rw [totalDegree_eq_weightedTotalDegree,
+  rw [← weightedTotalDegree_one,
     ← isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero, IsHomogeneous]
 
 theorem isHomogeneous_of_totalDegree_zero {p : MvPolynomial σ R} (hp : p.totalDegree = 0) :
     IsHomogeneous p 0 :=
-  (isHomogeneous_of_totalDegree_zero_iff _).mp hp
+  (totalDegree_zero_iff_isHomogeneous _).mp hp
 #align mv_polynomial.is_homogeneous_of_total_degree_zero MvPolynomial.isHomogeneous_of_totalDegree_zero
 
 theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
