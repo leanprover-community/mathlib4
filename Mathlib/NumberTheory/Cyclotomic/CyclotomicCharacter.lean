@@ -63,7 +63,7 @@ theorem rootsOfUnity.integer_power_of_ringEquiv (g : L ≃+* L) :
 theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t ∈ rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (g.restrictRootsOfUnity n).toMonoidHom
-  exact ⟨m, fun t ht ↦ Units.ext_iff.1 $ SetCoe.ext_iff.2 (hm ⟨t, ht⟩)⟩
+  exact ⟨m, fun t ht ↦ Units.ext_iff.1 <| SetCoe.ext_iff.2 (hm ⟨t, ht⟩)⟩
 
 /-- `ModularCyclotomicCharacter_aux g n` is a non-canonical auxiliary integer `j`,
    only well-defined modulo the number of `n`'th roots of unity in `L`, such that `g(ζ)=ζ^j`
@@ -140,8 +140,11 @@ lemma comp (g h : L ≃+* L) : χ n (g * h) =
 
 end ModularCyclotomicCharacter
 
+variable (L)
+
 -- see also `IsPrimitiveRoot.autToPow`, which is the same construction under the more
 -- restrictive condition that there exists a primitive n'th root of unity.
+
 /-- Given a positive integer `n`, `ModularCyclotomicCharacter n` is a
 multiplicative homomorphism from the automorphisms of a field `L` to `ℤ/dℤ`,
 where `d` is the number of `n`'th roots of unity in `L`. It is uniquely
@@ -153,3 +156,30 @@ def ModularCyclotomicCharacter (n : ℕ+) :
   { toFun := ModularCyclotomicCharacter.toFun n
     map_one' := ModularCyclotomicCharacter.id n
     map_mul' := ModularCyclotomicCharacter.comp n }
+
+#check Lean.Elab.Command.elabMutual
+
+noncomputable def ModularCyclotomicCharacter' (n : ℕ+)
+    (hn : Fintype.card { x // x ∈ rootsOfUnity n L } = n) :
+    (L ≃+* L) →* (ZMod n)ˣ :=
+  hn ▸ ModularCyclotomicCharacter L n
+
+variable {L}
+-- relationship with IsPrimitiveRoot.autToPow
+-- autToPow needs hμ and R which are both irrelevant.
+
+lemma IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter' (n : ℕ+)
+    (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : L ≃ₐ[R] L) :
+    hμ.autToPow R g = ModularCyclotomicCharacter' L n hμ.card_rootsOfUnity g := by
+  ext
+  apply ZMod.val_injective
+  apply hμ.pow_inj (ZMod.val_lt _) (ZMod.val_lt _)
+  rw [autToPow_spec R hμ g]
+  rw [spec]
+  sorry
+
+/-
+IsPrimitiveRoot.autToPow.{u_5, u_4} (R : Type u_4) {S : Type u_5} [inst✝ : CommRing S] [inst✝¹ : IsDomain S] {μ : S}
+  {n : ℕ+} (hμ : IsPrimitiveRoot μ ↑n) [inst✝² : CommRing R] [inst✝³ : Algebra R S] : (S ≃ₐ[R] S) →* (ZMod ↑n)ˣ
+-/
+#check IsPrimitiveRoot.autToPow
