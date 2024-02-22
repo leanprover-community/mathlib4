@@ -1399,7 +1399,7 @@ theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
   convert extChartAt_target_mem_nhdsWithin I x
   simp only [I.range_eq_univ, nhdsWithin_univ]
 
--- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/
+/-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/
 theorem extChartAt_target_mem_nhds' [I.Boundaryless] {x : M} {y : E}
     (m : y ∈ (extChartAt I x).target) : (extChartAt I x).target ∈ 𝓝 y :=
   (isOpen_extChartAt_target I x).mem_nhds m
