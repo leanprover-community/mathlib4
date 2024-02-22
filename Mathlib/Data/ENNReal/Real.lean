@@ -674,9 +674,9 @@ protected theorem add_sub_add_comm {a b c d : ENNReal}
       (hac : c ≤ a) (hbd : d ≤ b) :
     (a + b) - (c + d) = (a - c) + (b - d) := by
   apply calc
-    _ = _ := (ofReal_toReal _).symm
-    _ = _ := ?cast_goal
-    _ = _ := (ofReal_toReal _)
+    a + b - (c + d) = .ofReal (a + b - (c + d)).toReal := (ofReal_toReal _).symm
+    _               = .ofReal (a - c + (b - d)).toReal := ?cast_goal
+    _               =          a - c + (b - d)         := (ofReal_toReal _)
   case cast_goal =>
     rw [ofReal_eq_ofReal_iff toReal_nonneg toReal_nonneg]
     repeat rw [toReal_add ?_, toReal_sub_of_le ?_ ?_]
