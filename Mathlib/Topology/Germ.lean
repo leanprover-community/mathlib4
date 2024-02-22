@@ -167,21 +167,11 @@ private lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (�
   rw [mem_preimage, this]
   exact ha
 
--- move to `LocallyConstant/Basic.lean` once proven
-proof_wanted IsLocallyConstant.of_comp_of_inducing
-  {f : X → Y} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-  {i : Z → X} (_hi : Inducing i) (_hF : IsLocallyConstant (f ∘ i)) : IsLocallyConstant f
-
--- use previous lemma: `Subtype.val` is inducing
-proof_wanted IsLocallyConstant.of_germ_isConstantOn_of_preconnected {s : Set X} [TopologicalSpace Y]
-    (_hs : IsPreconnected s) (_h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant) : IsLocallyConstant f
-
 theorem eq_of_germ_isConstant [i : PreconnectedSpace X]
     (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) (x x' : X) : f x = f x' :=
   (IsLocallyConstant.of_germ_isConstant h).apply_eq_of_isPreconnected
     (preconnectedSpace_iff_univ.mp i) (by trivial) (by trivial)
 
--- use `IsLocallyConstant.of_germ_isConstantOn_of_preconnected`
 proof_wanted eq_of_germ_isConstant_on {s : Set X} (_h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant)
     (_hs : IsPreconnected s) {x' : X} (_x_in : x ∈ s) (_x'_in : x' ∈ s) : f x = f x'
 
