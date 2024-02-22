@@ -307,6 +307,15 @@ def compareHypFun (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα pα e
       assertInstancesCommute
       return .nonnegative q(Pi.le_def.mp $p $a)
     | _ => pure .none
+  | ~q(@LT.lt.{u} ($β → $β) $_le $lo $hi) =>
+    let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+    let a ← mkFreshExprMVarQ q($α)
+    let .defEq _h ← isDefEqQ q($e) q($hi $a) | return .none
+    match lo with
+    | ~q(0) =>
+      assertInstancesCommute
+      return .nonnegative q((Pi.lt_def.mp $p).1 $a)
+    | _ => pure .none
   | _ => pure .none
 
 variable {zα pα} in
