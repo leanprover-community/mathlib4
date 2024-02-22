@@ -17,10 +17,12 @@ These two sorts of shift functors shall be abbreviated as
 `HomologicalComplex₂.shiftFunctor₁ C x` and
 `HomologicalComplex₂.shiftFunctor₂ C y`.
 
-In this file, for any `K : HomologicalComplex₂ C (up ℤ) (up ℤ)`,
-we define an isomorphism
-`K.totalShift₁Iso : ((shiftFunctor₁ C x).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦x⟧`
-for any `x : ℤ` (which does not involve signs).
+In this file, for any `K : HomologicalComplex₂ C (up ℤ) (up ℤ)`, we define an isomorphism
+`K.totalShift₁Iso x : ((shiftFunctor₁ C x).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦x⟧`
+for any `x : ℤ` (which does not involve signs) and an isomorphism
+`K.totalShift₂Iso y : ((shiftFunctor₂ C y).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦y⟧`
+for any `y : ℤ` (which is given by the multiplication by `(p * y).negOnePow` on the
+summand in bidegree `(p, q)` of `K`).
 
 ## TODO
 
