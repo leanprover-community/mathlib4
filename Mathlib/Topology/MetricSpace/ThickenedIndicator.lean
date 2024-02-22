@@ -3,10 +3,9 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.Topology.ContinuousFunction.Bounded
-import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Order.Filter.IndicatorFunction
+import Mathlib.Topology.MetricSpace.Thickening
 
 #align_import topology.metric_space.thickened_indicator from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -176,7 +175,7 @@ def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ
     have key := @thickenedIndicatorAux_le_one _ _ δ E
     apply add_le_add <;>
       · norm_cast
-        refine' (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
+        exact (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
 #align thickened_indicator thickenedIndicator
 
 theorem thickenedIndicator.coeFn_eq_comp {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :

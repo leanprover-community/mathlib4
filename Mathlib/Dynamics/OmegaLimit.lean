@@ -44,13 +44,13 @@ section omegaLimit
 
 variable {τ : Type*} {α : Type*} {β : Type*} {ι : Type*}
 
-/-- The ω-limit of a set `s` under `ϕ` with respect to a filter `f` is
-    ⋂ u ∈ f, cl (ϕ u s). -/
+/-- The ω-limit of a set `s` under `ϕ` with respect to a filter `f` is `⋂ u ∈ f, cl (ϕ u s)`. -/
 def omegaLimit [TopologicalSpace β] (f : Filter τ) (ϕ : τ → α → β) (s : Set α) : Set β :=
   ⋂ u ∈ f, closure (image2 ϕ u s)
 #align omega_limit omegaLimit
 
 -- mathport name: omega_limit
+@[inherit_doc]
 scoped[omegaLimit] notation "ω" => omegaLimit
 
 -- mathport name: omega_limit.atTop

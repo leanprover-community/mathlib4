@@ -3,11 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Bitwise
-import Mathlib.Data.Nat.Cast.Order
-import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.int.lemmas from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
@@ -33,7 +32,7 @@ theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
 /-! ### `succ` and `pred` -/
 
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
 #align int.succ_coe_nat_pos Int.succ_coe_nat_pos

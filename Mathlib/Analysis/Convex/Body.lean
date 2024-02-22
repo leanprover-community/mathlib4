@@ -32,9 +32,7 @@ convex, convex body
 -/
 
 
-open Pointwise
-
-open NNReal
+open scoped Pointwise Topology NNReal
 
 variable {V : Type*}
 
@@ -98,11 +96,9 @@ section ContinuousAdd
 
 variable [ContinuousAdd V]
 
--- we cannot write K + L to avoid reducibility issues with the set.has_add instance
--- porting note: todo: is this^ still true?
 instance : Add (ConvexBody V) where
   add K L :=
-    ⟨Set.image2 (· + ·) K L, K.convex.add L.convex, K.isCompact.add L.isCompact,
+    ⟨K + L, K.convex.add L.convex, K.isCompact.add L.isCompact,
       K.nonempty.add L.nonempty⟩
 
 instance : Zero (ConvexBody V) where
@@ -216,7 +212,7 @@ open Filter
 numbers that tends to `0`. Then the intersection of the dilated bodies `(1 + u n) • K` is equal
 to `K`. -/
 theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V) (h_zero : 0 ∈ K)
-    (hu : Tendsto u atTop (nhds 0)) :
+    (hu : Tendsto u atTop (𝓝 0)) :
     ⋂ n : ℕ, (1 + (u n : ℝ)) • (K : Set V) = K := by
   ext x
   refine ⟨fun h => ?_, fun h => ?_⟩

@@ -88,7 +88,7 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
 
--- porting notes: not used in mathlib and coercions done differently in Lean 4
+-- Porting note: not used in mathlib and coercions done differently in Lean 4
 -- @[simp]
 -- theorem length_coe (v : Vector α n) :
 --     ((coe : { l : List α // l.length = n } → List α) v).length = n :=
@@ -118,7 +118,7 @@ theorem get_eq_get (v : Vector α n) (i : Fin n) :
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_getₓ
 
--- porting notes: `nthLe` deprecated for `get`
+-- Porting note: `nthLe` deprecated for `get`
 @[deprecated get_eq_get]
 theorem nth_eq_nthLe :
     ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length]; exact i.2)
@@ -270,7 +270,7 @@ theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
 #align vector.head_of_fn Vector.head_ofFn
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
 #align vector.nth_cons_zero Vector.get_cons_zero
 
@@ -455,7 +455,7 @@ This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (h_nil : C nil) (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     exact h_nil
@@ -476,7 +476,7 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -496,7 +496,7 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
     (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
     (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -606,7 +606,7 @@ theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
 
 end InsertNth
 
--- porting notes: renamed to `set` from `updateNth` to align with `List`
+-- Porting note: renamed to `set` from `updateNth` to align with `List`
 section ModifyNth
 
 /-- `set v n a` replaces the `n`th element of `v` with `a` -/

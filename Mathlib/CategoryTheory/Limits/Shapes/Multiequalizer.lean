@@ -434,7 +434,7 @@ theorem toPiFork_π_app_zero : K.toPiFork.ι = Pi.lift K.ι :=
   rfl
 #align category_theory.limits.multifork.to_pi_fork_π_app_zero CategoryTheory.Limits.Multifork.toPiFork_π_app_zero
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 theorem toPiFork_π_app_one : K.toPiFork.π.app WalkingParallelPair.one = Pi.lift K.ι ≫ I.fstPiMap :=
   rfl
 #align category_theory.limits.multifork.to_pi_fork_π_app_one CategoryTheory.Limits.Multifork.toPiFork_π_app_one
@@ -464,7 +464,7 @@ theorem ofPiFork_π_app_left (c : Fork I.fstPiMap I.sndPiMap) (a) :
   rfl
 #align category_theory.limits.multifork.of_pi_fork_π_app_left CategoryTheory.Limits.Multifork.ofPiFork_π_app_left
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 theorem ofPiFork_π_app_right (c : Fork I.fstPiMap I.sndPiMap) (a) :
     (ofPiFork I c).π.app (WalkingMulticospan.right a) = c.ι ≫ I.fstPiMap ≫ Pi.π _ _ :=
   rfl
@@ -644,7 +644,7 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         · simp }
 #align category_theory.limits.multicofork.of_sigma_cofork CategoryTheory.Limits.Multicofork.ofSigmaCofork
 
--- Porting note: dsimp cannot prove this... once ofSigmaCofork_ι_app_right' is defined
+-- Porting note (#10675): dsimp cannot prove this... once ofSigmaCofork_ι_app_right' is defined
 @[simp, nolint simpNF]
 theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
@@ -787,7 +787,7 @@ abbrev lift (W : C) (k : ∀ a, W ⟶ I.left a)
   limit.lift _ (Multifork.ofι I _ k h)
 #align category_theory.limits.multiequalizer.lift CategoryTheory.Limits.Multiequalizer.lift
 
-@[reassoc] -- Porting note: simp can prove this, removed attribute
+@[reassoc] -- Porting note (#10618): simp can prove this, removed attribute
 theorem lift_ι (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a) :
     Multiequalizer.lift I _ k h ≫ Multiequalizer.ι I a = k _ :=
@@ -872,7 +872,7 @@ abbrev desc (W : C) (k : ∀ b, I.right b ⟶ W)
   colimit.desc _ (Multicofork.ofπ I _ k h)
 #align category_theory.limits.multicoequalizer.desc CategoryTheory.Limits.Multicoequalizer.desc
 
-@[reassoc] -- Porting note: simp can prove this, removed attribute
+@[reassoc] -- Porting note (#10618): simp can prove this, removed attribute
 theorem π_desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (I.fstFrom a) = I.snd a ≫ k (I.sndFrom a)) (b) :
     Multicoequalizer.π I b ≫ Multicoequalizer.desc I _ k h = k _ :=

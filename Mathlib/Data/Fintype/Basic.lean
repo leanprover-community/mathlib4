@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Fin.OrderHom
+import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 
@@ -95,7 +97,7 @@ theorem coe_eq_univ : (s : Set α) = Set.univ ↔ s = univ := by rw [← coe_uni
 
 theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
-  refine' eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
+  exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
 #align finset.nonempty.eq_univ Finset.Nonempty.eq_univ
 
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
@@ -138,6 +140,10 @@ theorem top_eq_univ : (⊤ : Finset α) = univ :=
 theorem ssubset_univ_iff {s : Finset α} : s ⊂ univ ↔ s ≠ univ :=
   @lt_top_iff_ne_top _ _ _ s
 #align finset.ssubset_univ_iff Finset.ssubset_univ_iff
+
+@[simp]
+theorem univ_subset_iff {s : Finset α} : univ ⊆ s ↔ s = univ :=
+  @top_le_iff _ _ _ s
 
 theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t := by
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
@@ -386,27 +392,27 @@ instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq
 @[to_additive]
 instance decidableEqOneHomFintype [DecidableEq β] [Fintype α] [One α] [One β] :
     DecidableEq (OneHom α β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff FunLike.coe_injective)
+  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 #align fintype.decidable_eq_one_hom_fintype Fintype.decidableEqOneHomFintype
 #align fintype.decidable_eq_zero_hom_fintype Fintype.decidableEqZeroHomFintype
 
 @[to_additive]
 instance decidableEqMulHomFintype [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
     DecidableEq (α →ₙ* β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff FunLike.coe_injective)
+  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 #align fintype.decidable_eq_mul_hom_fintype Fintype.decidableEqMulHomFintype
 #align fintype.decidable_eq_add_hom_fintype Fintype.decidableEqAddHomFintype
 
 @[to_additive]
 instance decidableEqMonoidHomFintype [DecidableEq β] [Fintype α] [MulOneClass α] [MulOneClass β] :
     DecidableEq (α →* β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff FunLike.coe_injective)
+  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 #align fintype.decidable_eq_monoid_hom_fintype Fintype.decidableEqMonoidHomFintype
 #align fintype.decidable_eq_add_monoid_hom_fintype Fintype.decidableEqAddMonoidHomFintype
 
 instance decidableEqMonoidWithZeroHomFintype [DecidableEq β] [Fintype α] [MulZeroOneClass α]
     [MulZeroOneClass β] : DecidableEq (α →*₀ β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff FunLike.coe_injective)
+  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 #align fintype.decidable_eq_monoid_with_zero_hom_fintype Fintype.decidableEqMonoidWithZeroHomFintype
 
 instance decidableEqRingHomFintype [DecidableEq β] [Fintype α] [Semiring α] [Semiring β] :
@@ -618,12 +624,12 @@ def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
 
-/-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
+/-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
 @[simp]
-theorem univ_of_isEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
+theorem univ_ofIsEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
-#align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
+#align fintype.univ_of_is_empty Fintype.univ_ofIsEmpty
 
 instance : Fintype Empty := Fintype.ofIsEmpty
 instance : Fintype PEmpty := Fintype.ofIsEmpty
@@ -676,7 +682,7 @@ theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.N
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=
-  ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h] ⟩
+  ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h]⟩
 #align set.to_finset_inj Set.toFinset_inj
 
 @[mono]
@@ -742,6 +748,7 @@ theorem toFinset_diff [Fintype (s \ t : Set _)] : (s \ t).toFinset = s.toFinset 
   simp
 #align set.to_finset_diff Set.toFinset_diff
 
+open scoped symmDiff in
 @[simp]
 theorem toFinset_symmDiff [Fintype (s ∆ t : Set _)] :
     (s ∆ t).toFinset = s.toFinset ∆ t.toFinset := by
@@ -1268,7 +1275,7 @@ noncomputable def seqOfForallFinsetExistsAux {α : Type*} [DecidableEq α] (P : 
       (h
         (Finset.image (fun i : Fin n => seqOfForallFinsetExistsAux P r h i)
           (Finset.univ : Finset (Fin n))))
-  decreasing_by exact i.2
+  decreasing_by all_goals exact i.2
 #align seq_of_forall_finset_exists_aux seqOfForallFinsetExistsAux
 
 /-- Induction principle to build a sequence, by adding one point at a time satisfying a given

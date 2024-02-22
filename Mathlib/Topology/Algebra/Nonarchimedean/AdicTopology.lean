@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.UniformRing
 
 #align_import topology.algebra.nonarchimedean.adic_topology from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -182,7 +181,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
         exact ⟨n, trivial, h⟩
       · rcases H with ⟨n, -, hn⟩
         rw [mem_nhds_iff]
-        refine' ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
+        exact ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
 #align is_adic_iff isAdic_iff
 
 variable [TopologicalSpace R] [TopologicalRing R]

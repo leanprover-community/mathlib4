@@ -9,8 +9,8 @@ import Mathlib.Data.Subtype
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Cases
+import Mathlib.Order.Notation
 
 #align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 
@@ -35,9 +35,6 @@ classes and allows to transfer order instances.
 
 ### Extra class
 
-* `Sup`: type class for the `⊔` notation
-* `Inf`: type class for the `⊓` notation
-* `HasCompl`: type class for the `ᶜ` notation
 * `DenselyOrdered`: An order with no gap, i.e. for any two elements `a < b` there exists `c` such
   that `a < c < b`.
 
@@ -490,6 +487,13 @@ theorem exists_ge_of_linear [LinearOrder α] (a b : α) : ∃ c, a ≤ c ∧ b �
   | Or.inr h => ⟨_, le_rfl, h⟩
 #align exists_ge_of_linear exists_ge_of_linear
 
+lemma exists_forall_ge_and [LinearOrder α] {p q : α → Prop} :
+    (∃ i, ∀ j ≥ i, p j) → (∃ i, ∀ j ≥ i, q j) → ∃ i, ∀ j ≥ i, p j ∧ q j
+  | ⟨a, ha⟩, ⟨b, hb⟩ =>
+    let ⟨c, hac, hbc⟩ := exists_ge_of_linear a b
+    ⟨c, fun _d hcd ↦ ⟨ha _ $ hac.trans hcd, hb _ $ hbc.trans hcd⟩⟩
+#align exists_forall_ge_and exists_forall_ge_and
+
 theorem lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=
   lt_of_not_le fun h' ↦ (H h').not_lt h
@@ -794,7 +798,6 @@ end ltByCases
 
 /-! ### Order dual -/
 
-
 /-- Type synonym to equip a type with the dual order: `≤` means `≥` and `<` means `>`. `αᵒᵈ` is
 notation for `OrderDual α`. -/
 def OrderDual (α : Type*) : Type _ :=
@@ -858,18 +861,6 @@ end OrderDual
 
 /-! ### `HasCompl` -/
 
-
-/-- Set / lattice complement -/
-@[notation_class]
-class HasCompl (α : Type*) where
-  /-- Set / lattice complement -/
-  compl : α → α
-#align has_compl HasCompl
-
-export HasCompl (compl)
-
-@[inherit_doc]
-postfix:1024 "ᶜ" => compl
 
 instance Prop.hasCompl : HasCompl Prop :=
   ⟨Not⟩
@@ -1077,31 +1068,7 @@ theorem max_def_lt (x y : α) : max x y = if x < y then y else x := by
 
 end MinMaxRec
 
-/-! ### `Sup` and `Inf` -/
-
-
-/-- Typeclass for the `⊔` (`\lub`) notation -/
-@[notation_class, ext]
-class Sup (α : Type u) where
-  /-- Least upper bound (`\lub` notation) -/
-  sup : α → α → α
-#align has_sup Sup
-
-/-- Typeclass for the `⊓` (`\glb`) notation -/
-@[notation_class, ext]
-class Inf (α : Type u) where
-  /-- Greatest lower bound (`\glb` notation) -/
-  inf : α → α → α
-#align has_inf Inf
-
-@[inherit_doc]
-infixl:68 " ⊔ " => Sup.sup
-
-@[inherit_doc]
-infixl:69 " ⊓ " => Inf.inf
-
 /-! ### Lifts of order instances -/
-
 
 /-- Transfer a `Preorder` on `β` to a `Preorder` on `α` using a function `f : α → β`.
 See note [reducible non-instances]. -/
@@ -1487,12 +1454,12 @@ theorem min_eq : min a b = unit :=
   rfl
 #align punit.min_eq PUnit.min_eq
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 protected theorem le : a ≤ b :=
   trivial
 #align punit.le PUnit.le
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem not_lt : ¬a < b :=
   not_false
 #align punit.not_lt PUnit.not_lt

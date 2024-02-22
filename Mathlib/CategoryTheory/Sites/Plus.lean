@@ -275,13 +275,11 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
 
 theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by
   rw [Presheaf.isSheaf_iff_multiequalizer] at hP
-  suffices : ∀ X, IsIso ((J.toPlus P).app X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ X, IsIso ((J.toPlus P).app X) from NatIso.isIso_of_isIso_app _
   intro X
-  suffices : IsIso (colimit.ι (J.diagram P X.unop) (op ⊤))
-  · apply IsIso.comp_isIso
-  suffices : ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f)
-  · apply isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop)
+  suffices IsIso (colimit.ι (J.diagram P X.unop) (op ⊤)) from IsIso.comp_isIso
+  suffices ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f) from
+    isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop) _
   intro S T e
   have : S.unop.toMultiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.toMultiequalizer P :=
     Multiequalizer.hom_ext _ _ _ (fun II => by dsimp; simp)

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
-import Mathlib.CategoryTheory.Arrow
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Opposites
 
@@ -76,7 +76,7 @@ instance [HasColimits C] : HasColimits (SimplicialObject C) :=
 
 variable {C}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
     (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
@@ -300,7 +300,7 @@ variable {C}
 
 namespace Augmented
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
@@ -446,7 +446,7 @@ instance [HasColimits C] : HasColimits (CosimplicialObject C) :=
 
 variable {C}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
     (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
@@ -672,7 +672,7 @@ variable {C}
 
 namespace Augmented
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=

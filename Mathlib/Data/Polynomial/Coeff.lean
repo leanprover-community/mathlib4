@@ -58,7 +58,7 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
   exact Finsupp.smul_apply _ _ _
 #align polynomial.coeff_smul Polynomial.coeff_smul
 
-theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
+theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
   simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
@@ -66,17 +66,13 @@ theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
   simp [hi]
 #align polynomial.support_smul Polynomial.support_smul
 
+open scoped Pointwise in
 theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.support.card := by
   calc (p * q).support.card
    _ = (p.toFinsupp * q.toFinsupp).support.card := by rw [← support_toFinsupp, toFinsupp_mul]
-   _ ≤ _ := Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
-   _ ≤ _ := by
-    apply Finset.card_biUnion_le_card_mul
-    intro _ _
-    rw [← mul_one q.support.card]
-    apply Finset.card_biUnion_le_card_mul
-    intro _ _
-    exact (Finset.card_singleton _) ▸ le_rfl
+   _ ≤ (p.toFinsupp.support + q.toFinsupp.support).card :=
+    Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+   _ ≤ p.support.card * q.support.card := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -118,7 +114,7 @@ theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
-  -- Porting note: Was `simp [Polynomial.sum, support, coeff]`.
+  -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 #align polynomial.coeff_sum Polynomial.coeff_sum
 
@@ -323,8 +319,8 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
-  suffices : IsLeftRegular (X^n : R[X])
-  · exact ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
+  suffices IsLeftRegular (X^n : R[X]) from
+    ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
   intro P Q (hPQ : X^n * P = X^n * Q)
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
@@ -401,7 +397,7 @@ theorem nat_cast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coef
   simp only [coeff_nat_cast_ite, ite_true]
 #align polynomial.nat_cast_coeff_zero Polynomial.nat_cast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem nat_cast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
@@ -417,7 +413,7 @@ theorem int_cast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 
   cases i <;> simp
 #align polynomial.int_cast_coeff_zero Polynomial.int_cast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem int_cast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
