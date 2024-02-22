@@ -785,7 +785,7 @@ lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
     rw [forall_mem_image] at hf
     use f
     rw [graphOn, image_image, EqOn.image_eq_self]
-    exact fun x hx ↦ h (hf x hx) hx rfl
+    exact fun x hx ↦ h (hf hx) hx rfl
 
 lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
     (∃ f t, s = graphOn f t) ↔ InjOn Prod.fst s :=
