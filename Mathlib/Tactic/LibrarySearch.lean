@@ -103,6 +103,7 @@ initialize librarySearchLemmas : DiscrTreeCache (Name × DeclMod) ← unsafe do
     buildDiscrTree
 
 open Lean.Meta.SolveByElim
+open Lean.Elab.Tactic.SolveByElim
 
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) (depth) := do
@@ -112,7 +113,7 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
     { maxDepth := depth, exfalso := exfalso, symm := true, commitIndependentGoals := true,
       transparency := ← getTransparency }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
-  Lean.Elab.Tactic.processSyntax cfg false false [] [] #[] goals
+  processSyntax cfg false false [] [] #[] goals
 
 /--
 Try applying the given lemma (with symmetry modifier) to the goal,

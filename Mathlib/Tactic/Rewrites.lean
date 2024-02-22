@@ -184,7 +184,7 @@ def RewriteResult.ppResult (r : RewriteResult) : MetaM String :=
   else
     return (← ppExpr r.result.eNew).pretty
 
-open Lean.Elab.Tactic Lean.Meta.SolveByElim in
+open Lean.Elab.Tactic.SolveByElim Lean.Meta.SolveByElim in
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (depth : Nat := 6) : MetaM PUnit := do
   -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
