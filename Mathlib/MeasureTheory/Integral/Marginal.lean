@@ -26,7 +26,7 @@ space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
   but is constant in the variables in `s`. Mathematically, if `s = {i₁, ..., iₖ}`,
   then `lmarginal μ s f` is the expression
   $$
-  \vec{x}\mapsto \int\!\!\cdots\!\!\int f(\vec{x}[\vec{y}])dy_{i_1}\cdots dy_{i_k}.
+  \vec{x}\mapsto \int\cdots\int f(\vec{x}[\vec{y}])dy_{i_1}\cdots dy_{i_k}.
   $$
   where $\vec{x}[\vec{y}]$ is the vector $\vec{x}$ with $x_{i_j}$ replaced by $y_{i_j}$ for all
   $1 \le j \le k$.

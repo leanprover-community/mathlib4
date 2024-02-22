@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Interval
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Integral.MeanInequalities
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -49,8 +50,8 @@ variable {ι : Type*} [Fintype ι] {E : ι → Type _} [∀ i, NormedAddCommGrou
 
 theorem Pi.nnnorm_single (y : E i) : ‖Pi.single i y‖₊ = ‖y‖₊ := by
   classical
-  have H : ∀ b, ‖single i y b‖₊ = single (f := fun _ ↦ ℝ≥0) i ‖y‖₊ b
-  · intro b
+  have H : ∀ b, ‖single i y b‖₊ = single (f := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
+    intro b
     refine Pi.apply_single (fun i (x : E i) ↦ ‖x‖₊) ?_ i y b
     simp
   simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite,
@@ -159,8 +160,8 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι) (hp 
     _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ p *
           ∫⁻ t, f (X t) ^ (1 - k * p) * ∏ j in s, ((∫⋯∫⁻_{j}, f ∂μ) (X t)) ^ p ∂(μ i) := by
               -- pull out this constant factor
-              have : ∀ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) = (∫⋯∫⁻_{i}, f ∂μ) x
-              · intro t
+              have : ∀ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) = (∫⋯∫⁻_{i}, f ∂μ) x := by
+                intro t
                 rw [lmarginal_update_of_mem]
                 exact Iff.mpr Finset.mem_singleton rfl
               simp_rw [this]
@@ -186,8 +187,8 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι) (hp 
               congr! 2
               · rw [lmarginal_singleton]
               refine prod_congr rfl fun j hj => ?_
-              have hi' : i ∉ ({j} : Finset ι)
-              · simp only [Finset.mem_singleton, Finset.mem_insert, Finset.mem_compl] at hj ⊢
+              have hi' : i ∉ ({j} : Finset ι) := by
+                simp only [Finset.mem_singleton, Finset.mem_insert, Finset.mem_compl] at hj ⊢
                 exact fun h ↦ hi (h ▸ hj)
               rw [lmarginal_insert _ hf hi']
     _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ (p + (1 - k * p)) *  ∏ j in s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p := by
@@ -292,8 +293,8 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux {u : (ι → ℝ) → ℝ} (hu
     (h2u : HasCompactSupport u) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
     ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
-  have : (1:ℝ) ≤ ↑#ι - 1
-  · have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
+  have : (1:ℝ) ≤ ↑#ι - 1 := by
+    have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
     linarith
   calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
       = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ))) ^ (#ι : ℝ) := by
@@ -330,7 +331,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux {u : (ι → ℝ) → ℝ} (hu
         rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
           (hasDerivAt_update x i y).differentiableAt]
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ :=
-        ContinuousLinearMap.le_op_nnnorm ..
+        ContinuousLinearMap.le_opNNNorm ..
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ := by simp [deriv_update, Pi.nnnorm_single]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
@@ -340,6 +341,8 @@ open FiniteDimensional
 
 section
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+
+example (c : ℝ≥0) (μ : Measure E) : c • μ = (c : ℝ≥0∞) • μ := by rw [@ENNReal.smul_def]
 
 set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
@@ -365,22 +368,18 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
   have e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
   haveI : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
     (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
-  obtain ⟨c, hc₀, hc, rfl⟩ :=
-    isAddHaarMeasure_eq_smul_isAddHaarMeasure μ ((volume : Measure (ι → ℝ)).map e.symm)
+  let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
+  have hc : 0 < c := addHaarScalarFactor_pos_of_isAddHaarMeasure ..
+  have h2c : μ = c • ((volume : Measure (ι → ℝ)).map e.symm) := isAddLeftInvariant_eq_smul ..
+  have h3c : (c : ℝ≥0∞) ≠ 0 := by simp_rw [ne_eq, ENNReal.coe_eq_zero, hc.ne', not_false_eq_true]
   have : ∃ C : ℝ≥0, C * c ^ ((#ι:ℝ) / ((#ι - 1 : ℝ)))
-      = c * (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι:ℝ) / (#ι - 1 : ℝ)))
-  · lift c to ℝ≥0 using hc
-    norm_cast at hc₀
+      = c * (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι:ℝ) / (#ι - 1 : ℝ))) := by
     use (c * (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι:ℝ) / (#ι - 1 : ℝ))))
       * (c ^ ((#ι:ℝ) / ((#ι - 1 : ℝ))))⁻¹
-    rw [← ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ hι.le, ← ENNReal.coe_mul]
-    congr! 1
-    rw [← eq_mul_inv_iff_mul_eq₀]
-    apply LT.lt.ne'
-    apply NNReal.rpow_pos
-    positivity
+    rw [inv_mul_cancel_right₀]
+    exact (NNReal.rpow_pos hc).ne'
   refine this.imp fun C hC u hu h2u ↦ ?_
-  rw [lintegral_smul_measure, lintegral_smul_measure]
+  rw [h2c, ENNReal.smul_def, lintegral_smul_measure, lintegral_smul_measure]
   let v : (ι → ℝ) → ℝ := u ∘ e.symm
   have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
   have h2v : HasCompactSupport v := h2u.comp_homeomorph e.symm.toHomeomorph
@@ -400,7 +399,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
         gcongr with y
         norm_cast
         rw [e.symm.fderiv]
-        apply ContinuousLinearMap.op_nnnorm_comp_le
+        apply ContinuousLinearMap.opNNNorm_comp_le
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊
         * ∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
         rw [lintegral_mul_const, mul_comm]
@@ -415,9 +414,10 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
         congr
         rw [lintegral_map _ e.symm.continuous.measurable]
         exact (hu.continuous_fderiv (le_refl _)).measurable.nnnorm.coe_nnreal_ennreal
-  rw [← ENNReal.mul_le_mul_left hc₀ hc, ← mul_assoc, ← hC] at this
-  simp_rw [hιcard] at this hι
-  rw [ENNReal.mul_rpow_of_nonneg _ _ hι.le, ← mul_assoc]
+  rw [← ENNReal.mul_le_mul_left h3c ENNReal.coe_ne_top, ← mul_assoc, ← ENNReal.coe_mul, ← hC,
+    ENNReal.coe_mul] at this
+  rw [hιcard] at this hι
+  rw [ENNReal.mul_rpow_of_nonneg _ _ hι.le, ← mul_assoc, ENNReal.coe_rpow_of_ne_zero hc.ne']
   exact this
 
 set_option linter.unusedVariables false in
@@ -430,12 +430,13 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E) :
     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u (finrank ℝ E / (finrank ℝ E - 1)) μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
   obtain ⟨m, hm⟩ : ∃ m, finrank ℝ E = m + 2 := Nat.exists_eq_add_of_le' hE
-  have H_real : (finrank ℝ E / (finrank ℝ E - 1)) = (m + 2 : ℝ) / (m + 1 : ℝ)
-  · rw [hm]
+  have H_real : (finrank ℝ E / (finrank ℝ E - 1)) = (m + 2 : ℝ) / (m + 1 : ℝ) := by
+    rw [hm]
     push_cast
     ring_nf
-  have H_ennreal : (finrank ℝ E / (finrank ℝ E - 1)) = (↑((m + 2 : ℝ≥0) / (m + 1 : ℝ≥0)) : ℝ≥0∞)
-  · rw [ENNReal.coe_div, hm]
+  have H_ennreal :
+    (finrank ℝ E / (finrank ℝ E - 1)) = (↑((m + 2 : ℝ≥0) / (m + 1 : ℝ≥0)) : ℝ≥0∞) := by
+    rw [ENNReal.coe_div, hm]
     · push_cast
       congr
       apply ENNReal.sub_eq_of_eq_add_rev
