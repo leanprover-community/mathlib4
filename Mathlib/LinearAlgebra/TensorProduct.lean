@@ -3,8 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.GroupTheory.Congruence
+import Mathlib.LinearAlgebra.Basic
 import Mathlib.Tactic.SuppressCompilation
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
@@ -41,9 +42,10 @@ section Semiring
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
 variable {R'' : Type*} [Semiring R'']
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S]
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*} {T : Type*}
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
+variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
 variable (M N)
@@ -80,9 +82,9 @@ def TensorProduct : Type _ :=
 variable {R}
 
 set_option quotPrecheck false in
-scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
+@[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
-scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
+@[inherit_doc] scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
 
 namespace TensorProduct
 
@@ -122,8 +124,10 @@ def tmul (m : M) (n : N) : M ⊗[R] N :=
 
 variable {R}
 
+/-- The canonical function `M → N → M ⊗ N`. -/
 infixl:100 " ⊗ₜ " => tmul _
 
+/-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- porting note: make the arguments of induction_on explicit
@@ -488,7 +492,7 @@ theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ
 @[simp]
 theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := by
   rw [← top_le_iff, ← span_tmul_eq_top, Submodule.map₂_eq_span_image2]
-  exact Submodule.span_mono fun _ ⟨m, n, h⟩ => ⟨m, n, trivial, trivial, h⟩
+  exact Submodule.span_mono fun _ ⟨m, n, h⟩ => ⟨m, trivial, n, trivial, h⟩
 #align tensor_product.map₂_mk_top_top_eq_top TensorProduct.map₂_mk_top_top_eq_top
 
 theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
@@ -515,21 +519,8 @@ variable (f : M →ₗ[R] N →ₗ[R] P)
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def liftAux : M ⊗[R] N →+ P :=
-  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift fun p : M × N => f p.1 p.2) <|
-    AddCon.addConGen_le fun x y hxy =>
-      match x, y, hxy with
-      | _, _, Eqv.of_zero_left n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, f.map_zero₂]
-      | _, _, Eqv.of_zero_right m =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, (f m).map_zero]
-      | _, _, Eqv.of_add_left m₁ m₂ n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, f.map_add₂]
-      | _, _, Eqv.of_add_right m n₁ n₂ =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, (f m).map_add]
-      | _, _, Eqv.of_smul r m n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [FreeAddMonoid.lift_eval_of, f.map_smul₂, (f m).map_smul]
-      | _, _, Eqv.add_comm x y =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+  liftAddHom (LinearMap.toAddMonoidHom'.comp <| f.toAddMonoidHom)
+    fun r m n => by dsimp; rw [LinearMap.map_smul₂, map_smul]
 #align tensor_product.lift_aux TensorProduct.liftAux
 
 theorem liftAux_tmul (m n) : liftAux f (m ⊗ₜ n) = f m n :=
@@ -809,10 +800,41 @@ theorem map_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (m : M) (n : N) : map f
   rfl
 #align tensor_product.map_tmul TensorProduct.map_tmul
 
+/-- Given linear maps `f : M → P`, `g : N → Q`, if we identify `M ⊗ N` with `N ⊗ M` and `P ⊗ Q`
+with `Q ⊗ P`, then this lemma states that `f ⊗ g = g ⊗ f`. -/
 lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
-    map f g ∘ₗ TensorProduct.comm R N M =
-      TensorProduct.comm R Q P ∘ₗ map g f :=
+    map f g ∘ₗ TensorProduct.comm R N M = TensorProduct.comm R Q P ∘ₗ map g f :=
   ext rfl
+
+lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M):
+    map f g (TensorProduct.comm R N M x) = TensorProduct.comm R Q P (map g f x) :=
+  DFunLike.congr_fun (map_comp_comm_eq _ _) _
+
+/-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `(M ⊗ N) ⊗ P`
+with `M ⊗ (N ⊗ P)` and `(Q ⊗ S) ⊗ T` with `Q ⊗ (S ⊗ T)`, then this lemma states that
+`f ⊗ (g ⊗ h) = (f ⊗ g) ⊗ h`. -/
+lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
+    map f (map g h) ∘ₗ TensorProduct.assoc R M N P =
+      TensorProduct.assoc R Q S T ∘ₗ map (map f g) h :=
+  ext <| ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+
+lemma map_map_assoc (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : (M ⊗[R] N) ⊗[R] P) :
+    map f (map g h) (TensorProduct.assoc R M N P x) =
+      TensorProduct.assoc R Q S T (map (map f g) h x) :=
+  DFunLike.congr_fun (map_map_comp_assoc_eq _ _ _) _
+
+/-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `M ⊗ (N ⊗ P)`
+with `(M ⊗ N) ⊗ P` and `Q ⊗ (S ⊗ T)` with `(Q ⊗ S) ⊗ T`, then this lemma states that
+`(f ⊗ g) ⊗ h = f ⊗ (g ⊗ h)`. -/
+lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
+    map (map f g) h ∘ₗ (TensorProduct.assoc R M N P).symm =
+      (TensorProduct.assoc R Q S T).symm ∘ₗ map f (map g h) :=
+  ext <| LinearMap.ext fun _ => ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+
+lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] (N ⊗[R] P)) :
+    map (map f g) h ((TensorProduct.assoc R M N P).symm x) =
+      (TensorProduct.assoc R Q S T).symm (map f (map g h) x) :=
+  DFunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
 
 theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
@@ -945,6 +967,14 @@ theorem homTensorHomMap_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     homTensorHomMap R M N P Q (f ⊗ₜ g) = map f g :=
   rfl
 #align tensor_product.hom_tensor_hom_map_apply TensorProduct.homTensorHomMap_apply
+
+@[simp]
+theorem map_zero_left (g : N →ₗ[R] Q) : map (0 : M →ₗ[R] P) g = 0 :=
+  (mapBilinear R M N P Q).map_zero₂ _
+
+@[simp]
+theorem map_zero_right (f : M →ₗ[R] P) : map f (0 : N →ₗ[R] Q) = 0 :=
+  (mapBilinear R M N P Q _).map_zero
 
 end
 
@@ -1082,6 +1112,16 @@ theorem lTensor_tmul (m : M) (n : N) : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n :
 theorem rTensor_tmul (m : M) (n : N) : f.rTensor M (n ⊗ₜ m) = f n ⊗ₜ m :=
   rfl
 #align linear_map.rtensor_tmul LinearMap.rTensor_tmul
+
+@[simp]
+theorem lTensor_comp_mk (m : M) :
+    f.lTensor M ∘ₗ TensorProduct.mk R M N m = TensorProduct.mk R M P m ∘ₗ f :=
+  rfl
+
+@[simp]
+theorem rTensor_comp_flip_mk (m : M) :
+    f.rTensor M ∘ₗ (TensorProduct.mk R N M).flip m = (TensorProduct.mk R P M).flip m ∘ₗ f :=
+  rfl
 
 lemma comm_comp_rTensor_comp_comm_eq (g : N →ₗ[R] P) :
     TensorProduct.comm R P Q ∘ₗ rTensor Q g ∘ₗ TensorProduct.comm R Q N =
@@ -1297,8 +1337,8 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
     (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [add_left_neg, zero_tmul])
     fun x y hx hy => by
-    suffices : -x + x + (-y + y) = 0
-    · rw [← this]
+    suffices -x + x + (-y + y) = 0 by
+      rw [← this]
       unfold Neg.neg neg
       simp only
       rw [map_add]

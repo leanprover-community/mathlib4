@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Std.Data.MLList.Basic
-import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Prod.Lex
 import Mathlib.Order.Estimator
+import Mathlib.Data.Set.Finite
 
 /-!
 # Best first search

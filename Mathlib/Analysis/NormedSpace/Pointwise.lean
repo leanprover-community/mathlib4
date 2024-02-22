@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.normed_space.pointwise from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
@@ -49,7 +49,7 @@ theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖�
     simp [zero_smul_set hs, ← Set.singleton_zero]
   · have := (lipschitzWith_smul c⁻¹).ediam_image_le (c • s)
     rwa [← smul_eq_mul, ← ENNReal.smul_def, Set.image_smul, inv_smul_smul₀ hc s, nnnorm_inv,
-      ENNReal.le_inv_smul_iff (nnnorm_ne_zero_iff.mpr hc)] at this
+      le_inv_smul_iff_of_pos (nnnorm_pos.2 hc)] at this
 #align ediam_smul₀ ediam_smul₀
 
 theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
@@ -117,7 +117,7 @@ theorem set_smul_sphere_zero {s : Set 𝕜} (hs : 0 ∉ s) (r : ℝ) :
     _ = (‖·‖) ⁻¹' ((‖·‖ * r) '' s) := by ext; simp [eq_comm]
 
 /-- Image of a bounded set in a normed space under scalar multiplication by a constant is
-bounded. See also `Metric.Bounded.smul` for a similar lemma about an isometric action. -/
+bounded. See also `Bornology.IsBounded.smul` for a similar lemma about an isometric action. -/
 theorem Bornology.IsBounded.smul₀ {s : Set E} (hs : IsBounded s) (c : 𝕜) : IsBounded (c • s) :=
   (lipschitzWith_smul c).isBounded_image hs
 #align metric.bounded.smul Bornology.IsBounded.smul₀

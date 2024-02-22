@@ -48,7 +48,7 @@ theorem one_mem : (1 : ℝ) ∈ I :=
 #align unit_interval.one_mem unitInterval.one_mem
 
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
-  ⟨mul_nonneg hx.1 hy.1, (mul_le_mul hx.2 hy.2 hy.1 zero_le_one).trans_eq <| one_mul 1⟩
+  ⟨mul_nonneg hx.1 hy.1, mul_le_one hx.2 hy.1 hy.2⟩
 #align unit_interval.mul_mem unitInterval.mul_mem
 
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
@@ -72,7 +72,7 @@ instance hasOne : One I :=
   ⟨⟨1, by constructor <;> norm_num⟩⟩
 #align unit_interval.has_one unitInterval.hasOne
 
-instance : ZeroLEOneClass I := ⟨@zero_le_one ℝ _ _ _ _⟩
+instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
 
 instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
 
@@ -94,11 +94,11 @@ instance : Mul I :=
 
 -- todo: we could set up a `LinearOrderedCommMonoidWithZero I` instance
 theorem mul_le_left {x y : I} : x * y ≤ x :=
-  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq <| mul_one x.1
+  Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 #align unit_interval.mul_le_left unitInterval.mul_le_left
 
 theorem mul_le_right {x y : I} : x * y ≤ y :=
-  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq <| one_mul y.1
+  Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 #align unit_interval.mul_le_right unitInterval.mul_le_right
 
 /-- Unit interval central symmetry. -/
@@ -123,6 +123,9 @@ theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_symm unitInterval.symm_symm
 
+theorem symm_bijective : Function.Bijective (symm : I → I) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
@@ -141,7 +144,7 @@ theorem involutive_symm : Function.Involutive σ := symm_symm
 theorem bijective_symm : Function.Bijective σ := involutive_symm.bijective
 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
-  rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ←le_sub_iff_add_le, sub_half]
+  rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]
 
 instance : ConnectedSpace I :=
   Subtype.connectedSpace ⟨nonempty_Icc.mpr zero_le_one, isPreconnected_Icc⟩
@@ -177,7 +180,7 @@ theorem le_one' {t : I} : t ≤ 1 :=
   t.2.2
 #align unit_interval.le_one' unitInterval.le_one'
 
-instance : NeZero (1 : I) := ⟨fun h ↦ one_ne_zero <| congrArg Subtype.val h⟩
+instance : Nontrivial I := ⟨⟨1, 0, (one_ne_zero <| congrArg Subtype.val ·)⟩⟩
 
 theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor
@@ -211,26 +214,26 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
   · rwa [sub_self, abs_zero]
   · exact (abs_eq_self.mpr hdc).le
 
-/-- When `h : a ≤ b` and `δ > 0`, `addNsmul h δ` is a sequence of points in the closed interval
+/-- When `h : a ≤ b` and `δ > 0`, `addNSMul h δ` is a sequence of points in the closed interval
   `[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
-def addNsmul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
+def addNSMul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
 
-lemma addNsmul_zero : addNsmul h δ 0 = a := by
-  rw [addNsmul, zero_smul, add_zero, projIcc_left]
+lemma addNSMul_zero : addNSMul h δ 0 = a := by
+  rw [addNSMul, zero_smul, add_zero, projIcc_left]
 
-lemma addNsmul_eq_right [Archimedean α] (hδ : 0 < δ) :
-    ∃ m, ∀ n ≥ m, addNsmul h δ n = b := by
+lemma addNSMul_eq_right [Archimedean α] (hδ : 0 < δ) :
+    ∃ m, ∀ n ≥ m, addNSMul h δ n = b := by
   obtain ⟨m, hm⟩ := Archimedean.arch (b - a) hδ
   refine ⟨m, fun n hn ↦ ?_⟩
-  rw [addNsmul, coe_projIcc, add_comm, min_eq_left_iff.mpr, max_eq_right h]
-  exact sub_le_iff_le_add.mp (hm.trans <| nsmul_le_nsmul hδ.le hn)
+  rw [addNSMul, coe_projIcc, add_comm, min_eq_left_iff.mpr, max_eq_right h]
+  exact sub_le_iff_le_add.mp (hm.trans <| nsmul_le_nsmul_left hδ.le hn)
 
-lemma monotone_addNsmul (hδ : 0 ≤ δ) : Monotone (addNsmul h δ) :=
-  fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul hδ hnm)
+lemma monotone_addNSMul (hδ : 0 ≤ δ) : Monotone (addNSMul h δ) :=
+  fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul_left hδ hnm)
 
-lemma abs_sub_addNsmul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
-    (ht : t ∈ Icc (addNsmul h δ n) (addNsmul h δ (n+1))) :
-    (|t - addNsmul h δ n| : α) ≤ δ :=
+lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
+    (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n+1))) :
+    (|t - addNSMul h δ n| : α) ≤ δ :=
   (abs_eq_self.2 <| sub_nonneg.2 ht.1).trans_le <| (sub_le_sub_right (by exact ht.2) _).trans <|
     (le_abs_self _).trans <| (abs_projIcc_sub_projIcc h).trans <| by
       rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul, add_sub_cancel]
@@ -247,10 +250,10 @@ lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {
       Monotone t ∧ (∃ m, ∀ n ≥ m, t n = b) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
   obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
   have hδ := half_pos δ_pos
-  refine ⟨addNsmul h (δ/2), addNsmul_zero h,
-    monotone_addNsmul h hδ.le, addNsmul_eq_right h hδ, fun n ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNsmul h (δ/2) n) trivial
-  exact ⟨i, fun t ht ↦ hsub ((abs_sub_addNsmul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos)⟩
+  refine ⟨addNSMul h (δ/2), addNSMul_zero h,
+    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n ↦ ?_⟩
+  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ/2) n) trivial
+  exact ⟨i, fun t ht ↦ hsub ((abs_sub_addNSMul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos)⟩
 
 /-- Any open cover of the unit interval can be refined to a finite partition into subintervals. -/
 lemma exists_monotone_Icc_subset_open_cover_unitInterval {ι} {c : ι → Set I}
@@ -267,11 +270,11 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
   have hδ := half_pos δ_pos
   simp_rw [Subtype.ext_iff]
   have h : (0 : ℝ) ≤ 1 := zero_le_one
-  refine ⟨addNsmul h (δ/2), addNsmul_zero h,
-    monotone_addNsmul h hδ.le, addNsmul_eq_right h hδ, fun n m ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNsmul h (δ/2) n, addNsmul h (δ/2) m) trivial
-  exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNsmul_le h hδ.le n ht.1) <|
-    abs_sub_addNsmul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
+  refine ⟨addNSMul h (δ/2), addNSMul_zero h,
+    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ ?_⟩
+  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ/2) n, addNSMul h (δ/2) m) trivial
+  exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
+    abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
 
 end partition
 

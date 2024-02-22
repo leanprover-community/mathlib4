@@ -561,7 +561,7 @@ theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
   <;> simp [top_add, add_top]
-  simp only [←Nat.cast_add, PartENat.natCast_ne_top, forall_const, not_false_eq_true]
+  simp only [← Nat.cast_add, PartENat.natCast_ne_top, forall_const, not_false_eq_true]
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
 protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b := by
@@ -569,7 +569,7 @@ protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a +
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
   <;> simp [add_eq_top_iff, natCast_ne_top, @eq_comm _ (⊤ : PartENat), top_add]
-  simp only [←Nat.cast_add, add_left_cancel_iff, PartENat.natCast_inj, add_comm, forall_const]
+  simp only [← Nat.cast_add, add_left_cancel_iff, PartENat.natCast_inj, add_comm, forall_const]
 #align part_enat.add_right_cancel_iff PartENat.add_right_cancel_iff
 
 protected theorem add_left_cancel_iff {a b c : PartENat} (ha : a ≠ ⊤) : a + b = a + c ↔ b = c := by
@@ -875,7 +875,7 @@ theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m :
 
 theorem find_le (n : ℕ) (h : P n) : find P ≤ n := by
   rw [le_coe_iff]
-  refine' ⟨⟨_, h⟩, @Nat.find_min' P _ _ _ h⟩
+  exact ⟨⟨_, h⟩, @Nat.find_min' P _ _ _ h⟩
 #align part_enat.find_le PartENat.find_le
 
 theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=

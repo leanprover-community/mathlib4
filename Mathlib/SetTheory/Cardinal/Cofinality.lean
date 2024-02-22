@@ -90,7 +90,7 @@ theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} 
     (f : r ≃r s) : Cardinal.lift.{max u v} (Order.cof r) ≤
     Cardinal.lift.{max u v} (Order.cof s) := by
   rw [Order.cof, Order.cof, lift_sInf, lift_sInf,
-    le_csInf_iff'' (nonempty_image_iff.2 (Order.cof_nonempty s))]
+    le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
   apply csInf_le'
   refine'
@@ -181,8 +181,8 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
   let ⟨S, hS, e⟩ := cof_eq r
   let ⟨s, _, e'⟩ := Cardinal.ord_eq S
   let T : Set α := { a | ∃ aS : a ∈ S, ∀ b : S, s b ⟨_, aS⟩ → r b a }
-  suffices : Unbounded r T
-  · refine' ⟨T, this, le_antisymm _ (Cardinal.ord_le.2 <| cof_type_le this)⟩
+  suffices Unbounded r T by
+    refine' ⟨T, this, le_antisymm _ (Cardinal.ord_le.2 <| cof_type_le this)⟩
     rw [← e, e']
     refine'
       (RelEmbedding.ofMonotone
@@ -266,7 +266,7 @@ theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o
   · refine' le_cof_type.2 fun S H => _
     have : Cardinal.lift.{u, v} #(ULift.up ⁻¹' S) ≤ #(S : Type (max u v)) := by
       rw [← Cardinal.lift_umax.{v, u}, ← Cardinal.lift_id'.{v, u} #S]
-      refine mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{u, v})
+      exact mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{u, v})
     refine' (Cardinal.lift_le.2 <| cof_type_le _).trans this
     exact fun a =>
       let ⟨⟨b⟩, bs, br⟩ := H ⟨a⟩
@@ -527,8 +527,8 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
       · rcases x with (x | ⟨⟨⟨⟩⟩⟩) <;> rcases y with (y | ⟨⟨⟨⟩⟩⟩) <;>
           simp [Subrel, Order.Preimage, EmptyRelation]
         exact x.2
-      · suffices : r x a ∨ ∃ _ : PUnit.{u}, ↑a = x
-        · convert this
+      · suffices r x a ∨ ∃ _ : PUnit.{u}, ↑a = x by
+          convert this
           dsimp [RelEmbedding.ofMonotone]; simp
         rcases trichotomous_of r x a with (h | h | h)
         · exact Or.inl h
@@ -614,8 +614,8 @@ end IsFundamentalSequence
 /-- Every ordinal has a fundamental sequence. -/
 theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     ∃ f, IsFundamentalSequence a a.cof.ord f := by
-  suffices h : ∃ o f, IsFundamentalSequence a o f
-  · rcases h with ⟨o, f, hf⟩
+  suffices h : ∃ o f, IsFundamentalSequence a o f by
+    rcases h with ⟨o, f, hf⟩
     exact ⟨_, hf.ord_cof⟩
   rcases exists_lsub_cof a with ⟨ι, f, hf, hι⟩
   rcases ord_eq ι with ⟨r, wo, hr⟩
@@ -631,8 +631,8 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     rwa [hrr'.2, @enum_lt_enum _ r']
   · rw [← hf, lsub_le_iff]
     intro i
-    suffices h : ∃ i' hi', f i ≤ bfamilyOfFamily' r' (fun i => f i) i' hi'
-    · rcases h with ⟨i', hi', hfg⟩
+    suffices h : ∃ i' hi', f i ≤ bfamilyOfFamily' r' (fun i => f i) i' hi' by
+      rcases h with ⟨i', hi', hfg⟩
       exact hfg.trans_lt (lt_blsub _ _ _)
     by_cases h : ∀ j, r j i → f j < f i
     · refine' ⟨typein r' ⟨i, h⟩, typein_lt_type _ _, _⟩
@@ -640,7 +640,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     · push_neg at h
       cases' wo.wf.min_mem _ h with hji hij
       refine' ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le _ hij⟩, typein_lt_type _ _, _⟩
-      · by_contra' H
+      · by_contra! H
         exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
 #align ordinal.exists_fundamental_sequence Ordinal.exists_fundamental_sequence
@@ -781,7 +781,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
   then s has an unbounded member -/
 theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder α r] {s : Set (Set α)}
     (h₁ : Unbounded r <| ⋃₀ s) (h₂ : #s < StrictOrder.cof r) : ∃ x ∈ s, Unbounded r x := by
-  by_contra' h
+  by_contra! h
   simp_rw [not_unbounded_iff] at h
   let f : s → α := fun x : s => wo.wf.sup x (h x.1 x.2)
   refine' h₂.not_le (le_trans (csInf_le' ⟨range f, fun x => _, rfl⟩) mk_range_le)
@@ -803,7 +803,7 @@ theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) 
 theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ #β) (h₂ : #α < (#β).ord.cof) :
     ∃ a : α, #(f ⁻¹' {a}) = #β := by
   have : ∃ a, #β ≤ #(f ⁻¹' {a}) := by
-    by_contra' h
+    by_contra! h
     apply mk_univ.not_lt
     rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
     exact
@@ -923,8 +923,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
 theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
-  · rw [ha]
-    simp [fun s => (Cardinal.zero_le s).not_lt]
+  · simp [ha]
   have h' : IsStrongLimit #α := ⟨ha, h⟩
   rcases ord_eq α with ⟨r, wo, hr⟩
   haveI := wo
@@ -1046,7 +1045,7 @@ theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α �
   let u' : β → range f := fun b => ⟨f (u b).choose, by simp⟩
   have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a := by
     rintro a p m
-    simp at m
+    simp? at m says simp only [mem_preimage, mem_singleton_iff, Subtype.mk.injEq] at m
     rw [← m]
     apply fun b => (u b).choose_spec
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h k

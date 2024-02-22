@@ -37,7 +37,7 @@ open Limits HomologicalComplex CochainComplex
 variable {C : Type u} [Category.{v} C] [HasZeroObject C] [HasZeroMorphisms C]
 /--
 An `InjectiveResolution Z` consists of a bundled `ℕ`-indexed cochain complex of injective objects,
-along with a quasi-isomorphism to the complex consisting of just `Z` supported in degree `0`.
+along with a quasi-isomorphism from the complex consisting of just `Z` supported in degree `0`.
 -/
 -- @[nolint has_nonempty_instance]
 structure InjectiveResolution (Z : C) where
@@ -55,7 +55,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution CategoryTheory.InjectiveResolution
 
 open InjectiveResolution in
-attribute [instance] injective quasiIso hasHomology
+attribute [instance] injective hasHomology InjectiveResolution.quasiIso
 
 /-- An object admits an injective resolution. -/
 class HasInjectiveResolution (Z : C) : Prop where
@@ -87,7 +87,7 @@ lemma cocomplex_exactAt_succ (n : ℕ) :
   rw [← quasiIsoAt_iff_exactAt I.ι (n + 1) (exactAt_succ_single_obj _ _)]
   · infer_instance
 
-lemma exact_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ):
+lemma exact_succ (n : ℕ):
     (ShortComplex.mk _ _ (I.cocomplex.d_comp_d n (n + 1) (n + 2))).Exact :=
   (HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 2) (by simp)
     (by simp only [CochainComplex.next]; rfl)).1 (I.cocomplex_exactAt_succ n)
@@ -98,14 +98,15 @@ theorem ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
--- Porting note: removed @[simp] simp can prove this
+-- Porting note (#10618): removed @[simp] simp can prove this
+@[reassoc]
 theorem ι_f_zero_comp_complex_d :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 := by
   simp
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_zero_comp_complex_d CategoryTheory.InjectiveResolution.ι_f_zero_comp_complex_d
 
--- Porting note: removed @[simp] simp can prove this
+-- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_comp (n : ℕ) :
     I.cocomplex.d n (n + 1) ≫ I.cocomplex.d (n + 1) (n + 2) = 0 := by
   simp

@@ -66,7 +66,7 @@ structure IsLimit (t : Cone F) where
 #align category_theory.limits.is_limit.fac' CategoryTheory.Limits.IsLimit.fac
 #align category_theory.limits.is_limit.uniq' CategoryTheory.Limits.IsLimit.uniq
 
--- Porting note:  simp can prove this. Linter complains it still exists
+-- Porting note (#10618):  simp can prove this. Linter complains it still exists
 attribute [-simp, nolint simpNF] IsLimit.mk.injEq
 
 attribute [reassoc (attr := simp)] IsLimit.fac
@@ -377,7 +377,7 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
       dsimp
       simp only [Limits.Cone.whisker_π, Limits.Cones.postcompose_obj_π, fac, whiskerLeft_app,
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
-      rw [counit_app_functor, ←Functor.comp_map]
+      rw [counit_app_functor, ← Functor.comp_map]
       have l :
         NatTrans.app w.hom j = NatTrans.app w.hom (Prefunctor.obj (𝟭 J).toPrefunctor j) := by dsimp
       rw [l,w.hom.naturality]
@@ -568,7 +568,7 @@ structure IsColimit (t : Cocone F) where
 
 attribute [reassoc (attr := simp)] IsColimit.fac
 
--- Porting note: simp can prove this. Linter claims it still is tagged with simp
+-- Porting note (#10618): simp can prove this. Linter claims it still is tagged with simp
 attribute [-simp, nolint simpNF] IsColimit.mk.injEq
 
 namespace IsColimit

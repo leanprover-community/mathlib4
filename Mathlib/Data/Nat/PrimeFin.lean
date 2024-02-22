@@ -35,7 +35,7 @@ instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_inject
 @[simp] lemma toFinset_factors (n : ℕ) : n.factors.toFinset = n.primeFactors := rfl
 
 @[simp] lemma mem_primeFactors : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
-  simp_rw [←toFinset_factors, List.mem_toFinset, mem_factors']
+  simp_rw [← toFinset_factors, List.mem_toFinset, mem_factors']
 
 lemma mem_primeFactors_of_ne_zero (hn : n ≠ 0) : p ∈ n.primeFactors ↔ p.Prime ∧ p ∣ n := by
   simp [hn]
@@ -54,7 +54,7 @@ lemma pos_of_mem_primeFactors (hp : p ∈ n.primeFactors) : 0 < p :=
   (prime_of_mem_primeFactors hp).pos
 
 lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
-  le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt $ dvd_of_mem_primeFactors h
+  le_of_dvd (mem_primeFactors.1 h).2.2.bot_lt <| dvd_of_mem_primeFactors h
 
 @[simp] lemma primeFactors_zero : primeFactors 0 = ∅ := rfl
 @[simp] lemma primeFactors_one : primeFactors 1 = ∅ := rfl
@@ -64,8 +64,13 @@ lemma le_of_mem_primeFactors (h : p ∈ n.primeFactors) : p ≤ n :=
   · contrapose!
     rintro hn
     obtain ⟨p, hp, hpn⟩ := exists_prime_and_dvd hn.2
-    exact Nonempty.ne_empty $ ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
+    exact Nonempty.ne_empty <| ⟨_, mem_primeFactors.2 ⟨hp, hpn, hn.1⟩⟩
   · rintro (rfl | rfl) <;> simp
+
+@[simp]
+lemma nonempty_primeFactors {n : ℕ} : n.primeFactors.Nonempty ↔ 1 < n := by
+  rw [← not_iff_not, Finset.not_nonempty_iff_eq_empty, primeFactors_eq_empty, not_lt,
+    Nat.le_one_iff_eq_zero_or_eq_one]
 
 @[simp] protected lemma Prime.primeFactors (hp : p.Prime) : p.primeFactors = {p} := by
   simp [Nat.primeFactors, factors_prime hp]
@@ -86,12 +91,12 @@ lemma primeFactors_gcd (ha : a ≠ 0) (hb : b ≠ 0) :
 
 @[simp] lemma disjoint_primeFactors (ha : a ≠ 0) (hb : b ≠ 0) :
     Disjoint a.primeFactors b.primeFactors ↔ Coprime a b := by
-  simp [disjoint_iff_inter_eq_empty, coprime_iff_gcd_eq_one, ←primeFactors_gcd, gcd_ne_zero_left,
+  simp [disjoint_iff_inter_eq_empty, coprime_iff_gcd_eq_one, ← primeFactors_gcd, gcd_ne_zero_left,
     ha, hb]
 
 protected lemma Coprime.disjoint_primeFactors (hab : Coprime a b) :
     Disjoint a.primeFactors b.primeFactors :=
-  List.disjoint_toFinset_iff_disjoint.2 $ coprime_factors_disjoint hab
+  List.disjoint_toFinset_iff_disjoint.2 <| coprime_factors_disjoint hab
 
 lemma primeFactors_pow_succ (n k : ℕ) : (n ^ (k + 1)).primeFactors = n.primeFactors := by
   rcases eq_or_ne n 0 with (rfl | hn)

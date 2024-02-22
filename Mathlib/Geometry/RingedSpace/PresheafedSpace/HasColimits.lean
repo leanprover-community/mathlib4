@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Geometry.RingedSpace.PresheafedSpace
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Sheaves.Limits
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 #align_import algebraic_geometry.presheafed_space.has_colimits from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -134,11 +135,11 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
         pushforwardObj_obj, op_obj, Opens.map_obj, opEquiv, Equiv.coe_fn_mk, unop_comp,
         Quiver.Hom.unop_op, unop_id]
       -- Porting note : some `simp` lemmas are not picked up
-      rw [NatTrans.comp_app, pushforwardMap_app, NatTrans.id_app]
+      rw [NatTrans.id_app]
       simp only [op_obj, unop_op, Opens.map_obj, map_id_c_app, Opens.map_id_obj',
         map_id, pushforwardEq_hom_app, eqToHom_op, id_eq, eqToHom_map, id_comp,
         TopCat.Presheaf.Pushforward.id_inv_app']
-      rw [NatTrans.comp_app, Pushforward.comp_inv_app, id_comp]
+      rw [Pushforward.comp_inv_app]
       dsimp
       simp
   map_comp {j₁ j₂ j₃} f g := by
@@ -212,15 +213,15 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
         · ext ⟨U, hU⟩
-          dsimp
+          dsimp [-Presheaf.comp_app]
           rw [PresheafedSpace.id_c_app, map_id]
           erw [id_comp]
           rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app, eqToHom_app,
             ← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op),
             NatTrans.comp_app, Functor.leftOp_map, pushforwardDiagramToColimit_map]
-          dsimp
+          dsimp [-Presheaf.comp_app]
           rw [NatTrans.comp_app, NatTrans.comp_app, pushforwardEq_hom_app, id.def, eqToHom_op,
-            Pushforward.comp_inv_app, id_comp, pushforwardMap_app, ←assoc]
+            Pushforward.comp_inv_app, id_comp, pushforwardMap_app, ← assoc]
           congr 1 }
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_cocone AlgebraicGeometry.PresheafedSpace.colimitCocone
@@ -394,7 +395,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
     refine congr_arg (Set.preimage . U.1) (funext fun x => ?_)
-    erw [←comp_app]
+    erw [← TopCat.comp_app]
     congr
     exact ι_preservesColimitsIso_inv (forget C) F (unop X)
   · intro X Y f
@@ -403,7 +404,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     erw [Category.id_comp]
     rw [Category.assoc]
     erw [← (F.obj (unop Y)).presheaf.map_comp, (F.map f.unop).c.naturality_assoc,
-      ←(F.obj (unop Y)).presheaf.map_comp]
+      ← (F.obj (unop Y)).presheaf.map_comp]
     rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_presheaf_obj_iso_componentwise_limit AlgebraicGeometry.PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Floris van Doorn. All rights reserved.
+Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
@@ -18,25 +18,35 @@ and Fubini's theorem, without using measurable equivalences by changing the repr
 space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
 
 ## Main Definitions
-* If `f : α → ℝ≥0∞` then `lmarginal μ s f` or `∫⋯∫⁻_s, f ∂μ` is the function that integrates `f`
+
+* Assume that `∀ i : ι, π i` is a product of measurable spaces with measures `μ i` on `π i`,
+  `f : (∀ i, π i) → ℝ≥0∞` is a function and `s : Finset ι`.
+  Then `lmarginal μ s f` or `∫⋯∫⁻_s, f ∂μ` is the function that integrates `f`
   over all variables in `s`. It returns a function that still takes the same variables as `f`,
   but is constant in the variables in `s`. Mathematically, if `s = {i₁, ..., iₖ}`,
-  then `marginal μ s f` is the expression
+  then `lmarginal μ s f` is the expression
   $$
-  \vec{x}\mapsto \int\!\!\cdots\!\!\int f(\vec{x})dx_{i_1}\cdots dx_{i_k}.
+  \vec{x}\mapsto \int\!\!\cdots\!\!\int f(\vec{x}[\vec{y}])dy_{i_1}\cdots dy_{i_k}.
   $$
+  where $\vec{x}[\vec{y}]$ is the vector $\vec{x}$ with $x_{i_j}$ replaced by $y_{i_j}$ for all
+  $1 \le j \le k$.
+  If `f` is the distribution of a random variable, this is the marginal distribution of all
+  variables not in `s` (but not the most general notion, since we only consider product measures
+  here).
+  Note that the notation `∫⋯∫⁻_s, f ∂μ` is not a binder, and returns a function.
 
 ## Main Results
 
 * `lmarginal_union` is the analogue of Tonelli's theorem for iterated integrals. It states that
-  for measurable functions
+  for measurable functions `f` and disjoint finsets `s` and `t` we have
+  `∫⋯∫⁻_s ∪ t, f ∂μ = ∫⋯∫⁻_s, ∫⋯∫⁻_t, f ∂μ ∂μ`.
 
 ## Implementation notes
 
 The function `f` can have an arbitrary product as its domain (even infinite products), but the
 set `s` of integration variables is a `Finset`. We are assuming that the function `f` is measurable
-for most of this file. Note that asking whether `AEMeasurable` is not even well-posed, since there
-is no well-behaved measure on the domain of `f`.
+for most of this file. Note that asking whether it is `AEMeasurable` is not even well-posed,
+since there is no well-behaved measure on the domain of `f`.
 
 ## Todo
 
@@ -60,14 +70,17 @@ variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π
 
 /-- Integrate `f(x₁,…,xₙ)` over all variables `xᵢ` where `i ∈ s`. Return a function in the
   remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
-  This is the marginal distribution of all variables not in `s`. -/
+  This is the marginal distribution of all variables not in `s` when the considered measure
+  is the product measure. -/
 def lmarginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞)
     (x : ∀ i, π i) : ℝ≥0∞ :=
   ∫⁻ y : ∀ i : s, π i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i
 
 -- Note: this notation is not a binder. This is more convenient since it returns a function.
+@[inherit_doc]
 notation "∫⋯∫⁻_" s ", " f " ∂" μ:70 => lmarginal μ s f
 
+@[inherit_doc]
 notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 
 variable (μ)
@@ -92,7 +105,7 @@ theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫�
 theorem lmarginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → ℝ≥0∞)
     (h : ∀ i ∉ s, x i = y i) :
     (∫⋯∫⁻_s, f ∂μ) x = (∫⋯∫⁻_s, f ∂μ) y := by
-  dsimp [lmarginal, updateFinset]; rcongr; exact h _ ‹_›
+  dsimp [lmarginal, updateFinset_def]; rcongr; exact h _ ‹_›
 
 theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
     (f : (∀ i, π i) → ℝ≥0∞) (x : ∀ i, π i) (y : π i) :
@@ -178,7 +191,7 @@ theorem lmarginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : �
     ∫⋯∫⁻_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
-  simp_rw [lmarginal, measurePreserving_piCongrLeft μ e |>.lintegral_map_equiv, updateFinset]
+  simp_rw [lmarginal, measurePreserving_piCongrLeft μ e |>.lintegral_map_equiv, updateFinset_def]
   simp
   rfl
 
@@ -190,9 +203,9 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
       (∫⋯∫⁻_s.image e, f ∘ (· ∘' e) ∂μ) x = (∫⋯∫⁻_s, f ∂μ ∘' e) (x ∘' e) := by
   have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
     measurable_pi_iff.mpr <| λ i ↦ measurable_pi_apply (e i)
-  induction s using Finset.induction generalizing x
-  case empty => simp
-  case insert i s hi ih =>
+  induction s using Finset.induction generalizing x with
+  | empty => simp
+  | insert hi ih =>
     rw [image_insert, lmarginal_insert _ (hf.comp h) (he.mem_finset_image.not.mpr hi),
       lmarginal_insert _ hf hi]
     simp_rw [ih, ← update_comp_eq_of_injective' x he]
@@ -200,9 +213,9 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
 theorem lmarginal_update_of_not_mem {i : δ}
     {f : (∀ i, π i) → ℝ≥0∞} (hf : Measurable f) (hi : i ∉ s) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∘ (Function.update · i y) ∂μ) x := by
-  induction s using Finset.induction generalizing x
-  case empty => simp
-  case insert i' s hi' ih =>
+  induction s using Finset.induction generalizing x with
+  | empty => simp
+  | @insert i' s hi' ih =>
     rw [lmarginal_insert _ hf hi', lmarginal_insert _ (hf.comp measurable_update_left) hi']
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]
@@ -237,8 +250,6 @@ theorem lintegral_le_of_lmarginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i,
 end LMarginal
 
 -- not yet PR'd results below this!!
-
-
 
 section
 

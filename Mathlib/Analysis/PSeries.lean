@@ -78,7 +78,8 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     -- Note(kmill): was `fun k hk => ...` but `mem_Ico.mp hk` was elaborating with some
     -- delayed assignment metavariables that weren't resolved in time. `intro` fixes this.
     intro k hk
-    exact hf (n.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
+    exact hf ((@Nat.one_le_two_pow n).trans_lt <|
+      (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
       (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
   simp [pow_succ, two_mul]
@@ -86,7 +87,7 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
 
 theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
-  convert add_le_add_left (nsmul_le_nsmul_of_le_right (sum_condensed_le' hf n) 2) (f 1)
+  convert add_le_add_left (nsmul_le_nsmul_right (sum_condensed_le' hf n) 2) (f 1)
   simp [sum_range_succ', add_comm, pow_succ, mul_nsmul', sum_nsmul]
 #align finset.sum_condensed_le Finset.sum_condensed_le
 
@@ -111,7 +112,7 @@ theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     iSup_le fun n =>
       le_trans _
         (add_le_add_left
-          (nsmul_le_nsmul_of_le_right (ENNReal.sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)) _) _)
+          (nsmul_le_nsmul_right (ENNReal.sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)) _) _)
   simpa using Finset.sum_condensed_le hf n
 #align ennreal.tsum_condensed_le ENNReal.tsum_condensed_le
 
@@ -161,23 +162,21 @@ if and only if `1 < p`. -/
 @[simp]
 theorem Real.summable_nat_rpow_inv {p : ℝ} :
     Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
-  cases' le_or_lt 0 p with hp hp
+  rcases le_or_lt 0 p with hp | hp
   /- Cauchy condensation test applies only to antitone sequences, so we consider the
     cases `0 ≤ p` and `p < 0` separately. -/
   · rw [← summable_condensed_iff_of_nonneg]
     · simp_rw [Nat.cast_pow, Nat.cast_two, ← rpow_nat_cast, ← rpow_mul zero_lt_two.le, mul_comm _ p,
         rpow_mul zero_lt_two.le, rpow_nat_cast, ← inv_pow, ← mul_pow,
-        summable_geometric_iff_norm_lt_1]
+        summable_geometric_iff_norm_lt_one]
       nth_rw 1 [← rpow_one 2]
       rw [← division_def, ← rpow_sub zero_lt_two, norm_eq_abs,
         abs_of_pos (rpow_pos_of_pos zero_lt_two _), rpow_lt_one_iff zero_lt_two.le]
       norm_num
     · intro n
-      exact inv_nonneg.2 (rpow_nonneg_of_nonneg n.cast_nonneg _)
+      positivity
     · intro m n hm hmn
-      exact
-        inv_le_inv_of_le (rpow_pos_of_pos (Nat.cast_pos.2 hm) _)
-          (rpow_le_rpow m.cast_nonneg (Nat.cast_le.2 hmn) hp)
+      gcongr
   -- If `p < 0`, then `1 / n ^ p` tends to infinity, thus the series diverges.
   · suffices ¬Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) by
       have : ¬1 < p := fun hp₁ => hp.not_le (zero_le_one.trans hp₁.le)
@@ -218,7 +217,7 @@ theorem Real.summable_nat_pow_inv {p : ℕ} :
 if and only if `1 < p`. -/
 theorem Real.summable_one_div_nat_pow {p : ℕ} :
     Summable (fun n => 1 / (n : ℝ) ^ p : ℕ → ℝ) ↔ 1 < p := by
-  -- Porting note: was `simp`
+  -- porting note (#10745): was `simp`
   simp only [one_div, Real.summable_nat_pow_inv]
 #align real.summable_one_div_nat_pow Real.summable_one_div_nat_pow
 
@@ -268,7 +267,7 @@ theorem Real.tendsto_sum_range_one_div_nat_succ_atTop :
     Tendsto (fun n => ∑ i in Finset.range n, (1 / (i + 1) : ℝ)) atTop atTop := by
   rw [← not_summable_iff_tendsto_nat_atTop_of_nonneg]
   · exact_mod_cast mt (_root_.summable_nat_add_iff 1).1 Real.not_summable_one_div_nat_cast
-  · exact fun i => div_nonneg zero_le_one i.cast_add_one_pos.le
+  · exact fun i => by positivity
 #align real.tendsto_sum_range_one_div_nat_succ_at_top Real.tendsto_sum_range_one_div_nat_succ_atTop
 
 @[simp]
@@ -333,9 +332,8 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) �
     _ ≤ 1 / (k + 1) + 1 / (k + 1) := by
       have A : (1 : α) ≤ k + 1 := by simp only [le_add_iff_nonneg_left, Nat.cast_nonneg]
       simp_rw [← one_div]
-      apply add_le_add_right
-      refine' div_le_div zero_le_one le_rfl (zero_lt_one.trans_le A) _
-      simpa using pow_le_pow A one_le_two
+      gcongr
+      simpa using pow_le_pow_right A one_le_two
     _ = 2 / (k + 1) := by ring
 
 #align sum_Ioo_inv_sq_le sum_Ioo_inv_sq_le

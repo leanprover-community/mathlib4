@@ -66,7 +66,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
   archimedean_iff_nat_lt.2
     (by
-      by_contra' h
+      by_contra! h
       obtain ⟨x, h⟩ := h
       have := csSup_le _ _ (range_nonempty Nat.cast)
         (forall_range_iff.2 fun m =>
@@ -150,11 +150,11 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
   refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
   · rw [mem_setOf_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
-    refine ⟨q₁, q - q₁, by rwa [coe_mem_cutMap_iff], ?_, add_sub_cancel'_right _ _⟩
+    refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel'_right _ _⟩
     · norm_cast
       rw [coe_mem_cutMap_iff]
       exact mod_cast sub_lt_comm.mp hq₁q
-  · rintro _ ⟨_, _, ⟨qa, ha, rfl⟩, ⟨qb, hb, rfl⟩, rfl⟩
+  · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
     -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
     refine' ⟨qa + qb, _, by beta_reduce; norm_cast⟩
     rw [mem_setOf_eq, cast_add]
@@ -240,7 +240,7 @@ theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) =
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 #align linear_ordered_field.induced_map_induced_map LinearOrderedField.inducedMap_inducedMap
 
---@[simp] -- Porting note: simp can prove it
+--@[simp] -- Porting note (#10618): simp can prove it
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
   rw [inducedMap_inducedMap, inducedMap_self]
 #align linear_ordered_field.induced_map_inv_self LinearOrderedField.inducedMap_inv_self
@@ -295,9 +295,8 @@ def inducedAddHom : α →+ β :=
 @[simps!]
 def inducedOrderRingHom : α →+*o β :=
   { AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero (inducedAddHom α β) (by
-      suffices : ∀ x, 0 < x → inducedAddHom α β (x * x)
-          = inducedAddHom α β x * inducedAddHom α β x
-      · intro x
+      suffices ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x by
+        intro x
         obtain h | rfl | h := lt_trichotomy x 0
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]

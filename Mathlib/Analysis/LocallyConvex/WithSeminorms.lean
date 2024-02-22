@@ -78,8 +78,8 @@ def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
 variable (p : SeminormFamily 𝕜 E ι)
 
 theorem basisSets_iff {U : Set E} :
-    U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : _) (_ : 0 < r), U = ball (i.sup p) 0 r := by
-  simp only [basisSets, mem_iUnion, mem_singleton_iff]
+    U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : ℝ), 0 < r ∧ U = ball (i.sup p) 0 r := by
+  simp only [basisSets, mem_iUnion, exists_prop, mem_singleton_iff]
 #align seminorm_family.basis_sets_iff SeminormFamily.basisSets_iff
 
 theorem basisSets_mem (i : Finset ι) {r : ℝ} (hr : 0 < r) : (i.sup p).ball 0 r ∈ p.basisSets :=
@@ -150,7 +150,7 @@ theorem basisSets_smul_right (v : E) (U : Set E) (hU : U ∈ p.basisSets) :
   · simp_rw [(lt_div_iff h).symm]
     rw [← _root_.ball_zero_eq]
     exact Metric.ball_mem_nhds 0 (div_pos hr h)
-  simp_rw [le_antisymm (not_lt.mp h) (map_nonneg _ v), mul_zero, hr]
+  simp_rw [le_antisymm (not_lt.mp h) (apply_nonneg _ v), mul_zero, hr]
   exact IsOpen.mem_nhds isOpen_univ (mem_univ 0)
 #align seminorm_family.basis_sets_smul_right SeminormFamily.basisSets_smul_right
 
@@ -313,7 +313,7 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball x sr.2 := by
   have : TopologicalAddGroup E := hp.topologicalAddGroup
   rw [← map_add_left_nhds_zero]
-  convert hp.hasBasis_zero_ball.map ((· + ·) x) using 1
+  convert hp.hasBasis_zero_ball.map (x + ·) using 1
   ext sr : 1
   -- Porting note: extra type ascriptions needed on `0`
   have : (sr.fst.sup p).ball (x +ᵥ (0 : E)) sr.snd = x +ᵥ (sr.fst.sup p).ball 0 sr.snd :=
@@ -324,7 +324,7 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
 /-- The `x`-neighbourhoods of a space whose topology is induced by a family of seminorms
 are exactly the sets which contain seminorm balls around `x`.-/
 theorem WithSeminorms.mem_nhds_iff (hp : WithSeminorms p) (x : E) (U : Set E) :
-    U ∈ nhds x ↔ ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
+    U ∈ 𝓝 x ↔ ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
   rw [hp.hasBasis_ball.mem_iff, Prod.exists]
 #align with_seminorms.mem_nhds_iff WithSeminorms.mem_nhds_iff
 
@@ -354,7 +354,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
 theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E) (hx : x ≠ 0) :
     ∃ i, p i x ≠ 0 := by
   have := ((t1Space_TFAE E).out 0 9).mp (inferInstanceAs <| T1Space E)
-  by_contra' h
+  by_contra! h
   refine' hx (this _)
   rw [hp.hasBasis_zero_ball.specializes_iff]
   rintro ⟨s, r⟩ (hr : 0 < r)
@@ -511,12 +511,12 @@ variable [TopologicalSpace E]
 
 theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 s ↔ ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p x < r := by
-  rw [hp.hasBasis.isVonNBounded_basis_iff]
+  rw [hp.hasBasis.isVonNBounded_iff]
   constructor
   · intro h I
     simp only [id.def] at h
     specialize h ((I.sup p).ball 0 1) (p.basisSets_mem I zero_lt_one)
-    rcases h with ⟨r, hr, h⟩
+    rcases h.exists_pos with ⟨r, hr, h⟩
     cases' NormedField.exists_lt_norm 𝕜 r with a ha
     specialize h a (le_of_lt ha)
     rw [Seminorm.smul_ball_zero (norm_pos_iff.1 <| hr.trans ha), mul_one] at h
@@ -802,7 +802,7 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 lemma map_eq_zero_of_norm_zero (q : Seminorm 𝕜 F)
     (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
   (map_zero q) ▸
-    ((specializes_iff_mem_closure.mpr $ mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
+    ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
 
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there
@@ -813,7 +813,7 @@ controlled image by `q`. The control of `q` at the original element follows by r
 lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
     (hq : Continuous q) : ∃ C, 0 < C ∧ (∀ x : F, q x ≤ C * ‖x‖) := by
   have hq' : Tendsto q (𝓝 0) (𝓝 0) := map_zero q ▸ hq.tendsto 0
-  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' $ Iio_mem_nhds one_pos)
+  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' <| Iio_mem_nhds one_pos)
     with ⟨ε, ε_pos, hε⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have : 0 < ‖c‖ / ε := by positivity

@@ -5,6 +5,7 @@ Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Operations
 
 #align_import algebra.char_p.quotient from "leanprover-community/mathlib"@"85e3c05a94b27c84dc6f234cf88326d5e0096ec3"
 
@@ -46,7 +47,7 @@ theorem quotient' {R : Type*} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
 theorem quotient_iff {R : Type*} [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
     CharP (R ⧸ I) n ↔ ∀ x : ℕ, ↑x ∈ I → (x : R) = 0 := by
   refine ⟨fun _ x hx => ?_, CharP.quotient' n I⟩
-  rw [CharP.cast_eq_zero_iff R n, ←CharP.cast_eq_zero_iff (R ⧸ I) n _]
+  rw [CharP.cast_eq_zero_iff R n, ← CharP.cast_eq_zero_iff (R ⧸ I) n _]
   exact (Submodule.Quotient.mk_eq_zero I).mpr hx
 
 /-- `CharP.quotient_iff`, but stated in terms of inclusions of ideals. -/

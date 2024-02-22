@@ -34,7 +34,7 @@ open Submodule
 
 section IsomorphismLaws
 
-/-- The first isomorphism law for modules. The quotient of `M` by the kernel of `f` is linearly
+/-- The **first isomorphism law for modules**. The quotient of `M` by the kernel of `f` is linearly
 equivalent to the range of `f`. -/
 noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMap.range f :=
   (LinearEquiv.ofInjective (f.ker.liftQ f <| le_rfl) <|
@@ -42,7 +42,7 @@ noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMa
     (LinearEquiv.ofEq _ _ <| Submodule.range_liftQ _ _ _)
 #align linear_map.quot_ker_equiv_range LinearMap.quotKerEquivRange
 
-/-- The first isomorphism theorem for surjective linear maps. -/
+/-- The **first isomorphism theorem for surjective linear maps**. -/
 noncomputable def quotKerEquivOfSurjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f) :
     (M ⧸ LinearMap.ker f) ≃ₗ[R] M₂ :=
   f.quotKerEquivRange.trans (LinearEquiv.ofTop (LinearMap.range f) (LinearMap.range_eq_top.2 hf))
@@ -106,7 +106,7 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
 
 -- @[simp]
--- Porting note: `simp` affects the type arguments of `FunLike.coe`, so this theorem can't be
+-- Porting note: `simp` affects the type arguments of `DFunLike.coe`, so this theorem can't be
 --               a simp theorem anymore, even if it has high priority.
 theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
     ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
@@ -127,16 +127,16 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨x, hx⟩ :=
   (LinearEquiv.symm_apply_eq _).2 <| by
-    -- Porting note: Was `simp`.
+    -- porting note (#10745): was `simp`.
     rw [quotientInfEquivSupQuotient_apply_mk, inclusion_apply]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
   (LinearEquiv.symm_apply_eq _).trans <| by
-    -- Porting note: Was `simp`.
+    -- porting note (#10745): was `simp`.
     rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
 
@@ -171,7 +171,7 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
   liftQ_apply _ _ _
 #align submodule.quotient_quotient_equiv_quotient_aux_mk Submodule.quotientQuotientEquivQuotientAux_mk
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
 #align submodule.quotient_quotient_equiv_quotient_aux_mk_mk Submodule.quotientQuotientEquivQuotientAux_mk_mk

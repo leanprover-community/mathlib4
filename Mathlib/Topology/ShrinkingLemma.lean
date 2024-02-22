@@ -185,7 +185,7 @@ theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i
   · intro j
     rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
   · refine' fun x hx => mem_iUnion.2 _
-    rcases em (∃ (j : _) (_ : j ≠ i), x ∈ v j) with (⟨j, hji, hj⟩ | h)
+    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
       rwa [update_noteq hji]
     · push_neg at h
@@ -223,8 +223,8 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_nonempty_partialOrder this with ⟨v, hv⟩
-  suffices : ∀ i, i ∈ v.carrier
-  exact ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
+  suffices ∀ i, i ∈ v.carrier from
+    ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
   contrapose! hv
   rcases hv with ⟨i, hi⟩
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩

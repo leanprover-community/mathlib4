@@ -3,6 +3,7 @@ Copyright (c) 2023 Robin Böhne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
+import Std.Data.Json
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Data.String.Defs
 
@@ -30,7 +31,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
     -- we go through the application until we reach the end, counting how many explicit arguments
     -- it has and noting whether they are explicit or implicit
     while descExp.isApp do
-      if (←Lean.Meta.inferType descExp.appFn!).bindingInfo!.isExplicit then
+      if (← Lean.Meta.inferType descExp.appFn!).bindingInfo!.isExplicit then
         explicitList := true::explicitList
         count := count + 1
       else
@@ -76,7 +77,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
 
   | _ => do
     return {
-      expr := ←(Lean.Core.viewSubexpr path.head! expr)
+      expr := ← (Lean.Core.viewSubexpr path.head! expr)
       val? := toString (path.head! + 1)
       listRest := path.tail!
     }
@@ -133,4 +134,5 @@ open scoped Json in
 in the goal.-/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  savePanelWidgetInfo stx ``ConvSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
+  Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
+   (pure <| json% { replaceRange: $(replaceRange) }) stx

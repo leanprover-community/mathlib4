@@ -3,9 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
+import Aesop
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.SimpRw
+import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
 
 #align_import algebra.group.basic from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
@@ -24,14 +27,66 @@ universe u
 
 variable {α β G : Type*}
 
+section IsLeftCancelMul
+
+variable [Mul G] [IsLeftCancelMul G]
+
+@[to_additive]
+theorem mul_right_injective (a : G) : Injective (a * ·) := fun _ _ ↦ mul_left_cancel
+#align mul_right_injective mul_right_injective
+#align add_right_injective add_right_injective
+
+@[to_additive (attr := simp)]
+theorem mul_right_inj (a : G) {b c : G} : a * b = a * c ↔ b = c :=
+  (mul_right_injective a).eq_iff
+#align mul_right_inj mul_right_inj
+#align add_right_inj add_right_inj
+
+@[to_additive]
+theorem mul_ne_mul_right (a : G) {b c : G} : a * b ≠ a * c ↔ b ≠ c :=
+  (mul_right_injective a).ne_iff
+#align mul_ne_mul_right mul_ne_mul_right
+#align add_ne_add_right add_ne_add_right
+
+end IsLeftCancelMul
+
+section IsRightCancelMul
+
+variable [Mul G] [IsRightCancelMul G]
+
+@[to_additive]
+theorem mul_left_injective (a : G) : Function.Injective (· * a) := fun _ _ ↦ mul_right_cancel
+#align mul_left_injective mul_left_injective
+#align add_left_injective add_left_injective
+
+@[to_additive (attr := simp)]
+theorem mul_left_inj (a : G) {b c : G} : b * a = c * a ↔ b = c :=
+  (mul_left_injective a).eq_iff
+#align mul_left_inj mul_left_inj
+#align add_left_inj add_left_inj
+
+@[to_additive]
+theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
+  (mul_left_injective a).ne_iff
+#align mul_ne_mul_left mul_ne_mul_left
+#align add_ne_add_left add_ne_add_left
+
+end IsRightCancelMul
+
 section Semigroup
+variable [Semigroup α]
+
+@[to_additive]
+instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
+#align semigroup.to_is_associative Semigroup.to_isAssociative
+#align add_semigroup.to_is_associative AddSemigroup.to_isAssociative
 
 /-- Composing two multiplications on the left by `y` then `x`
 is equal to a multiplication on the left by `x * y`.
 -/
 @[to_additive (attr := simp) "Composing two additions on the left by `y` then `x`
 is equal to an addition on the left by `x + y`."]
-theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
+theorem comp_mul_left (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
   ext z
   simp [mul_assoc]
 #align comp_mul_left comp_mul_left
@@ -42,13 +97,18 @@ is equal to a multiplication on the right by `y * x`.
 -/
 @[to_additive (attr := simp) "Composing two additions on the right by `y` and `x`
 is equal to an addition on the right by `y + x`."]
-theorem comp_mul_right [Semigroup α] (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
+theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
   ext z
   simp [mul_assoc]
 #align comp_mul_right comp_mul_right
 #align comp_add_right comp_add_right
 
 end Semigroup
+
+@[to_additive]
+instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+#align comm_semigroup.to_is_commutative CommMagma.to_isCommutative
+#align add_comm_semigroup.to_is_commutative AddCommMagma.to_isCommutative
 
 section MulOneClass
 
@@ -75,7 +135,7 @@ theorem eq_one_iff_eq_one_of_mul_eq_one {a b : M} (h : a * b = 1) : a = 1 ↔ b 
 #align eq_zero_iff_eq_zero_of_add_eq_zero eq_zero_iff_eq_zero_of_add_eq_zero
 
 @[to_additive]
-theorem one_mul_eq_id : (· * ·) (1 : M) = id :=
+theorem one_mul_eq_id : ((1 : M) * ·) = id :=
   funext one_mul
 #align one_mul_eq_id one_mul_eq_id
 #align zero_add_eq_id zero_add_eq_id
@@ -231,6 +291,14 @@ theorem self_ne_mul_left : b ≠ a * b ↔ a ≠ 1 := self_eq_mul_left.not
 
 end RightCancelMonoid
 
+section CancelCommMonoid
+variable [CancelCommMonoid α] {a b c d : α}
+
+@[to_additive] lemma eq_iff_eq_of_mul_eq_mul (h : a * b = c * d) : a = c ↔ b = d := by aesop
+@[to_additive] lemma ne_iff_ne_of_mul_eq_mul (h : a * b = c * d) : a ≠ c ↔ b ≠ d := by aesop
+
+end CancelCommMonoid
+
 section InvolutiveInv
 
 variable [InvolutiveInv G] {a b : G}
@@ -351,7 +419,7 @@ end DivInvOneMonoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {a b c : α}
+variable [DivisionMonoid α] {a b c d : α}
 
 attribute [local simp] mul_assoc div_eq_mul_inv
 
@@ -378,6 +446,9 @@ theorem eq_of_div_eq_one (h : a / b = 1) : a = b :=
   inv_injective <| inv_eq_of_mul_eq_one_right <| by rwa [← div_eq_mul_inv]
 #align eq_of_div_eq_one eq_of_div_eq_one
 #align eq_of_sub_eq_zero eq_of_sub_eq_zero
+
+lemma eq_of_inv_mul_eq_one (h : a⁻¹ * b = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+lemma eq_of_mul_inv_eq_one (h : a * b⁻¹ = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
 
 @[to_additive]
 theorem div_ne_one_of_ne : a ≠ b → a / b ≠ 1 :=
@@ -411,6 +482,10 @@ theorem one_div_div : 1 / (a / b) = b / a := by simp
 theorem one_div_one_div : 1 / (1 / a) = a := by simp
 #align one_div_one_div one_div_one_div
 #align zero_sub_zero_sub zero_sub_zero_sub
+
+@[to_additive]
+theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
+  inv_inj.symm.trans <| by simp only [inv_div]
 
 @[to_additive SubtractionMonoid.toSubNegZeroMonoid]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
@@ -592,7 +667,7 @@ end DivisionCommMonoid
 
 section Group
 
-variable [Group G] {a b c d : G}
+variable [Group G] {a b c d : G} {n : ℤ}
 
 @[to_additive (attr := simp)]
 theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_left_eq_self]
@@ -600,7 +675,7 @@ theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul
 #align sub_eq_neg_self sub_eq_neg_self
 
 @[to_additive]
-theorem mul_left_surjective (a : G) : Function.Surjective ((· * ·) a) :=
+theorem mul_left_surjective (a : G) : Surjective (a * ·) :=
   fun x ↦ ⟨a⁻¹ * x, mul_inv_cancel_left a x⟩
 #align mul_left_surjective mul_left_surjective
 #align add_left_surjective add_left_surjective
@@ -708,6 +783,10 @@ theorem mul_inv_eq_one : a * b⁻¹ = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_in
 theorem inv_mul_eq_one : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_inv, inv_inj]
 #align inv_mul_eq_one inv_mul_eq_one
 #align neg_add_eq_zero neg_add_eq_zero
+
+@[to_additive (attr := simp)]
+theorem conj_eq_one_iff : a * b * a⁻¹ = 1 ↔ b = 1 := by
+  rw [mul_inv_eq_one, mul_right_eq_self]
 
 @[to_additive]
 theorem div_left_injective : Function.Injective fun a ↦ a / b := by
@@ -863,19 +942,18 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 #align left_inverse_inv_mul_mul_right leftInverse_inv_mul_mul_right
 #align left_inverse_neg_add_add_right leftInverse_neg_add_add_right
 
-@[to_additive]
-theorem exists_npow_eq_one_of_zpow_eq_one {n : ℤ} (hn : n ≠ 0) {x : G} (h : x ^ n = 1) :
-    ∃ n : ℕ, 0 < n ∧ x ^ n = 1 := by
-  cases' n with n n
-  · simp only [Int.ofNat_eq_coe] at h
-    rw [zpow_ofNat] at h
-    refine' ⟨n, Nat.pos_of_ne_zero fun n0 ↦ hn ?_, h⟩
-    rw [n0]
-    rfl
-  · rw [zpow_negSucc, inv_eq_one] at h
-    refine' ⟨n + 1, n.succ_pos, h⟩
-#align exists_npow_eq_one_of_zpow_eq_one exists_npow_eq_one_of_zpow_eq_one
+@[to_additive (attr := simp) natAbs_nsmul_eq_zero]
+lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
+
+set_option linter.existingAttributeWarning false in
+@[to_additive, deprecated pow_natAbs_eq_one]
+lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
+    ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
+#align exists_npow_eq_one_of_zpow_eq_one exists_pow_eq_one_of_zpow_eq_one
 #align exists_nsmul_eq_zero_of_zsmul_eq_zero exists_nsmul_eq_zero_of_zsmul_eq_zero
+
+-- 2024-02-14
+attribute [deprecated natAbs_nsmul_eq_zero] exists_nsmul_eq_zero_of_zsmul_eq_zero
 
 end Group
 
@@ -893,7 +971,7 @@ theorem div_eq_of_eq_mul' {a b c : G} (h : a = b * c) : a / b = c := by
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_left_eq_div (a b c : G) : c * a / (c * b) = a / b := by
-  rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ←mul_assoc c,
+  rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ← mul_assoc c,
     mul_right_inv, one_mul, div_eq_mul_inv]
 #align mul_div_mul_left_eq_div mul_div_mul_left_eq_div
 #align add_sub_add_left_eq_sub add_sub_add_left_eq_sub
@@ -1055,3 +1133,27 @@ theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → 
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
 #align multiplicative_of_is_total multiplicative_of_isTotal
 #align additive_of_is_total additive_of_isTotal
+
+section ite
+variable {α β : Type*} [Pow α β]
+
+@[to_additive (attr := simp) dite_smul]
+lemma pow_dite (p : Prop) [Decidable p] (a : α) (b : p → β) (c : ¬ p → β) :
+    a ^ (if h : p then b h else c h) = if h : p then a ^ b h else a ^ c h := by split_ifs <;> rfl
+
+@[to_additive (attr := simp) smul_dite]
+lemma dite_pow (p : Prop) [Decidable p] (a : p → α) (b : ¬ p → α) (c : β) :
+    (if h : p then a h else b h) ^ c = if h : p then a h ^ c else b h ^ c := by split_ifs <;> rfl
+
+@[to_additive (attr := simp) ite_smul]
+lemma pow_ite (p : Prop) [Decidable p] (a : α) (b c : β) :
+    a ^ (if p then b else c) = if p then a ^ b else a ^ c := pow_dite _ _ _ _
+
+@[to_additive (attr := simp) smul_ite]
+lemma ite_pow (p : Prop) [Decidable p] (a b : α) (c : β) :
+    (if p then a else b) ^ c = if p then a ^ c else b ^ c := dite_pow _ _ _ _
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive (attr := simp)] dite_smul smul_dite ite_smul smul_ite
+
+end ite

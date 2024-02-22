@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Johan Commelin
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Data.Set.Basic
 
 #align_import algebraic_geometry.projective_spectrum.topology from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
@@ -453,7 +454,7 @@ theorem basicOpen_eq_union_of_projection (f : A) :
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : A => (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜))) := by
-  apply TopologicalSpace.isTopologicalBasis_of_open_of_nhds
+  apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨r, rfl⟩
     exact isOpen_basicOpen 𝒜
   · rintro p U hp ⟨s, hs⟩

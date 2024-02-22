@@ -5,8 +5,7 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.LinearAlgebra.AdicCompletion
 
 #align_import ring_theory.discrete_valuation_ring.basic from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
@@ -78,7 +77,7 @@ theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing 
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine' ⟨h2, _⟩
   intro a b hab
-  by_contra' h
+  by_contra! h
   obtain ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩ := h
   rw [h, mem_span_singleton'] at ha hb
   rcases ha with ⟨a, rfl⟩
@@ -112,7 +111,7 @@ theorem exists_irreducible : ∃ ϖ : R, Irreducible ϖ := by
 
 /-- Uniformizers exist in a DVR. -/
 theorem exists_prime : ∃ ϖ : R, Prime ϖ :=
-  (exists_irreducible R).imp fun _ => PrincipalIdealRing.irreducible_iff_prime.1
+  (exists_irreducible R).imp fun _ => irreducible_iff_prime.1
 #align discrete_valuation_ring.exists_prime DiscreteValuationRing.exists_prime
 
 /-- An integral domain is a DVR iff it's a PID with a unique non-zero prime ideal. -/
@@ -211,8 +210,8 @@ theorem toUniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
       · rw [ha]
         simp only [true_or_iff, dvd_zero]
       obtain ⟨m, u, rfl⟩ := spec.2 ha
-      rw [mul_assoc, mul_left_comm, IsUnit.dvd_mul_left _ _ _ (Units.isUnit _)] at h
-      rw [IsUnit.dvd_mul_right (Units.isUnit _)]
+      rw [mul_assoc, mul_left_comm, Units.dvd_mul_left] at h
+      rw [Units.dvd_mul_right]
       by_cases hm : m = 0
       · simp only [hm, one_mul, pow_zero] at h ⊢
         right
@@ -293,7 +292,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
   obtain ⟨p, hp⟩ := h₁
   refine' ⟨PID, ⟨Ideal.span {p}, ⟨_, _⟩, _⟩⟩
   · rw [Submodule.ne_bot_iff]
-    refine' ⟨p, Ideal.mem_span_singleton.mpr (dvd_refl p), hp.ne_zero⟩
+    exact ⟨p, Ideal.mem_span_singleton.mpr (dvd_refl p), hp.ne_zero⟩
   · rwa [Ideal.span_singleton_prime hp.ne_zero, ← UniqueFactorizationMonoid.irreducible_iff_prime]
   · intro I
     rw [← Submodule.IsPrincipal.span_singleton_generator I]
@@ -406,7 +405,7 @@ theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (
   rw [addVal, addValuation_apply, hr, eq_of_associated_left
       (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
     eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
-    multiplicity_pow_self_of_prime (PrincipalIdealRing.irreducible_iff_prime.1 hϖ)]
+    multiplicity_pow_self_of_prime (irreducible_iff_prime.1 hϖ)]
 #align discrete_valuation_ring.add_val_def DiscreteValuationRing.addVal_def
 
 theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
@@ -414,12 +413,12 @@ theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
   addVal_def _ u hϖ n rfl
 #align discrete_valuation_ring.add_val_def' DiscreteValuationRing.addVal_def'
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem addVal_zero : addVal R 0 = ⊤ :=
   (addVal R).map_zero
 #align discrete_valuation_ring.add_val_zero DiscreteValuationRing.addVal_zero
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem addVal_one : addVal R 1 = 0 :=
   (addVal R).map_one
 #align discrete_valuation_ring.add_val_one DiscreteValuationRing.addVal_one
@@ -430,7 +429,7 @@ theorem addVal_uniformizer {ϖ : R} (hϖ : Irreducible ϖ) : addVal R ϖ = 1 := 
     using addVal_def ϖ 1 hϖ 1
 #align discrete_valuation_ring.add_val_uniformizer DiscreteValuationRing.addVal_uniformizer
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem addVal_mul {a b : R} :
     addVal R (a * b) = addVal R a + addVal R b :=
   (addVal R).map_mul _ _

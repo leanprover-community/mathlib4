@@ -30,8 +30,6 @@ natural transformations between the original additive functors,
 and show how to compute the components.
 
 ## Main results
-* `Functor.rightDerivedObj_injective_zero`: the `0`-th derived functor of `F` on
-  an injective object `X` is isomorphic to `F.obj X`.
 * `Functor.isZero_rightDerived_obj_injective_succ`: injective objects have no higher
   right derived functor.
 * `NatTrans.rightDerived`: the natural isomorphism between right derived functors
@@ -336,7 +334,7 @@ instance (X : C) : IsIso (F.toRightDerivedZero.app X) := by
   dsimp [Functor.toRightDerivedZero]
   infer_instance
 
-instance [PreservesFiniteLimits F] : IsIso F.toRightDerivedZero :=
+instance : IsIso F.toRightDerivedZero :=
   NatIso.isIso_of_isIso_app _
 
 namespace Functor

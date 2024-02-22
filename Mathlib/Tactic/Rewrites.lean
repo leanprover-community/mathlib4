@@ -3,16 +3,17 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Util.Pickle
 import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
-import Mathlib.Data.MLList.Dedup
-import Mathlib.Lean.Meta.DiscrTree
+import Std.Tactic.SolveByElim
+import Std.Util.Pickle
 import Std.Util.Cache
-import Mathlib.Lean.Meta
-import Mathlib.Tactic.TryThis
+import Mathlib.Init.Core
 import Mathlib.Control.Basic
-import Mathlib.Tactic.SolveByElim
+import Mathlib.Data.MLList.Dedup
+import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Meta.DiscrTree
+import Lean.Elab.Tactic.Location
 
 /-!
 # The `rewrites` tactic.
@@ -21,7 +22,7 @@ import Mathlib.Tactic.SolveByElim
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
-Suggestions are printed as `rw [h]` or `rw [←h]`.
+Suggestions are printed as `rw [h]` or `rw [← h]`.
 
 -/
 
@@ -31,10 +32,10 @@ namespace Lean.Meta
 
 /-- Extract the lemma, with arguments, that was used to produce a `RewriteResult`. -/
 -- This assumes that `r.eqProof` was constructed as:
--- `mkAppN (mkConst ``Eq.ndrec [u1, u2]) #[α, a, motive, h₁, b, h₂]`
--- and we want `h₂`.
+-- `mkApp6 (.const ``congrArg _) α eType lhs rhs motive heq`
+-- in `Lean.Meta.Tactic.Rewrite` and we want `heq`.
 def RewriteResult.by? (r : RewriteResult) : Option Expr :=
-  if r.eqProof.isAppOfArity ``Eq.ndrec 6 then
+  if r.eqProof.isAppOfArity ``congrArg 6 then
     r.eqProof.getArg! 5
   else
     none
@@ -56,9 +57,7 @@ def backwardWeight := 1
 /-- Configuration for `DiscrTree`. -/
 def discrTreeConfig : WhnfCoreConfig := {}
 
-/-- We will discard -/
-def keysSpecific (keys : Array DiscrTree.Key) : Bool :=
-  !(keys == #[.star] || keys == #[.const `Eq 3, .star, .star, .star])
+open Lean.Meta.DiscrTree (keysSpecific)
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
@@ -126,9 +125,9 @@ Retrieve the current cache of lemmas.
 initialize rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (DiscrTree (Name × Bool × Nat)) path
-    -- We can drop the `CompactedRegion` value; we do not plan to free it
-    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)
+    -- We can drop the `CompactedRegion` value from `unpickle`; we do not plan to free it
+    let d := (·.1) <$> unpickle (DiscrTree (Name × Bool × Nat)) path
+    DiscrTreeCache.mk "rw?: using cache" processLemma (init := d)
   else
     buildDiscrTree
 
@@ -248,7 +247,7 @@ def rewritesCore (hyps : Array (Expr × Bool × Nat))
     let some expr ← (match lem with
     | .inl hyp => pure (some hyp)
     | .inr lem => try? <| mkConstWithFreshMVarLevels lem) | return none
-    trace[Tactic.rewrites] m!"considering {if symm then "←" else ""}{expr}"
+    trace[Tactic.rewrites] m!"considering {if symm then "← " else ""}{expr}"
     let some result ← try? do goal.rewrite target expr symm
       | return none
     if result.mvarIds.isEmpty then
@@ -322,7 +321,7 @@ syntax forbidden := " [" (("-" ident),*,?) "]"
 
 `rw?` should not be left in proofs; it is a search tool, like `apply?`.
 
-Suggestions are printed as `rw [h]` or `rw [←h]`.
+Suggestions are printed as `rw [h]` or `rw [← h]`.
 
 You can use `rw? [-my_lemma, -my_theorem]` to prevent `rw?` using the named lemmas.
 -/
@@ -346,8 +345,7 @@ elab_rules : tactic |
       let results ← rewrites hyps lems goal target (stopAtRfl := false) forbidden
       reportOutOfHeartbeats `rewrites tk
       if results.isEmpty then
-        throwError "Could not find any lemmas which can rewrite the hypothesis {
-          ← f.getUserName}"
+        throwError "Could not find any lemmas which can rewrite the hypothesis {← f.getUserName}"
       for r in results do withMCtx r.mctx do
         addRewriteSuggestion tk [(r.expr, r.symm)]
           r.result.eNew (loc? := .some (.fvar f)) (origSpan? := ← getRef)

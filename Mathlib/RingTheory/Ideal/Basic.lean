@@ -514,6 +514,7 @@ theorem span_singleton_mul_right_unit {a : α} (h2 : IsUnit a) (x : α) :
     span ({x * a} : Set α) = span {x} := by rw [mul_comm, span_singleton_mul_left_unit h2]
 #align ideal.span_singleton_mul_right_unit Ideal.span_singleton_mul_right_unit
 
+@[simp]
 theorem span_singleton_eq_top {x} : span ({x} : Set α) = ⊤ ↔ IsUnit x := by
   rw [isUnit_iff_dvd_one, ← span_singleton_le_span_singleton, span_singleton_one, eq_top_iff]
 #align ideal.span_singleton_eq_top Ideal.span_singleton_eq_top
@@ -650,7 +651,7 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
     have : 1 ∈ (S : Set α) := S.one_mem
     aesop
   mem_or_mem' {x y} hxy := by
-    by_contra' rid
+    by_contra! rid
     have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_not_mem.mpr rid.1)
     have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_not_mem.mpr rid.2)
     simp only [Set.not_disjoint_iff, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
@@ -844,7 +845,7 @@ theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsFiel
   intro mle
   apply lt_irrefl (⊤ : Ideal R)
   have : M = ⊥ := eq_bot_iff.mpr mle
-  rw [←this] at Ibot
+  rw [← this] at Ibot
   rwa [hm.1.2 I Ibot] at Itop
 #align ideal.bot_lt_of_maximal Ideal.bot_lt_of_maximal
 

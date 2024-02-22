@@ -129,6 +129,7 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
     exact (h _ (List.mem_cons_self _ _)).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
 #align equiv.perm.disjoint_prod_right Equiv.Perm.disjoint_prod_right
 
+open scoped List in
 theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disjoint) (hp : l₁ ~ l₂) :
     l₁.prod = l₂.prod :=
   hp.prod_eq' <| hl.imp Disjoint.commute
@@ -352,7 +353,7 @@ theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
   simp_rw [Finset.ext_iff, mem_support, not_iff_not, inv_eq_iff_eq.trans eq_comm, imp_true_iff]
 #align equiv.perm.support_inv Equiv.Perm.support_inv
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
   rw [mem_support, mem_support, Ne.def, Ne.def, apply_eq_iff_eq]
 #align equiv.perm.apply_mem_support Equiv.Perm.apply_mem_support
@@ -363,7 +364,7 @@ theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
     f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
   rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
 #align equiv.perm.pow_apply_mem_support Equiv.Perm.pow_apply_mem_support
@@ -374,7 +375,7 @@ theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
     f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
   rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_zpow_apply_eq_iff]
 #align equiv.perm.zpow_apply_mem_support Equiv.Perm.zpow_apply_mem_support
@@ -438,7 +439,7 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
   refine' ⟨fun h => _, fun h => support_swap h⟩
-  by_contra'
+  by_contra!
   rw [← this] at h
   simp only [swap_self, support_refl, pair_eq_singleton] at h
   have : x ∈ ∅ := by
@@ -500,7 +501,7 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
   · split_ifs at hy with hf heq <;>
     simp_all only [not_true]
     exact ⟨h, hy⟩
-    refine' ⟨hy, heq⟩
+    exact ⟨hy, heq⟩
 #align equiv.perm.mem_support_swap_mul_imp_mem_support_ne Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
@@ -572,7 +573,7 @@ end ExtendDomain
 
 section Card
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove thisrove this
 theorem card_support_eq_zero {f : Perm α} : f.support.card = 0 ↔ f = 1 := by
   rw [Finset.card_eq_zero, support_eq_empty_iff]
 #align equiv.perm.card_support_eq_zero Equiv.Perm.card_support_eq_zero
@@ -635,7 +636,7 @@ theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := b
 
 theorem Disjoint.card_support_mul (h : Disjoint f g) :
     (f * g).support.card = f.support.card + g.support.card := by
-  rw [← Finset.card_disjoint_union]
+  rw [← Finset.card_union_of_disjoint]
   · congr
     ext
     simp [h.support_mul]

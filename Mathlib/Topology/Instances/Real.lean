@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Instances.Int
 
 #align_import topology.instances.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
@@ -59,7 +59,7 @@ instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
-  isTopologicalBasis_of_open_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
+  isTopologicalBasis_of_isOpen_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
     fun a v hav hv =>
     let ⟨l, u, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
     let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
@@ -74,13 +74,11 @@ theorem Real.isTopologicalBasis_Ioo_rat :
 theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
   simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
 
-@[simp]
-theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
-  rw [← cobounded_eq_cocompact, cobounded_eq]
+@[deprecated] alias Real.cocompact_eq := cocompact_eq_atBot_atTop
 #align real.cocompact_eq Real.cocompact_eq
 
-theorem Real.atBot_le_cocompact : atBot ≤ cocompact ℝ := by simp
-theorem Real.atTop_le_cocompact : atTop ≤ cocompact ℝ := by simp
+@[deprecated] alias Real.atBot_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
+@[deprecated] alias Real.atTop_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
@@ -119,7 +117,7 @@ theorem Real.Continuous.inv [TopologicalSpace α] {f : α → ℝ} (h : ∀ a, f
   hf.inv₀ h
 #align real.continuous.inv Real.Continuous.inv
 
-theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous ((· * ·) x) :=
+theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
   uniformContinuous_const_smul x
 #align real.uniform_continuous_const_mul Real.uniformContinuous_const_mul
 
@@ -147,7 +145,7 @@ instance : CompleteSpace ℝ := by
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
-  refine' this.imp fun N hN n hn => hε (hN n hn)
+  exact this.imp fun N hN n hn => hε (hN n hn)
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
@@ -158,7 +156,7 @@ section
 theorem closure_of_rat_image_lt {q : ℚ} :
     closure (((↑) : ℚ → ℝ) '' { x | q < x }) = { r | ↑q ≤ r } :=
   Subset.antisymm
-    ((isClosed_ge' _).closure_subset_iff.2
+    (isClosed_Ici.closure_subset_iff.2
       (image_subset_iff.2 fun p h => le_of_lt <| (@Rat.cast_lt ℝ _ _ _).2 h))
     fun x hx => mem_closure_iff_nhds.2 fun t ht =>
       let ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht
@@ -230,7 +228,7 @@ instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
-  rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
+  rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
   refine' ⟨ball 0 |a|, isOpen_ball, _⟩
   ext ⟨x, hx⟩
   obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
@@ -247,7 +245,7 @@ theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
-  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete $ smul_left_injective ℤ ha
+  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete <| smul_left_injective ℤ ha
   rw [AddSubgroup.range_zmultiplesHom]
   infer_instance
 #align int.tendsto_zmultiples_hom_cofinite Int.tendsto_zmultiplesHom_cofinite

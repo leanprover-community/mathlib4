@@ -3,7 +3,7 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone.Basic
 
@@ -72,7 +72,7 @@ variable {M N : Type*} (μ : M → N → N) (r : N → N → Prop)
 
 variable (M N)
 
-/-- `Covariant` is useful to formulate succintly statements about the interactions between an
+/-- `Covariant` is useful to formulate succinctly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
 
 See the `CovariantClass` doc-string for its meaning. -/
@@ -80,7 +80,7 @@ def Covariant : Prop :=
   ∀ (m) {n₁ n₂}, r n₁ n₂ → r (μ m n₁) (μ m n₂)
 #align covariant Covariant
 
-/-- `Contravariant` is useful to formulate succintly statements about the interactions between an
+/-- `Contravariant` is useful to formulate succinctly statements about the interactions between an
 action of a Type on another one and a relation on the acted-upon Type.
 
 See the `ContravariantClass` doc-string for its meaning. -/

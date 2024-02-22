@@ -15,7 +15,7 @@ Defines the notion of a sheaf of types (usually called a sheaf of sets by mathem
 on a category equipped with a Grothendieck topology, as well as a range of equivalent
 conditions useful in different situations.
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular sieve. Given a Grothendieck topology `J`, `P` is a sheaf if it is a sheaf
 for every sieve in the topology. See `IsSheaf`.
 

@@ -2,6 +2,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Interval
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
@@ -165,7 +166,7 @@ example (w x y z : ℤ) (h1 : 4*x + (-3)*y + 6*w ≤ 0) (h2 : (-1)*x < 0) (h3 : 
 section term_arguments
 
 example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
-  linarith [Rat.num_pos_iff_pos.mpr hx, h]
+  linarith [Rat.num_pos.mpr hx, h]
 
 example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   fail_if_success
@@ -173,8 +174,8 @@ example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
   fail_if_success
     linarith only [h]
   fail_if_success
-    linarith only [Rat.num_pos_iff_pos.mpr hx]
-  linarith only [Rat.num_pos_iff_pos.mpr hx, h]
+    linarith only [Rat.num_pos.mpr hx]
+  linarith only [Rat.num_pos.mpr hx, h]
 
 end term_arguments
 
@@ -192,7 +193,7 @@ by linarith (config := {exfalso := false})
 example (x y : Rat)
     (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False := by
   fail_if_success
-    linarith (config := {split_hypotheses := false})
+    linarith (config := {splitHypotheses := false})
   linarith
 
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by
@@ -490,8 +491,7 @@ end
 -- Checks that splitNe handles metavariables and also that conjunction splitting occurs
 -- before splitNe splitting
 example (r : ℚ) (h' : 1 = r * 2) : 1 = 0 ∨ r = 1 / 2 := by
-  by_contra h''
-  push_neg at h''
+  by_contra! h''
   linarith (config := {splitNe := true})
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
@@ -506,7 +506,7 @@ lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith
 
 example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
   cases' h with x h
-  have : 0 ≤ x; · linarith
+  have : 0 ≤ x := by linarith
   trivial
 
 -- At one point, this failed, due to `mdata` interfering with `Expr.isEq`.
@@ -587,3 +587,13 @@ error: Argument passed to nlinarith has metavariables:
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   nlinarith [p ?a]
+
+open BigOperators
+
+example (h : False): True := by
+  have : ∑ k in Finset.empty, k^2 = 0 := by contradiction
+  have : ∀ k : Nat, 0 ≤ k := by
+    intro h
+    -- this should not panic:
+    nlinarith
+  trivial

@@ -41,10 +41,10 @@ protected theorem uniformAddGroup : @UniformAddGroup G B.uniformSpace _ :=
 
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔
-      F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U := by
+      F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U := by
   letI := B.uniformSpace
   haveI := B.uniformAddGroup
-  suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U by
+  suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U by
     constructor <;> rintro ⟨h', h⟩ <;> refine' ⟨h', _⟩ <;> [rwa [← this]; rwa [this]]
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]
   change Tendsto _ _ _ ↔ _

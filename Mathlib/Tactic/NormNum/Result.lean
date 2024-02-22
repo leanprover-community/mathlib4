@@ -194,7 +194,11 @@ A "raw rat cast" is an expression of the form:
 
 * `(Nat.rawCast lit : α)` where `lit` is a raw natural number literal
 * `(Int.rawCast (Int.negOfNat lit) : α)` where `lit` is a nonzero raw natural number literal
-* `(Rat.rawCast n d : α)` where `n` is a raw int cast, `d` is a raw nat cast, and `d` is not 1 or 0.
+* `(Rat.rawCast n d : α)` where `n` is a raw int literal, `d` is a raw nat literal, and `d` is not
+  `1` or `0`.
+
+(where a raw int literal is of the form `Int.ofNat lit` or `Int.negOfNat nzlit` where `lit` is a raw
+nat literal)
 
 This representation is used by tactics like `ring` to decrease the number of typeclass arguments
 required in each use of a number literal at type `α`.

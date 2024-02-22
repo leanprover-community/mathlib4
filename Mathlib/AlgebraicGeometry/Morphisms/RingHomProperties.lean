@@ -85,8 +85,8 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine (hP : RingHom.Re
     {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
     P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔
     P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
-  have : IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Y.basicOpen r)
-  · rw [Scheme.preimage_basicOpen]
+  have : IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Y.basicOpen r) := by
+    rw [Scheme.preimage_basicOpen]
     show IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r)
       ↑Γ(X ∣_ᵤ X.basicOpen (Scheme.Γ.map f.op r))
     infer_instance
@@ -134,7 +134,7 @@ theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (h
   simp only [Quiver.Hom.unop_op, Functor.comp_map, AffineScheme.forgetToScheme_map,
     Functor.op_map] at this
   rw [← this, hP'.cancel_right_isIso,
-    ←pushoutIsoUnopPullback_inl_hom (Quiver.Hom.unop _) (Quiver.Hom.unop _),
+    ← pushoutIsoUnopPullback_inl_hom (Quiver.Hom.unop _) (Quiver.Hom.unop _),
     hP'.cancel_right_isIso]
   exact hP.pushout_inl _ hP' _ _ H
 #align ring_hom.stable_under_base_change.Γ_pullback_fst RingHom.StableUnderBaseChange.Γ_pullback_fst

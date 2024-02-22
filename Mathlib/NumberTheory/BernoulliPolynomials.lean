@@ -77,10 +77,10 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
   have : (∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x)) = 0 := by
-    apply sum_eq_zero <| fun x hx => _
+    apply sum_eq_zero fun x hx => _
     intros x hx
     have h : x < n := (mem_range.1 hx)
-    simp [h]
+    simp [tsub_eq_zero_iff_le, h]
   simp [this]
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
 
@@ -108,7 +108,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, ← C_eq_nat_cast, C_mul_monomial, mul_comm]
   rw [mul_assoc, mul_assoc, ← Nat.cast_mul, ← Nat.cast_mul]
   congr 3
-  rw [(choose_mul_succ_eq k m).symm, mul_comm]
+  rw [(choose_mul_succ_eq k m).symm]
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
 theorem derivative_bernoulli (k : ℕ) :
