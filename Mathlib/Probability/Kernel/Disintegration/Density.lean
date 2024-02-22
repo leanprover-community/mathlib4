@@ -250,7 +250,7 @@ lemma apply_partitionSet_le_of_fst_le (hκν : kernel.fst κ ≤ ν) (n : ℕ) (
         refine measure_mono (fun x ↦ ?_)
         simp only [mem_prod, mem_setOf_eq, and_imp]
         exact fun h _ ↦ h
-  _ ≤ ν a (partitionSet n t) := hκν a _ (measurableSet_partitionSet _ _)
+  _ ≤ ν a (partitionSet n t) := hκν a _
 
 lemma densityProcess_le_one (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : γ) (s : Set β) :
     densityProcess κ ν n a t s ≤ 1 := by
@@ -290,7 +290,7 @@ lemma set_integral_densityProcess_I (hκν : kernel.fst κ ≤ ν) [IsFiniteKern
     by_cases h0 : ν a (partitionSet n t) = 0
     · suffices κ a (partitionSet n t ×ˢ s) = 0 by simp [h0, this]
       have h0' : kernel.fst κ a (partitionSet n t) = 0 :=
-        le_antisymm ((hκν a _ (measurableSet_partitionSet _ _)).trans h0.le) zero_le'
+        le_antisymm ((hκν a _).trans h0.le) zero_le'
       rw [kernel.fst_apply' _ _ (measurableSet_partitionSet _ _)] at h0'
       refine measure_mono_null (fun x ↦ ?_) h0'
       simp only [mem_prod, mem_setOf_eq, and_imp]
@@ -307,7 +307,7 @@ lemma set_integral_densityProcess_I (hκν : kernel.fst κ ≤ ν) [IsFiniteKern
   by_cases h0 : ν a u = 0
   · simp only [h0, mul_zero]
     have h0' : kernel.fst κ a u = 0 :=
-      le_antisymm ((hκν a _ hu_meas).trans h0.le) zero_le'
+      le_antisymm ((hκν a _).trans h0.le) zero_le'
     rw [kernel.fst_apply' _ _ hu_meas] at h0'
     refine (measure_mono_null ?_ h0').symm
     intro p
@@ -428,7 +428,7 @@ lemma densityProcess_mono_set (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) 
   · exact h_ne_top s'
 
 lemma densityProcess_mono_kernel_left {κ' : kernel α (γ × β)} (hκκ' : κ ≤ κ')
-    (hκ'ν : kernel.fst κ' ≤ ν) (n : ℕ) (a : α) (t : γ) {s : Set β} (hs : MeasurableSet s) :
+    (hκ'ν : kernel.fst κ' ≤ ν) (n : ℕ) (a : α) (t : γ) (s : Set β) :
     densityProcess κ ν n a t s ≤ densityProcess κ' ν n a t s := by
   unfold densityProcess
   by_cases h0 : ν a (partitionSet n t) = 0
@@ -438,11 +438,11 @@ lemma densityProcess_mono_kernel_left {κ' : kernel α (γ × β)} (hκκ' : κ 
       ≤ ν a (partitionSet n t) := apply_partitionSet_le_of_fst_le hκ'ν n a t s
   rw [ENNReal.toReal_le_toReal]
   · gcongr
-    exact hκκ' _ _ ((measurableSet_partitionSet _ _).prod hs)
+    exact hκκ' _ _
   · rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact (hκκ' _ _ ((measurableSet_partitionSet _ _).prod hs)).trans h_le
+    exact (hκκ' _ _).trans h_le
   · rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
@@ -459,13 +459,13 @@ lemma densityProcess_antitone_kernel_right {ν' : kernel α γ}
     exact le_antisymm (h_le.trans h0.le) zero_le'
   have h0' : ν' a (partitionSet n t) ≠ 0 := by
     refine fun h ↦ h0 (le_antisymm (le_trans ?_ h.le) zero_le')
-    exact hνν' _ _ (measurableSet_partitionSet _ _)
+    exact hνν' _ _
   rw [ENNReal.toReal_le_toReal]
   · gcongr
-    exact hνν' _ _ (measurableSet_partitionSet _ _)
+    exact hνν' _ _
   · simp only [ne_eq, ENNReal.div_eq_top, h0', and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact h_le.trans (hνν' _ _ (measurableSet_partitionSet _ _))
+    exact h_le.trans (hνν' _ _)
   · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
 
@@ -555,7 +555,9 @@ lemma tendsto_snorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel κ]
     Tendsto (fun n ↦ snorm ((fun t ↦ densityProcess κ ν n a t s)
         - (partitionFiltration γ).limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a))
         1 ((ν a).restrict A)) atTop (𝓝 0) :=
-  tendsto_snorm_restrict_zero (tendsto_snorm_one_densityProcess_limitProcess hκν a hs) A
+  tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+    (tendsto_snorm_one_densityProcess_limitProcess hκν a hs) (fun _ ↦ zero_le')
+    (fun _ ↦ snorm_restrict_le _ _ _ _)
 
 noncomputable
 def kernel.density (κ : kernel α (γ × β)) (ν : kernel α γ) (a : α) (t : γ) (s : Set β) : ℝ :=
