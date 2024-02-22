@@ -146,7 +146,7 @@ theorem lintegral_zero_fun : lintegral μ (0 : α → ℝ≥0∞) = 0 :=
   lintegral_zero
 #align measure_theory.lintegral_zero_fun MeasureTheory.lintegral_zero_fun
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem lintegral_one : ∫⁻ _, (1 : ℝ≥0∞) ∂μ = μ univ := by rw [lintegral_const, one_mul]
 #align measure_theory.lintegral_one MeasureTheory.lintegral_one
 
@@ -1250,7 +1250,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
     ext1 b
     rw [lintegral_congr_ae]
     apply EventuallyEq.symm
-    refine' aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
+    exact aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
 #align measure_theory.lintegral_supr_directed MeasureTheory.lintegral_iSup_directed
 
 end

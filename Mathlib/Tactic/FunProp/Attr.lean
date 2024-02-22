@@ -37,7 +37,7 @@ initialize funPropAttr : Unit ←
 
        forallTelescope info.type fun _ b => do
          if b.isProp then
-           addFunPropDecl declName none
+           addFunPropDecl declName
          else
            addTheorem declName attrKind
     erase := fun _declName =>
