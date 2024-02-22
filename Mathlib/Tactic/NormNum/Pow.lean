@@ -59,24 +59,25 @@ so we use an additional trick to do binary subdivision on `log2 b`. As a result 
 a proof of depth `log (log b)` which will essentially never overflow before the numbers involved
 themselves exceed memory limits.
 -/
-partial def evalNatPow (a b : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.pow $a $b = $c) :=
+partial def evalNatPow (a b : Q(ℕ)) : OptionT CoreM ((c : Q(ℕ)) × Q(Nat.pow $a $b = $c)) := do
   if b.natLit! = 0 then
     haveI : $b =Q 0 := ⟨⟩
-    ⟨q(nat_lit 1), q(natPow_zero)⟩
+    return ⟨q(nat_lit 1), q(natPow_zero)⟩
   else if a.natLit! = 0 then
     haveI : $a =Q 0 := ⟨⟩
     have b' : Q(ℕ) := mkRawNatLit (b.natLit! - 1)
     haveI : $b =Q Nat.succ $b' := ⟨⟩
-    ⟨q(nat_lit 0), q(zero_natPow)⟩
+    return ⟨q(nat_lit 0), q(zero_natPow)⟩
   else if a.natLit! = 1 then
     haveI : $a =Q 1 := ⟨⟩
-    ⟨q(nat_lit 1), q(one_natPow)⟩
+    return ⟨q(nat_lit 1), q(one_natPow)⟩
   else if b.natLit! = 1 then
     haveI : $b =Q 1 := ⟨⟩
-    ⟨a, q(natPow_one)⟩
+    return ⟨a, q(natPow_one)⟩
   else
+    guard <| ← Lean.checkExponent b.natLit!
     let ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b _ .rfl
-    ⟨c, q(($p).run)⟩
+    return ⟨c, q(($p).run)⟩
 where
   /-- Invariants: `a ^ b₀ = c₀`, `depth > 0`, `b >>> depth = b₀`, `p := Nat.pow $a $b₀ = $c₀` -/
   go (depth : Nat) (a b₀ c₀ b : Q(ℕ)) (p : Q(Prop)) (hp : $p =Q (Nat.pow $a $b₀ = $c₀)) :
@@ -120,28 +121,29 @@ theorem intPow_negOfNat_bit1 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
   simp [mul_comm, mul_left_comm]
 
 /-- Evaluates `Int.pow a b = c` where `a` and `b` are raw integer literals. -/
-partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) : ℤ × (c : Q(ℤ)) × Q(Int.pow $a $b = $c) :=
+partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) :
+    OptionT CoreM (ℤ × (c : Q(ℤ)) × Q(Int.pow $a $b = $c)) := do
   have a' : Q(ℕ) := a.appArg!
   if 0 ≤ za then
-    haveI : $a =Q .ofNat $a' := ⟨⟩
-    let ⟨c, p⟩ := evalNatPow a' b
-    ⟨c.natLit!, q(.ofNat $c), q(intPow_ofNat $p)⟩
+    have : $a =Q .ofNat $a' := ⟨⟩
+    let ⟨c, p⟩ ← evalNatPow a' b
+    return ⟨c.natLit!, q(.ofNat $c), q(intPow_ofNat $p)⟩
   else
-    haveI : $a =Q .negOfNat $a' := ⟨⟩
+    have : $a =Q .negOfNat $a' := ⟨⟩
     let b' := b.natLit!
     have b₀ : Q(ℕ) := mkRawNatLit (b' >>> 1)
-    let ⟨c₀, p⟩ := evalNatPow a' b₀
+    let ⟨c₀, p⟩ := ← evalNatPow a' b₀
     let c' := c₀.natLit!
     if b' &&& 1 == 0 then
       have c : Q(ℕ) := mkRawNatLit (c' * c')
       have pc : Q($c₀ * $c₀ = $c) := (q(Eq.refl $c) : Expr)
       have pb : Q(2 * $b₀ = $b) := (q(Eq.refl $b) : Expr)
-      ⟨c.natLit!, q(.ofNat $c), q(intPow_negOfNat_bit0 $p $pb $pc)⟩
+      return ⟨c.natLit!, q(.ofNat $c), q(intPow_negOfNat_bit0 $p $pb $pc)⟩
     else
       have c : Q(ℕ) := mkRawNatLit (c' * (c' * a'.natLit!))
       have pc : Q($c₀ * ($c₀ * $a') = $c) := (q(Eq.refl $c) : Expr)
       have pb : Q(2 * $b₀ + 1 = $b) := (q(Eq.refl $b) : Expr)
-      ⟨-c.natLit!, q(.negOfNat $c), q(intPow_negOfNat_bit1 $p $pb $pc)⟩
+      return ⟨-c.natLit!, q(.negOfNat $c), q(intPow_negOfNat_bit1 $p $pb $pc)⟩
 
 -- see note [norm_num lemma function equality]
 theorem isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {b a' b' c : ℕ},
@@ -177,25 +179,26 @@ def evalPow : NormNumExt where eval {u α} e := do
   haveI' : $f =Q HPow.hPow := ⟨⟩
   let rec
   /-- Main part of `evalPow`. -/
-  core : Option (Result e) := do
+  core : OptionT CoreM (Result e) := do
     match ra with
     | .isBool .. => failure
     | .isNat sα na pa =>
       assumeInstancesCommute
-      have ⟨c, r⟩ := evalNatPow na nb
+      let ⟨c, r⟩ ← evalNatPow na nb
       return .isNat sα c q(isNat_pow (f := $f) (.refl $f) $pa $pb $r)
     | .isNegNat rα .. =>
       assumeInstancesCommute
-      let ⟨za, na, pa⟩ ← ra.toInt rα
-      have ⟨zc, c, r⟩ := evalIntPow za na nb
+      let .some ⟨za, na, pa⟩ := ra.toInt rα | failure
+      let ⟨zc, c, r⟩ ← evalIntPow za na nb
       return .isInt rα c zc q(isInt_pow (f := $f) (.refl $f) $pa $pb $r)
     | .isRat dα qa na da pa =>
       assumeInstancesCommute
-      have ⟨zc, nc, r1⟩ := evalIntPow qa.num na nb
-      have ⟨dc, r2⟩ := evalNatPow da nb
+      let ⟨zc, nc, r1⟩ ← evalIntPow qa.num na nb
+      let ⟨dc, r2⟩ ← evalNatPow da nb
       let qc := mkRat zc dc.natLit!
       return .isRat' dα qc nc dc q(isRat_pow (f := $f) (.refl $f) $pa $pb $r1 $r2)
-  core
+  let .some r ← core.run | failure
+  return r
 
 theorem isNat_zpow_pos {α : Type*} [DivisionSemiring α] {a : α} {b : ℤ} {nb ne : ℕ}
     (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
