@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Tactic.FunProp
+import Mathlib.Logic.Function.Basic
+import Mathlib.Data.FunLike.Basic
 
 /-! # Tests for the `fun_prop` tactic
 
@@ -27,31 +29,40 @@ class Obj (α : Type _) : Type where
 
 instance [Obj α] [Obj β] : Obj (α × β) := ⟨⟩
 instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
-
+instance : Obj Nat := ⟨⟩
 
 @[fun_prop] opaque Con {α β} [Obj α] [Obj β] (f : α → β) : Prop
 @[fun_prop] opaque Lin {α β} [Obj α] [Obj β] (f : α → β) : Prop
-
 
 -- state basic lambda calculus rules --
 ---------------------------------------
 
 variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
-@[fun_prop] theorem Con_id : Con (fun x : α => x) := silentSorry
+@[fun_prop] theorem Con_id : Con (id : α → α) := silentSorry
 @[fun_prop] theorem Con_const (y : β) : Con (fun x : α => y) := silentSorry
 @[fun_prop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := silentSorry
+@[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y:= g x; f x y) := silentSorry
 @[fun_prop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := silentSorry
 
 -- Lin is missing `const` theorem
 @[fun_prop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
 @[fun_prop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
-@[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (fun x => f (g x)) := silentSorry
+@[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
 @[fun_prop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := silentSorry
 
+
+-- this is to stress test detection of loops
+@[fun_prop]
+theorem kaboom (f : α → β) (hf : Con f) : Con f := hf
+
+-- currently only trivial loops are detected
+-- make it more sophisticated such that longer loops are detected
+-- @[fun_prop]
+-- theorem chabam (f : α → β) (hf : Con f) : Con f := hf
 
 
 -- transition theorem --
@@ -59,10 +70,8 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 @[fun_prop] theorem lin_to_con (f : α → β) (hf : Lin f) : Con f := silentSorry
 
 
-
 -- theorems about function in the environment --
 ------------------------------------------------
-
 @[fun_prop]
 theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd)
   : Con fun x => (fst x, snd x) := silentSorry
@@ -76,13 +85,15 @@ variable [Add α] [Add β]
 -- "simple form" of theorems
 @[fun_prop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
 @[fun_prop] theorem snd_Con : Con fun x : α×β => x.2 := silentSorry
-@[fun_prop] theorem add_Con : Con (fun x : α×α => x.1 + x.2) := silentSorry
+@[fun_prop] theorem add_Con : Con (Function.uncurry (fun x y : α => x + y)) := silentSorry
+@[fun_prop] theorem add_Lin : Lin ↿(fun x y : α => x + y) := silentSorry
 
 
 -- "compositional form" of theorems
 @[fun_prop] theorem fst_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).1 := by fun_prop
 @[fun_prop] theorem snd_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).2 := by fun_prop
 @[fun_prop] theorem add_Con' (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w => x w + y w) := by fun_prop
+@[fun_prop] theorem add_Lin' (x y : α → β) (hx : Lin x) (hy : Lin y) : Lin (fun w => x w + y w) := by fun_prop
 
 
 
@@ -101,14 +112,16 @@ structure LinHom (α β) [Obj α] [Obj β] where
 
 infixr:25 " -o " => LinHom
 
-instance : FunLike (α ->> β) α β where
+instance : CoeFun (α ->> β) (fun _ => α → β) where
   coe := fun f => f.toFun
-  coe_injective' := silentSorry
 
 instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
+#eval Lean.Elab.Command.liftTermElabM do
+  Std.Tactic.Coe.registerCoercion ``ConHom.toFun
+    (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
@@ -124,18 +137,38 @@ instance [Obj β] [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
 instance : Obj (α ->> β) := ⟨⟩
 instance : Obj (α -o β) := ⟨⟩
 
-
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
 
 -- this is some form of cartesion closedness with homs `α ->> β`
 @[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
+@[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
+
 -- analogous theorem with `α -o β` does no hold
 @[fun_prop] theorem linHom_lin (f : α -o β) : Lin f := silentSorry
+@[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
 
-set_option pp.coercions false in
-set_option pp.notation false in
+
+def LinHom.mk' (f : α → β) (hf : Lin f := by fun_prop) : α -o β := mk f hf
+
+@[fun_prop] theorem linHom_mk' (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) : Lin (fun x => LinHom.mk' (f x)) := silentSorry
+
+
+section Notation
+open Lean Syntax Parser
+open TSyntax.Compat
+macro "fun" xs:explicitBinders " ⊸ " b:term : term => expandExplicitBinders ``LinHom.mk' xs b
+macro "fun" xs:explicitBinders " -o " b:term : term => expandExplicitBinders ``LinHom.mk' xs b
+end Notation
+
+
+example (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) :
+  Lin (fun x => fun y ⊸ f y (x+x)) := by fun_prop
+
+example (f : α → α → α → α) (hx : ∀ x y, Lin (f x y ·)) (hy : ∀ x z, Lin (f x · z)) (hz : ∀ y z, Lin (f · y z)) :
+    Lin (fun x => fun y z ⊸ f z (x+x) y) := by fun_prop
+
 -- the only analoge is this theorem but that is alredy provable
 example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fun_prop
 
@@ -143,10 +176,7 @@ example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (h
 
 ----------------------------------------------------------------------------------------------------
 
--- set_option profiler true
--- set_option profiler.threshold 10
-
-example (f : α → β → γ) (hf : Con fun (x,y) => f x y)  : Con f := by fun_prop
+example (f : α → β → γ) (hf : Con fun (x,y) => f x y) : Con f := by fun_prop
 
 example : Con (fun x : α => x) := by fun_prop
 example (y : β) : Con (fun _ : α => y) := by fun_prop
@@ -210,7 +240,6 @@ example (f : α → Nat → Nat → β) (hf : Con f) (i j) : Con (fun x => f x (
 example (f : α → β → γ → δ) (hf : ∀ y, Con fun (x,z) => f x y z) : Con f := by fun_prop
 example (f : α → β → γ → δ) (hf : ∀ y, Con fun (x,z) => f x y z) : Con f := by fun_prop
 
-
 example (f : α → β ->> γ) (hf : Con f) (y) : Con (fun x => f x y) := by fun_prop
 example (f : α → β ->> γ) (hf : Con f) : Con (fun x y => f x y) := by fun_prop
 example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x => f x y := by fun_prop
@@ -220,6 +249,8 @@ example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) (x) : 
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) : Con fun x y => f y x x := by fun_prop
 
 example (f : α → β ->> γ) (hf : Con ↿f) (y) : Con fun x => f x y := by fun_prop
+example (f : α → β ->> γ) (x) : Con fun y : β => f x := by fun_prop
+example (f : α → β ->> γ) (x) : Con fun y : β => (f x : β → γ) := by fun_prop
 example (f : α → β ->> γ) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con ↿f) : Con fun x y => f y x x := by fun_prop
@@ -270,5 +301,85 @@ example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x : α
 example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fun_prop
 
 
--- is working up to here
+example : Con fun (a : α ->> α) => a x := by fun_prop
 
+-- this used to crash
+example (f : α → (α ->> α)) (hf : Con f) : Con fun x => ((f x) : α → α) := by fun_prop
+example : Con (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
+
+
+example : Lin (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
+example (y): Lin (fun f : (α ->> α ->> α) => f x y) := by fun_prop
+example : Lin (fun f : (α -o α ->> α) => (f x : α → α)) := by fun_prop
+example (y): Lin (fun f : (α ->> α -o α) => f x y) := by fun_prop
+
+
+example (f : α -o α ->> α) (y) : Lin (fun x  => f x y) := by fun_prop
+example (f : α ->> α -o α ->> α) (y) : Lin (fun x  => f y x y) := by fun_prop
+
+example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
+example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
+
+
+noncomputable
+def foo : α ->> α ->> α := silentSorry
+noncomputable
+def bar : α ->> α ->> α := silentSorry
+
+@[fun_prop]
+theorem foo_lin : Lin fun x : α => foo x := silentSorry
+@[fun_prop]
+theorem bar_lin (y) : Lin fun x : α => bar x y := silentSorry
+
+example : Lin (foo : α → α ->> α) := by fun_prop
+example : Con (foo : α → α ->> α) := by fun_prop
+example : Lin (fun x : α => (foo x : α → α)) := by fun_prop
+example : Lin (fun x y : α => foo x y) := by fun_prop
+example (y) : Lin (fun x : α => foo x y) := by fun_prop
+
+example : Lin (fun x : α => (bar x : α → α)) := by fun_prop
+example : Lin (fun x y : α => bar x y) := by fun_prop
+example (y) : Lin (fun x : α => bar x y) := by fun_prop
+
+example : Lin (fun (f : α ->> α) => (f : α → α)) := by fun_prop
+example : Con (fun (f : α ->> α) => (f : α → α)) := by fun_prop
+example : Lin (fun (f : α -o α) => (f : α → α)) := by fun_prop
+
+example : Con (fun fx : (α ->> β)×α => fx.1 fx.2) := by fun_prop
+
+
+def iterate (n : Nat) (f : α → α) (x : α) : α :=
+  match n with
+  | 0 => x
+  | n+1 => iterate n f (f x)
+
+theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) := by
+  induction n <;> (simp[iterate]; fun_prop)
+
+
+example : let f := fun x : α => x; Con f := by fun_prop
+
+
+example (f g : α → β) (hf : Con f := by fun_prop) (hg : outParam (Con g)) :
+  Con (fun x => f x + g x) := by fun_prop
+
+
+opaque foo1 : α → α := id
+opaque foo2 : α → α := id
+
+@[fun_prop]
+theorem foo1_lin : Lin (foo1 : α → α) := silentSorry
+@[fun_prop]
+theorem foo2_lin : Lin (foo2 : α → α) := silentSorry
+
+example : Con (fun x : α => foo1 (foo2 x)) := by fun_prop
+
+
+def foo3 (x : α) := x + x
+example : Con (fun x : α => foo3 x) := by fun_prop [foo3]
+
+def myUncurry (f : α → β → γ) : α×β → γ := fun (x,y) => f x y
+def diag (f : α → α → α) (x : α) := f x x
+
+theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
+  fun_prop [diag,myUncurry]

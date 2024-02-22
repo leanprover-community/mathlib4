@@ -215,7 +215,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
       (Fin.cons (A 0) fun j => A (Fin.succ (Classical.choose (hg j))))
     revert j_ne approx
     refine' Fin.cases _ (fun j₀ => _) j₀ <;>
-      refine' Fin.cases (fun j_ne approx => _) (fun j₁ j_ne approx => _) j₁
+      refine Fin.cases (fun j_ne approx => ?_) (fun j₁ j_ne approx => ?_) j₁
     · exact absurd rfl j_ne
     · rw [Fin.cons_succ, Fin.cons_zero, ← not_le, AbsoluteValue.map_sub] at approx
       have := (Classical.choose_spec (hg j₁)).2
