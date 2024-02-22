@@ -7,6 +7,7 @@ Authors: Jujian Zhang
 import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Algebra.HilbertSerre.AdditiveFunction
+import Mathlib.Algebra.HilbertSerre.FiniteInstances
 import Mathlib.Algebra.Category.FGModuleCat.Abelian
 import Mathlib.RingTheory.GradedAlgebra.Subgrading
 
@@ -93,6 +94,24 @@ variable (S : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrel
 
 abbrev statement : Prop := ∃ (p : Polynomial ℤ), μ.poincareSeries 𝒜 ℳ = p • S.poles⁻¹
 
+abbrev statement' (N : ℕ) : Prop :=
+    ∀ (A M : Type u)
+      [CommRing A] [AddCommGroup M] [Module A M]  [IsNoetherianRing A] [Module.Finite A M]
+
+      (𝒜 : ℕ → AddSubgroup A) (ℳ : ℕ → AddSubgroup M)
+      [GradedRing 𝒜] [DirectSum.Decomposition ℳ] [SetLike.GradedSMul 𝒜 ℳ]
+
+      (μ : (FGModuleCat (𝒜 0)) ⟹+ ℤ)
+
+      (S : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+      (_ : S.toFinset.card = N),
+
+    ∃ (p : Polynomial ℤ),
+      μ.poincareSeries 𝒜 ℳ = p • S.poles ⁻¹
+
+lemma statement'_imp_statement (h : ∀ n, statement'.{u} n) : statement 𝒜 ℳ μ S :=
+  h S.toFinset.card A M 𝒜 ℳ μ S rfl
+
 section base_case
 
 variable {𝒜}
@@ -170,9 +189,9 @@ lemma eventually_subsingleton_of_empty_generatorSet :
   obtain ⟨N, h⟩ := eventually_eq_zero_of_empty_generatorSet ℳ S card_generator
   exact ⟨N, fun n hn ↦ ⟨fun x y ↦ (h n hn x).trans (h n hn y).symm⟩⟩
 
-lemma proof.base_case : statement 𝒜 ℳ μ S := by
+lemma proof.base_case : statement'.{u} 0 := by
+  intro A M _ _ _ _ _ 𝒜 ℳ _ _ _ μ S card_generator
   obtain ⟨N, hN⟩ := eventually_subsingleton_of_empty_generatorSet ℳ S card_generator
-  delta statement
   classical
   rw [Finset.card_eq_zero] at card_generator
 
@@ -210,8 +229,6 @@ def KER : HomogeneousSubmodule A ℳ where
     exact this.symm
 
 lemma mem_KER_iff (a : M) : a ∈ KER ℳ x deg_x ↔ x • a = 0 := Iff.rfl
-
-variable [(i : ℕ) → (x : (ℳ i)) → Decidable (x ≠ 0)] [(a : M) → Decidable (a ∈ KER ℳ x deg_x)]
 
 open Pointwise
 
@@ -334,6 +351,8 @@ lemma COKER.descComponent_surjective (n : ℕ) :
 
 open CategoryTheory CategoryTheory.Limits ZeroObject
 
+variable [(i : ℕ) → (x : (ℳ i)) → Decidable (x ≠ 0)] [(a : M) → Decidable (a ∈ KER ℳ x deg_x)]
+
 @[simps!]
 noncomputable def anExactSeq (i : ℕ) (ineq : d ≤ i) : ComposableArrows (FGModuleCat (𝒜 0)) 5 :=
   .mk₅
@@ -441,6 +460,19 @@ lemma anExactSeq_exact (i : ℕ) (ineq : d ≤ i) : (anExactSeq ℳ x deg_x i in
       exact COKER.descComponent_surjective ℳ x deg_x _
     apply exact_epi_zero
 
+example : true := rfl
+
+variable [(i : ℕ) → (x : (𝒜 i)) → Decidable (x ≠ 0)] [(a : A) → Decidable (a ∈ KER 𝒜 x deg_x)]
+
+-- instance :  DirectSum.Decomposition (KER 𝒜 x deg_x).grading :=
+-- HomogeneousSubmodule.decomposition _
+
+-- instance (i : ℕ) : Module.Finite (𝒜 0) ((KER 𝒜 x deg_x).grading i) :=
+-- GradedModule.finite_module_over_degree_zero_subring 𝒜 (KER 𝒜 x deg_x).grading i
+
+-- #exit
+-- set_option synthInstance.maxHeartbeats 50000 in
+set_option maxHeartbeats 500000 in
 lemma key_lemma :
     ∃ (p : Polynomial ℤ),
       (1 - PowerSeries.X ^ d) * μ.poincareSeries 𝒜 ℳ =
@@ -483,11 +515,11 @@ lemma key_lemma :
   rw [eq1]
 
   have eq2 : ∑ jk in Finset.antidiagonal i,
-        (if jk.1 = d then μ (.of _ ((KER 𝒜 x deg_x).grading jk.2)) else 0) =
-      if d ≤ i then μ (.of _ ((KER 𝒜 x deg_x).grading (i - d))) else 0
+        (if jk.1 = d then μ (.of _ ((KER ℳ x deg_x).grading jk.2)) else 0) =
+      if d ≤ i then μ (.of _ ((KER ℳ x deg_x).grading (i - d))) else 0
   · rw [Finset.sum_ite, Finset.sum_const_zero, add_zero]
     split_ifs with ineq
-    · trans ∑ jk in {(d, i - d)}, μ (.of _ ((KER 𝒜 x deg_x).grading jk.2))
+    · trans ∑ jk in {(d, i - d)}, μ (.of _ ((KER ℳ x deg_x).grading jk.2))
       · refine Finset.sum_congr ?_ fun _ _ ↦ rfl
         ext ⟨j, k⟩
         simp only [Finset.mem_filter, Finset.mem_antidiagonal, Finset.mem_singleton, Prod.mk.injEq]
@@ -515,6 +547,114 @@ lemma key_lemma :
       AdditiveFunction.coeff_poincareSeries, AdditiveFunction.coeff_poincareSeries]
     abel
 
+example : true := rfl
+
+def adjoinHomogeneous (S : Finset A) (hS : ∀ a ∈ S, SetLike.Homogeneous 𝒜 a) : HomogeneousSubring 𝒜 where
+  __ :=  (Algebra.adjoin (𝒜 0) S : Subalgebra (𝒜 0) A).toSubring
+  is_homogeneous' := sorry
+
+section
+
+variable [DecidableEq A]
+variable (N : ℕ) (card : S.toFinset.card = N + 1)
+variable (s : A) (s_not_mem : s ∈ S.toFinset) (S' : Finset A) (hS' : insert s S' = S.toFinset)
+variable (d : ℕ) (deg_s : s ∈ 𝒜 d)
+
+abbrev A' : HomogeneousSubring 𝒜 := induction.constructions.adjoinHomogeneous S' fun _ h ↦
+  S.2 <| hS' ▸ Finset.mem_insert_of_mem h
+
+lemma mem_A' (a : A) : a ∈ A' S s S' hS' ↔ a ∈ Algebra.adjoin (𝒜 0) S' := Iff.rfl
+
+instance noetherian_A' : IsNoetherianRing (A' S s S' hS') :=
+  Algebra.adjoin_isNoetherian (R := 𝒜 0) S'
+
+abbrev 𝒜' : ℕ → AddSubgroup (A' S s S' hS') := (A' S s S' hS').grading
+
+variable [(a : A) → Decidable (a ∈ A' S s S' hS')]
+
+instance gradedRing_A' : GradedRing (𝒜' S s S' hS') :=
+  HomogeneousSubring.gradedRing (A' S s S' hS')
+
+instance noetherian_A'_zero : IsNoetherianRing (𝒜' S s S' hS' 0) := by
+  apply GradedRing.GradeZero.subring_isNoetherianRing_of_isNoetherianRing
+
+noncomputable instance abelian_A'_zero : CategoryTheory.Abelian (FGModuleCat (𝒜' S s S' hS' 0)) :=
+  FGModuleCat.abelian_of_noetherian
+
+instance finite_KER : Module.Finite (A' S s S' hS') (KER ℳ s deg_s).toSubmodule :=
+  Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' s (KER ℳ s deg_s).toSubmodule
+    fun x ↦ by ext; exact x.2
+
+instance finite_COKER : Module.Finite (A' S s S' hS') (COKER ℳ s deg_s) := by
+  refine Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' s (COKER ℳ s deg_s) fun x ↦ ?_
+  induction' x using Quotient.inductionOn' with x
+  erw [Submodule.Quotient.eq', add_zero]
+  refine ⟨-x, trivial, ?_⟩
+  simp only [map_neg, DistribMulAction.toLinearMap_apply]
+
+instance gradedModule_KER :
+    SetLike.GradedSMul (𝒜' S s S' hS') (HomogeneousSubmodule.grading (KER ℳ s deg_s)) where
+  smul_mem {_ _ _ _} ha hb := (inferInstance : SetLike.GradedSMul 𝒜 ℳ).smul_mem ha hb
+
+instance gradedModule_COKER :
+    SetLike.GradedSMul (𝒜' S s S' hS') (COKER.den ℳ s deg_s).quotientGrading where
+  smul_mem {i j a b} (ha : (a : A) ∈ 𝒜 i) hb := by
+    obtain ⟨b, rfl⟩ := hb
+    induction' b using Quotient.inductionOn' with b
+    erw [vadd_eq_add, QuotientAddGroup.map_mk']
+    exact ⟨Quotient.mk''
+      ⟨(a : A) • (b : M), (inferInstance : SetLike.GradedSMul 𝒜 ℳ).smul_mem ha b.2⟩, rfl⟩
+
+def μ' : FGModuleCat (𝒜' S s S' hS' 0) ⟹+ ℤ :=
+  μ.pushforward <| RingEquiv.toFGModuleCatEquivalence
+  { toFun := fun x ↦ ⟨⟨(x : A), by
+      rw [mem_A', Algebra.mem_adjoin_iff]
+      exact Subring.subset_closure <| Or.inl ⟨x, rfl⟩⟩, x.2⟩
+    invFun := fun x ↦ ⟨x.1, x.2⟩
+    left_inv := by intro x; ext; rfl
+    right_inv := by intro x; ext; rfl
+    map_mul' := by
+      rintro ⟨x, hx⟩ ⟨y, hy⟩
+      ext
+      show x * y = x * y
+      rfl
+      -- sorry
+    map_add' := by
+      rintro ⟨x, hx⟩ ⟨y, hy⟩
+      ext
+      show x + y = x + y
+      rfl
+      -- sorry
+       }
+end
+
 end induction.constructions
+
+section induction_case
+
+variable (N : ℕ) (ih : statement'.{u} N)
+
+open induction.constructions
+
+-- set_option maxHeartbeats 8000000 in
+lemma induction : statement'.{u} (N + 1) := by
+  classical
+  intro A M _ _ _ _ _ 𝒜 ℳ _ _ _ μ S cardS
+  rw [Finset.card_eq_succ] at cardS
+  obtain ⟨s, S', hs, hS1', hS2'⟩ := cardS
+
+  let d : ℕ := S.deg (hS1' ▸ Finset.mem_insert_self _ _ : s ∈ S.toFinset)
+  have deg_s : s ∈ 𝒜 d := S.mem_deg _
+
+  let A' : HomogeneousSubring 𝒜 := A' S s S' hS1'
+  let 𝒜' : ℕ → AddSubgroup A' := 𝒜' S s S' hS1'
+
+  let μ' := μ' S s S' hS1'
+
+  have ih_KER := ih A' (KER ℳ s deg_s).toSubmodule 𝒜' (KER ℳ s deg_s).grading -- (μ' _)
+  have ih_COKER := ih A' (COKER ℳ s deg_s) 𝒜' (COKER.den ℳ s deg_s).quotientGrading -- (μ.pushforward _)
+
+
+end induction_case
 
 end HilbertSerre

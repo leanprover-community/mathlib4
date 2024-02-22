@@ -55,7 +55,7 @@ noncomputable def normalEpi (hf : Epi f) : NormalEpi f where
             LinearMap.quotKerEquivRange f ≪≫ₗ
           LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext; rfl
 
-noncomputable instance : Abelian (FGModuleCat R) where
+noncomputable instance abelian_of_noetherian : Abelian (FGModuleCat R) where
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
   has_cokernels := hasCokernels_fgModuleCat

@@ -27,11 +27,11 @@ we have `μ(B) = μ(A) + μ(C)`.
 
 open CategoryTheory CategoryTheory.Limits
 
-universe u v w
+universe u u' v v' w
 
-variable (𝒞 : Type u) [Category.{v} 𝒞]
+variable (𝒞 : Type u) [Category.{v} 𝒞] (𝒟 : Type u') [Category.{v'} 𝒟]
 variable (T : Type w) [AddCommGroup T]
-variable [Abelian 𝒞]
+variable [Abelian 𝒞] [Abelian 𝒟]
 
 open ZeroObject
 
@@ -435,5 +435,18 @@ instance : AddCommGroup (𝒞 ⟹+ T) where
   add_left_neg _ := ext fun _ ↦ by simp
 
 end AddCommGroup
+
+section equivalence
+
+variable {𝒟}
+variable (e : 𝒞 ≌ 𝒟)
+
+@[simps]
+def pushforward : 𝒟 ⟹+ T where
+  toFun x := μ (e.inverse.obj x)
+  additive _ h := μ.additive _ (h.map_of_exact e.inverse)
+
+
+end equivalence
 
 end AdditiveFunction

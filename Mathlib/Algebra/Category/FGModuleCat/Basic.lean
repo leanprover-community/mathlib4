@@ -302,4 +302,103 @@ instance rightRigidCategory : RightRigidCategory (FGModuleCat K) where
 
 end Field
 
+
+section Equivalence
+
+variable {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S)
+
+@[simps]
+def _root_.RingEquiv.toFGModuleCatEquivalenceFunctor : FGModuleCat R ⥤ FGModuleCat S :=
+{ obj := fun M ↦ @of S _ M _ (Module.compHom M e.symm.toRingHom) (by
+      let m : Module S M := Module.compHom M e.symm.toRingHom
+      let a : Algebra R S := e.toRingHom.toAlgebra
+      have s : IsScalarTower R S M
+      · constructor
+        intros x y z
+        convert_to (e.symm (e x * y)) • z = x • (e.symm y • z)
+        rw [map_mul, mul_smul, e.symm_apply_apply]
+      refine Module.Finite.of_restrictScalars_finite R S M)
+  map := fun {X Y} l ↦
+    { toFun := fun x ↦ l x
+      map_add' := fun x y ↦ l.map_add x y
+      map_smul' := fun r (x : X) ↦ l.map_smul (e.symm r) x }
+  map_id := by intros; ext; rfl
+  map_comp := by intros; ext; rfl }
+
+@[simps]
+def _root_.RingEquiv.toFGModuleCatEquivalenceInverse : FGModuleCat S ⥤ FGModuleCat R :=
+{ obj := fun M ↦ @of R _ M _ (Module.compHom M e.toRingHom) (by
+      let m : Module R M := Module.compHom M e.toRingHom
+      let a : Algebra S R := e.symm.toRingHom.toAlgebra
+      have s : IsScalarTower S R M
+      · constructor
+        intros x y z
+        convert_to (e (e.symm x * y)) • z = x • (e y • z)
+        rw [map_mul, mul_smul, e.apply_symm_apply]
+      refine Module.Finite.of_restrictScalars_finite S R M)
+  map := fun {X Y} l ↦
+    { toFun := fun x ↦ l x
+      map_add' := fun x y ↦ l.map_add x y
+      map_smul' := fun r (x : X) ↦ l.map_smul (e r) x }
+  map_id := by intros; ext; rfl
+  map_comp := by intros; ext; rfl }
+
+@[simps]
+def _root_.RingEquiv.toFGModuleCatEquivalence : FGModuleCat R ≌ FGModuleCat S where
+  functor := e.toFGModuleCatEquivalenceFunctor
+  inverse := e.toFGModuleCatEquivalenceInverse
+  unitIso :=
+  { hom :=
+    { app := fun X ↦
+      { toFun := fun x ↦ x
+        map_add' := by intros; rfl
+        map_smul' := by
+          intro r x
+          exact (congr_arg (· • x) <| e.symm_apply_apply r).symm }
+      naturality := by intros; ext; rfl }
+    inv :=
+    { app := fun X ↦
+      { toFun := fun x ↦ x
+        map_add' := by intros; rfl
+        map_smul' := by
+          intro r x
+          let m : Module S X := Module.compHom X e.symm.toRingHom
+          have m_def (s : S) (x : X) : m.smul s x = e.symm s • x := rfl
+          let m' : Module R X := Module.compHom X e.toRingHom
+          have m'_def (r : R) (x : X) : m'.smul r x = m.smul (e r) x := rfl
+          change m'.smul r x = X.1.3.smul r x
+          rw [m'_def, m_def, e.symm_apply_apply]
+          rfl }
+      naturality := by intros; ext; rfl }
+    hom_inv_id := by intros; ext; rfl
+    inv_hom_id := by intros; ext; rfl }
+  counitIso :=
+  { hom :=
+    { app := fun X ↦
+      { toFun := fun x ↦ x
+        map_add' := by intros; rfl
+        map_smul' := by
+          intro r x
+          let m : Module R X := Module.compHom X e.toRingHom
+          have m_def (s : R) (x : X) : m.smul s x = e s • x := rfl
+          let m' : Module S X := Module.compHom X e.symm.toRingHom
+          have m'_def (r : S) (x : X) : m'.smul r x = m.smul (e.symm r) x := rfl
+          change m'.smul r x = X.1.3.smul r x
+          rw [m'_def, m_def, e.apply_symm_apply]
+          rfl }
+      naturality := by intros; ext; rfl }
+    inv :=
+    { app := fun X ↦
+      { toFun := fun x ↦ x
+        map_add' := by intros; rfl
+        map_smul' := by
+          intro r x
+          exact (congr_arg (· • x) <| e.apply_symm_apply r).symm }
+      naturality := by intros; ext; rfl }
+    hom_inv_id := by intros; ext; rfl
+    inv_hom_id := by intros; ext; rfl }
+  functor_unitIso_comp := by intros; ext; rfl
+
+end Equivalence
+
 end FGModuleCat
