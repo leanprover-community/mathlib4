@@ -185,11 +185,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
       have A : (insert i s).piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₂ i) :=
         s.piecewise_insert _ _ _
       have B : s.piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₁ i) := by
-        ext j
-        by_cases h : j = i
-        · rw [h]
-          simp [his]
-        · simp [h]
+        simp [eq_update_iff, his]
       rw [B, A, ← f.map_sub]
       apply le_trans (H _)
       gcongr with j
@@ -204,8 +200,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
             ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ := by
         rw [← dist_eq_norm, ← dist_eq_norm, ← dist_eq_norm]
         exact dist_triangle _ _ _
-      _ ≤
-          (C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
+      _ ≤ (C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
             C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
         (add_le_add Hrec I)
       _ = C * ∑ i in insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
@@ -816,35 +811,6 @@ theorem continuous_eval : Continuous
       ring
 #align continuous_multilinear_map.continuous_eval ContinuousMultilinearMap.continuous_eval
 
-theorem continuous_eval_left (m : ∀ i, E i) :
-    Continuous fun p : ContinuousMultilinearMap 𝕜 E G => p m :=
-  continuous_eval.comp (continuous_id.prod_mk continuous_const)
-#align continuous_multilinear_map.continuous_eval_left ContinuousMultilinearMap.continuous_eval_left
-
-theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E G}
-    {q : ContinuousMultilinearMap 𝕜 E G} (h : HasSum p q) (m : ∀ i, E i) :
-    HasSum (fun a => p a m) (q m) := by
-  dsimp [HasSum] at h ⊢
-  convert ((continuous_eval_left m).tendsto _).comp h using 1
-  ext s
-  simp
-#align continuous_multilinear_map.has_sum_eval ContinuousMultilinearMap.hasSum_eval
-
-variable (𝕜 E G)
-
-/-- The application of a multilinear map as a `ContinuousLinearMap`. -/
-def apply (m : ∀ i, E i) : ContinuousMultilinearMap 𝕜 E G →L[𝕜] G where
-  toFun c := c m
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-  cont := continuous_eval_left m
-
-variable {𝕜 E G}
-
-@[simp]
-lemma apply_apply {m : ∀ i, E i} {c : ContinuousMultilinearMap 𝕜 E G} :
-    (apply 𝕜 E G m) c = c m := rfl
-
 end ContinuousMultilinearMap
 
 /-- If a continuous multilinear map is constructed from a multilinear map via the constructor
@@ -1399,11 +1365,6 @@ theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
 #align continuous_multilinear_map.nnnorm_of_subsingleton ContinuousMultilinearMap.nnnorm_ofSubsingleton_id
 
 variable {𝕜 G}
-
-theorem tsum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E G} (hp : Summable p)
-    (m : ∀ i, E i) : (∑' a, p a) m = ∑' a, p a m :=
-  (hasSum_eval hp.hasSum m).tsum_eq.symm
-#align continuous_multilinear_map.tsum_eval ContinuousMultilinearMap.tsum_eval
 
 open Topology Filter
 

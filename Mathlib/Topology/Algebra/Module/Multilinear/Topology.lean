@@ -104,17 +104,46 @@ theorem hasBasis_nhds_zero :
       { f | MapsTo f SV.1 SV.2 } :=
   hasBasis_nhds_zero_of_basis (Filter.basis_sets _)
 
-theorem continuous_eval_left [∀ i, ContinuousSMul 𝕜 (E i)] (x : ∀ i, E i) :
+variable [∀ i, ContinuousSMul 𝕜 (E i)]
+
+theorem continuous_eval_left (x : ∀ i, E i) :
     Continuous fun p : ContinuousMultilinearMap 𝕜 E F ↦ p x := by
   letI := TopologicalAddGroup.toUniformSpace F
   haveI := comm_topologicalAddGroup_is_uniform (G := F)
   exact (uniformContinuous_eval_left x).continuous
+#align continuous_multilinear_map.continuous_eval_left ContinuousMultilinearMap.continuous_eval_left
 
-theorem continuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
+theorem continuous_coe_fun :
     Continuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (∀ i, E i) → F) :=
   continuous_pi continuous_eval_left
 
-instance [∀ i, ContinuousSMul 𝕜 (E i)] [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
+instance [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
   .of_injective_continuous DFunLike.coe_injective continuous_coe_fun
+
+variable (𝕜 E F)
+
+/-- The application of a multilinear map as a `ContinuousLinearMap`. -/
+def apply [ContinuousConstSMul 𝕜 F] (m : ∀ i, E i) : ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
+  toFun c := c m
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := continuous_eval_left m
+
+variable {𝕜 E F}
+
+@[simp]
+lemma apply_apply [ContinuousConstSMul 𝕜 F] {m : ∀ i, E i} {c : ContinuousMultilinearMap 𝕜 E F} :
+    (apply 𝕜 E F m) c = c m := rfl
+
+theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F}
+    {q : ContinuousMultilinearMap 𝕜 E F} (h : HasSum p q) (m : ∀ i, E i) :
+    HasSum (fun a => p a m) (q m) :=
+  h.map (applyAddHom m) (continuous_eval_left m)
+#align continuous_multilinear_map.has_sum_eval ContinuousMultilinearMap.hasSum_eval
+
+theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F} (hp : Summable p)
+    (m : ∀ i, E i) : (∑' a, p a) m = ∑' a, p a m :=
+  (hasSum_eval hp.hasSum m).tsum_eq.symm
+#align continuous_multilinear_map.tsum_eval ContinuousMultilinearMap.tsum_eval
 
 end ContinuousMultilinearMap
