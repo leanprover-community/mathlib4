@@ -570,7 +570,7 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
       · rw [← le_antisymm vφx (hφ us hx ux)]
         exact ⟨x, ⟨hx, ⟨le_rfl, h⟩⟩, rfl⟩
     · rintro _ ⟨u, ⟨⟨hu, xu, uy⟩, rfl⟩⟩
-      refine' ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
+      exact ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
   · rw [eVariationOn.subsingleton, eVariationOn.subsingleton]
     exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti (Set.inter_subset_right _ _),
       (Set.subsingleton_Icc_of_ge h).anti (Set.inter_subset_right _ _)]

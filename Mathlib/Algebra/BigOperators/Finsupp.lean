@@ -592,7 +592,7 @@ theorem support_sum_eq_biUnion {α : Type*} {ι : Type*} {M : Type*} [DecidableE
     rw [Finsupp.support_add_eq, hs]
     rw [hs, Finset.disjoint_biUnion_right]
     intro j hj
-    refine' h _ _ (ne_of_mem_of_not_mem hj hi).symm
+    exact h _ _ (ne_of_mem_of_not_mem hj hi).symm
 #align finsupp.support_sum_eq_bUnion Finsupp.support_sum_eq_biUnion
 
 theorem multiset_map_sum [Zero M] {f : α →₀ M} {m : β → γ} {h : α → M → Multiset β} :
