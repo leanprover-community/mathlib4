@@ -150,13 +150,6 @@ def delabSqrt : Delab :=
       return (← read).optionsPerPos.setBool (← getPos) `pp.proofs.withType true
     withTheReader Context ({· with optionsPerPos}) delab
 
--- test for custom elaborator
-/--
-info: (_ : PosSemidef A).sqrt : Matrix n n 𝕜
--/
-#guard_msgs in
-#check (id hA).sqrt
-
 lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
   apply PosSemidef.mul_mul_conjTranspose_same
   refine posSemidef_diagonal_iff.mpr fun i ↦ ?_
