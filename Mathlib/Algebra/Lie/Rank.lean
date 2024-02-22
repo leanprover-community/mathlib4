@@ -34,14 +34,61 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 open scoped BigOperators
 
-variable {R L M ι ιM : Type*}
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
-variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+section Basis
+
+variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι] [DecidableEq ι]
+
+noncomputable
+def Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
+  (Matrix.stdBasis R ι ι).map (LinearMap.toMatrix b b).symm
+
+end Basis
+
+namespace Matrix
+
+variable {l m n o R : Type*}
+variable [Fintype n] [Fintype o] [CommSemiring R]
+
+open MvPolynomial
+
+noncomputable
+def toMvPolynomial (M : Matrix m n R) (i : m) : MvPolynomial n R :=
+  ∑ j, monomial (.single j 1) (M i j)
+
+lemma toMvPolynomial_eval_eq_apply (M : Matrix m n R) (i : m) (c : n → R) :
+    eval c (M.toMvPolynomial i) = (M *ᵥ c) i := by
+  simp only [toMvPolynomial, map_sum, eval_monomial, pow_zero, Finsupp.prod_single_index, pow_one,
+    mulVec, dotProduct]
+
+lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
+    (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
+  simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
+    AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.id.map_eq_id,
+    RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
+    monomial_mul, zero_add]
+
+lemma toMvPolynomial_zero (i : m) : (0 : Matrix m n R).toMvPolynomial i = 0 := by
+  simp only [toMvPolynomial, zero_apply, map_zero, Finset.sum_const_zero]
+
+lemma toMvPolynomial_add (M N : Matrix m n R) (i : m) :
+    (M + N).toMvPolynomial i = M.toMvPolynomial i + N.toMvPolynomial i := by
+  simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib]
+
+end Matrix
+
+#exit
+
+variable {R L M n ι ιM : Type*}
+
+section LinearAlgebra
+
+variable [CommRing R] [AddCommGroup L] [Module R L] [AddCommGroup M] [Module R M]
+variable (φ : L →ₗ[R] Module.End R M)
 variable [Fintype ι] [Fintype ιM]
 
-namespace LieAlgebra
+namespace LinearMap
 
-local notation "φ" => LieModule.toEndomorphism R L M
+-- local notation "φ" => LieModule.toEndomorphism R L M
 
 section basic
 
@@ -59,7 +106,7 @@ def lieMatrixPoly (ij : ιM × ιM) : MvPolynomial ι R :=
 open LinearMap in
 @[simp]
 lemma lieMatrixPoly_eval_eq_toMatrix (ij : ιM × ιM) (c : ι →₀ R) :
-    MvPolynomial.eval c (lieMatrixPoly b bₘ ij) =
+    MvPolynomial.eval c (lieMatrixPoly φ b bₘ ij) =
       (toMatrix bₘ bₘ <| φ (b.repr.symm c)) ij.1 ij.2 := by
   rcases ij with ⟨i, j⟩
   simp only [lieMatrixPoly, map_sum, Basis.repr_symm_apply, MvPolynomial.eval_monomial,
@@ -69,37 +116,36 @@ lemma lieMatrixPoly_eval_eq_toMatrix (ij : ιM × ιM) (c : ι →₀ R) :
   case hadd f g hf hg => simp [hf, hg, mul_add, Finset.sum_add_distrib]
   case hsingle k r =>
     rw [Finset.sum_eq_single k, Finsupp.single_eq_same]
-    · rw [mul_comm, Finsupp.total_single, LieHom.map_smul, map_smul, Matrix.smul_apply, smul_eq_mul]
+    · rw [mul_comm, Finsupp.total_single, map_smul, map_smul, Matrix.smul_apply, smul_eq_mul]
     · rintro l - hl; rw [Finsupp.single_eq_of_ne hl.symm, mul_zero]
     · simp only [Finset.mem_univ, not_true_eq_false, IsEmpty.forall_iff]
 
 lemma lieMatrixPoly_eval_eq_lie (ij : ιM × ιM) (c : ι →₀ R) :
-    MvPolynomial.eval c (lieMatrixPoly b bₘ ij) = bₘ.repr ⁅b.repr.symm c, bₘ ij.2⁆ ij.1 := by
-  rw [lieMatrixPoly_eval_eq_toMatrix, Basis.repr_symm_apply, LinearMap.toMatrix_apply,
-    LieModule.toEndomorphism_apply_apply]
+    MvPolynomial.eval c (lieMatrixPoly φ b bₘ ij) = bₘ.repr (φ (b.repr.symm c) (bₘ ij.2)) ij.1 := by
+  rw [lieMatrixPoly_eval_eq_toMatrix, Basis.repr_symm_apply, LinearMap.toMatrix_apply]
 
 open Matrix
 
 /-- Let `M` be a Lie module of a Lie algebra `L` over `R`,
 and let `b` be a basis of `L` and `bₘ` a basis of `M`.
-Then `lieCharpoly b bₘ` is the polynomial that evaluates on elements `x` of `L`
+Then `lieCharpoly φ b bₘ` is the polynomial that evaluates on elements `x` of `L`
 to the characteristic polynomial of `⁅x, ·⁆` acting on `M`. -/
 noncomputable
 def lieCharpoly : Polynomial (MvPolynomial ι R) :=
-  (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (lieMatrixPoly b bₘ)
+  (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (lieMatrixPoly φ b bₘ)
 
-lemma lieCharpoly_monic : (lieCharpoly b bₘ).Monic :=
+lemma lieCharpoly_monic : (lieCharpoly φ b bₘ).Monic :=
   (charpoly.univ_monic R ιM).map _
 
-lemma lieCharpoly_ne_zero [Nontrivial R] : (lieCharpoly b bₘ) ≠ 0 :=
-  (lieCharpoly_monic _ _).ne_zero
+lemma lieCharpoly_ne_zero [Nontrivial R] : (lieCharpoly φ b bₘ) ≠ 0 :=
+  (lieCharpoly_monic _ _ _).ne_zero
 
 @[simp]
-lemma lieCharpoly_natDegree [Nontrivial R] : (lieCharpoly b bₘ).natDegree = Fintype.card ιM := by
+lemma lieCharpoly_natDegree [Nontrivial R] : (lieCharpoly φ b bₘ).natDegree = Fintype.card ιM := by
   rw [lieCharpoly, (charpoly.univ_monic _ _).natDegree_map, charpoly.univ_natDegree]
 
 lemma lieCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ιM) :
-    ((lieCharpoly b bₘ).coeff i).IsHomogeneous j := by
+    ((lieCharpoly φ b bₘ).coeff i).IsHomogeneous j := by
   rw [lieCharpoly, Polynomial.coeff_map, ← one_mul j]
   apply (charpoly.univ_coeff_isHomogeneous _ _ _ _ hij).eval₂
   · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
@@ -112,7 +158,7 @@ lemma lieCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ι
 
 open LinearMap in
 lemma lieCharpoly_map_eq_toMatrix_charpoly (x : L) :
-    (lieCharpoly b bₘ).map (MvPolynomial.eval (b.repr x)) = (toMatrix bₘ bₘ (φ x)).charpoly := by
+    (lieCharpoly φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (toMatrix bₘ bₘ (φ x)).charpoly := by
   erw [lieCharpoly, Polynomial.map_map, MvPolynomial.comp_eval₂Hom, charpoly.univ_map_eval₂Hom]
   congr
   ext
@@ -120,9 +166,9 @@ lemma lieCharpoly_map_eq_toMatrix_charpoly (x : L) :
 
 open LinearMap in
 lemma lieCharpoly_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
-    MvPolynomial.eval (b.repr x) ((lieCharpoly b bₘ).coeff i) =
+    MvPolynomial.eval (b.repr x) ((lieCharpoly φ b bₘ).coeff i) =
       (toMatrix bₘ bₘ (φ x)).charpoly.coeff i := by
-  simp [← lieCharpoly_map_eq_toMatrix_charpoly b bₘ x]
+  simp [← lieCharpoly_map_eq_toMatrix_charpoly φ b bₘ x]
 
 end basic
 
@@ -133,20 +179,29 @@ variable (b : Basis ι R L) (bₘ : Basis ιM R M) (x : L)
 
 @[simp]
 lemma lieCharpoly_map :
-    (lieCharpoly b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
+    (lieCharpoly φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
   rw [lieCharpoly_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
 
 @[simp]
 lemma lieCharpoly_eval (i : ℕ) :
-    MvPolynomial.eval (b.repr x) ((lieCharpoly b bₘ).coeff i) = (φ x).charpoly.coeff i := by
+    MvPolynomial.eval (b.repr x) ((lieCharpoly φ b bₘ).coeff i) = (φ x).charpoly.coeff i := by
   rw [lieCharpoly_eval_eq_toMatrix_charpoly_coeff, LinearMap.charpoly_toMatrix]
 
 end module
 
+end LinearMap
+
+end LinearAlgebra
+
+namespace LieAlgebra
+
+variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [DecidableEq ι] [DecidableEq ιM] [Nontrivial R] [Module.Finite R L] [Module.Free R L]
+variable [Fintype ι]
 variable (b : Basis ι R L) (bₘ : Basis ιM R L) (x : L)
 
-open Module.Free
+open LieAlgebra LinearMap Module.Free
 
 variable (R L)
 
@@ -158,11 +213,11 @@ Then the coefficients of the characteristic polynomial of `ad R L x` are polynom
 The *rank* of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
 -/
 noncomputable
-def rank : ℕ := (lieCharpoly (chooseBasis R L) (chooseBasis R L)).natTrailingDegree
+def rank : ℕ := (lieCharpoly (ad R L) (chooseBasis R L) (chooseBasis R L)).natTrailingDegree
 
 -- TODO: generalize to arbitrary basis, by carefully tracing all the polynomials
 lemma lieCharpoly_coeff_rank_ne_zero :
-    (lieCharpoly (chooseBasis R L) (chooseBasis R L)).coeff (rank R L) ≠ 0 := by
+    (lieCharpoly (ad R L) (chooseBasis R L) (chooseBasis R L)).coeff (rank R L) ≠ 0 := by
   apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
   apply lieCharpoly_ne_zero
 
@@ -170,8 +225,8 @@ open FiniteDimensional
 lemma rank_le_card : rank R L ≤ Fintype.card ι := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
   rw [← FiniteDimensional.finrank_eq_card_basis b, finrank_eq_card_chooseBasisIndex,
-      ← lieCharpoly_natDegree (chooseBasis R L) (chooseBasis R L), Polynomial.coeff_natDegree,
-    (lieCharpoly_monic _ _).leadingCoeff]
+      ← lieCharpoly_natDegree _ (chooseBasis R L) (chooseBasis R L), Polynomial.coeff_natDegree,
+    (lieCharpoly_monic _ _ _).leadingCoeff]
   apply one_ne_zero
 
 open FiniteDimensional
@@ -201,8 +256,9 @@ lemma isRegular_def :
 lemma isRegular_iff_coeff_lieCharpoly_rank_ne_zero :
     IsRegular R x ↔
     MvPolynomial.eval ((chooseBasis R L).repr x)
-      ((lieCharpoly (chooseBasis R L) (chooseBasis R L)).coeff (rank R L)) ≠ 0 := by
-  rw [IsRegular, lieCharpoly_eval, ad]
+      ((lieCharpoly (ad R L) (chooseBasis R L) (chooseBasis R L)).coeff (rank R L)) ≠ 0 := by
+  rw [IsRegular, lieCharpoly_eval]
+  rfl
 
 lemma isRegular_iff_natTrailingDegree_charpoly_eq_rank :
     IsRegular R x ↔ (ad R L x).charpoly.natTrailingDegree = rank R L := by
@@ -229,9 +285,9 @@ lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :
     ∃ x : L, IsRegular R x := by
   let b := chooseBasis R L
   let n := Fintype.card (ChooseBasisIndex R L)
-  have aux : ((lieCharpoly b b).coeff (rank R L)).IsHomogeneous (n - rank R L) :=
-    lieCharpoly_coeff_isHomogeneous b b (rank R L) (n - rank R L) (by simp [rank_le_card _ _ b])
-  obtain ⟨x, hx⟩ : ∃ r, eval r ((lieCharpoly b b).coeff (rank R L)) ≠ 0 := by
+  have aux : ((lieCharpoly (ad R L) b b).coeff (rank R L)).IsHomogeneous (n - rank R L) :=
+    lieCharpoly_coeff_isHomogeneous _ b b (rank R L) (n - rank R L) (by simp [rank_le_card _ _ b])
+  obtain ⟨x, hx⟩ : ∃ r, eval r ((lieCharpoly _ b b).coeff (rank R L)) ≠ 0 := by
     by_contra! h₀
     apply lieCharpoly_coeff_rank_ne_zero R L
     apply aux.eq_zero_of_forall_eval_eq_zero_of_le_card h₀ (le_trans _ h)
