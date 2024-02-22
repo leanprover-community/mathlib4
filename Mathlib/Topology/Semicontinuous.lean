@@ -902,7 +902,6 @@ theorem upperSemicontinuousWithinAt_iff_limsup_le {f : α → γ} :
     UpperSemicontinuousWithinAt f s x ↔ limsup f (𝓝[s] x) ≤ f x :=
   lowerSemicontinuousWithinAt_iff_le_liminf (γ := γᵒᵈ)
 
-
 alias ⟨UpperSemicontinuousWithinAt.limsup_le, _⟩ := upperSemicontinuousWithinAt_iff_limsup_le
 
 theorem upperSemicontinuousAt_iff_limsup_le {f : α → γ} :
