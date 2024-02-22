@@ -20,7 +20,7 @@ getHashCommands () {
     grep -v "#align_import$" |
     grep -v "#noalign$" |
     sort -u | tr '\n' , |
-    sed 's=,$=='
+    sed 's=$=^#eval='
 }
 
 ## scans all the files in `Mathlib/*.lean` looking for lines that
