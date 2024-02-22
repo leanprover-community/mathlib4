@@ -21,12 +21,20 @@ variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- `exp` is entire -/
-theorem AnalyticOn.cexp : AnalyticOn ℂ exp univ := by
+theorem analyticOn_cexp : AnalyticOn ℂ exp univ := by
   rw [analyticOn_univ_iff_differentiable]; exact differentiable_exp
 
 /-- `exp` is analytic at any point -/
-theorem AnalyticAt.cexp : AnalyticAt ℂ exp z :=
-  AnalyticOn.cexp z (Set.mem_univ _)
+theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
+  analyticOn_cexp z (mem_univ _)
+
+/-- `exp ∘ f` is analytic -/
+theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
+  analyticAt_cexp.comp fa
+
+/-- `exp ∘ f` is analytic -/
+theorem AnalyticOn.cexp (fs : AnalyticOn ℂ f s) : AnalyticOn ℂ (fun z ↦ exp (f z)) s :=
+  fun z n ↦ analyticAt_cexp.comp (fs z n)
 
 /-- `log` is analytic away from nonpositive reals -/
 theorem analyticAt_clog (m : z ∈ slitPlane) : AnalyticAt ℂ log z := by
@@ -53,4 +61,9 @@ theorem AnalyticAt.cpow (fa : AnalyticAt ℂ f x) (ga : AnalyticAt ℂ g x)
     intro z fz
     simp only [fz, cpow_def, if_false]
   rw [analyticAt_congr e]
-  exact AnalyticAt.cexp.comp ((fa.clog m).mul ga)
+  exact ((fa.clog m).mul ga).cexp
+
+/-- `f z ^ g z` is analytic if `f z` avoids nonpositive reals -/
+theorem AnalyticOn.cpow (fs : AnalyticOn ℂ f s) (gs : AnalyticOn ℂ g s)
+    (m : ∀ z ∈ s, f z ∈ slitPlane) : AnalyticOn ℂ (fun z ↦ f z ^ g z) s :=
+  fun z n ↦ (fs z n).cpow (gs z n) (m z n)
