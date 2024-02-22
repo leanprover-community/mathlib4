@@ -675,7 +675,7 @@ theorem continuousOn_iff' {f : α → β} {s : Set α} :
     simp only [Subtype.preimage_coe_eq_preimage_coe_iff]
     constructor <;>
       · rintro ⟨u, ou, useq⟩
-        exact ⟨u, ou, useq.symm⟩
+        exact ⟨u, ou, by simpa only [Set.inter_comm, eq_comm] using useq⟩
   rw [continuousOn_iff_continuous_restrict, continuous_def]; simp only [this]
 #align continuous_on_iff' continuousOn_iff'
 
@@ -700,7 +700,7 @@ theorem continuousOn_iff_isClosed {f : α → β} {s : Set α} :
   have : ∀ t, IsClosed (s.restrict f ⁻¹' t) ↔ ∃ u : Set α, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
     intro t
     rw [isClosed_induced_iff, Set.restrict_eq, Set.preimage_comp]
-    simp only [Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm]
+    simp only [Subtype.preimage_coe_eq_preimage_coe_iff, eq_comm, Set.inter_comm s]
   rw [continuousOn_iff_continuous_restrict, continuous_iff_isClosed]; simp only [this]
 #align continuous_on_iff_is_closed continuousOn_iff_isClosed
 
@@ -977,6 +977,13 @@ theorem Continuous.comp_continuousOn {g : β → γ} {f : α → β} {s : Set α
     (hf : ContinuousOn f s) : ContinuousOn (g ∘ f) s :=
   hg.continuousOn.comp hf (mapsTo_univ _ _)
 #align continuous.comp_continuous_on Continuous.comp_continuousOn
+
+@[fun_prop]
+theorem Continuous.comp_continuousOn'
+    {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {g : β → γ}
+    {f : α → β} {s : Set α} (hg : Continuous g) (hf : ContinuousOn f s) :
+    ContinuousOn (fun x ↦ g (f x)) s :=
+  hg.comp_continuousOn hf
 
 theorem ContinuousOn.comp_continuous {g : β → γ} {f : α → β} {s : Set β} (hg : ContinuousOn g s)
     (hf : Continuous f) (hs : ∀ x, f x ∈ s) : Continuous (g ∘ f) := by
@@ -1348,9 +1355,9 @@ theorem continuousOn_piecewise_ite {s s' t : Set α} {f f' : α → β} [∀ x, 
 
 theorem frontier_inter_open_inter {s t : Set α} (ht : IsOpen t) :
     frontier (s ∩ t) ∩ t = frontier s ∩ t := by
-  simp only [← Subtype.preimage_coe_eq_preimage_coe_iff,
+  simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
     ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
-    Subtype.preimage_coe_inter_self]
+    Subtype.preimage_coe_self_inter]
 #align frontier_inter_open_inter frontier_inter_open_inter
 
 theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
