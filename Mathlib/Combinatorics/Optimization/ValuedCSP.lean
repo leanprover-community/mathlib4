@@ -3,10 +3,9 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.List.OfFn
+import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -23,7 +22,7 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 * `ValuedCSP.Instance.evalSolution`: An evaluation of the VCSP instance for given solution.
 * `ValuedCSP.Instance.IsOptimumSolution`: Is given solution a minimum of the VCSP instance?
 * `Function.HasMaxCutProperty`: Can given binary function express the Max-Cut problem?
-* `FractionalOperation`: Multiset of operations of the same arity on given domain.
+* `FractionalOperation`: Multiset of operations on given domain of the same arity.
 * `FractionalOperation.IsSymmetricFractionalPolymorphismFor`: Is given fractional operation a
    symmetric fractional polymorphism for given VCSP template?
 
@@ -33,31 +32,19 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
 
 -/
 
-lemma Multiset.sum_ofList_twice {M : Type*} [AddCommMonoid M] (x : M) :
-    Multiset.sum ↑[x, x] = 2 • x :=
-by -- not sure we want to keep this form
-  convert (add_nsmul x 1 1).symm
-  simp
-
 lemma column_of_2x2_left {α : Type*} (a b c d : α) :
-    (fun i => ![![a, b], ![c, d]] i 0) = (fun i => ![a, c] i) :=
-by -- why not oneliner?
+    (fun i => ![![a, b], ![c, d]] i 0) = (fun i => ![a, c] i) := by
   ext i
-  match i with
-  | 0 => rfl
-  | 1 => rfl
+  fin_cases i <;> rfl
 
 lemma column_of_2x2_right {α : Type*} (a b c d : α) :
-    (fun i => ![![a, b], ![c, d]] i 1) = (fun i => ![b, d] i) :=
-by -- why not oneliner?
+    (fun i => ![![a, b], ![c, d]] i 1) = (fun i => ![b, d] i) := by
   ext i
-  match i with
-  | 0 => rfl
-  | 1 => rfl
+  fin_cases i <;> rfl
 
-lemma univ_val_map_2x2 {α β : Type*} {f : (Fin 2 → α) → β} {a b c d : α} :
-    Finset.univ.val.map (fun i => f (![![a, b], ![c, d]] i)) = [f ![a, b], f ![c, d]] :=
-  rfl
+lemma univ_sum_2x2_aux {α β : Type*} {f : (Fin 2 → α) → β} [AddCommMonoid β] {a b c d : α} :
+    Finset.univ.sum (fun i => f (![![a, b], ![c, d]] i)) = f ![a, b] + f ![c, d] :=
+  Fin.sum_univ_two _
 
 /-- A template for a valued CSP problem over a domain `D` with costs in `C`.
 Regarding `C` we want to support `Bool`, `Nat`, `ENat`, `Int`, `Rat`, `NNRat`,
@@ -84,7 +71,7 @@ def ValuedCSP.Term.evalSolution {Γ : ValuedCSP D C} {ι : Type*}
     (t : Γ.Term ι) (x : ι → D) : C :=
   t.f (x ∘ t.app)
 
-/-- A valued CSP instance over the template `Γ` with variables indexed by `ι`.-/
+/-- A valued CSP instance over the template `Γ` with variables indexed by `ι`. -/
 abbrev ValuedCSP.Instance (Γ : ValuedCSP D C) (ι : Type*) : Type _ :=
   Multiset (Γ.Term ι)
 
@@ -93,13 +80,13 @@ def ValuedCSP.Instance.evalSolution {Γ : ValuedCSP D C} {ι : Type*}
     (I : Γ.Instance ι) (x : ι → D) : C :=
   (I.map (·.evalSolution x)).sum
 
-/-- Condition for `x` being an optimum solution (min) to given `Γ` instance `I`.-/
+/-- Condition for `x` being an optimum solution (min) to given `Γ` instance `I`. -/
 def ValuedCSP.Instance.IsOptimumSolution {Γ : ValuedCSP D C} {ι : Type*}
     (I : Γ.Instance ι) (x : ι → D) : Prop :=
   ∀ y : ι → D, I.evalSolution x ≤ I.evalSolution y
 
 /-- Function `f` has Max-Cut property at labels `a` and `b` when `argmin f` is exactly
-`{ ![a, b] , ![b, a] }` -/
+`{ ![a, b] , ![b, a] }`. -/
 def Function.HasMaxCutPropertyAt (f : (Fin 2 → D) → C) (a b : D) : Prop :=
   f ![a, b] = f ![b, a] ∧
     ∀ x y : D, f ![a, b] ≤ f ![x, y] ∧ (f ![a, b] = f ![x, y] → a = x ∧ b = y ∨ a = y ∧ b = x)
@@ -136,7 +123,7 @@ def FractionalOperation.tt {ι : Type*} (ω : FractionalOperation D m) (x : Fin 
 /-- Cost function admits given fractional operation, i.e., `ω` improves `f` in the `≤` sense. -/
 def Function.AdmitsFractional {n : ℕ} (f : (Fin n → D) → C) (ω : FractionalOperation D m) : Prop :=
   ∀ x : (Fin m → (Fin n → D)),
-    m • ((ω.tt x).map f).sum ≤ ω.size • (Finset.univ.val.map (fun i => f (x i))).sum
+    m • ((ω.tt x).map f).sum ≤ ω.size • Finset.univ.sum (fun i => f (x i))
 
 /-- Fractional operation is a fractional polymorphism for given VCSP template. -/
 def FractionalOperation.IsFractionalPolymorphismFor
@@ -152,49 +139,51 @@ def FractionalOperation.IsSymmetricFractionalPolymorphismFor
     (ω : FractionalOperation D m) (Γ : ValuedCSP D C) : Prop :=
   ω.IsFractionalPolymorphismFor Γ ∧ ω.IsSymmetric
 
-lemma Function.HasMaxCutProperty.forbids_commutativeFP {C' : Type*} [OrderedCancelAddCommMonoid C']
-    {f : (Fin 2 → D) → C'} (mcf : f.HasMaxCutProperty)
+variable {C : Type*} [OrderedCancelAddCommMonoid C]
+
+lemma Function.HasMaxCutPropertyAt.rows_lt_aux
+    {f : (Fin 2 → D) → C} {a b : D} (mcf : f.HasMaxCutPropertyAt a b) (hab : a ≠ b)
+    {ω : FractionalOperation D 2} (symmega : ω.IsSymmetric)
+    {r : Fin 2 → D} (rin : r ∈ (ω.tt ![![a, b], ![b, a]])) :
+    f ![a, b] < f r := by
+  rw [FractionalOperation.tt, Multiset.mem_map] at rin
+  rw [show r = ![r 0, r 1] from List.ofFn_inj.mp rfl]
+  apply lt_of_le_of_ne (mcf.right (r 0) (r 1)).left
+  intro equ
+  have asymm : r 0 ≠ r 1 := by
+    rcases (mcf.right (r 0) (r 1)).right equ with ⟨ha0, hb1⟩ | ⟨ha1, hb0⟩
+    · rw [ha0, hb1] at hab
+      exact hab
+    · rw [ha1, hb0] at hab
+      exact hab.symm
+  apply asymm
+  obtain ⟨o, in_omega, rfl⟩ := rin
+  show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
+  rw [column_of_2x2_left, column_of_2x2_right]
+  exact symmega ![a, b] ![b, a] (List.Perm.swap b a []) o in_omega
+
+lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
+    {f : (Fin 2 → D) → C} (mcf : f.HasMaxCutProperty)
     {ω : FractionalOperation D 2} (valid : ω.IsValid) (symmega : ω.IsSymmetric) :
     ¬ f.AdmitsFractional ω := by
   intro contr
-  rcases mcf with ⟨a, b, hab, mcfab⟩
+  obtain ⟨a, b, hab, mcfab⟩ := mcf
   specialize contr ![![a, b], ![b, a]]
-  rw [univ_val_map_2x2, ← mcfab.left, Multiset.sum_ofList_twice] at contr
+  rw [univ_sum_2x2_aux, ← mcfab.left, ← two_nsmul] at contr
   have sharp :
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
-    have rows_lt : ∀ r ∈ (ω.tt ![![a, b], ![b, a]]), f ![a, b] < f r := by
-      intro r rin
-      rw [FractionalOperation.tt, Multiset.mem_map] at rin
-      rcases rin with ⟨o, in_omega, eq_r⟩
-      rw [show r = ![r 0, r 1] from List.ofFn_inj.mp rfl]
-      apply lt_of_le_of_ne (mcfab.right (r 0) (r 1)).left
-      intro equ
-      have asymm : r 0 ≠ r 1 := by
-        rcases (mcfab.right (r 0) (r 1)).right equ with ⟨ha0, hb1⟩ | ⟨ha1, hb0⟩
-        · rw [ha0, hb1] at hab
-          exact hab
-        · rw [ha1, hb0] at hab
-          exact hab.symm
-      apply asymm
-      rw [← eq_r]
-      show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
-      rw [column_of_2x2_left, column_of_2x2_right]
-      exact symmega ![a, b] ![b, a] (List.Perm.swap b a []) o in_omega
     have half_sharp :
       ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
       ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
       apply Multiset.sum_lt_sum
       · intro r rin
-        exact le_of_lt (rows_lt r rin)
+        exact le_of_lt (mcfab.rows_lt_aux hab symmega rin)
       · obtain ⟨g, _⟩ := valid.contains
-        use fun i => g ((Function.swap ![![a, b], ![b, a]]) i)
-        constructor
-        · simp [FractionalOperation.tt]
+        have : (fun i => g ((Function.swap ![![a, b], ![b, a]]) i)) ∈ ω.tt ![![a, b], ![b, a]] := by
+          simp only [FractionalOperation.tt, Multiset.mem_map]
           use g
-        · apply rows_lt
-          simp [FractionalOperation.tt]
-          use g
+        exact ⟨_, this, mcfab.rows_lt_aux hab symmega this⟩
     rw [two_nsmul, two_nsmul]
     exact add_lt_add half_sharp half_sharp
   have impos : 2 • (ω.map (fun _ => f ![a, b])).sum < ω.size • 2 • f ![a, b] := by
