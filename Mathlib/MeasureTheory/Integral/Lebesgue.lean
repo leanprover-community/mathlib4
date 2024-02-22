@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Function.SimpleFunc
 import Mathlib.MeasureTheory.Measure.MutuallySingular
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.Topology.IndicatorConstPointwise
+import Mathlib.Data.ENNReal.Real
 
 #align_import measure_theory.integral.lebesgue from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -1465,6 +1466,116 @@ theorem set_lintegral_subtype {s : Set α} (hs : MeasurableSet s) (t : Set s) (f
     ∫⁻ x in t, f x ∂(μ.comap (↑)) = ∫⁻ x in (↑) '' t, f x ∂μ := by
   rw [(MeasurableEmbedding.subtype_coe hs).restrict_comap, lintegral_subtype_comap hs,
     restrict_restrict hs, inter_eq_right.2 (Subtype.coe_image_subset _ _)]
+
+section UnifTight
+
+/- Counterpart of `tendsto_indicator_ge` from `MeasureTheory.Function.UniformIntegrable`.
+   It is used in `lintegral_indicator_compl_le`, so it is more convenient
+   to formulate it for `f` valued in `ENNReal`. Could be wrapped with `nnnorm` to make it
+   more general. -/
+theorem tendsto_ENNReal_indicator_lt (f : α → ℝ≥0∞) (x : α) :
+    Tendsto (fun M : ℕ => { x | f x < 1 / (↑M + 1) }.indicator f x) atTop (𝓝 0) := by
+  by_cases hfx : f x ≠ 0
+  · refine tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (1 / f x).toReal) fun n hn => ?_
+    rw [Set.indicator_of_not_mem]
+    simp only [not_lt, Set.mem_setOf_eq, one_div, inv_le_iff_inv_le]
+    simp only [one_div, ge_iff_le, Nat.ceil_le] at hn
+    calc
+      (f x)⁻¹ = .ofReal (f x)⁻¹.toReal := (ofReal_toReal (inv_ne_top.mpr hfx)).symm
+      _       ≤ .ofReal n              := ENNReal.ofReal_le_ofReal hn
+      _       = ↑n                     := by norm_cast
+      _       ≤ ↑n + 1                 := by norm_num
+  · refine tendsto_atTop_of_eventually_const (i₀ := 0) fun n _ => ?_
+    simp only [ne_eq, not_not] at hfx
+    simp only [mem_setOf_eq, not_lt, indicator_apply_eq_zero]
+    intro; assumption
+
+/-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
+integral over any measurable set. -/
+theorem exists_measurable_le_set_lintegral_eq_of_integrable {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
+    ∃ (g : α → ℝ≥0∞), Measurable g ∧ g ≤ f ∧ ∀ (s : Set α) (_hms : MeasurableSet s),
+      ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
+  obtain ⟨g, hmg, hgf, hifg⟩ := exists_measurable_le_lintegral_eq (μ := μ) f
+  use g, hmg, hgf
+  intro s hms
+  have hisf := (lintegral_add_compl (μ := μ) f hms).symm
+  have hisg := (lintegral_add_compl (μ := μ) g hms).symm
+  have := hisg ▸ hisf ▸ hifg
+  have hisfg := hisf ▸ tsub_self (∫⁻ a, f a ∂μ)
+  rw (config := { occs := .pos [2] }) [this] at hisfg
+  replace hisf := add_ne_top.mp (hisf ▸ hf)
+  replace hisg := add_ne_top.mp (hisg ▸ hifg ▸ hf)
+  replace hisfg := ENNReal.add_sub_add_comm
+    hisf.1 hisf.2 hisg.1 hisg.2 (lintegral_mono hgf) (lintegral_mono hgf) ▸ hisfg
+  replace hisfg := (add_eq_zero.mp hisfg).left
+  replace hisfg := tsub_eq_zero_iff_le.mp hisfg
+  replace hisfg := le_antisymm hisfg (lintegral_mono hgf)
+  use hisfg
+
+/-- Core lemma to be used in `MeasureTheory.Memℒp.snorm_indicator_compl_le`. -/
+theorem lintegral_indicator_compl_le
+    {g : α → ℝ≥0∞} (hg : ∫⁻ a, g a ∂μ ≠ ∞)
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧
+      ∫⁻ a in sᶜ, g a ∂μ ≤ ε := by
+  -- come up with a measurable replacement `f` for `g`
+  obtain ⟨f, hmf, _hfg, hsgf⟩ := exists_measurable_le_set_lintegral_eq_of_integrable hg
+  replace hg := lt_top_iff_ne_top.mpr hg
+  have hf := calc
+    ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := μ.restrict_univ ▸ (hsgf univ (by measurability)).symm
+    _            < ∞ := hg
+  have hmeas_lt : ∀ M : ℕ, MeasurableSet { x | f x < 1 / (↑M + 1) } := by
+    intro M
+    apply measurableSet_lt hmf measurable_const
+  have hmeas : ∀ M : ℕ, Measurable ({ x | f x < 1 / (↑M + 1) }.indicator f) := by
+    intro M
+    apply hmf.indicator
+    apply hmeas_lt M
+  -- show that the sequence a.e. converges to 0
+  have htendsto :
+      ∀ᵐ x ∂μ, Tendsto (fun M : ℕ => { x | f x < 1 / (↑M + 1) }.indicator f x) atTop (𝓝 0) :=
+    univ_mem' (id fun x => tendsto_ENNReal_indicator_lt f x)
+  -- use Lebesgue dominated convergence to show that the integrals eventually go to zero
+  have : Tendsto (fun n : ℕ ↦ ∫⁻ a, { x | f x < 1 / (↑n + 1) }.indicator f a ∂μ)
+      atTop (𝓝 (∫⁻ (_ : α), 0 ∂μ)) := by
+    refine tendsto_lintegral_of_dominated_convergence _ hmeas ?_ hf.ne htendsto
+    -- show that the sequence is bounded by f (which is integrable)
+    refine fun n => univ_mem' (id fun x => ?_)
+    by_cases hx : f x < 1 / (↑n + 1)
+    · dsimp
+      rwa [Set.indicator_of_mem]
+    · dsimp
+      rw [Set.indicator_of_not_mem]
+      · exact zero_le _
+      · assumption
+  -- rewrite limit to be more usable and get the sufficiently large M, so the integral is < ε
+  rw [lintegral_zero, ENNReal.tendsto_atTop_zero] at this
+  obtain ⟨M, hM⟩ := this ε hε
+  simp (config := { zeta := false } /- prevent let expansion -/)
+    only [true_and_iff, ge_iff_le, zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
+      Set.mem_Icc] at hM
+  -- the target estimate is now in hM
+  have hM := hM M le_rfl
+  -- let s be the complement of the integration domain in hM,
+  -- prove its measurability and finite measure
+  have : { x | f x < 1 / (↑M + 1) } = { x | 1 / (↑M + 1) ≤ f x }ᶜ := by
+    apply Set.ext; intro x
+    simp only [mem_compl_iff, mem_setOf_eq, not_le]
+  have hms := (hmeas_lt M).compl
+  rw [this] at hM hms
+  rw [compl_compl] at hms
+  have hμs := calc
+    μ { x | 1 / (↑M + 1) ≤ f x }
+      ≤ (∫⁻ a, f a ∂μ) / (1 / (↑M + 1)) :=
+        meas_ge_le_lintegral_div hmf.aemeasurable (by norm_num) (by norm_num)
+    _ < ∞ := by apply div_lt_top hf.ne (by norm_num)
+  set s := { x | 1 / (↑M + 1) ≤ f x }
+  -- replace `f` by `g`
+  rw [lintegral_indicator _ hms.compl, ← hsgf sᶜ hms.compl] at hM
+  -- fulfill the goal
+  use s, hms, hμs, hM
+
+end UnifTight
 
 section DiracAndCount
 variable [MeasurableSpace α]

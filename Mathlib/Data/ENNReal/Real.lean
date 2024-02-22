@@ -664,6 +664,32 @@ theorem iSup_coe_nat : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
 
 end iSup
 
+section Sub
+
+--XXX: this proof is rather hacked together, should be cleaned up
+--     can't go in `Mathlib.Data.ENNReal.Operations` because of
+--     dependence on `ofReal_eq_ofReal_iff`
+protected theorem add_sub_add_comm {a b c d : ENNReal}
+      (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) (hd : d ≠ ∞)
+      (hac : c ≤ a) (hbd : d ≤ b) :
+    (a + b) - (c + d) = (a - c) + (b - d) := by
+  apply calc
+    _ = _ := (ofReal_toReal _).symm
+    _ = _ := ?cast_goal
+    _ = _ := (ofReal_toReal _)
+  case cast_goal =>
+    rw [ofReal_eq_ofReal_iff toReal_nonneg toReal_nonneg]
+    repeat rw [toReal_add ?_, toReal_sub_of_le ?_ ?_]
+    linarith
+    repeat tauto
+    exact add_le_add hac hbd
+    repeat aesop
+  aesop
+  aesop
+
+
+end Sub
+
 end ENNReal
 
 namespace Mathlib.Meta.Positivity
