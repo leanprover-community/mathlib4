@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.BilinearMap
 
 #align_import linear_algebra.multilinear.tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
@@ -14,21 +14,27 @@ import Mathlib.LinearAlgebra.TensorProduct
 
 suppress_compilation
 
-namespace MultilinearMap
-
 section DomCoprod
 
-open TensorProduct
-
-variable {R ι₁ ι₂ ι₃ ι₄ : Type*}
+variable {R ι₁ ι₂ : Type*}
 
 variable [CommSemiring R]
 
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+
 variable {N₁ : Type*} [AddCommMonoid N₁] [Module R N₁]
-
 variable {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
+variable {N₃ : Type*} [AddCommMonoid N₃] [Module R N₃]
 
-variable {N : Type*} [AddCommMonoid N] [Module R N]
+def LinearMap.compMultilinearMap₂ :
+    (N₁ →ₗ[R] N₂ →ₗ[R] N₃) →ₗ[R] (MultilinearMap R (fun _ : ι₁ ↦ M) N₁) →ₗ[R]
+      (MultilinearMap R (fun _ : ι₂ ↦ M) N₂) →ₗ[R]
+        MultilinearMap R (fun _ : ι₁ ↦ M) (MultilinearMap R (fun _ : ι₂ ↦ M) N₃) where
+  toFun f := .mk₂ _ (fun g h ↦ _) _ _ _ _
+  map_add' _ _ := _
+  map_smul' _ _ := _
+
+namespace MultilinearMap
 
 /-- Given two multilinear maps `(ι₁ → N) → N₁` and `(ι₂ → N) → N₂`, this produces the map
 `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂` by taking the coproduct of the domain and the tensor product
@@ -44,7 +50,7 @@ to the simple case defined here. See [this zulip thread](
 https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X.3F/topic/Instances.20on.20.60sum.2Eelim.20A.20B.20i.60/near/218484619).
 -/
 @[simps apply]
-def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
+def domCoprod (f : N₁ →ₗ (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
     (b : MultilinearMap R (fun _ : ι₂ => N) N₂) :
     MultilinearMap R (fun _ : Sum ι₁ ι₂ => N) (N₁ ⊗[R] N₂) where
   toFun v := (a fun i => v (Sum.inl i)) ⊗ₜ b fun i => v (Sum.inr i)
