@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Mario Carneiro
 import Mathlib.Mathport.Rename
 import Std.Classes.SetNotation
 import Std.Tactic.Relation.Rfl
-import Std.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 
 /-!

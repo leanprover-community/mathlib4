@@ -7,7 +7,6 @@ import Std.Tactic.Lint.Basic
 import Std.Tactic.Relation.Rfl
 import Std.Logic
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
