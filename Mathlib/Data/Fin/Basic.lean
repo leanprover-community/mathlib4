@@ -89,10 +89,10 @@ namespace Fin
 instance : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
 
-/-- A non-dependent variant of `elim0`. -/
-def elim0' {α : Sort*} (x : Fin 0) : α :=
-  x.elim0
-#align fin.elim0' Fin.elim0'
+/-- A dependent variant of `Fin.elim0`. -/
+def rec0 {α : Fin 0 → Sort*} (i : Fin 0) : α i := absurd i.2 (Nat.not_lt_zero _)
+
+#align fin.elim0' Fin.elim0
 
 variable {n m : ℕ}
 --variable {a b : Fin n} -- this *really* breaks stuff
