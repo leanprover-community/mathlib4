@@ -1390,8 +1390,7 @@ theorem extChartAt_target_mem_nhdsWithin (x : M) :
 
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
-  simp only [extChartAt, PartialHomeomorph.extend, I.range_eq_univ, PartialEquiv.trans_target,
-    I.target_eq, I.toPartialEquiv_coe_symm, univ_inter]
+  simp_rw [extChartAt_target, I.range_eq_univ, inter_univ]
   exact (PartialHomeomorph.open_target _).preimage I.continuous_symm
 
 -- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
