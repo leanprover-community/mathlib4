@@ -47,8 +47,8 @@ Similar results are stated and proved for upper semicontinuity.
 We also prove that a function is continuous if and only if it is both lower and upper
 semicontinuous.
 
-We have some equivalent definitions of equicontinuity (under certain restrictions on the order
-on the codomain):
+We have some equivalent definitions of lower- and upper-semicontinuity (under certain
+restrictions on the order on the codomain):
 * `lowerSemicontinuous_iff_isOpen_preimage` in a linear order;
 * `lowerSemicontinuous_iff_isClosed_preimage` in a linear order;
 * `lowerSemicontinuousAt_iff_le_liminf` in a dense complete linear order;
