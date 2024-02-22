@@ -225,7 +225,6 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     h₃, LinearMap.map_eq_zero_iff] at f
   simp [f]
 
-
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
   let _ := Classical.decEq ι
