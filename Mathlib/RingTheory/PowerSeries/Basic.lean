@@ -3,6 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+
+import Mathlib.RingTheory.MvPowerSeries.Trunc
+import Mathlib.RingTheory.MvPowerSeries.Inverse
+
+/-
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Data.MvPolynomial.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
@@ -12,40 +17,27 @@ import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Finset.PiAntidiagonal
+-/
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
 /-!
-# Formal power series
+# Formal power series (in one variable)
 
-This file defines (multivariate) formal power series
+This file defines (univariate) formal power series
 and develops the basic properties of these objects.
 
 A formal power series is to a polynomial like an infinite sum is to a finite sum.
 
+Formal power series in one variable are defined from multivariate
+poweries as `PowerSeries R := MvPowerSeries Unit R`.
+
+This allows us to port a lot of proofs and properties
+from the multivariate case to the single variable case.
+
 We provide the natural inclusion from polynomials to formal power series.
 
-## Generalities
-
-The file starts with setting up the (semi)ring structure on multivariate power series.
-
-`trunc n φ` truncates a formal power series to the polynomial
-that has the same coefficients as `φ`, for all `m < n`, and `0` otherwise.
-
-If the constant coefficient of a formal power series is invertible,
-then this formal power series is invertible.
-
-Formal power series over a local ring form a local ring.
-
-## Formal power series in one variable
-
-We prove that if the ring of coefficients is an integral domain,
-then formal power series in one variable form an integral domain.
-
-The `order` of a formal power series `φ` is the multiplicity of the variable `X` in `φ`.
-
-If the coefficients form an integral domain, then `order` is a valuation
-(`order_mul`, `le_order_add`).
+The file sets up the (semi)ring structure on univariate power series.
 
 ## Implementation notes
 
@@ -75,6 +67,7 @@ open BigOperators Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 
+/-
 /-- Multivariate formal power series, where `σ` is the index set of the variables
 and `R` is the coefficient ring.-/
 def MvPowerSeries (σ : Type*) (R : Type*) :=
@@ -1290,6 +1283,8 @@ theorem algebraMap_apply'' :
 
 end MvPowerSeries
 
+-/
+
 /-- Formal power series over the coefficient ring `R`.-/
 def PowerSeries (R : Type*) :=
   MvPowerSeries Unit R
@@ -1869,7 +1864,7 @@ theorem rescale_mul (a b : R) : rescale (a * b) = (rescale b).comp (rescale a) :
 
 end CommSemiring
 
-section Trunc
+/- section Trunc
 variable [Semiring R]
 open Finset Nat
 
@@ -1977,9 +1972,9 @@ lemma trunc_X_of {n : ℕ} (hn : 2 ≤ n) : trunc n X = (Polynomial.X : R[X]) :=
     | succ n => exact trunc_X n
 
 end Trunc
+-/
 
-
-section Ring
+/- section Ring
 
 variable [Ring R]
 
@@ -2058,6 +2053,7 @@ set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_X_mul_shift PowerSeries.sub_const_eq_X_mul_shift
 
 end Ring
+-/
 
 section CommSemiring
 
@@ -2201,7 +2197,7 @@ theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a
 
 end IsDomain
 
-section LocalRing
+/- section LocalRing
 
 variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
@@ -2216,6 +2212,7 @@ instance : LocalRing R⟦X⟧ :=
 
 
 end LocalRing
+-/
 
 section Algebra
 
@@ -2235,7 +2232,7 @@ instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
 
 end Algebra
 
-section Field
+/- section Field
 
 variable {k : Type*} [Field k]
 
@@ -2339,6 +2336,7 @@ theorem smul_inv (r : k) (φ : PowerSeries k) : (r • φ)⁻¹ = r⁻¹ • φ�
 #align power_series.smul_inv PowerSeries.smul_inv
 
 end Field
+-/
 
 end PowerSeries
 
@@ -2346,7 +2344,7 @@ namespace PowerSeries
 
 variable {R : Type*}
 
-section OrderBasic
+/- section OrderBasic
 
 open multiplicity
 
@@ -2657,6 +2655,7 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
 #align power_series.order_mul PowerSeries.order_mul
 
 end OrderIsDomain
+-/
 
 end PowerSeries
 
@@ -2851,6 +2850,8 @@ theorem algebraMap_apply'' :
 
 end Algebra
 
+/-
+
 section Trunc
 /-
 Lemmas in this section involve the coercion `R[X] → R⟦X⟧`, so they may only be stated in the case
@@ -2929,4 +2930,7 @@ theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :
   coeff_mul_eq_coeff_trunc_mul_trunc₂ f g h h
 
 end Trunc
+
+-/
+
 end PowerSeries
