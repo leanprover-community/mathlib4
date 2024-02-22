@@ -433,7 +433,7 @@ theorem finsum_weightedHomogeneousComponent :
 
 variable {w}
 
-theorem weightedHomogeneousComponent_of_weighted_homogeneous_polynomial_same
+theorem IsWeightedHomogeneous.weightedHomogeneousComponent_same
     [DecidableEq M] (m : M) (p : MvPolynomial σ R) (hp : IsWeightedHomogeneous w p m) :
     weightedHomogeneousComponent w m p = p := by
   ext x
@@ -443,7 +443,7 @@ theorem weightedHomogeneousComponent_of_weighted_homogeneous_polynomial_same
     rfl; rw [zero_coeff]
   · rw [hp zero_coeff, if_pos]; rfl
 
-theorem weightedHomogeneousComponent_of_weightedHomogeneous_ne
+theorem IsWeightedHomogeneous.weightedHomogeneousComponent_ne
     [DecidableEq M] (m n : M) (p : MvPolynomial σ R) (hp : IsWeightedHomogeneous w p m) :
     n ≠ m → weightedHomogeneousComponent w n p = 0 := by
   intro hn
@@ -497,19 +497,18 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
     exact ⟨i, hi, hw i⟩
 #align mv_polynomial.weighted_homogeneous_component_zero MvPolynomial.weightedHomogeneousComponent_zero
 
-/-- A weight function is nontrivial if its values are not torsion. -/
-def NonTrivialWeight (w : σ → M) :=
+/-- A weight function is nontorsion if its values are not torsion. -/
+def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
-theorem nonTrivialWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
-    NonTrivialWeight w := by
+theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
+    NonTorsionWeight w := by
   intro n x
   rw [smul_eq_zero]
   intro hnx
   cases' hnx with hn hx
   · exact hn
   · exact absurd hx (hw x)
-#align mv_polynomial.non_trivial_weight_of MvPolynomial.nonTrivialWeight_of
 
 end CanonicallyOrderedAddCommMonoid
 
@@ -517,7 +516,7 @@ section CanonicallyLinearOrderedMonoid
 
 variable [CanonicallyLinearOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
 
-theorem weightedDegree_eq_zero_iff (hw : NonTrivialWeight w) (m : σ →₀ ℕ) :
+theorem weightedDegree_eq_zero_iff (hw : NonTorsionWeight w) {m : σ →₀ ℕ} :
     weightedDegree w m = 0 ↔ ∀ x : σ, m x = 0 := by
   simp only [weightedDegree, Finsupp.total, LinearMap.toAddMonoidHom_coe, coe_lsum,
     LinearMap.coe_smulRight, LinearMap.id_coe, id_eq]
@@ -539,7 +538,7 @@ theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolyno
   intro m
   rw [mem_support_iff]
 
-theorem weightedTotalDegree_eq_zero_iff (hw : NonTrivialWeight w) (p : MvPolynomial σ R) :
+theorem weightedTotalDegree_eq_zero_iff (hw : NonTorsionWeight w) (p : MvPolynomial σ R) :
     p.weightedTotalDegree w = 0 ↔ ∀ (m : σ →₀ ℕ) (_ : m ∈ p.support) (x : σ), m x = ⊥ := by
   rw [← isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero, IsWeightedHomogeneous]
   apply forall_congr'
@@ -547,7 +546,7 @@ theorem weightedTotalDegree_eq_zero_iff (hw : NonTrivialWeight w) (p : MvPolynom
   rw [mem_support_iff]
   apply forall_congr'
   intro _
-  exact weightedDegree_eq_zero_iff hw m
+  exact weightedDegree_eq_zero_iff hw
 
 end CanonicallyLinearOrderedMonoid
 

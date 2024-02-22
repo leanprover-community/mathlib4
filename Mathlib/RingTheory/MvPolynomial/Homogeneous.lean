@@ -128,9 +128,7 @@ theorem totalDegree_zero_iff_isHomogeneous {p : MvPolynomial σ R} :
   rw [← weightedTotalDegree_one,
     ← isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero, IsHomogeneous]
 
-theorem isHomogeneous_of_totalDegree_zero {p : MvPolynomial σ R} (hp : p.totalDegree = 0) :
-    IsHomogeneous p 0 :=
-  (totalDegree_zero_iff_isHomogeneous _).mp hp
+alias ⟨isHomogeneous_of_totalDegree_zero, _⟩ := totalDegree_zero_iff_isHomogeneous
 #align mv_polynomial.is_homogeneous_of_total_degree_zero MvPolynomial.isHomogeneous_of_totalDegree_zero
 
 theorem isHomogeneous_C (r : R) : IsHomogeneous (C r : MvPolynomial σ R) 0 := by
