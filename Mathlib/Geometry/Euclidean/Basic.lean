@@ -382,7 +382,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 #align euclidean_geometry.orthogonal_projection_mem_subspace_eq_self EuclideanGeometry.orthogonalProjection_mem_subspace_eq_self
 
 /-- Orthogonal projection is idempotent. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by

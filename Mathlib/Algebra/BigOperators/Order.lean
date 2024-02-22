@@ -836,11 +836,6 @@ open Qq Lean Meta Finset
 /-- The `positivity` extension which proves that `∑ i in s, f i` is nonnegative if `f` is, and
 positive if each `f i` is and `s` is nonempty.
 
-Note that this does not do any complicated reasoning. In particular, it does not try to feed in the
-`i ∈ s` hypothesis to local assumptions, and the only ways it can prove `s` is nonempty is if there
-is a local `s.Nonempty` hypothesis or `s = (univ : Finset ι)` and `Nonempty ι` can be synthesized by
-TC inference.
-
 TODO: The following example does not work
 ```
 example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum f := by positivity
@@ -852,53 +847,26 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.sum _ $ι $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
-    have body : Q($α) := Expr.betaRev f #[i]
+    have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    -- Try to show that the sum is positive
-    try
-      let .positive pbody := rbody | failure -- Fail if the body is not provably positive
-      -- TODO: If we replace the next line by
-      -- let ps : Q(Finset.Nonempty $s) ← do
-      -- then the type-ascription is ignored. See leanprover/lean4#3126
-      let (ps : Q(Finset.Nonempty $s)) ← do
-        try
-          match s with
-          | ~q(@univ _ $fi) => do
-            let _no ← synthInstanceQ q(Nonempty $ι)
-            pure q(Finset.univ_nonempty (α := $ι))
-          | _ => throwError "`s` is not `univ`"
-        catch _ => do
-          let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s)
-            | failure -- Fail if the set is not provably nonempty
-          pure (.fvar fv)
-      let pα' ← synthInstanceQ q(OrderedCancelAddCommMonoid $α)
+    let p_pos : Option Q(0 < $e) := ← (do
+      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+      let .some ps ← proveFinsetNonempty s | pure none
+      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      pure $ .positive q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps)
-    -- Try to show that the sum is nonnegative
-    catch _ => do
+      return some q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps))
+    -- Try to show that the sum is positive
+    if let some p_pos := p_pos then
+      return .positive p_pos
+    -- Fall back to showing that the sum is nonnegative
+    else
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
       assertInstancesCommute
-      pure $ .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
+      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
-
-example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j in range n, a j^2 := by positivity
-example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j in s, a j^2 := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i in range n, (a j^2 + i ^ 2) := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (a j^2 + 1) := by positivity
-example (a : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (a j^2 + 1) := by
-  have : Finset.Nonempty {1} := singleton_nonempty 1
-  positivity
-example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
-example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
-example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
-
--- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
--- `0` because of the `hf` assumption
-set_option linter.unusedVariables false in
-example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
 
 /-- We make an alias by hand to keep control over the order of the arguments. -/
 private lemma prod_ne_zero {ι α : Type*} [CommMonoidWithZero α] [Nontrivial α] [NoZeroDivisors α]
@@ -906,9 +874,6 @@ private lemma prod_ne_zero {ι α : Type*} [CommMonoidWithZero α] [Nontrivial �
 
 /-- The `positivity` extension which proves that `∏ i in s, f i` is nonnegative if `f` is, and
 positive if each `f i` is.
-
-Note that this does not do any complicated reasoning. In particular, it does not try to feed in the
-`i ∈ s` hypothesis to local assumptions.
 
 TODO: The following example does not work
 ```
@@ -953,23 +918,6 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       assertInstancesCommute
       pure $ .nonzero q(@prod_ne_zero $ι $α $instαmon $instαnontriv $instαnozerodiv $f $s
         fun i _ ↦ $pr i)
-  | _ => throwError "not Finset.sum"
-
-example (n : ℕ) : ∏ j in range n, (-1) ≠ 0 := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j in range n, a j^2 := by positivity
-example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∏ j in s, a j^2 := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j : Fin 8, ∏ i in range n, (a j^2 + i ^ 2) := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 < ∏ j : Fin (n + 1), (a j^2 + 1) := by positivity
-example (a : ℕ → ℤ) : 0 < ∏ j in ({1} : Finset ℕ), (a j^2 + 1) := by
-  have : Finset.Nonempty {1} := singleton_nonempty 1
-  positivity
-example (s : Finset ℕ) : 0 ≤ ∏ j in s, j := by positivity
-example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
-example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
-
--- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
--- `0` because of the `hf` assumption
-set_option linter.unusedVariables false in
-example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∏ n in Finset.range 10, f n := by positivity
+  | _ => throwError "not Finset.prod"
 
 end Mathlib.Meta.Positivity

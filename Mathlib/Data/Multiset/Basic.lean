@@ -245,7 +245,7 @@ theorem mem_cons_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ b ::�
   mem_cons.2 <| Or.inr h
 #align multiset.mem_cons_of_mem Multiset.mem_cons_of_mem
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_cons_self (a : α) (s : Multiset α) : a ∈ a ::ₘ s :=
   mem_cons.2 (Or.inl rfl)
 #align multiset.mem_cons_self Multiset.mem_cons_self
@@ -761,7 +761,7 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
   rw [← coe_card, coe_toList]
 #align multiset.length_to_list Multiset.length_toList
 
-@[simp, nolint simpNF] -- Porting note: `dsimp` can not prove this, yet linter complains
+@[simp, nolint simpNF] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
 theorem card_zero : @card α 0 = 0 :=
   rfl
 #align multiset.card_zero Multiset.card_zero
@@ -1039,7 +1039,7 @@ theorem coe_erase (l : List α) (a : α) : erase (l : Multiset α) a = l.erase a
   rfl
 #align multiset.coe_erase Multiset.coe_erase
 
-@[simp, nolint simpNF] -- Porting note: `dsimp` can not prove this, yet linter complains
+@[simp, nolint simpNF] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
 theorem erase_zero (a : α) : (0 : Multiset α).erase a = 0 :=
   rfl
 #align multiset.erase_zero Multiset.erase_zero
@@ -2439,7 +2439,7 @@ theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a := by
   rfl
 #align multiset.coe_count Multiset.coe_count
 
-@[simp, nolint simpNF] -- Porting note: simp can prove this at EOF, but not right now
+@[simp, nolint simpNF] -- Porting note (#10618): simp can prove this at EOF, but not right now
 theorem count_zero (a : α) : count a 0 = 0 :=
   rfl
 #align multiset.count_zero Multiset.count_zero
@@ -2928,7 +2928,7 @@ theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
     simp only [decide_eq_true_eq, add_right_inj]
-    refine' (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
+    exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 #align multiset.rel.countp_eq Multiset.Rel.countP_eq
 
 end Rel
