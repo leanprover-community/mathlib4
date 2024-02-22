@@ -512,15 +512,17 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [Complete
 
 namespace ContinuousLinearMap
 
-theorem inner_map_map_iff_star_mul_self (u : H →L[𝕜] H) :
-    (∀ x y : H, ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜) ↔ star u * u = 1 := by
+variable {K : Type*} [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
+
+theorem inner_map_map_iff_star_mul_self (u : H →L[𝕜] K) :
+    (∀ x y : H, ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜) ↔ adjoint u ∘L u = 1 := by
   refine ⟨fun h ↦ ext fun x ↦ ?_, fun h ↦ ?_⟩
   · refine ext_inner_right 𝕜 fun y ↦ ?_
     simpa [star_eq_adjoint, adjoint_inner_left] using h x y
-  · simp [← adjoint_inner_left, ← mul_apply, ← star_eq_adjoint, h]
+  · simp [← adjoint_inner_left, ← comp_apply, h]
 
-theorem norm_map_iff_star_mul_self (u : H →L[𝕜] H) :
-    (∀ x : H, ‖u x‖ = ‖x‖) ↔ star u * u = 1 := by
+theorem norm_map_iff_star_mul_self (u : H →L[𝕜] K) :
+    (∀ x : H, ‖u x‖ = ‖x‖) ↔ adjoint u ∘L u = 1 := by
   rw [LinearMap.norm_map_iff_inner_map_map u, u.inner_map_map_iff_star_mul_self]
 
 theorem norm_map_of_mem_unitary
