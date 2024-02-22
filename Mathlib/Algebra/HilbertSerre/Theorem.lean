@@ -74,6 +74,14 @@ variable {𝒜} in
     rw [zero_pow, sub_zero]
     linarith [irrelevant.deg_pos S i.2]
 
+lemma poles_val :
+    S.poles.val =
+    algebraMap (Polynomial ℤ) ℤ⟦X⟧ (∏ i in S.toFinset.attach, (1 - Polynomial.X ^ S.deg i.2)) := by
+  simp only [val_poles, HomogeneousIdeal.toIdeal_irrelevant, map_prod, map_sub, map_one, map_pow]
+  refine Finset.prod_congr rfl fun i _ ↦ ?_
+  congr
+  simp only [algebraMap_apply', Algebra.id.map_eq_id, Polynomial.coe_X, map_X]
+
 lemma poles_inv_eq' :
     (↑S.poles⁻¹ : ℤ⟦X⟧) =
     ∏ i in S.toFinset.attach, PowerSeries.invOfUnit (1 - PowerSeries.X ^ S.deg i.2) 1 := by
@@ -464,14 +472,6 @@ example : true := rfl
 
 variable [(i : ℕ) → (x : (𝒜 i)) → Decidable (x ≠ 0)] [(a : A) → Decidable (a ∈ KER 𝒜 x deg_x)]
 
--- instance :  DirectSum.Decomposition (KER 𝒜 x deg_x).grading :=
--- HomogeneousSubmodule.decomposition _
-
--- instance (i : ℕ) : Module.Finite (𝒜 0) ((KER 𝒜 x deg_x).grading i) :=
--- GradedModule.finite_module_over_degree_zero_subring 𝒜 (KER 𝒜 x deg_x).grading i
-
--- #exit
--- set_option synthInstance.maxHeartbeats 50000 in
 set_option maxHeartbeats 500000 in
 lemma key_lemma :
     ∃ (p : Polynomial ℤ),
@@ -605,27 +605,103 @@ instance gradedModule_COKER :
     exact ⟨Quotient.mk''
       ⟨(a : A) • (b : M), (inferInstance : SetLike.GradedSMul 𝒜 ℳ).smul_mem ha b.2⟩, rfl⟩
 
-def μ' : FGModuleCat (𝒜' S s S' hS' 0) ⟹+ ℤ :=
-  μ.pushforward <| RingEquiv.toFGModuleCatEquivalence
-  { toFun := fun x ↦ ⟨⟨(x : A), by
-      rw [mem_A', Algebra.mem_adjoin_iff]
-      exact Subring.subset_closure <| Or.inl ⟨x, rfl⟩⟩, x.2⟩
-    invFun := fun x ↦ ⟨x.1, x.2⟩
-    left_inv := by intro x; ext; rfl
-    right_inv := by intro x; ext; rfl
-    map_mul' := by
-      rintro ⟨x, hx⟩ ⟨y, hy⟩
-      ext
-      show x * y = x * y
-      rfl
-      -- sorry
-    map_add' := by
-      rintro ⟨x, hx⟩ ⟨y, hy⟩
-      ext
-      show x + y = x + y
-      rfl
-      -- sorry
-       }
+
+@[simps]
+def AZeroToA'Zero : 𝒜 0 →+* 𝒜' S s S' hS' 0 where
+  toFun := fun x ↦ ⟨⟨(x : A), by
+    rw [mem_A', Algebra.mem_adjoin_iff]
+    exact Subring.subset_closure <| Or.inl ⟨x, rfl⟩⟩, x.2⟩
+  map_one' := by ext; rfl
+  map_mul' := by intros; ext; rfl
+  map_zero' := by ext; rfl
+  map_add' := by intros; ext; rfl
+
+@[simps]
+def A'ZeroToAZero : 𝒜' S s S' hS' 0 →+* 𝒜 0 where
+  toFun := fun x ↦ ⟨x.1, x.2⟩
+  map_one' := by ext; rfl
+  map_mul' := by intros; ext; rfl
+  map_zero' := by ext; rfl
+  map_add' := by intros; ext; rfl
+
+lemma A'ZeroToAZero_comp_AZeroToA'Zero :
+    (A'ZeroToAZero S s S' hS').comp (AZeroToA'Zero S s S' hS') = RingHom.id (𝒜 0) := by
+  ext ⟨x, hx⟩
+  simp
+
+lemma AZeroToA'Zero_comp_A'ZeroToAZero :
+    (AZeroToA'Zero S s S' hS').comp (A'ZeroToAZero S s S' hS') = RingHom.id (𝒜' S s S' hS' 0) := by
+  ext ⟨⟨x, hx1⟩, hx2⟩
+  rw [RingHom.comp_apply, AZeroToA'Zero_apply_coe_coe, RingHom.id_apply,
+    A'ZeroToAZero_apply_coe]
+
+@[simps!]
+def AZeroEquivA'Zero : 𝒜 0 ≃+* 𝒜' S s S' hS' 0 :=
+RingEquiv.ofHomInv (AZeroToA'Zero S s S' hS') (A'ZeroToAZero S s S' hS')
+  (A'ZeroToAZero_comp_AZeroToA'Zero S s S' hS')
+  (AZeroToA'Zero_comp_A'ZeroToAZero S s S' hS')
+
+noncomputable def μ' : FGModuleCat (𝒜' S s S' hS' 0) ⟹+ ℤ :=
+  μ.pushforward <| RingEquiv.toFGModuleCatEquivalence <| AZeroEquivA'Zero S s S' hS'
+
+@[simps]
+noncomputable def generatingSet' :
+    GradedRing.HomogeneousGeneratingSetOf (𝒜' S s S' hS')
+      (HomogeneousIdeal.toIdeal (HomogeneousIdeal.irrelevant (𝒜' S s S' hS'))) where
+  toFinset := S'.attach.image fun x : S' ↦ ⟨x, by
+    rw [mem_A', Algebra.mem_adjoin_iff]
+    refine Subring.subset_closure <| Or.inr x.2⟩
+  homogeneous' := by
+    intro x hx
+    simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at hx
+    obtain ⟨x, hx, rfl⟩ := hx
+    obtain ⟨i, hi⟩ := S.2 (hS' ▸ Finset.mem_insert_of_mem hx : x ∈ S.toFinset)
+    exact ⟨i, hi⟩
+  ne_zero' := by
+    intro x hx
+    simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at hx
+    obtain ⟨x, hx, rfl⟩ := hx
+    have h := S.3 (hS' ▸ Finset.mem_insert_of_mem hx : x ∈ S.toFinset)
+    contrapose! h
+    rw [Subtype.ext_iff] at h
+    exact h
+  span_eq := sorry
+
+open Classical in
+lemma eqKER :
+    (μ' μ S s S' hS').poincareSeries (𝒜' S s S' hS') (KER ℳ s deg_s).grading =
+    μ.poincareSeries 𝒜 (KER ℳ s deg_s).grading := by
+  ext n
+  rw [AdditiveFunction.coeff_poincareSeries, AdditiveFunction.coeff_poincareSeries]
+  exact μ.eq_of_iso
+    { hom :=
+      { toFun := fun x ↦ x
+        map_add' := by intros; rfl
+        map_smul' := by rintro r (x : (KER ℳ s deg_s).grading n); rfl }
+      inv :=
+      { toFun := fun x ↦ x
+        map_add' := by intros; rfl
+        map_smul' := by rintro r (x : (KER ℳ s deg_s).grading n); rfl }
+      hom_inv_id := by ext; rfl
+      inv_hom_id := by ext; rfl }
+
+lemma eqCOKER :
+    (μ' μ S s S' hS').poincareSeries (𝒜' S s S' hS') (COKER.den ℳ s deg_s).quotientGrading =
+    μ.poincareSeries 𝒜 (COKER.den ℳ s deg_s).quotientGrading := by
+  ext n
+  rw [AdditiveFunction.coeff_poincareSeries, AdditiveFunction.coeff_poincareSeries]
+  exact μ.eq_of_iso
+    { hom :=
+      { toFun := fun x ↦ x
+        map_add' := by intros; rfl
+        map_smul' := by rintro r (x : (COKER.den ℳ s deg_s).quotientGrading n); rfl }
+      inv :=
+      { toFun := fun x ↦ x
+        map_add' := by intros; rfl
+        map_smul' := by rintro r (x : (COKER.den ℳ s deg_s).quotientGrading n); rfl }
+      hom_inv_id := by ext; rfl
+      inv_hom_id := by ext; rfl }
+
 end
 
 end induction.constructions
@@ -636,7 +712,6 @@ variable (N : ℕ) (ih : statement'.{u} N)
 
 open induction.constructions
 
--- set_option maxHeartbeats 8000000 in
 lemma induction : statement'.{u} (N + 1) := by
   classical
   intro A M _ _ _ _ _ 𝒜 ℳ _ _ _ μ S cardS
@@ -645,16 +720,137 @@ lemma induction : statement'.{u} (N + 1) := by
 
   let d : ℕ := S.deg (hS1' ▸ Finset.mem_insert_self _ _ : s ∈ S.toFinset)
   have deg_s : s ∈ 𝒜 d := S.mem_deg _
+  have d_pos : 0 < d := GradedRing.HomogeneousGeneratingSetOf.irrelevant.deg_pos S
+    (hS1' ▸ Finset.mem_insert_self _ _ : s ∈ S.toFinset)
+  have d_ne_zero : d ≠ 0 := by linarith only [d_pos]
 
   let A' : HomogeneousSubring 𝒜 := A' S s S' hS1'
   let 𝒜' : ℕ → AddSubgroup A' := 𝒜' S s S' hS1'
 
-  let μ' := μ' S s S' hS1'
+  let μ' := μ' μ S s S' hS1'
 
-  have ih_KER := ih A' (KER ℳ s deg_s).toSubmodule 𝒜' (KER ℳ s deg_s).grading -- (μ' _)
-  have ih_COKER := ih A' (COKER ℳ s deg_s) 𝒜' (COKER.den ℳ s deg_s).quotientGrading -- (μ.pushforward _)
+  obtain ⟨pKER, hpKER⟩ := ih A' (KER ℳ s deg_s).toSubmodule 𝒜' (KER ℳ s deg_s).grading μ'
+    (generatingSet' S s S' hS1') (by
+      rw [generatingSet'_toFinset, Finset.card_image_of_injective, Finset.card_attach, hS2']
+      intro x y h
+      ext
+      simp only [Subtype.mk.injEq] at h
+      exact h)
+  obtain ⟨pCOKER, hpCOKER⟩ := ih A' (COKER ℳ s deg_s) 𝒜' (COKER.den ℳ s deg_s).quotientGrading μ'
+    (generatingSet' S s S' hS1') (by
+      rw [generatingSet'_toFinset, Finset.card_image_of_injective, Finset.card_attach, hS2']
+      intro x y h
+      ext
+      simp only [Subtype.mk.injEq] at h
+      exact h)
+  rw [eqKER] at hpKER
+  rw [eqCOKER] at hpCOKER
 
+  obtain ⟨pIH, hpIH⟩ := key_lemma ℳ μ s deg_s
+  rw [hpKER, hpCOKER] at hpIH
+
+  replace hpIH : invOfUnit (1 - X ^ d : ℤ⟦X⟧) 1 * _ = invOfUnit (1 - X ^ d : ℤ⟦X⟧) 1 * _ :=
+    congr_arg (invOfUnit (1 - X ^ d : ℤ⟦X⟧) 1 * ·) hpIH
+
+  conv_lhs at hpIH => rw [← mul_assoc, mul_comm (invOfUnit (1 - X ^ d : ℤ⟦X⟧) 1),
+    mul_invOfUnit (h := by simpa using d_ne_zero), one_mul]
+
+  have eq_poles :
+    S.poles.val = (generatingSet' S s S' hS1').poles.val * (1 - X^d : ℤ⟦X⟧)
+  · rw [GradedRing.HomogeneousGeneratingSetOf.val_poles,
+      GradedRing.HomogeneousGeneratingSetOf.val_poles]
+    have eq0 := calc ∏ i in S.toFinset.attach, (1 - X ^ S.deg i.2 : ℤ⟦X⟧)
+        _ = ∏ i in (insert s S').attach,
+              (1 - X ^ S.deg (hS1' ▸ i.2 : i.1 ∈ S.toFinset) : ℤ⟦X⟧) := by
+            apply Finset.prod_bij (i := fun i _ ↦ ⟨i, hS1'.symm ▸ i.2⟩)
+            · rintro i -; exact Finset.mem_attach _ _
+            · rintro a - b - h
+              ext
+              rw [Subtype.ext_iff] at h
+              exact h
+            · rintro a -
+              exact ⟨⟨a, hS1' ▸ a.2⟩, Finset.mem_attach _ _, rfl⟩
+            · rintro a -; rfl
+    rw [Finset.attach_insert, Finset.prod_insert, mul_comm] at eq0
+    rw [eq0]
+    congr 1
+    · conv_lhs => rw [← Finset.prod_attach]
+      simp_rw [generatingSet'_toFinset]
+      set a1 := _; change ∏ i in a1, _ = _
+      set a2 := _; change _ = ∏ i in a2, _
+      apply Finset.prod_bij
+      pick_goal 5
+      · refine fun i _ ↦ ⟨⟨(i : A), ?_⟩, ?_⟩
+        · rw [mem_A']
+          have h := i.2
+          simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at h
+          obtain ⟨a, ha1, ha2⟩ := h
+          rw [Subtype.ext_iff] at ha2
+          rw [← ha2, Algebra.mem_adjoin_iff]
+          exact Subring.subset_closure <| Or.inr ha1
+        · simp only [Finset.mem_image, Finset.mem_attach, Subtype.mk.injEq, true_and,
+            Subtype.exists, exists_prop, exists_eq_right]
+          have h := i.2
+          simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at h
+          obtain ⟨a, ha1, ha2⟩ := h
+          rw [Subtype.ext_iff] at ha2
+          rw [← ha2]
+          exact ha1
+      · intro _ _; exact Finset.mem_attach _ _
+      · rintro ⟨i, hi⟩ - ⟨j, hj⟩ - h
+        ext
+        rw [Subtype.ext_iff, Subtype.ext_iff] at h
+        exact h
+      · rintro ⟨i, hi⟩ -
+        simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at hi
+        obtain ⟨a, ha, rfl⟩ := hi
+        refine ⟨⟨⟨a, Finset.mem_insert_of_mem ha⟩, ?_⟩, Finset.mem_attach _ _, rfl⟩
+        · simpa only [Finset.mem_image, Finset.mem_attach, Subtype.mk.injEq, true_and,
+          Subtype.exists, exists_prop, exists_eq_right] using ha
+      · rintro ⟨i, hi⟩ -
+        congr 1
+    · intro r
+      simp only [Finset.mem_image, Finset.mem_attach, Subtype.mk.injEq, true_and, Subtype.exists,
+        exists_prop, exists_eq_right] at r
+      exact hs r
+  have eq_pole' :
+    (generatingSet' S s S' hS1').poles⁻¹ = S.poles⁻¹ * (1 - X^d : ℤ⟦X⟧)
+  · symm
+    rw [Units.inv_mul_eq_iff_eq_mul, eq_poles, mul_comm _ (1 - X^d : ℤ⟦X⟧),
+      mul_assoc, Units.mul_inv (generatingSet' S s S' hS1').poles, mul_one]
+  rw [mul_add, mul_sub, Algebra.mul_smul_comm, eq_pole', Algebra.mul_smul_comm,
+    Algebra.mul_smul_comm, ← mul_assoc, mul_comm (invOfUnit (1 - X^d) 1), mul_assoc,
+    mul_comm (invOfUnit (1 - X^d) 1), mul_invOfUnit (h := by simpa using d_ne_zero),
+    mul_one, ← mul_assoc, mul_comm (invOfUnit (1 - X^d) 1), mul_assoc,
+    ← mul_assoc (invOfUnit (1 - X^d) 1), mul_comm (invOfUnit (1 - X^d) 1),
+    mul_assoc _ (invOfUnit (1 - X ^ d) 1) (1 - X^d), mul_comm (invOfUnit (1 - X^d) 1),
+    mul_invOfUnit (h := by simpa using d_ne_zero), mul_one, ← Algebra.smul_mul_assoc,
+    Algebra.smul_def, show pKER • X^d = algebraMap _ ℤ⟦X⟧ (pKER * Polynomial.X ^ d) from ?_,
+    show invOfUnit (1 - X ^ d) 1 * algebraMap _ ℤ⟦X⟧ pIH =
+      (algebraMap _ ℤ⟦X⟧ pIH * (generatingSet' S s S' hS1').poles.1) * S.poles.inv from ?_,
+    ← sub_mul, Units.inv_eq_val_inv, ← add_mul, ← map_sub,
+    (generatingSet' S s S' hS1').poles_val, ← map_mul, ← map_add] at hpIH
+  · exact ⟨_, hpIH⟩
+  · symm
+    rw [Units.inv_eq_val_inv, Units.mul_inv_eq_iff_eq_mul, eq_poles,
+      mul_comm (invOfUnit (1 - X^d) 1), mul_assoc, ← mul_assoc (invOfUnit (1 - X^d) 1),
+      mul_comm (invOfUnit (1 - X^d) 1), mul_assoc _ _ (1 - X^d), mul_comm (invOfUnit (1 - X^d) 1),
+      mul_invOfUnit (h := by simpa using d_ne_zero), mul_one]
+
+  · rw [Algebra.smul_def, map_mul]
+    congr
+    simp only [HomogeneousIdeal.toIdeal_irrelevant, map_pow]
+    congr
+    simp only [algebraMap_apply', Algebra.id.map_eq_id, Polynomial.coe_X, map_X]
 
 end induction_case
 
+lemma proof' : ∀ n, statement'.{u} n := by
+  intro n
+  induction' n with n ih
+  · apply proof.base_case
+  · exact induction n ih
+
+lemma _root_.hilbert_serre : ∃ (p : Polynomial ℤ), μ.poincareSeries 𝒜 ℳ = p • S.poles⁻¹ :=
+  statement'_imp_statement 𝒜 ℳ μ S proof'.{u}
 end HilbertSerre
