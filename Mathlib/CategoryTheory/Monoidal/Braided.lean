@@ -454,6 +454,9 @@ lemma BraidedFunctor.braided (F : BraidedFunctor C D) (X Y : C) :
       (F.μIso X Y).inv ≫ (β_ (F.obj X) (F.obj Y)).hom ≫ (F.μIso Y X).hom :=
   F.braided' X Y
 
+/-- Alternate constructor for `BraidedFunctor` which states things in terms of
+`(μIso X Y).inv` instead of `μ_inv`. This should be preferred over
+`BraidedFunctor.mk` since `μ_inv` is private. -/
 def BraidedFunctor.mk' (F : MonoidalFunctor C D)
     (braided : ∀ X Y,
       F.map (β_ X Y).hom =
@@ -480,10 +483,25 @@ def toLaxBraidedFunctor (F : BraidedFunctor C D) : LaxBraidedFunctor C D :=
 
 variable (C)
 /-- The identity braided monoidal functor. -/
-@[simps!]
 def id : BraidedFunctor C C :=
   BraidedFunctor.mk' (MonoidalFunctor.id C)
 #align category_theory.braided_functor.id CategoryTheory.BraidedFunctor.id
+
+variable {C}
+
+@[simp]
+lemma id_obj (X : C) : (id C).obj X = X := rfl
+
+@[simp]
+lemma id_map {X Y} (f : X ⟶ Y) : (id C).map f = f := rfl
+
+@[simp]
+lemma id_μIso (X Y : C) : (id C).μIso X Y = Iso.refl _ := rfl
+
+variable (C)
+
+@[simp]
+lemma id_εIso : (id C).εIso = Iso.refl _ := rfl
 
 instance : Inhabited (BraidedFunctor C C) :=
   ⟨id C⟩
@@ -491,10 +509,23 @@ instance : Inhabited (BraidedFunctor C C) :=
 variable {C E}
 
 /-- The composition of braided monoidal functors. -/
-@[simps!]
 def comp (F : BraidedFunctor C D) (G : BraidedFunctor D E) : BraidedFunctor C E :=
   { MonoidalFunctor.comp F.toMonoidalFunctor G.toMonoidalFunctor with }
 #align category_theory.braided_functor.comp CategoryTheory.BraidedFunctor.comp
+
+variable {F : BraidedFunctor C D} {G : BraidedFunctor D E}
+
+@[simp] lemma comp_obj (X : C) : (comp F G).obj X = G.obj (F.obj X) := rfl
+
+@[simp]
+lemma comp_map {X Y} (f : X ⟶ Y) : (comp F G).map f = G.map (F.map f) := rfl
+
+@[simp] lemma comp_εIso : (F.comp G).εIso = G.εIso ≪≫ G.mapIso F.εIso := rfl
+
+variable (F G)
+
+@[simp] lemma comp_μIso (X Y : C) :
+    (F.comp G).μIso X Y = G.μIso (F.obj X) (F.obj Y) ≪≫ G.mapIso (F.μIso X Y) := rfl
 
 instance categoryBraidedFunctor : Category (BraidedFunctor C D) :=
   InducedCategory.category BraidedFunctor.toMonoidalFunctor
@@ -533,10 +564,31 @@ variable {M} {N : Type u} [CommMonoid N]
 /-- A multiplicative morphism between commutative monoids gives a braided functor between
 the corresponding discrete braided monoidal categories.
 -/
-@[simps!]
 def Discrete.braidedFunctor (F : M →* N) : BraidedFunctor (Discrete M) (Discrete N) :=
   { Discrete.monoidalFunctor F with }
 #align category_theory.discrete.braided_functor CategoryTheory.Discrete.braidedFunctor
+
+variable {F : M →* N}
+
+@[simp]
+lemma Discrete.braidedFunctor_obj (X : Discrete M) :
+    (Discrete.braidedFunctor F).obj X = Discrete.mk (F X.as) := rfl
+
+@[simp]
+lemma Discrete.braidedFunctor_map {X Y} (f : X ⟶ Y) :
+    (Discrete.braidedFunctor F).map f =
+      Discrete.eqToHom' (congrArg _ f.down.down) := rfl
+
+@[simp]
+lemma Discrete.braidedFunctor_μIso (X Y : Discrete M) :
+    (Discrete.braidedFunctor F).μIso X Y =
+      Discrete.eqToIso (F.map_mul X.as Y.as).symm := rfl
+
+variable (F)
+
+@[simp]
+lemma Discrete.braidedFunctor_εIso:
+    (Discrete.braidedFunctor F).εIso = (Discrete.eqToIso F.map_one.symm) := rfl
 
 end CommMonoid
 
@@ -639,8 +691,9 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
 -- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
 attribute [reassoc] tensor_associativity
 
+variable (C)
+
 /-- The tensor product functor from `C × C` to `C` as a monoidal functor. -/
-@[simps!]
 def tensorMonoidal : MonoidalFunctor (C × C) C :=
   MonoidalFunctor.mk' (tensor C) (λ_ (𝟙_ C)).symm tensor_μ
   -- `simpa` will be not needed when we define `μ_natural_left` in terms of the whiskerings.
@@ -649,6 +702,27 @@ def tensorMonoidal : MonoidalFunctor (C × C) C :=
     (fun X Y Z => by simpa using tensor_associativity X.1 X.2 Y.1 Y.2 Z.1 Z.2)
     (fun ⟨X₁, X₂⟩ => by simpa using tensor_left_unitality X₁ X₂)
     (fun ⟨X₁, X₂⟩ => by simpa using tensor_right_unitality X₁ X₂)
+
+variable {C}
+
+@[simp]
+lemma tensorMonoidal_obj (X : C × C) :
+    (tensorMonoidal C).obj X = X.1 ⊗ X.2 := rfl
+
+@[simp]
+lemma tensorMonoidal_map {X Y} (f : X ⟶ Y) :
+    (tensorMonoidal C).map f = tensorHom f.1 f.2 := rfl
+
+@[simp]
+lemma tensorMonoidal_μIso (X Y : C × C) :
+    (tensorMonoidal C).μIso X Y = tensor_μ X Y := rfl
+
+variable (C)
+
+@[simp]
+lemma tensorMonoidal_εIso : (tensorMonoidal C).εIso = (λ_ (𝟙_ C)).symm := rfl
+
+variable {C}
 
 @[reassoc]
 theorem leftUnitor_monoidal (X₁ X₂ : C) :
@@ -746,19 +820,49 @@ lemma unmop_inv_braiding (X Y : Cᴹᵒᵖ) : (β_ X Y).inv.unmop = (β_ (unmop 
 
 end MonoidalOppositeLemmas
 
+variable (C)
+
 /-- The identity functor on `C`, viewed as a functor from `C` to its
 monoidal opposite, upgraded to a braided functor. -/
-@[simps!] def mopBraidedFunctor : BraidedFunctor C Cᴹᵒᵖ :=
+def mopBraidedFunctor : BraidedFunctor C Cᴹᵒᵖ :=
   BraidedFunctor.mk' <| MonoidalFunctor.mk' (mopFunctor C) (Iso.refl (𝟙_ Cᴹᵒᵖ))
     (fun X Y => β_ (mop X) (mop Y)) (by aesop_cat) (by aesop_cat)
     (by simp [id_tensorHom, tensorHom_id, ← yang_baxter_assoc])
 
 /-- The identity functor on `C`, viewed as a functor from the
 monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
-@[simps!] def unmopBraidedFunctor : BraidedFunctor Cᴹᵒᵖ C :=
+def unmopBraidedFunctor : BraidedFunctor Cᴹᵒᵖ C :=
   BraidedFunctor.mk' <| MonoidalFunctor.mk' (unmopFunctor C) (Iso.refl (𝟙_ C))
     (fun X Y => β_ (unmop X) (unmop Y)) (by aesop_cat) (by aesop_cat)
     (by simp [id_tensorHom, tensorHom_id, ← yang_baxter_assoc])
+
+variable {C}
+
+@[simp] lemma mopBraidedFunctor_obj (X : C) :
+    (mopBraidedFunctor C).obj X = mop X := rfl
+
+@[simp] lemma unmopBraidedFunctor_obj (X : Cᴹᵒᵖ) :
+    (unmopBraidedFunctor C).obj X = X.unmop := rfl
+
+@[simp] lemma mopBraidedFunctor_map {X Y} (f : X ⟶ Y) :
+    (mopBraidedFunctor C).map f = f.mop := rfl
+
+@[simp] lemma unmopBraidedFunctor_map {X Y} (f : X ⟶ Y) :
+    (unmopBraidedFunctor C).map f = f.unmop := rfl
+
+@[simp] lemma mopBraidedFunctor_μIso (X Y : C) :
+    (mopBraidedFunctor C).μIso X Y = β_ (mop X) (mop Y) := rfl
+
+@[simp] lemma unmopBraidedFunctor_μIso (X Y : Cᴹᵒᵖ) :
+    (unmopBraidedFunctor C).μIso X Y = β_ X.unmop Y.unmop := rfl
+
+variable (C)
+
+@[simp] lemma mopBraidedFunctor_εIso :
+    (mopBraidedFunctor C).εIso = Iso.refl (𝟙_ Cᴹᵒᵖ) := rfl
+
+@[simp] lemma unmopBraidedFunctor_εIso :
+    (unmopBraidedFunctor C).εIso = Iso.refl (𝟙_ C) := rfl
 
 end MonoidalOpposite
 

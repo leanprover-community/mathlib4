@@ -93,6 +93,8 @@ instance MonoidalFunctor.categoryMonoidalFunctor : Category (MonoidalFunctor C D
   InducedCategory.category MonoidalFunctor.toLaxMonoidalFunctor
 #align category_theory.monoidal_nat_trans.category_monoidal_functor CategoryTheory.MonoidalFunctor.categoryMonoidalFunctor
 
+/-- The functor which takes the underlying lax monoidal functor of a
+strong monoidal functor. -/
 def MonoidalFunctor.forget : MonoidalFunctor C D ⥤ LaxMonoidalFunctor C D :=
   inducedFunctor _
 
@@ -220,9 +222,9 @@ def Adjunction.monoidalUnit (F : MonoidalFunctor C D) [IsLeftAdjoint F.toFunctor
     LaxMonoidalFunctor.id C ⟶ F.toLaxMonoidalFunctor ⊗⋙ monoidalAdjoint F where
   toNatTrans := IsLeftAdjoint.adj.unit
   unit := (IsLeftAdjoint.adj.homEquiv _ _).symm.injective <| by
-    simp [F.εIso.eq_inv_comp, ← tensor_comp_assoc]
+    simp [← tensor_comp_assoc]
   tensor X Y := (IsLeftAdjoint.adj.homEquiv _ _).symm.injective <| by
-    simp [(F.μIso X Y).eq_inv_comp, ← tensor_comp_assoc]
+    simp [← tensor_comp_assoc]
 
 /-- The unit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
 @[simps!] -- Porting note: have to manually specify the toNatTrans projection

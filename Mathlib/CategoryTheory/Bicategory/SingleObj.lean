@@ -76,10 +76,32 @@ to the original monoidal category.
 
 We subsequently show this is an equivalence.
 -/
-@[simps!]
 def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C :=
   MonoidalFunctor.mk' (Functor.id C) (Iso.refl _) (fun _ _ => Iso.refl _)
+  -- This can't be defined as the monoidal identity because `EndMonoidal B`
+  -- defines `tensorHom` in terms of `whiskerLeft`, `whiskerRight`
+  -- If we removed the field `tensorHom` from `MonoidalCategory` it would work
 #align category_theory.monoidal_single_obj.End_monoidal_star_functor CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor
+
+variable {C}
+
+@[simp]
+lemma endMonoidalStarFunctor_obj (X : EndMonoidal (MonoidalSingleObj.star C)) :
+    (endMonoidalStarFunctor C).obj X = X := rfl
+
+@[simp]
+lemma endMonoidalStarFunctor_map {X Y} (f : X ⟶ Y) :
+    (endMonoidalStarFunctor C).map f = f := rfl
+
+@[simp]
+lemma endMonoidalStarFunctor_μIso (X Y : EndMonoidal (MonoidalSingleObj.star C)) :
+    (endMonoidalStarFunctor C).μIso X Y = Iso.refl _ := rfl
+
+variable (C)
+
+@[simp]
+lemma endMonoidalStarFunctor_εIso :
+    (endMonoidalStarFunctor C).εIso = Iso.refl _ := rfl
 
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,

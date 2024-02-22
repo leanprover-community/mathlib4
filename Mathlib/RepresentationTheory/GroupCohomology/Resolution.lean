@@ -387,8 +387,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
   rw [Finsupp.lift_apply]
   erw [Finsupp.sum_single_index]
   rw [one_smul]
-  · rw [zero_smul]
-  · rw [zero_smul]
+  all_goals exact zero_smul k _
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_symm_apply Rep.diagonalHomEquiv_symm_apply
 
