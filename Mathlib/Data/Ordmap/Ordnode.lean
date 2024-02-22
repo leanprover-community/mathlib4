@@ -197,7 +197,7 @@ instance {α} [Repr α] : Repr (Ordnode α) :=
 O(1). Rebalance a tree which was previously balanced but has had its left
 side grow by 1, or its right side shrink by 1. -/
 def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
+  -- Porting note: removed `clean`
   cases' id r with rs
   · cases' id l with ls ll lx lr
     · exact ι x
@@ -233,7 +233,7 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 O(1). Rebalance a tree which was previously balanced but has had its right
 side grow by 1, or its left side shrink by 1. -/
 def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
+  -- Porting note: removed `clean`
   cases' id l with ls
   · cases' id r with rs rl rx rr
     · exact ι x
@@ -269,7 +269,7 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 O(1). Rebalance a tree which was previously balanced but has had one side change
 by at most 1. -/
 def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
+  -- Porting note: removed `clean`
   cases' id l with ls ll lx lr
   · cases' id r with rs rl rx rr
     · exact ι x
@@ -596,7 +596,7 @@ Case conversion may be inaccurate. Consider using '#align ordnode.map Ordnode.ma
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
      partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
-     partition (λ x : ℕ, x - 2) {1, 2, 4} = precondition violation -/
+     partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)

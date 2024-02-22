@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Order.CompleteLatticeIntervals
 
 #align_import order.sup_indep from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 
@@ -429,8 +430,7 @@ theorem Independent.injOn (ht : Independent t) : InjOn t {i | t i ≠ ⊥} := by
   suffices t j ≤ ⨆ (k) (_ : k ≠ i), t k by
     replace ht := (ht i).mono_right this
     rwa [h, disjoint_self] at ht
-  replace contra : j ≠ i
-  · exact Ne.symm contra
+  replace contra : j ≠ i := Ne.symm contra
   -- Porting note: needs explicit `f`
   exact @le_iSup₂ _ _ _ _ (fun x _ => t x) j contra
 
@@ -473,6 +473,13 @@ theorem Independent.disjoint_biSup {ι : Type*} {α : Type*} [CompleteLattice α
     (ht : Independent t) {x : ι} {y : Set ι} (hx : x ∉ y) : Disjoint (t x) (⨆ i ∈ y, t i) :=
   Disjoint.mono_right (biSup_mono fun _ hi => (ne_of_mem_of_not_mem hi hx : _)) (ht x)
 #align complete_lattice.independent.disjoint_bsupr CompleteLattice.Independent.disjoint_biSup
+
+lemma independent_of_independent_coe_Iic_comp {ι : Sort*} {a : α} {t : ι → Set.Iic a}
+    (ht : Independent ((↑) ∘ t : ι → α)) : Independent t := by
+  intro i x
+  specialize ht i
+  simp_rw [Function.comp_apply, ← Set.Iic.coe_iSup] at ht
+  exact @ht x
 
 end CompleteLattice
 

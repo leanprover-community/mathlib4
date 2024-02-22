@@ -49,7 +49,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 #noalign list.to_array
 
 #align list.nthd List.getD
--- porting notes: see
+-- Porting note: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
@@ -151,7 +151,7 @@ end foldIdxM
 
 section mapIdxM
 
--- porting notes: This was defined in `mathlib` with an `Applicative`
+-- Porting note: This was defined in `mathlib` with an `Applicative`
 -- constraint on `m` and have been `#align`ed to the `Std` versions defined
 -- with a `Monad` typeclass constraint.
 -- Since all `Monad`s are `Applicative` this won't cause issues
