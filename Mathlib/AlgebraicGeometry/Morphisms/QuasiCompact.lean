@@ -306,8 +306,8 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     {U : Opens X.carrier} (hU : IsCompact U.1) (x f : X.presheaf.obj (op U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (isCompact_open_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
-  replace e : U = iSup fun i : s => (i : Opens X.carrier)
-  · ext1; simpa using e
+  replace e : U = iSup fun i : s => (i : Opens X.carrier) := by
+    ext1; simpa using e
   have h₁ : ∀ i : s, i.1.1 ≤ U := by
     intro i
     change (i : Opens X.carrier) ≤ U
@@ -320,10 +320,12 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   swap
   · delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict at H ⊢
     convert congr_arg (X.presheaf.map (homOfLE _).op) H
-    · simp only [← comp_apply, ← Functor.map_comp]
+    -- Note: the below was `simp only [← comp_apply]`
+    · rw [← comp_apply, ← comp_apply]
+      simp only [← Functor.map_comp]
       rfl
+      · simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
     · rw [map_zero]
-      simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
   choose n hn using H'
   haveI := hs.to_subtype
   cases nonempty_fintype s

@@ -455,9 +455,9 @@ set_option linter.uppercaseLean3 false in
 
 section ArithmeticFunction
 
-open Nat.ArithmeticFunction
+open ArithmeticFunction
 
-open scoped Nat.ArithmeticFunction
+open scoped ArithmeticFunction
 
 /-- `cyclotomic n R` can be expressed as a product in a fraction field of `R[X]`
   using Möbius inversion. -/
@@ -638,8 +638,8 @@ theorem orderOf_root_cyclotomic_dvd {n : ℕ} (hpos : 0 < n) {p : ℕ} [Fact p.P
     (hroot : IsRoot (cyclotomic n (ZMod p)) (Nat.castRingHom (ZMod p) a)) :
     orderOf (ZMod.unitOfCoprime a (coprime_of_root_cyclotomic hpos hroot)) ∣ n := by
   apply orderOf_dvd_of_pow_eq_one
-  suffices hpow : eval (Nat.castRingHom (ZMod p) a) (X ^ n - 1 : (ZMod p)[X]) = 0
-  · simp only [eval_X, eval_one, eval_pow, eval_sub, eq_natCast] at hpow
+  suffices hpow : eval (Nat.castRingHom (ZMod p) a) (X ^ n - 1 : (ZMod p)[X]) = 0 by
+    simp only [eval_X, eval_one, eval_pow, eval_sub, eq_natCast] at hpow
     apply Units.val_eq_one.1
     simp only [sub_eq_zero.mp hpow, ZMod.coe_unitOfCoprime, Units.val_pow_eq_pow_val]
   rw [IsRoot.def] at hroot

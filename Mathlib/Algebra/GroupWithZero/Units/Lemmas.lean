@@ -63,6 +63,22 @@ theorem mul_eq_one_iff_inv_eq₀ (ha : a ≠ 0) : a * b = 1 ↔ a⁻¹ = b :=
   IsUnit.mul_eq_one_iff_inv_eq ha.isUnit
 #align mul_eq_one_iff_inv_eq₀ mul_eq_one_iff_inv_eq₀
 
+/-- A variant of `eq_mul_inv_iff_mul_eq₀` that moves the nonzero hypothesis to another variable. -/
+lemma mul_eq_of_eq_mul_inv₀ (ha : a ≠ 0) (h : a = c * b⁻¹) : a * b = c := by
+  rwa [← eq_mul_inv_iff_mul_eq₀]; rintro rfl; simp [ha] at h
+
+/-- A variant of `eq_inv_mul_iff_mul_eq₀` that moves the nonzero hypothesis to another variable. -/
+lemma mul_eq_of_eq_inv_mul₀ (hb : b ≠ 0) (h : b = a⁻¹ * c) : a * b = c := by
+  rwa [← eq_inv_mul_iff_mul_eq₀]; rintro rfl; simp [hb] at h
+
+/-- A variant of `inv_mul_eq_iff_eq_mul₀` that moves the nonzero hypothesis to another variable. -/
+lemma eq_mul_of_inv_mul_eq₀ (hc : c ≠ 0) (h : b⁻¹ * a = c) : a = b * c := by
+  rwa [← inv_mul_eq_iff_eq_mul₀]; rintro rfl; simp [hc.symm] at h
+
+/-- A variant of `mul_inv_eq_iff_eq_mul₀` that moves the nonzero hypothesis to another variable. -/
+lemma eq_mul_of_mul_inv_eq₀ (hb : b ≠ 0) (h : a * c⁻¹ = b) : a = b * c := by
+  rwa [← mul_inv_eq_iff_eq_mul₀]; rintro rfl; simp [hb.symm] at h
+
 @[simp]
 theorem div_mul_cancel (a : G₀) (h : b ≠ 0) : a / b * b = a :=
   IsUnit.div_mul_cancel h.isUnit _
@@ -221,8 +237,9 @@ end CommGroupWithZero
 
 section MonoidWithZero
 
-variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [MonoidWithZeroHomClass F G₀ M₀]
-  [MonoidWithZeroHomClass F' G₀ M₀'] (f : F) {a : G₀}
+variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [FunLike F G₀ M₀]
+  [MonoidWithZeroHomClass F G₀ M₀] [FunLike F' G₀ M₀'] [MonoidWithZeroHomClass F' G₀ M₀']
+  (f : F) {a : G₀}
 
 
 theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
@@ -245,7 +262,8 @@ end MonoidWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] [GroupWithZero G₀'] [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (a b : G₀)
+variable [GroupWithZero G₀] [GroupWithZero G₀'] [FunLike F G₀ G₀']
+  [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (a b : G₀)
 
 /-- A monoid homomorphism between groups with zeros sending `0` to `0` sends `a⁻¹` to `(f a)⁻¹`. -/
 @[simp]
@@ -306,7 +324,7 @@ end Units
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/
 @[simp]
-theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀'] [FunLike F G₀ G₀']
     [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
   map_zpow' f (map_inv₀ f) x n
 #align map_zpow₀ map_zpow₀

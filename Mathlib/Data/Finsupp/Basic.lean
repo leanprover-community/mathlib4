@@ -202,7 +202,7 @@ end ZeroHom
 section AddMonoidHom
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable {F : Type*} [AddMonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N]
 
 /-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
 -/
@@ -1281,7 +1281,7 @@ theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
     f.curry.support ⊆ f.support.image Prod.fst := by
   rw [← Finset.biUnion_singleton]
   refine' Finset.Subset.trans support_sum _
-  refine' Finset.biUnion_mono fun a _ => support_single_subset
+  exact Finset.biUnion_mono fun a _ => support_single_subset
 #align finsupp.support_curry Finsupp.support_curry
 
 end CurryUncurry

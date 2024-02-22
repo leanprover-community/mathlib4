@@ -241,9 +241,10 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeS
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        rw [stalkIso_hom, stalkIso_inv]; erw [comp_apply, comp_apply]; rw [localizationToStalk_of]
-        erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644 and #8386
+        rw [stalkIso_hom, stalkIso_inv]
+        erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
+            stalkToFiberRingHom_toStalk]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
 
@@ -418,8 +419,8 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ((Spec.topMap (algebraMap R S) _* (structureSheaf S).1).germ_res_apply (homOfLE hrU)
           ⟨p, hpr⟩ _).trans e
   set s' := (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).map (homOfLE hrU).op s with h
-  replace e : ((Spec.topMap (algebraMap R S) _* (structureSheaf S).val).germ ⟨p, hpr⟩) s' = y
-  · rw [h]; exact e
+  replace e : ((Spec.topMap (algebraMap R S) _* (structureSheaf S).val).germ ⟨p, hpr⟩) s' = y := by
+    rw [h]; exact e
   clear_value s'; clear! U
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _
