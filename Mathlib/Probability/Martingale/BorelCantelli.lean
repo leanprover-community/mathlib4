@@ -346,7 +346,7 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
   · refine' tendsto_atTop_atTop_of_monotone' _ _
     · intro n m hnm
       simp only [predictablePart, Finset.sum_apply]
-      refine' Finset.sum_mono_set_of_nonneg hω₃ (Finset.range_mono hnm)
+      exact Finset.sum_mono_set_of_nonneg hω₃ (Finset.range_mono hnm)
     rintro ⟨b, hbdd⟩
     rw [← tendsto_neg_atBot_iff] at ht
     simp only [martingalePart, sub_eq_add_neg] at hω₁

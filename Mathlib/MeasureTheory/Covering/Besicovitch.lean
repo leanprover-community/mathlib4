@@ -1062,7 +1062,7 @@ protected def vitaliFamily (μ : Measure α) [SigmaFinite μ] : VitaliFamily μ 
       · have : closedBall x r = closedBall x (δ / 2) :=
           Subset.antisymm ht (closedBall_subset_closedBall H)
         rw [this] at tf
-        refine' ⟨δ / 2, ⟨half_pos δpos, tf⟩, ⟨half_pos δpos, half_lt_self δpos⟩⟩
+        exact ⟨δ / 2, ⟨half_pos δpos, tf⟩, ⟨half_pos δpos, half_lt_self δpos⟩⟩
     obtain ⟨t, r, _, ts, tg, μt, tdisj⟩ :
       ∃ (t : Set α) (r : α → ℝ),
         t.Countable ∧

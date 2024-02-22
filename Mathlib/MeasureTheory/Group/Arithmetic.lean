@@ -829,7 +829,7 @@ nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul₂ M α] : MeasurableSMul₂ Mᵐᵒᵖ α :=
   ⟨show Measurable fun x : Mᵐᵒᵖ × α => op (unop x.1) • x.2 by
       simp_rw [op_smul_eq_smul]
-      refine' (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
+      exact (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
 #align has_measurable_smul₂.op MeasurableSMul₂.op
 
 @[to_additive]

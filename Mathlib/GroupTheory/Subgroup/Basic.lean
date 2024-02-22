@@ -1917,7 +1917,7 @@ theorem le_pi_iff {I : Set η} {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i,
     rintro _ ⟨x, hx, rfl⟩
     exact (h hx) _ hi
   · intro h x hx i hi
-    refine' h i hi ⟨_, hx, rfl⟩
+    exact h i hi ⟨_, hx, rfl⟩
 #align subgroup.le_pi_iff Subgroup.le_pi_iff
 #align add_subgroup.le_pi_iff AddSubgroup.le_pi_iff
 

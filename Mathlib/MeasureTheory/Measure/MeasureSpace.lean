@@ -1023,9 +1023,9 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
     intro s t hst
     rw [OuterMeasure.sInfGen_def]
     refine' iInf_le_of_le μ.toOuterMeasure (iInf_le_of_le (mem_image_of_mem _ hμ) _)
-    refine' measure_mono hst
+    exact measure_mono hst
   rw [← measure_inter_add_diff u hs]
-  refine' add_le_add (hm <| inter_subset_inter_left _ htu) (hm <| diff_subset_diff_left htu)
+  exact add_le_add (hm <| inter_subset_inter_left _ htu) (hm <| diff_subset_diff_left htu)
 #align measure_theory.measure.Inf_caratheodory MeasureTheory.Measure.sInf_caratheodory
 
 instance [MeasurableSpace α] : InfSet (Measure α) :=
