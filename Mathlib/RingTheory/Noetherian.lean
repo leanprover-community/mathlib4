@@ -157,6 +157,10 @@ instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Finite R M :
   ⟨IsNoetherian.noetherian ⊤⟩
 #align module.is_noetherian.finite Module.IsNoetherian.finite
 
+instance {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S]
+    [IsNoetherian R₁ S] (I : Ideal S) : Finite R₁ I :=
+  IsNoetherian.finite R₁ ((I : Submodule S S).restrictScalars R₁)
+
 variable {R M}
 
 theorem Finite.of_injective [IsNoetherian R N] (f : M →ₗ[R] N) (hf : Function.Injective f) :
@@ -200,8 +204,8 @@ instance isNoetherian_pi {R ι : Type*} {M : ι → Type*}
     [∀ i, IsNoetherian R (M i)] : IsNoetherian R (∀ i, M i) := by
   cases nonempty_fintype ι
   haveI := Classical.decEq ι
-  suffices on_finset : ∀ s : Finset ι, IsNoetherian R (∀ i : s, M i)
-  · let coe_e := Equiv.subtypeUnivEquiv <| @Finset.mem_univ ι _
+  suffices on_finset : ∀ s : Finset ι, IsNoetherian R (∀ i : s, M i) by
+    let coe_e := Equiv.subtypeUnivEquiv <| @Finset.mem_univ ι _
     letI : IsNoetherian R (∀ i : Finset.univ, M (coe_e i)) := on_finset Finset.univ
     exact isNoetherian_of_linearEquiv (LinearEquiv.piCongrLeft R M coe_e)
   intro s
@@ -468,8 +472,8 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot
     (f : ℕ → Submodule R M) (h : ∀ n, Disjoint (partialSups f n) (f (n + 1))) :
     ∃ n : ℕ, ∀ m, n ≤ m → f m = ⊥ := by
   -- A little off-by-one cleanup first:
-  suffices t : ∃ n : ℕ, ∀ m, n ≤ m → f (m + 1) = ⊥
-  · obtain ⟨n, w⟩ := t
+  suffices t : ∃ n : ℕ, ∀ m, n ≤ m → f (m + 1) = ⊥ by
+    obtain ⟨n, w⟩ := t
     use n + 1
     rintro (_ | m) p
     · cases p
@@ -547,7 +551,7 @@ also noetherian. -/
 theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M := by
   rw [isNoetherian_iff_wellFounded] at h ⊢
-  refine' (Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h
+  exact (Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h
 #align is_noetherian_of_tower isNoetherian_of_tower
 
 theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module R M]
@@ -589,7 +593,7 @@ instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
   have : IsNoetherian R (⊤ : Submodule R M) :=
-    isNoetherian_of_fg_of_noetherian _ $ Module.finite_def.mp inferInstance
+    isNoetherian_of_fg_of_noetherian _ <| Module.finite_def.mp inferInstance
   isNoetherian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_noetherian_of_fg_of_noetherian' isNoetherian_of_isNoetherianRing_of_finite
 

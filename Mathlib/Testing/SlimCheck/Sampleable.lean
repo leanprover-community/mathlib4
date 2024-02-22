@@ -3,8 +3,9 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Init.Data.List.Instances
 import Mathlib.Testing.SlimCheck.Gen
-import Qq
 
 #align_import testing.slim_check.sampleable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -200,7 +201,7 @@ instance Nat.sampleableExt : SampleableExt Nat :=
 
 instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
-    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
+    simp only [Fin.ofNat, Fin.val_zero]
     exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt Int :=
@@ -216,7 +217,7 @@ instance Rat.sampleableExt : SampleableExt Rat :=
     return Rat.divInt d n)
 
 instance Bool.sampleableExt : SampleableExt Bool :=
-  mkSelfContained $ chooseAny Bool
+  mkSelfContained <| chooseAny Bool
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
 The resulting instance has `1 / length` chances of making an unrestricted choice of characters
@@ -227,7 +228,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
     let x ← choose Nat 0 length (Nat.zero_le _)
     if x.val == 0 then
       let n ← interpSample Nat
-      pure $ Char.ofNat n
+      pure <| Char.ofNat n
     else
       elements chars pos
 
@@ -271,7 +272,7 @@ instance shrinkable : Shrinkable (NoShrink α) where
   shrink := λ _ => []
 
 instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
-  SampleableExt.mkSelfContained $ (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
+  SampleableExt.mkSelfContained <| (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
 
 end NoShrink
 

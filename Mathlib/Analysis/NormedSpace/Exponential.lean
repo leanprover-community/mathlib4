@@ -145,7 +145,7 @@ theorem expSeries_apply_zero (n : ℕ) :
   rw [expSeries_apply_eq]
   cases' n with n
   · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Pi.single_eq_same]
-  · rw [zero_pow (Nat.succ_pos _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
+  · rw [zero_pow (Nat.succ_ne_zero _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
 #align exp_series_apply_zero NormedSpace.expSeries_apply_zero
 
 @[simp]
@@ -351,8 +351,8 @@ theorem invOf_exp_of_mem_ball [Algebra ℚ 𝔸] {x : 𝔸}
 #align inv_of_exp_of_mem_ball NormedSpace.invOf_exp_of_mem_ball
 
 /-- Any continuous ring homomorphism commutes with `exp`. -/
-theorem map_exp_of_mem_ball [Algebra ℚ 𝔸] [Algebra ℚ 𝔹] {F} [RingHomClass F 𝔸 𝔹] (f : F)
-    (hf : Continuous f) (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
+theorem map_exp_of_mem_ball [Algebra ℚ 𝔸] [Algebra ℚ 𝔹] {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]
+    (f : F) (hf : Continuous f) (x : 𝔸) (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     f (exp x) = exp (f x) := by
   rw [exp_eq_tsum, exp_eq_tsum]
   refine' ((expSeries_summable_of_mem_ball' _ hx).hasSum.map f hf).tsum_eq.symm.trans _
@@ -365,7 +365,7 @@ end CompleteAlgebra
 theorem algebraMap_exp_comm_of_mem_ball [Algebra ℚ 𝔸] [CharZero 𝕂] [CompleteSpace 𝕂] (x : 𝕂)
     (hx : x ∈ EMetric.ball (0 : 𝕂) (expSeries 𝕂 𝕂).radius) :
     algebraMap 𝕂 𝔸 (exp x) = exp (algebraMap 𝕂 𝔸 x) :=
-  map_exp_of_mem_ball _ _ (algebraMapClm _ _).continuous _ hx
+  map_exp_of_mem_ball _ (algebraMap _ _) (algebraMapCLM _ _).continuous _ hx
 #align algebra_map_exp_comm_of_mem_ball NormedSpace.algebraMap_exp_comm_of_mem_ball
 
 end AnyFieldAnyAlgebra
@@ -571,7 +571,7 @@ theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
 #align exp_nsmul NormedSpace.exp_nsmul
 
 /-- Any continuous ring homomorphism commutes with `exp`. -/
-theorem map_exp {F} [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸) :
+theorem map_exp {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸) :
     f (exp x) = exp (f x) :=
   map_exp_of_mem_ball 𝕂 f hf x <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 #align map_exp NormedSpace.map_exp
@@ -590,12 +590,14 @@ theorem exp_units_conj' (y : 𝔸ˣ) (x : 𝔸) : exp (↑y⁻¹ * x * y) = ↑y
 #align exp_units_conj' NormedSpace.exp_units_conj'
 
 -- @[simp]
-theorem _root_.Prod.fst_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) : (exp x).fst = exp x.fst :=
+theorem _root_.Prod.fst_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
+    (exp x).fst = exp x.fst :=
   map_exp 𝕂 (RingHom.fst 𝔸 𝔹) continuous_fst x
 #align prod.fst_exp Prod.fst_exp
 
 -- @[simp]
-theorem _root_.Prod.snd_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) : (exp x).snd = exp x.snd :=
+theorem _root_.Prod.snd_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
+    (exp x).snd = exp x.snd :=
   map_exp 𝕂 (RingHom.snd 𝔸 𝔹) continuous_snd x
 #align prod.snd_exp Prod.snd_exp
 

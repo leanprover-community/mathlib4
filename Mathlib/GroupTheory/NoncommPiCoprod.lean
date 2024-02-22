@@ -130,7 +130,7 @@ theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
     noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y := by
   change Finset.univ.noncommProd (fun j => ϕ j (Pi.mulSingle i y j)) (fun _ _ _ _ h => hcomm h _ _)
     = ϕ i y
-  simp (config := { singlePass := true }) only [← Finset.insert_erase (Finset.mem_univ i)]
+  rw [← Finset.insert_erase (Finset.mem_univ i)]
   rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ (Finset.not_mem_erase i _)]
   rw [Pi.mulSingle_eq_same]
   rw [Finset.noncommProd_eq_pow_card]
@@ -170,7 +170,7 @@ theorem noncommPiCoprod_mrange :
       simp
     · refine' iSup_le _
       rintro i x ⟨y, rfl⟩
-      refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
+      exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_mrange MonoidHom.noncommPiCoprod_mrange
 #align add_monoid_hom.noncomm_pi_coprod_mrange AddMonoidHom.noncommPiCoprod_mrange
 
@@ -208,7 +208,7 @@ theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (
       simp
     · refine' iSup_le _
       rintro i x ⟨y, rfl⟩
-      refine' ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
+      exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_range MonoidHom.noncommPiCoprod_range
 #align add_monoid_hom.noncomm_pi_coprod_range AddMonoidHom.noncommPiCoprod_range
 

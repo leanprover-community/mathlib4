@@ -58,7 +58,7 @@ variable {α : Type u}
 
 attribute [local simp] List.append_eq_has_append
 
--- porting notes: to_additive.map_namespace is not supported yet
+-- Porting note: to_additive.map_namespace is not supported yet
 -- worked around it by putting a few extra manual mappings (but not too many all in all)
 -- run_cmd to_additive.map_namespace `FreeGroup `FreeAddGroup
 
@@ -737,7 +737,7 @@ theorem lift.of {x} : lift f (of x) = f x :=
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
-  FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
+  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
 #align free_group.lift.unique FreeGroup.lift.unique
 #align free_add_group.lift.unique FreeAddGroup.lift.unique
 
@@ -754,7 +754,7 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 
 @[to_additive]
 theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  FunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
+  DFunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
 
@@ -1026,7 +1026,7 @@ protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C
 #align free_group.induction_on FreeGroup.induction_on
 #align free_add_group.induction_on FreeAddGroup.induction_on
 
--- porting note: simp can prove this: by simp only [@map_pure]
+-- porting note (#10618): simp can prove this: by simp only [@map_pure]
 @[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
@@ -1051,7 +1051,7 @@ theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻
 #align free_group.map_inv FreeGroup.map_inv
 #align free_add_group.map_neg FreeAddGroup.map_neg
 
--- porting note: simp can prove this: by simp only [@pure_bind]
+-- porting note (#10618): simp can prove this: by simp only [@pure_bind]
 @[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
   lift.of
@@ -1363,7 +1363,7 @@ instance Red.decidableRel : DecidableRel (@Red α)
     if h : (x1, b1) = (x2, b2) then
       match Red.decidableRel tl1 tl2 with
       | isTrue H => isTrue <| h ▸ Red.cons_cons H
-      | isFalse H => isFalse fun H2 => H $ (Red.cons_cons_iff _).1 $ h.symm ▸ H2
+      | isFalse H => isFalse fun H2 => H <| (Red.cons_cons_iff _).1 <| h.symm ▸ H2
     else
       match Red.decidableRel tl1 ((x1, ! b1) :: (x2, b2) :: tl2) with
       | isTrue H => isTrue <| (Red.cons_cons H).tail Red.Step.cons_not

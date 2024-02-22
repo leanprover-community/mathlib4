@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.Interval
 
 #align_import number_theory.divisors from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -94,7 +95,7 @@ theorem cons_self_properDivisors (h : n ≠ 0) :
 theorem mem_divisors {m : ℕ} : n ∈ divisors m ↔ n ∣ m ∧ m ≠ 0 := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [divisors]
   simp only [hm, Ne.def, not_false_iff, and_true_iff, ← filter_dvd_eq_divisors hm, mem_filter,
-    mem_range, and_iff_right_iff_imp, lt_succ_iff]
+    mem_range, and_iff_right_iff_imp, Nat.lt_succ_iff]
   exact le_of_dvd hm.bot_lt
 #align nat.mem_divisors Nat.mem_divisors
 
@@ -126,7 +127,8 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     simp only [succ_le_of_lt (Nat.pos_of_ne_zero h.1), succ_le_of_lt (Nat.pos_of_ne_zero h.2),
       true_and_iff]
     exact
-      ⟨le_mul_of_pos_right (Nat.pos_of_ne_zero h.2), le_mul_of_pos_left (Nat.pos_of_ne_zero h.1)⟩
+      ⟨Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero h.2),
+        Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero h.1)⟩
 #align nat.mem_divisors_antidiagonal Nat.mem_divisorsAntidiagonal
 
 -- Porting note: Redundant binder annotation update
@@ -416,7 +418,7 @@ theorem sum_properDivisors_dvd (h : (∑ x in n.properDivisors, x) ∣ n) :
       symm
       rw [← mem_singleton, eq_properDivisors_of_subset_of_sum_eq_sum (singleton_subset_iff.2
         (mem_properDivisors.2 ⟨h, hlt⟩)) (sum_singleton _ _), mem_properDivisors]
-      refine' ⟨one_dvd _, Nat.succ_lt_succ (Nat.succ_pos _)⟩
+      exact ⟨one_dvd _, Nat.succ_lt_succ (Nat.succ_pos _)⟩
 #align nat.sum_proper_divisors_dvd Nat.sum_properDivisors_dvd
 
 @[to_additive (attr := simp)]

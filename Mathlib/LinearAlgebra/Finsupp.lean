@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Finsupp.Encodable
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Span
+import Mathlib.Data.Set.Countable
 
 #align_import linear_algebra.finsupp from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -170,6 +171,24 @@ def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
   { Finsupp.applyAddHom a with map_smul' := fun _ _ => rfl }
 #align finsupp.lapply Finsupp.lapply
 
+section CompatibleSMul
+
+variable (R S M N ι : Type*)
+variable [Semiring S] [AddCommMonoid M] [AddCommMonoid N] [Module S M] [Module S N]
+
+instance _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
+    [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul (ι →₀ M) N R S where
+  map_smul f r m := by
+    conv_rhs => rw [← sum_single m, map_finsupp_sum, smul_sum]
+    erw [← sum_single (r • m), sum_mapRange_index single_zero, map_finsupp_sum]
+    congr; ext i m; exact (f.comp <| lsingle i).map_smul_of_tower r m
+
+instance _root_.LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
+    [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι →₀ N) R S where
+  map_smul f r m := by ext i; apply ((lapply i).comp f).map_smul_of_tower
+
+end CompatibleSMul
+
 /-- Forget that a function is finitely supported.
 
 This is the linear version of `Finsupp.toFun`. -/
@@ -314,7 +333,7 @@ theorem supported_eq_span_single (s : Set α) :
   · rintro _ ⟨_, hp, rfl⟩
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
-    refine' sum_mem fun i il => _
+    refine sum_mem fun i il => ?_
   -- Porting note: Needed to help this convert quite a bit replacing underscores
     convert smul_mem (M := α →₀ R) (x := single i 1) (span R ((fun i => single i 1) '' s)) (l i) ?_
     · simp [span]
@@ -897,7 +916,7 @@ theorem domLCongr_symm {α₁ α₂ : Type*} (f : α₁ ≃ α₂) :
   LinearEquiv.ext fun _ => rfl
 #align finsupp.dom_lcongr_symm Finsupp.domLCongr_symm
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp
@@ -1388,13 +1407,13 @@ theorem splittingOfFinsuppSurjective_injective (f : M →ₗ[R] α →₀ R) (s 
 
 -- See also `LinearMap.splittingOfFinsuppSurjective`
 /-- A surjective linear map to functions on a finite type has a splitting. -/
-def splittingOfFunOnFintypeSurjective [Fintype α] (f : M →ₗ[R] α → R) (s : Surjective f) :
+def splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R) (s : Surjective f) :
     (α → R) →ₗ[R] M :=
   (Finsupp.lift _ _ _ fun x : α => (s (Finsupp.single x 1)).choose).comp
     (linearEquivFunOnFinite R R α).symm.toLinearMap
 #align linear_map.splitting_of_fun_on_fintype_surjective LinearMap.splittingOfFunOnFintypeSurjective
 
-theorem splittingOfFunOnFintypeSurjective_splits [Fintype α] (f : M →ₗ[R] α → R)
+theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : f.comp (splittingOfFunOnFintypeSurjective f s) = LinearMap.id := by
   classical
   -- Porting note: `ext` can't find appropriate theorems.
@@ -1405,12 +1424,12 @@ theorem splittingOfFunOnFintypeSurjective_splits [Fintype α] (f : M →ₗ[R] �
   rw [zero_smul]
 #align linear_map.splitting_of_fun_on_fintype_surjective_splits LinearMap.splittingOfFunOnFintypeSurjective_splits
 
-theorem leftInverse_splittingOfFunOnFintypeSurjective [Fintype α] (f : M →ₗ[R] α → R)
+theorem leftInverse_splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : LeftInverse f (splittingOfFunOnFintypeSurjective f s) := fun g =>
   LinearMap.congr_fun (splittingOfFunOnFintypeSurjective_splits f s) g
 #align linear_map.left_inverse_splitting_of_fun_on_fintype_surjective LinearMap.leftInverse_splittingOfFunOnFintypeSurjective
 
-theorem splittingOfFunOnFintypeSurjective_injective [Fintype α] (f : M →ₗ[R] α → R)
+theorem splittingOfFunOnFintypeSurjective_injective [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : Injective (splittingOfFunOnFintypeSurjective f s) :=
   (leftInverse_splittingOfFunOnFintypeSurjective f s).injective
 #align linear_map.splitting_of_fun_on_fintype_surjective_injective LinearMap.splittingOfFunOnFintypeSurjective_injective

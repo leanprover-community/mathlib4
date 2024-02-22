@@ -74,7 +74,7 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     obtain ⟨n, f, rfl⟩ := Sfin.fin_embedding
     exact ⟨n, f, hS⟩
   · rintro ⟨n, s, hs⟩
-    refine' ⟨range s, finite_range s, hs⟩
+    exact ⟨range s, finite_range s, hs⟩
 #align submodule.fg_iff_exists_fin_generating_family Submodule.fg_iff_exists_fin_generating_family
 
 /-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2,
@@ -254,7 +254,8 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     -- Porting note: `refine'` doesn't work here
     refine
       ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
-    simp_rw [span_iUnion, span_image, hts, Submodule.iSup_map_single]
+    -- Note: #8386 changed `span_image` into `span_image _`
+    simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 #align submodule.fg_pi Submodule.fg_pi
 
 /-- If 0 → M' → M → M'' → 0 is exact and M' and M'' are
@@ -367,7 +368,7 @@ theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebr
   exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
 #align submodule.fg_restrict_scalars Submodule.fg_restrictScalars
 
-theorem FG.stablizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
+theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
   obtain ⟨S, hS⟩ := hM'
   have : ∀ s : S, ∃ n, (s : M) ∈ N n := fun s =>
@@ -384,7 +385,7 @@ theorem FG.stablizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o
     exact N.2 (Finset.le_sup <| S.mem_attach ⟨s, hs⟩) (hf _)
   · rw [← H]
     exact le_iSup _ _
-#align submodule.fg.stablizes_of_supr_eq Submodule.FG.stablizes_of_iSup_eq
+#align submodule.fg.stablizes_of_supr_eq Submodule.FG.stabilizes_of_iSup_eq
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
 theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
@@ -405,14 +406,13 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
       obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup')
       have ssup : s = u.sup id := by
-        suffices : u.sup id ≤ s
-        exact le_antisymm husup this
+        suffices u.sup id ≤ s from le_antisymm husup this
         rw [sSup', Finset.sup_id_eq_sSup]
         exact sSup_le_sSup huspan
       -- Porting note: had to split this out of the `obtain`
       have := Finset.subset_image_iff.mp huspan
       obtain ⟨t, ⟨-, rfl⟩⟩ := this
-      rw [Finset.sup_image, Function.comp.left_id, Finset.sup_eq_iSup, supr_rw, ←
+      rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw, ←
         span_eq_iSup_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
@@ -676,7 +676,7 @@ variable {R}
 
 section Algebra
 
-theorem trans {R : Type*} (A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
     [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M] :
     ∀ [Finite R A] [Finite A M], Finite R M
   | ⟨⟨s, hs⟩⟩, ⟨⟨t, ht⟩⟩ =>
@@ -695,8 +695,10 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [CommRing B�
   letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
     (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
-  let e : B₁ ≃ₐ[A₂] B₂ := { e₂ with commutes' := fun r ↦ by simpa [RingHom.algebraMap_toAlgebra]
-                                                  using FunLike.congr_fun he.symm (e₁.symm r) }
+  let e : B₁ ≃ₐ[A₂] B₂ :=
+    { e₂ with
+      commutes' := fun r ↦ by
+        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
   haveI := Module.Finite.of_restrictScalars_finite A₁ A₂ B₁
   exact Module.Finite.equiv e.toLinearEquiv
 

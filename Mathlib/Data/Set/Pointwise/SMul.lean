@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Pointwise.Basic
 
 #align_import data.set.pointwise.smul from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
@@ -337,7 +337,7 @@ theorem smul_set_eq_empty : a • s = ∅ ↔ s = ∅ :=
 
 @[to_additive (attr := simp)]
 theorem smul_set_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
-  nonempty_image_iff
+  image_nonempty
 #align set.smul_set_nonempty Set.smul_set_nonempty
 #align set.vadd_set_nonempty Set.vadd_set_nonempty
 
@@ -768,8 +768,9 @@ theorem image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : 
 #align set.image_vadd_comm Set.image_vadd_comm
 
 @[to_additive]
-theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [MonoidHomClass F α β] (f : F) (a : α)
-    (s : Set α) : f '' (a • s) = f a • f '' s :=
+theorem image_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+    (f : F) (a : α) (s : Set α) :
+    f '' (a • s) = f a • f '' s :=
   image_comm <| map_mul _ _
 #align set.image_smul_distrib Set.image_smul_distrib
 #align set.image_vadd_distrib Set.image_vadd_distrib
@@ -951,6 +952,7 @@ theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
 #align set.smul_set_sdiff Set.smul_set_sdiff
 #align set.vadd_set_sdiff Set.vadd_set_sdiff
 
+open scoped symmDiff in
 @[to_additive]
 theorem smul_set_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective a) _ _
@@ -969,6 +971,10 @@ theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ 
   eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul _ _⟩
 #align set.smul_univ Set.smul_univ
 #align set.vadd_univ Set.vadd_univ
+
+@[to_additive]
+theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
+  simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
 
 @[to_additive]
 theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
@@ -1024,6 +1030,10 @@ lemma inv_smul_set_distrib (a : α) (s : Set α) : (a • s)⁻¹ = op a⁻¹ �
 lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹ • s⁻¹ := by
   ext; simp [mem_smul_set_iff_inv_smul_mem]
 
+@[to_additive (attr := simp)]
+lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
+  simp [disjoint_iff, ← smul_set_inter]
+
 end Group
 
 section GroupWithZero
@@ -1072,6 +1082,7 @@ theorem smul_set_sdiff₀ (ha : a ≠ 0) : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective₀ ha) _ _
 #align set.smul_set_sdiff₀ Set.smul_set_sdiff₀
 
+open scoped symmDiff in
 theorem smul_set_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a • t) :=
   image_symmDiff (MulAction.injective₀ ha) _ _
 #align set.smul_set_symm_diff₀ Set.smul_set_symmDiff₀
