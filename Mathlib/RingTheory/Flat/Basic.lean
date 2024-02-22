@@ -102,7 +102,7 @@ lemma iff_rTensor_injective :
     erw [← Equiv.comp_injective _ (TensorProduct.lid R M).toEquiv]
     have h₁ := F.out hI
     rw [← aux] at h₁
-    refine h₁
+    exact h₁
   · intro h₁
     constructor
     intro I hI
