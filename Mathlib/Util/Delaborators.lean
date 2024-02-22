@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.PrettyPrinter.Delaborator.Builtins
-import Std.Classes.SetNotation
 
 /-! # Pi type notation
 

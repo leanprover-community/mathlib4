@@ -5,7 +5,6 @@ Authors: Simon Hudon, David Renshaw
 -/
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Core
-import Std.Tactic.SolveByElim
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Logic.Basic
 import Qq

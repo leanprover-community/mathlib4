@@ -10,6 +10,7 @@ import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Lean.Elab.Tactic.Ext
+import Lean.Meta.Tactic.Symm
 import Std.Lean.NameMapAttribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Std.Tactic.Relation.Rfl -- just to copy the attribute

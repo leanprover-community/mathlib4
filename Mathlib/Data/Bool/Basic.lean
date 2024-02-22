@@ -22,18 +22,18 @@ bool, boolean, Bool, De Morgan
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=
-  decide_eq_true True.intro
+  _root_.decide_eq_true True.intro
 #align bool.to_bool_true Bool.decide_True
 
 theorem decide_False {h} : @decide False h = false :=
-  decide_eq_false id
+  _root_.decide_eq_false id
 #align bool.to_bool_false Bool.decide_False
 
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  · exact decide_eq_false <| λ j => by cases j
-  · exact decide_eq_true <| rfl
+  · exact _root_.decide_eq_false <| λ j => by cases j
+  · exact _root_.decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
@@ -321,10 +321,10 @@ def ofNat (n : Nat) : Bool :=
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
   cases Nat.decEq n 0 with
-  | isTrue hn => rw [decide_eq_true hn]; exact Bool.false_le _
+  | isTrue hn => rw [_root_.decide_eq_true hn]; exact Bool.false_le _
   | isFalse hn =>
     cases Nat.decEq m 0 with
-    | isFalse hm => rw [decide_eq_false hm]; exact Bool.le_true _
+    | isFalse hm => rw [_root_.decide_eq_false hm]; exact Bool.le_true _
     | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 

@@ -5,12 +5,11 @@ Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Util.Cache
-import Std.Lean.Parser
-import Std.Tactic.SolveByElim
+import Std.Lean.Except
 import Std.Control.Nondet.Basic
 import Lean.Meta.Tactic.TryThis
+import Lean.Elab.Tactic.SolveByElim
 import Std.Data.MLList.Heartbeats
-import Std.Lean.Parser
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Expr.Basic
@@ -103,15 +102,17 @@ initialize librarySearchLemmas : DiscrTreeCache (Name × DeclMod) ← unsafe do
   else
     buildDiscrTree
 
+open Lean.Meta.SolveByElim
+
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) (depth) := do
   -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
-  let cfg : SolveByElim.Config :=
+  let cfg : SolveByElimConfig :=
     { maxDepth := depth, exfalso := exfalso, symm := true, commitIndependentGoals := true,
       transparency := ← getTransparency }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
-  SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
+  Lean.Elab.Tactic.processSyntax cfg false false [] [] #[] goals
 
 /--
 Try applying the given lemma (with symmetry modifier) to the goal,
