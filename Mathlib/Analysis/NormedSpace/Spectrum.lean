@@ -611,7 +611,7 @@ lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [Norme
 variable {A : Type*} [Ring A]
 
 lemma nnreal_iff [Algebra ℝ A] {a : A} :
-    SpectrumRestricts a ContinuousMap.toNNReal ↔ ∀ x ∈ spectrum ℝ a, 0 ≤ x := by
+    SpectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ spectrum ℝ a, 0 ≤ x := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
     exact coe_nonneg x
@@ -627,7 +627,7 @@ lemma real_iff [Algebra ℂ A] {a : A} :
 
 lemma nnreal_iff_spectralRadius_le [Algebra ℝ A]
     {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
-    SpectrumRestricts a ContinuousMap.toNNReal ↔ spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
+    SpectrumRestricts a ContinuousMap.realToNNReal ↔ spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
   have : spectrum ℝ a ⊆ Set.Icc (-t) t := by
     intro x hx
     rw [Set.mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← coe_nnnorm, NNReal.coe_le_coe,
