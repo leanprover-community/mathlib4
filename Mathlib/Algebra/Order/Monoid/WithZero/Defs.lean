@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Order.WithBot
 
 #align_import algebra.order.monoid.with_zero.defs from "leanprover-community/mathlib"@"4dc134b97a3de65ef2ed881f3513d56260971562"
 
@@ -89,13 +90,13 @@ instance covariantClass_mul_le [Mul α] [Preorder α]
   exact mul_le_mul_left' hbc' _
 #align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 nonrec theorem le_max_iff [LinearOrder α] {a b c : α} :
     (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
 #align with_zero.le_max_iff WithZero.le_max_iff
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 nonrec theorem min_le_iff [LinearOrder α] {a b c : α} :
     min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]

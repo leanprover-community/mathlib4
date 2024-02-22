@@ -2,6 +2,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Interval
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
@@ -505,7 +506,7 @@ lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith
 
 example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
   cases' h with x h
-  have : 0 ≤ x; · linarith
+  have : 0 ≤ x := by linarith
   trivial
 
 -- At one point, this failed, due to `mdata` interfering with `Expr.isEq`.
@@ -586,3 +587,13 @@ error: Argument passed to nlinarith has metavariables:
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   nlinarith [p ?a]
+
+open BigOperators
+
+example (h : False): True := by
+  have : ∑ k in Finset.empty, k^2 = 0 := by contradiction
+  have : ∀ k : Nat, 0 ≤ k := by
+    intro h
+    -- this should not panic:
+    nlinarith
+  trivial

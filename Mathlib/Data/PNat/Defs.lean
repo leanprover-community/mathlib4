@@ -103,6 +103,9 @@ def toPNat' (n : ℕ) : ℕ+ :=
 #align nat.to_pnat' Nat.toPNat'
 
 @[simp]
+theorem toPNat'_zero : Nat.toPNat' 0 = 1 := rfl
+
+@[simp]
 theorem toPNat'_coe : ∀ n : ℕ, (toPNat' n : ℕ) = ite (0 < n) n 1
   | 0 => rfl
   | m + 1 => by
@@ -207,7 +210,7 @@ instance : WellFoundedRelation ℕ+ :=
 /-- Strong induction on `ℕ+`. -/
 def strongInductionOn {p : ℕ+ → Sort*} (n : ℕ+) : (∀ k, (∀ m, m < k → p m) → p k) → p n
   | IH => IH _ fun a _ => strongInductionOn a IH
-termination_by _ => n.1
+termination_by n.1
 #align pnat.strong_induction_on PNat.strongInductionOn
 
 /-- We define `m % k` and `m / k` in the same way as for `ℕ`

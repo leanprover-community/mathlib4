@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Benjamin Davidson
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Set.Basic
 
 #align_import data.nat.parity from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -133,6 +134,9 @@ set_option linter.deprecated false in
 theorem not_even_bit1 (n : ℕ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
 #align nat.not_even_bit1 Nat.not_even_bit1
 
+theorem not_even_two_mul_add_one (n : ℕ) : ¬Even (2 * n + 1) :=
+  odd_iff_not_even.mp <| odd_two_mul_add_one n
+
 theorem two_not_dvd_two_mul_add_one (n : ℕ) : ¬2 ∣ 2 * n + 1 := by simp [add_mod]
 #align nat.two_not_dvd_two_mul_add_one Nat.two_not_dvd_two_mul_add_one
 
@@ -154,6 +158,8 @@ theorem Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
   (le_total n m).elim (fun h => by simp only [even_sub' h, *]) fun h => by
     simp only [tsub_eq_zero_iff_le.mpr h, even_zero]
 #align nat.odd.sub_odd Nat.Odd.sub_odd
+
+alias _root_.Odd.tsub_odd := Nat.Odd.sub_odd
 
 @[parity_simps]
 theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by

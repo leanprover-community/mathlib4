@@ -83,7 +83,7 @@ protected theorem antitone : Antitone F.N :=
 @[simps]
 def _root_.Ideal.trivialFiltration (I : Ideal R) (N : Submodule R M) : I.Filtration M where
   N _ := N
-  mono _ := le_of_eq rfl
+  mono _ := le_rfl
   smul_le _ := Submodule.smul_le_right
 #align ideal.trivial_filtration Ideal.trivialFiltration
 
@@ -91,7 +91,7 @@ def _root_.Ideal.trivialFiltration (I : Ideal R) (N : Submodule R M) : I.Filtrat
 instance : Sup (I.Filtration M) :=
   ⟨fun F F' =>
     ⟨F.N ⊔ F'.N, fun i => sup_le_sup (F.mono i) (F'.mono i), fun i =>
-      (le_of_eq (Submodule.smul_sup _ _ _)).trans <| sup_le_sup (F.smul_le i) (F'.smul_le i)⟩⟩
+      (Submodule.smul_sup _ _ _).trans_le <| sup_le_sup (F.smul_le i) (F'.smul_le i)⟩⟩
 
 /-- The `sSup` of a family of `I.Filtration`s is an `I.Filtration`. -/
 instance : SupSet (I.Filtration M) :=
@@ -373,7 +373,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
   simp_rw [← F.submodule_eq_span_le_iff_stable_ge]
   constructor
   · rintro H
-    refine H.stablizes_of_iSup_eq
+    refine H.stabilizes_of_iSup_eq
         ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_ : i ≤ n₀), single R i '' ↑(F.N i)), ?_⟩ ?_
     · intro n m e
       rw [Submodule.span_le, Set.iUnion₂_subset_iff]
