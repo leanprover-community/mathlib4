@@ -327,8 +327,7 @@ def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
   toFun := p ∘ Fin.rev
   step i := by
     rw [Function.comp_apply, Function.comp_apply]
-    have hi : i.1 + 1 ≤ p.length
-    · linarith [i.2]
+    have hi : i.1 + 1 ≤ p.length := by linarith [i.2]
     convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by linarith) hi⟩
     · ext; simp
     · ext
@@ -464,8 +463,7 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
     smash p q h (i.natAdd p.length).succ = q i.succ := by
   rw [smash_toFun]
   split_ifs with H
-  · have H' : p.length < p.length + (i.1 + 1)
-    · linarith
+  · have H' : p.length < p.length + (i.1 + 1) := by linarith
     exact (lt_irrefl _ (H.trans H')).elim
   · congr
     simp only [Fin.val_succ, Fin.coe_natAdd]
