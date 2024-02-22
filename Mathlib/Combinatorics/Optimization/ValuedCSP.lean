@@ -162,16 +162,16 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFP {C' : Type*} [OrderedCanc
   rw [univ_val_map_2x2, ← mcfab.left, Multiset.sum_ofList_twice] at contr
   have sharp :
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
-    2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum
-  · have rows_lt : ∀ r ∈ (ω.tt ![![a, b], ![b, a]]), f ![a, b] < f r
-    · intro r rin
+    2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
+    have rows_lt : ∀ r ∈ (ω.tt ![![a, b], ![b, a]]), f ![a, b] < f r := by
+      intro r rin
       rw [FractionalOperation.tt, Multiset.mem_map] at rin
       rcases rin with ⟨o, in_omega, eq_r⟩
       rw [show r = ![r 0, r 1] from List.ofFn_inj.mp rfl]
       apply lt_of_le_of_ne (mcfab.right (r 0) (r 1)).left
       intro equ
-      have asymm : r 0 ≠ r 1
-      · rcases (mcfab.right (r 0) (r 1)).right equ with ⟨ha0, hb1⟩ | ⟨ha1, hb0⟩
+      have asymm : r 0 ≠ r 1 := by
+        rcases (mcfab.right (r 0) (r 1)).right equ with ⟨ha0, hb1⟩ | ⟨ha1, hb0⟩
         · rw [ha0, hb1] at hab
           exact hab
         · rw [ha1, hb0] at hab
@@ -183,8 +183,8 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFP {C' : Type*} [OrderedCanc
       exact symmega ![a, b] ![b, a] (List.Perm.swap b a []) o in_omega
     have half_sharp :
       ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
-      ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum
-    · apply Multiset.sum_lt_sum
+      ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
+      apply Multiset.sum_lt_sum
       · intro r rin
         exact le_of_lt (rows_lt r rin)
       · obtain ⟨g, _⟩ := valid.contains
@@ -197,12 +197,10 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFP {C' : Type*} [OrderedCanc
           use g
     rw [two_nsmul, two_nsmul]
     exact add_lt_add half_sharp half_sharp
-  have impos : 2 • (ω.map (fun _ => f ![a, b])).sum < ω.size • 2 • f ![a, b]
-  · convert lt_of_lt_of_le sharp contr
+  have impos : 2 • (ω.map (fun _ => f ![a, b])).sum < ω.size • 2 • f ![a, b] := by
+    convert lt_of_lt_of_le sharp contr
     simp [FractionalOperation.tt, Multiset.map_map]
-  have rhs_swap : ω.size • 2 • f ![a, b] = 2 • ω.size • f ![a, b]
-  · apply nsmul_left_comm
-  have distrib : (ω.map (fun _ => f ![a, b])).sum = ω.size • f ![a, b]
-  · simp
+  have rhs_swap : ω.size • 2 • f ![a, b] = 2 • ω.size • f ![a, b] := nsmul_left_comm ..
+  have distrib : (ω.map (fun _ => f ![a, b])).sum = ω.size • f ![a, b] := by simp
   rw [rhs_swap, distrib] at impos
   exact ne_of_lt impos rfl
