@@ -724,6 +724,27 @@ protected theorem gen_mem_nhds (f : α →ᵤ[𝔖] β) (hs : s ∈ 𝔖) {V : S
   rw [UniformOnFun.nhds_eq]
   apply_rules [mem_iInf_of_mem, mem_principal_self]
 
+theorem uniformContinuous_ofUniformFun :
+    UniformContinuous fun f : α →ᵤ β ↦ ofFun 𝔖 (UniformFun.toFun f) := by
+  simp only [UniformContinuous, UniformOnFun.uniformity_eq, tendsto_iInf, tendsto_principal,
+    (UniformFun.hasBasis_uniformity _ _).eventually_iff]
+  exact fun _ _ U hU ↦ ⟨U, hU, fun f hf x _ ↦ hf x⟩
+
+/-- The uniformity on `α →ᵤ[𝔖] β` is the same as the uniformity on `α →ᵤ β`,
+provided that `Set.univ ∈ 𝔖`.
+
+Here we formulate it as a `UniformEquiv`. -/
+def uniformEquivUniformFun (h : univ ∈ 𝔖) : (α →ᵤ[𝔖] β) ≃ᵤ (α →ᵤ β) where
+  toFun f := UniformFun.ofFun <| toFun _ f
+  invFun f := ofFun _ <| UniformFun.toFun f
+  left_inv _ := rfl
+  right_inv _ := rfl
+  uniformContinuous_toFun := by
+    simp only [UniformContinuous, (UniformFun.hasBasis_uniformity _ _).tendsto_right_iff]
+    intro U hU
+    filter_upwards [UniformOnFun.gen_mem_uniformity _ _ h hU] with f hf x using hf x (mem_univ _)
+  uniformContinuous_invFun := uniformContinuous_ofUniformFun _ _
+
 /-- Let `u₁`, `u₂` be two uniform structures on `γ` and `𝔖₁ 𝔖₂ : Set (Set α)`. If `u₁ ≤ u₂` and
 `𝔖₂ ⊆ 𝔖₁` then `𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₂)`. -/
 protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) ⦃𝔖₁ 𝔖₂ : Set (Set α)⦄
@@ -896,14 +917,11 @@ instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) where
     intro s hs
     rw [tendstoUniformlyOn_iff_tendsto, uniformity_hasBasis_closed.tendsto_right_iff]
     rintro U ⟨hU, hUc⟩
-    
-    -- rcases F.basis_sets.prod_self.mem_iff.1
-    --   (hF.2 <| (UniformFun.hasBasis_uniformity _ _).mem_of_mem hU) with ⟨V, hV, HVU⟩
-    -- use V, hV
-    -- rintro ⟨f, x⟩ (hf : f ∈ V)
-    -- refine hUc.mem_of_tendsto ((hg x).prod_mk_nhds tendsto_const_nhds) ?_
-    -- filter_upwards [hV] with g' hg'
-    -- exact HVU (mk_mem_prod hg' hf) _
+    rcases mem_prod_self_iff.1 <| hF.2 <| UniformOnFun.gen_mem_uniformity _ _ hs hU
+      with ⟨V, hV, hVU⟩
+    filter_upwards [prod_mem_prod hV (mem_principal_self _)] with ⟨f, x⟩ ⟨hf, hx⟩
+    refine hUc.mem_of_tendsto ((hg x ⟨s, hs, hx⟩).prod_mk_nhds tendsto_const_nhds) ?_
+    filter_upwards [hV] with g' hg' using hVU (mk_mem_prod hg' hf) _ hx
 
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] β × γ` and `(α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] γ)`. -/
@@ -959,3 +977,10 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
 
 -- Like in the previous lemma, the diagram actually commutes by definition
 end UniformOnFun
+
+namespace UniformFun
+
+instance {α β : Type*} [UniformSpace β] [CompleteSpace β] : CompleteSpace (α →ᵤ β) :=
+  (UniformOnFun.uniformEquivUniformFun β {univ} (mem_singleton _)).completeSpace_iff.1 inferInstance
+
+end UniformFun
