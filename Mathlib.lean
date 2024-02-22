@@ -3766,7 +3766,6 @@ import Mathlib.Topology.FiberBundle.Trivialization
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.GPseudoMetric.Basic
-import Mathlib.Topology.GPseudoMetric.IsOrderedAddCommMonoid
 import Mathlib.Topology.Gluing
 import Mathlib.Topology.Hom.Open
 import Mathlib.Topology.Homeomorph
