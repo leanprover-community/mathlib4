@@ -295,7 +295,7 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     rw [← smul_assoc, ← hr, algebraMap_smul]
     refine' Subalgebra.smul_mem _ _ _
     rw [B.basis_eq_pow i]
-    refine' Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
+    exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
   rw [← H, ← mulVec_smul] at cramer
   replace cramer := congr_arg (mulVec (traceMatrix K B.basis)⁻¹) cramer
