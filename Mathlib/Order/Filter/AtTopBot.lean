@@ -1896,7 +1896,6 @@ theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
   exact ⟨x, h.tendsto hx⟩
 #align filter.exists_seq_tendsto Filter.exists_seq_tendsto
 
-attribute [gcongr] add_le_add_right in -- TODO: drop after #9393
 theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [SemilatticeSup α] [Nonempty α]
     [(atTop : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
