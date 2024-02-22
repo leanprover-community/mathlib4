@@ -1026,14 +1026,6 @@ lemma tendsto_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : �
   simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
   exact hF
 
-lemma tendsto_snorm_restrict_zero {β ι : Type*} [NormedAddCommGroup β]
-    {p : ℝ≥0∞} {f : ι → α → β} {l : Filter ι}
-    (h : Tendsto (fun n ↦ snorm (f n) p μ) l (𝓝 0)) (s : Set α) :
-    Tendsto (fun n ↦ snorm (f n) p (μ.restrict s)) l (𝓝 0) := by
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h ?_ ?_
-  · exact fun _ ↦ zero_le _
-  · exact fun _ ↦ snorm_restrict_le _
-
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
 lemma tendsto_set_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
     {l : Filter ι}
@@ -1043,7 +1035,8 @@ lemma tendsto_set_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F 
   refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
   · filter_upwards [hFi] with i hi using hi.restrict
   · simp_rw [← snorm_one_eq_lintegral_nnnorm] at hF ⊢
-    exact tendsto_snorm_restrict_zero hF s
+    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le')
+      (fun _ ↦ snorm_mono_measure _ Measure.restrict_le_self)
 
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
 lemma tendsto_set_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
@@ -1327,6 +1320,14 @@ theorem integral_eq_zero_iff_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi : In
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 :=
   integral_eq_zero_iff_of_nonneg_ae (eventually_of_forall hf) hfi
 #align measure_theory.integral_eq_zero_iff_of_nonneg MeasureTheory.integral_eq_zero_iff_of_nonneg
+
+lemma integral_eq_iff_of_ae_le {f g : α → ℝ}
+    (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
+    ∫ a, f a ∂μ = ∫ a, g a ∂μ ↔ f =ᵐ[μ] g := by
+  refine ⟨fun h_le ↦ EventuallyEq.symm ?_, fun h ↦ integral_congr_ae h⟩
+  rw [← sub_ae_eq_zero,
+    ← integral_eq_zero_iff_of_nonneg_ae ((sub_nonneg_ae _ _).mpr hfg) (hg.sub hf)]
+  simpa [Pi.sub_apply, integral_sub hg hf, sub_eq_zero, eq_comm]
 
 theorem integral_pos_iff_support_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     (0 < ∫ x, f x ∂μ) ↔ 0 < μ (Function.support f) := by
@@ -1735,7 +1736,7 @@ theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f
   by_cases hgm : AEStronglyMeasurable g (Measure.map f μ)
   · exact MeasureTheory.integral_map hf.measurable.aemeasurable hgm
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
-    refine' fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
+    exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
 #align measurable_embedding.integral_map MeasurableEmbedding.integral_map
 
 theorem _root_.ClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]

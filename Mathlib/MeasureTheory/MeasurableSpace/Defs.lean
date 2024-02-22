@@ -443,10 +443,6 @@ instance : CompleteLattice (MeasurableSpace α) :=
 
 instance : Inhabited (MeasurableSpace α) := ⟨⊤⟩
 
-@[simp]
-lemma generateFrom_empty : generateFrom (∅ : Set (Set α)) = ⊥ :=
-  le_bot_iff.mp (generateFrom_le (by simp))
-
 @[mono]
 theorem generateFrom_mono {s t : Set (Set α)} (h : s ⊆ t) : generateFrom s ≤ generateFrom t :=
   giGenerateFrom.gc.monotone_l h
@@ -457,9 +453,13 @@ theorem generateFrom_sup_generateFrom {s t : Set (Set α)} :
   (@giGenerateFrom α).gc.l_sup.symm
 #align measurable_space.generate_from_sup_generate_from MeasurableSpace.generateFrom_sup_generateFrom
 
-lemma iSup_generateFrom {ι : Type*} (s : ι → Set (Set α)) :
-    ⨆ i, MeasurableSpace.generateFrom (s i) = MeasurableSpace.generateFrom (⋃ i, s i) :=
+lemma iSup_generateFrom (s : ι → Set (Set α)) :
+    ⨆ i, generateFrom (s i) = generateFrom (⋃ i, s i) :=
   (@MeasurableSpace.giGenerateFrom α).gc.l_iSup.symm
+
+@[simp]
+lemma generateFrom_empty : generateFrom (∅ : Set (Set α)) = ⊥ :=
+  le_bot_iff.mp (generateFrom_le (by simp))
 
 theorem generateFrom_singleton_empty : generateFrom {∅} = (⊥ : MeasurableSpace α) :=
   bot_unique <| generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]

@@ -559,11 +559,11 @@ theorem range_pullback_snd_of_left :
   rw [←
     show _ = (pullback.snd : pullback f g ⟶ _).1.base from
       PreservesPullback.iso_hom_snd Scheme.forgetToTop f g]
-  -- Porting note : was `rw`
+  -- Porting note (#10691): was `rw`
   erw [coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
     @Set.preimage_univ _ _ (pullback.fst : pullback f.1.base g.1.base ⟶ _)]
-  -- Porting note : was `rw`
+  -- Porting note (#10691): was `rw`
   erw [TopCat.pullback_snd_image_fst_preimage]
   rw [Set.image_univ]
   rfl
@@ -577,11 +577,11 @@ theorem range_pullback_fst_of_right :
   rw [←
     show _ = (pullback.fst : pullback g f ⟶ _).1.base from
       PreservesPullback.iso_hom_fst Scheme.forgetToTop g f]
-  -- Porting note : was `rw`
+  -- Porting note (#10691): was `rw`
   erw [coe_comp]
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
     @Set.preimage_univ _ _ (pullback.snd : pullback g.1.base f.1.base ⟶ _)]
-  -- Porting note : was `rw`
+  -- Porting note (#10691): was `rw`
   erw [TopCat.pullback_fst_image_snd_preimage]
   rw [Set.image_univ]
   rfl
@@ -594,8 +594,7 @@ theorem range_pullback_to_base_of_left :
       Set.range f.1.base ∩ Set.range g.1.base := by
   rw [pullback.condition, Scheme.comp_val_base, coe_comp, Set.range_comp,
     range_pullback_snd_of_left, Opens.carrier_eq_coe,
-    Opens.map_obj, Opens.coe_mk, Set.image_preimage_eq_inter_range,
-    Set.inter_comm]
+    Opens.map_obj, Opens.coe_mk, Set.image_preimage_eq_inter_range]
 #align algebraic_geometry.IsOpenImmersion.range_pullback_to_base_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_left
 
 theorem range_pullback_to_base_of_right :
@@ -705,7 +704,7 @@ theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U 
     f.opensFunctor.obj (X.basicOpen r) = Y.basicOpen (Scheme.Hom.invApp f U r) := by
   have e := Scheme.preimage_basicOpen f (Scheme.Hom.invApp f U r)
   rw [Scheme.Hom.invApp] at e
-  -- Porting note : was `rw`
+  -- Porting note (#10691): was `rw`
   erw [PresheafedSpace.IsOpenImmersion.invApp_app_apply] at e
   rw [Scheme.basicOpen_res, inf_eq_right.mpr _] at e
   rw [← e]

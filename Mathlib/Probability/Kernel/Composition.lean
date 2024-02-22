@@ -652,6 +652,12 @@ theorem comap_apply' (κ : kernel α β) (hg : Measurable g) (c : γ) (s : Set �
 lemma comap_zero (hg : Measurable g) : kernel.comap (0 : kernel α β) g hg = 0 := by
   ext; rw [kernel.comap_apply]; simp
 
+@[simp]
+lemma comap_id (κ : kernel α β) : comap κ id measurable_id = κ := by ext a; rw [comap_apply]; simp
+
+@[simp]
+lemma comap_id' (κ : kernel α β) : comap κ (fun a ↦ a) measurable_id = κ := comap_id κ
+
 theorem lintegral_comap (κ : kernel α β) (hg : Measurable g) (c : γ) (g' : β → ℝ≥0∞) :
     ∫⁻ b, g' b ∂comap κ g hg c = ∫⁻ b, g' b ∂κ (g c) :=
   rfl

@@ -70,7 +70,7 @@ instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
-instance kernel.covariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+instance kernel.instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     CovariantClass (kernel α β) (kernel α β) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
 
@@ -607,6 +607,10 @@ theorem comapRight_apply' (κ : kernel α β) (hf : MeasurableEmbedding f) (a : 
   rw [comapRight_apply,
     Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
 #align probability_theory.kernel.comap_right_apply' ProbabilityTheory.kernel.comapRight_apply'
+
+@[simp]
+lemma comapRight_id (κ : kernel α β) : comapRight κ MeasurableEmbedding.id = κ := by
+  ext _ _ hs; rw [comapRight_apply' _ _ _ hs]; simp
 
 theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by

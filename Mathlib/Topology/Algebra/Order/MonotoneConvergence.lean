@@ -74,7 +74,7 @@ instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α]
   refine' ⟨fun a s ha => tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩⟩
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
-    refine' (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
+    exact (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
   · exact eventually_of_forall fun x => (ha.1 x.2).trans_lt hb
 #align linear_order.Sup_convergence_class LinearOrder.supConvergenceClass
 

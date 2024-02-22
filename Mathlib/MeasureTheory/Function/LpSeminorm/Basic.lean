@@ -621,7 +621,7 @@ theorem Memℒp.mono_measure {f : α → E} (hμν : ν ≤ μ) (hf : Memℒp f 
   ⟨hf.1.mono_measure hμν, (snorm_mono_measure f hμν).trans_lt hf.2⟩
 #align measure_theory.mem_ℒp.mono_measure MeasureTheory.Memℒp.mono_measure
 
-lemma snorm_restrict_le {p : ℝ≥0∞} {f : α → F} {μ : Measure α} (s : Set α) :
+lemma snorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
     snorm f p (μ.restrict s) ≤ snorm f p μ :=
   snorm_mono_measure f Measure.restrict_le_self
 

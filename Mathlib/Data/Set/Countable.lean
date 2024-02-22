@@ -95,13 +95,25 @@ theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
     simp [enumerateCountable, Encodable.encodek]⟩
 #align set.subset_range_enumerate Set.subset_range_enumerate
 
+lemma range_enumerateCountable_subset {s : Set α} (h : s.Countable) (default : α) :
+    range (enumerateCountable h default) ⊆ insert default s := by
+  refine range_subset_iff.mpr (fun n ↦ ?_)
+  rw [enumerateCountable]
+  match @decode s (Countable.toEncodable h) n with
+  | none => exact mem_insert _ _
+  | some val => simp
+
+lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : α}
+    (h_mem : default ∈ s) :
+    range (enumerateCountable h default) = s :=
+  subset_antisymm ((range_enumerateCountable_subset h _).trans_eq (insert_eq_of_mem h_mem))
+    (subset_range_enumerate h default)
+
 lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
     (n : ℕ) :
     enumerateCountable h default n ∈ s := by
-  rw [enumerateCountable]
-  match @decode s (Countable.toEncodable h) n with
-  | none => exact h_mem
-  | some val => simp only [Subtype.coe_prop]
+  conv_rhs => rw [← range_enumerateCountable_of_mem h h_mem]
+  exact mem_range_self n
 
 end Enumerate
 

@@ -894,7 +894,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     have := ht_cover hx
     rw [← Finset.set_biUnion_coe, Set.mem_iUnion₂] at this
     rcases this with ⟨i, i_mem, x_mem⟩
-    refine ⟨⟨i, i_mem⟩, x_mem⟩
+    exact ⟨⟨i, i_mem⟩, x_mem⟩
   rintro ⟨i, hi⟩
   dsimp
   change (structureSheaf R).1.map _ _ = (structureSheaf R).1.map _ _
