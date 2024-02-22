@@ -128,7 +128,7 @@ theorem num_lt_succ_floor_mul_den (q : ℚ) : q.num < (⌊q⌋ + 1) * q.den := b
 
 theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).num < q.num := by
   -- we know that the numerator must be positive
-  have q_num_pos : 0 < q.num := Rat.num_pos_iff_pos.mpr q_pos
+  have q_num_pos : 0 < q.num := Rat.num_pos.mpr q_pos
   -- we will work with the absolute value of the numerator, which is equal to the numerator
   have q_num_abs_eq_q_num : (q.num.natAbs : ℤ) = q.num := Int.natAbs_of_nonneg q_num_pos.le
   set q_inv := (q.den : ℚ) / q.num with q_inv_def
