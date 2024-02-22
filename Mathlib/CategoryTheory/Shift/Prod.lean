@@ -27,19 +27,21 @@ namespace CategoryTheory
 
 open Category
 
-variable (C A B : Type) [Category C] [AddMonoid A] [AddMonoid B]
+variable (C A B : Type*) [Category C] [AddMonoid A] [AddMonoid B]
 
 /-- This typeclass expresses the commutativity of two shifts on a category. -/
 class ShiftsComm [HasShift C A] [HasShift C B] where
   /-- the commutation isomorphism -/
   commIso (a : A) (b : B) :
     shiftFunctor C b ⋙ shiftFunctor C a ≅ shiftFunctor C a ⋙ shiftFunctor C b
-  zero₁ (b : B) : commIso 0 b = (Functor.CommShift.isoZero (shiftFunctor C b) A).symm
-  zero₂ (a : A) : commIso a 0 = (Functor.CommShift.isoZero (shiftFunctor C a) B)
+  zero₁ (b : B) : commIso 0 b = (Functor.CommShift.isoZero (shiftFunctor C b) A).symm := by
+    aesop_cat
+  zero₂ (a : A) : commIso a 0 = (Functor.CommShift.isoZero (shiftFunctor C a) B) := by
+    aesop_cat
   add₁ (a₁ a₂ : A) (b : B) : commIso (a₁ + a₂) b =
-    (Functor.CommShift.isoAdd (commIso a₁ b).symm (commIso a₂ b).symm).symm
+    (Functor.CommShift.isoAdd (commIso a₁ b).symm (commIso a₂ b).symm).symm := by aesop_cat
   add₂ (a : A) (b₁ b₂ : B) : commIso a (b₁ + b₂) =
-    Functor.CommShift.isoAdd (commIso a b₁) (commIso a b₂)
+    Functor.CommShift.isoAdd (commIso a b₁) (commIso a b₂) := by aesop_cat
 
 variable {A B}
 
