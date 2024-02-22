@@ -58,7 +58,7 @@ theorem stdBasisMatrix_add (i : m) (j : n) (a b : α) :
   split_ifs with h <;> simp [h]
 #align matrix.std_basis_matrix_add Matrix.stdBasisMatrix_add
 
-theorem mulVec_stdBasisMatrix [Fintype n] [Fintype m] (i : n) (j : m) (c : α) (x : m → α) :
+theorem mulVec_stdBasisMatrix [Fintype m] (i : n) (j : m) (c : α) (x : m → α) :
     mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
   simp [stdBasisMatrix, mulVec, dotProduct]
