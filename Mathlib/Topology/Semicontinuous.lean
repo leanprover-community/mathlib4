@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Sequences
 import Mathlib.Topology.Instances.ENNReal
 
 #align_import topology.semicontinuous from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -47,6 +46,14 @@ Similar results are stated and proved for upper semicontinuity.
 
 We also prove that a function is continuous if and only if it is both lower and upper
 semicontinuous.
+
+We have some equivalent definitions of equicontinuity (under certain restrictions on the order
+on the codomain):
+* `lowerSemicontinuous_iff_isOpen_preimage` in a linear order;
+* `lowerSemicontinuous_iff_isClosed_preimage` in a linear order;
+* `lowerSemicontinuousAt_iff_le_liminf` in a dense complete linear order;
+* `lowerSemicontinuous_iff_IsClosed_epigraph` in a dense complete linear order with the order
+  topology.
 
 ## Implementation details
 
@@ -179,51 +186,36 @@ section
 
 variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
 
-theorem lowerSemicontinuousAt_iff_le_liminf {f : α → γ} :
-    LowerSemicontinuousAt f x ↔ f x ≤ (liminf f <| 𝓝 x) := by
-  constructor
-  · intro hf; unfold LowerSemicontinuousAt at hf
-    contrapose! hf
-    obtain ⟨y,lty,ylt⟩ := exists_between hf; use y
-    exact ⟨ylt, fun h => not_le_of_lt lty
-      (Filter.le_liminf_of_le (by isBoundedDefault)
-        (Eventually.mono h (fun _ hx => le_of_lt hx)))⟩
-  exact fun hf y ylt => Filter.eventually_lt_of_lt_liminf (lt_of_lt_of_le ylt hf)
-
-theorem LowerSemicontinuousAt.le_liminf {f : α → γ} (hf : LowerSemicontinuousAt f x) :
-    f x ≤ (liminf f <| 𝓝 x) :=
-  lowerSemicontinuousAt_iff_le_liminf.mp hf
-
-theorem lowerSemicontinuous_iff_le_liminf {f : α → γ} :
-    LowerSemicontinuous f ↔ ∀ x, f x ≤ (liminf f <| 𝓝 x) := by
-  simp only [← lowerSemicontinuousAt_iff_le_liminf, LowerSemicontinuous]
-
-theorem LowerSemicontinuous.le_liminf {f : α → γ} (hf : LowerSemicontinuous f) :
-    ∀ x, f x ≤ (liminf f <| 𝓝 x) :=
-  lowerSemicontinuous_iff_le_liminf.mp hf
-
 theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
-    LowerSemicontinuousWithinAt f s x ↔ f x ≤ (liminf f <| 𝓝[s] x) := by
+    LowerSemicontinuousWithinAt f s x ↔ f x ≤ liminf f (𝓝[s] x) := by
   constructor
   · intro hf; unfold LowerSemicontinuousWithinAt at hf
     contrapose! hf
-    obtain ⟨y,lty,ylt⟩ := exists_between hf; use y
-    exact ⟨ylt, fun h => not_le_of_lt lty
-      (Filter.le_liminf_of_le (by isBoundedDefault)
-        (Eventually.mono h (fun _ hx => le_of_lt hx)))⟩
-  exact fun hf y ylt => Filter.eventually_lt_of_lt_liminf (lt_of_lt_of_le ylt hf)
+    obtain ⟨y, lty, ylt⟩ := exists_between hf; use y
+    exact ⟨ylt, fun h => lty.not_le
+      (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ hx => le_of_lt hx))⟩
+  exact fun hf y ylt => eventually_lt_of_lt_liminf (ylt.trans_le hf)
 
-theorem LowerSemicontinuousWithinAt.le_liminf {f : α → γ} (hf : LowerSemicontinuousWithinAt f s x) :
-    f x ≤ (liminf f <| 𝓝[s] x) :=
-  lowerSemicontinuousWithinAt_iff_le_liminf.mp hf
+alias ⟨LowerSemicontinuousWithinAt.le_liminf, _⟩ := lowerSemicontinuousWithinAt_iff_le_liminf
 
-theorem lowerSemicontinuous_on_iff_le_liminf {f : α → γ} :
-    LowerSemicontinuousOn f s ↔ ∀ x ∈ s, f x ≤ (liminf f <| 𝓝[s] x) := by
+theorem lowerSemicontinuousAt_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuousAt f x ↔ f x ≤ liminf f (𝓝 x) := by
+  rw [← lowerSemicontinuousWithinAt_univ_iff, lowerSemicontinuousWithinAt_iff_le_liminf,
+    ← nhdsWithin_univ]
+
+alias ⟨LowerSemicontinuousAt.le_liminf, _⟩ := lowerSemicontinuousAt_iff_le_liminf
+
+theorem lowerSemicontinuous_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuous f ↔ ∀ x, f x ≤ liminf f (𝓝 x) := by
+  simp only [← lowerSemicontinuousAt_iff_le_liminf, LowerSemicontinuous]
+
+alias ⟨LowerSemicontinuous.le_liminf, _⟩ := lowerSemicontinuous_iff_le_liminf
+
+theorem lowerSemicontinuousOn_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuousOn f s ↔ ∀ x ∈ s, f x ≤ liminf f (𝓝[s] x) := by
   simp only [← lowerSemicontinuousWithinAt_iff_le_liminf, LowerSemicontinuousOn]
 
-theorem LowerSemicontinuousOn.le_liminf {f : α → γ} (hf : LowerSemicontinuousOn f s) :
-    ∀ x ∈ s, f x ≤ (liminf f <| 𝓝[s] x) :=
-  lowerSemicontinuous_on_iff_le_liminf.mp hf
+alias ⟨LowerSemicontinuousOn.le_liminf, _⟩ := lowerSemicontinuousOn_iff_le_liminf
 
 end
 
@@ -358,33 +350,22 @@ end
 section
 
 variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
-
-variable [TopologicalSpace γ] [FirstCountableTopology α] [FirstCountableTopology γ] [OrderTopology γ]
+variable [TopologicalSpace γ] [OrderTopology γ]
 
 theorem lowerSemicontinuous_iff_IsClosed_epigraph {f : α → γ} :
     LowerSemicontinuous f ↔ IsClosed {p : α × γ | f p.1 ≤ p.2} := by
   constructor
-  · simp only [lowerSemicontinuous_iff_le_liminf]
-    intro hf; apply IsSeqClosed.isClosed
-    intro f' ⟨x', y'⟩ hxy cxy
-    rw [Prod.tendsto_iff] at cxy
-    let x : ℕ -> α := fun (n : ℕ) => (f' n).1
-    calc
-      f x' ≤ liminf f (𝓝 x') := hf x'
-      _ ≤ liminf (f ∘ x) atTop := by
-        simp only [liminf_eq, liminf_eq]
-        exact sSup_le_sSup (fun _ fa => (eventually_iff_seq_eventually.mp fa) x cxy.1)
-      _ ≤ liminf (fun (n : ℕ) => (f' n).2) atTop :=
-        liminf_le_liminf (eventually_of_forall (fun n => by convert hxy n))
-      _ = y' := (cxy.2).liminf_eq
-  simp only [lowerSemicontinuous_iff_isClosed_preimage]
-  intro hf y; apply IsSeqClosed.isClosed
-  exact fun _ _ xns cx =>
-    IsClosed.isSeqClosed hf (fun n => xns n) (Tendsto.prod_mk_nhds cx tendsto_const_nhds)
+  · rw [lowerSemicontinuous_iff_le_liminf, isClosed_iff_forall_filter]
+    rintro hf ⟨x, y⟩ F F_ne h h'
+    rw [nhds_prod_eq, le_prod] at h'
+    calc f x ≤ liminf f (𝓝 x) := hf x
+    _ ≤ liminf f (map Prod.fst F) := liminf_le_liminf_of_le h'.1
+    _ ≤ liminf Prod.snd F := liminf_le_liminf <| (eventually_principal.2 fun _ ↦ id).filter_mono h
+    _ = y := h'.2.liminf_eq
+  · rw [lowerSemicontinuous_iff_isClosed_preimage]
+    exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
 
-theorem LowerSemicontinuous.IsClosed_epigraph {f : α → γ} (hf : LowerSemicontinuous f) :
-    IsClosed {p : α × γ | f p.1 ≤ p.2} :=
-  lowerSemicontinuous_iff_IsClosed_epigraph.mp hf
+alias ⟨LowerSemicontinuous.IsClosed_epigraph, _⟩ := lowerSemicontinuous_iff_IsClosed_epigraph
 
 end
 
