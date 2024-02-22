@@ -1310,16 +1310,8 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
     simp [ha (zero_le n)]
   have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
   suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
-    rw [integral_sub' hF (hf 0)] at this
-    have h_sub : ∀ n, ∫ x, f' n x ∂μ = ∫ x, f n x ∂μ - ∫ x, f 0 x ∂μ := by
-      intro n
-      rw [integral_sub (hf n) (hf 0)]
-    simp_rw [h_sub] at this
-    have h1 : (fun n ↦ ∫ x, f n x ∂μ)
-        = fun n ↦ (∫ x, f n x ∂μ - ∫ x, f 0 x ∂μ) + ∫ x, f 0 x ∂μ := by ext n; abel
-    have h2 : ∫ x, F x ∂μ = (∫ x, F x ∂μ - ∫ x, f 0 x ∂μ) + ∫ x, f 0 x ∂μ := by abel
-    rw [h1, h2]
-    exact this.add tendsto_const_nhds
+    simp_rw [integral_sub (hf _) (hf _), integral_sub' hF (hf 0), tendsto_sub_const_iff] at this
+    exact this
   have hF_ge : 0 ≤ᵐ[μ] fun x ↦ (F - f 0) x := by
     filter_upwards [h_tendsto, h_mono] with x hx_tendsto hx_mono
     simp only [Pi.zero_apply, Pi.sub_apply, sub_nonneg]
