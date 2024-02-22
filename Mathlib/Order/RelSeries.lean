@@ -234,11 +234,11 @@ lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
   simp only [Nat.add_mod_mod, Nat.mod_add_mod, Nat.one_mod, Nat.mod_succ_eq_iff_lt]
   linarith [i.2]
 
-@[simp] lemma append_head (p q : RelSeries r) (connect : r p.last q.head) :
+@[simp] lemma head_append (p q : RelSeries r) (connect : r p.last q.head) :
     (p.append q connect).head = p.head :=
   append_apply_left p q connect 0
 
-@[simp] lemma append_last (p q : RelSeries r) (connect : r p.last q.head) :
+@[simp] lemma last_append (p q : RelSeries r) (connect : r p.last q.head) :
     (p.append q connect).last = q.last := by
   delta last
   convert append_apply_right p q connect (Fin.last _)
@@ -260,7 +260,7 @@ def map (p : RelSeries r)
   toFun := f.comp p
   step := (hf <| p.step .)
 
-lemma map_apply (p : RelSeries r)
+@[simp] lemma map_apply (p : RelSeries r)
     (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) (i : Fin (p.length + 1)) :
     p.map f hf i = f (p i) := rfl
 
@@ -347,13 +347,13 @@ a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
 def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r :=
   (singleton r newHead).append p rel
 
-@[simp] lemma cons_head (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
+@[simp] lemma head_cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
     (p.cons newHead rel).head = newHead := rfl
 
-@[simp] lemma cons_last (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
+@[simp] lemma last_cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
     (p.cons newHead rel).last = p.last := by
   delta cons
-  rw [append_last]
+  rw [last_append]
 
 /--
 If a series `a₀ -r→ a₁ -r→ ...` has positive length, then `a₁ -r→ ...` is another series
@@ -364,6 +364,24 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   toFun := Fin.tail p ∘ (Fin.cast <| Nat.succ_pred_eq_of_pos <| Nat.pos_of_ne_zero len_pos)
   step i := p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
 
+@[simp] lemma head_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
+    (p.tail len_pos).head = p 1 := by
+  show p (Fin.succ _) = p 1
+  congr
+  ext
+  show (1 : ℕ) = (1 : ℕ) % _
+  rw [Nat.mod_eq_of_lt]
+  simpa only [lt_add_iff_pos_left, Nat.pos_iff_ne_zero]
+
+@[simp] lemma last_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
+    (p.tail len_pos).last = p.last := by
+  show p _ = p _
+  congr
+  ext
+  simp only [tail_length, Fin.val_succ, Fin.coe_cast, Fin.val_last]
+  exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
+
+
 /--
 If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
 another series -/
@@ -373,6 +391,10 @@ def eraseLast (p : RelSeries r) : RelSeries r where
   toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
   step i := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
 
+@[simp] lemma head_eraseLast (p : RelSeries r) : p.eraseLast.head = p.head := rfl
+
+@[simp] lemma last_eraseLast (p : RelSeries r) :
+    p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
 /--
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
@@ -438,7 +460,7 @@ lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) 
   · congr
     exact Nat.add_sub_self_left _ _
 
-lemma combine_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
+lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (i.natAdd p.length).succ = q i.succ := by
   rw [smash_toFun]
   split_ifs with H
@@ -449,14 +471,14 @@ lemma combine_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.l
     simp only [Fin.val_succ, Fin.coe_natAdd]
     rw [add_assoc, Nat.add_sub_cancel_left]
 
-@[simp] lemma smash_head {p q : RelSeries r} (h : p.last = q.head) :
+@[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).head = p.head := by
   delta head smash
   simp only [Fin.val_zero, Fin.zero_eta, ge_iff_le, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
     ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
   intro H; convert h.symm; congr; aesop
 
-@[simp] lemma smash_last {p q : RelSeries r} (h : p.last = q.head) :
+@[simp] lemma last_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).last = q.last := by
   delta smash last; aesop
 
