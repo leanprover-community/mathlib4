@@ -5,9 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Polynomial.Coeff
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.TensorProduct.MvPolynomial
 
 /-! # Tensor products of a polynomial ring
 

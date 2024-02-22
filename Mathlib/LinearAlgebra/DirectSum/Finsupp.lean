@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Antoine Chambert-Loir
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 #align_import linear_algebra.direct_sum.finsupp from "leanprover-community/mathlib"@"9b9d125b7be0930f564a68f1d73ace10cf46064d"
 
