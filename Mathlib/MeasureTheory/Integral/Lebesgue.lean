@@ -1493,7 +1493,7 @@ theorem tendsto_ENNReal_indicator_lt (f : α → ℝ≥0∞) (x : α) :
 /-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
 integral over any measurable set. -/
 theorem exists_measurable_le_set_lintegral_eq_of_integrable {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
-    ∃ (g : α → ℝ≥0∞), Measurable g ∧ g ≤ f ∧ ∀ (s : Set α) (_hms : MeasurableSet s),
+    ∃ (g : α → ℝ≥0∞), Measurable g ∧ g ≤ f ∧ ∀ s : Set α, MeasurableSet s →
       ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
   obtain ⟨g, hmg, hgf, hifg⟩ := exists_measurable_le_lintegral_eq (μ := μ) f
   use g, hmg, hgf
@@ -1503,10 +1503,9 @@ theorem exists_measurable_le_set_lintegral_eq_of_integrable {f : α → ℝ≥0�
   have := hisg ▸ hisf ▸ hifg
   have hisfg := hisf ▸ tsub_self (∫⁻ a, f a ∂μ)
   rw (config := { occs := .pos [2] }) [this] at hisfg
-  replace hisf := add_ne_top.mp (hisf ▸ hf)
   replace hisg := add_ne_top.mp (hisg ▸ hifg ▸ hf)
   replace hisfg := ENNReal.add_sub_add_comm
-    hisf.1 hisf.2 hisg.1 hisg.2 (lintegral_mono hgf) (lintegral_mono hgf) ▸ hisfg
+    hisg.1 hisg.2 (lintegral_mono hgf) (lintegral_mono hgf) ▸ hisfg
   replace hisfg := (add_eq_zero.mp hisfg).left
   replace hisfg := tsub_eq_zero_iff_le.mp hisfg
   replace hisfg := le_antisymm hisfg (lintegral_mono hgf)

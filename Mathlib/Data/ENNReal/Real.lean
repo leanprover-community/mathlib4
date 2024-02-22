@@ -666,27 +666,12 @@ end iSup
 
 section Sub
 
---XXX: this proof is rather hacked together, should be cleaned up
---     can't go in `Mathlib.Data.ENNReal.Operations` because of
---     dependence on `ofReal_eq_ofReal_iff`
-protected theorem add_sub_add_comm {a b c d : ENNReal}
-    (ha : a ≠ ∞) (hb : b ≠ ∞) (hc : c ≠ ∞) (hd : d ≠ ∞)
-    (hac : c ≤ a) (hbd : d ≤ b) :
-    (a + b) - (c + d) = (a - c) + (b - d) := by
-  apply calc
-    a + b - (c + d) = .ofReal (a + b - (c + d)).toReal := (ofReal_toReal _).symm
-    _               = .ofReal (a - c + (b - d)).toReal := ?cast_goal
-    _               =          a - c + (b - d)         := (ofReal_toReal _)
-  case cast_goal =>
-    rw [ofReal_eq_ofReal_iff toReal_nonneg toReal_nonneg]
-    repeat rw [toReal_add ?_, toReal_sub_of_le ?_ ?_]
-    linarith
-    repeat tauto
-    exact add_le_add hac hbd
-    repeat aesop
-  aesop
-  aesop
-
+-- TODO: move this proof
+protected theorem add_sub_add_comm {a b c d : ℝ≥0∞} (hc : c ≠ ∞) (hd : d ≠ ∞)
+    (hac : c ≤ a) (hbd : d ≤ b) : (a + b) - (c + d) = (a - c) + (b - d) := by
+  refine add_tsub_add_le_tsub_add_tsub.antisymm ?_
+  apply le_sub_of_add_le_left (add_ne_top.2 ⟨hc, hd⟩)
+  rw [add_add_add_comm, add_tsub_cancel_of_le hac, add_tsub_cancel_of_le hbd]
 
 end Sub
 
