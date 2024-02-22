@@ -305,9 +305,14 @@ instance (priority := 200) atBot.isCountablyGenerated [Preorder α] [Countable �
   isCountablyGenerated_seq _
 #align filter.at_bot.is_countably_generated Filter.atBot.isCountablyGenerated
 
-theorem OrderTop.atTop_eq (α) [PartialOrder α] [OrderTop α] : (atTop : Filter α) = pure ⊤ :=
-  le_antisymm (le_pure_iff.2 <| (eventually_ge_atTop ⊤).mono fun _ => top_unique)
-    (le_iInf fun _ => le_principal_iff.2 le_top)
+theorem _root_.IsTop.atTop_eq [Preorder α] {a : α} (ha : IsTop a) : atTop = 𝓟 (Ici a) :=
+  (iInf_le _ _).antisymm <| le_iInf fun b ↦ principal_mono.2 <| Ici_subset_Ici.2 <| ha b
+
+theorem _root_.IsBot.atBot_eq [Preorder α] {a : α} (ha : IsBot a) : atBot = 𝓟 (Iic a) :=
+  ha.toDual.atTop_eq
+
+theorem OrderTop.atTop_eq (α) [PartialOrder α] [OrderTop α] : (atTop : Filter α) = pure ⊤ := by
+  rw [isTop_top.atTop_eq, Ici_top, principal_singleton]
 #align filter.order_top.at_top_eq Filter.OrderTop.atTop_eq
 
 theorem OrderBot.atBot_eq (α) [PartialOrder α] [OrderBot α] : (atBot : Filter α) = pure ⊥ :=
