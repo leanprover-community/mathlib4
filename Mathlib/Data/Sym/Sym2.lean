@@ -53,7 +53,7 @@ variable {α β γ : Type*}
 namespace Sym2
 
 /-- This is the relation capturing the notion of pairs equivalent up to permutations. -/
-@[aesop (rule_sets [Sym2]) [safe [constructors, cases], norm]]
+@[aesop (rule_sets := [Sym2]) [safe [constructors, cases], norm]]
 inductive Rel (α : Type u) : α × α → α × α → Prop
   | refl (x y : α) : Rel _ (x, y) (x, y)
   | swap (x y : α) : Rel _ (x, y) (y, x)
@@ -64,12 +64,12 @@ inductive Rel (α : Type u) : α × α → α × α → Prop
 attribute [refl] Rel.refl
 
 @[symm]
-theorem Rel.symm {x y : α × α} : Rel α x y → Rel α y x := by aesop (rule_sets [Sym2])
+theorem Rel.symm {x y : α × α} : Rel α x y → Rel α y x := by aesop (rule_sets := [Sym2])
 #align sym2.rel.symm Sym2.Rel.symm
 
 @[trans]
 theorem Rel.trans {x y z : α × α} (a : Rel α x y) (b : Rel α y z) : Rel α x z := by
-  aesop (rule_sets [Sym2])
+  aesop (rule_sets := [Sym2])
 #align sym2.rel.trans Sym2.Rel.trans
 
 theorem Rel.is_equivalence : Equivalence (Rel α) :=
@@ -84,7 +84,7 @@ def Rel.setoid (α : Type u) : Setoid (α × α) :=
 
 @[simp]
 theorem rel_iff' {p q : α × α} : Rel α p q ↔ p = q ∨ p = q.swap := by
-  aesop (rule_sets [Sym2])
+  aesop (rule_sets := [Sym2])
 
 theorem rel_iff {x y z w : α} : Rel α (x, y) (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
   simp
@@ -301,7 +301,7 @@ protected def Mem (x : α) (z : Sym2 α) : Prop :=
   ∃ y : α, z = s(x, y)
 #align sym2.mem Sym2.Mem
 
-@[aesop norm (rule_sets [Sym2])]
+@[aesop norm (rule_sets := [Sym2])]
 theorem mem_iff' {a b c : α} : Sym2.Mem a s(b, c) ↔ a = b ∨ a = c :=
   { mp := by
       rintro ⟨_, h⟩
@@ -347,7 +347,7 @@ theorem mem_mk_right (x y : α) : y ∈ s(x, y) :=
   eq_swap.subst <| mem_mk_left y x
 #align sym2.mem_mk_right Sym2.mem_mk_right
 
-@[simp, aesop norm (rule_sets [Sym2])]
+@[simp, aesop norm (rule_sets := [Sym2])]
 theorem mem_iff {a b c : α} : a ∈ s(b, c) ↔ a = b ∨ a = c :=
   mem_iff'
 #align sym2.mem_iff Sym2.mem_iff
@@ -669,14 +669,14 @@ instance [DecidableEq α] : DecidableEq (Sym2 α) :=
 /--
 A function that gives the other element of a pair given one of the elements.  Used in `Mem.other'`.
 -/
-@[aesop norm unfold (rule_sets [Sym2])]
+@[aesop norm unfold (rule_sets := [Sym2])]
 private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
   if a = z.1 then z.2 else z.1
 
 
 /-- Get the other element of the unordered pair using the decidable equality.
 This is the computable version of `Mem.other`. -/
-@[aesop norm unfold (rule_sets [Sym2])]
+@[aesop norm unfold (rule_sets := [Sym2])]
 def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
   Sym2.rec (fun s _ => pairOther a s) (by
     clear h z
@@ -696,7 +696,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
 theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other' h) = z := by
   induction z using Sym2.ind
   have h' := mem_iff.mp h
-  aesop (add norm unfold [Sym2.rec, Quot.rec]) (rule_sets [Sym2])
+  aesop (add norm unfold [Sym2.rec, Quot.rec]) (rule_sets := [Sym2])
 #align sym2.other_spec' Sym2.other_spec'
 
 @[simp]
@@ -712,7 +712,7 @@ theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.o
 theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other' ha ∈ z) :
     Mem.other' hb = a := by
   induction z using Sym2.ind
-  aesop (rule_sets [Sym2]) (add norm unfold [Sym2.rec, Quot.rec])
+  aesop (rule_sets := [Sym2]) (add norm unfold [Sym2.rec, Quot.rec])
 #align sym2.other_invol' Sym2.other_invol'
 
 theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
