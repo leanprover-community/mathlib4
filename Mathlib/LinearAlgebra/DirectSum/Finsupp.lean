@@ -24,9 +24,6 @@ open DirectSum
 
 open Set LinearMap Submodule
 
-variable {R : Type u} {M : Type v} {N : Type w} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N]
-
 section TensorProduct
 
 open TensorProduct
