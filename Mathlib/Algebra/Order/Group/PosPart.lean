@@ -5,7 +5,6 @@ Authors: Christopher Hoskin, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Lattice
-import Mathlib.Tactic.LibrarySearch
 
 #align_import algebra.order.lattice_group from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -45,28 +44,6 @@ lattice ordered group.
 positive part, negative part
 -/
 
-/-- The positive part of an element admitting a decomposition into positive and negative parts.
--/
-class PosPart (α : Type*) where
-  /-- The positive part function. -/
-  pos : α → α
-
-#align has_pos_part PosPart
-
-/-- The negative part of an element admitting a decomposition into positive and negative parts.
--/
-class NegPart (α : Type*) where
-  /-- The negative part function. -/
-  neg : α → α
-
-#align has_neg_part NegPart
-
-@[inherit_doc]
-postfix:max "⁺" => PosPart.pos
-
-@[inherit_doc]
-postfix:max "⁻" => NegPart.neg
-
 open Function
 
 universe u v
@@ -80,6 +57,8 @@ section Group
 variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)]
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α}
 
+#noalign has_pos_part
+#noalign has_neg_part
 #noalign lattice_ordered_comm_group.has_one_lattice_has_pos_part
 #noalign lattice_ordered_comm_group.has_zero_lattice_has_pos_part
 #noalign lattice_ordered_comm_group.has_one_lattice_has_neg_part

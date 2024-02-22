@@ -126,8 +126,6 @@ class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZe
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 #align non_unital_non_assoc_ring NonUnitalNonAssocRing
 
--- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
--- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
 /-- An associative but not-necessarily unital ring. -/
 class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
 #align non_unital_ring NonUnitalRing
@@ -137,9 +135,13 @@ class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiri
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
 
+/-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
+commutative and associative, multiplication is associative and left and right distributive over
+addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
 
+/-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
 

@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Control.Traversable.Instances
 import Mathlib.Data.Set.Finite
 
 #align_import order.filter.basic from "leanprover-community/mathlib"@"d4f691b9e5f94cfc64639973f3544c95f8d5d494"
@@ -153,6 +152,9 @@ theorem univ_mem : univ ∈ f :=
 theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f :=
   f.sets_of_superset hx hxy
 #align filter.mem_of_superset Filter.mem_of_superset
+
+instance : Trans (· ⊇ ·) ((· ∈ ·) : Set α → Filter α → Prop) (· ∈ ·) where
+  trans h₁ h₂ := mem_of_superset h₂ h₁
 
 theorem inter_mem {s t : Set α} (hs : s ∈ f) (ht : t ∈ f) : s ∩ t ∈ f :=
   f.inter_sets hs ht
@@ -777,6 +779,9 @@ instance unique [IsEmpty α] : Unique (Filter α) where
   uniq := filter_eq_bot_of_isEmpty
 #align filter.unique Filter.unique
 
+theorem NeBot.nonempty (f : Filter α) [hf : f.NeBot] : Nonempty α :=
+  not_isEmpty_iff.mp fun _ ↦ hf.ne (Subsingleton.elim _ _)
+
 /-- There are only two filters on a `subsingleton`: `⊥` and `⊤`. If the type is empty, then they are
 equal. -/
 theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ := by
@@ -1315,7 +1320,7 @@ theorem Eventually.and_frequently {p q : α → Prop} {f : Filter α} (hp : ∀�
 
 theorem Frequently.exists {p : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x) : ∃ x, p x := by
   by_contra H
-  replace H : ∀ᶠ x in f, ¬p x; exact eventually_of_forall (not_exists.1 H)
+  replace H : ∀ᶠ x in f, ¬p x := eventually_of_forall (not_exists.1 H)
   exact hp H
 #align filter.frequently.exists Filter.Frequently.exists
 
@@ -2036,7 +2041,7 @@ theorem eventually_comap : (∀ᶠ a in comap f l, p a) ↔ ∀ᶠ b in l, ∀ a
 
 @[simp]
 theorem frequently_comap : (∃ᶠ a in comap f l, p a) ↔ ∃ᶠ b in l, ∃ a, f a = b ∧ p a := by
-  simp only [Filter.Frequently, eventually_comap, not_exists, not_and]
+  simp only [Filter.Frequently, eventually_comap, not_exists, _root_.not_and]
 #align filter.frequently_comap Filter.frequently_comap
 
 theorem mem_comap_iff_compl : s ∈ comap f l ↔ (f '' sᶜ)ᶜ ∈ l := by
@@ -2328,6 +2333,12 @@ theorem map_mono : Monotone (map m) :=
 theorem comap_mono : Monotone (comap m) :=
   (gc_map_comap m).monotone_u
 #align filter.comap_mono Filter.comap_mono
+
+/-- Temporary lemma that we can tag with `gcongr` -/
+@[gcongr, deprecated] theorem map_le_map (h : F ≤ G) : map m F ≤ map m G := map_mono h
+
+/-- Temporary lemma that we can tag with `gcongr` -/
+@[gcongr, deprecated] theorem comap_le_comap (h : F ≤ G) : comap m F ≤ comap m G := comap_mono h
 
 @[simp] theorem map_bot : map m ⊥ = ⊥ := (gc_map_comap m).l_bot
 #align filter.map_bot Filter.map_bot
@@ -2940,87 +2951,6 @@ theorem principal_bind {s : Set α} {f : α → Filter β} : bind (𝓟 s) f = �
 
 end Bind
 
-section ListTraverse
-
-/- This is a separate section in order to open `List`, but mostly because of universe
-   equality requirements in `traverse` -/
-open List
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem sequence_mono : ∀ as bs : List (Filter α), Forall₂ (· ≤ ·) as bs → sequence as ≤ sequence bs
-  | [], [], Forall₂.nil => le_rfl
-  | _::as, _::bs, Forall₂.cons h hs => seq_mono (map_mono h) (sequence_mono as bs hs)
-#align filter.sequence_mono Filter.sequence_mono
-
-variable {α' β' γ' : Type u} {f : β' → Filter α'} {s : γ' → Set α'}
-
-theorem mem_traverse :
-    ∀ (fs : List β') (us : List γ'),
-      Forall₂ (fun b c => s c ∈ f b) fs us → traverse s us ∈ traverse f fs
-  | [], [], Forall₂.nil => mem_pure.2 <| mem_singleton _
-  | _::fs, _::us, Forall₂.cons h hs => seq_mem_seq (image_mem_map h) (mem_traverse fs us hs)
-#align filter.mem_traverse Filter.mem_traverse
-
-theorem mem_traverse_iff (fs : List β') (t : Set (List α')) :
-    t ∈ traverse f fs ↔
-      ∃ us : List (Set α'), Forall₂ (fun b (s : Set α') => s ∈ f b) fs us ∧ sequence us ⊆ t := by
-  constructor
-  · induction fs generalizing t with
-    | nil =>
-      simp only [sequence, mem_pure, imp_self, forall₂_nil_left_iff, exists_eq_left, Set.pure_def,
-        singleton_subset_iff, traverse_nil]
-    | cons b fs ih =>
-      intro ht
-      rcases mem_seq_iff.1 ht with ⟨u, hu, v, hv, ht⟩
-      rcases mem_map_iff_exists_image.1 hu with ⟨w, hw, hwu⟩
-      rcases ih v hv with ⟨us, hus, hu⟩
-      exact ⟨w::us, Forall₂.cons hw hus, (Set.seq_mono hwu hu).trans ht⟩
-  · rintro ⟨us, hus, hs⟩
-    exact mem_of_superset (mem_traverse _ _ hus) hs
-#align filter.mem_traverse_iff Filter.mem_traverse_iff
-
-end ListTraverse
-
-section ker
-variable {ι : Sort*} {α β : Type*} {f g : Filter α} {s : Set α} {a : α}
-open Function Set
-
-/-- The *kernel* of a filter is the intersection of all its sets. -/
-def ker (f : Filter α) : Set α := ⋂₀ f.sets
-
-lemma ker_def (f : Filter α) : f.ker = ⋂ s ∈ f, s := sInter_eq_biInter
-
-@[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_sInter
-@[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_sInter_iff
-
-/-- `Filter.principal` forms a Galois coinsertion with `Filter.ker`. -/
-def gi_principal_ker : GaloisCoinsertion (𝓟 : Set α → Filter α) ker :=
-GaloisConnection.toGaloisCoinsertion (λ s f ↦ by simp [principal_le_iff]) <| by
-  simp only [le_iff_subset, subset_def, mem_ker, mem_principal]; aesop
-
-lemma ker_mono : Monotone (ker : Filter α → Set α) := gi_principal_ker.gc.monotone_u
-lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_ker.u_surjective
-
-@[simp] lemma ker_bot : ker (⊥ : Filter α) = ∅ := sInter_eq_empty_iff.2 λ _ ↦ ⟨∅, trivial, id⟩
-@[simp] lemma ker_top : ker (⊤ : Filter α) = univ := gi_principal_ker.gc.u_top
-@[simp] lemma ker_eq_univ : ker f = univ ↔ f = ⊤ := gi_principal_ker.gc.u_eq_top.trans <| by simp
-@[simp] lemma ker_inf (f g : Filter α) : ker (f ⊓ g) = ker f ∩ ker g := gi_principal_ker.gc.u_inf
-@[simp] lemma ker_iInf (f : ι → Filter α) : ker (⨅ i, f i) = ⨅ i, ker (f i) :=
-gi_principal_ker.gc.u_iInf
-@[simp] lemma ker_sInf (S : Set (Filter α)) : ker (sInf S) = ⨅ f ∈ S, ker f :=
-gi_principal_ker.gc.u_sInf
-@[simp] lemma ker_principal (s : Set α) : ker (𝓟 s) = s := gi_principal_ker.u_l_eq _
-
-@[simp] lemma ker_pure (a : α) : ker (pure a) = {a} := by rw [← principal_singleton, ker_principal]
-
-@[simp] lemma ker_comap (m : α → β) (f : Filter β) : ker (comap m f) = m ⁻¹' ker f := by
-  ext a
-  simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_swap (Set α), mem_preimage]
-  exact forall₂_congr λ s _ ↦ ⟨λ h ↦ h _ Subset.rfl, λ ha t ht ↦ ht ha⟩
-
-end ker
-
 /-! ### Limits -/
 
 /-- `Filter.Tendsto` is the generic "limit of a function" predicate.
@@ -3136,6 +3066,11 @@ theorem tendsto_id {x : Filter α} : Tendsto id x x :=
 theorem Tendsto.comp {f : α → β} {g : β → γ} {x : Filter α} {y : Filter β} {z : Filter γ}
     (hg : Tendsto g y z) (hf : Tendsto f x y) : Tendsto (g ∘ f) x z := fun _ hs => hf (hg hs)
 #align filter.tendsto.comp Filter.Tendsto.comp
+
+protected theorem Tendsto.iterate {f : α → α} {l : Filter α} (h : Tendsto f l l) :
+    ∀ n, Tendsto (f^[n]) l l
+  | 0 => tendsto_id
+  | (n + 1) => (h.iterate n).comp h
 
 theorem Tendsto.mono_left {f : α → β} {x y : Filter α} {z : Filter β} (hx : Tendsto f x z)
     (h : y ≤ x) : Tendsto f y z :=

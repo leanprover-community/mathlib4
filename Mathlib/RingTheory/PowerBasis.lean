@@ -82,7 +82,8 @@ theorem finiteDimensional [Algebra K S] (pb : PowerBasis K S) : FiniteDimensiona
   FiniteDimensional.of_fintype_basis pb.basis
 #align power_basis.finite_dimensional PowerBasis.finiteDimensional
 
-theorem finrank [Algebra K S] (pb : PowerBasis K S) : FiniteDimensional.finrank K S = pb.dim := by
+theorem finrank [StrongRankCondition R] (pb : PowerBasis R S) :
+    FiniteDimensional.finrank R S = pb.dim := by
   rw [FiniteDimensional.finrank_eq_card_basis pb.basis, Fintype.card_fin]
 #align power_basis.finrank PowerBasis.finrank
 
@@ -468,7 +469,7 @@ noncomputable def map (pb : PowerBasis R S) (e : S ≃ₐ[R] S') : PowerBasis R 
 
 variable [Algebra A S] [Algebra A S']
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem minpolyGen_map (pb : PowerBasis A S) (e : S ≃ₐ[A] S') :
     (pb.map e).minpolyGen = pb.minpolyGen := by
   dsimp only [minpolyGen, map_dim]

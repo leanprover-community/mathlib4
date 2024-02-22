@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
-import Mathlib.Topology.Algebra.Order.Group
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Order.Lattice
 

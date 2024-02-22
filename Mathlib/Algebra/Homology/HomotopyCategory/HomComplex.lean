@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.GroupPower.NegOnePow
-import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 

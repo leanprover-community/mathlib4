@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 
 #align_import linear_algebra.affine_space.affine_equiv from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
@@ -49,6 +50,7 @@ structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCom
   map_vadd' : ∀ (p : P₁) (v : V₁), toEquiv (v +ᵥ p) = linear v +ᵥ toEquiv p
 #align affine_equiv AffineEquiv
 
+@[inherit_doc]
 notation:25 P₁ " ≃ᵃ[" k:25 "] " P₂:0 => AffineEquiv k P₁ P₂
 
 variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]

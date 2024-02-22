@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
@@ -660,7 +661,7 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 namespace Subgroup
 variable {H : Subgroup G}
 
-@[to_additive (attr := norm_cast)] -- Porting note: simp can prove this (so removed simp)
+@[to_additive (attr := norm_cast)] -- Porting note (#10618): simp can prove this (so removed simp)
 lemma orderOf_coe (a : H) : orderOf (a : G) = orderOf a :=
   orderOf_injective H.subtype Subtype.coe_injective _
 #align order_of_subgroup Subgroup.orderOf_coe
@@ -1073,11 +1074,20 @@ lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by
 #align nsmul_eq_mod_card mod_card_nsmul
 
 @[to_additive (attr := simp) mod_card_zsmul]
-theorem zpow_mod_card (n : ℤ) : x ^ (n % Fintype.card G : ℤ) = x ^ n := by
+theorem zpow_mod_card (a : G) (n : ℤ) : a ^ (n % Fintype.card G : ℤ) = a ^ n := by
   rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card),
     zpow_mod_orderOf]
 #align zpow_eq_mod_card zpow_mod_card
 #align zsmul_eq_mod_card mod_card_zsmul
+
+@[to_additive (attr := simp) mod_natCard_nsmul]
+lemma pow_mod_natCard (a : G) (n : ℕ) : a ^ (n % Nat.card G) = a ^ n := by
+  rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n $ orderOf_dvd_natCard _, pow_mod_orderOf]
+
+@[to_additive (attr := simp) mod_natCard_zsmul]
+lemma zpow_mod_natCard (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n := by
+  rw [eq_comm, ← zpow_mod_orderOf,
+    ← Int.emod_emod_of_dvd n $ Int.coe_nat_dvd.2 $ orderOf_dvd_natCard _, zpow_mod_orderOf]
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
@@ -1098,13 +1108,13 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
 #align pow_coprime powCoprime
 #align nsmul_coprime nsmulCoprime
 
-@[to_additive] -- Porting note: simp can prove this (so removed simp)
+@[to_additive] -- Porting note (#10618): simp can prove this (so removed simp)
 theorem powCoprime_one {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : powCoprime h 1 = 1 :=
   one_pow n
 #align pow_coprime_one powCoprime_one
 #align nsmul_coprime_zero nsmulCoprime_zero
 
-@[to_additive] -- Porting note: simp can prove this (so removed simp)
+@[to_additive] -- Porting note (#10618): simp can prove this (so removed simp)
 theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).Coprime n) {g : G} :
     powCoprime h g⁻¹ = (powCoprime h g)⁻¹ :=
   inv_pow g n
@@ -1150,7 +1160,7 @@ section PowIsSubgroup
 
 /-- A nonempty idempotent subset of a finite cancellative monoid is a submonoid -/
 @[to_additive "A nonempty idempotent subset of a finite cancellative add monoid is a submonoid"]
-def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Fintype M] (S : Set M)
+def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M)
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
   have pow_mem : ∀ a : M, a ∈ S → ∀ n : ℕ, a ^ (n + 1) ∈ S := fun a ha =>
     Nat.rec (by rwa [Nat.zero_eq, zero_add, pow_one]) fun n ih =>
@@ -1166,7 +1176,7 @@ def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Fintype M] (S : Set 
 
 /-- A nonempty idempotent subset of a finite group is a subgroup -/
 @[to_additive "A nonempty idempotent subset of a finite add group is a subgroup"]
-def subgroupOfIdempotent {G : Type*} [Group G] [Fintype G] (S : Set G) (hS1 : S.Nonempty)
+def subgroupOfIdempotent {G : Type*} [Group G] [Finite G] (S : Set G) (hS1 : S.Nonempty)
     (hS2 : S * S = S) : Subgroup G :=
   { submonoidOfIdempotent S hS1 hS2 with
     carrier := S
@@ -1224,7 +1234,7 @@ theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   cases' ne_or_eq |x| 1 with h h
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
-  · simp; decide
+  · simp
   apply orderOf_le_of_pow_eq_one <;> norm_num
 #align linear_ordered_ring.order_of_le_two LinearOrderedRing.orderOf_le_two
 

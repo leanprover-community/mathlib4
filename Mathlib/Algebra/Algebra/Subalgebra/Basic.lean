@@ -58,7 +58,7 @@ theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x
   Iff.rfl
 #align subalgebra.mem_to_subsemiring Subalgebra.mem_toSubsemiring
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subalgebra.mem_carrier Subalgebra.mem_carrier
@@ -371,7 +371,14 @@ instance : Module R S :=
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
-instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R' R A] :
+/- More general form of `Subalgebra.algebra`.
+
+This instance should have low priority since it is slow to fail:
+before failing, it will cause a search through all `SMul R' R` instances,
+which can quickly get expensive.
+-/
+instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
+    [IsScalarTower R' R A] :
     Algebra R' S :=
   { (algebraMap R' A).codRestrict S fun x => by
       rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Measure.GiryMonad
 
 #align_import probability.kernel.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -69,6 +69,16 @@ instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     FunLike (kernel α β) α (Measure β) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
+
+instance kernel.instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    CovariantClass (kernel α β) (kernel α β) (· + ·) (· ≤ ·) :=
+  ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
+
+noncomputable
+instance kernel.instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    OrderBot (kernel α β) where
+  bot := 0
+  bot_le κ a := by simp only [ZeroMemClass.coe_zero, Pi.zero_apply, Measure.zero_le]
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -597,6 +607,10 @@ theorem comapRight_apply' (κ : kernel α β) (hf : MeasurableEmbedding f) (a : 
   rw [comapRight_apply,
     Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
 #align probability_theory.kernel.comap_right_apply' ProbabilityTheory.kernel.comapRight_apply'
+
+@[simp]
+lemma comapRight_id (κ : kernel α β) : comapRight κ MeasurableEmbedding.id = κ := by
+  ext _ _ hs; rw [comapRight_apply' _ _ _ hs]; simp
 
 theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by

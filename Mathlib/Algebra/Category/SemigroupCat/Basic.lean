@@ -7,7 +7,6 @@ import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.Elementwise
 
 #align_import algebra.category.Semigroup.basic from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
@@ -75,6 +74,10 @@ unif_hint _root_.AddMagmaCat.forget_obj_eq_coe (R : AddMagmaCat) where ⊢
 
 @[to_additive]
 instance (X : MagmaCat) : Mul X := X.str
+
+@[to_additive]
+instance instFunLike (X Y : MagmaCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike (X →ₙ* Y) X Y
 
 @[to_additive]
 instance instMulHomClass (X Y : MagmaCat) : MulHomClass (X ⟶ Y) X Y :=
@@ -160,6 +163,10 @@ unif_hint _root_.AddSemigroupCat.forget_obj_eq_coe (R : AddSemigroupCat) where �
 
 @[to_additive]
 instance (X : SemigroupCat) : Semigroup X := X.str
+
+@[to_additive]
+instance instFunLike (X Y : SemigroupCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike (X →ₙ* Y) X Y
 
 @[to_additive]
 instance instMulHomClass (X Y : SemigroupCat) : MulHomClass (X ⟶ Y) X Y :=

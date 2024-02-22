@@ -5,6 +5,7 @@ Authors: Eric Wieser, Kevin Buzzard
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Group.ConjFinite
+import Mathlib.Data.Fintype.Lattice
 import Mathlib.Tactic.FinCases
 
 #align_import direct_sum_is_internal from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"

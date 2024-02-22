@@ -7,7 +7,6 @@ import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
 import Std.Tactic.Relation.Rfl
 import Std.Logic
-import Std.WF
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
@@ -633,7 +632,7 @@ end Binary
 #align decidable.not_imp_not Decidable.not_imp_not
 #align decidable.not_or_of_imp Decidable.not_or_of_imp
 #align decidable.imp_iff_not_or Decidable.imp_iff_not_or
-#align decidable.not_imp Decidable.not_imp
+#align decidable.not_imp Decidable.not_imp_iff_and_not
 #align decidable.peirce Decidable.peirce
 #align peirce' peirce'
 #align decidable.not_iff_not Decidable.not_iff_not
