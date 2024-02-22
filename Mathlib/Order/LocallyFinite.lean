@@ -1396,6 +1396,14 @@ section Finite
 
 variable {α : Type*} {s : Set α}
 
+theorem BddBelow.finite_of_bddAbove [Preorder α] [LocallyFiniteOrder α]
+    {s : Set α} (h₀ : BddBelow s) (h₁ : BddAbove s) :
+    s.Finite :=
+  let ⟨a, ha⟩ := h₀
+  let ⟨b, hb⟩ := h₁
+  (Set.finite_Icc a b).subset fun _x hx ↦ ⟨ha hx, hb hx⟩
+#align bdd_below.finite_of_bdd_above BddBelow.finite_of_bddAbove
+
 theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α] :
     s.Finite ↔ BddAbove s :=
   ⟨fun h ↦ ⟨h.toFinset.sup id, fun x hx ↦ Finset.le_sup (f := id) (by simpa)⟩,
@@ -1411,7 +1419,7 @@ theorem Set.finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFini
   · simp only [Set.finite_empty, bddBelow_empty, bddAbove_empty, and_self]
   exact ⟨fun h ↦ ⟨⟨h.toFinset.inf' (by simpa) id, fun x hx ↦ Finset.inf'_le id (by simpa)⟩,
     ⟨h.toFinset.sup' (by simpa) id, fun x hx ↦ Finset.le_sup' id (by simpa)⟩⟩,
-    fun ⟨⟨a,ha⟩,⟨b,hb⟩⟩ ↦ (Set.finite_Icc a b).subset (fun x hx ↦ ⟨ha hx,hb hx⟩ )⟩
+    fun ⟨h₀, h₁⟩ ↦ BddBelow.finite_of_bddAbove h₀ h₁⟩
 
 end Finite
 

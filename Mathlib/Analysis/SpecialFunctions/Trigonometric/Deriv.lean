@@ -698,6 +698,10 @@ theorem sinh_lt_sinh : sinh x < sinh y ↔ x < y :=
   sinh_strictMono.lt_iff_lt
 #align real.sinh_lt_sinh Real.sinh_lt_sinh
 
+@[simp] lemma sinh_eq_zero : sinh x = 0 ↔ x = 0 := by rw [← @sinh_inj x, sinh_zero]
+
+lemma sinh_ne_zero : sinh x ≠ 0 ↔ x ≠ 0 := sinh_eq_zero.not
+
 @[simp]
 theorem sinh_pos_iff : 0 < sinh x ↔ 0 < x := by simpa only [sinh_zero] using @sinh_lt_sinh 0 x
 #align real.sinh_pos_iff Real.sinh_pos_iff
@@ -719,7 +723,7 @@ theorem abs_sinh (x : ℝ) : |sinh x| = sinh |x| := by
 #align real.abs_sinh Real.abs_sinh
 
 theorem cosh_strictMonoOn : StrictMonoOn cosh (Ici 0) :=
-  (convex_Ici _).strictMonoOn_of_deriv_pos continuous_cosh.continuousOn fun x hx => by
+  strictMonoOn_of_deriv_pos (convex_Ici _) continuous_cosh.continuousOn fun x hx => by
     rw [interior_Ici, mem_Ioi] at hx; rwa [deriv_cosh, sinh_pos_iff]
 #align real.cosh_strict_mono_on Real.cosh_strictMonoOn
 
@@ -746,7 +750,7 @@ theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   -- Porting note: `by simp; abel` was just `by simp` in mathlib3.
   refine' strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) _
-  refine' (convex_Ici _).strictMonoOn_of_deriv_pos _ fun x hx => _
+  refine' strictMonoOn_of_deriv_pos (convex_Ici _) _ fun x hx => _
   · exact (continuous_sinh.sub continuous_id).continuousOn
   · rw [interior_Ici, mem_Ioi] at hx
     rw [deriv_sub, deriv_sinh, deriv_id'', sub_pos, one_lt_cosh]
@@ -1183,3 +1187,32 @@ theorem ContDiffWithinAt.sinh {n} (hf : ContDiffWithinAt ℝ n f s x) :
 #align cont_diff_within_at.sinh ContDiffWithinAt.sinh
 
 end
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+private alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
+private alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff
+private alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
+
+/-- Extension for the `positivity` tactic: `Real.sinh` is positive/nonnegative/nonzero if its input
+is. -/
+@[positivity Real.sinh _]
+def evalSinh : PositivityExt where eval {u α} _ _ e := do
+  let zα : Q(Zero ℝ) := q(inferInstance)
+  let pα : Q(PartialOrder ℝ) := q(inferInstance)
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.sinh $a) =>
+    assumeInstancesCommute
+    match ← core zα pα a with
+    | .positive pa => return .positive q(sinh_pos_of_pos $pa)
+    | .nonnegative pa => return .nonnegative q(sinh_nonneg_of_nonneg $pa)
+    | .nonzero pa => return .nonzero q(sinh_ne_zero_of_ne_zero $pa)
+    | _ => return .none
+  | _, _, _ => throwError "not Real.sinh"
+
+example (x : ℝ) (hx : 0 < x) : 0 < x.sinh := by positivity
+example (x : ℝ) (hx : 0 ≤ x) : 0 ≤ x.sinh := by positivity
+example (x : ℝ) (hx : x ≠ 0) : x.sinh ≠ 0 := by positivity
+
+end Mathlib.Meta.Positivity

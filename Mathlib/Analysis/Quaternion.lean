@@ -34,7 +34,7 @@ quaternion, normed ring, normed space, normed algebra
 
 
 -- mathport name: quaternion.real
-scoped[Quaternion] notation "ℍ" => Quaternion ℝ
+@[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
 
 open scoped RealInnerProductSpace
 

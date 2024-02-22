@@ -119,7 +119,7 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
           f (coeff (integralNormalization p) i.1 * p.leadingCoeff ^ i.1) * z ^ i.1 := by
       rw [eval₂_eq_sum, sum_def, support_integralNormalization]
       simp only [mul_comm z, mul_pow, mul_assoc, RingHom.map_pow, RingHom.map_mul]
-      exact Finset.sum_attach.symm
+      rw [← Finset.sum_attach]
     _ =
         p.support.attach.sum fun i =>
           f (coeff p i.1 * p.leadingCoeff ^ (natDegree p - 1)) * z ^ i.1 := by
@@ -141,7 +141,7 @@ theorem integralNormalization_eval₂_eq_zero {p : R[X]} (f : R →+* S) {z : S}
       simp_rw [eval₂_eq_sum, sum_def, fun i => mul_comm (coeff p i), RingHom.map_mul,
                RingHom.map_pow, mul_assoc, ← Finset.mul_sum]
       congr 1
-      exact @Finset.sum_attach _ _ p.support _ fun i => f (p.coeff i) * z ^ i
+      exact p.support.sum_attach fun i ↦ f (p.coeff i) * z ^ i
     _ = 0 := by rw [hz, mul_zero]
 #align polynomial.integral_normalization_eval₂_eq_zero Polynomial.integralNormalization_eval₂_eq_zero
 

@@ -19,7 +19,7 @@ open BigOperators
 
 open Pointwise Function
 
-variable {ι α β F : Type*}
+variable {ι α β F : Type*} [FunLike F α β]
 
 section Monoid
 
@@ -77,7 +77,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
           exact hg hj
       · rw [Finset.prod_update_of_not_mem hi, Function.update_same]
     · rintro ⟨g, hg, rfl⟩
-      exact ⟨g i, is.prod g, hg (is.mem_insert_self _),
+      exact ⟨g i, hg (is.mem_insert_self _), is.prod g,
         ⟨⟨g, fun hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩⟩
 #align set.mem_finset_prod Set.mem_finset_prod
 #align set.mem_finset_sum Set.mem_finset_sum

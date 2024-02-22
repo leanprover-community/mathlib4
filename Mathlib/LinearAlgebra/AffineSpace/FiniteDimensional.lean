@@ -3,6 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Init.Core
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.FiniteDimensional
 
@@ -125,6 +126,13 @@ theorem AffineIndependent.finrank_vectorSpan [Fintype ι] {p : ι → P} (hi : A
   exact hi.finrank_vectorSpan_image_finset hc
 #align affine_independent.finrank_vector_span AffineIndependent.finrank_vectorSpan
 
+/-- The `vectorSpan` of a finite affinely independent family has dimension one less than its
+cardinality. -/
+lemma AffineIndependent.finrank_vectorSpan_add_one [Fintype ι] [Nonempty ι] {p : ι → P}
+    (hi : AffineIndependent k p) : finrank k (vectorSpan k (Set.range p)) + 1 = Fintype.card ι := by
+  rw [hi.finrank_vectorSpan (tsub_add_cancel_of_le _).symm, tsub_add_cancel_of_le] <;>
+    exact Fintype.card_pos
+
 /-- The `vectorSpan` of a finite affinely independent family whose
 cardinality is one more than that of the finite-dimensional space is
 `⊤`. -/
@@ -142,7 +150,7 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     (hc : Finset.card s = n + 1) : finrank k (vectorSpan k (s.image p : Set P)) ≤ n := by
   classical
   have hn : (s.image p).Nonempty := by
-    rw [Finset.Nonempty.image_iff, ← Finset.card_pos, hc]
+    rw [Finset.image_nonempty, ← Finset.card_pos, hc]
     apply Nat.succ_pos
   rcases hn with ⟨p₁, hp₁⟩
   rw [vectorSpan_eq_span_vsub_finset_right_ne k hp₁]
@@ -161,6 +169,12 @@ theorem finrank_vectorSpan_range_le [Fintype ι] (p : ι → P) {n : ℕ} (hc : 
   rw [← Finset.card_univ] at hc
   exact finrank_vectorSpan_image_finset_le _ _ _ hc
 #align finrank_vector_span_range_le finrank_vectorSpan_range_le
+
+/-- The `vectorSpan` of an indexed family of `n + 1` points has dimension at most `n`. -/
+lemma finrank_vectorSpan_range_add_one_le [Fintype ι] [Nonempty ι] (p : ι → P) :
+    finrank k (vectorSpan k (Set.range p)) + 1 ≤ Fintype.card ι :=
+  (le_tsub_iff_right $ Nat.succ_le_iff.2 Fintype.card_pos).1 $ finrank_vectorSpan_range_le _ _
+    (tsub_add_cancel_of_le $ Nat.succ_le_iff.2 Fintype.card_pos).symm
 
 /-- `n + 1` points are affinely independent if and only if their
 `vectorSpan` has dimension `n`. -/
@@ -208,6 +222,54 @@ theorem finrank_vectorSpan_le_iff_not_affineIndependent [Fintype ι] (p : ι →
 #align finrank_vector_span_le_iff_not_affine_independent finrank_vectorSpan_le_iff_not_affineIndependent
 
 variable {k}
+
+lemma AffineIndependent.card_le_finrank_succ [Fintype ι] {p : ι → P} (hp : AffineIndependent k p) :
+    Fintype.card ι ≤ FiniteDimensional.finrank k (vectorSpan k (Set.range p)) + 1 := by
+  cases isEmpty_or_nonempty ι
+  · simp [Fintype.card_eq_zero]
+  rw [← tsub_le_iff_right]
+  exact (affineIndependent_iff_le_finrank_vectorSpan _ _
+    (tsub_add_cancel_of_le <| Nat.one_le_iff_ne_zero.2 Fintype.card_ne_zero).symm).1 hp
+
+open Finset in
+/-- If an affine independent finset is contained in the affine span of another finset, then its
+cardinality is at most the cardinality of that finset. -/
+lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
+    (hs : AffineIndependent k ((↑) : s → V)) (hst : (s : Set V) ⊆ affineSpan k (t : Set V)) :
+    s.card ≤ t.card := by
+  obtain rfl | hs' := s.eq_empty_or_nonempty
+  · simp
+  obtain rfl | ht' := t.eq_empty_or_nonempty
+  · simpa [Set.subset_empty_iff] using hst
+  have := hs'.to_subtype
+  have := ht'.to_set.to_subtype
+  have direction_le := AffineSubspace.direction_le (affineSpan_mono k hst)
+  rw [AffineSubspace.affineSpan_coe, direction_affineSpan, direction_affineSpan,
+    ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at direction_le
+  have finrank_le := add_le_add_right (Submodule.finrank_le_finrank_of_le direction_le) 1
+  -- We use `erw` to elide the difference between `↥s` and `↥(s : Set V)}`
+  erw [hs.finrank_vectorSpan_add_one] at finrank_le
+  simpa using finrank_le.trans <| finrank_vectorSpan_range_add_one_le _ _
+
+open Finset in
+/-- If the affine span of an affine independent finset is strictly contained in the affine span of
+another finset, then its cardinality is strictly less than the cardinality of that finset. -/
+lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V}
+    (hs : AffineIndependent k ((↑) : s → V))
+    (hst : affineSpan k (s : Set V) < affineSpan k (t : Set V)) : s.card < t.card := by
+  obtain rfl | hs' := s.eq_empty_or_nonempty
+  · simpa [card_pos] using hst
+  obtain rfl | ht' := t.eq_empty_or_nonempty
+  · simp [Set.subset_empty_iff] at hst
+  have := hs'.to_subtype
+  have := ht'.to_set.to_subtype
+  have dir_lt := AffineSubspace.direction_lt_of_nonempty (k := k) hst $ hs'.to_set.affineSpan k
+  rw [direction_affineSpan, direction_affineSpan,
+    ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at dir_lt
+  have finrank_lt := add_lt_add_right (Submodule.finrank_lt_finrank_of_lt dir_lt) 1
+  -- We use `erw` to elide the difference between `↥s` and `↥(s : Set V)}`
+  erw [hs.finrank_vectorSpan_add_one] at finrank_lt
+  simpa using finrank_lt.trans_le <| finrank_vectorSpan_range_add_one_le _ _
 
 /-- If the `vectorSpan` of a finite subset of an affinely independent
 family lies in a submodule with dimension one less than its
@@ -738,7 +800,7 @@ theorem Collinear.coplanar_insert {s : Set P} (h : Collinear k s) (p : P) :
 
 /-- A set of points in a two-dimensional space is coplanar. -/
 theorem coplanar_of_finrank_eq_two (s : Set P) (h : finrank k V = 2) : Coplanar k s := by
-  have : FiniteDimensional k V := finiteDimensional_of_finrank_eq_succ h
+  have : FiniteDimensional k V := .of_finrank_eq_succ h
   rw [coplanar_iff_finrank_le_two, ← h]
   exact Submodule.finrank_le _
 #align coplanar_of_finrank_eq_two coplanar_of_finrank_eq_two

@@ -87,7 +87,7 @@ theorem toΓSpec_preim_basicOpen_eq (r : Γ.obj (op X)) :
 
 /-- `toΓSpecFun` is continuous. -/
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
-  apply isTopologicalBasis_basic_opens.continuous
+  rw [isTopologicalBasis_basic_opens.continuous_iff]
   rintro _ ⟨r, rfl⟩
   erw [X.toΓSpec_preim_basicOpen_eq r]
   exact (X.toRingedSpace.basicOpen r).2
@@ -254,7 +254,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     -- realize it is useful
     have := IsLocalization.map_units (R := Γ.obj (op X)) S s
     dsimp at this ⊢
-    refine ht.mul <| this.map _
+    exact ht.mul <| this.map _
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toΓSpec
 
 theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ Γ.obj (op X)}
@@ -435,7 +435,7 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤)) := by
   have := congr_app ΓSpec.adjunction.left_triangle X
   dsimp at this
-  -- Porting Notes: Slightly changed some rewrites.
+  -- Porting note: Slightly changed some rewrites.
   -- Originally:
   --  rw [← is_iso.eq_comp_inv] at this
   --  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,

@@ -376,8 +376,8 @@ instance Pi.measurableDiv₂ {ι : Type*} {α : ι → Type*} [∀ i, Div (α i)
 theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [AddGroup E]
     [MeasurableSingletonClass E] [MeasurableSub₂ E] {f g : α → E} (hf : Measurable f)
     (hg : Measurable g) : MeasurableSet { x | f x = g x } := by
-  suffices h_set_eq : { x : α | f x = g x } = { x | (f - g) x = (0 : E) }
-  · rw [h_set_eq]
+  suffices h_set_eq : { x : α | f x = g x } = { x | (f - g) x = (0 : E) } by
+    rw [h_set_eq]
     exact (hf.sub hg) measurableSet_eq
   ext
   simp_rw [Set.mem_setOf_eq, Pi.sub_apply, sub_eq_zero]
@@ -504,7 +504,7 @@ theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s�
 end Inv
 
 /-- `DivInvMonoid.Pow` is measurable. -/
-instance DivInvMonoid.measurableZpow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
+instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
   ⟨measurable_from_prod_countable fun n => by
       cases' n with n n
@@ -512,7 +512,7 @@ instance DivInvMonoid.measurableZpow (G : Type u) [DivInvMonoid G] [MeasurableSp
         exact measurable_id.pow_const _
       · simp_rw [zpow_negSucc]
         exact (measurable_id.pow_const (n + 1)).inv⟩
-#align div_inv_monoid.has_measurable_zpow DivInvMonoid.measurableZpow
+#align div_inv_monoid.has_measurable_zpow DivInvMonoid.measurableZPow
 
 @[to_additive]
 instance (priority := 100) measurableDiv₂_of_mul_inv (G : Type*) [MeasurableSpace G]
@@ -829,7 +829,7 @@ nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul₂ M α] : MeasurableSMul₂ Mᵐᵒᵖ α :=
   ⟨show Measurable fun x : Mᵐᵒᵖ × α => op (unop x.1) • x.2 by
       simp_rw [op_smul_eq_smul]
-      refine' (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
+      exact (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
 #align has_measurable_smul₂.op MeasurableSMul₂.op
 
 @[to_additive]

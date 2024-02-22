@@ -5,6 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Projective objects in abelian categories

@@ -3,7 +3,7 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
 -/
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
@@ -109,7 +109,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
     closedBall x (infDist x sᶜ) ⊆ closure s := by
-  cases' eq_or_ne (infDist x sᶜ) 0 with h₀ h₀
+  rcases eq_or_ne (infDist x sᶜ) 0 with h₀ | h₀
   · rw [h₀, closedBall_zero']
     exact closure_mono (singleton_subset_iff.2 hx)
   · rw [← closure_ball x h₀]

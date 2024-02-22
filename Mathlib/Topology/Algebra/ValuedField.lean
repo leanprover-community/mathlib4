@@ -322,11 +322,11 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   ext x
   let γ₀ := extensionValuation x
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
-    cases' eq_or_ne γ₀ 0 with h h
+    rcases eq_or_ne γ₀ 0 with h | h
     · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
         iff_true_iff]
       apply subset_closure
-      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl ⟩
+      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl⟩
     · exact this h
   intro h
   have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=
@@ -335,12 +335,10 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   rw [mem_closure_iff_nhds']
   refine' ⟨fun hx => _, fun hx s hs => _⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
-    replace hy₂ : v y = γ₀
-    · simpa using hy₂
+    replace hy₂ : v y = γ₀ := by simpa using hy₂
     rwa [← hy₂]
   · obtain ⟨y, hy₁, hy₂⟩ := Completion.denseRange_coe.mem_nhds (inter_mem hγ₀ hs)
-    replace hy₁ : v y = γ₀
-    · simpa using hy₁
+    replace hy₁ : v y = γ₀ := by simpa using hy₁
     rw [← hy₁] at hx
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 #align valued.closure_coe_completion_v_lt Valued.closure_coe_completion_v_lt

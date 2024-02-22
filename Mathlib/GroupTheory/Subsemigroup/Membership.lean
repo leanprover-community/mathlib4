@@ -119,7 +119,7 @@ then it holds for all elements of the supremum of `S`. -/
 elements of `S i` for all `i`, and is preserved under addition, then it holds for all elements of
 the supremum of `S`."]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
-    (hp : ∀ (i) (x₂ : M) (_hxS : x₂ ∈ S i), C x₂) (hmul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
+    (hp : ∀ i, ∀ x₂ ∈ S i, C x₂) (hmul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
   refine' closure_induction hx₁ (fun x₂ hx₂ => _) hmul
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx₂

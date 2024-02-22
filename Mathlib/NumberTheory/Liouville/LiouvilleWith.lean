@@ -360,7 +360,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   rcases (this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
-  cases' le_or_lt N b with h h
+  rcases le_or_lt N b with h | h
   · refine' (hN b h a hne).not_lt (hlt.trans_le _)
     gcongr
     exact_mod_cast hb.le
@@ -369,7 +369,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
 
 /-- A Liouville number is a Liouville number with any real exponent. -/
 protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x := by
-  suffices : LiouvilleWith ⌈p⌉₊ x; exact this.mono (Nat.le_ceil p)
+  suffices LiouvilleWith ⌈p⌉₊ x from this.mono (Nat.le_ceil p)
   refine ⟨1, ((eventually_gt_atTop 1).and_frequently (hx.frequently_exists_num ⌈p⌉₊)).mono ?_⟩
   rintro b ⟨_hb, a, hne, hlt⟩
   refine ⟨a, hne, ?_⟩

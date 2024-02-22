@@ -663,11 +663,13 @@ theorem liminf_congr {α : Type*} [ConditionallyCompleteLattice β] {f : Filter 
   limsup_congr (β := βᵒᵈ) h
 #align filter.liminf_congr Filter.liminf_congr
 
+@[simp]
 theorem limsup_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
     (b : β) : limsup (fun _ => b) f = b := by
   simpa only [limsup_eq, eventually_const] using csInf_Ici
 #align filter.limsup_const Filter.limsup_const
 
+@[simp]
 theorem liminf_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
     (b : β) : liminf (fun _ => b) f = b :=
   limsup_const (β := βᵒᵈ) b
@@ -756,12 +758,14 @@ theorem bliminf_false {f : Filter β} {u : β → α} : (bliminf u f fun _ => Fa
 #align filter.bliminf_false Filter.bliminf_false
 
 /-- Same as limsup_const applied to `⊥` but without the `NeBot f` assumption -/
+@[simp]
 theorem limsup_const_bot {f : Filter β} : limsup (fun _ : β => (⊥ : α)) f = (⊥ : α) := by
   rw [limsup_eq, eq_bot_iff]
   exact sInf_le (eventually_of_forall fun _ => le_rfl)
 #align filter.limsup_const_bot Filter.limsup_const_bot
 
 /-- Same as limsup_const applied to `⊤` but without the `NeBot f` assumption -/
+@[simp]
 theorem liminf_const_top {f : Filter β} : liminf (fun _ : β => (⊤ : α)) f = (⊤ : α) :=
   limsup_const_bot (α := αᵒᵈ)
 #align filter.liminf_const_top Filter.liminf_const_top
@@ -823,7 +827,7 @@ theorem blimsup_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
   simp only [blimsup_eq]
   congr with a
   refine' eventually_congr (h.mono fun b hb => _)
-  cases' eq_or_ne (u b) ⊥ with hu hu; · simp [hu]
+  rcases eq_or_ne (u b) ⊥ with hu | hu; · simp [hu]
   rw [hb hu]
 #align filter.blimsup_congr' Filter.blimsup_congr'
 
@@ -1025,10 +1029,10 @@ theorem bliminf_or_le_inf_aux_left : (bliminf u f fun x => p x ∨ q x) ≤ blim
 theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bliminf u f q :=
   bliminf_or_le_inf.trans inf_le_right
 
-/- Porting note: Replaced `e` with `FunLike.coe e` to override the strange
+/- Porting note: Replaced `e` with `DFunLike.coe e` to override the strange
  coercion to `↑(RelIso.toRelEmbedding e).toEmbedding`.-/
 theorem OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
-    FunLike.coe e (blimsup u f p) = blimsup ((FunLike.coe e) ∘ u) f p := by
+    DFunLike.coe e (blimsup u f p) = blimsup ((DFunLike.coe e) ∘ u) f p := by
   simp only [blimsup_eq, map_sInf, Function.comp_apply]
   congr
   ext c
