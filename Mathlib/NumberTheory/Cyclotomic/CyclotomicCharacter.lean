@@ -95,12 +95,19 @@ namespace ModularCyclotomicCharacter
 local notation "χ" => ModularCyclotomicCharacter.toFun
 
 /-- The formula which characterises the output of `ModularCyclotomicCharacter g n`. -/
-theorem spec (g : L ≃+* L) (n : ℕ+) :
-    ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ (χ n g).val : Lˣ) := by
-  rintro t
+theorem spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
+    g (t : Lˣ) = (t ^ (χ n g).val : Lˣ) := by
   rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_ofNat, ModularCyclotomicCharacter.toFun,
     ZMod.val_int_cast, ← Subgroup.coe_zpow]
   exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| Group.pow_eq_zpow_mod _ pow_card_eq_one
+
+theorem spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
+    g t = t ^ (χ n g).val :=
+  spec g ⟨t, ht⟩
+
+theorem spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
+    g t = t ^ (χ n g).val :=
+  spec' g (SetLike.coe_mem ht.toRootsOfUnity)
 
 -- this is in the wrong place I guess
 lemma ext {G : Type _} [Group G] [Fintype G] [IsCyclic G]
@@ -142,44 +149,39 @@ end ModularCyclotomicCharacter
 
 variable (L)
 
--- see also `IsPrimitiveRoot.autToPow`, which is the same construction under the more
--- restrictive condition that there exists a primitive n'th root of unity.
-
-/-- Given a positive integer `n`, `ModularCyclotomicCharacter n` is a
+/-- Given a positive integer `n`, `ModularCyclotomicCharacter' n` is a
 multiplicative homomorphism from the automorphisms of a field `L` to `ℤ/dℤ`,
 where `d` is the number of `n`'th roots of unity in `L`. It is uniquely
 characterised by the property that `g(ζ)=ζ^(ModularCyclotomicCharacter n g)`
 for `g` an automorphism of `L` and `ζ` an `n`th root of unity. -/
 noncomputable
-def ModularCyclotomicCharacter (n : ℕ+) :
+def ModularCyclotomicCharacter' (n : ℕ+) :
     (L ≃+* L) →* (ZMod (Fintype.card { x // x ∈ rootsOfUnity n L }))ˣ := MonoidHom.toHomUnits
   { toFun := ModularCyclotomicCharacter.toFun n
     map_one' := ModularCyclotomicCharacter.id n
     map_mul' := ModularCyclotomicCharacter.comp n }
 
-#check Lean.Elab.Command.elabMutual
-
-noncomputable def ModularCyclotomicCharacter' (n : ℕ+)
+/-- Given a positive integer `n` and a field `L` containing `n` `n`th roots
+of unity, `ModularCyclotomicCharacter n` is a multiplicative homomorphism from the
+automorphisms of `L` to `ℤ/nℤ`. It is uniquely characterised by the property that
+`g(ζ)=ζ^(ModularCyclotomicCharacter n g)` for `g` an automorphism of `L` and `ζ` an `n`th root
+of unity. -/
+noncomputable def ModularCyclotomicCharacter (n : ℕ+)
     (hn : Fintype.card { x // x ∈ rootsOfUnity n L } = n) :
     (L ≃+* L) →* (ZMod n)ˣ :=
-  hn ▸ ModularCyclotomicCharacter L n
+  (Units.mapEquiv <| (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
+  (ModularCyclotomicCharacter' L n)
 
 variable {L}
--- relationship with IsPrimitiveRoot.autToPow
--- autToPow needs hμ and R which are both irrelevant.
 
-lemma IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter' (n : ℕ+)
+/-- The relationship between `IsPrimitiveRoot.autToPow` and
+`ModularCyclotomicCharacter`. Note that `IsPrimitiveRoot.autToPow`
+needs an explicit root of unity, and also an auxiliary "base ring" `R`. -/
+lemma IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter (n : ℕ+)
     (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : L ≃ₐ[R] L) :
-    hμ.autToPow R g = ModularCyclotomicCharacter' L n hμ.card_rootsOfUnity g := by
+    hμ.autToPow R g = ModularCyclotomicCharacter L n hμ.card_rootsOfUnity g := by
   ext
   apply ZMod.val_injective
   apply hμ.pow_inj (ZMod.val_lt _) (ZMod.val_lt _)
-  rw [autToPow_spec R hμ g]
-  rw [spec]
-  sorry
-
-/-
-IsPrimitiveRoot.autToPow.{u_5, u_4} (R : Type u_4) {S : Type u_5} [inst✝ : CommRing S] [inst✝¹ : IsDomain S] {μ : S}
-  {n : ℕ+} (hμ : IsPrimitiveRoot μ ↑n) [inst✝² : CommRing R] [inst✝³ : Algebra R S] : (S ≃ₐ[R] S) →* (ZMod ↑n)ˣ
--/
-#check IsPrimitiveRoot.autToPow
+  simpa [autToPow_spec R hμ g, ModularCyclotomicCharacter', ModularCyclotomicCharacter,
+    ZMod.ringEquivCongr_val] using ModularCyclotomicCharacter.spec'' g hμ
