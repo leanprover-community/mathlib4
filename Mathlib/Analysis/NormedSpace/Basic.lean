@@ -29,7 +29,7 @@ section Prio
 
 -- set_option extends_priority 920 -- Porting note: option unsupported
 
--- Here, we set a rather high priority for the instance `[NormedSpace α β] : Module α β`
+-- Here, we set a rather high priority for the instance `[NormedSpace 𝕜 E] : Module 𝕜 E`
 -- to take precedence over `Semiring.toModule` as this leads to instance paths with better
 -- unification properties.
 /-- A normed space over a normed field is a vector space endowed with a norm which satisfies the
@@ -68,14 +68,13 @@ theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(
   rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace α F]
-
-theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε) :
+theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
-  have : Tendsto (fun y => ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
-    ((continuous_id.sub continuous_const).const_smul _).norm.tendsto' _ _ (by simp)
+  have : Tendsto (fun y ↦ ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
+    Continuous.tendsto' (by fun_prop) _ _ (by simp)
   this.eventually (gt_mem_nhds h)
 #align eventually_nhds_norm_smul_sub_lt eventually_nhds_norm_smul_sub_lt
 
@@ -157,11 +156,11 @@ def NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCo
 
 section NormedAddCommGroup
 
-variable [NormedField α]
+variable [NormedField 𝕜]
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace α E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace α F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open NormedField
 
@@ -179,7 +178,7 @@ example
 
 [This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
 gives some more context. -/
-instance (priority := 100) NormedSpace.toModule' : Module α F :=
+instance (priority := 100) NormedSpace.toModule' : Module 𝕜 F :=
   NormedSpace.toModule
 #align normed_space.to_module' NormedSpace.toModule'
 
@@ -369,7 +368,7 @@ instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] 
 
 -- Porting note: Lean 3 could synth the algebra instances for Pi Pr
 /-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
-instance Pi.normedAlgebra {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
+instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
     [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
   { Pi.normedSpace, Pi.algebra _ E with }
 #align pi.normed_algebra Pi.normedAlgebra
@@ -389,16 +388,12 @@ end NormedAlgebra
 
 See note [reducible non-instances] -/
 @[reducible]
-def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring β] [Algebra α β]
-    [SeminormedRing γ] [NormedAlgebra α γ] [FunLike F β γ] [NonUnitalAlgHomClass F α β γ]
+def NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [Ring R] [Algebra 𝕜 R]
+    [SeminormedRing S] [NormedAlgebra 𝕜 S] [FunLike F R S] [NonUnitalAlgHomClass F 𝕜 R S]
     (f : F) :
-    @NormedAlgebra α β _ (SeminormedRing.induced β γ f) := by
-  -- Porting note: trouble with SeminormedRing β, Algebra α β, and unfolding seminorm
-  refine @NormedAlgebra.mk (𝕜 := α) (𝕜' := β) _ ?_ ?_ ?_
-  · infer_instance
-  · intro a b
-    change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
-    exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
+    @NormedAlgebra 𝕜 R _ (SeminormedRing.induced R S f) :=
+  letI := SeminormedRing.induced R S f
+  ⟨fun a b ↦ show ‖f (a • b)‖ ≤ ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul_le a (f b)⟩
 #align normed_algebra.induced NormedAlgebra.induced
 
 -- Porting note: failed to synth NonunitalAlgHomClass
