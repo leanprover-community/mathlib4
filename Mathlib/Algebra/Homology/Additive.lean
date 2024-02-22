@@ -141,6 +141,7 @@ end HomologicalComplex
 namespace CategoryTheory
 
 variable {W : Type*} [Category W] [Preadditive W]
+  {W' : Type*} [Category W'] [Preadditive W']
 
 /-- An additive functor induces a functor between homological complexes.
 This is sometimes called the "prolongation".
@@ -173,6 +174,14 @@ def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
 #align category_theory.functor.map_homological_complex_id_iso CategoryTheory.Functor.mapHomologicalComplexIdIso
 
 variable {V}
+
+/-- The functor on homological complexes induced by a composition of functors is isomorphic
+to the composition of the induced functors. -/
+@[simps!]
+def Functor.mapHomologicalComplexCompIso
+    (F : V ⥤ W) [F.Additive] (G : W ⥤ W') [G.Additive] (c : ComplexShape ι) :
+    (F ⋙ G).mapHomologicalComplex c ≅ F.mapHomologicalComplex c ⋙ G.mapHomologicalComplex c :=
+  NatIso.ofComponents fun K => Hom.isoOfComponents fun i => Iso.refl _
 
 instance Functor.map_homogical_complex_additive (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     (F.mapHomologicalComplex c).Additive where
