@@ -54,6 +54,7 @@ theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
   mem_powerset.2 Subset.rfl
 #align finset.mem_powerset_self Finset.mem_powerset_self
 
+@[aesop safe apply (rule_sets [finsetNonempty])]
 theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
   ⟨∅, empty_mem_powerset _⟩
 #align finset.powerset_nonempty Finset.powerset_nonempty
@@ -271,19 +272,9 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   simp [card_insert_of_not_mem this, Nat.succ_inj']
 #align finset.powerset_len_succ_insert Finset.powersetCard_succ_insert
 
-theorem powersetCard_nonempty {n : ℕ} {s : Finset α} (h : n ≤ s.card) :
-    (powersetCard n s).Nonempty := by
-  classical
-    induction' s using Finset.induction_on with x s hx IH generalizing n
-    · rw [card_empty, le_zero_iff] at h
-      rw [h, powersetCard_zero]
-      exact Finset.singleton_nonempty _
-    · cases n
-      · simp
-      · rw [card_insert_of_not_mem hx, Nat.succ_le_succ_iff] at h
-        rw [powersetCard_succ_insert hx]
-        refine' Nonempty.mono _ ((IH h).image (insert x))
-        exact subset_union_right _ _
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
+  aesop (add simp [Finset.Nonempty, exists_smaller_set, card_le_card])
 #align finset.powerset_len_nonempty Finset.powersetCard_nonempty
 
 @[simp]
@@ -329,7 +320,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
   · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
     intro x hx
     simp only [mem_biUnion, exists_prop, id.def]
-    obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
+    obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty.2
       (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
     · refine' ⟨insert x t, _, mem_insert_self _ _⟩
       rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
