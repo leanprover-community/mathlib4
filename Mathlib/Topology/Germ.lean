@@ -22,9 +22,9 @@ filter at `x`. This is the common value of all representatives of `φ` at `x`.
 monoid homomorphism, 𝕜-module homomorphism, ring homomorphism, monotone ring homomorphism
 
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
-`A : set X`, build a new predicate on germs `restrict_germ_predicate P A` such that
-`(∀ x, restrict_germ_predicate P A x f) ↔ ∀ᶠ x near A, P x f`;
-`forall_restrict_germ_predicate_iff` is this equivalence.
+`A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
+`(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`;
+`forall_restrictRermPredicate_iff` is this equivalence.
 
 * `Filter.Germ.sliceLeft, sliceRight`: map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y`
 to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
@@ -84,9 +84,9 @@ def _root_.Subring.orderedSubtype {R} [OrderedRing R] (s : Subring R) : s →+*o
 
 section RestrictGermPredicate
 /-- Given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and `A : set X`,
-build a new predicate on germs `restrict_germ_predicate P A` such that
-`(∀ x, restrict_germ_predicate P A x f) ↔ ∀ᶠ x near A, P x f`, see
-`forall_restrict_germ_predicate_iff` for this equivalence. -/
+build a new predicate on germs `RestrictGermPredicate P A` such that
+`(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`, see
+`forall_restrictGermPredicate_iff` for this equivalence. -/
 def RestrictGermPredicate (P : ∀ x : X, Germ (𝓝 x) Y → Prop)
     (A : Set X) : ∀ x : X, Germ (𝓝 x) Y → Prop := fun x φ ↦
   Germ.liftOn φ (fun f ↦ x ∈ A → ∀ᶠ y in 𝓝 x, P y f)
