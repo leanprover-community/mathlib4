@@ -35,11 +35,9 @@ private def exampleFiniteValuedCSP : ValuedCSP ℚ ℚ := {exampleAbs}
 private lemma abs_in : ⟨1, absRat⟩ ∈ exampleFiniteValuedCSP := rfl
 
 private def exampleFiniteValuedInstance : exampleFiniteValuedCSP.Instance (Fin 2) :=
-  Multiset.ofList [ValuedCSP.unaryTerm abs_in 0, ValuedCSP.unaryTerm abs_in 1]
+  {ValuedCSP.unaryTerm abs_in 0, ValuedCSP.unaryTerm abs_in 1}
 
 example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] := by
-  unfold ValuedCSP.Instance.IsOptimumSolution
-  unfold exampleFiniteValuedCSP
   intro s
   convert_to 0 ≤ exampleFiniteValuedInstance.evalSolution s
   rw [ValuedCSP.Instance.evalSolution, exampleFiniteValuedInstance]
@@ -71,32 +69,26 @@ private def beqBool : (Fin 2 → Fin 3) → Bool :=
 
 private def exampleEquality : Σ (n : ℕ), (Fin n → Fin 3) → Bool := ⟨2, beqBool⟩
 
-private def exampleCrispCsp : ValuedCSP (Fin 3) Bool := {exampleEquality}
+private def exampleCrispCSP : ValuedCSP (Fin 3) Bool := {exampleEquality}
 
-private lemma beq_in : ⟨2, beqBool⟩ ∈ exampleCrispCsp := rfl
+private lemma beqBool_mem : ⟨2, beqBool⟩ ∈ exampleCrispCSP := rfl
 
-/-- A ≠ B -/
-private def exampleTermAB : exampleCrispCsp.Term (Fin 4) :=
-  ValuedCSP.binaryTerm beq_in 0 1
+private def exampleTermAB : exampleCrispCSP.Term (Fin 4) :=
+  ValuedCSP.binaryTerm beqBool_mem 0 1
 
-/-- B ≠ C -/
-private def exampleTermBC : exampleCrispCsp.Term (Fin 4) :=
-  ValuedCSP.binaryTerm beq_in 1 2
+private def exampleTermBC : exampleCrispCSP.Term (Fin 4) :=
+  ValuedCSP.binaryTerm beqBool_mem 1 2
 
-/-- C ≠ A -/
-private def exampleTermCA : exampleCrispCsp.Term (Fin 4) :=
-  ValuedCSP.binaryTerm beq_in 2 0
+private def exampleTermCA : exampleCrispCSP.Term (Fin 4) :=
+  ValuedCSP.binaryTerm beqBool_mem 2 0
 
-/-- B ≠ D -/
-private def exampleTermBD : exampleCrispCsp.Term (Fin 4) :=
-  ValuedCSP.binaryTerm beq_in 1 3
+private def exampleTermBD : exampleCrispCSP.Term (Fin 4) :=
+  ValuedCSP.binaryTerm beqBool_mem 1 3
 
-/-- C ≠ D -/
-private def exampleTermCD : exampleCrispCsp.Term (Fin 4) :=
-  ValuedCSP.binaryTerm beq_in 2 3
+private def exampleTermCD : exampleCrispCSP.Term (Fin 4) :=
+  ValuedCSP.binaryTerm beqBool_mem 2 3
 
-/-- A ≠ B -/
-private def exampleCrispCspInstance : exampleCrispCsp.Instance (Fin 4) :=
+private def exampleCrispCspInstance : exampleCrispCSP.Instance (Fin 4) :=
   Multiset.ofList [exampleTermAB, exampleTermBC, exampleTermCA, exampleTermBD, exampleTermCD]
 
 /-
@@ -126,12 +118,12 @@ Or this format?
      \ /
       0
 -/
-private def exampleSolutionCorrect0 : Fin 4 → Fin 3 :=   ![0, 1, 2, 0]
-private def exampleSolutionCorrect1 : Fin 4 → Fin 3 :=   ![1, 2, 0, 1]
-private def exampleSolutionCorrect2 : Fin 4 → Fin 3 :=   ![2, 0, 1, 2]
-private def exampleSolutionCorrect3 : Fin 4 → Fin 3 :=   ![0, 2, 1, 0]
-private def exampleSolutionCorrect4 : Fin 4 → Fin 3 :=   ![1, 0, 2, 1]
-private def exampleSolutionCorrect5 : Fin 4 → Fin 3 :=   ![2, 1, 0, 2]
+private def exampleSolutionCorrect0 : Fin 4 → Fin 3 := ![0, 1, 2, 0]
+private def exampleSolutionCorrect1 : Fin 4 → Fin 3 := ![1, 2, 0, 1]
+private def exampleSolutionCorrect2 : Fin 4 → Fin 3 := ![2, 0, 1, 2]
+private def exampleSolutionCorrect3 : Fin 4 → Fin 3 := ![0, 2, 1, 0]
+private def exampleSolutionCorrect4 : Fin 4 → Fin 3 := ![1, 0, 2, 1]
+private def exampleSolutionCorrect5 : Fin 4 → Fin 3 := ![2, 1, 0, 2]
 private def exampleSolutionIncorrect0 : Fin 4 → Fin 3 := ![0, 0, 0, 0]
 private def exampleSolutionIncorrect1 : Fin 4 → Fin 3 := ![1, 0, 0, 0]
 private def exampleSolutionIncorrect2 : Fin 4 → Fin 3 := ![0, 2, 0, 0]
