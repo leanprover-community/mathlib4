@@ -72,6 +72,13 @@ protected theorem withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
   rw [kernel.withDensity_apply κ hf, withDensity_apply' _ s]
 #align probability_theory.kernel.with_density_apply' ProbabilityTheory.kernel.withDensity_apply'
 
+nonrec lemma withDensity_congr_ae (κ : kernel α β) [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
+  (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
+    (hfg : ∀ a, f a =ᵐ[κ a] g a) :
+    withDensity κ f = withDensity κ g := by
+  ext a
+  rw [kernel.withDensity_apply _ hf,kernel.withDensity_apply _ hg, withDensity_congr_ae (hfg a)]
+
 nonrec lemma withDensity_absolutelyContinuous [IsSFiniteKernel κ]
     (f : α → β → ℝ≥0∞) (a : α) :
     kernel.withDensity κ f a ≪ κ a := by
@@ -138,6 +145,25 @@ theorem withDensity_kernel_sum [Countable ι] (κ : ι → kernel α β) (hκ : 
     exact sum_zero.symm
 #align probability_theory.kernel.with_density_kernel_sum ProbabilityTheory.kernel.withDensity_kernel_sum
 
+lemma withDensity_add_right [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
+    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g)) :
+    withDensity κ (f + g) = withDensity κ f + withDensity κ g := by
+  ext a
+  rw [coeFn_add, Pi.add_apply, kernel.withDensity_apply _ hf, kernel.withDensity_apply _ hg,
+    kernel.withDensity_apply,Pi.add_apply, MeasureTheory.withDensity_add_right]
+  · exact hg.comp measurable_prod_mk_left
+  · exact hf.add hg
+
+lemma withDensity_sub_add_cancel [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
+    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
+    (hfg : ∀ a, g a ≤ᵐ[κ a] f a) :
+    withDensity κ (fun a x ↦ f a x - g a x) + withDensity κ g = withDensity κ f := by
+  rw [← withDensity_add_right _ hg]
+  swap; · exact hf.sub hg
+  refine withDensity_congr_ae κ ((hf.sub hg).add hg) hf (fun a ↦ ?_)
+  filter_upwards [hfg a] with x hx
+  rwa [Pi.add_apply, Pi.add_apply, tsub_add_cancel_iff_le]
+
 theorem withDensity_tsum [Countable ι] (κ : kernel α β) [IsSFiniteKernel κ] {f : ι → α → β → ℝ≥0∞}
     (hf : ∀ i, Measurable (Function.uncurry (f i))) :
     withDensity κ (∑' n, f n) = kernel.sum fun n => withDensity κ (f n) := by
@@ -160,21 +186,6 @@ theorem withDensity_tsum [Countable ι] (κ : kernel α β) [IsSFiniteKernel κ]
   congr with n
   rw [kernel.withDensity_apply' _ (hf n) a s]
 #align probability_theory.kernel.with_density_tsum ProbabilityTheory.kernel.withDensity_tsum
-
-lemma withDensity_sub_add [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
-    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
-    (hg_int : ∀ a, ∫⁻ x, g a x ∂(κ a) ≠ ∞) (hfg : ∀ a, g a ≤ᵐ[κ a] f a) :
-    withDensity κ (fun a x ↦ f a x - g a x) + withDensity κ g = withDensity κ f := by
-  ext a s
-  simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add]
-  rw [kernel.withDensity_apply' _ hf, kernel.withDensity_apply' _ hg, kernel.withDensity_apply']
-  swap; · exact hf.sub hg
-  rw [lintegral_sub]
-  · rw [tsub_add_cancel_iff_le]
-    exact lintegral_mono_ae (ae_restrict_of_ae (hfg a))
-  · exact hg.comp measurable_prod_mk_left
-  · exact ((set_lintegral_le_lintegral _ _).trans_lt (hg_int a).lt_top).ne
-  · exact ae_restrict_of_ae (hfg a)
 
 /-- If a kernel `κ` is finite and a function `f : α → β → ℝ≥0∞` is bounded, then `withDensity κ f`
 is finite. -/
