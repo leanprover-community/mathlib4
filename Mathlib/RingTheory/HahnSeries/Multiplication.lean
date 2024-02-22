@@ -269,7 +269,6 @@ end HahnModule
 
 namespace HahnSeries
 
-
 theorem mul_coeff_right' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hys : y.support ⊆ s) :
     (x * y).coeff a =
@@ -289,7 +288,6 @@ instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
       simp only [smul_eq_mul]
       exact add_mul
   }
-
 
 theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
     {b : Γ} : (single b r * x).coeff (a + b) = r * x.coeff a := by
@@ -397,10 +395,8 @@ theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : Hahn
 theorem mul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     [NonUnitalNonAssocSemiring R] (x y : HahnSeries Γ R) :
     (x * y).coeff (x.order + y.order) = x.coeff x.order * y.coeff y.order := by
-  by_cases hx : x = 0; · simp [hx, mul_coeff]
-  by_cases hy : y = 0; · simp [hy, mul_coeff]
-  rw [order_of_ne hx, order_of_ne hy, mul_coeff, Finset.addAntidiagonal_min_add_min,
-    Finset.sum_singleton]
+  simp only [← smul_eq_mul]
+  exact HahnModule.smul_coeff_order_add_order x y
 #align hahn_series.mul_coeff_order_add_order HahnSeries.mul_coeff_order_add_order
 
 end HahnSeries
@@ -409,8 +405,9 @@ namespace HahnModule
 
 variable {V : Type*} [AddCommMonoid V]
 
-/-- We can weaken `Semiring R` and `Module R V` hypotheses to `NonUnitalNonAssocSemiring R` and
-`DistribSMul R V` if we assume `sum_smul` and `mul_smul` for the `R`-action on `V`. -/
+/-! We could use this result to prove mul_assoc', if we weaken `Semiring R` and `Module R V`
+hypotheses to `NonUnitalNonAssocSemiring R` and `DistribSMul R V`.  However, we would need to
+assume `sum_smul` and `mul_smul` for the `R`-action on `V`, which seems cumbersome. -/
 private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
     (z : HahnModule Γ R V) : (x * y) • z = x • (y • z) := by
   ext b
@@ -514,8 +511,9 @@ instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
   zero_smul := fun _ => zero_smul'
   }
 
-instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R] [SMulWithZero R V]
-    [NoZeroSMulDivisors R V] : NoZeroSMulDivisors (HahnSeries Γ R) (HahnModule Γ R V) where
+instance HahnModule.instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R]
+    [SMulWithZero R V] [NoZeroSMulDivisors R V] : NoZeroSMulDivisors (HahnSeries Γ R)
+    (HahnModule Γ R V) where
   eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
     contrapose! hxy
     simp_all only [ne_eq]
@@ -529,14 +527,13 @@ end HahnModule
 
 namespace HahnSeries
 
+-- Is this proof too abusive?
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
     eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
-      contrapose! xy
-      rw [Ne, HahnSeries.ext_iff, Function.funext_iff, not_forall]
-      refine' ⟨x.order + y.order, _⟩
-      rw [mul_coeff_order_add_order x y, zero_coeff, mul_eq_zero]
-      simp [coeff_order_ne_zero, xy]
+      haveI : NoZeroSMulDivisors (HahnSeries Γ R) (HahnSeries Γ R) :=
+        HahnModule.HahnModule.instNoZeroSMulDivisors
+      exact eq_zero_or_eq_zero_of_smul_eq_zero xy
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
     IsDomain (HahnSeries Γ R) :=
