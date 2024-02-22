@@ -898,7 +898,7 @@ theorem tendstoUniformlyOnFilter_iff {F : ι → β → α} {f : β → α} {p :
       ∀ ε > 0, ∀ᶠ n : ι × β in p ×ˢ p', dist (f n.snd) (F n.fst n.snd) < ε := by
   refine' ⟨fun H ε hε => H _ (dist_mem_uniformity hε), fun H u hu => _⟩
   rcases mem_uniformity_dist.1 hu with ⟨ε, εpos, hε⟩
-  refine' (H ε εpos).mono fun n hn => hε hn
+  exact (H ε εpos).mono fun n hn => hε hn
 #align metric.tendsto_uniformly_on_filter_iff Metric.tendstoUniformlyOnFilter_iff
 
 /-- Expressing locally uniform convergence on a set using `dist`. -/
@@ -1698,7 +1698,7 @@ theorem continuous_dist : Continuous fun p : α × α => dist p.1 p.2 :=
   uniformContinuous_dist.continuous
 #align continuous_dist continuous_dist
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
   continuous_dist.comp (hf.prod_mk hg : _)
@@ -1740,6 +1740,7 @@ theorem continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
   uniformContinuous_nndist.continuous
 #align continuous_nndist continuous_nndist
 
+@[fun_prop]
 protected theorem Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
   continuous_nndist.comp (hf.prod_mk hg : _)

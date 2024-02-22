@@ -266,7 +266,7 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   simp only [peval, aeval_bind₁, Function.comp, hg, hf]
 #align witt_vector.is_poly.comp₂ WittVector.IsPoly.comp₂
 
-/-- The diagonal `λ x, f x x` of a polynomial function `f` is polynomial. -/
+/-- The diagonal `fun x ↦f x x` of a polynomial function `f` is polynomial. -/
 -- Porting note: made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf

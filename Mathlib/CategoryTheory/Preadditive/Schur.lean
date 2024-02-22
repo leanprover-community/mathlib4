@@ -93,7 +93,7 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
     subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
       have p := not_congr (isIso_iff_nonzero f)
       simp only [Classical.not_not, Ne.def] at p
-      refine' p.mp fun _ => h (asIso f)
+      exact p.mp fun _ => h (asIso f)
   finrank_zero_of_subsingleton
 #align category_theory.finrank_hom_simple_simple_eq_zero_of_not_iso CategoryTheory.finrank_hom_simple_simple_eq_zero_of_not_iso
 
