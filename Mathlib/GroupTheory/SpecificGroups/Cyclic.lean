@@ -134,8 +134,7 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
   isAddCyclic_of_addOrderOf_eq_card
 
 /-- Any non-identity element of a finite group of prime order generates the group. -/
-@[to_additive zmultiples_eq_top_of_prime_card "Any non-identity element of a finite group of prime
-  order generates the group."]
+@[to_additive "Any non-identity element of a finite group of prime order generates the group."]
 theorem zpowers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ}
     [hp : Fact p.Prime] (h : Fintype.card G = p) {g : G} (hg : g ≠ 1) : zpowers g = ⊤ := by
   have := card_subgroup_dvd_card (zpowers g)
@@ -143,18 +142,18 @@ theorem zpowers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : 
     card_eq_iff_eq_top] at this
   exact this
 
-@[to_additive mem_zmultiples_of_prime_card]
+@[to_additive]
 theorem mem_zpowers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
     (h : Fintype.card G = p) {g g' : G} (hg : g ≠ 1) : g' ∈ zpowers g := by
   simp_rw [zpowers_eq_top_of_prime_card h hg, Subgroup.mem_top]
 
-@[to_additive mem_multiples_of_prime_card]
+@[to_additive]
 theorem mem_powers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
     (h : Fintype.card G = p) {g g' : G} (hg : g ≠ 1) : g' ∈ Submonoid.powers g := by
   rw [mem_powers_iff_mem_zpowers]
   exact mem_zpowers_of_prime_card h hg
 
-@[to_additive multiples_eq_top_of_prime_card]
+@[to_additive]
 theorem powers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ}
     [hp : Fact p.Prime] (h : Fintype.card G = p) {g : G} (hg : g ≠ 1) : Submonoid.powers g = ⊤ := by
   ext x
