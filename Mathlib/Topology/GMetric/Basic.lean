@@ -25,11 +25,11 @@ for `GPseudoMetric`s in `GPseudoMetric/Basic.lean`.
 
 /-- We now define `GMetric`, extending `GPseudoMetric`. -/
 structure GMetric (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β]
-    [IsOrderedAddCommMonoid β] extends GPseudoMetric α β where
+    [CovariantClass β β (.+.) (.≤.)] extends GPseudoMetric α β where
   eq_of_dist_eq_zero : ∀ {x y : α}, toFun x y = 0 → x = y
 
 variable {α:Type*} {β:Type*} [LinearOrder β] [AddCommMonoid β]
-    [IsOrderedAddCommMonoid β]
+    [CovariantClass β β (.+.) (.≤.)]
 
 /-- Two generalised metrics with the same distance function coincide. -/
 @[ext]
