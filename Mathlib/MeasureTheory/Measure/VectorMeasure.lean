@@ -160,7 +160,7 @@ theorem hasSum_of_disjoint_iUnion [Countable β] {f : β → Set α} (hf₁ : �
     simp only [exists_prop, Set.mem_iUnion, Option.mem_def]
     constructor
     · intro hy
-      refine' ⟨x, (Encodable.decode₂_is_partial_inv _ _).2 rfl, hy⟩
+      exact ⟨x, (Encodable.decode₂_is_partial_inv _ _).2 rfl, hy⟩
     · rintro ⟨b, hb₁, hb₂⟩
       rw [Encodable.decode₂_is_partial_inv _ _] at hb₁
       rwa [← Encodable.encode_injective hb₁]
@@ -500,7 +500,7 @@ theorem toSignedMeasure_sub_apply {μ ν : Measure α} [IsFiniteMeasure μ] [IsF
     {i : Set α} (hi : MeasurableSet i) :
     (μ.toSignedMeasure - ν.toSignedMeasure) i = (μ i).toReal - (ν i).toReal := by
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
-    Measure.toSignedMeasure_apply_measurable hi, sub_eq_add_neg]
+    Measure.toSignedMeasure_apply_measurable hi]
 #align measure_theory.measure.to_signed_measure_sub_apply MeasureTheory.Measure.toSignedMeasure_sub_apply
 
 end Measure
