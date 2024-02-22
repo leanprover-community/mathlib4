@@ -247,6 +247,9 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_presheaf_in_CommRing AlgebraicGeometry.structurePresheafInCommRing
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
+
 /-- Some glue, verifying that that structure presheaf valued in `CommRingCat` agrees
 with the `Type` valued structure presheaf.
 -/
@@ -480,7 +483,7 @@ def localizationToStalk (x : PrimeSpectrum.Top R) :
 @[simp]
 theorem localizationToStalk_of (x : PrimeSpectrum.Top R) (f : R) :
     localizationToStalk R x (algebraMap _ (Localization _) f) = toStalk R x f :=
-  IsLocalization.lift_eq _ f
+  IsLocalization.lift_eq (S := Localization x.asIdeal.primeCompl) _ f
 #align algebraic_geometry.structure_sheaf.localization_to_stalk_of AlgebraicGeometry.StructureSheaf.localizationToStalk_of
 
 @[simp]
@@ -575,9 +578,9 @@ def stalkIso (x : PrimeSpectrum.Top R) :
   inv := localizationToStalk R x
   hom_inv_id := by
     ext U hxU s
-    simp only [FunctorToTypes.map_comp_apply, CommRingCat.forget_map,
-      CommRingCat.coe_of, Category.comp_id]
-    rw [comp_apply, comp_apply, stalkToFiberRingHom_germ']
+    -- Note: this `simp` was longer, but the line below had to become an `erw`
+    simp only [Category.comp_id]
+    erw [comp_apply, comp_apply, stalkToFiberRingHom_germ']
     obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
       exists_const _ _ s x hxU
     erw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
@@ -590,8 +593,9 @@ def stalkIso (x : PrimeSpectrum.Top R) :
       (RingHom.comp (stalkToFiberRingHom R x) (localizationToStalk R x))
       (RingHom.id (Localization.AtPrime _)) <| by
         ext f
-        rw [RingHom.comp_apply, RingHom.comp_apply, localizationToStalk_of,
-          stalkToFiberRingHom_toStalk, RingHom.comp_apply, RingHom.id_apply]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        rw [RingHom.comp_apply, RingHom.comp_apply]; erw [localizationToStalk_of,
+          stalkToFiberRingHom_toStalk]; rw [RingHom.comp_apply, RingHom.id_apply]
 #align algebraic_geometry.structure_sheaf.stalk_iso AlgebraicGeometry.StructureSheaf.stalkIso
 
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
@@ -622,9 +626,10 @@ def toBasicOpen (f : R) :
 @[simp]
 theorem toBasicOpen_mk' (s f : R) (g : Submonoid.powers s) :
     toBasicOpen R s (IsLocalization.mk' (Localization.Away s) f g) =
-      const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_subset hx g.2 :=
+      const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_le.2 hx g.2 :=
   (IsLocalization.lift_mk'_spec _ _ _ _).2 <| by
-    rw [toOpen_eq_const, toOpen_eq_const, const_mul_cancel']
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [toOpen_eq_const, toOpen_eq_const]; rw [const_mul_cancel']
 #align algebraic_geometry.structure_sheaf.to_basic_open_mk' AlgebraicGeometry.StructureSheaf.toBasicOpen_mk'
 
 @[simp]
@@ -845,16 +850,16 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   -- desired form
   rw [← SetLike.coe_subset_coe, Opens.coe_iSup] at ht_cover
   replace ht_cover : (PrimeSpectrum.basicOpen f : Set <| PrimeSpectrum R) ⊆
-    ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _)
-  · convert ht_cover using 2
+      ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _) := by
+    convert ht_cover using 2
     exact funext fun j => by rw [Opens.coe_iSup]
   -- Next we show that some power of `f` is a linear combination of the `h i`
   obtain ⟨n, hn⟩ : f ∈ (Ideal.span (h '' ↑t)).radical := by
     rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.zeroLocus_span]
     -- Porting note : simp with `PrimeSpectrum.basicOpen_eq_zeroLocus_compl` does not work
     replace ht_cover : (PrimeSpectrum.zeroLocus {f})ᶜ ⊆
-      ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ
-    · convert ht_cover
+        ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ := by
+      convert ht_cover
       · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
       · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [Set.compl_subset_comm] at ht_cover
@@ -889,7 +894,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     have := ht_cover hx
     rw [← Finset.set_biUnion_coe, Set.mem_iUnion₂] at this
     rcases this with ⟨i, i_mem, x_mem⟩
-    refine ⟨⟨i, i_mem⟩, x_mem⟩
+    exact ⟨⟨i, i_mem⟩, x_mem⟩
   rintro ⟨i, hi⟩
   dsimp
   change (structureSheaf R).1.map _ _ = (structureSheaf R).1.map _ _
@@ -1007,6 +1012,9 @@ instance isIso_to_global : IsIso (toOpen R ⊤) := by
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   asIso (toOpen R ⊤)
 #align algebraic_geometry.structure_sheaf.global_sections_iso AlgebraicGeometry.StructureSheaf.globalSectionsIso
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.StructureSheaf.globalSectionsIso_hom_apply_coe
 
 @[simp]
 theorem globalSectionsIso_hom (R : CommRingCat) : (globalSectionsIso R).hom = toOpen R ⊤ :=

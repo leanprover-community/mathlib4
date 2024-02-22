@@ -332,7 +332,7 @@ that `(lookup a).isSome ↔ a ∈ keys`. -/
 def keysLookupEquiv :
     Finmap β ≃ { f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1 } where
   toFun s := ⟨(s.keys, fun i => s.lookup i), fun _ => lookup_isSome⟩
-  invFun f := mk (f.1.1.sigma <| fun i => (f.1.2 i).toFinset).val <| by
+  invFun f := mk (f.1.1.sigma fun i => (f.1.2 i).toFinset).val <| by
     refine Multiset.nodup_keys.1 ((Finset.nodup _).map_on ?_)
     simp only [Finset.mem_val, Finset.mem_sigma, Option.mem_toFinset, Option.mem_def]
     rintro ⟨i, x⟩ ⟨_, hx⟩ ⟨j, y⟩ ⟨_, hy⟩ (rfl : i = j)
@@ -347,13 +347,13 @@ def keysLookupEquiv :
 @[simp] lemma keysLookupEquiv_symm_apply_keys :
     ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
       (keysLookupEquiv.symm f).keys = f.1.1 :=
-  keysLookupEquiv.surjective.forall.2 $ fun _ => by
+  keysLookupEquiv.surjective.forall.2 fun _ => by
     simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_fst]
 
 @[simp] lemma keysLookupEquiv_symm_apply_lookup :
     ∀ (f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1}) a,
       (keysLookupEquiv.symm f).lookup a = f.1.2 a :=
-  keysLookupEquiv.surjective.forall.2 $ fun _ _ => by
+  keysLookupEquiv.surjective.forall.2 fun _ _ => by
     simp only [Equiv.symm_apply_apply, keysLookupEquiv_apply_coe_snd]
 
 /-! ### replace -/
@@ -596,7 +596,7 @@ theorem lookup_union_left_of_not_in {a} {s₁ s₂ : Finmap β} (h : a ∉ s₂)
   · rw [lookup_union_right h', lookup_eq_none.mpr h, lookup_eq_none.mpr h']
 #align finmap.lookup_union_left_of_not_in Finmap.lookup_union_left_of_not_in
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : Finmap β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   induction_on₂ s₁ s₂ fun _ _ => AList.mem_lookup_union

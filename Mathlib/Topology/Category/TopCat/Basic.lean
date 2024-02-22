@@ -13,9 +13,9 @@ import Mathlib.Topology.ContinuousFunction.Basic
 # Category instance for topological spaces
 
 We introduce the bundled category `TopCat` of topological spaces together with the functors
-`discrete` and `trivial` from the category of types to `TopCat` which equip a type with the
-corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `topology.category.TopCat.adjunctions`.
+`TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
+with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
+resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
 -/
 
 
@@ -59,16 +59,16 @@ set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
 -- Porting note: cannot find a coercion to function otherwise
-attribute [instance] ConcreteCategory.funLike in
+attribute [instance] ConcreteCategory.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 set_option linter.uppercaseLean3 false in
@@ -168,7 +168,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding f := by
-  simp only [←Functor.map_comp]
+  simp only [← Functor.map_comp]
   exact openEmbedding_iff_comp_isIso f g
 
 -- Porting note: simpNF requested partially simped version below
@@ -185,7 +185,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding g := by
-  simp only [←Functor.map_comp]
+  simp only [← Functor.map_comp]
   exact openEmbedding_iff_isIso_comp f g
 
 end TopCat

@@ -37,7 +37,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   by_cases htop : M = ⊤
   · rw [htop]
     exact ⟨0, le_top⟩
-  have lt_add : ∀ (z) (_ : z ∉ M), M < M + span R {z} := by
+  have lt_add : ∀ z ∉ M, M < M + span R {z} := by
     intro z hz
     refine' lt_of_le_of_ne le_sup_left fun m_eq => hz _
     rw [m_eq]
@@ -68,8 +68,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥)
     (fun (M : Ideal A) hgt => _) I
   intro h_nzM
-  have hA_nont : Nontrivial A
-  apply IsDomain.toNontrivial
+  have hA_nont : Nontrivial A := IsDomain.toNontrivial
   by_cases h_topM : M = ⊤
   · rcases h_topM with rfl
     obtain ⟨p_id, h_nzp, h_pp⟩ : ∃ p : Ideal A, p ≠ ⊥ ∧ p.IsPrime := by
@@ -81,7 +80,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
     rw [Multiset.map_singleton, Multiset.prod_singleton]
     exact ⟨le_rfl, h_nzM⟩
   obtain ⟨x, hx, y, hy, h_xy⟩ := (Ideal.not_isPrime_iff.mp h_prM).resolve_left h_topM
-  have lt_add : ∀ (z) (_ : z ∉ M), M < M + span A {z} := by
+  have lt_add : ∀ z ∉ M, M < M + span A {z} := by
     intro z hz
     refine' lt_of_le_of_ne le_sup_left fun m_eq => hz _
     rw [m_eq]
@@ -106,5 +105,10 @@ instance : NoetherianSpace (PrimeSpectrum R) := by
   have H := ‹IsNoetherianRing R›
   rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H
   exact (closedsEmbedding R).dual.wellFounded H
+
+lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite :=
+  minimalPrimes.equivIrreducibleComponents R
+    |>.set_finite_iff
+    |>.mpr NoetherianSpace.finite_irreducibleComponents
 
 end PrimeSpectrum

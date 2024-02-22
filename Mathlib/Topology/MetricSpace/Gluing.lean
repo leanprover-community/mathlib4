@@ -48,9 +48,6 @@ isometrically and in a way compatible with `f n`.
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe u v w
@@ -186,7 +183,7 @@ def glueMetricApprox (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
   dist_triangle := glueDist_triangle Φ Ψ ε H
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   eq_of_dist_eq_zero := eq_of_glueDist_eq_zero Φ Ψ ε ε0 _ _
-  toUniformSpace := Sum.uniformSpace
+  toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ <| Sum.mem_uniformity_iff_glueDist ε0
 #align metric.glue_metric_approx Metric.glueMetricApprox
 
@@ -284,7 +281,7 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist q p).symm.trans h)
     · rw [eq_of_dist_eq_zero h]
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
-  toUniformSpace := Sum.uniformSpace
+  toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ Sum.mem_uniformity
 #align metric.metric_space_sum Metric.metricSpaceSum
 
@@ -377,21 +374,21 @@ protected theorem dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dis
     · simp only [Sigma.dist_ne hik, Sigma.dist_same]
       calc
         dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z ≤
-            dist x y + dist y (Nonempty.some ⟨y⟩) + 1 + dist (Nonempty.some ⟨z⟩) z :=
-          by apply_rules [add_le_add, le_rfl, dist_triangle]
+            dist x y + dist y (Nonempty.some ⟨y⟩) + 1 + dist (Nonempty.some ⟨z⟩) z := by
+          apply_rules [add_le_add, le_rfl, dist_triangle]
         _ = _ := by abel
     · rcases eq_or_ne j k with (rfl | hjk)
       · simp only [Sigma.dist_ne hij, Sigma.dist_same]
         calc
           dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z ≤
-              dist x (Nonempty.some ⟨x⟩) + 1 + (dist (Nonempty.some ⟨z⟩) y + dist y z) :=
-            by apply_rules [add_le_add, le_rfl, dist_triangle]
+              dist x (Nonempty.some ⟨x⟩) + 1 + (dist (Nonempty.some ⟨z⟩) y + dist y z) := by
+            apply_rules [add_le_add, le_rfl, dist_triangle]
           _ = _ := by abel
       · simp only [hik, hij, hjk, Sigma.dist_ne, Ne.def, not_false_iff]
         calc
           dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z =
-              dist x (Nonempty.some ⟨x⟩) + 1 + 0 + (0 + 0 + dist (Nonempty.some ⟨z⟩) z) :=
-            by simp only [add_zero, zero_add]
+              dist x (Nonempty.some ⟨x⟩) + 1 + 0 + (0 + 0 + dist (Nonempty.some ⟨z⟩) z) := by
+            simp only [add_zero, zero_add]
           _ ≤ _ := by apply_rules [add_le_add, zero_le_one, dist_nonneg, le_rfl]
 #align metric.sigma.dist_triangle Metric.Sigma.dist_triangle
 
@@ -496,8 +493,7 @@ def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 #align metric.glue_space Metric.GlueSpace
 
--- porting note: TODO: w/o `@`, tries to generate some `[MetricSpace _]` before finding `X` `Y`
-instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (@GlueSpace X Y Z _ _ _ _ _ _ hΦ hΨ) :=
+instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 
@@ -628,6 +624,7 @@ def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 #align metric.inductive_limit Metric.InductiveLimit
 
+set_option autoImplicit true in
 instance : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
@@ -659,7 +656,7 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]
-  exacts [le_rfl, le_succ _, le_rfl]
+  exact le_succ _
 #align metric.to_inductive_limit_commute Metric.toInductiveLimit_commute
 
 end InductiveLimit

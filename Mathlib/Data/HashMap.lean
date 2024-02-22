@@ -7,9 +7,9 @@ As `HashMap` has been completely reimplemented in `Std`,
 nothing from the mathlib3 file `data.hash_map` is reflected here.
 The porting header is just here to mark that no further work on `data.hash_map` is desired.
 -/
-import Mathlib.Init.Align
-import Std.Data.HashMap
-import Std.Data.RBMap
+import Std.Data.HashMap.Basic
+import Std.Data.RBMap.Basic
+import Mathlib.Mathport.Rename
 
 #align_import data.hash_map from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

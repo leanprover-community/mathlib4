@@ -42,6 +42,11 @@ theorem Pi.uniformity :
 
 variable {α}
 
+instance [Countable ι] [∀ i, IsCountablyGenerated (𝓤 (α i))] :
+    IsCountablyGenerated (𝓤 (∀ i, α i)) := by
+  rw [Pi.uniformity]
+  infer_instance
+
 theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
   -- porting note: required `Function.comp` to close
@@ -88,7 +93,8 @@ lemma Pi.uniformContinuous_restrict (S : Set ι) :
 lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
     UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
     ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
-  simp [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
+  simp (config := { unfoldPartialApp := true })
+    [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
 
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by

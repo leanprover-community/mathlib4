@@ -72,7 +72,7 @@ theorem Gamma_normal (N : ℕ) : Subgroup.Normal (Gamma N) :=
 
 theorem Gamma_one_top : Gamma 1 = ⊤ := by
   ext
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align Gamma_one_top Gamma_one_top
 
 theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
@@ -209,7 +209,7 @@ def IsCongruenceSubgroup (Γ : Subgroup SL(2, ℤ)) : Prop :=
 theorem isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
     (h2 : IsCongruenceSubgroup H) : IsCongruenceSubgroup K := by
   obtain ⟨N, hN⟩ := h2
-  refine' ⟨N, le_trans hN h⟩
+  exact ⟨N, le_trans hN h⟩
 #align is_congruence_subgroup_trans isCongruenceSubgroup_trans
 
 theorem Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=

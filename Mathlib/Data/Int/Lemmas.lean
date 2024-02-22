@@ -3,11 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Int.Bitwise
-import Mathlib.Data.Nat.Cast.Order
-import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.int.lemmas from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
@@ -33,7 +32,7 @@ theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
 /-! ### `succ` and `pred` -/
 
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
 #align int.succ_coe_nat_pos Int.succ_coe_nat_pos
@@ -122,9 +121,9 @@ attribute [local simp] Int.zero_div
 theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, add_comm, Int.add_mul_ediv_left, (_ : (_ / 2 : ℤ) = 0), zero_add]
   cases b
-  · simp
+  · decide
   · show ofNat _ = _
-    rw [Nat.div_eq_zero] <;> simp
+    rw [Nat.div_eq_of_lt] <;> simp
   · decide
 #align int.div2_bit Int.div2_bit
 

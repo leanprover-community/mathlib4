@@ -13,4 +13,4 @@ set_option autoImplicit true
 
 open Lean Std Format MessageData
 instance [ToMessageData α] [ToMessageData β] : ToMessageData (α × β) :=
-  ⟨fun x => paren <| toMessageData x.1 ++ ofFormat "," ++ Format.line ++ toMessageData x.2 ⟩
+  ⟨fun x => paren <| toMessageData x.1 ++ ofFormat "," ++ Format.line ++ toMessageData x.2⟩

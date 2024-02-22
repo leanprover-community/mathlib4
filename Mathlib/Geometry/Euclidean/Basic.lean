@@ -382,7 +382,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 #align euclidean_geometry.orthogonal_projection_mem_subspace_eq_self EuclideanGeometry.orthogonalProjection_mem_subspace_eq_self
 
 /-- Orthogonal projection is idempotent. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
@@ -617,7 +617,7 @@ theorem dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) :
     dist p₁ (reflection s p₂) = dist p₁ p₂ := by
   rw [← reflection_eq_self_iff p₁] at hp₁
-  convert(reflection s).dist_map p₁ p₂
+  convert (reflection s).dist_map p₁ p₂
   rw [hp₁]
 #align euclidean_geometry.dist_reflection_eq_of_mem EuclideanGeometry.dist_reflection_eq_of_mem
 

@@ -79,10 +79,10 @@ theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdCont
 
 -- PORTING NOTE: how to do this in non-tactic mode?
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
-    LeftOrdContinuous f^[n] :=
-by induction n with
-| zero => exact LeftOrdContinuous.id α
-| succ n ihn => exact ihn.comp hf
+    LeftOrdContinuous f^[n] := by
+  induction n with
+  | zero => exact LeftOrdContinuous.id α
+  | succ n ihn => exact ihn.comp hf
 #align left_ord_continuous.iterate LeftOrdContinuous.iterate
 
 end Preorder
