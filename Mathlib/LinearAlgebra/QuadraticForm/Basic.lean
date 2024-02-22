@@ -675,7 +675,7 @@ theorem toQuadraticForm_apply (B : BilinForm R M) (x : M) : B.toQuadraticForm x 
 #align bilin_form.to_quadratic_form_apply LinearMap.BilinForm.toQuadraticForm_apply
 
 theorem toQuadraticForm_comp_same (B : BilinForm R N) (f : M →ₗ[R] N) :
-    LinearMap.BilinForm.toQuadraticForm (B.compl₁₂ f f) = B.toQuadraticForm.comp f := rfl
+    BilinForm.toQuadraticForm (B.compl₁₂ f f) = B.toQuadraticForm.comp f := rfl
 
 section
 

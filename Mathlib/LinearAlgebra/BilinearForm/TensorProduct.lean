@@ -58,8 +58,8 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
 -- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
 -- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in #6306.
 @[simp]
-theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂)
-    (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
+theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
+    (m₁' : M₁) (m₂' : M₂) :
     tensorDistrib R A (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
       = B₂ m₂ m₂' • B₁ m₁ m₁' :=
   rfl
@@ -67,8 +67,7 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂)
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
 @[reducible]
-protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) :
-    BilinForm A (M₁ ⊗[R] M₂) :=
+protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 #align bilin_form.tmul LinearMap.BilinForm.tmul
 
@@ -83,7 +82,7 @@ lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R
 variable (A) in
 /-- The base change of a bilinear form. -/
 protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
-  LinearMap.BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
+  BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
 
 @[simp]
 theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
@@ -93,8 +92,7 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
 
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
-lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) :
-    (B₂.baseChange A).IsSymm :=
+lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm :=
   IsSymm.tmul mul_comm hB₂
 
 end CommSemiring
@@ -127,8 +125,8 @@ noncomputable def tensorDistribEquiv :
 
 -- this is a dsimp lemma
 @[simp, nolint simpNF]
-theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂)
-    (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
+theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
+    (m₁' : M₁) (m₂' : M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) (B₁ ⊗ₜ[R] B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
       = B₁ m₁ m₁' * B₂ m₂ m₂' :=
   rfl
