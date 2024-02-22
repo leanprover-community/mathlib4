@@ -3,17 +3,16 @@ Copyright (c) 2024 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent
 -/
+import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Data.Set.Lattice
-import Mathlib.Topology.GPseudoMetric.IsOrderedAddCommMonoid
-
 /-!
 # General Pseudo-Metrics
 
 In this file we introduce `GPseudoMetric`.
 This differs from `PseudoMetricSpace` by not requiring that the codomain of the metric be `ℝ`,
-instead only requiring that it is an (additive) commutative monoid, with a linear ordering that
-respects sensible assumptions about interactions between `+` and `≤`.
+instead only requiring that it is an (additive) commutative monoid, with a linear ordering.
 
 ## Main Definitions
 
@@ -41,7 +40,7 @@ function is not necessarily ℝ (or ℝ≥0∞), and as a result does not endow 
 space.
 -/
 structure GPseudoMetric
-    (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
+    (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β]
     where
   /-- A distance function on α with values in β -/
   toFun (x y : α):β
@@ -49,7 +48,7 @@ structure GPseudoMetric
   comm' : ∀ x y : α, toFun x y = toFun y x
   triangle' : ∀ x y z : α, toFun x z ≤ toFun x y + toFun y z
 
-variable {α β :Type*} [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
+variable {α β :Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (.+.) (.≤.)]
 @[ext]
 theorem GPseudoMetric.ext {d₁ d₂ : GPseudoMetric α β} (h : d₁.toFun = d₂.toFun) : d₁ = d₂ := by
   cases' d₁ with d _ _ _ B hB
@@ -63,7 +62,7 @@ instance : FunLike (GPseudoMetric α β) α (α → β) where
 
 /-- A class for types of pseudo metric functions on α with values in β -/
 class GPseudoMetricClass (T : Type*) (α β : outParam Type*) [LinearOrder β] [AddCommMonoid β]
-    [IsOrderedAddCommMonoid β] [FunLike T α (α → β)] : Prop :=
+    [CovariantClass β β (.+.) (.≤.)] [FunLike T α (α → β)] : Prop :=
   gdist_self : ∀ (gdist:T), ∀ x: α, gdist x x = 0
   comm' : ∀ (gdist:T), ∀ x y:α, gdist x y = gdist y x
   triangle' : ∀ (gdist:T), ∀ (x y z:α), gdist x z ≤ gdist x y + gdist y z
@@ -94,10 +93,13 @@ theorem triangle_left (x y z : α) : gdist x y ≤ gdist z x + gdist z y := by
 theorem triangle_right (x y z : α) : gdist x y ≤ gdist x z + gdist y z := by
   rw [comm' gdist y]; apply triangle'
 
+
 theorem triangle4 (x y z w : α) : gdist x w ≤ gdist x y + gdist y z + gdist z w :=
   calc
     gdist x w ≤ gdist x z + gdist z w := triangle' gdist x z w
-    _ ≤ (gdist x y + gdist y z + gdist z w:β) := add_le_add_right (triangle' gdist x y z) _
+    _ ≤ (gdist x y + gdist y z + gdist z w:β) := @act_rel_act_of_rel β β (Function.swap (.+.)) (.≤.)
+      _ _ _ _ (triangle' gdist x y z)
+
 
 theorem triangle4_left (x₁ y₁ x₂ y₂ : α) :
     gdist x₂ y₂ ≤ gdist x₁ y₁ + (gdist x₁ x₂ + gdist y₁ y₂) := by
@@ -109,22 +111,21 @@ theorem triangle4_right (x₁ y₁ x₂ y₂ : α) :
   rw [add_right_comm, comm' gdist y₁]
   apply triangle4
 
-
 theorem gdist_nonneg {x y : α} : 0 ≤ gdist x y := by
-  have : 0 ≤ gdist x y + gdist x y :=
+  have h1: 0 ≤ gdist x y + gdist x y :=
     calc 0 = gdist x x := (gdist_self gdist _).symm
     _ ≤ gdist x y + gdist y x := triangle' gdist _ _ _
     _ = gdist x y + gdist x y:= by rw [comm' gdist]
-  exact nonneg_add_self_iff.mp this
-
+  contrapose! h1
+  exact Left.add_neg' h1 h1
 
 namespace GMetric
 
 
-section non_cancel
-
-
 variable {x y z : α} {δ ε ε₁ ε₂ : β} {s : Set α}
+
+
+section non_cancel
 
 /-- `ball gdist x ε` is the set of all points `y` with `gdist y x < ε` -/
 def ball (x : α) (ε : β) : Set α :=
@@ -211,21 +212,9 @@ lemma sphere_subset_ball {r R : β} (h : r < R) : sphere gdist x r ⊆ ball gdis
 end non_cancel
 
 
-section cancel
-variable [IsOrderedCancelAddCommMonoid β]
-variable {x y z : α} {δ ε ε₁ ε₂ : β} {s : Set α}
+section weak_cancel
 
-theorem closedBall_disjoint_ball
-    (h : δ + ε ≤ gdist x y) : Disjoint (closedBall gdist x δ) (ball gdist y ε) :=
-  Set.disjoint_left.mpr fun _a ha1 ha2 =>
-    (h.trans <| triangle_left gdist _ _ _).not_lt <| add_lt_add_of_le_of_lt ha1 ha2
-
-theorem ball_disjoint_closedBall
-    (h : δ + ε ≤ gdist x y) : Disjoint (ball gdist x δ) (closedBall gdist (y:α) (ε :β)) :=
-  (closedBall_disjoint_ball gdist <| by rwa [add_comm, comm']).symm
-
-theorem ball_disjoint_ball (h : δ + ε ≤ gdist x y) : Disjoint (ball gdist x δ) (ball gdist y ε) :=
-  (closedBall_disjoint_ball gdist h).mono_left (ball_subset_closedBall gdist)
+variable [ContravariantClass β β (. + .) (. < .)]
 
 theorem closedBall_disjoint_closedBall (h : δ + ε < gdist x y) :
     Disjoint (closedBall gdist x δ) (closedBall gdist y ε) :=
@@ -265,13 +254,6 @@ theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball gdist x ε₁ ⊆ ball gdi
 theorem closedBall_eq_bInter_ball : closedBall gdist x ε = ⋂ δ > ε, ball gdist x δ := by
   ext y; rw [mem_closedBall, ← forall_lt_iff_le', mem_iInter₂]; rfl
 
-theorem ball_subset_ball' (h : ε₁ + gdist x y ≤ ε₂) : ball gdist x ε₁ ⊆ ball gdist y ε₂ := fun
-  z hz =>
-    calc
-      gdist z y ≤ gdist z x + gdist x y := by apply triangle' gdist
-      _ < ε₁ + gdist x y := by exact add_lt_add_right hz _
-      _ ≤ ε₂ := h
-
 theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) :
     closedBall gdist x ε₁ ⊆ closedBall gdist x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
@@ -299,6 +281,32 @@ theorem gdist_le_add_of_nonempty_closedBall_inter_closedBall
   calc
     gdist x y ≤ gdist z x + gdist z y := triangle_left gdist _ _ _
     _ ≤ ε₁ + ε₂ := add_le_add hz.1 hz.2
+end weak_cancel
+
+section strong_cancel
+
+
+variable [ContravariantClass β β (. + .) (. ≤ .)]
+
+
+theorem closedBall_disjoint_ball
+    (h : δ + ε ≤ gdist x y) : Disjoint (closedBall gdist x δ) (ball gdist y ε) :=
+  Set.disjoint_left.mpr fun _a ha1 ha2 =>
+    (h.trans <| triangle_left gdist _ _ _).not_lt <| add_lt_add_of_le_of_lt ha1 ha2
+
+theorem ball_disjoint_closedBall
+    (h : δ + ε ≤ gdist x y) : Disjoint (ball gdist x δ) (closedBall gdist (y:α) (ε :β)) :=
+  (closedBall_disjoint_ball gdist <| by rwa [add_comm, comm']).symm
+
+theorem ball_disjoint_ball (h : δ + ε ≤ gdist x y) : Disjoint (ball gdist x δ) (ball gdist y ε) :=
+  (closedBall_disjoint_ball gdist h).mono_left (ball_subset_closedBall gdist)
+
+theorem ball_subset_ball' (h : ε₁ + gdist x y ≤ ε₂) : ball gdist x ε₁ ⊆ ball gdist y ε₂ := fun
+  z hz =>
+    calc
+      gdist z y ≤ gdist z x + gdist x y := by apply triangle' gdist
+      _ < ε₁ + gdist x y := by exact add_lt_add_right hz _
+      _ ≤ ε₂ := h
 
 theorem gdist_lt_add_of_nonempty_closedBall_inter_ball
     (h : (closedBall gdist x ε₁ ∩ ball gdist y ε₂).Nonempty) : gdist x y < ε₁ + ε₂ :=
@@ -317,3 +325,4 @@ theorem gdist_lt_add_of_nonempty_ball_inter_ball
     (h : (ball gdist x ε₁ ∩ ball gdist y ε₂).Nonempty) : gdist x y < ε₁ + ε₂ :=
   gdist_lt_add_of_nonempty_closedBall_inter_ball gdist <|
     h.mono (inter_subset_inter (ball_subset_closedBall gdist) Subset.rfl)
+end strong_cancel
