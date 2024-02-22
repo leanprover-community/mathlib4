@@ -7,6 +7,22 @@ import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 
+/-! # Instances of the continuous functional calculus
+
+## Main definitions
+
+* `IsStarNormal.instContinuousFunctionalCalculus`: the continuous functional calculus for normal
+  elements in a unital C⋆-algebra over `ℂ`.
+* `IsSelfAdjoint.instContinuousFunctionalCalculus`: the continuous functional calculus for
+  selfadjoint elements in a unital C⋆-algebra over `ℂ`.
+* `Nonneg.instContinuousFunctionalCalculus`: the continuous functional calculus for nonnegative
+  elements in a unital C⋆-algebra over `ℂ`, which is also a `StarOrderedRing`.
+
+## Tags
+
+continuous functional calculus, normal, selfadjoint
+-/
+
 noncomputable section
 
 section Normal
