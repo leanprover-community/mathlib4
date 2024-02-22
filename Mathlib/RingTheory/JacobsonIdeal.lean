@@ -224,7 +224,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
   · rw [comap_sInf]
     refine' le_iInf_iff.2 fun J => le_iInf_iff.2 fun hJ => _
     haveI : J.IsMaximal := hJ.right
-    refine' sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
+    exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 #align ideal.comap_jacobson_of_surjective Ideal.comap_jacobson_of_surjective
 
 @[mono]

@@ -946,7 +946,7 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
 
 @[simp]
 theorem adjoin_int (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  refine' adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
+  exact adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
 #align intermediate_field.adjoin_int IntermediateField.adjoin_int
 
 @[simp]

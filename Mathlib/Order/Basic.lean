@@ -1454,12 +1454,12 @@ theorem min_eq : min a b = unit :=
   rfl
 #align punit.min_eq PUnit.min_eq
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 protected theorem le : a ≤ b :=
   trivial
 #align punit.le PUnit.le
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem not_lt : ¬a < b :=
   not_false
 #align punit.not_lt PUnit.not_lt

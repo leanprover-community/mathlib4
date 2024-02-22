@@ -257,7 +257,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
         simp only [Set.mem_diff, Set.mem_singleton_iff]
         refine ⟨irreducibleComponent_mem_irreducibleComponents _, ?_⟩
         rintro rfl
-        refine h mem_irreducibleComponent
+        exact h mem_irreducibleComponent
       · exact ⟨i, Or.inr i.2, hi⟩
 
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩

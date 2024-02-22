@@ -588,6 +588,12 @@ theorem map_apply' (κ : kernel α β) (hf : Measurable f) (a : α) {s : Set γ}
 lemma map_zero (hf : Measurable f) : kernel.map (0 : kernel α β) f hf = 0 := by
   ext; rw [kernel.map_apply]; simp
 
+@[simp]
+lemma map_id (κ : kernel α β) : map κ id measurable_id = κ := by ext a; rw [map_apply]; simp
+
+@[simp]
+lemma map_id' (κ : kernel α β) : map κ (fun a ↦ a) measurable_id = κ := map_id κ
+
 nonrec theorem lintegral_map (κ : kernel α β) (hf : Measurable f) (a : α) {g' : γ → ℝ≥0∞}
     (hg : Measurable g') : ∫⁻ b, g' b ∂map κ f hf a = ∫⁻ a, g' (f a) ∂κ a := by
   rw [map_apply _ hf, lintegral_map hg hf]
@@ -645,6 +651,12 @@ theorem comap_apply' (κ : kernel α β) (hg : Measurable g) (c : γ) (s : Set �
 @[simp]
 lemma comap_zero (hg : Measurable g) : kernel.comap (0 : kernel α β) g hg = 0 := by
   ext; rw [kernel.comap_apply]; simp
+
+@[simp]
+lemma comap_id (κ : kernel α β) : comap κ id measurable_id = κ := by ext a; rw [comap_apply]; simp
+
+@[simp]
+lemma comap_id' (κ : kernel α β) : comap κ (fun a ↦ a) measurable_id = κ := comap_id κ
 
 theorem lintegral_comap (κ : kernel α β) (hg : Measurable g) (c : γ) (g' : β → ℝ≥0∞) :
     ∫⁻ b, g' b ∂comap κ g hg c = ∫⁻ b, g' b ∂κ (g c) :=
