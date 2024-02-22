@@ -28,10 +28,10 @@ by applying lemmas tagged with the user attribute `arith_mult`. -/
 macro (name := arith_mult) "arith_mult" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   { aesop $c* (config :=
-  { destructProductsTransparency := .reducible,
-    applyHypsTransparency := .default,
-    introsTransparency? := some .reducible,
-    enableSimp := false} )
+    { destructProductsTransparency := .reducible,
+      applyHypsTransparency := .default,
+      introsTransparency? := some .reducible,
+      enableSimp := false } )
   (rule_sets [$(Lean.mkIdent `IsMultiplicative):ident])})
 
 /--
