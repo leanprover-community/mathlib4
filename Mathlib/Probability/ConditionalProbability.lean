@@ -78,18 +78,18 @@ def cond (s : Set Ω) : Measure Ω :=
 end Definitions
 
 @[inherit_doc] scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
-@[inherit_doc] scoped notation:60 μ "[|" t "]" => ProbabilityTheory.cond μ t
+@[inherit_doc] scoped notation:max μ "[|" t "]" => ProbabilityTheory.cond μ t
 
-/-- The conditional probability measure of measure `μ` on `{ω | T ω = t}`.
+/-- The conditional probability measure of measure `μ` on `{ω | X ω = x}`.
 
-It is `μ` restricted to `{ω | T ω = t}` and scaled by the inverse of `μ {ω | T ω = t}`
-(to make it a probability measure): `(μ {ω | T ω = t})⁻¹ • μ.restrict {ω | T ω = t}`. -/
-scoped notation:60 μ "[|" T " ← " t "]" => μ[|T ⁻¹' {t}]
+It is `μ` restricted to `{ω | X ω = x}` and scaled by the inverse of `μ {ω | X ω = x}`
+(to make it a probability measure): `(μ {ω | X ω = x})⁻¹ • μ.restrict {ω | X ω = x}`. -/
+scoped notation:max μ "[|" X " ← " x "]" => μ[|X ⁻¹' {x}]
 
 /-- The conditional probability measure of any measure on any set of finite positive measure
 is a probability measure. -/
 theorem cond_isProbabilityMeasure_of_finite (hcs : μ s ≠ 0) (hs : μ s ≠ ∞) :
-    IsProbabilityMeasure (μ[|s]) :=
+    IsProbabilityMeasure μ[|s] :=
   ⟨by
     unfold ProbabilityTheory.cond
     simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
@@ -99,10 +99,10 @@ theorem cond_isProbabilityMeasure_of_finite (hcs : μ s ≠ 0) (hs : μ s ≠ �
 /-- The conditional probability measure of any finite measure on any set of positive measure
 is a probability measure. -/
 theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
-    IsProbabilityMeasure (μ[|s]) := cond_isProbabilityMeasure_of_finite μ hcs (measure_ne_top μ s)
+    IsProbabilityMeasure μ[|s] := cond_isProbabilityMeasure_of_finite μ hcs (measure_ne_top μ s)
 #align probability_theory.cond_is_probability_measure ProbabilityTheory.cond_isProbabilityMeasure
 
-instance cond_isFiniteMeasure : IsFiniteMeasure (μ[|s]) := by
+instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := by
   constructor
   simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, MeasurableSet.univ,
     Measure.restrict_apply, Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond,
@@ -155,7 +155,7 @@ theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0)
 #align probability_theory.inter_pos_of_cond_ne_zero ProbabilityTheory.inter_pos_of_cond_ne_zero
 
 theorem cond_pos_of_inter_ne_zero [IsFiniteMeasure μ]
-    (hms : MeasurableSet s) (hci : μ (s ∩ t) ≠ 0) : 0 < (μ[|s]) t := by
+    (hms : MeasurableSet s) (hci : μ (s ∩ t) ≠ 0) : 0 < μ[|s] t := by
   rw [cond_apply _ hms]
   refine' ENNReal.mul_pos _ hci
   exact ENNReal.inv_ne_zero.mpr (measure_ne_top _ _)
@@ -210,7 +210,7 @@ theorem cond_eq_inv_mul_cond_mul [IsFiniteMeasure μ]
 end Bayes
 
 lemma comap_cond {i : Ω' → Ω} (hi : MeasurableEmbedding i) (hi' : ∀ᵐ ω ∂μ, ω ∈ range i)
-    (hs : MeasurableSet s) : comap i (μ[|s]) = (comap i μ)[|i ⁻¹' s] := by
+    (hs : MeasurableSet s) : comap i μ[|s] = (comap i μ)[|i ⁻¹' s] := by
   ext t ht
   change μ (range i)ᶜ = 0 at hi'
   rw [cond_apply, comap_apply, cond_apply, comap_apply, comap_apply, image_inter,
@@ -226,19 +226,20 @@ lemma comap_cond {i : Ω' → Ω} (hi : MeasurableEmbedding i) (hi' : ∀ᵐ ω 
 
 variable [Fintype α] [MeasurableSpace α] [DiscreteMeasurableSpace α]
 
-/-- The **law of total probability**: a measure `μ` can be expressed as a mixture of its conditional
-measures `μ[|Y ← y]` from a random variable `Y` valued in a fintype. -/
-lemma law_of_total_probability {Y : Ω → α} (hY : Measurable Y) (μ : Measure Ω) [IsFiniteMeasure μ] :
-    μ = ∑ y, μ (Y ⁻¹' {y}) • (μ[|Y ← y]) := by
+/-- The **law of total probability** for a random variable taking finitely many values: a measure
+`μ` can be expressed as a linear combination of its conditional measures `μ[|X ← x]` on fibers of a
+random variable `X` valued in a fintype. -/
+lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure Ω) [IsFiniteMeasure μ] :
+    ∑ x, μ (X ⁻¹' {x}) • μ[|X ← x] = μ := by
   ext E hE
   calc
-    _ = ∑ y : α, μ (Y ⁻¹' {y} ∩ E) := by
-      have : ⋃ y ∈ Finset.univ, Y ⁻¹' {y} ∩ E = E := by simp; ext _; simp
-      rw [← measure_biUnion_finset _ fun _ _ ↦ (hY (.singleton _)).inter hE, this]
-      aesop (add simp [PairwiseDisjoint, Set.Pairwise, Function.onFun, disjoint_left])
-    _ = _ := by
+    _ = ∑ x, μ (X ⁻¹' {x} ∩ E) := by
       simp only [Measure.coe_finset_sum, smul_toOuterMeasure, OuterMeasure.coe_smul,
         Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
-      simp_rw [mul_comm (μ _), cond_mul_eq_inter _ (hY (.singleton _))]
+      simp_rw [mul_comm (μ _), cond_mul_eq_inter _ (hX (.singleton _))]
+    _ = _ := by
+      have : ⋃ x ∈ Finset.univ, X ⁻¹' {x} ∩ E = E := by simp; ext _; simp
+      rw [← measure_biUnion_finset _ fun _ _ ↦ (hX (.singleton _)).inter hE, this]
+      aesop (add simp [PairwiseDisjoint, Set.Pairwise, Function.onFun, disjoint_left])
 
 end ProbabilityTheory
