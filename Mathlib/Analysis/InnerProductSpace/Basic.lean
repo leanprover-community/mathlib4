@@ -1302,6 +1302,87 @@ theorem LinearEquiv.isometryOfInner_toLinearEquiv (f : E ≃ₗ[𝕜] E') (h) :
   rfl
 #align linear_equiv.isometry_of_inner_to_linear_equiv LinearEquiv.isometryOfInner_toLinearEquiv
 
+/-- A linear map is an isometry if and it preserves the inner product. -/
+theorem LinearMap.norm_map_iff_inner_map_map {F : Type*} [FunLike F E E'] [LinearMapClass F 𝕜 E E']
+    (f : F) : (∀ x, ‖f x‖ = ‖x‖) ↔ (∀ x y, ⟪f x, f y⟫_𝕜 = ⟪x, y⟫_𝕜) :=
+  ⟨({ toLinearMap := LinearMapClass.linearMap f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
+    (LinearMapClass.linearMap f |>.isometryOfInner · |>.norm_map)⟩
+
+section unitary
+
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
+
+theorem ContinuousLinearMap.inner_map_map_iff_star_mul_self (u : H →L[𝕜] H) :
+    (∀ x y : H, ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜) ↔ star u * u = 1 := by
+  refine ⟨fun h ↦ ext fun x ↦ ?_, fun h ↦ ?_⟩
+  · refine ext_inner_right 𝕜 fun y ↦ ?_
+    simpa [star_eq_adjoint, adjoint_inner_left] using h x y
+  · simp [← adjoint_inner_left, ← mul_apply, ← star_eq_adjoint, h]
+
+theorem ContinuousLinearMap.norm_map_iff_star_mul_self (u : H →L[𝕜] H) :
+    (∀ x : H, ‖u x‖ = ‖x‖) ↔ star u * u = 1 := by
+  rw [LinearMap.norm_map_iff_inner_map_map u, u.inner_map_map_iff_star_mul_self]
+
+theorem ContinuousLinearMap.norm_map_of_mem_unitary
+    (u : H →L[𝕜] H) (hu : u ∈ unitary (H →L[𝕜] H)) (x : H) : ‖u x‖ = ‖x‖ :=
+  u.norm_map_iff_star_mul_self.mpr (unitary.star_mul_self_of_mem hu) x
+
+theorem ContinuousLinearMap.inner_map_map_of_mem_unitary
+    (u : H →L[𝕜] H) (hu : u ∈ unitary (H →L[𝕜] H)) (x y : H) : ⟪u x, u y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
+  u.inner_map_map_iff_star_mul_self.mpr (unitary.star_mul_self_of_mem hu) x y
+
+theorem unitary.norm_map (u : unitary (H →L[𝕜] H)) (x : H) : ‖u.val x‖ = ‖x‖ :=
+  u.val.norm_map_of_mem_unitary u.property x
+
+theorem unitary.inner_map_map (u : unitary (H →L[𝕜] H)) (x y : H) :
+    ⟪u.val x, u.val y⟫_𝕜 = ⟪x, y⟫_𝕜 :=
+  u.val.inner_map_map_of_mem_unitary u.property x y
+
+/-- The unitary elements of continuous linear maps a Hilbert space coincide with the linear
+isometric equivalences on that Hilbert space. -/
+noncomputable def unitary.linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗᵢ[𝕜] H) where
+  toFun u :=
+    { u.val with
+      norm_map' := norm_map u
+      invFun := ↑(star u)
+      left_inv := fun x ↦ congr($(star_mul_self u).val x)
+      right_inv := fun x ↦ congr($(mul_star_self u).val x) }
+  invFun e :=
+    { val := e
+      property := by
+        let e' : (H →L[𝕜] H)ˣ :=
+          { val := (e : H →L[𝕜] H)
+            inv := (e.symm : H →L[𝕜] H)
+            val_inv := by ext; simp
+            inv_val := by ext; simp }
+        exact IsUnit.mem_unitary_of_star_mul_self ⟨e', rfl⟩ <|
+          (e : H →L[𝕜] H).norm_map_iff_star_mul_self.mp e.norm_map }
+  left_inv u := Subtype.ext rfl
+  right_inv e := LinearIsometryEquiv.ext fun x ↦ rfl
+  map_mul' u v := by ext; rfl
+
+@[simp]
+lemma unitary.linearIsometryEquiv_coe_apply (u : unitary (H →L[𝕜] H)) :
+    linearIsometryEquiv u = u.val :=
+  rfl
+
+@[simp]
+lemma unitary.linearIsometryEquiv_coe_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
+    linearIsometryEquiv.symm e = (e : H →L[𝕜] H) :=
+  rfl
+
+@[simp]
+lemma unitary.linearIsometryEquiv_coe_star_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
+    star (linearIsometryEquiv.symm e) = (e.symm : H →L[𝕜] H) := by
+  apply left_inv_eq_right_inv (a := (linearIsometryEquiv.symm e : H →L[𝕜] H))
+  · have := congr(((↑) : _ → H →L[𝕜] H) $(star_mul_self (linearIsometryEquiv.symm e)))
+    simpa only [Submonoid.coe_mul, coe_star, linearIsometryEquiv_coe_symm_apply,
+      OneMemClass.coe_one, coe_star, linearIsometryEquiv_coe_symm_apply]
+  · ext
+    simp
+
+end unitary
+
 /-- A linear isometry preserves the property of being orthonormal. -/
 theorem LinearIsometry.orthonormal_comp_iff {v : ι → E} (f : E →ₗᵢ[𝕜] E') :
     Orthonormal 𝕜 (f ∘ v) ↔ Orthonormal 𝕜 v := by
