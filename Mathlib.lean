@@ -3407,6 +3407,8 @@ import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
+import Mathlib.Tactic.ArithMult
+import Mathlib.Tactic.ArithMult.Init
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
