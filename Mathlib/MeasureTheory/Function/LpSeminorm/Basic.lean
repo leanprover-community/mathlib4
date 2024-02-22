@@ -1158,7 +1158,7 @@ theorem Memℒp.snorm_indicator_compl_le
   rw [snorm_eq_lintegral_rpow_nnnorm hp_nz hp_top] at hsnf
   replace hsnf := (ENNReal.rpow_lt_top_iff_of_pos hirp_pos).mp hsnf
   -- use core result for lintegral (needs only AEMeasurable), the target estimate will be in `hsfε`
-  obtain ⟨s, hms, hμs, hsfε⟩ := lintegral_indicator_compl_le hsnf.ne hεp
+  obtain ⟨s, hms, hμs, hsfε⟩ := exists_lintegral_indicator_compl_le hsnf.ne hεp
   rw [← lintegral_indicator _ hms.compl] at hsfε
   use s, hms, hμs
   -- move indicator through function compositions, XXX: is this simp-able?
