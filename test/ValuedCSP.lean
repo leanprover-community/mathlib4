@@ -48,16 +48,15 @@ example : exampleFiniteValuedInstance.IsOptimumSolution ![(0 : ℚ), (0 : ℚ)] 
     rfl
   positivity
 
--- ## Example: `B ≠ A ≠ C ≠ D ≠ B ≠ C` with three available labels (i.e., 3-coloring of K₄⁻)
+-- ## Example: B ≠ A ≠ C ≠ D ≠ B ≠ C with three available labels (i.e., 3-coloring of K₄⁻)
 
 private def Bool_add_le_add_left (a b : Bool) :
-  (a ≤ b) → ∀ (c : Bool), ((c || a) ≤ (c || b)) :=
-by
+    (a ≤ b) → ∀ (c : Bool), ((c || a) ≤ (c || b)) := by
   intro hab c
   cases a <;> cases b <;> cases c <;> trivial
 
 -- For simpler implementation, we treat `false` as "satisfied" and `true` as "wrong" here.
-instance crispCodomain : LinearOrderedAddCommMonoid Bool where
+private instance crispCodomain : LinearOrderedAddCommMonoid Bool where
   __ := Bool.linearOrder
   add (a b : Bool) := a || b
   add_assoc := Bool.or_assoc
@@ -76,30 +75,63 @@ private def exampleCrispCsp : ValuedCSP (Fin 3) Bool := {exampleEquality}
 
 private lemma beq_in : ⟨2, beqBool⟩ ∈ exampleCrispCsp := rfl
 
+/-- A ≠ B -/
 private def exampleTermAB : exampleCrispCsp.Term (Fin 4) :=
   ValuedCSP.binaryTerm beq_in 0 1
 
+/-- B ≠ C -/
 private def exampleTermBC : exampleCrispCsp.Term (Fin 4) :=
   ValuedCSP.binaryTerm beq_in 1 2
 
+/-- C ≠ A -/
 private def exampleTermCA : exampleCrispCsp.Term (Fin 4) :=
   ValuedCSP.binaryTerm beq_in 2 0
 
+/-- B ≠ D -/
 private def exampleTermBD : exampleCrispCsp.Term (Fin 4) :=
   ValuedCSP.binaryTerm beq_in 1 3
 
+/-- C ≠ D -/
 private def exampleTermCD : exampleCrispCsp.Term (Fin 4) :=
   ValuedCSP.binaryTerm beq_in 2 3
 
+/-- A ≠ B -/
 private def exampleCrispCspInstance : exampleCrispCsp.Instance (Fin 4) :=
   Multiset.ofList [exampleTermAB, exampleTermBC, exampleTermCA, exampleTermBD, exampleTermCD]
 
+/-
+Do you prefer this format?
+
+       1
+     / | \
+    0  |  0
+     \ | /
+       2
+-/
+/-
+Or this format?
+
+       0
+     /   \
+    1-----2
+     \   /
+       0
+-/
+/-
+Or this format?
+
+      0
+     / \
+    1---2
+     \ /
+      0
+-/
 private def exampleSolutionCorrect0 : Fin 4 → Fin 3 :=   ![0, 1, 2, 0]
 private def exampleSolutionCorrect1 : Fin 4 → Fin 3 :=   ![1, 2, 0, 1]
 private def exampleSolutionCorrect2 : Fin 4 → Fin 3 :=   ![2, 0, 1, 2]
 private def exampleSolutionCorrect3 : Fin 4 → Fin 3 :=   ![0, 2, 1, 0]
 private def exampleSolutionCorrect4 : Fin 4 → Fin 3 :=   ![1, 0, 2, 1]
-private def exampleSolutionCorrect5 : Fin 4 → Fin 3 :=   ![1, 0, 2, 1]
+private def exampleSolutionCorrect5 : Fin 4 → Fin 3 :=   ![2, 1, 0, 2]
 private def exampleSolutionIncorrect0 : Fin 4 → Fin 3 := ![0, 0, 0, 0]
 private def exampleSolutionIncorrect1 : Fin 4 → Fin 3 := ![1, 0, 0, 0]
 private def exampleSolutionIncorrect2 : Fin 4 → Fin 3 := ![0, 2, 0, 0]
