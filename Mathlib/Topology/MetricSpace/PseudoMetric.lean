@@ -1893,8 +1893,8 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
     forall_mem_image, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
   refine' eventually_congr ((eventually_ge_atTop 0).mono fun C hC => _)
   lift C to ℝ≥0 using hC
-  refine' ⟨fun H x hx y hy => NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ => H b x hx y hy,
-    fun H b x hx y hy => NNReal.coe_le_coe.2 _⟩
+  refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
+    fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
   simpa only using Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
 #align pseudo_metric_space_pi pseudoMetricSpacePi
 
