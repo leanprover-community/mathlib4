@@ -39,8 +39,9 @@ theorem GMetric.ext {gdist₁ gdist₂ : GMetric α β} (h : gdist₁.toFun = gd
 
 /-- The class of types that are generalised metrics on α to β -/
 class GMetricClass
-    (T:Type*) (α β :outParam Type*) [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
-    [FunLike T α (α → β)] extends GPseudoMetricClass T α β : Prop where
+    (T:Type*) (α β :outParam Type*) [LinearOrder β] [AddCommMonoid β]
+    [CovariantClass β β (.+.) (.≤.)] [FunLike T α (α → β)]
+    extends GPseudoMetricClass T α β : Prop where
   eq_of_dist_eq_zero : ∀ (gdist:T), ∀ {x y : α}, gdist x y = 0 → x = y
 
 instance GMetric.instFunLike: FunLike (GMetric α β) α (α → β) where
