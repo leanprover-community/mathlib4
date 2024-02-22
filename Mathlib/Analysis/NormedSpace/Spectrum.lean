@@ -593,7 +593,9 @@ namespace SpectrumRestricts
 
 open NNReal ENNReal
 
-/-- -/
+/-- If `𝕜₁` is a normed field contained as subfield of a larger normed field `𝕜₂`, and if `a : A`
+is an element whose `𝕜₂` spectrum restricts to `𝕜₁`, then the spectral radii over each scalar
+field coincide. -/
 lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
     [NormedRing A] [NormedAlgebra 𝕜₁ A] [NormedAlgebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
     [IsScalarTower 𝕜₁ 𝕜₂ A] {f : 𝕜₂ → 𝕜₁} {a : A} (h : SpectrumRestricts a f) :
@@ -625,9 +627,9 @@ lemma real_iff [Algebra ℂ A] {a : A} :
     simp
   · exact .of_subset_range_algebraMap _ _ Complex.ofReal_re fun x hx ↦ ⟨x.re, (h x hx).symm⟩
 
-lemma nnreal_iff_spectralRadius_le [Algebra ℝ A]
-    {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
-    SpectrumRestricts a ContinuousMap.realToNNReal ↔ spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
+lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
+    SpectrumRestricts a ContinuousMap.realToNNReal ↔
+      spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
   have : spectrum ℝ a ⊆ Set.Icc (-t) t := by
     intro x hx
     rw [Set.mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← coe_nnnorm, NNReal.coe_le_coe,
