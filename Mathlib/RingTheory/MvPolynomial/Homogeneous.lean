@@ -297,10 +297,9 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) 
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
   rw [finSuccEquiv_coeff_coeff] at hd
-  have aux : 0 ∉ Finset.map (Fin.succEmb N).toEmbedding d.support := by simp [Fin.succ_ne_zero]
   have h' : (weightedDegree 1) (Finsupp.cons i d) = i + j := by
     simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
-     (d.cons_support (y := i)) (by simp) (fun _ _ ↦ rfl), Finset.sum_insert aux, ← h] using hφ hd
+     (d.cons_support (y := i)) (by simp) (fun _ _ ↦ rfl), ← h] using hφ hd
   simp only [weightedDegree_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum_cons,
     add_right_inj] at h' ⊢
   exact h'
