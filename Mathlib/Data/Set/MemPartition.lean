@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Fintype.Card
 
 /-!
 # Partitions based on membership of a sequence of sets
@@ -18,11 +17,13 @@ The partition `memPartition f (n + 1)` is finer than `memPartition f n`.
 
 ## Main definitions
 
-* `memPartition`
+* `memPartition f n`: the membership partition of the first `n+1` sets in `f`.
 
 ## Main statements
 
-* `fooBar_unique`
+* `disjoint_memPartition`: the sets in `memPartition f n` are disjoint
+* `sUnion_memPartition`: the union of the sets in `memPartition f n` is `univ`
+* `memPartition_finite`: `memPartition f n` is finite
 
 -/
 
