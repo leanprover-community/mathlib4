@@ -999,7 +999,7 @@ theorem find_spec :
     · rw [h] at hi
       dsimp at hi
       rw [← Option.some_inj.1 hi]
-      refine @find_spec n (fun i ↦ p (i.castLT (Nat.lt_succ_of_lt i.2))) _ _ h
+      exact @find_spec n (fun i ↦ p (i.castLT (Nat.lt_succ_of_lt i.2))) _ _ h
 #align fin.find_spec Fin.find_spec
 
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
@@ -1040,7 +1040,7 @@ theorem find_min :
       split_ifs at hi with hl
       · cases hi
         rw [find_eq_none_iff] at h
-        refine h ⟨j, hj⟩ hpj
+        exact h ⟨j, hj⟩ hpj
       · exact Option.not_mem_none _ hi
     · rw [h] at hi
       dsimp at hi
