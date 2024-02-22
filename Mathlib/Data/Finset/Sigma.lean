@@ -109,6 +109,38 @@ theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
   @sup_sigma _ _ βᵒᵈ _ _ _ _ _
 #align finset.inf_sigma Finset.inf_sigma
 
+theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  by simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
+
+theorem _root_.biSup_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → β) : ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm (biSup_finsetSigma _ _ _)
+
+theorem _root_.biInf_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → β) : ⨅ ij ∈ s.sigma t, f ij = ⨅ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  biSup_finsetSigma (β := βᵒᵈ) _ _ _
+
+theorem _root_.biInf_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → β) : ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm (biInf_finsetSigma _ _ _)
+
+theorem _root_.Set.biUnion_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → Set β) : ⋃ ij ∈ s.sigma t, f ij = ⋃ i ∈ s, ⋃ j ∈ t i, f ⟨i, j⟩ :=
+  biSup_finsetSigma _ _ _
+
+theorem _root_.Set.biUnion_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → Set β) : ⋃ i ∈ s, ⋃ j ∈ t i, f i j = ⋃ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  biSup_finsetSigma' _ _ _
+
+theorem _root_.Set.biInter_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → Set β) : ⋂ ij ∈ s.sigma t, f ij = ⋂ i ∈ s, ⋂ j ∈ t i, f ⟨i, j⟩ :=
+  biInf_finsetSigma _ _ _
+
+theorem _root_.Set.biInter_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → Set β) : ⋂ i ∈ s, ⋂ j ∈ t i, f i j = ⋂ ij ∈ s.sigma t, f ij.1 ij.2 :=
+  biInf_finsetSigma' _ _ _
+
 end Sigma
 
 section SigmaLift

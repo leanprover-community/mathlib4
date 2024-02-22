@@ -664,8 +664,8 @@ See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
 -/
 theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
     Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
-  have : p * C (leadingCoeff p)⁻¹ ≠ 1
-  · contrapose! hpu
+  have : p * C (leadingCoeff p)⁻¹ ≠ 1 := by
+    contrapose! hpu
     exact isUnit_of_mul_eq_one _ _ hpu
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,

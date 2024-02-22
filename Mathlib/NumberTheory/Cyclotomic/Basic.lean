@@ -317,7 +317,7 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
     rw [this]
     exact (nthRoots (↑n) 1).toFinset.finite_toSet
   · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hb
-    refine' ⟨X ^ (n : ℕ) - 1, ⟨monic_X_pow_sub_C _ n.pos.ne.symm, by simp [hb]⟩⟩
+    exact ⟨X ^ (n : ℕ) - 1, ⟨monic_X_pow_sub_C _ n.pos.ne.symm, by simp [hb]⟩⟩
 #align is_cyclotomic_extension.finite_of_singleton IsCyclotomicExtension.finite_of_singleton
 
 /-- If `S` is finite and `IsCyclotomicExtension S A B`, then `B` is a finite `A`-algebra. -/
@@ -383,15 +383,15 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
     refine' SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin _) _)
     rw [mem_rootSet', map_cyclotomic, aeval_def, ← eval_map, map_cyclotomic, ← IsRoot]
-    refine' ⟨cyclotomic_ne_zero n B, hζ.isRoot_cyclotomic n.pos⟩
+    exact ⟨cyclotomic_ne_zero n B, hζ.isRoot_cyclotomic n.pos⟩
 #align is_cyclotomic_extension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots
 
 theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ+} [IsDomain B] {ζ : B}
     (hζ : IsPrimitiveRoot ζ n) : adjoin A ((cyclotomic n A).rootSet B) = adjoin A {ζ} := by
   refine' le_antisymm (adjoin_le fun x hx => _) (adjoin_mono fun x hx => _)
-  · suffices hx : x ^ n.1 = 1
-    obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
-    exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
+  · suffices hx : x ^ n.1 = 1 by
+      obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
+      exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
     refine' (isRoot_of_unity_iff n.pos B).2 _
     refine' ⟨n, Nat.mem_divisors_self n n.ne_zero, _⟩
     rw [mem_rootSet', aeval_def, ← eval_map, map_cyclotomic, ← IsRoot] at hx

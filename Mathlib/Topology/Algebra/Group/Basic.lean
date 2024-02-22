@@ -297,7 +297,7 @@ variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
 theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
     IsClosed { f : G₁ → G₂ | ∀ x, f x⁻¹ = (f x)⁻¹ } := by
   simp only [setOf_forall]
-  refine' isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
+  exact isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
 #align is_closed_set_of_map_inv isClosed_setOf_map_inv
 #align is_closed_set_of_map_neg isClosed_setOf_map_neg
 
@@ -946,9 +946,8 @@ theorem TopologicalGroup.of_nhds_one {G : Type u} [Group G] [TopologicalSpace G]
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1))
     (hconj : ∀ x₀ : G, Tendsto (x₀ * · * x₀⁻¹) (𝓝 1) (𝓝 1)) : TopologicalGroup G := by
   refine' TopologicalGroup.of_nhds_one' hmul hinv hleft fun x₀ => _
-  replace hconj : ∀ x₀ : G, map (x₀ * · * x₀⁻¹) (𝓝 1) = 𝓝 1
-  · exact fun x₀ =>
-      map_eq_of_inverse (x₀⁻¹ * · * x₀⁻¹⁻¹) (by ext; simp [mul_assoc]) (hconj _) (hconj _)
+  replace hconj : ∀ x₀ : G, map (x₀ * · * x₀⁻¹) (𝓝 1) = 𝓝 1 :=
+    fun x₀ => map_eq_of_inverse (x₀⁻¹ * · * x₀⁻¹⁻¹) (by ext; simp [mul_assoc]) (hconj _) (hconj _)
   rw [← hconj x₀]
   simpa [(· ∘ ·)] using hleft _
 #align topological_group.of_nhds_one TopologicalGroup.of_nhds_one

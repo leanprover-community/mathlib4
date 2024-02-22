@@ -653,7 +653,7 @@ theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
   DFunLike.coe_injective <| Pi.single_zero _
 #align dfinsupp.single_zero DFinsupp.single_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
   simp only [single_apply, dite_eq_ite, ite_true]
 #align dfinsupp.single_eq_same DFinsupp.single_eq_same
@@ -768,7 +768,7 @@ theorem erase_apply {i j : ι} {f : Π₀ i, β i} : (f.erase i) j = if j = i th
   rfl
 #align dfinsupp.erase_apply DFinsupp.erase_apply
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 #align dfinsupp.erase_same DFinsupp.erase_same
 

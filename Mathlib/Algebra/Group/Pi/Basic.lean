@@ -5,18 +5,29 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
-import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
+import Mathlib.Logic.Unique
+import Mathlib.Tactic.Spread
 
 #align_import data.pi.algebra from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Instances and theorems on pi types
 
-This file provides basic definitions and notation instances for Pi types.
+This file provides instances for the typeclass defined in `Algebra.Group.Defs`. More sophisticated
+instances are defined in `Algebra.Group.Pi.Lemmas` files elsewhere.
 
-Instances of more sophisticated classes are defined in `Pi.lean` files elsewhere.
+## Porting note
+
+This file relied on the `pi_instance` tactic, which was not available at the time of porting. The
+comment `--pi_instance` is inserted before all fields which were previously derived by
+`pi_instance`. See this Zulip discussion:
+[https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
 -/
+
+-- We enforce to only import `Algebra.Group.Defs` and basic logic
+assert_not_exists Set.range
+assert_not_exists MonoidHom
 
 open Function
 
@@ -214,6 +225,130 @@ lemma _root_.Function.const_div [Div β] (a b : β) : const α a / const α b = 
 #align pi.const_div Function.const_div
 #align pi.const_sub Function.const_sub
 
+@[to_additive]
+instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
+  mul_assoc := by intros; ext; exact mul_assoc _ _ _
+#align pi.semigroup Pi.semigroup
+#align pi.add_semigroup Pi.addSemigroup
+
+@[to_additive]
+instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i) where
+  mul_comm := by intros; ext; exact mul_comm _ _
+#align pi.comm_semigroup Pi.commSemigroup
+#align pi.add_comm_semigroup Pi.addCommSemigroup
+
+@[to_additive]
+instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
+  one_mul := by intros; ext; exact one_mul _
+  mul_one := by intros; ext; exact mul_one _
+#align pi.mul_one_class Pi.mulOneClass
+#align pi.add_zero_class Pi.addZeroClass
+
+@[to_additive]
+instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
+  inv_one := by intros; ext; exact inv_one
+
+@[to_additive]
+instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
+  __ := semigroup
+  __ := mulOneClass
+  npow := fun n x i => x i ^ n
+  npow_zero := by intros; ext; exact Monoid.npow_zero _
+  npow_succ := by intros; ext; exact Monoid.npow_succ _ _
+#align pi.monoid Pi.monoid
+#align pi.add_monoid Pi.addMonoid
+
+@[to_additive]
+instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
+  { monoid, commSemigroup with }
+#align pi.comm_monoid Pi.commMonoid
+#align pi.add_comm_monoid Pi.addCommMonoid
+
+@[to_additive Pi.subNegMonoid]
+instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
+  zpow := fun z x i => x i ^ z
+  div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
+  zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
+  zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
+  zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
+
+@[to_additive Pi.subNegZeroMonoid]
+instance divInvOneMonoid [∀ i, DivInvOneMonoid (f i)] : DivInvOneMonoid (∀ i, f i) where
+  inv_one := by ext; exact inv_one
+
+@[to_additive]
+instance involutiveInv [∀ i, InvolutiveInv (f i)] : InvolutiveInv (∀ i, f i) where
+  inv_inv := by intros; ext; exact inv_inv _
+
+@[to_additive Pi.subtractionMonoid]
+instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f i) where
+  __ := divInvMonoid
+  __ := involutiveInv
+  mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
+  inv_eq_of_mul := by intros _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
+
+@[to_additive instSubtractionCommMonoid]
+instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) :=
+  { divisionMonoid, commSemigroup with }
+
+@[to_additive]
+instance group [∀ i, Group (f i)] : Group (∀ i, f i) where
+  mul_left_inv := by intros; ext; exact mul_left_inv _
+#align pi.group Pi.group
+#align pi.add_group Pi.addGroup
+
+@[to_additive]
+instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group, commMonoid with }
+#align pi.comm_group Pi.commGroup
+#align pi.add_comm_group Pi.addCommGroup
+
+@[to_additive] instance instIsLeftCancelMul [∀ i, Mul (f i)] [∀ i, IsLeftCancelMul (f i)] :
+    IsLeftCancelMul (∀ i, f i) where
+  mul_left_cancel  _ _ _ h := funext fun _ ↦ mul_left_cancel (congr_fun h _)
+
+@[to_additive] instance instIsRightCancelMul [∀ i, Mul (f i)] [∀ i, IsRightCancelMul (f i)] :
+    IsRightCancelMul (∀ i, f i) where
+  mul_right_cancel  _ _ _ h := funext fun _ ↦ mul_right_cancel (congr_fun h _)
+
+@[to_additive] instance instIsCancelMul [∀ i, Mul (f i)] [∀ i, IsCancelMul (f i)] :
+    IsCancelMul (∀ i, f i) where
+
+@[to_additive]
+instance leftCancelSemigroup [∀ i, LeftCancelSemigroup (f i)] : LeftCancelSemigroup (∀ i, f i) :=
+  { semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
+#align pi.left_cancel_semigroup Pi.leftCancelSemigroup
+#align pi.add_left_cancel_semigroup Pi.addLeftCancelSemigroup
+
+@[to_additive]
+instance rightCancelSemigroup [∀ i, RightCancelSemigroup (f i)] : RightCancelSemigroup (∀ i, f i) :=
+  { semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
+#align pi.right_cancel_semigroup Pi.rightCancelSemigroup
+#align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
+
+@[to_additive]
+instance leftCancelMonoid [∀ i, LeftCancelMonoid (f i)] : LeftCancelMonoid (∀ i, f i) :=
+  { leftCancelSemigroup, monoid with }
+#align pi.left_cancel_monoid Pi.leftCancelMonoid
+#align pi.add_left_cancel_monoid Pi.addLeftCancelMonoid
+
+@[to_additive]
+instance rightCancelMonoid [∀ i, RightCancelMonoid (f i)] : RightCancelMonoid (∀ i, f i) :=
+  { rightCancelSemigroup, monoid with }
+#align pi.right_cancel_monoid Pi.rightCancelMonoid
+#align pi.add_right_cancel_monoid Pi.addRightCancelMonoid
+
+@[to_additive]
+instance cancelMonoid [∀ i, CancelMonoid (f i)] : CancelMonoid (∀ i, f i) :=
+  { leftCancelMonoid, rightCancelMonoid with }
+#align pi.cancel_monoid Pi.cancelMonoid
+#align pi.add_cancel_monoid Pi.addCancelMonoid
+
+@[to_additive]
+instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (∀ i, f i) :=
+  { leftCancelMonoid, commMonoid with }
+#align pi.cancel_comm_monoid Pi.cancelCommMonoid
+#align pi.add_cancel_comm_monoid Pi.addCancelCommMonoid
+
 section
 
 variable [DecidableEq I]
@@ -253,7 +388,7 @@ theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
 #align pi.mul_single_one Pi.mulSingle_one
 #align pi.single_zero Pi.single_zero
 
--- Porting notes:
+-- Porting note:
 -- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
 -- 2) Why do I have to specify the type of `(1 : I → β)`?
 -- 3) Removed `{β : Sort*}` as `[One β]` converts it to a type anyways.
@@ -265,7 +400,7 @@ theorem mulSingle_apply [One β] (i : I) (x : β) (i' : I) :
 #align pi.mul_single_apply Pi.mulSingle_apply
 #align pi.single_apply Pi.single_apply
 
--- Porting notes : Same as above.
+-- Porting note: Same as above.
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
 @[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
 theorem mulSingle_comm [One β] (i : I) (x : β) (i' : I) :
