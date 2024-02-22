@@ -3,7 +3,7 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 
@@ -319,3 +319,29 @@ lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
 @[simp]
 lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
   rw [normEDS, Int.sign_neg, Int.cast_neg, neg_mul, Int.natAbs_neg, normEDS]
+
+/-- Strong recursion principle for a normalised EDS indexed by `ℕ`: if we have
+ * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+ * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
+ * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
+then we have `P n` for all `n : ℕ`. -/
+@[elab_as_elim]
+noncomputable def normEDSRec' {P : ℕ → Sort u} (base0 : P 0) (base1 : P 1) (base2 : P 2)
+    (base3 : P 3) (base4 : P 4) (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
+    (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
+  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [base0, base2, base4, even _ h])
+    (by rintro (_ | _ | _) h; exacts [base1, base3, odd _ h])
+
+/-- Strong recursion principle for a normalised EDS indexed by `ℤ`: if we have
+ * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
+ * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`,
+ * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`, and
+ * for all `n : ℕ` we can extend from `P n` to `P (-n)`,
+then we have `P n` for all `n : ℤ`. -/
+@[elab_as_elim]
+noncomputable def normEDSRec {P : ℤ → Sort u} (base0 : P 0) (base1 : P 1) (base2 : P 2)
+    (base3 : P 3) (base4 : P 4) (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
+    (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1))
+    (neg : ∀ n : ℕ, P n → P (-n)) : ∀ n : ℤ, P n
+  | .ofNat n => normEDSRec' base0 base1 base2 base3 base4 even odd n
+  | .negSucc n => neg (n + 1) <| normEDSRec' base0 base1 base2 base3 base4 even odd <| n + 1
