@@ -322,7 +322,7 @@ protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul 
   -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
+    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext xa xb ya yb za zb
   exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
@@ -524,10 +524,10 @@ instance instCommSemiring : CommSemiring (A ⊗[R] B) where
       · intro a₂ b₂
         simp [mul_comm]
       · intro a₂ b₂ ha hb
-        -- porting note: was `simp` not `rw`
+        -- porting note (#10745): was `simp` not `rw`
         rw [mul_add, add_mul, ha, hb]
     · intro x₁ x₂ h₁ h₂
-      -- porting note: was `simp` not `rw`
+      -- porting note (#10745): was `simp` not `rw`
       rw [mul_add, add_mul, h₁, h₂]
 
 end CommSemiring

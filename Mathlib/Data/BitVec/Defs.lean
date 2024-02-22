@@ -5,7 +5,6 @@ Authors: Joe Hendrix, Sebastian Ullrich, Harun Khan, Alex Keizer, Abdalrhman M M
 -/
 
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.ZMod.Defs
 import Std.Data.BitVec
 
@@ -143,7 +142,5 @@ def toBEList (x : BitVec w) : List Bool :=
 instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
 instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
 instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
-instance : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
-instance : IntCast (BitVec w) := ⟨BitVec.ofInt w⟩
 
 end Std.BitVec

@@ -7,7 +7,6 @@ import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
 import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Logic.Lemmas
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.CountableSeparatingOn
@@ -613,7 +612,7 @@ theorem MeasurableSet.subtype_image {s : Set α} {t : Set s} (hs : MeasurableSet
     MeasurableSet t → MeasurableSet (((↑) : s → α) '' t) := by
   rintro ⟨u, hu, rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact hu.inter hs
+  exact hs.inter hu
 #align measurable_set.subtype_image MeasurableSet.subtype_image
 
 @[measurability]
@@ -867,8 +866,8 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
   inhabit ι
   set g' : (i : ι) → t i → β := fun i => g i ∘ (↑)
   -- see #2184
-  have ht' : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), g' i ⟨x, hxi⟩ = g' j ⟨x, hxj⟩
-  · intro i j x hxi hxj
+  have ht' : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), g' i ⟨x, hxi⟩ = g' j ⟨x, hxj⟩ := by
+    intro i j x hxi hxj
     rcases eq_or_ne i j with rfl | hij
     · rfl
     · exact ht hij ⟨hxi, hxj⟩
@@ -1368,7 +1367,7 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
   inv e := e.toEquiv.symm
   left_inv e := e.toEquiv.left_inv
   right_inv e := e.toEquiv.right_inv
-  coe_injective' _ _ he _ := toEquiv_injective <| FunLike.ext' he
+  coe_injective' _ _ he _ := toEquiv_injective <| DFunLike.ext' he
 
 @[simp]
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
@@ -1429,7 +1428,7 @@ def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 
 initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
 
-@[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := FunLike.ext' h
+@[ext] theorem ext {e₁ e₂ : α ≃ᵐ β} (h : (e₁ : α → β) = e₂) : e₁ = e₂ := DFunLike.ext' h
 #align measurable_equiv.ext MeasurableEquiv.ext
 
 @[simp]

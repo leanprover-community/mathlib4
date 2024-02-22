@@ -233,19 +233,19 @@ theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f
 
 variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.inv (hf : Continuous f) : Continuous fun x => (f x)⁻¹ :=
   continuous_inv.comp hf
 #align continuous.inv Continuous.inv
 #align continuous.neg Continuous.neg
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt (fun x => (f x)⁻¹) x :=
   continuousAt_inv.comp hf
 #align continuous_at.inv ContinuousAt.inv
 #align continuous_at.neg ContinuousAt.neg
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x => (f x)⁻¹) s :=
   continuous_inv.comp_continuousOn hf
 #align continuous_on.inv ContinuousOn.inv
@@ -333,6 +333,10 @@ protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]
     continuous_invFun := continuous_inv }
 #align homeomorph.inv Homeomorph.inv
 #align homeomorph.neg Homeomorph.neg
+
+@[to_additive (attr := simp)]
+lemma Homeomorph.coe_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
+    ⇑(Homeomorph.inv G) = Inv.inv := rfl
 
 @[to_additive]
 theorem isOpenMap_inv : IsOpenMap (Inv.inv : G → G) :=
@@ -500,7 +504,7 @@ instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
   ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 #align add_group.has_continuous_smul_int AddGroup.continuousSMul_int
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.zpow {f : α → G} (h : Continuous f) (z : ℤ) : Continuous fun b => f b ^ z :=
   (continuous_zpow z).comp h
 #align continuous.zpow Continuous.zpow
@@ -532,14 +536,14 @@ theorem ContinuousWithinAt.zpow {f : α → G} {x : α} {s : Set α} (hf : Conti
 #align continuous_within_at.zpow ContinuousWithinAt.zpow
 #align continuous_within_at.zsmul ContinuousWithinAt.zsmul
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousAt.zpow {f : α → G} {x : α} (hf : ContinuousAt f x) (z : ℤ) :
     ContinuousAt (fun x => f x ^ z) x :=
   Filter.Tendsto.zpow hf z
 #align continuous_at.zpow ContinuousAt.zpow
 #align continuous_at.zsmul ContinuousAt.zsmul
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.zpow {f : α → G} {s : Set α} (hf : ContinuousOn f s) (z : ℤ) :
     ContinuousOn (fun x => f x ^ z) s := fun x hx => (hf x hx).zpow z
 #align continuous_on.zpow ContinuousOn.zpow
@@ -669,7 +673,7 @@ variable {G}
 
 @[to_additive]
 protected theorem Inducing.topologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
-    [MonoidHomClass F H G] (f : F) (hf : Inducing f) : TopologicalGroup H :=
+    [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : Inducing f) : TopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }
 #align inducing.topological_group Inducing.topologicalGroup
@@ -677,7 +681,8 @@ protected theorem Inducing.topologicalGroup {F : Type*} [Group H] [TopologicalSp
 
 @[to_additive]
 -- Porting note: removed `protected` (needs to be in namespace)
-theorem topologicalGroup_induced {F : Type*} [Group H] [MonoidHomClass F H G] (f : F) :
+theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
+    (f : F) :
     @TopologicalGroup H (induced f ‹_›) _ :=
   letI := induced f ‹_›
   Inducing.topologicalGroup f ⟨rfl⟩
@@ -865,7 +870,8 @@ also `uniformContinuous_of_continuousAt_one`. -/
   continuous provided that it is continuous at zero. See also
   `uniformContinuous_of_continuousAt_zero`."]
 theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
-    [ContinuousMul M] [MonoidHomClass hom G M] (f : hom) (hf : ContinuousAt f 1) :
+    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
+    (hf : ContinuousAt f 1) :
     Continuous f :=
   continuous_iff_continuousAt.2 fun x => by
     simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, (· ∘ ·), map_mul,
@@ -940,9 +946,8 @@ theorem TopologicalGroup.of_nhds_one {G : Type u} [Group G] [TopologicalSpace G]
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1))
     (hconj : ∀ x₀ : G, Tendsto (x₀ * · * x₀⁻¹) (𝓝 1) (𝓝 1)) : TopologicalGroup G := by
   refine' TopologicalGroup.of_nhds_one' hmul hinv hleft fun x₀ => _
-  replace hconj : ∀ x₀ : G, map (x₀ * · * x₀⁻¹) (𝓝 1) = 𝓝 1
-  · exact fun x₀ =>
-      map_eq_of_inverse (x₀⁻¹ * · * x₀⁻¹⁻¹) (by ext; simp [mul_assoc]) (hconj _) (hconj _)
+  replace hconj : ∀ x₀ : G, map (x₀ * · * x₀⁻¹) (𝓝 1) = 𝓝 1 :=
+    fun x₀ => map_eq_of_inverse (x₀⁻¹ * · * x₀⁻¹⁻¹) (by ext; simp [mul_assoc]) (hconj _) (hconj _)
   rw [← hconj x₀]
   simpa [(· ∘ ·)] using hleft _
 #align topological_group.of_nhds_one TopologicalGroup.of_nhds_one
@@ -1104,7 +1109,7 @@ theorem Filter.Tendsto.div_const' {c : G} {f : α → G} {l : Filter α} (h : Te
 
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
-@[to_additive (attr := continuity) sub]
+@[to_additive (attr := continuity, fun_prop) sub]
 theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
   continuous_div'.comp (hf.prod_mk hg : _)
 #align continuous.div' Continuous.div'
@@ -1120,7 +1125,7 @@ lemma continuous_div_right' (a : G) : Continuous (· / a) := continuous_id.div' 
 #align continuous_div_right' continuous_div_right'
 #align continuous_sub_right continuous_sub_right
 
-@[to_additive sub]
+@[to_additive (attr := fun_prop) sub]
 theorem ContinuousAt.div' {f g : α → G} {x : α} (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun x => f x / g x) x :=
   Filter.Tendsto.div' hf hg
@@ -1134,7 +1139,7 @@ theorem ContinuousWithinAt.div' (hf : ContinuousWithinAt f s x) (hg : Continuous
 #align continuous_within_at.div' ContinuousWithinAt.div'
 #align continuous_within_at.sub ContinuousWithinAt.sub
 
-@[to_additive sub]
+@[to_additive (attr := fun_prop) sub]
 theorem ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x / g x) s := fun x hx => (hf x hx).div' (hg x hx)
 #align continuous_on.div' ContinuousOn.div'
@@ -1767,35 +1772,31 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
 
 /-- A compact neighborhood of `1` in a topological group admits a closed compact subset
 that is a neighborhood of `1`. -/
-@[to_additive "A compact neighborhood of `0` in a topological additive group
+@[to_additive (attr := deprecated IsCompact.isCompact_isClosed_basis_nhds) -- Since 28 Jan 2024
+  "A compact neighborhood of `0` in a topological additive group
 admits a closed compact subset that is a neighborhood of `0`."]
 theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
     {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
-    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
-  rcases exists_mem_nhds_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
-  exact ⟨K, Lcomp.of_isClosed_subset K_closed KL, K_closed, KL, hK⟩
+    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) :=
+  let ⟨K, ⟨hK, hK₁, hK₂⟩, hKL⟩ := (Lcomp.isCompact_isClosed_basis_nhds L1).mem_iff.1 L1
+  ⟨K, hK₁, hK₂, hKL, hK⟩
 
 /-- If a point in a topological group has a compact neighborhood, then the group is
 locally compact. -/
 @[to_additive]
 theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsCompact K) {x : G}
     (h : K ∈ 𝓝 x) : LocallyCompactSpace G := by
-  refine ⟨fun y n hn ↦ ?_⟩
-  have A : (y * x⁻¹) • K ∈ 𝓝 y := by
-    rw [← preimage_smul_inv]
+  suffices WeaklyLocallyCompactSpace G from inferInstance
+  refine ⟨fun y ↦ ⟨(y * x⁻¹) • K, ?_, ?_⟩⟩
+  · exact hK.smul _
+  · rw [← preimage_smul_inv]
     exact (continuous_const_smul _).continuousAt.preimage_mem_nhds (by simpa using h)
-  rcases exists_mem_nhds_isClosed_subset (inter_mem A hn) with ⟨L, hL, L_closed, LK⟩
-  refine ⟨L, hL, LK.trans (inter_subset_right _ _), ?_⟩
-  exact (hK.smul (y * x⁻¹)).of_isClosed_subset L_closed (LK.trans (inter_subset_left _ _))
 
--- The next instance creates a loop between weakly locally compact space and locally compact space
--- for topological groups. Hopefully, it shouldn't create problems.
 /-- A topological group which is weakly locally compact is automatically locally compact. -/
-@[to_additive]
-instance (priority := 90) instLocallyCompactSpaceOfWeaklyOfGroup [WeaklyLocallyCompactSpace G] :
-    LocallyCompactSpace G := by
-  rcases exists_compact_mem_nhds (1 : G) with ⟨K, K_comp, hK⟩
-  exact K_comp.locallyCompactSpace_of_mem_nhds_of_group hK
+@[to_additive (attr := deprecated WeaklyLocallyCompactSpace.locallyCompactSpace)] -- 28 Jan 2024
+theorem instLocallyCompactSpaceOfWeaklyOfGroup [WeaklyLocallyCompactSpace G] :
+    LocallyCompactSpace G :=
+  WeaklyLocallyCompactSpace.locallyCompactSpace
 
 /-- If a function defined on a topological group has a support contained in a
 compact set, then either the function is trivial or the group is locally compact. -/
@@ -1806,11 +1807,8 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
     f = 0 ∨ LocallyCompactSpace G := by
-  by_cases h : ∀ x, f x = 0
-  · apply Or.inl
-    ext x
-    exact h x
-  apply Or.inr
+  refine or_iff_not_imp_left.mpr fun h => ?_
+  simp_rw [funext_iff, Pi.zero_apply] at h
   push_neg at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
   have : k ∈ 𝓝 x :=
@@ -1830,34 +1828,31 @@ theorem HasCompactSupport.eq_zero_or_locallyCompactSpace_of_group
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
-@[to_additive
+@[to_additive (attr := deprecated isCompact_isClosed_basis_nhds) -- Since 28 Jan 2024
   "In a locally compact additive group, any neighborhood of the identity contains a
   compact closed neighborhood of the identity, even without separation assumptions on the space."]
 theorem local_isCompact_isClosed_nhds_of_group [LocallyCompactSpace G] {U : Set G}
     (hU : U ∈ 𝓝 (1 : G)) :
-    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ U ∧ (1 : G) ∈ interior K := by
-  obtain ⟨L, L1, LU, Lcomp⟩ : ∃ (L : Set G), L ∈ 𝓝 (1 : G) ∧ L ⊆ U ∧ IsCompact L :=
-    local_compact_nhds hU
-  obtain ⟨K, Kcomp, Kcl, KL, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
-  exact ⟨K, Kcomp, Kcl, KL.trans LU, mem_interior_iff_mem_nhds.2 K1⟩
+    ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ U ∧ (1 : G) ∈ interior K :=
+  let ⟨K, ⟨hK₁, hKco, hKcl⟩, hKU⟩ := (isCompact_isClosed_basis_nhds (1 : G)).mem_iff.1 hU
+  ⟨K, hKco, hKcl, hKU, mem_interior_iff_mem_nhds.2 hK₁⟩
 #align local_is_compact_is_closed_nhds_of_group local_isCompact_isClosed_nhds_of_group
 #align local_is_compact_is_closed_nhds_of_add_group local_isCompact_isClosed_nhds_of_addGroup
 
 variable (G)
 
-@[to_additive]
+@[to_additive (attr := deprecated exists_mem_nhds_isCompact_isClosed)] -- Since 28 Jan 2024
 theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ∈ 𝓝 1 :=
-  let ⟨_L, Lcomp, L1⟩ := exists_compact_mem_nhds (1 : G)
-  let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
-  ⟨K, Kcl, Kcomp, K1⟩
+  let ⟨K, hK₁, hKcomp, hKcl⟩ := exists_mem_nhds_isCompact_isClosed (1 : G)
+  ⟨K, hKcomp, hKcl, hK₁⟩
 
 /-- A quotient of a locally compact group is locally compact. -/
 @[to_additive]
 instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
   refine ⟨fun x n hn ↦ ?_⟩
   let π := ((↑) : G → G ⧸ N)
-  have C : Continuous π := continuous_coinduced_rng
+  have C : Continuous π := continuous_quotient_mk'
   obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
   have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
   rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩

@@ -544,7 +544,7 @@ theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ f.support
           card_support_swap_mul hx.1
         rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul hx.1 h1).sign, ← h]
         simp only [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
-termination_by _ => f.support.card
+termination_by f.support.card
 #align equiv.perm.is_cycle.sign Equiv.Perm.IsCycle.sign
 
 theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^ n).support) :
@@ -678,7 +678,7 @@ theorem IsCycle.pow_eq_one_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : �
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} {x : β}
     (hx : f x ≠ x) : f ^ n = 1 ↔ (f ^ n) x = x :=
-  ⟨fun h => FunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
+  ⟨fun h => DFunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
 #align equiv.perm.is_cycle.pow_eq_one_iff' Equiv.Perm.IsCycle.pow_eq_one_iff'
 
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
@@ -1793,9 +1793,9 @@ theorem Disjoint.isConj_mul {α : Type*} [Finite α] {σ τ π ρ : Perm α} (hc
           · rw [mul_apply, mul_apply] at h
             rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
+        · rwa [Subtype.coe_mk, mem_coe, mem_support]
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
             apply_mem_support, mem_support]
-        · rwa [Subtype.coe_mk, mem_coe, mem_support]
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
         rw [Set.union_apply_right hd1''.le_bot _, Set.union_apply_right hd1''.le_bot _]
         simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
@@ -1804,9 +1804,9 @@ theorem Disjoint.isConj_mul {α : Type*} [Finite α] {σ τ π ρ : Perm α} (hc
           · rw [mul_apply, mul_apply] at h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
+        · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
-        · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
 #align equiv.perm.disjoint.is_conj_mul Equiv.Perm.Disjoint.isConj_mul
 
 section FixedPoints

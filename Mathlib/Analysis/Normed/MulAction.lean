@@ -78,6 +78,9 @@ theorem BoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ �
     dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 #align has_bounded_smul.of_norm_smul_le BoundedSMul.of_norm_smul_le
 
+theorem BoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
+    BoundedSMul α β := .of_norm_smul_le h
+
 end SeminormedRing
 
 section NormedDivisionRing

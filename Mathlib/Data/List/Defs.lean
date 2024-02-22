@@ -5,7 +5,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
-import Mathlib.Logic.Basic
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Std.Tactic.Lint.Basic
@@ -50,7 +49,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 #noalign list.to_array
 
 #align list.nthd List.getD
--- porting notes: see
+-- Porting note: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
@@ -152,7 +151,7 @@ end foldIdxM
 
 section mapIdxM
 
--- porting notes: This was defined in `mathlib` with an `Applicative`
+-- Porting note: This was defined in `mathlib` with an `Applicative`
 -- constraint on `m` and have been `#align`ed to the `Std` versions defined
 -- with a `Monad` typeclass constraint.
 -- Since all `Monad`s are `Applicative` this won't cause issues
@@ -227,8 +226,8 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
   | [], is => H0 is
   | t :: ts, is =>
       H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
-  termination_by _ ts is => (length ts + length is, length ts)
-  decreasing_by simp_wf; simp [Nat.succ_add]; decreasing_tactic
+  termination_by ts is => (length ts + length is, length ts)
+  decreasing_by all_goals (simp_wf; omega)
 #align list.permutations_aux.rec List.permutationsAux.rec
 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all

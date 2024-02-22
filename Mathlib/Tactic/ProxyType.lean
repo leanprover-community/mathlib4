@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 import Lean
 import Mathlib.Tactic.Core
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Generating "proxy types"
