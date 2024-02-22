@@ -125,10 +125,6 @@ def FractionalOperation.IsSymmetricFractionalPolymorphismFor
     (ω : FractionalOperation D m) (Γ : ValuedCSP D C) : Prop :=
   ω.IsFractionalPolymorphismFor Γ ∧ ω.IsSymmetric
 
-lemma Finset.univ_sum_fin_two_aux {f : (Fin 2 → D) → C} {a b c d : D} :
-    Finset.univ.sum (fun i => f (![![a, b], ![c, d]] i)) = f ![a, b] + f ![c, d] :=
-  Fin.sum_univ_two _
-
 variable {C : Type*} [OrderedCancelAddCommMonoid C]
 
 lemma Function.HasMaxCutPropertyAt.rows_lt_aux
@@ -159,7 +155,7 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
   intro contr
   obtain ⟨a, b, hab, mcfab⟩ := mcf
   specialize contr ![![a, b], ![b, a]]
-  rw [Finset.univ_sum_fin_two_aux, ← mcfab.left, ← two_nsmul] at contr
+  rw [Fin.sum_univ_two', ← mcfab.left, ← two_nsmul] at contr
   have sharp :
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by

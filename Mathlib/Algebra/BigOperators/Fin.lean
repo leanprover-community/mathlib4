@@ -114,6 +114,11 @@ theorem prod_univ_two [CommMonoid β] (f : Fin 2 → β) : ∏ i, f i = f 0 * f 
 #align fin.sum_univ_two Fin.sum_univ_two
 
 @[to_additive]
+theorem prod_univ_two' [CommMonoid β] (f : α → β) (a b : α) :
+    ∏ i, f (![a, b] i) = f a * f b :=
+  prod_univ_two _
+
+@[to_additive]
 theorem prod_univ_three [CommMonoid β] (f : Fin 3 → β) : ∏ i, f i = f 0 * f 1 * f 2 := by
   rw [prod_univ_castSucc, prod_univ_two]
   rfl
