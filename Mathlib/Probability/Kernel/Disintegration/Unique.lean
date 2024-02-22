@@ -57,9 +57,9 @@ lemma eq_condKernel_of_measure_eq_compProd_real {ρ : kernel α (β × ℝ)} [Is
     ∀ᵐ x ∂(kernel.fst ρ a), κ (a, x) = kernel.condKernel ρ (a, x) := by
   have huniv : ∀ᵐ x ∂(kernel.fst ρ a), κ (a, x) Set.univ = kernel.condKernel ρ (a, x) Set.univ :=
     eq_condKernel_of_measure_eq_compProd' hκ MeasurableSet.univ a
-  suffices : ∀ᵐ x ∂(kernel.fst ρ a),
-      ∀ ⦃t⦄, MeasurableSet t → κ (a, x) t = kernel.condKernel ρ (a, x) t
-  · filter_upwards [this] with x hx
+  suffices ∀ᵐ x ∂(kernel.fst ρ a),
+      ∀ ⦃t⦄, MeasurableSet t → κ (a, x) t = kernel.condKernel ρ (a, x) t by
+    filter_upwards [this] with x hx
     ext t ht; exact hx ht
   apply MeasurableSpace.ae_induction_on_inter Real.borel_eq_generateFrom_Iic_rat
     Real.isPiSystem_Iic_rat
@@ -83,8 +83,8 @@ theorem eq_condKernel_of_kernel_eq_compProd (κ : kernel (α × β) Ω) [IsFinit
   let hf := measurableEmbedding_measurableEmbedding_real Ω
   set ρ' : kernel α (β × ℝ) := kernel.map ρ (Prod.map id f)
     (measurable_id.prod_map hf.measurable) with hρ'def
-  have hρ' : kernel.fst ρ' = kernel.fst ρ
-  · ext a s hs
+  have hρ' : kernel.fst ρ' = kernel.fst ρ := by
+    ext a s hs
     rw [hρ'def, kernel.fst_apply' _ _ hs, kernel.fst_apply' _ _ hs, kernel.map_apply']
     exacts [rfl, measurable_fst hs]
   have hρ'' : ∀ᵐ x ∂(kernel.fst ρ a),
@@ -109,8 +109,8 @@ theorem eq_condKernel_of_kernel_eq_compProd (κ : kernel (α × β) Ω) [IsFinit
     rw [← Set.preimage_image_eq s hf.injective,
       ← Measure.map_apply hf.measurable <| hf.measurableSet_image.2 hs, hx,
       h _ <| hf.measurableSet_image.2 hs]
-  suffices : ρ' = (kernel.fst ρ ⊗ₖ (kernel.map (kernel.condKernel ρ) f hf.measurable))
-  · rw [← hρ'] at this
+  suffices ρ' = (kernel.fst ρ ⊗ₖ (kernel.map (kernel.condKernel ρ) f hf.measurable)) by
+    rw [← hρ'] at this
     have heq := eq_condKernel_of_measure_eq_compProd_real this a
     rw [hρ'] at heq
     filter_upwards [heq] with x hx s hs
@@ -156,8 +156,8 @@ lemma Measure.eq_condKernel_of_measure_eq_compProd_real {ρ : Measure (α × ℝ
     ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
   have huniv : ∀ᵐ x ∂ρ.fst, κ x Set.univ = ρ.condKernel x Set.univ :=
     eq_condKernel_of_measure_eq_compProd' κ hκ MeasurableSet.univ
-  suffices : ∀ᵐ x ∂ρ.fst, ∀ ⦃t⦄, MeasurableSet t → κ x t = ρ.condKernel x t
-  · filter_upwards [this] with x hx
+  suffices ∀ᵐ x ∂ρ.fst, ∀ ⦃t⦄, MeasurableSet t → κ x t = ρ.condKernel x t by
+    filter_upwards [this] with x hx
     ext t ht; exact hx ht
   apply MeasurableSpace.ae_induction_on_inter Real.borel_eq_generateFrom_Iic_rat
     Real.isPiSystem_Iic_rat
@@ -181,13 +181,13 @@ theorem Measure.eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFini
   let f := measurableEmbedding_real Ω
   let hf := measurableEmbedding_measurableEmbedding_real Ω
   set ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f) with hρ'def
-  have hρ' : ρ'.fst = ρ.fst
-  · ext s hs
+  have hρ' : ρ'.fst = ρ.fst := by
+    ext s hs
     rw [hρ'def, Measure.fst_apply, Measure.fst_apply, Measure.map_apply]
     exacts [rfl, Measurable.prod measurable_fst <| hf.measurable.comp measurable_snd,
       measurable_fst hs, hs, hs]
-  have hρ'' : ∀ᵐ x ∂ρ.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x
-  · rw [← hρ']
+  have hρ'' : ∀ᵐ x ∂ρ.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x := by
+    rw [← hρ']
     refine eq_condKernel_of_measure_eq_compProd_real (kernel.map κ f hf.measurable) ?_
     ext s hs
     conv_lhs => rw [hρ'def, hκ]
@@ -196,15 +196,15 @@ theorem Measure.eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFini
     congr with a
     rw [kernel.map_apply']
     exacts [rfl, measurable_prod_mk_left hs]
-  suffices : ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s → ρ'.condKernel x s = ρ.condKernel x (f ⁻¹' s)
-  · filter_upwards [hρ'', this] with x hx h
+  suffices ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s → ρ'.condKernel x s = ρ.condKernel x (f ⁻¹' s) by
+    filter_upwards [hρ'', this] with x hx h
     rw [kernel.map_apply] at hx
     ext s hs
     rw [← Set.preimage_image_eq s hf.injective,
       ← Measure.map_apply hf.measurable <| hf.measurableSet_image.2 hs, hx,
       h _ <| hf.measurableSet_image.2 hs]
-  suffices : ρ.map (Prod.map id f) = (ρ.fst ⊗ₘ (kernel.map ρ.condKernel f hf.measurable))
-  · rw [← hρ'] at this
+  suffices ρ.map (Prod.map id f) = (ρ.fst ⊗ₘ (kernel.map ρ.condKernel f hf.measurable)) by
+    rw [← hρ'] at this
     have heq := eq_condKernel_of_measure_eq_compProd_real _ this
     rw [hρ'] at heq
     filter_upwards [heq] with x hx s hs
