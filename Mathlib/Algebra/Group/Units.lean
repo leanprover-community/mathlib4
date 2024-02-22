@@ -639,11 +639,20 @@ def IsUnit [Monoid M] (a : M) : Prop :=
 #align is_unit IsUnit
 #align is_add_unit IsAddUnit
 
-@[to_additive]
+/-- See `isUnit_iff_exists_and_exists` for a similar lemma with two existentials. -/
+@[to_additive "See `isAddUnit_iff_exists_and_exists` for a similar lemma with two existentials."]
 lemma isUnit_iff_exists [Monoid M] {x : M} : IsUnit x ↔ ∃ b, x * b = 1 ∧ b * x = 1 := by
   refine ⟨fun ⟨u, hu⟩ => ?_, fun ⟨b, h1b, h2b⟩ => ⟨⟨x, b, h1b, h2b⟩, rfl⟩⟩
   subst x
   exact ⟨u.inv, u.val_inv, u.inv_val⟩
+
+/-- See `isUnit_iff_exists` for a similar lemma with one existential. -/
+@[to_additive "See `isAddUnit_iff_exists` for a similar lemma with one existential."]
+theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
+    IsUnit a ↔ (∃ b, a * b = 1) ∧ (∃ c, c * a = 1) :=
+  isUnit_iff_exists.trans <|
+    ⟨fun ⟨b, hba, hab⟩ => ⟨⟨b, hba⟩, ⟨b, hab⟩⟩, fun ⟨⟨b, hb⟩, ⟨_, hc⟩⟩ => ⟨b, hb,
+      left_inv_eq_right_inv hc hb ▸ hc⟩⟩
 
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
@@ -732,13 +741,6 @@ theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * 
   simp [isUnit_iff_exists_inv, mul_comm]
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
-
-@[to_additive]
-theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
-    IsUnit a ↔ (∃ b, a * b = 1) ∧ (∃ c, c * a = 1):= by
-  refine ⟨fun h => ⟨h.exists_right_inv, h.exists_left_inv⟩, ?_⟩
-  rintro ⟨⟨b, hab⟩, ⟨c, hca⟩⟩
-  exact ⟨⟨a, b, hab, left_inv_eq_right_inv hca hab ▸ hca⟩, rfl⟩
 
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
