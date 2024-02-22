@@ -247,7 +247,7 @@ theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
   · apply @h fun x => ∃ y : P.B a, f y = x
     rw [liftp_iff']
     intro
-    refine' ⟨_, rfl⟩
+    exact ⟨_, rfl⟩
   · simp only [liftp_iff']
     cases h
     subst x

@@ -297,11 +297,3 @@ theorem levenshtein_cons_cons
         (min (C.insert y + levenshtein C (x :: xs) ys)
           (C.substitute x y + levenshtein C xs ys)) :=
   suffixLevenshtein_cons_cons_fst_get_zero _ _ _ _ _
-
-#guard
-  (suffixLevenshtein Levenshtein.defaultCost "kitten".toList "sitting".toList).1 =
-    [3, 3, 4, 5, 6, 6, 7]
-
-#guard levenshtein Levenshtein.defaultCost
-  "but our fish said, 'no! no!'".toList
-  "'put me down!' said the fish.".toList = 21

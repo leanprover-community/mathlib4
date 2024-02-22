@@ -76,8 +76,8 @@ In any base, we have `ofDigits b L = L.foldr (fun x y ↦ x + b * y) 0`.
 * For `b = 1`, we define `digits 1 n = List.replicate n 1`.
 * For `b = 0`, we define `digits 0 n = [n]`, except `digits 0 0 = []`.
 
-Note this differs from the existing `Nat.to_digits` in core, which is used for printing numerals.
-In particular, `Nat.to_digits b 0 = [0]`, while `digits b 0 = []`.
+Note this differs from the existing `Nat.toDigits` in core, which is used for printing numerals.
+In particular, `Nat.toDigits b 0 = ['0']`, while `digits b 0 = []`.
 -/
 def digits : ℕ → ℕ → List ℕ
   | 0 => digitsAux0
@@ -90,7 +90,7 @@ theorem digits_zero (b : ℕ) : digits b 0 = [] := by
   rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 #align nat.digits_zero Nat.digits_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
 #align nat.digits_zero_zero Nat.digits_zero_zero
@@ -110,7 +110,7 @@ theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 #align nat.digits_one Nat.digits_one
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 #align nat.digits_one_succ Nat.digits_one_succ

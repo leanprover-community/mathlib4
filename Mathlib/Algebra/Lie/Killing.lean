@@ -116,17 +116,6 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
   exact isNilpotent_toEndomorphism_of_isNilpotent₂ R L M x y
 
 @[simp]
-lemma trace_toEndomorphism_weightSpace [IsDomain R] [IsPrincipalIdealRing R]
-    [LieAlgebra.IsNilpotent R L] (χ : L → R) (x : L) :
-    trace R _ (toEndomorphism R L (weightSpace M χ) x) = finrank R (weightSpace M χ) • χ x := by
-  suffices _root_.IsNilpotent ((toEndomorphism R L (weightSpace M χ) x) - χ x • LinearMap.id) by
-    replace this := (LinearMap.isNilpotent_trace_of_isNilpotent this).eq_zero
-    rwa [map_sub, map_smul, LinearMap.trace_id, sub_eq_zero, smul_eq_mul, mul_comm,
-      ← nsmul_eq_mul] at this
-  rw [← Module.algebraMap_end_eq_smul_id]
-  exact isNilpotent_toEndomorphism_sub_algebraMap M χ x
-
-@[simp]
 lemma traceForm_weightSpace_eq [IsDomain R] [IsPrincipalIdealRing R]
     [LieAlgebra.IsNilpotent R L] [IsNoetherian R M] [LinearWeights R L M] (χ : L → R) (x y : L) :
     traceForm R L (weightSpace M χ) x y = finrank R (weightSpace M χ) • (χ x * χ y) := by
@@ -215,7 +204,7 @@ lemma trace_toEndomorphism_eq_zero_of_mem_lcs
     simpa using hx
   refine Submodule.span_induction (p := fun x ↦ trace R _ (toEndomorphism R L M x) = 0) hx
     (fun y ⟨u, v, huv⟩ ↦ ?_) ?_ (fun u v hu hv ↦ ?_) (fun t u hu ↦ ?_)
-  · simp_rw [← huv, LieHom.map_lie, Ring.lie_def, map_sub, LinearMap.trace_mul_comm, sub_self]
+  · simp [← huv]
   · simp
   · simp [hu, hv]
   · simp [hu]

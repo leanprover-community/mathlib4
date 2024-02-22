@@ -263,7 +263,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
     refine' ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, _⟩
     apply subset_sInter
     intro s H
-    refine' subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
+    exact subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
   rcases h with ⟨S, Sg, Sct, hS⟩
   refine' mem_of_superset ((countable_sInter_mem Sct).mpr _) hS
   intro s H
