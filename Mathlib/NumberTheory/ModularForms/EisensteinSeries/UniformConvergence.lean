@@ -309,7 +309,7 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
 
 end summability
 
-theorem eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
+theorem eisensteinSeries_TendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) =>
       (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
         (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop := by
