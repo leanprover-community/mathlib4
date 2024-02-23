@@ -110,8 +110,8 @@ def condKernelBorelSnd (κ : kernel α (β × Ω)) {f : α × β → StieltjesFu
   let he := measurableEmbedding_measurableEmbedding_real Ω
   let x₀ := (range_nonempty e).choose
   kernel.comapRight
-    (kernel.piecewise (measurableSet_cdfKernel_eq_one hf he.measurableSet_range)
-      (cdfKernel f hf) (kernel.deterministic (fun _ ↦ x₀) measurable_const))
+    (kernel.piecewise (measurableSet_toKernel_eq_one hf he.measurableSet_range)
+      (hf.toKernel f) (kernel.deterministic (fun _ ↦ x₀) measurable_const))
     he
 
 instance instIsMarkovKernel_condKernelBorelSnd (κ : kernel α (β × Ω))
@@ -166,19 +166,19 @@ lemma compProd_fst_condKernelBorelSnd (κ : kernel α (β × Ω)) [IsFiniteKerne
     rwa [he.injective he_eq] at h_mem
   conv_rhs => rw [this]
   unfold_let κ'
-  conv_rhs => rw [kernel.eq_compProd_cdfKernel hf]
+  conv_rhs => rw [kernel.eq_compProd_toKernel hf]
   change kernel.fst κ ⊗ₖ condKernelBorelSnd κ hf
-    = kernel.comapRight (kernel.fst κ' ⊗ₖ cdfKernel f hf) h_prod_embed
+    = kernel.comapRight (kernel.fst κ' ⊗ₖ hf.toKernel f) h_prod_embed
   ext c t ht : 2
   rw [kernel.comapRight_apply' _ _ _ ht,
     kernel.compProd_apply _ _ _ (h_prod_embed.measurableSet_image.mpr ht)]
   simp_rw [h_fst, kernel.compProd_apply _ _ _ ht]
   refine lintegral_congr_ae ?_
-  let ρ_set := {p : α × β | cdfKernel f hf p (range e) = 1}
+  let ρ_set := {p : α × β | hf.toKernel f p (range e) = 1}
   have h_ae : ∀ a, ∀ᵐ t ∂(kernel.fst κ a), (a, t) ∈ ρ_set := by
     intro a
     rw [← h_fst]
-    refine ae_cdfKernel_eq_one hf a he.measurableSet_range ?_
+    refine ae_toKernel_eq_one hf a he.measurableSet_range ?_
     simp only [mem_compl_iff, mem_range, not_exists]
     rw [kernel.map_apply']
     · have h_empty : {a : β × Ω | ∀ (x : Ω), ¬e x = e a.2} = ∅ := by
@@ -211,14 +211,14 @@ section StandardBorel
 
 noncomputable
 def kernel.condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : kernel (α × γ) ℝ :=
-  cdfKernel _ (isKernelCDF_kernelCDF κ)
+  (isKernelCDF_kernelCDF κ).toKernel _
 
 instance (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : IsMarkovKernel (kernel.condKernelReal κ) := by
   unfold kernel.condKernelReal; infer_instance
 
 lemma kernel.eq_compProd_condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
     κ = kernel.fst κ ⊗ₖ kernel.condKernelReal κ :=
-  kernel.eq_compProd_cdfKernel (isKernelCDF_kernelCDF κ)
+  kernel.eq_compProd_toKernel (isKernelCDF_kernelCDF κ)
 
 noncomputable
 def condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel κ] : kernel (α × γ) Ω :=
@@ -244,7 +244,7 @@ section Real
 
 noncomputable def condKernelUnitReal (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] :
     kernel (Unit × α) ℝ :=
-  cdfKernel (fun (p : Unit × α) ↦ condCDF (ρ ()) p.2) (isKernelCDF_condCDF (ρ ()))
+  (isKernelCDF_condCDF (ρ ())).toKernel (fun (p : Unit × α) ↦ condCDF (ρ ()) p.2)
 
 instance (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] : IsMarkovKernel (condKernelUnitReal ρ) := by
   rw [condKernelUnitReal]; infer_instance
@@ -252,7 +252,7 @@ instance (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] : IsMarkovKernel (co
 lemma fst_compProd_condKernelUnitReal (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] :
     kernel.fst ρ ⊗ₖ condKernelUnitReal ρ = ρ := by
   have : ρ = kernel.const Unit (ρ ()) := by ext; simp
-  conv_rhs => rw [this, kernel.eq_compProd_cdfKernel (isKernelCDF_condCDF (ρ ()))]
+  conv_rhs => rw [this, kernel.eq_compProd_toKernel (isKernelCDF_condCDF (ρ ()))]
 
 end Real
 
