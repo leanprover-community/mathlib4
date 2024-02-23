@@ -478,7 +478,7 @@ end Polynomial
 
 variable [UniqueContinuousFunctionalCalculus R A]
 
-lemma cfc_comp' (g f : R → R) (ha : p a := by cfc_tac)
+lemma cfc_comp (g f : R → R) (ha : p a := by cfc_tac)
     (hg : ContinuousOn g (f '' spectrum R a) := by cfc_cont_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc a (g ∘ f) = cfc (cfc a f) g := by
@@ -496,39 +496,39 @@ lemma cfc_comp' (g f : R → R) (ha : p a := by cfc_tac)
   · congr
   · exact fun _ ↦ rfl
 
-lemma cfc_comp (g f : R → R) (ha : p a := by cfc_tac)
+lemma cfc_comp' (g f : R → R) (ha : p a := by cfc_tac)
     (hg : ContinuousOn g (f '' spectrum R a) := by cfc_cont_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc a (g <| f ·) = cfc (cfc a f) g :=
-  cfc_comp' a g f
+  cfc_comp a g f
 
 lemma cfc_comp_pow (n : ℕ) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((· ^ n) '' (spectrum R a)) := by cfc_cont_tac) :
     cfc a (f <| · ^ n) = cfc (a ^ n) f := by
-  rw [cfc_comp a f (· ^ n), cfc_pow_id a n]
+  rw [cfc_comp' a f (· ^ n), cfc_pow_id a n]
 
 lemma cfc_comp_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
     (s : S) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((s • ·) '' (spectrum R a)) := by cfc_cont_tac) :
     cfc a (f <| s • ·) = cfc (s • a) f := by
-  rw [cfc_comp a f (s • ·), cfc_smul_id a s]
+  rw [cfc_comp' a f (s • ·), cfc_smul_id a s]
 
 lemma cfc_comp_const_mul (r : R) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((r * ·) '' (spectrum R a)) := by cfc_cont_tac) :
     cfc a (f <| r * ·) = cfc (r • a) f := by
-  rw [cfc_comp a f (r * ·), cfc_const_mul_id a r]
+  rw [cfc_comp' a f (r * ·), cfc_const_mul_id a r]
 
 lemma cfc_comp_star (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (star '' (spectrum R a)) := by cfc_cont_tac) :
     cfc a (f <| star ·) = cfc (star a) f := by
-  rw [cfc_comp a f star, cfc_star_id a]
+  rw [cfc_comp' a f star, cfc_star_id a]
 
 open Polynomial in
 lemma cfc_comp_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (q.eval '' (spectrum R a)) := by cfc_cont_tac) :
     cfc a (f <| q.eval ·) = cfc (aeval a q) f := by
-  rw [cfc_comp a f q.eval, cfc_polynomial a]
+  rw [cfc_comp' a f q.eval, cfc_polynomial a]
 
 lemma eq_algebraMap_of_spectrum_singleton (r : R) (h_spec : spectrum R a = {r})
     (ha : p a := by cfc_tac) : a = algebraMap R A r := by
@@ -619,7 +619,7 @@ lemma Units.continuousOn_zpow₀_spectrum (a : Aˣ) (n : ℤ) :
 lemma cfc_comp_inv (a : Aˣ) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((· ⁻¹) '' (spectrum R (a : A))) := by cfc_cont_tac) :
     cfc (a : A) (fun x ↦ f x⁻¹) = cfc (↑a⁻¹ : A) f := by
-  rw [cfc_comp .., cfc_inv_id _]
+  rw [cfc_comp' .., cfc_inv_id _]
 
 lemma cfcUnits_zpow (a : A) (f : R → R) (hf' : ∀ x ∈ spectrum R a, f x ≠ 0) (n : ℤ)
     (ha : p a := by cfc_tac) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
@@ -645,7 +645,7 @@ lemma cfc_zpow (a : Aˣ) (n : ℤ) (ha : p a := by cfc_tac) :
 lemma cfc_comp_zpow (a : Aˣ) (f : R → R) (n : ℤ) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((· ^ n) '' (spectrum R (a : A))) := by cfc_cont_tac) :
     cfc (a : A) (fun x ↦ f (x ^ n)) = cfc (↑(a ^ n) : A) f := by
-  rw [cfc_comp .., cfc_zpow a]
+  rw [cfc_comp' .., cfc_zpow a]
 
 end Inv
 
@@ -684,6 +684,6 @@ variable [UniqueContinuousFunctionalCalculus R A]
 lemma cfc_comp_neg (a : A) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f ((- ·) '' (spectrum R (a : A))) := by cfc_cont_tac) :
     cfc (a : A) (f <| - ·) = cfc (-a) f := by
-  rw [cfc_comp .., cfc_neg_id _]
+  rw [cfc_comp' .., cfc_neg_id _]
 
 end Neg
