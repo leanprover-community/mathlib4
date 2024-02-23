@@ -339,7 +339,7 @@ def project : MonoidalFunctor (F C) D where
   -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
   -- In any case I don't understand why we need to specify `using Quotient.recOn`.
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
-  ε := 𝟙 _
+  η := 𝟙 _
   ε_inv := 𝟙 _
   μ X Y := 𝟙 _
   μ_inv X Y := 𝟙 _

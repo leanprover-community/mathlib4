@@ -427,15 +427,17 @@ def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
 #align category_theory.adjunction.equiv_homset_right_of_nat_iso CategoryTheory.Adjunction.equivHomsetRightOfNatIso
 
 /-- Transport an adjunction along a natural isomorphism on the left. -/
-def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y) }
+def ofNatIsoLeft {F G : C ⥤ D} {H : D ⥤ C} (adj : F ⊣ H) (iso : F ≅ G) : G ⊣ H where
+  homEquiv X Y := (equivHomsetLeftOfNatIso iso.symm).trans (adj.homEquiv X Y)
+  unit := adj.unit ≫ whiskerRight iso.hom H
+  counit := whiskerLeft H iso.inv ≫ adj.counit
 #align category_theory.adjunction.of_nat_iso_left CategoryTheory.Adjunction.ofNatIsoLeft
 
 /-- Transport an adjunction along a natural isomorphism on the right. -/
-def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
+def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) : F ⊣ H where
+  homEquiv X Y := (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso)
+  unit := adj.unit ≫ whiskerLeft F iso.hom
+  counit := whiskerRight iso.inv F ≫ adj.counit
 #align category_theory.adjunction.of_nat_iso_right CategoryTheory.Adjunction.ofNatIsoRight
 
 /-- Transport being a right adjoint along a natural isomorphism. -/
@@ -523,16 +525,15 @@ def leftAdjointOfEquiv : C ⥤ D where
 to `adjunctionOfRightEquiv`. -/
 @[simps!]
 def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
-  mkOfHomEquiv
-    { homEquiv := e
-      homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
-        have := @he' C _ D _ G F_obj e he
-        erw [← this, ← Equiv.apply_eq_iff_eq (e X' Y)]
-        simp only [leftAdjointOfEquiv_obj, Equiv.apply_symm_apply, assoc]
-        congr
-        rw [← he]
-        simp
-    }
+  have he' X Y Y' f g : (e X Y).symm g ≫ f = (e X Y').symm (g ≫ G.map f) := by
+    rw [Equiv.eq_symm_apply, he, Equiv.apply_symm_apply]
+  { homEquiv := e
+    unit := { app := fun X => e X (F_obj X) (𝟙 (F_obj X))
+              naturality := by simp [← he] }
+    counit := { app := fun X => (e (G.obj X) X).symm (𝟙 (G.obj X))
+                naturality := by simp [he', ← he] }
+    homEquiv_unit := by simp [← he]
+    homEquiv_counit := by simp [he', ← he] }
 #align category_theory.adjunction.adjunction_of_equiv_left CategoryTheory.Adjunction.adjunctionOfEquivLeft
 
 end ConstructLeft
@@ -570,13 +571,15 @@ def rightAdjointOfEquiv : D ⥤ C where
 to `adjunctionOfEquivRight`. -/
 @[simps!]
 def adjunctionOfEquivRight : F ⊣ (rightAdjointOfEquiv e he) :=
-  mkOfHomEquiv
-    { homEquiv := e
-      homEquiv_naturality_left_symm := by
-        intro X X' Y f g; rw [Equiv.symm_apply_eq]; dsimp; rw [he]; simp
-      homEquiv_naturality_right := by
-        intro X Y Y' g h
-        erw [← he, Equiv.apply_eq_iff_eq, ← assoc, he'' e he, comp_id, Equiv.symm_apply_apply] }
+  have he' X' X Y f g : F.map f ≫ (e X Y).symm g = (e X' Y).symm (f ≫ g) := by
+    rw [Equiv.eq_symm_apply, he, Equiv.apply_symm_apply]
+  { homEquiv := e
+    unit := { app := fun X => e X (F.obj X) (𝟙 (F.obj X))
+              naturality := by simp [← he, reassoc_of% he'] }
+    counit := { app := fun X => (e (G_obj X) X).symm (𝟙 (G_obj X))
+                naturality := by intros; simp [he', ← he] }
+    homEquiv_unit := by simp [← he, reassoc_of% he']
+    homEquiv_counit := by simp [he', ← he] }
 #align category_theory.adjunction.adjunction_of_equiv_right CategoryTheory.Adjunction.adjunctionOfEquivRight
 
 end ConstructRight

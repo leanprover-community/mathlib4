@@ -405,7 +405,7 @@ def mapActionLax (F : LaxMonoidalFunctor V W) (G : MonCat.{u}) :
     LaxMonoidalFunctor (Action V G) (Action W G) := .ofTensorHom
   (F := F.toFunctor.mapAction G)
   (ε :=
-    { hom := F.ε
+    { hom := F.η
       comm := fun g => by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
         rw [Category.id_comp, F.map_id, Category.comp_id] })
@@ -430,7 +430,7 @@ variable (F : MonoidalFunctor V W) (G : MonCat.{u})
 the categories of `G`-actions within those categories. -/
 def mapAction : MonoidalFunctor (Action V G) (Action W G) :=
   let F' := mapActionLax F.toLaxMonoidalFunctor G
-  .mk' (F.toFunctor.mapAction G) (mkIso F.εIso F'.ε.comm)
+  .mk' (F.toFunctor.mapAction G) (mkIso F.εIso F'.η.comm)
     (fun X Y => mkIso (F.μIso X.V Y.V) (F'.μ X Y).comm)
     F'.μ_natural_left F'.μ_natural_right F'.associativity
     F'.left_unitality F'.right_unitality

@@ -209,7 +209,7 @@ That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_
 def mapMon (F : LaxMonoidalFunctor C D) : Mon_ C ⥤ Mon_ D where
   obj A :=
     { X := F.obj A.X
-      one := F.ε ≫ F.map A.one
+      one := F.η ≫ F.map A.one
       mul := F.μ _ _ ≫ F.map A.mul
       one_mul := by
         simp only [comp_whiskerRight, Category.assoc, μ_natural_left'_assoc, left_unitality']
@@ -266,7 +266,7 @@ def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C 
   obj A :=
     { obj := fun _ => A.X
       map := fun _ => 𝟙 _
-      ε := A.one
+      η := A.one
       μ := fun _ _ => A.mul
       map_id := fun _ => rfl
       map_comp := fun _ _ => (Category.id_comp (𝟙 A.X)).symm }

@@ -117,7 +117,7 @@ variable {M : Type*} [Category M] [MonoidalCategory M] (F : MonoidalFunctor M (C
 @[reassoc (attr := simp)]
 theorem ε_naturality {X Y : C} (f : X ⟶ Y) :
     F.εIso.hom.app X ≫ (F.obj (𝟙_ M)).map f = f ≫ F.εIso.hom.app Y :=
-  (F.ε.naturality f).symm
+  (F.η.naturality f).symm
 #align category_theory.ε_naturality CategoryTheory.ε_naturality
 
 @[reassoc (attr := simp)]

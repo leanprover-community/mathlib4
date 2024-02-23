@@ -43,7 +43,7 @@ additionally satisfying:
 structure MonoidalNatTrans (F G : LaxMonoidalFunctor C D) extends
   NatTrans F.toFunctor G.toFunctor where
   /-- The unit condition for a monoidal natural transformation. -/
-  unit : F.ε ≫ app (𝟙_ C) = G.ε := by aesop_cat
+  unit : F.η ≫ app (𝟙_ C) = G.η := by aesop_cat
   /-- The tensor condition for a monoidal natural transformation. -/
   tensor : ∀ X Y, F.μ _ _ ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ _ _ := by aesop_cat
 #align category_theory.monoidal_nat_trans CategoryTheory.MonoidalNatTrans
@@ -179,7 +179,7 @@ variable {F G : LaxMonoidalFunctor C D}
 and the monoidal naturality in the forward direction. -/
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality' : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f)
-    (unit' : F.ε ≫ (app (𝟙_ C)).hom = G.ε)
+    (unit' : F.η ≫ (app (𝟙_ C)).hom = G.η)
     (tensor' : ∀ X Y, F.μ X Y ≫ (app (X ⊗ Y)).hom = ((app X).hom ⊗ (app Y).hom) ≫ G.μ X Y) :
     F ≅ G where
   hom := { app := fun X => (app X).hom }

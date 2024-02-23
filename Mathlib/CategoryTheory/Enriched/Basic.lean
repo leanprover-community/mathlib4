@@ -111,7 +111,7 @@ def TransportEnrichment (_ : LaxMonoidalFunctor V W) (C : Type u₁) :=
 
 instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment F C) where
   Hom := fun X Y : C => F.obj (X ⟶[V] Y)
-  id := fun X : C => F.ε ≫ F.map (eId V X)
+  id := fun X : C => F.η ≫ F.map (eId V X)
   comp := fun X Y Z : C => F.μ _ _ ≫ F.map (eComp V X Y Z)
   id_comp X Y := by
     rw [comp_tensor_id, Category.assoc, ← F.toFunctor.map_id, F.μ_natural_assoc,
