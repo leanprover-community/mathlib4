@@ -154,9 +154,8 @@ theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β
 #align erased.map_def Erased.map_def
 
 --Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
-protected instance LawfulMonad : LawfulMonad Erased :=
-  { Erased.Monad with
-    id_map := by intros; ext; simp
+protected instance instLawfulMonad : LawfulMonad Erased :=
+  { id_map := by intros; ext; simp
     map_const := by intros; ext; simp [Functor.mapConst]
     pure_bind := by intros; ext; simp
     bind_assoc := by intros; ext; simp
