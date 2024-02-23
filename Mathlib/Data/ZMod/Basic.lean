@@ -1297,7 +1297,7 @@ def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
         · rintro hf _ ⟨x, rfl⟩
           simp only [f.map_zsmul, zsmul_zero, f.mem_ker, hf]
         · intro h
-          refine' h (AddSubgroup.mem_zmultiples _)).trans <|
+          exact h (AddSubgroup.mem_zmultiples _)).trans <|
     (Int.castAddHom (ZMod n)).liftOfRightInverse cast int_cast_zmod_cast
 #align zmod.lift ZMod.lift
 

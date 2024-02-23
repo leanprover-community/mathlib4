@@ -185,7 +185,7 @@ theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l 
   refine' ⟨fun hfg => _, fun hf => hf.mul hg⟩
   rw [← mul_div_cancel x hy]
   refine' Tendsto.congr' _ (hfg.div hg hy)
-  refine' (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
+  exact (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
 #align filter.tendsto_mul_iff_of_ne_zero Filter.tendsto_mul_iff_of_ne_zero
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α} {a : α}

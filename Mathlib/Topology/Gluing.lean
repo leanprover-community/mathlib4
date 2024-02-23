@@ -426,7 +426,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
-  -- Porting note : was not necessary in mathlib3
+  -- Porting note: was not necessary in mathlib3
   f_mono i j := (TopCat.mono_iff_injective _).mpr fun x y h => Subtype.ext h
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk' TopCat.GlueData.mk'
@@ -503,7 +503,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
     --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
     apply congr_arg
-    refine' Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
+    exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
     -- porting note: another `rw ↦ erw`
     -- See above.
@@ -529,7 +529,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
     exact Set.subset_iUnion _ i hx'
   · rintro ⟨_, ⟨i, rfl⟩, hx⟩
     rename_i x
-    refine' ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
+    exact ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.range_from_open_subsets_glue TopCat.GlueData.range_fromOpenSubsetsGlue
 
