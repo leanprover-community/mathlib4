@@ -3,6 +3,12 @@ import Mathlib.MeasureTheory.Integral.Marginal
 
 /-!
 # Marginals of Banach valued functions
+
+This is a lot less nice
+* We need integrability conditions
+* `f` being integrable, doesn't mean that `f` is integrable everywhere w.r.t.
+  a subset of the variables, that only holds almost everywhere.
+* This means that many equalities will also hold only almost everywhere.
 -/
 section Set
 namespace Set
@@ -20,6 +26,14 @@ open Set Function Equiv Finset
 noncomputable section
 
 namespace MeasureTheory
+
+section
+variable {α E : Type*} [MeasurableSpace α] [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {μ : Measure α}
+
+lemma integral_of_isEmpty [IsEmpty α] (f : α → E) : ∫ x, f x ∂μ = 0 := by convert integral_zero α E
+
+end
 
 section Marginal
 
@@ -89,14 +103,13 @@ theorem marginal_update_of_mem {i : δ} (hi : i ∈ s)
   have : j ≠ i := by rintro rfl; exact hj hi
   apply update_noteq this
 
-variable [MeasurableSpace E]
+variable [MeasurableSpace E] [Fintype δ]
 
 variable (μ f) in
 /- A function `f` is integrable w.r.t. the variables in `s` -/
 def IntegrableWRT (s : Finset δ) : Prop :=
-  ∀ x : ∀ i, π i, Integrable (fun y : ∀ i : s, π i ↦ f (updateFinset x s y)) (.pi fun i : s ↦ μ i)
+  ∀ᵐ x ∂.pi μ, Integrable (fun y : ∀ i : s, π i ↦ f (updateFinset x s y)) (.pi fun i : s ↦ μ i)
 
-variable [Fintype δ] in
 theorem Integrable.IntegrableWRT (hf : Integrable f (.pi μ)) : IntegrableWRT μ f s :=
   sorry
 
@@ -107,12 +120,18 @@ theorem IntegrableWRT.marginal (hf : IntegrableWRT μ f s) {t₁ t₂ : Finset �
   (ht : Disjoint t₁ t₂) (ht₁ : t₁ ⊆ s) (ht₂ : t₂ ⊆ s) : IntegrableWRT μ (∫⋯∫_t₁, f ∂μ) t₂ :=
   sorry
 
-theorem IntegrableWRT.image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) {s : Finset δ'}
+theorem IntegrableWRT.image [Fintype δ'] [DecidableEq δ'] {e : δ' → δ} (he : Injective e) {s : Finset δ'}
     {f : (∀ i, π (e i)) → E} (hf : IntegrableWRT (μ ∘' e) f s) :
     IntegrableWRT μ (f ∘' (· ∘' e)) (s.image e) :=
   have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
     measurable_pi_iff.mpr <| λ i ↦ measurable_pi_apply (e i)
   sorry
+
+theorem IntegrableWRT.comp_update (hf : IntegrableWRT μ f s) {i : δ} {y : π i} :
+    IntegrableWRT μ (f ∘ (update · i y)) s :=
+  sorry
+
+
 
 -- -- move
 -- variable [Fintype δ] in
@@ -141,7 +160,7 @@ theorem marginal_union (f : (∀ i, π i) → E) (hf : IntegrableWRT μ f (s ∪
     _ = ∫ (y : (i : s) → π i), ∫ (z : (j : t) → π j), f (updateFinset x (s ∪ t) (e (y, z)))
           ∂.pi fun j : t ↦ μ j ∂.pi fun i : s ↦ μ i := by
         apply integral_prod
-        exact hf x |>.comp_measurePreserving <| measurePreserving_piFinsetUnion hst μ
+        sorry --exact hf x |>.comp_measurePreserving <| measurePreserving_piFinsetUnion hst μ
     _ = (∫⋯∫_s, ∫⋯∫_t, f ∂μ ∂μ) x := by
         simp_rw [marginal, updateFinset_updateFinset hst]
         rfl
@@ -232,7 +251,7 @@ theorem marginal_update_of_not_mem {i : δ}
   induction s using Finset.induction generalizing x
   case empty => simp
   case insert i' s hi' ih =>
-    rw [marginal_insert _ hf hi', marginal_insert _ sorry /-(hf.comp measurable_update_left)-/ hi']
+    rw [marginal_insert _ hf hi', marginal_insert _ (hf.comp_update) hi']
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii',
       ih (hf.mono <| Finset.subset_insert i' s) (mt Finset.mem_insert_of_mem hi)]
@@ -266,7 +285,7 @@ theorem integral_le_of_marginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i, �
     (hf : IntegrableWRT μ f univ) (hg : IntegrableWRT μ g univ) (hfg : ∫⋯∫_s, f ∂μ ≤ ∫⋯∫_s, g ∂μ) :
     ∫ x, f x ∂Measure.pi μ ≤ ∫ x, g x ∂Measure.pi μ := by
   rcases isEmpty_or_nonempty (∀ i, π i) with h|⟨⟨x⟩⟩
-  · sorry -- todo: prove `integral_of_isEmpty`
+  · simp [integral_of_isEmpty]
   simp_rw [integral_eq_marginal_univ x, marginal_le_of_subset (Finset.subset_univ s) hf hg hfg x]
 
 end Marginal
