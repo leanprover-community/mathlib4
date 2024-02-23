@@ -69,8 +69,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
           IH _ (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderivWithin hs In)
         _ ≤ ‖B‖ * ∑ i : ℕ in Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
               ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 g s) s x‖ :=
-          (mul_le_mul_of_nonneg_right (B.norm_precompR_le Du)
-            (Finset.sum_nonneg' fun i => by positivity))
+            mul_le_mul_of_nonneg_right (B.norm_precompR_le Du) (by positivity)
         _ = _ := by
           congr 1
           apply Finset.sum_congr rfl fun i hi => ?_
@@ -92,8 +91,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
         _ ≤ ‖B‖ * ∑ i : ℕ in Finset.range (n + 1),
             n.choose i * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 f s) s x‖ *
               ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ :=
-          (mul_le_mul_of_nonneg_right (B.norm_precompL_le Du)
-            (Finset.sum_nonneg' fun i => by positivity))
+            mul_le_mul_of_nonneg_right (B.norm_precompL_le Du) (by positivity)
         _ = _ := by
           congr 1
           apply Finset.sum_congr rfl fun i _ => ?_
@@ -223,8 +221,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
         ‖iteratedFDerivWithin 𝕜 (n - i) gu su xu‖ :=
     Bu.norm_iteratedFDerivWithin_le_of_bilinear_aux hfu hgu hsu hxu
   simp only [Nfu, Ngu, NBu] at this
-  apply this.trans (mul_le_mul_of_nonneg_right Bu_le ?_)
-  exact Finset.sum_nonneg' fun i => by positivity
+  exact this.trans (mul_le_mul_of_nonneg_right Bu_le (by positivity))
 #align continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear
 
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` in terms of the
@@ -250,8 +247,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
       ∑ i in Finset.range (n + 1), (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
         ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ := by
   apply (B.norm_iteratedFDerivWithin_le_of_bilinear hf hg hs hx hn).trans
-  apply mul_le_of_le_one_left (Finset.sum_nonneg' fun i => ?_) hB
-  positivity
+  exact mul_le_of_le_one_left (by positivity) hB
 #align continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear_of_le_one ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
 
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` in terms of the
