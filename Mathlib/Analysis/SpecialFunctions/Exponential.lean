@@ -89,7 +89,7 @@ variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
 characteristic zero has Fréchet derivative `exp x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x` in the
 disk of convergence. -/
-theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
+theorem hasFDerivAt_exp_of_mem_ball {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasFDerivAt (exp) (exp x • (1 : 𝔸 →L[𝕂] 𝔸)) x := by
   have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt hx
@@ -110,7 +110,7 @@ theorem hasFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
 characteristic zero has strict Fréchet derivative `exp x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x` in
 the disk of convergence. -/
-theorem hasStrictFDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
+theorem hasStrictFDerivAt_exp_of_mem_ball {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasStrictFDerivAt (exp) (exp x • (1 : 𝔸 →L[𝕂] 𝔸)) x :=
   let ⟨_, hp⟩ := analyticAt_exp_of_mem_ball x hx
