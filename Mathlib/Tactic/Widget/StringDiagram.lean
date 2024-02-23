@@ -14,10 +14,6 @@ import Mathlib.Tactic.CategoryTheory.Coherence
 This file provides tactic/meta infrastructure for displaying string diagrams for morphisms
 in monoidal categories in the infoview.
 
-## Implementation notes
-
-
-
 -/
 
 namespace Mathlib.Tactic.Widget.StringDiagram
@@ -123,14 +119,14 @@ inductive Structural : Type
   | whiskerLeft (f : Mor₁) (η : Structural) : Structural
   /-- Expressions for the right whiskering `η ▷ f`. -/
   | whiskerRight (η : Structural) (f : Mor₁) : Structural
-  /-- Expressions for the `MonoidalCoherence.hom`. -/
+  /-- Expressions for `α` in the monoidal composition `η ⊗≫ θ := η ≫ α ≫ θ`. -/
   | monoidalCoherence (f g : Mor₁) (e : Expr) : Structural
   deriving Inhabited
 
 /-- Normalized expressions for 2-morphisms. -/
 inductive NormalExpr : Type
-  /-- Construct the expression for `𝟙 f`. -/
-  | nil (src tar : Mor₁) (η : Structural) : NormalExpr
+  /-- Construct the expression for a structural 2-morphism. -/
+  | nil (α : Structural) : NormalExpr
   /-- Construct the normalized expression of 2-morphisms recursively. -/
   | cons (head_structural : Structural) (head : WhiskerLeftExpr) (tail : NormalExpr) : NormalExpr
   deriving Inhabited
@@ -210,37 +206,37 @@ def Structural.tar : Structural → Mor₁
 
 /-- The domain of a 2-morphism. -/
 def NormalExpr.src : NormalExpr → Mor₁
-  | NormalExpr.nil src _ _ => src
+  | NormalExpr.nil η => η.src
   | NormalExpr.cons α _ _ => α.src
 
 /-- The codomain of a 2-morphism. -/
 def NormalExpr.tar : NormalExpr → Mor₁
-  | NormalExpr.nil _ tar _ => tar
+  | NormalExpr.nil η => η.tar
   | NormalExpr.cons _ _ ηs => ηs.tar
 
 /-- The associator as a term of `normalExpr`. -/
 def NormalExpr.associator (f g h : Mor₁) : NormalExpr :=
-  .nil (f.comp (g.comp h)) (f.comp (g.comp h)) (.atom <| .associator f g h)
+  .nil <| .atom <| .associator f g h
 
 /-- The inverse of the associator as a term of `normalExpr`. -/
 def NormalExpr.associatorInv (f g h : Mor₁) : NormalExpr :=
-  .nil ((f.comp g).comp h) (f.comp (g.comp h)) (.atom <| .associatorInv f g h)
+  .nil <| .atom <| .associatorInv f g h
 
 /-- The left unitor as a term of `normalExpr`. -/
 def NormalExpr.leftUnitor (f : Mor₁) : NormalExpr :=
-  .nil (Mor₁.id.comp f) f (.atom <| .leftUnitor f)
+  .nil <| .atom <| .leftUnitor f
 
 /-- The inverse of the left unitor as a term of `normalExpr`. -/
 def NormalExpr.leftUnitorInv (f : Mor₁) : NormalExpr :=
-  .nil f (Mor₁.id.comp f) (.atom <| .leftUnitorInv f)
+  .nil <| .atom <| .leftUnitorInv f
 
 /-- The right unitor as a term of `normalExpr`. -/
 def NormalExpr.rightUnitor (f : Mor₁) : NormalExpr :=
-  .nil (f.comp Mor₁.id) f (.atom <| .rightUnitor f)
+  .nil <| .atom <| .rightUnitor f
 
 /-- The inverse of the right unitor as a term of `normalExpr`. -/
 def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
-  .nil f (f.comp Mor₁.id) (.atom <| .rightUnitorInv f)
+  .nil <| .atom <| .rightUnitorInv f
 
 /-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
 def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
@@ -268,7 +264,7 @@ partial def structural? (e : Expr) : MetaM Structural := do
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
 def NormalExpr.of (η : Expr) : MetaM NormalExpr := do
-  return .cons (.id (← StringDiagram.src η)) (.of (.of ⟨η⟩)) (.nil (← StringDiagram.tar η) (← StringDiagram.tar η) (.id (← StringDiagram.tar η)))
+  return .cons (.id (← StringDiagram.src η)) (.of (.of ⟨η⟩)) (.nil  (.id (← StringDiagram.tar η)))
 
 /-- If `e` is an expression of the form `η ⊗≫ θ := η ≫ α ≫ θ` in the monoidal category `C`,
 return the expression for `α` .-/
@@ -292,18 +288,18 @@ def structuralOfMonoidalComp (C e : Expr) : MetaM Structural := do
 
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
 partial def evalComp : NormalExpr → NormalExpr → MetaM NormalExpr
-  | .nil _ _ α, .cons β η ηs => do
+  | .nil α, .cons β η ηs => do
     return (.cons (α.comp β) η ηs)
-  | .nil f _ α, .nil _ g' α' => do
-    return (.nil f g' (α.comp α'))
+  | .nil α, .nil α' => do
+    return .nil (α.comp α')
   | .cons α η ηs, θ => do
     let ι ← evalComp ηs θ
-    return (.cons α η ι)
+    return .cons α η ι
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
 partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
-  | f, .nil g h α => do
-    return (.nil (f.comp g) (f.comp h) (.whiskerLeft f α))
+  | f, .nil α => do
+    return .nil (.whiskerLeft f α)
   | .of f, .cons α η ηs => do
     let η' := WhiskerLeftExpr.whisker f η
     let θ ← evalWhiskerLeftExpr (.of f) ηs
@@ -325,22 +321,22 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
 
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
-  | .nil f g α, h => do
-    return (.nil (f.comp h) (g.comp h) (.whiskerRight α h))
+  | .nil α, h => do
+    return .nil (.whiskerRight α h)
   | .cons α (.of η) ηs, .of f => do
     let θ ← evalWhiskerRightExpr ηs (.of f)
     return (.cons (.whiskerRight α (.of f)) (.of (.whisker η f)) θ)
   | .cons α (.whisker f η) ηs, h => do
     let g ← η.src
     let g' ← η.tar
-    let η₁ ← evalWhiskerRightExpr (.cons (.id g) η (.nil g' g' (.id g'))) h
+    let η₁ ← evalWhiskerRightExpr (.cons (.id g) η (.nil (.id g'))) h
     let η₂ ← evalWhiskerLeftExpr (.of f) η₁
     let ηs₁ ← evalWhiskerRightExpr ηs h
     let α' := .whiskerRight α h
     let ηs₂ ← evalComp (.associatorInv (.of f) g' h) ηs₁
     let η₃ ← evalComp η₂ ηs₂
     let η₄ ← evalComp (.associator (.of f) g h) η₃
-    let η₅ ← evalComp (.nil α'.src α'.tar α') η₄
+    let η₅ ← evalComp (.nil α') η₄
     return η₅
   | η, .comp g h => do
     let η₁ ← evalWhiskerRightExpr η g
@@ -361,78 +357,54 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
 partial def eval (e : Expr) : MetaM NormalExpr := do
   match e.getAppFnArgs with
   | (``CategoryStruct.id, #[_, _, f]) =>
-    return (NormalExpr.nil (toMor₁ f) (toMor₁ f) (.id (toMor₁ f)))
-  | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) => do
+    return .nil (.id (toMor₁ f))
+  | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
     let η_e ← eval η
     let θ_e ← eval θ
     let ηθ ← evalComp η_e θ_e
     return ηθ
-  | (``Iso.hom, #[_, _, _, _, η]) => do
+  | (``Iso.hom, #[_, _, _, _, η]) =>
     match η.getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) => do
-      let src := ((toMor₁ f).comp (toMor₁ g)).comp (toMor₁ h)
-      let tar := (toMor₁ f).comp ((toMor₁ g).comp (toMor₁ h))
-      let α := (.nil src tar (.atom <| .associator (toMor₁ f) (toMor₁ g) (toMor₁ h)))
-      return (α )
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => do
-      let src := Mor₁.id.comp (toMor₁ f)
-      let tar := toMor₁ f
-      let α := (.nil src tar (.atom <| .leftUnitor (toMor₁ f)))
-      return α
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => do
-      let src := (toMor₁ f).comp Mor₁.id
-      let tar := toMor₁ f
-      let α := (.nil src tar (.atom <| .rightUnitor (toMor₁ f)))
-      return α
+    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
+      return .associator (toMor₁ f) (toMor₁ g) (toMor₁ h)
+    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
+      return .leftUnitor (toMor₁ f)
+    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
+      return .rightUnitor (toMor₁ f)
     | _ => return (← NormalExpr.of e)
-  | (``Iso.inv, #[_, _, _, _, η]) => do
+  | (``Iso.inv, #[_, _, _, _, η]) =>
     match η.getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) => do
-      let src := (toMor₁ f).comp ((toMor₁ g).comp (toMor₁ h))
-      let tar := ((toMor₁ f).comp (toMor₁ g)).comp (toMor₁ h)
-      let α := (.nil src tar (.atom <| .associatorInv (toMor₁ f) (toMor₁ g) (toMor₁ h)))
-      return α
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => do
-      let src := toMor₁ f
-      let tar := Mor₁.id.comp (toMor₁ f)
-      let α := (.nil src tar (.atom <| .leftUnitorInv (toMor₁ f)))
-      return α
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => do
-      let src := toMor₁ f
-      let tar := (toMor₁ f).comp Mor₁.id
-      let α := (.nil src tar (.atom <| .rightUnitorInv (toMor₁ f)))
-      return α
+    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
+      return .associatorInv (toMor₁ f) (toMor₁ g) (toMor₁ h)
+    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
+      return .leftUnitorInv (toMor₁ f)
+    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
+      return .rightUnitorInv (toMor₁ f)
     | _ => return (← NormalExpr.of e)
   | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
-    let η_e ← eval η
-    let θ ← evalWhiskerLeftExpr (toMor₁ f) η_e
-    return θ
+    evalWhiskerLeftExpr (toMor₁ f) (← eval η)
   | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
-    let η_e ← eval η
-    let θ ← evalWhiskerRightExpr η_e (toMor₁ h)
-    return θ
-  | (``monoidalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) => do
+    evalWhiskerRightExpr (← eval η) (toMor₁ h)
+  | (``monoidalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) =>
     let η_e ← eval η
     let α₀' ← structuralOfMonoidalComp C e
-    let α := NormalExpr.nil α₀'.src α₀'.tar α₀'
+    let α := NormalExpr.nil α₀'
     let θ_e ← eval θ
     let αθ ← evalComp α θ_e
     let ηαθ ← evalComp η_e αθ
     return ηαθ
-  | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) => do
+  | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
     match η.getAppFnArgs, θ.getAppFnArgs with
-    | (``CategoryStruct.id, #[_, _, f]), _ => do
-      let θ_e ← evalWhiskerLeftExpr (toMor₁ f) (← eval θ)
-      return θ_e
-    | _, (``CategoryStruct.id, #[_, _, f]) => do
-      let η_e ← evalWhiskerRightExpr (← eval η) (toMor₁ f)
-      return η_e
+    | (``CategoryStruct.id, #[_, _, f]), _ =>
+      evalWhiskerLeftExpr (toMor₁ f) (← eval θ)
+    | _, (``CategoryStruct.id, #[_, _, f]) =>
+      evalWhiskerRightExpr (← eval η) (toMor₁ f)
     | _, _ => NormalExpr.of e
   | _ => NormalExpr.of e
 
 /-- Convert a `NormalExpr` expression into a list of `WhiskerLeftExpr` expressions. -/
 def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
-  | NormalExpr.nil _ _ _ => []
+  | NormalExpr.nil _ => []
   | NormalExpr.cons _ η ηs => η :: NormalExpr.toList ηs
 
 /-- Return `[f₁, ..., fₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
@@ -540,11 +512,11 @@ def addPenroseVar (tp : String) (v : PenroseVar) : DiagramBuilderM Unit := do
 def addInstruction (i : String) : DiagramBuilderM Unit := do
   modify fun st => { st with sub := st.sub ++ s!"{i}\n" }
 
-/-- Add constructor `tp v := nm vs` to the substance program. -/
+/-- Add constructor `tp v := nm (vs)` to the substance program. -/
 def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List PenroseVar) :
     DiagramBuilderM Unit := do
   let vs' := ", ".intercalate (vs.map (fun v => toString v))
-  addInstruction s!"{tp} {v} := {nm} {vs'}"
+  addInstruction s!"{tp} {v} := {nm} ({vs'})"
 
 /-- Run the program in the diagram builder monad. -/
 def DiagramBuilderM.run {α : Type} (x : DiagramBuilderM α) : MetaM α :=

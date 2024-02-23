@@ -101,6 +101,7 @@ def StructuralAtom.e : StructuralAtom → M Expr
   | .rightUnitorInv f => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
 
+/-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → M Expr
   | .atom η => η.e
   | .id f => do mkAppM ``CategoryStruct.id #[← f.e]
@@ -125,11 +126,13 @@ def WhiskerLeftExpr.e : WhiskerLeftExpr → M Expr
 
 /-- Extract a Lean expression from a `NormalExpr` expression. -/
 def NormalExpr.e : NormalExpr → M Expr
-  | NormalExpr.nil _ _ α => α.e
-  -- | NormalExpr.cons (.id _) η (NormalExpr.nil _ _ (.id _)) => η.e
+  | NormalExpr.nil α => α.e
   | NormalExpr.cons α η θ => do
     mkAppM ``CategoryStruct.comp #[← α.e, ← mkAppM ``CategoryStruct.comp #[← η.e, ← θ.e]]
 
+/-- `normalize% η` is the normalization of the 2-morphism `η`. It is of the form
+`α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₙ ≫ ηₙ ≫ αₙ₊₁`, where `αᵢ` are structural 2-morphisms
+and `ηᵢ` are non-structural 2-morphisms. -/
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   M.run (← mkContext e) do
