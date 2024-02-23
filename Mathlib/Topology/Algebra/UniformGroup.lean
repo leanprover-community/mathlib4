@@ -567,8 +567,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₂ _ hz₁
-  isOpen_uniformity S := by
-    simp only [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, comap_comap, (· ∘ ·), nhds_translation_div]
+  nhds_eq_comap_uniformity _ := by simp only [comap_comap, (· ∘ ·), nhds_translation_div]
 #align topological_group.to_uniform_space TopologicalGroup.toUniformSpace
 #align topological_add_group.to_uniform_space TopologicalAddGroup.toUniformSpace
 
