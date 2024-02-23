@@ -310,12 +310,13 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
 end summability
 
 theorem eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
-    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a)) =>
+    (a : Fin 2 → ZMod N) : TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) =>
       (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
-        (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
+        (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop := by
   have hk0 : 0 ≤ k := by linarith
   lift k to ℕ using hk0
-  rw [tendstoLocallyUniformlyOn_iff_forall_isCompact, eisensteinSeries_SIF]
+  rw [←tendstoLocallyUniformlyOn_univ,tendstoLocallyUniformlyOn_iff_forall_isCompact,
+    eisensteinSeries_SIF]
   simp only [Set.top_eq_univ, Set.subset_univ, eisensteinSeries, forall_true_left]
   intro K hK
   obtain ⟨A, B, hB, HABK⟩:= subset_slice_of_isCompact hK
