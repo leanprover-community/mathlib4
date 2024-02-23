@@ -34,6 +34,15 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 open scoped BigOperators
 
+lemma MvPolynomial.totalDegree_monomial_le
+    {R σ : Type*} [CommSemiring R] [Fintype σ] (m : σ →₀ ℕ) (r : R) :
+    (monomial m r).totalDegree ≤ m.sum fun _ ↦ id := by
+  if hr : r = 0 then
+    simp only [hr, map_zero, totalDegree_zero, zero_le]
+  else
+    rw [totalDegree_monomial _ hr]
+    exact le_rfl
+
 section Basis
 
 variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι] [DecidableEq ι]
@@ -46,7 +55,7 @@ end Basis
 
 namespace Matrix
 
-variable {l m n o R : Type*}
+variable {m n o R : Type*}
 variable [Fintype n] [Fintype o] [CommSemiring R]
 
 open MvPolynomial
@@ -60,13 +69,24 @@ lemma toMvPolynomial_eval_eq_apply (M : Matrix m n R) (i : m) (c : n → R) :
   simp only [toMvPolynomial, map_sum, eval_monomial, pow_zero, Finsupp.prod_single_index, pow_one,
     mulVec, dotProduct]
 
-lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
-    (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
-  simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
-    AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.id.map_eq_id,
-    RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
-    monomial_mul, zero_add]
+lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
+    (M.toMvPolynomial i).IsHomogeneous 1 := by
+  apply MvPolynomial.IsHomogeneous.sum
+  rintro j -
+  apply MvPolynomial.isHomogeneous_monomial _ _ _
+  rw [Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton, Finsupp.single_eq_same]
 
+lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
+    (M.toMvPolynomial i).totalDegree ≤ 1 := by
+  apply (toMvPolynomial_isHomogeneous _ _).totalDegree_le
+
+@[simp]
+lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
+    constantCoeff (M.toMvPolynomial i) = 0 := by
+  simp only [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, _root_.map_mul, constantCoeff_C,
+    constantCoeff_X, mul_zero, Finset.sum_const_zero]
+
+@[simp]
 lemma toMvPolynomial_zero (i : m) : (0 : Matrix m n R).toMvPolynomial i = 0 := by
   simp only [toMvPolynomial, zero_apply, map_zero, Finset.sum_const_zero]
 
@@ -74,9 +94,60 @@ lemma toMvPolynomial_add (M N : Matrix m n R) (i : m) :
     (M + N).toMvPolynomial i = M.toMvPolynomial i + N.toMvPolynomial i := by
   simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib]
 
+lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
+    (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
+  simp only [toMvPolynomial, mul_apply, map_sum, Finset.sum_comm (γ := o), bind₁, aeval,
+    AlgHom.coe_mk, coe_eval₂Hom, eval₂_monomial, algebraMap_apply, Algebra.id.map_eq_id,
+    RingHom.id_apply, C_apply, pow_zero, Finsupp.prod_single_index, pow_one, Finset.mul_sum,
+    monomial_mul, zero_add]
+
 end Matrix
 
-#exit
+namespace LinearMap
+
+variable {R M₁ M₂ M₃ ι₁ ι₂ ι₃ : Type*}
+variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M₁] [Module R M₂] [Module R M₃]
+variable [Fintype ι₁] [Fintype ι₂] [Fintype ι₃]
+variable [DecidableEq ι₁] [DecidableEq ι₂] [DecidableEq ι₃]
+variable (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) (b₃ : Basis ι₃ R M₃)
+
+open MvPolynomial
+
+noncomputable
+def toMvPolynomial (f : M₁ →ₗ[R] M₂) (i : ι₂) :
+    MvPolynomial ι₁ R :=
+  (toMatrix b₁ b₂ f).toMvPolynomial i
+
+lemma toMvPolynomial_eval_eq_apply (f : M₁ →ₗ[R] M₂) (i : ι₂) (c : ι₁ →₀ R) :
+    eval c (f.toMvPolynomial b₁ b₂ i) = b₂.repr (f (b₁.repr.symm c)) i := by
+  rw [toMvPolynomial, Matrix.toMvPolynomial_eval_eq_apply,
+    ← LinearMap.toMatrix_mulVec_repr b₁ b₂, LinearEquiv.apply_symm_apply]
+
+lemma toMvPolynomial_totalDegree_le (f : M₁ →ₗ[R] M₂) (i : ι₂) :
+    (f.toMvPolynomial b₁ b₂ i).totalDegree ≤ 1 :=
+  Matrix.toMvPolynomial_totalDegree_le _ _
+
+@[simp]
+lemma toMvPolynomial_constantCoeff (f : M₁ →ₗ[R] M₂) (i : ι₂) :
+    constantCoeff (f.toMvPolynomial b₁ b₂ i) = 0 :=
+  Matrix.toMvPolynomial_constantCoeff _ _
+
+@[simp]
+lemma toMvPolynomial_zero (i : ι₂) : (0 : M₁ →ₗ[R] M₂).toMvPolynomial b₁ b₂ i = 0 := by
+  simp only [toMvPolynomial, map_zero, Matrix.toMvPolynomial_zero]
+
+lemma toMvPolynomial_add (f g : M₁ →ₗ[R] M₂) (i : ι₂) :
+    (f + g).toMvPolynomial b₁ b₂ i = f.toMvPolynomial b₁ b₂ i + g.toMvPolynomial b₁ b₂ i := by
+  simp only [toMvPolynomial, map_add, Matrix.toMvPolynomial_add]
+
+lemma toMvPolynomial_comp (g : M₂ →ₗ[R] M₃) (f : M₁ →ₗ[R] M₂) (i : ι₃) :
+    (g.comp f).toMvPolynomial b₁ b₃ i =
+      bind₁ (f.toMvPolynomial b₁ b₂) (g.toMvPolynomial b₂ b₃ i) := by
+  simp only [toMvPolynomial, toMatrix_comp b₁ b₂ b₃, Matrix.toMvPolynomial_mul]
+  rfl
+
+end LinearMap
 
 variable {R L M n ι ιM : Type*}
 
@@ -84,7 +155,7 @@ section LinearAlgebra
 
 variable [CommRing R] [AddCommGroup L] [Module R L] [AddCommGroup M] [Module R M]
 variable (φ : L →ₗ[R] Module.End R M)
-variable [Fintype ι] [Fintype ιM]
+variable [Fintype ι] [Fintype ιM] [DecidableEq ι]
 
 namespace LinearMap
 
@@ -101,7 +172,7 @@ Then `lieMatrixPoly b bₘ (i,j)` is the polynomial that evaluates on elements `
 to the `(i,j)`-th coefficient of the matrix representation of `⁅x, ·⁆` acting on `M`. -/
 noncomputable
 def lieMatrixPoly (ij : ιM × ιM) : MvPolynomial ι R :=
-  ∑ k : ι, monomial (.single k 1) ((toMatrix bₘ bₘ <| φ <| b k) ij.1 ij.2)
+  φ.toMvPolynomial b bₘ.end ij
 
 open LinearMap in
 @[simp]
@@ -109,16 +180,8 @@ lemma lieMatrixPoly_eval_eq_toMatrix (ij : ιM × ιM) (c : ι →₀ R) :
     MvPolynomial.eval c (lieMatrixPoly φ b bₘ ij) =
       (toMatrix bₘ bₘ <| φ (b.repr.symm c)) ij.1 ij.2 := by
   rcases ij with ⟨i, j⟩
-  simp only [lieMatrixPoly, map_sum, Basis.repr_symm_apply, MvPolynomial.eval_monomial,
-    pow_zero, Finsupp.prod_single_index, pow_one]
-  induction c using Finsupp.induction_linear
-  case h0 => simp
-  case hadd f g hf hg => simp [hf, hg, mul_add, Finset.sum_add_distrib]
-  case hsingle k r =>
-    rw [Finset.sum_eq_single k, Finsupp.single_eq_same]
-    · rw [mul_comm, Finsupp.total_single, map_smul, map_smul, Matrix.smul_apply, smul_eq_mul]
-    · rintro l - hl; rw [Finsupp.single_eq_of_ne hl.symm, mul_zero]
-    · simp only [Finset.mem_univ, not_true_eq_false, IsEmpty.forall_iff]
+  simp only [lieMatrixPoly, toMvPolynomial_eval_eq_apply]
+  rfl
 
 lemma lieMatrixPoly_eval_eq_lie (ij : ιM × ιM) (c : ι →₀ R) :
     MvPolynomial.eval c (lieMatrixPoly φ b bₘ ij) = bₘ.repr (φ (b.repr.symm c) (bₘ ij.2)) ij.1 := by
