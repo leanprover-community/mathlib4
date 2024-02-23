@@ -626,4 +626,30 @@ protected theorem _root_.Differentiable.hasFPowerSeriesOnBall {f : ℂ → E} (h
     ⟨_, h.differentiableOn.hasFPowerSeriesOnBall hr⟩
 #align differentiable.has_fpower_series_on_ball Differentiable.hasFPowerSeriesOnBall
 
+/-- On an open set, `f : ℂ → E` is analytic iff it is differentiable -/
+theorem analyticOn_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : IsOpen s) :
+    AnalyticOn ℂ f s ↔ DifferentiableOn ℂ f s :=
+  ⟨AnalyticOn.differentiableOn, fun d _ zs ↦ d.analyticAt (o.mem_nhds zs)⟩
+
+/-- `f : ℂ → E` is entire iff it's differentiable -/
+theorem analyticOn_univ_iff_differentiable {f : ℂ → E} :
+    AnalyticOn ℂ f univ ↔ Differentiable ℂ f := by
+  simp only [← differentiableOn_univ]
+  exact analyticOn_iff_differentiableOn isOpen_univ
+
+/-- `f : ℂ → E` is analytic at `z` iff it's differentiable near `z` -/
+theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
+    AnalyticAt ℂ f c ↔ ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z := by
+  constructor
+  · intro fa
+    filter_upwards [fa.eventually_analyticAt]
+    apply AnalyticAt.differentiableAt
+  · intro d
+    rcases _root_.eventually_nhds_iff.mp d with ⟨s, d, o, m⟩
+    have h : AnalyticOn ℂ f s := by
+      refine DifferentiableOn.analyticOn ?_ o
+      intro z m
+      exact (d z m).differentiableWithinAt
+    exact h _ m
+
 end Complex
