@@ -8,8 +8,8 @@ import Mathlib.Data.Set.Finite
 /-!
 # Partitions based on membership of a sequence of sets
 
-Let `f : ℕ → Set α` be a sequence of sets. For `n : ℕ`, we can form the sets of points that are in
-`f 0 ∪ f 1 ∪ ... ∪ f n`; then the sets of points in `(f 0)ᶜ ∪ f 1 ∪ ... ∪ f n` and so on for
+Let `f : ℕ → Set α` be a sequence of sets. For `n : ℕ`, we can form the set of points that are in
+`f 0 ∪ f 1 ∪ ... ∪ f n`; then the set of points in `(f 0)ᶜ ∪ f 1 ∪ ... ∪ f n` and so on for
 all 2^(n+1) choices of a set or its complement. The at most 2^(n+1) sets we obtain form a partition
 of `univ : Set α`. We call that partition `memPartition f n` (the membership partition of `f`).
 
