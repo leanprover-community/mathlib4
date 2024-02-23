@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kevin Buzzard
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.Tactic.FieldSimp
 
