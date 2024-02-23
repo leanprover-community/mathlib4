@@ -599,6 +599,8 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
     FiniteDimensional.finrank_mul_finrank F L M] at heq
 
+alias _root_.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
+
 /-- If `E / F` is a finite extension, then its separable degree is equal to its degree if and
 only if it is a separable extension. -/
 theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
