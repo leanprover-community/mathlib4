@@ -127,3 +127,20 @@ instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α
 #align Pi.separated Pi.separated
 
 end
+
+theorem CompleteSpace.iInf {ι : Sort*} {X : Type*} {u : ι → UniformSpace X}
+    (hu : ∀ i, @CompleteSpace X (u i))
+    (ht₀ : ∃ i₀, @T0Space X (u i₀).toTopologicalSpace ∧
+      ∀ i, (u i).toTopologicalSpace ≤ (u i₀).toTopologicalSpace) :
+    @CompleteSpace X (⨅ i, u i) := by
+  refine @CompleteSpace.mk X ?_ fun {f} hf ↦ ?_
+  rcases ht₀ with ⟨i₀, hsep₀, hi₀⟩
+  have hf' : ∀ i, Cauchy (uniformSpace := u i) f := fun i ↦ hf.mono_uniformSpace (iInf_le _ _)
+  choose x hfx using fun i ↦ @CompleteSpace.complete _ (u i) (hu i) f (hf' i)
+  have hx : ∀ i, x i = x i₀ := fun i ↦ by
+    let _ := u i₀
+    have := hf.1
+    exact tendsto_nhds_unique ((hfx i).trans <| nhds_mono (hi₀ i)) (hfx i₀)
+  use x i₀
+  rw [UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
+  exact le_iInf fun i ↦ (hx i).symm ▸ hfx i

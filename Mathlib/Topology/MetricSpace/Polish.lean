@@ -196,20 +196,9 @@ protected theorem _root_.CompletePseudometrizable.iInf {ι : Sort*} [Countable �
       𝓤[u].IsCountablyGenerated ∧ u.toTopologicalSpace = ⨅ i, t i := by
   choose u hcomp hcount hut using ht
   obtain rfl : t = fun i ↦ (u i).toTopologicalSpace := (funext hut).symm
-  refine ⟨⨅ i, u i, ?_, ?_, UniformSpace.toTopologicalSpace_iInf⟩
-  · refine @CompleteSpace.mk α ?_ fun {f} hf ↦ ?_
-    rcases ht₀ with ⟨i₀, hsep₀, hi₀⟩
-    have hf' : ∀ i, Cauchy (uniformSpace := u i) f := fun i ↦ hf.mono_uniformSpace (iInf_le _ _)
-    choose x hfx using fun i ↦ @CompleteSpace.complete _ (u i) (hcomp i) f (hf' i)
-    have hx : ∀ i, x i = x i₀ := fun i ↦ by
-      let _ := u i₀
-      have := hf.1
-      exact tendsto_nhds_unique ((hfx i).trans <| nhds_mono (hi₀ i)) (hfx i₀)
-    use x i₀
-    rw [UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
-    exact le_iInf fun i ↦ (hx i).symm ▸ hfx i
-  · rw [iInf_uniformity]
-    infer_instance
+  refine ⟨⨅ i, u i, .iInf hcomp ht₀, ?_, UniformSpace.toTopologicalSpace_iInf⟩
+  rw [iInf_uniformity]
+  infer_instance
 
 protected theorem iInf {ι : Sort*} [Countable ι] {t : ι → TopologicalSpace α}
     (ht₀ : ∃ i₀, ∀ i, t i ≤ t i₀) (ht : ∀ i, @PolishSpace α (t i)) : @PolishSpace α (⨅ i, t i) := by
