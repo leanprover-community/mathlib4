@@ -675,6 +675,10 @@ theorem UniformSpace.isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) :
   hV.preimage <| continuous_const.prod_mk continuous_id
 #align uniform_space.is_open_ball UniformSpace.isOpen_ball
 
+theorem UniformSpace.isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) :
+    IsClosed (ball x V) :=
+  hV.preimage <| continuous_const.prod_mk continuous_id
+
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
   cases' p with x y
@@ -1256,6 +1260,10 @@ instance inhabitedUniformSpace : Inhabited (UniformSpace α) :=
 instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
   ⟨@UniformSpace.toCore _ default⟩
 #align inhabited_uniform_space_core inhabitedUniformSpaceCore
+
+instance [Subsingleton α] : Unique (UniformSpace α) where
+  uniq u := bot_unique <| le_principal_iff.2 <| by
+    rw [idRel, ← diagonal, diagonal_eq_univ]; exact univ_mem
 
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
   is the inverse image in the filter sense of the induced function `α × α → β × β`.

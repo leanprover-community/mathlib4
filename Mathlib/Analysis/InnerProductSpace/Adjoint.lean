@@ -311,7 +311,7 @@ theorem conj_orthogonalProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (U
       (U.subtypeL ∘L orthogonalProjection U ∘L T ∘L U.subtypeL ∘L orthogonalProjection U) := by
   rw [← ContinuousLinearMap.comp_assoc]
   nth_rw 1 [← (orthogonalProjection_isSelfAdjoint U).adjoint_eq]
-  refine' hT.adjoint_conj _
+  exact hT.adjoint_conj _
 #align is_self_adjoint.conj_orthogonal_projection IsSelfAdjoint.conj_orthogonalProjection
 
 end IsSelfAdjoint
@@ -443,7 +443,7 @@ theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →
     A = LinearMap.adjoint B ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
   ext x
-  refine' ext_inner_right_basis b fun i => by simp only [h i, adjoint_inner_left]
+  exact ext_inner_right_basis b fun i => by simp only [h i, adjoint_inner_left]
 #align linear_map.eq_adjoint_iff_basis_right LinearMap.eq_adjoint_iff_basis_right
 
 /-- `E →ₗ[𝕜] E` is a star algebra with the adjoint as the star operation. -/

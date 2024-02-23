@@ -584,7 +584,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     apply Differentiable.mul
     · exact differentiable_one_div_Gamma.comp (differentiable_id'.const_mul _)
     · refine' fun t => DifferentiableAt.const_cpow _ (Or.inl two_ne_zero)
-      refine' DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
+      exact DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
   have h3 : Tendsto ((↑) : ℝ → ℂ) (𝓝[≠] 1) (𝓝[≠] 1) := by
     rw [tendsto_nhdsWithin_iff]; constructor
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuous_ofReal.continuousAt

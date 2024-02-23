@@ -2273,7 +2273,7 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
     · intro ⟨C, hC⟩
       refine ⟨C.toNNReal • normSeminorm 𝕜 E,
         ((norm_withSeminorms 𝕜 E).continuous_seminorm 0).const_smul C.toNNReal, fun i x ↦ ?_⟩
-      refine (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
+      exact (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
   tfae_finish
 
 end Equicontinuous
