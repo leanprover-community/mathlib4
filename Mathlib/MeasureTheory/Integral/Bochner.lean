@@ -1335,6 +1335,57 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
   ext1 x
   simp only [Function.mem_support, ne_eq, (Real.exp_pos _).ne', not_false_eq_true, Set.mem_univ]
 
+/-- Monotone convergence theorem for real-valued functions and Bochner integrals -/
+lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Monotone fun n ↦ f n x)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  -- switch from the Bochner to the Lebesgue integral
+  let f' := fun n x ↦ f n x - f 0 x
+  have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
+    filter_upwards [h_mono] with a ha n
+    simp [ha (zero_le n)]
+  have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
+  suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
+    simp_rw [integral_sub (hf _) (hf _), integral_sub' hF (hf 0), tendsto_sub_const_iff] at this
+    exact this
+  have hF_ge : 0 ≤ᵐ[μ] fun x ↦ (F - f 0) x := by
+    filter_upwards [h_tendsto, h_mono] with x hx_tendsto hx_mono
+    simp only [Pi.zero_apply, Pi.sub_apply, sub_nonneg]
+    exact ge_of_tendsto' hx_tendsto (fun n ↦ hx_mono (zero_le _))
+  rw [ae_all_iff] at hf'_nonneg
+  simp_rw [integral_eq_lintegral_of_nonneg_ae (hf'_nonneg _) (hf'_meas _).1]
+  rw [integral_eq_lintegral_of_nonneg_ae hF_ge (hF.1.sub (hf 0).1)]
+  have h_cont := ENNReal.continuousAt_toReal (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
+  swap
+  · rw [← ofReal_integral_eq_lintegral_ofReal (hF.sub (hf 0)) hF_ge]
+    exact ENNReal.ofReal_ne_top
+  refine h_cont.tendsto.comp ?_
+  -- use the result for the Lebesgue integral
+  refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
+  · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
+  · filter_upwards [h_mono] with x hx n m hnm
+    refine ENNReal.ofReal_le_ofReal ?_
+    simp only [tsub_le_iff_right, sub_add_cancel]
+    exact hx hnm
+  · filter_upwards [h_tendsto] with x hx
+    refine (ENNReal.continuous_ofReal.tendsto _).comp ?_
+    simp only [Pi.sub_apply]
+    exact Tendsto.sub hx tendsto_const_nhds
+
+/-- Monotone convergence theorem for real-valued functions and Bochner integrals -/
+lemma integral_tendsto_of_tendsto_of_antitone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Antitone fun n ↦ f n x)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  suffices Tendsto (fun n ↦ ∫ x, -f n x ∂μ) atTop (𝓝 (∫ x, -F x ∂μ)) by
+    suffices Tendsto (fun n ↦ ∫ x, - -f n x ∂μ) atTop (𝓝 (∫ x, - -F x ∂μ)) by
+      simpa [neg_neg] using this
+    convert this.neg <;> rw [integral_neg]
+  refine integral_tendsto_of_tendsto_of_monotone (fun n ↦ (hf n).neg) hF.neg ?_ ?_
+  · filter_upwards [h_mono] with x hx n m hnm using neg_le_neg_iff.mpr <| hx hnm
+  · filter_upwards [h_tendsto] with x hx using hx.neg
+
 section NormedAddCommGroup
 
 variable {H : Type*} [NormedAddCommGroup H]

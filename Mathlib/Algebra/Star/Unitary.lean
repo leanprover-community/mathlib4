@@ -139,6 +139,17 @@ theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := 
   Subtype.ext <| Units.ext_iff.mp h
 #align unitary.to_units_injective unitary.toUnits_injective
 
+theorem _root_.IsUnit.mem_unitary_of_star_mul_self  {u : R} (hu : IsUnit u)
+    (h_mul : star u * u = 1) : u ∈ unitary R := by
+  refine unitary.mem_iff.mpr ⟨h_mul, ?_⟩
+  lift u to Rˣ using hu
+  exact left_inv_eq_right_inv h_mul u.mul_inv ▸ u.mul_inv
+
+theorem _root_.IsUnit.mem_unitary_of_mul_star_self {u : R} (hu : IsUnit u)
+    (h_mul : u * star u = 1) : u ∈ unitary R :=
+  star_star u ▸
+    (hu.star.mem_unitary_of_star_mul_self ((star_star u).symm ▸ h_mul) |> unitary.star_mem)
+
 instance instIsStarNormal (u : unitary R) : IsStarNormal u where
   star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm
 

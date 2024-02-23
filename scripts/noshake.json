@@ -277,6 +277,7 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
+  "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
@@ -285,6 +286,7 @@
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
