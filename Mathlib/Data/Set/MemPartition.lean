@@ -90,3 +90,6 @@ lemma memPartition_finite (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartit
     refine Finite.Set.finite_biUnion (memPartition f n) _ (fun u _ ↦ ?_)
     rw [Set.finite_coe_iff]
     simp
+
+instance instFinite_memPartition (f : ℕ → Set α) (n : ℕ) : Finite (memPartition f n) :=
+  Set.finite_coe_iff.mp (memPartition_finite _ _)
