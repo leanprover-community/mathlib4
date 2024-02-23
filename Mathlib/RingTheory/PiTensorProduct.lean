@@ -26,12 +26,12 @@ noncomputable section AddCommMonoidWithOne
 
 variable [CommSemiring R] [∀ i, AddCommMonoidWithOne (A i)] [∀ i, Module R (A i)]
 
-instance one : One (⨂[R] i, A i) where
+instance instOne : One (⨂[R] i, A i) where
   one := tprod R 1
 
-instance addCommMonoidWithOne : AddCommMonoidWithOne (⨂[R] i, A i) where
+instance instAddCommMonoidWithOne : AddCommMonoidWithOne (⨂[R] i, A i) where
   __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
-  __ := one
+  __ := instOne
 
 end AddCommMonoidWithOne
 
@@ -52,7 +52,7 @@ def lmul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :
   simp only [lmul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply']
   rfl
 
-instance mul : Mul (⨂[R] i, A i) where
+instance instMul : Mul (⨂[R] i, A i) where
   mul x y := lmul x y
 
 lemma mul_def (x y : ⨂[R] i, A i) : x * y = lmul x y := rfl
@@ -79,8 +79,8 @@ lemma lmul_add (x y z : ⨂[R] i, A i) : lmul x (y + z) = lmul x y + lmul x z :=
 lemma add_lmul (x y z : ⨂[R] i, A i) : lmul (x + y) z = lmul x z + lmul y z := by
   induction x using PiTensorProduct.induction_on <;> simp
 
-instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
-  __ := mul
+instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
+  __ := instMul
   __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
   left_distrib := lmul_add
   right_distrib := add_lmul
@@ -104,8 +104,8 @@ lemma lmul_one (x : ⨂[R] i, A i) : lmul x (tprod R 1) = x := by
   | C1 => simp
   | Cp h1 h2 => simp [h1, h2]
 
-instance nonAssocSemiring : NonAssocSemiring (⨂[R] i, A i) where
-  __ := nonUnitalNonAssocSemiring
+instance instNonAssocSemiring : NonAssocSemiring (⨂[R] i, A i) where
+  __ := instNonUnitalNonAssocSemiring
   one_mul := one_lmul
   mul_one := lmul_one
 
@@ -133,8 +133,8 @@ lemma lmul_assoc (x y z : ⨂[R] i, A i) : lmul (lmul x y) z = lmul x (lmul y z)
     simp only [map_add, LinearMap.add_apply] at hx1 hx2 ⊢
     rw [hx1, hx2]
 
-instance nonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
-  __ := nonUnitalNonAssocSemiring
+instance instNonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
+  __ := instNonUnitalNonAssocSemiring
   mul_assoc := lmul_assoc
 
 end NonUnitalSemiring
@@ -143,11 +143,11 @@ noncomputable section Semiring
 
 variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
 
-instance semiring : Semiring (⨂[R] i, A i) where
-  __ := nonUnitalSemiring
-  __ := nonAssocSemiring
+instance instSemiring : Semiring (⨂[R] i, A i) where
+  __ := instNonUnitalSemiring
+  __ := instNonAssocSemiring
 
-instance algebra : Algebra R (⨂[R] i, A i) where
+instance instAlgebra : Algebra R (⨂[R] i, A i) where
   __ := hasSMul'
   toFun := (· • 1)
   map_one' := by simp
@@ -226,8 +226,8 @@ noncomputable section Ring
 
 variable [CommRing R] [∀ i, Ring (A i)] [∀ i, Algebra R (A i)]
 
-instance ring : Ring (⨂[R] i, A i) where
-  __ := semiring
+instance instRing : Ring (⨂[R] i, A i) where
+  __ := instSemiring
   __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
 
 end Ring
@@ -251,8 +251,8 @@ lemma lmul_comm (x y : ⨂[R] i, A i) : lmul x y = lmul y x :=  by
     simp only [map_add, LinearMap.add_apply] at hx1 hx2 ⊢
     rw [hx1, hx2]
 
-instance commSemiring : CommSemiring (⨂[R] i, A i) where
-  __ := semiring
+instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
+  __ := instSemiring
   __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
   mul_comm := lmul_comm
 
@@ -261,8 +261,8 @@ end CommSemiring
 noncomputable section CommRing
 
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
-instance commRing : CommRing (⨂[R] i, A i) where
-  __ := commSemiring
+instance instCommRing : CommRing (⨂[R] i, A i) where
+  __ := instCommSemiring
   __ := inferInstanceAs <| AddCommGroup (⨂[R] i, A i)
 
 end CommRing
