@@ -51,7 +51,7 @@ def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 #align alternating_group alternatingGroup
 
--- Porting note: manually added instance
+-- Porting note (#10754): manually added instance
 instance fta : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
@@ -243,7 +243,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
-        --Porting note : added `: _`
+        --Porting note: added `: _`
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
 #align alternating_group.normal_closure_fin_rotate_five alternatingGroup.normalClosure_finRotate_five
 
