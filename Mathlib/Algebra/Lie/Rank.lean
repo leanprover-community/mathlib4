@@ -83,8 +83,8 @@ lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
 @[simp]
 lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
     constantCoeff (M.toMvPolynomial i) = 0 := by
-  simp only [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, _root_.map_mul, constantCoeff_C,
-    constantCoeff_X, mul_zero, Finset.sum_const_zero]
+  simp only [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, _root_.map_mul, constantCoeff_X,
+    mul_zero, Finset.sum_const_zero]
 
 @[simp]
 lemma toMvPolynomial_zero (i : m) : (0 : Matrix m n R).toMvPolynomial i = 0 := by
@@ -123,6 +123,10 @@ lemma toMvPolynomial_eval_eq_apply (f : M₁ →ₗ[R] M₂) (i : ι₂) (c : ι
     eval c (f.toMvPolynomial b₁ b₂ i) = b₂.repr (f (b₁.repr.symm c)) i := by
   rw [toMvPolynomial, Matrix.toMvPolynomial_eval_eq_apply,
     ← LinearMap.toMatrix_mulVec_repr b₁ b₂, LinearEquiv.apply_symm_apply]
+
+lemma toMvPolynomial_isHomogeneous (f : M₁ →ₗ[R] M₂) (i : ι₂) :
+    (f.toMvPolynomial b₁ b₂ i).IsHomogeneous 1 :=
+  Matrix.toMvPolynomial_isHomogeneous _ _
 
 lemma toMvPolynomial_totalDegree_le (f : M₁ →ₗ[R] M₂) (i : ι₂) :
     (f.toMvPolynomial b₁ b₂ i).totalDegree ≤ 1 :=
@@ -212,12 +216,7 @@ lemma lieCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ι
   rw [lieCharpoly, Polynomial.coeff_map, ← one_mul j]
   apply (charpoly.univ_coeff_isHomogeneous _ _ _ _ hij).eval₂
   · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
-  rintro ⟨x, y⟩
-  dsimp only [lieMatrixPoly]
-  apply MvPolynomial.IsHomogeneous.sum
-  rintro z -
-  apply MvPolynomial.isHomogeneous_monomial _ _ _
-  simp [Finsupp.single, Pi.single, Function.update]
+  · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
 
 open LinearMap in
 lemma lieCharpoly_map_eq_toMatrix_charpoly (x : L) :
