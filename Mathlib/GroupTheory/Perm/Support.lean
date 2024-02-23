@@ -353,7 +353,7 @@ theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
   simp_rw [Finset.ext_iff, mem_support, not_iff_not, inv_eq_iff_eq.trans eq_comm, imp_true_iff]
 #align equiv.perm.support_inv Equiv.Perm.support_inv
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
   rw [mem_support, mem_support, Ne.def, Ne.def, apply_eq_iff_eq]
 #align equiv.perm.apply_mem_support Equiv.Perm.apply_mem_support
@@ -364,7 +364,7 @@ theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
     f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
   rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
 #align equiv.perm.pow_apply_mem_support Equiv.Perm.pow_apply_mem_support
@@ -375,7 +375,7 @@ theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
     f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
   rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_zpow_apply_eq_iff]
 #align equiv.perm.zpow_apply_mem_support Equiv.Perm.zpow_apply_mem_support
@@ -501,7 +501,7 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
   · split_ifs at hy with hf heq <;>
     simp_all only [not_true]
     exact ⟨h, hy⟩
-    refine' ⟨hy, heq⟩
+    exact ⟨hy, heq⟩
 #align equiv.perm.mem_support_swap_mul_imp_mem_support_ne Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
@@ -573,7 +573,7 @@ end ExtendDomain
 
 section Card
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove thisrove this
 theorem card_support_eq_zero {f : Perm α} : f.support.card = 0 ↔ f = 1 := by
   rw [Finset.card_eq_zero, support_eq_empty_iff]
 #align equiv.perm.card_support_eq_zero Equiv.Perm.card_support_eq_zero

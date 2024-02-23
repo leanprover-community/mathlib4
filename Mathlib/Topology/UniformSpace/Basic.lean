@@ -679,6 +679,10 @@ theorem UniformSpace.isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) :
   hV.preimage <| continuous_const.prod_mk continuous_id
 #align uniform_space.is_open_ball UniformSpace.isOpen_ball
 
+theorem UniformSpace.isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) :
+    IsClosed (ball x V) :=
+  hV.preimage <| continuous_const.prod_mk continuous_id
+
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
   cases' p with x y
@@ -816,8 +820,8 @@ theorem IsCompact.nhdsSet_basis_uniformity {p : ι → Prop} {s : ι → Set (α
   refine' ⟨fun U => _⟩
   simp only [mem_nhdsSet_iff_forall, (nhds_basis_uniformity' hU).mem_iff, iUnion₂_subset_iff]
   refine' ⟨fun H => _, fun ⟨i, hpi, hi⟩ x hx => ⟨i, hpi, hi x hx⟩⟩
-  replace H : ∀ x ∈ K, ∃ i : { i // p i }, ball x (s i ○ s i) ⊆ U
-  · intro x hx
+  replace H : ∀ x ∈ K, ∃ i : { i // p i }, ball x (s i ○ s i) ⊆ U := by
+    intro x hx
     rcases H x hx with ⟨i, hpi, hi⟩
     rcases comp_mem_uniformity_sets (hU.mem_of_mem hpi) with ⟨t, ht_mem, ht⟩
     rcases hU.mem_iff.1 ht_mem with ⟨j, hpj, hj⟩
@@ -917,8 +921,8 @@ theorem nhdset_of_mem_uniformity {d : Set (α × α)} (s : Set (α × α)) (hd :
 theorem nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
   intro V V_in
   rcases comp_symm_mem_uniformity_sets V_in with ⟨w, w_in, w_symm, w_sub⟩
-  have : ball x w ×ˢ ball x w ∈ 𝓝 (x, x)
-  · rw [nhds_prod_eq]
+  have : ball x w ×ˢ ball x w ∈ 𝓝 (x, x) := by
+    rw [nhds_prod_eq]
     exact prod_mem_prod (ball_mem_nhds x w_in) (ball_mem_nhds x w_in)
   apply mem_of_superset this
   rintro ⟨u, v⟩ ⟨u_in, v_in⟩
@@ -1244,6 +1248,10 @@ instance inhabitedUniformSpace : Inhabited (UniformSpace α) :=
 instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
   ⟨@UniformSpace.toCore _ default⟩
 #align inhabited_uniform_space_core inhabitedUniformSpaceCore
+
+instance [Subsingleton α] : Unique (UniformSpace α) where
+  uniq u := bot_unique <| le_principal_iff.2 <| by
+    rw [idRel, ← diagonal, diagonal_eq_univ]; exact univ_mem
 
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
   is the inverse image in the filter sense of the induced function `α × α → β × β`.
@@ -1572,6 +1580,11 @@ theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
   rfl
 #align uniformity_prod uniformity_prod
 
+instance [UniformSpace α] [IsCountablyGenerated (𝓤 α)]
+    [UniformSpace β] [IsCountablyGenerated (𝓤 β)] : IsCountablyGenerated (𝓤 (α × β)) := by
+  rw [uniformity_prod]
+  infer_instance
+
 theorem uniformity_prod_eq_comap_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
       comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
@@ -1780,13 +1793,17 @@ theorem union_mem_uniformity_sum {a : Set (α × α)} (ha : a ∈ 𝓤 α) {b : 
   union_mem_sup (image_mem_map ha) (image_mem_map hb)
 #align union_mem_uniformity_sum union_mem_uniformity_sum
 
-protected theorem Sum.uniformity :
-    𝓤 (α ⊕ β) = map (Prod.map inl inl) (𝓤 α) ⊔ map (Prod.map inr inr) (𝓤 β) :=
+theorem Sum.uniformity : 𝓤 (α ⊕ β) = map (Prod.map inl inl) (𝓤 α) ⊔ map (Prod.map inr inr) (𝓤 β) :=
   rfl
 #align sum.uniformity Sum.uniformity
 
 lemma uniformContinuous_inl : UniformContinuous (Sum.inl : α → α ⊕ β) := le_sup_left
 lemma uniformContinuous_inr : UniformContinuous (Sum.inr : β → α ⊕ β) := le_sup_right
+
+instance [IsCountablyGenerated (𝓤 α)] [IsCountablyGenerated (𝓤 β)] :
+    IsCountablyGenerated (𝓤 (α ⊕ β)) := by
+  rw [Sum.uniformity]
+  infer_instance
 
 end Sum
 

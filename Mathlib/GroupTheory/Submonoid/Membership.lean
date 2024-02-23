@@ -294,7 +294,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Submonoid M) {C : ∀ x, (x ∈
   · exact ⟨_, hp _ _ hx⟩
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    refine' ⟨_, hmul _ _ _ _ Cx Cy⟩
+    exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 #align submonoid.supr_induction' Submonoid.iSup_induction'
 #align add_submonoid.supr_induction' AddSubmonoid.iSup_induction'
 

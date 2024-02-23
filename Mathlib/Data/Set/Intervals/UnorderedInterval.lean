@@ -83,7 +83,7 @@ lemma uIcc_of_lt (h : a < b) : [[a, b]] = Icc a b := uIcc_of_le h.le
 lemma uIcc_of_gt (h : b < a) : [[a, b]] = Icc b a := uIcc_of_ge h.le
 #align set.uIcc_of_gt Set.uIcc_of_gt
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 lemma uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 #align set.uIcc_self Set.uIcc_self

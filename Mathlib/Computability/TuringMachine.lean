@@ -358,7 +358,7 @@ instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : Inhabited (PointedMap Γ Γ')
 instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : CoeFun (PointedMap Γ Γ') fun _ ↦ Γ → Γ' :=
   ⟨PointedMap.f⟩
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem PointedMap.mk_val {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : Γ → Γ') (pt) :
     (PointedMap.mk f pt : Γ → Γ') = f :=
   rfl
@@ -1028,7 +1028,7 @@ inductive Stmt
   | write : Γ → Stmt
 #align turing.TM0.stmt Turing.TM0.Stmt
 
-local notation "Stmt₀" => Stmt Γ  -- Porting note: Added this to clean up types.
+local notation "Stmt₀" => Stmt Γ  -- Porting note (#10750): added this to clean up types.
 
 instance Stmt.inhabited : Inhabited Stmt₀ :=
   ⟨Stmt.write default⟩
@@ -1048,7 +1048,7 @@ def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × Stmt₀)
 #align turing.TM0.machine Turing.TM0.Machine
 
-local notation "Machine₀" => Machine Γ Λ  -- Porting note: Added this to clean up types.
+local notation "Machine₀" => Machine Γ Λ  -- Porting note (#10750): added this to clean up types.
 
 instance Machine.inhabited : Inhabited Machine₀ := by
   unfold Machine; infer_instance
@@ -1064,7 +1064,7 @@ structure Cfg where
   Tape : Tape Γ
 #align turing.TM0.cfg Turing.TM0.Cfg
 
-local notation "Cfg₀" => Cfg Γ Λ  -- Porting note: Added this to clean up types.
+local notation "Cfg₀" => Cfg Γ Λ  -- Porting note (#10750): added this to clean up types.
 
 instance Cfg.inhabited : Inhabited Cfg₀ :=
   ⟨⟨default, default⟩⟩
@@ -1253,7 +1253,7 @@ inductive Stmt
   | halt : Stmt
 #align turing.TM1.stmt Turing.TM1.Stmt
 
-local notation "Stmt₁" => Stmt Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Stmt₁" => Stmt Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 open Stmt
 
@@ -1269,7 +1269,7 @@ structure Cfg where
   Tape : Tape Γ
 #align turing.TM1.cfg Turing.TM1.Cfg
 
-local notation "Cfg₁" => Cfg Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Cfg₁" => Cfg Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₁ :=
   ⟨⟨default, default, default⟩⟩
@@ -1463,7 +1463,7 @@ def Λ' (M : Λ → TM1.Stmt Γ Λ σ) :=
   Option Stmt₁ × σ
 #align turing.TM1to0.Λ' Turing.TM1to0.Λ'
 
-local notation "Λ'₁₀" => Λ' M -- Porting note: Added this to clean up types.
+local notation "Λ'₁₀" => Λ' M -- Porting note (#10750): added this to clean up types.
 
 instance : Inhabited Λ'₁₀ :=
   ⟨(some (M default), default)⟩
@@ -1644,7 +1644,7 @@ inductive Λ'
   | write : Γ → Stmt₁ → Λ'
 #align turing.TM1to1.Λ' Turing.TM1to1.Λ'
 
-local notation "Λ'₁" => @Λ' Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Λ'₁" => @Λ' Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 instance : Inhabited Λ'₁ :=
   ⟨Λ'.normal default⟩
@@ -1668,7 +1668,7 @@ def move (d : Dir) (q : Stmt'₁) : Stmt'₁ :=
   (Stmt.move d)^[n] q
 #align turing.TM1to1.move Turing.TM1to1.move
 
-local notation "moveₙ" => @move Γ Λ σ n  -- Porting note: Added this to clean up types.
+local notation "moveₙ" => @move Γ Λ σ n  -- Porting note (#10750): added this to clean up types.
 
 /-- To read a symbol from the tape, we use `readAux` to traverse the symbol,
 then return to the original position with `n` moves to the left. -/
@@ -1801,7 +1801,7 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   suffices ∀ {L' R'} (l₁ l₂ l₂' : List Bool) (_ : l₂'.length = l₂.length),
       stepAux (write l₂ q) v (Tape.mk' (ListBlank.append l₁ L') (ListBlank.append l₂' R')) =
       stepAux q v (Tape.mk' (L'.append (List.reverseAux l₂ l₁)) R') by
-    refine' this [] _ _ ((enc b).2.trans (enc a).2.symm)
+    exact this [] _ _ ((enc b).2.trans (enc a).2.symm)
   clear a b L R
   intro L' R' l₁ l₂ l₂' e
   induction' l₂ with a l₂ IH generalizing l₁ l₂'
@@ -1936,7 +1936,7 @@ theorem tr_supports {S : Finset Λ} (ss : Supports M S) : Supports (tr enc dec M
     | load a q IH =>
       unfold writes at hw ⊢
       replace IH := IH hs hw
-      refine' ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
+      exact ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
     | branch p q₁ q₂ IH₁ IH₂ =>
       unfold writes at hw ⊢
       simp only [Finset.mem_union] at hw ⊢
@@ -1990,7 +1990,7 @@ inductive Λ'
   | act : TM0.Stmt Γ → Λ → Λ'
 #align turing.TM0to1.Λ' Turing.TM0to1.Λ'
 
-local notation "Λ'₁" => @Λ' Γ Λ  -- Porting note: Added this to clean up types.
+local notation "Λ'₁" => @Λ' Γ Λ  -- Porting note (#10750): added this to clean up types.
 
 instance : Inhabited Λ'₁ :=
   ⟨Λ'.normal default⟩
@@ -2112,7 +2112,7 @@ inductive Stmt
   | halt : Stmt
 #align turing.TM2.stmt Turing.TM2.Stmt
 
-local notation "Stmt₂" => Stmt Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Stmt₂" => Stmt Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 open Stmt
 
@@ -2129,7 +2129,7 @@ structure Cfg where
   stk : ∀ k, List (Γ k)
 #align turing.TM2.cfg Turing.TM2.Cfg
 
-local notation "Cfg₂" => Cfg Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Cfg₂" => Cfg Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₂ :=
   ⟨⟨default, default, default⟩⟩
@@ -2352,7 +2352,7 @@ def Γ' :=
   Bool × ∀ k, Option (Γ k)
 #align turing.TM2to1.Γ' Turing.TM2to1.Γ'
 
-local notation "Γ'₂₁" => @Γ' K Γ  -- Porting note: Added this to clean up types.
+local notation "Γ'₂₁" => @Γ' K Γ  -- Porting note (#10750): added this to clean up types.
 
 instance Γ'.inhabited : Inhabited Γ'₂₁ :=
   ⟨⟨false, fun _ ↦ none⟩⟩
@@ -2407,7 +2407,7 @@ inductive StAct (k : K)
   | pop : (σ → Option (Γ k) → σ) → StAct k
 #align turing.TM2to1.st_act Turing.TM2to1.StAct
 
-local notation "StAct₂" => @StAct K Γ σ  -- Porting note: Added this to clean up types.
+local notation "StAct₂" => @StAct K Γ σ  -- Porting note (#10750): added this to clean up types.
 
 instance StAct.inhabited {k : K} : Inhabited (StAct₂ k) :=
   ⟨StAct.peek fun s _ ↦ s⟩
@@ -2472,7 +2472,7 @@ inductive Λ'
   | ret : Stmt₂ → Λ'
 #align turing.TM2to1.Λ' Turing.TM2to1.Λ'
 
-local notation "Λ'₂₁" => @Λ' K Γ Λ σ  -- Porting note: Added this to clean up types.
+local notation "Λ'₂₁" => @Λ' K Γ Λ σ  -- Porting note (#10750): added this to clean up types.
 
 open Λ'
 
