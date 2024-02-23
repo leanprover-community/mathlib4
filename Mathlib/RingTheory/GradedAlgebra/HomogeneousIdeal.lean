@@ -52,20 +52,28 @@ open SetLike DirectSum Set
 
 open BigOperators Pointwise DirectSum
 
-variable {ιA ιM σA σM R A M : Type*}
-variable [SetLike σA A] [SetLike σM M]
+variable {ιA ιAA ιM σA σAA σM R A AA M : Type*}
+variable [SetLike σA A] [SetLike σAA AA] [SetLike σM M]
 variable [DecidableEq ιA] [DecidableEq ιM]
 
-variable (𝒜 : ιA → σA) (ℳ : ιM → σM)
+variable (𝒜 : ιA → σA) (ℳ : ιM → σM) (𝒜𝒜 : ιAA → σAA)
 
 section HomogeneousDef
 
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
-variable [Semiring A] [Module A M]
+variable [Semiring A] [Ring AA] [Module A M]
 variable [SetLike σA A] [AddSubmonoidClass σA A]
-variable [DecidableEq ιA] [AddMonoid ιA] [GradedRing 𝒜]
+variable [SetLike σAA AA] [AddSubgroupClass σAA AA]
+variable [DecidableEq ιA] [AddMonoid ιA] [AddMonoid ιAA] [GradedRing 𝒜]
+variable [DecidableEq ιAA] [GradedRing 𝒜𝒜]
 
 variable (p : Submodule A M) (I : Ideal A)
+
+def Subring.IsHomogeneous (A' : Subring AA) : Prop :=
+  ∀ (i : ιAA) ⦃a : AA⦄, a ∈ A' → (DirectSum.decompose 𝒜𝒜 a i : AA) ∈ A'
+
+structure HomogeneousSubring extends Subring AA :=
+  is_homogeneous' : toSubring.IsHomogeneous 𝒜𝒜
 
 /-- An `p : Submodule A M` is homogeneous if for every `m ∈ p`, all homogeneous components
   of `m` are in `I`. -/
@@ -88,7 +96,8 @@ structure HomogeneousSubmodule extends Submodule A M where
 /-- For any `Semiring A`, we collect the homogeneous ideals of `A` into a type. -/
 def HomogeneousIdeal := HomogeneousSubmodule A 𝒜
 
-variable {𝒜 ℳ}
+variable {𝒜 ℳ 𝒜𝒜}
+
 
 /-- Converting a homogeneous ideal to an ideal. -/
 def HomogeneousIdeal.toIdeal (I : HomogeneousIdeal 𝒜) : Ideal A :=
@@ -102,6 +111,9 @@ theorem HomogeneousSubmodule.isHomogeneous (I : HomogeneousSubmodule A ℳ) :
     I.toSubmodule.IsHomogeneous ℳ :=
   I.is_homogeneous'
 
+theorem HomogeneousSubring.isHomogeneous (A' : HomogeneousSubring 𝒜𝒜) :
+  A'.toSubring.IsHomogeneous 𝒜𝒜 := A'.is_homogeneous'
+
 theorem HomogeneousSubmodule.toSubmodule_injective :
     Function.Injective
       (HomogeneousSubmodule.toSubmodule : HomogeneousSubmodule A ℳ→ Submodule A M) :=
@@ -112,12 +124,28 @@ theorem HomogeneousIdeal.toIdeal_injective :
   HomogeneousSubmodule.toSubmodule_injective
 #align homogeneous_ideal.to_ideal_injective HomogeneousIdeal.toIdeal_injective
 
+theorem HomogeneousSubring.toSubring_injective :
+    Function.Injective
+      (HomogeneousSubring.toSubring : HomogeneousSubring 𝒜𝒜 → Subring AA) :=
+  fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (h : x = y) => by simp [h]
+
 instance HomogeneousSubmodule.setLike : SetLike (HomogeneousSubmodule A ℳ) M where
   coe p := p.toSubmodule
   coe_injective' _ _ h := HomogeneousSubmodule.toSubmodule_injective <| SetLike.coe_injective h
 
 instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A := HomogeneousSubmodule.setLike
 #align homogeneous_ideal.set_like HomogeneousIdeal.setLike
+
+instance HomogeneousSubring.setLike : SetLike (HomogeneousSubring 𝒜𝒜) AA where
+  coe x := x.toSubring
+  coe_injective' _ _ h := HomogeneousSubring.toSubring_injective <| SetLike.coe_injective h
+
+instance : SubringClass (HomogeneousSubring 𝒜𝒜) AA where
+  mul_mem {x} := x.toSubring.mul_mem
+  one_mem {x} := x.toSubring.one_mem
+  add_mem {x} := x.toSubring.add_mem
+  zero_mem {x} := x.toSubring.zero_mem
+  neg_mem {x} := x.toSubring.neg_mem
 
 @[ext]
 theorem HomogeneousSubmodule.ext
@@ -130,6 +158,11 @@ theorem HomogeneousIdeal.ext
   HomogeneousSubmodule.ext h
 #align homogeneous_ideal.ext HomogeneousIdeal.ext
 
+@[ext]
+theorem HomogeneousSubring.ext {x y : HomogeneousSubring 𝒜𝒜} (h : x.toSubring = y.toSubring) :
+    x = y :=
+  HomogeneousSubring.toSubring_injective h
+
 @[simp]
 theorem HomogeneousSubmodule.mem_iff {I : HomogeneousSubmodule A ℳ} {x : M} :
     x ∈ I.toSubmodule ↔ x ∈ I :=
@@ -141,19 +174,27 @@ theorem HomogeneousIdeal.mem_iff {I : HomogeneousIdeal 𝒜} {x : A} :
   Iff.rfl
 #align homogeneous_ideal.mem_iff HomogeneousSubmodule.mem_iff
 
+@[simp]
+theorem HomogeneousSubring.mem_iff {A' : HomogeneousSubring 𝒜𝒜} (x : AA) :
+    x ∈ A'.toSubring ↔ x ∈ A' :=
+  Iff.rfl
+
 end HomogeneousDef
 
 section HomogeneousCore
 
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
-variable [Semiring A] [Module A M]
+variable [Semiring A] [Ring AA] [Module A M]
 
-variable (p : Submodule A M) (I : Ideal A)
+variable (p : Submodule A M) (I : Ideal A) (R : Subring AA)
 
 /-- For any `p : Submodule A M`, not necessarily homogeneous, `p.homogeneousCore' ℳ`
 is the largest homogeneous `A`-submodule contained in `p`, as an `A`-submodule. -/
 def Submodule.homogeneousCore' (I : Submodule A M) : Submodule A M :=
   Submodule.span A ((↑) '' (((↑) : Subtype (Homogeneous ℳ) → M) ⁻¹' I))
+
+def Subring.homogeneousCore' (R : Subring AA) : Subring AA :=
+  Subring.closure ((↑) '' (((↑) : Subtype (Homogeneous 𝒜𝒜) → AA) ⁻¹' R))
 
 /-- For any `I : Ideal A`, not necessarily homogeneous, `I.homogeneousCore' 𝒜`
 is the largest homogeneous ideal of `A` contained in `I`, as an ideal. -/
@@ -168,6 +209,9 @@ theorem Ideal.homogeneousCore'_mono : Monotone (Ideal.homogeneousCore' 𝒜) :=
   Submodule.homogeneousCore'_mono 𝒜
 #align ideal.homogeneous_core'_mono Ideal.homogeneousCore'_mono
 
+theorem Subring.homogeneousCore'_mono : Monotone (Subring.homogeneousCore' 𝒜𝒜) :=
+  fun _ _ I_le_J => Subring.closure_mono <| Set.image_subset _ fun _ => @I_le_J _
+
 theorem Submodule.homogeneousCore'_le : p.homogeneousCore' ℳ ≤ p :=
   Submodule.span_le.2 <| image_preimage_subset _ _
 
@@ -175,16 +219,20 @@ theorem Ideal.homogeneousCore'_le : I.homogeneousCore' 𝒜 ≤ I :=
   Submodule.homogeneousCore'_le 𝒜 I
 #align ideal.homogeneous_core'_le Submodule.homogeneousCore'_le
 
+theorem Subring.homogeneousCore'_le : R.homogeneousCore' 𝒜𝒜 ≤ R :=
+  Subring.closure_le.2 <| image_preimage_subset _ _
+
 end HomogeneousCore
 
 section IsHomogeneousSubmoduleDefs
 
 variable [AddMonoid ιA] [SetLike σA A] [SetLike σA A]
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
-variable [Semiring A] [AddSubmonoidClass σA A] [Module A M] [GradedRing 𝒜]
+variable [Semiring A] [Ring AA] [AddSubmonoidClass σA A] [Module A M] [GradedRing 𝒜]
 variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
+variable [AddSubgroupClass σAA AA] [AddMonoid ιAA] [DecidableEq ιAA] [GradedRing 𝒜𝒜]
 
-variable (p : Submodule A M) (I : Ideal A)
+variable (p : Submodule A M) (I : Ideal A) (R : Subring AA)
 
 theorem Submodule.isHomogeneous_iff_forall_subset :
     p.IsHomogeneous ℳ ↔ ∀ i, (p : Set M) ⊆ GradedModule.proj ℳ i ⁻¹' (p : Set M) :=
@@ -195,6 +243,10 @@ theorem Ideal.isHomogeneous_iff_forall_subset :
   Iff.rfl
 #align ideal.is_homogeneous_iff_forall_subset Submodule.isHomogeneous_iff_forall_subset
 
+theorem Subring.isHomogeneous_iff_forall_subset :
+    R.IsHomogeneous 𝒜𝒜 ↔ ∀ i, (R : Set AA) ⊆ GradedRing.proj 𝒜𝒜 i ⁻¹' (R : Set AA) :=
+  Iff.rfl
+
 theorem Submodule.isHomogeneous_iff_subset_iInter :
     p.IsHomogeneous ℳ ↔ (p : Set M) ⊆ ⋂ i, GradedModule.proj ℳ i ⁻¹' ↑p :=
   subset_iInter_iff.symm
@@ -203,6 +255,10 @@ theorem Ideal.isHomogeneous_iff_subset_iInter :
     I.IsHomogeneous 𝒜 ↔ (I : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' ↑I :=
   subset_iInter_iff.symm
 #align ideal.is_homogeneous_iff_subset_Inter Submodule.isHomogeneous_iff_subset_iInter
+
+theorem Subring.isHomogeneous_iff_subset_iInter :
+    R.IsHomogeneous 𝒜𝒜 ↔ (R : Set AA) ⊆ ⋂ i, GradedRing.proj 𝒜𝒜 i ⁻¹' ↑R :=
+  subset_iInter_iff.symm
 
 theorem Submodule.smul_homogeneous_element_mem_of_mem {p : Submodule A M} (r : A) (x : M)
     (hx₁ : Homogeneous ℳ x) (hx₂ : x ∈ p) (j : ιM) : GradedModule.proj ℳ j (r • x) ∈ p := by
@@ -239,6 +295,58 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x)
     (Ideal.span s).IsHomogeneous 𝒜 :=
   Submodule.homogeneous_span 𝒜 𝒜 s h
 #align ideal.is_homogeneous_span Ideal.homogeneous_span
+
+theorem Subring.homogeneous_closure (s : Set AA) (h : ∀ x ∈ s, Homogeneous 𝒜𝒜 x) :
+    (Subring.closure s).IsHomogeneous 𝒜𝒜 := by
+  intro i x hx
+  revert i
+  refine Subring.closure_induction hx ?_ ?_ ?_ ?_ ?_ ?_
+  · intro x hx i
+    obtain ⟨j, hj⟩ := h _ hx
+    by_cases h : i = j
+    · subst h
+      rw [decompose_of_mem_same (hx := hj)]
+      refine subset_closure hx
+    · rw [decompose_of_mem_ne (hx := hj) (hij := Ne.symm h)]
+      exact Subring.zero_mem _
+  · intro i
+    rw [decompose_zero]
+    exact (closure s).zero_mem
+  · intro i
+    by_cases h : i = 0
+    · subst h
+      rw [decompose_of_mem_same]
+      · exact (closure s).one_mem
+      rw [show (1 : AA) = ((1 : ℤ) : AA) by simp]
+      apply SetLike.int_cast_mem_graded
+    · rw [decompose_of_mem_ne 𝒜𝒜 (i := 0) (j := i) (hij := Ne.symm h)]
+      · exact (closure s).zero_mem
+      rw [show (1 : AA) = ((1 : ℤ) : AA) by simp]
+      apply SetLike.int_cast_mem_graded
+  · intro x y hx hy i
+    simp only [decompose_add, add_apply, AddMemClass.coe_add]
+    exact (closure s).add_mem (hx i) (hy i)
+  · intro x h i
+    simp only [decompose_neg]
+    exact (closure s).neg_mem (h i)
+  · intro a b ha hb i
+    classical
+    rw [← sum_support_decompose 𝒜𝒜 a, ← sum_support_decompose 𝒜𝒜 b, Finset.sum_mul]
+    simp_rw [Finset.mul_sum]
+    rw [decompose_sum]
+    simp_rw [decompose_sum]
+    simp only [decompose_mul, decompose_coe, Finset.coe_insert]
+    erw [DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
+    refine Subring.sum_mem _ fun j _ ↦ ?_
+    erw [DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
+    refine Subring.sum_mem _ fun k _ ↦ ?_
+    rw [DirectSum.of_mul_of, DirectSum.coe_of_apply]
+    split_ifs with h
+    · specialize ha j
+      specialize hb k
+      simp only [coe_gMul]
+      exact Subring.mul_mem _  ha hb
+    · exact Subring.zero_mem _
 
 /-- For any `p : Submodule A M`, not necessarily homogeneous, `p.homogeneousCore' ℳ`
 is the largest homogeneous `A`-submodule contained in `p`. -/

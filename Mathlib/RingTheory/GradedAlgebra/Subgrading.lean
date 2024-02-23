@@ -12,25 +12,7 @@ variable [Ring A] [Module A M]
 variable [SetLike σA A] [AddSubgroupClass σA A]
 variable [DecidableEq ιA] [AddMonoid ιA] [GradedRing 𝒜]
 
-def Subring.IsHomogeneous (A' : Subring A) : Prop :=
-  ∀ (i : ιA) ⦃a : A⦄, a ∈ A' → (DirectSum.decompose 𝒜 a i : A) ∈ A'
-
-@[ext]
-structure HomogeneousSubring extends Subring A :=
-  is_homogeneous' : toSubring.IsHomogeneous 𝒜
-
 namespace HomogeneousSubring
-
-instance : SetLike (HomogeneousSubring 𝒜) A where
-  coe x := x.toSubring.carrier
-  coe_injective' x y (h : x.carrier = y.carrier) := by ext a; rw [h]
-
-instance : SubringClass (HomogeneousSubring 𝒜) A where
-  mul_mem {x} := x.toSubring.mul_mem
-  one_mem {x} := x.toSubring.one_mem
-  add_mem {x} := x.toSubring.add_mem
-  zero_mem {x} := x.toSubring.zero_mem
-  neg_mem {x} := x.toSubring.neg_mem
 
 variable {𝒜}
 variable (A' : HomogeneousSubring 𝒜)
@@ -141,8 +123,31 @@ instance gradedRing : GradedRing A'.grading where
   __ := inferInstanceAs <| SetLike.GradedMonoid A'.grading
   __ := inferInstanceAs <| Decomposition A'.grading
 
-end HomogeneousSubring
+lemma grading.decompose_def (x : A') :
+  DirectSum.decompose A'.grading x = HomogeneousSubring.grading.decompose A' x := rfl
 
+section irrelevant_ideal
+
+variable {ιA σA A : Type*} [SetLike σA A] [DecidableEq ιA]
+variable {𝒜 : ιA → σA} [Ring A]
+variable [SetLike σA A] [AddSubgroupClass σA A]
+variable [DecidableEq ιA] [CanonicallyOrderedAddCommMonoid ιA] [GradedRing 𝒜]
+variable [(i : ιA) → (x : 𝒜 i) → Decidable (x ≠ 0)]
+variable (R : HomogeneousSubring 𝒜) [(a : A) → Decidable (a ∈ R)]
+
+lemma irrelevant_eq  :
+    (HomogeneousIdeal.irrelevant R.grading).toIdeal =
+    Ideal.comap (R.toSubring.subtype : R →+* A) (HomogeneousIdeal.irrelevant 𝒜).toIdeal := by
+  classical
+  ext x
+  erw [HomogeneousIdeal.mem_irrelevant_iff, Ideal.mem_comap, HomogeneousIdeal.mem_irrelevant_iff,
+    GradedRing.proj_apply, GradedRing.proj_apply, HomogeneousSubring.grading.decompose_def,
+    Subtype.ext_iff, grading.decompose_apply]
+  rfl
+
+end irrelevant_ideal
+
+end HomogeneousSubring
 
 namespace HomogeneousSubmodule
 
@@ -163,7 +168,6 @@ def grading (i : ιM) : AddSubgroup p where
   neg_mem' := NegMemClass.neg_mem
 
 variable [(i : ιM) → (x : ℳ i) → Decidable (x ≠ 0)] [∀ a : M, Decidable (a ∈ p)]
-
 
 protected def grading.decompose (a : p) : ⨁ i, p.grading i :=
 ∑ i in ((decompose ℳ a).support.filter fun i ↦ (decompose ℳ a i : M) ∈ p).attach,
@@ -458,12 +462,10 @@ lemma quotientGrading.decompose_rightInverse :
       exact quotientGrading.decompose_apply_mkQ_of_ne p j i y hy' (Ne.symm h)
   · simp [hx, hy]
 
-
 instance quotientDecomposition : DirectSum.Decomposition p.quotientGrading where
   decompose' := quotientGrading.decompose p
   left_inv := quotientGrading.decompose_leftInverse p
   right_inv := quotientGrading.decompose_rightInverse p
-
 
 instance quotientGradedSMul : SetLike.GradedSMul 𝒜 p.quotientGrading where
   smul_mem := by

@@ -48,31 +48,216 @@ Module.compHom M ({
 
 lemma Algebra.adjoin_smul_def (a : R[S]) (m : M) : a • m = (a : A) • m := rfl
 
-instance : Algebra A R[insert s S] :=
-  RingHom.toAlgebra
-  { toFun := fun a ↦ ⟨a,  sorry⟩
-    map_one' := by sorry
-    map_mul' := by sorry
-    map_zero' := by sorry
-    map_add' := by sorry }
+noncomputable instance [Module.Finite A M] : Module.Finite R[insert s S] M :=
+  let m : Module R[insert s S] M :=
+  Module.compHom M
+    ({ toFun := fun x ↦ (x : A)
+       map_one' := rfl
+       map_mul' := by intros; rfl
+       map_zero' := rfl
+       map_add' := by intros; rfl } : R[insert s S] →+* A)
+  let a : Algebra A R[insert s S] :=
+  (RingHom.toAlgebra
+    { toFun := fun a ↦ ⟨a,  by simp only [Finset.coe_insert, hS, Algebra.mem_top]⟩
+      map_one' := by ext; rfl
+      map_mul' := by intros; ext; rfl
+      map_zero' := by ext; rfl
+      map_add' := by intros; ext; rfl })
+  @Module.Finite.of_restrictScalars_finite A R[insert s S] M _ _ _ _ m a
+    ⟨fun x y z ↦ by
+      change (x * (y : A)) • z = x • ((y : A) • z)
+      rw [mul_smul]⟩ _
 
-instance :  IsScalarTower A R[insert s S] M where
-  smul_assoc a x m := show (a • (x : A)) • m = a • (x : A) • m from smul_assoc _ _ _
+open BigOperators
 
-instance [Module.Finite A M] : Module.Finite R[insert s S] M :=
-  Module.Finite.of_restrictScalars_finite (R := A) (A := R[insert s S]) _
+namespace Algebra.adjoin_module_finite_of_annihilating
 
-example (ann : ∀ (m : M), s • m = 0) : Algebra A R[S] :=
-  RingHom.toAlgebra
-  { toFun := fun a ↦ ⟨a,  sorry⟩
-    map_one' := by sorry
-    map_mul' := by sorry
-    map_zero' := by sorry
-    map_add' := by sorry }
+variable {A} in
+/--
+if `f` maps `aᵢ` to `nᵢ`
+then `f` represents the monomial `∏ᵢ aᵢ ^ nᵢ`
+-/
+def evalMonomial (f : A →₀ ℕ) : A :=
+  ∏ a in f.support, a ^ (f a)
 
+@[simp] lemma evalMonomial_zero : evalMonomial (A := A) 0 = 1 := by
+  simp [evalMonomial]
 
+lemma top_eq_span_monomial :
+    (⊤ : Submodule R A) =
+    Submodule.span R
+      {a | ∃ (f : A →₀ ℕ), f.support ⊆ insert s S ∧ a = evalMonomial f } := by
+  classical
+  refine le_antisymm ?_ le_top
+  rintro x -
+  have hx : x ∈ (⊤ : Subalgebra R A) := ⟨⟩
+  rw [← hS] at hx
+  refine Algebra.adjoin_induction hx ?_ ?_ ?_ ?_
+  · intro x hx
+    refine Submodule.subset_span ⟨Finsupp.single x 1,
+      Finsupp.support_single_subset.trans (by simpa), ?_⟩
+    · delta evalMonomial
+      have eq1 : (Finsupp.single x 1).support = {x} :=
+        le_antisymm Finsupp.support_single_subset (by simp)
+      simp [eq1]
+  · intro r
+    change (algebraMap R A r : A) ∈ Submodule.span R _
+    rw [show (algebraMap R A r : A) = (r : R) • (1 : A) by rw [Algebra.smul_def, mul_one]]
+    exact Submodule.smul_mem _ _ <| Submodule.subset_span ⟨0, by simp, by simp [evalMonomial]⟩
+  · intro a b ha hb
+    exact Submodule.add_mem _ ha hb
+  · intro a b ha hb
+    apply Submodule.span_induction₂ ha hb
+    · rintro _ ⟨f, hf, rfl⟩ _ ⟨g, hg, rfl⟩
+      refine Submodule.subset_span ⟨(f + g : A →₀ ℕ), ?_, ?_⟩
+      · exact Finsupp.support_add (g₁ := f) (g₂ := g) |>.trans <|
+          sup_le (α := Finset A) hf hg
+      · simp only [evalMonomial, Finsupp.coe_add, Pi.add_apply]
+        rw [Finset.prod_subset (h := hf), Finset.prod_subset (h := hg),
+          Finset.prod_subset (h := (_ : (f + g).support ⊆ insert s S))]
+        rotate_left
+        · intro x _ hx2
+          simp only [Finsupp.mem_support_iff, Finsupp.coe_add, Pi.add_apply, ne_eq, add_eq_zero,
+            not_and, not_forall, not_not, exists_prop] at hx2
+          rw [pow_add, hx2.1, hx2.2, pow_zero, one_mul]
+        · exact Finsupp.support_add (g₁ := f) (g₂ := g) |>.trans <|
+            sup_le (α := Finset A) hf hg
+        · intro x _ hx2
+          simp only [Finsupp.mem_support_iff, ne_eq, not_not] at hx2
+          rw [hx2, pow_zero]
+        · intro x _ hx2
+          simp only [Finsupp.mem_support_iff, ne_eq, not_not] at hx2
+          rw [hx2, pow_zero]
+
+        simp_rw [pow_add]
+        rw [Finset.prod_mul_distrib]
+    · intro y
+      rw [zero_mul]
+      exact Submodule.zero_mem _
+    · intro x
+      rw [mul_zero]
+      exact Submodule.zero_mem _
+    · intro x₁ x₂ y hx₁ hx₂
+      rw [add_mul]
+      exact Submodule.add_mem _ hx₁ hx₂
+    · intro x y₁ y₂ hy₁ hy₂
+      rw [mul_add]
+      exact Submodule.add_mem _ hy₁ hy₂
+    · intro r x y h
+      rw [Algebra.smul_mul_assoc]
+      exact Submodule.smul_mem _ _ h
+    · intro r x y h
+      rw [Algebra.mul_smul_comm]
+      exact Submodule.smul_mem _ _ h
+
+end Algebra.adjoin_module_finite_of_annihilating
+
+open Algebra.adjoin_module_finite_of_annihilating in
 lemma Algebra.adjoin_module_finite_of_annihilating [Module.Finite A M]
-  (ann : ∀ (m : M), s • m = 0) : Module.Finite R[S] M := sorry
+    (ann : ∀ (m : M), s • m = 0) : Module.Finite R[S] M := by
+  obtain ⟨S', hS'⟩ := (inferInstance : Module.Finite A M)
+  use S'
+  refine le_antisymm le_top ?_
+  rintro x -
+  have mem : x ∈ (⊤ : Submodule A M) := ⟨⟩
+  rw [← hS', mem_span_set] at mem
+  obtain ⟨c, hc, (rfl : ∑ i in c.support, _ • _ = x)⟩ := mem
+  refine Submodule.sum_mem _ fun i hi ↦ ?_
+  have mem1 : c i ∈ (⊤ : Submodule R A) := ⟨⟩
+  rw [top_eq_span_monomial R A S s hS, mem_span_set] at mem1
+  obtain ⟨r, hr1, (hr2 : ∑ j in r.support, _ • _ = _)⟩ := mem1
+  rw [← hr2, Finset.sum_smul]
+  refine Submodule.sum_mem _ fun j hj ↦ ?_
 
+  specialize hr1 hj
+  -- simp only [Set.mem_setOf_eq] at hr1
+  obtain ⟨f, hf, rfl⟩ := hr1
+  let f1 : A →₀ ℕ := f.update s 0
+  let f2 : A →₀ ℕ := Finsupp.single s (f s)
+
+  have eq2 : evalMonomial f = evalMonomial f1 * evalMonomial f2
+  · delta evalMonomial
+    -- rw [Finsupp.single_support]
+    simp only [Finsupp.support_update_zero, Finsupp.coe_update]
+    by_cases mem : s ∈ f.support
+    · conv_lhs => rw [← Finset.insert_erase mem]
+      rw [Finset.prod_insert (by simp), mul_comm]
+      congr 1
+      · refine Finset.prod_congr rfl fun i hi ↦ ?_
+        rw [Function.update_apply, if_neg]
+        rintro rfl
+        simp only [Finset.mem_erase, ne_eq, not_true_eq_false, Finsupp.mem_support_iff,
+          false_and] at hi
+      · have eq1 : (Finsupp.single s (f s)).support = {s}
+        · ext a
+          simp only [Finsupp.mem_support_iff, ne_eq, Finset.mem_singleton] at mem ⊢
+          rw [Finsupp.single_apply]
+          split_ifs with h
+          · subst h
+            aesop
+          · aesop
+        rw [eq1, Finset.prod_singleton, Finsupp.single_apply, if_pos rfl]
+    · have eq1 : (Finsupp.single s (f s)).support = ∅
+      · ext a
+        simp only [Finsupp.mem_support_iff, ne_eq, not_not, Finset.not_mem_empty, iff_false] at mem
+          ⊢
+        rw [Finsupp.single_apply, mem, ite_self]
+      rw [eq1, Finset.prod_empty, mul_one, Finset.prod_erase]
+      refine Finset.prod_congr rfl fun k _ ↦ ?_
+      rw [Function.update_apply]
+      split_ifs with h
+      · subst h
+        simp only [Finsupp.mem_support_iff, ne_eq, not_not, Finsupp.support_eq_empty,
+          Finsupp.single_eq_zero] at mem eq1
+        rw [eq1]
+      · rfl
+      rw [Function.update_apply, if_pos rfl, pow_zero]
+
+  have h1 : evalMonomial f1 ∈ adjoin R S
+  · refine Subalgebra.prod_mem _ fun k hk ↦ Subalgebra.pow_mem _ ?_ _
+    rw [mem_adjoin_iff]
+    refine Subring.subset_closure <| Or.inr ?_
+    simp only [Finsupp.support_update_zero, Finset.mem_erase, ne_eq] at hk
+    specialize hf hk.2
+    simp only [Finset.mem_insert] at hf
+    exact hf.resolve_left hk.1
+
+  rw [Algebra.smul_def, mul_smul,
+    show algebraMap R A (r (evalMonomial f)) • evalMonomial f • i =
+      (⟨algebraMap R A (r (evalMonomial f)), by
+        rw [mem_adjoin_iff]
+        exact Subring.subset_closure <| Or.inl ⟨r (evalMonomial f), rfl⟩⟩ : adjoin R S) •
+      evalMonomial f • i from rfl]
+  refine Submodule.smul_mem _ _ ?_
+  rw [eq2, mul_smul,
+    show evalMonomial f1 • evalMonomial f2 • i =
+      (⟨evalMonomial f1, by exact h1⟩ : adjoin R S) • evalMonomial f2 • i from rfl]
+  refine Submodule.smul_mem _ _ ?_
+
+  by_cases mem : s ∈ f.support
+  · delta evalMonomial
+    have eq1 : (Finsupp.single s (f s)).support = {s}
+    · ext a
+      simp only [Finsupp.mem_support_iff, ne_eq, Finset.mem_singleton] at mem ⊢
+      rw [Finsupp.single_apply]
+      split_ifs with h
+      · subst h
+        aesop
+      · aesop
+    rw [eq1, Finset.prod_singleton, Finsupp.single_apply, if_pos rfl]
+    simp only [Finsupp.mem_support_iff, ne_eq] at mem
+    have ineq1 : 0 < f s := by omega
+    rw [show f s = (f s - 1) + 1 from Nat.succ_pred_eq_of_pos ineq1 |>.symm, pow_succ', mul_smul,
+      ann, smul_zero]
+    exact Submodule.zero_mem _
+  · delta evalMonomial
+    have eq1 : (Finsupp.single s (f s)).support = ∅
+    · ext a
+      simp only [Finsupp.mem_support_iff, ne_eq, not_not, Finset.not_mem_empty, iff_false] at mem
+        ⊢
+      rw [Finsupp.single_apply, mem, ite_self]
+    rw [eq1, Finset.prod_empty,
+      show (1 : A) • i = (⟨(1 : A), Subalgebra.one_mem _⟩ : adjoin R S) • i from rfl]
+    exact Submodule.smul_mem _ _ <| Submodule.subset_span <| hc hi
 
 end

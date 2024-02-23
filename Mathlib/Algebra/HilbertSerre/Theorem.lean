@@ -53,9 +53,17 @@ lemma map_subsingleton (x : FGModuleCat (𝒜 0)) [subsingleton : Subsingleton x
 
 end AdditiveFunction
 
-namespace GradedRing.HomogeneousGeneratingSetOf
+structure generatingSetOverBaseRing :=
+toFinset : Finset A
+deg : ∀ {a : A}, a ∈ toFinset → ℕ
+mem_deg : ∀ {a : A} (h : a ∈ toFinset), a ∈ 𝒜 (deg h)
+deg_pos : ∀ {a : A} (h : a ∈ toFinset), 0 < deg h
+ne_zero' : ∀ {a : A}, a ∈ toFinset → a ≠ 0
+span_eq : Algebra.adjoin (𝒜 0) toFinset = (⊤ : Subalgebra (𝒜 0) A)
 
-variable (S : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+namespace generatingSetOverBaseRing
+
+variable (S : generatingSetOverBaseRing 𝒜)
 
 variable {𝒜} in
 @[simps] noncomputable def poles : ℤ⟦X⟧ˣ where
@@ -65,14 +73,14 @@ variable {𝒜} in
     simp only [map_prod, map_sub, map_one, map_pow, constantCoeff_X, Units.val_one]
     refine Finset.prod_eq_one fun i _ ↦ ?_
     rw [zero_pow, sub_zero]
-    linarith [irrelevant.deg_pos S i.2]
+    linarith [S.deg_pos i.2]
   inv_val := by
     rw [mul_comm]
     refine mul_invOfUnit _ _ ?_
     simp only [map_prod, map_sub, map_one, map_pow, constantCoeff_X, Units.val_one]
     refine Finset.prod_eq_one fun i _ ↦ ?_
     rw [zero_pow, sub_zero]
-    linarith [irrelevant.deg_pos S i.2]
+    linarith [S.deg_pos i.2]
 
 lemma poles_val :
     S.poles.val =
@@ -91,14 +99,14 @@ lemma poles_inv_eq' :
   refine mul_invOfUnit _ _ ?_
   simp only [map_sub, map_one, map_pow, constantCoeff_X, Units.val_one, sub_eq_self,
     pow_eq_zero_iff', ne_eq, true_and]
-  linarith [irrelevant.deg_pos S hi]
+  linarith [S.deg_pos hi]
 
 
-end GradedRing.HomogeneousGeneratingSetOf
+end generatingSetOverBaseRing
 
 namespace HilbertSerre
 
-variable (S : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+variable (S : generatingSetOverBaseRing 𝒜)
 
 abbrev statement : Prop := ∃ (p : Polynomial ℤ), μ.poincareSeries 𝒜 ℳ = p • S.poles⁻¹
 
@@ -111,7 +119,7 @@ abbrev statement' (N : ℕ) : Prop :=
 
       (μ : (FGModuleCat (𝒜 0)) ⟹+ ℤ)
 
-      (S : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+      (S : generatingSetOverBaseRing 𝒜)
       (_ : S.toFinset.card = N),
 
     ∃ (p : Polynomial ℤ),
@@ -129,24 +137,36 @@ lemma eventually_eq_zero_of_empty_generatorSet :
     ∃ N : ℕ, ∀ n : ℕ, N < n → ∀ (x : ℳ n), x = 0 := by
   classical
   rw [Finset.card_eq_zero] at card_generator
+  have eq1 := S.span_eq
+  simp only [card_generator, Finset.coe_empty, Algebra.adjoin_empty] at eq1
 
+  let S' := GradedRing.HomogeneousGeneratingSetOf.Irrelevant 𝒜
+  have S'_eq : S'.toFinset = ∅
+  · have eq2 := GradedRing.HomogeneousGeneratingSetOf.irrelevant.adjoin_eq_top S'
+    rw [← eq1] at eq2
+    by_contra r
+    change S'.toFinset ≠ ∅ at r
+    rw [← Finset.nonempty_iff_ne_empty] at r
+    obtain ⟨s, hs⟩ := r
+    have hs' : s ∈ (⊥ : Subalgebra (𝒜 0) A)
+    · rw [← eq2, Algebra.mem_adjoin_iff]
+      exact Subring.subset_closure <| Or.inr hs
+    obtain ⟨s, rfl⟩ := hs'
+    change (s : A) ∈ S'.toFinset at hs
+    have eq3 := DirectSum.degree_eq_of_mem_mem (ℳ := 𝒜) s.2 (S'.mem_deg hs) (S'.ne_zero' hs)
+    have ineq1 : 0 < S'.deg hs :=  GradedRing.HomogeneousGeneratingSetOf.irrelevant.deg_pos S' hs
+    linarith only [eq3, ineq1]
   let T := GradedModule.HomogeneousGeneratingSetOf.Top A ℳ
   let deg : T.toFinset → ℕ := fun x ↦ T.deg x.2
   by_cases ne_empty : T.toFinset = ∅
   · refine ⟨1, fun n _ x ↦ ?_⟩
-    have eq1 := kth_degree_eq_span S T n
-    simp_rw [card_generator, Finset.subset_empty, Finsupp.support_eq_empty] at eq1
-    replace eq1 := calc ⊤
-      _ = _ := eq1
-      _ = Submodule.span (𝒜 0) ∅ := by
-          congr
-          rw [Set.eq_empty_iff_forall_not_mem]
-          rintro x ⟨ω, (hω : ω ∈ T.toFinset), -⟩
-          rw [ne_empty] at hω
-          simp only [Finset.not_mem_empty] at hω
-      _ = ⊥ := by rw [Submodule.span_empty]
-    rw [← Submodule.mem_bot (R := 𝒜 0), ← eq1]
-    trivial
+    have eq2 := T.span_eq
+    rw [ne_empty] at eq2
+    simp only [Finset.coe_empty, Submodule.span_empty] at eq2
+    have mem1 : (x : M) ∈ (⊤ : Submodule A M) := ⟨⟩
+    rw [← eq2] at mem1
+    ext
+    exact mem1
 
   let maxDeg : ℕ := Finset.image deg Finset.univ |>.max' (by
     simp only [Finset.univ_eq_attach, Finset.image_nonempty, Finset.attach_nonempty_iff]
@@ -157,7 +177,9 @@ lemma eventually_eq_zero_of_empty_generatorSet :
   have hn' (m : M) (hm : m ∈ T.toFinset) : T.deg hm < n
   · exact lt_of_le_of_lt (Finset.le_max' _ _ <| by aesop) hn
 
-  have eq0 := kth_degree_eq_span S T n
+  have eq0 := kth_degree_eq_span S' T n
+  replace card_generator : (GradedRing.HomogeneousGeneratingSetOf.Irrelevant 𝒜).toFinset = ∅
+  · exact S'_eq
   simp_rw [card_generator, Finset.subset_empty, Finsupp.support_eq_empty] at eq0
   replace eq0 := calc _
     _ = _ := eq0
@@ -206,7 +228,7 @@ lemma proof.base_case : statement'.{u} 0 := by
   refine ⟨(μ.poincareSeries 𝒜 ℳ).trunc (N + 1), ?_⟩
   rw [Algebra.smul_def, eq_comm, Units.mul_inv_eq_iff_eq_mul, eq_comm]
   convert mul_one _
-  · simp only [GradedRing.HomogeneousGeneratingSetOf.val_poles]
+  · simp only [generatingSetOverBaseRing.val_poles]
     convert Finset.prod_empty
     simp only[Finset.attach_eq_empty_iff, card_generator]
 
@@ -349,7 +371,6 @@ lemma exact_smulBy_COKERDescComponent' (n : ℕ) (ineq : d ≤ n) :
   simp only [reindex_symm_apply_coe, Submodule.pointwise_smul_toAddSubgroup,
     Submodule.top_toAddSubgroup] at h ⊢ <;>
   exact h
-
 
 lemma COKER.descComponent_surjective (n : ℕ) :
     Function.Surjective (COKER.descComponent ℳ x deg_x (d + n)) := by
@@ -549,9 +570,16 @@ lemma key_lemma :
 
 example : true := rfl
 
-def adjoinHomogeneous (S : Finset A) (hS : ∀ a ∈ S, SetLike.Homogeneous 𝒜 a) : HomogeneousSubring 𝒜 where
+def adjoinHomogeneous (S : Finset A) (hS : ∀ a ∈ S, SetLike.Homogeneous 𝒜 a) :
+    HomogeneousSubring 𝒜 where
   __ :=  (Algebra.adjoin (𝒜 0) S : Subalgebra (𝒜 0) A).toSubring
-  is_homogeneous' := sorry
+  is_homogeneous' := by
+    intro i a h
+    simp only [Subalgebra.mem_toSubring, Algebra.mem_adjoin_iff] at h ⊢
+    refine Subring.homogeneous_closure 𝒜 (Set.range (algebraMap (𝒜 0) A) ∪ S) ?_ i h
+    rintro x (⟨x, rfl⟩|hx)
+    · exact ⟨0, SetLike.coe_mem _⟩
+    · exact hS _ hx
 
 section
 
@@ -561,7 +589,7 @@ variable (s : A) (s_not_mem : s ∈ S.toFinset) (S' : Finset A) (hS' : insert s 
 variable (d : ℕ) (deg_s : s ∈ 𝒜 d)
 
 abbrev A' : HomogeneousSubring 𝒜 := induction.constructions.adjoinHomogeneous S' fun _ h ↦
-  S.2 <| hS' ▸ Finset.mem_insert_of_mem h
+  ⟨S.deg (hS' ▸ Finset.mem_insert_of_mem h), S.mem_deg _⟩
 
 lemma mem_A' (a : A) : a ∈ A' S s S' hS' ↔ a ∈ Algebra.adjoin (𝒜 0) S' := Iff.rfl
 
@@ -605,7 +633,6 @@ instance gradedModule_COKER :
     exact ⟨Quotient.mk''
       ⟨(a : A) • (b : M), (inferInstance : SetLike.GradedSMul 𝒜 ℳ).smul_mem ha b.2⟩, rfl⟩
 
-
 @[simps]
 def AZeroToA'Zero : 𝒜 0 →+* 𝒜' S s S' hS' 0 where
   toFun := fun x ↦ ⟨⟨(x : A), by
@@ -645,27 +672,51 @@ noncomputable def μ' : FGModuleCat (𝒜' S s S' hS' 0) ⟹+ ℤ :=
   μ.pushforward <| RingEquiv.toFGModuleCatEquivalence <| AZeroEquivA'Zero S s S' hS'
 
 @[simps]
-noncomputable def generatingSet' :
-    GradedRing.HomogeneousGeneratingSetOf (𝒜' S s S' hS')
-      (HomogeneousIdeal.toIdeal (HomogeneousIdeal.irrelevant (𝒜' S s S' hS'))) where
+def generatingSet' : generatingSetOverBaseRing (𝒜' S s S' hS') where
   toFinset := S'.attach.image fun x : S' ↦ ⟨x, by
     rw [mem_A', Algebra.mem_adjoin_iff]
     refine Subring.subset_closure <| Or.inr x.2⟩
-  homogeneous' := by
-    intro x hx
+  deg {x} hx := S.deg (by
     simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at hx
-    obtain ⟨x, hx, rfl⟩ := hx
-    obtain ⟨i, hi⟩ := S.2 (hS' ▸ Finset.mem_insert_of_mem hx : x ∈ S.toFinset)
-    exact ⟨i, hi⟩
-  ne_zero' := by
-    intro x hx
-    simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at hx
-    obtain ⟨x, hx, rfl⟩ := hx
-    have h := S.3 (hS' ▸ Finset.mem_insert_of_mem hx : x ∈ S.toFinset)
-    contrapose! h
-    rw [Subtype.ext_iff] at h
-    exact h
-  span_eq := sorry
+    obtain ⟨a, ha, rfl⟩ := hx
+    exact hS' ▸ Finset.mem_insert_of_mem ha : (x : A) ∈ S.toFinset)
+  mem_deg _ := S.mem_deg _
+  deg_pos _ := S.deg_pos _
+  ne_zero' h := by
+    simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at h
+    obtain ⟨a, ha, rfl⟩ := h
+    suffices h : a ≠ 0
+    · contrapose! h
+      rw [Subtype.ext_iff] at h
+      exact h
+    exact S.ne_zero' (hS' ▸ Finset.mem_insert_of_mem ha)
+  span_eq := by
+    refine le_antisymm ?_ ?_
+    · intro x _
+      simp only [Algebra.mem_top]
+    rintro ⟨a, ha⟩ -
+    rw [mem_A', Algebra.mem_adjoin_iff, Subring.mem_closure] at ha
+    rw [Algebra.mem_adjoin_iff, Subring.mem_closure]
+    intros R hR
+    specialize ha (R.map (A' S s S' hS').toSubring.subtype) (by
+      simp only [Finset.coe_image, Set.union_subset_iff, Set.image_subset_iff, Subring.coe_map,
+        Subring.coeSubtype] at hR ⊢
+      constructor
+      · rintro _ ⟨a, rfl⟩
+        let a' : 𝒜' S s S' hS' 0 := ⟨⟨(a : A), by
+          erw [mem_A', Algebra.mem_adjoin_iff]
+          refine Subring.subset_closure <| Or.inl ?_
+          exact ⟨a, rfl⟩⟩, a.2⟩
+        refine ⟨a', ?_, rfl⟩
+        refine hR.1 ⟨a', rfl⟩
+      · intro x hx
+        have hR2 := hR.2 (Finset.mem_attach S' ⟨x, hx⟩)
+        simp only [Set.mem_preimage, SetLike.mem_coe] at hR2
+        exact ⟨⟨x, _⟩, hR2, rfl⟩)
+    simp only [Subring.mem_map, Subring.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right] at ha
+    obtain ⟨_, ha⟩ := ha
+    exact ha
 
 open Classical in
 lemma eqKER :
@@ -720,7 +771,7 @@ lemma induction : statement'.{u} (N + 1) := by
 
   let d : ℕ := S.deg (hS1' ▸ Finset.mem_insert_self _ _ : s ∈ S.toFinset)
   have deg_s : s ∈ 𝒜 d := S.mem_deg _
-  have d_pos : 0 < d := GradedRing.HomogeneousGeneratingSetOf.irrelevant.deg_pos S
+  have d_pos : 0 < d := S.deg_pos
     (hS1' ▸ Finset.mem_insert_self _ _ : s ∈ S.toFinset)
   have d_ne_zero : d ≠ 0 := by linarith only [d_pos]
 
@@ -757,8 +808,7 @@ lemma induction : statement'.{u} (N + 1) := by
 
   have eq_poles :
     S.poles.val = (generatingSet' S s S' hS1').poles.val * (1 - X^d : ℤ⟦X⟧)
-  · rw [GradedRing.HomogeneousGeneratingSetOf.val_poles,
-      GradedRing.HomogeneousGeneratingSetOf.val_poles]
+  · rw [generatingSetOverBaseRing.val_poles, generatingSetOverBaseRing.val_poles]
     have eq0 := calc ∏ i in S.toFinset.attach, (1 - X ^ S.deg i.2 : ℤ⟦X⟧)
         _ = ∏ i in (insert s S').attach,
               (1 - X ^ S.deg (hS1' ▸ i.2 : i.1 ∈ S.toFinset) : ℤ⟦X⟧) := by
@@ -853,4 +903,5 @@ lemma proof' : ∀ n, statement'.{u} n := by
 
 lemma _root_.hilbert_serre : ∃ (p : Polynomial ℤ), μ.poincareSeries 𝒜 ℳ = p • S.poles⁻¹ :=
   statement'_imp_statement 𝒜 ℳ μ S proof'.{u}
+
 end HilbertSerre
