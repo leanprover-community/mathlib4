@@ -372,10 +372,11 @@ def GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E :=
 structure from the norm properties. Note that in most cases this instance creates bad definitional
 equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
 `E`). -/
-@[to_additive (attr := reducible) "Construct a normed group from a norm, i.e., registering
-the distance and the metric space structure from the norm properties. Note that in most
-cases this instance creates bad definitional equalities (e.g., it does not take into
-account a possibly existing `UniformSpace` instance on `E`)."]
+@[to_additive (attr := reducible)
+  "Construct a normed group from a norm, i.e., registering the distance and the metric
+space structure from the norm properties. Note that in most cases this instance creates bad
+definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
+instance on `E`)."]
 def GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGroup E :=
   { f.toNormedGroup with
     mul_comm := mul_comm }
