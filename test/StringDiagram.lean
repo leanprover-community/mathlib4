@@ -50,6 +50,11 @@ example {X Y : C} (f : X ⟶ Y) (g : 𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y) (w : False
   with_panel_widgets [SelectionPanel]
     exact w.elim
 
+example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ := by
+  with_panel_widgets [GoalTypePanel]
+    rw [MonoidalCategory.whisker_exchange]
+    rw [MonoidalCategory.tensorHom_def]
+
 namespace Mathlib.Tactic.Widget.StringDiagram
 
 open Mathlib.Tactic.Coherence
@@ -157,6 +162,7 @@ example : normalize% (ρ_ X).inv = (ρ_ X).inv := by simp
 example : normalize% (α_ X Y Z).hom = (α_ _ _ _).hom := by simp
 example : normalize% (α_ X Y Z).inv = (α_ _ _ _).inv := by simp
 example : normalize% 𝟙 (X ⊗ Y) = 𝟙 (X ⊗ Y) := by simp
+example : normalize% f ⊗ g = f ▷ _ ≫ _ ◁ g := by simp
 example (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) :
     normalize% R V₁ V₂ ▷ V₃ ⊗≫ V₂ ◁ R V₁ V₃ = R V₁ V₂ ▷ V₃ ≫ (α_ _ _ _).hom ≫ V₂ ◁ R V₁ V₃ := by
   simp

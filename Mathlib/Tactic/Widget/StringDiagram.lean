@@ -378,14 +378,18 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
       let αθ ← evalComp α θ_e
       let ηαθ ← evalComp η_e αθ
       return ηαθ
-    /- Partial support for `tensorHom`, in the cases for `η ⊗ 𝟙 f` and `𝟙 f ⊗ θ`. -/
-    | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
+    | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _f₁, g₁, f₂, _g₂, η, θ]) =>
+      /- Evaluate `η ⊗ 𝟙 f` and `𝟙 f ⊗ θ` as whiskerings. -/
       match η.getAppFnArgs, θ.getAppFnArgs with
-      | (``CategoryStruct.id, #[_, _, f]), _ =>
-        evalWhiskerLeftExpr (toMor₁ f) (← eval θ)
       | _, (``CategoryStruct.id, #[_, _, f]) =>
         evalWhiskerRightExpr (← eval η) (toMor₁ f)
-      | _, _ => NormalExpr.of e
+      | (``CategoryStruct.id, #[_, _, f]), _ =>
+        evalWhiskerLeftExpr (toMor₁ f) (← eval θ)
+      /- Otherwise, expand `tensorHom` by using `tensorHom_def`. -/
+      | _, _ =>
+        let η' ← evalWhiskerRightExpr (← eval η) (toMor₁ f₂)
+        let θ' ← evalWhiskerLeftExpr (toMor₁ g₁) (← eval θ)
+        evalComp η' θ'
     | _ => NormalExpr.of e
 
 /-- Convert a `NormalExpr` expression into a list of `WhiskerLeftExpr` expressions. -/
