@@ -281,9 +281,9 @@ end Extend
 
 end
 
-theorem cauchyFilter_eq {α : Type*} [Inhabited α] [UniformSpace α] [CompleteSpace α]
-    [SeparatedSpace α] {f g : CauchyFilter α} :
-    lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
+theorem cauchyFilter_eq {α : Type*} [UniformSpace α] [CompleteSpace α] [SeparatedSpace α]
+    {f g : CauchyFilter α} :
+    f.2.lim = g.2.lim ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
   constructor
   · intro e s hs
     rcases CauchyFilter.mem_uniformity'.1 hs with ⟨t, tu, ts⟩
@@ -291,8 +291,8 @@ theorem cauchyFilter_eq {α : Type*} [Inhabited α] [UniformSpace α] [CompleteS
     rcases comp_mem_uniformity_sets tu with ⟨d, du, dt⟩
     refine'
       mem_prod_iff.2
-        ⟨_, f.2.le_nhds_lim (mem_nhds_right (lim f.1) du), _,
-          g.2.le_nhds_lim (mem_nhds_left (lim g.1) du), fun x h => _⟩
+        ⟨_, f.2.le_nhds_lim (mem_nhds_right (f.2.lim) du), _,
+          g.2.le_nhds_lim (mem_nhds_left (g.2.lim) du), fun x h => _⟩
     cases' x with a b
     cases' h with h₁ h₂
     rw [← e] at h₂
@@ -301,9 +301,9 @@ theorem cauchyFilter_eq {α : Type*} [Inhabited α] [UniformSpace α] [CompleteS
     refine' separated_def.1 (by infer_instance) _ _ fun t tu => _
     rcases mem_uniformity_isClosed tu with ⟨d, du, dc, dt⟩
     refine'
-      H { p | (lim p.1.1, lim p.2.1) ∈ t } (CauchyFilter.mem_uniformity'.2 ⟨d, du, fun f g h => _⟩)
+      H { p | (p.1.2.lim, p.2.2.lim) ∈ t } (CauchyFilter.mem_uniformity'.2 ⟨d, du, fun f g h => _⟩)
     rcases mem_prod_iff.1 h with ⟨x, xf, y, yg, h⟩
-    have limc : ∀ (f : CauchyFilter α), ∀ x ∈ f.1, lim f.1 ∈ closure x := by
+    have limc : ∀ (f : CauchyFilter α), ∀ x ∈ f.1, f.2.lim ∈ closure x := by
       intro f x xf
       rw [closure_eq_cluster_pts]
       exact f.2.1.mono (le_inf f.2.le_nhds_lim (le_principal_iff.2 xf))
