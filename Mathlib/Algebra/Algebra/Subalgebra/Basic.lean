@@ -58,7 +58,7 @@ theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x
   Iff.rfl
 #align subalgebra.mem_to_subsemiring Subalgebra.mem_toSubsemiring
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subalgebra.mem_carrier Subalgebra.mem_carrier

@@ -111,8 +111,8 @@ then it does not frequently visit both below `a` and above `b`. -/
 theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a b f ω ≠ ∞) :
     ¬((∃ᶠ n in atTop, f n ω < a) ∧ ∃ᶠ n in atTop, b < f n ω) := by
   rw [← lt_top_iff_ne_top, upcrossings_lt_top_iff] at hω
-  replace hω : ∃ k, ∀ N, upcrossingsBefore a b f N ω < k
-  · obtain ⟨k, hk⟩ := hω
+  replace hω : ∃ k, ∀ N, upcrossingsBefore a b f N ω < k := by
+    obtain ⟨k, hk⟩ := hω
     exact ⟨k + 1, fun N => lt_of_le_of_lt (hk N) k.lt_succ_self⟩
   rintro ⟨h₁, h₂⟩
   rw [frequently_atTop] at h₁ h₂
