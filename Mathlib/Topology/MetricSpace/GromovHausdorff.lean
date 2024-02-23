@@ -412,7 +412,6 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
     exact (hausdorffDist_image (kuratowskiEmbedding.isometry _)).symm
 #align Gromov_Hausdorff.GH_dist_eq_Hausdorff_dist GromovHausdorff.ghDist_eq_hausdorffDist
 
-set_option maxHeartbeats 300000 in
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where
   dist := dist
@@ -442,6 +441,10 @@ instance : MetricSpace GHSpace where
       funext
       simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
       congr
+      -- The next line had `singlePass := true` before #9928,
+      -- then was changed to be `simp only [hausdorffDist_comm]`,
+      -- then `singlePass := true` was readded in #8386 because of timeouts.
+      -- TODO: figure out what causes the slowdown and make it a `simp only` again?
       simp (config := { singlePass := true }) only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
@@ -719,7 +722,7 @@ instance : SecondCountableTopology GHSpace := by
     · /- the distance between `x` and `y` is encoded in `F p`, and the distance between
             `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
             As `F p = F q`, the distances are almost equal. -/
-      -- porting note : we have to circumvent the absence of `change … with … `
+      -- Porting note: we have to circumvent the absence of `change … with … `
       intro x y
       -- have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
       rw [show dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) from rfl]
@@ -752,7 +755,7 @@ instance : SecondCountableTopology GHSpace := by
         have hpq' : HEq (F p).snd (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
         rw [Fin.heq_fun₂_iff Npq Npq] at hpq'
         rw [← hpq']
-        -- porting note : new version above, because `change … with…` is not implemented
+        -- Porting note: new version above, because `change … with…` is not implemented
         -- we want to `subst hpq` where `hpq : F p = F q`, except that `subst` only works
         -- with a constant, so replace `F q` (and everything that depends on it) by a constant `f`
         -- then `subst`

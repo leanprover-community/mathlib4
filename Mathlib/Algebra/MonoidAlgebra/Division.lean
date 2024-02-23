@@ -70,7 +70,7 @@ theorem support_divOf (g : G) (x : k[G]) :
 
 @[simp]
 theorem zero_divOf (g : G) : (0 : k[G]) /ᵒᶠ g = 0 :=
-  map_zero _
+  map_zero (Finsupp.comapDomain.addMonoidHom _)
 #align add_monoid_algebra.zero_div_of AddMonoidAlgebra.zero_divOf
 
 @[simp]
@@ -80,7 +80,7 @@ theorem divOf_zero (x : k[G]) : x /ᵒᶠ 0 = x := by
 #align add_monoid_algebra.div_of_zero AddMonoidAlgebra.divOf_zero
 
 theorem add_divOf (x y : k[G]) (g : G) : (x + y) /ᵒᶠ g = x /ᵒᶠ g + y /ᵒᶠ g :=
-  map_add _ _ _
+  map_add (Finsupp.comapDomain.addMonoidHom _) _ _
 #align add_monoid_algebra.add_div_of AddMonoidAlgebra.add_divOf
 
 theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by
@@ -123,6 +123,7 @@ theorem of'_divOf (a : G) : of' k G a /ᵒᶠ a = 1 := by
 
 /-- The remainder upon division by `of' k G g`. -/
 noncomputable def modOf (x : k[G]) (g : G) : k[G] :=
+  letI := Classical.decPred fun g₁ => ∃ g₂, g₁ = g + g₂
   x.filter fun g₁ => ¬∃ g₂, g₁ = g + g₂
 #align add_monoid_algebra.mod_of AddMonoidAlgebra.modOf
 
@@ -130,14 +131,14 @@ local infixl:70 " %ᵒᶠ " => modOf
 
 @[simp]
 theorem modOf_apply_of_not_exists_add (x : k[G]) (g : G) (g' : G)
-    (h : ¬∃ d, g' = g + d) : (x %ᵒᶠ g) g' = x g' :=
-  Finsupp.filter_apply_pos _ _ h
+    (h : ¬∃ d, g' = g + d) : (x %ᵒᶠ g) g' = x g' := by
+  classical exact Finsupp.filter_apply_pos _ _ h
 #align add_monoid_algebra.mod_of_apply_of_not_exists_add AddMonoidAlgebra.modOf_apply_of_not_exists_add
 
 @[simp]
 theorem modOf_apply_of_exists_add (x : k[G]) (g : G) (g' : G)
-    (h : ∃ d, g' = g + d) : (x %ᵒᶠ g) g' = 0 :=
-  Finsupp.filter_apply_neg _ _ <| by rwa [Classical.not_not]
+    (h : ∃ d, g' = g + d) : (x %ᵒᶠ g) g' = 0 := by
+  classical exact Finsupp.filter_apply_neg _ _ <| by rwa [Classical.not_not]
 #align add_monoid_algebra.mod_of_apply_of_exists_add AddMonoidAlgebra.modOf_apply_of_exists_add
 
 @[simp]
@@ -145,7 +146,7 @@ theorem modOf_apply_add_self (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g) (d + g) 
   modOf_apply_of_exists_add _ _ _ ⟨_, add_comm _ _⟩
 #align add_monoid_algebra.mod_of_apply_add_self AddMonoidAlgebra.modOf_apply_add_self
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem modOf_apply_self_add (x : k[G]) (g : G) (d : G) : (x %ᵒᶠ g) (g + d) = 0 :=
   modOf_apply_of_exists_add _ _ _ ⟨_, rfl⟩
 #align add_monoid_algebra.mod_of_apply_self_add AddMonoidAlgebra.modOf_apply_self_add

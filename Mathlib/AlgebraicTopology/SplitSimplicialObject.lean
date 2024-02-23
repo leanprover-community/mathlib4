@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 In this file, we introduce the notion of split simplicial object.
 If `C` is a category that has finite coproducts, a splitting
-`s : Splitting X` of a simplical object `X` in `C` consists
+`s : Splitting X` of a simplicial object `X` in `C` consists
 of the datum of a sequence of objects `s.N : ℕ → C` (which
 we shall refer to as "nondegenerate simplices") and a
 sequence of morphisms `s.ι n : s.N n → X _[n]` that have
@@ -337,11 +337,11 @@ def mk' {X : SimplicialObject C} (s : Splitting X) : Split C :=
   ⟨X, s⟩
 #align simplicial_object.split.mk' SimplicialObject.Split.mk'
 
--- porting note : removed @[nolint has_nonempty_instance]
+-- Porting note: removed @[nolint has_nonempty_instance]
 /-- Morphisms in `SimplicialObject.Split C` are morphisms of simplicial objects that
 are compatible with the splittings. -/
 structure Hom (S₁ S₂ : Split C) where
-  /-- the morphism between the underlying simplical objects -/
+  /-- the morphism between the underlying simplicial objects -/
   F : S₁.X ⟶ S₂.X
   /-- the morphism between the "nondegenerate" `n`-simplices for all `n : ℕ` -/
   f : ∀ n : ℕ, S₁.s.N n ⟶ S₂.s.N n

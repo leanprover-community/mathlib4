@@ -95,7 +95,7 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
             (mt (congr_arg (· % 2)) (by simp [natDegree_eq_of_degree_eq_some hf2, hR])))
           (card_image_polynomial_eval (by rw [degree_neg, hg2]; exact by decide)))
       _ = 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card := by
-        rw [card_disjoint_union hd];
+        rw [card_union_of_disjoint hd];
           simp [natDegree_eq_of_degree_eq_some hf2, natDegree_eq_of_degree_eq_some hg2, mul_add]
 
 #align finite_field.exists_root_sum_quadratic FiniteField.exists_root_sum_quadratic
@@ -196,10 +196,9 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
     congr
     rw [eq_comm]
     exact Multiset.map_univ_val_equiv (Equiv.mulRight a)
-  have h_multiset_map_sum :
-    (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k) Finset.univ.val).sum =
-      (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) Finset.univ.val).sum
-  rw [h_multiset_map]
+  have h_multiset_map_sum : (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k) Finset.univ.val).sum =
+    (Multiset.map (fun x : G => ((x : Kˣ) : K) ^ k * ((a : Kˣ) : K) ^ k) Finset.univ.val).sum := by
+    rw [h_multiset_map]
   rw [Multiset.sum_map_mul_right] at h_multiset_map_sum
   have hzero : (((a : Kˣ) : K) ^ k - 1 : K)
                   * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
@@ -228,10 +227,9 @@ theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
 #align finite_field.pow_card_sub_one_eq_one FiniteField.pow_card_sub_one_eq_one
 
 theorem pow_card (a : K) : a ^ q = a := by
-  have hp : 0 < Fintype.card K := lt_trans zero_lt_one Fintype.one_lt_card
-  by_cases h : a = 0; · rw [h]; apply zero_pow hp
-  rw [← Nat.succ_pred_eq_of_pos hp, pow_succ, Nat.pred_eq_sub_one, pow_card_sub_one_eq_one a h,
-    mul_one]
+  by_cases h : a = 0; · rw [h]; apply zero_pow Fintype.card_ne_zero
+  rw [← Nat.succ_pred_eq_of_pos Fintype.card_pos, pow_succ, Nat.pred_eq_sub_one,
+    pow_card_sub_one_eq_one a h, mul_one]
 #align finite_field.pow_card FiniteField.pow_card
 
 theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
@@ -317,8 +315,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
         mem_univ, mem_map, exists_prop_of_true, mem_singleton]
     calc
       ∑ x : K, x ^ i = ∑ x in univ \ {(0 : K)}, x ^ i := by
-        rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton,
-          zero_pow (Nat.pos_of_ne_zero hi), add_zero]
+        rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero]
       _ = ∑ x : Kˣ, (x ^ i : K) := by simp [← this, univ.sum_map φ]
       _ = 0 := by rw [sum_pow_units K i, if_neg]; exact hiq
 #align finite_field.sum_pow_lt_card_sub_one FiniteField.sum_pow_lt_card_sub_one

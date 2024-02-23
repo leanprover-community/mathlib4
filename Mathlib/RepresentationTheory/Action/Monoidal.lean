@@ -384,32 +384,42 @@ namespace CategoryTheory.MonoidalFunctor
 open Action
 
 variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCategory W]
-  (F : MonoidalFunctor V W) (G : MonCat.{u})
 
-/-- A monoidal functor induces a monoidal functor between
+/-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
-@[simps]
-def mapAction : MonoidalFunctor (Action V G) (Action W G) where
-  toFunctor := F.toFunctor.mapAction G
-  ε :=
+@[simps!]
+def mapActionLax (F : LaxMonoidalFunctor V W) (G : MonCat.{u}) :
+    LaxMonoidalFunctor (Action V G) (Action W G) := .ofTensorHom
+  (F := F.toFunctor.mapAction G)
+  (ε :=
     { hom := F.ε
       comm := fun g => by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-        rw [Category.id_comp, F.map_id, Category.comp_id] }
-  μ := fun X Y =>
+        rw [Category.id_comp, F.map_id, Category.comp_id] })
+  (μ := fun X Y =>
     { hom := F.μ X.V Y.V
-      comm := fun g => F.toLaxMonoidalFunctor.μ_natural (X.ρ g) (Y.ρ g) }
+      comm := fun g => F.μ_natural (X.ρ g) (Y.ρ g) })
   -- using `dsimp` before `simp` speeds these up
-  μ_natural {X Y X' Y'} f g := by ext; dsimp; simp
-  associativity X Y Z := by ext; dsimp; simp
-  left_unitality X := by ext; dsimp; simp
-  right_unitality X := by
+  (μ_natural := @fun {X Y X' Y'} f g ↦ by ext; dsimp; simp)
+  (associativity := fun X Y Z ↦ by ext; dsimp; simp)
+  (left_unitality := fun X ↦ by ext; dsimp; simp)
+  (right_unitality := fun X ↦ by
     ext
     dsimp
     simp only [MonoidalCategory.rightUnitor_conjugation,
       LaxMonoidalFunctor.right_unitality, Category.id_comp, Category.assoc,
       LaxMonoidalFunctor.right_unitality_inv_assoc, Category.comp_id, Iso.hom_inv_id]
-    rw [← F.map_comp, Iso.inv_hom_id, F.map_id, Category.comp_id]
+    rw [← F.map_comp, Iso.inv_hom_id, F.map_id, Category.comp_id])
+
+variable (F : MonoidalFunctor V W) (G : MonCat.{u})
+
+/-- A monoidal functor induces a monoidal functor between
+the categories of `G`-actions within those categories. -/
+@[simps!]
+def mapAction : MonoidalFunctor (Action V G) (Action W G) :=
+  { mapActionLax F.toLaxMonoidalFunctor G with
+    ε_isIso := by dsimp [mapActionLax]; infer_instance
+    μ_isIso := by dsimp [mapActionLax]; infer_instance }
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal_functor.map_Action CategoryTheory.MonoidalFunctor.mapAction
 

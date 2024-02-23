@@ -3,10 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Data.Rat.Order
-import Mathlib.Data.Set.Intervals.OrderEmbedding
-import Mathlib.Algebra.Order.Field.Basic
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -31,7 +30,7 @@ variable {K : Type*} [LinearOrderedField K]
 
 theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   rw [Rat.cast_def]
-  exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
+  exact div_pos (Int.cast_pos.2 <| num_pos.2 hr) (Nat.cast_pos.2 r.pos)
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
 @[mono]
@@ -147,3 +146,29 @@ theorem preimage_cast_uIoc (a b : ℚ) : (↑) ⁻¹' uIoc (a : K) b = uIoc a b 
   (castOrderEmbedding (K := K)).preimage_uIoc a b
 
 end LinearOrderedField
+end Rat
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Function
+
+/-- Extension for Rat.cast. -/
+@[positivity Rat.cast _]
+def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
+  let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
+  match ← core q(inferInstance) q(inferInstance) a with
+  | .positive pa =>
+    let _oα ← synthInstanceQ q(LinearOrderedField $α)
+    assumeInstancesCommute
+    return .positive q((Rat.cast_pos (K := $α)).mpr $pa)
+  | .nonnegative pa =>
+    let _oα ← synthInstanceQ q(LinearOrderedField $α)
+    assumeInstancesCommute
+    return .nonnegative q((Rat.cast_nonneg (K := $α)).mpr $pa)
+  | .nonzero pa =>
+    let _oα ← synthInstanceQ q(DivisionRing $α)
+    let _cα ← synthInstanceQ q(CharZero $α)
+    assumeInstancesCommute
+    return .nonzero q((Rat.cast_ne_zero (α := $α)).mpr $pa)
+  | .none => pure .none
+
+end Mathlib.Meta.Positivity

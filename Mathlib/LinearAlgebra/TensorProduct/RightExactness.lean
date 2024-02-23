@@ -455,13 +455,14 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         apply zero_mem
     | tmul a b =>
         simp only [LinearMap.rTensor_tmul, Submodule.coeSubtype]
-        suffices : (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B))
-        simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-          Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
-        rw [this]
-        apply Ideal.mul_mem_left
-        apply Ideal.mem_map_of_mem
-        exact Submodule.coe_mem a
+        suffices (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B)) by
+          simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+            Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
+          rw [this]
+          apply Ideal.mul_mem_left
+          -- Note: adding `includeLeft` as a hint fixes a timeout #8386
+          apply Ideal.mem_map_of_mem includeLeft
+          exact Submodule.coe_mem a
         simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
@@ -522,13 +523,14 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         apply zero_mem
     | tmul a b =>
         simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype]
-        suffices : a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B))
-        rw [this]
-        simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-          Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
-        apply Ideal.mul_mem_left
-        apply Ideal.mem_map_of_mem
-        exact Submodule.coe_mem b
+        suffices a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B)) by
+          rw [this]
+          simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+            Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
+          apply Ideal.mul_mem_left
+          -- Note: adding `includeRight` as a hint fixes a timeout #8386
+          apply Ideal.mem_map_of_mem includeRight
+          exact Submodule.coe_mem b
         simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
           mul_one, one_mul]
     | add x y hx hy =>
@@ -580,7 +582,7 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   simp only [← AlgHom.coe_ker]
   -- apply one step of exactness
   rw [← Algebra.TensorProduct.lTensor_ker _ hg, RingHom.ker_eq_comap_bot (map (AlgHom.id R A) g)]
-  rw [← Ideal.comap_map_of_surjective _ (lTensor.surjective A hg)]
+  rw [← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g) (lTensor.surjective A hg)]
   -- apply the other step of exactness
   rw [Algebra.TensorProduct.rTensor_ker _ hf]
   apply congr_arg₂ _ rfl

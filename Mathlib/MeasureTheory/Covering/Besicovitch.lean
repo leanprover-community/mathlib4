@@ -251,7 +251,7 @@ noncomputable def index : Ordinal.{u} → β
       -- return an index `b` for which the center `c b` is not in `Z`, and the radius is at
       -- least `R / τ`, if such an index exists (and garbage otherwise).
       Classical.epsilon fun b : β => p.c b ∉ Z ∧ R ≤ p.τ * p.r b
-  termination_by index i => i
+  termination_by i => i
   decreasing_by exact j.2
 #align besicovitch.tau_package.index Besicovitch.TauPackage.index
 
@@ -281,7 +281,7 @@ noncomputable def color : Ordinal.{u} → ℕ
         (_ : (closedBall (p.c (p.index j)) (p.r (p.index j)) ∩
           closedBall (p.c (p.index i)) (p.r (p.index i))).Nonempty), {color j}
     sInf (univ \ A)
-  termination_by color i => i
+  termination_by i => i
   decreasing_by exact j.2
 #align besicovitch.tau_package.color Besicovitch.TauPackage.color
 
@@ -294,7 +294,7 @@ def lastStep : Ordinal.{u} :=
 theorem lastStep_nonempty :
     {i | ¬∃ b : β, p.c b ∉ p.iUnionUpTo i ∧ p.R i ≤ p.τ * p.r b}.Nonempty := by
   by_contra h
-  suffices H : Function.Injective p.index; exact not_injective_of_ordinal p.index H
+  suffices H : Function.Injective p.index from not_injective_of_ordinal p.index H
   intro x y hxy
   wlog x_le_y : x ≤ y generalizing x y
   · exact (this hxy.symm (le_of_not_le x_le_y)).symm
@@ -500,8 +500,8 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
       simpa only [exists_prop, mem_iUnion, mem_singleton_iff] using hy
     wlog jxy : jx ≤ jy generalizing jx jy
     · exact (this jy jy_lt jyi hy jx jx_lt jxi hx x_ne_y.symm (le_of_not_le jxy)).symm
-    replace jxy : jx < jy
-    · rcases lt_or_eq_of_le jxy with (H | rfl); · { exact H }; · { exact (x_ne_y rfl).elim }
+    replace jxy : jx < jy := by
+      rcases lt_or_eq_of_le jxy with (H | rfl); · { exact H }; · { exact (x_ne_y rfl).elim }
     let A : Set ℕ :=
       ⋃ (j : { j // j < jy })
         (_ : (closedBall (p.c (p.index j)) (p.r (p.index j)) ∩
@@ -607,8 +607,8 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
   obtain ⟨i, -, hi⟩ : ∃ (i : Fin N), i ∈ Finset.univ ∧ μ s / N ≤ μ (s ∩ v i) := by
     apply ENNReal.exists_le_of_sum_le _ S
     exact ⟨⟨0, bot_lt_iff_ne_bot.2 Npos⟩, Finset.mem_univ _⟩
-  replace hi : μ s / (N + 1) < μ (s ∩ v i)
-  · apply lt_of_lt_of_le _ hi
+  replace hi : μ s / (N + 1) < μ (s ∩ v i) := by
+    apply lt_of_lt_of_le _ hi
     apply (ENNReal.mul_lt_mul_left hμs.ne' (measure_lt_top μ s).ne).2
     rw [ENNReal.inv_lt_inv]
     conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
@@ -636,8 +636,8 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
   -- show that it covers a large enough proportion of `s`. For measure computations, we do not
   -- use `s` (which might not be measurable), but its measurable superset `o`. Since their measures
   -- are the same, this does not spoil the estimates
-  · suffices H : μ (o \ ⋃ x ∈ w, closedBall (↑x) (r ↑x)) ≤ N / (N + 1) * μ s
-    · rw [Finset.set_biUnion_finset_image]
+  · suffices H : μ (o \ ⋃ x ∈ w, closedBall (↑x) (r ↑x)) ≤ N / (N + 1) * μ s by
+      rw [Finset.set_biUnion_finset_image]
       exact le_trans (measure_mono (diff_subset_diff so (Subset.refl _))) H
     rw [← diff_inter_self_eq_diff,
       measure_diff_le_iff_le_add _ (inter_subset_right _ _) (measure_lt_top μ _).ne]
@@ -800,7 +800,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
           rw [pow_succ, mul_assoc]; exact mul_le_mul_left' IH _
     have C : Tendsto (fun n : ℕ => ((N : ℝ≥0∞) / (N + 1)) ^ n * μ s) atTop (𝓝 (0 * μ s)) := by
       apply ENNReal.Tendsto.mul_const _ (Or.inr (measure_lt_top μ s).ne)
-      apply ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1
+      apply ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
       rw [ENNReal.div_lt_iff, one_mul]
       · conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
         exact ENNReal.add_lt_add_left (ENNReal.nat_ne_top N) zero_lt_one
@@ -1062,7 +1062,7 @@ protected def vitaliFamily (μ : Measure α) [SigmaFinite μ] : VitaliFamily μ 
       · have : closedBall x r = closedBall x (δ / 2) :=
           Subset.antisymm ht (closedBall_subset_closedBall H)
         rw [this] at tf
-        refine' ⟨δ / 2, ⟨half_pos δpos, tf⟩, ⟨half_pos δpos, half_lt_self δpos⟩⟩
+        exact ⟨δ / 2, ⟨half_pos δpos, tf⟩, ⟨half_pos δpos, half_lt_self δpos⟩⟩
     obtain ⟨t, r, _, ts, tg, μt, tdisj⟩ :
       ∃ (t : Set α) (r : α → ℝ),
         t.Countable ∧

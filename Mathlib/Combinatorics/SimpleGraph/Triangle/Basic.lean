@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Positivity
 
 #align_import combinatorics.simple_graph.triangle.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
@@ -34,7 +36,7 @@ open Classical
 
 namespace SimpleGraph
 
-variable {α 𝕜 : Type*} [Fintype α] [LinearOrderedField 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
+variable {α 𝕜 : Type*} [Fintype α] [LinearOrderedRing 𝕜] {G H : SimpleGraph α} {ε δ : 𝕜} {n : ℕ}
   {s : Finset α}
 
 /-- A simple graph is *`ε`-far from triangle-free* if one must remove at least
