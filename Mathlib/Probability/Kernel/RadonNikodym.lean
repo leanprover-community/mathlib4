@@ -43,6 +43,8 @@ open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
 namespace ProbabilityTheory
 
+open ProbabilityTheory.kernel
+
 variable {α γ : Type*} {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
   [MeasurableSpace.CountablyGenerated γ] {κ ν : kernel α γ}
 

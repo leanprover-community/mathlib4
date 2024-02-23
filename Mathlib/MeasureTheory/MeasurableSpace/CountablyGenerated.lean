@@ -74,7 +74,9 @@ instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [Measurabl
   rw [← forall_generateFrom_mem_iff_mem_iff, ← hb] at h
   simpa using h {y}
 
-lemma exists_countablePartition [m : MeasurableSpace α] [h : CountablyGenerated α] :
+variable [m : MeasurableSpace α] [h : CountablyGenerated α]
+
+lemma exists_countablePartition :
     ∃ s : ℕ → Set (Set α), (∀ n, Set.Finite (s n))
       ∧ (∀ n, ∀ {u v : Set α}, u ∈ s n → v ∈ s n → u ≠ v → Disjoint u v)
       ∧ (∀ n, ⋃₀ s n = univ)
@@ -140,7 +142,10 @@ lemma finite_countablePartition (α : Type*) [MeasurableSpace α] [CountablyGene
     Set.Finite (countablePartition α n) :=
   exists_countablePartition.choose_spec.1 n
 
-lemma disjoint_countablePartition [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) {s t : Set α}
+instance instCountable_countablePartition (n : ℕ) : Countable (countablePartition α n) :=
+  Set.Finite.countable (MeasurableSpace.finite_countablePartition _ _)
+
+lemma disjoint_countablePartition (n : ℕ) {s t : Set α}
     (hs : s ∈ countablePartition α n) (ht : t ∈ countablePartition α n) (hst : s ≠ t) :
     Disjoint s t :=
   exists_countablePartition.choose_spec.2.1 n hs ht hst
@@ -149,8 +154,7 @@ lemma sUnion_countablePartition (α : Type*) [MeasurableSpace α] [CountablyGene
     ⋃₀ countablePartition α n = univ :=
   exists_countablePartition.choose_spec.2.2.1 n
 
-lemma measurableSet_succ_countablePartition [MeasurableSpace α] [CountablyGenerated α] (n : ℕ)
-    {s : Set α} (hs : s ∈ countablePartition α n) :
+lemma measurableSet_succ_countablePartition (n : ℕ) {s : Set α} (hs : s ∈ countablePartition α n) :
     MeasurableSet[generateFrom (countablePartition α (n + 1))] s :=
   exists_countablePartition.choose_spec.2.2.2.1 n s hs
 
@@ -170,12 +174,47 @@ lemma generateFrom_countablePartition_le (α : Type*) [m : MeasurableSpace α] [
   conv_rhs => rw [← generateFrom_iUnion_countablePartition α]
   exact generateFrom_mono (subset_iUnion _ _)
 
-lemma measurableSet_countablePartition [m : MeasurableSpace α] [CountablyGenerated α] (n : ℕ)
-    {s : Set α} (hs : s ∈ countablePartition α n) :
+lemma measurableSet_countablePartition (n : ℕ) {s : Set α} (hs : s ∈ countablePartition α n) :
     MeasurableSet s := by
   have : MeasurableSet[generateFrom (countablePartition α n)] s :=
     measurableSet_generateFrom hs
   exact generateFrom_countablePartition_le α n _ this
+
+lemma existsPartitionSet_mem (n : ℕ) (t : α) :
+    ∃ s, s ∈ countablePartition α n ∧ t ∈ s := by
+  have h_univ := sUnion_countablePartition α n
+  have h_mem_univ := mem_univ t
+  rw [← h_univ] at h_mem_univ
+  simpa only [mem_sUnion] using h_mem_univ
+
+/-- The set in `countablePartition α n` to which `t : α` belongs. -/
+def partitionSet (n : ℕ) (t : α) : Set α := (existsPartitionSet_mem n t).choose
+
+lemma partitionSet_mem (n : ℕ) (t : α) : partitionSet n t ∈ countablePartition α n :=
+  (existsPartitionSet_mem n t).choose_spec.1
+
+lemma mem_partitionSet (n : ℕ) (t : α) : t ∈ partitionSet n t :=
+  (existsPartitionSet_mem n t).choose_spec.2
+
+lemma mem_countablePartition_iff (n : ℕ) (t : α) {s : Set α} (hs : s ∈ countablePartition α n) :
+    t ∈ s ↔ partitionSet n t = s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · by_contra h_ne
+    have h_disj : Disjoint s (partitionSet n t) :=
+      disjoint_countablePartition n hs (partitionSet_mem n t) (Ne.symm h_ne)
+    refine absurd h_disj ?_
+    rw [not_disjoint_iff_nonempty_inter]
+    exact ⟨t, h, mem_partitionSet n t⟩
+  · rw [← h]
+    exact mem_partitionSet n t
+
+lemma partitionSet_of_mem {n : ℕ} {t : α} {s : Set α} (hs : s ∈ countablePartition α n)
+    (ht : t ∈ s) :
+    partitionSet n t = s := by
+  rwa [← mem_countablePartition_iff n t hs]
+
+lemma measurableSet_partitionSet (n : ℕ) (t : α) : MeasurableSet (partitionSet n t) :=
+  measurableSet_countablePartition n (partitionSet_mem n t)
 
 variable (α)
 
