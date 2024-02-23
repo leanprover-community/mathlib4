@@ -579,11 +579,11 @@ lemma linearIsometryEquiv_coe_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
 
 @[simp]
 lemma linearIsometryEquiv_coe_star_symm_apply (e : H ≃ₗᵢ[𝕜] H) :
-    star (linearIsometryEquiv.symm e) = (e.symm : H →L[𝕜] H) := by
+    star (e : H →L[𝕜] H) = (e.symm : H →L[𝕜] H) := by
   apply left_inv_eq_right_inv (a := (linearIsometryEquiv.symm e : H →L[𝕜] H))
   · have := congr(((↑) : _ → H →L[𝕜] H) $(star_mul_self (linearIsometryEquiv.symm e)))
-    simpa only [Submonoid.coe_mul, coe_star, linearIsometryEquiv_coe_symm_apply,
-      OneMemClass.coe_one, coe_star, linearIsometryEquiv_coe_symm_apply]
+    simpa only [linearIsometryEquiv_coe_symm_apply, Submonoid.coe_mul, coe_star,
+      OneMemClass.coe_one]
   · ext
     simp
 
