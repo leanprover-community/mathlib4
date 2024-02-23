@@ -315,7 +315,7 @@ theorem eisensteinSeries_TendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
         (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop := by
   have hk0 : 0 ≤ k := by linarith
   lift k to ℕ using hk0
-  rw [←tendstoLocallyUniformlyOn_univ,tendstoLocallyUniformlyOn_iff_forall_isCompact,
+  rw [← tendstoLocallyUniformlyOn_univ,tendstoLocallyUniformlyOn_iff_forall_isCompact,
     eisensteinSeries_SIF]
   simp only [Set.top_eq_univ, Set.subset_univ, eisensteinSeries, forall_true_left]
   intro K hK
