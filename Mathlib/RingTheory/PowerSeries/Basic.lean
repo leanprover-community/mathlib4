@@ -7,18 +7,6 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 
-/-
-import Mathlib.Data.Finsupp.Interval
-import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Coeff
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.Tactic.Linarith
-import Mathlib.Data.Finset.PiAntidiagonal
--/
-
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
 /-!
@@ -58,6 +46,18 @@ However, it means that formal power series are indexed by `Unit →₀ ℕ`,
 which is of course canonically isomorphic to `ℕ`.
 We then build some glue to treat formal power series as if they are indexed by `ℕ`.
 Occasionally this leads to proofs that are uglier than expected.
+-/
+
+/-
+import Mathlib.Data.Finsupp.Interval
+import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Coeff
+import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Multiplicity
+import Mathlib.Tactic.Linarith
+import Mathlib.Data.Finset.PiAntidiagonal
 -/
 
 

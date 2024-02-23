@@ -6,15 +6,6 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.RingTheory.MvPowerSeries.Basic
 
-/- import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Coeff
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.Tactic.Linarith
-import Mathlib.Data.Finset.PiAntidiagonal -/
-
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
 /-!
@@ -29,6 +20,16 @@ then this formal power series is invertible.
 Formal power series over a local ring form a local ring.
 
 -/
+
+/- import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.Polynomial.Coeff
+import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Multiplicity
+import Mathlib.Tactic.Linarith
+import Mathlib.Data.Finset.PiAntidiagonal -/
+
 
 noncomputable section
 
