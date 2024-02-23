@@ -557,7 +557,6 @@ commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for 
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
 def TopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
-  refl := (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
   symm :=
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap

@@ -78,7 +78,6 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
 def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ
     where
   uniformity := 𝓝ˢ (diagonal γ)
-  refl := principal_le_nhdsSet
   symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
   comp := by
     /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`

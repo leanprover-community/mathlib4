@@ -201,7 +201,6 @@ theorem comap_map_mk_uniformity : comap (Prod.map mk mk) (map (Prod.map mk mk) (
 
 instance instUniformSpace : UniformSpace (SeparationQuotient α) where
   uniformity := map (Prod.map mk mk) (𝓤 α)
-  refl := le_trans (by simpa using surjective_mk) (Filter.map_mono refl_le_uniformity)
   symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
   comp := fun t ht ↦ by
     rcases comp_open_symm_mem_uniformity_sets ht with ⟨U, hU, hUo, -, hUt⟩
