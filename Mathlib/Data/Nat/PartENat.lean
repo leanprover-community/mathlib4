@@ -671,7 +671,7 @@ theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
 
 end WithTop
 
--- Porting note : new, extracted from `withTopEquiv`.
+-- Porting note: new, extracted from `withTopEquiv`.
 /-- Coercion from `ℕ∞` to `PartENat`. -/
 @[coe]
 def ofENat : ℕ∞ → PartENat :=
@@ -679,21 +679,21 @@ def ofENat : ℕ∞ → PartENat :=
   | Option.none => none
   | Option.some n => some n
 
--- Porting note : new
+-- Porting note: new
 instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 
 -- Porting note: new. This could probably be moved to tests or removed.
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
--- Porting note : new
+-- Porting note: new
 @[simp]
 lemma ofENat_none : ofENat Option.none = ⊤ := rfl
 
--- Porting note : new
+-- Porting note: new
 @[simp]
 lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 
--- Porting note : new
+-- Porting note: new
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
   induction n with
