@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 When `V` is preadditive, `HomologicalComplex V c` is also preadditive,
 and `homologyFunctor` is additive.
 
-TODO: similarly for `R`-linear.
 -/
 
 
