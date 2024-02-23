@@ -5,7 +5,7 @@ Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Tactic.FinCases
+import Mathlib.Data.Matrix.Notation
 
 /-!
 
@@ -145,8 +145,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
   apply asymm
   obtain ⟨o, in_omega, rfl⟩ := rin
   show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
-  rw [Matrix.fin_two_column_zero, Matrix.fin_two_column_one]
-  exact symmega ![a, b] ![b, a] (List.Perm.swap b a []) o in_omega
+  convert symmega ![a, b] ![b, a] (List.Perm.swap b a []) o in_omega using 2 <;> simp
 
 lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
     {f : (Fin 2 → D) → C} (mcf : f.HasMaxCutProperty)
