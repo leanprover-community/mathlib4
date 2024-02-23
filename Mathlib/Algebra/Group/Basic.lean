@@ -447,6 +447,9 @@ theorem eq_of_div_eq_one (h : a / b = 1) : a = b :=
 #align eq_of_div_eq_one eq_of_div_eq_one
 #align eq_of_sub_eq_zero eq_of_sub_eq_zero
 
+lemma eq_of_inv_mul_eq_one (h : a⁻¹ * b = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+lemma eq_of_mul_inv_eq_one (h : a * b⁻¹ = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+
 @[to_additive]
 theorem div_ne_one_of_ne : a ≠ b → a / b ≠ 1 :=
   mt eq_of_div_eq_one
@@ -664,7 +667,7 @@ end DivisionCommMonoid
 
 section Group
 
-variable [Group G] {a b c d : G}
+variable [Group G] {a b c d : G} {n : ℤ}
 
 @[to_additive (attr := simp)]
 theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_left_eq_self]
@@ -939,19 +942,18 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 #align left_inverse_inv_mul_mul_right leftInverse_inv_mul_mul_right
 #align left_inverse_neg_add_add_right leftInverse_neg_add_add_right
 
-@[to_additive]
-theorem exists_npow_eq_one_of_zpow_eq_one {n : ℤ} (hn : n ≠ 0) {x : G} (h : x ^ n = 1) :
-    ∃ n : ℕ, 0 < n ∧ x ^ n = 1 := by
-  cases' n with n n
-  · simp only [Int.ofNat_eq_coe] at h
-    rw [zpow_ofNat] at h
-    refine' ⟨n, Nat.pos_of_ne_zero fun n0 ↦ hn ?_, h⟩
-    rw [n0]
-    rfl
-  · rw [zpow_negSucc, inv_eq_one] at h
-    refine' ⟨n + 1, n.succ_pos, h⟩
-#align exists_npow_eq_one_of_zpow_eq_one exists_npow_eq_one_of_zpow_eq_one
+@[to_additive (attr := simp) natAbs_nsmul_eq_zero]
+lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
+
+set_option linter.existingAttributeWarning false in
+@[to_additive, deprecated pow_natAbs_eq_one]
+lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
+    ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
+#align exists_npow_eq_one_of_zpow_eq_one exists_pow_eq_one_of_zpow_eq_one
 #align exists_nsmul_eq_zero_of_zsmul_eq_zero exists_nsmul_eq_zero_of_zsmul_eq_zero
+
+-- 2024-02-14
+attribute [deprecated natAbs_nsmul_eq_zero] exists_nsmul_eq_zero_of_zsmul_eq_zero
 
 end Group
 
