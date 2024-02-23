@@ -331,7 +331,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         refine lt_of_le_of_lt (measure_union_le _ _) ?_
         rw [I, zero_add]
         apply lt_of_le_of_lt _ J
-        exact restrict_le_self _ (measurableSet_lt measurable_const f_mble)
+        exact restrict_le_self _
       spanning := by
         apply eq_univ_iff_forall.2 (fun a ↦ ?_)
         rcases le_or_lt (f a) M with ha|ha
