@@ -3,9 +3,8 @@ import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic
 
 /--
-info:
-* New constants:
-#[aDeprecatable_mul, aDeprecatable_add]
+info: * Pairings:
+#[(`good_mul, aDeprecatable_mul), (`good_add, aDeprecatable_add)]
 
 Try this:
 /-- I also have a doc-string -/

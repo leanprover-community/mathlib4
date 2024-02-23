@@ -79,10 +79,13 @@ elab "deprecate to" id:ident* ppLine cmd:command : command => do
     let allNew := (newNames oldEnv newEnv).reverse
     let skip ← allNew.filterM (·.isBlackListed)
     let news := allNew.filter (! · ∈ skip)
-    let msg := match skip with
-    | #[] => s!"* New constants:\n{news}"
-    | _ => s!"* Using these new constants:\n{news}\n\n* Ignoring:\n{skip}"
-    let stxs ← (id.zip news).mapM fun (id, n) => mkDeprecationStx id n
+    if id.size < news.size then
+      logWarning s!"Un-deprecated declarations: {news.toList.drop id.size}"
+    if news.size < id.size then
+      logWarning s!"Unused names: {id.toList.drop news.size}"
+    let pairs := id.zip news
+    let msg := s!"* Pairings:\n{pairs}" ++ if skip.size != 0 then s!"\n\n* Ignoring: {skip}" else ""
+    let stxs ← pairs.mapM fun (id, n) => mkDeprecationStx id n
     let stxs := #[cmd] ++ stxs
     liftTermElabM do
     Std.Tactic.TryThis.addSuggestion (header := msg ++ "\n\nTry this:\n") (← getRef)
