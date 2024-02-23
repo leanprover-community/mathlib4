@@ -47,6 +47,27 @@ def toGradedObject (K : HomologicalComplex₂ C c₁ c₂) :
     GradedObject (I₁ × I₂) C :=
   fun ⟨i₁, i₂⟩ => (K.X i₁).X i₂
 
+/-- The morphism of graded objects induced by a morphism of bicomplexes. -/
+def toGradedObjectMap {K L : HomologicalComplex₂ C c₁ c₂} (φ : K ⟶ L) :
+    K.toGradedObject ⟶ L.toGradedObject :=
+  fun ⟨i₁, i₂⟩ => (φ.f i₁).f i₂
+
+@[simp]
+lemma toGradedObjectMap_apply {K L : HomologicalComplex₂ C c₁ c₂} (φ : K ⟶ L) (i₁ : I₁) (i₂ : I₂) :
+    toGradedObjectMap φ ⟨i₁, i₂⟩ = (φ.f i₁).f i₂ := rfl
+
+variable (C c₁ c₂) in
+/-- The functor which sends a bicomplex to its associated graded object. -/
+@[simps]
+def toGradedObjectFunctor : HomologicalComplex₂ C c₁ c₂ ⥤ GradedObject (I₁ × I₂) C where
+  obj K := K.toGradedObject
+  map φ := toGradedObjectMap φ
+
+instance : Faithful (toGradedObjectFunctor C c₁ c₂) where
+  map_injective {_ _ φ₁ φ₂} h := by
+    ext i₁ i₂
+    exact congr_fun h ⟨i₁, i₂⟩
+
 lemma shape_f (K : HomologicalComplex₂ C c₁ c₂) (i₁ i₁' : I₁) (h : ¬ c₁.Rel i₁ i₁') (i₂ : I₂) :
     (K.d i₁ i₁').f i₂ = 0 := by
   rw [K.shape _ _ h, zero_f]
