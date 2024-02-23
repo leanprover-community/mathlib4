@@ -11,7 +11,7 @@ import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Algebra.GeomSum
-
+import Mathlib.LinearAlgebra.FiniteDimensional
 
 
 /-!
@@ -95,6 +95,8 @@ lemma q_factorial_degree (n : ℕ) : degree (q_factorial n) = (∑ i in range (n
   · rw [sum_range_succ, q_factorial_succ, Monic.degree_mul (q_factorial_Monic n), hn,
       degree_sum_eq, add_comm]
     simp
+
+--lemma num_one_dim_subspaces (n : ℕ) :
 
 /-def gauss' (n k : ℕ) : RatFunc ℚ :=
   RatFunc.mk (q_factorial n) ((q_factorial k) * (q_factorial (n - k)))
@@ -310,6 +312,9 @@ theorem gauss_symm_half (m : ℕ) : gauss (2 * m + 1) (m + 1) = gauss (2 * m + 1
   apply gauss_symm_of_eq_add
   rw [add_comm m 1, add_assoc 1 m m, add_comm (2 * m) 1, two_mul m]
 
+theorem gauss_eq_gauss {n k : ℕ} :
+  gauss n k + X ^ (k + 1) * gauss n (k + 1) = X ^ (n - k) * gauss n k + gauss n (k + 1) := sorry
+
 /-theorem gauss_succ_right_eq (n k : ℕ) : gauss n (k + 1) * (∑ i in range (k + 1), (X ^ i)) =
   gauss n k * (∑ i in range (n - k), (X ^ i)) := by
   have e : (∑ i in range (n + 1), (X ^ i)) * gauss n k = gauss n k * (∑ i in range (k + 1), (X ^ i))
@@ -365,7 +370,7 @@ theorem gauss_degree : ∀ {n k}, degree (gauss n k) = if n < k then ⊥ else �
   · rw [if_neg h2, degree_eq_natDegree (gauss_eq_zero_iff.1.mt h2), gauss_natDegree (not_lt.1 h2)]
 
 theorem gauss_Monic (n k : ℕ) (hkn : k ≤ n) : Monic (gauss n k) := by
-  induction' n with n hn generalizing k <;> induction' k with k hk <;>
+  induction' n with n hn generalizing k <;> induction' k with k <;>
     simp [gauss_succ_succ, choose_succ_succ]
   simp at hkn
   by_cases hkn2 : k = n
@@ -383,4 +388,96 @@ theorem gauss_Monic (n k : ℕ) (hkn : k ≤ n) : Monic (gauss n k) := by
 
 --theorem gauss_eq_zero_iff {n k : ℕ} : n.gauss k = 0 ↔ n < k := by sorry
 
+def q_factorial'_desc : ℕ → ℕ → ℤ[X]
+  | n, 0 => X ^ n - 1
+  | 0, _ + 1 => 0
+  | n, k + 1 => (X ^ n - X ^ (k + 1)) * q_factorial'_desc n k
+
 end Nat
+
+universe u v
+
+variable {K : Type u} {V : Type v}
+
+section subspacesCard
+
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
+
+/- Auxiliary function to construct the list of all sublists of a given length. Given an
+integer `n`, a list `l`, a function `f` and an auxiliary list `L`, it returns the list made of
+`f` applied to all sublists of `l` of length `n`, concatenated with `L`. -/
+/-def sublistsLenAux {α β : Type*} : ℕ → List α → (List α → β) → List β → List β
+  | 0, _, f, r => f [] :: r
+  | _ + 1, [], _, r => r
+  | n + 1, a :: l, f, r => sublistsLenAux (n + 1) l f (sublistsLenAux n l (f ∘ List.cons a) r)
+#align list.sublists_len_aux List.sublistsLenAux-/
+
+-- exists_linearIndependent_cons_of_lt_finrank
+-- exists_linearIndependent_cons_of_lt_rank
+/-def linearIndependentChoose [Module.Finite K V] [Fintype K] [FiniteDimensional K V] (k : ℕ)
+(hkn : k ≤ FiniteDimensional.finrank K V) : List V
+  | _, _, _, _, _, _, 0, _ => []-/
+
+/-
+X^n - 1 picks 1st vector
+X^(n-1) - 1 picks 2nd vector from (n-1)-dim subspace
+...
+X^(n-k + 1) - 1 picks kth vector
+-/
+
+/-- A rank `n` free module has a basis indexed by `Fin n`. -/
+lemma finBasisOfFinrankEq [Module.Finite K V] {n : ℕ} :
+    FiniteDimensional.finrank K V = n ↔ ∃ (v : Fin n → V), LinearIndependent K v ∧
+    Submodule.span K (Set.range v) = ⊤ := by
+
+    sorry
+
+def Grassmannian (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
+[Fintype K] [FiniteDimensional K V] (k : ℕ) :=
+{W : Submodule K V | FiniteDimensional.finrank K W = k}
+
+variable [Fintype K] [FiniteDimensional K V] [DecidableEq V] [DecidableEq (Submodule K V)]
+
+lemma dim_unique_subspaces [Nontrivial V] (h : 0 < FiniteDimensional.finrank K V) :
+∃ (X : Finset (Submodule K V)), ∀ (y : Submodule K V), y ∈ X → FiniteDimensional.finrank K y = 1 ∧
+Finset.card X = FiniteDimensional.finrank K V ∧ (Sup X) = V := by
+  have B := (FiniteDimensional.finBasis K V)
+  use Finset.image (λ x => K ∙ ((DFunLike.coe B) x)) (@Finset.univ (Fin (FiniteDimensional.finrank K V)) _)
+  intros y hyX
+  rw [Finset.mem_image] at hyX
+  obtain ⟨a, ⟨ha1, ha2⟩⟩ := hyX
+  rw [← ha2]
+  --simp
+  --rw [← ⊤.range_subtype, ← Submodule.map_top, ← B.span_eq]
+
+  /-have M := λ x : (fin (finite_dimensional.finrank K ↥S)), K ∙ B ↑x,
+  --have M2 := λ (y : subspace K V), ∃ x : fin (finite_dimensional.finrank K ↥S), (M x) = y.to_submodule,
+  have M2 := set.image M (@univ (fin (finite_dimensional.finrank K ↥S)) _),
+  use M2,-/
+  sorry
+
+-- linearIndependent_fin_cons
+theorem grassmannian_finite [Fintype K] [FiniteDimensional K V] (k : ℕ) :
+Fintype (Grassmannian K V k) := by
+  induction' k with k hk
+  · simp
+    rw [Grassmannian]
+    simp
+    sorry
+  · rw [Grassmannian]
+    simp [finBasisOfFinrankEq, linearIndependent_fin_succ]
+
+    sorry
+
+def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype (Submodule K V) where
+  elems := sorry
+  complete := sorry
+
+/-- Given a `Module K V` and a nat `k`, then `subspacesDim n s` is the finset of submodules of
+`V` of dimension `k`. -/
+def subspacesDim [FiniteDimensional K V] (k : ℕ) : Finset (Submodule K V) := sorry
+  /-⟨((s.1.powersetCard n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetCard.1 h).1 s.2,
+    s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩-/
+
+
+end subspacesCard
