@@ -650,9 +650,9 @@ lemma isUnit_iff_exists [Monoid M] {x : M} : IsUnit x ↔ ∃ b, x * b = 1 ∧ b
 @[to_additive "See `isAddUnit_iff_exists` for a similar lemma with one existential."]
 theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
     IsUnit a ↔ (∃ b, a * b = 1) ∧ (∃ c, c * a = 1) :=
-  isUnit_iff_exists.trans <|
-    ⟨fun ⟨b, hba, hab⟩ => ⟨⟨b, hba⟩, ⟨b, hab⟩⟩, fun ⟨⟨b, hb⟩, ⟨_, hc⟩⟩ => ⟨b, hb,
-      left_inv_eq_right_inv hc hb ▸ hc⟩⟩
+  isUnit_iff_exists.trans
+    ⟨fun ⟨b, hba, hab⟩ => ⟨⟨b, hba⟩, ⟨b, hab⟩⟩,
+      fun ⟨⟨b, hb⟩, ⟨_, hc⟩⟩ => ⟨b, hb, left_inv_eq_right_inv hc hb ▸ hc⟩⟩
 
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
