@@ -12,7 +12,7 @@ import Mathlib.Data.ZMod.Basic
 /-!
 # `QuadraticForm R M` and `Subtype LinearMap.IsSymm` are distinct notions in characteristic 2
 
-The main result of this file is `LinearMap.not_injOn_toQuadraticForm_isSymm`.
+The main result of this file is `LinearMap.BilinForm.not_injOn_toQuadraticForm_isSymm`.
 
 The counterexample we use is $B (x, y) (x', y') ↦ xy' + x'y$ where `x y x' y' : ZMod 2`.
 -/
@@ -47,11 +47,11 @@ theorem isAlt_B : (B F).IsAlt := fun x => by simp [mul_comm, CharTwo.add_self_eq
 theorem B_ne_zero : B F ≠ 0 := fun h => by simpa using LinearMap.congr_fun₂ h (1, 0) (1, 1)
 #align counterexample.B_ne_zero Counterexample.B_ne_zero
 
-/-- `LinearMap.toQuadraticForm` is not injective on symmetric bilinear forms.
+/-- `LinearMap.BilinForm.toQuadraticForm` is not injective on symmetric bilinear forms.
 
 This disproves a weaker version of `QuadraticForm.associated_left_inverse`.
 -/
-theorem LinearMap.not_injOn_toQuadraticForm_isSymm.{u} :
+theorem LinearMap.BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
     ¬∀ {R M : Type u} [CommSemiring R] [AddCommMonoid M], ∀ [Module R M],
       Set.InjOn (toQuadraticForm : BilinForm R M → QuadraticForm R M) {B | B.IsSymm} := by
   intro h
@@ -60,6 +60,6 @@ theorem LinearMap.not_injOn_toQuadraticForm_isSymm.{u} :
   apply h (isSymm_B F) isSymm_zero
   rw [toQuadraticForm_zero, toQuadraticForm_eq_zero]
   exact isAlt_B F
-#align counterexample.bilin_form.not_inj_on_to_quadratic_form_is_symm Counterexample.LinearMap.not_injOn_toQuadraticForm_isSymm
+#align counterexample.bilin_form.not_inj_on_to_quadratic_form_is_symm Counterexample.LinearMap.BilinForm.not_injOn_toQuadraticForm_isSymm
 
 end Counterexample
