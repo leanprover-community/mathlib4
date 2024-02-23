@@ -1,16 +1,35 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Quotient.Preadditive
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+
+/-!
+# The quotient category is linear
+
+If `r : HomRel C` is a congruence on a preadditive category `C` which satisfies certain
+compatibilities, we have already defined a preadditive structure on `Quotient r` in
+the file `CategoryTheory.Quotient.Preadditive` such that `functor r : C ⥤ Quotient r` is
+an additive functor. In this file, assuming moreover that `C` is a `R`-linear category
+and that the relation `r` is compatible with the scalar multiplication by any `a : R`, we
+show that `Quotient r` is a `R`-linear category and that `functor r : C ⥤ Quotient r`
+is a `R`-linear functor.
+
+-/
 
 namespace CategoryTheory
 
 namespace Quotient
 
-variable {R : Type _} [Ring R] {C : Type _} [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Ring R] [Category C] [Preadditive C] [Linear R C]
   (r : HomRel C) [Congruence r]
   (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
 
 namespace Linear
 
+/-- The scalar multiplications on morphisms in `Quotient R`. -/
 def smul (X Y : Quotient r) : SMul R (X ⟶ Y) where
   smul a := Quot.lift (fun g => Quot.mk _ (a • g)) (fun f₁ f₂ h₁₂ => by
     dsimp
@@ -25,6 +44,7 @@ lemma smul_eq (a : R) {X Y : C} (f : X ⟶ Y) :
 
 variable [Preadditive (Quotient r)] [(functor r).Additive]
 
+/-- Auxiliary definition for `Quotient.Linear.module`. -/
 def module' (X Y : C) : Module R ((functor r).obj X ⟶ (functor r).obj Y) :=
   letI := smul r hr ((functor r).obj X) ((functor r).obj Y)
   { smul_zero := fun a => by
@@ -52,6 +72,7 @@ def module' (X Y : C) : Module R ((functor r).obj X ⟶ (functor r).obj Y) :=
       dsimp
       rw [add_smul, Functor.map_add] }
 
+/-- Auxiliary definition for `Quotient.linear`. -/
 def module (X Y : Quotient r) : Module R (X ⟶ Y) := module' r hr X.as Y.as
 
 end Linear
@@ -59,6 +80,10 @@ end Linear
 variable (R)
 variable [Preadditive (Quotient r)] [(functor r).Additive]
 
+/-- Assuming `Quotient r` has already been endowed with a preadditive category structure
+such that `functor r : C ⥤ Quotient r` is additive, and that `C` has a `R`-linear category
+structure compatible with `r`, this is the induced `R`-linear category structure on
+`Quotient r`. -/
 def linear : Linear R (Quotient r) := by
   letI := Linear.module r hr
   exact
