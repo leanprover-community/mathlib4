@@ -9,33 +9,44 @@ import Mathlib.Data.MvPolynomial.Basic
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.Algebra.Algebra.Equiv
 
--- DOES NOT WORK YET
+/-! # TensorProduct of a monoid algebra
 
-section MonoidAlgebra
+This file consists of three sections, the first two will have to be moved
+somewhere else.
 
+## two lemmas about `Finsupp.single`
+
+## functoriality for `MonoidAlgebra`
+
+We prove some functoriality definitions for the `Semiring` variable.
+It remains to prove that this is a functor.
+
+## tensor product
+
+* `MonoidAlgebra.rTensorAlgEquiv`, the tensor product of
+   `MonoidAlgebra M α` with `N` is `R`-linearly equivalent to `MonoidAlgebra (M ⊗[R] N) α`
+
+* `MonoidAlgebra.scalarRTensorAlgEquiv`, the tensor product of
+   `MonoidAlgebra R α` with `N` is `R`-linearly equivalent to `MonoidAlgebra N α`
+
+## TODO
+
+* State and prove functoriality properties
+
+* Prove the `lTensor` variants
+
+* Combine both to get that the tensor product of `MonoidAlgebra M α` with `MonoidAlgebra N β` is `R`-linearly equivalent to `MonoidAlgebra (M ⊗[R] N) (α × β)`.
+
+-/
 open TensorProduct
-variable (α : Type*) [Monoid α] [DecidableEq α]
-  (R : Type*) [CommSemiring R]
-  (N : Type*) [Semiring N] [Algebra R N]
 
-noncomputable example : Semiring (MonoidAlgebra R α) := inferInstance
+variable {α : Type*} [Monoid α] [DecidableEq α]
+  {R : Type*} [CommSemiring R]
+  {M N N' : Type*}
 
-noncomputable example : Algebra R (MonoidAlgebra R α) := inferInstance
+section Finsupp
 
-noncomputable example : Semiring ((MonoidAlgebra R α) ⊗[R] N) := inferInstance
-
-noncomputable example : Algebra R ((MonoidAlgebra R α) ⊗[R] N) := inferInstance
-
-
-variable {α R N}
-
-noncomputable example
-    {N' : Type*} [Semiring N'] [Algebra R N'] (e : N ≃ₗ[R] N') :
-    MonoidAlgebra N α ≃ₗ[R] MonoidAlgebra N' α :=
-  Finsupp.mapRange.linearEquiv e
-
-lemma Finsupp.apply_single
-    {N N' : Type*} [AddCommMonoid N] [AddCommMonoid N']
+lemma Finsupp.apply_single [AddCommMonoid N] [AddCommMonoid N']
     (e : N →+ N') (a : α) (n : N) (b : α) :
     e ((Finsupp.single a n) b) = Finsupp.single a (e n) b := by
   simp only [Finsupp.single_apply]
@@ -44,20 +55,28 @@ lemma Finsupp.apply_single
   · exact map_zero e
 
 lemma Finsupp.mapRange.addMonoidHom_apply_single
-    {N N' : Type*} [AddCommMonoid N] [AddCommMonoid N']
-    (e : N →+ N') (a : α) (n : N) :
+    [AddCommMonoid N] [AddCommMonoid N'] (e : N →+ N') (a : α) (n : N) :
     Finsupp.mapRange.addMonoidHom e (Finsupp.single a n) = Finsupp.single a (e n) := by
     ext b
     apply Finsupp.apply_single
 
+end Finsupp
+
+section MonoidAlgebraFunctoriality
+
+variable [Semiring N] [Semiring N']
+
+/- noncomputable example
+    {N' : Type*} [Semiring N'] [Algebra R N'] (e : N ≃ₗ[R] N') :
+    MonoidAlgebra N α ≃ₗ[R] MonoidAlgebra N' α :=
+  Finsupp.mapRange.linearEquiv e -/
+
 lemma MonoidAlgebra.apply_single
-    {N N' : Type*} [Semiring N] [Semiring N']
     (e : N →+ N') (a : α) (n : N) (b : α) :
     e ((MonoidAlgebra.single a n) b) = MonoidAlgebra.single a (e n) b :=
   Finsupp.apply_single e a n b
 
-noncomputable def MonoidAlgebra.ringHom
-    {N N' : Type*} [Semiring N] [Semiring N'] (e : N →+* N') :
+noncomputable def MonoidAlgebra.ringHom (e : N →+* N') :
     MonoidAlgebra N α →+* MonoidAlgebra N' α := {
     Finsupp.mapRange.addMonoidHom e with
     map_one' := Finsupp.ext (fun _ => by simp [MonoidAlgebra.one_def])
@@ -78,30 +97,25 @@ noncomputable def MonoidAlgebra.ringHom
       rw [← _root_.map_mul]
       exact MonoidAlgebra.apply_single e.toAddMonoidHom (b * c) _ a) }
 
-lemma MonoidAlgebra.ringHom_apply
-    {N' : Type*} [Semiring N'] (e : N →+* N') (x : MonoidAlgebra N α) :
+lemma MonoidAlgebra.ringHom_apply (e : N →+* N') (x : MonoidAlgebra N α) :
     MonoidAlgebra.ringHom e x = Finsupp.mapRange.addMonoidHom e.toAddMonoidHom x :=
   rfl
 
-lemma MonoidAlgebra.ringHom_apply_single
-    {N' : Type*} [Semiring N'] (e : N →+* N') (a  : α) (n : N) :
+lemma MonoidAlgebra.ringHom_apply_single (e : N →+* N') (a  : α) (n : N) :
     MonoidAlgebra.ringHom e (single a n) = single a (e n) :=
   Finsupp.mapRange.addMonoidHom_apply_single e.toAddMonoidHom a n
 
-noncomputable def MonoidAlgebra.equivRingHom
-    {N' : Type*} [Semiring N'] (e : N ≃+* N') :
+noncomputable def MonoidAlgebra.equivRingHom (e : N ≃+* N') :
     MonoidAlgebra N α ≃+* MonoidAlgebra N' α := {
   Finsupp.mapRange.addEquiv e.toAddEquiv with
   map_mul' := (MonoidAlgebra.ringHom e.toRingHom).map_mul' }
 
-noncomputable def MonoidAlgebra.linearMap
-    {N' : Type*} [Semiring N'] [Algebra R N'] (e : N →ₗ[R] N') :
+noncomputable def MonoidAlgebra.linearMap [Module R N] [Module R N'] (e : N →ₗ[R] N') :
     MonoidAlgebra N α →ₗ[R] MonoidAlgebra N' α := {
   Finsupp.mapRange.linearMap e with
   toFun := Finsupp.mapRange.addMonoidHom e.toAddMonoidHom }
 
-noncomputable def MonoidAlgebra.algHom
-    {N' : Type*} [Semiring N'] [Algebra R N'] (e : N →ₐ[R] N') :
+noncomputable def MonoidAlgebra.algHom [Algebra R N] [Algebra R N'] (e : N →ₐ[R] N') :
     MonoidAlgebra N α →ₐ[R] MonoidAlgebra N' α := {
   MonoidAlgebra.ringHom e.toRingHom with
   toFun := Finsupp.mapRange.addMonoidHom e.toAddMonoidHom
@@ -110,18 +124,21 @@ noncomputable def MonoidAlgebra.algHom
       Function.comp_apply, Finsupp.mapRange.addMonoidHom_apply, AddMonoidHom.coe_coe,
       RingHom.coe_coe, Finsupp.mapRange_single, AlgHom.commutes] }
 
-noncomputable def MonoidAlgebra.algEquiv
-    {N' : Type*} [Semiring N'] [Algebra R N'] (e : N ≃ₐ[R] N') :
+noncomputable def MonoidAlgebra.algEquiv [Algebra R N] [Algebra R N'] (e : N ≃ₐ[R] N') :
     MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra N' α := {
   Finsupp.mapRange.linearEquiv e.toLinearEquiv,
   MonoidAlgebra.algHom e.toAlgHom with }
 
-noncomputable def MonoidAlgebra.rTensorLinearEquiv
-    {M : Type*} [Semiring M] [Algebra R M] :
+end MonoidAlgebraFunctoriality
+
+section MonoidAlgebra.TensorProduct
+
+variable [Semiring M] [Algebra R M] [Semiring N] [Algebra R N]
+
+noncomputable def MonoidAlgebra.rTensorLinearEquiv :
     (MonoidAlgebra M α) ⊗[R] N ≃ₗ[R] MonoidAlgebra (M ⊗[R] N) α :=
   TensorProduct.finsuppLeft
 
-variable {M : Type*} [Semiring M] [Algebra R M]
 
 lemma MonoidAlgebra.rTensorLinearEquiv_of_tmul (a : α) (n : N) :
     MonoidAlgebra.rTensorLinearEquiv ((MonoidAlgebra.of M α) a ⊗ₜ[R] n)
