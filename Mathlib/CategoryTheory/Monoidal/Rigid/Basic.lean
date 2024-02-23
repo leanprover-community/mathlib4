@@ -187,12 +187,12 @@ theorem rightDual_leftDual {X : C} [HasLeftDual X] : (ᘁX)ᘁ = X :=
 
 /-- The right adjoint mate `fᘁ : Xᘁ ⟶ Yᘁ` of a morphism `f : X ⟶ Y`. -/
 def rightAdjointMate {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) : Yᘁ ⟶ Xᘁ :=
-  (ρ_ _).inv ≫ (_ ◁ η_ _ _) ≫ (_ ◁ f ▷ _) ≫ (α_ _ _ _).inv ≫ (ε_ _ _ ▷ _) ≫ (λ_ _).hom
+  (ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ _ ◁ f ▷ _ ≫ (α_ _ _ _).inv ≫ ε_ _ _ ▷ _ ≫ (λ_ _).hom
 #align category_theory.right_adjoint_mate CategoryTheory.rightAdjointMate
 
 /-- The left adjoint mate `ᘁf : ᘁY ⟶ ᘁX` of a morphism `f : X ⟶ Y`. -/
 def leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) : ᘁY ⟶ ᘁX :=
-  (λ_ _).inv ≫ (η_ (ᘁX) X ▷ _) ≫ ((_ ◁ f) ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ ε_ _ _) ≫ (ρ_ _).hom
+  (λ_ _).inv ≫ η_ (ᘁX) X ▷ _ ≫ (_ ◁ f) ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ ε_ _ _ ≫ (ρ_ _).hom
 #align category_theory.left_adjoint_mate CategoryTheory.leftAdjointMate
 
 @[inherit_doc] notation f "ᘁ" => rightAdjointMate f
@@ -212,7 +212,7 @@ theorem rightAdjointMate_comp {X Y Z : C} [HasRightDual X] [HasRightDual Y] {f :
     {g : Xᘁ ⟶ Z} :
     fᘁ ≫ g =
       (ρ_ (Yᘁ)).inv ≫
-        (_ ◁ η_ X (Xᘁ)) ≫ (_ ◁ (f ⊗ g)) ≫ (α_ (Yᘁ) Y Z).inv ≫ ε_ Y (Yᘁ) ▷ _ ≫ (λ_ Z).hom :=
+        _ ◁ η_ X (Xᘁ) ≫ _ ◁ (f ⊗ g) ≫ (α_ (Yᘁ) Y Z).inv ≫ ε_ Y (Yᘁ) ▷ _ ≫ (λ_ Z).hom :=
   calc
     _ = 𝟙 _ ⊗≫ Yᘁ ◁ η_ X Xᘁ ≫ Yᘁ ◁ f ▷ Xᘁ ⊗≫ (ε_ Y Yᘁ ▷ Xᘁ ≫ 𝟙_ C ◁ g) ⊗≫ 𝟙 _ := by
       dsimp only [rightAdjointMate]; coherence
@@ -224,7 +224,7 @@ theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X 
     {g : (ᘁX) ⟶ Z} :
     (ᘁf) ≫ g =
       (λ_ _).inv ≫
-        (η_ (ᘁX) X ▷ _) ≫ ((g ⊗ f) ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ ε_ _ _) ≫ (ρ_ _).hom :=
+        η_ (ᘁX) X ▷ _ ≫ (g ⊗ f) ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ ε_ _ _ ≫ (ρ_ _).hom :=
   calc
     _ = 𝟙 _ ⊗≫ η_ (ᘁX) X ▷ (ᘁY) ⊗≫ (ᘁX) ◁ f ▷ (ᘁY) ⊗≫ ((ᘁX) ◁ ε_ (ᘁY) Y ≫ g ▷ 𝟙_ C) ⊗≫ 𝟙 _ := by
       dsimp only [leftAdjointMate]; coherence
@@ -286,8 +286,8 @@ This adjunction is often referred to as "Frobenius reciprocity" in the
 fusion categories / planar algebras / subfactors literature.
 -/
 def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃ (X ⟶ Y ⊗ Z) where
-  toFun f := (λ_ _).inv ≫ (η_ _ _ ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ f)
-  invFun f := (Y' ◁ f) ≫ (α_ _ _ _).inv ≫ (ε_ _ _ ▷ _) ≫ (λ_ _).hom
+  toFun f := (λ_ _).inv ≫ η_ _ _ ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ f
+  invFun f := Y' ◁ f ≫ (α_ _ _ _).inv ≫ ε_ _ _ ▷ _ ≫ (λ_ _).hom
   left_inv f := by
     calc
       _ = 𝟙 _ ⊗≫ Y' ◁ η_ Y Y' ▷ X ⊗≫ ((Y' ⊗ Y) ◁ f ≫ ε_ Y Y' ▷ Z) ⊗≫ 𝟙 _ := by
@@ -311,8 +311,8 @@ we get a bijection on hom-sets `(X ⊗ Y ⟶ Z) ≃ (X ⟶ Z ⊗ Y')`
 by "pulling the string on the right" up or down.
 -/
 def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃ (X ⟶ Z ⊗ Y') where
-  toFun f := (ρ_ _).inv ≫ (_ ◁ η_ _ _) ≫ (α_ _ _ _).inv ≫ (f ▷ _)
-  invFun f := (f ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ ε_ _ _) ≫ (ρ_ _).hom
+  toFun f := (ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ (α_ _ _ _).inv ≫ f ▷ _
+  invFun f := f ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ ε_ _ _ ≫ (ρ_ _).hom
   left_inv f := by
     calc
       _ = 𝟙 _ ⊗≫ X ◁ η_ Y Y' ▷ Y ⊗≫ (f ▷ (Y' ⊗ Y) ≫ Z ◁ ε_ Y Y') ⊗≫ 𝟙 _ := by
@@ -412,7 +412,7 @@ theorem tensorRightHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f :
 
 @[simp]
 theorem tensorLeftHomEquiv_symm_coevaluation_comp_id_tensor {Y Y' Z : C} [ExactPairing Y Y']
-    (f : Y' ⟶ Z) : (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ (Y ◁ f)) = (ρ_ _).hom ≫ f := by
+    (f : Y' ⟶ Z) : (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ Y ◁ f) = (ρ_ _).hom ≫ f := by
   calc
     _ = Y' ◁ η_ Y Y' ⊗≫ ((Y' ⊗ Y) ◁ f ≫ ε_ Y Y' ▷ Z) ⊗≫ 𝟙 _ := by
       dsimp [tensorLeftHomEquiv]; coherence
@@ -424,7 +424,7 @@ theorem tensorLeftHomEquiv_symm_coevaluation_comp_id_tensor {Y Y' Z : C} [ExactP
 @[simp]
 theorem tensorLeftHomEquiv_symm_coevaluation_comp_tensor_id {X Y : C} [HasRightDual X]
     [HasRightDual Y] (f : X ⟶ Y) :
-    (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ (f ▷ (Xᘁ))) = (ρ_ _).hom ≫ fᘁ := by
+    (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ f ▷ (Xᘁ)) = (ρ_ _).hom ≫ fᘁ := by
   dsimp [tensorLeftHomEquiv, rightAdjointMate]
   simp
 #align category_theory.tensor_left_hom_equiv_symm_coevaluation_comp_tensor_id CategoryTheory.tensorLeftHomEquiv_symm_coevaluation_comp_tensor_id
@@ -432,7 +432,7 @@ theorem tensorLeftHomEquiv_symm_coevaluation_comp_tensor_id {X Y : C} [HasRightD
 @[simp]
 theorem tensorRightHomEquiv_symm_coevaluation_comp_id_tensor {X Y : C} [HasLeftDual X]
     [HasLeftDual Y] (f : X ⟶ Y) :
-    (tensorRightHomEquiv _ (ᘁY) _ _).symm (η_ (ᘁX) X ≫ ((ᘁX) ◁ f)) = (λ_ _).hom ≫ ᘁf := by
+    (tensorRightHomEquiv _ (ᘁY) _ _).symm (η_ (ᘁX) X ≫ (ᘁX) ◁ f) = (λ_ _).hom ≫ ᘁf := by
   dsimp [tensorRightHomEquiv, leftAdjointMate]
   simp
 #align category_theory.tensor_right_hom_equiv_symm_coevaluation_comp_id_tensor CategoryTheory.tensorRightHomEquiv_symm_coevaluation_comp_id_tensor
@@ -463,21 +463,21 @@ theorem tensorLeftHomEquiv_id_tensor_comp_evaluation {Y Z : C} [HasLeftDual Z] (
 
 @[simp]
 theorem tensorLeftHomEquiv_tensor_id_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y]
-    (f : X ⟶ Y) : (tensorLeftHomEquiv _ _ _ _) ((f ▷ _) ≫ ε_ _ _) = (ᘁf) ≫ (ρ_ _).inv := by
+    (f : X ⟶ Y) : (tensorLeftHomEquiv _ _ _ _) (f ▷ _ ≫ ε_ _ _) = (ᘁf) ≫ (ρ_ _).inv := by
   dsimp [tensorLeftHomEquiv, leftAdjointMate]
   simp
 #align category_theory.tensor_left_hom_equiv_tensor_id_comp_evaluation CategoryTheory.tensorLeftHomEquiv_tensor_id_comp_evaluation
 
 @[simp]
 theorem tensorRightHomEquiv_id_tensor_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDual Y]
-    (f : X ⟶ Y) : (tensorRightHomEquiv _ _ _ _) (((Yᘁ) ◁ f) ≫ ε_ _ _) = fᘁ ≫ (λ_ _).inv := by
+    (f : X ⟶ Y) : (tensorRightHomEquiv _ _ _ _) ((Yᘁ) ◁ f ≫ ε_ _ _) = fᘁ ≫ (λ_ _).inv := by
   dsimp [tensorRightHomEquiv, rightAdjointMate]
   simp
 #align category_theory.tensor_right_hom_equiv_id_tensor_comp_evaluation CategoryTheory.tensorRightHomEquiv_id_tensor_comp_evaluation
 
 @[simp]
 theorem tensorRightHomEquiv_tensor_id_comp_evaluation {X Y : C} [HasRightDual X] (f : Y ⟶ Xᘁ) :
-    (tensorRightHomEquiv _ _ _ _) ((f ▷ X) ≫ ε_ X (Xᘁ)) = f ≫ (λ_ _).inv :=
+    (tensorRightHomEquiv _ _ _ _) (f ▷ X ≫ ε_ X (Xᘁ)) = f ≫ (λ_ _).inv :=
   calc
     _ = 𝟙 _ ⊗≫ (Y ◁ η_ X Xᘁ ≫ f ▷ (X ⊗ Xᘁ)) ⊗≫ ε_ X Xᘁ ▷ Xᘁ := by
       dsimp [tensorRightHomEquiv]; coherence
@@ -490,21 +490,21 @@ theorem tensorRightHomEquiv_tensor_id_comp_evaluation {X Y : C} [HasRightDual X]
 -- Next four lemmas passing `fᘁ` or `ᘁf` through (co)evaluations.
 @[reassoc]
 theorem coevaluation_comp_rightAdjointMate {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) :
-    η_ Y (Yᘁ) ≫ (_ ◁ fᘁ) = η_ _ _ ≫ (f ▷ _) := by
+    η_ Y (Yᘁ) ≫ _ ◁ (fᘁ) = η_ _ _ ≫ f ▷ _ := by
   apply_fun (tensorLeftHomEquiv _ Y (Yᘁ) _).symm
   simp
 #align category_theory.coevaluation_comp_right_adjoint_mate CategoryTheory.coevaluation_comp_rightAdjointMate
 
 @[reassoc]
 theorem leftAdjointMate_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
-    (X ◁ ᘁf) ≫ ε_ _ _ = (f ▷ _) ≫ ε_ _ _ := by
+    X ◁ (ᘁf) ≫ ε_ _ _ = f ▷ _ ≫ ε_ _ _ := by
   apply_fun tensorLeftHomEquiv _ (ᘁX) X _
   simp
 #align category_theory.left_adjoint_mate_comp_evaluation CategoryTheory.leftAdjointMate_comp_evaluation
 
 @[reassoc]
 theorem coevaluation_comp_leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
-    η_ (ᘁY) Y ≫ ((ᘁf) ▷ Y) = η_ (ᘁX) X ≫ ((ᘁX) ◁ f) := by
+    η_ (ᘁY) Y ≫ (ᘁf) ▷ Y = η_ (ᘁX) X ≫ (ᘁX) ◁ f := by
   apply_fun (tensorRightHomEquiv _ (ᘁY) Y _).symm
   simp
 #align category_theory.coevaluation_comp_left_adjoint_mate CategoryTheory.coevaluation_comp_leftAdjointMate
@@ -518,8 +518,8 @@ theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDua
 
 /-- Transport an exact pairing across an isomorphism in the first argument. -/
 def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : ExactPairing X Y where
-  evaluation' := (Y ◁ i.hom) ≫ ε_ _ _
-  coevaluation' := η_ _ _ ≫ (i.inv ▷ Y)
+  evaluation' := Y ◁ i.hom ≫ ε_ _ _
+  coevaluation' := η_ _ _ ≫ i.inv ▷ Y
   evaluation_coevaluation' :=
     calc
       _ = η_ X' Y ▷ X ⊗≫ (i.inv ▷ (Y ⊗ X) ≫ X ◁ (Y ◁ i.hom)) ⊗≫ X ◁ ε_ X' Y := by
@@ -549,8 +549,8 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
 def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : ExactPairing X Y where
-  evaluation' := (i.hom ▷ X) ≫ ε_ _ _
-  coevaluation' := η_ _ _ ≫ (X ◁ i.inv)
+  evaluation' := i.hom ▷ X ≫ ε_ _ _
+  coevaluation' := η_ _ _ ≫ X ◁ i.inv
   evaluation_coevaluation' := by
     calc
       _ = η_ X Y' ▷ X ⊗≫ X ◁ (i.inv ≫ i.hom) ▷ X ≫ X ◁ ε_ X Y' := by
