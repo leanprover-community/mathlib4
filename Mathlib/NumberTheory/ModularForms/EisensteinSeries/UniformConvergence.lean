@@ -183,7 +183,7 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
     simp only [neg_zero, Real.rpow_zero, mul_one, le_refl]
     rw [hx.1, hx.2]
     simp only [Int.cast_zero, zero_mul, add_zero, map_zero]
-    have h1 : (0 : ℝ) ^ (-k)  = 0 := by
+    have h1 : (0 : ℝ) ^ (-k) = 0 := by
       rw [Real.rpow_eq_zero_iff_of_nonneg (by rfl)]
       simp only [ne_eq, neg_eq_zero, hk0, not_false_eq_true, and_self]
     simp only [h1, hn, CharP.cast_eq_zero, mul_zero, le_refl]
