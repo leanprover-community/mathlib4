@@ -36,7 +36,8 @@ class UniformContinuousConstVAdd [VAdd M X] : Prop where
   uniformContinuous_const_vadd : ∀ c : M, UniformContinuous (c +ᵥ · : X → X)
 #align has_uniform_continuous_const_vadd UniformContinuousConstVAdd
 
-/-- A multiplicative action such that for all `c`, the map `λ x, c • x` is uniformly continuous. -/
+/-- A multiplicative action such that for all `c`,
+the map `fun x ↦c • x` is uniformly continuous. -/
 @[to_additive]
 class UniformContinuousConstSMul [SMul M X] : Prop where
   uniformContinuous_const_smul : ∀ c : M, UniformContinuous (c • · : X → X)
@@ -98,6 +99,14 @@ theorem UniformContinuous.const_smul [UniformContinuousConstSMul M X] {f : Y →
   (uniformContinuous_const_smul c).comp hf
 #align uniform_continuous.const_smul UniformContinuous.const_smul
 #align uniform_continuous.const_vadd UniformContinuous.const_vadd
+
+@[to_additive]
+lemma UniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuousConstSMul M Y]
+    {f : X → Y} (hf : UniformInducing f) (hsmul : ∀ (c : M) x, f (c • x) = c • f x) :
+    UniformContinuousConstSMul M X where
+  uniformContinuous_const_smul c := by
+    simpa only [hf.uniformContinuous_iff, Function.comp_def, hsmul]
+      using hf.uniformContinuous.const_smul c
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/

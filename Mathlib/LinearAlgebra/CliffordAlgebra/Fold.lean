@@ -100,7 +100,7 @@ def foldl (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x
 @[simp]
 theorem foldl_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
     foldl Q f hf n (reverse x) = foldr Q f hf n x :=
-  FunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
+  DFunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
 #align clifford_algebra.foldl_reverse CliffordAlgebra.foldl_reverse
 
 @[simp]

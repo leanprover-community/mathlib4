@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Order.Group.InjSurj
-import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Submonoid.Centralizer
-import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
 
@@ -133,7 +132,7 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 #align inv_mem_iff inv_mem_iff
 #align neg_mem_iff neg_mem_iff
 
-@[simp] theorem abs_mem_iff {S G} [InvolutiveNeg G] [LinearOrder G] {_ : SetLike S G}
+@[simp] theorem abs_mem_iff {S G} [AddGroup G] [LinearOrder G] {_ : SetLike S G}
     [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
   cases abs_choice x <;> simp [*]
 
@@ -187,7 +186,28 @@ theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ y ∈ H :=
 #align mul_mem_cancel_left mul_mem_cancel_left
 #align add_mem_cancel_left add_mem_cancel_left
 
+namespace InvMemClass
+
+/-- A subgroup of a group inherits an inverse. -/
+@[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
+instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
+  [InvMemClass S G] {H : S} : Inv H :=
+  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
+#align subgroup_class.has_inv InvMemClass.inv
+#align add_subgroup_class.has_neg NegMemClass.neg
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
+  rfl
+#align subgroup_class.coe_inv InvMemClass.coe_inv
+#align add_subgroup_class.coe_neg NegMemClass.coe_neg
+
+end InvMemClass
+
 namespace SubgroupClass
+
+-- deprecated since 15 January 2024
+@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
@@ -200,14 +220,6 @@ theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
-
-/-- A subgroup of a group inherits an inverse. -/
-@[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
-instance inv {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
-  [SubgroupClass S G] {H : S} : Inv H :=
-  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
-#align subgroup_class.has_inv SubgroupClass.inv
-#align add_subgroup_class.has_neg AddSubgroupClass.neg
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
@@ -229,12 +241,6 @@ instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} :
   ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 #align subgroup_class.has_zpow SubgroupClass.zpow
 -- Porting note: additive align statement is given above
-
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
-  rfl
-#align subgroup_class.coe_inv SubgroupClass.coe_inv
-#align add_subgroup_class.coe_neg AddSubgroupClass.coe_neg
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
@@ -410,7 +416,7 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subgroup.mem_carrier Subgroup.mem_carrier
@@ -745,7 +751,7 @@ theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align subgroup.coe_pow Subgroup.coe_pow
 #align add_subgroup.coe_nsmul AddSubgroup.coe_nsmul
 
-@[to_additive (attr := norm_cast)] -- Porting note: dsimp can prove this
+@[to_additive (attr := norm_cast)] -- Porting note (#10685): dsimp can prove this
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 #align subgroup.coe_zpow Subgroup.coe_zpow
@@ -1672,9 +1678,10 @@ theorem mem_subgroupOf {H K : Subgroup G} {h : K} : h ∈ H.subgroupOf K ↔ (h 
 #align subgroup.mem_subgroup_of Subgroup.mem_subgroupOf
 #align add_subgroup.mem_add_subgroup_of AddSubgroup.mem_addSubgroupOf
 
+-- TODO(kmill): use `K ⊓ H` order for RHS to match `Subtype.image_preimage_coe`
 @[to_additive (attr := simp)]
 theorem subgroupOf_map_subtype (H K : Subgroup G) : (H.subgroupOf K).map K.subtype = H ⊓ K :=
-  SetLike.ext' <| Subtype.image_preimage_coe _ _
+  SetLike.ext' <| by refine Subtype.image_preimage_coe _ _ |>.trans ?_; apply Set.inter_comm
 #align subgroup.subgroup_of_map_subtype Subgroup.subgroupOf_map_subtype
 #align add_subgroup.add_subgroup_of_map_subtype AddSubgroup.addSubgroupOf_map_subtype
 
@@ -1910,7 +1917,7 @@ theorem le_pi_iff {I : Set η} {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i,
     rintro _ ⟨x, hx, rfl⟩
     exact (h hx) _ hi
   · intro h x hx i hi
-    refine' h i hi ⟨_, hx, rfl⟩
+    exact h i hi ⟨_, hx, rfl⟩
 #align subgroup.le_pi_iff Subgroup.le_pi_iff
 #align add_subgroup.le_pi_iff AddSubgroup.le_pi_iff
 
@@ -2400,7 +2407,7 @@ end Centralizer
 /-- Commutativity of a subgroup -/
 structure IsCommutative : Prop where
   /-- `*` is commutative on `H` -/
-  is_comm : IsCommutative H (· * ·)
+  is_comm : Std.Commutative (α := H) (· * ·)
 #align subgroup.is_commutative Subgroup.IsCommutative
 
 attribute [class] IsCommutative
@@ -2408,7 +2415,7 @@ attribute [class] IsCommutative
 /-- Commutativity of an additive subgroup -/
 structure _root_.AddSubgroup.IsCommutative (H : AddSubgroup A) : Prop where
   /-- `+` is commutative on `H` -/
-  is_comm : _root_.IsCommutative H (· + ·)
+  is_comm : Std.Commutative (α := H) (· + ·)
 #align add_subgroup.is_commutative AddSubgroup.IsCommutative
 
 attribute [to_additive] Subgroup.IsCommutative
@@ -2577,7 +2584,7 @@ theorem normalClosure_eq_self (H : Subgroup G) [H.Normal] : normalClosure ↑H =
   le_antisymm (normalClosure_le_normal rfl.subset) le_normalClosure
 #align subgroup.normal_closure_eq_self Subgroup.normalClosure_eq_self
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem normalClosure_idempotent : normalClosure ↑(normalClosure s) = normalClosure s :=
   normalClosure_eq_self _
 #align subgroup.normal_closure_idempotent Subgroup.normalClosure_idempotent
@@ -2633,7 +2640,7 @@ theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
   le_antisymm H.normalCore_le (normal_le_normalCore.mpr le_rfl)
 #align subgroup.normal_core_eq_self Subgroup.normalCore_eq_self
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
 #align subgroup.normal_core_idempotent Subgroup.normalCore_idempotent
@@ -2963,7 +2970,7 @@ theorem ker_prodMap {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* 
 
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
-  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact FunLike.congr_fun h y⟩
+  ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
 
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=

@@ -41,8 +41,6 @@ coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` 
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
-set_option autoImplicit true
-
 universe u v w x
 
 open Filter Function Set Topology NNReal ENNReal Bornology
@@ -313,8 +311,8 @@ protected theorem continuousOn (hf : LipschitzOnWith K f s) : ContinuousOn f s :
   hf.uniformContinuousOn.continuousOn
 #align lipschitz_on_with.continuous_on LipschitzOnWith.continuousOn
 
-theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) (hx : x ∈ s) (hy : y ∈ s)
-    (hr : edist x y ≤ r) :
+theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
+    {r : ℝ≥0∞} (hr : edist x y ≤ r) :
     edist (f x) (f y) ≤ K * r :=
   (h hx hy).trans <| ENNReal.mul_left_mono hr
 
@@ -445,7 +443,7 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
     _ ≤ K * (δ + δ) + ε / 2 + K * δ := by
       gcongr
       · refine (hb b hbt).edist_le_mul_of_le has (hs' hx') ?_
-        refine (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
+        exact (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
       · exact hby
       · exact (hb y hy).edist_le_mul_of_le (hs' hx') hx ((edist_comm _ _).trans_le hxx'.le)
     _ = δ * ↑(3 * K) + ε / 2 := by push_cast; ring

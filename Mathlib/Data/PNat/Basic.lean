@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
+import Mathlib.Order.Hom.Basic
 
 #align_import data.pnat.basic from "leanprover-community/mathlib"@"172bf2812857f5e56938cc148b7a539f52f84ca9"
 
@@ -310,7 +311,7 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
   · exact (lt_irrefl 0 kprop).elim
   cases' k with k
   · exact hz
-  exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (lt_succ_iff.2 hm)
+  exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
 #align pnat.case_strong_induction_on PNat.caseStrongInductionOn
 
 /-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
@@ -381,7 +382,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        -- Porting note : Specified type of `h₂` explicitly because `rw` could not unify
+        -- Porting note: Specified type of `h₂` explicitly because `rw` could not unify
         -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂

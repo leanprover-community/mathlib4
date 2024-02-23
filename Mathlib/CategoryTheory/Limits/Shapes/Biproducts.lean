@@ -258,7 +258,7 @@ structure IsBilimit {F : J → C} (B : Bicone F) where
 
 attribute [inherit_doc IsBilimit] IsBilimit.isLimit IsBilimit.isColimit
 
--- Porting note: simp can prove this, linter doesn't notice it is removed
+-- Porting note (#10618): simp can prove this, linter doesn't notice it is removed
 attribute [-simp, nolint simpNF] IsBilimit.mk.injEq
 
 attribute [local ext] Bicone.IsBilimit
@@ -1975,6 +1975,21 @@ def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X �
         comp_zero]
     apply hY.eq_of_tgt
 #align category_theory.limits.iso_zero_biprod CategoryTheory.Limits.isoZeroBiprod
+
+@[simp]
+lemma biprod_isZero_iff (A B : C) [HasBinaryBiproduct A B] :
+    IsZero (biprod A B) ↔ IsZero A ∧ IsZero B := by
+  constructor
+  · intro h
+    simp only [IsZero.iff_id_eq_zero] at h ⊢
+    simp only [show 𝟙 A = biprod.inl ≫ 𝟙 (A ⊞ B) ≫ biprod.fst by simp,
+      show 𝟙 B = biprod.inr ≫ 𝟙 (A ⊞ B) ≫ biprod.snd by simp, h, zero_comp, comp_zero,
+      and_self]
+  · rintro ⟨hA, hB⟩
+    rw [IsZero.iff_id_eq_zero]
+    apply biprod.hom_ext
+    · apply hA.eq_of_tgt
+    · apply hB.eq_of_tgt
 
 end IsZero
 

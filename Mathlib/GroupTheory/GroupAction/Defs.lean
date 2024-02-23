@@ -432,6 +432,12 @@ theorem smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (
 #align smul_mul_assoc smul_mul_assoc
 #align vadd_add_assoc vadd_add_assoc
 
+/-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`.
+-/
+@[to_additive]
+lemma smul_div_assoc [DivInvMonoid β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
+    r • x / y = r • (x / y) := by simp [div_eq_mul_inv, smul_mul_assoc]
+
 @[to_additive]
 theorem smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [SMul γ δ]
     [IsScalarTower α β δ] [IsScalarTower α γ δ] [SMulCommClass β γ δ] (a : α) (b : β) (c : γ)
@@ -653,6 +659,19 @@ theorem isPretransitive_compHom
   obtain ⟨e, rfl⟩ : ∃ e, f e = m := hf m
   exact ⟨e, rfl⟩
 
+@[to_additive]
+theorem IsPretransitive.of_smul_eq {M N α : Type*} [SMul M α] [SMul N α]
+    [IsPretransitive M α] (f : M → N) (hf : ∀ {c : M} {x : α}, f c • x = c • x) :
+    IsPretransitive N α :=
+  ⟨fun x y ↦ (exists_smul_eq x y).elim fun m h ↦ ⟨f m, hf.trans h⟩⟩
+
+@[to_additive]
+theorem IsPretransitive.of_compHom
+    {M N α : Type*} [Monoid M] [Monoid N] [MulAction N α]
+    (f : M →* N) [h : letI := compHom α f; IsPretransitive M α] :
+    IsPretransitive N α :=
+  letI := compHom α f; h.of_smul_eq f rfl
+
 end MulAction
 
 end
@@ -665,6 +684,12 @@ theorem smul_one_smul {M} (N) [Monoid N] [SMul M N] [MulAction N α] [SMul M α]
   rw [smul_assoc, one_smul]
 #align smul_one_smul smul_one_smul
 #align vadd_zero_vadd vadd_zero_vadd
+
+@[to_additive]
+theorem MulAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Monoid N] [SMul M N]
+    [MulAction N α] [SMul M α] [IsScalarTower M N α] [IsPretransitive M α] :
+    IsPretransitive N α :=
+  of_smul_eq (fun x : M ↦ x • 1) (smul_one_smul N _ _)
 
 @[to_additive (attr := simp)]
 theorem smul_one_mul {M N} [MulOneClass N] [SMul M N] [IsScalarTower M N N] (x : M) (y : N) :
@@ -707,6 +732,17 @@ def MonoidHom.smulOneHom {M N} [Monoid M] [MulOneClass N] [MulAction M N] [IsSca
 #align smul_one_hom_apply MonoidHom.smulOneHom_apply
 #align vadd_zero_hom_apply AddMonoidHom.vaddZeroHom_apply
 
+/-- A monoid homomorphism between two monoids M and N can be equivalently specified by a
+multiplicative action of M on N that is compatible with the multiplication on N. -/
+@[to_additive "A monoid homomorphism between two additive monoids M and N can be equivalently
+  specified by an additive action of M on N that is compatible with the addition on N."]
+def monoidHomEquivMulActionIsScalarTower (M N) [Monoid M] [Monoid N] :
+    (M →* N) ≃ {_inst : MulAction M N // IsScalarTower M N N} where
+  toFun f := ⟨MulAction.compHom N f, SMul.comp.isScalarTower _⟩
+  invFun := fun ⟨_, _⟩ ↦ MonoidHom.smulOneHom
+  left_inv f := MonoidHom.ext fun m ↦ mul_one (f m)
+  right_inv := fun ⟨_, _⟩ ↦ Subtype.ext <| MulAction.ext _ _ <| funext₂ <| smul_one_smul N
+
 end CompatibleScalar
 
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/
@@ -726,6 +762,11 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
 
 lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
     (a • if p then b else 0) = if p then a • b else 0 := by split_ifs <;> simp
+
+lemma smul_eq_zero_of_right (a : M) {b : A} (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
+#align smul_eq_zero_of_right smul_eq_zero_of_right
+lemma right_ne_zero_of_smul {a : M} {b : A} : a • b ≠ 0 → b ≠ 0 := mt <| smul_eq_zero_of_right a
+#align right_ne_zero_of_smul right_ne_zero_of_smul
 
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
 See note [reducible non-instances]. -/

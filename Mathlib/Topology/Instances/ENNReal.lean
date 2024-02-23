@@ -8,7 +8,7 @@ import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.T5
-import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 
 #align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
@@ -138,6 +138,9 @@ theorem tendsto_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : Tendsto ENNReal.toRea
 
 lemma continuousOn_toReal : ContinuousOn ENNReal.toReal { a | a ≠ ∞ } :=
   NNReal.continuous_coe.comp_continuousOn continuousOn_toNNReal
+
+lemma continuousAt_toReal (hx : x ≠ ∞) : ContinuousAt ENNReal.toReal x :=
+  continuousOn_toReal.continuousAt (isOpen_ne_top.mem_nhds_iff.mpr hx)
 
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
@@ -446,7 +449,7 @@ theorem continuousOn_sub :
   rw [ContinuousOn]
   rintro ⟨x, y⟩ hp
   simp only [Ne.def, Set.mem_setOf_eq, Prod.mk.inj_iff] at hp
-  refine' tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
+  exact tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
 #align ennreal.continuous_on_sub ENNReal.continuousOn_sub
 
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
@@ -708,6 +711,20 @@ theorem exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠
   exact ⟨y', z', hy', hz', hx⟩
 #align ennreal.exists_lt_add_of_lt_add ENNReal.exists_lt_add_of_lt_add
 
+theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
+    ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
+  by_cases hf : BddBelow (range f)
+  · exact
+      Monotone.map_ciInf_of_continuousAt ENNReal.continuous_ofReal.continuousAt
+        (fun i j hij => ENNReal.ofReal_le_ofReal hij) hf
+  · symm
+    rw [Real.iInf_of_not_bddBelow hf, ENNReal.ofReal_zero, ← ENNReal.bot_eq_zero, iInf_eq_bot]
+    obtain ⟨y, hy_mem, hy_neg⟩ := not_bddBelow_iff.mp hf 0
+    obtain ⟨i, rfl⟩ := mem_range.mpr hy_mem
+    refine' fun x hx => ⟨i, _⟩
+    rwa [ENNReal.ofReal_of_nonpos hy_neg.le]
+#align ennreal.of_real_cinfi ENNReal.ofReal_cinfi
+
 end TopologicalSpace
 
 section Liminf
@@ -727,7 +744,7 @@ theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x :
   simp_rw [not_exists, not_frequently, not_lt] at h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
-  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs_self _)
+  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs _)
 #align ennreal.exists_frequently_lt_of_liminf_ne_top' ENNReal.exists_frequently_lt_of_liminf_ne_top'
 
 theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x : ι → ℝ}
@@ -1469,7 +1486,7 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
 #align continuous_edist continuous_edist
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.edist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => edist (f b) (g b) :=
   continuous_edist.comp (hf.prod_mk hg : _)
@@ -1647,7 +1664,7 @@ end truncateToReal
 
 section LimsupLiminf
 
-set_option autoImplicit true
+variable {ι : Type*}
 
 lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=

@@ -19,7 +19,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
--- porting notes: removed from module documentation because it moved to `data.finsupp.multiset`
+-- Porting note: removed from module documentation because it moved to `data.finsupp.multiset`
 -- TODO: move to `Data.Finsupp.Multiset` when that is ported
 -- * `Finsupp.orderIsoMultiset`: The order isomorphism between `ℕ`-valued finitely supported
 --   functions and multisets.
@@ -197,7 +197,7 @@ protected theorem bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
 
 @[simp]
 theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
-  simp [FunLike.ext_iff, forall_and]
+  simp [DFunLike.ext_iff, forall_and]
 #align finsupp.add_eq_zero_iff Finsupp.add_eq_zero_iff
 
 theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=

@@ -52,7 +52,7 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
     intro U hU
     -- Continuity means that `U ∈ 𝓝 0` implies that `f ⁻¹' U ∈ 𝓝 0`.
     rcases h with ⟨V, hV, h⟩
-    rcases h hU with ⟨r, hr, h⟩
+    rcases (h hU).exists_pos with ⟨r, hr, h⟩
     rcases NormedField.exists_lt_norm 𝕜 r with ⟨x, hx⟩
     specialize h x hx.le
     -- After unfolding all the definitions, we know that `f '' V ⊆ x • U`. We use this to show the
@@ -144,7 +144,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     intro n
     by_cases h : n = 0
     · rw [h, Nat.cast_zero, zero_smul]
-      refine' mem_of_mem_nhds (bE.1.mem_of_mem <| by triv)
+      exact mem_of_mem_nhds (bE.1.mem_of_mem <| by triv)
     rcases hu n h with ⟨y, hy, hu1⟩
     convert hy
     rw [← hu1, ← mul_smul]
@@ -152,8 +152,8 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   -- The image `(fun n ↦ n • u n)` is von Neumann bounded:
   have h_bounded : IsVonNBounded 𝕜 (Set.range fun n : ℕ => (n : 𝕜) • u n) :=
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
-  -- Since `range u` is bounded it absorbs `V`
-  rcases hf _ h_bounded hV with ⟨r, hr, h'⟩
+  -- Since `range u` is bounded, `V` absorbs it
+  rcases (hf _ h_bounded hV).exists_pos with ⟨r, hr, h'⟩
   cases' exists_nat_gt r with n hn
   -- We now find a contradiction between `f (u n) ∉ V` and the absorbing property
   have h1 : r ≤ ‖(n : 𝕜')‖ := by
