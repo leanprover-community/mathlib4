@@ -500,6 +500,20 @@ instance instUniqueEmbOfIsPurelyInseparable [IsPurelyInseparable F E] :
 theorem IsPurelyInseparable.finSepDegree_eq_one [IsPurelyInseparable F E] :
     finSepDegree F E = 1 := Nat.card_unique
 
+/-- A purely inseparable extension has separable degree one. -/
+theorem IsPurelyInseparable.sepDegree_eq_one [IsPurelyInseparable F E] :
+    sepDegree F E = 1 := by
+  rw [sepDegree, separableClosure.eq_bot_of_isPurelyInseparable, IntermediateField.rank_bot]
+
+/-- A purely inseparable extension has inseparable degree equal to degree. -/
+theorem IsPurelyInseparable.insepDegree_eq [IsPurelyInseparable F E] :
+    insepDegree F E = Module.rank F E := by
+  rw [insepDegree, separableClosure.eq_bot_of_isPurelyInseparable, rank_bot']
+
+/-- A purely inseparable extension has finite inseparable degree equal to degree. -/
+theorem IsPurelyInseparable.finInsepDegree_eq [IsPurelyInseparable F E] :
+    finInsepDegree F E = finrank F E := congr(Cardinal.toNat $(insepDegree_eq F E))
+
 -- TODO: remove `halg` assumption
 /-- An algebraic extension is purely inseparable if and only if it has finite separable
 degree one. -/
@@ -946,5 +960,89 @@ theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F
   simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K halg
 
 end Field
+
+variable {K} in
+/-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
+for any subset `S` of `K` such that `F(S) / F` is algebraic, the `E(S) / E` and `F(S) / F` have
+the same separable degree. -/
+theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable
+    (S : Set K) (halg : Algebra.IsAlgebraic F (adjoin F S)) [IsPurelyInseparable F E] :
+    sepDegree E (adjoin E S) = sepDegree F (adjoin F S) := by
+  set M := adjoin F S
+  set L := adjoin E S
+  let E' := (IsScalarTower.toAlgHom F E K).fieldRange
+  let j : E ≃ₐ[F] E' := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F E K)
+  have hi : M ≤ L.restrictScalars F := by
+    rw [restrictScalars_adjoin_of_algEquiv (E := K) j rfl, restrictScalars_adjoin]
+    exact adjoin.mono _ _ _ (Set.subset_union_right _ _)
+  let i : M →+* L := Subsemiring.inclusion hi
+  letI : Algebra M L := i.toAlgebra
+  letI : SMul M L := Algebra.toSMul
+  haveI : IsScalarTower F M L := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+  haveI : IsPurelyInseparable M L := by
+    change IsPurelyInseparable M (extendScalars hi)
+    obtain ⟨q, _⟩ := ExpChar.exists F
+    have : extendScalars hi = adjoin M (E' : Set K) := restrictScalars_injective F <| by
+      conv_lhs => rw [extendScalars_restrictScalars, restrictScalars_adjoin_of_algEquiv
+        (E := K) j rfl, ← adjoin_self F E', adjoin_adjoin_comm]
+    rw [this, isPurelyInseparable_adjoin_iff_pow_mem _ _ q]
+    rintro x ⟨y, hy⟩
+    obtain ⟨n, z, hz⟩ := IsPurelyInseparable.pow_mem F q y
+    refine ⟨n, algebraMap F M z, ?_⟩
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply F E K, hz, ← hy, map_pow]
+    rfl
+  have h := lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E L
+    (IsPurelyInseparable.isAlgebraic F E)
+  rw [IsPurelyInseparable.sepDegree_eq_one F E, Cardinal.lift_one, one_mul] at h
+  rw [Cardinal.lift_injective h, ← sepDegree_mul_sepDegree_of_isAlgebraic F M L halg,
+    IsPurelyInseparable.sepDegree_eq_one M L, mul_one]
+
+variable {F K} in
+/-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
+for any intermediate field `S` of `K / F` such that `S / F` is algebraic, the `E(S) / E` and
+`S / F` have the same separable degree. -/
+theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable'
+    (S : IntermediateField F K) (halg : Algebra.IsAlgebraic F S) [IsPurelyInseparable F E] :
+    sepDegree E (adjoin E (S : Set K)) = sepDegree F S := by
+  have := sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable F E (S : Set K)
+    (by rwa [adjoin_self])
+  rwa [adjoin_self] at this
+
+variable {K} in
+/-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
+for any element `x` of `K` separable over `F`, it has the same minimal polynomials over `F` and
+over `E`. -/
+theorem minpoly.map_eq_of_separable_of_isPurelyInseparable (x : K)
+    (hsep : (minpoly F x).Separable) [IsPurelyInseparable F E] :
+    (minpoly F x).map (algebraMap F E) = minpoly E x := by
+  have hi := hsep.isIntegral
+  have hi' : IsIntegral E x := IsIntegral.tower_top hi
+  refine eq_of_monic_of_dvd_of_natDegree_le (monic hi') ((monic hi).map (algebraMap F E))
+    (dvd_map_of_isScalarTower F E x) (le_of_eq ?_)
+  have hsep' := hsep.map_minpoly E
+  haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
+  haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep'
+  have halg := IsSeparable.isAlgebraic F F⟮x⟯
+  rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
+    ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,
+    finSepDegree_eq _ _ halg, finSepDegree_eq _ _ (IsSeparable.isAlgebraic E _),
+    sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable F E _ halg]
+
+variable {F} in
+/-- If `E / F` is a purely inseparable field extension, `f` is a separable irreducible polynomial
+over `F`, then it is also irreducible over `E`. -/
+theorem Polynomial.Separable.map_irreducible_of_isPurelyInseparable {f : F[X]} (hsep : f.Separable)
+    (hirr : Irreducible f) [IsPurelyInseparable F E] : Irreducible (f.map (algebraMap F E)) := by
+  let K := AlgebraicClosure E
+  obtain ⟨x, hx⟩ := IsAlgClosed.exists_aeval_eq_zero K f
+    (natDegree_pos_iff_degree_pos.1 hirr.natDegree_pos).ne'
+  have ha : Associated f (minpoly F x) := by
+    have := isUnit_C.2 (leadingCoeff_ne_zero.2 hirr.ne_zero).isUnit.inv
+    exact ⟨this.unit, by rw [IsUnit.unit_spec, minpoly.eq_of_irreducible hirr hx]⟩
+  have ha' : Associated (f.map (algebraMap F E)) ((minpoly F x).map (algebraMap F E)) :=
+    ha.map (mapRingHom (algebraMap F E)).toMonoidHom
+  have heq := minpoly.map_eq_of_separable_of_isPurelyInseparable F E x (ha.separable hsep)
+  rw [ha'.irreducible_iff, heq]
+  exact minpoly.irreducible (AlgebraicClosure.isAlgebraic E x).isIntegral
 
 end TowerLaw
