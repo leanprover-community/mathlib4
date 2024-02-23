@@ -135,7 +135,7 @@ theorem coe_injective : Injective ((↑) : M [Λ^ι]→ₗ[R] N → (ι → M) �
   DFunLike.coe_injective
 #align alternating_map.coe_injective AlternatingMap.coe_injective
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_inj {f g : M [Λ^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f = g :=
   coe_injective.eq_iff
 #align alternating_map.coe_inj AlternatingMap.coe_inj

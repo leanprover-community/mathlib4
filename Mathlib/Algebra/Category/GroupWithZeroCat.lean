@@ -60,10 +60,10 @@ instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
     apply DFunLike.coe_injective'
     exact h⟩
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
@@ -72,7 +72,7 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
     map := fun f => f.toFun }
   forget_faithful := ⟨fun h => DFunLike.coe_injective h⟩
 
--- porting note: added
+-- porting note (#10756): added lemma
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
 instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
   forget₂ :=
