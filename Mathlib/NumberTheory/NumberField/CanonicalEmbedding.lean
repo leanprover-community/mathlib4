@@ -985,8 +985,8 @@ theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBody
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT_mem K f).mp h_mem⟩
 
-/-- A version of `exists_ne_zero_mem_ideal_lt` where the absolute value of the real part of `x` is
-smaller than `1` at some fixed complex place. This is useful to ensure that `x` is not real. -/
+/-- A version of `exists_ne_zero_mem_ideal_lt` where the absolute value of the real part of `a` is
+smaller than `1` at some fixed complex place. This is useful to ensure that `a` is not real. -/
 theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w})
     (h : minkowskiBound K I < volume (convexBodyLT' K f w₀)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w a < f w) ∧
