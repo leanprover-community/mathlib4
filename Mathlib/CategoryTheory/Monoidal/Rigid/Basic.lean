@@ -82,10 +82,10 @@ class ExactPairing (X Y : C) where
   Do not use directly. Use `ExactPairing.evaluation` instead. -/
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :
-    (Y ◁ coevaluation') ≫ (α_ _ _ _).inv ≫ (evaluation' ▷ Y) = (ρ_ Y).hom ≫ (λ_ Y).inv := by
+    Y ◁ coevaluation' ≫ (α_ _ _ _).inv ≫ evaluation' ▷ Y = (ρ_ Y).hom ≫ (λ_ Y).inv := by
     aesop_cat
   evaluation_coevaluation' :
-    (coevaluation' ▷ X) ≫ (α_ _ _ _).hom ≫ (X ◁ evaluation') = (λ_ X).hom ≫ (ρ_ X).inv := by
+    coevaluation' ▷ X ≫ (α_ _ _ _).hom ≫ X ◁ evaluation' = (λ_ X).hom ≫ (ρ_ X).inv := by
     aesop_cat
 #align category_theory.exact_pairing CategoryTheory.ExactPairing
 
@@ -109,19 +109,19 @@ def evaluation : Y ⊗ X ⟶ 𝟙_ C := @evaluation' _ _ _ X Y _
 @[inherit_doc] notation "ε_" => ExactPairing.evaluation
 
 lemma coevaluation_evaluation :
-    (Y ◁ η_ _ _) ≫ (α_ _ _ _).inv ≫ (ε_ X _ ▷ Y) = (ρ_ Y).hom ≫ (λ_ Y).inv :=
+    Y ◁ η_ _ _ ≫ (α_ _ _ _).inv ≫ ε_ X _ ▷ Y = (ρ_ Y).hom ≫ (λ_ Y).inv :=
   coevaluation_evaluation'
 
 lemma evaluation_coevaluation :
-    (η_ _ _ ▷ X) ≫ (α_ _ _ _).hom ≫ (X ◁ ε_ _ Y) = (λ_ X).hom ≫ (ρ_ X).inv :=
+    η_ _ _ ▷ X ≫ (α_ _ _ _).hom ≫ X ◁ ε_ _ Y = (λ_ X).hom ≫ (ρ_ X).inv :=
   evaluation_coevaluation'
 
 lemma coevaluation_evaluation'' :
-    (Y ◁ η_ X Y) ⊗≫ (ε_ X Y ▷ Y) = ⊗𝟙 := by
+    Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙 := by
   convert coevaluation_evaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
 
 lemma evaluation_coevaluation'' :
-    (η_ X Y ▷ X) ⊗≫ (X ◁ ε_ X Y) = ⊗𝟙 := by
+    η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙 := by
   convert evaluation_coevaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
 
 end ExactPairing

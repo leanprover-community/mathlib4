@@ -308,9 +308,15 @@ theorem map_tensor {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
 theorem map_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
     F.map (𝟙 X ⊗ f) = inv (F.μ X Y) ≫ (𝟙 (F.obj X) ⊗ F.map f) ≫ F.μ X Z := by simp
 
+theorem map_whiskerLeft' (X : C) {Y Z : C} (f : Y ⟶ Z) :
+    F.map (X ◁ f) = inv (F.μ X Y) ≫ F.obj X ◁ F.map f ≫ F.μ X Z := by simp
+
 -- Note: `f ⊗ 𝟙 Z` will be replaced by `f ▷ Z` in #6307.
 theorem map_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     F.map (f ⊗ 𝟙 Z) = inv (F.μ X Z) ≫ (F.map f ⊗ 𝟙 (F.obj Z)) ≫ F.μ Y Z := by simp
+
+theorem map_whiskerRight' {X Y : C} (f : X ⟶ Y) (Z : C) :
+    F.map (f ▷ Z) = inv (F.μ X Z) ≫ F.map f ▷ F.obj Z ≫ F.μ Y Z := by simp
 
 theorem map_leftUnitor (X : C) :
     F.map (λ_ X).hom = inv (F.μ (𝟙_ C) X) ≫ (inv F.ε ⊗ 𝟙 (F.obj X)) ≫ (λ_ (F.obj X)).hom := by
