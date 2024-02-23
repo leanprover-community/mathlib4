@@ -76,7 +76,7 @@ arises from the composition property `cfc (cfc log a) exp = cfc (exp ∘ log) a 
 and `log` for matrices (power series), and these agree with the continuous functional calculus.
 In fact, given `f : C(spectrum ℂ a, ℂ)`, `cfc a f` amounts to diagonalizing `a` (possible since `a`
 is normal), and applying `f` to the resulting diagonal entries. That is, if `a = u * d * star u`
-with `u` a unitary matrix and `d` diagonal, then `cfc a f = u * (d.map f) * star u`.
+with `u` a unitary matrix and `d` diagonal, then `cfc a f = u * d.map f * star u`.
 
 In addition, if `a : Matrix n n ℂ` is positive semidefinite, then the `ℂ`-spectrum of `a` is
 contained in (the range of the coercion of) `ℝ≥0`. In this case, we get a continuous functional
@@ -93,7 +93,7 @@ b = cfc b id = cfc b (NNReal.sqrt ∘ (· ^ 2)) =
   cfc (cfc b (· ^ 2)) NNReal.sqrt = cfc a NNReal.sqrt = √a
 ```
 
-## Main statements
+## Main declarations
 
 + `ContinuousFunctionalCalculus R (p : A → Prop)`: a class stating that every `a : A` satisfying
   `p a` has a star algebra homomorphism from the continuous `R`-valued functions on the
@@ -208,7 +208,7 @@ no star algebra homomorphism between these spaces.
 While `ContinuousFunctionalCalculus` is stated in terms of these homomorphisms, in practice the
 user should instead prefer `cfc` over `cfcSpec`.
 -/
-def cfcSpec : C(spectrum R a, R) →⋆ₐ[R] A :=
+def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
   ContinuousFunctionalCalculus.toStarAlgHom ha
 
 lemma cfcSpec_closedEmbedding :
@@ -297,7 +297,7 @@ lemma cfc_apply_of_not_predicate {f : R → R} (ha : ¬ p a) :
     cfc a f = 0 := by
   rw [cfc_def, dif_neg (not_and_of_not_left _ ha)]
 
-lemma cfc_apply_of_not_continuous {f : R → R} (hf : ¬ ContinuousOn f (spectrum R a)) :
+lemma cfc_apply_of_not_continuousOn {f : R → R} (hf : ¬ ContinuousOn f (spectrum R a)) :
     cfc a f = 0 := by
   rw [cfc_def, dif_neg (not_and_of_not_right _ hf)]
 
@@ -331,7 +331,7 @@ lemma cfc_congr {f g : R → R} (hfg : (spectrum R a).EqOn f g) :
     · rw [cfc_apply_of_not_continuous a hg, cfc_apply_of_not_continuous]
       exact fun hf ↦ hg (hf.congr hfg.symm)
 
-lemma eqOn_of_cfc_eq {f g : R → R} (h : cfc a f = cfc a g) (ha : p a := by cfc_tac)
+lemma eqOn_of_cfc_eq_cfc {f g : R → R} (h : cfc a f = cfc a g) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
     (spectrum R a).EqOn f g := by
@@ -540,7 +540,7 @@ variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace 
 variable [TopologicalSemiring R] [ContinuousStar R] [HasContinuousInv₀ R] [TopologicalSpace A]
 variable [Ring A] [StarRing A] [Algebra R A] [ContinuousFunctionalCalculus R p]
 
-lemma cfc_isUnit_iff (a : A) (f : R → R) (ha : p a := by cfc_tac)
+lemma isUnit_cfc_iff (a : A) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     IsUnit (cfc a f) ↔ ∀ x ∈ spectrum R a, f x ≠ 0 := by
   rw [← spectrum.zero_not_mem_iff R, cfc_map_spectrum ..]
@@ -550,7 +550,7 @@ alias ⟨_, cfc_isUnit⟩ := cfc_isUnit_iff
 
 /-- Bundle `cfc a f` into a unit given a proof that `f` is nonzero on the spectrum of `a`. -/
 @[simps]
-noncomputable def cfc_units (a : A) (f : R → R) (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
+noncomputable def cfcUnits (a : A) (f : R → R) (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
     (ha : p a := by cfc_tac) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) : Aˣ where
   val := cfc a f
   inv := cfc a (fun x ↦ (f x)⁻¹)
