@@ -55,8 +55,8 @@ end Basis
 
 namespace Matrix
 
-variable {m n o R : Type*}
-variable [Fintype n] [Fintype o] [CommSemiring R]
+variable {m n o R S : Type*}
+variable [Fintype n] [Fintype o] [CommSemiring R] [CommSemiring S]
 
 open MvPolynomial
 
@@ -68,6 +68,10 @@ lemma toMvPolynomial_eval_eq_apply (M : Matrix m n R) (i : m) (c : n → R) :
     eval c (M.toMvPolynomial i) = (M *ᵥ c) i := by
   simp only [toMvPolynomial, map_sum, eval_monomial, pow_zero, Finsupp.prod_single_index, pow_one,
     mulVec, dotProduct]
+
+lemma toMvPolynomial_map (f : R →+* S) (M : Matrix m n R) (i : m) :
+    (M.map f).toMvPolynomial i = MvPolynomial.map f (M.toMvPolynomial i) := by
+  simp only [toMvPolynomial, map_apply, map_sum, map_monomial]
 
 lemma toMvPolynomial_isHomogeneous (M : Matrix m n R) (i : m) :
     (M.toMvPolynomial i).IsHomogeneous 1 := by
@@ -123,6 +127,12 @@ lemma toMvPolynomial_eval_eq_apply (f : M₁ →ₗ[R] M₂) (i : ι₂) (c : ι
     eval c (f.toMvPolynomial b₁ b₂ i) = b₂.repr (f (b₁.repr.symm c)) i := by
   rw [toMvPolynomial, Matrix.toMvPolynomial_eval_eq_apply,
     ← LinearMap.toMatrix_mulVec_repr b₁ b₂, LinearEquiv.apply_symm_apply]
+
+open Algebra.TensorProduct in
+lemma toMvPolynomial_baseChange (f : M₁ →ₗ[R] M₂) (i : ι₂) (A : Type*) [CommRing A] [Algebra R A] :
+    (f.baseChange A).toMvPolynomial (basis A b₁) (basis A b₂) i =
+      MvPolynomial.map (algebraMap R A) (f.toMvPolynomial b₁ b₂ i) := by
+  simp only [toMvPolynomial, toMatrix_baseChange, Matrix.toMvPolynomial_map]
 
 lemma toMvPolynomial_isHomogeneous (f : M₁ →ₗ[R] M₂) (i : ι₂) :
     (f.toMvPolynomial b₁ b₂ i).IsHomogeneous 1 :=
@@ -183,7 +193,6 @@ open LinearMap in
 lemma lieMatrixPoly_eval_eq_toMatrix (ij : ιM × ιM) (c : ι →₀ R) :
     MvPolynomial.eval c (lieMatrixPoly φ b bₘ ij) =
       (toMatrix bₘ bₘ <| φ (b.repr.symm c)) ij.1 ij.2 := by
-  rcases ij with ⟨i, j⟩
   simp only [lieMatrixPoly, toMvPolynomial_eval_eq_apply]
   rfl
 
