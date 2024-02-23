@@ -980,7 +980,7 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
-theorem _root_.LinearMap.toQuadraticForm_isOrtho [IsCancelAdd R]
+theorem _root_.LinearMap.BilinForm.toQuadraticForm_isOrtho [IsCancelAdd R]
     [NoZeroDivisors R] [CharZero R] {B : BilinForm R M} {x y : M} (h : B.IsSymm):
     B.toQuadraticForm.IsOrtho x y ↔ B.IsOrtho x y := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
@@ -1210,12 +1210,12 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 /-- There exists a non-null vector with respect to any symmetric, nonzero bilinear form `B`
 on a module `M` over a ring `R` with invertible `2`, i.e. there exists some
 `x : M` such that `B x x ≠ 0`. -/
-theorem exists_linearMap₂_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm R M}
+theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm R M}
     (hB₁ : B ≠ 0) (hB₂ : B.IsSymm) : ∃ x, ¬B.IsOrtho x x := by
   lift B to QuadraticForm R M using hB₂ with Q
   obtain ⟨x, hx⟩ := QuadraticForm.exists_quadraticForm_ne_zero hB₁
   exact ⟨x, fun h => hx (Q.associated_eq_self_apply ℕ x ▸ h)⟩
-#align bilin_form.exists_bilin_form_self_ne_zero LinearMap.BilinForm.exists_linearMap₂_self_ne_zero
+#align bilin_form.exists_bilin_form_self_ne_zero LinearMap.BilinForm.exists_bilinForm_self_ne_zero
 
 open FiniteDimensional
 
@@ -1236,7 +1236,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
   · let b := FiniteDimensional.finBasis K V
     rw [hd] at b
     exact ⟨b, fun i j _ => rfl⟩
-  obtain ⟨x, hx⟩ := exists_linearMap₂_self_ne_zero hB₁ hB₂
+  obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
   rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
     finrank_span_singleton (ne_zero_of_map hx)] at hd
   let B' :=  B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B )
