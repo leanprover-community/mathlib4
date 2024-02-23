@@ -237,7 +237,7 @@ def preservesLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
     apply IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) _ _
     have := (IsLimit.postcomposeInvEquiv h c).symm t
     apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
-    refine' Cones.ext (Iso.refl _)
+    exact Cones.ext (Iso.refl _)
 #align category_theory.limits.preserves_limit_of_iso_diagram CategoryTheory.Limits.preservesLimitOfIsoDiagram
 
 /-- Transfer preservation of a limit along a natural isomorphism in the functor. -/
@@ -305,7 +305,7 @@ def preservesColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ �
     apply IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) _ _
     have := (IsColimit.precomposeHomEquiv h c).symm t
     apply IsColimit.ofIsoColimit (isColimitOfPreserves F this)
-    refine' Cocones.ext (Iso.refl _)
+    exact Cocones.ext (Iso.refl _)
 #align category_theory.limits.preserves_colimit_of_iso_diagram CategoryTheory.Limits.preservesColimitOfIsoDiagram
 
 /-- Transfer preservation of a colimit along a natural isomorphism in the functor. -/
@@ -658,7 +658,7 @@ def reflectsLimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsIso
     suffices IsIso (Prefunctor.map (Cones.functoriality F G).toPrefunctor
       (IsLimit.liftConeMorphism (limit.isLimit F) c)) from by
         apply isIso_of_reflects_iso _ (Cones.functoriality F G)
-    refine' t.hom_isIso (isLimitOfPreserves G (limit.isLimit F)) _
+    exact t.hom_isIso (isLimitOfPreserves G (limit.isLimit F)) _
 #align category_theory.limits.reflects_limit_of_reflects_isomorphisms CategoryTheory.Limits.reflectsLimitOfReflectsIsomorphisms
 
 /-- If `C` has limits of shape `J` and `G` preserves them, then if `G` reflects isomorphisms then it
@@ -773,7 +773,7 @@ def reflectsColimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsI
     suffices IsIso (Prefunctor.map (Cocones.functoriality F G).toPrefunctor
       (IsColimit.descCoconeMorphism (colimit.isColimit F) c)) from by
         apply isIso_of_reflects_iso _ (Cocones.functoriality F G)
-    refine' (isColimitOfPreserves G (colimit.isColimit F)).hom_isIso t _
+    exact (isColimitOfPreserves G (colimit.isColimit F)).hom_isIso t _
 #align category_theory.limits.reflects_colimit_of_reflects_isomorphisms CategoryTheory.Limits.reflectsColimitOfReflectsIsomorphisms
 
 /--

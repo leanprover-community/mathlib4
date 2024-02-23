@@ -134,7 +134,7 @@ def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
         convert DirectSum.of_mul_of (A := (fun i : ι => gradeBy R f i)) _ _
         repeat { rw [ AddMonoidHom.map_add] }
         simp only [SetLike.coe_gMul]
-        refine Eq.trans (by rw [one_mul]) single_mul_single.symm }
+        exact Eq.trans (by rw [one_mul]) single_mul_single.symm }
 #align add_monoid_algebra.decompose_aux AddMonoidAlgebra.decomposeAux
 
 theorem decomposeAux_single (m : M) (r : R) :

@@ -525,7 +525,7 @@ theorem Sigma.isPreconnected_iff [hι : Nonempty ι] [∀ i, TopologicalSpace (�
   · obtain rfl | h := s.eq_empty_or_nonempty
     · exact ⟨Classical.choice hι, ∅, isPreconnected_empty, (Set.image_empty _).symm⟩
     · obtain ⟨a, t, ht, rfl⟩ := Sigma.isConnected_iff.1 ⟨h, hs⟩
-      refine' ⟨a, t, ht.isPreconnected, rfl⟩
+      exact ⟨a, t, ht.isPreconnected, rfl⟩
   · rintro ⟨a, t, ht, rfl⟩
     exact ht.image _ continuous_sigmaMk.continuousOn
 #align sigma.is_preconnected_iff Sigma.isPreconnected_iff

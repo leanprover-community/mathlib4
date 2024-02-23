@@ -628,7 +628,7 @@ def galoisInsertionOfIsSplitEpi (f : Y ⟶ X) [IsSplitEpi f] :
     GaloisInsertion (Sieve.pushforward f) (Sieve.pullback f) := by
   apply (galoisConnection f).toGaloisInsertion
   intro S Z g hg
-  refine' ⟨g ≫ section_ f, by simpa⟩
+  exact ⟨g ≫ section_ f, by simpa⟩
 #align category_theory.sieve.galois_insertion_of_is_split_epi CategoryTheory.Sieve.galoisInsertionOfIsSplitEpi
 
 theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presieve X) :
@@ -777,7 +777,7 @@ theorem functorPushforward_bot (F : C ⥤ D) (X : C) : (⊥ : Sieve X).functorPu
 theorem functorPushforward_top (F : C ⥤ D) (X : C) : (⊤ : Sieve X).functorPushforward F = ⊤ := by
   refine' (generate_sieve _).symm.trans _
   apply generate_of_contains_isSplitEpi (𝟙 (F.obj X))
-  refine' ⟨X, 𝟙 _, 𝟙 _, trivial, by simp⟩
+  exact ⟨X, 𝟙 _, 𝟙 _, trivial, by simp⟩
 #align category_theory.sieve.functor_pushforward_top CategoryTheory.Sieve.functorPushforward_top
 
 @[simp]

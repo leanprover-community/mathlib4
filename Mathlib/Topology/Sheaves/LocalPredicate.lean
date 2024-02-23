@@ -244,7 +244,7 @@ def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.s
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber TopCat.stalkToFiber
 
--- Porting note : removed `simp` attribute, due to left hand side is not in simple normal form.
+-- Porting note: removed `simp` attribute, due to left hand side is not in simple normal form.
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ x f) = f.1 x := by
   dsimp [Presheaf.germ, stalkToFiber]

@@ -140,7 +140,7 @@ theorem IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
 #align is_square.pow IsSquare.pow
 #align even.nsmul Even.nsmul
 
-/- Porting note: `simp` attribute removed because linter reports:
+/- Porting note (#10618): `simp` attribute removed because linter reports:
 simp can prove this:
   by simp only [even_two, Even.nsmul']
 -/
@@ -151,7 +151,7 @@ theorem Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
 #align even.is_square_pow Even.isSquare_pow
 #align even.nsmul' Even.nsmul'
 
-/- Porting note: `simp` attribute removed because linter reports:
+/- Porting note (#10618): `simp` attribute removed because linter reports:
 simp can prove this:
   by simp only [even_two, Even.is_square_pow]
 -/
@@ -459,7 +459,7 @@ section Ring
 
 variable [Ring α] {a b : α} {n : ℕ}
 
-/- Porting note: attribute `simp` removed based on linter report
+/- Porting note (#10618): attribute `simp` removed based on linter report
 simp can prove this:
   by simp only [even_neg, even_two]
 -/
@@ -479,7 +479,7 @@ theorem odd_neg : Odd (-a) ↔ Odd a :=
   ⟨fun h => neg_neg a ▸ h.neg, Odd.neg⟩
 #align odd_neg odd_neg
 
-/- Porting note: attribute `simp` removed based on linter report
+/- Porting note (#10618): attribute `simp` removed based on linter report
 simp can prove this:
   by simp only [odd_neg, odd_one]
 -/
