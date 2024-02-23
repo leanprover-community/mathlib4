@@ -395,6 +395,7 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
     let αθ ← evalComp α θ_e
     let ηαθ ← evalComp η_e αθ
     return ηαθ
+  /- Partial support for `tensorHom`, in the cases for `η ⊗ 𝟙 f` and `𝟙 f ⊗ θ`. -/
   | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
     match η.getAppFnArgs, θ.getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]), _ =>
