@@ -351,6 +351,11 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   map f := f.f
 #align homological_complex.forget HomologicalComplex.forget
 
+instance : Faithful (forget V c) where
+  map_injective h := by
+    ext i
+    exact congr_fun h i
+
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/
 @[simps!]

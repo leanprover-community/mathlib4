@@ -74,7 +74,7 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
   refine' (hP.cancel_right_isIso (CommRingCat.ofHom _) e₂.toCommRingCatIso.hom).symm.trans _
   rw [← eq_iff_iff]
   congr 1
-  -- Porting Note : Here, the proof used to have a huge `simp` involving `[anonymous]`, which didn't
+  -- Porting note: Here, the proof used to have a huge `simp` involving `[anonymous]`, which didn't
   -- work out anymore. The issue seemed to be that it couldn't handle a term in which Ring
   -- homomorphisms were repeatedly casted to the bundled category and back. Here we resolve the
   -- problem by converting the goal to a more straightforward form.
