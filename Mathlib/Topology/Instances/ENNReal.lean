@@ -139,6 +139,9 @@ theorem tendsto_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : Tendsto ENNReal.toRea
 lemma continuousOn_toReal : ContinuousOn ENNReal.toReal { a | a ≠ ∞ } :=
   NNReal.continuous_coe.comp_continuousOn continuousOn_toNNReal
 
+lemma continuousAt_toReal (hx : x ≠ ∞) : ContinuousAt ENNReal.toReal x :=
+  continuousOn_toReal.continuousAt (isOpen_ne_top.mem_nhds_iff.mpr hx)
+
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
   toEquiv := neTopEquivNNReal
