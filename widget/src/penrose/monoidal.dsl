@@ -7,7 +7,7 @@ Authors: Yuma Mizuno
 type Mor2
 type Mor1
 
-type Core <: Mor2
+type Atom <: Mor2
 type Id <: Mor2
 
 predicate Left(Mor2, Mor2)
