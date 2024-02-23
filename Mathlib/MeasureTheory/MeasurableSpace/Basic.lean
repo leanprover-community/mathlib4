@@ -2083,6 +2083,21 @@ instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyG
 
 end Filter
 
+/-- The set of points for which a sequence of measurable functions converges to a given value
+is measurable. -/
+@[measurability]
+lemma measurableSet_tendsto {_ : MeasurableSpace β} [MeasurableSpace γ]
+    [Countable δ] {l : Filter δ} [l.IsCountablyGenerated]
+    (l' : Filter γ) [l'.IsCountablyGenerated] [hl' : l'.IsMeasurablyGenerated]
+    {f : δ → β → γ} (hf : ∀ i, Measurable (f i)) :
+    MeasurableSet { x | Tendsto (fun n ↦ f n x) l l' } := by
+  rcases l.exists_antitone_basis with ⟨u, hu⟩
+  rcases (Filter.hasBasis_self.mpr hl'.exists_measurable_subset).exists_antitone_subbasis with
+    ⟨v, v_meas, hv⟩
+  simp only [hu.tendsto_iff hv.toHasBasis, true_imp_iff, true_and, setOf_forall, setOf_exists]
+  exact .iInter fun n ↦ .iUnion fun _ ↦ .biInter (to_countable _) fun i _ ↦
+    (v_meas n).2.preimage (hf i)
+
 /-- We say that a collection of sets is countably spanning if a countable subset spans the
   whole type. This is a useful condition in various parts of measure theory. For example, it is
   a needed condition to show that the product of two collections generate the product sigma algebra,
