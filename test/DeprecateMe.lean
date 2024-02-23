@@ -9,7 +9,7 @@ info: * Pairings:
 Try this:
 /-- I also have a doc-string -/
   @[to_additive "As do I"]
-  theorem aDeprecatable_mul : True :=
+  theorem good_mul : True :=
     .intro
   @[deprecated]
   alias aDeprecatable_mul := good_mul
