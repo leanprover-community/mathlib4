@@ -44,7 +44,7 @@ and composition with linear maps `f`, `Q.comp f x = Q (f x)`.
  * `QuadraticForm.associated_rightInverse`: in a commutative ring where 2 has
   an inverse, there is a correspondence between quadratic forms and symmetric
   bilinear forms
- * `LinearMap.exists_orthogonal_basis`: There exists an orthogonal basis with
+ * `LinearMap.BilinForm.exists_orthogonal_basis`: There exists an orthogonal basis with
   respect to any nondegenerate, symmetric bilinear form `B`.
 
 ## Notation
@@ -706,7 +706,7 @@ section
 
 variable (S R M)
 
-/-- `LinearMap.toQuadraticForm` as an additive homomorphism -/
+/-- `LinearMap.BilinForm.toQuadraticForm` as an additive homomorphism -/
 @[simps]
 def toQuadraticFormAddMonoidHom : BilinForm R M →+ QuadraticForm R M where
   toFun := toQuadraticForm
@@ -714,7 +714,7 @@ def toQuadraticFormAddMonoidHom : BilinForm R M →+ QuadraticForm R M where
   map_add' := toQuadraticForm_add
 #align bilin_form.to_quadratic_form_add_monoid_hom LinearMap.BilinForm.toQuadraticFormAddMonoidHom
 
-/-- `LinearMap.toQuadraticForm` as a linear map -/
+/-- `LinearMap.BilinForm.toQuadraticForm` as a linear map -/
 @[simps!]
 def toQuadraticFormLinearMap [Semiring S] [Module S R] [SMulCommClass S R R] [SMulCommClass R S R] :
     BilinForm R M →ₗ[S] QuadraticForm R M where
