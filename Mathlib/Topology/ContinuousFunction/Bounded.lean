@@ -217,7 +217,7 @@ instance : PseudoMetricSpace (α →ᵇ β) where
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle f g h := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun x => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
-  -- Porting note: Added proof for `edist_dist`
+  -- Porting note (#10888): added proof for `edist_dist`
   edist_dist x y := by dsimp; congr; simp [dist_nonneg']
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
@@ -999,7 +999,7 @@ instance seminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
 instance normedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
   { BoundedContinuousFunction.seminormedAddCommGroup with
-    -- Porting note: Added a proof for `eq_of_dist_eq_zero`
+    -- Porting note (#10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
@@ -1334,12 +1334,12 @@ instance commRing [SeminormedCommRing R] : CommRing (α →ᵇ R) :=
 
 instance [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) :=
   { BoundedContinuousFunction.commRing, BoundedContinuousFunction.seminormedAddCommGroup with
-    -- Porting note: Added proof for `norm_mul`
+    -- Porting note (#10888): added proof for `norm_mul`
     norm_mul := norm_mul_le }
 
 instance [NormedCommRing R] : NormedCommRing (α →ᵇ R) :=
   { BoundedContinuousFunction.commRing, BoundedContinuousFunction.normedAddCommGroup with
-    -- Porting note: Added proof for `norm_mul`
+    -- Porting note (#10888): added proof for `norm_mul`
     norm_mul := norm_mul_le }
 
 end NormedCommRing
@@ -1578,7 +1578,7 @@ instance : NormedLatticeAddCommGroup (α →ᵇ β) :=
       have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t)
-    -- Porting note: Added a proof for `eq_of_dist_eq_zero`
+    -- Porting note (#10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 end NormedLatticeOrderedGroup
