@@ -16,8 +16,8 @@ In this file, we prove basic properties of germs of functions between topologica
 with respect to the neighbourhood filter `𝓝 x`.
 
 ## Main definitions and results
-* `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the neighbourhood
-filter at `x`. This is the common value of all representatives of `φ` at `x`.
+* `Filter.Germ.value φ f`: value associated to the germ `φ` at a point `x`, w.r.t. the
+neighbourhood filter at `x`. This is the common value of all representatives of `φ` at `x`.
 * `Filter.Germ.valueOrderRingHom` and friends: the map `Germ (𝓝 x) E → E` is a
 monoid homomorphism, 𝕜-module homomorphism, ring homomorphism, monotone ring homomorphism
 
@@ -52,7 +52,7 @@ theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
-/-- The map `Germ (𝓝 x) E → E` as a monoid homomorphism -/
+/-- The map `Germ (𝓝 x) E → E` into a monoid `E` as a monoid homomorphism -/
 @[to_additive "The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism"]
 def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E where
   toFun := Filter.Germ.value
@@ -61,8 +61,9 @@ def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (�
 
 /-- The map `Germ (𝓝 x) E → E` into a `𝕜`-module `E` as a `𝕜`-linear map -/
 def valueₗ {X 𝕜 E : Type*} [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace X]
-    {x : X} : Germ (𝓝 x) E →ₗ[𝕜] E :=
-  { Filter.Germ.valueAddHom with map_smul' := fun _ φ ↦ Germ.inductionOn φ fun _ ↦ rfl }
+    {x : X} : Germ (𝓝 x) E →ₗ[𝕜] E where
+  __ := Filter.Germ.valueAddHom
+  map_smul' := fun _ φ ↦ Germ.inductionOn φ fun _ ↦ rfl
 
 /-- The map `Germ (𝓝 x) E → E` as a ring homomorphism -/
 def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →+* E :=
@@ -76,11 +77,6 @@ def valueOrderRingHom {X E : Type*} [OrderedSemiring E] [TopologicalSpace X] {x 
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ h ↦ h.self_of_nhds
 
 end Filter.Germ
-
-/-- The inclusion `S → R` of a subring, as an ordered ring homomorphism. -/
--- xxx: OrderedRing has no morphisms, OrderedRingHom no subtypes -> which file is a good place?
-def _root_.Subring.orderedSubtype {R} [OrderedRing R] (s : Subring R) : s →+*o R :=
-  { s.subtype with monotone' := fun _ _ h ↦ h }
 
 section RestrictGermPredicate
 /-- Given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and `A : set X`,
@@ -155,7 +151,7 @@ lemma isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
 end Filter.Germ
 
 /-- If the germ of `f` w.r.t. each `𝓝 x` is constant, `f` is locally constant. -/
-private lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) :
+lemma IsLocallyConstant.of_germ_isConstant (h : ∀ x : X, (f : Germ (𝓝 x) Y).IsConstant) :
     IsLocallyConstant f := by
   intro s
   rw [isOpen_iff_mem_nhds]
@@ -172,8 +168,12 @@ theorem eq_of_germ_isConstant [i : PreconnectedSpace X]
   (IsLocallyConstant.of_germ_isConstant h).apply_eq_of_isPreconnected
     (preconnectedSpace_iff_univ.mp i) (by trivial) (by trivial)
 
-proof_wanted eq_of_germ_isConstant_on {s : Set X} (_h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant)
-    (_hs : IsPreconnected s) {x' : X} (_x_in : x ∈ s) (_x'_in : x' ∈ s) : f x = f x'
+lemma eq_of_germ_isConstant_on {s : Set X} (h : ∀ x ∈ s, (f : Germ (𝓝 x) Y).IsConstant)
+    (hs : IsPreconnected s) {x' : X} (x_in : x ∈ s) (x'_in : x' ∈ s) : f x = f x' := by
+  let i : s → X := fun x ↦ x
+  show (f ∘ i) (⟨x, x_in⟩ : s) = (f ∘ i) (⟨x', x'_in⟩ : s)
+  have : PreconnectedSpace s := Subtype.preconnectedSpace hs
+  exact eq_of_germ_isConstant (fun y ↦ Germ.isConstant_comp_subtype (h y y.2)) _ _
 
 open scoped BigOperators in
 @[to_additive (attr := simp)]

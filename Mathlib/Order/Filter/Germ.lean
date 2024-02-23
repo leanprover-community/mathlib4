@@ -278,7 +278,7 @@ theorem Filter.Tendsto.congr_germ {f g : β → γ} {l : Filter α} {l' : Filter
   EventuallyEq.germ_eq (h.comp_tendsto hφ)
 
 lemma isConstant_comp_tendsto {lc : Filter γ} {g : γ → α}
-    (hf : (f : Germ l β).IsConstant) (hg : Tendsto g lc l) : IsConstant (f ∘ g : Germ lc β ) := by
+    (hf : (f : Germ l β).IsConstant) (hg : Tendsto g lc l) : IsConstant (f ∘ g : Germ lc β) := by
   rcases hf with ⟨b, hb⟩
   exact ⟨b, hb.comp_tendsto hg⟩
 
