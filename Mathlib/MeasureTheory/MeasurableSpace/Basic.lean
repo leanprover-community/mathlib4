@@ -2075,7 +2075,7 @@ instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyG
   choose U hUf hU using fun i => IsMeasurablyGenerated.exists_measurable_subset (hVf i)
   refine' ⟨⋂ i : t, U i, _, _, _⟩
   · rw [← Equiv.plift.surjective.iInf_comp, mem_iInf]
-    refine' ⟨t, ht, U, hUf, rfl⟩
+    exact ⟨t, ht, U, hUf, rfl⟩
   · haveI := ht.countable.toEncodable.countable
     exact MeasurableSet.iInter fun i => (hU i).1
   · exact iInter_mono fun i => (hU i).2

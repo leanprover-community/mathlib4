@@ -20,7 +20,7 @@ provided by mathlib, as they are not discoverable by `simp` unlike the current l
 being little to index on. The Wiki page linked above describes an algebraic normalizer, but it was
 never implemented in Lean 3.
 
-## Porting notes:
+## Porting note:
 This file is ancient, and it would be good to replace it with a clean version
 that provides what mathlib4 actually needs.
 

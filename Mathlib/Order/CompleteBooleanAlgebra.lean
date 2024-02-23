@@ -170,7 +170,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
             lt_irrefl x (lt_of_lt_of_le hl (le_trans (iInf_le _ a) h))
       choose f hf using this
       refine le_trans ?_ (le_iSup _ f)
-      refine le_iInf fun a => le_of_lt (hf a)
+      exact le_iInf fun a => le_of_lt (hf a)
     else
       refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by

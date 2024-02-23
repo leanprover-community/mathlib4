@@ -204,7 +204,7 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a
-  -- Porting note: was `simp [h₁, h, h.symm]`
+  -- porting note (#10745): was `simp [h₁, h, h.symm]`
   · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
     refine Finset.sum_eq_zero (fun x _ => ?_)
     apply if_neg

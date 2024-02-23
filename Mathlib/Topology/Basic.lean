@@ -1545,6 +1545,13 @@ theorem ContinuousAt.preimage_mem_nhds {t : Set Y} (h : ContinuousAt f x)
   h ht
 #align continuous_at.preimage_mem_nhds ContinuousAt.preimage_mem_nhds
 
+/-- If `f x ∈ s ∈ 𝓝 (f x)` for continuous `f`, then `f y ∈ s` near `x`.
+
+This is essentially `Filter.Tendsto.eventually_mem`, but infers in more cases when applied. -/
+theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x) {s : Set Y}
+    (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
+  hf hs
+
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated] -- 15 January 2024
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
@@ -1841,7 +1848,7 @@ However, lemmas with this conclusion are not nice to use in practice because
 1. They confuse the elaborator. The following two examples fail, because of limitations in the
   elaboration process.
   ```
-  variables {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
+  variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
   example : Continuous (λ x : M, x + x) :=
   continuous_add.comp _
 
