@@ -5,11 +5,11 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Artinian
+import Mathlib.LinearAlgebra.Trace
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import algebra.lie.weights from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -616,6 +616,18 @@ lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.top_coeSubmodule]
   exact IsTriangularizable.iSup_eq_top x
+
+open LinearMap FiniteDimensional in
+@[simp]
+lemma trace_toEndomorphism_weightSpace [IsDomain R] [IsPrincipalIdealRing R]
+    [Module.Free R M] [Module.Finite R M] (χ : L → R) (x : L) :
+    trace R _ (toEndomorphism R L (weightSpace M χ) x) = finrank R (weightSpace M χ) • χ x := by
+  suffices _root_.IsNilpotent ((toEndomorphism R L (weightSpace M χ) x) - χ x • LinearMap.id) by
+    replace this := (isNilpotent_trace_of_isNilpotent this).eq_zero
+    rwa [map_sub, map_smul, trace_id, sub_eq_zero, smul_eq_mul, mul_comm,
+      ← nsmul_eq_mul] at this
+  rw [← Module.algebraMap_end_eq_smul_id]
+  exact isNilpotent_toEndomorphism_sub_algebraMap M χ x
 
 section field
 
