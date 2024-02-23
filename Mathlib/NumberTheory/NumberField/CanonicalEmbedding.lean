@@ -346,7 +346,9 @@ theorem det_matrixToStdBasis :
           det_reindex_self, det_blockDiagonal]
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
       refine Finset.prod_congr (Eq.refl _) (fun _ _ => ?_)
-      field_simp; ring
+      simp only [smul_of, smul_cons, smul_eq_mul, mul_one, smul_empty, mul_neg, det_fin_two_of,
+        sub_neg_eq_add]
+      ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [Finset.prod_const, Fintype.card]
 
