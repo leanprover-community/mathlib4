@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.Algebra.CharP.IntermediateField
 
 /-!
 
@@ -358,6 +359,23 @@ def perfectClosure.algEquivOfAlgEquiv (i : E ≃ₐ[F] K) :
 alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
 
 end map
+
+/-- If `E` is a perfect field of characteristic `p`, then the (relative) perfect closure
+`perfectClosure F E` is perfect. -/
+instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
+    [PerfectRing E p] : PerfectRing (perfectClosure F E) p := .ofSurjective _ p fun x ↦ by
+  haveI := RingHom.expChar _ (algebraMap F E).injective p
+  obtain ⟨x', hx⟩ := surjective_frobenius E p x.1
+  obtain ⟨n, y, hy⟩ := (mem_perfectClosure_iff_pow_mem p).1 x.2
+  rw [frobenius_def] at hx
+  rw [← hx, ← pow_mul, ← pow_succ] at hy
+  exact ⟨⟨x', (mem_perfectClosure_iff_pow_mem p).2 ⟨n + 1, y, hy⟩⟩, by
+    simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
+
+/-- If `E` is a perfect field, then the (relative) perfect closure
+`perfectClosure F E` is perfect. -/
+instance perfectClosure.perfectField [PerfectField E] : PerfectField (perfectClosure F E) :=
+  PerfectRing.toPerfectField _ (ringExpChar E)
 
 end perfectClosure
 
