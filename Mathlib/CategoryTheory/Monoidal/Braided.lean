@@ -154,12 +154,43 @@ theorem yang_baxter (X Y Z : C) :
   repeat rw [assoc]
   rw [Iso.hom_inv_id, comp_id, ← braiding_naturality_right, braiding_tensor_right]
 
+set_option profiler true in
+set_option profiler.threshold 5 in
+example {C : Type u} [inst : Category.{v, u} C]
+  [inst_1 : MonoidalCategory C] [inst_2 : BraidedCategory C] (X Y Z : C) :
+  ((α_ X Y Z).inv ≫
+        𝟙 ((X ⊗ Y) ⊗ Z) ≫
+          ((α_ X Y Z).hom ≫ 𝟙 X ▷ (Y ⊗ Z)) ≫
+            (X ◁ (β_ Y Z).hom ≫
+                (𝟙 X ▷ (Z ⊗ Y) ≫ (α_ X Z Y).inv) ≫
+                  (β_ X Z).hom ▷ Y ≫ ((α_ Z X Y).hom ≫ 𝟙 Z ▷ (X ⊗ Y)) ≫ Z ◁ (β_ X Y).hom) ≫
+              (𝟙 Z ▷ (Y ⊗ X) ≫ (α_ Z Y X).inv) ≫ 𝟙 ((Z ⊗ Y) ⊗ X)) ≫
+      (α_ Z Y X).hom =
+    X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫ (β_ X Z).hom ▷ Y ≫ (α_ Z X Y).hom ≫ Z ◁ (β_ X Y).hom := by
+  liftable_prefixes
+  sorry
+
+
 theorem yang_baxter' (X Y Z : C) :
     (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
       𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
   rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
-  convert yang_baxter X Y Z using 1
-  all_goals coherence
+  convert yang_baxter X Y Z using 1 <;>
+  simp only [Mathlib.Tactic.Coherence.monoidalComp, Mathlib.Tactic.Coherence.MonoidalCoherence.hom, id_tensorHom, tensorHom_id]
+  -- simp [Mathlib.Tactic.Coherence.monoidalComp]
+  liftable_prefixes
+  congr
+  -- simp
+  coherence
+  coherence
+  extract_goal
+  liftable_prefixes
+  congr
+  coherence
+  coherence
+  coherence
+  coherence
+  -- all_goals coherence
 
 theorem yang_baxter_iso (X Y Z : C) :
     (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫
@@ -672,6 +703,50 @@ theorem rightUnitor_monoidal (X₁ X₂ : C) :
   coherence
 #align category_theory.right_unitor_monoidal CategoryTheory.rightUnitor_monoidal
 
+set_option profiler true in
+set_option profiler.threshold 55 in
+example (C : Type u₁) [inst : Category.{v₁, u₁} C] [inst_1 : MonoidalCategory C]
+  [inst_2 : BraidedCategory C] (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
+  ((α_ (X₁ ⊗ X₂) X₃ ((Y₁ ⊗ Y₂) ⊗ Y₃)).hom ≫
+        (X₁ ⊗ X₂) ◁ (α_ X₃ (Y₁ ⊗ Y₂) Y₃).inv ≫
+          (X₁ ⊗ X₂) ◁ (β_ X₃ (Y₁ ⊗ Y₂)).hom ▷ Y₃ ≫
+            (X₁ ⊗ X₂) ◁ (α_ (Y₁ ⊗ Y₂) X₃ Y₃).hom ≫ (α_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂) (X₃ ⊗ Y₃)).inv) ≫
+      ((α_ X₁ X₂ (Y₁ ⊗ Y₂)).hom ≫
+            X₁ ◁ (α_ X₂ Y₁ Y₂).inv ≫ X₁ ◁ (β_ X₂ Y₁).hom ▷ Y₂ ≫ X₁ ◁ (α_ Y₁ X₂ Y₂).hom ≫ (α_ X₁ Y₁ (X₂ ⊗ Y₂)).inv) ▷
+          (X₃ ⊗ Y₃) ≫
+        (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
+    𝟙 (((X₁ ⊗ X₂) ⊗ X₃) ⊗ (Y₁ ⊗ Y₂) ⊗ Y₃) ≫
+      ((α_ (X₁ ⊗ X₂) X₃ ((Y₁ ⊗ Y₂) ⊗ Y₃)).hom ≫
+          (α_ X₁ X₂ (X₃ ⊗ (Y₁ ⊗ Y₂) ⊗ Y₃)).hom ≫
+            X₁ ◁
+              X₂ ◁
+                ((X₃ ◁ ((α_ Y₁ Y₂ Y₃).hom ≫ 𝟙 Y₁ ▷ (Y₂ ⊗ Y₃)) ≫ (α_ X₃ Y₁ (Y₂ ⊗ Y₃)).inv) ≫ (α_ (X₃ ⊗ Y₁) Y₂ Y₃).inv)) ≫
+        X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ≫
+          X₁ ◁
+              ((X₂ ◁
+                    ((α_ (Y₁ ⊗ X₃) Y₂ Y₃).hom ≫
+                      (α_ Y₁ X₃ (Y₂ ⊗ Y₃)).hom ≫ Y₁ ◁ (𝟙 X₃ ▷ (Y₂ ⊗ Y₃) ≫ (α_ X₃ Y₂ Y₃).inv)) ≫
+                  (α_ X₂ Y₁ ((X₃ ⊗ Y₂) ⊗ Y₃)).inv) ≫
+                (α_ (X₂ ⊗ Y₁) (X₃ ⊗ Y₂) Y₃).inv) ≫
+            X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫ (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ≫
+              (X₁ ◁
+                    ((α_ (Y₁ ⊗ X₂) (Y₂ ⊗ X₃) Y₃).hom ≫
+                      (α_ Y₁ X₂ ((Y₂ ⊗ X₃) ⊗ Y₃)).hom ≫
+                        Y₁ ◁ (X₂ ◁ ((α_ Y₂ X₃ Y₃).hom ≫ 𝟙 Y₂ ▷ (X₃ ⊗ Y₃)) ≫ (α_ X₂ Y₂ (X₃ ⊗ Y₃)).inv)) ≫
+                  (α_ X₁ Y₁ ((X₂ ⊗ Y₂) ⊗ X₃ ⊗ Y₃)).inv) ≫
+                𝟙 ((X₁ ⊗ Y₁) ⊗ (X₂ ⊗ Y₂) ⊗ X₃ ⊗ Y₃) := by
+    simp only [braiding_tensor_right]
+    liftable_prefixes
+    congr 1
+    coherence
+    congr 2
+    coherence
+    congr 2
+    coherence
+    congr 1
+    coherence
+    -- sorry
+
 theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     tensor_μ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
         (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
@@ -681,8 +756,11 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
   calc
     _ = 𝟙 _ ⊗≫ X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ⊗≫
       X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫
-        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by simp; coherence
-    _ = _ := by rw [whisker_exchange]; simp; coherence
+        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by
+          simp only [Mathlib.Tactic.Coherence.monoidalComp, Mathlib.Tactic.Coherence.MonoidalCoherence.hom, id_tensorHom, tensorHom_id]
+          simp only [braiding_tensor_right]
+          extract_goal
+    _ = _ := by rw [whisker_exchange]; simp; sorry
 #align category_theory.associator_monoidal CategoryTheory.associator_monoidal
 
 -- We got a timeout if `reassoc` was at the declaration, so we put it here instead.

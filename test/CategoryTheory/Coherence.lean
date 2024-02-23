@@ -48,6 +48,7 @@ example (W X Y Z : C) (f) :
 
 example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
     f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
+  liftable_prefixes
   coherence
 
 example : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by coherence
