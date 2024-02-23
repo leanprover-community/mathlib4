@@ -65,9 +65,8 @@ forall Mor2 A {
 }
 
 forall Mor2 f, g where Left(f, g) {
-    ensure equal(f.center[1], g.center[1])
     ensure lessThan(f.right, g.left, 15.)
-    encourage equal(g.left - f.right, 15.)
+    ensure equal(f.center[1], g.center[1])
 }
 
 forall Mor2 f, g where Above(f, g) {
