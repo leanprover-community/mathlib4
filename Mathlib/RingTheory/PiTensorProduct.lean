@@ -44,48 +44,36 @@ attribute [aesop safe] mul_add mul_smul_comm smul_mul_assoc add_mul in
 /--
 The multiplication in tensor product of rings is induced by `(xᵢ) * (yᵢ) = (xᵢ * yᵢ)`
 -/
-def lmul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
+def mul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
   PiTensorProduct.piTensorHomMap₂ <| tprod R fun _ ↦ LinearMap.mul _ _
 
-@[simp] lemma lmul_tprod_tprod (x y : (i : ι) → A i) :
-    lmul (tprod R x) (tprod R y) = tprod R (x * y) := by
-  simp only [lmul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply']
+@[simp] lemma mul_tprod_tprod (x y : (i : ι) → A i) :
+    mul (tprod R x) (tprod R y) = tprod R (x * y) := by
+  simp only [mul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply']
   rfl
 
 instance instMul : Mul (⨂[R] i, A i) where
-  mul x y := lmul x y
+  mul x y := mul x y
 
-lemma mul_def (x y : ⨂[R] i, A i) : x * y = lmul x y := rfl
+lemma mul_def (x y : ⨂[R] i, A i) : x * y = mul x y := rfl
 
 @[simp] lemma tprod_mul_tprod (x y : (i : ι) → A i) :
-    (tprod R x) * (tprod R y) = tprod R (x * y) :=
-  lmul_tprod_tprod x y
+    tprod R x * tprod R y = tprod R (x * y) :=
+  mul_tprod_tprod x y
 
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
-    (r • tprod R x) * (s • tprod R y) = (r * s) • (tprod R (x * y)) := by
-  change lmul _ _ = _
+    (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by
+  change mul _ _ = _
   rw [map_smul, map_smul, mul_comm r s, mul_smul]
-  simp only [LinearMap.smul_apply, lmul_tprod_tprod]
-
-lemma zero_lmul (x : ⨂[R] i, A i) : lmul 0 x = 0 := by
-  induction x using PiTensorProduct.induction_on <;> simp
-
-lemma lmul_zero (x : ⨂[R] i, A i) : lmul x 0 = 0 := by
-  induction x using PiTensorProduct.induction_on <;> simp
-
-lemma lmul_add (x y z : ⨂[R] i, A i) : lmul x (y + z) = lmul x y + lmul x z := by
-  induction x using PiTensorProduct.induction_on <;> simp
-
-lemma add_lmul (x y z : ⨂[R] i, A i) : lmul (x + y) z = lmul x z + lmul y z := by
-  induction x using PiTensorProduct.induction_on <;> simp
+  simp only [LinearMap.smul_apply, mul_tprod_tprod]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
   __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
-  left_distrib := lmul_add
-  right_distrib := add_lmul
-  zero_mul := zero_lmul
-  mul_zero := lmul_zero
+  left_distrib _ _ _ := (mul _).map_add _ _
+  right_distrib _ _ _ := mul.map_add₂ _ _ _
+  zero_mul _ := mul.map_zero₂ _
+  mul_zero _ := map_zero (mul _)
 
 end NonUnitalNonAssocSemiring
 
@@ -94,20 +82,20 @@ noncomputable section NonAssocSemiring
 variable [CommSemiring R] [∀ i, NonAssocSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
-lemma one_lmul (x : ⨂[R] i, A i) : lmul (tprod R 1) x = x := by
+protected lemma one_mul (x : ⨂[R] i, A i) : mul (tprod R 1) x = x := by
   induction x using PiTensorProduct.induction_on with
   | C1 => simp
   | Cp h1 h2 => simp [map_add, h1, h2]
 
-lemma lmul_one (x : ⨂[R] i, A i) : lmul x (tprod R 1) = x := by
+protected lemma mul_one (x : ⨂[R] i, A i) : mul x (tprod R 1) = x := by
   induction x using PiTensorProduct.induction_on with
   | C1 => simp
   | Cp h1 h2 => simp [h1, h2]
 
 instance instNonAssocSemiring : NonAssocSemiring (⨂[R] i, A i) where
   __ := instNonUnitalNonAssocSemiring
-  one_mul := one_lmul
-  mul_one := lmul_one
+  one_mul := PiTensorProduct.one_mul
+  mul_one := PiTensorProduct.mul_one
 
 end NonAssocSemiring
 
@@ -116,26 +104,18 @@ noncomputable section NonUnitalSemiring
 variable [CommSemiring R] [∀ i, NonUnitalSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
-lemma lmul_assoc (x y z : ⨂[R] i, A i) : lmul (lmul x y) z = lmul x (lmul y z) := by
-  induction x using PiTensorProduct.induction_on with  -- rx x x₁ x₂ hx₁ hx₂
-  | C1 =>
-    induction y using PiTensorProduct.induction_on with
-    | C1 =>
-      induction z using PiTensorProduct.induction_on with
-      | C1 => simp [mul_assoc]
-      | Cp hz1 hz2 =>
-        simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, map_add] at hz1 hz2 ⊢
-        rw [hz1, hz2]
-    | Cp hy1 hy2 =>
-      simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply] at hy1 hy2 ⊢
-      rw [hy1, hy2]
-  | Cp hx1 hx2 =>
-    simp only [map_add, LinearMap.add_apply] at hx1 hx2 ⊢
-    rw [hx1, hx2]
+protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul y z) := by
+  -- restate as an equality of morphisms so that we can use `ext`
+  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
+  ext x y z
+  dsimp [←mul_def]
+  simpa only [tprod_mul_tprod] using congr_arg (tprod R) (mul_assoc x y z)
 
 instance instNonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
   __ := instNonUnitalNonAssocSemiring
-  mul_assoc := lmul_assoc
+  mul_assoc := PiTensorProduct.mul_assoc
 
 end NonUnitalSemiring
 
@@ -151,7 +131,7 @@ instance instAlgebra : Algebra R (⨂[R] i, A i) where
   __ := hasSMul'
   toFun := (· • 1)
   map_one' := by simp
-  map_mul' r s :=show (r * s) • 1 = lmul (r • 1) (s • 1)  by
+  map_mul' r s :=show (r * s) • 1 = mul (r • 1) (s • 1)  by
     rw [map_smul, map_smul, LinearMap.smul_apply, mul_comm, mul_smul]
     congr
     show (1 : ⨂[R] i, A i) = 1 * 1
@@ -160,13 +140,13 @@ instance instAlgebra : Algebra R (⨂[R] i, A i) where
   map_add' := by simp [add_smul]
   commutes' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-    change lmul _ _ = lmul _ _
+    change mul _ _ = mul _ _
     rw [map_smul, map_smul, LinearMap.smul_apply]
     change r • (1 * x) = r • (x * 1)
     rw [mul_one, one_mul]
   smul_def' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-    change _ = lmul _ _
+    change _ = mul _ _
     rw [map_smul, LinearMap.smul_apply]
     change _ = r • (1 * x)
     rw [one_mul]
@@ -236,25 +216,17 @@ noncomputable section CommSemiring
 
 variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
 
-lemma lmul_comm (x y : ⨂[R] i, A i) : lmul x y = lmul y x :=  by
-  induction x using PiTensorProduct.induction_on with
-  | C1 =>
-    induction y using PiTensorProduct.induction_on with
-    | C1 =>
-      simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod]
-      rw [smul_comm, mul_comm]
-    | Cp hy1 hy2 =>
-      simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply, smul_add] at hy1 hy2
-        ⊢
-      rw [hy1, hy2]
-  | Cp hx1 hx2 =>
-    simp only [map_add, LinearMap.add_apply] at hx1 hx2 ⊢
-    rw [hx1, hx2]
+protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
+  suffices mul (R := R) (A := A) = mul.flip from
+    DFunLike.congr_fun (DFunLike.congr_fun this x) y
+  ext x y
+  dsimp
+  simp only [mul_tprod_tprod, mul_tprod_tprod, mul_comm x y]
 
 instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
   __ := instSemiring
   __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
-  mul_comm := lmul_comm
+  mul_comm := PiTensorProduct.mul_comm
 
 end CommSemiring
 
