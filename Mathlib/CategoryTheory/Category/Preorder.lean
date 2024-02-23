@@ -51,7 +51,7 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
 #align preorder.small_category Preorder.smallCategory
 
 -- porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
-instance Preorder.subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
+instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
   Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 end Preorder
