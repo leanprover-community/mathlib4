@@ -8,16 +8,20 @@ info: * Pairings:
 
 Try this:
 /-- I also have a doc-string -/
-  @[to_additive "As do I"]
-  theorem good_mul : True :=
-    .intro
-  @[deprecated]
-  alias aDeprecatable_mul := good_mul
-  @[deprecated]
-  alias aDeprecatable_add := good_add
+@[to_additive "As do I"]
+theorem good_mul : True :=
+  .intro
+
+-- 2024-02-23
+@[deprecated]
+alias aDeprecatable_mul := good_mul
+
+-- 2024-02-23
+@[deprecated]
+alias aDeprecatable_add := good_add
 -/
 #guard_msgs in
-deprecate to good_mul good_add
+deprecate to good_mul good_add "2024-02-23"
 /-- I also have a doc-string -/
 @[to_additive "As do I"]
 theorem aDeprecatable_mul : True := .intro
