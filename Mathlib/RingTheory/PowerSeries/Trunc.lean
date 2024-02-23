@@ -5,7 +5,6 @@ Authors: Johan Commelin, Kenny Lau
 -/
 
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.Data.Polynomial.Degree.Lemmas
 
