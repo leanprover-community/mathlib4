@@ -35,8 +35,9 @@ It remains to prove that this is a functor.
 
 * Prove the `lTensor` variants
 
-* Combine both to get that the tensor product of `MonoidAlgebra M α` with `MonoidAlgebra N β` is `R`-linearly equivalent to `MonoidAlgebra (M ⊗[R] N) (α × β)`.
-
+* Combine both to get that the tensor product of `MonoidAlgebra M α`
+  with `MonoidAlgebra N β` is `R`-linearly equivalent to
+  `MonoidAlgebra (M ⊗[R] N) (α × β)`.
 -/
 open TensorProduct
 
@@ -90,7 +91,8 @@ noncomputable def MonoidAlgebra.ringHom (e : N →+* P) :
       rw [Finsupp.sum_mapRange_index (by simp)]
       apply Finsupp.sum_congr
       intro b _
-      rw [Finsupp.sum_apply, map_finsupp_sum, Finsupp.sum_mapRange_index (by simp), Finsupp.sum_apply]
+      rw [Finsupp.sum_apply, map_finsupp_sum,
+        Finsupp.sum_mapRange_index (by simp), Finsupp.sum_apply]
       apply Finsupp.sum_congr
       intro c _
       have := MonoidAlgebra.apply_single e.toAddMonoidHom (b * c) (x b * y c) a
