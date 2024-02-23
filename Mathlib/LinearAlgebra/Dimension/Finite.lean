@@ -436,6 +436,12 @@ theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R 
   rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Cardinal.natCast_inj]
 #align finrank_eq_zero Submodule.finrank_eq_zero
 
+@[simp]
+lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R M]
+    {S : Submodule R M} [Module.Finite R S] :
+    1 ≤ finrank R S ↔ S ≠ ⊥ := by
+  simp [← not_iff_not]
+
 variable [Module.Free R M]
 
 theorem finrank_eq_zero_of_basis_imp_not_finite
