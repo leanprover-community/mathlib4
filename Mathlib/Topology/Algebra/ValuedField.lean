@@ -335,12 +335,10 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   rw [mem_closure_iff_nhds']
   refine' ⟨fun hx => _, fun hx s hs => _⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
-    replace hy₂ : v y = γ₀
-    · simpa using hy₂
+    replace hy₂ : v y = γ₀ := by simpa using hy₂
     rwa [← hy₂]
   · obtain ⟨y, hy₁, hy₂⟩ := Completion.denseRange_coe.mem_nhds (inter_mem hγ₀ hs)
-    replace hy₁ : v y = γ₀
-    · simpa using hy₁
+    replace hy₁ : v y = γ₀ := by simpa using hy₁
     rw [← hy₁] at hx
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 #align valued.closure_coe_completion_v_lt Valued.closure_coe_completion_v_lt

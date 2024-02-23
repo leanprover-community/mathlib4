@@ -145,12 +145,12 @@ theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
 #align nnrat.coe_ne_zero NNRat.coe_ne_zero
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align nnrat.coe_le_coe NNRat.coe_le_coe
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
@@ -361,7 +361,7 @@ variable {p q : ℚ≥0}
 #align nnrat.denom NNRat.den
 
 @[norm_cast] lemma num_coe (q : ℚ≥0) : (q : ℚ).num = q.num := by
-  simp [num, abs_of_nonneg, Rat.num_nonneg_iff_zero_le.2 q.2]
+  simp [num, abs_of_nonneg, Rat.num_nonneg, q.2]
 
 theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 #align nnrat.nat_abs_num_coe NNRat.natAbs_num_coe
@@ -380,8 +380,8 @@ theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   ext
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
-    exact Rat.num_nonneg_iff_zero_le.2 p.2
-    exact Rat.num_nonneg_iff_zero_le.2 q.2
+    exact Rat.num_nonneg.2 p.2
+    exact Rat.num_nonneg.2 q.2
   · exact hd
 #align nnrat.ext_num_denom NNRat.ext_num_den
 

@@ -58,7 +58,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
     simp only [map.coe_coe, map.map_smul, norm_smul, norm_inv, norm_norm]
     field_simp only [one_mul]
   · ext1
-    -- Porting note: was simp
+    -- porting note (#10745): was simp
     rw [coe_restrictScalars', coe_smul', LinearIsometry.coe_toContinuousLinearMap,
       LinearIsometry.coe_mk, Pi.smul_apply, LinearMap.smul_apply, LinearMap.coe_restrictScalars,
       coe_coe, smul_inv_smul₀ minor₁]
@@ -87,13 +87,13 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
   -- let rot := c • (a : ℂ) • ContinuousLinearMap.id ℂ ℂ,
   · refine' Or.inl ⟨c • (a : ℂ) • ContinuousLinearMap.id ℂ ℂ, _⟩
     ext1
-    -- Porting note: was simp
+    -- porting note (#10745): was simp
     rw [coe_restrictScalars', smul_apply, smul_apply, smul_apply,
       LinearIsometry.coe_toContinuousLinearMap,
       LinearIsometryEquiv.coe_toLinearIsometry, rotation_apply, id_apply, smul_eq_mul]
   · refine' Or.inr ⟨c • (a : ℂ) • ContinuousLinearMap.id ℂ ℂ, _⟩
     ext1
-    -- Porting note: was simp
+    -- porting note (#10745): was simp
     rw [coe_restrictScalars', smul_apply, smul_apply, comp_apply, smul_apply,
       LinearIsometry.coe_toContinuousLinearMap, LinearIsometryEquiv.coe_toLinearIsometry,
       LinearIsometryEquiv.trans_apply, rotation_apply, id_apply, smul_eq_mul,
