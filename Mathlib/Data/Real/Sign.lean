@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.Sign
 
 #align_import data.real.sign from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -119,5 +120,13 @@ theorem sign_inv (r : ℝ) : sign r⁻¹ = sign r := by
   · rw [sign_zero, inv_zero, sign_zero]
   · rw [sign_of_pos hp, sign_of_pos (inv_pos.mpr hp)]
 #align real.sign_inv Real.sign_inv
+
+@[simp]
+lemma sign_eq_cast_sign (x : ℝ) : SignType.sign x = sign x := by
+  rcases lt_trichotomy x 0 with h | h | h <;>
+  simp [h, sign_of_pos, sign_of_neg]
+
+lemma sign_mul_abs (x : ℝ) : sign x * |x| = x := by
+  rw [← sign_eq_cast_sign, _root_.sign_mul_abs]
 
 end Real

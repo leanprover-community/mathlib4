@@ -484,9 +484,12 @@ end LinearOrderedAddCommGroup
 
 namespace Int
 
-theorem sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
+theorem sign_eq_cast_sign (n : ℤ) : Int.sign n = ↑(SignType.sign n) := by
   obtain (n | _) | _ := n <;> simp [sign, Int.sign_neg, negSucc_lt_zero]
-#align int.sign_eq_sign Int.sign_eq_sign
+#align int.sign_eq_sign Int.sign_eq_cast_sign
+
+--  2024-02-23
+@[deprecated sign_eq_cast_sign] alias sign_eq_sign := sign_eq_cast_sign
 
 end Int
 
@@ -506,7 +509,7 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
       fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, _, _⟩
   · simp [sum_attach (f := fun a => (f a).natAbs)]
   · intro x hx
-    simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
+    simp [sum_sigma, hx, ← Int.sign_eq_cast_sign, Int.sign_mul_abs, mul_comm |f _|,
       sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
 
 /-- We can decompose a sum of absolute value `n` into a sum of `n` signs. -/
