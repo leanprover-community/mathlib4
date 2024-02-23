@@ -52,7 +52,7 @@ For instance, why not require `A` to be an actual C⋆-algebra? Why define separ
 functional calculi for `R := ℂ`, `ℝ` or `ℝ≥0` instead of simply using the continuous functional
 calculus for normal elements? The reason for both can be explained with a simple example,
 `A := Matrix n n ℝ`. In Mathlib, matrices are not equipped with a norm (nor even a metric), and so
-requiring `A` to be a C⋆-algbera is far too stringent. Likewise, `A` is not a `ℂ`-algebra, and so
+requiring `A` to be a C⋆-algebra is far too stringent. Likewise, `A` is not a `ℂ`-algebra, and so
 it is impossible to consider the `ℂ`-spectrum of `a : Matrix n n ℝ`.
 
 There is another, more practical reason to define separate continuous functional calculi for
