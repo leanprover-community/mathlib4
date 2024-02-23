@@ -25,7 +25,7 @@ namespace DualNumber
 
 open TrivSqZeroExt
 
-variable {R : Type*} [NormedCommRing R] [Algebra ℚ R]
+variable {R : Type*} [CommRing R] [Algebra ℚ R]
 
 variable [UniformSpace R] [TopologicalRing R] [CompleteSpace R] [T2Space R]
 
