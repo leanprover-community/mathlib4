@@ -159,7 +159,7 @@ theorem IsMittagLeffler.subset_image_eventualRange (h : F.IsMittagLeffler) (f : 
   obtain ⟨k, g, hg⟩ := F.isMittagLeffler_iff_eventualRange.1 h j
   rw [hg]; intro x hx
   obtain ⟨x, rfl⟩ := F.mem_eventualRange_iff.1 hx (g ≫ f)
-  refine' ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply]⟩
+  exact ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply]⟩
 #align category_theory.functor.is_mittag_leffler.subset_image_eventual_range CategoryTheory.Functor.IsMittagLeffler.subset_image_eventualRange
 
 theorem eventualRange_eq_range_precomp (f : i ⟶ j) (g : j ⟶ k)
@@ -340,7 +340,7 @@ theorem eval_section_injective_of_eventually_injective {j}
   dsimp at h
   rw [← s₀.prop (mi ≫ f), ← s₁.prop (mi ≫ f)] at h
   rw [← s₀.prop mk, ← s₁.prop mk]
-  refine' congr_arg _ (Finj m (mi ≫ f) h)
+  exact congr_arg _ (Finj m (mi ≫ f) h)
 #align category_theory.functor.eval_section_injective_of_eventually_injective CategoryTheory.Functor.eval_section_injective_of_eventually_injective
 
 section FiniteCofilteredSystem

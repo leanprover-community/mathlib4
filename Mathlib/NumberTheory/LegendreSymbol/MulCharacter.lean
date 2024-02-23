@@ -260,10 +260,10 @@ the source has a zero and another element. -/
 @[coe, simps]
 def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
     R →*₀ R' where
-      toFun := χ.toFun
-      map_zero' := χ.map_zero
-      map_one' := χ.map_one'
-      map_mul' := χ.map_mul'
+  toFun := χ.toFun
+  map_zero' := χ.map_zero
+  map_one' := χ.map_one'
+  map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
@@ -532,7 +532,7 @@ theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
   refine' eq_zero_of_mul_eq_self_left hb _
   -- POrting note: `map_mul` isn't applied
   simp only [Finset.mul_sum, ← map_mul]
-  refine Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
+  exact Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
 #align mul_char.is_nontrivial.sum_eq_zero MulChar.IsNontrivial.sum_eq_zero
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is

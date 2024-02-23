@@ -15,7 +15,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 
 import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.FunProp.Continuous
 
 /-!
 ## `funProp` minimal setup for Differentiable(At/On)

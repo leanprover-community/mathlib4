@@ -262,13 +262,13 @@ protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α
   refine' isTopologicalBasis_of_isOpen_of_nhds _ _
   · rintro _ ⟨V, hV, rfl⟩
     rw [hf.isOpen_iff]
-    refine' ⟨V, h.isOpen hV, rfl⟩
+    exact ⟨V, h.isOpen hV, rfl⟩
   · intro a U ha hU
     rw [hf.isOpen_iff] at hU
     obtain ⟨V, hV, rfl⟩ := hU
     obtain ⟨S, hS, rfl⟩ := h.open_eq_sUnion hV
     obtain ⟨W, hW, ha⟩ := ha
-    refine' ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
+    exact ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
 #align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
 
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
@@ -411,20 +411,21 @@ theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α �
   simp [separableSpace_iff, countable_univ_iff]
 
 /-- In a separable space, a family of nonempty disjoint open sets is countable. -/
-theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type*}
-    {s : ι → Set α} {a : Set ι} (h : a.PairwiseDisjoint s) (ha : ∀ i ∈ a, IsOpen (s i))
-    (h'a : ∀ i ∈ a, (s i).Nonempty) : a.Countable := by
+theorem _root_.Pairwise.countable_of_isOpen_disjoint [SeparableSpace α] {ι : Type*}
+    {s : ι → Set α} (hd : Pairwise (Disjoint on s)) (ho : ∀ i, IsOpen (s i))
+    (hne : ∀ i, (s i).Nonempty) : Countable ι := by
   rcases exists_countable_dense α with ⟨u, u_countable, u_dense⟩
-  have : ∀ i : a, (s i ∩ u).Nonempty := fun i =>
-    dense_iff_inter_open.1 u_dense (s i) (ha i i.2) (h'a i i.2)
-  choose f hfs hfu using this
-  lift f to a → u using hfu
-  have f_inj : Injective f := by
-    refine' injective_iff_pairwise_ne.mpr
-      ((h.subtype _ _).mono fun i j hij hfij => hij.le_bot ⟨hfs i, _⟩)
-    simp only [congr_arg Subtype.val hfij, hfs j]
+  choose f hfu hfs using fun i ↦ u_dense.exists_mem_open (ho i) (hne i)
+  have f_inj : Injective f := fun i j hij ↦
+    hd.eq <| not_disjoint_iff.2 ⟨f i, hfs i, hij.symm ▸ hfs j⟩
   have := u_countable.to_subtype
-  exact f_inj.countable
+  exact (f_inj.codRestrict hfu).countable
+
+/-- In a separable space, a family of nonempty disjoint open sets is countable. -/
+theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type*}
+    {s : ι → Set α} {a : Set ι} (h : a.PairwiseDisjoint s) (ho : ∀ i ∈ a, IsOpen (s i))
+    (hne : ∀ i ∈ a, (s i).Nonempty) : a.Countable :=
+  (h.subtype _ _).countable_of_isOpen_disjoint (Subtype.forall.2 ho) (Subtype.forall.2 hne)
 #align set.pairwise_disjoint.countable_of_is_open Set.PairwiseDisjoint.countable_of_isOpen
 
 /-- In a separable space, a family of disjoint sets with nonempty interiors is countable. -/
@@ -859,8 +860,8 @@ theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (h
     ∃ s : Set α, s.Countable ∧ ⋃ x ∈ s, f x = univ := by
   rcases isOpen_iUnion_countable (fun x => interior (f x)) fun x => isOpen_interior with
     ⟨s, hsc, hsU⟩
-  suffices : ⋃ x ∈ s, interior (f x) = univ
-  exact ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
+  suffices ⋃ x ∈ s, interior (f x) = univ from
+    ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
   simp only [hsU, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
 #align topological_space.countable_cover_nhds TopologicalSpace.countable_cover_nhds

@@ -59,7 +59,7 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme} [IsAffine
   refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
   generalize_proofs h1 h2 h3
   haveI i1 := @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)
-  -- Porting note : needs to be very explicit here
+  -- Porting note: needs to be very explicit here
   convert
     (@IsLocalization.map_comp (hy := h3) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
     _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
@@ -73,7 +73,7 @@ theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Sche
     [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
     P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔ P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
   refine (hP.basicOpen_iff _ _).trans ?_
-  -- Porting note : was a one line term mode proof, but this `dsimp` is vital so the term mode
+  -- Porting note: was a one line term mode proof, but this `dsimp` is vital so the term mode
   -- one liner is not possible
   dsimp
   rw [← hP.is_localization_away_iff]
@@ -85,8 +85,8 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine (hP : RingHom.Re
     {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
     P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔
     P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
-  have : IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Y.basicOpen r)
-  · rw [Scheme.preimage_basicOpen]
+  have : IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Y.basicOpen r) := by
+    rw [Scheme.preimage_basicOpen]
     show IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r)
       ↑Γ(X ∣_ᵤ X.basicOpen (Scheme.Γ.map f.op r))
     infer_instance
@@ -121,7 +121,7 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
 theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (hP' : RespectsIso @P)
     {X Y S : Scheme} [IsAffine X] [IsAffine Y] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S)
     (H : P (Scheme.Γ.map g.op)) : P (Scheme.Γ.map (pullback.fst : pullback f g ⟶ _).op) := by
-  -- Porting note : change `rw` to `erw`
+  -- Porting note: change `rw` to `erw`
   erw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
       (AffineScheme.ofHom g)]
   rw [op_comp, Functor.map_comp, hP'.cancel_right_isIso, AffineScheme.forgetToScheme_map]
@@ -165,7 +165,7 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso @P) :
     rw [← h₁.cancel_right_isIso _ (Scheme.Γ.map (Scheme.restrictMapIso e.inv U.1).hom.op), ←
       Functor.map_comp, ← op_comp]
     convert H ⟨_, U.prop.map_isIso e.inv⟩ using 3
-    -- Porting note : have to add this instance manually
+    -- Porting note: have to add this instance manually
     haveI i1 : IsOpenImmersion
       (Scheme.ofRestrict Y ((Opens.map e.inv.val.base).obj U.1).openEmbedding ≫ e.inv) :=
       PresheafedSpace.IsOpenImmersion.comp _ _
