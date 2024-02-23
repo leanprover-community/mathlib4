@@ -254,8 +254,10 @@ partial def structural? (e : Expr) : MetaM Structural := do
   | (``CategoryStruct.comp, #[_, _, _, α, β]) =>
     return .comp (← structural? α) (← structural? β)
   | (``CategoryStruct.id, #[_, f]) => return .id (toMor₁ f)
-  | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) => return .whiskerLeft (toMor₁ f) (← structural? η)
-  | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) => return .whiskerRight (← structural? η) (toMor₁ f)
+  | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) =>
+    return .whiskerLeft (toMor₁ f) (← structural? η)
+  | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
+    return .whiskerRight (← structural? η) (toMor₁ f)
   | (``Mathlib.Tactic.Coherence.MonoidalCoherence.hom, #[_, _, f, g, _, _, inst]) =>
     return .monoidalCoherence (toMor₁ f) (toMor₁ g) inst
   | _ => match structuralAtom? e with
