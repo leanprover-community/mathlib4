@@ -102,7 +102,7 @@ lemma iff_rTensor_injective :
     erw [← Equiv.comp_injective _ (TensorProduct.lid R M).toEquiv]
     have h₁ := F.out hI
     rw [← aux] at h₁
-    refine h₁
+    exact h₁
   · intro h₁
     constructor
     intro I hI
@@ -187,6 +187,9 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   classical
   rw [iff_rTensor_injective]
   intro I hI
+  -- This instance was added during PR #10828,
+  -- see https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2310828.20-.20generalizing.20CommRing.20to.20CommSemiring.20etc.2E/near/422684923
+  letI : ∀ i, AddCommGroup (I ⊗[R] M i) := inferInstance
   rw [← Equiv.comp_injective _ (TensorProduct.lid R (⨁ i, M i)).toEquiv]
   set η₁ := TensorProduct.lid R (⨁ i, M i)
   set η := (fun i ↦ TensorProduct.lid R (M i))

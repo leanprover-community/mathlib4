@@ -121,7 +121,7 @@ theorem zorn_preorder₀ (s : Set α)
         ih (Subtype.val '' c) (fun _ ⟨⟨_, hx⟩, _, h⟩ => h ▸ hx)
           (by
             rintro _ ⟨p, hpc, rfl⟩ _ ⟨q, hqc, rfl⟩ hpq
-            refine' hc hpc hqc fun t => hpq (Subtype.ext_iff.1 t))
+            exact hc hpc hqc fun t => hpq (Subtype.ext_iff.1 t))
       ⟨⟨ub, hubs⟩, fun ⟨y, hy⟩ hc => hub _ ⟨_, hc, rfl⟩⟩
   ⟨m, hms, fun z hzs hmz => h ⟨z, hzs⟩ hmz⟩
 #align zorn_preorder₀ zorn_preorder₀

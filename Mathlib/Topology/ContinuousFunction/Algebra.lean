@@ -749,27 +749,17 @@ protected def AlgHom.compLeftContinuous {α : Type*} [TopologicalSpace α] (g : 
 
 variable (A)
 
-/-- Precomposition of functions into a normed ring by a continuous map is an algebra homomorphism.
--/
+/-- Precomposition of functions into a topological semiring by a continuous map is an algebra
+homomorphism. -/
 @[simps]
 def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     (f : C(α, β)) : C(β, A) →ₐ[R] C(α, A) where
   toFun g := g.comp f
-  map_zero' := by
-    ext
-    rfl
-  map_add' g₁ g₂ := by
-    ext
-    rfl
-  map_one' := by
-    ext
-    rfl
-  map_mul' g₁ g₂ := by
-    ext
-    rfl
-  commutes' r := by
-    ext
-    rfl
+  map_zero' := ext fun _ ↦ rfl
+  map_add'  _ _ := ext fun _ ↦ rfl
+  map_one' := ext fun _ ↦ rfl
+  map_mul' _ _ := ext fun _ ↦ rfl
+  commutes' _ := ext fun _ ↦ rfl
 #align continuous_map.comp_right_alg_hom ContinuousMap.compRightAlgHom
 
 variable {A}
@@ -835,7 +825,7 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
-    refine' ⟨_, (v x • (1 : s) : s).prop, mul_one _, mul_one _⟩
+    exact ⟨_, (v x • (1 : s) : s).prop, mul_one _, mul_one _⟩
   obtain ⟨_, ⟨f, hf, rfl⟩, hxy⟩ := h n
   replace hxy : f x - f y ≠ 0 := sub_ne_zero_of_ne hxy
   let a := v x
