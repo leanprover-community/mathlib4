@@ -96,11 +96,9 @@ section ContinuousAdd
 
 variable [ContinuousAdd V]
 
--- we cannot write K + L to avoid reducibility issues with the set.has_add instance
--- porting note: todo: is this^ still true?
 instance : Add (ConvexBody V) where
   add K L :=
-    ⟨Set.image2 (· + ·) K L, K.convex.add L.convex, K.isCompact.add L.isCompact,
+    ⟨K + L, K.convex.add L.convex, K.isCompact.add L.isCompact,
       K.nonempty.add L.nonempty⟩
 
 instance : Zero (ConvexBody V) where
