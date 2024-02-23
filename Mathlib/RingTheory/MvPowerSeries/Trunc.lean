@@ -5,6 +5,13 @@ Authors: Johan Commelin, Kenny Lau
 -/
 
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.Data.Finsupp.Interval
+-- import Mathlib.LinearAlgebra.StdBasis
+-- import Mathlib.Tactic.Linarith
+-- import Mathlib.Data.MvPolynomial.Basic
+-- import Mathlib.RingTheory.Multiplicity
+-- import Mathlib.Data.Finset.PiAntidiagonal
+
 
 /-!
 
@@ -18,7 +25,7 @@ that has the same coefficients as `φ`, for all `m < n`, and `0` otherwise.
 
 noncomputable section
 
-open BigOperators Polynomial
+open BigOperators
 
 open Finset (antidiagonal mem_antidiagonal)
 

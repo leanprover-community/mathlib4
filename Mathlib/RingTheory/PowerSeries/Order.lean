@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
+-- import Mathlib.RingTheory.Multiplicity
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 

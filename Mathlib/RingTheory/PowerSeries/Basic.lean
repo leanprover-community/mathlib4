@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
-import Mathlib.RingTheory.MvPowerSeries.Trunc
-import Mathlib.RingTheory.MvPowerSeries.Inverse
+import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.Data.Polynomial.AlgebraMap
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -51,7 +52,6 @@ Occasionally this leads to proofs that are uglier than expected.
 /-
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.LocalRing
@@ -63,7 +63,7 @@ import Mathlib.Data.Finset.PiAntidiagonal
 
 noncomputable section
 
-open BigOperators Polynomial
+open BigOperators
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -2661,7 +2661,7 @@ end PowerSeries
 
 namespace Polynomial
 
-open Finsupp
+open Finsupp Polynomial
 
 variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
@@ -2820,6 +2820,8 @@ end Polynomial
 namespace PowerSeries
 
 section Algebra
+
+open Polynomial
 
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : R⟦X⟧)
 
