@@ -121,8 +121,8 @@ instance (priority := 100) toNonUnitalNonAssocSemiring (s : NonUnitalSubsemiring
     mul_zero := fun _ => Subtype.ext <| mul_zero _ }
 
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
-instance (priority := 100) toNonUnitalSemiring {R} [NonUnitalSemiring R] (s : NonUnitalSubsemiring R) :
-  NonUnitalSemiring s where
+instance (priority := 100) toNonUnitalSemiring {R} [NonUnitalSemiring R]
+    (s : NonUnitalSubsemiring R) : NonUnitalSemiring s where
     mul_assoc := fun _ _ _ => Subtype.ext <| mul_assoc _ _ _
 
 /-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/

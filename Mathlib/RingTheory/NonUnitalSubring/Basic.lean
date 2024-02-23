@@ -156,11 +156,13 @@ instance (priority := 75) : NonUnitalSubringClass (NonUnitalSubring R) R where
   neg_mem {s} := s.neg_mem'
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
-instance (priority := 100) toNonUnitalNonAssocRing (s : NonUnitalSubring R): NonUnitalNonAssocRing s :=
+instance (priority := 100) toNonUnitalNonAssocRing (s : NonUnitalSubring R):
+    NonUnitalNonAssocRing s :=
   { s.toAddSubgroup.toAddCommGroup, s.toNonUnitalSubsemiring.toNonUnitalNonAssocSemiring with }
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
-instance (priority := 100) toNonUnitalRing {R} [NonUnitalRing R] (s : NonUnitalSubring R) : NonUnitalRing s :=
+instance (priority := 100) toNonUnitalRing {R} [NonUnitalRing R] (s : NonUnitalSubring R) :
+    NonUnitalRing s :=
   { s.toNonUnitalNonAssocRing, s.toNonUnitalSubsemiring.toNonUnitalSemiring with }
 
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/

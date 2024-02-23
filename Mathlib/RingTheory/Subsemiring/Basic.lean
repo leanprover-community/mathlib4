@@ -249,7 +249,8 @@ instance : SetLike (Subsemiring R) R where
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
 /-- Construct a `AddSubmonoidWithOne` from a `Subsemiring` -/
-def addSubmonoidWithOne {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) : AddSubmonoidWithOne R :=
+def addSubmonoidWithOne {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) :
+    AddSubmonoidWithOne R :=
   { s with }
 
 /-- Construct a `NonUnitalSubsemiring` from a `Subsemiring` -/
