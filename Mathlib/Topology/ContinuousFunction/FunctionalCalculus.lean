@@ -58,7 +58,7 @@ it is impossible to consider the `ℂ`-spectrum of `a : Matrix n n ℝ`.
 There is another, more practical reason to define separate continuous functional calculi for
 different scalar rings. It gives us the ability to use functions defined on these types, and the
 algebra of functions on them. For example, in `ℝ` it is quite natural to consider the functions
-`(·⁺ : ℝ → ℝ)` and `(·⁻ : ℝ → ℝ)` because the collection of such functions forms a lattice ordered
+`(·⁺ : ℝ → ℝ)` and `(·⁻ : ℝ → ℝ)` because the functions `ℝ → ℝ` form a lattice ordered
 group. If `a : A` is selfadjoint, and we define `a⁺ := cfc a (·⁺ : ℝ → ℝ)`, and likewise for `a⁻`,
 then the properties `a⁺ * a⁻ = 0 = a⁻ * a⁺` and `a = a⁺ - a⁻` are trivial consequences of the
 corresponding facts for functions. In contrast, if we had to do this for functions on `ℂ`, the
