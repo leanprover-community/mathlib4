@@ -3,7 +3,8 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.Combinatorics.Partition
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Finset.NatAntidiagonal
