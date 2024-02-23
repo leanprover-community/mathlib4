@@ -152,8 +152,7 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
       simp
       rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
       norm_cast at *
-  rw [h11]
-  simp only [Nat.cast_max, ofReal_int_cast, map_mul, abs_ofReal, ge_iff_le]
+  simp only [h11, Nat.cast_max, ofReal_int_cast, map_mul, abs_ofReal, ge_iff_le]
   rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
   cases' (div_max_sq_ge_one x hx) with H1 H2
   · apply mul_le_mul
@@ -267,9 +266,7 @@ lemma summable_partition {f : ι → ℝ} (hf : 0 ≤ f) {s : κ → Set ι} (hs
 
 lemma summable_r_pow {k : ℤ} (z : ℍ) (h : 3 ≤ k) :
     Summable fun n : ℕ => 8 / (r z) ^ k * ((n : ℝ) ^ (k - 1))⁻¹ := by
-  have hk : 1 < (k - 1 : ℝ) := by
-    norm_cast at *
-    linarith
+  have hk : 1 < (k - 1 : ℝ) := by norm_cast; linarith
   have nze : (8 / (r z) ^ k : ℝ) ≠ 0 := by
     apply div_ne_zero
     simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]
@@ -284,8 +281,7 @@ lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
   apply Summable.congr (summable_r_pow z h)
   intro b
   by_cases b0 : b = 0
-  · rw [b0]
-    norm_cast
+  · simp only [b0, CharP.cast_eq_zero, box_zero, Finset.card_singleton, Nat.cast_one, one_mul]
     rw [zero_zpow k (by linarith), zero_zpow (k - 1) (by linarith)]
     simp only [inv_zero, mul_zero, box_zero, Finset.card_singleton, Nat.cast_one]
   · rw [Int.card_box b0, zpow_sub_one₀ (a:= (b: ℝ)) (Nat.cast_ne_zero.mpr b0) k]
@@ -298,7 +294,7 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
   rw [← (piFinTwoEquiv _).symm.summable_iff,
     summable_partition _ (s := fun n ↦ (box n : Finset (ℤ × ℤ))) Int.existsUnique_mem_box]
   · simp_rw [coe_sort_coe, Finset.tsum_subtype]
-    simp only [one_div, piFinTwoEquiv_symm_apply, Function.comp_apply, Fin.cons_zero, Fin.cons_one]
+    simp only [coe_sort_coe, Finset.tsum_subtype, one_div, piFinTwoEquiv_symm_apply, Function.comp_apply, Fin.cons_zero, Fin.cons_one]
     refine ⟨fun n ↦ ?_, Summable.congr (summable_over_box z h) fun n ↦ Finset.sum_congr rfl
       fun x hx ↦ ?_⟩
     · simpa using (box n).summable (f ∘ (piFinTwoEquiv _).symm)
