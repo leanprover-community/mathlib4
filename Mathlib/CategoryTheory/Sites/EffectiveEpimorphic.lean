@@ -473,7 +473,6 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
     [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
   ⟨⟨effectiveEpiStructDescOfEffectiveEpiFamily X π⟩⟩
 
--- This is to show that the instance `epiCoproductDescOfEffectiveEpiFamily` is not needed anymore.
 example {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
     [HasCoproduct X] : Epi (Sigma.desc π) := inferInstance
 
