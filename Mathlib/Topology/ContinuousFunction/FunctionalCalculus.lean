@@ -137,6 +137,17 @@ goals, but it can be modified to become more sophisticated as the need arises.
 
 section Basic
 
+/-- Only intended for use in the class `ContinuousFunctionalCalculus`. -/
+structure IsCFCHom {R A : Type*}
+    [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+    [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] {a : A}
+    (φ : C(spectrum R a, R) →⋆ₐ[R] A) : Prop where
+  hom_closedEmbedding : ClosedEmbedding φ
+  /-- The continuous functional calculus extends the polynomial functional calculus. -/
+  hom_id : φ ((ContinuousMap.id R).restrict <| spectrum R a) = a
+  /-- The continuous functional calculus satisfies the spectral mapping property. -/
+  hom_map_spectrum : ∀ f, spectrum R (φ f) = Set.range f
+
 /-- A star `R`-algebra `A` has a *continuous functional calculus* for elements satisfying the
 property `p : A → Prop` if
 
@@ -153,17 +164,8 @@ The property `p` is marked as an `outParam` so that the user need not specify it
 -/
 class ContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
     [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-    [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] where
-  /-- The star algebra homomorphisms of the continuous functional calculus. -/
-  toStarAlgHom {a} (ha : p a) : C(spectrum R a, R) →⋆ₐ[R] A
-  /-- The continuous functional calculus is a closed embedding. -/
-  hom_closedEmbedding {a} (ha : p a) : ClosedEmbedding <| toStarAlgHom ha
-  /-- The continuous functional calculus extends the polynomial functional calculus. -/
-  hom_id {a} (ha : p a) : toStarAlgHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a
-  /-- The continuous functional calculus satisfies the spectral mapping property. -/
-  hom_map_spectrum {a} (ha : p a) : ∀ f, spectrum R (toStarAlgHom ha f) = Set.range f
-  /-- The continuous functional calculus preserves the predicate. -/
-  predicate_hom {a} (ha : p a) : ∀ f, p (toStarAlgHom ha f)
+    [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
+  key : ∀ a, p a → ∃ φ : C(spectrum R a, R) →⋆ₐ[R] A, IsCFCHom φ ∧ ∀ f, p (φ f)
 
 /-- A class guaranteeing that the continuous functional calculus is uniquely determined by the
 properties that it is a continuous star algebra homomorphism mapping the (restriction of) the
@@ -215,25 +217,25 @@ no star algebra homomorphism between these spaces.
 While `ContinuousFunctionalCalculus` is stated in terms of these homomorphisms, in practice the
 user should instead prefer `cfc` over `cfcHom`.
 -/
-def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
-  ContinuousFunctionalCalculus.toStarAlgHom ha
+noncomputable def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
+  (ContinuousFunctionalCalculus.key a ha).choose
 
 lemma cfcHom_closedEmbedding :
     ClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
-  ContinuousFunctionalCalculus.hom_closedEmbedding ha
+  (ContinuousFunctionalCalculus.key a ha).choose_spec.1.hom_closedEmbedding
 
 lemma cfcHom_map_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=
-  ContinuousFunctionalCalculus.hom_id ha
+  (ContinuousFunctionalCalculus.key a ha).choose_spec.1.hom_id
 
 /-- The **spectral mapping theorem** for the continuous functional calculus. -/
 lemma cfcHom_map_spectrum (f : C(spectrum R a, R)) :
     spectrum R (cfcHom ha f) = Set.range f :=
-  ContinuousFunctionalCalculus.hom_map_spectrum ha f
+  (ContinuousFunctionalCalculus.key a ha).choose_spec.1.hom_map_spectrum f
 
 lemma cfcHom_predicate (f : C(spectrum R a, R)) :
     p (cfcHom ha f) :=
-  ContinuousFunctionalCalculus.predicate_hom ha f
+  (ContinuousFunctionalCalculus.key a ha).choose_spec.2 f
 
 lemma cfcHom_eq_of_continuous_of_map_id [UniqueContinuousFunctionalCalculus R A]
     (φ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ₁ : Continuous φ)
