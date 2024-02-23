@@ -75,7 +75,8 @@ elab "deprecate to" id:ident* ppLine cmd:command : command => do
     elabCommand cmd
   finally
     let newEnv ← getEnv
-    let allNew := newNames oldEnv newEnv
+    -- reversing the output of `allNew` heuristically orders declarations in a human-friendly way
+    let allNew := (newNames oldEnv newEnv).reverse
     let skip ← allNew.filterM (·.isBlackListed)
     let news := allNew.filter (! · ∈ skip)
     let msg := match skip with

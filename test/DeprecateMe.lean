@@ -5,7 +5,7 @@ import Mathlib.Tactic
 /--
 info:
 * New constants:
-#[aDeprecatable_add, aDeprecatable_mul]
+#[aDeprecatable_mul, aDeprecatable_add]
 
 Try this:
 /-- I also have a doc-string -/
@@ -13,9 +13,9 @@ Try this:
   theorem aDeprecatable_mul : True :=
     .intro
   @[deprecated]
-  alias aDeprecatable_add := good_mul
+  alias aDeprecatable_mul := good_mul
   @[deprecated]
-  alias aDeprecatable_mul := good_add
+  alias aDeprecatable_add := good_add
 -/
 #guard_msgs in
 deprecate to good_mul good_add
