@@ -125,19 +125,19 @@ instance : Functor.Additive completion where
 /-- Given a normed group hom `f : V → W` with `W` complete, this provides a lift of `f` to
 the completion of `V`. The lemmas `lift_unique` and `lift_comp_incl` provide the api for the
 universal property of the completion. -/
-def completion.lift {V W : SemiNormedGroupCat} [CompleteSpace W] [SeparatedSpace W] (f : V ⟶ W) :
+def completion.lift {V W : SemiNormedGroupCat} [CompleteSpace W] [T0Space W] (f : V ⟶ W) :
     completion.obj V ⟶ W where
   toFun := f.extension
   map_add' := f.extension.toAddMonoidHom.map_add'
   bound' := f.extension.bound'
 #align SemiNormedGroup.Completion.lift SemiNormedGroupCat.completion.lift
 
-theorem completion.lift_comp_incl {V W : SemiNormedGroupCat} [CompleteSpace W] [SeparatedSpace W]
+theorem completion.lift_comp_incl {V W : SemiNormedGroupCat} [CompleteSpace W] [T0Space W]
     (f : V ⟶ W) : completion.incl ≫ completion.lift f = f :=
   ext <| NormedAddGroupHom.extension_coe _
 #align SemiNormedGroup.Completion.lift_comp_incl SemiNormedGroupCat.completion.lift_comp_incl
 
-theorem completion.lift_unique {V W : SemiNormedGroupCat} [CompleteSpace W] [SeparatedSpace W]
+theorem completion.lift_unique {V W : SemiNormedGroupCat} [CompleteSpace W] [T0Space W]
     (f : V ⟶ W) (g : completion.obj V ⟶ W) : completion.incl ≫ g = f → g = completion.lift f :=
   fun h => (NormedAddGroupHom.extension_unique _ fun v => ((ext_iff.1 h) v).symm).symm
 #align SemiNormedGroup.Completion.lift_unique SemiNormedGroupCat.completion.lift_unique

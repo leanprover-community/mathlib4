@@ -36,6 +36,12 @@ def IsComplete (s : Set α) :=
   ∀ f, Cauchy f → f ≤ 𝓟 s → ∃ x ∈ s, f ≤ 𝓝 x
 #align is_complete IsComplete
 
+/-- A version of `lim` that deduces `Nonempty` from `Cauchy`.
+
+This is an abbreviation, so that we do not need to repeat all API lemmas. -/
+protected noncomputable abbrev Cauchy.lim (f : Filter α) (hf : Cauchy f) : α :=
+  @lim _ _ hf.1.nonempty f
+
 theorem Filter.HasBasis.cauchy_iff {ι} {p : ι → Prop} {s : ι → Set (α × α)} (h : (𝓤 α).HasBasis p s)
     {f : Filter α} :
     Cauchy f ↔ NeBot f ∧ ∀ i, p i → ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, (x, y) ∈ s i :=
@@ -477,14 +483,14 @@ theorem cauchySeq_tendsto_of_isComplete [Preorder β] {K : Set α} (h₁ : IsCom
     ⟨univ, univ_mem, by rwa [image_univ, range_subset_iff]⟩
 #align cauchy_seq_tendsto_of_is_complete cauchySeq_tendsto_of_isComplete
 
-theorem Cauchy.le_nhds_lim [CompleteSpace α] [Nonempty α] {f : Filter α} (hf : Cauchy f) :
-    f ≤ 𝓝 (lim f) :=
+theorem Cauchy.le_nhds_lim [CompleteSpace α] {f : Filter α} (hf : Cauchy f) :
+    f ≤ 𝓝 (hf.lim f) :=
   _root_.le_nhds_lim (CompleteSpace.complete hf)
 set_option linter.uppercaseLean3 false in
 #align cauchy.le_nhds_Lim Cauchy.le_nhds_lim
 
-theorem CauchySeq.tendsto_limUnder [Preorder β] [CompleteSpace α] [Nonempty α] {u : β → α}
-    (h : CauchySeq u) : Tendsto u atTop (𝓝 <| limUnder atTop u) :=
+theorem CauchySeq.tendsto_limUnder [Preorder β] [CompleteSpace α] {u : β → α} (h : CauchySeq u) :
+    Tendsto u atTop (𝓝 <| @limUnder _ _ _ h.1.nonempty atTop u) :=
   h.le_nhds_lim
 #align cauchy_seq.tendsto_lim CauchySeq.tendsto_limUnder
 
