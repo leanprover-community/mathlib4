@@ -347,6 +347,12 @@ lemma eqOn_of_cfc_eq_cfc {f g : R → R} (h : cfc a f = cfc a g) (ha : p a := by
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 
+lemma eqOn_iff_cfc_eq_cfc {f g : R → R} (ha : p a := by cfc_tac)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+    (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
+    (spectrum R a).EqOn f g ↔ cfc a f = cfc a g :=
+  ⟨cfc_congr a, eqOn_of_cfc_eq_cfc a⟩
+
 lemma cfc_const (r : R) (ha : p a := by cfc_tac) :
     cfc a (fun _ ↦ r) = algebraMap R A r := by
   rw [cfc_apply a (fun _ : R ↦ r), ← AlgHomClass.commutes (cfcHom ha (p := p)) r]
