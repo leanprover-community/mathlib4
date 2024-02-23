@@ -75,8 +75,8 @@ jobs:
         git merge nightly-${NIGHTLY} --strategy-option ours --allow-unrelated-histories || true
         git push origin
 
-    -- Now post a success message to zulip, if the last message there is not a success message.
-    -- https://chat.openai.com/share/87656d2c-c804-4583-91aa-426d4f1537b3
+    # Now post a success message to zulip, if the last message there is not a success message.
+    # https://chat.openai.com/share/87656d2c-c804-4583-91aa-426d4f1537b3
     - name: Install Zulip API client
       run: pip install zulip
 

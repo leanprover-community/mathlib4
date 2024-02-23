@@ -588,3 +588,65 @@ theorem equivAlgHom_symm_coe (f : A →ₐ[𝕜] 𝕜) : ⇑(equivAlgHom.symm f)
 end CharacterSpace
 
 end WeakDual
+
+namespace SpectrumRestricts
+
+open NNReal ENNReal
+
+/-- If `𝕜₁` is a normed field contained as subfield of a larger normed field `𝕜₂`, and if `a : A`
+is an element whose `𝕜₂` spectrum restricts to `𝕜₁`, then the spectral radii over each scalar
+field coincide. -/
+lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
+    [NormedRing A] [NormedAlgebra 𝕜₁ A] [NormedAlgebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
+    [IsScalarTower 𝕜₁ 𝕜₂ A] {f : 𝕜₂ → 𝕜₁} {a : A} (h : SpectrumRestricts a f) :
+    spectralRadius 𝕜₁ a = spectralRadius 𝕜₂ a := by
+  rw [spectralRadius, spectralRadius]
+  have := algebraMap_isometry 𝕜₁ 𝕜₂ |>.nnnorm_map_of_map_zero (map_zero _)
+  apply le_antisymm
+  all_goals apply iSup₂_le fun x hx ↦ ?_
+  · refine congr_arg ((↑) : ℝ≥0 → ℝ≥0∞) (this x) |>.symm.trans_le <| le_iSup₂ (α := ℝ≥0∞) _ ?_
+    exact (spectrum.algebraMap_mem_iff _).mpr hx
+  · have ⟨y, hy, hy'⟩ := h.algebraMap_image.symm ▸ hx
+    subst hy'
+    exact this y ▸ le_iSup₂ (α := ℝ≥0∞) y hy
+
+variable {A : Type*} [Ring A]
+
+lemma nnreal_iff [Algebra ℝ A] {a : A} :
+    SpectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ spectrum ℝ a, 0 ≤ x := by
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
+    exact coe_nonneg x
+  · exact .of_subset_range_algebraMap _ _ (fun _ ↦ Real.toNNReal_coe)
+      fun x hx ↦ ⟨⟨x, h x hx⟩, rfl⟩
+
+lemma real_iff [Algebra ℂ A] {a : A} :
+    SpectrumRestricts a Complex.reCLM ↔ ∀ x ∈ spectrum ℂ a, x = x.re := by
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
+    simp
+  · exact .of_subset_range_algebraMap _ _ Complex.ofReal_re fun x hx ↦ ⟨x.re, (h x hx).symm⟩
+
+lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
+    SpectrumRestricts a ContinuousMap.realToNNReal ↔
+      spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
+  have : spectrum ℝ a ⊆ Set.Icc (-t) t := by
+    intro x hx
+    rw [Set.mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← coe_nnnorm, NNReal.coe_le_coe,
+      ← ENNReal.coe_le_coe]
+    exact le_iSup₂ (α := ℝ≥0∞) x hx |>.trans ht
+  rw [nnreal_iff]
+  refine ⟨fun h ↦ iSup₂_le fun x hx ↦ ?_, fun h ↦ ?_⟩
+  · rw [← spectrum.singleton_sub_eq] at hx
+    obtain ⟨y, hy, rfl⟩ : ∃ y ∈ spectrum ℝ a, ↑t - y = x := by simpa using hx
+    obtain ⟨hty, hyt⟩ := Set.mem_Icc.mp <| this hy
+    lift y to ℝ≥0 using h y hy
+    rw [← NNReal.coe_sub (by exact_mod_cast hyt)]
+    simp
+  · replace h : ∀ x ∈ spectrum ℝ a, ‖t - x‖₊ ≤ t := by
+      simpa [spectralRadius, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h
+    peel h with x hx h_le
+    rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
+    linarith [h_le.2]
+
+end SpectrumRestricts
