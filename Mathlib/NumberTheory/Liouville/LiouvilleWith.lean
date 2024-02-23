@@ -125,7 +125,6 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
       _ = ↑r.den ^ p * (↑|r| * C) / (↑r.den * ↑n) ^ p := ?_
     rw [mul_rpow, mul_div_mul_left, mul_comm, mul_div_assoc]
     · simp only [Rat.cast_abs, le_refl]
-    have := r.pos
     all_goals positivity
 #align liouville_with.mul_rat LiouvilleWith.mul_rat
 
@@ -184,16 +183,14 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   rcases h.exists_pos with ⟨C, _hC₀, hC⟩
   refine ⟨r.den ^ p * C, (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
   rintro n ⟨hn, m, hne, hlt⟩
-  have hr : (0 : ℝ) < r.den := Nat.cast_pos.2 r.pos
-  have hn' : (n : ℝ) ≠ 0 := by positivity
   have : (↑(r.den * m + r.num * n : ℤ) / ↑(r.den • id n) : ℝ) = m / n + r := by
     rw [Algebra.id.smul_eq_mul, id.def]
     nth_rewrite 4 [← Rat.num_div_den r]
     push_cast
-    rw [add_div, mul_div_mul_left _ _ (ne_of_gt hr), mul_div_mul_right _ _ hn']
+    rw [add_div, mul_div_mul_left _ _ (by positivity), mul_div_mul_right _ _ (by positivity)]
   refine ⟨r.den * m + r.num * n, ?_⟩; rw [this, add_sub_add_right_eq_sub]
   refine ⟨by simpa, hlt.trans_le (le_of_eq ?_)⟩
-  have : (r.den ^ p : ℝ) ≠ 0 := (rpow_pos_of_pos hr _).ne'
+  have : (r.den ^ p : ℝ) ≠ 0 := by positivity
   simp [mul_rpow, Nat.cast_nonneg, mul_div_mul_left, this]
 #align liouville_with.add_rat LiouvilleWith.add_rat
 

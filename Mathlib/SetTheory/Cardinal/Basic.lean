@@ -194,7 +194,7 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
   rfl
 #align cardinal.mk_ulift Cardinal.mk_uLift
 
--- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
@@ -202,7 +202,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 #align cardinal.lift_umax Cardinal.lift_umax
 
--- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
@@ -210,7 +210,7 @@ theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 #align cardinal.lift_umax' Cardinal.lift_umax'
 
--- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- A cardinal lifted to a lower or equal universe equals itself. -/
 @[simp, nolint simpNF]
@@ -1597,9 +1597,9 @@ theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 
     rw [← Ne, ← one_le_iff_ne_zero] at ha hb
     constructor
     · rw [← mul_one a]
-      refine' (mul_le_mul' le_rfl hb).trans_lt h
+      exact (mul_le_mul' le_rfl hb).trans_lt h
     · rw [← one_mul b]
-      refine' (mul_le_mul' ha le_rfl).trans_lt h
+      exact (mul_le_mul' ha le_rfl).trans_lt h
   rintro (rfl | rfl | ⟨ha, hb⟩) <;> simp only [*, mul_lt_aleph0, aleph0_pos, zero_mul, mul_zero]
 #align cardinal.mul_lt_aleph_0_iff Cardinal.mul_lt_aleph0_iff
 
