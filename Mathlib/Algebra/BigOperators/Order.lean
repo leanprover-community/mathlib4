@@ -868,9 +868,7 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
-/-- We make an alias by hand to keep control over the order of the arguments. -/
-private lemma prod_ne_zero {ι α : Type*} [CommMonoidWithZero α] [Nontrivial α] [NoZeroDivisors α]
-    {f : ι → α} {s : Finset ι} : (∀ i ∈ s, f i ≠ 0) → ∏ i in s, f i ≠ 0 := prod_ne_zero_iff.2
+private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
 /-- The `positivity` extension which proves that `∏ i in s, f i` is nonnegative if `f` is, and
 positive if each `f i` is.
@@ -891,33 +889,33 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     -- Try to show that the sum is positive
     try
       let .positive pbody := rbody | failure -- Fail if the body is not provably positive
-      let instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-      let instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
-      let instαposmul ← synthInstanceQ q(PosMulStrictMono $α)
-      let instαnontriv ← synthInstanceQ q(Nontrivial $α)
+      -- TODO: We must name the following, else `assertInstancesCommute` loops.
+      let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+      let _instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
+      let _instαposmul ← synthInstanceQ q(PosMulStrictMono $α)
+      let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      pure $ .positive q(@prod_pos $ι $α $instαmon $pα $instαzeroone $instαposmul $instαnontriv $f
-        $s fun i _ ↦ $pr i)
+      pure $ .positive q(prod_pos fun i _ ↦ $pr i)
     -- Try to show that the sum is nonnegative
     catch _ => try
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-      let instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
-      let instαposmul ← synthInstanceQ q(PosMulMono $α)
+      -- TODO: We must name the following, else `assertInstancesCommute` loops.
+      let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+      let _instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
+      let _instαposmul ← synthInstanceQ q(PosMulMono $α)
       assertInstancesCommute
-      pure $ .nonnegative q(@prod_nonneg $ι $α $instαmon $pα $instαzeroone $instαposmul $f $s
-        fun i _ ↦ $pr i)
+      pure $ .nonnegative q(prod_nonneg fun i _ ↦ $pr i)
     catch _ =>
       let pbody ← rbody.toNonzero
       let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody
-      let instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-      let instαnontriv ← synthInstanceQ q(Nontrivial $α)
-      let instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
+      -- TODO: We must name the following, else `assertInstancesCommute` loops.
+      let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+      let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
+      let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
       assertInstancesCommute
-      pure $ .nonzero q(@prod_ne_zero $ι $α $instαmon $instαnontriv $instαnozerodiv $f $s
-        fun i _ ↦ $pr i)
+      pure $ .nonzero q(prod_ne_zero fun i _ ↦ $pr i)
   | _ => throwError "not Finset.prod"
 
 end Mathlib.Meta.Positivity
