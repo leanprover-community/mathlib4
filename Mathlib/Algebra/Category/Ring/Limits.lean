@@ -49,7 +49,7 @@ set_option linter.uppercaseLean3 false in
 /-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections.
 -/
 def sectionsSubsemiring (F : J ⥤ SemiRingCatMax.{v, u}) : Subsemiring.{max v u} (∀ j, F.obj j) :=
-  -- Porting note : if `f` and `g` were inlined, it does not compile
+  -- Porting note: if `f` and `g` were inlined, it does not compile
   letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
     forget₂ AddCommMonCat AddMonCat
   letI g : J ⥤ MonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat.{max v u}
@@ -68,7 +68,7 @@ set_option linter.uppercaseLean3 false in
 /-- `limit.π (F ⋙ forget SemiRingCat) j` as a `RingHom`. -/
 def limitπRingHom (F : J ⥤ SemiRingCatMax.{v, u}) (j) :
     (Types.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
-  -- Porting note : if `f` and `g` were inlined, it does not compile
+  -- Porting note: if `f` and `g` were inlined, it does not compile
   letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
     forget₂ AddCommMonCat AddMonCat
   { AddMonCat.limitπAddMonoidHom f j,
@@ -224,7 +224,7 @@ and then reuse the existing limit.
 -/
 instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
     CreatesLimit F (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}) :=
-  -- Porting note : `CommSemiRingCat ⥤ Type` reflecting isomorphism is needed to make Lean see that
+  -- Porting note: `CommSemiRingCat ⥤ Type` reflecting isomorphism is needed to make Lean see that
   -- `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism. `CommSemiRingCat ⥤ Type` reflecting
   -- isomorphism is added manually since Lean can't see it, but even with this addition Lean can not
   -- see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this instance is also added.
@@ -427,7 +427,7 @@ set_option linter.uppercaseLean3 false in
 -/
 def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ RingCatMax.{v, u}) :
     IsLimit ((forget₂ RingCatMax.{v, u} AddCommGroupCat).mapCone (limitCone.{v, u} F)) := by
-  -- Porting note : inline `f` would not compile
+  -- Porting note: inline `f` would not compile
   letI f := (F ⋙ forget₂ RingCatMax.{v, u} AddCommGroupCat.{max v u})
   apply AddCommGroupCat.limitConeIsLimit.{v, u} f
 set_option linter.uppercaseLean3 false in
@@ -505,7 +505,7 @@ instance (F : J ⥤ CommRingCatMax.{v, u}) :
     ```
     but it seems this would introduce additional identity morphisms in `limit.π`.
     -/
-    -- Porting note : need to add these instances manually
+    -- Porting note: need to add these instances manually
     letI : ReflectsIsomorphisms (forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u}) :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
     letI c : Cone F :=
@@ -536,7 +536,7 @@ instance (F : J ⥤ CommRingCatMax.{v, u}) :
 (Generally, you'll just want to use `limit F`.)
 -/
 def limitCone (F : J ⥤ CommRingCatMax.{v, u}) : Cone F :=
-  -- Porting note : add this manually to get `liftLimit`
+  -- Porting note: add this manually to get `liftLimit`
   letI : HasLimitsOfSize RingCatMax.{v, u} := RingCat.hasLimitsOfSize.{v, u}
   liftLimit (limit.isLimit (F ⋙ forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u}))
 set_option linter.uppercaseLean3 false in
@@ -553,7 +553,7 @@ set_option linter.uppercaseLean3 false in
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of commutative rings has all limits. -/
 instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommRingCatMax.{v, u} :=
-  -- Porting note : add this manually to get `liftLimit`
+  -- Porting note: add this manually to get `liftLimit`
   letI : HasLimitsOfSize RingCatMax.{v, u} := RingCat.hasLimitsOfSize.{v, u}
   { has_limits_of_shape := fun {_ _} =>
       { has_limit := fun F => hasLimit_of_created F
