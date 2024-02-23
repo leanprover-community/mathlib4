@@ -26,6 +26,17 @@ immediately from the two instances of the class.
 The instance for `ℝ` is registered in this file.
 The instance for `ℂ` is declared in `Mathlib/Analysis/Complex/Basic.lean`.
 
+# A note on `AlgebraicClosure ℝ`
+
+`AlgebraicClosure ℝ` is a field isomorphic to the `ℂ` but with no preferred choice of square
+root of `-1`. However there is still a unique non-identity `ℝ`-algebra isomorphism
+`conj : AlgebraicClosure ℝ →ₐ[ℝ] AlgebraicClosure ℝ` making it into a `StarRing`, there is a natural
+norm on `AlgebraicClosure ℝ` (coming from the isomorphism with `ℂ`, as the norm on `ℂ` is
+`conj`-invariant), and all of the results about `IsROrC` fields which do not mention `im` or
+`I` or `ℂ` (for example, every single result in `Mathlib.Data.IsROrC.Lemmas`) is also true
+for `AlgebraicClosure ℝ`. If and when we need this theory (it plays a role in the local Langlands
+philosophy), we may need to rethink the generality in which those lemmas are proved.
+
 ## Implementation notes
 
 The coercion from reals into an `IsROrC` field is done by registering `IsROrC.ofReal` as
