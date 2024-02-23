@@ -11,6 +11,9 @@ import Mathlib.Data.MvPolynomial.Basic
 
 # Tensor Product of polynomial rings
 
+TODO : use what has been done for monoid algebras to get alg hom equiv
+(or do it directly)
+
 -/
 
 

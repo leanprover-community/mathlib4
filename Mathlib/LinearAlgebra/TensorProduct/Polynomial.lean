@@ -15,6 +15,9 @@ It is messy because `Polynomial` is not a `Finsupp`…
 I believe most of this file should go elsewhere,
 and maybe the small stuff that remains could be deleted.
 
+TODO : use what has been done for monoid algebras to get alg hom equiv
+(or do it directly)
+
 -/
 open TensorProduct LinearMap
 
