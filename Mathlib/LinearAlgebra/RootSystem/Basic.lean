@@ -130,7 +130,7 @@ lemma reflection_dualMap_eq_coreflection :
   simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
 
 lemma isCrystallographic_iff :
-    P.IsCrystallographic ↔ ∀ i j, ∃ (z : ℤ), z = P.pairing i j := by
+    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
   rw [IsCrystallographic]
   refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
   · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
