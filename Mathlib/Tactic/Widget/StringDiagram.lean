@@ -357,53 +357,36 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
 
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MetaM NormalExpr := do
-  match e.getAppFnArgs with
-  | (``CategoryStruct.id, #[_, _, f]) =>
-    return .nil (.id (toMor₁ f))
-  | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
-    let η_e ← eval η
-    let θ_e ← eval θ
-    let ηθ ← evalComp η_e θ_e
-    return ηθ
-  | (``Iso.hom, #[_, _, _, _, η]) =>
-    match η.getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
-      return .associator (toMor₁ f) (toMor₁ g) (toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
-      return .leftUnitor (toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
-      return .rightUnitor (toMor₁ f)
-    | _ => return (← NormalExpr.of e)
-  | (``Iso.inv, #[_, _, _, _, η]) =>
-    match η.getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
-      return .associatorInv (toMor₁ f) (toMor₁ g) (toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
-      return .leftUnitorInv (toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
-      return .rightUnitorInv (toMor₁ f)
-    | _ => return (← NormalExpr.of e)
-  | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
-    evalWhiskerLeftExpr (toMor₁ f) (← eval η)
-  | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
-    evalWhiskerRightExpr (← eval η) (toMor₁ h)
-  | (``monoidalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) =>
-    let η_e ← eval η
-    let α₀' ← structuralOfMonoidalComp C e
-    let α := NormalExpr.nil α₀'
-    let θ_e ← eval θ
-    let αθ ← evalComp α θ_e
-    let ηαθ ← evalComp η_e αθ
-    return ηαθ
-  /- Partial support for `tensorHom`, in the cases for `η ⊗ 𝟙 f` and `𝟙 f ⊗ θ`. -/
-  | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
-    match η.getAppFnArgs, θ.getAppFnArgs with
-    | (``CategoryStruct.id, #[_, _, f]), _ =>
-      evalWhiskerLeftExpr (toMor₁ f) (← eval θ)
-    | _, (``CategoryStruct.id, #[_, _, f]) =>
-      evalWhiskerRightExpr (← eval η) (toMor₁ f)
-    | _, _ => NormalExpr.of e
-  | _ => NormalExpr.of e
+  if let .some e' := structuralAtom? e then return .nil <| .atom e' else
+    match e.getAppFnArgs with
+    | (``CategoryStruct.id, #[_, _, f]) =>
+      return .nil (.id (toMor₁ f))
+    | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
+      let η_e ← eval η
+      let θ_e ← eval θ
+      let ηθ ← evalComp η_e θ_e
+      return ηθ
+    | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
+      evalWhiskerLeftExpr (toMor₁ f) (← eval η)
+    | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
+      evalWhiskerRightExpr (← eval η) (toMor₁ h)
+    | (``monoidalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) =>
+      let η_e ← eval η
+      let α₀' ← structuralOfMonoidalComp C e
+      let α := NormalExpr.nil α₀'
+      let θ_e ← eval θ
+      let αθ ← evalComp α θ_e
+      let ηαθ ← evalComp η_e αθ
+      return ηαθ
+    /- Partial support for `tensorHom`, in the cases for `η ⊗ 𝟙 f` and `𝟙 f ⊗ θ`. -/
+    | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
+      match η.getAppFnArgs, θ.getAppFnArgs with
+      | (``CategoryStruct.id, #[_, _, f]), _ =>
+        evalWhiskerLeftExpr (toMor₁ f) (← eval θ)
+      | _, (``CategoryStruct.id, #[_, _, f]) =>
+        evalWhiskerRightExpr (← eval η) (toMor₁ f)
+      | _, _ => NormalExpr.of e
+    | _ => NormalExpr.of e
 
 /-- Convert a `NormalExpr` expression into a list of `WhiskerLeftExpr` expressions. -/
 def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
