@@ -218,7 +218,7 @@ theorem limitEquivSections_symm_apply (F : J ⥤ Type u) (x : F.sections) (j : J
   isLimitEquivSections_symm_apply _ _ _
 #align category_theory.limits.types.limit_equiv_sections_symm_apply CategoryTheory.Limits.Types.limitEquivSections_symm_apply
 
--- porting note : `limitEquivSections_symm_apply'` was removed because the linter
+-- Porting note: `limitEquivSections_symm_apply'` was removed because the linter
 --   complains it is unnecessary
 --@[simp]
 --theorem limitEquivSections_symm_apply' (F : J ⥤ Type v) (x : F.sections) (j : J) :
@@ -243,7 +243,7 @@ theorem Limit.π_mk (F : J ⥤ Type u) (x : ∀ j, F.obj j)
   simp
 #align category_theory.limits.types.limit.π_mk CategoryTheory.Limits.Types.Limit.π_mk
 
--- porting note : `Limit.π_mk'` was removed because the linter complains it is unnecessary
+-- Porting note: `Limit.π_mk'` was removed because the linter complains it is unnecessary
 --@[simp]
 --theorem Limit.π_mk' (F : J ⥤ Type v) (x : ∀ j, F.obj j)
 --    (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :

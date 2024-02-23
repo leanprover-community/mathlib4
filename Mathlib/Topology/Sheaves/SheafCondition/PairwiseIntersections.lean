@@ -453,7 +453,7 @@ set_option linter.uppercaseLean3 false in
 /-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
 def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) :
     F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
-    -- Porting note : Lean 3 is able to figure out the ring homomorphism automatically
+    -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
     RingHom.eqLocus
       (RingHom.comp (F.val.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op)
         (RingHom.fst (F.val.obj <| op U) (F.val.obj <| op V)))

@@ -78,7 +78,7 @@ theorem AtPrime.Nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
 #align is_localization.at_prime.nontrivial IsLocalization.AtPrime.Nontrivial
 
 theorem AtPrime.localRing [IsLocalization.AtPrime S P] : LocalRing S :=
-  -- Porting Note : since I couldn't get local instance running, I just specify it manually
+  -- Porting note: since I couldn't get local instance running, I just specify it manually
   letI := AtPrime.Nontrivial S P
   LocalRing.of_nonunits_add
     (by
@@ -184,7 +184,7 @@ theorem AtPrime.comap_maximalIdeal :
     Ideal.comap (algebraMap R (Localization.AtPrime I))
         (LocalRing.maximalIdeal (Localization I.primeCompl)) =
       I :=
-  -- Porting Note : need to provide full name
+  -- Porting note: need to provide full name
   IsLocalization.AtPrime.comap_maximalIdeal _ _
 #align localization.at_prime.comap_maximal_ideal Localization.AtPrime.comap_maximalIdeal
 
@@ -194,9 +194,9 @@ theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       LocalRing.maximalIdeal (Localization I.primeCompl) := by
   convert congr_arg (Ideal.map (algebraMap R (Localization.AtPrime I)))
-  -- Porting Note : `algebraMap R ...` can not be solve by unification
+  -- Porting note: `algebraMap R ...` can not be solve by unification
     (AtPrime.comap_maximalIdeal (hI := hI)).symm
-  -- Porting Note : can not find `hI`
+  -- Porting note: can not find `hI`
   rw [map_comap I.primeCompl]
 #align localization.at_prime.map_eq_maximal_ideal Localization.AtPrime.map_eq_maximalIdeal
 
@@ -254,7 +254,7 @@ theorem localRingHom_id : localRingHom I I (RingHom.id R) (Ideal.comap_id I).sym
   localRingHom_unique _ _ _ _ fun _ => rfl
 #align localization.local_ring_hom_id Localization.localRingHom_id
 
--- Porting note : simplifier won't pick up this lemma, so deleted @[simp]
+-- Porting note: simplifier won't pick up this lemma, so deleted @[simp]
 theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsPrime] (K : Ideal P)
     [hK : K.IsPrime] (f : R →+* S) (hIJ : I = J.comap f) (g : S →+* P) (hJK : J = K.comap g) :
     localRingHom I K (g.comp f) (by rw [hIJ, hJK, Ideal.comap_comap f g]) =
