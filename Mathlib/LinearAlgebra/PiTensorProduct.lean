@@ -474,10 +474,8 @@ This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
 
 Note that `PiTensorProduct.piTensorHomMap (tprod R f)` is equal to `PiTensorProduct.map f`.
 -/
-def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
-  toFun φ := lift <| lift (MultilinearMap.piLinearMap <| tprod R) φ
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp
+def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
+  lift.toLinearMap ∘ₗ lift (MultilinearMap.piLinearMap <| tprod R)
 
 @[simp] lemma piTensorHomMap_tprod_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
     piTensorHomMap (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by
