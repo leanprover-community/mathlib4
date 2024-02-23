@@ -142,6 +142,11 @@ theorem nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R] {x
   simp only [le_iff, zero_add, exists_eq_right']
 #align star_ordered_ring.nonneg_iff StarOrderedRing.nonneg_iff
 
+theorem le_iff' [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R] {x y : R} :
+    x ≤ y ↔ ∃ p, 0 ≤ p ∧ y = x + p := by
+  rw [le_iff]
+  simp_rw [nonneg_iff]
+
 end StarOrderedRing
 
 section NonUnitalSemiring
@@ -257,3 +262,12 @@ lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
   simpa using star_lt_star_iff (x := x) (y := 1)
 
 end Semiring
+
+namespace StarOrderedRing
+
+/-- In a `StarOrderedRing` we always have `0 ≤ 1` since `0 ≤ (star 1) * 1 = 1`. -/
+instance toZeroLEOneClass [Semiring R] [PartialOrder R] [StarOrderedRing R] :
+    ZeroLEOneClass R where
+  zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+
+end StarOrderedRing

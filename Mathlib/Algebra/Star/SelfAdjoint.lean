@@ -346,22 +346,34 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-instance : One (selfAdjoint R) :=
-  ⟨⟨1, isSelfAdjoint_one R⟩⟩
+instance instOne : One (selfAdjoint R) where
+  one := ⟨1, isSelfAdjoint_one R⟩
 
 @[simp, norm_cast]
 theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
   rfl
 #align self_adjoint.coe_one selfAdjoint.val_one
 
+instance instNatCast : NatCast (selfAdjoint R) where
+  natCast n := ⟨n, isSelfAdjoint_natCast _⟩
+
+@[simp, norm_cast]
+theorem val_natCast (n : ℕ) : ((n : selfAdjoint R) : R) = n :=
+  rfl
+
+instance instIntCast : IntCast (selfAdjoint R) where
+  intCast := fun n ↦ ⟨n, isSelfAdjoint_intCast _⟩
+
+@[simp, norm_cast]
+theorem val_intCast (n : ℤ) : ((n : selfAdjoint R) : R) = n :=
+  rfl
+
 instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
-instance : NatCast (selfAdjoint R) where
-  natCast n := ⟨n, isSelfAdjoint_natCast _⟩
-
-instance : IntCast (selfAdjoint R) where
-  intCast n := ⟨n, isSelfAdjoint_intCast _⟩
+instance instAddCommGroupWithOne : AddCommGroupWithOne (selfAdjoint R) :=
+  Subtype.val_injective.addCommGroupWithOne _ rfl rfl (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) val_natCast val_intCast
 
 instance : Pow (selfAdjoint R) ℕ where
   pow x n := ⟨(x : R) ^ n, x.prop.pow n⟩
