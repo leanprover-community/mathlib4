@@ -101,6 +101,11 @@ def upgradePolishSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
 
 namespace PolishSpace
 
+instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
+    MetrizableSpace α := by
+  letI := upgradePolishSpace α
+  infer_instance
+
 instance (priority := 100) t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] :
     T2Space α := by
   letI := upgradePolishSpace α
