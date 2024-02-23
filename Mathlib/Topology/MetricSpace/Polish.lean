@@ -104,11 +104,14 @@ def upgradePolishSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
 
 namespace PolishSpace
 
-instance (priority := 100) t3Space (α : Type*) [TopologicalSpace α] [PolishSpace α] :
-    T3Space α := by
+instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
+    MetrizableSpace α := by
   letI := upgradePolishSpace α
   infer_instance
-#align polish_space.t2_space PolishSpace.t3Space
+
+@[deprecated] -- 2024-02-23
+theorem t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] : T2Space α := inferInstance
+#align polish_space.t2_space PolishSpace.t2Space
 
 /-- A countable product of Polish spaces is Polish. -/
 instance pi_countable {ι : Type*} [Countable ι] {E : ι → Type*} [∀ i, TopologicalSpace (E i)]
