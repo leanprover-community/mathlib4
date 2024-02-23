@@ -101,7 +101,7 @@ variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
       (((F.mapBifunctorHomologicalComplex _ _ ).obj K₁).obj K₂)) (ComplexShape.up ℤ)]
 
 def mapBifunctorHomologicalComplexShift₂Iso :
-  ((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj (K₂⟦y⟧) ≅
+    ((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj (K₂⟦y⟧) ≅
     (HomologicalComplex₂.shiftFunctor₂ D y).obj
       (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂) :=
   HomologicalComplex.Hom.isoOfComponents
