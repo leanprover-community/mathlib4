@@ -520,18 +520,16 @@ lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K
   Since this is true for any `z`, we thus have: `(α + β) • ⟪x, y⟫ = 0`, and hence the result.
   However the semisimplicity of `ad R L z` is (a) non-trivial and (b) requires the assumption
   that `K` is characteristic 0 (possibly perfect field would suffice) and `L` is semisimple. -/
-  let σ : (H → K) → (H → K) := fun γ ↦ α + β + γ
+  let σ : (H → K) → (H → K) := fun γ ↦ α + (β + γ)
+  have hσ : ∀ γ, σ γ ≠ γ := fun γ ↦ by simpa only [← add_assoc] using add_left_ne_self.mpr hαβ
   let f : Module.End K L := (ad K L x) ∘ₗ (ad K L y)
-  have hf : ∀ γ, MapsTo f (rootSpace H γ) (rootSpace H (σ γ)) := fun γ ↦ by
-    simp only [LinearMap.coe_comp, add_assoc]
-    have h₁ := mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx
-    have h₂ := mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L β γ hy
-    exact h₁.comp h₂
+  have hf : ∀ γ, MapsTo f (rootSpace H γ) (rootSpace H (σ γ)) := fun γ ↦
+    (mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α (β + γ) hx).comp <|
+      mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L β γ hy
   classical
   have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
     (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpace K H L)
     (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_weightSpace_eq_top K H L)
-  have hσ : ∀ γ, σ γ ≠ γ := fun γ ↦ by rwa [ne_eq, add_left_eq_self]
   exact LinearMap.trace_eq_zero_of_mapsTo_ne hds σ hσ hf
 
 namespace IsKilling
