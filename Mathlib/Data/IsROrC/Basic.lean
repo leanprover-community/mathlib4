@@ -26,7 +26,7 @@ immediately from the two instances of the class.
 The instance for `ℝ` is registered in this file.
 The instance for `ℂ` is declared in `Mathlib/Analysis/Complex/Basic.lean`.
 
-# A note on `AlgebraicClosure ℝ`
+## A note on `AlgebraicClosure ℝ`
 
 `AlgebraicClosure ℝ` is a field isomorphic to the `ℂ` but with no preferred choice of square
 root of `-1`. However there is still a unique non-identity `ℝ`-algebra isomorphism
