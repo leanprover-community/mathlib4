@@ -6,6 +6,7 @@ Authors: Jujian Zhang
 
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Algebra.Pi
 
 /-!
 # Tensor product of `R`-algebras and rings
@@ -28,6 +29,8 @@ variable [CommSemiring R] [∀ i, AddCommMonoidWithOne (A i)] [∀ i, Module R (
 
 instance instOne : One (⨂[R] i, A i) where
   one := tprod R 1
+
+lemma one_def : 1 = tprod R (1 : Π i, A i) := rfl
 
 instance instAddCommMonoidWithOne : AddCommMonoidWithOne (⨂[R] i, A i) where
   __ := inferInstanceAs (AddCommMonoid (⨂[R] i, A i))
