@@ -427,14 +427,14 @@ instance : Algebra R (v.adicCompletionIntegers K) where
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine' ValuationSubring.mul_mem _ _ _ _ x.2
-      --Porting note: added instance
+      --porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
     ⟨(algebraMap R K r : adicCompletion K v), by
-      -- Porting note: added instance
+      -- porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
       --Porting note: rest of proof was `simpa only
       --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
@@ -445,13 +445,13 @@ instance : Algebra R (v.adicCompletionIntegers K) where
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by
     ext
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
   commutes' r x := by
@@ -462,7 +462,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     ext
     --Porting note: added `dsimp`
     dsimp
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl

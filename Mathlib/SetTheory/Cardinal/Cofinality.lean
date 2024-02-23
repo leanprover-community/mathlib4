@@ -266,7 +266,7 @@ theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o
   · refine' le_cof_type.2 fun S H => _
     have : Cardinal.lift.{u, v} #(ULift.up ⁻¹' S) ≤ #(S : Type (max u v)) := by
       rw [← Cardinal.lift_umax.{v, u}, ← Cardinal.lift_id'.{v, u} #S]
-      refine mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{u, v})
+      exact mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{u, v})
     refine' (Cardinal.lift_le.2 <| cof_type_le _).trans this
     exact fun a =>
       let ⟨⟨b⟩, bs, br⟩ := H ⟨a⟩
