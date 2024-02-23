@@ -23,8 +23,6 @@ noncomputable section
 
 section RPow
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 theorem NNReal.rpow_add_of_nonneg (x : ℝ≥0) {y z : ℝ} (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ^ (y + z) = x ^ y * x ^ z := by
   by_cases h : y + z = 0
@@ -340,7 +338,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 open FiniteDimensional
 
 section
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 example (c : ℝ≥0) (μ : Measure E) : c • μ = (c : ℝ≥0∞) • μ := by rw [@ENNReal.smul_def]
 

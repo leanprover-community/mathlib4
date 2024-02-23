@@ -15,30 +15,21 @@ set_option autoImplicit true
 
 -- move to Data.Finset.Basic
 theorem Finset.constant_of_eq_insert {α β : Type _} (f : Finset α → β)
-    (H : ∀ s : Finset α, ∀ {i} (_hi : i ∉ s), f s = f (insert i s)) (s t : Finset α) :
+    (H : ∀ {s : Finset α}, ∀ {i}, i ∉ s → f (insert i s) = f s) (s t : Finset α) :
     f s = f t := by
-  suffices H : ∀ u v, u ∩ v = ∅ → f u = f (u ∪ v)
-  · calc f s = f ((s ∩ t) ∪ (s \ t)) := by
-            congr
-            ext
-            simp only [mem_union, mem_inter, mem_sdiff]
-            tauto
-      _ = f (s ∩ t) := by rw [← H]; aesop
-      _ = f (t ∩ s) := by rw [inter_comm]
-      _ = f ((t ∩ s) ∪ (t \ s)) := by rw [← H]; aesop
-      _ = f t := by
-            congr
-            ext
-            simp only [mem_union, mem_inter, mem_sdiff]
-            tauto
-  intro s t hst
-  induction' t using Finset.induction with i t hit ih
-  · simp
-  · have his : i ∉ s := by aesop
-    have hst' : s ∩ t = ∅ := by aesop
-    calc f s = f (s ∪ t) := ih hst'
-      _ = f (insert i (s ∪ t)) := H _ (by aesop)
-      _ = f (s ∪ (insert i t)) := by rw [Finset.union_insert]
+  have h1 : ∀ {s : Finset α}, ∀ {i}, f (insert i s) = f s := by
+    intros s i
+    by_cases hi : i ∈ s <;> simp [*]
+  have h2 : ∀ s t, f (s ∪ t) = f s := by
+    intro s t
+    induction' t using Finset.induction with i t _ ih
+    · simp
+    · calc f (s ∪ insert i t) = f (insert i (s ∪ t)) := by rw [Finset.union_insert]
+        _ = f (s ∪ t) := h1
+        _ = f s := by rw [ih]
+  calc f s = f (s ∪ t) := by rw [h2]
+      _ = f (t ∪ s) := by rw [union_comm]
+      _ = f t := by rw [h2]
 
 noncomputable section
 
@@ -116,8 +107,6 @@ lemma NNReal.Beta_add_one {a b : ℝ≥0} (hb : 0 < b) :
   have h2 : 0 < (a + b : ℝ) := h1.trans_le <| le_add_of_nonneg_left <| coe_nonneg a
   simp [Real.Beta_add_one h1.ne' h2.ne']
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 @[simp]
 theorem integral_cos_pow_eq_beta : (n : ℕ) →
     ∫ θ in (-(π / 2))..(π / 2), cos θ ^ n = Real.Beta (1 / 2) ((n + 1) / 2)
@@ -182,7 +171,7 @@ def I (n : ℕ) (t : ℝ) : ℝ≥0 := if ht : 0 ≤ t then (⟨t, ht⟩ ^ ((n:�
   simp [I]
 
 @[simp] theorem indicator_I : (Set.Ici (0 : ℝ)).indicator (I n ·) = I n := by
-  simp (config := {contextual := true}) [not_le_of_lt, I]
+  ext; simp (config := {contextual := true}) [not_le_of_lt, I]
 
 theorem I_apply_nonneg (n : ℕ) {t : ℝ} (ht : 0 ≤ t) : I n t = (⟨t, ht⟩ ^ ((n:ℝ) / 2)) := by
   rw [I, dif_pos]
@@ -272,7 +261,6 @@ theorem lintegral_I_sub_sq_nnreal (n : ℕ) (R : ℝ≥0) :
     _ = .ofReal (∫ x in (-R)..R, (Real.sqrt ((R : ℝ) ^ 2 - x ^ 2)) ^ n) := by
         rw [← ofReal_integral_eq_lintegral_ofReal, integral_Icc_eq_integral_Ioc,
           ← intervalIntegral.integral_of_le]
-        · rfl
         · simp [neg_le_self_iff]
         · apply Continuous.integrableOn_Icc
           exact continuous_const.sub (continuous_id.pow 2) |>.sqrt.pow n
@@ -280,7 +268,7 @@ theorem lintegral_I_sub_sq_nnreal (n : ℕ) (R : ℝ≥0) :
           exact Filter.eventually_of_forall fun _ _ ↦ pow_nonneg (sqrt_nonneg _) _
         -- x = R * sin θ
     _ = .ofReal (∫ θ in (-(π / 2))..π / 2, cos θ ^ (n + 1) * R ^ (n + 1)) := by
-        simp_rw [integral_sub_sq_sqrt_pow R.coe_nonneg, NNReal.coe_pow]
+        simp_rw [integral_sub_sq_sqrt_pow R.coe_nonneg]
     _ = .ofReal ((∫ θ in (-(π / 2))..π / 2, cos θ ^ (n + 1)) * R ^ (n + 1)) := by
         rw [intervalIntegral.integral_mul_const]
     _ = NNReal.Beta (1 / 2) (n / 2 + 1) * (R:ℝ≥0∞) ^ (n + 1) := by
@@ -300,25 +288,25 @@ theorem lintegral_I_sub_sq (n : ℕ) (c : ℝ) :
   · let r : ℝ≥0 := ⟨sqrt c, sqrt_nonneg _⟩
     have hr : r ^ 2 = c := Real.sq_sqrt h
     clear_value r
-    rw [← hr, lintegral_I_sub_sq_nnreal, I_apply_nnreal]
+    rw [← hr, lintegral_I_sub_sq_nnreal, ← NNReal.coe_pow, I_apply_nnreal]
     norm_cast
     push_cast
-    have : (r ^ 2) ^ ((((n : ℝ) + 1) / 2)) = r ^ n * r
-    · rw [← NNReal.rpow_two, ← NNReal.rpow_mul]
+    have : (r ^ 2) ^ ((((n : ℝ) + 1) / 2)) = r ^ n * r := by
+      rw [← NNReal.rpow_two, ← NNReal.rpow_mul]
       simp (discharger := positivity) [mul_div_cancel', NNReal.rpow_add']
     rw [this]
     ring
-  · have h₁ : (fun t ↦ ↑(I n (c - t ^ 2))) = (fun _ ↦ 0 : ℝ → ℝ≥0∞)
-    · ext1 t
+  · have h₁ : (fun t ↦ ↑(I n (c - t ^ 2))) = (fun _ ↦ 0 : ℝ → ℝ≥0∞) := by
+      ext1 t
       dsimp
       rw [I, dif_neg]
       · simp
       · have : (0:ℝ) ≤ t ^ 2 := by positivity
         linarith
-    have h₂ : I n c = 0
-    · rw [I, dif_neg h]
-    have h₃ : I (n + 1) c = 0
-    · rw [I, dif_neg h]
+    have h₂ : I n c = 0 := by
+      rw [I, dif_neg h]
+    have h₃ : I (n + 1) c = 0 := by
+      rw [I, dif_neg h]
     simp [h₁, h₂, h₃, -compl_insert, -mul_eq_zero, -zero_eq_mul]
 
 variable [Fintype ι]
@@ -329,18 +317,19 @@ def A (R : ℝ) (s : Finset ι) (x : ι → ℝ) : ℝ≥0∞ :=
 theorem measurable_A (R : ℝ) (s : Finset ι) : Measurable (A R s) := by
   refine measurable_const.mul <| measurable_coe_nnreal_ennreal.comp ?_
   refine measurable_I.comp <| measurable_const.sub ?_
-  exact Finset.measurable_sum _ (fun i _ ↦ Measurable.pow_const (measurable_pi_apply _) _)
+  exact measurable_sum _ (fun i _ ↦ Measurable.pow_const (measurable_pi_apply _) _)
 
-theorem sphere_aux_le_sphere_aux_insert {R : ℝ} (s : Finset ι) {i : ι} (hi : i ∉ s) :
-    (∫⋯∫⁻_sᶜ, A R s) = ∫⋯∫⁻_(insert i s)ᶜ, A R (insert i s) := by
+theorem sphere_aux_le_sphere_aux_insert {R : ℝ} {s : Finset ι} {i : ι} (hi : i ∉ s) :
+    (∫⋯∫⁻_(insert i s)ᶜ, A R (insert i s)) = (∫⋯∫⁻_sᶜ, A R s) := by
+  symm
   have hi' : i ∉ (insert i s)ᶜ := not_mem_compl.mpr <| mem_insert_self i s
   simp_rw [← insert_compl_insert hi, lmarginal_insert' _ (measurable_A ..) hi']
   congr! 2 with _ x
   calc ∫⁻ t, B s.card * I s.card (R ^ 2 - ∑ j in sᶜ, update x i t j ^ 2)
       = ∫⁻ (t : ℝ), B s.card * I s.card ((R ^ 2 - ∑ j in (insert i s)ᶜ, x j ^ 2) - t ^ 2) := by
           congr! 2 with t
-          have H : ∀ j ∈ (insert i s)ᶜ, update x i t j ^ 2 = x j ^ 2
-          · intro j hj
+          have H : ∀ j ∈ (insert i s)ᶜ, update x i t j ^ 2 = x j ^ 2 := by
+            intro j hj
             have hij : j ≠ i := by aesop
             rw [update_noteq hij]
           simp only [← insert_compl_insert hi, sum_insert hi', update_same, sum_congr rfl H]
@@ -354,20 +343,20 @@ theorem sphere_aux_le_sphere_aux_insert {R : ℝ} (s : Finset ι) {i : ι} (hi :
 
 theorem sphere_aux_emptyset_eq_sphere_aux_univ (R : ℝ) :
     (∫⋯∫⁻_∅ᶜ, A R ∅) = ∫⋯∫⁻_(univ : Finset ι)ᶜ, A R univ := by
-  refine Finset.constant_of_eq_insert (fun s : Finset ι ↦ ∫⋯∫⁻_sᶜ, A R s) ?_ ∅ univ
+  refine constant_of_eq_insert (fun s : Finset ι ↦ ∫⋯∫⁻_sᶜ, A R s) ?_ ∅ univ
   apply sphere_aux_le_sphere_aux_insert
 
 /-- The volume of a Euclidean ball of radius `R` in the space `ι → ℝ`, equipped with the product
 measure, is `B (Fintype.card ι) * R ^ Fintype.card ι`. -/
 theorem volume_ball (R : ℝ≥0) :
-    volume {x : ι → ℝ | ∑ j, x j ^ 2 ≤ R ^ 2} = B (Fintype.card ι) * R ^ Fintype.card ι := by
-  calc volume {x : ι → ℝ | ∑ j, x j ^ 2 ≤ R ^ 2}
-      = ∫⁻ x : ι → ℝ, Set.indicator {y : ι → ℝ | (0:ℝ) ≤ R ^ 2 - ∑ i : ι, y i ^ 2} 1 x := by
+    volume {x : ι → ℝ | ∑ j, x j ^ 2 ≤ (R : ℝ) ^ 2} = B (Fintype.card ι) * R ^ Fintype.card ι := by
+  calc volume {x : ι → ℝ | ∑ j, x j ^ 2 ≤ (R : ℝ) ^ 2}
+      = ∫⁻ x : ι → ℝ, Set.indicator {y : ι → ℝ | (0 : ℝ) ≤ R ^ 2 - ∑ i : ι, y i ^ 2} 1 x := by
           convert (lintegral_indicator_const _ 1).symm
           · simp
           · refine measurableSet_le measurable_const <| measurable_const.sub ?_
-            exact Finset.measurable_sum _ (fun i _ ↦ Measurable.pow_const (measurable_pi_apply _) _)
+            exact measurable_sum _ (fun i _ ↦ Measurable.pow_const (measurable_pi_apply _) _)
     _ = ∫⁻ x : ι → ℝ, I 0 (R ^ 2 - ∑ i : ι, x i ^ 2) := by simp [apply_ite, Set.indicator_apply]
     _ = B (Fintype.card ι) * R ^ Fintype.card ι := by
-          simpa [A, lmarginal_univ, lmarginal_empty, Finset.card_univ, -I_zero] using
+          simpa [A, lmarginal_univ, lmarginal_empty, card_univ, -I_zero] using
             congr_fun (sphere_aux_emptyset_eq_sphere_aux_univ R) (0 : ι → ℝ)

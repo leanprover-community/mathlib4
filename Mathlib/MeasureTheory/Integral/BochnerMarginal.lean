@@ -78,7 +78,7 @@ variable (μ) in
 theorem marginal_congr {x y : ∀ i, π i} (f : (∀ i, π i) → E)
     (h : ∀ i ∉ s, x i = y i) :
     (∫⋯∫_s, f ∂μ) x = (∫⋯∫_s, f ∂μ) y := by
-  dsimp [marginal, updateFinset]; rcongr; exact h _ ‹_›
+  dsimp [marginal, updateFinset_def]; rcongr; exact h _ ‹_›
 
 variable (μ) in
 theorem marginal_update_of_mem {i : δ} (hi : i ∈ s)
@@ -206,7 +206,7 @@ variable [Fintype δ] in
     ∫⋯∫_univ, f ∂μ = fun _ ↦ ∫ x, f x ∂Measure.pi μ := by
   let e : { j // j ∈ Finset.univ } ≃ δ := Equiv.subtypeUnivEquiv mem_univ
   ext1 x
-  simp_rw [marginal, measurePreserving_piCongrLeft μ e |>.integral_map_equiv, updateFinset]
+  simp_rw [marginal, measurePreserving_piCongrLeft μ e |>.integral_map_equiv, updateFinset_def]
   simp
   rfl
 
