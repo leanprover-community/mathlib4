@@ -610,11 +610,13 @@ noncomputable instance abelian_A'_zero : CategoryTheory.Abelian (FGModuleCat (�
   FGModuleCat.abelian_of_noetherian
 
 instance finite_KER : Module.Finite (A' S s S' hS') (KER ℳ s deg_s).toSubmodule :=
-  Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' s (KER ℳ s deg_s).toSubmodule
+  Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' s
+    (by rw [← S.span_eq, ← hS', Finset.coe_insert]) (KER ℳ s deg_s).toSubmodule
     fun x ↦ by ext; exact x.2
 
 instance finite_COKER : Module.Finite (A' S s S' hS') (COKER ℳ s deg_s) := by
-  refine Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' s (COKER ℳ s deg_s) fun x ↦ ?_
+  refine Algebra.adjoin_module_finite_of_annihilating (𝒜 0) A S' s
+    (by rw [← S.span_eq, ← hS', Finset.coe_insert]) (COKER ℳ s deg_s) fun x ↦ ?_
   induction' x using Quotient.inductionOn' with x
   erw [Submodule.Quotient.eq', add_zero]
   refine ⟨-x, trivial, ?_⟩
