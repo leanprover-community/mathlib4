@@ -67,7 +67,7 @@ theorem tendsto_one_div_add_atTop_nhds_zero_nat :
 
 theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜]
     [Algebra ℝ≥0 𝕜] [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
-    Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (nhds 0) := by
+    Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
   convert (continuous_algebraMap ℝ≥0 𝕜).continuousAt.tendsto.comp
     tendsto_inverse_atTop_nhds_zero_nat
   rw [map_zero]
@@ -76,7 +76,7 @@ theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Se
 
 theorem tendsto_algebraMap_inverse_atTop_nhds_zero_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ 𝕜]
     [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ 𝕜] :
-    Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (nhds 0) :=
+    Tendsto (algebraMap ℝ 𝕜 ∘ fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
   NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat 𝕜
 @[deprecated] alias tendsto_algebraMap_inverse_atTop_nhds_0_nat :=
   _root_.tendsto_algebraMap_inverse_atTop_nhds_zero_nat
@@ -623,6 +623,11 @@ theorem tendsto_nat_floor_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSe
     Tendsto (fun x : α ↦ ⌊x⌋₊) atTop atTop :=
   Nat.floor_mono.tendsto_atTop_atTop fun x ↦ ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 #align tendsto_nat_floor_at_top tendsto_nat_floor_atTop
+
+lemma tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+    Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
+  refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
+  simp only [Nat.ceil_natCast, le_refl]
 
 lemma tendsto_nat_floor_mul_atTop {α : Type _} [LinearOrderedSemifield α] [FloorSemiring α]
     [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x:ℕ) => ⌊a * x⌋₊) atTop atTop :=

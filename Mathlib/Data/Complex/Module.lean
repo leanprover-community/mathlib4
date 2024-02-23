@@ -304,7 +304,7 @@ theorem toMatrix_conjAe :
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
   refine'
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
-    refine' fun h => algHom_ext _
+    refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
@@ -582,6 +582,19 @@ lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   _          = z.re := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
     simp [conj_ofReal, ← two_mul]
+
+lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalRing A] [StarRing A]
+    [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :
+    star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
+  have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
+  calc
+    star a * a + a * star a = _ :=
+      congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
+    _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
+      simp [mul_add, add_mul, smul_smul, two_smul, mul_smul_comm,
+        smul_mul_assoc]
+      abel
+
 end RealImaginaryPart
 
 section Rational

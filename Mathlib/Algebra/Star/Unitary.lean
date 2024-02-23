@@ -3,7 +3,7 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.star.unitary from "leanprover-community/mathlib"@"247a102b14f3cebfee126293341af5f6bed00237"
@@ -135,11 +135,52 @@ def toUnits : unitary R →* Rˣ
   map_mul' _ _ := Units.ext rfl
 #align unitary.to_units unitary.toUnits
 
-theorem to_units_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
+theorem toUnits_injective : Function.Injective (toUnits : unitary R → Rˣ) := fun _ _ h =>
   Subtype.ext <| Units.ext_iff.mp h
-#align unitary.to_units_injective unitary.to_units_injective
+#align unitary.to_units_injective unitary.toUnits_injective
+
+theorem _root_.IsUnit.mem_unitary_of_star_mul_self  {u : R} (hu : IsUnit u)
+    (h_mul : star u * u = 1) : u ∈ unitary R := by
+  refine unitary.mem_iff.mpr ⟨h_mul, ?_⟩
+  lift u to Rˣ using hu
+  exact left_inv_eq_right_inv h_mul u.mul_inv ▸ u.mul_inv
+
+theorem _root_.IsUnit.mem_unitary_of_mul_star_self {u : R} (hu : IsUnit u)
+    (h_mul : u * star u = 1) : u ∈ unitary R :=
+  star_star u ▸
+    (hu.star.mem_unitary_of_star_mul_self ((star_star u).symm ▸ h_mul) |> unitary.star_mem)
+
+instance instIsStarNormal (u : unitary R) : IsStarNormal u where
+  star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm
+
+instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
+  star_comm_self := congr(Subtype.val $(star_comm_self' u))
+
+lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStarNormal u :=
+  coe_isStarNormal ⟨u, hu⟩
 
 end Monoid
+
+section Map
+
+variable {F R S : Type*} [Monoid R] [StarMul R] [Monoid S] [StarMul S]
+variable [FunLike F R S] [StarHomClass F R S] [MonoidHomClass F R S] (f : F)
+
+lemma map_mem {r : R} (hr : r ∈ unitary R) : f r ∈ unitary S := by
+  rw [unitary.mem_iff] at hr
+  simpa [map_star, map_mul] using And.intro congr(f $(hr.1)) congr(f $(hr.2))
+
+/-- The group homomorphism between unitary subgroups of star monoids induced by a star
+homomorphism -/
+@[simps]
+def map : unitary R →* unitary S where
+  toFun := Subtype.map f (fun _ ↦ map_mem f)
+  map_one' := Subtype.ext <| map_one f
+  map_mul' _ _ := Subtype.ext <| map_mul f _ _
+
+lemma toUnits_comp_map : toUnits.comp (map f) = (Units.map f).comp toUnits := by ext; rfl
+
+end Map
 
 section CommMonoid
 

@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.Weights.Cartan
+import Mathlib.Algebra.Lie.Weights.Chain
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.LinearAlgebra.PID
@@ -64,7 +65,7 @@ namespace LieModule
 
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace Form. See also `killingForm`. -/
-noncomputable def traceForm : L →ₗ[R] L →ₗ[R] R :=
+noncomputable def traceForm : LinearMap.BilinForm R L :=
   ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
 
 lemma traceForm_apply_apply (x y : L) :
@@ -114,17 +115,6 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
   simp only [traceForm_apply_apply, LinearMap.zero_apply, ← isNilpotent_iff_eq_zero]
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEndomorphism_of_isNilpotent₂ R L M x y
-
-@[simp]
-lemma trace_toEndomorphism_weightSpace [IsDomain R] [IsPrincipalIdealRing R]
-    [LieAlgebra.IsNilpotent R L] (χ : L → R) (x : L) :
-    trace R _ (toEndomorphism R L (weightSpace M χ) x) = finrank R (weightSpace M χ) • χ x := by
-  suffices _root_.IsNilpotent ((toEndomorphism R L (weightSpace M χ) x) - χ x • LinearMap.id) by
-    replace this := (LinearMap.isNilpotent_trace_of_isNilpotent this).eq_zero
-    rwa [map_sub, map_smul, LinearMap.trace_id, sub_eq_zero, smul_eq_mul, mul_comm,
-      ← nsmul_eq_mul] at this
-  rw [← Module.algebraMap_end_eq_smul_id]
-  exact isNilpotent_toEndomorphism_sub_algebraMap M χ x
 
 @[simp]
 lemma traceForm_weightSpace_eq [IsDomain R] [IsPrincipalIdealRing R]
@@ -183,7 +173,7 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
 invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
 Fitting decomposition of `M` are orthogonal wrt `B`. -/
 lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
-    {B : M →ₗ[R] M →ₗ[R] R} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
+    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ weightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
@@ -196,8 +186,8 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]
     conv_lhs => rw [pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
       ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ, ← smul_assoc, this]
-  suffices : ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0
-  · apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
+  suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
+    apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
     aesop
   clear hm₁ m₁; intro x m₁ hm₁
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
@@ -215,7 +205,7 @@ lemma trace_toEndomorphism_eq_zero_of_mem_lcs
     simpa using hx
   refine Submodule.span_induction (p := fun x ↦ trace R _ (toEndomorphism R L M x) = 0) hx
     (fun y ⟨u, v, huv⟩ ↦ ?_) ?_ (fun u v hu hv ↦ ?_) (fun t u hu ↦ ?_)
-  · simp_rw [← huv, LieHom.map_lie, Ring.lie_def, map_sub, LinearMap.trace_mul_comm, sub_self]
+  · simp [← huv]
   · simp
   · simp [hu, hv]
   · simp [hu]
@@ -326,8 +316,8 @@ case of an Abelian ideal (which has `M = L` and `N = I`). -/
 lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
     trace R M (φ x ∘ₗ φ y) = 0 := by
   let hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
-  suffices : (φ x ∘ₗ φ y).restrict hy' = 0
-  · simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
+  suffices (φ x ∘ₗ φ y).restrict hy' = 0 by
+    simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   ext n
   suffices ⁅y, (n : M)⁆ = 0 by simp [this]
   exact Submodule.coe_eq_zero.mpr (LieModule.IsTrivial.trivial (⟨y, hy⟩ : I) n)
@@ -341,7 +331,7 @@ variable [Module.Free R L] [Module.Finite R L]
 /-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
-noncomputable abbrev killingForm : L →ₗ[R] L →ₗ[R] R := LieModule.traceForm R L L
+noncomputable abbrev killingForm : LinearMap.BilinForm R L := LieModule.traceForm R L L
 
 lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
     (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
@@ -513,14 +503,65 @@ lemma range_traceForm_le_span_weight :
 
 end LieModule
 
+namespace LieAlgebra.IsKilling
+
+variable [FiniteDimensional K L] [IsKilling K L]
+  (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [IsTriangularizable K H L]
+
 /-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
 Killing form, the corresponding roots span the dual space of `H`. -/
 @[simp]
-lemma LieAlgebra.IsKilling.span_weight_eq_top [FiniteDimensional K L] [IsKilling K L]
-    (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [IsTriangularizable K H L] :
+lemma span_weight_eq_top :
     span K (range (weight.toLinear K H L)) = ⊤ := by
   refine eq_top_iff.mpr (le_trans ?_ (LieModule.range_traceForm_le_span_weight K H L))
   rw [← traceForm_flip K H L, ← LinearMap.dualAnnihilator_ker_eq_range_flip,
     ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
+
+@[simp]
+lemma iInf_ker_weight_eq_bot :
+    ⨅ α : weight K H L, LinearMap.ker (weight.toLinear K H L α) = ⊥ := by
+  rw [← Subspace.dualAnnihilator_inj, Subspace.dualAnnihilator_iInf_eq,
+    Submodule.dualAnnihilator_bot]
+  simp [← LinearMap.range_dualMap_eq_dualAnnihilator_ker, ← Submodule.span_range_eq_iSup]
+
+@[simp]
+lemma rootSpaceProductNegSelf_zero_eq_bot :
+    (rootSpaceProductNegSelf (0 : H → K)).range = ⊥ := by
+  refine eq_bot_iff.mpr fun x hx ↦ ?_
+  suffices {x | ∃ y ∈ H, ∃ z ∈ H, ⁅y, z⁆ = x} = {0} by
+    rw [LieSubmodule.mem_bot]
+    simpa [-LieModuleHom.mem_range, this, mem_range_rootSpaceProductNegSelf] using hx
+  refine eq_singleton_iff_unique_mem.mpr ⟨⟨0, H.zero_mem, 0, H.zero_mem, zero_lie 0⟩, ?_⟩
+  rintro - ⟨y, hy, z, hz, rfl⟩
+  suffices ⁅(⟨y, hy⟩ : H), (⟨z, hz⟩ : H)⁆ = 0 by
+    simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
+  simp
+
+variable {K H L}
+
+/-- The contrapositive of this result is very useful, taking `x` to be the element of `H`
+corresponding to a root `α` under the identification between `H` and `H^*` provided by the Killing
+form. -/
+lemma eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf [CharZero K]
+    (x : H) (α : H → K) (hαx : α x = 0) (hx : x ∈ (rootSpaceProductNegSelf α).range) :
+    x = 0 := by
+  rcases eq_or_ne α 0 with rfl | hα; · simpa using hx
+  replace hx : x ∈ ⨅ β : weight K H L, LinearMap.ker (weight.toLinear K H L β) := by
+    simp only [Submodule.mem_iInf, Subtype.forall, Finite.mem_toFinset]
+    intro β hβ
+    obtain ⟨a, b, hb, hab⟩ := exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero L α β hα hβ
+    simpa [hαx, hb.ne'] using hab _ hx
+  simpa using hx
+
+-- When `α ≠ 0`, this can be upgraded to `IsCompl`; moreover these complements are orthogonal with
+-- respect to the Killing form. TODO prove this!
+lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot [CharZero K] (α : weight K H L) :
+    LinearMap.ker (weight.toLinear K H L α) ⊓ (rootSpaceProductNegSelf (α : H → K)).range = ⊥ := by
+  rw [LieIdeal.coe_to_lieSubalgebra_to_submodule, LieModuleHom.coeSubmodule_range]
+  refine (Submodule.eq_bot_iff _).mpr fun x ⟨hαx, hx⟩ ↦ ?_
+  replace hαx : (α : H → K) x = 0 := by simpa using hαx
+  exact eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf x α hαx hx
+
+end LieAlgebra.IsKilling
 
 end Field

@@ -229,3 +229,8 @@ def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass �
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom
 #align smul_monoid_with_zero_hom_apply smulMonoidWithZeroHom_apply
+
+-- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
+instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
+    DistribSMul R R where
+  smul_add := mul_add
