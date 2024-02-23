@@ -66,6 +66,10 @@ open Set LinearMap Submodule
 
 section TensorProduct
 
+variable {R : Type*} [CommSemiring R]
+  {M : Type*} [AddCommMonoid M] [Module R M]
+  {N : Type*} [AddCommMonoid N] [Module R N]
+
 namespace TensorProduct
 
 variable {ι : Type*} [DecidableEq ι]
