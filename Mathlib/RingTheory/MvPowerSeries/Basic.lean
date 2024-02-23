@@ -21,31 +21,18 @@ A formal power series is to a polynomial like an infinite sum is to a finite sum
 
 We provide the natural inclusion from polynomials to formal power series.
 
-Formal power series in one variable will be obtained as a particular case,
-in `Mathlib.RingTheory.PowerSeries.Basic`,
-defined by `PowerSeries R := MvPowerSeries Unit R`,
+## Note
 
-## Generalities
+This file sets up the (semi)ring structure on multivariate power series:
+additional results are in:
+* `Mathlib.RingTheory.MvPowerSeries.Inverse` : invertibility,
+  formal power series over a local ring form a local ring
+* `Mathlib.RingTheory.MvPowerSeries.Trunc`: truncation of power series
 
-The file starts with setting up the (semi)ring structure on multivariate power series.
-
--> to Inverse
-If the constant coefficient of a formal power series is invertible,
-then this formal power series is invertible.
-
-Formal power series over a local ring form a local ring.
-
--> to PowerSeries
-
-## Formal power series in one variable
-
-We prove that if the ring of coefficients is an integral domain,
-then formal power series in one variable form an integral domain.
-
-The `order` of a formal power series `φ` is the multiplicity of the variable `X` in `φ`.
-
-If the coefficients form an integral domain, then `order` is a valuation
-(`order_mul`, `le_order_add`).
+In `Mathlib.RingTheory.PowerSeries.Basic`, formal power series in one variable
+will be obtained as a particular case, defined by
+  `PowerSeries R := MvPowerSeries Unit R`.
+See that file for a specific description.
 
 ## Implementation notes
 
@@ -57,15 +44,6 @@ of the ring of multivariate polynomials. However, we provide most of the infrast
 that is needed to do this. Once I-adic completion (topological or algebraic) is available
 it should not be hard to fill in the details.
 
-Formal power series in one variable are defined as
-`PowerSeries R := MvPowerSeries Unit R`.
-
-This allows us to port a lot of proofs and properties
-from the multivariate case to the single variable case.
-However, it means that formal power series are indexed by `Unit →₀ ℕ`,
-which is of course canonically isomorphic to `ℕ`.
-We then build some glue to treat formal power series as if they are indexed by `ℕ`.
-Occasionally this leads to proofs that are uglier than expected.
 -/
 
 
