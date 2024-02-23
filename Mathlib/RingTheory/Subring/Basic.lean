@@ -116,40 +116,6 @@ instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClas
 instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
   NoZeroDivisors.to_isDomain _
 
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
-    OrderedRing s :=
-  Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
-#align subring_class.to_ordered_ring SubringClass.toOrderedRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance (priority := 75) toOrderedCommRing {R} [OrderedCommRing R] [SetLike S R]
-    [SubringClass S R] : OrderedCommRing s :=
-  Subtype.coe_injective.orderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
-#align subring_class.to_ordered_comm_ring SubringClass.toOrderedCommRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance (priority := 75) toLinearOrderedRing {R} [LinearOrderedRing R] [SetLike S R]
-    [SubringClass S R] : LinearOrderedRing s :=
-  Subtype.coe_injective.linearOrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subring_class.to_linear_ordered_ring SubringClass.toLinearOrderedRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance (priority := 75) toLinearOrderedCommRing {R} [LinearOrderedCommRing R] [SetLike S R]
-    [SubringClass S R] : LinearOrderedCommRing s :=
-  Subtype.coe_injective.linearOrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subring_class.to_linear_ordered_comm_ring SubringClass.toLinearOrderedCommRing
-
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : S) : s →+* R :=
   { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
@@ -466,27 +432,6 @@ instance {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
 /-- A subring of a domain is a domain. -/
 instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
   NoZeroDivisors.to_isDomain _
-
-/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
-  SubringClass.toOrderedRing s
-#align subring.to_ordered_ring Subring.toOrderedRing
-
-/-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
-  SubringClass.toOrderedCommRing s
-#align subring.to_ordered_comm_ring Subring.toOrderedCommRing
-
-/-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
-  SubringClass.toLinearOrderedRing s
-#align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
-
-/-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
-    LinearOrderedCommRing s :=
-  SubringClass.toLinearOrderedCommRing s
-#align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
 
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : Subring R) : s →+* R :=
