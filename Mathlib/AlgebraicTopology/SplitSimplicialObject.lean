@@ -337,7 +337,7 @@ def mk' {X : SimplicialObject C} (s : Splitting X) : Split C :=
   ⟨X, s⟩
 #align simplicial_object.split.mk' SimplicialObject.Split.mk'
 
--- porting note : removed @[nolint has_nonempty_instance]
+-- Porting note: removed @[nolint has_nonempty_instance]
 /-- Morphisms in `SimplicialObject.Split C` are morphisms of simplicial objects that
 are compatible with the splittings. -/
 structure Hom (S₁ S₂ : Split C) where

@@ -99,7 +99,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
           exact
             (s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
               (s.ι.naturality Limits.WalkingSpan.Hom.fst).symm }
-    -- Porting note : Lean has forget why `A ⊗[R] B` makes sense
+    -- Porting note: Lean has forget why `A ⊗[R] B` makes sense
     letI : Algebra R A := f.toAlgebra
     letI : Algebra R B := g.toAlgebra
     letI : Algebra R (pushoutCocone f g).pt := show Algebra R (A ⊗[R] B) by infer_instance
@@ -108,13 +108,13 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
     simp only [pushoutCocone_inl, pushoutCocone_inr]
     constructor
     · ext x
-      -- Porting note : Lean can't see through `forget` functor
+      -- Porting note: Lean can't see through `forget` functor
       letI : Semiring ((forget CommRingCat).obj A) := A.str.toSemiring
       letI : Algebra R ((forget CommRingCat).obj A) := show Algebra R A by infer_instance
       exact Algebra.TensorProduct.productMap_left_apply _ _ x
     constructor
     · ext x
-      -- Porting note : Lean can't see through `forget` functor
+      -- Porting note: Lean can't see through `forget` functor
       letI : Semiring ((forget CommRingCat).obj B) := B.str.toSemiring
       letI : Algebra R ((forget CommRingCat).obj B) := show Algebra R B by infer_instance
       exact Algebra.TensorProduct.productMap_right_apply _ _ x
@@ -266,7 +266,7 @@ set_option linter.uppercaseLean3 false in
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  -- Porting note : Lean can't see through `(parallelPair f g).obj zero`
+  -- Porting note: Lean can't see through `(parallelPair f g).obj zero`
   haveI : SubsemiringClass (Subring A) ((parallelPair f g).obj WalkingParallelPair.zero) :=
     show SubsemiringClass (Subring A) A by infer_instance
   use s.ι.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)

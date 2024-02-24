@@ -546,7 +546,7 @@ theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
   · rintro ⟨y, hy, hx⟩
     simp [← hx, hy]
   · intro hx
-    refine' ⟨e.symm x, hx, by simp⟩
+    exact ⟨e.symm x, hx, by simp⟩
 #align submodule.mem_map_equiv Submodule.mem_map_equiv
 
 theorem map_equiv_eq_comap_symm (e : M ≃ₛₗ[τ₁₂] M₂) (K : Submodule R M) :
@@ -626,7 +626,7 @@ def compatibleMaps : Submodule R (N →ₗ[R] N₂) where
   zero_mem' := by
     change pₗ ≤ comap (0 : N →ₗ[R] N₂) qₗ
     rw [comap_zero]
-    refine' le_top
+    exact le_top
   add_mem' {f₁ f₂} h₁ h₂ := by
     apply le_trans _ (inf_comap_le_comap_add qₗ f₁ f₂)
     rw [le_inf_iff]
