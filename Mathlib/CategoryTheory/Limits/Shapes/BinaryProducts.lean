@@ -1123,7 +1123,7 @@ end
 
 section
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The braiding isomorphism which swaps a binary coproduct. -/
@@ -1196,7 +1196,7 @@ end
 
 section ProdFunctor
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1219,7 +1219,7 @@ end ProdFunctor
 
 section CoprodFunctor
 
--- Porting note: added category instance as it did not propagate
+-- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/

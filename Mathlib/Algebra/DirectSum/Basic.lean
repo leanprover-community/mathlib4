@@ -40,11 +40,11 @@ def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
 #align direct_sum DirectSum
 
--- Porting note: Added inhabited instance manually
+-- Porting note (#10754): Added inhabited instance manually
 instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
--- Porting note: Added addCommMonoid instance manually
+-- Porting note (#10754): Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
