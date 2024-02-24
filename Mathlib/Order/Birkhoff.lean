@@ -109,7 +109,7 @@ def OrderEmbedding.supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} wh
 variable {α}
 
 lemma OrderEmbedding.supIrredLowerSet_apply {a : α} {s : LowerSet α} (ha : LowerSet.Iic a = s) :
-  ((OrderEmbedding.supIrredLowerSet α) a) = s := by
+    ((OrderEmbedding.supIrredLowerSet α) a) = s := by
   unfold OrderEmbedding.supIrredLowerSet
   simp_all only [supIrred_iff_of_finite, RelEmbedding.coe_mk, Embedding.coeFn_mk]
 
