@@ -502,8 +502,8 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
 
 @[simp]
-theorem whiskerLeft_hom {X : Mon_ C} (Y Z : Mon_ C) (f : Y ⟶ Z) :
-    (f ▷ X).hom = f.hom ▷ X.X := by
+theorem whiskerLeft_hom {X Y : Mon_ C} (f : X ⟶ Y) (Z : Mon_ C) :
+    (f ▷ Z).hom = f.hom ▷ Z.X := by
   rw [← tensorHom_id]; rfl
 
 @[simp]
