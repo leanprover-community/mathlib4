@@ -34,9 +34,6 @@ TODO:
 
 namespace Mathlib.Tactic.DeprecateMe
 
-/-- Syntax for a sequence of commands. -/
-syntax commandSeq := sepBy1IndentSemicolon(command)
-
 open Lean Elab Term Command
 
 /-- Produce the syntax for the command `@[deprecated] alias n := id`. -/
