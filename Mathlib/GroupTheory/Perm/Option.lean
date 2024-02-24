@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.Fintype.Perm
--- import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Option
 --
