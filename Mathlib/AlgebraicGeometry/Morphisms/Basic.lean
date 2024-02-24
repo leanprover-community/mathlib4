@@ -265,7 +265,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
     refine' ⟨Y.openCoverOfSuprEqTop U hU, hU', _⟩
     intro i
     specialize H i
-    -- Porting note: added these two instances manually
+    -- Porting note (#10754): added these two instances manually
     haveI i2 : IsAffine (Scheme.OpenCover.obj (Scheme.openCoverOfSuprEqTop Y U hU) i) := hU' i
     haveI i3 : IsAffine (Y.restrict (U i).openEmbedding) := hU' i
     rw [← P.toProperty_apply, ← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
