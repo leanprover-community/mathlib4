@@ -160,7 +160,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ArithmeticFunction ℂ} {x : ℝ
     neg_sub, one_mul]
   exact hC n
 
-open Filter Finset in
+open Filter Finset Real in
 lemma LSeriesSummable_of_isBigO_rpow {f : ArithmeticFunction ℂ} {x : ℝ} {s : ℂ}
     (hs : x < s.re) (h : f =O[atTop] fun n ↦ (n : ℝ) ^ (x - 1)) :
     LSeriesSummable f s := by
@@ -168,23 +168,20 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ArithmeticFunction ℂ} {x : ℝ} {s :
   obtain ⟨m, hm⟩ := eventually_atTop.mp hC
   let C' := max C (max' (insert 0 (image (fun n : ℕ ↦ ‖f n‖ / (n : ℝ) ^ (x - 1)) (range m)))
     (insert_nonempty 0 _))
+  have hC'₀ : 0 ≤ C' := (le_max' _ _ (mem_insert.mpr (Or.inl rfl))).trans <| le_max_right ..
+  have hCC' : C ≤ C' := le_max_left ..
   refine LSeriesSummable_of_le_const_mul_rpow hs ⟨C', fun n ↦ ?_⟩
-  have hC'₀ : 0 ≤ C' := (le_max' _ (0 : ℝ) (mem_insert.mpr (Or.inl rfl))).trans <| le_max_right ..
   rcases le_or_lt m n with hn | hn
   · refine (hm n hn).trans ?_
+    have hn₀ : (0 : ℝ) ≤ n := Nat.cast_nonneg _
     gcongr
-    · exact le_max_left ..
-    · rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg (Nat.cast_nonneg _),
-        _root_.abs_of_nonneg (Nat.cast_nonneg _)]
+    rw [Real.norm_eq_abs, abs_rpow_of_nonneg hn₀, _root_.abs_of_nonneg hn₀]
   · rcases n.eq_zero_or_pos with rfl | hn'
     · simpa only [map_zero, norm_zero, Nat.cast_zero]
-        using mul_nonneg hC'₀ <| Real.zero_rpow_nonneg _
-    refine (div_le_iff <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn') _).mp ?_
+        using mul_nonneg hC'₀ <| zero_rpow_nonneg _
+    refine (div_le_iff <| rpow_pos_of_pos (Nat.cast_pos.mpr hn') _).mp ?_
     refine (le_max' _ _ <| mem_insert_of_mem ?_).trans <| le_max_right ..
     exact mem_image.mpr ⟨n, mem_range.mpr hn, rfl⟩
-
-example (a b c : ℝ) (hc : 0 < c) (h' : a / c ≤ b) : a ≤ b * c := by
-  exact (div_le_iff hc).mp h'
 
 theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ArithmeticFunction ℂ} {m : ℝ}
     (h : ∀ n : ℕ, Complex.abs (f n) ≤ m) {z : ℂ} (hz : 1 < z.re) : f.LSeriesSummable z := by
