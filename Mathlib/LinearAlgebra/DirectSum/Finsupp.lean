@@ -308,4 +308,4 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : α) (b : β) (r₁ r₂ : 
   aesop (add norm [Finsupp.single_apply])
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
 
-end TensorProduct
+end
