@@ -160,7 +160,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ArithmeticFunction ℂ} {x : ℝ
     neg_sub, one_mul]
   exact hC n
 
-open Filter Finset Real in
+open Filter Finset Real Nat in
 lemma LSeriesSummable_of_isBigO_rpow {f : ArithmeticFunction ℂ} {x : ℝ} {s : ℂ}
     (hs : x < s.re) (h : f =O[atTop] fun n ↦ (n : ℝ) ^ (x - 1)) :
     LSeriesSummable f s := by
@@ -173,13 +173,12 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ArithmeticFunction ℂ} {x : ℝ} {s :
   refine LSeriesSummable_of_le_const_mul_rpow hs ⟨C', fun n ↦ ?_⟩
   rcases le_or_lt m n with hn | hn
   · refine (hm n hn).trans ?_
-    have hn₀ : (0 : ℝ) ≤ n := Nat.cast_nonneg _
+    have hn₀ : (0 : ℝ) ≤ n := cast_nonneg _
     gcongr
     rw [Real.norm_eq_abs, abs_rpow_of_nonneg hn₀, _root_.abs_of_nonneg hn₀]
   · rcases n.eq_zero_or_pos with rfl | hn'
-    · simpa only [map_zero, norm_zero, Nat.cast_zero]
-        using mul_nonneg hC'₀ <| zero_rpow_nonneg _
-    refine (div_le_iff <| rpow_pos_of_pos (Nat.cast_pos.mpr hn') _).mp ?_
+    · simpa only [map_zero, norm_zero, cast_zero] using mul_nonneg hC'₀ <| zero_rpow_nonneg _
+    refine (div_le_iff <| rpow_pos_of_pos (cast_pos.mpr hn') _).mp ?_
     refine (le_max' _ _ <| mem_insert_of_mem ?_).trans <| le_max_right ..
     exact mem_image.mpr ⟨n, mem_range.mpr hn, rfl⟩
 
