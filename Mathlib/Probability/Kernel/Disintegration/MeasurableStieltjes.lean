@@ -78,9 +78,9 @@ lemma measurableSet_isRatStieltjesPoint (hf : Measurable f) :
     refine MeasurableSet.iInter (fun _ ↦ ?_)
     exact measurableSet_le hf.eval hf.eval
   have h2 : MeasurableSet {a | Tendsto (f a) atTop (𝓝 1)} :=
-    measurableSet_tendsto_nhds (fun q ↦ hf.eval) 1
+    measurableSet_tendsto _ (fun q ↦ hf.eval)
   have h3 : MeasurableSet {a | Tendsto (f a) atBot (𝓝 0)} :=
-    measurableSet_tendsto_nhds (fun q ↦ hf.eval) 0
+    measurableSet_tendsto _ (fun q ↦ hf.eval)
   have h4 : MeasurableSet {a | ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t} := by
     rw [Set.setOf_forall]
     refine MeasurableSet.iInter (fun q ↦ ?_)

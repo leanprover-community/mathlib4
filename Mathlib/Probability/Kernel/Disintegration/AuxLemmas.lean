@@ -20,27 +20,6 @@ theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
   exact exists_rat_lt x
 #align real.Inter_Iic_rat Real.iInter_Iic_rat
 
-lemma measurableSet_tendsto_nhds {β γ ι : Type*} [MeasurableSpace β]
-    [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
-    [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
-    [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) (c : γ) :
-    MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 c) } := sorry
-
-lemma measurableSet_tendsto_fun {β γ ι : Type*} [MeasurableSpace β]
-    [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
-    [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
-    [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) {g : β → γ}
-    (hg : Measurable g) :
-    MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) } := by
-  letI := upgradePolishSpace γ
-  have : { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) }
-      = { x | Tendsto (fun n ↦ dist (f n x) (g x)) l (𝓝 0) } := by
-    ext x
-    simp only [Set.mem_setOf_eq]
-    rw [tendsto_iff_dist_tendsto_zero]
-  rw [this]
-  exact measurableSet_tendsto_nhds (fun n ↦ (hf n).dist hg) 0
-
 lemma Measure.iInf_Iic_gt_prod {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
     {s : Set α} (hs : MeasurableSet s) (t : ℚ) :
     ⨅ r : { r' : ℚ // t < r' }, ρ (s ×ˢ Iic (r : ℝ)) = ρ (s ×ˢ Iic (t : ℝ)) := by
