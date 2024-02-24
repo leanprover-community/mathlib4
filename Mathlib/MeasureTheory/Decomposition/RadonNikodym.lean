@@ -62,9 +62,8 @@ theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition �
   rw [← measure_add_measure_compl h_sing.measurableSet_nullSet]
   simp only [MutuallySingular.measure_nullSet, zero_add]
   refine le_antisymm ?_ (zero_le _)
-  refine (singularPart_le μ ν ?_ ?_).trans_eq ?_
-  · exact h_sing.measurableSet_nullSet.compl
-  · exact h h_sing.measure_compl_nullSet
+  refine (singularPart_le μ ν ?_ ).trans_eq ?_
+  exact h h_sing.measure_compl_nullSet
 #align measure_theory.measure.with_density_rn_deriv_eq MeasureTheory.Measure.withDensity_rnDeriv_eq
 
 variable {μ ν : Measure α}
@@ -367,11 +366,12 @@ lemma set_integral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s 
         refine set_integral_mono_set ?_ ?_ (HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _))
         · exact integrableOn_toReal_rnDeriv hμt
         · exact ae_of_all _ (by simp)
+  _ = (withDensity ν (rnDeriv μ ν) t).toReal := set_integral_toReal_rnDeriv_eq_withDensity' ht_m
   _ ≤ (μ t).toReal := by
-        rw [set_integral_toReal_rnDeriv_eq_withDensity' ht_m, ENNReal.toReal_le_toReal _ hμt]
-        · exact withDensity_rnDeriv_le _ _ _ ht_m
-        · exact ((withDensity_rnDeriv_le _ _ _ ht_m).trans_lt hμt.lt_top).ne
-  _ = (μ s).toReal := by rw [← measure_toMeasurable s]
+        gcongr
+        · exact hμt
+        · apply withDensity_rnDeriv_le
+  _ = (μ s).toReal := by rw [measure_toMeasurable s]
 
 lemma set_integral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :

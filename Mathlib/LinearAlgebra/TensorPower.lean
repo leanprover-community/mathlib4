@@ -67,12 +67,12 @@ open scoped TensorProduct DirectSum
 open PiTensorProduct
 
 /-- As a graded monoid, `⨂[R]^i M` has a `1 : ⨂[R]^0 M`. -/
-instance gOne : GradedMonoid.GOne fun i => (⨂[R]^i) M where one := tprod R <| @Fin.elim0' M
+instance gOne : GradedMonoid.GOne fun i => (⨂[R]^i) M where one := tprod R <| @Fin.elim0 M
 #align tensor_power.ghas_one TensorPower.gOne
 
 local notation "ₜ1" => @GradedMonoid.GOne.one ℕ (fun i => (⨂[R]^i) M) _ _
 
-theorem gOne_def : ₜ1 = tprod R (@Fin.elim0' M) :=
+theorem gOne_def : ₜ1 = tprod R (@Fin.elim0 M) :=
   rfl
 #align tensor_power.ghas_one_def TensorPower.gOne_def
 
@@ -169,26 +169,30 @@ variable {R}
 
 theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a := by
   rw [gMul_def, gOne_def]
-  induction' a using PiTensorProduct.induction_on with r a x y hx hy
-  · rw [TensorProduct.tmul_smul, LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
+  induction a using PiTensorProduct.induction_on with
+  | smul_tprod r a =>
+    rw [TensorProduct.tmul_smul, LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
       tprod_mul_tprod, cast_tprod]
     congr 2 with i
-    rw [Fin.elim0'_append]
+    rw [Fin.elim0_append]
     refine' congr_arg a (Fin.ext _)
     simp
-  · rw [TensorProduct.tmul_add, map_add, map_add, hx, hy]
+  | add x y hx hy =>
+    rw [TensorProduct.tmul_add, map_add, map_add, hx, hy]
 #align tensor_power.one_mul TensorPower.one_mul
 
 theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a ₜ* ₜ1) = a := by
   rw [gMul_def, gOne_def]
-  induction' a using PiTensorProduct.induction_on with r a x y hx hy
-  · rw [← TensorProduct.smul_tmul', LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
+  induction a using PiTensorProduct.induction_on with
+  | smul_tprod r a =>
+    rw [← TensorProduct.smul_tmul', LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
       tprod_mul_tprod R a _, cast_tprod]
     congr 2 with i
-    rw [Fin.append_elim0']
+    rw [Fin.append_elim0]
     refine' congr_arg a (Fin.ext _)
     simp
-  · rw [TensorProduct.add_tmul, map_add, map_add, hx, hy]
+  | add x y hx hy =>
+    rw [TensorProduct.add_tmul, map_add, map_add, hx, hy]
 #align tensor_power.mul_one TensorPower.mul_one
 
 theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R]^nc) M) :

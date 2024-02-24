@@ -642,7 +642,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
         specialize hx hin.le
         have := nonarchimedean (x n - x i : ℤ_[p]) (x i - x'.lim)
         rw [sub_add_sub_cancel] at this
-        refine' this.trans (max_le_iff.mpr ⟨hx, hi.le⟩)
+        exact this.trans (max_le_iff.mpr ⟨hx, hi.le⟩)
 
 end Dvr
 

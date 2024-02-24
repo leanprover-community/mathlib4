@@ -52,17 +52,17 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-@[simp]
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 #align finset.nonempty_Icc Finset.nonempty_Icc
 
-@[simp]
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 #align finset.nonempty_Ico Finset.nonempty_Ico
 
-@[simp]
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
 #align finset.nonempty_Ioc Finset.nonempty_Ioc
@@ -128,42 +128,42 @@ theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
   Ioo_eq_empty h.not_lt
 #align finset.Ioo_eq_empty_of_le Finset.Ioo_eq_empty_of_le
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and_iff, le_rfl]
 #align finset.left_mem_Icc Finset.left_mem_Icc
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and_iff, le_refl]
 #align finset.left_mem_Ico Finset.left_mem_Ico
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_true_iff, le_rfl]
 #align finset.right_mem_Icc Finset.right_mem_Icc
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true_iff, le_rfl]
 #align finset.right_mem_Ioc Finset.right_mem_Ioc
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem left_not_mem_Ioc : a ∉ Ioc a b := fun h => lt_irrefl _ (mem_Ioc.1 h).1
 #align finset.left_not_mem_Ioc Finset.left_not_mem_Ioc
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem left_not_mem_Ioo : a ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).1
 #align finset.left_not_mem_Ioo Finset.left_not_mem_Ioo
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem right_not_mem_Ico : b ∉ Ico a b := fun h => lt_irrefl _ (mem_Ico.1 h).2
 #align finset.right_not_mem_Ico Finset.right_not_mem_Ico
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem right_not_mem_Ioo : b ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).2
 #align finset.right_not_mem_Ioo Finset.right_not_mem_Ioo
@@ -286,19 +286,19 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
 
 variable (a)
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem Ico_self : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
 #align finset.Ico_self Finset.Ico_self
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem Ioc_self : Ioc a a = ∅ :=
   Ioc_eq_empty <| lt_irrefl _
 #align finset.Ioc_self Finset.Ioc_self
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem Ioo_self : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
@@ -311,14 +311,6 @@ def _root_.Set.fintypeOfMemBounds {s : Set α} [DecidablePred (· ∈ s)] (ha : 
     (hb : b ∈ upperBounds s) : Fintype s :=
   Set.fintypeSubset (Set.Icc a b) fun _ hx => ⟨ha hx, hb hx⟩
 #align set.fintype_of_mem_bounds Set.fintypeOfMemBounds
-
--- TODO: move to `Order/LocallyFinite`
-theorem _root_.BddBelow.finite_of_bddAbove {s : Set α} (h₀ : BddBelow s) (h₁ : BddAbove s) :
-    s.Finite :=
-  let ⟨a, ha⟩ := h₀
-  let ⟨b, hb⟩ := h₁
-  (Set.finite_Icc a b).subset fun _x hx ↦ ⟨ha hx, hb hx⟩
-#align bdd_below.finite_of_bdd_above BddBelow.finite_of_bddAbove
 
 section Filter
 
@@ -403,8 +395,10 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
-@[simp] lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[simp] lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
 
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
   simpa [← coe_subset] using Set.Icc_subset_Ici_self
@@ -704,7 +698,7 @@ theorem Ioi_insert [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
   simp_rw [Finset.mem_insert, mem_Ici, mem_Ioi, le_iff_lt_or_eq, or_comm, eq_comm]
 #align finset.Ioi_insert Finset.Ioi_insert
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem not_mem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
 #align finset.not_mem_Ioi_self Finset.not_mem_Ioi_self
@@ -737,7 +731,7 @@ theorem Iio_insert [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
   simp_rw [Finset.mem_insert, mem_Iic, mem_Iio, le_iff_lt_or_eq, or_comm]
 #align finset.Iio_insert Finset.Iio_insert
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem not_mem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1 h)
 #align finset.not_mem_Iio_self Finset.not_mem_Iio_self
@@ -930,7 +924,7 @@ theorem uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by
   rw [uIcc, uIcc, inf_comm, sup_comm]
 #align finset.uIcc_comm Finset.uIcc_comm
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 #align finset.uIcc_self Finset.uIcc_self
@@ -948,13 +942,13 @@ theorem Icc_subset_uIcc' : Icc b a ⊆ [[a, b]] :=
   Icc_subset_Icc inf_le_right le_sup_left
 #align finset.Icc_subset_uIcc' Finset.Icc_subset_uIcc'
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem left_mem_uIcc : a ∈ [[a, b]] :=
   mem_Icc.2 ⟨inf_le_left, le_sup_left⟩
 #align finset.left_mem_uIcc Finset.left_mem_uIcc
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem right_mem_uIcc : b ∈ [[a, b]] :=
   mem_Icc.2 ⟨inf_le_right, le_sup_right⟩
