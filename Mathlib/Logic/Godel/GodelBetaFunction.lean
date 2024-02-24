@@ -5,6 +5,7 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
 
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Pairing
 
 /-!
@@ -67,7 +68,7 @@ private lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   have h₁ : a i < supOfSeq a :=
     Nat.lt_add_one_iff.mpr (le_max_of_le_right $ Finset.le_sup (by simp))
   have h₂ : supOfSeq a ≤ (i + 1) * (supOfSeq a)! + 1 :=
-    le_trans (self_le_factorial _) (le_trans (Nat.le_mul_of_pos_left (succ_pos _))
+    le_trans (self_le_factorial _) (le_trans (Nat.le_mul_of_pos_left (supOfSeq a)! (succ_pos i))
       (le_add_right _ _))
   simpa only [coprimes, List.get_ofFn] using lt_of_lt_of_le h₁ h₂
 
@@ -75,8 +76,6 @@ private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime 
   intro i j hij
   wlog ltij : i < j
   · exact (this a hij.symm (lt_of_le_of_ne (Fin.not_lt.mp ltij) hij.symm)).symm
-  suffices : Coprime ((i + 1) * (supOfSeq a)! + 1) ((j + 1) * (supOfSeq a)! + 1)
-  · exact this
   have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_step (le_max_left _ _))
   exact coprime_mul_succ
     (Nat.succ_le_succ $ le_of_lt ltij)
