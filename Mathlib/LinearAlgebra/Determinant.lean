@@ -623,7 +623,7 @@ theorem Basis.det_reindex' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Ba
 
 theorem Basis.det_reindex_symm {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M)
     (v : ι → M) (e : ι' ≃ ι) : (b.reindex e.symm).det (v ∘ e) = b.det v := by
-  rw [Basis.det_reindex, Function.comp.assoc, e.self_comp_symm, Function.comp.right_id]
+  rw [Basis.det_reindex, Function.comp.assoc, e.self_comp_symm, Function.comp_id]
 #align basis.det_reindex_symm Basis.det_reindex_symm
 
 @[simp]
@@ -669,7 +669,8 @@ theorem Basis.det_unitsSMul (e : Basis ι R M) (w : ι → Rˣ) :
       (↑(∏ i, w i)⁻¹ : R) • Matrix.det fun i j => e.repr (f j) i
   simp only [e.repr_unitsSMul]
   convert Matrix.det_mul_column (fun i => (↑(w i)⁻¹ : R)) fun i j => e.repr (f j) i
-  simp only [← Finset.prod_inv_distrib] -- Porting note: was `simp [← Finset.prod_inv_distrib]`
+  -- porting note (#10745): was `simp [← Finset.prod_inv_distrib]`
+  simp only [← Finset.prod_inv_distrib]
   norm_cast
 #align basis.det_units_smul Basis.det_unitsSMul
 

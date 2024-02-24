@@ -6,14 +6,14 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 import Qq.MetaM
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Attr.Core
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 
 set_option autoImplicit true
 
 namespace Mathlib.Tactic.Nontriviality
-open Lean Elab Meta Tactic Qq
+open Lean Elab Meta Tactic Qq Std.Tactic
 
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
@@ -27,7 +27,7 @@ including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
 -/
 def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
   let p : Q(Prop) ← g.getType
-  guard (←instantiateMVars (← inferType p)).isProp
+  guard (← instantiateMVars (← inferType p)).isProp
   g.withContext do
     let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
     let (_, g₁') ← g₁.mvarId!.intro1
@@ -109,8 +109,8 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       if let some (α, _) := tgt.eq? then return α
       if let some (α, _) := tgt.app4? ``LE.le then return α
       if let some (α, _) := tgt.app4? ``LT.lt then return α
-      throwError "The goal is not an (in)equality, so you'll need to specify the desired {""
-        }`Nontrivial α` instance by invoking `nontriviality α`.")
+      throwError "The goal is not an (in)equality, so you'll need to specify the desired \
+        `Nontrivial α` instance by invoking `nontriviality α`.")
     let .sort u ← whnf (← inferType α) | unreachable!
     let some v := u.dec | throwError "not a type{indentExpr α}"
     let α : Q(Type v) := α

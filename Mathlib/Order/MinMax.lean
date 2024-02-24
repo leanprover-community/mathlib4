@@ -206,13 +206,13 @@ theorem max_lt_max_right_iff : max a b < max a c ↔ b < c ∧ a < c :=
 #align max_lt_max_right_iff max_lt_max_right_iff
 
 /-- An instance asserting that `max a a = a` -/
-instance max_idem : IsIdempotent α max where
+instance max_idem : Std.IdempotentOp (α := α) max where
   idempotent := by simp
 #align max_idem max_idem
 
 -- short-circuit type class inference
 /-- An instance asserting that `min a a = a` -/
-instance min_idem : IsIdempotent α min where
+instance min_idem : Std.IdempotentOp (α := α) min where
   idempotent := by simp
 #align min_idem min_idem
 
@@ -244,7 +244,7 @@ theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
-  cases' le_total a b with h h <;>
+  rcases le_total a b with h | h <;>
     simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
 #align monotone_on.map_max MonotoneOn.map_max
 
@@ -261,7 +261,7 @@ theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 #align antitone_on.map_min AntitoneOn.map_min
 
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
-  cases' le_total a b with h h <;> simp [h, hf h]
+  rcases le_total a b with h | h <;> simp [h, hf h]
 #align monotone.map_max Monotone.map_max
 
 theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
@@ -269,7 +269,7 @@ theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
 #align monotone.map_min Monotone.map_min
 
 theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
-  cases' le_total a b with h h <;> simp [h, hf h]
+  rcases le_total a b with h | h <;> simp [h, hf h]
 #align antitone.map_max Antitone.map_max
 
 theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
@@ -299,10 +299,10 @@ theorem max_associative : Associative (max : α → α → α) :=
   max_assoc
 #align max_associative max_associative
 
-instance : IsCommutative α max where
+instance : Std.Commutative (α := α) max where
   comm := max_comm
 
-instance : IsAssociative α max where
+instance : Std.Associative (α := α) max where
   assoc := max_assoc
 
 theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
@@ -313,14 +313,14 @@ theorem min_commutative : Commutative (min : α → α → α) :=
   min_comm
 #align min_commutative min_commutative
 
-theorem min_associative : Associative (min : α → α → α) :=
+theorem min_associative : Associative (α := α) min :=
   min_assoc
 #align min_associative min_associative
 
-instance : IsCommutative α min where
+instance : Std.Commutative (α := α) min where
   comm := min_comm
 
-instance : IsAssociative α min where
+instance : Std.Associative (α := α) min where
   assoc := min_assoc
 
 theorem min_left_commutative : LeftCommutative (min : α → α → α) :=

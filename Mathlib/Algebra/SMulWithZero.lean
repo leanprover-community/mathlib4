@@ -75,12 +75,8 @@ variable {R} {a : R} {b : M}
 
 lemma smul_eq_zero_of_left (h : a = 0) (b : M) : a • b = 0 := h.symm ▸ zero_smul _ b
 #align smul_eq_zero_of_left smul_eq_zero_of_left
-lemma smul_eq_zero_of_right (a : R) (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
-#align smul_eq_zero_of_right smul_eq_zero_of_right
-lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt $ fun h ↦ smul_eq_zero_of_left h b
+lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt fun h ↦ smul_eq_zero_of_left h b
 #align left_ne_zero_of_smul left_ne_zero_of_smul
-lemma right_ne_zero_of_smul : a • b ≠ 0 → b ≠ 0 := mt $ smul_eq_zero_of_right a
-#align right_ne_zero_of_smul right_ne_zero_of_smul
 
 variable [Zero R'] [Zero M'] [SMul R M']
 
@@ -112,7 +108,7 @@ variable (M)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
 def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
-  smul := (· • ·) ∘ f
+  smul := (f · • ·)
   smul_zero m := smul_zero (f m)
   zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
 #align smul_with_zero.comp_hom SMulWithZero.compHom
@@ -176,7 +172,12 @@ protected lemma MulActionWithZero.nontrivial
 #align mul_action_with_zero.nontrivial MulActionWithZero.nontrivial
 
 variable {R M}
-variable [MulActionWithZero R M] [Zero M'] [SMul R M']
+variable [MulActionWithZero R M] [Zero M'] [SMul R M'] (p : Prop) [Decidable p]
+
+lemma ite_zero_smul (a : R) (b : M) : (if p then a else 0 : R) • b = if p then a • b else 0 := by
+  rw [ite_smul, zero_smul]
+
+lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 := by simp
 
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
@@ -228,3 +229,8 @@ def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass �
   { smulMonoidHom with map_zero' := smul_zero _ }
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom
 #align smul_monoid_with_zero_hom_apply smulMonoidWithZeroHom_apply
+
+-- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
+instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
+    DistribSMul R R where
+  smul_add := mul_add

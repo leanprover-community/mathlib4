@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 -/
 import Mathlib.Data.Nat.Parity
+import Mathlib.Data.Int.Basic
 import Mathlib.Tactic.Abel
 
 #align_import data.int.parity from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
@@ -104,8 +105,7 @@ theorem not_even_one : ¬Even (1 : ℤ) := by
 theorem even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
   cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
-  simp [even_iff, h₁, h₂, Int.add_emod]
-  rfl
+  simp [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
 #align int.even_add Int.even_add
 
 theorem even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
@@ -135,6 +135,10 @@ theorem even_sub' : Even (m - n) ↔ (Odd m ↔ Odd n) := by
 theorem even_add_one : Even (n + 1) ↔ ¬Even n := by
   simp [even_add]
 #align int.even_add_one Int.even_add_one
+
+@[parity_simps]
+theorem even_sub_one : Even (n - 1) ↔ ¬Even n := by
+  simp [even_sub]
 
 @[parity_simps]
 theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by
@@ -197,12 +201,15 @@ theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
   simpa [even_mul, parity_simps] using n.even_or_odd
 #align int.even_mul_succ_self Int.even_mul_succ_self
 
+theorem even_mul_pred_self (n : ℤ) : Even (n * (n - 1)) := by
+  simpa [even_mul, parity_simps] using n.even_or_odd
+
 @[simp, norm_cast]
 theorem even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
   rw_mod_cast [even_iff, Nat.even_iff]
 #align int.even_coe_nat Int.even_coe_nat
 
--- Porting note: was simp. simp can prove this.
+-- Porting note (#10618): was simp. simp can prove this.
 @[norm_cast]
 theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
   rw [odd_iff_not_even, Nat.odd_iff_not_even, even_coe_nat]
@@ -213,7 +220,7 @@ theorem natAbs_even : Even n.natAbs ↔ Even n := by
   simp [even_iff_two_dvd, dvd_natAbs, coe_nat_dvd_left.symm]
 #align int.nat_abs_even Int.natAbs_even
 
--- Porting note: was simp. simp can prove this.
+-- Porting note (#10618): was simp. simp can prove this.
 --@[simp]
 theorem natAbs_odd : Odd n.natAbs ↔ Odd n := by
   rw [odd_iff_not_even, Nat.odd_iff_not_even, natAbs_even]

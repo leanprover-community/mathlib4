@@ -25,8 +25,8 @@ open BoundedContinuousFunction
 
 open Set Function
 
-/-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
-then there exists a continuous function `f : X → ℝ` such that
+/-- **Urysohn's lemma**: if `s` and `t` are two disjoint closed sets in a normal topological
+space `X`, then there exists a continuous function `f : X → ℝ` such that
 
 * `f` equals zero on `s`;
 * `f` equals one on `t`;

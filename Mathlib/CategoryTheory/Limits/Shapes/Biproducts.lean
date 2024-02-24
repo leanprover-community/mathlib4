@@ -36,9 +36,12 @@ such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 As `⊕` is already taken for the sum of types, we introduce the notation `X ⊞ Y` for
 a binary biproduct. We introduce `⨁ f` for the indexed biproduct.
 
-## Implementation
-Prior to #14046, `HasFiniteBiproducts` required a `DecidableEq` instance on the indexing type.
-As this had no pay-off (everything about limits is non-constructive in mathlib), and occasional cost
+## Implementation notes
+
+Prior to leanprover-community/mathlib#14046,
+`HasFiniteBiproducts` required a `DecidableEq` instance on the indexing type.
+As this had no pay-off (everything about limits is non-constructive in mathlib),
+ and occasional cost
 (constructing decidability instances appropriate for constructions involving the indexing type),
 we made everything classical.
 -/
@@ -258,7 +261,7 @@ structure IsBilimit {F : J → C} (B : Bicone F) where
 
 attribute [inherit_doc IsBilimit] IsBilimit.isLimit IsBilimit.isColimit
 
--- Porting note: simp can prove this, linter doesn't notice it is removed
+-- Porting note (#10618): simp can prove this, linter doesn't notice it is removed
 attribute [-simp, nolint simpNF] IsBilimit.mk.injEq
 
 attribute [local ext] Bicone.IsBilimit
@@ -711,10 +714,10 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
           split_ifs with h
           · obtain ⟨rfl, rfl⟩ := h
             simp
-          · simp at h
+          · simp only [Sigma.mk.inj_iff, not_and] at h
             by_cases w : j = j'
             · cases w
-              simp at h
+              simp only [heq_eq_eq, forall_true_left] at h
               simp [biproduct.ι_π_ne _ h]
             · simp [biproduct.ι_π_ne_assoc _ w] }
       isBilimit :=
@@ -901,8 +904,8 @@ section
 
 open Classical
 
--- Per #15067, we only allow indexing in `Type 0` here.
-variable {K : Type} [Fintype K] [HasFiniteBiproducts C] (f : K → C)
+-- Per leanprover-community/mathlib#15067, we only allow indexing in `Type 0` here.
+variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
@@ -988,7 +991,7 @@ namespace Limits
 
 section FiniteBiproducts
 
-variable {J : Type} [Fintype J] {K : Type} [Fintype K] {C : Type u} [Category.{v} C]
+variable {J : Type} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
   [HasZeroMorphisms C] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
 
 /-- Convert a (dependently typed) matrix to a morphism of biproducts.
@@ -1031,8 +1034,7 @@ theorem biproduct.components_matrix (m : ⨁ f ⟶ ⨁ g) :
 
 /-- Morphisms between direct sums are matrices. -/
 @[simps]
-def biproduct.matrixEquiv : (⨁ f ⟶ ⨁ g) ≃ ∀ j k, f j ⟶ g k
-    where
+def biproduct.matrixEquiv : (⨁ f ⟶ ⨁ g) ≃ ∀ j k, f j ⟶ g k where
   toFun := biproduct.components
   invFun := biproduct.matrix
   left_inv := biproduct.components_matrix
@@ -1404,8 +1406,7 @@ This is not an instance as typically in concrete categories there will be
 an alternative construction with nicer definitional properties.
 -/
 theorem hasBinaryBiproducts_of_finite_biproducts [HasFiniteBiproducts C] : HasBinaryBiproducts C :=
-  {
-    has_binary_biproduct := fun P Q =>
+  { has_binary_biproduct := fun P Q =>
       HasBinaryBiproduct.mk
         { bicone := (biproduct.bicone (pairFunction P Q)).toBinaryBicone
           isBilimit := (Bicone.toBinaryBiconeIsBilimit _).symm (biproduct.isBilimit _) } }
@@ -1976,6 +1977,21 @@ def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X �
         comp_zero]
     apply hY.eq_of_tgt
 #align category_theory.limits.iso_zero_biprod CategoryTheory.Limits.isoZeroBiprod
+
+@[simp]
+lemma biprod_isZero_iff (A B : C) [HasBinaryBiproduct A B] :
+    IsZero (biprod A B) ↔ IsZero A ∧ IsZero B := by
+  constructor
+  · intro h
+    simp only [IsZero.iff_id_eq_zero] at h ⊢
+    simp only [show 𝟙 A = biprod.inl ≫ 𝟙 (A ⊞ B) ≫ biprod.fst by simp,
+      show 𝟙 B = biprod.inr ≫ 𝟙 (A ⊞ B) ≫ biprod.snd by simp, h, zero_comp, comp_zero,
+      and_self]
+  · rintro ⟨hA, hB⟩
+    rw [IsZero.iff_id_eq_zero]
+    apply biprod.hom_ext
+    · apply hA.eq_of_tgt
+    · apply hB.eq_of_tgt
 
 end IsZero
 

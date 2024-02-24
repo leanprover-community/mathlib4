@@ -75,7 +75,7 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
 #align mem_perms_of_list_of_mem mem_permsOfList_of_mem
 
 theorem mem_of_mem_permsOfList :
-    -- porting notes: was `∀ {x}` but need to capture the `x`
+    -- Porting note: was `∀ {x}` but need to capture the `x`
     ∀ {l : List α} {f : Perm α}, f ∈ permsOfList l → (x :α ) → f x ≠ x → x ∈ l
   | [], f, h, heq_iff_eq => by
     have : f = 1 := by simpa [permsOfList] using h
@@ -99,7 +99,7 @@ theorem mem_permsOfList_iff {l : List α} {f : Perm α} :
   ⟨mem_of_mem_permsOfList, mem_permsOfList_of_mem⟩
 #align mem_perms_of_list_iff mem_permsOfList_iff
 
-theorem nodup_permsOfList : ∀ {l : List α} (_ : l.Nodup), (permsOfList l).Nodup
+theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
   | [], _ => by simp [permsOfList]
   | a :: l, hl => by
     have hl' : l.Nodup := hl.of_cons

@@ -11,7 +11,7 @@ import Mathlib.Topology.ContinuousOn
 /-!
 # Inseparable points in a topological space
 
-In this file we define
+In this file we prove basic properties of the following notions defined elsewhere.
 
 * `Specializes` (notation: `x ⤳ y`) : a relation saying that `𝓝 x ≤ 𝓝 y`;
 
@@ -44,25 +44,6 @@ variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [Topolog
 /-!
 ### `Specializes` relation
 -/
-
-/-- `x` specializes to `y` (notation: `x ⤳ y`) if either of the following equivalent properties
-hold:
-
-* `𝓝 x ≤ 𝓝 y`; this property is used as the definition;
-* `pure x ≤ 𝓝 y`; in other words, any neighbourhood of `y` contains `x`;
-* `y ∈ closure {x}`;
-* `closure {y} ⊆ closure {x}`;
-* for any closed set `s` we have `x ∈ s → y ∈ s`;
-* for any open set `s` we have `y ∈ s → x ∈ s`;
-* `y` is a cluster point of the filter `pure x = 𝓟 {x}`.
-
-This relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this preorder is a partial
-order. If `X` is a T₁ space, then this partial order is trivial : `x ⤳ y ↔ x = y`. -/
-def Specializes (x y : X) : Prop := 𝓝 x ≤ 𝓝 y
-#align specializes Specializes
-
-@[inherit_doc]
-infixl:300 " ⤳ " => Specializes
 
 /-- A collection of equivalent definitions of `x ⤳ y`. The public API is given by `iff` lemmas
 below. -/
@@ -97,6 +78,9 @@ theorem specializes_TFAE (x y : X) :
 theorem specializes_iff_nhds : x ⤳ y ↔ 𝓝 x ≤ 𝓝 y :=
   Iff.rfl
 #align specializes_iff_nhds specializes_iff_nhds
+
+theorem Specializes.not_disjoint (h : x ⤳ y) : ¬Disjoint (𝓝 x) (𝓝 y) := fun hd ↦
+  absurd (hd.mono_right h) <| by simp [NeBot.ne']
 
 theorem specializes_iff_pure : x ⤳ y ↔ pure x ≤ 𝓝 y :=
   (specializes_TFAE x y).out 0 1
@@ -242,17 +226,6 @@ theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] 
     Continuous (s.piecewise f g) := by
   simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
 
-variable (X)
-
-/-- Specialization forms a preorder on the topological space. -/
-def specializationPreorder : Preorder X :=
-  { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
-    le := fun x y => y ⤳ x
-    lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
-#align specialization_preorder specializationPreorder
-
-variable {X}
-
 /-- A continuous function is monotone with respect to the specialization preorders on the domain and
 the codomain. -/
 theorem Continuous.specialization_monotone (hf : Continuous f) :
@@ -262,19 +235,6 @@ theorem Continuous.specialization_monotone (hf : Continuous f) :
 /-!
 ### `Inseparable` relation
 -/
-
-/-- Two points `x` and `y` in a topological space are `Inseparable` if any of the following
-equivalent properties hold:
-
-- `𝓝 x = 𝓝 y`; we use this property as the definition;
-- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_open`;
-- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_closed`;
-- `x ∈ closure {y}` and `y ∈ closure {x}`, see `inseparable_iff_mem_closure`;
-- `closure {x} = closure {y}`, see `inseparable_iff_closure_eq`.
--/
-def Inseparable (x y : X) : Prop :=
-  𝓝 x = 𝓝 y
-#align inseparable Inseparable
 
 local infixl:0 " ~ᵢ " => Inseparable
 
@@ -410,15 +370,6 @@ In this section we define the quotient of a topological space by the `Inseparabl
 
 variable (X)
 
-/-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
-def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
-#align inseparable_setoid inseparableSetoid
-
-/-- The quotient of a topological space by its `inseparableSetoid`. This quotient is guaranteed to
-be a T₀ space. -/
-def SeparationQuotient := Quotient (inseparableSetoid X)
-#align separation_quotient SeparationQuotient
-
 instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
 
 variable {X}
@@ -552,39 +503,39 @@ theorem lift_comp_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : l
 #align separation_quotient.lift_comp_mk SeparationQuotient.lift_comp_mk
 
 @[simp]
-theorem tendsto_lift_nhds_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {x : X} {l : Filter α} :
+theorem tendsto_lift_nhds_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {l : Filter α} :
     Tendsto (lift f hf) (𝓝 <| mk x) l ↔ Tendsto f (𝓝 x) l := by
   simp only [← map_mk_nhds, tendsto_map'_iff, lift_comp_mk]
 #align separation_quotient.tendsto_lift_nhds_mk SeparationQuotient.tendsto_lift_nhds_mk
 
 @[simp]
-theorem tendsto_lift_nhdsWithin_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {x : X}
+theorem tendsto_lift_nhdsWithin_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
     {s : Set (SeparationQuotient X)} {l : Filter α} :
     Tendsto (lift f hf) (𝓝[s] mk x) l ↔ Tendsto f (𝓝[mk ⁻¹' s] x) l := by
   simp only [← map_mk_nhdsWithin_preimage, tendsto_map'_iff, lift_comp_mk]
 #align separation_quotient.tendsto_lift_nhds_within_mk SeparationQuotient.tendsto_lift_nhdsWithin_mk
 
 @[simp]
-theorem continuousAt_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {x : X} :
+theorem continuousAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y}:
     ContinuousAt (lift f hf) (mk x) ↔ ContinuousAt f x :=
   tendsto_lift_nhds_mk
 #align separation_quotient.continuous_at_lift SeparationQuotient.continuousAt_lift
 
 @[simp]
-theorem continuousWithinAt_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
-    {s : Set (SeparationQuotient X)} {x : X} :
+theorem continuousWithinAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
+    {s : Set (SeparationQuotient X)}:
     ContinuousWithinAt (lift f hf) s (mk x) ↔ ContinuousWithinAt f (mk ⁻¹' s) x :=
   tendsto_lift_nhdsWithin_mk
 #align separation_quotient.continuous_within_at_lift SeparationQuotient.continuousWithinAt_lift
 
 @[simp]
-theorem continuousOn_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
-    {s : Set (SeparationQuotient X)} : ContinuousOn (lift f hf) s ↔ ContinuousOn f (mk ⁻¹' s) := by
+theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (SeparationQuotient X)} :
+    ContinuousOn (lift f hf) s ↔ ContinuousOn f (mk ⁻¹' s) := by
   simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 #align separation_quotient.continuous_on_lift SeparationQuotient.continuousOn_lift
 
 @[simp]
-theorem continuous_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
+theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
   simp only [continuous_iff_continuousOn_univ, continuousOn_lift, preimage_univ]
 #align separation_quotient.continuous_lift SeparationQuotient.continuous_lift
@@ -652,5 +603,5 @@ end SeparationQuotient
 
 theorem continuous_congr_of_inseparable (h : ∀ x, f x ~ᵢ g x) :
     Continuous f ↔ Continuous g := by
-  simp_rw [SeparationQuotient.inducing_mk.continuous_iff (β := Y)]
+  simp_rw [SeparationQuotient.inducing_mk.continuous_iff (Y := Y)]
   exact continuous_congr fun x ↦ SeparationQuotient.mk_eq_mk.mpr (h x)

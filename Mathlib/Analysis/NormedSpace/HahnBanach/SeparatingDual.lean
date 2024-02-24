@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Spaces with separating dual
@@ -22,6 +23,7 @@ equivalences acts transitively on the set of nonzero vectors.
 
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
+@[mk_iff separatingDual_def]
 class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V]
     [TopologicalSpace R] [Module R V] : Prop :=
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
@@ -32,7 +34,7 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup 
   ⟨fun x hx ↦ by
     rcases geometric_hahn_banach_point_point hx.symm with ⟨f, hf⟩
     simp only [map_zero] at hf
-    exact ⟨f, hf.ne'⟩ ⟩
+    exact ⟨f, hf.ne'⟩⟩
 
 instance {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
@@ -73,6 +75,26 @@ section Field
 variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
   [TopologicalRing R] [TopologicalAddGroup V] [Module R V] [SeparatingDual R V]
 
+-- TODO (@alreadydone): this could generalize to CommRing R if we were to add a section
+theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
+    Function.Injective (ContinuousLinearMap.coeLM (R := R) R (M := V) (N₃ := R)).flip := by
+  simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
+  congrm ∀ v, ?_
+  rw [not_imp_comm, LinearMap.ext_iff]
+  push_neg; rfl
+
+open Function in
+/-- Given a finite-dimensional subspace `W` of a space `V` with separating dual, any
+  linear functional on `W` extends to a continuous linear functional on `V`.
+  This is stated more generally for an injective linear map from `W` to `V`. -/
+theorem dualMap_surjective_iff {W} [AddCommGroup W] [Module R W] [FiniteDimensional R W]
+    {f : W →ₗ[R] V} : Surjective (f.dualMap ∘ ContinuousLinearMap.toLinearMap) ↔ Injective f := by
+  constructor <;> intro hf
+  · exact LinearMap.dualMap_surjective_iff.mp hf.of_comp
+  have := (separatingDual_iff_injective.mp ‹_›).comp hf
+  rw [← LinearMap.coe_comp] at this
+  exact LinearMap.flip_surjective_iff₁.mpr this
+
 lemma exists_eq_one {x : V} (hx : x ≠ 0) :
     ∃ f : V →L[R] R, f x = 1 := by
   rcases exists_ne_zero (R := R) hx with ⟨f, hf⟩
@@ -103,12 +125,14 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
       simp only [id_eq, eq_mpr_eq_cast, RingHom.id_apply, smul_eq_mul, AddHom.toFun_eq_coe,
-        AddHom.coe_mk, map_add, map_smulₛₗ, map_sub, Gx, mul_sub, mul_one, add_sub_cancel'_right]
+        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+        AddHom.coe_mk, map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel'_right]
       rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel Gy]
       simp only [smul_sub, one_mul]
       abel
     right_inv := fun z ↦ by
-      simp only [map_add, map_smulₛₗ, map_mul, map_inv₀, RingHom.id_apply, map_sub, Gx,
+        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+      simp only [map_add, map_smulₛₗ _, map_mul, map_inv₀, RingHom.id_apply, map_sub, Gx,
         smul_eq_mul, mul_sub, mul_one]
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel Gy]
       simp only [smul_sub, one_mul, add_sub_cancel'_right]

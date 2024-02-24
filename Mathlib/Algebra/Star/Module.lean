@@ -30,7 +30,7 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
 -/
 
 
-section SmulLemmas
+section SMulLemmas
 
 variable {R M : Type*}
 
@@ -70,7 +70,7 @@ theorem star_rat_smul {R : Type*} [AddCommGroup R] [StarAddMonoid R] [Module ℚ
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 #align star_rat_smul star_rat_smul
 
-end SmulLemmas
+end SMulLemmas
 
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
@@ -81,6 +81,8 @@ def starLinearEquiv (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCo
     toFun := star
     map_smul' := star_smul }
 #align star_linear_equiv starLinearEquiv
+
+section SelfSkewAdjoint
 
 variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
@@ -183,9 +185,25 @@ def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A
   ext x <;> dsimp <;> erw [Submodule.coeSubtype, Submodule.coeSubtype] <;> simp
 #align star_module.decompose_prod_adjoint StarModule.decomposeProdAdjoint
 
+end SelfSkewAdjoint
+
+section algebraMap
+
+variable {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A]
+variable [StarMul A] [Algebra R A] [StarModule R A]
+
 @[simp]
-theorem algebraMap_star_comm {R A : Type*} [CommSemiring R] [StarRing R] [Semiring A]
-    [StarMul A] [Algebra R A] [StarModule R A] (r : R) :
-    algebraMap R A (star r) = star (algebraMap R A r) := by
+theorem algebraMap_star_comm (r : R) : algebraMap R A (star r) = star (algebraMap R A r) := by
   simp only [Algebra.algebraMap_eq_smul_one, star_smul, star_one]
 #align algebra_map_star_comm algebraMap_star_comm
+
+variable (A) in
+protected lemma IsSelfAdjoint.algebraMap {r : R} (hr : IsSelfAdjoint r) :
+    IsSelfAdjoint (algebraMap R A r) := by
+  simpa using congr(algebraMap R A $(hr.star_eq))
+
+lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R A)) :
+    IsSelfAdjoint (algebraMap R A r) ↔ IsSelfAdjoint r :=
+  ⟨fun hr ↦ h <| algebraMap_star_comm r (A := A) ▸ hr.star_eq, IsSelfAdjoint.algebraMap A⟩
+
+end algebraMap

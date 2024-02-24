@@ -3,11 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.Basic
-import Mathlib.Order.WellFounded
 import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Order.WellFounded
 import Mathlib.Mathport.Notation
 
 #align_import data.pi.lex from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
@@ -74,7 +73,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
 theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
     IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
   { trichotomous := fun a b => by
-      cases' eq_or_ne a b with hab hab
+      rcases eq_or_ne a b with hab | hab
       · exact Or.inr (Or.inl hab)
       · rw [Function.ne_iff] at hab
         let i := wf.min _ hab

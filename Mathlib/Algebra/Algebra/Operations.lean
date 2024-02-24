@@ -6,14 +6,16 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Opposites
+import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.Finset.Pointwise
-import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Pointwise.BigOperators
+import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+import Mathlib.LinearAlgebra.Basic
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
@@ -93,7 +95,7 @@ theorem le_one_toAddSubmonoid : 1 ≤ (1 : Submodule R A).toAddSubmonoid := by
 #align submodule.le_one_to_add_submonoid Submodule.le_one_toAddSubmonoid
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) :=
-  LinearMap.mem_range_self _ _
+  LinearMap.mem_range_self (Algebra.linearMap R A) _
 #align submodule.algebra_map_mem Submodule.algebraMap_mem
 
 @[simp]
@@ -185,8 +187,8 @@ protected theorem mul_induction_on {C : A → Prop} {r : A} (hr : r ∈ M * N)
 /-- A dependent version of `mul_induction_on`. -/
 @[elab_as_elim]
 protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
-    (hm : ∀ m (_ : m ∈ M), ∀ n (_ : n ∈ N), C (m * n) (mul_mem_mul ‹_› ‹_›))
-    (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {r : A} (hr : r ∈ M * N) :
+    (hm : ∀ m (hm : m ∈ M) n (hn : n ∈ N), C (m * n) (mul_mem_mul hm hn))
+    (ha : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem hx hy)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
   refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
   exact
@@ -214,13 +216,13 @@ theorem bot_mul : ⊥ * M = ⊥ :=
   map₂_bot_left _ _
 #align submodule.bot_mul Submodule.bot_mul
 
--- @[simp] -- Porting note: simp can prove this once we have a monoid structure
+-- @[simp] -- Porting note (#10618): simp can prove this once we have a monoid structure
 protected theorem one_mul : (1 : Submodule R A) * M = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, one_mul, span_eq]
 #align submodule.one_mul Submodule.one_mul
 
--- @[simp] -- Porting note: simp can prove this once we have a monoid structure
+-- @[simp] -- Porting note (#10618): simp can prove this once we have a monoid structure
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, mul_one, span_eq]
@@ -390,6 +392,35 @@ theorem mem_mul_span_singleton {x y : A} : x ∈ P * span R {y} ↔ ∃ z ∈ P,
   rfl
 #align submodule.mem_mul_span_singleton Submodule.mem_mul_span_singleton
 
+lemma span_singleton_mul {x : A} {p : Submodule R A} :
+    Submodule.span R {x} * p = x • p := ext fun _ ↦ mem_span_singleton_mul
+
+lemma mem_smul_iff_inv_mul_mem {S} [Field S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+    (hx : x ≠ 0) : y ∈ x • p ↔ x⁻¹ * y ∈ p := by
+  constructor
+  · rintro ⟨a, ha : a ∈ p, rfl⟩; simpa [inv_mul_cancel_left₀ hx]
+  · exact fun h ↦ ⟨_, h, by simp [mul_inv_cancel_left₀ hx]⟩
+
+lemma mul_mem_smul_iff {S} [CommRing S] [Algebra R S] {x : S} {p : Submodule R S} {y : S}
+    (hx : x ∈ nonZeroDivisors S) :
+    x * y ∈ x • p ↔ y ∈ p :=
+  show Exists _ ↔ _ by simp [mul_cancel_left_mem_nonZeroDivisors hx]
+
+variable (M N) in
+theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M) * (y • N) := by
+  ext
+  refine ⟨?_, fun hx ↦ Submodule.mul_induction_on hx ?_ fun _ _ hx hy ↦ Submodule.add_mem _ hx hy⟩
+  · rintro ⟨_, hx, rfl⟩
+    rw [DistribMulAction.toLinearMap_apply]
+    refine Submodule.mul_induction_on hx (fun m hm n hn ↦ ?_) (fun _ _ hn hm ↦ ?_)
+    · rw [← smul_mul_smul x y m n]
+      exact mul_mem_mul (smul_mem_pointwise_smul m x M hm) (smul_mem_pointwise_smul n y N hn)
+    · rw [smul_add]
+      exact Submodule.add_mem _ hn hm
+  · rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩
+    erw [smul_mul_smul x y m n]
+    exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
+
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) :=
   { toAddSubmonoid_injective.semigroup _ fun m n : Submodule R A => mul_toAddSubmonoid m n,
@@ -558,13 +589,14 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 on either side). -/
 @[simps]
 def span.ringHom : SetSemiring A →+* Submodule R A where
-  toFun s := Submodule.span R (SetSemiring.down s)
+  -- Note: the hint `(α := A)` is new in #8386
+  toFun s := Submodule.span R (SetSemiring.down (α := A) s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
   map_add' := span_union
   map_mul' s t := by
     dsimp only -- porting note: new, needed due to new-style structures
-    rw [SetSemiring.down_mul, span_mul_span, ← image_mul_prod]
+    rw [SetSemiring.down_mul, span_mul_span]
 #align submodule.span.ring_hom Submodule.span.ringHom
 
 section
@@ -629,7 +661,8 @@ variable (R A)
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   -- porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
-  smul s P := span R (SetSemiring.down s) * P
+  -- Note: the hint `(α := A)` is new in #8386
+  smul s P := span R (SetSemiring.down (α := A) s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
     simp_rw [HSMul.hSMul, SetSemiring.down_add, span_union, sup_mul, add_eq_sup]
@@ -645,29 +678,22 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 variable {R A}
 
 theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
-    s • P = span R (SetSemiring.down s) * P :=
+    s • P = span R (SetSemiring.down (α := A) s) * P :=
   rfl
 #align submodule.smul_def Submodule.smul_def
 
 theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
-    (h₁ : SetSemiring.down s ⊆ SetSemiring.down t)
+    (h₁ : SetSemiring.down (α := A) s ⊆ SetSemiring.down (α := A) t)
     (h₂ : M ≤ N) : s • M ≤ t • N :=
   mul_le_mul (span_mono h₁) h₂
 #align submodule.smul_le_smul Submodule.smul_le_smul
 
-theorem smul_singleton (a : A) (M : Submodule R A) :
+theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
-  change span _ _ * span _ _ = _
-  rw [span_mul_span]
-  apply le_antisymm
-  · rw [span_le]
-    rintro _ ⟨b, m, hb, hm, rfl⟩
-    rw [SetLike.mem_coe, mem_map, Set.mem_singleton_iff.mp hb]
-    exact ⟨m, hm, rfl⟩
-  · rintro _ ⟨m, hm, rfl⟩
-    exact subset_span ⟨a, m, Set.mem_singleton a, hm, rfl⟩
-#align submodule.smul_singleton Submodule.smul_singleton
+  rw [smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
+  exact (map (LinearMap.mulLeft R a) M).span_eq
+#align submodule.smul_singleton Submodule.singleton_smul
 
 section Quotient
 
