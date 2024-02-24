@@ -26,12 +26,12 @@ section toComplex
 variable {R : Type*} [CommSemiring R] [Algebra R ℂ]
 
 /-- Coerce an arithmetic function with values in `R` to one with values in `ℂ`.
-We cannot inline this in `instToComplexAritmeticFunction` because it gets unfolded too much. -/
+We cannot inline this in `ArithmeticFunction.instCoeHead` because it gets unfolded too much. -/
 @[coe] def toComplexArithmeticFunction (f : ArithmeticFunction R) : ArithmeticFunction ℂ where
   toFun n := algebraMap R ℂ (f n)
   map_zero' := by simp only [map_zero, _root_.map_zero]
 
-instance instToComplexAritmeticFunction : CoeHead (ArithmeticFunction R) (ArithmeticFunction ℂ) :=
+instance instCoeHead : CoeHead (ArithmeticFunction R) (ArithmeticFunction ℂ) :=
   ⟨toComplexArithmeticFunction (R := R)⟩
 
 @[simp]
