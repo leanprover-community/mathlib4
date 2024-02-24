@@ -73,12 +73,12 @@ variable {M : Mon_ C}
 
 @[simp]
 theorem one_mul_hom {Z : C} (f : Z ⟶ M.X) : (M.one ⊗ f) ≫ M.mul = (λ_ Z).hom ≫ f := by
-  rw [tensorHom_def'_assoc, M.one_mul, leftUnitor_naturality']
+  rw [tensorHom_def'_assoc, M.one_mul, leftUnitor_naturality]
 #align Mon_.one_mul_hom Mon_.one_mul_hom
 
 @[simp]
 theorem mul_one_hom {Z : C} (f : Z ⟶ M.X) : (f ⊗ M.one) ≫ M.mul = (ρ_ Z).hom ≫ f := by
-  rw [tensorHom_def_assoc, M.mul_one, rightUnitor_naturality']
+  rw [tensorHom_def_assoc, M.mul_one, rightUnitor_naturality]
 #align Mon_.mul_one_hom Mon_.mul_one_hom
 
 theorem assoc_flip :
@@ -163,6 +163,7 @@ instance : ReflectsIsomorphisms (forget C) where
 /-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
+@[simps]
 def isoOfIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one)
     (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul) : M ≅ N where
   hom :=
@@ -212,15 +213,15 @@ def mapMon (F : LaxMonoidalFunctor C D) : Mon_ C ⥤ Mon_ D where
       one := F.ε ≫ F.map A.one
       mul := F.μ _ _ ≫ F.map A.mul
       one_mul := by
-        simp only [comp_whiskerRight, Category.assoc, μ_natural_left'_assoc, left_unitality']
+        simp only [comp_whiskerRight, Category.assoc, μ_natural_left_assoc, left_unitality]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.one_mul]
       mul_one := by
-        simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right'_assoc,
-          right_unitality']
+        simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc,
+          right_unitality]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.mul_one]
       mul_assoc := by
-        simp only [comp_whiskerRight, Category.assoc, μ_natural_left'_assoc,
-          MonoidalCategory.whiskerLeft_comp, μ_natural_right'_assoc]
+        simp only [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
+          MonoidalCategory.whiskerLeft_comp, μ_natural_right_assoc]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.mul_assoc]
         simp }
   map f :=
@@ -257,8 +258,6 @@ def laxMonoidalToMon : LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C ⥤ Mon_ C 
   obj F := (F.mapMon : Mon_ _ ⥤ Mon_ C).obj (trivial (Discrete PUnit))
   map α := ((mapMonFunctor (Discrete PUnit) C).map α).app _
 #align Mon_.equiv_lax_monoidal_functor_punit.lax_monoidal_to_Mon Mon_.EquivLaxMonoidalFunctorPUnit.laxMonoidalToMon
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps]
@@ -383,8 +382,6 @@ theorem one_associator {M N P : Mon_ C} :
   simp
 #align Mon_.one_associator Mon_.one_associator
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 theorem one_leftUnitor {M : Mon_ C} :
     ((λ_ (𝟙_ C)).inv ≫ (𝟙 (𝟙_ C) ⊗ M.one)) ≫ (λ_ M.X).hom = M.one := by
   simp
@@ -454,7 +451,7 @@ theorem mul_leftUnitor {M : Mon_ C} :
       ((λ_ M.X).hom ⊗ (λ_ M.X).hom) ≫ M.mul := by
   rw [← Category.comp_id (λ_ (𝟙_ C)).hom, ← Category.id_comp M.mul, tensor_comp]
   simp only [tensorHom_id, id_tensorHom]
-  slice_lhs 3 4 => rw [leftUnitor_naturality']
+  slice_lhs 3 4 => rw [leftUnitor_naturality]
   slice_lhs 1 3 => rw [← leftUnitor_monoidal]
   simp only [Category.assoc, Category.id_comp]
 #align Mon_.mul_left_unitor Mon_.mul_leftUnitor
@@ -464,11 +461,12 @@ theorem mul_rightUnitor {M : Mon_ C} :
       ((ρ_ M.X).hom ⊗ (ρ_ M.X).hom) ≫ M.mul := by
   rw [← Category.id_comp M.mul, ← Category.comp_id (λ_ (𝟙_ C)).hom, tensor_comp]
   simp only [tensorHom_id, id_tensorHom]
-  slice_lhs 3 4 => rw [rightUnitor_naturality']
+  slice_lhs 3 4 => rw [rightUnitor_naturality]
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
   simp only [Category.assoc, Category.id_comp]
 #align Mon_.mul_right_unitor Mon_.mul_rightUnitor
 
+@[simps tensorObj_X tensorHom_hom]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
   let tensorObj (M N : Mon_ C) : Mon_ C :=
     { X := M.X ⊗ N.X
@@ -497,14 +495,36 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
     leftUnitor := fun M ↦ isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor
     rightUnitor := fun M ↦ isoOfIso (ρ_ M.X) one_rightUnitor mul_rightUnitor }
 
-instance monMonoidal : MonoidalCategory (Mon_ C) := .ofTensorHom
-  (tensor_id := by intros; ext; apply tensor_id)
-  (tensor_comp := by intros; ext; apply tensor_comp)
-  (associator_naturality := by intros; ext; dsimp; apply associator_naturality)
-  (leftUnitor_naturality := by intros; ext; dsimp; apply leftUnitor_naturality)
-  (rightUnitor_naturality := by intros; ext; dsimp; apply rightUnitor_naturality)
-  (pentagon := by intros; ext; dsimp; apply pentagon)
-  (triangle := by intros; ext; dsimp; apply triangle)
+@[simp]
+theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
+
+@[simp]
+theorem whiskerLeft_hom {X : Mon_ C} (Y Z : Mon_ C) (f : Y ⟶ Z) :
+    (f ▷ X).hom = f.hom ▷ X.X := by
+  rw [← tensorHom_id]; rfl
+
+@[simp]
+theorem whiskerRight_hom (X : Mon_ C) {Y Z : Mon_ C} (f : Y ⟶ Z) :
+    (X ◁ f).hom = X.X ◁ f.hom := by
+  rw [← id_tensorHom]; rfl
+
+@[simp]
+theorem left_unitor_hom_hom (X : Mon_ C) : (λ_ X).hom.hom = (λ_ X.X).hom := rfl
+
+@[simp]
+theorem left_unitor_inv_hom (X : Mon_ C) : (λ_ X).inv.hom = (λ_ X.X).inv := rfl
+
+@[simp]
+theorem right_unitor_hom_hom (X : Mon_ C) : (ρ_ X).hom.hom = (ρ_ X.X).hom := rfl
+
+@[simp]
+theorem associator_hom_hom (X Y Z : Mon_ C) : (α_ X Y Z).hom.hom = (α_ X.X Y.X Z.X).hom := rfl
+
+@[simp]
+theorem associator_inv_hom (X Y Z : Mon_ C) : (α_ X Y Z).inv.hom = (α_ X.X Y.X Z.X).inv := rfl
+
+instance monMonoidal : MonoidalCategory (Mon_ C) where
+  tensorHom_def := by intros; ext; simp [tensorHom_def]
 #align Mon_.Mon_monoidal Mon_.monMonoidal
 
 end Mon_

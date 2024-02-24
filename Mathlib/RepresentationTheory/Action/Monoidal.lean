@@ -176,7 +176,7 @@ section
 
 variable [Preadditive V] [MonoidalPreadditive V]
 
-attribute [local simp] MonoidalPreadditive.tensor_add MonoidalPreadditive.add_tensor
+attribute [local simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
 
 instance : MonoidalPreadditive (Action V G) where
 
@@ -399,17 +399,10 @@ def mapActionLax (F : LaxMonoidalFunctor V W) (G : MonCat.{u}) :
   (μ := fun X Y =>
     { hom := F.μ X.V Y.V
       comm := fun g => F.μ_natural (X.ρ g) (Y.ρ g) })
-  -- using `dsimp` before `simp` speeds these up
-  (μ_natural := @fun {X Y X' Y'} f g ↦ by ext; dsimp; simp)
-  (associativity := fun X Y Z ↦ by ext; dsimp; simp)
-  (left_unitality := fun X ↦ by ext; dsimp; simp)
-  (right_unitality := fun X ↦ by
-    ext
-    dsimp
-    simp only [MonoidalCategory.rightUnitor_conjugation,
-      LaxMonoidalFunctor.right_unitality, Category.id_comp, Category.assoc,
-      LaxMonoidalFunctor.right_unitality_inv_assoc, Category.comp_id, Iso.hom_inv_id]
-    rw [← F.map_comp, Iso.inv_hom_id, F.map_id, Category.comp_id])
+  (μ_natural := by intros; ext; simp)
+  (associativity := by intros; ext; simp)
+  (left_unitality := by intros; ext; simp)
+  (right_unitality := by intros; ext; simp)
 
 variable (F : MonoidalFunctor V W) (G : MonCat.{u})
 

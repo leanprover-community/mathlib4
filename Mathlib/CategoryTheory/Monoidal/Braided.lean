@@ -206,37 +206,37 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left'_assoc, w, Functor.map_comp,
-      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right']
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right]
   braiding_naturality_right := by
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right'_assoc, w, Functor.map_comp,
-      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left']
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left]
   hexagon_forward := by
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ _ _)).1 ?_
     refine (cancel_epi (F.μ _ _ ▷ _)).1 ?_
     rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp, ←
-      LaxMonoidalFunctor.μ_natural_left'_assoc, ← comp_whiskerRight_assoc, w,
-      comp_whiskerRight_assoc, LaxMonoidalFunctor.associativity'_assoc,
-      LaxMonoidalFunctor.associativity'_assoc, ← LaxMonoidalFunctor.μ_natural_right', ←
+      LaxMonoidalFunctor.μ_natural_left_assoc, ← comp_whiskerRight_assoc, w,
+      comp_whiskerRight_assoc, LaxMonoidalFunctor.associativity_assoc,
+      LaxMonoidalFunctor.associativity_assoc, ← LaxMonoidalFunctor.μ_natural_right, ←
       MonoidalCategory.whiskerLeft_comp_assoc, w, MonoidalCategory.whiskerLeft_comp_assoc,
       reassoc_of% w, braiding_naturality_right_assoc,
-      LaxMonoidalFunctor.associativity', hexagon_forward_assoc]
+      LaxMonoidalFunctor.associativity, hexagon_forward_assoc]
   hexagon_reverse := by
     intros
     apply F.toFunctor.map_injective
     refine (cancel_epi (F.μ _ _)).1 ?_
     refine (cancel_epi (_ ◁ F.μ _ _)).1 ?_
     rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp, ←
-      LaxMonoidalFunctor.μ_natural_right'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, w,
-      MonoidalCategory.whiskerLeft_comp_assoc, LaxMonoidalFunctor.associativity_inv'_assoc,
-      LaxMonoidalFunctor.associativity_inv'_assoc, ← LaxMonoidalFunctor.μ_natural_left',
+      LaxMonoidalFunctor.μ_natural_right_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, w,
+      MonoidalCategory.whiskerLeft_comp_assoc, LaxMonoidalFunctor.associativity_inv_assoc,
+      LaxMonoidalFunctor.associativity_inv_assoc, ← LaxMonoidalFunctor.μ_natural_left,
       ← comp_whiskerRight_assoc, w, comp_whiskerRight_assoc, reassoc_of% w,
-      braiding_naturality_left_assoc, LaxMonoidalFunctor.associativity_inv', hexagon_reverse_assoc]
+      braiding_naturality_left_assoc, LaxMonoidalFunctor.associativity_inv, hexagon_reverse_assoc]
 #align category_theory.braided_category_of_faithful CategoryTheory.braidedCategoryOfFaithful
 
 /-- Pull back a braiding along a fully faithful monoidal functor. -/

@@ -181,27 +181,27 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
   Naturality of the left unitor, commutativity of `𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y ⟶ Y` and `𝟙_ C ⊗ X ⟶ X ⟶ Y`
   -/
   leftUnitor_naturality :
-    ∀ {X Y : C} (f : X ⟶ Y), (𝟙 (𝟙_ _) ⊗ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
+    ∀ {X Y : C} (f : X ⟶ Y), 𝟙_ _ ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
     aesop_cat
   /--
   Naturality of the right unitor: commutativity of `X ⊗ 𝟙_ C ⟶ Y ⊗ 𝟙_ C ⟶ Y` and `X ⊗ 𝟙_ C ⟶ X ⟶ Y`
   -/
   rightUnitor_naturality :
-    ∀ {X Y : C} (f : X ⟶ Y), (f ⊗ 𝟙 (𝟙_ _)) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
+    ∀ {X Y : C} (f : X ⟶ Y), f ▷ 𝟙_ _ ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
     aesop_cat
   /--
   The pentagon identity relating the isomorphism between `X ⊗ (Y ⊗ (Z ⊗ W))` and `((X ⊗ Y) ⊗ Z) ⊗ W`
   -/
   pentagon :
     ∀ W X Y Z : C,
-      ((α_ W X Y).hom ⊗ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (𝟙 W ⊗ (α_ X Y Z).hom) =
+      ((α_ W X Y).hom ▷ Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (W ◁ (α_ X Y Z).hom) =
         (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
     aesop_cat
   /--
-  The identity relating the isomorphisms between `X ⊗ (𝟙_C ⊗ Y)`, `(X ⊗ 𝟙_C) ⊗ Y` and `X ⊗ Y`
+  The identity relating the isomorphisms between `X ⊗ (𝟙_ C ⊗ Y)`, `(X ⊗ 𝟙_ C) ⊗ Y` and `X ⊗ Y`
   -/
   triangle :
-    ∀ X Y : C, (α_ X (𝟙_ _) Y).hom ≫ (𝟙 X ⊗ (λ_ Y).hom) = ((ρ_ X).hom ⊗ 𝟙 Y) := by
+    ∀ X Y : C, (α_ X (𝟙_ _) Y).hom ≫ (X ◁ (λ_ Y).hom) = ((ρ_ X).hom ▷ Y) := by
     aesop_cat
 #align category_theory.monoidal_category CategoryTheory.MonoidalCategory
 
@@ -222,11 +222,13 @@ namespace MonoidalCategory
 variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
 
 -- Note: this will be a simp lemma after merging #6307.
+@[simp]
 theorem id_tensorHom (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) :
     𝟙 X ⊗ f = X ◁ f := by
   simp [tensorHom_def]
 
 -- Note: this will be a simp lemma after merging #6307.
+@[simp]
 theorem tensorHom_id {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
     f ⊗ 𝟙 Y = f ▷ Y := by
   simp [tensorHom_def]
@@ -532,7 +534,7 @@ section
 theorem pentagon' (W X Y Z : C) :
     (α_ W X Y).hom ▷ Z ≫ (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom =
       (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
-  simp [← id_tensorHom, ← tensorHom_id, pentagon]
+  simp [pentagon]
 
 @[reassoc (attr := simp)]
 theorem pentagon_inv' :
@@ -593,7 +595,7 @@ theorem pentagon_inv_inv_hom_inv_inv :
 @[reassoc (attr := simp)]
 theorem triangle' (X Y : C) :
     (α_ X (𝟙_ C) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
-  simp [← id_tensorHom, ← tensorHom_id, triangle]
+  simp [triangle]
 
 @[reassoc (attr := simp)]
 theorem triangle_assoc_comp_right' (X Y : C) :
