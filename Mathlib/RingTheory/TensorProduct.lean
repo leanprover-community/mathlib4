@@ -109,13 +109,13 @@ lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by
 lemma baseChange_comp (g : N →ₗ[R] P) : (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
   ext; simp
 
-lemma baseChange_mul (f g : Module.End R M) :
-    (f * g).baseChange A = f.baseChange A * g.baseChange A := by
-  ext; simp
-
 variable (R M) in
 @[simp]
 lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
+
+lemma baseChange_mul (f g : Module.End R M) :
+    (f * g).baseChange A = f.baseChange A * g.baseChange A := by
+  ext; simp
 
 variable (R A M N)
 
@@ -133,6 +133,10 @@ def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N wh
 @[simps!]
 def _root_.Module.End.baseChangeHom : Module.End R M →ₐ[R] Module.End A (A ⊗[R] M) :=
   .ofLinearMap (LinearMap.baseChangeHom _ _ _ _) (baseChange_one _ _) baseChange_mul
+
+lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
+    (f ^ n).baseChange A = f.baseChange A ^ n :=
+  map_pow (Module.End.baseChangeHom _ _ _) f n
 
 end Semiring
 
