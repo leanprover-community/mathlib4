@@ -82,17 +82,17 @@ variable [Semiring α] {a b : α}
 
 variable (a) (m n : ℕ)
 
--- Porting note: `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_right`
+-- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_right`
 -- @[simp]
 lemma self_cast_nat_mul : Commute a (n * a) := (Commute.refl a).cast_nat_mul_right n
 #align commute.self_cast_nat_mul Commute.self_cast_nat_mul
 
--- Porting note: `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_left`
+-- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_left`
 -- @[simp]
 lemma cast_nat_mul_self : Commute (n * a) a := (Commute.refl a).cast_nat_mul_left n
 #align commute.cast_nat_mul_self Commute.cast_nat_mul_self
 
--- Porting note: `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_left`,
+-- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_left`,
 -- `Commute.cast_nat_mul_right`
 -- @[simp]
 lemma self_cast_nat_mul_cast_nat_mul : Commute (m * a) (n * a) :=

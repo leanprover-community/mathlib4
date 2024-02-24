@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Topology.Homeomorph
 
 #align_import topology.algebra.group_with_zero from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
@@ -185,7 +185,7 @@ theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l 
   refine' ⟨fun hfg => _, fun hf => hf.mul hg⟩
   rw [← mul_div_cancel x hy]
   refine' Tendsto.congr' _ (hfg.div hg hy)
-  refine' (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
+  exact (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
 #align filter.tendsto_mul_iff_of_ne_zero Filter.tendsto_mul_iff_of_ne_zero
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α} {a : α}
