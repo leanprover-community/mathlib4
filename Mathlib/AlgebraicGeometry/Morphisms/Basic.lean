@@ -132,7 +132,7 @@ theorem targetAffineLocally_respectsIso {P : AffineTargetMorphismProperty}
     (hP : P.toProperty.RespectsIso) : (targetAffineLocally P).RespectsIso := by
   constructor
   · introv H U
-    -- Porting note: added this instance
+    -- Porting note (#10754): added this instance
     haveI : IsAffine _ := U.prop
     rw [morphismRestrict_comp, affine_cancel_left_isIso hP]
     exact H U
