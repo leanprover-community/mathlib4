@@ -3,9 +3,8 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.Halfplane
 import Mathlib.NumberTheory.LSeries.Basic
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Data.Real.EReal
 
 /-!
 # Convergence of L-series
