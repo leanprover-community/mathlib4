@@ -162,19 +162,19 @@ nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ+) :
   left_inv ξ := by ext; exact σ.symm_apply_apply (ξ : Rˣ)
   right_inv ξ := by ext; exact σ.apply_symm_apply (ξ : Sˣ)
   map_mul' := (restrictRootsOfUnity _ n).map_mul
-#noalign ring_equiv.restrict_roots_of_unity
+#align ring_equiv.restrict_roots_of_unity MulEquiv.restrictRootsOfUnity
 
 @[simp]
 theorem MulEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃* S) (ζ : rootsOfUnity k R) :
     (σ.restrictRootsOfUnity k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
-#noalign ring_equiv.restrict_roots_of_unity_coe_apply
+#align ring_equiv.restrict_roots_of_unity_coe_apply MulEquiv.restrictRootsOfUnity_coe_apply
 
 @[simp]
 theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
-#noalign ring_equiv.restrict_roots_of_unity_symm
+#align ring_equiv.restrict_roots_of_unity_symm MulEquiv.restrictRootsOfUnity_symm
 
 end CommMonoid
 
