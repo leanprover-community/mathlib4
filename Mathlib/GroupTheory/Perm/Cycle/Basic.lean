@@ -44,12 +44,13 @@ open BigOperators
 
 variable {ι α β : Type*}
 
-namespace Equiv.Perm
 
 /-! ### `SameCycle` -/
 
 
 section SameCycle
+
+namespace Equiv.Perm
 
 variable {f g : Perm α} {p : α → Prop} {x y z : α}
 
@@ -260,6 +261,8 @@ instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f
         rw [← zpow_ofNat, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
           Int.coe_nat_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
 
+end Equiv.Perm
+
 end SameCycle
 
 /-!
@@ -267,6 +270,8 @@ end SameCycle
 -/
 
 section IsCycle
+
+namespace Equiv.Perm
 
 variable {f g : Perm α} {x y : α}
 
@@ -713,12 +718,78 @@ theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf 
     exact support_pow_le f n
 #align equiv.perm.is_cycle.is_cycle_pow_pos_of_lt_prime_order Equiv.Perm.IsCycle.isCycle_pow_pos_of_lt_prime_order
 
+
+end Equiv.Perm
+
+namespace Int
+
+open Equiv
+
+theorem _root_.Int.addLeft_one_isCycle : (Equiv.addLeft 1 : Perm ℤ).IsCycle :=
+  ⟨0, one_ne_zero, fun n _ => ⟨n, by simp⟩⟩
+#align int.add_left_one_is_cycle Int.addLeft_one_isCycle
+
+theorem _root_.Int.addRight_one_isCycle : (Equiv.addRight 1 : Perm ℤ).IsCycle :=
+  ⟨0, one_ne_zero, fun n _ => ⟨n, by simp⟩⟩
+#align int.add_right_one_is_cycle Int.addRight_one_isCycle
+
+end Int
+
+section Conjugation
+
+namespace Equiv.Perm
+
+variable [Fintype α] [DecidableEq α] {σ τ : Perm α}
+
+theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.card = τ.support.card) :
+    IsConj σ τ := by
+  refine'
+    isConj_of_support_equiv
+      (hσ.zpowersEquivSupport.symm.trans <|
+        (zpowersEquivZPowers <| by rw [hσ.orderOf, h, hτ.orderOf]).trans hτ.zpowersEquivSupport)
+      _
+  intro x hx
+  simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
+  obtain ⟨n, rfl⟩ := hσ.exists_pow_eq (Classical.choose_spec hσ).1 (mem_support.1 hx)
+  apply
+    Eq.trans _
+      (congr rfl (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply n).symm))))
+  apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
+  -- This used to be a `simp only` before leanprover/lean4#2644
+  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply]
+  dsimp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [pow_succ, Perm.mul_apply]
+#align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
+
+theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
+    IsConj σ τ ↔ σ.support.card = τ.support.card :=
+  ⟨by
+    intro h
+    obtain ⟨π, rfl⟩ := (_root_.isConj_iff).1 h
+    refine' Finset.card_congr (fun a _ => π a) (fun _ ha => _) (fun _ _ _ _ ab => π.injective ab)
+        fun b hb => _
+    · simp [mem_support.1 ha]
+    · refine' ⟨π⁻¹ b, ⟨_, π.apply_inv_self b⟩⟩
+      contrapose! hb
+      rw [mem_support, Classical.not_not] at hb
+      rw [mem_support, Classical.not_not, Perm.mul_apply, Perm.mul_apply, hb, Perm.apply_inv_self],
+    hσ.isConj hτ⟩
+#align equiv.perm.is_cycle.is_conj_iff Equiv.Perm.IsCycle.isConj_iff
+
+end Equiv.Perm
+
+end Conjugation
+
 end IsCycle
+
 
 /-! ### `IsCycleOn` -/
 
 
 section IsCycleOn
+
+namespace Equiv.Perm
 
 variable {f g : Perm α} {s t : Set α} {a b x y : α}
 
@@ -923,13 +994,12 @@ protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
   · exact (Set.countable_range fun n : ℤ => (⇑(f ^ n) : α → α) a).mono (hs.2 ha)
 #align equiv.perm.is_cycle_on.countable Equiv.Perm.IsCycleOn.countable
 
-end IsCycleOn
 
-end Perm
-
-end Equiv
+end Equiv.Perm
 
 namespace List
+
+section
 
 variable [DecidableEq α] {l : List α}
 
@@ -945,27 +1015,15 @@ theorem _root_.List.Nodup.isCycleOn_formPerm (h : l.Nodup) :
   rw [add_comm]
 #align list.nodup.is_cycle_on_form_perm List.Nodup.isCycleOn_formPerm
 
+end
+
 end List
-
-namespace Int
-
-open Equiv
-
-theorem _root_.Int.addLeft_one_isCycle : (Equiv.addLeft 1 : Perm ℤ).IsCycle :=
-  ⟨0, one_ne_zero, fun n _ => ⟨n, by simp⟩⟩
-#align int.add_left_one_is_cycle Int.addLeft_one_isCycle
-
-theorem _root_.Int.addRight_one_isCycle : (Equiv.addRight 1 : Perm ℤ).IsCycle :=
-  ⟨0, one_ne_zero, fun n _ => ⟨n, by simp⟩⟩
-#align int.add_right_one_is_cycle Int.addRight_one_isCycle
-
-end Int
 
 namespace Finset
 
 variable [DecidableEq α] [Fintype α]
 
-theorem _root_.Finset.exists_cycleOn (s : Finset α) :
+theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
   refine'
     ⟨s.toList.formPerm, _, fun x hx => by
@@ -1014,51 +1072,6 @@ theorem _root_.Set.prod_self_eq_iUnion_perm (hf : f.IsCycleOn s) :
 
 end Set
 
-section Conjugation
-
-namespace Equiv.Perm
-
-variable [Fintype α] [DecidableEq α] {σ τ : Perm α}
-
-theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.card = τ.support.card) :
-    IsConj σ τ := by
-  refine'
-    isConj_of_support_equiv
-      (hσ.zpowersEquivSupport.symm.trans <|
-        (zpowersEquivZPowers <| by rw [hσ.orderOf, h, hτ.orderOf]).trans hτ.zpowersEquivSupport)
-      _
-  intro x hx
-  simp only [Perm.mul_apply, Equiv.trans_apply, Equiv.sumCongr_apply]
-  obtain ⟨n, rfl⟩ := hσ.exists_pow_eq (Classical.choose_spec hσ).1 (mem_support.1 hx)
-  apply
-    Eq.trans _
-      (congr rfl (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply n).symm))))
-  apply (congr rfl (congr rfl (congr rfl (hσ.zpowersEquivSupport_symm_apply (n + 1))))).trans _
-  -- This used to be a `simp only` before leanprover/lean4#2644
-  erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply]
-  dsimp
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [pow_succ, Perm.mul_apply]
-#align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
-
-theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
-    IsConj σ τ ↔ σ.support.card = τ.support.card :=
-  ⟨by
-    intro h
-    obtain ⟨π, rfl⟩ := (_root_.isConj_iff).1 h
-    refine' Finset.card_congr (fun a _ => π a) (fun _ ha => _) (fun _ _ _ _ ab => π.injective ab)
-        fun b hb => _
-    · simp [mem_support.1 ha]
-    · refine' ⟨π⁻¹ b, ⟨_, π.apply_inv_self b⟩⟩
-      contrapose! hb
-      rw [mem_support, Classical.not_not] at hb
-      rw [mem_support, Classical.not_not, Perm.mul_apply, Perm.mul_apply, hb, Perm.apply_inv_self],
-    hσ.isConj hτ⟩
-#align equiv.perm.is_cycle.is_conj_iff Equiv.Perm.IsCycle.isConj_iff
-
-end Equiv.Perm
-
-end Conjugation
 
 namespace Finset
 
@@ -1125,3 +1138,5 @@ theorem _root_.Finset.sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι �
 #align finset.sum_mul_sum_eq_sum_perm Finset.sum_mul_sum_eq_sum_perm
 
 end Finset
+
+end IsCycleOn
