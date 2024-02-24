@@ -53,6 +53,54 @@ def Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
 
 end Basis
 
+namespace LinearMap
+
+variable (R A M : Type*) [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M] [Module R M]
+
+open Module
+open scoped TensorProduct
+
+noncomputable
+def TensorProductEndₗ' : A ⊗[R] (End R M) →ₗ[R] End A (A ⊗[R] M) :=
+  TensorProduct.lift <|
+  { toFun := fun a ↦ a • baseChangeHom R A M M
+    map_add' := by simp only [add_smul, forall_true_iff]
+    map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
+
+noncomputable
+def TensorProductEndₗ : A ⊗[R] (End R M) →ₗ[A] End A (A ⊗[R] M) :=
+  { TensorProductEndₗ' R A M with
+    map_smul' := by
+      intros a f
+      show TensorProductEndₗ' R A M (a • f) = a • TensorProductEndₗ' R A M f
+      unfold TensorProductEndₗ'
+      induction f using TensorProduct.induction_on with
+      | zero => simp only [smul_zero, LinearMap.map_zero]
+      | tmul b f =>
+          simp only [TensorProduct.smul_tmul', TensorProduct.lift.tmul]
+          dsimp only [coe_mk, AddHom.coe_mk, smul_apply, baseChangeHom_apply]
+          rw [smul_assoc]
+      | add f g hf hg => simp only [smul_add, LinearMap.map_add, hf, hg] }
+
+noncomputable
+def TensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
+  Algebra.TensorProduct.algHomOfLinearMapTensorProduct
+    (TensorProductEndₗ R A M)
+    (fun a b f g ↦ by
+      simp only [TensorProductEndₗ, TensorProductEndₗ', coe_mk, TensorProduct.lift.tmul',
+        AddHom.coe_mk, mul_eq_comp, baseChangeHom_apply, smul_apply, baseChange_comp]
+      apply LinearMap.ext
+      intro x
+      simp only [LinearMap.comp_apply, smul_apply, map_smul, mul_comm a b, mul_smul])
+    (by
+      simp only [TensorProductEndₗ, TensorProductEndₗ', coe_mk, TensorProduct.lift.tmul',
+        AddHom.coe_mk, one_smul, baseChangeHom_apply]
+      apply LinearMap.ext
+      intro x
+      erw [baseChange_eq_ltensor, lTensor_id, LinearMap.id_apply])
+
+end LinearMap
+
 namespace Matrix
 
 variable {m n o R S : Type*}
@@ -156,7 +204,7 @@ lemma toMvPolynomial_add (f g : M₁ →ₗ[R] M₂) (i : ι₂) :
   simp only [toMvPolynomial, map_add, Matrix.toMvPolynomial_add]
 
 lemma toMvPolynomial_comp (g : M₂ →ₗ[R] M₃) (f : M₁ →ₗ[R] M₂) (i : ι₃) :
-    (g.comp f).toMvPolynomial b₁ b₃ i =
+    (g ∘ₗ f).toMvPolynomial b₁ b₃ i =
       bind₁ (f.toMvPolynomial b₁ b₂) (g.toMvPolynomial b₂ b₃ i) := by
   simp only [toMvPolynomial, toMatrix_comp b₁ b₂ b₃, Matrix.toMvPolynomial_mul]
   rfl
@@ -227,6 +275,35 @@ lemma lieCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ι
   · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
   · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
 
+open Algebra.TensorProduct MvPolynomial in
+lemma lieCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
+    lieCharpoly (TensorProductEndₗ _ _ _ ∘ₗ φ.baseChange A) (basis A b) (basis A bₘ) =
+      (lieCharpoly φ b bₘ).map (MvPolynomial.map (algebraMap R A)) := by
+  simp only [lieCharpoly]
+  rw [← charpoly.univ_map_map _ (algebraMap R A)]
+  simp only [Polynomial.map_map]
+  congr 1
+  apply ringHom_ext
+  · intro r
+    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_C, bind₁_C_right]
+  · rintro ij
+    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_X,
+      bind₁_X_right, lieMatrixPoly]
+    classical
+    rw [toMvPolynomial_comp _ (basis A (Basis.end bₘ)), ← toMvPolynomial_baseChange]
+    suffices toMvPolynomial (basis A bₘ.end) (basis A bₘ).end (TensorProductEndₗ R A M) ij = X ij by
+      rw [this, bind₁_X_right]
+    simp only [toMvPolynomial, Matrix.toMvPolynomial]
+    rw [Finset.sum_eq_single ij]
+    · sorry
+      -- simp only [toMatrix_basis_equiv, one_apply_eq, X]
+    · sorry
+      -- rintro kl - H
+      -- simp only [toMatrix_basis_equiv, one_apply_ne H.symm, map_zero]
+    · intro h
+      exact (h (Finset.mem_univ _)).elim
+
+
 open LinearMap in
 lemma lieCharpoly_map_eq_toMatrix_charpoly (x : L) :
     (lieCharpoly φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (toMatrix bₘ bₘ (φ x)).charpoly := by
@@ -234,6 +311,39 @@ lemma lieCharpoly_map_eq_toMatrix_charpoly (x : L) :
   congr
   ext
   rw [of_apply, Function.curry_apply, lieMatrixPoly_eval_eq_toMatrix, LinearEquiv.symm_apply_apply]
+
+lemma lieCharpoly_map_eq_toMatrix_charpoly' [Module.Finite R M] [Module.Free R M]
+    (x : L) :
+    (lieCharpoly φ b bₘ).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
+  nontriviality R
+  rw [lieCharpoly_map_eq_toMatrix_charpoly, LinearMap.charpoly_toMatrix]
+
+lemma lieCharpoly_map_eq_toMatrix_charpoly'' [Module.Finite R M] [Module.Free R M]
+    (x : ι → R) :
+    (lieCharpoly φ b bₘ).map (MvPolynomial.eval x) =
+      (φ (b.repr.symm (Finsupp.equivFunOnFinite.symm x))).charpoly := by
+  rw [← lieCharpoly_map_eq_toMatrix_charpoly' φ b bₘ, Basis.repr_symm_apply, Basis.repr_total]
+  rfl
+
+open Algebra.TensorProduct MvPolynomial in
+lemma lieCharpoly_basisIndep (bₘ' : Basis ιM R M) :
+    lieCharpoly φ b bₘ = lieCharpoly φ b bₘ' := by
+  apply Polynomial.map_injective _
+    (MvPolynomial.map_injective (algebraMap R (MvPolynomial ι R)) (MvPolynomial.C_injective _ _))
+  rw [← lieCharpoly_baseChange, ← lieCharpoly_baseChange]
+  set B := basis (MvPolynomial ι R) b
+  let f : Polynomial (MvPolynomial ι (MvPolynomial ι R)) → Polynomial (MvPolynomial ι R) :=
+    Polynomial.map (MvPolynomial.eval X)
+  suffices Function.Injective f by
+    apply this
+    dsimp only
+    let _h1 : Module.Finite (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
+      Module.Finite.of_basis (basis (MvPolynomial ι R) bₘ)
+    let _h2 : Module.Free (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
+      Module.Free.of_basis (basis (MvPolynomial ι R) bₘ)
+    rw [lieCharpoly_map_eq_toMatrix_charpoly'', lieCharpoly_map_eq_toMatrix_charpoly'']
+  apply Polynomial.map_injective
+  sorry
 
 open LinearMap in
 lemma lieCharpoly_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
