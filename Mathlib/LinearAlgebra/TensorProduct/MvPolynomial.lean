@@ -74,16 +74,22 @@ end Module
 
 section Algebra
 
-variable [Semiring N] [Algebra R N]
+variable [CommSemiring N] [Algebra R N]
 
 noncomputable def MvPolynomial.rTensorAlgHom :
-    MvPolynomial σ S ⊗[R] N →ₐ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) := by
-  apply AlgHom.ofLinearMap MvPolynomial.rTensor'
-  · sorry
-  · sorry
+    (MvPolynomial σ S) ⊗[R] N →ₐ[S] MvPolynomial σ (S ⊗[R] N) :=
+  Algebra.TensorProduct.lift
+    (aeval MvPolynomial.X)
+    ((IsScalarTower.toAlgHom R (S ⊗[R] N) _).comp Algebra.TensorProduct.includeRight)
+    (fun p n => by simp [commute_iff_eq, MvPolynomial.algebraMap_eq, mul_comm])
 
 noncomputable def MvPolynomial.scalarRTensorAlgHom :
-    MvPolynomial σ R ⊗[R] N →ₐ[R] (σ →₀ ℕ) →₀ N := by
-  apply AlgHom.ofLinearMap MvPolynomial.rTensor'
+    MvPolynomial σ R ⊗[R] N →ₐ[R] MvPolynomial σ N :=
+  Algebra.TensorProduct.lift
+    (aeval MvPolynomial.X)
+    (IsScalarTower.toAlgHom R N _)
+    (fun p n => by simp [commute_iff_eq, MvPolynomial.algebraMap_eq, mul_comm])
+
+end Algebra
 
 end
