@@ -130,6 +130,15 @@ lemma LSeriesSummable.le_const_mul_rpow {f : ArithmeticFunction ℂ} {s : ℂ}
   rw [norm_LSeriesTerm_eq, div_le_iff <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn₀) _] at this
   exact (this.trans_lt hn).false.elim
 
+open Filter in
+lemma LSeriesSummable.isBigO_rpow {f : ArithmeticFunction ℂ} {s : ℂ}
+    (h : LSeriesSummable f s) : f =O[atTop] fun n ↦ (n : ℝ) ^ s.re := by
+  obtain ⟨C, hC⟩ := h.le_const_mul_rpow
+  refine Asymptotics.IsBigO.of_bound C ?_
+  convert eventually_of_forall hC using 4 with n
+  have hn₀ : (0 : ℝ) ≤ n := Nat.cast_nonneg _
+  rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg hn₀, _root_.abs_of_nonneg hn₀]
+
 lemma LSeriesSummable_of_le_const_mul_rpow {f : ArithmeticFunction ℂ} {x : ℝ} {s : ℂ}
     (hs : x < s.re) (h : ∃ C, ∀ n, ‖f n‖ ≤ C * n ^ (x - 1)) :
     LSeriesSummable f s := by
