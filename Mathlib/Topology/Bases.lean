@@ -279,20 +279,6 @@ protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set
   h₁.inf_induced h₂ Prod.fst Prod.snd
 #align topological_space.is_topological_basis.prod TopologicalSpace.IsTopologicalBasis.prod
 
-protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
-    (hf : Inducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) := by
-  refine' isTopologicalBasis_of_isOpen_of_nhds _ _
-  · rintro _ ⟨V, hV, rfl⟩
-    rw [hf.isOpen_iff]
-    exact ⟨V, h.isOpen hV, rfl⟩
-  · intro a U ha hU
-    rw [hf.isOpen_iff] at hU
-    obtain ⟨V, hV, rfl⟩ := hU
-    obtain ⟨S, hS, rfl⟩ := h.open_eq_sUnion hV
-    obtain ⟨W, hW, ha⟩ := ha
-    exact ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
-#align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
-
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
     (Uc : ⋃ i, U i = univ) {b : ∀ i, Set (Set (U i))} (hb : ∀ i, IsTopologicalBasis (b i)) :
     IsTopologicalBasis (⋃ i : ι, image ((↑) : U i → α) '' b i) := by
