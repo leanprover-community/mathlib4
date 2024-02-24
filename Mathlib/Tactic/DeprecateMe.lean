@@ -104,7 +104,7 @@ The ordering of the remaining assignment is unspecified.
 However, in the case in which the initial declaration produces at most 2 non-blacklisted
 declarations, then in effect there is no choice in the ordering.
 -/
-elab "deprecate to " id:ident* date:(str)? ppLine cmd:command : command => do
+elab tk:"deprecate to " id:ident* date:(str)? ppLine cmd:command : command => do
   let date := match date with
                 | some d => d.getString
                 | none => "YYYY-MM-DD"
@@ -120,7 +120,7 @@ elab "deprecate to " id:ident* date:(str)? ppLine cmd:command : command => do
     if id.size < news.size then
       warn := warn.push s!"Un-deprecated declarations: {news.toList.drop id.size}"
     if news.size < id.size then
-      for i in id.toList.drop news.size do logWarningAt i ""
+      for i in id.toList.drop news.size do logErrorAt i ""
       warn := warn.push s!"Unused names: {id.toList.drop news.size}"
     let (oldId, newCmd) := renameTheorem id[0]! cmd
     let oldNames := ← resolveGlobalName (oldId.raw.getArg 0).getId.eraseMacroScopes
@@ -136,7 +136,7 @@ elab "deprecate to " id:ident* date:(str)? ppLine cmd:command : command => do
       logWarningAt cmd m!"New declaration uses the old name {oldId.raw.getArg 0}!"
     let stxs := #[newCmd] ++ stxs
     if warn != #[] then
-      logWarningAt (← getRef) m!"{warn.foldl (· ++ "\n" ++ ·) "Warnings:\n"}"
+      logWarningAt tk m!"{warn.foldl (· ++ "\n" ++ ·) "Warnings:\n"}"
     liftTermElabM do
       let prettyStxs ← stxs.mapM (SuggestionText.prettyExtra <|.tsyntax ·)
       let toMessageData := (prettyStxs.toList.drop 1).foldl
