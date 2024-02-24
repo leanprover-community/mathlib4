@@ -46,15 +46,7 @@ variable (A : Type u) [AddCommGroup A]
 
 set_option linter.uppercaseLean3 false
 
-namespace AddCommGroupCat
-
-theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
-    Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
-  ((forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.map_injective_iff ⟨A⟩).symm
-#noalign AddCommGroup.injective_of_injective_as_module
-#noalign AddCommGroup.injective_as_module_of_injective_as_Ab
-
-instance Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
+theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
   rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
   obtain rfl | h0 := eq_or_ne m 0
   · refine ⟨0, fun n hn ↦ ?_⟩
@@ -66,6 +58,14 @@ instance Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun
   rcases Submodule.mem_span_singleton.mp hn with ⟨n, rfl⟩
   rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g,
     SetLike.mk_smul_mk]
+
+namespace AddCommGroupCat
+
+theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
+    Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
+  ((forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.map_injective_iff ⟨A⟩).symm
+#noalign AddCommGroup.injective_of_injective_as_module
+#noalign AddCommGroup.injective_as_module_of_injective_as_Ab
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
     Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
