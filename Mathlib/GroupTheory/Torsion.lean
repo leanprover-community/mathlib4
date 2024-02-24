@@ -449,3 +449,9 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 
 end CommGroup
+
+lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
+    AddMonoid.IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
+  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
+    pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
+  exact forall₂_congr fun _ _ ↦ by tauto
