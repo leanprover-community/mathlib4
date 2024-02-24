@@ -7,6 +7,7 @@ import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Combinatorics.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Factors
+import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.NormNum.GCD
 
@@ -532,7 +533,7 @@ variable [DecidableEq α]
 
 /-- The partition corresponding to a permutation -/
 def partition (σ : Perm α) : (Fintype.card α).Partition where
-  parts := σ.cycleType + replicate (Fintype.card α - σ.support.card) 1
+  parts := σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1
   parts_pos {n hn} := by
     cases' mem_add.mp hn with hn hn
     · exact zero_lt_one.trans (one_lt_of_mem_cycleType hn)
@@ -543,7 +544,7 @@ def partition (σ : Perm α) : (Fintype.card α).Partition where
 #align equiv.perm.partition Equiv.Perm.partition
 
 theorem parts_partition {σ : Perm α} :
-    σ.partition.parts = σ.cycleType + replicate (Fintype.card α - σ.support.card) 1 :=
+    σ.partition.parts = σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1 :=
   rfl
 #align equiv.perm.parts_partition Equiv.Perm.parts_partition
 
