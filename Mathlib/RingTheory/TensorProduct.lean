@@ -106,7 +106,8 @@ theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
 lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by
   ext; simp
 
-lemma baseChange_comp (g : N →ₗ[R] P) : (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
+lemma baseChange_comp (g : N →ₗ[R] P) :
+    (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
   ext; simp
 
 variable (R M) in
