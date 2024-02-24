@@ -67,14 +67,13 @@ class RepresentablyFlat (F : C ⥤ D) : Prop where
 
 attribute [instance] RepresentablyFlat.cofiltered
 
-attribute [local instance] IsCofiltered.Nonempty
+attribute [local instance] IsCofiltered.nonempty
 
 instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
   constructor
   intro X
   haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
-  suffices : IsCofilteredOrEmpty (StructuredArrow X (𝟭 C))
-  · constructor
+  suffices IsCofilteredOrEmpty (StructuredArrow X (𝟭 C)) by constructor
   constructor
   · intro Y Z
     use StructuredArrow.mk (𝟙 _)
@@ -95,8 +94,7 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
     have f₁ : StructuredArrow X G := Nonempty.some inferInstance
     have f₂ : StructuredArrow f₁.right F := Nonempty.some inferInstance
     exact ⟨StructuredArrow.mk (f₁.hom ≫ G.map f₂.hom)⟩
-  suffices : IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G))
-  · constructor
+  suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
   constructor
   · intro Y Z
     let W :=
@@ -142,7 +140,7 @@ attribute [local instance] hasFiniteLimits_of_hasFiniteLimits_of_size
 theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
   { cone_objs := fun A B => ⟨Limits.prod A B, Limits.prod.fst, Limits.prod.snd, trivial⟩
     cone_maps := fun _ _ f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
-    Nonempty := ⟨⊤_ C⟩ }
+    nonempty := ⟨⊤_ C⟩ }
 #align category_theory.cofiltered_of_has_finite_limits CategoryTheory.cofiltered_of_hasFiniteLimits
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
@@ -213,8 +211,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     ext x
     apply this
   -- And thus they are equal as `c` is the limit.
-  have : g₁.right = g₂.right
-  calc
+  have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats

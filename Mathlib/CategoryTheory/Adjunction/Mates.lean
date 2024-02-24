@@ -56,8 +56,6 @@ variable {G : C ⥤ E} {H : D ⥤ F} {L₁ : C ⥤ D} {R₁ : D ⥤ C} {L₂ : E
 
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
 
---include adj₁ adj₂
-
 /-- Suppose we have a square of functors (where the top and bottom are adjunctions `L₁ ⊣ R₁` and
 `L₂ ⊣ R₂` respectively).
 

@@ -72,8 +72,7 @@ theorem laurentAux_div :
 
 @[simp]
 theorem laurentAux_algebraMap : laurentAux r (algebraMap _ _ p) = algebraMap _ _ (taylor r p) := by
-  rw [← mk_one, ← mk_one, mk_eq_div, laurentAux_div, mk_eq_div, taylor_one, map_one, map_one,
-    map_one]
+  rw [← mk_one, ← mk_one, mk_eq_div, laurentAux_div, mk_eq_div, taylor_one, map_one, map_one]
 #align ratfunc.laurent_aux_algebra_map RatFunc.laurentAux_algebraMap
 
 /-- The Laurent expansion of rational functions about a value. -/

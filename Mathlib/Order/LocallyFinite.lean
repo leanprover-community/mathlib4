@@ -1081,8 +1081,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
         rw [some_mem_insertNone]
         simp
     | (a : α), (b : α), ⊤ => by
-        simp only [some, le_eq_subset, mem_map, mem_Icc, le_top, top_le_iff, and_false, iff_false,
-          not_exists, not_and, and_imp, Embedding.some, forall_const]
+        simp only [Embedding.some, mem_map, mem_Icc, and_false, exists_const, some, le_top,
+          top_le_iff]
     | (a : α), (b : α), (x : α) => by
         simp only [some, le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk,
           some_le_some]
@@ -1396,6 +1396,14 @@ section Finite
 
 variable {α : Type*} {s : Set α}
 
+theorem BddBelow.finite_of_bddAbove [Preorder α] [LocallyFiniteOrder α]
+    {s : Set α} (h₀ : BddBelow s) (h₁ : BddAbove s) :
+    s.Finite :=
+  let ⟨a, ha⟩ := h₀
+  let ⟨b, hb⟩ := h₁
+  (Set.finite_Icc a b).subset fun _x hx ↦ ⟨ha hx, hb hx⟩
+#align bdd_below.finite_of_bdd_above BddBelow.finite_of_bddAbove
+
 theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α] :
     s.Finite ↔ BddAbove s :=
   ⟨fun h ↦ ⟨h.toFinset.sup id, fun x hx ↦ Finset.le_sup (f := id) (by simpa)⟩,
@@ -1411,7 +1419,7 @@ theorem Set.finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFini
   · simp only [Set.finite_empty, bddBelow_empty, bddAbove_empty, and_self]
   exact ⟨fun h ↦ ⟨⟨h.toFinset.inf' (by simpa) id, fun x hx ↦ Finset.inf'_le id (by simpa)⟩,
     ⟨h.toFinset.sup' (by simpa) id, fun x hx ↦ Finset.le_sup' id (by simpa)⟩⟩,
-    fun ⟨⟨a,ha⟩,⟨b,hb⟩⟩ ↦ (Set.finite_Icc a b).subset (fun x hx ↦ ⟨ha hx,hb hx⟩ )⟩
+    fun ⟨h₀, h₁⟩ ↦ BddBelow.finite_of_bddAbove h₀ h₁⟩
 
 end Finite
 

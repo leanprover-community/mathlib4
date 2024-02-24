@@ -55,7 +55,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   init' : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
 
--- Porting notes: Deleted `scoped[InitialSeg]`
+-- Porting note: Deleted `scoped[InitialSeg]`
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
 embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
 range of `f`. -/
@@ -66,16 +66,18 @@ namespace InitialSeg
 instance : Coe (r ≼i s) (r ↪r s) :=
   ⟨InitialSeg.toRelEmbedding⟩
 
-instance : EmbeddingLike (r ≼i s) α β :=
-  { coe := fun f => f.toFun
-    coe_injective' := by
-      rintro ⟨f, hf⟩ ⟨g, hg⟩ h
-      congr with x
-      exact congr_fun h x,
-    injective' := fun f => f.inj' }
+instance : FunLike (r ≼i s) α β where
+  coe f := f.toFun
+  coe_injective' := by
+    rintro ⟨f, hf⟩ ⟨g, hg⟩ h
+    congr with x
+    exact congr_fun h x
+
+instance : EmbeddingLike (r ≼i s) α β where
+  injective' f := f.inj'
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align initial_seg.ext InitialSeg.ext
 
 @[simp]
@@ -241,7 +243,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   down' : ∀ b, s b top ↔ ∃ a, toRelEmbedding a = b
 #align principal_seg PrincipalSeg
 
--- Porting notes: deleted `scoped[InitialSeg]`
+-- Porting note: deleted `scoped[InitialSeg]`
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an order
 embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
 embeddings are called principal segments -/
@@ -513,7 +515,7 @@ noncomputable def InitialSeg.leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i 
 @[simp]
 theorem InitialSeg.leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     (f.leLT g) a = g (f a) := by
-  delta InitialSeg.leLT; cases' h : f.ltOrEq with f' f'
+  delta InitialSeg.leLT; cases' f.ltOrEq with f' f'
   · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
   · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
 #align initial_seg.le_lt_apply InitialSeg.leLT_apply

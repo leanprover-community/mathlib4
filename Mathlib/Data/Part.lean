@@ -74,7 +74,7 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 #align part.to_option_is_none Part.toOption_isNone
 
 /-- `Part` extensionality -/
-theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
+theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
     have t : od = pd := propext H1
     cases t; rw [show o = p from funext fun p => H2 p p]
@@ -294,7 +294,7 @@ theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o
   · exact mt Exists.fst h
 #align part.mem_to_option Part.mem_toOption
 
---Porting note : New theorem, like `mem_toOption` but with LHS in `simp` normal form
+--Porting note: New theorem, like `mem_toOption` but with LHS in `simp` normal form
 @[simp]
 theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
     toOption o = Option.some a ↔ a ∈ o :=
@@ -400,9 +400,7 @@ instance : PartialOrder (Part
 
 instance : OrderBot (Part α) where
   bot := none
-  bot_le := by
-    introv x
-    rintro ⟨⟨_⟩, _⟩
+  bot_le := by rintro x _ ⟨⟨_⟩, _⟩
 
 theorem le_total_of_le_of_le {x y : Part α} (z : Part α) (hx : x ≤ z) (hy : y ≤ z) :
     x ≤ y ∨ y ≤ x := by
@@ -697,7 +695,7 @@ instance [Union α] : Union (Part α) where union a b := (· ∪ ·) <$> a <*> b
 instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
--- Porting note : new theorems to unfold definitions
+-- Porting note: new theorems to unfold definitions
 theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
 theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl

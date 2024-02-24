@@ -119,6 +119,19 @@ theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : �
   simpa [Set.pi_def] using hasBasis_iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
 #align filter.has_basis_pi Filter.hasBasis_pi
 
+theorem le_pi_principal (s : (i : ι) → Set (α i)) :
+    𝓟 (univ.pi s) ≤ pi fun i ↦ 𝓟 (s i) :=
+  le_pi.2 fun i ↦ tendsto_principal_principal.2 fun _f hf ↦ hf i trivial
+
+@[simp]
+theorem pi_principal [Finite ι] (s : (i : ι) → Set (α i)) :
+    pi (fun i ↦ 𝓟 (s i)) = 𝓟 (univ.pi s) := by
+  simp [Filter.pi, Set.pi_def]
+
+@[simp]
+theorem pi_pure [Finite ι] (f : (i : ι) → α i) : pi (pure <| f ·) = pure f := by
+  simp only [← principal_singleton, pi_principal, univ_pi_singleton]
+
 @[simp]
 theorem pi_inf_principal_univ_pi_eq_bot :
     pi f ⊓ 𝓟 (Set.pi univ s) = ⊥ ↔ ∃ i, f i ⊓ 𝓟 (s i) = ⊥ := by
@@ -212,8 +225,8 @@ theorem mem_coprodᵢ_iff {s : Set (∀ i, α i)} :
 #align filter.mem_Coprod_iff Filter.mem_coprodᵢ_iff
 
 theorem compl_mem_coprodᵢ {s : Set (∀ i, α i)} :
-    sᶜ ∈ Filter.coprodᵢ f ↔ ∀ i, (eval i '' s)ᶜ ∈ f i :=
-  by simp only [Filter.coprodᵢ, mem_iSup, compl_mem_comap]
+    sᶜ ∈ Filter.coprodᵢ f ↔ ∀ i, (eval i '' s)ᶜ ∈ f i := by
+  simp only [Filter.coprodᵢ, mem_iSup, compl_mem_comap]
 #align filter.compl_mem_Coprod Filter.compl_mem_coprodᵢ
 
 theorem coprodᵢ_neBot_iff' :

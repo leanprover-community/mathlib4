@@ -16,7 +16,7 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Qq
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
@@ -63,7 +63,7 @@ partial def add : Linexp → Linexp → Linexp
 def scale (c : Int) (l : Linexp) : Linexp :=
   if c = 0 then []
   else if c = 1 then l
-  else l.map $ fun ⟨n, z⟩ => (n, z*c)
+  else l.map fun ⟨n, z⟩ => (n, z*c)
 
 /--
 `l.get n` returns the value in `l` associated with key `n`, if it exists, and `none` otherwise.
@@ -318,7 +318,7 @@ open Meta
 structure LinarithConfig : Type where
   /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
   -- TODO There should be a def for this, rather than calling `evalTactic`?
-  discharger : TacticM Unit := do evalTactic (←`(tactic| ring1))
+  discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
   -- We can't actually store a `Type` here,
   -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
   -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
@@ -346,7 +346,7 @@ since this is typically needed when using stronger unification.
 def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
     LinarithConfig :=
   if reduce_default then
-    { cfg with transparency := .default, discharger := do evalTactic (←`(tactic| ring1!)) }
+    { cfg with transparency := .default, discharger := do evalTactic (← `(tactic| ring1!)) }
   else cfg
 
 /-!
@@ -400,7 +400,7 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
   else if c = 1 then return (iq, h)
   else do
     let tp ← inferType (← getRelSides (← inferType h)).2
-    let cpos ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
+    let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')

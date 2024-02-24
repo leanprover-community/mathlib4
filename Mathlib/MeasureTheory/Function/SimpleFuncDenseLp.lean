@@ -72,7 +72,7 @@ theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measura
   have := edist_approxOn_le hf h₀ x n
   rw [edist_comm y₀] at this
   simp only [edist_nndist, nndist_eq_nnnorm] at this
-  exact_mod_cast this
+  exact mod_cast this
 #align measure_theory.simple_func.nnnorm_approx_on_le MeasureTheory.SimpleFunc.nnnorm_approxOn_le
 
 theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
@@ -80,7 +80,7 @@ theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     ‖approxOn f hf s y₀ h₀ n x - y₀‖ ≤ ‖f x - y₀‖ + ‖f x - y₀‖ := by
   have := edist_approxOn_y0_le hf h₀ x n
   repeat' rw [edist_comm y₀, edist_eq_coe_nnnorm_sub] at this
-  exact_mod_cast this
+  exact mod_cast this
 #align measure_theory.simple_func.norm_approx_on_y₀_le MeasureTheory.SimpleFunc.norm_approxOn_y₀_le
 
 theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
@@ -88,7 +88,7 @@ theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     ‖approxOn f hf s 0 h₀ n x‖ ≤ ‖f x‖ + ‖f x‖ := by
   have := edist_approxOn_y0_le hf h₀ x n
   simp [edist_comm (0 : E), edist_eq_coe_nnnorm] at this
-  exact_mod_cast this
+  exact mod_cast this
 #align measure_theory.simple_func.norm_approx_on_zero_le MeasureTheory.SimpleFunc.norm_approxOn_zero_le
 
 theorem tendsto_approxOn_Lp_snorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
@@ -159,7 +159,7 @@ theorem memℒp_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas 
     intro x
     convert norm_approxOn_y₀_le fmeas h₀ x n using 1
     rw [Real.norm_eq_abs, abs_of_nonneg]
-    exact add_nonneg (norm_nonneg _) (norm_nonneg _)
+    positivity
   calc
     snorm (fun x => approxOn f fmeas s y₀ h₀ n x - y₀) p μ ≤
         snorm (fun x => ‖f x - y₀‖ + ‖f x - y₀‖) p μ :=
@@ -314,8 +314,8 @@ theorem measure_preimage_lt_top_of_memℒp (hp_pos : p ≠ 0) (hp_ne_top : p ≠
     ENNReal.sum_lt_top_iff] at hf_snorm
   by_cases hyf : y ∈ f.range
   swap
-  · suffices h_empty : f ⁻¹' {y} = ∅
-    · rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
+  · suffices h_empty : f ⁻¹' {y} = ∅ by
+      rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
     ext1 x
     rw [Set.mem_preimage, Set.mem_singleton_iff, mem_empty_iff_false, iff_false_iff]
     refine' fun hxy => hyf _
@@ -964,7 +964,7 @@ theorem Memℒp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α
     · intro f g hfg hf hg int_fg
       rw [SimpleFunc.coe_add,
         memℒp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable] at int_fg
-      refine' h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
+      exact h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
   have : ∀ f : Lp.simpleFunc E p μ, P f := by
     intro f
     exact
@@ -986,12 +986,12 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
     (h1P : ∀ f g, P f → P g → P (f + g)) (h2P : ∀ f, P f → AEStronglyMeasurable f μ) {f : α → E}
     (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : α → E, snorm (f - g) p μ ≤ ε ∧ P g := by
   rcases eq_or_ne p 0 with (rfl | hp_pos)
-  · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, WithTop.zero_lt_top])
+  · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
         hε with ⟨g, _, Pg⟩
     exact ⟨g, by simp only [snorm_exponent_zero, zero_le'], Pg⟩
-  suffices H :
-    ∀ (f' : α →ₛ E) (δ : ℝ≥0∞) (hδ : δ ≠ 0), Memℒp f' p μ → ∃ g, snorm (⇑f' - g) p μ ≤ δ ∧ P g
-  · obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p hε
+  suffices H : ∀ (f' : α →ₛ E) (δ : ℝ≥0∞) (hδ : δ ≠ 0), Memℒp f' p μ →
+      ∃ g, snorm (⇑f' - g) p μ ≤ δ ∧ P g by
+    obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p hε
     rcases hf.exists_simpleFunc_snorm_sub_lt hp_ne_top ηpos.ne' with ⟨f', hf', f'_mem⟩
     rcases H f' η ηpos.ne' f'_mem with ⟨g, hg, Pg⟩
     refine' ⟨g, _, Pg⟩
@@ -1001,7 +1001,7 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
   apply SimpleFunc.induction
   · intro c s hs ε εpos Hs
     rcases eq_or_ne c 0 with (rfl | hc)
-    · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, WithTop.zero_lt_top])
+    · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
           εpos with ⟨g, hg, Pg⟩
       rw [← snorm_neg, neg_sub] at hg
       refine' ⟨g, _, Pg⟩

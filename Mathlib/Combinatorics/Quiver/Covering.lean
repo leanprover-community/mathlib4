@@ -161,7 +161,7 @@ theorem Prefunctor.symmetrifyStar (u : U) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- Porting note: was `simp [Quiver.symmetrifyStar]`
+    -- porting note (#10745): was `simp [Quiver.symmetrifyStar]`
     simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
@@ -174,7 +174,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- Porting note: was `simp [Quiver.symmetrifyCostar]`
+    -- porting note (#10745): was `simp [Quiver.symmetrifyCostar]`
     simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
@@ -216,7 +216,7 @@ theorem Prefunctor.pathStar_apply {u v : U} (p : Path u v) :
 
 theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : U) :
     Injective (φ.pathStar u) := by
-  dsimp [Prefunctor.pathStar, Quiver.PathStar.mk]
+  dsimp (config := { unfoldPartialApp := true }) [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v₁, p₁⟩
   induction' p₁ with x₁ y₁ p₁ e₁ ih <;>
     rintro ⟨y₂, p₂⟩ <;>
@@ -251,7 +251,7 @@ theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : 
 
 theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u : U) :
     Surjective (φ.pathStar u) := by
-  dsimp [Prefunctor.pathStar, Quiver.PathStar.mk]
+  dsimp (config := { unfoldPartialApp := true }) [Prefunctor.pathStar, Quiver.PathStar.mk]
   rintro ⟨v, p⟩
   induction' p with v' v'' p' ev ih
   · use ⟨u, Path.nil⟩

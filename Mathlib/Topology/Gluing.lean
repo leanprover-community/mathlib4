@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.GlueData
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Tactic.LibrarySearch
@@ -208,18 +207,17 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     rw [←
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
-    simp only [TopCat.sigmaIsoSigma_inv_apply]
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
     refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
-    rw [←show (sigmaIsoSigma.{u, u} _).inv _ = x from
+    rw [← show (sigmaIsoSigma.{u, u} _).inv _ = x from
         ConcreteCategory.congr_hom (sigmaIsoSigma.{u, u} _).hom_inv_id x]
     generalize (sigmaIsoSigma.{u, u} D.V).hom x = x'
     obtain ⟨⟨i, j⟩, y⟩ := x'
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
     simp only [Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
       Cofan.mk_ι_app]
-    rw [←comp_apply, colimit.ι_desc, ←comp_apply, colimit.ι_desc]
+    rw [← comp_apply, colimit.ι_desc, ← comp_apply, colimit.ι_desc]
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
@@ -254,7 +252,7 @@ theorem image_inter (i j : D.J) :
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨⟨⟩⟩ | ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
     · exact ⟨inv (D.f i i) x₁, by
-        -- Porting note: was `simp [eq₁]`
+        -- porting note (#10745): was `simp [eq₁]`
         -- See https://github.com/leanprover-community/mathlib4/issues/5026
         rw [TopCat.comp_app]
         erw [CategoryTheory.IsIso.inv_hom_id_apply]
@@ -392,7 +390,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion
   f_id i := by
-    -- Porting note: added `dsimp only`
+    -- Porting note (#10752): added `dsimp only`
     dsimp only
     exact (h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
   f_open := fun i j : h.J => (h.V i j).openEmbedding
@@ -428,7 +426,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
-  -- Porting note : was not necessary in mathlib3
+  -- Porting note: was not necessary in mathlib3
   f_mono i j := (TopCat.mono_iff_injective _).mpr fun x y h => Subtype.ext h
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk' TopCat.GlueData.mk'
@@ -505,7 +503,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
     --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
     apply congr_arg
-    refine' Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
+    exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
     -- porting note: another `rw ↦ erw`
     -- See above.
@@ -531,7 +529,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
     exact Set.subset_iUnion _ i hx'
   · rintro ⟨_, ⟨i, rfl⟩, hx⟩
     rename_i x
-    refine' ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
+    exact ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.range_from_open_subsets_glue TopCat.GlueData.range_fromOpenSubsetsGlue
 

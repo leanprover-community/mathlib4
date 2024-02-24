@@ -22,7 +22,7 @@ jobs:
         type: 'stream'
         topic: 'CI failure on the nightly-testing branch'
         content: |
-          The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
+          ❌ The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
 
   handle_success:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
@@ -40,8 +40,69 @@ jobs:
         toolchain=$(<lean-toolchain)
         if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
           version=${BASH_REMATCH[1]}
-          git push origin refs/heads/nightly-testing:refs/heads/nightly-testing-$version
+          echo "NIGHTLY=$version" >> $GITHUB_ENV
+          # Check if the remote tag exists
+          if git ls-remote --tags --exit-code origin "nightly-testing-$version" >/dev/null; then
+              echo "Tag nightly-testing-$version already exists on the remote."
+          else
+              # If the tag does not exist, create and push the tag to remote
+              echo "Creating tag nightly-testing-$version from the current state of the nightly-testing branch."
+              git tag nightly-testing-$version
+              git push origin nightly-testing-$version
+          fi
         else
           echo "Error: The file lean-toolchain does not contain the expected pattern."
           exit 1
         fi
+
+    # Next, we'll update the `nightly-with-mathlib` branch at Lean.
+    - name: Cleanup workspace
+      run: |
+        sudo rm -rf *
+    # Checkout the Lean repository on 'nightly-with-mathlib'
+    - name: Checkout Lean repository
+      uses: actions/checkout@v3
+      with:
+        repository: leanprover/lean4
+        token: ${{ secrets.LEAN_PR_TESTING }}
+        ref: nightly-with-mathlib
+    # Merge the relevant nightly.
+    - name: Fetch tags from 'lean4-nightly', and merge relevant nightly into 'nightly-with-mathlib'
+      run: |
+        git remote add nightly https://github.com/leanprover/lean4-nightly.git
+        git fetch nightly --tags
+        # Note: old jobs may run out of order, but it is safe to merge an older `nightly-YYYY-MM-DD`.
+        git merge nightly-${NIGHTLY} --strategy-option ours --allow-unrelated-histories || true
+        git push origin
+
+    # Now post a success message to zulip, if the last message there is not a success message.
+    # https://chat.openai.com/share/87656d2c-c804-4583-91aa-426d4f1537b3
+    - name: Install Zulip API client
+      run: pip install zulip
+
+    - name: Check last message and post if necessary
+      run: |
+        import zulip
+        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key='${{ secrets.ZULIP_API_KEY }}', site='https://leanprover.zulipchat.com')
+
+        # Get the last message in the 'CI failure on the nightly-testing branch' topic
+        request = {
+          'anchor': 'newest',
+          'num_before': 1,
+          'num_after': 0,
+          'narrow': [{'operator': 'stream', 'operand': 'mathlib reviewers'}, {'operator': 'topic', 'operand': 'CI failure on the nightly-testing branch'}],
+          'apply_markdown': True
+        }
+        response = client.get_messages(request)
+        messages = response['messages']
+        if not messages or messages[0]['content'] != "✅ The latest CI for branch#nightly-testing has succeeded!":
+            # Post the success message
+            request = {
+                'type': 'stream',
+                'to': 'mathlib reviewers',
+                'topic': 'CI failure on the nightly-testing branch',
+                'content': '✅ The latest CI for branch#nightly-testing has succeeded!'
+            }
+            result = client.send_message(request)
+            print(result)
+      shell: python

@@ -38,7 +38,7 @@ initial segment (or, equivalently, in any way). This total order is well founded
 
 * `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
   every element of `o₁` is smaller than every element of `o₂`. The main properties of addition
-  (and the other operations on ordinals) are stated and proved in `OrdinalArithmetic.lean`. Here,
+  (and the other operations on ordinals) are stated and proved in `Ordinal/Arithmetic.lean`. Here,
   we only introduce it and prove its basic properties to deduce the fact that the order on ordinals
   is total (and well founded).
 * `succ o` is the successor of the ordinal `o`.
@@ -195,7 +195,7 @@ theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := by
   rfl
 #align ordinal.type_def' Ordinal.type_def'
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := by
   rfl
 #align ordinal.type_def Ordinal.type_def
@@ -302,10 +302,10 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
   (RelIso.preimage f r).ordinal_type_eq
 #align ordinal.type_preimage Ordinal.type_preimage
 
-@[simp]
+@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
 theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
-    convert (RelIso.preimage f r).ordinal_type_eq
+  convert (RelIso.preimage f r).ordinal_type_eq
 
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
@@ -584,7 +584,7 @@ instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
 
 /-- Reformulation of well founded induction on ordinals as a lemma that works with the
-`induction` tactic, as in `induction i using Ordinal.induction with i IH`. -/
+`induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
 theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
     p i :=
   lt_wf.induction i h
@@ -648,7 +648,7 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
 -- @[simp] -- Porting note: Not in simpnf, added aux lemma below
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
     type (ULift.down.{v,u} ⁻¹'o r) = lift.{v} (type r) := by
-  simp
+  simp (config := { unfoldPartialApp := true })
   rfl
 #align ordinal.type_ulift Ordinal.type_uLift
 
@@ -867,7 +867,7 @@ theorem lift_omega : lift ω = ω :=
 In this paragraph, we introduce the addition on ordinals, and prove just enough properties to
 deduce that the order on ordinals is total (and therefore well-founded). Further properties of
 the addition, together with properties of the other operations, are proved in
-`OrdinalArithmetic.lean`.
+`Ordinal/Arithmetic.lean`.
 -/
 
 
@@ -921,7 +921,6 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
     refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
     rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
     refine inductionOn c (fun β s _ ↦ ?_)
-    have := (Embedding.refl β).sumMap f
     refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
     · intros a b
       match a, b with
@@ -1058,7 +1057,7 @@ theorem succ_zero : succ (0 : Ordinal) = 1 :=
 -- Porting note: Proof used to be rfl
 @[simp]
 theorem succ_one : succ (1 : Ordinal) = 2 := by
-  unfold instOfNat OfNat.ofNat
+  unfold instOfNatAtLeastTwo OfNat.ofNat
   simpa using by rfl
 #align ordinal.succ_one Ordinal.succ_one
 
@@ -1133,7 +1132,7 @@ theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {x x' : α}
     typein r x ≤ typein r x' ↔ ¬r x' x := by rw [← not_lt, typein_lt_typein]
 #align ordinal.typein_le_typein Ordinal.typein_le_typein
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem typein_le_typein' (o : Ordinal) {x x' : o.out.α} :
     @typein _ (· < ·) (isWellOrder_out_lt _) x ≤ @typein _ (· < ·) (isWellOrder_out_lt _) x'
       ↔ x ≤ x' := by
@@ -1225,7 +1224,7 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
 -- intended to be used with explicit universe parameters
 /-- `univ.{u v}` is the order type of the ordinals of `Type u` as a member
   of `Ordinal.{v}` (when `u < v`). It is an inaccessible cardinal. -/
- @[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (@type Ordinal (· < ·) _)
 #align ordinal.univ Ordinal.univ
@@ -1312,8 +1311,8 @@ def ord (c : Cardinal) : Ordinal :=
   let F := fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
   Quot.liftOn c F
     (by
-      suffices : ∀ {α β}, α ≈ β → F α ≤ F β
-      exact fun α β h => (this h).antisymm (this (Setoid.symm h))
+      suffices ∀ {α β}, α ≈ β → F α ≤ F β from
+        fun α β h => (this h).antisymm (this (Setoid.symm h))
       rintro α β ⟨f⟩
       refine' le_ciInf_iff'.2 fun i => _
       haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
@@ -1476,7 +1475,7 @@ theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = o
 /-- The cardinal `univ` is the cardinality of ordinal `univ`, or
   equivalently the cardinal of `Ordinal.{u}`, or `Cardinal.{u}`,
   as an element of `Cardinal.{v}` (when `u < v`). -/
-@[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ :=
   lift.{v, u + 1} #Ordinal
 #align cardinal.univ Cardinal.univ
@@ -1510,7 +1509,7 @@ theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
   refine' le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
   have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
-  rw [←h', lift.principalSeg_coe, ← lift_card]
+  rw [← h', lift.principalSeg_coe, ← lift_card]
   apply lift_lt_univ'
 #align cardinal.ord_univ Cardinal.ord_univ
 

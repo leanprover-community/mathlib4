@@ -130,7 +130,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Fintype α] (X : α → Profinite.{u})
+variable {α : Type} [Finite α] (X : α → Profinite.{u})
 
 /--
 The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
@@ -218,14 +218,12 @@ lemma finiteCoproduct.ι_desc_apply {B : Profinite} {π : (a : α) → X a ⟶ B
 
 instance : PreservesFiniteCoproducts profiniteToCompHaus := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) profiniteToCompHaus
-  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) profiniteToCompHaus from
+    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Profinite.finiteCoproduct.isColimit _)
   exact CompHaus.finiteCoproduct.isColimit _
 
 instance : FinitaryExtensive Profinite :=
-  have := fullyFaithfulReflectsLimits profiniteToCompHaus
-  have := fullyFaithfulReflectsColimits profiniteToCompHaus
   finitaryExtensive_of_preserves_and_reflects profiniteToCompHaus
 
 end FiniteCoproducts

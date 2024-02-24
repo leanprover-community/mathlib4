@@ -30,10 +30,10 @@ In this file we define `Gδ` sets and prove their basic properties.
 We prove that finite or countable intersections of Gδ sets are Gδ sets. We also prove that the
 continuity set of a function from a topological space to an (e)metric space is a Gδ set.
 
-- `closed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
+- `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
 its complement is open and dense
-- `meagre_iff_countable_union_nowhereDense`: a set is meagre iff it is contained in a countable
-union of nowhere dense
+- `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
+union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
 ## Tags
@@ -45,8 +45,9 @@ Gδ set, residual set, nowhere dense set, meagre set
 noncomputable section
 
 open Topology TopologicalSpace Filter Encodable Set
+open scoped Uniformity
 
-variable {X Y ι : Type*}
+variable {X Y ι : Type*} {ι' : Sort*}
 
 set_option linter.uppercaseLean3 false
 
@@ -65,50 +66,77 @@ theorem IsOpen.isGδ {s : Set X} (h : IsOpen s) : IsGδ s :=
 #align is_open.is_Gδ IsOpen.isGδ
 
 @[simp]
-theorem isGδ_empty : IsGδ (∅ : Set X) :=
+protected theorem IsGδ.empty : IsGδ (∅ : Set X) :=
   isOpen_empty.isGδ
-#align is_Gδ_empty isGδ_empty
+#align is_Gδ_empty IsGδ.empty
+
+@[deprecated] alias isGδ_empty := IsGδ.empty -- 2024-02-15
 
 @[simp]
-theorem isGδ_univ : IsGδ (univ : Set X) :=
+protected theorem IsGδ.univ : IsGδ (univ : Set X) :=
   isOpen_univ.isGδ
-#align is_Gδ_univ isGδ_univ
+#align is_Gδ_univ IsGδ.univ
 
-theorem isGδ_biInter_of_open {I : Set ι} (hI : I.Countable) {f : ι → Set X}
+@[deprecated] alias isGδ_univ := IsGδ.univ -- 2024-02-15
+
+theorem IsGδ.biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
     (hf : ∀ i ∈ I, IsOpen (f i)) : IsGδ (⋂ i ∈ I, f i) :=
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
-#align is_Gδ_bInter_of_open isGδ_biInter_of_open
+#align is_Gδ_bInter_of_open IsGδ.biInter_of_isOpen
 
--- porting note: TODO: generalize to `Sort*` + `Countable _`
-theorem isGδ_iInter_of_open [Encodable ι] {f : ι → Set X} (hf : ∀ i, IsOpen (f i)) :
+@[deprecated] alias isGδ_biInter_of_isOpen := IsGδ.biInter_of_isOpen -- 2024-02-15
+
+theorem IsGδ.iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
-#align is_Gδ_Inter_of_open isGδ_iInter_of_open
+#align is_Gδ_Inter_of_open IsGδ.iInter_of_isOpen
 
--- porting note: TODO: generalize to `Sort*` + `Countable _`
+@[deprecated] alias isGδ_iInter_of_isOpen := IsGδ.iInter_of_isOpen -- 2024-02-15
+
+lemma isGδ_iff_eq_iInter_nat {s : Set X} :
+    IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
+  refine ⟨?_, ?_⟩
+  · rintro ⟨T, hT, T_count, rfl⟩
+    rcases Set.eq_empty_or_nonempty T with rfl|hT
+    · exact ⟨fun _n ↦ univ, fun _n ↦ isOpen_univ, by simp⟩
+    · obtain ⟨f, hf⟩ : ∃ (f : ℕ → Set X), T = range f := Countable.exists_eq_range T_count hT
+      exact ⟨f, by aesop, by simp [hf]⟩
+  · rintro ⟨f, hf, rfl⟩
+    exact .iInter_of_isOpen hf
+
+alias ⟨IsGδ.eq_iInter_nat, _⟩ := isGδ_iff_eq_iInter_nat
+
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
-theorem isGδ_iInter [Encodable ι] {s : ι → Set X} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
+protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, IsGδ (s i)) :
+    IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine' ⟨⋃ i, T i, _, countable_iUnion hTc, (sInter_iUnion _).symm⟩
-  simpa [@forall_swap ι] using hTo
-#align is_Gδ_Inter isGδ_iInter
+  simpa [@forall_swap ι'] using hTo
+#align is_Gδ_Inter IsGδ.iInter
 
-theorem isGδ_biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
+@[deprecated] alias isGδ_iInter := IsGδ.iInter
+
+theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [biInter_eq_iInter]
-  haveI := hs.toEncodable
-  exact isGδ_iInter fun x => ht x x.2
-#align is_Gδ_bInter isGδ_biInter
+  haveI := hs.to_subtype
+  exact .iInter fun x => ht x x.2
+#align is_Gδ_bInter IsGδ.biInter
+
+@[deprecated] alias isGδ_biInter := IsGδ.biInter -- 2024-02-15
 
 /-- A countable intersection of Gδ sets is a Gδ set. -/
-theorem isGδ_sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Countable) : IsGδ (⋂₀ S) := by
-  simpa only [sInter_eq_biInter] using isGδ_biInter hS h
-#align is_Gδ_sInter isGδ_sInter
+theorem IsGδ.sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Countable) : IsGδ (⋂₀ S) := by
+  simpa only [sInter_eq_biInter] using IsGδ.biInter hS h
+#align is_Gδ_sInter IsGδ.sInter
+
+@[deprecated] -- 2024-02-15
+alias isGδ_sInter := IsGδ.sInter
 
 theorem IsGδ.inter {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
   rw [inter_eq_iInter]
-  exact isGδ_iInter (Bool.forall_bool.2 ⟨ht, hs⟩)
+  exact .iInter (Bool.forall_bool.2 ⟨ht, hs⟩)
 #align is_Gδ.inter IsGδ.inter
 
 /-- The union of two Gδ sets is a Gδ set. -/
@@ -116,26 +144,38 @@ theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t
   rcases hs with ⟨S, Sopen, Scount, rfl⟩
   rcases ht with ⟨T, Topen, Tcount, rfl⟩
   rw [sInter_union_sInter]
-  apply isGδ_biInter_of_open (Scount.prod Tcount)
+  refine .biInter_of_isOpen (Scount.prod Tcount) ?_
   rintro ⟨a, b⟩ ⟨ha, hb⟩
   exact (Sopen a ha).union (Topen b hb)
 #align is_Gδ.union IsGδ.union
 
--- porting note: TODO: add `iUnion` and `sUnion` versions
-/-- The union of finitely many Gδ sets is a Gδ set. -/
-theorem isGδ_biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i ∈ s, IsGδ (f i)) :
-    IsGδ (⋃ i ∈ s, f i) := by
-  refine' Finite.induction_on hs (by simp) _ h
-  simp only [ball_insert_iff, biUnion_insert]
-  exact fun _ _ ihs H => H.1.union (ihs H.2)
-#align is_Gδ_bUnion isGδ_biUnion
+/-- The union of finitely many Gδ sets is a Gδ set, `Set.sUnion` version. -/
+theorem IsGδ.sUnion {S : Set (Set X)} (hS : S.Finite) (h : ∀ s ∈ S, IsGδ s) : IsGδ (⋃₀ S) := by
+  induction S, hS using Set.Finite.dinduction_on with
+  | H0 => simp
+  | H1 _ _ ih =>
+    simp only [ball_insert_iff, sUnion_insert] at *
+    exact h.1.union (ih h.2)
 
--- Porting note: Did not recognize notation 𝓤 X, needed to replace with uniformity X
-theorem IsClosed.isGδ {X} [UniformSpace X] [IsCountablyGenerated (uniformity X)] {s : Set X}
+/-- The union of finitely many Gδ sets is a Gδ set, bounded indexed union version. -/
+theorem IsGδ.biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i ∈ s, IsGδ (f i)) :
+    IsGδ (⋃ i ∈ s, f i) := by
+  rw [← sUnion_image]
+  exact .sUnion (hs.image _) (ball_image_iff.2 h)
+#align is_Gδ_bUnion IsGδ.biUnion
+
+@[deprecated] -- 2024-02-15
+alias isGδ_biUnion := IsGδ.biUnion
+
+/-- The union of finitely many Gδ sets is a Gδ set, bounded indexed union version. -/
+theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
+  .sUnion (finite_range _) <| forall_range_iff.2 h
+
+theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
     (hs : IsClosed s) : IsGδ s := by
   rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
-  refine' isGδ_biInter (to_countable _) fun n _ => IsOpen.isGδ _
+  refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
   exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
 #align is_closed.is_Gδ IsClosed.isGδ
 
@@ -143,13 +183,15 @@ section T1Space
 
 variable [T1Space X]
 
-theorem isGδ_compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
+theorem IsGδ.compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
-#align is_Gδ_compl_singleton isGδ_compl_singleton
+#align is_Gδ_compl_singleton IsGδ.compl_singleton
+
+@[deprecated] alias isGδ_compl_singleton := IsGδ.compl_singleton -- 2024-02-15
 
 theorem Set.Countable.isGδ_compl {s : Set X} (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
-  exact isGδ_biInter hs fun x _ => isGδ_compl_singleton x
+  exact .biInter hs fun x _ => .compl_singleton x
 #align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
 
 theorem Set.Finite.isGδ_compl {s : Set X} (hs : s.Finite) : IsGδ sᶜ :=
@@ -166,14 +208,16 @@ theorem Finset.isGδ_compl (s : Finset X) : IsGδ (sᶜ : Set X) :=
 
 variable [FirstCountableTopology X]
 
-theorem isGδ_singleton (x : X) : IsGδ ({x} : Set X) := by
+protected theorem IsGδ.singleton (x : X) : IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
-  exact isGδ_biInter (to_countable _) fun n _ => (hU n).2.isGδ
-#align is_Gδ_singleton isGδ_singleton
+  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
+#align is_Gδ_singleton IsGδ.singleton
+
+@[deprecated] alias isGδ_singleton := IsGδ.singleton -- 2024-02-15
 
 theorem Set.Finite.isGδ {s : Set X} (hs : s.Finite) : IsGδ s :=
-  Finite.induction_on hs isGδ_empty fun _ _ hs => (isGδ_singleton _).union hs
+  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
 #align set.finite.is_Gδ Set.Finite.isGδ
 
 end T1Space
@@ -185,16 +229,18 @@ section ContinuousAt
 variable [TopologicalSpace X]
 
 /-- The set of points where a function is continuous is a Gδ set. -/
-theorem isGδ_setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (uniformity Y)] (f : X → Y) :
+theorem IsGδ.setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (𝓤 Y)] (f : X → Y) :
     IsGδ { x | ContinuousAt f x } := by
   obtain ⟨U, _, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
   simp only [(nhds_basis_opens _).prod_self.tendsto_iff hU.toHasBasis, forall_prop_of_true,
     setOf_forall, id]
-  refine' isGδ_iInter fun k => IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x => _
+  refine .iInter fun k ↦ IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x ↦ ?_
   rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
   filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
-#align is_Gδ_set_of_continuous_at isGδ_setOf_continuousAt
+#align is_Gδ_set_of_continuous_at IsGδ.setOf_continuousAt
+
+@[deprecated] alias isGδ_setOf_continuousAt := IsGδ.setOf_continuousAt -- 2024-02-15
 
 end ContinuousAt
 
@@ -242,7 +288,7 @@ def IsNowhereDense (s : Set X) := interior (closure s) = ∅
 
 /-- The empty set is nowhere dense. -/
 @[simp]
-lemma isNowhereDense_of_empty : IsNowhereDense (∅ : Set X) := by
+lemma isNowhereDense_empty : IsNowhereDense (∅ : Set X) := by
   rw [IsNowhereDense, closure_empty, interior_empty]
 
 /-- A closed set is nowhere dense iff its interior is empty. -/
@@ -256,12 +302,12 @@ protected lemma IsNowhereDense.closure {s : Set X} (hs : IsNowhereDense s) :
   rwa [IsNowhereDense, closure_closure]
 
 /-- A nowhere dense set `s` is contained in a closed nowhere dense set (namely, its closure). -/
-lemma IsNowhereDense.subset_of_closed_nowhereDense {s : Set X} (hs : IsNowhereDense s) :
+lemma IsNowhereDense.subset_of_closed_isNowhereDense {s : Set X} (hs : IsNowhereDense s) :
     ∃ t : Set X, s ⊆ t ∧ IsNowhereDense t ∧ IsClosed t :=
   ⟨closure s, subset_closure, ⟨hs.closure, isClosed_closure⟩⟩
 
 /-- A set `s` is closed and nowhere dense iff its complement `sᶜ` is open and dense. -/
-lemma closed_isNowhereDense_iff_compl {s : Set X} :
+lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
@@ -283,21 +329,22 @@ lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
   hs.mono (inter_subset_left s t)
 
 /-- A countable union of meagre sets is meagre. -/
-lemma meagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
+lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by
   rw [IsMeagre, compl_iUnion]
   exact countable_iInter_mem.mpr hs
 
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
-lemma meagre_iff_countable_union_nowhereDense {s : Set X} : IsMeagre s ↔
-    ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
+lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
+    IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
   rw [IsMeagre, mem_residual_iff, compl_bijective.surjective.image_surjective.exists]
-  simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← closed_isNowhereDense_iff_compl,
+  simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← isClosed_isNowhereDense_iff_compl,
     sInter_image, ← compl_iUnion₂, compl_subset_compl, ← sUnion_eq_biUnion, and_assoc]
-  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS s hs).2, ?_, hsub⟩, fun ⟨S, hS, hc, hsub⟩ ↦ ?_⟩
+  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS s hs).2, ?_, hsub⟩, ?_⟩
   · rw [← compl_compl_image S]; exact hc.image _
-  use closure '' S
-  rw [ball_image_iff]
-  exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
-    (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
+  · intro ⟨S, hS, hc, hsub⟩
+    use closure '' S
+    rw [ball_image_iff]
+    exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
+      (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
 
 end meagre

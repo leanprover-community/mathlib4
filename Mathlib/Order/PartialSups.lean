@@ -5,7 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Data.Set.Finite
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import order.partial_sups from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -122,6 +123,10 @@ theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
   eq_of_forall_ge_iff fun _ ↦ by simp [Nat.lt_succ_iff]
 #align partial_sups_eq_sup'_range partialSups_eq_sup'_range
 
+lemma partialSups_apply {ι : Type*} {π : ι → Type*} [(i : ι) → SemilatticeSup (π i)]
+    (f : ℕ → (i : ι) → π i) (n : ℕ) (i : ι) : partialSups f n i = partialSups (f · i) n := by
+  simp only [partialSups_eq_sup'_range, Finset.sup'_apply]
+
 end SemilatticeSup
 
 theorem partialSups_eq_sup_range [SemilatticeSup α] [OrderBot α] (f : ℕ → α) (n : ℕ) :
@@ -175,7 +180,7 @@ theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ 
   simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f n
 #align partial_sups_eq_bsupr partialSups_eq_biSup
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 #align supr_partial_sups_eq iSup_partialSups_eq

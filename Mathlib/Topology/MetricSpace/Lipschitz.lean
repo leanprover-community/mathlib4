@@ -32,8 +32,6 @@ coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` 
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
-set_option autoImplicit true
-
 universe u v w x
 
 open Filter Function Set Topology NNReal ENNReal Bornology
@@ -189,6 +187,11 @@ theorem _root_.lipschitzWith_min : LipschitzWith 1 fun p : ℝ × ℝ => min p.1
   LipschitzWith.of_le_add fun _ _ => sub_le_iff_le_add'.1 <|
     (le_abs_self _).trans (abs_min_sub_min_le_max _ _ _ _)
 #align lipschitz_with_min lipschitzWith_min
+
+lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
+  refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ ?_)
+  simpa only [ge_iff_le, NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
+    lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
 
 end Metric
 

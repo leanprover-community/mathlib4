@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 import Mathlib.Data.Real.Cardinality
-import Mathlib.Topology.Perfect
+import Mathlib.Topology.MetricSpace.Perfect
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 #align_import measure_theory.constructions.polish from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
@@ -72,18 +72,18 @@ This is useful in situations where a space has no natural topology or
 the natural topology in a space is non-Polish.
 
 To endow a standard Borel space `α` with a compatible Polish topology, use
-`letI := upgradePolishSpace α`. One can then use `eq_borel_upgradeStandardBorel α` to
+`letI := upgradeStandardBorel α`. One can then use `eq_borel_upgradeStandardBorel α` to
 rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology.-/
 class StandardBorelSpace [MeasurableSpace α] : Prop where
   /-- There exists a compatible Polish topology. -/
   polish : ∃ _ : TopologicalSpace α, BorelSpace α ∧ PolishSpace α
 
 /-- A convenience class similar to `UpgradedPolishSpace`. No instance should be registered.
-Instead one should use `letI := upgradePolishSpace α`. -/
+Instead one should use `letI := upgradeStandardBorel α`. -/
 class UpgradedStandardBorel extends MeasurableSpace α, TopologicalSpace α,
   BorelSpace α, PolishSpace α
 
-/-- Use as `letI := upgradePolishSpace α` to endow a standard Borel space `α` with
+/-- Use as `letI := upgradeStandardBorel α` to endow a standard Borel space `α` with
 a compatible Polish topology.
 
 Warning: following this with `borelize α` will cause an error. Instead, one can
@@ -338,7 +338,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
     exists_polishSpace_forall_le T Tt Tpolish
   refine' ⟨t', t't, _, t'_polish⟩
   have : Continuous[t', _] (rangeFactorization f) :=
-    hb.continuous _ fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
+    hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
   exact continuous_subtype_val.comp this
 #align measurable.exists_continuous Measurable.exists_continuous
 
@@ -589,7 +589,7 @@ if and only if the intesection with `Set.range f` is measurable. -/
 theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTopology (range f)]
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Y} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
-  rw [hf.measurableSet_preimage_iff_preimage_val,
+  rw [hf.measurableSet_preimage_iff_preimage_val, inter_comm,
     ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
 #align measurable.measurable_set_preimage_iff_inter_range Measurable.measurableSet_preimage_iff_inter_range
 
@@ -651,7 +651,7 @@ namespace MeasureTheory
 
 variable {γ : Type*}
 
-/-- The Lusin-Souslin theorem: the range of a continuous injective function defined on a Polish
+/-- The **Lusin-Souslin theorem**: the range of a continuous injective function defined on a Polish
 space is Borel-measurable. -/
 theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpace γ]
     [PolishSpace γ] [TopologicalSpace β] [T2Space β] [MeasurableSpace β] [OpensMeasurableSpace β]
@@ -749,7 +749,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by
       intro m n
       rw [← not_disjoint_iff_nonempty_inter]
-      by_contra' h
+      by_contra! h
       have A : x ∈ q ⟨(s m, s n), h⟩ \ q ⟨(s n, s m), h.symm⟩ :=
         haveI := mem_iInter.1 (hxs m).2 (s n)
         (mem_iInter.1 this h : _)
@@ -777,7 +777,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       rw [← this]
       exact mem_range_self _
     -- assume for a contradiction that `f z ≠ x`.
-    by_contra' hne
+    by_contra! hne
     -- introduce disjoint open sets `v` and `w` separating `f z` from `x`.
     obtain ⟨v, w, v_open, w_open, fzv, xw, hvw⟩ := t2_separation hne
     obtain ⟨δ, δpos, hδ⟩ : ∃ δ > (0 : ℝ), ball z δ ⊆ f ⁻¹' v := by
@@ -920,6 +920,19 @@ theorem isClopenable_iff_measurableSet
   rw [← borel_eq_borel_of_le t'_polish _ t't]
   · exact MeasurableSpace.measurableSet_generateFrom s_open
   infer_instance
+
+/-- The set of points for which a sequence of measurable functions converges to a given function
+is measurable. -/
+@[measurability]
+lemma measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
+    {l : Filter ι} [l.IsCountablyGenerated]
+    [TopologicalSpace γ] [SecondCountableTopology γ] [PseudoMetrizableSpace γ]
+    [OpensMeasurableSpace γ]
+    {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) {g : β → γ} (hg : Measurable g) :
+    MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) } := by
+  letI := TopologicalSpace.pseudoMetrizableSpacePseudoMetric γ
+  simp_rw [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
+  exact measurableSet_tendsto (𝓝 0) (fun n ↦ (hf n).dist hg)
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]

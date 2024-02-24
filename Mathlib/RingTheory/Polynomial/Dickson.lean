@@ -176,8 +176,7 @@ set_option linter.uppercaseLean3 false in
 `n`-th. -/
 theorem dickson_one_one_mul (m n : ℕ) :
     dickson 1 (1 : R) (m * n) = (dickson 1 1 m).comp (dickson 1 1 n) := by
-  have h : (1 : R) = Int.castRingHom R 1
-  simp only [eq_intCast, Int.cast_one]
+  have h : (1 : R) = Int.castRingHom R 1 := by simp only [eq_intCast, Int.cast_one]
   rw [h]
   simp only [← map_dickson (Int.castRingHom R), ← map_comp]
   congr 1
@@ -231,7 +230,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     -- For every `x`, that set is finite (since it is governed by a quadratic equation).
     -- For the moment, we claim that all these sets together cover `K`.
     suffices (Set.univ : Set K) =
-        { x : K | ∃ y : K, x = y + y⁻¹ ∧ y ≠ 0 } >>= fun x => { y | x = y + y⁻¹ ∨ y = 0 } by
+        ⋃ x ∈ { x : K | ∃ y : K, x = y + y⁻¹ ∧ y ≠ 0 }, { y | x = y + y⁻¹ ∨ y = 0 }  by
       rw [this]
       clear this
       refine' h.biUnion fun x _ => _
@@ -266,8 +265,8 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
 #align polynomial.dickson_one_one_zmod_p Polynomial.dickson_one_one_zmod_p
 
 theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by
-  have h : (1 : R) = ZMod.castHom (dvd_refl p) R 1
-  simp only [ZMod.castHom_apply, ZMod.cast_one']
+  have h : (1 : R) = ZMod.castHom (dvd_refl p) R 1 := by
+    simp only [ZMod.castHom_apply, ZMod.cast_one']
   rw [h, ← map_dickson (ZMod.castHom (dvd_refl p) R), dickson_one_one_zmod_p, Polynomial.map_pow,
     map_X]
 #align polynomial.dickson_one_one_char_p Polynomial.dickson_one_one_charP

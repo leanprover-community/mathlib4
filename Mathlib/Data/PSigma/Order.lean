@@ -7,6 +7,7 @@ import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
 import Mathlib.Mathport.Notation
 import Init.NotationExtra
+import Mathlib.Data.Sigma.Basic
 
 #align_import data.psigma.order from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 

@@ -375,7 +375,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   dsimp [Pairwise.diagram] <;>
   simp only [Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
   · rw [← cancel_mono (F.1.map (eqToHom <| inf_comm : U ⊓ V ⟶ _).op), Category.assoc,
-      Category.assoc, ←F.1.map_comp, ←F.1.map_comp]
+      Category.assoc, ← F.1.map_comp, ← F.1.map_comp]
     exact s.condition.symm
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.inter_union_pullback_cone_lift TopCat.Sheaf.interUnionPullbackConeLift
@@ -453,7 +453,7 @@ set_option linter.uppercaseLean3 false in
 /-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
 def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) :
     F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
-    -- Porting note : Lean 3 is able to figure out the ring homomorphism automatically
+    -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
     RingHom.eqLocus
       (RingHom.comp (F.val.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op)
         (RingHom.fst (F.val.obj <| op U) (F.val.obj <| op V)))
