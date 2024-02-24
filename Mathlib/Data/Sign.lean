@@ -277,7 +277,7 @@ theorem coe_neg_one : ↑(-1 : SignType) = (-1 : α) :=
   rfl
 #align sign_type.coe_neg_one SignType.coe_neg_one
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_neg {α : Type*} [One α] [SubtractionMonoid α] (s : SignType) :
     (↑(-s) : α) = -↑s := by
   cases s <;> simp
