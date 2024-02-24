@@ -98,7 +98,7 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
   · apply EqvGen.refl
   · simp only [Quiver.Path.reverse]
     fapply EqvGen.trans
-    -- Porting note : `Quiver.Path.*` and `Quiver.Hom.*` notation not working
+    -- Porting note: `Quiver.Path.*` and `Quiver.Hom.*` notation not working
     · exact q ≫ Quiver.Path.reverse q
     · apply EqvGen.symm
       apply EqvGen.rel
@@ -108,7 +108,7 @@ theorem congr_comp_reverse {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
         apply Quotient.CompClosure.intro
         apply redStep.step
       simp only [Category.assoc, Category.id_comp] at this ⊢
-      -- Porting note : `simp` cannot see how `Quiver.Path.comp_assoc` is relevant, so change to
+      -- Porting note: `simp` cannot see how `Quiver.Path.comp_assoc` is relevant, so change to
       -- category notation
       change Quotient.CompClosure redStep (q ≫ Quiver.Path.reverse q)
         (Quiver.Path.cons q f ≫ (Quiver.Hom.toPath (Quiver.reverse f)) ≫ (Quiver.Path.reverse q))
