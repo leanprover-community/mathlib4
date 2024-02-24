@@ -27,8 +27,22 @@ a group homomorphism `(L ≃+* L) →* ℤₚ`; this is the `p`-adic cyclotomic 
 Let `L` be an integral domain, `g : L ≃+* L` and `n : ℕ+`. Let `d` be the number of `n`th roots
 of `1` in `L`.
 
-* `ModularCyclotomicCharacter n : L ≃+* L →* ZMod d` sends `g` to the unique `j` such
-   that `g(ζ)=ζ^j` for all `ζ : rootsOfUnity n L`.
+* `ModularCyclotomicCharacter L n hn : (L ≃+* L) →* (ZMod n)ˣ` sends `g` to the unique `j` such
+   that `g(ζ)=ζ^j` for all `ζ : rootsOfUnity n L`. Here `hn` is a proof that there
+   are `n` `n`th roots of unity in `L`.
+
+## Implementation note
+
+In theory this could be set up as some theory about monoids, being a character
+on monoid isomorphisms, but under the hypotheses that the `n`'th roots of unity
+are cyclic of order `n`. The advantage of sticking to integral domains is that finite subgroups
+are guaranteed to be cyclic, so the weaker assumption that there are `n` `n`th
+roots of unity is enough. All the applications I'm aware of are when `L` is a
+field anyway.
+
+Although I don't know whether it's of any use, `ModularCyclotomicCharacter'`
+is the general case for integral domains, with target in `(ZMod d)ˣ`
+where `d` is the number of `n`th roots of unity in `L`.
 
 ## Todo
 
@@ -150,7 +164,7 @@ end ModularCyclotomicCharacter
 variable (L)
 
 /-- Given a positive integer `n`, `ModularCyclotomicCharacter' n` is a
-multiplicative homomorphism from the automorphisms of a field `L` to `ℤ/dℤ`,
+multiplicative homomorphism from the automorphisms of a field `L` to `ℤ/dℤˣ`,
 where `d` is the number of `n`'th roots of unity in `L`. It is uniquely
 characterised by the property that `g(ζ)=ζ^(ModularCyclotomicCharacter n g)`
 for `g` an automorphism of `L` and `ζ` an `n`th root of unity. -/
@@ -164,7 +178,7 @@ def ModularCyclotomicCharacter' (n : ℕ+) :
 /-- Given a positive integer `n` and a field `L` containing `n` `n`th roots
 of unity, `ModularCyclotomicCharacter n` is a multiplicative homomorphism from the
 automorphisms of `L` to `ℤ/nℤ`. It is uniquely characterised by the property that
-`g(ζ)=ζ^(ModularCyclotomicCharacter n g)` for `g` an automorphism of `L` and `ζ` an `n`th root
+`g(ζ)=ζ^(ModularCyclotomicCharacter n g)` for `g` an automorphism of `L` and `ζ` any `n`th root
 of unity. -/
 noncomputable def ModularCyclotomicCharacter (n : ℕ+)
     (hn : Fintype.card { x // x ∈ rootsOfUnity n L } = n) :
