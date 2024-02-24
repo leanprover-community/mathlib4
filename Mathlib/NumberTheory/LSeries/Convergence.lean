@@ -83,11 +83,30 @@ lemma abscissaOfAbsConv_le_of_le_const_mul_rpow {f : ArithmeticFunction ℂ} {x 
   exact (LSeriesSummable_of_le_const_mul_rpow (s := y) (EReal.coe_lt_coe_iff.mp hy₁) h
     |>.abscissaOfAbsConv_le.trans_lt hy₂).false
 
-/-- If `f` is bounded, the the abscissa of absolute convergence of `f` is bounded above by `1`. -/
+open Filter in
+/-- If `‖f n‖` is `O(n^x)`, then the abscissa of absolute convergence
+of `f` is bounded by `x + 1`. -/
+lemma abscissaOfAbsConv_le_of_isBigO_rpow {f : ArithmeticFunction ℂ} {x : ℝ}
+    (h : f =O[atTop] fun n ↦ (n : ℝ) ^ x) : abscissaOfAbsConv f ≤ x + 1 := by
+  rw [show x = x + 1 - 1 by ring] at h
+  by_contra! H
+  obtain ⟨y, hy₁, hy₂⟩ := EReal.exists_between_coe_real H
+  exact (LSeriesSummable_of_isBigO_rpow (s := y) (EReal.coe_lt_coe_iff.mp hy₁) h
+    |>.abscissaOfAbsConv_le.trans_lt hy₂).false
+
+/-- If `f` is bounded, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
 lemma abscissaOfAbsConv_le_of_le_const {f : ArithmeticFunction ℂ}
     (h : ∃ C, ∀ n, ‖f n‖ ≤ C) : abscissaOfAbsConv f ≤ 1 := by
   convert abscissaOfAbsConv_le_of_le_const_mul_rpow (x := 0) ?_
   · norm_num
   · simpa only [norm_eq_abs, Real.rpow_zero, mul_one] using h
+
+open Filter in
+/-- If `f` is `O(1)`, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
+lemma abscissaOfAbsConv_isBigO_one {f : ArithmeticFunction ℂ}
+    (h : f =O[atTop] fun n ↦ (1 : ℝ)) : abscissaOfAbsConv f ≤ 1 := by
+  convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_
+  · norm_num
+  · simpa only [Real.rpow_zero] using h
 
 end ArithmeticFunction
