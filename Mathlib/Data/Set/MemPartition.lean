@@ -23,7 +23,7 @@ The partition `memPartition f (n + 1)` is finer than `memPartition f n`.
 
 * `disjoint_memPartition`: the sets in `memPartition f n` are disjoint
 * `sUnion_memPartition`: the union of the sets in `memPartition f n` is `univ`
-* `memPartition_finite`: `memPartition f n` is finite
+* `finite_memPartition`: `memPartition f n` is finite
 
 -/
 
@@ -65,6 +65,7 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
     · refine Disjoint.mono (diff_subset _ _) (diff_subset _ _) (ih hu' hv' ?_)
       exact fun huv' ↦ huv (huv' ▸ rfl)
 
+@[simp]
 lemma sUnion_memPartition (f : ℕ → Set α) (n : ℕ) : ⋃₀ memPartition f n = univ := by
   induction n with
   | zero => simp
@@ -79,7 +80,7 @@ lemma sUnion_memPartition (f : ℕ → Set α) (n : ℕ) : ⋃₀ memPartition f
     · exact ⟨t ∩ f (n + 1), ⟨t, ht, Or.inl rfl⟩, hxt, hxf⟩
     · exact ⟨t \ f (n + 1), ⟨t, ht, Or.inr rfl⟩, hxt, hxf⟩
 
-lemma memPartition_finite (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartition f n) := by
+lemma finite_memPartition (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartition f n) := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -92,4 +93,4 @@ lemma memPartition_finite (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartit
     simp
 
 instance instFinite_memPartition (f : ℕ → Set α) (n : ℕ) : Finite (memPartition f n) :=
-  Set.finite_coe_iff.mp (memPartition_finite _ _)
+  Set.finite_coe_iff.mp (finite_memPartition _ _)

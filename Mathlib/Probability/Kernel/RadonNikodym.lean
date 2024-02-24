@@ -77,15 +77,11 @@ lemma set_lintegral_rnDerivAux (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFin
     (a : α) {s : Set γ} (hs : MeasurableSet s) :
     ∫⁻ x in s, ENNReal.ofReal (kernel.rnDerivAux κ (κ + ν) a x) ∂(κ + ν) a = κ a s := by
   have h_le : κ ≤ κ + ν := le_add_of_nonneg_right bot_le
-  rw [← ofReal_integral_eq_lintegral_ofReal]
-  · unfold kernel.rnDerivAux
-    rw [set_integral_density (kernel.fst_map_prod_le_of_le h_le) a MeasurableSet.univ hs,
-      ENNReal.ofReal_toReal, kernel.map_apply' _ _ _ (hs.prod MeasurableSet.univ)]
-    · congr with x
-      simp
-    · exact measure_ne_top _ _
-  · exact (integrable_density (kernel.fst_map_prod_le_of_le h_le) a MeasurableSet.univ).restrict
-  · exact ae_of_all _ (fun x ↦ density_nonneg (kernel.fst_map_prod_le_of_le h_le) _ _ _)
+  simp_rw [kernel.rnDerivAux]
+  rw [set_lintegral_density (kernel.fst_map_prod_le_of_le h_le) _ MeasurableSet.univ hs,
+    kernel.map_apply' _ _ _ (hs.prod MeasurableSet.univ)]
+  congr with x
+  simp
 
 lemma withDensity_rnDerivAux (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
     kernel.withDensity (κ + ν)

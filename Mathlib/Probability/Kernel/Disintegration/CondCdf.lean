@@ -36,16 +36,9 @@ The construction of the conditional cdf in this file follows the proof of Theore
 
 -/
 
-
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology
-
-section AuxLemmasToBeMoved
-
-variable {α β ι : Type*}
-
-end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
 
