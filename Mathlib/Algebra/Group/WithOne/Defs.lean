@@ -180,7 +180,7 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 #align with_one.cases_on WithOne.cases_on
 #align with_zero.cases_on WithZero.cases_on
 
--- port note: I don't know if `elab_as_elim` is being added to the additivised declaration.
+-- Porting note: I don't know if `elab_as_elim` is being added to the additivised declaration.
 attribute [elab_as_elim] WithZero.cases_on
 
 @[to_additive]

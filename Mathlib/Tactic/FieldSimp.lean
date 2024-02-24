@@ -64,7 +64,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     let ctx ← readThe Simp.Context
     let usedTheorems := (← get).usedTheorems
 
-    -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
+    -- Porting note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
     -- does not explicitly call `simp` recursively like this. It's unclear to me
     -- whether this is because
     --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
