@@ -60,7 +60,7 @@ lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a
 
 variable {m : ℕ}
 
-private def supOfSeq (a : Fin m → ℕ) := max m (Finset.sup .univ a) + 1
+private def supOfSeq (a : Fin m → ℕ) : ℕ := max m (Finset.sup .univ a) + 1
 
 private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (supOfSeq a)! + 1
 
@@ -100,7 +100,7 @@ lemma beta_function_lemma (l : List ℕ) (i : Fin l.length) :
     beta (beta_unbeta_coe l) i = l.get i := by
   simpa[beta, beta_unbeta_coe, coprimes] using mod_eq_of_modEq
     ((chineseRemainderOfFinset l.get (coprimes l.get) Finset.univ
-      (by simp[coprimes])
+      (by simp [coprimes])
       (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _))).prop i (by simp))
     (coprimes_lt l.get _)
 
