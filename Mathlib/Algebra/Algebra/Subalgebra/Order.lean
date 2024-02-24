@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Module.Order
+import Mathlib.Algebra.Module.Submodule.Order
 import Mathlib.RingTheory.Subsemiring.Order
 import Mathlib.RingTheory.Subring.Order
 
