@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Subring.Order
 
 namespace Subalgebra
 
-variables {R A : Type*}
+variable {R A : Type*}
 
 instance toOrderedSemiring [CommSemiring R] [OrderedSemiring A] [Algebra R A]
     (S : Subalgebra R A) : OrderedSemiring S :=
