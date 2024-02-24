@@ -5,6 +5,20 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.GCD.BigOperators
+/-!
+# Chinese Remainder Theorem
+
+This file provides definitions and theorems for the Chinese Remainder Theorem. These are used in
+Gödel's Beta Function, which is used in proving Gödel's incompleteness theorems.
+
+## Main result
+
+- `chineseRemainderOfList`: Definition of the Chinese remainder of a list
+
+## Tags
+
+Chinese Remainder Theorem, Gödel, beta function
+-/
 
 namespace Nat
 
