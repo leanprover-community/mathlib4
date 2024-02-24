@@ -570,7 +570,9 @@ theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
   rw [intCast_def, ← zsmul_one, smul_tmul, zsmul_one]
 
 -- verify there are no diamonds
-example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
+example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
+  with_reducible_and_instances rfl
+-- fails at `with_reducible_and_instances rfl` #10906
 example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
