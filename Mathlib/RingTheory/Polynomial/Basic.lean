@@ -742,7 +742,7 @@ variable [CommRing R]
 /-- If `P` is a prime ideal of `R`, then `P.R[x]` is a prime ideal of `R[x]`. -/
 theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     IsPrime (map (C : R →+* R[X]) P : Ideal R[X]) ↔ IsPrime P := by
-  -- Porting note: the following proof avoids quotient rings
+  -- Note: the following proof avoids quotient rings
   -- It can be golfed substantially by using something like
   -- `(Quotient.isDomain_iff_prime (map C P : Ideal R[X]))`
   constructor
