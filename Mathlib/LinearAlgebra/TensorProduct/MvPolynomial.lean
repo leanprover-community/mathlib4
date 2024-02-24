@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.RingTheory.TensorProduct
 
 /-!
 
@@ -26,11 +27,15 @@ open DirectSum TensorProduct
 open Set LinearMap Submodule
 
 variable {R : Type u} {M : Type v} {N : Type w}
-  [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+  [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable {σ : Type u} [DecidableEq σ]
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
+
+section Module
+
+variable   [AddCommMonoid N] [Module R N]
 
 noncomputable def MvPolynomial.rTensor' :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
@@ -64,4 +69,21 @@ lemma MvPolynomial.rTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d :
 lemma MvPolynomial.rTensor_symm_apply_single (d : σ →₀ ℕ) (n : N) :
     MvPolynomial.rTensor.symm (Finsupp.single d n) = (MvPolynomial.monomial d 1) ⊗ₜ[R] n :=
   TensorProduct.finsuppScalarLeft_symm_apply_single d n
+
+end Module
+
+section Algebra
+
+variable [Semiring N] [Algebra R N]
+
+noncomputable def MvPolynomial.rTensorAlgHom :
+    MvPolynomial σ S ⊗[R] N →ₐ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) := by
+  apply AlgHom.ofLinearMap MvPolynomial.rTensor'
+  · sorry
+  · sorry
+
+noncomputable def MvPolynomial.scalarRTensorAlgHom :
+    MvPolynomial σ R ⊗[R] N →ₐ[R] (σ →₀ ℕ) →₀ N := by
+  apply AlgHom.ofLinearMap MvPolynomial.rTensor'
+
 end

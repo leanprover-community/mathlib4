@@ -232,11 +232,14 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
 
 end TensorProduct
 
+end TensorProduct
+
 open scoped Classical in
 -- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
-noncomputable def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommSemiring R] [AddCommMonoid M]
-    [Module R M] [AddCommMonoid N] [Module R N] : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
+noncomputable def finsuppTensorFinsupp (R M N ι κ : Sort _)
+    [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] :
+    (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
   TensorProduct.congr (finsuppLEquivDirectSum R M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
     ((TensorProduct.directSum R (fun _ : ι => M) fun _ : κ => N) ≪≫ₗ
       (finsuppLEquivDirectSum R (M ⊗[R] N) (ι × κ)).symm)
@@ -306,3 +309,6 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : α) (b : β) (r₁ r₂ : 
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
 
 end TensorProduct
+
+example : HasMul (ℕ →₀ ℕ):= by
+  apply?
