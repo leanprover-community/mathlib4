@@ -19,7 +19,7 @@ In particular if we take `R` to be `ℤ`, then this collapse into tensor product
 
 open TensorProduct Function
 
-variable {ι R : Type*} {A : ι → Type*}
+variable {ι R' R : Type*} {A : ι → Type*}
 
 namespace PiTensorProduct
 
@@ -124,18 +124,21 @@ end NonUnitalSemiring
 
 noncomputable section Semiring
 
-variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
+variable [CommSemiring R'] [CommSemiring R] [∀ i, Semiring (A i)]
+variable [Algebra R' R] [∀ i, Algebra R (A i)] [∀ i, Algebra R' (A i)]
+variable [∀ i, IsScalarTower R' R (A i)]
 
 instance instSemiring : Semiring (⨂[R] i, A i) where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
 
-instance instAlgebra : Algebra R (⨂[R] i, A i) where
+instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   __ := hasSMul'
   toFun := (· • 1)
   map_one' := by simp
-  map_mul' r s :=show (r * s) • 1 = mul (r • 1) (s • 1)  by
-    rw [map_smul, map_smul, LinearMap.smul_apply, mul_comm, mul_smul]
+  map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
+    rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
+      mul_smul]
     congr
     show (1 : ⨂[R] i, A i) = 1 * 1
     rw [mul_one]
@@ -144,21 +147,22 @@ instance instAlgebra : Algebra R (⨂[R] i, A i) where
   commutes' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change mul _ _ = mul _ _
-    rw [map_smul, map_smul, LinearMap.smul_apply]
+    rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply]
     change r • (1 * x) = r • (x * 1)
     rw [mul_one, one_mul]
   smul_def' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change _ = mul _ _
-    rw [map_smul, LinearMap.smul_apply]
+    rw [LinearMap.map_smul_of_tower, LinearMap.smul_apply]
     change _ = r • (1 * x)
     rw [one_mul]
 
-lemma algebraMap_apply (r : R) (i : ι) [DecidableEq ι] :
-    algebraMap R (⨂[R] i, A i) r = tprod R (Pi.mulSingle i (algebraMap R (A i) r)) := by
+lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
+    algebraMap R' (⨂[R] i, A i) r = tprod R (Pi.mulSingle i (algebraMap R' (A i) r)) := by
   change r • tprod R 1 = _
-  rw [show Pi.mulSingle i (algebraMap R (A i) r) = update (fun i ↦ 1) i (r • 1) by
-    · rw [Algebra.algebraMap_eq_smul_one]; rfl, MultilinearMap.map_smul, update_eq_self]
+  have : Pi.mulSingle i (algebraMap R' (A i) r) = update (fun i ↦ 1) i (r • 1) := by
+    rw [Algebra.algebraMap_eq_smul_one]; rfl
+  rw [this, ←smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul]
   congr
 
 /--
