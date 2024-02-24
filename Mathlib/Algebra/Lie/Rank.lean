@@ -340,25 +340,37 @@ lemma lieCharpoly_map_eq_toMatrix_charpoly'' [Module.Finite R M] [Module.Free R 
   rw [← lieCharpoly_map_eq_toMatrix_charpoly' φ b bₘ, Basis.repr_symm_apply, Basis.repr_total]
   rfl
 
+open Algebra.TensorProduct TensorProduct in
+lemma lieCharpoly_map_eq_toMatrix_charpoly'''
+    (A : Type*) [CommRing A] [Algebra R A] [Module.Finite A (A ⊗[R] M)] [Module.Free A (A ⊗[R] M)]
+    (x : ι → A) :
+    (lieCharpoly φ b bₘ).map (MvPolynomial.aeval x).toRingHom =
+      LinearMap.charpoly ((TensorProductEndₗ R A M).comp (baseChange A φ)
+        ((basis A b).repr.symm (Finsupp.equivFunOnFinite.symm x))) := by
+  rw [← lieCharpoly_map_eq_toMatrix_charpoly''
+    (TensorProductEndₗ R A M ∘ₗ baseChange A φ) _ (basis A bₘ),
+    lieCharpoly_baseChange, Polynomial.map_map]
+  congr
+  symm
+  apply DFunLike.ext
+  intro
+  apply MvPolynomial.eval_map
+
 open Algebra.TensorProduct MvPolynomial in
 lemma lieCharpoly_basisIndep (bₘ' : Basis ιM R M) :
     lieCharpoly φ b bₘ = lieCharpoly φ b bₘ' := by
-  apply Polynomial.map_injective _
-    (MvPolynomial.map_injective (algebraMap R (MvPolynomial ι R)) (MvPolynomial.C_injective _ _))
-  rw [← lieCharpoly_baseChange, ← lieCharpoly_baseChange]
-  set B := basis (MvPolynomial ι R) b
-  let f : Polynomial (MvPolynomial ι (MvPolynomial ι R)) → Polynomial (MvPolynomial ι R) :=
-    Polynomial.map (MvPolynomial.eval X)
-  suffices Function.Injective f by
-    apply this
-    dsimp only
-    let _h1 : Module.Finite (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
-      Module.Finite.of_basis (basis (MvPolynomial ι R) bₘ)
-    let _h2 : Module.Free (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
-      Module.Free.of_basis (basis (MvPolynomial ι R) bₘ)
-    rw [lieCharpoly_map_eq_toMatrix_charpoly'', lieCharpoly_map_eq_toMatrix_charpoly'']
-  apply Polynomial.map_injective
-  sorry
+  let f : Polynomial (MvPolynomial ι R) → Polynomial (MvPolynomial ι R) :=
+    Polynomial.map (MvPolynomial.aeval X).toRingHom
+  have hf : Function.Injective f := by
+    simp only [aeval_X_left, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, Polynomial.map_id]
+    exact Polynomial.map_injective (RingHom.id _) Function.injective_id
+  apply hf
+  dsimp only
+  let _h1 : Module.Finite (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
+    Module.Finite.of_basis (basis (MvPolynomial ι R) bₘ)
+  let _h2 : Module.Free (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
+    Module.Free.of_basis (basis (MvPolynomial ι R) bₘ)
+  rw [lieCharpoly_map_eq_toMatrix_charpoly''', lieCharpoly_map_eq_toMatrix_charpoly''']
 
 open LinearMap in
 lemma lieCharpoly_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
