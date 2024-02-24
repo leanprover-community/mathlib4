@@ -619,6 +619,7 @@ theorem measure_liminf_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)) ≠ 
 
 theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
     (h : ∀ n, s n =ᵐ[μ] t) : @limsup (Set α) ℕ _ s atTop =ᵐ[μ] t := by
+    -- Need `@` below because of diamond; see gh issue #16932
   simp_rw [ae_eq_set] at h ⊢
   constructor
   · rw [atTop.limsup_sdiff s t]
@@ -631,6 +632,7 @@ theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
 
 theorem liminf_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
     (h : ∀ n, s n =ᵐ[μ] t) : @liminf (Set α) ℕ _ s atTop =ᵐ[μ] t := by
+    -- Need `@` below because of diamond; see gh issue #16932
   simp_rw [ae_eq_set] at h ⊢
   constructor
   · rw [atTop.liminf_sdiff s t]
@@ -1797,6 +1799,7 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
 
 theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : @limsup (Set α) ℕ _ (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
+    -- Need `@` below because of diamond; see gh issue #16932
   haveI : ∀ n, (preimage f)^[n] s =ᵐ[μ] s := by
     intro n
     induction' n with n ih
@@ -1807,6 +1810,7 @@ theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreservi
 
 theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : @liminf (Set α) ℕ _ (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s := by
+    -- Need `@` below because of diamond; see gh issue #16932
   rw [← ae_eq_set_compl_compl, @Filter.liminf_compl (Set α)]
   rw [← ae_eq_set_compl_compl, ← preimage_compl] at hs
   convert hf.limsup_preimage_iterate_ae_eq hs
