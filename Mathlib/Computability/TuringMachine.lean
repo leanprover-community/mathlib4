@@ -1273,6 +1273,23 @@ local notation "CfgQ" => TM0.Cfg Γ Λ
 def trCfg : CfgQ → Cfg₀
   | ⟨q, T⟩ => ⟨(q, Dir'.stay), T⟩
 
+theorem tr_respects : Respects (TMQ.step MQ) (TM0.step (tr MQ))
+  fun a b ↦ trCfg a = b :=
+  fun_respects.2 fun ⟨q, T⟩ ↦ by
+  cases' e : MQ q T.1 with val
+  simp only [trCfg, TMQ.step,e,FRespects,Option.map]
+  simp [TM0.step,tr]
+  exact e
+  cases' val with q' s
+  simp only [trCfg,TMQ.step,e,Option.map,FRespects]
+  cases' s with gamma dir
+  simp
+
+
+
+
+
+
 end
 
 end TMQto0
