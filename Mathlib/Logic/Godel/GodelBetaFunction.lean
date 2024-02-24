@@ -60,7 +60,7 @@ lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a
 
 variable {m : ℕ}
 
-private def supOfSeq (a : Fin m → ℕ) := max m (Finset.sup .univ a) + 1
+private def supOfSeq (a : Fin m → ℕ) : ℕ := max m (Finset.sup .univ a) + 1
 
 private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (supOfSeq a)! + 1
 
