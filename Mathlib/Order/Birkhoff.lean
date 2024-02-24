@@ -242,7 +242,7 @@ end LatticeHom
 variable [DecidableEq α] [@DecidablePred α SupIrred]
 
 
-lemma exists_birkhoff_representation.{u} (α : Type u) [Finite α] [DistribLattice α] /- [Nonempty α]  -/:
+lemma exists_birkhoff_representation.{u} (α : Type u) [Finite α] [DistribLattice α] :
     ∃ (β : Type u) (_ : DecidableEq β) (_ : Fintype β) (f : LatticeHom α (Finset β)),
       Injective f := by
   classical
