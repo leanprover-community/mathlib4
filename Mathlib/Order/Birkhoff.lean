@@ -130,6 +130,8 @@ end PartialOrder
 section DistribLattice
 variable [DistribLattice α]
 
+open Fintype
+
 variable [Fintype α] [OrderBot α]
 
 open scoped Classical
@@ -156,10 +158,11 @@ noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrr
           exact le_sup (Set.mem_toFinset.2 ha) }
     (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
+
 variable (α)
 
 namespace OrderEmbedding
-variable [Fintype α] /- [@DecidablePred α SupIrred] -/
+variable [Fintype α]
 /-- **Birkhoff's Representation Theorem**. Any finite distributive lattice can be embedded in a
 powerset lattice. -/
 noncomputable def birkhoffSet : α ↪o Set {a : α // SupIrred a} := by
@@ -203,8 +206,6 @@ variable [DecidableEq α]
   rw [birkhoffSet_inf, OrderIso.coe_toOrderEmbedding]
   simpa using OrderIso.map_inf _ _ _
 
-variable [OrderBot α]
-
 @[simp] lemma birkhoffSet_apply (a : α) : birkhoffSet α a = OrderIso.lowerSetSupIrred a := by
   simp [birkhoffSet]
 
@@ -232,11 +233,16 @@ lemma birkhoffFinset_injective : Injective (birkhoffFinset α) :=
 
 end LatticeHom
 
-lemma exists_birkhoff_representation.{u} (α : Type u) [Finite α] [DistribLattice α] [OrderBot α] :
+variable [DecidableEq α] [@DecidablePred α SupIrred]
+
+
+lemma exists_birkhoff_representation.{u} (α : Type u) [Finite α] [DistribLattice α] /- [Nonempty α]  -/:
     ∃ (β : Type u) (_ : DecidableEq β) (_ : Fintype β) (f : LatticeHom α (Finset β)),
       Injective f := by
   classical
+  -- by_cases ha : Nonempty α
   cases nonempty_fintype α
+  have := Fintype.toOrderBot α
   exact ⟨{a : α // SupIrred a}, _, by infer_instance, LatticeHom.birkhoffFinset _,
     LatticeHom.birkhoffFinset_injective _⟩
 
