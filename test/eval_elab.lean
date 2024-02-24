@@ -11,7 +11,7 @@ import Std.Tactic.GuardExpr
 section from_zulip
 
 /--
-error: failed to synthesize instance
+error: failed to synthesize
   Lean.ToExpr (Finset (Finset ℕ))
 -/
 #guard_msgs in
