@@ -35,7 +35,7 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
   CanonicallyOrderedCommSemiring, CanonicallyLinearOrderedAddCommMonoid, Sub, Inhabited
 #align nnrat NNRat
 
--- Porting note: Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
+-- Porting note (#10754): Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
 -- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
 

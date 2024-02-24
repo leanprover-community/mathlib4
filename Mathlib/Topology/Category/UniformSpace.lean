@@ -194,7 +194,7 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   property := Completion.uniformContinuous_extension
 #align UniformSpace.extension_hom UniformSpaceCat.extensionHom
 
--- Porting note: added this instance to make things compile
+-- Porting note (#10754): added this instance to make things compile
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
