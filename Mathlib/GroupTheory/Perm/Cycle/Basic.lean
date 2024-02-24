@@ -7,8 +7,8 @@ Authors: Chris Hughes, Yaël Dillies
 import Mathlib.Data.Fintype.Perm
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Finite
+import Mathlib.Algebra.Module.BigOperators
 
--- import Mathlib.Algebra.Module.BigOperators
 -- import Mathlib.Data.Finset.NoncommProd
 -- import Mathlib.Data.Int.ModEq
 
