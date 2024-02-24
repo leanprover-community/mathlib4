@@ -16,12 +16,12 @@ the space of continuous maps `C(α, β)` carries a natural uniform space structu
 uniform space structure in this file and also prove the following properties of the topology it
 induces on `C(α, β)`:
 
- 1. Given a sequence of continuous functions `Fₙ : α → β` together with some continuous `f : α → β`,
-    then `Fₙ` converges to `f` as a sequence in `C(α, β)` iff `Fₙ` converges to `f` uniformly on
-    each compact subset `K` of `α`.
- 2. Given `Fₙ` and `f` as above and suppose `α` is locally compact, then `Fₙ` converges to `f` iff
-    `Fₙ` converges to `f` locally uniformly.
- 3. The topology coincides with the compact-open topology.
+1. Given a sequence of continuous functions `Fₙ : α → β` together with some continuous `f : α → β`,
+   then `Fₙ` converges to `f` as a sequence in `C(α, β)` iff `Fₙ` converges to `f` uniformly on
+   each compact subset `K` of `α`.
+2. Given `Fₙ` and `f` as above and suppose `α` is locally compact, then `Fₙ` converges to `f` iff
+   `Fₙ` converges to `f` locally uniformly.
+3. The topology coincides with the compact-open topology.
 
 Property 1 is essentially true by definition, 2 follows from basic results about uniform
 convergence, but 3 requires a little work and uses the Lebesgue number lemma.
@@ -141,11 +141,12 @@ theorem tendsto_iff_forall_compact_tendstoUniformlyOn
 /-- Interpret a bundled continuous map as an element of `α →ᵤ[{K | IsCompact K}] β`.
 
 We use this map to induce the `UniformSpace` structure on `C(α, β)`. -/
-def toUniformOnCompact (f : C(α, β)) : α →ᵤ[{K | IsCompact K}] β :=
+def toUniformOnFunIsCompact (f : C(α, β)) : α →ᵤ[{K | IsCompact K}] β :=
   UniformOnFun.ofFun {K | IsCompact K} f
 
 @[simp]
-theorem toUniformOnFun_toFun (f : C(α, β)) : UniformOnFun.toFun _ f.toUniformOnFun = f := rfl
+theorem toUniformOnFun_toFun (f : C(α, β)) :
+    UniformOnFun.toFun _ f.toUniformOnFunIsCompact = f := rfl
 
 open UniformSpace in
 /-- Uniform space structure on `C(α, β)`.
@@ -157,15 +158,15 @@ to show that the induced topology agrees with the compact-open topology
 and replace the topology with `compactOpen` to avoid non-defeq diamonds,
 see Note [forgetful inheritance].  -/
 instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
-  .replaceTopology (.comap toUniformOnFun inferInstance) <| by
+  .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
     refine eq_of_nhds_eq_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
     simp_rw [← tendsto_id', tendsto_iff_forall_compact_tendstoUniformlyOn,
       nhds_induced, tendsto_comap_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
     rfl
 #align continuous_map.compact_convergence_uniform_space ContinuousMap.compactConvergenceUniformSpace
 
-theorem uniformEmbedding_toUniformOnFun :
-    UniformEmbedding (toUniformOnFun : C(α, β) → α →ᵤ[{K | IsCompact K}] β) where
+theorem uniformEmbedding_toUniformOnFunIsCompact :
+    UniformEmbedding (toUniformOnFunIsCompact : C(α, β) → α →ᵤ[{K | IsCompact K}] β) where
   comap_uniformity := rfl
   inj := DFunLike.coe_injective
 
@@ -197,7 +198,7 @@ theorem _root_.Filter.HasBasis.compactConvergenceUniformity {ι : Type*} {pi : �
     {s : ι → Set (β × β)} (h : (𝓤 β).HasBasis pi s) :
     HasBasis (𝓤 C(α, β)) (fun p : Set α × ι => IsCompact p.1 ∧ pi p.2) fun p =>
       { fg : C(α, β) × C(α, β) | ∀ x ∈ p.1, (fg.1 x, fg.2 x) ∈ s p.2 } := by
-  rw [← uniformEmbedding_toUniformOnFun.comap_uniformity]
+  rw [← uniformEmbedding_toUniformOnFunIsCompact.comap_uniformity]
   exact .comap _ <| UniformOnFun.hasBasis_uniformity_of_basis _ _ {K | IsCompact K}
     ⟨∅, isCompact_empty⟩ (directedOn_of_sup_mem fun _ _ ↦ IsCompact.union) h
 #align filter.has_basis.compact_convergence_uniformity Filter.HasBasis.compactConvergenceUniformity
