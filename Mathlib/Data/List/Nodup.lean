@@ -318,6 +318,20 @@ theorem Nodup.erase [DecidableEq α] (a : α) : Nodup l → Nodup (l.erase a) :=
   Nodup.sublist <| erase_sublist _ _
 #align list.nodup.erase List.Nodup.erase
 
+theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) :
+    ∀ i : Fin l.length, l.erase (l.get i) = l.eraseIdx ↑i := by
+  induction l with
+  | nil => simp
+  | cons a l IH =>
+    intro i
+    cases i using Fin.cases with
+    | zero => simp
+    | succ i =>
+      rw [nodup_cons] at hl
+      rw [erase_cons_tail]
+      · simp [IH hl.2]
+      · exact fun h ↦ hl.1 <| by simpa [h] using l.get_mem i i.isLt
+
 theorem Nodup.diff [DecidableEq α] : l₁.Nodup → (l₁.diff l₂).Nodup :=
   Nodup.sublist <| diff_sublist _ _
 #align list.nodup.diff List.Nodup.diff
