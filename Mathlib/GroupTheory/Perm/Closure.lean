@@ -4,15 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
 
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Int.ModEq
-import Mathlib.GroupTheory.Perm.List
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Logic.Equiv.Fintype
+import Mathlib.GroupTheory.Perm.Cycle.Basic
 
-import Mathlib.GroupTheory.Perm.Cycle.Factors
+-- import Mathlib.Algebra.Module.BigOperators
+-- import Mathlib.Data.Finset.NoncommProd
+-- import Mathlib.Data.Fintype.Perm
+-- import Mathlib.Data.Int.ModEq
+-- import Mathlib.GroupTheory.Perm.List
+-- import Mathlib.GroupTheory.Perm.Sign
+-- import Mathlib.Logic.Equiv.Fintype
 
 #align_import group_theory.perm.cycle.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
