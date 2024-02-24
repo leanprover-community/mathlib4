@@ -621,8 +621,8 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
 #align cyclotomic_ring.algebra_base CyclotomicRing.algebraBase
 
 -- Ensure that there is no diamonds with ℤ.
-example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = algebraInt _ := by
-  with_reducible_and_instances rfl
+-- but there is at `reducible_and_instances` #10906
+example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = algebraInt _ := rfl
 
 instance : NoZeroSMulDivisors A (CyclotomicRing n A K) :=
   (adjoin A _).noZeroSMulDivisors_bot
