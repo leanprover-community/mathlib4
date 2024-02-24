@@ -8,9 +8,7 @@ import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.Algebra.Order.Ring.InjSurj
 
 /-!
-
-`Order`ed instances for `SubsemiringClass` and `Subsemiring`.
-
+# `Order`ed instances for `SubsemiringClass` and `Subsemiring`.
 -/
 
 namespace SubsemiringClass

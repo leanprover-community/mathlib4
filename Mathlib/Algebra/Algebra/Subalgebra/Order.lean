@@ -9,9 +9,7 @@ import Mathlib.RingTheory.Subsemiring.Order
 import Mathlib.RingTheory.Subring.Order
 
 /-!
-
 # Order instances on subalgebras
-
 -/
 
 namespace Subalgebra

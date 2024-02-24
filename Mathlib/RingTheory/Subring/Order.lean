@@ -7,9 +7,7 @@ Authors: Ashvni Narayanan
 import Mathlib.RingTheory.Subring.Basic
 
 /-!
-
 # Ordered instances on subrings
-
 -/
 
 namespace SubringClass
