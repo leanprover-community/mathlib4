@@ -32,7 +32,7 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 ## References
 
-* [C. Kassel, *Quantum Groups* (§II.4)][kasselTensorProducts1995]
+* [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
 
@@ -322,7 +322,7 @@ protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul 
   -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
       (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this x) y) z
+    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext xa xb ya yb za zb
   exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
@@ -451,7 +451,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   rwa [← f.map_mul, ← g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
-  ext (AlgHom.ext <| fun _ => H _ _) (AlgHom.ext <| fun _ => H _ _)
+  ext (AlgHom.ext fun _ => H _ _) (AlgHom.ext fun _ => H _ _)
 #align algebra.tensor_product.ext Algebra.TensorProduct.ext
 
 end ext
@@ -508,6 +508,30 @@ instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
 
 end NonUnitalRing
 
+section CommSemiring
+variable [CommSemiring R]
+variable [CommSemiring A] [Algebra R A]
+variable [CommSemiring B] [Algebra R B]
+
+instance instCommSemiring : CommSemiring (A ⊗[R] B) where
+  toSemiring := inferInstance
+  mul_comm x y := by
+    refine TensorProduct.induction_on x ?_ ?_ ?_
+    · simp
+    · intro a₁ b₁
+      refine TensorProduct.induction_on y ?_ ?_ ?_
+      · simp
+      · intro a₂ b₂
+        simp [mul_comm]
+      · intro a₂ b₂ ha hb
+        -- porting note (#10745): was `simp` not `rw`
+        rw [mul_add, add_mul, ha, hb]
+    · intro x₁ x₂ h₁ h₂
+      -- porting note (#10745): was `simp` not `rw`
+      rw [mul_add, add_mul, h₁, h₂]
+
+end CommSemiring
+
 section Ring
 variable [CommRing R]
 variable [Ring A] [Algebra R A]
@@ -534,20 +558,7 @@ variable [CommRing B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
-    mul_comm := fun x y => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp
-      · intro a₁ b₁
-        refine TensorProduct.induction_on y ?_ ?_ ?_
-        · simp
-        · intro a₂ b₂
-          simp [mul_comm]
-        · intro a₂ b₂ ha hb
-          -- porting note: was `simp` not `rw`
-          rw [mul_add, add_mul, ha, hb]
-      · intro x₁ x₂ h₁ h₂
-        -- porting note: was `simp` not `rw`
-        rw [mul_add, add_mul, h₁, h₂] }
+    mul_comm := mul_comm }
 
 section RightAlgebra
 
@@ -699,7 +710,10 @@ theorem lift_comp_includeRight (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : �
 
 Pairs of algebra morphisms that commute are equivalent to algebra morphisms from the tensor product.
 
-This is `Algebra.TensorProduct.lift` as an equivalence. -/
+This is `Algebra.TensorProduct.lift` as an equivalence.
+
+See also `GradedTensorProduct.liftEquiv` for an alternative commutativity requirement for graded
+algebra. -/
 @[simps]
 def liftEquiv [IsScalarTower R S A] [IsScalarTower R S C] :
     {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
+import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 
 #align_import algebraic_topology.dold_kan.gamma_comp_n from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
@@ -42,7 +43,7 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
       rw [Fintype.sum_eq_single (0 : Fin (n + 2))]
       · simp only [Fin.val_zero, pow_zero, one_zsmul]
         erw [Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_δ₀,
-          Splitting.ι_πSummand_eq_id, comp_id]
+          Splitting.cofan_inj_πSummand_eq_id, comp_id]
       · intro i hi
         dsimp
         simp only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
@@ -116,7 +117,7 @@ theorem N₁Γ₀_inv_app_f_f (K : ChainComplex C ℕ) (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁Γ₀_inv_app_f_f AlgebraicTopology.DoldKan.N₁Γ₀_inv_app_f_f
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] N₁Γ₀
 
 /-- Compatibility isomorphism between `toKaroubi _ ⋙ Γ₂ ⋙ N₂` and `Γ₀ ⋙ N₁` which
@@ -159,7 +160,7 @@ lemma N₂Γ₂ToKaroubiIso_inv_app (X : ChainComplex C ℕ) :
   rw [Splitting.ι_desc]
   erw [comp_id, id_comp]
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] N₂Γ₂ToKaroubiIso
 
 /-- The counit isomorphism of the Dold-Kan equivalence for additive categories. -/
@@ -172,7 +173,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     (N₂Γ₂.inv.app X).f.f n =
-      X.p.f n ≫ (Γ₀.splitting X.X).ιSummand (Splitting.IndexSet.id (op [n])) := by
+      X.p.f n ≫ ((Γ₀.splitting X.X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
   dsimp [N₂Γ₂]
   simp only [whiskeringLeft_obj_preimage_app, NatTrans.comp_app, Functor.comp_map,
     Karoubi.comp_f, N₂Γ₂ToKaroubiIso_inv_app, HomologicalComplex.comp_f,
@@ -194,7 +195,7 @@ lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
   dsimp only [whiskeringLeft, N₂Γ₂, Functor.preimageIso] at h ⊢
   exact h
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] N₂Γ₂
 
 theorem N₂Γ₂_compatible_with_N₁Γ₀ (K : ChainComplex C ℕ) :

@@ -152,7 +152,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     (f'symm : f'.NonlinearRightInverse) {ε : ℝ} {b : E} (ε0 : 0 ≤ ε) (hε : closedBall b ε ⊆ s) :
     SurjOn f (closedBall b ε) (closedBall (f b) (((f'symm.nnnorm : ℝ)⁻¹ - c) * ε)) := by
   intro y hy
-  cases' le_or_lt (f'symm.nnnorm : ℝ)⁻¹ c with hc hc
+  rcases le_or_lt (f'symm.nnnorm : ℝ)⁻¹ c with hc | hc
   · refine' ⟨b, by simp [ε0], _⟩
     have : dist y (f b) ≤ 0 :=
       (mem_closedBall.1 hy).trans (mul_nonpos_of_nonpos_of_nonneg (by linarith) ε0)
@@ -252,8 +252,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         apply IH.1
       _ = ((c : ℝ) * f'symm.nnnorm) ^ n.succ * dist (f b) y := by simp only [pow_succ']; ring
   -- Deduce from the inductive bound that `uₙ` is a Cauchy sequence, therefore converging.
-  have : CauchySeq u
-  · refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
+  have : CauchySeq u := by
+    refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
     calc
       dist (u n) (u (n + 1)) = dist (g (u n)) (u n) := by rw [usucc, dist_comm]
       _ ≤ f'symm.nnnorm * dist (f (u n)) y := (A _)
@@ -276,7 +276,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   have T2 : Tendsto (f ∘ u) atTop (𝓝 y) := by
     rw [tendsto_iff_dist_tendsto_zero]
     refine' squeeze_zero (fun _ => dist_nonneg) (fun n => (D n).1) _
-    simpa using (tendsto_pow_atTop_nhds_0_of_lt_1 (by positivity) Icf').mul tendsto_const_nhds
+    simpa using (tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) Icf').mul tendsto_const_nhds
   exact tendsto_nhds_unique T1 T2
 #align approximates_linear_on.surj_on_closed_ball_of_nonlinear_right_inverse ApproximatesLinearOn.surjOn_closedBall_of_nonlinearRightInverse
 
@@ -355,7 +355,7 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
     exact fun R h y hy => h hy
 #align approximates_linear_on.surjective ApproximatesLinearOn.surjective
 
-/-- A map approximating a linear equivalence on a set defines a local equivalence on this set.
+/-- A map approximating a linear equivalence on a set defines a partial equivalence on this set.
 Should not be used outside of this file, because it is superseded by `toPartialHomeomorph` below.
 
 This is a first step towards the inverse function. -/
@@ -403,7 +403,7 @@ section
 variable (f s)
 
 /-- Given a function `f` that approximates a linear equivalence on an open set `s`,
-returns a local homeomorph with `toFun = f` and `source = s`. -/
+returns a partial homeomorphism with `toFun = f` and `source = s`. -/
 def toPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : PartialHomeomorph E F where
   toPartialEquiv := hf.toPartialEquiv hc

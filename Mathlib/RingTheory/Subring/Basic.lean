@@ -114,7 +114,6 @@ instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClas
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
 instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
-  have := SubsemiringClass.noZeroDivisors (s := s) -- porting note: todo: fails without `have`
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
@@ -446,7 +445,7 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
 #align subring.coe_pow Subring.coe_pow
 
 -- TODO: can be generalized to `AddSubmonoidClass`
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
@@ -499,12 +498,12 @@ theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 #align subring.coe_subtype Subring.coeSubtype
 
-@[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
+@[norm_cast] -- Porting note (#10618): simp can prove this (removed `@[simp]`)
 theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
   map_natCast s.subtype
 #align subring.coe_nat_cast Subring.coe_natCast
 
-@[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
+@[norm_cast] -- Porting note (#10618): simp can prove this (removed `@[simp]`)
 theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
   map_intCast s.subtype
 #align subring.coe_int_cast Subring.coe_intCast
@@ -516,7 +515,7 @@ theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 #align subring.mem_to_submonoid Subring.mem_toSubmonoid
@@ -526,7 +525,7 @@ theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 #align subring.coe_to_submonoid Subring.coe_toSubmonoid
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 #align subring.mem_to_add_subgroup Subring.mem_toAddSubgroup
@@ -602,7 +601,7 @@ theorem coe_map (f : R →+* S) (s : Subring R) : (s.map f : Set S) = f '' s :=
 
 @[simp]
 theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
-  Set.mem_image_iff_bex.trans $ by simp
+  Set.mem_image_iff_bex.trans <| by simp
 #align subring.mem_map Subring.mem_map
 
 @[simp]
@@ -1237,6 +1236,10 @@ theorem range_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
   range_top_iff_surjective.2 hf
 #align ring_hom.range_top_of_surjective RingHom.range_top_of_surjective
 
+section eqLocus
+
+variable {S : Type v} [Semiring S]
+
 /-- The subring of elements `x : R` such that `f x = g x`, i.e.,
   the equalizer of f and g as a subring of R -/
 def eqLocus (f g : R →+* S) : Subring R :=
@@ -1262,6 +1265,8 @@ theorem eq_of_eqOn_set_dense {s : Set R} (hs : closure s = ⊤) {f g : R →+* S
     f = g :=
   eq_of_eqOn_set_top <| hs ▸ eqOn_set_closure h
 #align ring_hom.eq_of_eq_on_set_dense RingHom.eq_of_eqOn_set_dense
+
+end eqLocus
 
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
@@ -1292,12 +1297,12 @@ theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 #align subring.range_subtype Subring.range_subtype
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_fst : (fst R S).rangeS = ⊤ :=
   (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
 #align subring.range_fst Subring.range_fst
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_snd : (snd R S).rangeS = ⊤ :=
   (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 #align subring.range_snd Subring.range_snd
@@ -1529,7 +1534,7 @@ end Actions
 -- both ordered ring structures and submonoids available
 /-- The subgroup of positive units of a linear ordered semiring. -/
 def Units.posSubgroup (R : Type*) [LinearOrderedSemiring R] : Subgroup Rˣ :=
-  { (posSubmonoid R).comap (Units.coeHom R) with
+  { (Submonoid.pos R).comap (Units.coeHom R) with
     carrier := { x | (0 : R) < x }
     inv_mem' := Units.inv_pos.mpr }
 #align units.pos_subgroup Units.posSubgroup

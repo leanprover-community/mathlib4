@@ -3,10 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Equivalence
-import Mathlib.Topology.Category.Profinite.EffectiveEpi
-import Mathlib.Topology.Category.Stonean.EffectiveEpi
 /-!
 
 # The explicit sheaf condition for condensed sets
@@ -21,7 +21,7 @@ We give the following three explicit descriptions of condensed sets:
 * `Condensed.ofSheafStonean`: A finite-product-preserving presheaf on `CompHaus`, satisfying
   `EqualizerCondition`.
 
-The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularExtensive`
+The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularExtensive.lean`
 and it says that for any effective epi `X ⟶ B` (in this case that is equivalent to being a
 continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
 `F(X) ⇉ F(X ×_B X)`
@@ -34,7 +34,7 @@ open CategoryTheory Limits Opposite Functor Presieve regularCoverage
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C]
-  [FinitaryPreExtensive C] [Precoherent C]
+  [FinitaryPreExtensive C]
 
 theorem isSheaf_coherent_iff_regular_and_extensive : IsSheaf (coherentTopology C) F ↔
     IsSheaf (extensiveCoverage C).toGrothendieck F ∧

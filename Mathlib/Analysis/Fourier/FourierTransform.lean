@@ -169,7 +169,7 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
   · exact hf.norm
   · rw [continuous_induced_rng] at he
     refine' ae_of_all _ fun v => (he.comp (continuous_ofAdd.comp _)).smul continuous_const
-    refine' (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
+    exact (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
 #align vector_fourier.fourier_integral_continuous VectorFourier.fourierIntegral_continuous
 
 end Continuous
@@ -262,7 +262,7 @@ theorem fourierIntegral_def (f : ℝ → E) (w : ℝ) :
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_def
 
-scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
+@[inherit_doc] scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
 
 theorem fourierIntegral_eq_integral_exp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     (f : ℝ → E) (w : ℝ) :

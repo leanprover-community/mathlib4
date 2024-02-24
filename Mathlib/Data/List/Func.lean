@@ -106,13 +106,12 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
     · simp [Nat.le_add_right]
       exact Nat.succ_le_succ (Nat.zero_le _)
   | m + 1, [] => by
-    have := @length_set m []
     simp [set, length, @length_set m, Nat.zero_max]
   | m + 1, _ :: as => by
     simp [set, length, @length_set m, Nat.succ_max_succ]
 #align list.func.length_set List.Func.length_set
 
--- porting note : @[simp] has been removed since `#lint` says this is
+-- Porting note: @[simp] has been removed since `#lint` says this is
 theorem get_nil {k : ℕ} : (get k [] : α) = default := by cases k <;> rfl
 #align list.func.get_nil List.Func.get_nil
 
@@ -134,19 +133,19 @@ theorem get_set {a : α} : ∀ {k : ℕ} {as : List α}, get k (as {k ↦ a}) = 
 theorem eq_get_of_mem {a : α} : ∀ {as : List α}, a ∈ as → ∃ n : Nat, a = get n as
   | [], h => by cases h
   | b :: as, h => by
-    rw [mem_cons] at h -- porting note : `mem_cons_iff` is now named `mem_cons`
+    rw [mem_cons] at h -- Porting note: `mem_cons_iff` is now named `mem_cons`
     cases h with
     | inl h => exact ⟨0, h⟩
     | inr h =>
       rcases eq_get_of_mem h with ⟨n, h⟩
       exact ⟨n + 1, h⟩
 #noalign list.func.eq_get_of_mem
--- porting note : the signature has been changed to correct what was presumably a bug,
+-- Porting note: the signature has been changed to correct what was presumably a bug,
 -- hence the #noalign
 
 theorem mem_get_of_le : ∀ {n : ℕ} {as : List α}, n < as.length → get n as ∈ as
   | _, [], h1 => by cases h1
-  -- porting note : needed to add to `rw [mem_cons] here` in the two cases below
+  -- Porting note: needed to add to `rw [mem_cons] here` in the two cases below
   -- and in other lemmas (presumably because previously lean could see through the def of `mem` ?)
   | 0, a :: as, _ => by rw [mem_cons]; exact Or.inl rfl
   | n + 1, a :: as, h1 => by
@@ -171,20 +170,16 @@ theorem get_set_eq_of_ne {a : α} :
     contradiction
     cases as <;> simp only [set, get, get_nil]
   | as, k + 1, m, h1 => by
-    -- porting note : I somewhat rearranged the case split
-    cases as <;> cases m
-    case nil =>
-      simp only [set, get]
-    case nil m =>
-      have h3 : get m (nil {k ↦ a}) = default := by
-        rw [get_set_eq_of_ne k m, get_nil]
-        intro hc
-        apply h1
-        simp [hc]
-      apply h3
-    case zero =>
-      simp only [set, get]
-    case _ _ m =>
+    -- porting note: I somewhat rearranged the case split
+    match as, m with
+    | as, 0 => cases as <;> simp only [set, get]
+    | [], m+1 =>
+      show get m (nil {k ↦ a}) = default
+      rw [get_set_eq_of_ne k m, get_nil]
+      intro hc
+      apply h1
+      simp [hc]
+    | _::_, m+1 =>
       apply get_set_eq_of_ne k m
       intro hc
       apply h1
@@ -316,7 +311,7 @@ namespace Func
 -- add
 @[simp]
 theorem get_add {α : Type u} [AddMonoid α] {k : ℕ} {xs ys : List α} :
-    -- porting note : `@` and `⟨0⟩`s added b/c of instance troubles
+    -- Porting note: `@` and `⟨0⟩`s added b/c of instance troubles
     -- (similarly at other places below)
     @get α ⟨0⟩ k (add xs ys) = @get α ⟨0⟩ k xs + @get α ⟨0⟩ k ys := by
   apply @get_pointwise _ _ _ ⟨0⟩ ⟨0⟩ ⟨0⟩

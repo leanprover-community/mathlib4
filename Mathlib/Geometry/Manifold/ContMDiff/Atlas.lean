@@ -226,7 +226,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
       mfld_set_tac
     refine' ⟨e.symm, StructureGroupoid.symm _ he, h3e, _⟩
     rw [h2X]; exact e.mapsTo hex
-  · -- We now show the converse: a local homeomorphism `f : M → M'` which is smooth in both
+  · -- We now show the converse: a partial homeomorphism `f : M → M'` which is smooth in both
     -- directions is a local structomorphism.  We do this by proposing
     -- `((chart_at H x).symm.trans f).trans (chart_at H (f x))` as a candidate for a structomorphism
     -- of `H`.
@@ -253,8 +253,9 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     · -- smoothness of the candidate local structomorphism in the reverse direction
       intro y hy
       simp only [mfld_simps] at hy
-      have H : ContMDiffWithinAt I I ⊤ f.symm (f.symm ≫ₕ c).source ((extChartAt I (f x)).symm y)
-      · refine' (h₂ ((extChartAt I (f x)).symm y) _).mono _
+      have H : ContMDiffWithinAt I I ⊤ f.symm (f.symm ≫ₕ c).source
+          ((extChartAt I (f x)).symm y) := by
+        refine' (h₂ ((extChartAt I (f x)).symm y) _).mono _
         · simp only [hy, mfld_simps]
         · mfld_set_tac
       have hy' : (extChartAt I (f x)).symm y ∈ c'.source := by simp only [hy, mfld_simps]

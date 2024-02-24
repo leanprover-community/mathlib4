@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.Algebra.Function.Support
+import Mathlib.Algebra.Group.Pi.Lemmas
 
 #align_import algebra.indicator_function from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
@@ -380,6 +381,7 @@ theorem mulIndicator_union_of_disjoint (h : Disjoint s t) (f : α → M) :
 #align set.mul_indicator_union_of_disjoint Set.mulIndicator_union_of_disjoint
 #align set.indicator_union_of_disjoint Set.indicator_union_of_disjoint
 
+open scoped symmDiff in
 @[to_additive]
 theorem mulIndicator_symmDiff (s t : Set α) (f : α → M) :
     mulIndicator (s ∆ t) f = mulIndicator (s \ t) f * mulIndicator (t \ s) f :=
@@ -532,6 +534,7 @@ theorem mulIndicator_diff' (h : s ⊆ t) (f : α → G) :
   rw [mulIndicator_diff h, div_eq_mul_inv]
 #align set.indicator_diff Set.indicator_diff
 
+open scoped symmDiff in
 @[to_additive]
 theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
     (s t : Set α) (f : α → G) (x : α):
