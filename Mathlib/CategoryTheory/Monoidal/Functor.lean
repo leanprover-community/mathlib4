@@ -239,7 +239,7 @@ def LaxMonoidalFunctor.op (F : LaxMonoidalFunctor C D) :
   δ X Y := (F.μ X.unop Y.unop).op
   __ := F.toFunctor.op
 
-@[simps, pp_dot]
+@[simps!, pp_dot]
 def LaxMonoidalFunctor.unop (F : LaxMonoidalFunctor Cᵒᵖ Dᵒᵖ) :
     ColaxMonoidalFunctor C D where
   ε := F.η.unop

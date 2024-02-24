@@ -27,7 +27,6 @@ is equivalent to the bicategory consisting of
 * (oplax) natural transformations `η` such that `η.app PUnit.unit = 𝟙 _`.
 -/
 
-
 namespace CategoryTheory
 
 variable (C : Type*) [Category C] [MonoidalCategory C]
@@ -42,23 +41,20 @@ def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
   PUnit --deriving Inhabited
 #align category_theory.monoidal_single_obj CategoryTheory.MonoidalSingleObj
 
--- Porting note: `deriving` didn't work. Create this instance manually.
-instance : Inhabited (MonoidalSingleObj C) := by
-  unfold MonoidalSingleObj
-  infer_instance
+instance : Unique (MonoidalSingleObj C) := inferInstanceAs (Unique PUnit)
 
 open MonoidalCategory
 
+attribute [local simp] whisker_exchange in
 instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
-  comp X Y := tensorObj X Y
-  whiskerLeft X Y Z f := X ◁ f
-  whiskerRight f Z := f ▷ Z
-  associator X Y Z := α_ X Y Z
-  leftUnitor X := λ_ X
-  rightUnitor X := ρ_ X
-  whisker_exchange := whisker_exchange
+  comp X Y := tensorObj Y X
+  whiskerLeft X Y Z f := f ▷ X
+  whiskerRight f Z := Z ◁ f
+  associator X Y Z := (α_ Z Y X).symm
+  leftUnitor X := ρ_ X
+  rightUnitor X := λ_ X
 
 namespace MonoidalSingleObj
 
@@ -69,39 +65,17 @@ protected def star : MonoidalSingleObj C :=
 #align category_theory.monoidal_single_obj.star CategoryTheory.MonoidalSingleObj.star
 
 attribute [local simp] id_tensorHom tensorHom_id in
-
 /-- The monoidal functor from the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
 to the original monoidal category.
 
 We subsequently show this is an equivalence.
 -/
-def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C :=
-  MonoidalFunctor.mk' (Functor.id C) (Iso.refl _) (fun _ _ => Iso.refl _)
-  -- This can't be defined as the monoidal identity because `EndMonoidal B`
-  -- defines `tensorHom` in terms of `whiskerLeft`, `whiskerRight`
-  -- If we removed the field `tensorHom` from `MonoidalCategory` it would work
+@[simps!]
+def endMonoidalStarFunctor :
+    MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C :=
+  .mkOfUnitTensoratorIsos (Functor.id C) (Iso.refl _) (fun _ _ => Iso.refl _)
 #align category_theory.monoidal_single_obj.End_monoidal_star_functor CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor
-
-variable {C}
-
-@[simp]
-lemma endMonoidalStarFunctor_obj (X : EndMonoidal (MonoidalSingleObj.star C)) :
-    (endMonoidalStarFunctor C).obj X = X := rfl
-
-@[simp]
-lemma endMonoidalStarFunctor_map {X Y} (f : X ⟶ Y) :
-    (endMonoidalStarFunctor C).map f = f := rfl
-
-@[simp]
-lemma endMonoidalStarFunctor_μIso (X Y : EndMonoidal (MonoidalSingleObj.star C)) :
-    (endMonoidalStarFunctor C).μIso X Y = Iso.refl _ := rfl
-
-variable (C)
-
-@[simp]
-lemma endMonoidalStarFunctor_εIso :
-    (endMonoidalStarFunctor C).εIso = Iso.refl _ := rfl
 
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
