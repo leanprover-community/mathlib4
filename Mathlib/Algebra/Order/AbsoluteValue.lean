@@ -147,7 +147,7 @@ section Ring
 variable {R S : Type*} [Ring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
 protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
-  simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
+  simpa [add_assoc] using abv.add_le (a - b) (b - c)
 #align absolute_value.sub_le AbsoluteValue.sub_le
 
 @[simp high] -- porting note: added `high` to apply it before `AbsoluteValue.eq_zero`

@@ -186,7 +186,7 @@ partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
 
 theorem term_neg {α} [AddCommGroup α] (n x a n' a')
     (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
-  simp [h₂.symm, h₁.symm, termg]; exact add_comm _ _
+  simp [h₂.symm, h₁.symm, termg, neg_sub_comm]
 
 /--
 Interpret a negated expression in `abel`'s normal form.

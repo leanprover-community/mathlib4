@@ -588,6 +588,8 @@ theorem inv_inv_div_inv : (a⁻¹ / b⁻¹)⁻¹ = a / b := by simp
 #align inv_inv_div_inv inv_inv_div_inv
 #align neg_neg_sub_neg neg_neg_sub_neg
 
+@[to_additive] lemma inv_div_comm : a⁻¹ / b = b⁻¹ / a := by simp
+
 @[to_additive]
 theorem one_div_mul_one_div : 1 / a * (1 / b) = 1 / (a * b) := by simp
 #align one_div_mul_one_div one_div_mul_one_div

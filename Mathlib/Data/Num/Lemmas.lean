@@ -1107,8 +1107,9 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = bit1 (n :
     -- Porting note: `rw [Num.succ']` yields a `match` pattern.
     · dsimp only [Num.succ'] at ep
       subst p
-      have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (- ↑a : ℤ) 1]
-      simpa [_root_.bit1, _root_.bit0] using this
+      have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by
+        simp [-neg_add_eq_sub, add_comm (- ↑a : ℤ) 1]
+      simpa [-neg_add_eq_sub, _root_.bit1, _root_.bit0] using this
 #align znum.cast_bit1 ZNum.cast_bit1
 
 @[simp]
@@ -1118,7 +1119,7 @@ theorem cast_bitm1 [AddGroupWithOne α] (n : ZNum) : (n.bitm1 : α) = bit0 (n : 
     rw [← zneg_zneg n]
   rw [← zneg_bit1, cast_zneg, cast_bit1]
   have : ((-1 + n + n : ℤ) : α) = (n + n + -1 : ℤ) := by simp [add_comm, add_left_comm]
-  simpa [_root_.bit1, _root_.bit0, sub_eq_add_neg] using this
+  simpa [-neg_add_eq_sub, sub_eq_add_neg, _root_.bit1, _root_.bit0] using this
 #align znum.cast_bitm1 ZNum.cast_bitm1
 
 theorem add_zero (n : ZNum) : n + 0 = n := by cases n <;> rfl
