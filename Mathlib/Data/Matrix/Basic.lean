@@ -270,7 +270,7 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
--- Porting note: added the following section with simp lemmas because `simp` fails
+-- Porting note (#10756): added the following section with simp lemmas because `simp` fails
 -- to apply the corresponding lemmas in the namespace `Pi`.
 -- (e.g. `Pi.zero_apply` used on `OfNat.ofNat 0 i j`)
 section
