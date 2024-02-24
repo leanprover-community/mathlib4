@@ -1346,7 +1346,7 @@ variable {E : Type*} [EquivLike E ι ι']
 #align equiv_like.range_comp EquivLike.range_comp
 
 /-- `EquivLike.exists_congr_left'` specialized to `x ∈ Set.range (f ∘ ⇑e)` so `simp` can apply it.-/
-@[simp]
+@[simp, nolint simpNF] -- simpNF false positive. https://github.com/leanprover/std4/issue/671
 theorem memRange_congr_left' (f : ι' → α) (e : E) (x : α) : (∃ y, f (e y) = x) ↔ ∃ y, f y = x :=
   EquivLike.exists_congr_left' e (P := fun y ↦ f y = x)
 
