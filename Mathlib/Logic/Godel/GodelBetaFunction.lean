@@ -76,6 +76,7 @@ private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime 
   intro i j hij
   wlog ltij : i < j
   · exact (this a hij.symm (lt_of_le_of_ne (Fin.not_lt.mp ltij) hij.symm)).symm
+  suffices  Coprime ((i + 1) * (supOfSeq a)! + 1) ((j + 1) * (supOfSeq a)! + 1) by exact this
   have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_step (le_max_left _ _))
   exact coprime_mul_succ
     (Nat.succ_le_succ $ le_of_lt ltij)
