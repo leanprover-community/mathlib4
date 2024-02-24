@@ -246,8 +246,7 @@ sending `x` to `(f x) / (g x)`. -/
 @[to_additive "If `f` and `g` are monoid homomorphisms to an additive commutative group,
 then `f - g` is the homomorphism sending `x` to `(f x) - (g x)`."]
 instance : Div (M →* G) where
-  div f g := mk' (fun x ↦ f x / g x) fun a b ↦ by
-    simp [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm]
+  div f g := mk' (fun x ↦ f x / g x) fun a b ↦ by simp [div_mul_div_comm]
 
 @[to_additive (attr := simp)] lemma div_apply (f g : M →* G) (x : M) : (f / g) x = f x / g x := rfl
 #align monoid_hom.div_apply MonoidHom.div_apply

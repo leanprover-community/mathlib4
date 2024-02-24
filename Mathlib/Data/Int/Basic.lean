@@ -67,7 +67,7 @@ theorem cast_mul [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = m * n := fu
     | succ m ih => simp_all [add_mul]
   · induction m with
     | zero => simp
-    | succ m ih => simp_all [add_mul]
+    | succ m ih => simp_all [sub_mul]
 #align int.cast_mul Int.cast_mulₓ -- dubious translation, type involves HasLiftT
 
 lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast n :=
