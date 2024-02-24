@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.FunLike.Basic
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
@@ -58,7 +58,7 @@ MonoidHom, AddMonoidHom
 -/
 
 
-variable {α β M N P : Type*}
+variable {ι α β M N P : Type*}
 
 -- monoids
 variable {G : Type*} {H : Type*}
@@ -205,6 +205,8 @@ theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
 #align map_one map_one
 #align map_zero map_zero
 
+@[to_additive] lemma map_comp_one [OneHomClass F M N] (f : F) : f ∘ (1 : ι → M) = 1 := by simp
+
 /-- In principle this could be an instance, but in practice it causes performance issues. -/
 @[to_additive]
 theorem Subsingleton.of_oneHomClass [Subsingleton M] [OneHomClass F M N] :
@@ -307,6 +309,10 @@ theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
 #align map_mul map_mul
 #align map_add map_add
+
+@[to_additive (attr := simp)]
+lemma map_comp_mul [MulHomClass F M N] (f : F) (g h : ι → M) : f ∘ (g * h) = f ∘ g * f ∘ h := by
+  ext; simp
 
 /-- Turn an element of a type `F` satisfying `MulHomClass F M N` into an actual
 `MulHom`. This is declared as the default coercion from `F` to `M →ₙ* N`. -/
@@ -420,6 +426,11 @@ theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_div' map_div'
 #align map_sub' map_sub'
 
+@[to_additive]
+lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F)
+    (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (g h : ι → G) : f ∘ (g / h) = f ∘ g / f ∘ h := by
+  ext; simp [map_div' f hf]
+
 /-- Group homomorphisms preserve inverse. -/
 @[to_additive (attr := simp) "Additive group homomorphisms preserve negation."]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
@@ -428,6 +439,10 @@ theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
 #align map_inv map_inv
 #align map_neg map_neg
 
+@[to_additive (attr := simp)]
+lemma map_comp_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) :
+    f ∘ g⁻¹ = (f ∘ g)⁻¹ := by ext; simp
+
 /-- Group homomorphisms preserve division. -/
 @[to_additive "Additive group homomorphisms preserve subtraction."]
 theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (a b : G) :
@@ -435,12 +450,20 @@ theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) 
 #align map_mul_inv map_mul_inv
 #align map_add_neg map_add_neg
 
+@[to_additive]
+lemma map_comp_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
+    f ∘ (g * h⁻¹) = f ∘ g * (f ∘ h)⁻¹ := by simp
+
 /-- Group homomorphisms preserve division. -/
 @[to_additive (attr := simp) "Additive group homomorphisms preserve subtraction."]
 theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
     ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
 #align map_div map_div
 #align map_sub map_sub
+
+@[to_additive (attr := simp)]
+lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
+    f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
 @[to_additive (attr := simp) (reorder := 9 10)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
@@ -450,6 +473,10 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
 #align map_pow map_pow
 #align map_nsmul map_nsmul
 
+@[to_additive (attr := simp)]
+lemma map_comp_pow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) (n : ℕ) :
+    f ∘ (g ^ n) = f ∘ g ^ n := by ext; simp
+
 @[to_additive]
 theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
     (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
@@ -458,6 +485,11 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zpow' map_zpow'
 #align map_zsmul' map_zsmul'
 
+@[to_additive (attr := simp)]
+lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F)
+    (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (g : ι → G) (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by
+  ext; simp [map_zpow' f hf]
+
 /-- Group homomorphisms preserve integer power. -/
 @[to_additive (attr := simp) (reorder := 9 10)
 "Additive group homomorphisms preserve integer scaling."]
@@ -465,6 +497,10 @@ theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
 #align map_zsmul map_zsmul
+
+@[to_additive]
+lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G)
+    (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by simp
 
 end mul_one
 

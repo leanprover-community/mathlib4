@@ -44,7 +44,7 @@ class PerfectRing (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p] : Prop wh
 
 section PerfectRing
 
-variable (R : Type*) (p n : ℕ) [CommSemiring R] [ExpChar R p]
+variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
@@ -81,6 +81,8 @@ noncomputable def frobeniusEquiv : R ≃+* R :=
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
 #align coe_frobenius_equiv coe_frobeniusEquiv
 
+theorem frobeniusEquiv_def (x : R) : frobeniusEquiv R p x = x ^ p := rfl
+
 /-- The iterated Frobenius automorphism for a perfect ring. -/
 @[simps! apply]
 noncomputable def iterateFrobeniusEquiv : R ≃+* R :=
@@ -88,6 +90,39 @@ noncomputable def iterateFrobeniusEquiv : R ≃+* R :=
 
 @[simp]
 theorem coe_iterateFrobeniusEquiv : ⇑(iterateFrobeniusEquiv R p n) = iterateFrobenius R p n := rfl
+
+theorem iterateFrobeniusEquiv_def (x : R) : iterateFrobeniusEquiv R p n x = x ^ p ^ n := rfl
+
+theorem iterateFrobeniusEquiv_add_apply (x : R) : iterateFrobeniusEquiv R p (m + n) x =
+    iterateFrobeniusEquiv R p m (iterateFrobeniusEquiv R p n x) :=
+  iterateFrobenius_add_apply R p m n x
+
+theorem iterateFrobeniusEquiv_add : iterateFrobeniusEquiv R p (m + n) =
+    (iterateFrobeniusEquiv R p n).trans (iterateFrobeniusEquiv R p m) :=
+  RingEquiv.ext (iterateFrobeniusEquiv_add_apply R p m n)
+
+theorem iterateFrobeniusEquiv_symm_add_apply (x : R) : (iterateFrobeniusEquiv R p (m + n)).symm x =
+    (iterateFrobeniusEquiv R p m).symm ((iterateFrobeniusEquiv R p n).symm x) :=
+  (iterateFrobeniusEquiv R p (m + n)).injective <| by rw [RingEquiv.apply_symm_apply, add_comm,
+    iterateFrobeniusEquiv_add_apply, RingEquiv.apply_symm_apply, RingEquiv.apply_symm_apply]
+
+theorem iterateFrobeniusEquiv_symm_add : (iterateFrobeniusEquiv R p (m + n)).symm =
+    (iterateFrobeniusEquiv R p n).symm.trans (iterateFrobeniusEquiv R p m).symm :=
+  RingEquiv.ext (iterateFrobeniusEquiv_symm_add_apply R p m n)
+
+theorem iterateFrobeniusEquiv_zero_apply (x : R) : iterateFrobeniusEquiv R p 0 x = x := by
+  rw [iterateFrobeniusEquiv_def, pow_zero, pow_one]
+
+theorem iterateFrobeniusEquiv_one_apply (x : R) : iterateFrobeniusEquiv R p 1 x = x ^ p := by
+  rw [iterateFrobeniusEquiv_def, pow_one]
+
+@[simp]
+theorem iterateFrobeniusEquiv_zero  : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
+  RingEquiv.ext (iterateFrobeniusEquiv_zero_apply R p)
+
+@[simp]
+theorem iterateFrobeniusEquiv_one : iterateFrobeniusEquiv R p 1 = frobeniusEquiv R p :=
+  RingEquiv.ext (iterateFrobeniusEquiv_one_apply R p)
 
 theorem iterateFrobeniusEquiv_eq_pow : iterateFrobeniusEquiv R p n = frobeniusEquiv R p ^ n :=
   DFunLike.ext' <| show _ = ⇑(RingAut.toPerm _ _) by
@@ -182,8 +217,8 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   have hfa : aeval a f = 0 := by rw [aeval_def, map_rootOfSplits _ (SplittingField.splits f) hf_deg]
   have ha_pow : a ^ p = ι y := by rwa [AlgHom.map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hfa
   let g : K[X] := minpoly K a
-  suffices : (g.map ι).natDegree = 1
-  · rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
+  suffices (g.map ι).natDegree = 1 by
+    rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
     obtain ⟨a' : K, ha' : ι a' = a⟩ := minpoly.mem_range_of_degree_eq_one K a this
     refine' ⟨a', NoZeroSMulDivisors.algebraMap_injective K L _⟩
     rw [RingHom.map_frobenius, ha', frobenius_def, ha_pow]
@@ -272,6 +307,25 @@ theorem roots_expand_pow :
 
 theorem roots_expand : (expand R p f).roots = p • f.roots.map (frobeniusEquiv R p).symm := by
   conv_lhs => rw [← pow_one p, roots_expand_pow, iterateFrobeniusEquiv_eq_pow, pow_one]
+
+theorem roots_X_pow_char_pow_sub_C {y : R} :
+    (X ^ p ^ n - C y).roots = p ^ n • {(iterateFrobeniusEquiv R p n).symm y} := by
+  have H := roots_expand_pow (p := p) (n := n) (f := X - C y)
+  rwa [roots_X_sub_C, Multiset.map_singleton, map_sub, expand_X, expand_C] at H
+
+theorem roots_X_pow_char_pow_sub_C_pow {y : R} {m : ℕ} :
+    ((X ^ p ^ n - C y) ^ m).roots = (m * p ^ n) • {(iterateFrobeniusEquiv R p n).symm y} := by
+  rw [roots_pow, roots_X_pow_char_pow_sub_C, mul_smul]
+
+theorem roots_X_pow_char_sub_C {y : R} :
+    (X ^ p - C y).roots = p • {(frobeniusEquiv R p).symm y} := by
+  have H := roots_X_pow_char_pow_sub_C (p := p) (n := 1) (y := y)
+  rwa [pow_one, iterateFrobeniusEquiv_one] at H
+
+theorem roots_X_pow_char_sub_C_pow {y : R} {m : ℕ} :
+    ((X ^ p - C y) ^ m).roots = (m * p) • {(frobeniusEquiv R p).symm y} := by
+  have H := roots_X_pow_char_pow_sub_C_pow (p := p) (n := 1) (y := y) (m := m)
+  rwa [pow_one, iterateFrobeniusEquiv_one] at H
 
 theorem roots_expand_pow_map_iterateFrobenius :
     (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) = p ^ n • f.roots := by

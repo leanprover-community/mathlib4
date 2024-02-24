@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 namespace Coyoneda
 
-variable {C : Type v} [SmallCategory C]
+variable {C : Type u} [Category.{v} C]
 
 /-- The colimit cocone over `coyoneda.obj X`, with cocone point `PUnit`.
 -/
