@@ -160,18 +160,17 @@ theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
 scalars or vectors (respectively), closed under addition, and under left-multiplication by a pair
 of vectors. -/
 @[elab_as_elim]
-theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
-    (hr :
-      ∀ (v) (h : v ∈ LinearMap.range (ι Q) ^ n.val),
-        P v (Submodule.mem_iSup_of_mem ⟨n.val, n.nat_cast_zmod_val⟩ h))
-    (hadd : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
-    (hιι_mul :
-      ∀ (m₁ m₂) {x hx},
-        P x hx →
-          P (ι Q m₁ * ι Q m₂ * x)
+theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Prop}
+    (range_ι_pow : ∀ (v) (h : v ∈ LinearMap.range (ι Q) ^ n.val),
+        motive v (Submodule.mem_iSup_of_mem ⟨n.val, n.nat_cast_zmod_val⟩ h))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (Submodule.add_mem _ hx hy))
+    (ι_mul_ι_mul :
+      ∀ m₁ m₂ x hx,
+        motive x hx →
+          motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add n ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
-    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : P x hx := by
-  apply Submodule.iSup_induction' (C := P) _ (hr 0 (Submodule.zero_mem _)) @hadd
+    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
+  apply Submodule.iSup_induction' (C := motive) _ (range_ι_pow 0 (Submodule.zero_mem _)) add
   refine' Subtype.rec _
   simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv
@@ -182,10 +181,10 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
     induction ha using Submodule.pow_induction_on_left' with
     | hr r =>
       simp_rw [← Algebra.smul_def]
-      exact hr _ (Submodule.smul_mem _ _ hb)
+      exact range_ι_pow _ (Submodule.smul_mem _ _ hb)
     | hadd x y n hx hy ihx ihy =>
       simp_rw [add_mul]
-      apply hadd ihx ihy
+      apply add _ _ _ _ ihx ihy
     | hmul x hx n'' y hy ihy =>
       revert hx
       simp_rw [pow_two]
@@ -195,48 +194,48 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
         simp_rw [LinearMap.mem_range] at hm hn
         obtain ⟨m₁, rfl⟩ := hm; obtain ⟨m₂, rfl⟩ := hn
         simp_rw [mul_assoc _ y b]
-        exact hιι_mul _ _ ihy
+        exact ι_mul_ι_mul _ _ _ _ ihy
       | ha x hx y hy ihx ihy =>
         simp_rw [add_mul]
-        apply hadd ihx ihy
+        apply add _ _ _ _ ihx ihy
   | ha x y hx hy ihx ihy =>
-    apply hadd ihx ihy
+    apply add _ _ _ _ ihx ihy
 #align clifford_algebra.even_odd_induction CliffordAlgebra.evenOdd_induction
 
 /-- To show a property is true on the even parts, it suffices to show it is true on the
 scalars, closed under addition, and under left-multiplication by a pair of vectors. -/
 @[elab_as_elim]
-theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
-    (hr : ∀ r : R, P (algebraMap _ _ r) (SetLike.algebraMap_mem_graded _ _))
-    (hadd : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
-    (hιι_mul :
-      ∀ (m₁ m₂) {x hx},
-        P x hx →
-          P (ι Q m₁ * ι Q m₂ * x)
+theorem even_induction {motive : ∀ x, x ∈ evenOdd Q 0 → Prop}
+    (algebraMap : ∀ r : R, motive (algebraMap _ _ r) (SetLike.algebraMap_mem_graded _ _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (Submodule.add_mem _ hx hy))
+    (ι_mul_ι_mul :
+      ∀ m₁ m₂ x hx,
+        motive x hx →
+          motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
-    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : P x hx := by
-  refine' evenOdd_induction Q 0 (fun rx => _) (@hadd) hιι_mul x hx
+    (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : motive x hx := by
+  refine' evenOdd_induction Q 0 (fun rx => _) (@add) ι_mul_ι_mul x hx
   rintro ⟨r, rfl⟩
-  exact hr r
+  exact algebraMap r
 #align clifford_algebra.even_induction CliffordAlgebra.even_induction
 
 /-- To show a property is true on the odd parts, it suffices to show it is true on the
 vectors, closed under addition, and under left-multiplication by a pair of vectors. -/
 @[elab_as_elim]
 theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
-    (hι : ∀ v, P (ι Q v) (ι_mem_evenOdd_one _ _))
-    (hadd : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
-    (hιι_mul :
-      ∀ (m₁ m₂) {x hx},
+    (ι : ∀ v, P (ι Q v) (ι_mem_evenOdd_one _ _))
+    (add : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
+    (ι_mul_ι_mul :
+      ∀ m₁ m₂ x hx,
         P x hx →
-          P (ι Q m₁ * ι Q m₂ * x)
+          P (CliffordAlgebra.ι Q m₁ * CliffordAlgebra.ι Q m₂ * x)
             (zero_add (1 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx := by
-  refine' evenOdd_induction Q 1 (fun ιv => _) (@hadd) hιι_mul x hx
+  refine' evenOdd_induction Q 1 (fun ιv => _) (@add) ι_mul_ι_mul x hx
   -- porting note: was `simp_rw [ZMod.val_one, pow_one]`, lean4#1926
   intro h; rw [ZMod.val_one, pow_one] at h; revert h
   rintro ⟨v, rfl⟩
-  exact hι v
+  exact ι v
 #align clifford_algebra.odd_induction CliffordAlgebra.odd_induction
 
 end CliffordAlgebra
