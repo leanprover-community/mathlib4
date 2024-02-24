@@ -578,7 +578,7 @@ theorem inv_mul' : (a * b)⁻¹ = a⁻¹ / b := by simp
 #align inv_mul' inv_mul'
 #align neg_add' neg_add'
 
-@[to_additive] --porting note: Removing simp in favor of `inv_mul_eq_div`
+@[to_additive]
 theorem inv_div_inv : a⁻¹ / b⁻¹ = b / a := by simp
 #align inv_div_inv inv_div_inv
 #align neg_sub_neg neg_sub_neg
@@ -1093,7 +1093,6 @@ theorem div_eq_div_iff_div_eq_div : a / b = c / d ↔ a / c = b / d := by
 
 end CommGroup
 
---porting note: Adding simp over `inv_div_inv`/`neg_sub_neg`
 attribute [simp] inv_mul_eq_div neg_add_eq_sub
 
 section multiplicative
