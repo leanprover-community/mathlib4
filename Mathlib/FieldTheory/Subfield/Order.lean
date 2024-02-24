@@ -13,10 +13,11 @@ import Mathlib.RingTheory.Subring.Order
 -/
 
 namespace SubfieldClass
+variable {K S : Type*} [SetLike S K]
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance (priority := 75) toLinearOrderedField {K} [LinearOrderedField K] [SetLike S K]
+instance (priority := 75) toLinearOrderedField [LinearOrderedField K]
     [SubfieldClass S K] (s : S) : LinearOrderedField s :=
   Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl)
@@ -28,9 +29,10 @@ instance (priority := 75) toLinearOrderedField {K} [LinearOrderedField K] [SetLi
 end SubfieldClass
 
 namespace Subfield
+variable {K : Type*}
 
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
+instance toLinearOrderedField [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
   Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
