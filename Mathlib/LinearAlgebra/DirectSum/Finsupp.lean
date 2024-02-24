@@ -309,6 +309,3 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : α) (b : β) (r₁ r₂ : 
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
 
 end TensorProduct
-
-example : HasMul (ℕ →₀ ℕ):= by
-  apply?
