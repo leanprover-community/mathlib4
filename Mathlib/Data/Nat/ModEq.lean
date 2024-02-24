@@ -8,7 +8,7 @@ import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Data.Nat.Prime
+--import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.FinRange
