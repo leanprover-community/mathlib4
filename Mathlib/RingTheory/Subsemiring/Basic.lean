@@ -753,8 +753,8 @@ instance center.commSemiring {R} [Semiring R] : CommSemiring (center R) :=
 
 -- no instance diamond, unlike the primed version
 example {R} [Semiring R] :
-    center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) :=
-  rfl
+    center.commSemiring.toSemiring = Subsemiring.toSemiring (center R) := by
+  with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [Semiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff

@@ -22,30 +22,31 @@ section SMul
 
 open scoped Polynomial
 
-example : (SubNegMonoid.SMulInt : SMul ℤ ℂ) = (Complex.instSMulRealComplex : SMul ℤ ℂ) :=
-  rfl
+example : (SubNegMonoid.SMulInt : SMul ℤ ℂ) = (Complex.instSMulRealComplex : SMul ℤ ℂ) := by
+  with_reducible_and_instances rfl
 
-example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule :=
-  rfl
+example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule := by
+  with_reducible_and_instances rfl
 
-example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraComplexInstSemiringComplex :=
+-- fails `with_reducible_and_instances` #10906
+example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraComplexInstSemiringComplex := by
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
-    (Prod.smul : SMul ℕ (α × β)) = AddMonoid.toNatSMul :=
-  rfl
+    (Prod.smul : SMul ℕ (α × β)) = AddMonoid.toNatSMul := by
+  with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
-    (Prod.smul : SMul ℤ (α × β)) = SubNegMonoid.SMulInt :=
-  rfl
+    (Prod.smul : SMul ℤ (α × β)) = SubNegMonoid.SMulInt := by
+  with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
-    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNatSMul :=
-  rfl
+    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNatSMul := by
+  with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :
-    (Pi.instSMul : SMul ℤ (∀ a, β a)) = SubNegMonoid.SMulInt :=
-  rfl
+    (Pi.instSMul : SMul ℤ (∀ a, β a)) = SubNegMonoid.SMulInt := by
+  with_reducible_and_instances rfl
 
 namespace TensorProduct
 
@@ -88,13 +89,16 @@ end TensorProduct
 section Units
 
 example (α : Type _) [Monoid α] :
-    (Units.instMulAction : MulAction αˣ (α × α)) = Prod.mulAction := rfl
+    (Units.instMulAction : MulAction αˣ (α × α)) = Prod.mulAction := by
+  with_reducible_and_instances rfl
 
 example (R α : Type _) (β : α → Type _) [Monoid R] [∀ i, MulAction R (β i)] :
-    (Units.instMulAction : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ := rfl
+    (Units.instMulAction : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ := by
+  with_reducible_and_instances rfl
 
 example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
-    (Units.instDistribMulAction : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction := rfl
+    (Units.instDistribMulAction : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction := by
+  with_reducible_and_instances rfl
 
 /-!
 TODO: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/units.2Emul_action'.20diamond/near/246402813
@@ -122,8 +126,8 @@ example (R : Type _) [h : StrictOrderedSemiring R] :
       @OrderedAddCommMonoid.toAddCommMonoid (WithTop R)
         (@WithTop.orderedAddCommMonoid R
           (@OrderedCancelAddCommMonoid.toOrderedAddCommMonoid R
-            (@StrictOrderedSemiring.toOrderedCancelAddCommMonoid R h))) :=
-  rfl
+            (@StrictOrderedSemiring.toOrderedCancelAddCommMonoid R h))) := by
+  with_reducible_and_instances rfl
 
 end WithTop
 
@@ -132,9 +136,9 @@ end WithTop
 
 section Multiplicative
 
-example :
-    @Monoid.toMulOneClass (Multiplicative ℕ) CommMonoid.toMonoid = Multiplicative.mulOneClass :=
-  rfl
+example : @Monoid.toMulOneClass (Multiplicative ℕ) CommMonoid.toMonoid =
+    Multiplicative.mulOneClass := by
+  with_reducible_and_instances rfl
 
 end Multiplicative
 
@@ -198,15 +202,18 @@ example [CommSemiring R] [Nontrivial R] :
   simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), Function.funext_iff, Polynomial.ext_iff] at h
   simpa using h X 1 1 0
 
+-- fails `with_reducible_and_instances` #10906
 /-- `Polynomial.hasSMulPi'` is consistent with `Polynomial.hasSMulPi`. -/
 example [CommSemiring R] [Nontrivial R] :
     Polynomial.hasSMulPi' _ _ _ = (Polynomial.hasSMulPi _ _ : SMul R[X] (R → R[X])) :=
   rfl
 
+-- fails `with_reducible_and_instances` #10906
 /-- `Polynomial.algebraOfAlgebra` is consistent with `algebraNat`. -/
 example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = algebraNat :=
   rfl
 
+-- fails `with_reducible_and_instances` #10906
 /-- `Polynomial.algebraOfAlgebra` is consistent with `algebraInt`. -/
 example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = algebraInt _ :=
   rfl
@@ -236,14 +243,14 @@ variable {p : ℕ} [Fact p.Prime]
 
 example :
     @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.instFieldZMod p)) =
-      ZMod.commRing p :=
-  rfl
+      ZMod.commRing p := by
+  with_reducible_and_instances rfl
 
-example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) :=
-  rfl
+example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) := by
+  with_reducible_and_instances rfl
 
-example : ZMod.commRing 0 = Int.instCommRingInt :=
-  rfl
+example : ZMod.commRing 0 = Int.instCommRingInt := by
+  with_reducible_and_instances rfl
 
 end ZMod
 
@@ -258,15 +265,17 @@ that at least some potential diamonds are avoided. -/
 
 section complexToReal
 
+-- fails `with_reducible_and_instances` #10906
 -- the two ways to get `Algebra ℝ ℂ` are definitionally equal
 example : (Algebra.id ℂ).complexToReal = Complex.instAlgebraComplexInstSemiringComplex := rfl
 
+-- fails `with_reducible_and_instances` #10906
 /- The complexification of an `ℝ`-algebra `A` (i.e., `ℂ ⊗[ℝ] A`) is a `ℂ`-algebra. Viewing this
 as an `ℝ`-algebra by restricting scalars agrees with the existing `ℝ`-algebra structure on the
 tensor product. -/
 open Algebra TensorProduct in
 example {A : Type*} [Ring A] [Algebra ℝ A]:
-    (leftAlgebra : Algebra ℂ (ℂ ⊗[ℝ] A)).complexToReal = leftAlgebra :=
+    (leftAlgebra : Algebra ℂ (ℂ ⊗[ℝ] A)).complexToReal = leftAlgebra := by
   rfl
 
 end complexToReal

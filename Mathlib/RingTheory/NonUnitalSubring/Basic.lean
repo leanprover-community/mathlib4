@@ -624,10 +624,9 @@ section NonUnitalRing
 variable [NonUnitalRing R]
 
 -- no instance diamond, unlike the unital version
-example :
-    (center.instNonUnitalCommRing _).toNonUnitalRing =
-      NonUnitalSubringClass.toNonUnitalRing (center R) :=
-  rfl
+example : (center.instNonUnitalCommRing _).toNonUnitalRing =
+      NonUnitalSubringClass.toNonUnitalRing (center R) := by
+  with_reducible_and_instances rfl
 
 theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subsemigroup.mem_center_iff
 
