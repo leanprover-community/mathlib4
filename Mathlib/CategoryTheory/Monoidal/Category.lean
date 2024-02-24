@@ -348,6 +348,20 @@ theorem inv_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     inv (X ◁ f) = X ◁ inv f := by
   aesop_cat
 
+@[simp]
+lemma whiskerLeftIso_refl (W X : C) :
+    whiskerLeftIso W (Iso.refl X) = Iso.refl (W ⊗ X) :=
+  Iso.ext (whiskerLeft_id W X)
+
+@[simp]
+lemma whiskerLeftIso_trans (W : C) {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) :
+    whiskerLeftIso W (f ≪≫ g) = whiskerLeftIso W f ≪≫ whiskerLeftIso W g :=
+  Iso.ext (whiskerLeft_comp W f.hom g.hom)
+
+@[simp]
+lemma whiskerLeftIso_symm (W : C) {X Y : C} (f : X ≅ Y) :
+    (whiskerLeftIso W f).symm = whiskerLeftIso W f.symm := rfl
+
 /-- The right whiskering of an isomorphism is an isomorphism. -/
 @[simps!]
 def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
@@ -361,6 +375,20 @@ instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f
 theorem inv_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] :
     inv (f ▷ Z) = inv f ▷ Z := by
   aesop_cat
+
+@[simp]
+lemma whiskerRightIso_refl (X W : C) :
+    whiskerRightIso (Iso.refl X) W = Iso.refl (X ⊗ W) :=
+  Iso.ext (id_whiskerRight X W)
+
+@[simp]
+lemma whiskerRightIso_trans {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) (W : C) :
+    whiskerRightIso (f ≪≫ g) W = whiskerRightIso f W ≪≫ whiskerRightIso g W :=
+  Iso.ext (comp_whiskerRight f.hom g.hom W)
+
+@[simp]
+lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
+    (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
 end MonoidalCategory
 

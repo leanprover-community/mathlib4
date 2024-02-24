@@ -1054,29 +1054,29 @@ variable [LinearOrderedSemifield α] {l : Filter β} {f : β → α} {r c : α} 
 -/
 
 
-/-- If `r` is a positive constant, then `λ x, r * f x` tends to infinity along a filter if and only
-if `f` tends to infinity along the same filter. -/
+/-- If `r` is a positive constant, `fun x ↦ r * f x` tends to infinity along a filter
+if and only if `f` tends to infinity along the same filter. -/
 theorem tendsto_const_mul_atTop_of_pos (hr : 0 < r) :
     Tendsto (fun x => r * f x) l atTop ↔ Tendsto f l atTop :=
   ⟨fun h => h.atTop_of_const_mul hr, fun h =>
     Tendsto.atTop_of_const_mul (inv_pos.2 hr) <| by simpa only [inv_mul_cancel_left₀ hr.ne'] ⟩
 #align filter.tendsto_const_mul_at_top_of_pos Filter.tendsto_const_mul_atTop_of_pos
 
-/-- If `r` is a positive constant, then `λ x, f x * r` tends to infinity along a filter if and only
-if `f` tends to infinity along the same filter. -/
+/-- If `r` is a positive constant, `fun x ↦ f x * r` tends to infinity along a filter
+if and only if `f` tends to infinity along the same filter. -/
 theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
     Tendsto (fun x => f x * r) l atTop ↔ Tendsto f l atTop := by
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_mul_const_at_top_of_pos Filter.tendsto_mul_const_atTop_of_pos
 
-/-- If `r` is a positive constant, then `x ↦ f x / r` tends to infinity along a filter if and only
-if `f` tends to infinity along the same filter. -/
+/-- If `r` is a positive constant, `x ↦ f x / r` tends to infinity along a filter
+if and only if `f` tends to infinity along the same filter. -/
 lemma tendsto_div_const_atTop_of_pos (hr : 0 < r) :
     Tendsto (λ x ↦ f x / r) l atTop ↔ Tendsto f l atTop := by
   simpa only [div_eq_mul_inv] using tendsto_mul_const_atTop_of_pos (inv_pos.2 hr)
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to infinity
-if and only if `0 < r. `-/
+/-- If `f` tends to infinity along a nontrivial filter `l`, then
+`fun x ↦ r * f x` tends to infinity if and only if `0 < r. `-/
 theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r := by
   refine' ⟨fun hrf => not_le.mp fun hr => _, fun hr => (tendsto_const_mul_atTop_of_pos hr).mpr h⟩
@@ -1084,20 +1084,20 @@ theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
   exact (mul_nonpos_of_nonpos_of_nonneg hr hx).not_lt hrx
 #align filter.tendsto_const_mul_at_top_iff_pos Filter.tendsto_const_mul_atTop_iff_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to infinity
-if and only if `0 < r. `-/
+/-- If `f` tends to infinity along a nontrivial filter `l`, then
+`fun x ↦ f x * r` tends to infinity if and only if `0 < r. `-/
 theorem tendsto_mul_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop ↔ 0 < r := by
   simp only [mul_comm _ r, tendsto_const_mul_atTop_iff_pos h]
 #align filter.tendsto_mul_const_at_top_iff_pos Filter.tendsto_mul_const_atTop_iff_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `x ↦ f x * r` tends to infinity
-if and only if `0 < r. `-/
+/-- If `f` tends to infinity along a nontrivial filter `l`, then
+`x ↦ f x * r` tends to infinity if and only if `0 < r. `-/
 lemma tendsto_div_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (λ x ↦ f x / r) l atTop ↔ 0 < r := by
   simp only [div_eq_mul_inv, tendsto_mul_const_atTop_iff_pos h, inv_pos]
 
-/-- If a function tends to infinity along a filter, then this function multiplied by a positive
+/-- If `f` tends to infinity along a filter, then `f` multiplied by a positive
 constant (on the left) also tends to infinity. For a version working in `ℕ` or `ℤ`, use
 `filter.tendsto.const_mul_atTop'` instead. -/
 theorem Tendsto.const_mul_atTop (hr : 0 < r) (hf : Tendsto f l atTop) :
@@ -1105,7 +1105,7 @@ theorem Tendsto.const_mul_atTop (hr : 0 < r) (hf : Tendsto f l atTop) :
   (tendsto_const_mul_atTop_of_pos hr).2 hf
 #align filter.tendsto.const_mul_at_top Filter.Tendsto.const_mul_atTop
 
-/-- If a function tends to infinity along a filter, then this function multiplied by a positive
+/-- If a function `f` tends to infinity along a filter, then `f` multiplied by a positive
 constant (on the right) also tends to infinity. For a version working in `ℕ` or `ℤ`, use
 `filter.tendsto.atTop_mul_const'` instead. -/
 theorem Tendsto.atTop_mul_const (hr : 0 < r) (hf : Tendsto f l atTop) :
@@ -1113,7 +1113,7 @@ theorem Tendsto.atTop_mul_const (hr : 0 < r) (hf : Tendsto f l atTop) :
   (tendsto_mul_const_atTop_of_pos hr).2 hf
 #align filter.tendsto.at_top_mul_const Filter.Tendsto.atTop_mul_const
 
-/-- If a function tends to infinity along a filter, then this function divided by a positive
+/-- If a function `f` tends to infinity along a filter, then `f` divided by a positive
 constant also tends to infinity. -/
 theorem Tendsto.atTop_div_const (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x / r) l atTop := by
@@ -1144,50 +1144,50 @@ section LinearOrderedField
 
 variable [LinearOrderedField α] {l : Filter β} {f : β → α} {r : α}
 
-/-- If `r` is a positive constant, then `λ x, r * f x` tends to negative infinity along a filter if
-and only if `f` tends to negative infinity along the same filter. -/
+/-- If `r` is a positive constant, `fun x ↦ r * f x` tends to negative infinity along a filter
+if and only if `f` tends to negative infinity along the same filter. -/
 theorem tendsto_const_mul_atBot_of_pos (hr : 0 < r) :
     Tendsto (fun x => r * f x) l atBot ↔ Tendsto f l atBot := by
   simpa only [← mul_neg, ← tendsto_neg_atTop_iff] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_const_mul_at_bot_of_pos Filter.tendsto_const_mul_atBot_of_pos
 
-/-- If `r` is a positive constant, then `λ x, f x * r` tends to negative infinity along a filter if
-and only if `f` tends to negative infinity along the same filter. -/
+/-- If `r` is a positive constant, `fun x ↦f x * r` tends to negative infinity along a filter
+if and only if `f` tends to negative infinity along the same filter. -/
 theorem tendsto_mul_const_atBot_of_pos (hr : 0 < r) :
     Tendsto (fun x => f x * r) l atBot ↔ Tendsto f l atBot := by
   simpa only [mul_comm] using tendsto_const_mul_atBot_of_pos hr
 #align filter.tendsto_mul_const_at_bot_of_pos Filter.tendsto_mul_const_atBot_of_pos
 
-/-- If `r` is a negative constant, then `λ x, r * f x` tends to infinity along a filter if and only
-if `f` tends to negative infinity along the same filter. -/
+/-- If `r` is a negative constant, `fun x ↦r * f x` tends to infinity along a filter `l`
+if and only if `f` tends to negative infinity along `l`. -/
 theorem tendsto_const_mul_atTop_of_neg (hr : r < 0) :
     Tendsto (fun x => r * f x) l atTop ↔ Tendsto f l atBot := by
   simpa only [neg_mul, tendsto_neg_atBot_iff] using tendsto_const_mul_atBot_of_pos (neg_pos.2 hr)
 #align filter.tendsto_const_mul_at_top_of_neg Filter.tendsto_const_mul_atTop_of_neg
 
-/-- If `r` is a negative constant, then `λ x, f x * r` tends to infinity along a filter if and only
-if `f` tends to negative infinity along the same filter. -/
+/-- If `r` is a negative constant, `fun x ↦f x * r` tends to infinity along a filter `l`
+if and only if `f` tends to negative infinity along `l`. -/
 theorem tendsto_mul_const_atTop_of_neg (hr : r < 0) :
     Tendsto (fun x => f x * r) l atTop ↔ Tendsto f l atBot := by
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_neg hr
 #align filter.tendsto_mul_const_at_top_of_neg Filter.tendsto_mul_const_atTop_of_neg
 
-/-- If `r` is a negative constant, then `λ x, r * f x` tends to negative infinity along a filter if
-and only if `f` tends to infinity along the same filter. -/
+/-- If `r` is a negative constant, `fun x ↦r * f x` tends to negative infinity along a filter `l`
+if and only if `f` tends to infinity along `l`. -/
 theorem tendsto_const_mul_atBot_of_neg (hr : r < 0) :
     Tendsto (fun x => r * f x) l atBot ↔ Tendsto f l atTop := by
   simpa only [neg_mul, tendsto_neg_atTop_iff] using tendsto_const_mul_atTop_of_pos (neg_pos.2 hr)
 #align filter.tendsto_const_mul_at_bot_of_neg Filter.tendsto_const_mul_atBot_of_neg
 
-/-- If `r` is a negative constant, then `λ x, f x * r` tends to negative infinity along a filter if
-and only if `f` tends to infinity along the same filter. -/
+/-- If `r` is a negative constant, `fun x ↦f x * r` tends to negative infinity along a filter `l`
+if and only if `f` tends to infinity along `l`. -/
 theorem tendsto_mul_const_atBot_of_neg (hr : r < 0) :
     Tendsto (fun x => f x * r) l atBot ↔ Tendsto f l atTop := by
   simpa only [mul_comm] using tendsto_const_mul_atBot_of_neg hr
 #align filter.tendsto_mul_const_at_bot_of_neg Filter.tendsto_mul_const_atBot_of_neg
 
-/-- The function `λ x, r * f x` tends to infinity along a nontrivial filter if and only if `r > 0`
-and `f` tends to infinity or `r < 0` and `f` tends to negative infinity. -/
+/-- The function `fun x ↦ r * f x` tends to infinity along a nontrivial filter
+if and only if `r > 0` and `f` tends to infinity or `r < 0` and `f` tends to negative infinity. -/
 theorem tendsto_const_mul_atTop_iff [NeBot l] :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r ∧ Tendsto f l atTop ∨ r < 0 ∧ Tendsto f l atBot := by
   rcases lt_trichotomy r 0 with (hr | rfl | hr)
@@ -1196,113 +1196,113 @@ theorem tendsto_const_mul_atTop_iff [NeBot l] :
   · simp [hr, hr.not_lt, tendsto_const_mul_atTop_of_pos]
 #align filter.tendsto_const_mul_at_top_iff Filter.tendsto_const_mul_atTop_iff
 
-/-- The function `λ x, f x * r` tends to infinity along a nontrivial filter if and only if `r > 0`
-and `f` tends to infinity or `r < 0` and `f` tends to negative infinity. -/
+/-- The function `fun x ↦ f x * r` tends to infinity along a nontrivial filter
+if and only if `r > 0` and `f` tends to infinity or `r < 0` and `f` tends to negative infinity. -/
 theorem tendsto_mul_const_atTop_iff [NeBot l] :
     Tendsto (fun x => f x * r) l atTop ↔ 0 < r ∧ Tendsto f l atTop ∨ r < 0 ∧ Tendsto f l atBot := by
   simp only [mul_comm _ r, tendsto_const_mul_atTop_iff]
 #align filter.tendsto_mul_const_at_top_iff Filter.tendsto_mul_const_atTop_iff
 
-/-- The function `λ x, r * f x` tends to negative infinity along a nontrivial filter if and only if
-`r > 0` and `f` tends to negative infinity or `r < 0` and `f` tends to infinity. -/
+/-- The function `fun x ↦ r * f x` tends to negative infinity along a nontrivial filter
+if and only if `r > 0` and `f` tends to negative infinity or `r < 0` and `f` tends to infinity. -/
 theorem tendsto_const_mul_atBot_iff [NeBot l] :
     Tendsto (fun x => r * f x) l atBot ↔ 0 < r ∧ Tendsto f l atBot ∨ r < 0 ∧ Tendsto f l atTop := by
   simp only [← tendsto_neg_atTop_iff, ← mul_neg, tendsto_const_mul_atTop_iff, neg_neg]
 #align filter.tendsto_const_mul_at_bot_iff Filter.tendsto_const_mul_atBot_iff
 
-/-- The function `λ x, f x * r` tends to negative infinity along a nontrivial filter if and only if
-`r > 0` and `f` tends to negative infinity or `r < 0` and `f` tends to infinity. -/
+/-- The function `fun x ↦ f x * r` tends to negative infinity along a nontrivial filter
+if and only if `r > 0` and `f` tends to negative infinity or `r < 0` and `f` tends to infinity. -/
 theorem tendsto_mul_const_atBot_iff [NeBot l] :
     Tendsto (fun x => f x * r) l atBot ↔ 0 < r ∧ Tendsto f l atBot ∨ r < 0 ∧ Tendsto f l atTop := by
   simp only [mul_comm _ r, tendsto_const_mul_atBot_iff]
 #align filter.tendsto_mul_const_at_bot_iff Filter.tendsto_mul_const_atBot_iff
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to
-infinity if and only if `r < 0. `-/
+/-- If `f` tends to negative infinity along a nontrivial filter `l`,
+then `fun x ↦ r * f x` tends to infinity if and only if `r < 0. `-/
 theorem tendsto_const_mul_atTop_iff_neg [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => r * f x) l atTop ↔ r < 0 := by
   simp [tendsto_const_mul_atTop_iff, h, h.not_tendsto disjoint_atBot_atTop]
 #align filter.tendsto_const_mul_at_top_iff_neg Filter.tendsto_const_mul_atTop_iff_neg
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to
-infinity if and only if `r < 0. `-/
+/-- If `f` tends to negative infinity along a nontrivial filter `l`,
+then `fun x ↦ f x * r` tends to infinity if and only if `r < 0. `-/
 theorem tendsto_mul_const_atTop_iff_neg [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop ↔ r < 0 := by
   simp only [mul_comm _ r, tendsto_const_mul_atTop_iff_neg h]
 #align filter.tendsto_mul_const_at_top_iff_neg Filter.tendsto_mul_const_atTop_iff_neg
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to
-negative infinity if and only if `0 < r. `-/
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then
+`fun x ↦ r * f x` tends to negative infinity if and only if `0 < r. `-/
 theorem tendsto_const_mul_atBot_iff_pos [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => r * f x) l atBot ↔ 0 < r := by
   simp [tendsto_const_mul_atBot_iff, h, h.not_tendsto disjoint_atBot_atTop]
 #align filter.tendsto_const_mul_at_bot_iff_pos Filter.tendsto_const_mul_atBot_iff_pos
 
-/-- If `f` tends to negative infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to
-negative infinity if and only if `0 < r. `-/
+/-- If `f` tends to negative infinity along a nontrivial filter `l`, then
+`fun x ↦ f x * r` tends to negative infinity if and only if `0 < r. `-/
 theorem tendsto_mul_const_atBot_iff_pos [NeBot l] (h : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot ↔ 0 < r := by
   simp only [mul_comm _ r, tendsto_const_mul_atBot_iff_pos h]
 #align filter.tendsto_mul_const_at_bot_iff_pos Filter.tendsto_mul_const_atBot_iff_pos
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ r * f x` tends to negative
-infinity if and only if `r < 0. `-/
+/-- If `f` tends to infinity along a nontrivial filter,
+`fun x ↦ r * f x` tends to negative infinity if and only if `r < 0. `-/
 theorem tendsto_const_mul_atBot_iff_neg [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atBot ↔ r < 0 := by
   simp [tendsto_const_mul_atBot_iff, h, h.not_tendsto disjoint_atTop_atBot]
 #align filter.tendsto_const_mul_at_bot_iff_neg Filter.tendsto_const_mul_atBot_iff_neg
 
-/-- If `f` tends to infinity along a nontrivial filter `l`, then `fun x ↦ f x * r` tends to negative
-infinity if and only if `r < 0. `-/
+/-- If `f` tends to infinity along a nontrivial filter,
+`fun x ↦ f x * r` tends to negative infinity if and only if `r < 0. `-/
 theorem tendsto_mul_const_atBot_iff_neg [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot ↔ r < 0 := by
   simp only [mul_comm _ r, tendsto_const_mul_atBot_iff_neg h]
 #align filter.tendsto_mul_const_at_bot_iff_neg Filter.tendsto_mul_const_atBot_iff_neg
 
-/-- If a function tends to infinity along a filter, then this function multiplied by a negative
-constant (on the left) tends to negative infinity. -/
+/-- If a function `f` tends to infinity along a filter,
+then `f` multiplied by a negative constant (on the left) tends to negative infinity. -/
 theorem Tendsto.neg_const_mul_atTop (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atBot :=
   (tendsto_const_mul_atBot_of_neg hr).2 hf
 #align filter.tendsto.neg_const_mul_at_top Filter.Tendsto.neg_const_mul_atTop
 
-/-- If a function tends to infinity along a filter, then this function multiplied by a negative
-constant (on the right) tends to negative infinity. -/
+/-- If a function `f` tends to infinity along a filter,
+then `f` multiplied by a negative constant (on the right) tends to negative infinity. -/
 theorem Tendsto.atTop_mul_neg_const (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot :=
   (tendsto_mul_const_atBot_of_neg hr).2 hf
 #align filter.tendsto.at_top_mul_neg_const Filter.Tendsto.atTop_mul_neg_const
 
-/-- If a function tends to negative infinity along a filter, then this function multiplied by
+/-- If a function `f` tends to negative infinity along a filter, then `f` multiplied by
 a positive constant (on the left) also tends to negative infinity. -/
 theorem Tendsto.const_mul_atBot (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => r * f x) l atBot :=
   (tendsto_const_mul_atBot_of_pos hr).2 hf
 #align filter.tendsto.const_mul_at_bot Filter.Tendsto.const_mul_atBot
 
-/-- If a function tends to negative infinity along a filter, then this function multiplied by
+/-- If a function `f` tends to negative infinity along a filter, then `f` multiplied by
 a positive constant (on the right) also tends to negative infinity. -/
 theorem Tendsto.atBot_mul_const (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot :=
   (tendsto_mul_const_atBot_of_pos hr).2 hf
 #align filter.tendsto.at_bot_mul_const Filter.Tendsto.atBot_mul_const
 
-/-- If a function tends to negative infinity along a filter, then this function divided by
+/-- If a function `f` tends to negative infinity along a filter, then `f` divided by
 a positive constant also tends to negative infinity. -/
 theorem Tendsto.atBot_div_const (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x / r) l atBot := by
   simpa only [div_eq_mul_inv] using hf.atBot_mul_const (inv_pos.2 hr)
 #align filter.tendsto.at_bot_div_const Filter.Tendsto.atBot_div_const
 
-/-- If a function tends to negative infinity along a filter, then this function multiplied by
-a negative constant (on the left) tends to positive infinity. -/
+/-- If a function `f` tends to negative infinity along a filter,
+then `f` multiplied by a negative constant (on the left) tends to positive infinity. -/
 theorem Tendsto.neg_const_mul_atBot (hr : r < 0) (hf : Tendsto f l atBot) :
     Tendsto (fun x => r * f x) l atTop :=
   (tendsto_const_mul_atTop_of_neg hr).2 hf
 #align filter.tendsto.neg_const_mul_at_bot Filter.Tendsto.neg_const_mul_atBot
 
-/-- If a function tends to negative infinity along a filter, then this function multiplied by
-a negative constant (on the right) tends to positive infinity. -/
+/-- If a function tends to negative infinity along a filter,
+then `f` multiplied by a negative constant (on the right) tends to positive infinity. -/
 theorem Tendsto.atBot_mul_neg_const (hr : r < 0) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop :=
   (tendsto_mul_const_atTop_of_neg hr).2 hf
@@ -1371,11 +1371,19 @@ theorem tendsto_atTop_atTop_of_monotone [Preorder α] [Preorder β] {f : α → 
       mem_of_superset (mem_atTop a) fun _a' ha' => le_trans ha (hf ha')
 #align filter.tendsto_at_top_at_top_of_monotone Filter.tendsto_atTop_atTop_of_monotone
 
+theorem tendsto_atTop_atBot_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
+    (h : ∀ b, ∃ a, f a ≤ b) : Tendsto f atTop atBot :=
+  @tendsto_atTop_atTop_of_monotone _ βᵒᵈ _ _ _ hf h
+
 theorem tendsto_atBot_atBot_of_monotone [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (h : ∀ b, ∃ a, f a ≤ b) : Tendsto f atBot atBot :=
   tendsto_iInf.2 fun b => tendsto_principal.2 <|
     let ⟨a, ha⟩ := h b; mem_of_superset (mem_atBot a) fun _a' ha' => le_trans (hf ha') ha
 #align filter.tendsto_at_bot_at_bot_of_monotone Filter.tendsto_atBot_atBot_of_monotone
+
+theorem tendsto_atBot_atTop_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
+    (h : ∀ b, ∃ a, b ≤ f a) : Tendsto f atBot atTop :=
+  @tendsto_atBot_atBot_of_monotone _ βᵒᵈ _ _ _ hf h
 
 theorem tendsto_atTop_atTop_iff_of_monotone [Nonempty α] [SemilatticeSup α] [Preorder β] {f : α → β}
     (hf : Monotone f) : Tendsto f atTop atTop ↔ ∀ b : β, ∃ a : α, b ≤ f a :=
@@ -1383,11 +1391,19 @@ theorem tendsto_atTop_atTop_iff_of_monotone [Nonempty α] [SemilatticeSup α] [P
     ⟨fun h => h a (le_refl a), fun h _a' ha' => le_trans h <| hf ha'⟩
 #align filter.tendsto_at_top_at_top_iff_of_monotone Filter.tendsto_atTop_atTop_iff_of_monotone
 
+theorem tendsto_atTop_atBot_iff_of_antitone [Nonempty α] [SemilatticeSup α] [Preorder β] {f : α → β}
+    (hf : Antitone f) : Tendsto f atTop atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
+  @tendsto_atTop_atTop_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
+
 theorem tendsto_atBot_atBot_iff_of_monotone [Nonempty α] [SemilatticeInf α] [Preorder β] {f : α → β}
     (hf : Monotone f) : Tendsto f atBot atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
   tendsto_atBot_atBot.trans <| forall_congr' fun _ => exists_congr fun a =>
     ⟨fun h => h a (le_refl a), fun h _a' ha' => le_trans (hf ha') h⟩
 #align filter.tendsto_at_bot_at_bot_iff_of_monotone Filter.tendsto_atBot_atBot_iff_of_monotone
+
+theorem tendsto_atBot_atTop_iff_of_antitone [Nonempty α] [SemilatticeInf α] [Preorder β] {f : α → β}
+    (hf : Antitone f) : Tendsto f atBot atTop ↔ ∀ b : β, ∃ a : α, b ≤ f a :=
+  @tendsto_atBot_atBot_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
 
 alias _root_.Monotone.tendsto_atTop_atTop := tendsto_atTop_atTop_of_monotone
 #align monotone.tendsto_at_top_at_top Monotone.tendsto_atTop_atTop

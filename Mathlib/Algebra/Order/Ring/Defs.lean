@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
@@ -13,7 +14,6 @@ import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Pi.Algebra
 import Mathlib.Tactic.Tauto
 
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
@@ -1227,16 +1227,6 @@ lemma mul_self_add_mul_self_eq_zero : a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := b
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
 #align eq_zero_of_mul_self_add_mul_self_eq_zero eq_zero_of_mul_self_add_mul_self_eq_zero
-
-lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
-  calc
-    (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
-        simp_rw [pow_succ, pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
-    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
-    _ = _ := by simp_rw [pow_succ, pow_zero, mul_one, two_mul]
-  cases le_total a b
-  · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
-  · exact mul_add_mul_le_mul_add_mul' ‹_› ‹_›
 
 end LinearOrderedSemiring
 

@@ -197,6 +197,7 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Std.Classes.SetNotation": ["Std.Util.ExtendedBinder"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
@@ -229,6 +230,8 @@
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FunProp.Types": ["Mathlib.Logic.Function.Basic"],
+  "Mathlib.Tactic.FunProp.RefinedDiscrTree": ["Mathlib.Algebra.Group.Pi.Basic"],
+  "Mathlib.Tactic.FunProp.MorExt": ["Mathlib.Tactic.FunProp.ToStd"],
   "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
   "Mathlib.Tactic.FunProp.Measurable":
   ["Mathlib.Analysis.Calculus.ContDiff.Basic",
@@ -242,20 +245,12 @@
    "Mathlib.Analysis.Calculus.FDeriv.Prod",
    "Mathlib.Analysis.SpecialFunctions.ExpDeriv",
    "Mathlib.Analysis.SpecialFunctions.Log.Deriv",
-   "Mathlib.Tactic.FunProp",
-   "Mathlib.Tactic.FunProp.Continuous"],
-  "Mathlib.Tactic.FunProp.Continuous":
-  ["Mathlib.Analysis.SpecialFunctions.Log.Basic",
-   "Mathlib.Tactic.FunProp",
-   "Mathlib.Topology.Algebra.Field",
-   "Mathlib.Topology.Algebra.Group.Basic",
-   "Mathlib.Topology.Order.Lattice"],
+   "Mathlib.Tactic.FunProp"],
   "Mathlib.Tactic.FunProp.ContDiff":
   ["Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas",
    "Mathlib.Analysis.SpecialFunctions.ExpDeriv",
    "Mathlib.Analysis.SpecialFunctions.Log.Deriv",
    "Mathlib.Tactic.FunProp",
-   "Mathlib.Tactic.FunProp.Continuous",
    "Mathlib.Tactic.FunProp.Differentiable"],
   "Mathlib.Tactic.FunProp.AEMesurable":
   ["Mathlib.MeasureTheory.Constructions.Pi",
@@ -296,6 +291,7 @@
   "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
+  "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],

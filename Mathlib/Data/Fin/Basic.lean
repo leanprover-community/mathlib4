@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
@@ -237,11 +236,11 @@ instance {n : ℕ} : LinearOrder (Fin n) :=
 #align fin.mk_le_mk Fin.mk_le_mk
 #align fin.mk_lt_mk Fin.mk_lt_mk
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 #align fin.min_coe Fin.min_val
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 #align fin.max_coe Fin.max_val
 
@@ -817,6 +816,29 @@ def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
 #align fin.coe_cast_le Fin.coe_castLE
 #align fin.cast_le_mk Fin.castLE_mk
 #align fin.cast_le_zero Fin.castLE_zero
+
+/- The next proof can be golfed a lot using `Fintype.card`.
+It is written this way to define `ENat.card` and `Nat.card` without a `Fintype` dependency
+(not done yet). -/
+assert_not_exists Fintype
+
+lemma nonempty_embedding_iff : Nonempty (Fin n ↪ Fin m) ↔ n ≤ m := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨(castLEEmb h).toEmbedding⟩⟩
+  induction n generalizing m with
+  | zero => exact m.zero_le
+  | succ n ihn =>
+    cases' h with e
+    rcases exists_eq_succ_of_ne_zero (pos_iff_nonempty.2 (Nonempty.map e inferInstance)).ne'
+      with ⟨m, rfl⟩
+    refine Nat.succ_le_succ <| ihn ⟨?_⟩
+    refine ⟨fun i ↦ (e.setValue 0 0 i.succ).pred (mt e.setValue_eq_iff.1 i.succ_ne_zero),
+      fun i j h ↦ ?_⟩
+    simpa only [pred_inj, EmbeddingLike.apply_eq_iff_eq, succ_inj] using h
+
+lemma equiv_iff_eq : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
+  ⟨fun ⟨e⟩ ↦ le_antisymm (nonempty_embedding_iff.1 ⟨e⟩) (nonempty_embedding_iff.1 ⟨e.symm⟩),
+    fun h ↦ h ▸ ⟨.refl _⟩⟩
+#align fin.equiv_iff_eq Fin.equiv_iff_eq
 
 @[simp] lemma castLE_castSucc {n m} (i : Fin n) (h : n + 1 ≤ m) :
     i.castSucc.castLE h = i.castLE (Nat.le_of_succ_le h) :=
@@ -1488,10 +1510,9 @@ instance neg (n : ℕ) : Neg (Fin n) :=
 instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
   { Fin.addCommMonoid n, Fin.neg n with
     add_left_neg := fun ⟨a, ha⟩ =>
-      Fin.ext <|
-        _root_.trans (Nat.mod_add_mod _ _ _) <| by
-          rw [Fin.val_zero', tsub_add_cancel_of_le, Nat.mod_self]
-          exact le_of_lt ha
+      Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
+        rw [Fin.val_zero', Nat.sub_add_cancel, Nat.mod_self]
+        exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
       Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
     sub := Fin.sub }
@@ -1550,7 +1571,7 @@ theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a 
   · simp
   split_ifs with h
   · simp [h]
-  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, add_comm, add_tsub_add_eq_tsub_left]
+  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, add_comm, Nat.add_sub_add_left]
   conv_rhs => rw [add_comm]
   rw [add_le_add_iff_left, Nat.one_le_iff_ne_zero]
   rwa [Fin.ext_iff] at h
