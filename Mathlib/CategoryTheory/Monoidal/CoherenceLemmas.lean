@@ -60,12 +60,6 @@ theorem pentagon_inv_inv_hom (W X Y Z : C) :
   coherence
 #align category_theory.monoidal_category.pentagon_inv_inv_hom CategoryTheory.MonoidalCategory.pentagon_inv_inv_hom
 
-@[reassoc (attr := simp)]
-theorem triangle_assoc_comp_right_inv (X Y : C) :
-    ((ρ_ X).inv ⊗ 𝟙 Y) ≫ (α_ X (𝟙_ C) Y).hom = 𝟙 X ⊗ (λ_ Y).inv := by
-  coherence
-#align category_theory.monoidal_category.triangle_assoc_comp_right_inv CategoryTheory.MonoidalCategory.triangle_assoc_comp_right_inv
-
 theorem unitors_equal : (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
   coherence
 #align category_theory.monoidal_category.unitors_equal CategoryTheory.MonoidalCategory.unitors_equal
