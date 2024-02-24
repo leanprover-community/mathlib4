@@ -328,10 +328,10 @@ theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z 
 
 /-- Induct using scaled versions of `PiTensorProduct.tprod`. -/
 @[elab_as_elim]
-protected theorem induction_on {C : (⨂[R] i, s i) → Prop} (z : ⨂[R] i, s i)
-    (smul_tprod : ∀ (r : R) (f : Π i, s i), C (r • tprod R f))
-    (add : ∀ x y, C x → C y → C (x + y)) :
-    C z := by
+protected theorem induction_on {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] i, s i)
+    (smul_tprod : ∀ (r : R) (f : Π i, s i), motive (r • tprod R f))
+    (add : ∀ x y, motive x → motive y → motive (x + y)) :
+    motive z := by
   simp_rw [← tprodCoeff_eq_smul_tprod] at smul_tprod
   exact PiTensorProduct.induction_on' z smul_tprod add
 #align pi_tensor_product.induction_on PiTensorProduct.induction_on
