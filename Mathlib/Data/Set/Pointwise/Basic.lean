@@ -261,6 +261,10 @@ theorem image_inv : Inv.inv '' s = s⁻¹ :=
 #align set.image_neg Set.image_neg
 
 @[to_additive (attr := simp)]
+theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
+  rw [← image_inv, image_eq_empty]
+
+@[to_additive (attr := simp)]
 noncomputable instance involutiveInv : InvolutiveInv (Set α) where
   inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
@@ -405,7 +409,7 @@ theorem singleton_mul : {a} * t = (a * ·) '' t :=
 #align set.singleton_mul Set.singleton_mul
 #align set.singleton_add Set.singleton_add
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
@@ -671,7 +675,7 @@ theorem singleton_div : {a} / t = (· / ·) a '' t :=
 #align set.singleton_div Set.singleton_div
 #align set.singleton_sub Set.singleton_sub
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton

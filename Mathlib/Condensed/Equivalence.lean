@@ -69,8 +69,8 @@ instance isCoverDense : Stonean.toCompHaus.IsCoverDense (coherentTopology _)  :=
   convert generate_singleton_mem_coherentTopology B
   ext Y f
   refine ⟨fun ⟨⟨obj, lift, map, fact⟩⟩ ↦ ?_, fun ⟨Z, h, g, hypo1, hf⟩ ↦ ?_⟩
-  · have : Projective (Stonean.toCompHaus.obj obj) -- Lean should find this instance?
-    · simp only [Stonean.toCompHaus, inducedFunctor_obj]
+  · have : Projective (Stonean.toCompHaus.obj obj) := by -- Lean should find this instance?
+      simp only [Stonean.toCompHaus, inducedFunctor_obj]
       exact inferInstance
     obtain ⟨p, p_factors⟩ := Projective.factors map (CompHaus.presentation.π B)
     exact ⟨(Stonean.toCompHaus.obj (presentation B)), ⟨lift ≫ p, ⟨(presentation.π B),
@@ -79,8 +79,8 @@ instance isCoverDense : Stonean.toCompHaus.IsCoverDense (coherentTopology _)  :=
     exact ⟨⟨presentation B, h, presentation.π B, hf⟩⟩
 
 theorem coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily (X : Stonean) (S : Sieve X) :
-    (∃ (α : Type) (_ : Fintype α) (Y : α → Stonean) (π : (a : α) → (Y a ⟶ X)),
-    EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
+    (∃ (α : Type) (_ : Finite α) (Y : α → Stonean) (π : (a : α) → (Y a ⟶ X)),
+      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
     (S ∈ Stonean.toCompHaus.inducedTopologyOfIsCoverDense (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
@@ -172,8 +172,8 @@ instance coverDense : Stonean.toProfinite.IsCoverDense (coherentTopology _) := b
     exact ⟨⟨presentation B, h, presentation.π B, hf⟩⟩
 
 theorem coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily (X : Stonean) (S : Sieve X) :
-    (∃ (α : Type) (_ : Fintype α) (Y : α → Stonean) (π : (a : α) → (Y a ⟶ X)),
-    EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
+    (∃ (α : Type) (_ : Finite α) (Y : α → Stonean) (π : (a : α) → (Y a ⟶ X)),
+      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
     (S ∈ Stonean.toProfinite.inducedTopologyOfIsCoverDense (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr

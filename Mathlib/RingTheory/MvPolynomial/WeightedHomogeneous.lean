@@ -326,6 +326,7 @@ variable {R}
   See `sum_weightedHomogeneousComponent` for the statement that `φ` is equal to the sum
   of all its weighted homogeneous components. -/
 def weightedHomogeneousComponent (w : σ → M) (n : M) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
+  letI := Classical.decEq M
   (Submodule.subtype _).comp <| Finsupp.restrictDom _ _ { d | weightedDegree' w d = n }
 #align mv_polynomial.weighted_homogeneous_component MvPolynomial.weightedHomogeneousComponent
 
@@ -336,13 +337,15 @@ variable {w : σ → M} (n : M) (φ ψ : MvPolynomial σ R)
 theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
     coeff d (weightedHomogeneousComponent w n φ) =
       if weightedDegree' w d = n then coeff d φ else 0 :=
-  Finsupp.filter_apply (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ d
+  letI := Classical.decEq M
+  Finsupp.filter_apply (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ d |>.trans <| by convert rfl
 #align mv_polynomial.coeff_weighted_homogeneous_component MvPolynomial.coeff_weightedHomogeneousComponent
 
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d in φ.support.filter fun d => weightedDegree' w d = n, monomial d (coeff d φ) :=
-  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ
+  letI := Classical.decEq M
+  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ |>.trans <| by convert rfl
 #align mv_polynomial.weighted_homogeneous_component_apply MvPolynomial.weightedHomogeneousComponent_apply
 
 /-- The `n` weighted homogeneous component of a polynomial is weighted homogeneous of

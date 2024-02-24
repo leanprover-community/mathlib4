@@ -317,17 +317,7 @@ theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X
 theorem hasLimitOfIso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :=
   HasLimit.mk
     { cone := (Cones.postcompose α.hom).obj (limit.cone F)
-      isLimit :=
-        { lift := fun s => limit.lift F ((Cones.postcompose α.inv).obj s)
-          fac := fun s j => by
-            rw [Cones.postcompose_obj_π, NatTrans.comp_app, limit.cone_π, ← Category.assoc,
-              limit.lift_π]
-            simp
-          uniq := fun s m w => by
-            apply limit.hom_ext; intro j
-            rw [limit.lift_π, Cones.postcompose_obj_π, NatTrans.comp_app, ← NatIso.app_inv,
-              Iso.eq_comp_inv]
-            simpa using w j } }
+      isLimit := (IsLimit.postcomposeHomEquiv _ _).symm (limit.isLimit F) }
 #align category_theory.limits.has_limit_of_iso CategoryTheory.Limits.hasLimitOfIso
 
 -- See the construction of limits from products and equalizers
@@ -925,16 +915,7 @@ theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} 
 theorem hasColimitOfIso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColimit G :=
   HasColimit.mk
     { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
-      isColimit :=
-        { desc := fun s => colimit.desc F ((Cocones.precompose α.inv).obj s)
-          fac := fun s j => by
-            rw [Cocones.precompose_obj_ι, NatTrans.comp_app, colimit.cocone_ι]
-            rw [Category.assoc, colimit.ι_desc, ← NatIso.app_hom, ← Iso.eq_inv_comp]; rfl
-          uniq := fun s m w => by
-            apply colimit.hom_ext; intro j
-            rw [colimit.ι_desc, Cocones.precompose_obj_ι, NatTrans.comp_app, ← NatIso.app_inv,
-              Iso.eq_inv_comp]
-            simpa using w j } }
+      isColimit := (IsColimit.precomposeHomEquiv _ _).symm (colimit.isColimit F) }
 #align category_theory.limits.has_colimit_of_iso CategoryTheory.Limits.hasColimitOfIso
 
 /-- If a functor `G` has the same collection of cocones as a functor `F`
