@@ -18,7 +18,7 @@ about these definitions.
 -/
 
 
-variable {𝕜 E F α : Type*}
+variable {𝕜 𝕜' E F α : Type*}
 
 open Filter Metric Function Set Topology Bornology
 open scoped BigOperators NNReal ENNReal uniformity
@@ -68,8 +68,8 @@ theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(
   rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
 #align norm_zsmul norm_zsmul
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
@@ -157,10 +157,8 @@ def NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCo
 section NormedAddCommGroup
 
 variable [NormedField 𝕜]
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open NormedField
 
@@ -186,8 +184,8 @@ end NormedAddCommGroup
 
 section NontriviallyNormedSpace
 
-variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [Nontrivial E]
+variable (𝕜 E)
+variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [Nontrivial E]
 
 /-- If `E` is a nontrivial normed space over a nontrivially normed field `𝕜`, then `E` is unbounded:
 for any `c : ℝ`, there exists a vector `x : E` with norm strictly greater than `c`. -/
@@ -222,8 +220,8 @@ end NontriviallyNormedSpace
 
 section NormedSpace
 
-variable (𝕜 E : Type*) [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E]
-  [NormedSpace 𝕜 E]
+variable (𝕜 E)
+variable [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E] [NormedSpace 𝕜 E]
 
 /-- A normed vector space over an infinite normed field is a noncompact space.
 This cannot be an instance because in order to apply it,
@@ -270,7 +268,8 @@ class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [Seminorme
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
-variable {𝕜 : Type*} (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable (𝕜')
+variable [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
   -- Porting note: previous Lean could figure out what we were extending
@@ -373,7 +372,7 @@ instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, S
   { Pi.normedSpace, Pi.algebra _ E with }
 #align pi.normed_algebra Pi.normedAlgebra
 
-variable {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E]
+variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
 instance MulOpposite.normedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ :=
@@ -405,8 +404,6 @@ instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedF
 section RestrictScalars
 
 section NormInstances
-
-variable {𝕜 𝕜' E : Type*}
 
 instance [I : SeminormedAddCommGroup E] :
     SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
@@ -452,8 +449,9 @@ end NormInstances
 
 section NormedSpace
 
-variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
+variable (𝕜 𝕜' E)
+variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
 
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
@@ -480,15 +478,16 @@ rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; bot
 inferred, and because it is likely to create instance diamonds.
 -/
 def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
-  RestrictScalars.normedSpace _ 𝕜' _
+  RestrictScalars.normedSpace _ 𝕜' E
 #align normed_space.restrict_scalars NormedSpace.restrictScalars
 
 end NormedSpace
 
 section NormedAlgebra
 
-variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  (E : Type*) [SeminormedRing E] [NormedAlgebra 𝕜' E]
+variable (𝕜 𝕜' E)
+variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [SeminormedRing E] [NormedAlgebra 𝕜' E]
 
 /-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedAlgebra`. -/
