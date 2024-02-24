@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Analysis.Complex.Halfplane
 import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.Topology.Instances.EReal
 
@@ -27,10 +28,6 @@ the series converges absolutely at `s` when `re s > x` and does not converge abs
 when `re s < x`. -/
 noncomputable def abscissaOfAbsConv (f : ArithmeticFunction ℂ) : EReal :=
   sInf <| Real.toEReal '' {x : ℝ | LSeriesSummable f x}
-
-/-- An open right half plane is open. -/
-lemma _root_.Complex.isOpen_rightHalfPlane (x : EReal) : IsOpen {z : ℂ | x < z.re} :=
-  isOpen_lt continuous_const <| EReal.continuous_coe_iff.mpr continuous_re
 
 lemma LSeriesSummable_of_abscissaOfAbsConv_lt_re {f : ArithmeticFunction ℂ} {s : ℂ}
     (hs : abscissaOfAbsConv f < s.re) : LSeriesSummable f s := by
