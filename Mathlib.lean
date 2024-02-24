@@ -1070,6 +1070,7 @@ import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.FintypeCat
@@ -2317,6 +2318,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Closure
+import Mathlib.GroupTheory.Perm.ClosureSwap
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
 import Mathlib.GroupTheory.Perm.Cycle.Factors
@@ -2556,6 +2558,7 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
 import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.LinearAlgebra.Matrix.PosDef
+import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
@@ -3228,6 +3231,7 @@ import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.Henselian
+import Mathlib.RingTheory.HopfAlgebra
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Cotangent
