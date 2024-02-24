@@ -100,7 +100,7 @@ lemma beta_function_lemma (l : List ℕ) (i : Fin l.length) :
     beta (unbeta l) i = l.get i := by
   simpa[beta, unbeta, coprimes] using mod_eq_of_modEq
     ((chineseRemainderOfFinset l.get (coprimes l.get) Finset.univ
-      (by simp[coprimes])
+      (by simp [coprimes])
       (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _))).prop i (by simp))
     (coprimes_lt l.get _)
 
