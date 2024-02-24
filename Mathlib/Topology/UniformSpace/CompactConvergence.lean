@@ -141,7 +141,7 @@ theorem tendsto_iff_forall_compact_tendstoUniformlyOn
 /-- Interpret a bundled continuous map as an element of `α →ᵤ[{K | IsCompact K}] β`.
 
 We use this map to induce the `UniformSpace` structure on `C(α, β)`. -/
-def toUniformOnFun (f : C(α, β)) : α →ᵤ[{K | IsCompact K}] β :=
+def toUniformOnCompact (f : C(α, β)) : α →ᵤ[{K | IsCompact K}] β :=
   UniformOnFun.ofFun {K | IsCompact K} f
 
 @[simp]
@@ -150,12 +150,13 @@ theorem toUniformOnFun_toFun (f : C(α, β)) : UniformOnFun.toFun _ f.toUniformO
 open UniformSpace in
 /-- Uniform space structure on `C(α, β)`.
 
-The uniformity comes from `α →ᵤ[{K | IsCompact K}] β`
+The uniformity comes from `α →ᵤ[{K | IsCompact K}] β` (i.e., `UniformOnFun α β {K | IsCompact K}`)
 which defines topology of uniform convergence on compact sets.
-We use `tendsto_iff_forall_compact_tendstoUniformlyOn`
+We use `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn`
 to show that the induced topology agrees with the compact-open topology
-and replace the topology with `compactOpen` to avoid non-defeq diamonds.  -/
-instance compactConvergenceUniformSpace : UniformSpace (C(α, β)) :=
+and replace the topology with `compactOpen` to avoid non-defeq diamonds,
+see Note [forgetful inheritance].  -/
+instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
   .replaceTopology (.comap toUniformOnFun inferInstance) <| by
     refine eq_of_nhds_eq_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
     simp_rw [← tendsto_id', tendsto_iff_forall_compact_tendstoUniformlyOn,
@@ -169,7 +170,7 @@ theorem uniformEmbedding_toUniformOnFun :
   inj := DFunLike.coe_injective
 
 -- The following definitions and theorems
--- used to be a part of the construction of the `UniformSpace (C(α, β))` structure
+-- used to be a part of the construction of the `UniformSpace C(α, β)` structure
 -- before it was migrated to `UniformOnFun`
 #noalign continuous_map.compact_conv_nhd
 #noalign continuous_map.self_mem_compact_conv_nhd
