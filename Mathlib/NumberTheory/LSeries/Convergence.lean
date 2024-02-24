@@ -39,7 +39,7 @@ lemma LSeriesSummable_lt_re_of_abscissaOfAbsConv_lt_re {f : ArithmeticFunction �
     (hs : abscissaOfAbsConv f < s.re) :
     ∃ x : ℝ, x < s.re ∧ LSeriesSummable f x := by
   obtain ⟨x, hx₁, hx₂⟩ := EReal.exists_between_coe_real hs
-  refine ⟨x, EReal.coe_lt_coe_iff.mp hx₂, LSeriesSummable_of_abscissaOfAbsConv_lt_re hx₁⟩
+  exact ⟨x, EReal.coe_lt_coe_iff.mp hx₂, LSeriesSummable_of_abscissaOfAbsConv_lt_re hx₁⟩
 
 lemma LSeriesSummable.abscissaOfAbsConv_le {f : ArithmeticFunction ℂ} {s : ℂ}
     (h : LSeriesSummable f s) : abscissaOfAbsConv f ≤ s.re := by
