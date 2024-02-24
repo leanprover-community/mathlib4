@@ -109,7 +109,7 @@ variable [Ring α]
 
 @[simp] lemma _root_.zsmul_eq_mul (a : α) : ∀ n : ℤ, n • a = n * a
   | (n : ℕ) => by rw [coe_nat_zsmul, nsmul_eq_mul, Int.cast_ofNat]
-  | -[n+1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
+  | -[n+1] => by simp [Nat.cast_succ, Int.cast_negSucc, add_mul, sub_mul]
 #align zsmul_eq_mul zsmul_eq_mul
 
 lemma _root_.zsmul_eq_mul' (a : α) (n : ℤ) : n • a = a * n := by

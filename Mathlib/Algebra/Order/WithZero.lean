@@ -221,7 +221,7 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
   have ha : a ≠ 0 := ne_of_gt (lt_of_lt_of_le hc hh)
   simp_rw [← inv_le_inv₀ ha (ne_of_gt hc)] at hh
   have := mul_lt_mul_of_lt_of_le₀ hh (inv_ne_zero (ne_of_gt hc)) h
-  simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ (ne_of_gt hc)] using this
+  simpa [mul_div_cancel_left _ ha, mul_div_cancel_left _ hc.ne'] using this
 #align lt_of_mul_lt_mul_of_le₀ lt_of_mul_lt_mul_of_le₀
 
 theorem mul_le_mul_right₀ (hc : c ≠ 0) : a * c ≤ b * c ↔ a ≤ b :=
