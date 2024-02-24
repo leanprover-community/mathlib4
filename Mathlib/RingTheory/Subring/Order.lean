@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.GroupTheory.Subgroup.Order
-import Mathlib.RingTheory.Subring.Order
+import Mathlib.RingTheory.Subsemiring.Order
 
 /-!
 # Ordered instances on subrings
