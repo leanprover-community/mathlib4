@@ -48,8 +48,6 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
   -- letI : Module.Free R (Fin n.succ → R) := Module.Free.pi _ _
   let g : (Fin (n + 1) → R) →ₗ[R] Fin (n + 1) → R := (ExtendByZero.linearMap R castSucc).comp f
   have hg : Injective g := (extend_injective Fin.strictMono_castSucc.injective _).comp hf
-  have hnex : ¬∃ i : Fin n, castSucc i = last n :=
-    fun ⟨i, hi⟩ => ne_of_lt (castSucc_lt_last i) hi
   let a₀ := (minpoly R g).coeff 0
   have : a₀ ≠ 0 := minpoly_coeff_zero_of_injective hg
   have : a₀ = 0 := by
@@ -59,6 +57,6 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
     rw [← monomial_add_erase (minpoly R g) 0, hP] at heval
     replace heval := congr_fun heval (Fin.last n)
     -- Porting note: ...it's just that this line gives a timeout without slightly raising heartbeats
-    simpa [hnex] using heval
+    simpa using heval
   contradiction
 #align comm_ring_strong_rank_condition commRing_strongRankCondition
