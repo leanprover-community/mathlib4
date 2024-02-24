@@ -234,7 +234,7 @@ theorem measure_diff_null (h : μ s₂ = 0) : μ (s₁ \ s₂) = μ s₁ :=
 #align measure_theory.measure_diff_null MeasureTheory.measure_diff_null
 
 theorem measure_add_diff (hs : MeasurableSet s) (t : Set α) : μ s + μ (t \ s) = μ (s ∪ t) := by
-  rw [← measure_union' (@disjoint_sdiff_right _ s t) hs, union_diff_self]
+  rw [← measure_union' disjoint_sdiff_right hs, union_diff_self]
 #align measure_theory.measure_add_diff MeasureTheory.measure_add_diff
 
 theorem measure_diff' (s : Set α) (hm : MeasurableSet t) (h_fin : μ t ≠ ∞) :
@@ -618,7 +618,8 @@ theorem measure_liminf_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)) ≠ 
 #align measure_theory.measure_liminf_eq_zero MeasureTheory.measure_liminf_eq_zero
 
 theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
-    (h : ∀ n, s n =ᵐ[μ] t) : @limsup (Set α) ℕ _ s atTop =ᵐ[μ] t := by
+    (h : ∀ n, s n =ᵐ[μ] t) : limsup (α := Set α) s atTop =ᵐ[μ] t := by
+    -- Need to specify `α := Set α` above because of diamond; see gh issue #16932
   simp_rw [ae_eq_set] at h ⊢
   constructor
   · rw [atTop.limsup_sdiff s t]
@@ -630,7 +631,8 @@ theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
 #align measure_theory.limsup_ae_eq_of_forall_ae_eq MeasureTheory.limsup_ae_eq_of_forall_ae_eq
 
 theorem liminf_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
-    (h : ∀ n, s n =ᵐ[μ] t) : @liminf (Set α) ℕ _ s atTop =ᵐ[μ] t := by
+    (h : ∀ n, s n =ᵐ[μ] t) : liminf (α := Set α) s atTop =ᵐ[μ] t := by
+    -- Need to specify `α := Set α` above because of diamond; see gh issue #16932
   simp_rw [ae_eq_set] at h ⊢
   constructor
   · rw [atTop.liminf_sdiff s t]
@@ -811,7 +813,7 @@ variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
--- porting note: TODO: refactor
+-- TODO: refactor
 instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
@@ -867,7 +869,7 @@ end SMul
 
 instance instNoZeroSMulDivisors [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [NoZeroSMulDivisors R ℝ≥0∞] : NoZeroSMulDivisors R (Measure α) where
-  eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne.def, @ext_iff', forall_or_left] using h
+  eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne.def, ext_iff', forall_or_left] using h
 
 instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [MeasurableSpace α] : MulAction R (Measure α) :=
@@ -1403,7 +1405,7 @@ theorem NullMeasurableSet.image {β} [MeasurableSpace α] {mβ : MeasurableSpace
   swap
   · exact hf _ (measurableSet_toMeasurable _ _)
   have h : toMeasurable (comap f μ) s =ᵐ[comap f μ] s :=
-    @NullMeasurableSet.toMeasurable_ae_eq _ _ (μ.comap f : Measure α) s hs
+    NullMeasurableSet.toMeasurable_ae_eq hs
   exact ae_eq_image_of_ae_eq_comap f μ hfi hf h.symm
 #align measure_theory.measure.null_measurable_set.image MeasureTheory.Measure.NullMeasurableSet.image
 
@@ -1796,7 +1798,8 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
 #align measure_theory.measure.quasi_measure_preserving.image_zpow_ae_eq MeasureTheory.Measure.QuasiMeasurePreserving.image_zpow_ae_eq
 
 theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : @limsup (Set α) ℕ _ (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
+    (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
+    -- Need to specify `α := Set α` above because of diamond; see gh issue #16932
   haveI : ∀ n, (preimage f)^[n] s =ᵐ[μ] s := by
     intro n
     induction' n with n ih
@@ -1806,7 +1809,7 @@ theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreservi
 #align measure_theory.measure.quasi_measure_preserving.limsup_preimage_iterate_ae_eq MeasureTheory.Measure.QuasiMeasurePreserving.limsup_preimage_iterate_ae_eq
 
 theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : @liminf (Set α) ℕ _ (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s := by
+    (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s := by
   rw [← ae_eq_set_compl_compl, @Filter.liminf_compl (Set α)]
   rw [← ae_eq_set_compl_compl, ← preimage_compl] at hs
   convert hf.limsup_preimage_iterate_ae_eq hs
@@ -1823,7 +1826,7 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePrese
     ∃ t : Set α, MeasurableSet t ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t :=
   ⟨limsup (fun n => (preimage f)^[n] s) atTop,
     MeasurableSet.measurableSet_limsup fun n =>
-      @preimage_iterate_eq α f n ▸ h.measurable.iterate n hs,
+      preimage_iterate_eq ▸ h.measurable.iterate n hs,
     h.limsup_preimage_iterate_ae_eq hs',
     Filter.CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) s⟩
 #align measure_theory.measure.quasi_measure_preserving.exists_preimage_eq_of_preimage_ae MeasureTheory.Measure.QuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae
@@ -2057,7 +2060,7 @@ theorem Iio_ae_eq_Iic' (ha : μ {a} = 0) : Iio a =ᵐ[μ] Iic a := by
 #align measure_theory.Iio_ae_eq_Iic' MeasureTheory.Iio_ae_eq_Iic'
 
 theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a =ᵐ[μ] Ici a :=
-  @Iio_ae_eq_Iic' αᵒᵈ _ μ _ _ ha
+  Iio_ae_eq_Iic' (α := αᵒᵈ) ha
 #align measure_theory.Ioi_ae_eq_Ici' MeasureTheory.Ioi_ae_eq_Ici'
 
 theorem Ioo_ae_eq_Ioc' (hb : μ {b} = 0) : Ioo a b =ᵐ[μ] Ioc a b :=
