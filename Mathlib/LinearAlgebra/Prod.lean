@@ -632,14 +632,14 @@ def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
 #align submodule.fst_equiv Submodule.fstEquiv
 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_top_iff]; rintro x -
   simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
     Prod.exists, exists_eq_left, exists_eq]
 #align submodule.fst_map_fst Submodule.fst_map_fst
 
 theorem fst_map_snd : (Submodule.fst R M M₂).map (LinearMap.snd R M M₂) = ⊥ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_bot_iff]; intro x
   simp only [fst, comap_bot, mem_map, mem_ker, snd_apply, eq_comm, Prod.exists, exists_eq_left,
     exists_const, mem_bot, imp_self]
@@ -668,14 +668,14 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
 #align submodule.snd_equiv Submodule.sndEquiv
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_bot_iff]; intro x
   simp only [snd, comap_bot, mem_map, mem_ker, fst_apply, eq_comm, Prod.exists, exists_eq_left,
     exists_const, mem_bot, imp_self]
 #align submodule.snd_map_fst Submodule.snd_map_fst
 
 theorem snd_map_snd : (Submodule.snd R M M₂).map (LinearMap.snd R M M₂) = ⊤ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_top_iff]; rintro x -
   simp only [snd, comap_bot, mem_map, mem_ker, snd_apply, fst_apply,
     Prod.exists, exists_eq_right, exists_eq]
@@ -691,7 +691,7 @@ theorem fst_sup_snd : Submodule.fst R M M₂ ⊔ Submodule.snd R M M₂ = ⊤ :=
 #align submodule.fst_sup_snd Submodule.fst_sup_snd
 
 theorem fst_inf_snd : Submodule.fst R M M₂ ⊓ Submodule.snd R M M₂ = ⊥ := by
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   rw [eq_bot_iff]; rintro ⟨x, y⟩
   simp only [fst, comap_bot, snd, ge_iff_le, mem_inf, mem_ker, snd_apply, fst_apply, mem_bot,
     Prod.mk_eq_zero, and_comm, imp_self]

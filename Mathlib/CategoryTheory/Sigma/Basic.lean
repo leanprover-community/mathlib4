@@ -95,7 +95,7 @@ instance (i : I) : Full (incl i : C i ⥤ Σi, C i) where
   witness := fun ⟨_⟩ => rfl
 
 instance (i : I) : Faithful (incl i : C i ⥤ Σi, C i) where
-  -- Porting note: was `tidy`
+  -- Porting note (#10936): was `tidy`
   map_injective {_ _ _ _} h := by injection h
 
 section

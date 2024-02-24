@@ -413,7 +413,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
         dsimp
         simp }
   inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by
-    -- Porting note: used to be `tidy`, but `aesop` can't do it
+    -- Porting note (#10936): used to be `tidy`, but `aesop` can't do it
     refine DFunLike.ext _ _ ?_
     rintro ⟨x, (hx : f _ = 0)⟩
     exact hx
