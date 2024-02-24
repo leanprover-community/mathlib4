@@ -6,6 +6,7 @@ Authors: Damiano Testa
 
 import Mathlib.GroupTheory.Subgroup.Order
 import Mathlib.RingTheory.Subsemiring.Order
+import Mathlib.RingTheory.Subring.Basic
 
 /-!
 # Ordered instances on subrings
