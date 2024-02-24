@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.GroupTheory.Subgroup.Order
+import Mathlib.RingTheory.Subring.Order
 
 /-!
 # Ordered instances on subrings
 -/
 
 namespace SubringClass
-
 variable {R S : Type*} [SetLike S R] (s : S)
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
