@@ -116,7 +116,7 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : Memℒp g 
   intro ε hε
   by_cases hε_top : ε = ∞
   · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
-  obtain ⟨s, _, hμs, hgε⟩ := hg.snorm_indicator_compl_le hp_ne_top hε
+  obtain ⟨s, _, hμs, hgε⟩ := hg.existssnorm_indicator_compl_lt hp_ne_top hε
   exact ⟨s, ne_of_lt hμs, fun _ => hgε⟩
 
 /-- A single function is tight. -/

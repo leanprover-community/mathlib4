@@ -276,6 +276,17 @@ theorem memℒp_neg_iff {f : α → E} : Memℒp (-f) p μ ↔ Memℒp f p μ :=
 
 end Neg
 
+theorem snorm_indicator_eq_restrict {f : α → E} {s : Set α} (hs : MeasurableSet s) :
+    snorm (s.indicator f) p μ = snorm f p (μ.restrict s) := by
+  rcases eq_or_ne p ∞ with rfl | hp
+  · simp only [snorm_exponent_top, snormEssSup, ← ENNReal.essSup_indicator_eq_essSup_restrict hs,
+      ENNReal.coe_indicator, nnnorm_indicator_eq_indicator_nnnorm]
+  · rcases eq_or_ne p 0 with rfl | hp₀; · simp
+    simp only [snorm_eq_lintegral_rpow_nnnorm hp₀ hp, ← lintegral_indicator _ hs,
+      ENNReal.coe_indicator, nnnorm_indicator_eq_indicator_nnnorm]
+    congr with x
+    by_cases hx : x ∈ s <;> simp [ENNReal.toReal_pos, *]
+
 section Const
 
 theorem snorm'_const (c : F) (hq_pos : 0 < q) :
@@ -1134,52 +1145,21 @@ theorem _root_.Continuous.memℒp_top_of_hasCompactSupport
 
 section UnifTight
 
-/-- A single function that is `Memℒp f p μ` is tight wrt to `μ`. -/
-theorem Memℒp.snorm_indicator_compl_le
-    {β : Type*} [NormedAddCommGroup β]
-    (hp_top : p ≠ ∞)
-    {f : α → β} (hf : Memℒp f p μ)
-    {ε : ℝ≥0∞} (hε : 0 < ε) :
-    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ snorm (sᶜ.indicator f) p μ ≤ ε := by
-  -- The proof unwraps `Memℒp f p μ` and applies the analogous result for `lintegral`.
-  by_cases hfinε : ε ≠ ∞; swap -- first take care of `ε = ∞`
-  · rw [not_ne_iff.mp hfinε]; exact ⟨∅, by measurability⟩
-  by_cases hp_nz : p ≠ 0; swap -- first take care of `p = 0`
-  · simp only [ne_eq, not_not] at hp_nz
-    use ∅, by measurability, by measurability
-    simp only [Set.compl_empty, Set.indicator_univ]
-    calc
-      snorm f p μ = snorm f 0 μ := by congr
-      _           = 0           := snorm_exponent_zero
-      _           ≤ ε           := zero_le _
-  -- do some arithmetic that will come in useful
-  have hrp_pos : 0 < p.toReal := ENNReal.toReal_pos hp_nz hp_top
-  have hirp_pos : 0 < 1 / p.toReal := div_pos (by norm_num) hrp_pos
-  have hεp : 0 < ε ^ p.toReal := ENNReal.rpow_pos hε hfinε
-  -- decode Memℒp into a.e. strong measurability and finite snorm
-  obtain ⟨_haesmf, hsnf⟩ := hf
-  -- transform snorm to lintegral
-  rw [snorm_eq_lintegral_rpow_nnnorm hp_nz hp_top] at hsnf
-  replace hsnf := (ENNReal.rpow_lt_top_iff_of_pos hirp_pos).mp hsnf
-  -- use core result for lintegral (needs only AEMeasurable), the target estimate will be in `hsfε`
-  obtain ⟨s, hms, hμs, hsfε⟩ := exists_lintegral_indicator_compl_le hsnf.ne hεp
-  rw [← lintegral_indicator _ hms.compl] at hsfε
-  use s, hms, hμs
-  -- move indicator through function compositions, XXX: is this simp-able?
-  rw [← Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal)] at hsfε
-  rw [← Function.comp_def ENNReal.ofNNReal] at hsfε
-  rw [← Function.comp_def nnnorm] at hsfε
-  rw [sᶜ.indicator_comp_of_zero (@ENNReal.zero_rpow_of_pos p.toReal hrp_pos)] at hsfε
-  rw [sᶜ.indicator_comp_of_zero ENNReal.coe_zero] at hsfε
-  rw [sᶜ.indicator_comp_of_zero nnnorm_zero] at hsfε
-  rw [Function.comp_def nnnorm] at hsfε
-  rw [Function.comp_def ENNReal.ofNNReal] at hsfε
-  rw [Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal)] at hsfε
-  -- commute ENNReal coersion with rpow, use rpow monotonicity
-  rw [← ENNReal.rpow_le_rpow_iff hirp_pos, ENNReal.rpow_inv_rpow_self hrp_pos.ne'] at hsfε
-  -- convert lintegral to snorm
-  rw [← snorm_eq_lintegral_rpow_nnnorm hp_nz hp_top] at hsfε
-  exact hsfε
+/-- A single function that is `Memℒp f p μ` is tight with respect to `μ`. -/
+theorem Memℒp.exists_snorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup β] (hp_top : p ≠ ∞)
+    {f : α → β} (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ snorm (sᶜ.indicator f) p μ < ε := by
+  rcases eq_or_ne p 0 with rfl | hp₀ -- first take care of `ε = ∞`
+  · use ∅; simp [pos_iff_ne_zero.2 hε]
+  · obtain ⟨s, hsm, hs, hε⟩ :
+        ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, (‖f a‖₊) ^ p.toReal ∂μ < ε ^ p.toReal := by
+      apply exists_set_lintegral_compl_lt
+      · exact ((snorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp₀ hp_top).1 hf.2).ne
+      · simp [*]
+    refine ⟨s, hsm, hs, ?_⟩
+    rwa [snorm_indicator_eq_restrict hsm.compl, snorm_eq_lintegral_rpow_nnnorm hp₀ hp_top,
+      ENNReal.rpow_one_div_lt_iff]
+    simp [ENNReal.toReal_pos, *]
 
 end UnifTight
 
