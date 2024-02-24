@@ -89,7 +89,7 @@ def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
-def unbeta (l : List ℕ) : ℕ :=
+def beta_unbeta_coe (l : List ℕ) : ℕ :=
   (chineseRemainderOfFinset l.get (coprimes l.get) Finset.univ
     (by simp[coprimes])
     (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _)) : ℕ).pair
@@ -97,8 +97,8 @@ def unbeta (l : List ℕ) : ℕ :=
 
 /-- **Gödel's Beta Function Lemma** -/
 lemma beta_function_lemma (l : List ℕ) (i : Fin l.length) :
-    beta (unbeta l) i = l.get i := by
-  simpa[beta, unbeta, coprimes] using mod_eq_of_modEq
+    beta (beta_unbeta_coe l) i = l.get i := by
+  simpa[beta, beta_unbeta_coe, coprimes] using mod_eq_of_modEq
     ((chineseRemainderOfFinset l.get (coprimes l.get) Finset.univ
       (by simp[coprimes])
       (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _))).prop i (by simp))
