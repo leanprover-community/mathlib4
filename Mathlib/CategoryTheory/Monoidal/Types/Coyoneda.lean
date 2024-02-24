@@ -33,8 +33,6 @@ open MonoidalCategory
 -- I don't know if that is a problem, might need to change it back in the future, but
 -- if so it might be better to fix then instead of at the moment of porting.
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 /-- `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`. -/
 noncomputable
 def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
