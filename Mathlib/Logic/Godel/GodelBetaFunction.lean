@@ -12,12 +12,13 @@ import Mathlib.Data.Nat.Pairing
 # Gödel's Beta Function Lemma
 
 This file proves Gödel's Beta Function Lemma, used to prove the First Incompleteness Theorem. It
- permits  quantification over finite sequences of natural numbers in formal theories of arithmetic.
- This Beta Function has no connection with the unrelated Beta Function defined in analysis. Note
- that beta and unbeta provide similar functionality to List.encodeList and List.decodeList, ,
- except that we can prove that `Nat.beta` and `Nat.unbeta` are arithmetically definable, and it is
- hard to prove that for `Encodable.encodeList` and `Encodable.decodeList` directly. The arithmetic
- definability is needed for the proof of the  First Incompleteness Theorem.
+permits  quantification over finite sequences of natural numbers in formal theories of arithmetic.
+This Beta Function has no connection with the unrelated Beta Function defined in analysis. Note
+that `Nat.beta` and `Nat.unbeta` provide similar functionality to `Encodable.encodeList` and 
+`Encodable.decodeList`. We define these separately, because it is easier to prove that `Nat.beta` 
+and `Nat.unbeta` are arithmetically definable, and this is hard to prove that for 
+`Encodable.encodeList` and `Encodable.decodeList` directly. The arithmetic
+definability is needed for the proof of the First Incompleteness Theorem.
 
 ## Main result
 
