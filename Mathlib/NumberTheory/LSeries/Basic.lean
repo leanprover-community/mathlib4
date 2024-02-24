@@ -182,7 +182,7 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ArithmeticFunction ℂ} {x : ℝ} {s :
     refine (div_le_iff <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn') _).mp ?_
     refine (le_max' _ _ <| mem_insert_of_mem ?_).trans <| le_max_right ..
     rw [mem_image]
-    refine ⟨n, mem_range.mpr hn, rfl⟩
+    exact ⟨n, mem_range.mpr hn, rfl⟩
 
 example (a b c : ℝ) (hc : 0 < c) (h' : a / c ≤ b) : a ≤ b * c := by
   exact (div_le_iff hc).mp h'
