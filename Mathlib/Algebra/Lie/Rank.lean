@@ -61,43 +61,30 @@ open Module
 open scoped TensorProduct
 
 noncomputable
-def TensorProductEndₗ' : A ⊗[R] (End R M) →ₗ[R] End A (A ⊗[R] M) :=
-  TensorProduct.lift <|
+def TensorProductEndₗ : A ⊗[R] (End R M) →ₗ[A] End A (A ⊗[R] M) :=
+  TensorProduct.AlgebraTensorModule.lift <|
   { toFun := fun a ↦ a • baseChangeHom R A M M
     map_add' := by simp only [add_smul, forall_true_iff]
     map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
-
-noncomputable
-def TensorProductEndₗ : A ⊗[R] (End R M) →ₗ[A] End A (A ⊗[R] M) :=
-  { TensorProductEndₗ' R A M with
-    map_smul' := by
-      intros a f
-      show TensorProductEndₗ' R A M (a • f) = a • TensorProductEndₗ' R A M f
-      unfold TensorProductEndₗ'
-      induction f using TensorProduct.induction_on with
-      | zero => simp only [smul_zero, LinearMap.map_zero]
-      | tmul b f =>
-          simp only [TensorProduct.smul_tmul', TensorProduct.lift.tmul]
-          dsimp only [coe_mk, AddHom.coe_mk, smul_apply, baseChangeHom_apply]
-          rw [smul_assoc]
-      | add f g hf hg => simp only [smul_add, LinearMap.map_add, hf, hg] }
 
 noncomputable
 def TensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
     (TensorProductEndₗ R A M)
     (fun a b f g ↦ by
-      simp only [TensorProductEndₗ, TensorProductEndₗ', coe_mk, TensorProduct.lift.tmul',
-        AddHom.coe_mk, mul_eq_comp, baseChangeHom_apply, smul_apply, baseChange_comp]
       apply LinearMap.ext
       intro x
-      simp only [LinearMap.comp_apply, smul_apply, map_smul, mul_comm a b, mul_smul])
+      simp only [TensorProductEndₗ, mul_comm a b, mul_eq_comp,
+        TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul, coe_restrictScalars,
+        coe_mk, AddHom.coe_mk, mul_smul, smul_apply, baseChangeHom_apply, baseChange_comp,
+        comp_apply, Algebra.mul_smul_comm, Algebra.smul_mul_assoc])
     (by
-      simp only [TensorProductEndₗ, TensorProductEndₗ', coe_mk, TensorProduct.lift.tmul',
-        AddHom.coe_mk, one_smul, baseChangeHom_apply]
       apply LinearMap.ext
       intro x
-      erw [baseChange_eq_ltensor, lTensor_id, LinearMap.id_apply])
+      simp only [TensorProductEndₗ, TensorProduct.AlgebraTensorModule.lift_apply,
+        TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
+        baseChangeHom_apply, baseChange_eq_ltensor, one_apply]
+      erw [lTensor_id, LinearMap.id_apply])
 
 end LinearMap
 
