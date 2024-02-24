@@ -807,7 +807,7 @@ theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
     Submodule.FG (I.degreeLE n) :=
   letI := Classical.decEq R
   isNoetherian_submodule_left.1
-    (isNoetherian_of_fg_of_noetherian _ ⟨_, (degreeLE_eq_span_X_pow).symm⟩) _
+    (isNoetherian_of_fg_of_noetherian _ ⟨_, degreeLE_eq_span_X_pow.symm⟩) _
 #align ideal.is_fg_degree_le Ideal.is_fg_degreeLE
 
 end CommRing
@@ -865,7 +865,7 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
       have : algebraMap R _ r ∣ a' * b' := by
-        convert killCompl Subtype.coe_injective|>.toRingHom.map_dvd hd <;> simp
+        convert killCompl Subtype.coe_injective |>.toRingHom.map_dvd hd <;> simp
       rw [← rename_C ((↑) : s → σ)]
       let f := (rename (R := R) ((↑) : s → σ)).toRingHom
       exact (((prime_C_iff_of_fintype s).2 hr).2.2 a' b' this).imp f.map_dvd f.map_dvd⟩⟩
