@@ -450,11 +450,14 @@ noncomputable def Fintype.ofFinite (α : Type*) [Finite α] : Fintype α :=
 #align fintype.of_finite Fintype.ofFinite
 
 theorem Finite.of_injective {α β : Sort*} [Finite β] (f : α → β) (H : Injective f) : Finite α := by
-  cases nonempty_fintype (PLift β)
-  rw [← Equiv.injective_comp Equiv.plift f, ← Equiv.comp_injective _ Equiv.plift.symm] at H
-  haveI := Fintype.ofInjective _ H
-  exact Finite.of_equiv _ Equiv.plift
+  rcases Finite.exists_equiv_fin β with ⟨n, ⟨e⟩⟩
+  classical exact .of_equiv (Set.range (e ∘ f)) (Equiv.ofInjective _ (e.injective.comp H)).symm
 #align finite.of_injective Finite.of_injective
+
+/-- This instance also provides `[Finite s]` for `s : Set α`. -/
+instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
+  Finite.of_injective (↑) Subtype.coe_injective
+#align subtype.finite Subtype.finite
 
 theorem Finite.of_surjective {α β : Sort*} [Finite α] (f : α → β) (H : Surjective f) : Finite β :=
   Finite.of_injective _ <| injective_surjInv H
