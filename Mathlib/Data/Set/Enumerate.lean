@@ -25,7 +25,7 @@ namespace Set
 
 section Enumerate
 
-/- porting note : The original used parameters -/
+/- Porting note: The original used parameters -/
 variable {α : Type*} (sel : Set α → Option α)
 
 /-- Given a choice function `sel`, enumerates the elements of a set in the order
@@ -74,7 +74,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
 
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
-  /- porting note : The `rcase, on_goal, all_goals` has been used instead of
+  /- Porting note: The `rcase, on_goal, all_goals` has been used instead of
      the not-yet-ported `wlog` -/
   rcases le_total n₁ n₂ with (hn|hn)
   on_goal 2 => swap_var n₁ ↔ n₂, h₁ ↔ h₂
@@ -92,7 +92,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
         simp_all [Set.mem_diff_singleton]
     | succ k ih =>
       cases h : sel s with
-      /- porting note : The original covered both goals with just `simp_all <;> tauto` -/
+      /- Porting note: The original covered both goals with just `simp_all <;> tauto` -/
       | none =>
         simp_all only [add_comm, self_eq_add_left, Nat.add_succ, enumerate_eq_none_of_sel _ h]
       | some =>
