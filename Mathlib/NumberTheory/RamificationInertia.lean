@@ -370,7 +370,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     haveI := Ideal.Quotient.nontrivial hp
     calc
       Ideal.Quotient.mk p A.det = Matrix.det ((Ideal.Quotient.mk p).mapMatrix A) := by
-        rw [RingHom.map_det, RingHom.mapMatrix_apply]
+        rw [RingHom.map_det]
       _ = Matrix.det ((Ideal.Quotient.mk p).mapMatrix (Matrix.of A' - 1)) := rfl
       _ = Matrix.det fun i j =>
           (Ideal.Quotient.mk p) (A' i j) - (1 : Matrix (Fin n) (Fin n) (R ⧸ p)) i j := ?_
@@ -575,8 +575,8 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDomain S] [IsDedekindDo
   have Pe_le_Pi : P ^ e ≤ P ^ i := Ideal.pow_le_pow_right hi.le
   rw [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.mem_quotient_iff_mem_sup,
     sup_eq_left.mpr Pe_le_Pi] at hx
-  suffices hx' : x ∈ Ideal.span {a} ⊔ P ^ (i + 1)
-  · obtain ⟨y', hy', z, hz, rfl⟩ := Submodule.mem_sup.mp hx'
+  suffices hx' : x ∈ Ideal.span {a} ⊔ P ^ (i + 1) by
+    obtain ⟨y', hy', z, hz, rfl⟩ := Submodule.mem_sup.mp hx'
     obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.mp hy'
     refine ⟨Submodule.Quotient.mk y, ?_⟩
     simp only [Submodule.Quotient.quot_mk_eq_mk, quotientToQuotientRangePowQuotSucc_mk,

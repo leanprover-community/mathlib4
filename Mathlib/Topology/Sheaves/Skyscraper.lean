@@ -101,7 +101,7 @@ theorem SkyscraperPresheafFunctor.map'_comp {a b c : C} (f : a ⟶ b) (g : b ⟶
     SkyscraperPresheafFunctor.map' p₀ (f ≫ g) =
       SkyscraperPresheafFunctor.map' p₀ f ≫ SkyscraperPresheafFunctor.map' p₀ g := by
   ext U
-  -- Porting note : change `simp` to `rw`
+  -- Porting note: change `simp` to `rw`
   rw [NatTrans.comp_app]
   simp only [SkyscraperPresheafFunctor.map'_app]
   split_ifs with h <;> aesop_cat
@@ -137,7 +137,7 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
     { app := fun U => eqToHom <| if_pos <| h.mem_open U.unop.1.2 U.unop.2
       naturality := fun U V inc => by
         change dite _ _ _ ≫ _ = _; rw [dif_pos]
-        swap -- Porting note : swap goal to prevent proving same thing twice
+        swap -- Porting note: swap goal to prevent proving same thing twice
         · exact h.mem_open V.unop.1.2 V.unop.2
         · simp only [Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj, unop_op,
             Functor.const_obj_obj, eqToHom_trans, Functor.const_obj_map, Category.comp_id] }
@@ -151,7 +151,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     IsColimit (skyscraperPresheafCoconeOfSpecializes p₀ A h) where
   desc c := eqToHom (if_pos trivial).symm ≫ c.ι.app (op ⊤)
   fac c U := by
-    dsimp -- Porting note : added a `dsimp`
+    dsimp -- Porting note: added a `dsimp`
     rw [← c.w (homOfLE <| (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dif_pos]
@@ -159,7 +159,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
         eqToHom_refl, Category.id_comp, unop_op, op_unop]
     · exact h.mem_open U.unop.1.2 U.unop.2
   uniq c f h := by
-    dsimp -- Porting note : added a `dsimp`
+    dsimp -- Porting note: added a `dsimp`
     rw [← h, skyscraperPresheafCoconeOfSpecializes_ι_app, eqToHom_trans_assoc, eqToHom_refl,
       Category.id_comp]
 #align skyscraper_presheaf_cocone_is_colimit_of_specializes skyscraperPresheafCoconeIsColimitOfSpecializes
@@ -200,7 +200,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h :
       refine' ((if_neg _).symm.ndrec terminalIsTerminal).hom_ext _ _
       exact fun h => h1.choose_spec h.1
     uniq := fun c f H => by
-      dsimp -- Porting note : added a `dsimp`
+      dsimp -- Porting note: added a `dsimp`
       rw [← Category.id_comp f, ← H, ← Category.assoc]
       congr 1; apply terminalIsTerminal.hom_ext }
 #align skyscraper_presheaf_cocone_is_colimit_of_not_specializes skyscraperPresheafCoconeIsColimitOfNotSpecializes
@@ -265,7 +265,7 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
     if h : p₀ ∈ U.unop then 𝓕.germ ⟨p₀, h⟩ ≫ f ≫ eqToHom (if_pos h).symm
     else ((if_neg h).symm.ndrec terminalIsTerminal).from _
   naturality U V inc := by
-    -- Porting note : don't know why original proof fell short of working, add `aesop_cat` finished
+    -- Porting note: don't know why original proof fell short of working, add `aesop_cat` finished
     -- the proofs anyway
     dsimp
     by_cases hV : p₀ ∈ V.unop
@@ -289,7 +289,7 @@ def fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p�
           dsimp
           erw [Category.comp_id, ← Category.assoc, comp_eqToHom_iff, Category.assoc,
             eqToHom_trans, f.naturality, skyscraperPresheaf_map]
-          -- Porting note : added this `dsimp` and `rfl` in the end
+          -- Porting note: added this `dsimp` and `rfl` in the end
           dsimp only [skyscraperPresheaf_obj, unop_op, Eq.ndrec]
           have hV : p₀ ∈ (OpenNhds.inclusion p₀).obj V.unop := V.unop.2; split_ifs <;>
           simp only [comp_eqToHom_iff, Category.assoc, eqToHom_trans, eqToHom_refl,
@@ -368,7 +368,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit _
   homEquiv_unit {𝓕} c α := by
     ext U;
-    -- Porting note : `NatTrans.comp_app` is not picked up by `simp`
+    -- Porting note: `NatTrans.comp_app` is not picked up by `simp`
     rw [NatTrans.comp_app]
     simp only [Equiv.coe_fn_mk, toSkyscraperPresheaf_app, SkyscraperPresheafFunctor.map'_app,
       skyscraperPresheafFunctor_map, unit_app]
@@ -378,7 +378,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
         Category.assoc _ _ α, eqToHom_trans, eqToHom_refl, Category.id_comp]
     · apply ((if_neg h).symm.ndrec terminalIsTerminal).hom_ext
   homEquiv_counit {𝓕} c α := by
-    -- Porting note : added a `dsimp`
+    -- Porting note: added a `dsimp`
     dsimp; ext U; simp only [Equiv.coe_fn_symm_mk, counit_app]
     erw [colimit.ι_desc, ← Category.assoc, colimit.ι_map, whiskerLeft_app, Category.assoc,
       colimit.ι_desc]
@@ -395,7 +395,7 @@ instance [HasColimits C] : IsLeftAdjoint (Presheaf.stalkFunctor C p₀) :=
 -/
 def stalkSkyscraperSheafAdjunction [HasColimits C] :
     Sheaf.forget C X ⋙ Presheaf.stalkFunctor _ p₀ ⊣ skyscraperSheafFunctor p₀ where
-  -- Porting note : `ext1` is changed to `Sheaf.Hom.ext`,
+  -- Porting note: `ext1` is changed to `Sheaf.Hom.ext`,
   -- see https://github.com/leanprover-community/mathlib4/issues/5229
   homEquiv 𝓕 c :=
     ⟨fun f => ⟨toSkyscraperPresheaf p₀ f⟩, fun g => fromStalk p₀ g.1, fromStalk_to_skyscraper p₀,

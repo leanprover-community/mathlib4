@@ -262,13 +262,13 @@ protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α
   refine' isTopologicalBasis_of_isOpen_of_nhds _ _
   · rintro _ ⟨V, hV, rfl⟩
     rw [hf.isOpen_iff]
-    refine' ⟨V, h.isOpen hV, rfl⟩
+    exact ⟨V, h.isOpen hV, rfl⟩
   · intro a U ha hU
     rw [hf.isOpen_iff] at hU
     obtain ⟨V, hV, rfl⟩ := hU
     obtain ⟨S, hS, rfl⟩ := h.open_eq_sUnion hV
     obtain ⟨W, hW, ha⟩ := ha
-    refine' ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
+    exact ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
 #align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
 
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
@@ -860,8 +860,8 @@ theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (h
     ∃ s : Set α, s.Countable ∧ ⋃ x ∈ s, f x = univ := by
   rcases isOpen_iUnion_countable (fun x => interior (f x)) fun x => isOpen_interior with
     ⟨s, hsc, hsU⟩
-  suffices : ⋃ x ∈ s, interior (f x) = univ
-  exact ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
+  suffices ⋃ x ∈ s, interior (f x) = univ from
+    ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
   simp only [hsU, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
 #align topological_space.countable_cover_nhds TopologicalSpace.countable_cover_nhds
