@@ -229,7 +229,7 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 #align sup_le_sup_right sup_le_sup_right
 
--- Porting note: was @[simp], but now proved by simp so not needed.
+-- Porting note (#10618): was @[simp], but now proved by simp so not needed.
 theorem sup_idem : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
@@ -250,11 +250,11 @@ theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, @sup_comm _ _ a, sup_assoc]
 #align sup_left_right_swap sup_left_right_swap
 
--- Porting note: was @[simp], but now proved by simp so not needed.
+-- Porting note (#10618): was @[simp], but now proved by simp so not needed.
 theorem sup_left_idem : a ⊔ (a ⊔ b) = a ⊔ b := by simp
 #align sup_left_idem sup_left_idem
 
--- Porting note: was @[simp], but now proved by simp so not needed.
+-- Porting note (#10618): was @[simp], but now proved by simp so not needed.
 theorem sup_right_idem : a ⊔ b ⊔ b = a ⊔ b := by simp
 #align sup_right_idem sup_right_idem
 
@@ -475,7 +475,7 @@ theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c 
   inf_le_inf le_rfl h
 #align inf_le_inf_left inf_le_inf_left
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inf_idem : a ⊓ a = a :=
   @sup_idem αᵒᵈ _ _
 #align inf_idem inf_idem
@@ -501,12 +501,12 @@ theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
   @sup_left_right_swap αᵒᵈ _ _ _ _
 #align inf_left_right_swap inf_left_right_swap
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inf_left_idem : a ⊓ (a ⊓ b) = a ⊓ b :=
   @sup_left_idem αᵒᵈ _ a b
 #align inf_left_idem inf_left_idem
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inf_right_idem : a ⊓ b ⊓ b = a ⊓ b :=
   @sup_right_idem αᵒᵈ _ a b
 #align inf_right_idem inf_right_idem
@@ -667,7 +667,7 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
   inf_le_left.trans le_sup_left
 #align inf_le_sup inf_le_sup
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
 #align sup_le_inf sup_le_inf
 
