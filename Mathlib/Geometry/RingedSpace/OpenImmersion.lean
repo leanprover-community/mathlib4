@@ -1147,14 +1147,14 @@ image is contained in the image of `f`, we can lift this morphism to a unique `Y
 commutes with these maps.
 -/
 def lift (H' : Set.range g.1.base ⊆ Set.range f.1.base) : Y ⟶ X :=
-  -- Porting note: added instance manually
+  -- Porting note (#10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   inv (pullback.snd : pullback f g ⟶ _) ≫ pullback.fst
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift
 
 @[simp, reassoc]
 theorem lift_fac (H' : Set.range g.1.base ⊆ Set.range f.1.base) : lift f g H' ≫ f = g := by
-  -- Porting note: added instance manually
+  -- Porting note (#10754): added instance manually
   haveI := pullback_snd_isIso_of_range_subset f g H'
   erw [Category.assoc]; rw [IsIso.inv_comp_eq]; exact pullback.condition
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift_fac AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift_fac
@@ -1165,7 +1165,7 @@ theorem lift_uniq (H' : Set.range g.1.base ⊆ Set.range f.1.base) (l : Y ⟶ X)
 
 theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     Set.range (lift f g H').1.base = f.1.base ⁻¹' Set.range g.1.base := by
-  -- Porting note: added instance manually
+  -- Porting note (#10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   dsimp only [lift]
   have : _ = (pullback.fst : pullback f g ⟶ _).val.base :=

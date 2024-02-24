@@ -51,7 +51,7 @@ def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 #align alternating_group alternatingGroup
 
--- Porting note: manually added instance
+-- Porting note (#10754): manually added instance
 instance fta : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
