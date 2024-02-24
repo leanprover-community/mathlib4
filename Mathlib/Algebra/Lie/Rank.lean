@@ -47,9 +47,32 @@ section Basis
 
 variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι] [DecidableEq ι]
 
+open scoped Matrix
+
+@[simps! repr_apply repr_symm_apply]
 noncomputable
 def Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   (Matrix.stdBasis R ι ι).map (LinearMap.toMatrix b b).symm
+
+lemma Basis.end_apply (b : Basis ι R M) (ij : ι × ι) :
+    (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) := by
+  erw [end_repr_symm_apply, Finsupp.total_single, one_smul]
+
+lemma Basis.end_apply_apply (b : Basis ι R M) (ij : ι × ι) (k : ι) :
+    (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 := by
+  rcases ij with ⟨i, j⟩
+  rw [end_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
+  dsimp only [Matrix.stdBasisMatrix]
+  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+
+open Algebra.TensorProduct LinearMap in
+lemma Basis.baseChange_end (A : Type*) [CommRing A] [Algebra R A] (b : Basis ι R M) (ij : ι × ι) :
+    baseChange A (b.end ij) = (basis A b).end ij := by
+  apply (basis A b).ext
+  intro k
+  conv_lhs => simp only [basis_apply, baseChange_tmul]
+  simp_rw [end_apply_apply, basis_apply]
+  split <;> simp only [TensorProduct.tmul_zero]
 
 end Basis
 
@@ -281,15 +304,20 @@ lemma lieCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     suffices toMvPolynomial (basis A bₘ.end) (basis A bₘ).end (TensorProductEndₗ R A M) ij = X ij by
       rw [this, bind₁_X_right]
     simp only [toMvPolynomial, Matrix.toMvPolynomial]
-    rw [Finset.sum_eq_single ij]
-    · sorry
-      -- simp only [toMatrix_basis_equiv, one_apply_eq, X]
-    · sorry
-      -- rintro kl - H
-      -- simp only [toMatrix_basis_equiv, one_apply_ne H.symm, map_zero]
-    · intro h
-      exact (h (Finset.mem_univ _)).elim
-
+    suffices ∀ kl,
+      (toMatrix (basis A (Basis.end bₘ)) (Basis.end (basis A bₘ))) (TensorProductEndₗ R A M) ij kl =
+      if kl = ij then 1 else 0 by
+      rw [Finset.sum_eq_single ij]
+      · rw [this, if_pos rfl, X]
+      · rintro kl - H
+        rw [this, if_neg H, map_zero]
+      · intro h
+        exact (h (Finset.mem_univ _)).elim
+    intro kl
+    rw [toMatrix_apply, TensorProductEndₗ, TensorProduct.AlgebraTensorModule.lift_apply,
+      basis_apply, TensorProduct.lift.tmul, coe_restrictScalars]
+    dsimp only [coe_mk, AddHom.coe_mk, smul_apply, baseChangeHom_apply]
+    rw [one_smul, Basis.baseChange_end, Basis.repr_self_apply]
 
 open LinearMap in
 lemma lieCharpoly_map_eq_toMatrix_charpoly (x : L) :
