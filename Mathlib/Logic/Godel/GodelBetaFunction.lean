@@ -22,7 +22,7 @@ definability is needed for the proof of the First Incompleteness Theorem.
 
 ## Main result
 
-- `beta_function_lemma`: Gödel's Beta Function Lemma
+- `beta_function_lemma`: Gödel's Beta Function Lemma.
 
 ## Implementation note
 
