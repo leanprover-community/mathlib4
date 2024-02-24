@@ -3,8 +3,15 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.GroupTheory.OrderOfElement
+-- import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Logic.Equiv.Fin
+import Mathlib.Data.Finset.Sort
+import Mathlib.GroupTheory.Subgroup.Finite
+--
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Int.Order.Units
 
@@ -29,9 +36,11 @@ open BigOperators
 
 variable {α : Type u} [DecidableEq α] {β : Type v}
 
+/-
 -- An example on how to determine the order of an element of a finite group.
 example : orderOf (-1 : ℤˣ) = 2 :=
   orderOf_eq_prime (Int.units_sq _) (by decide)
+-/
 
 namespace Equiv.Perm
 
