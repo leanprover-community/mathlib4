@@ -30,7 +30,7 @@ section
 
 variable (C) (D)
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Bundled left-exact functors. -/
 def LeftExactFunctor :=
   FullSubcategory fun F : C ⥤ D => Nonempty (PreservesFiniteLimits F)
@@ -55,7 +55,7 @@ instance : Full (LeftExactFunctor.forget C D) :=
 instance : Faithful (LeftExactFunctor.forget C D) :=
   FullSubcategory.faithful _
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Bundled right-exact functors. -/
 def RightExactFunctor :=
   FullSubcategory fun F : C ⥤ D => Nonempty (PreservesFiniteColimits F)
@@ -80,7 +80,7 @@ instance : Full (RightExactFunctor.forget C D) :=
 instance : Faithful (RightExactFunctor.forget C D) :=
   FullSubcategory.faithful _
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Bundled exact functors. -/
 def ExactFunctor :=
   FullSubcategory fun F : C ⥤ D =>

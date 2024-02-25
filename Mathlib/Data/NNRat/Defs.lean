@@ -328,7 +328,7 @@ theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
 
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
-  · ext <;> simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
+  · ext; simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
   · have hpq := mul_nonpos_of_nonneg_of_nonpos hp hq
     rw [toNNRat_eq_zero.2 hq, toNNRat_eq_zero.2 hpq, mul_zero]
 #align rat.to_nnrat_mul Rat.toNNRat_mul
@@ -378,7 +378,7 @@ theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
-  ext
+  refine ext <| Rat.ext ?_ ?_
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
     exact Rat.num_nonneg.2 p.2
     exact Rat.num_nonneg.2 q.2
