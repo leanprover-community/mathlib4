@@ -85,7 +85,7 @@ noncomputable def rTensorAlgHom :
     ((IsScalarTower.toAlgHom R (S ⊗[R] N) _).comp Algebra.TensorProduct.includeRight)
     (fun p n => by simp [commute_iff_eq, algebraMap_eq, mul_comm])
 
-lemma rTensorAlgHom_coeff_apply_tmul
+lemma rTensorAlgHom_coeff_tmul
     (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
     coeff d (rTensorAlgHom (p ⊗ₜ[R] n)) = (coeff d p) ⊗ₜ[R] n := by
   rw [rTensorAlgHom, Algebra.TensorProduct.lift_tmul]
@@ -102,7 +102,7 @@ lemma rTensorAlgHom_toLinearMap :
     LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
   simp only [coe_comp, Function.comp_apply, AlgebraTensorModule.curry_apply, curry_apply,
     LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
-  rw [rTensorAlgHom_coeff_apply_tmul]
+  rw [rTensorAlgHom_coeff_tmul]
   simp only [coeff]
   erw [finsuppLeft_apply_tmul_apply]
 
