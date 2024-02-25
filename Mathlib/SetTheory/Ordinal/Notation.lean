@@ -896,7 +896,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   haveI No : NF (oadd a0 n a') :=
     N0.oadd n (Na'.below_of_lt' <| lt_of_le_of_lt (le_add_right _ _) h)
   induction' k with k IH
-  · cases m <;> simp [opowAux]
+  · cases m <;> simp [R', opowAux]
   -- rename R => R'
   let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
   let ω0 := ω ^ repr a0
@@ -905,15 +905,15 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     = (α' + m) ^ (succ ↑k : Ordinal) at IH
   have RR : R' = ω0 ^ (k : Ordinal) * (α' * m) + R := by
     by_cases h : m = 0
-    · simp only [h, ONote.ofNat, Nat.cast_zero, zero_add, ONote.repr, mul_zero, ONote.opowAux,
+    · simp only [R, R', h, ONote.ofNat, Nat.cast_zero, zero_add, ONote.repr, mul_zero, ONote.opowAux,
         add_zero]
-    · simp only [ONote.repr_scale, ONote.repr, ONote.mulNat_eq_mul, ONote.opowAux, ONote.repr_ofNat,
+    · simp only [R', ONote.repr_scale, ONote.repr, ONote.mulNat_eq_mul, ONote.opowAux, ONote.repr_ofNat,
         ONote.repr_mul, ONote.repr_add, Ordinal.opow_mul, ONote.zero_add]
   have α0 : 0 < α' := by simpa [lt_def, repr] using oadd_pos a0 n a'
   have ω00 : 0 < ω0 ^ (k : Ordinal) := opow_pos _ (opow_pos _ omega_pos)
   have Rl : R < ω ^ (repr a0 * succ ↑k) := by
     by_cases k0 : k = 0
-    · simp [k0]
+    · simp [R, k0]
       refine' lt_of_lt_of_le _ (opow_le_opow_right omega_pos (one_le_iff_ne_zero.2 e0))
       cases' m with m <;> simp [opowAux, omega_pos]
       rw [← add_one_eq_succ, ← Nat.cast_succ]
@@ -954,7 +954,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       rw [opow_mul]
       simpa [-opow_succ]
   · cases m
-    · have : R = 0 := by cases k <;> simp [opowAux]
+    · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
     · rw [nat_cast_succ, add_mul_succ]
       apply add_absorp Rl

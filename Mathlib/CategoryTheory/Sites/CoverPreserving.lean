@@ -142,11 +142,11 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   let c' := IsCofiltered.cone (c.toStructuredArrow ⋙ StructuredArrow.pre _ _ _)
   have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app left).w]
-    dsimp
+    dsimp [c]
     simp
   have eq₂ : f₂ = (c'.pt.hom ≫ G.map (c'.π.app right).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app right).w]
-    dsimp
+    dsimp [c]
     simp
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
