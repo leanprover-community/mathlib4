@@ -5,7 +5,6 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.Order.Atoms
@@ -268,28 +267,6 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_comm_group SubgroupClass.toCommGroup
 #align add_subgroup_class.to_add_comm_group AddSubgroupClass.toAddCommGroup
-
--- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
-@[to_additive "An additive subgroup of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance (priority := 75) toOrderedCommGroup {G : Type*} [OrderedCommGroup G] [SetLike S G]
-    [SubgroupClass S G] : OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align subgroup_class.to_ordered_comm_group SubgroupClass.toOrderedCommGroup
-#align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
-
--- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive
-      "An additive subgroup of a `LinearOrderedAddCommGroup` is a
-        `LinearOrderedAddCommGroup`."]
-instance (priority := 75) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G]
-    [SetLike S G] [SubgroupClass S G] : LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subgroup_class.to_linear_ordered_comm_group SubgroupClass.toLinearOrderedCommGroup
-#align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
@@ -778,26 +755,6 @@ instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_comm_group Subgroup.toCommGroup
 #align add_subgroup.to_add_comm_group AddSubgroup.toAddCommGroup
-
-/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
-@[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance toOrderedCommGroup {G : Type*} [OrderedCommGroup G] (H : Subgroup G) :
-    OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align subgroup.to_ordered_comm_group Subgroup.toOrderedCommGroup
-#align add_subgroup.to_ordered_add_comm_group AddSubgroup.toOrderedAddCommGroup
-
-/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive
-      "An `AddSubgroup` of a `LinearOrderedAddCommGroup` is a
-        `LinearOrderedAddCommGroup`."]
-instance toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Subgroup G) :
-    LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subgroup.to_linear_ordered_comm_group Subgroup.toLinearOrderedCommGroup
-#align add_subgroup.to_linear_ordered_add_comm_group AddSubgroup.toLinearOrderedAddCommGroup
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]

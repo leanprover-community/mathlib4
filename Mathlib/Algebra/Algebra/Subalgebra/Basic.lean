@@ -278,56 +278,6 @@ instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebr
   S.toSubring.toCommRing
 #align subalgebra.to_comm_ring Subalgebra.toCommRing
 
-instance toOrderedSemiring {R A} [CommSemiring R] [OrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedSemiring S :=
-  S.toSubsemiring.toOrderedSemiring
-#align subalgebra.to_ordered_semiring Subalgebra.toOrderedSemiring
-
-instance toStrictOrderedSemiring {R A} [CommSemiring R] [StrictOrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : StrictOrderedSemiring S :=
-  S.toSubsemiring.toStrictOrderedSemiring
-#align subalgebra.to_strict_ordered_semiring Subalgebra.toStrictOrderedSemiring
-
-instance toOrderedCommSemiring {R A} [CommSemiring R] [OrderedCommSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedCommSemiring S :=
-  S.toSubsemiring.toOrderedCommSemiring
-#align subalgebra.to_ordered_comm_semiring Subalgebra.toOrderedCommSemiring
-
-instance toStrictOrderedCommSemiring {R A} [CommSemiring R] [StrictOrderedCommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) : StrictOrderedCommSemiring S :=
-  S.toSubsemiring.toStrictOrderedCommSemiring
-#align subalgebra.to_strict_ordered_comm_semiring Subalgebra.toStrictOrderedCommSemiring
-
-instance toOrderedRing {R A} [CommRing R] [OrderedRing A] [Algebra R A] (S : Subalgebra R A) :
-    OrderedRing S :=
-  S.toSubring.toOrderedRing
-#align subalgebra.to_ordered_ring Subalgebra.toOrderedRing
-
-instance toOrderedCommRing {R A} [CommRing R] [OrderedCommRing A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedCommRing S :=
-  S.toSubring.toOrderedCommRing
-#align subalgebra.to_ordered_comm_ring Subalgebra.toOrderedCommRing
-
-instance toLinearOrderedSemiring {R A} [CommSemiring R] [LinearOrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedSemiring S :=
-  S.toSubsemiring.toLinearOrderedSemiring
-#align subalgebra.to_linear_ordered_semiring Subalgebra.toLinearOrderedSemiring
-
-instance toLinearOrderedCommSemiring {R A} [CommSemiring R] [LinearOrderedCommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) : LinearOrderedCommSemiring S :=
-  S.toSubsemiring.toLinearOrderedCommSemiring
-#align subalgebra.to_linear_ordered_comm_semiring Subalgebra.toLinearOrderedCommSemiring
-
-instance toLinearOrderedRing {R A} [CommRing R] [LinearOrderedRing A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedRing S :=
-  S.toSubring.toLinearOrderedRing
-#align subalgebra.to_linear_ordered_ring Subalgebra.toLinearOrderedRing
-
-instance toLinearOrderedCommRing {R A} [CommRing R] [LinearOrderedCommRing A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedCommRing S :=
-  S.toSubring.toLinearOrderedCommRing
-#align subalgebra.to_linear_ordered_comm_ring Subalgebra.toLinearOrderedCommRing
-
 end
 
 /-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
