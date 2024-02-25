@@ -71,7 +71,7 @@ lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   have h₂ : supOfSeq a ≤ (i + 1) * (supOfSeq a)! + 1 :=
     le_trans (self_le_factorial _) (le_trans (Nat.le_mul_of_pos_left (supOfSeq a)! (succ_pos i))
       (le_add_right _ _))
-  simpa only [coprimes, List.get_ofFn] using lt_of_lt_of_le h₁ h₂
+  simpa only [coprimes] using lt_of_lt_of_le h₁ h₂
 
 private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
   intro i j hij
