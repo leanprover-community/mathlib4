@@ -14,7 +14,7 @@ This file proves that a category $\mathsf{C}$ is connected if and only if
 $\operatorname{colim}_{c \in \mathsf{C}} \{*\} \cong \{*\}$ in the category
 $\mathsf{Set}$ (i.e. `Type v`).
 
-See `connected_iff_colimit_const_punit_iso_pUnit` for the proof of this characterization and
+See `connected_iff_colimit_const_pUnit_iso_pUnit` for the proof of this characterization and
 `unitValuedFunctor` for the definition of the constant functor used in the statement.
 
 ## Tags
@@ -67,7 +67,7 @@ theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ TypeMax.{u, v}) (c d : Σ j, F.obj 
 
 /-- An index category is connected iff the colimit of the constant unit-valued functor is `PUnit`.
 -/
-theorem connected_iff_colimit_const_punit_iso_pUnit :
+theorem connected_iff_colimit_const_pUnit_iso_pUnit :
     IsConnected C ↔ Nonempty (colimit (unitValuedFunctor C) ≅ PUnit) := by
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit C⟩, fun ⟨h⟩ => ?_⟩
   have : Nonempty C := nonempty_of_nonempty_colimit _ <| Nonempty.map h.inv inferInstance
