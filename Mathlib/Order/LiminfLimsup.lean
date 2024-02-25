@@ -242,16 +242,6 @@ theorem IsBoundedUnder.isCoboundedUnder_le {u : γ → α} {l : Filter γ} [Preo
     (h : l.IsBoundedUnder (· ≥ ·) u) : l.IsCoboundedUnder (· ≤ ·) u :=
   h.isCoboundedUnder_flip
 
-lemma isCoboundedUnder_le_of_eventually_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
-    (hf : ∀ᶠ i in l, x ≤ f i) :
-    IsCoboundedUnder (· ≤ ·) l f :=
-  IsBoundedUnder.isCoboundedUnder_le ⟨x, hf⟩
-
-lemma isCoboundedUnder_le_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
-    (hf : ∀ i, x ≤ f i) :
-    IsCoboundedUnder (· ≤ ·) l f :=
-  isCoboundedUnder_le_of_eventually_le l (eventually_of_forall hf)
-
 theorem IsBoundedUnder.isCoboundedUnder_ge {u : γ → α} {l : Filter γ} [Preorder α] [NeBot l]
     (h : l.IsBoundedUnder (· ≤ ·) u) : l.IsCoboundedUnder (· ≥ ·) u :=
   h.isCoboundedUnder_flip
