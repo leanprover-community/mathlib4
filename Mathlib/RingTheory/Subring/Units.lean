@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.GroupTheory.Submonoid.Order
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.GroupTheory.Subgroup.Basic
 
 /-!
 
@@ -13,6 +13,7 @@ import Mathlib.RingTheory.Subring.Basic
 
 -/
 
+/-- The subgroup of positive units of a linear ordered semiring. -/
 def Units.posSubgroup (R : Type*) [LinearOrderedSemiring R] : Subgroup Rˣ :=
   { (Submonoid.pos R).comap (Units.coeHom R) with
     carrier := { x | (0 : R) < x }
