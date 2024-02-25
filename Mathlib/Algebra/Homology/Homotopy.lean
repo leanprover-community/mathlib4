@@ -209,7 +209,7 @@ def add {f₁ g₁ f₂ g₂ : C ⟶ D} (h₁ : Homotopy f₁ g₁) (h₂ : Homo
 
 /-- the scalar multiplication of an homotopy -/
 @[simps!]
-def smul {R : Type*} [Ring R] [Linear R V] (h : Homotopy f g) (a : R) :
+def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
     Homotopy (a • f) (a • g) where
   hom i j := a • h.hom i j
   zero i j hij := by

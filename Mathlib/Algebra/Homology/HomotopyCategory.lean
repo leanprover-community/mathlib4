@@ -28,7 +28,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
 
-variable {R : Type*} [Ring R]
+variable {R : Type*} [Semiring R]
   {ι : Type*} (V : Type u) [Category.{v} V] [Preadditive V] (c : ComplexShape ι)
 
 /-- The congruence on `HomologicalComplex V c` given by the existence of a homotopy.
