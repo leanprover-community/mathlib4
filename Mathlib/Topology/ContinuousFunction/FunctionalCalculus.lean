@@ -235,7 +235,7 @@ lemma cfcHom_eq_of_continuous_of_map_id [UniqueContinuousFunctionalCalculus R A]
     (φ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ₁ : Continuous φ)
     (hφ₂ : φ (.restrict (spectrum R a) <| .id R) = a) : cfcHom ha = φ :=
   (cfcHom ha).ext_continuousMap a φ (cfcHom_closedEmbedding ha).continuous hφ₁ <| by
-    rw [cfcHom_map_id ha, hφ₂]
+    rw [cfcHom_id ha, hφ₂]
 
 theorem cfcHom_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R a, R))
     (f' : C(spectrum R a, spectrum R (cfcHom ha f)))
@@ -263,8 +263,7 @@ syntax (name := cfcTac) "cfc_tac" : tactic
 macro_rules
   | `(tactic| cfc_tac) => `(tactic| (try (first | assumption | infer_instance | aesop)))
 
--- if `fun_prop` is good enough, we'll just use that everywhere instead of this, but right now
--- there are still a few rough edges. See #10724
+-- we may want to try using `fun_prop` directly in the future.
 /-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
 specifically concerning continuity of the functions involved. -/
 syntax (name := cfcContTac) "cfc_cont_tac" : tactic
@@ -306,7 +305,7 @@ lemma cfc_apply_of_not_continuousOn {f : R → R} (hf : ¬ ContinuousOn f (spect
 
 variable (R) in
 lemma cfc_id (ha : p a := by cfc_tac) : cfc a (id : R → R) = a :=
-  cfc_apply a (id : R → R) ▸ cfcHom_map_id (p := p) ha
+  cfc_apply a (id : R → R) ▸ cfcHom_id (p := p) ha
 
 variable (R) in
 lemma cfc_id' (ha : p a := by cfc_tac) : cfc a (fun x : R ↦ x) = a :=
