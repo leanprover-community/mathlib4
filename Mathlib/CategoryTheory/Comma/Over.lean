@@ -203,7 +203,7 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
-    repeat (ext; simp)
+    repeat (ext; simp [g])
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
 
 /-- The identity over `X` is terminal. -/
@@ -486,7 +486,7 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
-    repeat (ext; simp)
+    repeat (ext; simp [g])
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
 
 /-- The identity under `X` is initial. -/

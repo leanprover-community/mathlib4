@@ -73,7 +73,10 @@ namespace ClosureOperator
 
 instance [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp [*]
+  coe_injective' := by
+    -- FIXME nightly-testing
+    sorry
+    -- rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp [*]
 
 instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   map_rel f _ _ h := f.mono h

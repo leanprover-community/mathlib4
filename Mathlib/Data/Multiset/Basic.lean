@@ -1052,7 +1052,7 @@ theorem erase_cons_head (a : α) (s : Multiset α) : (a ::ₘ s).erase a = s :=
 @[simp]
 theorem erase_cons_tail {a b : α} (s : Multiset α) (h : b ≠ a) :
     (b ::ₘ s).erase a = b ::ₘ s.erase a :=
-  Quot.inductionOn s fun l => congr_arg _ <| List.erase_cons_tail l h
+  Quot.inductionOn s fun l => congr_arg _ <| List.erase_cons_tail l (not_beq_of_ne h)
 #align multiset.erase_cons_tail Multiset.erase_cons_tail
 
 @[simp]
