@@ -130,35 +130,39 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
 #align is_cyclic_of_order_of_eq_card isCyclic_of_orderOf_eq_card
 #align is_add_cyclic_of_order_of_eq_card isAddCyclic_of_orderOf_eq_card
 
+/-- Any non-identity element of a finite group of prime order generates the group. -/
+@[to_additive zmultiples_eq_top_of_prime_card "Any non-identity element of a finite group of prime
+  order generates the group."]
+theorem zpowers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ}
+    [hp : Fact p.Prime] (h : Fintype.card G = p) {g : G} (hg : g ≠ 1) : zpowers g = ⊤ := by
+  have := card_subgroup_dvd_card (zpowers g)
+  simp_rw [h, Nat.dvd_prime hp.1, ← eq_bot_iff_card, zpowers_eq_bot, hg, false_or, ← h,
+    card_eq_iff_eq_top] at this
+  exact this
+
+@[to_additive mem_zmultiples_of_prime_card]
+theorem mem_zpowers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
+    (h : Fintype.card G = p) {g g' : G} (hg : g ≠ 1) : g' ∈ zpowers g := by
+  simp_rw [zpowers_eq_top_of_prime_card h hg, Subgroup.mem_top]
+
+@[to_additive mem_multiples_of_prime_card]
+theorem mem_powers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
+    (h : Fintype.card G = p) {g g' : G} (hg : g ≠ 1) : g' ∈ Submonoid.powers g := by
+  rw [mem_powers_iff_mem_zpowers]
+  exact mem_zpowers_of_prime_card h hg
+
+@[to_additive multiples_eq_top_of_prime_card]
+theorem powers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ}
+    [hp : Fact p.Prime] (h : Fintype.card G = p) {g : G} (hg : g ≠ 1) : Submonoid.powers g = ⊤ := by
+  ext x
+  simp [mem_powers_of_prime_card h hg]
+
 /-- A finite group of prime order is cyclic. -/
 @[to_additive "A finite group of prime order is cyclic."]
 theorem isCyclic_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [hp : Fact p.Prime]
-    (h : Fintype.card α = p) : IsCyclic α :=
-  ⟨by
-    obtain ⟨g, hg⟩ : ∃ g : α, g ≠ 1 := Fintype.exists_ne_of_one_lt_card (h.symm ▸ hp.1.one_lt) 1
-    classical
-      -- for Fintype (Subgroup.zpowers g)
-      have : Fintype.card (Subgroup.zpowers g) ∣ p := by
-        rw [← h]
-        apply card_subgroup_dvd_card
-      rw [Nat.dvd_prime hp.1] at this
-      cases' this with that that
-      · rw [Fintype.card_eq_one_iff] at that
-        cases' that with t ht
-        suffices g = 1 by contradiction
-        have hgt :=
-          ht
-            ⟨g, by
-              change g ∈ Subgroup.zpowers g
-              exact Subgroup.mem_zpowers g⟩
-        rw [← ht 1] at hgt
-        change (⟨_, _⟩ : Subgroup.zpowers g) = ⟨_, _⟩ at hgt
-        simpa using hgt
-      · use g
-        intro x
-        rw [← h] at that
-        rw [Subgroup.eq_top_of_card_eq _ that]
-        exact Subgroup.mem_top _⟩
+    (h : Fintype.card α = p) : IsCyclic α := by
+  obtain ⟨g, hg⟩ : ∃ g, g ≠ 1 := Fintype.exists_ne_of_one_lt_card (h.symm ▸ hp.1.one_lt) 1
+  exact ⟨g, fun g' ↦ mem_zpowers_of_prime_card h hg⟩
 #align is_cyclic_of_prime_card isCyclic_of_prime_card
 #align is_add_cyclic_of_prime_card isAddCyclic_of_prime_card
 

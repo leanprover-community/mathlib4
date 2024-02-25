@@ -89,7 +89,7 @@ protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
