@@ -207,3 +207,31 @@ For example, you might have another class that takes `[LE α]` as an argument, a
 sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
 Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 -/
+
+library_note "implicit instance arguments"/--
+There are places where typeclass arguments are specified with implicit `{}` brackets instead of
+the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
+arguments to the type of one of the other arguments. When they can be inferred from these other
+arguments, it is faster to use this method than to use type class inference.
+
+For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
+and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
+`[Semiring α] [Semiring β]`.
+-/
+
+library_note "lower instance priority"/--
+Certain instances always apply during type-class resolution. For example, the instance
+`AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
+resolution problems of the form `AddGroup _`, and type-class inference will then do an
+exhaustive search to find a commutative group. These instances take a long time to fail.
+Other instances will only apply if the goal has a certain shape. For example
+`Int.instAddGroupInt : AddGroup ℤ` or
+`Prod.instAddGroup {α β} [AddGroup α] [AddGroup β] : AddGroup (α × β)`. Usually these instances
+will fail quickly, and when they apply, they are almost always the desired instance.
+For this reason, we want the instances of the second type (that only apply in specific cases) to
+always have higher priority than the instances of the first type (that always apply).
+See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1561).
+
+Therefore, if we create an instance that always applies, we set the priority of these instances to
+100 (or something similar, which is below the default value of 1000).
+-/
