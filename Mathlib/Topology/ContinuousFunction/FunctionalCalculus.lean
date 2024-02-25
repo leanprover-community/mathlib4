@@ -218,7 +218,7 @@ lemma cfcHom_closedEmbedding :
     ClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
 
-lemma cfcHom_map_id :
+lemma cfcHom_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
 
@@ -343,7 +343,7 @@ lemma eqOn_of_cfc_eq_cfc {f g : R → R} (h : cfc a f = cfc a g) (ha : p a := by
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 
-lemma cfc_eq_cfc_eqOn_iff {f g : R → R} (ha : p a := by cfc_tac)
+lemma cfc_eq_cfc_iff_eqOn {f g : R → R} (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
     cfc a f = cfc a g ↔ (spectrum R a).EqOn f g :=
@@ -430,16 +430,13 @@ lemma cfc_pow_id (n : ℕ) (ha : p a := by cfc_tac) : cfc a (· ^ n : R → R) =
 lemma cfc_smul_id {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
     (s : S) (ha : p a := by cfc_tac) : cfc a (s • · : R → R) = s • a := by
-  have := cfc_id R a ▸ cfc_smul a s id
-  exact this
+  rw [cfc_smul a s _, cfc_id' R a]
 
 lemma cfc_const_mul_id (r : R) (ha : p a := by cfc_tac) : cfc a (r * ·) = r • a :=
   cfc_smul_id a r
 
 lemma cfc_star_id (ha : p a := by cfc_tac) : cfc a (star · : R → R) = star a := by
-  nth_rw 2 [← cfcHom_map_id (show p a from ha) (R := R)]
-  rw [← map_star, cfc_apply a (star : R → R)]
-  congr
+  rw [cfc_star a _, cfc_id' R a]
 
 section Polynomial
 open Polynomial
@@ -466,9 +463,7 @@ lemma cfc_map_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
 
 lemma cfc_polynomial (q : R[X]) (ha : p a := by cfc_tac) :
     cfc a q.eval = aeval a q := by
-  rw [cfc_map_polynomial a q (fun x : R ↦ x)]
-  congr
-  exact cfc_id R a
+  rw [cfc_map_polynomial a q (fun x : R ↦ x), cfc_id' R a]
 
 end Polynomial
 
@@ -484,9 +479,8 @@ lemma cfc_comp (g f : R → R) (ha : p a := by cfc_tac)
     rw [cfcHom_map_spectrum (by exact ha) _]
     ext
     simp
-  rw [cfc_apply .., cfc_apply a f]
-  rw [cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert hg)]
-  rw [← cfcHom_comp _ _]
+  rw [cfc_apply .., cfc_apply a f,
+    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert hg), ← cfcHom_comp _ _]
   swap
   · exact ContinuousMap.mk _ <| hf.restrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
   · congr
@@ -672,8 +666,7 @@ lemma cfc_neg (a : A) (f : R → R) : cfc a (fun x ↦ - (f x)) = - (cfc a f) :=
 
 lemma cfc_neg_id (a : A) (ha : p a := by cfc_tac) :
     cfc (a : A) (- · : R → R) = -a := by
-  have := cfc_id R a ▸ cfc_neg a (id : R → R)
-  exact this
+  rw [cfc_neg a _, cfc_id' R a]
 
 variable [UniqueContinuousFunctionalCalculus R A]
 
