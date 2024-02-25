@@ -9,15 +9,15 @@ import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
-import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 /-!
-# Cumulative distributions functions of Markov kernels
+# Measurable parametric Stieltjes functions
 
 We provide tools to build a measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at
-+∞ for all `a : α` from a measurable function `f : α → ℚ → ℝ`. The reason for going through `ℚ`
-instead of defining directly a Stieltjes function is that since `ℚ` is countable, building a
-measurable function is much easier.
++∞ for all `a : α` from a measurable function `f : α → ℚ → ℝ`. These measurable parametric Stieltjes
+functions are cumulative distribution functions (CDF) of transition kernels.
+The reason for going through `ℚ` instead of defining directly a Stieltjes function is that since
+`ℚ` is countable, building a measurable function is much easier.
 
 This construction will be possible if `f a : ℚ → ℝ` satisfies a package of properties for all `a`:
 monotonicity, limits at +-∞ at a continuity property. We define `IsRatStieltjesPoint f a` to state
@@ -26,8 +26,8 @@ that this is the case at `a` and define the property `IsRatCDF f` that `f` is me
 The function `α → StieltjesFunction` obtained by extending `f` by continuity from the right is then
 called `IsRatCDF.stieltjesFunction`.
 
-In applications, we will only have `IsRatStieltjesPoint f a` almost surely with respect to some
-measure. We thus define
+In applications, we will often only have `IsRatStieltjesPoint f a` almost surely with respect to
+some measure. In order to turn that almost everywhere property into an everywhere property we define
 `toRatCDF (f : α → ℚ → ℝ) := fun a q ↦ if IsRatStieltjesPoint f a then f a q else defaultRatCDF q`,
 which satisfies the property `IsRatCDF (toRatCDF f)`.
 
@@ -40,7 +40,6 @@ Finally, we define `stieltjesOfMeasurableRat`, composition of `toRatCDF` and
   function `α → StieltjesFunction`.
 
 -/
-
 
 open MeasureTheory Set Filter TopologicalSpace
 
@@ -140,8 +139,8 @@ end IsRatCDF
 section DefaultRatCDF
 
 /-- A function with the property `IsRatCDF`.
-Used in a `piecewise` construction to convert a function which only satisfies the properties
-defining `IsRatCDF` almost everywhere into a true `IsRatCDF`. -/
+Used in a piecewise construction to convert a function which only satisfies the properties
+defining `IsRatCDF` on some set into a true `IsRatCDF`. -/
 def defaultRatCDF (q : ℚ) := if q < 0 then (0 : ℝ) else 1
 
 lemma monotone_defaultRatCDF : Monotone defaultRatCDF := by
@@ -171,7 +170,7 @@ lemma tendsto_defaultRatCDF_atBot : Tendsto defaultRatCDF atBot (𝓝 0) := by
   refine ⟨-1, fun q hq => (if_pos (hq.trans_lt ?_)).symm⟩
   linarith
 
-lemma inf_gt_rat_defaultRatCDF (t : ℚ) :
+lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
     ⨅ r : Ioi t, defaultRatCDF r = defaultRatCDF t := by
   simp only [defaultRatCDF]
   have h_bdd : BddBelow (range fun r : ↥(Ioi t) ↦ ite ((r : ℚ) < 0) (0 : ℝ) 1) := by
@@ -202,7 +201,7 @@ lemma isRatStieltjesPoint_defaultRatCDF (a : α) :
   mono := monotone_defaultRatCDF
   tendsto_atTop_one := tendsto_defaultRatCDF_atTop
   tendsto_atBot_zero := tendsto_defaultRatCDF_atBot
-  iInf_rat_gt_eq := inf_gt_rat_defaultRatCDF
+  iInf_rat_gt_eq := iInf_rat_gt_defaultRatCDF
 
 lemma IsRatCDF_defaultRatCDF (α : Type*) [MeasurableSpace α] :
     IsRatCDF (fun (_ : α) (q : ℚ) ↦ defaultRatCDF q) where
