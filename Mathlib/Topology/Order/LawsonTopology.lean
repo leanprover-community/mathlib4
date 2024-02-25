@@ -42,40 +42,6 @@ open Set
 
 open TopologicalSpace
 
-section inf
-
-variable {X Y Z} [tY : TopologicalSpace Y] [tZ : TopologicalSpace Z] (fY : X → Y) (fZ : X → Z)
-
-theorem induced_to_prod (f : X → Y × Z) :
-    induced f inferInstance = induced (fun x ↦ (f x).1) tY ⊓ induced (fun x ↦ (f x).2) tZ := by
-  erw [induced_inf]
-  simp_rw [induced_compose]
-  rfl
-
-theorem inducing_inf_to_prod :
-    @Inducing X (Y × Z) (induced fY tY ⊓ induced fZ tZ) _ fun x ↦ (fY x, fZ x) :=
-  letI := induced fY tY ⊓ induced fZ tZ; ⟨(induced_to_prod fun x ↦ (fY x, fZ x)).symm⟩
-
-theorem TopologicalSpace.IsTopologicalBasis.inf
-    {BY : Set (Set Y)} {BZ : Set (Set Z)} (bY : IsTopologicalBasis BY) (bZ : IsTopologicalBasis BZ) :
-    @IsTopologicalBasis X (induced fY tY ⊓ induced fZ tZ) (BY.image2 (fY ⁻¹' · ∩ fZ ⁻¹' ·) BZ) := by
-  letI := induced fY tY ⊓ induced fZ tZ
-  convert (bY.prod bZ).inducing (inducing_inf_to_prod fY fZ)
-  rw [Set.image_image2]; rfl
-
-example {t₁ t₂ B₁ B₂} (h₁ : @IsTopologicalBasis X t₁ B₁) (h₂ : @IsTopologicalBasis X t₂ B₂) :
-    @IsTopologicalBasis X (t₁ ⊓ t₂) (Set.image2 (· ∩ ·) B₁ B₂) := by
-  convert @IsTopologicalBasis.inf X X X t₁ t₂ id id B₁ B₂ h₁ h₂ <;> rw [@induced_id _ (_)]
--- need to specify all implicit arguments because multiple instances on the same type
--- would be easier if `TopologicalSpace` arguments in `TopologicalSpace.IsTopologicalBasis.inf`
--- are regular implicit rather than instance implicit
-
-end inf
-
-
-
-
-
 variable {α β : Type*}
 
 variable [TopologicalSpace α]
@@ -112,8 +78,6 @@ namespace IsLawson
 section Preorder
 variable (α) [Preorder α] [TopologicalSpace α] [IsLawson α]
 
-
-
 lemma topology_eq : ‹_› = lawson := topology_eq_lawson
 
 /-- The complements of the upper closures of finite sets intersected with Scott open sets form
@@ -124,42 +88,22 @@ def lawsonBasis (α : Type*) [Preorder α] :=
 
 open TopologicalSpace
 
-def lawson_basis := (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1) (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U})
+def lawson_basis := (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
+  (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U})
 
-example {α : Type*} [Preorder α] :
-    lower α = induced WithLower.toLower WithLower.instTopologicalSpaceWithLower := by
-  letI _ := lower α; exact @WithLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
-
---set_option maxHeartbeats 1000000 in
-example {α : Type*} [Preorder α] :
-    scott α = induced WithScott.toScott WithScott.instTopologicalSpaceWithScott := by
-  letI _ := scott α; apply @WithScott.withScottHomeomorph α ‹_› (scott α) ⟨sorry⟩ |>.inducing.induced
-
-
-#check WithLower.withLowerHomeomorph
-#check WithScott.withScottHomeomorph
-
-set_option maxHeartbeats 300000 in
-protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawsonBasis α) := by
-  rw [lawsonBasis]
-  convert IsTopologicalBasis.inf WithLower.toLower WithScott.toScott IsLower.isTopologicalBasis
+protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawson_basis α) := by
+  rw [lawson_basis]
+  convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
     (TopologicalSpace.isTopologicalBasis_opens (α := WithScott α))
+    WithLower.toLower WithScott.toScott
   erw [topology_eq α]
   rw [lawson]
   apply (congrArg₂ Inf.inf _) _
-  letI _ := lower α; exact @WithLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
-  letI _ := scott α; exact @WithScott.withScottHomeomorph α ‹_› (scott α) ⟨rfl⟩ |>.inducing.induced
-
+  letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
+  letI _ := scott α; exact @IsScott.withScottHomeomorph α _ (scott α) ⟨rfl⟩ |>.inducing.induced
 
 
 variable (s : Set α) (h: IsUpperSet s) (hs: IsOpen[Topology.scottHausdorff α] s)
-
-
-
-#check IsScottHausdorff.isOpen_of_isLowerSet (IsLower.isLowerSet_of_isOpen _)
-
-
-
 
 
 
@@ -167,23 +111,26 @@ variable (s : Set α) (h: IsUpperSet s) (hs: IsOpen[Topology.scottHausdorff α] 
 -- IsScottHausdorff.isOpen_of_isLowerSet (IsLower.isLowerSet_of_isOpen _)
 -- Have the Scott open sets are SH by scottHausdorff_le_scott I think)
 -- Together these are a subbasis
+/-
 lemma isOpen_implies_scottHausdorff_open {s : Set α} : IsOpen s → IsOpen[scottHausdorff α] s := by
   erw [topology_eq α];
   intro hs
   sorry
+-/
 
 --#check ⟨h, hs⟩
 
 --#check IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr ⟨h, hs⟩
 
-#check scott
-
 --variable [IsScott α]
 
 -- Get the statement deliberately wrong for now
+/-
 lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
   IsOpen s ↔ IsOpen[Topology.scottHausdorff α] s := by
   sorry
+-/
+
 /-
   constructor
   · intro hs
