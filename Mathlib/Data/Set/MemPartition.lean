@@ -31,6 +31,8 @@ open Set
 
 variable {α : Type*}
 
+/-- `memPartition f n` is the partition containing at most `2^(n+1)` sets, where each set contains
+the points that for all `i` belong to one of `f i` or its complement. -/
 def memPartition (f : ℕ → Set α) : ℕ → Set (Set α)
   | 0 => {f 0, (f 0)ᶜ}
   | n + 1 => {s | ∃ u ∈ memPartition f n, s = u ∩ f (n + 1) ∨ s = u \ f (n + 1)}
