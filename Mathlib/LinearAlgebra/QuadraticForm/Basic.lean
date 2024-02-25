@@ -769,8 +769,8 @@ theorem toQuadraticForm_sub (B₁ B₂ : BilinForm R M) :
 #align bilin_form.to_quadratic_form_sub LinearMap.BilinForm.toQuadraticForm_sub
 
 theorem polar_toQuadraticForm (x y : M) : polar (toQuadraticForm B) x y = B x y + B y x := by
-  simp only [polar._eq_1, toQuadraticForm_apply, map_add, add_apply, add_assoc, add_comm (B y x) _,
-    add_sub_cancel', sub_eq_add_neg _ (B y y), add_neg_cancel_left]
+  simp only [toQuadraticForm_apply, add_assoc, add_sub_cancel', add_apply, polar, add_left_inj,
+    add_neg_cancel_left, map_add, sub_eq_add_neg _ (B y y), add_comm (B y x) _]
 #align bilin_form.polar_to_quadratic_form LinearMap.BilinForm.polar_toQuadraticForm
 
 theorem polarBilin_toQuadraticForm : polarBilin (toQuadraticForm B) = B + B.flip :=
@@ -853,7 +853,7 @@ theorem associated_isSymm : (associatedHom S Q).IsSymm := fun x y => by
 #align quadratic_form.associated_is_symm QuadraticForm.associated_isSymm
 
 @[simp]
-theorem associated_comp {N : Type v} [AddCommGroup N] [Module R N] (f : N →ₗ[R] M) :
+theorem associated_comp [AddCommGroup N] [Module R N] (f : N →ₗ[R] M) :
     associatedHom S (Q.comp f) = (associatedHom S Q).compl₁₂ f f := by
   ext
   simp only [associated_apply, comp_apply, map_add, LinearMap.compl₁₂_apply]
