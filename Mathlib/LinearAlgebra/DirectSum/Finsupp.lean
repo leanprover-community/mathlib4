@@ -20,8 +20,8 @@ noncomputable section
 
 open DirectSum Set LinearMap Submodule TensorProduct
 
-variable (R M N ι κ : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N]
+variable (R M N ι κ : Type*)
+  [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 open scoped Classical in
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
