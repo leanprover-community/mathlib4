@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Order.Filter.Germ
-import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-! # Germs of functions between topological spaces
 
