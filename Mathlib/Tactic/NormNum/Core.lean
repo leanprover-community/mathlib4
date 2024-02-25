@@ -80,7 +80,7 @@ initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums 
 
 /-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
 def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := do
-  if e.isNatLit then
+  if e.isRawNatLit then
     let lit : Q(ℕ) := e
     return .isNat (q(instAddMonoidWithOneNat) : Q(AddMonoidWithOne ℕ))
       lit (q(IsNat.raw_refl $lit) : Expr)
