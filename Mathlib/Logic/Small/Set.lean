@@ -19,8 +19,3 @@ instance small_iUnion {α : Type v} {ι : Type w} [Small.{u} ι] (s : ι → Set
 instance small_sUnion {α : Type v} (s : Set (Set α)) [Small.{u} s] [∀ t : s, Small.{u} t] :
     Small.{u} (⋃₀ s) :=
   Set.sUnion_eq_iUnion ▸ small_iUnion _
-
-instance small_union {α : Type v} (s t : Set α) [Small.{u} s] [Small.{u} t] :
-    Small.{u} (s ∪ t : Set α) := by
-  rw [← Subtype.range_val (s := s), ← Subtype.range_val (s := t), ← Set.Sum.elim_range]
-  infer_instance
