@@ -635,7 +635,6 @@ theorem cons_snoc_eq_snoc_cons {β : Type*} (a : β) (q : Fin n → β) (b : β)
     have : j = castSucc k := by rw [jk, castSucc_castLT]
     rw [this, ← castSucc_fin_succ, snoc]
     simp [pred, snoc, cons]
-    rfl
   rw [eq_last_of_not_lt h', succ_last]
   simp
 #align fin.cons_snoc_eq_snoc_cons Fin.cons_snoc_eq_snoc_cons

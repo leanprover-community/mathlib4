@@ -8,7 +8,7 @@ import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
-import Std.Data.Fin.Basic
+import Std.Data.Fin.Lemmas
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
