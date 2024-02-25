@@ -94,4 +94,9 @@ instance small_image {α : Type v} {β : Type w} (f : α → β) (S : Set α) [S
   small_of_surjective Set.surjective_onto_image
 #align small_image small_image
 
+instance small_union {α : Type v} (s t : Set α) [Small.{u} s] [Small.{u} t] :
+    Small.{u} (s ∪ t : Set α) := by
+  rw [← Subtype.range_val (s := s), ← Subtype.range_val (s := t), ← Set.Sum.elim_range]
+  infer_instance
+
 end
