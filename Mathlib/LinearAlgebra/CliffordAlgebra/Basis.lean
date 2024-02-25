@@ -320,7 +320,7 @@ def lift :
 @[simp]
 lemma liftToFun_composed_single (i : ι) (r : R) (f : (ι →₀ R) →ₗ[R] A) (hf) :
     liftToFun B f hf (Model.single B (.single i) r) = f (Finsupp.single i r) := by
-  simp [liftToFun, ←map_smul f r]
+  simp [liftToFun, ← map_smul f r]
 
 @[ext high]
 theorem hom_ext {f g : Model ι B →ₐ[R] A}
