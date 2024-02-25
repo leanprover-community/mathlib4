@@ -52,17 +52,17 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 #align finset.nonempty_Icc Finset.nonempty_Icc
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 #align finset.nonempty_Ico Finset.nonempty_Ico
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
 #align finset.nonempty_Ioc Finset.nonempty_Ioc
@@ -395,9 +395,9 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
 
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by

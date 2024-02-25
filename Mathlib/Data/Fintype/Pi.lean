@@ -59,7 +59,7 @@ theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (�
   eq_empty_of_forall_not_mem fun _ => by simp
 #align fintype.pi_finset_empty Fintype.piFinset_empty
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
 

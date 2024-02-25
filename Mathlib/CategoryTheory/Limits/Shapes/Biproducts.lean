@@ -130,7 +130,7 @@ namespace Bicones
   isomorphism between their vertices which commutes with the cocone
   maps. -/
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
-@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+@[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
     (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by aesop_cat)
     (wπ : ∀ j, φ.hom ≫ c'.π j = c.π j := by aesop_cat) : c ≅ c' where
@@ -161,10 +161,10 @@ end Bicones
 
 namespace Bicone
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 -- Porting note: would it be okay to use this more generally?
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- Extract the cone from a bicone. -/
 def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where

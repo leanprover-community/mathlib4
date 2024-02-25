@@ -315,7 +315,7 @@ namespace Cones
   isomorphism between their vertices which commutes with the cone
   maps. -/
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
-@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+@[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by aesop_cat) : c ≅ c' where
   hom := { hom := φ.hom }
@@ -514,7 +514,7 @@ namespace Cocones
   isomorphism between their vertices which commutes with the cocone
   maps. -/
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
-@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+@[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by aesop_cat) : c ≅ c' where
   hom := { hom := φ.hom }

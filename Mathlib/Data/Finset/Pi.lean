@@ -88,7 +88,7 @@ theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = sing
   rfl
 #align finset.pi_empty Finset.pi_empty
 
-@[simp, aesop safe apply (rule_sets [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma pi_nonempty : (s.pi t).Nonempty ↔ ∀ a ∈ s, (t a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
 
