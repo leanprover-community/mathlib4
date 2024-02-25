@@ -117,7 +117,7 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
       -- change l' with cons' a l
       --
       -- This can be removed.
-      simpa [cons] using IH rfl
+      simpa [cons, l'] using IH rfl
 #align lists'.of_to_list Lists'.of_toList
 
 end Lists'
