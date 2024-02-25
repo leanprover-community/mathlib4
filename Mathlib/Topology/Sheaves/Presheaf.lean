@@ -74,7 +74,7 @@ attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
-  `(attr|aesop safe 50 apply (rule_sets [$(Lean.mkIdent `Restrict):ident]))
+  `(attr|aesop safe 50 apply (rule_sets := [$(Lean.mkIdent `Restrict):ident]))
 
 attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
   le_sup_left le_sup_right
@@ -86,7 +86,7 @@ macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
     (config := { terminal := true
                  assumptionTransparency := .reducible
                  enableSimp := false })
-    (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+    (rule_sets := [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
 /-- `restrict_tac?` passes along `Try this` from `aesop` -/
 macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
@@ -96,11 +96,11 @@ macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
                  assumptionTransparency := .reducible
                  enableSimp := false
                  maxRuleApplications := 300 })
-  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+  (rule_sets := [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
-attribute[aesop 10% (rule_sets [Restrict])] le_trans
-attribute[aesop safe destruct (rule_sets [Restrict])] Eq.trans_le
-attribute[aesop safe -50 (rule_sets [Restrict])] Aesop.BuiltinRules.assumption
+attribute[aesop 10% (rule_sets := [Restrict])] le_trans
+attribute[aesop safe destruct (rule_sets := [Restrict])] Eq.trans_le
+attribute[aesop safe -50 (rule_sets := [Restrict])] Aesop.BuiltinRules.assumption
 
 example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_ : v 1 = v 2)
     (h₀ : v 1 ≤ x) (_ : x ≤ z ⊓ w) (h₂ : x ≤ y ⊓ z) : v 0 ≤ y :=
@@ -258,8 +258,8 @@ set_option linter.uppercaseLean3 false in
 -- the proof below could be `by aesop_cat` if
 -- https://github.com/JLimperg/aesop/issues/59
 -- can be resolved, and we add:
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 
 @[simp]
 theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by

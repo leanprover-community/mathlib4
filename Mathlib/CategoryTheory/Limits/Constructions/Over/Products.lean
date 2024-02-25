@@ -75,7 +75,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 
 -- Porting note: this should help with the additional `naturality` proof we now have to give in
 -- `conesEquivFunctor`, but doesn't.
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Discrete
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
@@ -92,7 +92,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 
 -- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym
 -- `WidePullbackShape`.
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] WidePullbackShape
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WidePullbackShape
 -- If this worked we could avoid the `rintro` in `conesEquivUnitIso`.
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/

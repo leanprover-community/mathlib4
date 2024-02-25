@@ -26,13 +26,13 @@ variable (C : Type*) [Category C]
 -- Porting note: we used to have:
 -- local attribute [tidy] tactic.auto_cases_opens
 -- We would replace this by:
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- although it doesn't appear to help in this file, in any case.
 
 -- Porting note: we used to have:
 -- local attribute [tidy] tactic.op_induction'
 -- A possible replacement would be:
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
 -- but this would probably require https://github.com/JLimperg/aesop/issues/59
 -- In any case, it doesn't seem necessary here.
 
