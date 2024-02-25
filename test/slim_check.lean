@@ -2,6 +2,7 @@ import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.SlimCheck.Functions
+import Mathlib.Tactic.Have
 
 private axiom test_sorry : ∀ {α}, α
 

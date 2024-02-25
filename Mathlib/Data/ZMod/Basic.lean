@@ -133,7 +133,7 @@ theorem ringChar_zmod_n (n : ℕ) : ringChar (ZMod n) = n := by
   exact ZMod.charP n
 #align zmod.ring_char_zmod_n ZMod.ringChar_zmod_n
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem nat_cast_self (n : ℕ) : (n : ZMod n) = 0 :=
   CharP.cast_eq_zero (ZMod n) n
 #align zmod.nat_cast_self ZMod.nat_cast_self
@@ -1297,7 +1297,7 @@ def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
         · rintro hf _ ⟨x, rfl⟩
           simp only [f.map_zsmul, zsmul_zero, f.mem_ker, hf]
         · intro h
-          refine' h (AddSubgroup.mem_zmultiples _)).trans <|
+          exact h (AddSubgroup.mem_zmultiples _)).trans <|
     (Int.castAddHom (ZMod n)).liftOfRightInverse cast int_cast_zmod_cast
 #align zmod.lift ZMod.lift
 

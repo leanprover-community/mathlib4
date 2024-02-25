@@ -41,6 +41,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 
 open scoped Classical MeasureTheory BigOperators NNReal ENNReal
 
+-- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
 open TopologicalSpace MeasureTheory.Measure PMF
 
 noncomputable section
@@ -75,8 +76,7 @@ theorem aemeasurable {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s �
       Set.univ_inter, smul_eq_mul, ENNReal.inv_mul_cancel hns hnt]
 
 theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) : map X ℙ ≪ μ := by
-  rw [hu]
-  exact ProbabilityTheory.cond_absolutelyContinuous μ
+  rw [hu]; exact ProbabilityTheory.cond_absolutelyContinuous
 
 theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) {A : Set E} (hA : MeasurableSet A) :
@@ -232,7 +232,7 @@ def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
     have : (s.card : ℝ≥0∞) ≠ 0 := by
       simpa only [Ne.def, Nat.cast_eq_zero, Finset.card_eq_zero] using
         Finset.nonempty_iff_ne_empty.1 hs
-    refine' ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
+    exact ENNReal.mul_inv_cancel this <| ENNReal.nat_ne_top s.card
   · exact fun x hx => by simp only [hx, if_false]
 #align pmf.uniform_of_finset PMF.uniformOfFinset
 

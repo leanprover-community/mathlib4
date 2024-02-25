@@ -260,9 +260,7 @@ def toConstProdContinuousLinearMap : (V →A[𝕜] W) ≃ₗᵢ[𝕜] W × (V �
   left_inv f := by
     ext
     rw [f.decomp]
-    -- Porting note: previously `simp` closed the goal, but now we need to rewrite:
-    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, Pi.add_apply]
-    rw [ContinuousAffineMap.coe_const, Function.const_apply]
+    simp only [coe_add, ContinuousLinearMap.coe_toContinuousAffineMap, Pi.add_apply, coe_const]
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

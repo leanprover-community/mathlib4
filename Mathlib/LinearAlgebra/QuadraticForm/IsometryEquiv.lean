@@ -129,8 +129,6 @@ theorem trans (h : Q₁.Equivalent Q₂) (h' : Q₂.Equivalent Q₃) : Q₁.Equi
 
 end Equivalent
 
-variable [Fintype ι] {v : Basis ι R M}
-
 /-- A quadratic form composed with a `LinearEquiv` is isometric to itself. -/
 def isometryEquivOfCompLinearEquiv (Q : QuadraticForm R M) (f : M₁ ≃ₗ[R] M) :
     Q.IsometryEquiv (Q.comp (f : M₁ →ₗ[R] M)) :=
@@ -140,6 +138,8 @@ def isometryEquivOfCompLinearEquiv (Q : QuadraticForm R M) (f : M₁ ≃ₗ[R] M
       simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.toFun_eq_coe,
         LinearEquiv.apply_symm_apply, f.apply_symm_apply] }
 #align quadratic_form.isometry_of_comp_linear_equiv QuadraticForm.isometryEquivOfCompLinearEquiv
+
+variable [Finite ι]
 
 /-- A quadratic form is isometrically equivalent to its bases representations. -/
 noncomputable def isometryEquivBasisRepr (Q : QuadraticForm R M) (v : Basis ι R M) :

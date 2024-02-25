@@ -206,11 +206,11 @@ theorem C_apply : (C a : MvPolynomial σ R) = monomial 0 a :=
   rfl
 #align mv_polynomial.C_apply MvPolynomial.C_apply
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
 #align mv_polynomial.C_0 MvPolynomial.C_0
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 #align mv_polynomial.C_1 MvPolynomial.C_1
@@ -221,17 +221,17 @@ theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   simp [C_apply, single_mul_single]
 #align mv_polynomial.C_mul_monomial MvPolynomial.C_mul_monomial
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
   Finsupp.single_add _ _ _
 #align mv_polynomial.C_add MvPolynomial.C_add
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
   C_mul_monomial.symm
 #align mv_polynomial.C_mul MvPolynomial.C_mul
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 #align mv_polynomial.C_pow MvPolynomial.C_pow
@@ -345,7 +345,7 @@ theorem C_mul_X_eq_monomial {s : σ} {a : R} : C a * X s = monomial (Finsupp.sin
   rw [← C_mul_X_pow_eq_monomial, pow_one]
 #align mv_polynomial.C_mul_X_eq_monomial MvPolynomial.C_mul_X_eq_monomial
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem monomial_zero {s : σ →₀ ℕ} : monomial s (0 : R) = 0 :=
   Finsupp.single_zero _
 #align mv_polynomial.monomial_zero MvPolynomial.monomial_zero

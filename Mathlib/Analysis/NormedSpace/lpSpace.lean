@@ -372,7 +372,7 @@ theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
 #align lp.coe_fn_add lp.coeFn_add
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i in s, f i) = ∑ i in s, ⇑(f i) := by
   simp
@@ -502,7 +502,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
       add_le' := fun f g => by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
-          · -- Porting note: was `simp [lp.eq_zero' f]`
+          · -- porting note (#10745): was `simp [lp.eq_zero' f]`
             rw [lp.eq_zero' f]
             simp only [zero_add, norm_zero, le_refl] -- porting note: just `simp` was slow
           refine' (lp.isLUB_norm (f + g)).2 _
@@ -1180,7 +1180,7 @@ theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.ra
   · apply memℓp_infty
     use C
     rintro _ ⟨a, rfl⟩
-    refine' norm_apply_le_of_tendsto (eventually_of_forall hCF) hf a
+    exact norm_apply_le_of_tendsto (eventually_of_forall hCF) hf a
   · apply memℓp_gen'
     exact sum_rpow_le_of_tendsto hp.ne (eventually_of_forall hCF) hf
 #align lp.mem_ℓp_of_tendsto lp.memℓp_of_tendsto

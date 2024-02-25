@@ -20,9 +20,10 @@ In this file we prove the Divergence theorem for Bochner integral on a box in
 
 Let `E` be a complete normed space. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is
 continuous on a rectangular box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, differentiable on its interior with
-derivative `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹`, and the divergence `λ x, ∑ i, f' x eᵢ i` is integrable on
-`[a, b]`, where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the
-sum of integrals of `f` over the faces of `[a, b]`, taken with appropriate signs. Moreover, the same
+derivative `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹`, and the divergence `fun x ↦ ∑ i, f' x eᵢ i`
+is integrable on `[a, b]`, where `eᵢ = Pi.single i 1` is the `i`-th basis vector,
+then its integral is equal to the sum of integrals of `f` over the faces of `[a, b]`,
+taken with appropriate signs. Moreover, the same
 is true if the function is not differentiable at countably many points of the interior of `[a, b]`.
 
 Once we prove the general theorem, we deduce corollaries for functions `ℝ → E` and pairs of

@@ -58,17 +58,21 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
 
 /-! ### Constants -/
 
--- porting note: TODO: prove `HasFTaylorSeriesUpToOn` theorems for zero and a constant
+@[simp]
+theorem iteratedFDerivWithin_zero_fun (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} :
+    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s x = 0 := by
+  induction i generalizing x with
+  | zero => ext; simp
+  | succ i IH =>
+    ext m
+    rw [iteratedFDerivWithin_succ_apply_left, fderivWithin_congr (fun _ ↦ IH) (IH hx)]
+    rw [fderivWithin_const_apply _ (hs x hx)]
+    rfl
 
 @[simp]
-theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E => (0 : F)) = 0 := by
-  induction' n with n IH
-  · ext m; simp
-  · ext x m
-    rw [iteratedFDeriv_succ_apply_left, IH]
-    change (fderiv 𝕜 (fun _ : E => (0 : E[×n]→L[𝕜] F)) x : E → E[×n]→L[𝕜] F) (m 0) (tail m) = _
-    rw [fderiv_const]
-    rfl
+theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦ (0 : F)) = 0 :=
+  funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
+    iteratedFDerivWithin_zero_fun uniqueDiffOn_univ (mem_univ x)
 #align iterated_fderiv_zero_fun iteratedFDeriv_zero_fun
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
@@ -119,18 +123,31 @@ theorem contDiffOn_of_subsingleton [Subsingleton F] : ContDiffOn 𝕜 n f s := b
   rw [Subsingleton.elim f fun _ => 0]; exact contDiffOn_const
 #align cont_diff_on_of_subsingleton contDiffOn_of_subsingleton
 
--- porting note: TODO: add a `fderivWithin` version
+theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 (n + 1) (fun _ : E ↦ c) s x = 0 := by
+  ext m
+  rw [iteratedFDerivWithin_succ_apply_right hs hx]
+  rw [iteratedFDerivWithin_congr (fun y hy ↦ fderivWithin_const_apply c (hs y hy)) hx]
+  rw [iteratedFDerivWithin_zero_fun hs hx]
+  simp [ContinuousMultilinearMap.zero_apply (R := 𝕜)]
+
 theorem iteratedFDeriv_succ_const (n : ℕ) (c : F) :
-    (iteratedFDeriv 𝕜 (n + 1) fun _ : E => c) = 0 := by
-  ext x
-  simp only [iteratedFDeriv_succ_eq_comp_right, fderiv_const, Pi.zero_apply,
-    iteratedFDeriv_zero_fun, comp_apply, LinearIsometryEquiv.map_zero]
+    (iteratedFDeriv 𝕜 (n + 1) fun _ : E ↦ c) = 0 :=
+  funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
+    iteratedFDerivWithin_succ_const n c uniqueDiffOn_univ (mem_univ x)
 #align iterated_fderiv_succ_const iteratedFDeriv_succ_const
 
+theorem iteratedFDerivWithin_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 n (fun _ : E ↦ c) s x = 0 := by
+  cases n with
+  | zero => contradiction
+  | succ n => exact iteratedFDerivWithin_succ_const n c hs hx
+
 theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
-    (iteratedFDeriv 𝕜 n fun _ : E => c) = 0 := by
-  cases' Nat.exists_eq_succ_of_ne_zero hn with k hk
-  rw [hk, iteratedFDeriv_succ_const]
+    (iteratedFDeriv 𝕜 n fun _ : E ↦ c) = 0 :=
+  funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
+    iteratedFDerivWithin_const_of_ne hn c uniqueDiffOn_univ (mem_univ x)
 #align iterated_fderiv_const_of_ne iteratedFDeriv_const_of_ne
 
 /-! ### Smoothness of linear functions -/
@@ -562,7 +579,7 @@ in any universe in `u, v, w, max u v, max v w, max u v w`, but it would be extre
 lead to a lot of duplication. Instead, we formulate the above proof when all spaces live in the same
 universe (where everything is fine), and then we deduce the general result by lifting all our spaces
 to a common universe. We use the trick that any space `H` is isomorphic through a continuous linear
-equiv to `ContinuousMultilinearMap (λ (i : Fin 0), E × F × G) H` to change the universe level,
+equiv to `ContinuousMultilinearMap (fun (i : Fin 0) ↦ E × F × G) H` to change the universe level,
 and then argue that composing with such a linear equiv does not change the fact of being `C^n`,
 which we have already proved previously.
 -/
@@ -988,7 +1005,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
     refine' mem_nhdsWithin_insert.mpr ⟨this, _⟩
     refine' (continuousWithinAt_id.prod hg.continuousWithinAt).preimage_mem_nhdsWithin' _
     rw [← nhdsWithin_le_iff] at hst hv ⊢
-    refine' (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
+    exact (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
   · intro z hz
     have := hvf' (z, g z) hz.1
     refine' this.comp _ (hasFDerivAt_prod_mk_right _ _).hasFDerivWithinAt _
@@ -1429,6 +1446,23 @@ theorem ContDiff.sum {ι : Type*} {f : ι → E → F} {s : Finset ι}
   simp only [← contDiffOn_univ] at *; exact ContDiffOn.sum h
 #align cont_diff.sum ContDiff.sum
 
+theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ} {x : E}
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffOn 𝕜 i (f j) s) :
+    iteratedFDerivWithin 𝕜 i (∑ j in u, f j ·) s x =
+      ∑ j in u, iteratedFDerivWithin 𝕜 i (f j) s x := by
+  induction u using Finset.cons_induction with
+  | empty => ext; simp [hs, hx]
+  | @cons a u ha IH =>
+    simp only [Finset.mem_cons, forall_eq_or_imp] at h
+    simp only [Finset.sum_cons]
+    rw [iteratedFDerivWithin_add_apply' h.1 (ContDiffOn.sum h.2) hs hx, IH h.2]
+
+theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
+    (h : ∀ j ∈ u, ContDiff 𝕜 i (f j)) :
+    iteratedFDeriv 𝕜 i (∑ j in u, f j ·) = ∑ j in u, iteratedFDeriv 𝕜 i (f j) :=
+  funext fun x ↦ by simpa [iteratedFDerivWithin_univ] using
+    iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x) fun j hj ↦ (h j hj).contDiffOn
+
 /-! ### Product of two functions -/
 
 section MulProd
@@ -1636,7 +1670,7 @@ theorem iteratedFDerivWithin_const_smul_apply (hf : ContDiffOn 𝕜 i f s) (hu :
 theorem iteratedFDeriv_const_smul_apply {x : E} (hf : ContDiff 𝕜 i f) :
     iteratedFDeriv 𝕜 i (a • f) x = a • iteratedFDeriv 𝕜 i f x := by
   simp_rw [← contDiffOn_univ, ← iteratedFDerivWithin_univ] at *
-  refine' iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
+  exact iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
 #align iterated_fderiv_const_smul_apply iteratedFDeriv_const_smul_apply
 
 end ConstSMul
