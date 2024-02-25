@@ -62,6 +62,10 @@ theorem pairwise_disjoint_mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise 
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
 #align pairwise_disjoint.mono pairwise_disjoint_mono
 
+lemma Pairwise.range_pairwise (hr : Pairwise (r on f)) : (Set.range f).Pairwise r := by
+  simp only [Set.Pairwise, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+  exact fun _ _ h ↦ hr <| ne_of_apply_ne _ h
+
 namespace Set
 
 theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
