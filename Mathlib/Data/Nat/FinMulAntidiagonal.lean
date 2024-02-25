@@ -75,9 +75,9 @@ theorem mem_finMulAntidiagonal {d n : ℕ} {f : (Fin d) → ℕ} :
   split_ifs with h
   · simp_rw [mem_map, mem_finAntidiagonal, Function.Embedding.arrowCongrRight_apply,
       Function.comp, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
-      Function.Embedding.coeFn_mk, ←Additive.ofMul.symm_apply_eq, Additive.ofMul_symm_eq,
+      Function.Embedding.coeFn_mk, ← Additive.ofMul.symm_apply_eq, Additive.ofMul_symm_eq,
       toMul_sum, (Equiv.piCongrRight fun _=> Additive.ofMul).surjective.exists,
-      Equiv.piCongrRight_apply, toMul_ofMul, ←PNat.coe_inj, PNat.mk_coe, PNat.coe_prod]
+      Equiv.piCongrRight_apply, toMul_ofMul, ← PNat.coe_inj, PNat.mk_coe, PNat.coe_prod]
     constructor
     · rintro ⟨a, ha_mem, rfl⟩
       exact ⟨ha_mem, h.ne.symm⟩
@@ -174,13 +174,6 @@ lemma image_piFinTwoEquiv {n : ℕ} :
     simp (config:={decide:=true}) only [ite_true, ite_false, h, mem_univ, not_true,
       IsEmpty.forall_iff, forall_const, not_false_eq_true, and_self, Prod.mk.eta, hn]
 
-lemma filter_primeFactors {m n : ℕ} (hmn : m ∣ n) (hn : n ≠ 0) :
-    n.primeFactors.filter fun p => p ∣ m = m.primeFactors := by
-  ext p
-  simp only [mem_filter, mem_primeFactors, ne_eq, hn, not_false_eq_true, and_true,
-    ne_zero_of_dvd_ne_zero hn hmn, and_congr_left_iff, and_iff_left_iff_imp]
-  exact fun h _ ↦ h.trans hmn
-
 lemma finMulAntidiagonal_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     (hp : p ∈ n.factors) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiagonal d n) :
     ∃! i, p ∣ f i := by
@@ -251,7 +244,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
     ext ⟨p, hp⟩
     refine ⟨by rintro rfl; apply hf, fun h => (hf_unique p hp i h).symm⟩
   rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
-  rw [filter_primeFactors this hn.ne_zero]
+  rw [primeFactors_filter_dvd_of_dvd this hn.ne_zero]
   apply prod_primeFactors_of_squarefree $ hn.squarefree_of_dvd this
 
 theorem card_finMulAntidiagonal_pi (d n : ℕ) (hn : Squarefree n) :
