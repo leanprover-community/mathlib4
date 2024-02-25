@@ -11,10 +11,13 @@ import Mathlib.Topology.MetricSpace.Bounded
 /-!
 # Sequences in topological spaces
 
-In this file we define sequences in topological spaces and show how they are related to
-filters and the topology.
+In this file we prove theorems about relations
+between closure/compactness/continuity etc and their sequential counterparts.
 
 ## Main definitions
+
+The following notions are defined in `Topology/Defs/Sequences`.
+We build theory about these definitions here, so we remind the definitions.
 
 ### Set operation
 * `seqClosure s`: sequential closure of a set, the set of limits of sequences of points of `s`;
@@ -66,7 +69,6 @@ open scoped Topology Uniformity
 variable {X Y : Type*}
 
 /-! ### Sequential closures, sequential continuity, and sequential spaces. -/
-
 
 section TopologicalSpace
 

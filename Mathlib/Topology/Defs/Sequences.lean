@@ -5,6 +5,40 @@ Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Defs.Filter
 
+/-!
+# Sequences in topological spaces
+
+In this file we define sequential closure, continuity, compactness etc.
+
+## Main definitions
+
+### Set operation
+* `seqClosure s`: sequential closure of a set, the set of limits of sequences of points of `s`;
+
+### Predicates
+
+* `IsSeqClosed s`: predicate saying that a set is sequentially closed, i.e., `seqClosure s ⊆ s`;
+* `SeqContinuous f`: predicate saying that a function is sequentially continuous, i.e.,
+  for any sequence `u : ℕ → X` that converges to a point `x`, the sequence `f ∘ u` converges to
+  `f x`;
+* `IsSeqCompact s`: predicate saying that a set is sequentially compact, i.e., every sequence
+  taking values in `s` has a converging subsequence.
+
+### Type classes
+
+* `FrechetUrysohnSpace X`: a typeclass saying that a topological space is a *Fréchet-Urysohn
+  space*, i.e., the sequential closure of any set is equal to its closure.
+* `SequentialSpace X`: a typeclass saying that a topological space is a *sequential space*, i.e.,
+  any sequentially closed set in this space is closed. This condition is weaker than being a
+  Fréchet-Urysohn space.
+* `SeqCompactSpace X`: a typeclass saying that a topological space is sequentially compact, i.e.,
+  every sequence in `X` has a converging subsequence.
+
+## Tags
+
+sequentially closed, sequentially compact, sequential space
+-/
+
 open Set Filter
 open scoped Topology
 
