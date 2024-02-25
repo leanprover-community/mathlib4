@@ -129,7 +129,7 @@ def Index.singleMul (i : ι) (l : Model.Index ι) :
                       aux.subset <| (List.mem_erase_of_ne hij'.symm).2 hj'
                 haveI pfoo := foo.prop
                 ⟨foo, fun i' hi' => show _ <+ _ from
-                  have pfooi : _ <+ _ := ((pfoo hi').erase i).trans aux by
+                  have pfooi : _ <+ _ := ((pfoo hi').erase i).trans aux; by
                     have pf' := pfoo hi'
                     dsimp at *
                     rw [List.erase_comm] at pfooi
