@@ -3,8 +3,9 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
+import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 import Mathlib.CategoryTheory.Bicategory.Adjunction
+import Mathlib.Tactic.TFAE
 
 /-!
 # Adjunctions as Kan extensions
@@ -95,6 +96,22 @@ def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a
       f ⊣ t.extension :=
   H.isKan.adjunction (H f)
 
+theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
+    List.TFAE [
+      IsLeftAdjoint f,
+      HasAbsLeftKan f (𝟙 a),
+      ∃ _ : HasLeftKan f (𝟙 a), CommuteWithLeftKan f (𝟙 a) f] := by
+  tfae_have 1 → 2
+  · intro h
+    exact .intro (getRightAdjointAdj f).isAbsoluteLeftKan
+  tfae_have 2 → 3
+  · intro h;
+    exact ⟨inferInstance, ⟨⟨lan.isAbsLeftKan f (𝟙 a) f⟩⟩⟩
+  tfae_have 3 → 1
+  · intro ⟨h, h'⟩
+    exact .intro <| (lan.isLeftKan f (𝟙 a)).adjunction <| Classical.choice h'.commute
+  tfae_finish
+
 end LeftExtension
 
 section LeftLift
@@ -157,6 +174,22 @@ def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : Le
     t.lift ⊣ u :=
   H.isKan.adjunction (H u)
 
+theorem isRightAdjoint_TFAE (u : b ⟶ a) :
+    List.TFAE [
+      IsRightAdjoint u,
+      HasAbsLeftKanLift u (𝟙 a),
+      ∃ _ : HasLeftKanLift u (𝟙 a), CommuteWithLeftKanLift u (𝟙 a) u] := by
+  tfae_have 1 → 2
+  · intro h
+    exact .intro (getLeftAdjointAdj u).isAbsoluteLeftKanLift
+  tfae_have 2 → 3
+  · intro h;
+    exact ⟨inferInstance, ⟨⟨lanLift.isAbsLeftKan u (𝟙 a) u⟩⟩⟩
+  tfae_have 3 → 1
+  · intro ⟨h, h'⟩
+    exact .intro <| (lanLift.isLeftKan u (𝟙 a)).adjunction <| Classical.choice h'.commute
+  tfae_finish
+
 end LeftLift
 
 namespace LeftExtension
@@ -199,6 +232,10 @@ def isKanOfWhiskerLeftAdjoint
         rw [← whisker_exchange]; simp [bicategoricalComp]
       _ = _ := by
         rw [Hτ']; simp [bicategoricalComp]
+
+instance {f : a ⟶ b} {g : a ⟶ c} {x : B} {h : c ⟶ x} [IsLeftAdjoint h] [HasLeftKan f g] :
+    HasLeftKan f (g ≫ h) :=
+  .intro <| isKanOfWhiskerLeftAdjoint (lan.isLeftKan f g) (getRightAdjointAdj h)
 
 end LeftExtension
 

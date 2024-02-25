@@ -78,6 +78,11 @@ def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := .mk _ (λ_ g).inv
 
 instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
 
+/-- Construct a left extension along `g : a ⟶ c` from a left extension along `g ≫ 𝟙 c`. -/
+@[simps!]
+def ofAlongCompId (t : LeftExtension f (g ≫ 𝟙 c)) : LeftExtension f g :=
+  mk (extension t) ((ρ_ g).inv ≫ unit t)
+
 /-- Whisker a 1-morphism to an extension.
 ```
   b
@@ -111,9 +116,11 @@ def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g 
     rw [← LeftExtension.w η]
     simp [- LeftExtension.w]
 
+variable {s t : LeftExtension f g}
+
 /-- Define a morphism between left extensions by cancelling the whiskered identities. -/
 @[simps! right]
-def whiskerIdCancel {s t : LeftExtension f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
+def whiskerIdCancel (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
     s ⟶ t :=
   LeftExtension.homMk ((ρ_ _).inv ≫ τ.right ≫ (ρ_ _).hom) <| by
     have := LeftExtension.w τ
@@ -123,6 +130,40 @@ def whiskerIdCancel {s t : LeftExtension f g} (τ : s.whisker (𝟙 c) ⟶ t.whi
       Iso.cancel_iso_hom_left] at this
     rw [reassoc_of% this]
     simp
+
+/-- Construct a morphism between whiskered extensions. -/
+@[simps! right]
+def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
+    s.whisker h ⟶ t.whisker h :=
+  StructuredArrow.homMk (i.right ▷ h) <| by
+    rw [← cancel_mono (α_ _ _ _).inv]
+    calc
+      _ = (unit s ≫ f ◁ i.right) ▷ h := by simp [- LeftExtension.w]
+      _ = unit t ▷ h := congrArg (· ▷ h) (LeftExtension.w i)
+      _ = _ := by simp
+
+/-- Construct an isomorphism between whiskered extensions. -/
+def whiskerIso (i : s ≅ t) {x : B} (h : c ⟶ x) :
+    s.whisker h ≅ t.whisker h :=
+  Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
+    (StructuredArrow.hom_ext _ _ <|
+      calc
+        _ = (i.hom ≫ i.inv).right ▷ h := by simp [- Iso.hom_inv_id]
+        _ = 𝟙 _ := by simp [Iso.hom_inv_id])
+    (StructuredArrow.hom_ext _ _ <|
+      calc
+        _ = (i.inv ≫ i.hom).right ▷ h := by simp [- Iso.inv_hom_id]
+        _ = 𝟙 _ := by simp [Iso.inv_hom_id])
+
+/-- The isomorphism between left extensions induced by a right unitor. -/
+@[simps! hom_right inv_right]
+def whiskerOfCompIdIsoSelf (t : LeftExtension f g) : (t.whisker (𝟙 c)).ofAlongCompId ≅ t :=
+  StructuredArrow.isoMk (ρ_ (t.extension))
+
+/-- The isomorphism between left extensions induced by a right unitor. -/
+@[simps! hom_right inv_right]
+def ofCompIdWhiskerIsoSelf (t : LeftExtension f (g ≫ 𝟙 c)) : t.ofAlongCompId.whisker (𝟙 c) ≅ t :=
+  StructuredArrow.isoMk (ρ_ (t.extension))
 
 end LeftExtension
 
@@ -169,6 +210,11 @@ def alongId (g : c ⟶ a) : LeftLift (𝟙 a) g := .mk _ (ρ_ g).inv
 
 instance : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
 
+/-- Construct a left lift along `g : c ⟶ a` from a left lift along `𝟙 c ≫ g`. -/
+@[simps!]
+def ofAlongIdComp (t : LeftLift f (𝟙 c ≫ g)) : LeftLift f g :=
+  mk (lift t) ((λ_ _).inv ≫ unit t)
+
 /-- Whisker a 1-morphism to a lift.
 ```
                     b
@@ -202,9 +248,11 @@ def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) whe
     rw [← LeftLift.w η]
     simp [- LeftLift.w]
 
+variable {s t : LeftLift f g}
+
 /-- Define a morphism between left lifts by cancelling the whiskered identities. -/
 @[simps! right]
-def whiskerIdCancel {s t : LeftLift f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
+def whiskerIdCancel (τ : s.whisker (𝟙 c) ⟶ t.whisker (𝟙 c)) :
     s ⟶ t :=
   LeftLift.homMk ((λ_ _).inv ≫ τ.right ≫ (λ_ _).hom) <| by
     have := LeftLift.w τ
@@ -214,6 +262,40 @@ def whiskerIdCancel {s t : LeftLift f g} (τ : s.whisker (𝟙 c) ⟶ t.whisker 
       Iso.cancel_iso_hom_left] at this
     rw [reassoc_of% this]
     simp
+
+/-- Construct a morphism between whiskered lifts. -/
+@[simps! right]
+def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :
+    s.whisker h ⟶ t.whisker h :=
+  StructuredArrow.homMk (h ◁ i.right) <| by
+    rw [← cancel_mono (α_ h _ _).hom]
+    calc
+      _ = h ◁ (unit s ≫ i.right ▷ f) := by simp [- LeftLift.w]
+      _ = h ◁ unit t := congrArg (h ◁ ·) (LeftLift.w i)
+      _ = _ := by simp
+
+/-- Construct an isomorphism between whiskered lifts. -/
+def whiskerIso (i : s ≅ t) {x : B} (h : x ⟶ c) :
+    s.whisker h ≅ t.whisker h :=
+  Iso.mk (whiskerHom i.hom h) (whiskerHom i.inv h)
+    (StructuredArrow.hom_ext _ _ <|
+      calc
+        _ = h ◁ (i.hom ≫ i.inv).right := by simp [- Iso.hom_inv_id]
+        _ = 𝟙 _ := by simp [Iso.hom_inv_id])
+    (StructuredArrow.hom_ext _ _ <|
+      calc
+        _ = h ◁ (i.inv ≫ i.hom).right := by simp [- Iso.inv_hom_id]
+        _ = 𝟙 _ := by simp [Iso.inv_hom_id])
+
+/-- The isomorphism between left lifts induced by a left unitor. -/
+@[simps! hom_right inv_right]
+def whiskerOfCompIdIsoSelf (t : LeftLift f g) : (t.whisker (𝟙 c)).ofAlongIdComp ≅ t :=
+  StructuredArrow.isoMk (λ_ (lift t))
+
+/-- The isomorphism between left lifts induced by a left unitor. -/
+@[simps! hom_right inv_right]
+def ofCompIdWhiskerIsoSelf (t : LeftLift f (𝟙 c ≫ g)) : t.ofAlongIdComp.whisker (𝟙 c) ≅ t :=
+  StructuredArrow.isoMk (λ_ (lift t))
 
 end LeftLift
 

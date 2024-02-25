@@ -292,6 +292,58 @@ end Equivalence
 
 end
 
+/-- A class giving a chosen right adjoint to the functor `left`. -/
+structure RightAdjoint (left : a ⟶ b) where
+  /-- The right adjoint to `left` -/
+  right : b ⟶ a
+  /-- The adjunction between `left` and `right` -/
+  adj : left ⊣ right
+
+/-- A class giving a chosen right adjoint to the functor `left`. -/
+class IsLeftAdjoint (left : a ⟶ b) : Prop where
+  nonempty : Nonempty (RightAdjoint left)
+
+def IsLeftAdjoint.intro (adj : f ⊣ g) : IsLeftAdjoint f :=
+  ⟨⟨g, adj⟩⟩
+
+noncomputable
+def getRightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : RightAdjoint f :=
+  Classical.choice IsLeftAdjoint.nonempty
+
+noncomputable
+def getRightAdjointHom (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
+  (getRightAdjoint f).right
+
+scoped notation f "⁺⁺" => getRightAdjointHom f
+
+noncomputable
+def getRightAdjointAdj (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ f⁺⁺ :=
+  (getRightAdjoint f).adj
+
+structure LeftAdjoint (right : b ⟶ a) where
+  left : a ⟶ b
+  adj : left ⊣ right
+
+class IsRightAdjoint (right : b ⟶ a) : Prop where
+  nonempty : Nonempty (LeftAdjoint right)
+
+def IsRightAdjoint.intro (adj : f ⊣ g) : IsRightAdjoint g :=
+  ⟨⟨f, adj⟩⟩
+
+noncomputable
+def getLeftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : LeftAdjoint f :=
+  Classical.choice IsRightAdjoint.nonempty
+
+noncomputable
+def getLeftAdjointHom (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
+  (getLeftAdjoint f).left
+
+scoped notation f "⁺" => getLeftAdjointHom f
+
+noncomputable
+def getLeftAdjointAdj (f : b ⟶ a) [IsRightAdjoint f] : f⁺ ⊣ f :=
+  (getLeftAdjoint f).adj
+
 end Bicategory
 
 end CategoryTheory
