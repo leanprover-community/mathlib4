@@ -129,10 +129,10 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
   let ε : i ⋙ L ⟶ 𝟭 D := ir.counit
   apply ExponentialIdeal.mk'
   intro B A
-  let q : i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B
-  apply CartesianClosed.curry (ir.homEquiv _ _ _)
-  apply _ ≫ (ir.homEquiv _ _).symm ((exp.ev A).app (i.obj B))
-  refine' prodComparison L A _ ≫ Limits.prod.map (𝟙 _) (ε.app _) ≫ inv (prodComparison _ _ _)
+  let q : i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B := by
+    apply CartesianClosed.curry (ir.homEquiv _ _ _)
+    apply _ ≫ (ir.homEquiv _ _).symm ((exp.ev A).app (i.obj B))
+    exact prodComparison L A _ ≫ Limits.prod.map (𝟙 _) (ε.app _) ≫ inv (prodComparison _ _ _)
   have : η.app (A ⟹ i.obj B) ≫ q = 𝟙 (A ⟹ i.obj B) := by
     dsimp
     rw [← curry_natural_left, curry_eq_iff, uncurry_id_eq_ev, ← ir.homEquiv_naturality_left,
@@ -149,7 +149,7 @@ variable [ExponentialIdeal i]
 itself cartesian closed.
 -/
 def cartesianClosedOfReflective : CartesianClosed D :=
-  { monoidalOfHasFiniteProducts D with -- Porting note: Added this instance
+  { monoidalOfHasFiniteProducts D with -- Porting note (#10754): added this instance
     closed := fun B =>
       { isAdj :=
           { right := i ⋙ exp (i.obj B) ⋙ leftAdjoint i
@@ -203,9 +203,6 @@ noncomputable def bijection (A B : C) (X : D) :
 
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
-  -- Porting note: added
-  have : PreservesLimits i := (Adjunction.ofRightAdjoint i).rightAdjointPreservesLimits
-  have := preservesSmallestLimitsOfPreservesLimits i
   dsimp [bijection]
   -- Porting note: added
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
@@ -216,8 +213,7 @@ theorem bijection_symm_apply_id (A B : C) :
   dsimp only [Functor.comp_obj]
   rw [prod.comp_lift_assoc, prod.lift_snd, prod.lift_fst_assoc, prod.lift_fst_comp_snd_comp,
     ← Adjunction.eq_homEquiv_apply, Adjunction.homEquiv_unit, Iso.comp_inv_eq, assoc]
-  -- Porting note: rw became erw
-  erw [PreservesLimitPair.iso_hom i ((leftAdjoint i).obj A) ((leftAdjoint i).obj B)]
+  rw [PreservesLimitPair.iso_hom i ((leftAdjoint i).obj A) ((leftAdjoint i).obj B)]
   apply prod.hom_ext
   · rw [Limits.prod.map_fst, assoc, assoc, prodComparison_fst, ← i.map_comp, prodComparison_fst]
     apply (Adjunction.ofRightAdjoint i).unit.naturality

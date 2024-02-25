@@ -119,7 +119,7 @@ theorem hammingDist_pos {x y : ∀ i, β i} : 0 < hammingDist x y ↔ x ≠ y :=
   rw [← hammingDist_ne_zero, iff_not_comm, not_lt, le_zero_iff]
 #align hamming_dist_pos hammingDist_pos
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingDist_lt_one {x y : ∀ i, β i} : hammingDist x y < 1 ↔ x = y := by
   rw [Nat.lt_one_iff, hammingDist_eq_zero]
 #align hamming_dist_lt_one hammingDist_lt_one
@@ -172,7 +172,7 @@ theorem hammingDist_zero_left : hammingDist (0 : ∀ i, β i) = hammingNorm :=
 #align hamming_dist_zero_left hammingDist_zero_left
 
 /-- Corresponds to `norm_nonneg`. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingNorm_nonneg {x : ∀ i, β i} : 0 ≤ hammingNorm x :=
   zero_le _
 #align hamming_norm_nonneg hammingNorm_nonneg
@@ -200,7 +200,7 @@ theorem hammingNorm_pos_iff {x : ∀ i, β i} : 0 < hammingNorm x ↔ x ≠ 0 :=
   hammingDist_pos
 #align hamming_norm_pos_iff hammingNorm_pos_iff
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingNorm_lt_one {x : ∀ i, β i} : hammingNorm x < 1 ↔ x = 0 :=
   hammingDist_lt_one
 #align hamming_norm_lt_one hammingNorm_lt_one

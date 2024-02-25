@@ -79,7 +79,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
 instance : CoeSort Profinite (Type*) :=
   ⟨fun X => X.toCompHaus⟩
 
--- Porting note: This lemma was not needed in mathlib3
+-- Porting note (#10688): This lemma was not needed in mathlib3
 @[simp]
 lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f) :
     (forget Profinite).map (ContinuousMap.mk f hf) = f :=

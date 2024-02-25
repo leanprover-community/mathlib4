@@ -331,7 +331,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         refine lt_of_le_of_lt (measure_union_le _ _) ?_
         rw [I, zero_add]
         apply lt_of_le_of_lt _ J
-        exact restrict_le_self _ (measurableSet_lt measurable_const f_mble)
+        exact restrict_le_self _
       spanning := by
         apply eq_univ_iff_forall.2 (fun a ↦ ?_)
         rcases le_or_lt (f a) M with ha|ha
@@ -479,7 +479,7 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
   have g_nn : ∀ᵐ t ∂volume.restrict (Ioi (0 : ℝ)), 0 ≤ g t := by
     filter_upwards [self_mem_ae_restrict (measurableSet_Ioi : MeasurableSet (Ioi (0 : ℝ)))]
     intro t t_pos
-    exact Real.rpow_nonneg_of_nonneg (mem_Ioi.mp t_pos).le (p - 1)
+    exact Real.rpow_nonneg (mem_Ioi.mp t_pos).le (p - 1)
   have g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t := fun _ _ =>
     intervalIntegral.intervalIntegrable_rpow' one_lt_p
   have key := lintegral_comp_eq_lintegral_meas_le_mul μ f_nn f_mble g_intble g_nn

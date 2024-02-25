@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
 import Mathlib.Algebra.Periodic
-import Mathlib.Data.ZMod.Algebra
-import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
-import Mathlib.Data.ZMod.Algebra
 import Mathlib.Data.ZMod.Units
+import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
 
 /-!
 # Dirichlet Characters
@@ -88,7 +86,7 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
   simp [changeLevel_def, MonoidHom.comp_assoc, ZMod.unitsMap_comp]
 
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
-    (changeLevel hm χ) a = χ a := by
+    (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
   simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
       toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
 
@@ -163,11 +161,11 @@ lemma conductor_ne_zero (hn : n ≠ 0) : conductor χ ≠ 0 :=
   fun h ↦ hn <| Nat.eq_zero_of_zero_dvd <| h ▸ conductor_dvd_level _
 
 lemma conductor_one (hn : n ≠ 0) : conductor (1 : DirichletCharacter R n) = 1 := by
-  suffices : FactorsThrough (1 : DirichletCharacter R n) 1
-  · have h : conductor (1 : DirichletCharacter R n) ≤ 1 :=
+  suffices FactorsThrough (1 : DirichletCharacter R n) 1 by
+    have h : conductor (1 : DirichletCharacter R n) ≤ 1 :=
       Nat.sInf_le <| (mem_conductorSet_iff _).mpr this
     exact Nat.le_antisymm h (Nat.pos_of_ne_zero <| conductor_ne_zero _ hn)
-  · exact (factorsThrough_one_iff _).mpr rfl
+  exact (factorsThrough_one_iff _).mpr rfl
 
 variable {χ}
 
@@ -255,9 +253,8 @@ def Odd : Prop := ψ (-1) = -1
 def Even : Prop := ψ (-1) = 1
 
 lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
-  suffices : ψ (-1) ^ 2 = 1
-  · convert sq_eq_one_iff.mp this
-  · rw [← map_pow _, neg_one_sq, map_one]
+  suffices ψ (-1) ^ 2 = 1 by convert sq_eq_one_iff.mp this
+  rw [← map_pow _, neg_one_sq, map_one]
 
 lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
   rw [← Units.eq_iff, MulChar.coe_toUnitHom]

@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 
 #align_import algebra.order.group.with_top from "leanprover-community/mathlib"@"f178c0e25af359f6cbc72a96a243efd3b12423a3"
@@ -28,7 +28,7 @@ instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (Wi
   add_neg_cancel := by
     rintro (a | a) ha
     · exact (ha rfl).elim
-    · exact WithTop.coe_add.symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
+    · exact (WithTop.coe_add ..).symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
 #align with_top.linear_ordered_add_comm_group_with_top WithTop.linearOrderedAddCommGroupWithTop
 
 @[simp, norm_cast]

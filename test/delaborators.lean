@@ -45,11 +45,9 @@ variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)
 #guard_msgs in
 #check ∀ x, x ∈ s → P x
 
--- TODO: uncomment after bumping past
--- https://github.com/leanprover/std4/pull/427
--- /-- info: ∀ x ∉ s, P x : Prop -/
--- #guard_msgs in
--- #check ∀ x ∉ s,P x
+/-- info: ∀ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∀ x ∉ s,P x
 
 /-- info: ∀ x ∉ s, P x : Prop -/
 #guard_msgs in
@@ -149,11 +147,9 @@ section existential
 
 variable (s : Set ℕ) (P : ℕ → Prop) (Q : Set ℕ → Prop)
 
--- TODO: uncomment after bumping past
--- https://github.com/leanprover/std4/pull/427
--- /-- info: ∃ x ∉ s, P x : Prop -/
--- #guard_msgs in
--- #check ∃ x ∉ s, P x
+/-- info: ∃ x ∉ s, P x : Prop -/
+#guard_msgs in
+#check ∃ x ∉ s, P x
 
 /-- info: ∃ x ∉ s, P x : Prop -/
 #guard_msgs in
@@ -233,7 +229,7 @@ variable (x : ℕ × ℕ)
 
 variable (p : (ℕ → ℕ) × (ℕ → ℕ))
 
-/-- info: p.1 22 : ℕ -/
+/-- info: p.fst 22 : ℕ -/
 #guard_msgs in
 #check p.1 22
 

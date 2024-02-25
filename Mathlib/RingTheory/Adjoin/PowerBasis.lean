@@ -134,13 +134,14 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) :
     ∀ i, IsIntegral R (B.basis.repr (x * y) i) := by
   intro i
-  rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, map_sum, Finset.sum_apply']
+  rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, ← Finset.sum_product',
+    map_sum, Finset.sum_apply']
   refine' IsIntegral.sum _ fun I _ => _
   simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, LinearEquiv.map_smulₛₗ,
     RingHom.id_apply, Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
   refine (hy _).mul ((hx _).mul ?_)
   simp only [coe_basis, ← pow_add]
-  refine' repr_gen_pow_isIntegral hB hmin _ _
+  exact repr_gen_pow_isIntegral hB hmin _ _
 #align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
 /-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element

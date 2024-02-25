@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Order.Filter.ListTraverse
 
 #align_import topology.list from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -26,40 +27,40 @@ instance : TopologicalSpace (List α) :=
 theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
   refine' nhds_mkOfNhds _ _ _ _
   · intro l
-    induction l
-    case nil => exact le_rfl
-    case cons a l ih =>
+    induction l with
+    | nil => exact le_rfl
+    | cons a l ih =>
       suffices List.cons <$> pure a <*> pure l ≤ List.cons <$> 𝓝 a <*> traverse 𝓝 l by
         simpa only [functor_norm] using this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
   · intro l s hs
     rcases (mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
     clear as hs
-    have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
-    induction hu generalizing s
-    case nil _hs =>
-      exists []
-      simp only [List.forall₂_nil_left_iff, exists_eq_left]
-      exact ⟨trivial, hus⟩
-    -- porting note -- renamed reordered variables based on previous types
-    case cons a s as ss hts h ht _ ih =>
-      rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
-      rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩
-      exact
-        ⟨u::v, List.Forall₂.cons hu hv,
-          Subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hus⟩
+    have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s := by
+      induction hu generalizing s with
+      | nil =>
+        exists []
+        simp only [List.forall₂_nil_left_iff, exists_eq_left]
+        exact ⟨trivial, hus⟩
+      -- porting note -- renamed reordered variables based on previous types
+      | cons ht _ ih =>
+        rcases mem_nhds_iff.1 ht with ⟨u, hut, hu⟩
+        rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩
+        exact
+          ⟨u::v, List.Forall₂.cons hu hv,
+            Subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hus⟩
     rcases this with ⟨v, hv, hvs⟩
-    refine' ⟨sequence v, mem_traverse _ _ _, hvs, _⟩
-    · exact hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
-    · intro u hu
-      have hu := (List.mem_traverse _ _).1 hu
-      have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
-        refine' List.Forall₂.flip _
-        replace hv := hv.flip
-        simp only [List.forall₂_and_left, flip] at hv ⊢
-        exact ⟨hv.1, hu.flip⟩
-      refine' mem_of_superset _ hvs
-      exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
+    have : sequence v ∈ traverse 𝓝 l :=
+      mem_traverse _ _ <| hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
+    refine mem_of_superset this fun u hu ↦ ?_
+    have hu := (List.mem_traverse _ _).1 hu
+    have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
+      refine' List.Forall₂.flip _
+      replace hv := hv.flip
+      simp only [List.forall₂_and_left, flip] at hv ⊢
+      exact ⟨hv.1, hu.flip⟩
+    refine' mem_of_superset _ hvs
+    exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
 #align nhds_list nhds_list
 
 @[simp]
@@ -116,7 +117,7 @@ theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
   · intro l a ih
     dsimp only [List.length]
     refine' Tendsto.comp (tendsto_pure_pure (fun x => x + 1) _) _
-    refine' Tendsto.comp ih tendsto_snd
+    exact Tendsto.comp ih tendsto_snd
 #align list.continuous_at_length List.continuousAt_length
 
 theorem tendsto_insertNth' {a : α} :

@@ -103,7 +103,7 @@ variable (R ι N)
 
 /-- The linear map constructed using the universal property of the coproduct. -/
 def toModule : (⨁ i, M i) →ₗ[R] N :=
-  FunLike.coe (DFinsupp.lsum ℕ) φ
+  DFunLike.coe (DFinsupp.lsum ℕ) φ
 #align direct_sum.to_module DirectSum.toModule
 
 /-- Coproducts in the categories of modules and additive monoids commute with the forgetful functor
@@ -432,7 +432,9 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 theorem isInternal_submodule_of_independent_of_iSup_eq_top {A : ι → Submodule R M}
     (hi : CompleteLattice.Independent A) (hs : iSup A = ⊤) : IsInternal A :=
   ⟨hi.dfinsupp_lsum_injective,
-    LinearMap.range_eq_top.1 <| (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
+    -- Note: #8386 had to specify value of `f`
+    (LinearMap.range_eq_top (f := DFinsupp.lsum _ _)).1 <|
+      (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
 #align direct_sum.is_internal_submodule_of_independent_of_supr_eq_top DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
 
 /-- `iff` version of `DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top`,
@@ -458,6 +460,20 @@ theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
     IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
   simp only [isInternal_submodule_iff_independent_and_iSup_eq_top]
   exact Iff.and CompleteLattice.independent_ne_bot_iff_independent <| by simp
+
+lemma isInternal_biSup_submodule_of_independent {A : ι → Submodule R M} (s : Set ι)
+    (h : CompleteLattice.Independent <| fun i : s ↦ A i) :
+    IsInternal <| fun (i : s) ↦ (A i).comap (⨆ i ∈ s, A i).subtype := by
+  refine (isInternal_submodule_iff_independent_and_iSup_eq_top _).mpr ⟨?_, by simp [iSup_subtype]⟩
+  let p := ⨆ i ∈ s, A i
+  have hp : ∀ i ∈ s, A i ≤ p := fun i hi ↦ le_biSup A hi
+  let e : Submodule R p ≃o Set.Iic p := Submodule.MapSubtype.relIso p
+  suffices (e ∘ fun i : s ↦ (A i).comap p.subtype) = fun i ↦ ⟨A i, hp i i.property⟩ by
+    rw [← CompleteLattice.independent_map_orderIso_iff e, this]
+    exact CompleteLattice.independent_of_independent_coe_Iic_comp h
+  ext i m
+  change m ∈ ((A i).comap p.subtype).map p.subtype ↔ _
+  rw [Submodule.map_comap_subtype, inf_of_le_right (hp i i.property)]
 
 /-! Now copy the lemmas for subgroup and submonoids. -/
 

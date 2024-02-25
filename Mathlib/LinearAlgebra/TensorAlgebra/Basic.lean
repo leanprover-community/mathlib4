@@ -77,6 +77,7 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
   RingQuot.instAlgebra _
 
 -- verify there is no diamond
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
@@ -97,6 +98,7 @@ instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
 
 -- verify there is no diamond
+-- but doesn't work at `reducible_and_instances` #10906
 variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
 example : (algebraInt _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 
@@ -242,6 +244,10 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 0 
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align tensor_algebra.algebra_map_eq_one_iff TensorAlgebra.algebraMap_eq_one_iff
+
+/-- A `TensorAlgebra` over a nontrivial semiring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (TensorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
 
 variable {M}
 

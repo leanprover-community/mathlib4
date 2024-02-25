@@ -20,6 +20,25 @@ imports. Further results about divisibility in rings may be found in
 
 variable {α β : Type*}
 
+section Semigroup
+
+variable [Semigroup α] [Semigroup β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] (f : F)
+
+theorem map_dvd_iff {a b} : f a ∣ f b ↔ a ∣ b :=
+  let f := MulEquivClass.toMulEquiv f
+  ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
+
+theorem MulEquiv.decompositionMonoid [DecompositionMonoid β] : DecompositionMonoid α where
+  primal a b c h := by
+    rw [← map_dvd_iff f, map_mul] at h
+    obtain ⟨a₁, a₂, h⟩ := DecompositionMonoid.primal _ h
+    refine ⟨symm f a₁, symm f a₂, ?_⟩
+    simp_rw [← map_dvd_iff f, ← map_mul, eq_symm_apply]
+    iterate 2 erw [(f : α ≃* β).apply_symm_apply]
+    exact h
+
+end Semigroup
+
 section DistribSemigroup
 
 variable [Add α] [Semigroup α]
