@@ -1285,3 +1285,10 @@ theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
 #align if_false_left_eq_and if_false_left
 
 end ite
+
+theorem not_beq_of_ne [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
+  fun h => ne (eq_of_beq h)
+
+theorem beq_eq_decide [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
+  rw [← beq_iff_eq a b]
+  cases a == b <;> simp
