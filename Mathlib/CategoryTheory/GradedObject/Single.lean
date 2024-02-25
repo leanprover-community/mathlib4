@@ -73,6 +73,8 @@ lemma single_map_singleObjApplyIso_hom (j : J) {X Y : C} (f : X ⟶ Y) :
   apply single_map_singleObjApplyIsoOfEq_hom
 
 variable (C) in
+/-- The composition of the single functor `single j : C ⥤ GradedObject J C` and the
+evaluation functor `eval j` identifies to the identity functor. -/
 @[simps!]
 noncomputable def singleCompEval (j : J) : single j ⋙ eval j ≅ 𝟭 C :=
   NatIso.ofComponents (singleObjApplyIso j) (by aesop_cat)
