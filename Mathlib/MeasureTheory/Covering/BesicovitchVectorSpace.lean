@@ -133,7 +133,6 @@ def multiplicity (E : Type*) [NormedAddCommGroup E] :=
 section
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-
 /-- Any `1`-separated set in the ball of radius `2` has cardinality at most `5 ^ dim`. This is
 useful to show that the supremum in the definition of `Besicovitch.multiplicity E` is
 well behaved. -/
@@ -176,9 +175,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (ENNReal.mul_le_mul_right (measure_ball_pos _ _ zero_lt_one).ne' measure_ball_lt_top.ne).1 I
   have K : (s.card : ℝ) ≤ (5 : ℝ) ^ finrank ℝ E := by
     have := ENNReal.toReal_le_of_le_ofReal (pow_nonneg ρpos.le _) J
-    simp? [ENNReal.toReal_mul] at this says
-      simp only [one_div, inv_pow, ENNReal.toReal_mul, ENNReal.toReal_nat, div_pow] at this
-    simpa [div_eq_mul_inv, zero_le_two] using this
+    simpa [div_eq_mul_inv, mul_pow] using this
   exact mod_cast K
 #align besicovitch.card_le_of_separated Besicovitch.card_le_of_separated
 
