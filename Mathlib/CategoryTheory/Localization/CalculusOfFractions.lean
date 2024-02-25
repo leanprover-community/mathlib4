@@ -683,9 +683,7 @@ lemma map_compatibility {X Y : C}
   have := Localization.inverts L₂ W φ.s φ.hs
   rw [← cancel_mono (e.hom.app Y), assoc, assoc, e.inv_hom_id_app, comp_id,
     ← cancel_mono (L₂.map φ.s), assoc, assoc, map_comp_map_s, ← e.hom.naturality]
-  dsimp
-  rw [← Functor.map_comp_assoc, map_comp_map_s]
-  exact e.hom.naturality φ.f
+  simpa [← Functor.map_comp_assoc, map_comp_map_s] using e.hom.naturality φ.f
 
 lemma map_eq_of_map_eq {X Y : C}
     (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category E]
