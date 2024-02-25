@@ -60,8 +60,8 @@ theorem prod_coe {ι : Type*} [DecidableEq ι] (f : ι → PNat) (s : Finset ι)
   `n=0`. -/
 def finMulAntidiagonal (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   if hn : 0 < n then
-    (Finset.finAntidiagonal d (Additive.ofMul (show ℕ+ from ⟨n, hn⟩))).image <|
-      fun x i ↦ (Additive.toMul (x i) : PNat)
+    (Finset.finAntidiagonal d (Additive.ofMul (show ℕ+ from ⟨n, hn⟩))).map <|
+      .arrowCongrRight <| Additive.toMul.toEmbedding.trans <| ⟨PNat.val, PNat.coe_injective⟩
   else
     ∅
 
@@ -70,28 +70,28 @@ theorem mem_finMulAntidiagonal {d n : ℕ} {f : (Fin d) → ℕ} :
     f ∈ finMulAntidiagonal d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by
   unfold finMulAntidiagonal
   split_ifs with h
-  · simp only [mem_image, ne_eq, Finset.mem_finAntidiagonal]
+  · simp only [mem_map, mem_finAntidiagonal, Function.Embedding.arrowCongrRight_apply, ne_eq]
     constructor
-    · rintro ⟨a, ha_mem, ha⟩
-      rw [← ha]
+    · rintro ⟨a, ha_mem, rfl⟩
+      simp only [Function.comp_apply, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
+        Function.Embedding.coeFn_mk]
       refine ⟨?_, h.ne.symm⟩
       apply_fun ((↑) : PNat → ℕ) ∘ Additive.toMul at ha_mem
-      simp only [Function.comp_apply, toMul_sum, toMul_ofMul, PNat.mk_coe] at ha_mem
       convert ha_mem
       norm_cast
-    · rintro ⟨hf, _⟩
+    · rintro ⟨rfl, _⟩
       refine ⟨fun i ↦ .ofMul (show PNat from ⟨f i, ?_⟩), ?_, ?_⟩
       · apply Nat.pos_of_ne_zero
-        apply (Finset.prod_ne_zero_iff (s:=Finset.univ)).mp
-        · subst hf; assumption
-        · exact mem_univ _
+        apply (Finset.prod_ne_zero_iff (s:=Finset.univ)).mp h.ne.symm _ (mem_univ _)
       · apply_fun Additive.toMul
         apply_fun PNat.val
-        · simp only [toMul_sum, toMul_ofMul, ← hf, PNat.mk_coe]
+        · simp only [toMul_sum, toMul_ofMul, PNat.mk_coe]
           push_cast
           simp only [PNat.mk_coe]
         exact PNat.coe_injective
-      · simp only [toMul_ofMul, PNat.mk_coe]
+      · ext i
+        simp only [Function.comp_apply, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
+          toMul_ofMul, Function.Embedding.coeFn_mk, PNat.mk_coe]
   · simp only [not_lt, nonpos_iff_eq_zero] at h
     simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
 
