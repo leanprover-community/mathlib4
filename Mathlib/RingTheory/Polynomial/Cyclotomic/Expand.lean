@@ -8,7 +8,6 @@ import Mathlib.Data.ZMod.Algebra
 
 #align_import ring_theory.polynomial.cyclotomic.expand from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
-set_option profiler true
 
 /-!
 # Cyclotomic polynomials and `expand`.
