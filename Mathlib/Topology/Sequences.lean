@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Defs.Sequences
-import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.UniformSpace.Cauchy
 
 #align_import topology.sequences from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
