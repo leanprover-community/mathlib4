@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Chris Birbeck. All rights reserved.
+Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birbeck
+Authors: Chris Birkbeck
 -/
 
 import Mathlib.GroupTheory.Submonoid.Order
