@@ -6,7 +6,16 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Types
 
-namespace CategoryTheory.Limits.Types
+/-!
+# Concrete description of (co)limits in functor categories
+
+Some of the concrete descriptions of (co)limits in `Type v` extend to (co)limits in the functor
+category `K ⥤ Type v`.
+-/
+
+namespace CategoryTheory.FunctorToTypes
+
+open CategoryTheory.Limits
 
 universe w v₁ v₂ u₁ u₂
 
@@ -14,21 +23,13 @@ variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
 
 variable (F : J ⥤ K ⥤ TypeMax.{u₁, w})
 
-/-
-
-  obtain ⟨j, y, hy⟩ := Types.jointly_surjective'.{v, v} ((colimitObjIsoColimitCompEvaluation F X).hom x)
-  refine' ⟨j, y, ?_⟩
-  apply (colimitObjIsoColimitCompEvaluation F X).toEquiv.injective
-  simp [← hy, elementwise_of% colimitObjIsoColimitCompEvaluation_ι_app_hom F]
-  rfl -- wat?
--/
-
-theorem bifunctor_jointly_surjective (k : K) {t : Cocone F} (h : IsColimit t)
-    (x : t.pt.obj k) : ∃ j y, x = (t.ι.app j).app k y := by
+theorem jointly_surjective (k : K) {t : Cocone F} (h : IsColimit t) (x : t.pt.obj k) :
+    ∃ j y, x = (t.ι.app j).app k y := by
   let hev := PreservesColimit.preserves (F := (evaluation _ _).obj k) h
+  obtain ⟨j, y, rfl⟩ := Types.jointly_surjective _ hev x
+  refine ⟨j, y, by simp⟩
 
+theorem jointly_surjective' (k : K) (x : (colimit F).obj k) : ∃ j y, x = (colimit.ι F j).app k y :=
+  jointly_surjective _ _ (colimit.isColimit _) x
 
-  sorry
-  -- obtain ⟨j, y, hy⟩ := Types.jointly_surjective
-
-end CategoryTheory.Limits.Types
+end CategoryTheory.FunctorToTypes
