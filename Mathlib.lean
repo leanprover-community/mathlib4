@@ -2667,6 +2667,7 @@ import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.List
 import Mathlib.Logic.Small.Module
 import Mathlib.Logic.Small.Ring
+import Mathlib.Logic.Small.Set
 import Mathlib.Logic.Unique
 import Mathlib.Logic.UnivLE
 import Mathlib.Mathport.Attributes
