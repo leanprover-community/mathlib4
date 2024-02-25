@@ -77,7 +77,7 @@ namespace Mat_
 
 variable {C}
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j

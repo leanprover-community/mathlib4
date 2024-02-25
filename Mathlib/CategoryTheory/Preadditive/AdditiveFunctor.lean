@@ -198,7 +198,7 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
   FullSubcategory fun F : C ⥤ D => F.Additive
