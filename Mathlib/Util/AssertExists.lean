@@ -28,7 +28,8 @@ in the current import scope.
 Be careful to use names (e.g. `Rat`) rather than notations (e.g. `ℚ`).
 -/
 elab "assert_exists " n:ident : command => do
-  -- this throws an error if the user types something ambiguous or doesn't exist, otherwise succeeds
+  -- this throws an error if the user types something ambiguous or
+  -- something that doesn't exist, otherwise succeeds
   let _ ← resolveGlobalConstNoOverloadWithInfo n
 
 /--
