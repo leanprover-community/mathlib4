@@ -246,6 +246,26 @@ theorem IsBoundedUnder.isCoboundedUnder_ge {u : γ → α} {l : Filter γ} [Preo
     (h : l.IsBoundedUnder (· ≤ ·) u) : l.IsCoboundedUnder (· ≥ ·) u :=
   h.isCoboundedUnder_flip
 
+lemma isCoboundedUnder_le_of_eventually_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
+    (hf : ∀ᶠ i in l, x ≤ f i) :
+    IsCoboundedUnder (· ≤ ·) l f :=
+  IsBoundedUnder.isCoboundedUnder_le ⟨x, hf⟩
+
+lemma isCoboundedUnder_ge_of_eventually_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
+    (hf : ∀ᶠ i in l, f i ≤ x) :
+    IsCoboundedUnder (· ≥ ·) l f :=
+  IsBoundedUnder.isCoboundedUnder_ge ⟨x, hf⟩
+
+lemma isCoboundedUnder_le_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
+    (hf : ∀ i, x ≤ f i) :
+    IsCoboundedUnder (· ≤ ·) l f :=
+  isCoboundedUnder_le_of_eventually_le l (eventually_of_forall hf)
+
+lemma isCoboundedUnder_ge_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α} {x : α}
+    (hf : ∀ i, f i ≤ x) :
+    IsCoboundedUnder (· ≥ ·) l f :=
+  isCoboundedUnder_ge_of_eventually_le l (eventually_of_forall hf)
+
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 #align filter.is_cobounded_bot Filter.isCobounded_bot
 
