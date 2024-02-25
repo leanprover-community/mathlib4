@@ -80,7 +80,7 @@ instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i 
 
 end DirectedSystem
 
--- Porting note : Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
+-- Porting note: Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
 -- which depends on `f`. This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
 -- Otherwise we have a "cannot find synthesization order" error. See the discussion at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
@@ -166,7 +166,7 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
 
 attribute [local instance] DirectLimit.setoid
 
--- Porting note: Added local instance
+-- Porting note (#10754): Added local instance
 attribute [local instance] DirectLimit.sigmaStructure
 
 
