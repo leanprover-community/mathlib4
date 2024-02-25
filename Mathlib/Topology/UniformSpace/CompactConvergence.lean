@@ -79,8 +79,6 @@ so that the resulting instance uses the compact-open topology.
 
 ## TODO
 
-* When `α` is compact and `β` is a metric space,
-  the compact-convergence topology (and thus also the compact-open topology) is metrisable.
 * Results about uniformly continuous functions `γ → C(α, β)`
   and uniform limits of sequences `ι → γ → C(α, β)`.
 -/
@@ -222,6 +220,29 @@ theorem mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) 
         { fg : C(α, β) × C(α, β) | ∀ x ∈ K, (fg.1 x, fg.2 x) ∈ V } ⊆ X := by
   simp [hasBasis_compactConvergenceUniformity.mem_iff, and_assoc]
 #align continuous_map.mem_compact_convergence_entourage_iff ContinuousMap.mem_compactConvergence_entourage_iff
+
+theorem _root_.CompactExhaustion.hasBasis_compactConvergenceUniformity {ι : Type*}
+    {p : ι → Prop} {V : ι → Set (β × β)} (K : CompactExhaustion α) (hb : (𝓤 β).HasBasis p V) :
+    HasBasis (𝓤 C(α, β)) (fun i : ℕ × ι ↦ p i.2) fun i ↦
+      {fg | ∀ x ∈ K i.1, (fg.1 x, fg.2 x) ∈ V i.2} := by
+  refine hb.compactConvergenceUniformity.to_hasBasis ?_ fun i hi ↦
+    ⟨(K i.1, i.2), ⟨K.isCompact _, hi⟩, Subset.rfl⟩
+  rintro ⟨L, i⟩ ⟨hL, hi⟩
+  rcases K.exists_isCompact_subset hL with ⟨n, hn⟩
+  exact ⟨(n, i), hi, fun _fg h x hx ↦ h x <| hn hx⟩
+
+/-- If `α` is a weakly locally compact σ-compact space
+(e.g., a proper pseudometric space or a compact spaces)
+and the uniformity on `β` is pseudometrizable,
+then the uniformity on `C(α, β)` is pseudometrizable too.
+
+TODO: prove a corollary in terms of pseudometrizable topologies,
+maybe after we redefine it without `MetricSpace`s, see #2032. -/
+instance [WeaklyLocallyCompactSpace α] [SigmaCompactSpace α] [IsCountablyGenerated (𝓤 β)] :
+    IsCountablyGenerated (𝓤 (C(α, β))) :=
+  let ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
+  HasCountableBasis.isCountablyGenerated
+    ⟨(CompactExhaustion.choice α).hasBasis_compactConvergenceUniformity hV.1, Set.to_countable _⟩
 
 variable {ι : Type u₃} {p : Filter ι} {F : ι → C(α, β)} {f}
 
