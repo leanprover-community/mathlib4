@@ -1083,7 +1083,7 @@ end
 section Basis
 
 universe uM uι
-variable {M : Type uM} {ι : Type uι}
+variable {M : Type uM} {ι : Type uι} [DecidableEq ι]
 variable [CommRing R] [Ring A] [Algebra R A] [AddCommMonoid M] [Module R M] (b : Basis ι R M)
 
 variable (A)
