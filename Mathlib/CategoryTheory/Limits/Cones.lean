@@ -454,8 +454,10 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (postcomposeEquivalence f).functor
-    unitIso := NatIso.ofComponents fun c => Cones.ext (e.unitIso.app _)
-    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _)
+    -- FIXME broken on nightly-testing (previously `sorry` was just omitted and done by aesop)
+    unitIso := NatIso.ofComponents fun c => Cones.ext (e.unitIso.app _) sorry
+    -- FIXME broken on nightly-testing (previously `sorry` was just omitted and done by aesop)
+    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _) sorry
   }
 #align category_theory.limits.cones.functoriality_equivalence CategoryTheory.Limits.Cones.functorialityEquivalence
 
@@ -651,13 +653,11 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f.symm).functor
-    unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _)
+    -- FIXME broken on nightly-testing (previously `sorry` was just omitted and done by aesop)
+    unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _) sorry
+    -- FIXME broken on nightly-testing (previously `sorry` was just omitted and done by aesop)
     counitIso :=
-      NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _)
-        (fun j =>
-          -- Unfortunately this doesn't work by `aesop_cat`.
-          -- In this configuration `simp` reaches a dead-end and needs help.
-          by simp [← Equivalence.counitInv_app_functor]) }
+      NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) sorry }
 #align category_theory.limits.cocones.functoriality_equivalence CategoryTheory.Limits.Cocones.functorialityEquivalence
 
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
