@@ -228,7 +228,7 @@ noncomputable def rTensorAlgEquiv :
     simp only [_root_.map_mul, rTensorAlgHom_apply_eq]
 
 /-- The tensor product of a polynomial ring  with an algebra is a polynomial ring -/
-noncomputable def Polynomial.scalarRTensorAlgEquiv :
+noncomputable def scalarRTensorAlgEquiv :
     Polynomial R ⊗[R] N ≃ₐ[R] Polynomial N :=
   rTensorAlgEquiv.trans (mapAlgEquiv (Algebra.TensorProduct.lid R N))
 
