@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.Germ
+import Mathlib.Order.Filter.Germ
 
 /-! # Germs of smooth functions
 
@@ -101,7 +99,8 @@ def smoothGerm.toAddSubsemigroup [SmoothAdd I' R] (x : M) : AddSubsemigroup (Ger
     choose g hg using hb
     exact ⟨f + g, by rw [← hf, ← hg, SmoothMap.coe_add, Germ.coe_add]⟩
 
-/-- If `G` is an additive Lie group, `smoothGerm I I' G x` is an additive subgroup of `Germ (𝓝 x) G`. -/
+/-- If `G` is an additive Lie group, `smoothGerm I I' G x` is
+  an additive subgroup of `Germ (𝓝 x) G`. -/
 def smoothGerm.toAddSubgroup [LieAddGroup I' R] (x : M) : AddSubgroup (Germ (𝓝 x) R) where
   __ := smoothGerm.toAddSubsemigroup I I' R x
   zero_mem' := ⟨0, by rw [SmoothMap.coe_zero, Germ.coe_zero]⟩
@@ -124,7 +123,7 @@ def smoothGerm.toSubring [SmoothRing I' R] (x : M) : Subring (Germ (𝓝 x) R) w
 
 -- xxx: is this lemma useful?
 lemma smoothGerm.toSubring_mem_coe [SmoothRing I' R] {x : M} (a : Germ (𝓝 x) R) :
-  a ∈ smoothGerm.toSubring I I' R x ↔ a ∈ smoothGerm I I' R x := by rfl
+    a ∈ smoothGerm.toSubring I I' R x ↔ a ∈ smoothGerm I I' R x := by rfl
 
 /-- The map `C^∞(M, R) → Germ (𝓝 x) R` as a ring homomorphism, for a smooth ring `R`. -/
 def RingHom.germOfContMDiffMap (R : Type*) [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
