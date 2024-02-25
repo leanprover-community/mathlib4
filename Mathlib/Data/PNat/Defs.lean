@@ -153,7 +153,7 @@ theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
   Subtype.eq
 #align pnat.eq PNat.eq
 
-theorem coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
+theorem coe_injective : Function.Injective PNat.val :=
   Subtype.coe_injective
 #align pnat.coe_injective PNat.coe_injective
 
