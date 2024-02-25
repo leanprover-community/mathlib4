@@ -954,7 +954,7 @@ variable [DivInvMonoid G] {a b : G}
 #align zpow_zero zpow_zero
 #align zero_zsmul zero_zsmul
 
-@[to_additive (attr := norm_cast) coe_nat_zsmul]
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
 theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
