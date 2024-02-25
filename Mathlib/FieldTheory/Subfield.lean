@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Order.Field.InjSurj
 
 #align_import field_theory.subfield from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
@@ -141,17 +140,6 @@ instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K
     (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
     (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
 #align subfield_class.to_field SubfieldClass.toField
-
--- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
-/-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance (priority := 75) toLinearOrderedField {K} [LinearOrderedField K] [SetLike S K]
-    [SubfieldClass S K] (s : S) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subfield_class.to_linear_ordered_field SubfieldClass.toLinearOrderedField
 
 end SubfieldClass
 
@@ -361,14 +349,6 @@ instance toField {K} [Field K] (s : Subfield K) : Field s :=
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) fun _ => rfl
 #align subfield.to_field Subfield.toField
-
-/-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subfield.to_linear_ordered_field Subfield.toLinearOrderedField
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
