@@ -306,10 +306,9 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type
 /-- Cantor's intersection theorem for `sInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
 theorem IsCompact.nonempty_sInter_of_directed_nonempty_compact_closed
-    {S : Set (Set X)} (hS : S.Nonempty) (hSd : DirectedOn (· ⊇ ·) S) (hSn : ∀ U ∈ S, U.Nonempty)
+    {S : Set (Set X)} [hS : Nonempty S] (hSd : DirectedOn (· ⊇ ·) S) (hSn : ∀ U ∈ S, U.Nonempty)
     (hSc : ∀ U ∈ S, IsCompact U) (hScl : ∀ U ∈ S, IsClosed U) : (⋂₀ S).Nonempty := by
   rw [sInter_eq_iInter]
-  have : Nonempty S := nonempty_coe_sort.mpr hS
   exact IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _
     (DirectedOn.directed_val hSd) (fun i ↦ hSn i i.2) (fun i ↦ hSc i i.2) (fun i ↦ hScl i i.2)
 
