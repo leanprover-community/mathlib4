@@ -62,10 +62,6 @@ theorem pairwise_disjoint_mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise 
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
 #align pairwise_disjoint.mono pairwise_disjoint_mono
 
-lemma Pairwise.range_pairwise (hr : Pairwise (r on f)) : (Set.range f).Pairwise r := by
-  simp only [Set.Pairwise, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-  exact fun _ _ h ↦ hr <| ne_of_apply_ne _ h
-
 namespace Set
 
 theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
@@ -228,6 +224,9 @@ theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
   simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]
 #align set.inj_on.pairwise_image Set.InjOn.pairwise_image
 
+lemma _root_.Pairwise.range_pairwise (hr : Pairwise (r on f)) : (Set.range f).Pairwise r :=
+  image_univ ▸ (pairwise_univ.mpr hr).image
+
 end Set
 
 end Pairwise
@@ -359,9 +358,8 @@ end SemilatticeInfBot
 variable {s : Set ι} {t : Set ι'}
 
 theorem pairwiseDisjoint_range_singleton :
-    (range (singleton : ι → Set ι)).PairwiseDisjoint id := by
-  rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
-  exact disjoint_singleton.2 (ne_of_apply_ne _ h)
+    (range (singleton : ι → Set ι)).PairwiseDisjoint id :=
+  Pairwise.range_pairwise fun _ _ => disjoint_singleton.2
 #align set.pairwise_disjoint_range_singleton Set.pairwiseDisjoint_range_singleton
 
 theorem pairwiseDisjoint_fiber (f : ι → α) (s : Set α) : s.PairwiseDisjoint fun a => f ⁻¹' {a} :=
