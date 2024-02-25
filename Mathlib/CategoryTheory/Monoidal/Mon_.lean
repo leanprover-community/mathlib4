@@ -277,7 +277,7 @@ def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C 
       tensor := fun _ _ => f.mul_hom }
 #align Mon_.equiv_lax_monoidal_functor_punit.Mon_to_lax_monoidal Mon_.EquivLaxMonoidalFunctorPUnit.monToLaxMonoidal
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
 attribute [local simp] eqToIso_map
