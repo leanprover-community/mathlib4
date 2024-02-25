@@ -51,8 +51,12 @@ open AddSubmonoidClass
 `NonUnitalSubsemiringClass`. -/
 /-- A non-unital subsemiring of a `NonUnitalNonAssocSemiring` inherits a
 `NonUnitalNonAssocSemiring` structure -/
-instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
-  Subtype.coe_injective.nonUnitalNonAssocSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s where
+  left_distrib := fun _ _ _ => Subtype.ext <| left_distrib _ _ _
+  right_distrib := fun _ _ _ => Subtype.ext <| right_distrib _ _ _
+  zero_mul := fun _ => Subtype.ext <| zero_mul _
+  mul_zero := fun _ => Subtype.ext <| mul_zero _
+
 #align non_unital_subsemiring_class.to_non_unital_non_assoc_semiring NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring
 
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
@@ -71,15 +75,15 @@ theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
 #align non_unital_subsemiring_class.coe_subtype NonUnitalSubsemiringClass.coeSubtype
 
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
-instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s :=
-  Subtype.coe_injective.nonUnitalSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+instance (priority := 75) toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
+    [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s where
+  mul_assoc := mul_assoc
 #align non_unital_subsemiring_class.to_non_unital_semiring NonUnitalSubsemiringClass.toNonUnitalSemiring
 
 /-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
-instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s :=
-  Subtype.coe_injective.nonUnitalCommSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+instance (priority := 75) toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
+    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s where
+  mul_comm := mul_comm
 #align non_unital_subsemiring_class.to_non_unital_comm_semiring NonUnitalSubsemiringClass.toNonUnitalCommSemiring
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
@@ -107,7 +111,26 @@ instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
+-- We cannot synth Mul s
+instance (priority := 100) toNonUnitalNonAssocSemiring (s : NonUnitalSubsemiring R) :
+    NonUnitalNonAssocSemiring s :=
+  { s.toAddSubmonoid.toAddCommMonoid, s.toSubsemigroup.mul with
+    left_distrib := fun _ _ _ => Subtype.ext <| left_distrib _ _ _
+    right_distrib := fun _ _ _ => Subtype.ext <| right_distrib _ _ _
+    zero_mul := fun _ => Subtype.ext <| zero_mul _
+    mul_zero := fun _ => Subtype.ext <| mul_zero _ }
+
+/-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
+instance (priority := 100) toNonUnitalSemiring {R} [NonUnitalSemiring R]
+    (s : NonUnitalSubsemiring R) : NonUnitalSemiring s where
+    mul_assoc := fun _ _ _ => Subtype.ext <| mul_assoc _ _ _
+
+/-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
+instance (priority := 100) toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R]
+    (s : NonUnitalSubsemiring R) : NonUnitalCommSemiring s where
+  mul_comm := fun _ _ => Subtype.ext <| mul_comm _ _
+
+instance (priority := 75) : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
   zero_mem {s} := AddSubmonoid.zero_mem' s.toAddSubmonoid
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   mul_mem {s} := mul_mem' s

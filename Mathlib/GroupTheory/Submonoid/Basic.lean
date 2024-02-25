@@ -151,7 +151,7 @@ instance : SetLike (Submonoid M) M where
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
 @[to_additive]
-instance : SubmonoidClass (Submonoid M) M where
+instance (priority := 75) : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
 

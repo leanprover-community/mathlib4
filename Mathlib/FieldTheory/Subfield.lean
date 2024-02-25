@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Order.Field.InjSurj
 
 #align_import field_theory.subfield from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
@@ -94,7 +93,7 @@ theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
 #align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
 
-instance (s : S) : RatCast s :=
+instance ratCast (s : S) : RatCast s :=
   ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
 
 @[simp]
@@ -125,32 +124,28 @@ variable (S)
 
 /-- A subfield inherits a division ring structure -/
 instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
-  Subtype.coe_injective.divisionRing ((↑) : s → K)
-    (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _; rfl)
-    (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
+  { SubringClass.toRing _, SubgroupClass.toDivInvMonoid,
+    SubsemiringClass.nontrivial _, ratCast _ with
+    qsmul := fun q x => q • x
+    qsmul_eq_mul' := fun _ _ => Subtype.ext <| DivisionRing.qsmul_eq_mul' _ _
+    ratCast_mk := fun  _ _ _ _ => Subtype.ext <| DivisionRing.ratCast_mk _ _ _ _
+    mul_inv_cancel := fun _ hx => Subtype.ext <| DivisionRing.mul_inv_cancel _ <|
+      fun h => hx (Subtype.ext h)
+    inv_zero := Subtype.ext DivisionRing.inv_zero }
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a field inherits a field structure -/
 instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K] (s : S) :
     Field s :=
-  Subtype.coe_injective.field ((↑) : s → K)
-    (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _; rfl)
-    (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
+  { toDivisionRing _ _  with
+    mul_comm := mul_comm }
 #align subfield_class.to_field SubfieldClass.toField
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
 instance (priority := 75) toLinearOrderedField {K} [LinearOrderedField K] [SetLike S K]
     [SubfieldClass S K] (s : S) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  { SubringClass.toLinearOrderedCommRing _, toField _ _  with }
 #align subfield_class.to_linear_ordered_field SubfieldClass.toLinearOrderedField
 
 end SubfieldClass
@@ -332,6 +327,9 @@ protected theorem coe_int_mem (n : ℤ) : (n : K) ∈ s :=
   coe_int_mem s n
 #align subfield.coe_int_mem Subfield.coe_int_mem
 
+protected theorem coe_rat_mem (x : ℚ) : (x : K) ∈ s :=
+  SubfieldClass.coe_rat_mem s x
+
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
   · simpa using s.pow_mem hx _
@@ -341,33 +339,45 @@ theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
 instance : Ring s :=
   s.toSubring.toRing
 
-instance : Div s :=
+instance div : Div s :=
   ⟨fun x y => ⟨x / y, s.div_mem x.2 y.2⟩⟩
 
-instance : Inv s :=
+instance inv : Inv s :=
   ⟨fun x => ⟨x⁻¹, s.inv_mem x.2⟩⟩
 
-instance : Pow s ℤ :=
+instance pow : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
-instance toDivisionRing (s : Subfield K) : DivisionRing s :=
-  Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) fun _ ↦ rfl
+instance (priority := 100) ratCast : RatCast s :=
+  ⟨fun q => ⟨q, Subfield.coe_rat_mem s q⟩⟩
+
+instance (priority := 100) toDivInvMonoid (s : Subfield K) : DivInvMonoid s :=
+  { s.toMonoid, div _, inv _ with
+    zpow := fun n x => x ^n
+    zpow_zero' := fun _ => Subtype.ext <| zpow_zero _
+    zpow_succ' := fun _ _ => Subtype.ext <| DivInvMonoid.zpow_succ' _ _
+    zpow_neg' := fun _ _ => Subtype.ext <| DivInvMonoid.zpow_neg' _ _
+    div_eq_mul_inv := fun _ _ => Subtype.ext <| div_eq_mul_inv _ _ }
+
+instance (priority := 100) toDivisionRing (s : Subfield K) : DivisionRing s :=
+  { Subring.toRing _, toDivInvMonoid _, ratCast _ with
+    qsmul := fun q x => q • x
+    qsmul_eq_mul' := fun _ _ => Subtype.ext <| DivisionRing.qsmul_eq_mul' _ _
+    ratCast_mk := fun  _ _ _ _ => Subtype.ext <| DivisionRing.ratCast_mk _ _ _ _
+    mul_inv_cancel := fun _ hx => Subtype.ext <| DivisionRing.mul_inv_cancel _ <|
+      fun h => hx (Subtype.ext h)
+    inv_zero := Subtype.ext DivisionRing.inv_zero }
 
 /-- A subfield inherits a field structure -/
-instance toField {K} [Field K] (s : Subfield K) : Field s :=
-  Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) fun _ => rfl
+instance (priority := 100) toField {K} [Field K] (s : Subfield K) : Field s :=
+  { toDivisionRing _ with
+    mul_comm := mul_comm }
 #align subfield.to_field Subfield.toField
 
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+instance (priority := 100) toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) :
+    LinearOrderedField s :=
+  { Subring.toLinearOrderedCommRing _, toField _ with }
 #align subfield.to_linear_ordered_field Subfield.toLinearOrderedField
 
 @[simp, norm_cast]

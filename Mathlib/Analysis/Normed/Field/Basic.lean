@@ -1267,24 +1267,47 @@ namespace SubringClass
 
 variable {S R : Type*} [SetLike S R]
 
-instance toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) : SeminormedRing s :=
+instance (priority := 75) toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) :
+    SeminormedRing s :=
   SeminormedRing.induced s R (SubringClass.subtype s)
 #align subring_class.to_semi_normed_ring SubringClass.toSeminormedRing
 
-instance toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
+instance (priority := 75) toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
   NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
 #align subring_class.to_normed_ring SubringClass.toNormedRing
 
-instance toSeminormedCommRing [SeminormedCommRing R] [_h : SubringClass S R] (s : S) :
-    SeminormedCommRing s :=
+instance (priority := 75) toSeminormedCommRing [SeminormedCommRing R] [_h : SubringClass S R]
+    (s : S) : SeminormedCommRing s :=
   { SubringClass.toSeminormedRing s with mul_comm := mul_comm }
 #align subring_class.to_semi_normed_comm_ring SubringClass.toSeminormedCommRing
 
-instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : NormedCommRing s :=
+instance (priority := 75) toNormedCommRing [NormedCommRing R] [SubringClass S R]
+    (s : S) : NormedCommRing s :=
   { SubringClass.toNormedRing s with mul_comm := mul_comm }
 #align subring_class.to_normed_comm_ring SubringClass.toNormedCommRing
 
 end SubringClass
+
+namespace Subring
+
+variable {S R : Type*} [SetLike S R]
+
+instance (priority := 100) toSeminormedRing [SeminormedRing R] (s : Subring R) :
+    SeminormedRing s :=
+  SeminormedRing.induced s R (Subring.subtype s)
+
+instance (priority := 100) toNormedRing [NormedRing R]  (s : Subring R) : NormedRing s :=
+  NormedRing.induced s R (Subring.subtype s) Subtype.val_injective
+
+instance (priority := 100) toSeminormedCommRing [SeminormedCommRing R]
+    (s : Subring R) : SeminormedCommRing s :=
+  { toSeminormedRing s with mul_comm := mul_comm }
+
+instance (priority := 100) toNormedCommRing [NormedCommRing R] (s : Subring R) :
+    NormedCommRing s :=
+  { toNormedRing s with mul_comm := mul_comm }
+
+end Subring
 
 -- Guard against import creep.
 assert_not_exists RestrictScalars
