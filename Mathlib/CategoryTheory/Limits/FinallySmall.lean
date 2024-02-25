@@ -17,6 +17,10 @@ This means that if a category `C` has colimits of size `w` and `J` is `w`-finall
 generalization of the notion of "essentially small" for indexing categories of colimits.
 
 Dually, we have a notion of initially small category.
+
+We show that a finally small category admits a small weakly terminal set, i.e., a small set `s` of
+objects such that from every object there a morphism to a member of `s`. We also show that the
+converse holds if `J` is filtered.
 -/
 
 universe w v v₁ u u₁
@@ -126,6 +130,7 @@ section WeaklyTerminal
 
 variable (J : Type u) [Category.{v} J]
 
+/-- The converse is true if `J` is filtered, see `finallySmall_of_small_weakly_terminal_set`. -/
 theorem FinallySmall.exists_small_weakly_terminal_set [FinallySmall.{w} J] :
     ∃ (s : Set J) (_ : Small.{w} s), ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) := by
   refine ⟨Set.range (fromFinalModel J).obj, inferInstance, fun i => ?_⟩
@@ -153,6 +158,7 @@ section WeaklyInitial
 
 variable (J : Type u) [Category.{v} J]
 
+/-- The converse is true if `J` is cofiltered, see `intiallySmall_of_small_weakly_initial_set`. -/
 theorem InitiallySmall.exists_small_weakly_initial_set [InitiallySmall.{w} J] :
     ∃ (s : Set J) (_ : Small.{w} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by
   refine ⟨Set.range (fromInitialModel J).obj, inferInstance, fun i => ?_⟩
