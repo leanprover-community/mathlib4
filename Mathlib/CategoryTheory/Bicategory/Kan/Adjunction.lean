@@ -100,10 +100,10 @@ theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
     List.TFAE [
       IsLeftAdjoint f,
       HasAbsLeftKan f (𝟙 a),
-      ∃ _ : HasLeftKan f (𝟙 a), CommuteWithLeftKan f (𝟙 a) f] := by
+      ∃ _ : HasLeftKanExtension f (𝟙 a), CommuteWithLeftKan f (𝟙 a) f] := by
   tfae_have 1 → 2
   · intro h
-    exact .intro (getRightAdjointAdj f).isAbsoluteLeftKan
+    exact .mk (getRightAdjointAdj f).isAbsoluteLeftKan
   tfae_have 2 → 3
   · intro h;
     exact ⟨inferInstance, ⟨⟨lan.isAbsLeftKan f (𝟙 a) f⟩⟩⟩
@@ -181,7 +181,7 @@ theorem isRightAdjoint_TFAE (u : b ⟶ a) :
       ∃ _ : HasLeftKanLift u (𝟙 a), CommuteWithLeftKanLift u (𝟙 a) u] := by
   tfae_have 1 → 2
   · intro h
-    exact .intro (getLeftAdjointAdj u).isAbsoluteLeftKanLift
+    exact .mk (getLeftAdjointAdj u).isAbsoluteLeftKanLift
   tfae_have 2 → 3
   · intro h;
     exact ⟨inferInstance, ⟨⟨lanLift.isAbsLeftKan u (𝟙 a) u⟩⟩⟩
@@ -233,9 +233,9 @@ def isKanOfWhiskerLeftAdjoint
       _ = _ := by
         rw [Hτ']; simp [bicategoricalComp]
 
-instance {f : a ⟶ b} {g : a ⟶ c} {x : B} {h : c ⟶ x} [IsLeftAdjoint h] [HasLeftKan f g] :
-    HasLeftKan f (g ≫ h) :=
-  .intro <| isKanOfWhiskerLeftAdjoint (lan.isLeftKan f g) (getRightAdjointAdj h)
+instance {f : a ⟶ b} {g : a ⟶ c} {x : B} {h : c ⟶ x} [IsLeftAdjoint h] [HasLeftKanExtension f g] :
+    HasLeftKanExtension f (g ≫ h) :=
+  .mk <| isKanOfWhiskerLeftAdjoint (lan.isLeftKan f g) (getRightAdjointAdj h)
 
 end LeftExtension
 
