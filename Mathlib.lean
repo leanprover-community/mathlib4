@@ -2609,9 +2609,7 @@ import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
-import Mathlib.LinearAlgebra.TensorProduct.MvPolynomial
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
-import Mathlib.LinearAlgebra.TensorProduct.Polynomial
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Tower
@@ -3339,6 +3337,8 @@ import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
+import Mathlib.LinearAlgebra.TensorProduct.MvPolynomial
+import Mathlib.LinearAlgebra.TensorProduct.Polynomial
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
