@@ -170,7 +170,7 @@ lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := 
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
 @[simp] lemma toFin_pow (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := rfl
 
-@[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
+lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
   apply toFin_inj.mpr; simp only [ofFin_natCast]
 
 end
