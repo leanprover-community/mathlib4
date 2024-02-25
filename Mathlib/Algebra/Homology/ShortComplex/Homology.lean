@@ -621,6 +621,8 @@ lemma HomologyData.leftRightHomologyComparison'_eq (h : S.HomologyData) :
     leftRightHomologyComparison' h.left h.right = h.iso.hom := by
   simp only [← cancel_epi h.left.π, ← cancel_mono h.right.ι,
     π_leftRightHomologyComparison'_ι, HomologyData.comm]
+  -- FIXME nightly-testing
+  sorry
 
 instance isIso_leftRightHomologyComparison'_of_homologyData (h : S.HomologyData) :
   IsIso (leftRightHomologyComparison' h.left h.right) := by

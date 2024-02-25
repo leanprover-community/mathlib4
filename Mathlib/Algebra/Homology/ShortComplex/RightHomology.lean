@@ -397,7 +397,7 @@ instance : Inhabited (RightHomologyMapData φ h₁ h₂) := ⟨by
       RightHomologyData.p_g', φ.comm₂₃, RightHomologyData.p_g'_assoc]
   let φH : h₁.H ⟶ h₂.H := h₂.liftH (h₁.ι ≫ φQ)
     (by rw [assoc, commg', RightHomologyData.ι_g'_assoc, zero_comp])
-  exact ⟨φQ, φH, by simp, commg', by simp⟩⟩
+  exact ⟨φQ, φH, by simp [φQ], commg', by simp [φH]⟩⟩
 
 instance : Unique (RightHomologyMapData φ h₁ h₂) := Unique.mk' _
 

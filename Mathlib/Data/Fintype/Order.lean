@@ -90,8 +90,8 @@ open Classical
 /-- A finite bounded lattice is complete. -/
 @[reducible]
 noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α :=
-  { ‹Lattice α›,
-    ‹BoundedOrder α› with
+  let _ := ‹Lattice α›
+  { ‹BoundedOrder α› with
     sSup := fun s => s.toFinset.sup id
     sInf := fun s => s.toFinset.inf id
     le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
@@ -106,8 +106,8 @@ noncomputable def toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLat
 @[reducible]
 noncomputable def toCompleteDistribLattice [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice α :=
-  { toCompleteLattice α with
-    iInf_sup_le_sup_sInf := fun a s => by
+  let _ := toCompleteLattice α
+  { iInf_sup_le_sup_sInf := fun a s => by
       convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
       rw [Finset.inf_eq_iInf]
       simp_rw [Set.mem_toFinset]
@@ -131,6 +131,7 @@ noncomputable def toCompleteLinearOrder [LinearOrder α] [BoundedOrder α] : Com
 @[reducible]
 noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α :=
   -- Porting note: using `Fintype.toCompleteDistribLattice α` caused timeouts
+  let _ := Fintype.toCompleteLattice α
   { Fintype.toCompleteLattice α,
     ‹BooleanAlgebra α› with
     iInf_sup_le_sup_sInf := fun a s => by

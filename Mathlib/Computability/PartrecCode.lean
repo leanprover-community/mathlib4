@@ -149,7 +149,7 @@ def ofNatCode : ℕ → Code
   | n + 4 =>
     let m := n.div2.div2
     have hm : m < n + 4 := by
-      simp only [div2_val]
+      simp only [m, div2_val]
       exact
         lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
           (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -171,7 +171,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
   | n + 4 => by
     let m := n.div2.div2
     have hm : m < n + 4 := by
-      simp only [div2_val]
+      simp only [m, div2_val]
       exact
         lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
           (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -364,20 +364,20 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       _root_.Primrec.id <| encode_iff.2 hc).of_eq fun a => by simp
   simp (config := { zeta := false })
   iterate 4 cases' n with n; · simp (config := { zeta := false }) [ofNatCode_eq, ofNatCode]; rfl
-  simp only []
+  simp only [G]
   rw [List.length_map, List.length_range]
   let m := n.div2.div2
   show
     G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m) =
       some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
-    simp only [div2_val]
+    simp only [m, div2_val]
     exact
       lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
         (Nat.succ_le_succ (Nat.le_add_right _ _))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [List.get?_map, List.get?_range, hm, m1, m2]
+  simp [m, List.get?_map, List.get?_range, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -583,20 +583,20 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       encode_iff.2 hc).of_eq fun a => by simp
   simp (config := { zeta := false })
   iterate 4 cases' n with n; · simp (config := { zeta := false }) [ofNatCode_eq, ofNatCode]; rfl
-  simp only []
+  simp only [G]
   rw [List.length_map, List.length_range]
   let m := n.div2.div2
   show
     G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m) =
       some (F a (ofNat Code (n + 4)))
   have hm : m < n + 4 := by
-    simp only [div2_val]
+    simp only [m, div2_val]
     exact
       lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
         (Nat.succ_le_succ (Nat.le_add_right _ _))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [List.get?_map, List.get?_range, hm, m1, m2]
+  simp [m, List.get?_map, List.get?_range, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -1186,7 +1186,7 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
   ⟨curry cg (encode cF),
     funext fun n =>
       show eval (f (curry cg (encode cF))) n = eval (curry cg (encode cF)) n by
-        simp [eg', eF', Part.map_id']⟩
+        simp [g, eg', eF', Part.map_id']⟩
 #align nat.partrec.code.fixed_point Nat.Partrec.Code.fixed_point
 
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
