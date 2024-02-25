@@ -498,8 +498,8 @@ protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.C
   refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩ <;>
   · refine (pow_one _).symm.trans ?_
     conv_lhs => rw [← zpow_coe_nat, ← hmn, Nat.gcd_eq_gcd_ab]
-    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_coe_nat, (hab.zpow_zpow₀ _ _).mul_zpow, ← zpow_mul,
-      mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]
+    simp only [zpow_add₀ ha, zpow_add₀ hb, ← zpow_coe_nat, (hab.zpow_zpow₀ _ _).mul_zpow,
+      ← zpow_mul, mul_comm (Nat.gcdB m n), mul_comm (Nat.gcdA m n)]
     simp only [zpow_mul, zpow_coe_nat, h]
     exact ((Commute.pow_pow (by aesop) _ _).zpow_zpow₀ _ _).symm
 

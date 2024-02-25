@@ -731,8 +731,8 @@ lemma IsOfFinOrder.mem_powers_iff_mem_zpowers (hx : IsOfFinOrder x) :
     y ∈ powers x ↔ y ∈ zpowers x :=
   ⟨fun ⟨n, hn⟩ ↦ ⟨n, by simp_all⟩, fun ⟨i, hi⟩ ↦ ⟨(i % orderOf x).natAbs, by
     dsimp only
-    rwa [← zpow_coe_nat, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <| Int.coe_nat_ne_zero_iff_pos.2 <|
-      hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
+    rwa [← zpow_coe_nat, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <|
+      Int.coe_nat_ne_zero_iff_pos.2 <| hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
 
 @[to_additive IsOfFinAddOrder.multiples_eq_zmultiples]
 lemma IsOfFinOrder.powers_eq_zpowers (hx : IsOfFinOrder x) : (powers x : Set G) = zpowers x :=
@@ -1098,13 +1098,13 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
   left_inv g := by
     have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
     dsimp only at key
-    rwa [zpow_add, zpow_mul, zpow_mul, zpow_coe_nat, zpow_coe_nat, zpow_coe_nat, h.gcd_eq_one, pow_one,
-      pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
+    rwa [zpow_add, zpow_mul, zpow_mul, zpow_coe_nat, zpow_coe_nat, zpow_coe_nat, h.gcd_eq_one,
+      pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
   right_inv g := by
     have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
     dsimp only at key
-    rwa [zpow_add, zpow_mul, zpow_mul', zpow_coe_nat, zpow_coe_nat, zpow_coe_nat, h.gcd_eq_one, pow_one,
-      pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
+    rwa [zpow_add, zpow_mul, zpow_mul', zpow_coe_nat, zpow_coe_nat, zpow_coe_nat, h.gcd_eq_one,
+      pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
 #align pow_coprime powCoprime
 #align nsmul_coprime nsmulCoprime
 

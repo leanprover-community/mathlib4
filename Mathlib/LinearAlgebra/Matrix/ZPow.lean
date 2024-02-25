@@ -127,7 +127,8 @@ theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A 
 theorem isUnit_det_zpow_iff {A : M} {z : ℤ} : IsUnit (A ^ z).det ↔ IsUnit A.det ∨ z = 0 := by
   induction' z using Int.induction_on with z _ z _
   · simp
-  · rw [← Int.ofNat_succ, zpow_coe_nat, det_pow, isUnit_pow_succ_iff, ← Int.ofNat_zero, Int.ofNat_inj]
+  · rw [← Int.ofNat_succ, zpow_coe_nat, det_pow, isUnit_pow_succ_iff, ← Int.ofNat_zero,
+      Int.ofNat_inj]
     simp
   · rw [← neg_add', ← Int.ofNat_succ, zpow_neg_coe_nat, isUnit_nonsing_inv_det_iff, det_pow,
       isUnit_pow_succ_iff, neg_eq_zero, ← Int.ofNat_zero, Int.ofNat_inj]
