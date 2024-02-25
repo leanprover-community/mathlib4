@@ -857,7 +857,7 @@ theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
 -- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
 @[simp (high)]
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
-  rw [← norm_p_zpow, zpow_ofNat]
+  rw [← norm_p_zpow, zpow_coe_nat]
 #align padic_norm_e.norm_p_pow padicNormE.norm_p_pow
 
 instance : NontriviallyNormedField ℚ_[p] :=
@@ -903,7 +903,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
-        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_ofNat]
+        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_coe_nat]
       apply inv_le_one
       · norm_cast
         apply one_le_pow

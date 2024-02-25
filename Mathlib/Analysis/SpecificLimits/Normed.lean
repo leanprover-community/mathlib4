@@ -60,7 +60,7 @@ theorem tendsto_norm_zpow_nhdsWithin_0_atTop {𝕜 : Type*} [NormedField 𝕜] {
     Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   rcases neg_surjective m with ⟨m, rfl⟩
   rw [neg_lt_zero] at hm; lift m to ℕ using hm.le; rw [Int.coe_nat_pos] at hm
-  simp only [norm_pow, zpow_neg, zpow_ofNat, ← inv_pow]
+  simp only [norm_pow, zpow_neg, zpow_coe_nat, ← inv_pow]
   exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
 #align normed_field.tendsto_norm_zpow_nhds_within_0_at_top NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop
 

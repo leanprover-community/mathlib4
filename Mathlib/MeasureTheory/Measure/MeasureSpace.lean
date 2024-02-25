@@ -1789,7 +1789,7 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
   · replace hs : (⇑e⁻¹) ⁻¹' s =ᵐ[μ] s := by rwa [Equiv.image_eq_preimage] at hs
     replace he' : (⇑e⁻¹)^[k] ⁻¹' s =ᵐ[μ] s := he'.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e⁻¹ k, inv_pow e k] at he'
-  · rw [zpow_neg, zpow_ofNat]
+  · rw [zpow_neg, zpow_coe_nat]
     replace hs : e ⁻¹' s =ᵐ[μ] s := by
       convert he.preimage_ae_eq hs.symm
       rw [Equiv.preimage_image]

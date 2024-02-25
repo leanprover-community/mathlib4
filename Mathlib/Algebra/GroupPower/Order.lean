@@ -25,7 +25,7 @@ variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
 
 @[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
   obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
-  rw [zpow_ofNat]
+  rw [zpow_coe_nat]
   refine' one_lt_pow' ha ?_
   rintro rfl
   simp at hn

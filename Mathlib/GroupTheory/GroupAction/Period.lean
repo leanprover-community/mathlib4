@@ -72,7 +72,7 @@ theorem period_inv (g : G) (a : α) : period g⁻¹ a = period g a := by
   simp only [period_eq_minimalPeriod, Function.minimalPeriod_eq_minimalPeriod_iff,
     isPeriodicPt_smul_iff]
   intro n
-  rw [smul_eq_iff_eq_inv_smul, eq_comm, ← zpow_ofNat, inv_zpow, inv_inv, zpow_ofNat]
+  rw [smul_eq_iff_eq_inv_smul, eq_comm, ← zpow_coe_nat, inv_zpow, inv_inv, zpow_coe_nat]
 
 end Identities
 

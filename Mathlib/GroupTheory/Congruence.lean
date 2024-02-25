@@ -1265,7 +1265,7 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
 /-- Multiplicative congruence relations preserve integer powers. -/
 @[to_additive "Additive congruence relations preserve integer scaling."]
 protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
-  | Int.ofNat n, w, x, h => by simpa only [zpow_ofNat, Int.ofNat_eq_coe] using c.pow n h
+  | Int.ofNat n, w, x, h => by simpa only [zpow_coe_nat, Int.ofNat_eq_coe] using c.pow n h
   | Int.negSucc n, w, x, h => by simpa only [zpow_negSucc] using c.inv (c.pow _ h)
 #align con.zpow Con.zpow
 #align add_con.zsmul AddCon.zsmul

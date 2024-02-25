@@ -477,7 +477,7 @@ theorem of_pow : ∀ n : ℕ, Irrational (x ^ n) → Irrational x
 open Int in
 theorem of_zpow : ∀ m : ℤ, Irrational (x ^ m) → Irrational x
   | (n : ℕ) => fun h => by
-    rw [zpow_ofNat] at h
+    rw [zpow_coe_nat] at h
     exact h.of_pow _
   | -[n+1] => fun h => by
     rw [zpow_negSucc] at h
