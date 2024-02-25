@@ -10,8 +10,6 @@ import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Algebra.GroupPower.Order
 
-set_option says.verify true
-
 #align_import number_theory.lucas_lehmer from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
