@@ -42,6 +42,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
 -/
 
 open Set
+open scoped Topology
 
 namespace TopologicalSpace
 
@@ -74,6 +75,19 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   isOpen_inter s₁ s₂ h₁ h₂ := h₁.inter h₂
   isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
 #align topological_space.coinduced TopologicalSpace.coinduced
+
+/-- We say that restrictions of the topology on `X` to sets from a family `S`
+generates the original topology,
+if either of the following equivalent conditions hold:
+
+- a set which is relatively open in each `s ∈ S` is open;
+- a set which is relatively closed in each `s ∈ S` is closed;
+- for any topological space `Y`, a function `f : X → Y` is continuous
+  provided that it is continuous on each `s ∈ S`.
+-/
+structure RestrGenFamily [t : TopologicalSpace X] (S : Set (Set X)) : Prop where
+  isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen[.induced (↑) t] ((↑) ⁻¹' u : Set s)) →
+    IsOpen u
 
 end TopologicalSpace
 
