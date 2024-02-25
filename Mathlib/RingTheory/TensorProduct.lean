@@ -32,7 +32,7 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 ## References
 
-* [C. Kassel, *Quantum Groups* (§II.4)][kasselTensorProducts1995]
+* [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
 
@@ -54,11 +54,12 @@ open TensorProduct
 
 section Semiring
 
-variable {R A B M N : Type*} [CommSemiring R]
+variable {R A B M N P : Type*} [CommSemiring R]
 
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable [Module R M] [Module R N] [Module R P]
 
 variable (r : R) (f g : M →ₗ[R] N)
 
@@ -101,19 +102,42 @@ theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
   simp [baseChange_tmul]
 #align linear_map.base_change_smul LinearMap.baseChange_smul
 
-lemma baseChange_comp {P : Type*} [AddCommMonoid P] [Module R P] (g : N →ₗ[R] P) :
+@[simp]
+lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by
+  ext; simp
+
+lemma baseChange_comp (g : N →ₗ[R] P) :
     (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
+  ext; simp
+
+variable (R M) in
+@[simp]
+lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
+
+lemma baseChange_mul (f g : Module.End R M) :
+    (f * g).baseChange A = f.baseChange A * g.baseChange A := by
   ext; simp
 
 variable (R A M N)
 
-/-- `baseChange` as a linear map. -/
+/-- `baseChange` as a linear map.
+
+When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
 @[simps]
 def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
   toFun := baseChange A
   map_add' := baseChange_add
   map_smul' := baseChange_smul
 #align linear_map.base_change_hom LinearMap.baseChangeHom
+
+/-- `baseChange` as an `AlgHom`. -/
+@[simps!]
+def _root_.Module.End.baseChangeHom : Module.End R M →ₐ[R] Module.End A (A ⊗[R] M) :=
+  .ofLinearMap (LinearMap.baseChangeHom _ _ _ _) (baseChange_one _ _) baseChange_mul
+
+lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
+    (f ^ n).baseChange A = f.baseChange A ^ n :=
+  map_pow (Module.End.baseChangeHom _ _ _) f n
 
 end Semiring
 

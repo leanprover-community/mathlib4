@@ -166,7 +166,7 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
 
 attribute [local instance] DirectLimit.setoid
 
--- Porting note: Added local instance
+-- Porting note (#10754): Added local instance
 attribute [local instance] DirectLimit.sigmaStructure
 
 
