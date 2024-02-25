@@ -89,7 +89,8 @@ lemma rTensorAlgHom_coeff_tmul
     (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
     coeff d (rTensorAlgHom (p ⊗ₜ[R] n)) = (coeff d p) ⊗ₜ[R] n := by
   rw [rTensorAlgHom, Algebra.TensorProduct.lift_tmul]
-  rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply, Algebra.TensorProduct.includeRight_apply]
+  rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
+    Algebra.TensorProduct.includeRight_apply]
   rw [algebraMap_eq, mul_comm, coeff_C_mul]
   simp [mapAlgHom, coeff_map]
 

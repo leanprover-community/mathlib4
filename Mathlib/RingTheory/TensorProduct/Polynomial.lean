@@ -181,13 +181,15 @@ lemma rTensorAlgHom_coeff_apply_tmul
     (p : Polynomial S) (n : N) (d : ℕ) :
     coeff (rTensorAlgHom (p ⊗ₜ[R] n)) d = (coeff p d) ⊗ₜ[R] n := by
   rw [rTensorAlgHom, Algebra.TensorProduct.lift_tmul]
-  rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply, Algebra.TensorProduct.includeRight_apply]
+  rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
+    Algebra.TensorProduct.includeRight_apply]
   rw [← C_eq_algebraMap, mul_comm, coeff_C_mul]
   simp [mapAlgHom, coeff_map]
 
 noncomputable def rTensorLinearEquiv :
     (Polynomial S) ⊗[R] N ≃ₗ[S] Polynomial (S ⊗[R] N) :=
-  ((LinearEquiv.rTensor' N toFinsuppLinearEquiv).trans finsuppLeft').trans (toFinsuppLinearEquiv.symm.restrictScalars S)
+  ((LinearEquiv.rTensor' N toFinsuppLinearEquiv).trans finsuppLeft').trans
+    (toFinsuppLinearEquiv.symm.restrictScalars S)
 
 lemma rTensorLinearEquiv_coeff_tmul (p : Polynomial S) (n : N) (e : ℕ) :
     coeff (rTensorLinearEquiv (S := S) (p ⊗ₜ[R] n)) e = (coeff p e) ⊗ₜ[R] n := by
