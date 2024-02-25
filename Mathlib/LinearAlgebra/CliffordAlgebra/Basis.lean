@@ -9,18 +9,19 @@ import Mathlib.Data.Sign
 /-!
 # A basis for the Clifford algebra
 
-This file constructs `Model ι B`, which is a model for `CliffordAlgebra (_ : ι →₀ R)` that also
-works as a basis.
+This file constructs `CliffordAlgebra.Model ι B`, which is a model for
+`CliffordAlgebra (_ : ι →₀ R)` that also works as a basis.
 -/
 
-variable  (ι : Type) [LinearOrder ι]
-
 noncomputable section
+namespace CliffordAlgebra
+
+variable (ι : Type*) [LinearOrder ι]
 
 /-- A sorted list of indices.
 
 This is chosen instead of `Finset ι` as it makes computing signs more efficient. -/
-abbrev Model.Index := {l : List ι // l.Sorted (· < ·) }
+abbrev Model.Index : Type _ := {l : List ι // l.Sorted (· < ·) }
 
 
 variable {R : Type*} [CommRing R]
@@ -270,85 +271,66 @@ Un-adapted from below
 
 -/
 
-noncomputable def model_of_free_vsp : (ι →₀ R) →ₗ[R] Model ι B :=
-  Model.ofFinsupp.toLinearMap ∘ₗ Finsupp.lmapDomain R R (fun i ↦ Model.Index.single i)
+noncomputable def ofFreeVS : (ι →₀ R) →ₗ[R] Model ι B :=
+  Model.ofFinsupp.toLinearMap ∘ₗ Finsupp.lmapDomain R R Model.Index.single
 
 @[simp]
-lemma model_of_free_vsp_single (i : ι) :
-    model_of_free_vsp (Finsupp.single i (1 : R)) = Model.single B i := by
-  unfold model_of_free_vsp
+lemma ofFreeVS_single (i : ι) (r : R) :
+    ofFreeVS B (Finsupp.single i r) = Model.single B (.single i) r := by
+  unfold ofFreeVS
   simp
-
-lemma two_vectors_square_zero (m: ι →₀ R) :
-    model_of_free_vsp m * model_of_free_vsp m = 0 := by
-  sorry
-
-
 
 variable {A : Type} [Ring A] [Algebra R A]
 variable {M : Type} [AddCommGroup M] [Module R M]
 
-def liftToFun ( f : (ι →₀ R) →ₗ[R] A ) ( hf : ∀ m, f m * f m = 0 ) : (Model ι B →ₐ[R] A) where
-  toFun m := (Model.ofFinsupp.symm m).sum $
-    λ ⟨i, _⟩ r =>
-    r • (
-      List.prod (
-        List.map (fun x => f (Finsupp.single x 1)) i) : A)
-  -- Alternative:
-  -- toFun m := m.sum
-  --   λ ⟨basis_elem, _⟩ scaler =>
-  --     ((List.map f (List.map (λ v => by exact Finsupp.single v 1) basis_elem)).prod)
-  map_one' := by simp
-  map_mul' := sorry
-  map_zero' := by simp
-  map_add' x y:= by
-    simp [Finsupp.sum_add_index, add_smul]
-  commutes' r := by
-    simp
-    rw [@Algebra.algebraMap_eq_smul_one]
-
-def liftInvFun (F : Model ι B →ₐ[R] A) : { f : (ι →₀ R) →ₗ[R] A // ∀ m, f m * f m = 0 } where
-  val := {
-    toFun := fun v => F (model_of_free_vsp v)
-    map_add' := by
+def liftToFun (f : (ι →₀ R) →ₗ[R] A)
+    (hf : ∀ i, f (.single i 1) * f (.single i 1) = algebraMap _ _ (B i i)) :
+    Model ι B →ₐ[R] A :=
+  letI aux : Model ι B →ₗ[R] A :=
+      (Finsupp.lsum (R := R) R fun i =>
+        LinearMap.toSpanSingleton _ _ (i.val.map fun x => f (Finsupp.single x 1)).prod)
+      ∘ₗ (Model.ofFinsupp (B := B)).symm.toLinearMap
+  .ofLinearMap aux
+    (by simp)
+    (by
+      rw [LinearMap.map_mul_iff]
+      ext xi yi
+      dsimp [LinearMap.toSpanSingleton]
       simp
-    map_smul' := by
-      simp
-  }
-  property := by
-    intro m
-    simp
-    rw [← F.map_mul]
-    rw [two_vectors_square_zero]
-    simp
-
+      sorry)
 
 @[simps! symm_apply]
 def lift :
-    { f : (ι →₀ R) →ₗ[R] A // ∀ m, f m * f m = 0 }
-    ≃ (Model ι B →ₐ[R] A)
-    where
-      toFun := by
-        intro f
-        exact liftToFun f.val f.property
-      invFun := liftInvFun
-      left_inv := sorry
-      right_inv := sorry
+    { f : (ι →₀ R) →ₗ[R] A // ∀ i, f (.single i 1) * f (.single i 1) = algebraMap _ _ (B i i)} ≃
+      (Model ι B →ₐ[R] A) where
+  toFun f := liftToFun B f.val f.property
+  invFun F := ⟨F ∘ₗ ofFreeVS B, by
+    intro m
+    simp
+    rw [← F.map_mul, single_mul_single, one_mul, one_smul]
+    simp [Algebra.algebraMap_eq_smul_one]⟩
+  left_inv f := by
+    ext
+    simp [liftToFun]
+  right_inv F := by
+    ext
+    dsimp [liftToFun]
+    sorry
 
 @[simp]
-lemma liftToFun_composed_single (i : ι) (f : (ι →₀ R) →ₗ[R] A) (hf) :
-    liftToFun f hf (Model.single B i) = f (Finsupp.single i 1) := by
-  sorry
-
+lemma liftToFun_composed_single (i : ι) (r : R) (f : (ι →₀ R) →ₗ[R] A) (hf) :
+    liftToFun B f hf (Model.single B (.single i) r) = f (Finsupp.single i r) := by
+  simp [liftToFun, ←map_smul f r]
 
 @[ext high]
-theorem hom_ext {f g : Model ι B →ₐ[R] A} :
-    f.toLinearMap.comp (model_of_free_vsp) = g.toLinearMap.comp (model_of_free_vsp) → f = g := by
-  intro h
-  apply lift.symm.injective
+theorem hom_ext {f g : Model ι B →ₐ[R] A}
+    (h : f.toLinearMap.comp (ofFreeVS B) = g.toLinearMap.comp (ofFreeVS B)) :
+    f = g := by
+  apply (lift B).symm.injective
   rw [lift_symm_apply, lift_symm_apply]
-  sorry
-  -- intro h
-  -- apply (lift Q).symm.injective
-  -- rw [lift_symm_apply, lift_symm_apply]
-  -- simp only [h]
+  ext
+  exact DFunLike.congr_fun h _
+
+end Model
+
+end CliffordAlgebra
