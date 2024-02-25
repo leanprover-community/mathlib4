@@ -48,13 +48,20 @@ instance PNat.instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
 namespace Nat
 
 open BigOperators Finset ArithmeticFunction
+@[norm_cast]
+theorem prod_coe {ι : Type*} [DecidableEq ι] (f : ι → PNat) (s : Finset ι) :
+    ↑(∏ i in s, f i) = (∏ i in s, f i : Nat) := by
+  induction s using Finset.induction with
+  | empty => simp only [prod_empty, PNat.one_coe]
+  | @insert i s h h_ind => simp only [Finset.prod_insert h, PNat.mul_coe, h_ind]
+
 /--
   The `Finset` of all `d`-tuples of natural numbers whose product is `n`. Defined to be `∅` when
   `n=0`. -/
 def finMulAntidiagonal (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   if hn : 0 < n then
-    (Finset.finAntidiagonal d (Additive.ofMul (show ℕ+ from ⟨n, hn⟩))).map <|
-      .arrowCongrRight <| Additive.toMul.toEmbedding.trans <| .subtype _
+    (Finset.finAntidiagonal d (Additive.ofMul (show ℕ+ from ⟨n, hn⟩))).image <|
+      fun x i ↦ (Additive.toMul (x i) : PNat)
   else
     ∅
 
@@ -63,21 +70,28 @@ theorem mem_finMulAntidiagonal {d n : ℕ} {f : (Fin d) → ℕ} :
     f ∈ finMulAntidiagonal d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by
   unfold finMulAntidiagonal
   split_ifs with h
-  · simp only [mem_map, ne_eq]
+  · simp only [mem_image, ne_eq, Finset.mem_finAntidiagonal]
     constructor
     · rintro ⟨a, ha_mem, ha⟩
-      rw [@Finset.mem_finAntidiagonal _ _ _ PNat.instHasAntidiagonal] at ha_mem
-      subst ha
-      simp
-      apply_fun Additive.toMul at ha_mem
-      apply_fun Subtype.val at ha_mem
-      simp only [toMul_sum, toMul_ofMul] at ha_mem
-      constructor
-      · convert ha_mem
-        sorry
-      · omega
-    · rintro ⟨rfl, h⟩
-      sorry
+      rw [← ha]
+      refine ⟨?_, h.ne.symm⟩
+      apply_fun ((↑) : PNat → ℕ) ∘ Additive.toMul at ha_mem
+      simp only [Function.comp_apply, toMul_sum, toMul_ofMul, PNat.mk_coe] at ha_mem
+      convert ha_mem
+      norm_cast
+    · rintro ⟨hf, _⟩
+      refine ⟨fun i ↦ .ofMul (show PNat from ⟨f i, ?_⟩), ?_, ?_⟩
+      · apply Nat.pos_of_ne_zero
+        apply (Finset.prod_ne_zero_iff (s:=Finset.univ)).mp
+        · subst hf; assumption
+        · exact mem_univ _
+      · apply_fun Additive.toMul
+        apply_fun PNat.val
+        · simp only [toMul_sum, toMul_ofMul, ← hf, PNat.mk_coe]
+          push_cast
+          simp only [PNat.mk_coe]
+        exact PNat.coe_injective
+      · simp only [toMul_ofMul, PNat.mk_coe]
   · simp only [not_lt, nonpos_iff_eq_zero] at h
     simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
 
