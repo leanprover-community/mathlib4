@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finsupp.Notation
-import Mathlib.Data.List.Sigma
 
 /-!
 # Notation for `DFinsupp`
