@@ -340,7 +340,7 @@ instance (priority := 100) mono_of_iso (f : X ⟶ Y) [IsIso f] : Mono f where
 #align category_theory.is_iso.mono_of_iso CategoryTheory.IsIso.mono_of_iso
 
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_eq_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     inv f = g := by
   apply (cancel_epi f).mp
@@ -354,7 +354,7 @@ theorem inv_eq_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
 #align category_theory.is_iso.inv_eq_of_inv_hom_id CategoryTheory.IsIso.inv_eq_of_inv_hom_id
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem eq_inv_of_hom_inv_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (hom_inv_id : f ≫ g = 𝟙 X) :
     g = inv f :=
   (inv_eq_of_hom_inv_id hom_inv_id).symm
@@ -506,13 +506,13 @@ theorem isIso_of_comp_hom_eq_id (g : X ⟶ Y) [IsIso g] {f : Y ⟶ X} (h : f ≫
 namespace Iso
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : f.inv = g :=
   ((hom_comp_eq_id f).1 hom_inv_id).symm
 #align category_theory.iso.inv_ext CategoryTheory.Iso.inv_ext
 
 -- Porting note: `@[ext]` used to accept lemmas like this.
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 theorem inv_ext' {f : X ≅ Y} {g : Y ⟶ X} (hom_inv_id : f.hom ≫ g = 𝟙 X) : g = f.inv :=
   (hom_comp_eq_id f).1 hom_inv_id
 #align category_theory.iso.inv_ext' CategoryTheory.Iso.inv_ext'

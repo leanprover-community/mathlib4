@@ -105,11 +105,6 @@ instance [Finite α] : Finite (Set α) := by
 
 end Finite
 
-/-- This instance also provides `[Finite s]` for `s : Set α`. -/
-instance Subtype.finite {α : Sort*} [Finite α] {p : α → Prop} : Finite { x // p x } :=
-  Finite.of_injective (↑) Subtype.coe_injective
-#align subtype.finite Subtype.finite
-
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
   haveI := Fintype.ofFinite (PLift α)

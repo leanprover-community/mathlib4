@@ -149,7 +149,7 @@ variable [ExponentialIdeal i]
 itself cartesian closed.
 -/
 def cartesianClosedOfReflective : CartesianClosed D :=
-  { monoidalOfHasFiniteProducts D with -- Porting note: Added this instance
+  { monoidalOfHasFiniteProducts D with -- Porting note (#10754): added this instance
     closed := fun B =>
       { isAdj :=
           { right := i ⋙ exp (i.obj B) ⋙ leftAdjoint i
