@@ -11,11 +11,12 @@ import Mathlib.CategoryTheory.Localization.Predicate
 Following the definitions by [Gabriel and Zisman][gabriel-zisman-1967],
 given a morphism property `W : MorphismProperty C` on a category `C`,
 we introduce the class `W.HasLeftCalculusOfFractions`. The main
-result (TODO) is that if `L : C ⥤ D` is a localization functor for `W`,
-then for any morphism `L.obj X ⟶ L.obj Y` in `D`, there exists an auxiliary
-object `Y' : C` and morphisms `g : X ⟶ Y'` and `s : Y ⟶ Y'`, with `W s`, such
-that the given morphism is a sort of fraction `g / s`, or more precisely of
-the form `L.map g ≫ (Localization.isoOfHom L W s hs).inv`.
+result `Localization.exists_leftFraction` is that if `L : C ⥤ D`
+is a localization functor for `W`, then for any morphism `L.obj X ⟶ L.obj Y` in `D`,
+there exists an auxiliary object `Y' : C` and morphisms `g : X ⟶ Y'` and `s : Y ⟶ Y'`,
+with `W s`, such that the given morphism is a sort of fraction `g / s`,
+or more precisely of the form `L.map g ≫ (Localization.isoOfHom L W s hs).inv`.
+We also show that the functor `L.mapArrow : Arrow C ⥤ Arrow D` is essentially surjective.
 
 ## References
 
@@ -643,12 +644,125 @@ instance : (Q W).IsLocalization W :=
 
 end
 
+lemma homMk_eq {X Y : C} (f : LeftFraction W X Y) :
+    homMk f = f.map (Q W) (Localization.inverts _ W) := by
+  have := Localization.inverts (Q W) W f.s f.hs
+  rw [← Q_map_comp_Qinv f.f f.s f.hs, ← cancel_mono ((Q W).map f.s),
+    assoc, Qiso_inv_hom_id, comp_id, map_comp_map_s]
+
+lemma map_eq_iff {X Y : C} (f g : LeftFraction W X Y) :
+    f.map (LeftFraction.Localization.Q W) (Localization.inverts _ _) =
+        g.map (LeftFraction.Localization.Q W) (Localization.inverts _ _) ↔
+      LeftFractionRel f g := by
+  simp only [← Hom.map_mk _ (Q W)]
+  constructor
+  · intro h
+    rw [← homMk_eq_iff_leftFractionRel, homMk_eq, homMk_eq]
+    exact h
+  · intro h
+    congr 1
+    exact Quot.sound h
+
 end Localization
+
+section
+
+lemma map_eq {X Y : C} (φ : W.LeftFraction X Y) (L : C ⥤ D) [L.IsLocalization W] :
+    φ.map L (Localization.inverts L W) =
+      L.map φ.f ≫ (Localization.isoOfHom L W φ.s φ.hs).inv := rfl
+
+lemma map_compatibility {X Y : C}
+    (φ : W.LeftFraction X Y) {E : Type*} [Category E]
+    (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W] :
+    (Localization.uniq L₁ L₂ W).functor.map (φ.map L₁ (Localization.inverts L₁ W)) =
+      (Localization.compUniqFunctor L₁ L₂ W).hom.app X ≫
+        φ.map L₂ (Localization.inverts L₂ W) ≫
+        (Localization.compUniqFunctor L₁ L₂ W).inv.app Y := by
+  let e := Localization.compUniqFunctor L₁ L₂ W
+  have := Localization.inverts L₂ W φ.s φ.hs
+  rw [← cancel_mono (e.hom.app Y), assoc, assoc, e.inv_hom_id_app, comp_id,
+    ← cancel_mono (L₂.map φ.s), assoc, assoc, map_comp_map_s, ← e.hom.naturality]
+  simpa [← Functor.map_comp_assoc, map_comp_map_s] using e.hom.naturality φ.f
+
+lemma map_eq_of_map_eq {X Y : C}
+    (φ₁ φ₂ : W.LeftFraction X Y) {E : Type*} [Category E]
+    (L₁ : C ⥤ D) (L₂ : C ⥤ E) [L₁.IsLocalization W] [L₂.IsLocalization W]
+    (h : φ₁.map L₁ (Localization.inverts L₁ W) = φ₂.map L₁ (Localization.inverts L₁ W)) :
+    φ₁.map L₂ (Localization.inverts L₂ W) = φ₂.map L₂ (Localization.inverts L₂ W) := by
+  apply (Localization.uniq L₂ L₁ W).functor.map_injective
+  rw [map_compatibility φ₁ L₂ L₁, map_compatibility φ₂ L₂ L₁, h]
+
+end
 
 end LeftFraction
 
 end
 
 end MorphismProperty
+
+variable (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
+
+section
+
+variable [W.HasLeftCalculusOfFractions]
+
+lemma Localization.exists_leftFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
+    ∃ (φ : W.LeftFraction X Y), f = φ.map L (Localization.inverts L W) := by
+  let E := Localization.uniq (MorphismProperty.LeftFraction.Localization.Q W) L W
+  let e : _ ⋙ E.functor ≅ L := Localization.compUniqFunctor _ _ _
+  obtain ⟨f', rfl⟩ : ∃ (f' : E.functor.obj X ⟶ E.functor.obj Y),
+      f = e.inv.app _ ≫ f' ≫ e.hom.app _ := ⟨e.hom.app _ ≫ f ≫ e.inv.app _, by simp⟩
+  obtain ⟨g, rfl⟩ := E.functor.map_surjective f'
+  obtain ⟨g, rfl⟩ := MorphismProperty.LeftFraction.Localization.Hom.mk_surjective g
+  refine' ⟨g, _⟩
+  rw [← MorphismProperty.LeftFraction.Localization.homMk_eq_hom_mk,
+    MorphismProperty.LeftFraction.Localization.homMk_eq g,
+    g.map_compatibility (MorphismProperty.LeftFraction.Localization.Q W) L,
+    assoc, assoc, Iso.inv_hom_id_app, comp_id, Iso.inv_hom_id_app_assoc]
+
+lemma MorphismProperty.LeftFraction.map_eq_iff
+    {X Y : C} (φ ψ : W.LeftFraction X Y) :
+    φ.map L (Localization.inverts _ _) = ψ.map L (Localization.inverts _ _) ↔
+      LeftFractionRel φ ψ := by
+  constructor
+  · intro h
+    rw [← MorphismProperty.LeftFraction.Localization.map_eq_iff]
+    apply map_eq_of_map_eq _ _ _ _ h
+  · intro h
+    simp only [← Localization.Hom.map_mk _ L (Localization.inverts _ _)]
+    congr 1
+    exact Quot.sound h
+
+lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
+    L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Y ⟶ Z) (_ : W s), f₁ ≫ s = f₂ ≫ s := by
+  constructor
+  · intro h
+    rw [← LeftFraction.map_ofHom W _ L (Localization.inverts _ _),
+      ← LeftFraction.map_ofHom W _ L (Localization.inverts _ _),
+      LeftFraction.map_eq_iff] at h
+    obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
+    dsimp at t₁ t₂ hst hft ht
+    simp only [id_comp] at hst
+    exact ⟨Z, t₁, by simpa using ht, by rw [hft, hst]⟩
+  · rintro ⟨Z, s, hs, fac⟩
+    simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
+      Localization.isoOfHom_hom, ← L.map_comp, fac]
+
+lemma Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions :
+    EssSurj L.mapArrow where
+  mem_essImage f := by
+    have := Localization.essSurj L W
+    obtain ⟨X, ⟨eX⟩⟩ : ∃ (X : C), Nonempty (L.obj X ≅ f.left) :=
+      ⟨_, ⟨L.objObjPreimageIso f.left⟩⟩
+    obtain ⟨Y, ⟨eY⟩⟩ : ∃ (Y : C), Nonempty (L.obj Y ≅ f.right) :=
+      ⟨_, ⟨L.objObjPreimageIso f.right⟩⟩
+    obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L W (eX.hom ≫ f.hom ≫ eY.inv)
+    refine' ⟨Arrow.mk φ.f, ⟨Iso.symm _⟩⟩
+    refine' Arrow.isoMk eX.symm (eY.symm ≪≫ Localization.isoOfHom L W φ.s φ.hs) _
+    dsimp
+    simp only [← cancel_epi eX.hom, Iso.hom_inv_id_assoc, reassoc_of% hφ,
+      MorphismProperty.LeftFraction.map_comp_map_s]
+
+end
 
 end CategoryTheory
