@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.GCD.BigOperators
 # Chinese Remainder Theorem
 
 This file provides definitions and theorems for the Chinese Remainder Theorem. These are used in
-Gödel's Beta Function, which is used in proving Gödel's incompleteness theorems.
+Gödel's Beta function, which is used in proving Gödel's incompleteness theorems.
 
 ## Main result
 
