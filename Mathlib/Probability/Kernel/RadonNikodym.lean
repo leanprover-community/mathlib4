@@ -7,54 +7,58 @@ import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.WithDensity
 
 /-!
-# Radon-Nikodym derivative and Lebesgue decompusition for kernels
+# Radon-Nikodym derivative and Lebesgue decomposition for kernels
 
-Let `γ` be a countably generated measurable space and `κ ν : kernel α γ`. Then there exists... TODO
+Let `γ` be a countably generated measurable space and `κ ν : kernel α γ` be finite kernels.
+Then there exists a function `kernel.rnDeriv κ ν : α → γ → ℝ≥0∞` jointly measurable on `α × γ`
+and a kernel `kernel.singularPart κ ν : kernel α γ` such that
+* `κ = kernel.withDensity ν (kernel.rnDeriv κ ν) + kernel.singularPart κ ν`,
+* for all `a : α`, `kernel.singularPart κ ν a ⟂ₘ ν a`,
+* for all `a : α`, `kernel.singularPart κ ν a = 0 ↔ κ a ≪ ν a`,
+* for all `a : α`, `kernel.withDensity ν (kernel.rnDeriv κ ν) a = 0 ↔ κ a ⟂ₘ ν a`.
+
+Furthermore, the sets `{a | κ a ≪ ν a}` and `{a | κ a ⟂ₘ ν a}` are measurable.
 
 ## Main definitions
 
-* `ProbabilityTheory.kernel.rnDeriv`
-* `ProbabilityTheory.kernel.singularPart`
+* `ProbabilityTheory.kernel.rnDeriv`: a function `α → γ → ℝ≥0∞` jointly measurable on `α × γ`
+* `ProbabilityTheory.kernel.singularPart`: a `kernel α γ`
 
 ## Main statements
 
-* `fooBar_unique`
-
-## Notation
-
-
-
-## Implementation details
-
-
+* `ProbabilityTheory.kernel.mutuallySingular_singularPart`: for all `a : α`,
+  `kernel.singularPart κ ν a ⟂ₘ ν a`
+* `ProbabilityTheory.kernel.rnDeriv_add_singularPart`:
+  `kernel.withDensity ν (kernel.rnDeriv κ ν) + kernel.singularPart κ ν = κ`
+* `ProbabilityTheory.kernel.measurableSet_absolutelyContinuous` : the set `{a | κ a ≪ ν a}`
+  is Measurable
+* `ProbabilityTheory.kernel.measurableSet_mutuallySingular` : the set `{a | κ a ⟂ₘ ν a}`
+  is Measurable
 
 ## References
 
 Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
 
-## Tags
-
-Foobars, barfoos
 -/
 
 open MeasureTheory Set Filter
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
-namespace ProbabilityTheory
-
-open ProbabilityTheory.kernel
+namespace ProbabilityTheory.kernel
 
 variable {α γ : Type*} {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
   [MeasurableSpace.CountablyGenerated γ] {κ ν : kernel α γ}
 
-lemma kernel.fst_map_prod_le_of_le (hκν : κ ≤ ν) :
+lemma fst_map_prod_le_of_le (hκν : κ ≤ ν) :
     kernel.fst (kernel.map κ (fun a ↦ (a, ()))
       (@measurable_prod_mk_right γ Unit _ inferInstance _)) ≤ ν := by
   rwa [kernel.fst_map_prod _ measurable_id' measurable_const, kernel.map_id']
 
+/-- Auxiliary function used to define `ProbabilityTheory.kernel.rnDeriv` and
+`ProbabilityTheory.kernel.singularPart`. -/
 noncomputable
-def kernel.rnDerivAux (κ ν : kernel α γ) (a : α) (x : γ) : ℝ :=
+def rnDerivAux (κ ν : kernel α γ) (a : α) (x : γ) : ℝ :=
   kernel.density (kernel.map κ (fun a ↦ (a, ()))
     (@measurable_prod_mk_right γ Unit _ inferInstance _)) ν a x univ
 
@@ -130,10 +134,17 @@ lemma withDensity_one_sub_rnDerivAux (κ ν : kernel α γ) [IsFiniteKernel κ] 
     simp only [ENNReal.ofReal_le_one]
     exact density_le_one (kernel.fst_map_prod_le_of_le h_le) _ _ _
 
-def kernel.mutuallySingularSet (κ ν : kernel α γ) : Set (α × γ) :=
+/-- A set of points in `α × γ` related to the absolute continuity / mutual singularity of
+`κ` and `ν`. -/
+def mutuallySingularSet (κ ν : kernel α γ) : Set (α × γ) :=
   {p | kernel.rnDerivAux κ (κ + ν) p.1 p.2 = 1}
 
-def kernel.mutuallySingularSetSlice (κ ν : kernel α γ) (a : α) : Set γ :=
+/-- A set of points in `α × γ` related to the absolute continuity / mutual singularity of
+`κ` and `ν`. That is,
+* `kernel.withDensity ν (kernel.rnDeriv κ ν) a (kernel.mutuallySingularSetSlice κ ν a) = 0`,
+* `kernel.singularPart κ ν a (kernel.mutuallySingularSetSlice κ ν a)ᶜ = 0`.
+ -/
+def mutuallySingularSetSlice (κ ν : kernel α γ) (a : α) : Set γ :=
   {x | kernel.rnDerivAux κ (κ + ν) a x = 1}
 
 lemma measurableSet_mutuallySingularSet (κ ν : kernel α γ) :
@@ -164,12 +175,13 @@ lemma measure_mutuallySingularSetSlice (κ ν : kernel α γ) [IsFiniteKernel κ
   simp only [mem_setOf_eq] at hx
   simp [hx]
 
+/-- Radon-Nikodym derivative of the kernel `κ` with respect to the kernel `ν`. -/
 noncomputable
-def kernel.rnDeriv (κ ν : kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
+def rnDeriv (κ ν : kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
   ENNReal.ofReal (kernel.rnDerivAux κ (κ + ν) a x)
     / ENNReal.ofReal (1 - kernel.rnDerivAux κ (κ + ν) a x)
 
-lemma kernel.rnDeriv_def (κ ν : kernel α γ) :
+lemma rnDeriv_def (κ ν : kernel α γ) :
     kernel.rnDeriv κ ν = fun a x ↦ ENNReal.ofReal (kernel.rnDerivAux κ (κ + ν) a x)
       / ENNReal.ofReal (1 - kernel.rnDerivAux κ (κ + ν) a x) := rfl
 
@@ -191,21 +203,21 @@ lemma rnDeriv_eq_top_iff (κ ν : kernel α γ) (a : α) (x : γ) :
   exact ⟨fun h ↦ le_antisymm (rnDerivAux_le_one (le_add_of_nonneg_right bot_le)) h.2,
     fun h ↦ by simp [h]⟩
 
+/-- Singular part of the kernel `κ` with respect to the kernel `ν`. -/
 noncomputable
-def kernel.singularPart (κ ν : kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel ν] :
+def singularPart (κ ν : kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel ν] :
     kernel α γ :=
   kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (kernel.rnDerivAux κ (κ + ν) a x)
     - Real.toNNReal (1 - kernel.rnDerivAux κ (κ + ν) a x) * kernel.rnDeriv κ ν a x)
 
-lemma measurable_singularPart_fun (κ ν : kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel ν] :
+lemma measurable_singularPart_fun (κ ν : kernel α γ) :
     Measurable (fun p : α × γ ↦ Real.toNNReal (kernel.rnDerivAux κ (κ + ν) p.1 p.2)
       - Real.toNNReal (1 - kernel.rnDerivAux κ (κ + ν) p.1 p.2) * kernel.rnDeriv κ ν p.1 p.2) := by
   refine (measurable_rnDerivAux _ _).ennreal_ofReal.sub
     (Measurable.mul ?_ (measurable_rnDeriv _ _))
   exact (measurable_const.sub (measurable_rnDerivAux _ _)).ennreal_ofReal
 
-lemma measurable_singularPart_fun_right (κ ν : kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel ν]
-    (a : α) :
+lemma measurable_singularPart_fun_right (κ ν : kernel α γ) (a : α) :
     Measurable (fun x : γ ↦ Real.toNNReal (kernel.rnDerivAux κ (κ + ν) a x)
       - Real.toNNReal (1 - kernel.rnDerivAux κ (κ + ν) a x) * kernel.rnDeriv κ ν a x) := by
   change Measurable ((Function.uncurry fun a b ↦
@@ -316,14 +328,14 @@ lemma withDensity_rnDeriv_subset_compl_mutuallySingularSetSlice (κ ν : kernel 
       · simp [hs' x hx]
   _ = κ a s := set_lintegral_rnDerivAux κ ν a hsm
 
-lemma kernel.mutuallySingular_singularPart (κ ν : kernel α γ)
+lemma mutuallySingular_singularPart (κ ν : kernel α γ)
     [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
     kernel.singularPart κ ν a ⟂ₘ ν a := by
   symm
   exact ⟨mutuallySingularSetSlice κ ν a, measurableSet_mutuallySingularSetSlice κ ν a,
     measure_mutuallySingularSetSlice κ ν a, singularPart_compl_mutuallySingularSetSlice κ ν a⟩
 
-lemma kernel.rnDeriv_add_singularPart (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
+lemma rnDeriv_add_singularPart (κ ν : kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
     kernel.withDensity ν (kernel.rnDeriv κ ν) + kernel.singularPart κ ν = κ := by
   ext a s hs
   rw [← inter_union_diff s (mutuallySingularSetSlice κ ν a)]
@@ -425,4 +437,4 @@ lemma measurableSet_mutuallySingular (κ ν : kernel α γ) [IsFiniteKernel κ] 
   exact kernel.measurable_kernel_prod_mk_left (measurableSet_mutuallySingularSet κ ν).compl
     (measurableSet_singleton 0)
 
-end ProbabilityTheory
+end ProbabilityTheory.kernel
