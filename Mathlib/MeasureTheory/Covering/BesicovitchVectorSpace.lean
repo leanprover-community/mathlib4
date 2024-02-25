@@ -133,6 +133,7 @@ def multiplicity (E : Type*) [NormedAddCommGroup E] :=
 section
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+
 /-- Any `1`-separated set in the ball of radius `2` has cardinality at most `5 ^ dim`. This is
 useful to show that the supremum in the definition of `Besicovitch.multiplicity E` is
 well behaved. -/
