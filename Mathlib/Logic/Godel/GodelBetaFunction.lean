@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.ChineseRemainder
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Nat.Pairing
-import Mathlib.Data.List.OfFn
+--import Mathlib.Data.List.OfFn
 
 /-!
 # Gödel's Beta Function Lemma
