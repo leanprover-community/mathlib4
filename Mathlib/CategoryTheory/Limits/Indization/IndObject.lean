@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.Logic.Small.Set
+import Mathlib.CategoryTheory.Limits.FunctorToTypes
 
 /-!
 # Ind-objects
@@ -16,12 +17,12 @@ For a presheaf `A : Cᵒᵖ ⥤ Type v` we define the type `IndObjectPresentatio
 of `A` as small filtered colimits of representable presheaves and define the predicate
 `IsIndObject A` asserting that there is at least one such presentation.
 
-## Future work
-
 A presheaf is an ind-object if and only if the category `CostructuredArrow yoneda A` is filtered
 and finally small. In this way, `CostructuredArrow yoneda A` can be thought of the universal
 indexing category for the representation of `A` as a small filtered colimit of representable
 presheaves.
+
+## Future work
 
 There are various useful ways to understand natural transformations between ind-objects in terms
 of their presentations.
@@ -42,6 +43,8 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 universe v u
 
 namespace CategoryTheory.Limits
+
+open CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
@@ -106,42 +109,47 @@ theorem IsIndObject.mk {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) : 
 theorem isIndObject_yoneda (X : C) : IsIndObject (yoneda.obj X) :=
   .mk <| IndObjectPresentation.yoneda X
 
-open IsFiltered
+namespace IsIndObject
 
-theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) :
-    IsIndObject A ↔ (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) := by
-  refine ⟨fun ⟨⟨P⟩⟩ => ?_, ?_⟩
-  · exact ⟨IsFiltered.of_final P.toCostructuredArrow, FinallySmall.mk' P.toCostructuredArrow⟩
-  · rintro ⟨hI₁, hI₂⟩
-    have h₁ : (SmallFilteredIntermediate.factoring (fromFinalModel (CostructuredArrow yoneda A))
-      ⋙ SmallFilteredIntermediate.inclusion (fromFinalModel (CostructuredArrow yoneda A))).Final :=
-        Functor.final_of_natIso (SmallFilteredIntermediate.factoringCompInclusion _).symm
-    have h₂ : Functor.Final (SmallFilteredIntermediate.inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
-      Functor.final_of_comp_full_faithful' (SmallFilteredIntermediate.factoring _) (SmallFilteredIntermediate.inclusion _)
-    let c := (tautologicalCocone A).whisker (SmallFilteredIntermediate.inclusion (fromFinalModel (CostructuredArrow yoneda A)))
-    let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm (isColimitTautologicalCocone A)
-    have hq : _root_.Nonempty (FinalModel (CostructuredArrow yoneda A)) :=
-      Nonempty.map (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
-    exact ⟨SmallFilteredIntermediate (fromFinalModel (CostructuredArrow yoneda A)),
-      SmallFilteredIntermediate.inclusion (fromFinalModel (CostructuredArrow yoneda A))
-        ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
+variable {A : Cᵒᵖ ⥤ Type v}
 
-theorem IsIndObject.filtered {A : Cᵒᵖ ⥤ Type v} (h : IsIndObject A) :
-    IsFiltered.{v} (CostructuredArrow yoneda A) :=
-  ((isIndObject_iff _).mp h).1
+/-- Pick a presentation for an ind-object using choice. -/
+noncomputable def presentation : IsIndObject A → IndObjectPresentation A
+  | ⟨P⟩ => P.some
 
-theorem IsIndObject.finallySmall {A : Cᵒᵖ ⥤ Type v} (h : IsIndObject A) :
-    FinallySmall.{v} (CostructuredArrow yoneda A) :=
-  ((isIndObject_iff _).mp h).2
+theorem isFiltered (h : IsIndObject A) : IsFiltered (CostructuredArrow yoneda A) :=
+  IsFiltered.of_final h.presentation.toCostructuredArrow
 
-theorem presheaf_colim_jointly_surjective (I : Type v) [SmallCategory I]
-    (F : I ⥤ Cᵒᵖ ⥤ Type v) (X : Cᵒᵖ) (x : (colimit F).obj X) :
-    ∃ j y, x = (colimit.ι F j).app X y := by
-  obtain ⟨j, y, hy⟩ := Types.jointly_surjective'.{v, v} ((colimitObjIsoColimitCompEvaluation F X).hom x)
-  refine' ⟨j, y, ?_⟩
-  apply (colimitObjIsoColimitCompEvaluation F X).toEquiv.injective
-  simp [← hy, elementwise_of% colimitObjIsoColimitCompEvaluation_ι_app_hom F]
-  rfl -- wat?
+theorem finallySmall (h : IsIndObject A) : FinallySmall.{v} (CostructuredArrow yoneda A) :=
+  FinallySmall.mk' h.presentation.toCostructuredArrow
+
+end IsIndObject
+
+open IsFiltered SmallFilteredIntermediate
+
+theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
+    [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
+    IsIndObject A := by
+  have h₁ : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
+      inclusion (fromFinalModel (CostructuredArrow yoneda A))).Final := Functor.final_of_natIso
+    (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
+  have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
+    Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
+  let c := (tautologicalCocone A).whisker (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
+  let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
+    (isColimitTautologicalCocone A)
+  have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
+    (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
+  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
+
+/-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
+    `CostructuredArrow yoneda A` is filtered and finally `v`-small.
+
+    Theorem 6.1.8  of [Kashiwara2006] -/
+theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
+    (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
+  ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
+   fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
 
 theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFilteredOrEmpty I]
     (F : I ⥤ Cᵒᵖ ⥤ Type v) (hF : ∀ i, IsIndObject (F.obj i)) : IsIndObject (colimit F) := by
@@ -154,7 +162,7 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFilteredOrEmpty I]
     have : Small.{v} (⋃ i, (CostructuredArrow.map (colimit.ι F i)).obj '' (s i)) := small_iUnion _
     refine finallySmall_of_small_weakly_terminal_set
       (⋃ i, (CostructuredArrow.map (colimit.ι F i)).obj '' (s i)) (fun A => ?_)
-    obtain ⟨i, y, hy⟩ := presheaf_colim_jointly_surjective I F _ (yonedaEquiv A.hom)
+    obtain ⟨i, y, hy⟩ := FunctorToTypes.jointly_surjective'.{v, v} F _ (yonedaEquiv A.hom)
     let y' : CostructuredArrow yoneda (F.obj i) := CostructuredArrow.mk (yonedaEquiv.symm y)
     obtain ⟨x⟩ := hj _ y'
     refine ⟨(CostructuredArrow.map (colimit.ι F i)).obj (j i y'), ?_, ⟨?_⟩⟩
