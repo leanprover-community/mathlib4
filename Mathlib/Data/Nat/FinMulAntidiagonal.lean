@@ -136,8 +136,8 @@ lemma image_apply_finMulAntidiagonal {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     refine ⟨dvd_of_mem_finMulAntidiagonal hf _, (mem_finMulAntidiagonal.mp hf).2⟩
   · simp_rw [mem_finMulAntidiagonal]
     rintro ⟨⟨r, rfl⟩, hn⟩
-    have hs : Nontrivial (Fin d)
-    · rw [Fin.nontrivial_iff_two_le]
+    have hs : Nontrivial (Fin d) := by
+      rw [Fin.nontrivial_iff_two_le]
       by_cases hd' : d = 0
       · subst hd'
         apply Fin.isEmpty.elim' i
@@ -284,17 +284,17 @@ private theorem f_inj {n : ℕ} :
       f a ha = f b hb → a = b := by
   intro a b ha hb hfab
   obtain ⟨hfab1, hfab2⟩ := Prod.mk.inj hfab
-  have hprods : a 0 * a 1 * a 2 = a 0 * a 1 * b 2
-  · rw [finMulAntidiagonal_three a ha, hfab1, finMulAntidiagonal_three b hb]
-  have hab2 : a 2 = b 2
-  · rw [← mul_right_inj' $ mul_ne_zero (ne_zero_of_mem_finMulAntidiagonal ha 0)
+  have hprods : a 0 * a 1 * a 2 = a 0 * a 1 * b 2 := by
+    rw [finMulAntidiagonal_three a ha, hfab1, finMulAntidiagonal_three b hb]
+  have hab2 : a 2 = b 2 := by
+    rw [← mul_right_inj' $ mul_ne_zero (ne_zero_of_mem_finMulAntidiagonal ha 0)
       (ne_zero_of_mem_finMulAntidiagonal ha 1)]
     exact hprods
-  have hab0 : a 0 = b 0
-  · rw [hab2] at hfab2
+  have hab0 : a 0 = b 0 := by
+    rw [hab2] at hfab2
     exact (mul_left_inj' $ ne_zero_of_mem_finMulAntidiagonal hb 2).mp hfab2;
-  have hab1 : a 1 = b 1
-  · rw [hab0] at hfab1
+  have hab1 : a 1 = b 1 := by
+    rw [hab0] at hfab1
     exact (mul_right_inj' $ ne_zero_of_mem_finMulAntidiagonal hb 0).mp hfab1;
   funext i; fin_cases i <;> assumption
 
