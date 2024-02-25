@@ -220,7 +220,7 @@ noncomputable def rTensorAlgEquiv :
     apply symm
     ext e
     simp only [rTensorLinearEquiv_coeff_tmul, coeff_one]
-    split_ifs ; rfl ; simp only [zero_tmul]
+    split_ifs; rfl; simp only [zero_tmul]
   · intro x y
     erw [← rTensorAlgHom_apply_eq (S := S)]
     simp only [_root_.map_mul, rTensorAlgHom_apply_eq]

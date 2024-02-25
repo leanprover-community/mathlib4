@@ -54,9 +54,7 @@ lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
     (e : N →+ P) (a : α) (n : N) (b : α) :
     e ((single a n) b) = single a (e n) b := by
   simp only [single_apply]
-  split_ifs with h
-  · exact rfl
-  · exact map_zero e
+  split_ifs; rfl; exact map_zero e
 
 lemma mapRange.addMonoidHom_apply_single
     [AddCommMonoid N] [AddCommMonoid P] (e : N →+ P) (a : α) (n : N) :
@@ -184,9 +182,7 @@ noncomputable def rTensorAlgHom :
       · intro b _
         rw [sum_apply, sum_single_index (by simp)]
         simp only [mul_one, single_apply, one_mul]
-        split_ifs
-        · simp [algHom_apply_apply]
-        · rfl)
+        split_ifs; simp [algHom_apply_apply]; rfl)
 
 lemma rTensorAlgHom_apply_tmul_apply
     (x : MonoidAlgebra M α) (n : N) (a : α) :
