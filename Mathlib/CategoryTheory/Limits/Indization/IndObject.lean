@@ -1,8 +1,43 @@
+/-
+Copyright (c) 2024 Markus Himmel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Markus Himmel
+-/
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.Logic.Small.Set
+
+/-!
+# Ind-objects
+
+For a presheaf `A : Cᵒᵖ ⥤ Type v` we define the type `IndObjectPresentation A` of presentations
+of `A` as small filtered colimits of representable presheaves and define the predicate
+`IsIndObject A` asserting that there is at least one such presentation.
+
+## Future work
+
+A presheaf is an ind-object if and only if the category `CostructuredArrow yoneda A` is filtered
+and finally small. In this way, `CostructuredArrow yoneda A` can be thought of the universal
+indexing category for the representation of `A` as a small filtered colimit of representable
+presheaves.
+
+There are various useful ways to understand natural transformations between ind-objects in terms
+of their presentations.
+
+The ind-objects form a locally `v`-small category `IndCategory C` which has numerous interesting
+properties.
+
+## Implementation notes
+
+One might be tempted to introduce another universe parameter and consider being a `w`-ind-object
+as a property of presheaves `C ⥤ TypeMax.{v, w}`. This comes with significant technical hurdles.
+The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` instead.
+
+## References
+* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
+-/
 
 universe v u
 
@@ -10,35 +45,74 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
 
+/-- The data that witnesses that a presheaf `A` is an ind-object. It consists of a small
+    filtered indexing category `I`, a diagram `F : I ⥤ C` and the data for a colimit cocone on
+    `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v` with cocone point `A`. -/
 structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
   (I : Type v)
   [ℐ : SmallCategory I]
   [hI : IsFiltered I]
   (F : I ⥤ C)
   (ι : F ⋙ yoneda ⟶ (Functor.const I).obj A)
-  (hi : IsColimit (Cocone.mk A ι))
+  (isColimit : IsColimit (Cocone.mk A ι))
 
-instance {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) : SmallCategory P.I :=
-  P.ℐ
+namespace IndObjectPresentation
 
-instance {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) : IsFiltered P.I :=
-  P.hI
+variable {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A)
 
-def IsIndObject (A : Cᵒᵖ ⥤ Type v) : Prop :=
-  Nonempty (IndObjectPresentation A)
+instance : SmallCategory P.I := P.ℐ
+instance : IsFiltered P.I := P.hI
+
+/-- The (colimit) cocone with cocone point `A`. -/
+@[simps]
+def cocone : Cocone (P.F ⋙ yoneda) where
+  pt := A
+  ι := P.ι
+
+/-- `P.cocone` is a colimit cocone. -/
+def coconeIsColimit : IsColimit P.cocone :=
+  P.isColimit
+
+/-- The canonical comparison functor between the indexing category of the presentation and the
+    comma category `CostructuredArrow yoneda A`. This functor is always final. -/
+@[simps!]
+def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
+  P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
+
+instance : P.toCostructuredArrow.Final :=
+  final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
+
+/-- Representable presheaves are (trivially) ind-objects. -/
+@[simps]
+def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
+  I := Discrete PUnit.{v + 1}
+  F := Functor.fromPUnit X
+  ι := { app := fun s => 𝟙 _ }
+  isColimit :=
+    { desc := fun s => s.ι.app ⟨PUnit.unit⟩
+      uniq := fun s m h => h ⟨PUnit.unit⟩ }
+
+end IndObjectPresentation
+
+/-- A presheaf is called an ind-object if it can be written as a filtered colimit of representable
+    presheaves. -/
+structure IsIndObject (A : Cᵒᵖ ⥤ Type v) : Prop where
+  mk' :: nonempty_presentation : Nonempty (IndObjectPresentation A)
+
+theorem IsIndObject.mk {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) : IsIndObject A :=
+  ⟨⟨P⟩⟩
+
+/-- Representable presheaves are (trivially) ind-objects. -/
+theorem isIndObject_yoneda (X : C) : IsIndObject (yoneda.obj X) :=
+  .mk <| IndObjectPresentation.yoneda X
 
 open IsFiltered
 
 theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) :
     IsIndObject A ↔ (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) := by
-  refine' ⟨_, _⟩
-  · rintro ⟨P⟩
-    have := final_toCostructuredArrow_comp_pre _ P.hi
-    refine' ⟨_, _⟩
-    · exact IsFiltered.of_final ((Cocone.mk A P.ι).toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _)
-    · exact FinallySmall.mk' ((Cocone.mk A P.ι).toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _)
+  refine ⟨fun ⟨⟨P⟩⟩ => ?_, ?_⟩
+  · exact ⟨IsFiltered.of_final P.toCostructuredArrow, FinallySmall.mk' P.toCostructuredArrow⟩
   · rintro ⟨hI₁, hI₂⟩
-    refine' ⟨_⟩
     have h₁ : (SmallFilteredIntermediate.factoring (fromFinalModel (CostructuredArrow yoneda A))
       ⋙ SmallFilteredIntermediate.inclusion (fromFinalModel (CostructuredArrow yoneda A))).Final :=
         Functor.final_of_natIso (SmallFilteredIntermediate.factoringCompInclusion _).symm
@@ -48,7 +122,7 @@ theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) :
     let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm (isColimitTautologicalCocone A)
     have hq : _root_.Nonempty (FinalModel (CostructuredArrow yoneda A)) :=
       Nonempty.map (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
-    refine' ⟨SmallFilteredIntermediate (fromFinalModel (CostructuredArrow yoneda A)),
+    exact ⟨SmallFilteredIntermediate (fromFinalModel (CostructuredArrow yoneda A)),
       SmallFilteredIntermediate.inclusion (fromFinalModel (CostructuredArrow yoneda A))
         ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
 
