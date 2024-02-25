@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 namespace Quotient
 
-variable {R C : Type*} [Ring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
   (r : HomRel C) [Congruence r]
   (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
 
