@@ -186,7 +186,7 @@ theorem coeFn_mk {f : α →ₘ[μ] E} (hf : snorm f p μ < ∞) : ((⟨f, hf⟩
   rfl
 #align measure_theory.Lp.coe_fn_mk MeasureTheory.Lp.coeFn_mk
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coe_mk {f : α →ₘ[μ] E} (hf : snorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α →ₘ[μ] E) = f :=
   rfl
 #align measure_theory.Lp.coe_mk MeasureTheory.Lp.coe_mk
@@ -458,11 +458,11 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
 #align measure_theory.Lp.normed_add_comm_group MeasureTheory.Lp.instNormedAddCommGroup
 
 -- check no diamond is created
-example [Fact (1 ≤ p)] : PseudoEMetricSpace.toEDist = (Lp.instEDist : EDist (Lp E p μ)) :=
-  rfl
+example [Fact (1 ≤ p)] : PseudoEMetricSpace.toEDist = (Lp.instEDist : EDist (Lp E p μ)) := by
+  with_reducible_and_instances rfl
 
-example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm (Lp E p μ)) :=
-  rfl
+example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm (Lp E p μ)) := by
+  with_reducible_and_instances rfl
 
 section BoundedSMul
 

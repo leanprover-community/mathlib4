@@ -30,9 +30,9 @@ universe u v w u₁
 
 variable (ι : Type v) [dec_ι : DecidableEq ι] (β : ι → Type w)
 
-/-- `DirectSum β` is the direct sum of a family of additive commutative monoids `β i`.
+/-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
-Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum β`. -/
+Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   -- Porting note: Failed to synthesize
   -- Π₀ i, β i deriving AddCommMonoid, Inhabited
@@ -40,11 +40,11 @@ def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
 #align direct_sum DirectSum
 
--- Porting note: Added inhabited instance manually
+-- Porting note (#10754): Added inhabited instance manually
 instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
--- Porting note: Added addCommMonoid instance manually
+-- Porting note (#10754): Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
@@ -378,7 +378,7 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
 
 For the alternate statement in terms of independence and spanning, see
 `DirectSum.subgroup_isInternal_iff_independent_and_supr_eq_top` and
-`DirectSum.isInternalSubmodule_iff_independent_and_supr_eq_top`. -/
+`DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top`. -/
 def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : Prop :=
   Function.Bijective (DirectSum.coeAddMonoidHom A)

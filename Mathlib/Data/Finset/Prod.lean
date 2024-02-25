@@ -205,7 +205,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   ⟨xy.2, (mem_product.1 hxy).2⟩
 #align finset.nonempty.snd Finset.Nonempty.snd
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
 #align finset.nonempty_product Finset.nonempty_product

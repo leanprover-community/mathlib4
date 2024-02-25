@@ -64,12 +64,12 @@ theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
   rfl
 #align category_theory.arrow.id_right CategoryTheory.Arrow.id_right
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[simp, reassoc]
 theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).left = f.left ≫ g.left := rfl
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[simp, reassoc]
 theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).right = f.right ≫ g.right := rfl
@@ -98,7 +98,7 @@ theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
   (mk_injective A B).eq_iff
 #align category_theory.arrow.mk_inj CategoryTheory.Arrow.mk_inj
 
-/- Porting note : was marked as dangerous instance so changed from `Coe` to `CoeOut` -/
+/- Porting note: was marked as dangerous instance so changed from `Coe` to `CoeOut` -/
 instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
@@ -121,7 +121,7 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} {u : X ⟶ P} {v : Y 
   w := w
 #align category_theory.arrow.hom_mk' CategoryTheory.Arrow.homMk'
 
-/- Porting note : was warned simp could prove reassoc'd version. Found simp could not.
+/- Porting note: was warned simp could prove reassoc'd version. Found simp could not.
 Added nolint. -/
 @[reassoc (attr := simp, nolint simpNF)]
 theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right :=
@@ -209,7 +209,7 @@ theorem inv_right [IsIso sq] : (inv sq).right = inv sq.right :=
   IsIso.eq_inv_of_hom_inv_id <| by rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
 #align category_theory.arrow.inv_right CategoryTheory.Arrow.inv_right
 
-/- Porting note : simp can prove this so removed @[simp] -/
+/- Porting note (#10618): simp can prove this so removed @[simp] -/
 theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.hom := by
   simp only [← Category.assoc, IsIso.comp_inv_eq, w]
 #align category_theory.arrow.left_hom_inv_right CategoryTheory.Arrow.left_hom_inv_right

@@ -53,7 +53,7 @@ cone morphism to `t`.
 
 See <https://stacks.math.columbia.edu/tag/002E>.
   -/
--- Porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -66,7 +66,7 @@ structure IsLimit (t : Cone F) where
 #align category_theory.limits.is_limit.fac' CategoryTheory.Limits.IsLimit.fac
 #align category_theory.limits.is_limit.uniq' CategoryTheory.Limits.IsLimit.uniq
 
--- Porting note:  simp can prove this. Linter complains it still exists
+-- Porting note (#10618):  simp can prove this. Linter complains it still exists
 attribute [-simp, nolint simpNF] IsLimit.mk.injEq
 
 attribute [reassoc (attr := simp)] IsLimit.fac
@@ -568,7 +568,7 @@ structure IsColimit (t : Cocone F) where
 
 attribute [reassoc (attr := simp)] IsColimit.fac
 
--- Porting note: simp can prove this. Linter claims it still is tagged with simp
+-- Porting note (#10618): simp can prove this. Linter claims it still is tagged with simp
 attribute [-simp, nolint simpNF] IsColimit.mk.injEq
 
 namespace IsColimit

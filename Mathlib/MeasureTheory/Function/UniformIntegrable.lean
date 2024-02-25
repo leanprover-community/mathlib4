@@ -395,7 +395,7 @@ theorem Memℒp.snorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf :
   refine' ⟨δ, hδpos, fun s hs hμs => _⟩
   convert hδ s hs hμs using 1
   rw [snorm_indicator_eq_snorm_restrict hs, snorm_indicator_eq_snorm_restrict hs]
-  refine' snorm_congr_ae heq.restrict
+  exact snorm_congr_ae heq.restrict
 #align measure_theory.mem_ℒp.snorm_indicator_le MeasureTheory.Memℒp.snorm_indicator_le
 
 /-- A constant function is uniformly integrable. -/
@@ -425,7 +425,8 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
   revert f
   induction' n with n h
   · intro f hf
-    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero -- Porting note: Added this instance
+  -- Porting note (#10754): added this instance
+    have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero
     exact unifIntegrable_subsingleton hp_one hp_top hf
   intro f hfLp ε hε
   let g : Fin n → α → β := fun k => f k

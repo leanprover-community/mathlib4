@@ -26,7 +26,7 @@ variable (C : Type*) [Category C]
 -- Porting note: removed
 -- local attribute [tidy] tactic.op_induction'
 -- as it isn't needed here. If it is useful elsewhere
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
 -- should suffice, but may need
 -- https://github.com/JLimperg/aesop/issues/59
 
@@ -43,7 +43,7 @@ variable {C}
 
 namespace SheafedSpace
 
--- Porting note : use `CoeOut` for the coercion happens left to right
+-- Porting note: use `CoeOut` for the coercion happens left to right
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
@@ -57,14 +57,14 @@ def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.sheaf AlgebraicGeometry.SheafedSpace.sheaf
 
--- Porting note : this is a syntactic tautology, so removed
+-- Porting note: this is a syntactic tautology, so removed
 -- @[simp]
 -- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
 --   rfl
 -- set_option linter.uppercaseLean3 false in
 #noalign algebraic_geometry.SheafedSpace.as_coe
 
--- Porting note : this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
+-- Porting note: this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
 -- so removed @[simp]
 theorem mk_coe (carrier) (presheaf) (h) :
     (({ carrier
@@ -104,11 +104,11 @@ def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget_to_PresheafedSpace AlgebraicGeometry.SheafedSpace.forgetToPresheafedSpace
 
--- Porting note : can't derive `Full` functor automatically
+-- Porting note: can't derive `Full` functor automatically
 instance forgetToPresheafedSpace_full : Full <| forgetToPresheafedSpace (C := C) where
   preimage f := f
 
--- Porting note : can't derive `Faithful` functor automatically
+-- Porting note: can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : Faithful <| forgetToPresheafedSpace (C := C) where
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :

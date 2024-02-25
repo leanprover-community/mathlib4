@@ -77,7 +77,7 @@ namespace Mat_
 
 variable {C}
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j
@@ -666,7 +666,7 @@ instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
 
 variable {R}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[simp]
 theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl

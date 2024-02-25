@@ -175,7 +175,7 @@ theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
     nlinarith
   have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine' (contDiff_const.smul contDiff_id).add _
-    refine' (h₀.sub contDiff_const).smul contDiff_const
+    exact (h₀.sub contDiff_const).smul contDiff_const
   exact h₁.smul h₂
 #align cont_diff_stereo_inv_fun_aux contDiff_stereoInvFunAux
 
@@ -223,11 +223,11 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
     convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
-    -- Porting note: was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
+    -- porting note (#10745): was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
     · simp only [norm_eq_of_mem_sphere, Nat.cast_one, mul_one, ← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _
-  -- Porting note : added to work around cancel_denoms and nlinarith failures
+  -- Porting note: added to work around cancel_denoms and nlinarith failures
   have duh : ‖y.val‖ ^ 2 = 1 - a ^ 2 := by
     rw [← Submodule.coe_norm, pythag]; ring
   -- two facts which will be helpful for clearing denominators in the main calculation
