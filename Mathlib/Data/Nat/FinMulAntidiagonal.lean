@@ -20,9 +20,13 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 (`card_pair_lcm_eq`)
 -/
 
+open Finset
+open scoped BigOperators ArithmeticFunction
+namespace PNat
+
 /-- The set of divisors of a positive natural number.
 This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
-def PNat.divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
+def divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
   (Nat.divisorsAntidiagonal n).attach.map
     ⟨fun x =>
       (⟨x.val.1, Nat.pos_of_mem_divisors <| Nat.fst_mem_divisors_of_mem_antidiagonal x.prop⟩,
@@ -30,14 +34,14 @@ def PNat.divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
     fun _ _ h => Subtype.ext <| Prod.ext (congr_arg (·.1.val) h) (congr_arg (·.2.val) h)⟩
 
 @[simp]
-theorem PNat.mem_divisorsAntidiagonal {n : ℕ+} (x : ℕ+ × ℕ+) :
-    x ∈ PNat.divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
+theorem mem_divisorsAntidiagonal {n : ℕ+} (x : ℕ+ × ℕ+) :
+    x ∈ divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
   simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
-    Prod.ext_iff, true_and, ← PNat.coe_inj, Subtype.exists]
+    Prod.ext_iff, true_and, ← coe_inj, Subtype.exists]
   aesop
 
-instance PNat.instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
-  antidiagonal n := PNat.divisorsAntidiagonal (Additive.toMul n) |>.map
+instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
+  antidiagonal n := divisorsAntidiagonal (Additive.toMul n) |>.map
     (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
   mem_antidiagonal {n a} := by
     obtain ⟨a₁, a₂⟩ := a
@@ -45,15 +49,14 @@ instance PNat.instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
     simp_rw [Additive.ofMul.surjective.forall, ← ofMul_mul, Additive.ofMul.injective.eq_iff]
     simp
 
-namespace Nat
-
-open BigOperators Finset ArithmeticFunction
 @[norm_cast]
-theorem prod_coe {ι : Type*} [DecidableEq ι] (f : ι → PNat) (s : Finset ι) :
-    ↑(∏ i in s, f i) = (∏ i in s, f i : Nat) := by
-  induction s using Finset.induction with
-  | empty => simp only [prod_empty, PNat.one_coe]
-  | @insert i s h h_ind => simp only [Finset.prod_insert h, PNat.mul_coe, h_ind]
+theorem coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
+    ↑(∏ i in s, f i) = (∏ i in s, f i : Nat) :=
+  map_prod coeMonoidHom _ _
+
+end PNat
+
+namespace Nat
 
 /--
   The `Finset` of all `d`-tuples of natural numbers whose product is `n`. Defined to be `∅` when
@@ -270,7 +273,7 @@ theorem card_finMulAntidiagonal_pi (d n : ℕ) (hn : Squarefree n) :
 theorem card_finMulAntidiagonal_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     (finMulAntidiagonal d n).card = d ^ ω n := by
   rw [← card_finMulAntidiagonal_pi d n hn, Finset.card_pi, Finset.prod_const,
-    cardDistinctFactors_apply, List.card_toFinset, Finset.card_fin]
+    ArithmeticFunction.cardDistinctFactors_apply, List.card_toFinset, Finset.card_fin]
 
 @[reducible]
 private def f {n : ℕ} : ∀ a ∈ finMulAntidiagonal 3 n, ℕ × ℕ := fun a _ => (a 0 * a 1, a 0 * a 2)
