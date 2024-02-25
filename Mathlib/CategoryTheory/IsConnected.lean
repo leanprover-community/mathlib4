@@ -278,6 +278,9 @@ def Zag (j₁ j₂ : J) : Prop :=
 theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
 #align category_theory.zag_symmetric CategoryTheory.zag_symmetric
 
+/-- Objects connected by a morphism are related by a `Zag`. -/
+theorem zag_of_hom {c d : J} (h : c ⟶ d) : Zag c d := Or.inl <| Nonempty.intro h
+
 /-- `j₁` and `j₂` are related by `Zigzag` if there is a chain of
 morphisms from `j₁` to `j₂`, with backward morphisms allowed.
 -/
@@ -294,6 +297,10 @@ theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
   _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
   (fun h g => Relation.transitive_reflTransGen h g)
 #align category_theory.zigzag_equivalence CategoryTheory.zigzag_equivalence
+
+/-- Objects connected by a morphism are related by a `Zigzag`. -/
+theorem zigzag_of_hom {c d : J} (h : c ⟶ d) : Zigzag c d :=
+    Relation.ReflTransGen.single <| zag_of_hom h
 
 /-- The setoid given by the equivalence relation `Zigzag`. A quotient for this
 setoid is a connected component of the category.
