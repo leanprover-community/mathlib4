@@ -70,7 +70,7 @@ unsafe instance {α : Type*} {β : α → Type*} [Repr α] [∀ i, Repr (β i)] 
     if vals.length = 0 then
       "0"
     else
-      let ret := "dfun₀" ++
+      let ret := "fun₀" ++
         Std.Format.join (vals_dedup.map <|
           fun a => f!" | " ++ a.1 ++ f!" => " ++ a.2)
       if p ≥ leadPrec then Format.paren ret else ret
