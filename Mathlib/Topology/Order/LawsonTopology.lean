@@ -86,6 +86,8 @@ def lawsonBasis (α : Type*) [Preorder α] :=
 
 open TopologicalSpace
 
+/-- The complements of the upper closures of finite sets intersected with Scott open sets form
+a basis for the lawson topology. -/
 def lawson_basis := (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1)
   (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U})
 
