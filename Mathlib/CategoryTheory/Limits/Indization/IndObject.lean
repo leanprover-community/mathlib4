@@ -46,16 +46,16 @@ variable {C : Type u} [Category.{v} C]
     `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v` with cocone point `A`. -/
 structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
   /-- The indexing category of the filtered colimit presentation -/
-  (I : Type v)
+  I : Type v
   /-- The indexing category of the filtered colimit presentation -/
   [ℐ : SmallCategory I]
   [hI : IsFiltered I]
   /-- The diagram of the filtered colimit presentation -/
-  (F : I ⥤ C)
+  F : I ⥤ C
   /-- Use `IndObjectPresentation.cocone` instead. -/
-  (ι : F ⋙ yoneda ⟶ (Functor.const I).obj A)
+  ι : F ⋙ yoneda ⟶ (Functor.const I).obj A
   /-- Use `IndObjectPresenation.coconeIsColimit` instead. -/
-  (isColimit : IsColimit (Cocone.mk A ι))
+  isColimit : IsColimit (Cocone.mk A ι)
 
 namespace IndObjectPresentation
 
