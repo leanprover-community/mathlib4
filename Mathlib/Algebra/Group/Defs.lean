@@ -290,16 +290,16 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 
 end Semigroup
 
-/-- A commutative addition is a type with an addition which commutes-/
+/-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
 class AddCommMagma (G : Type u) extends Add G where
-  /-- Addition is commutative in an additive commutative semigroup. -/
+  /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
-/-- A commutative multiplication is a type with a multiplication which commutes-/
+/-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 @[ext]
 class CommMagma (G : Type u) extends Mul G where
-  /-- Multiplication is commutative in a commutative semigroup. -/
+  /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
 attribute [to_additive] CommMagma

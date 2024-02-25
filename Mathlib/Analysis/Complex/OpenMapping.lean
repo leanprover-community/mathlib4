@@ -21,8 +21,8 @@ its image `f z₀`. The results extend in higher dimension to `g : E → ℂ`.
 The proof of the local version on `ℂ` goes through two main steps: first, assuming that the function
 is not constant around `z₀`, use the isolated zero principle to show that `‖f z‖` is bounded below
 on a small `sphere z₀ r` around `z₀`, and then use the maximum principle applied to the auxiliary
-function `(λ z, ‖f z - v‖)` to show that any `v` close enough to `f z₀` is in `f '' ball z₀ r`. That
-second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
+function `(fun z ↦ ‖f z - v‖)` to show that any `v` close enough to `f z₀` is in `f '' ball z₀ r`.
+That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
 
 ## Main results
 
@@ -45,7 +45,7 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
     (hf : ∀ z ∈ sphere z₀ r, ε ≤ ‖f z - f z₀‖) (hz₀ : ∃ᶠ z in 𝓝 z₀, f z ≠ f z₀) :
     ball (f z₀) (ε / 2) ⊆ f '' closedBall z₀ r := by
   /- This is a direct application of the maximum principle. Pick `v` close to `f z₀`, and look at
-    the function `λ z, ‖f z - v‖`: it is bounded below on the circle, and takes a small value
+    the function `fun z ↦ ‖f z - v‖`: it is bounded below on the circle, and takes a small value
     at `z₀` so it is not constant on the disk, which implies that its infimum is equal to `0` and
     hence that `v` is in the range of `f`. -/
   rintro v hv
@@ -88,9 +88,9 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
     ∃ ρ > 0, AnalyticOn ℂ f (closedBall z₀ ρ) ∧ ∀ z ∈ closedBall z₀ ρ, z ≠ z₀ → f z ≠ f z₀ := by
     simpa only [setOf_and, subset_inter_iff] using
       nhds_basis_closedBall.mem_iff.mp (h2.and (eventually_nhdsWithin_iff.mp h1))
-  replace h3 : DiffContOnCl ℂ f (ball z₀ ρ)
-  exact ⟨h3.differentiableOn.mono ball_subset_closedBall,
-    (closure_ball z₀ hρ.lt.ne.symm).symm ▸ h3.continuousOn⟩
+  replace h3 : DiffContOnCl ℂ f (ball z₀ ρ) :=
+    ⟨h3.differentiableOn.mono ball_subset_closedBall,
+      (closure_ball z₀ hρ.lt.ne.symm).symm ▸ h3.continuousOn⟩
   let r := ρ ⊓ R
   have hr : 0 < r := lt_inf_iff.mpr ⟨hρ, hR⟩
   have h5 : closedBall z₀ r ⊆ closedBall z₀ ρ := closedBall_subset_closedBall inf_le_left

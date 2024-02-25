@@ -62,9 +62,9 @@ theorem ContinuousLinearMap.norm_map_tail_le
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) (m : ∀ i, Ei i) :
     ‖f (m 0) (tail m)‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
   calc
-    ‖f (m 0) (tail m)‖ ≤ ‖f (m 0)‖ * ∏ i, ‖(tail m) i‖ := (f (m 0)).le_op_norm _
+    ‖f (m 0) (tail m)‖ ≤ ‖f (m 0)‖ * ∏ i, ‖(tail m) i‖ := (f (m 0)).le_opNorm _
     _ ≤ ‖f‖ * ‖m 0‖ * ∏ i, ‖(tail m) i‖ :=
-      (mul_le_mul_of_nonneg_right (f.le_op_norm _) (prod_nonneg fun _ _ => norm_nonneg _))
+      (mul_le_mul_of_nonneg_right (f.le_opNorm _) (prod_nonneg fun _ _ => norm_nonneg _))
     _ = ‖f‖ * (‖m 0‖ * ∏ i, ‖(tail m) i‖) := by ring
     _ = ‖f‖ * ∏ i, ‖m i‖ := by
       rw [prod_univ_succ]
@@ -75,9 +75,9 @@ theorem ContinuousMultilinearMap.norm_map_init_le
     (f : ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G))
     (m : ∀ i, Ei i) : ‖f (init m) (m (last n))‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
   calc
-    ‖f (init m) (m (last n))‖ ≤ ‖f (init m)‖ * ‖m (last n)‖ := (f (init m)).le_op_norm _
+    ‖f (init m) (m (last n))‖ ≤ ‖f (init m)‖ * ‖m (last n)‖ := (f (init m)).le_opNorm _
     _ ≤ (‖f‖ * ∏ i, ‖(init m) i‖) * ‖m (last n)‖ :=
-      (mul_le_mul_of_nonneg_right (f.le_op_norm _) (norm_nonneg _))
+      (mul_le_mul_of_nonneg_right (f.le_opNorm _) (norm_nonneg _))
     _ = ‖f‖ * ((∏ i, ‖(init m) i‖) * ‖m (last n)‖) := (mul_assoc _ _ _)
     _ = ‖f‖ * ∏ i, ‖m i‖ := by
       rw [prod_univ_castSucc]
@@ -87,7 +87,7 @@ theorem ContinuousMultilinearMap.norm_map_init_le
 theorem ContinuousMultilinearMap.norm_map_cons_le (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0)
     (m : ∀ i : Fin n, Ei i.succ) : ‖f (cons x m)‖ ≤ ‖f‖ * ‖x‖ * ∏ i, ‖m i‖ :=
   calc
-    ‖f (cons x m)‖ ≤ ‖f‖ * ∏ i, ‖cons x m i‖ := f.le_op_norm _
+    ‖f (cons x m)‖ ≤ ‖f‖ * ∏ i, ‖cons x m i‖ := f.le_opNorm _
     _ = ‖f‖ * ‖x‖ * ∏ i, ‖m i‖ := by
       rw [prod_univ_succ]
       simp [mul_assoc]
@@ -97,7 +97,7 @@ theorem ContinuousMultilinearMap.norm_map_snoc_le (f : ContinuousMultilinearMap 
     (m : ∀ i : Fin n, Ei <| castSucc i) (x : Ei (last n)) :
     ‖f (snoc m x)‖ ≤ (‖f‖ * ∏ i, ‖m i‖) * ‖x‖ :=
   calc
-    ‖f (snoc m x)‖ ≤ ‖f‖ * ∏ i, ‖snoc m x i‖ := f.le_op_norm _
+    ‖f (snoc m x)‖ ≤ ‖f‖ * ∏ i, ‖snoc m x i‖ := f.le_opNorm _
     _ = (‖f‖ * ∏ i, ‖m i‖) * ‖x‖ := by
       rw [prod_univ_castSucc]
       simp [mul_assoc]
@@ -456,9 +456,9 @@ variable {𝕜 G}
 theorem ContinuousMultilinearMap.fin0_apply_norm (f : G[×0]→L[𝕜] G') {x : Fin 0 → G} :
     ‖f x‖ = ‖f‖ := by
   obtain rfl : x = 0 := Subsingleton.elim _ _
-  refine' le_antisymm (by simpa using f.le_op_norm 0) _
+  refine' le_antisymm (by simpa using f.le_opNorm 0) _
   have : ‖ContinuousMultilinearMap.curry0 𝕜 G f.uncurry0‖ ≤ ‖f.uncurry0‖ :=
-    ContinuousMultilinearMap.op_norm_le_bound _ (norm_nonneg _) fun m => by
+    ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) fun m => by
       simp [-ContinuousMultilinearMap.apply_zero_curry0]
   simpa [-Matrix.zero_empty] using this
 #align continuous_multilinear_map.fin0_apply_norm ContinuousMultilinearMap.fin0_apply_norm
@@ -558,7 +558,7 @@ maps with variables indexed by `ι'`. -/
 def currySum (f : ContinuousMultilinearMap 𝕜 (fun _ : Sum ι ι' => G) G') :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G') :=
   MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySum f.toMultilinearMap) ‖f‖
-    fun m m' => by simpa [Fintype.prod_sum_type, mul_assoc] using f.le_op_norm (Sum.elim m m')
+    fun m m' => by simpa [Fintype.prod_sum_type, mul_assoc] using f.le_opNorm (Sum.elim m m')
 #align continuous_multilinear_map.curry_sum ContinuousMultilinearMap.currySum
 
 @[simp]
@@ -576,7 +576,7 @@ def uncurrySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
   MultilinearMap.mkContinuous
     (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m => by
     simpa [Fintype.prod_sum_type, mul_assoc] using
-      (f (m ∘ Sum.inl)).le_of_op_norm_le (m ∘ Sum.inr) (f.le_op_norm _)
+      (f (m ∘ Sum.inl)).le_of_opNorm_le (m ∘ Sum.inr) (f.le_opNorm _)
 #align continuous_multilinear_map.uncurry_sum ContinuousMultilinearMap.uncurrySum
 
 @[simp]

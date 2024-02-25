@@ -172,7 +172,7 @@ theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn :
 
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
-@[norm_num (_ : α) ^ (_ : ℕ), Pow.pow _ (_ : ℕ)]
+@[norm_num (_ : α) ^ (_ : ℕ)]
 def evalPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
   let ⟨nb, pb⟩ ← deriveNat b q(instAddMonoidWithOneNat)

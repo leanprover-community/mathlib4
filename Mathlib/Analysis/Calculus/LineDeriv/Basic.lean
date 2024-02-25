@@ -27,7 +27,7 @@ linear in general).
 
 ## Main definition and results
 
-We mimick the definitions and statements for the Fréchet derivative and the one-dimensional
+We mimic the definitions and statements for the Fréchet derivative and the one-dimensional
 derivative. We define in particular the following objects:
 
 * `LineDifferentiableWithinAt 𝕜 f s x v`

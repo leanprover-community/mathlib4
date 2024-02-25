@@ -146,7 +146,7 @@ theorem lintegral_zero_fun : lintegral μ (0 : α → ℝ≥0∞) = 0 :=
   lintegral_zero
 #align measure_theory.lintegral_zero_fun MeasureTheory.lintegral_zero_fun
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem lintegral_one : ∫⁻ _, (1 : ℝ≥0∞) ∂μ = μ univ := by rw [lintegral_const, one_mul]
 #align measure_theory.lintegral_one MeasureTheory.lintegral_one
 
@@ -354,9 +354,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   rcases ENNReal.lt_iff_exists_coe.1 ha with ⟨r, rfl, _⟩
   have ha : r < 1 := ENNReal.coe_lt_coe.1 ha
   let rs := s.map fun a => r * a
-  have eq_rs : (const α r : α →ₛ ℝ≥0∞) * map c s = rs.map c := by
-    ext1 a
-    exact ENNReal.coe_mul.symm
+  have eq_rs : rs.map c = (const α r : α →ₛ ℝ≥0∞) * map c s := rfl
   have eq : ∀ p, rs.map c ⁻¹' {p} = ⋃ n, rs.map c ⁻¹' {p} ∩ { a | p ≤ f n a } := by
     intro p
     rw [← inter_iUnion]; nth_rw 1 [← inter_univ (map c rs ⁻¹' {p})]
@@ -381,7 +379,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     refine' inter_subset_inter (Subset.refl _) _
     intro x (hx : r ≤ f i x)
     exact le_trans hx (h_mono h x)
-  have h_meas : ∀ n, MeasurableSet { a : α | (⇑(map c rs)) a ≤ f n a } := fun n =>
+  have h_meas : ∀ n, MeasurableSet {a : α | map c rs a ≤ f n a} := fun n =>
     measurableSet_le (SimpleFunc.measurable _) (hf n)
   calc
     (r : ℝ≥0∞) * (s.map c).lintegral μ = ∑ r in (rs.map c).range, r * μ (rs.map c ⁻¹' {r}) := by
@@ -438,8 +436,8 @@ theorem lintegral_tendsto_of_tendsto_of_monotone {f : ℕ → α → ℝ≥0∞}
     Tendsto (fun n => ∫⁻ x, f n x ∂μ) atTop (𝓝 <| ∫⁻ x, F x ∂μ) := by
   have : Monotone fun n => ∫⁻ x, f n x ∂μ := fun i j hij =>
     lintegral_mono_ae (h_mono.mono fun x hx => hx hij)
-  suffices key : ∫⁻ x, F x ∂μ = ⨆ n, ∫⁻ x, f n x ∂μ
-  · rw [key]
+  suffices key : ∫⁻ x, F x ∂μ = ⨆ n, ∫⁻ x, f n x ∂μ by
+    rw [key]
     exact tendsto_atTop_iSup this
   rw [← lintegral_iSup' hf h_mono]
   refine' lintegral_congr_ae _
@@ -1252,7 +1250,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
     ext1 b
     rw [lintegral_congr_ae]
     apply EventuallyEq.symm
-    refine' aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
+    exact aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
 #align measure_theory.lintegral_supr_directed MeasureTheory.lintegral_iSup_directed
 
 end
@@ -1676,8 +1674,7 @@ theorem lintegral_trim {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞}
   · intro c s hs
     rw [lintegral_indicator _ hs, lintegral_indicator _ (hm s hs), set_lintegral_const,
       set_lintegral_const]
-    suffices h_trim_s : μ.trim hm s = μ s
-    · rw [h_trim_s]
+    suffices h_trim_s : μ.trim hm s = μ s by rw [h_trim_s]
     exact trim_measurableSet_eq hm hs
   · intro f g _ hf _ hf_prop hg_prop
     have h_m := lintegral_add_left (μ := Measure.trim μ hm) hf g
@@ -1792,7 +1789,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       simp only [hc, ENNReal.coe_zero, zero_mul, not_lt_zero] at hL
     have : L / c < μ s := by
       rwa [ENNReal.div_lt_iff, mul_comm]
-      · simp only [c_ne_zero, Ne.def, coe_eq_zero, not_false_iff, true_or_iff]
+      · simp only [c_ne_zero, Ne.def, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
       · simp only [Ne.def, coe_ne_top, not_false_iff, true_or_iff]
     obtain ⟨t, ht, ts, mlt, t_top⟩ :
       ∃ t : Set α, MeasurableSet t ∧ t ⊆ s ∧ L / ↑c < μ t ∧ μ t < ∞ :=
@@ -1807,10 +1804,10 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', univ_inter]
       rwa [mul_comm, ← ENNReal.div_lt_iff]
-      · simp only [c_ne_zero, Ne.def, coe_eq_zero, not_false_iff, true_or_iff]
+      · simp only [c_ne_zero, Ne.def, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
       · simp only [Ne.def, coe_ne_top, not_false_iff, true_or_iff]
-  · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ
-    · rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
+  · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
+      rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
     by_cases hf₁ : ∫⁻ x, f₁ x ∂μ = 0
     · simp only [hf₁, zero_add] at hL
       rcases h₂ hL with ⟨g, g_le, g_top, gL⟩

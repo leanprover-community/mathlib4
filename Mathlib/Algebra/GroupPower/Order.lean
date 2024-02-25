@@ -50,11 +50,12 @@ lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := fun m n
 #align zpow_mono_right zpow_mono_right
 #align zsmul_mono_left zsmul_mono_left
 
-@[to_additive] lemma zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_mono_right ha h
+@[to_additive (attr := gcongr)]
+lemma zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_mono_right ha h
 #align zpow_le_zpow zpow_le_zpow
 #align zsmul_le_zsmul zsmul_le_zsmul
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n := zpow_right_strictMono ha h
 #align zpow_lt_zpow zpow_lt_zpow
 #align zsmul_lt_zsmul zsmul_lt_zsmul
@@ -85,12 +86,12 @@ lemma zpow_mono_left (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b
 
 variable {α}
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma zpow_le_zpow' (hn : 0 ≤ n) (h : a ≤ b) : a ^ n ≤ b ^ n := zpow_mono_left α hn h
 #align zpow_le_zpow' zpow_le_zpow'
 #align zsmul_le_zsmul' zsmul_le_zsmul'
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma zpow_lt_zpow' (hn : 0 < n) (h : a < b) : a ^ n < b ^ n := zpow_strictMono_left α hn h
 #align zpow_lt_zpow' zpow_lt_zpow'
 #align zsmul_lt_zsmul' zsmul_lt_zsmul'
@@ -204,6 +205,7 @@ theorem pow_right_mono (h : 1 ≤ a) : Monotone (a ^ ·) :=
     exact le_mul_of_one_le_left (pow_nonneg (zero_le_one.trans h) _) h
 #align pow_mono pow_right_mono
 
+@[gcongr]
 theorem pow_le_pow_right (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_right_mono ha h
 #align pow_le_pow pow_le_pow_right
 
@@ -212,7 +214,7 @@ theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m := by
 #align self_le_pow le_self_pow
 #align le_self_pow le_self_pow
 
-@[mono]
+@[mono, gcongr]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
   | 0 => by simp
   | n + 1 => by simpa only [pow_succ]
@@ -237,6 +239,7 @@ section StrictOrderedSemiring
 
 variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 
+@[gcongr]
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n
   | 0, hn => by contradiction
   | n + 1, _ => by
@@ -256,6 +259,7 @@ lemma pow_right_strictMono (h : 1 < a) : StrictMono (a ^ ·) :=
     simpa only [one_mul, pow_succ] using mul_lt_mul h (le_refl (a ^ n)) (pow_pos this _) this.le
 #align pow_strict_mono_right pow_right_strictMono
 
+@[gcongr]
 theorem pow_lt_pow_right (h : 1 < a) (hmn : m < n) : a ^ m < a ^ n := pow_right_strictMono h hmn
 #align pow_lt_pow_right pow_lt_pow_right
 
@@ -386,6 +390,50 @@ theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b := b
   simp_rw [← sq]
   exact lt_of_pow_lt_pow_left _ hb
 #align lt_of_mul_self_lt_mul_self lt_of_mul_self_lt_mul_self
+
+variable [ExistsAddOfLE R]
+
+lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
+  calc
+    (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
+        simp_rw [pow_succ, pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
+    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
+    _ = _ := by simp_rw [pow_succ, pow_zero, mul_one, two_mul]
+  cases le_total a b
+  · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
+  · exact mul_add_mul_le_mul_add_mul' ‹_› ‹_›
+
+-- TODO: Use `gcongr`, `positivity`, `ring` once those tactics are made available here
+lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n - 1) * (a ^ n + b ^ n)
+  | 0 => by simp
+  | 1 => by simp
+  | n + 2 => by
+    rw [pow_succ']
+    calc
+      _ ≤ 2 ^ n * (a ^ (n + 1) + b ^ (n + 1)) * (a + b) :=
+          mul_le_mul_of_nonneg_right (add_pow_le ha hb (n + 1)) $ add_nonneg ha hb
+      _ = 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * b + b ^ (n + 1) * a)) := by
+          rw [mul_assoc, mul_add, add_mul, add_mul, ← pow_succ', ← pow_succ', add_comm _ (b ^ _),
+            add_add_add_comm, add_comm (_ * a)]
+      _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
+          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) $ pow_nonneg (zero_le_two (α := R)) _
+      _ = _ := by simp only [← pow_succ', ← two_mul, ← mul_assoc]; rfl
+    · obtain hab | hba := le_total a b
+      · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left ha hab _) hab
+      · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left hb hba _) hba
+
+-- TODO: State using `Even`
+protected lemma Even.add_pow_le (hn : ∃ k, 2 * k = n) :
+    (a + b) ^ n ≤ 2 ^ (n - 1) * (a ^ n + b ^ n) := by
+  obtain ⟨n, rfl⟩ := hn
+  rw [pow_mul]
+  calc
+    _ ≤ (2 * (a ^ 2 + b ^ 2)) ^ n := pow_le_pow_left (sq_nonneg _) add_sq_le _
+    _ = 2 ^ n * (a ^ 2 + b ^ 2) ^ n := by -- TODO: Should be `Nat.cast_commute`
+        rw [Commute.mul_pow]; simp [Commute, SemiconjBy, two_mul, mul_two]
+    _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) := mul_le_mul_of_nonneg_left
+          (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
+    _ = _ := by simp only [← mul_assoc, ← pow_add, ← pow_mul]; cases n; rfl; simp [two_mul]
 
 end LinearOrderedSemiring
 

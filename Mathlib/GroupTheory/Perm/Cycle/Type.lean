@@ -339,13 +339,13 @@ theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ
   let σ : α ≃ α := ⟨f, f ^ (p ^ n - 1),
     leftInverse_iff_comp.mpr ((pow_sub_mul_pow f (Nat.one_le_pow n p hp.out.pos)).trans hf),
     leftInverse_iff_comp.mpr ((pow_mul_pow_sub f (Nat.one_le_pow n p hp.out.pos)).trans hf)⟩
-  have hσ : σ ^ p ^ n = 1
-  · rw [DFunLike.ext'_iff, coe_pow]
+  have hσ : σ ^ p ^ n = 1 := by
+    rw [DFunLike.ext'_iff, coe_pow]
     exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
-  suffices : Fintype.card f.fixedPoints = (support σ)ᶜ.card
-  · exact this ▸ (card_compl_support_modEq hσ).symm
-  suffices : f.fixedPoints = (support σ)ᶜ
-  · simp only [this]; apply Fintype.card_coe
+  suffices Fintype.card f.fixedPoints = (support σ)ᶜ.card from
+    this ▸ (card_compl_support_modEq hσ).symm
+  suffices f.fixedPoints = (support σ)ᶜ by
+    simp only [this]; apply Fintype.card_coe
   simp [Set.ext_iff, IsFixedPt]
 
 theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p ∣ Fintype.card α)
@@ -643,8 +643,8 @@ variable [DecidableEq α]
 
 theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ c) (bc : b ≠ c) :
     IsThreeCycle (swap a b * swap a c) := by
-  suffices h : support (swap a b * swap a c) = {a, b, c}
-  · rw [← card_support_eq_three_iff, h]
+  suffices h : support (swap a b * swap a c) = {a, b, c} by
+    rw [← card_support_eq_three_iff, h]
     simp [ab, ac, bc]
   apply le_antisymm ((support_mul_le _ _).trans fun x => _) fun x hx => ?_
   · simp [ab, ac, bc]

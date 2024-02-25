@@ -36,20 +36,11 @@ universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ ProfiniteMax.{u, v}} (C : Cone F)
 
-noncomputable
-instance preserves_smaller_limits_toTopCat :
-    PreservesLimitsOfSize.{v, v} (toTopCat : ProfiniteMax.{v, u} ⥤ TopCatMax.{v, u}) :=
-  Limits.preservesLimitsOfSizeShrink.{v, max u v, v, max u v} _
-
--- include hC
--- Porting note: I just add `(hC : IsLimit C)` explicitly as a hypothesis to all the theorems
-
 /-- If `X` is a cofiltered limit of profinite sets, then any clopen subset of `X` arises from
 a clopen set in one of the terms in the limit.
 -/
 theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen U) :
     ∃ (j : J) (V : Set (F.obj j)), IsClopen V ∧ U = C.π.app j ⁻¹' V := by
-  have := preserves_smaller_limits_toTopCat.{u, v}
   -- First, we have the topological basis of the cofiltered limit obtained by pulling back
   -- clopen sets from the factors in the limit. By continuity, all such sets are again clopen.
   have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, v} (F ⋙ Profinite.toTopCat)
@@ -74,11 +65,11 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
 
   -- Since `U` is also closed, hence compact, it is covered by finitely many of the
   -- clopens constructed in the previous step.
-  have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i)
-  · intro s
+  have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i) := by
+    intro s
     exact (hV s).1.2.preimage (C.π.app (j s)).continuous
-  have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i
-  · dsimp only
+  have hsU : U ⊆ ⋃ (i : ↑S), (fun s ↦ (forget Profinite).map (C.π.app (j s)) ⁻¹' V s) i := by
+    dsimp only
     rw [h]
     rintro x ⟨T, hT, hx⟩
     refine' ⟨_, ⟨⟨T, hT⟩, rfl⟩, _⟩
@@ -218,15 +209,14 @@ set_option linter.uppercaseLean3 false in
 one of the components. -/
 theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
-  have := preserves_smaller_limits_toTopCat.{u, v}
   let S := f.discreteQuotient
   let ff : S → α := f.lift
   cases isEmpty_or_nonempty S
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine' this.imp fun j hj => _
       refine' ⟨⟨hj.elim, fun A => _⟩, _⟩
-      · suffices : (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅
-        · rw [this]
+      · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
+          rw [this]
           exact isOpen_empty
         exact @Set.eq_empty_of_isEmpty _ hj _
       · ext x
@@ -240,7 +230,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
       (inferInstance : CompactSpace (F.obj j))
     have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u}
       (F ⋙ Profinite.toTopCat)
-    suffices : Nonempty C.pt; exact IsEmpty.false (S.proj this.some)
+    suffices Nonempty C.pt from IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C
     have hD : IsLimit D := isLimitOfPreserves Profinite.toTopCat hC
     have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{v, max u v} _)).inv

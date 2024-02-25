@@ -70,7 +70,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι
 /-! ### Paths -/
 
 /-- Continuous path connecting two points `x` and `y` in a topological space -/
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 structure Path (x y : X) extends C(I, X) where
   /-- The start point of a `Path`. -/
   source' : toFun 0 = x
@@ -78,14 +78,16 @@ structure Path (x y : X) extends C(I, X) where
   target' : toFun 1 = y
 #align path Path
 
--- porting note: added this instance so that we can use `DFunLike.coe` for `CoeFun`
--- this also fixed very strange `simp` timeout issues
-instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
+instance Path.funLike : FunLike (Path x y) I X where
   coe := fun γ ↦ ⇑γ.toContinuousMap
   coe_injective' := fun γ₁ γ₂ h => by
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
-  map_continuous := fun γ => by continuity
+
+-- Porting note (#10754): added this instance so that we can use `FunLike.coe` for `CoeFun`
+-- this also fixed very strange `simp` timeout issues
+instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
+  map_continuous := fun γ => show Continuous γ.toContinuousMap by continuity
 
 -- porting note: not necessary in light of the instance above
 /-

@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Measure.Regular
 
 #align_import analysis.box_integral.integrability from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -15,6 +14,8 @@ import Mathlib.MeasureTheory.Measure.Regular
 In this file we prove that any Bochner integrable function is McShane integrable (hence, it is
 Henstock and `GP` integrable) with the same integral. The proof is based on
 [Russel A. Gordon, *The integrals of Lebesgue, Denjoy, Perron, and Henstock*][Gordon55].
+
+We deduce that the same is true for the Riemann integral for continuous functions.
 
 ## Tags
 
@@ -301,5 +302,17 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     refine' norm_integral_le_of_norm_le (hfgi _ J hJ) (eventually_of_forall fun x => _)
     exact hfg_mono x (hNx (π.tag J))
 #align measure_theory.integrable_on.has_box_integral MeasureTheory.IntegrableOn.hasBoxIntegral
+
+/-- If `f : ℝⁿ → E` is continuous on a rectangular box `I`, then it is Box integrable on `I`
+w.r.t. a locally finite measure `μ` with the same integral. -/
+theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (μ : Measure (ι → ℝ))
+    [IsLocallyFiniteMeasure μ] {I : Box ι} (hc : ContinuousOn f (Box.Icc I))
+    (l : IntegrationParams) :
+    HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
+  obtain ⟨y, hy⟩ := BoxIntegral.integrable_of_continuousOn l hc μ
+  convert hy
+  have : IntegrableOn f I μ :=
+    IntegrableOn.mono_set (hc.integrableOn_compact I.isCompact_Icc) Box.coe_subset_Icc
+  exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
 
 end MeasureTheory

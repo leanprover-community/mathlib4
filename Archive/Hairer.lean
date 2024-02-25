@@ -95,7 +95,7 @@ lemma inj_L : Injective (L ι) :=
   (injective_iff_map_eq_zero _).mpr fun p hp ↦ by
     have H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 :=
       isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero
-        (by exact continuous_eval p |>.locallyIntegrable.locallyIntegrableOn _)
+        (continuous_eval p |>.locallyIntegrable.locallyIntegrableOn _)
         fun g hg _h2g g_supp ↦ by
           simpa [mul_comm (g _), L] using congr($hp ⟨g, g_supp.trans ball_subset_closedBall, hg⟩)
     simp_rw [MvPolynomial.funext_iff, map_zero]

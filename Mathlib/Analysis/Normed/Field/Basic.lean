@@ -1064,7 +1064,7 @@ namespace NNReal
 
 open NNReal
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 #align nnreal.norm_eq NNReal.norm_eq
 
@@ -1117,6 +1117,7 @@ instance Rat.denselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
     ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
+
 section RingHomIsometric
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
@@ -1144,6 +1145,7 @@ end RingHomIsometric
 section Induced
 
 variable {F : Type*} (R S : Type*)
+variable [FunLike F R S]
 
 /-- A non-unital ring homomorphism from a `NonUnitalRing` to a `NonUnitalSeminormedRing`
 induces a `NonUnitalSeminormedRing` structure on the domain.
@@ -1252,7 +1254,7 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
 theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
-    [NormOneClass S] [RingHomClass F R S] (f : F) :
+    [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
   -- porting note: is this `let` a bad idea somehow?
   let _ : SeminormedRing R := SeminormedRing.induced R S f

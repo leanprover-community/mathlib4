@@ -18,11 +18,11 @@ universe u
 
 namespace AddCommGroupCat
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 instance (P Q : AddCommGroupCat) : AddCommGroup (P ⟶ Q) :=
   (inferInstance : AddCommGroup (AddMonoidHom P Q))
 
--- porting note: this lemma was not necessary in mathlib
+-- porting note (#10688): this lemma was not necessary in mathlib
 @[simp]
 lemma hom_add_apply {P Q : AddCommGroupCat} (f g : P ⟶ Q) (x : P) : (f + g) x = f x + g x := rfl
 

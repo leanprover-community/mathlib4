@@ -118,7 +118,6 @@ theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (
   e.leftInverse_symm.preimage_preimage s
 #align equiv.preimage_symm_preimage Equiv.preimage_symm_preimage
 
-@[simp]
 theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ e ⁻¹' t ↔ s ⊆ t :=
   e.surjective.preimage_subset_preimage_iff
 #align equiv.preimage_subset Equiv.preimage_subset
