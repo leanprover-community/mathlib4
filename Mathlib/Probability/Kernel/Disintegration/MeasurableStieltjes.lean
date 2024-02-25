@@ -17,7 +17,9 @@ We provide tools to build a measurable function `α → StieltjesFunction` with 
 +∞ for all `a : α` from a measurable function `f : α → ℚ → ℝ`. These measurable parametric Stieltjes
 functions are cumulative distribution functions (CDF) of transition kernels.
 The reason for going through `ℚ` instead of defining directly a Stieltjes function is that since
-`ℚ` is countable, building a measurable function is much easier.
+`ℚ` is countable, building a measurable function is easier and we can obtain properties of the
+form `∀ᵐ (a : α) ∂μ, ∀ (q : ℚ), ...` (for some measure `μ` on `α`) by proving the weaker
+`∀ (q : ℚ), ∀ᵐ (a : α) ∂μ, ...`.
 
 This construction will be possible if `f a : ℚ → ℝ` satisfies a package of properties for all `a`:
 monotonicity, limits at +-∞ at a continuity property. We define `IsRatStieltjesPoint f a` to state
