@@ -507,6 +507,12 @@ instance monMonoidal : MonoidalCategory (Mon_ C) := .ofTensorHom
   (triangle := by intros; ext; dsimp; apply triangle)
 #align Mon_.Mon_monoidal Mon_.monMonoidal
 
+@[simp] lemma tensorObj_one (M N : Mon_ C) :
+    (M ⊗ N).one = (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one) := rfl
+
+@[simp] lemma tensorObj_mul (M N : Mon_ C) :
+    (M ⊗ N).mul = tensor_μ C (M.X, N.X) (M.X, N.X) ≫ (M.mul ⊗ N.mul) := rfl
+
 end Mon_
 
 /-!
