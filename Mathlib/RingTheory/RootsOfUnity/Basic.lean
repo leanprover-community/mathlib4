@@ -95,6 +95,9 @@ theorem mem_rootsOfUnity' (k : ℕ+) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (�
   rw [mem_rootsOfUnity]; norm_cast
 #align mem_roots_of_unity' mem_rootsOfUnity'
 
+@[simp]
+theorem rootsOfUnity_one (M : Type*) [CommMonoid M] : rootsOfUnity 1 M = ⊥ := by ext; simp
+
 theorem rootsOfUnity.coe_injective {n : ℕ+} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
   Units.ext.comp fun _ _ => Subtype.eq
@@ -131,12 +134,12 @@ theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
   rw [Subgroup.coe_pow, Units.val_pow_eq_pow_val]
 #align roots_of_unity.coe_pow rootsOfUnity.coe_pow
 
-section CommSemiring
+section CommMonoid
 
-variable [CommSemiring R] [CommSemiring S] [FunLike F R S]
+variable [CommMonoid R] [CommMonoid S] [FunLike F R S]
 
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
-def restrictRootsOfUnity [RingHomClass F R S] (σ : F) (n : ℕ+) :
+def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ+) :
     rootsOfUnity n R →* rootsOfUnity n S :=
   let h : ∀ ξ : rootsOfUnity n R, (σ (ξ : Rˣ)) ^ (n : ℕ) = 1 := fun ξ => by
     rw [← map_pow, ← Units.val_pow_eq_pow_val, show (ξ : Rˣ) ^ (n : ℕ) = 1 from ξ.2, Units.val_one,
@@ -149,34 +152,34 @@ def restrictRootsOfUnity [RingHomClass F R S] (σ : F) (n : ℕ+) :
 #align restrict_roots_of_unity restrictRootsOfUnity
 
 @[simp]
-theorem restrictRootsOfUnity_coe_apply [RingHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
+theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
     (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
 #align restrict_roots_of_unity_coe_apply restrictRootsOfUnity_coe_apply
 
-/-- Restrict a ring isomorphism to the nth roots of unity. -/
-nonrec def RingEquiv.restrictRootsOfUnity (σ : R ≃+* S) (n : ℕ+) :
+/-- Restrict a monoid isomorphism to the nth roots of unity. -/
+nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ+) :
     rootsOfUnity n R ≃* rootsOfUnity n S where
-  toFun := restrictRootsOfUnity σ.toRingHom n
-  invFun := restrictRootsOfUnity σ.symm.toRingHom n
+  toFun := restrictRootsOfUnity σ n
+  invFun := restrictRootsOfUnity σ.symm n
   left_inv ξ := by ext; exact σ.symm_apply_apply (ξ : Rˣ)
   right_inv ξ := by ext; exact σ.apply_symm_apply (ξ : Sˣ)
   map_mul' := (restrictRootsOfUnity _ n).map_mul
-#align ring_equiv.restrict_roots_of_unity RingEquiv.restrictRootsOfUnity
+#align ring_equiv.restrict_roots_of_unity MulEquiv.restrictRootsOfUnity
 
 @[simp]
-theorem RingEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃+* S) (ζ : rootsOfUnity k R) :
+theorem MulEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃* S) (ζ : rootsOfUnity k R) :
     (σ.restrictRootsOfUnity k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
-#align ring_equiv.restrict_roots_of_unity_coe_apply RingEquiv.restrictRootsOfUnity_coe_apply
+#align ring_equiv.restrict_roots_of_unity_coe_apply MulEquiv.restrictRootsOfUnity_coe_apply
 
 @[simp]
-theorem RingEquiv.restrictRootsOfUnity_symm (σ : R ≃+* S) :
+theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
-#align ring_equiv.restrict_roots_of_unity_symm RingEquiv.restrictRootsOfUnity_symm
+#align ring_equiv.restrict_roots_of_unity_symm MulEquiv.restrictRootsOfUnity_symm
 
-end CommSemiring
+end CommMonoid
 
 section IsDomain
 

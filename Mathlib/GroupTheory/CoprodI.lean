@@ -724,8 +724,8 @@ def toWord {i j} (w : NeWord M i j) : Word M
 
 /-- Every nonempty `Word M` can be constructed as a `NeWord M i j` -/
 theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
-  suffices : ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList
-  · rcases this with ⟨i, j, w, h⟩
+  suffices ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList by
+    rcases this with ⟨i, j, w, h⟩
     refine' ⟨i, j, w, _⟩
     ext
     rw [h]
@@ -880,8 +880,6 @@ variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
 
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 
---include hpp Porting note: commented out
-
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
     lift f w.prod • X k ⊆ X i := by
   induction' w with i x hne_one i j k l w₁ hne w₂ hIw₁ hIw₂ generalizing k
@@ -893,8 +891,6 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
       _ ⊆ X i := hIw₁ hne
 #align free_product.lift_word_ping_pong Monoid.CoprodI.lift_word_ping_pong
 
---include X hXnonempty hXdisj Porting note: commented out
-
 theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead : k ≠ i)
     (hlast : k ≠ j) : lift f w.prod ≠ 1 := by
   intro heq1
@@ -902,8 +898,6 @@ theorem lift_word_prod_nontrivial_of_other_i {i j k} (w : NeWord H i j) (hhead :
   obtain ⟨x, hx⟩ := hXnonempty k
   exact (hXdisj hhead).le_bot ⟨hx, this hx⟩
 #align free_product.lift_word_prod_nontrivial_of_other_i Monoid.CoprodI.lift_word_prod_nontrivial_of_other_i
-
---include hnontriv Porting note: commented out
 
 theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) : lift f w.prod ≠ 1 := by
   obtain ⟨k, hk⟩ := exists_ne i
@@ -925,8 +919,6 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard :
   apply hw'
   simp [heq1]
 #align free_product.lift_word_prod_nontrivial_of_head_card Monoid.CoprodI.lift_word_prod_nontrivial_of_head_card
-
---include hcard Porting note: commented out
 
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f w.prod ≠ 1 := by
   classical
@@ -1046,8 +1038,6 @@ variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
-
---include hXnonempty hXdisj hYdisj hXYdisj hX hY Porting note: commented out
 
 /-- The Ping-Pong-Lemma.
 

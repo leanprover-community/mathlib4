@@ -277,13 +277,6 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
     simp [upperBounds] at hb
     exact hfcb <| hb _ hcd
 
-variable (α)
-
-def scottBasis := { s : Set α | IsOpen s}
-
-protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (scottBasis α) :=
-  TopologicalSpace.isTopologicalBasis_opens
-
 end Preorder
 
 section PartialOrder
@@ -340,15 +333,15 @@ instance : IsScott (WithScott α) := ⟨rfl⟩
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ (scottHausdorff α).IsOpen u := Iff.rfl
 
-/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
--/
-def withScottHomeomorph [TopologicalSpace α] [IsScott α] : WithScott α ≃ₜ α :=
-  WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [IsScott.topology_eq α, induced_id]; rfl⟩
-
 end WithScott
 end Scott
 
 variable [Preorder α] [TopologicalSpace α]
+
+/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
+-/
+def IsScott.withScottHomeomorph [TopologicalSpace α] [IsScott α] : WithScott α ≃ₜ α :=
+  WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [IsScott.topology_eq α, induced_id]; rfl⟩
 
 lemma IsScott.scottHausdorff_le [IsScott α] : scottHausdorff α ≤ ‹TopologicalSpace α› := by
   rw [IsScott.topology_eq α, scott]; exact le_sup_right

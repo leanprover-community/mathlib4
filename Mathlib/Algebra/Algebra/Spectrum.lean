@@ -142,6 +142,20 @@ theorem mem_resolventSet_iff {r : R} {a : A} : r ∈ resolventSet R a ↔ IsUnit
 #align spectrum.mem_resolvent_set_iff spectrum.mem_resolventSet_iff
 
 @[simp]
+theorem algebraMap_mem_iff (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
+    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} {r : R} :
+    algebraMap R S r ∈ spectrum S a ↔ r ∈ spectrum R a := by
+  simp only [spectrum.mem_iff, Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
+
+protected alias ⟨of_algebraMap_mem, algebraMap_mem⟩ := spectrum.algebraMap_mem_iff
+
+@[simp]
+theorem preimage_algebraMap (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
+    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} :
+    algebraMap R S ⁻¹' spectrum S a = spectrum R a :=
+  Set.ext fun _ => spectrum.algebraMap_mem_iff _
+
+@[simp]
 theorem resolventSet_of_subsingleton [Subsingleton A] (a : A) : resolventSet R a = Set.univ := by
   simp_rw [resolventSet, Subsingleton.elim (algebraMap R A _ - a) 1, isUnit_one, Set.setOf_true]
 #align spectrum.resolvent_set_of_subsingleton spectrum.resolventSet_of_subsingleton
@@ -367,11 +381,11 @@ theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
 #align spectrum.smul_eq_smul spectrum.smul_eq_smul
 
 theorem nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
-  suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0}
-  · exact Set.eq_of_subset_of_subset (h a b) (h b a)
-  · rintro _ _ k ⟨k_mem, k_neq⟩
-    change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
-    exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
+  suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0} from
+    Set.eq_of_subset_of_subset (h a b) (h b a)
+  rintro _ _ k ⟨k_mem, k_neq⟩
+  change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
+  exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
 #align spectrum.nonzero_mul_eq_swap_mul spectrum.nonzero_mul_eq_swap_mul
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
@@ -441,3 +455,69 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
     simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
       AlgHom.spectrum_apply_subset (f : A ≃ₐ[R] B).symm (f a)
+
+/-! ### Restriction of the spectrum -/
+
+/-- Given an element `a : A` of an `S`-algebra, where `S` is itself an `R`-algebra, we say that
+the spectrum of `a` restricts via a function `f : S → R` if `f` is a left inverse of
+`algebraMap R S`, and `f` is a right inverse of `algebraMap R S` on `spectrum S a`.
+
+For example, when `f = Complex.re` (so `S := ℂ` and `R := ℝ`), `SpectrumRestricts a f` means that
+the `ℂ`-spectrum of `a` is contained within `ℝ`. This arises naturally when `a` is selfadjoint
+and `A` is a C⋆-algebra.
+
+This is the property allows us to restrict a continuous functional calculus over `S` to a
+continuous functional calculus over `R`. -/
+structure SpectrumRestricts {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
+    [Algebra R S] [Algebra R A] [Algebra S A] (a : A) (f : S → R) : Prop where
+  /-- `f` is a right inverse of `algebraMap R S` when restricted to `spectrum S a`. -/
+  rightInvOn : (spectrum S a).RightInvOn f (algebraMap R S)
+  /-- `f` is a left inverse of `algebraMap R S`. -/
+  left_inv : Function.LeftInverse f (algebraMap R S)
+
+namespace SpectrumRestricts
+
+variable {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
+    [Algebra R S] [Algebra R A] [Algebra S A]
+
+theorem of_subset_range_algebraMap (a : A) (f : S → R) (hf : f.LeftInverse (algebraMap R S))
+    (h : spectrum S a ⊆ Set.range (algebraMap R S)) : SpectrumRestricts a f where
+  rightInvOn := fun s hs => by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
+  left_inv := hf
+
+variable [IsScalarTower R S A] {a : A} {f : S → R} (h : SpectrumRestricts a f)
+
+theorem algebraMap_image : algebraMap R S '' spectrum R a = spectrum S a := by
+  refine' Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
+  simpa only [spectrum.preimage_algebraMap] using
+    (spectrum S a).image_preimage_subset (algebraMap R S)
+  exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
+
+theorem image : f '' spectrum S a = spectrum R a := by
+  simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
+
+theorem apply_mem {s : S} (hs : s ∈ spectrum S a) : f s ∈ spectrum R a :=
+  h.image ▸ ⟨s, hs, rfl⟩
+
+theorem subset_preimage : spectrum S a ⊆ f ⁻¹' spectrum R a :=
+  h.image ▸ (spectrum S a).subset_preimage_image f
+
+lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
+    (h : spectrum S a = spectrum S b) : SpectrumRestricts b f where
+  rightInvOn := h ▸ ha.rightInvOn
+  left_inv := ha.left_inv
+
+protected lemma comp {R₁ R₂ R₃ A : Type*} [CommSemiring R₁] [CommSemiring R₂] [CommSemiring R₃]
+    [Ring A] [Algebra R₁ A] [Algebra R₂ A] [Algebra R₃ A] [Algebra R₁ R₂] [Algebra R₂ R₃]
+    [Algebra R₁ R₃] [IsScalarTower R₁ R₂ R₃] [IsScalarTower R₂ R₃ A]
+    {a : A} {f : R₃ → R₂} {g : R₂ → R₁} {e : R₃ → R₁} (hfge : g ∘ f = e)
+    (hf : SpectrumRestricts a f) (hg : SpectrumRestricts a g) :
+    SpectrumRestricts a e where
+  left_inv := by
+    convert hfge ▸ hf.left_inv.comp hg.left_inv
+    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+  rightInvOn := by
+    convert hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
+    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+
+end SpectrumRestricts

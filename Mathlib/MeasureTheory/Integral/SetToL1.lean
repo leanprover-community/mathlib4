@@ -231,13 +231,12 @@ theorem smul [NormedField 𝕜] [NormedSpace 𝕜 β] (hT : DominatedFinMeasAddi
 
 theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeasAdditive μ T C)
     (hC : 0 ≤ C) : DominatedFinMeasAdditive μ' T C := by
-  have h' : ∀ s, MeasurableSet s → μ s = ∞ → μ' s = ∞ := by
-    intro s hs hμs; rw [eq_top_iff, ← hμs]; exact h s hs
-  refine' ⟨hT.1.of_eq_top_imp_eq_top h', fun s hs hμ's => _⟩
-  have hμs : μ s < ∞ := (h s hs).trans_lt hμ's
-  refine' (hT.2 s hs hμs).trans (mul_le_mul le_rfl _ ENNReal.toReal_nonneg hC)
-  rw [toReal_le_toReal hμs.ne hμ's.ne]
-  exact h s hs
+  have h' : ∀ s, μ s = ∞ → μ' s = ∞ := fun s hs ↦ top_unique <| hs.symm.trans_le (h _)
+  refine ⟨hT.1.of_eq_top_imp_eq_top fun s _ ↦ h' s, fun s hs hμ's ↦ ?_⟩
+  have hμs : μ s < ∞ := (h s).trans_lt hμ's
+  calc
+    ‖T s‖ ≤ C * (μ s).toReal := hT.2 s hs hμs
+    _ ≤ C * (μ' s).toReal := by gcongr; exacts [hμ's.ne, h _]
 #align measure_theory.dominated_fin_meas_additive.of_measure_le MeasureTheory.DominatedFinMeasAdditive.of_measure_le
 
 theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
@@ -573,7 +572,7 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
       refine' Finset.sum_le_sum fun b _ => _; simp_rw [ContinuousLinearMap.le_opNorm]
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_op_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_opNorm
 
-@[deprecated norm_setToSimpleFunc_le_sum_opNorm]
+@[deprecated]
 alias norm_setToSimpleFunc_le_sum_op_norm :=
   norm_setToSimpleFunc_le_sum_opNorm -- deprecated on 2024-02-02
 
@@ -625,11 +624,11 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
   swap; · rw [Finset.mem_singleton]; exact hx0
   rw [sum_singleton, (T _).map_zero, add_zero]
   congr
-  simp only [coe_piecewise, piecewise_eq_indicator, coe_const, Pi.const_zero,
+  simp only [coe_piecewise, piecewise_eq_indicator, coe_const, Function.const_zero,
     piecewise_eq_indicator]
   rw [indicator_preimage, ← Function.const_def, preimage_const_of_mem]
   swap; · exact Set.mem_singleton x
-  rw [← Pi.const_zero, ← Function.const_def, preimage_const_of_not_mem]
+  rw [← Function.const_zero, ← Function.const_def, preimage_const_of_not_mem]
   swap; · rw [Set.mem_singleton_iff]; exact Ne.symm hx0
   simp
 #align measure_theory.simple_func.set_to_simple_func_indicator MeasureTheory.SimpleFunc.setToSimpleFunc_indicator
@@ -727,7 +726,7 @@ theorem setToL1S_congr_measure {μ' : Measure α} (T : Set α → E →L[ℝ] F)
     setToL1S T f = setToL1S T f' := by
   refine' SimpleFunc.setToSimpleFunc_congr T h_zero h_add (SimpleFunc.integrable f) _
   refine' (toSimpleFunc_eq_toFun f).trans _
-  suffices : (f' : α → E) =ᵐ[μ] simpleFunc.toSimpleFunc f'; exact h.trans this
+  suffices (f' : α → E) =ᵐ[μ] simpleFunc.toSimpleFunc f' from h.trans this
   have goal' : (f' : α → E) =ᵐ[μ'] simpleFunc.toSimpleFunc f' := (toSimpleFunc_eq_toFun f').symm
   exact hμ.ae_eq goal'
 #align measure_theory.L1.simple_func.set_to_L1s_congr_measure MeasureTheory.L1.SimpleFunc.setToL1S_congr_measure
@@ -1178,8 +1177,8 @@ theorem setToL1_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
 theorem setToL1_nonneg {T : Set α → G' →L[ℝ] G''} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hT_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, 0 ≤ x → 0 ≤ T s x) {f : α →₁[μ] G'}
     (hf : 0 ≤ f) : 0 ≤ setToL1 hT f := by
-  suffices : ∀ f : { g : α →₁[μ] G' // 0 ≤ g }, 0 ≤ setToL1 hT f
-  exact this (⟨f, hf⟩ : { g : α →₁[μ] G' // 0 ≤ g })
+  suffices ∀ f : { g : α →₁[μ] G' // 0 ≤ g }, 0 ≤ setToL1 hT f from
+    this (⟨f, hf⟩ : { g : α →₁[μ] G' // 0 ≤ g })
   refine' fun g =>
     @isClosed_property { g : α →₁ₛ[μ] G' // 0 ≤ g } { g : α →₁[μ] G' // 0 ≤ g } _ _
       (fun g => 0 ≤ setToL1 hT g)
@@ -1524,7 +1523,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     suffices Tendsto (fun i => setToFun μ T hT (F_lp i)) l (𝓝 (setToFun μ T hT f)) by
       refine' (tendsto_congr' _).mp this
       filter_upwards [hfsi] with i hi
-      suffices h_ae_eq : F_lp i =ᵐ[μ] fs i; exact setToFun_congr_ae hT h_ae_eq
+      suffices h_ae_eq : F_lp i =ᵐ[μ] fs i from setToFun_congr_ae hT h_ae_eq
       simp_rw [dif_pos hi]
       exact hi.coeFn_toL1
     rw [setToFun_congr_ae hT hfi.coeFn_toL1.symm]
@@ -1610,7 +1609,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
   apply hfμ.induction (P := fun f => setToFun μ T hT f = setToFun μ' T hT' f)
   · intro c s hs hμs
     have hμ's : μ' s ≠ ∞ := by
-      refine' ((hμ'_le s hs).trans_lt _).ne
+      refine ((hμ'_le s).trans_lt ?_).ne
       rw [Measure.smul_apply, smul_eq_mul]
       exact ENNReal.mul_lt_top hc' hμs.ne
     rw [setToFun_indicator_const hT hs hμs.ne, setToFun_indicator_const hT' hs hμ's]

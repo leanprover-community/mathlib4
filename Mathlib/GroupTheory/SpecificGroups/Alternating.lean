@@ -51,7 +51,7 @@ def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 #align alternating_group alternatingGroup
 
--- Porting note: manually added instance
+-- Porting note (#10754): manually added instance
 instance fta : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
@@ -148,8 +148,8 @@ theorem closure_three_cycles_eq_alternating :
   closure_eq_of_le _ (fun σ hσ => mem_alternatingGroup.2 hσ.sign) fun σ hσ => by
     suffices hind :
       ∀ (n : ℕ) (l : List (Perm α)) (_ : ∀ g, g ∈ l → IsSwap g) (_ : l.length = 2 * n),
-        l.prod ∈ closure { σ : Perm α | IsThreeCycle σ }
-    · obtain ⟨l, rfl, hl⟩ := truncSwapFactors σ
+        l.prod ∈ closure { σ : Perm α | IsThreeCycle σ } by
+      obtain ⟨l, rfl, hl⟩ := truncSwapFactors σ
       obtain ⟨n, hn⟩ := (prod_list_swap_mem_alternatingGroup_iff_even_length hl).1 hσ
       rw [← two_mul] at hn
       exact hind n l hl hn
@@ -195,8 +195,8 @@ theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 �
   obtain ⟨c, g', rfl, hd, _, h3⟩ := mem_cycleType_iff.1 h
   simp only [mul_assoc]
   rw [hd.commute.eq, ← mul_assoc g']
-  suffices hg' : orderOf g' ∣ 2
-  · rw [← pow_two, orderOf_dvd_iff_pow_eq_one.1 hg', one_mul]
+  suffices hg' : orderOf g' ∣ 2 by
+    rw [← pow_two, orderOf_dvd_iff_pow_eq_one.1 hg', one_mul]
     exact (card_support_eq_three_iff.1 h3).isThreeCycle_sq
   rw [← lcm_cycleType, Multiset.lcm_dvd]
   intro n hn
@@ -243,7 +243,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
-        --Porting note : added `: _`
+        --Porting note: added `: _`
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
 #align alternating_group.normal_closure_fin_rotate_five alternatingGroup.normalClosure_finRotate_five
 
