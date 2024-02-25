@@ -5,6 +5,7 @@ Authors: Felix Weilacher, Yury G. Kudryashov, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.Data.Set.MemPartition
+import Mathlib.Order.Filter.CountableSeparatingOn
 
 /-!
 # Countably generated measurable spaces
