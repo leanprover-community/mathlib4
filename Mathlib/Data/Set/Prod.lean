@@ -713,7 +713,7 @@ theorem pi_univ (s : Set ι) : (pi s fun i => (univ : Set (α i))) = univ :=
 
 @[simp]
 theorem pi_univ_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
-    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
+    ( fun i => if i ∈ s then t i else univ) = s.pi t := by
   ext; simp_rw [Set.mem_pi]; apply forall_congr'; intro i; split_ifs with h <;> simp [h]
 
 theorem pi_mono (h : ∀ i ∈ s, t₁ i ⊆ t₂ i) : pi s t₁ ⊆ pi s t₂ := fun _ hx i hi => h i hi <| hx i hi
@@ -733,7 +733,7 @@ theorem pi_eq_empty (hs : i ∈ s) (ht : t i = ∅) : s.pi t = ∅ := by
   exact ⟨i, hs, by simp [ht]⟩
 #align set.pi_eq_empty Set.pi_eq_empty
 
-theorem univ_pi_eq_empty (ht : t i = ∅) : pi univ t = ∅ :=
+theorem univ_pi_eq_empty (ht : t i = ∅) :  t = ∅ :=
   pi_eq_empty (mem_univ i) ht
 #align set.univ_pi_eq_empty Set.univ_pi_eq_empty
 
@@ -741,7 +741,7 @@ theorem pi_nonempty_iff : (s.pi t).Nonempty ↔ ∀ i, ∃ x, i ∈ s → x ∈ 
   simp [Classical.skolem, Set.Nonempty]
 #align set.pi_nonempty_iff Set.pi_nonempty_iff
 
-theorem univ_pi_nonempty_iff : (pi univ t).Nonempty ↔ ∀ i, (t i).Nonempty := by
+theorem univ_pi_nonempty_iff : ( t).Nonempty ↔ ∀ i, (t i).Nonempty := by
   simp [Classical.skolem, Set.Nonempty]
 #align set.univ_pi_nonempty_iff Set.univ_pi_nonempty_iff
 
@@ -753,17 +753,17 @@ theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧
 #align set.pi_eq_empty_iff Set.pi_eq_empty_iff
 
 @[simp]
-theorem univ_pi_eq_empty_iff : pi univ t = ∅ ↔ ∃ i, t i = ∅ := by
+theorem univ_pi_eq_empty_iff :  t = ∅ ↔ ∃ i, t i = ∅ := by
   simp [← not_nonempty_iff_eq_empty, univ_pi_nonempty_iff]
 #align set.univ_pi_eq_empty_iff Set.univ_pi_eq_empty_iff
 
 @[simp]
-theorem univ_pi_empty [h : Nonempty ι] : pi univ (fun _ => ∅ : ∀ i, Set (α i)) = ∅ :=
+theorem univ_pi_empty [h : Nonempty ι] :  (fun _ => ∅ : ∀ i, Set (α i)) = ∅ :=
   univ_pi_eq_empty_iff.2 <| h.elim fun x => ⟨x, rfl⟩
 #align set.univ_pi_empty Set.univ_pi_empty
 
 @[simp]
-theorem disjoint_univ_pi : Disjoint (pi univ t₁) (pi univ t₂) ↔ ∃ i, Disjoint (t₁ i) (t₂ i) := by
+theorem disjoint_univ_pi : Disjoint ( t₁) ( t₂) ↔ ∃ i, Disjoint (t₁ i) (t₂ i) := by
   simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, univ_pi_eq_empty_iff]
 #align set.disjoint_univ_pi Set.disjoint_univ_pi
 
@@ -772,7 +772,7 @@ theorem Disjoint.set_pi (hi : i ∈ s) (ht : Disjoint (t₁ i) (t₂ i)) : Disjo
 #align set.disjoint.set_pi Set.Disjoint.set_pi
 
 theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
-    uniqueElim ⁻¹' pi univ t = t (default : ι) := by ext; simp [Unique.forall_iff]
+    uniqueElim ⁻¹'  t = t (default : ι) := by ext; simp [Unique.forall_iff]
 
 section Nonempty
 
@@ -790,7 +790,7 @@ end Nonempty
 
 -- Porting note: Removing `simp` - LHS does not simplify
 theorem range_dcomp (f : ∀ i, α i → β i) :
-    (range fun g : ∀ i, α i => fun i => f i (g i)) = pi univ fun i => range (f i) := by
+    (range fun g : ∀ i, α i => fun i => f i (g i)) =  fun i => range (f i) := by
   refine Subset.antisymm ?_ fun x hx => ?_
   · rintro _ ⟨x, rfl⟩ i -
     exact ⟨x i, rfl⟩
@@ -815,7 +815,7 @@ theorem singleton_pi' (i : ι) (t : ∀ i, Set (α i)) : pi {i} t = { x | x i �
   singleton_pi i t
 #align set.singleton_pi' Set.singleton_pi'
 
-theorem univ_pi_singleton (f : ∀ i, α i) : (pi univ fun i => {f i}) = ({f} : Set (∀ i, α i)) :=
+theorem univ_pi_singleton (f : ∀ i, α i) : ( fun i => {f i}) = ({f} : Set (∀ i, α i)) :=
   ext fun g => by simp [funext_iff]
 #align set.univ_pi_singleton Set.univ_pi_singleton
 
@@ -860,7 +860,7 @@ theorem union_pi_inter
       exact mem_univ _
 
 @[simp]
-theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi sᶜ t = pi univ t := by
+theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi sᶜ t =  t := by
   rw [← union_pi, union_compl_self]
 #align set.pi_inter_compl Set.pi_inter_compl
 
@@ -883,12 +883,12 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
 
 theorem univ_pi_update [DecidableEq ι] {β : ι → Type*} (i : ι) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
-    (pi univ fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ pi {i}ᶜ fun j => t j (f j) :=
+    ( fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ pi {i}ᶜ fun j => t j (f j) :=
   by rw [compl_eq_univ_diff, ← pi_update_of_mem (mem_univ _)]
 #align set.univ_pi_update Set.univ_pi_update
 
 theorem univ_pi_update_univ [DecidableEq ι] (i : ι) (s : Set (α i)) :
-    pi univ (update (fun j : ι => (univ : Set (α j))) i s) = eval i ⁻¹' s := by
+     (update (fun j : ι => (univ : Set (α j))) i s) = eval i ⁻¹' s := by
   rw [univ_pi_update i (fun j => (univ : Set (α j))) s fun j t => t, pi_univ, inter_univ, preimage]
 #align set.univ_pi_update_univ Set.univ_pi_update_univ
 
@@ -896,7 +896,7 @@ theorem eval_image_pi_subset (hs : i ∈ s) : eval i '' s.pi t ⊆ t i :=
   image_subset_iff.2 fun _ hf => hf i hs
 #align set.eval_image_pi_subset Set.eval_image_pi_subset
 
-theorem eval_image_univ_pi_subset : eval i '' pi univ t ⊆ t i :=
+theorem eval_image_univ_pi_subset : eval i ''  t ⊆ t i :=
   eval_image_pi_subset (mem_univ i)
 #align set.eval_image_univ_pi_subset Set.eval_image_univ_pi_subset
 
@@ -912,8 +912,8 @@ theorem eval_image_pi (hs : i ∈ s) (ht : (s.pi t).Nonempty) : eval i '' s.pi t
 #align set.eval_image_pi Set.eval_image_pi
 
 @[simp]
-theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
-    (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
+theorem eval_image_univ_pi (ht : ( t).Nonempty) :
+    (fun f : ∀ i, α i => f i) ''  t = t i :=
   eval_image_pi (mem_univ i) ht
 #align set.eval_image_univ_pi Set.eval_image_univ_pi
 
@@ -926,12 +926,12 @@ theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ 
     image_subset (fun f : ∀ i, α i => f i) h
 #align set.pi_subset_pi_iff Set.pi_subset_pi_iff
 
-theorem univ_pi_subset_univ_pi_iff : pi univ t₁ ⊆ pi univ t₂ ↔ (∀ i, t₁ i ⊆ t₂ i) ∨ ∃ i, t₁ i = ∅ :=
+theorem univ_pi_subset_univ_pi_iff :  t₁ ⊆  t₂ ↔ (∀ i, t₁ i ⊆ t₂ i) ∨ ∃ i, t₁ i = ∅ :=
   by simp [pi_subset_pi_iff]
 #align set.univ_pi_subset_univ_pi_iff Set.univ_pi_subset_univ_pi_iff
 
 theorem eval_preimage [DecidableEq ι] {s : Set (α i)} :
-    eval i ⁻¹' s = pi univ (update (fun i => univ) i s) := by
+    eval i ⁻¹' s =  (update (fun i => univ) i s) := by
   ext x
   simp [@forall_update_iff _ (fun i => Set (α i)) _ _ _ _ fun i' y => x i' ∈ y]
 #align set.eval_preimage Set.eval_preimage
@@ -955,7 +955,7 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
 #align set.update_preimage_pi Set.update_preimage_pi
 
 theorem update_preimage_univ_pi [DecidableEq ι] {f : ∀ i, α i} (hf : ∀ j ≠ i, f j ∈ t j) :
-    update f i ⁻¹' pi univ t = t i :=
+    update f i ⁻¹'  t = t i :=
   update_preimage_pi (mem_univ i) fun j _ => hf j
 #align set.update_preimage_univ_pi Set.update_preimage_univ_pi
 
@@ -964,7 +964,7 @@ theorem subset_pi_eval_image (s : Set ι) (u : Set (∀ i, α i)) : u ⊆ pi s f
 #align set.subset_pi_eval_image Set.subset_pi_eval_image
 
 theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
-    (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
+    ( fun i => if i ∈ s then t i else univ) = s.pi t := by
   ext
   simp_rw [mem_univ_pi]
   refine' forall_congr' fun i => _

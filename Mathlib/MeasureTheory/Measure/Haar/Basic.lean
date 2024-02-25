@@ -134,7 +134,7 @@ theorem prehaar_nonneg (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G) 
   For all `U`, we can show that `prehaar K₀ U ∈ haarProduct K₀`. -/
 @[to_additive "additive version of `MeasureTheory.Measure.haar.haarProduct`"]
 def haarProduct (K₀ : Set G) : Set (Compacts G → ℝ) :=
-  pi univ fun K => Icc 0 <| index (K : Set G) K₀
+   fun K => Icc 0 <| index (K : Set G) K₀
 #align measure_theory.measure.haar.haar_product MeasureTheory.Measure.haar.haarProduct
 #align measure_theory.measure.haar.add_haar_product MeasureTheory.Measure.haar.addHaarProduct
 

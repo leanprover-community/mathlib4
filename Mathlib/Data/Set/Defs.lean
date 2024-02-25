@@ -246,17 +246,14 @@ variable {ι : Type*} {α : ι → Type*}
 
 /-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
 is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
-whenever `a ∈ s`. -/
-def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) := {f | ∀ i ∈ s, f i ∈ t i}
+whenever `a ∈ s`. -/ -- TODO docs
+def pi (t : ∀ i, Set (α i)) : Set (∀ i, α i) := {f | ∀ i, f i ∈ t i}
 #align set.pi Set.pi
 
-variable {s : Set ι} {t : ∀ i, Set (α i)} {f : ∀ i, α i}
+variable {t : ∀ i, Set (α i)} {f : ∀ i, α i}
 
-@[simp] theorem mem_pi : f ∈ s.pi t ↔ ∀ i ∈ s, f i ∈ t i := .rfl
+@[simp] theorem mem_pi : f ∈ pi t ↔ ∀ i, f i ∈ t i := .rfl
 #align set.mem_pi Set.mem_pi
-
-theorem mem_univ_pi : f ∈ pi univ t ↔ ∀ i, f i ∈ t i := by simp
-#align set.mem_univ_pi Set.mem_univ_pi
 
 end Pi
 

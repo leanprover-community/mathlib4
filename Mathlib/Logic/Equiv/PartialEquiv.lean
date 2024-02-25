@@ -1020,8 +1020,8 @@ variable {ι : Type*} {αi βi γi : ι → Type*}
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
   toFun f i := ei i (f i)
   invFun f i := (ei i).symm (f i)
-  source := pi univ fun i => (ei i).source
-  target := pi univ fun i => (ei i).target
+  source :=  fun i => (ei i).source
+  target :=  fun i => (ei i).target
   map_source' _ hf i hi := (ei i).map_source (hf i hi)
   map_target' _ hf i hi := (ei i).map_target (hf i hi)
   left_inv' _ hf := funext fun i => (ei i).left_inv (hf i trivial)

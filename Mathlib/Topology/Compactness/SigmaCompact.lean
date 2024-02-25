@@ -226,7 +226,7 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
 
 instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SigmaCompactSpace (X i)] :
     SigmaCompactSpace (∀ i, X i) := by
-  refine' ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
+  refine' ⟨⟨fun n => Set.pi fun i => compactCovering (X i) n,
     fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, _⟩⟩
   rw [iUnion_univ_pi_of_monotone]
   · simp only [iUnion_compactCovering, pi_univ]

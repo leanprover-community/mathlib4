@@ -115,16 +115,16 @@ lemma IsBounded.image_eval {s : Set (∀ i, π i)} (hs : IsBounded s) (i : ι) :
     IsBounded (eval i '' s) :=
   forall_isBounded_image_eval_iff.2 hs i
 
-theorem IsBounded.pi (h : ∀ i, IsBounded (S i)) : IsBounded (pi univ S) :=
+theorem IsBounded.pi (h : ∀ i, IsBounded (S i)) : IsBounded ( S) :=
   forall_isBounded_image_eval_iff.1 fun i => (h i).subset eval_image_univ_pi_subset
 #align bornology.is_bounded.pi Bornology.IsBounded.pi
 
-theorem isBounded_pi_of_nonempty (hne : (pi univ S).Nonempty) :
-    IsBounded (pi univ S) ↔ ∀ i, IsBounded (S i) :=
+theorem isBounded_pi_of_nonempty (hne : ( S).Nonempty) :
+    IsBounded ( S) ↔ ∀ i, IsBounded (S i) :=
   ⟨fun H i => @eval_image_univ_pi _ _ _ i hne ▸ forall_isBounded_image_eval_iff.2 H i, IsBounded.pi⟩
 #align bornology.is_bounded_pi_of_nonempty Bornology.isBounded_pi_of_nonempty
 
-theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, IsBounded (S i) := by
+theorem isBounded_pi : IsBounded ( S) ↔ (∃ i, S i = ∅) ∨ ∀ i, IsBounded (S i) := by
   by_cases hne : ∃ i, S i = ∅
   · simp [hne, univ_pi_eq_empty_iff.2 hne]
   · simp only [hne, false_or_iff]

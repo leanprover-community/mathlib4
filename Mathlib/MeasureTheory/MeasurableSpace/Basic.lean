@@ -984,7 +984,7 @@ protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (π i)} (hs
 #align measurable_set.pi MeasurableSet.pi
 
 protected theorem MeasurableSet.univ_pi [Countable δ] {t : ∀ i : δ, Set (π i)}
-    (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
+    (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet ( t) :=
   MeasurableSet.pi (to_countable _) fun i _ => ht i
 #align measurable_set.univ_pi MeasurableSet.univ_pi
 

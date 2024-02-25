@@ -1851,9 +1851,9 @@ variable {η : Type*} {f : η → Type*}
 @[to_additive " A version of `Set.pi` for `AddSubmonoid`s. Given an index set `I` and a family
   of submodules `s : Π i, AddSubmonoid f i`, `pi I s` is the `AddSubmonoid` of dependent functions
   `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/ "]
-def _root_.Submonoid.pi [∀ i, MulOneClass (f i)] (I : Set η) (s : ∀ i, Submonoid (f i)) :
+def _root_.Submonoid.pi [∀ i, MulOneClass (f i)] (s : ∀ i, Submonoid (f i)) :
     Submonoid (∀ i, f i) where
-  carrier := I.pi fun i => (s i).carrier
+  carrier := Set.pi fun i => (s i).carrier
   one_mem' i _ := (s i).one_mem
   mul_mem' hp hq i hI := (s i).mul_mem (hp i hI) (hq i hI)
 #align submonoid.pi Submonoid.pi
@@ -1868,40 +1868,37 @@ variable [∀ i, Group (f i)]
       " A version of `Set.pi` for `AddSubgroup`s. Given an index set `I` and a family
       of submodules `s : Π i, AddSubgroup f i`, `pi I s` is the `AddSubgroup` of dependent functions
       `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/ "]
-def pi (I : Set η) (H : ∀ i, Subgroup (f i)) : Subgroup (∀ i, f i) :=
-  { Submonoid.pi I fun i => (H i).toSubmonoid with
+def pi (H : ∀ i, Subgroup (f i)) : Subgroup (∀ i, f i) :=
+  { Submonoid.pi fun i => (H i).toSubmonoid with
     inv_mem' := fun hp i hI => (H i).inv_mem (hp i hI) }
 #align subgroup.pi Subgroup.pi
 #align add_subgroup.pi AddSubgroup.pi
 
 @[to_additive]
-theorem coe_pi (I : Set η) (H : ∀ i, Subgroup (f i)) :
-    (pi I H : Set (∀ i, f i)) = Set.pi I fun i => (H i : Set (f i)) :=
+theorem coe_pi (H : ∀ i, Subgroup (f i)) :
+    (pi H : Set (∀ i, f i)) = Set.pi fun i => (H i : Set (f i)) :=
   rfl
 #align subgroup.coe_pi Subgroup.coe_pi
 #align add_subgroup.coe_pi AddSubgroup.coe_pi
 
 @[to_additive]
-theorem mem_pi (I : Set η) {H : ∀ i, Subgroup (f i)} {p : ∀ i, f i} :
-    p ∈ pi I H ↔ ∀ i : η, i ∈ I → p i ∈ H i :=
+theorem mem_pi {H : ∀ i, Subgroup (f i)} {p : ∀ i, f i} :
+    p ∈ pi H ↔ ∀ i : η, p i ∈ H i :=
   Iff.rfl
 #align subgroup.mem_pi Subgroup.mem_pi
 #align add_subgroup.mem_pi AddSubgroup.mem_pi
 
 @[to_additive]
-theorem pi_top (I : Set η) : (pi I fun i => (⊤ : Subgroup (f i))) = ⊤ :=
+theorem pi_top : (pi fun i => (⊤ : Subgroup (f i))) = ⊤ :=
   ext fun x => by simp [mem_pi]
 #align subgroup.pi_top Subgroup.pi_top
 #align add_subgroup.pi_top AddSubgroup.pi_top
 
-@[to_additive]
-theorem pi_empty (H : ∀ i, Subgroup (f i)) : pi ∅ H = ⊤ :=
-  ext fun x => by simp [mem_pi]
-#align subgroup.pi_empty Subgroup.pi_empty
-#align add_subgroup.pi_empty AddSubgroup.pi_empty
+#noalign subgroup.pi_empty
+#noalign add_subgroup.pi_empty
 
 @[to_additive]
-theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (f i))) = ⊥ :=
+theorem pi_bot : (pi fun i => (⊥ : Subgroup (f i))) = ⊥ :=
   (eq_bot_iff_forall _).mpr fun p hp => by
     simp only [mem_pi, mem_bot] at *
     ext j
@@ -1910,8 +1907,8 @@ theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (f i))) = ⊥ :=
 #align add_subgroup.pi_bot AddSubgroup.pi_bot
 
 @[to_additive]
-theorem le_pi_iff {I : Set η} {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i, f i)} :
-    J ≤ pi I H ↔ ∀ i : η, i ∈ I → map (Pi.evalMonoidHom f i) J ≤ H i := by
+theorem le_pi_iff {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i, f i)} :
+    J ≤ pi H ↔ ∀ i : η, map (Pi.evalMonoidHom f i) J ≤ H i := by
   constructor
   · intro h i hi
     rintro _ ⟨x, hx, rfl⟩
@@ -1922,8 +1919,8 @@ theorem le_pi_iff {I : Set η} {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i,
 #align add_subgroup.le_pi_iff AddSubgroup.le_pi_iff
 
 @[to_additive (attr := simp)]
-theorem mulSingle_mem_pi [DecidableEq η] {I : Set η} {H : ∀ i, Subgroup (f i)} (i : η) (x : f i) :
-    Pi.mulSingle i x ∈ pi I H ↔ i ∈ I → x ∈ H i := by
+theorem mulSingle_mem_pi [DecidableEq η] {H : ∀ i, Subgroup (f i)} (i : η) (x : f i) :
+    Pi.mulSingle i x ∈ pi H ↔ x ∈ H i := by
   constructor
   · intro h hi
     simpa using h i hi
@@ -1936,7 +1933,7 @@ theorem mulSingle_mem_pi [DecidableEq η] {I : Set η} {H : ∀ i, Subgroup (f i
 #align add_subgroup.single_mem_pi AddSubgroup.single_mem_pi
 
 @[to_additive]
-theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ i, H i = ⊥ := by
+theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi H = ⊥ ↔ ∀ i, H i = ⊥ := by
   classical
     simp only [eq_bot_iff_forall]
     constructor

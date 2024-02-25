@@ -81,7 +81,7 @@ theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
   simp_rw [implies_true]
 
 lemma fundamentalDomain_pi_basisFun [Fintype ι] :
-    fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
+    fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
   ext; simp
 
 variable [FloorRing K]
@@ -314,7 +314,7 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
     MeasurableSet (fundamentalDomain b) := by
   cases nonempty_fintype ι
   haveI : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
-  let D : Set (ι → ℝ) := Set.pi Set.univ fun _ : ι => Set.Ico (0 : ℝ) 1
+  let D : Set (ι → ℝ) := Set.pi fun _ : ι => Set.Ico (0 : ℝ) 1
   rw [(_ : fundamentalDomain b = b.equivFun.toLinearMap ⁻¹' D)]
   · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
     exact MeasurableSet.pi Set.countable_univ fun _ _ => measurableSet_Ico

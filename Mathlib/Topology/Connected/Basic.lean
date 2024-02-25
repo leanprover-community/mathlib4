@@ -476,7 +476,7 @@ theorem IsConnected.prod [TopologicalSpace β] {s : Set α} {t : Set β} (hs : I
 #align is_connected.prod IsConnected.prod
 
 theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set (π i)}
-    (hs : ∀ i, IsPreconnected (s i)) : IsPreconnected (pi univ s) := by
+    (hs : ∀ i, IsPreconnected (s i)) : IsPreconnected ( s) := by
   rintro u v uo vo hsuv ⟨f, hfs, hfu⟩ ⟨g, hgs, hgv⟩
   rcases exists_finset_piecewise_mem_of_mem_nhds (uo.mem_nhds hfu) g with ⟨I, hI⟩
   induction' I using Finset.induction_on with i I _ ihI
@@ -486,7 +486,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
     have := I.piecewise_mem_set_pi hfs hgs
     refine' (hsuv this).elim ihI fun h => _
     set S := update (I.piecewise f g) i '' s i
-    have hsub : S ⊆ pi univ s := by
+    have hsub : S ⊆  s := by
       refine' image_subset_iff.2 fun z hz => _
       rwa [update_preimage_univ_pi]
       exact fun j _ => this j trivial
@@ -500,7 +500,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
 
 @[simp]
 theorem isConnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set (π i)} :
-    IsConnected (pi univ s) ↔ ∀ i, IsConnected (s i) := by
+    IsConnected ( s) ↔ ∀ i, IsConnected (s i) := by
   simp only [IsConnected, ← univ_pi_nonempty_iff, forall_and, and_congr_right_iff]
   refine' fun hne => ⟨fun hc i => _, isPreconnected_univ_pi⟩
   rw [← eval_image_univ_pi hne]

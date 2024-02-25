@@ -1032,7 +1032,7 @@ section Pi
 variable {ι : Type*} [Finite ι] {κ : ι → Type*} {t : ∀ i, Set (κ i)}
 
 /-- Finite product of finite sets is finite -/
-theorem Finite.pi (ht : ∀ i, (t i).Finite) : (pi univ t).Finite := by
+theorem Finite.pi (ht : ∀ i, (t i).Finite) : ( t).Finite := by
   cases nonempty_fintype ι
   lift t to ∀ d, Finset (κ d) using ht
   classical
@@ -1616,7 +1616,7 @@ theorem iUnion_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] 
 
 theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] [Finite ι]
     {α : ι → Type*} {s : ∀ i, ι' → Set (α i)} (hs : ∀ i, Monotone (s i)) :
-    ⋃ j : ι', pi univ (fun i => s i j) = pi univ fun i => ⋃ j, s i j :=
+    ⋃ j : ι',  (fun i => s i j) =  fun i => ⋃ j, s i j :=
   iUnion_pi_of_monotone finite_univ fun i _ => hs i
 #align set.Union_univ_pi_of_monotone Set.iUnion_univ_pi_of_monotone
 

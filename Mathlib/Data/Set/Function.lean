@@ -1601,11 +1601,11 @@ theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : �
 
 -- porting note: new lemma
 theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
-    [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
+    [∀ x, Decidable (x ∈ s)] :  (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
   simp [compl_eq_univ_diff]
 
 theorem univ_pi_piecewise_univ {ι : Type*} {α : ι → Type*} (s : Set ι) (t : ∀ i, Set (α i))
-    [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ => univ) = pi s t := by simp
+    [∀ x, Decidable (x ∈ s)] :  (s.piecewise t fun _ => univ) = pi s t := by simp
 #align set.univ_pi_piecewise Set.univ_pi_piecewise_univ
 
 end Set

@@ -30,17 +30,17 @@ section PiPreorder
 variable [∀ i, Preorder (α i)] (x y : ∀ i, α i)
 
 @[simp]
-theorem pi_univ_Ici : (pi univ fun i ↦ Ici (x i)) = Ici x :=
+theorem pi_univ_Ici : ( fun i ↦ Ici (x i)) = Ici x :=
   ext fun y ↦ by simp [Pi.le_def]
 #align set.pi_univ_Ici Set.pi_univ_Ici
 
 @[simp]
-theorem pi_univ_Iic : (pi univ fun i ↦ Iic (x i)) = Iic x :=
+theorem pi_univ_Iic : ( fun i ↦ Iic (x i)) = Iic x :=
   ext fun y ↦ by simp [Pi.le_def]
 #align set.pi_univ_Iic Set.pi_univ_Iic
 
 @[simp]
-theorem pi_univ_Icc : (pi univ fun i ↦ Icc (x i) (y i)) = Icc x y :=
+theorem pi_univ_Icc : ( fun i ↦ Icc (x i) (y i)) = Icc x y :=
   ext fun y ↦ by simp [Pi.le_def, forall_and]
 #align set.pi_univ_Icc Set.pi_univ_Icc
 
@@ -60,24 +60,24 @@ section Nonempty
 
 variable [Nonempty ι]
 
-theorem pi_univ_Ioi_subset : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
+theorem pi_univ_Ioi_subset : ( fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
     (Nonempty.elim ‹Nonempty ι›) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
 #align set.pi_univ_Ioi_subset Set.pi_univ_Ioi_subset
 
-theorem pi_univ_Iio_subset : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
+theorem pi_univ_Iio_subset : ( fun i ↦ Iio (x i)) ⊆ Iio x :=
   @pi_univ_Ioi_subset ι (fun i ↦ (α i)ᵒᵈ) _ x _
 #align set.pi_univ_Iio_subset Set.pi_univ_Iio_subset
 
-theorem pi_univ_Ioo_subset : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
+theorem pi_univ_Ioo_subset : ( fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 #align set.pi_univ_Ioo_subset Set.pi_univ_Ioo_subset
 
-theorem pi_univ_Ioc_subset : (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
+theorem pi_univ_Ioc_subset : ( fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, fun i ↦ (hx i trivial).2⟩
 #align set.pi_univ_Ioc_subset Set.pi_univ_Ioc_subset
 
-theorem pi_univ_Ico_subset : (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
+theorem pi_univ_Ico_subset : ( fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
   ⟨fun i ↦ (hx i trivial).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 #align set.pi_univ_Ico_subset Set.pi_univ_Ico_subset
 
@@ -88,8 +88,8 @@ variable [DecidableEq ι]
 open Function (update)
 
 theorem pi_univ_Ioc_update_left {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : x i₀ ≤ m) :
-    (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) =
-      { z | m < z i₀ } ∩ pi univ fun i ↦ Ioc (x i) (y i) := by
+    ( fun i ↦ Ioc (update x i₀ m i) (y i)) =
+      { z | m < z i₀ } ∩  fun i ↦ Ioc (x i) (y i) := by
   have : Ioc m (y i₀) = Ioi m ∩ Ioc (x i₀) (y i₀) := by
     rw [← Ioi_inter_Iic, ← Ioi_inter_Iic, ← inter_assoc,
       inter_eq_self_of_subset_left (Ioi_subset_Ioi hm)]
@@ -99,8 +99,8 @@ theorem pi_univ_Ioc_update_left {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (h
 #align set.pi_univ_Ioc_update_left Set.pi_univ_Ioc_update_left
 
 theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (hm : m ≤ y i₀) :
-    (pi univ fun i ↦ Ioc (x i) (update y i₀ m i)) =
-      { z | z i₀ ≤ m } ∩ pi univ fun i ↦ Ioc (x i) (y i) := by
+    ( fun i ↦ Ioc (x i) (update y i₀ m i)) =
+      { z | z i₀ ≤ m } ∩  fun i ↦ Ioc (x i) (y i) := by
   have : Ioc (x i₀) m = Iic m ∩ Ioc (x i₀) (y i₀) := by
     rw [← Ioi_inter_Iic, ← Ioi_inter_Iic, inter_left_comm,
       inter_eq_self_of_subset_left (Iic_subset_Iic.2 hm)]
@@ -110,8 +110,8 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
 #align set.pi_univ_Ioc_update_right Set.pi_univ_Ioc_update_right
 
 theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
-    Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
-    (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
+    Disjoint ( fun i ↦ Ioc (x i) (update y i₀ m i))
+    ( fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]
   rintro z h₁ h₂
   refine' (h₁ i₀ (mem_univ _)).2.not_lt _
@@ -282,7 +282,7 @@ section PiLattice
 variable [∀ i, Lattice (α i)]
 
 @[simp]
-theorem pi_univ_uIcc (a b : ∀ i, α i) : (pi univ fun i => uIcc (a i) (b i)) = uIcc a b :=
+theorem pi_univ_uIcc (a b : ∀ i, α i) : ( fun i => uIcc (a i) (b i)) = uIcc a b :=
   pi_univ_Icc _ _
 #align set.pi_univ_uIcc Set.pi_univ_uIcc
 
@@ -333,9 +333,9 @@ variable [DecidableEq ι] [∀ i, LinearOrder (α i)]
 open Function (update)
 
 theorem pi_univ_Ioc_update_union (x y : ∀ i, α i) (i₀ : ι) (m : α i₀) (hm : m ∈ Icc (x i₀) (y i₀)) :
-    ((pi univ fun i ↦ Ioc (x i) (update y i₀ m i)) ∪
-        pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) =
-      pi univ fun i ↦ Ioc (x i) (y i) := by
+    (( fun i ↦ Ioc (x i) (update y i₀ m i)) ∪
+         fun i ↦ Ioc (update x i₀ m i) (y i)) =
+       fun i ↦ Ioc (x i) (y i) := by
   simp_rw [pi_univ_Ioc_update_left hm.1, pi_univ_Ioc_update_right hm.2, ← union_inter_distrib_right,
     ← setOf_or, le_or_lt, setOf_true, univ_inter]
 #align set.pi_univ_Ioc_update_union Set.pi_univ_Ioc_update_union
@@ -349,7 +349,7 @@ E.g., if `x' = x` and `y' = y`, then this lemma states that the difference betwe
 `[x, y]` and the corresponding open box `{z | ∀ i, x i < z i < y i}` is covered by the union
 of the faces of `[x, y]`. -/
 theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
-    (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
+    (Icc x y \  fun i ↦ Ioo (x' i) (y' i)) ⊆
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
   simp at ha'
@@ -369,7 +369,7 @@ E.g., if `x = y`, then this lemma states that the difference between a closed bo
 `[x, y]` and the product of half-open intervals `{z | ∀ i, x i < z i ≤ y i}` is covered by the union
 of the faces of `[x, y]` adjacent to `x`. -/
 theorem Icc_diff_pi_univ_Ioc_subset (x y z : ∀ i, α i) :
-    (Icc x z \ pi univ fun i ↦ Ioc (y i) (z i)) ⊆ ⋃ i : ι, Icc x (update z i (y i)) := by
+    (Icc x z \  fun i ↦ Ioc (y i) (z i)) ⊆ ⋃ i : ι, Icc x (update z i (y i)) := by
   rintro a ⟨⟨hax, haz⟩, hay⟩
   simpa [not_and_or, hax, le_update_iff, haz _] using hay
 #align set.Icc_diff_pi_univ_Ioc_subset Set.Icc_diff_pi_univ_Ioc_subset

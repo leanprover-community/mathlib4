@@ -610,7 +610,7 @@ theorem iInter_ite (f g : ι → Set α) :
 end
 
 theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, Set (α i)}
-    (hv : (pi univ v).Nonempty) (i : ι) :
+    (hv : ( v).Nonempty) (i : ι) :
     ((fun x : ∀ i : ι, α i => x i) '' ⋂ k, (fun x : ∀ j : ι, α j => x k) ⁻¹' v k) = v i := by
   classical
     apply Subset.antisymm
@@ -2015,7 +2015,7 @@ theorem pi_def (i : Set α) (s : ∀ a, Set (π a)) : pi i s = ⋂ a ∈ i, eval
   simp
 #align set.pi_def Set.pi_def
 
-theorem univ_pi_eq_iInter (t : ∀ i, Set (π i)) : pi univ t = ⋂ i, eval i ⁻¹' t i := by
+theorem univ_pi_eq_iInter (t : ∀ i, Set (π i)) :  t = ⋂ i, eval i ⁻¹' t i := by
   simp only [pi_def, iInter_true, mem_univ]
 #align set.univ_pi_eq_Inter Set.univ_pi_eq_iInter
 
@@ -2028,7 +2028,7 @@ theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
 #align set.pi_diff_pi_subset Set.pi_diff_pi_subset
 
 theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)) :
-    ⋃ x : (a : α) → ι a, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j : ι a, t a j := by
+    ⋃ x : (a : α) → ι a,  (fun a => t a (x a)) =  fun a => ⋃ j : ι a, t a j := by
   ext
   simp [Classical.skolem]
 #align set.Union_univ_pi Set.iUnion_univ_pi

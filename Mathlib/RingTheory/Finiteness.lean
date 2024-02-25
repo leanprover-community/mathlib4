@@ -247,7 +247,7 @@ theorem FG.prod {sb : Submodule R M} {sc : Submodule R P} (hsb : sb.FG) (hsc : s
 
 theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid (M i)]
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).FG) :
-    (Submodule.pi Set.univ p).FG := by
+    (Submodule.pi p).FG := by
   classical
     simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb

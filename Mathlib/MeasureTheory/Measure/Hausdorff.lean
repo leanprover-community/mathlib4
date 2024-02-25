@@ -967,7 +967,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     simpa only [sub_nonneg, Rat.cast_le] using (H i).le
   let γ := fun n : ℕ => ∀ i : ι, Fin ⌈((b i : ℝ) - a i) * n⌉₊
   let t : ∀ n : ℕ, γ n → Set (ι → ℝ) := fun n f =>
-    Set.pi univ fun i => Icc (a i + f i / n) (a i + (f i + 1) / n)
+    Set.pi fun i => Icc (a i + f i / n) (a i + (f i + 1) / n)
   have A : Tendsto (fun n : ℕ => 1 / (n : ℝ≥0∞)) atTop (𝓝 0) := by
     simp only [one_div, ENNReal.tendsto_inv_nat_nhds_zero]
   have B : ∀ᶠ n in atTop, ∀ i : γ n, diam (t n i) ≤ 1 / n := by
@@ -976,7 +976,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     refine' diam_pi_le_of_le fun b => _
     simp only [Real.ediam_Icc, add_div, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), le_refl,
       add_sub_add_left_eq_sub, add_sub_cancel', ENNReal.ofReal_one, ENNReal.ofReal_coe_nat]
-  have C : ∀ᶠ n in atTop, (Set.pi univ fun i : ι => Ioo (a i : ℝ) (b i)) ⊆ ⋃ i : γ n, t n i := by
+  have C : ∀ᶠ n in atTop, (Set.pi fun i : ι => Ioo (a i : ℝ) (b i)) ⊆ ⋃ i : γ n, t n i := by
     refine' eventually_atTop.2 ⟨1, fun n hn => _⟩
     have npos : (0 : ℝ) < n := Nat.cast_pos.2 hn
     intro x hx
@@ -1000,9 +1000,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n :=
           add_le_add le_rfl ((div_le_div_right npos).2 (Nat.lt_floor_add_one _).le)
   calc
-    μH[Fintype.card ι] (Set.pi univ fun i : ι => Ioo (a i : ℝ) (b i)) ≤
+    μH[Fintype.card ι] (Set.pi fun i : ι => Ioo (a i : ℝ) (b i)) ≤
         liminf (fun n : ℕ => ∑ i : γ n, diam (t n i) ^ ((Fintype.card ι) : ℝ)) atTop :=
-      hausdorffMeasure_le_liminf_sum _ (Set.pi univ fun i => Ioo (a i : ℝ) (b i))
+      hausdorffMeasure_le_liminf_sum _ (Set.pi fun i => Ioo (a i : ℝ) (b i))
         (fun n : ℕ => 1 / (n : ℝ≥0∞)) A t B C
     _ ≤ liminf (fun n : ℕ => ∑ i : γ n, (1 / (n : ℝ≥0∞)) ^ Fintype.card ι) atTop := by
       refine' liminf_le_liminf _ _

@@ -31,7 +31,7 @@ instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSp
     WeaklyLocallyCompactSpace ((i : ι) → X i) where
   exists_compact_mem_nhds := fun f ↦ by
     choose s hsc hs using fun i ↦ exists_compact_mem_nhds (f i)
-    exact ⟨pi univ s, isCompact_univ_pi hsc, set_pi_mem_nhds univ.toFinite fun i _ ↦ hs i⟩
+    exact ⟨ s, isCompact_univ_pi hsc, set_pi_mem_nhds univ.toFinite fun i _ ↦ hs i⟩
 
 instance (priority := 100) [CompactSpace X] : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds _ := ⟨univ, isCompact_univ, univ_mem⟩

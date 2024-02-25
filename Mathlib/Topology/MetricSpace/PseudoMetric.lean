@@ -1982,7 +1982,7 @@ theorem dist_le_pi_dist (f g : ∀ b, π b) (b : β) : dist (f b) (g b) ≤ dist
 /-- An open ball in a product space is a product of open balls. See also `ball_pi'`
 for a version assuming `Nonempty β` instead of `0 < r`. -/
 theorem ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
-    ball x r = Set.pi univ fun b => ball (x b) r := by
+    ball x r = Set.pi fun b => ball (x b) r := by
   ext p
   simp [dist_pi_lt_iff hr]
 #align ball_pi ball_pi
@@ -1990,14 +1990,14 @@ theorem ball_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 < r) :
 /-- An open ball in a product space is a product of open balls. See also `ball_pi`
 for a version assuming `0 < r` instead of `Nonempty β`. -/
 theorem ball_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
-    ball x r = Set.pi univ fun b => ball (x b) r :=
+    ball x r = Set.pi fun b => ball (x b) r :=
   (lt_or_le 0 r).elim (ball_pi x) fun hr => by simp [ball_eq_empty.2 hr]
 #align ball_pi' ball_pi'
 
 /-- A closed ball in a product space is a product of closed balls. See also `closedBall_pi'`
 for a version assuming `Nonempty β` instead of `0 ≤ r`. -/
 theorem closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
-    closedBall x r = Set.pi univ fun b => closedBall (x b) r := by
+    closedBall x r = Set.pi fun b => closedBall (x b) r := by
   ext p
   simp [dist_pi_le_iff hr]
 #align closed_ball_pi closedBall_pi
@@ -2005,7 +2005,7 @@ theorem closedBall_pi (x : ∀ b, π b) {r : ℝ} (hr : 0 ≤ r) :
 /-- A closed ball in a product space is a product of closed balls. See also `closedBall_pi`
 for a version assuming `0 ≤ r` instead of `Nonempty β`. -/
 theorem closedBall_pi' [Nonempty β] (x : ∀ b, π b) (r : ℝ) :
-    closedBall x r = Set.pi univ fun b => closedBall (x b) r :=
+    closedBall x r = Set.pi fun b => closedBall (x b) r :=
   (le_or_lt 0 r).elim (closedBall_pi x) fun hr => by simp [closedBall_eq_empty.2 hr]
 #align closed_ball_pi' closedBall_pi'
 

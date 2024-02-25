@@ -746,9 +746,9 @@ section BoundedPi
 variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 
 theorem lowerCentralSeries_pi_le (n : ℕ) :
-    lowerCentralSeries (∀ i, Gs i) n ≤ Subgroup.pi Set.univ
+    lowerCentralSeries (∀ i, Gs i) n ≤ Subgroup.pi
       fun i => lowerCentralSeries (Gs i) n := by
-  let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
+  let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi f
   induction' n with n ih
   · simp [pi_top]
   · calc
@@ -780,9 +780,9 @@ section FinitePi
 variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 
 theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
-    lowerCentralSeries (∀ i, Gs i) n = Subgroup.pi Set.univ
+    lowerCentralSeries (∀ i, Gs i) n = Subgroup.pi
       fun i => lowerCentralSeries (Gs i) n := by
-  let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
+  let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi f
   induction' n with n ih
   · simp [pi_top]
   · calc

@@ -456,10 +456,10 @@ protected def prod {α β} (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ s × t 
   @subtypeProdEquivProd α β s t
 #align equiv.set.prod Equiv.Set.prod
 
-/-- The set `Set.pi Set.univ s` is equivalent to `Π a, s a`. -/
+/-- The set `Set.pi s` is equivalent to `Π a, s a`. -/
 @[simps]
 protected def univPi {α : Type*} {β : α → Type*} (s : ∀ a, Set (β a)) :
-    pi univ s ≃ ∀ a, s a where
+     s ≃ ∀ a, s a where
   toFun f a := ⟨(f : ∀ a, β a) a, f.2 a (mem_univ a)⟩
   invFun f := ⟨fun a => f a, fun a _ => (f a).2⟩
   left_inv := fun ⟨f, hf⟩ => by
@@ -657,8 +657,8 @@ protected theorem set_forall_iff {α β} (e : α ≃ β) {p : Set α → Prop} :
 
 theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (p : α → Prop)
     [DecidablePred p] (s : ∀ i, Set (β i)) :
-    (piEquivPiSubtypeProd p β).symm ⁻¹' pi univ s =
-      (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
+    (piEquivPiSubtypeProd p β).symm ⁻¹'  s =
+      ( fun i : { i // p i } => s i) ×ˢ  fun i : { i // ¬p i } => s i := by
   ext ⟨f, g⟩
   simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine' forall_congr' fun i => _

@@ -1040,7 +1040,7 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
 
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
 theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
-    IsCompact (pi univ s) := by
+    IsCompact ( s) := by
   convert isCompact_pi_infinite h
   simp only [← mem_univ_pi, setOf_mem_eq]
 #align is_compact_univ_pi isCompact_univ_pi
@@ -1066,7 +1066,7 @@ protected lemma Pi.exists_compact_superset_iff {s : Set (Π i, X i)} :
     exact ⟨eval i '' K, hK.image <| continuous_apply i, hsK.trans <| K.subset_preimage_image _⟩
   · intro H
     choose K hK hsK using H
-    exact ⟨pi univ K, isCompact_univ_pi hK, fun _ hx i _ ↦ hsK i hx⟩
+    exact ⟨ K, isCompact_univ_pi hK, fun _ hx i _ ↦ hsK i hx⟩
 
 /-- **Tychonoff's theorem** formulated in terms of filters: `Filter.cocompact` on an indexed product
 type `Π d, X d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `X d`. -/
@@ -1076,7 +1076,7 @@ theorem Filter.coprodᵢ_cocompact {X : ι → Type*} [∀ d, TopologicalSpace (
   refine' compl_surjective.forall.2 fun s H => _
   simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H ⊢
   choose K hKc htK using H
-  exact ⟨Set.pi univ K, isCompact_univ_pi hKc, fun f hf i _ => htK i hf⟩
+  exact ⟨Set.pi K, isCompact_univ_pi hKc, fun f hf i _ => htK i hf⟩
 set_option linter.uppercaseLean3 false in
 #align filter.Coprod_cocompact Filter.coprodᵢ_cocompact
 

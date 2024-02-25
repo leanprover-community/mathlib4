@@ -112,11 +112,11 @@ theorem mem_coe : x ∈ (I : Set (ι → ℝ)) ↔ x ∈ I := Iff.rfl
 theorem mem_def : x ∈ I ↔ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i) := Iff.rfl
 #align box_integral.box.mem_def BoxIntegral.Box.mem_def
 
-theorem mem_univ_Ioc {I : Box ι} : (x ∈ pi univ fun i ↦ Ioc (I.lower i) (I.upper i)) ↔ x ∈ I :=
+theorem mem_univ_Ioc {I : Box ι} : (x ∈  fun i ↦ Ioc (I.lower i) (I.upper i)) ↔ x ∈ I :=
   mem_univ_pi
 #align box_integral.box.mem_univ_Ioc BoxIntegral.Box.mem_univ_Ioc
 
-theorem coe_eq_pi : (I : Set (ι → ℝ)) = pi univ fun i ↦ Ioc (I.lower i) (I.upper i) :=
+theorem coe_eq_pi : (I : Set (ι → ℝ)) =  fun i ↦ Ioc (I.lower i) (I.upper i) :=
   Set.ext fun _ ↦ mem_univ_Ioc.symm
 #align box_integral.box.coe_eq_pi BoxIntegral.Box.coe_eq_pi
 
@@ -216,7 +216,7 @@ protected theorem isCompact_Icc (I : Box ι) : IsCompact (Box.Icc I) :=
   isCompact_Icc
 #align box_integral.box.is_compact_Icc BoxIntegral.Box.isCompact_Icc
 
-theorem Icc_eq_pi : Box.Icc I = pi univ fun i ↦ Icc (I.lower i) (I.upper i) :=
+theorem Icc_eq_pi : Box.Icc I =  fun i ↦ Icc (I.lower i) (I.upper i) :=
   (pi_univ_Icc _ _).symm
 #align box_integral.box.Icc_eq_pi BoxIntegral.Box.Icc_eq_pi
 
@@ -327,7 +327,7 @@ theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.up
 #align box_integral.box.mk'_eq_coe BoxIntegral.Box.mk'_eq_coe
 
 @[simp]
-theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun i ↦ Ioc (l i) (u i) := by
+theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) =  fun i ↦ Ioc (l i) (u i) := by
   rw [mk']; split_ifs with h
   · exact coe_eq_pi _
   · rcases not_forall.mp h with ⟨i, hi⟩
@@ -438,7 +438,7 @@ theorem continuousOn_face_Icc {X} [TopologicalSpace X] {n} {f : (Fin (n + 1) →
 
 /-- The interior of a box. -/
 protected def Ioo : Box ι →o Set (ι → ℝ) where
-  toFun I := pi univ fun i ↦ Ioo (I.lower i) (I.upper i)
+  toFun I :=  fun i ↦ Ioo (I.lower i) (I.upper i)
   monotone' _ _ h :=
     pi_mono fun i _ ↦ Ioo_subset_Ioo ((le_iff_bounds.1 h).1 i) ((le_iff_bounds.1 h).2 i)
 #align box_integral.box.Ioo BoxIntegral.Box.Ioo
@@ -459,7 +459,7 @@ theorem iUnion_Ioo_of_tendsto [Finite ι] {I : Box ι} {J : ℕ → Box ι} (hJ 
   have hu' : ∀ i, Monotone fun n ↦ (J n).upper i :=
     fun i ↦ (monotone_eval i).comp (monotone_upper.comp hJ)
   calc
-    ⋃ n, Box.Ioo (J n) = pi univ fun i ↦ ⋃ n, Ioo ((J n).lower i) ((J n).upper i) :=
+    ⋃ n, Box.Ioo (J n) =  fun i ↦ ⋃ n, Ioo ((J n).lower i) ((J n).upper i) :=
       iUnion_univ_pi_of_monotone fun i ↦ (hl' i).Ioo (hu' i)
     _ = Box.Ioo I :=
       pi_congr rfl fun i _ ↦

@@ -301,7 +301,7 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
 #align set.countable_set_of_finite_subset Set.countable_setOf_finite_subset
 
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
-    (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
+    (hs : ∀ a, (s a).Countable) : ( s).Countable :=
   have := fun a ↦ (hs a).to_subtype; .of_equiv _ (Equiv.Set.univPi s).symm
 #align set.countable_univ_pi Set.countable_univ_pi
 

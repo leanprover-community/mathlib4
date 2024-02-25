@@ -219,35 +219,35 @@ theorem volume_Icc_pi_toReal {a b : ι → ℝ} (h : a ≤ b) :
 #align real.volume_Icc_pi_to_real Real.volume_Icc_pi_toReal
 
 theorem volume_pi_Ioo {a b : ι → ℝ} :
-    volume (pi univ fun i => Ioo (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
+    volume ( fun i => Ioo (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
   (measure_congr Measure.univ_pi_Ioo_ae_eq_Icc).trans volume_Icc_pi
 #align real.volume_pi_Ioo Real.volume_pi_Ioo
 
 @[simp]
 theorem volume_pi_Ioo_toReal {a b : ι → ℝ} (h : a ≤ b) :
-    (volume (pi univ fun i => Ioo (a i) (b i))).toReal = ∏ i, (b i - a i) := by
+    (volume ( fun i => Ioo (a i) (b i))).toReal = ∏ i, (b i - a i) := by
   simp only [volume_pi_Ioo, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
 #align real.volume_pi_Ioo_to_real Real.volume_pi_Ioo_toReal
 
 theorem volume_pi_Ioc {a b : ι → ℝ} :
-    volume (pi univ fun i => Ioc (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
+    volume ( fun i => Ioc (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
   (measure_congr Measure.univ_pi_Ioc_ae_eq_Icc).trans volume_Icc_pi
 #align real.volume_pi_Ioc Real.volume_pi_Ioc
 
 @[simp]
 theorem volume_pi_Ioc_toReal {a b : ι → ℝ} (h : a ≤ b) :
-    (volume (pi univ fun i => Ioc (a i) (b i))).toReal = ∏ i, (b i - a i) := by
+    (volume ( fun i => Ioc (a i) (b i))).toReal = ∏ i, (b i - a i) := by
   simp only [volume_pi_Ioc, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
 #align real.volume_pi_Ioc_to_real Real.volume_pi_Ioc_toReal
 
 theorem volume_pi_Ico {a b : ι → ℝ} :
-    volume (pi univ fun i => Ico (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
+    volume ( fun i => Ico (a i) (b i)) = ∏ i, ENNReal.ofReal (b i - a i) :=
   (measure_congr Measure.univ_pi_Ico_ae_eq_Icc).trans volume_Icc_pi
 #align real.volume_pi_Ico Real.volume_pi_Ico
 
 @[simp]
 theorem volume_pi_Ico_toReal {a b : ι → ℝ} (h : a ≤ b) :
-    (volume (pi univ fun i => Ico (a i) (b i))).toReal = ∏ i, (b i - a i) := by
+    (volume ( fun i => Ico (a i) (b i))).toReal = ∏ i, (b i - a i) := by
   simp only [volume_pi_Ico, ENNReal.toReal_prod, ENNReal.toReal_ofReal (sub_nonneg.2 (h _))]
 #align real.volume_pi_Ico_to_real Real.volume_pi_Ico_toReal
 
@@ -268,7 +268,7 @@ nonrec theorem volume_pi_closedBall (a : ι → ℝ) {r : ℝ} (hr : 0 ≤ r) :
 theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
     volume s ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) :=
   calc
-    volume s ≤ volume (pi univ fun i => closure (Function.eval i '' s)) :=
+    volume s ≤ volume ( fun i => closure (Function.eval i '' s)) :=
       volume.mono <|
         Subset.trans (subset_pi_eval_image univ s) <| pi_mono fun _ _ => subset_closure
     _ = ∏ i, volume (closure <| Function.eval i '' s) := (volume_pi_pi _)
@@ -356,8 +356,8 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
   have :
-    (Matrix.toLin' (diagonal D) ⁻¹' Set.pi Set.univ fun i : ι => s i) =
-      Set.pi Set.univ fun i : ι => (D i * ·) ⁻¹' s i := by
+    (Matrix.toLin' (diagonal D) ⁻¹' Set.pi fun i : ι => s i) =
+      Set.pi fun i : ι => (D i * ·) ⁻¹' s i := by
     ext f
     simp only [LinearMap.coe_proj, Algebra.id.smul_eq_mul, LinearMap.smul_apply, mem_univ_pi,
       mem_preimage, LinearMap.pi_apply, diagonal_toLin']

@@ -277,8 +277,8 @@ open LinearMap
 /-- A version of `Set.pi` for submodules. Given an index set `I` and a family of submodules
 `p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
 `f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
-def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
-  carrier := Set.pi I fun i => p i
+def pi (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
+  carrier := Set.pi fun i => p i
   zero_mem' i _ := (p i).zero_mem
   add_mem' {_ _} hx hy i hi := (p i).add_mem (hx i hi) (hy i hi)
   smul_mem' c _ hx i hi := (p i).smul_mem c (hx i hi)
@@ -292,7 +292,7 @@ theorem mem_pi : x ∈ pi I p ↔ ∀ i ∈ I, x i ∈ p i :=
 #align submodule.mem_pi Submodule.mem_pi
 
 @[simp, norm_cast]
-theorem coe_pi : (pi I p : Set ((i : ι) → φ i)) = Set.pi I fun i => p i :=
+theorem coe_pi : (pi p : Set ((i : ι) → φ i)) = Set.pi fun i => p i :=
   rfl
 #align submodule.coe_pi Submodule.coe_pi
 
@@ -334,7 +334,7 @@ theorem iSup_map_single [DecidableEq ι] [Finite ι] :
 #align submodule.supr_map_single Submodule.iSup_map_single
 
 theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {i} :
-    p i ≤ Submodule.comap (LinearMap.single i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
+    p i ≤ Submodule.comap (LinearMap.single i : φ i →ₗ[R] _) (Submodule.pi p) := by
   intro x hx
   rw [Submodule.mem_comap, Submodule.mem_pi]
   rintro j -

@@ -134,7 +134,7 @@ theorem pi_pure [Finite ι] (f : (i : ι) → α i) : pi (pure <| f ·) = pure f
 
 @[simp]
 theorem pi_inf_principal_univ_pi_eq_bot :
-    pi f ⊓ 𝓟 (Set.pi univ s) = ⊥ ↔ ∃ i, f i ⊓ 𝓟 (s i) = ⊥ := by
+    pi f ⊓ 𝓟 (Set.pi s) = ⊥ ↔ ∃ i, f i ⊓ 𝓟 (s i) = ⊥ := by
   constructor
   · simp only [inf_principal_eq_bot, mem_pi]
     contrapose!
@@ -157,7 +157,7 @@ theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
 
 @[simp]
 theorem pi_inf_principal_univ_pi_neBot :
-    NeBot (pi f ⊓ 𝓟 (Set.pi univ s)) ↔ ∀ i, NeBot (f i ⊓ 𝓟 (s i)) := by simp [neBot_iff]
+    NeBot (pi f ⊓ 𝓟 (Set.pi s)) ↔ ∀ i, NeBot (f i ⊓ 𝓟 (s i)) := by simp [neBot_iff]
 #align filter.pi_inf_principal_univ_pi_ne_bot Filter.pi_inf_principal_univ_pi_neBot
 
 @[simp]

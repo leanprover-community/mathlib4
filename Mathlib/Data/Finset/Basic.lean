@@ -2611,8 +2611,8 @@ theorem piecewise_cases {i} (p : δ i → Prop) (hf : p (f i)) (hg : p (g i)) :
   by_cases hi : i ∈ s <;> simpa [hi]
 #align finset.piecewise_cases Finset.piecewise_cases
 
-theorem piecewise_mem_set_pi {δ : α → Type*} {t : Set α} {t' : ∀ i, Set (δ i)} {f g}
-    (hf : f ∈ Set.pi t t') (hg : g ∈ Set.pi t t') : s.piecewise f g ∈ Set.pi t t' := by
+theorem piecewise_mem_set_pi {δ : α → Type*} {t : ∀ i, Set (δ i)} {f g}
+    (hf : f ∈ Set.pi t) (hg : g ∈ Set.pi t) : s.piecewise f g ∈ Set.pi t := by
   classical
     rw [← piecewise_coe]
     exact Set.piecewise_mem_pi (↑s) hf hg
