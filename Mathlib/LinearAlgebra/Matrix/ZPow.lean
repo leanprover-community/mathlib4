@@ -107,7 +107,7 @@ theorem zpow_neg_one (A : M) : A ^ (-1 : ℤ) = A⁻¹ := by
   simp only [zpow_one, Int.ofNat_zero, Int.ofNat_succ, zpow_eq_pow, zero_add]
 #align matrix.zpow_neg_one Matrix.zpow_neg_one
 
-theorem zpow_coe_nat (A : M) (n : ℕ) : A ^ (n : ℤ) = A ^ n :=
+nonrec theorem zpow_coe_nat (A : M) (n : ℕ) : A ^ (n : ℤ) = A ^ n :=
   zpow_coe_nat _ _
 #align matrix.zpow_coe_nat Matrix.zpow_coe_nat
 
