@@ -42,7 +42,7 @@ variable {α : Type*} [MeasurableSpace α] [CountablyGenerated α]
 all `n : ℕ`. -/
 def partitionFiltration (α : Type*) [m : MeasurableSpace α] [CountablyGenerated α] :
     Filtration ℕ m where
-  seq := fun n ↦ generateFrom <| countablePartition α n
+  seq n := generateFrom (countablePartition α n)
   mono' := monotone_nat_of_le_succ (generateFrom_countablePartition_le_succ _)
   le' := generateFrom_countablePartition_le α
 
@@ -67,7 +67,7 @@ lemma measurable_partitionSet_aux (n : ℕ) (m : MeasurableSpace (countableParti
     simp
   have : {x | partitionSet n x = t} = t := by
     ext x
-    rw [Set.mem_setOf_eq, ← partitionSet_eq_iff x ht]
+    exact partitionSet_eq_iff x ht
   rw [this]
   exact measurableSet_partitionFiltration_of_mem_countablePartition _ ht
 
@@ -82,8 +82,6 @@ lemma measurable_partitionSet (α : Type*) [MeasurableSpace α] [CountablyGenera
 
 lemma iSup_partitionFiltration (α : Type*) [m : MeasurableSpace α] [CountablyGenerated α] :
     ⨆ n, partitionFiltration α n = m := by
-  conv_rhs => rw [← generateFrom_iUnion_countablePartition α]
-  rw [← iSup_generateFrom]
-  rfl
+  conv_rhs => rw [← generateFrom_iUnion_countablePartition α, ← iSup_generateFrom]
 
 end ProbabilityTheory
