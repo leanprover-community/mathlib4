@@ -12,6 +12,11 @@ import Mathlib.Logic.Small.Basic
 
 universe u v w
 
+theorem small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] : Small.{u} t :=
+  let f : t → s := fun x => ⟨x, hts x.prop⟩
+  @small_of_injective _ _ _ f fun _ _ hxy => Subtype.ext (Subtype.mk.inj hxy)
+#align small_subset small_subset
+
 instance small_range {α : Type v} {β : Type w} (f : α → β) [Small.{u} α] :
     Small.{u} (Set.range f) :=
   small_of_surjective Set.surjective_onto_range
