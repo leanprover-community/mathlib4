@@ -24,10 +24,6 @@ open Lean
 open Lean.Parser
 open Lean.Parser.Term
 
-extend_docs Finsupp.fun₀ after
-  "If the expected type is `Π₀ i, α i` (`DFinsupp`),
-  then this is notation for `DFinsupp.single` and  `Dfinsupp.update` instead."
-
 macro_rules
   | `(term| fun₀ $x:matchAlt*) => do
     let mut stx : Term ← `(0)

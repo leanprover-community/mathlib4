@@ -73,4 +73,10 @@ unsafe instance {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) wher
           fun a => " | " ++ repr a ++ " => " ++ repr (f a))
       if p ≥ leadPrec then Format.paren ret else ret
 
+-- lean4#3497 causes a PANIC if we put this in `Mathlib.Data.DFinsupp.Notation` where it belongs
+extend_docs Finsupp.fun₀ after
+  "If the expected type is `Π₀ i, α i` (`DFinsupp`)
+  and `Mathlib.Data.DFinsupp.Notation` is imported,
+  then this is notation for `DFinsupp.single` and  `Dfinsupp.update` instead."
+
 end Finsupp
