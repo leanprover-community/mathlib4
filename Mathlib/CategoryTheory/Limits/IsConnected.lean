@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.IsConnected
 # Colimits of connected index categories
 
 This file proves that a category $\mathsf{C}$ is connected if and only if
-$\colim_{c \in \mathsf{C}} \{\,0\,\} \cong \{\,0\,\}$ in the category
+$\operatorname{colim}_{c \in \mathsf{C}} \{*\} \cong \{*\}$ in the category
 $\mathsf{Set}$ (i.e. `Type v`).
 
 See `connected_iff_colimit_const_punit_iso_pUnit` for the proof of this characterization and
