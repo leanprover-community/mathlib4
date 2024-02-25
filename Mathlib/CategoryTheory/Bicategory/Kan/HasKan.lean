@@ -1,4 +1,23 @@
+/-
+Copyright (c) 2024 Yuma Mizuno. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yuma Mizuno
+-/
 import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
+
+/-!
+# Existence of Kan extensions and Kan lifts in bicategories
+
+We provide the propositional typeclass `HasLeftKanExtension f g`, which asserts that there
+exists a left Kan extension of `g` along `f`. Under the assumption that `HasLeftKanExtension f g`,
+we define the left Kan extension `lan f g` by using the axiom of choice.
+
+## Main definitions
+
+* `lan f g` is the left Kan extension of `g` along `f`, and is denoted by `f ⁺ g`.
+* `lanLift f g` is the left Kan lift of `g` along `f`, and is denoted by `f ₊ g`.
+
+-/
 
 noncomputable section
 
@@ -103,7 +122,8 @@ def absLan.getAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) [HasAbsLeftKan f g
 instance [HasAbsLeftKan f g] {x : B} (h : c ⟶ x) : HasLeftKanExtension f (g ≫ h) :=
   .mk <| (absLan.getAbsLeftKanExtension f g).isAbsKan h
 
-instance [HasAbsLeftKan f g] : HasLeftKanExtension f g := .mk (lan.isLeftKan f (g ≫ 𝟙 c)).ofAlongCompId
+instance [HasAbsLeftKan f g] : HasLeftKanExtension f g :=
+  .mk (lan.isLeftKan f (g ≫ 𝟙 c)).ofAlongCompId
 
 /-- If there exists an absolute Kan extension of `g` along `f`, we have the evidence that the
 distinguished kan extension `lan.extension f g` is an absolute Kan extension. -/
@@ -112,10 +132,12 @@ def lan.isAbsLeftKan (f : a ⟶ b) (g : a ⟶ c) [HasAbsLeftKan f g] : (lan.exte
   H.ofIsoAbsKan <| IsKan.uniqueUpToIso H.isKan (lan.isLeftKan f g)
 
 /-- `h : c ⟶ x` commutes with the left Kan extension of `g : a ⟶ c` along `f : a ⟶ b`. -/
-class CommuteWithLeftKan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] {x : B} (h : c ⟶ x) : Prop where
+class CommuteWithLeftKan
+    (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] {x : B} (h : c ⟶ x) : Prop where
   commute : Nonempty <| IsKan <| (lan.extension f g).whisker h
 
-instance {x : B} {h : c ⟶ x} [HasLeftKanExtension f g] [CommuteWithLeftKan f g h] : HasLeftKanExtension f (g ≫ h) :=
+instance {x : B} {h : c ⟶ x} [HasLeftKanExtension f g] [CommuteWithLeftKan f g h] :
+    HasLeftKanExtension f (g ≫ h) :=
   .mk (Classical.choice <| CommuteWithLeftKan.commute)
 
 end LeftKan
@@ -207,7 +229,8 @@ theorem HasAbsLeftKanLift.mk {t : LeftLift f g} (H : IsAbsKan t) : HasAbsLeftKan
   ⟨⟨t, H⟩⟩
 
 /-- Use the axiom of choice to extract the explicit absolute left kan lift. -/
-def absLanLift.getAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) [HasAbsLeftKanLift f g] : AbsLeftKanLift f g :=
+def absLanLift.getAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) [HasAbsLeftKanLift f g] :
+    AbsLeftKanLift f g :=
   Classical.choice HasAbsLeftKanLift.exists_absLeftKanLift
 
 instance [HasAbsLeftKanLift f g] {x : B} (h : x ⟶ c) : HasLeftKanLift f (h ≫ g) :=
@@ -218,15 +241,18 @@ instance [HasAbsLeftKanLift f g] : HasLeftKanLift f g :=
 
 /-- If there exists an absolute Kan lift of `g` along `f`, we have the evidence that the
 distinguished kan lift `lanLift.lift f g` is an absolute Kan lift. -/
-def lanLift.isAbsLeftKan (f : b ⟶ a) (g : c ⟶ a) [HasAbsLeftKanLift f g] : (lanLift.lift f g).IsAbsKan :=
+def lanLift.isAbsLeftKan (f : b ⟶ a) (g : c ⟶ a) [HasAbsLeftKanLift f g] :
+    (lanLift.lift f g).IsAbsKan :=
   let ⟨_, H⟩ := absLanLift.getAbsLeftKanLift f g
   fun h ↦ (H h).ofIso (whiskerIso (IsKan.uniqueUpToIso (H.isKan) (lanLift.isLeftKan f g)) h)
 
 /-- `h : x ⟶ b` commutes with the left kan lift of `g : c ⟶ a` along `f : b ⟶ a`. -/
-class CommuteWithLeftKanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] {x : B} (h : x ⟶ c) : Prop where
+class CommuteWithLeftKanLift
+    (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] {x : B} (h : x ⟶ c) : Prop where
   commute : Nonempty <| IsKan <| (lanLift.lift f g).whisker h
 
-instance {x : B} {h : x ⟶ c} [HasLeftKanLift f g] [CommuteWithLeftKanLift f g h] : HasLeftKanLift f (h ≫ g) :=
+instance {x : B} {h : x ⟶ c} [HasLeftKanLift f g] [CommuteWithLeftKanLift f g h] :
+    HasLeftKanLift f (h ≫ g) :=
   .mk (Classical.choice <| CommuteWithLeftKanLift.commute)
 
 end LeftLift
