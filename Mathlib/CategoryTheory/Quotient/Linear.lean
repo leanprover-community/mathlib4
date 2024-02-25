@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 namespace Quotient
 
-variable {R C : Type*} [Ring R] [Category C] [Preadditive C] [Linear R C]
+variable {R C : Type*} [Semiring R] [Category C] [Preadditive C] [Linear R C]
   (r : HomRel C) [Congruence r]
   (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f₂), r (a • f₁) (a • f₂))
 
@@ -34,7 +34,8 @@ def smul (X Y : Quotient r) : SMul R (X ⟶ Y) where
   smul a := Quot.lift (fun g => Quot.mk _ (a • g)) (fun f₁ f₂ h₁₂ => by
     dsimp
     simp only [compClosure_eq_self] at h₁₂
-    erw [functor_map_eq_iff]
+    apply Quot.sound
+    rw [compClosure_eq_self]
     exact hr _ _ _ h₁₂)
 
 @[simp]
