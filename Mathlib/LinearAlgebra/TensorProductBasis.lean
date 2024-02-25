@@ -24,7 +24,6 @@ section CommSemiring
 
 variable {R : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type*}
   [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-  [DecidableEq ι] [DecidableEq κ]
 
 /-- If `b : ι → M` and `c : κ → N` are bases then so is `fun i ↦ b i.1 ⊗ₜ c i.2 : ι × κ → M ⊗ N`. -/
 def Basis.tensorProduct (b : Basis ι R M) (c : Basis κ R N) :

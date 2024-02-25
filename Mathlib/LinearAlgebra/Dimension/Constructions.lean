@@ -355,10 +355,8 @@ open Module.Free
 theorem rank_tensorProduct :
     Module.rank S (M ⊗[S] M') =
       Cardinal.lift.{v'} (Module.rank S M) * Cardinal.lift.{v} (Module.rank S M') := by
-  obtain ⟨⟨ι, bM⟩⟩ := Module.Free.exists_basis (R := S) (M := M)
-  obtain ⟨⟨κ, bN⟩⟩ := Module.Free.exists_basis (R := S) (M := M')
-  haveI := Classical.decEq ι
-  haveI := Classical.decEq κ
+  obtain ⟨⟨_, bM⟩⟩ := Module.Free.exists_basis (R := S) (M := M)
+  obtain ⟨⟨_, bN⟩⟩ := Module.Free.exists_basis (R := S) (M := M')
   rw [← bM.mk_eq_rank'', ← bN.mk_eq_rank'', ← (bM.tensorProduct bN).mk_eq_rank'', Cardinal.mk_prod]
 #align rank_tensor_product rank_tensorProduct
 

@@ -21,8 +21,9 @@ noncomputable section
 open DirectSum Set LinearMap Submodule TensorProduct
 
 variable (R M N ι κ : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N] [DecidableEq ι] [DecidableEq κ]
+  [AddCommMonoid N] [Module R N]
 
+open scoped Classical in
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
 def finsuppTensorFinsupp : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
   TensorProduct.congr (finsuppLEquivDirectSum R M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
@@ -33,8 +34,8 @@ def finsuppTensorFinsupp : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ
 @[simp]
 theorem finsuppTensorFinsupp_single (i : ι) (m : M) (k : κ) (n : N) :
     finsuppTensorFinsupp R M N ι κ (Finsupp.single i m ⊗ₜ Finsupp.single k n) =
-      Finsupp.single (i, k) (m ⊗ₜ n) := by
-  simp [finsuppTensorFinsupp]
+      Finsupp.single (i, k) (m ⊗ₜ n) :=
+  by classical simp [finsuppTensorFinsupp]
 #align finsupp_tensor_finsupp_single finsuppTensorFinsupp_single
 
 @[simp]
@@ -83,6 +84,7 @@ theorem finsuppTensorFinsupp'_single_tmul_single (a : ι) (b : κ) (r₁ r₂ : 
     finsuppTensorFinsupp' R ι κ (Finsupp.single a r₁ ⊗ₜ[R] Finsupp.single b r₂) =
       Finsupp.single (a, b) (r₁ * r₂) := by
   ext ⟨a', b'⟩
+  classical
   aesop (add norm [Finsupp.single_apply])
 #align finsupp_tensor_finsupp'_single_tmul_single finsuppTensorFinsupp'_single_tmul_single
 
