@@ -10,7 +10,7 @@ open CategoryTheory
 set_option linter.existingAttributeWarning false in
 attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 @[elementwise]
 theorem ex1 [Category C] [ConcreteCategory C] (X : C) (f g h : X ⟶ X) (h' : g ≫ h = h ≫ g) :
@@ -90,7 +90,7 @@ lemma bar'' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g
     g (f x) = h x := by apply foo_apply w
 
 lemma bar''' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
-  g (f x) = h x := by apply foo_apply w
+    g (f x) = h x := by apply foo_apply w
 
 example (M N K : Mon) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by rw [elementwise_of% w]

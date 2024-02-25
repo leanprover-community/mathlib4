@@ -3,12 +3,10 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Hom.Equiv.TypeTags
-import Mathlib.Algebra.Module.Equiv
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.GroupTheory.IsFreeGroup
-import Mathlib.LinearAlgebra.Dimension
+import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 #align_import group_theory.free_abelian_group_finsupp from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
@@ -187,7 +185,7 @@ theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
 theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   apply support_zsmul k _ a
-  exact_mod_cast h
+  exact mod_cast h
 #align free_abelian_group.support_nsmul FreeAbelianGroup.support_nsmul
 
 open Classical

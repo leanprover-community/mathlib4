@@ -87,9 +87,8 @@ theorem of_injective : Function.Injective (of : α → FreeCommRing α) :=
 #align free_comm_ring.of_injective FreeCommRing.of_injective
 
 -- Porting note: added to ease a proof in `Algebra.DirectLimit`
-lemma of_cons (a : α) (m : Multiset α) :
-  (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
-  @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
+lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
+    @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
   dsimp [FreeCommRing]
   rw [← Multiset.singleton_add, ofAdd_add,
@@ -375,7 +374,7 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
 #align free_ring.coe_surjective FreeRing.coe_surjective
 
 theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
-      @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
+    @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
   funext x
   erw [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Function.comp,
     FreeAbelianGroup.liftMonoid_coe (FreeMonoid.lift FreeCommRing.of)]

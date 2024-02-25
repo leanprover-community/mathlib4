@@ -5,8 +5,9 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Adjunction.Evaluation
-import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Adhesive
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 #align_import category_theory.sites.subsheaf from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -29,7 +30,7 @@ We define the sub(pre)sheaf of a type valued presheaf.
   The descent of a map into a sheaf to the sheafification.
 - `CategoryTheory.GrothendieckTopology.imageSheaf` : The image sheaf of a morphism.
 - `CategoryTheory.GrothendieckTopology.imageFactorization` : The image sheaf as a
-  `limits.image_factorization`.
+  `Limits.imageFactorization`.
 -/
 
 
@@ -143,7 +144,7 @@ def Subpresheaf.lift (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) : F' �
 
 @[reassoc (attr := simp)]
 theorem Subpresheaf.lift_ι (f : F' ⟶ F) (hf : ∀ U x, f.app U x ∈ G.obj U) :
-  G.lift f hf ≫ G.ι = f := by
+    G.lift f hf ≫ G.ι = f := by
   ext
   rfl
 #align category_theory.grothendieck_topology.subpresheaf.lift_ι CategoryTheory.GrothendieckTopology.Subpresheaf.lift_ι
@@ -237,7 +238,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
       have hi'' : S' (i' ≫ i) := ⟨_, _, _, hi, hi', rfl⟩
       have := H _ hi''
       rw [op_comp, F.map_comp] at this
-      refine' this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
+      exact this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
   have : x''.Compatible := by
     intro V₁ V₂ V₃ g₁ g₂ g₃ g₄ S₁ S₂ e
     rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
@@ -323,7 +324,7 @@ theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
 theorem Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
     (hG' : Presieve.IsSheaf J G'.toPresheaf) : G.sheafify J ≤ G' := by
   intro U x hx
-  convert((G.sheafifyLift (Subpresheaf.homOfLe h) hG').app U ⟨x, hx⟩).2
+  convert ((G.sheafifyLift (Subpresheaf.homOfLe h) hG').app U ⟨x, hx⟩).2
   apply (hF _ hx).isSeparatedFor.ext
   intro V i hi
   have :=

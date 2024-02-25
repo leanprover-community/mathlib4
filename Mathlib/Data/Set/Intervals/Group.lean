@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Logic.Pairwise
 
 #align_import data.set.intervals.group from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
@@ -167,7 +167,8 @@ variable [OrderedCommGroup α] (a b : α)
 @[to_additive]
 theorem pairwise_disjoint_Ioc_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ioc (a * b ^ n) (a * b ^ (n + 1))) := by
-  simp_rw [Function.onFun, Set.disjoint_iff]
+  simp (config := { unfoldPartialApp := true }) only [Function.onFun]
+  simp_rw [Set.disjoint_iff]
   intro m n hmn x hx
   apply hmn
   have hb : 1 < b := by
@@ -183,7 +184,8 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
 @[to_additive]
 theorem pairwise_disjoint_Ico_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) := by
-  simp_rw [Function.onFun, Set.disjoint_iff]
+  simp (config := { unfoldPartialApp := true }) only [Function.onFun]
+  simp_rw [Set.disjoint_iff]
   intro m n hmn x hx
   apply hmn
   have hb : 1 < b := by

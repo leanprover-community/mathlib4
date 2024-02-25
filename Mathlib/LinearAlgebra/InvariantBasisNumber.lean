@@ -199,14 +199,14 @@ theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   refine' zero_ne_one (eq_of_fin_equiv R _)
   haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
-    Subsingleton.intro <| fun a b => funext fun x => Subsingleton.elim _ _
+    Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
   exact
     { toFun := 0
       invFun := 0
       map_add' := by aesop
       map_smul' := by aesop
-      left_inv := fun _ => by simp
-      right_inv := fun _ => by simp }
+      left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
+      right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
 #align nontrivial_of_invariant_basis_number nontrivial_of_invariantBasisNumber
 
 end

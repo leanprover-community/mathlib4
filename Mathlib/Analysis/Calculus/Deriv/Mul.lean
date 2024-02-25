@@ -49,7 +49,7 @@ variable {s t : Set 𝕜}
 
 variable {L L₁ L₂ : Filter 𝕜}
 
-section Smul
+section SMul
 
 /-! ### Derivative of the multiplication of a scalar function and a vector function -/
 
@@ -113,9 +113,9 @@ theorem deriv_smul_const (hc : DifferentiableAt 𝕜 c x) (f : F) :
   (hc.hasDerivAt.smul_const f).deriv
 #align deriv_smul_const deriv_smul_const
 
-end Smul
+end SMul
 
-section ConstSmul
+section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
 
@@ -150,7 +150,7 @@ theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
   (hf.hasDerivAt.const_smul c).deriv
 #align deriv_const_smul deriv_const_smul
 
-end ConstSmul
+end ConstSMul
 
 section Mul
 
@@ -334,7 +334,7 @@ theorem deriv_div_const (d : 𝕜') : deriv (fun x => c x / d) x = deriv c x / d
 
 end Div
 
-section ClmCompApply
+section CLMCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
 
@@ -410,5 +410,4 @@ theorem deriv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt 
   (hc.hasDerivAt.clm_apply hu.hasDerivAt).deriv
 #align deriv_clm_apply deriv_clm_apply
 
-end ClmCompApply
-
+end CLMCompApply

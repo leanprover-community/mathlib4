@@ -196,7 +196,7 @@ instance : TopologicalSpace (OnePoint X) where
     suffices IsOpen ((↑) ⁻¹' ⋃₀ S : Set X) by
       refine' ⟨_, this⟩
       rintro ⟨s, hsS : s ∈ S, hs : ∞ ∈ s⟩
-      refine' isCompact_of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
+      refine' IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
       exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
@@ -464,7 +464,7 @@ instance [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := by
     rw [nhds_infty_eq, disjoint_sup_right, nhds_coe_eq, coclosedCompact_eq_cocompact,
       disjoint_map coe_injective, ← principal_singleton, disjoint_principal_right, compl_infty]
     exact ⟨disjoint_nhds_cocompact z, range_mem_map⟩
-  suffices : T2Space (OnePoint X); infer_instance
+  suffices T2Space (OnePoint X) by infer_instance
   refine t2Space_iff_disjoint_nhds.2 fun x y hxy => ?_
   induction x using OnePoint.rec <;> induction y using OnePoint.rec
   · exact (hxy rfl).elim

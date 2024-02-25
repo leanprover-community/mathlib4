@@ -5,7 +5,6 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Data.Int.Units
-import Mathlib.Data.Int.Basic
 
 #align_import data.int.associated from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 /-!

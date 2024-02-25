@@ -127,7 +127,7 @@ theorem isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :
 #align is_solvable_of_top_eq_bot isSolvable_of_top_eq_bot
 
 instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolvable G :=
-  isSolvable_of_top_eq_bot G (by simp)
+  isSolvable_of_top_eq_bot G (by simp [eq_iff_true_of_subsingleton])
 #align is_solvable_of_subsingleton isSolvable_of_subsingleton
 
 variable {G}
@@ -137,7 +137,7 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
   obtain ⟨m, hm⟩ := id hG'
-  refine' ⟨⟨n + m, le_bot_iff.mp (map_bot f ▸ hm ▸ _)⟩⟩
+  refine' ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ _)⟩⟩
   clear hm
   induction' m with m hm
   · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp

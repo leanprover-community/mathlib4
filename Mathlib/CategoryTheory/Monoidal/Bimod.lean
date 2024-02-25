@@ -180,6 +180,8 @@ set_option linter.uppercaseLean3 false in
 
 variable (A)
 
+attribute [local simp] id_tensorHom tensorHom_id
+
 /-- A monoid object as a bimodule over itself. -/
 @[simps]
 def regular : Bimod A A where
@@ -663,7 +665,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   slice_lhs 3 3 => rw [← Iso.inv_hom_id_assoc (α_ R.X R.X P.X) (𝟙 R.X ⊗ P.actLeft)]
   slice_lhs 4 6 => rw [← Category.assoc, ← coequalizer.condition]
   slice_lhs 2 3 => rw [← MonoidalCategory.tensor_id, associator_inv_naturality]
-  slice_lhs 3 4 => rw [← comp_tensor_id, Mon_.one_mul]
+  slice_lhs 3 4 => rw [← comp_tensor_id, tensorHom_id, tensorHom_id, Mon_.one_mul]
   slice_rhs 1 2 => rw [Category.comp_id]
   coherence
 set_option linter.uppercaseLean3 false in
@@ -730,7 +732,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   slice_lhs 2 3 => rw [tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
   slice_lhs 3 4 => rw [coequalizer.condition]
   slice_lhs 2 3 => rw [← MonoidalCategory.tensor_id, associator_naturality]
-  slice_lhs 3 4 => rw [← id_tensor_comp, Mon_.mul_one]
+  slice_lhs 3 4 => rw [← id_tensor_comp, id_tensorHom, id_tensorHom, Mon_.mul_one]
   slice_rhs 1 2 => rw [Category.comp_id]
   coherence
 set_option linter.uppercaseLean3 false in
@@ -833,10 +835,10 @@ theorem id_whisker_left_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 4 4 => rw [← Iso.inv_hom_id_assoc (α_ X.X X.X N.X) (𝟙 X.X ⊗ N.actLeft)]
   slice_rhs 5 7 => rw [← Category.assoc, ← coequalizer.condition]
   slice_rhs 3 4 => rw [← MonoidalCategory.tensor_id, associator_inv_naturality]
-  slice_rhs 4 5 => rw [← comp_tensor_id, Mon_.one_mul]
+  slice_rhs 4 5 => rw [← comp_tensor_id, tensorHom_id, tensorHom_id, Mon_.one_mul]
   have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ⊗ 𝟙 N.X) = 𝟙 _ := by
     pure_coherence
-  slice_rhs 2 4 => rw [this]
+  slice_rhs 2 4 => rw [← tensorHom_id, this]
   slice_rhs 1 2 => rw [Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align Bimod.id_whisker_left_Bimod Bimod.id_whisker_left_bimod
@@ -890,10 +892,10 @@ theorem whisker_right_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 3 4 => rw [tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
   slice_rhs 4 5 => rw [coequalizer.condition]
   slice_rhs 3 4 => rw [← MonoidalCategory.tensor_id, associator_naturality]
-  slice_rhs 4 5 => rw [← id_tensor_comp, Mon_.mul_one]
+  slice_rhs 4 5 => rw [← id_tensor_comp, id_tensorHom, id_tensorHom, Mon_.mul_one]
   have : (ρ_ (N.X ⊗ Y.X)).inv ≫ (α_ N.X Y.X (𝟙_ C)).hom ≫ (𝟙 N.X ⊗ (ρ_ Y.X).hom) = 𝟙 _ := by
     pure_coherence
-  slice_rhs 2 4 => rw [this]
+  slice_rhs 2 4 => rw [← id_tensorHom, this]
   slice_rhs 1 2 => rw [Category.comp_id]
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_right_id_Bimod Bimod.whisker_right_id_bimod
@@ -972,7 +974,6 @@ theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_exchange_Bimod Bimod.whisker_exchange_bimod
 
-set_option maxHeartbeats 400000 in
 theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P : Bimod X Y)
     (Q : Bimod Y Z) :
     tensorHom (associatorBimod M N P).hom (𝟙 Q) ≫

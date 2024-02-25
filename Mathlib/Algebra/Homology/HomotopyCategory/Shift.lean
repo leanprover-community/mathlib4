@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.GroupPower.NegOnePow
 import Mathlib.CategoryTheory.Shift.Quotient
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -40,7 +41,7 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
       d := fun i j => n.negOnePow • K.d _ _
       d_comp_d' := by
         intros
-        simp only [Preadditive.comp_zsmul, Preadditive.zsmul_comp, d_comp_d, smul_zero]
+        simp only [Linear.comp_units_smul, Linear.units_smul_comp, d_comp_d, smul_zero]
       shape := fun i j hij => by
         dsimp
         rw [K.shape, smul_zero]
@@ -53,7 +54,7 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
       comm' := by
         intros
         dsimp
-        simp only [Preadditive.comp_zsmul, Hom.comm, Preadditive.zsmul_comp] }
+        simp only [Linear.comp_units_smul, Hom.comm, Linear.units_smul_comp] }
   map_id := by intros; rfl
   map_comp := by intros; rfl
 
@@ -80,15 +81,15 @@ def shiftFunctorZero' (n : ℤ) (h : n = 0) :
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
 to the addition of integers. -/
 @[simps!]
-def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂ ) :
+def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
     shiftFunctor C n₁₂ ≅ shiftFunctor C n₁ ⋙ shiftFunctor C n₂ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
     (fun i => K.shiftFunctorObjXIso _ _ _ (by linarith))
     (fun _ _ _ => by
       subst h
       dsimp
-      simp only [add_comm n₁ n₂, Int.negOnePow_add, Preadditive.zsmul_comp,
-        Preadditive.comp_zsmul, d_comp_XIsoOfEq_hom, smul_smul, XIsoOfEq_hom_comp_d]))
+      simp only [add_comm n₁ n₂, Int.negOnePow_add, Linear.units_smul_comp,
+        Linear.comp_units_smul, d_comp_XIsoOfEq_hom, smul_smul, XIsoOfEq_hom_comp_d]))
     (by aesop_cat)
 
 attribute [local simp] XIsoOfEq
@@ -105,8 +106,12 @@ instance (n : ℤ) :
 variable {C}
 
 @[simp]
+lemma shiftFunctor_obj_X' (K : CochainComplex C ℤ) (n p : ℤ) :
+    ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).X p = K.X (p + n) := rfl
+
+@[simp]
 lemma shiftFunctor_map_f' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p : ℤ) :
-    ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p = φ.f (p+n) := rfl
+    ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p = φ.f (p + n) := rfl
 
 @[simp]
 lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
@@ -252,7 +257,7 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
   hom i j := n.negOnePow • h.hom _ _
   zero i j hij := by
     dsimp
-    rw [h.zero, zsmul_zero]
+    rw [h.zero, smul_zero]
     intro hij'
     dsimp at hij hij'
     exact hij (by linarith)
@@ -260,8 +265,8 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
     rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i + 1) by simp),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1) i by simp)]
     dsimp
-    simpa only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, smul_smul,
-      Int.negOnePow_mul_self, one_smul,
+    simpa only [Linear.units_smul_comp, Linear.comp_units_smul, smul_smul,
+      Int.units_mul_self, one_smul,
       dNext_eq _ (show (ComplexShape.up ℤ).Rel (i + n) (i + 1 + n) by dsimp; linarith),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1 + n) (i + n) by dsimp; linarith)]
         using h.comm (i + n)
@@ -281,5 +286,10 @@ noncomputable instance hasShift :
 noncomputable instance commShiftQuotient :
     (HomotopyCategory.quotient C (ComplexShape.up ℤ)).CommShift ℤ :=
   Quotient.functor_commShift (homotopic C (ComplexShape.up ℤ)) ℤ
+
+instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
+  have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
+    Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
+  apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
 
 end HomotopyCategory

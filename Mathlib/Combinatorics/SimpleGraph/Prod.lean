@@ -57,12 +57,12 @@ theorem boxProd_adj : (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Ad
   Iff.rfl
 #align simple_graph.box_prod_adj SimpleGraph.boxProd_adj
 
---@[simp] porting note: `simp` can prove
+--@[simp] Porting note (#10618): `simp` can prove
 theorem boxProd_adj_left : (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
   simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
 #align simple_graph.box_prod_adj_left SimpleGraph.boxProd_adj_left
 
---@[simp] porting note: `simp` can prove
+--@[simp] Porting note (#10618): `simp` can prove
 theorem boxProd_adj_right : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 #align simple_graph.box_prod_adj_right SimpleGraph.boxProd_adj_right
@@ -161,7 +161,7 @@ theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b
     rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
       Walk.boxProdRight]
     simp [ofBoxProdLeft_boxProdRight]
-    exact⟨h, rfl⟩
+    exact ⟨h, rfl⟩
 #align simple_graph.walk.of_box_prod_left_box_prod_right SimpleGraph.Walk.ofBoxProdLeft_boxProdRight
 
 end Walk

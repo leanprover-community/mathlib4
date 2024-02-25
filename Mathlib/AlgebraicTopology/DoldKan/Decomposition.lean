@@ -84,7 +84,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (X)
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The structure `MorphComponents` is an ad hoc structure that is used in
 the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms. The fields are the data that are needed in order to
@@ -100,7 +100,7 @@ namespace MorphComponents
 
 variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h : Z ⟶ Z')
 
-/-- The morphism `X _[n+1] ⟶ Z ` associated to `f : MorphComponents X n Z`. -/
+/-- The morphism `X _[n+1] ⟶ Z` associated to `f : MorphComponents X n Z`. -/
 def φ {Z : C} (f : MorphComponents X n Z) : X _[n + 1] ⟶ Z :=
   PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫
     f.b (Fin.rev i)

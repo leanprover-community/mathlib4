@@ -19,6 +19,8 @@ This file shows that taking `TensorProduct`s commutes with taking `DirectSum`s i
 * `TensorProduct.directSumRight`
 -/
 
+suppress_compilation
+
 universe u v₁ v₂ w₁ w₁' w₂ w₂'
 
 section Ring
@@ -33,7 +35,7 @@ open LinearMap
 
 attribute [local ext] TensorProduct.ext
 
-variable (R : Type u) [CommRing R]
+variable (R : Type u) [CommSemiring R]
 
 variable {ι₁ : Type v₁} {ι₂ : Type v₂}
 
@@ -41,9 +43,9 @@ variable [DecidableEq ι₁] [DecidableEq ι₂]
 
 variable (M₁ : ι₁ → Type w₁) (M₁' : Type w₁') (M₂ : ι₂ → Type w₂) (M₂' : Type w₂')
 
-variable [∀ i₁, AddCommGroup (M₁ i₁)] [AddCommGroup M₁']
+variable [∀ i₁, AddCommMonoid (M₁ i₁)] [AddCommMonoid M₁']
 
-variable [∀ i₂, AddCommGroup (M₂ i₂)] [AddCommGroup M₂']
+variable [∀ i₂, AddCommMonoid (M₂ i₂)] [AddCommMonoid M₂']
 
 variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (M₂ i₂)] [Module R M₂']
 
@@ -56,7 +58,7 @@ protected def directSum :
   refine LinearEquiv.ofLinear (R := R) (R₂ := R) ?toFun ?invFun ?left ?right
   · refine lift ?_
     refine DirectSum.toModule R _ _ fun i₁ => ?_
-    refine @LinearMap.flip R _ R _ R _ R _ _ _ _ _ _ _ _ _ _ _ _ _ _ ?_
+    refine LinearMap.flip ?_
     refine DirectSum.toModule R _ _ fun i₂ => LinearMap.flip <| ?_
     refine curry ?_
     exact DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
@@ -71,9 +73,9 @@ protected def directSum :
   · -- `(_)` prevents typeclass search timing out on problems that can be solved immediately by
     -- unification
     refine TensorProduct.ext ?_
-    refine @DirectSum.linearMap_ext R _ _ _ _ _ _ _ _ (_) _ _ fun i₁ => ?_
-    refine @LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ fun x₁ => ?_
-    refine @DirectSum.linearMap_ext R _ _ _ _ _ _ _ _ (_) _ _ fun i₂ => ?_
+    refine DirectSum.linearMap_ext _ fun i₁ => ?_
+    refine LinearMap.ext fun x₁ => ?_
+    refine DirectSum.linearMap_ext _ fun i₂ => ?_
     refine LinearMap.ext fun x₂ => ?_
     -- porting note: seems much nicer than the `repeat` lean 3 proof.
     simp only [compr₂_apply, comp_apply, id_apply, mk_apply, DirectSum.toModule_lof, map_tmul,
@@ -154,6 +156,13 @@ theorem directSum_lof_tmul_lof (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) 
       DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂) := by
   simp [TensorProduct.directSum]
 #align tensor_product.direct_sum_lof_tmul_lof TensorProduct.directSum_lof_tmul_lof
+
+@[simp]
+theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
+    (TensorProduct.directSum R M₁ M₂).symm
+      (DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂)) =
+      (DirectSum.lof R ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) := by
+  rw [LinearEquiv.symm_apply_eq, directSum_lof_tmul_lof]
 
 @[simp]
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :

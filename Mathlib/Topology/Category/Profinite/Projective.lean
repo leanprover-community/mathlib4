@@ -49,7 +49,8 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
      -- Porting note: same fix as in `Topology.Category.CompHaus.Projective`
     let g'' : ContinuousMap Y Z := g
     have : g'' ∘ g' = id := hg'.comp_eq_id
-    rw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, id_comp]
 #align Profinite.projective_ultrafilter Profinite.projective_ultrafilter
 
 /-- For any profinite `X`, the natural map `Ultrafilter X → X` is a projective presentation. -/

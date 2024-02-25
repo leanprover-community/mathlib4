@@ -122,8 +122,8 @@ theorem unitCompPartialBijectiveAux_symm_apply [Reflective i] {A : C} {B : D}
 
 /-- If `i` has a reflector `L`, then the function `(i.obj (L.obj A) ⟶ B) → (A ⟶ B)` given by
 precomposing with `η.app A` is a bijection provided `B` is in the essential image of `i`.
-That is, the function `λ (f : i.obj (L.obj A) ⟶ B), η.app A ≫ f` is bijective, as long as `B` is in
-the essential image of `i`.
+That is, the function `fun (f : i.obj (L.obj A) ⟶ B) ↦ η.app A ≫ f` is bijective,
+as long as `B` is in the essential image of `i`.
 This definition gives an equivalence: the key property that the inverse can be described
 nicely is shown in `unitCompPartialBijective_symm_apply`.
 
@@ -167,21 +167,21 @@ Functor.essImage.unit_isIso X.property
 /-- The counit isomorphism of the equivalence `D ≌ i.EssImageSubcategory` given
 by `equivEssImageOfReflective` when the functor `i` is reflective. -/
 def equivEssImageOfReflective_counitIso_app [Reflective i] (X : Functor.EssImageSubcategory i) :
-  ((Functor.essImageInclusion i ⋙ leftAdjoint i) ⋙ Functor.toEssImage i).obj X ≅ X := by
+    ((Functor.essImageInclusion i ⋙ leftAdjoint i) ⋙ Functor.toEssImage i).obj X ≅ X := by
   refine' Iso.symm (@asIso _ _ X _ ((ofRightAdjoint i).unit.app X.obj) ?_)
   refine @isIso_of_reflects_iso _ _ _ _ _ _ _ i.essImageInclusion ?_ _
   dsimp
   exact inferInstance
 
 lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
-  (X : Functor.EssImageSubcategory i) :
+    (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
     inv (NatTrans.app (ofRightAdjoint i).unit X.obj) := by
     simp [equivEssImageOfReflective_counitIso_app, asIso]
     rfl
 
 lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
-  (X : Functor.EssImageSubcategory i) :
+    (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).inv =
     (NatTrans.app (ofRightAdjoint i).unit X.obj) := rfl
 

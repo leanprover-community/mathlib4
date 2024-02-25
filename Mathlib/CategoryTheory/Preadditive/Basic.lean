@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Hom.Group.Defs
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Module.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -198,7 +198,7 @@ instance {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) :=
   ⟨fun g g' H => by rwa [comp_neg, comp_neg, ← neg_comp, ← neg_comp, cancel_mono, neg_inj] at H⟩
 
 instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C where
-  Zero := inferInstance
+  zero := inferInstance
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _
   zero_comp P _ _ f := show rightComp P f 0 = 0 from map_zero _
 #align category_theory.preadditive.preadditive_has_zero_morphisms CategoryTheory.Preadditive.preadditiveHasZeroMorphisms
@@ -243,6 +243,15 @@ theorem mono_of_kernel_zero {X Y : C} {f : X ⟶ Y} [HasLimit (parallelPair f 0)
   mono_of_cancel_zero f fun g h => by rw [← kernel.lift_ι f g h, w, Limits.comp_zero]
 #align category_theory.preadditive.mono_of_kernel_zero CategoryTheory.Preadditive.mono_of_kernel_zero
 
+lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
+    (h : IsZero c.pt) : Mono f := mono_of_cancel_zero _ (fun g hg => by
+  obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ hg
+  rw [← ha, h.eq_of_tgt a 0, Limits.zero_comp])
+
+lemma mono_of_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] (h : IsZero (kernel f)) :
+    Mono f :=
+  mono_of_isZero_kernel' _ (kernelIsKernel _) h
+
 theorem epi_of_cancel_zero {P Q : C} (f : P ⟶ Q) (h : ∀ {R : C} (g : Q ⟶ R), f ≫ g = 0 → g = 0) :
     Epi f :=
   ⟨fun {Z} g g' hg =>
@@ -258,6 +267,15 @@ theorem epi_of_cokernel_zero {X Y : C} {f : X ⟶ Y} [HasColimit (parallelPair f
     (w : cokernel.π f = 0) : Epi f :=
   epi_of_cancel_zero f fun g h => by rw [← cokernel.π_desc f g h, w, Limits.zero_comp]
 #align category_theory.preadditive.epi_of_cokernel_zero CategoryTheory.Preadditive.epi_of_cokernel_zero
+
+lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
+    (h : IsZero c.pt) : Epi f := epi_of_cancel_zero _ (fun g hg => by
+  obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ hg
+  rw [← ha, h.eq_of_src a 0, Limits.comp_zero])
+
+lemma epi_of_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] (h : IsZero (cokernel f)) :
+    Epi f :=
+  epi_of_isZero_cokernel' _ (cokernelIsCokernel _) h
 
 namespace IsIso
 
@@ -442,6 +460,38 @@ theorem hasCoequalizers_of_hasCokernels [HasCokernels C] : HasCoequalizers C :=
 #align category_theory.preadditive.has_coequalizers_of_has_cokernels CategoryTheory.Preadditive.hasCoequalizers_of_hasCokernels
 
 end Equalizers
+
+section
+
+variable {C : Type*} [Category C] [Preadditive C] {X Y : C}
+
+instance : SMul (Units ℤ) (X ≅ Y) where
+  smul a e :=
+    { hom := (a : ℤ) • e.hom
+      inv := ((a⁻¹ : Units ℤ) : ℤ) • e.inv
+      hom_inv_id := by
+        simp only [comp_zsmul, zsmul_comp, smul_smul, Units.inv_mul, one_smul, e.hom_inv_id]
+      inv_hom_id := by
+        simp only [comp_zsmul, zsmul_comp, smul_smul, Units.mul_inv, one_smul, e.inv_hom_id] }
+
+@[simp]
+lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = (a : ℤ) • e.hom := rfl
+
+@[simp]
+lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = ((a⁻¹ : Units ℤ) : ℤ) • e.inv := rfl
+
+instance : Neg (X ≅ Y) where
+  neg e :=
+    { hom := -e.hom
+      inv := -e.inv }
+
+@[simp]
+lemma neg_iso_hom (e : X ≅ Y) : (-e).hom = -e.hom := rfl
+
+@[simp]
+lemma neg_iso_inv (e : X ≅ Y) : (-e).inv = -e.inv := rfl
+
+end
 
 end Preadditive
 

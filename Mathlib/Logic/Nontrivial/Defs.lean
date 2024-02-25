@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Init.Logic
 import Mathlib.Init.Function
+import Mathlib.Tactic.TypeStar
 
 #align_import logic.nontrivial from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -89,6 +91,9 @@ theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
 theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
   fun _ => not_nontrivial _ ‹_›
 #align not_subsingleton not_subsingleton
+
+lemma not_subsingleton_iff_nontrivial : ¬ Subsingleton α ↔ Nontrivial α := by
+  rw [← not_nontrivial_iff_subsingleton, not_not]
 
 /-- A type is either a subsingleton or nontrivial. -/
 theorem subsingleton_or_nontrivial (α : Type*) : Subsingleton α ∨ Nontrivial α := by

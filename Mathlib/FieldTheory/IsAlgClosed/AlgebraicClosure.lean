@@ -132,7 +132,7 @@ instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
 
 -- Porting note: In the statement, the type of `C` had to be made explicit.
 theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk _).comp
-  (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl
+    (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl
 #align algebraic_closure.adjoin_monic.algebra_map AlgebraicClosure.AdjoinMonic.algebraMap
 
 theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
@@ -140,9 +140,9 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
   rw [← hp]
   induction p using MvPolynomial.induction_on generalizing z with
     | h_C => exact isIntegral_algebraMap
-    | h_add _ _ ha hb => exact isIntegral_add (ha _ rfl) (hb _ rfl)
+    | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
     | h_X p f ih =>
-      · refine @isIntegral_mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
+      · refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
         refine ⟨f, f.2.1, ?_⟩
         erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
         exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
@@ -151,7 +151,8 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
   ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k), by
-    rw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
     exact le_maxIdeal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
 #align algebraic_closure.adjoin_monic.exists_root AlgebraicClosure.AdjoinMonic.exists_root
 
@@ -283,7 +284,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     unfold RingHom.toAlgebra'
     simp only
     rw [toStepOfLE.succ k a a.zero_le]
-    apply @RingHom.isIntegral_trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
+    apply @RingHom.IsIntegral.trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
         (toStepOfLE k 0 a (a.zero_le : 0 ≤ a)) (toStepSucc k a) _
     · intro z
       have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
@@ -325,7 +326,7 @@ def ofStep (n : ℕ) : Step k n →+* AlgebraicClosureAux k :=
 
 theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
   ext x
-  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x:= Nat.leRecOn_succ' x
+  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x := Nat.leRecOn_succ' x
   unfold ofStep
   rw [RingHom.comp_apply]
   dsimp [toStepOfLE]
@@ -380,9 +381,9 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
 #noalign algebraic_closure.of_step_hom
 
 theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
-  isAlgebraic_iff_isIntegral.2 <|
+  IsIntegral.isAlgebraic <|
     let ⟨n, x, hx⟩ := exists_ofStep k z
-    hx ▸ map_isIntegral (ofStepHom k n) (Step.isIntegral k n x)
+    hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)
 
 @[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
   ⟨AlgebraicClosureAux.instIsAlgClosed k, isAlgebraic k⟩

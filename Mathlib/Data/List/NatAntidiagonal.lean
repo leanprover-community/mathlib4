@@ -38,7 +38,7 @@ def antidiagonal (n : ℕ) : List (ℕ × ℕ) :=
 theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x.1 + x.2 = n := by
   rw [antidiagonal, mem_map]; constructor
   · rintro ⟨i, hi, rfl⟩
-    rw [mem_range, lt_succ_iff] at hi
+    rw [mem_range, Nat.lt_succ_iff] at hi
     exact add_tsub_cancel_of_le hi
   · rintro rfl
     refine' ⟨x.fst, _, _⟩
@@ -86,7 +86,8 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
   rw [antidiagonal_succ']
-  simp
+  simp only [antidiagonal_succ, map_cons, Prod_map, id_eq, map_map, cons_append, cons.injEq,
+    append_cancel_right_eq, true_and]
   ext
   simp
 #align list.nat.antidiagonal_succ_succ' List.Nat.antidiagonal_succ_succ'
@@ -96,10 +97,9 @@ theorem map_swap_antidiagonal {n : ℕ} :
   rw [antidiagonal, map_map, ← List.map_reverse, range_eq_range', reverse_range', ←
     range_eq_range', map_map]
   apply map_congr
-  simp (config := { contextual := true }) [Nat.sub_sub_self, lt_succ_iff]
+  simp (config := { contextual := true }) [Nat.sub_sub_self, Nat.lt_succ_iff]
 #align list.nat.map_swap_antidiagonal List.Nat.map_swap_antidiagonal
 
 end Nat
 
 end List
-

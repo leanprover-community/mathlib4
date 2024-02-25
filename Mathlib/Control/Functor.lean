@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 import Std.Tactic.Lint
 
 #align_import control.functor from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -38,12 +38,12 @@ variable {α β γ : Type u}
 
 variable [Functor F] [LawfulFunctor F]
 
-theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := funext id_map
+theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
 #align functor.map_id Functor.map_id
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
-    ((· <$> ·) g ∘ (· <$> ·) f : F α → F γ) = (· <$> ·) (g ∘ f) :=
-  funext <| fun _ => (comp_map _ _ _).symm
+    ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
+  funext fun _ => (comp_map _ _ _).symm
   -- porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
 #align functor.map_comp_map Functor.map_comp_map
 
@@ -182,19 +182,19 @@ variable [Functor F] [Functor G]
 
 /-- The map operation for the composition `Comp F G` of functors `F` and `G`. -/
 protected def map {α β : Type v} (h : α → β) : Comp F G α → Comp F G β
-  | Comp.mk x => Comp.mk ((· <$> ·) h <$> x)
+  | Comp.mk x => Comp.mk ((h <$> ·) <$> x)
 #align functor.comp.map Functor.Comp.map
 
 instance functor : Functor (Comp F G) where map := @Comp.map F G _ _
 
 @[functor_norm]
-theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((· <$> ·) h <$> x) :=
+theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((h <$> ·) <$> x) :=
   rfl
 #align functor.comp.map_mk Functor.Comp.map_mk
 
 @[simp]
 protected theorem run_map {α β} (h : α → β) (x : Comp F G α) :
-    (h <$> x).run = (· <$> ·) h <$> x.run :=
+    (h <$> x).run = (h <$> ·) <$> x.run :=
   rfl
 #align functor.comp.run_map Functor.Comp.run_map
 

@@ -79,7 +79,7 @@ maximum modulus principle, complex analysis
 -/
 
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap
+open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
 
 open scoped Topology Filter NNReal Real
 
@@ -145,8 +145,8 @@ theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ba
     (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have he : ∀ x, ‖e x‖ = ‖x‖ := UniformSpace.Completion.norm_coe
-  replace hz : IsMaxOn (norm ∘ e ∘ f) (closedBall z (dist w z)) z
-  · simpa only [IsMaxOn, (· ∘ ·), he] using hz
+  replace hz : IsMaxOn (norm ∘ e ∘ f) (closedBall z (dist w z)) z := by
+    simpa only [IsMaxOn, (· ∘ ·), he] using hz
   simpa only [he, (· ∘ ·)]
     using norm_max_aux₁ (e.differentiable.comp_diffContOnCl hd) hz
 #align complex.norm_max_aux₂ Complex.norm_max_aux₂
@@ -221,7 +221,7 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
 theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
     (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
   refine' isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and _
-  replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w; exact hd.eventually_differentiableAt hz.1
+  replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w := hd.eventually_differentiableAt hz.1
   exact (norm_eventually_eq_of_isLocalMax hd <| hz.2.isLocalMax hz.1).mono fun x hx y hy =>
     le_trans (hz.2 hy).out hx.ge
 #align complex.is_open_set_of_mem_nhds_and_is_max_on_norm Complex.isOpen_setOf_mem_nhds_and_isMaxOn_norm
@@ -234,13 +234,13 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
     (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const E ‖f c‖) U := by
   set V := U ∩ {z | IsMaxOn (norm ∘ f) U z}
   have hV : ∀ x ∈ V, ‖f x‖ = ‖f c‖ := fun x hx => le_antisymm (hm hx.1) (hx.2 hcU)
-  suffices : U ⊆ V; exact fun x hx => hV x (this hx)
+  suffices U ⊆ V from fun x hx => hV x (this hx)
   have hVo : IsOpen V := by
     simpa only [ho.mem_nhds_iff, setOf_and, setOf_mem_eq]
       using isOpen_setOf_mem_nhds_and_isMaxOn_norm hd
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, hm⟩
   set W := U ∩ {z | ‖f z‖ ≠ ‖f c‖}
-  have hWo : IsOpen W := hd.continuousOn.norm.preimage_open_of_open ho isOpen_ne
+  have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne
   have hdVW : Disjoint V W := disjoint_left.mpr fun x hxV hxW => hxW.2 (hV x hxV)
   have hUVW : U ⊆ V ∪ W := fun x hx =>
     (eq_or_ne ‖f x‖ ‖f c‖).imp (fun h => ⟨hx, fun y hy => (hm hy).out.trans_eq h.symm⟩)
@@ -367,7 +367,7 @@ variable [Nontrivial E]
 set `U` and is continuous on its closure, then there exists a point `z ∈ frontier U` such that
 `(‖f ·‖)` takes it maximum value on `closure U` at `z`. -/
 theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F} {U : Set E}
-    (hb : Bounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
+    (hb : IsBounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
     ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
   have hc : IsCompact (closure U) := hb.isCompact_closure
   obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w
@@ -384,7 +384,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a bounded set `U` and
 `‖f z‖ ≤ C` for any `z ∈ frontier U`, then the same is true for any `z ∈ closure U`. -/
-theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : Bounded U)
+theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : IsBounded U)
     (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
@@ -396,10 +396,10 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : B
   set e := (lineMap z w : ℂ → E)
   have hde : Differentiable ℂ e := (differentiable_id.smul_const (w - z)).add_const z
   have hL : AntilipschitzWith (nndist z w)⁻¹ e := antilipschitzWith_lineMap hne.symm
-  replace hd : DiffContOnCl ℂ (f ∘ e) (e ⁻¹' U)
-  exact hd.comp hde.diffContOnCl (mapsTo_preimage _ _)
+  replace hd : DiffContOnCl ℂ (f ∘ e) (e ⁻¹' U) :=
+    hd.comp hde.diffContOnCl (mapsTo_preimage _ _)
   have h₀ : (0 : ℂ) ∈ e ⁻¹' U := by simpa only [mem_preimage, lineMap_apply_zero]
-  rcases exists_mem_frontier_isMaxOn_norm (hL.bounded_preimage hU) ⟨0, h₀⟩ hd with ⟨ζ, hζU, hζ⟩
+  rcases exists_mem_frontier_isMaxOn_norm (hL.isBounded_preimage hU) ⟨0, h₀⟩ hd with ⟨ζ, hζU, hζ⟩
   calc
     ‖f z‖ = ‖f (e 0)‖ := by simp only [lineMap_apply_zero]
     _ ≤ ‖f (e ζ)‖ := (hζ (subset_closure h₀))
@@ -408,20 +408,19 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : B
 
 /-- If two complex differentiable functions `f g : E → F` are equal on the boundary of a bounded set
 `U`, then they are equal on `closure U`. -/
-theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U)
+theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U)
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
     EqOn f g (closure U) := by
-  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0; · simpa [sub_eq_zero] using H
+  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using H
   refine' fun z hz => norm_le_of_forall_mem_frontier_norm_le hU (hf.sub hg) (fun w hw => _) hz
   simp [hfg hw]
 #align complex.eq_on_closure_of_eq_on_frontier Complex.eqOn_closure_of_eqOn_frontier
 
 /-- If two complex differentiable functions `f g : E → F` are equal on the boundary of a bounded set
 `U`, then they are equal on `U`. -/
-theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : Bounded U) (hf : DiffContOnCl ℂ f U)
+theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U) (hf : DiffContOnCl ℂ f U)
     (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) : EqOn f g U :=
   (eqOn_closure_of_eqOn_frontier hU hf hg hfg).mono subset_closure
 #align complex.eq_on_of_eq_on_frontier Complex.eqOn_of_eqOn_frontier
 
 end Complex
-

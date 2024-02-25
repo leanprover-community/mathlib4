@@ -108,9 +108,9 @@ universe v₁ w₁
 
 variable {R S A}
 
-variable [CommSemiring R] [Semiring S] [AddCommMonoid A]
+variable [Semiring R] [Semiring S] [AddCommMonoid A]
 
-variable [Algebra R S] [Module S A] [Module R A] [IsScalarTower R S A]
+variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
     (hb : LinearIndependent R b) (hc : LinearIndependent S c) :
@@ -128,10 +128,23 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
   exact hg _ hik
 #align linear_independent_smul linearIndependent_smul
 
+variable (R)
+
+-- LinearIndependent is enough if S is a ring rather than semiring.
+theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScalarTower R S S :=
+  (b.repr.symm.comp <| lsingle <| Classical.arbitrary ι).isScalarTower_of_injective R
+    (b.repr.symm.injective.comp <| single_injective _)
+
+theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
+  b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
+
+variable {R}
+
 /-- `Basis.SMul (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
 noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
     Basis (ι × ι') R A :=
+  haveI := c.isScalarTower_finsupp R
   .ofRepr
     (c.repr.restrictScalars R ≪≫ₗ
       (Finsupp.lcongr (Equiv.refl _) b.repr ≪≫ₗ
@@ -141,7 +154,7 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
-    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by simp [Basis.smul]
+    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by simp [Basis.smul]; rfl
 #align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)

@@ -34,6 +34,10 @@ def lor : PosNum → PosNum → PosNum
   | bit1 p, bit1 q => bit1 (lor p q)
 #align pos_num.lor PosNum.lor
 
+instance : OrOp PosNum where or := PosNum.lor
+
+@[simp] lemma lor_eq_or (p q : PosNum) : p.lor q = p ||| q := rfl
+
 /-- Bitwise "and" for `PosNum`. -/
 def land : PosNum → PosNum → Num
   | 1, bit0 _ => 0
@@ -45,6 +49,10 @@ def land : PosNum → PosNum → Num
   | bit1 p, bit0 q => Num.bit0 (land p q)
   | bit1 p, bit1 q => Num.bit1 (land p q)
 #align pos_num.land PosNum.land
+
+instance : HAnd PosNum PosNum Num where hAnd := PosNum.land
+
+@[simp] lemma land_eq_and (p q : PosNum) : p.land q = p &&& q := rfl
 
 /-- Bitwise `fun a b ↦ a && !b` for `PosNum`. For example, `ldiff 5 9 = 4`:
 ```
@@ -78,6 +86,10 @@ def lxor : PosNum → PosNum → Num
   | bit1 p, bit1 q => Num.bit0 (lxor p q)
 #align pos_num.lxor PosNum.lxor
 
+instance : HXor PosNum PosNum Num where hXor := PosNum.lxor
+
+@[simp] lemma lxor_eq_xor (p q : PosNum) : p.lxor q = p ^^^ q := rfl
+
 /-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
       of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/
 def testBit : PosNum → Nat → Bool
@@ -102,9 +114,14 @@ def shiftl : PosNum → Nat → PosNum
   | p, n + 1 => shiftl p.bit0 n
 #align pos_num.shiftl PosNum.shiftl
 
+instance : HShiftLeft PosNum Nat PosNum where hShiftLeft := PosNum.shiftl
+
+@[simp] lemma shiftl_eq_shiftLeft (p : PosNum) (n : Nat) : p.shiftl n = p <<< n := rfl
+
+
 -- Porting note: `PosNum.shiftl` is defined as tail-recursive in Lean4.
 --               This theorem ensures the definition is same to one in Lean3.
-theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), shiftl p n.succ = bit0 (shiftl p n)
+theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), p <<< n.succ = bit0 (p <<< n)
   | _, 0       => rfl
   | p, .succ n => shiftl_succ_eq_bit0_shiftl p.bit0 n
 
@@ -116,23 +133,35 @@ def shiftr : PosNum → Nat → Num
   | bit1 p, n + 1 => shiftr p n
 #align pos_num.shiftr PosNum.shiftr
 
+instance : HShiftRight PosNum Nat Num where hShiftRight := PosNum.shiftr
+
+@[simp] lemma shiftr_eq_shiftRight (p : PosNum) (n : Nat) : p.shiftr n = p >>> n := rfl
+
 end PosNum
 
 namespace Num
 
 /-- Bitwise "or" for `Num`. -/
-def lor : Num → Num → Num
+protected def lor : Num → Num → Num
   | 0, q => q
   | p, 0 => p
-  | pos p, pos q => pos (p.lor q)
-#align num.lor Num.lor
+  | pos p, pos q => pos (p ||| q)
+#align num.lor OrOp.or
+
+instance : OrOp Num where or := Num.lor
+
+@[simp] lemma lor_eq_or (p q : Num) : p.lor q = p ||| q := rfl
 
 /-- Bitwise "and" for `Num`. -/
 def land : Num → Num → Num
   | 0, _ => 0
   | _, 0 => 0
-  | pos p, pos q => p.land q
+  | pos p, pos q => p &&& q
 #align num.land Num.land
+
+instance : AndOp Num where and := Num.land
+
+@[simp] lemma land_eq_and (p q : Num) : p.land q = p &&& q := rfl
 
 /-- Bitwise `fun a b ↦ a && !b` for `Num`. For example, `ldiff 5 9 = 4`:
 ```
@@ -152,20 +181,32 @@ def ldiff : Num → Num → Num
 def lxor : Num → Num → Num
   | 0, q => q
   | p, 0 => p
-  | pos p, pos q => p.lxor q
+  | pos p, pos q => p ^^^ q
 #align num.lxor Num.lxor
+
+instance : Xor Num where xor := Num.lxor
+
+@[simp] lemma lxor_eq_xor (p q : Num) : p.lxor q = p ^^^ q := rfl
 
 /-- Left-shift the binary representation of a `Num`. -/
 def shiftl : Num → Nat → Num
   | 0, _ => 0
-  | pos p, n => pos (p.shiftl n)
+  | pos p, n => pos (p <<< n)
 #align num.shiftl Num.shiftl
+
+instance : HShiftLeft Num Nat Num where hShiftLeft := Num.shiftl
+
+@[simp] lemma shiftl_eq_shiftLeft (p : Num) (n : Nat) : p.shiftl n = p <<< n := rfl
 
 /-- Right-shift the binary representation of a `Num`. -/
 def shiftr : Num → Nat → Num
   | 0, _ => 0
-  | pos p, n => p.shiftr n
+  | pos p, n => p >>> n
 #align num.shiftr Num.shiftr
+
+instance : HShiftRight Num Nat Num where hShiftRight := Num.shiftr
+
+@[simp] lemma shiftr_eq_shiftRight (p : Num) (n : Nat) : p.shiftr n = p >>> n := rfl
 
 /-- `a.testBit n` is `true` iff the `n`-th bit (starting from the LSB) in the binary representation
       of `a` is active. If the size of `a` is less than `n`, this evaluates to `false`. -/

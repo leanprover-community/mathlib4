@@ -39,8 +39,9 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
     -- Porting note: broken dot notation on LinearMap.ker
       LinearMap.codRestrict (LinearMap.ker f) (Fork.ι s) fun c =>
         LinearMap.mem_ker.2 <| by
-          rw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← coe_comp, Fork.condition,
-            HasZeroMorphisms.comp_zero (Fork.ι s) N]
+          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          erw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← coe_comp]
+          rw [Fork.condition, HasZeroMorphisms.comp_zero (Fork.ι s) N]
           rfl)
     (fun s => LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
     LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h]; rfl)
@@ -63,7 +64,7 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     -- Porting note: broken dot notation
     apply (cancel_epi (asHom (LinearMap.range f).mkQ)).1
     convert h
-    -- Porting note : no longer necessary
+    -- Porting note: no longer necessary
     -- exact Submodule.liftQ_mkQ _ _ _
 #align Module.cokernel_is_colimit ModuleCat.cokernelIsColimit
 

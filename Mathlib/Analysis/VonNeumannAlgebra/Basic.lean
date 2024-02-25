@@ -143,7 +143,7 @@ theorem coe_commutant (S : VonNeumannAlgebra H) :
 @[simp]
 theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
     z ∈ S.commutant ↔ ∀ g ∈ S, g * z = z * g := by
-  rw [←SetLike.mem_coe, coe_commutant]
+  rw [← SetLike.mem_coe, coe_commutant]
   rfl
 #align von_neumann_algebra.mem_commutant_iff VonNeumannAlgebra.mem_commutant_iff
 

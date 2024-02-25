@@ -101,10 +101,10 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     ext : 1
     have hh : ¬(Fix.approx f z.val x).Dom := by
       apply Nat.find_min h'
-      rw [hk, Nat.succ_add, ← Nat.add_succ]
+      rw [hk, Nat.succ_add_eq_add_succ]
       apply Nat.lt_of_succ_le
       apply Nat.le_add_left
-    rw [succ_add_eq_succ_add] at _this hk
+    rw [succ_add_eq_add_succ] at _this hk
     rw [assert_pos hh, n_ih (Upto.succ z hh) _this hk]
 #align part.fix_def Part.fix_def
 

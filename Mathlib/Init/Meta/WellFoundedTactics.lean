@@ -3,8 +3,8 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-prelude
-import Mathlib.Init.Data.Nat.Lemmas
+import Std.Data.Nat.Lemmas
+import Mathlib.Mathport.Rename
 
 #align_import init.meta.well_founded_tactics from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
@@ -16,17 +16,11 @@ theorem Nat.lt_add_of_zero_lt_left (a b : Nat) (h : 0 < b) : a < a + b :=
     assumption
 #align nat.lt_add_of_zero_lt_left Nat.lt_add_of_zero_lt_left
 
-theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a :=
-  suffices 0 < a + 1 by
-    simp [Nat.add_comm]
-    assumption
-  Nat.zero_lt_succ _
+theorem Nat.zero_lt_one_add (a : Nat) : 0 < 1 + a := by simp [Nat.one_add]
 #align nat.zero_lt_one_add Nat.zero_lt_one_add
 
 #align nat.lt_add_right Nat.lt_add_right
 
-theorem Nat.lt_add_left (a b c : Nat) : a < b → a < c + b := fun h =>
-  lt_of_lt_of_le h (Nat.le_add_left _ _)
 #align nat.lt_add_left Nat.lt_add_left
 
 /-

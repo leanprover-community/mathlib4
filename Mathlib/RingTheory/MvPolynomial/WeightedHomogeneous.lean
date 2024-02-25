@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.GradedMonoid
-import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.Basic
 
 #align_import ring_theory.mv_polynomial.weighted_homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -185,7 +185,7 @@ theorem weightedHomogeneousSubmodule_mul (w : σ → M) (m n : M) :
     contrapose! H
     by_cases h : coeff d φ = 0 <;>
       simp_all only [Ne.def, not_false_iff, zero_mul, mul_zero]
-  rw [← Finsupp.mem_antidiagonal.mp hde, ← hφ aux.1, ← hψ aux.2, map_add]
+  rw [← mem_antidiagonal.mp hde, ← hφ aux.1, ← hψ aux.2, map_add]
 #align mv_polynomial.weighted_homogeneous_submodule_mul MvPolynomial.weightedHomogeneousSubmodule_mul
 
 /-- Monomials are weighted homogeneous. -/
@@ -326,6 +326,7 @@ variable {R}
   See `sum_weightedHomogeneousComponent` for the statement that `φ` is equal to the sum
   of all its weighted homogeneous components. -/
 def weightedHomogeneousComponent (w : σ → M) (n : M) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
+  letI := Classical.decEq M
   (Submodule.subtype _).comp <| Finsupp.restrictDom _ _ { d | weightedDegree' w d = n }
 #align mv_polynomial.weighted_homogeneous_component MvPolynomial.weightedHomogeneousComponent
 
@@ -336,13 +337,15 @@ variable {w : σ → M} (n : M) (φ ψ : MvPolynomial σ R)
 theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
     coeff d (weightedHomogeneousComponent w n φ) =
       if weightedDegree' w d = n then coeff d φ else 0 :=
-  Finsupp.filter_apply (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ d
+  letI := Classical.decEq M
+  Finsupp.filter_apply (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ d |>.trans <| by convert rfl
 #align mv_polynomial.coeff_weighted_homogeneous_component MvPolynomial.coeff_weightedHomogeneousComponent
 
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d in φ.support.filter fun d => weightedDegree' w d = n, monomial d (coeff d φ) :=
-  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ
+  letI := Classical.decEq M
+  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weightedDegree' w d = n) φ |>.trans <| by convert rfl
 #align mv_polynomial.weighted_homogeneous_component_apply MvPolynomial.weightedHomogeneousComponent_apply
 
 /-- The `n` weighted homogeneous component of a polynomial is weighted homogeneous of
@@ -441,11 +444,11 @@ end WeightedHomogeneousComponent
 
 end AddCommMonoid
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [CanonicallyOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
 
-/-- If `M` is a `CanonicallyOrderedAddMonoid`, then the `weightedHomogeneousComponent`
+/-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
   of weighted degree `0` of a polynomial is its constant coefficient. -/
 @[simp]
 theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
@@ -458,11 +461,11 @@ theorem weightedHomogeneousComponent_zero [NoZeroSMulDivisors ℕ M] (hw : ∀ i
     simp only [weightedDegree', LinearMap.toAddMonoidHom_coe, Finsupp.total_apply, Finsupp.sum,
       sum_eq_zero_iff, Finsupp.mem_support_iff, Ne.def, smul_eq_zero, not_forall, not_or,
       and_self_left, exists_prop]
-    simp only [FunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
+    simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
     obtain ⟨i, hi⟩ := hd
     exact ⟨i, hi, hw i⟩
 #align mv_polynomial.weighted_homogeneous_component_zero MvPolynomial.weightedHomogeneousComponent_zero
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 end MvPolynomial

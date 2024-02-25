@@ -30,6 +30,11 @@ theorem prod_insertNone (f : Option α → M) (s : Finset α) :
 #align finset.sum_insert_none Finset.sum_insertNone
 
 @[to_additive]
+theorem mul_prod_eq_prod_insertNone (f : α → M) (x : M) (s : Finset α) :
+    x * ∏ i in s, f i = ∏ i in insertNone s, i.elim x f :=
+  (prod_insertNone (fun i => i.elim x f) _).symm
+
+@[to_additive]
 theorem prod_eraseNone (f : α → M) (s : Finset (Option α)) :
     ∏ x in eraseNone s, f x = ∏ x in s, Option.elim' 1 f x := by
   classical calc

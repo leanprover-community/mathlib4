@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.DFinsupp.Order
@@ -198,7 +198,7 @@ variable [DecidableEq ι] [∀ i, DecidableEq (α i)] [∀ i, Lattice (α i)] [�
   [∀ i, LocallyFiniteOrder (α i)] (f g : Π₀ i, α i)
 
 theorem card_uIcc : (uIcc f g).card = ∏ i in f.support ∪ g.support, (uIcc (f i) (g i)).card := by
-  rw [←support_inf_union_support_sup]; exact card_Icc _ _
+  rw [← support_inf_union_support_sup]; exact card_Icc _ _
 #align dfinsupp.card_uIcc DFinsupp.card_uIcc
 
 end Lattice
@@ -207,7 +207,7 @@ section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
-variable [∀ i, CanonicallyOrderedAddMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
+variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
 variable (f : Π₀ i, α i)
 

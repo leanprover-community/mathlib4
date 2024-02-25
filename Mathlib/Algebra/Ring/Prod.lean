@@ -7,6 +7,7 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
+import Mathlib.Algebra.Order.Ring.Defs
 
 #align_import algebra.ring.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -352,7 +353,7 @@ def prodZeroRing : R ≃+* R × S where
   map_add' := by simp
   map_mul' := by simp
   left_inv x := rfl
-  right_inv x := by cases x; simp
+  right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 #align ring_equiv.prod_zero_ring RingEquiv.prodZeroRing
 #align ring_equiv.prod_zero_ring_symm_apply RingEquiv.prodZeroRing_symm_apply
 #align ring_equiv.prod_zero_ring_apply RingEquiv.prodZeroRing_apply
@@ -365,7 +366,7 @@ def zeroRingProd : R ≃+* S × R where
   map_add' := by simp
   map_mul' := by simp
   left_inv x := rfl
-  right_inv x := by cases x; simp
+  right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 #align ring_equiv.zero_ring_prod RingEquiv.zeroRingProd
 #align ring_equiv.zero_ring_prod_symm_apply RingEquiv.zeroRingProd_symm_apply
 #align ring_equiv.zero_ring_prod_apply RingEquiv.zeroRingProd_apply

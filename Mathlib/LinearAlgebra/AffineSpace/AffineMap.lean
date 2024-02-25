@@ -59,22 +59,22 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
-instance AffineMap.funLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
+instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
-    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 fun _ => P2
+    [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2
     where
   coe := AffineMap.toFun
   coe_injective' := fun ⟨f, f_linear, f_add⟩ ⟨g, g_linear, g_add⟩ => fun (h : f = g) => by
-    cases' (AddTorsor.Nonempty : Nonempty P1) with p
+    cases' (AddTorsor.nonempty : Nonempty P1) with p
     congr with v
     apply vadd_right_cancel (f p)
     erw [← f_add, h, ← g_add]
-#align affine_map.fun_like AffineMap.funLike
+#align affine_map.fun_like AffineMap.instFunLike
 
 instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align affine_map.has_coe_to_fun AffineMap.hasCoeToFun
 
 namespace LinearMap
@@ -140,7 +140,7 @@ theorem linearMap_vsub (f : P1 →ᵃ[k] P2) (p1 p2 : P1) : f.linear (p1 -ᵥ p2
 /-- Two affine maps are equal if they coerce to the same function. -/
 @[ext]
 theorem ext {f g : P1 →ᵃ[k] P2} (h : ∀ p, f p = g p) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align affine_map.ext AffineMap.ext
 
 theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
@@ -148,7 +148,7 @@ theorem ext_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ ∀ p, f p = g p :=
 #align affine_map.ext_iff AffineMap.ext_iff
 
 theorem coeFn_injective : @Function.Injective (P1 →ᵃ[k] P2) (P1 → P2) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align affine_map.coe_fn_injective AffineMap.coeFn_injective
 
 protected theorem congr_arg (f : P1 →ᵃ[k] P2) {x y : P1} (h : x = y) : f x = f y :=
@@ -198,7 +198,7 @@ theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
 #align affine_map.linear_eq_zero_iff_exists_const AffineMap.linear_eq_zero_iff_exists_const
 
 instance nonempty : Nonempty (P1 →ᵃ[k] P2) :=
-  (AddTorsor.Nonempty : Nonempty P2).elim fun p => ⟨const k P1 p⟩
+  (AddTorsor.nonempty : Nonempty P2).map <| const k P1
 #align affine_map.nonempty AffineMap.nonempty
 
 /-- Construct an affine map by verifying the relation between the map and its linear part at one
@@ -250,14 +250,10 @@ end SMul
 instance : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ => (zero_vadd _ _).symm⟩
 
 instance : Add (P1 →ᵃ[k] V2) where
-  add f g := ⟨f + g, f.linear + g.linear,
-      -- porting note: `simp` needs lemmas to be expressions
-      fun p v => by simp [add_add_add_comm, (map_vadd)]⟩
+  add f g := ⟨f + g, f.linear + g.linear, fun p v => by simp [add_add_add_comm]⟩
 
 instance : Sub (P1 →ᵃ[k] V2) where
-  sub f g := ⟨f - g, f.linear - g.linear,
-      -- porting note: `simp` needs lemmas to be expressions
-      fun p v => by simp [sub_add_sub_comm, (map_vadd)]⟩
+  sub f g := ⟨f - g, f.linear - g.linear, fun p v => by simp [sub_add_sub_comm]⟩
 
 instance : Neg (P1 →ᵃ[k] V2) where
   neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
@@ -312,16 +308,12 @@ from `P1` to the vector space `V2` corresponding to `P2`. -/
 instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd f g :=
     ⟨fun p => f p +ᵥ g p, f.linear + g.linear,
-      -- porting note: `simp` needs lemmas to be expressions
-      letI : AddAction V2 P2 := inferInstance
-      fun p v => by simp [vadd_vadd, add_right_comm, (map_vadd)]⟩
+      fun p v => by simp [vadd_vadd, add_right_comm]⟩
   zero_vadd f := ext fun p => zero_vadd _ (f p)
   add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
   vsub f g :=
     ⟨fun p => f p -ᵥ g p, f.linear - g.linear, fun p v => by
-      -- porting note: `simp` needs lemmas to be expressions
-      simp [(map_vadd), (vsub_vadd_eq_vsub_sub), (vadd_vsub_assoc),
-        add_sub, sub_add_eq_add_sub]⟩
+      simp [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub, sub_add_eq_add_sub]⟩
   vsub_vadd' f g := ext fun p => vsub_vadd (f p) (g p)
   vadd_vsub' f g := ext fun p => vadd_vsub (f p) (g p)
 
@@ -542,9 +534,7 @@ theorem lineMap_linear (p₀ p₁ : P1) :
 #align affine_map.line_map_linear AffineMap.lineMap_linear
 
 theorem lineMap_same_apply (p : P1) (c : k) : lineMap p p c = p := by
-  letI : AddAction V1 P1 := inferInstance
-  -- porting note: `simp` needs lemmas to be expressions
-  simp [(lineMap_apply), (vsub_self)]
+  simp [lineMap_apply]
 #align affine_map.line_map_same_apply AffineMap.lineMap_same_apply
 
 @[simp]
@@ -554,15 +544,12 @@ theorem lineMap_same (p : P1) : lineMap p p = const k k p :=
 
 @[simp]
 theorem lineMap_apply_zero (p₀ p₁ : P1) : lineMap p₀ p₁ (0 : k) = p₀ := by
-  letI : AddAction V1 P1 := inferInstance
-  -- porting note: `simp` needs lemmas to be expressions
-  simp [(lineMap_apply)]
+  simp [lineMap_apply]
 #align affine_map.line_map_apply_zero AffineMap.lineMap_apply_zero
 
 @[simp]
 theorem lineMap_apply_one (p₀ p₁ : P1) : lineMap p₀ p₁ (1 : k) = p₁ := by
-  -- porting note: `simp` needs lemmas to be expressions
-  simp [(lineMap_apply), (vsub_vadd)]
+  simp [lineMap_apply]
 #align affine_map.line_map_apply_one AffineMap.lineMap_apply_one
 
 @[simp]
@@ -596,8 +583,7 @@ variable {k}
 @[simp]
 theorem apply_lineMap (f : P1 →ᵃ[k] P2) (p₀ p₁ : P1) (c : k) :
     f (lineMap p₀ p₁ c) = lineMap (f p₀) (f p₁) c := by
-  -- porting note: `simp` needs lemmas to be expressions
-  simp [(lineMap_apply), (map_vadd), (linearMap_vsub)]
+  simp [lineMap_apply]
 #align affine_map.apply_line_map AffineMap.apply_lineMap
 
 @[simp]
@@ -687,7 +673,7 @@ theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b :
 
 section
 
-variable {ι : Type*} {V : ∀ _ : ι, Type*} {P : ∀ _ : ι, Type*} [∀ i, AddCommGroup (V i)]
+variable {ι : Type*} {V : ι → Type*} {P : ι → Type*} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
 /-- Evaluation at a point as an affine map. -/

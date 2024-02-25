@@ -466,9 +466,9 @@ theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicH
   apply dvd_mul_right
 #align adjoin_root.mk_left_inverse AdjoinRoot.mk_leftInverse
 
-theorem mk_surjective (hg : g.Monic) : Function.Surjective (mk g) :=
-  (mk_leftInverse hg).surjective
-#align adjoin_root.mk_surjective AdjoinRoot.mk_surjective
+theorem mk_surjective : Function.Surjective (mk g) :=
+  Ideal.Quotient.mk_surjective
+#align adjoin_root.mk_surjective AdjoinRoot.mk_surjectiveₓ
 
 /-- The elements `1, root g, ..., root g ^ (d - 1)` form a basis for `AdjoinRoot g`,
 where `g` is a monic polynomial of degree `d`. -/
@@ -538,7 +538,7 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
 variable [Field K] {f : K[X]}
 
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
-  isAlgebraic_iff_isIntegral.mp (isAlgebraic_root hf)
+  (isAlgebraic_root hf).isIntegral
 #align adjoin_root.is_integral_root AdjoinRoot.isIntegral_root
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
@@ -611,7 +611,7 @@ variable [CommRing R] [CommRing S] [Algebra R S] (x : S) (R)
 open Algebra Polynomial
 
 /-- The surjective algebra morphism `R[X]/(minpoly R x) → R[x]`.
-If `R` is a GCD domain and `x` is integral, this is an isomorphism,
+If `R` is a integrally closed domain and `x` is integral, this is an isomorphism,
 see `minpoly.equivAdjoin`. -/
 @[simps!]
 def Minpoly.toAdjoin : AdjoinRoot (minpoly R x) →ₐ[R] adjoin R ({x} : Set S) :=
@@ -630,7 +630,7 @@ theorem Minpoly.toAdjoin_apply' (a : AdjoinRoot (minpoly R x)) :
 
 theorem Minpoly.toAdjoin.apply_X :
     Minpoly.toAdjoin R x (mk (minpoly R x) X) = ⟨x, self_mem_adjoin_singleton R x⟩ := by
-    simp [toAdjoin]
+  simp [toAdjoin]
 set_option linter.uppercaseLean3 false in
 #align adjoin_root.minpoly.to_adjoin.apply_X AdjoinRoot.Minpoly.toAdjoin.apply_X
 
@@ -638,10 +638,7 @@ variable (R x)
 
 theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x) := by
   rw [← range_top_iff_surjective, _root_.eq_top_iff, ← adjoin_adjoin_coe_preimage]
-  refine' adjoin_le _
-  simp only [AlgHom.coe_range, Set.mem_range]
-  rintro ⟨y₁, y₂⟩ h
-  refine' ⟨mk (minpoly R x) X, by simpa [toAdjoin] using h.symm⟩
+  exact adjoin_le fun ⟨y₁, y₂⟩ h ↦ ⟨mk (minpoly R x) X, by simpa [toAdjoin] using h.symm⟩
 #align adjoin_root.minpoly.to_adjoin.surjective AdjoinRoot.Minpoly.toAdjoin.surjective
 
 end minpoly
@@ -658,7 +655,7 @@ such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `Adjo
 Compare `PowerBasis.equivOfRoot`, which would require
 `h₂ : aeval pb.gen (minpoly R (root g)) = 0`; that minimal polynomial is not
 guaranteed to be identical to `g`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
   { AdjoinRoot.liftHom g pb.gen h₂ with
@@ -690,9 +687,7 @@ end Equiv'
 
 section Field
 
-variable (K) (L F : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
-
-variable (pb : PowerBasis F K)
+variable (L F : Type*) [Field F] [CommRing L] [IsDomain L] [Algebra F L]
 
 /-- If `L` is a field extension of `F` and `f` is a polynomial over `F` then the set
 of maps from `F[x]/(f)` into `L` is in bijection with the set of roots of `f` in `L`. -/
@@ -823,7 +818,6 @@ theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
       (p.map (Ideal.Quotient.mk I)) := rfl
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot_mk_of AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of
 
-set_option maxHeartbeats 300000 in
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_symm_mk_mk (p : R[X]) :
     (quotAdjoinRootEquivQuotPolynomialQuot I f).symm
@@ -852,7 +846,7 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
         rfl
       rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C]
       -- Porting note: the following `rfl` was not needed
-      rfl )
+      rfl)
 #align adjoin_root.quot_equiv_quot_map AdjoinRoot.quotEquivQuotMap
 
 @[simp]
@@ -901,7 +895,7 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
                     RingHom.toFun_eq_coe, Ideal.quotientMap_mk, AlgEquiv.toRingEquiv_eq_coe,
                     RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
-                    Quotient.mk_algebraMap]; rfl)).trans (AdjoinRoot.quotEquivQuotMap _ _)
+                    Quotient.mk_algebraMap])).trans (AdjoinRoot.quotEquivQuotMap _ _)
 #align power_basis.quotient_equiv_quotient_minpoly_map PowerBasis.quotientEquivQuotientMinpolyMap
 
 -- This lemma should have the simp tag but this causes a lint issue.
@@ -929,3 +923,14 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
 #align power_basis.quotient_equiv_quotient_minpoly_map_symm_apply_mk PowerBasis.quotientEquivQuotientMinpolyMap_symm_apply_mk
 
 end PowerBasis
+
+/-- If `L / K` is an integral extension, `K` is a domain, `L` is a field, then any irreducible
+polynomial over `L` divides some monic irreducible polynomial over `K`. -/
+theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
+    [CommRing K] [IsDomain K] [Field L] [Algebra K L] (H : Algebra.IsIntegral K L) {f : L[X]}
+    (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
+  haveI := Fact.mk hf
+  have h := hf.ne_zero
+  have h2 := isIntegral_trans H _ (AdjoinRoot.isIntegral_root h)
+  have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
+  exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩

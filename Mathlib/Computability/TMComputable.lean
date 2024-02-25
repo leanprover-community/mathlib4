@@ -260,7 +260,7 @@ def idComputableInPolyTime {α : Type} (ea : FinEncoding α) :
   outputsFun _ :=
     { steps := 1
       evals_in_steps := rfl
-      steps_le_m := by simp only [Polynomial.eval_one] }
+      steps_le_m := by simp only [Polynomial.eval_one, le_refl] }
 #align turing.id_computable_in_poly_time Turing.idComputableInPolyTime
 
 instance inhabitedTM2ComputableInPolyTime :

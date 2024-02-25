@@ -6,6 +6,7 @@ Authors: Arthur Paulino, Patrick Massot
 
 import Lean
 import Mathlib.Util.Tactic
+import Mathlib.Lean.Expr.Basic
 
 namespace Mathlib.Tactic
 
@@ -15,7 +16,7 @@ open Lean Meta Parser Elab Tactic
 def renameBVarHyp (mvarId : MVarId) (fvarId : FVarId) (old new : Name) :
     MetaM Unit :=
   modifyLocalDecl mvarId fvarId fun ldecl ↦
-    ldecl.setType $ ldecl.type.renameBVar old new
+    ldecl.setType <| ldecl.type.renameBVar old new
 
 /-- Renames a bound variable in the target. -/
 def renameBVarTarget (mvarId : MVarId) (old new : Name) : MetaM Unit :=

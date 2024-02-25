@@ -85,12 +85,12 @@ noncomputable def lift {S : C} (k : IsKernelPair f a b) (p q : S ⟶ X) (w : p �
 
 @[reassoc (attr := simp)]
 lemma lift_fst {S : C} (k : IsKernelPair f a b) (p q : S ⟶ X) (w : p ≫ f = q ≫ f) :
-  k.lift p q w ≫ a = p :=
+    k.lift p q w ≫ a = p :=
   PullbackCone.IsLimit.lift_fst _ _ _ _
 
 @[reassoc (attr := simp)]
 lemma lift_snd {S : C} (k : IsKernelPair f a b) (p q : S ⟶ X) (w : p ≫ f = q ≫ f) :
-  k.lift p q w ≫ b = q :=
+    k.lift p q w ≫ b = q :=
   PullbackCone.IsLimit.lift_snd _ _ _ _
 
 /--

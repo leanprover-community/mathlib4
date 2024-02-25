@@ -43,7 +43,7 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
     rw [IsRoot.def, ← map_cyclotomic_int k (ZMod p), eval_map, coe_castRingHom, ← Int.cast_ofNat,
       this, eval₂_hom, Int.coe_castRingHom, ZMod.int_cast_zmod_eq_zero_iff_dvd _ _]
     apply Int.dvd_natAbs.1
-    exact_mod_cast minFac_dvd (eval (↑b) (cyclotomic k ℤ)).natAbs
+    exact mod_cast minFac_dvd (eval (↑b) (cyclotomic k ℤ)).natAbs
   have hpb : ¬p ∣ b :=
     hprime.1.coprime_iff_not_dvd.1 (coprime_of_root_cyclotomic hk0.bot_lt hroot).symm
   refine' ⟨p, hprime.1, not_le.1 fun habs => _, _⟩

@@ -42,7 +42,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 -- constructors
 /-- `pure a` is the computation that immediately terminates with result `a`. -/
--- porting notes: `return` is reserved, so changed to `pure`
+-- Porting note: `return` is reserved, so changed to `pure`
 def pure (a : α) : Computation α :=
   ⟨Stream'.const (some a), fun _ _ => id⟩
 #align computation.return Computation.pure
@@ -254,7 +254,7 @@ theorem corec_eq (f : β → Sum α β) (b : β) : destruct (corec f b) = rmap (
   dsimp [corec, destruct]
   rw [show Stream'.corec' (Corec.f f) (Sum.inr b) 0 =
     Sum.rec Option.some (λ _ => none) (f b) by
-    dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.nth, Stream'.iterate]
+    dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
     | Sum.inr x => rfl
@@ -360,7 +360,7 @@ theorem terminates_of_mem {s : Computation α} {a : α} (h : a ∈ s) : Terminat
 theorem terminates_def (s : Computation α) : Terminates s ↔ ∃ n, (s.1 n).isSome :=
   ⟨fun ⟨⟨a, n, h⟩⟩ =>
     ⟨n, by
-      dsimp [Stream'.nth] at h
+      dsimp [Stream'.get] at h
       rw [← h]
       exact rfl⟩,
     fun ⟨n, h⟩ => ⟨⟨Option.get _ h, n, (Option.eq_some_of_isSome h).symm⟩⟩⟩
@@ -646,7 +646,7 @@ def terminatesRecOn
 def map (f : α → β) : Computation α → Computation β
   | ⟨s, al⟩ =>
     ⟨s.map fun o => Option.casesOn o none (some ∘ f), fun n b => by
-      dsimp [Stream'.map, Stream'.nth]
+      dsimp [Stream'.map, Stream'.get]
       induction' e : s n with a <;> intro h
       · contradiction
       · rw [al e]; exact h⟩
@@ -725,10 +725,10 @@ theorem ret_bind (a) (f : α → Computation β) : bind (pure a) f = f a := by
   · intro c₁ c₂ h
     match c₁, c₂, h with
     | _, _, Or.inl ⟨rfl, rfl⟩ =>
-      simp [bind, Bind.f]
+      simp only [BisimO, bind, Bind.f, corec_eq, rmap, destruct_pure]
       cases' destruct (f a) with b cb <;> simp [Bind.g]
     | _, c, Or.inr rfl =>
-      simp [Bind.f]
+      simp only [BisimO, Bind.f, corec_eq, rmap]
       cases' destruct c with b cb <;> simp [Bind.g]
   · simp
 #align computation.ret_bind Computation.ret_bind
@@ -750,7 +750,7 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
   · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_ret Computation.bind_pure
 
--- porting notes: used to use `rw [bind_pure]`
+-- Porting note: used to use `rw [bind_pure]`
 @[simp]
 theorem bind_pure' (s : Computation α) : bind s pure = s := by
   apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure) ∧ c₂ = s
@@ -825,11 +825,11 @@ theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
   induction' k with n IH generalizing s <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
   · simp only [ret_bind, Nat.zero_eq] at h
-    refine' ⟨e, _, _, results_pure _, h, rfl⟩
+    exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
     contradiction
   · simp only [ret_bind] at h
-    refine' ⟨e, _, n + 1, results_pure _, h, rfl⟩
+    exact ⟨e, _, n + 1, results_pure _, h, rfl⟩
   · simp only [think_bind, results_think_iff] at h
     let ⟨a, m, n', h1, h2, e'⟩ := IH h
     rw [e']
@@ -1076,12 +1076,12 @@ theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (
 #align computation.lift_rel.trans Computation.LiftRel.trans
 
 theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  -- Porting note: The code below was:
+  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, by apply LiftRel.symm; apply symm,
+    by apply LiftRel.trans; apply trans⟩
+  -- Porting note: The code above was:
   -- | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, LiftRel.symm R symm, LiftRel.trans R trans⟩
   --
   -- The code fails to identify `symm` as being symmetric.
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, by apply LiftRel.symm; apply symm,
-    by apply LiftRel.trans; apply trans⟩
 #align computation.lift_rel.equiv Computation.LiftRel.equiv
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :
@@ -1175,7 +1175,7 @@ theorem liftRel_pure_right (R : α → β → Prop) (ca : Computation α) (b : �
     LiftRel R ca (pure b) ↔ ∃ a, a ∈ ca ∧ R a b := by rw [LiftRel.swap, liftRel_pure_left]
 #align computation.lift_rel_return_right Computation.liftRel_pure_right
 
--- porting notes: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
+-- Porting note: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
 -- a general invariant on `LiftRel`
 @[simp, nolint simpNF]
 theorem liftRel_pure (R : α → β → Prop) (a : α) (b : β) :
@@ -1222,7 +1222,7 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
   intros a b h; exact ⟨f1 a, ⟨ret_mem _, @h2 a b h⟩⟩
 #align computation.lift_rel_map Computation.liftRel_map
 
--- porting notes: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
+-- Porting note: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
 theorem map_congr {s1 s2 : Computation α} {f : α → β}
     (h1 : s1 ~ s2) : map f s1 ~ map f s2 := by
   rw [← lift_eq_iff_equiv]

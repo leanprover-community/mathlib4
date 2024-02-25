@@ -3,8 +3,8 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Real.ENNReal
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Data.ENNReal.Basic
+import Mathlib.RingTheory.Finiteness
 
 /-! # The `WithLp` type synonym
 
@@ -54,6 +54,9 @@ namespace WithLp
 /-- The canonical equivalence between `WithLp p V` and `V`. This should always be used to convert
 back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
+
+instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
+instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
 
 variable [Semiring K] [Semiring K'] [AddCommGroup V]
 
@@ -134,7 +137,7 @@ theorem equiv_symm_smul : (WithLp.equiv p V).symm (c • x') = c • (WithLp.equ
 variable (K V)
 
 /-- `WithLp.equiv` as a linear equivalence. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def linearEquiv : WithLp p V ≃ₗ[K] V :=
   { LinearEquiv.refl _ _ with
     toFun := WithLp.equiv _ _

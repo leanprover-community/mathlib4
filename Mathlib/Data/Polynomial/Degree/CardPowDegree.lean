@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 import Mathlib.Data.Polynomial.FieldDivision
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.polynomial.degree.card_pow_degree from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
 
@@ -33,7 +34,7 @@ variable {Fq : Type*} [Field Fq] [Fintype Fq]
 
 open AbsoluteValue
 
-open Classical Polynomial
+open Polynomial
 
 /-- `cardPowDegree` is the absolute value on `𝔽_q[t]` sending `f` to `q ^ degree f`.
 
@@ -42,6 +43,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
   have card_pos : 0 < Fintype.card Fq := Fintype.card_pos_iff.mpr inferInstance
   have pow_pos : ∀ n, 0 < (Fintype.card Fq : ℤ) ^ n := fun n =>
     pow_pos (Int.coe_nat_pos.mpr card_pos) n
+  letI := Classical.decEq Fq;
   { toFun := fun p => if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ p.natDegree
     nonneg' := fun p => by
       dsimp
@@ -60,7 +62,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       · simp only [hpq, hp, hq, eq_self_iff_true, if_true, if_false]
         exact add_nonneg (pow_pos _).le (pow_pos _).le
       simp only [hpq, hp, hq, if_false]
-      refine' le_trans (pow_le_pow (by linarith) (Polynomial.natDegree_add_le _ _)) _
+      refine' le_trans (pow_le_pow_right (by linarith) (Polynomial.natDegree_add_le _ _)) _
       refine'
         le_trans (le_max_iff.mpr _)
           (max_le_add_of_nonneg (pow_nonneg (by linarith) _) (pow_nonneg (by linarith) _))
@@ -73,9 +75,11 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
         pow_add] }
 #align polynomial.card_pow_degree Polynomial.cardPowDegree
 
-theorem cardPowDegree_apply (p : Fq[X]) :
-    cardPowDegree p = if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ natDegree p :=
-  rfl
+theorem cardPowDegree_apply [DecidableEq Fq] (p : Fq[X]) :
+    cardPowDegree p = if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ natDegree p := by
+  rw [cardPowDegree]
+  dsimp
+  convert rfl
 #align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
 
 @[simp, nolint simpNF]
@@ -93,6 +97,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
   have pow_pos : ∀ n, 0 < (Fintype.card Fq : ℤ) ^ n := fun n =>
     pow_pos (Int.coe_nat_pos.mpr card_pos) n
   { map_lt_map_iff' := fun {p q} => by
+      classical
       show cardPowDegree p < cardPowDegree q ↔ degree p < degree q
       simp only [cardPowDegree_apply]
       split_ifs with hp hq hq
@@ -100,8 +105,8 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
       · simp only [hp, hq, degree_zero, Ne.def, bot_lt_iff_ne_bot, degree_eq_bot, pow_pos,
           not_false_iff]
       · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
-      · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff]
-        exact_mod_cast @Fintype.one_lt_card Fq _ _ }
+      · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff_right]
+        exact mod_cast @Fintype.one_lt_card Fq _ _ }
 #align polynomial.card_pow_degree_is_euclidean Polynomial.cardPowDegree_isEuclidean
 
 end Polynomial

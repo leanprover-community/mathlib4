@@ -101,6 +101,11 @@ def upgradePolishSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
 
 namespace PolishSpace
 
+instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
+    MetrizableSpace α := by
+  letI := upgradePolishSpace α
+  infer_instance
+
 instance (priority := 100) t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] :
     T2Space α := by
   letI := upgradePolishSpace α
@@ -124,6 +129,13 @@ instance sigma {ι : Type*} [Countable ι] {E : ι → Type*} [∀ n, Topologica
   haveI : CompleteSpace (Σn, E n) := Sigma.completeSpace
   inferInstance
 #align polish_space.sigma PolishSpace.sigma
+
+/-- The product of two Polish spaces is Polish. -/
+instance prod [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
+    PolishSpace (α × β) :=
+  letI := upgradePolishSpace α
+  letI := upgradePolishSpace β
+  inferInstance
 
 /-- The disjoint union of two Polish spaces is Polish. -/
 instance sum [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
@@ -312,8 +324,8 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
     · rcases h x hx with ⟨ε, ε0, hε⟩
       simp only [dist_eq, one_div] at hε
       have : Tendsto (fun y : s ↦ dist x.1 y.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist y.1 sᶜ)⁻¹|)
-        (𝓝 x) (𝓝 (dist x.1 x.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist x.1 sᶜ)⁻¹|))
-      · refine (tendsto_const_nhds.dist continuous_subtype_val.continuousAt).add
+          (𝓝 x) (𝓝 (dist x.1 x.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist x.1 sᶜ)⁻¹|)) := by
+        refine (tendsto_const_nhds.dist continuous_subtype_val.continuousAt).add
           (tendsto_const_nhds.sub <| ?_).abs
         refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtype_val.continuousAt
         rw [s.isOpen.isClosed_compl.closure_eq, mem_compl_iff, not_not]
@@ -327,10 +339,10 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
 
 instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
   refine Metric.complete_of_convergent_controlled_sequences ((1 / 2) ^ ·) (by simp) fun u hu ↦ ?_
-  have A : CauchySeq fun n => (u n).1
-  · refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
+  have A : CauchySeq fun n => (u n).1 := by
+    refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
     · exact (dist_val_le_dist (u n) (u m)).trans (hu N n m hNn hNm).le
-    · exact tendsto_pow_atTop_nhds_0_of_lt_1 (by norm_num) (by norm_num)
+    · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)
   obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩
@@ -391,16 +403,15 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   let t : Set α := sᶜ
   haveI : PolishSpace t := hs.isOpen_compl.polishSpace
   let f : s ⊕ t ≃ α := Equiv.Set.sumCompl s
-  have hle : TopologicalSpace.coinduced f instTopologicalSpaceSum ≤ ‹_›
-  · simp only [instTopologicalSpaceSum, coinduced_sup, coinduced_compose, sup_le_iff,
+  have hle : TopologicalSpace.coinduced f instTopologicalSpaceSum ≤ ‹_› := by
+    simp only [instTopologicalSpaceSum, coinduced_sup, coinduced_compose, sup_le_iff,
       ← continuous_iff_coinduced_le]
     exact ⟨continuous_subtype_val, continuous_subtype_val⟩
   refine ⟨.coinduced f instTopologicalSpaceSum, hle, ?_, hs.mono hle, ?_⟩
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    convert And.intro (isOpen_univ (α := s)) (isOpen_empty (α := (sᶜ : Set α)))
-      <;> ext ⟨x, hx⟩ <;> simpa using hx
+    simp [preimage_preimage]
 #align is_closed.is_clopenable IsClosed.isClopenable
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :

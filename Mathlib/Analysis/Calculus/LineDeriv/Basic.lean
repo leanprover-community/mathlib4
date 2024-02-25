@@ -27,7 +27,7 @@ linear in general).
 
 ## Main definition and results
 
-We mimick the definitions and statements for the Fréchet derivative and the one-dimensional
+We mimic the definitions and statements for the Fréchet derivative and the one-dimensional
 derivative. We define in particular the following objects:
 
 * `LineDifferentiableWithinAt 𝕜 f s x v`
@@ -278,7 +278,7 @@ theorem lineDerivWithin_of_mem_nhds (h : s ∈ 𝓝 x) :
   apply (Continuous.continuousAt _).preimage_mem_nhds (by simpa using h)
   continuity
 
-theorem lineDerivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) :
+theorem lineDerivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
     lineDerivWithin 𝕜 f s x v = lineDeriv 𝕜 f x v :=
   lineDerivWithin_of_mem_nhds (hs.mem_nhds hx)
 

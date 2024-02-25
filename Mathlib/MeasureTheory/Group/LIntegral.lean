@@ -68,9 +68,8 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [BorelSpace G] [IsM
 @[to_additive
       "For nonzero regular left invariant measures, the integral of a continuous nonnegative
       function `f` is 0 iff `f` is 0."]
-theorem lintegral_eq_zero_of_isMulLeftInvariant [Regular μ] (hμ : μ ≠ 0) {f : G → ℝ≥0∞}
+theorem lintegral_eq_zero_of_isMulLeftInvariant [Regular μ] [NeZero μ] {f : G → ℝ≥0∞}
     (hf : Continuous f) : ∫⁻ x, f x ∂μ = 0 ↔ f = 0 := by
-  haveI := isOpenPosMeasure_of_mulLeftInvariant_of_regular hμ
   rw [lintegral_eq_zero_iff hf.measurable, hf.ae_eq_iff_eq μ continuous_zero]
 #align measure_theory.lintegral_eq_zero_of_is_mul_left_invariant MeasureTheory.lintegral_eq_zero_of_isMulLeftInvariant
 #align measure_theory.lintegral_eq_zero_of_is_add_left_invariant MeasureTheory.lintegral_eq_zero_of_isAddLeftInvariant

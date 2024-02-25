@@ -79,14 +79,9 @@ theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
 @[to_additive]
 theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
   let _ := H.fintypeQuotientOfFiniteIndex
-  prod_bij' (fun q _ => g⁻¹ • q) (fun _ _ => mem_univ _)
-    (fun _ _ =>
-      congr_arg ϕ
-        (by
-          simp_rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
-            inv_mul_cancel_left]))
-    (fun q _ => g • q) (fun _ _ => mem_univ _) (fun q _ => smul_inv_smul g q) fun q _ =>
-    inv_smul_smul g q
+  Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun _ ↦ by
+    simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
+      inv_mul_cancel_left, toPerm_symm_apply]
 #align subgroup.left_transversals.smul_diff_smul Subgroup.leftTransversals.smul_diff_smul
 #align add_subgroup.left_transversals.vadd_diff_vadd AddSubgroup.leftTransversals.vadd_diff_vadd
 
@@ -124,7 +119,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
     transfer ϕ g =
       ∏ q : Quotient (orbitRel (zpowers g) (G ⧸ H)),
         ϕ
-          ⟨q.out'.out'⁻¹ * g ^ Function.minimalPeriod ((· • ·) g) q.out' * q.out'.out',
+          ⟨q.out'.out'⁻¹ * g ^ Function.minimalPeriod (g • ·) q.out' * q.out'.out',
             QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q.out'⟩ := by
   classical
     letI := H.fintypeQuotientOfFiniteIndex
@@ -136,7 +131,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         refine' Fintype.prod_congr _ _ (fun q => _)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
-        rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod ((· • ·) g) q.out')) _]
+        rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out')) _]
         · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
         · intro k hk
           simp only [if_neg hk, inv_mul_self]
@@ -154,11 +149,11 @@ theorem transfer_eq_pow_aux (g : G)
   classical
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
       (_root_.congr_arg (· ∈ H) (key k g₀ hk)).mp hk
-    replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod ((· • ·) g) q ∈ H := fun q =>
-      key (Function.minimalPeriod ((· • ·) g) q) q.out'
+    replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q =>
+      key (Function.minimalPeriod (g • ·) q) q.out'
         (QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q)
     let f : Quotient (orbitRel (zpowers g) (G ⧸ H)) → zpowers g := fun q =>
-      (⟨g, mem_zpowers g⟩ : zpowers g) ^ Function.minimalPeriod ((· • ·) g) q.out'
+      (⟨g, mem_zpowers g⟩ : zpowers g) ^ Function.minimalPeriod (g • ·) q.out'
     have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out'
     replace key :=
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
@@ -187,7 +182,8 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
 
 theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
     transfer (MonoidHom.id (center G)) g = ⟨g ^ (center G).index, (center G).pow_index_mem g⟩ :=
-  transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, hk, mul_inv_cancel_right]
+  transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
+    mul_inv_cancel_right]
 #align monoid_hom.transfer_center_eq_pow MonoidHom.transfer_center_eq_pow
 
 variable (G)
@@ -242,11 +238,12 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
-  (fun x : P => x ^ (P : Subgroup G).index) :=
+    (fun x : P => x ^ (P : Subgroup G).index) :=
   funext fun g => transferSylow_eq_pow P hP g g.2
 #align monoid_hom.transfer_sylow_restrict_eq_pow MonoidHom.transferSylow_restrict_eq_pow
 
-/-- Burnside's normal p-complement theorem: If `N(P) ≤ C(P)`, then `P` has a normal complement. -/
+/-- **Burnside's normal p-complement theorem**: If `N(P) ≤ C(P)`, then `P` has a normal
+complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
   have hf : Function.Bijective ((transferSylow P hP).restrict (P : Subgroup G)) :=
     (transferSylow_restrict_eq_pow P hP).symm ▸
