@@ -17,7 +17,6 @@ The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to 
 
 
 noncomputable section
-suppress_compilation
 
 open DirectSum Set LinearMap Submodule TensorProduct
 
