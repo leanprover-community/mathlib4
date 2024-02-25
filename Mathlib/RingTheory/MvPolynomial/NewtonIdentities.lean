@@ -158,7 +158,6 @@ private lemma filter_pairs_lt (k : ℕ) :
       (range k).disjiUnion (powersetCard · univ) ((pairwise_disjoint_powersetCard _).set_pairwise _)
         ×ˢ univ := by ext; aesop (add unsafe le_of_lt)
 
-set_option maxHeartbeats 400000 in
 private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k : ℕ)
     (f : Finset σ × σ → MvPolynomial σ R) :
     ∑ t in (pairs σ k).filter fun t ↦ card t.fst < k, f t =
