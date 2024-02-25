@@ -173,11 +173,6 @@ lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := 
 @[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
   apply toFin_inj.mpr; simp only [ofFin_natCast]
 
--- See Note [no_index around OfNat.ofNat]
-lemma toFin_ofNat (n : ℕ) :
-    toFin (no_index (OfNat.ofNat n : BitVec w)) = OfNat.ofNat n := by
-  simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod, Fin.ofNat']
-
 end
 
 /-!
