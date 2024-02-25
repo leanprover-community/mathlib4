@@ -30,7 +30,7 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
-  (K : HomologicalComplex₂ C c₁ c₂)
+  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
   [TotalComplexShape c₁ c₂ c₁₂]
 
@@ -231,5 +231,131 @@ noncomputable def total : HomologicalComplex C c₁₂ where
   shape i₁₂ i₁₂' h₁₂ := by
     dsimp
     rw [K.D₁_shape c₁₂ _ _ h₁₂, K.D₂_shape c₁₂ _ _ h₁₂, zero_add]
+
+/-- The inclusion of a summand in the total complex. -/
+noncomputable abbrev ιTotal (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
+    (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
+    (K.X i₁).X i₂ ⟶ (K.total c₁₂).X i₁₂ :=
+  K.toGradedObject.ιMapObj (ComplexShape.π c₁ c₂ c₁₂) ⟨i₁, i₂⟩ i₁₂ h
+
+/-- The inclusion of a summand in the total complex, or zero if the degrees do not match. -/
+noncomputable abbrev ιTotalOrZero (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
+    (K.X i₁).X i₂ ⟶ (K.total c₁₂).X i₁₂ :=
+  K.toGradedObject.ιMapObjOrZero (ComplexShape.π c₁ c₂ c₁₂) ⟨i₁, i₂⟩ i₁₂
+
+section
+
+variable {c₁₂}
+variable {A : C} {i₁₂ : I₁₂}
+  (f : ∀ (i₁ : I₁) (i₂ : I₂) (_ : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂), (K.X i₁).X i₂ ⟶ A)
+
+/-- Given a bicomplex `K`, this is a constructor for morphisms from `(K.total c₁₂).X i₁₂`. -/
+noncomputable def totalDesc : (K.total c₁₂).X i₁₂ ⟶ A :=
+  K.toGradedObject.descMapObj _ (fun ⟨i₁, i₂⟩ hi => f i₁ i₂ hi)
+
+@[reassoc (attr := simp)]
+lemma ι_totalDesc (i₁ : I₁) (i₂ : I₂) (hi : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
+    K.ιTotal c₁₂ i₁ i₂ i₁₂ hi ≫ K.totalDesc f = f i₁ i₂ hi := by
+  simp [totalDesc]
+
+end
+
+namespace total
+
+variable {K L M}
+
+@[ext]
+lemma hom_ext {A : C} {i₁₂ : I₁₂} {f g : (K.total c₁₂).X i₁₂ ⟶ A}
+    (h : ∀ (i₁ : I₁) (i₂ : I₂) (hi : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂),
+      K.ιTotal c₁₂ i₁ i₂ i₁₂ hi ≫ f = K.ιTotal c₁₂ i₁ i₂ i₁₂ hi ≫ g) : f = g := by
+  apply GradedObject.mapObj_ext
+  rintro ⟨i₁, i₂⟩ hi
+  exact h i₁ i₂ hi
+
+variable [L.HasTotal c₁₂]
+
+@[reassoc (attr := simp)]
+lemma d₁_mapMap (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
+    K.d₁ c₁₂ i₁ i₂ i₁₂ ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ =
+    (φ.f i₁).f i₂ ≫ L.d₁ c₁₂ i₁ i₂ i₁₂ := by
+  by_cases h : c₁.Rel i₁ (c₁.next i₁)
+  · simp [d₁_eq' _ c₁₂ h]
+  · simp [d₁_eq_zero _ c₁₂ i₁ i₂ i₁₂ h]
+
+@[reassoc (attr := simp)]
+lemma d₂_mapMap (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
+    K.d₂ c₁₂ i₁ i₂ i₁₂ ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ =
+    (φ.f i₁).f i₂ ≫ L.d₂ c₁₂ i₁ i₂ i₁₂ := by
+  by_cases h : c₂.Rel i₂ (c₂.next i₂)
+  · simp [d₂_eq' _ c₁₂ i₁ h]
+  · simp [d₂_eq_zero _ c₁₂ i₁ i₂ i₁₂ h]
+
+@[reassoc]
+lemma mapMap_D₁ (i₁₂ i₁₂' : I₁₂) :
+    GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ ≫ L.D₁ c₁₂ i₁₂ i₁₂' =
+      K.D₁ c₁₂ i₁₂ i₁₂' ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂' := by
+  aesop_cat
+
+@[reassoc]
+lemma mapMap_D₂ (i₁₂ i₁₂' : I₁₂) :
+    GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ ≫ L.D₂ c₁₂ i₁₂ i₁₂' =
+      K.D₂ c₁₂ i₁₂ i₁₂' ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂' := by
+  aesop_cat
+
+/-- The morphism `K.total c₁₂ ⟶ L.total c₁₂` of homological complexes induced
+by a morphism of bicomplexes `K ⟶ L`. -/
+noncomputable def map : K.total c₁₂ ⟶ L.total c₁₂ where
+  f := GradedObject.mapMap (toGradedObjectMap φ) _
+  comm' i₁₂ i₁₂' _ := by
+    dsimp
+    rw [comp_add, add_comp, mapMap_D₁, mapMap_D₂]
+
+@[simp]
+lemma forget_map :
+    (HomologicalComplex.forget C c₁₂).map (map φ c₁₂) =
+      GradedObject.mapMap (toGradedObjectMap φ) _ := rfl
+
+variable (K) in
+@[simp]
+lemma map_id : map (𝟙 K) c₁₂ = 𝟙 _ := by
+  apply (HomologicalComplex.forget _ _).map_injective
+  apply GradedObject.mapMap_id
+
+variable [M.HasTotal c₁₂]
+
+@[simp, reassoc]
+lemma map_comp : map (φ ≫ ψ) c₁₂ = map φ c₁₂ ≫ map ψ c₁₂ := by
+  apply (HomologicalComplex.forget _ _).map_injective
+  exact GradedObject.mapMap_comp (toGradedObjectMap φ) (toGradedObjectMap ψ) _
+
+end total
+
+section
+
+variable [L.HasTotal c₁₂]
+
+@[reassoc (attr := simp)]
+lemma ιTotal_map (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) (h : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
+    K.ιTotal c₁₂ i₁ i₂ i₁₂ h ≫ (total.map φ c₁₂).f i₁₂ =
+      (φ.f i₁).f i₂ ≫ L.ιTotal c₁₂ i₁ i₂ i₁₂ h := by
+  simp [total.map]
+
+@[reassoc (attr := simp)]
+lemma ιTotalOrZero_map (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
+    K.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ ≫ (total.map φ c₁₂).f i₁₂ =
+      (φ.f i₁).f i₂ ≫ L.ιTotalOrZero c₁₂ i₁ i₂ i₁₂ := by
+  simp [total.map]
+
+end
+
+variable (C c₁ c₂)
+variable [∀ (K : HomologicalComplex₂ C c₁ c₂), K.HasTotal c₁₂]
+
+/-- The functor which sends a bicomplex to its total complex. -/
+@[simps]
+noncomputable def totalFunctor :
+    HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂ where
+  obj K := K.total c₁₂
+  map φ := total.map φ c₁₂
 
 end HomologicalComplex₂
