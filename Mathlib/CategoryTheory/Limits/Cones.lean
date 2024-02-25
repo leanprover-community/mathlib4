@@ -653,11 +653,7 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f.symm).functor
     unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _)
     counitIso :=
-      NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _)
-        (fun j =>
-          -- Unfortunately this doesn't work by `aesop_cat`.
-          -- In this configuration `simp` reaches a dead-end and needs help.
-          by simp [← Equivalence.counitInv_app_functor]) }
+      NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) }
 #align category_theory.limits.cocones.functoriality_equivalence CategoryTheory.Limits.Cocones.functorialityEquivalence
 
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
