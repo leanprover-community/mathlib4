@@ -647,8 +647,7 @@ end
 lemma homMk_eq {X Y : C} (f : LeftFraction W X Y) :
     homMk f = f.map (Q W) (Localization.inverts _ W) := by
   have := Localization.inverts (Q W) W f.s f.hs
-  erw [← Q_map_comp_Qinv f.f f.s f.hs]
-  rw [← cancel_mono ((Q W).map f.s),
+  rw [← Q_map_comp_Qinv f.f f.s f.hs, ← cancel_mono ((Q W).map f.s),
     assoc, Qiso_inv_hom_id, comp_id, map_comp_map_s]
 
 lemma map_eq_iff {X Y : C} (f g : LeftFraction W X Y) :
