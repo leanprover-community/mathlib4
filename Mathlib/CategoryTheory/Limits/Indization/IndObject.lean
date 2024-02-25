@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 # Ind-objects
 
 For a presheaf `A : Cᵒᵖ ⥤ Type v` we define the type `IndObjectPresentation A` of presentations
-of `A` as small filtered colimits of representable presheaves and define the predicate
+of `A` a small filtered colimit of representable presheaves and define the predicate
 `IsIndObject A` asserting that there is at least one such presentation.
 
 ## Future work
