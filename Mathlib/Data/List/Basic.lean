@@ -3663,8 +3663,8 @@ variable [DecidableEq α]
 
 theorem map_erase [DecidableEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
-  have this : Eq a = Eq (f a) ∘ f := by ext b; simp [finj.eq_iff]
-  simp [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
+  have this : (a == ·) = (f a == f ·) := by ext b; simp [beq_eq_decide, finj.eq_iff]
+  rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 #align list.map_erase List.map_erase
 
 theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
@@ -3720,7 +3720,7 @@ theorem erase_diff_erase_sublist_of_sublist {a : α} :
   | b :: l₁, l₂, h =>
     if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
     else by
-      simp only [erase_cons_head b l₁, erase_cons_tail l₁ heq,
+      simp only [erase_cons_head b l₁, erase_cons_tail l₁ (not_beq_of_ne heq),
         diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
       have h' := h.erase b
       rw [erase_cons_head] at h'
