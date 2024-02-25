@@ -724,6 +724,7 @@ section
 
 /-- A family of equivalences `∀ a, β₁ a ≃ β₂ a` generates an equivalence between `∀ a, β₁ a` and
 `∀ a, β₂ a`. -/
+@[simps]
 def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
   ⟨fun H a => F a (H a), fun H a => (F a).symm (H a), fun H => funext <| by simp,
     fun H => funext <| by simp⟩
