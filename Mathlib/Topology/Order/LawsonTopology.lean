@@ -6,8 +6,6 @@ Authors: Christopher Hoskin
 
 import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Topology.Order.ScottTopology
-import Mathlib.Tactic.LibrarySearch
-import Mathlib.Data.ZMod.Defs
 
 /-!
 # Lawson topology
