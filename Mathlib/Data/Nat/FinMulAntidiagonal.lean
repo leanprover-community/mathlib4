@@ -63,7 +63,7 @@ namespace Nat
   `n=0`. -/
 def finMulAntidiagonal (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   if hn : 0 < n then
-    (Finset.finAntidiagonal d (Additive.ofMul (show ℕ+ from ⟨n, hn⟩))).map <|
+    (Finset.finAntidiagonal d (Additive.ofMul (α := ℕ+) ⟨n, hn⟩)).map <|
       .arrowCongrRight <| Additive.toMul.toEmbedding.trans <| ⟨PNat.val, PNat.coe_injective⟩
   else
     ∅
@@ -73,28 +73,18 @@ theorem mem_finMulAntidiagonal {d n : ℕ} {f : (Fin d) → ℕ} :
     f ∈ finMulAntidiagonal d n ↔ ∏ i, f i = n ∧ n ≠ 0 := by
   unfold finMulAntidiagonal
   split_ifs with h
-  · simp only [mem_map, mem_finAntidiagonal, Function.Embedding.arrowCongrRight_apply, ne_eq]
+  · simp_rw [mem_map, mem_finAntidiagonal, Function.Embedding.arrowCongrRight_apply,
+      Function.comp, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
+      Function.Embedding.coeFn_mk, ←Additive.ofMul.symm_apply_eq, Additive.ofMul_symm_eq,
+      toMul_sum, (Equiv.piCongrRight fun _=> Additive.ofMul).surjective.exists,
+      Equiv.piCongrRight_apply, toMul_ofMul, ←PNat.coe_inj, PNat.mk_coe, PNat.coe_prod]
     constructor
     · rintro ⟨a, ha_mem, rfl⟩
-      simp only [Function.comp_apply, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
-        Function.Embedding.coeFn_mk]
-      refine ⟨?_, h.ne.symm⟩
-      apply_fun ((↑) : PNat → ℕ) ∘ Additive.toMul at ha_mem
-      convert ha_mem
-      norm_cast
+      exact ⟨ha_mem, h.ne.symm⟩
     · rintro ⟨rfl, _⟩
-      refine ⟨fun i ↦ .ofMul (show PNat from ⟨f i, ?_⟩), ?_, ?_⟩
-      · apply Nat.pos_of_ne_zero
-        apply (Finset.prod_ne_zero_iff (s:=Finset.univ)).mp h.ne.symm _ (mem_univ _)
-      · apply_fun Additive.toMul
-        apply_fun PNat.val
-        · simp only [toMul_sum, toMul_ofMul, PNat.mk_coe]
-          push_cast
-          simp only [PNat.mk_coe]
-        exact PNat.coe_injective
-      · ext i
-        simp only [Function.comp_apply, Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
-          toMul_ofMul, Function.Embedding.coeFn_mk, PNat.mk_coe]
+      refine ⟨fun i ↦ show PNat from ⟨f i, ?_⟩, rfl, funext fun _ => rfl⟩
+      apply Nat.pos_of_ne_zero
+      exact Finset.prod_ne_zero_iff.mp h.ne.symm _ (mem_univ _)
   · simp only [not_lt, nonpos_iff_eq_zero] at h
     simp only [h, not_mem_empty, ne_eq, not_true_eq_false, and_false]
 
