@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher, Yury G. Kudryashov, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.Data.Set.memPartition
+import Mathlib.Data.Set.MemPartition
 
 /-!
 # Countably generated measurable spaces
