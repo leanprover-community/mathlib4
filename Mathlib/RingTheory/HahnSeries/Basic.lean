@@ -193,7 +193,7 @@ theorem eq_of_mem_support_single {b : Γ} (h : b ∈ support (single a r)) : b =
   support_single_subset h
 #align hahn_series.eq_of_mem_support_single HahnSeries.eq_of_mem_support_single
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem single_eq_zero : single a (0 : R) = 0 :=
   (single a).map_zero
 #align hahn_series.single_eq_zero HahnSeries.single_eq_zero
