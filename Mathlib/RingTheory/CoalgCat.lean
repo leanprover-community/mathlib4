@@ -443,10 +443,10 @@ theorem associator_inv_apply {M N K : CoalgCat.{u} R} (m : M) (n : N) (k : K) :
 
 end CoalgCat
 namespace Coalgebra
-open scoped TensorProduct
-variable {R : Type u} [CommRing R] {M N : Type u}
-  [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-  [Coalgebra R M] [Coalgebra R N]
+open TensorProduct
+variable {R : Type u} [CommRing R] {M N P Q : Type u}
+  [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q] [Module R M] [Module R N]
+  [Module R P] [Module R Q] [Coalgebra R M] [Coalgebra R N] [Coalgebra R P] [Coalgebra R Q]
 
 @[simps] noncomputable instance tensorProductCoalgebraStruct :
     CoalgebraStruct R (M ⊗[R] N) where
@@ -476,5 +476,31 @@ noncomputable instance : Coalgebra R (M ⊗[R] N) :=
       ∘ₗ TensorProduct.map comul comul) ∘ₗ _ = _
     rw [← tensor_μ_eq_tensorTensorTensorComm]
     rfl)
+
+@[simps!] noncomputable def tensorMap (f : M →c[R] N) (g : P →c[R] Q) :
+    M ⊗[R] P →c[R] N ⊗[R] Q :=
+  { TensorProduct.map f.toLinearMap g.toLinearMap with
+    counit_comp := TensorProduct.ext' fun x y => by
+      simp only [tensorProductCoalgebraStruct_counit, LinearMap.coe_comp, Function.comp_apply,
+        TensorProduct.map_tmul, CoalgHom.toLinearMap_apply, CoalgHom.counit_comp_apply,
+        LinearMap.mul'_apply]
+/- would've been nice to use the monoidal cat structure for this, maybe make some
+lemmas about the coalgebra struct
+-/
+    map_comp_comul := TensorProduct.ext' fun x y => by
+      simp only [tensorProductCoalgebraStruct_comul, LinearMap.coe_comp, LinearEquiv.coe_coe,
+        Function.comp_apply, TensorProduct.map_tmul, CoalgHom.toLinearMap_apply,
+        ← f.map_comp_comul_apply, ← g.map_comp_comul_apply]
+      simp only [← TensorProduct.mk_apply, ← LinearEquiv.coe_toLinearMap]
+      rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
+      conv_rhs =>
+        rw [← LinearMap.compl₁₂_apply, ← LinearMap.comp_apply]
+      congr 1
+      refine' TensorProduct.ext' fun c d => _
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, mk_apply,
+        LinearMap.compl₁₂_apply, map_tmul, CoalgHom.toLinearMap_apply]
+      refine' (comul x).induction_on _ (fun a b => _) (fun _ _ _ _ => _) <;>
+      simp_all only [zero_tmul, map_zero, tensorTensorTensorComm_tmul, map_tmul,
+        CoalgHom.toLinearMap_apply, add_tmul, map_add] }
 
 end Coalgebra

@@ -280,8 +280,10 @@ open scoped TensorProduct
   have : Coalgebra.comul = Algebra.TensorProduct.tensorTensorTensorComm R A A B B
     ∘ₗ Algebra.TensorProduct.map (Bialgebra.comulAlgHom R A) (Bialgebra.comulAlgHom R B) := rfl
 -/
-#check TensorProduct.tensorTensorTensorComm
-#check Algebra.TensorProduct.lmul'
+
+variable {A B C D : Type u} [Ring A] [Ring B] [Ring C] [Ring D]
+    [Bialgebra R A] [Bialgebra R B] [Bialgebra R C] [Bialgebra R D]
+
 instance hmmmmmm {A B : Type u} [Ring A] [Ring B]
     [Bialgebra R A] [Bialgebra R B] : Bialgebra R (A ⊗[R] B) :=
     { counit_one := by
@@ -303,13 +305,14 @@ instance hmmmmmm {A B : Type u} [Ring A] [Ring B]
         simp only [Coalgebra.tensorProductCoalgebraStruct_comul]
         ext w x y z
         simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-        LinearMap.coe_restrictScalars, LinearMap.compr₂_apply, LinearMap.mul_apply',
-        Algebra.TensorProduct.tmul_mul_tmul, LinearMap.coe_comp, LinearEquiv.coe_coe,
-        Function.comp_apply, TensorProduct.map_tmul, comul_mul, LinearMap.compl₁₂_apply]
-
+          LinearMap.coe_restrictScalars, LinearMap.compr₂_apply, LinearMap.mul_apply',
+          Algebra.TensorProduct.tmul_mul_tmul, LinearMap.coe_comp, LinearEquiv.coe_coe,
+          Function.comp_apply, TensorProduct.map_tmul, comul_mul, LinearMap.compl₁₂_apply]
+        sorry
          }
 
-
+def tensorMap (f : A →b[R] B) (g : C →b[R] D) :
+    A ⊗[R] C →b[R] B ⊗[R] D := _
 
 
 end Bialgebra
