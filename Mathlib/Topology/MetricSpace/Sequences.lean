@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Sequences
+import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Sequencial compacts in metric spaces
