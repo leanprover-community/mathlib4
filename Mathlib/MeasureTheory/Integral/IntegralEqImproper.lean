@@ -1066,6 +1066,7 @@ theorem integral_deriv_mul_eq_sub
     ∫ (x : ℝ), u' x * v x + u x * v' x = b' - a' :=
   integral_of_hasDerivAt_of_tendsto (fun x ↦ (hu x).mul (hv x)) huv h_bot h_top
 
+/-- Integration by parts on (-∞, ∞). -/
 theorem integral_mul_deriv_eq_deriv_mul
     (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v))
@@ -1094,6 +1095,7 @@ theorem integral_Ioi_deriv_mul_eq_sub
   simpa using integral_Ioi_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
+/-- Integration by parts on (a, ∞). -/
 theorem integral_Ioi_mul_deriv_eq_deriv_mul
     (hu : ∀ x ∈ Ioi a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Ioi a, HasDerivAt v (v' x) x)
     (huv' : IntegrableOn (u * v') (Ioi a)) (hu'v : IntegrableOn (u' * v) (Ioi a))
@@ -1122,6 +1124,7 @@ theorem integral_Iic_deriv_mul_eq_sub
   simpa using integral_Iic_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
+/-- Integration by parts on (∞, a]. -/
 theorem integral_Iic_mul_deriv_eq_deriv_mul
     (hu : ∀ x ∈ Iio a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Iio a, HasDerivAt v (v' x) x)
     (huv' : IntegrableOn (u * v') (Iic a)) (hu'v : IntegrableOn (u' * v) (Iic a))
