@@ -967,7 +967,7 @@ theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align of_nat_zsmul coe_nat_zsmul
 
 -- See note [no_index around OfNat.ofNat]
-@[to_additive (attr := simp) ofNat_zsmul]
+@[to_additive ofNat_zsmul]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_coe_nat ..
 
