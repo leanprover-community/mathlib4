@@ -293,7 +293,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · exact ⟨k2, dk, a⟩
     · refine'
         have := minFac_lemma n k h
-        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [e, left_distrib]) fun m m2 d => _
+        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib]) fun m m2 d => _
       rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me
         contradiction

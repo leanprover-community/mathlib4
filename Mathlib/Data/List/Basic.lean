@@ -3717,7 +3717,7 @@ theorem erase_diff_erase_sublist_of_sublist {a : α} :
   | b :: l₁, l₂, h =>
     if heq : b == a then by simp only [eq_of_beq heq, erase_cons_head, diff_cons]; rfl
     else by
-      simp only [erase_cons_head b l₁, erase_cons_tail l₁ (not_beq_of_ne heq),
+      simp only [erase_cons_head b l₁, erase_cons_tail l₁ heq,
         diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
       have h' := h.erase b
       rw [erase_cons_head] at h'

@@ -1235,7 +1235,8 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
   constructor
   · -- length
     rw [← ranges_length c]
-    simp only [map_map, map_pmap, Function.comp_apply, length_map, length_pmap, pmap_eq_map]
+    simp only [l, klift', map_map, map_pmap, Function.comp_apply, length_map, length_pmap,
+      pmap_eq_map]
   constructor
   · -- nodup
     intro s
@@ -1253,7 +1254,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
       intro u hu v hv huv
       apply disjoint_pmap
       · intro a a' ha ha' h
-        simpa only [Fin.mk_eq_mk] using h
+        simpa only [klift, Fin.mk_eq_mk] using h
       exact huv
 
 end Ranges

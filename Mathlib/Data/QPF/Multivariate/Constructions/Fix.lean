@@ -345,7 +345,7 @@ def Fix.drec {β : Fix F α → Type u}
   let y := @Fix.rec _ F _ _ α (Sigma β) (fun i => ⟨_, g i⟩) x
   have : x = y.1 := by
     symm
-    dsimp
+    dsimp [y]
     apply Fix.ind_rec _ id _ x
     intro x' ih
     rw [Fix.rec_eq]

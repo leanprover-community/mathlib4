@@ -135,7 +135,7 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
   have q_inv_eq : q⁻¹ = q_inv := Rat.inv_def''
   suffices (q_inv - ⌊q_inv⌋).num < q.num by rwa [q_inv_eq]
   suffices ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num < q.num by
-    field_simp [this, ne_of_gt q_num_pos]
+    field_simp [q_inv, this, ne_of_gt q_num_pos]
   suffices (q.den : ℤ) - q.num * ⌊q_inv⌋ < q.num by
     -- use that `q.num` and `q.den` are coprime to show that the numerator stays unreduced
     have : ((q.den - q.num * ⌊q_inv⌋ : ℚ) / q.num).num = q.den - q.num * ⌊q_inv⌋ := by
