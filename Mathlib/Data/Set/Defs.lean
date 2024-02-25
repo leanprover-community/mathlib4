@@ -124,12 +124,11 @@ theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s �
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
 infixl:80 " '' " => image
 
-@[simp]
 theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
   Iff.rfl
 #align set.mem_image Set.mem_image
 
-@[mfld_simps]
+@[simp, mfld_simps]
 theorem mem_image_of_mem (f : α → β) {x : α} {a : Set α} (h : x ∈ a) : f x ∈ f '' a :=
   ⟨_, h, rfl⟩
 #align set.mem_image_of_mem Set.mem_image_of_mem
@@ -158,10 +157,13 @@ and not an arbitrary Sort. -/
 def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 #align set.range Set.range
 
-@[simp] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
+theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
 #align set.mem_range Set.mem_range
 
-@[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
+theorem mem_range' {x : α} : x ∈ range f ↔ ∃ y, x = f y := by
+  conv in (x = _) => rw [eq_comm]
+
+@[simp, mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
 #align set.mem_range_self Set.mem_range_self
 
 /-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/

@@ -221,8 +221,9 @@ theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective 
   ⟨fun ⟨_, hb, Eq⟩ => hf Eq ▸ hb, mem_image_of_mem f⟩
 #align function.injective.mem_set_image Function.Injective.mem_set_image
 
+@[simp]
 theorem ball_image_iff {f : α → β} {s : Set α} {p : β → Prop} :
-    (∀ y ∈ f '' s, p y) ↔ ∀ x ∈ s, p (f x) := by simp
+    (∀ y ∈ f '' s, p y) ↔ ∀ x ∈ s, p (f x) := by simp [mem_image]
 #align set.ball_image_iff Set.ball_image_iff
 
 theorem ball_image_of_ball {f : α → β} {s : Set α} {p : β → Prop} (h : ∀ x ∈ s, p (f x)) :
@@ -230,8 +231,9 @@ theorem ball_image_of_ball {f : α → β} {s : Set α} {p : β → Prop} (h : �
   ball_image_iff.2 h
 #align set.ball_image_of_ball Set.ball_image_of_ball
 
+@[simp]
 theorem bex_image_iff {f : α → β} {s : Set α} {p : β → Prop} :
-    (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
+    (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp [mem_image]
 #align set.bex_image_iff Set.bex_image_iff
 
 theorem mem_image_elim {f : α → β} {s : Set α} {C : β → Prop} (h : ∀ x : α, x ∈ s → C (f x)) :
@@ -274,12 +276,12 @@ theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a =
     (ball_image_of_ball <| ball_image_of_ball fun _ ha => mem_image_of_mem _ ha)
 #align set.image_comp Set.image_comp
 
-theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by ext; simp
-
 /-- A variant of `image_comp`, useful for rewriting -/
 theorem image_image (g : β → γ) (f : α → β) (s : Set α) : g '' (f '' s) = (fun x => g (f x)) '' s :=
   (image_comp g f s).symm
 #align set.image_image Set.image_image
+
+theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := funext <| image_comp g f
 
 theorem image_comm {β'} {f : β → γ} {g : α → β} {f' : α → β'} {g' : β' → γ}
     (h_comm : ∀ a, f (g a) = g' (f' a)) : (s.image g).image f = (s.image f').image g' := by
@@ -317,7 +319,7 @@ theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪
 @[simp]
 theorem image_empty (f : α → β) : f '' ∅ = ∅ := by
   ext
-  simp
+  simp [mem_image]
 #align set.image_empty Set.image_empty
 
 theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f '' s ∩ f '' t :=
@@ -659,7 +661,8 @@ section Range
 
 variable {f : ι → α} {s t : Set α}
 
-theorem forall_range_iff {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
+@[simp]
+theorem forall_range_iff {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp [mem_range]
 #align set.forall_range_iff Set.forall_range_iff
 
 theorem forall_subtype_range_iff {p : range f → Prop} :
@@ -669,7 +672,8 @@ theorem forall_subtype_range_iff {p : range f → Prop} :
     apply H⟩
 #align set.forall_subtype_range_iff Set.forall_subtype_range_iff
 
-theorem exists_range_iff {p : α → Prop} : (∃ a ∈ range f, p a) ↔ ∃ i, p (f i) := by simp
+@[simp]
+theorem exists_range_iff {p : α → Prop} : (∃ a ∈ range f, p a) ↔ ∃ i, p (f i) := by simp [mem_range]
 #align set.exists_range_iff Set.exists_range_iff
 
 theorem exists_range_iff' {p : α → Prop} : (∃ a, a ∈ range f ∧ p a) ↔ ∃ i, p (f i) := by
@@ -884,9 +888,9 @@ theorem range_eval {α : ι → Sort _} [∀ i, Nonempty (α i)] (i : ι) :
   (surjective_eval i).range_eq
 #align set.range_eval Set.range_eval
 
-theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_|_) <;> simp
+theorem range_inl : range (@Sum.inl α β) = {x | Sum.isLeft x} := by ext (_|_) <;> simp [mem_range]
 #align set.range_inl Set.range_inl
-theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_|_) <;> simp
+theorem range_inr : range (@Sum.inr α β) = {x | Sum.isRight x} := by ext (_|_) <;> simp [mem_range]
 #align set.range_inr Set.range_inr
 
 theorem isCompl_range_inl_range_inr : IsCompl (range <| @Sum.inl α β) (range Sum.inr) :=

@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Basic
 
 #align_import algebra.parity from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -295,8 +295,7 @@ theorem Dvd.dvd.even (hn : m ∣ n) (hm : Even m) : Even n :=
 
 @[simp]
 theorem range_two_mul (α) [Semiring α] : (Set.range fun x : α => 2 * x) = { a | Even a } := by
-  ext x
-  simp [eq_comm, two_mul, Even]
+  simp [two_mul, Even, ← Set.mem_range']
 #align range_two_mul range_two_mul
 
 set_option linter.deprecated false in
@@ -355,8 +354,7 @@ set_option linter.deprecated false in
 @[simp]
 theorem range_two_mul_add_one (α : Type*) [Semiring α] :
     (Set.range fun x : α => 2 * x + 1) = { a | Odd a } := by
-  ext x
-  simp [Odd, eq_comm]
+  simp [Odd, ← Set.mem_range']
 #align range_two_mul_add_one range_two_mul_add_one
 
 theorem Even.add_odd : Even m → Odd n → Odd (m + n) := by
