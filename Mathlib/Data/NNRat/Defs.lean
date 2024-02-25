@@ -378,7 +378,7 @@ theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
-  ext
+  refine ext <| Rat.ext ?_ ?_
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
     exact Rat.num_nonneg.2 p.2
     exact Rat.num_nonneg.2 q.2
