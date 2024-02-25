@@ -999,10 +999,9 @@ variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsSc
   [SMulCommClass R A A]
 
 -- no instance diamond, as the `npow` field isn't present in the non-unital case.
-example :
-    center.instNonUnitalCommSemiring.toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) :=
-  rfl
+example : center.instNonUnitalCommSemiring.toNonUnitalSemiring =
+    NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) := by
+  with_reducible_and_instances rfl
 
 @[simp]
 theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [Module R A] [IsScalarTower R A A]
