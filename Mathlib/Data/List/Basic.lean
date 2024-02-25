@@ -3663,8 +3663,8 @@ variable [DecidableEq α]
 
 theorem map_erase [DecidableEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
-  have this : Eq a = Eq (f a) ∘ f := by ext b; simp [finj.eq_iff]
-  simp [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
+  have this : (a == ·) = (f a == f ·) := by ext b; simp [beq_eq_decide, finj.eq_iff]
+  rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 #align list.map_erase List.map_erase
 
 theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :

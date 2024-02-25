@@ -1288,3 +1288,7 @@ end ite
 
 theorem not_beq_of_ne [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
   fun h => ne (eq_of_beq h)
+
+theorem beq_eq_decide [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
+  rw [← beq_iff_eq a b]
+  cases a == b <;> simp
