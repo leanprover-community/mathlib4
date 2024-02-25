@@ -27,7 +27,7 @@ theorem jointly_surjective (k : K) {t : Cocone F} (h : IsColimit t) (x : t.pt.ob
     ∃ j y, x = (t.ι.app j).app k y := by
   let hev := PreservesColimit.preserves (F := (evaluation _ _).obj k) h
   obtain ⟨j, y, rfl⟩ := Types.jointly_surjective _ hev x
-  refine ⟨j, y, by simp⟩
+  exact ⟨j, y, by simp⟩
 
 theorem jointly_surjective' (k : K) (x : (colimit F).obj k) : ∃ j y, x = (colimit.ι F j).app k y :=
   jointly_surjective _ _ (colimit.isColimit _) x
