@@ -200,6 +200,8 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N]
 instance tensor : Module.Free R (M ⊗[R] N) :=
   let ⟨bM⟩ := exists_basis (R := R) (M := M)
   let ⟨bN⟩ := exists_basis (R := R) (M := N)
+  haveI := Classical.decEq bM.1
+  haveI := Classical.decEq bN.1
   of_basis (bM.2.tensorProduct bN.2)
 #align module.free.tensor Module.Free.tensor
 
