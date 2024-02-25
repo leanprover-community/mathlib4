@@ -1,4 +1,3 @@
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
