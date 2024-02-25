@@ -33,7 +33,7 @@ def PNat.divisorsAntidiagonal (n : ℕ+) : Finset (ℕ+ × ℕ+) :=
 theorem PNat.mem_divisorsAntidiagonal {n : ℕ+} (x : ℕ+ × ℕ+) :
     x ∈ PNat.divisorsAntidiagonal n ↔ x.1 * x.2 = n := by
   simp_rw [divisorsAntidiagonal, Finset.mem_map, Finset.mem_attach, Function.Embedding.coeFn_mk,
-    Prod.ext_iff, true_and, ←PNat.coe_inj, Subtype.exists]
+    Prod.ext_iff, true_and, ← PNat.coe_inj, Subtype.exists]
   aesop
 
 instance PNat.instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
@@ -42,7 +42,7 @@ instance PNat.instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
   mem_antidiagonal {n a} := by
     obtain ⟨a₁, a₂⟩ := a
     revert n a₁ a₂
-    simp_rw [Additive.ofMul.surjective.forall, ←ofMul_mul, Additive.ofMul.injective.eq_iff]
+    simp_rw [Additive.ofMul.surjective.forall, ← ofMul_mul, Additive.ofMul.injective.eq_iff]
     simp
 
 namespace Nat
