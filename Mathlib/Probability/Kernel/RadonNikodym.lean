@@ -120,16 +120,10 @@ lemma withDensity_one_sub_rnDerivAux (κ ν : kernel α γ) [IsFiniteKernel κ] 
     fun _ _ ↦ density_nonneg (kernel.fst_map_prod_le_of_le h_le) _ _ _
   have : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   simp_rw [this, ENNReal.ofReal_sub _ (h_nonneg _ _), ENNReal.ofReal_one]
-  rw [kernel.withDensity_sub_add]
+  rw [kernel.withDensity_sub_add_cancel]
   · rw [kernel.withDensity_one']
   · exact measurable_const
   · exact (measurable_rnDerivAux _ _).ennreal_ofReal
-  · refine fun a ↦ ne_of_lt ?_
-    calc ∫⁻ x, ENNReal.ofReal (kernel.rnDerivAux κ (κ + ν) a x) ∂(κ + ν) a
-      ≤ ∫⁻ _, 1 ∂(κ + ν) a := by
-          refine lintegral_mono (fun x ↦ ?_)
-          simp [rnDerivAux_le_one (le_add_of_nonneg_right bot_le)]
-    _ < ⊤ := by rw [MeasureTheory.lintegral_const, one_mul]; exact measure_lt_top _ _
   · refine fun a ↦ ae_of_all _ (fun x ↦ ?_)
     simp only [ENNReal.ofReal_le_one]
     exact density_le_one (kernel.fst_map_prod_le_of_le h_le) _ _ _
