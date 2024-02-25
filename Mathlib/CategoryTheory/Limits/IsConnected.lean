@@ -6,7 +6,6 @@ Authors: Paul Reichert
 
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
-import Mathlib.Data.Setoid.Basic
 
 /-!
 # Colimits of connected index categories
