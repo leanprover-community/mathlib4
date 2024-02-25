@@ -988,7 +988,7 @@ end OfHom
 
 section Mk
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Auxiliary structure for setting up the recursion in `mk`.
 This is purely an implementation detail: for some reason just using the dependent 6-tuple directly
 results in `mkAux` taking much longer (well over the `-T100000` limit) to elaborate.
