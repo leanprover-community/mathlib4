@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Data.Polynomial.Basic
+-- import Mathlib.Data.Polynomial.Basic
+import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.RingTheory.TensorProduct
 
 /-! # Tensor products of a polynomial ring
 
@@ -24,7 +26,13 @@ open TensorProduct LinearMap
 universe u v w
 
 variable {R : Type u} {M : Type v} {N : Type w}
-  [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+  [CommSemiring R] [AddCommMonoid M] [Module R M]
+
+variable {S : Type*} [CommSemiring S] [Algebra R S]
+
+section Module
+
+variable [AddCommMonoid N] [Module R N]
 
 -- keep ?
 noncomputable def LinearEquiv.rTensor
@@ -33,7 +41,6 @@ noncomputable def LinearEquiv.rTensor
 
 -- TODO : lTensor ?
 
-variable {S : Type*} [CommSemiring S] [Algebra R S]
 
 lemma TensorProduct.map_isLinearMap'
     [Module S M] [IsScalarTower R S M] [Module S N] [IsScalarTower R S N]
@@ -123,3 +130,23 @@ lemma Polynomial.rTensor'_apply_tmul_apply (p : Polynomial S) (n : N) (i : ℕ) 
     Equiv.invFun_as_coe, LinearEquiv.coe_mk, toFinsuppIso_apply]
   rw [finsuppLeft_apply_tmul_apply]
   rfl
+
+end Module
+
+section Algebra
+
+variable [CommSemiring N] [Algebra R N]
+
+noncomputable def Polynomial.rTensorAlgHom :
+    (Polynomial S) ⊗[R] N →ₐ[S] Polynomial (S ⊗[R] N) :=
+  Algebra.TensorProduct.lift
+    (Polynomial.aeval Polynomial.X)
+    ((IsScalarTower.toAlgHom R (S ⊗[R] N) _).comp Algebra.TensorProduct.includeRight)
+    (fun p n => by simp only [commute_iff_eq, mul_comm])
+
+noncomputable def Polynomial.scalarRTensorAlgHom :
+    Polynomial R ⊗[R] N →ₐ[R] Polynomial N :=
+  Algebra.TensorProduct.lift
+    (aeval Polynomial.X)
+    (IsScalarTower.toAlgHom R N _)
+    (fun p n => by simp [commute_iff_eq, mul_comm])
