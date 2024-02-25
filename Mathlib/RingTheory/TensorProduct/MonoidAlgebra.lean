@@ -200,18 +200,6 @@ lemma rTensorAlgHom_apply_tmul_apply
 
 lemma rTensorAlgHom_toLinearMap :
     (rTensorAlgHom :
-      MonoidAlgebra M α ⊗[R] N →ₐ[R] MonoidAlgebra (M ⊗[R] N) α).toLinearMap =
-      finsuppLeft.toLinearMap := by
-  apply TensorProduct.ext'
-  intro x y
-  dsimp only [AlgHom.toLinearMap_apply]
-  apply Finsupp.ext
-  intro a
-  rw [rTensorAlgHom_apply_tmul_apply, ← finsuppLeft_apply_tmul_apply]
-  rfl
-
-lemma rTensorAlgHom_toLinearMap' :
-    (rTensorAlgHom :
       MonoidAlgebra M α ⊗[R] N →ₐ[S] MonoidAlgebra (M ⊗[R] N) α).toLinearMap =
       finsuppLeft'.toLinearMap := by
   ext x n
@@ -222,9 +210,16 @@ lemma rTensorAlgHom_toLinearMap' :
   rw [rTensorAlgHom_apply_tmul_apply, ← finsuppLeft_apply_tmul_apply]
   rfl
 
+lemma rTensorAlgHom_toLinearMap' :
+    (rTensorAlgHom :
+      MonoidAlgebra M α ⊗[R] N →ₐ[R] MonoidAlgebra (M ⊗[R] N) α).toLinearMap =
+      finsuppLeft.toLinearMap := by
+  rw [rTensorAlgHom_toLinearMap]
+  rfl
+
 lemma rTensorAlgHom_apply_eq (x : MonoidAlgebra M α ⊗[R] N) :
     rTensorAlgHom (S := S) x = finsuppLeft' (S := S) x := by
-  rw [← AlgHom.toLinearMap_apply, rTensorAlgHom_toLinearMap']
+  rw [← AlgHom.toLinearMap_apply, rTensorAlgHom_toLinearMap]
   rfl
 
 /-- AlgHom equiv for the tensor product of the monoid algebra with an algebra -/
