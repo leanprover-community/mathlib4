@@ -65,7 +65,8 @@ theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ TypeMax.{u, v}) (c d : Σ j, F.obj 
   | symm _ _ _ ih => exact zigzag_symmetric ih
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
-/-- An index category is connected iff the colimit of the constant unit-valued functor is `PUnit`.
+/-- An index category is connected iff the colimit of the constant singleton-valued functor is a
+singleton.
 -/
 theorem connected_iff_colimit_const_pUnit_iso_pUnit :
     IsConnected C ↔ Nonempty (colimit (unitValuedFunctor C) ≅ PUnit) := by
