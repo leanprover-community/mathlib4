@@ -416,7 +416,7 @@ theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVe
 section Fintype
 
 instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
-  Pi.fintype
+  Pi.instFintype
 
 variable (p n R)
 

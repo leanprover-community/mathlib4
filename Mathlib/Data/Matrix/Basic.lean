@@ -196,7 +196,7 @@ scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
   -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
   -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
-  instInhabitedForAll_1 _
+  Pi.inhabited _
 
 -- porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=

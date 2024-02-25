@@ -1285,3 +1285,10 @@ theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
 #align if_false_left_eq_and if_false_left
 
 end ite
+
+-- Aliases to work around lean4#2343
+alias Pi.inhabited := instInhabitedForAll_1
+#align pi.inhabited Pi.inhabited
+
+alias Pi.subsingleton := instSubsingletonForAll
+#align pi.subsingleton Pi.subsingleton
