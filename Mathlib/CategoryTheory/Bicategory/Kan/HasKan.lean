@@ -44,10 +44,11 @@ open LeftExtension
 variable {f : a ⟶ b} {g : a ⟶ c}
 
 /-- The existence of a left Kan extension of `g` along `f`. -/
-class HasLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) : Prop where mk''::
+class HasLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) : Prop where
   hasInitial : HasInitial <| LeftExtension f g
 
-theorem HasLeftKanExtension.mk {t : LeftExtension f g} (H : IsKan t) : HasLeftKanExtension f g :=
+theorem LeftExtension.IsKan.hasLeftKanExtension {t : LeftExtension f g} (H : IsKan t) :
+    HasLeftKanExtension f g :=
   ⟨IsInitial.hasInitial H⟩
 
 instance [HasLeftKanExtension f g] : HasInitial <| LeftExtension f g :=
@@ -132,7 +133,7 @@ variable {x : B} (h : c ⟶ x) [Lan.CommuteWith f g h]
 /-- Evidence that `h` commutes with the left Kan extension `f⁺ g`. -/
 def isKan : IsKan <| (lanLeftExtension f g).whisker h := Classical.choice Lan.CommuteWith.commute
 
-instance : HasLeftKanExtension f (g ≫ h) := .mk <| Lan.CommuteWith.isKan f g h
+instance : HasLeftKanExtension f (g ≫ h) := (Lan.CommuteWith.isKan f g h).hasLeftKanExtension
 
 /-- The isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` at the level of structured arrows. -/
 def lanAlongCompIsoLanwhisker : lanLeftExtension f (g ≫ h) ≅ (lanLeftExtension f g).whisker h :=
@@ -164,9 +165,9 @@ class HasAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) extends HasLeftKanExten
 instance [HasAbsLeftKanExtension f g] {x : B} (h : c ⟶ x) : Lan.CommuteWith f g h :=
   HasAbsLeftKanExtension.commute h
 
-theorem HasAbsLeftKanExtension.ofIsAbsKan {t : LeftExtension f g} (H : IsAbsKan t) :
+theorem LeftExtension.IsAbsKan.hasAbsLeftKanExtension {t : LeftExtension f g} (H : IsAbsKan t) :
     HasAbsLeftKanExtension f g :=
-  have : HasLeftKanExtension f g := .mk H.isKan
+  have : HasLeftKanExtension f g := H.isKan.hasLeftKanExtension
   ⟨fun h ↦ ⟨⟨H.ofIsoAbsKan (IsKan.uniqueUpToIso H.isKan (lanIsKan f g)) h⟩⟩⟩
 
 end LeftKan
@@ -181,7 +182,7 @@ variable {f : b ⟶ a} {g : c ⟶ a}
 class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
   hasInitial : HasInitial <| LeftLift f g
 
-theorem HasLeftKanLift.mk {t : LeftLift f g} (H : IsKan t) : HasLeftKanLift f g :=
+theorem LeftLift.IsKan.hasLeftKanLift {t : LeftLift f g} (H : IsKan t) : HasLeftKanLift f g :=
   ⟨IsInitial.hasInitial H⟩
 
 instance [HasLeftKanLift f g] : HasInitial <| LeftLift f g := HasLeftKanLift.hasInitial
@@ -266,7 +267,7 @@ variable {x : B} (h : x ⟶ c) [LanLift.CommuteWith f g h]
 def isKan : IsKan <| (lanLiftLeftLift f g).whisker h :=
     Classical.choice LanLift.CommuteWith.commute
 
-instance : HasLeftKanLift f (h ≫ g) := .mk <| LanLift.CommuteWith.isKan f g h
+instance : HasLeftKanLift f (h ≫ g) := (LanLift.CommuteWith.isKan f g h).hasLeftKanLift
 
 /-- The isomorphism `f₊ (h ≫ g) ≅ h ≫ f₊ g` at the level of structured arrows. -/
 def lanLiftAlongCompIsoLanLiftWhisker :
@@ -300,8 +301,9 @@ class HasAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) extends HasLeftKanLift f g :
 instance [HasAbsLeftKanLift f g] {x : B} (h : x ⟶ c) : LanLift.CommuteWith f g h :=
   HasAbsLeftKanLift.commute h
 
-theorem HasAbsLeftKanLift.ofIsAbsKan {t : LeftLift f g} (H : IsAbsKan t) : HasAbsLeftKanLift f g :=
-  have : HasLeftKanLift f g := .mk H.isKan
+theorem LeftLift.IsAbsKan.hasAbsLeftKanLift {t : LeftLift f g} (H : IsAbsKan t) :
+    HasAbsLeftKanLift f g :=
+  have : HasLeftKanLift f g := H.isKan.hasLeftKanLift
   ⟨fun h ↦ ⟨⟨H.ofIsoAbsKan (IsKan.uniqueUpToIso H.isKan (lanLiftIsKan f g)) h⟩⟩⟩
 
 end LeftLift

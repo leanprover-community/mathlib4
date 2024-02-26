@@ -97,9 +97,9 @@ of extensions. -/
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
 
-/-- If `t : LeftExtension f (g ≫ 𝟙 c)` is a Kan extension, then
-`t.ofAlongCompId : LeftExtension f g` is also a Kan extension. -/
-def ofAlongCompId (t : LeftExtension f (g ≫ 𝟙 c)) (P : IsKan t) : IsKan t.ofAlongCompId :=
+/-- If `t : LeftExtension f (g ≫ 𝟙 c)` is a Kan extension, then `t.ofCompId : LeftExtension f g`
+is also a Kan extension. -/
+def ofCompId (t : LeftExtension f (g ≫ 𝟙 c)) (P : IsKan t) : IsKan t.ofCompId :=
   .mk (fun s ↦ t.whiskerIdCancel <| P.to (s.whisker (𝟙 c))) <| by
     intro s τ
     ext
@@ -119,7 +119,7 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h
 
 /-- An absolute left Kan extension is a left Kan extension. -/
 def isKan (H : IsAbsKan t) : IsKan t :=
-  ((H (𝟙 c)).ofAlongCompId _).ofIsoKan <| whiskerOfAlongCompIdIsoSelf t
+  ((H (𝟙 c)).ofCompId _).ofIsoKan <| whiskerOfCompIdIsoSelf t
 
 /-- Transport evidence that a left extension is a Kan extension across an isomorphism
 of extensions. -/
@@ -182,9 +182,9 @@ theorem uniqueUpToIso_inv_right (P : IsKan s) (Q : IsKan t) :
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
 
-/-- If `t : LeftLift f (𝟙 c ≫ g)` is a Kan lift, then `t.ofAlongIdComp : LeftLift f g` is
-also a Kan lift. -/
-def ofAlongIdComp (t : LeftLift f (𝟙 c ≫ g)) (P : IsKan t) : IsKan t.ofAlongIdComp :=
+/-- If `t : LeftLift f (𝟙 c ≫ g)` is a Kan lift, then `t.ofIdComp : LeftLift f g` is also
+a Kan lift. -/
+def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) (P : IsKan t) : IsKan t.ofIdComp :=
   .mk (fun s ↦ t.whiskerIdCancel <| P.to (s.whisker (𝟙 c))) <| by
     intro s τ
     ext
@@ -204,7 +204,7 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : LeftLift f (h ≫ g)) :
 
 /-- An absolute left Kan lift is a left Kan lift. -/
 def isKan (H : IsAbsKan t) : IsKan t :=
-  ((H (𝟙 c)).ofAlongIdComp _).ofIsoKan <| whiskerOfAlongIdCompIsoSelf t
+  ((H (𝟙 c)).ofIdComp _).ofIsoKan <| whiskerOfIdCompIsoSelf t
 
 /-- Transport evidence that a left lift is a Kan lift across an isomorphism of lifts. -/
 def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
