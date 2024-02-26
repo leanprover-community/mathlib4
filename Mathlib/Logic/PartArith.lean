@@ -26,6 +26,7 @@ Gödel, partial recursive function
 namespace Matrix
 open Fin
 section
+universe u
 variable {n : ℕ} {α : Type u}
 
 infixr:70 " :> " => vecCons
