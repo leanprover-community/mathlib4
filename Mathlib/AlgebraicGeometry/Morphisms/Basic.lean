@@ -381,7 +381,7 @@ theorem AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal
         simp only [Category.comp_id, Category.id_comp, pullbackSymmetry_hom_comp_snd]
       rw [← affine_cancel_left_isIso hP.1 e] at h𝒰
       convert h𝒰 using 1
-      simp
+      simp [e]
 #align algebraic_geometry.affine_target_morphism_property.is_local.target_affine_locally_is_local AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal
 
 open List in
@@ -455,7 +455,7 @@ theorem IsLocal.targetAffineLocallyPullbackFstOfRightOfStableUnderBaseChange
   use X.affineCover, inferInstance
   intro i
   let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.map i)
-  have : e.hom ≫ pullback.fst = pullback.snd := by simp
+  have : e.hom ≫ pullback.fst = pullback.snd := by simp [e]
   rw [← this, affine_cancel_left_isIso hP.1]
   apply hP'; assumption
 #align algebraic_geometry.affine_target_morphism_property.is_local.target_affine_locally_pullback_fst_of_right_of_stable_under_base_change AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.targetAffineLocallyPullbackFstOfRightOfStableUnderBaseChange
@@ -482,7 +482,7 @@ theorem IsLocal.stableUnderBaseChange {P : AffineTargetMorphismProperty} (hP : P
             (pullback.snd : pullback f (S.affineCover.map i) ⟶ _)).symm
         exact asIso
           (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
-      have : e.hom ≫ pullback.fst = pullback.snd := by simp
+      have : e.hom ≫ pullback.fst = pullback.snd := by simp [e]
       rw [← this, (targetAffineLocally_respectsIso hP.1).cancel_left_isIso]
       apply hP.targetAffineLocallyPullbackFstOfRightOfStableUnderBaseChange hP'
       rw [← pullbackSymmetry_hom_comp_snd, affine_cancel_left_isIso hP.1]
