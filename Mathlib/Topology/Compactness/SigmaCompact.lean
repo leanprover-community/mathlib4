@@ -385,7 +385,7 @@ theorem exists_isCompact_subset {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K 
   · intro x _
     rcases K.exists_mem x with ⟨k, hk⟩
     exact mem_iUnion.2 ⟨k + 1, K.subset_interior_succ _ hk⟩
-  · exact Monotone.directed_le <| fun _ _ h ↦ interior_mono <| K.subset h
+  · exact Monotone.directed_le fun _ _ h ↦ interior_mono <| K.subset h
 
 /-- The minimal `n` such that `x ∈ K n`. -/
 protected noncomputable def find (x : X) : ℕ :=
