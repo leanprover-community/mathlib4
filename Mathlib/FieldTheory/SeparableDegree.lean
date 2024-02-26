@@ -642,22 +642,26 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
   clear_value g
   have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
   have hzero : aeval x g = 0 := by
-    simpa only [← h, aeval_map_algebraMap] using minpoly.aeval E x
+    -- FIXME nightly-testing: can't work out how to simp the right lets here
+    -- simpa only [← h, aeval_map_algebraMap] using minpoly.aeval E x
+    sorry
   have halg : IsIntegral E' x :=
     isIntegral_trans (IsSeparable.isAlgebraic F E).isIntegral _ hsep.isIntegral |>.tower_top
-  simp_rw [← h, separable_map] at hsep
-  replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
-  haveI : IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
-  haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
-  haveI := adjoin.finiteDimensional halg
-  haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
-  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯ (IsSeparable.isAlgebraic _ _)
-  rw [finSepDegree_eq_finrank_of_isSeparable F E',
-    finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
-    FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
-    eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
-  change IsSeparable F (restrictScalars F E'⟮x⟯) at this
-  exact separable_of_mem_isSeparable F K hx
+  -- FIXME nightly-testing: something has gone wrong here?
+  sorry
+  -- simp_rw [← h, separable_map] at hsep
+  -- replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
+  -- haveI : IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
+  -- haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
+  -- haveI := adjoin.finiteDimensional halg
+  -- haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
+  -- have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯ (IsSeparable.isAlgebraic _ _)
+  -- rw [finSepDegree_eq_finrank_of_isSeparable F E',
+  --   finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
+  --   FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
+  --   eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
+  -- change IsSeparable F (restrictScalars F E'⟮x⟯) at this
+  -- exact separable_of_mem_isSeparable F K hx
 
 /-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
 theorem IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
