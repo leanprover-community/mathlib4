@@ -300,10 +300,10 @@ variable (p : HomogeneousSubmodule A ℳ)
 
 open Classical
 
-@[simps!]
 /--
 The addive group homomorphism from `Mᵢ ⧸ p ∩ Mᵢ` to `M ⧸ p`
 -/
+@[simps!]
 def quotientGradingEmb (i : ιM) :
     ℳ i ⧸ ({
       carrier := {x | (x : M) ∈ p}
