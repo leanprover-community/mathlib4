@@ -3,9 +3,8 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.Basic
-import Std.Tactic.Simpa
-import Mathlib.Data.Array.Basic
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Init.Order.LinearOrder
 
 set_option autoImplicit true
 
@@ -241,7 +240,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
       ⟨root.2, ?_⟩, le_of_lt this⟩
     have : x.1 ≠ root := mt (congrArg _) (ne_of_lt this); dsimp only at this
     simp [UFModel.setParent, this, hr]
-termination_by _ α self x => self.rankMax - self.rank x
+termination_by self.rankMax - self.rank x
 
 def find (self : UnionFind α) (x : Fin self.size) :
     (s : UnionFind α) × (root : Fin s.size) ×'

@@ -233,6 +233,44 @@ theorem MeasurableEmbedding.prod_mk {α β γ δ : Type*} {mα : MeasurableSpace
       exact MeasurableSet.iUnion hg
 #align measurable_embedding.prod_mk MeasurableEmbedding.prod_mk
 
+lemma MeasurableEmbedding.prod_mk_left {β γ : Type*} [MeasurableSingletonClass α]
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+    (x : α) {f : γ → β} (hf : MeasurableEmbedding f) :
+    MeasurableEmbedding (fun y ↦ (x, f y)) where
+  injective := by
+    intro y y'
+    simp only [Prod.mk.injEq, true_and]
+    exact fun h ↦ hf.injective h
+  measurable := Measurable.prod_mk measurable_const hf.measurable
+  measurableSet_image' := by
+    intro s hs
+    convert (MeasurableSet.singleton x).prod (hf.measurableSet_image.mpr hs)
+    ext x
+    simp
+
+lemma measurableEmbedding_prod_mk_left [MeasurableSingletonClass α] (x : α) :
+    MeasurableEmbedding (Prod.mk x : β → α × β) :=
+  MeasurableEmbedding.prod_mk_left x MeasurableEmbedding.id
+
+lemma MeasurableEmbedding.prod_mk_right {β γ : Type*} [MeasurableSingletonClass α]
+    {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+    {f : γ → β} (hf : MeasurableEmbedding f) (x : α) :
+    MeasurableEmbedding (fun y ↦ (f y, x)) where
+  injective := by
+    intro y y'
+    simp only [Prod.mk.injEq, and_true]
+    exact fun h ↦ hf.injective h
+  measurable := Measurable.prod_mk hf.measurable measurable_const
+  measurableSet_image' := by
+    intro s hs
+    convert (hf.measurableSet_image.mpr hs).prod (MeasurableSet.singleton x)
+    ext x
+    simp
+
+lemma measurableEmbedding_prod_mk_right [MeasurableSingletonClass α] (x : α) :
+    MeasurableEmbedding (fun y ↦ (y, x) : β → β × α) :=
+  MeasurableEmbedding.prod_mk_right MeasurableEmbedding.id x
+
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable. -/
 theorem Measurable.lintegral_prod_right' [SFinite ν] :
@@ -428,7 +466,7 @@ instance prod.instNoAtoms_snd [NoAtoms ν] :
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
   rw [prod_apply hs] at h2s
-  refine' ae_lt_top (measurable_measure_prod_mk_left hs) h2s
+  exact ae_lt_top (measurable_measure_prod_mk_left hs) h2s
 #align measure_theory.measure.ae_measure_lt_top MeasureTheory.Measure.ae_measure_lt_top
 
 /-- Note: the assumption `hs` cannot be dropped. For a counterexample, see

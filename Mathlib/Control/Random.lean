@@ -3,15 +3,8 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
-
-import Mathlib.Init.Order.Defs
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Int.Order
 import Mathlib.Control.ULiftable
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.ULift
-import Mathlib.Logic.Equiv.Functor
 
 #align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 

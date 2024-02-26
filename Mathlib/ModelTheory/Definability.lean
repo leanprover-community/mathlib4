@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Finset.Preimage
 import Mathlib.ModelTheory.Semantics
 
 #align_import model_theory.definability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -216,7 +217,7 @@ theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → 
   refine' ⟨(BoundedFormula.relabel id φ).exs, _⟩
   ext x
   simp only [Set.mem_image, mem_setOf_eq, BoundedFormula.realize_exs,
-    BoundedFormula.realize_relabel, Function.comp.right_id, Fin.castAdd_zero, Fin.cast_refl]
+    BoundedFormula.realize_relabel, Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
   constructor
   · rintro ⟨y, hy, rfl⟩
     exact

@@ -61,7 +61,7 @@ noncomputable def toDirectLimit : DirectLimit G f ⊗[R] M →ₗ[R] DirectLimit
   TensorProduct.lift <| DirectLimit.lift _ _ _ _
     (fun i ↦
       (TensorProduct.mk R _ _).compr₂ (of R ι _ (fun _i _j h ↦ (f _ _ h).rTensor M) i))
-    fun _ _ _ g ↦ FunLike.ext _ _ (of_f (G := (G · ⊗[R] M)) (x := g ⊗ₜ ·))
+    fun _ _ _ g ↦ DFunLike.ext _ _ (of_f (G := (G · ⊗[R] M)) (x := g ⊗ₜ ·))
 
 variable {M} in
 @[simp] lemma toDirectLimit_tmul_of
@@ -80,9 +80,9 @@ noncomputable def directLimitLeft :
   refine LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) ?_ ?_
     <;> cases isEmpty_or_nonempty ι
   · ext; apply Subsingleton.elim
-  · refine FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ g.induction_on ?_ ?_ ?_ <;> aesop
+  · refine DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ g.induction_on ?_ ?_ ?_ <;> aesop
   · ext; apply Subsingleton.elim
-  · exact ext (FunLike.ext _ _ fun g ↦ FunLike.ext _ _ fun _ ↦ g.induction_on <| by aesop)
+  · exact ext (DFunLike.ext _ _ fun g ↦ DFunLike.ext _ _ fun _ ↦ g.induction_on <| by aesop)
 
 @[simp] lemma directLimitLeft_tmul_of {i : ι} (g : G i) (m : M) :
     directLimitLeft f M (of _ _ _ _ _ g ⊗ₜ m) = of _ _ _ (f ▷ M) _ (g ⊗ₜ m) :=
@@ -99,7 +99,7 @@ noncomputable def directLimitRight :
     M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f) :=
   TensorProduct.comm _ _ _ ≪≫ₗ directLimitLeft f M ≪≫ₗ
     Module.DirectLimit.congr (fun i ↦ TensorProduct.comm _ _ _)
-      (fun i j h ↦ TensorProduct.ext <| FunLike.ext _ _ <| by aesop)
+      (fun i j h ↦ TensorProduct.ext <| DFunLike.ext _ _ <| by aesop)
 
 @[simp] lemma directLimitRight_tmul_of {i : ι} (m : M) (g : G i):
     directLimitRight f M (m ⊗ₜ of _ _ _ _ _ g) = of _ _ _ _ i (m ⊗ₜ g) := by

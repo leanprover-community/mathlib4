@@ -413,6 +413,13 @@ instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMu
   exact Module.Free.of_basis b
 #align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
 
+instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
+    [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
+  have : Module.Finite R (restrictScalars R I) := hI₁
+  have : NoZeroSMulDivisors R (restrictScalars R I) := hI₂
+  change Module.Free R (restrictScalars R I)
+  exact Module.free_of_finite_type_torsion_free'
+
 theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
     Module.Free R M ↔ NoZeroSMulDivisors R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩

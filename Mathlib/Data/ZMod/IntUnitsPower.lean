@@ -3,7 +3,6 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.ZMod.Basic
@@ -58,7 +57,8 @@ Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
 instance Int.instUnitsPow : Pow ℤˣ R where
   pow u r := Additive.toMul (r • Additive.ofMul u)
 
--- The above instance forms no typeclass diamonds with the standard power operators
+-- The above instances form no typeclass diamonds with the standard power operators
+-- but we will need `reducible_and_instances` which currently fails #10906
 example : Int.instUnitsPow = Monoid.toNatPow := rfl
 example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 

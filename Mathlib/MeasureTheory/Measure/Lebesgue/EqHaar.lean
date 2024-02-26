@@ -3,7 +3,6 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
@@ -59,7 +58,7 @@ def TopologicalSpace.PositiveCompacts.Icc01 : PositiveCompacts ℝ where
 universe u
 
 /-- The set `[0,1]^ι` as a compact set with non-empty interior. -/
-def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Fintype ι] :
+def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Finite ι] :
     PositiveCompacts (ι → ℝ) where
   carrier := pi univ fun _ => Icc 0 1
   isCompact' := isCompact_univ_pi fun _ => isCompact_Icc
@@ -158,8 +157,8 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E)
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (hu : IsBounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
-  suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0
-  · apply le_antisymm _ (zero_le _)
+  suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0 by
+    apply le_antisymm _ (zero_le _)
     calc
       μ s ≤ ∑' n : ℕ, μ (s ∩ closedBall 0 n) := by
         conv_lhs => rw [← iUnion_inter_closedBall_nat s 0]
@@ -181,7 +180,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   obtain ⟨c, cpos, cone⟩ : ∃ c : ℝ, 0 < c ∧ c < 1 := ⟨1 / 2, by norm_num, by norm_num⟩
   have A : IsBounded (range fun n : ℕ => c ^ n • x) :=
     have : Tendsto (fun n : ℕ => c ^ n • x) atTop (𝓝 ((0 : ℝ) • x)) :=
-      (tendsto_pow_atTop_nhds_0_of_lt_1 cpos.le cone).smul_const x
+      (tendsto_pow_atTop_nhds_zero_of_lt_one cpos.le cone).smul_const x
     isBounded_range_of_tendsto _ this
   apply addHaar_eq_zero_of_disjoint_translates μ _ A _
     (Submodule.closed_of_finiteDimensional s).measurableSet
@@ -378,7 +377,7 @@ theorem addHaar_smul (r : ℝ) (s : Set E) :
       pow_zero, Subsingleton.eq_univ_of_nonempty (singleton_nonempty (0 : E))]
   · haveI : Nontrivial E := nontrivial_of_finrank_pos (bot_lt_iff_ne_bot.2 h)
     simp only [h, zero_mul, ENNReal.ofReal_zero, abs_zero, Ne.def, not_false_iff,
-      zero_pow', measure_singleton]
+      zero_pow, measure_singleton]
 #align measure_theory.measure.add_haar_smul MeasureTheory.Measure.addHaar_smul
 
 theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
@@ -448,7 +447,7 @@ theorem addHaar_ball_of_pos (x : E) {r : ℝ} (hr : 0 < r) :
 theorem addHaar_ball_mul [Nontrivial E] (x : E) {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     μ (ball x (r * s)) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 s) := by
   rcases hr.eq_or_lt with (rfl | h)
-  · simp only [zero_pow (finrank_pos (R := ℝ) (M := E)), measure_empty, zero_mul,
+  · simp only [zero_pow (finrank_pos (R := ℝ) (M := E)).ne', measure_empty, zero_mul,
       ENNReal.ofReal_zero, ball_zero]
   · exact addHaar_ball_mul_of_pos μ x h s
 #align measure_theory.measure.add_haar_ball_mul MeasureTheory.Measure.addHaar_ball_mul
@@ -716,8 +715,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
   refine' tendsto_order.2 ⟨fun a' ha' => (ENNReal.not_lt_zero ha').elim, fun ε (εpos : 0 < ε) => _⟩
   rcases eq_or_ne (μ t) 0 with (h't | h't)
   · apply eventually_of_forall fun r => ?_
-    suffices H : μ (s ∩ ({x} + r • t)) = 0
-    · rw [H]; simpa only [ENNReal.zero_div] using εpos
+    suffices H : μ (s ∩ ({x} + r • t)) = 0 by
+      rw [H]; simpa only [ENNReal.zero_div] using εpos
     apply le_antisymm _ (zero_le _)
     calc
       μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono (inter_subset_right _ _)

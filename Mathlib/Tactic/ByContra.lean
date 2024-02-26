@@ -3,7 +3,6 @@ Copyright (c) 2022 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Author: Kevin Buzzard
 -/
-import Lean
 import Mathlib.Tactic.PushNeg
 
 open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta

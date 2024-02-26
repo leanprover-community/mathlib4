@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Functor.Currying
+import Mathlib.CategoryTheory.Products.Bifunctor
 
 #align_import category_theory.limits.fubini from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
@@ -556,7 +557,7 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
   simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_inv_π,
     Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
   erw [NatTrans.id_app]
-  -- Porting note: `simp` can do this in lean 4.
+  -- Porting note (#10618): `simp` can do this in lean 4.
   simp
 #align category_theory.limits.limit_curry_swap_comp_lim_iso_limit_curry_comp_lim_inv_π_π CategoryTheory.Limits.limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π
 

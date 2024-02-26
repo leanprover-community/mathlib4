@@ -86,6 +86,11 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 #align continuous_real_to_nnreal continuous_real_toNNReal
 
+/-- `Real.toNNReal` bundled as a continuous map for convenience. -/
+@[simps (config := .asFn)]
+noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
+  .mk Real.toNNReal continuous_real_toNNReal
+
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 #align nnreal.continuous_coe NNReal.continuous_coe
@@ -99,7 +104,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
-  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, FunLike.ext' rfl⟩
+  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
 #align nnreal.continuous_map.can_lift NNReal.ContinuousMap.canLift
 
 @[simp, norm_cast]

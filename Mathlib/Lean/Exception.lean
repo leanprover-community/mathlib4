@@ -3,7 +3,7 @@ Copyright (c) 2022 E.W.Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Author: E.W.Ayers
 -/
-import Lean
+import Lean.Exception
 
 set_option autoImplicit true
 

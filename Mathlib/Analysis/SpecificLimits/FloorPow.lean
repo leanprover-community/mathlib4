@@ -111,7 +111,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
           simp only [cnpos.ne', Ne.def, Nat.cast_eq_zero, not_false_iff, neg_sub, field_simps]
         _ ≤ ε * c n := by
           gcongr
-          refine le_trans (neg_le_abs_self _) ?_
+          refine le_trans (neg_le_abs _) ?_
           simpa using hn
     obtain ⟨a, ha⟩ :
       ∃ a : ℕ,

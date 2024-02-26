@@ -24,8 +24,8 @@ theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ 
   refine Nat.dvd_antisymm ?_ (Int.coe_nat_dvd.1 (Int.dvd_gcd h₁ h₂))
   rw [← Int.coe_nat_dvd, ← h₃]
   apply dvd_add
-  · exact (Int.gcd_dvd_left _ _).mul_right _
-  · exact (Int.gcd_dvd_right _ _).mul_right _
+  · exact Int.gcd_dvd_left.mul_right _
+  · exact Int.gcd_dvd_right.mul_right _
 
 theorem nat_gcd_helper_dvd_left (x y : ℕ) (h : y % x = 0) : Nat.gcd x y = x :=
   Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero h)

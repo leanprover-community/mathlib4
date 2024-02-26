@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Data.Set.Basic
 
 #align_import combinatorics.composition from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -997,8 +998,8 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
   let d := c.toCompositionAsSet
   change d.blocks = c.blocks
   have length_eq : d.blocks.length = c.blocks.length := by simp [blocks_length]
-  suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum
-  exact eq_of_sum_take_eq length_eq H
+  suffices H : ∀ i ≤ d.blocks.length, (d.blocks.take i).sum = (c.blocks.take i).sum from
+    eq_of_sum_take_eq length_eq H
   intro i hi
   have i_lt : i < d.boundaries.card := by
     -- porting note: relied on `convert` unfolding definitions, switched to using a `simpa`

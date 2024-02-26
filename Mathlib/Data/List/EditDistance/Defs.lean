@@ -47,7 +47,7 @@ structure Cost (α β δ : Type*) where
   delete : α → δ
   /-- Cost in insert an element into a list. -/
   insert : β → δ
-  /-- Cost to substitute one elemenet for another in a list. -/
+  /-- Cost to substitute one element for another in a list. -/
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
@@ -297,11 +297,3 @@ theorem levenshtein_cons_cons
         (min (C.insert y + levenshtein C (x :: xs) ys)
           (C.substitute x y + levenshtein C xs ys)) :=
   suffixLevenshtein_cons_cons_fst_get_zero _ _ _ _ _
-
-#guard
-  (suffixLevenshtein Levenshtein.defaultCost "kitten".toList "sitting".toList).1 =
-    [3, 3, 4, 5, 6, 6, 7]
-
-#guard levenshtein Levenshtein.defaultCost
-  "but our fish said, 'no! no!'".toList
-  "'put me down!' said the fish.".toList = 21

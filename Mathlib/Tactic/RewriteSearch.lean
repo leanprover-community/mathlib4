@@ -3,6 +3,7 @@ Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Init.Core
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.Nat.Interval
@@ -290,6 +291,8 @@ You can use `rw_search [-my_lemma, -my_theorem]`
 to prevent `rw_search` from using the names theorems.
 -/
 syntax "rw_search" (forbidden)? : tactic
+
+open Std.Tactic.TryThis
 
 elab_rules : tactic |
     `(tactic| rw_search%$tk $[[ $[-$forbidden],* ]]?) => withMainContext do

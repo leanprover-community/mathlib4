@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.GaloisConnection
-import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Data.Set.Lattice
 
 #align_import data.rel from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 

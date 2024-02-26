@@ -1,3 +1,5 @@
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 
 open CategoryTheory

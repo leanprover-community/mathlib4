@@ -7,7 +7,7 @@ import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Order.CompactlyGenerated
+import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
 
 #align_import topology.sets.opens from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
@@ -396,7 +396,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
   ContinuousMap.ext fun a =>
     Inseparable.eq <|
       inseparable_iff_forall_open.2 fun s hs =>
-        have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := FunLike.congr_fun h ⟨_, hs⟩
+        have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := DFunLike.congr_fun h ⟨_, hs⟩
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 #align topological_space.opens.comap_injective TopologicalSpace.Opens.comap_injective
 

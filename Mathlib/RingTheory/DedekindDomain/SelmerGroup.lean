@@ -6,7 +6,6 @@ Authors: David Kurniadi Angdinata
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.Norm
 
 #align_import ring_theory.dedekind_domain.selmer_group from "leanprover-community/mathlib"@"2032a878972d5672e7c27c957e7a6e297b044973"
 

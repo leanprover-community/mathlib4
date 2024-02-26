@@ -244,7 +244,7 @@ theorem fundamentalDomain_isBounded [Finite ι] [HasSolidNorm K] :
 
 theorem vadd_mem_fundamentalDomain [Fintype ι] (y : span ℤ (Set.range b)) (x : E) :
     y +ᵥ x ∈ fundamentalDomain b ↔ y = -floor b x := by
-  rw [Subtype.ext_iff, ← add_right_inj x, AddSubgroupClass.coe_neg, ← sub_eq_add_neg, ← fract_apply,
+  rw [Subtype.ext_iff, ← add_right_inj x, NegMemClass.coe_neg, ← sub_eq_add_neg, ← fract_apply,
     ← fract_zspan_add b _ (Subtype.mem y), add_comm, ← vadd_eq_add, ← vadd_def, eq_comm, ←
     fract_eq_self]
 #align zspan.vadd_mem_fundamental_domain Zspan.vadd_mem_fundamentalDomain
@@ -342,12 +342,12 @@ theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [Borel
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
-    μ (fundamentalDomain b) = ENNReal.ofReal |(b₀.toMatrix b).det| * μ (fundamentalDomain b₀) := by
+    μ (fundamentalDomain b) = ENNReal.ofReal |b₀.det b| * μ (fundamentalDomain b₀) := by
   have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
   convert μ.addHaar_preimage_linearEquiv (b.equiv b₀ (Equiv.refl ι)) (fundamentalDomain b₀)
   · rw [Set.eq_preimage_iff_image_eq (LinearEquiv.bijective _), map_fundamentalDomain,
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
-  · rw [← LinearMap.det_toMatrix b₀, Basis.equiv_symm, Equiv.refl_symm]
+  · rw [← LinearMap.det_toMatrix b₀, Basis.equiv_symm, Equiv.refl_symm, Basis.det_apply]
     congr
     ext
     simp [Basis.toMatrix_apply, LinearMap.toMatrix_apply, LinearEquiv.coe_coe, Basis.equiv_apply]

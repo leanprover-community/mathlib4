@@ -630,8 +630,7 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
     obtain ⟨d, hd⟩ := CokernelCofork.IsColimit.desc' this u hu
     dsimp at d; dsimp at hd
     -- But then f ≫ d = 0:
-    have : f ≫ d = 0;
-    calc
+    have : f ≫ d = 0 := calc
       f ≫ d = (biprod.inl ≫ biprod.desc f (-g)) ≫ d := by rw [biprod.inl_desc]
       _ = biprod.inl ≫ u := by rw [Category.assoc, hd]
       _ = 0 := biprod.inl_desc _ _
@@ -664,8 +663,7 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
     obtain ⟨d, hd⟩ := CokernelCofork.IsColimit.desc' this u hu
     dsimp at d; dsimp at hd
     -- But then (-g) ≫ d = 0:
-    have : (-g) ≫ d = 0;
-    calc
+    have : (-g) ≫ d = 0 := calc
       (-g) ≫ d = (biprod.inr ≫ biprod.desc f (-g)) ≫ d := by rw [biprod.inr_desc]
       _ = biprod.inr ≫ u := by rw [Category.assoc, hd]
       _ = 0 := biprod.inr_desc _ _
@@ -717,8 +715,7 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
     obtain ⟨d, hd⟩ := KernelFork.IsLimit.lift' this u hu
     dsimp at d
     dsimp at hd
-    have : d ≫ f = 0;
-    calc
+    have : d ≫ f = 0 := calc
       d ≫ f = d ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [biprod.lift_fst]
       _ = u ≫ biprod.fst := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_fst _ _
@@ -741,8 +738,7 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g
     obtain ⟨d, hd⟩ := KernelFork.IsLimit.lift' this u hu
     dsimp at d
     dsimp at hd
-    have : d ≫ (-g) = 0;
-    calc
+    have : d ≫ (-g) = 0 := calc
       d ≫ (-g) = d ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [biprod.lift_snd]
       _ = biprod.lift e (0 : R ⟶ Z) ≫ biprod.snd := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_snd _ _

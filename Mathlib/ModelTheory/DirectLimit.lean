@@ -3,6 +3,7 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Init.Align
 import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
@@ -39,13 +40,13 @@ variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 namespace DirectedSystem
 
 /-- A copy of `DirectedSystem.map_self` specialized to `L`-embeddings, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
   DirectedSystem.map_self (fun i j h => f i j h) i x h
 #align first_order.language.directed_system.map_self FirstOrder.Language.DirectedSystem.map_self
 
 /-- A copy of `DirectedSystem.map_map` specialized to `L`-embeddings, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
   DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
@@ -73,13 +74,13 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
 #align first_order.language.directed_system.coe_nat_le_rec FirstOrder.Language.DirectedSystem.coe_natLERec
 
 instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
-  ⟨fun i x h => congr (congr rfl (Nat.leRecOn_self _)) rfl,
+  ⟨fun i x _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
    fun hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
 #align first_order.language.directed_system.nat_le_rec.directed_system FirstOrder.Language.DirectedSystem.natLERec.directedSystem
 
 end DirectedSystem
 
--- Porting note : Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
+-- Porting note: Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
 -- which depends on `f`. This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
 -- Otherwise we have a "cannot find synthesization order" error. See the discussion at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
@@ -148,12 +149,12 @@ noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.S
   funMap F x :=
     ⟨_,
       funMap F
-        (unify f x (Classical.choose (Fintype.bddAbove_range fun a => (x a).1))
-          (Classical.choose_spec (Fintype.bddAbove_range fun a => (x a).1)))⟩
+        (unify f x (Classical.choose (Finite.bddAbove_range fun a => (x a).1))
+          (Classical.choose_spec (Finite.bddAbove_range fun a => (x a).1)))⟩
   RelMap R x :=
     RelMap R
-      (unify f x (Classical.choose (Fintype.bddAbove_range fun a => (x a).1))
-        (Classical.choose_spec (Fintype.bddAbove_range fun a => (x a).1)))
+      (unify f x (Classical.choose (Finite.bddAbove_range fun a => (x a).1))
+        (Classical.choose_spec (Finite.bddAbove_range fun a => (x a).1)))
 #align first_order.language.direct_limit.sigma_structure FirstOrder.Language.DirectLimit.sigmaStructure
 
 end DirectLimit
@@ -165,7 +166,7 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
 
 attribute [local instance] DirectLimit.setoid
 
--- Porting note: Added local instance
+-- Porting note (#10754): Added local instance
 attribute [local instance] DirectLimit.sigmaStructure
 
 
@@ -210,7 +211,7 @@ variable [Nonempty ι]
 theorem exists_unify_eq {α : Type*} [Fintype α] {x y : α → Σˣ f} (xy : x ≈ y) :
     ∃ (i : ι)(hx : i ∈ upperBounds (range (Sigma.fst ∘ x)))(hy :
       i ∈ upperBounds (range (Sigma.fst ∘ y))), unify f x i hx = unify f y i hy := by
-  obtain ⟨i, hi⟩ := Fintype.bddAbove_range (Sum.elim (fun a => (x a).1) fun a => (y a).1)
+  obtain ⟨i, hi⟩ := Finite.bddAbove_range (Sum.elim (fun a => (x a).1) fun a => (y a).1)
   rw [Sum.elim_range, upperBounds_union] at hi
   simp_rw [← Function.comp_apply (f := Sigma.fst)] at hi
   exact ⟨i, hi.1, hi.2, funext fun a => (equiv_iff G f _ _).1 (xy a)⟩
@@ -219,13 +220,13 @@ theorem exists_unify_eq {α : Type*} [Fintype α] {x y : α → Σˣ f} (xy : x 
 theorem funMap_equiv_unify {n : ℕ} (F : L.Functions n) (x : Fin n → Σˣ f) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     funMap F x ≈ .mk f _ (funMap F (unify f x i hi)) :=
-  funMap_unify_equiv G f F x (Classical.choose (Fintype.bddAbove_range fun a => (x a).1)) i _ hi
+  funMap_unify_equiv G f F x (Classical.choose (Finite.bddAbove_range fun a => (x a).1)) i _ hi
 #align first_order.language.direct_limit.fun_map_equiv_unify FirstOrder.Language.DirectLimit.funMap_equiv_unify
 
 theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → Σˣ f) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     RelMap R x = RelMap R (unify f x i hi) :=
-  relMap_unify_equiv G f R x (Classical.choose (Fintype.bddAbove_range fun a => (x a).1)) i _ hi
+  relMap_unify_equiv G f R x (Classical.choose (Finite.bddAbove_range fun a => (x a).1)) i _ hi
 #align first_order.language.direct_limit.rel_map_equiv_unify FirstOrder.Language.DirectLimit.relMap_equiv_unify
 
 /-- The direct limit `setoid` respects the structure `sigmaStructure`, so quotienting by it
@@ -256,7 +257,7 @@ theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x 
     funMap F (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = ⟦.mk f i (funMap F x)⟧ := by
   simp only [funMap_quotient_mk', Quotient.eq]
   obtain ⟨k, ik, jk⟩ :=
-    directed_of (· ≤ ·) i (Classical.choose (Fintype.bddAbove_range fun _ : Fin n => i))
+    directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
   refine' ⟨k, jk, ik, _⟩
   simp only [Embedding.map_fun, comp_unify]
   rfl
@@ -267,14 +268,14 @@ theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x 
     RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = RelMap R x := by
   rw [relMap_quotient_mk']
   obtain ⟨k, _, _⟩ :=
-    directed_of (· ≤ ·) i (Classical.choose (Fintype.bddAbove_range fun _ : Fin n => i))
+    directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
   rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i]
   rw [unify_sigma_mk_self]
 #align first_order.language.direct_limit.rel_map_quotient_mk_sigma_mk FirstOrder.Language.DirectLimit.relMap_quotient_mk'_sigma_mk'
 
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Fintype α] (x : α → DirectLimit G f) :
     ∃ (i : ι) (y : α → G i), x = fun a => ⟦.mk f i (y a)⟧ := by
-  obtain ⟨i, hi⟩ := Fintype.bddAbove_range fun a => (x a).out.1
+  obtain ⟨i, hi⟩ := Finite.bddAbove_range fun a => (x a).out.1
   refine' ⟨i, unify f (Quotient.out ∘ x) i hi, _⟩
   ext a
   rw [Quotient.eq_mk_iff_out, unify]

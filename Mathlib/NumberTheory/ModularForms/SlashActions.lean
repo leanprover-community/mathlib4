@@ -25,7 +25,7 @@ In the `ModularForm` locale, this provides
 -/
 
 
-open Complex UpperHalfPlane
+open Complex UpperHalfPlane ModularGroup
 
 open scoped UpperHalfPlane
 
@@ -113,7 +113,7 @@ private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
       ((↑(↑B : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ)) ^ (k - 1) =
       ((↑(↑A : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ) ^ (k - 1) *
         ((↑(↑B : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ) ^ (k - 1) := by
-    simp_rw [← mul_zpow]
+    rw [← mul_zpow]
   simp_rw [this, ← mul_assoc, ← mul_zpow]
 
 private theorem add_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
