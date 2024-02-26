@@ -309,4 +309,244 @@ theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ 
 
 end PowerSum
 
+section Exponent
+
+open Classical
+open Composition
+open Finset
+
+variable (σ R) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
+
+@[ext]
+structure Exponent (n : ℕ) :=
+  (exp : σ → ℕ)
+  (sum_eq : ∑ i, exp i = n)
+
+lemma Exponent.single_le_sum {n : ℕ} (s : Exponent σ n) (i : σ) : s.exp i ≤ n := by
+  have h : ∑ i, s.exp i = n := s.sum_eq
+  simp_rw [←h]
+  exact Finset.single_le_sum (fun i _ => Nat.zero_le (s.exp i)) (mem_univ i)
+  done
+
+lemma Exponent.zero_of_sum_eq_zero (s : Exponent σ 0) : ∀ i, s.exp i = 0 := by
+  intro i
+  have := Finset.single_le_sum (fun i _ => Nat.zero_le (s.exp i)) (mem_univ i)
+  rw [s.sum_eq] at this
+  exact Nat.eq_zero_of_le_zero this
+  done
+
+def Exponent.zero : Exponent σ 0 := ⟨fun _ => 0, by norm_num⟩
+
+def Exponent.one (i : σ) : Exponent σ 1 := ⟨fun j => if i = j then 1 else 0, by norm_num⟩
+
+instance exponentFinite (n : ℕ) : Finite (Exponent σ n) := by
+  let f : Exponent σ n → (σ → Fin (n+1)) := fun s => fun i => ⟨s.exp i, Nat.lt_succ_of_le (Exponent.single_le_sum σ s i)⟩
+  have hf : Function.Injective f := by
+    intros s t h
+    rw [Exponent.ext_iff]
+    ext i
+    have := congr_arg (fun s => s i) h
+    simp only [Function.Injective.eq_iff] at this
+    exact Fin.mk_eq_mk.mp this
+  exact Finite.of_injective f hf
+  done
+
+instance exponentFintype (n : ℕ) : Fintype (Exponent σ n) := Fintype.ofFinite (Exponent σ n)
+
+def exponentLiftEquiv (e : σ ≃ τ) : Exponent σ n ≃ Exponent τ n := {
+          toFun := fun s => ⟨fun i => s.exp (e.invFun i), by simp_rw [← s.sum_eq]; exact Equiv.sum_comp e.symm s.exp⟩,
+          invFun := fun s => ⟨fun i => s.exp (e.toFun i), by simp_rw [← s.sum_eq]; exact Equiv.sum_comp e s.exp⟩,
+          left_inv := fun s => by simp,
+          right_inv := fun s => by simp
+          }
+
+lemma exponentLiftEquiv_toFun (e : σ ≃ τ) (s : Exponent σ n) (i : τ) : ((exponentLiftEquiv _ e).toFun s).exp i = s.exp (e.invFun i) := by
+  simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe]
+  rfl
+  done
+
+lemma Exponent.exponentCard_zero : Fintype.card (Exponent σ 0) = 1 := by
+  apply Fintype.card_eq_one_iff.mpr
+  use Exponent.zero σ
+  intro x
+  ext i
+  simp only [Exponent.sum_eq, Exponent.zero_of_sum_eq_zero]
+  done
+
+lemma Exponent.one_sum_singleton (s : Exponent σ 1) : ∃! (i : σ) , Exponent.one σ i = s:= by
+  have h : ∑ i, s.exp i = 1 := s.sum_eq
+  have (i : σ): exp s i = 0 ∨ exp s i = 1 := by
+    have := Exponent.single_le_sum σ s i
+    apply Nat.le_one_iff_eq_zero_or_eq_one.mp
+    exact this
+  by_cases exists_i : ∃ (i : σ), s.exp i = 1
+  · obtain ⟨i, hi⟩ := exists_i
+    use i
+    constructor
+    simp only [Exponent]
+    ext j
+    by_cases hji : j = i
+    · rw [hji, Exponent.one]
+      simp only [ite_true, hi]
+    · have : exp s j = 0 := by
+        obtain (h0 | h1) := (this j)
+        · assumption
+        · exfalso
+          have : 2 <= ∑ i, s.exp i := by
+            let f : Finset σ := {i, j}
+            have : f ⊆ univ := subset_univ f
+            have that : ∑ k in f, s.exp k = 2 := by
+              simp only [Finset.sum_insert]
+              have : ∀ k ∈ f, s.exp k = 1 := by
+                intro k hk
+                have : k = i ∨ k = j := by
+                  simp only [Finset.mem_insert] at hk
+                  obtain (ki | kj) := hk
+                  · left
+                    exact ki
+                  · right
+                    exact mem_singleton.mp kj
+                obtain (ki | kj) := this
+                · rw [ki]
+                  exact hi
+                · rw [kj]
+                  exact h1
+              have f2 : f.card = 2 := by
+                simp only [Finset.card_insert_of_not_mem, Finset.card_singleton, hji]
+                rw [Finset.card_eq_two]
+                use i, j
+                constructor
+                symm
+                simp only [ne_eq, hji]
+                trivial
+                rfl
+              have : ∑ k in f, s.exp k = ∑ k in f, 1 := by
+                apply Finset.sum_congr
+                rfl
+                exact this
+              rw [this]
+              simp only [sum_const, f2, smul_eq_mul, mul_one]
+            rw [←that]
+            exact Finset.sum_le_sum_of_subset this
+          linarith
+      rw [this]
+      simp only [Exponent.one]
+      split
+      tauto
+      rfl
+    intro j
+    by_cases hji : j = i
+    rw [hji]
+    simp only [implies_true]
+    intro h0
+    exfalso
+    rw [←h0] at hi
+    have : exp (one σ j) i = 0 := by simp only [Exponent.one]; split; tauto; rfl
+    linarith
+  · exfalso
+    have : ∀ i : σ, s.exp i = 0 := by
+      intro i
+      obtain (h0 | h1) := (this i)
+      · assumption
+      · exfalso
+        exact exists_i ⟨i, h1⟩
+    have : ∑ i, s.exp i = 0 := by
+      simp only [this, Finset.sum_const_zero]
+    linarith
+  done
+
+def Exponent.fintype_toExponent : (σ → Exponent σ 1) := (fun i => ⟨fun j => if i = j then 1 else 0, by simp only [sum_ite_eq, mem_univ, ite_true]⟩)
+
+lemma Exponent.fintype_toExponent_bijective : Function.Bijective (Exponent.fintype_toExponent σ) := by
+  rw [Function.bijective_iff_existsUnique]
+  exact Exponent.one_sum_singleton σ
+
+lemma Exponent.fintype_toExponent_equiv : σ ≃ Exponent σ 1 := by
+  exact Equiv.ofBijective _ (Exponent.fintype_toExponent_bijective σ)
+  done
+
+lemma Exponent.exponentCard_one : Fintype.card (Exponent σ 1) = Fintype.card σ := by
+  apply Fintype.card_congr
+  symm
+  exact Exponent.fintype_toExponent_equiv _
+  done
+
+end Exponent
+
+section CompleteHomogeneousSymmetric
+
+open Classical
+
+variable (σ R) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
+
+/-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`. -/
+def hsymm (n : ℕ) : MvPolynomial σ R := ∑ μ : Exponent σ n, ∏ i : σ, X i ^ (μ.exp i)
+
+lemma hsum_def (n : ℕ) : hsymm σ R n = ∑ μ : Exponent σ n, ∏ i : σ, X i ^ (μ.exp i) := rfl
+
+@[simp]
+theorem hsymm_zero : hsymm σ R 0 = 1 := by
+  simp only [hsymm, pow_zero]
+  simp_rw [Exponent.zero_of_sum_eq_zero]
+  have (p : MvPolynomial σ R) : p ^ 0 = 1 := by simp
+  simp_rw [this]
+  have : ∏ i : σ, (1 : MvPolynomial σ R) = 1 := by simp
+  simp_rw [this]
+  have : ∑ x : Exponent σ 0, (1 : MvPolynomial σ R) = (Fintype.card (Exponent σ 0) : MvPolynomial σ R) := by simp only [Finset.sum_const,
+    nsmul_eq_mul, mul_one, Fintype.card_eq_sum_ones, smul_eq_mul]
+  rw [this, Exponent.exponentCard_zero]
+  exact Nat.cast_one
+  done
+
+@[simp]
+theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
+  have (i : σ) (s : Exponent σ 1) : Exponent.exp s i = if (Equiv.ofBijective (Exponent.fintype_toExponent σ) ((Exponent.fintype_toExponent_bijective σ) : Function.Bijective (Exponent.fintype_toExponent σ))).symm s = i then 1 else 0 := by
+    have : ∃ (i : σ), Exponent.one σ i = s := ExistsUnique.exists (Exponent.one_sum_singleton σ s)
+    obtain ⟨j, h⟩ := this
+    have is_inv (j : σ) : (Equiv.ofBijective (Exponent.fintype_toExponent σ) ((Exponent.fintype_toExponent_bijective σ) : Function.Bijective (Exponent.fintype_toExponent σ))).symm (Exponent.one σ j) = j := by
+      have : (Equiv.ofBijective (Exponent.fintype_toExponent σ) ((Exponent.fintype_toExponent_bijective σ) : Function.Bijective (Exponent.fintype_toExponent σ))) j = Exponent.one σ j := by
+        simp [Exponent.fintype_toExponent, Exponent.one]
+      rw [←this]
+      simp only [Equiv.ofBijective_apply, Equiv.ofBijective_symm_apply_apply]
+    simp_rw [←h, is_inv j, Exponent.one]
+  have pow_eq (i x : σ) : (X x ^ if i = x then 1 else 0) = if i = x then ((X : σ → MvPolynomial σ R) i) else 1 := by
+    by_cases h : i = x
+    · simp_rw [if_pos h]
+      simp only [pow_one, h]
+    · simp_rw [if_neg h]
+      simp only [pow_zero]
+  calc
+    hsymm σ R 1 = ∑ μ : Exponent σ 1, ∏ i : σ, X i ^ Exponent.exp μ i := by simp only [hsymm, pow_one]
+    _ = ∑ i : σ, ∏ j : σ, X j ^ (Exponent.fintype_toExponent σ i).exp j := by apply Fintype.sum_equiv; swap; symm; exact Equiv.ofBijective _ (Exponent.fintype_toExponent_bijective σ); intro s; congr; simp only [Exponent.fintype_toExponent]; funext i; congr; simp only [this]
+    _ = ∑ i : σ, X i := by congr; funext i; simp only [Exponent.fintype_toExponent, Equiv.toFun_as_coe]; simp_rw [pow_eq _ _]; simp only [Finset.prod_ite_eq,
+      Finset.mem_univ, ite_true]
+
+theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
+  simp_rw [hsymm, map_sum, map_prod, map_pow, map_X]
+
+theorem rename_hsymm (n : ℕ) (e : σ ≃ τ) : rename e (hsymm σ R n) = hsymm τ R n :=
+  calc
+    rename e (hsymm σ R n) = ∑ μ : Exponent σ n, ∏ i : σ, X (e i) ^ (μ.exp i) := by
+      simp_rw [hsymm, map_sum, map_prod, map_pow, rename_X]
+    _ = ∑ μ : Exponent σ n, ∏ j : τ, X j ^ (((exponentLiftEquiv _ e) μ).exp j) := by
+      congr
+      funext s
+      apply Fintype.prod_equiv
+      intro i
+      swap
+      exact e
+      congr
+      simp only [Equiv.invFun_as_coe, Equiv.symm_apply_apply]
+    _ = hsymm τ R n := by
+      simp_rw [hsymm]
+      apply Fintype.sum_equiv
+      intro i
+      swap
+      exact (exponentLiftEquiv _ e)
+      congr
+
+theorem hsymm_isSymmetric (n : ℕ) : IsSymmetric (hsymm σ R n) := rename_hsymm _ _ n
+
+end CompleteHomogeneousSymmetric
+
 end MvPolynomial
