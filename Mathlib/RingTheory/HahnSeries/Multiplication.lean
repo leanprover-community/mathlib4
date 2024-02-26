@@ -103,6 +103,9 @@ variable {V : Type*} [AddCommMonoid V] [SMul R V]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
+instance instRSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
+    SMul R (HahnModule Γ R V) :=
+  inferInstanceAs <| SMul R (HahnSeries Γ V)
 
 @[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
 @[simp] theorem of_add (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y := rfl
@@ -175,8 +178,6 @@ instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R) where
 theorem of_symm_smul_of_eq_mul [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
     (HahnModule.of R).symm (x • HahnModule.of R y) = x * y := rfl
 
-/-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
-failures elsewhere-/
 theorem mul_coeff [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ} :
     (x * y).coeff a =
       ∑ ij in addAntidiagonal x.isPWO_support y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd :=
@@ -338,6 +339,12 @@ theorem single_zero_smul_coeff [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
     {a : Γ} : ((of R).symm ((HahnSeries.single 0 r : HahnSeries Γ R) • x)).coeff a =
     r • ((of R).symm x).coeff a := by
   rw [← add_zero a, single_smul_coeff_add, add_zero]
+
+@[simp]
+theorem single_zero_smul_eq_smul [Semiring R] [Module R V] {r : R}
+    {x : HahnModule Γ R V} : (HahnSeries.single (0 : Γ) r) • x = r • x := by
+  ext
+  exact single_zero_smul_coeff
 
 @[simp]
 theorem zero_smul' [Zero R] [SMulWithZero R V] {x : HahnModule Γ R V} :
@@ -504,6 +511,9 @@ namespace HahnModule
 
 variable {V : Type*} [AddCommMonoid V]
 
+instance instRModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V) :=
+  inferInstanceAs <| Module R (HahnSeries Γ V)
+
 instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
     (HahnModule Γ R V) := {
   inferInstanceAs (DistribSMul (HahnSeries Γ R) (HahnModule Γ R V)) with
@@ -512,6 +522,22 @@ instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
   add_smul := fun _ _ _ => add_smul Module.add_smul
   zero_smul := fun _ => zero_smul'
   }
+
+instance instGroupModule {V} [Ring R] [AddCommGroup V] [Module R V] : Module (HahnSeries Γ R)
+    (HahnModule Γ R V) where
+  add_smul _ _ _ := add_smul Module.add_smul
+  zero_smul _ := zero_smul'
+
+instance [CommRing R] [Module R V] : SMulCommClass R (HahnSeries Γ R) (HahnModule Γ R V) where
+  smul_comm r x y := by
+    simp_rw [← single_zero_smul_eq_smul]
+    rw [← mul_smul', mul_comm, mul_smul']
+
+/-! instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
+  ⟨fun r s a => by
+    ext
+    simp⟩
+-/
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R] [SMulWithZero R V]
     [NoZeroSMulDivisors R V] : NoZeroSMulDivisors (HahnSeries Γ R) (HahnModule Γ R V) where

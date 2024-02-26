@@ -261,6 +261,34 @@ def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
   { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
 #align hahn_series.coeff.linear_map HahnSeries.coeff.linearMap
 
+/-- `ofIterate` as a linear map. -/
+@[simps]
+def ofIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
+    HahnSeries Γ (HahnSeries Γ' V) →ₗ[R] HahnSeries (Γ ×ₗ Γ') V where
+  toFun := ofIterate
+  map_add' := by
+    intro _ _
+    ext _
+    simp only [ofIterate, add_coeff', Pi.add_apply]
+  map_smul' := by
+    intro _ _
+    ext _
+    simp only [ofIterate, RingHom.id_apply, smul_coeff]
+
+/-- `toIterate` as a linear map. -/
+@[simps]
+def toIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
+    HahnSeries (Γ ×ₗ Γ') V →ₗ[R] HahnSeries Γ (HahnSeries Γ' V) where
+  toFun := toIterate
+  map_add' := by
+    intro _ _
+    ext _
+    simp only [toIterate, add_coeff', Pi.add_apply]
+  map_smul' := by
+    intro _ _
+    ext _
+    simp only [toIterate, RingHom.id_apply, smul_coeff]
+
 section Domain
 
 variable {Γ' : Type*} [PartialOrder Γ']
