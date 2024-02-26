@@ -294,20 +294,16 @@ instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) 
 
 instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
-    { toFun := (f.toEnd ^ n : AddMonoid.End α) -- Problems with v4.7.0-rc1
-      map_zero' := by simp
-      map_add' := by simp
+    { toAddMonoidHom := (f.toEnd ^ n : AddMonoid.End α)
       map_mul_left' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
-        · simp
-          rw [pow_succ]
+        · rw [pow_succ]
           exact (congr_arg f.toEnd ih).trans (f.map_mul_left' _ _)
       map_mul_right' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
-        · simp
-          rw [pow_succ]
+        · rw [pow_succ]
           exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)
         }⟩
 #align centroid_hom.has_npow_nat CentroidHom.hasNPowNat
