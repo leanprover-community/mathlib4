@@ -74,7 +74,7 @@ theorem Module.injective_module_of_injective_object
   out X Y _ _ _ _ f hf g := by
     have : CategoryTheory.Mono (ModuleCat.ofHom f) := (ModuleCat.mono_iff_injective _).mpr hf
     obtain ⟨l, rfl⟩ := inj.factors (ModuleCat.ofHom g) (ModuleCat.ofHom f)
-    refine ⟨l, fun _ ↦ rfl⟩
+    exact ⟨l, fun _ ↦ rfl⟩
 #align module.injective_module_of_injective_object Module.injective_module_of_injective_object
 
 theorem Module.injective_iff_injective_object :
@@ -181,10 +181,6 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       refine' le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
-      -- porting note: this subgoal didn't exist before the reenableeta branch
-      -- follow-up note: the subgoal was moved from after `refine'` in `is_extension` to here
-      -- after the behavior of `refine'` changed.
-      exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
       symm
@@ -257,7 +253,7 @@ private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSinglet
     ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
   have mem1 : x.1 ∈ (_ : Set _) := x.2
   rw [Submodule.coe_sup] at mem1
-  rcases mem1 with ⟨a, b, a_mem, b_mem : b ∈ (Submodule.span R _ : Submodule R N), eq1⟩
+  rcases mem1 with ⟨a, a_mem, b, b_mem : b ∈ (Submodule.span R _ : Submodule R N), eq1⟩
   rw [Submodule.mem_span_singleton] at b_mem
   rcases b_mem with ⟨z, eq2⟩
   exact ⟨⟨a, a_mem⟩, z, by rw [← eq1, ← eq2]⟩
@@ -453,12 +449,17 @@ protected theorem extension_property (h : Module.Baer R Q)
       map_smul' := fun r x ↦  by rw [← LinearPMap.map_smul]; dsimp } <|
     LinearMap.ext fun x ↦ ((extensionOfMax f g).is_extension x).symm
 
+theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
+    (f : M →+ N) (hf : Function.Injective f) (g : M →+ Q) : ∃ h : N →+ Q, h.comp f = g :=
+  have ⟨g', hg'⟩ := h.extension_property f.toIntLinearMap hf g.toIntLinearMap
+  ⟨g', congr(LinearMap.toAddMonoidHom $hg')⟩
+
 /-- **Baer's criterion** for injective module : a Baer module is an injective module, i.e. if every
 linear map from an ideal can be extended, then the module is injective.-/
-protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
-  { out := fun X Y ins1 ins2 ins3 ins4 i hi f ↦ by
-      obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
-      exact ⟨h, FunLike.congr_fun H⟩ }
+protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
+  out := fun X Y _ _ _ _ i hi f ↦ by
+    obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
+    exact ⟨h, DFunLike.congr_fun H⟩
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
@@ -466,53 +467,48 @@ protected theorem of_injective [UnivLE.{u, v}] (inj : Module.Injective R Q) : Mo
   intro I g
   let eI := Shrink.linearEquiv I R
   let eR := Shrink.linearEquiv R R
-
   obtain ⟨g', hg'⟩ := Module.Injective.out (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
     (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
-
   exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa using hg' (equivShrink I ⟨x, mx⟩)⟩
 
 protected theorem iff_injective [UnivLE.{u, v}] : Module.Baer R Q ↔ Module.Injective R Q :=
-  ⟨Module.Baer.injective, Module.Baer.of_injective.{u, v}⟩
+  ⟨Module.Baer.injective, Module.Baer.of_injective⟩
 
 end Module.Baer
 
 section ULift
 
-variable {M : Type v} [AddCommGroup M] [Module R M] [UnivLE.{u, v}]
+variable {M : Type v} [AddCommGroup M] [Module R M]
 
-lemma Module.ulift_injective_of_injective
+lemma Module.ulift_injective_of_injective [UnivLE.{u, v}]
     (inj : Module.Injective R M) :
-    Module.Injective R (ULift.{max v' v} M) := by
-  letI : UnivLE.{u, max v' v} := UnivLE.trans.{v, u, max v' v}
-  rw [← Module.Baer.iff_injective.{u, v}] at inj
-  rw [← Module.Baer.iff_injective.{u, max v' v}]
-  intro I g
-  obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
-  exact ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
+    Module.Injective R (ULift.{v'} M) := Module.Baer.injective fun I g ↦
+  have ⟨g', hg'⟩ := Module.Baer.iff_injective.mpr inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
+  ⟨ULift.moduleEquiv.symm.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext _ _ <| hg' r hr⟩
 
 lemma Module.injective_of_ulift_injective
-    (inj : Module.Injective R (ULift.{max v v'} M)) :
-    Module.Injective R M := by
-  letI : UnivLE.{u, max v' v} := UnivLE.trans.{v, u, max v' v}
-  rw [← Module.Baer.iff_injective.{u, max v v'}] at inj
-  rw [← Module.Baer.iff_injective.{u, v}]
-  intro I g
-  obtain ⟨g', hg'⟩ := inj I (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g)
-  exact ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun r hr ↦ ULift.ext_iff _ _ |>.mp <| hg' r hr⟩
+    (inj : Module.Injective R (ULift.{v'} M)) :
+    Module.Injective R M where
+  out X Y _ _ _ _ f hf g :=
+    let eX := ULift.moduleEquiv.{_,_,v'} (R := R) (M := X)
+    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_,_,v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
+      (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
+      (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ eX.toLinearMap)
+    ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
+      fun x ↦ by exact congr(ULift.down $(hg' ⟨x⟩))⟩
 
-variable (M)
+variable (M) [UnivLE.{u, v}]
 
 lemma Module.injective_iff_ulift_injective :
-    Module.Injective R M ↔ Module.Injective R (ULift.{max v v'} M) :=
-  ⟨Module.ulift_injective_of_injective.{u, v, v'} R,
-   Module.injective_of_ulift_injective.{u, v, v'} R⟩
+    Module.Injective R M ↔ Module.Injective R (ULift.{v'} M) :=
+  ⟨Module.ulift_injective_of_injective R,
+   Module.injective_of_ulift_injective R⟩
 
 instance ModuleCat.ulift_injective_of_injective
     [inj : CategoryTheory.Injective <| ModuleCat.of R M] :
-    CategoryTheory.Injective <| ModuleCat.of R (ULift.{max v v'} M) :=
+    CategoryTheory.Injective <| ModuleCat.of R (ULift.{v'} M) :=
   Module.injective_object_of_injective_module
-    (inj := Module.ulift_injective_of_injective.{u, v, v'}
+    (inj := Module.ulift_injective_of_injective
       (inj := Module.injective_module_of_injective_object (inj := inj)))
 
 end ULift
@@ -529,42 +525,7 @@ variable (P' : Type uP') [AddCommGroup P'] [Module R P']
 
 lemma Module.Injective.extension_property
     (f : P →ₗ[R] P') (hf : Function.Injective f)
-    (g : P →ₗ[R] M) : ∃ h : P' →ₗ[R] M, h ∘ₗ f = g := by
-  have inj' : Module.Injective R (ULift.{max uM uP uP'} M) :=
-    Module.ulift_injective_of_injective.{uR, uM, max uM uP uP'} R inj
-  obtain ⟨h, H⟩ := inj'.out
-    (ULift.moduleEquiv.symm.toLinearMap ∘ₗ f ∘ₗ ULift.moduleEquiv.toLinearMap :
-      ULift.{max uM uP uP'} P →ₗ[R] ULift.{max uM uP uP'} P')
-    (ULift.moduleEquiv.symm.injective.comp (hf.comp ULift.moduleEquiv.injective))
-    (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap)
-  refine ⟨ULift.moduleEquiv.toLinearMap ∘ₗ h ∘ₗ ULift.moduleEquiv.symm.toLinearMap, ?_⟩
-  ext x
-  specialize H (ULift.up x)
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, ULift.moduleEquiv_apply,
-    ULift.moduleEquiv_symm_apply] at H ⊢
-  rw [H]
+    (g : P →ₗ[R] M) : ∃ h : P' →ₗ[R] M, h ∘ₗ f = g :=
+  (Module.Baer.of_injective inj).extension_property f hf g
 
 end lifting_property
-
-section
-
-variable {R : Type u} {M N P : Type*} [CommRing R]
-variable [AddCommGroup M]  [AddCommGroup N] [AddCommGroup P]
-variable [Module R M] [Module R N]  [Module R P]
-
-lemma LinearMap.lrcomp_surjective_of_injective
-    (f : M →ₗ[R] N) (hf : Function.Injective f) (baer : Module.Baer R P)  :
-    Function.Surjective <| LinearMap.lrcomp R M N P f :=
-  baer.extension_property f hf
-
-instance ModuleCat.rightHomFunctorPreservesEpi
-    (M : ModuleCat.{v, u} R) [UnivLE.{u, v}] [CategoryTheory.Injective M] :
-    (ModuleCat.rightHomFunctor R M).PreservesEpimorphisms where
-  preserves {N₁ N₂} L hL := by
-    rw [ModuleCat.epi_iff_surjective]
-    let inj : Function.Injective L.unop := ModuleCat.mono_iff_injective _ |>.mp inferInstance
-    refine L.unop.lrcomp_surjective_of_injective inj ?_
-    rw [Module.Baer.iff_injective, Module.injective_iff_injective_object]
-    assumption
-
-end

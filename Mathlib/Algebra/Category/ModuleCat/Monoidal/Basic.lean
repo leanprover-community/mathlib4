@@ -5,7 +5,6 @@ Authors: Kevin Buzzard, Scott Morrison, Jakob von Raumer
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.TensorProduct
-import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Monoidal.Linear
 
 #align_import algebra.category.Module.monoidal.basic from "leanprover-community/mathlib"@"74403a3b2551b0970855e14ef5e8fd0d6af1bfc2"
@@ -207,7 +206,6 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-set_option maxHeartbeats 400000 in
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
   (tensor_id := fun M N ↦ tensor_id M N)
   (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)

@@ -138,7 +138,7 @@ theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g =
       "The group exponent exists for any bounded additive torsion group."]
 theorem IsTorsion.exponentExists (tG : IsTorsion G)
     (bounded : (Set.range fun g : G => orderOf g).Finite) : ExponentExists G :=
-  exponentExists_iff_ne_zero.mpr <|
+  exponent_ne_zero.mp <|
     (exponent_ne_zero_iff_range_orderOf_finite fun g => (tG g).orderOf_pos).mpr bounded
 #align is_torsion.exponent_exists IsTorsion.exponentExists
 #align is_add_torsion.exponent_exists IsAddTorsion.exponentExists
@@ -146,7 +146,7 @@ theorem IsTorsion.exponentExists (tG : IsTorsion G)
 /-- Finite groups are torsion groups. -/
 @[to_additive is_add_torsion_of_finite "Finite additive groups are additive torsion groups."]
 theorem isTorsion_of_finite [Finite G] : IsTorsion G :=
-  ExponentExists.isTorsion <| exponentExists_iff_ne_zero.mpr exponent_ne_zero_of_finite
+  ExponentExists.isTorsion .of_finite
 #align is_torsion_of_finite isTorsion_of_finite
 #align is_add_torsion_of_finite is_add_torsion_of_finite
 
@@ -372,6 +372,12 @@ theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsO
 @[to_additive (attr := simp)]
 lemma isTorsionFree_of_subsingleton [Subsingleton G] : IsTorsionFree G :=
   fun _a ha _ => ha <| Subsingleton.elim _ _
+
+@[to_additive]
+lemma isTorsionFree_iff_torsion_eq_bot {G} [CommGroup G] :
+    IsTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
+  rw [IsTorsionFree, eq_bot_iff, SetLike.le_def]
+  simp [not_imp_not, CommGroup.mem_torsion]
 
 end Monoid
 

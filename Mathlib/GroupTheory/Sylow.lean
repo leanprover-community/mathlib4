@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Order.Atoms.Finite
+import Mathlib.Data.Set.Lattice
 
 #align_import group_theory.sylow from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -394,11 +395,11 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)]
 #align sylow.conj_eq_normalizer_conj_of_mem Sylow.conj_eq_normalizer_conj_of_mem
 
 /-- Sylow `p`-subgroups are in bijection with cosets of the normalizer of a Sylow `p`-subgroup -/
-noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Fintype (Sylow p G)]
+noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : Sylow p G ≃ G ⧸ (P : Subgroup G).normalizer :=
   calc
     Sylow p G ≃ (⊤ : Set (Sylow p G)) := (Equiv.Set.univ (Sylow p G)).symm
-    _ ≃ orbit G P := by rw [P.orbit_eq_top]
+    _ ≃ orbit G P := Equiv.setCongr P.orbit_eq_top.symm
     _ ≃ G ⧸ stabilizer G P := (orbitEquivQuotientStabilizer G P)
     _ ≃ G ⧸ (P : Subgroup G).normalizer := by rw [P.stabilizer_eq_normalizer]
 
@@ -658,13 +659,13 @@ then there is a subgroup of cardinality `p ^ n`. -/
 lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : IsPGroup p G)
     (hn : p ^ n ≤ Nat.card G) : ∃ H : Subgroup G, Nat.card H = p ^ n := by
   have : Fact p.Prime := ⟨hp⟩
-  have : Finite G := Nat.finite_of_card_ne_zero $ by linarith [Nat.one_le_pow n p hp.pos]
+  have : Finite G := Nat.finite_of_card_ne_zero <| by linarith [Nat.one_le_pow n p hp.pos]
   cases nonempty_fintype G
   obtain ⟨m, hm⟩ := h.exists_card_eq
   simp_rw [Nat.card_eq_fintype_card] at hm hn ⊢
   refine exists_subgroup_card_pow_prime _ ?_
   rw [hm] at hn ⊢
-  exact pow_dvd_pow _ $ (pow_le_pow_iff_right hp.one_lt).1 hn
+  exact pow_dvd_pow _ <| (pow_le_pow_iff_right hp.one_lt).1 hn
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
 least `p ^ n` then there is a subgroup of `H` of cardinality `p ^ n`. -/
@@ -853,7 +854,6 @@ noncomputable def directProductOfNormal [Fintype G]
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
       _ = (card G).factorization.prod (· ^ ·) := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero
-
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal
 
 end Sylow

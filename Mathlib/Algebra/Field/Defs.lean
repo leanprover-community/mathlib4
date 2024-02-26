@@ -159,7 +159,7 @@ end DivisionRing
 
 section OfScientific
 
-instance DivisionRing.toOfScientific [DivisionRing K] : OfScientific K where
+instance RatCast.toOfScientific [RatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
 
 end OfScientific

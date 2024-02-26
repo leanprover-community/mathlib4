@@ -29,11 +29,8 @@ variable {ι α β : Type*} {l : Filter α}
 namespace Filter
 
 /-- The cofinite filter is the filter of subsets whose complements are finite. -/
-def cofinite : Filter α where
-  sets := { s | sᶜ.Finite }
-  univ_sets := by simp only [compl_univ, finite_empty, mem_setOf_eq]
-  sets_of_superset hs st := hs.subset <| compl_subset_compl.2 st
-  inter_sets hs ht := by simpa only [compl_inter, mem_setOf_eq] using hs.union ht
+def cofinite : Filter α :=
+  comk Set.Finite finite_empty (fun _t ht _s hsub ↦ ht.subset hsub) fun _ h _ ↦ h.union
 #align filter.cofinite Filter.cofinite
 
 @[simp]
@@ -177,6 +174,9 @@ theorem Nat.frequently_atTop_iff_infinite {p : ℕ → Prop} :
     (∃ᶠ n in atTop, p n) ↔ Set.Infinite { n | p n } := by
   rw [← Nat.cofinite_eq_atTop, frequently_cofinite_iff_infinite]
 #align nat.frequently_at_top_iff_infinite Nat.frequently_atTop_iff_infinite
+
+lemma Nat.eventually_pos : ∀ᶠ (k : ℕ) in Filter.atTop, 0 < k :=
+  Filter.eventually_of_mem (Filter.mem_atTop_sets.mpr ⟨1, fun _ hx ↦ hx⟩) (fun _ hx ↦ hx)
 
 theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] {s : Set α}
     (hs : s.Nonempty) {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atTop) :

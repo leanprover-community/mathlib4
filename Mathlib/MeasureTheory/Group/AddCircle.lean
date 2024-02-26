@@ -32,7 +32,7 @@ namespace AddCircle
 variable {T : ℝ} [hT : Fact (0 < T)]
 
 theorem closedBall_ae_eq_ball {x : AddCircle T} {ε : ℝ} : closedBall x ε =ᵐ[volume] ball x ε := by
-  cases' le_or_lt ε 0 with hε hε
+  rcases le_or_lt ε 0 with hε | hε
   · rw [ball_eq_empty.mpr hε, ae_eq_empty, volume_closedBall,
       min_eq_right (by linarith [hT.out] : 2 * ε ≤ T), ENNReal.ofReal_eq_zero]
     exact mul_nonpos_of_nonneg_of_nonpos zero_le_two hε
@@ -63,7 +63,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     exact measurableSet_ball.nullMeasurableSet.congr hI.symm
   · -- `∀ (g : G), g ≠ 0 → AEDisjoint volume (g +ᵥ I) I`
     rintro ⟨g, hg⟩ hg'
-    replace hg' : g ≠ 0; · simpa only [Ne.def, AddSubgroup.mk_eq_zero_iff] using hg'
+    replace hg' : g ≠ 0 := by simpa only [Ne.def, AddSubgroup.mk_eq_zero_iff] using hg'
     change AEDisjoint volume (g +ᵥ I) I
     refine' AEDisjoint.congr (Disjoint.aedisjoint _)
       ((quasiMeasurePreserving_add_left volume (-g)).vadd_ae_eq_of_ae_eq g hI) hI
@@ -101,7 +101,7 @@ theorem volume_of_add_preimage_eq (s I : Set <| AddCircle T) (u x : AddCircle T)
   have hsG : ∀ g : G, (g +ᵥ s : Set <| AddCircle T) =ᵐ[volume] s := by
     rintro ⟨y, hy⟩; exact (vadd_ae_eq_self_of_mem_zmultiples hs hy : _)
   rw [(isAddFundamentalDomain_of_ae_ball I u x hu hI).measure_eq_card_smul_of_vadd_ae_eq_self s hsG,
-    ← Nat.card_zmultiples u, Nat.card_eq_fintype_card]
+    ← Nat.card_zmultiples u]
 #align add_circle.volume_of_add_preimage_eq AddCircle.volume_of_add_preimage_eq
 
 end AddCircle

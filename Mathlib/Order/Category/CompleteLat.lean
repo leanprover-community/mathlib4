@@ -50,7 +50,7 @@ instance : BundledHom @CompleteLatticeHom where
   toFun _ _ f := f.toFun
   id := @CompleteLatticeHom.id
   comp := @CompleteLatticeHom.comp
-  hom_ext _ _ _ _ h := FunLike.coe_injective h
+  hom_ext _ _ _ _ h := DFunLike.coe_injective h
 
 deriving instance LargeCategory for CompleteLat
 

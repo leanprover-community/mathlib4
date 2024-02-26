@@ -298,6 +298,8 @@ theorem subset_negative_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
   exact this hw₁ hw₂ hwt
 #align measure_theory.signed_measure.subset_negative_null_set MeasureTheory.SignedMeasure.subset_negative_null_set
 
+open scoped symmDiff
+
 /-- If the symmetric difference of two positive sets is a null-set, then so are the differences
 between the two sets. -/
 theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)

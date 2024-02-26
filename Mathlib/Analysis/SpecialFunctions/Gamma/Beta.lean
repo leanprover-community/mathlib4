@@ -71,8 +71,8 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
     apply ContinuousAt.cpow
     · exact (continuous_const.sub continuous_ofReal).continuousAt
     · exact continuousAt_const
-    · rw [sub_re, one_re, ofReal_re, sub_pos]
-      exact Or.inl (hx.2.trans_lt (by norm_num : (1 / 2 : ℝ) < 1))
+    · norm_cast
+      exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
 #align complex.beta_integral_convergent_left Complex.betaIntegral_convergent_left
 
 /-- The Beta integral is convergent for all `u, v` of positive real part. -/
@@ -339,7 +339,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     rcases lt_or_le (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_not_mem (not_mem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
-      exact rpow_nonneg_of_nonneg (le_of_lt hx) _
+      exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_eq_abs,
         Complex.abs_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le hxn <| by positivity) _),
@@ -459,7 +459,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       rw [Complex.sin_ne_zero_iff]
       intro k
       apply_fun im
-      rw [ofReal_mul_im, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
+      rw [im_ofReal_mul, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
       exact mul_ne_zero Real.pi_pos.ne' h_im
     have A := div_ne_zero (ofReal_ne_zero.mpr Real.pi_pos.ne') this
     rw [← Complex.Gamma_mul_Gamma_one_sub s, mul_ne_zero_iff] at A
@@ -491,8 +491,8 @@ noncomputable def GammaSeq (s : ℝ) (n : ℕ) :=
 
 /-- Euler's limit formula for the real Gamma function. -/
 theorem GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) := by
-  suffices : Tendsto ((↑) ∘ GammaSeq s : ℕ → ℂ) atTop (𝓝 <| Complex.Gamma s)
-  exact (Complex.continuous_re.tendsto (Complex.Gamma ↑s)).comp this
+  suffices Tendsto ((↑) ∘ GammaSeq s : ℕ → ℂ) atTop (𝓝 <| Complex.Gamma s) by
+    exact (Complex.continuous_re.tendsto (Complex.Gamma ↑s)).comp this
   convert Complex.GammaSeq_tendsto_Gamma s
   ext1 n
   dsimp only [GammaSeq, Function.comp_apply, Complex.GammaSeq]
@@ -532,26 +532,21 @@ theorem one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
   · rw [zero_add, Gamma_zero, inv_zero, zero_mul]
 #align complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one Complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one
 
-/-- The reciprocal of the Gamma function is differentiable everywhere (including the points where
-Gamma itself is not). -/
-theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma s)⁻¹ := by
-  suffices : ∀ n : ℕ, ∀ (s : ℂ) (_ : -s.re < n), DifferentiableAt ℂ (fun u : ℂ => (Gamma u)⁻¹) s
-  exact fun s =>
-    let ⟨n, h⟩ := exists_nat_gt (-s.re)
-    this n s h
-  intro n
-  induction' n with m hm
-  · intro s hs
+/-- The reciprocal of the Gamma function is differentiable everywhere
+(including the points where Gamma itself is not). -/
+theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma s)⁻¹ := fun s ↦ by
+  rcases exists_nat_gt (-s.re) with ⟨n, hs⟩
+  induction n generalizing s with
+  | zero =>
     rw [Nat.cast_zero, neg_lt_zero] at hs
-    suffices : ∀ m : ℕ, s ≠ -↑m; exact (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
-    contrapose! hs
-    rcases hs with ⟨m, rfl⟩
-    simpa only [neg_re, ← ofReal_nat_cast, ofReal_re, neg_nonpos] using Nat.cast_nonneg m
-  · intro s hs
+    suffices ∀ m : ℕ, s ≠ -↑m from (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
+    rintro m rfl
+    apply hs.not_le
+    simp
+  | succ n ihn =>
     rw [funext one_div_Gamma_eq_self_mul_one_div_Gamma_add_one]
-    specialize hm (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
-    refine' differentiableAt_id.mul (hm.comp s _)
-    exact differentiableAt_id.add (differentiableAt_const _)
+    specialize ihn (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
+    exact differentiableAt_id.mul (ihn.comp s <| differentiableAt_id.add_const _)
 #align complex.differentiable_one_div_Gamma Complex.differentiable_one_div_Gamma
 
 end Complex
@@ -589,7 +584,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     apply Differentiable.mul
     · exact differentiable_one_div_Gamma.comp (differentiable_id'.const_mul _)
     · refine' fun t => DifferentiableAt.const_cpow _ (Or.inl two_ne_zero)
-      refine' DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
+      exact DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
   have h3 : Tendsto ((↑) : ℝ → ℂ) (𝓝[≠] 1) (𝓝[≠] 1) := by
     rw [tendsto_nhdsWithin_iff]; constructor
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuous_ofReal.continuousAt

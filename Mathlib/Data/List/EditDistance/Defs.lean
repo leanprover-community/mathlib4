@@ -47,7 +47,7 @@ structure Cost (α β δ : Type*) where
   delete : α → δ
   /-- Cost in insert an element into a list. -/
   insert : β → δ
-  /-- Cost to substitute one elemenet for another in a list. -/
+  /-- Cost to substitute one element for another in a list. -/
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
@@ -124,10 +124,9 @@ theorem impl_cons_fst_zero (h) (w' : 0 < List.length ds) :
 
 theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.length + 1) :
     (impl C xs y d).1.length = xs.length + 1 := by
-  induction xs generalizing d
-  · case nil =>
-    rfl
-  · case cons x xs ih =>
+  induction xs generalizing d with
+  | nil => rfl
+  | cons x xs ih =>
     dsimp [impl]
     match d, w with
     | ⟨d₁ :: d₂ :: ds, _⟩, w =>
@@ -164,14 +163,14 @@ variable {C}
 
 theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
     (suffixLevenshtein C xs ys).1.length = xs.length + 1 := by
-  induction ys
-  · case nil =>
+  induction ys with
+  | nil =>
     dsimp [suffixLevenshtein]
-    induction xs
-    · case nil => rfl
-    · case cons _ xs ih =>
+    induction xs with
+    | nil => rfl
+    | cons _ xs ih =>
       simp_all
-  · case cons y ys ih =>
+  | cons y ys ih =>
     dsimp [suffixLevenshtein]
     rw [impl_length]
     exact ih
@@ -229,10 +228,10 @@ theorem suffixLevenshtein_cons₁
     suffixLevenshtein C (x :: xs) ys =
       ⟨levenshtein C (x :: xs) ys ::
         (suffixLevenshtein C xs ys).1, by simp⟩ := by
-  induction ys
-  · case nil =>
+  induction ys with
+  | nil =>
     dsimp [levenshtein, suffixLevenshtein]
-  · case cons y ys ih =>
+  | cons y ys ih =>
     apply suffixLevenshtein_cons₁_aux
     · rfl
     · rw [suffixLevenshtein_cons₂ (x :: xs), ih, impl_cons]
@@ -265,10 +264,10 @@ theorem suffixLevenshtein_cons_cons_fst_get_zero
 
 theorem suffixLevenshtein_eq_tails_map (xs ys) :
     (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
-  induction xs
-  · case nil =>
+  induction xs with
+  | nil =>
     simp only [List.map, suffixLevenshtein_nil']
-  · case cons x xs ih =>
+  | cons x xs ih =>
     simp only [List.map, suffixLevenshtein_cons₁, ih]
 
 @[simp]
@@ -298,11 +297,3 @@ theorem levenshtein_cons_cons
         (min (C.insert y + levenshtein C (x :: xs) ys)
           (C.substitute x y + levenshtein C xs ys)) :=
   suffixLevenshtein_cons_cons_fst_get_zero _ _ _ _ _
-
-#guard
-  (suffixLevenshtein Levenshtein.defaultCost "kitten".toList "sitting".toList).1 =
-    [3, 3, 4, 5, 6, 6, 7]
-
-#guard levenshtein Levenshtein.defaultCost
-  "but our fish said, 'no! no!'".toList
-  "'put me down!' said the fish.".toList = 21

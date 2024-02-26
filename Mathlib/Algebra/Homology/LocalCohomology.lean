@@ -250,7 +250,7 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
       apply Relation.ReflTransGen.single
       -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
       -- which exponent is larger.
-      cases' le_total (unop j1.left) (unop j2.left) with h h
+      rcases le_total (unop j1.left) (unop j2.left) with h | h
       right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
       left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial

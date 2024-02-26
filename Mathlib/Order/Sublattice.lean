@@ -107,7 +107,7 @@ def subtype (L : Sublattice α) : LatticeHom L α where
 @[simp, norm_cast] lemma coe_subtype (L : Sublattice α) : L.subtype = ((↑) : L → α) := rfl
 lemma subtype_apply (L : Sublattice α) (a : L) : L.subtype a = a := rfl
 
-lemma subtype_injective (L : Sublattice α) : Injective $ subtype L := Subtype.coe_injective
+lemma subtype_injective (L : Sublattice α) : Injective <| subtype L := Subtype.coe_injective
 
 /-- The inclusion homomorphism from a sublattice `L` to a bigger sublattice `M`. -/
 def inclusion (h : L ≤ M) : LatticeHom L M where
@@ -118,7 +118,7 @@ def inclusion (h : L ≤ M) : LatticeHom L M where
 @[simp] lemma coe_inclusion (h : L ≤ M) : inclusion h = Set.inclusion h := rfl
 lemma inclusion_apply (h : L ≤ M) (a : L) : inclusion h a = Set.inclusion h a := rfl
 
-lemma inclusion_injective (h : L ≤ M) : Injective $ inclusion h := Set.inclusion_injective h
+lemma inclusion_injective (h : L ≤ M) : Injective <| inclusion h := Set.inclusion_injective h
 
 @[simp] lemma inclusion_rfl (L : Sublattice α) : inclusion le_rfl = LatticeHom.id L := rfl
 @[simp] lemma subtype_comp_inclusion (h : L ≤ M) : M.subtype.comp (inclusion h) = L.subtype := rfl
@@ -144,9 +144,9 @@ instance instInf : Inf (Sublattice α) where
 /-- The inf of sublattices is their intersection. -/
 instance instInfSet : InfSet (Sublattice α) where
   sInf S := { carrier := ⨅ L ∈ S, L
-              supClosed' := supClosed_sInter $ forall_range_iff.2 $ fun L ↦ supClosed_sInter $
+              supClosed' := supClosed_sInter <| forall_range_iff.2 fun L ↦ supClosed_sInter <|
                 forall_range_iff.2 fun _ ↦ L.supClosed
-              infClosed' := infClosed_sInter $ forall_range_iff.2 $ fun L ↦ infClosed_sInter $
+              infClosed' := infClosed_sInter <| forall_range_iff.2 fun L ↦ infClosed_sInter <|
                 forall_range_iff.2 fun _ ↦ L.infClosed }
 
 instance instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩
@@ -190,7 +190,7 @@ instance instCompleteLattice : CompleteLattice (Sublattice α) where
       fun _s ↦ IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf
 
 lemma subsingleton_iff : Subsingleton (Sublattice α) ↔ IsEmpty α :=
-  ⟨fun _ ↦ univ_eq_empty_iff.1 $ coe_inj.2 $ Subsingleton.elim ⊤ ⊥,
+  ⟨fun _ ↦ univ_eq_empty_iff.1 <| coe_inj.2 <| Subsingleton.elim ⊤ ⊥,
     fun _ ↦ SetLike.coe_injective.subsingleton⟩
 
 instance [IsEmpty α] : Unique (Sublattice α) where
@@ -228,10 +228,10 @@ lemma apply_coe_mem_map (f : LatticeHom α β) (a : L) : f a ∈ L.map f := mem_
 
 lemma map_mono : Monotone (map f) := fun _ _ ↦ image_subset _
 
-@[simp] lemma map_id : L.map (LatticeHom.id α) = L := SetLike.coe_injective $ image_id _
+@[simp] lemma map_id : L.map (LatticeHom.id α) = L := SetLike.coe_injective <| image_id _
 
 @[simp] lemma map_map (g : LatticeHom β γ) (f : LatticeHom α β) :
-    (L.map f).map g = L.map (g.comp f) := SetLike.coe_injective $ image_image _ _ _
+    (L.map f).map g = L.map (g.comp f) := SetLike.coe_injective <| image_image _ _ _
 
 lemma mem_map_equiv {f : α ≃o β} {a : β} : a ∈ L.map f ↔ f.symm a ∈ L := Set.mem_image_equiv
 
@@ -239,7 +239,7 @@ lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.m
 
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : Sublattice α) :
     L.map f = L.comap (f.symm : LatticeHom β α) :=
-  SetLike.coe_injective $ f.toEquiv.image_eq_preimage L
+  SetLike.coe_injective <| f.toEquiv.image_eq_preimage L
 
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : Sublattice α) :
     L.comap f = L.map (f.symm : LatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm
@@ -286,6 +286,6 @@ lemma map_inf (L M : Sublattice α) (f : LatticeHom α β) (hf : Injective f) :
   simp [Set.image_inter hf]
 
 lemma map_top (f : LatticeHom α β) (h : Surjective f) : Sublattice.map f ⊤ = ⊤ :=
-  SetLike.coe_injective $ by simp [h.range_eq]
+  SetLike.coe_injective <| by simp [h.range_eq]
 
 end Sublattice

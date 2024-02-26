@@ -78,7 +78,8 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     -- Note(kmill): was `fun k hk => ...` but `mem_Ico.mp hk` was elaborating with some
     -- delayed assignment metavariables that weren't resolved in time. `intro` fixes this.
     intro k hk
-    exact hf (n.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
+    exact hf ((@Nat.one_le_two_pow n).trans_lt <|
+      (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
       (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
   simp [pow_succ, two_mul]
@@ -161,13 +162,13 @@ if and only if `1 < p`. -/
 @[simp]
 theorem Real.summable_nat_rpow_inv {p : ℝ} :
     Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
-  cases' le_or_lt 0 p with hp hp
+  rcases le_or_lt 0 p with hp | hp
   /- Cauchy condensation test applies only to antitone sequences, so we consider the
     cases `0 ≤ p` and `p < 0` separately. -/
   · rw [← summable_condensed_iff_of_nonneg]
     · simp_rw [Nat.cast_pow, Nat.cast_two, ← rpow_nat_cast, ← rpow_mul zero_lt_two.le, mul_comm _ p,
         rpow_mul zero_lt_two.le, rpow_nat_cast, ← inv_pow, ← mul_pow,
-        summable_geometric_iff_norm_lt_1]
+        summable_geometric_iff_norm_lt_one]
       nth_rw 1 [← rpow_one 2]
       rw [← division_def, ← rpow_sub zero_lt_two, norm_eq_abs,
         abs_of_pos (rpow_pos_of_pos zero_lt_two _), rpow_lt_one_iff zero_lt_two.le]
@@ -216,7 +217,7 @@ theorem Real.summable_nat_pow_inv {p : ℕ} :
 if and only if `1 < p`. -/
 theorem Real.summable_one_div_nat_pow {p : ℕ} :
     Summable (fun n => 1 / (n : ℝ) ^ p : ℕ → ℝ) ↔ 1 < p := by
-  -- Porting note: was `simp`
+  -- porting note (#10745): was `simp`
   simp only [one_div, Real.summable_nat_pow_inv]
 #align real.summable_one_div_nat_pow Real.summable_one_div_nat_pow
 

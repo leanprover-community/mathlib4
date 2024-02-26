@@ -416,6 +416,7 @@ theorem exists_isCompl_positive_negative (s : SignedMeasure α) :
   ⟨i, iᶜ, hi₁, hi₂, hi₁.compl, hi₃, isCompl_compl⟩
 #align measure_theory.signed_measure.exists_is_compl_positive_negative MeasureTheory.SignedMeasure.exists_isCompl_positive_negative
 
+open scoped symmDiff in
 /-- The symmetric difference of two Hahn decompositions has measure zero. -/
 theorem of_symmDiff_compl_positive_negative {s : SignedMeasure α} {i j : Set α}
     (hi : MeasurableSet i) (hj : MeasurableSet j) (hi' : 0 ≤[i] s ∧ s ≤[iᶜ] 0)

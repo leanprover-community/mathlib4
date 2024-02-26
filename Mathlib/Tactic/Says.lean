@@ -5,6 +5,8 @@ Authors: Kim Liesinger
 -/
 import Std.Data.String.Basic
 import Std.Tactic.GuardMsgs
+import Std.Tactic.TryThis
+import Std.Linter.UnreachableTactic
 import Qq.Match
 
 /-!
@@ -32,8 +34,8 @@ namespace Mathlib.Tactic.Says
 register_option says.verify : Bool :=
   { defValue := false
     group := "says"
-    descr := "For every appearance of the `X says Y` combinator, " ++
-      "re-verify that running `X` produces `Try this: Y`." }
+    descr := "For every appearance of the `X says Y` combinator, \
+      re-verify that running `X` produces `Try this: Y`." }
 
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false

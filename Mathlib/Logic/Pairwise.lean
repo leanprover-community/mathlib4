@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Relation
 import Mathlib.Init.Set
 import Mathlib.Tactic.Common
 
@@ -42,6 +41,9 @@ theorem Pairwise.mono (hr : Pairwise r) (h : ∀ ⦃i j⦄, r i j → p i j) : P
 protected theorem Pairwise.eq (h : Pairwise r) : ¬r a b → a = b :=
   not_imp_comm.1 <| @h _ _
 #align pairwise.eq Pairwise.eq
+
+protected lemma Subsingleton.pairwise [Subsingleton α] : Pairwise r :=
+  fun _ _ h ↦ False.elim <| h.elim <| Subsingleton.elim _ _
 
 theorem Function.injective_iff_pairwise_ne : Injective f ↔ Pairwise ((· ≠ ·) on f) :=
   forall₂_congr fun _i _j => not_imp_not.symm

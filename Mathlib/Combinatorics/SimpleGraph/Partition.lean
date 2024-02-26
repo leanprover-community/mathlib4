@@ -115,9 +115,9 @@ def toColoring' : G.Coloring (Set V) :=
   Coloring.mk P.partOfVertex fun hvw ↦ P.partOfVertex_ne_of_adj hvw
 #align simple_graph.partition.to_coloring' SimpleGraph.Partition.toColoring'
 
-theorem to_colorable [Fintype P.parts] : G.Colorable (Fintype.card P.parts) :=
-  P.toColoring.to_colorable
-#align simple_graph.partition.to_colorable SimpleGraph.Partition.to_colorable
+theorem colorable [Fintype P.parts] : G.Colorable (Fintype.card P.parts) :=
+  P.toColoring.colorable
+#align simple_graph.partition.to_colorable SimpleGraph.Partition.colorable
 
 end Partition
 
@@ -143,7 +143,7 @@ theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorabl
   · rintro ⟨P, hf, hc⟩
     have : Fintype P.parts := hf.fintype
     rw [Set.Finite.card_toFinset hf] at hc
-    apply P.to_colorable.mono hc
+    apply P.colorable.mono hc
   · rintro ⟨C⟩
     refine' ⟨C.toPartition, C.colorClasses_finite, le_trans _ (Fintype.card_fin n).le⟩
     generalize_proofs h

@@ -88,7 +88,9 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
   RingQuot.instAlgebra _
 
 -- verify there are no diamonds
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
@@ -249,8 +251,8 @@ theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (
     (f : M →ₗ[R] A) :
     (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
       (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =
-        Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
-  simp_rw [FunLike.ext_iff]
+        Q.polarBilin.compr₂ (Algebra.linearMap R A) := by
+  simp_rw [DFunLike.ext_iff]
   refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
   change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
   apply h2.mul_left_cancel
@@ -262,15 +264,36 @@ theorem ι_mul_ι_add_swap (a b : M) :
   mul_add_swap_eq_polar_of_forall_mul_self_eq _ (ι_sq_scalar _) _ _
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
-theorem ι_mul_comm (a b : M) :
+theorem ι_mul_ι_comm (a b : M) :
     ι Q a * ι Q b = algebraMap R _ (QuadraticForm.polar Q a b) - ι Q b * ι Q a :=
   eq_sub_of_add_eq (ι_mul_ι_add_swap a b)
-#align clifford_algebra.ι_mul_comm CliffordAlgebra.ι_mul_comm
+#align clifford_algebra.ι_mul_comm CliffordAlgebra.ι_mul_ι_comm
+
+section isOrtho
+
+@[simp] theorem ι_mul_ι_add_swap_of_isOrtho {a b : M} (h : Q.IsOrtho a b) :
+    ι Q a * ι Q b + ι Q b * ι Q a = 0 := by
+  rw [ι_mul_ι_add_swap, h.polar_eq_zero]
+  simp
+
+theorem ι_mul_ι_comm_of_isOrtho {a b : M} (h : Q.IsOrtho a b) :
+    ι Q a * ι Q b = -(ι Q b * ι Q a) :=
+  eq_neg_of_add_eq_zero_left <| ι_mul_ι_add_swap_of_isOrtho h
+
+theorem mul_ι_mul_ι_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) :
+    x * ι Q a * ι Q b = -(x * ι Q b * ι Q a) := by
+  rw [mul_assoc, ι_mul_ι_comm_of_isOrtho h, mul_neg, mul_assoc]
+
+theorem ι_mul_ι_mul_of_isOrtho (x : CliffordAlgebra Q) {a b : M} (h : Q.IsOrtho a b) :
+    ι Q a * (ι Q b * x) = -(ι Q b * (ι Q a * x)) := by
+  rw [← mul_assoc, ι_mul_ι_comm_of_isOrtho h, neg_mul, mul_assoc]
+
+end isOrtho
 
 /-- $aba$ is a vector. -/
 theorem ι_mul_ι_mul_ι (a b : M) :
     ι Q a * ι Q b * ι Q a = ι Q (QuadraticForm.polar Q a b • a - Q a • b) := by
-  rw [ι_mul_comm, sub_mul, mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← Algebra.commutes, ←
+  rw [ι_mul_ι_comm, sub_mul, mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← Algebra.commutes, ←
     Algebra.smul_def, ← map_smul, ← map_smul, ← map_sub]
 #align clifford_algebra.ι_mul_ι_mul_ι CliffordAlgebra.ι_mul_ι_mul_ι
 
@@ -329,6 +352,26 @@ theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
     (ι Q₁).range.map (map f).toLinearMap = f.range.map (ι Q₂) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 #align clifford_algebra.ι_range_map_map CliffordAlgebra.ι_range_map_map
+
+open Function in
+/-- If `f` is a linear map from `M₁` to `M₂` that preserves the quadratic forms, and if it has
+a linear retraction `g` that also preserves the quadratic forms, then `CliffordAlgebra.map g`
+is a retraction of `CliffordAlgebra.map f`. -/
+lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (f : Q₁ →qᵢ Q₂) (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
+  refine fun x => ?_
+  replace h : g.comp f = QuadraticForm.Isometry.id Q₁ := DFunLike.ext _ _ h
+  rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
+
+/-- If a linear map preserves the quadratic forms and is surjective, then the algebra
+maps it induces between Clifford algebras is also surjective.-/
+lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
+    (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) :=
+  CliffordAlgebra.induction
+    (fun r ↦ ⟨algebraMap R (CliffordAlgebra Q₁) r, by simp only [AlgHom.commutes]⟩)
+    (fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x, by simp only [map_apply_ι, hx]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x * y, by simp only [map_mul, hx, hy]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simp only [map_add, hx, hy]⟩)
 
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/

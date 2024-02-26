@@ -15,7 +15,7 @@ In this file we define the groupoid of conformal maps on normed spaces.
 
 ## Main definitions
 
-* `conformalGroupoid`: the groupoid of conformal local homeomorphisms.
+* `conformalGroupoid`: the groupoid of conformal partial homeomorphisms.
 
 ## Tags
 

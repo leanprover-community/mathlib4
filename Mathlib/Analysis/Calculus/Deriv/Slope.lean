@@ -152,7 +152,7 @@ theorem range_deriv_subset_closure_span_image
 theorem isSeparable_range_derivWithin [SeparableSpace 𝕜] (f : 𝕜 → F) (s : Set 𝕜) :
     IsSeparable (range (derivWithin f s)) := by
   obtain ⟨t, ts, t_count, ht⟩ : ∃ t, t ⊆ s ∧ Set.Countable t ∧ s ⊆ closure t :=
-    (isSeparable_of_separableSpace s).exists_countable_dense_subset
+    (IsSeparable.of_separableSpace s).exists_countable_dense_subset
   have : s ⊆ closure (s ∩ t) := by rwa [inter_eq_self_of_subset_right ts]
   apply IsSeparable.mono _ (range_derivWithin_subset_closure_span_image f this)
   exact (Countable.image t_count f).isSeparable.span.closure

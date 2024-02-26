@@ -143,6 +143,8 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
           isoWhiskerRight (triangleRotation C).counitIso _
     _ ≅ _ := Functor.leftUnitor _
 
+namespace Triangle
+
 noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
     { F := Triangle.shiftFunctor C
@@ -155,6 +157,31 @@ noncomputable instance : HasShift (Triangle C) ℤ :=
           rw [← shiftFunctorAdd'_assoc_hom_app a b c _ _ _ rfl rfl (add_assoc a b c)]
           dsimp only [CategoryTheory.shiftFunctorAdd']
           simp }
+
+@[simp]
+lemma shiftFunctor_eq (n : ℤ) :
+    CategoryTheory.shiftFunctor (Triangle C) n = Triangle.shiftFunctor C n := rfl
+
+@[simp]
+lemma shiftFunctorZero_eq :
+    CategoryTheory.shiftFunctorZero (Triangle C) ℤ = Triangle.shiftFunctorZero C :=
+  ShiftMkCore.shiftFunctorZero_eq _
+
+@[simp]
+lemma shiftFunctorAdd_eq (a b : ℤ) :
+    CategoryTheory.shiftFunctorAdd (Triangle C) a b =
+      Triangle.shiftFunctorAdd' C a b _ rfl :=
+  ShiftMkCore.shiftFunctorAdd_eq _ _ _
+
+@[simp]
+lemma shiftFunctorAdd'_eq (a b c : ℤ) (h : a + b = c) :
+    CategoryTheory.shiftFunctorAdd' (Triangle C) a b c h =
+      Triangle.shiftFunctorAdd' C a b c h := by
+  subst h
+  rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
+  apply shiftFunctorAdd_eq
+
+end Triangle
 
 end Pretriangulated
 

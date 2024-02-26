@@ -5,7 +5,6 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Int.Lemmas
 
 #align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!
@@ -112,7 +111,7 @@ private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b :=
   cases a <;> cases b <;> trivial
 
 private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
-  cases a <;> cases b <;> cases c <;> first | tauto | constructor
+  cases a <;> cases b <;> cases c <;> tauto
 
 instance : LinearOrder SignType where
   le := (· ≤ ·)
@@ -390,7 +389,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
 #align sign_one sign_one
@@ -518,7 +517,7 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
-    (@sum_attach _ _ t _ fun b => ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
+    (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 #align exists_signed_sum exists_signed_sum
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
