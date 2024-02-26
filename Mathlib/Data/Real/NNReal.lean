@@ -617,6 +617,12 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 #align nnreal.zero_le_coe NNReal.zero_le_coe
 
+instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
+    OrderedSMul ℝ≥0 M where
+  smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) : _)
+  lt_of_smul_lt_smul_of_pos {a b c} hab _ :=
+    lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
+
 end NNReal
 
 open NNReal
@@ -664,9 +670,9 @@ lemma toNNReal_eq_nat_cast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n �
   mod_cast toNNReal_eq_iff_eq_coe <| Nat.cast_ne_zero.2 hn
 
 @[simp]
-lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
+lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
-  toNNReal_eq_nat_cast h.ne_zero
+  toNNReal_eq_nat_cast (NeZero.ne n)
 
 @[simp]
 theorem toNNReal_le_toNNReal_iff {r p : ℝ} (hp : 0 ≤ p) :
@@ -745,14 +751,14 @@ lemma nat_cast_le_toNNReal {n : ℕ} {r : ℝ} (hn : n ≠ 0) : ↑n ≤ r.toNNR
 lemma toNNReal_lt_nat_cast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal < n ↔ r < n := by simp [hn]
 
 @[simp]
-lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
+lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal < no_index (OfNat.ofNat n) ↔ r < OfNat.ofNat n :=
-  toNNReal_lt_nat_cast h.ne_zero
+  toNNReal_lt_nat_cast (NeZero.ne n)
 
 @[simp]
-lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [h : n.AtLeastTwo] :
+lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [n.AtLeastTwo] :
     no_index (OfNat.ofNat n) ≤ r.toNNReal ↔ OfNat.ofNat n ≤ r :=
-  nat_cast_le_toNNReal h.ne_zero
+  nat_cast_le_toNNReal (NeZero.ne n)
 
 @[simp]
 theorem toNNReal_add {r p : ℝ} (hr : 0 ≤ r) (hp : 0 ≤ p) :

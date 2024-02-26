@@ -179,8 +179,8 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
   have hf_eq_tsum : f = ∑' n, fs n := by
     have h_sum_a : ∀ a, Summable fun n => fs n a := by
       refine' fun a => Pi.summable.mpr fun b => _
-      suffices : ∀ n, n ∉ Finset.range ⌈(f a b).toReal⌉₊ → fs n a b = 0
-      exact summable_of_ne_finset_zero this
+      suffices ∀ n, n ∉ Finset.range ⌈(f a b).toReal⌉₊ → fs n a b = 0 from
+        summable_of_ne_finset_zero this
       intro n hn_not_mem
       rw [Finset.mem_range, not_lt] at hn_not_mem
       exact h_zero a b n hn_not_mem

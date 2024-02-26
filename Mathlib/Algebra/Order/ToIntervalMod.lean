@@ -860,13 +860,12 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
   have h : x₂' ≤ toIocMod hp x₁ x₃' := by simpa
   have h₂₁ : x₂' < x₁ + p := toIcoMod_lt_right _ _ _
   have h₃₂ : x₃' - p < x₂' := sub_lt_iff_lt_add.2 (toIcoMod_lt_right _ _ _)
-  suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁
-  · obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
+  suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁ by
+    obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     rw [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
     assumption -- Porting note: was `simpa`
   rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
-  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p
-    · exact hIoc₂₁.symm.trans_ge h₃₁
+  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
     exact ⟨⟨h₂₁, by simp [left_le_toIcoMod]⟩, -1, by simp⟩
   have hIoc₁₃ : toIocMod hp x₁ x₃' = x₃' - p := by
@@ -890,7 +889,7 @@ private theorem toIxxMod_total' (a b c : α) :
     Thus if a ≠ b and b ≠ c then ({a-b} + {b-c}) + ({c-b} + {b-a}) = 2 * period, so one of
     `{a-b} + {b-c}` and `{c-b} + {b-a}` must be `≤ period` -/
   have := congr_arg₂ (· + ·) (toIcoMod_add_toIocMod_zero hp a b) (toIcoMod_add_toIocMod_zero hp c b)
-  simp only [add_add_add_comm] at this -- Porting note: was `rw`
+  simp only [add_add_add_comm] at this -- Porting note (#10691): Was `rw`
   rw [_root_.add_comm (toIocMod _ _ _), add_add_add_comm, ← two_nsmul] at this
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this
@@ -908,8 +907,8 @@ private theorem toIxxMod_trans {x₁ x₂ x₃ x₄ : α}
     (h₂₃₄ : toIcoMod hp x₂ x₄ ≤ toIocMod hp x₂ x₃ ∧ ¬toIcoMod hp x₃ x₄ ≤ toIocMod hp x₃ x₂) :
     toIcoMod hp x₁ x₄ ≤ toIocMod hp x₁ x₃ ∧ ¬toIcoMod hp x₃ x₄ ≤ toIocMod hp x₃ x₁ := by
   constructor
-  · suffices h : ¬x₃ ≡ x₂ [PMOD p]
-    · have h₁₂₃' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₁₂₃.1)
+  · suffices h : ¬x₃ ≡ x₂ [PMOD p] by
+      have h₁₂₃' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₁₂₃.1)
       have h₂₃₄' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₂₃₄.1)
       rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp).1 h] at h₂₃₄'
       exact toIxxMod_cyclic_left _ (h₁₂₃'.trans h₂₃₄')

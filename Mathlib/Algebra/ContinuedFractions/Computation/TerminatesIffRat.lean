@@ -188,8 +188,8 @@ theorem coe_stream_nth_rat_eq :
       cases' ifp_n with b fr
       cases' Decidable.em (fr = 0) with fr_zero fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
-      · replace IH : some (IntFractPair.mk b (fr : K)) = IntFractPair.stream (↑q) n;
-        · rwa [stream_q_nth_eq] at IH
+      · replace IH : some (IntFractPair.mk b (fr : K)) = IntFractPair.stream (↑q) n := by
+          rwa [stream_q_nth_eq] at IH
         have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
         have coe_of_fr := coe_of_rat_eq this
         simpa [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_ne_zero]
@@ -322,13 +322,13 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
     have ifp_fr_num_le_q_fr_num_sub_n : ifp.fr.num ≤ fract_q_num - n :=
       stream_nth_fr_num_le_fr_num_sub_n_rat stream_nth_eq
     have : fract_q_num - n = -1 := by
-      have : 0 ≤ fract_q_num := Rat.num_nonneg_iff_zero_le.mpr (Int.fract_nonneg q)
+      have : 0 ≤ fract_q_num := Rat.num_nonneg.mpr (Int.fract_nonneg q)
       -- Porting note: was
       -- simp [Int.natAbs_of_nonneg this, sub_add_eq_sub_sub_swap, sub_right_comm]
       simp only [Nat.cast_add, Int.natAbs_of_nonneg this, Nat.cast_one, sub_add_eq_sub_sub_swap,
         sub_right_comm, sub_self, zero_sub]
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left
-    have : 0 ≤ ifp.fr.num := Rat.num_nonneg_iff_zero_le.mpr this
+    have : 0 ≤ ifp.fr.num := Rat.num_nonneg.mpr this
     linarith
 #align generalized_continued_fraction.int_fract_pair.exists_nth_stream_eq_none_of_rat GeneralizedContinuedFraction.IntFractPair.exists_nth_stream_eq_none_of_rat
 

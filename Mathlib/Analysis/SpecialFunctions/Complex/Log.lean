@@ -91,7 +91,7 @@ theorem log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
 #align complex.log_of_real_mul Complex.log_ofReal_mul
 
 theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
-    log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
+    log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx]
 #align complex.log_mul_of_real Complex.log_mul_ofReal
 
 lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :

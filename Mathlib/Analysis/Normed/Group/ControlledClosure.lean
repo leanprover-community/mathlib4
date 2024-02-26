@@ -81,8 +81,8 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     rw [← this] at lim_v
     exact tendsto_nhds_unique ((f.continuous.tendsto g).comp hg) lim_v
   · -- Then we need to estimate the norm of `g`, using our careful choice of `b`.
-    suffices : ∀ n, ‖s n‖ ≤ (C + ε) * ‖h‖
-    exact le_of_tendsto' (continuous_norm.continuousAt.tendsto.comp hg) this
+    suffices ∀ n, ‖s n‖ ≤ (C + ε) * ‖h‖ from
+      le_of_tendsto' (continuous_norm.continuousAt.tendsto.comp hg) this
     intro n
     have hnorm₀ : ‖u 0‖ ≤ C * b 0 + C * ‖h‖ := by
       have :=
@@ -122,8 +122,8 @@ theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Ty
     [SeminormedAddCommGroup K] {j : NormedAddGroupHom K H} (hj : ∀ x, ‖j x‖ = ‖x‖) {C ε : ℝ}
     (hC : 0 < C) (hε : 0 < ε) (hyp : ∀ k, ∃ g, f g = j k ∧ ‖g‖ ≤ C * ‖k‖) :
     f.SurjectiveOnWith j.range.topologicalClosure (C + ε) := by
-  replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖
-  · intro h h_in
+  replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖ := by
+    intro h h_in
     rcases (j.mem_range _).mp h_in with ⟨k, rfl⟩
     rw [hj]
     exact hyp k

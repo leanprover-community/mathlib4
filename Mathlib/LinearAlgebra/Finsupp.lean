@@ -333,7 +333,7 @@ theorem supported_eq_span_single (s : Set α) :
   · rintro _ ⟨_, hp, rfl⟩
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
-    refine' sum_mem fun i il => _
+    refine sum_mem fun i il => ?_
   -- Porting note: Needed to help this convert quite a bit replacing underscores
     convert smul_mem (M := α →₀ R) (x := single i 1) (span R ((fun i => single i 1) '' s)) (l i) ?_
     · simp [span]
@@ -344,7 +344,7 @@ theorem supported_eq_span_single (s : Set α) :
 variable (M)
 
 /-- Interpret `Finsupp.filter s` as a linear map from `α →₀ M` to `supported M R s`. -/
-def restrictDom (s : Set α) : (α →₀ M) →ₗ[R] supported M R s :=
+def restrictDom (s : Set α) [DecidablePred (· ∈ s)] : (α →₀ M) →ₗ[R] supported M R s :=
   LinearMap.codRestrict _
     { toFun := filter (· ∈ s)
       map_add' := fun _ _ => filter_add
@@ -357,21 +357,21 @@ variable {M R}
 section
 
 @[simp]
-theorem restrictDom_apply (s : Set α) (l : α →₀ M) :
-    ((restrictDom M R s : (α →₀ M) →ₗ[R] supported M R s) l : α →₀ M) = Finsupp.filter (· ∈ s) l :=
-  rfl
+theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)]:
+    (restrictDom M R s l : α →₀ M) = Finsupp.filter (· ∈ s) l := rfl
 #align finsupp.restrict_dom_apply Finsupp.restrictDom_apply
 
 end
 
-theorem restrictDom_comp_subtype (s : Set α) :
+theorem restrictDom_comp_subtype (s : Set α) [DecidablePred (· ∈ s)] :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
   ext l a
   by_cases h : a ∈ s <;> simp [h]
   exact ((mem_supported' R l.1).1 l.2 a h).symm
 #align finsupp.restrict_dom_comp_subtype Finsupp.restrictDom_comp_subtype
 
-theorem range_restrictDom (s : Set α) : LinearMap.range (restrictDom M R s) = ⊤ :=
+theorem range_restrictDom (s : Set α) [DecidablePred (· ∈ s)] :
+    LinearMap.range (restrictDom M R s) = ⊤ :=
   range_eq_top.2 <|
     Function.RightInverse.surjective <| LinearMap.congr_fun (restrictDom_comp_subtype s)
 #align finsupp.range_restrict_dom Finsupp.range_restrictDom
@@ -916,7 +916,7 @@ theorem domLCongr_symm {α₁ α₂ : Type*} (f : α₁ ≃ α₂) :
   LinearEquiv.ext fun _ => rfl
 #align finsupp.dom_lcongr_symm Finsupp.domLCongr_symm
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp
