@@ -1030,8 +1030,9 @@ instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁�
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
-  add_smul _ _ _ := ext fun _ ↦ by simp_rw [add_apply, dom_smul_apply, ← map_add, ← add_smul]; rfl
-  zero_smul _ := ext fun _ ↦ by erw [dom_smul_apply, zero_smul, map_zero]; rfl
+  add_smul _ _ _ := ext fun _ ↦ by
+    simp_rw [add_apply, DomMulAct.smul_linearMap_apply, ← map_add, ← add_smul]; rfl
+  zero_smul _ := ext fun _ ↦ by erw [DomMulAct.smul_linearMap_apply, zero_smul, map_zero]; rfl
 
 end Module
 
