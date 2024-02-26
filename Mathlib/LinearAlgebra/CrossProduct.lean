@@ -70,7 +70,7 @@ section ProductsProperties
 
 @[simp]
 theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
-  simp only [cross_apply, mul_comm, neg_cons, neg_sub, neg_empty]
+  simp [cross_apply, mul_comm]
 #align cross_anticomm cross_anticomm
 
 alias neg_cross := cross_anticomm

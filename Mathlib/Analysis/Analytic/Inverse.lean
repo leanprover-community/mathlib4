@@ -146,7 +146,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       ext k
       simp [h, Function.comp]
     simp [FormalMultilinearSeries.comp, show n + 2 ≠ 1 by norm_num, A, Finset.sum_union B,
-      applyComposition_ones, C, D, -Set.toFinset_setOf, -Matrix.const_fin1_eq]
+      applyComposition_ones, C, D, -Set.toFinset_setOf]
 #align formal_multilinear_series.left_inv_comp FormalMultilinearSeries.leftInv_comp
 
 /-! ### The right inverse of a formal multilinear series -/
@@ -277,8 +277,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     ext v
     have N : 0 < n + 2 := by norm_num
     have : ((p 1) fun i : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
-    simp [comp_rightInv_aux1 N, lt_irrefl n, this, comp_rightInv_aux2,
-      -Set.toFinset_setOf, -Matrix.const_fin1_eq]
+    simp [comp_rightInv_aux1 N, lt_irrefl n, this, comp_rightInv_aux2, -Set.toFinset_setOf]
 #align formal_multilinear_series.right_inv_coeff FormalMultilinearSeries.rightInv_coeff
 
 /-! ### Coincidence of the left and the right inverse -/

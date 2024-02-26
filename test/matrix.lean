@@ -81,22 +81,20 @@ end safety
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] :=
-by simp only [of_add_of, add_cons, head_cons, tail_cons, empty_add_empty]
+by simp
 
 example {a a' b b' c c' d d' : β} :
   !![a, b; c, d] - !![a', b'; c', d'] = !![a - a', b - b'; c - c', d - d'] :=
-by simp only [of_sub_of, sub_cons, head_cons, tail_cons, sub_self, zero_empty]
+by simp
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] * !![a', b'; c', d'] =
     !![a * a' + b * c', a * b' + b * d'; c * a' + d * c', c * b' + d * d'] :=
-by simp only [cons_mul, vecMul_cons, head_cons, smul_cons, smul_eq_mul, smul_empty, tail_cons,
-  empty_vecMul, add_zero, add_cons, empty_add_empty, empty_mul, Equiv.symm_apply_apply]
+by simp
 
 example {a b c d x y : α} :
   !![a, b; c, d] *ᵥ ![x, y] = ![a * x + b * y, c * x + d * y] :=
-by simp only [cons_mulVec, dotProduct_cons, head_cons, tail_cons, dotProduct_empty, add_zero,
-  empty_mulVec]
+by simp
 
 /-!
 TODO: the below lemmas rely on simp lemmas assuming the indexing numerals are assembled from
@@ -135,30 +133,6 @@ example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 37 = f := by simp
 example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 99 = d := by simp
 -/
 
-/-
-
-TODO
-
-Why are the following two tests useful?
-
-If I do
-```
-example {α : Type _} [CommRing α] {a b c d : α} :
-    Matrix.det !![a, b; c, d] = a * d - b * c := by
-  simp?
-```
-I get
-```
-example {α : Type _} [CommRing α] {a b c d : α} :
-    Matrix.det !![a, b; c, d] = a * d - b * c := by
-  simp only [det_fin_two_of]
-```
-and the goal gets closed.
-
-
-
-The tests that fail:
-
 example {α : Type _} [CommRing α] {a b c d : α} :
     Matrix.det !![a, b; c, d] = a * d - b * c := by
   simp? [Matrix.det_succ_row_zero, Fin.sum_univ_succ] says
@@ -183,7 +157,5 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       Finset.sum_singleton, cons_val_succ, Fin.succ_succAbove_one, Nat.reduceAdd, even_two,
       Even.neg_pow, one_pow, Finset.sum_const, Finset.card_singleton, one_smul]
   ring
-
--/
 
 end Matrix

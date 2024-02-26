@@ -368,22 +368,22 @@ theorem mul_coeff (x y : 𝕎 R) (n : ℕ) :
 #align witt_vector.mul_coeff WittVector.mul_coeff
 
 theorem neg_coeff (x : 𝕎 R) (n : ℕ) : (-x).coeff n = peval (wittNeg p n) ![x.coeff] := by
-  simp only [Neg.neg, eval, Matrix.cons_fin_one, coeff_mk]
+  simp [Neg.neg, eval, Matrix.cons_fin_one, coeff_mk]
 #align witt_vector.neg_coeff WittVector.neg_coeff
 
 theorem nsmul_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) :
     (m • x).coeff n = peval (wittNSMul p m n) ![x.coeff] := by
-  simp only [(· • ·), SMul.smul, eval, Matrix.cons_fin_one, coeff_mk]
+  simp [(· • ·), SMul.smul, eval, Matrix.cons_fin_one, coeff_mk]
 #align witt_vector.nsmul_coeff WittVector.nsmul_coeff
 
 theorem zsmul_coeff (m : ℤ) (x : 𝕎 R) (n : ℕ) :
     (m • x).coeff n = peval (wittZSMul p m n) ![x.coeff] := by
-  simp only [(· • ·), SMul.smul, eval, Matrix.cons_fin_one, coeff_mk]
+  simp [(· • ·), SMul.smul, eval, Matrix.cons_fin_one, coeff_mk]
 #align witt_vector.zsmul_coeff WittVector.zsmul_coeff
 
 theorem pow_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) :
     (x ^ m).coeff n = peval (wittPow p m n) ![x.coeff] := by
-  simp only [(· ^ ·), Pow.pow, eval, Matrix.cons_fin_one, coeff_mk]
+  simp [(· ^ ·), Pow.pow, eval, Matrix.cons_fin_one, coeff_mk]
 #align witt_vector.pow_coeff WittVector.pow_coeff
 
 theorem add_coeff_zero (x y : 𝕎 R) : (x + y).coeff 0 = x.coeff 0 + y.coeff 0 := by

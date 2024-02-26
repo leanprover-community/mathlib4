@@ -124,8 +124,8 @@ noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
       right_inv := fun c => by
         ext i
         fin_cases i <;> simp
-      map_add' := fun z z' => by simp [-Matrix.const_fin1_eq]
-      map_smul' := fun c z => by simp [-Matrix.const_fin1_eq] }
+      map_add' := fun z z' => by simp
+      map_smul' := fun c z => by simp }
 set_option linter.uppercaseLean3 false in
 #align complex.basis_one_I Complex.basisOneI
 
