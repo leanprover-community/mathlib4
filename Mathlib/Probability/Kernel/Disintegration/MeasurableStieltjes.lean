@@ -442,7 +442,7 @@ variable {f : α → ℚ → ℝ}
 Composition of `toRatCDF` and `IsMeasurableRatCDF.stieltjesFunction`. -/
 noncomputable
 def stieltjesOfMeasurableRat (f : α → ℚ → ℝ) (hf : Measurable f) : α → StieltjesFunction :=
-  (IsMeasurableRatCDF_toRatCDF hf).stieltjesFunction
+  (isMeasurableRatCDF_toRatCDF hf).stieltjesFunction
 
 lemma stieltjesOfMeasurableRat_eq (hf : Measurable f) (a : α) (r : ℚ) :
     stieltjesOfMeasurableRat f hf a r = toRatCDF f a r :=
