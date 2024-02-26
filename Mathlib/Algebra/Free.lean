@@ -530,11 +530,9 @@ def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
     { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
       map_mul' := fun x y ↦ by
-        -- FIXME nightly-testing
-        sorry
-        -- simp only [head_mul, tail_mul, ← List.foldl_map f, List.foldl_append, List.foldl_cons,
-        --   List.foldl_assoc]
-        }
+        simp [head_mul, tail_mul, ← List.foldl_map, List.foldl_append, List.foldl_cons,
+          List.foldl_assoc] }
+        -- v4.7.0 issues
   invFun f := f ∘ of
   left_inv f := rfl
   right_inv f := hom_ext rfl
