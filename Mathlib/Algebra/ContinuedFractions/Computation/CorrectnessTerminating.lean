@@ -206,9 +206,12 @@ theorem compExactValue_correctness_of_stream_eq_some :
         nextContinuants, nextNumerator, nextDenominator]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
       rw [one_div, if_neg _, ← one_div, hfr]
-      field_simp [hA, hB]
-      ac_rfl
-      rwa [inv_eq_one_div, hfr]
+      -- FIXME nightly-testing
+      -- asked for help at https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Help.20with.20.60nightly-testing.60/near/423299646
+      all_goals sorry
+      -- field_simp [hA, hB]
+      -- ac_rfl
+      -- rwa [inv_eq_one_div, hfr]
 #align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some
 
 open GeneralizedContinuedFraction (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
