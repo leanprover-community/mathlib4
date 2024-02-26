@@ -107,7 +107,8 @@ def ball (n : ℕ) (p : ℕ → ℕ) : ℕ := n.rec 1 (fun n ih => (p n).pos.and
 @[simp] lemma ball_pos_iff {p : ℕ → ℕ} {n : ℕ} : 0 < ball n p ↔ ∀ m < n, 0 < p m := by
   induction' n with n ih <;> simp[ball, Nat.lt_succ_iff] at*
   · simp[ih]; exact ⟨
-    by rintro ⟨hn, hp⟩ m hm; rcases lt_or_eq_of_le hm with (hm | rfl); {exact hp _ hm }; {exact hn },
+    by rintro ⟨hn, hp⟩ m hm; rcases lt_or_eq_of_le hm with (hm | rfl); {exact hp _ hm };
+      {exact hn },
     by intro h; exact ⟨h n (Nat.le_refl n), fun m hm => h m (le_of_lt hm)⟩⟩
 
 @[simp] lemma ball_eq_zero_iff {p : ℕ → ℕ} {n : ℕ} : ball n p = 0 ↔ ∃ m < n, p m = 0 := by
@@ -191,7 +192,7 @@ lemma bind (f : Vector ℕ n → ℕ →. ℕ) (hf : @PartArith (n + 1) fun v =>
     · simp[hgv, Matrix.comp_vecCons']
       have : mOfFn (fun i => (g :> fun j v => Part.some $ v.get j) i v) = pure (Vector.ofFn
           (x :> fun j => v.get j)) := by
-        rw[←Vector.mOfFn_pure]; apply congr_arg
+        rw[← Vector.mOfFn_pure]; apply congr_arg
         funext i; cases i using Fin.cases <;> simp[hgv]
       simp[this])
 
@@ -258,7 +259,7 @@ protected lemma cons {n m f g} (hf : @Arith n f) (hg : @Vec n m g) :
 
 lemma tail {n f} (hf : @Arith n f) : @Arith n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @proj _ i.succ).of_eq fun v => by
-    rw[←ofFn_get v.tail]; congr; funext i; simp
+    rw[← ofFn_get v.tail]; congr; funext i; simp
 
 lemma comp' {n m f g} (hf : @Arith m f) (hg : @Vec n m g) : Arith fun v => f (g v) :=
   (hf.comp _ hg).of_eq fun v => by simp
