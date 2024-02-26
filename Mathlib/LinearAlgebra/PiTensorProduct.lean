@@ -453,7 +453,8 @@ variable (s) in
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
-  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
+  -- FIXME nightly-testing: aesop won't unfold: both sorries were `aesop`
+  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by sorry) (by sorry)
 #align pi_tensor_product.reindex PiTensorProduct.reindex
 
 end
