@@ -5,7 +5,7 @@ Authors: Louis Carlin, Mario Carneiro
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Order.Basic
 
