@@ -97,7 +97,7 @@ def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
 /-- For an adjuntion `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a)) (H : IsAbsKan t) :
-      f ⊣ t.extension :=
+    f ⊣ t.extension :=
   H.isKan.adjunction (H f)
 
 theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
