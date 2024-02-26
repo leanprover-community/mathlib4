@@ -1034,7 +1034,7 @@ lemma exists_eq_of_iSup_eq_of_not_isLimit
   rw [← le_zero_iff] at h ⊢
   exact (le_ciSup hf _).trans h
 
--- Portin note: simpNF is not happy with universe levels.
+-- Porting note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
