@@ -1827,7 +1827,7 @@ open Equiv
 
 namespace List
 
-variable [i4 : DecidableEq α] {l : List α}
+variable [DecidableEq α] {l : List α}
 
 set_option linter.deprecated false in -- nthLe
 theorem _root_.List.Nodup.isCycleOn_formPerm (h : l.Nodup) :
