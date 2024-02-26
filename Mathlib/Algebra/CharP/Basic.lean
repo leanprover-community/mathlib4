@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Choose.Sum
@@ -93,33 +94,6 @@ end CommSemiring
 
 variable (R)
 
-/-- The generator of the kernel of the unique homomorphism ℕ → R for a semiring R.
-
-*Warning*: for a semiring `R`, `CharP R 0` and `CharZero R` need not coincide.
-* `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`;
-* `CharZero R` requires an injection `ℕ ↪ R`.
-
-For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that
-`CharZero {0, 1}` does not hold and yet `CharP {0, 1} 0` does.
-This example is formalized in `Counterexamples/CharPZeroNeCharZero.lean`.
--/
-@[mk_iff]
-class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
-  cast_eq_zero_iff' : ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x
-#align char_p CharP
-#align char_p_iff charP_iff
-
--- porting note: the field of the structure had implicit arguments where they were
--- explicit in Lean 3
-theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (x : ℕ) :
-    (x : R) = 0 ↔ p ∣ x :=
-CharP.cast_eq_zero_iff' (R := R) (p := p) x
-
-@[simp]
-theorem CharP.cast_eq_zero [AddMonoidWithOne R] (p : ℕ) [CharP R p] : (p : R) = 0 :=
-  (CharP.cast_eq_zero_iff R p p).2 (dvd_refl p)
-#align char_p.cast_eq_zero CharP.cast_eq_zero
-
 @[simp]
 theorem CharP.cast_card_eq_zero [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by
   rw [← nsmul_one, card_nsmul_eq_zero]
@@ -128,17 +102,6 @@ theorem CharP.cast_card_eq_zero [AddGroupWithOne R] [Fintype R] : (Fintype.card 
 theorem CharP.addOrderOf_one (R) [Semiring R] : CharP R (addOrderOf (1 : R)) :=
   ⟨fun n => by rw [← Nat.smul_one_eq_coe, addOrderOf_dvd_iff_nsmul_eq_zero]⟩
 #align char_p.add_order_of_one CharP.addOrderOf_one
-
-theorem CharP.int_cast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a : ℤ) :
-    (a : R) = 0 ↔ (p : ℤ) ∣ a := by
-  rcases lt_trichotomy a 0 with (h | rfl | h)
-  · rw [← neg_eq_zero, ← Int.cast_neg, ← dvd_neg]
-    lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
-    rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.coe_nat_dvd]
-  · simp only [Int.cast_zero, eq_self_iff_true, dvd_zero]
-  · lift a to ℕ using le_of_lt h with b
-    rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.coe_nat_dvd]
-#align char_p.int_cast_eq_zero_iff CharP.int_cast_eq_zero_iff
 
 theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ} :
     (a : R) = b ↔ a ≡ b [ZMOD p] := by
@@ -160,14 +123,6 @@ theorem CharP.natCast_eq_natCast [AddMonoidWithOne R] [IsRightCancelAdd R] (p : 
     ← add_right_cancel_iff (G := R) (a := a) (b := b - a), zero_add, ← Nat.cast_add,
     Nat.sub_add_cancel hle, eq_comm]
 #align char_p.nat_cast_eq_nat_cast CharP.natCast_eq_natCast
-
-theorem CharP.intCast_eq_intCast_mod [AddGroupWithOne R] (p : ℕ) [CharP R p] {a : ℤ} :
-    (a : R) = a % (p : ℤ) :=
-  (CharP.intCast_eq_intCast R p).mpr (Int.mod_modEq a p).symm
-
-theorem CharP.natCast_eq_natCast_mod [AddMonoidWithOne R] (p : ℕ) [CharP R p] {a : ℕ} :
-    (a : R) = a % p :=
-  CharP.natCast_eq_natCast' R p (Nat.mod_modEq a p).symm
 
 theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (_c1 : CharP R p) (_c2 : CharP R q) : p = q :=
   Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R p q).1 (CharP.cast_eq_zero _ _))
