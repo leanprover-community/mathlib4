@@ -267,6 +267,12 @@ theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
   bijective_id
 #align set.set_of_bijective Set.setOf_bijective
 
+theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
+  Iff.rfl
+
+theorem setOf_subset {p : α → Prop} {s : Set α} : setOf p ⊆ s ↔ ∀ x, p x → x ∈ s :=
+  Iff.rfl
+
 @[simp]
 theorem setOf_subset_setOf {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
   Iff.rfl
