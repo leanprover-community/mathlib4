@@ -416,7 +416,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
   -- And this, of course, is just `f`
   ext
   apply Eq.symm
-  simp [mul_comm IsROrC.I _]
+  simp [I, f_re, f_im, mul_comm IsROrC.I _]
 #align continuous_map.subalgebra_is_R_or_C_topological_closure_eq_top_of_separates_points ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPointsₓ
 
 end IsROrC
