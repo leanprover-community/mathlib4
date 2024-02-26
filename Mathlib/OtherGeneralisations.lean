@@ -5,7 +5,7 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Order.RelSeries
+import Mathlib.Data.Rel
 
 /-!
 This file discuss generalisation of relation series.

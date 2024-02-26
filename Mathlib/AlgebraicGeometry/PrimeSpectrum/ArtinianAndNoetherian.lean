@@ -48,6 +48,7 @@ variable {R}
 /--
 Cover of Spec of an artinian ring by singleton sets.
 -/
+@[simps]
 def openCover (i : PrimeSpectrum R) : Opens (PrimeSpectrum R) :=
   ⟨{i}, by continuity⟩
 
@@ -64,10 +65,10 @@ lemma openCover.pairwiseDisjoint (i j : PrimeSpectrum R) (hij : i ≠ j) :
 
 variable (R) in
 lemma openCover.is_cover : ⨆ (i : PrimeSpectrum R), openCover i = ⊤ :=
-  eq_top_iff.mpr <| fun p _ ↦ by simpa using ⟨p, Set.mem_singleton _⟩
+  eq_top_iff.mpr <| fun p _ ↦ by simp
 
 instance (i : PrimeSpectrum R) : Unique (openCover i) where
-  default := ⟨i, by aesop⟩
+  default := ⟨i, by simp [openCover]⟩
   uniq p := Subtype.ext <| by rw [Set.mem_singleton_iff.mp p.2]; rfl
 
 /--
@@ -83,7 +84,7 @@ noncomputable def sectionsOnOpenCover (i : PrimeSpectrum R) :
       (M := i.asIdeal.primeCompl) (T := x.1.asIdeal.primeCompl) (RingEquiv.refl R) <| by
       rw [Set.mem_singleton_iff.mp x.2]; simp
   RingEquiv.toCommRingCatIso
-  { toFun := fun f ↦ f.1 ⟨i, by aesop⟩
+  { toFun := fun f ↦ f.1 ⟨i, by simp only [openCover, unop_op]; exact Set.mem_singleton _⟩
     invFun := fun q ↦ ⟨fun x ↦ e _ q, fun x ↦ by
         simp_rw [Set.mem_singleton_iff.mp x.2]
         induction' q using Localization.induction_on with d
@@ -100,7 +101,7 @@ noncomputable def sectionsOnOpenCover (i : PrimeSpectrum R) :
         IsLocalization.ringEquivOfRingEquiv_apply, RingEquiv.coe_ringHom_refl]
       refine Subtype.ext <| funext fun (x : openCover i) ↦ ?_
       simp only [unop_op]
-      have eq1 : x = (⟨i, by aesop⟩ : openCover i) := Subsingleton.elim _ _
+      have eq1 : x = (⟨i, by simp [openCover]⟩ : openCover i) := Subsingleton.elim _ _
       rw [eq1]
       simp only [IsLocalization.map_id]
     right_inv := by
@@ -169,9 +170,8 @@ section zeroDimensionalAndNoetherianLocal
 lemma maximalIdeal_locally_nilpotent_of_zero_dimensional_local_ring
     [LocalRing R] (dim0 : ringKrullDim R = 0)
     (x : R) (hx : x ∈ LocalRing.maximalIdeal R) : ∃ (n : ℕ), x ^ n = 0 := by
-  suffices eq1 : LocalRing.maximalIdeal R = nilradical R
-  · rw [eq1] at hx
-    exact hx
+  suffices eq1 : LocalRing.maximalIdeal R = nilradical R by
+    rw [eq1] at hx; exact hx
   rw [nilradical_eq_sInf]
   rw [show sInf {J : Ideal R | Ideal.IsPrime J} = sInf {J : Ideal R | Ideal.IsMaximal J} by
     · congr 1
@@ -244,8 +244,8 @@ lemma IsNoetherianRing.pow_le_of_le_radical [noeth : IsNoetherianRing R] (I J : 
 
     · refine Ideal.mul_mem_left _ _ ?_
       simp only [not_le] at s_eq
-      have s_eq' : n ≤ Finset.card (Finset.univ \ s)
-      · simp only [Finset.subset_univ, Finset.card_sdiff, Finset.card_fin]
+      have s_eq' : n ≤ Finset.card (Finset.univ \ s) := by
+        simp only [Finset.subset_univ, Finset.card_sdiff, Finset.card_fin]
         rw [Nat.add_sub_assoc (le_of_lt s_eq)]
         norm_num
       let e := (Finset.univ \ s).equivFin
@@ -339,8 +339,8 @@ def residualFieldActionOnQF (i : Fin (K R)) : κ →ₗ[R] Module.End R ((series
       RingHom.id_apply, Submodule.coeSubtype, smul_eq_mul]
     have mem1 := m.2
     simp only [series_length, series_toFun, Fin.val_succ] at mem1
-    have eq1 : 𝓂 ^ (K R - i) = 𝓂 * 𝓂 ^ (K R - (i + 1))
-    · conv_rhs => lhs; rw [show 𝓂 = 𝓂 ^ 1 from pow_one _ |>.symm]
+    have eq1 : 𝓂 ^ (K R - i) = 𝓂 * 𝓂 ^ (K R - (i + 1)) := by
+      conv_rhs => lhs; rw [show 𝓂 = 𝓂 ^ 1 from pow_one _ |>.symm]
       rw [← pow_add, add_comm]
       congr
       rw [Nat.sub_add_eq, Nat.sub_add_cancel]
@@ -525,16 +525,14 @@ instance qf_noetherian_κ [IsNoetherianRing R] (i : Fin (K R)) : IsNoetherian κ
 
 instance qf_finiteLength_κ_of_artinian [IsArtinianRing R] (i : Fin (K R)) :
     FiniteLengthModule κ ((series R).qf i) := by
-  suffices inst1 : IsFiniteLengthModule κ ((series R).qf i)
-  · exact Classical.choice inst1.finite
+  suffices inst1 : IsFiniteLengthModule κ ((series R).qf i) from Classical.choice inst1.finite
   rw [finiteLengthModule_over_field_iff_finite_dimensional,
     ← Module.finite_iff_artinian_over_divisionRing]
   infer_instance
 
 instance qf_finiteLength_κ_of_noetherian [IsNoetherianRing R] (i : Fin (K R)) :
     FiniteLengthModule κ ((series R).qf i) := by
-  suffices inst1 : IsFiniteLengthModule κ ((series R).qf i)
-  · exact Classical.choice inst1.finite
+  suffices inst1 : IsFiniteLengthModule κ ((series R).qf i) from Classical.choice inst1.finite
   rw [finiteLengthModule_over_field_iff_finite_dimensional,
     ← Module.finite_iff_artinian_over_divisionRing]
   infer_instance
@@ -592,10 +590,9 @@ noncomputable instance : Fintype (PrimeSpectrum R) :=
   Classical.choice <| finite_iff_nonempty_fintype (PrimeSpectrum R) |>.mp inferInstance
 
 instance isNoetherianRing_of_local [LocalRing R] : IsNoetherianRing R := by
-  suffices i1 : IsFiniteLengthModule R R
-  · exact isNoetherian_of_finiteLength R R
-  have i2 : Fact (IsNilpotent (LocalRing.maximalIdeal R))
-  · fconstructor
+  suffices i1 : IsFiniteLengthModule R R from isNoetherian_of_finiteLength R R
+  have i2 : Fact (IsNilpotent (LocalRing.maximalIdeal R)) := by
+    fconstructor
     have H := IsArtinianRing.isNilpotent_jacobson_bot (R := R)
     rwa [LocalRing.jacobson_eq_maximalIdeal (h := by simp)] at H
 
@@ -621,8 +618,7 @@ noncomputable instance : Fintype (PrimeSpectrum R) := PrimeSpectrum.finTypeOfNoe
 
 instance isArtinianRing_of_local_dim0_noetherian [Nontrivial R] [LocalRing R] :
     IsArtinianRing R := by
-  suffices i1 : IsFiniteLengthModule R R
-  · exact isArtinian_of_finiteLength R R
+  suffices i1 : IsFiniteLengthModule R R from isArtinian_of_finiteLength R R
   have i2 : Fact (IsNilpotent (LocalRing.maximalIdeal R)) :=
   ⟨IsNoetherianRing.nilpotent_maximalIdeal_of_zero_dimensional_localRing _ dim0.out⟩
 
@@ -637,8 +633,8 @@ instance : IsArtinianRing R := by
   · exact isArtinian_of_finite
   · have i1 (i : PrimeSpectrum R) : IsNoetherianRing (Localization.AtPrime i.asIdeal) :=
       IsNoetherianRing.Localization (Ideal.primeCompl i.asIdeal) _
-    have i2 (i : PrimeSpectrum R) : Fact (ringKrullDim (Localization.AtPrime i.asIdeal) = 0)
-    · fconstructor
+    have i2 (i : PrimeSpectrum R) : Fact (ringKrullDim (Localization.AtPrime i.asIdeal) = 0) := by
+      fconstructor
       have : ringKrullDim (Localization.AtPrime i.asIdeal) ≤ ringKrullDim R :=
         krullDim.le_of_strictMono (fun p ↦
           ⟨IsLocalization.orderEmbedding i.asIdeal.primeCompl (Localization.AtPrime i.asIdeal) p.1,
@@ -655,18 +651,16 @@ instance : IsArtinianRing R := by
         induction' x using Localization.induction_on with data
         rcases data with ⟨a, b⟩
         dsimp at hx1 hx2
-        have eq1 : Localization.mk a b = Localization.mk 1 b * Localization.mk a 1
-        · rw [Localization.mk_mul]; simp
-        have hx3 : Localization.mk a 1 ∈ q.asIdeal
-        · rw [eq1] at hx1
+        have eq1 : Localization.mk a b = Localization.mk 1 b * Localization.mk a 1 := by
+          rw [Localization.mk_mul]; simp
+        have hx3 : Localization.mk a 1 ∈ q.asIdeal := by
+          rw [eq1] at hx1
           refine q.IsPrime.mem_or_mem hx1 |>.resolve_left ?_
           intro r
           refine q.IsPrime.1 (Ideal.eq_top_iff_one _ |>.mpr ?_)
           have eq2 : (Localization.mk 1 b : Localization.AtPrime i.asIdeal) *
             (Localization.mk b 1 : Localization.AtPrime i.asIdeal) =
-            (1 : Localization.AtPrime i.asIdeal)
-          · rw [Localization.mk_mul]
-            simp
+            (1 : Localization.AtPrime i.asIdeal) := by rw [Localization.mk_mul]; simp
           rw [← eq2]
           exact q.asIdeal.mul_mem_right _ r
         refine Set.not_subset.mpr ⟨a, ?_, ?_⟩ <;>
@@ -679,7 +673,6 @@ instance : IsArtinianRing R := by
 
       rw [dim0.out] at this
       refine le_antisymm this krullDim.nonneg_of_Nonempty
-
 
     refine @isArtinianRing_of_ringEquiv (e := equivProdLocalization.symm) inferInstance
 

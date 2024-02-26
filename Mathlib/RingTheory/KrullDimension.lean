@@ -8,7 +8,6 @@ import Mathlib.Order.KrullDimension
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Artinian
-import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Topology.KrullDimension
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.Topology.NoetherianSpace
