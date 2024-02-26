@@ -46,6 +46,8 @@ open Vector Part
 
 namespace Nat
 
+variable {m n : ℕ}
+
 lemma pos_of_eq_one (h : n = 1) : 0 < n := by simp[h]
 
 def isEqNat (n m : ℕ) : ℕ := if n = m then 1 else 0
