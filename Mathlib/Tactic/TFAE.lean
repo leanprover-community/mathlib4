@@ -71,13 +71,13 @@ open Parser
 
 /--
 `tfae_have` introduces hypotheses for proving goals of the form `TFAE [P₁, P₂, ...]`. Specifically,
-`tfae_have : i <arrow> j := ...` introduces a hypothesis of type `Pᵢ <arrow> Pⱼ` to the local
+`tfae_have i <arrow> j := ...` introduces a hypothesis of type `Pᵢ <arrow> Pⱼ` to the local
 context, where `<arrow>` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices
 (beginning at 1) used to specify the propositions `P₁, P₂, ...` that appear in the goal.
 
 ```lean
 example (h : P → R) : TFAE [P, Q, R] := by
-  tfae_have : 1 → 3 := h
+  tfae_have 1 → 3 := h
   ...
 ```
 The resulting context now includes `tfae_1_to_3 : P → R`.
@@ -87,9 +87,9 @@ the goal. For example,
 
 ```lean
 example : TFAE [P, Q, R] := by
-  tfae_have : 1 → 2 := sorry /- proof of P → Q -/
-  tfae_have : 2 → 1 := sorry /- proof of Q → P -/
-  tfae_have : 2 ↔ 3 := sorry /- proof of Q ↔ R -/
+  tfae_have 1 → 2 := sorry /- proof of P → Q -/
+  tfae_have 2 → 1 := sorry /- proof of Q → P -/
+  tfae_have 2 ↔ 3 := sorry /- proof of Q ↔ R -/
   tfae_finish
 ```
 
@@ -99,18 +99,18 @@ creation, and matching. These are demonstrated below.
 ```lean
 example : TFAE [P, Q] := by
   -- `tfae_1_to_2 : P → Q`:
-  tfae_have : 1 → 2 := sorry
+  tfae_have 1 → 2 := sorry
   -- `hpq : P → Q`:
   tfae_have hpq : 1 → 2 := sorry
   -- inaccessible `h✝ : P → Q`:
   tfae_have _ : 1 → 2 := sorry
   -- `tfae_1_to_2 : P → Q`, and `?a` is a new goal:
-  tfae_have : 1 → 2 := f ?a
+  tfae_have 1 → 2 := f ?a
   -- create a goal of type `P → Q`:
-  tfae_have : 1 → 2
+  tfae_have 1 → 2
   · exact (sorry : P → Q)
   -- match on `p : P` and prove `Q`:
-  tfae_have : 1 → 2
+  tfae_have 1 → 2
   | p => f p
   -- introduces `pq : P → Q`, `qp : Q → P`:
   tfae_have ⟨pq, qp⟩ : 1 ↔ 2 := sorry
@@ -261,7 +261,7 @@ def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Ex
     | _ => throwUnsupportedSyntax
   | _ => throwUnsupportedSyntax
 
-/- Convert `tfae_have : i <arr> j ...` to `tfae_have tfae_i_arr_j : i <arr> j ...`. See
+/- Convert `tfae_have i <arr> j ...` to `tfae_have tfae_i_arr_j : i <arr> j ...`. See
 `expandHave`, which is responsible for inserting `this` in `have : A := ...`. Note that we
 require some extra help for `tfaeHave'` (Mathlib `have`). -/
 macro_rules
