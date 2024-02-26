@@ -307,7 +307,7 @@ instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
 #align valuation_subring.of_prime_algebra ValuationSubring.ofPrimeAlgebra
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    -- Porting note: added instance
+    -- porting note (#10754): added instance
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
   IsScalarTower.subalgebra' A K K
@@ -513,7 +513,7 @@ theorem unitGroup_le_unitGroup {A B : ValuationSubring K} : A.unitGroup ≤ B.un
         B.add_mem _ _ (show 1 + x ∈ B from SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B))
           (B.neg_mem _ B.one_mem)
     · have := h (show Units.mk0 x h_1 ∈ A.unitGroup from hx)
-      refine' SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B)
+      exact SetLike.coe_mem (B.unitGroupMulEquiv ⟨_, this⟩ : B)
   · rintro h x (hx : A.valuation x = 1)
     apply_fun A.mapOfLE B h at hx
     simpa using hx

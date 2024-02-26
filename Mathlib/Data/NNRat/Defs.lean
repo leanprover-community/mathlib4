@@ -35,7 +35,7 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
   CanonicallyOrderedCommSemiring, CanonicallyLinearOrderedAddCommMonoid, Sub, Inhabited
 #align nnrat NNRat
 
--- Porting note: Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
+-- Porting note (#10754): Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
 -- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
 
@@ -145,12 +145,12 @@ theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
 #align nnrat.coe_ne_zero NNRat.coe_ne_zero
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 #align nnrat.coe_le_coe NNRat.coe_le_coe
 
-@[norm_cast] -- Porting note: simp can prove this
+@[norm_cast] -- Porting note (#10618): simp can prove this
 theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
@@ -194,12 +194,13 @@ def coeHom : ℚ≥0 →+* ℚ where
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
-  map_natCast coeHom n
+  rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
-  ext (coe_natCast n).symm
+  rfl
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 
 @[simp]
@@ -328,7 +329,7 @@ theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
 
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
-  · ext <;> simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
+  · ext; simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
   · have hpq := mul_nonpos_of_nonneg_of_nonpos hp hq
     rw [toNNRat_eq_zero.2 hq, toNNRat_eq_zero.2 hpq, mul_zero]
 #align rat.to_nnrat_mul Rat.toNNRat_mul
@@ -361,7 +362,7 @@ variable {p q : ℚ≥0}
 #align nnrat.denom NNRat.den
 
 @[norm_cast] lemma num_coe (q : ℚ≥0) : (q : ℚ).num = q.num := by
-  simp [num, abs_of_nonneg, Rat.num_nonneg_iff_zero_le.2 q.2]
+  simp [num, abs_of_nonneg, Rat.num_nonneg, q.2]
 
 theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 #align nnrat.nat_abs_num_coe NNRat.natAbs_num_coe
@@ -378,10 +379,10 @@ theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
-  ext
+  refine ext <| Rat.ext ?_ ?_
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
-    exact Rat.num_nonneg_iff_zero_le.2 p.2
-    exact Rat.num_nonneg_iff_zero_le.2 q.2
+    exact Rat.num_nonneg.2 p.2
+    exact Rat.num_nonneg.2 q.2
   · exact hd
 #align nnrat.ext_num_denom NNRat.ext_num_den
 

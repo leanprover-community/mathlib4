@@ -168,7 +168,7 @@ def Subpresheaf.familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
 theorem Subpresheaf.family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
     (G.familyOfElementsOfSection s).Compatible := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ e
-  refine Subtype.ext ?_ -- port note: `ext1` does not work here
+  refine Subtype.ext ?_ -- Porting note: `ext1` does not work here
   change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
   rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← op_comp, e]
 #align category_theory.grothendieck_topology.subpresheaf.family_of_elements_compatible CategoryTheory.GrothendieckTopology.Subpresheaf.family_of_elements_compatible
@@ -238,7 +238,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
       have hi'' : S' (i' ≫ i) := ⟨_, _, _, hi, hi', rfl⟩
       have := H _ hi''
       rw [op_comp, F.map_comp] at this
-      refine' this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
+      exact this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
   have : x''.Compatible := by
     intro V₁ V₂ V₃ g₁ g₂ g₃ g₄ S₁ S₂ e
     rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
@@ -459,7 +459,7 @@ noncomputable def imageFactorization {F F' : Sheaf J TypeMax.{v, u}} (f : F ⟶ 
   F := imageMonoFactorization f
   isImage :=
     { lift := fun I => by
-        -- port note: need to specify the target category (TypeMax.{v, u}) for this to work.
+        -- Porting note: need to specify the target category (TypeMax.{v, u}) for this to work.
         haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J TypeMax.{v, u} _).mp I.m_mono
         haveI := isIso_toImagePresheaf I.m.1
         refine' ⟨Subpresheaf.homOfLe _ ≫ inv (toImagePresheaf I.m.1)⟩

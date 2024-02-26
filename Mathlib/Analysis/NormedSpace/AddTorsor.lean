@@ -44,7 +44,7 @@ theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₁ (homothety p₁ c p₂) = ‖c‖ * dist p₁ p₂ := by
-  -- Porting note: was `simp [homothety_def, norm_smul, ← dist_eq_norm_vsub, dist_comm]`
+  -- porting note (#10745): was `simp [homothety_def, norm_smul, ← dist_eq_norm_vsub, dist_comm]`
   rw [homothety_def, dist_eq_norm_vsub V]
   simp [norm_smul, ← dist_eq_norm_vsub V, dist_comm]
 #align dist_center_homothety dist_center_homothety

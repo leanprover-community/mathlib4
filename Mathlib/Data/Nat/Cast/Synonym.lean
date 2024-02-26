@@ -45,10 +45,22 @@ theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=
   rfl
 #align to_dual_nat_cast toDual_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem toDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    (toDual (no_index (OfNat.ofNat n : α))) = OfNat.ofNat n :=
+  rfl
+
 @[simp]
 theorem ofDual_natCast [NatCast α] (n : ℕ) : (ofDual n : α) = n :=
   rfl
 #align of_dual_nat_cast ofDual_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    (ofDual (no_index (OfNat.ofNat n : αᵒᵈ))) = OfNat.ofNat n :=
+  rfl
 
 /-! ### Lexicographic order -/
 
@@ -68,6 +80,17 @@ theorem toLex_natCast [NatCast α] (n : ℕ) : toLex (n : α) = n :=
 #align to_lex_nat_cast toLex_natCast
 
 @[simp]
+theorem toLex_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    (toLex (no_index (OfNat.ofNat n : α))) = OfNat.ofNat n :=
+  rfl
+
+@[simp]
 theorem ofLex_natCast [NatCast α] (n : ℕ) : (ofLex n : α) = n :=
   rfl
+
+@[simp]
+theorem ofLex_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    (ofLex (no_index (OfNat.ofNat n : Lex α))) = OfNat.ofNat n :=
+  rfl
+
 #align of_lex_nat_cast ofLex_natCast

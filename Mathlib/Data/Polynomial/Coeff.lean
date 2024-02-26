@@ -114,7 +114,7 @@ theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
-  -- Porting note: Was `simp [Polynomial.sum, support, coeff]`.
+  -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 #align polynomial.coeff_sum Polynomial.coeff_sum
 
@@ -397,7 +397,7 @@ theorem nat_cast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coef
   simp only [coeff_nat_cast_ite, ite_true]
 #align polynomial.nat_cast_coeff_zero Polynomial.nat_cast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem nat_cast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
@@ -413,7 +413,7 @@ theorem int_cast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 
   cases i <;> simp
 #align polynomial.int_cast_coeff_zero Polynomial.int_cast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem int_cast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h

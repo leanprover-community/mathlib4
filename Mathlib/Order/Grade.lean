@@ -63,7 +63,7 @@ variable {𝕆 ℙ α β : Type*}
 `grade 𝕆 : α → 𝕆` which preserves order covering (`CovBy`). -/
 class GradeOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] where
   /-- The grading function. -/
-  grade : α → 𝕆
+  protected grade : α → 𝕆
   /-- `grade` is strictly monotonic. -/
   grade_strictMono : StrictMono grade
   /-- `grade` preserves `CovBy`. -/
@@ -266,7 +266,7 @@ theorem grade_ofDual [GradeOrder 𝕆 α] (a : αᵒᵈ) : grade 𝕆 (ofDual a)
 @[reducible]
 def GradeOrder.liftLeft [GradeOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder ℙ α where
-  grade := f ∘ _root_.grade 𝕆
+  grade := f ∘ grade 𝕆
   grade_strictMono := hf.comp grade_strictMono
   covBy_grade _ _ h := hcovBy _ _ <| h.grade _
 #align grade_order.lift_left GradeOrder.liftLeft
@@ -301,7 +301,7 @@ def GradeBoundedOrder.liftLeft [GradeBoundedOrder 𝕆 α] (f : 𝕆 → ℙ) (h
 @[reducible]
 def GradeOrder.liftRight [GradeOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) : GradeOrder 𝕆 α where
-  grade := _root_.grade 𝕆 ∘ f
+  grade := grade 𝕆 ∘ f
   grade_strictMono := grade_strictMono.comp hf
   covBy_grade _ _ h := (hcovBy _ _ h).grade _
 #align grade_order.lift_right GradeOrder.liftRight

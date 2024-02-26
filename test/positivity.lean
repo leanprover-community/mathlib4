@@ -10,7 +10,8 @@ This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
 set_option autoImplicit true
 
-open Function Nat NNReal ENNReal
+open Finset Function Nat NNReal ENNReal
+open scoped BigOperators
 
 variable {ι α β : Type _}
 
@@ -184,6 +185,16 @@ example {a b : ℚ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14
 
 example {a b : ℤ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14 := by positivity
 
+section
+variable {q : ℚ}
+
+example (hq : q ≠ 0) : q.num ≠ 0 := by positivity
+example : 0 < q.den := by positivity
+example (hq : 0 < q) : 0 < q := by positivity
+example (hq : 0 ≤ q) : 0 ≤ q.num := by positivity
+
+end
+
 /-! ### Exponentiation -/
 
 example [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 := by positivity
@@ -334,6 +345,25 @@ example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {α : Type _} [OrderedRing α] {n : ℤ} : 0 ≤ ((n ^ 2 : ℤ) : α) := by positivity
 -- example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : ereal) := by positivity
 -- example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : ereal) := by positivity
+
+/-! ## Big operators -/
+
+example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j in range n, f j ^ 2 := by positivity
+example (f : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j in s, f j ^ 2 := by positivity
+example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i in range n, (f j ^ 2 + i ^ 2) := by positivity
+example (n : ℕ) (f : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (f j ^ 2 + 1) := by positivity
+example (f : Empty → ℤ) : 0 ≤ ∑ j : Empty, f j ^ 2 := by positivity
+example (f : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (f j ^ 2 + 1) := by
+  have : Finset.Nonempty {1} := singleton_nonempty 1
+  positivity
+example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
+example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
+example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
+
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- `0` because of the `hf` assumption
+set_option linter.unusedVariables false in
+example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
 
 /- ## Other extensions -/
 
