@@ -147,46 +147,6 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   exact (one_add_mul_self_lt_rpow_one_add hs hs' hp).le
 #align one_add_mul_self_le_rpow_one_add one_add_mul_self_le_rpow_one_add
 
-/-- **Bernoulli's inequality** for real exponents, strict version: for `0 < p < 1` and `-1 ≤ s`,
-with `s ≠ 0`, we have `(1 + s) ^ p < 1 + p * s`. -/
-theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp1 : 0 < p)
-    (hp2 : p < 1) : (1 + s) ^ p < 1 + p * s := by
-  rcases eq_or_lt_of_le hs with (rfl | hs)
-  · have : p ≠ 0 := by positivity
-    simpa [zero_rpow this]
-  have hs1 : 0 < 1 + s := by linarith
-  rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
-  · nlinarith
-  rw [rpow_def_of_pos hs1, ← exp_log hs2]
-  apply exp_strictMono
-  have hs3 : 1 + s ≠ 1 := by contrapose! hs'; linarith
-  have hs4 : 1 + p * s ≠ 1 := by contrapose! hs'; nlinarith
-  cases' lt_or_gt_of_ne hs' with hs' hs'
-  · rw [← lt_div_iff hp1, ← div_lt_div_right_of_neg hs']
-    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
-    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs1 hs2 hs3 hs4 _ using 1
-    · field_simp
-    · field_simp
-    · nlinarith
-  · rw [← lt_div_iff hp1, ← div_lt_div_right hs']
-    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
-    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs2 hs1 hs4 hs3 _ using 1
-    · field_simp
-    · field_simp
-    · nlinarith
-
-/-- **Bernoulli's inequality** for real exponents, non-strict version: for `0 ≤ p ≤ 1` and `-1 ≤ s`
-we have `(1 + s) ^ p ≤ 1 + p * s`. -/
-theorem rpow_one_add_le_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp1 : 0 ≤ p) (hp2 : p ≤ 1) :
-    (1 + s) ^ p ≤ 1 + p * s := by
-  rcases eq_or_lt_of_le hp1 with (rfl | hp1)
-  · simp
-  rcases eq_or_lt_of_le hp2 with (rfl | hp2)
-  · simp
-  by_cases hs' : s = 0
-  · simp [hs']
-  exact (rpow_one_add_lt_one_add_mul_self hs hs' hp1 hp2).le
-
 /- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$.
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
