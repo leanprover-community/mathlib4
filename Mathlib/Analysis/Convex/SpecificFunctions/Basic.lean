@@ -19,16 +19,13 @@ In this file we prove that the following functions are convex or strictly convex
   $(0, +∞)$ and $(-∞, 0)$ respectively.
 * `convexOn_rpow`, `strictConvexOn_rpow` : For `p : ℝ`, `fun x ↦ x ^ p` is convex on $[0, +∞)$ when
   `1 ≤ p` and strictly convex when `1 < p`.
+* `concaveOn_rpow`, `strictConcaveOn_rpow` : For `p : ℝ`, `fun x ↦ x ^ p` is concave on $[0, +∞)$
+  when `0 ≤ p ≤ 1` and strictly concave when `0 < p < 1`.
 
 The proofs in this file are deliberately elementary, *not* by appealing to the sign of the second
-derivative.  This is in order to keep this file early in the import hierarchy, since it is on the
+derivative. This is in order to keep this file early in the import hierarchy, since it is on the
 path to Hölder's and Minkowski's inequalities and after that to Lp spaces and most of measure
 theory.
-
-## TODO
-
-For `p : ℝ`, prove that `fun x ↦ x ^ p` is concave when `0 ≤ p ≤ 1` and strictly concave when
-`0 < p < 1`.
 
 ## See also
 
@@ -147,7 +144,47 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   exact (one_add_mul_self_lt_rpow_one_add hs hs' hp).le
 #align one_add_mul_self_le_rpow_one_add one_add_mul_self_le_rpow_one_add
 
-/- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$.
+/-- **Bernoulli's inequality** for real exponents, strict version: for `0 < p < 1` and `-1 ≤ s`,
+with `s ≠ 0`, we have `(1 + s) ^ p < 1 + p * s`. -/
+theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp1 : 0 < p)
+    (hp2 : p < 1) : (1 + s) ^ p < 1 + p * s := by
+  rcases eq_or_lt_of_le hs with (rfl | hs)
+  · have : p ≠ 0 := by positivity
+    simpa [zero_rpow this]
+  have hs1 : 0 < 1 + s := by linarith
+  rcases le_or_lt (1 + p * s) 0 with hs2 | hs2
+  · nlinarith
+  rw [rpow_def_of_pos hs1, ← exp_log hs2]
+  apply exp_strictMono
+  have hs3 : 1 + s ≠ 1 := by contrapose! hs'; linarith
+  have hs4 : 1 + p * s ≠ 1 := by contrapose! hs'; nlinarith
+  cases' lt_or_gt_of_ne hs' with hs' hs'
+  · rw [← lt_div_iff hp1, ← div_lt_div_right_of_neg hs']
+    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
+    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs1 hs2 hs3 hs4 _ using 1
+    · field_simp
+    · field_simp
+    · nlinarith
+  · rw [← lt_div_iff hp1, ← div_lt_div_right hs']
+    haveI : (1 : ℝ) ∈ Ioi 0 := zero_lt_one
+    convert strictConcaveOn_log_Ioi.secant_strict_mono this hs2 hs1 hs4 hs3 _ using 1
+    · field_simp
+    · field_simp
+    · nlinarith
+
+/-- **Bernoulli's inequality** for real exponents, non-strict version: for `0 ≤ p ≤ 1` and `-1 ≤ s`
+we have `(1 + s) ^ p ≤ 1 + p * s`. -/
+theorem rpow_one_add_le_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp1 : 0 ≤ p) (hp2 : p ≤ 1) :
+    (1 + s) ^ p ≤ 1 + p * s := by
+  rcases eq_or_lt_of_le hp1 with (rfl | hp1)
+  · simp
+  rcases eq_or_lt_of_le hp2 with (rfl | hp2)
+  · simp
+  by_cases hs' : s = 0
+  · simp [hs']
+  exact (rpow_one_add_lt_one_add_mul_self hs hs' hp1 hp2).le
+
+/-- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$.
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
@@ -198,6 +235,59 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
   exact (strictConvexOn_rpow hp).convexOn
 #align convex_on_rpow convexOn_rpow
 
+/-- For `p : ℝ` with `0 < p < 1`, `fun x ↦ x ^ p` is strictly concave on $[0, +∞)$.
+
+We give an elementary proof rather than using the second derivative test, since this lemma is
+needed early in the analysis library. -/
+theorem strictConcaveOn_rpow {p : ℝ} (hp1 : 0 < p) (hp2 : p < 1) :
+    StrictConcaveOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
+  apply strictConcaveOn_of_slope_strict_anti_adjacent (convex_Ici (0 : ℝ))
+  rintro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz
+  have hy : 0 < y := by linarith
+  have hy' : 0 < y ^ p := rpow_pos_of_pos hy _
+  have H1 : y ^ (p - 1 + 1) = y ^ (p - 1) * y := rpow_add_one hy.ne' _
+  ring_nf at H1
+  trans p * y ^ (p - 1)
+  · have hyz' : 0 < z - y := by linarith only [hyz]
+    have hyz'' : 1 < z / y := by rwa [one_lt_div hy]
+    have hyz''' : 0 < z / y - 1 := by linarith only [hyz'']
+    have hyz'''' : -1 ≤ z / y - 1 := by linarith only [hyz'']
+    have : (1 + (z / y - 1)) ^ p - 1 < p * (z / y - 1) := by
+      linarith [rpow_one_add_lt_one_add_mul_self hyz'''' hyz'''.ne' hp1 hp2]
+    rw [div_lt_iff hyz', ← div_lt_div_right hy']
+    convert this using 1
+    · have H : (z / y) ^ p = z ^ p / y ^ p := div_rpow hz hy.le _
+      ring_nf at H ⊢
+      field_simp at H ⊢
+      linear_combination -H
+    · ring_nf at H1 ⊢
+      field_simp at H1 ⊢
+      linear_combination p * (y - z) * y ^ p * H1
+  · have h3 : 0 < y - x := by linarith only [hxy]
+    have hyx'' : x / y < 1 := by rwa [div_lt_one hy]
+    have hyx''' : x / y - 1 < 0 := by linarith only [hyx'']
+    have hyx'''' : 0 ≤ x / y := by positivity
+    have hyx''''' : -1 ≤ x / y - 1 := by linarith only [hyx'''']
+    have : -p * (x / y - 1) < 1 - (1 + (x / y - 1)) ^ p := by
+      linarith [rpow_one_add_lt_one_add_mul_self hyx''''' hyx'''.ne hp1 hp2]
+    rw [lt_div_iff h3, ← div_lt_div_right hy']
+    convert this using 1
+    · ring_nf at H1 ⊢
+      field_simp
+      linear_combination p * (-y + x) * H1
+    · have H : (x / y) ^ p = x ^ p / y ^ p := div_rpow hx hy.le _
+      ring_nf at H ⊢
+      field_simp at H ⊢
+      linear_combination H
+
+theorem concaveOn_rpow {p : ℝ} (hp1 : 0 ≤ p) (hp2 : p ≤ 1) :
+    ConcaveOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
+  rcases eq_or_lt_of_le hp1 with (rfl | hp1)
+  · simpa using concaveOn_const (c := 1) (convex_Ici _)
+  rcases eq_or_lt_of_le hp2 with (rfl | hp2)
+  · simpa using concaveOn_id (convex_Ici _)
+  exact (strictConcaveOn_rpow hp1 hp2).concaveOn
+
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine' ⟨convex_Iio _, _⟩
   rintro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
@@ -209,7 +299,6 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
     _ < log (a • -x + b • -y) := (strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab)
     _ = log (-(a • x + b • y)) := by congr 1; simp only [Algebra.id.smul_eq_mul]; ring
     _ = _ := by rw [log_neg_eq_log]
-
 #align strict_concave_on_log_Iio strictConcaveOn_log_Iio
 
 namespace Real
