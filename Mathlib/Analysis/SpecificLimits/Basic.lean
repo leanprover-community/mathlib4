@@ -215,12 +215,11 @@ theorem NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0} (hr : r < 1) 
 @[deprecated] alias NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 :=
   NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 
--- @[simp]
--- theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
--- Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0)) ↔ r < 1 := by
--- simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe]
---         using tendsto_pow_atTop_nhds_zero_iff.mp <| tendsto_coe.mpr h
-
+@[simp]
+theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
+  Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 :=
+  ⟨fun h => by simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe] using
+    tendsto_pow_atTop_nhds_zero_iff.mp <| tendsto_coe.mpr h, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
 
 theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) := by
@@ -231,6 +230,23 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
 #align ennreal.tendsto_pow_at_top_nhds_0_of_lt_1 ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 @[deprecated] alias ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 :=
   ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
+
+example (f : ℕ → ℝ≥0∞) (hf : ∀ᶠ x in atTop, f x = 1) : Tendsto f atTop (𝓝 1) := by
+  exact EventuallyEq.tendsto hf
+
+@[simp]
+theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
+  Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
+  refine ⟨fun h => ?_, ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one⟩
+  have hr : r ≠ ⊤ := by
+    have : ∀ᶠ n in atTop, (⊤ : ℝ≥0∞)^n = ⊤ := by
+      simp only [pow_eq_top_iff, ne_eq, true_and, eventually_atTop, ge_iff_le]
+      exact ⟨1, fun _ _ => by linarith⟩
+    exact fun hr => ENNReal.top_ne_zero (tendsto_nhds_unique (EventuallyEq.tendsto this) (hr ▸ h))
+  rw [← ENNReal.coe_zero, ← ENNReal.coe_toNNReal hr] at h
+  simp_rw [← ENNReal.coe_pow, tendsto_coe, NNReal.tendsto_pow_atTop_nhds_zero_iff,
+    ← ENNReal.coe_lt_coe, ENNReal.coe_toNNReal hr] at h
+  exact h
 
 /-! ### Geometric series-/
 
