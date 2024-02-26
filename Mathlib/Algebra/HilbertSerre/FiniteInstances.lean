@@ -65,7 +65,8 @@ Module.compHom M ({
 
 lemma Algebra.adjoin_smul_def (a : R[S]) (m : M) : a • m = (a : A) • m := rfl
 
-noncomputable instance [Module.Finite A M] : Module.Finite R[insert s S] M :=
+lemma finite_adjoin_module_of_finite_module [Module.Finite A M] :
+    Module.Finite R[insert s S] M :=
   let m : Module R[insert s S] M :=
   Module.compHom M
     ({ toFun := fun x ↦ (x : A)

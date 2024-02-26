@@ -112,6 +112,7 @@ def of (V : Type u) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModule
 #align fgModule.of FGModuleCat.of
 
 variable {R} in
+/-- Interpret a linear map as an arrow in the category of finitely-generated modules.-/
 def asHom
     {M N : Type u} [AddCommGroup M] [AddCommGroup N]
     [Module R M] [Module R N] [Module.Finite R M] [Module.Finite R N]
@@ -307,6 +308,10 @@ section Equivalence
 
 variable {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S)
 
+/--
+For any isomorphic rings `R` and `S`, the category of finitely generated modules over `R` and `S`
+are equivalent.
+-/
 @[simps]
 def _root_.RingEquiv.toFGModuleCatEquivalenceFunctor : FGModuleCat R ⥤ FGModuleCat S :=
 { obj := fun M ↦ @of S _ M _ (Module.compHom M e.symm.toRingHom) (by
@@ -325,6 +330,10 @@ def _root_.RingEquiv.toFGModuleCatEquivalenceFunctor : FGModuleCat R ⥤ FGModul
   map_id := by intros; ext; rfl
   map_comp := by intros; ext; rfl }
 
+/--
+For any isomorphic rings `R` and `S`, the category of finitely generated modules over `R` and `S`
+are equivalent.
+-/
 @[simps]
 def _root_.RingEquiv.toFGModuleCatEquivalenceInverse : FGModuleCat S ⥤ FGModuleCat R :=
 { obj := fun M ↦ @of R _ M _ (Module.compHom M e.toRingHom) (by
@@ -343,6 +352,10 @@ def _root_.RingEquiv.toFGModuleCatEquivalenceInverse : FGModuleCat S ⥤ FGModul
   map_id := by intros; ext; rfl
   map_comp := by intros; ext; rfl }
 
+/--
+For any isomorphic rings `R` and `S`, the category of finitely generated modules over `R` and `S`
+are equivalent.
+-/
 @[simps]
 def _root_.RingEquiv.toFGModuleCatEquivalence : FGModuleCat R ≌ FGModuleCat S where
   functor := e.toFGModuleCatEquivalenceFunctor
@@ -398,6 +411,21 @@ def _root_.RingEquiv.toFGModuleCatEquivalence : FGModuleCat R ≌ FGModuleCat S 
     hom_inv_id := by intros; ext; rfl
     inv_hom_id := by intros; ext; rfl }
   functor_unitIso_comp := by intros; ext; rfl
+
+
+attribute [simp high]
+  RingEquiv.toFGModuleCatEquivalenceFunctor_map_apply
+  RingEquiv.toFGModuleCatEquivalenceInverse_map_apply
+  RingEquiv.toFGModuleCatEquivalence_counitIso_hom_app_apply
+  RingEquiv.toFGModuleCatEquivalence_counitIso_inv_app_apply
+
+attribute [nolint simpNF]
+  RingEquiv.toFGModuleCatEquivalenceFunctor_map_apply
+  RingEquiv.toFGModuleCatEquivalenceInverse_map_apply
+  RingEquiv.toFGModuleCatEquivalence_counitIso_hom_app_apply
+  RingEquiv.toFGModuleCatEquivalence_counitIso_inv_app_apply
+  RingEquiv.toFGModuleCatEquivalence_unitIso_inv_app_apply
+  RingEquiv.toFGModuleCatEquivalence_unitIso_hom_app_apply
 
 end Equivalence
 

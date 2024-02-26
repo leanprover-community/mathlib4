@@ -325,7 +325,6 @@ lemma alternating_sum_apply_of_length6 :
     (μ_ 0) - (μ_ 1) + (μ_ 2) - (μ_ 3) + (μ_ 4) - (μ_ 5) =
     μ (kernel (S.map' 0 1)) - μ (cokernel (S.map' 4 5)) := by
   rw [μ.alternating_apply_aux_of_length6 (hS := hS)]
-  have := S.sc hS.toIsComplex 3
   have eq0 : _ = μ (S.obj' 4) - μ (S.obj' 5) :=
     μ.apply_shortComplex_of_exact' (S.sc hS.toIsComplex 3)
   rw [add_sub_assoc, ← eq0]
@@ -427,6 +426,9 @@ section equivalence
 variable {𝒟}
 variable (e : 𝒞 ≌ 𝒟)
 
+/--
+pushforward of an additive function along a category equivalence
+-/
 @[simps]
 def pushforward : 𝒟 ⟹+ T where
   toFun x := μ (e.inverse.obj x)

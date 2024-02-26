@@ -34,6 +34,11 @@ variable (μ : (FGModuleCat (𝒜 0)) ⟹+ ℤ)
 
 namespace AdditiveFunction
 
+/--
+Let `A` be a graded ring and `M` a grade module over `A`. Let `μ` be an additive function from
+category of finitely generated `A₀`-module, its Poincaré series is defined as the power series
+`∑ᵢ μ(Mᵢ) Xⁱ ∈ ℤ⟦X⟧`.
+-/
 def poincareSeries : ℤ⟦X⟧ :=
 PowerSeries.mk fun n ↦ μ <| .of _ <| (ℳ n : Type u)
 
@@ -53,8 +58,17 @@ lemma map_subsingleton (x : FGModuleCat (𝒜 0)) [subsingleton : Subsingleton x
 
 end AdditiveFunction
 
+/--
+A finite collection of homogeneous elements that generates `A` over `A₀`.
+-/
 structure generatingSetOverBaseRing :=
+/--
+A finite collection of homogeneous elements that generates `A` over `A₀`.
+-/
 toFinset : Finset A
+/--
+A finite collection of homogeneous elements with degree `dᵢ` that generates `A` over `A₀`.
+-/
 deg : ∀ {a : A}, a ∈ toFinset → ℕ
 mem_deg : ∀ {a : A} (h : a ∈ toFinset), a ∈ 𝒜 (deg h)
 deg_pos : ∀ {a : A} (h : a ∈ toFinset), 0 < deg h
@@ -66,6 +80,10 @@ namespace generatingSetOverBaseRing
 variable (S : generatingSetOverBaseRing 𝒜)
 
 variable {𝒜} in
+/--
+Suppose `a₀, ..., aₙ` with degree `d₀, ..., dₙ`, we can consider the power series `∏ᵢ (1 - X^{dᵢ})`,
+this power series is invertible, because its constant coefficient is one.
+-/
 @[simps] noncomputable def poles : ℤ⟦X⟧ˣ where
   val := ∏ i in S.toFinset.attach, (1 - PowerSeries.X ^ S.deg i.2)
   inv := PowerSeries.invOfUnit (∏ i in S.toFinset.attach, (1 - PowerSeries.X ^ S.deg i.2)) 1
@@ -108,8 +126,19 @@ namespace HilbertSerre
 
 variable (S : generatingSetOverBaseRing 𝒜)
 
+/--
+statement of Hilbert-Serre theorem:
+Let `A` be a notherian graded ring and `M` a finite graded module over `A` and `μ` an additive
+function from the category of finitely generated `A₀`-modules.
+If `a₀, ..., aₙ` with degree `dᵢ` generate `A` over `A₀`, then the Poincare series of `µ` is of the
+form `p / ∏ᵢ (1 - X^{dᵢ})` where `p` is a polynomial in `ℤ[X]`.
+-/
 abbrev statement : Prop := ∃ (p : Polynomial ℤ), μ.poincareSeries 𝒜 ℳ = p • S.poles⁻¹
 
+/--
+statement of Hilber-Serre theorem. Only this form is used in induction.
+(Implementation details)
+-/
 abbrev statement' (N : ℕ) : Prop :=
     ∀ (A M : Type u)
       [CommRing A] [AddCommGroup M] [Module A M]  [IsNoetherianRing A] [Module.Finite A M]
@@ -248,6 +277,10 @@ namespace induction.constructions
 variable {𝒜}
 variable {d : ℕ} (x : A) (deg_x : x ∈ 𝒜 d)
 
+/--
+Let `x` be a homogeneous element, then the set of elements annilaited by `x` (i,e `x • m = 0`) forms
+a homogeneous submodule. Denote this module as `K`
+-/
 def KER : HomogeneousSubmodule A ℳ where
   carrier := {m : M | x • m = 0 }
   add_mem' := by aesop
@@ -262,6 +295,11 @@ lemma mem_KER_iff (a : M) : a ∈ KER ℳ x deg_x ↔ x • a = 0 := Iff.rfl
 
 open Pointwise
 
+/--
+(Implementation details)
+x • M is also a homogeneous submodule, so we can take the quotient modue `M ⧸ x • M` with its
+quotient grading as a grade module over `A`.
+-/
 abbrev COKER.den : HomogeneousSubmodule A ℳ :=
 { toSubmodule := x • (⊤ : Submodule A M)
   is_homogeneous' := by
@@ -272,6 +310,9 @@ abbrev COKER.den : HomogeneousSubmodule A ℳ :=
     rw [GradedModule.proj_smul_mem_left 𝒜 ℳ x m deg_x]
     split_ifs <;> aesop }
 
+/--
+`M ⧸ x • M` has a quotient grading when `x` is homogeneous. Dentoe this module as `L`
+-/
 abbrev COKER := M ⧸ (COKER.den ℳ x deg_x).toSubmodule
 
 instance : DirectSum.Decomposition (COKER.den ℳ x deg_x).quotientGrading :=
@@ -280,12 +321,19 @@ instance : DirectSum.Decomposition (COKER.den ℳ x deg_x).quotientGrading :=
 instance : SetLike.GradedSMul 𝒜 (COKER.den ℳ x deg_x).quotientGrading :=
   HomogeneousSubmodule.quotientGradedSMul _
 
+/--
+The `A₀`-linear map `Kₙ → Mₙ`.
+-/
 @[simps]
 def KER.componentEmb (n : ℕ) : (KER ℳ x deg_x).grading n →ₗ[𝒜 0] ℳ n where
   toFun a := ⟨a.1, a.2⟩
   map_add' := by intros; ext; rfl
   map_smul' := by intros; ext; rfl
 
+/--
+The `A₀`-linear map `Mₙ → M_{n + d}` defined by scalar action `x • ⬝` where `x` is a homogeneous
+element of degree `d`.
+-/
 @[simps]
 def smulBy (n : ℕ) : ℳ n →ₗ[𝒜 0] ℳ (d + n) where
   toFun m := ⟨x • m, SetLike.GradedSMul.smul_mem deg_x m.2⟩
@@ -296,7 +344,9 @@ def smulBy (n : ℕ) : ℳ n →ₗ[𝒜 0] ℳ (d + n) where
 instance (n : ℕ) : Module (𝒜 0) ((COKER.den ℳ x deg_x).quotientGrading n) :=
 DirectSum.GradeZero.module_at_i 𝒜 (COKER.den ℳ x deg_x).quotientGrading n
 
-
+/--
+The `A₀`-linear map `Mₙ → Lₙ`
+-/
 def COKER.descComponent (n : ℕ) :
     ℳ n →ₗ[𝒜 0] (COKER.den ℳ x deg_x).quotientGrading n where
   toFun m := ⟨Quotient.mk'' m, by
@@ -354,6 +404,9 @@ lemma exact_smulBy_COKERDescComponent (n : ℕ) :
     convert m.2 using 1
     rw [add_comm]
 
+/--
+relabelling `Mᵢ` to `M_{d + (i - d)}` and vice versa.
+-/
 @[simps]
 def reindex (i : ℕ) (ineq : d ≤ i) : (ℳ (d + (i - d))) ≃ₗ[(𝒜 0)] (ℳ i) where
   toFun m := ⟨m.1, by convert m.2; omega⟩
@@ -385,6 +438,12 @@ open CategoryTheory CategoryTheory.Limits ZeroObject
 variable [(i : ℕ) → (x : (ℳ i)) → Decidable (x ≠ 0)] [(a : M) → Decidable (a ∈ KER ℳ x deg_x)]
 
 set_option maxHeartbeats 500000 in
+/--
+The exact sequence
+`0 → Kₙ → Mₙ → M_{n + d} → L_{n + d}`
+more accurately
+`0 → K_{n - d} → M_{n - d} → Mₙ → Lₙ`
+-/
 @[simps!]
 noncomputable def anExactSeq (i : ℕ) (ineq : d ≤ i) : ComposableArrows (FGModuleCat (𝒜 0)) 5 :=
   .mk₅
@@ -571,7 +630,9 @@ lemma key_lemma :
     abel
 
 example : true := rfl
-
+/--
+Add homogeneous elements to a ring gives a homogeneous ring.
+-/
 def adjoinHomogeneous (S : Finset A) (hS : ∀ a ∈ S, SetLike.Homogeneous 𝒜 a) :
     HomogeneousSubring 𝒜 where
   __ :=  (Algebra.adjoin (𝒜 0) S : Subalgebra (𝒜 0) A).toSubring
@@ -590,6 +651,9 @@ variable (N : ℕ) (card : S.toFinset.card = N + 1)
 variable (s : A) (s_not_mem : s ∈ S.toFinset) (S' : Finset A) (hS' : insert s S' = S.toFinset)
 variable (d : ℕ) (deg_s : s ∈ 𝒜 d)
 
+/--
+If `A = A₀[S, s]`, define `A'` as `A₀[S]`
+-/
 abbrev A' : HomogeneousSubring 𝒜 := induction.constructions.adjoinHomogeneous S' fun _ h ↦
   ⟨S.deg (hS' ▸ Finset.mem_insert_of_mem h), S.mem_deg _⟩
 
@@ -598,6 +662,10 @@ lemma mem_A' (a : A) : a ∈ A' S s S' hS' ↔ a ∈ Algebra.adjoin (𝒜 0) S' 
 instance noetherian_A' : IsNoetherianRing (A' S s S' hS') :=
   Algebra.adjoin_isNoetherian (R := 𝒜 0) S'
 
+/--
+If `A = A₀[S, s]`, define `A'` as `A₀[S]`. Then `A'` has grading defined by `n`-th grading being
+`Aₙ ∩ A₀[S]`.
+-/
 abbrev 𝒜' : ℕ → AddSubgroup (A' S s S' hS') := (A' S s S' hS').grading
 
 variable [(a : A) → Decidable (a ∈ A' S s S' hS')]
@@ -637,6 +705,9 @@ instance gradedModule_COKER :
     exact ⟨Quotient.mk''
       ⟨(a : A) • (b : M), (inferInstance : SetLike.GradedSMul 𝒜 ℳ).smul_mem ha b.2⟩, rfl⟩
 
+/--
+The degree zero part of `A` and `A'` agrees.
+-/
 @[simps]
 def AZeroToA'Zero : 𝒜 0 →+* 𝒜' S s S' hS' 0 where
   toFun := fun x ↦ ⟨⟨(x : A), by
@@ -647,6 +718,9 @@ def AZeroToA'Zero : 𝒜 0 →+* 𝒜' S s S' hS' 0 where
   map_zero' := by ext; rfl
   map_add' := by intros; ext; rfl
 
+/--
+The degree zero part of `A'` and `A` agrees.
+-/
 @[simps]
 def A'ZeroToAZero : 𝒜' S s S' hS' 0 →+* 𝒜 0 where
   toFun := fun x ↦ ⟨x.1, x.2⟩
@@ -666,15 +740,26 @@ lemma AZeroToA'Zero_comp_A'ZeroToAZero :
   rw [RingHom.comp_apply, AZeroToA'Zero_apply_coe_coe, RingHom.id_apply,
     A'ZeroToAZero_apply_coe]
 
+/--
+The degree zero part of `A'` and `A` agrees.
+-/
 @[simps!]
 def AZeroEquivA'Zero : 𝒜 0 ≃+* 𝒜' S s S' hS' 0 :=
 RingEquiv.ofHomInv (AZeroToA'Zero S s S' hS') (A'ZeroToAZero S s S' hS')
   (A'ZeroToAZero_comp_AZeroToA'Zero S s S' hS')
   (AZeroToA'Zero_comp_A'ZeroToAZero S s S' hS')
 
+/--
+Since the degree zero part of `A'` and `A` agrees. any additive `μ` from finitely generated `Aₒ`
+modules gaves an additive function from finitely generated `A'₀` modules.
+
+-/
 noncomputable def μ' : FGModuleCat (𝒜' S s S' hS' 0) ⟹+ ℤ :=
   μ.pushforward <| RingEquiv.toFGModuleCatEquivalence <| AZeroEquivA'Zero S s S' hS'
 
+/--
+If `A = A₀[S, s]`, define `A'` as `A₀[S]`, then `S` generates `A₉[S]` over `A₀`.
+-/
 @[simps]
 def generatingSet' : generatingSetOverBaseRing (𝒜' S s S' hS') where
   toFinset := S'.attach.image fun x : S' ↦ ⟨x, by

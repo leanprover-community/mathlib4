@@ -36,6 +36,10 @@ namespace HomogeneousSubring
 variable {𝒜}
 variable (A' : HomogeneousSubring 𝒜)
 
+/--
+If `A` is a graded ring and `A'` a homogeneous subring, then `A'` is also graded whose degree `i`
+part is `Aᵢ ∩ A'`.
+-/
 def grading (i : ιA) : AddSubgroup A' where
   carrier := { a | (a : A) ∈ 𝒜 i }
   add_mem' := AddMemClass.add_mem
@@ -44,6 +48,9 @@ def grading (i : ιA) : AddSubgroup A' where
 
 variable [(i : ιA) → (x : 𝒜 i) → Decidable (x ≠ 0)] [∀ a : A, Decidable (a ∈ A')]
 
+/--
+Then `A' ≃ ⨁ᵢ Aᵢ ∩ A` by `a ↦ i ↦ aᵢ`. This is well-defined because `A'` is a homogeneoeus subring.
+-/
 protected def grading.decompose (a : A') : ⨁ i, A'.grading i :=
 ∑ i in ((decompose 𝒜 a).support.filter fun i ↦ (decompose 𝒜 a i : A) ∈ A').attach,
   .of _ (i : ιA) ⟨⟨decompose 𝒜 a i, Finset.mem_filter.mp i.2 |>.2⟩, SetLike.coe_mem _⟩
@@ -177,6 +184,10 @@ variable (p : HomogeneousSubmodule A ℳ)
 
 section submodule_grading
 
+/--
+If `A` is a graded ring and `M` a graded module over `A`. Let `p` a homogeneous submodule of `M`,
+then `p` is a graded module over `A` as well whose degree `i` part is `Mᵢ ∩ p`.
+-/
 def grading (i : ιM) : AddSubgroup p where
   carrier := { x | (x : M) ∈ ℳ i }
   add_mem' := AddMemClass.add_mem
@@ -185,6 +196,10 @@ def grading (i : ιM) : AddSubgroup p where
 
 variable [(i : ιM) → (x : ℳ i) → Decidable (x ≠ 0)] [∀ a : M, Decidable (a ∈ p)]
 
+
+/--
+`p ≃ ⨁ᵢ p ∩ Mᵢ` is defined by `x ↦ i ↦ xᵢ`. This is well-defined because `p` is homogeneous.
+-/
 protected def grading.decompose (a : p) : ⨁ i, p.grading i :=
 ∑ i in ((decompose ℳ a).support.filter fun i ↦ (decompose ℳ a i : M) ∈ p).attach,
   .of _ (i : ιM) ⟨⟨decompose ℳ a i, Finset.mem_filter.mp i.2 |>.2⟩, SetLike.coe_mem _⟩
@@ -286,6 +301,9 @@ variable (p : HomogeneousSubmodule A ℳ)
 open Classical
 
 @[simps!]
+/--
+The addive group homomorphism from `Mᵢ ⧸ p ∩ Mᵢ` to `M ⧸ p`
+-/
 def quotientGradingEmb (i : ιM) :
     ℳ i ⧸ ({
       carrier := {x | (x : M) ∈ p}
@@ -298,9 +316,16 @@ def quotientGradingEmb (i : ιM) :
       map_zero' := by simp
       map_add' := by intros; simp } fun x hx ↦ hx
 
+/--
+`M ⧸ p` is a graded module over `A` whose `i`-th degree part is `Mᵢ ⧸ p ∩ Mᵢ`
+-/
 def quotientGrading (i : ιM) : AddSubgroup (M ⧸ p.toSubmodule) :=
   (p.quotientGradingEmb i).range
 
+/--
+`M ⧸ p ≃ ⨁ᵢ Mᵢ ⧸ Mᵢ ∩ p` is given by `[x] ↦ i ↦ [xᵢ]`. This is well-defined because `p` is
+homogeneous.
+-/
 def quotientGrading.decomposeAux : M →+ ⨁ i, p.quotientGrading i :=
 AddMonoidHom.comp
   (DFinsupp.liftAddHom fun i ↦
@@ -351,6 +376,10 @@ lemma quotientGrading.le_decomposeAux_ker :
   · subst h; simp only [of_eq_same, Submodule.Quotient.mk_eq_zero, mem_iff]; exact p.2 _ hx
   · rw [of_eq_of_ne, ZeroMemClass.coe_zero]; exact h
 
+/--
+`M ⧸ p ≃ ⨁ᵢ Mᵢ ⧸ Mᵢ ∩ p` is given by `[x] ↦ i ↦ [xᵢ]`. This is well-defined because `p` is
+homogeneous.
+-/
 protected def quotientGrading.decompose : M ⧸ p.toSubmodule →+ ⨁ i, p.quotientGrading i :=
 QuotientAddGroup.lift _ (quotientGrading.decomposeAux p) (quotientGrading.le_decomposeAux_ker p)
 
