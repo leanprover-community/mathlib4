@@ -758,7 +758,7 @@ def evalUseFiniteInstance : TacticM Unit := do
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
   protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
@@ -843,7 +843,7 @@ def basis : Basis ι R M :=
         exact (ε i).map_smul c v }
 #align module.dual_bases.basis Module.DualBases.basis
 
--- Porting note : from simpNF the LHS simplifies; it yields lc_def.symm
+-- Porting note: from simpNF the LHS simplifies; it yields lc_def.symm
 -- probably not a useful simp lemma; nolint simpNF since it cannot see this removal
 attribute [-simp, nolint simpNF] basis_repr_symm_apply
 
