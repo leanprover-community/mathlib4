@@ -3,15 +3,14 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
-import Mathlib.Probability.Kernel.MeasureCompProd
-import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 /-!
 
 
 -/
-
 
 open MeasureTheory Set Filter TopologicalSpace
 
@@ -89,8 +88,7 @@ lemma set_lintegral_stieltjesOfMeasurableRat [IsFiniteKernel μ] (hf : IsRatKern
       · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
         exact mod_cast hq
     · exact fun _ ↦ measurableSet_Iic
-    · refine Monotone.directed_ge fun r r' hrr' ↦ ?_
-      refine Iic_subset_Iic.mpr ?_
+    · refine Monotone.directed_ge fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
       exact mod_cast hrr'
     · obtain ⟨q, hq⟩ := exists_rat_gt x
       exact ⟨⟨q, hq⟩, measure_ne_top _ _⟩
@@ -206,11 +204,6 @@ section kernel
 variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction}
   {μ : kernel α (β × ℝ)} {ν : kernel α β} {hf : IsKernelCDF f μ ν}
 
-lemma isProbabilityMeasure_stieltjesFunction {f : StieltjesFunction}
-    (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
-    IsProbabilityMeasure f.measure :=
-  ⟨by simp [StieltjesFunction.measure_univ _ hf_bot hf_top]⟩
-
 lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
     (hf : ∀ q, Measurable fun a ↦ f a q)
     (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
@@ -218,10 +211,8 @@ lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
     Measurable fun a ↦ (f a).measure := by
   rw [Measure.measurable_measure]
   have : ∀ a, IsProbabilityMeasure (f a).measure :=
-    fun a ↦ isProbabilityMeasure_stieltjesFunction (hf_bot _) (hf_top _)
-  refine fun s hs ↦ ?_
-  -- Porting note: supplied `C`
-  refine MeasurableSpace.induction_on_inter
+    fun a ↦ (f a).isProbabilityMeasure (hf_bot a) (hf_top a)
+  refine fun s hs ↦ MeasurableSpace.induction_on_inter
     (C := fun s ↦ Measurable fun b ↦ StieltjesFunction.measure (f b) s)
     (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
   · simp only [measure_empty, measurable_const]
@@ -252,8 +243,7 @@ def IsKernelCDF.toKernel (f : α × β → StieltjesFunction) (hf : IsKernelCDF 
 lemma IsKernelCDF.toKernel_apply (p : α × β) : hf.toKernel f p = (f p).measure := rfl
 
 instance instIsMarkovKernel_toKernel : IsMarkovKernel (hf.toKernel f) :=
-  ⟨fun _ ↦ isProbabilityMeasure_stieltjesFunction
-    (hf.tendsto_atBot_zero _) (hf.tendsto_atTop_one _)⟩
+  ⟨fun _ ↦ (f _).isProbabilityMeasure (hf.tendsto_atBot_zero _) (hf.tendsto_atTop_one _)⟩
 
 lemma IsKernelCDF.toKernel_Iic (p : α × β) (x : ℝ) :
     hf.toKernel f p (Iic x) = ENNReal.ofReal (f p x) := by
@@ -277,7 +267,12 @@ lemma set_lintegral_toKernel_Iic [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
 lemma set_lintegral_toKernel_univ [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ t in s, hf.toKernel f (a, t) univ ∂(ν a) = μ a (s ×ˢ univ) := by
-  rw [← Real.iUnion_Iic_rat, prod_iUnion]
+  have : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+    ext1 x
+    simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
+    obtain ⟨r, hr⟩ := exists_rat_gt x
+    exact ⟨r, hr.le⟩
+  rw [← this, prod_iUnion]
   have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
     refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'
@@ -340,7 +335,7 @@ lemma set_lintegral_toKernel_prod [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
 lemma lintegral_toKernel_mem [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
     (a : α) {s : Set (β × ℝ)} (hs : MeasurableSet s) :
     ∫⁻ x, hf.toKernel f (a, x) {y | (x, y) ∈ s} ∂(ν a) = μ a s := by
-  -- `set_lintegral_cdfKernel_prod` gives the result for sets of the form `t₁ × t₂`. These
+  -- `set_lintegral_toKernel_prod` gives the result for sets of the form `t₁ × t₂`. These
   -- sets form a π-system that generates the product σ-algebra, hence we can get the same equality
   -- for any measurable set `s`.
   apply MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs

@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.Probability.Kernel.Disintegration.CDFKernel
+import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 

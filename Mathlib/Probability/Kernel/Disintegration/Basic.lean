@@ -3,6 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Probability.Kernel.MeasureCompProd
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.KernelCDFReal
 
@@ -10,8 +11,9 @@ import Mathlib.Probability.Kernel.Disintegration.KernelCDFReal
 # Disintegration of kernels and measures
 
 Let `κ : kernel α (β × Ω)` be a finite kernel, where `Ω` is a standard Borel space. Then if `α` is
-countable or `β` is a standard Borel space, there exists a `kernel (α × β) Ω`, called conditional
-kernel and denoted by `kernel.condKernel κ` such that `κ = kernel.fst κ ⊗ₖ kernel.condKernel κ`.
+countable or `β` has a countably generated σ-algebra (for example if it is standard Borel),
+there exists a `kernel (α × β) Ω`, called conditional kernel and denoted by `kernel.condKernel κ`
+such that `κ = kernel.fst κ ⊗ₖ kernel.condKernel κ`.
 We also define a conditional kernel for a measure `ρ : Measure (β × Ω)`, where `Ω` is a standard
 Borel space. This is a `kernel β Ω` denoted by `ρ.condKernel` such that `ρ = ρ.fst ⊗ₘ ρ.condKernel`.
 
@@ -36,7 +38,7 @@ The first step (building the measurable function on `ℚ`) is done differently d
 * If `α` is not countable, we can't proceed separately for each `a : α` and have to build a function
   `f : α × β → ℚ → ℝ` which is measurable on the product. We are able to do so if `β` has a
   countably generated σ-algebra (this is the case in particular for standard Borel spaces).
-  See the file `KernelCDFBorel.lean`.
+  See the files `Density.lean` and `KernelCDFReal.lean`.
 
 We define a class `CountableOrCountablyGenerated α β` which encodes the property
 `(Countable α ∧ MeasurableSingletonClass α) ∨ CountablyGenerated β`. The conditional kernel is
