@@ -119,7 +119,7 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h
 
 /-- An absolute left Kan extension is a left Kan extension. -/
 def isKan (H : IsAbsKan t) : IsKan t :=
-  ((H (𝟙 c)).ofAlongCompId _).ofIsoKan <| whiskerOfCompIdIsoSelf t
+  ((H (𝟙 c)).ofAlongCompId _).ofIsoKan <| whiskerOfAlongCompIdIsoSelf t
 
 /-- Transport evidence that a left extension is a Kan extension across an isomorphism
 of extensions. -/
@@ -204,7 +204,7 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : LeftLift f (h ≫ g)) :
 
 /-- An absolute left Kan lift is a left Kan lift. -/
 def isKan (H : IsAbsKan t) : IsKan t :=
-  ((H (𝟙 c)).ofAlongIdComp _).ofIsoKan <| whiskerOfCompIdIsoSelf t
+  ((H (𝟙 c)).ofAlongIdComp _).ofIsoKan <| whiskerOfAlongIdCompIsoSelf t
 
 /-- Transport evidence that a left lift is a Kan lift across an isomorphism of lifts. -/
 def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
