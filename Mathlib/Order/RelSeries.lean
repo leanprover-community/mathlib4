@@ -8,7 +8,6 @@ import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Abel
 
 /-!
@@ -90,26 +89,20 @@ lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
 /-- Every relation series gives a list -/
 abbrev toList (x : RelSeries r) : List α := List.ofFn x
 
-lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 := by
-  rw [List.length_ofFn]
-
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
   intros i h
-  have h' : i < x.length := by simpa [List.length_ofFn] using h
-  convert x.step ⟨i, h'⟩ <;>
-  · rw [List.get_ofFn]; congr 1
+  convert x.step ⟨i, by simpa using h⟩ <;> apply List.get_ofFn
 
-lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ ∅ := fun m =>
+lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
-def fromListChain' (x : List α) (x_ne_empty : x ≠ ∅) (hx : x.Chain' r) : RelSeries r where
+def fromListChain' (x : List α) (x_ne_empty : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length.pred
   toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_empty)
-  step := fun i => List.chain'_iff_get.mp hx i i.2
-
+  step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other.-/
@@ -122,6 +115,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
     simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
+
 end RelSeries
 
 namespace Rel
@@ -169,31 +163,6 @@ instance membership : Membership α (RelSeries r) :=
 
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=
   Iff.rfl
-
-variable {r}
-
-lemma mem_toList {s : RelSeries r} {x : α} : x ∈ s.toList ↔ x ∈ s := by
-  rw [List.mem_ofFn, mem_def]
-
-theorem length_pos_of_mem_ne {s : RelSeries r} {x y : α} (hx : x ∈ s) (hy : y ∈ s)
-    (hxy : x ≠ y) : 0 < s.length := by
-  obtain ⟨i, rfl⟩ := hx
-  obtain ⟨j, rfl⟩ := hy
-  contrapose! hxy
-  simp only [nonpos_iff_eq_zero] at hxy
-  congr
-  apply_fun Fin.castIso (by rw [hxy, zero_add] : s.length + 1 = 1)
-  · exact Subsingleton.elim (α := Fin 1) _ _
-  · exact OrderIso.injective _
-
-theorem forall_mem_eq_of_length_eq_zero {s : RelSeries r} (hs : s.length = 0) {x y}
-    (hx : x ∈ s) (hy : y ∈ s) : x = y := by
-  rcases hx with ⟨i, rfl⟩
-  rcases hy with ⟨j, rfl⟩
-  congr
-  apply_fun Fin.castIso (by rw [hs, zero_add] : s.length + 1 = 1)
-  · exact Subsingleton.elim (α := Fin 1) _ _
-  · exact OrderIso.injective _
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
@@ -523,7 +492,7 @@ abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
 
 section LTSeries
 
-variable (α β) [Preorder α] [Preorder β]
+variable (α) [Preorder α] [Preorder β]
 /--
 If `α` is a preorder, a LTSeries is a relation series of the less than relation.
 -/
@@ -544,7 +513,7 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
   RelSeries.length_withLength _ _
 
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
-lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
+lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
 
 variable {α}
@@ -558,32 +527,6 @@ lemma longestOf_len_unique [FiniteDimensionalOrder α] (p : LTSeries α)
     p.length = (LTSeries.longestOf α).length :=
   le_antisymm (longestOf_is_longest _) (is_longest _)
 
-lemma longestOf_is_compositionSeries [FiniteDimensionalOrder α]
-    (i : Fin (LTSeries.longestOf α).length) :
-    LTSeries.longestOf α i.castSucc ⋖ LTSeries.longestOf α i.succ := by
-  refine ⟨(LTSeries.longestOf α).step i, ?_⟩
-  by_contra! rid
-  obtain ⟨a, ha1, ha2⟩ := rid
-  let x := RelSeries.insertNth (LTSeries.longestOf α) i a ha1 ha2
-  have := LTSeries.longestOf_is_longest x
-  simp only [RelSeries.insertNth_length, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
-
-variable {β}
-
-instance [Unique β] : Unique (LTSeries β) where
-  default := RelSeries.singleton _ default
-  uniq := λ x ↦ by
-    have h : x.length = 0
-    · rcases (lt_trichotomy x.length 0) with (h|h|h)
-      · linarith
-      · exact h
-      · exact (ne_of_lt (x.step ⟨0, h⟩) <| Subsingleton.allEq _ _).elim
-    exact RelSeries.ext h <| funext λ b ↦ Subsingleton.allEq _ _
-
-instance [Unique β] : FiniteDimensionalOrder β :=
-⟨default, fun y => le_of_eq <| show _ = 0 by
-  by_contra h
-  exact ne_of_lt (y.step ⟨0, Nat.pos_iff_ne_zero.mpr h⟩) <| Subsingleton.elim _ _⟩
 
 lemma strictMono (x : LTSeries α) : StrictMono x :=
   fun _ _ h => x.rel_of_lt h
@@ -591,10 +534,13 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
-/-- an alternative constructor of `LTSeries` using `StrictMono` functions. -/
-def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) : LTSeries α :=
-{ toFun := toFun
-  step := fun i => strictMono <| lt_add_one i.1 }
+
+/-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
+@[simps]
+def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) :
+    LTSeries α where
+  toFun := toFun
+  step i := strictMono <| lt_add_one i.1
 
 /--
 For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
@@ -617,5 +563,7 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   (surjective : Function.Surjective f) :
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
+
+end LTSeries
 
 end LTSeries
