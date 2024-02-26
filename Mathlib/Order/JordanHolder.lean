@@ -145,6 +145,11 @@ instance inhabited [Inhabited X] : Inhabited (CompositionSeries X) :=
   inferInstanceAs <| Inhabited <| RelSeries _
 #align composition_series.has_inhabited CompositionSeries.inhabited
 
+theorem step (s : CompositionSeries X) :
+    ∀ i : Fin s.length, IsMaximal (s (Fin.castSucc i)) (s (Fin.succ i)) :=
+  s.step'
+#align composition_series.step CompositionSeries.step
+
 -- @[simp] -- Porting note: dsimp can prove this
 theorem coeFn_mk (length : ℕ) (series step) :
     (@RelSeries.mk X IsMaximal length series step : Fin length.succ → X) = series :=
@@ -255,9 +260,8 @@ theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     have hi : (i : ℕ) < s.length := by
       conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
-    -- Porting note: Was `simp [last, Fin.ext_iff, ne_of_lt hi]`.
-    simp [last, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
-    exact ⟨_, rfl⟩
+    -- porting note (#10745): was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
+    simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseLast_of_ne_of_mem h.1 h.2
 

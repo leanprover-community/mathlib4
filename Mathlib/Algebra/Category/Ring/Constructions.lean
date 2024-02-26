@@ -20,6 +20,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * `Z` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
+* arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
 
 -/
@@ -98,7 +99,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
           exact
             (s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
               (s.ι.naturality Limits.WalkingSpan.Hom.fst).symm }
-    -- Porting note : Lean has forget why `A ⊗[R] B` makes sense
+    -- Porting note: Lean has forget why `A ⊗[R] B` makes sense
     letI : Algebra R A := f.toAlgebra
     letI : Algebra R B := g.toAlgebra
     letI : Algebra R (pushoutCocone f g).pt := show Algebra R (A ⊗[R] B) by infer_instance
@@ -107,13 +108,13 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
     simp only [pushoutCocone_inl, pushoutCocone_inr]
     constructor
     · ext x
-      -- Porting note : Lean can't see through `forget` functor
+      -- Porting note: Lean can't see through `forget` functor
       letI : Semiring ((forget CommRingCat).obj A) := A.str.toSemiring
       letI : Algebra R ((forget CommRingCat).obj A) := show Algebra R A by infer_instance
       exact Algebra.TensorProduct.productMap_left_apply _ _ x
     constructor
     · ext x
-      -- Porting note : Lean can't see through `forget` functor
+      -- Porting note: Lean can't see through `forget` functor
       letI : Semiring ((forget CommRingCat).obj B) := B.str.toSemiring
       letI : Algebra R ((forget CommRingCat).obj B) := show Algebra R B by infer_instance
       exact Algebra.TensorProduct.productMap_right_apply _ _ x
@@ -217,47 +218,35 @@ end Product
 
 section Pi
 
-variable {ι : Type u} (f : ι → CommRingCat.{u})
+variable {ι : Type u} (R : ι → CommRingCat.{u})
 
 /--
-The categorical pi object and usual pi object
+The categorical product of rings is the cartesian product of rings. This is its `Fan`.
 -/
 @[simps! pt]
-def piFan : Fan f :=
-  Fan.mk (CommRingCat.of ((i : ι) → f i)) fun i ↦
-    { toFun := fun g ↦ g i
-      map_one' := by aesop
-      map_mul' := by aesop
-      map_zero' := by aesop
-      map_add' := by aesop }
+def piFan : Fan R :=
+  Fan.mk (CommRingCat.of ((i : ι) → R i)) (Pi.evalRingHom _)
 
 /--
-The categorical pi object and usual pi object
+The categorical product of rings is the cartesian product of rings.
 -/
-def piFanIsLimit : IsLimit (piFan f) where
-  lift s :=
-  { toFun := fun x i ↦ s.π.app ⟨i⟩ x
-    map_one' := by aesop
-    map_mul' := by aesop
-    map_zero' := by aesop
-    map_add' := by aesop }
-  fac := by aesop
-  uniq s g h := FunLike.ext _ _ fun x ↦ funext fun i ↦ FunLike.congr_fun (h ⟨i⟩) x
+def piFanIsLimit : IsLimit (piFan R) where
+  lift s := Pi.ringHom fun i ↦ s.π.1 ⟨i⟩
+  fac s i := by rfl
+  uniq s g h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
 
 /--
-The categorical pi object and usual pi object
+The categorical product and the usual product agrees
 -/
-def piIsoPi : ∏ f ≅ CommRingCat.of ((i : ι) → f i) :=
-  limit.isoLimitCone ⟨_, piFanIsLimit f⟩
-
+def piIsoPi : ∏ R ≅ CommRingCat.of ((i : ι) → R i) :=
+  limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 /--
-The categorical pi object and usual pi object
+The categorical product and the usual product agrees
 -/
-def piEquivPi : (∏ f : CommRingCat) ≃+* ((i : ι) → f i) :=
-  RingEquiv.ofHomInv (piIsoPi f).hom (piIsoPi f).inv
-    (piIsoPi f).3 (piIsoPi f).4
-
+def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+    (∏ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
+  (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 
 end Pi
 
@@ -277,7 +266,7 @@ set_option linter.uppercaseLean3 false in
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  -- Porting note : Lean can't see through `(parallelPair f g).obj zero`
+  -- Porting note: Lean can't see through `(parallelPair f g).obj zero`
   haveI : SubsemiringClass (Subring A) ((parallelPair f g).obj WalkingParallelPair.zero) :=
     show SubsemiringClass (Subring A) A by infer_instance
   use s.ι.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)

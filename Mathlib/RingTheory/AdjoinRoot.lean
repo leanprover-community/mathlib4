@@ -923,3 +923,14 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
 #align power_basis.quotient_equiv_quotient_minpoly_map_symm_apply_mk PowerBasis.quotientEquivQuotientMinpolyMap_symm_apply_mk
 
 end PowerBasis
+
+/-- If `L / K` is an integral extension, `K` is a domain, `L` is a field, then any irreducible
+polynomial over `L` divides some monic irreducible polynomial over `K`. -/
+theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
+    [CommRing K] [IsDomain K] [Field L] [Algebra K L] (H : Algebra.IsIntegral K L) {f : L[X]}
+    (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
+  haveI := Fact.mk hf
+  have h := hf.ne_zero
+  have h2 := isIntegral_trans H _ (AdjoinRoot.isIntegral_root h)
+  have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
+  exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩

@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Hull
 
 #align_import analysis.convex.join from "leanprover-community/mathlib"@"951bf1d9e98a2042979ced62c0620bcfb3587cf8"
 
@@ -73,7 +73,7 @@ theorem convexJoin_singleton_right (s : Set E) (y : E) :
     convexJoin 𝕜 s {y} = ⋃ x ∈ s, segment 𝕜 x y := by simp [convexJoin]
 #align convex_join_singleton_right convexJoin_singleton_right
 
--- porting note: simp can prove it
+-- Porting note (#10618): simp can prove it
 theorem convexJoin_singletons (x : E) : convexJoin 𝕜 {x} {y} = segment 𝕜 x y := by simp
 #align convex_join_singletons convexJoin_singletons
 

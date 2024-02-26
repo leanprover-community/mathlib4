@@ -144,11 +144,10 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
       (Finset.sum_congr rfl fun i _hi => by
         simp_rw [f.map_mul, f.map_pow, pow_add, hsa.mul_pow, mul_assoc])
     _ = p.support.sum fun i : ℕ => f s ^ p.natDegree * (f (p.coeff i) * a ^ i) :=
-      (Finset.sum_congr rfl fun i hi => by
+      Finset.sum_congr rfl fun i hi => by
         rw [mul_assoc, ← map_pow, (hf _ _).left_comm, map_pow, tsub_add_cancel_of_le]
-        exact le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hi))
-    _ = f s ^ p.natDegree * p.support.sum fun i : ℕ => f (p.coeff i) * a ^ i := Finset.mul_sum.symm
-    _ = f s ^ p.natDegree * eval₂ f a p := by simp [eval₂_eq_sum, sum_def]
+        exact le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hi)
+    _ = f s ^ p.natDegree * eval₂ f a p := by simp [← Finset.mul_sum, eval₂_eq_sum, sum_def]
 
 theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
     eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=
@@ -257,8 +256,8 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
     IsCoprime (p.scaleRoots r) (q.scaleRoots r) := by
   obtain ⟨a, b, e⟩ := h
   let s : R := ↑hr.unit⁻¹
-  have : natDegree (a * p) = natDegree (b * q)
-  · apply natDegree_eq_of_natDegree_add_eq_zero
+  have : natDegree (a * p) = natDegree (b * q) := by
+    apply natDegree_eq_of_natDegree_add_eq_zero
     rw [e, natDegree_one]
   use s ^ natDegree (a * p) • s ^ (natDegree a + natDegree p - natDegree (a * p)) • a.scaleRoots r
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r

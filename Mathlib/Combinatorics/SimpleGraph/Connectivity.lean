@@ -3,7 +3,6 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
 
@@ -2037,7 +2036,7 @@ This follows the convention observed by mathlib that something is connected iff 
 exactly one connected component.
 
 There is a `CoeFun` instance so that `h u v` can be used instead of `h.Preconnected u v`. -/
-@[mk_iff connected_iff]
+@[mk_iff]
 structure Connected : Prop where
   protected preconnected : G.Preconnected
   protected [nonempty : Nonempty V]

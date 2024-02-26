@@ -1,4 +1,5 @@
 import Mathlib.Tactic.MoveAdd
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Nat.Basic
 
 universe u
@@ -75,9 +76,29 @@ example {R : Type u} [Add R] [CommSemigroup R] {a b c d e f g : R} :
   move_mul [a, a, b, c, d, e, f]
   rfl
 
+/-
+#  Sample usage of `move_oper`
+-/
+
+example (a b c : Prop) : a ∧ b ∧ c ↔ b ∧ c ∧ a := by
+  move_oper And [a]
+  rfl
+
+example (a b c : Prop) : a ∨ b ∨ c ↔ b ∨ c ∨ a := by
+  move_oper Or [a]
+  rfl
+
+example {R} [LinearOrder R] (a b c : R) : max (max a b) c = max (max b c) a := by
+  move_oper Max.max [a]
+  rfl
+
+example {R} [LinearOrder R] (a b c : R) : min (min a b) c = min (min b c) a := by
+  move_oper Min.min [a]
+  rfl
 end mul
 
 section left_assoc
+
 example {a b c d e : Prop} (h : a ∧ b ∧ c ∧ d ∧ e) : a ∧ c ∧ e ∧ b ∧ d := by
   move_oper And [a, b, c, d, e]
   exact h

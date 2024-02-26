@@ -3,8 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Init.Data.Fin.Basic
@@ -312,7 +310,7 @@ theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
     symm
     rw [filter_eq_self]
     simpa [@eq_comm α] using m
-  · rw [erase_cons_tail _ h, filter_cons_of_pos, IH]
+  · rw [erase_cons_tail _ (not_beq_of_ne h), filter_cons_of_pos, IH]
     simp [h]
 #align list.nodup.erase_eq_filter List.Nodup.erase_eq_filter
 

@@ -346,7 +346,7 @@ variable [LinearOrder α] {l : List α} {a m : α}
 
 theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by
   simp only [maximum, argmax_concat, id]
-  cases h : argmax id l
+  cases argmax id l
   · exact (max_eq_right bot_le).symm
   · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
 #align list.maximum_concat List.maximum_concat

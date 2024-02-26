@@ -25,7 +25,7 @@ namespace Set
 
 section Enumerate
 
-/- porting note : The original used parameters -/
+/- Porting note: The original used parameters -/
 variable {α : Type*} (sel : Set α → Option α)
 
 /-- Given a choice function `sel`, enumerates the elements of a set in the order
@@ -40,7 +40,7 @@ def enumerate : Set α → ℕ → Option α
 
 theorem enumerate_eq_none_of_sel {s : Set α} (h : sel s = none) : ∀ {n}, enumerate sel s n = none
   | 0 => by simp [h, enumerate]
-  | n + 1 => by simp [h, enumerate]; rfl
+  | n + 1 => by simp [h, enumerate]
 #align set.enumerate_eq_none_of_sel Set.enumerate_eq_none_of_sel
 
 theorem enumerate_eq_none :
@@ -52,7 +52,9 @@ theorem enumerate_eq_none :
     · cases m with
       | zero => contradiction
       | succ m' =>
-        simp? [hs, enumerate] at h ⊢ says simp only [enumerate, hs, Nat.add_eq, add_zero] at h ⊢
+        simp? [hs, enumerate] at h ⊢ says
+          simp only [enumerate, hs, Nat.add_eq, add_zero, Option.bind_eq_bind,
+            Option.some_bind] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
 #align set.enumerate_eq_none Set.enumerate_eq_none
@@ -72,7 +74,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
 
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
-  /- porting note : The `rcase, on_goal, all_goals` has been used instead of
+  /- Porting note: The `rcase, on_goal, all_goals` has been used instead of
      the not-yet-ported `wlog` -/
   rcases le_total n₁ n₂ with (hn|hn)
   on_goal 2 => swap_var n₁ ↔ n₂, h₁ ↔ h₂
@@ -90,7 +92,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
         simp_all [Set.mem_diff_singleton]
     | succ k ih =>
       cases h : sel s with
-      /- porting note : The original covered both goals with just `simp_all <;> tauto` -/
+      /- Porting note: The original covered both goals with just `simp_all <;> tauto` -/
       | none =>
         simp_all only [add_comm, self_eq_add_left, Nat.add_succ, enumerate_eq_none_of_sel _ h]
       | some =>

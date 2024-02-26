@@ -3,8 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Size
+import Mathlib.Data.List.GetD
+import Mathlib.Data.Nat.Bits
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Tactic.Set
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
@@ -128,12 +129,10 @@ theorem xor_bit : ∀ a m b n, bit a m ^^^ bit b n = bit (bne a b) (m ^^^ n) :=
 attribute [simp] Nat.testBit_bitwise
 #align nat.test_bit_bitwise Nat.testBit_bitwise
 
-@[simp]
 theorem testBit_lor : ∀ m n k, testBit (m ||| n) k = (testBit m k || testBit n k) :=
   testBit_bitwise rfl
 #align nat.test_bit_lor Nat.testBit_lor
 
-@[simp]
 theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit n k) :=
   testBit_bitwise rfl
 #align nat.test_bit_land Nat.testBit_land
@@ -200,7 +199,7 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
   induction' n using Nat.binaryRec with b n hn
   · rfl
   · have : b = false := by simpa using h 0
-    rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_succ], mul_zero]
+    rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_bit_succ], mul_zero]
 #align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit_eq_false
 
 theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
@@ -215,7 +214,7 @@ theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
       bodd_eq_bits_head, List.getI_zero_eq_headI]
     cases List.headI (bits n) <;> rfl
   conv_lhs => rw [← bit_decomp n]
-  rw [testBit_succ, ih n.div2, div2_bits_eq_tail]
+  rw [testBit_bit_succ, ih n.div2, div2_bits_eq_tail]
   cases n.bits <;> simp
 #align nat.test_bit_eq_inth Nat.testBit_eq_inth
 
@@ -230,13 +229,13 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     rw [show b = true by
         revert h
         cases b <;> simp]
-    refine' ⟨0, ⟨by rw [testBit_zero], fun j hj => _⟩⟩
+    refine' ⟨0, ⟨by rw [testBit_bit_zero], fun j hj => _⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (ne_of_gt hj)
-    rw [testBit_succ, zero_testBit]
+    rw [testBit_bit_succ, zero_testBit]
   · obtain ⟨k, ⟨hk, hk'⟩⟩ := hn h'
-    refine' ⟨k + 1, ⟨by rw [testBit_succ, hk], fun j hj => _⟩⟩
+    refine' ⟨k + 1, ⟨by rw [testBit_bit_succ, hk], fun j hj => _⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (show j ≠ 0 by intro x; subst x; simp at hj)
-    exact (testBit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
+    exact (testBit_bit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
 #align nat.exists_most_significant_bit Nat.exists_most_significant_bit
 
 theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = true)
@@ -249,16 +248,16 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
   · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
   by_cases hi : i = 0
   · subst hi
-    simp only [testBit_zero] at hn hm
+    simp only [testBit_bit_zero] at hn hm
     have : n = m :=
       eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
-      <;> rw [testBit_succ]
+      <;> rw [testBit_bit_succ]
     rw [hn, hm, this, bit_false, bit_true, bit0_val, bit1_val]
     exact lt_add_one _
   · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
-    simp only [testBit_succ] at hn hm
-    have :=
-      hn' _ hn hm fun j hj => by convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_succ]
+    simp only [testBit_bit_succ] at hn hm
+    have := hn' _ hn hm fun j hj => by
+      convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
     have this' : 2 * n < 2 * m := Nat.mul_lt_mul' (le_refl _) this two_pos
     cases b <;> cases b'
     <;> simp only [bit_false, bit_true, bit0_val n, bit1_val n, bit0_val m, bit1_val m]
@@ -282,7 +281,7 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
   · rw [Nat.div_eq_of_lt]
     · simp
     · exact pow_lt_pow_right one_lt_two hm
-  · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
+  · rw [Nat.pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
     simp [pow_succ, and_one_is_mod, mul_mod_left]
@@ -363,7 +362,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' m using Nat.binaryRec with b' m hm
   · simp
   induction' k using Nat.binaryRec with b'' k hk
-  -- Porting note: was `simp [hn]`
+  -- porting note (#10745): was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 
@@ -484,7 +483,7 @@ theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy : y < 2 ^ n) :
       cases n <;> simp_all
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
-  simp only [pow_add, shiftLeft_eq, mul_lt_mul_right (two_pow_pos _), h]
+  simp only [pow_add, shiftLeft_eq, mul_lt_mul_right (Nat.two_pow_pos _), h]
 
 /-- Note that the LHS is the expression used within `Std.BitVec.append`, hence the name. -/
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by

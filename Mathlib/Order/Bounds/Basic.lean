@@ -7,7 +7,7 @@ import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.Directed
 
-#align_import order.bounds.basic from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
+#align_import order.bounds.basic from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
 /-!
 # Upper / lower bounds
@@ -89,6 +89,12 @@ theorem mem_upperBounds : a ∈ upperBounds s ↔ ∀ x ∈ s, x ≤ a :=
 theorem mem_lowerBounds : a ∈ lowerBounds s ↔ ∀ x ∈ s, a ≤ x :=
   Iff.rfl
 #align mem_lower_bounds mem_lowerBounds
+
+lemma mem_upperBounds_iff_subset_Iic : a ∈ upperBounds s ↔ s ⊆ Iic a := Iff.rfl
+#align mem_upper_bounds_iff_subset_Iic mem_upperBounds_iff_subset_Iic
+
+lemma mem_lowerBounds_iff_subset_Ici : a ∈ lowerBounds s ↔ s ⊆ Ici a := Iff.rfl
+#align mem_lower_bounds_iff_subset_Ici mem_lowerBounds_iff_subset_Ici
 
 theorem bddAbove_def : BddAbove s ↔ ∃ x, ∀ y ∈ s, y ≤ x :=
   Iff.rfl
@@ -1561,6 +1567,54 @@ end AntitoneMonotone
 
 end Image2
 
+section Prod
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+lemma bddAbove_prod {s : Set (α × β)} :
+    BddAbove s ↔ BddAbove (Prod.fst '' s) ∧ BddAbove (Prod.snd '' s) :=
+  ⟨fun ⟨p, hp⟩ ↦ ⟨⟨p.1, ball_image_of_ball fun _q hq ↦ (hp hq).1⟩,
+    ⟨p.2, ball_image_of_ball fun _q hq ↦ (hp hq).2⟩⟩,
+    fun ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ ↦ ⟨⟨x, y⟩, fun _p hp ↦
+      ⟨hx <| mem_image_of_mem _ hp, hy <| mem_image_of_mem _ hp⟩⟩⟩
+
+lemma bddBelow_prod {s : Set (α × β)} :
+    BddBelow s ↔ BddBelow (Prod.fst '' s) ∧ BddBelow (Prod.snd '' s) :=
+  bddAbove_prod (α := αᵒᵈ) (β := βᵒᵈ)
+
+lemma bddAbove_range_prod {F : ι → α × β} :
+    BddAbove (range F) ↔ BddAbove (range <| Prod.fst ∘ F) ∧ BddAbove (range <| Prod.snd ∘ F) := by
+  simp only [bddAbove_prod, ← range_comp]
+
+lemma bddBelow_range_prod {F : ι → α × β} :
+    BddBelow (range F) ↔ BddBelow (range <| Prod.fst ∘ F) ∧ BddBelow (range <| Prod.snd ∘ F) :=
+  bddAbove_range_prod (α := αᵒᵈ) (β := βᵒᵈ)
+
+theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
+    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
+  refine'
+    ⟨fun H =>
+      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => _⟩,
+        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => _⟩⟩,
+      fun H => ⟨_, _⟩⟩
+  · suffices h : (a, p.2) ∈ upperBounds s from (H.2 h).1
+    exact fun q hq => ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
+  · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
+    exact fun q hq => ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
+  · exact fun q hq => ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
+  · exact fun q hq =>
+      ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
+        H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
+#align is_lub_prod isLUB_prod
+
+theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
+    IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
+  @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
+#align is_glb_prod isGLB_prod
+
+end Prod
+
+
 section Pi
 
 variable {π : α → Type*} [∀ a, Preorder (π a)]
@@ -1590,7 +1644,7 @@ theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
       ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => _⟩, fun H =>
         ⟨_, _⟩⟩
     · suffices h : Function.update f a b ∈ upperBounds s from Function.update_same a b f ▸ H.2 h a
-      refine' fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩
+      exact fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩
     · exact fun g hg a => (H a).1 (mem_image_of_mem _ hg)
     · exact fun g hg a => (H a).2 ((Function.monotone_eval a).mem_upperBounds_image hg)
 #align is_lub_pi isLUB_pi
@@ -1614,27 +1668,26 @@ theorem IsLUB.of_image [Preorder α] [Preorder β] {f : α → β} (hf : ∀ {x 
     hf.1 <| hx.2 <| Monotone.mem_upperBounds_image (fun _ _ => hf.2) hy⟩
 #align is_lub.of_image IsLUB.of_image
 
-theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
-    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
-  refine'
-    ⟨fun H =>
-      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => _⟩,
-        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => _⟩⟩,
-      fun H => ⟨_, _⟩⟩
-  · suffices h : (a, p.2) ∈ upperBounds s from (H.2 h).1
-    exact fun q hq => ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
-  · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
-    exact fun q hq => ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
-  · exact fun q hq => ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
-  · exact fun q hq =>
-      ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
-        H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
-#align is_lub_prod isLUB_prod
+lemma BddAbove.range_mono [Preorder β] {f : α → β} (g : α → β) (h : ∀ a, f a ≤ g a)
+    (hbdd : BddAbove (range g)) : BddAbove (range f) := by
+  obtain ⟨C, hC⟩ := hbdd
+  use C
+  rintro - ⟨x, rfl⟩
+  exact (h x).trans (hC <| mem_range_self x)
 
-theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
-    IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
-  @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
-#align is_glb_prod isGLB_prod
+lemma BddBelow.range_mono [Preorder β] (f : α → β) {g : α → β} (h : ∀ a, f a ≤ g a)
+    (hbdd : BddBelow (range f)) : BddBelow (range g) :=
+  BddAbove.range_mono (β := βᵒᵈ) f h hbdd
+
+lemma BddAbove.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
+    (hf : BddAbove (range f)) (hg : Monotone g) : BddAbove (range (fun x => g (f x))) := by
+  change BddAbove (range (g ∘ f))
+  simpa only [Set.range_comp] using hg.map_bddAbove hf
+
+lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → β} {g : β → γ}
+    (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x => g (f x))) := by
+  change BddBelow (range (g ∘ f))
+  simpa only [Set.range_comp] using hg.map_bddBelow hf
 
 section ScottContinuous
 variable [Preorder α] [Preorder β] {f : α → β} {a : α}

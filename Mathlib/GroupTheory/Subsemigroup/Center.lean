@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Logic.Basic
 
 #align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -56,21 +57,19 @@ structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
--- TODO: these should have explicit arguments (mathlib4#9129)
-attribute [mk_iff isMulCentral_iff] IsMulCentral
-attribute [mk_iff isAddCentral_iff] IsAddCentral
+attribute [mk_iff] IsMulCentral IsAddCentral
 attribute [to_additive existing] isMulCentral_iff
 
 namespace IsMulCentral
 
 variable {a b c : M} [Mul M]
 
--- c.f. Commute.left_comm
+-- cf. `Commute.left_comm`
 @[to_additive]
 protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) := by
   simp only [h.comm, h.right_assoc]
 
--- c.f. Commute.right_comm
+-- cf. `Commute.right_comm`
 @[to_additive]
 protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b := by
   simp only [h.right_assoc, h.mid_assoc, h.comm]

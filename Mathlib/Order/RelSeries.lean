@@ -3,8 +3,9 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.Data.List.Indexes
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.ApplyFun
@@ -117,7 +118,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
   right_inv x := by
-    refine Subtype.ext (List.ext_get ?_ <| fun n hn1 _ => List.get_ofFn _ _)
+    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
     simp [Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1]
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
@@ -208,12 +209,14 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
+variable {r s}
+
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ bₘ` are two strict series
 such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ b₀ -r→ b₁ -r→ ... -r→ bₘ`.
 -/
-@[simps]
+@[simps length]
 def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
   length := p.length + q.length + 1
   toFun := Fin.append p q ∘ Fin.cast (by abel)
@@ -227,11 +230,11 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
     · set x := _; set y := _
       change r (Fin.append p q x) (Fin.append p q y)
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-        i.2.trans <| by linarith!⟩
-      · ext; dsimp; rw [Nat.add_sub_cancel']; exact hi
+          i.2.trans <| by linarith!⟩ := by
+        ext; dsimp; rw [Nat.add_sub_cancel']; exact hi
       have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
-        (by exact i.2)⟩
-      · ext
+          (by exact i.2)⟩ := by
+        ext
         dsimp
         conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
           Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
@@ -242,28 +245,66 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
         Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
       exact hi
 
+lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
+    (i : Fin (p.length + 1)) :
+    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; abel)) = p i := by
+  delta append
+  simp only [Function.comp_apply]
+  convert Fin.append_left _ _ _
+
+lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
+    (i : Fin (q.length + 1)) :
+    p.append q connect (i.natAdd p.length + 1) = q i := by
+  delta append
+  simp only [Fin.coe_natAdd, Nat.cast_add, Function.comp_apply]
+  convert Fin.append_right _ _ _
+  ext
+  simp only [Fin.coe_cast, Fin.coe_natAdd]
+  conv_rhs => rw [add_assoc, add_comm 1, ← add_assoc]
+  change _ % _ = _
+  simp only [Nat.add_mod_mod, Nat.mod_add_mod, Nat.one_mod, Nat.mod_succ_eq_iff_lt]
+  linarith [i.2]
+
+@[simp] lemma head_append (p q : RelSeries r) (connect : r p.last q.head) :
+    (p.append q connect).head = p.head :=
+  append_apply_left p q connect 0
+
+@[simp] lemma last_append (p q : RelSeries r) (connect : r p.last q.head) :
+    (p.append q connect).last = q.last := by
+  delta last
+  convert append_apply_right p q connect (Fin.last _)
+  congr
+  ext
+  change _ = _ % _
+  simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,
+    Nat.mod_succ]
+
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
 `r`-series can be pushed out to an `s`-series by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
 -/
-@[simps]
+@[simps length]
 def map (p : RelSeries r)
     (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
   length := p.length
   toFun := f.comp p
   step := (hf <| p.step .)
 
+@[simp] lemma map_apply (p : RelSeries r)
+    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) (i : Fin (p.length + 1)) :
+    p.map f hf i = f (p i) := rfl
+
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
 `aᵢ -r→ a -r→ a_ᵢ₊₁`, then
-`a₀ -r→ a₁ -r→ ... -r→ a_i -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
+`a₀ -r→ a₁ -r→ ... -r→ aᵢ -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
 is another `r`-series
 -/
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
-  toFun :=  (Fin.castSucc i.succ).insertNth a p
+  toFun := (Fin.castSucc i.succ).insertNth a p
   step m := by
     set x := _; set y := _; change r x y
     obtain hm | hm | hm := lt_trichotomy m.1 i.1
@@ -307,233 +348,97 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           simp only [Fin.pred_succ, eq_rec_constant]
           congr; ext; exact hm.symm
 
-variable (s : Rel β β)
-
 /--
-A strict series `a_0 --r-> a_1 --r-> ... --r-> a_n` in `α` gives a strict series in `αᵒᵈ` by
-reversing the series `a_n <-r-- a_{n - 1} <-r-- ... <-r-- a_1 <-r-- a_0`.
+A relation series `a₀ -r→ a₁ -r→ ... -r→ aₙ` of `r` gives a relation series of the reverse of `r`
+by reversing the series `aₙ ←r- aₙ₋₁ ←r- ... ←r- a₁ ←r- a₀`.
 -/
-def rev (p : RelSeries r) : RelSeries (fun (a b : α) => r b a) where
+@[simps length]
+def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
   length := p.length
   toFun := p ∘ Fin.rev
-    -- p ∘ (Sub.sub ⟨p.length, lt_add_one _⟩)
-  step := fun i => by
+  step i := by
     rw [Function.comp_apply, Function.comp_apply]
-    have hi : i.1 + 1 ≤ p.length
-    · linarith [i.2]
-    convert p.step ⟨p.length - (i.1 + 1), _⟩
-    · ext
-      simp only [Fin.val_rev, Fin.val_succ, Nat.succ_sub_succ_eq_sub, Fin.coe_castSucc]
+    have hi : i.1 + 1 ≤ p.length := by linarith [i.2]
+    convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by linarith) hi⟩
+    · ext; simp
     · ext
       simp only [Fin.val_rev, Fin.coe_castSucc, Nat.succ_sub_succ_eq_sub, Fin.val_succ]
-      rw [Nat.sub_eq_iff_eq_add, add_assoc, add_comm 1 i.1, Nat.sub_add_cancel]
-      · assumption
-      · linarith
-    exact Nat.sub_lt_self (by linarith) hi
+      rw [Nat.sub_eq_iff_eq_add, add_assoc, add_comm 1 i.1, Nat.sub_add_cancel] <;>
+      aesop
+
+@[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
+    p.reverse i = p i.rev := rfl
 
 /--
-given a series `a_0 --r-> a_1 --r-> ... --r-> a_n` and an `a` such that `r a_0 a` holds, there is
-a series of length `n+1`: `a --r-> a_0 --r-> a_1 --r-> ... --r-> a_n`.
--/
-@[simps!]
-def cons (p : RelSeries r) (a : α) (rel : r a (p 0)) : RelSeries r :=
-  (singleton r a).append p rel
-
-lemma cons_zero (p : RelSeries r) (a : α) (rel : r a (p 0)) : p.cons a rel 0 = a := by
-  rw [cons_toFun]
-  exact Fin.append_left _ _ 0
-
-lemma cons_succ (p : RelSeries r) (a : α) (rel : r a (p 0)) (x) :
-    p.cons a rel x.succ = p x := by
-  rw [cons_toFun]
-  convert Fin.append_right _ _ _
-  ext
-  simp only [Fin.val_succ, Fin.coe_natAdd]
-  rw [add_comm 1 x.1]
-  change _ % _ = _
-  simp only [cons_length, Nat.mod_succ_eq_iff_lt]
-  linarith [x.2]
-/--
-given a series `a_0 --r-> a_1 --r-> ... --r-> a_n` and an `a` such that `r a_n a`, there is a series
-of length `n+1`: `a_0 --r-> a_1 --r-> ... --r-> a_n --r-> a`.
+Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
+a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
 -/
 @[simps! length]
-def snoc (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) : RelSeries r :=
-p.append (singleton r a) rel
+def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r :=
+  (singleton r newHead).append p rel
 
-@[simp] lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
-    (p.snoc a rel).last = a := by
-  change p.snoc a rel (Fin.last _) = a
-  dsimp [snoc]
-  exact Fin.append_right _ _ 0
+@[simp] lemma head_cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
+    (p.cons newHead rel).head = newHead := rfl
 
-@[simp] lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
-    (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i := by
-  unfold snoc
-  simp only [append_toFun]
-  exact Fin.append_left _ _ i
-
-@[simp] lemma head_snoc (s : RelSeries r) (a : α) (connect : r s.last a) :
-    (snoc s a connect).head = s.head := by
-  unfold snoc head
-  simp only [append_toFun]
-  exact Fin.append_left _ _ 0
-
-theorem mem_snoc {s : RelSeries r} {x y : α} (connect : r s.last x) :
-    y ∈ snoc s x connect ↔ y ∈ s ∨ y = x := by
-  simp only [snoc]
-  constructor
-  · rintro ⟨i, rfl⟩
-    refine' Fin.lastCases _ (fun i => _) i
-    · right
-      simp only [append_toFun]
-      convert Fin.append_right _ _ 0
-    · left
-      simp only [append_toFun]
-      refine ⟨⟨i.1, ?_⟩, ?_⟩
-      · exact i.2
-      convert (Fin.append_left _ _ _).symm
-  · intro h
-    rcases h with (⟨i, rfl⟩ | rfl)
-    · use Fin.castSucc i
-      simp only [append_toFun]
-      convert Fin.append_left _ _ _
-    · use Fin.last _
-      simp only [append_toFun]
-      convert Fin.append_right _ _ 0
+@[simp] lemma last_cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
+    (p.cons newHead rel).last = p.last := by
+  delta cons
+  rw [last_append]
 
 /--
-If a series `a_0 --r-> a_1 --r-> ...` has positive length, then `a_1 --r-> ...` is another series
+If a series `a₀ -r→ a₁ -r→ ...` has positive length, then `a₁ -r→ ...` is another series
 -/
 @[simps]
-def tail (p : RelSeries r) (h : p.length ≠ 0) : RelSeries r where
-  length := p.length.pred
-  toFun := fun j ↦ p ⟨j + 1, Nat.succ_lt_succ (by
-    have hj := j.2
-    conv_rhs at hj =>
-      rw [← Nat.succ_eq_add_one, Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero h)]
-    exact hj)⟩
-  step := fun i => p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
+def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
+  length := p.length - 1
+  toFun := Fin.tail p ∘ (Fin.cast <| Nat.succ_pred_eq_of_pos <| Nat.pos_of_ne_zero len_pos)
+  step i := p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
 
-lemma tail_zero (p : RelSeries r) (h : p.length ≠ 0) : p.tail h 0 = p 1 := by
-  rw [tail_toFun]
+@[simp] lemma head_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
+    (p.tail len_pos).head = p 1 := by
+  show p (Fin.succ _) = p 1
   congr
-  change (0 : ℕ) % (p.length.pred + 1) + 1 = 1 % (p.length + 1)
-  rw [Nat.zero_mod, Nat.mod_eq_of_lt]
-  rw [lt_add_iff_pos_left]
-  exact Nat.pos_of_ne_zero h
+  ext
+  show (1 : ℕ) = (1 : ℕ) % _
+  rw [Nat.mod_eq_of_lt]
+  simpa only [lt_add_iff_pos_left, Nat.pos_iff_ne_zero]
+
+@[simp] lemma last_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
+    (p.tail len_pos).last = p.last := by
+  show p _ = p _
+  congr
+  ext
+  simp only [tail_length, Fin.val_succ, Fin.coe_cast, Fin.val_last]
+  exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
+
 
 /--
-If a series `a_0 --r-> a_1 --r-> ... a_n` has positive length, then `a_0 --r-> ... a_{n-1}` is
+If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
 another series -/
 @[simps]
 def eraseLast (p : RelSeries r) : RelSeries r where
   length := p.length - 1
   toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
-  step i := by
-    have := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
-    cases i
-    exact this
+  step i := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
 
-@[elab_as_elim]
-lemma snoc_induction {motive : (x : RelSeries r) → Prop}
-    (x : RelSeries r)
-    (singleton_ : ∀ (a : α), motive (singleton r a))
-    (snoc_ : ∀ (x : RelSeries r) (a : α) (ha : r x.last a), motive x → motive (x.snoc a ha)) :
-    motive x := by
-  induction' hn : x.length with n ih generalizing x
-  · have x_eq : x = singleton r (x 0)
-    · ext i
-      · exact hn
-      · simp only [singleton_length, Function.comp_apply, singleton_toFun]
-        congr
-        ext
-        have hi := i.2
-        simp_rw [hn] at hi
-        simpa using hi
-    rw [x_eq]
-    apply singleton_
-  · have x_eq : x = x.eraseLast.snoc x.last (by
-      simp only [eraseLast_length, eraseLast_toFun, Fin.val_last]
-      convert x.step ⟨x.length - 1, Nat.pred_lt (show x.length ≠ 0 by rw [hn]; norm_num)⟩
-      delta last; congr; ext
-      simpa using Nat.succ_pred_eq_of_pos (by rw [hn]; norm_num) |>.symm)
-    · ext i
-      · simpa using Nat.succ_pred_eq_of_pos (by rw [hn]; norm_num) |>.symm
-      · rw [Function.comp_apply]
-        generalize_proofs h1 h2
-        by_cases ineq1 : i = Fin.last _
-        · subst ineq1
-          have eq1 : Fin.cast h2 (Fin.last _) = Fin.last _
-          · ext; simp
-          rw [eq1]
-          change _ = (snoc _ _ _).last
-          rw [snoc_last]
-          rfl
-        have eq1 : Fin.cast h2 i = Fin.castSucc ⟨i.1, by
-          simp only [snoc_length, eraseLast_length]
-          rw [show x.length - 1 + 1 = x.length from
-            @Nat.succ_pred_eq_of_ne_zero x.length (by rw [hn]; norm_num)]
-          change i < ⊤
-          rw [lt_top_iff_ne_top]
-          exact ineq1⟩
-        · ext; rfl
-        rw [eq1]
-        erw [snoc_castSucc]
-        rfl
-    rw [x_eq]
-    exact snoc_ _ _ _ (ih _ <| by simp [hn])
+@[simp] lemma head_eraseLast (p : RelSeries r) : p.eraseLast.head = p.head := rfl
 
 @[simp] lemma last_eraseLast (p : RelSeries r) :
-    p.eraseLast.last = p ⟨p.length - 1, lt_of_le_of_lt tsub_le_self (Nat.lt_succ_self _)⟩ :=
-  show p _ = p _ from congr_arg p <| by ext; simp
-
-lemma rel_last_eraseLast_last_of_pos_length (p : RelSeries r) (h : 0 < p.length) :
-    r p.eraseLast.last p.last := by
-  convert p.step ⟨p.length - 1, Nat.pred_lt (n := p.length) <| by linarith⟩
-  delta last
-  congr
-  ext
-  exact (Nat.succ_pred_eq_of_pos h).symm
-
-theorem mem_eraseLast_of_ne_of_mem {s : RelSeries r} {x : α} (hx : x ≠ s.last) (hxs : x ∈ s) :
-    x ∈ s.eraseLast := by
-  rcases hxs with ⟨i, rfl⟩
-  refine ⟨i, ?_⟩
-  dsimp
-  congr
-  by_cases H : s.length = 0
-  · simp only [Nat.mod_succ_eq_iff_lt]
-    have H' := i.2
-    simp_rw [H] at H'
-    linarith
-  · have H' : s.length - 1 + 1 = s.length
-    · exact Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero H)
-    simp_rw [H']
-    rw [Nat.mod_eq_of_lt]
-    have H'' := i.2
-    rw [Nat.lt_succ_iff, le_iff_lt_or_eq] at H''
-    refine H''.elim id <| fun h => (False.elim <| hx ?_)
-    congr
-    ext
-    exact h
-
+    p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
 /--
-Give two series `a₀ --r-> ... --r-> X` and `X --r-> b ---> ...` can be combined together to form
-`a₀ --r-> ... --r-> x --r-> b ...`
+Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
+then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
 -/
-@[simps length]
-def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
+@[simps]
+def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
-  toFun := fun i =>
+  toFun i :=
     if H : i.1 < p.length
     then p ⟨i.1, H.trans (lt_add_one _)⟩
-    else q ⟨i.1 - p.length, by
-      apply Nat.sub_lt_left_of_lt_add
-      · rwa [not_lt] at H
-      · rw [← add_assoc]; exact i.2⟩
-  step := fun i => by
-    dsimp only []
+    else q ⟨i.1 - p.length,
+      Nat.sub_lt_left_of_lt_add (by rwa [not_lt] at H) (by rw [← add_assoc]; exact i.2)⟩
+  step i := by
+    dsimp only
     by_cases h₂ : i.1 + 1 < p.length
     · have h₁ : i.1 < p.length := lt_trans (lt_add_one _) h₂
       erw [dif_pos h₁, dif_pos h₂]
@@ -541,38 +446,30 @@ def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
     · erw [dif_neg h₂]
       by_cases h₁ : i.1 < p.length
       · erw [dif_pos h₁]
-        have h₃ : p.length = i.1 + 1
-        · linarith
+        have h₃ : p.length = i.1 + 1 := by linarith
         convert p.step ⟨i, h₁⟩ using 1
         convert connect.symm
-        · congr
-          simp only [Nat.zero_mod, tsub_eq_zero_iff_le]
-          simp_rw [h₃]
-          rfl
-        · congr
-          ext
-          exact h₃.symm
+        · aesop
+        · congr; aesop
       · erw [dif_neg h₁]
         convert q.step ⟨i.1 - p.length, _⟩ using 1
         · congr
           change (i.1 + 1) - _ = _
           rw [Nat.sub_add_comm]
-          rw [not_lt] at h₁
-          exact h₁
+          rwa [not_lt] at h₁
         · refine Nat.sub_lt_left_of_lt_add ?_ i.2
-          rw [not_lt] at h₁
-          exact h₁
+          rwa [not_lt] at h₁
 
-@[simp] lemma combine_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
-    p.combine q connect (Fin.castSucc <| Fin.castAdd q.length i) = p (Fin.castSucc i) := by
-  unfold combine
+lemma smash_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
+    p.smash q connect (Fin.castSucc <| i.castAdd q.length) = p (Fin.castSucc i) := by
+  unfold smash
   dsimp
   rw [dif_pos i.2]
   rfl
 
-@[simp] lemma combine_succ_castAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head)
-    (i : Fin s₁.length) : combine s₁ s₂ h (Fin.castAdd s₂.length i).succ = s₁ i.succ := by
-  dsimp [combine]
+lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
+    (i : Fin p.length) : p.smash q h (i.castAdd q.length).succ = p i.succ := by
+  rw [smash_toFun]
   split_ifs with H
   · congr
   · simp only [Fin.val_succ, Fin.coe_castAdd] at H
@@ -582,48 +479,37 @@ def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
       linarith [i.2]
     · congr
       ext
-      change i.1 + 1 = s₁.length
+      change i.1 + 1 = p.length
       linarith [i.2]
 
-@[simp] lemma combine_natAdd {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) (i : Fin s₂.length) :
-    combine s₁ s₂ h (Fin.castSucc <| Fin.natAdd s₁.length i) = s₂ (Fin.castSucc i) := by
-  dsimp [combine]
+lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
+    smash p q h (Fin.castSucc <| i.natAdd p.length) = q (Fin.castSucc i) := by
+  rw [smash_toFun]
   split_ifs with H
   · simp only [Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero'] at H
   · congr
     exact Nat.add_sub_self_left _ _
 
-@[simp] lemma combine_succ_natAdd {s₁ s₂ : RelSeries r}
-    (h : s₁.last = s₂.head) (i : Fin s₂.length) :
-    combine s₁ s₂ h (Fin.natAdd s₁.length i).succ = s₂ i.succ := by
-  dsimp [combine]
+lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
+    smash p q h (i.natAdd p.length).succ = q i.succ := by
+  rw [smash_toFun]
   split_ifs with H
-  · have H' : s₁.length < s₁.length + (i.1 + 1)
-    · linarith
+  · have H' : p.length < p.length + (i.1 + 1) := by linarith
     exact (lt_irrefl _ (H.trans H')).elim
   · congr
+    simp only [Fin.val_succ, Fin.coe_natAdd]
     rw [add_assoc, Nat.add_sub_cancel_left]
 
-@[simp] lemma combine_head {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) :
-    (combine s₁ s₂ h).head = s₁.head := by
-  delta combine head
+@[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
+    (smash p q h).head = p.head := by
+  delta head smash
   simp only [Fin.val_zero, Fin.zero_eta, ge_iff_le, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
     ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
-  intro H; symm; convert h
-  congr
-  rw [H]
-  rfl
+  intro H; convert h.symm; congr; aesop
 
-@[simp] lemma combine_last {s₁ s₂ : RelSeries r} (h : s₁.last = s₂.head) :
-    (combine s₁ s₂ h).last = s₂.last := by
-  delta combine last
-  simp only [Fin.val_last, add_lt_iff_neg_left, not_lt_zero', add_tsub_cancel_left, dite_false]
-  congr
-
-variable (r)
-lemma exists_len_gt_of_infiniteDimensional [r.InfiniteDimensional] (n : ℕ) :
-    ∃ (p : RelSeries r), n < p.length :=
-  ⟨RelSeries.withLength r (n + 1), RelSeries.length_withLength r _ ▸ lt_add_one _⟩
+@[simp] lemma last_smash {p q : RelSeries r} (h : p.last = q.head) :
+    (smash p q h).last = q.last := by
+  delta smash last; aesop
 
 end RelSeries
 

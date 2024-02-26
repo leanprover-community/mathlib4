@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 Some proofs and docs came from `algebra/commute` (c) Neil Strickland
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Init.Logic
 import Mathlib.Tactic.Cases
 
 #align_import algebra.group.semiconj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
@@ -138,6 +139,14 @@ theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
   unfold SemiconjBy; rw [mul_assoc, inv_mul_self, mul_one]
 #align semiconj_by.conj_mk SemiconjBy.conj_mk
 #align add_semiconj_by.conj_mk AddSemiconjBy.conj_mk
+
+@[to_additive (attr := simp)]
+theorem conj_iff {a x y b : G} :
+    SemiconjBy (b * a * b⁻¹) (b * x * b⁻¹) (b * y * b⁻¹) ↔ SemiconjBy a x y := by
+  unfold SemiconjBy
+  simp only [← mul_assoc, inv_mul_cancel_right]
+  repeat rw [mul_assoc]
+  rw [mul_left_cancel_iff, ← mul_assoc, ← mul_assoc, mul_right_cancel_iff]
 
 end Group
 

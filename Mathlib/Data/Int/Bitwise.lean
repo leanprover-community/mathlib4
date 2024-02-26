@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Nat.Bitwise
-import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Size
 import Mathlib.Init.Data.Int.Bitwise
 
@@ -194,22 +193,22 @@ theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using
 end deprecated
 
 @[simp]
-theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_zero
+theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_zero]; clear testBit_zero;
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero;
         cases b <;>
       rfl
-#align int.test_bit_zero Int.testBit_zero
+#align int.test_bit_zero Int.testBit_bit_zero
 
 @[simp]
-theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
+theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_succ
   | -[n+1] => by
     dsimp only [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_succ]
-#align int.test_bit_succ Int.testBit_succ
+    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
+#align int.test_bit_succ Int.testBit_bit_succ
 
 -- Porting note: TODO
 -- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
@@ -217,7 +216,7 @@ theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
 --   sorry
 -- #align int.bitwise_tac int.bitwise_tac
 
---Porting note : Was `bitwise_tac` in mathlib
+--Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_or : bitwise or = lor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -235,7 +234,7 @@ theorem bitwise_or : bitwise or = lor := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_or Int.bitwise_or
 
---Porting note : Was `bitwise_tac` in mathlib
+--Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -251,7 +250,7 @@ theorem bitwise_and : bitwise and = land := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_and Int.bitwise_and
 
---Porting note : Was `bitwise_tac` in mathlib
+--Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -270,7 +269,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_diff Int.bitwise_diff
 
---Porting note : Was `bitwise_tac` in mathlib
+--Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}

@@ -1,5 +1,6 @@
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Order.Basic
 
 set_option pp.unicode.fun true
 set_option autoImplicit true

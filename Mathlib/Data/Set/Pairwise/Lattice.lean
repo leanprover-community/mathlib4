@@ -164,4 +164,13 @@ theorem Pairwise.biUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀
     (h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.superset
 #align pairwise.bUnion_injective Pairwise.biUnion_injective
 
+/-- In a disjoint union we can identify the unique set an element belongs to.-/
+theorem pairwiseDisjoint_unique {y : α}
+    (h_disjoint : PairwiseDisjoint s f)
+    (hy : y ∈ (⋃ i ∈ s, f i)) : ∃! i, i ∈ s ∧ y ∈ f i := by
+  refine exists_unique_of_exists_of_unique ?ex ?unique
+  · simpa only [mem_iUnion, exists_prop] using hy
+  · rintro i j ⟨his, hi⟩ ⟨hjs, hj⟩
+    exact h_disjoint.elim his hjs <| not_disjoint_iff.mpr ⟨y, ⟨hi, hj⟩⟩
+
 end

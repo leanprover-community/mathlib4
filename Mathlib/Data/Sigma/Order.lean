@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
 import Mathlib.Mathport.Notation
+import Mathlib.Data.Sigma.Basic
 
 #align_import data.sigma.order from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
 
