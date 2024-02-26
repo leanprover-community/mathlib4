@@ -253,16 +253,23 @@ end ToRatCDF
 
 section IsMeasurableRatCDF.stieltjesFunction
 
-variable {f : α → ℚ → ℝ} (hf : IsMeasurableRatCDF f)
-
-/-- Auxiliary definition for `IsMeasurableRatCDF.stieltjesFunction`: turn `f : α → ℚ → ℝ` into a function
-`α → ℝ → ℝ` by assigning to `f a x` the infimum of `f a q` over `q : ℚ` with `x < q`. -/
-noncomputable irreducible_def IsMeasurableRatCDF.stieltjesFunctionAux (f : α → ℚ → ℝ) : α → ℝ → ℝ :=
+/-- Auxiliary definition for `IsMeasurableRatCDF.stieltjesFunction`: turn `f : α → ℚ → ℝ` into
+a function `α → ℝ → ℝ` by assigning to `f a x` the infimum of `f a q` over `q : ℚ` with `x < q`. -/
+noncomputable irreducible_def IsMeasurableRatCDF.stieltjesFunctionAux (f : α → ℚ → ℝ) :
+    α → ℝ → ℝ :=
   fun a x ↦ ⨅ q : { q' : ℚ // x < q' }, f a q
 
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_def' (f : α → ℚ → ℝ) (a : α) :
-    IsMeasurableRatCDF.stieltjesFunctionAux f a = fun (t : ℝ) ↦ ⨅ r : { r' : ℚ // t < r' }, f a r := by
+    IsMeasurableRatCDF.stieltjesFunctionAux f a
+      = fun (t : ℝ) ↦ ⨅ r : { r' : ℚ // t < r' }, f a r := by
   ext t; exact IsMeasurableRatCDF.stieltjesFunctionAux_def f a t
+
+lemma IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod {f : α → ℚ → ℝ} (a : α) :
+    IsMeasurableRatCDF.stieltjesFunctionAux (fun (p : Unit × α) ↦ f p.2) ((), a)
+      = IsMeasurableRatCDF.stieltjesFunctionAux f a := by
+  simp_rw [IsMeasurableRatCDF.stieltjesFunctionAux_def']
+
+variable {f : α → ℚ → ℝ} (hf : IsMeasurableRatCDF f)
 
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
     IsMeasurableRatCDF.stieltjesFunctionAux f a r = f a r := by
@@ -275,10 +282,6 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
         right_inv := fun t ↦ by simp only [Subtype.coe_eta] }
   · intro t
     simp only [Equiv.coe_fn_mk, Subtype.coe_mk]
-
-lemma IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod (a : α) :
-    IsMeasurableRatCDF.stieltjesFunctionAux (fun (p : Unit × α) ↦ f p.2) ((), a) =
-  IsMeasurableRatCDF.stieltjesFunctionAux f a := by simp_rw [IsMeasurableRatCDF.stieltjesFunctionAux_def']
 
 lemma IsMeasurableRatCDF.stieltjesFunctionAux_nonneg (a : α) (r : ℝ) :
     0 ≤ IsMeasurableRatCDF.stieltjesFunctionAux f a r := by
@@ -320,8 +323,8 @@ lemma IsMeasurableRatCDF.continuousWithinAt_stieltjesFunctionAux_Ici (a : α) (x
   congr!
   rw [stieltjesFunctionAux_def]
 
-/-- Extend a function `f : α → ℚ → ℝ` with property `IsMeasurableRatCDF` from `ℚ` to `ℝ`, to a function
-`α → StieltjesFunction`. -/
+/-- Extend a function `f : α → ℚ → ℝ` with property `IsMeasurableRatCDF` from `ℚ` to `ℝ`,
+to a function `α → StieltjesFunction`. -/
 noncomputable def IsMeasurableRatCDF.stieltjesFunction (a : α) : StieltjesFunction where
   toFun := stieltjesFunctionAux f a
   mono' := monotone_stieltjesFunctionAux hf a
@@ -333,7 +336,8 @@ lemma IsMeasurableRatCDF.stieltjesFunction_eq (a : α) (r : ℚ) : hf.stieltjesF
 lemma IsMeasurableRatCDF.stieltjesFunction_nonneg (a : α) (r : ℝ) : 0 ≤ hf.stieltjesFunction a r :=
   stieltjesFunctionAux_nonneg hf a r
 
-lemma IsMeasurableRatCDF.stieltjesFunction_le_one (a : α) (x : ℝ) : hf.stieltjesFunction a x ≤ 1 := by
+lemma IsMeasurableRatCDF.stieltjesFunction_le_one (a : α) (x : ℝ) :
+    hf.stieltjesFunction a x ≤ 1 := by
   obtain ⟨r, hrx⟩ := exists_rat_gt x
   rw [← StieltjesFunction.iInf_rat_gt_eq]
   simp_rw [IsMeasurableRatCDF.stieltjesFunction_eq]
@@ -441,7 +445,8 @@ def stieltjesOfMeasurableRat (f : α → ℚ → ℝ) (hf : Measurable f) : α �
   (IsMeasurableRatCDF_toRatCDF hf).stieltjesFunction
 
 lemma stieltjesOfMeasurableRat_eq (hf : Measurable f) (a : α) (r : ℚ) :
-    stieltjesOfMeasurableRat f hf a r = toRatCDF f a r := IsMeasurableRatCDF.stieltjesFunction_eq _ a r
+    stieltjesOfMeasurableRat f hf a r = toRatCDF f a r :=
+  IsMeasurableRatCDF.stieltjesFunction_eq _ a r
 
 lemma stieltjesOfMeasurableRat_unit_prod (hf : Measurable f) (a : α) :
     stieltjesOfMeasurableRat (fun (p : Unit × α) ↦ f p.2) (hf.comp measurable_snd) ((), a)
