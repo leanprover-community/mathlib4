@@ -766,11 +766,9 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
   have Pu : ∀ n, P (u n) := by
     intro n
     induction' n with n IH
-    · -- FIXME nightly-testin
-      sorry
-      -- simp only [Prod.forall, id.def, Function.iterate_zero, Nat.zero_eq]
-      -- simp only [Finset.not_mem_empty, IsEmpty.forall_iff, Finset.coe_empty, forall₂_true_iff,
-      --   and_self_iff, pairwiseDisjoint_empty]
+    · simp only [P, u, Prod.forall, id.def, Function.iterate_zero, Nat.zero_eq]
+      simp only [Finset.not_mem_empty, IsEmpty.forall_iff, Finset.coe_empty, forall₂_true_iff,
+        and_self_iff, pairwiseDisjoint_empty]
     · rw [u_succ]
       exact (hF (u n) IH).2.1
   refine' ⟨⋃ n, u n, countable_iUnion fun n => (u n).countable_toSet, _, _, _, _⟩
