@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Data.Bool.Basic
+import Std.Data.Bool
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Coe
 
@@ -107,10 +107,10 @@ theorem coe_false : ↑false = False := by simp
 theorem coe_true : ↑true = True := by simp
 #align coe_tt Bool.coe_true
 
-theorem coe_sort_false : (↥false : Prop) = False := by simp
+theorem coe_sort_false : (false : Prop) = False := by simp
 #align coe_sort_ff Bool.coe_sort_false
 
-theorem coe_sort_true : (↥true : Prop) = True := by simp
+theorem coe_sort_true : (true : Prop) = True := by simp
 #align coe_sort_tt Bool.coe_sort_true
 
 theorem decide_iff (p : Prop) [d : Decidable p] : decide p = true ↔ p := by simp

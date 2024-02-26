@@ -255,7 +255,7 @@ def IsSeqCompact (s : Set X) :=
 
 /-- A space `X` is sequentially compact if every sequence in `X` has a
 converging subsequence. -/
-@[mk_iff seqCompactSpace_iff]
+@[mk_iff]
 class SeqCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
   seq_compact_univ : IsSeqCompact (univ : Set X)
 #align seq_compact_space SeqCompactSpace

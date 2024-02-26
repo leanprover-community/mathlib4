@@ -249,7 +249,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
     intro H
     rw [nodup_iff_nthLe_inj] at h
     specialize h _ _ _ _ H
-    cases' (Nat.succ_le_of_lt hn).eq_or_lt with hn' hn'
+    rcases (Nat.succ_le_of_lt hn).eq_or_lt with hn' | hn'
     · simp only [← hn', Nat.mod_self] at h
       refine' not_exists.mpr h' _
       rw [← length_eq_one]
@@ -311,7 +311,7 @@ theorem formPerm_reverse (l : List α) (h : Nodup l) : formPerm l.reverse = (for
       nthLe_reverse' _ _ _ h2, formPerm_apply_nthLe _ h]
     congr
     rw [length_reverse] at *
-    cases' lt_or_eq_of_le (Nat.succ_le_of_lt hk) with h h
+    rcases lt_or_eq_of_le (Nat.succ_le_of_lt hk) with h | h
     · rw [Nat.mod_eq_of_lt h, ← Nat.sub_add_comm, Nat.succ_sub_succ_eq_sub,
         Nat.mod_eq_of_lt h1]
       exact (Nat.le_sub_iff_add_le (length_pos_of_mem hx)).2 (Nat.succ_le_of_lt h)
@@ -382,7 +382,7 @@ theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   cases hn : l.length
   · exact absurd k.zero_le (hk.trans_le hn.le).not_le
   · rw [hn] at hk
-    cases' (Nat.le_of_lt_succ hk).eq_or_lt with hk' hk'
+    rcases (Nat.le_of_lt_succ hk).eq_or_lt with hk' | hk'
     · simp [← hk', Nat.succ_le_succ_iff, eq_comm]
     · simpa [Nat.mod_eq_of_lt (Nat.succ_lt_succ hk'), Nat.succ_lt_succ_iff] using
         k.zero_le.trans_lt hk'

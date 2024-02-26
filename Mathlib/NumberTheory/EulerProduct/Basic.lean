@@ -15,9 +15,9 @@ The main result in this file is `EulerProduct.eulerProduct`, which says that
 if `f : ℕ → R` is norm-summable, where `R` is a complete normed commutative ring and `f` is
 multiplicative on coprime arguments with `f 0 = 0`, then
 `∏ p in primesBelow N, ∑' e : ℕ, f (p^e)` tends to `∑' n, f n` as `N` tends to infinity.
-`Nat.ArithmeticFunction.IsMultiplicative.eulerProduct` is a version of
+`ArithmeticFunction.IsMultiplicative.eulerProduct` is a version of
 `EulerProduct.eulerProduct` for multiplicative arithmetic functions in the sense of
-`Nat.ArithmeticFunction.IsMultiplicative`.
+`ArithmeticFunction.IsMultiplicative`.
 
 There is also a version `EulerProduct.eulerProduct_completely_multiplicative`, which states that
 `∏ p in primesBelow N, (1 - f p)⁻¹` tends to `∑' n, f n` as `N` tends to infinity,
@@ -38,7 +38,7 @@ have norm strictly less than `1`. -/
 lemma Summable.norm_lt_one {F : Type*} [NormedField F] [CompleteSpace F] {f : ℕ →* F}
     (hsum : Summable f) {p : ℕ} (hp : 1 < p) :
     ‖f p‖ < 1 := by
-  refine summable_geometric_iff_norm_lt_1.mp ?_
+  refine summable_geometric_iff_norm_lt_one.mp ?_
   simp_rw [← map_pow]
   exact hsum.comp_injective <| Nat.pow_right_injective hp
 
@@ -132,7 +132,7 @@ complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 Since there are no infinite products yet in Mathlib, we state it in the form of
 convergence of finite partial products. -/
 -- TODO: Change to use `∏'` once infinite products are in Mathlib
-nonrec theorem _root_.Nat.ArithmeticFunction.IsMultiplicative.eulerProduct
+nonrec theorem _root_.ArithmeticFunction.IsMultiplicative.eulerProduct
     {f : ArithmeticFunction R} (hf : f.IsMultiplicative) (hsum : Summable (‖f ·‖)) :
     Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) :=
   eulerProduct hf.1 hf.2 hsum f.map_zero
@@ -162,10 +162,10 @@ lemma summable_and_hasSum_smoothNumbers_prod_primesBelow_geometric {f : ℕ →*
   have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
   convert summable_and_hasSum_smoothNumbers_prod_primesBelow_tsum f.map_one hmul ?_ N with M hM <;>
     simp_rw [map_pow]
-  · exact (tsum_geometric_of_norm_lt_1 <| h <| prime_of_mem_primesBelow hM).symm
+  · exact (tsum_geometric_of_norm_lt_one <| h <| prime_of_mem_primesBelow hM).symm
   · intro p hp
     refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_pow_le ..) ?_
-    exact summable_geometric_iff_norm_lt_1.mpr <| (norm_norm (f p)).symm ▸ h hp
+    exact summable_geometric_iff_norm_lt_one.mpr <| (norm_norm (f p)).symm ▸ h hp
 
 /-- A version of `EulerProduct.summable_and_hasSum_smoothNumbers_prod_primesBelow_geometric`
 in terms of the value of the series. -/
@@ -185,9 +185,9 @@ theorem eulerProduct_completely_multiplicative {f : ℕ →*₀ F} (hsum : Summa
     Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - f p)⁻¹) atTop (𝓝 (∑' n, f n)) := by
   convert eulerProduct f.map_one (fun {m n} _ ↦ f.map_mul m n) hsum f.map_zero with N p hN
   simp_rw [map_pow]
-  refine (tsum_geometric_of_norm_lt_1 <| summable_geometric_iff_norm_lt_1.mp ?_).symm
+  refine (tsum_geometric_of_norm_lt_one <| summable_geometric_iff_norm_lt_one.mp ?_).symm
   refine Summable.of_norm ?_
-  convert hsum.comp_injective <| pow_right_injective (prime_of_mem_primesBelow hN).one_lt
+  convert hsum.comp_injective <| Nat.pow_right_injective (prime_of_mem_primesBelow hN).one_lt
   simp only [norm_pow, Function.comp_apply, map_pow]
 
 end CompletelyMultiplicative

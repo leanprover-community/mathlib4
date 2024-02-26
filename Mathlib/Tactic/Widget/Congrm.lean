@@ -51,4 +51,5 @@ open scoped Json in
 subexpressions in the goal.-/
 elab stx:"congrm?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  savePanelWidgetInfo stx ``CongrmSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
+  Widget.savePanelWidgetInfo CongrmSelectionPanel.javascriptHash
+    (pure <| json% { replaceRange: $(replaceRange) }) stx

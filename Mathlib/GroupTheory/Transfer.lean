@@ -79,14 +79,9 @@ theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
 @[to_additive]
 theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
   let _ := H.fintypeQuotientOfFiniteIndex
-  prod_bij' (fun q _ => g⁻¹ • q) (fun _ _ => mem_univ _)
-    (fun _ _ =>
-      congr_arg ϕ
-        (by
-          simp_rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
-            inv_mul_cancel_left]))
-    (fun q _ => g • q) (fun _ _ => mem_univ _) (fun q _ => smul_inv_smul g q) fun q _ =>
-    inv_smul_smul g q
+  Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun _ ↦ by
+    simp only [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
+      inv_mul_cancel_left, toPerm_symm_apply]
 #align subgroup.left_transversals.smul_diff_smul Subgroup.leftTransversals.smul_diff_smul
 #align add_subgroup.left_transversals.vadd_diff_vadd AddSubgroup.leftTransversals.vadd_diff_vadd
 

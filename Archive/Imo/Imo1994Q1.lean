@@ -53,7 +53,7 @@ open Imo1994Q1
 
 theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
-    (hadd : ∀ (a) (_ : a ∈ A) (b) (_ : b ∈ A), a + b ≤ n → a + b ∈ A) :
+    (hadd : ∀ a ∈ A, ∀ b ∈ A, a + b ≤ n → a + b ∈ A) :
     (m + 1) * (n + 1) ≤ 2 * ∑ x in A, x := by
   set a := orderEmbOfFin A hm
   -- We sort the elements of `A`
@@ -66,8 +66,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     rw [← coe_inj]; simp
   rw [this]; clear this
   -- The main proof is a simple calculation by rearranging one of the two sums
-  suffices hpair : ∀ k ∈ univ, a k + a (rev k) ≥ n + 1
-  calc
+  suffices hpair : ∀ k ∈ univ, a k + a (rev k) ≥ n + 1 by calc
     2 * ∑ i : Fin (m + 1), a i = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a i := two_mul _
     _ = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a (rev i) := by rw [Equiv.sum_comp rev]
     _ = ∑ i : Fin (m + 1), (a i + a (rev i)) := sum_add_distrib.symm
@@ -97,5 +96,5 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     rw [← a.strictMono.lt_iff_lt, hj]
     simpa using (hrange (a i) (ha i)).1
   -- A set of size `k+1` embed in one of size `k`, which yields a contradiction
-  simpa [Fin.coe_sub, tedious] using card_le_of_subset hf
+  simpa [Fin.coe_sub, tedious] using card_le_card hf
 #align imo1994_q1 imo1994_q1

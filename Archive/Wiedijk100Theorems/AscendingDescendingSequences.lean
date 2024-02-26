@@ -102,8 +102,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       rcases this with ⟨t, ht₁, ht₂⟩
       rw [mem_filter] at ht₁
       -- Ensure `t` ends at `i`.
-      have : t.max = i
-      simp only [ht₁.2.1]
+      have : t.max = i := by simp only [ht₁.2.1]
       -- Now our new subsequence is given by adding `j` at the end of `t`.
       refine' ⟨insert j t, _, _⟩
       -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
@@ -166,7 +165,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
-  simpa [Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_of_subset this
+  simpa [Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
 #align theorems_100.erdos_szekeres Theorems100.erdos_szekeres
 
 end Theorems100

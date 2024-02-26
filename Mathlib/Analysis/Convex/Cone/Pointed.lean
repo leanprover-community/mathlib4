@@ -3,7 +3,7 @@ Copyright (c) 2023 Apurva Nakade All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Analysis.Convex.Cone.Dual
+import Mathlib.Analysis.Convex.Cone.InnerDual
 import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Module.Submodule.Basic
 
@@ -15,16 +15,11 @@ nonnegative. This is equivalent to saying that as a set a pointed cone is convex
 contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the submodule definition
 as it allows us to use the `Module` API to work with convex cones.
 
-## TODO
-
-- Rewrite proper cones using pointed cones.
-
 -/
 
 variable {𝕜 E F G : Type*}
 
--- TODO: remove `prettyPrint := false` once #6833 is merged
-local notation3 (prettyPrint := false) "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
+local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
 abbrev PointedCone (𝕜 E) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=

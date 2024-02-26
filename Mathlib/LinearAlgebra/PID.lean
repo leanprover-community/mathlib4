@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Linear maps of modules with coefficients in a principal ideal domain

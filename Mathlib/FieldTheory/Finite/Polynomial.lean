@@ -73,7 +73,7 @@ theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 :=
   nontriviality
   have : 0 < Fintype.card K - 1 := tsub_pos_of_lt Fintype.one_lt_card
   simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
-    zero_pow this, sub_zero, Finset.prod_const_one]
+    zero_pow this.ne', sub_zero, Finset.prod_const_one]
 #align mv_polynomial.eval_indicator_apply_eq_one MvPolynomial.eval_indicator_apply_eq_one
 
 theorem degrees_indicator (c : σ → K) :
@@ -82,7 +82,7 @@ theorem degrees_indicator (c : σ → K) :
   refine' le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => _)
   refine' le_trans (degrees_sub _ _) _
   rw [degrees_one, ← bot_eq_zero, bot_sup_eq]
-  refine' le_trans (degrees_pow _ _) (nsmul_le_nsmul_of_le_right _ _)
+  refine' le_trans (degrees_pow _ _) (nsmul_le_nsmul_right _ _)
   refine' le_trans (degrees_sub _ _) _
   rw [degrees_C, ← bot_eq_zero, sup_bot_eq]
   exact degrees_X' _
