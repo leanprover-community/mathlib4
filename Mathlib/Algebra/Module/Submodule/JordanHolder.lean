@@ -47,7 +47,7 @@ lemma qf_def (i : Fin s.length) : s.qf i = s i.succ ⧸ₛ s i.castSucc := rfl
 
 instance qf_isSimpleModule (i : Fin s.length) : IsSimpleModule R $ s.qf i := by
   delta qf quot
-  rw [← covby_iff_quot_is_simple (s.strictMono.monotone _)]
+  rw [← covBy_iff_quot_is_simple (s.strictMono.monotone _)]
   · exact s.step i
   · change i.1 ≤ i.1 + 1
     linarith
@@ -189,13 +189,13 @@ lemma interList_get_eq_succ_or_covby (i : Fin s.length) :
   · left; rw [h]
   · right
     delta interList_qf quot at h
-    rw [covby_iff_quot_is_simple]
+    rw [covBy_iff_quot_is_simple]
     convert h
     exact s.interList_get_le_get_succ N i
 
 lemma interList_wcovby (i : Fin s.length) :
     s.interList_get N i ⩿ s.interList_get_succ N i :=
-wcovby_iff_covby_or_eq.mpr $ Or.symm $ s.interList_get_eq_succ_or_covby N i
+wcovBy_iff_covBy_or_eq.mpr $ Or.symm $ s.interList_get_eq_succ_or_covby N i
 
 lemma interList_chain'_wcovby : (s.interList N).Chain' (. ⩿ .) :=
 List.chain'_iff_get.mpr $ λ i h ↦ s.interList_wcovby N ⟨i, by simpa [s.interList_length] using h⟩
@@ -248,8 +248,7 @@ noncomputable def interList_qf_equiv_of_nodup (h : (s.interList N).Nodup) (i : F
   (s.interList_qf N i ≃ₗ[R] s.qf i) :=
 match (s.eq_sum_interList_qf_equiv_qf N i) with
 | Sum.inl ⟨e⟩ => by
-    have : IsIrrefl (Submodule R N) (. ≠ .)
-    · fconstructor; intro _ r; exact r rfl
+    have : IsIrrefl (Submodule R N) (. ≠ .) := ⟨fun _ r ↦ r rfl⟩
     have := Fin.ext_iff.mp $ h.nodup.get_inj_iff.mp e
     norm_num at this
 | Sum.inr e => e
@@ -272,14 +271,14 @@ lemma eq_interList_get_of_head_eq_head_and_interList_nodup (s0 : s.head = ⊥)
 
   change i + 1 < _ at hi
   have ih' := ih ((lt_add_one _).trans hi) -- s i = N ⊓ s i
-  have ih'' : s ⟨i, (lt_add_one _).trans hi⟩ = N ⊓ s ⟨i, (lt_add_one _).trans hi⟩
-  · erw [ih']; rw [eq_comm, inf_eq_right]
+  have ih'' : s ⟨i, (lt_add_one _).trans hi⟩ = N ⊓ s ⟨i, (lt_add_one _).trans hi⟩ := by
+    erw [ih']
+    rw [eq_comm, inf_eq_right]
     rintro _ ⟨y, hy, rfl⟩
     simp only [Fin.cast_mk, SetLike.mem_coe] at hy
     rw [s.interList_get_eq_aux N i ((lt_add_one _).trans hi), Submodule.mem_comap] at hy
     exact hy.1
-  have si_le : s ⟨i, (lt_add_one _).trans hi⟩ ≤ N
-  · rw [ih'']; exact inf_le_left
+  have si_le : s ⟨i, (lt_add_one _).trans hi⟩ ≤ N := by rw [ih'']; exact inf_le_left
 
   rw [List.chain'_iff_get] at inter_chain
   have h1 := inter_chain i (by
@@ -287,24 +286,22 @@ lemma eq_interList_get_of_head_eq_head_and_interList_nodup (s0 : s.head = ⊥)
     exact Nat.succ_lt_succ_iff.mp $ hi)
   -- N ⊓ s i ⋖ N ⊓ s (i + 1) as N-submodule
 
-  have le1 : N ⊓ s ⟨i, (lt_add_one _).trans hi⟩ ≤ N ⊓ s ⟨i + 1, hi⟩
-  · simp only [le_inf_iff, inf_le_left, true_and]
+  have le1 : N ⊓ s ⟨i, (lt_add_one _).trans hi⟩ ≤ N ⊓ s ⟨i + 1, hi⟩ := by
+    simp only [le_inf_iff, inf_le_left, true_and]
     refine le_trans inf_le_right (s.strictMono.monotone $ by norm_num)
 
-  have covby2 : s ⟨i, (lt_add_one _).trans hi⟩ ⋖ s ⟨i + 1, hi⟩
-  · refine s.step ⟨i, by linarith only [hi]⟩
+  have covby2 : s ⟨i, (lt_add_one _).trans hi⟩ ⋖ s ⟨i + 1, hi⟩ := s.step ⟨i, by linarith only [hi]⟩
 
   rw [← ih''] at le1
   obtain (H|H) := covby2.eq_or_eq le1 inf_le_right
   · have eq2 : (s.interList N).get ⟨i + 1, by rw [s.interList_length]; exact hi⟩ =
-      (s.interList N).get ⟨i, by rw [s.interList_length]; exact (lt_add_one _).trans hi⟩
-    · refine le_antisymm ?_ h1.le
+      (s.interList N).get ⟨i, by rw [s.interList_length]; exact (lt_add_one _).trans hi⟩ := by
+      refine le_antisymm ?_ h1.le
       rw [s.interList_get_eq_aux N _ hi, s.interList_get_eq_aux N _ ((lt_add_one _).trans hi)]
       refine Submodule.comap_mono ?_
       simp only [le_inf_iff, inf_le_left, true_and]
       rw [H]
-    have : IsIrrefl (Submodule R N) (. ≠ .)
-    · fconstructor; intro _ r; exact r rfl
+    have : IsIrrefl (Submodule R N) (. ≠ .) := ⟨fun _ r ↦ r rfl⟩
     have : i + 1 = i := Fin.ext_iff.mp $ h.nodup.get_inj_iff.mp eq2
     norm_num at this
   · rw [← H]
@@ -348,8 +345,7 @@ lemma ofInterList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) :
     (s.ofInterList N).head = ⊥ := by
   classical
   change List.get _ ⟨0, _⟩ = _
-  have h : 0 < (s.interList N).length
-  · rw [interList_length]; norm_num
+  have h : 0 < (s.interList N).length := by rw [interList_length]; norm_num
   have := List.dedup_head?_of_chain'_wcovby _ (s.interList_chain'_wcovby N)
   rw [← List.get_zero h, ← List.get_zero, Option.some.injEq] at this
   rw [this]
@@ -372,12 +368,11 @@ lemma exists_compositionSeries_with_smaller_length_of_lt_top (h : N < ⊤)
   classical
   refine ⟨s.ofInterList N, s.ofInterList_head_eq_bot_of_head_eq_bot N s0,
     s.ofInterList_last_eq_top_of_last_eq_top N slast, ?_⟩
-  have ineq1 : (s.interList N).dedup.length < (s.interList N).length
-  · exact List.dedup_length_lt_of_not_nodup _
-      (s.interList_not_nodup_of_lt_top N s0 slast h)
+  have ineq1 : (s.interList N).dedup.length < (s.interList N).length :=
+    List.dedup_length_lt_of_not_nodup _ (s.interList_not_nodup_of_lt_top N s0 slast h)
   rw [interList_length] at ineq1
-  have ineq2 : 0 < (s.interList N).dedup.length
-  · by_contra rid
+  have ineq2 : 0 < (s.interList N).dedup.length := by
+    by_contra rid
     push_neg at rid
     norm_num at rid
     rw [List.length_eq_zero] at rid

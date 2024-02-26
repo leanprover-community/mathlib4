@@ -11,6 +11,7 @@ import Mathlib.Order.KrullDimension
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.Algebra.BigOperators.WithTop
 
 /-!
 
@@ -61,7 +62,7 @@ instance : FiniteLengthModule R PUnit where
 def _root_.CompositionSeries.congr (s : CompositionSeries (Submodule R M))
     {M' : Type _} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') :
     CompositionSeries (Submodule R M') :=
-  s.map _ (Submodule.map e) $ λ x y (h : x ⋖ y) ↦ by
+  s.map (Submodule.map e) $ λ x y (h : x ⋖ y) ↦ by
     refine ⟨⟨?_, ?_⟩, ?_⟩
     · rintro _ ⟨a, ha, rfl⟩; exact ⟨a, h.1.1 ha, rfl⟩
     · have H := h.1.2
@@ -163,8 +164,8 @@ lemma moduleLength_congr
     · exact (finiteLengthModule_congr (h := H.finite.some) e).last_eq
     · exact H.finite.some.head_eq
     · exact H.finite.some.last_eq
-  · have H' : ¬ IsFiniteLengthModule R M'
-    · contrapose! H; apply isFiniteLengthModule_congr e.symm
+  · have H' : ¬ IsFiniteLengthModule R M' := by
+      contrapose! H; apply isFiniteLengthModule_congr e.symm
     delta moduleLength
     rw [dif_neg H, dif_neg H']
 
@@ -180,8 +181,8 @@ lemma moduleLength_strictMono [h : FiniteLengthModule R M]
     obtain ⟨s2, s20, s2last, -⟩ :=
       h.compositionSeries.exists_compositionSeries_with_smaller_length_of_lt_top N2 hN2
         h.head_eq h.last_eq
-    have lt' : LinearMap.range (Submodule.inclusion $ le_of_lt hN) < ⊤
-    · obtain ⟨x, hx1, hx2⟩ := (SetLike.lt_iff_le_and_exists.mp hN).2
+    have lt' : LinearMap.range (Submodule.inclusion $ le_of_lt hN) < ⊤ := by
+      obtain ⟨x, hx1, hx2⟩ := (SetLike.lt_iff_le_and_exists.mp hN).2
       rw [lt_top_iff_ne_top]
       intros r
       have mem1 : (⟨x, hx1⟩ : N2) ∈ (⊤ : Submodule R N2) := ⟨⟩
@@ -241,13 +242,13 @@ private lemma lt_compositionSeries_length_aux
   classical
   by_cases x_len : x.length = 0
   · rw [x_len]; norm_num
-  replace x_len : 0 < x.length
-  · contrapose! x_len; exact Nat.eq_zero_of_le_zero x_len
-  have : ∀ (i : Fin x.length), moduleLength R (x i.castSucc) < moduleLength R (x i.succ)
-  · intro i
+  replace x_len : 0 < x.length := by
+    contrapose! x_len; exact Nat.eq_zero_of_le_zero x_len
+  have : ∀ (i : Fin x.length), moduleLength R (x i.castSucc) < moduleLength R (x i.succ) := by
+    intro i
     refine moduleLength_strictMono _ _ (x.strictMono $ Fin.castSucc_lt_succ _)
-  have aux1 : ∀ (i : Fin x.length), i ≤ moduleLength R (x i.castSucc)
-  · rintro ⟨i, hi⟩
+  have aux1 : ∀ (i : Fin x.length), i ≤ moduleLength R (x i.castSucc) := by
+    rintro ⟨i, hi⟩
     induction i with | zero => ?_ | succ i ih => ?_
     · simp only [Nat.zero_eq, WithTop.coe_zero, Fin.castSucc_mk, Fin.mk_zero, zero_le]
     · specialize this ⟨i, (lt_add_one _).trans hi⟩
@@ -274,7 +275,7 @@ lemma length_le_compositionSeries
   · apply x.lt_compositionSeries_length_aux H s s0 slast
   · let x' : LTSeries _ := x.snoc ⊤ (lt_top_iff_ne_top.mpr H)
     refine le_trans (le_of_lt (lt_add_one _ : x.length < x'.length)) (?_ : x'.length ≤ _)
-    refine x'.lt_compositionSeries_length_aux (RelSeries.snoc_last _ _ _) s s0 slast
+    refine x'.lt_compositionSeries_length_aux (RelSeries.last_snoc _ _ _) s s0 slast
 
 end LTSeries
 
@@ -290,12 +291,12 @@ le_antisymm
 lemma krullDim_submodules_of_infinite_length (h : ¬ IsFiniteLengthModule R M) :
     krullDim (Submodule R M) = ⊤ := by
   contrapose! h
-  have : FiniteDimensionalOrder (Submodule R M)
-  · fconstructor
+  have : FiniteDimensionalOrder (Submodule R M) := by
+    fconstructor
     rw [← lt_top_iff_ne_top] at h
     obtain ⟨x, hx1, hx2⟩ := iSup_lt_iff.mp h
-    have hx3 : ∃ (n : ℕ), x = n
-    · rcases x with _ | ⟨_ | ⟨x⟩⟩
+    have hx3 : ∃ (n : ℕ), x = n := by
+      rcases x with _ | ⟨_ | ⟨x⟩⟩
       · specialize hx2 (RelSeries.singleton _ ⊥)
         simp only [RelSeries.singleton_length, CharP.cast_eq_zero] at hx2
         change 0 ≤ ⊥ at hx2
@@ -310,8 +311,8 @@ lemma krullDim_submodules_of_infinite_length (h : ¬ IsFiniteLengthModule R M) :
     have rid' := rid
     choose p hp1 using rid
     let x := fun n ↦ p^[n] (RelSeries.singleton _ ⊥)
-    have hx : ∀ n, n ≤ (x n).length
-    · intro n
+    have hx : ∀ n, n ≤ (x n).length := by
+      intro n
       induction' n with n ih
       · simp
       · simp only [Function.iterate_succ', Function.comp_apply]
@@ -326,7 +327,7 @@ lemma krullDim_submodules_of_infinite_length (h : ¬ IsFiniteLengthModule R M) :
 
   let x := LTSeries.longestOf (Submodule R M)
   refine ⟨⟨⟨?_, ?_, ?_⟩⟩⟩
-  · refine ⟨x.length, x.toFun, fun i ↦ LTSeries.longestOf_is_compositionSeries i⟩
+  · refine ⟨x.length, x.toFun, fun i ↦ LTSeries.longestOf_covBy i⟩
   · by_contra! rid
     have rid' : x.head ≠ ⊥ := rid
     let x' := RelSeries.cons x ⊥ (bot_lt_iff_ne_bot.mpr rid')
@@ -407,7 +408,7 @@ lemma _root_.Submodule.eq_last_of_eq_next (eq_next : N = N.next) : N = ⊤ := by
 
 lemma _root_.Submodule.covby_next_of_ne_last (ne_last : N ≠ ⊤) : N ⋖ N.next := by
   classical
-  rw [covby_iff_lt_and_eq_or_eq]
+  rw [covBy_iff_lt_and_eq_or_eq]
   refine ⟨N.lt_next_of_ne_last ne_last, λ x hx1 hx2 ↦ ?_⟩
   dsimp only [Submodule.next] at hx2 ⊢
   -- generalize_proofs h at hx2
@@ -473,8 +474,8 @@ lemma ne_last_of_lt_indexOfTopSubmodule (n : ℕ) (lt : n < indexOfTopSubmodule 
   push_neg at H
   obtain ⟨m, hm1, hm2⟩ := H
   intro rid
-  have ineq1 : nthSubmodule R M n < nthSubmodule R M m
-  · exact (le_iff_lt_or_eq.mp ((nthSubmodule R M).2 hm1)).resolve_right hm2
+  have ineq1 : nthSubmodule R M n < nthSubmodule R M m :=
+    (le_iff_lt_or_eq.mp ((nthSubmodule R M).2 hm1)).resolve_right hm2
   rw [rid] at ineq1
   exact not_top_lt ineq1
 
@@ -534,8 +535,8 @@ def CompositionSeries.liftQuotient : CompositionSeries (Submodule R M) where
     obtain ⟨lt, H⟩ := (c.step i)
     refine ⟨N.comapMkQRelIso.lt_iff_lt.mpr lt, ?_⟩
     intro p h
-    have p_le : N ≤ p
-    · simp only [Submodule.comapMkQRelIso, RelIso.coe_fn_mk, Equiv.coe_fn_mk] at h
+    have p_le : N ≤ p := by
+      simp only [Submodule.comapMkQRelIso, RelIso.coe_fn_mk, Equiv.coe_fn_mk] at h
       intro m hm
       refine h.1 ?_
       simp only [Submodule.comap_coe, Set.mem_preimage, Submodule.mkQ_apply, SetLike.mem_coe]
@@ -573,8 +574,8 @@ def CompositionSeries.liftSubmodule : CompositionSeries (Submodule R M) where
     refine ⟨Submodule.MapSubtype.relIso N |>.lt_iff_lt.mpr lt, ?_⟩
     contrapose! H
     obtain ⟨p, hp1, hp2⟩ := H
-    have hp3 : p ≤ N
-    · intro x hx
+    have hp3 : p ≤ N := by
+      intro x hx
       have := hp2.1 hx
       simp only [Submodule.map_coe, Submodule.coeSubtype, Set.mem_image, SetLike.mem_coe,
         Subtype.exists, exists_and_right, exists_eq_right] at this
@@ -623,7 +624,7 @@ def FiniteLengthModule.of_quotient_of_submodule
   compositionSeries :=
     let c1 := quotFin.compositionSeries.liftQuotient
     let c2 := subFin.compositionSeries.liftSubmodule
-    c2.combine c1  <| by
+    c2.smash c1  <| by
       rw [CompositionSeries.liftQuotient_head, CompositionSeries.liftSubmodule_last]
       ext m
       simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
@@ -637,11 +638,11 @@ def FiniteLengthModule.of_quotient_of_submodule
       simp only [Submodule.mem_top, exists_prop, and_true, Submodule.mem_bot,
         Submodule.Quotient.mk_eq_zero]
   head_eq := by
-    simp only [RelSeries.combine_head]
+    simp only [RelSeries.head_smash]
     show Submodule.map _ _ = ⊥
     rw [show RelSeries.toFun compositionSeries 0 = ⊥ from subFin.head_eq, Submodule.map_bot]
   last_eq := by
-    simp only [RelSeries.combine_last]
+    simp only [RelSeries.last_smash]
     show Submodule.comap _ _ = ⊤
     erw [show RelSeries.toFun compositionSeries (Fin.last _) = ⊤ from quotFin.last_eq,
       Submodule.comap_top]
@@ -664,8 +665,8 @@ lemma moduleLength.eq_length_submodule_add_length_quotient :
     norm_cast
   · conv_lhs => delta moduleLength
     rw [dif_neg finiteLength]
-    have inst1 : ¬ IsFiniteLengthModule R N ∨ ¬ IsFiniteLengthModule R (M ⧸ N)
-    · contrapose! finiteLength
+    have inst1 : ¬ IsFiniteLengthModule R N ∨ ¬ IsFiniteLengthModule R (M ⧸ N) := by
+      contrapose! finiteLength
       haveI i1 := Classical.choice finiteLength.1.finite
       haveI i2 := Classical.choice finiteLength.2.finite
       exact ⟨⟨FiniteLengthModule.of_quotient_of_submodule (N := N)⟩⟩
@@ -737,8 +738,7 @@ The `0`-th cumulative quotient factor is trivial.
 -/
 noncomputable def RelSeries.cqfZeroEquiv : x.cqf 0 ≃ₗ[R] PUnit := by
   refine PUnit.linearEquivOfUnique (uniq := ?_)
-  suffices H : Nonempty (Unique _)
-  · exact Classical.choice H
+  suffices H : Nonempty (Unique _) from Classical.choice H
   erw [Submodule.unique_quotient_iff_eq_top]
   simp only [Submodule.comap_subtype_eq_top]
   rfl
@@ -851,12 +851,10 @@ lemma Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.F
   · intro h
     let s := Basis.ofVectorSpaceIndex K M
     let b : Basis s K M := Basis.ofVectorSpace K M
-    suffices : _root_.Finite s
-    · apply Module.Finite.of_basis b
+    suffices _root_.Finite s from Module.Finite.of_basis b
     contrapose! h
     simp only [not_finite_iff_infinite] at h
-    replace h : s.Infinite
-    · exact Set.infinite_coe_iff.mp h
+    replace h : s.Infinite := Set.infinite_coe_iff.mp h
 
     let enum := h.natEmbedding
     rw [← monotone_stabilizes_iff_artinian]
@@ -877,16 +875,16 @@ lemma Module.finite_iff_artinian_over_divisionRing : IsArtinian K M ↔ Module.F
     intro n
     refine ⟨n + 1, by norm_num, ?_⟩
     change g n ≠ g (n + 1)
-    have mem1 : b (enum (n + 1)) ∈ OrderDual.ofDual (g n)
-    · simp only [Basis.coe_ofVectorSpace, OrderDual.ofDual_toDual]
+    have mem1 : b (enum (n + 1)) ∈ OrderDual.ofDual (g n) := by
+      simp only [Basis.coe_ofVectorSpace, OrderDual.ofDual_toDual]
       refine Submodule.subset_span ?_
       simp only [Set.mem_image, Set.mem_diff, Set.mem_univ, Set.mem_setOf_eq, not_exists, not_and,
         true_and, Subtype.exists, exists_and_right, exists_eq_right, Subtype.coe_eta,
         EmbeddingLike.apply_eq_iff_eq, Subtype.coe_prop, exists_const]
       rintro x hx rfl
       norm_num at hx
-    suffices mem2 : b (enum (n + 1)) ∉ OrderDual.ofDual (g (n + 1))
-    · intro r
+    suffices mem2 : b (enum (n + 1)) ∉ OrderDual.ofDual (g (n + 1)) by
+      intro r
       dsimp only at r
       erw [r] at mem1
       exact mem2 mem1
@@ -906,9 +904,8 @@ variable (M : Type*) [AddCommGroup M] [Module S M]
 
 lemma moduleLength_le_restrictScalars :
     moduleLength S M ≤ moduleLength R (RestrictScalars R S M) := by
-  suffices : (moduleLength S M : WithBot (WithTop ℕ)) ≤
-    (moduleLength R (RestrictScalars R S M) : WithBot (WithTop ℕ))
-  · simpa using this
+  suffices (moduleLength S M : WithBot (WithTop ℕ)) ≤
+    (moduleLength R (RestrictScalars R S M) : WithBot (WithTop ℕ)) by simpa using this
   rw [moduleLength_eq_krullDim_Submodules, moduleLength_eq_krullDim_Submodules]
   refine krullDim.le_of_strictMono (fun p ↦ { __ := p, smul_mem' := ?_ }) fun _ _ h ↦ h
   intro r m hm
@@ -918,9 +915,8 @@ lemma moduleLength_eq_restrictScalars_of_surjective
     [surj : RingHomSurjective (algebraMap R S)] :
     moduleLength S M = moduleLength R (RestrictScalars R S M) :=
   le_antisymm (moduleLength_le_restrictScalars R S M) <| by
-    suffices : (moduleLength R (RestrictScalars R S M) : WithBot (WithTop ℕ)) ≤
-      (moduleLength S M : WithBot (WithTop ℕ))
-    · simpa using this
+    suffices (moduleLength R (RestrictScalars R S M) : WithBot (WithTop ℕ)) ≤
+      (moduleLength S M : WithBot (WithTop ℕ)) by simpa using this
     rw [moduleLength_eq_krullDim_Submodules, moduleLength_eq_krullDim_Submodules]
     refine krullDim.le_of_strictMono (fun p ↦ { __ := p, smul_mem' := ?_ }) fun _ _ h ↦ h
     intro s m hm

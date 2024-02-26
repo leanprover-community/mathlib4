@@ -637,14 +637,14 @@ lemma relation.refl_trans_gen_of_chain'_wcovby {X : Type _}  [DecidableEq X] [Pa
     exact Relation.ReflTransGen.refl
   · dsimp at *
     specialize ih x1 (Nat.zero_lt_succ _) (List.chain'_cons'.mp l_chain).2
-    have h1 : Relation.ReflTransGen (. ⋖ .) x0 x1
-    · rw [List.chain'_cons] at l_chain
+    have h1 : Relation.ReflTransGen (. ⋖ .) x0 x1 := by
+      rw [List.chain'_cons] at l_chain
       by_cases eq0 : x0 = x1
       · subst eq0
         exact Relation.ReflTransGen.refl
       · rw [Relation.ReflTransGen.cases_head_iff]
         right
-        refine ⟨_, l_chain.1.covby_of_ne eq0, by rfl⟩
+        refine ⟨_, l_chain.1.covBy_of_ne eq0, by rfl⟩
     simp only [ge_iff_le, Nat.succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero, and_false,
       tsub_zero] at ih ⊢
     exact Relation.ReflTransGen.trans h1 ih

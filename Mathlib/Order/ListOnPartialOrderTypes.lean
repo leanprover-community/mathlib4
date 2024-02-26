@@ -26,8 +26,8 @@ lemma le_of_chain'_le
   refine hy.elim (by rintro rfl; rfl) (fun hy => ?_)
   rw [List.mem_iff_get] at hy
   obtain ⟨n, hn, rfl⟩ := hy
-  have s' : (x :: l).Sorted (. ≤ .)
-  · rw [List.chain'_iff_pairwise] at l_chain
+  have s' : (x :: l).Sorted (. ≤ .) := by
+    rw [List.chain'_iff_pairwise] at l_chain
     exact l_chain
   rw [show x = (x :: l).get ⟨0, (Nat.zero_lt_succ _)⟩ from rfl,
     show l.get n = (x :: l).get n.succ from rfl]
@@ -36,8 +36,8 @@ lemma le_of_chain'_le
 lemma le_getLast_of_chain'_le
     (x : α) (l : List α) (l_chain : (x :: l).Chain' (. ≤ .)) (y : α) (hy : y ∈ (x :: l)) :
     y ≤ List.getLast (x :: l) (List.cons_ne_nil _ _)  := by
-  have s' : (x :: l).Sorted (. ≤ .)
-  · rw [List.chain'_iff_pairwise] at l_chain
+  have s' : (x :: l).Sorted (. ≤ .) := by
+    rw [List.chain'_iff_pairwise] at l_chain
     exact l_chain
   rw [List.mem_iff_get] at hy
   obtain ⟨m, hm, rfl⟩ := hy
@@ -49,19 +49,19 @@ lemma dedup_head?_of_chain'_wcovby [DecidableEq α]
 match l, l_chain with
 | [], _ => by simp
 | x0::l, l_chain => by
-  have ne_nil : (x0 :: l).dedup ≠ List.nil
-  · apply List.dedup_ne_nil_of_ne_nil; exact List.cons_ne_nil _ _
+  have ne_nil : (x0 :: l).dedup ≠ List.nil :=
+    List.dedup_ne_nil_of_ne_nil _ <| List.cons_ne_nil _ _
   obtain ⟨y, l', h⟩ : ∃ (y : α) (l' : List α), (x0 :: l).dedup = y :: l'
   · set L := dedup (x0 :: l); clear_value L; revert ne_nil
     induction L with
     | nil => intro h; cases h rfl
     | cons y l' _ => exact fun _ => ⟨_, _, rfl⟩
-  have h1 : ∀ (x : α) (_ : x ∈ y :: l'), y ≤ x
-  · apply List.le_of_chain'_le
+  have h1 : ∀ (x : α) (_ : x ∈ y :: l'), y ≤ x := by
+    apply List.le_of_chain'_le
     rw [← h]
-    exact List.Chain'.sublist (l_chain.imp $ fun {_ _} => Wcovby.le) (List.dedup_sublist _)
+    exact List.Chain'.sublist (l_chain.imp $ fun {_ _} => WCovBy.le) (List.dedup_sublist _)
   have h2 : ∀ (x : α) (_ : x ∈ x0 :: l), x0 ≤ x := fun x hx =>
-    List.le_of_chain'_le _ l (l_chain.imp $ fun {_ _} => Wcovby.le) _ hx
+    List.le_of_chain'_le _ l (l_chain.imp $ fun {_ _} => WCovBy.le) _ hx
   specialize h1 x0 (by rw [← h, List.mem_dedup]; exact List.mem_cons_self _ _)
   specialize h2 y (by
       have mem1 : y ∈ y :: l' := List.mem_cons_self _ _
@@ -83,12 +83,11 @@ lemma dedup_getLast_eq_getLast_of_chain'_wcovby [DecidableEq α] [PartialOrder �
 
   refine _root_.le_antisymm ?_ ?_
 
-  · apply List.le_getLast_of_chain'_le _ _ (l_chain.imp $ λ _ _ ↦ Wcovby.le)
+  · apply List.le_getLast_of_chain'_le _ _ (l_chain.imp $ λ _ _ ↦ WCovBy.le)
     rw [← List.mem_dedup]
     exact List.getLast_mem _
 
-  · have ne_nil2 : (y :: l').dedup ≠ []
-    · exact List.dedup_ne_nil_of_ne_nil _ l_ne_nil
+  · have ne_nil2 : (y :: l').dedup ≠ [] := List.dedup_ne_nil_of_ne_nil _ l_ne_nil
     obtain ⟨x, l, hl⟩ : ∃ (x : α) (l : List α), x :: l = (y :: l').dedup
     · set L := dedup (y :: l'); clear_value L
       induction L with | nil => ?_ | cons y l' _ => ?_
@@ -97,7 +96,7 @@ lemma dedup_getLast_eq_getLast_of_chain'_wcovby [DecidableEq α] [PartialOrder �
     simp_rw [← hl]
     refine List.le_getLast_of_chain'_le x l ?_ _ ?_
     · rw [hl]
-      exact List.Chain'.sublist (l_chain.imp $ λ _ _ ↦ Wcovby.le) (List.dedup_sublist _)
+      exact List.Chain'.sublist (l_chain.imp $ λ _ _ ↦ WCovBy.le) (List.dedup_sublist _)
     rw [hl, List.mem_dedup]
     exact List.getLast_mem _
 
@@ -119,7 +118,7 @@ lemma dedup_chain'_covby_of_chain'_wcovby [DecidableEq α]
     (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.Chain' (. ⋖ .) := by
   have c := dedup_chain'_wcovby_of_chain'_wcovby l l_chain
   rw [chain'_iff_get] at c ⊢
-  simp_rw [wcovby_iff_covby_or_eq] at c
+  simp_rw [wcovBy_iff_covBy_or_eq] at c
   intros i hi
   refine (c i hi).resolve_right (fun h => ?_)
   simpa only [Fin.mk.injEq, self_eq_add_right] using List.nodup_iff_injective_get.mp l.nodup_dedup h

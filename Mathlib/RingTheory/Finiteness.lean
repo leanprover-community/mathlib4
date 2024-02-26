@@ -591,8 +591,8 @@ lemma exists_strictMono_of_not_finite.aux (h : ¬ Finite R M) :
   rw [finite_def] at h
   delta FG at h
   push_neg at h
-  replace h : ∀ (S : Finset M), ∃ (m : M), m ∉ S ∧ m ∉ span R S
-  · intro S
+  replace h : ∀ (S : Finset M), ∃ (m : M), m ∉ S ∧ m ∉ span R S := by
+    intro S
     specialize h S
     contrapose! h
     rw [eq_top_iff]
@@ -606,8 +606,9 @@ lemma exists_strictMono_of_not_finite (h : ¬ Finite R M) :
     ∃ f : ℕ → Submodule R M, StrictMono f := by
   classical
   have h1 := exists_strictMono_of_not_finite.aux h
-  have h2 : ∀ (S : Finset M), ∃ (S' : Finset M), S ⊂ S' ∧ (span R S : Submodule R M) < span R S'
-  · intro S
+  have h2 : ∀ (S : Finset M), ∃ (S' : Finset M),
+      S ⊂ S' ∧ (span R S : Submodule R M) < span R S' := by
+    intro S
     specialize h1 S
     obtain ⟨m, hm1, hm2⟩ := h1
     refine ⟨insert m S, Finset.ssubset_insert hm1,
@@ -617,8 +618,8 @@ lemma exists_strictMono_of_not_finite (h : ¬ Finite R M) :
     refine subset_span <| by simp
   choose S _ hS2 using h2
   let f : ℕ → Submodule R M := fun m : ℕ ↦ span R <| S^[m] ∅
-  have hf1 : StrictMono f
-  · refine strictMono_nat_of_lt_succ fun n ↦ ?_
+  have hf1 : StrictMono f := by
+    refine strictMono_nat_of_lt_succ fun n ↦ ?_
     simp only [Function.Embedding.coeFn_mk]
     rw [Function.iterate_succ', Function.comp_apply]
     apply hS2

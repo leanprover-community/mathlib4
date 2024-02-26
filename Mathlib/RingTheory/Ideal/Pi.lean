@@ -43,8 +43,8 @@ lemma Pi_eq (I : Ideal (Π i, f i)) :
     refine ⟨x, hx, rfl⟩
   · intro hx
     change ∀ i, x i ∈ map (Pi.evalRingHom f i) I at hx
-    replace hx : ∀ i, ∃ y, y ∈ I ∧ y i = x i
-    · intro i
+    replace hx : ∀ i, ∃ y, y ∈ I ∧ y i = x i := by
+      intro i
       specialize hx i
       rw [mem_map_iff_of_surjective (hf := fun z ↦ ⟨Pi.single i z, by simp⟩)] at hx
       exact hx
@@ -162,8 +162,8 @@ lemma Pi_fg_of_unPi_fg (I : Ideal (Π i, f i)) (H : ∀ i, (unPi I i).FG) : I.FG
       · subst eq1; simp
       · simp [Pi.single_eq_of_ne' eq1]] at hy1 ⊢
     specialize hs i
-    have mem1 : (y i i) ∈ unPi I i
-    · rw [mem_unPi]
+    have mem1 : (y i i) ∈ unPi I i := by
+      rw [mem_unPi]
       exact ⟨_, hy1 i, by simp⟩
     rw [← hs] at mem1
     refine Submodule.span_induction mem1 ?_ ?_ ?_ ?_

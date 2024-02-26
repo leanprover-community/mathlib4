@@ -76,7 +76,7 @@ lemma eq_bot_of_isEmpty [IsEmpty α] : krullDimOfRel r = ⊥ := WithBot.ciSup_em
 variable {r s}
 lemma le_of_map (f : α → β) (map : ∀ (x y : α), r x y → s (f x) (f y)) :
     krullDimOfRel r ≤ krullDimOfRel s :=
-  iSup_le $ fun p => le_sSup ⟨p.map _ f map, rfl⟩
+  iSup_le $ fun p => le_sSup ⟨p.map _ map, rfl⟩
 
 lemma eq_of_relIso (f : r ≃r s) : krullDimOfRel r = krullDimOfRel s :=
   le_antisymm (le_of_map f fun _ _ h => f.2.mpr h) $ le_of_map f.symm fun _ _ h => f.2.mp $ by
@@ -91,11 +91,10 @@ le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
   exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) $ hm default
 | some ⊤, _ => le_refl _
 | some (some m), hm => by
-  obtain ⟨p, hp⟩ := RelSeries.exists_len_gt_of_infiniteDimensional r m
-  specialize hm p
+  specialize hm (RelSeries.withLength r (m + 1))
   refine (not_lt_of_le hm ?_).elim
   erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
-  assumption
+  simp
 
 lemma eq_len_of_finiteDimensional [r.FiniteDimensional] :
     krullDimOfRel r = (RelSeries.longestOf r).length :=
@@ -131,7 +130,7 @@ lemma infiniteDimensional_of_strictMono
   ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩
 
 lemma eq_zero_of_unique [Unique α] : krullDim α = 0 := by
-  rw [eq_len_of_finiteDimensionalType, Nat.cast_eq_zero]
+  rw [eq_len_of_finiteDimensionalType (α := α), Nat.cast_eq_zero]
   refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
   by_contra r
   rw [not_le] at r
@@ -159,7 +158,7 @@ lemma eq_iSup_height : krullDim α = ⨆ (a : α), height α a := by
           λ _ _ h ↦ h }
 
 lemma le_orderDual : krullDim α ≤ krullDim αᵒᵈ :=
-  iSup_le $ λ i ↦ le_sSup $ ⟨i.rev, rfl⟩
+  iSup_le $ λ i ↦ le_sSup $ ⟨i.reverse, rfl⟩
 
 lemma orderDual_le : krullDim αᵒᵈ ≤ krullDim α :=
   le_orderDual.trans $ le_of_strictMono

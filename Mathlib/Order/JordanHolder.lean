@@ -145,17 +145,6 @@ instance inhabited [Inhabited X] : Inhabited (CompositionSeries X) :=
   inferInstanceAs <| Inhabited <| RelSeries _
 #align composition_series.has_inhabited CompositionSeries.inhabited
 
-theorem step (s : CompositionSeries X) :
-    ∀ i : Fin s.length, IsMaximal (s (Fin.castSucc i)) (s (Fin.succ i)) :=
-  s.step'
-#align composition_series.step CompositionSeries.step
-
--- @[simp] -- Porting note: dsimp can prove this
-theorem coeFn_mk (length : ℕ) (series step) :
-    (@RelSeries.mk X IsMaximal length series step : Fin length.succ → X) = series :=
-  rfl
-#align composition_series.coe_fn_mk CompositionSeries.coeFn_mk
-
 theorem lt_succ (s : CompositionSeries X) (i : Fin s.length) :
     s (Fin.castSucc i) < s (Fin.succ i) :=
   lt_of_isMaximal (s.step _)
@@ -226,21 +215,8 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
   let ⟨_i, hi⟩ := Set.mem_range.2 hx
   hi ▸ head_le _
 
-theorem length_pos_of_mem_ne {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s)
-    (hxy : x ≠ y) : 0 < s.length :=
-  RelSeries.length_pos_of_mem_ne hx hy hxy
-#align composition_series.length_pos_of_mem_ne CompositionSeries.length_pos_of_mem_ne
-
-theorem forall_mem_eq_of_length_eq_zero {s : CompositionSeries X} (hs : s.length = 0) {x y}
-    (hx : x ∈ s) (hy : y ∈ s) : x = y :=
-  RelSeries.forall_mem_eq_of_length_eq_zero hs hx hy
-#align composition_series.forall_mem_eq_of_length_eq_zero CompositionSeries.forall_mem_eq_of_length_eq_zero
-
 theorem eraseLast_last_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
   simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val, tsub_le_self]
-
-@[simp]
-theorem head_eraseLast (s : CompositionSeries X) : s.eraseLast.head = s.head := rfl
 
 theorem mem_eraseLast_of_ne_of_mem
     {s : CompositionSeries X} {x : X} (hx : x ≠ s.last) (hxs : x ∈ s) :
@@ -261,7 +237,7 @@ theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
       conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
     -- porting note (#10745): was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
-    simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
+    simp [last, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self, RelSeries.mem_def]
   · intro h
     exact mem_eraseLast_of_ne_of_mem h.1 h.2
 
@@ -270,12 +246,12 @@ theorem lt_last_of_mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.le
   lt_of_le_of_ne (le_last_of_mem ((mem_eraseLast h).1 hx).2) ((mem_eraseLast h).1 hx).1
 
 theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
-    IsMaximal s.eraseLast.last s.last := RelSeries.rel_last_eraseLast_last_of_pos_length s h
+    IsMaximal s.eraseLast.last s.last := by
+  convert s.step ⟨s.length - 1, Nat.pred_lt (by omega)⟩
+  refine congr_arg s <| Fin.ext ?_
+  simp only [Fin.val_last, Fin.succ_mk]
+  omega
 #align composition_series.is_maximal_erase_last_last CompositionSeries.isMaximal_eraseLast_last
-
-@[simp]
-theorem snoc_last' (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.last x) :
-    snoc s x hsat (Fin.last (s.length + 1)) = x := RelSeries.snoc_last s x hsat
 
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
     s = snoc (eraseLast s) s.last (isMaximal_eraseLast_last h) := by
@@ -324,20 +300,19 @@ theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s�
     fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 #align composition_series.equivalent.trans CompositionSeries.Equivalent.trans
 
-theorem combine {s₁ s₂ t₁ t₂ : CompositionSeries X}
+theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
     (h₁ : Equivalent s₁ t₁) (h₂ : Equivalent s₂ t₂) :
-    Equivalent (combine s₁ s₂ hs) (combine t₁ t₂ ht) :=
+    Equivalent (smash s₁ s₂ hs) (smash t₁ t₂ ht) :=
   let e : Fin (s₁.length + s₂.length) ≃ Fin (t₁.length + t₂.length) :=
     calc
       Fin (s₁.length + s₂.length) ≃ Sum (Fin s₁.length) (Fin s₂.length) := finSumFinEquiv.symm
       _ ≃ Sum (Fin t₁.length) (Fin t₂.length) := (Equiv.sumCongr h₁.choose h₂.choose)
       _ ≃ Fin (t₁.length + t₂.length) := finSumFinEquiv
-
   ⟨e, Fin.addCases
-    (fun i ↦ by erw [Equiv.trans_apply]; simpa [finSumFinEquiv] using h₁.choose_spec i)
-    (fun i ↦ by erw [Equiv.trans_apply]; simpa [finSumFinEquiv] using h₂.choose_spec i)⟩
-#align composition_series.equivalent.combine CompositionSeries.Equivalent.combine
+    (fun i ↦ by simpa [finSumFinEquiv] using h₁.choose_spec i)
+    (fun i ↦ by simpa [finSumFinEquiv] using h₂.choose_spec i)⟩
+#align composition_series.equivalent.combine CompositionSeries.Equivalent.smash
 
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
@@ -351,9 +326,13 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
     refine' Fin.lastCases _ _ i
     · erw [snoc_castSucc, snoc_castSucc]
       convert hlast using 2
-      · exact snoc_last _ _ _
+      · exact last_snoc _ _ _
       · congr; ext; simp
-      · simp
+      · simp only [snoc, append_length, singleton_length, Nat.add_zero,
+        Equiv.instTransSortSortSortEquivEquivEquiv_trans, Equiv.trans_apply, finSuccEquivLast_last,
+        Functor.mapEquiv_apply, Option.map_eq_map, Option.map_none', finSuccEquivLast_symm_none,
+        Fin.succ_last]
+        exact last_append _ _ _
     · intro i
       simpa [Fin.succ_castSucc] using hequiv.choose_spec i⟩
 #align composition_series.equivalent.snoc CompositionSeries.Equivalent.snoc
@@ -379,14 +358,18 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
     intro i
     dsimp only []
     refine' Fin.lastCases _ (fun i => _) i
-    · erw [Equiv.swap_apply_left, snoc_castSucc, snoc_last', Fin.succ_last, snoc_last',
-        snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
-        snoc_last']
+    · erw [Equiv.swap_apply_left, snoc_castSucc,
+      show (snoc s x₁ hsat₁).toFun (Fin.last _) = x₁ from last_snoc _ _ _, Fin.succ_last,
+      show ((s.snoc x₁ hsat₁).snoc y₁ hsaty₁).toFun (Fin.last _) = y₁ from last_snoc _ _ _,
+      snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
+      show (s.snoc _ hsat₂).toFun (Fin.last _) = x₂ from last_snoc _ _ _]
       exact hr₂
     · refine' Fin.lastCases _ (fun i => _) i
       · erw [Equiv.swap_apply_right, snoc_castSucc, snoc_castSucc, snoc_castSucc,
-          Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, snoc_last', snoc_last',
-          Fin.succ_last, snoc_last']
+          Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
+          show (snoc s x₁ hsat₁).toFun (Fin.last _) = x₁ from last_snoc _ _ _, Fin.succ_last,
+        show ((s.snoc x₂ hsat₂).snoc y₂ hsaty₂).toFun (Fin.last _) = y₂ from last_snoc _ _ _,
+          show (snoc s x₂ hsat₂).toFun (Fin.last _) = x₂ from last_snoc _ _ _]
         exact hr₁
       · erw [Equiv.swap_apply_of_ne_of_ne h2 h1, snoc_castSucc, snoc_castSucc,
           snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc,
