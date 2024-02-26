@@ -518,7 +518,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     simp only [dist_eq_norm] at hn ⊢
     refine' ContinuousLinearMap.opNorm_le_bound _ hq.le _
     intro z
-    simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
+    simp only [F', G', ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
       ContinuousLinearMap.one_apply]
     rw [← smul_sub, norm_smul, mul_comm]
     gcongr
