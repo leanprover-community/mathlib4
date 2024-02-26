@@ -260,7 +260,7 @@ lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
 lemma map_cast {α β F : Type*} [AddGroupWithOne α] [One β] [SubtractionMonoid β]
     [FunLike F α β] [AddMonoidHomClass F α β] [OneHomClass F α β] (f : F) (s : SignType) :
     f s = s := by
-  apply comp_cast' <;> simp
+  apply map_cast' <;> simp
 
 @[simp]
 theorem coe_zero : ↑(0 : SignType) = (0 : α) :=
