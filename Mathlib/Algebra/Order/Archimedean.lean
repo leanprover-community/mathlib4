@@ -7,7 +7,7 @@ import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
-import Mathlib.Data.Rat.NNRat
+import Mathlib.Data.NNRat.Defs
 
 #align_import algebra.order.archimedean from "leanprover-community/mathlib"@"6f413f3f7330b94c92a5a27488fdc74e6d483a78"
 

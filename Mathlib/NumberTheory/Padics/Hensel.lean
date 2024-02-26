@@ -321,7 +321,7 @@ private theorem newton_seq_dist_aux (n : ℕ) :
 
 private theorem newton_seq_dist {n k : ℕ} (hnk : n ≤ k) :
     ‖newton_seq k - newton_seq n‖ ≤ ‖F.derivative.eval a‖ * T ^ 2 ^ n := by
-  have hex : ∃ m, k = n + m := exists_eq_add_of_le hnk
+  have hex : ∃ m, k = n + m := Nat.exists_eq_add_of_le hnk
   let ⟨_, hex'⟩ := hex
   rw [hex']; apply newton_seq_dist_aux
 

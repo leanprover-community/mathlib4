@@ -136,7 +136,7 @@ theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i
   DFunLike.coe_injective
 #align multilinear_map.coe_injective MultilinearMap.coe_injective
 
-@[norm_cast] -- Porting note: Removed simp attribute, simp can prove this
+@[norm_cast] -- Porting note (#10618): Removed simp attribute, simp can prove this
 theorem coe_inj {f g : MultilinearMap R M₁ M₂} : (f : (∀ i, M₁ i) → M₂) = g ↔ f = g :=
   DFunLike.coe_fn_eq
 #align multilinear_map.coe_inj MultilinearMap.coe_inj
@@ -790,21 +790,23 @@ an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map 
 The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
 domain of the domain.
 -/
-def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
+def domDomRestrict (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
     (z : (i : {a : ι // ¬ P a}) → M₁ i) :
     MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂ where
   toFun x := f (fun j ↦ if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩)
   map_add' x i a b := by
+    classical
     simp only
     repeat (rw [domDomRestrict_aux])
     simp only [MultilinearMap.map_add]
   map_smul' z i c a := by
+    classical
     simp only
     repeat (rw [domDomRestrict_aux])
     simp only [MultilinearMap.map_smul]
 
 @[simp]
-lemma domDomRestrict_apply [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (P : ι → Prop)
+lemma domDomRestrict_apply (f : MultilinearMap R M₁ M₂) (P : ι → Prop)
     [DecidablePred P] (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) :
     f.domDomRestrict P z x = f (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) := rfl
 

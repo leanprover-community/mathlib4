@@ -19,6 +19,7 @@ be satisfied by itself and all stricter types.
 
 
 open Function
+open scoped Topology
 
 /-- The type of continuous maps from `α` to `β`.
 
@@ -51,7 +52,7 @@ end
 
 export ContinuousMapClass (map_continuous)
 
-attribute [continuity] map_continuous
+attribute [continuity, fun_prop] map_continuous
 
 section ContinuousMapClass
 
@@ -440,7 +441,7 @@ section Gluing
 
 variable {ι : Type*} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
   (hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
-  (hS : ∀ x : α, ∃ i, S i ∈ nhds x)
+  (hS : ∀ x : α, ∃ i, S i ∈ 𝓝 x)
 
 /-- A family `φ i` of continuous maps `C(S i, β)`, where the domains `S i` contain a neighbourhood
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
@@ -470,7 +471,7 @@ theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = �
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
   (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
     F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
-  (hA : ∀ x : α, ∃ i ∈ A, i ∈ nhds x)
+  (hA : ∀ x : α, ∃ i ∈ A, i ∈ 𝓝 x)
 
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree

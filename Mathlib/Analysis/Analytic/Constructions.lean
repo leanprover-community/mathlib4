@@ -211,7 +211,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
   apply le_antisymm
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← coe_one, ENNReal.coe_le_coe]
+    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
     have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
     contrapose! this

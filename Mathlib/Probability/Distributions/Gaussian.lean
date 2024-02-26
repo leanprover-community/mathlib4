@@ -297,7 +297,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   rw [gaussianReal_apply_eq_integral _ _ s']
   swap
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
-    rw [← NNReal.coe_eq]
+    rw [← NNReal.coe_inj]
     simp [hc]
   simp only [Homeomorph.mulLeft₀, Equiv.toFun_as_coe, Equiv.mulLeft₀_apply, Equiv.invFun_as_coe,
     Equiv.mulLeft₀_symm_apply, Homeomorph.toMeasurableEquiv_coe, Homeomorph.homeomorph_mk_coe_symm,

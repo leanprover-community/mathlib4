@@ -63,7 +63,7 @@ Linear algebra:
     invariant subspaces of an endomorphism: 'https://en.wikipedia.org/wiki/Invariant_subspace'
     generalized eigenspaces: 'Module.End.generalizedEigenspace'
     kernels lemma: 'https://fr.wikipedia.org/wiki/Lemme_des_noyaux'
-    Jordan-Chevalley-Dunford decomposition: 'https://en.wikipedia.org/wiki/Jordan%E2%80%93Chevalley_decomposition'
+    Jordan-Chevalley-Dunford decomposition: 'Module.End.exists_isNilpotent_isSemisimple'
     Jordan normal form: 'https://en.wikipedia.org/wiki/Jordan_normal_form'
   Linear representations:
     irreducible representation: 'https://en.wikipedia.org/wiki/Irreducible_representation'

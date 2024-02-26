@@ -72,8 +72,8 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
   rw [mem_ball] at hz
   filter_upwards [Ioo_mem_nhdsWithin_Iio ⟨hz, le_rfl⟩] with r hr
   have hr₀ : 0 < r := dist_nonneg.trans_lt hr.1
-  replace hd : DiffContOnCl ℂ (dslope f c) (ball c r)
-  · refine' DifferentiableOn.diffContOnCl _
+  replace hd : DiffContOnCl ℂ (dslope f c) (ball c r) := by
+    refine DifferentiableOn.diffContOnCl ?_
     rw [closure_ball c hr₀.ne']
     exact ((differentiableOn_dslope <| ball_mem_nhds _ hR₁).mpr hd).mono
       (closedBall_subset_ball hr.2)
@@ -194,7 +194,7 @@ point `z` of this disk we have `abs (f z) ≤ abs z`. -/
 theorem abs_le_abs_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball 0 R))
     (h_maps : MapsTo f (ball 0 R) (ball 0 R)) (h₀ : f 0 = 0) (hz : abs z < R) :
     abs (f z) ≤ abs z := by
-  replace hz : z ∈ ball (0 : ℂ) R; exact mem_ball_zero_iff.2 hz
+  replace hz : z ∈ ball (0 : ℂ) R := mem_ball_zero_iff.2 hz
   simpa only [dist_zero_right] using dist_le_dist_of_mapsTo_ball_self hd h_maps h₀ hz
 #align complex.abs_le_abs_of_maps_to_ball_self Complex.abs_le_abs_of_mapsTo_ball_self
 

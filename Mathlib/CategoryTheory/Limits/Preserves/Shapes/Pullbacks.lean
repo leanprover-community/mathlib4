@@ -89,12 +89,12 @@ def preservesPullbackSymmetry : PreservesLimit (cospan g f) G where
   preserves {c} hc := by
     apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₂} _) _).toFun
     apply IsLimit.ofIsoLimit _ (PullbackCone.isoMk _).symm
-    apply PullbackCone.flipIsLimit
+    apply PullbackCone.isLimitOfFlip
     apply (isLimitMapConePullbackConeEquiv _ _).toFun
     · refine @PreservesLimit.preserves _ _ _ _ _ _ _ _ ?_ _ ?_
       · dsimp
         infer_instance
-      apply PullbackCone.flipIsLimit
+      apply PullbackCone.isLimitOfFlip
       apply IsLimit.ofIsoLimit _ (PullbackCone.isoMk _)
       exact (IsLimit.postcomposeHomEquiv (diagramIsoCospan.{v₁} _) _).invFun hc
     · exact
@@ -196,15 +196,12 @@ def preservesPushoutSymmetry : PreservesColimit (span g f) G where
   preserves {c} hc := by
     apply (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₂} _).symm _).toFun
     apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _).symm
-    apply PushoutCocone.flipIsColimit
+    apply PushoutCocone.isColimitOfFlip
     apply (isColimitMapCoconePushoutCoconeEquiv _ _).toFun
     · refine @PreservesColimit.preserves _ _ _ _ _ _ _ _ ?_ _ ?_ -- Porting note: more TC coddling
       · dsimp
         infer_instance
-      apply PushoutCocone.flipIsColimit
-      apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _)
-      exact (IsColimit.precomposeHomEquiv (diagramIsoSpan.{v₁} _) _).invFun hc
-    · exact (c.ι.naturality WalkingSpan.Hom.snd).trans (c.ι.naturality WalkingSpan.Hom.fst).symm
+      · exact PushoutCocone.flipIsColimit hc
 #align category_theory.limits.preserves_pushout_symmetry CategoryTheory.Limits.preservesPushoutSymmetry
 
 theorem hasPushout_of_preservesPushout [HasPushout f g] : HasPushout (G.map f) (G.map g) :=

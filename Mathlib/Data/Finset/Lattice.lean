@@ -926,6 +926,12 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
   refine' hs.cons_induction _ _ <;> intros <;> simp [*]
 #align map_finset_sup' map_finset_sup'
 
+lemma nsmul_sup' [LinearOrderedAddCommMonoid β] {s : Finset α}
+    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
+    s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
+  let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
+  (map_finset_sup' ns hs _).symm
+
 /-- To rewrite from right to left, use `Finset.sup'_comp_eq_image`. -/
 @[simp]
 theorem sup'_image [DecidableEq β] {s : Finset γ} {f : γ → β} (hs : (s.image f).Nonempty)
@@ -1091,6 +1097,12 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
     f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine' hs.cons_induction _ _ <;> intros <;> simp [*]
 #align map_finset_inf' map_finset_inf'
+
+lemma nsmul_inf' [LinearOrderedAddCommMonoid β] {s : Finset α}
+    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
+    s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
+  let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
+  (map_finset_inf' ns hs _).symm
 
 /-- To rewrite from right to left, use `Finset.inf'_comp_eq_image`. -/
 @[simp]
@@ -1756,8 +1768,8 @@ theorem card_le_of_interleaved {s t : Finset α}
     (h : ∀ᵉ (x ∈ s) (y ∈ s),
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
     s.card ≤ t.card + 1 := by
-  replace h : ∀ᵉ (x ∈ s) (y ∈ s), x < y → ∃ z ∈ t, x < z ∧ z < y
-  · intro x hx y hy hxy
+  replace h : ∀ᵉ (x ∈ s) (y ∈ s), x < y → ∃ z ∈ t, x < z ∧ z < y := by
+    intro x hx y hy hxy
     rcases exists_next_right ⟨y, hy, hxy⟩ with ⟨a, has, hxa, ha⟩
     rcases h x hx a has hxa fun z hzs hz => hz.2.not_le <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
     exact ⟨b, hbt, hxb, hba.trans_le <| ha _ hy hxy⟩

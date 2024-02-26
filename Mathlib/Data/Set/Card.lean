@@ -79,7 +79,7 @@ theorem Finite.encard_eq_coe_toFinset_card (h : s.Finite) : s.encard = h.toFinse
 
 theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFinset.card := by
   have h := toFinite s
-  rw [h.encard_eq_coe_toFinset_card, toFinite_toFinset, toFinset_card]
+  rw [h.encard_eq_coe_toFinset_card, toFinite_toFinset]
 
 theorem encard_coe_eq_coe_finsetCard (s : Finset α) : encard (s : Set α) = s.card := by
   rw [Finite.encard_eq_coe_toFinset_card (Finset.finite_toSet s)]; simp
@@ -353,8 +353,8 @@ theorem exists_subset_encard_eq (hk : k ≤ s.encard) : ∃ t, t ⊆ s ∧ t.enc
   refine' ENat.nat_induction k (fun _ ↦ ⟨∅, empty_subset _, by simp⟩) (fun n IH hle ↦ _) _
   · obtain ⟨t₀, ht₀s, ht₀⟩ := IH (le_trans (by simp) hle)
     simp only [Nat.cast_succ] at *
-    have hne : t₀ ≠ s
-    · rintro rfl; rw [ht₀, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le] at hle; simp at hle
+    have hne : t₀ ≠ s := by
+      rintro rfl; rw [ht₀, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le] at hle; simp at hle
     obtain ⟨x, hx⟩ := exists_of_ssubset (ht₀s.ssubset_of_ne hne)
     exact ⟨insert x t₀, insert_subset hx.1 ht₀s, by rw [encard_insert_of_not_mem hx.2, ht₀]⟩
   simp only [top_le_iff, encard_eq_top_iff]
@@ -366,8 +366,8 @@ theorem exists_superset_subset_encard_eq (hst : s ⊆ t) (hsk : s.encard ≤ k) 
   · rw [hs, top_le_iff] at hsk; subst hsk; exact ⟨s, Subset.rfl, hst, hs⟩
   obtain ⟨k, rfl⟩ := exists_add_of_le hsk
   obtain ⟨k', hk'⟩ := exists_add_of_le hkt
-  have hk : k ≤ encard (t \ s)
-  · rw [← encard_diff_add_encard_of_subset hst, add_comm] at hkt
+  have hk : k ≤ encard (t \ s) := by
+    rw [← encard_diff_add_encard_of_subset hst, add_comm] at hkt
     exact WithTop.le_of_add_le_add_right hs hkt
   obtain ⟨r', hr', rfl⟩ := exists_subset_encard_eq hk
   refine' ⟨s ∪ r', subset_union_left _ _, union_subset hst (hr'.trans (diff_subset _ _)), _⟩
@@ -421,8 +421,8 @@ theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β}
   · simp
   · exact (encard_ne_top_iff.mpr hs h).elim
   obtain ⟨b, hbt⟩ := encard_pos.1 ((encard_pos.2 ⟨_, has⟩).trans_le hle)
-  have hle' : (s \ {a}).encard ≤ (t \ {b}).encard
-  · rwa [← WithTop.add_le_add_iff_right WithTop.one_ne_top,
+  have hle' : (s \ {a}).encard ≤ (t \ {b}).encard := by
+    rwa [← WithTop.add_le_add_iff_right WithTop.one_ne_top,
     encard_diff_singleton_add_one has, encard_diff_singleton_add_one hbt]
 
   obtain ⟨f₀, hf₀s, hinj⟩ := exists_injOn_of_encard_le (hs.diff {a}) hle'

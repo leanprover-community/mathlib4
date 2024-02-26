@@ -67,7 +67,7 @@ theorem hermite_zero : hermite 0 = C 1 :=
   rfl
 #align polynomial.hermite_zero Polynomial.hermite_zero
 
--- Porting note: There was initially @[simp] on this line but it was removed
+-- Porting note (#10618): There was initially @[simp] on this line but it was removed
 -- because simp can prove this theorem
 theorem hermite_one : hermite 1 = X := by
   rw [hermite_succ, hermite_zero]

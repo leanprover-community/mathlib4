@@ -64,7 +64,7 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     -- Porting note: broken dot notation
     apply (cancel_epi (asHom (LinearMap.range f).mkQ)).1
     convert h
-    -- Porting note : no longer necessary
+    -- Porting note: no longer necessary
     -- exact Submodule.liftQ_mkQ _ _ _
 #align Module.cokernel_is_colimit ModuleCat.cokernelIsColimit
 

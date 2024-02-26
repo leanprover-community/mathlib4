@@ -88,7 +88,7 @@ variable {ι κ X X' Y Z α α' β β' γ 𝓕 : Type*} [tX : TopologicalSpace X
   [tZ : TopologicalSpace Z] [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
-*equicontinuous at `x₀ : X`* if, for all entourage `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`
+*equicontinuous at `x₀ : X`* if, for all entourages `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`
 such that, for all `x ∈ V` and for all `i : ι`, `F i x` is `U`-close to `F i x₀`. -/
 def EquicontinuousAt (F : ι → X → α) (x₀ : X) : Prop :=
   ∀ U ∈ 𝓤 α, ∀ᶠ x in 𝓝 x₀, ∀ i, (F i x₀, F i x) ∈ U
@@ -101,7 +101,7 @@ protected abbrev Set.EquicontinuousAt (H : Set <| X → α) (x₀ : X) : Prop :=
 #align set.equicontinuous_at Set.EquicontinuousAt
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
-*equicontinuous at `x₀ : X` within `S : Set X`* if, for all entourage `U ∈ 𝓤 α`, there is a
+*equicontinuous at `x₀ : X` within `S : Set X`* if, for all entourages `U ∈ 𝓤 α`, there is a
 neighborhood `V` of `x₀` within `S` such that, for all `x ∈ V` and for all `i : ι`, `F i x` is
 `U`-close to `F i x₀`. -/
 def EquicontinuousWithinAt (F : ι → X → α) (S : Set X) (x₀ : X) : Prop :=
@@ -135,7 +135,7 @@ protected abbrev Set.EquicontinuousOn (H : Set <| X → α) (S : Set X) : Prop :
   EquicontinuousOn ((↑) : H → X → α) S
 
 /-- A family `F : ι → β → α` of functions between uniform spaces is *uniformly equicontinuous* if,
-for all entourage `U ∈ 𝓤 α`, there is an entourage `V ∈ 𝓤 β` such that, whenever `x` and `y` are
+for all entourages `U ∈ 𝓤 α`, there is an entourage `V ∈ 𝓤 β` such that, whenever `x` and `y` are
 `V`-close, we have that, *for all `i : ι`*, `F i x` is `U`-close to `F i y`. -/
 def UniformEquicontinuous (F : ι → β → α) : Prop :=
   ∀ U ∈ 𝓤 α, ∀ᶠ xy : β × β in 𝓤 β, ∀ i, (F i xy.1, F i xy.2) ∈ U
@@ -148,7 +148,7 @@ protected abbrev Set.UniformEquicontinuous (H : Set <| β → α) : Prop :=
 #align set.uniform_equicontinuous Set.UniformEquicontinuous
 
 /-- A family `F : ι → β → α` of functions between uniform spaces is
-*uniformly equicontinuous on `S : Set β`* if, for all entourage `U ∈ 𝓤 α`, there is a relative
+*uniformly equicontinuous on `S : Set β`* if, for all entourages `U ∈ 𝓤 α`, there is a relative
 entourage `V ∈ 𝓤 β ⊓ 𝓟 (S ×ˢ S)` such that, whenever `x` and `y` are `V`-close, we have that,
 *for all `i : ι`*, `F i x` is `U`-close to `F i y`. -/
 def UniformEquicontinuousOn (F : ι → β → α) (S : Set β) : Prop :=

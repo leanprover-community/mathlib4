@@ -157,7 +157,7 @@ theorem step (s : CompositionSeries X) :
   s.step'
 #align composition_series.step CompositionSeries.step
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem coeFn_mk (length : ℕ) (series step) :
     (@CompositionSeries.mk X _ _ length series step : Fin length.succ → X) = series :=
   rfl
@@ -427,7 +427,7 @@ theorem mem_eraseTop {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     have hi : (i : ℕ) < s.length := by
       conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
-    -- Porting note: Was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
+    -- porting note (#10745): was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
     simp [top, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseTop_of_ne_of_mem h.1 h.2

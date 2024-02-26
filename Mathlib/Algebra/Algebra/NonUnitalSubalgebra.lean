@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Data.Set.UnionLift
+import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.NonUnitalSubring.Basic
 
@@ -534,7 +535,7 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 
@@ -998,10 +999,9 @@ variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsSc
   [SMulCommClass R A A]
 
 -- no instance diamond, as the `npow` field isn't present in the non-unital case.
-example :
-    center.instNonUnitalCommSemiring.toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) :=
-  rfl
+example : center.instNonUnitalCommSemiring.toNonUnitalSemiring =
+    NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) := by
+  with_reducible_and_instances rfl
 
 @[simp]
 theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [Module R A] [IsScalarTower R A A]

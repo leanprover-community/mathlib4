@@ -5,7 +5,8 @@ Authors: Josha Dekker
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.SigmaCompact
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Lindelöf sets and Lindelöf spaces
@@ -304,7 +305,8 @@ theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s
     (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) := by
   apply isLindelof_of_countable_subcover
   intro i U hU hUcover
-  have hiU : ∀ i ∈ s, f i ⊆ ⋃ i, U i := fun _ is ↦ subset_trans (subset_biUnion_of_mem is) hUcover
+  have hiU : ∀ i ∈ s, f i ⊆ ⋃ i, U i :=
+    fun _ is ↦ _root_.subset_trans (subset_biUnion_of_mem is) hUcover
   have iSets := fun i is ↦ (hf i is).elim_countable_subcover U hU (hiU i is)
   choose! r hr using iSets
   use ⋃ i ∈ s, r i
@@ -497,15 +499,27 @@ theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
 theorem IsCompact.isLindelof (hs : IsCompact s) :
     IsLindelof s := by tauto
 
+/-- A σ-compact set `s` is Lindelöf-/
+theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
+    IsLindelof s := by
+  rw [IsSigmaCompact] at hs
+  rcases hs with ⟨K, ⟨hc, huniv⟩⟩
+  rw [← huniv]
+  have hl : ∀ n, IsLindelof (K n) := fun n ↦ IsCompact.isLindelof (hc n)
+  exact isLindelof_iUnion hl
+
 /-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
   { isLindelof_univ := isCompact_univ.isLindelof}
+
+/-- A sigma-compact space `X` is Lindelöf. -/
+instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
+  { isLindelof_univ := isSigmaCompact_univ.isLindelof}
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a non-Lindelöf space, `Set.univ` is not a Lindelöf set. -/
   nonLindelof_univ : ¬IsLindelof (univ : Set X)
-
 
 lemma nonLindelof_univ (X : Type*) [TopologicalSpace X] [NonLindelofSpace X] :
     ¬IsLindelof (univ : Set X) :=
@@ -695,6 +709,25 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     rcases this with ⟨t, ⟨htc, htu⟩⟩
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
+
+instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMetrizableSpace X]
+    [LindelofSpace X] : SecondCountableTopology X := by
+  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  have h_dense : ∀ ε > 0, ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
+    intro ε hpos
+    let U := fun (z : X) ↦ Metric.ball z ε
+    have hU : ∀ z, U z ∈ 𝓝 z := by
+      intro z
+      have : IsOpen (U z) := Metric.isOpen_ball
+      refine IsOpen.mem_nhds this ?hx
+      simp_all only [gt_iff_lt, Metric.mem_ball, dist_self, zero_lt_two, mul_pos_iff_of_pos_left]
+    have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
+    refine ⟨t, hct, ?_⟩
+    intro z
+    have ⟨y, ht, hzy⟩ : ∃ y ∈ t, z ∈ U y := exists_set_mem_of_union_eq_top t (fun i ↦ U i) huniv z
+    use y, ht
+    exact LT.lt.le hzy
+  exact Metric.secondCountable_of_almost_dense_set h_dense
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by

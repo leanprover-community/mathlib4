@@ -149,8 +149,8 @@ theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s
       refine' set_lintegral_congr_fun ht₁ (eventually_of_forall fun a ha => _)
       rw [h_prod_eq_snd a ha]
     have h_eq2 : ∫⁻ a in t₁ᶜ, condKernelReal ρ a {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} ∂ρ.fst = 0 := by
-      suffices h_eq_zero : ∀ a ∈ t₁ᶜ, condKernelReal ρ a {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = 0
-      · rw [set_lintegral_congr_fun ht₁.compl (eventually_of_forall h_eq_zero)]
+      suffices h_eq_zero : ∀ a ∈ t₁ᶜ, condKernelReal ρ a {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = 0 by
+        rw [set_lintegral_congr_fun ht₁.compl (eventually_of_forall h_eq_zero)]
         simp only [lintegral_const, zero_mul]
       intro a hat₁
       rw [mem_compl_iff] at hat₁
@@ -265,8 +265,8 @@ theorem exists_cond_kernel (γ : Type*) [MeasurableSpace γ] :
     intro a ha
     rw [mem_compl_iff] at ha
     have h_ss := subset_toMeasurable ρ.fst {a : α | condKernelReal ρ' a (range f) = 1}ᶜ
-    suffices ha' : a ∉ {a : α | condKernelReal ρ' a (range f) = 1}ᶜ
-    · rwa [not_mem_compl_iff] at ha'
+    suffices ha' : a ∉ {a : α | condKernelReal ρ' a (range f) = 1}ᶜ by
+      rwa [not_mem_compl_iff] at ha'
     exact not_mem_subset h_ss ha
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : α → α) f) :=
     MeasurableEmbedding.id.prod_mk hf
@@ -524,8 +524,8 @@ lemma eq_condKernel_of_measure_eq_compProd_real (ρ : Measure (α × ℝ)) [IsFi
     ∀ᵐ x ∂ρ.fst, κ x = ρ.condKernel x := by
   have huniv : ∀ᵐ x ∂ρ.fst, κ x Set.univ = ρ.condKernel x Set.univ :=
     eq_condKernel_of_measure_eq_compProd' ρ κ hκ MeasurableSet.univ
-  suffices : ∀ᵐ x ∂ρ.fst, ∀ ⦃t⦄, MeasurableSet t → κ x t = ρ.condKernel x t
-  · filter_upwards [this] with x hx
+  suffices ∀ᵐ x ∂ρ.fst, ∀ ⦃t⦄, MeasurableSet t → κ x t = ρ.condKernel x t by
+    filter_upwards [this] with x hx
     ext t ht; exact hx ht
   apply MeasurableSpace.ae_induction_on_inter Real.borel_eq_generateFrom_Iic_rat
     Real.isPiSystem_Iic_rat
@@ -547,13 +547,13 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
 -- and then constructing a measure on `α × ℝ` using the obtained measurable embedding
   obtain ⟨f, hf⟩ := exists_measurableEmbedding_real Ω
   set ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f) with hρ'def
-  have hρ' : ρ'.fst = ρ.fst
-  · ext s hs
+  have hρ' : ρ'.fst = ρ.fst := by
+    ext s hs
     rw [hρ'def, Measure.fst_apply, Measure.fst_apply, Measure.map_apply]
     exacts [rfl, Measurable.prod measurable_fst <| hf.measurable.comp measurable_snd,
       measurable_fst hs, hs, hs]
-  have hρ'' : ∀ᵐ x ∂ρ'.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x
-  · refine' eq_condKernel_of_measure_eq_compProd_real ρ' (kernel.map κ f hf.measurable) _
+  have hρ'' : ∀ᵐ x ∂ρ'.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x := by
+    refine' eq_condKernel_of_measure_eq_compProd_real ρ' (kernel.map κ f hf.measurable) _
     ext s hs
     simp only [Measure.map_apply (measurable_id.prod_map hf.measurable) hs]
     conv_lhs => congr; rw [hκ]
@@ -569,23 +569,23 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
       · simp only [Prod_map, id_eq]; rfl
       · exact (hf.measurable.comp measurable_snd)
   rw [hρ'] at hρ''
-  suffices : ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s →
-    ((ρ.map (Prod.map id f)).condKernel x) s = (ρ.condKernel x) (f ⁻¹' s)
-  · filter_upwards [hρ'', this] with x hx h
+  suffices ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s →
+      ((ρ.map (Prod.map id f)).condKernel x) s = (ρ.condKernel x) (f ⁻¹' s) by
+    filter_upwards [hρ'', this] with x hx h
     rw [kernel.map_apply] at hx
     ext s hs
     rw [← Set.preimage_image_eq s hf.injective,
       ← Measure.map_apply hf.measurable <| hf.measurableSet_image.2 hs, hx,
       h _ <| hf.measurableSet_image.2 hs]
-  have hprod : (ρ.map (Prod.map id f)).fst = ρ.fst
-  · ext s hs
+  have hprod : (ρ.map (Prod.map id f)).fst = ρ.fst := by
+    ext s hs
     rw [Measure.fst_apply hs,
       Measure.map_apply (measurable_id.prod_map hf.measurable) (measurable_fst hs),
       ← Set.preimage_comp, Measure.fst_apply hs]
     rfl
-  suffices : ρ.map (Prod.map id f) =
-    ((ρ.map (Prod.map id f)).fst ⊗ₘ (kernel.map (Measure.condKernel ρ) f hf.measurable))
-  · have heq := eq_condKernel_of_measure_eq_compProd_real _ _ this
+  suffices ρ.map (Prod.map id f) =
+      ((ρ.map (Prod.map id f)).fst ⊗ₘ (kernel.map (Measure.condKernel ρ) f hf.measurable)) by
+    have heq := eq_condKernel_of_measure_eq_compProd_real _ _ this
     rw [hprod] at heq
     filter_upwards [heq] with x hx s hs
     rw [← hx, kernel.map_apply, Measure.map_apply hf.measurable hs]

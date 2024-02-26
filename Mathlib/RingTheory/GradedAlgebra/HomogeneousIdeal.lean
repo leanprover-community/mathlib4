@@ -920,7 +920,7 @@ theorem Submodule.homogeneousHull_mono :
     Monotone (Submodule.homogeneousHull 𝒜 ℳ) := fun I J I_le_J => by
   apply Submodule.span_mono
   rintro r ⟨hr1, ⟨x, hx⟩, rfl⟩
-  refine' ⟨hr1, ⟨⟨x, I_le_J hx⟩, rfl⟩⟩
+  exact ⟨hr1, ⟨⟨x, I_le_J hx⟩, rfl⟩⟩
 
 theorem Ideal.homogeneousHull_mono : Monotone (Ideal.homogeneousHull 𝒜) :=
   Submodule.homogeneousHull_mono 𝒜 𝒜

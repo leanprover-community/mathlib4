@@ -3,6 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
+import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -196,6 +197,8 @@ def LinearMap.dualMap (f : M₁ →ₗ[R] M₂) : Dual R M₂ →ₗ[R] Dual R M
   Module.Dual.transpose (R := R) f
 #align linear_map.dual_map LinearMap.dualMap
 
+lemma LinearMap.dualMap_eq_lcomp (f : M₁ →ₗ[R] M₂) : f.dualMap = f.lcomp R := rfl
+
 -- Porting note: with reducible def need to specify some parameters to transpose explicitly
 theorem LinearMap.dualMap_def (f : M₁ →ₗ[R] M₂) : f.dualMap = Module.Dual.transpose (R := R) f :=
   rfl
@@ -262,6 +265,21 @@ theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommGroup M₃] [Module R M
     (g : M₂ ≃ₗ[R] M₃) : g.dualMap.trans f.dualMap = (f.trans g).dualMap :=
   rfl
 #align linear_equiv.dual_map_trans LinearEquiv.dualMap_trans
+
+@[simp]
+lemma Dual.apply_one_mul_eq (f : Dual R R) (r : R) :
+    f 1 * r = f r := by
+  conv_rhs => rw [← mul_one r, ← smul_eq_mul]
+  rw [map_smul, smul_eq_mul, mul_comm]
+
+@[simp]
+lemma LinearMap.range_dualMap_dual_eq_span_singleton (f : Dual R M₁) :
+    range f.dualMap = R ∙ f := by
+  ext m
+  rw [Submodule.mem_span_singleton]
+  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r 1, ?_⟩, fun ⟨r, hr⟩ ↦ ⟨r • LinearMap.id, ?_⟩⟩
+  · ext; simp [dualMap_apply', ← hr]
+  · ext; simp [dualMap_apply', ← hr]
 
 end DualMap
 
@@ -740,7 +758,7 @@ def evalUseFiniteInstance : TacticM Unit := do
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
   protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
@@ -825,7 +843,7 @@ def basis : Basis ι R M :=
         exact (ε i).map_smul c v }
 #align module.dual_bases.basis Module.DualBases.basis
 
--- Porting note : from simpNF the LHS simplifies; it yields lc_def.symm
+-- Porting note: from simpNF the LHS simplifies; it yields lc_def.symm
 -- probably not a useful simp lemma; nolint simpNF since it cannot see this removal
 attribute [-simp, nolint simpNF] basis_repr_symm_apply
 

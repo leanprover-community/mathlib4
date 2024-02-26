@@ -794,7 +794,7 @@ noncomputable abbrev equalizer.lift {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g
   limit.lift (parallelPair f g) (Fork.ofι k h)
 #align category_theory.limits.equalizer.lift CategoryTheory.Limits.equalizer.lift
 
--- Porting note: removed simp since simp can prove this and the reassoc version
+-- Porting note (#10618): removed simp since simp can prove this and the reassoc version
 @[reassoc]
 theorem equalizer.lift_ι {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
     equalizer.lift k h ≫ equalizer.ι f g = k :=
@@ -949,7 +949,7 @@ theorem coequalizer.cofork_π : (coequalizer.cofork f g).π = coequalizer.π f g
   rfl
 #align category_theory.limits.coequalizer.cofork_π CategoryTheory.Limits.coequalizer.cofork_π
 
--- Porting note: simp can prove this, simp removed
+-- Porting note (#10618): simp can prove this, simp removed
 theorem coequalizer.cofork_ι_app_one : (coequalizer.cofork f g).ι.app one = coequalizer.π f g :=
   rfl
 #align category_theory.limits.coequalizer.cofork_ι_app_one CategoryTheory.Limits.coequalizer.cofork_ι_app_one
@@ -974,7 +974,7 @@ noncomputable abbrev coequalizer.desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫
   colimit.desc (parallelPair f g) (Cofork.ofπ k h)
 #align category_theory.limits.coequalizer.desc CategoryTheory.Limits.coequalizer.desc
 
--- Porting note: removing simp since simp can prove this and reassoc version
+-- Porting note (#10618): removing simp since simp can prove this and reassoc version
 @[reassoc]
 theorem coequalizer.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
     coequalizer.π f g ≫ coequalizer.desc k h = k :=

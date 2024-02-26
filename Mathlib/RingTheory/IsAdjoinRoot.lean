@@ -154,7 +154,7 @@ theorem aeval_eq (h : IsAdjoinRoot S f) (p : R[X]) : aeval h.root p = h.map p :=
       RingHom.map_pow, map_X]
 #align is_adjoin_root.aeval_eq IsAdjoinRoot.aeval_eq
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem aeval_root (h : IsAdjoinRoot S f) : aeval h.root f = 0 := by rw [aeval_eq, map_self]
 #align is_adjoin_root.aeval_root IsAdjoinRoot.aeval_root
 
@@ -215,17 +215,17 @@ where `S` is given by adjoining a root of `f` to `R`. -/
 def lift (h : IsAdjoinRoot S f) : S →+* T where
   toFun z := (h.repr z).eval₂ i x
   map_zero' := by
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_zero _), eval₂_zero]
   map_add' z w := by
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), eval₂_add]
     · rw [map_add, map_repr, map_repr]
   map_one' := by
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _), eval₂_one]
   map_mul' z w := by
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z * h.repr w), eval₂_mul]
     · rw [map_mul, map_repr, map_repr]
 #align is_adjoin_root.lift IsAdjoinRoot.lift
@@ -371,11 +371,11 @@ def modByMonicHom (h : IsAdjoinRootMonic S f) : S →ₗ[R] R[X] where
   map_add' x y := by
     conv_lhs =>
       rw [← h.map_repr x, ← h.map_repr y, ← map_add]
-      dsimp only -- Porting note: added
+      dsimp only -- Porting note (#10752): added `dsimp only`
       rw [h.modByMonic_repr_map, add_modByMonic]
   map_smul' c x := by
     rw [RingHom.id_apply, ← h.map_repr x, Algebra.smul_def, h.algebraMap_apply, ← map_mul]
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.modByMonic_repr_map, ← smul_eq_C_mul, smul_modByMonic, h.map_repr]
 #align is_adjoin_root_monic.mod_by_monic_hom IsAdjoinRootMonic.modByMonicHom
 
@@ -435,24 +435,24 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
         rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
-        dsimp only -- Porting note: added
+        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [Finsupp.mapDomain_apply Fin.val_injective]
         rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
-        dsimp only -- Porting note: added
+        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [Finsupp.mapDomain_notin_range]
         rw [Set.mem_range, not_exists]
         rintro i rfl
         exact i.prop.not_le hm
       map_add' := fun x y => by
-        dsimp only -- Porting note: added
+        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
       -- Porting note: the original simp proof with the same lemmas does not work
       -- See https://github.com/leanprover-community/mathlib4/issues/5026
       -- simp only [map_add, Finsupp.comapDomain_add_of_injective Fin.val_injective, toFinsupp_add]
       map_smul' := fun c x => by
-        dsimp only -- Porting note: added
+        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [map_smul, toFinsupp_smul, Finsupp.comapDomain_smul_of_injective Fin.val_injective,
           RingHom.id_apply] }
       -- Porting note: the original simp proof with the same lemmas does not work

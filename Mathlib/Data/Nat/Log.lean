@@ -135,7 +135,7 @@ theorem lt_pow_succ_log_self {b : ℕ} (hb : 1 < b) (x : ℕ) : x < b ^ (log b x
 theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     log b n = m ↔ b ^ m ≤ n ∧ n < b ^ (m + 1) := by
   rcases em (1 < b ∧ n ≠ 0) with (⟨hb, hn⟩ | hbn)
-  · rw [le_antisymm_iff, ← lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt, and_comm] <;>
+  · rw [le_antisymm_iff, ← Nat.lt_succ_iff, ← pow_le_iff_le_log, ← lt_pow_iff_log_lt, and_comm] <;>
       assumption
   · have hm : m ≠ 0 := h.resolve_right hbn
     rw [not_and_or, not_lt, Ne.def, not_not] at hbn
@@ -283,7 +283,7 @@ theorem clog_pos {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : 0 < clog b n := by
 theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := by
   rw [clog_of_two_le (hn.trans h) hn, clog_of_right_le_one]
   have n_pos : 0 < n := (zero_lt_two' ℕ).trans_le hn
-  rw [← lt_succ_iff, Nat.div_lt_iff_lt_mul (n_pos.trans_le h), ← succ_le_iff, ← pred_eq_sub_one,
+  rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul (n_pos.trans_le h), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (add_pos n_pos (n_pos.trans_le h)), succ_mul, one_mul]
   exact add_le_add_right h _
 #align nat.clog_eq_one Nat.clog_eq_one

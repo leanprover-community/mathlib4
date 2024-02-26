@@ -411,6 +411,8 @@ variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
+theorem mk {f : α → β → σ} (hf : Primrec fun p : α × β => f p.1 p.2) : Primrec₂ f := hf
+
 theorem of_eq {f g : α → β → σ} (hg : Primrec₂ f) (H : ∀ a b, f a b = g a b) : Primrec₂ g :=
   (by funext a b; apply H : f = g) ▸ hg
 #align primrec₂.of_eq Primrec₂.of_eq
@@ -971,9 +973,9 @@ instance list : Primcodable (List α) :=
         intro n IH; simp
         cases' @decode α _ n.unpair.1 with a; · rfl
         simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some']
-        suffices : ∀ (o : Option (List ℕ)) (p), encode o = encode p →
-          encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p)
-        exact this _ _ (IH _ (Nat.unpair_right_le n))
+        suffices ∀ (o : Option (List ℕ)) (p), encode o = encode p →
+            encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p) from
+          this _ _ (IH _ (Nat.unpair_right_le n))
         intro o p IH
         cases o <;> cases p
         · rfl
@@ -1454,9 +1456,10 @@ theorem add : @Primrec' 2 fun v => v.head + v.tail.head :=
 #align nat.primrec'.add Nat.Primrec'.add
 
 theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
-  suffices; simpa using comp₂ (fun a b => b - a) this (tail head) head
-  refine' (prec head (pred.comp₁ _ (tail head))).of_eq fun v => _
-  simp; induction v.head <;> simp [*, Nat.sub_succ]
+  have : @Primrec' 2 fun v ↦ (fun a b ↦ b - a) v.head v.tail.head := by
+    refine' (prec head (pred.comp₁ _ (tail head))).of_eq fun v => _
+    simp; induction v.head <;> simp [*, Nat.sub_succ]
+  simpa using comp₂ (fun a b => b - a) this (tail head) head
 #align nat.primrec'.sub Nat.Primrec'.sub
 
 theorem mul : @Primrec' 2 fun v => v.head * v.tail.head :=
@@ -1484,8 +1487,9 @@ protected theorem encode : ∀ {n}, @Primrec' n encode
 #align nat.primrec'.encode Nat.Primrec'.encode
 
 theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
-  suffices H : ∀ n : ℕ, n.sqrt = n.rec 0 fun x y => if x.succ < y.succ * y.succ then y else y.succ
-  · simp [H]
+  suffices H : ∀ n : ℕ, n.sqrt =
+      n.rec 0 fun x y => if x.succ < y.succ * y.succ then y else y.succ by
+    simp [H]
     have :=
       @prec' 1 _ _
         (fun v => by
