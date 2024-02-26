@@ -494,6 +494,7 @@ Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, then `f : Πᵢ sᵢ 
 element of `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))` defined by `⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
 This is `PiTensorProduct.map` for two arbitrary families of modules.
+This is `TensorProduct.map₂` for families of modules.
 Note that for now, there is no `TensorProduct` analogue of this construction.
 -/
 def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
