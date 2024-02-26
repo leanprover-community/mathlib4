@@ -346,7 +346,7 @@ lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
   let b := Module.Free.chooseBasis R M
   let b' := Algebra.TensorProduct.basis A b
   change _ = (algebraMap R A : R →+ A) _
-  simp [trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
+  simp [b', trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
 
 end
 
