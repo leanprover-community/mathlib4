@@ -512,7 +512,6 @@ instance inhabitedTopologicalSpace {α : Type u} : Inhabited (TopologicalSpace �
   ⟨⊥⟩
 #align inhabited_topological_space inhabitedTopologicalSpace
 
--- See note [lower instance priority]
 instance (priority := 100) Subsingleton.uniqueTopologicalSpace [Subsingleton α] :
     Unique (TopologicalSpace α) where
   default := ⊥

@@ -176,7 +176,6 @@ example
 
 [This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
 gives some more context. -/
--- See note [lower instance priority]
 instance (priority := 100) NormedSpace.toModule' : Module 𝕜 F :=
   NormedSpace.toModule
 #align normed_space.to_module' NormedSpace.toModule'

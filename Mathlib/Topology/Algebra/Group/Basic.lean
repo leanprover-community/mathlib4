@@ -283,7 +283,8 @@ instance Pi.has_continuous_inv' : ContinuousInv (ι → G) :=
 #align pi.has_continuous_neg' Pi.has_continuous_neg'
 
 
--- See note [lower instance priority]@[to_additive]
+-- See note [lower instance priority]
+@[to_additive]
 instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H] [Inv H]
     [DiscreteTopology H] : ContinuousInv H :=
   ⟨continuous_of_discreteTopology⟩
@@ -1558,7 +1559,8 @@ section
 variable (G) [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 
--- See note [lower instance priority]@[to_additive]
+-- See note [lower instance priority]
+@[to_additive]
 instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
   refine' RegularSpace.ofExistsMemNhdsIsClosedSubset fun a s hs => _
   have : Tendsto (fun p : G × G => p.1 * p.2) (𝓝 (a, 1)) (𝓝 a) :=

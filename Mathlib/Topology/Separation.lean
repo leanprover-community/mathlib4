@@ -843,7 +843,6 @@ theorem ConnectedSpace.infinite [ConnectedSpace X] [Nontrivial X] [T1Space X] : 
 #align connected_space.infinite ConnectedSpace.infinite
 
 /-- A non-trivial connected T1 space has no isolated points. -/
--- See note [lower instance priority]
 instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
     [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
     NeBot (𝓝[≠] x) := by

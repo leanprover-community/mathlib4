@@ -41,9 +41,8 @@ variable {α Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ�
 
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.
 A subset U is open if 0 ∉ U or if there is an invertible element γ₀ such that {γ | γ < γ₀} ⊆ U. -/
-scoped -- See note [lower instance priority]
 -- See note [lower instance priority]
-instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
+scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
   nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
 #align with_zero_topology.topological_space WithZeroTopology.topologicalSpace
 
@@ -159,8 +158,7 @@ theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
 structure: the set `{p : Γ₀ × Γ₀ | p.1 ≤ p.2}` is closed. -/
 -- See note [lower instance priority]
 @[nolint defLemma]
-scoped -- See note [lower instance priority]
-instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
+scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
   isClosed_le' := by
     simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
     rintro ⟨a, b⟩ (hab : b < a)
@@ -171,8 +169,7 @@ instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ₀ where
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/
 -- See note [lower instance priority]
 @[nolint defLemma]
-scoped -- See note [lower instance priority]
-instance (priority := 100) t5Space : T5Space Γ₀ where
+scoped instance (priority := 100) t5Space : T5Space Γ₀ where
   completely_normal := fun s t h₁ h₂ => by
     by_cases hs : 0 ∈ s
     · have ht : 0 ∉ t := fun ht => disjoint_left.1 h₁ (subset_closure hs) ht
@@ -187,8 +184,7 @@ instance (priority := 100) t5Space : T5Space Γ₀ where
 monoid. -/
 -- See note [lower instance priority]
 @[nolint defLemma]
-scoped -- See note [lower instance priority]
-instance (priority := 100) : ContinuousMul Γ₀ where
+scoped instance (priority := 100) : ContinuousMul Γ₀ where
   continuous_mul := by
     simp only [continuous_iff_continuousAt, ContinuousAt]
     rintro ⟨x, y⟩
@@ -212,8 +208,7 @@ instance (priority := 100) : ContinuousMul Γ₀ where
 
 -- See note [lower instance priority]
 @[nolint defLemma]
-scoped -- See note [lower instance priority]
-instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
+scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩
