@@ -414,7 +414,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     by_cases h : n' = i
     · have hni : n = i := by
         cases i
-        simp only [Fin.mk_eq_mk] at h
+        simp only [n', Fin.mk_eq_mk] at h
         simp [h]
       simp only [h, transvection_mul_apply_same, IH, ← hni, add_le_iff_nonpos_right,
           listTransvecCol_mul_last_row_drop _ _ hn]
@@ -449,7 +449,7 @@ theorem mul_listTransvecRow_last_col_take (i : Sum (Fin r) Unit) {k : ℕ} (hk :
             (-M (inr Unit.unit) (inl k') / M (inr Unit.unit) (inr Unit.unit))) := by
       simp only [listTransvecRow, List.ofFnNthVal, hkr, dif_pos, List.get?_ofFn]
     simp only [List.take_succ, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
-      List.prod_cons, List.prod_nil, Option.to_list_some]
+      List.prod_cons, List.prod_nil, Option.toList_some]
     rw [mul_transvection_apply_of_ne, IH hkr.le]
     simp only [Ne.def, not_false_iff]
 #align matrix.pivot.mul_list_transvec_row_last_col_take Matrix.Pivot.mul_listTransvecRow_last_col_take
@@ -486,11 +486,11 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         (-M (inr unit) (inl n') / M (inr unit) (inr unit))) := by
       simp only [listTransvecRow, List.ofFnNthVal, hnr, dif_pos, List.get?_ofFn]
     simp only [List.take_succ, A, ← Matrix.mul_assoc, List.prod_append, Matrix.mul_one,
-      List.prod_cons, List.prod_nil, Option.to_list_some]
+      List.prod_cons, List.prod_nil, Option.toList_some]
     by_cases h : n' = i
     · have hni : n = i := by
         cases i
-        simp only [Fin.mk_eq_mk] at h
+        simp only [n', Fin.mk_eq_mk] at h
         simp only [h]
       have : ¬n.succ ≤ i := by simp only [← hni, n.lt_succ_self, not_le]
       simp only [h, mul_transvection_apply_same, List.take, if_false,
@@ -559,8 +559,8 @@ theorem exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0
     List.ofFn fun i : Fin r =>
       ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) / M (inr unit) (inr unit)⟩
   refine' ⟨L, L', _⟩
-  have A : L.map toMatrix = listTransvecCol M := by simp [listTransvecCol, (· ∘ ·)]
-  have B : L'.map toMatrix = listTransvecRow M := by simp [listTransvecRow, (· ∘ ·)]
+  have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, (· ∘ ·)]
+  have B : L'.map toMatrix = listTransvecRow M := by simp [L', listTransvecRow, (· ∘ ·)]
   rw [A, B]
   exact isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow M hM
 #align matrix.pivot.exists_is_two_block_diagonal_of_ne_zero Matrix.Pivot.exists_isTwoBlockDiagonal_of_ne_zero
@@ -591,7 +591,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
       exact (H j).2
   rcases this with ⟨i, h | h⟩
   · let M' := transvection (inr Unit.unit) (inl i) 1 * M
-    have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [hM]
+    have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [M', hM]
     rcases exists_isTwoBlockDiagonal_of_ne_zero M' hM' with ⟨L, L', hLL'⟩
     rw [Matrix.mul_assoc] at hLL'
     refine' ⟨L ++ [⟨inr unit, inl i, by simp, 1⟩], L', _⟩
@@ -599,7 +599,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
       List.prod_nil, List.map, Matrix.mul_assoc (L.map toMatrix).prod]
     exact hLL'
   · let M' := M * transvection (inl i) (inr unit) 1
-    have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [hM]
+    have hM' : M' (inr unit) (inr unit) ≠ 0 := by simpa [M', hM]
     rcases exists_isTwoBlockDiagonal_of_ne_zero M' hM' with ⟨L, L', hLL'⟩
     refine' ⟨L, ⟨inl i, inr unit, by simp, 1⟩::L', _⟩
     simp only [← Matrix.mul_assoc, toMatrix_mk, List.prod_cons, List.map]
@@ -627,7 +627,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
       Sum.elim D₀ fun _ => M' (inr unit) (inr unit), _⟩
   suffices (L₀.map (toMatrix ∘ sumInl Unit)).prod * M' * (L₀'.map (toMatrix ∘ sumInl Unit)).prod =
       diagonal (Sum.elim D₀ fun _ => c) by
-    simpa [Matrix.mul_assoc]
+    simpa [M', c, Matrix.mul_assoc]
   have : M' = fromBlocks M'' 0 0 (diagonal fun _ => c) := by
     -- porting note: simplified proof, because `congr` didn't work anymore
     rw [← fromBlocks_toBlocks M', hM.1, hM.2]

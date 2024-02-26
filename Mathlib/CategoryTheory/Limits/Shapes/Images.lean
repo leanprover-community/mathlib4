@@ -436,13 +436,11 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
     (w : factorThruImage f ≫ g = factorThruImage f ≫ h) : g = h := by
   let q := equalizer.ι g h
   let e' := equalizer.lift _ w
-  -- FIXME nightly-testing: the `sorry` here used to be an autoparam, but `aesop` won't unfold.
   let F' : MonoFactorisation f :=
     { I := equalizer g h
       m := q ≫ image.ι f
       m_mono := by apply mono_comp
-      e := e'
-      fac := sorry }
+      e := e' }
   let v := image.lift F'
   have t₀ : v ≫ q ≫ image.ι f = image.ι f := image.lift_fac F'
   have t : v ≫ q = 𝟙 (image f) :=

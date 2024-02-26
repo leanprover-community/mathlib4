@@ -338,10 +338,10 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   have hSne : S.Nonempty := by
     use 1
     have h1 : 0 < n ∧ ∃ x : ℕ, 1 = x ^ 2 := ⟨hn, ⟨1, (one_pow 2).symm⟩⟩
-    simp [h1]
+    simp [S, h1]
   let s := Finset.max' S hSne
   have hs : s ∈ S := Finset.max'_mem S hSne
-  simp only [Finset.mem_filter, Finset.mem_range] at hs
+  simp only [S, Finset.mem_filter, Finset.mem_range] at hs
   obtain ⟨-, ⟨a, hsa⟩, ⟨b, hsb⟩⟩ := hs
   rw [hsa] at hn
   obtain ⟨hlts, hlta⟩ := CanonicallyOrderedCommSemiring.mul_pos.mp hn
@@ -356,7 +356,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
       (one_lt_pow 2 x two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
       using 1
     rw [mul_pow]
-  · simp_rw [hsa, Finset.mem_filter, Finset.mem_range]
+  · simp_rw [S, hsa, Finset.mem_filter, Finset.mem_range]
     refine' ⟨Nat.lt_succ_iff.mpr (le_of_dvd hn _), _, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
 #align nat.sq_mul_squarefree_of_pos Nat.sq_mul_squarefree_of_pos
 
