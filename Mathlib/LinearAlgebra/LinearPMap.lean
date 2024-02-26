@@ -632,10 +632,12 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     rw [f_eq ⟨p, hpc⟩ x x' rfl, f_eq ⟨p, hpc⟩ y y' rfl, f_eq ⟨p, hpc⟩ (x + y) (x' + y') rfl,
       map_add]
   · -- FIXME nightly-testing: not sure what has happened here:
-    sorry
-    -- intro c x
+    -- sorry
+    intro c x
     -- -- Porting note: `simp [..]` to `simp only [..]`, or timeouts.
-    -- simp only [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul, RingHom.id_apply]
+    dsimp
+    rw [← map_smul]  -- v4.7.0-rc1 problems
+    simp only [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, RingHom.id_apply]
   · intro p hpc
     refine' ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
