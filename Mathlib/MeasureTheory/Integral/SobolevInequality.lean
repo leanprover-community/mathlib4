@@ -66,6 +66,14 @@ protected theorem div_le_iff' {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ �
 
 end ENNReal
 
+namespace Real.IsConjExponent
+
+variable {p q : ℝ} (h : IsConjExponent p q)
+lemma conj_inv_eq : q⁻¹ = 1 - p⁻¹ := by
+  rw [eq_sub_iff_add_eq, add_comm, h.inv_add_inv_conj]
+
+end Real.IsConjExponent
+
 section conjExponent
 
 /- I (F) was planning to use this, but in the end none of the results in this section are used. -/
@@ -86,9 +94,6 @@ lemma NNReal.one_lt_conjExponent {p : ℝ≥0} : 1 < p.conjExponent ↔ 1 < p :=
 
 lemma NNReal.conjExponent_pos {p : ℝ≥0} (hp : 1 < p) : 0 < p.conjExponent :=
   zero_lt_one.trans <| NNReal.one_lt_conjExponent.mpr hp
-
-lemma MeasureTheory.snorm_conjExponent_eq_lintegral {u : E → ℝ} {p : ℝ≥0} :
-  snorm u p.conjExponent μ = snorm u p μ := by sorry
 
 end conjExponent
 
@@ -506,30 +511,41 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
   exact hC hu h2u
 
 theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} (hp : 1 ≤ p)
-    (h2p : p < finrank ℝ E) (hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+    (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
   have hn : NNReal.IsConjExponent n n' := .conjExponent (by norm_cast)
   have h1n : 1 ≤ (n : ℝ≥0) := hn.one_le
+  have h2n : (0 : ℝ) < n - 1 := by simp_rw [sub_pos]; exact hn.coe.one_lt
+  have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
   obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv μ hE hn
   rcases hp.eq_or_lt with rfl|hp
   -- the case `p = 1`
-  · use C
-    intros u hu h2u
+  · refine ⟨C, @fun u hu h2u ↦ ?_⟩
     convert hC hu h2u
     ext
-    rw [← inv_inj, ← NNReal.coe_inv, hp']
+    rw [← inv_inj, hp']
     field_simp [NNReal.conjExponent]
   -- the case `p > 1`
-  have h0p : p ≠ 0 := sorry
-  have h0p' : p' ≠ 0 := sorry
+  have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   let q := Real.conjExponent p
   have hq : Real.IsConjExponent p q := .conjExponent hp
-  have h2q : 1 / n' - 1 / q = 1 / p' := by sorry
-  let γ : ℝ≥0 := p * (n - 1) / (n - p)
-  have hγ : 1 < γ := sorry
+  have h0p' : p' ≠ 0 := by
+    suffices 0 < (p' : ℝ) from (show 0 < p' from this) |>.ne'
+    rw [← inv_pos, hp', sub_pos]
+    exact inv_lt_inv_of_lt hq.pos h2p
+  have h2q : 1 / n' - 1 / q = 1 / p' := by
+    simp_rw (config := {zeta := false}) [one_div, hp']
+    rw [hq.conj_inv_eq, hn.coe.conj_inv_eq, sub_sub_sub_cancel_left]
+    simp
+  let γ : ℝ≥0 := ⟨p * (n - 1) / (n - p), by positivity⟩
+  have h0γ : (γ : ℝ) = p * (n - 1) / (n - p) := rfl
+  have h1γ : 1 < γ := by
+    rwa [← NNReal.coe_lt_coe, NNReal.coe_one, h0γ, one_lt_div hnp, mul_sub, mul_one,
+      sub_lt_sub_iff_right, lt_mul_iff_one_lt_left]
+    exact hn.coe.pos
   have h2γ : γ * n' = p' := sorry
   have h3γ : (γ - 1) * q = p' := sorry
   refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
