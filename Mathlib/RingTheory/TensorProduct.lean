@@ -213,8 +213,8 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
-#noalign algebra.tensor_product.mul_aux -- Algebra.TensorProduct.mulAux
-#noalign algebra.tensor_product.mul_aux_apply -- Algebra.TensorProduct.mulAux_apply
+#noalign algebra.tensor_product.mul_aux
+#noalign algebra.tensor_product.mul_aux_apply
 
 /-- (Implementation detail)
 The multiplication map on `A ⊗[R] B`,
