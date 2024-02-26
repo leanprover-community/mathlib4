@@ -776,9 +776,7 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
           · apply hp
           · apply hy'.le
         _ = B n := by
-          -- porting note: in the original, `B` was in the `field_simp`, but now Lean does not
-          -- accept it. The current proof works in Lean 4, but does not in Lean 3.
-          field_simp [pow_succ]
+          field_simp [B, pow_succ]
           simp only [mul_assoc, mul_comm, mul_left_comm]
     have hBL : HasSum B (L y) := by
       apply HasSum.mul_left
@@ -792,7 +790,7 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     refine' (IsBigO.of_bound 1 (eventually_principal.2 fun y hy => _)).trans this
     rw [one_mul]
     exact (hL y hy).trans (le_abs_self _)
-  simp_rw [mul_right_comm _ (_ * _)]  -- porting note: there was an `L` inside the `simp_rw`.
+  simp_rw [L, mul_right_comm _ (_ * _)]
   exact (isBigO_refl _ _).const_mul_left _
 set_option linter.uppercaseLean3 false in
 #align has_fpower_series_on_ball.is_O_image_sub_image_sub_deriv_principal HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
@@ -1334,7 +1332,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
     refine' HasSum.sigma_of_hasSum ((p.changeOrigin x).summable y_mem_ball).hasSum (fun k => _) hsf
-    · dsimp only
+    · dsimp only [f]
       refine' ContinuousMultilinearMap.hasSum_eval _ _
       have := (p.hasFPowerSeriesOnBall_changeOrigin k radius_pos).hasSum x_mem_ball
       rw [zero_add] at this
