@@ -945,6 +945,10 @@ def homTensorHomMap : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] 
 
 variable {R M N P Q}
 
+def map₂ (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) :
+    M ⊗[R] N →ₗ[R] P ⊗[R] S →ₗ[R] Q ⊗[R] T :=
+  homTensorHomMap R _ _ _ _ ∘ₗ map f g
+
 @[simp]
 theorem mapBilinear_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : mapBilinear R M N P Q f g = map f g :=
   rfl
@@ -967,6 +971,10 @@ theorem homTensorHomMap_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     homTensorHomMap R M N P Q (f ⊗ₜ g) = map f g :=
   rfl
 #align tensor_product.hom_tensor_hom_map_apply TensorProduct.homTensorHomMap_apply
+
+@[simp]
+theorem map₂_apply_tmul (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) (m : M) (n : N) :
+  map₂ f g (m ⊗ₜ n) = map (f m) (g n) := rfl
 
 @[simp]
 theorem map_zero_left (g : N →ₗ[R] Q) : map (0 : M →ₗ[R] P) g = 0 :=
