@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 
 import Qq.Macro
-import Std.Lean.Expr
 
 /-!
 # The `eval%` term elaborator
