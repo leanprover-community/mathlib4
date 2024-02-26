@@ -515,7 +515,7 @@ partial def funTrans (e : Expr) : SimpM Simp.Step := do
 
   let .some (funTransDecl, f) ← getFunTrans? e | return .continue
 
-  if e.approxDepth > 30 then
+  if e.approxDepth > 60 then
     throwError "fun_trans, expression is too deep({e.approxDepth})\n{← ppExpr e}"
 
   trace[Meta.Tactic.fun_trans] s!"runing fun_trans on {← ppExpr e}"
