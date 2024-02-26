@@ -210,9 +210,17 @@ theorem NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0} (hr : r < 1) 
   NNReal.tendsto_coe.1 <| by
     simp only [NNReal.coe_pow, NNReal.coe_zero,
       _root_.tendsto_pow_atTop_nhds_zero_of_lt_one r.coe_nonneg hr]
+
 #align nnreal.tendsto_pow_at_top_nhds_0_of_lt_1 NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 @[deprecated] alias NNReal.tendsto_pow_atTop_nhds_0_of_lt_1 :=
   NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
+
+-- @[simp]
+-- theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
+-- Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0)) ↔ r < 1 := by
+-- simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe]
+--         using tendsto_pow_atTop_nhds_zero_iff.mp <| tendsto_coe.mpr h
+
 
 theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) := by
