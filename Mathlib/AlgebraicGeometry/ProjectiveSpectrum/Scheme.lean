@@ -206,8 +206,8 @@ lemma carrier_eq_span :
   · intro z hz
     let k : ℕ := z.den_mem.choose
     have hk : f^k = z.den := z.den_mem.choose_spec
-    suffices mem1 : z.num ∈ x.1.asHomogeneousIdeal
-    · refine Ideal.subset_span ⟨_, _, mem1, _, z.num_mem_deg, z.den_mem_deg, z.den_mem, ?_⟩
+    suffices mem1 : z.num ∈ x.1.asHomogeneousIdeal by
+      refine Ideal.subset_span ⟨_, _, mem1, _, z.num_mem_deg, z.den_mem_deg, z.den_mem, ?_⟩
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
         HomogeneousLocalization.eq_num_div_den]
 
@@ -218,9 +218,9 @@ lemma carrier_eq_span :
     dsimp only [OneMemClass.coe_one] at eq1
     rw [one_mul, ← hk, ← mul_assoc, ← mul_assoc, ← pow_add, ← pow_add] at eq1
 
-    suffices : f^(l + k) * ∑ i in c.support.attach, acd (c i) _ * i.1.2.choose ∈
-      x.1.asHomogeneousIdeal
-    · exact (x.1.isPrime.mem_or_mem (eq1.symm ▸ this)).resolve_left fun r ↦
+    suffices f^(l + k) * ∑ i in c.support.attach, acd (c i) _ * i.1.2.choose ∈
+      x.1.asHomogeneousIdeal from
+      (x.1.isPrime.mem_or_mem (eq1.symm ▸ this)).resolve_left fun r ↦
         (ProjectiveSpectrum.mem_basicOpen 𝒜 _ _).mp x.2 <| x.1.isPrime.mem_of_pow_mem _ r
     exact Ideal.mul_mem_left _ _ <| Ideal.sum_mem _ (fun ⟨j, hj⟩ _ ↦
       Ideal.mul_mem_left _ _ j.2.choose_spec.1)
@@ -654,7 +654,7 @@ lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
       · dsimp; congr 2
         rw [← k_spec, ← pow_mul, show z.deg = k * m from
           degree_eq_of_mem_mem 𝒜 (k_spec ▸ z.den_mem_deg) (SetLike.pow_mem_graded k f_deg) ineq]
-    · simp only [CommRingCat.coe_of, GradedAlgebra.proj_apply, zero_pow hm,
+    · simp only [CommRingCat.coe_of, GradedAlgebra.proj_apply, zero_pow (by linarith only [hm]),
         DirectSum.decompose_of_mem_ne 𝒜 z.num_mem_deg ineq]
       convert x.asIdeal.zero_mem
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
