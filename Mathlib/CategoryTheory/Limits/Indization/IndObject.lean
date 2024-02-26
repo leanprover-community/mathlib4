@@ -145,7 +145,7 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
 /-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
     `CostructuredArrow yoneda A` is filtered and finally `v`-small.
 
-    Theorem 6.1.8 of [Kashiwara2006] -/
+    Theorem 6.1.5 of [Kashiwara2006] -/
 theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
   ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
