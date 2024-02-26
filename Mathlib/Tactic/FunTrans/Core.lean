@@ -89,7 +89,7 @@ def tryTheoremCore (lhs : Expr) (xs : Array Expr) (bis : Array BinderInfo) (val 
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
 
   unless (← isDefEq lhs (← instantiateMVars e)) do
-    trace[Meta.Tactic.fun_trans.unify] "failed to unify {← ppOrigin' thmId}\n{type}\nwith\n{e}"
+    trace[Meta.Tactic.fun_trans.unify] "failed to unify {← ppOrigin' thmId}\n{lhs}\nwith\n{e}"
     return none
 
   if ¬(← synthesizeArgs thmId xs bis) then
