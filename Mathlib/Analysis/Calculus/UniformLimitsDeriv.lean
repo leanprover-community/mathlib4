@@ -130,7 +130,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     obtain ⟨a, b, c, d, e⟩ := eventually_prod_iff.1 ((hf' ε hε).and this)
     obtain ⟨R, hR, hR'⟩ := Metric.nhds_basis_ball.eventually_iff.mp d
     let r := min 1 R
-    have hr : 0 < r := by simp [hR]
+    have hr : 0 < r := by simp [r, hR]
     have hr' : ∀ ⦃y : E⦄, y ∈ Metric.ball x r → c y := fun y hy =>
       hR' (lt_of_lt_of_le (Metric.mem_ball.mp hy) (min_le_right _ _))
     have hxy : ∀ y : E, y ∈ Metric.ball x r → ‖y - x‖ < 1 := by
