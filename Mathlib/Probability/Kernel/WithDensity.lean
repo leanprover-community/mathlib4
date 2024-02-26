@@ -73,7 +73,7 @@ protected theorem withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
 #align probability_theory.kernel.with_density_apply' ProbabilityTheory.kernel.withDensity_apply'
 
 nonrec lemma withDensity_congr_ae (κ : kernel α β) [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
-  (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
+    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
     (hfg : ∀ a, f a =ᵐ[κ a] g a) :
     withDensity κ f = withDensity κ g := by
   ext a
