@@ -105,11 +105,9 @@ theorem quadraticChar_card_card [DecidableEq F] (hF : ringChar F ≠ 2) {F' : Ty
       contrapose ha
       exact ne_of_eq_of_ne (map_nonunit (quadraticChar F) ha) (mt zero_eq_neg.mp one_ne_zero)
     use hu.unit
-    -- FIXME nightly-testing
-    sorry
-    -- simp only [χ, IsUnit.unit_spec, ringHomComp_apply, eq_intCast, Ne.def, ha]
-    -- rw [Int.cast_neg, Int.cast_one]
-    -- exact Ring.neg_one_ne_one_of_char_ne_two hF'
+    simp only [χ, IsUnit.unit_spec, ringHomComp_apply, eq_intCast, Ne.def, ha]
+    rw [Int.cast_neg, Int.cast_one]
+    exact Ring.neg_one_ne_one_of_char_ne_two hF'
   have hχ₂ : χ.IsQuadratic := IsQuadratic.comp (quadraticChar_isQuadratic F) _
   have h := Char.card_pow_card hχ₁ hχ₂ h hF'
   rw [← quadraticChar_eq_pow_of_char_ne_two' hF'] at h
