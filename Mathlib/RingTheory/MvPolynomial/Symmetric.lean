@@ -6,6 +6,9 @@ Authors: Hanting Zhang, Johan Commelin
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Combinatorics.Composition
+import Mathlib.Combinatorics.Partition
+import Mathlib.Data.Set.Card
 
 #align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -353,14 +356,14 @@ instance exponentFinite (n : ℕ) : Finite (Exponent σ n) := by
 
 instance exponentFintype (n : ℕ) : Fintype (Exponent σ n) := Fintype.ofFinite (Exponent σ n)
 
-def exponentLiftEquiv (e : σ ≃ τ) : Exponent σ n ≃ Exponent τ n := {
+def exponentLiftEquiv (e : σ ≃ τ) (n : ℕ): Exponent σ n ≃ Exponent τ n := {
           toFun := fun s => ⟨fun i => s.exp (e.invFun i), by simp_rw [← s.sum_eq]; exact Equiv.sum_comp e.symm s.exp⟩,
           invFun := fun s => ⟨fun i => s.exp (e.toFun i), by simp_rw [← s.sum_eq]; exact Equiv.sum_comp e s.exp⟩,
           left_inv := fun s => by simp,
           right_inv := fun s => by simp
           }
 
-lemma exponentLiftEquiv_toFun (e : σ ≃ τ) (s : Exponent σ n) (i : τ) : ((exponentLiftEquiv _ e).toFun s).exp i = s.exp (e.invFun i) := by
+lemma exponentLiftEquiv_toFun (e : σ ≃ τ) (n : ℕ) (s : Exponent σ n) (i : τ) : ((exponentLiftEquiv _ e _).toFun s).exp i = s.exp (e.invFun i) := by
   simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe]
   rfl
   done
@@ -528,7 +531,7 @@ theorem rename_hsymm (n : ℕ) (e : σ ≃ τ) : rename e (hsymm σ R n) = hsymm
   calc
     rename e (hsymm σ R n) = ∑ μ : Exponent σ n, ∏ i : σ, X (e i) ^ (μ.exp i) := by
       simp_rw [hsymm, map_sum, map_prod, map_pow, rename_X]
-    _ = ∑ μ : Exponent σ n, ∏ j : τ, X j ^ (((exponentLiftEquiv _ e) μ).exp j) := by
+    _ = ∑ μ : Exponent σ n, ∏ j : τ, X j ^ (((exponentLiftEquiv _ e _) μ).exp j) := by
       congr
       funext s
       apply Fintype.prod_equiv
@@ -542,7 +545,7 @@ theorem rename_hsymm (n : ℕ) (e : σ ≃ τ) : rename e (hsymm σ R n) = hsymm
       apply Fintype.sum_equiv
       intro i
       swap
-      exact (exponentLiftEquiv _ e)
+      exact (exponentLiftEquiv _ e _)
       congr
 
 theorem hsymm_isSymmetric (n : ℕ) : IsSymmetric (hsymm σ R n) := rename_hsymm _ _ n
