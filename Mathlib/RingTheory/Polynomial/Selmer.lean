@@ -105,15 +105,15 @@ def res' {K : Type*} [Field K] (σ : K ≃+* K) : 𝓞 K ≃+* 𝓞 K :=
   RingEquiv.ofHomInv (reshom σ) (reshom σ.symm)
     (by ext x; exact σ.symm_apply_apply x) (by ext x; exact σ.apply_symm_apply x)
 
-def res {K : Type*} [Field K] {τ : Type*} [RingEquivClass τ K K] (σ : τ) : 𝓞 K ≃+* 𝓞 K :=
+def res {K : Type*} [Field K] {τ : Type*} [EquivLike τ K K] [RingEquivClass τ K K] (σ : τ) : 𝓞 K ≃+* 𝓞 K :=
   res' (RingEquivClass.toRingEquiv σ)
 
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
   let f : ℚ[X] := X ^ n - X - 1
   change Function.Bijective (Gal.galActionHom f ℂ)
-  have : MulAction.IsPretransitive f.Gal (f.rootSet ℂ)
-  · rcases eq_or_ne n 1 with rfl | hn
+  have : MulAction.IsPretransitive f.Gal (f.rootSet ℂ) := by
+    rcases eq_or_ne n 1 with rfl | hn
     · have : IsEmpty (rootSet f ℂ) := by simp
       infer_instance
     exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
@@ -121,15 +121,14 @@ theorem X_pow_sub_X_sub_one_gal :
   let R := 𝓞 K
   let S0 : Set f.Gal := ⋃ (q : Ideal R) (hq : q.IsMaximal), {σ | ∀ x : R, res σ x - x ∈ q}
   let S : Set f.Gal := S0 \ {1}
-  have hS0 : Subgroup.closure S0 = ⊤
-  · sorry
-  have hS1 : Subgroup.closure S = ⊤
-  · have h : Subgroup.closure (S0 ∩ {1}) = ⊥
-    · rw [eq_bot_iff, ← Subgroup.closure_singleton_one]
+  have hS0 : Subgroup.closure S0 = ⊤ := sorry
+  have hS1 : Subgroup.closure S = ⊤ := by
+    have h : Subgroup.closure (S0 ∩ {1}) = ⊥ := by
+      rw [eq_bot_iff, ← Subgroup.closure_singleton_one]
       exact Subgroup.closure_mono (Set.inter_subset_right S0 {1})
     rw [← hS0, ← Set.diff_union_inter S0 {1}, Subgroup.closure_union, h, sup_bot_eq]
-  have hS2 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet ℂ) σ)
-  · rintro σ ⟨hσ, hσ1 : σ ≠ 1⟩
+  have hS2 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet ℂ) σ) := by
+    rintro σ ⟨hσ, hσ1 : σ ≠ 1⟩
     rw [Set.mem_iUnion] at hσ
     obtain ⟨q, hσ⟩ := hσ
     rw [Set.mem_iUnion] at hσ
@@ -162,6 +161,6 @@ theorem X_pow_sub_X_sub_one_gal :
   -- key facts from algebraic number theory: p divides discriminant implies ramified
   -- ramified means there exists σ(x) = x (mod p)
 
-#check NumberField.discr_gt_one
+#check NumberField.abs_discr_gt_two
 
 end Polynomial

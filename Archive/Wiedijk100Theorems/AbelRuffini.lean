@@ -28,37 +28,34 @@ namespace AbelRuffini
 
 set_option linter.uppercaseLean3 false
 
-open Function Polynomial Polynomial.Gal Ideal
-
-open scoped Polynomial
+open Function Ideal IsAlgClosed Polynomial Polynomial.Gal
 
 attribute [local instance] splits_ℚ_ℂ
 
 /-- A quintic polynomial that we will show is not solvable by radicals -/
 noncomputable def quintic : ℚ[X] := X ^ 5 - X - 1
 
-theorem degree_quintic : quintic.degree = 5 := by rw [quintic]; compute_degree; norm_num
+theorem degree_quintic : quintic.degree = 5 := by
+  rw [quintic]; compute_degree; norm_num
 
 theorem irreducible_quintic : Irreducible quintic :=
   X_pow_sub_X_sub_one_irreducible_rat (by norm_num)
 
-theorem gal_quintic : Bijective (galActionHom quintic ℂ) := X_pow_sub_X_sub_one_gal
+theorem gal_quintic : Bijective (galActionHom quintic ℂ) :=
+  X_pow_sub_X_sub_one_gal
 
 theorem not_solvable_by_rad (x : ℂ) (hx : aeval x quintic = 0) : ¬IsSolvableByRad ℚ x := by
-  apply mt (solvableByRad.isSolvable' irreducible_quintic hx)
-  refine' fun h ↦ Equiv.Perm.not_solvable _ _ (solvable_of_surjective gal_quintic.2)
+  refine' mt (solvableByRad.isSolvable' irreducible_quintic hx)
+    fun h ↦ Equiv.Perm.not_solvable (rootSet quintic ℂ) _ (solvable_of_surjective gal_quintic.2)
   rw [Cardinal.mk_fintype, card_rootSet_eq_natDegree irreducible_quintic.separable
-    (IsAlgClosed.splits_codomain quintic), natDegree_eq_of_degree_eq_some degree_quintic]
-  norm_num
+    (splits_codomain quintic), natDegree_eq_of_degree_eq_some degree_quintic, Nat.ofNat_le_cast]
 #align abel_ruffini.not_solvable_by_rad AbelRuffini.not_solvable_by_rad
 
 /-- **Abel-Ruffini Theorem** -/
 theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
-  have h1 : quintic.degree > 0 := by rw [degree_quintic]; norm_num
-  have h2 : quintic ≠ 0 := fun h ↦ by simp [h] at h1
-  obtain ⟨x, hx⟩ := exists_root_of_splits (algebraMap ℚ ℂ) (IsAlgClosed.splits_codomain quintic)
-    h1.ne'
-  exact ⟨x, ⟨quintic, h2, hx⟩, not_solvable_by_rad x hx⟩
+  have h : quintic.degree > 0 := by rw [degree_quintic]; norm_num
+  obtain ⟨x, hx⟩ := exists_root_of_splits (algebraMap ℚ ℂ) (splits_codomain quintic) h.ne'
+  exact ⟨x, ⟨quintic, ne_zero_of_degree_gt h, hx⟩, not_solvable_by_rad x hx⟩
 #align abel_ruffini.exists_not_solvable_by_rad AbelRuffini.exists_not_solvable_by_rad
 
 end AbelRuffini
