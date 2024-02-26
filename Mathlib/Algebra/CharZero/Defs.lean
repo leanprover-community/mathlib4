@@ -99,6 +99,7 @@ theorem cast_ne_one {n : ℕ} : (n : R) ≠ 1 ↔ n ≠ 1 :=
   cast_eq_one.not
 #align nat.cast_ne_one Nat.cast_ne_one
 
+-- See note [lower instance priority]
 instance (priority := 100) AtLeastTwo.toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
   ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
 
