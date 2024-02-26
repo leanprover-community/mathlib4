@@ -62,6 +62,9 @@ instance instGroup : Group (Gal p) :=
 instance instFintype : Fintype (Gal p) :=
   inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
 
+instance : EquivLike p.Gal p.SplittingField p.SplittingField :=
+  inferInstanceAs (EquivLike (p.SplittingField ≃ₐ[F] p.SplittingField) _ _)
+
 instance : AlgEquivClass p.Gal F p.SplittingField p.SplittingField :=
   inferInstanceAs (AlgEquivClass (p.SplittingField ≃ₐ[F] p.SplittingField) F _ _)
 
