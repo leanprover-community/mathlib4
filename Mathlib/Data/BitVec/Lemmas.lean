@@ -116,27 +116,22 @@ section
 variable (x y : Fin (2^w))
 
 @[simp] lemma ofFin_neg : ofFin (-x) = -(ofFin x) := by
-  -- FIXME nightly-testing: the lemmas should just be removed
-  sorry
-  -- rw [neg_eq_zero_sub]; rfl
+  ext; rw [neg_eq_zero_sub]; simp; rfl -- v4.7.0-rc1 issues remove?
 
 @[simp] lemma ofFin_and : ofFin (x &&& y) = ofFin x &&& ofFin y := by
-  -- FIXME nightly-testing: the lemmas should just be removed
-  sorry
-  -- simp only [HAnd.hAnd, AndOp.and, Fin.land, BitVec.and, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
-  -- exact mod_eq_of_lt (Nat.and_lt_two_pow _ y.prop)
+  ext
+  simp [HAnd.hAnd, AndOp.and, Fin.land, BitVec.and, toNat_ofFin]
+  -- v4.7.0-rc1 issues remove?
 
 @[simp] lemma ofFin_or  : ofFin (x ||| y) = ofFin x ||| ofFin y := by
-  -- FIXME nightly-testing: the lemmas should just be removed
-  sorry
-  -- simp only [HOr.hOr, OrOp.or, Fin.lor, BitVec.or, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
-  -- exact mod_eq_of_lt (Nat.or_lt_two_pow x.prop y.prop)
+  ext
+  simp [HOr.hOr, OrOp.or, Fin.lor, BitVec.or, toNat_ofFin]
+  -- v4.7.0-rc1 issues remove?
 
 @[simp] lemma ofFin_xor : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := by
-  -- FIXME nightly-testing: the lemmas should just be removed
-  sorry
-  -- simp only [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
-  -- exact mod_eq_of_lt (Nat.xor_lt_two_pow x.prop y.prop)
+  ext
+  simp [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin]
+  -- v4.7.0-rc1 issues remove?
 
 @[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
@@ -167,9 +162,8 @@ section
 variable (x y : BitVec w)
 
 @[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
-  -- FIXME nightly-testing: the lemmas should just be removed
-  sorry
-  -- rw [neg_eq_zero_sub]; rfl
+  ext; rw [neg_eq_zero_sub]; simp; rfl
+  -- v4.7.0-rc1 issues remove?
 
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
 lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
