@@ -512,10 +512,10 @@ lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ dist
   obtain ⟨fst, hfst⟩ := T.coyoneda_exact₂ hT (𝟙 T.obj₂ - T.mor₂ ≫ section_ T.mor₂) (by simp)
   let d := binaryBiproductData _ hT zero (section_ T.mor₂) (by simp) fst
     (by simp only [← hfst, sub_add_cancel])
-  refine' ⟨biprod.uniqueUpToIso _ _ d.isBilimit, ⟨_, by simp⟩⟩
+  refine' ⟨biprod.uniqueUpToIso _ _ d.isBilimit, ⟨_, by simp [d]⟩⟩
   ext
-  · simpa using d.bicone.inl_fst
-  · simpa using d.bicone.inl_snd
+  · simpa [d] using d.bicone.inl_fst
+  · simpa [d] using d.bicone.inl_snd
 
 lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
     binaryBiproductTriangle X₁ X₂ ∈ distTriang C := by
@@ -561,7 +561,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
   let T' := Triangle.mk f₁ f₂ f₃
   change T' ∈ distTriang C at hT'
   let φ : ∀ j, T' ⟶ T j := fun j => completeDistinguishedTriangleMorphism _ _
-    hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp)
+    hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp [f₁, T'])
   let φ' := productTriangle.lift _ φ
   have h₁ : φ'.hom₁ = 𝟙 _ := by aesop_cat
   have h₂ : φ'.hom₂ = 𝟙 _ := by aesop_cat

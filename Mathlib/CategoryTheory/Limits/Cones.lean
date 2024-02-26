@@ -454,11 +454,8 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (postcomposeEquivalence f).functor
-    -- FIXME nightly-testing (previously `sorry` was just omitted and done by aesop)
-    unitIso := NatIso.ofComponents fun c => Cones.ext (e.unitIso.app _) sorry
-    -- FIXME nightly-testing (previously `sorry` was just omitted and done by aesop)
-    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _) sorry
-  }
+    unitIso := NatIso.ofComponents fun c => Cones.ext (e.unitIso.app _)
+    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _) }
 #align category_theory.limits.cones.functoriality_equivalence CategoryTheory.Limits.Cones.functorialityEquivalence
 
 /-- If `F` reflects isomorphisms, then `Cones.functoriality F` reflects isomorphisms
@@ -653,11 +650,8 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f.symm).functor
-    -- FIXME nightly-testing (previously `sorry` was just omitted and done by aesop)
-    unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _) sorry
-    -- FIXME nightly-testing (previously `sorry` was just omitted and done by aesop)
-    counitIso :=
-      NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) sorry }
+    unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _)
+    counitIso := NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) }
 #align category_theory.limits.cocones.functoriality_equivalence CategoryTheory.Limits.Cocones.functorialityEquivalence
 
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
