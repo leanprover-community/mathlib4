@@ -836,7 +836,7 @@ variable {S' T' : Type*}
 variable [Monoid S'] [DistribMulAction S' M] [SMulCommClass R S' M]
 variable [Monoid T'] [DistribMulAction T' M] [SMulCommClass R T' M]
 
-instance instDomSmul : SMul S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
+instance : SMul S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
   smul a f :=
     { toFun := a • (f : M → M₂)
       map_add' := fun x y ↦ by simp only [DomMulAct.smul_apply, f.map_add, smul_add]
