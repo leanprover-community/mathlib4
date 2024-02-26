@@ -946,9 +946,9 @@ def homTensorHomMap : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] 
 variable {R M N P Q}
 
 /--
-This is a binary version of `TensorProduct.map`: Given a linear map `f : M ⟶ P ⟶ Q` and a linear
-map `g : N ⟶ S ⟶ T`, if we think `f` and `g` as linear maps with two inputs, then `map₂ f g` is
-a linear map taking  two inputs `M ⊗ N → P ⊗ S → Q ⊗ S` defined by
+This is a binary version of `TensorProduct.map`: Given a bilinear map `f : M ⟶ P ⟶ Q` and a
+bilinear map `g : N ⟶ S ⟶ T`, if we think `f` and `g` as linear maps with two inputs, then
+`map₂ f g` is a bilinear map taking two inputs `M ⊗ N → P ⊗ S → Q ⊗ S` defined by
 `map₂ f g (m ⊗ n) (p ⊗ s) = f m p ⊗ g n s`.
 
 Mathematically, `TensorProduct.map₂` is defined as the composition
