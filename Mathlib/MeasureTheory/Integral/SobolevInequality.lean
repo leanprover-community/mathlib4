@@ -31,6 +31,9 @@ theorem NNReal.rpow_add_of_nonneg (x : ℝ≥0) {y z : ℝ} (hy : 0 ≤ y) (hz :
     simp [h]
   · exact rpow_add' _ h
 
+theorem Real.nnnorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
+  ext; exact Real.norm_rpow_of_nonneg hx
+
 theorem ENNReal.rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ^ (y + z) = x ^ y * x ^ z := by
   induction x using recTopCoe
@@ -42,6 +45,26 @@ theorem ENNReal.rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (
   simp [coe_rpow_of_nonneg, hy, hz, add_nonneg hy hz, NNReal.rpow_add_of_nonneg _ hy hz]
 
 end RPow
+
+namespace ENNReal
+
+protected theorem inv_mul_le_iff {x y z : ℝ≥0∞} (h1 : x ≠ 0) (h2 : x ≠ ∞) :
+    x⁻¹ * y ≤ z ↔ y ≤ x * z := by
+  rw [← mul_le_mul_left h1 h2, ← mul_assoc, ENNReal.mul_inv_cancel h1 h2, one_mul]
+
+protected theorem mul_inv_le_iff {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ ∞) :
+    x * y⁻¹ ≤ z ↔ x ≤ z * y := by
+  rw [mul_comm, ENNReal.inv_mul_le_iff h1 h2, mul_comm]
+
+protected theorem div_le_iff {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ ∞) :
+    x / y ≤ z ↔ x ≤ z * y := by
+  rw [div_eq_mul_inv, ENNReal.mul_inv_le_iff h1 h2]
+
+protected theorem div_le_iff' {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ ∞) :
+    x / y ≤ z ↔ x ≤ y * z := by
+  rw [mul_comm, ENNReal.div_le_iff h1 h2]
+
+end ENNReal
 
 section conjExponent
 
@@ -69,6 +92,25 @@ lemma MeasureTheory.snorm_conjExponent_eq_lintegral {u : E → ℝ} {p : ℝ≥0
 
 end conjExponent
 
+namespace MeasureTheory
+
+variable {α E : Type*} [NormedAddCommGroup E] {_ : MeasurableSpace α}
+  {f : α → E} {μ : Measure α}
+
+lemma snorm_nnreal_eq_lintegral {p : ℝ≥0} (hp : p ≠ 0) :
+    snorm f p μ = (∫⁻ x, ‖f x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) := by
+  simp [snorm_eq_lintegral_rpow_nnnorm (by exact_mod_cast hp) ENNReal.coe_ne_top]
+
+lemma snorm_nnreal_pow_eq_lintegral {p : ℝ≥0} (hp : p ≠ 0) :
+    snorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖₊ ^ (p : ℝ) ∂μ := by
+  simp [snorm_eq_snorm' (by exact_mod_cast hp) ENNReal.coe_ne_top,
+    lintegral_rpow_nnnorm_eq_rpow_snorm' (show 0 < (p : ℝ) from pos_iff_ne_zero.mpr hp)]
+
+end MeasureTheory
+
+namespace MeasureTheory
+
+end MeasureTheory
 
 section NormedAddCommGroup
 variable {ι : Type*} [Fintype ι] {E : ι → Type _} [∀ i, NormedAddCommGroup (E i)]
@@ -456,21 +498,12 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
   obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv μ hE hp.coe
   use C ^ (p : ℝ)⁻¹
   intro u hu h2u
-  specialize hC hu h2u
-  rw [snorm_one_eq_lintegral_nnnorm, snorm_eq_snorm', ENNReal.coe_toReal,
+  rw [snorm_one_eq_lintegral_nnnorm,
     ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
-    ENNReal.coe_rpow_of_nonneg _ h0p.le, ← NNReal.rpow_mul]
-  · rw [← lintegral_rpow_nnnorm_eq_rpow_snorm' h0p]
-    simp [inv_mul_cancel h0p.ne', hC]
-  · exact_mod_cast h0p.ne'
-  · exact ENNReal.coe_ne_top
-
--- theorem lintegral_pow_le_pow_lintegral__of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} (hp : 1 ≤ p)
---     (h2p : p < finrank ℝ E) (hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
---     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
---     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) ∂μ
---     ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) := by
---   sorry
+    ENNReal.coe_rpow_of_nonneg _ h0p.le, ← NNReal.rpow_mul,
+    snorm_nnreal_pow_eq_lintegral hp.symm.pos.ne',
+    inv_mul_cancel h0p.ne', NNReal.rpow_one]
+  exact hC hu h2u
 
 theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
@@ -478,34 +511,59 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
-  have h1n : 1 ≤ (n : ℝ≥0) := by norm_cast; linarith
   have hn : NNReal.IsConjExponent n n' := .conjExponent (by norm_cast)
+  have h1n : 1 ≤ (n : ℝ≥0) := hn.one_le
   obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv μ hE hn
   rcases hp.eq_or_lt with rfl|hp
+  -- the case `p = 1`
   · use C
     intros u hu h2u
     convert hC hu h2u
     ext
     rw [← inv_inj, ← NNReal.coe_inv, hp']
     field_simp [NNReal.conjExponent]
+  -- the case `p > 1`
+  have h0p : p ≠ 0 := sorry
+  have h0p' : p' ≠ 0 := sorry
+  let q := Real.conjExponent p
+  have hq : Real.IsConjExponent p q := .conjExponent hp
+  have h2q : 1 / n' - 1 / q = 1 / p' := by sorry
   let γ : ℝ≥0 := p * (n - 1) / (n - p)
   have hγ : 1 < γ := sorry
   have h2γ : γ * n' = p' := sorry
-  have h3γ : (γ - 1) * Real.conjExponent p = p' := sorry
-  refine ⟨γ * C, @fun u hu h2u ↦ ?_⟩
+  have h3γ : (γ - 1) * q = p' := sorry
+  refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
+  have h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ 0 := sorry
+  have h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := sorry
+  have h5u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
+    ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
+  have h6u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
+    ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
   let v : E → ℝ := fun x ↦ |u x| ^ (γ : ℝ)
   have hv : ContDiff ℝ 1 v := sorry
   have h2v : HasCompactSupport v := sorry
   specialize hC hv h2v
   have :=
-  calc snorm v n' μ ≤ C * snorm (fderiv ℝ v) 1 μ := hC
+  calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
+        rw [← h2γ, snorm_nnreal_eq_lintegral hn.symm.pos.ne']
+        congr! 3
+        simp [Real.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul]
+        rw [ENNReal.coe_rpow_of_nonneg]
+        positivity
+    _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
-    _ = (C * γ) * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
-    _ = (C * γ) * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
-    _ ≤ (C * γ) * ((∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / Real.conjExponent p) *
+    _ = C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
+    _ = C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
+    _ ≤ C * γ * ((∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
         (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ))) := by
         gcongr
         convert ENNReal.lintegral_mul_le_Lp_mul_Lq μ
           (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp) sorry sorry using 5
         simp_rw [← ENNReal.rpow_mul, ← h3γ]
-  sorry
+    _ = C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) *
+      (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) := by ring
+  calc
+    snorm u p' μ = (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) := snorm_nnreal_eq_lintegral h0p'
+    _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
+      by rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
+    _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
