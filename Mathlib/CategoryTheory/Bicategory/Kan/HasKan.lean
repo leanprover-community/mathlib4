@@ -59,7 +59,7 @@ theorem HasLeftKanExtension.mk {t : LeftExtension f g} (H : IsKan t) : HasLeftKa
 def getLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : LeftKanExtension f g :=
   Classical.choice HasLeftKanExtension.exists_leftKan
 
-/-- The left Kan extension of `g` along `f` at the level of left extension. -/
+/-- The left Kan extension of `g` along `f` at the level of structured arrows. -/
 def Lan.leftExtension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : LeftExtension f g :=
   (getLeftKanExtension f g).leftExtension
 
@@ -117,8 +117,8 @@ theorem Lan.existsUnique [HasLeftKanExtension f g] (s : LeftExtension f g) :
     ∃! τ, Lan.unit f g ≫ f ◁ τ = s.unit :=
   (Lan.isKan f g).existsUnique _
 
-/-- `h : c ⟶ x` commutes with the left Kan extension `f⁺ g` if there is an isomorphism
-`f⁺ (g ≫ h) ≅ f⁺ g ≫ h` that is compatible with the units for `f⁺ (g ≫ h)` and `f⁺ g`. -/
+/-- We say that a 1-morphism `h` commutes with the left Kan extension `f⁺ g` if the whiskered
+left extension for `f⁺ g` by `h` is a Kan extension of `g ≫ h` along `f`. -/
 class Lan.CommuteWith
     (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] {x : B} (h : c ⟶ x) : Prop where
   commute : Nonempty <| IsKan <| (Lan.leftExtension f g).whisker h
@@ -140,7 +140,7 @@ def isKan : IsKan <| (Lan.leftExtension f g).whisker h := Classical.choice Lan.C
 
 instance : HasLeftKanExtension f (g ≫ h) := .mk <| Lan.CommuteWith.isKan f g h
 
-/-- The isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` at the level of left extensions. -/
+/-- The isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` at the level of structured arrows. -/
 def lanAlongCompIsoLanwhisker : Lan.leftExtension f (g ≫ h) ≅ (Lan.leftExtension f g).whisker h :=
   IsKan.uniqueUpToIso (Lan.isKan f (g ≫ h)) (Lan.CommuteWith.isKan f g h)
 
@@ -200,7 +200,7 @@ theorem HasLeftKanLift.mk {t : LeftLift f g} (H : IsKan t) : HasLeftKanLift f g 
 def getLeftKanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftKanLift f g :=
   Classical.choice HasLeftKanLift.exists_leftKanLift
 
-/-- The left Kan lift of `g` along `f`. -/
+/-- The left Kan lift of `g` along `f` at the level of structured arrows. -/
 def LanLift.leftLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftLift f g :=
   (getLeftKanLift f g).leftLift
 
@@ -258,8 +258,8 @@ theorem LanLift.existsUnique [HasLeftKanLift f g] (s : LeftLift f g) :
     ∃! τ, LanLift.unit f g ≫ τ ▷ f = s.unit :=
   (LanLift.isKan f g).existsUnique _
 
-/-- `h : x ⟶ b` commutes with the left Kan lift `f₊ g` if there is an isomorphism
-`f₊ (h ≫ g) ≅ h ≫ f₊ g` that is compatible with the units for `f₊ (h ≫ g)` and `f₊ g`. -/
+/-- We say that a 1-morphism `h` commutes with the left Kan lift `f₊ g` if the whiskered left lift
+for `f₊ g` by `h` is a Kan lift of `h ≫ g` along `f`. -/
 class LanLift.CommuteWith
     (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] {x : B} (h : x ⟶ c) : Prop where
   commute : Nonempty <| IsKan <| (LanLift.leftLift f g).whisker h
@@ -282,7 +282,7 @@ def isKan : IsKan <| (LanLift.leftLift f g).whisker h :=
 
 instance : HasLeftKanLift f (h ≫ g) := .mk <| LanLift.CommuteWith.isKan f g h
 
-/-- The isomorphism `f₊ (h ≫ g) ≅ h ≫ f₊ g` at the level of left lifts. -/
+/-- The isomorphism `f₊ (h ≫ g) ≅ h ≫ f₊ g` at the level of structured arrows. -/
 def lanLiftAlongCompIsoLanLiftWhisker :
     LanLift.leftLift f (h ≫ g) ≅ (LanLift.leftLift f g).whisker h :=
   IsKan.uniqueUpToIso (LanLift.isKan f (h ≫ g)) (LanLift.CommuteWith.isKan f g h)

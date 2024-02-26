@@ -317,7 +317,7 @@ def getRightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : RightAdjoint f :=
 def rightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
   (getRightAdjoint f).right
 
-@[inherit_doc] scoped notation f "⁺⁺" => rightAdjoint f
+@[inherit_doc] scoped postfix:max "⁺⁺" => rightAdjoint
 
 /-- Evidence that `f⁺⁺` is a right adjoint of `f`. -/
 def rightAdjoint.adjunction (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ f⁺⁺ :=
@@ -345,7 +345,7 @@ def getLeftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : LeftAdjoint f :=
 def leftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
   (getLeftAdjoint f).left
 
-@[inherit_doc] scoped notation f "⁺" => leftAdjoint f
+@[inherit_doc] scoped postfix:max "⁺" => leftAdjoint
 
 /-- Evidence that `f⁺` is a left adjoint of `f`. -/
 def leftAdjoint.adjunction (f : b ⟶ a) [IsRightAdjoint f] : f⁺ ⊣ f :=
