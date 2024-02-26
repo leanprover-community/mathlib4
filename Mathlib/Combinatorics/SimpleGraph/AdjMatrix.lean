@@ -281,10 +281,10 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
 
 /-- The sum of the identity, the adjacency of `G`, and the adjacency of `Gᶜ` yeilds all ones. -/
 theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] :
-    1 + G.adjMatrix ℕ + (G.adjMatrix ℕ).compl = fun _ _ ↦ 1 := by
+    1 + G.adjMatrix ℕ + (G.adjMatrix ℕ).compl = Matrix.of fun _ _ ↦ 1 := by
   ext i j
   unfold Matrix.compl
-  rw [add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
+  rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
   by_cases h : G.Adj i j
   · rw [if_pos h, if_neg one_ne_zero, if_neg (G.ne_of_adj h), if_neg (G.ne_of_adj h), zero_add,
      add_zero]
