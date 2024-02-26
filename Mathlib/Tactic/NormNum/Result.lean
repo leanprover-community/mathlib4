@@ -517,9 +517,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
     let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
     return { expr := q(-$a'), proof? := q(IsInt.neg_to_eq $p $pa') }
   | .isNNRat _ _ n d p => do
-    have lit : Q(ℕ) := n.appArg!
-    let p : Q(IsNNRat $e $lit $d) := p
-    let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
+    let ⟨n', pn'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) n
     let ⟨d', pd'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) d
     return { expr := q($n' / $d'), proof? := q(IsNNRat.to_eq $p $pn' $pd') }
   | .isNegNNRat _ _ n d p => do

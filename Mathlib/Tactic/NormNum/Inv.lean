@@ -169,7 +169,7 @@ such that `norm_num` successfully recognises `a`. -/
       if let some i := i then
         have lit2 : Q(ℕ) := mkRawNatLit (na.natLit! - 1)
         haveI : $na =Q ($lit2).succ := ⟨⟩
-        return .isNNRat dsα qb q($da) q($na) q(isNNRat_inv_pos $pa)
+        return .isNNRat' dsα qb q($da) q($na) q(isNNRat_inv_pos $pa)
       else
         guard (qa = 1)
         let .isNat inst n pa := ra | failure

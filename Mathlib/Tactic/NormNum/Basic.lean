@@ -544,7 +544,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let rab ← derive (q($a * $b⁻¹) : Q($α))
   if let some ⟨qa, na, da, pa⟩ := rab.toNNRat' dsα then
     assumeInstancesCommute
-    return .isNNRat dsα qa na da q(isNNRat_div $pa)
+    return .isNNRat' dsα qa na da q(isNNRat_div $pa)
   else
     let dα ← inferDivisionRing α
     let ⟨qa, na, da, pa⟩ ← rab.toRat' dα
