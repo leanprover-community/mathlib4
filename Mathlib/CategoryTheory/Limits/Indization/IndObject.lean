@@ -151,15 +151,40 @@ theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
   ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
    fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
 
+section Experiments
+
+variable {I : Type v} [SmallCategory I] [IsFilteredOrEmpty I] (F : I ⥤ Cᵒᵖ ⥤ Type v)
+  (hF : ∀ i, IsIndObject (F.obj i))
+
+noncomputable def lhs : (CostructuredArrow yoneda (colimit F))ᵒᵖ ⥤ TypeMax.{u, v} :=
+  (CostructuredArrow.toOver _ _).op ⋙ yoneda.obj (Over.mk (𝟙 (colimit F)))
+
+noncomputable def theOther (X : CostructuredArrow yoneda (colimit F)) : TypeMax.{u, v} :=
+  (CostructuredArrow.toOver _ _).obj X ⟶ Over.mk (𝟙 (colimit F))
+
+
+-- Surely the ulift is a bad bad idea....
+noncomputable def innermost (X : CostructuredArrow yoneda (colimit F)) (i : I) :
+    CostructuredArrow yoneda (F.obj i) ⥤ TypeMax.{u, v} :=
+  CostructuredArrow.map (colimit.ι F i) ⋙ coyoneda.obj (Opposite.op X) ⋙ uliftFunctor.{u}
+
+noncomputable def next (X : CostructuredArrow yoneda (colimit F)) :
+    I ⥤ TypeMax.{u, v} where
+  obj i := limit (innermost F X i)
+  map := sorry
+  map_id := sorry
+  map_comp := sorry
+
+end Experiments
+
 theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFilteredOrEmpty I]
     (F : I ⥤ Cᵒᵖ ⥤ Type v) (hF : ∀ i, IsIndObject (F.obj i)) : IsIndObject (colimit F) := by
   suffices IsFiltered (CostructuredArrow yoneda (colimit F)) by
     refine (isIndObject_iff _).mpr ⟨this, ?_⟩
-    have : ∀ i, ∃ (s : Set (CostructuredArrow yoneda (F.obj i)))
-      (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) := fun i =>
-        (hF i).finallySmall.exists_small_weakly_terminal_set
+    have : ∀ i, ∃ (s : Set (CostructuredArrow yoneda (F.obj i))) (_ : Small.{v} s),
+        ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) :=
+      fun i => (hF i).finallySmall.exists_small_weakly_terminal_set
     choose s hs j hjs hj using this
-    have : Small.{v} (⋃ i, (CostructuredArrow.map (colimit.ι F i)).obj '' (s i)) := small_iUnion _
     refine finallySmall_of_small_weakly_terminal_set
       (⋃ i, (CostructuredArrow.map (colimit.ι F i)).obj '' (s i)) (fun A => ?_)
     obtain ⟨i, y, hy⟩ := FunctorToTypes.jointly_surjective'.{v, v} F _ (yonedaEquiv A.hom)
