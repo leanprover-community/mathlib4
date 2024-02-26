@@ -102,7 +102,7 @@ On `ℝ`, we get disintegration by constructing a map `f` with the property `IsK
 
 noncomputable
 def condKernelBorelSnd (κ : kernel α (β × Ω)) {f : α × β → StieltjesFunction}
-    (hf : IsKernelCDF f
+    (hf : IsCondKernelCDF f
       (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
         (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable))
       (kernel.fst (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
@@ -118,7 +118,7 @@ def condKernelBorelSnd (κ : kernel α (β × Ω)) {f : α × β → StieltjesFu
 
 instance instIsMarkovKernel_condKernelBorelSnd (κ : kernel α (β × Ω))
     {f : α × β → StieltjesFunction}
-    (hf : IsKernelCDF f
+    (hf : IsCondKernelCDF f
       (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
         (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable))
       (kernel.fst (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
@@ -137,7 +137,7 @@ instance instIsMarkovKernel_condKernelBorelSnd (κ : kernel α (β × Ω))
 
 lemma compProd_fst_condKernelBorelSnd (κ : kernel α (β × Ω)) [IsFiniteKernel κ]
     {f : α × β → StieltjesFunction}
-    (hf : IsKernelCDF f
+    (hf : IsCondKernelCDF f
       (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
         (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω).measurable))
       (kernel.fst (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω))
@@ -213,21 +213,21 @@ section StandardBorel
 
 noncomputable
 def kernel.condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : kernel (α × γ) ℝ :=
-  (isKernelCDF_kernelCDF κ).toKernel _
+  (isCondKernelCDF_condKernelCDF κ).toKernel _
 
 instance (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : IsMarkovKernel (kernel.condKernelReal κ) := by
   unfold kernel.condKernelReal; infer_instance
 
 lemma kernel.eq_compProd_condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
     κ = kernel.fst κ ⊗ₖ kernel.condKernelReal κ :=
-  kernel.eq_compProd_toKernel (isKernelCDF_kernelCDF κ)
+  kernel.eq_compProd_toKernel (isCondKernelCDF_condKernelCDF κ)
 
 noncomputable
 def condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel κ] : kernel (α × γ) Ω :=
   let f := measurableEmbedding_real Ω
   let hf := measurableEmbedding_measurableEmbedding_real Ω
   let κ' := kernel.map κ (Prod.map (id : γ → γ) f) (measurable_id.prod_map hf.measurable)
-  condKernelBorelSnd κ (isKernelCDF_kernelCDF κ')
+  condKernelBorelSnd κ (isCondKernelCDF_condKernelCDF κ')
 
 instance instIsMarkovKernel_condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel κ] :
     IsMarkovKernel (condKernelBorel κ) := by
@@ -246,7 +246,7 @@ section Real
 
 noncomputable def condKernelUnitReal (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] :
     kernel (Unit × α) ℝ :=
-  (isKernelCDF_condCDF (ρ ())).toKernel (fun (p : Unit × α) ↦ condCDF (ρ ()) p.2)
+  (isCondKernelCDF_condCDF (ρ ())).toKernel (fun (p : Unit × α) ↦ condCDF (ρ ()) p.2)
 
 instance (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] : IsMarkovKernel (condKernelUnitReal ρ) := by
   rw [condKernelUnitReal]; infer_instance
@@ -254,7 +254,7 @@ instance (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] : IsMarkovKernel (co
 lemma fst_compProd_condKernelUnitReal (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] :
     kernel.fst ρ ⊗ₖ condKernelUnitReal ρ = ρ := by
   have : ρ = kernel.const Unit (ρ ()) := by ext; simp
-  conv_rhs => rw [this, kernel.eq_compProd_toKernel (isKernelCDF_condCDF (ρ ()))]
+  conv_rhs => rw [this, kernel.eq_compProd_toKernel (isCondKernelCDF_condCDF (ρ ()))]
 
 end Real
 
@@ -265,7 +265,7 @@ def condKernelUnitBorel (κ : kernel Unit (α × Ω)) [IsFiniteKernel κ] : kern
   let f := measurableEmbedding_real Ω
   let hf := measurableEmbedding_measurableEmbedding_real Ω
   let κ' := kernel.map κ (Prod.map (id : α → α) f) (measurable_id.prod_map hf.measurable)
-  condKernelBorelSnd κ (isKernelCDF_condCDF (κ' ()))
+  condKernelBorelSnd κ (isCondKernelCDF_condCDF (κ' ()))
 
 instance instIsMarkovKernel_condKernelUnitBorel (κ : kernel Unit (α × Ω)) [IsFiniteKernel κ] :
     IsMarkovKernel (condKernelUnitBorel κ) := by

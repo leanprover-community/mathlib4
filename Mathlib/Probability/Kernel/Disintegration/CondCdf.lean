@@ -425,8 +425,8 @@ theorem integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : �
     refine (set_lintegral_le_lintegral _ _).trans (lintegral_mono_ae ?_)
     filter_upwards [preCDF_le_one ρ] with a ha using ENNReal.ofReal_toReal_le.trans (ha _)
 
-lemma isRatKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
-    IsRatKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
+lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
+    IsRatCondKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
       (kernel.const Unit ρ) (kernel.const Unit ρ.fst) where
   measurable := measurable_preCDF'.comp measurable_snd
   isRatStieltjesPoint_ae a := by
@@ -492,7 +492,7 @@ theorem measurable_condCDF (ρ : Measure (α × ℝ)) (x : ℝ) : Measurable fun
 theorem set_lintegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
     (hs : MeasurableSet s) :
     ∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x) := by
-  have h := set_lintegral_stieltjesOfMeasurableRat (isRatKernelCDF_preCDF ρ) () x hs
+  have h := set_lintegral_stieltjesOfMeasurableRat (isRatCondKernelCDF_preCDF ρ) () x hs
   simp only [kernel.const_apply] at h
   rw [← h]
   congr with a
@@ -542,8 +542,8 @@ theorem integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : �
   rw [← set_integral_condCDF ρ _ MeasurableSet.univ, Measure.restrict_univ]
 #align probability_theory.integral_cond_cdf ProbabilityTheory.integral_condCDF
 
-lemma isKernelCDF_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
-    IsKernelCDF (fun p : Unit × α ↦ condCDF ρ p.2) (kernel.const Unit ρ)
+lemma isCondKernelCDF_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
+    IsCondKernelCDF (fun p : Unit × α ↦ condCDF ρ p.2) (kernel.const Unit ρ)
       (kernel.const Unit ρ.fst) where
   measurable x := (measurable_condCDF ρ x).comp measurable_snd
   integrable _ x := integrable_condCDF ρ x

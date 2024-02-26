@@ -205,8 +205,8 @@ lemma isRatStieltjesPoint_densityIic_ae (κ : kernel α (γ × ℝ)) [IsFiniteKe
     iInf_rat_gt_densityIic_eq le_rfl a] with t ht_top ht_bot ht_iInf
   exact ⟨monotone_densityIic le_rfl a t, ht_top, ht_bot, ht_iInf⟩
 
-lemma isRatKernelCDF_densityIic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    IsRatKernelCDF (fun p : α × γ ↦ kernel.densityIic κ (kernel.fst κ) p.1 p.2) κ (kernel.fst κ)
+lemma isRatCondKernelCDF_densityIic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsRatCondKernelCDF (fun p : α × γ ↦ kernel.densityIic κ (kernel.fst κ) p.1 p.2) κ (kernel.fst κ)
     where
   measurable := measurable_densityIic κ (kernel.fst κ)
   isRatStieltjesPoint_ae := isRatStieltjesPoint_densityIic_ae κ
@@ -214,13 +214,12 @@ lemma isRatKernelCDF_densityIic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ]
   set_integral := fun _ _ hs _ ↦ set_integral_densityIic le_rfl _ _ hs
 
 noncomputable
-def kernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    α × γ → StieltjesFunction :=
+def condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : α × γ → StieltjesFunction :=
   stieltjesOfMeasurableRat (fun p : α × γ ↦ kernel.densityIic κ (kernel.fst κ) p.1 p.2)
-    (isRatKernelCDF_densityIic κ).measurable
+    (isRatCondKernelCDF_densityIic κ).measurable
 
-lemma isKernelCDF_kernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    IsKernelCDF (kernelCDF κ) κ (kernel.fst κ) :=
-  isKernelCDF_stieltjesOfMeasurableRat (isRatKernelCDF_densityIic κ)
+lemma isCondKernelCDF_condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsCondKernelCDF (condKernelCDF κ) κ (kernel.fst κ) :=
+  isCondKernelCDF_stieltjesOfMeasurableRat (isRatCondKernelCDF_densityIic κ)
 
 end ProbabilityTheory
