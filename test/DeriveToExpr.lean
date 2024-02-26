@@ -1,5 +1,4 @@
 import Mathlib.Tactic.DeriveToExpr
-import Std.Tactic.RunCmd
 
 namespace tests
 open Lean
