@@ -294,7 +294,9 @@ instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) 
 
 instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
-    { (f.toEnd ^ n : AddMonoid.End α) with
+    { toFun := (f.toEnd ^ n : AddMonoid.End α) -- Problems with v4.7.0-rc1
+      map_zero' := by simp
+      map_add' := by simp
       map_mul_left' := fun a b ↦ by
         induction' n with n ih
         · exact rfl
