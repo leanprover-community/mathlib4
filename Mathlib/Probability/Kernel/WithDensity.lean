@@ -72,6 +72,40 @@ protected theorem withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
   rw [kernel.withDensity_apply κ hf, withDensity_apply' _ s]
 #align probability_theory.kernel.with_density_apply' ProbabilityTheory.kernel.withDensity_apply'
 
+nonrec lemma withDensity_congr_ae (κ : kernel α β) [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
+    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
+    (hfg : ∀ a, f a =ᵐ[κ a] g a) :
+    withDensity κ f = withDensity κ g := by
+  ext a
+  rw [kernel.withDensity_apply _ hf,kernel.withDensity_apply _ hg, withDensity_congr_ae (hfg a)]
+
+nonrec lemma withDensity_absolutelyContinuous [IsSFiniteKernel κ]
+    (f : α → β → ℝ≥0∞) (a : α) :
+    kernel.withDensity κ f a ≪ κ a := by
+  by_cases hf : Measurable (Function.uncurry f)
+  · rw [kernel.withDensity_apply _ hf]
+    exact withDensity_absolutelyContinuous _ _
+  · rw [withDensity_of_not_measurable _ hf]
+    simp [Measure.AbsolutelyContinuous.zero]
+
+@[simp]
+lemma withDensity_one (κ : kernel α β) [IsSFiniteKernel κ] :
+    kernel.withDensity κ 1 = κ := by
+  ext; rw [kernel.withDensity_apply _ measurable_const]; simp
+
+@[simp]
+lemma withDensity_one' (κ : kernel α β) [IsSFiniteKernel κ] :
+    kernel.withDensity κ (fun _ _ ↦ 1) = κ := kernel.withDensity_one _
+
+@[simp]
+lemma withDensity_zero (κ : kernel α β) [IsSFiniteKernel κ] :
+    kernel.withDensity κ 0 = 0 := by
+  ext; rw [kernel.withDensity_apply _ measurable_const]; simp
+
+@[simp]
+lemma withDensity_zero' (κ : kernel α β) [IsSFiniteKernel κ] :
+    kernel.withDensity κ (fun _ _ ↦ 0) = 0 := kernel.withDensity_zero _
+
 theorem lintegral_withDensity (κ : kernel α β) [IsSFiniteKernel κ]
     (hf : Measurable (Function.uncurry f)) (a : α) {g : β → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ b, g b ∂withDensity κ f a = ∫⁻ b, f a b * g b ∂κ a := by
@@ -110,6 +144,25 @@ theorem withDensity_kernel_sum [Countable ι] (κ : ι → kernel α β) (hκ : 
   · simp_rw [withDensity_of_not_measurable _ hf]
     exact sum_zero.symm
 #align probability_theory.kernel.with_density_kernel_sum ProbabilityTheory.kernel.withDensity_kernel_sum
+
+lemma withDensity_add_right [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
+    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g)) :
+    withDensity κ (f + g) = withDensity κ f + withDensity κ g := by
+  ext a
+  rw [coeFn_add, Pi.add_apply, kernel.withDensity_apply _ hf, kernel.withDensity_apply _ hg,
+    kernel.withDensity_apply,Pi.add_apply, MeasureTheory.withDensity_add_right]
+  · exact hg.comp measurable_prod_mk_left
+  · exact hf.add hg
+
+lemma withDensity_sub_add_cancel [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
+    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
+    (hfg : ∀ a, g a ≤ᵐ[κ a] f a) :
+    withDensity κ (fun a x ↦ f a x - g a x) + withDensity κ g = withDensity κ f := by
+  rw [← withDensity_add_right _ hg]
+  swap; · exact hf.sub hg
+  refine withDensity_congr_ae κ ((hf.sub hg).add hg) hf (fun a ↦ ?_)
+  filter_upwards [hfg a] with x hx
+  rwa [Pi.add_apply, Pi.add_apply, tsub_add_cancel_iff_le]
 
 theorem withDensity_tsum [Countable ι] (κ : kernel α β) [IsSFiniteKernel κ] {f : ι → α → β → ℝ≥0∞}
     (hf : ∀ i, Measurable (Function.uncurry (f i))) :
@@ -229,5 +282,21 @@ nonrec theorem IsSFiniteKernel.withDensity (κ : kernel α β) [IsSFiniteKernel 
 instance (κ : kernel α β) [IsSFiniteKernel κ] (f : α → β → ℝ≥0) :
     IsSFiniteKernel (withDensity κ fun a b => f a b) :=
   IsSFiniteKernel.withDensity κ fun _ _ => ENNReal.coe_ne_top
+
+nonrec lemma withDensity_mul [IsSFiniteKernel κ] {f : α → β → ℝ≥0} {g : α → β → ℝ≥0∞}
+    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g)) :
+    withDensity κ (fun a x ↦ f a x * g a x)
+      = withDensity (withDensity κ fun a x ↦ f a x) g := by
+  ext a : 1
+  rw [kernel.withDensity_apply]
+  swap; · exact (measurable_coe_nnreal_ennreal.comp hf).mul hg
+  change (Measure.withDensity (κ a) ((fun x ↦ (f a x : ℝ≥0∞)) * (fun x ↦ (g a x : ℝ≥0∞)))) =
+      (withDensity (withDensity κ fun a x ↦ f a x) g) a
+  rw [withDensity_mul]
+  · rw [kernel.withDensity_apply _ hg, kernel.withDensity_apply]
+    exact measurable_coe_nnreal_ennreal.comp hf
+  · rw [measurable_coe_nnreal_ennreal_iff]
+    exact hf.comp measurable_prod_mk_left
+  · exact hg.comp measurable_prod_mk_left
 
 end ProbabilityTheory.kernel
