@@ -1993,16 +1993,16 @@ section CancelCommMonoid
 variable [DecidableEq ι] [CancelCommMonoid α] {s t : Finset ι} {f : ι → α}
 
 @[to_additive]
-lemma prod_sdiff_eq_prod_sdiff :
+lemma prod_sdiff_eq_prod_sdiff_iff :
     ∏ i in s \ t, f i = ∏ i in t \ s, f i ↔ ∏ i in s, f i = ∏ i in t, f i :=
   eq_comm.trans $ eq_iff_eq_of_mul_eq_mul $ by
     rw [← prod_union disjoint_sdiff_self_left, ← prod_union disjoint_sdiff_self_left,
       sdiff_union_self_eq_union, sdiff_union_self_eq_union, union_comm]
 
 @[to_additive]
-lemma prod_sdiff_ne_prod_sdiff :
+lemma prod_sdiff_ne_prod_sdiff_iff :
     ∏ i in s \ t, f i ≠ ∏ i in t \ s, f i ↔ ∏ i in s, f i ≠ ∏ i in t, f i :=
-  prod_sdiff_eq_prod_sdiff.not
+  prod_sdiff_eq_prod_sdiff_iff.not
 
 end CancelCommMonoid
 
@@ -2357,28 +2357,34 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
 #align fintype.sum_subtype_add_sum_subtype Fintype.sum_subtype_add_sum_subtype
 
 @[to_additive]
-lemma prod_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j) (a : α) :
+lemma prod_ite_eq_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j) (a : α) :
     ∏ i, ite (p i) a 1 = ite (∃ i, p i) a 1 := by simp [prod_ite_one univ p (by simpa using h)]
 
 variable [DecidableEq ι]
 
-@[to_additive] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → α) :
+/-- See also `Finset.prod_dite_eq`. -/
+@[to_additive "See also `Finset.sum_dite_eq`."] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → α) :
     ∏ j, (if h : i = j then f j h else 1) = f i rfl := by simp
 
-@[to_additive] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → α) :
+/-- See also `Finset.prod_dite_eq'`. -/
+@[to_additive "See also `Finset.sum_dite_eq'`."] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → α) :
     ∏ j, (if h : j = i then f j h else 1) = f i rfl := by simp
 
-@[to_additive]
+/-- See also `Finset.prod_ite_eq`. -/
+@[to_additive "See also `Finset.sum_ite_eq`."]
 lemma prod_ite_eq (i : ι) (f : ι → α) : ∏ j, (if i = j then f j else 1) = f i := by simp
 
-@[to_additive]
+/-- See also `Finset.prod_ite_eq'`. -/
+@[to_additive "See also `Finset.sum_ite_eq'`."]
 lemma prod_ite_eq' (i : ι) (f : ι → α) : ∏ j, (if j = i then f j else 1) = f i := by simp
 
-@[to_additive]
+/-- See also `Finset.prod_pi_mulSingle`. -/
+@[to_additive "See also `Finset.sum_pi_single`."]
 lemma prod_pi_mulSingle {α : ι → Type*} [∀ i, CommMonoid (α i)] (i : ι) (f : ∀ i, α i) :
     ∏ j, Pi.mulSingle j (f j) i = f i := prod_dite_eq _ _
 
-@[to_additive]
+/-- See also `Finset.prod_pi_mulSingle'`. -/
+@[to_additive "See also `Finset.sum_pi_single'`."]
 lemma prod_pi_mulSingle' (i : ι) (a : α) : ∏ j, Pi.mulSingle i a j = a := prod_dite_eq' _ _
 
 end CommMonoid
