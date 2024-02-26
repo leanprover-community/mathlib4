@@ -139,6 +139,10 @@ example : TFAE [P, Q, R] := by
 -/
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
+def tfaeFields := leading_parser manyIndent <| ppLine >> checkColGe >> ppGroup tfaeHaveDecl
+
+syntax (name := tfaeBlock) "tfae" tfaeFields : tactic
+
 
 /-! # Setup -/
 
@@ -325,3 +329,9 @@ elab_rules : tactic
           let q2 ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
+
+elab_rules : tactic
+| `(tactic|tfae $[$ts:tfaeHaveDecl]*) => do
+  for t in ts do
+    evalTactic <|← withRef t `(tactic|tfae_have $t:tfaeHaveDecl)
+  evalTactic <|← `(tactic|tfae_finish)
