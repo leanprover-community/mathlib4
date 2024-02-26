@@ -11,7 +11,8 @@ import Mathlib.Algebra.Algebra.Pi
 /-!
 # Tensor product of `R`-algebras and rings
 
-If `(Aᵢ)` is a family of `R`-algebras then the `R`-tensor product `⨂ᵢ Aᵢ` is an `R`-algebra as well with structure map defined by `r ↦ r • 1`.
+If `(Aᵢ)` is a family of `R`-algebras then the `R`-tensor product `⨂ᵢ Aᵢ` is an `R`-algebra as well
+with structure map defined by `r ↦ r • 1`.
 
 In particular if we take `R` to be `ℤ`, then this collapses into the tensor product of rings.
 -/
