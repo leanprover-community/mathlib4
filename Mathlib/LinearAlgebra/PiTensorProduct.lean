@@ -467,7 +467,7 @@ def map (f : Π i, s i →ₗ[R] t i) : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i 
 
 /--
 Let `sᵢ` and `tᵢ` be families of `R`-modules.
-Then there is an `R`=linear map between `⨂ᵢ Hom(sᵢ, tᵢ)` and `Hom(⨂ᵢ sᵢ, ⨂ tᵢ)` defined by
+Then there is an `R`-linear map between `⨂ᵢ Hom(sᵢ, tᵢ)` and `Hom(⨂ᵢ sᵢ, ⨂ tᵢ)` defined by
 `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ fᵢ aᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
@@ -482,10 +482,11 @@ def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →
   simp [piTensorHomMap]
 
 /--
-Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, i.e. `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
+Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, then `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
 element of `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))` defined by `⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
-This is `TensorProduct.map` for two arbitrary families of modules.
+This is `PiTensorProduct.map` for two arbitrary families of modules.
+Note that for now, there is no `TensorProduct` analogue of this construction.
 -/
 def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=

@@ -11,10 +11,9 @@ import Mathlib.Algebra.Algebra.Pi
 /-!
 # Tensor product of `R`-algebras and rings
 
-If `(Aᵢ)` is a family of `R`-algebras then the `R`-tensor `⨂ᵢ Aᵢ` is an `R`-algebra as well with
-its structure map defined by `r ↦ r • 1`.
+If `(Aᵢ)` is a family of `R`-algebras then the `R`-tensor product `⨂ᵢ Aᵢ` is an `R`-algebra as well with structure map defined by `r ↦ r • 1`.
 
-In particular if we take `R` to be `ℤ`, then this collapse into tensor product of rings.
+In particular if we take `R` to be `ℤ`, then this collapses into the tensor product of rings.
 -/
 
 open TensorProduct Function
@@ -113,7 +112,7 @@ protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul
       (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
     exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext x y z
-  dsimp [←mul_def]
+  dsimp [← mul_def]
   simpa only [tprod_mul_tprod] using congr_arg (tprod R) (mul_assoc x y z)
 
 instance instNonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
@@ -162,7 +161,7 @@ lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
   change r • tprod R 1 = _
   have : Pi.mulSingle i (algebraMap R' (A i) r) = update (fun i ↦ 1) i (r • 1) := by
     rw [Algebra.algebraMap_eq_smul_one]; rfl
-  rw [this, ←smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul]
+  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul]
   congr
 
 /--

@@ -1044,7 +1044,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
 Let `M₁ᵢ` and `M₁ᵢ'` be two families of `R`-modules and `M₂` an `R`-module.
 Let us denote `Π i, M₁ᵢ` and `Π i, M₁ᵢ'` by `M` and `M'` respectively.
 If `g` is a multilinear map `M' → M₂`, then `g` can be reinterpreted as a multilinear
-map of multilinear map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` by `(fᵢ) ↦ v ↦ g(fᵢ vᵢ)`.
+map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` via `(fᵢ) ↦ v ↦ g(fᵢ vᵢ)`.
 -/
 @[simps!] def piLinearMap :
     MultilinearMap R M₁' M₂ →ₗ[R]
