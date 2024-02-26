@@ -63,7 +63,7 @@ variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {ε : ℝ}
 
-open Asymptotics Filter Metric Set
+open Filter Metric Set
 
 open ContinuousLinearMap (id)
 
