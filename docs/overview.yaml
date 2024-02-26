@@ -46,7 +46,7 @@ General algebra:
     cyclic group: 'IsCyclic'
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
-    structure of fintely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
+    structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
 
   Rings:
     ring: 'Ring'
@@ -130,7 +130,7 @@ General algebra:
     quadratic reciprocity: 'legendreSym.quadratic_reciprocity'
     "solutions to Pell's equation": 'Pell.pell'
     "Matiyasevič's theorem": 'Pell.matiyasevic'
-    arithmetic functions: 'Nat.ArithmeticFunction'
+    arithmetic functions: 'ArithmeticFunction'
     Bernoulli numbers: 'bernoulli'
     Chevalley-Warning theorem: 'char_dvd_card_solutions'
     "Hensel's lemma (for $\\mathbb{Z}_p$)": 'hensels_lemma'

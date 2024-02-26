@@ -205,7 +205,7 @@ theorem χ₈'_nat_eq_if_mod_eight (n : ℕ) :
 #align zmod.χ₈'_nat_eq_if_mod_eight ZMod.χ₈'_nat_eq_if_mod_eight
 
 /-- The relation between `χ₄`, `χ₈` and `χ₈'` -/
-theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ a * χ₈ a := by
+theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ (cast a) * χ₈ a := by
     --porting note: was `decide!`
   fin_cases a
   all_goals decide

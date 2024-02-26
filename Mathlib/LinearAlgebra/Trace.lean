@@ -123,6 +123,12 @@ theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
   simp
 #align linear_map.trace_conj LinearMap.trace_conj
 
+@[simp]
+lemma trace_lie {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f g : Module.End R M) :
+    trace R M ⁅f, g⁆ = 0 := by
+  rw [Ring.lie_def, map_sub, trace_mul_comm]
+  exact sub_self _
+
 end
 
 section
@@ -255,7 +261,8 @@ theorem trace_comp_comm :
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext g m f n
   simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
-    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply,
+    -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ _, RingHom.id_apply,
     trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 

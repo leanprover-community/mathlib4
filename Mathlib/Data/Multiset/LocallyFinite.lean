@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 
 #align_import data.multiset.locally_finite from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -97,15 +97,15 @@ theorem Ioo_eq_zero_of_le (h : b ≤ a) : Ioo a b = 0 :=
 
 variable (a)
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ico_self : Ico a a = 0 := by rw [Ico, Finset.Ico_self, Finset.empty_val]
 #align multiset.Ico_self Multiset.Ico_self
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ioc_self : Ioc a a = 0 := by rw [Ioc, Finset.Ioc_self, Finset.empty_val]
 #align multiset.Ioc_self Multiset.Ioc_self
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem Ioo_self : Ioo a a = 0 := by rw [Ioo, Finset.Ioo_self, Finset.empty_val]
 #align multiset.Ioo_self Multiset.Ioo_self
 
@@ -127,22 +127,22 @@ theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b :=
   Finset.right_mem_Ioc
 #align multiset.right_mem_Ioc Multiset.right_mem_Ioc
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem left_not_mem_Ioc : a ∉ Ioc a b :=
   Finset.left_not_mem_Ioc
 #align multiset.left_not_mem_Ioc Multiset.left_not_mem_Ioc
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem left_not_mem_Ioo : a ∉ Ioo a b :=
   Finset.left_not_mem_Ioo
 #align multiset.left_not_mem_Ioo Multiset.left_not_mem_Ioo
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem right_not_mem_Ico : b ∉ Ico a b :=
   Finset.right_not_mem_Ico
 #align multiset.right_not_mem_Ico Multiset.right_not_mem_Ico
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem right_not_mem_Ioo : b ∉ Ioo a b :=
   Finset.right_not_mem_Ioo
 #align multiset.right_not_mem_Ioo Multiset.right_not_mem_Ioo

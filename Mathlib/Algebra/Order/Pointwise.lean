@@ -27,7 +27,7 @@ open Pointwise
 
 variable {α : Type*}
 
--- Porting note : Swapped the place of `CompleteLattice` and `ConditionallyCompleteLattice`
+-- Porting note: Swapped the place of `CompleteLattice` and `ConditionallyCompleteLattice`
 -- due to simpNF problem between `sSup_xx` `csSup_xx`.
 
 section CompleteLattice
@@ -179,8 +179,6 @@ namespace LinearOrderedField
 variable {K : Type*} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
 
 open Set
-
--- Porting note: Removing `include hr`
 
 theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
   ext x

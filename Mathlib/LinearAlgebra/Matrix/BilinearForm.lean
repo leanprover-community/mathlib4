@@ -139,7 +139,7 @@ theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
 #align matrix.to_bilin'_apply Matrix.toBilin'_apply
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₂) (v w : n → R₂) :
-    Matrix.toBilin' M v w = Matrix.dotProduct v (M.mulVec w) := Matrix.toLinearMap₂'_apply' _ _ _
+    Matrix.toBilin' M v w = Matrix.dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
 #align matrix.to_bilin'_apply' Matrix.toBilin'_apply'
 
 @[simp]

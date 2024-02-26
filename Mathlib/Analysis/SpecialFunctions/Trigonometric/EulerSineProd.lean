@@ -72,10 +72,9 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
   convert (config := { sameFun := true })
     integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_cos_comp_const_mul hz x) _ _ using 2
   · ext1 x; rw [mul_comm]
-  · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div,
-      mul_zero, sub_zero, cos_pi_div_two, Complex.ofReal_zero,
-      zero_pow (by positivity : 0 < n), zero_mul, zero_sub, ← integral_neg, ←
-      integral_const_mul]
+  · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div, mul_zero, sub_zero,
+      cos_pi_div_two, Complex.ofReal_zero, zero_pow (by positivity : n ≠ 0), zero_mul, zero_sub,
+      ← integral_neg, ← integral_const_mul]
     refine' integral_congr fun x _ => _
     field_simp; ring
   · apply Continuous.intervalIntegrable
@@ -128,7 +127,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
         continuous_const.mul
           ((Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).mul
             ((Complex.continuous_ofReal.comp continuous_cos).pow (n - 2)))
-    · apply Nat.sub_pos_of_lt; exact one_lt_two.trans_le hn
+    · exact Nat.sub_ne_zero_of_lt hn
     refine' integral_congr fun x _ => _
     dsimp only
     -- get rid of real trig functions and divisions by 2 * z:
@@ -311,13 +310,10 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
   have : 𝓝 (Complex.sin (π * z)) = 𝓝 (Complex.sin (π * z) * 1) := by rw [mul_one]
   simp_rw [this, mul_div_assoc] at A
   convert (tendsto_mul_iff_of_ne_zero _ one_ne_zero).mp A
-  suffices :
-    Tendsto
-      (fun n : ℕ =>
+  suffices Tendsto (fun n : ℕ =>
         (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) /
-          (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ))
-      atTop (𝓝 1)
-  exact this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
+          (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ)) atTop (𝓝 1) from
+    this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
   have : ContinuousOn (fun x : ℝ => Complex.cos (2 * z * x)) (Icc 0 (π / 2)) :=
     (Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).continuousOn
   convert tendsto_integral_cos_pow_mul_div this using 1

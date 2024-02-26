@@ -18,8 +18,8 @@ and `S` acting contravariantly ("on the right"). The compatibility condition is 
 
 This situation can be set up in Mathlib as:
 ```lean
-variables (R S M : Type*) [Ring R] [Ring S]
-variables [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
+variable (R S M : Type*) [Ring R] [Ring S]
+variable [AddCommGroup M] [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M]
 ```
 The key fact is:
 ```lean

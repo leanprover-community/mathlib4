@@ -69,6 +69,7 @@ scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofEl
 end
 
 -- Overloading the usual `::` notation for `List.cons` with `Vector3.cons`.
+@[inherit_doc]
 scoped notation a " :: " b => cons a b
 
 @[simp]
@@ -265,7 +266,7 @@ theorem vectorAllP_nil (p : α → Prop) : VectorAllP p [] = True :=
   rfl
 #align vector_allp_nil vectorAllP_nil
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 theorem vectorAllP_singleton (p : α → Prop) (x : α) : VectorAllP p (cons x []) = p x :=
   rfl
 #align vector_allp_singleton vectorAllP_singleton

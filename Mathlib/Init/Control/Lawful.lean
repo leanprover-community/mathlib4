@@ -67,7 +67,7 @@ following theorem as a simp theorem.
 theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s => f s) st = f st :=
   rfl
 ```
-If we decleare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
+If we declare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
 reduction. This breaks the structure of `StateT`.
 So, we declare a constructor-like definition `StateT.mk` and a simp theorem for it.
 -/
@@ -155,7 +155,7 @@ following theorem as a simp theorem.
 theorem run_fun (f : σ → m α) (r : σ) : ReaderT.run (fun r' => f r') r = f r :=
   rfl
 ```
-If we decleare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
+If we declare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
 reduction. This breaks the structure of `ReaderT`.
 So, we declare a constructor-like definition `ReaderT.mk` and a simp theorem for it.
 -/

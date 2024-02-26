@@ -3,10 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue
-import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Ring
 
@@ -687,6 +685,7 @@ end StrictOrderedCommSemiring
 section LinearOrderedCommSemiring
 variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
 
+/-- **Cauchy-Schwarz inequality** for finsets. -/
 lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → α) :
     (∑ i in s, f i * g i) ^ 2 ≤ (∑ i in s, f i ^ 2) * ∑ i in s, g i ^ 2 := by
   nontriviality α
@@ -791,37 +790,6 @@ lemma prod_lt_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i < 1 ↔ f < 1 := by
 end OrderedCancelCommMonoid
 end Fintype
 
-namespace WithTop
-
-open Finset
-
-/-- A product of finite numbers is still finite -/
-theorem prod_lt_top [CommMonoidWithZero R] [NoZeroDivisors R] [Nontrivial R] [DecidableEq R] [LT R]
-    {s : Finset ι} {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i in s, f i < ⊤ :=
-  prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top' h₁ h₂) (coe_lt_top 1)
-    fun a ha ↦ WithTop.lt_top_iff_ne_top.2 (h a ha)
-#align with_top.prod_lt_top WithTop.prod_lt_top
-
-/-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
-    ∑ i in s, f i = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
-  induction s using Finset.cons_induction <;> simp [*]
-#align with_top.sum_eq_top_iff WithTop.sum_eq_top_iff
-
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M} :
-    ∑ i in s, f i < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
-  simp only [WithTop.lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
-#align with_top.sum_lt_top_iff WithTop.sum_lt_top_iff
-
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M}
-    (h : ∀ i ∈ s, f i ≠ ⊤) : ∑ i in s, f i < ⊤ :=
-  sum_lt_top_iff.2 fun i hi => WithTop.lt_top_iff_ne_top.2 (h i hi)
-#align with_top.sum_lt_top WithTop.sum_lt_top
-
-end WithTop
-
 section AbsoluteValue
 
 variable {S : Type*}
@@ -836,6 +804,9 @@ theorem IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S)
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
+--  2024-02-14
+@[deprecated] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
+
 nonrec theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i in s, f i) = ∏ i in s, abv (f i) :=
@@ -849,3 +820,43 @@ theorem IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedC
 #align is_absolute_value.map_prod IsAbsoluteValue.map_prod
 
 end AbsoluteValue
+
+namespace Mathlib.Meta.Positivity
+open Qq Lean Meta Finset
+
+/-- The `positivity` extension which proves that `∑ i in s, f i` is nonnegative if `f` is, and
+positive if each `f i` is and `s` is nonempty.
+
+TODO: The following example does not work
+```
+example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum f := by positivity
+```
+because `compareHyp` can't look for assumptions behind binders.
+-/
+@[positivity Finset.sum _ _]
+def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
+  match e with
+  | ~q(@Finset.sum _ $ι $instα $s $f) =>
+    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
+    have body : Q($α) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    let p_pos : Option Q(0 < $e) := ← (do
+      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+      let .some ps ← proveFinsetNonempty s | pure none
+      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
+      assertInstancesCommute
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
+      return some q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps))
+    -- Try to show that the sum is positive
+    if let some p_pos := p_pos then
+      return .positive p_pos
+    -- Fall back to showing that the sum is nonnegative
+    else
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      assertInstancesCommute
+      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
+  | _ => throwError "not Finset.sum"
+
+end Mathlib.Meta.Positivity

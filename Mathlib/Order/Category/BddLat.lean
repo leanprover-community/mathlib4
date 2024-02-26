@@ -27,6 +27,7 @@ open CategoryTheory
 
 /-- The category of bounded lattices with bounded lattice morphisms. -/
 structure BddLat where
+  /-- The underlying lattice of a bounded lattice. -/
   toLat : Lat
   [isBoundedOrder : BoundedOrder toLat]
 #align BddLat BddLat

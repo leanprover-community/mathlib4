@@ -63,7 +63,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.eisenstein_criterion_aux.le_nat_degree_of_map_eq_mul_X_pow Polynomial.EisensteinCriterionAux.le_natDegree_of_map_eq_mul_X_pow
 
 theorem eval_zero_mem_ideal_of_eq_mul_X_pow {n : ℕ} {P : Ideal R} {q : R[X]}
-    {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hn0 : 0 < n) : eval 0 q ∈ P := by
+    {c : Polynomial (R ⧸ P)} (hq : map (mk P) q = c * X ^ n) (hn0 : n ≠ 0) : eval 0 q ∈ P := by
   rw [← coeff_zero_eq_eval_zero, ← eq_zero_iff_mem, ← coeff_map, hq,
     coeff_zero_eq_eval_zero, eval_mul, eval_pow, eval_X, zero_pow hn0, mul_zero]
 set_option linter.uppercaseLean3 false in
@@ -106,8 +106,8 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       refine' h0 _
       rw [coeff_zero_eq_eval_zero, eval_mul, sq]
       exact
-        Ideal.mul_mem_mul (eval_zero_mem_ideal_of_eq_mul_X_pow hp hm0)
-          (eval_zero_mem_ideal_of_eq_mul_X_pow hq hn0)
+        Ideal.mul_mem_mul (eval_zero_mem_ideal_of_eq_mul_X_pow hp hm0.ne')
+          (eval_zero_mem_ideal_of_eq_mul_X_pow hq hn0.ne')
     have hpql0 : (mk P) (p * q).leadingCoeff ≠ 0 := by rwa [Ne.def, eq_zero_iff_mem]
     have hp0 : p ≠ 0 := fun h => by
       simp_all only [zero_mul, eq_self_iff_true, not_true, Ne.def]

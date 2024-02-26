@@ -36,15 +36,9 @@ is locally compact. -/
   "Every topological additive group
   in which there exists a compact set with nonempty interior is locally compact."]
 theorem TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
-    (K : PositiveCompacts G) : LocallyCompactSpace G := by
-  have A : WeaklyLocallyCompactSpace G :=
-    { exists_compact_mem_nhds := by
-        intro x
-        obtain ⟨y, hy⟩ := K.interior_nonempty
-        refine ⟨(x * y⁻¹) • (K : Set G), K.isCompact.smul _, ?_⟩
-        rw [mem_interior_iff_mem_nhds] at hy
-        simpa using smul_mem_nhds (x * y⁻¹) hy }
-  infer_instance
+    (K : PositiveCompacts G) : LocallyCompactSpace G :=
+  let ⟨_x, hx⟩ := K.interior_nonempty
+  K.isCompact.locallyCompactSpace_of_mem_nhds_of_group (mem_interior_iff_mem_nhds.1 hx)
 #align topological_space.positive_compacts.locally_compact_space_of_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
 #align topological_space.positive_compacts.locally_compact_space_of_add_group TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_addGroup
 
@@ -61,7 +55,7 @@ instance QuotientGroup.continuousSMul [LocallyCompactSpace G] : ContinuousSMul G
     change Continuous F
     have H : Continuous (F ∘ fun p : G × G => (p.1, QuotientGroup.mk p.2)) := by
       change Continuous fun p : G × G => QuotientGroup.mk (p.1 * p.2)
-      refine' continuous_coinduced_rng.comp continuous_mul
+      exact continuous_coinduced_rng.comp continuous_mul
     exact QuotientMap.continuous_lift_prod_right quotientMap_quotient_mk' H
 #align quotient_group.has_continuous_smul QuotientGroup.continuousSMul
 #align quotient_add_group.has_continuous_vadd QuotientAddGroup.continuousVAdd

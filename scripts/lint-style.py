@@ -65,18 +65,21 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         path = ROOT_DIR / filename
         if errno == "ERR_COP":
             exceptions += [(ERR_COP, path, None)]
-        if errno == "ERR_MOD":
+        elif errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
-        if errno == "ERR_LIN":
+        elif errno == "ERR_LIN":
             exceptions += [(ERR_LIN, path, None)]
-        if errno == "ERR_OPT":
+        elif errno == "ERR_OPT":
             exceptions += [(ERR_OPT, path, None)]
-        if errno == "ERR_AUT":
+        elif errno == "ERR_AUT":
             exceptions += [(ERR_AUT, path, None)]
-        if errno == "ERR_TAC":
+        elif errno == "ERR_TAC":
             exceptions += [(ERR_TAC, path, None)]
-        if errno == "ERR_NUM_LIN":
+        elif errno == "ERR_NUM_LIN":
             exceptions += [(ERR_NUM_LIN, path, extra[1])]
+        else:
+            print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
+            sys.exit(1)
 
 new_exceptions = False
 
@@ -364,6 +367,7 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
 
 def lint(path, fix=False):
+    global new_exceptions
     with path.open(encoding="utf-8", newline="") as f:
         # We enumerate the lines so that we can report line numbers in the error messages correctly
         # we will modify lines as we go, so we need to keep track of the original line numbers
