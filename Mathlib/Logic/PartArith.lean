@@ -27,7 +27,7 @@ namespace Matrix
 open Fin
 section
 universe u
-variable {n : ℕ} {α : Type u}
+variable {n : ℕ} {α β : Type u}
 
 infixr:70 " :> " => vecCons
 
