@@ -112,7 +112,7 @@ theorem HomogeneousSubmodule.isHomogeneous (I : HomogeneousSubmodule A ℳ) :
   I.is_homogeneous'
 
 theorem HomogeneousSubring.isHomogeneous (A' : HomogeneousSubring 𝒜𝒜) :
-  A'.toSubring.IsHomogeneous 𝒜𝒜 := A'.is_homogeneous'
+    A'.toSubring.IsHomogeneous 𝒜𝒜 := A'.is_homogeneous'
 
 theorem HomogeneousSubmodule.toSubmodule_injective :
     Function.Injective

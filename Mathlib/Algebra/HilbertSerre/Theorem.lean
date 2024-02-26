@@ -331,7 +331,8 @@ lemma exact_KERComponentEmb_smulBy (n : ℕ) :
 
 -- `ℳₙ -> ℳ_{d + n} -> COKER_{d + n}` is exact
 lemma exact_smulBy_COKERDescComponent (n : ℕ) :
-    LinearMap.range (smulBy ℳ x deg_x n) = LinearMap.ker (COKER.descComponent ℳ x deg_x (d + n)) := by
+    LinearMap.range (smulBy ℳ x deg_x n) =
+    LinearMap.ker (COKER.descComponent ℳ x deg_x (d + n)) := by
   ext m
   fconstructor
   · rintro ⟨m, rfl⟩
@@ -363,7 +364,8 @@ def reindex (i : ℕ) (ineq : d ≤ i) : (ℳ (d + (i - d))) ≃ₗ[(𝒜 0)] (�
   right_inv x := by ext; rfl
 
 lemma exact_smulBy_COKERDescComponent' (n : ℕ) (ineq : d ≤ n) :
-    LinearMap.range ((reindex ℳ n ineq).toLinearMap ∘ₗ (smulBy ℳ x deg_x (n - d))) = LinearMap.ker (COKER.descComponent ℳ x deg_x n) := by
+    LinearMap.range ((reindex ℳ n ineq).toLinearMap ∘ₗ (smulBy ℳ x deg_x (n - d))) =
+    LinearMap.ker (COKER.descComponent ℳ x deg_x n) := by
   rw [LinearMap.range_comp, exact_smulBy_COKERDescComponent]
   ext m
   simp only [Submodule.mem_map_equiv, LinearMap.mem_ker]
@@ -390,7 +392,8 @@ noncomputable def anExactSeq (i : ℕ) (ineq : d ≤ i) : ComposableArrows (FGMo
       FGModuleCat.of _ ((KER ℳ x deg_x).grading (i - d)) ⟶ FGModuleCat.of _ (ℳ (i - d)))
     (FGModuleCat.asHom (smulBy ℳ x deg_x (i - d)) ≫ (reindex ℳ i ineq).toFGModuleCatIso.hom :
       FGModuleCat.of _ (ℳ (i - d)) ⟶ FGModuleCat.of _ (ℳ i))
-    (FGModuleCat.asHom (COKER.descComponent ℳ x deg_x i) : FGModuleCat.of _ (ℳ i) ⟶ FGModuleCat.of _ ((COKER.den ℳ x deg_x).quotientGrading i))
+    (FGModuleCat.asHom (COKER.descComponent ℳ x deg_x i) :
+      FGModuleCat.of _ (ℳ i) ⟶ FGModuleCat.of _ ((COKER.den ℳ x deg_x).quotientGrading i))
     (0 : FGModuleCat.of _ ((COKER.den ℳ x deg_x).quotientGrading i) ⟶ 0)
 
 example : true := rfl

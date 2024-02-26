@@ -1,6 +1,23 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.QuotientNoetherian
+
+/-!
+# Some finite result about modules
+Let `R` be a noetherian and `A` an `R`-algebra and `S` a finite subset of `A`
+
+- `R[S]` is also a noetherian ring.
+- If `M` is an `A`-module, then `M` is also an `A[S]`-module by restricting the scalar action; if
+  `M` is finite and annihilated by `S`, then `M` is also finite as an `A[S]`-module.
+
+-/
+
 
 variable (R A : Type*) [CommRing R] [IsNoetherianRing R] [CommRing A] [Algebra R A]
 

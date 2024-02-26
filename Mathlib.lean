@@ -239,6 +239,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.HilbertSerre.AdditiveFunction
+import Mathlib.Algebra.HilbertSerre.FiniteInstances
 import Mathlib.Algebra.HilbertSerre.Theorem
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
@@ -3242,6 +3243,7 @@ import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.Radical
+import Mathlib.RingTheory.GradedAlgebra.Subgrading
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.Multiplication

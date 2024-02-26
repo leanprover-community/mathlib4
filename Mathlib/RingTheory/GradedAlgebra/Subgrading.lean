@@ -1,4 +1,23 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+
+/-!
+# Grading structure for sub-structures
+
+Let `A` be a graded ring and `M` a graded module over `A`.
+
+- If `R` is a homogeneous subring of `A`, then `R` is also a grade ring with `i`-th grading being
+  `Rᵢ ∩ Aᵢ`
+- If `N` is a homogeneous submodule of `M`, then `N` is also a graded module over `A` with `i`-th
+  grading being `Nᵢ ∩ Mᵢ`
+- If `N` is a homogeneous submodule of `M`, then `M ⧸ N` is also a graded module over `A` with
+  `i`-th grading being `Mᵢ ⧸ (Nᵢ ∩ Mᵢ)`
+-/
 
 open DirectSum
 open BigOperators
@@ -124,7 +143,7 @@ instance gradedRing : GradedRing A'.grading where
   __ := inferInstanceAs <| Decomposition A'.grading
 
 lemma grading.decompose_def (x : A') :
-  DirectSum.decompose A'.grading x = HomogeneousSubring.grading.decompose A' x := rfl
+    DirectSum.decompose A'.grading x = HomogeneousSubring.grading.decompose A' x := rfl
 
 section irrelevant_ideal
 
@@ -279,8 +298,7 @@ def quotientGradingEmb (i : ιM) :
       add_mem' := p.toSubmodule.add_mem
       zero_mem' := p.toSubmodule.zero_mem
       neg_mem' := p.toSubmodule.neg_mem
-    } : AddSubgroup (ℳ i)) →+ M ⧸ p.toSubmodule
-     :=
+    } : AddSubgroup (ℳ i)) →+ M ⧸ p.toSubmodule :=
   QuotientAddGroup.map _ _
     { toFun := fun m ↦ m.1
       map_zero' := by simp
