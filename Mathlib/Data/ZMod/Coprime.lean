@@ -15,6 +15,7 @@ We show that for prime `p`, the image of an integer `a` in `ZMod p` vanishes if 
 `a` and `p` are not coprime.
 -/
 
+
 namespace ZMod
 
 /-- If `p` is a prime and `a` is an integer, then `a : ZMod p` is zero if and only if
