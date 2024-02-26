@@ -602,7 +602,6 @@ theorem tail_neg (a : Fin n.succ → α) : vecTail (-a) = -vecTail a :=
 
 end Neg
 
-@[simp]
 lemma const_fin1_eq (x : α) : (fun _ : Fin 1 => x) = ![x] :=
   (cons_fin_one x _).symm
 
