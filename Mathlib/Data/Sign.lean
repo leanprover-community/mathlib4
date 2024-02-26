@@ -251,13 +251,13 @@ instance : CoeTC SignType α :=
 -- Porting note: `cast_eq_coe` removed, syntactic equality
 
 /-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
-lemma comp_cast' {β : Type*} [One β] [Neg β] [Zero β]
+lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
     (f : α → β) (h₁ : f 1 = 1) (h₂ : f 0 = 0) (h₃ : f (-1) = -1) (s : SignType) :
     f s = s := by
   cases s <;> simp only [SignType.cast, h₁, h₂, h₃]
 
 /-- Casting out of `SignType` respects composition with suitable bundled homomorphism types. -/
-lemma comp_cast {α β F : Type*} [AddGroupWithOne α] [One β] [SubtractionMonoid β]
+lemma map_cast {α β F : Type*} [AddGroupWithOne α] [One β] [SubtractionMonoid β]
     [FunLike F α β] [AddMonoidHomClass F α β] [OneHomClass F α β] (f : F) (s : SignType) :
     f s = s := by
   apply comp_cast' <;> simp
@@ -373,7 +373,7 @@ variable [Zero α] [LinearOrder α] {a : α}
 
 /-- `SignType.sign` respects strictly monotone zero-preserving maps. -/
 lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel ((· < ·) : β → β → _)]
-    [FunLike F α β] [ZeroHomClass F α β] {f : F} (hf : StrictMono f) (a) :
+    [FunLike F α β] [ZeroHomClass F α β] {f : F} (hf : StrictMono f) (a : α) :
     sign (f a) = sign a := by
   simp only [sign_apply, ← map_zero f, hf.lt_iff_lt]
 
