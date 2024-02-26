@@ -6,7 +6,6 @@ Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.Data.ULift
-assert_not_exists div_self
 
 #align_import category_theory.discrete_category from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
