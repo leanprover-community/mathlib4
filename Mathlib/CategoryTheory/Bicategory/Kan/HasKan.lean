@@ -9,13 +9,19 @@ import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 # Existence of Kan extensions and Kan lifts in bicategories
 
 We provide the propositional typeclass `HasLeftKanExtension f g`, which asserts that there
-exists a left Kan extension of `g` along `f`. Under the assumption that `HasLeftKanExtension f g`,
+exists a left Kan extension of `g` along `f`. See `CategoryTheory.Bicategory.Kan.IsKan` for
+the definition of left Kan extensions. Under the assumption that `HasLeftKanExtension f g`,
 we define the left Kan extension `lan f g` by using the axiom of choice.
 
 ## Main definitions
 
-* `lan f g` is the left Kan extension of `g` along `f`, and is denoted by `f ⁺ g`.
-* `lanLift f g` is the left Kan lift of `g` along `f`, and is denoted by `f ₊ g`.
+* `lan f g` is the left Kan extension of `g` along `f`, and is denoted by `f⁺ g`.
+* `lanLift f g` is the left Kan lift of `g` along `f`, and is denoted by `f₊ g`.
+
+## TODO
+
+* `ran f g` is the right Kan extension of `g` along `f`, and is denoted by `f⁺⁺ g`.
+* `ranLift f g` is the right Kan lift of `g` along `f`, and is denoted by `f₊₊ g`.
 
 -/
 
@@ -38,9 +44,9 @@ variable {f : a ⟶ b} {g : a ⟶ c}
 /-- Left Kan extensions of `g` along `f`. -/
 structure LeftKanExtension (f : a ⟶ b) (g : a ⟶ c) where
   /-- The underlying left extension. -/
-  extension : LeftExtension f g
-  /-- The proof that the extension is a Kan extension. -/
-  isKan : extension.IsKan
+  leftExtension : LeftExtension f g
+  /-- The evidence that the extension is a Kan extension. -/
+  isKan : leftExtension.IsKan
 
 /-- The existence of a left Kan extension of `g` along `f`. -/
 class HasLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) : Prop where mk' ::
@@ -49,96 +55,126 @@ class HasLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) : Prop where mk' ::
 theorem HasLeftKanExtension.mk {t : LeftExtension f g} (H : IsKan t) : HasLeftKanExtension f g :=
   ⟨⟨t, H⟩⟩
 
-/-- Use the axiom of choice to extract the explicit left kan extension. -/
+/-- Use the axiom of choice to extract a left kan extension. -/
 def getLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : LeftKanExtension f g :=
   Classical.choice HasLeftKanExtension.exists_leftKan
 
-/-- The left Kan extension of `g` along `f`. -/
-def lan.extension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : LeftExtension f g :=
-  (getLeftKanExtension f g).extension
+/-- The left Kan extension of `g` along `f` at the level of left extension. -/
+def Lan.leftExtension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : LeftExtension f g :=
+  (getLeftKanExtension f g).leftExtension
 
-/-- The left Kan extension of `g` along `f`, denoted by `f ⁺ g`.
+/-- The left Kan extension of `g` along `f`. -/
+def lan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : b ⟶ c :=
+  (Lan.leftExtension f g).extension
+
+/-- `f⁺ g` is the left Kan extension of `g` along `f`.
 ```
   b
   △ \
-  |   \ f ⁺ g
+  |   \ f⁺ g
 f |     \
   |       ◿
   a - - - ▷ c
       g
 ```
 -/
-def lan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : b ⟶ c :=
-  (lan.extension f g).extension
+scoped infixr:90 "⁺ " => lan
 
-@[inherit_doc] scoped infixr:90 " ⁺ " => lan
+@[simp]
+theorem Lan.leftExtension_extension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] :
+    (Lan.leftExtension f g).extension = f⁺ g := rfl
 
-/-- The unit for the left kan extension `f ⁺ g`. -/
-def lan.unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫ f ⁺ g :=
-  (lan.extension f g).unit
+/-- The unit for the left kan extension `f⁺ g`. -/
+def Lan.unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫ f⁺ g :=
+  (Lan.leftExtension f g).unit
 
-/-- Evidence that the `lan.extension f g` is a kan extension. -/
-def lan.isLeftKan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : (lan.extension f g).IsKan :=
+@[simp]
+theorem Lan.leftExtension_unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] :
+    (Lan.leftExtension f g).unit = Lan.unit f g := rfl
+
+/-- Evidence that the `Lan.extension f g` is a kan extension. -/
+def Lan.isKan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : (Lan.leftExtension f g).IsKan :=
   (getLeftKanExtension f g).isKan
 
 variable {f : a ⟶ b} {g : a ⟶ c}
 
-/-- The family of 2-morphisms out of the left Kan extension `f ⁺ g`. -/
-def lan.desc [HasLeftKanExtension f g] (s : LeftExtension f g) :
-    f ⁺ g ⟶ s.extension :=
-  (lan.isLeftKan f g).desc s
+/-- The family of 2-morphisms out of the left Kan extension `f⁺ g`. -/
+def Lan.desc [HasLeftKanExtension f g] (s : LeftExtension f g) :
+    f⁺ g ⟶ s.extension :=
+  (Lan.isKan f g).desc s
 
 @[reassoc (attr := simp)]
-theorem lan.lan₂_desc [HasLeftKanExtension f g] (s : LeftExtension f g) :
-    lan.unit f g ≫ f ◁ lan.desc s = s.unit :=
-  (lan.isLeftKan f g).fac s
+theorem Lan.unit_desc [HasLeftKanExtension f g] (s : LeftExtension f g) :
+    Lan.unit f g ≫ f ◁ Lan.desc s = s.unit :=
+  (Lan.isKan f g).fac s
 
 @[simp]
-theorem lan.isLeftKan_desc [HasLeftKanExtension f g] (s : LeftExtension f g) :
-    (lan.isLeftKan f g).desc s = lan.desc s :=
+theorem Lan.isKan_desc [HasLeftKanExtension f g] (s : LeftExtension f g) :
+    (Lan.isKan f g).desc s = Lan.desc s :=
   rfl
 
-theorem lan.existsUnique [HasLeftKanExtension f g] (s : LeftExtension f g) :
-    ∃! τ, lan.unit f g ≫ f ◁ τ = s.unit :=
-  (lan.isLeftKan f g).existsUnique _
+theorem Lan.existsUnique [HasLeftKanExtension f g] (s : LeftExtension f g) :
+    ∃! τ, Lan.unit f g ≫ f ◁ τ = s.unit :=
+  (Lan.isKan f g).existsUnique _
 
-/-- Absolute left Kan extensions of `g` along `f`. -/
-structure AbsLeftKan (f : a ⟶ b) (g : a ⟶ c) where
-  /-- The underlying left extension. -/
-  extension : LeftExtension f g
-  /-- The proof that the extension is an absolute Kan extension. -/
-  isAbsKan : extension.IsAbsKan
+/-- `h : c ⟶ x` commutes with the left Kan extension of `g : a ⟶ c` along `f : a ⟶ b` if
+
+. -/
+class Lan.CommuteWith
+    (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] {x : B} (h : c ⟶ x) : Prop where
+  commute : Nonempty <| IsKan <| (Lan.leftExtension f g).whisker h
+
+namespace Lan.CommuteWith
+
+theorem ofLanCompIsoLanAlongComp [HasLeftKanExtension f g]
+    {x : B} {h : c ⟶ x} [HasLeftKanExtension f (g ≫ h)]
+    (i : f⁺ (g ≫ h) ≅ f⁺ g ≫ h)
+    (w : Lan.unit f (g ≫ h) ≫ f ◁ i.hom = Lan.unit f g ▷ h ≫ (α_ _ _ _).hom) :
+    Lan.CommuteWith f g h :=
+  ⟨⟨(Lan.isKan f (g ≫ h)).ofIsoKan <| StructuredArrow.isoMk i⟩⟩
+
+variable (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g]
+variable {x : B} (h : c ⟶ x) [Lan.CommuteWith f g h]
+
+/-- Evidence that `h` commutes with the left kan extension `f⁺ g`. -/
+def isKan : IsKan <| (Lan.leftExtension f g).whisker h := Classical.choice Lan.CommuteWith.commute
+
+instance : HasLeftKanExtension f (g ≫ h) := .mk <| Lan.CommuteWith.isKan f g h
+
+/-- The isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` at the level of left extensions. -/
+def lanAlongCompIsoLanwhisker : Lan.leftExtension f (g ≫ h) ≅ (Lan.leftExtension f g).whisker h :=
+  IsKan.uniqueUpToIso (Lan.isKan f (g ≫ h)) (Lan.CommuteWith.isKan f g h)
+
+@[simp]
+theorem lanAlongCompIsoLanwhisker_hom_right :
+    (lanAlongCompIsoLanwhisker f g h).hom.right = Lan.desc ((Lan.leftExtension f g).whisker h) :=
+  rfl
+
+@[simp]
+theorem lanAlongCompIsoLanwhisker_inv_right :
+    (lanAlongCompIsoLanwhisker f g h).inv.right =
+      (isKan f g h).desc (Lan.leftExtension f (g ≫ h)) :=
+  rfl
+
+/-- The 1-morphism `h` commutes with the left Kan extension `f⁺ g`. -/
+@[simps!]
+def lanAlongCompIsoLanComp : f⁺ (g ≫ h) ≅ f⁺ g ≫ h :=
+    Comma.rightIso <| Lan.CommuteWith.lanAlongCompIsoLanwhisker f g h
+
+end Lan.CommuteWith
 
 /-- The existence of an absolute left Kan extension of `g` along `f`. -/
-class HasAbsLeftKan (f : a ⟶ b) (g : a ⟶ c) : Prop where mk' ::
-  exists_absLeftKan : Nonempty (AbsLeftKan f g)
+class HasAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) extends HasLeftKanExtension f g : Prop where
+  commute : ∀ {x : B} (h : c ⟶ x), Lan.CommuteWith f g h
 
-theorem HasAbsLeftKan.mk {t : LeftExtension f g} (H : IsAbsKan t) : HasAbsLeftKan f g := ⟨⟨t, H⟩⟩
+instance [HasAbsLeftKanExtension f g] {x : B} (h : c ⟶ x) : Lan.CommuteWith f g h :=
+  HasAbsLeftKanExtension.commute h
 
-/-- Use the axiom of choice to extract the explicit absolute left kan extension. -/
-def absLan.getAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) [HasAbsLeftKan f g] : AbsLeftKan f g :=
-  Classical.choice HasAbsLeftKan.exists_absLeftKan
-
-instance [HasAbsLeftKan f g] {x : B} (h : c ⟶ x) : HasLeftKanExtension f (g ≫ h) :=
-  .mk <| (absLan.getAbsLeftKanExtension f g).isAbsKan h
-
-instance [HasAbsLeftKan f g] : HasLeftKanExtension f g :=
-  .mk (lan.isLeftKan f (g ≫ 𝟙 c)).ofAlongCompId
-
-/-- If there exists an absolute Kan extension of `g` along `f`, we have the evidence that the
-distinguished kan extension `lan.extension f g` is an absolute Kan extension. -/
-def lan.isAbsLeftKan (f : a ⟶ b) (g : a ⟶ c) [HasAbsLeftKan f g] : (lan.extension f g).IsAbsKan :=
-  let ⟨_, H⟩ := absLan.getAbsLeftKanExtension f g
-  H.ofIsoAbsKan <| IsKan.uniqueUpToIso H.isKan (lan.isLeftKan f g)
-
-/-- `h : c ⟶ x` commutes with the left Kan extension of `g : a ⟶ c` along `f : a ⟶ b`. -/
-class CommuteWithLeftKan
-    (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] {x : B} (h : c ⟶ x) : Prop where
-  commute : Nonempty <| IsKan <| (lan.extension f g).whisker h
-
-instance {x : B} {h : c ⟶ x} [HasLeftKanExtension f g] [CommuteWithLeftKan f g h] :
-    HasLeftKanExtension f (g ≫ h) :=
-  .mk (Classical.choice <| CommuteWithLeftKan.commute)
+theorem HasAbsLeftKanExtension.ofIsAbsKan {t : LeftExtension f g} (H : IsAbsKan t) :
+    HasAbsLeftKanExtension f g :=
+  have : HasLeftKanExtension f g := .mk H.isKan
+  ⟨fun h ↦
+    ⟨⟨(H h).ofIsoKan (LeftExtension.whiskerIso (IsKan.uniqueUpToIso H.isKan (Lan.isKan f g)) h)⟩⟩⟩
 
 end LeftKan
 
@@ -151,9 +187,9 @@ variable {f : b ⟶ a} {g : c ⟶ a}
 /-- Left lifts of `g` along `f`. -/
 structure LeftKanLift (f : b ⟶ a) (g : c ⟶ a) where
   /-- The underlying left lift. -/
-  lift : LeftLift f g
-  /-- The proof that the left lift is a Kan lift. -/
-  isKan : lift.IsKan
+  leftLift : LeftLift f g
+  /-- The evidence that the left lift is a Kan lift. -/
+  isKan : leftLift.IsKan
 
 /-- The existence of a left kan lift of `g` along `f`. -/
 class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
@@ -161,99 +197,126 @@ class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
 
 theorem HasLeftKanLift.mk {t : LeftLift f g} (H : IsKan t) : HasLeftKanLift f g := ⟨⟨t, H⟩⟩
 
-/-- Use the axiom of choice to extract the explicit left kan lift. -/
+/-- Use the axiom of choice to extract a left kan lift. -/
 def getLeftKanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftKanLift f g :=
   Classical.choice HasLeftKanLift.exists_leftKanLift
 
 /-- The left kan lift of `g` along `f`. -/
-def lanLift.lift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftLift f g :=
-  (getLeftKanLift f g).lift
+def LanLift.leftLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftLift f g :=
+  (getLeftKanLift f g).leftLift
 
-/-- The left kan lift of `g` along `f`, denoted by `f ₊ g`.
+/-- The left kan lift of `g` along `f`. -/
+def lanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : c ⟶ b :=
+  (LanLift.leftLift f g).lift
+
+/-- `f₊ g` is the left kan lift of `g` along `f`.
 ```
             b
           ◹ |
-  f ₊ g /   |
+   f₊ g /   |
       /     | f
     /       ▽
   c - - - ▷ a
        g
 ```
 -/
-def lanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : c ⟶ b :=
-  (lanLift.lift f g).lift
+scoped infixr:90 "₊ " => lanLift
 
-@[inherit_doc] scoped infixr:90 " ₊ " => lanLift
+@[simp]
+theorem LanLift.leftLift_lift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
+    (LanLift.leftLift f g).lift = f₊ g := rfl
 
 /-- The unit for `lanLift f g`. -/
-def lanLift.unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f ₊ g ≫ f :=
-  (lanLift.lift f g).unit
+def LanLift.unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g ≫ f :=
+  (LanLift.leftLift f g).unit
 
-/-- Evidence that the `lanLift.lift f g` is a kan lift. -/
-def lanLift.isLeftKan (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : (lanLift.lift f g).IsKan :=
+@[simp]
+theorem LanLift.leftLift_unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
+    (LanLift.leftLift f g).unit = LanLift.unit f g := rfl
+
+/-- Evidence that the `LanLift.lift f g` is a kan lift. -/
+def LanLift.isKan (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : (LanLift.leftLift f g).IsKan :=
   (getLeftKanLift f g).isKan
 
 variable {f : b ⟶ a} {g : c ⟶ a}
 
-/-- The family of 2-morphisms out of the left kan lift `f ₊ g`. -/
-def lanLift.desc [HasLeftKanLift f g] (s : LeftLift f g) :
+/-- The family of 2-morphisms out of the left kan lift `f₊ g`. -/
+def LanLift.desc [HasLeftKanLift f g] (s : LeftLift f g) :
     f ₊ g ⟶ s.lift :=
-  (lanLift.isLeftKan f g).desc s
+  (LanLift.isKan f g).desc s
 
 @[reassoc (attr := simp)]
-theorem lanLift.unit_desc [HasLeftKanLift f g] (s : LeftLift f g) :
-    lanLift.unit f g ≫ lanLift.desc s ▷ f = s.unit :=
-  (lanLift.isLeftKan f g).fac s
+theorem LanLift.unit_desc [HasLeftKanLift f g] (s : LeftLift f g) :
+    LanLift.unit f g ≫ LanLift.desc s ▷ f = s.unit :=
+  (LanLift.isKan f g).fac s
 
 @[simp]
-theorem lanLift.isLeftKan_desc [HasLeftKanLift f g] (s : LeftLift f g) :
-    (lanLift.isLeftKan f g).desc s = lanLift.desc s :=
+theorem LanLift.isKan_desc [HasLeftKanLift f g] (s : LeftLift f g) :
+    (LanLift.isKan f g).desc s = LanLift.desc s :=
   rfl
 
-theorem lanLift.existsUnique [HasLeftKanLift f g] (s : LeftLift f g) :
-    ∃! τ, lanLift.unit f g ≫ τ ▷ f = s.unit :=
-  (lanLift.isLeftKan f g).existsUnique _
-
-/-- Absolute left lifts of `g` along `f`. -/
-structure AbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) where
-  /-- The underlying left lift. -/
-  lift : LeftLift f g
-  /-- The proof that the left lift is an absolute Kan lift. -/
-  isAbsKan : lift.IsAbsKan
-
-/-- The existence of an absolute left Kan lift of `g` along `f`. -/
-class HasAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
-  exists_absLeftKanLift : Nonempty (AbsLeftKanLift f g)
-
-theorem HasAbsLeftKanLift.mk {t : LeftLift f g} (H : IsAbsKan t) : HasAbsLeftKanLift f g :=
-  ⟨⟨t, H⟩⟩
-
-/-- Use the axiom of choice to extract the explicit absolute left kan lift. -/
-def absLanLift.getAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) [HasAbsLeftKanLift f g] :
-    AbsLeftKanLift f g :=
-  Classical.choice HasAbsLeftKanLift.exists_absLeftKanLift
-
-instance [HasAbsLeftKanLift f g] {x : B} (h : x ⟶ c) : HasLeftKanLift f (h ≫ g) :=
-  .mk <| (absLanLift.getAbsLeftKanLift f g).isAbsKan h
-
-instance [HasAbsLeftKanLift f g] : HasLeftKanLift f g :=
-  .mk (lanLift.isLeftKan f (𝟙 c ≫ g)).ofAlongIdComp
-
-/-- If there exists an absolute Kan lift of `g` along `f`, we have the evidence that the
-distinguished kan lift `lanLift.lift f g` is an absolute Kan lift. -/
-def lanLift.isAbsLeftKan (f : b ⟶ a) (g : c ⟶ a) [HasAbsLeftKanLift f g] :
-    (lanLift.lift f g).IsAbsKan :=
-  let ⟨_, H⟩ := absLanLift.getAbsLeftKanLift f g
-  fun h ↦ (H h).ofIso (whiskerIso (IsKan.uniqueUpToIso (H.isKan) (lanLift.isLeftKan f g)) h)
+theorem LanLift.existsUnique [HasLeftKanLift f g] (s : LeftLift f g) :
+    ∃! τ, LanLift.unit f g ≫ τ ▷ f = s.unit :=
+  (LanLift.isKan f g).existsUnique _
 
 /-- `h : x ⟶ b` commutes with the left kan lift of `g : c ⟶ a` along `f : b ⟶ a`. -/
-class CommuteWithLeftKanLift
+class LanLift.CommuteWith
     (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] {x : B} (h : x ⟶ c) : Prop where
-  commute : Nonempty <| IsKan <| (lanLift.lift f g).whisker h
+  commute : Nonempty <| IsKan <| (LanLift.leftLift f g).whisker h
 
-instance {x : B} {h : x ⟶ c} [HasLeftKanLift f g] [CommuteWithLeftKanLift f g h] :
-    HasLeftKanLift f (h ≫ g) :=
-  .mk (Classical.choice <| CommuteWithLeftKanLift.commute)
+namespace LanLift.CommuteWith
+
+theorem ofLanCompIsoLanAlongComp [HasLeftKanLift f g]
+    {x : B} {h : x ⟶ c} [HasLeftKanLift f (h ≫ g)]
+    (i : f₊ (h ≫ g) ≅ h ≫ f₊ g)
+    (w : LanLift.unit f (h ≫ g) ≫ i.hom ▷ f = h ◁ LanLift.unit f g ≫ (α_ _ _ _).inv) :
+    LanLift.CommuteWith f g h :=
+  ⟨⟨(LanLift.isKan f (h ≫ g)).ofIsoKan <| StructuredArrow.isoMk i⟩⟩
+
+variable (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g]
+variable {x : B} (h : x ⟶ c) [LanLift.CommuteWith f g h]
+
+/-- Evidence that `h` commutes with the left kan lift `f₊ g`. -/
+def isKan : IsKan <| (LanLift.leftLift f g).whisker h :=
+    Classical.choice LanLift.CommuteWith.commute
+
+instance : HasLeftKanLift f (h ≫ g) := .mk <| LanLift.CommuteWith.isKan f g h
+
+/-- The isomorphism `f₊ (h ≫ g) ≅ h ≫ f₊ g` at the level of left lifts. -/
+def lanLiftAlongCompIsoLanLiftWhisker :
+    LanLift.leftLift f (h ≫ g) ≅ (LanLift.leftLift f g).whisker h :=
+  IsKan.uniqueUpToIso (LanLift.isKan f (h ≫ g)) (LanLift.CommuteWith.isKan f g h)
+
+@[simp]
+theorem lanLiftAlongCompIsoLanLiftWhisker_hom_right :
+    (lanLiftAlongCompIsoLanLiftWhisker f g h).hom.right =
+      LanLift.desc ((LanLift.leftLift f g).whisker h) :=
+  rfl
+
+@[simp]
+theorem lanLiftAlongCompIsoLanLiftWhisker_inv_right :
+    (lanLiftAlongCompIsoLanLiftWhisker f g h).inv.right =
+      (isKan f g h).desc (LanLift.leftLift f (h ≫ g)) :=
+  rfl
+
+/-- The 1-morphism `h` commutes with the left Kan lift `f₊ g`. -/
+@[simps!]
+def lanLiftAlongCompIsoCompLan : f₊ (h ≫ g) ≅ h ≫ f₊ g :=
+    Comma.rightIso <| LanLift.CommuteWith.lanLiftAlongCompIsoLanLiftWhisker f g h
+
+end LanLift.CommuteWith
+
+/-- The existence of an absolute left Kan lift of `g` along `f`. -/
+class HasAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) extends HasLeftKanLift f g : Prop where
+  commute : ∀ {x : B} (h : x ⟶ c), LanLift.CommuteWith f g h
+
+instance [HasAbsLeftKanLift f g] {x : B} (h : x ⟶ c) : LanLift.CommuteWith f g h :=
+  HasAbsLeftKanLift.commute h
+
+theorem HasAbsLeftKanLift.ofIsAbsKan {t : LeftLift f g} (H : IsAbsKan t) : HasAbsLeftKanLift f g :=
+  have : HasLeftKanLift f g := .mk H.isKan
+  ⟨fun h ↦
+    ⟨⟨(H h).ofIsoKan (LeftLift.whiskerIso (IsKan.uniqueUpToIso H.isKan (LanLift.isKan f g)) h)⟩⟩⟩
 
 end LeftLift
 

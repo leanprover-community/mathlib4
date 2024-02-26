@@ -99,17 +99,17 @@ def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a
 theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
     List.TFAE [
       IsLeftAdjoint f,
-      HasAbsLeftKan f (𝟙 a),
-      ∃ _ : HasLeftKanExtension f (𝟙 a), CommuteWithLeftKan f (𝟙 a) f] := by
+      HasAbsLeftKanExtension f (𝟙 a),
+      ∃ _ : HasLeftKanExtension f (𝟙 a), Lan.CommuteWith f (𝟙 a) f] := by
   tfae_have 1 → 2
   · intro h
-    exact .mk (getRightAdjointAdj f).isAbsoluteLeftKan
+    exact .ofIsAbsKan (rightAdjoint.adjunction f).isAbsoluteLeftKan
   tfae_have 2 → 3
-  · intro h;
-    exact ⟨inferInstance, ⟨⟨lan.isAbsLeftKan f (𝟙 a) f⟩⟩⟩
+  · intro h
+    exact ⟨inferInstance, inferInstance⟩
   tfae_have 3 → 1
   · intro ⟨h, h'⟩
-    exact .intro <| (lan.isLeftKan f (𝟙 a)).adjunction <| Classical.choice h'.commute
+    exact .mk <| (Lan.isKan f (𝟙 a)).adjunction <| Lan.CommuteWith.isKan f (𝟙 a) f
   tfae_finish
 
 end LeftExtension
@@ -178,16 +178,16 @@ theorem isRightAdjoint_TFAE (u : b ⟶ a) :
     List.TFAE [
       IsRightAdjoint u,
       HasAbsLeftKanLift u (𝟙 a),
-      ∃ _ : HasLeftKanLift u (𝟙 a), CommuteWithLeftKanLift u (𝟙 a) u] := by
+      ∃ _ : HasLeftKanLift u (𝟙 a), LanLift.CommuteWith u (𝟙 a) u] := by
   tfae_have 1 → 2
   · intro h
-    exact .mk (getLeftAdjointAdj u).isAbsoluteLeftKanLift
+    exact .ofIsAbsKan (leftAdjoint.adjunction u).isAbsoluteLeftKanLift
   tfae_have 2 → 3
   · intro h;
-    exact ⟨inferInstance, ⟨⟨lanLift.isAbsLeftKan u (𝟙 a) u⟩⟩⟩
+    exact ⟨inferInstance, inferInstance⟩
   tfae_have 3 → 1
   · intro ⟨h, h'⟩
-    exact .intro <| (lanLift.isLeftKan u (𝟙 a)).adjunction <| Classical.choice h'.commute
+    exact .mk <| (LanLift.isKan u (𝟙 a)).adjunction <| LanLift.CommuteWith.isKan u (𝟙 a) u
   tfae_finish
 
 end LeftLift
@@ -234,8 +234,15 @@ def isKanOfWhiskerLeftAdjoint
         rw [Hτ']; simp [bicategoricalComp]
 
 instance {f : a ⟶ b} {g : a ⟶ c} {x : B} {h : c ⟶ x} [IsLeftAdjoint h] [HasLeftKanExtension f g] :
-    HasLeftKanExtension f (g ≫ h) :=
-  .mk <| isKanOfWhiskerLeftAdjoint (lan.isLeftKan f g) (getRightAdjointAdj h)
+    Lan.CommuteWith f g h :=
+  ⟨⟨isKanOfWhiskerLeftAdjoint (Lan.isKan f g) (rightAdjoint.adjunction h)⟩⟩
+
+/-- A left adjoint commutes with a left Kan extension. -/
+noncomputable
+def LeftAdjoint.lanAlongCompIsoLanComp (f : a ⟶ b) (g : a ⟶ c) {x : B} (h : c ⟶ x)
+    [IsLeftAdjoint h] [HasLeftKanExtension f g] :
+    f⁺ (g ≫ h) ≅ f⁺ g ≫ h :=
+  Lan.CommuteWith.lanAlongCompIsoLanComp f g h
 
 end LeftExtension
 

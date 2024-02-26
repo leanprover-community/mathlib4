@@ -81,27 +81,30 @@ theorem hom_ext (H : IsKan t) {k : b ⟶ c} {τ τ' : t.extension ⟶ k}
   StructuredArrow.IsUniversal.hom_ext H w
 
 /-- Kan extensions on `g` along `f` are unique up to isomorphism. -/
-@[simps]
-def uniqueUpToIso (P : IsKan s) (Q : IsKan t) : s ≅ t where
-  hom := P.to t
-  inv := Q.to s
-  hom_inv_id := by apply Limits.IsInitial.hom_ext P
-  inv_hom_id := by apply Limits.IsInitial.hom_ext Q
+def uniqueUpToIso (P : IsKan s) (Q : IsKan t) : s ≅ t :=
+  Limits.IsInitial.uniqueUpToIso P Q
+
+@[simp]
+theorem uniqueUpToIso_hom_right (P : IsKan s) (Q : IsKan t) :
+    (uniqueUpToIso P Q).hom.right = P.desc t := rfl
+
+@[simp]
+theorem uniqueUpToIso_inv_right (P : IsKan s) (Q : IsKan t) :
+    (uniqueUpToIso P Q).inv.right = Q.desc s := rfl
 
 /-- Transport evidence that a left extension is a kan extension across an isomorphism
 of extensions. -/
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
 
-/-- If `t : LeftExtension f (𝟙 c)` is a Kan extension, then `t.ofCompId : LeftExtension f g` is
-also a Kan extension. -/
+/-- If `t : LeftExtension f (g ≫ 𝟙 c)` is a Kan extension, then
+`t.ofAlongCompId : LeftExtension f g` is also a Kan extension. -/
 def ofAlongCompId (t : LeftExtension f (g ≫ 𝟙 c)) (P : IsKan t) : IsKan t.ofAlongCompId :=
-  .mk (fun s ↦ LeftExtension.whiskerIdCancel <|
-    (ofCompIdWhiskerIsoSelf t).hom ≫ P.to (s.whisker (𝟙 c))) <| by
-      intro s τ
-      ext
-      apply P.hom_ext
-      simp [← LeftExtension.w τ]
+  .mk (fun s ↦ t.whiskerIdCancel <| P.to (s.whisker (𝟙 c))) <| by
+    intro s τ
+    ext
+    apply P.hom_ext
+    simp [← LeftExtension.w τ]
 
 end IsKan
 
@@ -164,26 +167,29 @@ theorem hom_ext (H : IsKan t) {k : c ⟶ b} {τ τ' : t.lift ⟶ k}
   StructuredArrow.IsUniversal.hom_ext H w
 
 /-- Kan lifts on `g` along `f` are unique up to isomorphism. -/
-@[simps]
-def uniqueUpToIso (P : IsKan s) (Q : IsKan t) : s ≅ t where
-  hom := P.to t
-  inv := Q.to s
-  hom_inv_id := by apply Limits.IsInitial.hom_ext P
-  inv_hom_id := by apply Limits.IsInitial.hom_ext Q
+def uniqueUpToIso (P : IsKan s) (Q : IsKan t) : s ≅ t :=
+  Limits.IsInitial.uniqueUpToIso P Q
+
+@[simp]
+theorem uniqueUpToIso_hom_right (P : IsKan s) (Q : IsKan t) :
+    (uniqueUpToIso P Q).hom.right = P.desc t := rfl
+
+@[simp]
+theorem uniqueUpToIso_inv_right (P : IsKan s) (Q : IsKan t) :
+    (uniqueUpToIso P Q).inv.right = Q.desc s := rfl
 
 /-- Transport evidence that a left lift is a kan lift across an isomorphism of lifts. -/
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
-  .mk (fun s ↦ i.inv ≫ P.to s) fun s m ↦ by rw [i.eq_inv_comp]; apply P.uniq (i.hom ≫ m)
+  Limits.IsInitial.ofIso P i
 
-/-- If `t : LeftLift (𝟙 c) g` is a Kan lift, then `t.ofIdComp : LeftLift f g` is
+/-- If `t : LeftLift f (𝟙 c ≫ g)` is a Kan lift, then `t.ofAlongIdComp : LeftLift f g` is
 also a Kan lift. -/
 def ofAlongIdComp (t : LeftLift f (𝟙 c ≫ g)) (P : IsKan t) : IsKan t.ofAlongIdComp :=
-  .mk (fun s ↦ LeftLift.whiskerIdCancel <|
-    (ofCompIdWhiskerIsoSelf t).hom ≫ P.to (s.whisker (𝟙 c))) <| by
-      intro s τ
-      ext
-      apply P.hom_ext
-      simp [← LeftLift.w τ]
+  .mk (fun s ↦ t.whiskerIdCancel <| P.to (s.whisker (𝟙 c))) <| by
+    intro s τ
+    ext
+    apply P.hom_ext
+    simp [← LeftLift.w τ]
 
 end IsKan
 

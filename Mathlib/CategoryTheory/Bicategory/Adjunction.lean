@@ -292,56 +292,66 @@ end Equivalence
 
 end
 
-/-- A class giving a chosen right adjoint to the functor `left`. -/
+/-- A class giving a chosen right adjoint of a functor `left`. -/
 structure RightAdjoint (left : a ⟶ b) where
-  /-- The right adjoint to `left` -/
+  /-- The right adjoint to `left`. -/
   right : b ⟶ a
-  /-- The adjunction between `left` and `right` -/
+  /-- The adjunction between `left` and `right`. -/
   adj : left ⊣ right
 
-/-- A class giving a chosen right adjoint to the functor `left`. -/
-class IsLeftAdjoint (left : a ⟶ b) : Prop where
+/-- The existence of a right adjoint of `f`. -/
+class IsLeftAdjoint (left : a ⟶ b) : Prop where  mk' ::
   nonempty : Nonempty (RightAdjoint left)
 
-def IsLeftAdjoint.intro (adj : f ⊣ g) : IsLeftAdjoint f :=
+theorem IsLeftAdjoint.mk (adj : f ⊣ g) : IsLeftAdjoint f :=
   ⟨⟨g, adj⟩⟩
 
+/-- Use the axiom of choice to extract a right adjoint from an `IsLeftAdjoint` instance. -/
 noncomputable
 def getRightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : RightAdjoint f :=
   Classical.choice IsLeftAdjoint.nonempty
 
+/-- The right adjoint of a functor. -/
 noncomputable
-def getRightAdjointHom (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
+def rightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
   (getRightAdjoint f).right
 
-scoped notation f "⁺⁺" => getRightAdjointHom f
+@[inherit_doc] scoped notation f "⁺⁺" => rightAdjoint f
 
+/-- Evidence that `f⁺⁺` is a right adjoint of `f`. -/
 noncomputable
-def getRightAdjointAdj (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ f⁺⁺ :=
+def rightAdjoint.adjunction (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ f⁺⁺ :=
   (getRightAdjoint f).adj
 
+/-- A class giving a chosen left adjoint of a functor `right`. -/
 structure LeftAdjoint (right : b ⟶ a) where
+  /-- The left adjoint to `right`. -/
   left : a ⟶ b
+  /-- The adjunction between `left` and `right`. -/
   adj : left ⊣ right
 
-class IsRightAdjoint (right : b ⟶ a) : Prop where
+/-- The existence of a left adjoint of `f`. -/
+class IsRightAdjoint (right : b ⟶ a) : Prop where mk' ::
   nonempty : Nonempty (LeftAdjoint right)
 
-def IsRightAdjoint.intro (adj : f ⊣ g) : IsRightAdjoint g :=
+theorem IsRightAdjoint.mk (adj : f ⊣ g) : IsRightAdjoint g :=
   ⟨⟨f, adj⟩⟩
 
+/-- Use the axiom of choice to extract a left adjoint from an `IsRightAdjoint` instance. -/
 noncomputable
 def getLeftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : LeftAdjoint f :=
   Classical.choice IsRightAdjoint.nonempty
 
+/-- The left adjoint of a functor. -/
 noncomputable
-def getLeftAdjointHom (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
+def leftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
   (getLeftAdjoint f).left
 
-scoped notation f "⁺" => getLeftAdjointHom f
+@[inherit_doc] scoped notation f "⁺" => leftAdjoint f
 
+/-- Evidence that `f⁺` is a left adjoint of `f`. -/
 noncomputable
-def getLeftAdjointAdj (f : b ⟶ a) [IsRightAdjoint f] : f⁺ ⊣ f :=
+def leftAdjoint.adjunction (f : b ⟶ a) [IsRightAdjoint f] : f⁺ ⊣ f :=
   (getLeftAdjoint f).adj
 
 end Bicategory
