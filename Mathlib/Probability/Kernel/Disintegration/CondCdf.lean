@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
-import Mathlib.Probability.Kernel.Disintegration.CDFKernel
+import Mathlib.Probability.Kernel.Disintegration.KernelCdf
 import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
@@ -85,7 +85,7 @@ theorem IsFiniteMeasure.IicSnd {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ] (
 
 theorem iInf_IicSnd_gt (t : ℚ) {s : Set α} (hs : MeasurableSet s) [IsFiniteMeasure ρ] :
     ⨅ r : { r' : ℚ // t < r' }, ρ.IicSnd r s = ρ.IicSnd t s := by
-  simp_rw [ρ.IicSnd_apply _ hs, Measure.iInf_Iic_gt_prod hs]
+  simp_rw [ρ.IicSnd_apply _ hs, Measure.iInf_rat_gt_prod_Iic hs]
 #align measure_theory.measure.infi_Iic_snd_gt MeasureTheory.Measure.iInf_IicSnd_gt
 
 theorem tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :

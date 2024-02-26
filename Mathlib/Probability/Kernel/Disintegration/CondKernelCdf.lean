@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration.CDFKernel
+import Mathlib.Probability.Kernel.Disintegration.KernelCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
@@ -177,7 +177,7 @@ lemma set_integral_iInf_rat_gt_densityIic (hκν : kernel.fst κ ≤ ν) [IsFini
     calc ∫ t in A, ⨅ r : Ioi q, kernel.densityIic κ ν a t r ∂(ν a)
       ≤ ⨅ r : Ioi q, (κ a (A ×ˢ Iic (r : ℝ))).toReal := le_ciInf h
     _ = (κ a (A ×ˢ Iic (q : ℝ))).toReal := by
-        rw [← Measure.iInf_Iic_gt_prod hA q]
+        rw [← Measure.iInf_rat_gt_prod_Iic hA q]
         exact (ENNReal.toReal_iInf (fun r ↦ measure_ne_top _ _)).symm
   · rw [← set_integral_densityIic hκν a q hA]
     refine set_integral_mono ?_ ?_ ?_

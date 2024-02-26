@@ -3138,11 +3138,11 @@ import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
 import Mathlib.Probability.Kernel.Disintegration.Basic
-import Mathlib.Probability.Kernel.Disintegration.CDFKernel
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
+import Mathlib.Probability.Kernel.Disintegration.CondKernelCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
 import Mathlib.Probability.Kernel.Disintegration.Integral
-import Mathlib.Probability.Kernel.Disintegration.KernelCDFReal
+import Mathlib.Probability.Kernel.Disintegration.KernelCdf
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 import Mathlib.Probability.Kernel.Disintegration.Unique
 import Mathlib.Probability.Kernel.IntegralCompProd

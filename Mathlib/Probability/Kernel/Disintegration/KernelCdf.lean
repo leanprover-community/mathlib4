@@ -8,7 +8,7 @@ import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 /-!
-# TODO
+# Cumulative distribution function of a Markov kernel
 
 ## Main definitions
 
@@ -210,7 +210,7 @@ lemma isKernelCDF_stieltjesOfMeasurableRat {f : α × β → ℚ → ℝ} (hf : 
 
 end IsKernelCDF
 
-section kernel
+section ToKernel
 
 variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction}
   {μ : kernel α (β × ℝ)} {ν : kernel α β} {hf : IsKernelCDF f μ ν}
@@ -220,10 +220,10 @@ lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
     (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
     (hf_top : ∀ a, Tendsto (f a) atTop (𝓝 1)) :
     Measurable fun a ↦ (f a).measure := by
-  rw [Measure.measurable_measure]
+  refine Measure.measurable_measure.mpr fun s hs ↦ ?_
   have : ∀ a, IsProbabilityMeasure (f a).measure :=
     fun a ↦ (f a).isProbabilityMeasure (hf_bot a) (hf_top a)
-  refine fun s hs ↦ MeasurableSpace.induction_on_inter
+  refine MeasurableSpace.induction_on_inter
     (C := fun s ↦ Measurable fun b ↦ StieltjesFunction.measure (f b) s)
     (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
   · simp only [measure_empty, measurable_const]
@@ -261,7 +261,7 @@ lemma IsKernelCDF.toKernel_Iic (p : α × β) (x : ℝ) :
   rw [IsKernelCDF.toKernel_apply p, (f p).measure_Iic (hf.tendsto_atBot_zero p)]
   simp
 
-end kernel
+end ToKernel
 
 section
 
