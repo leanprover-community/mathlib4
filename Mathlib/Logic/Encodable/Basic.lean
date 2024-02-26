@@ -131,6 +131,7 @@ theorem decode_nat (n : ℕ) : decode n = some n :=
   rfl
 #align encodable.decode_nat Encodable.decode_nat
 
+-- See note [lower instance priority]
 instance (priority := 100) _root_.IsEmpty.toEncodable [IsEmpty α] : Encodable α :=
   ⟨isEmptyElim, fun _ => none, isEmptyElim⟩
 #align is_empty.to_encodable IsEmpty.toEncodable

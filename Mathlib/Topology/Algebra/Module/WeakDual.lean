@@ -91,6 +91,7 @@ instance instModule [CommSemiring 𝕜] [AddCommMonoid E] [m : Module 𝕜 E] [A
 instance instAddCommGroup [CommSemiring 𝕜] [a : AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) := a
 
+-- See note [lower instance priority]
 instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup E]
     [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [m : Module 𝕝 E] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     Module 𝕝 (WeakBilin B) := m

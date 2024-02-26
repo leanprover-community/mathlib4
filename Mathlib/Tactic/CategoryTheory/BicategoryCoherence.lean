@@ -53,6 +53,7 @@ instance liftHomComp (f : a ⟶ b) (g : b ⟶ c) [LiftHom f] [LiftHom g] : LiftH
   lift := LiftHom.lift f ≫ LiftHom.lift g
 #align category_theory.bicategory.lift_hom_comp Mathlib.Tactic.BicategoryCoherence.liftHomComp
 
+-- See note [lower instance priority]
 instance (priority := 100) liftHomOf (f : a ⟶ b) : LiftHom f where lift := of.map f
 #align category_theory.bicategory.lift_hom_of Mathlib.Tactic.BicategoryCoherence.liftHomOf
 

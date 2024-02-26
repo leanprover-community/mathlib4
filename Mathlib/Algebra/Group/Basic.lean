@@ -487,6 +487,7 @@ theorem one_div_one_div : 1 / (1 / a) = a := by simp
 theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
   inv_inj.symm.trans <| by simp only [inv_div]
 
+-- See note [lower instance priority]
 @[to_additive SubtractionMonoid.toSubNegZeroMonoid]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
   { DivisionMonoid.toDivInvMonoid with

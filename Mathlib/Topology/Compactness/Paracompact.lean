@@ -290,6 +290,7 @@ instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLoc
 /- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
 Formalization is based on the proof
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
+-- See note [lower instance priority]
 instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [ParacompactSpace X] :
     T4Space X := by
   -- First we show how to go from points to a set on one side.

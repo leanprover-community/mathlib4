@@ -49,6 +49,7 @@ theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.ma
   ReflectsIsomorphisms.reflects F f
 #align category_theory.is_iso_of_reflects_iso CategoryTheory.isIso_of_reflects_iso
 
+-- See note [lower instance priority]
 instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
     (F : C ⥤ D) [Full F] [Faithful F] :
     ReflectsIsomorphisms F where
@@ -63,6 +64,7 @@ instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
     haveI := isIso_of_reflects_iso (F.map f) G
     exact isIso_of_reflects_iso f F⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :
     ReflectsIsomorphisms F where

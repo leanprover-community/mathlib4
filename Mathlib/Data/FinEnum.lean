@@ -203,6 +203,7 @@ instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [�
   else ofList [] fun a => (h ⟨a.fst, a.snd⟩).elim
 #align fin_enum.psigma.fin_enum_prop_prop FinEnum.PSigma.finEnumPropProp
 
+-- See note [lower instance priority]
 instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map (equiv).symm.toEmbedding
   complete := by intros; simp

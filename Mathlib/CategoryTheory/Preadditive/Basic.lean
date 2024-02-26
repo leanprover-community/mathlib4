@@ -197,6 +197,7 @@ instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
 instance {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) :=
   ⟨fun g g' H => by rwa [comp_neg, comp_neg, ← neg_comp, ← neg_comp, cancel_mono, neg_inj] at H⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C where
   zero := inferInstance
   comp_zero f R := show leftComp R f 0 = 0 from map_zero _

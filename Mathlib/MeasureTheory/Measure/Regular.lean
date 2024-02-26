@@ -669,6 +669,7 @@ instance smul [h : InnerRegular μ] (c : ℝ≥0∞) : InnerRegular (c • μ) :
 
 instance smul_nnreal [InnerRegular μ] (c : ℝ≥0) : InnerRegular (c • μ) := smul (c : ℝ≥0∞)
 
+-- See note [lower instance priority]
 instance (priority := 100) [InnerRegular μ] : InnerRegularCompactLTTop μ :=
   ⟨fun _s hs r hr ↦ InnerRegular.innerRegular hs.1 r hr⟩
 
@@ -969,6 +970,7 @@ theorem exists_compact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
 compact subset. See also `MeasurableSet.exists_isCompact_lt_add` and
 `MeasurableSet.exists_lt_isCompact_of_ne_top`. -/
+-- See note [lower instance priority]
 instance (priority := 100) [Regular μ] : InnerRegularCompactLTTop μ :=
   ⟨Regular.innerRegular.measurableSet_of_isOpen (fun _ _ hs hU ↦ hs.diff hU)⟩
 #noalign measure_theory.measure.regular.inner_regular_measurable
@@ -1022,6 +1024,7 @@ instance (priority := 100) Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasur
 #align measure_theory.measure.regular.of_sigma_compact_space_of_is_locally_finite_measure MeasureTheory.Measure.Regular.of_sigmaCompactSpace_of_isLocallyFiniteMeasure
 
 /-- Any sigma finite measure on a `σ`-compact pseudometrizable space is inner regular. -/
+-- See note [lower instance priority]
 instance (priority := 100) {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [SigmaFinite μ] : InnerRegular μ := by

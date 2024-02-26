@@ -157,6 +157,7 @@ theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEM
 #align ae_measurable.mul AEMeasurable.mul
 #align ae_measurable.add AEMeasurable.add
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) MeasurableMul₂.toMeasurableMul [MeasurableMul₂ M] :
     MeasurableMul M :=
@@ -350,6 +351,7 @@ theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEM
 #align ae_measurable.div AEMeasurable.div
 #align ae_measurable.sub AEMeasurable.sub
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) MeasurableDiv₂.toMeasurableDiv [MeasurableDiv₂ G] :
     MeasurableDiv G :=
@@ -431,6 +433,7 @@ export MeasurableInv (measurable_inv)
 
 export MeasurableNeg (measurable_neg)
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) measurableDiv_of_mul_inv (G : Type*) [MeasurableSpace G]
     [DivInvMonoid G] [MeasurableMul G] [MeasurableInv G] : MeasurableDiv G where
@@ -514,6 +517,7 @@ instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSp
         exact (measurable_id.pow_const (n + 1)).inv⟩
 #align div_inv_monoid.has_measurable_zpow DivInvMonoid.measurableZPow
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) measurableDiv₂_of_mul_inv (G : Type*) [MeasurableSpace G]
     [DivInvMonoid G] [MeasurableMul₂ G] [MeasurableInv G] : MeasurableDiv₂ G :=
@@ -622,6 +626,7 @@ theorem AEMeasurable.smul [MeasurableSMul₂ M β] {μ : Measure α} (hf : AEMea
 #align ae_measurable.smul AEMeasurable.smul
 #align ae_measurable.vadd AEMeasurable.vadd
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) MeasurableSMul₂.toMeasurableSMul [MeasurableSMul₂ M β] :
     MeasurableSMul M β :=

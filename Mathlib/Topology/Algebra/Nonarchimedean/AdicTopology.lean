@@ -232,15 +232,19 @@ variable (R)
 
 variable [WithIdeal R]
 
+-- See note [lower instance priority]
 instance (priority := 100) : TopologicalSpace R :=
   i.adicTopology
 
+-- See note [lower instance priority]
 instance (priority := 100) : NonarchimedeanRing R :=
   RingSubgroupsBasis.nonarchimedean _
 
+-- See note [lower instance priority]
 instance (priority := 100) : UniformSpace R :=
   TopologicalAddGroup.toUniformSpace R
 
+-- See note [lower instance priority]
 instance (priority := 100) : UniformAddGroup R :=
   comm_topologicalAddGroup_is_uniform
 

@@ -282,7 +282,8 @@ instance Pi.has_continuous_inv' : ContinuousInv (ι → G) :=
 #align pi.has_continuous_inv' Pi.has_continuous_inv'
 #align pi.has_continuous_neg' Pi.has_continuous_neg'
 
-@[to_additive]
+
+-- See note [lower instance priority]@[to_additive]
 instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H] [Inv H]
     [DiscreteTopology H] : ContinuousInv H :=
   ⟨continuous_of_discreteTopology⟩
@@ -1556,7 +1557,8 @@ section
 
 variable (G) [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
-@[to_additive]
+
+-- See note [lower instance priority]@[to_additive]
 instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
   refine' RegularSpace.ofExistsMemNhdsIsClosedSubset fun a s hs => _
   have : Tendsto (fun p : G × G => p.1 * p.2) (𝓝 (a, 1)) (𝓝 a) :=
@@ -1754,6 +1756,7 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
 
 /-- Every weakly locally compact separable topological group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis. -/
+-- See note [lower instance priority]
 @[to_additive SeparableWeaklyLocallyCompactAddGroup.sigmaCompactSpace
   "Every weakly locally compact separable topological additive group is σ-compact.
   Note: this is not true if we drop the topological group hypothesis."]

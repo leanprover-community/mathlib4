@@ -819,6 +819,7 @@ variable [CommSemigroup G]
 /-- In an abelian group every left invariant measure is also right-invariant.
   We don't declare the converse as an instance, since that would loop type-class inference, and
   we use `IsMulLeftInvariant` as the default hypothesis in abelian groups. -/
+-- See note [lower instance priority]
 @[to_additive IsAddLeftInvariant.isAddRightInvariant
 "In an abelian additive group every left invariant measure is also right-invariant. We don't declare
 the converse as an instance, since that would loop type-class inference, and we use
@@ -981,13 +982,10 @@ theorem _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     IsAddHaarMeasure (μ.map L) :=
   AddEquiv.isAddHaarMeasure_map _ (L : E ≃+ F) L.continuous L.symm.continuous
 
-/-- A Haar measure on a σ-compact space is σ-finite.
-
-See Note [lower instance priority] -/
+/-- A Haar measure on a σ-compact space is σ-finite. -/
+-- See note [lower instance priority]
 @[to_additive
-"A Haar measure on a σ-compact space is σ-finite.
-
-See Note [lower instance priority]"]
+"A Haar measure on a σ-compact space is σ-finite."]
 instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
         set_mem := fun _ => mem_univ _
@@ -1009,6 +1007,7 @@ no atoms.
 
 The additive version of this instance applies in particular to show that an additive Haar
 measure on a nontrivial finite-dimensional real vector space has no atom. -/
+-- See note [lower instance priority]
 @[to_additive
 "If the zero element of an additive group is not isolated, then an additive Haar measure on this
 group has no atoms.

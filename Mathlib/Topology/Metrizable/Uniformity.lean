@@ -267,6 +267,7 @@ protected noncomputable def UniformSpace.metricSpace (X : Type*) [UniformSpace X
 #align uniform_space.metric_space UniformSpace.metricSpace
 
 /-- A uniform space with countably generated `𝓤 X` is pseudo metrizable. -/
+-- See note [lower instance priority]
 instance (priority := 100) UniformSpace.pseudoMetrizableSpace [UniformSpace X]
     [IsCountablyGenerated (𝓤 X)] : TopologicalSpace.PseudoMetrizableSpace X := by
   letI := UniformSpace.pseudoMetricSpace X

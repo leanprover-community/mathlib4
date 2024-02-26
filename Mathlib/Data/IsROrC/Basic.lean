@@ -650,6 +650,7 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
 theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 #align is_R_or_C.norm_conj IsROrC.norm_conj
 
+-- See note [lower instance priority]
 instance (priority := 100) : CstarRing K where
   norm_star_mul_self {x} := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj
 
@@ -1092,6 +1093,7 @@ theorem conjCLE_apply : (conjCLE : K → K) = conj :=
   rfl
 #align is_R_or_C.conj_cle_apply IsROrC.conjCLE_apply
 
+-- See note [lower instance priority]
 instance (priority := 100) : ContinuousStar K :=
   ⟨conjLIE.continuous⟩
 

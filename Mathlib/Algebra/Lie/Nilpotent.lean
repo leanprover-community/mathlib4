@@ -250,6 +250,7 @@ theorem _root_.LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot (N : LieSubmodule 
 
 variable (R L M)
 
+-- See note [lower instance priority]
 instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent R L M :=
   ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
 #align lie_module.trivial_is_nilpotent LieModule.trivialIsNilpotent
@@ -622,6 +623,7 @@ end Morphisms
 
 end NilpotentModules
 
+-- See note [lower instance priority]
 instance (priority := 100) LieAlgebra.isSolvable_of_isNilpotent (R : Type u) (L : Type v)
     [CommRing R] [LieRing L] [LieAlgebra R L] [hL : LieModule.IsNilpotent R L L] :
     LieAlgebra.IsSolvable R L := by

@@ -30,6 +30,7 @@ theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLoc
   rw [Subtype.coe_mk, hy', ← mul_comm y', mul_assoc]; conv_lhs => rw [hx']
 #align is_localization.surj_of_gcd_domain IsLocalization.surj_of_gcd_domain
 
+-- See note [lower instance priority]
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
     [h : Nonempty (GCDMonoid R)] : IsIntegrallyClosed R :=
   ⟨fun {X} ⟨p, hp₁, hp₂⟩ => by

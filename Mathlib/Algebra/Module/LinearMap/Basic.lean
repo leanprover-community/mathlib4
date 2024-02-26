@@ -151,6 +151,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
+-- See note [lower instance priority]
 instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
@@ -159,6 +160,7 @@ instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearM
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
+-- See note [lower instance priority]
 instance (priority := 100) distribMulActionHomClass [FunLike F M M₂] [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.instAddMonoidHomClass F with
@@ -383,6 +385,7 @@ section
 
 variable {R S : Type*} [Semiring S] [SMul R M] [Module S M] [SMul R M₂] [Module S M₂]
 
+-- See note [lower instance priority]
 instance (priority := 100) IsScalarTower.compatibleSMul [SMul R S]
     [IsScalarTower R S M] [IsScalarTower R S M₂] :
     CompatibleSMul M M₂ R S :=

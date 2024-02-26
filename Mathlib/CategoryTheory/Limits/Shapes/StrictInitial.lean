@@ -81,6 +81,7 @@ theorem IsInitial.subsingleton_to (hI : IsInitial I) {A : C} : Subsingleton (A �
   ⟨hI.strict_hom_ext⟩
 #align category_theory.limits.is_initial.subsingleton_to CategoryTheory.Limits.IsInitial.subsingleton_to
 
+-- See note [lower instance priority]
 instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoClass C where
   isInitial_mono_from := fun _ hI => { right_cancellation := fun _ _ _ => hI.strict_hom_ext _ _ }
 #align category_theory.limits.initial_mono_of_strict_initial_objects CategoryTheory.Limits.initial_mono_of_strict_initial_objects

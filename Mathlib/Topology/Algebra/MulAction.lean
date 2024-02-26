@@ -73,6 +73,7 @@ section SMul
 
 variable [SMul M X] [ContinuousSMul M X]
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)

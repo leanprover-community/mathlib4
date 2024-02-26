@@ -42,6 +42,7 @@ class QuasiIso' (f : C ⟶ D) : Prop where
 
 attribute [instance] QuasiIso'.isIso
 
+-- See note [lower instance priority]
 instance (priority := 100) quasiIso'_of_iso (f : C ⟶ D) [IsIso f] : QuasiIso' f where
   isIso i := by
     change IsIso ((homology'Functor V c i).mapIso (asIso f)).hom

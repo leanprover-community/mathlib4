@@ -541,6 +541,7 @@ theorem addHaar_singleton_add_smul_div_singleton_add_smul {r : ℝ} (hr : r ≠ 
       · simp only [ENNReal.ofReal_ne_top, Ne.def, not_false_iff]
 #align measure_theory.measure.add_haar_singleton_add_smul_div_singleton_add_smul MeasureTheory.Measure.addHaar_singleton_add_smul_div_singleton_add_smul
 
+-- See note [lower instance priority]
 instance (priority := 100) isUnifLocDoublingMeasureOfIsAddHaarMeasure :
     IsUnifLocDoublingMeasure μ := by
   refine' ⟨⟨(2 : ℝ≥0) ^ finrank ℝ E, _⟩⟩

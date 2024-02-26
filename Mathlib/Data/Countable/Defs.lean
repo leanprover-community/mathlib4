@@ -88,6 +88,7 @@ instance {β : Type v} [Countable β] : Countable (ULift.{u} β) :=
 instance [Countable α] : Countable (PLift α) :=
   Equiv.plift.injective.countable
 
+-- See note [lower instance priority]
 instance (priority := 100) Subsingleton.to_countable [Subsingleton α] : Countable α :=
   ⟨⟨fun _ => 0, fun x y _ => Subsingleton.elim x y⟩⟩
 
@@ -98,6 +99,7 @@ instance (priority := 500) Subtype.countable [Countable α] {p : α → Prop} :
 instance {n : ℕ} : Countable (Fin n) :=
   Function.Injective.countable (@Fin.eq_of_veq n)
 
+-- See note [lower instance priority]
 instance (priority := 100) Finite.to_countable [Finite α] : Countable α :=
   let ⟨_, ⟨e⟩⟩ := Finite.exists_equiv_fin α
   Countable.of_equiv _ e.symm
@@ -105,6 +107,7 @@ instance (priority := 100) Finite.to_countable [Finite α] : Countable α :=
 instance : Countable PUnit.{u} :=
   Subsingleton.to_countable
 
+-- See note [lower instance priority]
 instance (priority := 100) Prop.countable (p : Prop) : Countable p :=
   Subsingleton.to_countable
 
@@ -172,5 +175,6 @@ instance {β : Type v} [Uncountable β] : Uncountable (ULift.{u} β) :=
 instance [Uncountable α] : Uncountable (PLift α) :=
   .of_equiv _ Equiv.plift.symm
 
+-- See note [lower instance priority]
 instance (priority := 100) [Uncountable α] : Infinite α :=
   ⟨fun _ ↦ not_countable (α := α) inferInstance⟩

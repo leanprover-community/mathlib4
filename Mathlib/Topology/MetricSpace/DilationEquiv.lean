@@ -32,6 +32,7 @@ dilations. -/
 class DilationEquivClass [EquivLike F X Y] : Prop where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
+-- See note [lower instance priority]
 instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
   { inferInstanceAs (FunLike F X Y), ‹DilationEquivClass F X Y› with }
 

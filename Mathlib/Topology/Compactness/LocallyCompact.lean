@@ -33,6 +33,7 @@ instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSp
     choose s hsc hs using fun i ↦ exists_compact_mem_nhds (f i)
     exact ⟨pi univ s, isCompact_univ_pi hsc, set_pi_mem_nhds univ.toFinite fun i _ ↦ hs i⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) [CompactSpace X] : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds _ := ⟨univ, isCompact_univ, univ_mem⟩
 
@@ -133,6 +134,7 @@ instance (priority := 900) [LocallyCompactSpace X] : LocallyCompactPair X Y wher
   exists_mem_nhds_isCompact_mapsTo hf hs :=
     let ⟨K, hKx, hKs, hKc⟩ := local_compact_nhds (hf.continuousAt hs); ⟨K, hKx, hKc, hKs⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) [LocallyCompactSpace X] : WeaklyLocallyCompactSpace X where
   exists_compact_mem_nhds (x : X) :=
     let ⟨K, hx, _, hKc⟩ := local_compact_nhds (x := x) univ_mem; ⟨K, hKc, hx⟩

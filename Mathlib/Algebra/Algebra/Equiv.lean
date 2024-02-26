@@ -63,6 +63,7 @@ instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Sem
   { h with }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
 
+-- See note [lower instance priority]
 instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [EquivLike F A B] [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=

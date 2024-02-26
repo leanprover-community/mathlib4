@@ -157,6 +157,7 @@ def preservesBiproductsShrink (F : C ⥤ D) [PreservesZeroMorphisms F]
           (isBilimitOfPreserves F ((b.whiskerIsBilimitIff Equiv.ulift.{w₂}).invFun ib))⟩⟩⟩
 #align category_theory.limits.preserves_biproducts_shrink CategoryTheory.Limits.preservesBiproductsShrink
 
+-- See note [lower instance priority]
 instance (priority := 100) preservesFiniteBiproductsOfPreservesBiproducts (F : C ⥤ D)
     [PreservesZeroMorphisms F] [PreservesBiproducts.{w₁} F] : PreservesFiniteBiproducts F where
   preserves {J} _ := by letI := preservesBiproductsShrink.{0} F; infer_instance

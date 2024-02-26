@@ -47,6 +47,7 @@ instance small_subobject [WellPowered C] (X : C) : Small.{v} (Subobject X) :=
   WellPowered.subobject_small X
 #align category_theory.small_subobject CategoryTheory.small_subobject
 
+-- See note [lower instance priority]
 instance (priority := 100) wellPowered_of_smallCategory (C : Type u₁) [SmallCategory C] :
     WellPowered C where
 #align category_theory.well_powered_of_small_category CategoryTheory.wellPowered_of_smallCategory

@@ -92,6 +92,7 @@ theorem coe_inj {a b : R} : (Algebra.cast a : K) = Algebra.cast b ↔ a = b :=
   (IsFractionRing.injective R K).eq_iff
 #align is_fraction_ring.coe_inj IsFractionRing.coe_inj
 
+-- See note [lower instance priority]
 instance (priority := 100) [NoZeroDivisors K] : NoZeroSMulDivisors R K :=
   NoZeroSMulDivisors.of_algebraMap_injective <| IsFractionRing.injective R K
 

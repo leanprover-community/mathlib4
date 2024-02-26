@@ -477,6 +477,7 @@ theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 #align subgroup.nilpotency_class_le Subgroup.nilpotencyClass_le
 
+-- See note [lower instance priority]
 instance (priority := 100) Group.isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=
   nilpotent_iff_lowerCentralSeries.2 ⟨0, Subsingleton.elim ⊤ ⊥⟩
 #align is_nilpotent_of_subsingleton isNilpotent_of_subsingleton
@@ -680,6 +681,7 @@ theorem derived_le_lower_central (n : ℕ) : derivedSeries G n ≤ lowerCentralS
 #align derived_le_lower_central derived_le_lower_central
 
 /-- Abelian groups are nilpotent -/
+-- See note [lower instance priority]
 instance (priority := 100) CommGroup.isNilpotent {G : Type*} [CommGroup G] : IsNilpotent G := by
   use 1
   rw [upperCentralSeries_one]
@@ -818,6 +820,7 @@ theorem nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
 end FinitePi
 
 /-- A nilpotent subgroup is solvable -/
+-- See note [lower instance priority]
 instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSolvable G := by
   obtain ⟨n, hn⟩ := nilpotent_iff_lowerCentralSeries.1 h
   use n

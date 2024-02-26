@@ -534,6 +534,7 @@ section
 
 variable [IsModularLattice α] [IsCompactlyGenerated α]
 
+-- See note [lower instance priority]
 instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice α] : IsAtomic α :=
   ⟨fun b => by
     by_cases h : { c : α | CompleteLattice.IsCompactElement c ∧ c ≤ b } ⊆ {⊥}
@@ -555,6 +556,7 @@ instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice 
 #align is_atomic_of_complemented_lattice isAtomic_of_complementedLattice
 
 /-- See [Lemma 5.1][calugareanu]. -/
+-- See note [lower instance priority]
 instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLattice α] :
     IsAtomistic α :=
   ⟨fun b =>

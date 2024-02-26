@@ -249,6 +249,7 @@ instance Pi.continuousMul' : ContinuousMul (ι → M) :=
 #align pi.has_continuous_mul' Pi.continuousMul'
 #align pi.has_continuous_add' Pi.continuousAdd'
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) continuousMul_of_discreteTopology [TopologicalSpace N] [Mul N]
     [DiscreteTopology N] : ContinuousMul N :=
@@ -658,6 +659,7 @@ theorem Filter.tendsto_cocompact_mul_right {a b : M} (ha : a * b = 1) :
 multiplication by constants.
 
 Notably, this instances applies when `R = A`, or when `[Algebra R A]` is available. -/
+-- See note [lower instance priority]
 @[to_additive "If `R` acts on `A` via `A`, then continuous addition implies
 continuous affine addition by constants."]
 instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
@@ -672,6 +674,7 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Mono
 implies continuous scalar multiplication by constants.
 
 Notably, this instances applies when `R = Aᵐᵒᵖ`.-/
+-- See note [lower instance priority]
 @[to_additive "If the action of `R` on `A` commutes with left-addition, then
 continuous addition implies continuous affine addition by constants.
 

@@ -76,21 +76,25 @@ variable {M : Type*} [MeasurableSpace M]
 
 section OrderDual
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.instMeasurableSup [Inf M] [MeasurableInf M] :
     MeasurableSup Mᵒᵈ :=
   ⟨@measurable_const_inf M _ _ _, @measurable_inf_const M _ _ _⟩
 #align order_dual.has_measurable_sup OrderDual.instMeasurableSup
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.instMeasurableInf [Sup M] [MeasurableSup M] :
     MeasurableInf Mᵒᵈ :=
   ⟨@measurable_const_sup M _ _ _, @measurable_sup_const M _ _ _⟩
 #align order_dual.has_measurable_inf OrderDual.instMeasurableInf
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.instMeasurableSup₂ [Inf M] [MeasurableInf₂ M] :
     MeasurableSup₂ Mᵒᵈ :=
   ⟨@measurable_inf M _ _ _⟩
 #align order_dual.has_measurable_sup₂ OrderDual.instMeasurableSup₂
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.instMeasurableInf₂ [Sup M] [MeasurableSup₂ M] :
     MeasurableInf₂ Mᵒᵈ :=
   ⟨@measurable_sup M _ _ _⟩
@@ -158,6 +162,7 @@ theorem AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
   measurable_sup.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.sup AEMeasurable.sup
 
+-- See note [lower instance priority]
 instance (priority := 100) MeasurableSup₂.toMeasurableSup : MeasurableSup M :=
   ⟨fun _ => measurable_const.sup measurable_id, fun _ => measurable_id.sup measurable_const⟩
 #align has_measurable_sup₂.to_has_measurable_sup MeasurableSup₂.toMeasurableSup
@@ -224,6 +229,7 @@ theorem AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
   measurable_inf.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.inf AEMeasurable.inf
 
+-- See note [lower instance priority]
 instance (priority := 100) MeasurableInf₂.to_hasMeasurableInf : MeasurableInf M :=
   ⟨fun _ => measurable_const.inf measurable_id, fun _ => measurable_id.inf measurable_const⟩
 #align has_measurable_inf₂.to_has_measurable_inf MeasurableInf₂.to_hasMeasurableInf

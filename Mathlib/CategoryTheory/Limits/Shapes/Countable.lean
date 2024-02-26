@@ -39,10 +39,12 @@ class HasCountableLimits : Prop where
   and which has countably many objects and morphisms-/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasLimitsOfShape J C
 
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteLimits_of_hasCountableLimits [HasCountableLimits C] :
     HasFiniteLimits C where
   out J := HasCountableLimits.out J
 
+-- See note [lower instance priority]
 instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
     HasCountableLimits C where
   out := inferInstance
@@ -61,10 +63,12 @@ class HasCountableColimits : Prop where
   and which has countably many objects and morphisms-/
   out (J : Type) [SmallCategory J] [CountableCategory J] : HasColimitsOfShape J C
 
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteColimits_of_hasCountableColimits [HasCountableColimits C] :
     HasFiniteColimits C where
   out J := HasCountableColimits.out J
 
+-- See note [lower instance priority]
 instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
     HasCountableColimits C where
   out := inferInstance

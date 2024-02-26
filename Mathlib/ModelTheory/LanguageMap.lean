@@ -312,6 +312,7 @@ theorem sumInr_injective : (LHom.sumInr : L' →ᴸ L.sum L').Injective :=
   ⟨fun h => Sum.inr_injective h, fun h => Sum.inr_injective h⟩
 #align first_order.language.Lhom.sum_inr_injective FirstOrder.Language.LHom.sumInr_injective
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply
 instance (priority := 100) isExpansionOn_reduct (ϕ : L →ᴸ L') (M : Type*) [L'.Structure M] :
     @IsExpansionOn L L' ϕ M (ϕ.reduct M) _ :=
   letI := ϕ.reduct M

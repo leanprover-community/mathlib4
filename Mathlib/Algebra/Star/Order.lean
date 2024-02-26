@@ -272,12 +272,14 @@ lemma NonUnitalRingHom.map_le_map_of_map_star (f : R →ₙ+* S) (hf : ∀ r, f 
   induction hp using AddSubmonoid.closure_induction'
   all_goals aesop
 
+-- See note [lower instance priority]
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S] [StarHomClass F R S]
     [NonUnitalRingHomClass F R S] : OrderHomClass F R S where
   map_rel f := (f : R →ₙ+* S).map_le_map_of_map_star (map_star f)
 
 -- This doesn't require any module structure, but the only morphism we currently have bundling
 -- `star` is `starAlgHom`. So we have to build the inverse morphism by hand.
+-- See note [lower instance priority]
 instance (priority := 100) StarRingHomClass.instOrderIsoClass [EquivLike F R S] [StarHomClass F R S]
     [RingEquivClass F R S] : OrderIsoClass F R S where
   map_le_map_iff f x y := by

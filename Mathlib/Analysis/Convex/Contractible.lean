@@ -45,6 +45,7 @@ protected theorem Convex.contractibleSpace (hs : Convex ℝ s) (hne : s.Nonempty
   (hs.starConvex hx).contractibleSpace hne
 #align convex.contractible_space Convex.contractibleSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) RealTopologicalVectorSpace.contractibleSpace : ContractibleSpace E :=
   (Homeomorph.Set.univ E).contractibleSpace_iff.mp <|
     convex_univ.contractibleSpace Set.univ_nonempty

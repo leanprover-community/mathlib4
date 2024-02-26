@@ -396,6 +396,7 @@ attribute [instance 75] AddLeftCancelSemigroup.toAddSemigroup -- See note [lower
 attribute [to_additive] LeftCancelSemigroup
 
 /-- Any `LeftCancelSemigroup` satisfies `IsLeftCancelMul`. -/
+-- See note [lower instance priority]
 @[to_additive AddLeftCancelSemigroup.toIsLeftCancelAdd "Any `AddLeftCancelSemigroup` satisfies
 `IsLeftCancelAdd`."]
 instance (priority := 100) LeftCancelSemigroup.toIsLeftCancelMul (G : Type u)
@@ -428,6 +429,7 @@ attribute [instance 75] AddRightCancelSemigroup.toAddSemigroup -- See note [lowe
 attribute [to_additive] RightCancelSemigroup
 
 /-- Any `RightCancelSemigroup` satisfies `IsRightCancelMul`. -/
+-- See note [lower instance priority]
 @[to_additive AddRightCancelSemigroup.toIsRightCancelAdd "Any `AddRightCancelSemigroup` satisfies
 `IsRightCancelAdd`."]
 instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
@@ -763,6 +765,7 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
 #align add_cancel_comm_monoid.to_cancel_add_monoid AddCancelCommMonoid.toAddCancelMonoid
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
+-- See note [lower instance priority]
 @[to_additive toIsCancelAdd "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
 instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid M] :
     IsCancelMul M :=

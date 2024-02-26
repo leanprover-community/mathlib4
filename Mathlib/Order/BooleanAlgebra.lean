@@ -600,6 +600,7 @@ theorem himp_eq : x ⇨ y = y ⊔ xᶜ :=
   BooleanAlgebra.himp_eq x y
 #align himp_eq himp_eq
 
+-- See note [lower instance priority]
 instance (priority := 100) BooleanAlgebra.toComplementedLattice : ComplementedLattice α :=
   ⟨fun x => ⟨xᶜ, isCompl_compl⟩⟩
 #align boolean_algebra.to_complemented_lattice BooleanAlgebra.toComplementedLattice

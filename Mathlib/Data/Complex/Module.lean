@@ -222,6 +222,7 @@ instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ 
 -- check that the following instance is implied by the one above.
 example (E : Type*) [AddCommGroup E] [Module ℂ E] : IsScalarTower ℝ ℂ E := inferInstance
 
+-- See note [lower instance priority]
 instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
     [Module ℂ E] [FiniteDimensional ℂ E] : FiniteDimensional ℝ E :=
   FiniteDimensional.trans ℝ ℂ E

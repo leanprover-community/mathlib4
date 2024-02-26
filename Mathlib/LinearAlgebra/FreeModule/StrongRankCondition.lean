@@ -38,6 +38,7 @@ variable (R : Type*) [CommRing R] [Nontrivial R]
 open Polynomial Function Fin LinearMap
 
 /-- Any commutative ring satisfies the `StrongRankCondition`. -/
+-- See note [lower instance priority]
 instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R := by
   suffices ∀ n, ∀ f : (Fin (n + 1) → R) →ₗ[R] Fin n → R, ¬Injective f by
     rwa [strongRankCondition_iff_succ R]

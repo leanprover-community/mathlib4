@@ -273,6 +273,7 @@ instance ofIso {X Y : PresheafedSpace C} (H : X ≅ Y) : IsOpenImmersion H.hom w
   c_iso _ := letI : IsIso H.hom.c := c_isIso_of_iso H.hom; inferInstance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.of_iso AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofIso
 
+-- See note [lower instance priority]
 instance (priority := 100) ofIsIso {X Y : PresheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     IsOpenImmersion f :=
   AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofIso (asIso f)
@@ -693,6 +694,7 @@ end PresheafedSpace.IsOpenImmersion
 
 namespace SheafedSpace.IsOpenImmersion
 
+-- See note [lower instance priority]
 instance (priority := 100) of_isIso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     SheafedSpace.IsOpenImmersion f :=
   @PresheafedSpace.IsOpenImmersion.ofIsIso _ _ _ _ f
@@ -955,6 +957,7 @@ variable {X Y Z : LocallyRingedSpace} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 variable [H : LocallyRingedSpace.IsOpenImmersion f]
 
+-- See note [lower instance priority]
 instance (priority := 100) of_isIso [IsIso g] : LocallyRingedSpace.IsOpenImmersion g :=
   @PresheafedSpace.IsOpenImmersion.ofIsIso _ _ _ _ g.1
     ⟨⟨(inv g).1, by

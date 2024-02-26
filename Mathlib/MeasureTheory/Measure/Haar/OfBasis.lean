@@ -291,6 +291,7 @@ end NormedSpace
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
 is proved in `orthonormalBasis.volume_parallelepiped`. -/
+-- See note [lower instance priority]
 instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar

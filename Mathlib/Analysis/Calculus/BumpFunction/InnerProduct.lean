@@ -55,6 +55,7 @@ noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E wher
     simp [div_pos_iff, sq_lt_sq, abs_of_pos (one_pos.trans hR), hR, hR.not_lt]
 
 /-- Any inner product space has smooth bump functions. -/
+-- See note [lower instance priority]
 instance (priority := 100) hasContDiffBump_of_innerProductSpace : HasContDiffBump E :=
   ⟨⟨.ofInnerProductSpace E⟩⟩
 #align has_cont_diff_bump_of_inner_product_space hasContDiffBump_of_innerProductSpace

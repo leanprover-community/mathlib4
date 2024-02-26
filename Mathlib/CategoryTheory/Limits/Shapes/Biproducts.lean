@@ -374,12 +374,14 @@ def biproduct.isColimit (F : J → C) [HasBiproduct F] : IsColimit (biproduct.bi
   (getBiproductData F).isBilimit.isColimit
 #align category_theory.limits.biproduct.is_colimit CategoryTheory.Limits.biproduct.isColimit
 
+-- See note [lower instance priority]
 instance (priority := 100) hasProduct_of_hasBiproduct [HasBiproduct F] : HasProduct F :=
   HasLimit.mk
     { cone := (biproduct.bicone F).toCone
       isLimit := biproduct.isLimit F }
 #align category_theory.limits.has_product_of_has_biproduct CategoryTheory.Limits.hasProduct_of_hasBiproduct
 
+-- See note [lower instance priority]
 instance (priority := 100) hasCoproduct_of_hasBiproduct [HasBiproduct F] : HasCoproduct F :=
   HasColimit.mk
     { cocone := (biproduct.bicone F).toCocone
@@ -418,6 +420,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
         LimitBicone.mk (c.whisker e) ((c.whiskerIsBilimitIff _).2 hc)⟩
 #align category_theory.limits.has_biproducts_of_shape_of_equiv CategoryTheory.Limits.hasBiproductsOfShape_of_equiv
 
+-- See note [lower instance priority]
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :
     HasBiproductsOfShape J C := by
   rcases Finite.exists_equiv_fin J with ⟨n, ⟨e⟩⟩
@@ -425,11 +428,13 @@ instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [
   exact hasBiproductsOfShape_of_equiv C e
 #align category_theory.limits.has_biproducts_of_shape_finite CategoryTheory.Limits.hasBiproductsOfShape_finite
 
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteProducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasFiniteProducts C where
   out _ := ⟨fun _ => hasLimitOfIso Discrete.natIsoFunctor.symm⟩
 #align category_theory.limits.has_finite_products_of_has_finite_biproducts CategoryTheory.Limits.hasFiniteProducts_of_hasFiniteBiproducts
 
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteCoproducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasFiniteCoproducts C where
   out _ := ⟨fun _ => hasColimitOfIso Discrete.natIsoFunctor⟩
@@ -1116,6 +1121,7 @@ def limitBiconeOfUnique : LimitBicone f where
       isColimit := (colimitCoconeOfUnique f).isColimit }
 #align category_theory.limits.limit_bicone_of_unique CategoryTheory.Limits.limitBiconeOfUnique
 
+-- See note [lower instance priority]
 instance (priority := 100) hasBiproduct_unique : HasBiproduct f :=
   HasBiproduct.mk (limitBiconeOfUnique f)
 #align category_theory.limits.has_biproduct_unique CategoryTheory.Limits.hasBiproduct_unique
@@ -1424,11 +1430,13 @@ instance HasBinaryBiproduct.hasColimit_pair [HasBinaryBiproduct P Q] : HasColimi
   HasColimit.mk ⟨_, BinaryBiproduct.isColimit P Q⟩
 #align category_theory.limits.has_binary_biproduct.has_colimit_pair CategoryTheory.Limits.HasBinaryBiproduct.hasColimit_pair
 
+-- See note [lower instance priority]
 instance (priority := 100) hasBinaryProducts_of_hasBinaryBiproducts [HasBinaryBiproducts C] :
     HasBinaryProducts C where
   has_limit F := hasLimitOfIso (diagramIsoPair F).symm
 #align category_theory.limits.has_binary_products_of_has_binary_biproducts CategoryTheory.Limits.hasBinaryProducts_of_hasBinaryBiproducts
 
+-- See note [lower instance priority]
 instance (priority := 100) hasBinaryCoproducts_of_hasBinaryBiproducts [HasBinaryBiproducts C] :
     HasBinaryCoproducts C where
   has_colimit F := hasColimitOfIso (diagramIsoPair F)

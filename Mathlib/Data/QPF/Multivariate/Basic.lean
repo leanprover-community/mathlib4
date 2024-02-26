@@ -117,6 +117,7 @@ theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) (x : F �
   rfl
 #align mvqpf.comp_map MvQPF.comp_map
 
+-- See note [lower instance priority]
 instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F where
   id_map := @MvQPF.id_map n F _ _
   comp_map := @comp_map n F _ _

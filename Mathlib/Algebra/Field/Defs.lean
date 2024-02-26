@@ -140,6 +140,7 @@ theorem cast_def : ∀ r : ℚ, (r : K) = r.num / r.den
   | ⟨_, _, _, _⟩ => (cast_mk' _ _ _ _).trans (div_eq_mul_inv _ _).symm
 #align rat.cast_def Rat.cast_def
 
+-- See note [lower instance priority]
 instance (priority := 100) smulDivisionRing : SMul ℚ K :=
   ⟨DivisionRing.qsmul⟩
 #align rat.smul_division_ring Rat.smulDivisionRing

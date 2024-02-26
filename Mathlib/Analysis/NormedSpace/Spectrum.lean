@@ -509,6 +509,7 @@ variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [C
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
+-- See note [lower instance priority]
 instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
     ContinuousLinearMapClass F 𝕜 A 𝕜 :=
   { AlgHomClass.linearMapClass with

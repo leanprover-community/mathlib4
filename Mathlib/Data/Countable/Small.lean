@@ -17,6 +17,7 @@ That is, any countable type is equivalent to a type in any universe.
 
 universe w v
 
+-- See note [lower instance priority]
 instance (priority := 100) small_of_countable (α : Type v) [Countable α] : Small.{w} α :=
   let ⟨_, hf⟩ := exists_injective_nat α
   small_of_injective hf

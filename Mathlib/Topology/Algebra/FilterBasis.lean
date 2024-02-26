@@ -296,6 +296,7 @@ def topology : TopologicalSpace R :=
 
 /-- If a ring is endowed with a topological structure coming from
 a ring filter basis then it's a topological ring. -/
+-- See note [lower instance priority]
 instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilterBasis R) :
     @TopologicalRing R B.topology _ := by
   let B' := B.toAddGroupFilterBasis
@@ -424,6 +425,7 @@ theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [To
 
 /-- If a module is endowed with a topological structure coming from
 a module filter basis then it's a topological module. -/
+-- See note [lower instance priority]
 instance (priority := 100) continuousSMul [TopologicalRing R] :
     @ContinuousSMul R M _ _ B.topology := by
   let B' := B.toAddGroupFilterBasis

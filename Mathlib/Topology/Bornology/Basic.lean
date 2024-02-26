@@ -337,6 +337,7 @@ class BoundedSpace (α : Type*) [Bornology α] : Prop where
 #align bounded_space BoundedSpace
 
 /-- A finite space is bounded. -/
+-- See note [lower instance priority]
 instance (priority := 100) BoundedSpace.of_finite {α : Type*} [Bornology α] [Finite α] :
     BoundedSpace α where
   bounded_univ := (toFinite _).isBounded

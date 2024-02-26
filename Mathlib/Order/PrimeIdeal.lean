@@ -148,6 +148,7 @@ section DistribLattice
 
 variable [DistribLattice P] {I : Ideal P}
 
+-- See note [lower instance priority]
 instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   rw [isPrime_iff_mem_or_mem]
   intro x y
@@ -194,6 +195,7 @@ theorem isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x
   ⟨fun h _ => h.mem_or_compl_mem, isPrime_of_mem_or_compl_mem⟩
 #align order.ideal.is_prime_iff_mem_or_compl_mem Order.Ideal.isPrime_iff_mem_or_compl_mem
 
+-- See note [lower instance priority]
 instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   simp only [isMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
   intro J hIJ x

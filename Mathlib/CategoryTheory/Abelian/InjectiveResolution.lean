@@ -356,8 +356,10 @@ irreducible_def of : InjectiveResolution Z where
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.of CategoryTheory.InjectiveResolution.of
 
+-- See note [lower instance priority]
 instance (priority := 100) (Z : C) : HasInjectiveResolution Z where out := ⟨of Z⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) : HasInjectiveResolutions C where out _ := inferInstance
 
 end InjectiveResolution

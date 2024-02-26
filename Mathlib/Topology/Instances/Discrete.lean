@@ -28,11 +28,13 @@ open Order Set TopologicalSpace Filter
 
 variable {α : Type*} [TopologicalSpace α]
 
+-- See note [lower instance priority]
 instance (priority := 100) DiscreteTopology.firstCountableTopology [DiscreteTopology α] :
     FirstCountableTopology α where
   nhds_generated_countable := by rw [nhds_discrete]; exact isCountablyGenerated_pure
 #align discrete_topology.first_countable_topology DiscreteTopology.firstCountableTopology
 
+-- See note [lower instance priority]
 instance (priority := 100) DiscreteTopology.secondCountableTopology_of_encodable
     [hd : DiscreteTopology α] [Encodable α] : SecondCountableTopology α :=
   haveI : ∀ i : α, SecondCountableTopology (↥({i} : Set α)) := fun i =>
@@ -42,6 +44,7 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_encodable
     (iUnion_of_singleton α)
 #align discrete_topology.second_countable_topology_of_encodable DiscreteTopology.secondCountableTopology_of_encodable
 
+-- See note [lower instance priority]
 instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable {α : Type*}
     [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
   @DiscreteTopology.secondCountableTopology_of_encodable _ _ _ (Encodable.ofCountable _)
@@ -71,6 +74,7 @@ theorem discreteTopology_iff_orderTopology_of_pred_succ' [PartialOrder α] [Pred
     exact bot_topologicalSpace_eq_generateFrom_of_pred_succOrder.symm
 #align discrete_topology_iff_order_topology_of_pred_succ' discreteTopology_iff_orderTopology_of_pred_succ'
 
+-- See note [lower instance priority]
 instance (priority := 100) DiscreteTopology.orderTopology_of_pred_succ' [h : DiscreteTopology α]
     [PartialOrder α] [PredOrder α] [SuccOrder α] [NoMinOrder α] [NoMaxOrder α] : OrderTopology α :=
   discreteTopology_iff_orderTopology_of_pred_succ'.1 h
@@ -116,11 +120,13 @@ theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOr
     exact LinearOrder.bot_topologicalSpace_eq_generateFrom.symm
 #align discrete_topology_iff_order_topology_of_pred_succ discreteTopology_iff_orderTopology_of_pred_succ
 
+-- See note [lower instance priority]
 instance (priority := 100) DiscreteTopology.orderTopology_of_pred_succ [h : DiscreteTopology α]
     [LinearOrder α] [PredOrder α] [SuccOrder α] : OrderTopology α :=
   discreteTopology_iff_orderTopology_of_pred_succ.mp h
 #align discrete_topology.order_topology_of_pred_succ DiscreteTopology.orderTopology_of_pred_succ
 
+-- See note [lower instance priority]
 instance (priority := 100) DiscreteTopology.metrizableSpace [DiscreteTopology α] :
     MetrizableSpace α := by
   obtain rfl := DiscreteTopology.eq_bot (α := α)

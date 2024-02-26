@@ -75,6 +75,7 @@ class UpgradedPolishSpace (α : Type*) extends MetricSpace α, SecondCountableTo
   CompleteSpace α
 #align upgraded_polish_space UpgradedPolishSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) polishSpace_of_complete_second_countable [m : MetricSpace α]
     [SecondCountableTopology α] [h' : CompleteSpace α] : PolishSpace α where
   complete := ⟨m, rfl, h'⟩
@@ -101,11 +102,13 @@ def upgradePolishSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
 
 namespace PolishSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
     MetrizableSpace α := by
   letI := upgradePolishSpace α
   infer_instance
 
+-- See note [lower instance priority]
 instance (priority := 100) t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] :
     T2Space α := by
   letI := upgradePolishSpace α

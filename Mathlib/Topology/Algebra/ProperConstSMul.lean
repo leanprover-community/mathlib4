@@ -47,11 +47,13 @@ theorem IsCompact.preimage_smul {M X : Type*} [SMul M X] [TopologicalSpace X]
     [ProperConstSMul M X] {s : Set X} (hs : IsCompact s) (c : M) : IsCompact ((c • ·) ⁻¹' s) :=
   (isProperMap_smul c X).isCompact_preimage hs
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) {M X : Type*} [SMul M X] [TopologicalSpace X] [ContinuousConstSMul M X]
     [T2Space X] [CompactSpace X] : ProperConstSMul M X :=
   ⟨fun c ↦ (continuous_const_smul c).isProperMap⟩
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace X]
     [ContinuousConstSMul G X] : ProperConstSMul G X :=

@@ -470,6 +470,7 @@ class StrongHomClass (L : outParam Language) (F M N : Type*)
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
 --Porting note: using implicit brackets for `Structure` arguments
+-- See note [lower instance priority]
 instance (priority := 100) StrongHomClass.homClass [L.Structure M]
     [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
@@ -1084,6 +1085,7 @@ instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
     ext _ f <;> exact Empty.elim f⟩
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply
 instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M N] :
     StrongHomClass Language.empty F M N :=
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩

@@ -151,11 +151,13 @@ theorem isIso_of_mono_of_isSplitEpi {X Y : C} (f : X ⟶ Y) [Mono f] [IsSplitEpi
 #align category_theory.is_iso_of_mono_of_is_split_epi CategoryTheory.isIso_of_mono_of_isSplitEpi
 
 /-- Every iso is a split mono. -/
+-- See note [lower instance priority]
 instance (priority := 100) IsSplitMono.of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] : IsSplitMono f :=
   IsSplitMono.mk' { retraction := inv f }
 #align category_theory.is_split_mono.of_iso CategoryTheory.IsSplitMono.of_iso
 
 /-- Every iso is a split epi. -/
+-- See note [lower instance priority]
 instance (priority := 100) IsSplitEpi.of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] : IsSplitEpi f :=
   IsSplitEpi.mk' { section_ := inv f }
 #align category_theory.is_split_epi.of_iso CategoryTheory.IsSplitEpi.of_iso
@@ -165,6 +167,7 @@ theorem SplitMono.mono {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : Mono f :=
 #align category_theory.split_mono.mono CategoryTheory.SplitMono.mono
 
 /-- Every split mono is a mono. -/
+-- See note [lower instance priority]
 instance (priority := 100) IsSplitMono.mono {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : Mono f :=
   hf.exists_splitMono.some.mono
 #align category_theory.is_split_mono.mono CategoryTheory.IsSplitMono.mono
@@ -174,6 +177,7 @@ theorem SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
 #align category_theory.split_epi.epi CategoryTheory.SplitEpi.epi
 
 /-- Every split epi is an epi. -/
+-- See note [lower instance priority]
 instance (priority := 100) IsSplitEpi.epi {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : Epi f :=
   hf.exists_splitEpi.some.epi
 #align category_theory.is_split_epi.epi CategoryTheory.IsSplitEpi.epi

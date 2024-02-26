@@ -475,6 +475,7 @@ attribute [to_additive] ProperlyDiscontinuousSMul
 variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ T]
 
 /-- A finite group action is always properly discontinuous. -/
+-- See note [lower instance priority]
 @[to_additive "A finite group action is always properly discontinuous."]
 instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
     ProperlyDiscontinuousSMul Γ T where finite_disjoint_inter_image _ _ := Set.toFinite _
@@ -497,6 +498,7 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
 #align is_open_map_quotient_mk_add isOpenMap_quotient_mk'_add
 
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
+-- See note [lower instance priority]
 @[to_additive "The quotient by a discontinuous group action of a locally compact t2
 space is t2."]
 instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Space T]

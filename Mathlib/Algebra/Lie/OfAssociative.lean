@@ -44,6 +44,7 @@ variable {A : Type v} [Ring A]
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
+-- See note [lower instance priority]
 instance (priority := 100) ofAssociativeRing : LieRing A where
   add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
@@ -99,6 +100,7 @@ variable {R : Type u} [CommRing R] [Algebra R A]
 
 /-- An associative algebra gives rise to a Lie algebra by taking the bracket to be the ring
 commutator. -/
+-- See note [lower instance priority]
 instance (priority := 100) LieAlgebra.ofAssociativeAlgebra : LieAlgebra R A where
   lie_smul t x y := by
     rw [LieRing.of_associative_ring_bracket, LieRing.of_associative_ring_bracket,

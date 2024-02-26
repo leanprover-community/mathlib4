@@ -1239,9 +1239,11 @@ class HasCokernels : Prop where
 
 attribute [instance 100] HasKernels.has_limit HasCokernels.has_colimit
 
+-- See note [lower instance priority]
 instance (priority := 100) hasKernels_of_hasEqualizers [HasEqualizers C] : HasKernels C where
 #align category_theory.limits.has_kernels_of_has_equalizers CategoryTheory.Limits.hasKernels_of_hasEqualizers
 
+-- See note [lower instance priority]
 instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] : HasCokernels C
     where
 #align category_theory.limits.has_cokernels_of_has_coequalizers CategoryTheory.Limits.hasCokernels_of_hasCoequalizers

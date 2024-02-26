@@ -158,6 +158,7 @@ open LittleWedderburn
 /-- A finite division ring is a field. See `Finite.isDomain_to_isField` and
 `Fintype.divisionRingOfIsDomain` for more general statements, but these create data, and therefore
 may cause diamonds if used improperly. -/
+-- See note [lower instance priority]
 instance (priority := 100) littleWedderburn (D : Type*) [DivisionRing D] [Finite D] : Field D :=
   { ‹DivisionRing D› with
     mul_comm := fun x y ↦ by simp [Subring.mem_center_iff.mp ?_ x, center_eq_top D] }

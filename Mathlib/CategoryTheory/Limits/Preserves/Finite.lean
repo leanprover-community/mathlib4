@@ -51,6 +51,7 @@ attribute [instance] PreservesFiniteLimits.preservesFiniteLimits
 
 /-- Preserving finite limits also implies preserving limits over finite shapes in higher universes,
 though through a noncomputable instance. -/
+-- See note [lower instance priority]
 noncomputable instance (priority := 100) preservesLimitsOfShapeOfPreservesFiniteLimits (F : C ⥤ D)
     [PreservesFiniteLimits F] (J : Type w) [SmallCategory J] [FinCategory J] :
     PreservesLimitsOfShape J F := by
@@ -124,6 +125,7 @@ attribute [instance] PreservesFiniteColimits.preservesFiniteColimits
 
 /-- Preserving finite limits also implies preserving limits over finite shapes in higher universes,
 though through a noncomputable instance. -/
+-- See note [lower instance priority]
 noncomputable instance (priority := 100) preservesColimitsOfShapeOfPreservesFiniteColimits
     (F : C ⥤ D) [PreservesFiniteColimits F] (J : Type w) [SmallCategory J] [FinCategory J] :
     PreservesColimitsOfShape J F := by

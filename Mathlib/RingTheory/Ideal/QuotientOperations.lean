@@ -607,6 +607,7 @@ def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J
 
 end
 
+-- See note [lower instance priority]
 instance (priority := 100) quotientAlgebra {I : Ideal A} [Algebra R A] :
     Algebra (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=
   (quotientMap I (algebraMap R A) (le_of_eq rfl)).toAlgebra

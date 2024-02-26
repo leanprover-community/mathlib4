@@ -58,6 +58,7 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
 
 attribute [local instance] Path.Homotopic.setoid
 
+-- See note [lower instance priority]
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
   { nonempty := unique_homotopic.1
@@ -68,6 +69,7 @@ theorem paths_homotopic {x y : X} (p₁ p₂ : Path x y) : Path.Homotopic p₁ p
   Quotient.eq.mp (@Subsingleton.elim (Path.Homotopic.Quotient x y) _ _ _)
 #align simply_connected_space.paths_homotopic SimplyConnectedSpace.paths_homotopic
 
+-- See note [lower instance priority]
 instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [ContractibleSpace Y] :
     SimplyConnectedSpace Y where
   equiv_unit :=

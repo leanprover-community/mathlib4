@@ -182,6 +182,7 @@ theorem preservesEpimorphsisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : 
           Equiv.apply_eq_iff_eq] at H⟩ }
 #align category_theory.functor.preserves_epimorphsisms_of_adjunction CategoryTheory.Functor.preservesEpimorphsisms_of_adjunction
 
+-- See note [lower instance priority]
 instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesEpimorphisms F :=
   preservesEpimorphsisms_of_adjunction (Adjunction.ofLeftAdjoint F)
@@ -197,11 +198,13 @@ theorem preservesMonomorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : 
           Equiv.apply_eq_iff_eq] at H⟩ }
 #align category_theory.functor.preserves_monomorphisms_of_adjunction CategoryTheory.Functor.preservesMonomorphisms_of_adjunction
 
+-- See note [lower instance priority]
 instance (priority := 100) preservesMonomorphisms_of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
     PreservesMonomorphisms F :=
   preservesMonomorphisms_of_adjunction (Adjunction.ofRightAdjoint F)
 #align category_theory.functor.preserves_monomorphisms_of_is_right_adjoint CategoryTheory.Functor.preservesMonomorphisms_of_isRightAdjoint
 
+-- See note [lower instance priority]
 instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
     ReflectsMonomorphisms F where
   reflects {X} {Y} f hf :=
@@ -209,6 +212,7 @@ instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Fait
       F.map_injective ((cancel_mono (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 #align category_theory.functor.reflects_monomorphisms_of_faithful CategoryTheory.Functor.reflectsMonomorphisms_of_faithful
 
+-- See note [lower instance priority]
 instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
     ReflectsEpimorphisms F where
   reflects {X} {Y} f hf :=

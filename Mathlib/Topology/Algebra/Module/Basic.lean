@@ -341,6 +341,7 @@ variable (F : Type*) {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R �
   [Module R M] [Module S M₂]
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
+-- See note [lower instance priority]
 instance (priority := 100) continuousSemilinearMapClass [EquivLike F M M₂]
     [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
   { s with }

@@ -82,10 +82,12 @@ class IsBezout : Prop where
   isPrincipal_of_FG : ∀ I : Ideal R, I.FG → I.IsPrincipal
 #align is_bezout IsBezout
 
+-- See note [lower instance priority]
 instance (priority := 100) IsBezout.of_isPrincipalIdealRing [IsPrincipalIdealRing R] : IsBezout R :=
   ⟨fun I _ => IsPrincipalIdealRing.principal I⟩
 #align is_bezout.of_is_principal_ideal_ring IsBezout.of_isPrincipalIdealRing
 
+-- See note [lower instance priority]
 instance (priority := 100) DivisionRing.isPrincipalIdealRing (K : Type u) [DivisionRing K] :
     IsPrincipalIdealRing K where
   principal S := by

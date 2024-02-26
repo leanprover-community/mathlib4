@@ -57,6 +57,7 @@ lemma Nat.AtLeastTwo.ne_one (n : ℕ) [h : n.AtLeastTwo] : n ≠ 1 := by
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
+-- See note [lower instance priority]
 @[nolint unusedArguments]
 instance (priority := 100) instOfNatAtLeastTwo [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
   ofNat := n.cast

@@ -90,6 +90,7 @@ instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUn
   inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 #align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_punit_isEmpty
 
+-- See note [lower instance priority]
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X.carrier] : IsOpenImmersion f := by
   apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
@@ -101,6 +102,7 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
   · rintro (i : X.carrier); exact isEmptyElim i
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersion_of_isEmpty
 
+-- See note [lower instance priority]
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
     IsIso f := by
   haveI : IsEmpty X.carrier := ⟨fun x => isEmptyElim (show Y.carrier from f.1.base x)⟩
@@ -120,6 +122,7 @@ noncomputable def specPunitIsInitial : IsInitial (Scheme.Spec.obj (op <| CommRin
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 #align algebraic_geometry.Spec_punit_is_initial AlgebraicGeometry.specPunitIsInitial
 
+-- See note [lower instance priority]
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X.carrier] : IsAffine X :=
   isAffineOfIso
     (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Scheme.Spec.obj (op <| CommRingCat.of PUnit)))

@@ -843,6 +843,7 @@ theorem ConnectedSpace.infinite [ConnectedSpace X] [Nontrivial X] [T1Space X] : 
 #align connected_space.infinite ConnectedSpace.infinite
 
 /-- A non-trivial connected T1 space has no isolated points. -/
+-- See note [lower instance priority]
 instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
     [ConnectedSpace X] [Nontrivial X] [T1Space X] (x : X) :
     NeBot (𝓝[≠] x) := by
@@ -1818,6 +1819,7 @@ theorem RegularSpace.ofExistsMemNhdsIsClosedSubset
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.ofExistsMemNhdsIsClosedSubset
 
 /-- A weakly locally compact R₁ space is regular. -/
+-- See note [lower instance priority]
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
   .ofBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, _, h⟩ ↦ h
 
@@ -1833,6 +1835,7 @@ theorem disjoint_nhds_nhdsSet : Disjoint (𝓝 x) (𝓝ˢ s) ↔ x ∉ closure s
 #align disjoint_nhds_nhds_set disjoint_nhds_nhdsSet
 
 /-- A regular space is R₁. -/
+-- See note [lower instance priority]
 instance (priority := 100) : R1Space X where
   specializes_or_disjoint_nhds _ _ := or_iff_not_imp_left.2 fun h ↦ by
     rwa [← nhdsSet_singleton, disjoint_nhdsSet_nhds, ← specializes_iff_mem_closure]
@@ -2065,6 +2068,7 @@ protected theorem ClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace 
         (disjoint_image_of_injective hf.inj hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
 
+-- See note [lower instance priority]
 instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] [R1Space X] :
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
@@ -2072,6 +2076,7 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
 /-- A regular topological space with second countable topology is a normal space.
 
 TODO: The same is true for a regular Lindelöf space. -/
+-- See note [lower instance priority]
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     [RegularSpace X] [SecondCountableTopology X] : NormalSpace X := by
   have key : ∀ {s t : Set X}, IsClosed t → Disjoint s t →
@@ -2124,6 +2129,7 @@ section Normality
 class T4Space (X : Type u) [TopologicalSpace X] extends T1Space X, NormalSpace X : Prop
 #align normal_space NormalSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) [T1Space X] [NormalSpace X] : T4Space X := ⟨⟩
 
 -- see Note [lower instance priority]
@@ -2308,6 +2314,7 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace X ↔ Totally
 variable [TotallyDisconnectedSpace X]
 
 /-- A totally disconnected compact Hausdorff space is totally separated. -/
+-- See note [lower instance priority]
 instance (priority := 100) : TotallySeparatedSpace X :=
   compact_t2_tot_disc_iff_tot_sep.mp inferInstance
 

@@ -479,7 +479,8 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
     exact mul_dvd_mul (RingHom.map_dvd C h.1) h.2
 #align polynomial.dvd_iff_content_dvd_content_and_prim_part_dvd_prim_part Polynomial.dvd_iff_content_dvd_content_and_primPart_dvd_primPart
 
-noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
+noncomputable -- See note [lower instance priority]
+instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R
   normalizedGCDMonoidOfExistsLCM fun p q => by
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart

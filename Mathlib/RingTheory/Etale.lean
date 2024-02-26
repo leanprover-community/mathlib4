@@ -75,11 +75,13 @@ theorem FormallyEtale.iff_unramified_and_smooth :
   simp_rw [← forall_and, Function.Bijective]
 #align algebra.formally_etale.iff_unramified_and_smooth Algebra.FormallyEtale.iff_unramified_and_smooth
 
+-- See note [lower instance priority]
 instance (priority := 100) FormallyEtale.to_unramified [h : FormallyEtale R A] :
     FormallyUnramified R A :=
   (FormallyEtale.iff_unramified_and_smooth.mp h).1
 #align algebra.formally_etale.to_unramified Algebra.FormallyEtale.to_unramified
 
+-- See note [lower instance priority]
 instance (priority := 100) FormallyEtale.to_smooth [h : FormallyEtale R A] : FormallySmooth R A :=
   (FormallyEtale.iff_unramified_and_smooth.mp h).2
 #align algebra.formally_etale.to_smooth Algebra.FormallyEtale.to_smooth

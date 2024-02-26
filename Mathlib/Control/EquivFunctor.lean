@@ -88,6 +88,7 @@ theorem mapEquiv_trans {γ : Type u₀} (ab : α ≃ β) (bc : β ≃ γ) :
 
 end
 
+-- See note [lower instance priority]
 instance (priority := 100) ofLawfulFunctor (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] :
     EquivFunctor f where
   map {α β} e := Functor.map e

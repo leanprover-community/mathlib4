@@ -162,6 +162,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   exact b.total_repr m
 #align module.projective_of_basis Module.Projective.of_basis
 
+-- See note [lower instance priority]
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
   .of_basis <| Module.Free.chooseBasis R P
 #align module.projective_of_free Module.Projective.of_free

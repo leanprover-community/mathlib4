@@ -560,6 +560,7 @@ theorem finiteIndex_of_finite_quotient [Finite (G ⧸ H)] : FiniteIndex H :=
 #align add_subgroup.finite_index_of_finite_quotient AddSubgroup.finiteIndex_of_finite_quotient
 
 --porting note: had to manually provide finite instance for quotient when it should be automatic
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
   @finiteIndex_of_finite_quotient _ _ H (Quotient.finite _)

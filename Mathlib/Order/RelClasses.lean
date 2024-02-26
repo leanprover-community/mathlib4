@@ -488,6 +488,7 @@ theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr 
 instance [Subsingleton α] : IsWellOrder α EmptyRelation :=
   Subsingleton.isWellOrder _
 
+-- See note [lower instance priority]
 instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder α r where
   trichotomous := isEmptyElim
   trans := isEmptyElim

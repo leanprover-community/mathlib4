@@ -512,6 +512,7 @@ instance inhabitedTopologicalSpace {α : Type u} : Inhabited (TopologicalSpace �
   ⟨⊥⟩
 #align inhabited_topological_space inhabitedTopologicalSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) Subsingleton.uniqueTopologicalSpace [Subsingleton α] :
     Unique (TopologicalSpace α) where
   default := ⊥
@@ -520,6 +521,7 @@ instance (priority := 100) Subsingleton.uniqueTopologicalSpace [Subsingleton α]
       Subsingleton.set_cases (@isOpen_empty _ t) (@isOpen_univ _ t) ({x} : Set α)
 #align subsingleton.unique_topological_space Subsingleton.uniqueTopologicalSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) Subsingleton.discreteTopology [t : TopologicalSpace α] [Subsingleton α] :
     DiscreteTopology α :=
   ⟨Unique.eq_default t⟩

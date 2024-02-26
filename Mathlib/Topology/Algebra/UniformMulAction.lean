@@ -84,6 +84,7 @@ section SMul
 
 variable [SMul M X]
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) UniformContinuousConstSMul.to_continuousConstSMul
     [UniformContinuousConstSMul M X] : ContinuousConstSMul M X :=
@@ -110,6 +111,7 @@ lemma UniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuousCo
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
+-- See note [lower instance priority]
 @[to_additive "If an additive action is central, then its right action is uniform
 continuous when its left action is."]
 instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X]

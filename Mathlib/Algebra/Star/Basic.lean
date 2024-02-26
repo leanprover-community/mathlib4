@@ -318,6 +318,7 @@ class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R wher
   star_add : ∀ r s : R, star (r + s) = star r + star s
 #align star_ring StarRing
 
+-- See note [lower instance priority]
 instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalNonAssocSemiring R] [StarRing R] :
     StarAddMonoid R where
   star_add := StarRing.star_add

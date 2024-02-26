@@ -623,6 +623,7 @@ lemma isMulInvariant_eq_smul_of_compactSpace [CompactSpace G] (μ' μ : Measure 
   ext s _hs
   exact measure_isMulInvariant_eq_smul_of_isCompact_closure _ _ isClosed_closure.isCompact
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instInnerRegularOfIsHaarMeasureOfCompactSpace
     [CompactSpace G] (μ : Measure G) [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] :
@@ -630,6 +631,7 @@ instance (priority := 100) instInnerRegularOfIsHaarMeasureOfCompactSpace
   rw [isMulInvariant_eq_smul_of_compactSpace μ haar]
   infer_instance
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instRegularOfIsHaarMeasureOfCompactSpace
     [CompactSpace G] (μ : Measure G) [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] :
@@ -895,6 +897,7 @@ variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 /-- Any regular Haar measure is invariant under inversion in an abelian group. -/
+-- See note [lower instance priority]
 @[to_additive "Any regular additive Haar measure is invariant under negation in an abelian group."]
 instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
     [LocallyCompactSpace G] [Regular μ] : IsInvInvariant μ := by
@@ -922,6 +925,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
 #align measure_theory.measure.is_add_haar_measure.is_neg_invariant MeasureTheory.Measure.IsAddHaarMeasure.isNegInvariant_of_regular
 
 /-- Any inner regular Haar measure is invariant under inversion in an abelian group. -/
+-- See note [lower instance priority]
 @[to_additive "Any regular additive Haar measure is invariant under negation in an abelian group."]
 instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
     [LocallyCompactSpace G] [InnerRegular μ] : IsInvInvariant μ := by

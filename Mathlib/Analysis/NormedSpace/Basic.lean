@@ -176,6 +176,7 @@ example
 
 [This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
 gives some more context. -/
+-- See note [lower instance priority]
 instance (priority := 100) NormedSpace.toModule' : Module 𝕜 F :=
   NormedSpace.toModule
 #align normed_space.to_module' NormedSpace.toModule'
@@ -207,6 +208,7 @@ protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by
   rw [neBot_iff, Ne.def, cobounded_eq_bot_iff, ← isBounded_univ]
   exact NormedSpace.unbounded_univ 𝕜 E
 
+-- See note [lower instance priority]
 instance (priority := 100) NontriviallyNormedField.cobounded_neBot : NeBot (cobounded 𝕜) :=
   NormedSpace.cobounded_neBot 𝕜 𝕜
 
@@ -240,10 +242,12 @@ protected theorem NormedSpace.noncompactSpace : NoncompactSpace E := by
     rwa [sub_ne_zero, (Embedding.injective _).ne_iff]
 #align normed_space.noncompact_space NormedSpace.noncompactSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) NormedField.noncompactSpace : NoncompactSpace 𝕜 :=
   NormedSpace.noncompactSpace 𝕜 𝕜
 #align nontrivially_normed_field.noncompact_space NormedField.noncompactSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) RealNormedSpace.noncompactSpace [NormedSpace ℝ E] : NoncompactSpace E :=
   NormedSpace.noncompactSpace ℝ E
 #align real_normed_space.noncompact_space RealNormedSpace.noncompactSpace
@@ -271,6 +275,7 @@ attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 variable (𝕜')
 variable [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
+-- See note [lower instance priority]
 instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
   -- Porting note: previous Lean could figure out what we were extending
   { NormedAlgebra.toAlgebra.toModule with
@@ -289,6 +294,7 @@ example
 ```
 
 See `NormedSpace.toModule'` for a similar situation. -/
+-- See note [lower instance priority]
 instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] :
     NormedSpace 𝕜 𝕜' := by infer_instance
 #align normed_algebra.to_normed_space' NormedAlgebra.toNormedSpace'

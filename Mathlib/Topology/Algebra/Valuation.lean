@@ -153,6 +153,7 @@ theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 
   exact Valuation.map_eq_of_sub_lt _ y_in
 #align valued.loc_const Valued.loc_const
 
+-- See note [lower instance priority]
 instance (priority := 100) : TopologicalRing R :=
   (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
 

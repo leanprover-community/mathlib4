@@ -311,6 +311,7 @@ def zeroIsoTerminal [HasTerminal C] : 0 ≅ ⊤_ C :=
   zeroIsTerminal.uniqueUpToIso terminalIsTerminal
 #align category_theory.limits.has_zero_object.zero_iso_terminal CategoryTheory.Limits.HasZeroObject.zeroIsoTerminal
 
+-- See note [lower instance priority]
 instance (priority := 100) initialMonoClass : InitialMonoClass C :=
   InitialMonoClass.of_isInitial zeroIsInitial fun X => by infer_instance
 #align category_theory.limits.has_zero_object.has_strict_initial CategoryTheory.Limits.HasZeroObject.initialMonoClass

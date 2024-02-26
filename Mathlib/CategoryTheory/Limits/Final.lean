@@ -154,10 +154,12 @@ theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Init
               Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp)⟩)) }
 #align category_theory.functor.initial_of_adjunction CategoryTheory.Functor.initial_of_adjunction
 
+-- See note [lower instance priority]
 instance (priority := 100) final_of_isRightAdjoint (F : C ⥤ D) [h : IsRightAdjoint F] : Final F :=
   final_of_adjunction h.adj
 #align category_theory.functor.final_of_is_right_adjoint CategoryTheory.Functor.final_of_isRightAdjoint
 
+-- See note [lower instance priority]
 instance (priority := 100) initial_of_isLeftAdjoint (F : C ⥤ D) [h : IsLeftAdjoint F] : Initial F :=
   initial_of_adjunction h.adj
 #align category_theory.functor.initial_of_is_left_adjoint CategoryTheory.Functor.initial_of_isLeftAdjoint
@@ -314,6 +316,7 @@ def colimitCoconeComp (t : ColimitCocone G) : ColimitCocone (F ⋙ G)
   isColimit := (isColimitWhiskerEquiv F _).symm t.isColimit
 #align category_theory.functor.final.colimit_cocone_comp CategoryTheory.Functor.Final.colimitCoconeComp
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) comp_hasColimit [HasColimit G] : HasColimit (F ⋙ G) :=
   HasColimit.mk (colimitCoconeComp F (getColimitCocone G))
 #align category_theory.functor.final.comp_has_colimit CategoryTheory.Functor.Final.comp_hasColimit
@@ -613,6 +616,7 @@ def limitConeComp (t : LimitCone G) : LimitCone (F ⋙ G)
   isLimit := (isLimitWhiskerEquiv F _).symm t.isLimit
 #align category_theory.functor.initial.limit_cone_comp CategoryTheory.Functor.Initial.limitConeComp
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) comp_hasLimit [HasLimit G] : HasLimit (F ⋙ G) :=
   HasLimit.mk (limitConeComp F (getLimitCone G))
 #align category_theory.functor.initial.comp_has_limit CategoryTheory.Functor.Initial.comp_hasLimit

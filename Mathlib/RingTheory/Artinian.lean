@@ -110,6 +110,7 @@ instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × 
     LinearMap.snd_surjective (LinearMap.range_inl R M P)
 #align is_artinian_prod isArtinian_prod
 
+-- See note [lower instance priority]
 instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 #align is_artinian_of_finite isArtinian_of_finite

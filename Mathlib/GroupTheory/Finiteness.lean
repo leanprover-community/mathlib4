@@ -130,6 +130,7 @@ instance Monoid.fg_of_addMonoid_fg [AddMonoid.FG N] : Monoid.FG (Multiplicative 
   AddMonoid.fg_iff_mul_fg.1 ‹_›
 #align monoid.fg_of_add_monoid_fg Monoid.fg_of_addMonoid_fg
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) Monoid.fg_of_finite [Finite M] : Monoid.FG M := by
   cases nonempty_fintype M
@@ -344,6 +345,7 @@ instance Group.fg_of_mul_group_fg [AddGroup.FG H] : Group.FG (Multiplicative H) 
   AddGroup.fg_iff_mul_fg.1 ‹_›
 #align group.fg_of_mul_group_fg Group.fg_of_mul_group_fg
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) Group.fg_of_finite [Finite G] : Group.FG G := by
   cases nonempty_fintype G

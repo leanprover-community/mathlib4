@@ -409,6 +409,7 @@ class VectorBundle : Prop where
 
 variable {F E}
 
+-- See note [lower instance priority]
 instance (priority := 100) trivialization_linear [VectorBundle R F E] (e : Trivialization F (π F E))
     [MemTrivializationAtlas e] : e.IsLinear R :=
   VectorBundle.trivialization_linear' e

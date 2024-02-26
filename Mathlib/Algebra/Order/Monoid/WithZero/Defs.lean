@@ -26,11 +26,13 @@ class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMono
   zero_le_one : (0 : α) ≤ 1
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
 
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
     [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
   { ‹LinearOrderedCommMonoidWithZero α› with }
 #align linear_ordered_comm_monoid_with_zero.to_zero_le_one_class LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 
+-- See note [lower instance priority]
 instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
     [CanonicallyOrderedAddCommMonoid α] [One α] : ZeroLEOneClass α :=
   ⟨zero_le 1⟩

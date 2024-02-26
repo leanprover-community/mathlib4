@@ -220,6 +220,7 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
   · filter_upwards [Ioi_mem_nhds (inv_lt_one hx)] with y hy
     simpa only [inv_inv] using inv_lt_inv_of_lt (inv_pos.2 <| one_pos.trans hx) hy
 
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 #align linear_ordered_field.to_topological_division_ring LinearOrderedField.toTopologicalDivisionRing

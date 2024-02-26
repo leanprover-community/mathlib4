@@ -653,6 +653,7 @@ theorem hasLimitsOfSizeShrink [HasLimitsOfSize.{max v₁ v₂, max u₁ u₂} C]
     HasLimitsOfSize.{v₁, u₁} C := hasLimitsOfSizeOfUnivLE.{max v₁ v₂, max u₁ u₂} C
 #align category_theory.limits.has_limits_of_size_shrink CategoryTheory.Limits.hasLimitsOfSizeShrink
 
+-- See note [lower instance priority]
 instance (priority := 100) hasSmallestLimitsOfHasLimits [HasLimits C] : HasLimitsOfSize.{0, 0} C :=
   hasLimitsOfSizeShrink.{0, 0} C
 #align category_theory.limits.has_smallest_limits_of_has_limits CategoryTheory.Limits.hasSmallestLimitsOfHasLimits
@@ -1229,6 +1230,7 @@ theorem hasColimitsOfSizeShrink [HasColimitsOfSize.{max v₁ v₂, max u₁ u₂
     HasColimitsOfSize.{v₁, u₁} C := hasColimitsOfSizeOfUnivLE.{max v₁ v₂, max u₁ u₂} C
 #align category_theory.limits.has_colimits_of_size_shrink CategoryTheory.Limits.hasColimitsOfSizeShrink
 
+-- See note [lower instance priority]
 instance (priority := 100) hasSmallestColimitsOfHasColimits [HasColimits C] :
     HasColimitsOfSize.{0, 0} C :=
   hasColimitsOfSizeShrink.{0, 0} C

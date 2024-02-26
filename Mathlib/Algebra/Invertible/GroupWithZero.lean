@@ -25,6 +25,7 @@ theorem nonzero_of_invertible [MulZeroOneClass α] (a : α) [Nontrivial α] [Inv
       _ = 1 := invOf_mul_self a
 #align nonzero_of_invertible nonzero_of_invertible
 
+-- See note [lower instance priority]
 instance (priority := 100) Invertible.ne_zero [MulZeroOneClass α] [Nontrivial α] (a : α)
     [Invertible a] : NeZero a :=
   ⟨nonzero_of_invertible a⟩

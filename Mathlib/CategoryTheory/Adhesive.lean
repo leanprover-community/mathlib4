@@ -254,6 +254,7 @@ instance Type.adhesive : Adhesive (Type u) :=
     (IsPushout.isVanKampen_inl _ (Types.isCoprodOfMono f) _ _ _ H.flip).flip⟩
 #align category_theory.type.adhesive CategoryTheory.Type.adhesive
 
+-- See note [lower instance priority]
 noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesive C] :
     RegularMonoCategory C :=
   ⟨fun f _ =>

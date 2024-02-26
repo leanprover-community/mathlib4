@@ -382,6 +382,7 @@ theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
 
 section AlgebraInstances
 
+-- See note [lower instance priority]
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
     @UniformContinuousConstSMul R K v.adicValued.toUniformSpace _ :=
   @uniformContinuousConstSMul_of_continuousConstSMul R K _ _ _ v.adicValued.toUniformSpace _ _

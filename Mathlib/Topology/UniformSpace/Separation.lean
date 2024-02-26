@@ -80,6 +80,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 ### Separated uniform spaces
 -/
 
+-- See note [lower instance priority]
 instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
   RegularSpace.ofBasis
     (fun a => by

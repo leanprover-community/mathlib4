@@ -36,6 +36,7 @@ class NormedAddTorsor (V : outParam <| Type*) (P : Type*) [outParam <| Seminorme
 #align normed_add_torsor NormedAddTorsor
 
 /-- Shortcut instance to help typeclass inference out. -/
+-- See note [lower instance priority]
 instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAddCommGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
@@ -44,6 +45,7 @@ instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAdd
 variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
+-- See note [lower instance priority]
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
     -- porting note (#10745): was `simp [NormedAddTorsor.dist_eq_norm']`
@@ -51,6 +53,7 @@ instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P 
 #align normed_add_torsor.to_has_isometric_vadd NormedAddTorsor.to_isometricVAdd
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
+-- See note [lower instance priority]
 instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V where
   dist_eq_norm' := dist_eq_norm
 #align seminormed_add_comm_group.to_normed_add_torsor SeminormedAddCommGroup.toNormedAddTorsor
@@ -259,6 +262,7 @@ theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.
   (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 #align uniform_continuous_vsub uniformContinuous_vsub
 
+-- See note [lower instance priority]
 instance (priority := 100) NormedAddTorsor.to_continuousVAdd : ContinuousVAdd V P where
   continuous_vadd := uniformContinuous_vadd.continuous
 #align normed_add_torsor.to_has_continuous_vadd NormedAddTorsor.to_continuousVAdd

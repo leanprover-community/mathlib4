@@ -83,6 +83,7 @@ def Groupoid.invEquiv : (X ⟶ Y) ≃ (Y ⟶ X) :=
   ⟨Groupoid.inv, Groupoid.inv, fun f => by simp, fun f => by simp⟩
 #align category_theory.groupoid.inv_equiv CategoryTheory.Groupoid.invEquiv
 
+-- See note [lower instance priority]
 instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveReverse C where
   reverse' f := Groupoid.inv f
   inv' f := by

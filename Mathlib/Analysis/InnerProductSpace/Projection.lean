@@ -365,6 +365,7 @@ orthogonal projection to `K`. -/
 class HasOrthogonalProjection (K : Submodule 𝕜 E) : Prop where
   exists_orthogonal (v : E) : ∃ w ∈ K, v - w ∈ Kᗮ
 
+-- See note [lower instance priority]
 instance (priority := 100) HasOrthogonalProjection.ofCompleteSpace [CompleteSpace K] :
     HasOrthogonalProjection K where
   exists_orthogonal v := by

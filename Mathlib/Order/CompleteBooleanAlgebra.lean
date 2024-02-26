@@ -133,6 +133,7 @@ theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
   obtain ⟨h, rfl, rfl⟩ := ha b
   exact iInf_le _ _
 
+-- See note [lower instance priority]
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
   iInf_sup_le_sup_sInf a s := calc

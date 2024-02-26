@@ -183,6 +183,7 @@ variable [NonUnitalNonAssocRing R]
 
 namespace Ring
 
+-- See note [lower instance priority]
 instance (priority := 100) instBracket : Bracket R R := ⟨fun x y => x * y - y * x⟩
 
 theorem lie_def (x y : R) : ⁅x, y⁆ = x * y - y * x := rfl

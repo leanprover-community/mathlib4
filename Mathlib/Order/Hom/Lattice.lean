@@ -1171,6 +1171,7 @@ variable (α β) [LinearOrder α] [Lattice β] [FunLike F α β] [OrderHomClass 
 
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
 -- porting note: made it an `instance` because we're no longer afraid of loops
+-- See note [lower instance priority]
 instance (priority := 100) toLatticeHomClass : LatticeHomClass F α β :=
   { ‹OrderHomClass F α β› with
     map_sup := fun f a b => by

@@ -116,6 +116,7 @@ theorem hequiv [ContractibleSpace X] [ContractibleSpace Y] :
   rcases ContractibleSpace.hequiv_unit' (X := Y) with ⟨h'⟩
   exact ⟨h.trans h'.symm⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X := by
   obtain ⟨p, ⟨h⟩⟩ := id_nullhomotopic X
   have : ∀ x, Joined p x := fun x => ⟨(h.evalAt x).symm⟩

@@ -114,6 +114,7 @@ theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingP
 
 namespace HasPullbacksOfInclusions
 
+-- See note [lower instance priority]
 instance (priority := 100) [HasBinaryCoproducts C] [HasPullbacks C] :
     HasPullbacksOfInclusions C := ⟨⟩
 
@@ -142,6 +143,7 @@ namespace PreservesPullbacksOfInclusions
 
 variable {D : Type*} [Category D] [HasBinaryCoproducts C] (F : C ⥤ D)
 
+-- See note [lower instance priority]
 noncomputable
 instance (priority := 100) [PreservesLimitsOfShape WalkingCospan F] :
     PreservesPullbacksOfInclusions F := ⟨⟩
@@ -166,6 +168,7 @@ instance preservesPullbackInr :
 
 end PreservesPullbacksOfInclusions
 
+-- See note [lower instance priority]
 instance (priority := 100) FinitaryExtensive.toFinitaryPreExtensive [FinitaryExtensive C] :
     FinitaryPreExtensive C :=
   ⟨fun c hc ↦ (FinitaryExtensive.van_kampen' c hc).isUniversal⟩
@@ -192,6 +195,7 @@ theorem FinitaryExtensive.isPullback_initial_to_binaryCofan [FinitaryExtensive C
   BinaryCofan.isPullback_initial_to_of_isVanKampen (FinitaryExtensive.vanKampen c hc)
 #align category_theory.finitary_extensive.is_pullback_initial_to_binary_cofan CategoryTheory.FinitaryExtensive.isPullback_initial_to_binaryCofan
 
+-- See note [lower instance priority]
 instance (priority := 100) hasStrictInitialObjects_of_finitaryPreExtensive
     [FinitaryPreExtensive C] : HasStrictInitialObjects C :=
   hasStrictInitial_of_isUniversal (FinitaryPreExtensive.universal' _

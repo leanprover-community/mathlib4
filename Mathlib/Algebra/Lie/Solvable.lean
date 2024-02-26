@@ -259,6 +259,7 @@ theorem le_solvable_ideal_solvable {I J : LieIdeal R L} (h₁ : I ≤ J) (_ : Is
 
 variable (R L)
 
+-- See note [lower instance priority]
 instance (priority := 100) ofAbelianIsSolvable [IsLieAbelian L] : IsSolvable R L := by
   use 1
   rw [← abelian_iff_derived_one_eq_bot, lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv]

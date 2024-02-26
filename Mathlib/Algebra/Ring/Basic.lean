@@ -178,6 +178,7 @@ lemma IsRightCancelMulZero.to_noZeroDivisors [Ring α] [IsRightCancelMulZero α]
         rwa [sub_zero] at this } }
 #align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.to_noZeroDivisors
 
+-- See note [lower instance priority]
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero [Ring α] [NoZeroDivisors α] :
     IsCancelMulZero α :=
   { mul_left_cancel_of_ne_zero := fun ha h ↦ by
@@ -198,6 +199,7 @@ lemma NoZeroDivisors.to_isDomain [Ring α] [h : Nontrivial α] [NoZeroDivisors �
   { NoZeroDivisors.to_isCancelMulZero α, h with .. }
 #align no_zero_divisors.to_is_domain NoZeroDivisors.to_isDomain
 
+-- See note [lower instance priority]
 instance (priority := 100) IsDomain.to_noZeroDivisors [Ring α] [IsDomain α] :
     NoZeroDivisors α :=
   IsRightCancelMulZero.to_noZeroDivisors α

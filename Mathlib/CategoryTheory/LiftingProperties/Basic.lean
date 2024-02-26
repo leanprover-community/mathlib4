@@ -44,6 +44,7 @@ class HasLiftingProperty : Prop where
 #align category_theory.has_lifting_property CategoryTheory.HasLiftingProperty
 #align category_theory.has_lifting_property.sq_has_lift CategoryTheory.HasLiftingProperty.sq_hasLift
 
+-- See note [lower instance priority]
 instance (priority := 100) sq_hasLift_of_hasLiftingProperty {f : A ⟶ X} {g : B ⟶ Y}
     (sq : CommSq f i p g) [hip : HasLiftingProperty i p] : sq.HasLift := by apply hip.sq_hasLift
 #align category_theory.sq_has_lift_of_has_lifting_property CategoryTheory.sq_hasLift_of_hasLiftingProperty
@@ -77,6 +78,7 @@ theorem iff_unop {A B X Y : Cᵒᵖ} (i : A ⟶ B) (p : X ⟶ Y) :
 
 variable (i p)
 
+-- See note [lower instance priority]
 instance (priority := 100) of_left_iso [IsIso i] : HasLiftingProperty i p :=
   ⟨fun {f} {g} sq =>
     CommSq.HasLift.mk'
@@ -85,6 +87,7 @@ instance (priority := 100) of_left_iso [IsIso i] : HasLiftingProperty i p :=
         fac_right := by simp only [sq.w, assoc, IsIso.inv_hom_id_assoc] }⟩
 #align category_theory.has_lifting_property.of_left_iso CategoryTheory.HasLiftingProperty.of_left_iso
 
+-- See note [lower instance priority]
 instance (priority := 100) of_right_iso [IsIso p] : HasLiftingProperty i p :=
   ⟨fun {f} {g} sq =>
     CommSq.HasLift.mk'

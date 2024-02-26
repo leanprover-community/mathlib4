@@ -18,6 +18,7 @@ That is, any `α` with `[Fintype α]` is equivalent to a type in any universe.
 
 universe w v
 
+-- See note [lower instance priority]
 instance (priority := 100) small_of_fintype (α : Type v) [Fintype α] : Small.{w} α := by
   rw [small_congr (Fintype.equivFin α)]
   infer_instance

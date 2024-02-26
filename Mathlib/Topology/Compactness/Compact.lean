@@ -974,6 +974,7 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
 #align is_compact.prod IsCompact.prod
 
 /-- Finite topological spaces are compact. -/
+-- See note [lower instance priority]
 instance (priority := 100) Finite.compactSpace [Finite X] : CompactSpace X where
   isCompact_univ := finite_univ.isCompact
 #align finite.compact_space Finite.compactSpace

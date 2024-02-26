@@ -81,6 +81,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
 end
 
 /-- Every normal monomorphism is a regular monomorphism. -/
+-- See note [lower instance priority]
 instance (priority := 100) NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono f] : RegularMono f :=
   { I with
     left := I.g
@@ -146,6 +147,7 @@ def normalMonoOfMono [NormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono 
   NormalMonoCategory.normalMonoOfMono _
 #align category_theory.normal_mono_of_mono CategoryTheory.normalMonoOfMono
 
+-- See note [lower instance priority]
 instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [NormalMonoCategory C] :
     RegularMonoCategory C where
   regularMonoOfMono f _ := by
@@ -193,6 +195,7 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
 end
 
 /-- Every normal epimorphism is a regular epimorphism. -/
+-- See note [lower instance priority]
 instance (priority := 100) NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] : RegularEpi f :=
   { I with
     left := I.g
@@ -304,6 +307,7 @@ def normalEpiOfEpi [NormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
   NormalEpiCategory.normalEpiOfEpi _
 #align category_theory.normal_epi_of_epi CategoryTheory.normalEpiOfEpi
 
+-- See note [lower instance priority]
 instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [NormalEpiCategory C] :
     RegularEpiCategory C where
   regularEpiOfEpi f _ := by

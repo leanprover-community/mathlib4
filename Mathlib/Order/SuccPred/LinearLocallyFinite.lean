@@ -113,6 +113,7 @@ theorem le_of_lt_succFn (j i : ι) (hij : j < succFn i) : j ≤ i := by
   exact not_lt.mp fun hi_lt_j ↦ not_le.mpr hk (hk_lb j hi_lt_j)
 #align linear_locally_finite_order.le_of_lt_succ_fn LinearLocallyFiniteOrder.le_of_lt_succFn
 
+-- See note [lower instance priority]
 noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
@@ -120,11 +121,13 @@ noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι 
   succ_le_of_lt h := succFn_le_of_lt _ _ h
   le_of_lt_succ h := le_of_lt_succFn _ _ h
 
+-- See note [lower instance priority]
 noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
   (inferInstance : PredOrder (OrderDual ιᵒᵈ))
 
 end LinearLocallyFiniteOrder
 
+-- See note [lower instance priority]
 instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFiniteOrder ι] :
     IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
@@ -156,6 +159,7 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
 #align linear_locally_finite_order.is_succ_archimedean LinearLocallyFiniteOrder.isSuccArchimedean
 
+-- See note [lower instance priority]
 instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [SuccOrder ι]
     [PredOrder ι] [IsSuccArchimedean ι] : IsPredArchimedean ι where
   exists_pred_iterate_of_le := by
@@ -371,6 +375,7 @@ noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
 set_option linter.uppercaseLean3 false in
 #align order_iso_range_to_Z_of_linear_succ_pred_arch orderIsoRangeToZOfLinearSuccPredArch
 
+-- See note [lower instance priority]
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
   cases' isEmpty_or_nonempty ι with _ hι
   · infer_instance

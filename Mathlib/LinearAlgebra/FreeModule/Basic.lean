@@ -107,6 +107,7 @@ noncomputable def constr {S : Type z} [Semiring S] [Module S N] [SMulCommClass R
   Basis.constr (chooseBasis R M) S
 #align module.free.constr Module.Free.constr
 
+-- See note [lower instance priority]
 instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDivisors R M :=
   let ⟨⟨_, b⟩⟩ := exists_basis (R := R) (M := M)
   b.noZeroSMulDivisors
@@ -170,10 +171,12 @@ instance finsupp : Module.Free R (ι →₀ M) :=
 
 variable {ι}
 
+-- See note [lower instance priority]
 instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
   of_basis.{u,z,z} (Basis.empty N : Basis PEmpty R N)
 #align module.free.of_subsingleton Module.Free.of_subsingleton
 
+-- See note [lower instance priority]
 instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :=
   letI := Module.subsingleton R N
   Module.Free.of_subsingleton R N

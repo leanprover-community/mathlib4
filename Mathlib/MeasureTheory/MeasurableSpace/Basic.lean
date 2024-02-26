@@ -1975,6 +1975,7 @@ theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @Countab
   rcases h₂ with ⟨⟨b₂, hb₂c, rfl⟩⟩
   exact @mk _ (_ ⊔ _) ⟨_, hb₁c.union hb₂c, generateFrom_sup_generateFrom⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) [MeasurableSpace α] [Finite α] : CountablyGenerated α where
   isCountablyGenerated :=
     ⟨{s | MeasurableSet s}, Set.to_countable _, generateFrom_measurableSet.symm⟩

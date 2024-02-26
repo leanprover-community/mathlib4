@@ -435,6 +435,7 @@ instance isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
 
 variable [IsAtomistic α]
 
+-- See note [lower instance priority]
 instance (priority := 100) : IsAtomic α :=
   ⟨fun b => by
     rcases eq_sSup_atoms b with ⟨s, rfl, hs⟩
@@ -481,6 +482,7 @@ instance isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
 
 variable [IsCoatomistic α]
 
+-- See note [lower instance priority]
 instance (priority := 100) : IsCoatomic α :=
   ⟨fun b => by
     rcases eq_sInf_coatoms b with ⟨s, rfl, hs⟩
@@ -739,6 +741,7 @@ variable [CompleteLattice α] [IsSimpleOrder α]
 
 --set_option default_priority 100 --Porting note: not supported, done for each instance individually
 
+-- See note [lower instance priority]
 instance (priority := 100) : IsAtomistic α :=
   ⟨fun b =>
     (eq_bot_or_eq_top b).elim

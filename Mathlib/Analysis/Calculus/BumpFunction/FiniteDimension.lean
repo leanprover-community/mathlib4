@@ -502,6 +502,7 @@ variable {E}
 
 end HelperDefinitions
 
+-- See note [lower instance priority]
 instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] : HasContDiffBump E := by
   refine' ⟨⟨_⟩⟩

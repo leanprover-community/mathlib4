@@ -56,6 +56,7 @@ theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsC
   exact forall_congr' Opens.isCompactElement_iff
 #align topological_space.noetherian_space_iff_opens TopologicalSpace.noetherianSpace_iff_opens
 
+-- See note [lower instance priority]
 instance (priority := 100) NoetherianSpace.compactSpace [h : NoetherianSpace α] : CompactSpace α :=
   ⟨(noetherianSpace_iff_opens α).mp h ⊤⟩
 #align topological_space.noetherian_space.compact_space TopologicalSpace.NoetherianSpace.compactSpace
@@ -167,6 +168,7 @@ theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
   Finite.of_finite_univ (NoetherianSpace.isCompact Set.univ).finite_of_discrete
 #align topological_space.noetherian_space.finite TopologicalSpace.NoetherianSpace.finite
 
+-- See note [lower instance priority]
 instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpace α :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 #align topological_space.finite.to_noetherian_space TopologicalSpace.Finite.to_noetherianSpace

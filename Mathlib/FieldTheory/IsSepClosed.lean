@@ -96,6 +96,7 @@ theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.S
 
 variable (k) in
 /-- A separably closed perfect field is also algebraically closed. -/
+-- See note [lower instance priority]
 instance (priority := 100) isAlgClosed_of_perfectField [IsSepClosed k] [PerfectField k] :
     IsAlgClosed k :=
   IsAlgClosed.of_exists_root k fun p _ h ↦ exists_root p ((degree_pos_of_irreducible h).ne')
@@ -200,6 +201,7 @@ instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
 
 /-- If `K` is perfect and is a separable closure of `k`,
 then it is also an algebraic closure of `k`. -/
+-- See note [lower instance priority]
 instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField_top
     [Algebra k K] [IsSepClosure k K] [PerfectField K] : IsAlgClosure k K :=
   haveI : IsSepClosed K := IsSepClosure.sep_closed k
@@ -207,6 +209,7 @@ instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField_top
 
 /-- If `k` is perfect, `K` is a separable closure of `k`,
 then it is also an algebraic closure of `k`. -/
+-- See note [lower instance priority]
 instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField
     [Algebra k K] [IsSepClosure k K] [PerfectField k] : IsAlgClosure k K :=
   have halg : Algebra.IsAlgebraic k K := IsSepClosure.separable.isAlgebraic
@@ -214,6 +217,7 @@ instance (priority := 100) IsSepClosure.isAlgClosure_of_perfectField
 
 /-- If `k` is perfect, `K` is an algebraic closure of `k`,
 then it is also a separable closure of `k`. -/
+-- See note [lower instance priority]
 instance (priority := 100) IsSepClosure.of_isAlgClosure_of_perfectField
     [Algebra k K] [IsAlgClosure k K] [PerfectField k] : IsSepClosure k K :=
   ⟨haveI := IsAlgClosure.alg_closed (R := k) (K := K); inferInstance,
@@ -230,6 +234,7 @@ namespace IsSepClosure
 instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
   IsSepClosure.separable
 
+-- See note [lower instance priority]
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
   to_normal := ⟨fun x ↦ (IsSeparable.isIntegral k x).isAlgebraic,

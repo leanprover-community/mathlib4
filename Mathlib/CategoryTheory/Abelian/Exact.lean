@@ -329,6 +329,7 @@ variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
 
 variable (F : C ⥤ D) [PreservesZeroMorphisms F]
 
+-- See note [lower instance priority]
 instance (priority := 100) reflectsExactSequencesOfPreservesZeroMorphismsOfFaithful [Faithful F] :
     ReflectsExactSequences F where
   reflects {X Y Z} f g hfg := by

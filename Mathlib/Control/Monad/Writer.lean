@@ -129,9 +129,8 @@ class MonadWriterAdapter (ω : outParam (Type u)) (m : Type u → Type v) where
 
 export MonadWriterAdapter (adaptWriter)
 
-/-- Transitivity.
-
-see Note [lower instance priority] -/
+/-- Transitivity. -/
+-- See note [lower instance priority]
 instance (priority := 100) monadWriterAdapterTrans {n : Type u → Type v}
     [MonadWriterAdapter ω m] [MonadFunctor m n] : MonadWriterAdapter ω n where
   adaptWriter f := monadMap (fun {α} ↦ (adaptWriter f : m α → m α))

@@ -278,10 +278,12 @@ theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
 
 attribute [local instance] hasFiniteBiproducts
 
+-- See note [lower instance priority]
 instance (priority := 100) hasBinaryBiproducts : HasBinaryBiproducts C :=
   Limits.hasBinaryBiproducts_of_finite_biproducts _
 #align category_theory.abelian.has_binary_biproducts CategoryTheory.Abelian.hasBinaryBiproducts
 
+-- See note [lower instance priority]
 instance (priority := 100) hasZeroObject : HasZeroObject C :=
   hasZeroObject_of_hasInitial_object
 #align category_theory.abelian.has_zero_object CategoryTheory.Abelian.hasZeroObject
@@ -377,6 +379,7 @@ end Factor
 section HasStrongEpiMonoFactorisations
 
 /-- An abelian category has strong epi-mono factorisations. -/
+-- See note [lower instance priority]
 instance (priority := 100) : HasStrongEpiMonoFactorisations C :=
   HasStrongEpiMonoFactorisations.mk fun f => imageStrongEpiMonoFactorisation f
 
@@ -504,11 +507,13 @@ end CokernelOfKernel
 
 section
 
+-- See note [lower instance priority]
 instance (priority := 100) hasEqualizers : HasEqualizers C :=
   Preadditive.hasEqualizers_of_hasKernels
 #align category_theory.abelian.has_equalizers CategoryTheory.Abelian.hasEqualizers
 
 /-- Any abelian category has pullbacks -/
+-- See note [lower instance priority]
 instance (priority := 100) hasPullbacks : HasPullbacks C :=
   hasPullbacks_of_hasBinaryProducts_of_hasEqualizers C
 #align category_theory.abelian.has_pullbacks CategoryTheory.Abelian.hasPullbacks
@@ -517,19 +522,23 @@ end
 
 section
 
+-- See note [lower instance priority]
 instance (priority := 100) hasCoequalizers : HasCoequalizers C :=
   Preadditive.hasCoequalizers_of_hasCokernels
 #align category_theory.abelian.has_coequalizers CategoryTheory.Abelian.hasCoequalizers
 
 /-- Any abelian category has pushouts -/
+-- See note [lower instance priority]
 instance (priority := 100) hasPushouts : HasPushouts C :=
   hasPushouts_of_hasBinaryCoproducts_of_hasCoequalizers C
 #align category_theory.abelian.has_pushouts CategoryTheory.Abelian.hasPushouts
 
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteLimits : HasFiniteLimits C :=
   Limits.hasFiniteLimits_of_hasEqualizers_and_finite_products
 #align category_theory.abelian.has_finite_limits CategoryTheory.Abelian.hasFiniteLimits
 
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteColimits : HasFiniteColimits C :=
   Limits.hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts
 #align category_theory.abelian.has_finite_colimits CategoryTheory.Abelian.hasFiniteColimits

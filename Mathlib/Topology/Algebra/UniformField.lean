@@ -59,6 +59,7 @@ namespace UniformSpace
 
 namespace Completion
 
+-- See note [lower instance priority]
 instance (priority := 100) [SeparatedSpace K] : Nontrivial (hat K) :=
   ⟨⟨0, 1, fun h => zero_ne_one <| (uniformEmbedding_coe K).inj h⟩⟩
 
@@ -193,6 +194,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K :
       rw [← Filter.push_pull', ← map_zero i, ← hi.inducing.nhds_eq_comap, inf_F, Filter.map_bot] }
 #align subfield.completable_top_field Subfield.completableTopField
 
+-- See note [lower instance priority]
 instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
     [TopologicalDivisionRing L] [SeparatedSpace L] [CompleteSpace L] : CompletableTopField L :=
   { ‹SeparatedSpace L› with

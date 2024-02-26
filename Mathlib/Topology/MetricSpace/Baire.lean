@@ -48,6 +48,7 @@ class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
 /-- Baire theorems asserts that various topological spaces have the Baire property.
 Two versions of these theorems are given.
 The first states that complete `PseudoEMetricSpace`s are Baire. -/
+-- See note [lower instance priority]
 instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace [PseudoEMetricSpace X]
     [CompleteSpace X] : BaireSpace X := by
   refine' ⟨fun f ho hd => _⟩
@@ -143,6 +144,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace [Pseud
 #align baire_category_theorem_emetric_complete BaireSpace.of_pseudoEMetricSpace_completeSpace
 
 /-- The second theorem states that locally compact R₁ spaces are Baire. -/
+-- See note [lower instance priority]
 instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace
     [TopologicalSpace X] [R1Space X] [LocallyCompactSpace X] : BaireSpace X := by
   constructor

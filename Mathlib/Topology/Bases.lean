@@ -350,6 +350,7 @@ theorem denseRange_denseSeq [SeparableSpace α] [Nonempty α] : DenseRange (dens
 
 variable {α}
 
+-- See note [lower instance priority]
 instance (priority := 100) Countable.to_separableSpace [Countable α] : SeparableSpace α where
   exists_countable_dense := ⟨Set.univ, Set.countable_univ, dense_univ⟩
 #align topological_space.countable.to_separable_space TopologicalSpace.Countable.to_separableSpace

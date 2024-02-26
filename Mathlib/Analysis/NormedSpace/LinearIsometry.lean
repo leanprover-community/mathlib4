@@ -129,6 +129,7 @@ theorem diam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
   (SemilinearIsometryClass.isometry f).diam_range
 #align semilinear_isometry_class.diam_range SemilinearIsometryClass.diam_range
 
+-- See note [lower instance priority]
 instance (priority := 100) SemilinearIsometryClass.toContinuousSemilinearMapClass
     [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ where
   map_continuous := SemilinearIsometryClass.continuous
@@ -533,6 +534,7 @@ namespace SemilinearIsometryEquivClass
 variable (𝓕)
 
 -- `σ₂₁` becomes a metavariable, but it's OK since it's an outparam
+-- See note [lower instance priority]
 instance (priority := 100) SemilinearIsometryEquivClass.toSemilinearIsometryClass [EquivLike 𝓕 E E₂]
     [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] : SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
   { s with }

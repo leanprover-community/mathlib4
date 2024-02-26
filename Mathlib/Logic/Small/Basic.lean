@@ -42,6 +42,7 @@ theorem small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] 
   @small_of_injective _ _ _ f fun _ _ hxy => Subtype.ext (Subtype.mk.inj hxy)
 #align small_subset small_subset
 
+-- See note [lower instance priority]
 instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : Small.{w} α := by
   rcases isEmpty_or_nonempty α with ⟨⟩ <;> skip
   · apply small_map (Equiv.equivPEmpty α)

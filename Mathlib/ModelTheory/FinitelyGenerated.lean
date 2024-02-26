@@ -252,6 +252,7 @@ theorem FG.cg (h : FG L M) : CG L M :=
   cg_def.2 (fg_def.1 h).cg
 #align first_order.language.Structure.fg.cg FirstOrder.Language.Structure.FG.cg
 
+-- See note [lower instance priority]
 instance (priority := 100) cg_of_fg [h : FG L M] : CG L M :=
   h.cg
 #align first_order.language.Structure.cg_of_fg FirstOrder.Language.Structure.cg_of_fg

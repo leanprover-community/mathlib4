@@ -237,6 +237,7 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
 #align subtype.irreducible_space Subtype.irreducibleSpace
 
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
+-- See note [lower instance priority]
 instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
   isPreirreducible_univ u v := by
     haveI : Infinite (CofiniteTopology X) := ‹_›

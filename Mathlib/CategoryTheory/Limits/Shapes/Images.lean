@@ -284,6 +284,7 @@ theorem HasImage.of_arrow_iso {f g : Arrow C} [h : HasImage f.hom] (sq : f ⟶ g
   ⟨⟨h.exists_image.some.ofArrowIso sq⟩⟩
 #align category_theory.limits.has_image.of_arrow_iso CategoryTheory.Limits.HasImage.of_arrow_iso
 
+-- See note [lower instance priority]
 instance (priority := 100) mono_hasImage (f : X ⟶ Y) [Mono f] : HasImage f :=
   HasImage.mk ⟨_, IsImage.self f⟩
 #align category_theory.limits.mono_has_image CategoryTheory.Limits.mono_hasImage
@@ -914,6 +915,7 @@ theorem HasStrongEpiMonoFactorisations.mk
   ⟨fun f => Nonempty.intro <| d f⟩
 #align category_theory.limits.has_strong_epi_mono_factorisations.mk CategoryTheory.Limits.HasStrongEpiMonoFactorisations.mk
 
+-- See note [lower instance priority]
 instance (priority := 100) hasImages_of_hasStrongEpiMonoFactorisations
     [HasStrongEpiMonoFactorisations C] : HasImages C where
   has_image f :=
@@ -958,6 +960,7 @@ theorem strongEpi_factorThruImage_of_strongEpiMonoFactorisation {X Y : C} {f : X
 
 /-- If we constructed our images from strong epi-mono factorisations, then these images are
     strong epi images. -/
+-- See note [lower instance priority]
 instance (priority := 100) hasStrongEpiImages_of_hasStrongEpiMonoFactorisations
     [HasStrongEpiMonoFactorisations C] : HasStrongEpiImages C where
   strong_factorThruImage f :=
@@ -972,6 +975,7 @@ section HasStrongEpiImages
 variable [HasImages C]
 
 /-- A category with strong epi images has image maps. -/
+-- See note [lower instance priority]
 instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages C] : HasImageMaps C
     where
   has_image_map {f} {g} st :=
@@ -986,6 +990,7 @@ instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages 
 
 /-- If a category has images, equalizers and pullbacks, then images are automatically strong epi
     images. -/
+-- See note [lower instance priority]
 instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [HasPullbacks C]
     [HasEqualizers C] : HasStrongEpiImages C where
   strong_factorThruImage f :=

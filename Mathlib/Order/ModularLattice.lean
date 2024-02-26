@@ -384,6 +384,7 @@ theorem isModularLattice_iff_inf_sup_inf_assoc [Lattice α] :
 
 namespace DistribLattice
 
+-- See note [lower instance priority]
 instance (priority := 100) [DistribLattice α] : IsModularLattice α :=
   ⟨fun y z xz => by rw [inf_sup_right, inf_eq_left.2 xz]⟩
 

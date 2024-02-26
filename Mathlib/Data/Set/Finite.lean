@@ -451,7 +451,7 @@ is decidable for this particular `a` we can still get a `Fintype` instance by us
 This instance pre-dates `Set.fintypeInsert`, and it is less efficient.
 When `Set.decidableMemOfFintype` is made a local instance, then this instance would
 override `Set.fintypeInsert` if not for the fact that its priority has been
-adjusted. See Note [lower instance priority]. -/
+adjusted. -/
 instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a ∈ s] [Fintype s] :
     Fintype (insert a s : Set α) :=
   if h : a ∈ s then fintypeInsertOfMem s h else fintypeInsertOfNotMem s h

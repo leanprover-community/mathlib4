@@ -51,6 +51,7 @@ class MonoCoprod : Prop where
 
 variable {C}
 
+-- See note [lower instance priority]
 instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : MonoCoprod C :=
   ⟨fun A B c hc => by
     haveI : IsSplitMono c.inl :=

@@ -57,6 +57,7 @@ class RegularMono (f : X ⟶ Y) where
 attribute [reassoc] RegularMono.w
 
 /-- Every regular monomorphism is a monomorphism. -/
+-- See note [lower instance priority]
 instance (priority := 100) RegularMono.mono (f : X ⟶ Y) [RegularMono f] : Mono f :=
   mono_of_isLimit_fork RegularMono.isLimit
 #align category_theory.regular_mono.mono CategoryTheory.RegularMono.mono
@@ -74,6 +75,7 @@ instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
 #align category_theory.equalizer_regular CategoryTheory.equalizerRegular
 
 /-- Every split monomorphism is a regular monomorphism. -/
+-- See note [lower instance priority]
 instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
     RegularMono f where
   Z := Y
@@ -132,6 +134,7 @@ def regularOfIsPullbackFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
   regularOfIsPullbackSndOfRegular comm.symm (PullbackCone.flipIsLimit t)
 #align category_theory.regular_of_is_pullback_fst_of_regular CategoryTheory.regularOfIsPullbackFstOfRegular
 
+-- See note [lower instance priority]
 instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono f] : StrongMono f :=
   StrongMono.mk' (by
       intro A B z hz u v sq
@@ -167,6 +170,7 @@ def regularMonoOfMono [RegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMo
   RegularMonoCategory.regularMonoOfMono _
 #align category_theory.regular_mono_of_mono CategoryTheory.regularMonoOfMono
 
+-- See note [lower instance priority]
 instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCategory C] :
     RegularMonoCategory C where
   regularMonoOfMono f _ := by
@@ -174,6 +178,7 @@ instance (priority := 100) regularMonoCategoryOfSplitMonoCategory [SplitMonoCate
     infer_instance
 #align category_theory.regular_mono_category_of_split_mono_category CategoryTheory.regularMonoCategoryOfSplitMonoCategory
 
+-- See note [lower instance priority]
 instance (priority := 100) strongMonoCategory_of_regularMonoCategory [RegularMonoCategory C] :
     StrongMonoCategory C where
   strongMono_of_mono f _ := by
@@ -196,6 +201,7 @@ class RegularEpi (f : X ⟶ Y) where
 attribute [reassoc] RegularEpi.w
 
 /-- Every regular epimorphism is an epimorphism. -/
+-- See note [lower instance priority]
 instance (priority := 100) RegularEpi.epi (f : X ⟶ Y) [RegularEpi f] : Epi f :=
   epi_of_isColimit_cofork RegularEpi.isColimit
 #align category_theory.regular_epi.epi CategoryTheory.RegularEpi.epi
@@ -222,6 +228,7 @@ noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f 
   isColimit := hc
 
 /-- Every split epimorphism is a regular epimorphism. -/
+-- See note [lower instance priority]
 instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f
     where
   W := X
@@ -279,6 +286,7 @@ def regularOfIsPushoutFstOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h 
   regularOfIsPushoutSndOfRegular comm.symm (PushoutCocone.flipIsColimit t)
 #align category_theory.regular_of_is_pushout_fst_of_regular CategoryTheory.regularOfIsPushoutFstOfRegular
 
+-- See note [lower instance priority]
 instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] : StrongEpi f :=
   StrongEpi.mk'
     (by
@@ -317,6 +325,7 @@ def regularEpiOfEpi [RegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f 
   RegularEpiCategory.regularEpiOfEpi _
 #align category_theory.regular_epi_of_epi CategoryTheory.regularEpiOfEpi
 
+-- See note [lower instance priority]
 instance (priority := 100) regularEpiCategoryOfSplitEpiCategory [SplitEpiCategory C] :
     RegularEpiCategory C where
   regularEpiOfEpi f _ := by
@@ -324,6 +333,7 @@ instance (priority := 100) regularEpiCategoryOfSplitEpiCategory [SplitEpiCategor
     infer_instance
 #align category_theory.regular_epi_category_of_split_epi_category CategoryTheory.regularEpiCategoryOfSplitEpiCategory
 
+-- See note [lower instance priority]
 instance (priority := 100) strongEpiCategory_of_regularEpiCategory [RegularEpiCategory C] :
     StrongEpiCategory C where
   strongEpi_of_epi f _ := by

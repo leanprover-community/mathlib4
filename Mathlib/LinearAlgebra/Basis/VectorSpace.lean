@@ -113,6 +113,7 @@ noncomputable def ofVectorSpace : Basis (ofVectorSpaceIndex K V) K V :=
   Basis.extend (linearIndependent_empty K V)
 #align basis.of_vector_space Basis.ofVectorSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) _root_.Module.Free.of_divisionRing : Module.Free K V :=
   Module.Free.of_basis (ofVectorSpace K V)
 #align module.free.of_division_ring Module.Free.of_divisionRing

@@ -55,6 +55,7 @@ theorem isometry_smul {M : Type u} (X : Type w) [PseudoEMetricSpace X] [SMul M X
     [IsometricSMul M X] (c : M) : Isometry (c • · : X → X) :=
   IsometricSMul.isometry_smul c
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) IsometricSMul.to_continuousConstSMul [PseudoEMetricSpace X] [SMul M X]
     [IsometricSMul M X] : ContinuousConstSMul M X :=
@@ -62,6 +63,7 @@ instance (priority := 100) IsometricSMul.to_continuousConstSMul [PseudoEMetricSp
 #align has_isometric_smul.to_has_continuous_const_smul IsometricSMul.to_continuousConstSMul
 #align has_isometric_vadd.to_has_continuous_const_vadd IsometricVAdd.to_continuousConstVAdd
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) IsometricSMul.opposite_of_comm [PseudoEMetricSpace X] [SMul M X]
     [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] [IsometricSMul M X] : IsometricSMul Mᵐᵒᵖ X :=

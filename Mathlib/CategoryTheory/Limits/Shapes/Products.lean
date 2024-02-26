@@ -619,6 +619,7 @@ def limitConeOfUnique : LimitCone (Discrete.functor f)
         simpa using w }
 #align category_theory.limits.limit_cone_of_unique CategoryTheory.Limits.limitConeOfUnique
 
+-- See note [lower instance priority]
 instance (priority := 100) hasProduct_unique : HasProduct f :=
   HasLimit.mk (limitConeOfUnique f)
 #align category_theory.limits.has_product_unique CategoryTheory.Limits.hasProduct_unique
@@ -651,6 +652,7 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f)
         exact w }
 #align category_theory.limits.colimit_cocone_of_unique CategoryTheory.Limits.colimitCoconeOfUnique
 
+-- See note [lower instance priority]
 instance (priority := 100) hasCoproduct_unique : HasCoproduct f :=
   HasColimit.mk (colimitCoconeOfUnique f)
 #align category_theory.limits.has_coproduct_unique CategoryTheory.Limits.hasCoproduct_unique

@@ -170,6 +170,7 @@ class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, I
 -- See note [lower cancel priority]
 attribute [instance 75] CancelCommMonoidWithZero.toCommMonoidWithZero
 
+-- See note [lower instance priority]
 instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
     [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
 { IsLeftCancelMulZero.to_isCancelMulZero (M₀ := M₀) with }

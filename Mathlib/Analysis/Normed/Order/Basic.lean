@@ -68,6 +68,7 @@ class NormedLinearOrderedField (α : Type*) extends LinearOrderedField α, Norm 
   norm_mul' : ∀ x y : α, ‖x * y‖ = ‖x‖ * ‖y‖
 #align normed_linear_ordered_field NormedLinearOrderedField
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) NormedOrderedGroup.toNormedCommGroup [NormedOrderedGroup α] :
     NormedCommGroup α :=
@@ -75,6 +76,7 @@ instance (priority := 100) NormedOrderedGroup.toNormedCommGroup [NormedOrderedGr
 #align normed_ordered_group.to_normed_comm_group NormedOrderedGroup.toNormedCommGroup
 #align normed_ordered_add_group.to_normed_add_comm_group NormedOrderedAddGroup.toNormedAddCommGroup
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) NormedLinearOrderedGroup.toNormedOrderedGroup
     [NormedLinearOrderedGroup α] : NormedOrderedGroup α :=
@@ -82,6 +84,7 @@ instance (priority := 100) NormedLinearOrderedGroup.toNormedOrderedGroup
 #align normed_linear_ordered_group.to_normed_ordered_group NormedLinearOrderedGroup.toNormedOrderedGroup
 #align normed_linear_ordered_add_group.to_normed_ordered_add_group NormedLinearOrderedAddGroup.toNormedOrderedAddGroup
 
+-- See note [lower instance priority]
 instance (priority := 100) NormedLinearOrderedField.toNormedField (α : Type*)
     [NormedLinearOrderedField α] : NormedField α where
   dist_eq := NormedLinearOrderedField.dist_eq

@@ -494,6 +494,7 @@ theorem isConnected_Ico (h : a < b) : IsConnected (Ico a b) :=
   ⟨nonempty_Ico.2 h, isPreconnected_Ico⟩
 #align is_connected_Ico isConnected_Ico
 
+-- See note [lower instance priority]
 instance (priority := 100) ordered_connected_space : PreconnectedSpace α :=
   ⟨ordConnected_univ.isPreconnected⟩
 #align ordered_connected_space ordered_connected_space

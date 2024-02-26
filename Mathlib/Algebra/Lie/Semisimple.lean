@@ -81,6 +81,7 @@ theorem center_eq_bot_of_semisimple [h : IsSemisimple R L] : center R L = ⊥ :=
 #align lie_algebra.center_eq_bot_of_semisimple LieAlgebra.center_eq_bot_of_semisimple
 
 /-- A simple Lie algebra is semisimple. -/
+-- See note [lower instance priority]
 instance (priority := 100) isSemisimpleOfIsSimple [h : IsSimple R L] : IsSemisimple R L := by
   rw [isSemisimple_iff_no_abelian_ideals]
   intro I hI

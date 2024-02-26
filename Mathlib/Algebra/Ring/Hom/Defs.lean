@@ -396,6 +396,7 @@ def RingHomClass.toRingHom (f : F) : α →+* β :=
 instance : CoeTC F (α →+* β) :=
   ⟨RingHomClass.toRingHom⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
   { ‹RingHomClass F α β› with }
 #align ring_hom_class.to_non_unital_ring_hom_class RingHomClass.toNonUnitalRingHomClass

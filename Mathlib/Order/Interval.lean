@@ -127,6 +127,7 @@ instance : Preorder (NonemptyInterval α) :=
 instance : Coe (NonemptyInterval α) (Set α) :=
   ⟨fun s => Icc s.fst s.snd⟩
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) : Membership α (NonemptyInterval α) :=
   ⟨fun a s => a ∈ (s : Set α)⟩
 

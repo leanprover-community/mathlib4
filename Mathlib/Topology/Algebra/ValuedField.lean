@@ -78,6 +78,7 @@ open Valued
 
 /-- The topology coming from a valuation on a division ring makes it a topological division ring
     [BouAC, VI.5.1 middle of Proposition 1] -/
+-- See note [lower instance priority]
 instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
     TopologicalDivisionRing K :=
   { (by infer_instance : TopologicalRing K) with
@@ -97,6 +98,7 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
 #align valued.topological_division_ring Valued.topologicalDivisionRing
 
 /-- A valued division ring is separated. -/
+-- See note [lower instance priority]
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : SeparatedSpace K := by
   rw [separated_iff_t2]
   apply TopologicalAddGroup.t2Space_of_zero_sep
@@ -142,6 +144,7 @@ variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
 local notation "hat " => Completion
 
 /-- A valued field is completable. -/
+-- See note [lower instance priority]
 instance (priority := 100) completable : CompletableTopField K :=
   { ValuedRing.separated with
     nice := by

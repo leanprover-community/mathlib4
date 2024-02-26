@@ -123,10 +123,12 @@ theorem isBounded_convexHull {s : Set E} :
   simp only [Metric.isBounded_iff_ediam_ne_top, convexHull_ediam]
 #align bounded_convex_hull isBounded_convexHull
 
+-- See note [lower instance priority]
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
   TopologicalAddGroup.pathConnectedSpace
 #align normed_space.path_connected NormedSpace.instPathConnectedSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnectedSpace E :=
   locPathConnected_of_bases (fun x => Metric.nhds_basis_ball) fun x r r_pos =>
     (convex_ball x r).isPathConnected <| by simp [r_pos]

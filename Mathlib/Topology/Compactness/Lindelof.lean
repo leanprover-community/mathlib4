@@ -509,10 +509,12 @@ theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
   exact isLindelof_iUnion hl
 
 /-- A compact space `X` is Lindelöf. -/
+-- See note [lower instance priority]
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
   { isLindelof_univ := isCompact_univ.isLindelof}
 
 /-- A sigma-compact space `X` is Lindelöf. -/
+-- See note [lower instance priority]
 instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
   { isLindelof_univ := isSigmaCompact_univ.isLindelof}
 
@@ -553,6 +555,7 @@ theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
 /-- A compact space `X` is Lindelöf.  -/
+-- See note [lower instance priority]
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
   { isLindelof_univ := isCompact_univ.isLindelof}
 
@@ -645,6 +648,7 @@ protected theorem ClosedEmbedding.LindelofSpace [h : LindelofSpace Y] {f : X →
   ⟨by rw [hf.toInducing.isLindelof_iff, image_univ]; exact hf.closed_range.isLindelof⟩
 
 /-- Countable topological spaces are Lindelof. -/
+-- See note [lower instance priority]
 instance (priority := 100) Countable.LindelofSpace [Countable X] : LindelofSpace X where
   isLindelof_univ := countable_univ.isLindelof
 
@@ -691,6 +695,7 @@ lemma IsHereditarilyLindelof.isLindelof_subset (hs : IsHereditarilyLindelof s) (
 lemma IsHereditarilyLindelof.isLindelof (hs : IsHereditarilyLindelof s) :
     IsLindelof s := hs.isLindelof_subset Subset.rfl
 
+-- See note [lower instance priority]
 instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelofSpace X] :
     LindelofSpace X where
   isLindelof_univ := HereditarilyLindelofSpace.isHereditarilyLindelof_univ.isLindelof
@@ -700,6 +705,7 @@ theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
 
+-- See note [lower instance priority]
 instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     [SecondCountableTopology X] : HereditarilyLindelofSpace X where
   isHereditarilyLindelof_univ t _ _ := by

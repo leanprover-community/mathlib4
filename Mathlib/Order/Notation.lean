@@ -113,10 +113,12 @@ notation "⊤" => Top.top
 /-- The bot (`⊥`, `\bot`) element -/
 notation "⊥" => Bot.bot
 
+-- See note [lower instance priority]
 instance (priority := 100) top_nonempty (α : Type*) [Top α] : Nonempty α :=
   ⟨⊤⟩
 #align has_top_nonempty top_nonempty
 
+-- See note [lower instance priority]
 instance (priority := 100) bot_nonempty (α : Type*) [Bot α] : Nonempty α :=
   ⟨⊥⟩
 #align has_bot_nonempty bot_nonempty

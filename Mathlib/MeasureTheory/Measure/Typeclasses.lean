@@ -223,6 +223,7 @@ attribute [simp] IsProbabilityMeasure.measure_univ
 lemma isProbabilityMeasure_iff : IsProbabilityMeasure μ ↔ μ univ = 1 :=
   ⟨fun _ ↦ measure_univ, IsProbabilityMeasure.mk⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) IsProbabilityMeasure.toIsFiniteMeasure (μ : Measure α)
     [IsProbabilityMeasure μ] : IsFiniteMeasure μ :=
   ⟨by simp only [measure_univ, ENNReal.one_lt_top]⟩
@@ -232,6 +233,7 @@ theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ]
   mt measure_univ_eq_zero.2 <| by simp [measure_univ]
 #align measure_theory.is_probability_measure.ne_zero MeasureTheory.IsProbabilityMeasure.ne_zero
 
+-- See note [lower instance priority]
 instance (priority := 100) IsProbabilityMeasure.neZero (μ : Measure α) [IsProbabilityMeasure μ] :
     NeZero μ := ⟨IsProbabilityMeasure.ne_zero μ⟩
 
@@ -665,6 +667,7 @@ theorem sum_restrict_disjointed_spanningSets (μ : Measure α) [SigmaFinite μ] 
       (MeasurableSet.disjointed (measurable_spanningSets _)),
     iUnion_disjointed, iUnion_spanningSets, restrict_univ]
 
+-- See note [lower instance priority]
 instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
   have : ∀ n, Fact (μ (disjointed (spanningSets μ) n) < ∞) :=
     fun n ↦ ⟨(measure_mono (disjointed_subset _ _)).trans_lt (measure_spanningSets_lt_top μ n)⟩
@@ -1016,6 +1019,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
 end Measure
 
 /-- Every finite measure is σ-finite. -/
+-- See note [lower instance priority]
 instance (priority := 100) IsFiniteMeasure.toSigmaFinite {_m0 : MeasurableSpace α} (μ : Measure α)
     [IsFiniteMeasure μ] : SigmaFinite μ :=
   ⟨⟨⟨fun _ => univ, fun _ => trivial, fun _ => measure_lt_top μ _, iUnion_const _⟩⟩⟩
@@ -1215,11 +1219,13 @@ instance instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measu
     [IsFiniteMeasureOnCompacts μ] {s : Set α} : IsFiniteMeasureOnCompacts (μ.restrict s) :=
   ⟨fun _k hk ↦ (restrict_apply_le _ _).trans_lt hk.measure_lt_top⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
     [IsFiniteMeasureOnCompacts μ] : IsFiniteMeasure μ :=
   ⟨IsFiniteMeasureOnCompacts.lt_top_of_isCompact isCompact_univ⟩
 #align measure_theory.compact_space.is_finite_measure MeasureTheory.CompactSpace.isFiniteMeasure
 
+-- See note [lower instance priority]
 instance (priority := 100) SigmaFinite.of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [SigmaCompactSpace α] (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering α
@@ -1237,6 +1243,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
 #align measure_theory.sigma_finite_of_locally_finite MeasureTheory.sigmaFinite_of_locallyFinite
 
 /-- A measure which is finite on compact sets in a locally compact space is locally finite. -/
+-- See note [lower instance priority]
 instance (priority := 100) isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [WeaklyLocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
   ⟨fun x ↦

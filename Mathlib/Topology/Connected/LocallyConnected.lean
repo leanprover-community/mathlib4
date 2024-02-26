@@ -53,6 +53,7 @@ theorem locallyConnectedSpace_iff_open_connected_subsets :
 #align locally_connected_space_iff_open_connected_subsets locallyConnectedSpace_iff_open_connected_subsets
 
 /-- A space with discrete topology is a locally connected space. -/
+-- See note [lower instance priority]
 instance (priority := 100) DiscreteTopology.toLocallyConnectedSpace (α) [TopologicalSpace α]
     [DiscreteTopology α] : LocallyConnectedSpace α :=
   locallyConnectedSpace_iff_open_connected_subsets.2 fun x _U hU =>

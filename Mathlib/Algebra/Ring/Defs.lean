@@ -341,6 +341,7 @@ section MulZeroClass
 
 variable [MulZeroClass α] [HasDistribNeg α]
 
+-- See note [lower instance priority]
 instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α where
   __ := inferInstanceAs (Zero α); __ := inferInstanceAs (InvolutiveNeg α)
   neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero]
@@ -358,6 +359,7 @@ section NonUnitalNonAssocRing
 
 variable [NonUnitalNonAssocRing α]
 
+-- See note [lower instance priority]
 instance (priority := 100) NonUnitalNonAssocRing.toHasDistribNeg : HasDistribNeg α where
   neg := Neg.neg
   neg_neg := neg_neg
@@ -446,6 +448,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
 
+-- See note [lower instance priority]
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }
 #align comm_ring.to_comm_semiring CommRing.toCommSemiring

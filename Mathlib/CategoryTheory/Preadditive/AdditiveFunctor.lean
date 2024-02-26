@@ -67,6 +67,7 @@ theorem coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
   rfl
 #align category_theory.functor.coe_map_add_hom CategoryTheory.Functor.coe_mapAddHom
 
+-- See note [lower instance priority]
 instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMorphisms F where
   map_zero _ _ := F.mapAddHom.map_zero
 #align category_theory.functor.preserves_zero_morphisms_of_additive CategoryTheory.Functor.preservesZeroMorphisms_of_additive
@@ -160,6 +161,7 @@ open CategoryTheory.Limits
 
 open CategoryTheory.Preadditive
 
+-- See note [lower instance priority]
 instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
     PreservesFiniteBiproducts F where
   preserves :=

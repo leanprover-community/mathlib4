@@ -413,6 +413,7 @@ theorem isBounded_image (f : C₀(α, β)) (s : Set α) : IsBounded (f '' s) :=
   f.isBounded_range.subset <| image_subset_range _ _
 #align zero_at_infty_continuous_map.bounded_image ZeroAtInftyContinuousMap.isBounded_image
 
+-- See note [lower instance priority]
 instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapClass F α β :=
   { ‹ZeroAtInftyContinuousMapClass F α β› with
     map_bounded := fun f => ZeroAtInftyContinuousMap.bounded f }

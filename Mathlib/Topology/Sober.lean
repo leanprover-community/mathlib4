@@ -241,6 +241,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
 #align quasi_sober_of_open_cover quasiSober_of_open_cover
 
 /-- Any Hausdorff space is a quasi-sober space because any irreducible set is a singleton. -/
+-- See note [lower instance priority]
 instance (priority := 100) T2Space.quasiSober [T2Space α] : QuasiSober α where
   sober h _ := by
     obtain ⟨x, rfl⟩ := isIrreducible_iff_singleton.mp h

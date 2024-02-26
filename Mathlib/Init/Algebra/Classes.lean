@@ -76,6 +76,7 @@ class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
 abbrev IsCommutative (α : Sort u) (op : α → α → α) := Std.Commutative op
 #align is_commutative Std.Commutative
 
+-- See note [lower instance priority]
 instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → α → α)
     [Std.Commutative op] : IsSymmOp α α op where symm_op := Std.Commutative.comm
 #align is_symm_op_of_is_commutative isSymmOp_of_isCommutative
@@ -174,6 +175,7 @@ class IsSymm (α : Sort u) (r : α → α → Prop) : Prop where
 #align is_symm IsSymm
 
 /-- The opposite of a symmetric relation is symmetric. -/
+-- See note [lower instance priority]
 instance (priority := 100) isSymmOp_of_isSymm (α : Sort u) (r : α → α → Prop) [IsSymm α r] :
     IsSymmOp α Prop r where symm_op a b := propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
 #align is_symm_op_of_is_symm isSymmOp_of_isSymm
@@ -197,6 +199,7 @@ class IsTrans (α : Sort u) (r : α → α → Prop) : Prop where
 instance {α : Sort u} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
   ⟨IsTrans.trans _ _ _⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) {α : Sort u} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=
   ⟨fun _ _ _ => Trans.trans⟩
 
@@ -216,6 +219,7 @@ class IsTotalPreorder (α : Sort u) (r : α → α → Prop) extends IsTrans α 
 #align is_total_preorder IsTotalPreorder
 
 /-- Every total pre-order is a pre-order. -/
+-- See note [lower instance priority]
 instance (priority := 100) isTotalPreorder_isPreorder (α : Sort u) (r : α → α → Prop)
     [s : IsTotalPreorder α r] : IsPreorder α r where
   trans := s.trans

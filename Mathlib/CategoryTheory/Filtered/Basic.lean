@@ -94,6 +94,7 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
   [nonempty : Nonempty C]
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
+-- See note [lower instance priority]
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
     IsFilteredOrEmpty α
     where
@@ -103,10 +104,12 @@ instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [Se
     apply Subsingleton.elim⟩
 #align category_theory.is_filtered_or_empty_of_semilattice_sup CategoryTheory.isFilteredOrEmpty_of_semilatticeSup
 
+-- See note [lower instance priority]
 instance (priority := 100) isFiltered_of_semilatticeSup_nonempty (α : Type u) [SemilatticeSup α]
     [Nonempty α] : IsFiltered α where
 #align category_theory.is_filtered_of_semilattice_sup_nonempty CategoryTheory.isFiltered_of_semilatticeSup_nonempty
 
+-- See note [lower instance priority]
 instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preorder α]
     [IsDirected α (· ≤ ·)] : IsFilteredOrEmpty α where
   cocone_objs X Y :=
@@ -117,6 +120,7 @@ instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preor
     apply Subsingleton.elim⟩
 #align category_theory.is_filtered_or_empty_of_directed_le CategoryTheory.isFilteredOrEmpty_of_directed_le
 
+-- See note [lower instance priority]
 instance (priority := 100) isFiltered_of_directed_le_nonempty (α : Type u) [Preorder α]
     [IsDirected α (· ≤ ·)] [Nonempty α] : IsFiltered α where
 #align category_theory.is_filtered_of_directed_le_nonempty CategoryTheory.isFiltered_of_directed_le_nonempty
@@ -554,6 +558,7 @@ class IsCofiltered extends IsCofilteredOrEmpty C : Prop where
   [nonempty : Nonempty C]
 #align category_theory.is_cofiltered CategoryTheory.IsCofiltered
 
+-- See note [lower instance priority]
 instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [SemilatticeInf α] :
     IsCofilteredOrEmpty α where
   cone_objs X Y := ⟨X ⊓ Y, homOfLE inf_le_left, homOfLE inf_le_right, trivial⟩
@@ -562,10 +567,12 @@ instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [
     apply Subsingleton.elim⟩
 #align category_theory.is_cofiltered_or_empty_of_semilattice_inf CategoryTheory.isCofilteredOrEmpty_of_semilatticeInf
 
+-- See note [lower instance priority]
 instance (priority := 100) isCofiltered_of_semilatticeInf_nonempty (α : Type u) [SemilatticeInf α]
     [Nonempty α] : IsCofiltered α where
 #align category_theory.is_cofiltered_of_semilattice_inf_nonempty CategoryTheory.isCofiltered_of_semilatticeInf_nonempty
 
+-- See note [lower instance priority]
 instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Preorder α]
     [IsDirected α (· ≥ ·)] : IsCofilteredOrEmpty α where
   cone_objs X Y :=
@@ -576,6 +583,7 @@ instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Pre
     apply Subsingleton.elim⟩
 #align category_theory.is_cofiltered_or_empty_of_directed_ge CategoryTheory.isCofilteredOrEmpty_of_directed_ge
 
+-- See note [lower instance priority]
 instance (priority := 100) isCofiltered_of_directed_ge_nonempty (α : Type u) [Preorder α]
     [IsDirected α (· ≥ ·)] [Nonempty α] : IsCofiltered α where
 #align category_theory.is_cofiltered_of_directed_ge_nonempty CategoryTheory.isCofiltered_of_directed_ge_nonempty

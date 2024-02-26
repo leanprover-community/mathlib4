@@ -42,12 +42,14 @@ class HasFiniteLimits : Prop where
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasLimitsOfShape J 𝒥 C _
 #align category_theory.limits.has_finite_limits CategoryTheory.Limits.HasFiniteLimits
 
+-- See note [lower instance priority]
 instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [SmallCategory J]
     [FinCategory J] [HasFiniteLimits C] : HasLimitsOfShape J C := by
   apply @hasLimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
   apply HasFiniteLimits.out
 #align category_theory.limits.has_limits_of_shape_of_has_finite_limits CategoryTheory.Limits.hasLimitsOfShape_of_hasFiniteLimits
 
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteLimits_of_hasLimitsOfSize [HasLimitsOfSize.{v', u'} C] :
     HasFiniteLimits C where
   out := fun J hJ hJ' =>
@@ -58,6 +60,7 @@ instance (priority := 100) hasFiniteLimits_of_hasLimitsOfSize [HasLimitsOfSize.{
 #align category_theory.limits.has_finite_limits_of_has_limits_of_size CategoryTheory.Limits.hasFiniteLimits_of_hasLimitsOfSize
 
 /-- If `C` has all limits, it has finite limits. -/
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteLimits_of_hasLimits [HasLimits C] : HasFiniteLimits C :=
   inferInstance
 #align category_theory.limits.has_finite_limits_of_has_limits CategoryTheory.Limits.hasFiniteLimits_of_hasLimits
@@ -92,12 +95,14 @@ class HasFiniteColimits : Prop where
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
 #align category_theory.limits.has_finite_colimits CategoryTheory.Limits.HasFiniteColimits
 
+-- See note [lower instance priority]
 instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) [SmallCategory J]
     [FinCategory J] [HasFiniteColimits C] : HasColimitsOfShape J C := by
   refine @hasColimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
   apply HasFiniteColimits.out
 #align category_theory.limits.has_colimits_of_shape_of_has_finite_colimits CategoryTheory.Limits.hasColimitsOfShape_of_hasFiniteColimits
 
+-- See note [lower instance priority]
 instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOfSize.{v', u'} C] :
     HasFiniteColimits C where
   out := fun J hJ hJ' =>

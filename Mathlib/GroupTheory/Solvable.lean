@@ -111,6 +111,7 @@ class IsSolvable : Prop where
 #align is_solvable IsSolvable
 #align is_solvable_def isSolvable_def
 
+-- See note [lower instance priority]
 instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 #align comm_group.is_solvable CommGroup.isSolvable
@@ -126,6 +127,7 @@ theorem isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :
   ⟨⟨0, h⟩⟩
 #align is_solvable_of_top_eq_bot isSolvable_of_top_eq_bot
 
+-- See note [lower instance priority]
 instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolvable G :=
   isSolvable_of_top_eq_bot G (by simp [eq_iff_true_of_subsingleton])
 #align is_solvable_of_subsingleton isSolvable_of_subsingleton

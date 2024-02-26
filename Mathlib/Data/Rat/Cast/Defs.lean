@@ -249,6 +249,7 @@ namespace Rat
 
 variable {K : Type*} [DivisionRing K]
 
+-- See note [lower instance priority]
 instance (priority := 100) distribSMul : DistribSMul ℚ K where
   smul := (· • ·)
   smul_zero a := by rw [smul_def, mul_zero]

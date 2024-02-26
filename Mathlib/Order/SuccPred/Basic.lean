@@ -1503,6 +1503,7 @@ section IsWellOrder
 
 variable [LinearOrder α]
 
+-- See note [lower instance priority]
 instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (· < ·)]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
@@ -1520,6 +1521,7 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
     rw [iterate_add_apply, iterate_one, hk]⟩
 #align is_well_order.to_is_pred_archimedean IsWellOrder.toIsPredArchimedean
 
+-- See note [lower instance priority]
 instance (priority := 100) IsWellOrder.toIsSuccArchimedean [h : IsWellOrder α (· > ·)]
     [SuccOrder α] : IsSuccArchimedean α :=
   let h : IsPredArchimedean αᵒᵈ := by infer_instance

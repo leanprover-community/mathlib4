@@ -251,6 +251,7 @@ lemma LocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [DiscreteValuationRin
     finrank (ResidueField R) (CotangentSpace R) = 1 :=
   finrank_CotangentSpace_eq_one_iff.mpr ‹_›
 
+-- See note [lower instance priority]
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
     [LocalRing R] [IsDedekindDomain R] :
     IsPrincipalIdealRing R := ((tfae_of_isNoetherianRing_of_localRing_of_isDomain R).out 2 0).mp ‹_›

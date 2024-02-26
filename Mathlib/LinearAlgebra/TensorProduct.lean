@@ -236,6 +236,7 @@ end
 
 /-- Note that this provides the default `compatible_smul R R M N` instance through
 `IsScalarTower.left`. -/
+-- See note [lower instance priority]
 instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTower R' R M]
     [DistribMulAction R' N] [IsScalarTower R' R N] : CompatibleSMul R R' M N :=
   ⟨fun r m n => by

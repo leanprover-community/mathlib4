@@ -63,6 +63,7 @@ class IsCyclic (α : Type u) [Group α] : Prop where
   exists_generator : ∃ g : α, ∀ x, x ∈ zpowers g
 #align is_cyclic IsCyclic
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 @[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
   ⟨⟨1, fun x => by
@@ -541,6 +542,7 @@ section CommGroup
 
 variable [CommGroup α] [IsSimpleGroup α]
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 @[to_additive]
 instance (priority := 100) isCyclic : IsCyclic α := by
   cases' subsingleton_or_nontrivial α with hi hi <;> haveI := hi

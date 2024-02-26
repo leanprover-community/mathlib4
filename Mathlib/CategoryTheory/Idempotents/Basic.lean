@@ -118,6 +118,7 @@ theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
 #align category_theory.idempotents.is_idempotent_complete_iff_idempotents_have_kernels CategoryTheory.Idempotents.isIdempotentComplete_iff_idempotents_have_kernels
 
 /-- An abelian category is idempotent complete. -/
+-- See note [lower instance priority]
 instance (priority := 100) isIdempotentComplete_of_abelian (D : Type*) [Category D] [Abelian D] :
     IsIdempotentComplete D := by
   rw [isIdempotentComplete_iff_idempotents_have_kernels]

@@ -55,6 +55,7 @@ instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨unit⟩
 instance LiftObj_tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
   lift := LiftObj.lift X ⊗ LiftObj.lift Y
 
+-- See note [lower instance priority]
 instance (priority := 100) LiftObj_of (X : C) : LiftObj X := ⟨of X⟩
 
 /-- A typeclass carrying a choice of lift of a morphism from `C` to `FreeMonoidalCategory C`.

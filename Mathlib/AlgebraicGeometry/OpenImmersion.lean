@@ -402,6 +402,7 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 variable [H : IsOpenImmersion f]
 
+-- See note [lower instance priority]
 instance (priority := 100) of_isIso [IsIso g] : IsOpenImmersion g :=
   @LocallyRingedSpace.IsOpenImmersion.of_isIso _ _ _
     (show IsIso ((inducedFunctor _).map g) by infer_instance)

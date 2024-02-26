@@ -220,6 +220,7 @@ instance sigmaFinite_of_sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω) (f
   hf.SigmaFinite _
 #align measure_theory.sigma_finite_of_sigma_finite_filtration MeasureTheory.sigmaFinite_of_sigmaFiniteFiltration
 
+-- See note [lower instance priority]
 instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω)
     (f : Filtration ι m) [IsFiniteMeasure μ] : SigmaFiniteFiltration μ f :=
   ⟨fun n => by infer_instance⟩

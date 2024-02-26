@@ -59,6 +59,7 @@ theorem denseRange_smul [IsMinimal M α] (x : α) : DenseRange fun c : M ↦ c �
 #align dense_range_smul denseRange_smul
 #align dense_range_vadd denseRange_vadd
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) MulAction.isMinimal_of_pretransitive [IsPretransitive M α] :
     IsMinimal M α :=

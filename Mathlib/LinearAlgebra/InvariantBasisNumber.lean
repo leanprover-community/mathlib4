@@ -155,6 +155,7 @@ theorem card_le_of_surjective' [RankCondition R] {α β : Type*} [Fintype α] [F
 has an injective splitting `(Fin m → R) →ₗ[R] (Fin n → R)`
 from which the strong rank condition gives the necessary inequality for the rank condition.
 -/
+-- See note [lower instance priority]
 instance (priority := 100) rankCondition_of_strongRankCondition [StrongRankCondition R] :
     RankCondition R where
   le_of_fin_surjective f s :=
@@ -169,6 +170,7 @@ class InvariantBasisNumber : Prop where
   eq_of_fin_equiv : ∀ {n m : ℕ}, ((Fin n → R) ≃ₗ[R] Fin m → R) → n = m
 #align invariant_basis_number InvariantBasisNumber
 
+-- See note [lower instance priority]
 instance (priority := 100) invariantBasisNumber_of_rankCondition [RankCondition R] :
     InvariantBasisNumber R where
   eq_of_fin_equiv e := le_antisymm (le_of_fin_surjective R e.symm.toLinearMap e.symm.surjective)
@@ -223,6 +225,7 @@ An injective map `((Fin n ⊕ Fin (1 + m)) → R) →ₗ[R] (Fin n → R)` for s
 would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPUnitOfProdInjective`),
 which is not the case!
 -/
+-- See note [lower instance priority]
 instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R := by
   constructor
   intro m n f i
@@ -308,6 +311,7 @@ attribute [local instance] Ideal.Quotient.field
 In fact, any nontrivial commutative ring satisfies the strong rank condition, see
 `commRing_strongRankCondition`. We prove this instance separately to avoid dependency on
 `LinearAlgebra.Charpoly.Basic`. -/
+-- See note [lower instance priority]
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>

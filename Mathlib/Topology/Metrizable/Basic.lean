@@ -30,6 +30,7 @@ class PseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   exists_pseudo_metric : ∃ m : PseudoMetricSpace X, m.toUniformSpace.toTopologicalSpace = t
 #align topological_space.pseudo_metrizable_space TopologicalSpace.PseudoMetrizableSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) _root_.PseudoMetricSpace.toPseudoMetrizableSpace {X : Type*}
     [m : PseudoMetricSpace X] : PseudoMetrizableSpace X :=
   ⟨⟨m, rfl⟩⟩
@@ -57,6 +58,7 @@ theorem _root_.Inducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X �
 #align inducing.pseudo_metrizable_space Inducing.pseudoMetrizableSpace
 
 /-- Every pseudo-metrizable space is first countable. -/
+-- See note [lower instance priority]
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
     [h : PseudoMetrizableSpace X] : FirstCountableTopology X := by
   rcases h with ⟨_, hm⟩
@@ -84,11 +86,13 @@ class MetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   exists_metric : ∃ m : MetricSpace X, m.toUniformSpace.toTopologicalSpace = t
 #align topological_space.metrizable_space TopologicalSpace.MetrizableSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) _root_.MetricSpace.toMetrizableSpace {X : Type*} [m : MetricSpace X] :
     MetrizableSpace X :=
   ⟨⟨m, rfl⟩⟩
 #align metric_space.to_metrizable_space MetricSpace.toMetrizableSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) MetrizableSpace.toPseudoMetrizableSpace [h : MetrizableSpace X] :
     PseudoMetrizableSpace X :=
   let ⟨m, hm⟩ := h.1
@@ -101,6 +105,7 @@ noncomputable def metrizableSpaceMetric (X : Type*) [TopologicalSpace X] [h : Me
   h.exists_metric.choose.replaceTopology h.exists_metric.choose_spec.symm
 #align topological_space.metrizable_space_metric TopologicalSpace.metrizableSpaceMetric
 
+-- See note [lower instance priority]
 instance (priority := 100) t2Space_of_metrizableSpace [MetrizableSpace X] : T2Space X :=
   letI : MetricSpace X := metrizableSpaceMetric X
   inferInstance

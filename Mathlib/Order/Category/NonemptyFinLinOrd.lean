@@ -35,6 +35,7 @@ class NonemptyFiniteLinearOrder (α : Type*) extends Fintype α, LinearOrder α 
 
 attribute [instance] NonemptyFiniteLinearOrder.Nonempty
 
+-- See note [lower instance priority]
 instance (priority := 100) NonemptyFiniteLinearOrder.toBoundedOrder (α : Type*)
   [NonemptyFiniteLinearOrder α] : BoundedOrder α :=
   Fintype.toBoundedOrder α

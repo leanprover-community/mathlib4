@@ -212,12 +212,14 @@ theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
   ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
 #align is_alg_closure_iff isAlgClosure_iff
 
+-- See note [lower instance priority]
 instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] : Normal R K :=
   ⟨IsAlgClosure.algebraic, fun _ =>
     @IsAlgClosed.splits_codomain _ _ _ (IsAlgClosure.alg_closed R) _ _ _⟩
 #align is_alg_closure.normal IsAlgClosure.normal
 
+-- See note [lower instance priority]
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
   ⟨fun _ => (minpoly.irreducible (IsAlgClosure.algebraic _).isIntegral).separable⟩
@@ -278,11 +280,13 @@ noncomputable irreducible_def lift : S →ₐ[R] M := by
   exact (f.restrictScalars R).comp ((Algebra.ofId S (FractionRing S)).restrictScalars R)
 #align is_alg_closed.lift IsAlgClosed.lift
 
+-- See note [lower instance priority]
 noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [CharP k p]
     [IsAlgClosed k] : PerfectRing k p :=
   PerfectRing.ofSurjective k p fun _ => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
 #align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
 
+-- See note [lower instance priority]
 noncomputable instance (priority := 100) perfectField [IsAlgClosed k] : PerfectField k := by
   obtain _ | ⟨p, _, _⟩ := CharP.exists' k
   exacts [.ofCharZero, PerfectRing.toPerfectField k p]

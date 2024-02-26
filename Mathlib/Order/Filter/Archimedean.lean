@@ -132,11 +132,13 @@ theorem atBot_hasCountableBasis_of_archimedean [LinearOrderedRing R] [Archimedea
         fun m _ => ⟨m, trivial, Subset.rfl⟩ }
 #align at_bot_countable_basis_of_archimedean atBot_hasCountableBasis_of_archimedean
 
+-- See note [lower instance priority]
 instance (priority := 100) atTop_isCountablyGenerated_of_archimedean [StrictOrderedSemiring R]
     [Archimedean R] : (atTop : Filter R).IsCountablyGenerated :=
   atTop_hasCountableBasis_of_archimedean.isCountablyGenerated
 #align at_top_countably_generated_of_archimedean atTop_isCountablyGenerated_of_archimedean
 
+-- See note [lower instance priority]
 instance (priority := 100) atBot_isCountablyGenerated_of_archimedean [LinearOrderedRing R]
     [Archimedean R] : (atBot : Filter R).IsCountablyGenerated :=
   atBot_hasCountableBasis_of_archimedean.isCountablyGenerated

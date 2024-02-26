@@ -179,6 +179,7 @@ instance IsFiniteKernel.isFiniteMeasure [IsFiniteKernel κ] (a : α) : IsFiniteM
   ⟨(kernel.measure_le_bound κ a Set.univ).trans_lt (IsFiniteKernel.bound_lt_top κ)⟩
 #align probability_theory.is_finite_kernel.is_finite_measure ProbabilityTheory.IsFiniteKernel.isFiniteMeasure
 
+-- See note [lower instance priority]
 instance (priority := 100) IsMarkovKernel.isFiniteKernel [IsMarkovKernel κ] :
     IsFiniteKernel κ :=
   ⟨⟨1, ENNReal.one_lt_top, fun _ => prob_le_one⟩⟩
@@ -289,6 +290,7 @@ class _root_.ProbabilityTheory.IsSFiniteKernel (κ : kernel α β) : Prop where
   tsum_finite : ∃ κs : ℕ → kernel α β, (∀ n, IsFiniteKernel (κs n)) ∧ κ = kernel.sum κs
 #align probability_theory.is_s_finite_kernel ProbabilityTheory.IsSFiniteKernel
 
+-- See note [lower instance priority]
 instance (priority := 100) IsFiniteKernel.isSFiniteKernel [h : IsFiniteKernel κ] :
     IsSFiniteKernel κ :=
   ⟨⟨fun n => if n = 0 then κ else 0, fun n => by simp only; split_ifs; exact h; infer_instance, by

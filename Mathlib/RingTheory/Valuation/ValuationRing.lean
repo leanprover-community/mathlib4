@@ -246,6 +246,7 @@ section
 
 variable (A : Type u) [CommRing A] [IsDomain A] [ValuationRing A]
 
+-- See note [lower instance priority]
 instance (priority := 100) localRing : LocalRing A :=
   LocalRing.of_isUnit_or_isUnit_one_sub_self
     (by
@@ -347,6 +348,7 @@ theorem isInteger_or_isInteger [h : ValuationRing R] (x : K) :
 variable {R}
 
 -- This implies that valuation rings are integrally closed through typeclass search.
+-- See note [lower instance priority]
 instance (priority := 100) [ValuationRing R] : IsBezout R := by
   classical
   rw [IsBezout.iff_span_pair_isPrincipal]
@@ -356,6 +358,7 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   · erw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
   · erw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   classical
   refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
@@ -427,6 +430,7 @@ section
 variable (K : Type u) [Field K]
 
 /-- A field is a valuation ring. -/
+-- See note [lower instance priority]
 instance (priority := 100) of_field : ValuationRing K := by
   constructor
   intro a b
@@ -442,6 +446,7 @@ section
 variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
 
 /-- A DVR is a valuation ring. -/
+-- See note [lower instance priority]
 instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
   constructor
   intro a b

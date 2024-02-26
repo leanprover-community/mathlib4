@@ -523,6 +523,7 @@ theorem IsInitial.mono_from [InitialMonoClass C] {I} {X : C} (hI : IsInitial I) 
   apply InitialMonoClass.isInitial_mono_from
 #align category_theory.limits.is_initial.mono_from CategoryTheory.Limits.IsInitial.mono_from
 
+-- See note [lower instance priority]
 instance (priority := 100) initial.mono_from [HasInitial C] [InitialMonoClass C] (X : C)
     (f : ⊥_ C ⟶ X) : Mono f :=
   initialIsInitial.mono_from f

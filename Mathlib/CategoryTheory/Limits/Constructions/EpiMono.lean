@@ -37,6 +37,7 @@ theorem preserves_mono_of_preservesLimit {X Y : C} (f : X ⟶ Y) [PreservesLimit
   apply PullbackCone.mono_of_isLimitMkIdId _ this
 #align category_theory.preserves_mono_of_preserves_limit CategoryTheory.preserves_mono_of_preservesLimit
 
+-- See note [lower instance priority]
 instance (priority := 100) preservesMonomorphisms_of_preservesLimitsOfShape
     [PreservesLimitsOfShape WalkingCospan F] : F.PreservesMonomorphisms where
   preserves f _ := preserves_mono_of_preservesLimit F f
@@ -50,6 +51,7 @@ theorem reflects_mono_of_reflectsLimit {X Y : C} (f : X ⟶ Y) [ReflectsLimit (c
   apply PullbackCone.mono_of_isLimitMkIdId _ (isLimitOfIsLimitPullbackConeMap F _ this)
 #align category_theory.reflects_mono_of_reflects_limit CategoryTheory.reflects_mono_of_reflectsLimit
 
+-- See note [lower instance priority]
 instance (priority := 100) reflectsMonomorphisms_of_reflectsLimitsOfShape
     [ReflectsLimitsOfShape WalkingCospan F] : F.ReflectsMonomorphisms where
   reflects f _ := reflects_mono_of_reflectsLimit F f
@@ -63,6 +65,7 @@ theorem preserves_epi_of_preservesColimit {X Y : C} (f : X ⟶ Y) [PreservesColi
   apply PushoutCocone.epi_of_isColimitMkIdId _ this
 #align category_theory.preserves_epi_of_preserves_colimit CategoryTheory.preserves_epi_of_preservesColimit
 
+-- See note [lower instance priority]
 instance (priority := 100) preservesEpimorphisms_of_preservesColimitsOfShape
     [PreservesColimitsOfShape WalkingSpan F] : F.PreservesEpimorphisms where
   preserves f _ := preserves_epi_of_preservesColimit F f
@@ -78,6 +81,7 @@ theorem reflects_epi_of_reflectsColimit {X Y : C} (f : X ⟶ Y) [ReflectsColimit
       (isColimitOfIsColimitPushoutCoconeMap F _ this)
 #align category_theory.reflects_epi_of_reflects_colimit CategoryTheory.reflects_epi_of_reflectsColimit
 
+-- See note [lower instance priority]
 instance (priority := 100) reflectsEpimorphisms_of_reflectsColimitsOfShape
     [ReflectsColimitsOfShape WalkingSpan F] : F.ReflectsEpimorphisms where
   reflects f _ := reflects_epi_of_reflectsColimit F f

@@ -179,6 +179,7 @@ theorem isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
 #align galois_field.is_splitting_field_of_card_eq GaloisField.isSplittingField_of_card_eq
 
+-- See note [lower instance priority]
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
   cases nonempty_fintype K'

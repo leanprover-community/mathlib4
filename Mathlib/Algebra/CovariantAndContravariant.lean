@@ -162,6 +162,7 @@ theorem Group.covariant_iff_contravariant [Group N] :
 #align group.covariant_iff_contravariant Group.covariant_iff_contravariant
 #align add_group.covariant_iff_contravariant AddGroup.covariant_iff_contravariant
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) Group.covconv [Group N] [CovariantClass N N (· * ·) r] :
     ContravariantClass N N (· * ·) r :=
@@ -178,7 +179,7 @@ theorem Group.covariant_swap_iff_contravariant_swap [Group N] :
 #align group.covariant_swap_iff_contravariant_swap Group.covariant_swap_iff_contravariant_swap
 #align add_group.covariant_swap_iff_contravariant_swap AddGroup.covariant_swap_iff_contravariant_swap
 
-
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) Group.covconv_swap [Group N] [CovariantClass N N (swap (· * ·)) r] :
     ContravariantClass N N (swap (· * ·)) r :=

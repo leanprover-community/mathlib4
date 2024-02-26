@@ -76,11 +76,13 @@ class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (SL(2, ℤ))) (k : ou
   zero_at_infty : ∀ (f : F) (A : SL(2, ℤ)), IsZeroAtImInfty (f ∣[k] A)
 #align cusp_form_class CuspFormClass
 
+-- TODO: add library note for funlike priority 100?
 instance (priority := 100) ModularForm.funLike :
     FunLike (ModularForm Γ k) ℍ ℂ where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
+-- TODO: add library note for funlike priority 100?
 instance (priority := 100) ModularFormClass.modularForm :
     ModularFormClass (ModularForm Γ k) Γ k where
   slash_action_eq f := f.slash_action_eq'
@@ -88,10 +90,12 @@ instance (priority := 100) ModularFormClass.modularForm :
   bdd_at_infty := ModularForm.bdd_at_infty'
 #align modular_form_class.modular_form ModularFormClass.modularForm
 
+-- TODO: add library note for funlike priority 100?
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
+-- TODO: add library note for funlike priority 100?
 instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k) Γ k where
   slash_action_eq f := f.slash_action_eq'
   holo := CuspForm.holo'

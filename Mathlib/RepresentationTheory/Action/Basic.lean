@@ -162,6 +162,7 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
 set_option linter.uppercaseLean3 false in
 #align Action.mk_iso Action.mkIso
 
+-- See note [lower instance priority]
 instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [IsIso f.hom] :
     IsIso f := IsIso.of_iso (mkIso (asIso f.hom) f.comm)
 set_option linter.uppercaseLean3 false in

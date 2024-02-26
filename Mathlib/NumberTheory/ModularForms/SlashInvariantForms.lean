@@ -50,11 +50,13 @@ class SlashInvariantFormClass [FunLike F ℍ ℂ] : Prop where
   slash_action_eq : ∀ (f : F) (γ : Γ), (f : ℍ → ℂ) ∣[k] γ = f
 #align slash_invariant_form_class SlashInvariantFormClass
 
+-- TODO: add library note for funlike priority 100?
 instance (priority := 100) SlashInvariantForm.funLike :
     FunLike (SlashInvariantForm Γ k) ℍ ℂ where
   coe := SlashInvariantForm.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
+-- TODO: add library note for funlike priority 100?
 instance (priority := 100) SlashInvariantFormClass.slashInvariantForm :
     SlashInvariantFormClass (SlashInvariantForm Γ k) Γ k where
   slash_action_eq := SlashInvariantForm.slash_action_eq'

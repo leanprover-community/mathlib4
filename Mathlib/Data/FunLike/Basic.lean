@@ -174,6 +174,7 @@ namespace DFunLike
 
 variable {F α β} [i : DFunLike F α β]
 
+-- See note [lower instance priority]
 instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
   coe := @DFunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
 

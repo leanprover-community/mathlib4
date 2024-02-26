@@ -30,6 +30,7 @@ namespace Completion
 
 variable (𝕜 E : Type*) [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
+-- See note [lower instance priority]
 instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
     UniformContinuousConstSMul 𝕜 E :=
   ⟨fun c => (lipschitzWith_smul c).uniformContinuous⟩

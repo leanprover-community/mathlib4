@@ -90,6 +90,7 @@ instance oreSetBot : OreSet (⊥ : Submonoid R)
 #align ore_localization.ore_set_bot OreLocalization.oreSetBot
 
 /-- Every submonoid of a commutative monoid is an Ore set. -/
+-- See note [lower instance priority]
 instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : OreSet S
     where
   ore_left_cancel m n s h := ⟨s, by rw [mul_comm n s, mul_comm m s, h]⟩

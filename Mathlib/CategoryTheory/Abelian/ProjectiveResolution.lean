@@ -344,8 +344,10 @@ irreducible_def of : ProjectiveResolution Z where
       · apply ChainComplex.exactAt_succ_single_obj⟩
 #align category_theory.ProjectiveResolution.of CategoryTheory.ProjectiveResolution.of
 
+-- See note [lower instance priority]
 instance (priority := 100) (Z : C) : HasProjectiveResolution Z where out := ⟨of Z⟩
 
+-- See note [lower instance priority]
 instance (priority := 100) : HasProjectiveResolutions C where out _ := inferInstance
 
 end ProjectiveResolution

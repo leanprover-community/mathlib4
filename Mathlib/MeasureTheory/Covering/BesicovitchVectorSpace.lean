@@ -546,6 +546,7 @@ theorem isEmpty_satelliteConfig_multiplicity :
       lt_irrefl _ ((Nat.lt_succ_self _).trans_le (le_multiplicity_of_δ_of_fin c' c'_le_two hc'))⟩
 #align besicovitch.is_empty_satellite_config_multiplicity Besicovitch.isEmpty_satelliteConfig_multiplicity
 
+-- See note [lower instance priority]
 instance (priority := 100) instHasBesicovitchCovering : HasBesicovitchCovering E :=
   ⟨⟨multiplicity E, goodτ E, one_lt_goodτ E, isEmpty_satelliteConfig_multiplicity E⟩⟩
 #align besicovitch.has_besicovitch_covering Besicovitch.instHasBesicovitchCovering

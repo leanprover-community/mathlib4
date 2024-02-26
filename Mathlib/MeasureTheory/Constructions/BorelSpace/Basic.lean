@@ -252,17 +252,20 @@ elab_rules : tactic
 
 end Mathlib.Tactic.Borelize
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.opensMeasurableSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [h : OpensMeasurableSpace α] : OpensMeasurableSpace αᵒᵈ where
   borel_le := h.borel_le
 #align order_dual.opens_measurable_space OrderDual.opensMeasurableSpace
 
+-- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.borelSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [h : BorelSpace α] : BorelSpace αᵒᵈ where
   measurable_eq := h.measurable_eq
 #align order_dual.borel_space OrderDual.borelSpace
 
 /-- In a `BorelSpace` all open sets are measurable. -/
+-- See note [lower instance priority]
 instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] : OpensMeasurableSpace α :=
   ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
@@ -292,6 +295,7 @@ lemma opensMeasurableSpace_iff_forall_measurableSet
   refine ⟨fun h s hs ↦ ?_, fun h ↦ ⟨generateFrom_le h⟩⟩
   exact OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ hs
 
+-- See note [lower instance priority]
 instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SecondCountableTopology α] : CountablyGenerated α := by
   obtain ⟨b, bct, -, hb⟩ := exists_countable_basis α
@@ -450,11 +454,13 @@ class SecondCountableTopologyEither (α β : Type*) [TopologicalSpace α] [Topol
   out : SecondCountableTopology α ∨ SecondCountableTopology β
 #align second_countable_topology_either SecondCountableTopologyEither
 
+-- See note [lower instance priority]
 instance (priority := 100) secondCountableTopologyEither_of_left (α β : Type*) [TopologicalSpace α]
     [TopologicalSpace β] [SecondCountableTopology α] : SecondCountableTopologyEither α β where
   out := Or.inl (by infer_instance)
 #align second_countable_topology_either_of_left secondCountableTopologyEither_of_left
 
+-- See note [lower instance priority]
 instance (priority := 100) secondCountableTopologyEither_of_right (α β : Type*)
     [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology β] :
     SecondCountableTopologyEither α β where
@@ -969,6 +975,7 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
     exact u_open.measurableSet.inter hs.compl
 #align continuous_on.measurable_piecewise ContinuousOn.measurable_piecewise
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [ContinuousMul γ] :
     MeasurableMul γ where
@@ -977,12 +984,14 @@ instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [ContinuousMul �
 #align has_continuous_mul.has_measurable_mul ContinuousMul.measurableMul
 #align has_continuous_add.has_measurable_add ContinuousAdd.measurableAdd
 
+-- See note [lower instance priority]
 instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub γ] :
     MeasurableSub γ where
   measurable_const_sub _ := (continuous_const.sub continuous_id).measurable
   measurable_sub_const _ := (continuous_id.sub continuous_const).measurable
 #align has_continuous_sub.has_measurable_sub ContinuousSub.measurableSub
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) TopologicalGroup.measurableInv [Group γ] [TopologicalGroup γ] :
     MeasurableInv γ :=
@@ -990,6 +999,7 @@ instance (priority := 100) TopologicalGroup.measurableInv [Group γ] [Topologica
 #align topological_group.has_measurable_inv TopologicalGroup.measurableInv
 #align topological_add_group.has_measurable_neg TopologicalAddGroup.measurableNeg
 
+-- See note [lower instance priority]
 instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpace M]
     [TopologicalSpace α] [MeasurableSpace M] [MeasurableSpace α] [OpensMeasurableSpace M]
     [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α :=
@@ -999,6 +1009,7 @@ instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpac
 
 section Lattice
 
+-- See note [lower instance priority]
 instance (priority := 100) ContinuousSup.measurableSup [Sup γ] [ContinuousSup γ] :
     MeasurableSup γ where
   measurable_const_sup _ := (continuous_const.sup continuous_id).measurable
@@ -1010,12 +1021,15 @@ instance (priority := 100) ContinuousSup.measurableSup₂ [SecondCountableTopolo
   ⟨continuous_sup.measurable⟩
 #align has_continuous_sup.has_measurable_sup₂ ContinuousSup.measurableSup₂
 
+-- See note [lower instance priority]
+-- See note [lower instance priority]
 instance (priority := 100) ContinuousInf.measurableInf [Inf γ] [ContinuousInf γ] :
     MeasurableInf γ where
   measurable_const_inf _ := (continuous_const.inf continuous_id).measurable
   measurable_inf_const _ := (continuous_id.inf continuous_const).measurable
 #align has_continuous_inf.has_measurable_inf ContinuousInf.measurableInf
 
+-- See note [lower instance priority]
 instance (priority := 100) ContinuousInf.measurableInf₂ [SecondCountableTopology γ] [Inf γ]
     [ContinuousInf γ] : MeasurableInf₂ γ :=
   ⟨continuous_inf.measurable⟩
@@ -1077,11 +1091,13 @@ theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
   h.measurable.comp_aemeasurable (hf.prod_mk hg)
 #align continuous.ae_measurable2 Continuous.aemeasurable2
 
+-- See note [lower instance priority]
 instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
     [HasContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
 #align has_continuous_inv₀.has_measurable_inv HasContinuousInv₀.measurableInv
 
+-- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]
     [ContinuousMul γ] : MeasurableMul₂ γ :=
@@ -1089,11 +1105,13 @@ instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopolo
 #align has_continuous_mul.has_measurable_mul₂ ContinuousMul.measurableMul₂
 #align has_continuous_add.has_measurable_mul₂ ContinuousAdd.measurableMul₂
 
+-- See note [lower instance priority]
 instance (priority := 100) ContinuousSub.measurableSub₂ [SecondCountableTopology γ] [Sub γ]
     [ContinuousSub γ] : MeasurableSub₂ γ :=
   ⟨continuous_sub.measurable⟩
 #align has_continuous_sub.has_measurable_sub₂ ContinuousSub.measurableSub₂
 
+-- See note [lower instance priority]
 instance (priority := 100) ContinuousSMul.measurableSMul₂ {M α} [TopologicalSpace M]
     [MeasurableSpace M] [OpensMeasurableSpace M] [TopologicalSpace α]
     [SecondCountableTopologyEither M α] [MeasurableSpace α] [BorelSpace α] [SMul M α]

@@ -46,6 +46,7 @@ class PreservesFilteredColimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) where
 
 attribute [instance 100] PreservesFilteredColimits.preserves_filtered_colimits
 
+-- See note [lower instance priority]
 instance (priority := 100) PreservesColimits.preservesFilteredColimits (F : C ⥤ D)
     [PreservesColimits F] : PreservesFilteredColimits F where
   preserves_filtered_colimits _ := inferInstance
@@ -66,6 +67,7 @@ class PreservesCofilteredLimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) where
 
 attribute [instance 100] PreservesCofilteredLimits.preserves_cofiltered_limits
 
+-- See note [lower instance priority]
 instance (priority := 100) PreservesLimits.preservesCofilteredLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesCofilteredLimits F where
   preserves_cofiltered_limits _ := inferInstance

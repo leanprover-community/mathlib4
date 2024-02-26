@@ -110,10 +110,12 @@ theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category
   ⟨fun _ => locallySmall_of_faithful e.inverse, fun _ => locallySmall_of_faithful e.functor⟩
 #align category_theory.locally_small_congr CategoryTheory.locallySmall_congr
 
+-- See note [lower instance priority]
 instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] : LocallySmall.{v} C
     where
 #align category_theory.locally_small_self CategoryTheory.locallySmall_self
 
+-- See note [lower instance priority]
 instance (priority := 100) locallySmall_of_univLE (C : Type u) [Category.{v} C] [UnivLE.{v, w}] :
     LocallySmall.{w} C where
 
@@ -121,6 +123,7 @@ theorem locallySmall_max {C : Type u} [Category.{v} C] : LocallySmall.{max v w} 
     where
   hom_small _ _ := small_max.{w} _
 
+-- See note [lower instance priority]
 instance (priority := 100) locallySmall_of_essentiallySmall (C : Type u) [Category.{v} C]
     [EssentiallySmall.{w} C] : LocallySmall.{w} C :=
   (locallySmall_congr (equivSmallModel C)).mpr (CategoryTheory.locallySmall_self _)
@@ -256,6 +259,7 @@ end FullSubcategory
 
 /-- Any thin category is locally small.
 -/
+-- See note [lower instance priority]
 instance (priority := 100) locallySmall_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThin C] :
     LocallySmall.{w} C where
 #align category_theory.locally_small_of_thin CategoryTheory.locallySmall_of_thin

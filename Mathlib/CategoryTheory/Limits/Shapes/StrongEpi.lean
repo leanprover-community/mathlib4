@@ -83,10 +83,12 @@ attribute [instance 100] StrongEpi.llp
 
 attribute [instance 100] StrongMono.rlp
 
+-- See note [lower instance priority]
 instance (priority := 100) epi_of_strongEpi (f : P ⟶ Q) [StrongEpi f] : Epi f :=
   StrongEpi.epi
 #align category_theory.epi_of_strong_epi CategoryTheory.epi_of_strongEpi
 
+-- See note [lower instance priority]
 instance (priority := 100) mono_of_strongMono (f : P ⟶ Q) [StrongMono f] : Mono f :=
   StrongMono.mono
 #align category_theory.mono_of_strong_mono CategoryTheory.mono_of_strongMono
@@ -137,12 +139,14 @@ theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
 #align category_theory.strong_mono_of_strong_mono CategoryTheory.strongMono_of_strongMono
 
 /-- An isomorphism is in particular a strong epimorphism. -/
+-- See note [lower instance priority]
 instance (priority := 100) strongEpi_of_isIso [IsIso f] : StrongEpi f where
   epi := by infer_instance
   llp {X Y} z := HasLiftingProperty.of_left_iso _ _
 #align category_theory.strong_epi_of_is_iso CategoryTheory.strongEpi_of_isIso
 
 /-- An isomorphism is in particular a strong monomorphism. -/
+-- See note [lower instance priority]
 instance (priority := 100) strongMono_of_isIso [IsIso f] : StrongMono f where
   mono := by infer_instance
   rlp {X Y} z := HasLiftingProperty.of_right_iso _ _
@@ -226,6 +230,7 @@ section
 
 attribute [local instance] strongEpi_of_epi
 
+-- See note [lower instance priority]
 instance (priority := 100) balanced_of_strongEpiCategory [StrongEpiCategory C] : Balanced C where
   isIso_of_mono_of_epi _ _ _ := isIso_of_mono_of_strongEpi _
 #align category_theory.balanced_of_strong_epi_category CategoryTheory.balanced_of_strongEpiCategory
@@ -236,6 +241,7 @@ section
 
 attribute [local instance] strongMono_of_mono
 
+-- See note [lower instance priority]
 instance (priority := 100) balanced_of_strongMonoCategory [StrongMonoCategory C] : Balanced C where
   isIso_of_mono_of_epi _ _ _ := isIso_of_epi_of_strongMono _
 #align category_theory.balanced_of_strong_mono_category CategoryTheory.balanced_of_strongMonoCategory

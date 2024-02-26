@@ -464,6 +464,7 @@ end normalClosure
 
 section IsAlgClosure
 
+-- See note [lower instance priority]
 instance (priority := 100) IsAlgClosure.isGalois (k K : Type*) [Field k] [Field K] [Algebra k K]
     [IsAlgClosure k K] [CharZero k] : IsGalois k K where
 #align is_alg_closure.is_galois IsAlgClosure.isGalois

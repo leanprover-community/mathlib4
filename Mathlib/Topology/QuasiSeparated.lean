@@ -109,10 +109,12 @@ theorem IsQuasiSeparated.of_subset {s t : Set α} (ht : IsQuasiSeparated t) (h :
   exact ht U V (hU.trans h) hU' hU'' (hV.trans h) hV' hV''
 #align is_quasi_separated.of_subset IsQuasiSeparated.of_subset
 
+-- See note [lower instance priority]
 instance (priority := 100) T2Space.to_quasiSeparatedSpace [T2Space α] : QuasiSeparatedSpace α :=
   ⟨fun _ _ _ hU' _ hV' => hU'.inter hV'⟩
 #align t2_space.to_quasi_separated_space T2Space.to_quasiSeparatedSpace
 
+-- See note [lower instance priority]
 instance (priority := 100) NoetherianSpace.to_quasiSeparatedSpace [NoetherianSpace α] :
     QuasiSeparatedSpace α :=
   ⟨fun _ _ _ _ _ _ => NoetherianSpace.isCompact _⟩
