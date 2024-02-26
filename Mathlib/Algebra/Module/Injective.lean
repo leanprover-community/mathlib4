@@ -7,9 +7,7 @@ import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Data.TypeMax -- Porting note: added for universe issues
-import Mathlib.Algebra.Module.ULift
-import Mathlib.Data.Set.Basic
+import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 
@@ -460,7 +458,7 @@ linear map from an ideal can be extended, then the module is injective.-/
 protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
   out := fun X Y _ _ _ _ i hi f ↦ by
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
-    exact ⟨h, FunLike.congr_fun H⟩
+    exact ⟨h, DFunLike.congr_fun H⟩
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
