@@ -10,7 +10,10 @@ import Std.Lean.Name
 import Std.Data.Rat.Basic
 import Std.Data.List.Basic
 import Std.Lean.Name
+<<<<<<< HEAD
 import Std.Logic
+=======
+>>>>>>> bump/v4.7.0
 
 /-!
 # Additional operations on Expr and related types

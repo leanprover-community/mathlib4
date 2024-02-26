@@ -9,7 +9,12 @@ import Std.Lean.Parser
 import Std.Tactic.SolveByElim
 import Std.Tactic.TryThis
 import Std.Data.MLList.Heartbeats
+<<<<<<< HEAD
 import Std.Control.Nondet.Basic
+=======
+import Std.Tactic.TryThis
+import Std.Lean.Parser
+>>>>>>> bump/v4.7.0
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Expr.Basic
