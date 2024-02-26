@@ -8,7 +8,18 @@ import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 /-!
+# TODO
 
+## Main definitions
+
+* `ProbabilityTheory.IsRatKernelCDF`:
+* `ProbabilityTheory.IsKernelCDF`:
+* `ProbabilityTheory.IsKernelCDF.toKernel`:
+
+## Main statements
+
+* `ProbabilityTheory.isKernelCDF_stieltjesOfMeasurableRat`:
+* `ProbabilityTheory.kernel.eq_compProd_toKernel`:
 
 -/
 
