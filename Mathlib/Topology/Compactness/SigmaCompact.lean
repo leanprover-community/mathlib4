@@ -381,7 +381,7 @@ theorem exists_mem (x : X) : ∃ n, x ∈ K n :=
 /-- A compact exhaustion eventually covers any compact set. -/
 theorem exists_isCompact_subset {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K n := by
   suffices ∃ n, s ⊆ interior (K n) from this.imp fun _ ↦ (Subset.trans · interior_subset)
-  refine hs.elim_directed_cover (interior <| K ·) (fun _ ↦ isOpen_interior) ?_ ?_
+  refine hs.elim_directed_cover (interior ∘ K) (fun _ ↦ isOpen_interior) ?_ ?_
   · intro x _
     rcases K.exists_mem x with ⟨k, hk⟩
     exact mem_iUnion.2 ⟨k + 1, K.subset_interior_succ _ hk⟩
