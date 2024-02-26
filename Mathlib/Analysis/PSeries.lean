@@ -83,7 +83,6 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
       (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
   simp [pow_succ, two_mul]
-  
 theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n) (h_nonneg : ∀ n, 0 <= f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) (n : ℕ) :
     ∑ k in range (n + 1), (u (k + 1) - u k) • f (u k) ≤
     (u 1 - u 0) • f (u 0) + C • ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
