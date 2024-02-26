@@ -12,17 +12,25 @@ import Mathlib.Tactic.Have
 /-!
 # The Following Are Equivalent (TFAE)
 
-This file provides the tactics `tfae_have` and `tfae_finish` for proving goals of the form
+This file provides the tactics `tfae`, `tfae_have`, and `tfae_finish` for proving goals of the form
 `TFAE [P₁, P₂, ...]`.
+
+The `tfae` block tactic is now preferred, but `tfae_have` and `tfae_finish` are still supported for
+implementation purposes and backwards compatibility.
+
+Example:
+```lean
+  tfae
+    1 → 2 := /- proof of `P₁ → P₂` -/
+    2 → 3 := /- proof of `P₂ → P₃` -/
+    3 → 1 := /- proof of `P₃ → P₁` -/
+```
+See the dosctring for `tfae` for more information.
 -/
 
 namespace Mathlib.Tactic.TFAE
 
-/-! # Parsing and syntax
-
-We implement `tfae_have` in terms of a syntactic `have`. To support as much of the same syntax as
-possible, we recreate the parsers for `have`, except with the changes necessary for `tfae_have`.
--/
+/-! # Parsing and syntax -/
 
 open Lean.Parser Term
 
@@ -34,11 +42,19 @@ private def impFrom : Parser := leading_parser unicodeSymbol " ← " " <- "
 private def impIff : Parser := leading_parser unicodeSymbol " ↔ " " <-> "
 private def impArrow : Parser := leading_parser impTo <|> impFrom <|> impIff
 
-/-- A `tfae_have` type specification, e.g. `1 ↔ 3` The numbers refer to the proposition at the
+/-- A `tfae` type specification, e.g. `1 ↔ 3`. The numbers refer to the proposition at the
 corresponding position in the `TFAE` goal (starting at 1). -/
 private def tfaeType := leading_parser num >> impArrow >> num
 
 /-!
+
+## 'Old-style' `tfae` (`tfae_have` and `tfae_finish`)
+
+Although the `tfae` block tactic is now preferred (see below), we preserve the following parsers
+for backwards compatibility and implementation.
+
+We implement `tfae_have` in terms of a syntactic `have`. To support as much of the same syntax as
+possible, we recreate the parsers for `have`, except with the changes necessary for `tfae_have`.
 The following parsers are similar to those for `have` in `Lean.Parser.Term`, but
 instead of `optType`, we use `tfaeType := num >> impArrow >> num` (as a `tfae_have` invocation must
 always include this specification). Also, we disallow including extra binders, as that makes no
@@ -70,6 +86,18 @@ end Parser
 open Parser
 
 /--
+NOTE: The `tfae` block tactic is now preferred in place of `tfae_have` and `tfae_finish`, e.g.
+```lean
+  tfae
+    1 → 2 := /- proof of `P₁ → P₂` -/
+    2 → 3 := /- proof of `P₂ → P₃` -/
+    3 → 1 := /- proof of `P₃ → P₁` -/
+```
+
+See `tfae`.
+
+-----
+
 `tfae_have` introduces hypotheses for proving goals of the form `TFAE [P₁, P₂, ...]`. Specifically,
 `tfae_have i <arrow> j := ...` introduces a hypothesis of type `Pᵢ <arrow> Pⱼ` to the local
 context, where `<arrow>` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices
@@ -139,8 +167,53 @@ example : TFAE [P, Q, R] := by
 -/
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
+/-!
+
+## The `tfae` block tactic
+
+The following currently relies on the 'old-style' parsers for implementation.
+
+`tfaeFields` parses e.g.
+```
+  1 → 2 := sorry
+  2 → 3 := sorry
+  ...
+```
+(including other variations of the `tfaeHaveDecl`) and is patterned loosely off of the
+`structFields` parser used for declaring structures.
+-/
+
 def tfaeFields := leading_parser manyIndent <| ppLine >> checkColGe >> ppGroup tfaeHaveDecl
 
+/-- The `tfae` tactic is used for proving goals of the form `TFAE [P₁, P₂, ...]`. For example,
+given a goal `TFAE [P₁, P₂, P₃]`, we can prove it with
+```lean
+  tfae
+    1 → 2 := /- proof of `P₁ → P₂` -/
+    2 → 3 := /- proof of `P₂ → P₃` -/
+    3 → 1 := /- proof of `P₃ → P₁` -/
+```
+In `i → j := ...`, `i` and `j` are natural-number indices which refer to the proposition at the
+corresponding position in the `TFAE` goal list, starting at `1` (not `0`).
+
+Both `→` and `↔` can be used to specify subgoals, e.g. ```lean 2 ↔ 3 := /- proof of `P₂ ↔ P₃`-/``.
+(`i ← j` can also be used as shorthand for `j → i`.)
+
+`match`-style alternatives can also be used to prove an implication as usual, e.g.
+```lean
+  tfae
+    1 → 2 := ...
+    2 → 3
+    | h₂ => /- proof of `P₃` -/
+    3 → 1 -- given `P₁ := ∀(a : A), (b : B), (c : C), X`:
+    | h₃, a, b, c => /- proof of `X` -/
+```
+
+Once e.g. `2 → 3` has been proved, it appears in the local context during proofs of subsequent
+implications as `tfae_2_to_3 : P₂ → P₃`. If desired, a custom name can be given using the syntax
+`h : 2 → 3 := ...` Patterns can also be used here to introduce `Iff` fields individually, e.g.
+`⟨h_mp, h_mpr⟩ : 5 ↔ 6 := ...`.
+-/
 syntax (name := tfaeBlock) "tfae" tfaeFields : tactic
 
 
@@ -265,6 +338,8 @@ def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Ex
     | _ => throwUnsupportedSyntax
   | _ => throwUnsupportedSyntax
 
+/-! ## `tfae_have` -/
+
 /- Convert `tfae_have i <arr> j ...` to `tfae_have tfae_i_arr_j : i <arr> j ...`. See
 `expandHave`, which is responsible for inserting `this` in `have : A := ...`. Note that we
 require some extra help for `tfaeHave'` (Mathlib `have`). -/
@@ -308,6 +383,7 @@ elab_rules : tactic
     evalTactic <|← `(tactic|have $b:ident : $(← type.toSyntax))
   | _ => throwUnsupportedSyntax
 
+/-! ## `tfae_finish` -/
 
 elab_rules : tactic
 | `(tactic| tfae_finish) => do
@@ -329,6 +405,26 @@ elab_rules : tactic
           let q2 ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
+
+/-! ## `tfae` block tactic
+
+This is currently implemented simply in terms of `tfae_have` and `tfae_finish`.
+
+TODO: prevent `tfae_have` from being able to introduce new subgoals. Since `tfae_have` is defined
+in terms of `have`, we're allowed to write e.g. `1 → 2 := f ?a`, which will introduce `?a` as a
+subgoal.
+
+TODO: eliminate `tfae_finish` and take advantage of the nature of the block tactic. `tfae_finish`
+currently looks through the entire local context for implications, since it can't communicate
+directly with prior uses of `tfae_have`. However, since we have all of the indices available to the
+block tactic at once (and links between them), we can:
+1. figure out the structure of the proof term more efficiently
+2. (automatic from `1`) make sure all necessary implications are specified explicitly as fields.
+Currently an implication in the local context not introduced by `tfae` could be used by
+`tfae_finish`, which hampers readability. Although this doesn't happen in practice.
+3. alert the user to unused fields (currently we wait on the "unused `have`" linter in CI)
+
+-/
 
 elab_rules : tactic
 | `(tactic|tfae $[$ts:tfaeHaveDecl]*) => do
