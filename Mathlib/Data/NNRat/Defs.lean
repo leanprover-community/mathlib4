@@ -194,12 +194,13 @@ def coeHom : ℚ≥0 →+* ℚ where
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
-  map_natCast coeHom n
+  rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
-  ext (coe_natCast n).symm
+  rfl
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 
 @[simp]

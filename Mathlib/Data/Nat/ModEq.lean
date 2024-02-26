@@ -384,6 +384,15 @@ theorem chineseRemainder_lt_mul (co : n.Coprime m) (a b : ℕ) (hn : n ≠ 0) (h
   lt_of_lt_of_le (chineseRemainder'_lt_lcm _ hn hm) (le_of_eq co.lcm_eq_mul)
 #align nat.chinese_remainder_lt_mul Nat.chineseRemainder_lt_mul
 
+theorem mod_lcm (hn : a ≡ b [MOD n]) (hm : a ≡ b [MOD m]) : a ≡ b [MOD lcm n m] :=
+  (Nat.modEq_iff_dvd).mpr <| Int.lcm_dvd (Nat.modEq_iff_dvd.mp hn) (Nat.modEq_iff_dvd.mp hm)
+
+theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
+    (hzan : z ≡ a [MOD n]) (hzbm : z ≡ b [MOD m]) : z ≡ chineseRemainder co a b [MOD n*m] := by
+  simpa [Nat.Coprime.lcm_eq_mul co] using
+    mod_lcm (hzan.trans ((chineseRemainder co a b).prop.1).symm)
+      (hzbm.trans ((chineseRemainder co a b).prop.2).symm)
+
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℕ} (hmn : m.Coprime n) :
     a ≡ b [MOD m] ∧ a ≡ b [MOD n] ↔ a ≡ b [MOD m * n] :=
   ⟨fun h => by
@@ -532,4 +541,5 @@ theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 #align nat.odd_mod_four_iff Nat.odd_mod_four_iff
 
-end Nat
+lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=
+  Eq.trans h (mod_eq_of_lt hb)
