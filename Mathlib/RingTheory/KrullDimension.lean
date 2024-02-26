@@ -146,14 +146,14 @@ lemma zero_dimensional_of_isMaximal_eq_mem_minimalPrimes [Nontrivial R]
   le_antisymm
     (iSup_le fun x ↦ by
       by_contra! rid
-      replace rid : 0 < x.length
-      · norm_num at rid; exact rid
+      replace rid : 0 < x.length := by
+        norm_num at rid; exact rid
       obtain ⟨y, hy1, hy2⟩ := Ideal.exists_le_maximal (x 0).asIdeal (x 0).IsPrime.1
       have hy0 := hy1
       rw [h] at hy1
       have x_0_eq := le_antisymm (hy1.2 ⟨(x 0).IsPrime, bot_le⟩ hy2) hy2
-      have ineq1 : (x 0) < (x 1)
-      · convert x.step ⟨0, rid⟩ using 1
+      have ineq1 : (x 0) < (x 1) := by
+        convert x.step ⟨0, rid⟩ using 1
         congr
         ext
         simp only [Fin.val_one', Fin.succ_mk, zero_add, Nat.mod_succ_eq_iff_lt]
@@ -170,8 +170,8 @@ variable (R : Type _) [CommRing R] [Nontrivial R]
 
 lemma eq_zero_of_isArtinianRing [IsArtinianRing R] : ringKrullDim R = 0 := by
   rw [ringKrullDim, krullDim.eq_iSup_height]
-  suffices : ∀ (a : PrimeSpectrum R), height (PrimeSpectrum R) a = 0
-  · simp_rw [this]; rw [iSup_const]
+  suffices ∀ (a : PrimeSpectrum R), height (PrimeSpectrum R) a = 0 by
+    simp_rw [this]; rw [iSup_const]
   · intro p
     refine le_antisymm (iSup_le fun x ↦ ?_) krullDim.nonneg_of_Nonempty
     erw [WithBot.coe_le_coe, WithTop.coe_le_coe]
@@ -197,7 +197,7 @@ noncomputable def _root_.PrimeSpectrum.finTypeOfNoetherian
     [IsNoetherianRing R] (h : ringKrullDim R = 0) :
     Fintype (PrimeSpectrum R) :=
   letI fin1 : Fintype (minimalPrimes R) := @Fintype.ofFinite _ <|
-    Set.finite_coe_iff.mpr <| minimalPrimes.finiteOfIsNoetherianRing R
+    Set.finite_coe_iff.mpr <| minimalPrimes.finite_of_isNoetherianRing R
   Fintype.ofInjective
     (fun p ↦ ⟨p.asIdeal, p.IsPrime.isMinimal_of_dim_zero h⟩ : PrimeSpectrum R → minimalPrimes R)
     (fun _ _ H ↦ PrimeSpectrum.ext _ _ <| Subtype.ext_iff.mp H)
@@ -230,8 +230,8 @@ lemma _root_.LTSeries.ofPID_isLongest (x : LTSeries (PrimeSpectrum R)) : x.lengt
   let a := Submodule.IsPrincipal.generator (f 1).asIdeal
   let b := Submodule.IsPrincipal.generator (f 2).asIdeal
   have hf1 : (f 1).asIdeal ≠ ⊥ := fun h ↦ by
-    have : (f 0).asIdeal < (f 1).asIdeal
-    · simpa only [show 0 = Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ by rfl, show 1 = Fin.succ
+    have : (f 0).asIdeal < (f 1).asIdeal := by
+      simpa only [show 0 = Fin.castSucc ⟨0, Nat.lt_of_succ_lt rid⟩ by rfl, show 1 = Fin.succ
         ⟨0, Nat.lt_of_succ_lt rid⟩ from Fin.ext <| Nat.mod_eq_of_lt <| by linarith] using
         s ⟨0, Nat.lt_of_succ_lt rid⟩
     rw [h] at this
