@@ -457,10 +457,18 @@ theorem of_zero_pow (a : A 0) : ∀ n : ℕ, of A 0 (a ^ n) = of A 0 a ^ n
 instance : NatCast (A 0) :=
   ⟨GSemiring.natCast⟩
 
+
+-- TODO: These could be replaced by the general lemmas for `AddMonoidHomClass` (`map_natCast'` and
+-- `map_ofNat'`) if those were marked `@[simp low]`.
 @[simp]
 theorem of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
 #align direct_sum.of_nat_cast DirectSum.of_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
 instance GradeZero.semiring : Semiring (A 0) :=
