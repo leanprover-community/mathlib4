@@ -225,7 +225,7 @@ scoped infixr:90 "₊ " => lanLift
 theorem LanLift.leftLift_lift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
     (LanLift.leftLift f g).lift = f₊ g := rfl
 
-/-- The unit for `lanLift f g`. -/
+/-- The unit for the left Kan lift `f₊ g`. -/
 def LanLift.unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g ≫ f :=
   (LanLift.leftLift f g).unit
 
