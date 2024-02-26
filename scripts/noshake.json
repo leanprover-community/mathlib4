@@ -197,6 +197,7 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Std.Classes.SetNotation": ["Std.Util.ExtendedBinder"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Germ": ["Mathlib.Analysis.NormedSpace.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
