@@ -312,8 +312,8 @@ def _root_.RingEquiv.toFGModuleCatEquivalenceFunctor : FGModuleCat R ⥤ FGModul
 { obj := fun M ↦ @of S _ M _ (Module.compHom M e.symm.toRingHom) (by
       let m : Module S M := Module.compHom M e.symm.toRingHom
       let a : Algebra R S := e.toRingHom.toAlgebra
-      have s : IsScalarTower R S M
-      · constructor
+      have s : IsScalarTower R S M := by
+        constructor
         intros x y z
         convert_to (e.symm (e x * y)) • z = x • (e.symm y • z)
         rw [map_mul, mul_smul, e.symm_apply_apply]
@@ -330,12 +330,12 @@ def _root_.RingEquiv.toFGModuleCatEquivalenceInverse : FGModuleCat S ⥤ FGModul
 { obj := fun M ↦ @of R _ M _ (Module.compHom M e.toRingHom) (by
       let m : Module R M := Module.compHom M e.toRingHom
       let a : Algebra S R := e.symm.toRingHom.toAlgebra
-      have s : IsScalarTower S R M
-      · constructor
+      have s : IsScalarTower S R M := by
+        constructor
         intros x y z
         convert_to (e (e.symm x * y)) • z = x • (e y • z)
         rw [map_mul, mul_smul, e.apply_symm_apply]
-      refine Module.Finite.of_restrictScalars_finite S R M)
+      exact Module.Finite.of_restrictScalars_finite S R M)
   map := fun {X Y} l ↦
     { toFun := fun x ↦ l x
       map_add' := fun x y ↦ l.map_add x y

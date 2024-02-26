@@ -80,10 +80,7 @@ lemma grading.decompose_apply (a : A') (j : ιA) :
     exact hi.1 (Subtype.ext <| h.symm ▸ hj)
   have eq : S = {⟨j, by
     simp only [Finset.filter_congr_decidable, Finset.mem_filter, DFinsupp.mem_support_toFun, ne_eq]
-    exact ⟨by contrapose! hj; exact Subtype.ext_iff.mp hj, A'.is_homogeneous' _ a.2⟩⟩}
-  · ext ⟨i, hi⟩
-    simp only [Finset.filter_congr_decidable, Finset.mem_filter, Finset.mem_attach, true_and,
-      Finset.mem_singleton, Subtype.mk.injEq]
+    exact ⟨by contrapose! hj; exact Subtype.ext_iff.mp hj, A'.is_homogeneous' _ a.2⟩⟩} := by aesop
   rw [eq, Finset.sum_singleton]
 
 lemma grading.decompose_add (a b : A') :
@@ -224,10 +221,7 @@ lemma grading.decompose_apply (a : p) (j : ιM) :
     exact hi.1 (Subtype.ext <| h.symm ▸ hj)
   have eq : S = {⟨j, by
     simp only [Finset.filter_congr_decidable, Finset.mem_filter, DFinsupp.mem_support_toFun, ne_eq]
-    exact ⟨by contrapose! hj; exact Subtype.ext_iff.mp hj, p.is_homogeneous' _ a.2⟩⟩}
-  · ext ⟨i, hi⟩
-    simp only [Finset.filter_congr_decidable, Finset.mem_filter, Finset.mem_attach, true_and,
-      Finset.mem_singleton, Subtype.mk.injEq]
+    exact ⟨by contrapose! hj; exact Subtype.ext_iff.mp hj, p.is_homogeneous' _ a.2⟩⟩} := by aesop
   rw [eq, Finset.sum_singleton]
 
 lemma grading.decompose_add (a b : p) :
@@ -338,8 +332,9 @@ lemma quotientGrading.le_decomposeAux_ker :
   show DFinsupp.sumAddHom _ (decompose ℳ x) = 0 by
   have eq0 :
       decompose ℳ x =
-      ∑ i in (decompose ℳ x).support, (DFinsupp.single i ⟨decompose ℳ x i, SetLike.coe_mem _⟩)
-  · refine DFinsupp.ext fun i ↦ ?_
+      ∑ i in (decompose ℳ x).support,
+        (DFinsupp.single i ⟨decompose ℳ x i, SetLike.coe_mem _⟩) := by
+    refine DFinsupp.ext fun i ↦ ?_
     ext
     simp only [Subtype.coe_eta, DFinsupp.finset_sum_apply, DFinsupp.single_apply,
       Finset.sum_dite_eq', DFinsupp.mem_support_toFun, ne_eq, ite_not, SetLike.coe_eq_coe]
@@ -368,8 +363,9 @@ lemma quotientGrading.decompose_apply_mkQ_of_mem (i : ιM) (m : M) (hm : m ∈ �
     Function.comp_apply]
   have eq0 :
       decompose ℳ m =
-      ∑ i in (decompose ℳ m).support, (DFinsupp.single i ⟨decompose ℳ m i, SetLike.coe_mem _⟩)
-  · refine DFinsupp.ext fun i ↦ ?_
+      ∑ i in (decompose ℳ m).support,
+        (DFinsupp.single i ⟨decompose ℳ m i, SetLike.coe_mem _⟩) := by
+    refine DFinsupp.ext fun i ↦ ?_
     ext
     simp only [Subtype.coe_eta, DFinsupp.finset_sum_apply, DFinsupp.single_apply,
       Finset.sum_dite_eq', DFinsupp.mem_support_toFun, ne_eq, ite_not, SetLike.coe_eq_coe]
@@ -401,8 +397,9 @@ lemma quotientGrading.decompose_apply_mkQ_of_ne (i j : ιM) (m : M) (hm : m ∈ 
     Function.comp_apply]
   have eq0 :
       decompose ℳ m =
-      ∑ i in (decompose ℳ m).support, (DFinsupp.single i ⟨decompose ℳ m i, SetLike.coe_mem _⟩)
-  · refine DFinsupp.ext fun i ↦ ?_
+      ∑ i in (decompose ℳ m).support,
+        (DFinsupp.single i ⟨decompose ℳ m i, SetLike.coe_mem _⟩) := by
+    refine DFinsupp.ext fun i ↦ ?_
     ext
     simp only [Subtype.coe_eta, DFinsupp.finset_sum_apply, DFinsupp.single_apply,
       Finset.sum_dite_eq', DFinsupp.mem_support_toFun, ne_eq, ite_not, SetLike.coe_eq_coe]
@@ -434,8 +431,9 @@ lemma quotientGrading.decompose_leftInverse :
   change DirectSum.coeAddMonoidHom _ (DFinsupp.sumAddHom _ (decompose ℳ x)) = _
   have eq0 :
       decompose ℳ x =
-      ∑ i in (decompose ℳ x).support, (DFinsupp.single i ⟨decompose ℳ x i, SetLike.coe_mem _⟩)
-  · refine DFinsupp.ext fun i ↦ ?_
+      ∑ i in (decompose ℳ x).support,
+        (DFinsupp.single i ⟨decompose ℳ x i, SetLike.coe_mem _⟩) := by
+    refine DFinsupp.ext fun i ↦ ?_
     ext
     simp only [Subtype.coe_eta, DFinsupp.finset_sum_apply, DFinsupp.single_apply,
       Finset.sum_dite_eq', DFinsupp.mem_support_toFun, ne_eq, ite_not, SetLike.coe_eq_coe]

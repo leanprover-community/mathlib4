@@ -32,8 +32,8 @@ lemma Algebra.adjoin_isNoetherian (S : Finset A) :
   let P := (MvPolynomial S R)
   haveI : IsNoetherianRing P := MvPolynomial.isNoetherianRing
   have eq1 : (MvPolynomial.aeval Subtype.val).range = R[S] := adjoin_eq_range R S.toSet |>.symm
-  have eq2 : (MvPolynomial.aeval Subtype.val : P →ₐ[R] A).toRingHom.range = R[S].toSubring
-  · ext a
+  have eq2 : (MvPolynomial.aeval Subtype.val : P →ₐ[R] A).toRingHom.range = R[S].toSubring := by
+    ext a
     simp only [AlgHom.toRingHom_eq_coe, RingHom.mem_range, RingHom.coe_coe,
       Subalgebra.mem_toSubring]
     rw [← eq1]
@@ -187,14 +187,12 @@ lemma Algebra.adjoin_module_finite_of_annihilating [Module.Finite A M]
   refine Submodule.sum_mem _ fun j hj ↦ ?_
 
   specialize hr1 hj
-  -- simp only [Set.mem_setOf_eq] at hr1
   obtain ⟨f, hf, rfl⟩ := hr1
   let f1 : A →₀ ℕ := f.update s 0
   let f2 : A →₀ ℕ := Finsupp.single s (f s)
 
-  have eq2 : evalMonomial f = evalMonomial f1 * evalMonomial f2
-  · delta evalMonomial
-    -- rw [Finsupp.single_support]
+  have eq2 : evalMonomial f = evalMonomial f1 * evalMonomial f2 := by
+    delta evalMonomial
     simp only [Finsupp.support_update_zero, Finsupp.coe_update]
     by_cases mem : s ∈ f.support
     · conv_lhs => rw [← Finset.insert_erase mem]
@@ -205,8 +203,9 @@ lemma Algebra.adjoin_module_finite_of_annihilating [Module.Finite A M]
         rintro rfl
         simp only [Finset.mem_erase, ne_eq, not_true_eq_false, Finsupp.mem_support_iff,
           false_and] at hi
-      · have eq1 : (Finsupp.single s (f s)).support = {s}
-        · ext a
+
+      · have eq1 : (Finsupp.single s (f s)).support = {s} := by
+          ext a
           simp only [Finsupp.mem_support_iff, ne_eq, Finset.mem_singleton] at mem ⊢
           rw [Finsupp.single_apply]
           split_ifs with h
@@ -214,11 +213,7 @@ lemma Algebra.adjoin_module_finite_of_annihilating [Module.Finite A M]
             aesop
           · aesop
         rw [eq1, Finset.prod_singleton, Finsupp.single_apply, if_pos rfl]
-    · have eq1 : (Finsupp.single s (f s)).support = ∅
-      · ext a
-        simp only [Finsupp.mem_support_iff, ne_eq, not_not, Finset.not_mem_empty, iff_false] at mem
-          ⊢
-        rw [Finsupp.single_apply, mem, ite_self]
+    · have eq1 : (Finsupp.single s (f s)).support = ∅ :=  by aesop
       rw [eq1, Finset.prod_empty, mul_one, Finset.prod_erase]
       refine Finset.prod_congr rfl fun k _ ↦ ?_
       rw [Function.update_apply]
@@ -230,8 +225,8 @@ lemma Algebra.adjoin_module_finite_of_annihilating [Module.Finite A M]
       · rfl
       rw [Function.update_apply, if_pos rfl, pow_zero]
 
-  have h1 : evalMonomial f1 ∈ adjoin R S
-  · refine Subalgebra.prod_mem _ fun k hk ↦ Subalgebra.pow_mem _ ?_ _
+  have h1 : evalMonomial f1 ∈ adjoin R S := by
+    refine Subalgebra.prod_mem _ fun k hk ↦ Subalgebra.pow_mem _ ?_ _
     rw [mem_adjoin_iff]
     refine Subring.subset_closure <| Or.inr ?_
     simp only [Finsupp.support_update_zero, Finset.mem_erase, ne_eq] at hk
@@ -253,8 +248,8 @@ lemma Algebra.adjoin_module_finite_of_annihilating [Module.Finite A M]
 
   by_cases mem : s ∈ f.support
   · delta evalMonomial
-    have eq1 : (Finsupp.single s (f s)).support = {s}
-    · ext a
+    have eq1 : (Finsupp.single s (f s)).support = {s} := by
+      ext a
       simp only [Finsupp.mem_support_iff, ne_eq, Finset.mem_singleton] at mem ⊢
       rw [Finsupp.single_apply]
       split_ifs with h
@@ -268,11 +263,7 @@ lemma Algebra.adjoin_module_finite_of_annihilating [Module.Finite A M]
       ann, smul_zero]
     exact Submodule.zero_mem _
   · delta evalMonomial
-    have eq1 : (Finsupp.single s (f s)).support = ∅
-    · ext a
-      simp only [Finsupp.mem_support_iff, ne_eq, not_not, Finset.not_mem_empty, iff_false] at mem
-        ⊢
-      rw [Finsupp.single_apply, mem, ite_self]
+    have eq1 : (Finsupp.single s (f s)).support = ∅ := by aesop
     rw [eq1, Finset.prod_empty,
       show (1 : A) • i = (⟨(1 : A), Subalgebra.one_mem _⟩ : adjoin R S) • i from rfl]
     exact Submodule.smul_mem _ _ <| Submodule.subset_span <| hc hi

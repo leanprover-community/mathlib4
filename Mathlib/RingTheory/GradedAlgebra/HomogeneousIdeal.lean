@@ -352,7 +352,7 @@ theorem Subring.homogeneous_closure (s : Set AA) (h : ∀ x ∈ s, Homogeneous �
 is the largest homogeneous `A`-submodule contained in `p`. -/
 def Submodule.homogeneousCore : HomogeneousSubmodule A ℳ :=
   ⟨p.homogeneousCore' ℳ,
-    Submodule.homogeneous_span 𝒜 _ _ fun _ h => (Subtype.image_preimage_coe _ _ ▸ h).2⟩
+    Submodule.homogeneous_span 𝒜 _ _ fun _ h => (Subtype.image_preimage_coe _ _ ▸ h).1⟩
 
 /-- For any `I : Ideal A`, not necessarily homogeneous, `I.homogeneousCore' 𝒜`
 is the largest homogeneous ideal of `A` contained in `I`. -/

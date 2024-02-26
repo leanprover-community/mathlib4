@@ -301,8 +301,8 @@ lemma proj_smul_mem_right {i j : ℕ} (a : A) (m : M) (hm : m ∈ ℳ i) :
   have eq1 (k : ℕ) :
     ∑ j in (decompose ℳ m).support,
       (decompose 𝒜 (decompose 𝒜 a k)) • decompose ℳ (decompose ℳ m j) =
-    decompose 𝒜 (decompose 𝒜 a k) • decompose ℳ m
-  · rw [Finset.sum_eq_single i, decompose_of_mem_same ℳ hm]
+    decompose 𝒜 (decompose 𝒜 a k) • decompose ℳ m := by
+    rw [Finset.sum_eq_single i, decompose_of_mem_same ℳ hm]
     · intro j _ hne
       rw [decompose_of_mem_ne ℳ hm hne.symm, decompose_zero, smul_zero]
     · intro hi
@@ -409,15 +409,14 @@ lemma proj_smul_mem_left {i j : ℕ} (a : A) (m : M) (ha : a ∈ 𝒜 i) :
     rw [Finset.eq_empty_iff_forall_not_mem]
     rintro ⟨i', j'⟩ h
     simp only [Finset.mem_filter, Finset.mem_product, DFinsupp.mem_support_toFun, ne_eq] at h
-    have hii' : i = i'
-    · by_contra hii'
+    have hii' : i = i' := by
+      by_contra hii'
       exact h.1.1 <| Subtype.ext <| DirectSum.decompose_of_mem_ne 𝒜 ha hii'
     subst hii'
     refine h.1.2 ?_
     by_cases ineq : i ≤ j
-    · have hjj' : j' = j - i
-      · symm
-        rw [Nat.sub_eq_iff_eq_add ineq, add_comm, h.2]
+    · have hjj' : j' = j - i := by
+        symm; rw [Nat.sub_eq_iff_eq_add ineq, add_comm, h.2]
       subst hjj'
       exact Subtype.ext hj
     · simp only [not_le] at ineq
@@ -431,13 +430,12 @@ lemma proj_smul_mem_left {i j : ℕ} (a : A) (m : M) (ha : a ∈ 𝒜 i) :
       refine ⟨⟨⟨hi, hj⟩, show i + (j - i) = j from Nat.add_sub_of_le ineq⟩, ?_⟩
       rintro ⟨i', j'⟩ h
       simp only [Finset.mem_filter, Finset.mem_product, DFinsupp.mem_support_toFun, ne_eq] at h
-      have hii' : i = i'
-      · by_contra hii'
+      have hii' : i = i' := by
+        by_contra hii'
         exact h.1.1 <| Subtype.ext <| DirectSum.decompose_of_mem_ne 𝒜 ha hii'
       subst hii'
-      have hjj' : j' = j - i
-      · symm
-        rw [Nat.sub_eq_iff_eq_add ineq, add_comm, h.2]
+      have hjj' : j' = j - i := by
+        symm; rw [Nat.sub_eq_iff_eq_add ineq, add_comm, h.2]
       subst hjj'
       rfl
     · rw [Finset.sum_singleton, DirectSum.decompose_of_mem_same 𝒜 ha, proj_apply]
@@ -446,9 +444,8 @@ lemma proj_smul_mem_left {i j : ℕ} (a : A) (m : M) (ha : a ∈ 𝒜 i) :
     rintro ⟨i', j'⟩ h
     simp only [Finset.mem_filter, Finset.mem_product, DFinsupp.mem_support_toFun, ne_eq] at h
     simp only [not_le] at ineq
-    have hii' : i = i'
-    · by_contra hii'
-      exact h.1.1 <| Subtype.ext <| DirectSum.decompose_of_mem_ne 𝒜 ha hii'
+    have hii' : i = i' := by
+      by_contra hii'; exact h.1.1 <| Subtype.ext <| DirectSum.decompose_of_mem_ne 𝒜 ha hii'
     subst hii'
     linarith only [(h.2 : i + j' = j), ineq]
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fangming Li
+Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
@@ -113,16 +113,18 @@ lemma irrelevant.adjoin_eq_top :
     Algebra.adjoin (𝒜 0) S.toFinset = (⊤ : Subalgebra (𝒜 0) A) := by
     classical
   symm
-  suffices subset (m : ℕ) :
-    (𝒜 m : Set A) ⊆ (Algebra.adjoin (𝒜 0) S.toFinset : Subalgebra (𝒜 0) A)
-  · refine le_antisymm (fun a _ ↦ ?_) le_top
+  suffices subset :
+      ∀ (m : ℕ), (𝒜 m : Set A) ⊆ (Algebra.adjoin (𝒜 0) S.toFinset : Subalgebra (𝒜 0) A) by
+    refine le_antisymm ?_ le_top
+    intro a _
     rw [← DirectSum.sum_support_decompose 𝒜 a]
     exact Subalgebra.sum_mem _ fun j _ ↦ subset j <| Subtype.mem _
 
-  suffices (n : ℕ) :
-    𝒜 n.succ =
-    ⨆ (s : {s : S.toFinset | S.deg s.2 ≤ n + 1 }), (s : A) • 𝒜 (n.succ - deg _ s.1.2)
-  · cases m with | zero => ?_ | succ m => ?_
+  suffices ∀ (n : ℕ),
+      𝒜 n.succ =
+      ⨆ (s : {s : S.toFinset | S.deg s.2 ≤ n + 1 }), (s : A) • 𝒜 (n.succ - deg _ s.1.2) by
+    intro m
+    cases m with | zero => ?_ | succ m => ?_
     · simp only [Nat.zero_eq]
       intro x hx
       show _ ∈ Subsemiring.closure (_ ∪ _)
@@ -147,9 +149,7 @@ lemma irrelevant.adjoin_eq_top :
       · rw [ineq1, zero_smul]; exact Subalgebra.zero_mem _
 
       by_cases ineq0 : m < S.deg hx1
-      · have eq0 : m.succ - S.deg hx1 = 0
-        · simp only [tsub_eq_zero_iff_le]
-          exact ineq0
+      · have eq0 : m.succ - S.deg hx1 = 0 := by simpa only [tsub_eq_zero_iff_le] using ineq0
         rw [eq0] at hy1
         refine Subalgebra.mul_mem _ (show _ ∈ Subsemiring.closure (_ ∪ _) from ?_)
           (show _ ∈ Subsemiring.closure (_ ∪ _) from ?_) <;>
@@ -174,10 +174,11 @@ lemma irrelevant.adjoin_eq_top :
     · intros _ _ h1 h2
       exact Subalgebra.add_mem _ h1 h2
 
+  intro n
   ext x; constructor
   · intro hx
-    have m : x ∈ (HomogeneousIdeal.irrelevant 𝒜).toIdeal
-    · erw [HomogeneousIdeal.mem_irrelevant_iff, GradedRing.proj_apply,
+    have m : x ∈ (HomogeneousIdeal.irrelevant 𝒜).toIdeal := by
+      erw [HomogeneousIdeal.mem_irrelevant_iff, GradedRing.proj_apply,
         DirectSum.decompose_of_mem_ne (hx := hx)]
       norm_num
     erw [← S.span_eq, mem_span_set] at m
@@ -395,16 +396,15 @@ lemma monomial_finite_of_bounded_degree (k : ℕ) :
       dsimp only at le1
       simp only [Set.mem_setOf_eq] at le1
       by_cases mem1 : a.1 ∈ s.1.support
-      · have le2 : S.deg (s.2.1 mem1) * s.1 a.1 ≤ k
-        · refine le_trans ?_ le1
-          exact Finset.single_le_sum' (s := s.1.support)
-            (f := fun i ↦ S.deg (s.2.1 i.2) * s.1 i.1) (a := ⟨a, mem1⟩)
+      · have le2 : S.deg (s.2.1 mem1) * s.1 a.1 ≤ k :=
+          le_trans (Finset.single_le_sum' (s := s.1.support)
+            (f := fun i ↦ S.deg (s.2.1 i.2) * s.1 i.1) (a := ⟨a, mem1⟩)) le1
         by_cases le3 : a.1 = 0
         · exfalso
           exact S.ne_zero (s.2.1 mem1) le3
         · have le4 := HomogeneousGeneratingSetOf.irrelevant.deg_pos S (s.2.1 mem1)
-          have le5 : s.1 a.1 ≤ k
-          · have := Nat.div_le_div_right (c := S.deg (s.2.1 mem1)) le2
+          have le5 : s.1 a.1 ≤ k := by
+            have := Nat.div_le_div_right (c := S.deg (s.2.1 mem1)) le2
             erw [mul_comm, Nat.mul_div_cancel _ le4] at this
             refine this.trans (Nat.div_le_self _ _)
           simp only [Set.mem_setOf_eq, Finset.mem_union, Finset.mem_range, Finset.mem_singleton]
@@ -413,10 +413,8 @@ lemma monomial_finite_of_bounded_degree (k : ℕ) :
       · simp only [Set.mem_setOf_eq, Finsupp.mem_support_iff, ne_eq, not_not] at mem1
         rw [mem1]
         aesop⟩
-  suffices : Finite SMonomials
-  · exact Set.toFinite _
-  suffices inj : Function.Injective e
-  · exact Finite.of_injective _ inj
+  suffices Finite SMonomials from Set.toFinite _
+  suffices inj : Function.Injective e from Finite.of_injective _ inj
 
   intro s1 s2 h
   ext a
@@ -530,8 +528,8 @@ lemma generatingSet_is_finite (k : ℕ) :
   apply Set.Finite.biUnion
   · apply monomial_finite_of_bounded_degree
   · rintro p ⟨_, _⟩
-    have fin1 : Subsingleton {x : ℳ k | ↑x = evalMonomial p • ω}
-    · constructor
+    have fin1 : Subsingleton {x : ℳ k | ↑x = evalMonomial p • ω} := by
+      constructor
       rintro ⟨x, (hx : _ = _)⟩ ⟨y, (hy : _ = _)⟩
       ext
       rw [hx, hy]
@@ -559,9 +557,7 @@ lemma kth_degree_eq_span (k : ℕ) :
   choose r hr1 hr2 using mem1
   change ∀ a, ∑ j in (r a).support, (r a) j • j = a at hr2
   replace hr1 (a : A) :
-    ∀ j ∈ (r a).support, ∃ f, f.support ⊆ T.toFinset ∧ j = evalMonomial f
-  · specialize hr1 a
-    exact hr1
+    ∀ j ∈ (r a).support, ∃ f, f.support ⊆ T.toFinset ∧ j = evalMonomial f := by exact hr1 a
   choose p hp1 hp2 using hr1
   replace eq0 := calc
       x = ∑ i in f.support, (f i) • i := eq0.symm
@@ -730,8 +726,8 @@ lemma kth_degree_eq_span (k : ℕ) :
             simp only [Finset.filter_congr_decidable, Finset.mem_filter, Finset.mem_attach,
               true_and] at mem
             rw [mem, vadd_eq_add, Nat.sub_add_cancel]
-            simpa using i.2⟩ : ℳ k)
-  · ext
+            simpa using i.2⟩ : ℳ k) := by
+    ext
     refine eq0.trans ?_
     rw [AddSubgroup.val_finset_sum]
     refine Finset.sum_congr rfl ?_
