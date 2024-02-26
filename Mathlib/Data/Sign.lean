@@ -389,7 +389,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
 #align sign_one sign_one

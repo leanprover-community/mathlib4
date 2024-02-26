@@ -47,7 +47,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 attribute [instance 1100] MulZeroClass.toZero in
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
-  refine DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
+  exact DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
 
 /-- `ExteriorAlgebra.GradedAlgebra.ι` lifted to exterior algebra. This is
@@ -96,5 +96,23 @@ instance gradedAlgebra :
       rw [lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     (by apply GradedAlgebra.liftι_eq R M)
 #align exterior_algebra.graded_algebra ExteriorAlgebra.gradedAlgebra
+
+/-- The union of the images of the maps `ExteriorAlgebra.ιMulti R n` for `n` running through
+all natural numbers spans the exterior algebra.-/
+lemma ιMulti_span :
+    Submodule.span R (Set.range fun x : Σ n, (Fin n → M) => ιMulti R x.1 x.2) = ⊤ := by
+  rw [Submodule.eq_top_iff']
+  intro x
+  induction x
+    using DirectSum.Decomposition.inductionOn fun i => LinearMap.range (ι R (M := M)) ^ i with
+  | h_zero => exact Submodule.zero_mem _
+  | h_add _ _ hm hm' => exact Submodule.add_mem _ hm hm'
+  | h_homogeneous hm =>
+    let ⟨m, hm⟩ := hm
+    apply Set.mem_of_mem_of_subset hm
+    rw [← ιMulti_span_fixedDegree]
+    refine Submodule.span_mono fun _ hx ↦ ?_
+    obtain ⟨y, rfl⟩ := hx
+    exact ⟨⟨_, y⟩, rfl⟩
 
 end ExteriorAlgebra

@@ -477,7 +477,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
     have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
       ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm
     rw [this]
-    refine' Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
+    exact Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
   apply eventuallyEq_of_mem this
   intro t ht; rw [mem_setOf_eq] at ht
   apply Gamma_eq_GammaAux; linarith

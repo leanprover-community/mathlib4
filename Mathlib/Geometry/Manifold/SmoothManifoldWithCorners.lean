@@ -610,8 +610,8 @@ variable (n)
 theorem ofSet_mem_contDiffGroupoid {s : Set H} (hs : IsOpen s) :
     PartialHomeomorph.ofSet s hs ∈ contDiffGroupoid n I := by
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
-  suffices h : ContDiffOn 𝕜 n (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
-  · simp [h, contDiffPregroupoid]
+  suffices h : ContDiffOn 𝕜 n (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
+    simp [h, contDiffPregroupoid]
   have : ContDiffOn 𝕜 n id (univ : Set E) := contDiff_id.contDiffOn
   exact this.congr_mono (fun x hx => I.right_inv hx.2) (subset_univ _)
 #align of_set_mem_cont_diff_groupoid ofSet_mem_contDiffGroupoid
@@ -757,8 +757,8 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   refine And.intro (ofSet_mem_contDiffGroupoid ∞ I hs) ?_
   apply mem_groupoid_of_pregroupoid.mpr
   suffices h : AnalyticOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ interior (range I)) ∧
-      (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I)
-  · simp only [PartialHomeomorph.ofSet_apply, id_comp, PartialHomeomorph.ofSet_toPartialEquiv,
+      (I.symm ⁻¹' s ∩ interior (range I)).image (I ∘ I.symm) ⊆ interior (range I) by
+    simp only [PartialHomeomorph.ofSet_apply, id_comp, PartialHomeomorph.ofSet_toPartialEquiv,
       PartialEquiv.ofSet_source, h, comp_apply, mem_range, image_subset_iff, true_and,
       PartialHomeomorph.ofSet_symm, PartialEquiv.ofSet_target, and_self]
     intro x hx
@@ -1230,7 +1230,7 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
   rw [f.extend_coord_change_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
   refine' I.image_mem_nhdsWithin _
-  refine' (PartialHomeomorph.open_source _).mem_nhds hx
+  exact (PartialHomeomorph.open_source _).mem_nhds hx
 #align local_homeomorph.extend_coord_change_source_mem_nhds_within PartialHomeomorph.extend_coord_change_source_mem_nhdsWithin
 
 theorem extend_coord_change_source_mem_nhdsWithin' {x : M} (hxf : x ∈ f.source)
@@ -1387,6 +1387,22 @@ theorem extChartAt_target_mem_nhdsWithin (x : M) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x x :=
   extChartAt_target_mem_nhdsWithin' I (mem_extChartAt_source I x)
 #align ext_chart_at_target_mem_nhds_within extChartAt_target_mem_nhdsWithin
+
+/-- If we're boundaryless, `extChartAt` has open target -/
+theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
+  simp_rw [extChartAt_target, I.range_eq_univ, inter_univ]
+  exact (PartialHomeomorph.open_target _).preimage I.continuous_symm
+
+/-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
+theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
+    (extChartAt I x).target ∈ 𝓝 (extChartAt I x x) := by
+  convert extChartAt_target_mem_nhdsWithin I x
+  simp only [I.range_eq_univ, nhdsWithin_univ]
+
+/-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of any of its points -/
+theorem extChartAt_target_mem_nhds' [I.Boundaryless] {x : M} {y : E}
+    (m : y ∈ (extChartAt I x).target) : (extChartAt I x).target ∈ 𝓝 y :=
+  (isOpen_extChartAt_target I x).mem_nhds m
 
 theorem extChartAt_target_subset_range (x : M) : (extChartAt I x).target ⊆ range I := by
   simp only [mfld_simps]

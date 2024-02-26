@@ -236,8 +236,8 @@ def toFun (x : Proj.T| pbo f) : Spec.T A⁰_ f :=
     classical
     rw [mem_carrier_iff] at hx12
     let J := span ((algebraMap A (Away f) : A → (Away f)) '' x.val.asHomogeneousIdeal)
-    suffices h : ∀ x y : Localization.Away f, x * y ∈ J → x ∈ J ∨ y ∈ J
-    · rw [HomogeneousLocalization.mul_val] at hx12; exact h x1.val x2.val hx12
+    suffices h : ∀ x y : Localization.Away f, x * y ∈ J → x ∈ J ∨ y ∈ J by
+      rw [HomogeneousLocalization.mul_val] at hx12; exact h x1.val x2.val hx12
     clear x1 x2 hx12
     intro x1 x2 hx12
     induction' x1 using Localization.induction_on with data_x1

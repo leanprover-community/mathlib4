@@ -146,7 +146,7 @@ theorem lintegral_zero_fun : lintegral μ (0 : α → ℝ≥0∞) = 0 :=
   lintegral_zero
 #align measure_theory.lintegral_zero_fun MeasureTheory.lintegral_zero_fun
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem lintegral_one : ∫⁻ _, (1 : ℝ≥0∞) ∂μ = μ univ := by rw [lintegral_const, one_mul]
 #align measure_theory.lintegral_one MeasureTheory.lintegral_one
 
@@ -436,8 +436,8 @@ theorem lintegral_tendsto_of_tendsto_of_monotone {f : ℕ → α → ℝ≥0∞}
     Tendsto (fun n => ∫⁻ x, f n x ∂μ) atTop (𝓝 <| ∫⁻ x, F x ∂μ) := by
   have : Monotone fun n => ∫⁻ x, f n x ∂μ := fun i j hij =>
     lintegral_mono_ae (h_mono.mono fun x hx => hx hij)
-  suffices key : ∫⁻ x, F x ∂μ = ⨆ n, ∫⁻ x, f n x ∂μ
-  · rw [key]
+  suffices key : ∫⁻ x, F x ∂μ = ⨆ n, ∫⁻ x, f n x ∂μ by
+    rw [key]
     exact tendsto_atTop_iSup this
   rw [← lintegral_iSup' hf h_mono]
   refine' lintegral_congr_ae _
@@ -1250,7 +1250,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
     ext1 b
     rw [lintegral_congr_ae]
     apply EventuallyEq.symm
-    refine' aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
+    exact aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
 #align measure_theory.lintegral_supr_directed MeasureTheory.lintegral_iSup_directed
 
 end
@@ -1674,8 +1674,7 @@ theorem lintegral_trim {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞}
   · intro c s hs
     rw [lintegral_indicator _ hs, lintegral_indicator _ (hm s hs), set_lintegral_const,
       set_lintegral_const]
-    suffices h_trim_s : μ.trim hm s = μ s
-    · rw [h_trim_s]
+    suffices h_trim_s : μ.trim hm s = μ s by rw [h_trim_s]
     exact trim_measurableSet_eq hm hs
   · intro f g _ hf _ hf_prop hg_prop
     have h_m := lintegral_add_left (μ := Measure.trim μ hm) hf g
@@ -1807,8 +1806,8 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       rwa [mul_comm, ← ENNReal.div_lt_iff]
       · simp only [c_ne_zero, Ne.def, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
       · simp only [Ne.def, coe_ne_top, not_false_iff, true_or_iff]
-  · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ
-    · rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
+  · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
+      rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
     by_cases hf₁ : ∫⁻ x, f₁ x ∂μ = 0
     · simp only [hf₁, zero_add] at hL
       rcases h₂ hL with ⟨g, g_le, g_top, gL⟩

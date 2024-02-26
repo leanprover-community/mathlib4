@@ -531,8 +531,8 @@ def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
             rw [mem_coe, mem_image] at hx hy
             obtain ⟨Q, hQ, rfl⟩ := hx
             obtain ⟨R, hR, rfl⟩ := hy
-            suffices h' : Q = R
-            · subst h'
+            suffices h' : Q = R by
+              subst h'
               exact of_eq_true (eq_self (
                 filter (fun i ↦ ∀ (t : Finset α), t ∈ F → (t ∈ Q ↔ i ∈ t)) s))
             rw [id, mem_filter] at hz1 hz2
@@ -592,8 +592,8 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty).card ≤ 2 ^ (F.card - 1) := by
   suffices h :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty) ⊆
-      (F.erase t).powerset.image fun P ↦ s.filter fun i ↦ ∀ x ∈ F, x ∈ insert t P ↔ i ∈ x
-  · refine' (card_le_card h).trans (card_image_le.trans _)
+      (F.erase t).powerset.image fun P ↦ s.filter fun i ↦ ∀ x ∈ F, x ∈ insert t P ↔ i ∈ x by
+    refine' (card_le_card h).trans (card_image_le.trans _)
     rw [card_powerset, card_erase_of_mem ht]
   rw [subset_iff]
   simp_rw [mem_image, mem_powerset, mem_filter, and_imp, Finset.Nonempty, exists_imp, mem_atomise,

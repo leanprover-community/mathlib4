@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Order.Group.InjSurj
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.Order.Atoms
@@ -122,7 +122,7 @@ class AddSubgroupClass (S G : Type*) [SubNegMonoid G] [SetLike S G] extends AddS
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [aesop safe apply (rule_sets [SetLike])] inv_mem neg_mem
+attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -138,14 +138,14 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := aesop safe apply (rule_sets [SetLike]))
+@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))
   "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 #align div_mem div_mem
 #align sub_mem sub_mem
 
-@[to_additive (attr := aesop safe apply (rule_sets [SetLike]))]
+@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
     rw [zpow_ofNat]
@@ -267,28 +267,6 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_comm_group SubgroupClass.toCommGroup
 #align add_subgroup_class.to_add_comm_group AddSubgroupClass.toAddCommGroup
-
--- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
-@[to_additive "An additive subgroup of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance (priority := 75) toOrderedCommGroup {G : Type*} [OrderedCommGroup G] [SetLike S G]
-    [SubgroupClass S G] : OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align subgroup_class.to_ordered_comm_group SubgroupClass.toOrderedCommGroup
-#align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
-
--- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive
-      "An additive subgroup of a `LinearOrderedAddCommGroup` is a
-        `LinearOrderedAddCommGroup`."]
-instance (priority := 75) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G]
-    [SetLike S G] [SubgroupClass S G] : LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subgroup_class.to_linear_ordered_comm_group SubgroupClass.toLinearOrderedCommGroup
-#align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
@@ -415,7 +393,7 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subgroup.mem_carrier Subgroup.mem_carrier
@@ -750,7 +728,7 @@ theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align subgroup.coe_pow Subgroup.coe_pow
 #align add_subgroup.coe_nsmul AddSubgroup.coe_nsmul
 
-@[to_additive (attr := norm_cast)] -- Porting note: dsimp can prove this
+@[to_additive (attr := norm_cast)] -- Porting note (#10685): dsimp can prove this
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 #align subgroup.coe_zpow Subgroup.coe_zpow
@@ -777,26 +755,6 @@ instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_comm_group Subgroup.toCommGroup
 #align add_subgroup.to_add_comm_group AddSubgroup.toAddCommGroup
-
-/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
-@[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance toOrderedCommGroup {G : Type*} [OrderedCommGroup G] (H : Subgroup G) :
-    OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align subgroup.to_ordered_comm_group Subgroup.toOrderedCommGroup
-#align add_subgroup.to_ordered_add_comm_group AddSubgroup.toOrderedAddCommGroup
-
-/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive
-      "An `AddSubgroup` of a `LinearOrderedAddCommGroup` is a
-        `LinearOrderedAddCommGroup`."]
-instance toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Subgroup G) :
-    LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subgroup.to_linear_ordered_comm_group Subgroup.toLinearOrderedCommGroup
-#align add_subgroup.to_linear_ordered_add_comm_group AddSubgroup.toLinearOrderedAddCommGroup
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]
@@ -1127,7 +1085,7 @@ theorem mem_closure {x : G} : x ∈ closure k ↔ ∀ K : Subgroup G, k ⊆ K �
 #align add_subgroup.mem_closure AddSubgroup.mem_closure
 
 /-- The subgroup generated by a set includes the set. -/
-@[to_additive (attr := simp, aesop safe 20 apply (rule_sets [SetLike]))
+@[to_additive (attr := simp, aesop safe 20 apply (rule_sets := [SetLike]))
   "The `AddSubgroup` generated by a set includes the set."]
 theorem subset_closure : k ⊆ closure k := fun _ hx => mem_closure.2 fun _ hK => hK hx
 #align subgroup.subset_closure Subgroup.subset_closure
@@ -1677,9 +1635,10 @@ theorem mem_subgroupOf {H K : Subgroup G} {h : K} : h ∈ H.subgroupOf K ↔ (h 
 #align subgroup.mem_subgroup_of Subgroup.mem_subgroupOf
 #align add_subgroup.mem_add_subgroup_of AddSubgroup.mem_addSubgroupOf
 
+-- TODO(kmill): use `K ⊓ H` order for RHS to match `Subtype.image_preimage_coe`
 @[to_additive (attr := simp)]
 theorem subgroupOf_map_subtype (H K : Subgroup G) : (H.subgroupOf K).map K.subtype = H ⊓ K :=
-  SetLike.ext' <| Subtype.image_preimage_coe _ _
+  SetLike.ext' <| by refine Subtype.image_preimage_coe _ _ |>.trans ?_; apply Set.inter_comm
 #align subgroup.subgroup_of_map_subtype Subgroup.subgroupOf_map_subtype
 #align add_subgroup.add_subgroup_of_map_subtype AddSubgroup.addSubgroupOf_map_subtype
 
@@ -1915,7 +1874,7 @@ theorem le_pi_iff {I : Set η} {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i,
     rintro _ ⟨x, hx, rfl⟩
     exact (h hx) _ hi
   · intro h x hx i hi
-    refine' h i hi ⟨_, hx, rfl⟩
+    exact h i hi ⟨_, hx, rfl⟩
 #align subgroup.le_pi_iff Subgroup.le_pi_iff
 #align add_subgroup.le_pi_iff AddSubgroup.le_pi_iff
 
@@ -2582,7 +2541,7 @@ theorem normalClosure_eq_self (H : Subgroup G) [H.Normal] : normalClosure ↑H =
   le_antisymm (normalClosure_le_normal rfl.subset) le_normalClosure
 #align subgroup.normal_closure_eq_self Subgroup.normalClosure_eq_self
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem normalClosure_idempotent : normalClosure ↑(normalClosure s) = normalClosure s :=
   normalClosure_eq_self _
 #align subgroup.normal_closure_idempotent Subgroup.normalClosure_idempotent
@@ -2638,7 +2597,7 @@ theorem normalCore_eq_self (H : Subgroup G) [H.Normal] : H.normalCore = H :=
   le_antisymm H.normalCore_le (normal_le_normalCore.mpr le_rfl)
 #align subgroup.normal_core_eq_self Subgroup.normalCore_eq_self
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem normalCore_idempotent (H : Subgroup G) : H.normalCore.normalCore = H.normalCore :=
   H.normalCore.normalCore_eq_self
 #align subgroup.normal_core_idempotent Subgroup.normalCore_idempotent
