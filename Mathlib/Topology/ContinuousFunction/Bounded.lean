@@ -1292,6 +1292,12 @@ instance : NatCast (α →ᵇ R) :=
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 #align bounded_continuous_function.coe_nat_cast BoundedContinuousFunction.coe_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp, norm_cast]
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index OfNat.ofNat n : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+  rfl
+
 instance : IntCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩
 

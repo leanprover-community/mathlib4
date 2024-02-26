@@ -13,6 +13,7 @@ import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Order
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Algebra.Subalgebra.Unitization
@@ -350,6 +351,7 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Algebra.Module.Submodule.Localization
 import Mathlib.Algebra.Module.Submodule.Map
+import Mathlib.Algebra.Module.Submodule.Order
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.Torsion
@@ -385,6 +387,7 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Floor.Div
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Bounds
+import Mathlib.Algebra.Order.Group.Cone
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Group.InjSurj
@@ -1096,6 +1099,7 @@ import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
+import Mathlib.CategoryTheory.GradedObject.Single
 import Mathlib.CategoryTheory.GradedObject.Trifunctor
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
@@ -1149,6 +1153,7 @@ import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Limits.Indization.IndObject
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Lattice
@@ -1310,6 +1315,7 @@ import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.CategoryTheory.Quotient
+import Mathlib.CategoryTheory.Quotient.Linear
 import Mathlib.CategoryTheory.Quotient.Preadditive
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
@@ -1839,6 +1845,7 @@ import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Cast.SetInterval
 import Mathlib.Data.Nat.Cast.Synonym
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.ChineseRemainder
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Data.Nat.Choose.Cast
@@ -2187,6 +2194,7 @@ import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Subfield
+import Mathlib.FieldTheory.Subfield.Order
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
@@ -2348,6 +2356,7 @@ import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.GroupTheory.Subgroup.MulOpposite
+import Mathlib.GroupTheory.Subgroup.Order
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.GroupTheory.Subgroup.Saturated
 import Mathlib.GroupTheory.Subgroup.Simple
@@ -2359,6 +2368,7 @@ import Mathlib.GroupTheory.Submonoid.Inverses
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Submonoid.MulOpposite
 import Mathlib.GroupTheory.Submonoid.Operations
+import Mathlib.GroupTheory.Submonoid.Order
 import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.GroupTheory.Submonoid.Units
 import Mathlib.GroupTheory.Subsemigroup.Basic
@@ -2647,6 +2657,7 @@ import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.FromTypes
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Function.OfArity
+import Mathlib.Logic.Godel.GodelBetaFunction
 import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
@@ -2662,6 +2673,7 @@ import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.List
 import Mathlib.Logic.Small.Module
 import Mathlib.Logic.Small.Ring
+import Mathlib.Logic.Small.Set
 import Mathlib.Logic.Unique
 import Mathlib.Logic.UnivLE
 import Mathlib.Mathport.Attributes
@@ -3348,8 +3360,11 @@ import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Subring.Basic
+import Mathlib.RingTheory.Subring.Order
 import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.RingTheory.Subring.Units
 import Mathlib.RingTheory.Subsemiring.Basic
+import Mathlib.RingTheory.Subsemiring.Order
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.RingTheory.Trace

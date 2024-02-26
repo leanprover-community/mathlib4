@@ -278,6 +278,9 @@
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
+  "Mathlib.RingTheory.Subsemiring.Order":
+  ["Mathlib.GroupTheory.Submonoid.Order"],
+  "Mathlib.RingTheory.Subring.Order": ["Mathlib.GroupTheory.Subgroup.Order"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
@@ -295,6 +298,7 @@
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
   "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
+  "Mathlib.GroupTheory.Subgroup.Order": ["Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
@@ -315,8 +319,12 @@
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Basic"],
   "Mathlib.Algebra.Order.Ring.Defs":
   ["Mathlib.Algebra.Order.Monoid.WithZero.Defs"],
+  "Mathlib.Algebra.Module.Submodule.Order":
+  ["Mathlib.GroupTheory.Subgroup.Order", "Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.LinearMap": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Category.Ring.Basic":
-  ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"]}}
+  ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
+  "Mathlib.Algebra.Algebra.Subalgebra.Order":
+  ["Mathlib.Algebra.Module.Submodule.Order"]}}
