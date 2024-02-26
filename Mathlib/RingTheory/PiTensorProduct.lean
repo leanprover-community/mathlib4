@@ -6,7 +6,6 @@ Authors: Jujian Zhang
 
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.Pi
 
 /-!
 # Tensor product of `R`-algebras and rings
