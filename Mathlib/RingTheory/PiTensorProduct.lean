@@ -86,13 +86,13 @@ variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, Is
 
 protected lemma one_mul (x : ⨂[R] i, A i) : mul (tprod R 1) x = x := by
   induction x using PiTensorProduct.induction_on with
-  | C1 => simp
-  | Cp h1 h2 => simp [map_add, h1, h2]
+  | smul_tprod => simp
+  | add _ _ h1 h2 => simp [map_add, h1, h2]
 
 protected lemma mul_one (x : ⨂[R] i, A i) : mul x (tprod R 1) = x := by
   induction x using PiTensorProduct.induction_on with
-  | C1 => simp
-  | Cp h1 h2 => simp [h1, h2]
+  | smul_tprod => simp
+  | add _ _ h1 h2 => simp [h1, h2]
 
 instance instNonAssocSemiring : NonAssocSemiring (⨂[R] i, A i) where
   __ := instNonUnitalNonAssocSemiring
@@ -190,15 +190,15 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
   map_one' := show lift f (tprod R 1) = 1 by simp [one]
   map_mul' x y := show lift f (x * y) = lift f x * lift f y by
     induction x using PiTensorProduct.induction_on with
-    | C1 =>
+    | smul_tprod =>
       induction y using PiTensorProduct.induction_on with
-      | C1 =>
+      | smul_tprod =>
         simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, tprod_mul_tprod, map_smul,
           lift.tprod, mul]
-      | Cp hy1 hy2 =>
+      | add _ _ hy1 hy2 =>
         simp only [Algebra.smul_mul_assoc, map_smul, lift.tprod, map_add] at hy1 hy2 ⊢
         rw [mul_add, map_add, smul_add, hy1, hy2, mul_add, smul_add]
-    | Cp hx1 hx2 =>
+    | add _ _ hx1 hx2 =>
       simp only [map_add] at hx1 hx2 ⊢
       rw [add_mul, map_add, hx1, hx2, add_mul]
   map_zero' := by simp only [map_zero]
