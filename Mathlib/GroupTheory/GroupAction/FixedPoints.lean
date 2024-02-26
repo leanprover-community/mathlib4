@@ -128,7 +128,7 @@ theorem fixedBy_commutatorElement (g h : G) :
 
 @[to_additive]
 theorem mem_fixedBy_pow_period (g : G) (x : α) : x ∈ fixedBy α (g ^ period g x) := by
-  rw [mem_fixedBy, smul_pow_period_fixed]
+  rw [mem_fixedBy, pow_period_smul]
 
 end FixedPoints
 
