@@ -33,7 +33,8 @@ infixr:70 " :> " => vecCons
 lemma comp_vecCons (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (a :> s) x) = f a :> f ∘ s :=
 funext (fun i => cases (by simp) (by simp) i)
 
-lemma comp_vecCons' (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (a :> s) x) = f a :> fun i => f (s i) :=
+lemma comp_vecCons' (f : α → β) (a : α) (s : Fin n → α) :
+    (fun x => f $ (a :> s) x) = f a :> fun i => f (s i) :=
   comp_vecCons f a s
 
 end
@@ -54,13 +55,17 @@ def isLeNat (n m : ℕ) : ℕ := if n ≤ m then 1 else 0
 
 def isDvdNat (n m : ℕ) : ℕ := if n ∣ m then 1 else 0
 
-@[simp] lemma isEqNat_pos_iff : 0 < isEqNat n m ↔ n = m := by simp[isEqNat]; by_cases n = m <;> simp[*]
+@[simp] lemma isEqNat_pos_iff : 0 < isEqNat n m ↔ n = m := by
+  simp[isEqNat]; by_cases n = m <;> simp[*]
 
-@[simp] lemma isLtNat_pos_iff : 0 < isLtNat n m ↔ n < m := by simp[isLtNat]; by_cases n < m <;> simp[*]
+@[simp] lemma isLtNat_pos_iff : 0 < isLtNat n m ↔ n < m := by
+  simp[isLtNat]; by_cases n < m <;> simp[*]
 
-@[simp] lemma isLeNat_pos_iff : 0 < isLeNat n m ↔ n ≤ m := by simp[isLeNat]; by_cases n ≤ m <;> simp[*]
+@[simp] lemma isLeNat_pos_iff : 0 < isLeNat n m ↔ n ≤ m := by
+  simp[isLeNat]; by_cases n ≤ m <;> simp[*]
 
-@[simp] lemma isDvdNat_pos_iff : 0 < isDvdNat n m ↔ n ∣ m := by simp[isDvdNat]; by_cases n ∣ m <;> simp[*]
+@[simp] lemma isDvdNat_pos_iff : 0 < isDvdNat n m ↔ n ∣ m := by
+  simp[isDvdNat]; by_cases n ∣ m <;> simp[*]
 
 def inv (n : ℕ) : ℕ := isEqNat n 0
 
@@ -82,13 +87,16 @@ def or (n m : ℕ) : ℕ := isLtNat 0 (n + m)
 
 lemma and_eq (n m : ℕ) : and n m = if 0 < n ∧ 0 < m then 1 else 0 := by simp[and, isLtNat]
 
-lemma and_eq_one (n m : ℕ) : and n m = 1 ↔ 0 < n ∧ 0 < m := by simp[and_eq, imp_false, Nat.pos_iff_ne_zero]
+lemma and_eq_one (n m : ℕ) : and n m = 1 ↔ 0 < n ∧ 0 < m := by
+  simp[and_eq, imp_false, Nat.pos_iff_ne_zero]
 
 lemma or_eq (n m : ℕ) : or n m = if 0 < n ∨ 0 < m then 1 else 0 := by simp[or, isLtNat]
 
-@[simp] lemma and_pos_iff (n m : ℕ) : 0 < and n m ↔ 0 < n ∧ 0 < m := by simp[and_eq]; by_cases 0 < n ∧ 0 < m <;> simp[*]
+@[simp] lemma and_pos_iff (n m : ℕ) : 0 < and n m ↔ 0 < n ∧ 0 < m := by
+  simp[and_eq]; by_cases 0 < n ∧ 0 < m <;> simp[*]
 
-@[simp] lemma or_pos_iff (n m : ℕ) : 0 < or n m ↔ 0 < n ∨ 0 < m := by simp[or_eq]; by_cases 0 < n ∨ 0 < m <;> simp[*]
+@[simp] lemma or_pos_iff (n m : ℕ) : 0 < or n m ↔ 0 < n ∨ 0 < m := by
+  simp[or_eq]; by_cases 0 < n ∨ 0 < m <;> simp[*]
 
 @[simp] lemma inv_pos_iff (n : ℕ) : 0 < inv n ↔ ¬0 < n := by simp[inv]
 
@@ -99,7 +107,7 @@ def ball (n : ℕ) (p : ℕ → ℕ) : ℕ := n.rec 1 (fun n ih => (p n).pos.and
 @[simp] lemma ball_pos_iff {p : ℕ → ℕ} {n : ℕ} : 0 < ball n p ↔ ∀ m < n, 0 < p m := by
   induction' n with n ih <;> simp[ball, Nat.lt_succ_iff] at*
   · simp[ih]; exact ⟨
-    by rintro ⟨hn, hp⟩ m hm; rcases lt_or_eq_of_le hm with (hm | rfl); { exact hp _ hm }; { exact hn },
+    by rintro ⟨hn, hp⟩ m hm; rcases lt_or_eq_of_le hm with (hm | rfl); {exact hp _ hm }; {exact hn },
     by intro h; exact ⟨h n (Nat.le_refl n), fun m hm => h m (le_of_lt hm)⟩⟩
 
 @[simp] lemma ball_eq_zero_iff {p : ℕ → ℕ} {n : ℕ} : ball n p = 0 ↔ ∃ m < n, p m = 0 := by
@@ -173,20 +181,22 @@ lemma to_partrec' {n} {f : Vector ℕ n →. ℕ} (hf : PartArith f) : Partrec' 
 lemma of_eq {n} {f g : Vector ℕ n →. ℕ} (hf : PartArith f) (H : ∀ i, f i = g i) : PartArith g :=
   (funext H : f = g) ▸ hf
 
-lemma bind (f : Vector ℕ n → ℕ →. ℕ) (hf : @PartArith (n + 1) fun v => f v.tail v.head) {g} (hg : @PartArith n g) :
-    @PartArith n fun v => (g v).bind (f v) :=
-  (hf.comp (g :> fun i v => v.get i) (fun i => by cases i using Fin.cases <;> simp[*]; exact proj _)).of_eq (by
+lemma bind (f : Vector ℕ n → ℕ →. ℕ) (hf : @PartArith (n + 1) fun v => f v.tail v.head) {g}
+    (hg : @PartArith n g) : @PartArith n fun v => (g v).bind (f v) :=
+  (hf.comp (g :> fun i v => v.get i) (fun i => by cases i using Fin.cases <;> simp[*];
+      exact proj _)).of_eq (by
     intro v; simp
     rcases Part.eq_none_or_eq_some (g v) with (hgv | ⟨x, hgv⟩)
     · simp[hgv, mOfFn]
     · simp[hgv, Matrix.comp_vecCons']
-      have : mOfFn (fun i => (g :> fun j v => Part.some $ v.get j) i v) = pure (Vector.ofFn (x :> fun j => v.get j)) := by
+      have : mOfFn (fun i => (g :> fun j v => Part.some $ v.get j) i v) = pure (Vector.ofFn
+          (x :> fun j => v.get j)) := by
         rw[←Vector.mOfFn_pure]; apply congr_arg
         funext i; cases i using Fin.cases <;> simp[hgv]
       simp[this])
 
-lemma map (f : Vector ℕ n → ℕ → ℕ) (hf : @Arith (n + 1) fun v => f v.tail v.head) {g} (hg : @PartArith n g) :
-    @PartArith n fun v => (g v).map (f v) :=
+lemma map (f : Vector ℕ n → ℕ → ℕ) (hf : @Arith (n + 1) fun v => f v.tail v.head) {g}
+    (hg : @PartArith n g) : @PartArith n fun v => (g v).map (f v) :=
   (bind (Part.some $ f · ·) (hf.of_eq <| by simp) hg).of_eq <| by
   intro v; rcases Part.eq_none_or_eq_some (g v) with (_ | ⟨x, _⟩) <;> simp[*]
 
@@ -194,19 +204,21 @@ lemma comp₁ (f : ℕ →. ℕ) (hf : @PartArith 1 fun v => f (v.get 0)) {n g} 
     @PartArith n fun v => f (g v) :=
   (hf.comp _ fun _ => hg).of_eq (by simp)
 
-lemma comp₂ (f : ℕ → ℕ →. ℕ) (hf : @PartArith 2 fun v => f (v.get 0) (v.get 1)) {n g h} (hg : @Arith n g) (hh : @Arith n h) :
-    @PartArith n fun v => f (g v) (h v) :=
+lemma comp₂ (f : ℕ → ℕ →. ℕ) (hf : @PartArith 2 fun v => f (v.get 0) (v.get 1)) {n g h}
+    (hg : @Arith n g) (hh : @Arith n h) : @PartArith n fun v => f (g v) (h v) :=
   (hf.comp ![g, h] (fun i => i.cases hg (fun i => by simpa using hh))).of_eq
     (by intro i
-        have : (fun j => (![↑g, h] : Fin 2 → Vector ℕ n →. ℕ) j i) = (fun j => pure (![g i, h i] j)) := by
+        have : (fun j => (![↑g, h] : Fin 2 → Vector ℕ n →. ℕ) j i) =
+            (fun j => pure (![g i, h i] j)) := by
           funext j; cases j using Fin.cases <;> simp[Fin.eq_zero]
         simp[Matrix.comp_vecCons']; simp[this] )
 
 lemma rfind' {n} {f : ℕ → Vector ℕ n → ℕ} (h : Arith (n := n + 1) (fun v => f v.head v.tail)) :
     PartArith (fun v => Nat.rfind fun n => Part.some (f n v = 0)) := rfind h
 
-lemma rfind'₁ {n} (i : Fin n) {f : ℕ → ℕ → ℕ} (h : Arith (n := 2) (fun v => f (v.get 0) (v.get 1))) :
-    PartArith (fun v => Nat.rfind fun n => Part.some (f n (v.get i) = 0)) :=
+lemma rfind'₁ {n} (i : Fin n) {f : ℕ → ℕ → ℕ} (h : Arith (n := 2)
+    (fun v => f (v.get 0) (v.get 1))) : PartArith (fun v => Nat.rfind fun n =>
+    Part.some (f n (v.get i) = 0)) :=
   (rfind h).comp₁ (fun m => Nat.rfind fun n => Part.some (f n m = 0)) (proj i)
 
 end Nat.PartArith
@@ -228,7 +240,8 @@ lemma proj {n} (i : Fin n) : @Arith n (fun v => v.get i) := Nat.PartArith.proj i
 
 lemma head {n} : @Arith (n + 1) (fun v => v.head) := (Nat.PartArith.proj 0).of_eq <| by simp
 
-lemma equal {n} (i j : Fin n) : @Arith n (fun v => isEqNat (v.get i) (v.get j)) := Nat.PartArith.equal i j
+lemma equal {n} (i j : Fin n) : @Arith n (fun v => isEqNat (v.get i) (v.get j)) :=
+  Nat.PartArith.equal i j
 
 lemma lt {n} (i j : Fin n) : @Arith n (fun v => isLtNat (v.get i) (v.get j)) := Nat.PartArith.lt i j
 
@@ -254,9 +267,10 @@ lemma comp₁ (f : ℕ → ℕ) (hf : @Arith 1 fun v => f (v.get 0)) {n g} (hg :
     @Arith n fun v => f (g v) :=
   (hf.comp _ fun _ => hg).of_eq (by simp)
 
-lemma comp₂ (f : ℕ → ℕ → ℕ) (hf : @Arith 2 fun v => f (v.get 0) (v.get 1)) {n g h} (hg : @Arith n g) (hh : @Arith n h) :
-    @Arith n fun v => f (g v) (h v) :=
-  (hf.comp ![g, h] (fun i => i.cases hg (fun i => by simpa using hh))).of_eq (by intro i; simp[Matrix.comp_vecCons'])
+lemma comp₂ (f : ℕ → ℕ → ℕ) (hf : @Arith 2 fun v => f (v.get 0) (v.get 1)) {n g h}
+    (hg : @Arith n g) (hh : @Arith n h) : @Arith n fun v => f (g v) (h v) :=
+  (hf.comp ![g, h] (fun i => i.cases hg (fun i => by simpa using hh))).of_eq
+    (by intro i; simp[Matrix.comp_vecCons'])
 
 lemma succ {n} (i : Fin n) : Arith (fun v => v.get i + 1) := (add 0 1).comp₂ _ (proj i) one
 
@@ -268,9 +282,11 @@ lemma inv {n} (i : Fin n) : Arith (fun v => inv (v.get i)) := (equal 0 1).comp�
 
 lemma pos {n} (i : Fin n) : Arith (fun v => pos (v.get i)) := (lt 0 1).comp₂ _ zero (proj i)
 
-lemma and {n} (i j : Fin n) : Arith (fun v => and (v.get i) (v.get j)) := (lt 0 1).comp₂ _ zero (mul i j)
+lemma and {n} (i j : Fin n) : Arith (fun v => and (v.get i) (v.get j)) :=
+  (lt 0 1).comp₂ _ zero (mul i j)
 
-lemma or {n} (i j : Fin n) : Arith (fun v => or (v.get i) (v.get j)) := (lt 0 1).comp₂ _ zero (add i j)
+lemma or {n} (i j : Fin n) : Arith (fun v => or (v.get i) (v.get j)) :=
+  (lt 0 1).comp₂ _ zero (add i j)
 
 lemma le {n} (i j : Fin n) : @Arith n (fun v => isLeNat (v.get i) (v.get j)) :=
   ((or 0 1).comp₂ _ (lt i j) (equal i j)).of_eq <| by simp[Nat.or_eq, Nat.le_iff_lt_or_eq, isLeNat]
@@ -294,8 +310,9 @@ lemma rfindPos {n} {f : Vector ℕ (n + 1) → ℕ} (h : Arith f) :
     PartArith (fun v => Nat.rfind fun n => Part.some (0 < f (n ::ᵥ v))) :=
   (PartArith.rfind ((Arith.inv 0).comp₁ _ ((Arith.lt 0 1).comp₂ _ zero h))).of_eq <| by simp
 
-lemma rfindPos₁ {n} (i : Fin n) {f : ℕ → ℕ → ℕ} (h : Arith (n := 2) (fun v => f (v.get 0) (v.get 1))) :
-    PartArith (fun v => Nat.rfind fun n => Part.some (0 < f n (v.get i))) :=
+lemma rfindPos₁ {n} (i : Fin n) {f : ℕ → ℕ → ℕ} (h : Arith (n := 2)
+    (fun v => f (v.get 0) (v.get 1))) : PartArith (fun v => Nat.rfind fun n =>
+    Part.some (0 < f n (v.get i))) :=
   (rfindPos h).comp₁ (fun m => Nat.rfind fun n => Part.some (0 < f n m)) (proj i)
 
 lemma inv_fun {n} (i : Fin n) (f : ℕ → ℕ) (hf : Arith (n := 1) (fun v => f (v.get 0))) :
@@ -306,11 +323,12 @@ lemma inv_fun {n} (i : Fin n) (f : ℕ → ℕ) (hf : Arith (n := 1) (fun v => f
       ((Arith.lt 0 1).comp₂ _ (proj 1) (hf.comp₁ _ $ (Arith.succ 0).comp₁ _ $ proj 0))
   exact this.of_eq <| by intro v; simp
 
-lemma implicit_fun {n} (i : Fin n) (f : Vector ℕ n → ℕ → ℕ)
-  (hf : Arith (n := n + 1) (fun v => f v.tail v.head)) :
-    PartArith (fun v => Nat.rfind (fun x => Part.some (f v x ≤ v.get i ∧ v.get i < f v (x + 1)))) := by
+lemma implicit_fun {n} (i : Fin n) (f : Vector ℕ n → ℕ → ℕ) (hf : Arith (n := n + 1)
+    (fun v => f v.tail v.head)) : PartArith (fun v => Nat.rfind (fun x => Part.some
+    (f v x ≤ v.get i ∧ v.get i < f v (x + 1)))) := by
   let F : Vector ℕ (n + 1) → ℕ :=
-    fun v => (isLeNat (f v.tail v.head) (v.get i.succ)).and (isLtNat (v.get i.succ) (f v.tail (v.head + 1)))
+    fun v => (isLeNat (f v.tail v.head) (v.get i.succ)).and (isLtNat (v.get i.succ)
+    (f v.tail (v.head + 1)))
   have : Arith F :=
     (Arith.and 0 1).comp₂ _
       ((Arith.le 0 1).comp₂ _ hf (proj i.succ))
