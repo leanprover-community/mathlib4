@@ -53,7 +53,7 @@ lemma FermatLastTheoremFor.mono (hmn : m ∣ n) (hm : FermatLastTheoremFor m) :
 
 lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
-  tfae_have : 1 → 2
+  tfae_have 1 → 2
   · rintro h a b c ha hb hc habc
     obtain hn | hn := n.even_or_odd
     · refine' h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
@@ -93,7 +93,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
         (Int.coe_nat_inj'.1 _)
       push_cast
       simp only [abs_of_pos, habc, *]
-  tfae_have : 2 → 3
+  tfae_have 2 → 3
   · rintro h a b c ha hb hc habc
     rw [← Rat.num_ne_zero] at ha hb hc
     have : a.den ≠ 0 := a.den_pos.ne'
@@ -107,7 +107,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     simp only [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),
       one_mul, mul_one, Rat.num_div_den, habc]
-  tfae_have : 3 → 1
+  tfae_have 3 → 1
   · rintro h a b c
     exact mod_cast h a b c
   tfae_finish

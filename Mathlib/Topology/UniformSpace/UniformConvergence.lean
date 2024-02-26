@@ -732,14 +732,14 @@ theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α �
       TendstoLocallyUniformlyOn G g p s,
       ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn G g p K,
       ∀ x ∈ s, ∃ v ∈ 𝓝[s] x, TendstoUniformlyOn G g p v] := by
-  tfae_have : 1 → 2
+  tfae_have 1 → 2
   · rintro h K hK1 hK2
     exact (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK2).mp (h.mono hK1)
-  tfae_have : 2 → 3
+  tfae_have 2 → 3
   · rintro h x hx
     obtain ⟨K, ⟨hK1, hK2⟩, hK3⟩ := (compact_basis_nhds x).mem_iff.mp (hs.mem_nhds hx)
     refine' ⟨K, nhdsWithin_le_nhds hK1, h K hK3 hK2⟩
-  tfae_have : 3 → 1
+  tfae_have 3 → 1
   · rintro h u hu x hx
     obtain ⟨v, hv1, hv2⟩ := h x hx
     exact ⟨v, hv1, hv2 u hu⟩

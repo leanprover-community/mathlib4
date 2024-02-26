@@ -126,10 +126,10 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
         ∀ {K : Type u} [Field K],
           ∀ (φ : R →+* K), Surjective φ → ∀ f : R[X], f.Monic → ∀ a₀ : K,
             f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 → ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
-  tfae_have : 3 → 2
+  tfae_have 3 → 2
   · intro H
     exact H (residue R) Ideal.Quotient.mk_surjective
-  tfae_have : 2 → 1
+  tfae_have 2 → 1
   · intro H
     constructor
     intro f hf a₀ h₁ h₂
@@ -141,7 +141,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     refine' ⟨a, ha₁, _⟩
     rw [← Ideal.Quotient.eq_zero_iff_mem]
     rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
-  tfae_have : 1 → 3
+  tfae_have 1 → 3
   · intro hR K _K φ hφ f hf a₀ h₁ h₂
     obtain ⟨a₀, rfl⟩ := hφ a₀
     have H := HenselianLocalRing.is_henselian f hf a₀

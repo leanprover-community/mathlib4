@@ -265,13 +265,13 @@ open List in
 theorem wellFounded_characterisations : List.TFAE
     [WellFounded ((· > ·) : α → α → Prop),
       IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
-  tfae_have : 1 → 2
+  tfae_have 1 → 2
   · exact WellFounded.isSupFiniteCompact α
-  tfae_have : 2 → 3
+  tfae_have 2 → 3
   · exact IsSupFiniteCompact.isSupClosedCompact α
-  tfae_have : 3 → 1
+  tfae_have 3 → 1
   · exact IsSupClosedCompact.wellFounded α
-  tfae_have : 2 ↔ 4
+  tfae_have 2 ↔ 4
   · exact isSupFiniteCompact_iff_all_elements_compact α
   tfae_finish
 #align complete_lattice.well_founded_characterisations CompleteLattice.wellFounded_characterisations
