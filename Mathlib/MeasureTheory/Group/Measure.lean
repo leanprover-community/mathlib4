@@ -982,10 +982,13 @@ theorem _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     IsAddHaarMeasure (μ.map L) :=
   AddEquiv.isAddHaarMeasure_map _ (L : E ≃+ F) L.continuous L.symm.continuous
 
-/-- A Haar measure on a σ-compact space is σ-finite. -/
--- See note [lower instance priority]
+/-- A Haar measure on a σ-compact space is σ-finite.
+
+See Note [lower instance priority] -/
 @[to_additive
-"A Haar measure on a σ-compact space is σ-finite."]
+"A Haar measure on a σ-compact space is σ-finite.
+
+See Note [lower instance priority]"]
 instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
         set_mem := fun _ => mem_univ _

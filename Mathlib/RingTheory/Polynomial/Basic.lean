@@ -919,7 +919,6 @@ end Prime
 
 namespace Polynomial
 
--- See note [lower instance priority]
 instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] :
     WfDvdMonoid R[X] where
   wellFounded_dvdNotUnit := by
@@ -1295,7 +1294,6 @@ open UniqueFactorizationMonoid
 
 namespace Polynomial
 
--- See note [lower instance priority]
 attribute [-instance] Ring.toSemiring in
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
   letI := Classical.arbitrary (NormalizedGCDMonoid D)
@@ -1345,7 +1343,6 @@ private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
       · apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) _ _ ?_
         assumption
 
--- See note [lower instance priority]
 instance (priority := 100) uniqueFactorizationMonoid :
     UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]

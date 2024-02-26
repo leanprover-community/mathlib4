@@ -1085,7 +1085,6 @@ instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
     ext _ f <;> exact Empty.elim f⟩
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply
 instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M N] :
     StrongHomClass Language.empty F M N :=
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩

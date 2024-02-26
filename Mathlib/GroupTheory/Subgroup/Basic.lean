@@ -1935,7 +1935,6 @@ namespace Subgroup
 
 variable {H K : Subgroup G}
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 @[to_additive]
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
   ⟨by simp [mul_comm, mul_left_comm]⟩
@@ -1974,7 +1973,6 @@ structure Characteristic : Prop where
 
 attribute [class] Characteristic
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) normal_of_characteristic [h : H.Characteristic] : H.Normal :=
   ⟨fun a ha b => (SetLike.ext_iff.mp (h.fixed (MulAut.conj b)) a).mpr ha⟩
 #align subgroup.normal_of_characteristic Subgroup.normal_of_characteristic
@@ -1996,7 +1994,6 @@ attribute [to_additive] Subgroup.Characteristic
 
 attribute [class] Characteristic
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) normal_of_characteristic [h : H.Characteristic] : H.Normal :=
   ⟨fun a ha b => (SetLike.ext_iff.mp (h.fixed (AddAut.conj b)) a).mpr ha⟩
 #align add_subgroup.normal_of_characteristic AddSubgroup.normal_of_characteristic
@@ -2209,7 +2206,6 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 #align subgroup.le_normalizer Subgroup.le_normalizer
 #align add_subgroup.le_normalizer AddSubgroup.le_normalizer
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 @[to_additive]
 instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).Normal :=
   ⟨fun x xH g => by simpa only [mem_subgroupOf] using (g.2 x.1).1 xH⟩
@@ -2933,7 +2929,6 @@ theorem ker_prodMap {G' : Type*} {N' : Type*} [Group G'] [Group N'] (f : G →* 
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
   ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
   ⟨fun x hx y => by
@@ -3463,7 +3458,6 @@ theorem Subgroup.Normal.comap {H : Subgroup N} (hH : H.Normal) (f : G →* N) : 
 #align subgroup.normal.comap Subgroup.Normal.comap
 #align add_subgroup.normal.comap AddSubgroup.Normal.comap
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 @[to_additive]
 instance (priority := 100) Subgroup.normal_comap {H : Subgroup N} [nH : H.Normal] (f : G →* N) :
     (H.comap f).Normal :=
@@ -3479,7 +3473,6 @@ theorem Subgroup.Normal.subgroupOf {H : Subgroup G} (hH : H.Normal) (K : Subgrou
 #align subgroup.normal.subgroup_of Subgroup.Normal.subgroupOf
 #align add_subgroup.normal.add_subgroup_of AddSubgroup.Normal.addSubgroupOf
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 @[to_additive]
 instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Normal] :
     (N.subgroupOf H).Normal :=

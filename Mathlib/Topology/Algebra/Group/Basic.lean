@@ -282,7 +282,6 @@ instance Pi.has_continuous_inv' : ContinuousInv (ι → G) :=
 #align pi.has_continuous_inv' Pi.has_continuous_inv'
 #align pi.has_continuous_neg' Pi.has_continuous_neg'
 
-
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H] [Inv H]
@@ -1557,7 +1556,6 @@ end
 section
 
 variable (G) [TopologicalSpace G] [Group G] [TopologicalGroup G]
-
 
 -- See note [lower instance priority]
 @[to_additive]

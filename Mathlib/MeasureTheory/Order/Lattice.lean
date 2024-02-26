@@ -76,25 +76,21 @@ variable {M : Type*} [MeasurableSpace M]
 
 section OrderDual
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.instMeasurableSup [Inf M] [MeasurableInf M] :
     MeasurableSup Mᵒᵈ :=
   ⟨@measurable_const_inf M _ _ _, @measurable_inf_const M _ _ _⟩
 #align order_dual.has_measurable_sup OrderDual.instMeasurableSup
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.instMeasurableInf [Sup M] [MeasurableSup M] :
     MeasurableInf Mᵒᵈ :=
   ⟨@measurable_const_sup M _ _ _, @measurable_sup_const M _ _ _⟩
 #align order_dual.has_measurable_inf OrderDual.instMeasurableInf
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.instMeasurableSup₂ [Inf M] [MeasurableInf₂ M] :
     MeasurableSup₂ Mᵒᵈ :=
   ⟨@measurable_inf M _ _ _⟩
 #align order_dual.has_measurable_sup₂ OrderDual.instMeasurableSup₂
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) OrderDual.instMeasurableInf₂ [Sup M] [MeasurableSup₂ M] :
     MeasurableInf₂ Mᵒᵈ :=
   ⟨@measurable_sup M _ _ _⟩

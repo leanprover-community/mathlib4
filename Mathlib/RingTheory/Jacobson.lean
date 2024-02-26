@@ -118,7 +118,6 @@ theorem isJacobson_of_surjective [H : IsJacobson R] :
   exact this.trans (map_sInf hf fun J ⟨hJ, _⟩ => le_trans (Ideal.ker_le_comap f) hJ)
 #align ideal.is_jacobson_of_surjective Ideal.isJacobson_of_surjective
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) isJacobson_quotient [IsJacobson R] : IsJacobson (R ⧸ I) :=
   isJacobson_of_surjective ⟨Quotient.mk I, by
     rintro ⟨x⟩

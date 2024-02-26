@@ -146,8 +146,8 @@ theorem norm_apply_le (a : A) : ‖(φ a : B)‖ ≤ ‖a‖ :=
   nnnorm_apply_le φ a
 #align star_alg_hom.norm_apply_le StarAlgHom.norm_apply_le
 
-/-- Star algebra homomorphisms between C⋆-algebras are continuous linear maps. -/
--- See note [lower instance priority]
+/-- Star algebra homomorphisms between C⋆-algebras are continuous linear maps.
+See note [lower instance priority] -/
 noncomputable instance (priority := 100) : ContinuousLinearMapClass F ℂ A B :=
   { AlgHomClass.linearMapClass with
     map_continuous := fun φ =>
@@ -184,8 +184,8 @@ open scoped ComplexStarModule
 variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
-/-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops. -/
--- See note [lower instance priority]
+/-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.
+See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
   map_star φ a := by
     suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s by

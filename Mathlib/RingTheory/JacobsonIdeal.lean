@@ -91,7 +91,6 @@ theorem jacobson_eq_self_of_isMaximal [H : IsMaximal I] : I.jacobson = I :=
   le_antisymm (sInf_le ⟨le_of_eq rfl, H⟩) le_jacobson
 #align ideal.jacobson_eq_self_of_is_maximal Ideal.jacobson_eq_self_of_isMaximal
 
--- TODO: why is this priority 100? [lower instance priority] doesn't seem to apply.
 instance (priority := 100) jacobson.isMaximal [H : IsMaximal I] : IsMaximal (jacobson I) :=
   ⟨⟨fun htop => H.1.1 (jacobson_eq_top_iff.1 htop), fun _ hJ =>
     H.1.2 _ (lt_of_le_of_lt le_jacobson hJ)⟩⟩
