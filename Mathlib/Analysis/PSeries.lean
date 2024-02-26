@@ -109,7 +109,7 @@ namespace ENNReal
 variable {u : ℕ → ℕ} {f : ℕ → ℝ≥0∞}
 
 theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n) (hu_strict : StrictMono u) :
-  ∑' k , f k ≤ ∑ k in range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
+    ∑' k , f k ≤ ∑ k in range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
   have hu : Monotone u := by
     apply StrictMono.monotone hu_strict
   rw [ENNReal.tsum_eq_iSup_nat' (StrictMono.tendsto_atTop hu_strict)]
