@@ -84,7 +84,7 @@ theorem terminates_parallel.aux :
       exacts [⟨a', rfl⟩, ⟨a, rfl⟩]
     · cases' IH m with a' e
       simp only [parallel.aux2, rmap, List.foldr_cons]
-      simp [parallel.aux2] at e
+      simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
       rw [e]
       exact ⟨a', rfl⟩
   · intro s IH l S m
@@ -143,41 +143,39 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       rw [← a]
       simp
       rfl
-    induction' h : parallel.aux2 l with a l' <;> have C : corec parallel.aux1 (l, S) = _
-    · -- Porting note: To adjust RHS of `C`, these lines are changed.
-      apply destruct_eq_pure
-      rw [corec_eq, parallel.aux1]
-      dsimp only []
-      rw [h]
-      simp only [rmap]
-      rfl
-    · rw [C]
-      skip
+    induction' h : parallel.aux2 l with a l'
+    · have C : corec parallel.aux1 (l, S) = pure a := by
+        apply destruct_eq_pure
+        rw [corec_eq, parallel.aux1]
+        dsimp only []
+        rw [h]
+        simp only [rmap]
+      rw [C]
       infer_instance
-    · apply destruct_eq_think
-      simp only [corec_eq, rmap, parallel.aux1._eq_1]
-      rw [h, H]
-    · rw [C]
+    · have C : corec parallel.aux1 (l, S) = _ := by
+        apply destruct_eq_think
+        simp only [corec_eq, rmap, parallel.aux1._eq_1]
+        rw [h, H]
+      rw [C]
       refine @Computation.think_terminates _ _ ?_
       apply terminates_parallel.aux _ T
       simp
   · cases' o with a a
     · exact terminates_parallel.aux a T
-    induction' h : parallel.aux2 l with a l' <;> have C : corec parallel.aux1 (l, S) = _
-    · -- Porting note: To adjust RHS of `C`, these lines are changed.
-      apply destruct_eq_pure
-      rw [corec_eq, parallel.aux1]
-      dsimp only []
-      rw [h]
-      simp only [rmap]
-      rfl
-    · rw [C]
-      skip
+    induction' h : parallel.aux2 l with a l'
+    · have C : corec parallel.aux1 (l, S) = pure a := by
+        apply destruct_eq_pure
+        rw [corec_eq, parallel.aux1]
+        dsimp only []
+        rw [h]
+        simp only [rmap]
+      rw [C]
       infer_instance
-    · apply destruct_eq_think
-      simp only [corec_eq, rmap, parallel.aux1._eq_1]
-      rw [h]
-    · rw [C]
+    · have C : corec parallel.aux1 (l, S) = _ := by
+        apply destruct_eq_think
+        simp only [corec_eq, rmap, parallel.aux1._eq_1]
+        rw [h]
+      rw [C]
       refine @Computation.think_terminates _ _ ?_
       have TT : ∀ l', Terminates (corec parallel.aux1 (l', S.tail)) := by
         intro
@@ -230,14 +228,14 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         intro IH <;>
         simp only [parallel.aux2]
       · rcases IH with ⟨c', cl, ac⟩
-        refine' ⟨c', List.Mem.tail _ cl, ac⟩
+        exact ⟨c', List.Mem.tail _ cl, ac⟩
       · induction' h : destruct c with a c' <;> simp only [rmap]
         · refine' ⟨c, List.mem_cons_self _ _, _⟩
           rw [destruct_eq_pure h]
           apply ret_mem
         · intro a' h
           rcases h with ⟨d, dm, ad⟩
-          simp at dm
+          simp? at dm says simp only [List.mem_cons] at dm
           cases' dm with e dl
           · rw [e] at ad
             refine' ⟨c, List.mem_cons_self _ _, _⟩

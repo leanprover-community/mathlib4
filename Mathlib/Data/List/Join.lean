@@ -21,7 +21,7 @@ namespace List
 
 attribute [simp] join
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 #align list.join_singleton List.join_singleton
@@ -42,24 +42,22 @@ theorem join_append (L₁ L₂ : List (List α)) : join (L₁ ++ L₂) = join L�
 theorem join_concat (L : List (List α)) (l : List α) : join (L.concat l) = join L ++ l := by simp
 #align list.join_concat List.join_concat
 
--- Porting note: `ff/tt` should be translated to `false/true`.
--- Porting note: `List.filter` now takes a `Bool` not a `Prop`.
---     Should the correct spelling now be `== false` instead?
 @[simp]
-theorem join_filter_isEmpty_eq_false [DecidablePred fun l : List α => l.isEmpty = false] :
-    ∀ {L : List (List α)}, join (L.filter fun l => l.isEmpty = false) = L.join
+theorem join_filter_not_isEmpty  :
+    ∀ {L : List (List α)}, join (L.filter fun l => !l.isEmpty) = L.join
   | [] => rfl
   | [] :: L => by
-      simp [join_filter_isEmpty_eq_false (L := L), isEmpty_iff_eq_nil]
+      simp [join_filter_not_isEmpty (L := L), isEmpty_iff_eq_nil]
   | (a :: l) :: L => by
-      have cons_not_empty : isEmpty (a :: l) = false := rfl
-      simp [join_filter_isEmpty_eq_false (L := L), cons_not_empty]
-#align list.join_filter_empty_eq_ff List.join_filter_isEmpty_eq_false
+      simp [join_filter_not_isEmpty (L := L)]
+#align list.join_filter_empty_eq_ff List.join_filter_not_isEmpty
+
+@[deprecated] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
 
 @[simp]
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
     join (L.filter fun l => l ≠ []) = L.join := by
-  simp [join_filter_isEmpty_eq_false, ← isEmpty_iff_eq_nil]
+  simp only [Ne.def, join_filter_not_isEmpty, ← isEmpty_iff_eq_nil, decide_not, Bool.decide_coe]
 #align list.join_filter_ne_nil List.join_filter_ne_nil
 
 theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join := by
@@ -123,7 +121,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   · simp
     rfl
   have : i < tail.length := by
-    simp at hi
+    simp? at hi says simp only [length_cons] at hi
     exact Nat.lt_of_succ_lt_succ hi
   simp [*]
   rfl

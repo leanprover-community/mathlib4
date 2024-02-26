@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
+import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.EisensteinCriterion
@@ -106,8 +107,8 @@ theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine' (card_rootSet_le_derivative _).trans
     (Nat.succ_le_succ ((card_rootSet_le_derivative _).trans (Nat.succ_le_succ _)))
-  suffices : (Polynomial.rootSet (C (20 : ℚ) * X ^ 3) ℝ).Subsingleton
-  · norm_num [Fintype.card_le_one_iff_subsingleton, ← mul_assoc] at *
+  suffices (Polynomial.rootSet (C (20 : ℚ) * X ^ 3) ℝ).Subsingleton by
+    norm_num [Fintype.card_le_one_iff_subsingleton, ← mul_assoc] at *
     exact this
   rw [rootSet_C_mul_X_pow] <;>
   norm_num
@@ -126,7 +127,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     have hfa : 0 ≤ f a := by
       -- Porting note: was `simp_rw`
       simp only [hf, ← sq]
-      refine' add_nonneg (sub_nonneg.mpr (pow_le_pow ha _)) _ <;> norm_num
+      refine' add_nonneg (sub_nonneg.mpr (pow_le_pow_right ha _)) _ <;> norm_num
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
     obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)
     exact ⟨x, y, (hx1.trans hy1).ne, hx2, hy2⟩
@@ -137,7 +138,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
         f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
           norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow (by decide : Odd 5)]
         _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
-          refine' add_le_add (sub_le_sub_left (pow_le_pow ha _) _) _ <;> linarith
+          refine' add_le_add (sub_le_sub_left (pow_le_pow_right ha _) _) _ <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith
     have ha' := neg_nonpos.mpr (hle.trans ha)

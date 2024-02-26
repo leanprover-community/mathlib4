@@ -126,7 +126,7 @@ variable {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule 
 
 instance instSMul' : SMul S (M ⧸ P) :=
   ⟨fun a =>
-    Quotient.map' ((· • ·) a) fun x y h =>
+    Quotient.map' (a • ·) fun x y h =>
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
 #align submodule.quotient.has_smul' Submodule.Quotient.instSMul'
 

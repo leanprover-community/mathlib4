@@ -50,8 +50,8 @@ def of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : AlexDisc := 
 def Iso.mk {α β : AlexDisc} (e : α ≃ₜ β) : α ≅ β where
   hom := (e : ContinuousMap α β)
   inv := (e.symm : ContinuousMap β α)
-  hom_inv_id := FunLike.ext _ _ e.symm_apply_apply
-  inv_hom_id := FunLike.ext _ _ e.apply_symm_apply
+  hom_inv_id := DFunLike.ext _ _ e.symm_apply_apply
+  inv_hom_id := DFunLike.ext _ _ e.apply_symm_apply
 
 end AlexDisc
 
@@ -60,7 +60,7 @@ end AlexDisc
 def alexDiscEquivPreord : AlexDisc ≌ Preord where
   functor := forget₂ _ _ ⋙ topToPreord
   inverse := { obj := λ X ↦ AlexDisc.of (WithUpperSet X), map := WithUpperSet.map }
-  unitIso := NatIso.ofComponents λ X ↦ AlexDisc.Iso.mk $ by
+  unitIso := NatIso.ofComponents λ X ↦ AlexDisc.Iso.mk <| by
     dsimp; exact homeoWithUpperSetTopologyorderIso X
-  counitIso := NatIso.ofComponents λ X ↦ Preord.Iso.mk $ by
+  counitIso := NatIso.ofComponents λ X ↦ Preord.Iso.mk <| by
     dsimp; exact (orderIsoSpecializationWithUpperSetTopology X).symm

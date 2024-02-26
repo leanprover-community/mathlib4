@@ -150,7 +150,7 @@ def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultra
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨hf.1⟩
-  le_of_le g hg := (isAtom_iff.1 hf).2 g hg.ne
+  le_of_le g hg := (isAtom_iff_le_of_ge.1 hf).2 g hg.ne
 #align ultrafilter.of_atom Ultrafilter.ofAtom
 
 theorem nonempty_of_mem (hs : s ∈ f) : s.Nonempty :=

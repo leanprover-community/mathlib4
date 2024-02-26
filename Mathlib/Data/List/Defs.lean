@@ -3,10 +3,8 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
-import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Basic
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Std.Tactic.Lint.Basic
@@ -23,7 +21,7 @@ proofs about these definitions, those are contained in other files in `Data.List
 
 set_option autoImplicit true
 
--- Porting notes
+-- Porting note
 -- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
 -- These have been annotated with `#align`s
 -- To make this easier for review, the `#align`s have been placed in order of occurrence
@@ -51,7 +49,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 #noalign list.to_array
 
 #align list.nthd List.getD
--- porting notes: see
+-- Porting note: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
@@ -74,44 +72,13 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 #align list.take_while List.takeWhile
 #align list.scanl List.scanl
 #align list.scanr List.scanr
-
-/-- Product of a list.
-
-     `List.prod [a, b, c] = ((1 * a) * b) * c` -/
-def prod [Mul α] [One α] : List α → α :=
-  foldl (· * ·) 1
-#align list.prod List.prod
-
--- Later this will be tagged with `to_additive`, but this can't be done yet because of imports.
--- dependencies.
-/-- Sum of a list.
-
-     `List.sum [a, b, c] = ((0 + a) + b) + c` -/
-def sum [Add α] [Zero α] : List α → α :=
-  foldl (· + ·) 0
-#align list.sum List.sum
-
-/-- The alternating sum of a list. -/
-def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
-  | [] => 0
-  | g :: [] => g
-  | g :: h :: t => g + -h + alternatingSum t
-#align list.alternating_sum List.alternatingSum
-
-/-- The alternating product of a list. -/
-def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
-  | [] => 1
-  | g :: [] => g
-  | g :: h :: t => g * h⁻¹ * alternatingProd t
-#align list.alternating_prod List.alternatingProd
-
 #align list.partition_map List.partitionMap
 #align list.find List.find?
 
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
-  List.firstM <| fun a => (tac a) $> a
+  List.firstM fun a => (tac a) $> a
 #align list.mfind List.findM
 
 /-- `findM? p l` returns the first element `a` of `l` for which `p a` returns
@@ -184,7 +151,7 @@ end foldIdxM
 
 section mapIdxM
 
--- porting notes: This was defined in `mathlib` with an `Applicative`
+-- Porting note: This was defined in `mathlib` with an `Applicative`
 -- constraint on `m` and have been `#align`ed to the `Std` versions defined
 -- with a `Monad` typeclass constraint.
 -- Since all `Monad`s are `Applicative` this won't cause issues
@@ -259,8 +226,8 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
   | [], is => H0 is
   | t :: ts, is =>
       H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
-  termination_by _ ts is => (length ts + length is, length ts)
-  decreasing_by simp_wf; simp [Nat.succ_add]; decreasing_tactic
+  termination_by ts is => (length ts + length is, length ts)
+  decreasing_by all_goals (simp_wf; omega)
 #align list.permutations_aux.rec List.permutationsAux.rec
 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
@@ -533,7 +500,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 #align list.to_chunks_aux List.toChunksAux
 #align list.to_chunks List.toChunks
 
--- porting notes -- was `unsafe` but removed for Lean 4 port
+-- porting note -- was `unsafe` but removed for Lean 4 port
 -- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/
@@ -548,7 +515,7 @@ These can also be written in terms of `List.zip` or `List.zipWith`.
 For example, `zipWith3 f xs ys zs` could also be written as
 `zipWith id (zipWith f xs ys) zs`
 or as
-`(zip xs $ zip ys zs).map $ λ ⟨x, y, z⟩, f x y z`.
+`(zip xs <| zip ys zs).map <| λ ⟨x, y, z⟩, f x y z`.
 -/
 
 /-- Ternary version of `List.zipWith`. -/

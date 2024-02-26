@@ -211,9 +211,9 @@ variable {α}
 
 /-- If `α` is equipped with the lower topology, then it is homeomorphic to `WithLower α`.
 -/
-def WithLowerHomeomorph : WithLower α ≃ₜ α :=
+def withLowerHomeomorph : WithLower α ≃ₜ α :=
   WithLower.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
-#align lower_topology.with_lower_topology_homeomorph Topology.IsLower.WithLowerHomeomorph
+#align lower_topology.with_lower_topology_homeomorph Topology.IsLower.withLowerHomeomorph
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -241,11 +241,11 @@ theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
   -- porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
-  induction h
-  case basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
-  case univ => exact isLowerSet_univ
-  case inter u v _ _ hu2 hv2 => exact hu2.inter hv2
-  case sUnion _ _ ih => exact isLowerSet_sUnion ih
+  induction h with
+  | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl
+  | univ => exact isLowerSet_univ
+  | inter u v _ _ hu2 hv2 => exact hu2.inter hv2
+  | sUnion _ _ ih => exact isLowerSet_sUnion ih
 #align lower_topology.is_lower_set_of_is_open Topology.IsLower.isLowerSet_of_isOpen
 
 theorem isUpperSet_of_isClosed (h : IsClosed s) : IsUpperSet s :=
@@ -277,16 +277,17 @@ protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by
     exact ⟨_, finite_range f, by simp_rw [biInter_range, hf, sInter_eq_iInter]⟩
 #align lower_topology.is_topological_basis Topology.IsLower.isTopologicalBasis
 
-/-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
-preimage of every interval `Set.Ici a` is a closed set.
-
-TODO: upgrade to an `iff`. -/
-lemma continuous_of_Ici [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Ici a))) :
-    Continuous f := by
+/-- A function `f : β → α` with lower topology in the codomain is continuous
+if and only if the preimage of every interval `Set.Ici a` is a closed set.
+-/
+lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
+    Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Ici a)) := by
   obtain rfl := IsLower.topology_eq α
-  refine continuous_generateFrom ?_
-  rintro _ ⟨a, rfl⟩
-  exact (h a).isOpen_compl
+  simp [continuous_generateFrom_iff]
+
+/-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
+preimage of every interval `Set.Ici a` is a closed set. -/
+@[deprecated] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
 
 end Preorder
 
@@ -323,7 +324,7 @@ variable {α}
 
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
-def WithUpperHomeomorph : WithUpper α ≃ₜ α :=
+def withUpperHomeomorph : WithUpper α ≃ₜ α :=
   WithUpper.ofUpper.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
@@ -359,13 +360,18 @@ theorem closure_singleton (a : α) : closure {a} = Iic a :=
 protected theorem isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
   IsLower.isTopologicalBasis (α := αᵒᵈ)
 
-/-- A function `f : β → α` with upper topology in the codomain is continuous provided that the
-preimage of every interval `Set.Iic a` is a closed set.
+/-- A function `f : β → α` with upper topology in the codomain is continuous
+if and only if the preimage of every interval `Set.Iic a` is a closed set. -/
+lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
+    Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Iic a)) :=
+  IsLower.continuous_iff_Ici (α := αᵒᵈ)
 
-TODO: upgrade to an `iff`. -/
+/-- A function `f : β → α` with upper topology in the codomain is continuous
+provided that the preimage of every interval `Set.Iic a` is a closed set. -/
+@[deprecated]
 lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
     Continuous f :=
-  IsLower.continuous_of_Ici (α := αᵒᵈ) h
+  continuous_iff_Iic.2 h
 
 end Preorder
 
@@ -406,8 +412,7 @@ instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
     [OrderTop α] [Preorder β] [TopologicalSpace β] [IsUpper β] [OrderTop β] :
     IsUpper (α × β) where
   topology_eq_upperTopology := by
-    suffices : IsLower (α × β)ᵒᵈ
-    · exact IsLower.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
+    suffices IsLower (α × β)ᵒᵈ from IsLower.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
     exact instIsLowerProd (α := αᵒᵈ) (β := βᵒᵈ)
 
 section CompleteLattice_IsLower
@@ -416,7 +421,7 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [IsLowe
   [TopologicalSpace β] [IsLower β]
 
 protected lemma _root_.sInfHom.continuous (f : sInfHom α β) : Continuous f := by
-  refine IsLower.continuous_of_Ici fun b => ?_
+  refine IsLower.continuous_iff_Ici.2 fun b => ?_
   convert isClosed_Ici (a := sInf <| f ⁻¹' Ici b)
   refine' Subset.antisymm (fun a => sInf_le) fun a ha => le_trans _ <|
     OrderHomClass.mono (f : α →o β) ha

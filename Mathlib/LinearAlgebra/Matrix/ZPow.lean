@@ -3,8 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.Data.Int.Bitwise
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 #align_import linear_algebra.matrix.zpow from "leanprover-community/mathlib"@"03fda9112aa6708947da13944a19310684bfdfcb"
 
@@ -85,9 +86,8 @@ theorem one_zpow : ∀ n : ℤ, (1 : M) ^ n = 1
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : M) ^ z = 0
   | (n : ℕ), h => by
     rw [zpow_ofNat, zero_pow]
-    refine' lt_of_le_of_ne n.zero_le (Ne.symm _)
-    simpa using h
-  | -[n+1], _ => by simp [zero_pow n.zero_lt_succ]
+    exact mod_cast h
+  | -[n+1], _ => by simp [zero_pow n.succ_ne_zero]
 #align matrix.zero_zpow Matrix.zero_zpow
 
 theorem zero_zpow_eq (n : ℤ) : (0 : M) ^ n = if n = 0 then 1 else 0 := by
@@ -241,7 +241,7 @@ theorem Commute.zpow_zpow_self (A : M) (m n : ℤ) : Commute (A ^ m) (A ^ n) :=
 
 set_option linter.deprecated false in
 theorem zpow_bit0 (A : M) (n : ℤ) : A ^ bit0 n = A ^ n * A ^ n := by
-  cases' le_total 0 n with nonneg nonpos
+  rcases le_total 0 n with nonneg | nonpos
   · exact zpow_add_of_nonneg nonneg nonneg
   · exact zpow_add_of_nonpos nonpos nonpos
 #align matrix.zpow_bit0 Matrix.zpow_bit0
@@ -253,7 +253,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
     rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
     · apply zpow_add_one (isUnit_det_of_left_inverse h)
     · show A ^ (-((n + 1 : ℕ) : ℤ)) = A ^ (-((n + 2 : ℕ) : ℤ)) * A
-      simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow Nat.succ_pos', zero_mul]
+      simp_rw [zpow_neg_coe_nat, ← inv_pow', h, zero_pow $ Nat.succ_ne_zero _, zero_mul]
 #align matrix.zpow_add_one_of_ne_neg_one Matrix.zpow_add_one_of_ne_neg_one
 
 set_option linter.deprecated false in
@@ -339,6 +339,10 @@ theorem conjTranspose_zpow [StarRing R] (A : M) : ∀ n : ℤ, (A ^ n)ᴴ = Aᴴ
   | (n : ℕ) => by rw [zpow_ofNat, zpow_ofNat, conjTranspose_pow]
   | -[n+1] => by rw [zpow_negSucc, zpow_negSucc, conjTranspose_nonsing_inv, conjTranspose_pow]
 #align matrix.conj_transpose_zpow Matrix.conjTranspose_zpow
+
+theorem IsSymm.zpow {A : M} (h : A.IsSymm) (k : ℤ) :
+    (A ^ k).IsSymm := by
+  rw [IsSymm, transpose_zpow, h]
 
 end ZPow
 

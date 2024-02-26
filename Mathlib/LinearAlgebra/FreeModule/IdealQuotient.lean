@@ -3,8 +3,7 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Quotient
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.QuotientPi
@@ -78,7 +77,7 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
   · infer_instance
   classical
     let this :=
-      Submodule.quotientPi (show ∀ _, Submodule R R from fun i => span ({a i} : Set R))
+      Submodule.quotientPi (show _ → Submodule R R from fun i => span ({a i} : Set R))
     exact this
 #align ideal.quotient_equiv_pi_span Ideal.quotientEquivPiSpan
 
@@ -116,7 +115,7 @@ variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R
 noncomputable def quotientEquivDirectSum :
     (S ⧸ I) ≃ₗ[F] ⨁ i, R ⧸ span ({I.smithCoeffs b hI i} : Set R) := by
   haveI := Fintype.ofFinite ι
-  -- porting note: manual construction of `CompatibleSmul` typeclass no longer needed
+  -- porting note: manual construction of `CompatibleSMul` typeclass no longer needed
   exact ((I.quotientEquivPiSpan b _).restrictScalars F).trans
     (DirectSum.linearEquivFunOnFintype _ _ _).symm
 #align ideal.quotient_equiv_direct_sum Ideal.quotientEquivDirectSum

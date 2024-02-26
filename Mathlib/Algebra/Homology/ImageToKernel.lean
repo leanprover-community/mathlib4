@@ -64,7 +64,7 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
   rfl
 #align subobject_of_le_as_image_to_kernel subobject_ofLE_as_imageToKernel
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 -- porting note: removed elementwise attribute which does not seem to be helpful here
 -- a more suitable lemma is added below
@@ -174,7 +174,7 @@ instance imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
   simp only [imageToKernel_zero_right]
   haveI := epi_image_of_epi f
   rw [← imageSubobject_arrow]
-  refine' @epi_comp _ _ _ _ _ _ (epi_comp _ _) _ _
+  exact @epi_comp _ _ _ _ _ _ (epi_comp _ _) _ _
 #align image_to_kernel_epi_of_epi_of_zero imageToKernel_epi_of_epi_of_zero
 
 end
@@ -303,7 +303,7 @@ theorem homology'.π_map (p : α.right = β.left) :
 
 section
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 @[simp]
 lemma homology'.π_map_apply [ConcreteCategory.{w} V] (p : α.right = β.left)

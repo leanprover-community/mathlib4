@@ -133,14 +133,11 @@ theorem fermatPsp_base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatP
 -- pseudoprimes
 section HelperLemmas
 
-private theorem pow_gt_exponent {a : ℕ} (b : ℕ) (h : 2 ≤ a) : b < a ^ b :=
-  lt_of_lt_of_le (Nat.lt_two_pow b) <| Nat.pow_le_pow_of_le_left h _
-
 private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a ^ b - 1) / (a - 1) := by
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
   rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
-  exact self_lt_pow (Nat.lt_of_succ_le ha) hb
+  exact lt_self_pow (Nat.lt_of_succ_le ha) hb
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -148,7 +145,7 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
   calc
     2 * a + 1 ≤ a ^ 2 * a := by nlinarith
     _ = a ^ 3 := by rw [pow_succ a 2]
-    _ ≤ a ^ b := pow_le_pow (Nat.le_of_succ_le ha) hb
+    _ ≤ a ^ b := pow_le_pow_right (Nat.le_of_succ_le ha) hb
 
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by
@@ -219,7 +216,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have hi_bpowpsubone : 1 ≤ b ^ (p - 1) := Nat.one_le_pow (p - 1) b hi_b
   -- Other useful facts
   have p_odd : Odd p := p_prime.odd_of_ne_two p_gt_two.ne.symm
-  have AB_not_prime : ¬Nat.Prime (A * B) := Nat.not_prime_mul hi_A hi_B
+  have AB_not_prime : ¬Nat.Prime (A * B) := Nat.not_prime_mul hi_A.ne' hi_B.ne'
   have AB_id : A * B = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := AB_id_helper _ _ b_ge_two p_odd
   have hd : b ^ 2 - 1 ∣ b ^ (2 * p) - 1 := by
     simpa only [one_pow, pow_mul] using nat_sub_dvd_pow_sub_pow _ 1 p
@@ -261,8 +258,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     rwa [← hc] at this
   -- Used to prove that `2 * p` divides `A * B - 1`
   have ha₅ : 2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1) := by
-    suffices q : 2 * p * (b ^ 2 - 1) ∣ b * (b ^ (p - 1) - 1) * (b ^ p + b)
-    · rwa [ha₁]
+    suffices q : 2 * p * (b ^ 2 - 1) ∣ b * (b ^ (p - 1) - 1) * (b ^ p + b) by rwa [ha₁]
     -- We already proved that `b ^ 2 - 1 ∣ b ^ (p - 1) - 1`.
     -- Since `2 ∣ b ^ p + b` and `p ∣ b ^ p + b`, if we show that 2 and p are coprime, then we
     -- know that `2 * p ∣ b ^ p + b`
@@ -309,8 +305,8 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
       AB_id_helper _ _ b_ge_two (p_prime.odd_of_ne_two p_gt_two.ne.symm)]
   have AB_dvd : b ^ 2 - 1 ∣ b ^ (2 * p) - 1 := by
     simpa only [one_pow, pow_mul] using nat_sub_dvd_pow_sub_pow _ 1 p
-  suffices h : p * (b ^ 2 - 1) < b ^ (2 * p) - 1
-  · have h₁ : p * (b ^ 2 - 1) / (b ^ 2 - 1) < (b ^ (2 * p) - 1) / (b ^ 2 - 1) :=
+  suffices h : p * (b ^ 2 - 1) < b ^ (2 * p) - 1 by
+    have h₁ : p * (b ^ 2 - 1) / (b ^ 2 - 1) < (b ^ (2 * p) - 1) / (b ^ 2 - 1) :=
       Nat.div_lt_div_of_lt_of_dvd AB_dvd h
     have h₂ : 0 < b ^ 2 - 1 := by
       linarith [show 3 ≤ b ^ 2 - 1 from le_tsub_of_add_le_left (show 4 ≤ b ^ 2 by nlinarith)]
@@ -318,22 +314,22 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   rw [Nat.mul_sub_left_distrib, mul_one, pow_mul]
   conv_rhs => rw [← Nat.sub_add_cancel (show 1 ≤ p by linarith)]
   rw [pow_succ (b ^ 2)]
-  suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2
-  · apply gt_of_ge_of_gt
+  suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2 by
+    apply gt_of_ge_of_gt
     · exact tsub_le_tsub_left (one_le_of_lt p_gt_two) ((b ^ 2) ^ (p - 1) * b ^ 2)
-    · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right (show 0 < b ^ 2 by nlinarith)
+    · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right _ (show 0 < b ^ 2 by nlinarith)
       exact tsub_lt_tsub_right_of_le this h
-  suffices h : p < (b ^ 2) ^ (p - 1)
-  · have : 4 ≤ b ^ 2 := by nlinarith
+  suffices h : p < (b ^ 2) ^ (p - 1) by
+    have : 4 ≤ b ^ 2 := by nlinarith
     have : 0 < b ^ 2 := by linarith
     exact mul_lt_mul_of_pos_right h this
   rw [← pow_mul, Nat.mul_sub_left_distrib, mul_one]
   have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by linarith)
   have : 2 + p ≤ 2 * p := by linarith
   have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
-  exact Nat.lt_of_le_of_lt this (pow_gt_exponent _ b_ge_two)
+  exact this.trans_lt (lt_pow_self b_ge_two _)
 
-/-- For all positive bases, there exist Fermat infinite pseudoprimes to that base.
+/-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such
 that `m ≤ n`. This form is similar to `Nat.exists_infinite_primes`.
 -/
@@ -350,12 +346,12 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
     cases' h with p hp
     cases' hp with hp₁ hp₂
     have h₁ : 0 < b := pos_of_gt (Nat.succ_le_iff.mp b_ge_two)
-    have h₂ : 4 ≤ b ^ 2 := pow_le_pow_of_le_left' b_ge_two 2
+    have h₂ : 4 ≤ b ^ 2 := pow_le_pow_left' b_ge_two 2
     have h₃ : 0 < b ^ 2 - 1 := tsub_pos_of_lt (gt_of_ge_of_gt h₂ (by norm_num))
     have h₄ : 0 < b * (b ^ 2 - 1) := mul_pos h₁ h₃
     have h₅ : b * (b ^ 2 - 1) < p := by linarith
     have h₆ : ¬p ∣ b * (b ^ 2 - 1) := Nat.not_dvd_of_pos_of_lt h₄ h₅
-    have h₇ : b ≤ b * (b ^ 2 - 1) := Nat.le_mul_of_pos_right h₃
+    have h₇ : b ≤ b * (b ^ 2 - 1) := Nat.le_mul_of_pos_right _ h₃
     have h₈ : 2 ≤ b * (b ^ 2 - 1) := le_trans b_ge_two h₇
     have h₉ : 2 < p := gt_of_gt_of_ge h₅ h₈
     have h₁₀ := psp_from_prime_gt_p b_ge_two hp₂ h₉

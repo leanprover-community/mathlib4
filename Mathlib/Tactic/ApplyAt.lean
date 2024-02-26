@@ -3,7 +3,7 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Lean.Elab.Tactic
+import Lean.Elab.Tactic.ElabTerm
 import Mathlib.Lean.Meta.Basic
 
 /-!
@@ -23,8 +23,8 @@ metavariables/goals for any terms of `αⱼ` for `j = 1, …, i-1`,
 then replace the type of `i` with `αᵢ₊₁ → ⋯ → αₙ` by applying those metavariables and the
 original `i`.
 -/
-elab "apply" t:term "at" i:ident : tactic => withMainContext do
-  let f ← Term.elabTerm (← `(@$t)) none
+elab "apply" t:term "at" i:ident : tactic => withSynthesize <| withMainContext do
+  let f ← elabTermForApply t
   let some ldecl := (← getLCtx).findFromUserName? i.getId
     | throwErrorAt i m!"Identifier {i} not found"
   let (mvs, bis, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type

@@ -98,9 +98,9 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
 open BigOperators
 
 @[simp]
-theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
+nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
     F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
-  (F.mapAddHom : (X ⟶ Y) →+ _).map_sum f s
+  map_sum F.mapAddHom f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
 
 variable {F}
@@ -198,7 +198,7 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
   FullSubcategory fun F : C ⥤ D => F.Additive

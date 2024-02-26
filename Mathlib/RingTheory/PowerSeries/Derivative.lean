@@ -53,7 +53,8 @@ theorem derivativeFun_add (f g : R⟦X⟧) :
 
 theorem derivativeFun_C (r : R) : derivativeFun (C R r) = 0 := by
   ext n
-  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, map_zero]
+  -- Note that `map_zero` didn't get picked up, apparently due to a missing `FunLike.coe`
+  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, (coeff R n).map_zero]
 
 theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
     trunc n f.derivativeFun = derivative (trunc (n + 1) f) := by
@@ -71,12 +72,12 @@ private theorem derivativeFun_coe_mul_coe (f g : R[X]) : derivativeFun (f * g : 
   rw [← coe_mul, derivativeFun_coe, derivative_mul,
     add_comm, mul_comm _ g, ← coe_mul, ← coe_mul, Polynomial.coe_add]
 
-/-- Leibniz rule for formal power series.-/
+/-- **Leibniz rule for formal power series**.-/
 theorem derivativeFun_mul (f g : R⟦X⟧) :
     derivativeFun (f * g) = f • g.derivativeFun + g • f.derivativeFun := by
   ext n
   have h₁ : n < n + 1 := lt_succ_self n
-  have h₂ : n < n + 1 + 1 := Nat.lt_add_right _ _ _ h₁
+  have h₂ : n < n + 1 + 1 := Nat.lt_add_right _ h₁
   rw [coeff_derivativeFun, map_add, coeff_mul_eq_coeff_trunc_mul_trunc _ _ (lt_succ_self _),
     smul_eq_mul, smul_eq_mul, coeff_mul_eq_coeff_trunc_mul_trunc₂ g f.derivativeFun h₂ h₁,
     coeff_mul_eq_coeff_trunc_mul_trunc₂ f g.derivativeFun h₂ h₁, trunc_derivativeFun,

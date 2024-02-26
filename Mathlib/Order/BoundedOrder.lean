@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.ULift
 import Mathlib.Tactic.PushNeg
@@ -39,37 +38,6 @@ universe u v
 variable {α : Type u} {β : Type v} {γ δ : Type*}
 
 /-! ### Top, bottom element -/
-
-
-/-- Typeclass for the `⊤` (`\top`) notation -/
-@[notation_class, ext]
-class Top (α : Type u) where
-  /-- The top (`⊤`, `\top`) element -/
-  top : α
-#align has_top Top
-
-/-- Typeclass for the `⊥` (`\bot`) notation -/
-@[notation_class, ext]
-class Bot (α : Type u) where
-  /-- The bot (`⊥`, `\bot`) element -/
-  bot : α
-#align has_bot Bot
-
-/-- The top (`⊤`, `\top`) element -/
-notation "⊤" => Top.top
-
-/-- The bot (`⊥`, `\bot`) element -/
-notation "⊥" => Bot.bot
-
-instance (priority := 100) top_nonempty (α : Type u) [Top α] : Nonempty α :=
-  ⟨⊤⟩
-#align has_top_nonempty top_nonempty
-
-instance (priority := 100) bot_nonempty (α : Type u) [Bot α] : Nonempty α :=
-  ⟨⊥⟩
-#align has_bot_nonempty bot_nonempty
-
-attribute [match_pattern] Bot.bot Top.top
 
 /-- An order is an `OrderTop` if it has a greatest element.
 We state this using a data mixin, holding the value of `⊤` and the greatest element constraint. -/
@@ -551,10 +519,10 @@ theorem monotone_or {p q : α → Prop} (m_p : Monotone p) (m_q : Monotone q) :
   fun _ _ h => Or.imp (m_p h) (m_q h)
 #align monotone_or monotone_or
 
-theorem monotone_le {x : α} : Monotone ((· ≤ ·) x) := fun _ _ h' h => h.trans h'
+theorem monotone_le {x : α} : Monotone (x ≤ ·) := fun _ _ h' h => h.trans h'
 #align monotone_le monotone_le
 
-theorem monotone_lt {x : α} : Monotone ((· < ·) x) := fun _ _ h' h => h.trans_le h'
+theorem monotone_lt {x : α} : Monotone (x < ·) := fun _ _ h' h => h.trans_le h'
 #align monotone_lt monotone_lt
 
 theorem antitone_le {x : α} : Antitone (· ≤ x) := fun _ _ h' h => h'.trans h
@@ -654,11 +622,11 @@ theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 #align pi.top_def Pi.top_def
 
-instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
-  { inferInstanceAs (Top (∀ i, α' i)) with le_top := fun _ _ => le_top }
+instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) where
+  le_top _ := fun _ => le_top
 
-instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
-  { inferInstanceAs (Bot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
+instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) where
+  bot_le _ := fun _ => bot_le
 
 instance boundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
   __ := inferInstanceAs (OrderTop (∀ i, α' i))
@@ -723,8 +691,10 @@ def OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
 /-- Pullback a `BoundedOrder`. -/
 @[reducible]
 def BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
-    (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : BoundedOrder α :=
-  { OrderTop.lift f map_le map_top, OrderBot.lift f map_le map_bot with }
+    (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
+    BoundedOrder α where
+  __ := OrderTop.lift f map_le map_top
+  __ := OrderBot.lift f map_le map_bot
 #align bounded_order.lift BoundedOrder.lift
 
 end lift
@@ -756,8 +726,9 @@ protected def orderTop [LE α] [OrderTop α] (htop : p ⊤) : OrderTop { x : α 
 /-- A subtype remains a bounded order if the property holds at `⊥` and `⊤`. -/
 @[reducible]
 protected def boundedOrder [LE α] [BoundedOrder α] (hbot : p ⊥) (htop : p ⊤) :
-    BoundedOrder (Subtype p) :=
-  { Subtype.orderTop htop, Subtype.orderBot hbot with }
+    BoundedOrder (Subtype p) where
+  __ := Subtype.orderTop htop
+  __ := Subtype.orderBot hbot
 #align subtype.bounded_order Subtype.boundedOrder
 
 variable [PartialOrder α]

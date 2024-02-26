@@ -4,14 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init.Meta.WellFoundedTactics
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
+import Mathlib.Data.Set.Basic
+import Mathlib.Order.GaloisConnection
 
 #align_import algebra.order.floor from "leanprover-community/mathlib"@"afdb43429311b885a7988ea15d0bac2aac80f69c"
 
@@ -283,7 +285,7 @@ theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le
 #align nat.lt_ceil Nat.lt_ceil
 
--- porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem add_one_le_ceil_iff : n + 1 ≤ ⌈a⌉₊ ↔ (n : α) < a := by
   rw [← Nat.lt_ceil, Nat.add_one_le_iff]
@@ -456,8 +458,9 @@ theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rw [← cast_one, floor_add_nat ha 1]
 #align nat.floor_add_one Nat.floor_add_one
 
+-- See note [no_index around OfNat.ofNat]
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a + OfNat.ofNat n⌋₊ = ⌊a⌋₊ + OfNat.ofNat n :=
+    ⌊a + (no_index (OfNat.ofNat n))⌋₊ = ⌊a⌋₊ + OfNat.ofNat n :=
   floor_add_nat ha n
 
 @[simp]
@@ -465,7 +468,7 @@ theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : 
     ⌊a - n⌋₊ = ⌊a⌋₊ - n := by
   obtain ha | ha := le_total a 0
   · rw [floor_of_nonpos ha, floor_of_nonpos (tsub_nonpos_of_le (ha.trans n.cast_nonneg)), zero_tsub]
-  cases' le_total a n with h h
+  rcases le_total a n with h | h
   · rw [floor_of_nonpos (tsub_nonpos_of_le h), eq_comm, tsub_eq_zero_iff_le]
     exact Nat.cast_le.1 ((Nat.floor_le ha).trans h)
   · rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_nat _, tsub_add_cancel_of_le h]
@@ -476,9 +479,10 @@ theorem floor_sub_nat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : 
 theorem floor_sub_one [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) : ⌊a - 1⌋₊ = ⌊a⌋₊ - 1 :=
   mod_cast floor_sub_nat a 1
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem floor_sub_ofNat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a - OfNat.ofNat n⌋₊ = ⌊a⌋₊ - OfNat.ofNat n :=
+    ⌊a - (no_index (OfNat.ofNat n))⌋₊ = ⌊a⌋₊ - OfNat.ofNat n :=
   floor_sub_nat a n
 
 theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
@@ -488,7 +492,7 @@ theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n 
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
       rw [Nat.cast_add, add_comm n, add_comm (n : α), add_lt_add_iff_right, add_lt_add_iff_right,
         lt_ceil]
-    · exact iff_of_true (lt_add_of_nonneg_of_lt ha <| cast_lt.2 hb) (lt_add_left _ _ _ hb)
+    · exact iff_of_true (lt_add_of_nonneg_of_lt ha <| cast_lt.2 hb) (Nat.lt_add_left _ hb)
 #align nat.ceil_add_nat Nat.ceil_add_nat
 
 theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
@@ -496,8 +500,9 @@ theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
   rw [cast_one.symm, ceil_add_nat ha 1]
 #align nat.ceil_add_one Nat.ceil_add_one
 
+-- See note [no_index around OfNat.ofNat]
 theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
-    ⌈a + OfNat.ofNat n⌉₊ = ⌈a⌉₊ + OfNat.ofNat n :=
+    ⌈a + (no_index (OfNat.ofNat n))⌉₊ = ⌈a⌉₊ + OfNat.ofNat n :=
   ceil_add_nat ha n
 
 theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : α) < a + 1 :=
@@ -528,7 +533,7 @@ variable [LinearOrderedSemifield α] [FloorSemiring α]
 -- TODO: should these lemmas be `simp`? `norm_cast`?
 
 theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
-  cases' le_total a 0 with ha ha
+  rcases le_total a 0 with ha | ha
   · rw [floor_of_nonpos, floor_of_nonpos ha]
     · simp
     apply div_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
@@ -537,14 +542,15 @@ theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
   refine' (floor_eq_iff _).2 _
   · exact div_nonneg ha n.cast_nonneg
   constructor
-  · exact cast_div_le.trans (div_le_div_of_le_of_nonneg (floor_le ha) n.cast_nonneg)
+  · exact cast_div_le.trans (div_le_div_of_le n.cast_nonneg (floor_le ha))
   rw [div_lt_iff, add_mul, one_mul, ← cast_mul, ← cast_add, ← floor_lt ha]
   · exact lt_div_mul_add hn
   · exact cast_pos.2 hn
 #align nat.floor_div_nat Nat.floor_div_nat
 
+-- See note [no_index around OfNat.ofNat]
 theorem floor_div_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a / OfNat.ofNat n⌋₊ = ⌊a⌋₊ / OfNat.ofNat n :=
+    ⌊a / (no_index (OfNat.ofNat n))⌋₊ = ⌊a⌋₊ / OfNat.ofNat n :=
   floor_div_nat a n
 
 /-- Natural division is the floor of field division. -/
@@ -738,7 +744,9 @@ theorem floor_zero : ⌊(0 : α)⌋ = 0 := by rw [← cast_zero, floor_intCast]
 theorem floor_one : ⌊(1 : α)⌋ = 1 := by rw [← cast_one, floor_intCast]
 #align int.floor_one Int.floor_one
 
-@[simp] theorem floor_ofNat (n : ℕ) [n.AtLeastTwo] : ⌊(OfNat.ofNat n : α)⌋ = n := floor_natCast n
+-- See note [no_index around OfNat.ofNat]
+@[simp] theorem floor_ofNat (n : ℕ) [n.AtLeastTwo] : ⌊(no_index (OfNat.ofNat n : α))⌋ = n :=
+  floor_natCast n
 
 @[mono]
 theorem floor_mono : Monotone (floor : α → ℤ) :=
@@ -786,9 +794,10 @@ theorem floor_int_add (z : ℤ) (a : α) : ⌊↑z + a⌋ = z + ⌊a⌋ := by
 theorem floor_add_nat (a : α) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by rw [← Int.cast_ofNat, floor_add_int]
 #align int.floor_add_nat Int.floor_add_nat
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem floor_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a + OfNat.ofNat n⌋ = ⌊a⌋ + OfNat.ofNat n :=
+    ⌊a + (no_index (OfNat.ofNat n))⌋ = ⌊a⌋ + OfNat.ofNat n :=
   floor_add_nat a n
 
 @[simp]
@@ -796,9 +805,10 @@ theorem floor_nat_add (n : ℕ) (a : α) : ⌊↑n + a⌋ = n + ⌊a⌋ := by
   rw [← Int.cast_ofNat, floor_int_add]
 #align int.floor_nat_add Int.floor_nat_add
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem floor_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : α) :
-    ⌊OfNat.ofNat n + a⌋ = OfNat.ofNat n + ⌊a⌋ :=
+    ⌊(no_index (OfNat.ofNat n)) + a⌋ = OfNat.ofNat n + ⌊a⌋ :=
   floor_nat_add n a
 
 @[simp]
@@ -812,9 +822,10 @@ theorem floor_sub_nat (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by rw [�
 
 @[simp] theorem floor_sub_one (a : α) : ⌊a - 1⌋ = ⌊a⌋ - 1 := mod_cast floor_sub_nat a 1
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem floor_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a - OfNat.ofNat n⌋ = ⌊a⌋ - OfNat.ofNat n :=
+    ⌊a - (no_index (OfNat.ofNat n))⌋ = ⌊a⌋ - OfNat.ofNat n :=
   floor_sub_nat a n
 
 theorem abs_sub_lt_one_of_floor_eq_floor {α : Type*} [LinearOrderedCommRing α] [FloorRing α]
@@ -883,8 +894,10 @@ theorem fract_add_nat (a : α) (m : ℕ) : fract (a + m) = fract a := by
 @[simp]
 theorem fract_add_one (a : α) : fract (a + 1) = fract a := mod_cast fract_add_nat a 1
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem fract_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] : fract (a + OfNat.ofNat n) = fract a :=
+theorem fract_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+    fract (a + (no_index (OfNat.ofNat n))) = fract a :=
   fract_add_nat a n
 
 @[simp]
@@ -897,8 +910,10 @@ theorem fract_nat_add (n : ℕ) (a : α) : fract (↑n + a) = fract a := by rw [
 @[simp]
 theorem fract_one_add (a : α) : fract (1 + a) = fract a := mod_cast fract_nat_add 1 a
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem fract_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : α) : fract (OfNat.ofNat n + a) = fract a :=
+theorem fract_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : α) :
+    fract ((no_index (OfNat.ofNat n)) + a) = fract a :=
   fract_nat_add n a
 
 @[simp]
@@ -916,8 +931,10 @@ theorem fract_sub_nat (a : α) (n : ℕ) : fract (a - n) = fract a := by
 @[simp]
 theorem fract_sub_one (a : α) : fract (a - 1) = fract a := mod_cast fract_sub_nat a 1
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem fract_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] : fract (a - OfNat.ofNat n) = fract a :=
+theorem fract_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+    fract (a - (no_index (OfNat.ofNat n))) = fract a :=
   fract_sub_nat a n
 
 -- Was a duplicate lemma under a bad name
@@ -950,7 +967,7 @@ theorem fract_nonneg (a : α) : 0 ≤ fract a :=
 
 /-- The fractional part of `a` is positive if and only if `a ≠ ⌊a⌋`. -/
 lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
-  (fract_nonneg a).lt_iff_ne.trans $ ne_comm.trans sub_ne_zero
+  (fract_nonneg a).lt_iff_ne.trans <| ne_comm.trans sub_ne_zero
 #align int.fract_pos Int.fract_pos
 
 theorem fract_lt_one (a : α) : fract a < 1 :=
@@ -985,10 +1002,13 @@ theorem fract_intCast (z : ℤ) : fract (z : α) = 0 := by
 theorem fract_natCast (n : ℕ) : fract (n : α) = 0 := by simp [fract]
 #align int.fract_nat_cast Int.fract_natCast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem fract_ofNat (n : ℕ) [n.AtLeastTwo] : fract (OfNat.ofNat n : α) = 0 := fract_natCast n
+theorem fract_ofNat (n : ℕ) [n.AtLeastTwo] :
+    fract ((no_index (OfNat.ofNat n)) : α) = 0 :=
+  fract_natCast n
 
--- porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem fract_floor (a : α) : fract (⌊a⌋ : α) = 0 :=
   fract_intCast _
@@ -1090,7 +1110,7 @@ section LinearOrderedField
 variable {k : Type*} [LinearOrderedField k] [FloorRing k] {b : k}
 
 theorem fract_div_mul_self_mem_Ico (a b : k) (ha : 0 < a) : fract (b / a) * a ∈ Ico 0 a :=
-  ⟨(zero_le_mul_right ha).2 (fract_nonneg (b / a)),
+  ⟨(mul_nonneg_iff_of_pos_right ha).2 (fract_nonneg (b / a)),
     (mul_lt_iff_lt_one_left ha).2 (fract_lt_one (b / a))⟩
 #align int.fract_div_mul_self_mem_Ico Int.fract_div_mul_self_mem_Ico
 
@@ -1129,8 +1149,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
-  replace hn : 0 < (n : k)
-  · norm_cast
+  replace hn : 0 < (n : k) := by norm_cast
   have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
     intros l hl
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
@@ -1213,8 +1232,9 @@ theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉ = n :=
   eq_of_forall_ge_iff fun a => by rw [ceil_le, ← cast_ofNat, cast_le]
 #align int.ceil_nat_cast Int.ceil_natCast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(OfNat.ofNat n : α)⌉ = n := ceil_natCast n
+theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(no_index (OfNat.ofNat n : α))⌉ = n := ceil_natCast n
 
 theorem ceil_mono : Monotone (ceil : α → ℤ) :=
   gc_ceil_coe.monotone_l
@@ -1238,8 +1258,10 @@ theorem ceil_add_one (a : α) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
   rw [← ceil_add_int a (1 : ℤ), cast_one]
 #align int.ceil_add_one Int.ceil_add_one
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ceil_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] : ⌈a + OfNat.ofNat n⌉ = ⌈a⌉ + OfNat.ofNat n :=
+theorem ceil_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+    ⌈a + (no_index (OfNat.ofNat n))⌉ = ⌈a⌉ + OfNat.ofNat n :=
   ceil_add_nat a n
 
 @[simp]
@@ -1258,8 +1280,10 @@ theorem ceil_sub_one (a : α) : ⌈a - 1⌉ = ⌈a⌉ - 1 := by
   rw [eq_sub_iff_add_eq, ← ceil_add_one, sub_add_cancel]
 #align int.ceil_sub_one Int.ceil_sub_one
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ceil_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] : ⌈a - OfNat.ofNat n⌉ = ⌈a⌉ - OfNat.ofNat n :=
+theorem ceil_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
+    ⌈a - (no_index (OfNat.ofNat n))⌉ = ⌈a⌉ - OfNat.ofNat n :=
   ceil_sub_nat a n
 
 theorem ceil_lt_add_one (a : α) : (⌈a⌉ : α) < a + 1 := by
@@ -1326,7 +1350,7 @@ theorem preimage_ceil_singleton (m : ℤ) : (ceil : α → ℤ) ⁻¹' {m} = Ioc
 #align int.preimage_ceil_singleton Int.preimage_ceil_singleton
 
 theorem fract_eq_zero_or_add_one_sub_ceil (a : α) : fract a = 0 ∨ fract a = a + 1 - (⌈a⌉ : α) := by
-  cases' eq_or_ne (fract a) 0 with ha ha
+  rcases eq_or_ne (fract a) 0 with ha | ha
   · exact Or.inl ha
   right
   suffices (⌈a⌉ : α) = ⌊a⌋ + 1 by
@@ -1438,8 +1462,10 @@ theorem round_one : round (1 : α) = 1 := by simp [round]
 theorem round_natCast (n : ℕ) : round (n : α) = n := by simp [round]
 #align round_nat_cast round_natCast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (OfNat.ofNat n : α) = n := round_natCast n
+theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (no_index (OfNat.ofNat n : α)) = n :=
+  round_natCast n
 
 @[simp]
 theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
@@ -1474,9 +1500,10 @@ theorem round_add_nat (x : α) (y : ℕ) : round (x + y) = round x + y :=
   mod_cast round_add_int x y
 #align round_add_nat round_add_nat
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
-    round (x + OfNat.ofNat n) = round x + OfNat.ofNat n :=
+    round (x + (no_index (OfNat.ofNat n))) = round x + OfNat.ofNat n :=
   round_add_nat x n
 
 @[simp]
@@ -1484,9 +1511,10 @@ theorem round_sub_nat (x : α) (y : ℕ) : round (x - y) = round x - y :=
   mod_cast round_sub_int x y
 #align round_sub_nat round_sub_nat
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
-    round (x - OfNat.ofNat n) = round x - OfNat.ofNat n :=
+    round (x - (no_index (OfNat.ofNat n))) = round x - OfNat.ofNat n :=
   round_sub_nat x n
 
 @[simp]
@@ -1499,9 +1527,10 @@ theorem round_nat_add (x : α) (y : ℕ) : round ((y : α) + x) = y + round x :=
   rw [add_comm, round_add_nat, add_comm]
 #align round_nat_add round_nat_add
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
-    round (OfNat.ofNat n + x) = OfNat.ofNat n + round x :=
+    round ((no_index (OfNat.ofNat n)) + x) = OfNat.ofNat n + round x :=
   round_nat_add x n
 
 theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract x) := by
@@ -1510,7 +1539,7 @@ theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract
   · rw [if_pos hx, if_pos hx, self_sub_floor, abs_fract]
   · have : 0 < fract x := by
       replace hx : 0 < fract x + fract x := lt_of_lt_of_le zero_lt_one (tsub_le_iff_left.mp hx)
-      simpa only [← two_mul, zero_lt_mul_left, zero_lt_two] using hx
+      simpa only [← two_mul, mul_pos_iff_of_pos_left, zero_lt_two] using hx
     rw [if_neg (not_lt.mpr hx), if_neg (not_lt.mpr hx), abs_sub_comm, ceil_sub_self_eq this.ne.symm,
       abs_one_sub_fract]
 #align abs_sub_round_eq_min abs_sub_round_eq_min
@@ -1596,10 +1625,7 @@ end round
 namespace Nat
 
 variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
-  [RingHomClass F α β] {a : α} {b : β}
-
--- Porting note: no longer needed
--- include β
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem floor_congr (h : ∀ n : ℕ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
   have h₀ : 0 ≤ a ↔ 0 ≤ b := by simpa only [cast_zero] using h 0
@@ -1625,10 +1651,7 @@ end Nat
 namespace Int
 
 variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
-  [RingHomClass F α β] {a : α} {b : β}
-
--- Porting note: no longer needed
--- include β
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem floor_congr (h : ∀ n : ℤ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋ = ⌊b⌋ :=
   (le_floor.2 <| (h _).1 <| floor_le _).antisymm <| le_floor.2 <| (h _).2 <| floor_le _
@@ -1655,10 +1678,7 @@ end Int
 namespace Int
 
 variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
-  [RingHomClass F α β] {a : α} {b : β}
-
--- Porting note: no longer needed
--- include β
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
   have H : f 2 = 2 := map_natCast f 2
@@ -1706,21 +1726,27 @@ theorem Nat.ceil_int : (Nat.ceil : ℤ → ℕ) = Int.toNat :=
 
 variable {a : α}
 
-theorem Nat.cast_floor_eq_int_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
+theorem Int.ofNat_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
   rw [← Int.floor_toNat, Int.toNat_of_nonneg (Int.floor_nonneg.2 ha)]
-#align nat.cast_floor_eq_int_floor Nat.cast_floor_eq_int_floor
+#align nat.cast_floor_eq_int_floor Int.ofNat_floor_eq_floor
 
-theorem Nat.cast_floor_eq_cast_int_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
-  rw [← Nat.cast_floor_eq_int_floor ha, Int.cast_ofNat]
-#align nat.cast_floor_eq_cast_int_floor Nat.cast_floor_eq_cast_int_floor
-
-theorem Nat.cast_ceil_eq_int_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
+theorem Int.ofNat_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
   rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
-#align nat.cast_ceil_eq_int_ceil Nat.cast_ceil_eq_int_ceil
+#align nat.cast_ceil_eq_int_ceil Int.ofNat_ceil_eq_ceil
 
-theorem Nat.cast_ceil_eq_cast_int_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
-  rw [← Nat.cast_ceil_eq_int_ceil ha, Int.cast_ofNat]
-#align nat.cast_ceil_eq_cast_int_ceil Nat.cast_ceil_eq_cast_int_ceil
+theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
+  rw [← Int.ofNat_floor_eq_floor ha, Int.cast_ofNat]
+#align nat.cast_floor_eq_cast_int_floor natCast_floor_eq_intCast_floor
+
+theorem natCast_ceil_eq_intCast_ceil  (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
+  rw [← Int.ofNat_ceil_eq_ceil ha, Int.cast_ofNat]
+#align nat.cast_ceil_eq_cast_int_ceil natCast_ceil_eq_intCast_ceil
+
+-- 2024-02-14
+@[deprecated] alias Nat.cast_floor_eq_int_floor := Int.ofNat_floor_eq_floor
+@[deprecated] alias Nat.cast_ceil_eq_int_ceil := Int.ofNat_ceil_eq_ceil
+@[deprecated] alias Nat.cast_floor_eq_cast_int_floor := natCast_floor_eq_intCast_floor
+@[deprecated] alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
 
 end FloorRingToSemiring
 
@@ -1747,16 +1773,18 @@ private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 @[positivity ⌊ _ ⌋]
-def evalIntFloor : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℤ)) := do
-  let ~q(@Int.floor $α' $i $j $a) := e | throwError "failed to match on Int.floor application"
-  match ← core q(inferInstance) q(inferInstance) a with
-  | .positive pa =>
-      letI ret : Q(0 ≤ $e) := q(int_floor_nonneg_of_pos (α := $α') $pa)
-      pure (.nonnegative ret)
-  | .nonnegative pa =>
-      letI ret : Q(0 ≤ $e) := q(int_floor_nonneg (α := $α') $pa)
-      pure (.nonnegative ret)
-  | _ => pure .none
+def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(@Int.floor $α' $i $j $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(int_floor_nonneg_of_pos (α := $α') $pa))
+    | .nonnegative pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(int_floor_nonneg (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Int.floor application"
 
 private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
     0 < a → 0 < ⌈a⌉₊ :=
@@ -1764,30 +1792,34 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈ _ ⌉₊]
-def evalNatCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℕ)) := do
-  let ~q(@Nat.ceil $α' $i $j $a) := e | throwError "failed to match on Nat.ceil application"
-  let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
-  assertInstancesCommute
-  match ← core q(inferInstance) q(inferInstance) a with
-  | .positive pa =>
-    letI ret : Q(0 < $e) := q(nat_ceil_pos (α := $α') $pa)
-    pure (.positive ret)
-  | _ => pure .none
+def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(@Nat.ceil $α' $i $j $a) =>
+    let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
+    assertInstancesCommute
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+      assertInstancesCommute
+      pure (.positive q(nat_ceil_pos (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Nat.ceil application"
 
 private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
   Int.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈ _ ⌉]
-def evalIntCeil : PositivityExt where eval {_u _α} _zα _pα (e : Q(ℤ)) := do
-  let ~q(@Int.ceil $α' $i $j $a) := e | throwError "failed to match on Int.ceil application"
-  match ← core q(inferInstance) q(inferInstance) a with
-  | .positive pa =>
-      letI ret : Q(0 < $e) := q(int_ceil_pos (α := $α') $pa)
-      pure (.positive ret)
-  | .nonnegative pa =>
-      letI ret : Q(0 ≤ $e) := q(Int.ceil_nonneg (α := $α') $pa)
-      pure (.nonnegative ret)
-  | _ => pure .none
+def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(@Int.ceil $α' $i $j $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+        assertInstancesCommute
+        pure (.positive q(int_ceil_pos (α := $α') $pa))
+    | .nonnegative pa =>
+        assertInstancesCommute
+        pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Int.ceil application"
 
 end Mathlib.Meta.Positivity

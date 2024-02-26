@@ -202,7 +202,7 @@ theorem join₂_comp_map (f : R →+* MvPolynomial σ S) : join₂.comp (map f) 
 #align mv_polynomial.join₂_comp_map MvPolynomial.join₂_comp_map
 
 theorem aeval_id_rename (f : σ → MvPolynomial τ R) (p : MvPolynomial σ R) :
-    aeval id (rename f p) = aeval f p := by rw [aeval_rename, Function.comp.left_id]
+    aeval id (rename f p) = aeval f p := by rw [aeval_rename, Function.id_comp]
 #align mv_polynomial.aeval_id_rename MvPolynomial.aeval_id_rename
 
 @[simp]

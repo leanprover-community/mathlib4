@@ -307,7 +307,7 @@ attribute [coe] LieHom.toLinearMap
 instance : Coe (L₁ →ₗ⁅R⁆ L₂) (L₁ →ₗ[R] L₂) :=
   ⟨LieHom.toLinearMap⟩
 
-instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ (fun _ => L₂) :=
+instance : FunLike (L₁ →ₗ⁅R⁆ L₂) L₁ L₂ :=
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h] }
@@ -736,10 +736,12 @@ attribute [coe] LieModuleHom.toLinearMap
 instance : CoeOut (M →ₗ⁅R,L⁆ N) (M →ₗ[R] N) :=
   ⟨LieModuleHom.toLinearMap⟩
 
-instance : FunLike (M →ₗ⁅R, L⁆ N) M (fun _ => N) :=
+instance : FunLike (M →ₗ⁅R, L⁆ N) M N :=
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h] }
+
+initialize_simps_projections LieModuleHom (toFun → apply)
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
@@ -921,9 +923,9 @@ theorem neg_apply (f : M →ₗ⁅R,L⁆ N) (m : M) : (-f) m = -f m :=
   rfl
 #align lie_module_hom.neg_apply LieModuleHom.neg_apply
 
-instance hasNsmul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
+instance hasNSMul : SMul ℕ (M →ₗ⁅R,L⁆ N) where
   smul n f := { n • (f : M →ₗ[R] N) with map_lie' := by simp }
-#align lie_module_hom.has_nsmul LieModuleHom.hasNsmul
+#align lie_module_hom.has_nsmul LieModuleHom.hasNSMul
 
 @[norm_cast, simp]
 theorem coe_nsmul (n : ℕ) (f : M →ₗ⁅R,L⁆ N) : ⇑(n • f) = n • (⇑f) :=
@@ -934,9 +936,9 @@ theorem nsmul_apply (n : ℕ) (f : M →ₗ⁅R,L⁆ N) (m : M) : (n • f) m = 
   rfl
 #align lie_module_hom.nsmul_apply LieModuleHom.nsmul_apply
 
-instance hasZsmul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
+instance hasZSMul : SMul ℤ (M →ₗ⁅R,L⁆ N) where
   smul z f := { z • (f : M →ₗ[R] N) with map_lie' := by simp }
-#align lie_module_hom.has_zsmul LieModuleHom.hasZsmul
+#align lie_module_hom.has_zsmul LieModuleHom.hasZSMul
 
 @[norm_cast, simp]
 theorem coe_zsmul (z : ℤ) (f : M →ₗ⁅R,L⁆ N) : ⇑(z • f) = z • (⇑f) :=

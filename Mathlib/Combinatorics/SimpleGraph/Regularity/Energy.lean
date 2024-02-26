@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Rat.BigOperators
@@ -41,7 +42,7 @@ def energy : ℚ :=
 #align finpartition.energy Finpartition.energy
 
 theorem energy_nonneg : 0 ≤ P.energy G := by
-  refine' div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
+  exact div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
 #align finpartition.energy_nonneg Finpartition.energy_nonneg
 
 theorem energy_le_one : P.energy G ≤ 1 :=

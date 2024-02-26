@@ -262,7 +262,7 @@ theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 
 
 theorem hasDerivAtFilter_iff_isLittleO :
     HasDerivAtFilter f f' x L ↔ (fun x' : 𝕜 => f x' - f x - (x' - x) • f') =o[L] fun x' => x' - x :=
-  Iff.rfl
+  hasFDerivAtFilter_iff_isLittleO ..
 #align has_deriv_at_filter_iff_is_o hasDerivAtFilter_iff_isLittleO
 
 theorem hasDerivAtFilter_iff_tendsto :
@@ -274,7 +274,7 @@ theorem hasDerivAtFilter_iff_tendsto :
 theorem hasDerivWithinAt_iff_isLittleO :
     HasDerivWithinAt f f' s x ↔
       (fun x' : 𝕜 => f x' - f x - (x' - x) • f') =o[𝓝[s] x] fun x' => x' - x :=
-  Iff.rfl
+  hasFDerivAtFilter_iff_isLittleO ..
 #align has_deriv_within_at_iff_is_o hasDerivWithinAt_iff_isLittleO
 
 theorem hasDerivWithinAt_iff_tendsto :
@@ -285,7 +285,7 @@ theorem hasDerivWithinAt_iff_tendsto :
 
 theorem hasDerivAt_iff_isLittleO :
     HasDerivAt f f' x ↔ (fun x' : 𝕜 => f x' - f x - (x' - x) • f') =o[𝓝 x] fun x' => x' - x :=
-  Iff.rfl
+  hasFDerivAtFilter_iff_isLittleO ..
 #align has_deriv_at_iff_is_o hasDerivAt_iff_isLittleO
 
 theorem hasDerivAt_iff_tendsto :
@@ -535,6 +535,10 @@ theorem derivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x
   derivWithin_of_mem_nhds (hs.mem_nhds hx)
 #align deriv_within_of_open derivWithin_of_isOpen
 
+lemma deriv_eqOn {f' : 𝕜 → F} (hs : IsOpen s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    s.EqOn (deriv f) f' := fun x hx ↦ by
+  rw [← derivWithin_of_isOpen hs hx, (hf' _ hx).derivWithin <| hs.uniqueDiffWithinAt hx]
+
 theorem deriv_mem_iff {f : 𝕜 → F} {s : Set F} {x : 𝕜} :
     deriv f x ∈ s ↔
       DifferentiableAt 𝕜 f x ∧ deriv f x ∈ s ∨ ¬DifferentiableAt 𝕜 f x ∧ (0 : F) ∈ s :=
@@ -613,6 +617,17 @@ theorem Filter.EventuallyEq.hasDerivWithinAt_iff_of_mem (h₁ : f₁ =ᶠ[𝓝[s
     HasDerivWithinAt f₁ f' s x ↔ HasDerivWithinAt f f' s x :=
   ⟨fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁.symm hx,
   fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁ hx⟩
+
+theorem HasStrictDerivAt.congr_deriv (h : HasStrictDerivAt f f' x) (h' : f' = g') :
+    HasStrictDerivAt f g' x :=
+  h.congr_fderiv <| congr_arg _ h'
+
+theorem HasDerivAt.congr_deriv (h : HasDerivAt f f' x) (h' : f' = g') : HasDerivAt f g' x :=
+  HasFDerivAt.congr_fderiv h <| congr_arg _ h'
+
+theorem HasDerivWithinAt.congr_deriv (h : HasDerivWithinAt f f' s x) (h' : f' = g') :
+    HasDerivWithinAt f g' s x :=
+  HasFDerivWithinAt.congr_fderiv h <| congr_arg _ h'
 
 theorem HasDerivAt.congr_of_eventuallyEq (h : HasDerivAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasDerivAt f₁ f' x :=

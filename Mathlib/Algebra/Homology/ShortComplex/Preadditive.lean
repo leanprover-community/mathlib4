@@ -140,7 +140,7 @@ section
 variable [S₁.HasLeftHomology] [S₂.HasLeftHomology]
 
 @[simp]
-lemma leftHomologyMap_neg : leftHomologyMap (-φ)  = -leftHomologyMap φ :=
+lemma leftHomologyMap_neg : leftHomologyMap (-φ) = -leftHomologyMap φ :=
   leftHomologyMap'_neg _ _
 
 @[simp]
@@ -148,7 +148,7 @@ lemma cyclesMap_neg : cyclesMap (-φ) = -cyclesMap φ :=
   cyclesMap'_neg _ _
 
 @[simp]
-lemma leftHomologyMap_add : leftHomologyMap (φ + φ')  = leftHomologyMap φ + leftHomologyMap φ' :=
+lemma leftHomologyMap_add : leftHomologyMap (φ + φ') = leftHomologyMap φ + leftHomologyMap φ' :=
   leftHomologyMap'_add _ _
 
 @[simp]
@@ -249,7 +249,7 @@ section
 variable [S₁.HasRightHomology] [S₂.HasRightHomology]
 
 @[simp]
-lemma rightHomologyMap_neg : rightHomologyMap (-φ)  = -rightHomologyMap φ :=
+lemma rightHomologyMap_neg : rightHomologyMap (-φ) = -rightHomologyMap φ :=
   rightHomologyMap'_neg _ _
 
 @[simp]
@@ -258,7 +258,7 @@ lemma opcyclesMap_neg : opcyclesMap (-φ) = -opcyclesMap φ :=
 
 @[simp]
 lemma rightHomologyMap_add :
-    rightHomologyMap (φ + φ')  = rightHomologyMap φ + rightHomologyMap φ' :=
+    rightHomologyMap (φ + φ') = rightHomologyMap φ + rightHomologyMap φ' :=
   rightHomologyMap'_add _ _
 
 @[simp]
@@ -332,11 +332,11 @@ section
 variable [S₁.HasHomology] [S₂.HasHomology]
 
 @[simp]
-lemma homologyMap_neg : homologyMap (-φ)  = -homologyMap φ :=
+lemma homologyMap_neg : homologyMap (-φ) = -homologyMap φ :=
   homologyMap'_neg _ _
 
 @[simp]
-lemma homologyMap_add : homologyMap (φ + φ')  = homologyMap φ + homologyMap φ' :=
+lemma homologyMap_add : homologyMap (φ + φ') = homologyMap φ + homologyMap φ' :=
   homologyMap'_add _ _
 
 @[simp]

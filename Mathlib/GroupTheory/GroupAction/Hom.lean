@@ -75,8 +75,8 @@ notation:25 (name := «MulActionHomLocal≺») X " →[" M:25 "] " Y:0 => MulAct
 scalar multiplication by `M`.
 
 You should extend this class when you extend `MulActionHom`. -/
-class SMulHomClass (F : Type*) (M X Y : outParam <| Type*) [SMul M X] [SMul M Y] extends
-  FunLike F X fun _ => Y where
+class SMulHomClass (F : Type*) (M X Y : outParam <| Type*) [SMul M X] [SMul M Y]
+    [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
 #align smul_hom_class SMulHomClass
@@ -91,9 +91,11 @@ attribute [simp] map_smul
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
-instance : SMulHomClass (X →[M'] Y) M' X Y where
+instance : FunLike (X →[M'] Y) X Y where
   coe := MulActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+instance : SMulHomClass (X →[M'] Y) M' X Y where
   map_smul := MulActionHom.map_smul'
 
 initialize_simps_projections MulActionHom (toFun → apply)
@@ -107,15 +109,23 @@ see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
-def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y] (f : F) :
+def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [FunLike F X Y]
+    [SMulHomClass F M X Y] (f : F) :
     X →[M] Y where
-   toFun := FunLike.coe f
-   map_smul' := map_smul f
+  toFun := DFunLike.coe f
+  map_smul' := map_smul f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [SMul M X] [SMul M Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
+instance [SMul M X] [SMul M Y] [FunLike F X Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
   ⟨SMulHomClass.toMulActionHom⟩
+
+variable (M' X Y F) in
+/-- If Y/X/M forms a scalar tower, any map X → Y preserving X-action also preserves M-action. -/
+theorem _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
+    [FunLike F X Y] [SMulHomClass F X X Y] : SMulHomClass F M' X Y where
+  map_smul f m x := by
+    rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul, smul_eq_mul, mul_one]
 
 protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
   map_smul f m x
@@ -123,15 +133,15 @@ protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m 
 
 @[ext]
 theorem ext {f g : X →[M'] Y} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
 
 theorem ext_iff {f g : X →[M'] Y} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_action_hom.ext_iff MulActionHom.ext_iff
 
 protected theorem congr_fun {f g : X →[M'] Y} (h : f = g) (x : X) : f x = g x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
 
 variable (M M')
@@ -218,13 +228,10 @@ notation:25 (name := «DistribMulActionHomLocal≺»)
 the additive monoid structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `DistribMulActionHom`. -/
-class DistribMulActionHomClass (F : Type*) (M A B : outParam <| Type*) [Monoid M] [AddMonoid A]
-  [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends SMulHomClass F M A B,
-  AddMonoidHomClass F A B
+class DistribMulActionHomClass (F : Type*) (M A B : outParam <| Type*)
+  [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B]
+  [FunLike F A B] extends SMulHomClass F M A B, AddMonoidHomClass F A B : Prop
 #align distrib_mul_action_hom_class DistribMulActionHomClass
-
-/- porting note: Removed a @[nolint dangerousInstance] for
-DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
 
 namespace DistribMulActionHom
 
@@ -238,20 +245,20 @@ Coercion is already handled by all the HomClass constructions I believe -/
 --   ⟨toMulActionHom⟩
 -- #align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
--- porting note: removed has_coe_to_fun instance, coercions handled differently now
-
 #noalign distrib_mul_action_hom.has_coe
 #noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
 
-instance : DistribMulActionHomClass (A →+[M] B) M A B where
+instance : FunLike (A →+[M] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
-  map_smul m := m.map_smul'
+
+instance : DistribMulActionHomClass (A →+[M] B) M A B where
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
+  map_smul m := m.map_smul'
 
 initialize_simps_projections DistribMulActionHom (toFun → apply)
 
@@ -261,13 +268,15 @@ see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
-def _root_.DistribMulActionHomClass.toDistribMulActionHom [DistribMulActionHomClass F M A B]
+def _root_.DistribMulActionHomClass.toDistribMulActionHom [FunLike F A B]
+    [DistribMulActionHomClass F M A B]
     (f : F) : A →+[M] B :=
   { (f : A →+ B), (f : A →[M] B) with }
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
+instance [FunLike F A B] [DistribMulActionHomClass F M A B] :
+    CoeTC F (A →+[M] B) :=
   ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
 @[simp]
@@ -286,15 +295,15 @@ theorem coe_fn_coe' (f : A →+[M] B) : ⇑(f : A →[M] B) = f :=
 
 @[ext]
 theorem ext {f g : A →+[M] B} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align distrib_mul_action_hom.ext DistribMulActionHom.ext
 
 theorem ext_iff {f g : A →+[M] B} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align distrib_mul_action_hom.ext_iff DistribMulActionHom.ext_iff
 
 protected theorem congr_fun {f g : A →+[M] B} (h : f = g) (x : A) : f x = g x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align distrib_mul_action_hom.congr_fun DistribMulActionHom.congr_fun
 
 theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g : A →[M] B)) :
@@ -305,7 +314,7 @@ theorem toMulActionHom_injective {f g : A →+[M] B} (h : (f : A →[M] B) = (g 
 
 theorem toAddMonoidHom_injective {f g : A →+[M] B} (h : (f : A →+ B) = (g : A →+ B)) : f = g := by
   ext a
-  exact FunLike.congr_fun h a
+  exact DFunLike.congr_fun h a
 #align distrib_mul_action_hom.to_add_monoid_hom_injective DistribMulActionHom.toAddMonoidHom_injective
 
 protected theorem map_zero (f : A →+[M] B) : f 0 = 0 :=
@@ -448,9 +457,9 @@ notation:25 (name := «MulSemiringActionHomLocal≺»)
 the ring structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `MulSemiringActionHom`. -/
-class MulSemiringActionHomClass (F : Type*) (M R S : outParam <| Type*) [Monoid M] [Semiring R]
-  [Semiring S] [DistribMulAction M R] [DistribMulAction M S] extends
-  DistribMulActionHomClass F M R S, RingHomClass F R S
+class MulSemiringActionHomClass (F : Type*) (M R S : outParam <| Type*)
+  [Monoid M] [Semiring R] [Semiring S] [DistribMulAction M R] [DistribMulAction M S]
+  [FunLike F R S] extends DistribMulActionHomClass F M R S, RingHomClass F R S : Prop
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
 
 /- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
@@ -476,16 +485,18 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign mul_semiring_action_hom.has_coe'
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
-instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
+instance : FunLike (R →+*[M] S) R S where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
     cases tF; cases tG; congr
-  map_smul m := m.map_smul'
+
+instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
   map_zero m := m.map_zero'
   map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
+  map_smul m := m.map_smul'
 
 initialize_simps_projections MulSemiringActionHom (toFun → apply)
 
@@ -497,13 +508,15 @@ see also Algebra.Hom.Group -/
 `MulSemiringActionHom`. This is declared as the default coercion from `F` to
 `MulSemiringActionHom M X Y`. -/
 @[coe]
-def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [MulSemiringActionHomClass F M R S]
+def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [FunLike F R S]
+    [MulSemiringActionHomClass F M R S]
     (f : F) : R →+*[M] S :=
  { (f : R →+* S), (f : R →+[M] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
-instance [MulSemiringActionHomClass F M R S] : CoeTC F (R →+*[M] S) :=
+instance [FunLike F R S] [MulSemiringActionHomClass F M R S] :
+    CoeTC F (R →+*[M] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
 
 @[norm_cast]
@@ -518,11 +531,11 @@ theorem coe_fn_coe' (f : R →+*[M] S) : ⇑(f : R →+[M] S) = f :=
 
 @[ext]
 theorem ext {f g : R →+*[M] S} : (∀ x, f x = g x) → f = g :=
-  FunLike.ext f g
+  DFunLike.ext f g
 #align mul_semiring_action_hom.ext MulSemiringActionHom.ext
 
 theorem ext_iff {f g : R →+*[M] S} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align mul_semiring_action_hom.ext_iff MulSemiringActionHom.ext_iff
 
 protected theorem map_zero (f : R →+*[M] S) : f 0 = 0 :=

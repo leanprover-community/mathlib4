@@ -191,7 +191,7 @@ variable (A : Type*) [Ring A] [UniformSpace A] [UniformAddGroup A] [TopologicalR
 
 @[simp]
 theorem map_smul_eq_mul_coe (r : R) :
-    Completion.map ((· • ·) r) = (· * ·) (algebraMap R A r : Completion A) := by
+    Completion.map (r • ·) = ((algebraMap R A r : Completion A) * ·) := by
   ext x
   refine' Completion.induction_on x _ fun a => _
   · exact isClosed_eq Completion.continuous_map (continuous_mul_left _)

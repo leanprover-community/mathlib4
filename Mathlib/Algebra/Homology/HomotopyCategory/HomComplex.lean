@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.GroupPower.NegOnePow
-import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
@@ -330,6 +330,11 @@ protected lemma smul_comp {n₁ n₂ n₁₂ : ℤ} (k : R) (z₁ : Cochain F G 
   simp only [comp_v _ _ h p _ q rfl (by linarith), smul_v, Linear.smul_comp]
 
 @[simp]
+lemma units_smul_comp {n₁ n₂ n₁₂ : ℤ} (k : Rˣ) (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂)
+    (h : n₁ + n₂ = n₁₂) : (k • z₁).comp z₂ h = k • (z₁.comp z₂ h) := by
+  apply Cochain.smul_comp
+
+@[simp]
 protected lemma id_comp {n : ℤ} (z₂ : Cochain F G n) :
     (Cochain.ofHom (𝟙 F)).comp z₂ (zero_add n) = z₂ := by
   ext p q hpq
@@ -364,6 +369,11 @@ protected lemma comp_smul {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (k
     (h : n₁ + n₂ = n₁₂ ) : z₁.comp (k • z₂) h = k • (z₁.comp z₂ h) := by
   ext p q hpq
   simp only [comp_v _ _ h p _ q rfl (by linarith), smul_v, Linear.comp_smul]
+
+@[simp]
+lemma comp_units_smul {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (k : Rˣ) (z₂ : Cochain G K n₂)
+    (h : n₁ + n₂ = n₁₂ ) : z₁.comp (k • z₂) h = k • (z₁.comp z₂ h) := by
+  apply Cochain.comp_smul
 
 @[simp]
 protected lemma comp_id {n : ℤ} (z₁ : Cochain F G n) :
@@ -457,6 +467,9 @@ variable {F G R}
 @[simp] lemma δ_smul (k : R) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
   (δ_hom R F G n m).map_smul k z
 
+@[simp] lemma δ_units_smul (k : Rˣ) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
+  δ_smul ..
+
 lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 := by
   by_cases h₁₂ : n₁ + 1 = n₂; swap; rw [δ_shape _ _ h₁₂]
   by_cases h₀₁ : n₀ + 1 = n₁; swap; rw [δ_shape _ _ h₀₁, δ_zero]
@@ -543,6 +556,7 @@ lemma δ_neg_one_cochain (z : Cochain F G (-1)) :
   rw [Homotopy.nullHomotopicMap'_f (show (ComplexShape.up ℤ).Rel (p-1) p by simp)
     (show (ComplexShape.up ℤ).Rel p (p+1) by simp)]
   abel
+
 end HomComplex
 
 variable (F G)
@@ -613,6 +627,10 @@ lemma coe_neg (z : Cocycle F G n) :
 
 @[simp]
 lemma coe_smul (z : Cocycle F G n) (x : R) :
+    (↑(x • z) : Cochain F G n) = x • (z : Cochain F G n) := rfl
+
+@[simp]
+lemma coe_units_smul (z : Cocycle F G n) (x : Rˣ) :
     (↑(x • z) : Cochain F G n) = x • (z : Cochain F G n) := rfl
 
 @[simp]
@@ -690,9 +708,38 @@ def diff : Cocycle K K 1 :=
 
 end Cocycle
 
-namespace Cochain
-
 variable {F G}
+
+@[simp]
+lemma δ_comp_zero_cocycle {n : ℤ} (z₁ : Cochain F G n) (z₂ : Cocycle G K 0) (m : ℤ) :
+    δ n m (z₁.comp z₂.1 (add_zero n)) =
+      (δ n m z₁).comp z₂.1 (add_zero m) := by
+  by_cases hnm : n + 1 = m
+  · simp [δ_comp_zero_cochain _ _ _ hnm]
+  · simp [δ_shape _ _ hnm]
+
+@[simp]
+lemma δ_comp_ofHom {n : ℤ} (z₁ : Cochain F G n) (f : G ⟶ K) (m : ℤ) :
+    δ n m (z₁.comp (Cochain.ofHom f) (add_zero n)) =
+      (δ n m z₁).comp (Cochain.ofHom f) (add_zero m) := by
+  rw [← Cocycle.ofHom_coe, δ_comp_zero_cocycle]
+
+
+@[simp]
+lemma δ_zero_cocycle_comp {n : ℤ} (z₁ : Cocycle F G 0) (z₂ : Cochain G K n) (m : ℤ) :
+    δ n m (z₁.1.comp z₂ (zero_add n)) =
+      z₁.1.comp (δ n m z₂) (zero_add m) := by
+  by_cases hnm : n + 1 = m
+  · simp [δ_zero_cochain_comp _ _ _ hnm]
+  · simp [δ_shape _ _ hnm]
+
+@[simp]
+lemma δ_ofHom_comp {n : ℤ} (f : F ⟶ G) (z : Cochain G K n) (m : ℤ) :
+    δ n m ((Cochain.ofHom f).comp z (zero_add n)) =
+      (Cochain.ofHom f).comp (δ n m z) (zero_add m) := by
+  rw [← Cocycle.ofHom_coe, δ_zero_cocycle_comp]
+
+namespace Cochain
 
 /-- Given two morphisms of complexes `φ₁ φ₂ : F ⟶ G`, the datum of an homotopy between `φ₁` and
 `φ₂` is equivalent to the datum of a `1`-cochain `z` such that `δ (-1) 0 z` is the difference

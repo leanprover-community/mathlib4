@@ -142,7 +142,7 @@ many of the paths do not have defeq starting/ending points, so we end up needing
 /-- Interpret a homotopy `H : C(I × X, Y)` as a map `C(ULift I × X, Y)` -/
 def uliftMap : C(TopCat.of (ULift.{u} I × X), Y) :=
   ⟨fun x => H (x.1.down, x.2),
-    H.continuous.comp ((continuous_induced_dom.comp continuous_fst).prod_mk continuous_snd)⟩
+    H.continuous.comp ((continuous_uLift_down.comp continuous_fst).prod_mk continuous_snd)⟩
 #align continuous_map.homotopy.ulift_map ContinuousMap.Homotopy.uliftMap
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.

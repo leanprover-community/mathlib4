@@ -45,7 +45,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     by_cases hx : x ∉ closure s
     · rw [← closure_closure] at hx; exact hasFDerivWithinAt_of_nmem_closure hx
     push_neg at hx
-    rw [HasFDerivWithinAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff]
+    rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
     /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in
       `closure s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it
       suffices to prove this for nearby points inside `s`. In a neighborhood of `x`, the derivative
@@ -55,8 +55,8 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     obtain ⟨δ, δ_pos, hδ⟩ : ∃ δ > 0, ∀ y ∈ s, dist y x < δ → ‖fderiv ℝ f y - f'‖ < ε := by
       simpa [dist_zero_right] using tendsto_nhdsWithin_nhds.1 h ε ε_pos
     set B := ball x δ
-    suffices : ∀ y ∈ B ∩ closure s, ‖f y - f x - (f' y - f' x)‖ ≤ ε * ‖y - x‖
-    exact mem_nhdsWithin_iff.2 ⟨δ, δ_pos, fun y hy => by simpa using this y hy⟩
+    suffices ∀ y ∈ B ∩ closure s, ‖f y - f x - (f' y - f' x)‖ ≤ ε * ‖y - x‖ from
+      mem_nhdsWithin_iff.2 ⟨δ, δ_pos, fun y hy => by simpa using this y hy⟩
     suffices
       ∀ p : E × E,
         p ∈ closure ((B ∩ s) ×ˢ (B ∩ s)) → ‖f p.2 - f p.1 - (f' p.2 - f' p.1)‖ ≤ ε * ‖p.2 - p.1‖ by
@@ -178,7 +178,7 @@ theorem has_deriv_at_interval_right_endpoint_of_tendsto_deriv {s : Set ℝ} {e :
 /-- If a real function `f` has a derivative `g` everywhere but at a point, and `f` and `g` are
 continuous at this point, then `g` is also the derivative of `f` at this point. -/
 theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
-    (f_diff : ∀ (y) (_ : y ≠ x), HasDerivAt f (g y) y) (hf : ContinuousAt f x)
+    (f_diff : ∀ y ≠ x, HasDerivAt f (g y) y) (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : HasDerivAt f (g x) x := by
   have A : HasDerivWithinAt f (g x) (Ici x) x := by
     have diff : DifferentiableOn ℝ f (Ioi x) := fun y hy =>
@@ -212,7 +212,7 @@ theorem hasDerivAt_of_hasDerivAt_of_ne {f g : ℝ → E} {x : ℝ}
 /-- If a real function `f` has a derivative `g` everywhere but at a point, and `f` and `g` are
 continuous at this point, then `g` is the derivative of `f` everywhere. -/
 theorem hasDerivAt_of_hasDerivAt_of_ne' {f g : ℝ → E} {x : ℝ}
-    (f_diff : ∀ (y) (_ : y ≠ x), HasDerivAt f (g y) y) (hf : ContinuousAt f x)
+    (f_diff : ∀ y ≠ x, HasDerivAt f (g y) y) (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) (y : ℝ) : HasDerivAt f (g y) y := by
   rcases eq_or_ne y x with (rfl | hne)
   · exact hasDerivAt_of_hasDerivAt_of_ne f_diff hf hg

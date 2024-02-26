@@ -107,7 +107,6 @@ def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → β) (μ : Measure α 
   (∫⁻ a, ‖f a‖₊ ∂μ) < ∞
 #align measure_theory.has_finite_integral MeasureTheory.HasFiniteIntegral
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖₊ ∂μ) < ∞) :=
   Iff.rfl
@@ -184,14 +183,13 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
   (hasFiniteIntegral_const C).mono' hC
 #align measure_theory.has_finite_integral_of_bounded MeasureTheory.hasFiniteIntegral_of_bounded
 
-theorem hasFiniteIntegral_of_fintype [Fintype α] [IsFiniteMeasure μ] {f : α → β} :
+theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α → β} :
     HasFiniteIntegral f μ :=
-  hasFiniteIntegral_of_bounded (C := (Finset.sup .univ (fun a => ‖f a‖₊) : NNReal)) <| by
-    apply ae_of_all μ
-    intro x
-    rw [← coe_nnnorm (f x)]
-    apply NNReal.toReal_le_toReal
-    apply Finset.le_sup (Finset.mem_univ x)
+  let ⟨_⟩ := nonempty_fintype α
+  hasFiniteIntegral_of_bounded <| ae_of_all μ <| norm_le_pi_norm f
+
+@[deprecated] -- Since 2024/02/05
+alias hasFiniteIntegral_of_fintype := HasFiniteIntegral.of_finite
 
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
@@ -355,8 +353,8 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
     rwa [← tendsto_iff_norm_sub_tendsto_zero]
   /- Therefore, by the dominated convergence theorem for nonnegative integration, have
     ` ∫ ‖f a - F n a‖ --> 0 ` -/
-  suffices h : Tendsto (fun n => ∫⁻ a, ENNReal.ofReal ‖F n a - f a‖ ∂μ) atTop (𝓝 (∫⁻ _ : α, 0 ∂μ))
-  · rwa [lintegral_zero] at h
+  suffices Tendsto (fun n => ∫⁻ a, ENNReal.ofReal ‖F n a - f a‖ ∂μ) atTop (𝓝 (∫⁻ _ : α, 0 ∂μ)) by
+    rwa [lintegral_zero] at this
   -- Using the dominated convergence theorem.
   refine' tendsto_lintegral_of_dominated_convergence' _ _ hb _ _
   -- Show `fun a => ‖f a - F n a‖` is almost everywhere measurable for all `n`
@@ -388,7 +386,7 @@ theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ
 
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=
-  hf.mono <| eventually_of_forall fun x => by simpa [abs_le] using neg_abs_le_self _
+  hf.mono <| eventually_of_forall fun x => by simpa [abs_le] using neg_abs_le _
 #align measure_theory.has_finite_integral.min_zero MeasureTheory.HasFiniteIntegral.min_zero
 
 end PosPart
@@ -436,14 +434,13 @@ end NormedSpace
 /-! ### The predicate `Integrable` -/
 
 
--- variables [measurable_space β] [measurable_space γ] [measurable_space δ]
+-- variable [MeasurableSpace β] [MeasurableSpace γ] [MeasurableSpace δ]
 /-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
 def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 #align measure_theory.integrable MeasureTheory.Integrable
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem integrable_def {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     Integrable f μ ↔ (AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ) :=
   Iff.rfl
@@ -508,10 +505,12 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
 #align measure_theory.integrable_const MeasureTheory.integrable_const
 
 @[simp]
-theorem integrable_of_fintype [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
+theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
-  ⟨ StronglyMeasurable.aestronglyMeasurable (stronglyMeasurable_of_fintype f),
-    hasFiniteIntegral_of_fintype ⟩
+  ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
+
+@[deprecated] -- Since 2024/02/05
+alias integrable_of_fintype := Integrable.of_finite
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
@@ -747,7 +746,7 @@ theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (
     exact ENNReal.mul_lt_top ENNReal.coe_ne_top (ne_of_lt hint.2)
 #align measure_theory.integrable.bdd_mul MeasureTheory.Integrable.bdd_mul
 
-/-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
+/-- **Hölder's inequality for integrable functions**: the scalar multiplication of an integrable
 vector-valued function by a scalar function with finite essential supremum is integrable. -/
 theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β] {f : α → β}
     (hf : Integrable f μ) {g : α → 𝕜} (g_aestronglyMeasurable : AEStronglyMeasurable g μ)
@@ -825,7 +824,7 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
       ENNReal.ofReal_eq_zero, not_le] using hε
   simpa only [ENNReal.one_toReal, ENNReal.rpow_one] using
     (memℒp_one_iff_integrable.2 hf).snorm_ne_top
-#align measure_theory.integrable.measurege_lt_top MeasureTheory.Integrable.measure_norm_ge_lt_top
+#align measure_theory.integrable.measure_ge_lt_top MeasureTheory.Integrable.measure_norm_ge_lt_top
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ > ε` is finite for all positive `ε`. -/
@@ -849,7 +848,7 @@ lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : 
   refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (show 0 < -c by linarith))
   intro x hx
   simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact (show -c ≤ - f x by linarith).trans (neg_le_abs_self _)
+  exact (show -c ≤ - f x by linarith).trans (neg_le_abs _)
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
 measure. -/
@@ -1521,7 +1520,7 @@ theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E)
     Integrable (fun a : α => L (φ a)) μ :=
   ((Integrable.norm φ_int).const_mul ‖L‖).mono'
     (L.continuous.comp_aestronglyMeasurable φ_int.aestronglyMeasurable)
-    (eventually_of_forall fun a => L.le_op_norm (φ a))
+    (eventually_of_forall fun a => L.le_opNorm (φ a))
 #align continuous_linear_map.integrable_comp ContinuousLinearMap.integrable_comp
 
 theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}

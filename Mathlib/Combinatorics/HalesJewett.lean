@@ -214,8 +214,9 @@ theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = 
   simp_rw [Line.diagonal, Option.getD_none]
 #align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
-/-- The Hales-Jewett theorem. This version has a restriction on universe levels which is necessary
-for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic version. -/
+/-- The **Hales-Jewett theorem**. This version has a restriction on universe levels which is
+necessary for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic
+version. -/
 private theorem exists_mono_in_high_dimension' :
     ∀ (α : Type u) [Finite α] (κ : Type max v u) [Finite κ],
       ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=

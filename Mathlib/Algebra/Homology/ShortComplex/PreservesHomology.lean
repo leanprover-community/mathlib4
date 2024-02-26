@@ -400,6 +400,11 @@ noncomputable def mapCyclesIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S]
     (S.map F).cycles ≅ F.obj S.cycles :=
   (S.leftHomologyData.map F).cyclesIso
 
+@[reassoc (attr := simp)]
+lemma mapCyclesIso_hom_iCycles [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
+    (S.mapCyclesIso F).hom ≫ F.map S.iCycles = (S.map F).iCycles := by
+  apply LeftHomologyData.cyclesIso_hom_comp_i
+
 /-- When a functor `F` preserves the left homology of a short complex `S`, this is the
 canonical isomorphism `(S.map F).leftHomology ≅ F.obj S.leftHomology`. -/
 noncomputable def mapLeftHomologyIso [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :

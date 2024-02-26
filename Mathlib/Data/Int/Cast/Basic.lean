@@ -129,16 +129,6 @@ section deprecated
 set_option linter.deprecated false
 
 @[norm_cast, deprecated]
-theorem ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n :=
-  rfl
-#align int.coe_nat_bit0 Int.ofNat_bit0
-
-@[norm_cast, deprecated]
-theorem ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n :=
-  rfl
-#align int.coe_nat_bit1 Int.ofNat_bit1
-
-@[norm_cast, deprecated]
 theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
   Int.cast_add _ _
 #align int.cast_bit0 Int.cast_bit0
@@ -151,15 +141,15 @@ theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) :=
 end deprecated
 
 theorem cast_two : ((2 : ℤ) : R) = 2 :=
-  show (((2 : ℕ) : ℤ) : R) = ((2 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
+  show (((2 : ℕ) : ℤ) : R) = ((2 : ℕ) : R) by rw [cast_ofNat]
 #align int.cast_two Int.cast_two
 
 theorem cast_three : ((3 : ℤ) : R) = 3 :=
-  show (((3 : ℕ) : ℤ) : R) = ((3 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
+  show (((3 : ℕ) : ℤ) : R) = ((3 : ℕ) : R) by rw [cast_ofNat]
 #align int.cast_three Int.cast_three
 
 theorem cast_four : ((4 : ℤ) : R) = 4 :=
-  show (((4 : ℕ) : ℤ) : R) = ((4 : ℕ) : R) by rw [cast_ofNat, Nat.cast_ofNat]
+  show (((4 : ℕ) : ℤ) : R) = ((4 : ℕ) : R) by rw [cast_ofNat]
 #align int.cast_four Int.cast_four
 
 end Int

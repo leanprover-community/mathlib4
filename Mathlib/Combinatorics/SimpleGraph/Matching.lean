@@ -57,11 +57,11 @@ def IsMatching : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w, M.Adj v w
 
 /-- Given a vertex, returns the unique edge of the matching it is incident to. -/
 noncomputable def IsMatching.toEdge {M : Subgraph G} (h : M.IsMatching) (v : M.verts) : M.edgeSet :=
-  ⟨⟦(v, (h v.property).choose)⟧, (h v.property).choose_spec.1⟩
+  ⟨s(v, (h v.property).choose), (h v.property).choose_spec.1⟩
 #align simple_graph.subgraph.is_matching.to_edge SimpleGraph.Subgraph.IsMatching.toEdge
 
 theorem IsMatching.toEdge_eq_of_adj {M : Subgraph G} (h : M.IsMatching) {v w : V} (hv : v ∈ M.verts)
-    (hvw : M.Adj v w) : h.toEdge ⟨v, hv⟩ = ⟨⟦(v, w)⟧, hvw⟩ := by
+    (hvw : M.Adj v w) : h.toEdge ⟨v, hv⟩ = ⟨s(v, w), hvw⟩ := by
   simp only [IsMatching.toEdge, Subtype.mk_eq_mk]
   congr
   exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm

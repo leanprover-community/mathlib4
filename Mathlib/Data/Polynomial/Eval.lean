@@ -156,7 +156,7 @@ theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
       map_add' := fun p q => eval₂_add _ _ }
   have A : ∀ y, eval₂ f x y = T y := fun y => rfl
   simp only [A]
-  rw [sum, T.map_sum, sum]
+  rw [sum, map_sum, sum]
 #align polynomial.eval₂_sum Polynomial.eval₂_sum
 
 theorem eval₂_list_sum (l : List R[X]) (x : S) : eval₂ f x l.sum = (l.map (eval₂ f x)).sum :=
@@ -516,8 +516,7 @@ theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
     _ = p.eval 0 := by
       symm
       rw [eval_eq_sum]
-      exact
-        Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow (Nat.pos_of_ne_zero hb)]) (by simp)
+      exact Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow hb]) (by simp)
 #align polynomial.coeff_zero_eq_eval_zero Polynomial.coeff_zero_eq_eval_zero
 
 theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by
@@ -638,7 +637,7 @@ theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
 
 @[simp]
 theorem nat_cast_mul_comp {n : ℕ} : ((n : R[X]) * p).comp r = n * p.comp r := by
-  rw [← C_eq_nat_cast, C_mul_comp, C_eq_nat_cast]
+  rw [← C_eq_nat_cast, C_mul_comp]
 #align polynomial.nat_cast_mul_comp Polynomial.nat_cast_mul_comp
 
 theorem mul_X_add_nat_cast_comp {n : ℕ} :
@@ -815,8 +814,9 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
   refine' Finset.sum_congr rfl fun x _hx => _
-  -- Porting note: Was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
-  simp [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul]
+  -- porting note (#10745): was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
+  simp? [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul] says
+    simp only [RingHom.coe_comp, Function.comp_apply, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
 #align polynomial.coeff_map Polynomial.coeff_map
 
@@ -1071,6 +1071,31 @@ theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
 
 end
 
+section Algebra
+
+variable [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
+
+@[simp]
+theorem eval₂_mul' :
+    (p * q).eval₂ (algebraMap R S) x = p.eval₂ (algebraMap R S) x * q.eval₂ (algebraMap R S) x := by
+  exact eval₂_mul_noncomm _ _ fun k => Algebra.commute_algebraMap_left (coeff q k) x
+
+@[simp]
+theorem eval₂_pow' (n : ℕ) :
+    (p ^ n).eval₂ (algebraMap R S) x = (p.eval₂ (algebraMap R S) x) ^ n := by
+  induction n with
+  | zero => simp only [Nat.zero_eq, pow_zero, eval₂_one]
+  | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
+
+@[simp]
+theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
+    eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
+  induction p using Polynomial.induction_on' with
+    | h_add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
+    | h_monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
+
+end Algebra
+
 section
 
 variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
@@ -1091,7 +1116,7 @@ theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
 #align polynomial.coe_eval_ring_hom Polynomial.coe_evalRingHom
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
-  FunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
+  DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
 #align polynomial.eval_ring_hom_zero Polynomial.evalRingHom_zero
 
 @[simp]
@@ -1114,6 +1139,9 @@ theorem iterate_comp_eval :
     ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x => p.eval x)^[k] (q.eval t) :=
   iterate_comp_eval₂ _
 #align polynomial.iterate_comp_eval Polynomial.iterate_comp_eval
+
+lemma isRoot_comp {R} [CommSemiring R] {p q : R[X]} {r : R} :
+    (p.comp q).IsRoot r ↔ p.IsRoot (q.eval r) := by simp_rw [IsRoot, eval_comp]
 
 /-- `comp p`, regarded as a ring homomorphism from `R[X]` to itself. -/
 def compRingHom : R[X] → R[X] →+* R[X] :=

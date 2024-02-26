@@ -3,6 +3,7 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
+import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.Sups
 import Mathlib.Logic.Function.Iterate
 
@@ -100,12 +101,12 @@ theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ �
 
 See also `Finset.mem_shadow_iff_exists_mem_card_add_one`. -/
 lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ (s \ t).card = 1 := by
-  simp_rw [mem_shadow_iff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_erase, eq_comm]
+  simp_rw [mem_shadow_iff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_erase]
 
 /-- `t` is in the shadow of `𝒜` iff we can add an element to it so that the resulting finset is in
 `𝒜`. -/
 lemma mem_shadow_iff_insert_mem : t ∈ ∂ 𝒜 ↔ ∃ a, a ∉ t ∧ insert a t ∈ 𝒜 := by
-  simp_rw [mem_shadow_iff_exists_sdiff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
+  simp_rw [mem_shadow_iff_exists_sdiff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_insert]
   aesop
 #align finset.mem_shadow_iff_insert_mem Finset.mem_shadow_iff_insert_mem
 
@@ -114,7 +115,7 @@ lemma mem_shadow_iff_insert_mem : t ∈ ∂ 𝒜 ↔ ∃ a, a ∉ t ∧ insert a
 See also `Finset.mem_shadow_iff_exists_sdiff`. -/
 lemma mem_shadow_iff_exists_mem_card_add_one :
     t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ s.card = t.card + 1 := by
-  refine mem_shadow_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+  refine mem_shadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
@@ -144,7 +145,7 @@ lemma mem_shadow_iterate_iff_exists_sdiff : t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ �
 See also `Finset.mem_shadow_iterate_iff_exists_sdiff`. -/
 lemma mem_shadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ s.card = t.card + k := by
-  refine mem_shadow_iterate_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+  refine mem_shadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
@@ -163,7 +164,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
     (∂^[k] 𝒜 : Set (Finset α)).Sized (r - k) := by
   simp_rw [Set.Sized, mem_coe, mem_shadow_iterate_iff_exists_sdiff]
   rintro t ⟨s, hs, hts, rfl⟩
-  rw [card_sdiff hts, ← h𝒜 hs, Nat.sub_sub_self (card_le_of_subset hts)]
+  rw [card_sdiff hts, ← h𝒜 hs, Nat.sub_sub_self (card_le_card hts)]
 
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
@@ -210,7 +211,7 @@ theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (
 
 /-- `t` is in the upper shadow of `𝒜` iff there is a `s ∈ 𝒜` from which we can remove one element
 to get `t`. -/
-lemma mem_upShadow_iff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a, a ∉ s ∧ insert a s = t := by
+lemma mem_upShadow_iff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∉ s, insert a s = t := by
   simp_rw [upShadow, mem_sup, mem_image, mem_compl]
 #align finset.mem_up_shadow_iff Finset.mem_upShadow_iff
 
@@ -222,12 +223,12 @@ theorem insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ �
 
 See also `Finset.mem_upShadow_iff_exists_mem_card_add_one`. -/
 lemma mem_upShadow_iff_exists_sdiff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ (t \ s).card = 1 := by
-  simp_rw [mem_upShadow_iff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_insert]
+  simp_rw [mem_upShadow_iff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_insert]
 
 /-- `t` is in the upper shadow of `𝒜` iff we can remove an element from it so that the resulting
 finset is in `𝒜`. -/
 lemma mem_upShadow_iff_erase_mem : t ∈ ∂⁺ 𝒜 ↔ ∃ a, a ∈ t ∧ erase t a ∈ 𝒜 := by
-  simp_rw [mem_upShadow_iff_exists_sdiff, ← covby_iff_card_sdiff_eq_one, covby_iff_exists_erase]
+  simp_rw [mem_upShadow_iff_exists_sdiff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_erase]
   aesop
 #align finset.mem_up_shadow_iff_erase_mem Finset.mem_upShadow_iff_erase_mem
 
@@ -236,7 +237,7 @@ lemma mem_upShadow_iff_erase_mem : t ∈ ∂⁺ 𝒜 ↔ ∃ a, a ∈ t ∧ eras
 See also `Finset.mem_upShadow_iff_exists_sdiff`. -/
 lemma mem_upShadow_iff_exists_mem_card_add_one :
     t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ t.card = s.card + 1 := by
-  refine mem_upShadow_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+  refine mem_upShadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
@@ -272,7 +273,7 @@ lemma mem_upShadow_iterate_iff_exists_sdiff :
 See also `Finset.mem_upShadow_iterate_iff_exists_sdiff`. -/
 lemma mem_upShadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂⁺^[k] 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ t.card = s.card + k := by
-  refine mem_upShadow_iterate_iff_exists_sdiff.trans $ exists_congr fun t ↦ and_congr_right fun _ ↦
+  refine mem_upShadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
   rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst

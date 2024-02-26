@@ -410,9 +410,7 @@ theorem map_eq_iff_det_pos (x : Orientation R M ι) (f : M ≃ₗ[R] M)
     (h : Fintype.card ι = finrank R M) :
     Orientation.map ι f x = x ↔ 0 < LinearMap.det (f : M →ₗ[R] M) := by
   cases isEmpty_or_nonempty ι
-  · have H : finrank R M = 0 := by
-      refine' h.symm.trans _
-      convert @Fintype.card_of_isEmpty ι _
+  · have H : finrank R M = 0 := h.symm.trans Fintype.card_eq_zero
     simp [LinearMap.det_eq_one_of_finrank_eq_zero H]
   rw [map_eq_det_inv_smul _ _ h, units_inv_smul, units_smul_eq_self_iff, LinearEquiv.coe_det]
 #align orientation.map_eq_iff_det_pos Orientation.map_eq_iff_det_pos
@@ -424,14 +422,12 @@ theorem map_eq_neg_iff_det_neg (x : Orientation R M ι) (f : M ≃ₗ[R] M)
     (h : Fintype.card ι = finrank R M) :
     Orientation.map ι f x = -x ↔ LinearMap.det (f : M →ₗ[R] M) < 0 := by
   cases isEmpty_or_nonempty ι
-  · have H : finrank R M = 0 := by
-      refine' h.symm.trans _
-      convert @Fintype.card_of_isEmpty ι _
+  · have H : finrank R M = 0 := h.symm.trans Fintype.card_eq_zero
     simp [LinearMap.det_eq_one_of_finrank_eq_zero H, Module.Ray.ne_neg_self x]
   have H : 0 < finrank R M := by
     rw [← h]
     exact Fintype.card_pos
-  haveI : FiniteDimensional R M := finiteDimensional_of_finrank H
+  haveI : FiniteDimensional R M := of_finrank_pos H
   rw [map_eq_det_inv_smul _ _ h, units_inv_smul, units_smul_eq_neg_iff, LinearEquiv.coe_det]
 #align orientation.map_eq_neg_iff_det_neg Orientation.map_eq_neg_iff_det_neg
 

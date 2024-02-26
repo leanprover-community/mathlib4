@@ -156,7 +156,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
   · -- The reverse direction is a straightforward cardinality argument
     rintro ⟨f, hf₁, hf₂⟩ s
     rw [← Finset.card_image_of_injective s hf₁]
-    apply Finset.card_le_of_subset
+    apply Finset.card_le_card
     intro
     rw [Finset.mem_image, Finset.mem_biUnion]
     rintro ⟨x, hx, rfl⟩

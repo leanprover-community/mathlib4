@@ -150,7 +150,7 @@ variable (R n)
 /-- A structure containing all the information from which one can build a nontrivial transvection.
 This structure is easier to manipulate than transvections as one has a direct access to all the
 relevant fields. -/
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 structure TransvectionStruct where
   (i j : n)
   hij : i ≠ j
@@ -235,6 +235,22 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
       by simpa [Matrix.mul_assoc]
     simp_rw [IH, Matrix.mul_one, t.mul_inv]
 #align matrix.transvection_struct.prod_mul_reverse_inv_prod Matrix.TransvectionStruct.prod_mul_reverse_inv_prod
+
+/-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix).-/
+theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix n n R}
+    (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) :
+    M ∈ Set.range (Matrix.scalar n) := by
+  refine mem_range_scalar_of_commute_stdBasisMatrix ?_
+  intro i j hij
+  simpa [transvection, mul_add, add_mul] using (hM ⟨i, j, hij, 1⟩).eq
+
+theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matrix n n R} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ t : TransvectionStruct n R, Commute t.toMatrix M := by
+  refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
+  rw [mem_range_scalar_iff_commute_stdBasisMatrix] at h
+  refine (Commute.one_left M).add_left ?_
+  convert (h _ _ t.hij).smul_left t.c using 1
+  rw [smul_stdBasisMatrix, smul_eq_mul, mul_one]
 
 end
 
@@ -380,8 +396,8 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     ∀ k : ℕ,
       k ≤ r →
         (((listTransvecCol M).drop k).prod * M) (inl i) (inr unit) =
-          if k ≤ i then 0 else M (inl i) (inr unit)
-  · simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (zero_le _)
+          if k ≤ i then 0 else M (inl i) (inr unit) by
+    simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (zero_le _)
   intro k hk
   -- porting note: `apply` didn't work anymore, because of the implicit arguments
   refine' Nat.decreasingInduction' _ hk _
@@ -454,8 +470,8 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     ∀ k : ℕ,
       k ≤ r →
         (M * ((listTransvecRow M).take k).prod) (inr unit) (inl i) =
-          if k ≤ i then M (inr unit) (inl i) else 0
-  · have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
+          if k ≤ i then M (inr unit) (inl i) else 0 by
+    have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
     rw [← List.take_length (listTransvecRow M), A]
     have : ¬r ≤ i := by simp
     simpa only [this, ite_eq_right_iff] using H r le_rfl
@@ -711,8 +727,8 @@ theorem diagonal_transvection_induction (P : Matrix n n 𝕜 → Prop) (M : Matr
   have PD : P (diagonal D) := hdiag D (by simp [h])
   suffices H :
     ∀ (L₁ L₂ : List (TransvectionStruct n 𝕜)) (E : Matrix n n 𝕜),
-      P E → P ((L₁.map toMatrix).prod * E * (L₂.map toMatrix).prod)
-  · rw [h]
+      P E → P ((L₁.map toMatrix).prod * E * (L₂.map toMatrix).prod) by
+    rw [h]
     apply H L L'
     exact PD
   intro L₁ L₂ E PE

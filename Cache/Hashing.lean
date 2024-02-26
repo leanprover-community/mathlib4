@@ -85,15 +85,14 @@ Computes the hash of a file, which mixes:
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
 -/
-partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
-  let stt ← get
-  match stt.cache.find? filePath with
+partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
+  match (← get).cache.find? filePath with
   | some hash? => return hash?
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath
     if !(← fixedPath.pathExists) then
       IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it"
-      set { stt with cache := stt.cache.insert filePath none }
+      modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
     let fileImports := getFileImports content pkgDirs
@@ -102,11 +101,11 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
-        set { stt with cache := stt.cache.insert filePath none }
+        modify fun stt => { stt with cache := stt.cache.insert filePath none }
         return none
     let rootHash := (← get).rootHash
     let pathHash := hash filePath.components
-    let fileHash := hash $ rootHash :: pathHash :: hashFileContents content :: importHashes.toList
+    let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
         hashMap := stt.hashMap.insert filePath fileHash

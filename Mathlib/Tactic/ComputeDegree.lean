@@ -8,9 +8,9 @@ import Mathlib.Data.Polynomial.Degree.Lemmas
 
 /-!
 
-# `compute_degree` a tactic for computing degrees of polynomials
+# `compute_degree` and `monicity`: tactics for explicit polynomials
 
-This file defines the tactic `compute_degree`.
+This file defines two related tactics: `compute_degree` and `monicity`.
 
 Using `compute_degree` when the goal is of one of the five forms
 *  `natDegree f ≤ d`,
@@ -21,11 +21,17 @@ Using `compute_degree` when the goal is of one of the five forms
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
-See the doc-string for more details.
+Using `monicity` when the goal is of the form `Monic f` tries to solve the goal.
+It may leave side-goals, in case it is not entirely successful.
+
+Both tactics admit a `!` modifier (`compute_degree!` and `monicity!`) instructing
+Lean to try harder to close the goal.
+
+See the doc-strings for more details.
 
 ##  Future work
 
-* Currently, the tactic does not deal correctly with some edge cases.  For instance,
+* Currently, `compute_degree` does not deal correctly with some edge cases.  For instance,
   ```lean
   example [Semiring R] : natDegree (C 0 : R[X]) = 0 := by
     compute_degree
@@ -105,7 +111,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     · exact natDegree_mul_le_of_le ‹_› ‹_›
     · exact ne_comm.mp h
 
-theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} {p : R[X]}
+theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
     (h_pow : natDegree p ≤ n) (h_exp : m * n ≤ o) (h_pow_bas : coeff p n = a) :
     coeff (p ^ m) o = if o = m * n then a ^ m else 0 := by
   split_ifs with h
@@ -115,6 +121,16 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} 
     apply lt_of_le_of_lt ?_ (lt_of_le_of_ne ‹_› ?_)
     · exact natDegree_pow_le_of_le m ‹_›
     · exact Iff.mp ne_comm h
+
+theorem natDegree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : natDegree f ≤ n) :
+    natDegree (a • f) ≤ n :=
+  (natDegree_smul_le a f).trans hf
+
+theorem degree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : degree f ≤ n) :
+    degree (a • f) ≤ n :=
+  (degree_smul_le a f).trans hf
+
+theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coeff n := rfl
 
 section congr_lemmas
 
@@ -211,7 +227,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.r
     | some 1 => .inl `one
     | some _ => .inl `many
     | none => match pol.getAppFnArgs with
-      | (``FunLike.coe, #[_, _, _, _, polFun, _]) =>
+      | (``DFunLike.coe, #[_, _, _, _, polFun, _]) =>
         let na := polFun.getAppFn.constName
         if na ∈ [``Polynomial.monomial, ``Polynomial.C] then
           .inr na
@@ -320,6 +336,8 @@ def dispatchLemma
           π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial
         | .inr ``Polynomial.C =>
           π ``natDegree_C_le ``degree_C_le ``coeff_C
+        | .inr ``HSMul.hSMul =>
+          π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl
 
 /-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
@@ -433,11 +451,10 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
     | _ => none
   let twoH := twoHeadsArgs gt
   match twoH with
-    | (_, .anonymous, _) => throwError
-        (m!"'compute_degree' inapplicable. The goal{indentD gt}\nis expected to be '≤' or '='.")
-    | (.anonymous, _, _) => throwError
-        (m!"'compute_degree' inapplicable. The LHS must be an application of {
-          ""}'natDegree', 'degree', or 'coeff'.")
+    | (_, .anonymous, _) => throwError m!"'compute_degree' inapplicable. \
+        The goal{indentD gt}\nis expected to be '≤' or '='."
+    | (.anonymous, _, _) => throwError m!"'compute_degree' inapplicable. \
+        The LHS must be an application of 'natDegree', 'degree', or 'coeff'."
     | _ =>
       let lem := dispatchLemma twoH
       trace[Tactic.compute_degree] f!"'compute_degree' first applies lemma '{lem.getString}'"
@@ -465,6 +482,19 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
           unless errors.isEmpty do
             throwError Lean.MessageData.joinSep
               (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n"
+
+/-- `monicity` tries to solve a goal of the form `Monic f`.
+It converts the goal into a goal of the form `natDegree f ≤ n` and one of the form `f.coeff n = 1`
+and calls `compute_degree` on those two goals.
+
+The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on the two side-goals.
+-/
+macro (name := monicityMacro) "monicity" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
+
+@[inherit_doc monicityMacro]
+macro "monicity!" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 
 end Tactic
 

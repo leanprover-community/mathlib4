@@ -2,7 +2,7 @@ import Mathlib.Tactic.Congr!
 import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
-import Mathlib.Data.List.Defs
+import Mathlib.Data.List.BigOperators.Basic
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
