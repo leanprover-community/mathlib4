@@ -974,7 +974,7 @@ theorem homTensorHomMap_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
 
 @[simp]
 theorem map₂_apply_tmul (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) (m : M) (n : N) :
-  map₂ f g (m ⊗ₜ n) = map (f m) (g n) := rfl
+    map₂ f g (m ⊗ₜ n) = map (f m) (g n) := rfl
 
 @[simp]
 theorem map_zero_left (g : N →ₗ[R] Q) : map (0 : M →ₗ[R] P) g = 0 :=
