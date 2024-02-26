@@ -236,7 +236,7 @@ lemma toRatCDF_of_isRatStieltjesPoint {a : α} (h : IsRatStieltjesPoint f a) (q 
 lemma measurable_toRatCDF (hf : Measurable f) : Measurable (toRatCDF f) :=
   Measurable.ite (measurableSet_isRatStieltjesPoint hf) hf measurable_const
 
-lemma IsMeasurableRatCDF_toRatCDF (hf : Measurable f) :
+lemma isMeasurableRatCDF_toRatCDF (hf : Measurable f) :
     IsMeasurableRatCDF (toRatCDF f) where
   isRatStieltjesPoint a := by
     classical
