@@ -15,56 +15,18 @@ of multiplication and scalar-multiplication operations in normed algebras and no
 
 suppress_compilation
 
-open Bornology
-open Filter hiding map_smul
+set_option linter.uppercaseLean3 false
+
+open Metric
 open scoped Classical NNReal Topology Uniformity
 
--- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
 
 section SemiNormed
 
-open Metric ContinuousLinearMap
-
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Eₗ] [SeminormedAddCommGroup F]
-  [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup G] [SeminormedAddCommGroup Gₗ]
-
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
-  [NormedSpace 𝕜 Gₗ] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
-  [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
-variable [FunLike 𝓕 E F]
+variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace ContinuousLinearMap
-
-variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
-
-variable (E F G σ₁₃ σ₂₃)
-
-variable {E F G σ₁₃ σ₂₃}
-
-variable (𝕜 E Fₗ Gₗ)
-
-variable {𝕜 E Fₗ Gₗ}
-
-variable (F σ₁₂) [RingHomIsometric σ₁₂]
-
-variable {F σ₁₂}
-
-variable (𝕜 Fₗ)
-
-variable {𝕜 Fₗ}
-
-variable (σ₁₂ σ₂₃ E F G)
-
-set_option linter.uppercaseLean3 false
-
-variable {σ₁₂ σ₂₃ E F G}
-
-variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
-
-variable (Eₗ) {𝕜 E Fₗ Gₗ}
 
 section MultiplicationLinear
 
@@ -302,28 +264,9 @@ end SemiNormed
 
 section Normed
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
-  [NormedAddCommGroup Fₗ]
-
-open Metric ContinuousLinearMap
-
 namespace ContinuousLinearMap
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ] (c : 𝕜)
-  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
-
-variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [NormedAddCommGroup F']
-  [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
-  [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
-  [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
-  [RingHomIsometric σ₂''] [RingHomIsometric σ₂₃']
-
-variable (𝕜 E Fₗ)
-
-set_option linter.uppercaseLean3 false
-
-variable {𝕜 E Fₗ}
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] (c : 𝕜)
 
 variable (𝕜) (𝕜' : Type*)
 

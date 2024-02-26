@@ -9,37 +9,25 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 # Operator norm: Cartesian products
 
 Interaction of operator norm with Cartesian products.
-
 -/
 
-suppress_compilation
+--suppress_compilation
 
-open Bornology
-open Filter hiding map_smul
-open scoped Classical NNReal Topology Uniformity
-
--- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
+-- the `ₗ` subscript variables are because we only treat linear maps in this file, while other
+-- closely related files use plain letters for semilinear maps and subscript `ₗ` for linear
+variable {𝕜 E Fₗ Gₗ : Type*}
 
 section SemiNormed
 
-open Metric ContinuousLinearMap
+open Set Real Metric ContinuousLinearMap
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Eₗ] [SeminormedAddCommGroup F]
-  [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup G] [SeminormedAddCommGroup Gₗ]
+variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup Gₗ]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
-  [NormedSpace 𝕜 Gₗ] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
-  [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
-variable [FunLike 𝓕 E F]
+variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜 Gₗ]
 
 namespace ContinuousLinearMap
 
 section OpNorm
-
-open Set Real
 
 @[simp]
 theorem opNorm_prod (f : E →L[𝕜] Fₗ) (g : E →L[𝕜] Gₗ) : ‖f.prod g‖ = ‖(f, g)‖ :=
@@ -76,37 +64,7 @@ def prodₗᵢ (R : Type*) [Semiring R] [Module R Fₗ] [Module R Gₗ] [Continu
 
 end OpNorm
 
-end ContinuousLinearMap
-
-namespace ContinuousLinearMap
-
-variable [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
-
-variable (E F G σ₁₃ σ₂₃)
-
-variable {E F G σ₁₃ σ₂₃}
-
-variable (𝕜 E Fₗ Gₗ)
-
-variable {𝕜 E Fₗ Gₗ}
-
-variable (F σ₁₂) [RingHomIsometric σ₁₂]
-
-variable {F σ₁₂}
-
-variable (𝕜 Fₗ)
-
-variable {𝕜 Fₗ}
-
-variable (σ₁₂ σ₂₃ E F G)
-
 set_option linter.uppercaseLean3 false
-
-variable {σ₁₂ σ₂₃ E F G}
-
-variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
-
-variable (Eₗ) {𝕜 E Fₗ Gₗ}
 
 section Prod
 
@@ -116,7 +74,7 @@ variable (M₁ : Type u₁) [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁
   [SeminormedAddCommGroup M₂] [NormedSpace 𝕜 M₂] (M₃ : Type u₃) [SeminormedAddCommGroup M₃]
   [NormedSpace 𝕜 M₃] (M₄ : Type u₄) [SeminormedAddCommGroup M₄] [NormedSpace 𝕜 M₄]
 
-variable {Eₗ} (𝕜)
+variable (𝕜)
 
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=

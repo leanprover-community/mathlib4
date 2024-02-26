@@ -8,18 +8,14 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 /-!
 # Asymptotic statements about the operator norm
 
-This file contains lemmas about how operator norm on continuous linear maps interact with `IsBigO`.
+This file contains lemmas about how operator norm on continuous linear maps interacts with `IsBigO`.
 
 -/
 
-suppress_compilation
+open Asymptotics
 
-open Bornology Asymptotics Metric ContinuousLinearMap
-open Filter hiding map_smul
-open scoped Classical NNReal Topology Uniformity
+set_option linter.uppercaseLean3 false
 
-
--- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E F G : Type*}
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
@@ -28,8 +24,6 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F]  [NormedSpace 𝕜₃ G] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
 namespace ContinuousLinearMap
-
-set_option linter.uppercaseLean3 false
 
 variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) (l : Filter E)
 
@@ -64,8 +58,6 @@ theorem isBigO_sub (x : E) :
 end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
-
-set_option linter.uppercaseLean3 false
 
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]  (e : E ≃SL[σ₁₂] F)
 
