@@ -286,7 +286,8 @@ theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] :
   unfold Matrix.compl
   rw [add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
   by_cases h : G.Adj i j
-  · rw [if_pos h, if_neg one_ne_zero, if_neg (G.ne_of_adj h), if_neg (G.ne_of_adj h), zero_add, add_zero]
+  · rw [if_pos h, if_neg one_ne_zero, if_neg (G.ne_of_adj h), if_neg (G.ne_of_adj h), zero_add,
+     add_zero]
   · rw [if_neg h]
     by_cases heq : i = j
     · repeat rw [if_pos heq, add_zero]
