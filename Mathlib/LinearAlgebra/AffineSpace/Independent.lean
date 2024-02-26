@@ -581,7 +581,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     rw [Basis.coe_ofVectorSpace] at hsvi hsvt
     have h0 : ∀ v : V, v ∈ Basis.ofVectorSpaceIndex _ _ → v ≠ 0 := by
       intro v hv
-      simpa using hsv.ne_zero ⟨v, hv⟩
+      simpa [hsv] using hsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     exact
       ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' _, Set.empty_subset _, hsvi,
@@ -594,7 +594,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     have hsv := h.subset_extend (Set.subset_univ _)
     have h0 : ∀ v : V, v ∈ h.extend _ → v ≠ 0 := by
       intro v hv
-      simpa using bsv.ne_zero ⟨v, hv⟩
+      simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine' ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), _, _⟩
     · refine' Set.Subset.trans _ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
@@ -661,12 +661,12 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
     by_cases his : i ∈ s ∧ w i ≠ 0
     · refine' False.elim (hi _)
       let wm : ι → k := -(w i)⁻¹ • w
-      have hms : s.weightedVSub p wm = (0 : V) := by simp [hs]
-      have hwm : ∑ i in s, wm i = 0 := by simp [← Finset.mul_sum, hw]
-      have hwmi : wm i = -1 := by simp [his.2]
+      have hms : s.weightedVSub p wm = (0 : V) := by simp [wm, hs]
+      have hwm : ∑ i in s, wm i = 0 := by simp [wm, ← Finset.mul_sum, hw]
+      have hwmi : wm i = -1 := by simp [wm, his.2]
       let w' : { y // y ≠ i } → k := fun x => wm x
       have hw' : ∑ x in s', w' x = 1 := by
-        simp_rw [Finset.sum_subtype_eq_sum_filter]
+        simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [← s.sum_filter_add_sum_filter_not (· ≠ i)] at hwm
         simp_rw [Classical.not_not] at hwm
         -- Porting note: this `erw` used to be part of the `simp_rw`
@@ -680,12 +680,12 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
     · rw [not_and_or, Classical.not_not] at his
       let w' : { y // y ≠ i } → k := fun x => w x
       have hw' : ∑ x in s', w' x = 0 := by
-        simp_rw [Finset.sum_subtype_eq_sum_filter]
+        simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [Finset.sum_filter_of_ne, hw]
         rintro x hxs hwx rfl
         exact hwx (his.neg_resolve_left hxs)
       have hs' : s'.weightedVSub p' w' = (0 : V) := by
-        simp_rw [Finset.weightedVSub_subtype_eq_filter]
+        simp_rw [w', s', p', Finset.weightedVSub_subtype_eq_filter]
         rw [Finset.weightedVSub_filter_of_ne, hs]
         rintro x hxs hwx rfl
         exact hwx (his.neg_resolve_left hxs)
