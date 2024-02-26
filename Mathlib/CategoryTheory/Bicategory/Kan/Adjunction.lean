@@ -14,7 +14,7 @@ We show that adjunctions are realized as Kan extensions or Kan lifts.
 
 We also show that a left adjoint commutes with a left Kan extension. Under the assumption that
 `IsLeftAdjoint h`, the isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` can be accessed by
-`Lan.CommuteWith.lanAlongCompIsoLanComp f g h`.
+`Lan.CommuteWith.lanCompIso f g h`.
 
 ## References
 

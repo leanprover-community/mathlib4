@@ -120,7 +120,7 @@ class Lan.CommuteWith
 
 namespace Lan.CommuteWith
 
-theorem ofLanCompIsoLanAlongComp [HasLeftKanExtension f g]
+theorem ofLanCompIso [HasLeftKanExtension f g]
     {x : B} {h : c ⟶ x} [HasLeftKanExtension f (g ≫ h)]
     (i : f⁺ (g ≫ h) ≅ f⁺ g ≫ h)
     (w : lanUnit f (g ≫ h) ≫ f ◁ i.hom = lanUnit f g ▷ h ≫ (α_ _ _ _).hom) :
@@ -136,24 +136,22 @@ def isKan : IsKan <| (lanLeftExtension f g).whisker h := Classical.choice Lan.Co
 instance : HasLeftKanExtension f (g ≫ h) := (Lan.CommuteWith.isKan f g h).hasLeftKanExtension
 
 /-- The isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` at the level of structured arrows. -/
-def lanAlongCompIsoLanwhisker : lanLeftExtension f (g ≫ h) ≅ (lanLeftExtension f g).whisker h :=
+def lanCompIsoWhisker : lanLeftExtension f (g ≫ h) ≅ (lanLeftExtension f g).whisker h :=
   IsKan.uniqueUpToIso (lanIsKan f (g ≫ h)) (Lan.CommuteWith.isKan f g h)
 
 @[simp]
-theorem lanAlongCompIsoLanwhisker_hom_right :
-    (lanAlongCompIsoLanwhisker f g h).hom.right = lanDesc ((lanLeftExtension f g).whisker h) :=
+theorem lanCompIsoWhisker_hom_right :
+    (lanCompIsoWhisker f g h).hom.right = lanDesc ((lanLeftExtension f g).whisker h) :=
   rfl
 
 @[simp]
-theorem lanAlongCompIsoLanwhisker_inv_right :
-    (lanAlongCompIsoLanwhisker f g h).inv.right =
-      (isKan f g h).desc (lanLeftExtension f (g ≫ h)) :=
+theorem lanCompIsoWhisker_inv_right :
+    (lanCompIsoWhisker f g h).inv.right = (isKan f g h).desc (lanLeftExtension f (g ≫ h)) :=
   rfl
 
 /-- The 1-morphism `h` commutes with the left Kan extension `f⁺ g`. -/
 @[simps!]
-def lanAlongCompIsoLanComp : f⁺ (g ≫ h) ≅ f⁺ g ≫ h :=
-    Comma.rightIso <| Lan.CommuteWith.lanAlongCompIsoLanwhisker f g h
+def lanCompIso : f⁺ (g ≫ h) ≅ f⁺ g ≫ h := Comma.rightIso <| lanCompIsoWhisker f g h
 
 end Lan.CommuteWith
 
@@ -253,7 +251,7 @@ class LanLift.CommuteWith
 
 namespace LanLift.CommuteWith
 
-theorem ofLanCompIsoLanAlongComp [HasLeftKanLift f g]
+theorem ofLanLiftCompIso [HasLeftKanLift f g]
     {x : B} {h : x ⟶ c} [HasLeftKanLift f (h ≫ g)]
     (i : f₊ (h ≫ g) ≅ h ≫ f₊ g)
     (w : lanLiftUnit f (h ≫ g) ≫ i.hom ▷ f = h ◁ lanLiftUnit f g ≫ (α_ _ _ _).inv) :
@@ -270,26 +268,23 @@ def isKan : IsKan <| (lanLiftLeftLift f g).whisker h :=
 instance : HasLeftKanLift f (h ≫ g) := (LanLift.CommuteWith.isKan f g h).hasLeftKanLift
 
 /-- The isomorphism `f₊ (h ≫ g) ≅ h ≫ f₊ g` at the level of structured arrows. -/
-def lanLiftAlongCompIsoLanLiftWhisker :
+def lanLiftCompIsoWhisker :
     lanLiftLeftLift f (h ≫ g) ≅ (lanLiftLeftLift f g).whisker h :=
   IsKan.uniqueUpToIso (lanLiftIsKan f (h ≫ g)) (LanLift.CommuteWith.isKan f g h)
 
 @[simp]
-theorem lanLiftAlongCompIsoLanLiftWhisker_hom_right :
-    (lanLiftAlongCompIsoLanLiftWhisker f g h).hom.right =
-      lanLiftDesc ((lanLiftLeftLift f g).whisker h) :=
+theorem lanLiftCompIsoWhisker_hom_right :
+    (lanLiftCompIsoWhisker f g h).hom.right = lanLiftDesc ((lanLiftLeftLift f g).whisker h) :=
   rfl
 
 @[simp]
-theorem lanLiftAlongCompIsoLanLiftWhisker_inv_right :
-    (lanLiftAlongCompIsoLanLiftWhisker f g h).inv.right =
-      (isKan f g h).desc (lanLiftLeftLift f (h ≫ g)) :=
+theorem lanLiftCompIsoWhisker_inv_right :
+    (lanLiftCompIsoWhisker f g h).inv.right = (isKan f g h).desc (lanLiftLeftLift f (h ≫ g)) :=
   rfl
 
 /-- The 1-morphism `h` commutes with the left Kan lift `f₊ g`. -/
 @[simps!]
-def lanLiftAlongCompIsoCompLan : f₊ (h ≫ g) ≅ h ≫ f₊ g :=
-    Comma.rightIso <| LanLift.CommuteWith.lanLiftAlongCompIsoLanLiftWhisker f g h
+def lanLiftCompIso : f₊ (h ≫ g) ≅ h ≫ f₊ g := Comma.rightIso <| lanLiftCompIsoWhisker f g h
 
 end LanLift.CommuteWith
 
