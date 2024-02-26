@@ -240,13 +240,6 @@ instance {f : a ⟶ b} {g : a ⟶ c} {x : B} {h : c ⟶ x} [IsLeftAdjoint h] [Ha
     Lan.CommuteWith f g h :=
   ⟨⟨isKanOfWhiskerLeftAdjoint (Lan.isKan f g) (rightAdjoint.adjunction h)⟩⟩
 
-/-- A left adjoint commutes with a left Kan extension. -/
-noncomputable
-def LeftAdjoint.lanAlongCompIsoLanComp (f : a ⟶ b) (g : a ⟶ c) {x : B} (h : c ⟶ x)
-    [IsLeftAdjoint h] [HasLeftKanExtension f g] :
-    f⁺ (g ≫ h) ≅ f⁺ g ≫ h :=
-  Lan.CommuteWith.lanAlongCompIsoLanComp f g h
-
 end LeftExtension
 
 end Bicategory
