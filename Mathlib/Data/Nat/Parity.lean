@@ -84,7 +84,7 @@ theorem even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
 theorem even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;> use k
   · simpa only [← two_mul, eq_self_iff_true, xor_true] using (succ_ne_self (2 * k)).symm
-  · simpa only [xor_true, xor_comm] using (succ_ne_self _)
+  · simpa only [_root_.xor_true, _root_.xor_comm] using (succ_ne_self _)
 #align nat.even_xor_odd' Nat.even_xor_odd'
 
 @[simp] theorem two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
