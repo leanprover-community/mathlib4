@@ -37,20 +37,21 @@ private def impArrow : Parser := leading_parser impTo <|> impFrom <|> impIff
 /-- A `tfae_have` type specification, e.g. `1 ↔ 3` The numbers refer to the proposition at the
 corresponding position in the `TFAE` goal (starting at 1). -/
 private def tfaeType := leading_parser num >> impArrow >> num
-private def tfaeTypeAnnotation := " : " >> tfaeType
 
 /-!
-The following parsers are exactly the same as those for `have` in `Lean.Parser.Term`, but
+The following parsers are similar to those for `have` in `Lean.Parser.Term`, but
 instead of `optType`, we use `tfaeType := num >> impArrow >> num` (as a `tfae_have` invocation must
 always include this specification). Also, we disallow including extra binders, as that makes no
-sense in this context.
+sense in this context; we also include `" : "` after the binder to avoid breaking `tfae_have 1 → 2`
+syntax (which, unlike `have`, omits `" : "`).
 -/
 
 /- See `haveIdLhs`.
 
 We omit `many (ppSpace >> letIdBinder)`, as it makes no sense to add extra arguments to a
 `tfae_have` decl.  -/
-private def tfaeHaveIdLhs := ((ppSpace >> binderIdent) <|> hygieneInfo)  >> tfaeTypeAnnotation
+private def tfaeHaveIdLhs := leading_parser
+  ((ppSpace >> binderIdent >> " : ") <|> hygieneInfo)  >> tfaeType
 /- See `haveIdDecl`. E.g. `h : 1 → 3 := term`. -/
 private def tfaeHaveIdDecl   := leading_parser (withAnonymousAntiquot := false)
   atomic (tfaeHaveIdLhs >> " := ") >> termParser
@@ -59,22 +60,10 @@ private def tfaeHaveEqnsDecl := leading_parser (withAnonymousAntiquot := false)
   tfaeHaveIdLhs >> matchAlts
 /- See `letPatDecl`. E.g. `⟨mp, mpr⟩ : 1 ↔ 3 := term`. -/
 private def tfaeHavePatDecl  := leading_parser (withAnonymousAntiquot := false)
-  atomic (termParser >> pushNone >> tfaeTypeAnnotation >> " := ") >> termParser
+  atomic (termParser >> pushNone >> " : " >> tfaeType >> " := ") >> termParser
 /- See `haveDecl`. Any of `tfaeHaveIdDecl`, `tfaeHavePatDecl`, or `tfaeHaveEqnsDecl`. -/
 private def tfaeHaveDecl     := leading_parser (withAnonymousAntiquot := false)
   tfaeHaveIdDecl <|> (ppSpace >> tfaeHavePatDecl) <|> tfaeHaveEqnsDecl
-
-/-
-Patterned off of `haveIdLhs'` in `Mathlib.Tactic.Have`. This parser supports "Mathlib `have`"
-usage, which allows writing
-```lean
-  have : X
-  /- main goal is of type X -/
-```
-We omit `many (ppSpace >> letIdBinder)`, as it makes no sense to add extra arguments to a
-`tfae_have` decl.  -/
-private def tfaeHaveIdLhs' := leading_parser (withAnonymousAntiquot := false)
-  (ppSpace >> optBinderIdent) >> tfaeTypeAnnotation
 
 end Parser
 
@@ -131,7 +120,7 @@ example : TFAE [P, Q] := by
 syntax (name := tfaeHave) "tfae_have " tfaeHaveDecl : tactic
 
 @[inherit_doc tfaeHave]
-syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs' : tactic
+syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
 
 /--
 `tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
@@ -276,43 +265,43 @@ def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Ex
 `expandHave`, which is responsible for inserting `this` in `have : A := ...`. Note that we
 require some extra help for `tfaeHave'` (Mathlib `have`). -/
 macro_rules
-| `(tfaeHave|tfae_have $hy:hygieneInfo : $t:tfaeType := $val) => do
+| `(tfaeHave|tfae_have $hy:hygieneInfo $t:tfaeType := $val) => do
   let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
   `(tfaeHave|tfae_have $id : $t := $val)
-| `(tfaeHave|tfae_have $hy:hygieneInfo : $t:tfaeType $alts:matchAlts) => do
+| `(tfaeHave|tfae_have $hy:hygieneInfo $t:tfaeType $alts:matchAlts) => do
   let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
   `(tfaeHave|tfae_have $id : $t $alts)
 
 -- Mathlib `have`
-| `(tfaeHave'|tfae_have $hy:hygieneInfo : $t:tfaeType) => do
+| `(tfaeHave'|tfae_have $hy:hygieneInfo $t:tfaeType) => do
   let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
-  let id ← `(optBinderIdent|$id:ident)
   `(tfaeHave'|tfae_have $id : $t)
 
 elab_rules : tactic
 | `(tfaeHave|tfae_have $d:tfaeHaveDecl) => withMainContext do
   let goal ← getMainGoal
   let (_, tfaeList) ← getTFAEList (← goal.getType)
-  match d with
-  | `(tfaeHaveDecl| $b : $t:tfaeType := $pf:term) =>
-    let type ← elabTFAEType tfaeList t
-    evalTactic <|← `(tactic|have $b : $(← type.toSyntax) := $pf)
-  | `(tfaeHaveDecl| $b : $t:tfaeType $alts:matchAlts) =>
-    let type ← elabTFAEType tfaeList t
-    evalTactic <|← `(tactic|have $b : $(← type.toSyntax) $alts:matchAlts)
-  | `(tfaeHaveDecl| $pat:term : $t:tfaeType := $pf:term) =>
-    let type ← elabTFAEType tfaeList t
-    evalTactic <|← `(tactic|have $pat:term : $(← type.toSyntax) := $pf)
-  | _ => throwUnsupportedSyntax
+  withRef d do
+    match d with
+    | `(tfaeHaveDecl| $b : $t:tfaeType := $pf:term) =>
+      let type ← elabTFAEType tfaeList t
+      evalTactic <|← `(tactic|have $b : $(← type.toSyntax) := $pf)
+    | `(tfaeHaveDecl| $b : $t:tfaeType $alts:matchAlts) =>
+      let type ← elabTFAEType tfaeList t
+      evalTactic <|← `(tactic|have $b : $(← type.toSyntax) $alts:matchAlts)
+    | `(tfaeHaveDecl| $pat:term : $t:tfaeType := $pf:term) =>
+      let type ← elabTFAEType tfaeList t
+      evalTactic <|← `(tactic|have $pat:term : $(← type.toSyntax) := $pf)
+    | _ => throwUnsupportedSyntax
 
 -- Mathlib `have`
-| `(tfaeHave'|tfae_have $d:tfaeHaveIdLhs') => withMainContext do
+| `(tfaeHave'|tfae_have $d:tfaeHaveIdLhs) => withMainContext do
   let goal ← getMainGoal
   let (_, tfaeList) ← getTFAEList (← goal.getType)
   match d with
-  | `(tfaeHaveIdLhs'| $b : $t:tfaeType) =>
+  | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
     let type ← elabTFAEType tfaeList t
-    evalTactic <|← `(tactic|have $b : $(← type.toSyntax))
+    evalTactic <|← `(tactic|have $b:ident : $(← type.toSyntax))
   | _ => throwUnsupportedSyntax
 
 
