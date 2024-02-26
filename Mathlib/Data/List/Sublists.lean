@@ -165,7 +165,7 @@ theorem sublists_append (l₁ l₂ : List α) :
     simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
 
---Portin note: New theorem
+--Porting note: New theorem
 theorem sublists_cons (a : α) (l : List α) :
     sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
   show sublists ([a] ++ l) = _ by

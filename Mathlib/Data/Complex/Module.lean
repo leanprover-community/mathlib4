@@ -185,14 +185,19 @@ instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algeb
     Algebra ℝ A :=
   RestrictScalars.algebra ℝ ℂ A
 
--- try to make sure we're not introducing diamonds.
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
 example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
 example {ι : Type*} [Fintype ι] :
     Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
   rfl
+
 example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
     (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
-  rfl
+  by with_reducible_and_instances rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
