@@ -141,20 +141,20 @@ lemma eventually_eq_zero_of_empty_generatorSet :
   simp only [card_generator, Finset.coe_empty, Algebra.adjoin_empty] at eq1
 
   let S' := GradedRing.HomogeneousGeneratingSetOf.Irrelevant 𝒜
-  have S'_eq : S'.toFinset = ∅
-  · have eq2 := GradedRing.HomogeneousGeneratingSetOf.irrelevant.adjoin_eq_top S'
+  have S'_eq : S'.toFinset = ∅ := by
+    have eq2 := GradedRing.HomogeneousGeneratingSetOf.irrelevant.adjoin_eq_top S'
     rw [← eq1] at eq2
     by_contra r
     change S'.toFinset ≠ ∅ at r
     rw [← Finset.nonempty_iff_ne_empty] at r
     obtain ⟨s, hs⟩ := r
-    have hs' : s ∈ (⊥ : Subalgebra (𝒜 0) A)
-    · rw [← eq2, Algebra.mem_adjoin_iff]
+    have hs' : s ∈ (⊥ : Subalgebra (𝒜 0) A) := by
+      rw [← eq2, Algebra.mem_adjoin_iff]
       exact Subring.subset_closure <| Or.inr hs
     obtain ⟨s, rfl⟩ := hs'
     change (s : A) ∈ S'.toFinset at hs
     have eq3 := DirectSum.degree_eq_of_mem_mem (ℳ := 𝒜) s.2 (S'.mem_deg hs) (S'.ne_zero' hs)
-    have ineq1 : 0 < S'.deg hs :=  GradedRing.HomogeneousGeneratingSetOf.irrelevant.deg_pos S' hs
+    have ineq1 : 0 < S'.deg hs := GradedRing.HomogeneousGeneratingSetOf.irrelevant.deg_pos S' hs
     linarith only [eq3, ineq1]
   let T := GradedModule.HomogeneousGeneratingSetOf.Top A ℳ
   let deg : T.toFinset → ℕ := fun x ↦ T.deg x.2
@@ -174,12 +174,12 @@ lemma eventually_eq_zero_of_empty_generatorSet :
     exact ne_empty)
 
   refine ⟨maxDeg, fun n hn x ↦ ?_⟩
-  have hn' (m : M) (hm : m ∈ T.toFinset) : T.deg hm < n
-  · exact lt_of_le_of_lt (Finset.le_max' _ _ <| by aesop) hn
+  have hn' (m : M) (hm : m ∈ T.toFinset) : T.deg hm < n :=
+    lt_of_le_of_lt (Finset.le_max' _ _ <| by aesop) hn
 
   have eq0 := kth_degree_eq_span S' T n
-  replace card_generator : (GradedRing.HomogeneousGeneratingSetOf.Irrelevant 𝒜).toFinset = ∅
-  · exact S'_eq
+  replace card_generator : (GradedRing.HomogeneousGeneratingSetOf.Irrelevant 𝒜).toFinset = ∅ :=
+    S'_eq
   simp_rw [card_generator, Finset.subset_empty, Finsupp.support_eq_empty] at eq0
   replace eq0 := calc _
     _ = _ := eq0
@@ -384,6 +384,7 @@ open CategoryTheory CategoryTheory.Limits ZeroObject
 
 variable [(i : ℕ) → (x : (ℳ i)) → Decidable (x ≠ 0)] [(a : M) → Decidable (a ∈ KER ℳ x deg_x)]
 
+set_option maxHeartbeats 500000 in
 @[simps!]
 noncomputable def anExactSeq (i : ℕ) (ineq : d ≤ i) : ComposableArrows (FGModuleCat (𝒜 0)) 5 :=
   .mk₅
@@ -401,8 +402,7 @@ example : true := rfl
 lemma anExactSeq_complex (i : ℕ) (ineq : d ≤ i) : (anExactSeq ℳ x deg_x i ineq).IsComplex := by
   constructor
   rintro j (hj : j + 2 ≤ 5)
-  replace hj : j ≤ 3
-  · linarith
+  replace hj : j ≤ 3 := by linarith
   interval_cases j
   · ext m
     simp only [Int.ofNat_eq_coe, Int.Nat.cast_ofNat_Int, id_eq, Nat.cast_ofNat, anExactSeq_obj,
@@ -452,8 +452,7 @@ lemma anExactSeq_exact (i : ℕ) (ineq : d ≤ i) : (anExactSeq ℳ x deg_x i in
   · apply anExactSeq_complex
   rintro j (hj : j + 2 ≤ 5)
   refine exact_iff_shortComplex_exact (A := FGModuleCat (𝒜 0)) _ |>.mp ?_
-  replace hj : j ≤ 3
-  · omega
+  replace hj : j ≤ 3 := by omega
   interval_cases j
   · simp only [Int.ofNat_eq_coe, Nat.cast_ofNat, Int.Nat.cast_ofNat_Int, id_eq, Fin.zero_eta,
     anExactSeq_obj, ComposableArrows.Precomp.obj_zero, ComposableArrows.Precomp.obj_succ,
@@ -462,9 +461,9 @@ lemma anExactSeq_exact (i : ℕ) (ineq : d ≤ i) : (anExactSeq ℳ x deg_x i in
     ComposableArrows.Precomp.map_succ_succ, ComposableArrows.precomp_map,
     ComposableArrows.Precomp.map_zero_one]
 
-    have : Mono (FGModuleCat.asHom (KER.componentEmb ℳ x deg_x (i - d)))
-    · apply ConcreteCategory.mono_of_injective
-      exact KER.componentEmb_injective ℳ x deg_x _
+    have : Mono (FGModuleCat.asHom (KER.componentEmb ℳ x deg_x (i - d))) :=
+      ConcreteCategory.mono_of_injective
+        (i := KER.componentEmb_injective ℳ x deg_x _)
     apply exact_zero_mono
   · change Exact (FGModuleCat.asHom (KER.componentEmb ℳ x deg_x (i - d)))
       (FGModuleCat.asHom (smulBy ℳ x deg_x (i - d)) ≫ (reindex ℳ i ineq).toFGModuleCatIso.hom)
@@ -486,8 +485,8 @@ lemma anExactSeq_exact (i : ℕ) (ineq : d ≤ i) : (anExactSeq ℳ x deg_x i in
     ComposableArrows.Precomp.map_one_succ, ComposableArrows.Precomp.map_zero_one,
     ComposableArrows.mk₁_map, ComposableArrows.Mk₁.map]
 
-    have : Epi (FGModuleCat.asHom (COKER.descComponent ℳ x deg_x i))
-    · apply ConcreteCategory.epi_of_surjective
+    have : Epi (FGModuleCat.asHom (COKER.descComponent ℳ x deg_x i)) := by
+      apply ConcreteCategory.epi_of_surjective
       rw [show i = d + (i - d) by omega]
       exact COKER.descComponent_surjective ℳ x deg_x _
     apply exact_epi_zero
@@ -511,8 +510,8 @@ lemma key_lemma :
   simp only [map_sub, AdditiveFunction.coeff_poincareSeries, coeff_mul, coeff_X_pow, ite_mul,
     one_mul, zero_mul, map_add]
   have eq0 (q : ℤ⟦X⟧) : coeff _ i (algebraMap _ ℤ⟦X⟧ (q.trunc d)) =
-      if i < d then coeff _ i q else 0
-  · rw [show algebraMap (Polynomial ℤ) ℤ⟦X⟧ = (Polynomial.coeToPowerSeries.algHom (R := ℤ) ℤ) from
+      if i < d then coeff _ i q else 0 := by
+    rw [show algebraMap (Polynomial ℤ) ℤ⟦X⟧ = (Polynomial.coeToPowerSeries.algHom (R := ℤ) ℤ) from
       rfl]
     simp only [RingHom.coe_coe, Polynomial.coeToPowerSeries.algHom_apply, Algebra.id.map_eq_id,
       map_id, id_eq, Polynomial.coeff_coe]
@@ -521,8 +520,8 @@ lemma key_lemma :
 
   have eq1 :
     ∑ x in Finset.antidiagonal i, (if x.1 = d then μ (.of (𝒜 0) (ℳ x.2)) else 0)=
-    if d ≤ i then μ (.of _ (ℳ (i - d))) else 0
-  · rw [Finset.sum_ite, Finset.sum_const_zero, add_zero]
+    if d ≤ i then μ (.of _ (ℳ (i - d))) else 0 := by
+    rw [Finset.sum_ite, Finset.sum_const_zero, add_zero]
     split_ifs with ineq
     · trans ∑ x in {(d, i - d)}, μ (.of (𝒜 0) (ℳ x.2))
       · refine Finset.sum_congr ?_ fun _ _ ↦ rfl
@@ -540,8 +539,8 @@ lemma key_lemma :
 
   have eq2 : ∑ jk in Finset.antidiagonal i,
         (if jk.1 = d then μ (.of _ ((KER ℳ x deg_x).grading jk.2)) else 0) =
-      if d ≤ i then μ (.of _ ((KER ℳ x deg_x).grading (i - d))) else 0
-  · rw [Finset.sum_ite, Finset.sum_const_zero, add_zero]
+      if d ≤ i then μ (.of _ ((KER ℳ x deg_x).grading (i - d))) else 0 := by
+    rw [Finset.sum_ite, Finset.sum_const_zero, add_zero]
     split_ifs with ineq
     · trans ∑ jk in {(d, i - d)}, μ (.of _ ((KER ℳ x deg_x).grading jk.2))
       · refine Finset.sum_congr ?_ fun _ _ ↦ rfl
@@ -690,8 +689,8 @@ def generatingSet' : generatingSetOverBaseRing (𝒜' S s S' hS') where
   ne_zero' h := by
     simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists] at h
     obtain ⟨a, ha, rfl⟩ := h
-    suffices h : a ≠ 0
-    · contrapose! h
+    suffices h : a ≠ 0 by
+      contrapose! h
       rw [Subtype.ext_iff] at h
       exact h
     exact S.ne_zero' (hS' ▸ Finset.mem_insert_of_mem ha)
@@ -812,8 +811,8 @@ lemma induction : statement'.{u} (N + 1) := by
     mul_invOfUnit (h := by simpa using d_ne_zero), one_mul]
 
   have eq_poles :
-    S.poles.val = (generatingSet' S s S' hS1').poles.val * (1 - X^d : ℤ⟦X⟧)
-  · rw [generatingSetOverBaseRing.val_poles, generatingSetOverBaseRing.val_poles]
+    S.poles.val = (generatingSet' S s S' hS1').poles.val * (1 - X^d : ℤ⟦X⟧) := by
+    rw [generatingSetOverBaseRing.val_poles, generatingSetOverBaseRing.val_poles]
     have eq0 := calc ∏ i in S.toFinset.attach, (1 - X ^ S.deg i.2 : ℤ⟦X⟧)
         _ = ∏ i in (insert s S').attach,
               (1 - X ^ S.deg (hS1' ▸ i.2 : i.1 ∈ S.toFinset) : ℤ⟦X⟧) := by
@@ -869,8 +868,8 @@ lemma induction : statement'.{u} (N + 1) := by
         exists_prop, exists_eq_right] at r
       exact hs r
   have eq_pole' :
-    (generatingSet' S s S' hS1').poles⁻¹ = S.poles⁻¹ * (1 - X^d : ℤ⟦X⟧)
-  · symm
+    (generatingSet' S s S' hS1').poles⁻¹ = S.poles⁻¹ * (1 - X^d : ℤ⟦X⟧) := by
+    symm
     rw [Units.inv_mul_eq_iff_eq_mul, eq_poles, mul_comm _ (1 - X^d : ℤ⟦X⟧),
       mul_assoc, Units.mul_inv (generatingSet' S s S' hS1').poles, mul_one]
   rw [mul_add, mul_sub, Algebra.mul_smul_comm, eq_pole', Algebra.mul_smul_comm,
