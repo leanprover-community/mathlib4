@@ -346,13 +346,11 @@ def Result.isInt {α : Q(Type u)} {x : Q($α)} (inst : Q(Ring $α) := by assumpt
 -- We ensure these are "the same" when calling.
 def Result.isNNRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionSemiring $α) := by assumption)
     (q : NNRat) (n : Q(ℕ)) (d : Q(ℕ)) (proof : Q(IsNNRat $x $n $d)) : Result x :=
-  have lit : Q(ℕ) := n.appArg!
   if q.den = 1 then
-    have proof : Q(IsNNRat $x $n (nat_lit 1)) := proof
+    haveI : nat_lit 1 =Q $d := ⟨⟩
     .isNat q(instAddMonoidWithOne') n q(IsNNRat.to_isNat $proof)
   else
-    let proof : Q(IsNNRat $x ($lit) $d) := proof
-    .isNNRat inst q lit d proof
+    .isNNRat inst q n d proof
 
 /-- The result is `q : ℚ` and `proof : isRat x q`. -/
 -- Note the independent arguments `q : Q(ℚ)` and `n : ℚ`.

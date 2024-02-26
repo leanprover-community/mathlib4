@@ -517,8 +517,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isNat mα c q(isNat_mul (f := $f) (.refl $f) $pa $pb (.refl $c))
   core
 
-theorem isNNRat_div [DivisionSemiring α] : {a b : α} → {cn : ℕ} → {cd : ℕ} → IsNNRat (a * b⁻¹) cn cd →
-    IsNNRat (a / b) cn cd
+theorem isNNRat_div [DivisionSemiring α] :
+    {a b : α} → {cn : ℕ} → {cd : ℕ} → IsNNRat (a * b⁻¹) cn cd → IsNNRat (a / b) cn cd
   | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
 
 theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →

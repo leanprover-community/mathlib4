@@ -296,5 +296,4 @@ def evalZPow : NormNumExt where eval {u α} e := do
       return .isNNRat dsα' qe' nume' dene' q(isNNRat_zpow_neg $pb $pe')
     | .isNegNNRat dα' qe' nume' dene' pe' =>
       assumeInstancesCommute
-      let proof := q(isRat_zpow_neg $pb $pe')
-      return .isRat dα' qe' nume' dene' proof
+      return .isRat dα' qe' q(.negOfNat $nume') dene' q(isRat_zpow_neg $pb $pe')

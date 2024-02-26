@@ -5,7 +5,6 @@ Authors: Simon Hudon, Mario Carneiro, Thomas Murrills
 -/
 
 import Mathlib.Tactic.NormNum
-import Mathlib.Data.NNRat.Lemmas
 
 private axiom test_sorry : ∀ {α}, α
 /-!
@@ -63,7 +62,9 @@ example : (-1 : α)⁻¹ = -1 := by norm_num1
 
 end InvLit
 
-example (h : x = 1) : x = (1/5 + 4/5 : ℚ) := by norm_num1; exact h
+set_option trace.Tactic.norm_num true in
+set_option pp.natLit true in
+example (h : x = 1) : x = (1/5 + 4 : ℚ) := by norm_num1; exact h
 example (h : x = 1) : x = (5 * 5⁻¹ : ℚ) := by norm_num1; exact h
 example (h : x = 1) : x = (6/5 - 1/5 : ℚ) := by norm_num1; exact h
 example (h : x = 1) : x = ((6/5) ^ 0 : ℚ) := by norm_num1; exact h

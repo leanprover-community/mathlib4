@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Algebra.Field.Basic
+import Mathlib.Data.NNRat.Lemmas
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
@@ -117,21 +118,27 @@ recognizes `q`, returning the cast of `q`. -/
     return .isNegNNRat dα qa na da q(isRat_ratCast $pa)
   | _ => failure
 
+theorem isNNRat_inv_pos {α} [DivisionSemiring α] [CharZero α] {a : α} {n d : ℕ} :
+    IsNNRat a (Nat.succ n) d → IsNNRat a⁻¹ d (Nat.succ n) := by
+  rintro ⟨_, rfl⟩
+  have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
+  exact ⟨this, by simp⟩
+
 theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.ofNat (Nat.succ n)) d → IsRat a⁻¹ (.ofNat d) (Nat.succ n) := by
   rintro ⟨_, rfl⟩
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   exact ⟨this, by simp⟩
 
-theorem isRat_inv_one {α} [DivisionRing α] : {a : α} →
+theorem isNat_inv_one {α} [DivisionSemiring α] : {a : α} →
     IsNat a (nat_lit 1) → IsNat a⁻¹ (nat_lit 1)
   | _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_inv_zero {α} [DivisionRing α] : {a : α} →
+theorem isNat_inv_zero {α} [DivisionSemiring α] : {a : α} →
     IsNat a (nat_lit 0) → IsNat a⁻¹ (nat_lit 0)
   | _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_inv_neg_one {α} [DivisionRing α] : {a : α} →
+theorem isInt_inv_neg_one {α} [DivisionRing α] : {a : α} →
     IsInt a (.negOfNat (nat_lit 1)) → IsInt a⁻¹ (.negOfNat (nat_lit 1))
   | _, ⟨rfl⟩ => ⟨by simp [inv_neg_one]⟩
 
@@ -151,47 +158,46 @@ such that `norm_num` successfully recognises `a`. -/
 @[norm_num _⁻¹] def evalInv : NormNumExt where eval {u α} e := do
   let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
-  let dα ← inferDivisionRing α
-  let i ← inferCharZeroOfDivisionRing? dα
-  guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
+  let dsα ← inferDivisionSemiring α
+  let i ← inferCharZeroOfDivisionSemiring? dsα
+  guard <| ← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
   haveI' : $e =Q $a⁻¹ := ⟨⟩
   assumeInstancesCommute
-  let rec
-  /-- Main part of `evalInv`. -/
-  core : Option (Result e) := do
-    let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
+  if let .some ⟨qa, na, da, pa⟩ := ra.toNNRat' dsα then
     let qb := qa⁻¹
     if qa > 0 then
       if let some i := i then
-        have lit : Q(ℕ) := na.appArg!
-        haveI : $na =Q Int.ofNat $lit := ⟨⟩
-        have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
-        haveI : $lit =Q ($lit2).succ := ⟨⟩
-        return .isRat dα qb q(.ofNat $da) lit q(isRat_inv_pos $pa)
+        have lit2 : Q(ℕ) := mkRawNatLit (na.natLit! - 1)
+        haveI : $na =Q ($lit2).succ := ⟨⟩
+        return .isNNRat dsα qb q($da) q($na) q(isNNRat_inv_pos $pa)
       else
         guard (qa = 1)
         let .isNat inst n pa := ra | failure
         haveI' : $n =Q nat_lit 1 := ⟨⟩
         assumeInstancesCommute
-        return .isNat inst n q(isRat_inv_one $pa)
-    else if qa < 0 then
-      if let some i := i then
-        have lit : Q(ℕ) := na.appArg!
-        haveI : $na =Q Int.negOfNat $lit := ⟨⟩
-        have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
-        haveI : $lit =Q ($lit2).succ := ⟨⟩
-        return .isRat dα qb q(.negOfNat $da) lit q(isRat_inv_neg $pa)
-      else
-        guard (qa = -1)
-        let .isNegNat inst n pa := ra | failure
-        haveI' : $n =Q nat_lit 1 := ⟨⟩
-        assumeInstancesCommute
-        return .isNegNat inst n q(isRat_inv_neg_one $pa)
+        return .isNat inst n q(isNat_inv_one $pa)
     else
       let .isNat inst n pa := ra | failure
       haveI' : $n =Q nat_lit 0 := ⟨⟩
       assumeInstancesCommute
-      return .isNat inst n q(isRat_inv_zero $pa)
-  core
+      return .isNat inst n q(isNat_inv_zero $pa)
+  else
+    let dα ← inferDivisionRing α
+    assertInstancesCommute
+    let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
+    let qb := qa⁻¹
+    guard <| qa < 0
+    if let some i := i then
+      have lit : Q(ℕ) := na.appArg!
+      haveI : $na =Q Int.negOfNat $lit := ⟨⟩
+      have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
+      haveI : $lit =Q ($lit2).succ := ⟨⟩
+      return .isRat dα qb q(.negOfNat $da) lit q(isRat_inv_neg $pa)
+    else
+      guard (qa = -1)
+      let .isNegNat inst n pa := ra | failure
+      haveI' : $n =Q nat_lit 1 := ⟨⟩
+      assumeInstancesCommute
+      return .isNegNat inst n q(isInt_inv_neg_one $pa)
 
 end Mathlib.Meta.NormNum
