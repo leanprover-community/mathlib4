@@ -945,6 +945,10 @@ def homTensorHomMap : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] 
 
 variable {R M N P Q}
 
+/--
+Given any linear maps `f ∈ M → Hom(P, Q)` and `g ∈ N → Hom(S, T)`, there is a linear map
+`M ⊗ N → Hom(P ⊗ S, Q ⊗ T)` given by `m ⊗ n ↦ f m ⊗ g n`
+-/
 def map₂ (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) :
     M ⊗[R] N →ₗ[R] P ⊗[R] S →ₗ[R] Q ⊗[R] T :=
   homTensorHomMap R _ _ _ _ ∘ₗ map f g
