@@ -117,9 +117,8 @@ theorem Lan.existsUnique [HasLeftKanExtension f g] (s : LeftExtension f g) :
     ∃! τ, Lan.unit f g ≫ f ◁ τ = s.unit :=
   (Lan.isKan f g).existsUnique _
 
-/-- `h : c ⟶ x` commutes with the left Kan extension of `g : a ⟶ c` along `f : a ⟶ b` if
-
-. -/
+/-- `h : c ⟶ x` commutes with the left Kan extension `f⁺ g` if there is an isomorphism
+`f⁺ (g ≫ h) ≅ f⁺ g ≫ h` that is compatible with the units for `f⁺ (g ≫ h)` and `f⁺ g`. -/
 class Lan.CommuteWith
     (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] {x : B} (h : c ⟶ x) : Prop where
   commute : Nonempty <| IsKan <| (Lan.leftExtension f g).whisker h
@@ -173,8 +172,7 @@ instance [HasAbsLeftKanExtension f g] {x : B} (h : c ⟶ x) : Lan.CommuteWith f 
 theorem HasAbsLeftKanExtension.ofIsAbsKan {t : LeftExtension f g} (H : IsAbsKan t) :
     HasAbsLeftKanExtension f g :=
   have : HasLeftKanExtension f g := .mk H.isKan
-  ⟨fun h ↦
-    ⟨⟨(H h).ofIsoKan (LeftExtension.whiskerIso (IsKan.uniqueUpToIso H.isKan (Lan.isKan f g)) h)⟩⟩⟩
+  ⟨fun h ↦ ⟨⟨H.ofIsoAbsKan (IsKan.uniqueUpToIso H.isKan (Lan.isKan f g)) h⟩⟩⟩
 
 end LeftKan
 
@@ -259,7 +257,8 @@ theorem LanLift.existsUnique [HasLeftKanLift f g] (s : LeftLift f g) :
     ∃! τ, LanLift.unit f g ≫ τ ▷ f = s.unit :=
   (LanLift.isKan f g).existsUnique _
 
-/-- `h : x ⟶ b` commutes with the left kan lift of `g : c ⟶ a` along `f : b ⟶ a`. -/
+/-- `h : x ⟶ b` commutes with the left kan lift `f₊ g` if there is an isomorphism
+`f₊ (h ≫ g) ≅ h ≫ f₊ g` that is compatible with the units for `f₊ (h ≫ g)` and `f₊ g`. -/
 class LanLift.CommuteWith
     (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] {x : B} (h : x ⟶ c) : Prop where
   commute : Nonempty <| IsKan <| (LanLift.leftLift f g).whisker h
@@ -315,8 +314,7 @@ instance [HasAbsLeftKanLift f g] {x : B} (h : x ⟶ c) : LanLift.CommuteWith f g
 
 theorem HasAbsLeftKanLift.ofIsAbsKan {t : LeftLift f g} (H : IsAbsKan t) : HasAbsLeftKanLift f g :=
   have : HasLeftKanLift f g := .mk H.isKan
-  ⟨fun h ↦
-    ⟨⟨(H h).ofIsoKan (LeftLift.whiskerIso (IsKan.uniqueUpToIso H.isKan (LanLift.isKan f g)) h)⟩⟩⟩
+  ⟨fun h ↦ ⟨⟨H.ofIsoAbsKan (IsKan.uniqueUpToIso H.isKan (LanLift.isKan f g)) h⟩⟩⟩
 
 end LeftLift
 
