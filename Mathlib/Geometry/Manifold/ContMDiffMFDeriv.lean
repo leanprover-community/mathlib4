@@ -383,8 +383,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     show IsOpen (π E (TangentSpace I) ⁻¹' (o ∩ l.source));
     exact (o_open.inter l.open_source).preimage (FiberBundle.continuous_proj E _)
     show p ∈ π E (TangentSpace I) ⁻¹' (o ∩ l.source)
-    · simp
-      have : p.proj ∈ f ⁻¹' r.source ∩ s := by simp [hp]
+    · simp only [l, preimage_inter, mem_inter_iff, mem_preimage, mem_chart_source, and_true]
+      have : p.proj ∈ f ⁻¹' r.source ∩ s := by simp [r, hp]
       rw [ho] at this
       exact this.1
     · have : π E (TangentSpace I) ⁻¹' s ∩ π E (TangentSpace I) ⁻¹' (o ∩ l.source) = s'_lift := by
