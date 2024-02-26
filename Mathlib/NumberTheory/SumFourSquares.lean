@@ -126,7 +126,7 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
   set σ := swap i 0
   obtain ⟨x, hx⟩ : (2 : ℤ) ∣ f (σ 0) ^ 2 + f (σ 1) ^ 2 :=
     (CharP.int_cast_eq_zero_iff (ZMod 2) 2 _).1 <| by
-      simpa only [Int.cast_pow, Int.cast_add, Equiv.swap_apply_right, ZMod.pow_card] using hσ.1
+      simpa only [σ, Int.cast_pow, Int.cast_add, Equiv.swap_apply_right, ZMod.pow_card] using hσ.1
   obtain ⟨y, hy⟩ : (2 : ℤ) ∣ f (σ 2) ^ 2 + f (σ 3) ^ 2 :=
     (CharP.int_cast_eq_zero_iff (ZMod 2) 2 _).1 <| by
       simpa only [Int.cast_pow, Int.cast_add, ZMod.pow_card] using hσ.2

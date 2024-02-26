@@ -634,11 +634,11 @@ theorem rank_pow_quot [IsDomain S] [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
   refine @Nat.decreasingInduction' Q i e (fun j lt_e _le_j ih => ?_) hi ?_
-  · dsimp only
+  · dsimp only [Q]
     rw [rank_pow_quot_aux f p P _ lt_e, ih, ← succ_nsmul, Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
     assumption
-  · dsimp only
+  · dsimp only [Q]
     rw [Nat.sub_self, zero_nsmul, map_quotient_self]
     exact rank_bot (R ⧸ p) (S ⧸ P ^ e)
 #align ideal.rank_pow_quot Ideal.rank_pow_quot
