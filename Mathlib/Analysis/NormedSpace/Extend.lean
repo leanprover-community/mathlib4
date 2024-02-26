@@ -3,9 +3,8 @@ Copyright (c) 2020 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Data.IsROrC.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 
 #align_import analysis.normed_space.extend from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
