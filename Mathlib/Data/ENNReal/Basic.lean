@@ -455,9 +455,7 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
   simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff' hx hy]
 #align ennreal.to_real_eq_to_real_iff' ENNReal.toReal_eq_toReal_iff'
 
-@[simp]
-nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
-  coe_one ▸ coe_two ▸ mod_cast (one_lt_two : 1 < 2)
+theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
 @[simp] theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top

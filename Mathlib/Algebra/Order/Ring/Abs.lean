@@ -37,7 +37,7 @@ variable [LinearOrderedRing α] {n : ℕ} {a b c : α}
 @[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_pos zero_lt_one
 #align abs_one abs_one
 
-@[simp] lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
+lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
 #align abs_two abs_two
 
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by

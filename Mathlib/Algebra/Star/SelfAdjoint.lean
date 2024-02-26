@@ -218,6 +218,12 @@ theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 #align is_self_adjoint_nat_cast isSelfAdjoint_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem _root_.isSelfAdjoint_ofNat (n : ℕ) [n.AtLeastTwo] :
+    IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
+  _root_.isSelfAdjoint_natCast n
+
 end Semiring
 
 section CommSemigroup

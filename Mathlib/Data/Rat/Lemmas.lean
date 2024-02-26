@@ -289,6 +289,10 @@ theorem inv_coe_nat_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
 #align rat.inv_coe_nat_num Rat.inv_coe_nat_num
 
 @[simp]
+theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
+  inv_coe_nat_num_of_pos (NeZero.pos a)
+
+@[simp]
 theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
   induction a using Int.induction_on <;>
     simp [← Int.negSucc_coe', Int.negSucc_coe, -neg_add_rev, Rat.inv_neg, Int.ofNat_add_one_out,
@@ -299,6 +303,11 @@ theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
 theorem inv_coe_nat_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
   simpa [-inv_coe_int_den, ofInt_eq_cast] using inv_coe_int_den a
 #align rat.inv_coe_nat_denom Rat.inv_coe_nat_den
+
+@[simp]
+theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
+    (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
+  inv_coe_nat_den_of_pos (NeZero.pos a)
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
   ⟨fun h _ _ => h _,
