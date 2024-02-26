@@ -92,7 +92,7 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
   (ofBijective
     (map _ (stabilizer (zmultiples a) b) (zmultiplesHom (zmultiples a) ⟨a, mem_zmultiples a⟩) (by
       rw [zmultiples_le, mem_comap, mem_stabilizer_iff, zmultiplesHom_apply, coe_nat_zsmul]
-      simp only [AddSubmonoidClass.mk_nsmul, AddSubmonoid.mk_vadd, vadd_nsmul_period_fixed]))
+      simp only [AddSubmonoidClass.mk_nsmul, AddSubmonoid.mk_vadd, nsmul_period_vadd]))
     ⟨by
       rw [← ker_eq_bot_iff, eq_bot_iff]
       refine' fun q => induction_on' q fun n hn => _
