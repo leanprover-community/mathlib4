@@ -436,8 +436,10 @@ def Result.toRat' {α : Q(Type u)} {e : Q($α)}
     have proof : Q(@IsInt _ DivisionRing.toRing $e (.negOfNat $lit)) := proof
     some ⟨-lit.natLit!, q(.negOfNat $lit), q(nat_lit 1),
       (q(@IsInt.to_isRat _ DivisionRing.toRing _ _ $proof) : Expr)⟩
-  | .isNNRat _ q n d proof => some ⟨q, n, d, proof⟩
-  | .isNegNNRat _ q n d proof => some ⟨q, n, d, proof⟩
+  | .isNNRat inst q n d proof =>
+    letI : $inst =Q DivisionRing.toDivisionSemiring := ⟨⟩
+    some ⟨q, q(.ofNat $n), d, q(IsNNRat.to_isRat $proof)⟩
+  | .isNegNNRat _ q n d proof => some ⟨q, q(.negOfNat $n), d, proof⟩
 
 /--
 Given a `NormNum.Result e` (which uses `IsNat`, `IsInt`, `IsRat` to express equality to a rational

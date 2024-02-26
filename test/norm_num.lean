@@ -5,6 +5,7 @@ Authors: Simon Hudon, Mario Carneiro, Thomas Murrills
 -/
 
 import Mathlib.Tactic.NormNum
+import Mathlib.Data.NNRat.Lemmas
 
 private axiom test_sorry : ∀ {α}, α
 /-!

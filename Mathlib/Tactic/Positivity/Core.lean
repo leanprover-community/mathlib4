@@ -141,6 +141,14 @@ lemma nz_of_isNegNat [StrictOrderedRing A]
   apply ne_of_gt
   simpa using w
 
+lemma pos_of_isNNRat [LinearOrderedSemiring A] :
+    (NormNum.IsNNRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
+  | ⟨inv, eq⟩, h => by
+    have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
+    have pos_n : (0 < (n : A)) := Nat.cast_pos (n := n) |>.2 (of_decide_eq_true h)
+    rw [eq]
+    exact mul_pos pos_n pos_invOf_d
+
 lemma pos_of_isRat [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
@@ -148,6 +156,10 @@ lemma pos_of_isRat [LinearOrderedRing A] :
     have pos_n : (0 < (n : A)) := Int.cast_pos (n := n) |>.2 (of_decide_eq_true h)
     rw [eq]
     exact mul_pos pos_n pos_invOf_d
+
+lemma nonneg_of_isNNRat [LinearOrderedSemiring A] :
+    (NormNum.IsNNRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
+  | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
 lemma nonneg_of_isRat [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
@@ -201,19 +213,30 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
     haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
     pure (.nonzero q(nz_of_isNegNat $p $p'))
-  | .isRat _i q n d p =>
-    let _a ← synthInstanceQ q(LinearOrderedRing $α)
+  | .isNNRat _i q n d p =>
+    let _a ← synthInstanceQ q(LinearOrderedSemiring $α)
     assumeInstancesCommute
-    have p : Q(NormNum.IsRat $e $n $d) := p
+    have p : Q(NormNum.IsNNRat $e $n $d) := p
     if 0 < q then
       haveI' w : decide (0 < $n) =Q true := ⟨⟩
-      pure (.positive q(pos_of_isRat $p $w))
-    else if q = 0 then -- should not be reachable, but just in case
+      pure (.positive q(pos_of_isNNRat $p $w))
+    else -- should not be reachable, but just in case
       haveI' w : decide ($n = 0) =Q true := ⟨⟩
-      pure (.nonnegative q(nonneg_of_isRat $p $w))
-    else
-      haveI' w : decide ($n < 0) =Q true := ⟨⟩
-      pure (.nonzero q(nz_of_isRat $p $w))
+      pure (.nonnegative q(nonneg_of_isNNRat $p $w))
+  | .isNegNNRat _i q n d p =>
+    let _a ← synthInstanceQ q(LinearOrderedRing $α)
+    failure -- TODO
+    -- assumeInstancesCommute
+    -- have p : Q(NormNum.IsRat $e $n $d) := p
+    -- if 0 < q then
+    --   haveI' w : decide (0 < $n) =Q true := ⟨⟩
+    --   pure (.positive q(pos_of_isRat $p $w))
+    -- else if q = 0 then -- should not be reachable, but just in case
+    --   haveI' w : decide ($n = 0) =Q true := ⟨⟩
+    --   pure (.nonnegative q(nonneg_of_isRat $p $w))
+    -- else
+    --   haveI' w : decide ($n < 0) =Q true := ⟨⟩
+    --   pure (.nonzero q(nz_of_isRat $p $w))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
