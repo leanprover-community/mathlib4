@@ -92,7 +92,7 @@ theorem uniqueUpToIso_hom_right (P : IsKan s) (Q : IsKan t) :
 theorem uniqueUpToIso_inv_right (P : IsKan s) (Q : IsKan t) :
     (uniqueUpToIso P Q).inv.right = Q.desc s := rfl
 
-/-- Transport evidence that a left extension is a kan extension across an isomorphism
+/-- Transport evidence that a left extension is a Kan extension across an isomorphism
 of extensions. -/
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
@@ -121,7 +121,7 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : LeftExtension f (g ≫ h
 def isKan (H : IsAbsKan t) : IsKan t :=
   ((H (𝟙 c)).ofAlongCompId _).ofIsoKan <| whiskerOfCompIdIsoSelf t
 
-/-- Transport evidence that a left extension is a kan extension across an isomorphism
+/-- Transport evidence that a left extension is a Kan extension across an isomorphism
 of extensions. -/
 def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
   fun h ↦ (P h).ofIsoKan (whiskerIso i h)
@@ -178,7 +178,7 @@ theorem uniqueUpToIso_hom_right (P : IsKan s) (Q : IsKan t) :
 theorem uniqueUpToIso_inv_right (P : IsKan s) (Q : IsKan t) :
     (uniqueUpToIso P Q).inv.right = Q.desc s := rfl
 
-/-- Transport evidence that a left lift is a kan lift across an isomorphism of lifts. -/
+/-- Transport evidence that a left lift is a Kan lift across an isomorphism of lifts. -/
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
 
@@ -206,7 +206,7 @@ abbrev desc (H : IsAbsKan t) {x : B} {h : x ⟶ c} (s : LeftLift f (h ≫ g)) :
 def isKan (H : IsAbsKan t) : IsKan t :=
   ((H (𝟙 c)).ofAlongIdComp _).ofIsoKan <| whiskerOfCompIdIsoSelf t
 
-/-- Transport evidence that a left lift is a kan lift across an isomorphism of lifts. -/
+/-- Transport evidence that a left lift is a Kan lift across an isomorphism of lifts. -/
 def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
   fun h ↦ (P h).ofIsoKan (whiskerIso i h)
 

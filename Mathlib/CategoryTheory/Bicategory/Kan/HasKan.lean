@@ -55,7 +55,7 @@ class HasLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) : Prop where mk' ::
 theorem HasLeftKanExtension.mk {t : LeftExtension f g} (H : IsKan t) : HasLeftKanExtension f g :=
   ⟨⟨t, H⟩⟩
 
-/-- Use the axiom of choice to extract a left kan extension. -/
+/-- Use the axiom of choice to extract a left Kan extension. -/
 def getLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : LeftKanExtension f g :=
   Classical.choice HasLeftKanExtension.exists_leftKan
 
@@ -84,7 +84,7 @@ scoped infixr:90 "⁺ " => lan
 theorem Lan.leftExtension_extension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] :
     (Lan.leftExtension f g).extension = f⁺ g := rfl
 
-/-- The unit for the left kan extension `f⁺ g`. -/
+/-- The unit for the left Kan extension `f⁺ g`. -/
 def Lan.unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫ f⁺ g :=
   (Lan.leftExtension f g).unit
 
@@ -92,7 +92,7 @@ def Lan.unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫
 theorem Lan.leftExtension_unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] :
     (Lan.leftExtension f g).unit = Lan.unit f g := rfl
 
-/-- Evidence that the `Lan.extension f g` is a kan extension. -/
+/-- Evidence that the `Lan.extension f g` is a Kan extension. -/
 def Lan.isKan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : (Lan.leftExtension f g).IsKan :=
   (getLeftKanExtension f g).isKan
 
@@ -135,7 +135,7 @@ theorem ofLanCompIsoLanAlongComp [HasLeftKanExtension f g]
 variable (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g]
 variable {x : B} (h : c ⟶ x) [Lan.CommuteWith f g h]
 
-/-- Evidence that `h` commutes with the left kan extension `f⁺ g`. -/
+/-- Evidence that `h` commutes with the left Kan extension `f⁺ g`. -/
 def isKan : IsKan <| (Lan.leftExtension f g).whisker h := Classical.choice Lan.CommuteWith.commute
 
 instance : HasLeftKanExtension f (g ≫ h) := .mk <| Lan.CommuteWith.isKan f g h
@@ -162,7 +162,8 @@ def lanAlongCompIsoLanComp : f⁺ (g ≫ h) ≅ f⁺ g ≫ h :=
 
 end Lan.CommuteWith
 
-/-- The existence of an absolute left Kan extension of `g` along `f`. -/
+/-- We say that there exists an absolute left Kan extension of `g` along `f` if any 1-morphism `h`
+commutes with the left Kan extension `f⁺ g`. -/
 class HasAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) extends HasLeftKanExtension f g : Prop where
   commute : ∀ {x : B} (h : c ⟶ x), Lan.CommuteWith f g h
 
@@ -195,19 +196,19 @@ class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
 
 theorem HasLeftKanLift.mk {t : LeftLift f g} (H : IsKan t) : HasLeftKanLift f g := ⟨⟨t, H⟩⟩
 
-/-- Use the axiom of choice to extract a left kan lift. -/
+/-- Use the axiom of choice to extract a left Kan lift. -/
 def getLeftKanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftKanLift f g :=
   Classical.choice HasLeftKanLift.exists_leftKanLift
 
-/-- The left kan lift of `g` along `f`. -/
+/-- The left Kan lift of `g` along `f`. -/
 def LanLift.leftLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftLift f g :=
   (getLeftKanLift f g).leftLift
 
-/-- The left kan lift of `g` along `f`. -/
+/-- The left Kan lift of `g` along `f`. -/
 def lanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : c ⟶ b :=
   (LanLift.leftLift f g).lift
 
-/-- `f₊ g` is the left kan lift of `g` along `f`.
+/-- `f₊ g` is the left Kan lift of `g` along `f`.
 ```
             b
           ◹ |
@@ -232,13 +233,13 @@ def LanLift.unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g
 theorem LanLift.leftLift_unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
     (LanLift.leftLift f g).unit = LanLift.unit f g := rfl
 
-/-- Evidence that the `LanLift.lift f g` is a kan lift. -/
+/-- Evidence that the `LanLift.lift f g` is a Kan lift. -/
 def LanLift.isKan (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : (LanLift.leftLift f g).IsKan :=
   (getLeftKanLift f g).isKan
 
 variable {f : b ⟶ a} {g : c ⟶ a}
 
-/-- The family of 2-morphisms out of the left kan lift `f₊ g`. -/
+/-- The family of 2-morphisms out of the left Kan lift `f₊ g`. -/
 def LanLift.desc [HasLeftKanLift f g] (s : LeftLift f g) :
     f ₊ g ⟶ s.lift :=
   (LanLift.isKan f g).desc s
@@ -257,7 +258,7 @@ theorem LanLift.existsUnique [HasLeftKanLift f g] (s : LeftLift f g) :
     ∃! τ, LanLift.unit f g ≫ τ ▷ f = s.unit :=
   (LanLift.isKan f g).existsUnique _
 
-/-- `h : x ⟶ b` commutes with the left kan lift `f₊ g` if there is an isomorphism
+/-- `h : x ⟶ b` commutes with the left Kan lift `f₊ g` if there is an isomorphism
 `f₊ (h ≫ g) ≅ h ≫ f₊ g` that is compatible with the units for `f₊ (h ≫ g)` and `f₊ g`. -/
 class LanLift.CommuteWith
     (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] {x : B} (h : x ⟶ c) : Prop where
@@ -275,7 +276,7 @@ theorem ofLanCompIsoLanAlongComp [HasLeftKanLift f g]
 variable (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g]
 variable {x : B} (h : x ⟶ c) [LanLift.CommuteWith f g h]
 
-/-- Evidence that `h` commutes with the left kan lift `f₊ g`. -/
+/-- Evidence that `h` commutes with the left Kan lift `f₊ g`. -/
 def isKan : IsKan <| (LanLift.leftLift f g).whisker h :=
     Classical.choice LanLift.CommuteWith.commute
 
@@ -305,7 +306,8 @@ def lanLiftAlongCompIsoCompLan : f₊ (h ≫ g) ≅ h ≫ f₊ g :=
 
 end LanLift.CommuteWith
 
-/-- The existence of an absolute left Kan lift of `g` along `f`. -/
+/-- We say that there exists an absolute left Kan lift of `g` along `f` if any 1-morphism `h`
+commutes with the left Kan lift `f₊ g`. -/
 class HasAbsLeftKanLift (f : b ⟶ a) (g : c ⟶ a) extends HasLeftKanLift f g : Prop where
   commute : ∀ {x : B} (h : x ⟶ c), LanLift.CommuteWith f g h
 
