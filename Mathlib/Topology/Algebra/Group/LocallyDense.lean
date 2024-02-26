@@ -273,7 +273,7 @@ theorem LocallyMovingSMul.exponent_fixingSubgroup_eq_zero [LocallyMovingSMul G �
   case pos eq =>
     rw [← Nat.succ_pred pos.ne', pow_succ, mul_smul, hg_pow_eq _ ?pred_lt, ← mul_smul, mul_assoc,
       ← pow_succ, ← Nat.succ_eq_add_one, Nat.succ_pred pos.ne', mul_smul, eq, period_y_eq_x,
-      smul_pow_period_fixed]
+      pow_period_smul]
     exact y_in_moved
 
     case pred_lt =>
