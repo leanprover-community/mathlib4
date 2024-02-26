@@ -4,6 +4,8 @@ import Mathlib.Tactic.SuccessIfFailWithMsg
 open List
 set_option autoImplicit true
 
+/-! # 'Old-style' `tfae` (`tfae_have`/`tfae_finish`) -/
+
 section zeroOne
 
 example : TFAE []  := by tfae_finish
@@ -11,42 +13,18 @@ example : TFAE [P] := by tfae_finish
 
 end zeroOne
 
-namespace two
-
+/- Note: can't use `variable` otherwise these are present in the local context, and get caught by
+`tfae_finish`. -/
 axiom P : Prop
 axiom Q : Prop
 axiom pq : P → Q
 axiom qp : Q → P
 
-example : TFAE [P, Q] := by
-  tfae_have 1 → 2
-  · exact pq
-  tfae_have 2 → 1
-  · exact qp
-  tfae_finish
-
-example : TFAE [P, Q] := by
-  tfae_have 1 ↔ 2
-  · exact Iff.intro pq qp
-  tfae_finish
-
-example : TFAE [P, Q] := by
-  tfae_have 2 ← 1
-  · exact pq
-  tfae_have 1 ← 2
-  · exact qp
-  tfae_finish
-
-end two
-
-namespace three
-
-axiom P : Prop
-axiom Q : Prop
 axiom R : Prop
-axiom pq : P → Q
 axiom qr : Q → R
 axiom rp : R → P
+
+/-! Old-style `have` -/
 
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2
@@ -65,15 +43,14 @@ example : TFAE [P, Q, R] := by
   tfae_finish
 
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
-  · exact pq
+  tfae_have 1 → 2 := pq
   tfae_have 2 → 1
   · exact rp ∘ qr
   tfae_have 2 ↔ 3
   · exact Iff.intro qr (pq ∘ rp)
   tfae_finish
 
-end three
+/-! The following tests test both `tfae_have` and the `tfae` block tactic. -/
 
 section seven
 
@@ -93,21 +70,24 @@ axiom h₆ : P₅ → P₃
 axiom h₇ : P₃ → P₂
 
 example : TFAE [P₁, P₂, P₃, P₄, P₅, P₆, P₇] := by
-  tfae_have 1 ↔ 2
-  · exact h₁
-  tfae_have 1 → 6
-  · exact h₂
-  tfae_have 6 → 7
-  · exact h₃
-  tfae_have 7 → 4
-  · exact h₄
-  tfae_have 4 → 5
-  · exact h₅
-  tfae_have 5 → 3
-  · exact h₆
-  tfae_have 3 → 2
-  · exact h₇
+  tfae_have 1 ↔ 2 := h₁
+  tfae_have 1 → 6 := h₂
+  tfae_have 6 → 7 := h₃
+  tfae_have 7 → 4 := h₄
+  tfae_have 4 → 5 := h₅
+  tfae_have 5 → 3 := h₆
+  tfae_have 3 → 2 := h₇
   tfae_finish
+
+example : TFAE [P₁, P₂, P₃, P₄, P₅, P₆, P₇] := by
+  tfae
+    1 ↔ 2 := h₁
+    1 → 6 := h₂
+    6 → 7 := h₃
+    7 → 4 := h₄
+    4 → 5 := h₅
+    5 → 3 := h₆
+    3 → 2 := h₇
 
 end seven
 
@@ -115,20 +95,14 @@ section context
 
 example (n : ℕ) : List.TFAE [n = 1, n + 1 = 2] := by
   generalize n = m
-  tfae_have 1 ↔ 2; simp
-  tfae_finish
+  tfae 1 ↔ 2 := by simp
 
 example (h₁ : P → Q) (h₂ : Q → P) : TFAE [P, Q] := by
   tfae_finish
 
 end context
 
-section term
-
-axiom P : Prop
-axiom Q : Prop
-axiom pq : P → Q
-axiom qp : Q → P
+section naming
 
 example : TFAE [P, Q] := by
   tfae_have h : 1 → 2 := pq
@@ -145,6 +119,9 @@ example : TFAE [P, Q] := by
   tfae_have 1 ← 2 := qp
   tfae_finish
 
+section refine
+
+-- check `have := f ?a` feature works for `tfae_have`, and occurs check succeeds
 example : TFAE [P, Q] := by
   have n : ℕ := 3
   tfae_have 2 ← 1 := fun p => ?Qgoal
@@ -154,6 +131,10 @@ example : TFAE [P, Q] := by
   tfae_have 2 → 1 := qp
   tfae_finish
 
+end refine
+
+section matching
+
 example : TFAE [P, Q] := by
   tfae_have 1 → 2
   | p => pq p
@@ -162,7 +143,36 @@ example : TFAE [P, Q] := by
   tfae_finish
 
 example : TFAE [P, Q] := by
-  tfae_have ⟨mp, mpr⟩ : 1 ↔ 2 := ⟨pq, qp⟩
-  tfae_finish
+  tfae
+    1 → 2
+    | p => pq p
+    2 → 1
+    | q => qp q
 
-end term
+example : TFAE [P, ∀(_ : Nat), Q] := by
+  tfae
+    1 → 2
+    | p, _ => pq p
+    2 → 1
+    | q => qp (q 0)
+
+example : TFAE [P, Q] := by
+  tfae ⟨mp, mpr⟩ : 1 ↔ 2 := ⟨pq, qp⟩
+
+/--
+error: type mismatch
+  [false]
+has type
+  List Bool : Type
+but is expected to have type
+  P₂ : Prop
+---
+error: couldn't prove P₂ → P₁
+-/
+#guard_msgs in
+example : TFAE [P₁, P₂] := by
+  tfae
+    1 → 2
+    | p => [false]
+
+end matching
