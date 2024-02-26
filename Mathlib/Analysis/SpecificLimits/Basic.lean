@@ -236,7 +236,7 @@ example (f : ℕ → ℝ≥0∞) (hf : ∀ᶠ x in atTop, f x = 1) : Tendsto f a
 
 @[simp]
 theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
-   Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
+    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
   refine ⟨fun h => ?_, ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one⟩
   have hr : r ≠ ⊤ := by
     have : ∀ᶠ n in atTop, (⊤ : ℝ≥0∞)^n = ⊤ := by
