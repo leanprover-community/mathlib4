@@ -268,11 +268,13 @@ theorem pullback_snd_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are embeddings,
 then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an embedding.
 
-  W ⟶ Y
-    ↘      ↘
-      S ⟶ T
-    ↗      ↗
-  X ⟶ Z
+```
+W ⟶ Y
+ ↘   ↘
+  S ⟶ T
+ ↗   ↗
+X ⟶ Z
+```
 -/
 theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f₂ : X ⟶ S)
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : Embedding i₁) (H₂ : Embedding i₂)
@@ -292,11 +294,14 @@ theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : 
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are open embeddings, and `S ⟶ T`
 is mono, then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an open embedding.
-  W ⟶ Y
-    ↘      ↘
-      S ⟶ T
-    ↗       ↗
-  X ⟶ Z
+
+```
+W ⟶ Y
+ ↘   ↘
+  S ⟶ T
+ ↗   ↗
+X ⟶ Z
+```
 -/
 theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
     (f₂ : X ⟶ S) (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : OpenEmbedding i₁)

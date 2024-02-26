@@ -1255,12 +1255,13 @@ theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f 
 
 /-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
 
-    W ⟶ Y
-      ↘      ↘
-        S ⟶ T
-      ↗      ↗
-    X ⟶ Z
-
+```
+W ⟶ Y
+  ↘   ↘
+  S ⟶ T
+  ↗   ↗
+X ⟶ Z
+```
 -/
 abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
@@ -1277,11 +1278,13 @@ abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) 
 
 /-- Given such a diagram, then there is a natural morphism `W ⨿ₛ X ⟶ Y ⨿ₜ Z`.
 
-        W ⟶ Y
-      ↗      ↗
-    S ⟶ T
-      ↘      ↘
-        X ⟶ Z
+```
+  W ⟶ Y
+ ↗   ↗
+S ⟶ T
+ ↘   ↘
+  X ⟶ Z
+```
 
 -/
 abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
@@ -2021,11 +2024,13 @@ variable (h₁ : i₁ ≫ g₁ = f₁ ≫ i₂) (h₂ : i₂ ≫ g₂ = f₂ ≫
 
 /-- Given
 
+```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
 
 Then the big square is a pullback if both the small squares are.
 -/
@@ -2057,11 +2062,13 @@ def bigSquareIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
 
 /-- Given
 
+```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
 
 Then the big square is a pushout if both the small squares are.
 -/
@@ -2094,11 +2101,13 @@ def bigSquareIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₂))
 
 /-- Given
 
+```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
 
 Then the left square is a pullback if the right square and the big square are.
 -/
@@ -2131,11 +2140,13 @@ def leftSquareIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
 
 /-- Given
 
+```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
 
 Then the right square is a pushout if the left square and the big square are.
 -/
@@ -2275,37 +2286,43 @@ section PullbackAssoc
 /-
 The objects and morphisms are as follows:
 
+```
            Z₂ - g₄ -> X₃
            |          |
            g₃         f₄
-           ∨          ∨
+           ↓          ↓
 Z₁ - g₂ -> X₂ - f₃ -> Y₂
 |          |
 g₁         f₂
-∨          ∨
+↓          ↓
 X₁ - f₁ -> Y₁
+```
 
 where the two squares are pullbacks.
 
 We can then construct the pullback squares
 
+```
 W  - l₂ -> Z₂ - g₄ -> X₃
 |                     |
 l₁                    f₄
-∨                     ∨
+↓                     ↓
 Z₁ - g₂ -> X₂ - f₃ -> Y₂
+```
 
 and
 
+```
 W' - l₂' -> Z₂
 |           |
 l₁'         g₃
-∨           ∨
+↓           ↓
 Z₁          X₂
 |           |
 g₁          f₂
-∨           ∨
+↓           ↓
 X₁ -  f₁ -> Y₁
+```
 
 We will show that both `W` and `W'` are pullbacks over `g₁, g₂`, and thus we may construct a
 canonical isomorphism between them. -/
@@ -2473,37 +2490,43 @@ section PushoutAssoc
 /-
 The objects and morphisms are as follows:
 
+```
            Z₂ - g₄ -> X₃
            |          |
            g₃         f₄
-           ∨          ∨
+           ↓          ↓
 Z₁ - g₂ -> X₂ - f₃ -> Y₂
 |          |
 g₁         f₂
-∨          ∨
+↓          ↓
 X₁ - f₁ -> Y₁
+```
 
 where the two squares are pushouts.
 
 We can then construct the pushout squares
 
+```
 Z₁ - g₂ -> X₂ - f₃ -> Y₂
 |                     |
 g₁                    l₂
-∨                     ∨
+↓                     ↓
 X₁ - f₁ -> Y₁ - l₁ -> W
+```
 
 and
 
+```
 Z₂ - g₄  -> X₃
 |           |
 g₃          f₄
-∨           ∨
+↓           ↓
 X₂          Y₂
 |           |
 f₂          l₂'
-∨           ∨
+↓           ↓
 Y₁ - l₁' -> W'
+```
 
 We will show that both `W` and `W'` are pushouts over `f₂, f₃`, and thus we may construct a
 canonical isomorphism between them. -/
