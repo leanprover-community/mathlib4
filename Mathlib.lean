@@ -3344,7 +3344,6 @@ import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.RingTheory.Subring.Order
-import Mathlib.RingTheory.Subring.Ordered
 import Mathlib.RingTheory.Subring.Pointwise
 import Mathlib.RingTheory.Subring.Units
 import Mathlib.RingTheory.Subsemiring.Basic
