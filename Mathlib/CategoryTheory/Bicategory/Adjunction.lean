@@ -295,7 +295,7 @@ end
 noncomputable
 section
 
-/-- A class giving a chosen right adjoint of a functor `left`. -/
+/-- A class giving a chosen right adjoint of a 1-morphism `left`. -/
 structure RightAdjoint (left : a ⟶ b) where
   /-- The right adjoint to `left`. -/
   right : b ⟶ a
@@ -313,7 +313,7 @@ theorem IsLeftAdjoint.mk (adj : f ⊣ g) : IsLeftAdjoint f :=
 def getRightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : RightAdjoint f :=
   Classical.choice IsLeftAdjoint.nonempty
 
-/-- The right adjoint of a functor. -/
+/-- The right adjoint of a 1-morphism. -/
 def rightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
   (getRightAdjoint f).right
 
@@ -323,7 +323,7 @@ def rightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
 def rightAdjoint.adjunction (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ f⁺⁺ :=
   (getRightAdjoint f).adj
 
-/-- A class giving a chosen left adjoint of a functor `right`. -/
+/-- A class giving a chosen left adjoint of a 1-morphism `right`. -/
 structure LeftAdjoint (right : b ⟶ a) where
   /-- The left adjoint to `right`. -/
   left : a ⟶ b
@@ -341,7 +341,7 @@ theorem IsRightAdjoint.mk (adj : f ⊣ g) : IsRightAdjoint g :=
 def getLeftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : LeftAdjoint f :=
   Classical.choice IsRightAdjoint.nonempty
 
-/-- The left adjoint of a functor. -/
+/-- The left adjoint of a 1-morphism. -/
 def leftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
   (getLeftAdjoint f).left
 
