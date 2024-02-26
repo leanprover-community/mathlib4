@@ -43,6 +43,33 @@ theorem ENNReal.rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (
 
 end RPow
 
+section conjExponent
+
+/- I (F) was planning to use this, but in the end none of the results in this section are used. -/
+
+lemma Real.one_lt_conjExponent {p : ℝ} : 1 < p.conjExponent ↔ 1 < p := by
+  sorry
+
+lemma Real.conjExponent_pos {p : ℝ} (hp : 1 < p) : 0 < p.conjExponent :=
+  zero_lt_one.trans <| Real.one_lt_conjExponent.mpr hp
+
+@[simp]
+lemma NNReal.coe_conjExponent {p : ℝ≥0} (hp : 1 < p) :
+    p.conjExponent = Real.conjExponent p := by
+  simp [Real.conjExponent, NNReal.conjExponent, hp.le]
+
+lemma NNReal.one_lt_conjExponent {p : ℝ≥0} : 1 < p.conjExponent ↔ 1 < p := by
+  sorry
+
+lemma NNReal.conjExponent_pos {p : ℝ≥0} (hp : 1 < p) : 0 < p.conjExponent :=
+  zero_lt_one.trans <| NNReal.one_lt_conjExponent.mpr hp
+
+lemma MeasureTheory.snorm_conjExponent_eq_lintegral {u : E → ℝ} {p : ℝ≥0} :
+  snorm u p.conjExponent μ = snorm u p μ := by sorry
+
+end conjExponent
+
+
 section NormedAddCommGroup
 variable {ι : Type*} [Fintype ι] {E : ι → Type _} [∀ i, NormedAddCommGroup (E i)]
 
@@ -267,14 +294,19 @@ theorem lintegral_mul_prod_lintegral_pow_le {p : ℝ} (hp₀ : 0 ≤ p)
 
 /-- Special case of the grid-lines lemma `lintegral_mul_prod_lintegral_pow_le`, taking the extremal
 exponent `p = (#ι - 1)⁻¹`. -/
-theorem lintegral_prod_lintegral_pow_le [Nontrivial ι] {f} (hf : Measurable f) :
+theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
+    {p : ℝ} (hp : Real.IsConjExponent #ι p)
+    {f} (hf : Measurable f) :
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂.pi μ
-    ≤ (∫⁻ x, f x ∂.pi μ) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
-  have : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
-  have : (0:ℝ) < #ι - 1 := by linarith
-  have hp₀ : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
-  have hp : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
-  convert lintegral_mul_prod_lintegral_pow_le μ hp₀ hp hf using 2 <;> field_simp
+    ≤ (∫⁻ x, f x ∂.pi μ) ^ p := by
+  have h0 : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
+  have h1 : (0:ℝ) < #ι - 1 := by linarith
+  have h3 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
+  have h4 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
+  have h5 : p = 1 + 1 / (↑#ι - 1) := by field_simp; rw [mul_comm, hp.sub_one_mul_conj]
+  rw [h5]
+  convert lintegral_mul_prod_lintegral_pow_le μ h3 h4 hf using 2
+  field_simp
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
@@ -287,18 +319,19 @@ expression `|u x| ^ (n / (n - 1))` is bounded above by the `n / (n - 1)`-th powe
 integral of the Fréchet derivative of `u`.
 
 For a basis-free version, see `lintegral_pow_le_pow_lintegral_fderiv`. -/
-theorem lintegral_pow_le_pow_lintegral_fderiv_aux {u : (ι → ℝ) → ℝ} (hu : ContDiff ℝ 1 u)
+theorem lintegral_pow_le_pow_lintegral_fderiv_aux
+    {p : ℝ} (hp : Real.IsConjExponent #ι p)
+    {u : (ι → ℝ) → ℝ} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
-    ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
-    ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+    ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
   have : (1:ℝ) ≤ ↑#ι - 1 := by
     have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
     linarith
-  calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ))
+  calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p
       = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ))) ^ (#ι : ℝ) := by
         -- a little algebraic manipulation of the exponent
         congr! 2 with x
-        rw [← ENNReal.rpow_mul]
+        rw [← ENNReal.rpow_mul, hp.conj_eq]
         field_simp
     _ = ∫⁻ x, ∏ _i : ι, (‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ)) := by
         -- express the left-hand integrand as a product of identical factors
@@ -306,9 +339,9 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux {u : (ι → ℝ) → ℝ} (hu
         simp_rw [prod_const, card_univ]
         norm_cast
     _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
-    _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+    _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
         -- apply the grid-lines lemma
-        apply lintegral_prod_lintegral_pow_le
+        apply lintegral_prod_lintegral_pow_le _ hp
         borelize ((ι → ℝ) →L[ℝ] ℝ)
         have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv (le_refl _)).measurable
         measurability
@@ -347,32 +380,28 @@ compactly-supported real-valued function on a normed space `E` of finite dimensi
 with Haar measure. There exists a constant `C` depending only on `E`, such that the Lebesgue
 integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by `C` times the
 `n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
-theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
+theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
+    {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
-    ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) ∂μ
-    ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) := by
+    ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂μ ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ p := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
   let ι := Fin (finrank ℝ E)
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : Nontrivial ι := by rwa [Fin.nontrivial_iff_two_le]
-  have hι : 0 < (#ι : ℝ) / (#ι - 1 : ℝ) := by
-    have : 2 ≤ (#ι:ℝ) := by rw [hιcard]; norm_cast
-    have : 1 ≤ (#ι:ℝ) - 1 := by linarith
-    positivity
   haveI : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp
   have e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
   haveI : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
     (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
+  have hp : Real.IsConjExponent #ι p := by rwa [hιcard]
+  have h0p : 0 ≤ p := hp.symm.nonneg
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
   have hc : 0 < c := addHaarScalarFactor_pos_of_isAddHaarMeasure ..
   have h2c : μ = c • ((volume : Measure (ι → ℝ)).map e.symm) := isAddLeftInvariant_eq_smul ..
   have h3c : (c : ℝ≥0∞) ≠ 0 := by simp_rw [ne_eq, ENNReal.coe_eq_zero, hc.ne', not_false_eq_true]
-  have : ∃ C : ℝ≥0, C * c ^ ((#ι:ℝ) / ((#ι - 1 : ℝ)))
-      = c * (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι:ℝ) / (#ι - 1 : ℝ))) := by
-    use (c * (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι:ℝ) / (#ι - 1 : ℝ))))
-      * (c ^ ((#ι:ℝ) / ((#ι - 1 : ℝ))))⁻¹
+  have : ∃ C : ℝ≥0, C * c ^ p = c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p := by
+    use (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹
     rw [inv_mul_cancel_right₀]
     exact (NNReal.rpow_pos hc).ne'
   refine this.imp fun C hC u hu h2u ↦ ?_
@@ -381,40 +410,35 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E) :
   have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
   have h2v : HasCompactSupport v := h2u.comp_homeomorph e.symm.toHomeomorph
   have :=
-  calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) ∂(volume : Measure (ι → ℝ)).map e.symm
-      = ∫⁻ y, (‖v y‖₊ : ℝ≥0∞) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+  calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂(volume : Measure (ι → ℝ)).map e.symm
+      = ∫⁻ y, (‖v y‖₊ : ℝ≥0∞) ^ p := by
         refine lintegral_map ?_ e.symm.continuous.measurable
         exact hu.continuous.measurable.nnnorm.coe_nnreal_ennreal.pow_const _
-    _ ≤ (∫⁻ y, ‖fderiv ℝ v y‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) :=
-        lintegral_pow_le_pow_lintegral_fderiv_aux hv h2v
-    _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖₊) ^ ((#ι:ℝ) / (#ι - 1 : ℝ)) := by
+    _ ≤ (∫⁻ y, ‖fderiv ℝ v y‖₊) ^ p :=
+        lintegral_pow_le_pow_lintegral_fderiv_aux hp hv h2v
+    _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖₊) ^ p := by
         congr! with y
         apply fderiv.comp _ (hu.differentiable (le_refl _) _)
         exact e.symm.differentiableAt
-    _ ≤ (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊
-        * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+    _ ≤ (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊ * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊) ^ p := by
         gcongr with y
         norm_cast
         rw [e.symm.fderiv]
         apply ContinuousLinearMap.opNNNorm_comp_le
-    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊
-        * ∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ * ∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ p := by
         rw [lintegral_mul_const, mul_comm]
         refine (Continuous.nnnorm ?_).measurable.coe_nnreal_ennreal
         exact (hu.continuous_fderiv (le_refl _)).comp e.symm.continuous
-    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) : ℝ≥0)
-        * (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
-        rw [ENNReal.mul_rpow_of_nonneg _ _ hι.le, ENNReal.coe_rpow_of_nonneg _ hι.le]
-    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) : ℝ≥0)
-        * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂(volume : Measure (ι → ℝ)).map e.symm)
-        ^ ((#ι : ℝ) / (#ι - 1 : ℝ)) := by
+    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0) * (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ p := by
+        rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, ENNReal.coe_rpow_of_nonneg _ h0p]
+    _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0)
+        * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂(volume : Measure (ι → ℝ)).map e.symm) ^ p := by
         congr
         rw [lintegral_map _ e.symm.continuous.measurable]
         exact (hu.continuous_fderiv (le_refl _)).measurable.nnnorm.coe_nnreal_ennreal
   rw [← ENNReal.mul_le_mul_left h3c ENNReal.coe_ne_top, ← mul_assoc, ← ENNReal.coe_mul, ← hC,
     ENNReal.coe_mul] at this
-  rw [hιcard] at this hι
-  rw [ENNReal.mul_rpow_of_nonneg _ _ hι.le, ← mul_assoc, ENNReal.coe_rpow_of_ne_zero hc.ne']
+  rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, ← mul_assoc, ENNReal.coe_rpow_of_ne_zero hc.ne']
   exact this
 
 set_option linter.unusedVariables false in
@@ -423,35 +447,65 @@ compactly-supported real-valued function on a normed space `E` of finite dimensi
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
-theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E) :
+theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
+    {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
-    snorm u (finrank ℝ E / (finrank ℝ E - 1)) μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
+    snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
   obtain ⟨m, hm⟩ : ∃ m, finrank ℝ E = m + 2 := Nat.exists_eq_add_of_le' hE
-  have H_real : (finrank ℝ E / (finrank ℝ E - 1)) = (m + 2 : ℝ) / (m + 1 : ℝ) := by
-    rw [hm]
-    push_cast
-    ring_nf
-  have H_ennreal :
-    (finrank ℝ E / (finrank ℝ E - 1)) = (↑((m + 2 : ℝ≥0) / (m + 1 : ℝ≥0)) : ℝ≥0∞) := by
-    rw [ENNReal.coe_div, hm]
-    · push_cast
-      congr
-      apply ENNReal.sub_eq_of_eq_add_rev
-      · norm_num
-      · ring
-    positivity
-  rw [H_ennreal]
-  have hn : 0 < (m + 2 : ℝ) / (m + 1 : ℝ) := by positivity
-  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv μ hE
-  use C ^ ((m + 1 : ℝ) / (m + 2 : ℝ))
+  have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
+  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv μ hE hp.coe
+  use C ^ (p : ℝ)⁻¹
   intro u hu h2u
+  specialize hC hu h2u
   rw [snorm_one_eq_lintegral_nnnorm, snorm_eq_snorm', ENNReal.coe_toReal,
-    ← ENNReal.rpow_le_rpow_iff hn, ENNReal.mul_rpow_of_nonneg _ _ hn.le,
-    ENNReal.coe_rpow_of_nonneg _ hn.le, ← NNReal.rpow_mul]
-  · have key := hC hu h2u
-    rw [H_real, lintegral_rpow_nnnorm_eq_rpow_snorm' hn] at key
-    convert key
-    convert NNReal.rpow_one _
-    field_simp
-  · positivity
+    ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
+    ENNReal.coe_rpow_of_nonneg _ h0p.le, ← NNReal.rpow_mul]
+  · rw [← lintegral_rpow_nnnorm_eq_rpow_snorm' h0p]
+    simp [inv_mul_cancel h0p.ne', hC]
+  · exact_mod_cast h0p.ne'
   · exact ENNReal.coe_ne_top
+
+-- theorem lintegral_pow_le_pow_lintegral__of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} (hp : 1 ≤ p)
+--     (h2p : p < finrank ℝ E) (hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+--     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+--     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) ∂μ
+--     ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ ((finrank ℝ E : ℝ) / (finrank ℝ E - 1 : ℝ)) := by
+--   sorry
+
+theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} (hp : 1 ≤ p)
+    (h2p : p < finrank ℝ E) (hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+    ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  set n := finrank ℝ E
+  let n' := NNReal.conjExponent n
+  have h1n : 1 ≤ (n : ℝ≥0) := by norm_cast; linarith
+  have hn : NNReal.IsConjExponent n n' := .conjExponent (by norm_cast)
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv μ hE hn
+  rcases hp.eq_or_lt with rfl|hp
+  · use C
+    intros u hu h2u
+    convert hC hu h2u
+    ext
+    rw [← inv_inj, ← NNReal.coe_inv, hp']
+    field_simp [NNReal.conjExponent]
+  let γ : ℝ≥0 := p * (n - 1) / (n - p)
+  have hγ : 1 < γ := sorry
+  have h2γ : γ * n' = p' := sorry
+  have h3γ : (γ - 1) * Real.conjExponent p = p' := sorry
+  refine ⟨γ * C, @fun u hu h2u ↦ ?_⟩
+  let v : E → ℝ := fun x ↦ |u x| ^ (γ : ℝ)
+  have hv : ContDiff ℝ 1 v := sorry
+  have h2v : HasCompactSupport v := sorry
+  specialize hC hv h2v
+  have :=
+  calc snorm v n' μ ≤ C * snorm (fderiv ℝ v) 1 μ := hC
+    _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
+    _ = (C * γ) * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
+    _ = (C * γ) * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
+    _ ≤ (C * γ) * ((∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / Real.conjExponent p) *
+        (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ))) := by
+        gcongr
+        convert ENNReal.lintegral_mul_le_Lp_mul_Lq μ
+          (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp) sorry sorry using 5
+        simp_rw [← ENNReal.rpow_mul, ← h3γ]
+  sorry
