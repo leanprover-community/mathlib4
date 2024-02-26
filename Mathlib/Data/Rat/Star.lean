@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Power
-import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.Parity
+import Mathlib.Algebra.Star.Order
+import Mathlib.RingTheory.Subsemiring.Order
 
 #align_import data.rat.star from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
