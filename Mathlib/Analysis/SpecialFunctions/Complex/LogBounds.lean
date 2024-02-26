@@ -154,28 +154,27 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
     · simp only [add_zero, log_one, logTaylor_at_zero, sub_self, real_smul, zero_add, smul_eq_mul]
-  -- FIXME nightly-testing
-  sorry
-  -- simp only [H, norm_mul]
-  -- simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
-  --   mul_comm _ (z ^ n), mul_assoc, intervalIntegral.integral_const_mul, norm_mul, norm_pow,
-  --   norm_neg, norm_one, one_pow, one_mul, ← mul_assoc, ← pow_succ, mul_div_assoc]
-  -- refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (norm_nonneg z) (n + 1))
-  -- calc ‖∫ t in (0 : ℝ)..1, (t : ℂ) ^ n * (1 + t * z)⁻¹‖
-  --   _ ≤ ∫ t in (0 : ℝ)..1, ‖(t : ℂ) ^ n * (1 + t * z)⁻¹‖ :=
-  --       intervalIntegral.norm_integral_le_integral_norm zero_le_one
-  --   _ = ∫ t in (0 : ℝ)..1, t ^ n * ‖(1 + t * z)⁻¹‖ := by
-  --       refine intervalIntegral.integral_congr <| fun t ht ↦ ?_
-  --       rw [Set.uIcc_of_le zero_le_one, Set.mem_Icc] at ht
-  --       simp_rw [norm_mul, norm_pow, norm_eq_abs, abs_of_nonneg ht.1]
-  --   _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ :=
-  --       intervalIntegral.integral_mono_on zero_le_one
-  --         (integrable_pow_mul_norm_one_add_mul_inv n hz) help <|
-  --         fun t ht ↦ mul_le_mul_of_nonneg_left (norm_one_add_mul_inv_le ht hz)
-  --                      (pow_nonneg ((Set.mem_Icc.mp ht).1) _)
-  --   _ = (1 - ‖z‖)⁻¹ / (n + 1) := by
-  --       rw [intervalIntegral.integral_mul_const, mul_comm, integral_pow]
-  --       field_simp
+  unfold_let f at H
+  simp only [H, norm_mul]
+  simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
+    mul_comm _ (z ^ n), mul_assoc, intervalIntegral.integral_const_mul, norm_mul, norm_pow,
+    norm_neg, norm_one, one_pow, one_mul, ← mul_assoc, ← pow_succ, mul_div_assoc]
+  refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (norm_nonneg z) (n + 1))
+  calc ‖∫ t in (0 : ℝ)..1, (t : ℂ) ^ n * (1 + t * z)⁻¹‖
+    _ ≤ ∫ t in (0 : ℝ)..1, ‖(t : ℂ) ^ n * (1 + t * z)⁻¹‖ :=
+        intervalIntegral.norm_integral_le_integral_norm zero_le_one
+    _ = ∫ t in (0 : ℝ)..1, t ^ n * ‖(1 + t * z)⁻¹‖ := by
+        refine intervalIntegral.integral_congr <| fun t ht ↦ ?_
+        rw [Set.uIcc_of_le zero_le_one, Set.mem_Icc] at ht
+        simp_rw [norm_mul, norm_pow, norm_eq_abs, abs_of_nonneg ht.1]
+    _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ :=
+        intervalIntegral.integral_mono_on zero_le_one
+          (integrable_pow_mul_norm_one_add_mul_inv n hz) help <|
+          fun t ht ↦ mul_le_mul_of_nonneg_left (norm_one_add_mul_inv_le ht hz)
+                       (pow_nonneg ((Set.mem_Icc.mp ht).1) _)
+    _ = (1 - ‖z‖)⁻¹ / (n + 1) := by
+        rw [intervalIntegral.integral_mul_const, mul_comm, integral_pow]
+        field_simp
 
 /-- The difference `log (1+z) - z` is bounded by `‖z‖^2/(2*(1-‖z‖))` when `‖z‖ < 1`. -/
 lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
