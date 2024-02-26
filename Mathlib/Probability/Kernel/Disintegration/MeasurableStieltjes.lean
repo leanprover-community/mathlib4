@@ -399,7 +399,10 @@ lemma IsMeasurableRatCDF.measure_stieltjesFunction_Iic (a : α) (x : ℝ) :
   exact (hf.stieltjesFunction a).measure_Iic (tendsto_stieltjesFunction_atBot hf a) _
 
 lemma IsMeasurableRatCDF.measure_stieltjesFunction_univ (a : α) :
+    (hf.stieltjesFunction a).measure univ = 1 := by
+  rw [← ENNReal.ofReal_one, ← sub_zero (1 : ℝ)]
   exact StieltjesFunction.measure_univ _ (tendsto_stieltjesFunction_atBot hf a)
+    (tendsto_stieltjesFunction_atTop hf a)
 
 instance IsMeasurableRatCDF.instIsProbabilityMeasure_stieltjesFunction (a : α) :
     IsProbabilityMeasure (hf.stieltjesFunction a).measure :=
