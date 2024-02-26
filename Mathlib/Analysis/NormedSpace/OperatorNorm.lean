@@ -226,6 +226,16 @@ theorem norm_id_le : ‖id 𝕜 E‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => by simp
 #align continuous_linear_map.norm_id_le ContinuousLinearMap.norm_id_le
 
+/-- The operator norm of the first projection `E × F → E` is at most 1. (It is 0 if `E` is zero, so
+the inequality cannot be improved without further assumptions.) -/
+lemma norm_fst_le : ‖fst 𝕜 E Fₗ‖ ≤ 1 :=
+  opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ by simpa only [one_mul] using le_max_left ‖e‖ ‖f‖)
+
+/-- The operator norm of the second projection `E × F → F` is at most 1. (It is 0 if `F` is zero, so
+the inequality cannot be improved without further assumptions.) -/
+lemma norm_snd_le : ‖snd 𝕜 E Fₗ‖ ≤ 1 :=
+  opNorm_le_bound _ zero_le_one (fun ⟨e, f⟩ ↦ by simpa only [one_mul] using le_max_right ‖e‖ ‖f‖)
+
 section
 
 variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] (f g : E →SL[σ₁₂] F) (h : F →SL[σ₂₃] G)
