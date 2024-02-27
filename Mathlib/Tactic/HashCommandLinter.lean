@@ -43,9 +43,10 @@ private abbrev whiteList : Array String := #["#align", "#align_import", "#noalig
 /-- Checks that no command beginning with `#` is present in 'Mathlib', except for the ones in
 `whiteList`. -/
 def hashCommandLinter : Linter where run := withSetOptionIn fun stx => do
+  let currentModule := (← getEnv).mainModule
   if getLinterHash (← getOptions) &&
      (← getInfoState).enabled &&
-     (← getEnv).mainModule.getRoot == `Mathlib then
+     (currentModule.getRoot == `Mathlib || currentModule == `test.HashCommandLinter) then
     let sa := (getAtomStx stx)[0]!
     let a := sa.getAtomVal
     if ("#".isPrefixOf a && (!' ' ∈ a.toList) && whiteList.all (· != a)) then
