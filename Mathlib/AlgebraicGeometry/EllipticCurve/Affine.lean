@@ -174,7 +174,7 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 #align weierstrass_curve.irreducible_polynomial WeierstrassCurve.Affine.irreducible_polynomial
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_polynomial (x y : R) : (W.polynomial.eval <| C y).eval x =
     y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) := by
   simp only [polynomial]
@@ -198,7 +198,7 @@ lemma equation_iff' (x y : R) : W.equation x y ↔
   rw [equation, eval_polynomial]
 #align weierstrass_curve.equation_iff' WeierstrassCurve.Affine.equation_iff'
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma equation_iff (x y : R) :
     W.equation x y ↔ y ^ 2 + W.a₁ * x * y + W.a₃ * y = x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆ := by
   rw [equation_iff', sub_eq_zero]
@@ -231,7 +231,7 @@ noncomputable def polynomialX : R[X][Y] :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_X WeierstrassCurve.Affine.polynomialX
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_polynomialX (x y : R) :
     (W.polynomialX.eval <| C y).eval x = W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) := by
   simp only [polynomialX]
@@ -254,7 +254,7 @@ noncomputable def polynomialY : R[X][Y] :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_Y WeierstrassCurve.Affine.polynomialY
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_polynomialY (x y : R) :
     (W.polynomialY.eval <| C y).eval x = 2 * y + W.a₁ * x + W.a₃ := by
   simp only [polynomialY]
@@ -281,7 +281,7 @@ lemma nonsingular_iff' (x y : R) : W.nonsingular x y ↔ W.equation x y ∧
   rw [nonsingular, equation_iff', eval_polynomialX, eval_polynomialY]
 #align weierstrass_curve.nonsingular_iff' WeierstrassCurve.Affine.nonsingular_iff'
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma nonsingular_iff (x y : R) : W.nonsingular x y ↔
     W.equation x y ∧ (W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ ∨ y ≠ -y - W.a₁ * x - W.a₃) := by
   rw [nonsingular_iff', sub_ne_zero, ← sub_ne_zero (a := y)]
@@ -344,7 +344,7 @@ lemma negY_negY (x y : R) : W.negY x (W.negY x y) = y := by
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.neg_Y_neg_Y WeierstrassCurve.Affine.negY_negY
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_negPolynomial (x y : R) : (W.negPolynomial.eval <| C y).eval x = W.negY x y := by
   rw [negY, sub_sub, negPolynomial]
   eval_simp
@@ -656,7 +656,7 @@ instance : Inhabited W.Point :=
 instance : Zero W.Point :=
   ⟨zero⟩
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma zero_def : (zero : W.Point) = 0 :=
   rfl
 #align weierstrass_curve.point.zero_def WeierstrassCurve.Affine.Point.zero_def
@@ -673,7 +673,7 @@ def neg : W.Point → W.Point
 instance : Neg W.Point :=
   ⟨neg⟩
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma neg_def (P : W.Point) : P.neg = -P :=
   rfl
 #align weierstrass_curve.point.neg_def WeierstrassCurve.Affine.Point.neg_def
@@ -711,7 +711,7 @@ noncomputable def add : W.Point → W.Point → W.Point
 noncomputable instance instAddPoint : Add W.Point :=
   ⟨add⟩
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma add_def (P Q : W.Point) : P.add Q = P + Q :=
   rfl
 #align weierstrass_curve.point.add_def WeierstrassCurve.Affine.Point.add_def

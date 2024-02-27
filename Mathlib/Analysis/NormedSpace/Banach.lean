@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.CompleteMetrizable
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.AffineIsometry
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 #align_import analysis.normed_space.banach from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -17,7 +17,6 @@ import Mathlib.Analysis.NormedSpace.AffineIsometry
 This file contains the Banach open mapping theorem, i.e., the fact that a bijective
 bounded linear map between Banach spaces has a bounded inverse.
 -/
-
 
 open Function Metric Set Filter Finset Classical Topology BigOperators NNReal
 
@@ -134,7 +133,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
         _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
         _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
-          simp only
+          simp only [δ]
           ring
         _ = ‖y‖ / 2 := by
           rw [inv_mul_cancel, one_mul]

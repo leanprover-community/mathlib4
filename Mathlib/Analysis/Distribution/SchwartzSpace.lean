@@ -621,12 +621,12 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := by simp only [le_refl, Finset.le_sup'_iff, true_or_iff, le_max_iff]
+  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or_iff, le_max_iff]
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
   refine' le_trans (f N x) (mul_le_mul _ _ (by positivity) hC')
-  · simp only [Finset.le_sup'_iff, le_max_iff]
+  · simp only [C', Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
   refine' pow_le_pow_right (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
@@ -841,7 +841,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         refine' le_add_of_nonneg_right _
         specialize hg_upper' 0
         rw [norm_zero] at hg_upper'
-        refine' nonneg_of_mul_nonneg_left hg_upper' (by positivity)
+        exact nonneg_of_mul_nonneg_left hg_upper' (by positivity)
       let k' := kg * (k + l * n)
       use Finset.Iic (k', n), (1 + Cg) ^ (k + l * n) * ((C + 1) ^ n * n ! * 2 ^ k'), by positivity
       intro f x

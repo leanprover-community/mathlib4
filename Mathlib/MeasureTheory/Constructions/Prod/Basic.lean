@@ -466,7 +466,7 @@ instance prod.instNoAtoms_snd [NoAtoms ν] :
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
   rw [prod_apply hs] at h2s
-  refine' ae_lt_top (measurable_measure_prod_mk_left hs) h2s
+  exact ae_lt_top (measurable_measure_prod_mk_left hs) h2s
 #align measure_theory.measure.ae_measure_lt_top MeasureTheory.Measure.ae_measure_lt_top
 
 /-- Note: the assumption `hs` cannot be dropped. For a counterexample, see

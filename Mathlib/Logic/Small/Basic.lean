@@ -37,11 +37,6 @@ theorem small_of_surjective {α : Type v} {β : Type w} [Small.{u} α] {f : α �
   small_of_injective (Function.injective_surjInv hf)
 #align small_of_surjective small_of_surjective
 
-theorem small_subset {α : Type v} {s t : Set α} (hts : t ⊆ s) [Small.{u} s] : Small.{u} t :=
-  let f : t → s := fun x => ⟨x, hts x.prop⟩
-  @small_of_injective _ _ _ f fun _ _ hxy => Subtype.ext (Subtype.mk.inj hxy)
-#align small_subset small_subset
-
 instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : Small.{w} α := by
   rcases isEmpty_or_nonempty α with ⟨⟩ <;> skip
   · apply small_map (Equiv.equivPEmpty α)
@@ -83,15 +78,5 @@ instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (Sum α β)
 instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
   ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩
 #align small_set small_set
-
-instance small_range {α : Type v} {β : Type w} (f : α → β) [Small.{u} α] :
-    Small.{u} (Set.range f) :=
-  small_of_surjective Set.surjective_onto_range
-#align small_range small_range
-
-instance small_image {α : Type v} {β : Type w} (f : α → β) (S : Set α) [Small.{u} S] :
-    Small.{u} (f '' S) :=
-  small_of_surjective Set.surjective_onto_image
-#align small_image small_image
 
 end

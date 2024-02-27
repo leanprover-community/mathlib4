@@ -216,7 +216,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (ε_pos : 0 
     hF'_int key
   replace hF'_int : Integrable F' μ := by
     rw [← integrable_norm_iff hm] at hF'_int
-    simpa only [(· ∘ ·), integrable_norm_iff, hF'_meas, one_mul, norm_one,
+    simpa only [L, (· ∘ ·), integrable_norm_iff, hF'_meas, one_mul, norm_one,
       ContinuousLinearMap.comp_apply, ContinuousLinearMap.coe_restrict_scalarsL',
       ContinuousLinearMap.norm_restrictScalars, ContinuousLinearMap.norm_smulRightL_apply] using
       hF'_int

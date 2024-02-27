@@ -154,7 +154,7 @@ theorem aeval_eq (h : IsAdjoinRoot S f) (p : R[X]) : aeval h.root p = h.map p :=
       RingHom.map_pow, map_X]
 #align is_adjoin_root.aeval_eq IsAdjoinRoot.aeval_eq
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem aeval_root (h : IsAdjoinRoot S f) : aeval h.root f = 0 := by rw [aeval_eq, map_self]
 #align is_adjoin_root.aeval_root IsAdjoinRoot.aeval_root
 

@@ -1073,7 +1073,7 @@ theorem HasSum.sum_nat_of_sum_int {α : Type*} [AddCommMonoid α] [TopologicalSp
   let u2 := v'.image fun x : ℕ => -(x : ℤ)
   have A : u ⊆ u1 ∪ u2 := by
     intro x hx
-    simp only [mem_union, mem_image, exists_prop]
+    simp only [u1, u2, mem_union, mem_image, exists_prop]
     rcases le_total 0 x with (h'x | h'x)
     · left
       refine' ⟨Int.natAbs x, hv' _, _⟩
@@ -1095,9 +1095,9 @@ theorem HasSum.sum_nat_of_sum_int {α : Type*} [AddCommMonoid α] [TopologicalSp
       · intro x hx
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
-        simp at hx
+        simp [u1, u2] at hx
       · intro x hx
-        simp only [mem_inter, mem_image, exists_prop] at hx
+        simp only [u1, u2, mem_inter, mem_image, exists_prop] at hx
         have : x = 0 := by
           apply le_antisymm
           · rcases hx.2 with ⟨a, _, rfl⟩
@@ -1106,7 +1106,7 @@ theorem HasSum.sum_nat_of_sum_int {α : Type*} [AddCommMonoid α] [TopologicalSp
             simp only [Nat.cast_nonneg]
         simp only [this, eq_self_iff_true, if_true]
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
-    _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by simp
+    _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by simp [u1, u2]
     _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm
 #align has_sum.sum_nat_of_sum_int HasSum.sum_nat_of_sum_int
 
