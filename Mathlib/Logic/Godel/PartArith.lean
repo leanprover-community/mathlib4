@@ -113,6 +113,7 @@ lemma or_eq (n m : ℕ) : or n m = if 0 < n ∨ 0 < m then 1 else 0 := by simp[o
 
 @[simp] lemma pos_pos_iff (n : ℕ) : 0 < pos n ↔ 0 < n := by simp[pos]
 
+/-- Ball -/
 def ball (n : ℕ) (p : ℕ → ℕ) : ℕ := n.rec 1 (fun n ih => (p n).pos.and ih)
 
 @[simp] lemma ball_pos_iff {p : ℕ → ℕ} {n : ℕ} : 0 < ball n p ↔ ∀ m < n, 0 < p m := by
@@ -130,6 +131,7 @@ lemma ball_pos_iff_eq_one {p : ℕ → ℕ} {n : ℕ} : ball n p = 1 ↔ 0 < bal
     · intro h; simpa using pos_of_eq_one h
     · intro h; simpa[and_eq_one] using h
 
+/-- Arithmetized partial recursive function -/
 inductive PartArith : ∀ {n}, (Vector ℕ n →. ℕ) → Prop
   | zero {n} : @PartArith n (fun _ => 0)
   | one {n} : @PartArith n (fun _ => 1)
