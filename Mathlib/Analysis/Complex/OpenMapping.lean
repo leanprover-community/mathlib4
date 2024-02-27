@@ -21,8 +21,8 @@ its image `f z₀`. The results extend in higher dimension to `g : E → ℂ`.
 The proof of the local version on `ℂ` goes through two main steps: first, assuming that the function
 is not constant around `z₀`, use the isolated zero principle to show that `‖f z‖` is bounded below
 on a small `sphere z₀ r` around `z₀`, and then use the maximum principle applied to the auxiliary
-function `(λ z, ‖f z - v‖)` to show that any `v` close enough to `f z₀` is in `f '' ball z₀ r`. That
-second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
+function `(fun z ↦ ‖f z - v‖)` to show that any `v` close enough to `f z₀` is in `f '' ball z₀ r`.
+That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
 
 ## Main results
 
@@ -45,7 +45,7 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
     (hf : ∀ z ∈ sphere z₀ r, ε ≤ ‖f z - f z₀‖) (hz₀ : ∃ᶠ z in 𝓝 z₀, f z ≠ f z₀) :
     ball (f z₀) (ε / 2) ⊆ f '' closedBall z₀ r := by
   /- This is a direct application of the maximum principle. Pick `v` close to `f z₀`, and look at
-    the function `λ z, ‖f z - v‖`: it is bounded below on the circle, and takes a small value
+    the function `fun z ↦ ‖f z - v‖`: it is bounded below on the circle, and takes a small value
     at `z₀` so it is not constant on the disk, which implies that its infimum is equal to `0` and
     hence that `v` is in the range of `f`. -/
   rintro v hv
@@ -88,9 +88,9 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
     ∃ ρ > 0, AnalyticOn ℂ f (closedBall z₀ ρ) ∧ ∀ z ∈ closedBall z₀ ρ, z ≠ z₀ → f z ≠ f z₀ := by
     simpa only [setOf_and, subset_inter_iff] using
       nhds_basis_closedBall.mem_iff.mp (h2.and (eventually_nhdsWithin_iff.mp h1))
-  replace h3 : DiffContOnCl ℂ f (ball z₀ ρ)
-  exact ⟨h3.differentiableOn.mono ball_subset_closedBall,
-    (closure_ball z₀ hρ.lt.ne.symm).symm ▸ h3.continuousOn⟩
+  replace h3 : DiffContOnCl ℂ f (ball z₀ ρ) :=
+    ⟨h3.differentiableOn.mono ball_subset_closedBall,
+      (closure_ball z₀ hρ.lt.ne.symm).symm ▸ h3.continuousOn⟩
   let r := ρ ⊓ R
   have hr : 0 < r := lt_inf_iff.mpr ⟨hρ, hR⟩
   have h5 : closedBall z₀ r ⊆ closedBall z₀ ρ := closedBall_subset_closedBall inf_le_left
@@ -123,7 +123,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
   obtain ⟨r, hr, hgr⟩ := isOpen_iff.mp (isOpen_analyticAt ℂ g) z₀ hg
   have h1 : ∀ z ∈ sphere (0 : E) 1, AnalyticOn ℂ (gray z) (ball 0 r) := by
     refine fun z hz t ht => AnalyticAt.comp ?_ ?_
-    · exact hgr (by simpa [norm_smul, mem_sphere_zero_iff_norm.mp hz] using ht)
+    · exact hgr (by simpa [ray, norm_smul, mem_sphere_zero_iff_norm.mp hz] using ht)
     · exact analyticAt_const.add
         ((ContinuousLinearMap.smulRight (ContinuousLinearMap.id ℂ ℂ) z).analyticAt t)
   by_cases h : ∀ z ∈ sphere (0 : E) 1, ∀ᶠ t in 𝓝 0, gray z t = gray z 0
@@ -135,14 +135,14 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     let w : E := ‖z - z₀‖⁻¹ • (z - z₀)
     have h3 : ∀ t ∈ ball (0 : ℂ) r, gray w t = g z₀ := by
       have e1 : IsPreconnected (ball (0 : ℂ) r) := (convex_ball 0 r).isPreconnected
-      have e2 : w ∈ sphere (0 : E) 1 := by simp [norm_smul, inv_mul_cancel h']
+      have e2 : w ∈ sphere (0 : E) 1 := by simp [w, norm_smul, inv_mul_cancel h']
       specialize h1 w e2
       apply h1.eqOn_of_preconnected_of_eventuallyEq analyticOn_const e1 (mem_ball_self hr)
-      simpa using h w e2
+      simpa [ray, gray] using h w e2
     have h4 : ‖z - z₀‖ < r := by simpa [dist_eq_norm] using mem_ball.mp hz
     replace h4 : ↑‖z - z₀‖ ∈ ball (0 : ℂ) r := by
       simpa only [mem_ball_zero_iff, norm_eq_abs, abs_ofReal, abs_norm]
-    simpa only [smul_smul, mul_inv_cancel h', one_smul, add_sub_cancel'_right,
+    simpa only [ray, gray, w, smul_smul, mul_inv_cancel h', one_smul, add_sub_cancel'_right,
       Function.comp_apply, coe_smul] using h3 (↑‖z - z₀‖) h4
   · right
     -- Otherwise, it is open along at least one direction and that implies the result
@@ -150,7 +150,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     obtain ⟨z, hz, hrz⟩ := h
     specialize h1 z hz 0 (mem_ball_self hr)
     have h7 := h1.eventually_constant_or_nhds_le_map_nhds_aux.resolve_left hrz
-    rw [show gray z 0 = g z₀ by simp, ← map_compose] at h7
+    rw [show gray z 0 = g z₀ by simp [gray, ray], ← map_compose] at h7
     refine h7.trans (map_mono ?_)
     have h10 : Continuous fun t : ℂ => z₀ + t • z :=
       continuous_const.add (continuous_id'.smul continuous_const)

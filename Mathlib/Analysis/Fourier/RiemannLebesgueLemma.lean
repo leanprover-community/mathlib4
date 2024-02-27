@@ -35,11 +35,11 @@ equivalence to an inner-product space.
 ## Main results
 
 - `tendsto_integral_exp_inner_smul_cocompact` : for `V` a finite-dimensional real inner product
-  space and `f : V → E`, the function `λ w : V, ∫ v : V, exp (2 * π * ⟪w, v⟫ * I) • f v` tends to 0
-  along `cocompact V`.
+  space and `f : V → E`, the function `fun w : V ↦ ∫ v : V, exp (2 * π * ⟪w, v⟫ * I) • f v`
+  tends to 0 along `cocompact V`.
 - `tendsto_integral_exp_smul_cocompact` : for `V` a finite-dimensional real vector space (endowed
   with its unique Hausdorff topological vector space structure), and `W` the dual of `V`, the
-  function `λ w : W, ∫ v : V, exp (2 * π * w v * I) • f v` tends to along `cocompact W`.
+  function `fun w : W ↦ ∫ v : V, exp (2 * π * w v * I) • f v` tends to along `cocompact W`.
 - `Real.tendsto_integral_exp_smul_cocompact`: special case of functions on `ℝ`.
 - `Real.zero_at_infty_fourierIntegral` and `Real.zero_at_infty_vector_fourierIntegral`:
   reformulations explicitly using the Fourier integral.
@@ -168,7 +168,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   --* Show integral can be taken over A only.
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
     refine' (set_integral_eq_integral_of_forall_compl_eq_zero fun v hv => _).symm
-    dsimp only at hv
+    dsimp only [A] at hv
     simp only [mem_setOf, not_le] at hv
     rw [hR_bd v _, hR_bd (v + i w) _, sub_zero, norm_zero]
     · rw [← sub_neg_eq_add]
@@ -268,8 +268,7 @@ theorem tendsto_integral_exp_smul_cocompact_of_inner_product (μ : Measure V) [�
   have : (fun w : V →L[ℝ] ℝ => ∫ v, e[-w v] • f v) = (fun w : V => ∫ v, e[-⟪v, w⟫] • f v) ∘ A := by
     ext1 w
     congr 1 with v : 1
-    rw [← inner_conj_symm, IsROrC.conj_to_real, InnerProductSpace.toDual_symm_apply,
-      Real.fourierChar_apply]
+    rw [← inner_conj_symm, IsROrC.conj_to_real, InnerProductSpace.toDual_symm_apply]
   rw [this]
   exact
     (tendsto_integral_exp_inner_smul_cocompact f).comp

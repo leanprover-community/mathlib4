@@ -36,9 +36,12 @@ such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 As `⊕` is already taken for the sum of types, we introduce the notation `X ⊞ Y` for
 a binary biproduct. We introduce `⨁ f` for the indexed biproduct.
 
-## Implementation
-Prior to #14046, `HasFiniteBiproducts` required a `DecidableEq` instance on the indexing type.
-As this had no pay-off (everything about limits is non-constructive in mathlib), and occasional cost
+## Implementation notes
+
+Prior to leanprover-community/mathlib#14046,
+`HasFiniteBiproducts` required a `DecidableEq` instance on the indexing type.
+As this had no pay-off (everything about limits is non-constructive in mathlib),
+ and occasional cost
 (constructing decidability instances appropriate for constructions involving the indexing type),
 we made everything classical.
 -/
@@ -67,7 +70,7 @@ variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 * morphisms `π j : pt ⟶ F j` and `ι j : F j ⟶ pt` for each `j`,
 * such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure Bicone (F : J → C) where
   pt : C
   π : ∀ j, pt ⟶ F j
@@ -127,7 +130,7 @@ namespace Bicones
   isomorphism between their vertices which commutes with the cocone
   maps. -/
 -- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
-@[aesop apply safe (rule_sets [CategoryTheory]), simps]
+@[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
     (wι : ∀ j, c.ι j ≫ φ.hom = c'.ι j := by aesop_cat)
     (wπ : ∀ j, φ.hom ≫ c'.π j = c.π j := by aesop_cat) : c ≅ c' where
@@ -158,10 +161,10 @@ end Bicones
 
 namespace Bicone
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 -- Porting note: would it be okay to use this more generally?
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Eq
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- Extract the cone from a bicone. -/
 def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
@@ -247,7 +250,7 @@ theorem π_of_isColimit {f : J → C} {t : Bicone f} (ht : IsColimit t.toCocone)
 #align category_theory.limits.bicone.π_of_is_colimit CategoryTheory.Limits.Bicone.π_of_isColimit
 
 /-- Structure witnessing that a bicone is both a limit cone and a colimit cocone. -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure IsBilimit {F : J → C} (B : Bicone F) where
   isLimit : IsLimit B.toCone
   isColimit : IsColimit B.toCocone
@@ -258,7 +261,7 @@ structure IsBilimit {F : J → C} (B : Bicone F) where
 
 attribute [inherit_doc IsBilimit] IsBilimit.isLimit IsBilimit.isColimit
 
--- Porting note: simp can prove this, linter doesn't notice it is removed
+-- Porting note (#10618): simp can prove this, linter doesn't notice it is removed
 attribute [-simp, nolint simpNF] IsBilimit.mk.injEq
 
 attribute [local ext] Bicone.IsBilimit
@@ -901,8 +904,8 @@ section
 
 open Classical
 
--- Per #15067, we only allow indexing in `Type 0` here.
-variable {K : Type} [Fintype K] [HasFiniteBiproducts C] (f : K → C)
+-- Per leanprover-community/mathlib#15067, we only allow indexing in `Type 0` here.
+variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
@@ -988,7 +991,7 @@ namespace Limits
 
 section FiniteBiproducts
 
-variable {J : Type} [Fintype J] {K : Type} [Fintype K] {C : Type u} [Category.{v} C]
+variable {J : Type} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
   [HasZeroMorphisms C] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
 
 /-- Convert a (dependently typed) matrix to a morphism of biproducts.
@@ -1031,8 +1034,7 @@ theorem biproduct.components_matrix (m : ⨁ f ⟶ ⨁ g) :
 
 /-- Morphisms between direct sums are matrices. -/
 @[simps]
-def biproduct.matrixEquiv : (⨁ f ⟶ ⨁ g) ≃ ∀ j k, f j ⟶ g k
-    where
+def biproduct.matrixEquiv : (⨁ f ⟶ ⨁ g) ≃ ∀ j k, f j ⟶ g k where
   toFun := biproduct.components
   invFun := biproduct.matrix
   left_inv := biproduct.components_matrix
@@ -1132,7 +1134,7 @@ variable {C}
 maps from `X` to both `P` and `Q`, and maps from both `P` and `Q` to `X`,
 so that `inl ≫ fst = 𝟙 P`, `inl ≫ snd = 0`, `inr ≫ fst = 0`, and `inr ≫ snd = 𝟙 Q`
 -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure BinaryBicone (P Q : C) where
   pt : C
   fst : pt ⟶ P
@@ -1299,7 +1301,7 @@ def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
 end Bicone
 
 /-- Structure witnessing that a binary bicone is a limit cone and a limit cocone. -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure BinaryBicone.IsBilimit {P Q : C} (b : BinaryBicone P Q) where
   isLimit : IsLimit b.toCone
   isColimit : IsColimit b.toCocone
@@ -1332,7 +1334,7 @@ def Bicone.toBinaryBiconeIsBilimit {X Y : C} (b : Bicone (pairFunction X Y)) :
 
 /-- A bicone over `P Q : C`, which is both a limit cone and a colimit cocone.
 -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure BinaryBiproductData (P Q : C) where
   bicone : BinaryBicone P Q
   isBilimit : bicone.IsBilimit

@@ -183,7 +183,7 @@ def glueMetricApprox (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
   dist_triangle := glueDist_triangle Φ Ψ ε H
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   eq_of_dist_eq_zero := eq_of_glueDist_eq_zero Φ Ψ ε ε0 _ _
-  toUniformSpace := Sum.uniformSpace
+  toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ <| Sum.mem_uniformity_iff_glueDist ε0
 #align metric.glue_metric_approx Metric.glueMetricApprox
 
@@ -281,7 +281,7 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist q p).symm.trans h)
     · rw [eq_of_dist_eq_zero h]
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
-  toUniformSpace := Sum.uniformSpace
+  toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ Sum.mem_uniformity
 #align metric.metric_space_sum Metric.metricSpaceSum
 

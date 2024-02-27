@@ -251,8 +251,8 @@ theorem QuasiCompact.affineProperty_stableUnderBaseChange :
   intro X Y S _ _ f g h
   rw [QuasiCompact.affineProperty] at h ⊢
   let 𝒰 := Scheme.Pullback.openCoverOfRight Y.affineCover.finiteSubcover f g
-  have : Finite 𝒰.J := by dsimp; infer_instance
-  have : ∀ i, CompactSpace (𝒰.obj i).carrier := by intro i; dsimp; infer_instance
+  have : Finite 𝒰.J := by dsimp [𝒰]; infer_instance
+  have : ∀ i, CompactSpace (𝒰.obj i).carrier := by intro i; dsimp [𝒰]; infer_instance
   exact 𝒰.compactSpace
 #align algebraic_geometry.quasi_compact.affine_property_stable_under_base_change AlgebraicGeometry.QuasiCompact.affineProperty_stableUnderBaseChange
 
@@ -306,8 +306,8 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     {U : Opens X.carrier} (hU : IsCompact U.1) (x f : X.presheaf.obj (op U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (isCompact_open_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
-  replace e : U = iSup fun i : s => (i : Opens X.carrier)
-  · ext1; simpa using e
+  replace e : U = iSup fun i : s => (i : Opens X.carrier) := by
+    ext1; simpa using e
   have h₁ : ∀ i : s, i.1.1 ≤ U := by
     intro i
     change (i : Opens X.carrier) ≤ U

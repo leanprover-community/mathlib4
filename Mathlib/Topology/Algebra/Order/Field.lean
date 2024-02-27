@@ -32,8 +32,9 @@ theorem TopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Line
     (norm_nonneg : ∀ x, 0 ≤ norm x) (norm_mul_le : ∀ x y, norm (x * y) ≤ norm x * norm y)
     (nhds_basis : (𝓝 (0 : R)).HasBasis ((0 : 𝕜) < ·) (fun ε ↦ { x | norm x < ε })) :
     TopologicalRing R := by
-  have h0 : ∀ f : R → R, ∀ c ≥ (0 : 𝕜), (∀ x, norm (f x) ≤ c * norm x) → Tendsto f (𝓝 0) (𝓝 0)
-  · refine fun f c c0 hf ↦ (nhds_basis.tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
+  have h0 : ∀ f : R → R, ∀ c ≥ (0 : 𝕜), (∀ x, norm (f x) ≤ c * norm x) →
+      Tendsto f (𝓝 0) (𝓝 0) := by
+    refine fun f c c0 hf ↦ (nhds_basis.tendsto_iff nhds_basis).2 fun ε ε0 ↦ ?_
     rcases exists_pos_mul_lt ε0 c with ⟨δ, δ0, hδ⟩
     refine ⟨δ, δ0, fun x hx ↦ (hf _).trans_lt ?_⟩
     exact (mul_le_mul_of_nonneg_left (le_of_lt hx) c0).trans_lt hδ

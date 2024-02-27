@@ -229,8 +229,8 @@ theorem norm_mk_eq_zero (S : AddSubgroup M) (hS : IsClosed (S : Set M)) (m : M)
 
 theorem quotient_nhd_basis (S : AddSubgroup M) :
     (𝓝 (0 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ { x | ‖x‖ < ε } := by
-  have : ∀ ε : ℝ, mk '' ball (0 : M) ε = { x : M ⧸ S | ‖x‖ < ε }
-  · refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
+  have : ∀ ε : ℝ, mk '' ball (0 : M) ε = { x : M ⧸ S | ‖x‖ < ε } := by
+    refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
     rw [ball_zero_eq, mem_setOf_eq, norm_lt_iff, mem_image]
     exact exists_congr fun _ ↦ and_comm
   rw [← mk_zero, nhds_eq, ← funext this]

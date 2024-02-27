@@ -279,7 +279,7 @@ lemma cast_int_mul_cast_int_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) 
 
 variable (a) (m n : ℤ)
 
-/- Porting note: `simp` attribute removed as linter reports:
+/- Porting note (#10618): `simp` attribute removed as linter reports:
 simp can prove this:
   by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
 -/
@@ -287,7 +287,7 @@ simp can prove this:
 lemma self_cast_int_mul : Commute a (n * a : α) := (Commute.refl a).cast_int_mul_right n
 #align commute.self_cast_int_mul Commute.self_cast_int_mul
 
-/- Porting note: `simp` attribute removed as linter reports:
+/- Porting note (#10618): `simp` attribute removed as linter reports:
 simp can prove this:
   by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
 -/

@@ -70,7 +70,7 @@ instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObjec
   CategoryTheory.pi fun _ => C
 #align category_theory.graded_object.category_of_graded_objects CategoryTheory.GradedObject.categoryOfGradedObjects
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
@@ -480,6 +480,14 @@ noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
 lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
 
 lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+
+variable {X Y} in
+@[reassoc (attr := simp)]
+lemma ιMapObjOrZero_mapMap :
+    X.ιMapObjOrZero p i j ≫ mapMap φ p j = φ i ≫ Y.ιMapObjOrZero p i j := by
+  by_cases h : p i = j
+  · simp only [ιMapObjOrZero_eq _ _ _ _ h, ι_mapMap]
+  · simp only [ιMapObjOrZero_eq_zero _ _ _ _ h, zero_comp, comp_zero]
 
 end GradedObject
 

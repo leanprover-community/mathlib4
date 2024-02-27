@@ -84,8 +84,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       · simp
       · norm_num; simp_rw [_root_.pow_succ, (even_two.mul_right _).neg_one_pow,
           ((even_two.mul_right _).mul_right _).neg_one_pow]
-    · replace hp2 : (p : ℕ) ≠ 2
-      · rwa [Ne.def, ← coe_two, PNat.coe_inj]
+    · replace hp2 : (p : ℕ) ≠ 2 := by rwa [Ne.def, ← coe_two, PNat.coe_inj]
       have hpo : Odd (p : ℕ) := hp.out.odd_of_ne_two hp2
       obtain ⟨a, ha⟩ := (hp.out.even_sub_one hp2).two_dvd
       rw [ha, mul_left_comm, mul_assoc, Nat.mul_div_cancel_left _ two_pos,

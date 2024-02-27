@@ -86,6 +86,11 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 #align continuous_real_to_nnreal continuous_real_toNNReal
 
+/-- `Real.toNNReal` bundled as a continuous map for convenience. -/
+@[simps (config := .asFn)]
+noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
+  .mk Real.toNNReal continuous_real_toNNReal
+
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 #align nnreal.continuous_coe NNReal.continuous_coe

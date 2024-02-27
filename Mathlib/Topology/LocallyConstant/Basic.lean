@@ -149,7 +149,7 @@ theorem comp_continuous [TopologicalSpace Y] {g : Y → Z} {f : X → Y} (hg : I
 theorem apply_eq_of_isPreconnected {f : X → Y} (hf : IsLocallyConstant f) {s : Set X}
     (hs : IsPreconnected s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) : f x = f y := by
   let U := f ⁻¹' {f y}
-  suffices : x ∉ Uᶜ; exact Classical.not_not.1 this
+  suffices x ∉ Uᶜ from Classical.not_not.1 this
   intro hxV
   specialize hs U Uᶜ (hf {f y}) (hf {f y}ᶜ) _ ⟨y, ⟨hy, rfl⟩⟩ ⟨x, ⟨hx, hxV⟩⟩
   · simp only [union_compl_self, subset_univ]

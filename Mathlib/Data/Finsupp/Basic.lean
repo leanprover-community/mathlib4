@@ -872,33 +872,27 @@ section Filter
 
 section Zero
 
-variable [Zero M] (p : α → Prop) (f : α →₀ M)
+variable [Zero M] (p : α → Prop) [DecidablePred p] (f : α →₀ M)
 
 /--
 `Finsupp.filter p f` is the finitely supported function that is `f a` if `p a` is true and `0`
 otherwise. -/
-def filter (p : α → Prop) (f : α →₀ M) : α →₀ M
-    where
-  toFun a :=
-    haveI := Classical.decPred p
-    if p a then f a else 0
-  support :=
-    haveI := Classical.decPred p
-    f.support.filter fun a => p a
+def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M where
+  toFun a := if p a then f a else 0
+  support := f.support.filter p
   mem_support_toFun a := by
     simp only -- porting note: necessary to beta reduce to activate `split_ifs`
     split_ifs with h <;>
-      · simp only [h, @mem_filter _ _ (Classical.decPred p), mem_support_iff]
-        -- porting note: I needed to provide the instance explicitly
+      · simp only [h, mem_filter, mem_support_iff]
         tauto
 #align finsupp.filter Finsupp.filter
 
-theorem filter_apply (a : α) [D : Decidable (p a)] : f.filter p a = if p a then f a else 0 := by
-  rw [Subsingleton.elim D] <;> rfl
+theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
 #align finsupp.filter_apply Finsupp.filter_apply
 
-theorem filter_eq_indicator : ⇑(f.filter p) = Set.indicator { x | p x } f :=
-  rfl
+theorem filter_eq_indicator : ⇑(f.filter p) = Set.indicator { x | p x } f := by
+  ext
+  simp [filter_apply, Set.indicator_apply]
 #align finsupp.filter_eq_indicator Finsupp.filter_eq_indicator
 
 theorem filter_eq_zero_iff : f.filter p = 0 ↔ ∀ x, p x → f x = 0 := by
@@ -920,8 +914,7 @@ theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
 #align finsupp.filter_apply_neg Finsupp.filter_apply_neg
 
 @[simp]
-theorem support_filter [D : DecidablePred p] : (f.filter p).support = f.support.filter p := by
-  rw [Subsingleton.elim D] <;> rfl
+theorem support_filter : (f.filter p).support = f.support.filter p := rfl
 #align finsupp.support_filter Finsupp.support_filter
 
 theorem filter_zero : (0 : α →₀ M).filter p = 0 := by
@@ -966,9 +959,11 @@ theorem prod_div_prod_filter [CommGroup G] (g : α → M → G) :
 
 end Zero
 
-theorem filter_pos_add_filter_neg [AddZeroClass M] (f : α →₀ M) (p : α → Prop) :
+theorem filter_pos_add_filter_neg [AddZeroClass M] (f : α →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter p + f.filter fun a => ¬p a) = f :=
-  DFunLike.coe_injective <| Set.indicator_self_add_compl { x | p x } f
+  DFunLike.coe_injective <| by
+    simp only [coe_add, filter_eq_indicator]
+    exact Set.indicator_self_add_compl { x | p x } f
 #align finsupp.filter_pos_add_filter_neg Finsupp.filter_pos_add_filter_neg
 
 end Filter
@@ -1086,15 +1081,18 @@ def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M
 #align finsupp.subtype_domain_add_monoid_hom Finsupp.subtypeDomainAddMonoidHom
 
 /-- `Finsupp.filter` as an `AddMonoidHom`. -/
-def filterAddHom (p : α → Prop) : (α →₀ M) →+ α →₀ M
+def filterAddHom (p : α → Prop) [DecidablePred p]: (α →₀ M) →+ α →₀ M
     where
   toFun := filter p
   map_zero' := filter_zero p
-  map_add' f g := DFunLike.coe_injective <| Set.indicator_add { x | p x } f g
+  map_add' f g := DFunLike.coe_injective <| by
+    simp only [filter_eq_indicator, coe_add]
+    exact Set.indicator_add { x | p x } f g
 #align finsupp.filter_add_hom Finsupp.filterAddHom
 
 @[simp]
-theorem filter_add {v v' : α →₀ M} : (v + v').filter p = v.filter p + v'.filter p :=
+theorem filter_add [DecidablePred p] {v v' : α →₀ M} :
+    (v + v').filter p = v.filter p + v'.filter p :=
   (filterAddHom p).map_add v v'
 #align finsupp.filter_add Finsupp.filter_add
 
@@ -1114,15 +1112,15 @@ theorem subtypeDomain_finsupp_sum [Zero N] {s : β →₀ N} {h : β → N → �
   subtypeDomain_sum
 #align finsupp.subtype_domain_finsupp_sum Finsupp.subtypeDomain_finsupp_sum
 
-theorem filter_sum (s : Finset ι) (f : ι → α →₀ M) :
+theorem filter_sum [DecidablePred p] (s : Finset ι) (f : ι → α →₀ M) :
     (∑ a in s, f a).filter p = ∑ a in s, filter p (f a) :=
   map_sum (filterAddHom p) f s
 #align finsupp.filter_sum Finsupp.filter_sum
 
-theorem filter_eq_sum (p : α → Prop) [D : DecidablePred p] (f : α →₀ M) :
+theorem filter_eq_sum (p : α → Prop) [DecidablePred p] (f : α →₀ M) :
     f.filter p = ∑ i in f.support.filter p, single i (f i) :=
   (f.filter p).sum_single.symm.trans <|
-    Finset.sum_congr (by rw [Subsingleton.elim D] <;> rfl) fun x hx => by
+    Finset.sum_congr rfl fun x hx => by
       rw [filter_apply_pos _ _ (mem_filter.1 hx).2]
 #align finsupp.filter_eq_sum Finsupp.filter_eq_sum
 
@@ -1163,12 +1161,12 @@ theorem erase_sub (a : α) (f₁ f₂ : α →₀ G) : erase a (f₁ - f₂) = e
 #align finsupp.erase_sub Finsupp.erase_sub
 
 @[simp]
-theorem filter_neg (p : α → Prop) (f : α →₀ G) : filter p (-f) = -filter p f :=
+theorem filter_neg (p : α → Prop) [DecidablePred p] (f : α →₀ G) : filter p (-f) = -filter p f :=
   (filterAddHom p : (_ →₀ G) →+ _).map_neg f
 #align finsupp.filter_neg Finsupp.filter_neg
 
 @[simp]
-theorem filter_sub (p : α → Prop) (f₁ f₂ : α →₀ G) :
+theorem filter_sub (p : α → Prop) [DecidablePred p] (f₁ f₂ : α →₀ G) :
     filter p (f₁ - f₂) = filter p f₁ - filter p f₂ :=
   (filterAddHom p : (_ →₀ G) →+ _).map_sub f₁ f₂
 #align finsupp.filter_sub Finsupp.filter_sub
@@ -1265,7 +1263,7 @@ def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M)
       forall₃_true_iff, (single_sum _ _ _).symm, sum_single]
 #align finsupp.finsupp_prod_equiv Finsupp.finsuppProdEquiv
 
-theorem filter_curry (f : α × β →₀ M) (p : α → Prop) :
+theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
   classical
     rw [Finsupp.curry, Finsupp.curry, Finsupp.sum, Finsupp.sum, filter_sum, support_filter,
@@ -1281,7 +1279,7 @@ theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
     f.curry.support ⊆ f.support.image Prod.fst := by
   rw [← Finset.biUnion_singleton]
   refine' Finset.Subset.trans support_sum _
-  refine' Finset.biUnion_mono fun a _ => support_single_subset
+  exact Finset.biUnion_mono fun a _ => support_single_subset
 #align finsupp.support_curry Finsupp.support_curry
 
 end CurryUncurry
@@ -1567,12 +1565,14 @@ theorem support_smul_eq [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulD
 
 section
 
-variable {p : α → Prop}
+variable {p : α → Prop} [DecidablePred p]
 
 @[simp]
 theorem filter_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] {b : R} {v : α →₀ M} :
     (b • v).filter p = b • v.filter p :=
-  DFunLike.coe_injective <| Set.indicator_const_smul { x | p x } b v
+  DFunLike.coe_injective <| by
+    simp only [filter_eq_indicator, coe_smul]
+    exact Set.indicator_const_smul { x | p x } b v
 #align finsupp.filter_smul Finsupp.filter_smul
 
 end
