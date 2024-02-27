@@ -46,6 +46,33 @@ theorem ENNReal.rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (
 
 end RPow
 
+namespace HasCompactSupport
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddGroup β] [Lattice β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+protected theorem abs {f : α → β} (hf : HasCompactSupport f) : HasCompactSupport |f| :=
+  hf.comp_left (g := abs) abs_zero
+
+protected theorem rpow_const {f : α → ℝ} (hf : HasCompactSupport f) {r : ℝ} (hr : r ≠ 0) :
+    HasCompactSupport (fun x ↦ f x ^ r) :=
+  hf.comp_left (g := (· ^ r)) (Real.zero_rpow hr)
+
+end HasCompactSupport
+
+section
+
+variable {E : Type*} [NormedAddCommGroup E] {p : ℝ≥0∞}
+
+theorem Continuous.memℒp_of_hasCompactSupport
+    {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
+    {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) (μ : Measure X)
+    [IsFiniteMeasureOnCompacts μ] : Memℒp f p μ := by
+  have := hf.memℒp_top_of_hasCompactSupport h'f μ
+  exact this.memℒp_of_exponent_le_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_nmem_tsupport) (h'f.measure_lt_top.ne) le_top
+
+end
+
 namespace ENNReal
 
 protected theorem inv_mul_le_iff {x y z : ℝ≥0∞} (h1 : x ≠ 0) (h2 : x ≠ ∞) :
@@ -74,37 +101,17 @@ lemma conj_inv_eq : q⁻¹ = 1 - p⁻¹ := by
 
 end Real.IsConjExponent
 
-section conjExponent
-
-/- I (F) was planning to use this, but in the end none of the results in this section are used. -/
-
-lemma Real.one_lt_conjExponent {p : ℝ} : 1 < p.conjExponent ↔ 1 < p := by
-  sorry
-
-lemma Real.conjExponent_pos {p : ℝ} (hp : 1 < p) : 0 < p.conjExponent :=
-  zero_lt_one.trans <| Real.one_lt_conjExponent.mpr hp
-
-@[simp]
-lemma NNReal.coe_conjExponent {p : ℝ≥0} (hp : 1 < p) :
-    p.conjExponent = Real.conjExponent p := by
-  simp [Real.conjExponent, NNReal.conjExponent, hp.le]
-
-lemma NNReal.one_lt_conjExponent {p : ℝ≥0} : 1 < p.conjExponent ↔ 1 < p := by
-  sorry
-
-lemma NNReal.conjExponent_pos {p : ℝ≥0} (hp : 1 < p) : 0 < p.conjExponent :=
-  zero_lt_one.trans <| NNReal.one_lt_conjExponent.mpr hp
-
-end conjExponent
-
 namespace MeasureTheory
 
 variable {α E : Type*} [NormedAddCommGroup E] {_ : MeasurableSpace α}
   {f : α → E} {μ : Measure α}
 
+lemma snorm_nnreal_eq_snorm' {p : ℝ≥0} (hp : p ≠ 0) : snorm f p μ = snorm' f p μ :=
+  snorm_eq_snorm' (by exact_mod_cast hp) ENNReal.coe_ne_top
+
 lemma snorm_nnreal_eq_lintegral {p : ℝ≥0} (hp : p ≠ 0) :
-    snorm f p μ = (∫⁻ x, ‖f x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) := by
-  simp [snorm_eq_lintegral_rpow_nnnorm (by exact_mod_cast hp) ENNReal.coe_ne_top]
+    snorm f p μ = (∫⁻ x, ‖f x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
+  snorm_nnreal_eq_snorm' hp
 
 lemma snorm_nnreal_pow_eq_lintegral {p : ℝ≥0} (hp : p ≠ 0) :
     snorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖₊ ^ (p : ℝ) ∂μ := by
@@ -510,6 +517,12 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
     inv_mul_cancel h0p.ne', NNReal.rpow_one]
   exact hC hu h2u
 
+example (a b c d : ℝ) (ha : a ≠ 0) (hb : b ≠ 0) (hd : d ≠ 0) : a * (b * c) * d / ((d * b) * a) = c := by
+  field_simp; ring
+
+attribute [fun_prop] AEMeasurable Continuous.aemeasurable
+  ENNReal.continuous_coe ENNReal.continuous_rpow_const ContDiff.continuous
+
 theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
@@ -529,9 +542,12 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     rw [← inv_inj, hp']
     field_simp [NNReal.conjExponent]
   -- the case `p > 1`
-  have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   let q := Real.conjExponent p
   have hq : Real.IsConjExponent p q := .conjExponent hp
+  have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
+  have h1p : (p : ℝ) ≠ 1 := hq.one_lt.ne'
+  -- have h3p : (p : ℝ) ≠ 0 := hq.pos.ne'
+  have h3p : (p : ℝ) - 1 ≠ 0 := sub_ne_zero_of_ne h1p
   have h0p' : p' ≠ 0 := by
     suffices 0 < (p' : ℝ) from (show 0 < p' from this) |>.ne'
     rw [← inv_pos, hp', sub_pos]
@@ -542,22 +558,32 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     simp
   let γ : ℝ≥0 := ⟨p * (n - 1) / (n - p), by positivity⟩
   have h0γ : (γ : ℝ) = p * (n - 1) / (n - p) := rfl
-  have h1γ : 1 < γ := by
-    rwa [← NNReal.coe_lt_coe, NNReal.coe_one, h0γ, one_lt_div hnp, mul_sub, mul_one,
-      sub_lt_sub_iff_right, lt_mul_iff_one_lt_left]
+  have h1γ : 1 < (γ : ℝ) := by
+    rwa [h0γ, one_lt_div hnp, mul_sub, mul_one, sub_lt_sub_iff_right, lt_mul_iff_one_lt_left]
     exact hn.coe.pos
-  have h2γ : γ * n' = p' := sorry
-  have h3γ : (γ - 1) * q = p' := sorry
+  have h2γ : γ * n' = p' := by
+    rw [← NNReal.coe_inj, ← inv_inj, hp', NNReal.coe_mul, h0γ, hn.coe.conj_eq]
+    field_simp; ring
+  have h3γ : (γ - 1) * q = p' := by
+    rw [← inv_inj, hp', h0γ, hq.conj_eq]
+    have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
+    field_simp; rw [this]; field_simp; ring
+  have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
   refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
-  have h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ 0 := sorry
-  have h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := sorry
+  by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
+  · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
+  have h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := by
+    refine lintegral_rpow_nnnorm_lt_top_of_snorm'_lt_top (pos_iff_ne_zero.mpr h0p') ?_ |>.ne
+    dsimp only
+    rw [NNReal.val_eq_coe, ← snorm_nnreal_eq_snorm' h0p']
+    exact hu.continuous.memℒp_of_hasCompactSupport (μ := μ) h2u |>.snorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
   have h6u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
     ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
   let v : E → ℝ := fun x ↦ |u x| ^ (γ : ℝ)
   have hv : ContDiff ℝ 1 v := sorry
-  have h2v : HasCompactSupport v := sorry
+  have h2v : HasCompactSupport v := h2u.abs.rpow_const h4γ
   specialize hC hv h2v
   have :=
   calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
@@ -569,13 +595,19 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
     _ = C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
-    _ = C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
         (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ))) := by
         gcongr
         convert ENNReal.lintegral_mul_le_Lp_mul_Lq μ
-          (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp) sorry sorry using 5
-        simp_rw [← ENNReal.rpow_mul, ← h3γ]
+          (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp) ?_ ?_ using 5
+        · simp_rw [← ENNReal.rpow_mul, ← h3γ]
+        · -- `fun_prop` can do this with a bit of help
+          apply Continuous.aemeasurable
+          have := hu.continuous
+          fun_prop
+        · apply Continuous.aemeasurable
+          have := (hu.fderiv_right (m := 0) le_rfl).continuous
+          fun_prop
     _ = C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) *
       (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) := by ring
   calc
@@ -583,3 +615,5 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
       by rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
+
+-- #lint
