@@ -71,7 +71,7 @@ variable (n : ℕ+)
 
 theorem rootsOfUnity.integer_power_of_ringEquiv (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
-  obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (g.restrictRootsOfUnity n).toMonoidHom
+  obtain ⟨m, hm⟩ := MonoidHom.map_cyclic ((g : L ≃* L).restrictRootsOfUnity n).toMonoidHom
   exact ⟨m, fun t ↦ Units.ext_iff.1 <| SetCoe.ext_iff.2 <| hm t⟩
 
 theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
@@ -103,9 +103,9 @@ local notation "χ" => ModularCyclotomicCharacter.toFun
 /-- The formula which characterises the output of `ModularCyclotomicCharacter g n`. -/
 theorem spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
     g (t : Lˣ) = (t ^ (χ n g).val : Lˣ) := by
-  rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_ofNat, ModularCyclotomicCharacter.toFun,
+  rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_coe_nat, ModularCyclotomicCharacter.toFun,
     ZMod.val_int_cast, ← Subgroup.coe_zpow]
-  exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| zpow_eq_zpow_mod _ pow_card_eq_one
+  exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| zpow_eq_zpow_emod _ pow_card_eq_one
 
 theorem spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
     g t = t ^ (χ n g).val :=
