@@ -580,7 +580,7 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   let f' := (⟨f, hf⟩ : lpMeas F ℝ m p μ)
   let g := lpMeasToLpTrimLie F ℝ p μ hm f'
   have hfg : f' = (lpMeasToLpTrimLie F ℝ p μ hm).symm g := by
-    simp only [LinearIsometryEquiv.symm_apply_apply]
+    simp only [f', g, LinearIsometryEquiv.symm_apply_apply]
   change P ↑f'
   rw [hfg]
   refine'

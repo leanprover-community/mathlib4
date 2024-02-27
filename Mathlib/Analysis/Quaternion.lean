@@ -80,12 +80,12 @@ theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 #align quaternion.nnnorm_coe Quaternion.nnnorm_coe
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 #align quaternion.norm_star Quaternion.norm_star
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 #align quaternion.nnnorm_star Quaternion.nnnorm_star
@@ -147,7 +147,7 @@ theorem coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
   rfl
 #align quaternion.coe_complex_one Quaternion.coeComplex_one
 
-@[simp, norm_cast, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, norm_cast, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
 #align quaternion.coe_real_complex_mul Quaternion.coe_real_complex_mul
 

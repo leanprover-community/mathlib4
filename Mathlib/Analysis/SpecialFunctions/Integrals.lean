@@ -274,64 +274,65 @@ theorem intervalIntegrable_inv_one_add_sq :
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 
 
--- Porting note: was @[simp]; simpNF says LHS does not simplify when applying lemma on itself
+-- Porting note (#10618): was @[simp];
+-- simpNF says LHS does not simplify when applying lemma on itself
 theorem mul_integral_comp_mul_right : (c * ∫ x in a..b, f (x * c)) = ∫ x in a * c..b * c, f x :=
   smul_integral_comp_mul_right f c
 #align interval_integral.mul_integral_comp_mul_right intervalIntegral.mul_integral_comp_mul_right
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_mul_left : (c * ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x :=
   smul_integral_comp_mul_left f c
 #align interval_integral.mul_integral_comp_mul_left intervalIntegral.mul_integral_comp_mul_left
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_div : (c⁻¹ * ∫ x in a..b, f (x / c)) = ∫ x in a / c..b / c, f x :=
   inv_smul_integral_comp_div f c
 #align interval_integral.inv_mul_integral_comp_div intervalIntegral.inv_mul_integral_comp_div
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_mul_add :
     (c * ∫ x in a..b, f (c * x + d)) = ∫ x in c * a + d..c * b + d, f x :=
   smul_integral_comp_mul_add f c d
 #align interval_integral.mul_integral_comp_mul_add intervalIntegral.mul_integral_comp_mul_add
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_add_mul :
     (c * ∫ x in a..b, f (d + c * x)) = ∫ x in d + c * a..d + c * b, f x :=
   smul_integral_comp_add_mul f c d
 #align interval_integral.mul_integral_comp_add_mul intervalIntegral.mul_integral_comp_add_mul
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_div_add :
     (c⁻¹ * ∫ x in a..b, f (x / c + d)) = ∫ x in a / c + d..b / c + d, f x :=
   inv_smul_integral_comp_div_add f c d
 #align interval_integral.inv_mul_integral_comp_div_add intervalIntegral.inv_mul_integral_comp_div_add
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_add_div :
     (c⁻¹ * ∫ x in a..b, f (d + x / c)) = ∫ x in d + a / c..d + b / c, f x :=
   inv_smul_integral_comp_add_div f c d
 #align interval_integral.inv_mul_integral_comp_add_div intervalIntegral.inv_mul_integral_comp_add_div
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_mul_sub :
     (c * ∫ x in a..b, f (c * x - d)) = ∫ x in c * a - d..c * b - d, f x :=
   smul_integral_comp_mul_sub f c d
 #align interval_integral.mul_integral_comp_mul_sub intervalIntegral.mul_integral_comp_mul_sub
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem mul_integral_comp_sub_mul :
     (c * ∫ x in a..b, f (d - c * x)) = ∫ x in d - c * b..d - c * a, f x :=
   smul_integral_comp_sub_mul f c d
 #align interval_integral.mul_integral_comp_sub_mul intervalIntegral.mul_integral_comp_sub_mul
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_div_sub :
     (c⁻¹ * ∫ x in a..b, f (x / c - d)) = ∫ x in a / c - d..b / c - d, f x :=
   inv_smul_integral_comp_div_sub f c d
 #align interval_integral.inv_mul_integral_comp_div_sub intervalIntegral.inv_mul_integral_comp_div_sub
 
--- Porting note: was @[simp]
+-- Porting note (#10618): was @[simp]
 theorem inv_mul_integral_comp_sub_div :
     (c⁻¹ * ∫ x in a..b, f (d - x / c)) = ∫ x in d - b / c..d - a / c, f x :=
   inv_smul_integral_comp_sub_div f c d
