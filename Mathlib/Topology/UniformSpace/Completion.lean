@@ -99,7 +99,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         (monotone_setOf fun p => @Filter.monotone_mem _ (p.2.val ×ˢ p.1.val)))
       (by
         have h := fun p : CauchyFilter α × CauchyFilter α => @Filter.prod_comm _ _ p.2.val p.1.val
-        simp [Function.comp, h, mem_map']
+        simp [f, Function.comp, h, mem_map']
         exact le_rfl)
   exact h₁.trans_le h₂
 
@@ -295,13 +295,14 @@ theorem inseparable_iff_of_le_nhds {f g : CauchyFilter α} {a b : α}
   rfl
 
 theorem inseparable_lim_iff [CompleteSpace α] {f g : CauchyFilter α} :
-    Inseparable (f.2.lim f.1) (g.2.lim g.1) ↔ Inseparable f g :=
+    haveI := f.2.1.nonempty; Inseparable (lim f.1) (lim g.1) ↔ Inseparable f g :=
   inseparable_iff_of_le_nhds f.2.le_nhds_lim g.2.le_nhds_lim
 
 end
 
 theorem cauchyFilter_eq {α : Type*} [UniformSpace α] [CompleteSpace α] [T0Space α]
-    {f g : CauchyFilter α} : f.2.lim f.1 = g.2.lim g.1 ↔ Inseparable f g := by
+    {f g : CauchyFilter α} :
+    haveI := f.2.1.nonempty; lim f.1 = lim g.1 ↔ Inseparable f g := by
   rw [← inseparable_iff_eq, inseparable_lim_iff]
 
 set_option linter.uppercaseLean3 false in

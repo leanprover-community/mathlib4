@@ -30,7 +30,7 @@ variable {C : Type u} [Category.{v} C] [HasColimits C]
 -- Porting note: no tidy tactic
 -- attribute [local tidy] tactic.auto_cases_opens
 -- this could be replaced by
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- but it doesn't appear to be needed here.
 
 open TopCat.Presheaf
