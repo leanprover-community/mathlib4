@@ -73,8 +73,7 @@ instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
   constructor
   intro X
   haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
-  suffices : IsCofilteredOrEmpty (StructuredArrow X (𝟭 C))
-  · constructor
+  suffices IsCofilteredOrEmpty (StructuredArrow X (𝟭 C)) by constructor
   constructor
   · intro Y Z
     use StructuredArrow.mk (𝟙 _)
@@ -95,8 +94,7 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
     have f₁ : StructuredArrow X G := Nonempty.some inferInstance
     have f₂ : StructuredArrow f₁.right F := Nonempty.some inferInstance
     exact ⟨StructuredArrow.mk (f₁.hom ≫ G.map f₂.hom)⟩
-  suffices : IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G))
-  · constructor
+  suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
   constructor
   · intro Y Z
     let W :=
@@ -206,15 +204,14 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    convert e₁.symm.trans e₂ <;> simp
+    convert e₁.symm.trans e₂ <;> simp [c₁, c₂]
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
     ext x
     apply this
   -- And thus they are equal as `c` is the limit.
-  have : g₁.right = g₂.right
-  calc
+  have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats

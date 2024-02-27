@@ -128,8 +128,6 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
     rw [Multiset.toFinset_card_of_nodup, ← natDegree_eq_card_roots]
     · exact IsAlgClosed.splits_codomain p
     · exact nodup_roots ((separable_map (algebraMap ℚ ℂ)).mpr p_irr.separable)
-  have h2 : Fintype.card p.Gal = Fintype.card (galActionHom p ℂ).range :=
-    Fintype.card_congr (MonoidHom.ofInjective (galActionHom_injective p ℂ)).toEquiv
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
   refine'
     ⟨galActionHom_injective p ℂ, fun x =>
@@ -138,8 +136,9 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
   apply Equiv.Perm.subgroup_eq_top_of_swap_mem
   · rwa [h1]
   · rw [h1]
-    convert prime_degree_dvd_card p_irr p_deg using 1
-    convert h2.symm
+    simpa only [Fintype.card_eq_nat_card,
+      Nat.card_congr (MonoidHom.ofInjective (galActionHom_injective p ℂ)).toEquiv.symm]
+      using prime_degree_dvd_card p_irr p_deg
   · exact ⟨conj', rfl⟩
   · rw [← Equiv.Perm.card_support_eq_two]
     apply Nat.add_left_cancel
@@ -220,5 +219,8 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
     rwa [isUnit_iff_degree_eq_zero.1 hq, add_zero]
 
 /-- An irreducible real polynomial has natural degree at most two. -/
-lemma Irreducible.nat_degree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
+lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
   natDegree_le_iff_degree_le.2 hp.degree_le_two
+
+@[deprecated] -- 2024-02-18
+alias Irreducible.nat_degree_le_two := Irreducible.natDegree_le_two

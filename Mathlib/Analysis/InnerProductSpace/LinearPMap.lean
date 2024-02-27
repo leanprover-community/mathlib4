@@ -95,8 +95,8 @@ def adjointDomain : Submodule 𝕜 F where
     exact hx.const_smul (conj a)
 #align linear_pmap.adjoint_domain LinearPMap.adjointDomain
 
-/-- The operator `λ x, ⟪y, T x⟫` considered as a continuous linear operator from `T.adjointDomain`
-to `𝕜`. -/
+/-- The operator `fun x ↦ ⟪y, T x⟫` considered as a continuous linear operator
+from `T.adjointDomain` to `𝕜`. -/
 def adjointDomainMkCLM (y : T.adjointDomain) : T.domain →L[𝕜] 𝕜 :=
   ⟨(innerₛₗ 𝕜 (y : F)).comp T.toFun, y.prop⟩
 #align linear_pmap.adjoint_domain_mk_clm LinearPMap.adjointDomainMkCLM

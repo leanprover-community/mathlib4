@@ -133,8 +133,8 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     exact ContinuousAt.continuousOn fun x hx =>
       Complex.continuousAt_ofReal_cpow_const x r (Or.inr hx)
   -- reduce to case of integral over `[0, c]`
-  suffices : ∀ c : ℝ, IntervalIntegrable (fun x : ℝ => ‖(x:ℂ) ^ r‖) μ 0 c
-  exact (this a).symm.trans (this b)
+  suffices ∀ c : ℝ, IntervalIntegrable (fun x : ℝ => ‖(x:ℂ) ^ r‖) μ 0 c from
+    (this a).symm.trans (this b)
   intro c
   rcases le_or_lt 0 c with (hc | hc)
   · -- case `0 ≤ c`: integrand is identically 1
@@ -215,7 +215,7 @@ theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b
 #align interval_integral.interval_integrable_id intervalIntegral.intervalIntegrable_id
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
   continuous_const.intervalIntegrable a b
 #align interval_integral.interval_integrable_const intervalIntegral.intervalIntegrable_const
@@ -358,7 +358,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
     refine' hasDerivAt_ofReal_cpow (ne_of_mem_of_not_mem hx hab) _
     contrapose! hr; rwa [add_eq_zero_iff_eq_neg]
-  replace h : -1 < r.re; · tauto
+  replace h : -1 < r.re := by tauto
   suffices ∀ c : ℝ, (∫ x : ℝ in (0)..c, (x : ℂ) ^ r) =
       (c:ℂ) ^ (r + 1) / (r + 1) - (0:ℂ) ^ (r + 1) / (r + 1) by
     rw [← integral_add_adjacent_intervals (@intervalIntegrable_cpow' a 0 r h)
@@ -401,7 +401,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
 
 theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
-  replace h : -1 < (n : ℝ) ∨ (n : ℝ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]; · exact mod_cast h
+  replace h : -1 < (n : ℝ) ∨ (n : ℝ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]] := mod_cast h
   exact mod_cast integral_rpow h
 #align integral_zpow integral_zpow
 
@@ -442,7 +442,7 @@ theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
   exact this
 #align integral_id integral_id
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem integral_one : (∫ _ in a..b, (1 : ℝ)) = b - a := by
   simp only [mul_one, smul_eq_mul, integral_const]
 #align integral_one integral_one

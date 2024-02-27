@@ -1440,8 +1440,8 @@ Then `f` tends to `x` along `l` restricted to `s` if and only if it tends to `x`
 theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : α → X} {l : Filter α} {s : Set α}
     (h : ∀ a ∉ s, f a = x) : Tendsto f (l ⊓ 𝓟 s) (𝓝 x) ↔ Tendsto f l (𝓝 x) := by
   rw [tendsto_iff_comap, tendsto_iff_comap]
-  replace h : 𝓟 sᶜ ≤ comap f (𝓝 x)
-  · rintro U ⟨t, ht, htU⟩ x hx
+  replace h : 𝓟 sᶜ ≤ comap f (𝓝 x) := by
+    rintro U ⟨t, ht, htU⟩ x hx
     have : f x ∈ t := (h x hx).symm ▸ mem_of_mem_nhds ht
     exact htU this
   refine' ⟨fun h' => _, le_trans inf_le_left⟩
@@ -1499,11 +1499,14 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 
 open TopologicalSpace
 
-variable {f : X → Y} {s : Set X} {x : X} {y : Y}
-
-theorem continuous_def : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
+-- The curly braces are intentional, so this definition works well with simp
+-- when topologies are not those provided by instances.
+theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X → Y} :
+    Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
+
+variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 
 theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
     IsOpen (f ⁻¹' t) :=
@@ -1541,6 +1544,13 @@ theorem ContinuousAt.preimage_mem_nhds {t : Set Y} (h : ContinuousAt f x)
     (ht : t ∈ 𝓝 (f x)) : f ⁻¹' t ∈ 𝓝 x :=
   h ht
 #align continuous_at.preimage_mem_nhds ContinuousAt.preimage_mem_nhds
+
+/-- If `f x ∈ s ∈ 𝓝 (f x)` for continuous `f`, then `f y ∈ s` near `x`.
+
+This is essentially `Filter.Tendsto.eventually_mem`, but infers in more cases when applied. -/
+theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x) {s : Set Y}
+    (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
+  hf hs
 
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
 @[deprecated] -- 15 January 2024
@@ -1838,7 +1848,7 @@ However, lemmas with this conclusion are not nice to use in practice because
 1. They confuse the elaborator. The following two examples fail, because of limitations in the
   elaboration process.
   ```
-  variables {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
+  variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
   example : Continuous (λ x : M, x + x) :=
   continuous_add.comp _
 
