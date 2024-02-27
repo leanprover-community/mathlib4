@@ -36,13 +36,12 @@ namespace Equiv.Perm
 
 section Conjugation
 
-variable [Fintype α] [DecidableEq α] {σ τ : Perm α}
+variable [DecidableEq α] [Fintype α] {σ τ : Perm α}
 
 theorem isConj_of_support_equiv
     (f : { x // x ∈ (σ.support : Set α) } ≃ { x // x ∈ (τ.support : Set α) })
-    (hf :
-      ∀ (x : α) (hx : x ∈ (σ.support : Set α)),
-        (f ⟨σ x, apply_mem_support.2 hx⟩ : α) = τ ↑(f ⟨x, hx⟩)) :
+    (hf : ∀ (x : α) (hx : x ∈ (σ.support : Set α)),
+      (f ⟨σ x, apply_mem_support.2 hx⟩ : α) = τ ↑(f ⟨x, hx⟩)) :
     IsConj σ τ := by
   refine' isConj_iff.2 ⟨Equiv.extendSubtype f, _⟩
   rw [mul_inv_eq_iff_eq_mul]
@@ -178,7 +177,7 @@ nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
       (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).2))
 #align equiv.perm.disjoint.order_of Equiv.Perm.Disjoint.orderOf
 
-theorem Disjoint.extendDomain {α : Type*} {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
+theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
     {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
   intro b
   by_cases pb : p b
@@ -189,8 +188,7 @@ theorem Disjoint.extendDomain {α : Type*} {p : β → Prop} [DecidablePred p] (
     rw [extendDomain_apply_not_subtype _ _ pb]
 #align equiv.perm.disjoint.extend_domain Equiv.Perm.Disjoint.extendDomain
 
-
-theorem Disjoint.isConj_mul {α : Type*} [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
+theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
     cases nonempty_fintype α

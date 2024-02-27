@@ -681,9 +681,9 @@ namespace Equiv.Perm
 ### Fixed points
 -/
 
-variable {α : Type*} [DecidableEq α]
+variable {α : Type*}
 
-theorem fixed_point_card_lt_of_ne_one [Fintype α] {σ : Perm α} (h : σ ≠ 1) :
+theorem fixed_point_card_lt_of_ne_one [DecidableEq α] [Fintype α] {σ : Perm α} (h : σ ≠ 1) :
     (filter (fun x => σ x = x) univ).card < Fintype.card α - 1 := by
   rw [lt_tsub_iff_left, ← lt_tsub_iff_right, ← Finset.card_compl, Finset.compl_filter]
   exact one_lt_card_support_of_ne_one h

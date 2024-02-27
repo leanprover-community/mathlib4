@@ -168,7 +168,7 @@ theorem mem_finPairsLT {n : ℕ} {a : Σ_ : Fin n, Fin n} : a ∈ finPairsLT n �
 
 /-- `signAux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
   pairs `(x₁, x₂)` such that `x₂ < x₁` but `σ x₁ ≤ σ x₂` -/
-def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
+
   ∏ x in finPairsLT n, if a x.1 ≤ a x.2 then -1 else 1
 #align equiv.perm.sign_aux Equiv.Perm.signAux
 

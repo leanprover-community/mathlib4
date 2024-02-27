@@ -719,7 +719,6 @@ theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf 
     exact support_pow_le f n
 #align equiv.perm.is_cycle.is_cycle_pow_pos_of_lt_prime_order Equiv.Perm.IsCycle.isCycle_pow_pos_of_lt_prime_order
 
-
 end Equiv.Perm
 
 namespace Int

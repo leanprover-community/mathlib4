@@ -40,7 +40,7 @@ namespace Equiv.Perm
 
 section Generation
 
-variable [DecidableEq α] [Finite β]
+variable [Finite β]
 
 open Subgroup
 
@@ -51,7 +51,7 @@ theorem closure_isCycle : closure { σ : Perm β | IsCycle σ } = ⊤ := by
       top_le_iff.mp (le_trans (ge_of_eq closure_isSwap) (closure_mono fun _ => IsSwap.isCycle))
 #align equiv.perm.closure_is_cycle Equiv.Perm.closure_isCycle
 
-variable [Fintype α]
+variable [DecidableEq α] [Fintype α]
 
 theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.support = ⊤) (x : α) :
     closure ({σ, swap x (σ x)} : Set (Perm α)) = ⊤ := by

@@ -313,12 +313,10 @@ end CycleOf
 
 section cycleFactors
 
-variable [DecidableEq α]
-
 open scoped List in
 /-- Given a list `l : List α` and a permutation `f : perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
-def cycleFactorsAux [Fintype α] :
+def cycleFactorsAux [DecidableEq α] [Fintype α] :
     ∀ (l : List α) (f : Perm α),
       (∀ {x}, f x ≠ x → x ∈ l) →
         { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } := by
@@ -420,7 +418,7 @@ def cycleFactors [Fintype α] [LinearOrder α] (f : Perm α) :
 
 /-- Factors a permutation `f` into a list of disjoint cyclic permutations that multiply to `f`,
   without a linear order. -/
-def truncCycleFactors [Fintype α] (f : Perm α) :
+def truncCycleFactors [DecidableEq α] [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
   Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))
     (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
@@ -428,7 +426,7 @@ def truncCycleFactors [Fintype α] (f : Perm α) :
 
 section CycleFactorsFinset
 
-variable [Fintype α] (f : Perm α)
+variable [DecidableEq α] [Fintype α] (f : Perm α)
 
 /-- Factors a permutation `f` into a `Finset` of disjoint cyclic permutations that multiply to `f`.
 -/
@@ -642,7 +640,7 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
         (ih (fun τ hτ => h1 τ (List.mem_cons_of_mem σ hτ)) h2.of_cons)
 #align equiv.perm.cycle_induction_on Equiv.Perm.cycle_induction_on
 
-theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [Fintype α] {f g : Perm α}
+theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f g : Perm α}
     (h : f ∈ cycleFactorsFinset g) : cycleFactorsFinset (g * f⁻¹) = cycleFactorsFinset g \ {f} := by
   revert f
   refine'
