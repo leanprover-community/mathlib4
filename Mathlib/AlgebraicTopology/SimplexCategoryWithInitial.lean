@@ -304,10 +304,8 @@ lemma toOrderHom_join_apply_on_lt_fst
     simp [len] at ha
   | (of x, star), (of y, star), f => rfl
   | (of x1, of x2), (of y1, of y2), f =>
-    simp [toOrderHom, Join.func]
-    have hx {n m  : ℕ } (f : Fin n → Fin m ) (mo : Monotone f) (a : Fin  n) :
-    (({toFun := f, monotone' := mo } : Fin n →o Fin m) a).val = (f a).val := rfl
-    erw [hx]
+    simp only [toOrderHom]
+    erw [OrderHom.coe_mk]
     split_ifs
     rfl
     rename_i ht
@@ -324,31 +322,22 @@ lemma toOrderHom_join_apply_on_fst_le
     (toOrderHom f.2 ⟨a.val-len X.1, sub_fst_lt_snd_if_fst_le a ha⟩).val + len Y.1 := by
   simp [join]
   match X, Y, f with
-  | (star, star), (star, star), _ => rfl
-  | (star, star), (star, of y), _ => rfl
-  | (star, star), (of y, star), _ =>
-    exact Fin.elim0 a
-  | (star, star), (of y1, of y2), f =>
+  | (star, star), _, _ =>
     exact Fin.elim0 a
   | (star, of x), (star, of y), f => rfl
-  | (of x, star), (of y, star), f =>
-    have hx := sub_fst_lt_snd_if_fst_le a ha
-    simp [len] at hx
+  | (star, of x2), (of y1, of y2), f => rfl
+  | (of x, star), _, f =>
+    simpa [len] using (sub_fst_lt_snd_if_fst_le a ha)
   | (of x1, of x2), (of y1, of y2), f =>
     simp [toOrderHom, Join.func]
-    have hx {n m  : ℕ } (f : Fin n → Fin m ) (mo : Monotone f) (a : Fin  n) :
-    (({toFun := f, monotone' := mo } : Fin n →o Fin m) a).val = (f a).val := rfl
-    erw [hx]
+    erw [OrderHom.coe_mk]
     split_ifs
     rename_i han
     simp [len] at ha
     rw [Nat.succ_eq_add_one] at ha
     exact ((Nat.not_le.mpr han) ha).elim
     simp [len]
-  | (of x1, star), (of y1, of y2), f =>
-    have hx := sub_fst_lt_snd_if_fst_le a ha
-    simp [len] at hx
-  | (star, of x2), (of y1, of y2), f => rfl
+
 
 lemma toOrderHom_fst_apply {X Y : WithInitial SimplexCategory × WithInitial SimplexCategory}
     (f : X ⟶ Y) (a : Fin (len X.1)) :
@@ -461,20 +450,16 @@ lemma indexEqToIso_inv_comp_symm_inv {X : WithInitial SimplexCategory}
     <;> apply OrderHom.ext
     <;> funext a
     <;> rw [toOrderHom_comp, toOrderHom_homMk, toOrderHom_homMk, Fin.eq_iff_veq]
-  · have h : (toOrderHom (𝟙 (obj X j).1)) = OrderHom.id := by
-      rw [toOrderHom_id]
-    simp [h]
+  · simp only [OrderHom.comp_coe, Function.comp_apply, @toOrderHom_id (obj X j).1, OrderHom.id_coe,
+    id_eq]
     rfl
-  · have h : (toOrderHom (𝟙 (obj X j).2)) = OrderHom.id := by
-      rw [toOrderHom_id]
-    simp [h]
+  · simp only [OrderHom.comp_coe, Function.comp_apply, @toOrderHom_id (obj X j).2, OrderHom.id_coe,
+    id_eq]
     rfl
 
 lemma join_split_len (X : WithInitial SimplexCategory) (i : Fin (Nat.succ (len X))) :
     len X = len (join.obj (Split.obj X i))  := by
-  rw [len_of_join]
-  simp [Split.obj]
-  rw [len_mk, len_mk]
+  simp only [obj, Fin.val_rev, Nat.succ_sub_succ_eq_sub, len_of_join, len_mk]
   omega
 
 /-- An isomorphism between an object and the join of a split of that object. -/
@@ -517,15 +502,11 @@ lemma sourceValue_of_iso_hom {X Y : WithInitial SimplexCategory} (f : Y ≅ X)
   rw [hk]
   match k with
   | some x =>
-    rw [Fin.find_eq_some_iff] at hk
-    let hkl := hk.left
-    rw [toOrderHomIso_apply f] at hkl
-    simp [Fin.le_def] at hkl
-    let hkr := hk.right ⟨i, Nat.lt_of_le_of_lt hkl x.prop⟩
-    rw [toOrderHomIso_apply f] at hkr
+    let hkl := (toOrderHomIso_apply f x) ▸ (Fin.find_eq_some_iff.mp hk).left
+    let hkr := ((toOrderHomIso_apply f _) ▸ ((Fin.find_eq_some_iff.mp hk).right
+       ⟨i, Nat.lt_of_le_of_lt hkl x.prop⟩))
     simp [Fin.le_def] at hkr
-    simp [Fin.eq_iff_veq]
-    exact Nat.le_antisymm hkr hkl
+    simpa [Fin.eq_iff_veq, Fin.le_def] using (Nat.le_antisymm hkr hkl)
   | none =>
     rw [Fin.find_eq_none_iff] at hk
     ext
@@ -534,12 +515,8 @@ lemma sourceValue_of_iso_hom {X Y : WithInitial SimplexCategory} (f : Y ≅ X)
     | star, star =>
       simp [len]
     | of x, of y =>
-      have h1 := hk (Fin.last (y.len))
-      rw [toOrderHomIso_apply f] at h1
-      simp  [Fin.lt_def] at h1
-      have ht := Fin.is_le i
-      simp [← len_iso f] at ht
-      exact Nat.le_antisymm h1 ht
+      have h1 := Fin.lt_def.mp (not_le.mp ((toOrderHomIso_apply f _) ▸ (hk (Fin.last (y.len)))))
+      exact Nat.le_antisymm h1 (Eq.trans_ge (len_iso f).symm i.is_le)
 
 lemma sourceValue_of_iso_inv {X Y : WithInitial SimplexCategory} (f : Y ≅ X)
     (i : Fin (Nat.succ (len Y))) :
@@ -576,14 +553,13 @@ lemma toOrderHom_apply_on_sourceValue_le {X Y : WithInitial SimplexCategory} (f 
   simp [sourceValue, hk] at ha
   match k with
   | some k =>
-    simp_all
+    simp_all only [Fin.castSucc_le_castSucc_iff, ge_iff_le]
     rw [Fin.find_eq_some_iff] at hk
     exact hk.left.trans ((toOrderHom f).monotone' ha )
   | none =>
-    simp_all
+    simp_all only [Fin.last_le_iff, ge_iff_le]
     rw [Fin.find_eq_none_iff] at hk
-    rw [Fin.eq_iff_veq] at ha
-    simp at ha
+    simp [Fin.eq_iff_veq] at ha
     omega
 
 lemma toOrderHom_apply_on_lt_sourceValue' {X Y : WithInitial SimplexCategory} {f : X ⟶ Y}
@@ -595,11 +571,11 @@ lemma toOrderHom_apply_on_lt_sourceValue' {X Y : WithInitial SimplexCategory} {f
   simp [sourceValue, hk] at ha
   match k with
   | some k =>
-    simp_all
+    simp_all only [Fin.coe_castSucc, Fin.val_fin_lt, gt_iff_lt]
     rw [Fin.find_eq_some_iff] at hk
     exact Fin.not_le.mp ((hk.right a).mt (Fin.not_le.mpr ha))
   | none =>
-    simp_all
+    simp_all only [Fin.val_last, Fin.is_lt, gt_iff_lt]
     rw [Fin.find_eq_none_iff] at hk
     exact Fin.not_le.mp (hk a)
 
@@ -658,21 +634,21 @@ lemma sourceValue_of_comp  {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g
       intro j
       simp
       by_contra hn
-      simp at hn
-      exact hk2 j (hk.right ((toOrderHom f) j) hn )
+      exact hk2 j (hk.right ((toOrderHom f) j) (not_lt.mp hn))
   | none =>
     rw [Fin.find_eq_none_iff] at hk
     simp
-    have h1 : Fin.find fun a ↦ Fin.castSucc ((toOrderHom f) a) = Fin.last (len Y) = none := by
-      rw [Fin.find_eq_none_iff]
+    apply @Eq.trans _ _ none _
+    · rw [Fin.find_eq_none_iff]
       intro i
-      have := ((toOrderHom f) i).prop
       rw [Fin.eq_iff_veq]
-      omega
-    rw [h1]
-    symm
-    rw [Fin.find_eq_none_iff, toOrderHom_comp]
-    exact fun l => hk ((toOrderHom f) l)
+      exact  Nat.ne_of_lt ((toOrderHom f) i).prop
+    · symm
+      rw [Fin.find_eq_none_iff, toOrderHom_comp]
+      exact (fun l => hk ((toOrderHom f) l))
+
+
+
 
 lemma splitValue_of_join {X Y : WithInitial SimplexCategory × WithInitial SimplexCategory}
     (f : X ⟶ Y) : Split.sourceValue (join.map f) ⟨len Y.1, len_of_fst_lt_len_of_join_plus_one Y⟩
@@ -687,22 +663,17 @@ lemma splitValue_of_join {X Y : WithInitial SimplexCategory × WithInitial Simpl
   | some x =>
     rw [Fin.find_eq_some_iff] at hk
     by_cases hX2 : len X.2 = 0
-    · let hkl := hk.left
-      rw [Fin.le_def] at hkl
-      simp at hkl
-      have hx := x.prop
-      simp only [len_of_join] at hx
-      rw [hX2, add_zero] at hx
-      rw [toOrderHom_join_apply_on_lt_fst f x hx] at hkl
-      exact ((Nat.not_le.mpr ((toOrderHom f.1) ⟨x.val, hx⟩).prop) hkl).elim
-    · have hx := @Nat.lt_add_of_pos_right (len X.2) (len X.1) (Nat.pos_of_ne_zero hX2)
-      rw [← len_of_join] at hx
+    · have hx :=  add_zero (len X.1) ▸ (hX2 ▸ (Eq.trans_gt (len_of_join _) x.prop))
+      refine ((Nat.not_le.mpr ((toOrderHom f.1) ⟨x.val, hx⟩).prop) ?_).elim
+      exact (toOrderHom_join_apply_on_lt_fst f x hx) ▸ (Fin.coe_castSucc _) ▸ Fin.le_def.mp hk.left
+    · have hx := Eq.trans_gt (len_of_join _).symm
+       (@Nat.lt_add_of_pos_right _ (len X.1) (Nat.pos_of_ne_zero hX2))
       let X1 : Fin (len (join.obj X)) := ⟨len X.1, hx⟩
       have hkr := hk.right X1
       rw [Fin.le_def, Fin.coe_castSucc, toOrderHom_join_apply_on_fst_le] at hkr
-      have hkl := Fin.le_def.mp hk.left
       by_cases hlt : x < X1
-      · rw [Fin.coe_castSucc, toOrderHom_join_apply_on_lt_fst f x hlt] at hkl
+      · have hkl := Fin.le_def.mp hk.left
+        rw [Fin.coe_castSucc, toOrderHom_join_apply_on_lt_fst f x hlt] at hkl
         exact ((Nat.not_le.mpr ((toOrderHom f.1) ⟨ x,hlt ⟩).prop) hkl).elim
       · change Fin.castSucc x = Fin.castSucc X1
         refine Fin.castSucc_inj.mpr ?_
@@ -767,9 +738,7 @@ lemma map_id {X : WithInitial SimplexCategory} (i : Fin (Nat.succ (len X))) :
   rw [prod_id, Prod.mk.injEq]
   rw [← homMk_comp, ← homMk_comp, ← @homMk_id (obj X i).1, ← @homMk_id (obj X i).2]
   apply And.intro
-  match X with
-  | star => rfl
-  | of x => rfl
+  rfl
   match X with
   | star =>
     simp_all only [obj, len_mk, Fin.val_rev, Fin.coe_fin_one, add_zero, Fin.eta, tsub_zero,
@@ -790,9 +759,7 @@ lemma map_comp {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g : Y ⟶ Z)
     (i : Fin (Nat.succ (len Z)))  : map (f ≫ g) i
     =  (indexEqToIso (sourceValue_of_comp f g i)).inv ≫ map f (sourceValue g i) ≫ map g i := by
   match X, Y, Z, f, g with
-  | star, star, star, f, g => rfl
-  | star, star, of z, f, g => rfl
-  | star, of y, of z, f, g => rfl
+  | star, _, _, f, g => rfl
   | of x, of y, of z, f, g =>
      simp [map, indexEqToIso, ← homMk_comp]
      apply And.intro
@@ -834,9 +801,7 @@ lemma toOrderHom_on_fst_le_eq {X Y: WithInitial SimplexCategory} (f : Y ⟶ X)
   simp [preimageIncl₂]
   change _= ↑((toOrderHom (map f i).2).toFun _) + i.val
   simp only [map, preimageIncl₂, toOrderHom_homMk, OrderHom.toFun_eq_coe, OrderHom.coe_mk]
-  have hx {n m  : ℕ } (f : Fin n → Fin m ) (mo : Monotone f) (a : Fin  n) :
-    (({toFun := f, monotone' := mo } : Fin n →o Fin m) a).val = (f a).val := rfl
-  nth_rewrite 2 [hx]
+  nth_rewrite 2 [OrderHom.coe_mk]
   simp only [obj, Fin.val_rev, Nat.succ_sub_succ_eq_sub, len_mk, OrderHom.toFun_eq_coe]
   rw [tsub_add_cancel_iff_le.mpr]
   repeat apply congrArg
@@ -869,8 +834,7 @@ def splitJoinUnitEquiv (X Y : WithInitial SimplexCategory) (i : Fin (Nat.succ (l
     | Split.hom.split p fs =>
     (Split.joinSplitIso Y p).hom ≫ join.map fs ≫ (Split.joinSplitIso X i).inv
   invFun f := Split.hom.split (Split.sourceValue f i) (Split.map f i)
-  left_inv := by
-    intro s
+  left_inv := fun s => by
     refine Split.hom_ext _ _ _ _ _
       (sourceValue_of_joinSplitIso_comp_join_comp_joinSplitIso i s.1 s.2) ?_
     apply Prod.ext
@@ -895,15 +859,14 @@ def splitJoinUnitEquiv (X Y : WithInitial SimplexCategory) (i : Fin (Nat.succ (l
       simp [Split.obj, len_mk]
       exact (Fin.eq_iff_veq _ _).mp
           (sourceValue_of_joinSplitIso_comp_join_comp_joinSplitIso i s.1 s.2)
-  right_inv := by
-    intro f
+  right_inv := fun f => by
     apply hom_eq_if_toOrderHom_eq
-    rw [toOrderHom_comp, toOrderHom_comp, Split.joinSplitIso, Split.joinSplitIso]
-    rw [toOrderHom_of_lenIso_hom, toOrderHom_of_lenIso_inv]
     apply OrderHom.ext
     funext a
-    rw [Fin.eq_iff_veq]
-    simp
+    rw [toOrderHom_comp, toOrderHom_comp, Split.joinSplitIso, Split.joinSplitIso]
+    rw [toOrderHom_of_lenIso_hom, toOrderHom_of_lenIso_inv, Fin.eq_iff_veq]
+    simp only [OrderHom.comp_coe, OrderHomClass.coe_coe, Function.comp_apply, Fin.castIso_apply,
+      Fin.coe_cast]
     by_cases ha : a.val < len (Split.obj Y (Split.sourceValue f i)).1
     rw [Split.toOrderHom_on_lt_fst_eq f i a ha]
     exact toOrderHom_join_apply_on_lt_fst (Split.map f i)
@@ -921,15 +884,8 @@ lemma splitJoinUnitEquiv_naturality (X : WithInitial SimplexCategory) (i : Fin (
   refine Split.hom_ext _ _ _ _ _ (Split.sourceValue_of_comp f s i).symm ?_
   simp only [Split.splitJoinUnitEquiv,  Equiv.toFun_as_coe, Equiv.coe_fn_symm_mk,
     Function.comp_apply, homMap,  Fin.val_rev, Prod.mk.injEq]
-  rw [Split.map_comp]
-  repeat rw [← Category.assoc]
-  apply congrFun
-  apply congrArg
-  rw [← Category.id_comp (Split.map f (Split.sourceValue s i))]
-  repeat rw [← Category.assoc]
-  apply congrFun
-  apply congrArg
-  rw [Category.comp_id, indexEqToIso_inv_comp_symm_inv]
+  rw [Split.map_comp, ← Category.assoc, ← Category.id_comp (Split.map f (Split.sourceValue s i))]
+  rw [← Category.assoc, ← Category.assoc, Category.comp_id, indexEqToIso_inv_comp_symm_inv]
   rfl
 
 lemma splitJoinUnitEquiv_naturality_equiv (X : WithInitial SimplexCategory)
