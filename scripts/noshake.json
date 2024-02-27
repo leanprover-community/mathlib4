@@ -276,7 +276,7 @@
   ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.CategoryTheory.Reassoc":
   ["Mathlib.CategoryTheory.Functor.Basic"],
-  "Mathlib.Tactic.Basic": ["Std"],
+  "Mathlib.Tactic.Basic": ["Mathlib.Tactic.HashCommandLinter", "Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.Subsemiring.Order":
