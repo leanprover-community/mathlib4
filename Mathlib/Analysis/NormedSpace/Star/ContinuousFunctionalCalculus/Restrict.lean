@@ -60,55 +60,58 @@ variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [Con
 /-- Given a `ContinuousFunctionalCalculus S q`. If we form the predicate `p` for characterized by
 `q a` and the spectrum of `a` restricts to the scalar subring `R` via `f : C(S, R)`, then we can
 get a restricted functional calculus `ContinuousFunctionalCalculus R p`. -/
-@[reducible]
-protected def cfc [CompleteSpace R] (f : C(S, R)) (h_isom : Isometry (algebraMap R S))
+protected theorem cfc [CompleteSpace R] (f : C(S, R)) (h_isom : Isometry (algebraMap R S))
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) (h_cpct : ∀ a, q a → CompactSpace (spectrum S a)) :
     ContinuousFunctionalCalculus R p where
-  toStarAlgHom {a} ha := ((h a).mp ha).2.starAlgHom (cfcSpec ((h a).mp ha).1 (R := S)) f
-  hom_closedEmbedding {a} ha := by
-    apply ClosedEmbedding.comp (cfcSpec_closedEmbedding ((h a).mp ha).1)
-    simp only [RingHom.coe_coe, StarAlgHom.coe_toAlgHom, StarAlgHom.comp_apply,
-      ContinuousMap.compStarAlgHom'_apply, ContinuousMap.compStarAlgHom_apply]
-    have : CompactSpace (spectrum S a) := h_cpct a ((h a).mp ha).1
-    have : CompactSpace (spectrum R a) := ((h a).mp ha).2.compactSpace
-    refine Isometry.closedEmbedding ?_
-    simp only [isometry_iff_dist_eq]
-    refine fun g₁ g₂ ↦ le_antisymm ?_ ?_
-    all_goals refine (ContinuousMap.dist_le dist_nonneg).mpr fun x ↦ ?_
-    · simpa [h_isom.dist_eq] using ContinuousMap.dist_apply_le_dist _
-    · obtain ⟨y, y_mem, hy⟩ : (x : R) ∈ f '' spectrum S a := ((h a).mp ha).2.image.symm ▸ x.2
-      lift y to spectrum S a using y_mem
-      refine le_of_eq_of_le ?_ <| ContinuousMap.dist_apply_le_dist y
-      simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply]
-      rw [h_isom.dist_eq]
-      congr <;> exact Subtype.ext hy.symm
-  hom_id {a} ha := by
-    simp only [SpectrumRestricts.starAlgHom_apply]
-    convert cfcSpec_map_id ((h a).mp ha).1
-    ext x
-    exact ((h a).mp ha).2.rightInvOn x.2
-  hom_map_spectrum {a} ha g := by
-    rw [SpectrumRestricts.starAlgHom_apply]
-    simp only [← @spectrum.preimage_algebraMap (R := R) S, cfcSpec_map_spectrum]
-    ext x
-    constructor
-    · rintro ⟨y, hy⟩
-      have := congr_arg f hy
-      simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply] at this
-      rw [((h a).mp ha).2.left_inv _, ((h a).mp ha).2.left_inv _] at this
-      exact ⟨_, this⟩
-    · rintro ⟨y, rfl⟩
-      rw [Set.mem_preimage]
-      refine' ⟨⟨algebraMap R S y, spectrum.algebraMap_mem S y.prop⟩, _⟩
-      simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply]
-      congr
-      exact Subtype.ext (((h a).mp ha).2.left_inv y)
-  predicate_hom {a} ha g := by
-    rw [h]
-    refine ⟨cfcSpec_predicate _ _, ?_⟩
-    refine { rightInvOn := fun s hs ↦ ?_, left_inv := ((h a).mp ha).2.left_inv }
-    rw [SpectrumRestricts.starAlgHom_apply, cfcSpec_map_spectrum] at hs
-    obtain ⟨r, rfl⟩ := hs
-    simp [((h a).mp ha).2.left_inv _]
+  exists_cfc_of_predicate a ha := by
+    refine ⟨((h a).mp ha).2.starAlgHom (cfcHom ((h a).mp ha).1 (R := S)) f,
+      ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
+    case hom_closedEmbedding =>
+      apply ClosedEmbedding.comp (cfcHom_closedEmbedding ((h a).mp ha).1)
+      simp only [RingHom.coe_coe, StarAlgHom.coe_toAlgHom, StarAlgHom.comp_apply,
+        ContinuousMap.compStarAlgHom'_apply, ContinuousMap.compStarAlgHom_apply]
+      have : CompactSpace (spectrum S a) := h_cpct a ((h a).mp ha).1
+      have : CompactSpace (spectrum R a) := ((h a).mp ha).2.compactSpace
+      refine Isometry.closedEmbedding ?_
+      simp only [isometry_iff_dist_eq]
+      refine fun g₁ g₂ ↦ le_antisymm ?_ ?_
+      all_goals refine (ContinuousMap.dist_le dist_nonneg).mpr fun x ↦ ?_
+      · simpa [h_isom.dist_eq] using ContinuousMap.dist_apply_le_dist _
+      · obtain ⟨y, y_mem, hy⟩ : (x : R) ∈ f '' spectrum S a := ((h a).mp ha).2.image.symm ▸ x.2
+        lift y to spectrum S a using y_mem
+        refine le_of_eq_of_le ?_ <| ContinuousMap.dist_apply_le_dist y
+        simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply]
+        rw [h_isom.dist_eq]
+        congr <;> exact Subtype.ext hy.symm
+    case hom_id =>
+      simp only [SpectrumRestricts.starAlgHom_apply]
+      convert cfcHom_id ((h a).mp ha).1
+      ext x
+      exact ((h a).mp ha).2.rightInvOn x.2
+    case hom_map_spectrum =>
+      intro g
+      rw [SpectrumRestricts.starAlgHom_apply]
+      simp only [← @spectrum.preimage_algebraMap (R := R) S, cfcHom_map_spectrum]
+      ext x
+      constructor
+      · rintro ⟨y, hy⟩
+        have := congr_arg f hy
+        simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply] at this
+        rw [((h a).mp ha).2.left_inv _, ((h a).mp ha).2.left_inv _] at this
+        exact ⟨_, this⟩
+      · rintro ⟨y, rfl⟩
+        rw [Set.mem_preimage]
+        refine' ⟨⟨algebraMap R S y, spectrum.algebraMap_mem S y.prop⟩, _⟩
+        simp only [ContinuousMap.coe_mk, ContinuousMap.comp_apply, StarAlgHom.ofId_apply]
+        congr
+        exact Subtype.ext (((h a).mp ha).2.left_inv y)
+    case predicate_hom =>
+      intro g
+      rw [h]
+      refine ⟨cfcHom_predicate _ _, ?_⟩
+      refine { rightInvOn := fun s hs ↦ ?_, left_inv := ((h a).mp ha).2.left_inv }
+      rw [SpectrumRestricts.starAlgHom_apply, cfcHom_map_spectrum] at hs
+      obtain ⟨r, rfl⟩ := hs
+      simp [((h a).mp ha).2.left_inv _]
 
 end SpectrumRestricts
