@@ -96,7 +96,7 @@ NOTE: The `tfae` block tactic is now preferred in place of `tfae_have` and `tfae
 
 See `tfae`.
 
------
+---
 
 `tfae_have` introduces hypotheses for proving goals of the form `TFAE [P₁, P₂, ...]`. Specifically,
 `tfae_have i <arrow> j := ...` introduces a hypothesis of type `Pᵢ <arrow> Pⱼ` to the local
@@ -151,6 +151,18 @@ syntax (name := tfaeHave) "tfae_have " tfaeHaveDecl : tactic
 syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
 
 /--
+NOTE: The `tfae` block tactic is now preferred in place of `tfae_have` and `tfae_finish`, e.g.
+```lean
+  tfae
+    1 → 2 := /- proof of `P₁ → P₂` -/
+    2 → 3 := /- proof of `P₂ → P₃` -/
+    3 → 1 := /- proof of `P₃ → P₁` -/
+```
+
+See `tfae`.
+
+---
+
 `tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
 of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduced to the local context.
 
