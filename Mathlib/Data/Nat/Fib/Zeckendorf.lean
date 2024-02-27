@@ -100,11 +100,11 @@ lemma greatestFib_ne_zero : greatestFib n ≠ 0 ↔ n ≠ 0 := greatestFib_eq_ze
 
 lemma greatestFib_sub_fib_greatestFib_le_greatestFib (hn : n ≠ 0) :
     greatestFib (n - fib (greatestFib n)) ≤ greatestFib n - 2 := by
-  rw [← lt_succ_iff, greatestFib_lt, tsub_lt_iff_right n.fib_greatestFib_le, Nat.sub_succ,
+  rw [← Nat.lt_succ_iff, greatestFib_lt, tsub_lt_iff_right n.fib_greatestFib_le, Nat.sub_succ,
     succ_pred, ← fib_add_one]
   exact n.lt_fib_greatestFib_add_one
   · simpa
-  · simpa [← succ_le_iff] using hn.bot_lt
+  · simpa [← succ_le_iff, tsub_eq_zero_iff_le] using hn.bot_lt
 
 private lemma zeckendorf_aux (hm : 0 < m) : m - fib (greatestFib m) < m :=
 tsub_lt_self hm <| fib_pos.2 <| findGreatest_pos.2 ⟨1, zero_lt_one, le_add_self, hm⟩
@@ -152,8 +152,8 @@ lemma zeckendorf_sum_fib : ∀ {l}, IsZeckendorfRep l → zeckendorf (l.map fib)
       mem_singleton, or_imp, forall_and, forall_eq, zero_add] at hl
     rw [← chain'_iff_pairwise] at hl
     have ha : 0 < a := hl.1.2.trans_lt' zero_lt_two
-    suffices h : greatestFib (fib a + sum (map fib l)) = a
-    · simp only [map, List.sum_cons, add_pos_iff, fib_pos.2 ha, true_or, zeckendorf_of_pos, h,
+    suffices h : greatestFib (fib a + sum (map fib l)) = a by
+      simp only [map, List.sum_cons, add_pos_iff, fib_pos.2 ha, true_or, zeckendorf_of_pos, h,
       add_tsub_cancel_left, zeckendorf_sum_fib hl.2]
     simp only [add_comm, add_assoc, greatestFib, findGreatest_eq_iff, ne_eq, ha.ne',
       not_false_eq_true, le_add_iff_nonneg_left, _root_.zero_le, forall_true_left, not_le, true_and]

@@ -49,13 +49,13 @@ namespace ComplexMeasure
 /-- The real part of a complex measure is a signed measure. -/
 @[simps! apply]
 def re : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
-  mapRangeₗ Complex.reClm Complex.continuous_re
+  mapRangeₗ Complex.reCLM Complex.continuous_re
 #align measure_theory.complex_measure.re MeasureTheory.ComplexMeasure.re
 
 /-- The imaginary part of a complex measure is a signed measure. -/
 @[simps! apply]
 def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
-  mapRangeₗ Complex.imClm Complex.continuous_im
+  mapRangeₗ Complex.imCLM Complex.continuous_im
 #align measure_theory.complex_measure.im MeasureTheory.ComplexMeasure.im
 
 /-- Given `s` and `t` signed measures, `s + it` is a complex measure-/

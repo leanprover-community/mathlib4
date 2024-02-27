@@ -261,6 +261,10 @@ theorem image_inv : Inv.inv '' s = s⁻¹ :=
 #align set.image_neg Set.image_neg
 
 @[to_additive (attr := simp)]
+theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
+  rw [← image_inv, image_eq_empty]
+
+@[to_additive (attr := simp)]
 noncomputable instance involutiveInv : InvolutiveInv (Set α) where
   inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
@@ -405,7 +409,7 @@ theorem singleton_mul : {a} * t = (a * ·) '' t :=
 #align set.singleton_mul Set.singleton_mul
 #align set.singleton_add Set.singleton_add
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
@@ -671,7 +675,7 @@ theorem singleton_div : {a} / t = (· / ·) a '' t :=
 #align set.singleton_div Set.singleton_div
 #align set.singleton_sub Set.singleton_sub
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
@@ -1291,7 +1295,7 @@ end GroupWithZero
 
 section Mul
 
-variable [Mul α] [Mul β] [MulHomClass F α β] (m : F) {s t : Set α}
+variable [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_mul : m '' (s * t) = m '' s * m '' t :=
@@ -1301,7 +1305,7 @@ theorem image_mul : m '' (s * t) = m '' s * m '' t :=
 
 @[to_additive]
 lemma mul_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s * t ⊆ range m := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a * b, map_mul _ _ _⟩
@@ -1324,7 +1328,7 @@ end Mul
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {s t : Set α}
+variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_div : m '' (s / t) = m '' s / m '' t :=
@@ -1334,7 +1338,7 @@ theorem image_div : m '' (s / t) = m '' s / m '' t :=
 
 @[to_additive]
 lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s / t ⊆ range m := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩;
+  rintro _ ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a / b, map_div _ _ _⟩

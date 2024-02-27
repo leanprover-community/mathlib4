@@ -22,11 +22,11 @@ The construction is done in four steps:
   is integrable and define a map `Set α → (E →L[ℝ] (α →₁[μ] E))` which to a set associates a linear
   map. That linear map sends `x ∈ E` to the conditional expectation of the indicator of the set
   with value `x`.
-* Extend that map to `condexpL1Clm : (α →₁[μ] E) →L[ℝ] (α →₁[μ] E)`. This is done using the same
+* Extend that map to `condexpL1CLM : (α →₁[μ] E) →L[ℝ] (α →₁[μ] E)`. This is done using the same
   construction as the Bochner integral (see the file `MeasureTheory/Integral/SetToL1`).
 * Define the conditional expectation of a function `f : α → E`, which is an integrable function
   `α → E` equal to 0 if `f` is not integrable, and equal to an `m`-measurable representative of
-  `condexpL1Clm` applied to `[f]`, the equivalence class of `f` in `L¹`.
+  `condexpL1CLM` applied to `[f]`, the equivalence class of `f` in `L¹`.
 
 The first step is done in `MeasureTheory.Function.ConditionalExpectation.CondexpL2`, the two
 next steps in `MeasureTheory.Function.ConditionalExpectation.CondexpL1` and the final step is
@@ -45,7 +45,7 @@ The conditional expectation and its properties
   `∫ x in s, condexp m μ f x ∂μ = ∫ x in s, f x ∂μ` for any `m`-measurable set `s`.
 
 While `condexp` is function-valued, we also define `condexpL1` with value in `L1` and a continuous
-linear map `condexpL1Clm` from `L1` to `L1`. `condexp` should be used in most cases.
+linear map `condexpL1CLM` from `L1` to `L1`. `condexp` should be used in most cases.
 
 Uniqueness of the conditional expectation
 
@@ -149,12 +149,12 @@ theorem condexp_ae_eq_condexpL1 (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)
 set_option linter.uppercaseLean3 false in
 #align measure_theory.condexp_ae_eq_condexp_L1 MeasureTheory.condexp_ae_eq_condexpL1
 
-theorem condexp_ae_eq_condexpL1Clm (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
-    μ[f|m] =ᵐ[μ] condexpL1Clm F' hm μ (hf.toL1 f) := by
+theorem condexp_ae_eq_condexpL1CLM (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
+    μ[f|m] =ᵐ[μ] condexpL1CLM F' hm μ (hf.toL1 f) := by
   refine' (condexp_ae_eq_condexpL1 hm f).trans (eventually_of_forall fun x => _)
   rw [condexpL1_eq hf]
 set_option linter.uppercaseLean3 false in
-#align measure_theory.condexp_ae_eq_condexp_L1_clm MeasureTheory.condexp_ae_eq_condexpL1Clm
+#align measure_theory.condexp_ae_eq_condexp_L1_clm MeasureTheory.condexp_ae_eq_condexpL1CLM
 
 theorem condexp_undef (hf : ¬Integrable f μ) : μ[f|m] = 0 := by
   by_cases hm : m ≤ m0
@@ -310,7 +310,7 @@ theorem condexp_smul (c : 𝕜) (f : α → F') : μ[c • f|m] =ᵐ[μ] c • �
   rw [condexpL1_smul c f]
   refine' (@condexp_ae_eq_condexpL1 _ _ _ _ _ m _ _ hm _ f).mp _
   refine' (coeFn_smul c (condexpL1 hm μ f)).mono fun x hx1 hx2 => _
-  rw [hx1, Pi.smul_apply, Pi.smul_apply, hx2]
+  simp only [hx1, hx2, Pi.smul_apply]
 #align measure_theory.condexp_smul MeasureTheory.condexp_smul
 
 theorem condexp_neg (f : α → F') : μ[-f|m] =ᵐ[μ] -μ[f|m] := by

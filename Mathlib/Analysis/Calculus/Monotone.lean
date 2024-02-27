@@ -168,12 +168,12 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
         norm_num; nlinarith
     -- apply the sandwiching argument, with the helper function and `g`
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' this hx.2
-    · filter_upwards [self_mem_nhdsWithin] with y (hy : x < y)
-      rw [← sub_pos] at hy
+    · filter_upwards [self_mem_nhdsWithin] with y hy
+      rw [mem_Ioi, ← sub_pos] at hy
       gcongr
       exact hf.rightLim_le (by nlinarith)
-    · filter_upwards [self_mem_nhdsWithin] with y (hy : x < y)
-      rw [← sub_pos] at hy
+    · filter_upwards [self_mem_nhdsWithin] with y hy
+      rw [mem_Ioi, ← sub_pos] at hy
       gcongr
       exact hf.le_rightLim le_rfl
   -- prove differentiability on the left, by sandwiching with values of `g`
@@ -191,19 +191,22 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
       · have : Ioo (x - 1) x ∈ 𝓝[<] x := by
           apply Ioo_mem_nhdsWithin_Iio; exact ⟨by linarith, le_refl _⟩
         filter_upwards [this]
-        rintro y ⟨hy : x - 1 < y, h'y : y < x⟩
+        rintro y hy
+        rw [mem_Ioo] at hy
         rw [mem_Iio]
         norm_num; nlinarith
     -- apply the sandwiching argument, with `g` and the helper function
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' hx.1 this
     · filter_upwards [self_mem_nhdsWithin]
-      rintro y (hy : y < x)
-      apply div_le_div_of_nonpos_of_le (sub_neg.2 hy).le
+      rintro y hy
+      rw [mem_Iio, ← sub_neg] at hy
+      apply div_le_div_of_nonpos_of_le hy.le
       exact (sub_le_sub_iff_right _).2 (hf.le_rightLim (le_refl _))
     · filter_upwards [self_mem_nhdsWithin]
-      rintro y (hy : y < x)
-      have : ↑0 < (y - x) ^ 2 := sq_pos_of_neg (sub_neg.2 hy)
-      apply div_le_div_of_nonpos_of_le (sub_neg.2 hy).le
+      rintro y hy
+      rw [mem_Iio, ← sub_neg] at hy
+      have : 0 < (y - x) ^ 2 := sq_pos_of_neg hy
+      apply div_le_div_of_nonpos_of_le hy.le
       exact (sub_le_sub_iff_right _).2 (hf.rightLim_le (by norm_num; linarith))
   -- conclude global differentiability
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, (nhds_left'_sup_nhds_right' x).symm,

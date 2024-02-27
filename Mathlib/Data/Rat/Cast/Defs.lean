@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.Field
 import Mathlib.Data.Rat.Lemmas
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
@@ -182,24 +182,27 @@ end Rat
 
 open Rat
 
+variable [FunLike F α β]
+
 @[simp]
 theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
     f q = q := by rw [cast_def, map_div₀, map_intCast, map_natCast, cast_def]
 #align map_rat_cast map_ratCast
 
 @[simp]
-theorem eq_ratCast {k} [DivisionRing k] [RingHomClass F ℚ k] (f : F) (r : ℚ) : f r = r := by
+theorem eq_ratCast {k} [DivisionRing k] [FunLike F ℚ k] [RingHomClass F ℚ k] (f : F) (r : ℚ) :
+    f r = r := by
   rw [← map_ratCast f, Rat.cast_id]
 #align eq_rat_cast eq_ratCast
 
 namespace MonoidWithZeroHom
 
-variable {M₀ : Type*} [MonoidWithZero M₀] [MonoidWithZeroHomClass F ℚ M₀] {f g : F}
-
+variable {M₀ : Type*} [MonoidWithZero M₀] [FunLike F ℚ M₀] [MonoidWithZeroHomClass F ℚ M₀]
+variable {f g : F}
 
 /-- If `f` and `g` agree on the integers then they are equal `φ`. -/
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
-  (FunLike.ext f g) fun r => by
+  (DFunLike.ext f g) fun r => by
     rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_ofNat,
       eq_on_inv₀ f g]
     apply h
@@ -211,14 +214,14 @@ See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
 theorem ext_rat {f g : ℚ →*₀ M₀}
     (h : f.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) = g.comp (Int.castRingHom ℚ)) : f = g :=
-  ext_rat' <| FunLike.congr_fun h
+  ext_rat' <| DFunLike.congr_fun h
 #align monoid_with_zero_hom.ext_rat MonoidWithZeroHom.ext_rat
 
 /-- Positive integer values of a morphism `φ` and its value on `-1` completely determine `φ`. -/
 theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
     (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   ext_rat' <|
-    FunLike.congr_fun <|
+    DFunLike.congr_fun <|
       show
         (f : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) =
           (g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)
@@ -229,7 +232,8 @@ end MonoidWithZeroHom
 
 /-- Any two ring homomorphisms from `ℚ` to a semiring are equal. If the codomain is a division ring,
 then this lemma follows from `eq_ratCast`. -/
-theorem RingHom.ext_rat {R : Type*} [Semiring R] [RingHomClass F ℚ R] (f g : F) : f = g :=
+theorem RingHom.ext_rat {R : Type*} [Semiring R] [FunLike F ℚ R] [RingHomClass F ℚ R] (f g : F) :
+    f = g :=
   MonoidWithZeroHom.ext_rat' <|
     RingHom.congr_fun <|
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))

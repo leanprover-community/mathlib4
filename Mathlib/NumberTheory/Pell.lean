@@ -271,7 +271,7 @@ theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a *
   · positivity
   · rw [(eq_zero_of_d_neg h a).resolve_left ha.ne', (eq_zero_of_d_neg h b).resolve_left hb.ne']
     -- Porting note: was
-    -- rw [zero_pow two_pos, zero_add, zero_mul, zero_add]
+    -- rw [zero_pow two_ne_zero, zero_add, zero_mul, zero_add]
     -- exact one_pos
     -- but this relied on the exact output of `ring_nf`
     simp
@@ -555,7 +555,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
   rcases le_or_lt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
-    have hm : n = -m - 1 := by simp only [neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
+    have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
     exact H _ (by linarith [hn])
 #align pell.is_fundamental.y_strict_mono Pell.IsFundamental.y_strictMono

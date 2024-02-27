@@ -3,8 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.GroupTheory.Congruence
+import Mathlib.LinearAlgebra.Basic
 import Mathlib.Tactic.SuppressCompilation
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
@@ -81,9 +82,9 @@ def TensorProduct : Type _ :=
 variable {R}
 
 set_option quotPrecheck false in
-scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
+@[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
-scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
+@[inherit_doc] scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
 
 namespace TensorProduct
 
@@ -123,8 +124,10 @@ def tmul (m : M) (n : N) : M ⊗[R] N :=
 
 variable {R}
 
+/-- The canonical function `M → N → M ⊗ N`. -/
 infixl:100 " ⊗ₜ " => tmul _
 
+/-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- porting note: make the arguments of induction_on explicit
@@ -805,7 +808,7 @@ lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
 
 lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M):
     map f g (TensorProduct.comm R N M x) = TensorProduct.comm R Q P (map g f x) :=
-  FunLike.congr_fun (map_comp_comm_eq _ _) _
+  DFunLike.congr_fun (map_comp_comm_eq _ _) _
 
 /-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `(M ⊗ N) ⊗ P`
 with `M ⊗ (N ⊗ P)` and `(Q ⊗ S) ⊗ T` with `Q ⊗ (S ⊗ T)`, then this lemma states that
@@ -818,7 +821,7 @@ lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →�
 lemma map_map_assoc (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : (M ⊗[R] N) ⊗[R] P) :
     map f (map g h) (TensorProduct.assoc R M N P x) =
       TensorProduct.assoc R Q S T (map (map f g) h x) :=
-  FunLike.congr_fun (map_map_comp_assoc_eq _ _ _) _
+  DFunLike.congr_fun (map_map_comp_assoc_eq _ _ _) _
 
 /-- Given linear maps `f : M → Q`, `g : N → S`, and `h : P → T`, if we identify `M ⊗ (N ⊗ P)`
 with `(M ⊗ N) ⊗ P` and `Q ⊗ (S ⊗ T)` with `(Q ⊗ S) ⊗ T`, then this lemma states that
@@ -831,7 +834,7 @@ lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P 
 lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] (N ⊗[R] P)) :
     map (map f g) h ((TensorProduct.assoc R M N P).symm x) =
       (TensorProduct.assoc R Q S T).symm (map f (map g h) x) :=
-  FunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
+  DFunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
 
 theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
@@ -1334,8 +1337,8 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
     (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [add_left_neg, zero_tmul])
     fun x y hx hy => by
-    suffices : -x + x + (-y + y) = 0
-    · rw [← this]
+    suffices -x + x + (-y + y) = 0 by
+      rw [← this]
       unfold Neg.neg neg
       simp only
       rw [map_add]

@@ -202,30 +202,22 @@ section PartialOrder
 
 variable [Preorder α] [PartialOrder β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
 
-theorem l_u_l_eq_l (a : α) : l (u (l a)) = l a :=
-  (gc.l_u_le _).antisymm (gc.monotone_l (gc.le_u_l _))
+theorem l_u_l_eq_l (a : α) : l (u (l a)) = l a := gc.dual.u_l_u_eq_u _
 #align galois_connection.l_u_l_eq_l GaloisConnection.l_u_l_eq_l
 
-theorem l_u_l_eq_l' : l ∘ u ∘ l = l :=
-  funext gc.l_u_l_eq_l
+theorem l_u_l_eq_l' : l ∘ u ∘ l = l := funext gc.l_u_l_eq_l
 #align galois_connection.l_u_l_eq_l' GaloisConnection.l_u_l_eq_l'
 
 theorem l_unique {l' : α → β} {u' : β → α} (gc' : GaloisConnection l' u') (hu : ∀ b, u b = u' b)
     {a : α} : l a = l' a :=
-  le_antisymm (gc.l_le <| (hu (l' a)).symm ▸ gc'.le_u_l _) (gc'.l_le <| hu (l a) ▸ gc.le_u_l _)
+  gc.dual.u_unique gc'.dual hu
 #align galois_connection.l_unique GaloisConnection.l_unique
 
 /-- If there exists an `a` such that `b = l a`, then `a = u b` is one such element. -/
-theorem exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) :=
-  ⟨fun ⟨_, hS⟩ => hS.symm ▸ (gc.l_u_l_eq_l _).symm, fun HI => ⟨_, HI⟩⟩
+theorem exists_eq_l (b : β) : (∃ a : α, b = l a) ↔ b = l (u b) := gc.dual.exists_eq_u _
 #align galois_connection.exists_eq_l GaloisConnection.exists_eq_l
 
-theorem l_eq {x : α} {z : β} : l x = z ↔ ∀ y, z ≤ y ↔ x ≤ u y := by
-  constructor
-  · rintro rfl y
-    exact gc x y
-  · intro H
-    exact ((gc _ _).mpr <| (H z).mp le_rfl).antisymm ((H <| l x).mpr (gc.le_u_l x))
+theorem l_eq {x : α} {z : β} : l x = z ↔ ∀ y, z ≤ y ↔ x ≤ u y := gc.dual.u_eq
 #align galois_connection.l_eq GaloisConnection.l_eq
 
 end PartialOrder
@@ -272,8 +264,7 @@ section SemilatticeInf
 
 variable [SemilatticeInf α] [SemilatticeInf β] {l : α → β} {u : β → α} (gc : GaloisConnection l u)
 
-theorem u_inf : u (b₁ ⊓ b₂) = u b₁ ⊓ u b₂ :=
-  gc.dual.l_sup
+theorem u_inf : u (b₁ ⊓ b₂) = u b₁ ⊓ u b₂ := gc.dual.l_sup
 #align galois_connection.u_inf GaloisConnection.u_inf
 
 end SemilatticeInf
@@ -329,7 +320,7 @@ protected theorem id [pα : Preorder α] : @GaloisConnection α α pα pα id id
 
 protected theorem compose [Preorder α] [Preorder β] [Preorder γ] {l1 : α → β} {u1 : β → α}
     {l2 : β → γ} {u2 : γ → β} (gc1 : GaloisConnection l1 u1) (gc2 : GaloisConnection l2 u2) :
-    GaloisConnection (l2 ∘ l1) (u1 ∘ u2) := by intro a b; dsimp; rw [gc2, gc1]
+    GaloisConnection (l2 ∘ l1) (u1 ∘ u2) := fun _ _ ↦ (gc2 _ _).trans (gc1 _ _)
 #align galois_connection.compose GaloisConnection.compose
 
 protected theorem dfun {ι : Type u} {α : ι → Type v} {β : ι → Type w} [∀ i, Preorder (α i)]
@@ -341,8 +332,7 @@ protected theorem dfun {ι : Type u} {α : ι → Type v} {β : ι → Type w} [
 
 protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} {u : β → α}
     (gc : GaloisConnection l u) :
-    GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := by
-  intro a b
+    GaloisConnection (compl ∘ u ∘ compl) (compl ∘ l ∘ compl) := fun a b ↦ by
   dsimp
   rw [le_compl_iff_le_compl, gc, compl_le_iff_compl_le]
 

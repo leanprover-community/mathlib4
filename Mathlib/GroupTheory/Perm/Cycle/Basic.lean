@@ -544,7 +544,7 @@ theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ f.support
           card_support_swap_mul hx.1
         rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul hx.1 h1).sign, ← h]
         simp only [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
-termination_by _ => f.support.card
+termination_by f.support.card
 #align equiv.perm.is_cycle.sign Equiv.Perm.IsCycle.sign
 
 theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^ n).support) :
@@ -678,7 +678,7 @@ theorem IsCycle.pow_eq_one_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : �
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} {x : β}
     (hx : f x ≠ x) : f ^ n = 1 ↔ (f ^ n) x = x :=
-  ⟨fun h => FunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
+  ⟨fun h => DFunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
 #align equiv.perm.is_cycle.pow_eq_one_iff' Equiv.Perm.IsCycle.pow_eq_one_iff'
 
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
@@ -1218,12 +1218,10 @@ end CycleOf
 ### `cycleFactors`
 -/
 
-variable [DecidableEq α]
-
 open scoped List in
 /-- Given a list `l : List α` and a permutation `f : perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
-def cycleFactorsAux [Fintype α] :
+def cycleFactorsAux [DecidableEq α] [Fintype α] :
     ∀ (l : List α) (f : Perm α),
       (∀ {x}, f x ≠ x → x ∈ l) →
         { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } := by
@@ -1325,7 +1323,7 @@ def cycleFactors [Fintype α] [LinearOrder α] (f : Perm α) :
 
 /-- Factors a permutation `f` into a list of disjoint cyclic permutations that multiply to `f`,
   without a linear order. -/
-def truncCycleFactors [Fintype α] (f : Perm α) :
+def truncCycleFactors [DecidableEq α] [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
   Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))
     (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
@@ -1333,7 +1331,7 @@ def truncCycleFactors [Fintype α] (f : Perm α) :
 
 section CycleFactorsFinset
 
-variable [Fintype α] (f : Perm α)
+variable [DecidableEq α] [Fintype α] (f : Perm α)
 
 /-- Factors a permutation `f` into a `Finset` of disjoint cyclic permutations that multiply to `f`.
 -/
@@ -1547,7 +1545,7 @@ theorem cycle_induction_on [Finite β] (P : Perm β → Prop) (σ : Perm β) (ba
         (ih (fun τ hτ => h1 τ (List.mem_cons_of_mem σ hτ)) h2.of_cons)
 #align equiv.perm.cycle_induction_on Equiv.Perm.cycle_induction_on
 
-theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [Fintype α] {f g : Perm α}
+theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f g : Perm α}
     (h : f ∈ cycleFactorsFinset g) : cycleFactorsFinset (g * f⁻¹) = cycleFactorsFinset g \ {f} := by
   revert f
   refine'
@@ -1607,7 +1605,7 @@ theorem closure_isCycle : closure { σ : Perm β | IsCycle σ } = ⊤ := by
       top_le_iff.mp (le_trans (ge_of_eq closure_isSwap) (closure_mono fun _ => IsSwap.isCycle))
 #align equiv.perm.closure_is_cycle Equiv.Perm.closure_isCycle
 
-variable [Fintype α]
+variable [DecidableEq α] [Fintype α]
 
 theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.support = ⊤) (x : α) :
     closure ({σ, swap x (σ x)} : Set (Perm α)) = ⊤ := by
@@ -1692,15 +1690,14 @@ end Generation
 
 section
 
-variable [Fintype α] {σ τ : Perm α}
-
 noncomputable section
+
+variable [DecidableEq α] [Fintype α] {σ τ : Perm α}
 
 theorem isConj_of_support_equiv
     (f : { x // x ∈ (σ.support : Set α) } ≃ { x // x ∈ (τ.support : Set α) })
-    (hf :
-      ∀ (x : α) (hx : x ∈ (σ.support : Set α)),
-        (f ⟨σ x, apply_mem_support.2 hx⟩ : α) = τ ↑(f ⟨x, hx⟩)) :
+    (hf : ∀ (x : α) (hx : x ∈ (σ.support : Set α)),
+      (f ⟨σ x, apply_mem_support.2 hx⟩ : α) = τ ↑(f ⟨x, hx⟩)) :
     IsConj σ τ := by
   refine' isConj_iff.2 ⟨Equiv.extendSubtype f, _⟩
   rw [mul_inv_eq_iff_eq_mul]
@@ -1762,7 +1759,7 @@ theorem card_support_conj : (σ * τ * σ⁻¹).support.card = τ.support.card :
 
 end
 
-theorem Disjoint.isConj_mul {α : Type*} [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
+theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
     cases nonempty_fintype α
@@ -1793,9 +1790,9 @@ theorem Disjoint.isConj_mul {α : Type*} [Finite α] {σ τ π ρ : Perm α} (hc
           · rw [mul_apply, mul_apply] at h
             rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
+        · rwa [Subtype.coe_mk, mem_coe, mem_support]
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
             apply_mem_support, mem_support]
-        · rwa [Subtype.coe_mk, mem_coe, mem_support]
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
         rw [Set.union_apply_right hd1''.le_bot _, Set.union_apply_right hd1''.le_bot _]
         simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
@@ -1804,9 +1801,9 @@ theorem Disjoint.isConj_mul {α : Type*} [Finite α] {σ τ π ρ : Perm α} (hc
           · rw [mul_apply, mul_apply] at h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
+        · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
-        · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
 #align equiv.perm.disjoint.is_conj_mul Equiv.Perm.Disjoint.isConj_mul
 
 section FixedPoints
@@ -1816,7 +1813,7 @@ section FixedPoints
 -/
 
 
-theorem fixed_point_card_lt_of_ne_one [Fintype α] {σ : Perm α} (h : σ ≠ 1) :
+theorem fixed_point_card_lt_of_ne_one [DecidableEq α] [Fintype α] {σ : Perm α} (h : σ ≠ 1) :
     (filter (fun x => σ x = x) univ).card < Fintype.card α - 1 := by
   rw [lt_tsub_iff_left, ← lt_tsub_iff_right, ← Finset.card_compl, Finset.compl_filter]
   exact one_lt_card_support_of_ne_one h
@@ -1866,9 +1863,8 @@ variable [DecidableEq α] [Fintype α]
 
 theorem _root_.Finset.exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
-  refine'
-    ⟨s.toList.formPerm, _, fun x hx => by
-      simpa using List.mem_of_formPerm_apply_ne _ _ (Perm.mem_support.1 hx)⟩
+  refine ⟨s.toList.formPerm, ?_, fun x hx => by
+    simpa using List.mem_of_formPerm_apply_ne _ _ (Perm.mem_support.1 hx)⟩
   convert s.nodup_toList.isCycleOn_formPerm
   simp
 #align finset.exists_cycle_on Finset.exists_cycleOn
@@ -1882,18 +1878,16 @@ variable {f : Perm α} {s : Set α}
 theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
     ∃ f : Perm α, f.IsCycleOn s ∧ { x | f x ≠ x } ⊆ s := by
   classical
-    obtain hs' | hs' := s.finite_or_infinite
-    · refine'
-        ⟨hs'.toFinset.toList.formPerm, _, fun x hx => by
-          simpa using List.mem_of_formPerm_apply_ne _ _ hx⟩
-      convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
-      simp
-    haveI := hs.to_subtype
+  obtain hs' | hs' := s.finite_or_infinite
+  · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
+      simpa using List.mem_of_formPerm_apply_ne _ _ hx⟩
+    convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
+    simp
+  · haveI := hs.to_subtype
     haveI := hs'.to_subtype
     obtain ⟨f⟩ : Nonempty (ℤ ≃ s) := inferInstance
-    refine'
-      ⟨(Equiv.addRight 1).extendDomain f, _, fun x hx =>
-        of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
+    refine ⟨(Equiv.addRight 1).extendDomain f, ?_, fun x hx =>
+      of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
     convert Int.addRight_one_isCycle.isCycleOn.extendDomain f
     rw [Set.image_comp, Equiv.image_eq_preimage]
     ext

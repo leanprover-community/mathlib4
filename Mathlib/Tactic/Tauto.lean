@@ -3,10 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
-
-import Lean
 import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
 import Std.Tactic.SolveByElim
 import Mathlib.Lean.Elab.Tactic.Basic
@@ -40,7 +37,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   | ~q(¬ (($a : Prop) ∧ $b)) => do
     let h' : Q(¬($a ∧ $b)) := h.toExpr
     let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-    replace q(Decidable.not_and'.mp $h')
+    replace q(Decidable.not_and_iff_or_not_not'.mp $h')
   | ~q(¬ (($a : Prop) ∨ $b)) => do
     let h' : Q(¬($a ∨ $b)) := h.toExpr
     replace q(not_or.mp $h')
@@ -55,7 +52,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   | ~q(¬ ((($a : Prop)) → $b)) => do
     let h' : Q(¬($a → $b)) := h.toExpr
     let _inst ← synthInstanceQ (q(Decidable $a) : Q(Type))
-    replace q(Decidable.not_imp.mp $h')
+    replace q(Decidable.not_imp_iff_and_not.mp $h')
   | ~q(¬ (($a : Prop) ↔ $b)) => do
     let h' : Q(¬($a ↔ $b)) := h.toExpr
     let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))

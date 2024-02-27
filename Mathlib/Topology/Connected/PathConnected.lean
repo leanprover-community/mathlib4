@@ -70,7 +70,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι
 /-! ### Paths -/
 
 /-- Continuous path connecting two points `x` and `y` in a topological space -/
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 structure Path (x y : X) extends C(I, X) where
   /-- The start point of a `Path`. -/
   source' : toFun 0 = x
@@ -78,14 +78,16 @@ structure Path (x y : X) extends C(I, X) where
   target' : toFun 1 = y
 #align path Path
 
--- porting note: added this instance so that we can use `FunLike.coe` for `CoeFun`
--- this also fixed very strange `simp` timeout issues
-instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
+instance Path.funLike : FunLike (Path x y) I X where
   coe := fun γ ↦ ⇑γ.toContinuousMap
   coe_injective' := fun γ₁ γ₂ h => by
-    simp only [FunLike.coe_fn_eq] at h
+    simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
-  map_continuous := fun γ => by continuity
+
+-- Porting note (#10754): added this instance so that we can use `FunLike.coe` for `CoeFun`
+-- this also fixed very strange `simp` timeout issues
+instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
+  map_continuous := fun γ => show Continuous γ.toContinuousMap by continuity
 
 -- porting note: not necessary in light of the instance above
 /-
@@ -190,7 +192,7 @@ theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := by
 @[simp]
 theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
   ext x
-  simp only [mem_range, Path.symm, FunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
+  simp only [mem_range, Path.symm, DFunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
     Subtype.coe_mk]
   constructor <;> rintro ⟨y, hy, hxy⟩ <;> refine' ⟨1 - y, mem_iff_one_sub_mem.mp hy, _⟩ <;>
     convert hxy
@@ -202,7 +204,7 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
 
 open ContinuousMap
 
-/- porting note: because of the new `FunLike` instance, we already have a coercion to `C(I, X)`
+/- porting note: because of the `DFunLike` instance, we already have a coercion to `C(I, X)`
 so we avoid adding another.
 --instance : Coe (Path x y) C(I, X) :=
   --⟨fun γ => γ.1⟩
@@ -646,7 +648,7 @@ theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
   rw [← γ.extend_range]
   simp only [range_subset_iff, SetCoe.exists, SetCoe.forall]
   intro x _hx
-  simp only [FunLike.coe, Path.truncate, mem_range_self]
+  simp only [DFunLike.coe, Path.truncate, mem_range_self]
 #align path.truncate_range Path.truncate_range
 
 /-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we
@@ -671,7 +673,7 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
     γ.truncate t t = (Path.refl <| γ.extend t).cast (by rw [min_self]) rfl := by
   ext x
   rw [cast_coe]
-  simp only [truncate, FunLike.coe, refl, min_def, max_def]
+  simp only [truncate, DFunLike.coe, refl, min_def, max_def]
   split_ifs with h₁ h₂ <;> congr
 #align path.truncate_self Path.truncate_self
 
@@ -1054,7 +1056,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
   obtain ⟨γ, hγ⟩ : ∃ γ : Path (p' 0) (p' n), (∀ i ≤ n, p' i ∈ range γ) ∧ range γ ⊆ s := by
     have hp' : ∀ i ≤ n, p' i ∈ s := by
       intro i hi
-      simp [Nat.lt_succ_of_le hi, hp]
+      simp [p', Nat.lt_succ_of_le hi, hp]
     clear_value p'
     clear hp p
     induction' n with n hn
@@ -1089,7 +1091,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
         exact hγ₁
   have hpp' : ∀ k < n + 1, p k = p' k := by
     intro k hk
-    simp only [hk, dif_pos]
+    simp only [p', hk, dif_pos]
     congr
     ext
     rw [Fin.val_cast_of_lt hk]
@@ -1276,17 +1278,17 @@ theorem pathConnectedSpace_iff_connectedSpace [LocPathConnectedSpace X] :
     rw [pathConnectedSpace_iff_eq]
     use Classical.arbitrary X
     refine' IsClopen.eq_univ ⟨_, _⟩ (by simp)
+    · rw [isClosed_iff_nhds]
+      intro y H
+      rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
+      rcases H U U_in with ⟨z, hz, hz'⟩
+      exact (hU.joinedIn z hz y <| mem_of_mem_nhds U_in).joined.mem_pathComponent hz'
     · rw [isOpen_iff_mem_nhds]
       intro y y_in
       rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
       apply mem_of_superset U_in
       rw [← pathComponent_congr y_in]
       exact hU.subset_pathComponent (mem_of_mem_nhds U_in)
-    · rw [isClosed_iff_nhds]
-      intro y H
-      rcases (path_connected_basis y).ex_mem with ⟨U, ⟨U_in, hU⟩⟩
-      rcases H U U_in with ⟨z, hz, hz'⟩
-      exact (hU.joinedIn z hz y <| mem_of_mem_nhds U_in).joined.mem_pathComponent hz'
 #align path_connected_space_iff_connected_space pathConnectedSpace_iff_connectedSpace
 
 theorem pathConnected_subset_basis [LocPathConnectedSpace X] {U : Set X} (h : IsOpen U)

@@ -5,6 +5,7 @@ Authors: Kenny Lau, Patrick Massot
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Algebra.Ring.Fin
 
 #align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 
@@ -53,8 +54,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
 
 /-- The induced map from the quotient by the kernel is injective. -/
 theorem kerLift_injective [Semiring S] (f : R →+* S) : Function.Injective (kerLift f) :=
-  lift_injective_of_ker_le_ideal (ker f)
-    (fun a => by simp only [mem_ker, imp_self]) (Eq.le rfl)
+  lift_injective_of_ker_le_ideal (ker f) (fun a => by simp only [mem_ker, imp_self]) le_rfl
 #align ring_hom.ker_lift_injective RingHom.kerLift_injective
 
 
@@ -164,7 +164,7 @@ lemma ker_Pi_Quotient_mk {ι : Type*} (I : ι → Ideal R) :
 theorem bot_quotient_isMaximal_iff (I : Ideal R) : (⊥ : Ideal (R ⧸ I)).IsMaximal ↔ I.IsMaximal :=
   ⟨fun hI =>
     @mk_ker _ _ I ▸
-      @comap_isMaximal_of_surjective _ _ _ _ _ _ (Quotient.mk I) Quotient.mk_surjective ⊥ hI,
+      comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective (K := ⊥) (H := hI),
     fun hI => by
     skip
     letI := Quotient.field I
@@ -207,9 +207,10 @@ rfl
 lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) : Injective (quotientInfToPiQuotient I) := by
   rw [quotientInfToPiQuotient, injective_lift_iff, ker_Pi_Quotient_mk]
 
-lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
+lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
     (hI : Pairwise fun i j => IsCoprime (I i) (I j)) : Surjective (quotientInfToPiQuotient I) := by
   classical
+  cases nonempty_fintype ι
   intro g
   choose f hf using fun i ↦ mk_surjective (g i)
   have key : ∀ i, ∃ e : R, mk (I i) e = 1 ∧ ∀ j, j ≠ i → mk (I j) e = 0 := by
@@ -221,7 +222,6 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
     replace he : ∀ j, j ≠ i → e ∈ I j := by simpa using he
     refine ⟨e, ?_, ?_⟩
     · simp [eq_sub_of_add_eq' hue, map_sub, eq_zero_iff_mem.mpr hu]
-      rfl
     · exact fun j hj ↦ eq_zero_iff_mem.mpr (he j hj)
   choose e he using key
   use mk _ (∑ i, f i*e i)
@@ -232,7 +232,7 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
     simp [(he j).2 i hj.symm]
 
 /-- Chinese Remainder Theorem. Eisenbud Ex.2.6. Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
-noncomputable def quotientInfRingEquivPiQuotient [Fintype ι] (f : ι → Ideal R)
+noncomputable def quotientInfRingEquivPiQuotient [Finite ι] (f : ι → Ideal R)
     (hf : Pairwise fun i j => IsCoprime (f i) (f j)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
@@ -247,7 +247,7 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopr
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption
     · exact coprime.symm
-  (Ideal.quotEquivOfEq (by simp [iInf, inf_comm])).trans <|
+  (Ideal.quotEquivOfEq (by simp [f, iInf, inf_comm])).trans <|
             (Ideal.quotientInfRingEquivPiQuotient f hf).trans <| RingEquiv.piFinTwo fun i => R ⧸ f i
 #align ideal.quotient_inf_equiv_quotient_prod Ideal.quotientInfEquivQuotientProd
 
@@ -292,7 +292,7 @@ variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
 instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
-  { toRingHom :=  (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
+  { toRingHom := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
     smul_def' := fun _ x =>
       Quotient.inductionOn' x fun _ =>
         ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
@@ -497,12 +497,10 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J �
 def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
     R ⧸ I ≃+* S ⧸ J :=
   {
-    quotientMap J (↑f)
-      (by
-        rw [hIJ]
-        exact
-          @le_comap_map _ S _ _ _ _ _
-            _) with
+    quotientMap J (↑f) (by
+      rw [hIJ]
+      exact le_comap_map)
+  with
     invFun :=
       quotientMap I (↑f.symm)
         (by
@@ -600,7 +598,8 @@ def quotientEquivAlg (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' := fun r => by
       -- Porting note: Needed to add the below lemma because Equivs coerce weird
-      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = FunLike.coe e := fun _ ↦ rfl
+      have : ∀ (e : RingEquiv (A ⧸ I) (B ⧸ J)), Equiv.toFun e.toEquiv = DFunLike.coe e :=
+        fun _ ↦ rfl
       rw [this]
       simp only [quotientEquiv_apply, RingHom.toFun_eq_coe, quotientMap_algebraMap,
       RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes, Quotient.mk_algebraMap]}

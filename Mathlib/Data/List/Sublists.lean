@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Range
 
 #align_import data.list.sublists from "leanprover-community/mathlib"@"ccad6d5093bd2f5c6ca621fc74674cce51355af6"
 
@@ -164,7 +165,7 @@ theorem sublists_append (l₁ l₂ : List α) :
     simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
 
---Portin note: New theorem
+--Porting note: New theorem
 theorem sublists_cons (a : α) (l : List α) :
     sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
   show sublists ([a] ++ l) = _ by

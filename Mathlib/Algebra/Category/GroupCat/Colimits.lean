@@ -129,7 +129,7 @@ theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
 
 @[simp]
 theorem quot_neg (x) :
-    -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
+    -- Porting note: force Lean to treat `ColimitType F` no as `Quot _`
     (by exact Quot.mk Setoid.r (neg x) : ColimitType.{w} F) =
       -(by exact Quot.mk Setoid.r x) :=
   rfl
@@ -138,7 +138,7 @@ theorem quot_neg (x) :
 @[simp]
 theorem quot_add (x y) :
     (by exact Quot.mk Setoid.r (add x y) : ColimitType.{w} F) =
-      -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
+      -- Porting note: force Lean to treat `ColimitType F` no as `Quot _`
       (by exact Quot.mk Setoid.r x) + (by exact Quot.mk Setoid.r y) :=
   rfl
 #align AddCommGroup.colimits.quot_add AddCommGroupCat.Colimits.quot_add
@@ -202,7 +202,7 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
     | symm _ _ _ r_ih => exact r_ih.symm
     | trans _ _ _ _ _ r_ih_h r_ih_k => exact Eq.trans r_ih_h r_ih_k
     | map j j' f x => simpa only [descFunLift, Functor.const_obj_obj] using
-      FunLike.congr_fun (s.ι.naturality f) x
+      DFunLike.congr_fun (s.ι.naturality f) x
     | zero => simp
     | neg => simp
     | add => simp
@@ -220,17 +220,17 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
 def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
   toFun := descFun F s
   map_zero' := rfl
-  -- Porting note : in `mathlib3`, nothing needs to be done after `induction`
+  -- Porting note: in `mathlib3`, nothing needs to be done after `induction`
   map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp; rw [← quot_add F]; rfl
 #align AddCommGroup.colimits.desc_morphism AddCommGroupCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
   desc s := descMorphism F s
-  uniq s m w := FunLike.ext _ _ fun x => Quot.inductionOn x fun x => by
+  uniq s m w := DFunLike.ext _ _ fun x => Quot.inductionOn x fun x => by
     change (m : ColimitType F →+ s.pt) _ = (descMorphism F s : ColimitType F →+ s.pt) _
     induction x using Prequotient.recOn with
-    | of j x => exact FunLike.congr_fun (w j) x
+    | of j x => exact DFunLike.congr_fun (w j) x
     | zero =>
       dsimp only [quot_zero]
       rw [map_zero, map_zero]
