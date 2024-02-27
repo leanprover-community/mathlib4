@@ -115,18 +115,19 @@ theorem spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
     g t = t ^ (χ n g).val :=
   spec' g (SetLike.coe_mem ht.toRootsOfUnity)
 
--- this is in the wrong place I guess
-lemma ext {G : Type _} [Group G] [Fintype G] [IsCyclic G]
-    {d : ℕ} {a b : ZMod d} (hGcard : Fintype.card G = d) (h : ∀ t : G, t^a.val = t^b.val) :
-  a = b := by
-  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
-  have hgord := orderOf_eq_card_of_forall_mem_zpowers hg
-  specialize h g
-  rw [pow_eq_pow_iff_modEq, hgord, hGcard, ← ZMod.nat_cast_eq_nat_cast_iff] at h
-  subst hGcard
-  simpa [ZMod.nat_cast_val, ZMod.cast_id'] using h
+-- -- this is in the wrong place I guess
+-- lemma ext {G : Type _} [Group G] [Fintype G] [IsCyclic G]
+--     {d : ℕ} {a b : ZMod d} (hGcard : Fintype.card G = d) (h : ∀ t : G, t^a.val = t^b.val) :
+--   a = b := by
+--   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
+--   have hgord := orderOf_eq_card_of_forall_mem_zpowers hg
+--   specialize h g
+--   rw [pow_eq_pow_iff_modEq, hgord, hGcard, ← ZMod.nat_cast_eq_nat_cast_iff] at h
+--   subst hGcard
+--   simpa [ZMod.nat_cast_val, ZMod.cast_id'] using h
 
 lemma id : χ n (RingEquiv.refl L) = 1 := by
+  have foo := IsCyclic.unique_zpow_zmod (α := rootsOfUnity n L)
   refine ext (G := rootsOfUnity n L) rfl ?_
   intro ζ
   ext
