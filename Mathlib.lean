@@ -2904,6 +2904,7 @@ import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.FunctionField
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.Basic
+import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.NumberTheory.LegendreSymbol.Basic
 import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
