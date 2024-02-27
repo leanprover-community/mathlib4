@@ -2334,6 +2334,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.ClosureSwap
+import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
