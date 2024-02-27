@@ -279,7 +279,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       simp at hxy
 #align simple_graph.adj_matrix_pow_apply_eq_card_walk SimpleGraph.adjMatrix_pow_apply_eq_card_walk
 
-/-- The sum of the identity, the adjacency of `G`, and the adjacency of `Gᶜ` yeilds all ones. -/
+/-- The sum of the identity, `G.adjMatrix ℕ` and `(G.adjMatrix ℕ).compl` is the all-ones matrix. -/
 theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] :
     1 + G.adjMatrix ℕ + (G.adjMatrix ℕ).compl = Matrix.of fun _ _ ↦ 1 := by
   ext i j
