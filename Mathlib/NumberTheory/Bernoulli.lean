@@ -184,7 +184,7 @@ theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoul
       simp only [PowerSeries.ext_iff, evalNegHom, coeff_X] at h
     · apply eq_zero_of_neg_eq
       specialize h n
-      split_ifs at h <;> simp_all [h_odd.neg_one_pow, factorial_ne_zero]
+      split_ifs at h <;> simp_all [B, h_odd.neg_one_pow, factorial_ne_zero]
     · simpa (config := {decide := true}) [Nat.factorial] using h 1
   have h : B * (exp ℚ - 1) = X * exp ℚ := by
     simpa [bernoulli'PowerSeries] using bernoulli'PowerSeries_mul_exp_sub_one ℚ
@@ -319,7 +319,7 @@ theorem sum_range_pow (n p : ℕ) :
     simp only [coeff_mul, coeff_mk, cast_mul, sum_antidiagonal_eq_sum_range_succ f]
     apply sum_congr rfl
     intros m h
-    simp only [exp_pow_eq_rescale_exp, rescale, one_div, coeff_mk, RingHom.coe_mk, coeff_exp,
+    simp only [f, exp_pow_eq_rescale_exp, rescale, one_div, coeff_mk, RingHom.coe_mk, coeff_exp,
       RingHom.id_apply, cast_mul, algebraMap_rat_rat]
     -- manipulate factorials and binomial coefficients
     simp? at h says simp only [mem_range] at h
@@ -390,7 +390,7 @@ theorem sum_Ico_pow (n p : ℕ) :
   have h1 : ∀ r : ℚ, r * (p + 1 + 1) * (n : ℚ) ^ p.succ / (p + 1 + 1 : ℚ) = r * (n : ℚ) ^ p.succ :=
       fun r => by rw [mul_div_right_comm, mul_div_cancel _ hne]
   have h2 : f 1 + (n : ℚ) ^ p.succ = 1 / 2 * (n : ℚ) ^ p.succ := by
-    simp_rw [bernoulli_one, choose_one_right, succ_sub_succ_eq_sub, cast_succ, tsub_zero, h1]
+    simp_rw [f, bernoulli_one, choose_one_right, succ_sub_succ_eq_sub, cast_succ, tsub_zero, h1]
     ring
   have :
     (∑ i in range p, bernoulli (i + 2) * (p + 2).choose (i + 2) * (n : ℚ) ^ (p - i) / ↑(p + 2)) =
@@ -405,7 +405,7 @@ theorem sum_Ico_pow (n p : ℕ) :
       by rw [sum_range_succ]
     -- apply the key lemma, `sum_range_pow`
         _ = (∑ i in range p.succ.succ, f i) + (n : ℚ) ^ p.succ :=
-      by simp [sum_range_pow]
+      by simp [f, sum_range_pow]
     -- extract the first two terms of the sum
         _ = (∑ i in range p, f i.succ.succ) + f 1 + f 0 + (n : ℚ) ^ p.succ :=
       by simp_rw [sum_range_succ']
@@ -413,7 +413,7 @@ theorem sum_Ico_pow (n p : ℕ) :
         _ = (∑ i in range p, f i.succ.succ) + 1 / 2 * (n : ℚ) ^ p.succ + f 0 := by rw [h2]
     -- convert from `bernoulli` to `bernoulli'`
         _ = (∑ i in range p, f' i.succ.succ) + f' 1 + f' 0 :=
-      by simpa [h1, fun i => show i + 2 = i + 1 + 1 from rfl]
+      by simpa [f, f', h1, fun i => show i + 2 = i + 1 + 1 from rfl]
     -- rejoin the first two terms of the sum
         _ = ∑ i in range p.succ.succ, f' i :=
       by simp_rw [sum_range_succ']

@@ -1,4 +1,3 @@
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
@@ -26,11 +25,11 @@ set_option pp.unicode.fun true
 
 noncomputable section
 
-/-- info: Try this: exact Nat.le.refl -/
+/-- info: Try this: exact Nat.lt.base x -/
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
-/-- info: Try this: exact Nat.le.step Nat.le.refl -/
+/-- info: Try this: exact Nat.zero_lt_succ 1 -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 
@@ -50,7 +49,7 @@ example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 #guard_msgs (drop info) in
 example : Int := by apply?
 
-/-- info: Try this: Nat.le.refl -/
+/-- info: Try this: lt_add_one x -/
 #guard_msgs in
 example : x < x + 1 := exact?%
 
@@ -174,7 +173,7 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
-/-- info: Try this: exact List.findIdxs (fun a ↦ false) L -/
+/-- info: Try this: exact List.join L -/
 #guard_msgs in
 example (L _M : List (List ℕ)) : List ℕ := by apply? using L
 

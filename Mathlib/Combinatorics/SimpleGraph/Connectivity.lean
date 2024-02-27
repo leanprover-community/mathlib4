@@ -2590,7 +2590,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   let puw := (c.takeUntil v hv).takeUntil w hw
   let pwv := (c.takeUntil v hv).dropUntil w hw
   let pvu := c.dropUntil v hv
-  have : c = (puw.append pwv).append pvu := by simp
+  have : c = (puw.append pwv).append pvu := by simp [puw, pwv, pvu]
   -- We have two walks from v to w
   --      pvu     puw
   --   v ----> u ----> w

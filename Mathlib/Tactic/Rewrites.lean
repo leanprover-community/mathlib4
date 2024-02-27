@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Lean.Elab.Tactic.Location
 import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
-import Std.Tactic.SolveByElim
+import Lean.Meta.Tactic.SolveByElim
 import Std.Util.Pickle
 import Std.Util.Cache
 import Mathlib.Init.Core
@@ -185,13 +185,14 @@ def RewriteResult.ppResult (r : RewriteResult) : MetaM String :=
   else
     return (← ppExpr r.result.eNew).pretty
 
+open Lean.Elab.Tactic.SolveByElim Lean.Meta.SolveByElim in
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (depth : Nat := 6) : MetaM PUnit := do
   -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
-  let cfg : SolveByElim.Config :=
+  let cfg : SolveByElimConfig :=
     { maxDepth := depth, exfalso := false, symm := true }
-  let [] ← SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
+  let [] ← processSyntax cfg false false [] [] #[] goals
     | failure
 
 /-- Should we try discharging side conditions? If so, using `assumption`, or `solve_by_elim`? -/

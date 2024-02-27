@@ -22,7 +22,7 @@ namespace WithTop
 
 variable [DecidableEq α]
 
-instance : DecidableEq (WithTop α) := instDecidableEqOption
+instance : DecidableEq (WithTop α) := inferInstanceAs <| DecidableEq (Option α)
 
 section MulZeroClass
 variable [MulZeroClass α] {a b : WithTop α}
@@ -215,7 +215,7 @@ namespace WithBot
 
 variable [DecidableEq α]
 
-instance : DecidableEq (WithBot α) := instDecidableEqOption
+instance : DecidableEq (WithBot α) := inferInstanceAs <| DecidableEq (Option α)
 
 section MulZeroClass
 variable [MulZeroClass α] {a b : WithBot α}

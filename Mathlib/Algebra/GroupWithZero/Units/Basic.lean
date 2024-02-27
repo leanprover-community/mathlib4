@@ -318,8 +318,9 @@ instance (priority := 10) CommGroupWithZero.toCancelCommMonoidWithZero :
 #align comm_group_with_zero.to_cancel_comm_monoid_with_zero CommGroupWithZero.toCancelCommMonoidWithZero
 
 -- See note [lower instance priority]
-instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid : DivisionCommMonoid G₀ :=
-  { ‹CommGroupWithZero G₀›, GroupWithZero.toDivisionMonoid with }
+instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid [i : CommGroupWithZero G₀] :
+    DivisionCommMonoid G₀ :=
+  { i, GroupWithZero.toDivisionMonoid with }
 #align comm_group_with_zero.to_division_comm_monoid CommGroupWithZero.toDivisionCommMonoid
 
 end CommGroupWithZero

@@ -306,12 +306,12 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
     dsimp
     simp? [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl,
         Cochain.shift_v', smul_smul] says
-      simp only [ext_to_iff _ _ (p + 1) rfl, shiftFunctor_obj_X', assoc, lift_f_fst_v,
-        Cocycle.coe_units_smul, Cocycle.shift_coe, Cochain.units_smul_v, Cochain.shift_v',
-        Linear.comp_units_smul, id_comp, ext_from_iff _ (p + 1) _ rfl, inl_v_desc_f_assoc,
-        Linear.units_smul_comp, inl_v_fst_v, smul_smul, Int.units_mul_self, one_smul,
-        inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, smul_zero, and_self, lift_f_snd_v,
-        inl_v_snd_v, inr_f_snd_v]
+      simp only [ext_from_iff _ (p + 1) _ rfl, shiftFunctor_obj_X', inl_v_desc_f_assoc,
+        Cochain.units_smul_v, Cochain.shift_v', Linear.units_smul_comp, comp_id,
+        ext_to_iff _ _ (p + 1) rfl, assoc, lift_f_fst_v,
+        Cocycle.coe_units_smul, Cocycle.shift_coe, Linear.comp_units_smul, inl_v_fst_v, smul_smul,
+        Int.units_mul_self, one_smul, lift_f_snd_v, inl_v_snd_v, smul_zero, and_self,
+        inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, inr_f_snd_v]
 
 set_option maxHeartbeats 800000 in
 /-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
@@ -446,9 +446,9 @@ lemma complete_distinguished_triangle_morphism
   let γ := e₁.hom ≫ CochainComplex.mappingCone.trianglehMapOfHomotopy H ≫ e₂.inv
   have comm₂ := γ.comm₂
   have comm₃ := γ.comm₃
-  dsimp at comm₂ comm₃
+  dsimp [γ] at comm₂ comm₃
   simp only [ha', hb'] at comm₂ comm₃
-  exact ⟨γ.hom₃, by simpa using comm₂, by simpa using comm₃⟩
+  exact ⟨γ.hom₃, by simpa [γ] using comm₂, by simpa [γ] using comm₃⟩
 
 end Pretriangulated
 

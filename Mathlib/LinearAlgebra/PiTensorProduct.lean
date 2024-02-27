@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis, Eric Wieser
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-import Mathlib.Tactic.LibrarySearch
 
 #align_import linear_algebra.pi_tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
@@ -452,9 +451,11 @@ variable (R M)
 variable (s) in
 /-- Re-index the components of the tensor power by `e`.-/
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
-  let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
-  let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
-  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
+  let __f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
+  let __g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
+  -- v4.7.0-rc1 issues - nightly-testing: aesop won't unfold: both sorries were `aesop`
+  LinearEquiv.ofLinear (lift <| __f.symm <| tprod R) (lift <| __g <| tprod R)
+  ( by aesop ) ( by aesop )
 #align pi_tensor_product.reindex PiTensorProduct.reindex
 
 end

@@ -2091,7 +2091,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
     Finset.card_image_of_injOn (injOn_of_injective Subtype.coe_injective _)
   rw [← this]
   apply H
-  simp only [Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+  simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=

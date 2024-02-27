@@ -468,7 +468,7 @@ protected theorem of_injective [UnivLE.{u, v}] (inj : Module.Injective R Q) : Mo
   let eR := Shrink.linearEquiv R R
   obtain ⟨g', hg'⟩ := Module.Injective.out (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
     (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
-  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa using hg' (equivShrink I ⟨x, mx⟩)⟩
+  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa [eI,eR] using hg' (equivShrink I ⟨x, mx⟩)⟩
 
 protected theorem iff_injective [UnivLE.{u, v}] : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective⟩

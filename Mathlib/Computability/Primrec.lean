@@ -169,8 +169,8 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
 
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
-  { Encodable.ofEquiv α e with
-    prim := (@Primcodable.prim α _).of_eq fun n => by
+  let _ := Encodable.ofEquiv α e
+  { prim := (@Primcodable.prim α _).of_eq fun n => by
       rw [decode_ofEquiv]
       cases (@decode α _ n) <;>
         simp [encode_ofEquiv] }
@@ -839,7 +839,7 @@ theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
 
 theorem nat_bodd : Primrec Nat.bodd :=
   (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n => by
-    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]; rfl
+    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]
 #align primrec.nat_bodd Primrec.nat_bodd
 
 theorem nat_div2 : Primrec Nat.div2 :=
@@ -909,7 +909,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     refine hF.of_eq fun a => ?_
     rw [this, List.take_all_of_le (length_le_encode _)]
   introv
-  dsimp only
+  dsimp only [F]
   generalize f a = l
   generalize g a = x
   induction' n with n IH generalizing l x
@@ -1059,7 +1059,7 @@ theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β 
       to₂ <| pair ((list_cons.comp fst (fst.comp snd)).comp snd) hh
   (snd.comp this).of_eq fun a => by
     suffices F a = (f a, List.recOn (f a) (g a) fun b l IH => h a (b, l, IH)) by rw [this]
-    dsimp
+    dsimp [F]
     induction' f a with b l IH <;> simp [*]
 #align primrec.list_rec Primrec.list_rec
 
@@ -1081,7 +1081,7 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
     dsimp; symm
     induction' l with a l IH generalizing n; · rfl
     cases' n with n
-    · dsimp
+    · dsimp [F]
       clear IH
       induction' l with _ l IH <;> simp [*]
     · apply IH

@@ -324,7 +324,8 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
       apply Set.length_le_chainHeight_of_mem_subchain
       exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h : _)⟩
     refine' le_trans _ (add_le_add hl₁ hl₂)
-    simp_rw [← Nat.cast_add, ← Multiset.coe_card, ← Multiset.card_add, ← Multiset.coe_filter]
+    simp_rw [l₁, l₂, ← Nat.cast_add, ← Multiset.coe_card, ← Multiset.card_add,
+      ← Multiset.coe_filter]
     rw [Multiset.filter_add_filter, Multiset.filter_eq_self.mpr, Multiset.card_add, Nat.cast_add]
     exacts [le_add_right rfl.le, hl.2]
 #align set.chain_height_union_le Set.chainHeight_union_le

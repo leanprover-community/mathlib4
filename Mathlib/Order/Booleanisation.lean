@@ -227,7 +227,8 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
   le_sup_inf x y z := match x, y, z with
     | lift a, lift b, lift c => LE.lift le_sup_inf
     | lift a, lift b, comp c => LE.lift <| by simp [sup_left_comm, sup_comm]
-    | lift a, comp b, lift c => LE.lift <| by simp [sup_left_comm, sup_comm (a := b \ a)]
+    | lift a, comp b, lift c => LE.lift <| by
+      simp [sup_left_comm (a := b \ a), sup_comm (a := b \ a)] -- v4.7.0-rc1 issues
     | lift a, comp b, comp c => LE.comp <| by rw [sup_sdiff]
     | comp a, lift b, lift c => LE.comp <| by rw [sdiff_inf]
     | comp a, lift b, comp c => LE.comp <| by rw [sdiff_sdiff_right']

@@ -52,6 +52,22 @@ example (s : Finset α) (t : Finset (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := test
 example (s : Finset α) (t : Finset (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := test_sorry
 example (s : Finset α) (_t : Finset (ℕ × α)) : ({1, 2, 3} ×ˢ' s).card = 22 := test_sorry
 
+-- FIXME nightly-testing
+-- The following app_unexpanders have been lost in the shuffle.
+-- Copy pasted here to mitigate the test, and Scott is following up.
+
+/-- Unexpander for the `{ x }` notation. -/
+@[app_unexpander singleton]
+def singletonUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $a) => `({ $a:term })
+  | _ => throw ()
+
+/-- Unexpander for the `{ x, y, ... }` notation. -/
+@[app_unexpander insert]
+def insertUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $a { $ts:term,* }) => `({$a:term, $ts,*})
+  | _ => throw ()
+
 /--
 info: {1, 2, 3} ×ˢ' {4, 5, 6} : Finset (ℕ × ℕ)
 -/

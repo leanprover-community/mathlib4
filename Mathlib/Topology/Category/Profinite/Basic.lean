@@ -388,14 +388,14 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         rw [← cancel_epi f]
         ext x
         apply ULift.ext
-        dsimp [LocallyConstant.ofIsClopen]
+        dsimp [g, LocallyConstant.ofIsClopen]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
-        simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
+        simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
-      dsimp [LocallyConstant.ofIsClopen] at H
+      dsimp [g, LocallyConstant.ofIsClopen] at H
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H

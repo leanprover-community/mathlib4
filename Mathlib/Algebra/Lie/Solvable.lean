@@ -121,7 +121,7 @@ theorem derivedSeriesOfIdeal_add_le_add (J : LieIdeal R L) (k l : ℕ) :
     { toFun := fun I => ⁅I, I⁆
       monotone' := fun I J h => LieSubmodule.mono_lie I J I J h h }
   have h₁ : ∀ I J : LieIdeal R L, D₁ (I ⊔ J) ≤ D₁ I ⊔ J := by
-    simp [LieSubmodule.lie_le_right, LieSubmodule.lie_le_left, le_sup_of_le_right]
+    simp [D₁, LieSubmodule.lie_le_right, LieSubmodule.lie_le_left, le_sup_of_le_right]
   rw [← D₁.iterate_sup_le_sup_iff] at h₁
   exact h₁ k l I J
 #align lie_algebra.derived_series_of_ideal_add_le_add LieAlgebra.derivedSeriesOfIdeal_add_le_add
@@ -363,7 +363,7 @@ theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
     obtain ⟨k, hk⟩ := id hI
     refine' Set.Nonempty.ne_empty ⟨k, _⟩
     rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
-  simp [hne]
+  simp [s, hne]
 #align lie_algebra.derived_length_zero LieAlgebra.derivedLength_zero
 
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable R I] :
