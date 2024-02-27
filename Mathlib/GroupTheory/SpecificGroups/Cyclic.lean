@@ -347,8 +347,8 @@ theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
 #align is_cyclic.image_range_card IsCyclic.image_range_card
 #align is_add_cyclic.image_range_card IsAddCyclic.image_range_card
 
-@[to_additive IsCyclic.unique_sum]
-theorem IsCyclic.unique_power_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
+@[to_additive]
+theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
     ∃! n : ZMod (Fintype.card α), x = a ^ n.val := by
   obtain ⟨n, rfl⟩ := ha x
   refine ⟨n, (?_ : a ^ n = _), ?_⟩
