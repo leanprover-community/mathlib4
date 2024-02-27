@@ -31,7 +31,7 @@ namespace Functor
 def star : C ⥤ Discrete PUnit.{w + 1} :=
   (Functor.const _).obj ⟨⟨⟩⟩
 #align category_theory.functor.star CategoryTheory.Functor.star
--- Porting note: simp can simplify this
+-- Porting note (#10618): simp can simplify this
 attribute [nolint simpNF] star_map_down_down
 variable {C}
 

@@ -282,7 +282,7 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
   let F : γ → α := fun ⟨n, x⟩ ↦ f n x
   have F_cont : Continuous F := continuous_sigma f_cont
   have F_range : range F = ⋃ n, s n := by
-    simp only [range_sigma_eq_iUnion_range, f_range]
+    simp only [γ, range_sigma_eq_iUnion_range, f_range]
   rw [← F_range]
   exact analyticSet_range_of_polishSpace F_cont
 #align measure_theory.analytic_set.Union MeasureTheory.AnalyticSet.iUnion
@@ -429,7 +429,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   let p0 : A := ⟨⟨0, fun _ => 0, fun _ => 0⟩, by simp [hfg]⟩
   -- construct inductively decreasing sequences of cylinders whose images are not separated
   let p : ℕ → A := fun n => F^[n] p0
-  have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [iterate_succ', Function.comp]
+  have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [p, iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
   have pn_fst : ∀ n, (p n).1.1 = n := by
     intro n
@@ -735,7 +735,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
   · intro x hx
     -- pick for each `n` a good set `s n` of small diameter for which `x ∈ E (s n)`.
     have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), x ∈ E s := fun n => by
-      simpa only [mem_iUnion] using mem_iInter.1 hx n
+      simpa only [F, mem_iUnion] using mem_iInter.1 hx n
     choose s hs hxs using C1
     have C2 : ∀ n, (s n).1.Nonempty := by
       intro n
@@ -920,6 +920,19 @@ theorem isClopenable_iff_measurableSet
   rw [← borel_eq_borel_of_le t'_polish _ t't]
   · exact MeasurableSpace.measurableSet_generateFrom s_open
   infer_instance
+
+/-- The set of points for which a sequence of measurable functions converges to a given function
+is measurable. -/
+@[measurability]
+lemma measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
+    {l : Filter ι} [l.IsCountablyGenerated]
+    [TopologicalSpace γ] [SecondCountableTopology γ] [PseudoMetrizableSpace γ]
+    [OpensMeasurableSpace γ]
+    {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) {g : β → γ} (hg : Measurable g) :
+    MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) } := by
+  letI := TopologicalSpace.pseudoMetrizableSpacePseudoMetric γ
+  simp_rw [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
+  exact measurableSet_tendsto (𝓝 0) (fun n ↦ (hf n).dist hg)
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]

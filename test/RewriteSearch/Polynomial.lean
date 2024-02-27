@@ -11,8 +11,7 @@ open Polynomial
 #guard_msgs in
 example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
     natDegree (p - C a) = natDegree p := by
-  rw_search [-sub_eq_add_neg, -Polynomial.natDegree_sub_C]
-
+  rw_search [-Polynomial.natDegree_sub_C, -sub_eq_neg_add]
 
 -- This one works, but is very slow:
 
