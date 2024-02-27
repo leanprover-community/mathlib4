@@ -420,24 +420,77 @@ theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b;
 
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i: α) :
-  adjugate !![a, b, c; d, e, f; g, h, i]=
-  Matrix.of !![e * i - f * h, -(b * i) + c * h, b * f - c * e;
-            -(d * i) + f * g, a * i - c * g, -(a * f) + c * d;
-            d * h - e * g, -(a * h) + b * g, a * e - b * d] := by
+    adjugate !![a, b, c; d, e, f; g, h, i] =
+    !![e * i - f * h, -(b * i) + c * h, b * f - c * e; -(d * i) + f * g, a * i - c * g, -(a * f) + c * d; d * h - e * g, -(a * h) + b * g, a * e - b * d] := by
 
-  ext h1 h2
-  fin_cases h1
-  simp
-  rw [adjugate_apply]
-  rw [Matrix.det_fin_three]
-  repeat rw [Matrix.updateRow_apply]
-  simp
-  fin_cases h2
-  repeat
-    repeat simp
-    repeat rw [if_neg]
+    ext h1 h2
+    fin_cases h1
+    simp
+    rw [adjugate_apply]
+    rw [Matrix.det_fin_three]
+    repeat rw [Matrix.updateRow_apply]
+    simp
+    fin_cases h2
+    repeat
+      repeat simp
+      repeat rw [if_neg]
+      rw [Pi.single_apply]
+      repeat rw [if_neg]
+      simp
+
+      repeat
+        rw [← ne_eq]
+        rw [@ne_iff_lt_or_gt]
+        right
+        exact Fin.coe_sub_iff_lt.mp rfl
+    ---
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_pos]
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_pos]
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    simp
     rw [Pi.single_apply]
-    repeat rw [if_neg]
+    rw [if_neg]
+    simp
+
+    rw [← ne_eq]
+    rw [@ne_iff_lt_or_gt]
+    right
+    exact Fin.coe_sub_iff_lt.mp rfl
+
+    repeat
+      rw [@Fin.eq_mk_iff_val_eq]
+      simp
+
+    ---
+
+    rw [Matrix.adjugate_apply]
+    rw [Matrix.det_fin_three]
+    repeat rw [Matrix.updateRow_apply]
+    simp
+    fin_cases h2
+    simp
+    rw [Pi.single_apply]
+    rw [if_neg]
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_neg]
+    rw [Pi.single_apply]
+    rw [if_neg]
+    simp
+    --
+    rw [@Fin.eq_mk_iff_val_eq]
     simp
 
     repeat
@@ -445,166 +498,111 @@ theorem adjugate_fin_three_of (a b c d e f g h i: α) :
       rw [@ne_iff_lt_or_gt]
       right
       exact Fin.coe_sub_iff_lt.mp rfl
-  ---
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_pos]
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_pos]
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  simp
-  rw [Pi.single_apply]
-  rw [if_neg]
-  simp
 
-  rw [← ne_eq]
-  rw [@ne_iff_lt_or_gt]
-  right
-  exact Fin.coe_sub_iff_lt.mp rfl
-
-  repeat
     rw [@Fin.eq_mk_iff_val_eq]
     simp
 
-  ---
-
-  rw [Matrix.adjugate_apply]
-  rw [Matrix.det_fin_three]
-  repeat rw [Matrix.updateRow_apply]
-  simp
-  fin_cases h2
-  simp
-  rw [Pi.single_apply]
-  rw [if_neg]
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_neg]
-  rw [Pi.single_apply]
-  rw [if_neg]
-  simp
-  --
-  rw [@Fin.eq_mk_iff_val_eq]
-  simp
-
-  repeat
     rw [← ne_eq]
     rw [@ne_iff_lt_or_gt]
     right
     exact Fin.coe_sub_iff_lt.mp rfl
-
-  rw [@Fin.eq_mk_iff_val_eq]
-  simp
-
-  rw [← ne_eq]
-  rw [@ne_iff_lt_or_gt]
-  right
-  exact Fin.coe_sub_iff_lt.mp rfl
-  ---
-  simp
-  repeat rw [if_neg]
-  repeat rw [Pi.single_apply]
-  rw [if_pos]
-  rw [if_neg]
-  simp
-  --
-  rw [@Fin.eq_mk_iff_val_eq]
-  simp
-
-  rw [@Fin.eq_mk_iff_val_eq]
-  simp
-
-  repeat
-    rw [← ne_eq]
-    rw [@ne_iff_lt_or_gt]
-    right
-    exact Fin.coe_sub_iff_lt.mp rfl
-
-  ---
-  simp
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_pos]
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_pos]
-  simp
-  repeat rw [Pi.single_apply]
-  rw [if_neg]
-  rw [if_pos]
-  simp
-  --
-  repeat
+    ---
+    simp
+    repeat rw [if_neg]
+    repeat rw [Pi.single_apply]
+    rw [if_pos]
+    rw [if_neg]
+    simp
+    --
     rw [@Fin.eq_mk_iff_val_eq]
     simp
 
-  rw [Matrix.adjugate_apply]
-  rw [Matrix.det_fin_three]
-  repeat rw [Matrix.updateRow_apply]
-  simp
-  fin_cases h2
-  simp
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_neg]
-  repeat rw [Pi.single_apply]
-  rw [if_neg]
-  rw [if_neg]
-  rw [if_pos]
-  simp
-  --
-  repeat
-    rw [@Fin.eq_mk_iff_val_eq]
-    simp
-  ---
-  simp
-
-  repeat rw [if_neg]
-  repeat rw [Pi.single_apply]
-  rw [if_neg]
-  rw [if_pos]
-  rw [if_neg]
-  simp
-  --
-  repeat
     rw [@Fin.eq_mk_iff_val_eq]
     simp
 
-  ---
-  repeat simp
-  repeat
+    repeat
+      rw [← ne_eq]
+      rw [@ne_iff_lt_or_gt]
+      right
+      exact Fin.coe_sub_iff_lt.mp rfl
+
+    ---
+    simp
     rw [if_pos]
     rw [if_neg]
     rw [if_neg]
-
-  repeat rw [Pi.single_apply]
-  rw [if_pos]
-  rw [if_neg]
-  rw [if_neg]
-  --
-  simp
-  repeat
-    rw [@Fin.eq_mk_iff_val_eq]
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_pos]
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_pos]
     simp
+    repeat rw [Pi.single_apply]
+    rw [if_neg]
+    rw [if_pos]
+    simp
+    --
+    repeat
+      rw [@Fin.eq_mk_iff_val_eq]
+      simp
+
+    rw [Matrix.adjugate_apply]
+    rw [Matrix.det_fin_three]
+    repeat rw [Matrix.updateRow_apply]
+    simp
+    fin_cases h2
+    simp
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_neg]
+    repeat rw [Pi.single_apply]
+    rw [if_neg]
+    rw [if_neg]
+    rw [if_pos]
+    simp
+    --
+    repeat
+      rw [@Fin.eq_mk_iff_val_eq]
+      simp
+    ---
+    simp
+
+    repeat rw [if_neg]
+    repeat rw [Pi.single_apply]
+    rw [if_neg]
+    rw [if_pos]
+    rw [if_neg]
+    simp
+    --
+    repeat
+      rw [@Fin.eq_mk_iff_val_eq]
+      simp
+
+    ---
+    repeat simp
+    repeat
+      rw [if_pos]
+      rw [if_neg]
+      rw [if_neg]
+
+    repeat rw [Pi.single_apply]
+    rw [if_pos]
+    rw [if_neg]
+    rw [if_neg]
+    --
+    simp
+    repeat
+      rw [@Fin.eq_mk_iff_val_eq]
+      simp
 
 theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
     adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
