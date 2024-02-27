@@ -48,7 +48,6 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
-import Mathlib.Tactic.Have
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
@@ -68,7 +67,6 @@ import Mathlib.Tactic.Observe
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Symm

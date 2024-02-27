@@ -146,11 +146,11 @@ theorem yn_succ (n : ℕ) : yn a1 (n + 1) = xn a1 n + yn a1 n * a :=
   rfl
 #align pell.yn_succ Pell.yn_succ
 
---@[simp] Porting note: `simp` can prove it
+--@[simp] Porting note (#10618): `simp` can prove it
 theorem xn_one : xn a1 1 = a := by simp
 #align pell.xn_one Pell.xn_one
 
---@[simp] Porting note: `simp` can prove it
+--@[simp] Porting note (#10618): `simp` can prove it
 theorem yn_one : yn a1 1 = 1 := by simp
 #align pell.yn_one Pell.yn_one
 

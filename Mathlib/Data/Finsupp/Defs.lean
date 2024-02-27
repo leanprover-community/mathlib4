@@ -741,7 +741,7 @@ theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
   classical convert filter_subset (f · ≠ 0) s
 #align finsupp.support_on_finset_subset Finsupp.support_onFinset_subset
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_support_onFinset {s : Finset α} {f : α → M} (hf : ∀ a : α, f a ≠ 0 → a ∈ s) {a : α} :
     a ∈ (Finsupp.onFinset s f hf).support ↔ f a ≠ 0 := by
   rw [Finsupp.mem_support_iff, Finsupp.onFinset_apply]

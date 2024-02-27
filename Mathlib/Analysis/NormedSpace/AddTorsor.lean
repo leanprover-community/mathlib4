@@ -44,7 +44,7 @@ theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₁ (homothety p₁ c p₂) = ‖c‖ * dist p₁ p₂ := by
-  -- Porting note: was `simp [homothety_def, norm_smul, ← dist_eq_norm_vsub, dist_comm]`
+  -- porting note (#10745): was `simp [homothety_def, norm_smul, ← dist_eq_norm_vsub, dist_comm]`
   rw [homothety_def, dist_eq_norm_vsub V]
   simp [norm_smul, ← dist_eq_norm_vsub V, dist_comm]
 #align dist_center_homothety dist_center_homothety
@@ -300,7 +300,8 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by -- Porting note: was `by simp [h]`
-      simp only [Function.comp_apply, AffineEquiv.vaddConst_apply, AffineEquiv.vaddConst_symm_apply]
+      simp only [c, Function.comp_apply, AffineEquiv.vaddConst_apply,
+        AffineEquiv.vaddConst_symm_apply]
       conv_lhs => rw [(midpoint_self ℝ (Classical.arbitrary P)).symm, midpoint_vadd_midpoint, h, h,
           midpoint_vsub_midpoint]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
