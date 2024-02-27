@@ -44,7 +44,7 @@ private abbrev whiteList : Array String := #["#align", "#align_import", "#noalig
 `whiteList`. -/
 def hashCommandLinter : Linter where run := withSetOptionIn fun stx => do
   if getLinterHash (← getOptions) && (← getInfoState).enabled then
-    for sa in getAtomStx stx do
+    for sa in [(getAtomStx stx)[0]!] do
       let a := sa.getAtomVal
       if ("#".isPrefixOf a && (!' ' ∈ a.toList) && whiteList.all (· != a)) then
         logWarningAt sa f!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'\n\
