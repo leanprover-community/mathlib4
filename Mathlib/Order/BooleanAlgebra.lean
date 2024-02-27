@@ -614,13 +614,13 @@ instance (priority := 100) BooleanAlgebra.toGeneralizedBooleanAlgebra :
 #align boolean_algebra.to_generalized_boolean_algebra BooleanAlgebra.toGeneralizedBooleanAlgebra
 
 -- See note [lower instance priority]
-instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra α :=
-  let _ := ‹BooleanAlgebra α›
-  { __ := GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra
-    hnot := compl
-    le_himp_iff := fun a b c => by rw [himp_eq, isCompl_compl.le_sup_right_iff_inf_left_le]
-    himp_bot := fun _ => _root_.himp_eq.trans bot_sup_eq
-    top_sdiff := fun _ => by rw [sdiff_eq, top_inf_eq]; rfl }
+instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra α where
+  __ := ‹BooleanAlgebra α›
+  __ := GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra
+  hnot := compl
+  le_himp_iff a b c := by rw [himp_eq, isCompl_compl.le_sup_right_iff_inf_left_le]
+  himp_bot _ := _root_.himp_eq.trans bot_sup_eq
+  top_sdiff _ := by rw [sdiff_eq, top_inf_eq]; rfl
 #align boolean_algebra.to_biheyting_algebra BooleanAlgebra.toBiheytingAlgebra
 
 @[simp]
@@ -851,12 +851,12 @@ protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bo
     [GeneralizedBooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
-    GeneralizedBooleanAlgebra α :=
-  let _ := hf.distribLattice f map_sup map_inf
-  { __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
-    __ := hf.distribLattice f map_sup map_inf
-    sup_inf_sdiff := fun a b => hf <| by erw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
-    inf_inf_sdiff := fun a b => hf <| by erw [map_inf, map_sdiff, map_inf, inf_inf_sdiff, map_bot] }
+    GeneralizedBooleanAlgebra α where
+  __ := hf.distribLattice f map_sup map_inf
+  __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
+  __ := hf.distribLattice f map_sup map_inf
+  sup_inf_sdiff a b := hf <| by erw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
+  inf_inf_sdiff a b := hf <| by erw [map_inf, map_sdiff, map_inf, inf_inf_sdiff, map_bot]
 #align function.injective.generalized_boolean_algebra Function.Injective.generalizedBooleanAlgebra
 
 -- See note [reducible non-instances]
