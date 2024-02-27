@@ -6,6 +6,7 @@ Authors: Kenny Lau, Patrick Massot
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Algebra.Ring.Fin
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 #align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 
@@ -14,8 +15,12 @@ import Mathlib.Algebra.Ring.Fin
 
 ## Main results:
 
- - `quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
- - `quotientKerEquivRangeS` : the **first isomorphism theorem**
+ - `RingHom.quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
+ - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
+  for a morphism from a commutative ring to a semiring.
+ - `AlgHom.quotientKerEquivRange` : the **first isomorphism theorem**
+  for a morphism of algebras (over a commutative semiring)
+ - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
   for a morphism from a commutative ring to a semiring.
  - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
    ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
@@ -643,6 +648,16 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
 lemma comap_map_mk {I J : Ideal R} (h : I ≤ J) :
     Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J :=
   by ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
+
+/-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
+noncomputable def quotientKerEquivRange
+  {A B : Type*} [Semiring A] [Algebra R₁ A] [Semiring B] [Algebra R₁ B]
+  (f : A →ₐ[R₁] B) :
+  (A ⧸ RingHom.ker f) ≃ₐ[R₁] f.range :=
+  (Ideal.quotientEquivAlgOfEq R f.ker_rangeRestrict.symm).trans <|
+-- it necessary to add `(f := …)` here, otherwise Lean times out…
+    Ideal.quotientKerAlgEquivOfSurjective (f := f.rangeRestrict)
+      f.rangeRestrict_surjective
 
 end QuotientAlgebra
 

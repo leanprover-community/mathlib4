@@ -567,6 +567,7 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 
 variable (φ : A →ₐ[R] B)
 
+#check RingHom.range
 /-- Range of an `AlgHom` as a subalgebra. -/
 protected def range (φ : A →ₐ[R] B) : Subalgebra R B :=
   { φ.toRingHom.rangeS with algebraMap_mem' := fun r => ⟨algebraMap R A r, φ.commutes r⟩ }
@@ -625,6 +626,12 @@ This is the bundled version of `Set.rangeFactorization`. -/
 def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 #align alg_hom.range_restrict AlgHom.rangeRestrict
+
+theorem rangeRestrict_surjective (f : A →ₐ[R] B):
+    Function.Surjective (f.rangeRestrict) :=
+  fun ⟨_y, hy⟩ =>
+  let ⟨x, hx⟩ := hy
+  ⟨x, SetCoe.ext hx⟩
 
 /-- The equalizer of two R-algebra homomorphisms -/
 def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
