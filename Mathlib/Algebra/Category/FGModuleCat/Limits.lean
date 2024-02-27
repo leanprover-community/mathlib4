@@ -81,6 +81,8 @@ def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
 set_option linter.uppercaseLean3 false in
 #align fgModule.forget₂_creates_limit FGModuleCat.forget₂CreatesLimit
 
+/-- The forgetful functor from `FGModuleCat R` to `ModuleCat R` creates all finite limits when `R`
+is Noetherian. -/
 def forget₂CreatesLimitOfNoetherian (F : J ⥤ FGModuleCat R) :
     CreatesLimit F (forget₂ (FGModuleCat R) (ModuleCat.{v} R)) :=
   createsLimitOfFullyFaithfulOfIso
