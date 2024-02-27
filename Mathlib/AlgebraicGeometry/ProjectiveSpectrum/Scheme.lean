@@ -654,7 +654,7 @@ lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
       · dsimp; congr 2
         rw [← k_spec, ← pow_mul, show z.deg = k * m from
           degree_eq_of_mem_mem 𝒜 (k_spec ▸ z.den_mem_deg) (SetLike.pow_mem_graded k f_deg) ineq]
-    · simp only [CommRingCat.coe_of, GradedAlgebra.proj_apply, zero_pow hm,
+    · simp only [CommRingCat.coe_of, GradedAlgebra.proj_apply, zero_pow (by linarith only [hm]),
         DirectSum.decompose_of_mem_ne 𝒜 z.num_mem_deg ineq]
       convert x.asIdeal.zero_mem
       rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
