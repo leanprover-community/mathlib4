@@ -230,9 +230,6 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
 @[deprecated] alias ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 :=
   ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 
-example (f : ℕ → ℝ≥0∞) (hf : ∀ᶠ x in atTop, f x = 1) : Tendsto f atTop (𝓝 1) := by
-  exact EventuallyEq.tendsto hf
-
 @[simp]
 theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
