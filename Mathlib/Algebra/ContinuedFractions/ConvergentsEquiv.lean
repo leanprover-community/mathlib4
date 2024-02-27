@@ -308,8 +308,7 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
       -- then compute the convergent of the original gcf by recursively unfolding the continuants
       -- computation twice
       have : g.convergents (n' + 2) =
-          (b * (pb * pA + pa * ppA) + a * pA) /
-            (b * (pb * pB + pa * ppB) + a * pB) := by
+          (b * (pb * pA + pa * ppA) + a * pA) / (b * (pb * pB + pa * ppB) + a * pB) := by
         -- use the recurrence once
         have : g.continuantsAux (n' + 2) = ⟨pb * pA + pa * ppA, pb * pB + pa * ppB⟩ :=
           continuantsAux_recurrence s_n'th_eq n'th_conts_aux_eq.symm succ_n'th_conts_aux_eq.symm
@@ -319,13 +318,11 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
       rw [this]
       suffices
         ((pb + a / b) * pA + pa * ppA) / ((pb + a / b) * pB + pa * ppB) =
-          (b * (pb * pA + pa * ppA) + a * pA) /
-            (b * (pb * pB + pa * ppB) + a * pB) by
-        obtain ⟨eq1, eq2, eq3, eq4⟩ : pA' = pA ∧ pB' = pB ∧
-            ppA' = ppA ∧ ppB' = ppB := by
-          simp [*, (continuantsAux_eq_continuantsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
-            (continuantsAux_eq_continuantsAux_squashGCF_of_le n'.le_succ).symm,
-            pA', pB', ppA', ppB']
+          (b * (pb * pA + pa * ppA) + a * pA) / (b * (pb * pB + pa * ppB) + a * pB) by
+        obtain ⟨eq1, eq2, eq3, eq4⟩ : pA' = pA ∧ pB' = pB ∧ ppA' = ppA ∧ ppB' = ppB := by
+          simp [*, pA', pB', ppA', ppB',
+            (continuantsAux_eq_continuantsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
+            (continuantsAux_eq_continuantsAux_squashGCF_of_le n'.le_succ).symm]
         symm
         simpa only [eq1, eq2, eq3, eq4, mul_div_cancel _ b_ne_zero]
       field_simp

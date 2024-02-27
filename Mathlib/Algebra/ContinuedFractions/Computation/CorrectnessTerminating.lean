@@ -127,7 +127,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
         of_h_eq_floor, compExactValue]
       -- Porting note: this and the if_neg rewrite are needed
       have : (IntFractPair.of v).fr = Int.fract v := rfl
-      rw [this, if_neg fract_ne_zero, Int.floor_add_fract]
+      rw [this, if_neg fract_ne_zero, g_eq, of_h_eq_floor, Int.floor_add_fract]
   · intro ifp_succ_n succ_nth_stream_eq
     -- Nat.succ
     obtain ⟨ifp_n, nth_stream_eq, nth_fract_ne_zero, -⟩ :
@@ -209,7 +209,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
         nextContinuants, nextNumerator, nextDenominator]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
       rw [one_div, if_neg _, ← one_div, hfr]
-      · field_simp [hA, hB]
+      · rw [f_eq]
+        field_simp [hA, hB, pA, ppA, pB, ppB]
         ac_rfl
       · rwa [inv_eq_one_div, hfr]
 #align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some
