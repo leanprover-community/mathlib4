@@ -93,30 +93,31 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
         · have := ht₃ v
           have := he₃ v
           simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
-              Bool.not_eq_true', AList.lookup_insert, imp_false]
+              Bool.not_eq_true', implies_true]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
           split <;> rename_i h'
           · subst h'
             simp_all
-          · simp_all -- used to be done here v4.7.0-rc1 issues
-            constructor <;> intro h <;> apply Option.some_ne_none _ <;>
-              rw [← AList.lookup_insert l]
-            · exact ht₃ _ h
-            · exact he₃ _ h
-        · by_cases h' : w = v
-          · rwa [h']
-          · split_ifs at b with h
-            · rw [h] at b
-              have := he₃ w b
-              rwa [AList.lookup_insert_ne h'] at this
-            · simp_all
-              match b with
-              | .inr h'' =>
-                have := he₃ w h''
-                rwa [AList.lookup_insert_ne h'] at this
-              | .inl h'' =>
-                have := ht₃ w h''
-                rwa [AList.lookup_insert_ne h'] at this ⟩
+          · simp_all
+            constructor
+            · intro h
+              specialize ht₃ _ h
+              simp at ht₃
+            · intro h
+              specialize he₃ _ h
+              simp at he₃
+        · have := ht₃ w
+          have := he₃ w
+          by_cases h : w = v
+          · subst h; simp_all
+          · simp_all? says simp_all only [Option.elim, normalized, Bool.and_eq_true,
+              Bool.not_eq_true', ne_eq, not_false_eq_true, AList.lookup_insert_ne]
+            obtain ⟨⟨⟨en, ec⟩, er⟩, ed⟩ := he₂
+            split at b <;> rename_i h'
+            · subst h'; simp_all
+            · simp_all only [ne_eq, vars, List.singleton_append, List.cons_append,
+                Bool.not_eq_true, List.mem_cons, List.mem_append, false_or]
+              cases b <;> simp_all⟩
     | some b =>
       have ⟨e', he'⟩ := normalize' l (.ite (lit b) t e)
       ⟨e', by simp_all⟩
