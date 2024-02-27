@@ -118,32 +118,4 @@ Lean.Expr.app (Lean.Expr.const `Nat.succ []) (Lean.Expr.const `Nat.zero []))
 -/
 #guard_msgs in #eval do Expr.relSidesIfRefl? (← mkRel ``LE.le eNatZero eNatOne)
 
-/-! ### `Lean.Expr.relSidesIfSymm?` -/
-
-/--
-info: some (`Eq, Lean.Expr.const `Nat.zero [],
-Lean.Expr.app (Lean.Expr.const `Nat.succ []) (Lean.Expr.const `Nat.zero []))
--/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``Eq eNatZero eNatOne)
-
-/-- info: some (`Iff, Lean.Expr.const `True [], Lean.Expr.const `False []) -/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``Iff eTrue eFalse)
-
-/-- info: some (`HEq, Lean.Expr.const `True [], Lean.Expr.const `False []) -/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``HEq eTrue eFalse)
-
-/-- info: none -/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``LT.lt eNatZero eNatOne)
-
-def eq2 (a b : Nat) : Prop := a = b
-
-@[symm] theorem eq2_symm (a b : Nat) (h : eq2 a b) : eq2 b a := h.symm
-
-/--
-info: some (`Tests.eq2,
- Lean.Expr.const `Nat.zero [],
- Lean.Expr.app (Lean.Expr.const `Nat.succ []) (Lean.Expr.const `Nat.zero []))
--/
-#guard_msgs in #eval do Expr.relSidesIfSymm? (← mkRel ``eq2 eNatZero eNatOne)
-
 end Tests
