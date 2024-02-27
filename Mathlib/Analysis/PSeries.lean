@@ -83,7 +83,9 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
       (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
   simp [pow_succ, two_mul]
-theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n) (h_nonneg : ∀ n, 0 <= f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) (n : ℕ) :
+
+theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (h_nonneg : ∀ n, 0 <= f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) (n : ℕ) :
     ∑ k in range (n + 1), (u (k + 1) - u k) • f (u k) ≤
     (u 1 - u 0) • f (u 0) + C • ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
   rw [sum_range_succ', add_comm]
@@ -108,19 +110,20 @@ namespace ENNReal
 
 variable {u : ℕ → ℕ} {f : ℕ → ℝ≥0∞}
 
-theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n) (hu_strict : StrictMono u) :
+theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (hu_strict : StrictMono u) :
     ∑' k , f k ≤ ∑ k in range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
   have hu : Monotone u := by
     apply StrictMono.monotone hu_strict
   rw [ENNReal.tsum_eq_iSup_nat' (StrictMono.tendsto_atTop hu_strict)]
   refine' iSup_le fun n => (Finset.le_sum_schlomilch hf h_pos hu n).trans (add_le_add_left _ _)
   have (k : ℕ) : ((u (k + 1) : ℝ≥0∞) - (u k : ℝ≥0∞) : ℝ≥0∞) = (u (k + 1) - (u k : ℕ) : ℕ) := by
-    have := Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le
-    simp [NNReal.coe_sub this]
+    simp [NNReal.coe_sub (Nat.cast_le (α := ℝ≥0).mpr <| (hu_strict k.lt_succ_self).le)]
   simp only [nsmul_eq_mul, this]
   apply ENNReal.sum_le_tsum
 
-theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)  (h_nonneg : ∀ n, 0 <= f n) (hu_strict : StrictMono u) (h_succ_diff : SuccDiffBounded C u) :
+theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
+    (h_nonneg : ∀ n, 0 <= f n) (hu_strict : StrictMono u) (h_succ_diff : SuccDiffBounded C u) :
     ∑' k : ℕ, (u (k + 1) - u k) * f (u k) ≤ (u 1 - u 0) * f (u 0) + C * ∑' k, f k := by
   have hu : Monotone u := by
     apply StrictMono.monotone hu_strict
