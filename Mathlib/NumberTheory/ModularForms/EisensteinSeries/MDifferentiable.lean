@@ -20,12 +20,7 @@ namespace EisensteinSeries
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
-theorem complex_denom_HasDerivAt(a : Fin 2 → ℤ) (k : ℤ) (z : ℂ) (h : (a 0 : ℂ) * z + a 1 ≠ 0) :
-    HasDerivAt (fun z : ℂ => (a 0 * z + a 1) ^ k) (k * (a 0 * z + a 1) ^ (k - 1) * a 0) z := by
-  rw [← Function.comp_def (fun x : ℂ => x ^ k) ((a 0) * · + (a 1))]
-  apply HasDerivAt.comp
-  · exact hasDerivAt_zpow k ((a 0 ) * z + a 1 ) (Or.inl h)
-  · simpa using (hasDerivAt_id' z).const_mul (a 0 : ℂ) |>.add_const _
+/-I'll move these lemmas once find_home is working again-/
 
 lemma comp_eq_const_iff {α β γ: Type*} (b : β) (f : α → β) (g : β → γ)
     (hg : Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
@@ -42,22 +37,29 @@ lemma comp_inj_ne_zero {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → 
 
 variable (k : ℤ) (a : Fin 2 → ℤ)
 
+theorem complex_denom_HasDerivAt (z : ℂ) (h : (a 0 : ℂ) * z + a 1 ≠ 0) :
+    HasDerivAt (fun z : ℂ => (a 0 * z + a 1) ^ k) (k * (a 0 * z + a 1) ^ (k - 1) * a 0) z := by
+  rw [← Function.comp_def (fun x : ℂ => x ^ k) ((a 0) * · + (a 1))]
+  apply HasDerivAt.comp
+  · exact hasDerivAt_zpow k ((a 0 ) * z + a 1 ) (Or.inl h)
+  · simpa using (hasDerivAt_id' z).const_mul (a 0 : ℂ) |>.add_const _
+
 lemma UpperHalfPlane.coe_linear_ne_zero (a : Fin 2 → ℤ) (x : UpperHalfPlane.coe '' ⊤) (ha : a ≠ 0) :
     ((a 0 : ℂ) * x + a 1) ≠ 0 := by
   have hx := x.2
-  simp only [ne_eq, top_eq_univ, image_univ, mem_range] at *
+  simp only [ne_eq, Set.top_eq_univ, Set.image_univ, Set.mem_range] at *
   obtain ⟨y, hy⟩ := hx
   rw [← hy]
   apply UpperHalfPlane.linear_ne_zero ((Int.cast (R := ℝ)) ∘ a) y
       ((comp_inj_ne_zero _ _ Int.cast_injective Int.cast_zero).mpr ha)
 
 lemma complex_eisSummand_differentiableOn (hk : k ≠ 0) :
-  DifferentiableOn ℂ (fun z : ℂ => 1/(a 0 * z + a 1) ^ k) (UpperHalfPlane.coe '' ⊤) := by
+    DifferentiableOn ℂ (fun z : ℂ => 1/(a 0 * z + a 1) ^ k) (UpperHalfPlane.coe '' ⊤) := by
   by_cases ha : a ≠ 0
   · apply DifferentiableOn.div (differentiableOn_const 1)
     intro z hz
     apply DifferentiableAt.differentiableWithinAt
-      (complex_denom_HasDerivAt a k z ?_).differentiableAt
+      (complex_denom_HasDerivAt k a z ?_).differentiableAt
     apply UpperHalfPlane.coe_linear_ne_zero a ⟨z, hz⟩ ha
     intro z hz
     apply zpow_ne_zero k (UpperHalfPlane.coe_linear_ne_zero a ⟨z, hz⟩ ha)
@@ -71,7 +73,7 @@ lemma complex_eisSummand_differentiableOn (hk : k ≠ 0) :
     exact differentiableOn_const 0
 
 lemma eisSummad_complex_extension_differentiableOn (hk : k ≠ 0) :
-  DifferentiableOn ℂ (↑ₕ(eisSummand k a)) (UpperHalfPlane.coe '' ⊤) := by
+    DifferentiableOn ℂ (↑ₕ(eisSummand k a)) (UpperHalfPlane.coe '' ⊤) := by
   apply DifferentiableOn.congr (complex_eisSummand_differentiableOn k a hk)
   intro z hz
   simp only [eisSummand, one_div, comp_apply, inv_inj]
