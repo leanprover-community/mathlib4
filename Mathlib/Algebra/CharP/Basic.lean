@@ -120,6 +120,17 @@ theorem CharP.cast_eq_zero [AddMonoidWithOne R] (p : ℕ) [CharP R p] : (p : R) 
   (CharP.cast_eq_zero_iff R p p).2 (dvd_refl p)
 #align char_p.cast_eq_zero CharP.cast_eq_zero
 
+-- See note [no_index around OfNat.ofNat]
+--
+-- TODO: This lemma needs to be `@[simp]` for confluence in the presence of `CharP.cast_eq_zero` and
+-- `Nat.cast_ofNat`, but with `no_index` on its entire LHS, it matches literally every expression so
+-- is too expensive. If lean4#2867 is fixed in a performant way, this can be made `@[simp]`.
+--
+-- @[simp]
+theorem CharP.ofNat_eq_zero [AddMonoidWithOne R] (p : ℕ) [p.AtLeastTwo] [CharP R p] :
+    (no_index (OfNat.ofNat p : R)) = 0 :=
+  cast_eq_zero R p
+
 @[simp]
 theorem CharP.cast_card_eq_zero [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by
   rw [← nsmul_one, card_nsmul_eq_zero]
@@ -256,7 +267,7 @@ theorem eq_zero [CharZero R] : ringChar R = 0 :=
   eq R 0
 #align ring_char.eq_zero ringChar.eq_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 #align ring_char.nat.cast_ring_char ringChar.Nat.cast_ringChar
 
