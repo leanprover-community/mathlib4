@@ -355,7 +355,8 @@ theorem res_const' (f g : R) (V hv) :
 
 theorem const_zero (f : R) (U hu) : const R 0 f U hu = 0 :=
   Subtype.eq <| funext fun x => IsLocalization.mk'_eq_iff_eq_mul.2 <| by
-    erw [RingHom.map_zero, Subring.coe_zero, Pi.zero_apply, zero_mul]
+    rw [RingHom.map_zero]
+    exact (mul_eq_zero_of_left rfl ((algebraMap R (Localizations R x)) _)).symm
 #align algebraic_geometry.structure_sheaf.const_zero AlgebraicGeometry.StructureSheaf.const_zero
 
 theorem const_self (f : R) (U hu) : const R f f U hu = 1 :=
@@ -799,7 +800,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
     -- To accommodate for the difference `k`, we multiply both sides of the equation `n_spec (i, j)`
     -- by `(h i * h j) ^ k`
     convert congr_arg (fun z => z * (h i * h j) ^ k) (n_spec (i, j)) using 1 <;>
-      · simp only [mul_pow]; ring
+      · simp only [n, mul_pow]; ring
   -- Lastly, we need to show that the new fractions still represent our original `s`
   intro i _
   rw [op_comp, Functor.map_comp]

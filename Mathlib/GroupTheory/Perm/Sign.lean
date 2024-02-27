@@ -322,8 +322,6 @@ def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ_ : Fin n, Fin n) : Σ_ : Fin
   if _ : f a.2 < f a.1 then ⟨f a.1, f a.2⟩ else ⟨f a.2, f a.1⟩
 #align equiv.perm.sign_bij_aux Equiv.Perm.signBijAux
 
--- porting note: Lean insists `ha` and `hb` are unused despite obvious uses
-set_option linter.unusedVariables false in
 theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
     (finPairsLT n : Set (Σ _, Fin n)).InjOn (signBijAux f) := by
   rintro ⟨a₁, a₂⟩ ha ⟨b₁, b₂⟩ hb h
@@ -526,6 +524,19 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
     rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, signAux_swap hexy]
 #align equiv.perm.sign_aux3_mul_and_swap Equiv.Perm.signAux3_mul_and_swap
 
+theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
+    {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
+    signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
+  -- porting note: switched from term mode to tactic mode
+  induction' t, s using Quotient.inductionOn₂ with t s ht hs
+  show signAux2 _ _ = signAux2 _ _
+  rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
+  rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,
+    ← signAux_eq_signAux2 _ _ (e.trans e') fun _ _ => hs _]
+  exact congr_arg signAux
+    (Equiv.ext fun x => by simp [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply])
+#align equiv.perm.sign_aux3_symm_trans_trans Equiv.Perm.signAux3_symm_trans_trans
+
 /-- `SignType.sign` of a permutation returns the signature or parity of a permutation, `1` for even
 permutations, `-1` for odd permutations. It is the unique surjective group homomorphism from
 `Perm α` to the group with two elements.-/
@@ -537,7 +548,7 @@ section SignType.sign
 
 variable [Fintype α]
 
---@[simp] porting note: simp can prove
+--@[simp] Porting note (#10618): simp can prove
 theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
   MonoidHom.map_mul sign f g
 #align equiv.perm.sign_mul Equiv.Perm.sign_mul
@@ -547,7 +558,7 @@ theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
   rw [← mul_def, sign_mul]
 #align equiv.perm.sign_trans Equiv.Perm.sign_trans
 
---@[simp] porting note: simp can prove
+--@[simp] Porting note (#10618): simp can prove
 theorem sign_one : sign (1 : Perm α) = 1 :=
   MonoidHom.map_one sign
 #align equiv.perm.sign_one Equiv.Perm.sign_one
@@ -557,7 +568,7 @@ theorem sign_refl : sign (Equiv.refl α) = 1 :=
   MonoidHom.map_one sign
 #align equiv.perm.sign_refl Equiv.Perm.sign_refl
 
---@[simp] porting note: simp can prove
+--@[simp] Porting note (#10618): simp can prove
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
   rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
 #align equiv.perm.sign_inv Equiv.Perm.sign_inv
@@ -580,19 +591,6 @@ theorem IsSwap.sign_eq {f : Perm α} (h : f.IsSwap) : sign f = -1 :=
   let ⟨_, _, hxy⟩ := h
   hxy.2.symm ▸ sign_swap hxy.1
 #align equiv.perm.is_swap.sign_eq Equiv.Perm.IsSwap.sign_eq
-
-theorem signAux3_symm_trans_trans [DecidableEq β] [Fintype β] (f : Perm α) (e : α ≃ β)
-    {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
-    signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
-  -- porting note: switched from term mode to tactic mode
-  induction' t, s using Quotient.inductionOn₂ with t s ht hs
-  show signAux2 _ _ = signAux2 _ _
-  let n := equivFin β
-  rw [← signAux_eq_signAux2 _ _ n fun _ _ => ht _,
-    ← signAux_eq_signAux2 _ _ (e.trans n) fun _ _ => hs _]
-  exact congr_arg signAux
-    (Equiv.ext fun x => by simp [Equiv.coe_trans, apply_eq_iff_eq, symm_trans_apply])
-#align equiv.perm.sign_aux3_symm_trans_trans Equiv.Perm.signAux3_symm_trans_trans
 
 @[simp]
 theorem sign_symm_trans_trans [DecidableEq β] [Fintype β] (f : Perm α) (e : α ≃ β) :

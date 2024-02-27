@@ -50,7 +50,7 @@ theorem tendsto_sum_pi_div_four :
     convert (((tendsto_rpow_div_mul_add (-1) 2 1 two_ne_zero.symm).neg.const_add 1).add
         tendsto_inv_atTop_zero).comp tendsto_nat_cast_atTop_atTop using 1
     · ext k
-      simp only [NNReal.coe_nat_cast, Function.comp_apply, NNReal.coe_rpow]
+      simp only [u, NNReal.coe_nat_cast, Function.comp_apply, NNReal.coe_rpow]
       rw [← rpow_mul (Nat.cast_nonneg k) (-1 / (2 * (k : ℝ) + 1)) (2 * (k : ℝ) + 1),
         @div_mul_cancel _ _ (2 * (k : ℝ) + 1) _
           (by norm_cast; simp only [Nat.succ_ne_zero, not_false_iff]),
@@ -67,11 +67,11 @@ theorem tendsto_sum_pi_div_four :
   suffices f_bound : |f 1 - f 0| ≤ (1 : ℝ) - U + U ^ (2 * (k : ℝ) + 1) by
     rw [← norm_neg]
     convert f_bound using 1
-    simp
+    simp [b, f]
   -- We show that `U` is indeed in [0,1]
   have hU1 : (U : ℝ) ≤ 1 := by
     by_cases hk : k = 0
-    · simp [hk]
+    · simp [U, u, hk]
     · exact rpow_le_one_of_one_le_of_nonpos
         (by norm_cast; exact Nat.succ_le_iff.mpr (Nat.pos_of_ne_zero hk)) (le_of_lt
           (@div_neg_of_neg_of_pos _ _ (-(1 : ℝ)) (2 * k + 1) (neg_neg_iff_pos.mpr zero_lt_one)

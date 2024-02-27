@@ -394,7 +394,7 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
   let d := (↑ₘg 1 1 : ℝ)
   calc
     (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
-    _ = Complex.normSq (denom g z) := by dsimp [denom, Complex.normSq]; ring
+    _ = Complex.normSq (denom g z) := by dsimp [c, d, denom, Complex.normSq]; ring
 #align upper_half_plane.c_mul_im_sq_le_norm_sq_denom UpperHalfPlane.c_mul_im_sq_le_normSq_denom
 
 @[simp]
