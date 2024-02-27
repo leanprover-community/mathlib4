@@ -10,7 +10,6 @@ import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
 import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 
 /-!
