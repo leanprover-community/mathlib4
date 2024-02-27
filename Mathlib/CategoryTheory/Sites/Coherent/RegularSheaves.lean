@@ -73,7 +73,7 @@ theorem equalizerCondition_iff_isIso_lift_aux_comp (P : Cᵒᵖ ⥤ Type*) {X B 
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
     ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], IsIso
     (equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π)) := by
-  unfold EqualizerCondition
+  -- unfold EqualizerCondition
   refine ⟨fun h X B π _ _ ↦ ?_, fun h X B π _ _ ↦ ?_⟩
   · specialize h X B π
     rw [← isIso_iff_bijective, equalizerCondition_iff_isIso_lift_aux_comp] at h
