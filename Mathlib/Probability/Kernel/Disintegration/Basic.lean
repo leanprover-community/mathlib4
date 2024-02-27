@@ -168,7 +168,7 @@ lemma compProd_fst_condKernelBorelSnd (κ : kernel α (β × Ω)) [IsFiniteKerne
     rwa [he.injective he_eq] at h_mem
   conv_rhs => rw [this]
   unfold_let κ'
-  conv_rhs => rw [kernel.eq_compProd_toKernel hf]
+  conv_rhs => rw [← compProd_toKernel hf]
   change kernel.fst κ ⊗ₖ condKernelBorelSnd κ hf
     = kernel.comapRight (kernel.fst κ' ⊗ₖ hf.toKernel f) h_prod_embed
   ext c t ht : 2
@@ -209,18 +209,7 @@ lemma compProd_fst_condKernelBorelSnd (κ : kernel α (β × Ω)) [IsFiniteKerne
 
 end BorelSnd
 
-section StandardBorel
-
-noncomputable
-def kernel.condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : kernel (α × γ) ℝ :=
-  (isCondKernelCDF_condKernelCDF κ).toKernel _
-
-instance (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : IsMarkovKernel (kernel.condKernelReal κ) := by
-  unfold kernel.condKernelReal; infer_instance
-
-lemma kernel.eq_compProd_condKernelReal (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    κ = kernel.fst κ ⊗ₖ kernel.condKernelReal κ :=
-  kernel.eq_compProd_toKernel (isCondKernelCDF_condKernelCDF κ)
+section CountablyGenerated
 
 noncomputable
 def condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel κ] : kernel (α × γ) Ω :=
@@ -238,27 +227,9 @@ lemma compProd_fst_condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel �
     kernel.fst κ ⊗ₖ condKernelBorel κ = κ := by
   rw [condKernelBorel, compProd_fst_condKernelBorelSnd]
 
-end StandardBorel
+end CountablyGenerated
 
 section Unit
-
-section Real
-
-noncomputable def condKernelUnitReal (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] :
-    kernel (Unit × α) ℝ :=
-  (isCondKernelCDF_condCDF (ρ ())).toKernel (fun (p : Unit × α) ↦ condCDF (ρ ()) p.2)
-
-instance (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] : IsMarkovKernel (condKernelUnitReal ρ) := by
-  rw [condKernelUnitReal]; infer_instance
-
-lemma fst_compProd_condKernelUnitReal (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] :
-    kernel.fst ρ ⊗ₖ condKernelUnitReal ρ = ρ := by
-  have : ρ = kernel.const Unit (ρ ()) := by ext; simp
-  conv_rhs => rw [this, kernel.eq_compProd_toKernel (isCondKernelCDF_condCDF (ρ ()))]
-
-end Real
-
-section BorelSnd
 
 noncomputable
 def condKernelUnitBorel (κ : kernel Unit (α × Ω)) [IsFiniteKernel κ] : kernel (Unit × α) Ω :=
@@ -275,8 +246,6 @@ instance instIsMarkovKernel_condKernelUnitBorel (κ : kernel Unit (α × Ω)) [I
 lemma compProd_fst_condKernelUnitBorel (κ : kernel Unit (α × Ω)) [IsFiniteKernel κ] :
     kernel.fst κ ⊗ₖ condKernelUnitBorel κ = κ := by
   rw [condKernelUnitBorel, compProd_fst_condKernelBorelSnd]
-
-end BorelSnd
 
 end Unit
 
