@@ -27,7 +27,7 @@ def BoundedGDist : Prop := ∃ d, BoundedGDistWith gdist d
 end bounded
 
 
-variable {T:Type} [FunLike T α (α → γ)] [GPseudoMetricClass T α γ] (gdist:T) (s:Set α)
+variable {T:Type*} [FunLike T α (α → γ)] [GPseudoMetricClass T α γ] (gdist:T) (s:Set α)
 open GMetric
 
 section packing
