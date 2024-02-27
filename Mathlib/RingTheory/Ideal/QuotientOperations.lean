@@ -651,13 +651,11 @@ lemma comap_map_mk {I J : Ideal R} (h : I ≤ J) :
 
 /-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
 noncomputable def quotientKerEquivRange
-  {A B : Type*} [Semiring A] [Algebra R₁ A] [Semiring B] [Algebra R₁ B]
-  (f : A →ₐ[R₁] B) :
-  (A ⧸ RingHom.ker f) ≃ₐ[R₁] f.range :=
-  (Ideal.quotientEquivAlgOfEq R f.ker_rangeRestrict.symm).trans <|
--- it necessary to add `(f := …)` here, otherwise Lean times out…
-    Ideal.quotientKerAlgEquivOfSurjective (f := f.rangeRestrict)
-      f.rangeRestrict_surjective
+  {A B : Type*} [CommRing A] [Algebra R A] [Semiring B] [Algebra R B]
+  (f : A →ₐ[R] B) :
+  (A ⧸ RingHom.ker f) ≃ₐ[R] f.range :=
+  (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
+    Ideal.quotientKerAlgEquivOfSurjective f.rangeRestrict_surjective
 
 end QuotientAlgebra
 
