@@ -634,7 +634,7 @@ variable {E K} in
 `x : K` is separable over `E`, then it's also separable over `F`. -/
 theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScalarTower F E K]
     [IsSeparable F E] {x : K} (hsep : (minpoly E x).Separable) : (minpoly F x).Separable := by
-  let f := minpoly E x
+  set f := minpoly E x with hf
   let E' : IntermediateField F E := adjoin F f.frange
   haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
@@ -642,7 +642,7 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
   clear_value g
   have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
   have hzero : aeval x g = 0 := by
-    simpa only [← show _ = minpoly E x from h, aeval_map_algebraMap] using minpoly.aeval E x
+    simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=
     isIntegral_trans (IsSeparable.isAlgebraic F E).isIntegral _ hsep.isIntegral |>.tower_top
   simp_rw [← show _ = minpoly E x from h, separable_map] at hsep
@@ -651,8 +651,7 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
   haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
   haveI := adjoin.finiteDimensional halg
   haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
-  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
-    (IsSeparable.isAlgebraic _ _)
+  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯ (IsSeparable.isAlgebraic _ _)
   rw [finSepDegree_eq_finrank_of_isSeparable F E',
     finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
     FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
