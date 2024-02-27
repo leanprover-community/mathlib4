@@ -436,27 +436,19 @@ theorem kerLiftAlg_injective (f : A →ₐ[R₁] B) : Function.Injective (kerLif
 #align ideal.ker_lift_alg_injective Ideal.kerLiftAlg_injective
 
 /-- The **first isomorphism** theorem for algebras, computable version. -/
+@[simps!]
 def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
-    (hf : Function.RightInverse g f) : (A ⧸ (RingHom.ker f.toRingHom)) ≃ₐ[R₁] B :=
-  { RingHom.quotientKerEquivOfRightInverse fun x => show f.toRingHom (g x) = x from hf x,
+    (hf : Function.RightInverse g f) : (A ⧸ RingHom.ker f) ≃ₐ[R₁] B :=
+  { RingHom.quotientKerEquivOfRightInverse hf,
     kerLiftAlg f with }
 #align ideal.quotient_ker_alg_equiv_of_right_inverse Ideal.quotientKerAlgEquivOfRightInverse
+#align ideal.quotient_ker_alg_equiv_of_right_inverse.apply Ideal.quotientKerAlgEquivOfRightInverse_apply
+#align ideal.quotient_ker_alg_equiv_of_right_inverse_symm.apply Ideal.quotientKerAlgEquivOfRightInverse_symm_apply
 
--- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
-theorem quotientKerAlgEquivOfRightInverse.apply {f : A →ₐ[R₁] B} {g : B → A}
-    (hf : Function.RightInverse g f) (x : A ⧸ (RingHom.ker f.toRingHom)) :
-    quotientKerAlgEquivOfRightInverse hf x = kerLiftAlg f x :=
-  rfl
-#align ideal.quotient_ker_alg_equiv_of_right_inverse.apply Ideal.quotientKerAlgEquivOfRightInverse.apply
-
--- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
-theorem QuotientKerAlgEquivOfRightInverseSymm.apply {f : A →ₐ[R₁] B} {g : B → A}
-    (hf : Function.RightInverse g f) (x : B) : (quotientKerAlgEquivOfRightInverse hf).symm x =
-    Quotient.mkₐ R₁ (RingHom.ker f.toRingHom) (g x) :=
-  rfl
-#align ideal.quotient_ker_alg_equiv_of_right_inverse_symm.apply Ideal.QuotientKerAlgEquivOfRightInverseSymm.apply
+@[deprecated] -- 2024-02-27
+alias quotientKerAlgEquivOfRightInverse.apply := quotientKerAlgEquivOfRightInverse_apply
+@[deprecated] -- 2024-02-27
+alias QuotientKerAlgEquivOfRightInverseSymm.apply := quotientKerAlgEquivOfRightInverse_symm_apply
 
 /-- The **first isomorphism theorem** for algebras. -/
 noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : Function.Surjective f) :
