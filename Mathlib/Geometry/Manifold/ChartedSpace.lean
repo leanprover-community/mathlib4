@@ -1306,7 +1306,8 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         apply (c.symm ≫ₕ f₁).continuousOn_toFun.isOpen_inter_preimage <;> apply open_source
       have : x ∈ s := by
         constructor
-        · simp only [f₁, trans_source, preimage_univ, inter_univ, Homeomorph.toPartialHomeomorph_source]
+        · simp only [f₁, trans_source, preimage_univ, inter_univ,
+            Homeomorph.toPartialHomeomorph_source]
           rw [trans_source] at hx
           exact hx.1
         · exact hg₂
@@ -1315,7 +1316,8 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       have A : F₁ ∈ G := G.trans (e.mem_groupoid c g hc hg₁) (e'.mem_groupoid g c' hg₁ hc')
       let F₂ := (c.symm ≫ₕ f ≫ₕ c').restr s
       have : F₁ ≈ F₂ := calc
-        F₁ ≈ c.symm ≫ₕ f₁ ≫ₕ (g ≫ₕ g.symm) ≫ₕ f₂ ≫ₕ c' := by simp only [F₁, trans_assoc, _root_.refl]
+        F₁ ≈ c.symm ≫ₕ f₁ ≫ₕ (g ≫ₕ g.symm) ≫ₕ f₂ ≫ₕ c' := by
+            simp only [F₁, trans_assoc, _root_.refl]
         _ ≈ c.symm ≫ₕ f₁ ≫ₕ ofSet g.source g.open_source ≫ₕ f₂ ≫ₕ c' :=
           EqOnSource.trans' (_root_.refl _) (EqOnSource.trans' (_root_.refl _)
             (EqOnSource.trans' (self_trans_symm g) (_root_.refl _)))

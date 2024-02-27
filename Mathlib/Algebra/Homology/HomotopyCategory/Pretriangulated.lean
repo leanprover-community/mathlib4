@@ -310,8 +310,8 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
         Cochain.units_smul_v, Cochain.shift_v', Linear.units_smul_comp, comp_id,
         ext_to_iff _ _ (p + 1) rfl, assoc, lift_f_fst_v,
         Cocycle.coe_units_smul, Cocycle.shift_coe, Linear.comp_units_smul, inl_v_fst_v, smul_smul,
-        Int.units_mul_self, one_smul, lift_f_snd_v, inl_v_snd_v, smul_zero, and_self, inr_f_desc_f_assoc,
-        shiftFunctor_map_f', inr_f_fst_v, inr_f_snd_v]
+        Int.units_mul_self, one_smul, lift_f_snd_v, inl_v_snd_v, smul_zero, and_self,
+        inr_f_desc_f_assoc, shiftFunctor_map_f', inr_f_fst_v, inr_f_snd_v]
 
 set_option maxHeartbeats 800000 in
 /-- The canonical isomorphism `(triangle φ)⟦n⟧ ≅ triangle (φ⟦n⟧')`. -/
