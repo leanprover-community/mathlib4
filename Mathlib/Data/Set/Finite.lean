@@ -476,7 +476,6 @@ def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g
 
 instance fintypeRange [DecidableEq α] (f : ι → α) [Fintype (PLift ι)] : Fintype (range f) :=
   Fintype.ofFinset (Finset.univ.image <| f ∘ PLift.down) <| by simp
-  -- v4.7.0-rc1 extra argument throws it off (works also with v4.6.0)
 #align set.fintype_range Set.fintypeRange
 
 instance fintypeMap {α β} [DecidableEq β] :
