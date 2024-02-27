@@ -824,19 +824,19 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         · intro x; rfl
         · rintro ⟨x, y⟩
           fin_cases y
-          simp [castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
+          simp [to_fun, inv_fun, castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
       · constructor
         · intro x; rfl
         · rintro ⟨x, y⟩
           fin_cases x
-          simp [castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
+          simp [to_fun, inv_fun, castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
     else by
       haveI : NeZero (m * n) := ⟨hmn0⟩
       haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
       haveI : NeZero n := ⟨right_ne_zero_of_mul hmn0⟩
       have left_inv : Function.LeftInverse inv_fun to_fun := by
         intro x
-        dsimp only [ZMod.castHom_apply]
+        dsimp only [to_fun, inv_fun, ZMod.castHom_apply]
         conv_rhs => rw [← ZMod.nat_cast_zmod_val x]
         rw [if_neg hmn0, ZMod.eq_iff_modEq_nat, ← Nat.modEq_and_modEq_iff_modEq_mul h,
           Prod.fst_zmod_cast, Prod.snd_zmod_cast]

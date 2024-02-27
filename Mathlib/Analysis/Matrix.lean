@@ -491,13 +491,13 @@ lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
   classical
   let x : n → α := fun j => unitOf (A i j)
   have hxn : ‖x‖₊ = 1 := by
-    simp_rw [Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
+    simp_rw [x, Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
   specialize hN x
   rw [hxn, mul_one, Pi.nnnorm_def, Finset.sup_le_iff] at hN
   replace hN := hN i (Finset.mem_univ _)
   dsimp [mulVec, dotProduct] at hN
-  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq, nnnorm_one,
-    mul_one] at hN
+  simp_rw [x, mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq,
+    nnnorm_one, mul_one] at hN
   exact hN
 
 @[deprecated]
