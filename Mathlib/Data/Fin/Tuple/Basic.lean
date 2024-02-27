@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 import Mathlib.Data.Fin.OrderHom
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Subtype.ExtendFun
 
 #align_import data.fin.tuple.basic from "leanprover-community/mathlib"@"ef997baa41b5c428be3fb50089a7139bf4ee886b"
 
@@ -1141,5 +1142,30 @@ theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σii, Fin ii → α} :
   ⟨fun h ↦ h ▸ ⟨rfl, funext <| Fin.rec fun _ _ ↦ rfl⟩, fun ⟨_, h'⟩ ↦
     sigma_eq_of_eq_comp_cast _ h'⟩
 #align fin.sigma_eq_iff_eq_comp_cast Fin.sigma_eq_iff_eq_comp_cast
+
+section ExtendFun
+
+/-- Extend a function `f : Fin n → α` to a function on all natural numbers, by
+    defining `f i = a` for all `i ≥ n` and some given constant `a` -/
+@[simp]
+abbrev extendFun {α : Type*} {n : ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
+  Subtype.extendFun (f ∘ equivSubtype.symm) (fun _ => a)
+
+@[simp] lemma extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
+    extendFun f a i.val = f (i.castAdd _) := by
+  apply Subtype.extendFun_of_p
+  apply Nat.lt_add_right _ _ _ i.isLt
+
+@[simp] lemma extendFun_comp_val' {α a n} (m) {f : Fin (n+m) → α} :
+    (extendFun f a) ∘ val = f ∘ (castAdd m) := by
+  funext i; apply extendFun_val'
+
+@[simp]
+lemma extendFun_succ {α a n} {f : Fin (n+1) → α} :
+    extendFun f a n = f (Fin.last n) := by
+  apply Subtype.extendFun_of_p
+  apply lt_add_one
+
+end ExtendFun
 
 end Fin

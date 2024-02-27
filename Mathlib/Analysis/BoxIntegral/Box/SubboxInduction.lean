@@ -46,7 +46,7 @@ def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
   lower := s.piecewise (fun i ↦ (I.lower i + I.upper i) / 2) I.lower
   upper := s.piecewise I.upper fun i ↦ (I.lower i + I.upper i) / 2
   lower_lt_upper i := by
-    dsimp only [Set.piecewise]
+    dsimp only [Set.piecewise, Set.piecewiseMem]
     split_ifs <;> simp only [left_lt_add_div_two, add_div_two_lt_right, I.lower_lt_upper]
 #align box_integral.box.split_center_box BoxIntegral.Box.splitCenterBox
 
@@ -54,7 +54,7 @@ theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
     y ∈ I.splitCenterBox s ↔ y ∈ I ∧ ∀ i, (I.lower i + I.upper i) / 2 < y i ↔ i ∈ s := by
   simp only [splitCenterBox, mem_def, ← forall_and]
   refine' forall_congr' fun i ↦ _
-  dsimp only [Set.piecewise]
+  dsimp only [Set.piecewise, Set.piecewiseMem]
   split_ifs with hs <;> simp only [hs, iff_true_iff, iff_false_iff, not_lt]
   exacts [⟨fun H ↦ ⟨⟨(left_lt_add_div_two.2 (I.lower_lt_upper i)).trans H.1, H.2⟩, H.1⟩,
       fun H ↦ ⟨H.2, H.1.2⟩⟩,

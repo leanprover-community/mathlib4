@@ -2102,6 +2102,7 @@ import Mathlib.Data.String.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
+import Mathlib.Data.Subtype.ExtendFun
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Interval
 import Mathlib.Data.Sum.Lattice
