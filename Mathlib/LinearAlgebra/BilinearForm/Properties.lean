@@ -482,23 +482,18 @@ variable {ι : Type*} [DecidableEq ι] [Finite ι]
 `B (B.dualBasis hB b i) (b j) = B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0`,
 where `B` is a nondegenerate (symmetric) bilinear form and `b` is a finite basis. -/
 noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) :
-    Basis ι K V :=
-  haveI := FiniteDimensional.of_fintype_basis b
-  b.dualBasis.map (B.toDual hB).symm
+    Basis ι K V := LinearMap.BilinForm.dualBasis (BilinForm.toLin B) hB b
 --#align bilin_form.dual_basis BilinForm.dualBasis
 
 @[simp]
 theorem dualBasis_repr_apply (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
-    (B.dualBasis hB b).repr x i = B x (b i) := by
-  rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Basis.dualBasis_repr, toDual_def]
+    (B.dualBasis hB b).repr x i = B x (b i) :=
+  LinearMap.BilinForm.dualBasis_repr_apply (BilinForm.toLin B) hB b _ _
 --#align bilin_form.dual_basis_repr_apply BilinForm.dualBasis_repr_apply
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
-    B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
-  have := FiniteDimensional.of_fintype_basis b
-  rw [dualBasis, Basis.map_apply, Basis.coe_dualBasis, ← toDual_def hB,
-    LinearEquiv.apply_symm_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]
+    B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 :=
+  LinearMap.BilinForm.apply_dualBasis_left (BilinForm.toLin B) hB b _ _
 --#align bilin_form.apply_dual_basis_left BilinForm.apply_dualBasis_left
 
 theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : B.IsSymm)
@@ -537,7 +532,7 @@ section LinearAdjoints
 is the linear map `B₂.toLin⁻¹ ∘ B₁.toLin`. -/
 noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B₂.Nondegenerate) :
     V →ₗ[K] V :=
-  (B₂.toDual b₂).symm.toLinearMap.comp (BilinForm.toLin B₁)
+  LinearMap.BilinForm.symmCompOfNondegenerate (BilinForm.toLin B₁) (BilinForm.toLin B₂) b₂
 --#align bilin_form.symm_comp_of_nondegenerate BilinForm.symmCompOfNondegenerate
 
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
@@ -557,7 +552,7 @@ theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinF
 The lemma proving this property is `BilinForm.isAdjointPairLeftAdjointOfNondegenerate`. -/
 noncomputable def leftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (φ : V →ₗ[K] V) : V →ₗ[K] V :=
-  symmCompOfNondegenerate (B.compRight φ) B b
+  LinearMap.BilinForm.leftAdjointOfNondegenerate (BilinForm.toLin B) b φ
 --#align bilin_form.left_adjoint_of_nondegenerate BilinForm.leftAdjointOfNondegenerate
 
 theorem isAdjointPairLeftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)

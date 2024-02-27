@@ -1,6 +1,18 @@
+/-
+Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andreas Swerdlow, Kexing Ying, Christopher Hoskin
+-/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.SesquilinearForm
+
+/-!
+# Bilinear form
+
+Properties of separating left bilinear forms
+
+-/
 
 variable {R R₁ R₂ R₃ M M₁ M₂ M₃ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type*}
 
@@ -49,8 +61,6 @@ theorem isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.S
 end
 
 section FiniteDimensional
-
-
 
 variable [Field K] [AddCommGroup V] [Module K V]
 
@@ -127,7 +137,8 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.SeparatingLeft) {ι}
 @[simp]
 lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.SeparatingLeft) {ι}
     [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
-    LinearMap.BilinForm.dualBasis B.flip (LinearMap.BilinForm.SeparatingLeft.flip hB) (B.dualBasis hB b) = b :=
+    LinearMap.BilinForm.dualBasis B.flip (LinearMap.BilinForm.SeparatingLeft.flip hB)
+    (B.dualBasis hB b) = b :=
   dualBasis_dualBasis_flip _ (LinearMap.BilinForm.SeparatingLeft.flip hB) b
 
 @[simp]
