@@ -169,8 +169,8 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
 
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
-  let _ := Encodable.ofEquiv α e
-  { prim := (@Primcodable.prim α _).of_eq fun n => by
+  { __ := Encodable.ofEquiv α e
+    prim := (@Primcodable.prim α _).of_eq fun n => by
       rw [decode_ofEquiv]
       cases (@decode α _ n) <;>
         simp [encode_ofEquiv] }
