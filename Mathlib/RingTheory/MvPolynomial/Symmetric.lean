@@ -5,6 +5,8 @@ Authors: Hanting Zhang, Johan Commelin
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Data.Set.Card
+import Mathlib.Data.Sym.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 #align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
@@ -28,6 +30,8 @@ We also prove some basic facts about them.
 ## Notation
 
 + `esymm σ R n` is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
+
++ `hsymm σ R n` is the `n`th complete homogeneous symmetric polynomial in `MvPolynomial σ R`.
 
 + `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
   `(X i)^n` over `i ∈ σ`.
@@ -157,11 +161,11 @@ end CommRing
 
 end IsSymmetric
 
+variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
+
 section ElementarySymmetric
 
 open Finset
-
-variable (σ R) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R`. -/
 def esymm (n : ℕ) : MvPolynomial σ R :=
@@ -281,11 +285,47 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
 
 end ElementarySymmetric
 
+section CompleteHomogeneousSymmetric
+
+open Classical Set
+
+/-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`. -/
+def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
+
+lemma hsum_def (n : ℕ) : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
+
+@[simp]
+theorem hsymm_zero : hsymm σ R 0 = 1 := by
+  simp only [hsymm, Finset.univ_unique, Sym.eq_nil_of_card_zero, Sym.val_eq_coe, Sym.coe_nil,
+    Multiset.map_zero, Multiset.prod_zero, Finset.sum_const, Finset.card_singleton, one_smul]
+
+@[simp]
+theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
+  simp only [hsymm, Finset.univ_unique]
+  symm
+  apply Fintype.sum_equiv (Equiv.ofBijective _ Sym.one_bijective)
+  intro i
+  have : (Sym.one i).toMultiset = [i] := by rfl
+  simp only [Equiv.ofBijective_apply, Sym.val_eq_coe, this, Multiset.coe_singleton,
+    Multiset.map_singleton, Multiset.prod_singleton]
+
+theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
+  simp_rw [hsymm, map_sum, ←Multiset.prod_hom']
+  simp only [Sym.val_eq_coe, map_X]
+
+theorem rename_hsymm (n : ℕ) (e : σ ≃ τ) : rename e (hsymm σ R n) = hsymm τ R n := by
+  simp_rw [hsymm, map_sum, ← Multiset.prod_hom', rename_X]
+  apply Fintype.sum_equiv (Sym.equivCongr e)
+  simp only [Sym.val_eq_coe, Sym.equivCongr_apply, Sym.coe_map, Multiset.map_map,
+    Function.comp_apply, implies_true]
+
+theorem hsymm_isSymmetric (n : ℕ) : IsSymmetric (hsymm σ R n) := rename_hsymm _ _ n
+
+end CompleteHomogeneousSymmetric
+
 section PowerSum
 
 open Finset
-
-variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
 
 /-- The degree-`n` power sum -/
 def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
