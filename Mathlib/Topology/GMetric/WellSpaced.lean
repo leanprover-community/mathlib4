@@ -118,6 +118,12 @@ lemma separates_of_mem_ball_packingradius
   exact isPacking_of_isOpenPacking_of_lt gdist s ((mem_ball gdist).mp hz)
     (isOpenPackingWith_packingradius gdist s)
 
+structure UniformlyDiscreteWith (δ:γ) : Prop :=
+  isOpenPackingWith : IsOpenPackingWith gdist s δ
+  positive_radius : 0 < δ
+
+def Uniformlydiscrete : Prop := ∃ (δ:γ), UniformlyDiscreteWith gdist s δ
+
 end packing
 
 section covering
@@ -175,7 +181,27 @@ example : s.covering_radius' gdist ≤ s.covering_radius gdist := by
   rw [comm'] at hx'
   exact hz.trans hx'.le
 
+structure RelativelyDenseWith (δ:γ) : Prop :=
+  isClosedCoveringWith : IsClosedCoveringWith gdist s δ
+  not_top : δ < ⊤
+
+def RelativelyDense : Prop := ∃ (δ:γ), RelativelyDenseWith gdist s δ
 
 end covering
+
+section net_delone
+
+-- technically this defines a 2ε-net, but we can't define an ε-net because there is no division.
+structure IsNetWith (ε:γ) :Prop :=
+  isOpenPacking : IsOpenPackingWith gdist s ε
+  isClosedCoveringWith: IsClosedCoveringWith gdist s (2•ε)
+
+structure IsDeloneWith (r R:γ):Prop :=
+  isOpenPacking : IsOpenPackingWith gdist s r
+  isClosedCoveringWith: IsClosedCoveringWith gdist s R
+
+def IsDelone : Prop := ∃ (r R :γ),IsDeloneWith gdist s r R
+
+end net_delone
 
 end Set
