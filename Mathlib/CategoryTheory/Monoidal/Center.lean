@@ -38,7 +38,7 @@ open CategoryTheory.MonoidalCategory
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
-noncomputable section
+section
 
 namespace CategoryTheory
 
@@ -73,7 +73,7 @@ and `b` is a half-braiding on `X`.
 -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 def Center :=
-  Σ X : C, HalfBraiding X
+  Σ X : C, HalfBraiding X -- Why is this defined as a sigma type instead of a structure?
 #align category_theory.center CategoryTheory.Center
 
 namespace Center
@@ -89,17 +89,15 @@ structure Hom (X Y : Center C) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-instance : Quiver (Center C) where
+instance : Category (Center C) where
   Hom := Hom
+  id X := { f := 𝟙 X.1 }
+  comp f g := { f := f.f ≫ g.f }
 
 @[ext]
 theorem ext {X Y : Center C} (f g : X ⟶ Y) (w : f.f = g.f) : f = g := by
   cases f; cases g; congr
 #align category_theory.center.ext CategoryTheory.Center.ext
-
-instance : Category (Center C) where
-  id X := { f := 𝟙 X.1 }
-  comp f g := { f := f.f ≫ g.f }
 
 @[simp]
 theorem id_f (X : Center C) : Hom.f (𝟙 X) = 𝟙 X.1 :=
@@ -115,16 +113,18 @@ theorem comp_f {X Y Z : Center C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).f = f.
 a morphism whose underlying morphism is an isomorphism.
 -/
 @[simps]
-def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
-  hom := f
-  inv := ⟨inv f.f,
-    fun U => by simp [← cancel_epi (f.f ▷ U), ← comp_whiskerRight_assoc,
-      ← MonoidalCategory.whiskerLeft_comp] ⟩
+def isoMk {X Y : Center C} (f : X.1 ≅ Y.1)
+    (H : ∀ U, (f.hom ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f.hom)) :
+    X ≅ Y where
+  hom := ⟨f.hom, H⟩
+  inv := ⟨f.inv,
+    fun U => by erw [(whiskerRightIso f U).inv_comp_eq, ← Category.assoc, H,
+      Category.assoc, (whiskerLeftIso U f).hom_inv_id, Category.comp_id]⟩
 #align category_theory.center.iso_mk CategoryTheory.Center.isoMk
 
 instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
-  change IsIso (isoMk f).hom
-  infer_instance
+  obtain ⟨g, h1, h2⟩ := ‹IsIso f.f›
+  exact inferInstanceAs (IsIso (isoMk ⟨f.f, g, h1, h2⟩ f.comm).hom)
 #align category_theory.center.is_iso_of_f_is_iso CategoryTheory.Center.isIso_of_f_isIso
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
@@ -227,17 +227,17 @@ def tensorUnit : Center C :=
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def associator (X Y Z : Center C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
-  isoMk ⟨(α_ X.1 Y.1 Z.1).hom, fun U => by simp⟩
+  isoMk (α_ X.1 Y.1 Z.1) (by simp)
 #align category_theory.center.associator CategoryTheory.Center.associator
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def leftUnitor (X : Center C) : tensorObj tensorUnit X ≅ X :=
-  isoMk ⟨(λ_ X.1).hom, fun U => by simp⟩
+  isoMk (λ_ X.1) (by simp)
 #align category_theory.center.left_unitor CategoryTheory.Center.leftUnitor
 
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 def rightUnitor (X : Center C) : tensorObj X tensorUnit ≅ X :=
-  isoMk ⟨(ρ_ X.1).hom, fun U => by simp⟩
+  isoMk (ρ_ X.1) (by simp)
 #align category_theory.center.right_unitor CategoryTheory.Center.rightUnitor
 
 end
@@ -333,29 +333,37 @@ section
 variable (C)
 
 /-- The forgetful monoidal functor from the Drinfeld center to the original category. -/
-@[simps]
-def forget : MonoidalFunctor (Center C) C where
-  obj X := X.1
-  map f := f.f
-  ε := 𝟙 (𝟙_ C)
-  μ X Y := 𝟙 (X.1 ⊗ Y.1)
+def forget : MonoidalFunctor (Center C) C :=
+  .mk' (.mk ⟨(fun X => X.1), (fun f => f.f)⟩) (Iso.refl _) (fun _ _ => Iso.refl _)
 #align category_theory.center.forget CategoryTheory.Center.forget
 
+variable {C}
+
+@[simp] lemma forget_obj (X : Center C) : (forget C).obj X = X.1 := rfl
+@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : (forget C).map f = f.f := rfl
+@[simp]
+lemma forget_μIso (X Y : Center C) : (forget C).μIso X Y = Iso.refl _ := rfl
+
+variable (C)
+
+@[simp] lemma forget_εIso : (forget C).εIso = Iso.refl _ := rfl
+
 instance : ReflectsIsomorphisms (forget C).toFunctor where
-  reflects f i := by dsimp at i; change IsIso (isoMk f).hom; infer_instance
+  reflects f i := by
+    obtain ⟨g, h1, h2⟩ := i
+    exact inferInstanceAs (IsIso (isoMk ⟨f.f, g, h1, h2⟩ f.comm).hom)
 
 end
 
 /-- Auxiliary definition for the `BraidedCategory` instance on `Center C`. -/
 @[simps!]
 def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
-  isoMk
-    ⟨(X.2.β Y.1).hom, fun U => by
-      dsimp
-      simp only [Category.assoc]
-      rw [← IsIso.inv_comp_eq, IsIso.Iso.inv_hom, ← HalfBraiding.monoidal_assoc,
-        ← HalfBraiding.naturality_assoc, HalfBraiding.monoidal]
-      simp⟩
+  isoMk (X.2.β Y.1) fun U => by
+    dsimp
+    simp only [Category.assoc]
+    rw [← IsIso.inv_comp_eq, IsIso.Iso.inv_hom, ← HalfBraiding.monoidal_assoc,
+      ← HalfBraiding.naturality_assoc, HalfBraiding.monoidal]
+    simp
 #align category_theory.center.braiding CategoryTheory.Center.braiding
 
 instance braidedCategoryCenter : BraidedCategory (Center C) where
@@ -379,15 +387,26 @@ variable (C)
 
 /-- The functor lifting a braided category to its center, using the braiding as the half-braiding.
 -/
-@[simps]
-def ofBraided : MonoidalFunctor C (Center C) where
-  obj := ofBraidedObj
-  map f :=
-    { f
-      comm := fun U => braiding_naturality_left f U }
-  ε := { f := 𝟙 _ }
-  μ X Y := { f := 𝟙 _ }
+def ofBraided : BraidedFunctor C (Center C) :=
+  .mk' <| .mk' (.mk ⟨ofBraidedObj, (fun f => ⟨f, braiding_naturality_left f⟩)⟩)
+    (isoMk (Iso.refl _) (by aesop_cat))
+    (fun _ _ => isoMk (Iso.refl _) (by aesop_cat))
 #align category_theory.center.of_braided CategoryTheory.Center.ofBraided
+
+variable {C}
+
+@[simp]
+lemma ofBraided_obj (X : C) : (ofBraided C).obj X = ofBraidedObj X := rfl
+@[simp]
+lemma ofBraided_map_f {X Y} (f : X ⟶ Y) : ((ofBraided C).map f).f = f := rfl
+
+@[simp]
+lemma ofBraided_μIso_hom_f (X Y : C) :
+    ((ofBraided C).μIso X Y).hom.f = 𝟙 _ := rfl
+
+variable (C)
+
+@[simp] lemma ofBraided_εIso_hom_f : (ofBraided C).εIso.hom.f = 𝟙 _ := rfl
 
 end
 

@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 -/
 
 
-noncomputable section
+section
 
 namespace CategoryTheory
 
@@ -27,8 +27,8 @@ which is sent by a faithful monoidal functor to an exact pairing,
 the equations holds automatically. -/
 def exactPairingOfFaithful [Faithful F.toFunctor] {X Y : C} (eval : Y ⊗ X ⟶ 𝟙_ C)
     (coeval : 𝟙_ C ⟶ X ⊗ Y) [ExactPairing (F.obj X) (F.obj Y)]
-    (map_eval : F.map eval = inv (F.μ _ _) ≫ ε_ _ _ ≫ F.ε)
-    (map_coeval : F.map coeval = inv F.ε ≫ η_ _ _ ≫ F.μ _ _) : ExactPairing X Y where
+    (map_eval : F.map eval = (F.μIso _ _).inv ≫ ε_ _ _ ≫ F.εIso.hom)
+    (map_coeval : F.map coeval = F.εIso.inv ≫ η_ _ _ ≫ (F.μIso _ _).hom) : ExactPairing X Y where
   evaluation' := eval
   coevaluation' := coeval
   evaluation_coevaluation' :=
@@ -42,8 +42,8 @@ with an exact pairing, we get an exact pairing.
 -/
 def exactPairingOfFullyFaithful [Full F.toFunctor] [Faithful F.toFunctor] (X Y : C)
     [ExactPairing (F.obj X) (F.obj Y)] : ExactPairing X Y :=
-  exactPairingOfFaithful F (F.toFunctor.preimage (inv (F.μ _ _) ≫ ε_ _ _ ≫ F.ε))
-    (F.toFunctor.preimage (inv F.ε ≫ η_ _ _ ≫ F.μ _ _)) (by simp) (by simp)
+  exactPairingOfFaithful F (F.toFunctor.preimage ((F.μIso _ _).inv ≫ ε_ _ _ ≫ F.εIso.hom))
+    (F.toFunctor.preimage (F.εIso.inv ≫ η_ _ _ ≫ (F.μIso _ _).hom)) (by simp) (by simp)
 #align category_theory.exact_pairing_of_fully_faithful CategoryTheory.exactPairingOfFullyFaithful
 
 /-- Pull back a left dual along an equivalence. -/

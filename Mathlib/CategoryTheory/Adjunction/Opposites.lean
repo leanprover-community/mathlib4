@@ -28,7 +28,9 @@ universe v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
-namespace CategoryTheory.Adjunction
+namespace CategoryTheory
+
+namespace Adjunction
 
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
 -- Porting note: in mathlib3 we generated all the default `simps` lemmas.
@@ -36,27 +38,13 @@ namespace CategoryTheory.Adjunction
 -- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
 -- See also the porting note on opAdjointOpOfAdjoint
 @[simps! unit_app counit_app]
-def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun {X Y} =>
-      ((h.homEquiv (Opposite.op Y) (Opposite.op X)).trans (opEquiv _ _)).symm.trans
-        (opEquiv _ _)
-    homEquiv_naturality_left_symm := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_unit, homEquiv_unit]
-      simp
-    homEquiv_naturality_right := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X Y Y' f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_counit, homEquiv_counit]
-      simp }
+def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G where
+  homEquiv X Y :=
+    ((h.homEquiv (.op Y) (.op X)).trans (opEquiv _ _)).symm.trans (opEquiv _ _)
+  unit := NatTrans.unop h.counit
+  counit := NatTrans.unop h.unit
+  homEquiv_unit := (opEquiv _ _).apply_eq_iff_eq_symm_apply.mpr h.homEquiv_counit
+  homEquiv_counit := (opEquiv _ _).apply_eq_iff_eq_symm_apply.mpr h.homEquiv_unit
 #align category_theory.adjunction.adjoint_of_op_adjoint_op CategoryTheory.Adjunction.adjointOfOpAdjointOp
 
 /-- If `G` is adjoint to `F.op` then `F` is adjoint to `G.unop`. -/
@@ -80,26 +68,13 @@ def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ)
 -- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
 -- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
 -- See also the porting note on adjointOfOpAdjointOp
-def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv := fun X Y =>
-      (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (Opposite.op _)).symm)
-    homEquiv_naturality_left_symm := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_unit, homEquiv_unit]
-      simp
-    homEquiv_naturality_right := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_counit, homEquiv_counit]
-      simp }
+def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op where
+  homEquiv X Y :=
+    (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (.op _)).symm)
+  unit := NatTrans.op h.counit
+  counit := NatTrans.op h.unit
+  homEquiv_unit := (opEquiv _ _).symm_apply_eq.mpr h.homEquiv_counit
+  homEquiv_counit := (opEquiv _ _).symm_apply_eq.mpr h.homEquiv_unit
 #align category_theory.adjunction.op_adjoint_op_of_adjoint CategoryTheory.Adjunction.opAdjointOpOfAdjoint
 
 /-- If `G` is adjoint to `F.unop` then `F` is adjoint to `G.op`. -/
@@ -226,37 +201,17 @@ def rightAdjointUniq {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F �
 -- Porting note (#10618): simp can prove this
 theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G)
     (adj2 : F ⊣ G') (x : D) :
-    (adj2.homEquiv _ _).symm ((rightAdjointUniq adj1 adj2).hom.app x) = adj1.counit.app x := by
-  apply Quiver.Hom.op_inj
-  convert homEquiv_leftAdjointUniq_hom_app (opAdjointOpOfAdjoint _ F adj2)
+    (adj2.homEquiv _ _).symm ((rightAdjointUniq adj1 adj2).hom.app x) = adj1.counit.app x :=
+  Quiver.Hom.op_inj <| homEquiv_leftAdjointUniq_hom_app (opAdjointOpOfAdjoint _ F adj2)
     (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x)
-  -- Porting note: was `simpa`
-  simp only [opAdjointOpOfAdjoint, Functor.op_obj, Opposite.unop_op, mkOfHomEquiv_unit_app,
-    Equiv.trans_apply, homEquiv_counit, Functor.id_obj]
-  -- Porting note: Yet another `erw`...
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [F.map_id]
-  rw [Category.id_comp]
-  rfl
 #align category_theory.adjunction.hom_equiv_symm_right_adjoint_uniq_hom_app CategoryTheory.Adjunction.homEquiv_symm_rightAdjointUniq_hom_app
 
 @[reassoc (attr := simp)]
 theorem unit_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G')
     (x : C) : adj1.unit.app x ≫ (rightAdjointUniq adj1 adj2).hom.app (F.obj x) =
-      adj2.unit.app x := by
-  apply Quiver.Hom.op_inj
-  convert
-    leftAdjointUniq_hom_app_counit (opAdjointOpOfAdjoint _ _ adj2)
-      (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x) using 1
-  --all_goals simp
-  all_goals {
-    -- Porting note: Again, something seems wrong here... Some `simp` lemmas are not firing!
-    simp only [Functor.id_obj, Functor.comp_obj, op_comp, Functor.op_obj, Opposite.unop_op,
-      opAdjointOpOfAdjoint, mkOfHomEquiv_counit_app, Equiv.invFun_as_coe, Equiv.symm_trans_apply,
-      Equiv.symm_symm, homEquiv_unit]
-    erw [Functor.map_id]
-    rw [Category.comp_id]
-    rfl }
+      adj2.unit.app x :=
+  Quiver.Hom.op_inj <| leftAdjointUniq_hom_app_counit (opAdjointOpOfAdjoint _ _ adj2)
+      (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x)
 #align category_theory.adjunction.unit_right_adjoint_uniq_hom_app CategoryTheory.Adjunction.unit_rightAdjointUniq_hom_app
 
 @[reassoc (attr := simp)]
@@ -269,20 +224,9 @@ theorem unit_rightAdjointUniq_hom {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G
 @[reassoc (attr := simp)]
 theorem rightAdjointUniq_hom_app_counit {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G')
     (x : D) :
-    F.map ((rightAdjointUniq adj1 adj2).hom.app x) ≫ adj2.counit.app x = adj1.counit.app x := by
-  apply Quiver.Hom.op_inj
-  convert
-    unit_leftAdjointUniq_hom_app (opAdjointOpOfAdjoint _ _ adj2)
-      (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x) using 1
-  · simp only [Functor.id_obj, op_comp, Functor.comp_obj, Functor.op_obj, Opposite.unop_op,
-      opAdjointOpOfAdjoint_unit_app, Functor.op_map]
-    dsimp [opEquiv]
-    simp only [← op_comp]
-    congr 2
-    simp
-  · simp only [Functor.id_obj, opAdjointOpOfAdjoint_unit_app, Opposite.unop_op]
-    erw [Functor.map_id, Category.id_comp]
-    rfl
+    F.map ((rightAdjointUniq adj1 adj2).hom.app x) ≫ adj2.counit.app x = adj1.counit.app x :=
+  Quiver.Hom.op_inj <| unit_leftAdjointUniq_hom_app (opAdjointOpOfAdjoint _ _ adj2)
+      (opAdjointOpOfAdjoint _ _ adj1) (Opposite.op x)
 #align category_theory.adjunction.right_adjoint_uniq_hom_app_counit CategoryTheory.Adjunction.rightAdjointUniq_hom_app_counit
 
 @[reassoc (attr := simp)]
@@ -340,4 +284,12 @@ def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G
   leftAdjointUniq adj1 (adj2.ofNatIsoRight r.symm)
 #align category_theory.adjunction.nat_iso_of_right_adjoint_nat_iso CategoryTheory.Adjunction.natIsoOfRightAdjointNatIso
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+instance IsLeftAdjoint.op (F : C ⥤ D) [IsLeftAdjoint F] : IsRightAdjoint F.op where
+  adj := .opAdjointOpOfAdjoint _ _ (.ofLeftAdjoint F)
+
+instance IsRightAdjoint.op (F : C ⥤ D) [IsRightAdjoint F] : IsLeftAdjoint F.op where
+  adj := .opAdjointOpOfAdjoint _ _ (.ofRightAdjoint F)
+
+end CategoryTheory

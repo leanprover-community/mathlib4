@@ -180,7 +180,7 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
   obj A :=
     { obj := fun _ => A.X
       map := fun _ => 𝟙 _
-      ε := A.one
+      η := A.one
       μ := fun _ _ => A.mul
       map_id := fun _ => rfl
       map_comp := fun _ _ => (Category.id_comp (𝟙 A.X)).symm }

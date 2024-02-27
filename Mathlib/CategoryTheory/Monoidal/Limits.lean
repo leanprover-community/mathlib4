@@ -126,7 +126,7 @@ theorem limLax_map {F G : J ⥤ C} (α : F ⟶ G) : limLax.map α = lim.map α :
 
 @[simp]
 theorem limLax_ε :
-    (@limLax J _ C _ _ _).ε =
+    (@limLax J _ C _ _ _).η =
       limit.lift _
         { pt := _
           π := { app := fun j => 𝟙 _ } } :=

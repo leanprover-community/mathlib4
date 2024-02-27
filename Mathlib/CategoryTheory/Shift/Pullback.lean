@@ -34,7 +34,7 @@ attribute [local instance] endofunctorMonoidalCategory
 
 /-- The shift on `PullbackShift C φ` is obtained by precomposing the shift on `C` with
 the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B`. -/
-noncomputable instance : HasShift (PullbackShift C φ) A where
+instance : HasShift (PullbackShift C φ) A where
   shift := (Discrete.addMonoidalFunctor φ).comp (@HasShift.shift C B _ _ _)
 
 instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
@@ -52,7 +52,7 @@ instance [Preadditive C] (a : A) [(shiftFunctor C (φ a)).Additive] :
 
 /-- When `b = φ a`, this is the canonical
 isomorphism `shiftFunctor (PullbackShift C φ) a ≅ shiftFunctor C b`. -/
-noncomputable def pullbackShiftIso (a : A) (b : B) (h : b = φ a) :
+def pullbackShiftIso (a : A) (b : B) (h : b = φ a) :
     shiftFunctor (PullbackShift C φ) a ≅ shiftFunctor C b := eqToIso (by subst h; rfl)
 
 variable {C}

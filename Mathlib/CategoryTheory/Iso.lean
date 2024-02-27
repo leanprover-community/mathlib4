@@ -578,11 +578,9 @@ end Iso
 
 namespace Functor
 
-universe u₁ v₁ u₂ v₂
+universe u₁ v₁ u₂ v₂ u₃ v₃
 
-variable {D : Type u₂}
-
-variable [Category.{v₂} D]
+variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/
 @[simps, pp_dot]
@@ -628,6 +626,10 @@ theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
 theorem map_inv_hom (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map (inv f) ≫ F.map f = 𝟙 (F.obj Y) := by simp
 #align category_theory.functor.map_inv_hom CategoryTheory.Functor.map_inv_hom
+
+@[simp]
+theorem comp_mapIso (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ≅ Y) :
+    (F ⋙ G).mapIso f = G.mapIso (F.mapIso f) := rfl
 
 end Functor
 

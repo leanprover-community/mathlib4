@@ -147,10 +147,10 @@ instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) 
     IsTrivial (Rep.of ρ) where
 
 -- Porting note: the two following instances were found automatically in mathlib3
-noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesLimitsForget.{u} _ _
 
-noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesColimitsForget.{u} _ _
 
 /- Porting note: linter complains `simp` unfolds some types in the LHS, so
@@ -175,7 +175,7 @@ variable (k G)
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-noncomputable def linearization : MonoidalFunctor (Action (Type u) (MonCat.of G)) (Rep k G) :=
+def linearization : MonoidalFunctor (Action (Type u) (MonCat.of G)) (Rep k G) :=
   (ModuleCat.monoidalFree k).mapAction (MonCat.of G)
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization Rep.linearization
@@ -216,45 +216,48 @@ set_option linter.uppercaseLean3 false in
 #align Rep.linearization_map_hom_single Rep.linearization_map_hom_single
 
 @[simp]
-theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
-    ((linearization k G).μ X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
-  rfl
+theorem linearization_μIso_hom_hom (X Y : Action (Type u) (MonCat.of G)) :
+    ((linearization k G).μIso X Y).hom.hom =
+      (finsuppTensorFinsupp' k X.V Y.V).toLinearMap := rfl
 set_option linter.uppercaseLean3 false in
-#align Rep.linearization_μ_hom Rep.linearization_μ_hom
+#align Rep.linearization_μ_hom Rep.linearization_μIso_hom_hom
 
 @[simp]
-theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
-    (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
+theorem linearization_μIso_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
+    ((linearization k G).μIso X Y).inv.hom =
+      (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
 -- Porting note: broken proof was
 /-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
-  rw [← Action.forget_map, Functor.map_inv]
+  rw [← Action.forget_map, ← Functor.mapIso_inv, ← IsIso.Iso.inv_hom]
   apply IsIso.inv_eq_of_hom_inv_id
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
 set_option linter.uppercaseLean3 false in
-#align Rep.linearization_μ_inv_hom Rep.linearization_μ_inv_hom
+#align Rep.linearization_μ_inv_hom Rep.linearization_μIso_inv_hom
 
 @[simp]
-theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUnit.unit :=
-  rfl
+theorem linearization_εIso_hom_hom :
+    (linearization k G).εIso.hom.hom = Finsupp.lsingle PUnit.unit := by
+  simp [linearization]
 set_option linter.uppercaseLean3 false in
-#align Rep.linearization_ε_hom Rep.linearization_ε_hom
+#align Rep.linearization_ε_hom Rep.linearization_εIso_hom_hom
 
 -- This was always a bad simp lemma, but the linter did not notice until lean4#2644
 @[simp, nolint simpNF]
-theorem linearization_ε_inv_hom_apply (r : k) :
-    (inv (linearization k G).ε).hom (Finsupp.single PUnit.unit r) = r :=
-  IsIso.hom_inv_id_apply (linearization k G).ε r
+theorem linearization_εIso_inv_hom_apply (r : k) :
+    (linearization k G).εIso.inv.hom (Finsupp.single PUnit.unit r) = r := by
+  convert (linearization k G).εIso.hom_inv_id_apply r using 2
+  exact (congrArg (DFunLike.coe . r) linearization_εIso_hom_hom).symm
 set_option linter.uppercaseLean3 false in
-#align Rep.linearization_ε_inv_hom_apply Rep.linearization_ε_inv_hom_apply
+#align Rep.linearization_ε_inv_hom_apply Rep.linearization_εIso_inv_hom_apply
 
 variable (k G)
 
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
 @[simps!]
-noncomputable def linearizationTrivialIso (X : Type u) :
+def linearizationTrivialIso (X : Type u) :
     (linearization k G).obj (Action.mk X 1) ≅ trivial k G (X →₀ k) :=
   Action.mkIso (Iso.refl _) fun _ => Finsupp.lhom_ext' fun _ => LinearMap.ext
     fun _ => linearization_single ..
@@ -263,26 +266,26 @@ set_option linter.uppercaseLean3 false in
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-noncomputable abbrev ofMulAction (H : Type u) [MulAction G H] : Rep k G :=
+abbrev ofMulAction (H : Type u) [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 set_option linter.uppercaseLean3 false in
 #align Rep.of_mul_action Rep.ofMulAction
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
-noncomputable def leftRegular : Rep k G :=
+def leftRegular : Rep k G :=
   ofMulAction k G G
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular Rep.leftRegular
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-noncomputable def diagonal (n : ℕ) : Rep k G :=
+def diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal Rep.diagonal
 
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
-noncomputable def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
+def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
     (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
   Iso.refl _
 set_option linter.uppercaseLean3 false in
@@ -328,7 +331,7 @@ variable {k G}
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 @[simps]
-noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
+def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
   comm g := by
     refine Finsupp.lhom_ext' fun y => LinearMap.ext_ring ?_
@@ -355,7 +358,7 @@ set_option linter.uppercaseLean3 false in
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
-noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶ A) ≃ₗ[k] A where
+def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶ A) ≃ₗ[k] A where
   toFun f := f.hom (Finsupp.single 1 1)
   map_add' x y := rfl
   map_smul' r x := rfl
@@ -606,7 +609,7 @@ example : MonoidalPreadditive (Rep k G) := by infer_instance
 
 example : MonoidalLinear k (Rep k G) := by infer_instance
 
-noncomputable section
+section
 
 /-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
 theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V W : Type*)

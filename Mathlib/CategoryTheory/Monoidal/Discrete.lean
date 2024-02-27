@@ -47,15 +47,37 @@ variable {M} {N : Type u'} [Monoid N]
 /-- A multiplicative morphism between monoids gives a monoidal functor between the corresponding
 discrete monoidal categories.
 -/
-@[to_additive (attr := simps) Discrete.addMonoidalFunctor]
-def Discrete.monoidalFunctor (F : M →* N) : MonoidalFunctor (Discrete M) (Discrete N)
-    where
-  obj X := Discrete.mk (F X.as)
-  map f := Discrete.eqToHom (F.congr_arg (eq_of_hom f))
-  ε := Discrete.eqToHom F.map_one.symm
-  μ X Y := Discrete.eqToHom (F.map_mul X.as Y.as).symm
+@[to_additive Discrete.addMonoidalFunctor]
+def Discrete.monoidalFunctor (F : M →* N) : MonoidalFunctor (Discrete M) (Discrete N) :=
+  MonoidalFunctor.mk' (Discrete.functor (Discrete.mk ∘ F))
+    (Discrete.eqToIso F.map_one.symm)
+    (fun X Y => Discrete.eqToIso (F.map_mul X.as Y.as).symm)
 #align category_theory.discrete.monoidal_functor CategoryTheory.Discrete.monoidalFunctor
 #align category_theory.discrete.add_monoidal_functor CategoryTheory.Discrete.addMonoidalFunctor
+
+variable {F : M →* N}
+
+-- simps is no longer working as of the MonoidalFunctor refactor
+@[to_additive (attr:=simp) Discrete.addMonoidalFunctor_obj]
+lemma Discrete.monoidalFunctor_obj (X : Discrete M) :
+    (Discrete.monoidalFunctor F).obj X = Discrete.mk (F X.as) := rfl
+
+@[to_additive (attr:=simp) Discrete.addMonoidalFunctor_map]
+lemma Discrete.monoidalFunctor_map {X Y} (f : X ⟶ Y) :
+    (Discrete.monoidalFunctor F).map f =
+      Discrete.eqToHom' (congrArg _ f.down.down) := rfl
+
+
+@[to_additive (attr:=simp) Discrete.addMonoidalFunctor_μIso]
+lemma Discrete.monoidalFunctor_μIso (X Y : Discrete M) :
+    (Discrete.monoidalFunctor F).μIso X Y =
+      Discrete.eqToIso (F.map_mul X.as Y.as).symm := rfl
+
+variable (F)
+
+@[to_additive (attr:=simp) Discrete.addMonoidalFunctor_εIso]
+lemma Discrete.monoidalFunctor_εIso :
+    (Discrete.monoidalFunctor F).εIso = (Discrete.eqToIso F.map_one.symm) := rfl
 
 /-- An additive morphism between add_monoids gives a
 monoidal functor between the corresponding discrete monoidal categories. -/
