@@ -109,7 +109,7 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
--- Porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/

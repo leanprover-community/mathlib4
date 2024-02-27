@@ -51,7 +51,7 @@ inductive WithTerminal : Type u
   deriving Inhabited
 #align category_theory.with_terminal CategoryTheory.WithTerminal
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] WithTerminal
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WithTerminal
 
 /-- Formally adjoin an initial object to a category. -/
 inductive WithInitial : Type u
@@ -60,7 +60,7 @@ inductive WithInitial : Type u
   deriving Inhabited
 #align category_theory.with_initial CategoryTheory.WithInitial
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] WithInitial
+attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WithInitial
 
 namespace WithTerminal
 
@@ -114,7 +114,7 @@ def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
     down (f ≫ g) = down f ≫ down g :=
   rfl
 
-@[aesop safe destruct (rule_sets [CategoryTheory])]
+@[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_from_star {X : C} (f : star ⟶ of X) : False := (f : PEmpty).elim
 
 /-- The inclusion from `C` into `WithTerminal C`. -/
@@ -412,7 +412,7 @@ def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
     down (f ≫ g) = down f ≫ down g :=
   rfl
 
-@[aesop safe destruct (rule_sets [CategoryTheory])]
+@[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_to_star {X : C} (f : of X ⟶ star) : False := (f : PEmpty).elim
 
 /-- The inclusion of `C` into `WithInitial C`. -/

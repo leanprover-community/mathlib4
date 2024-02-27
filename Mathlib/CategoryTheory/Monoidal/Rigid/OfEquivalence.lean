@@ -22,6 +22,8 @@ variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C] [MonoidalC
 
 variable (F : MonoidalFunctor C D)
 
+attribute [local simp] id_tensorHom tensorHom_id
+
 /-- Given candidate data for an exact pairing,
 which is sent by a faithful monoidal functor to an exact pairing,
 the equations holds automatically. -/
@@ -32,9 +34,13 @@ def exactPairingOfFaithful [Faithful F.toFunctor] {X Y : C} (eval : Y ⊗ X ⟶ 
   evaluation' := eval
   coevaluation' := coeval
   evaluation_coevaluation' :=
-    F.toFunctor.map_injective (by simp [map_eval, map_coeval, MonoidalFunctor.map_tensor])
+    F.toFunctor.map_injective <| by
+      simp [map_eval, map_coeval,
+        MonoidalFunctor.map_whiskerLeft', MonoidalFunctor.map_whiskerRight']
   coevaluation_evaluation' :=
-    F.toFunctor.map_injective (by simp [map_eval, map_coeval, MonoidalFunctor.map_tensor])
+    F.toFunctor.map_injective <| by
+      simp [map_eval, map_coeval,
+        MonoidalFunctor.map_whiskerLeft', MonoidalFunctor.map_whiskerRight']
 #align category_theory.exact_pairing_of_faithful CategoryTheory.exactPairingOfFaithful
 
 /-- Given a pair of objects which are sent by a fully faithful functor to a pair of objects

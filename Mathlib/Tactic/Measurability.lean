@@ -14,16 +14,16 @@ We define the `measurability` tactic using `aesop`. -/
 
 open Lean.Parser.Tactic (config)
 
-attribute [aesop (rule_sets [Measurable]) unfold norm] Function.comp
+attribute [aesop (rule_sets := [Measurable]) unfold norm] Function.comp
 -- FIXME: `npowRec` is an internal implementation detail,
 -- and `aesop` certainly should not know about it.
 -- If anyone is working on the `measurability` tactic, please try to fix this!
-attribute [aesop (rule_sets [Measurable]) norm] npowRec
+attribute [aesop (rule_sets := [Measurable]) norm] npowRec
 
 /--
 The `measurability` attribute used to tag continuity statements for the `measurability` tactic. -/
 macro "measurability" : attr =>
-  `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `Measurable):ident]))
+  `(attr|aesop safe apply (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
 
 /--
 The tactic `measurability` solves goals of the form `Measurable f`, `AEMeasurable f`,
@@ -31,7 +31,7 @@ The tactic `measurability` solves goals of the form `Measurable f`, `AEMeasurabl
 with the `measurability` user attribute. -/
 macro "measurability" (config)? : tactic =>
   `(tactic| aesop (config := { terminal := true })
-    (rule_sets [$(Lean.mkIdent `Measurable):ident]))
+    (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
 
 /--
 The tactic `measurability?` solves goals of the form `Measurable f`, `AEMeasurable f`,
@@ -40,7 +40,7 @@ with the `measurability` user attribute, and suggests a faster proof script that
 for the tactic call in case of success. -/
 macro "measurability?" (config)? : tactic =>
   `(tactic| aesop? (config := { terminal := true })
-    (rule_sets [$(Lean.mkIdent `Measurable):ident]))
+    (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
 
 -- Todo: implement `measurability!` and `measurability!?` and add configuration,
 -- original syntax was (same for the missing `measurability` variants):

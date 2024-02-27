@@ -88,7 +88,9 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
   RingQuot.instAlgebra _
 
 -- verify there are no diamonds
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
@@ -249,7 +251,7 @@ theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (
     (f : M →ₗ[R] A) :
     (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
       (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =
-        Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
+        Q.polarBilin.compr₂ (Algebra.linearMap R A) := by
   simp_rw [DFunLike.ext_iff]
   refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
   change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
