@@ -200,38 +200,30 @@ lemma measurableSet_countablePartition (n : ℕ) {s : Set α} (hs : s ∈ counta
     MeasurableSet s :=
   generateFrom_countablePartition_le α n _ (measurableSet_generateFrom hs)
 
-lemma exists_countablePartition_mem (n : ℕ) (a : α) : ∃ s, s ∈ countablePartition α n ∧ a ∈ s := by
-  have h_univ := sUnion_countablePartition α n
-  have h_mem_univ := mem_univ a
-  rw [← h_univ] at h_mem_univ
-  simpa only [mem_sUnion] using h_mem_univ
-
 /-- The set in `countablePartition α n` to which `a : α` belongs. -/
-def partitionSet (n : ℕ) (a : α) : Set α := (exists_countablePartition_mem n a).choose
+def countablePartitionSet (n : ℕ) (a : α) : Set α :=
+  memPartitionSet (enumerateCountable countable_countableGeneratingSet ∅) n a
+  --(exists_countablePartition_mem n a).choose
 
-lemma partitionSet_mem (n : ℕ) (a : α) : partitionSet n a ∈ countablePartition α n :=
-  (exists_countablePartition_mem n a).choose_spec.1
+lemma countablePartitionSet_mem (n : ℕ) (a : α) :
+    countablePartitionSet n a ∈ countablePartition α n :=
+  memPartitionSet_mem _ _ _
 
-lemma mem_partitionSet (n : ℕ) (a : α) : a ∈ partitionSet n a :=
-  (exists_countablePartition_mem n a).choose_spec.2
+lemma mem_countablePartitionSet (n : ℕ) (a : α) : a ∈ countablePartitionSet n a :=
+  mem_memPartitionSet _ _ _
 
-lemma partitionSet_eq_iff {n : ℕ} (a : α) {s : Set α} (hs : s ∈ countablePartition α n) :
-    partitionSet n a = s ↔ a ∈ s := by
-  refine ⟨fun h ↦ h ▸ mem_partitionSet n a, fun h ↦ ?_⟩
-  by_contra h_ne
-  have h_disj : Disjoint s (partitionSet n a) :=
-    disjoint_countablePartition hs (partitionSet_mem n a) (Ne.symm h_ne)
-  refine absurd h_disj ?_
-  rw [not_disjoint_iff_nonempty_inter]
-  exact ⟨a, h, mem_partitionSet n a⟩
+lemma countablePartitionSet_eq_iff {n : ℕ} (a : α) {s : Set α} (hs : s ∈ countablePartition α n) :
+    countablePartitionSet n a = s ↔ a ∈ s :=
+  memPartitionSet_eq_iff _ hs
 
-lemma partitionSet_of_mem {n : ℕ} {a : α} {s : Set α} (hs : s ∈ countablePartition α n)
+lemma countablePartitionSet_of_mem {n : ℕ} {a : α} {s : Set α} (hs : s ∈ countablePartition α n)
     (ha : a ∈ s) :
-    partitionSet n a = s :=
-  (partitionSet_eq_iff a hs).mpr ha
+    countablePartitionSet n a = s :=
+  memPartitionSet_of_mem hs ha
 
-lemma measurableSet_partitionSet (n : ℕ) (a : α) : MeasurableSet (partitionSet n a) :=
-  measurableSet_countablePartition n (partitionSet_mem n a)
+lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
+    MeasurableSet (countablePartitionSet n a) :=
+  measurableSet_countablePartition n (countablePartitionSet_mem n a)
 
 variable (α)
 

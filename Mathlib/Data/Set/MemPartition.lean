@@ -97,3 +97,37 @@ lemma finite_memPartition (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartit
 
 instance instFinite_memPartition (f : ℕ → Set α) (n : ℕ) : Finite (memPartition f n) :=
   Set.finite_coe_iff.mp (finite_memPartition _ _)
+
+lemma exists_memPartition_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
+    ∃ s, s ∈ memPartition f n ∧ a ∈ s := by
+  have h_univ := sUnion_memPartition f n
+  have h_mem_univ := mem_univ a
+  rw [← h_univ] at h_mem_univ
+  simpa only [mem_sUnion] using h_mem_univ
+
+/-- The set in `memPartition f n` to which `a : α` belongs. -/
+def memPartitionSet (f : ℕ → Set α) (n : ℕ) (a : α) : Set α :=
+  (exists_memPartition_mem f n a).choose
+
+lemma memPartitionSet_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
+    memPartitionSet f n a ∈ memPartition f n :=
+  (exists_memPartition_mem f n a).choose_spec.1
+
+lemma mem_memPartitionSet(f : ℕ → Set α) (n : ℕ) (a : α) : a ∈ memPartitionSet f n a :=
+  (exists_memPartition_mem f n a).choose_spec.2
+
+lemma memPartitionSet_eq_iff {f : ℕ → Set α} {n : ℕ} (a : α) {s : Set α}
+    (hs : s ∈ memPartition f n) :
+    memPartitionSet f n a = s ↔ a ∈ s := by
+  refine ⟨fun h ↦ h ▸ mem_memPartitionSet f n a, fun h ↦ ?_⟩
+  by_contra h_ne
+  have h_disj : Disjoint s (memPartitionSet f n a) :=
+    disjoint_memPartition f n hs (memPartitionSet_mem f n a) (Ne.symm h_ne)
+  refine absurd h_disj ?_
+  rw [not_disjoint_iff_nonempty_inter]
+  exact ⟨a, h, mem_memPartitionSet f n a⟩
+
+lemma memPartitionSet_of_mem {f : ℕ → Set α} {n : ℕ} {a : α} {s : Set α}
+    (hs : s ∈ memPartition f n) (ha : a ∈ s) :
+    memPartitionSet f n a = s :=
+  (memPartitionSet_eq_iff a hs).mpr ha
