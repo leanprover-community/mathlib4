@@ -76,8 +76,7 @@ theorem rootsOfUnity.integer_power_of_ringEquiv (g : L ≃+* L) :
 
 theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t ∈ rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
-  obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (g.restrictRootsOfUnity n).toMonoidHom
-  exact ⟨m, fun t ht ↦ Units.ext_iff.1 <| SetCoe.ext_iff.2 (hm ⟨t, ht⟩)⟩
+  simpa using rootsOfUnity.integer_power_of_ringEquiv n g
 
 /-- `ModularCyclotomicCharacter_aux g n` is a non-canonical auxiliary integer `j`,
    only well-defined modulo the number of `n`'th roots of unity in `L`, such that `g(ζ)=ζ^j`
@@ -97,13 +96,6 @@ noncomputable def ModularCyclotomicCharacter.toFun (n : ℕ+) (g : L ≃+* L) :
     ZMod (Fintype.card (rootsOfUnity n L)) :=
   ModularCyclotomicCharacter_aux g n
 
--- This appears to be missing from the library. It should not be in this file.
-theorem Group.pow_eq_zpow_mod {G : Type _} [Group G] {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
-    x ^ m = x ^ (m % (n : ℤ)) := by
-  have h2 : x ^ m = x ^ ((n : ℤ) * (m / (n : ℤ)) + m % (n : ℤ)) :=
-    congr_arg (fun a => x ^ a) ((Int.add_comm _ _).trans (Int.emod_add_ediv _ _)).symm
-  simp [h, h2, zpow_add, zpow_mul]
-
 namespace ModularCyclotomicCharacter
 
 local notation "χ" => ModularCyclotomicCharacter.toFun
@@ -113,7 +105,7 @@ theorem spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
     g (t : Lˣ) = (t ^ (χ n g).val : Lˣ) := by
   rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_ofNat, ModularCyclotomicCharacter.toFun,
     ZMod.val_int_cast, ← Subgroup.coe_zpow]
-  exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| Group.pow_eq_zpow_mod _ pow_card_eq_one
+  exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| zpow_eq_zpow_mod _ pow_card_eq_one
 
 theorem spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
     g t = t ^ (χ n g).val :=
