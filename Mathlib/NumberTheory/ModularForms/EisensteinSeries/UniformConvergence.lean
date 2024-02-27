@@ -344,3 +344,17 @@ theorem eisensteinSeries_TendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   · apply pow_pos (r_pos _)
   · simp only [Int.mem_box]
   · simp only [Set.top_eq_univ, isOpen_univ]
+
+local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
+          (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
+
+/- A version for the extension to maps `ℂ → ℂ` that is nice to have for holomorphicity later -/
+lemma  eisensteinSeries_TendstoLocallyUniformlyOn3 {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
+    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
+      ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ((eisensteinSeries_SIF a k).toFun ))
+          Filter.atTop (UpperHalfPlane.coe '' ⊤) := by
+  apply TendstoLocallyUniformlyOn.comp (s := ⊤)
+  simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
+  apply eisensteinSeries_TendstoLocallyUniformly hk
+  simp only [Set.top_eq_univ, image_univ, mapsTo_range_iff, Set.mem_univ, forall_const]
+  apply PartialHomeomorph.continuousOn_symm
