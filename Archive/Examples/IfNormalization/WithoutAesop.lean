@@ -98,7 +98,10 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           split <;> rename_i h'
           · subst h'
             simp_all
-          · simp_all
+          · simp_all? says simp_all only [AList.lookup_insert_eq_none, ne_eq, hasNestedIf,
+              Bool.or_self, hasConstantIf, and_self, hasRedundantIf, Bool.or_false,
+              beq_eq_false_iff_ne, not_false_eq_true, disjoint, List.disjoint, decide_not,
+              Bool.and_true, Bool.and_eq_true, Bool.not_eq_true', decide_eq_false_iff_not, true_and]
             constructor
             · intro h
               specialize ht₃ _ h
