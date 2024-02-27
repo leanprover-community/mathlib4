@@ -87,7 +87,7 @@ theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - 
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have h₁ : x ^ 3 + b * x ^ 2 + c * x + d = y ^ 3 + 3 * p * y - 2 * q := by
     rw [hp, hq]
-    field_simp [h9, h54]; ring
+    field_simp [y, h9, h54]; ring
   rw [h₁, cubic_basic_eq_zero_iff hω hp_nonzero hr hs3 ht y]
   simp_rw [eq_sub_iff_add_eq]
 #align theorems_100.cubic_monic_eq_zero_iff Theorems100.cubic_monic_eq_zero_iff
