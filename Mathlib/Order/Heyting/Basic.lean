@@ -1193,8 +1193,9 @@ protected def Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] [To
     [HImp α] [GeneralizedHeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : GeneralizedHeytingAlgebra α :=
-  let _ := hf.lattice f map_sup map_inf
-  { ‹Top α›, ‹HImp α› with
+  { __ := hf.lattice f map_sup map_inf
+    __ := ‹Top α›
+    __ := ‹HImp α›
     le_top := fun a => by
       change f _ ≤ _
       rw [map_top]
@@ -1212,8 +1213,9 @@ protected def Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     GeneralizedCoheytingAlgebra α :=
-  let _ := hf.lattice f map_sup map_inf
-  { ‹Bot α›, ‹SDiff α› with
+  { __ := hf.lattice f map_sup map_inf
+    __ := ‹Bot α›
+    __ := ‹SDiff α›
     bot_le := fun a => by
       change f _ ≤ _
       rw [map_bot]
@@ -1231,8 +1233,9 @@ protected def Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot 
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : HeytingAlgebra α :=
-  let _ := hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp
-  { ‹Bot α›, ‹HasCompl α› with
+  { __ := hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp
+    __ := ‹Bot α›
+    __ := ‹HasCompl α›
     bot_le := fun a => by
       change f _ ≤ _
       rw [map_bot]
@@ -1248,8 +1251,9 @@ protected def Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] [Bo
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : CoheytingAlgebra α :=
-  let _ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
-  { ‹Top α›, ‹HNot α› with
+  { __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
+    __ := ‹Top α›
+    __ := ‹HNot α›
     le_top := fun a => by
       change f _ ≤ _
       rw [map_top]
