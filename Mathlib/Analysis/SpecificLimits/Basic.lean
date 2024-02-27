@@ -233,16 +233,13 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
 @[simp]
 theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
-  refine ⟨fun h => ?_, ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one⟩
-  have hr : r ≠ ⊤ := by
-    have : ∀ᶠ n in atTop, (⊤ : ℝ≥0∞)^n = ⊤ := by
-      simp only [pow_eq_top_iff, ne_eq, true_and, eventually_atTop, ge_iff_le]
-      exact ⟨1, fun _ _ => by linarith⟩
-    exact fun hr => ENNReal.top_ne_zero (tendsto_nhds_unique (EventuallyEq.tendsto this) (hr ▸ h))
-  rw [← ENNReal.coe_zero, ← ENNReal.coe_toNNReal hr] at h
-  simp_rw [← ENNReal.coe_pow, tendsto_coe, NNReal.tendsto_pow_atTop_nhds_zero_iff,
-    ← ENNReal.coe_lt_coe, ENNReal.coe_toNNReal hr] at h
-  exact h
+  refine ⟨fun h ↦ ?_, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
+  lift r to NNReal
+  · refine fun hr ↦ top_ne_zero (tendsto_nhds_unique (EventuallyEq.tendsto ?_) (hr ▸ h))
+    exact eventually_atTop.mpr ⟨1, fun _ hn ↦ pow_eq_top_iff.mpr ⟨rfl, Nat.pos_iff_ne_zero.mp hn⟩⟩
+  rw [← coe_zero] at h
+  norm_cast at h ⊢
+  exact NNReal.tendsto_pow_atTop_nhds_zero_iff.mp h
 
 /-! ### Geometric series-/
 
