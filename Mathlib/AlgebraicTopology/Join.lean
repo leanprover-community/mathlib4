@@ -165,10 +165,12 @@ def joinStandardSimplexTypeEquiv (X : WithInitial SimplexCategory) (i : Fin (Nat
   right_inv := by
     aesop_cat
 
-lemma joinStandardSimplexTypeEquiv_nat (X : WithInitial SimplexCategory) (i : Fin (Nat.succ (len X)))
+lemma joinStandardSimplexTypeEquiv_nat (X : WithInitial SimplexCategory)
+    (i : Fin (Nat.succ (len X)))
     {Δop1 Δop2 : (WithInitial SimplexCategory)ᵒᵖ} (f : Δop1 ⟶  Δop2) :
     (Equiv.toIso (joinStandardSimplexTypeEquiv X i Δop2).symm).hom ∘ (Split.homMap X i f.unop)
-    = (joinStandardSimplex X i).map f ∘ (Equiv.toIso (joinStandardSimplexTypeEquiv X i Δop1).symm).hom := by
+    = (joinStandardSimplex X i).map f ∘
+    (Equiv.toIso (joinStandardSimplexTypeEquiv X i Δop1).symm).hom := by
   rfl
 
 lemma standardSimplexType_nat (X : WithInitial SimplexCategory)
