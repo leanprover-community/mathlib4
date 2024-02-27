@@ -698,8 +698,8 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
     simpa only [closedBall_iSup bdd _ one_pos, mem_iInter, mem_closedBall_zero] using hx
   tfae_have 5 → 4 := fun H ↦ ⟨⨆ k, (q i).comp (f k), Seminorm.coe_iSup_eq H.1 ▸ H.2, le_ciSup H.1⟩
   tfae_have 4 → 1 -- This would work over any `NormedField`
-  · intro ⟨p, hp, hfp⟩
-    exact Metric.equicontinuousAt_of_continuity_modulus p (map_zero p ▸ hp.tendsto 0) _ <|
+  | ⟨p, hp, hfp⟩ =>
+    Metric.equicontinuousAt_of_continuity_modulus p (map_zero p ▸ hp.tendsto 0) _ <|
       eventually_of_forall fun x k ↦ by simpa using hfp k x
   tfae_finish
 
