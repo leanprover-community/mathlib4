@@ -6,7 +6,6 @@ Authors: Simon Hudon, Scott Morrison
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.Data.Sum.Basic
 
 #align_import category_theory.pi.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -373,7 +372,7 @@ def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (
   inverse := Functor.pi' (fun i => match i with
     | none => Prod.fst _ _
     | some i => Prod.snd _ _ ⋙ (Pi.eval _ i))
-  unitIso :=  NatIso.pi' (fun i => match i with
+  unitIso := NatIso.pi' (fun i => match i with
     | none => Iso.refl _
     | some i => Iso.refl _)
   counitIso := by exact Iso.refl _

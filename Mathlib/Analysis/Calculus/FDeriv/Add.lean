@@ -123,9 +123,9 @@ nonrec theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x)
     abel
 #align has_strict_fderiv_at.add HasStrictFDerivAt.add
 
-nonrec theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' x L)
+theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' x L)
     (hg : HasFDerivAtFilter g g' x L) : HasFDerivAtFilter (fun y => f y + g y) (f' + g') x L :=
-  (hf.add hg).congr_left fun _ => by
+  .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun _ => by
     simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
     abel
 #align has_fderiv_at_filter.add HasFDerivAtFilter.add
@@ -337,7 +337,7 @@ theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) x L) :
     HasFDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
-  dsimp [HasFDerivAtFilter] at *
+  simp only [hasFDerivAtFilter_iff_isLittleO] at *
   convert IsLittleO.sum h
   simp [ContinuousLinearMap.sum_apply]
 #align has_fderiv_at_filter.sum HasFDerivAtFilter.sum

@@ -89,7 +89,7 @@ theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopolo
     rintro ⟨x, hx⟩
     rcases hf x hx with ⟨t, ht, h't⟩
     rcases mem_nhdsWithin.1 ht with ⟨u, u_open, x_mem, u_sub⟩
-    refine' ⟨u, u_open, x_mem, h't.mono_set u_sub⟩
+    exact ⟨u, u_open, x_mem, h't.mono_set u_sub⟩
   choose u u_open xu hu using this
   obtain ⟨T, T_count, hT⟩ : ∃ T : Set s, T.Countable ∧ s ⊆ ⋃ i ∈ T, u i := by
     have : s ⊆ ⋃ x : s, u x := fun y hy => mem_iUnion_of_mem ⟨y, hy⟩ (xu ⟨y, hy⟩)
@@ -110,7 +110,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   rcases hf.exists_countable_integrableOn with ⟨T, T_count, T_open, sT, hT⟩
   let T' : Set (Set X) := insert ∅ T
   have T'_count : T'.Countable := Countable.insert ∅ T_count
-  have T'_ne : T'.Nonempty := by simp only [insert_nonempty]
+  have T'_ne : T'.Nonempty := by simp only [T', insert_nonempty]
   rcases T'_count.exists_eq_range T'_ne with ⟨u, hu⟩
   refine' ⟨u, _, _, _⟩
   · intro n
@@ -381,6 +381,15 @@ theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
   · rw [integrable_indicator_iff hK.measurableSet]
     exact hf.integrableOn_isCompact hK
   · exact hg.memℒp_top_of_hasCompactSupport h'g μ
+
+open Filter
+
+theorem integrable_iff_integrableAtFilter_cocompact :
+    Integrable f μ ↔ (IntegrableAtFilter f (cocompact X) μ ∧ LocallyIntegrable f μ) := by
+  refine ⟨fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩, fun ⟨⟨s, hsc, hs⟩, hloc⟩ ↦ ?_⟩
+  obtain ⟨t, htc, ht⟩ := mem_cocompact'.mp hsc
+  rewrite [← integrableOn_univ, ← compl_union_self s, integrableOn_union]
+  exact ⟨(hloc.integrableOn_isCompact htc).mono ht le_rfl, hs⟩
 
 end MeasureTheory
 

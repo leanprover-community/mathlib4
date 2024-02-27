@@ -90,7 +90,7 @@ In fact, this is only complete if the ideal is finitely generated. -/
 def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
   carrier := { f | ∀ {m n} (h : m ≤ n), liftQ _ (mkQ _) (by
       rw [ker_mkQ]
-      exact smul_mono (Ideal.pow_le_pow h) le_rfl)
+      exact smul_mono (Ideal.pow_le_pow_right h) le_rfl)
     (f n) = f m }
   zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
   add_mem' hf hg m n hmn := by
@@ -289,7 +289,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   let f : ℕ → R := fun n => ∑ i in range n, (x * y) ^ i
   have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
-    simp only [Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
+    simp only [f, Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
     rw [← add_tsub_cancel_of_le h, Finset.sum_range_add, ← sub_sub, sub_self, zero_sub,
       @neg_mem_iff]
     apply Submodule.sum_mem

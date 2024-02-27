@@ -131,12 +131,17 @@ section AddMonoid
 
 variable [AddMonoid α] [StarAddMonoid α] [AddMonoid β] [StarAddMonoid β]
 
-/-- A diagonal matrix is hermitian if the entries are self-adjoint -/
+/-- A diagonal matrix is hermitian if the entries are self-adjoint (as a vector) -/
 theorem isHermitian_diagonal_of_self_adjoint [DecidableEq n] (v : n → α) (h : IsSelfAdjoint v) :
     (diagonal v).IsHermitian :=
   (-- TODO: add a `pi.has_trivial_star` instance and remove the `funext`
         diagonal_conjTranspose v).trans <| congr_arg _ h
 #align matrix.is_hermitian_diagonal_of_self_adjoint Matrix.isHermitian_diagonal_of_self_adjoint
+
+/-- A diagonal matrix is hermitian if each diagonal entry is self-adjoint -/
+lemma isHermitian_diagonal_iff [DecidableEq n] {d : n → α} :
+    IsHermitian (diagonal d) ↔ (∀ i : n, IsSelfAdjoint (d i)) := by
+  simp [isSelfAdjoint_iff, IsHermitian, conjTranspose, diagonal_transpose, diagonal_map]
 
 /-- A diagonal matrix is hermitian if the entries have the trivial `star` operation
 (such as on the reals). -/

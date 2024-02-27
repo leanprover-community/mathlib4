@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.LinearAlgebra.Basic
+import Mathlib.Algebra.BigOperators.Pi
 
 #align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -104,6 +106,11 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i
       simp only [mem_iInf, mem_ker, proj_apply] at h
       exact (mem_bot _).2 (funext fun i => h i)
 #align linear_map.infi_ker_proj LinearMap.iInf_ker_proj
+
+instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
+    [AddCommMonoid M] [AddCommMonoid N] [SMul R M] [SMul R N] [Module S M] [Module S N]
+    [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι → N) R S where
+  map_smul f r m := by ext i; apply ((LinearMap.proj i).comp f).map_smul_of_tower
 
 /-- Linear map between the function spaces `I → M₂` and `I → M₃`, induced by a linear map `f`
 between `M₂` and `M₃`. -/
@@ -535,7 +542,7 @@ end Extend
 /-! ### Bundled versions of `Matrix.vecCons` and `Matrix.vecEmpty`
 
 The idea of these definitions is to be able to define a map as `x ↦ ![f₁ x, f₂ x, f₃ x]`, where
-`f₁ f₂ f₃` are already linear maps, as `f₁.vecCons $ f₂.vecCons $ f₃.vecCons $ vecEmpty`.
+`f₁ f₂ f₃` are already linear maps, as `f₁.vecCons <| f₂.vecCons <| f₃.vecCons <| vecEmpty`.
 
 While the same thing could be achieved using `LinearMap.pi ![f₁, f₂, f₃]`, this is not
 definitionally equal to the result using `LinearMap.vecCons`, as `Fin.cases` and function

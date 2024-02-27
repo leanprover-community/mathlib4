@@ -25,7 +25,7 @@ In the `ModularForm` locale, this provides
 -/
 
 
-open Complex UpperHalfPlane
+open Complex UpperHalfPlane ModularGroup
 
 open scoped UpperHalfPlane
 
@@ -113,7 +113,7 @@ private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
       ((↑(↑B : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ)) ^ (k - 1) =
       ((↑(↑A : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ) ^ (k - 1) *
         ((↑(↑B : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ) ^ (k - 1) := by
-    simp_rw [← mul_zpow]
+    rw [← mul_zpow]
   simp_rw [this, ← mul_assoc, ← mul_zpow]
 
 private theorem add_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
@@ -176,13 +176,17 @@ theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺)
 set_option linter.uppercaseLean3 false in
 #align modular_form.SL_slash ModularForm.SL_slash
 
-/-- The constant function 1 is invariant under any element of `SL(2, ℤ)`. -/
--- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
-theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) := by
+theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
+    Function.const ℍ x ∣[(0 : ℤ)] A = Function.const ℍ x := by
   have : ((↑ₘ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := det_coe'
   funext
   rw [SL_slash, slash_def, slash, zero_sub, this]
   simp
+
+/-- The constant function 1 is invariant under any element of `SL(2, ℤ)`. -/
+-- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
+theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) :=
+  is_invariant_const _ _
 #align modular_form.is_invariant_one ModularForm.is_invariant_one
 
 /-- A function `f : ℍ → ℂ` is slash-invariant, of weight `k ∈ ℤ` and level `Γ`,
@@ -207,7 +211,7 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
   set d : ℂ := ↑((↑ₘA).det : ℝ)
   have h1 : d ^ (k1 + k2 - 1) = d * d ^ (k1 - 1) * d ^ (k2 - 1) := by
     have : d ≠ 0 := by
-      dsimp
+      dsimp [d]
       norm_cast
       exact Matrix.GLPos.det_ne_zero A
     rw [← zpow_one_add₀ this, ← zpow_add₀ this]

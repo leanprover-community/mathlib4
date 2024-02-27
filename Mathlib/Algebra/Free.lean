@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Basic
@@ -81,7 +80,7 @@ def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
-  (FunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros; simp only [map_mul, *]
+  (DFunLike.ext _ _) fun x ↦ recOnMul x (congr_fun h) <| by intros; simp only [map_mul, *]
 #align free_magma.hom_ext FreeMagma.hom_ext
 
 end FreeMagma
@@ -166,7 +165,7 @@ protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure 
   FreeMagma.recOnMul x ih1 ih2
 #align free_magma.rec_on_pure FreeMagma.recOnPure
 
--- Porting note: dsimp can not prove this
+-- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp, nolint simpNF)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
 #align free_magma.map_pure FreeMagma.map_pure
@@ -175,7 +174,7 @@ theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x
 theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y := rfl
 #align free_magma.map_mul' FreeMagma.map_mul'
 
--- Porting note: dsimp can not prove this
+-- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp, nolint simpNF)]
 theorem pure_bind (f : α → FreeMagma β) (x) : pure x >>= f = f x := rfl
 #align free_magma.pure_bind FreeMagma.pure_bind
@@ -258,7 +257,7 @@ theorem traverse_mul' :
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 #align free_magma.traverse_eq FreeMagma.traverse_eq
 
--- Porting note: dsimp can not prove this
+-- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp, nolint simpNF)]
 theorem mul_map_seq (x y : FreeMagma α) :
     ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
@@ -390,7 +389,7 @@ variable {β : Type v} [Semigroup β] (f : α →ₙ* β)
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) : f = g :=
-  (FunLike.ext _ _) fun x => AssocQuotient.induction_on x <| FunLike.congr_fun h
+  (DFunLike.ext _ _) fun x => AssocQuotient.induction_on x <| DFunLike.congr_fun h
 #align magma.assoc_quotient.hom_ext Magma.AssocQuotient.hom_ext
 
 /-- Lifts a magma homomorphism `α → β` to a semigroup homomorphism `Magma.AssocQuotient α → β`
@@ -403,8 +402,8 @@ def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β) where
       Quot.liftOn x f <| by rintro a b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only [map_mul, mul_assoc]
     map_mul' := fun x y ↦ Quot.induction_on₂ x y (map_mul f) }
   invFun f := f.comp of
-  left_inv f := (FunLike.ext _ _) fun x ↦ rfl
-  right_inv f := hom_ext <| (FunLike.ext _ _) fun x ↦ rfl
+  left_inv f := (DFunLike.ext _ _) fun x ↦ rfl
+  right_inv f := hom_ext <| (DFunLike.ext _ _) fun x ↦ rfl
 #align magma.assoc_quotient.lift Magma.AssocQuotient.lift
 
 @[to_additive (attr := simp)]
@@ -511,7 +510,7 @@ protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
-  (FunLike.ext _ _) fun x ↦
+  (DFunLike.ext _ _) fun x ↦
     FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
 #align free_semigroup.hom_ext FreeSemigroup.hom_ext
 
@@ -589,7 +588,7 @@ def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
   FreeSemigroup.recOnMul x ih1 ih2
 #align free_semigroup.rec_on_pure FreeSemigroup.recOnPure
 
--- Porting note: dsimp can not prove this
+-- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp, nolint simpNF)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeSemigroup β) = pure (f x) := rfl
 #align free_semigroup.map_pure FreeSemigroup.map_pure
@@ -599,7 +598,7 @@ theorem map_mul' (f : α → β) (x y : FreeSemigroup α) : f <$> (x * y) = f <$
   map_mul (map f) _ _
 #align free_semigroup.map_mul' FreeSemigroup.map_mul'
 
--- Porting note: dsimp can not prove this
+-- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp, nolint simpNF)]
 theorem pure_bind (f : α → FreeSemigroup β) (x) : pure x >>= f = f x := rfl
 #align free_semigroup.pure_bind FreeSemigroup.pure_bind
@@ -675,7 +674,7 @@ end
 theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x := rfl
 #align free_semigroup.traverse_eq FreeSemigroup.traverse_eq
 
--- Porting note: dsimp can not prove this
+-- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp, nolint simpNF)]
 theorem mul_map_seq (x y : FreeSemigroup α) :
     ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) := rfl
@@ -731,7 +730,7 @@ theorem toFreeSemigroup_comp_map (f : α → β) :
 @[to_additive]
 theorem toFreeSemigroup_map (f : α → β) (x : FreeMagma α) :
     toFreeSemigroup (map f x) = FreeSemigroup.map f (toFreeSemigroup x) :=
-  FunLike.congr_fun (toFreeSemigroup_comp_map f) x
+  DFunLike.congr_fun (toFreeSemigroup_comp_map f) x
 #align free_magma.to_free_semigroup_map FreeMagma.toFreeSemigroup_map
 
 @[to_additive (attr := simp)]

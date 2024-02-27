@@ -41,7 +41,7 @@ namespace Trivial
 
 variable (B : Type*) (F : Type*)
 
--- Porting note: Added name for this instance.
+-- Porting note (#10754): Added name for this instance.
 -- TODO: use `TotalSpace.toProd`
 instance topologicalSpace [t₁ : TopologicalSpace B]
     [t₂ : TopologicalSpace F] : TopologicalSpace (TotalSpace F (Trivial B F)) :=
@@ -160,7 +160,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   · rw [e₁.source_eq, e₂.source_eq]
     exact mapsTo_preimage _ _
   rintro ⟨b, v₁, v₂⟩ ⟨hb₁, _⟩
-  simp only [Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true_iff]
+  simp only [f₃, Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true_iff]
   rw [e₁.coe_fst]
   rw [e₁.source_eq, mem_preimage]
   exact hb₁
@@ -326,7 +326,7 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
   exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
 #align pullback.continuous_total_space_mk Pullback.continuous_totalSpaceMk
 
-variable {E F} [∀ _b, Zero (E _b)] {K : Type U} [ContinuousMapClass K B' B]
+variable {E F} [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
 -- Porting note: universe levels are explicitly provided
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/

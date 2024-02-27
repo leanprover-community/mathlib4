@@ -39,7 +39,7 @@ an implementation of this construction: starting from an object of type
 fiber bundle and projection.
 
 Similarly we implement the object `FiberPrebundle` which allows to define a topological
-fiber bundle from trivializations given as local equivalences with minimum additional properties.
+fiber bundle from trivializations given as partial equivalences with minimum additional properties.
 
 ## Main definitions
 
@@ -64,7 +64,7 @@ Let `Z : FiberBundleCore ι B F`. Then we define
                     open set in `B`.
 
 * `FiberPrebundle F E` : structure registering a cover of prebundle trivializations
-  and requiring that the relative transition maps are local homeomorphisms.
+  and requiring that the relative transition maps are partial homeomorphisms.
 * `FiberPrebundle.totalSpaceTopology a` : natural topology of the total space, making
   the prebundle into a bundle.
 
@@ -216,7 +216,7 @@ for trivializations of `E`, expressing that a trivialization is in the designate
 bundle.  This is needed because lemmas about the linearity of trivializations or the continuity (as
 functions to `F →L[R] F`, where `F` is the model fiber) of the transition functions are only
 expected to hold for trivializations in the designated atlas. -/
-@[mk_iff memTrivializationAtlas_iff]
+@[mk_iff]
 class MemTrivializationAtlas [FiberBundle F E] (e : Trivialization F (π F E)) : Prop where
   out : e ∈ trivializationAtlas F E
 #align mem_trivialization_atlas MemTrivializationAtlas
@@ -333,7 +333,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   have hsc : IsLUB s c := isLUB_csSup sne sbd
   have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
   obtain ⟨-, ec : Trivialization F (π F E), hec : Icc a c ⊆ ec.baseSet⟩ : c ∈ s := by
-    cases' hc.1.eq_or_lt with heq hlt
+    rcases hc.1.eq_or_lt with heq | hlt
     · rwa [← heq]
     refine ⟨hc, ?_⟩
     /- In order to show that `c ∈ s`, consider a trivialization `ec` of `proj` over a neighborhood
@@ -347,11 +347,11 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
       `proj` over `[a, d]`. Then we can glue `ead` and `ec` into a trivialization over `[a, c]`. -/
     obtain ⟨d, ⟨hdab, ead, had⟩, hd⟩ : ∃ d ∈ s, d ∈ Ioc c' c := hsc.exists_between hc'.2
     refine' ⟨ead.piecewiseLe ec d (had ⟨hdab.1, le_rfl⟩) (hc'e hd), subset_ite.2 _⟩
-    refine' ⟨fun x hx => had ⟨hx.1.1, hx.2⟩, fun x hx => hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
+    exact ⟨fun x hx => had ⟨hx.1.1, hx.2⟩, fun x hx => hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
   /- So, `c ∈ s`. Let `ec` be a trivialization of `proj` over `[a, c]`.  If `c = b`, then we are
     done. Otherwise we show that `proj` can be trivialized over a larger interval `[a, d]`,
     `d ∈ (c, b]`, hence `c` is not an upper bound of `s`. -/
-  cases' hc.2.eq_or_lt with heq hlt
+  rcases hc.2.eq_or_lt with heq | hlt
   · exact ⟨ec, heq ▸ hec⟩
   rsuffices ⟨d, hdcb, hd⟩ : ∃ d ∈ Ioc c b, ∃ e : Trivialization F (π F E), Icc a d ⊆ e.baseSet
   · exact ((hsc.1 ⟨⟨hc.1.trans hdcb.1.le, hdcb.2⟩, hd⟩).not_lt hdcb.1).elim
@@ -481,7 +481,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
 between `proj ⁻¹ (baseSet i)` and `baseSet i × F`. As the fiber above `x` is `F` but read in the
 chart with index `index_at x`, the trivialization in the fiber above x is by definition the
 coordinate change from i to `index_at x`, so it depends on `x`.
-The local trivialization will ultimately be a local homeomorphism. For now, we only introduce the
+The local trivialization will ultimately be a partial homeomorphism. For now, we only introduce the
 partial equivalence version, denoted with a prime.
 In further developments, avoid this auxiliary version, and use `Z.local_triv` instead. -/
 def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
@@ -591,7 +591,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
       exact (continuousOn_open_iff (Z.trivChange i j).open_source).1
         (Z.trivChange i j).continuousOn _ s_open
     convert this using 1
-    dsimp [PartialEquiv.trans_source]
+    dsimp [f, PartialEquiv.trans_source]
     rw [← preimage_comp, inter_assoc]
   toPartialEquiv := Z.localTrivAsPartialEquiv i
 #align fiber_bundle_core.local_triv FiberBundleCore.localTriv
@@ -759,8 +759,8 @@ variable (F) (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
 
 /-- This structure permits to define a fiber bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space. The total space is hence given a
-topology in such a way that there is a fiber bundle structure for which the local equivalences
-are also local homeomorphism and hence local trivializations. -/
+topology in such a way that there is a fiber bundle structure for which the partial equivalences
+are also partial homeomorphisms and hence local trivializations. -/
 -- porting note: todo: was @[nolint has_nonempty_instance]
 structure FiberPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))

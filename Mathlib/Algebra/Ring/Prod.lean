@@ -7,6 +7,7 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
+import Mathlib.Algebra.Order.Ring.Defs
 
 #align_import algebra.ring.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 

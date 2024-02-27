@@ -96,7 +96,8 @@ theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
-    simp only [Sequence₂, mk_uLift, mk_fintype, Fintype.card_of_isEmpty, Nat.cast_zero, lift_zero]
+    simp only [Sequence₂, mk_uLift, Nat.succ_ne_zero, IsEmpty.forall_iff, Nat.succ.injEq,
+      add_eq_zero, OfNat.ofNat_ne_zero, and_false, one_ne_zero, mk_eq_zero, lift_zero]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
@@ -455,35 +456,35 @@ end Structure
 
 /-- `HomClass L F M N` states that `F` is a type of `L`-homomorphisms. You should extend this
   typeclass when you extend `FirstOrder.Language.Hom`. -/
-class HomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
-  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] : Prop where
+class HomClass (L : outParam Language) (F M N : Type*)
+  [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r x → RelMap r (φ ∘ x)
 #align first_order.language.hom_class FirstOrder.Language.HomClass
 
 /-- `StrongHomClass L F M N` states that `F` is a type of `L`-homomorphisms which preserve
   relations in both directions. -/
-class StrongHomClass (L : outParam Language) (F : Type*) (M N : outParam <| Type*)
-  [FunLike F M fun _ => N] [L.Structure M] [L.Structure N] : Prop where
+class StrongHomClass (L : outParam Language) (F M N : Type*)
+  [FunLike F M N] [L.Structure M] [L.Structure N] : Prop where
   map_fun : ∀ (φ : F) {n} (f : L.Functions n) (x), φ (funMap f x) = funMap f (φ ∘ x)
   map_rel : ∀ (φ : F) {n} (r : L.Relations n) (x), RelMap r (φ ∘ x) ↔ RelMap r x
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
 --Porting note: using implicit brackets for `Structure` arguments
 instance (priority := 100) StrongHomClass.homClass [L.Structure M]
-    [L.Structure N] [FunLike F M fun _ => N] [StrongHomClass L F M N] : HomClass L F M N where
+    [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
   map_rel φ _ R x := (StrongHomClass.map_rel φ R x).2
 #align first_order.language.strong_hom_class.hom_class FirstOrder.Language.StrongHomClass.homClass
 
 /-- Not an instance to avoid a loop. -/
 theorem HomClass.strongHomClassOfIsAlgebraic [L.IsAlgebraic] {F M N} [L.Structure M] [L.Structure N]
-    [FunLike F M fun _ => N] [HomClass L F M N] : StrongHomClass L F M N where
+    [FunLike F M N] [HomClass L F M N] : StrongHomClass L F M N where
   map_fun := HomClass.map_fun
   map_rel _ n R _ := (IsAlgebraic.empty_relations n).elim R
 #align first_order.language.hom_class.strong_hom_class_of_is_algebraic FirstOrder.Language.HomClass.strongHomClassOfIsAlgebraic
 
-theorem HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M fun _ => N]
+theorem HomClass.map_constants {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] (φ : F) (c : L.Constants) : φ c = c :=
   (HomClass.map_fun φ c default).trans (congr rfl (funext default))
 #align first_order.language.hom_class.map_constants FirstOrder.Language.HomClass.map_constants
@@ -498,10 +499,10 @@ attribute [inherit_doc FirstOrder.Language.Hom.map_rel'] FirstOrder.Language.Emb
 
 namespace Hom
 
-instance funLike : FunLike (M →[L] N) M fun _ => N where
+instance instFunLike : FunLike (M →[L] N) M N where
   coe := Hom.toFun
   coe_injective' f g h := by cases f; cases g; cases h; rfl
-#align first_order.language.hom.fun_like FirstOrder.Language.Hom.funLike
+#align first_order.language.hom.fun_like FirstOrder.Language.Hom.instFunLike
 
 instance homClass : HomClass L (M →[L] N) M N where
   map_fun := map_fun'
@@ -512,7 +513,7 @@ instance [L.IsAlgebraic] : StrongHomClass L (M →[L] N) M N :=
   HomClass.strongHomClassOfIsAlgebraic
 
 instance hasCoeToFun : CoeFun (M →[L] N) fun _ => M → N :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align first_order.language.hom.has_coe_to_fun FirstOrder.Language.Hom.hasCoeToFun
 
 @[simp]
@@ -522,11 +523,11 @@ theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
 
 @[ext]
 theorem ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align first_order.language.hom.ext FirstOrder.Language.Hom.ext
 
 theorem ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align first_order.language.hom.ext_iff FirstOrder.Language.Hom.ext_iff
 
 @[simp]
@@ -585,25 +586,35 @@ theorem comp_assoc (f : M →[L] N) (g : N →[L] P) (h : P →[L] Q) :
   rfl
 #align first_order.language.hom.comp_assoc FirstOrder.Language.Hom.comp_assoc
 
+@[simp]
+theorem comp_id (f : M →[L] N) : f.comp (id L M) = f :=
+  rfl
+
+@[simp]
+theorem id_comp (f : M →[L] N) : (id L N).comp f = f :=
+  rfl
+
 end Hom
 
 /-- Any element of a `HomClass` can be realized as a first_order homomorphism. -/
-def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M fun _ => N]
+def HomClass.toHom {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
     [HomClass L F M N] : F → M →[L] N := fun φ =>
   ⟨φ, HomClass.map_fun φ, HomClass.map_rel φ⟩
 #align first_order.language.hom_class.to_hom FirstOrder.Language.HomClass.toHom
 
 namespace Embedding
 
-instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
+instance funLike : FunLike (M ↪[L] N) M N where
   coe f := f.toFun
-  injective' f := f.toEmbedding.injective
   coe_injective' f g h := by
     cases f
     cases g
     congr
     ext x
     exact Function.funext_iff.1 h x
+
+instance embeddingLike : EmbeddingLike (M ↪[L] N) M N where
+  injective' f := f.toEmbedding.injective
 #align first_order.language.embedding.embedding_like FirstOrder.Language.Embedding.embeddingLike
 
 instance strongHomClass : StrongHomClass L (M ↪[L] N) M N where
@@ -611,9 +622,7 @@ instance strongHomClass : StrongHomClass L (M ↪[L] N) M N where
   map_rel := map_rel'
 #align first_order.language.embedding.strong_hom_class FirstOrder.Language.Embedding.strongHomClass
 
-instance hasCoeToFun : CoeFun (M ↪[L] N) fun _ => M → N :=
-  FunLike.hasCoeToFun
-#align first_order.language.embedding.has_coe_to_fun FirstOrder.Language.Embedding.hasCoeToFun
+#noalign first_order.language.embedding.has_coe_to_fun -- Porting note: replaced by funLike instance
 
 @[simp]
 theorem map_fun (φ : M ↪[L] N) {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
@@ -723,18 +732,45 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
   rfl
 #align first_order.language.embedding.comp_assoc FirstOrder.Language.Embedding.comp_assoc
 
+theorem comp_injective (h : N ↪[L] P) :
+    Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (DFunLike.congr_fun hfg x)
+
+@[simp]
+theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f = g :=
+  ⟨fun eq ↦ h.comp_injective eq, congr_arg h.comp⟩
+
+theorem toHom_comp_injective (h : N ↪[L] P) :
+    Function.Injective (h.toHom.comp : (M →[L] N) →  (M →[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (DFunLike.congr_fun hfg x)
+
+@[simp]
+theorem toHom_comp_inj (h : N ↪[L] P) (f g : M →[L] N) : h.toHom.comp f = h.toHom.comp g ↔ f = g :=
+  ⟨fun eq ↦ h.toHom_comp_injective eq, congr_arg h.toHom.comp⟩
+
 @[simp]
 theorem comp_toHom (hnp : N ↪[L] P) (hmn : M ↪[L] N) :
-    (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom := by
-  ext
-  simp only [coe_toHom, comp_apply, Hom.comp_apply]
+    (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom :=
+  rfl
 #align first_order.language.embedding.comp_to_hom FirstOrder.Language.Embedding.comp_toHom
+
+@[simp]
+theorem comp_refl (f : M ↪[L] N) : f.comp (refl L M) = f := DFunLike.coe_injective rfl
+
+@[simp]
+theorem refl_comp (f : M ↪[L] N) : (refl L N).comp f = f := DFunLike.coe_injective rfl
+
+@[simp]
+theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
+  rfl
 
 end Embedding
 
 /-- Any element of an injective `StrongHomClass` can be realized as a first_order embedding. -/
-def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [EmbeddingLike F M N]
-    [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
+def StrongHomClass.toEmbedding {F M N} [L.Structure M] [L.Structure N] [FunLike F M N]
+    [EmbeddingLike F M N] [StrongHomClass L F M N] : F → M ↪[L] N := fun φ =>
   ⟨⟨φ, EmbeddingLike.injective φ⟩, StrongHomClass.map_fun φ, StrongHomClass.map_rel φ⟩
 #align first_order.language.strong_hom_class.to_embedding FirstOrder.Language.StrongHomClass.toEmbedding
 
@@ -764,16 +800,21 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
       refine' Eq.trans _ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.comp.left_id]
+      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
       refine' (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans _
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.comp.left_id] }
+      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 
 instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 #align first_order.language.equiv.has_coe_to_fun FirstOrder.Language.Equiv.hasCoeToFun
+
+@[simp]
+theorem symm_symm (f : M ≃[L] N) :
+    f.symm.symm = f :=
+  rfl
 
 @[simp]
 theorem apply_symm_apply (f : M ≃[L] N) (a : N) : f (f.symm a) = a :=
@@ -827,8 +868,11 @@ theorem coe_toEmbedding (f : M ≃[L] N) : (f.toEmbedding : M → N) = (f : M �
   rfl
 #align first_order.language.equiv.coe_to_embedding FirstOrder.Language.Equiv.coe_toEmbedding
 
+theorem injective_toEmbedding : Function.Injective (toEmbedding : (M ≃[L] N) → M ↪[L] N) := by
+  intro _ _ h; apply DFunLike.coe_injective; exact congr_arg (DFunLike.coe ∘ Embedding.toHom) h
+
 theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align first_order.language.equiv.coe_injective FirstOrder.Language.Equiv.coe_injective
 
 @[ext]
@@ -884,11 +928,84 @@ theorem comp_apply (g : N ≃[L] P) (f : M ≃[L] N) (x : M) : g.comp f x = g (f
   rfl
 #align first_order.language.equiv.comp_apply FirstOrder.Language.Equiv.comp_apply
 
+@[simp]
+theorem comp_refl (g : M ≃[L] N) : g.comp (refl L M) = g :=
+  rfl
+
+@[simp]
+theorem refl_comp (g : M ≃[L] N) : (refl L N).comp g = g :=
+  rfl
+
+@[simp]
+theorem refl_toEmbedding : (refl L M).toEmbedding = Embedding.refl L M :=
+  rfl
+
+@[simp]
+theorem refl_toHom : (refl L M).toHom = Hom.id L M :=
+  rfl
+
 /-- Composition of first-order homomorphisms is associative. -/
 theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
     (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align first_order.language.equiv.comp_assoc FirstOrder.Language.Equiv.comp_assoc
+
+theorem injective_comp (h : N ≃[L] P) :
+    Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
+  intro f g hfg
+  ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
+
+@[simp]
+theorem comp_toHom (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
+    (hnp.comp hmn).toHom = hnp.toHom.comp hmn.toHom :=
+  rfl
+
+@[simp]
+theorem comp_toEmbedding (hnp : N ≃[L] P) (hmn : M ≃[L] N) :
+    (hnp.comp hmn).toEmbedding = hnp.toEmbedding.comp hmn.toEmbedding :=
+  rfl
+
+@[simp]
+theorem self_comp_symm (f : M ≃[L] N) : f.comp f.symm = refl L N := by
+  ext; rw [comp_apply, apply_symm_apply, refl_apply]
+
+@[simp]
+theorem symm_comp_self (f : M ≃[L] N) : f.symm.comp f = refl L M := by
+  ext; rw [comp_apply, symm_apply_apply, refl_apply]
+
+@[simp]
+theorem symm_comp_self_toEmbedding (f : M ≃[L] N) :
+    f.symm.toEmbedding.comp f.toEmbedding = Embedding.refl L M := by
+  rw [← comp_toEmbedding, symm_comp_self, refl_toEmbedding]
+
+@[simp]
+theorem self_comp_symm_toEmbedding (f : M ≃[L] N) :
+    f.toEmbedding.comp f.symm.toEmbedding = Embedding.refl L N := by
+  rw [← comp_toEmbedding, self_comp_symm, refl_toEmbedding]
+
+@[simp]
+theorem symm_comp_self_toHom (f : M ≃[L] N) :
+    f.symm.toHom.comp f.toHom = Hom.id L M := by
+  rw [← comp_toHom, symm_comp_self, refl_toHom]
+
+@[simp]
+theorem self_comp_symm_toHom (f : M ≃[L] N) :
+    f.toHom.comp f.symm.toHom = Hom.id L N := by
+  rw [← comp_toHom, self_comp_symm, refl_toHom]
+
+@[simp]
+theorem comp_symm (f : M ≃[L] N) (g : N ≃[L] P) : (g.comp f).symm = f.symm.comp g.symm :=
+  rfl
+
+theorem comp_right_injective (h : M ≃[L] N) :
+    Function.Injective (fun f ↦ f.comp h : (N ≃[L] P) → (M ≃[L] P)) := by
+  intro f g hfg
+  convert (congr_arg (fun r : (M ≃[L] P) ↦ r.comp h.symm) hfg) <;>
+    rw [comp_assoc, self_comp_symm, comp_refl]
+
+@[simp]
+theorem comp_right_inj (h : M ≃[L] N) (f g : N ≃[L] P) : f.comp h = g.comp h ↔ f = g :=
+  ⟨fun eq ↦ h.comp_right_injective eq, congr_arg (fun (r : N ≃[L] P) ↦ r.comp h)⟩
 
 end Equiv
 
@@ -968,7 +1085,7 @@ instance : Unique (Language.empty.Structure M) :=
   ⟨⟨Language.emptyStructure⟩, fun a => by
     ext _ f <;> exact Empty.elim f⟩
 
-instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M fun _ => N] :
+instance (priority := 100) strongHomClassEmpty {F M N} [FunLike F M N] :
     StrongHomClass Language.empty F M N :=
   ⟨fun _ _ f => Empty.elim f, fun _ _ r => Empty.elim r⟩
 #align first_order.language.strong_hom_class_empty FirstOrder.Language.strongHomClassEmpty
@@ -1043,14 +1160,14 @@ theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :
 
 @[simp]
 theorem toFun_inducedStructureEquiv (e : M ≃ N) :
-    FunLike.coe (@inducedStructureEquiv L M N _ e) = e :=
+    DFunLike.coe (@inducedStructureEquiv L M N _ e) = e :=
   rfl
 
 @[simp]
 theorem toFun_inducedStructureEquiv_Symm (e : M ≃ N) :
     (by
     letI : L.Structure N := inducedStructure e
-    exact FunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=
+    exact DFunLike.coe (@inducedStructureEquiv L M N _ e).symm) = (e.symm : N → M) :=
   rfl
 
 end Equiv

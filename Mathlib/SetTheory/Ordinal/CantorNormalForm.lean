@@ -46,7 +46,7 @@ noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
     by_cases h : o = 0
     · rw [h]; exact H0
     · exact H o h (CNFRec _ H0 H (o % b ^ log b o))
-    termination_by CNFRec b H0 H o => o
+    termination_by o => o
     decreasing_by exact mod_opow_log_lt_self b h
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec Ordinal.CNFRec
@@ -163,7 +163,7 @@ set_option linter.uppercaseLean3 false in
 theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
   refine' CNFRec b _ (fun o ho IH ↦ _) o
   · simp only [gt_iff_lt, CNF_zero, map_nil, sorted_nil]
-  · cases' le_or_lt b 1 with hb hb
+  · rcases le_or_lt b 1 with hb | hb
     · simp only [CNF_of_le_one hb ho, gt_iff_lt, map_cons, map, sorted_singleton]
     · cases' lt_or_le o b with hob hbo
       · simp only [CNF_of_lt ho hob, gt_iff_lt, map_cons, map, sorted_singleton]

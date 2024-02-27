@@ -66,10 +66,10 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
-class NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
-  (B : outParam (Type*)) [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-  [DistribMulAction R A] [DistribMulAction R B] extends DistribMulActionHomClass F R A B,
-  MulHomClass F A B
+class NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
+  [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+  [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B]
+  extends DistribMulActionHomClass F R A B, MulHomClass F A B : Prop
 #align non_unital_alg_hom_class NonUnitalAlgHomClass
 
 -- Porting note: commented out, not dangerous
@@ -80,30 +80,35 @@ namespace NonUnitalAlgHomClass
 -- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass {F R A B : Type*}
-    [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
+    {_ : Monoid R} {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
+    {_ : NonUnitalNonAssocSemiring B} [DistribMulAction R B] [FunLike F A B]
     [NonUnitalAlgHomClass F R A B] : NonUnitalRingHomClass F A B :=
-  { ‹NonUnitalAlgHomClass F R A B› with coe := (⇑) }
+  { ‹NonUnitalAlgHomClass F R A B› with }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.toNonUnitalRingHomClass
 
 variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [NonUnitalNonAssocSemiring B] [Module R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type*} [NonUnitalAlgHomClass F R A B] : LinearMapClass F R A B :=
+instance (priority := 100) {F R A B : Type*}
+    {_ : Semiring R} {_ : NonUnitalSemiring A} {_ : NonUnitalSemiring B}
+    [Module R A] [Module R B]
+    [FunLike F A B] [NonUnitalAlgHomClass F R A B] :
+    LinearMapClass F R A B :=
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smul }
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
 `NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₙₐ[R] B`. -/
 @[coe]
 def toNonUnitalAlgHom {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
+    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [FunLike F A B]
     [NonUnitalAlgHomClass F R A B] (f : F) : A →ₙₐ[R] B :=
   { (f : A →ₙ+* B) with
     map_smul' := map_smul f }
 
 instance {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [NonUnitalAlgHomClass F R A B] :
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
+    [FunLike F A B] [NonUnitalAlgHomClass F R A B] :
     CoeTC F (A →ₙₐ[R] B) :=
   ⟨toNonUnitalAlgHom⟩
 
@@ -119,12 +124,12 @@ variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
 
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 
--- Porting note: Replaced with FunLike instance
+-- Porting note: Replaced with DFunLike instance
 -- /-- see Note [function coercion] -/
 -- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
 --   ⟨toFun⟩
 
-instance : FunLike (A →ₙₐ[R] B) A fun _ => B where
+instance : FunLike (A →ₙₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
@@ -140,7 +145,7 @@ initialize_simps_projections NonUnitalAlgHom
   (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [NonUnitalAlgHomClass F R A B] (f : F) :
+protected theorem coe_coe {F : Type*} [FunLike F A B] [NonUnitalAlgHomClass F R A B] (f : F) :
     ⇑(f : A →ₙₐ[R] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_coe NonUnitalAlgHom.coe_coe
@@ -149,14 +154,17 @@ theorem coe_injective : @Function.Injective (A →ₙₐ[R] B) (A → B) (↑) :
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
 
-instance : NonUnitalAlgHomClass (A →ₙₐ[R] B) R A B
+instance : FunLike (A →ₙₐ[R] B) A B
     where
   coe f := f.toFun
   coe_injective' := coe_injective
-  map_smul f := f.map_smul'
+
+instance : NonUnitalAlgHomClass (A →ₙₐ[R] B) R A B
+    where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
+  map_smul f := f.map_smul'
 
 @[ext]
 theorem ext {f g : A →ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=
@@ -217,7 +225,7 @@ theorem to_distribMulActionHom_injective {f g : A →ₙₐ[R] B}
 
 theorem to_mulHom_injective {f g : A →ₙₐ[R] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
-  exact FunLike.congr_fun h a
+  exact DFunLike.congr_fun h a
 #align non_unital_alg_hom.to_mul_hom_injective NonUnitalAlgHom.to_mulHom_injective
 
 @[norm_cast]
@@ -232,22 +240,22 @@ theorem coe_mulHom_mk (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) :
   rfl
 #align non_unital_alg_hom.coe_mul_hom_mk NonUnitalAlgHom.coe_mulHom_mk
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smul (f : A →ₙₐ[R] B) (c : R) (x : A) : f (c • x) = c • f x :=
   map_smul _ _ _
 #align non_unital_alg_hom.map_smul NonUnitalAlgHom.map_smul
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_add (f : A →ₙₐ[R] B) (x y : A) : f (x + y) = f x + f y :=
   map_add _ _ _
 #align non_unital_alg_hom.map_add NonUnitalAlgHom.map_add
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_mul (f : A →ₙₐ[R] B) (x y : A) : f (x * y) = f x * f y :=
   map_mul _ _ _
 #align non_unital_alg_hom.map_mul NonUnitalAlgHom.map_mul
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_zero (f : A →ₙₐ[R] B) : f 0 = 0 :=
   map_zero _
 #align non_unital_alg_hom.map_zero NonUnitalAlgHom.map_zero
@@ -434,7 +442,8 @@ variable {R A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
+instance (priority := 100) [FunLike F A B] [AlgHomClass F R A B] :
+    NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smul := map_smul }
 
 /-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Sidharth Hariharan
 -/
 import Mathlib.Data.Polynomial.Div
-import Mathlib.Data.ZMod.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Tactic.FieldSimp

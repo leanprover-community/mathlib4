@@ -337,6 +337,23 @@ theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶
   rfl
 #align category_theory.yoneda_pairing_map CategoryTheory.yonedaPairing_map
 
+variable {C} in
+/-- A bijection `(yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X)` which is a variant
+of `yonedaEquiv` with heterogeneous universes. -/
+def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
+    (yoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) ≃ F.obj (op X) where
+  toFun φ := φ.app (op X) (ULift.up (𝟙 _))
+  invFun f :=
+    { app := fun Y x => F.map (ULift.down x).op f }
+  left_inv φ := by
+    ext Y f
+    dsimp
+    rw [← FunctorToTypes.naturality]
+    dsimp
+    rw [Category.comp_id]
+    rfl
+  right_inv f := by aesop_cat
+
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
 is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`.
@@ -348,35 +365,21 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
     { app := fun F x => ULift.up ((x.app F.1) (𝟙 (unop F.1)))
       naturality := by
         intro X Y f
-        simp only [yonedaEvaluation]
         ext
-        dsimp
-        erw [Category.id_comp, ← FunctorToTypes.naturality]
-        simp only [Category.comp_id, yoneda_obj_map] }
+        simp [yonedaEvaluation, ← FunctorToTypes.naturality] }
   inv :=
     { app := fun F x =>
-        { app := fun X a => (F.2.map a.op) x.down
-          naturality := by
-            intro X Y f
-            ext
-            dsimp
-            rw [FunctorToTypes.map_comp_apply] }
+        { app := fun X a => (F.2.map a.op) x.down }
       naturality := by
         intro X Y f
-        simp only [yoneda]
         ext
-        dsimp
-        rw [← FunctorToTypes.naturality X.snd Y.snd f.snd, FunctorToTypes.map_comp_apply] }
+        simp [yoneda, ← FunctorToTypes.naturality] }
   hom_inv_id := by
     ext
-    dsimp
-    erw [← FunctorToTypes.naturality, obj_map_id]
-    simp only [yoneda_map_app, Quiver.Hom.unop_op]
-    erw [Category.id_comp]
+    simp [← FunctorToTypes.naturality]
   inv_hom_id := by
     ext
-    dsimp
-    rw [FunctorToTypes.map_id_apply, ULift.up_down]
+    simp [ULift.up_down]
 #align category_theory.yoneda_lemma CategoryTheory.yonedaLemma
 
 variable {C}
@@ -397,7 +400,6 @@ def yonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type v₁} : (yoneda.obj X ⟶ F) ≃ F
   (yonedaSections X F).toEquiv.trans Equiv.ulift
 #align category_theory.yoneda_equiv CategoryTheory.yonedaEquiv
 
-@[simp]
 theorem yonedaEquiv_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F) :
     yonedaEquiv f = f.app (op X) (𝟙 X) :=
   rfl

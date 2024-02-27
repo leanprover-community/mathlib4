@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Scott Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -168,6 +169,10 @@ def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.units_End_equiv_Aut CategoryTheory.Aut.unitsEndEquivAut
 
+/-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/
+@[simps!]
+def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEndEquivAut X).symm
+
 /-- Isomorphisms induce isomorphisms of the automorphism group -/
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := ⟨h.inv ≫ x.hom ≫ h.hom, h.inv ≫ x.inv ≫ h.hom, _, _⟩
@@ -199,6 +204,20 @@ def mapAut : Aut X →* Aut (f.obj X) where
   map_one' := f.mapIso_refl X
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Aut CategoryTheory.Functor.mapAut
+
+/-- `equivOfFullyFaithful f` as an isomorphism between endomorphism monoids. -/
+@[simps!]
+def mulEquivOfFullyFaithful [Full f] [Faithful f] :
+    End X ≃* End (f.obj X) where
+  toEquiv := equivOfFullyFaithful f
+  __ := mapEnd X f
+
+/-- `isoEquivOfFullyFaithful f` as an isomorphism between automorphism groups. -/
+@[simps!]
+def autMulEquivOfFullyFaithful [Full f] [Faithful f] :
+    Aut X ≃* Aut (f.obj X) where
+  toEquiv := isoEquivOfFullyFaithful f
+  __ := mapAut X f
 
 end Functor
 

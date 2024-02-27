@@ -3,6 +3,7 @@ Copyright (c) 2023 Robin Böhne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
+import Std.Data.Json
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Data.String.Defs
 
@@ -133,4 +134,5 @@ open scoped Json in
 in the goal.-/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  savePanelWidgetInfo stx ``ConvSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
+  Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
+   (pure <| json% { replaceRange: $(replaceRange) }) stx

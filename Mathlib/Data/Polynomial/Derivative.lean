@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.GroupTheory.GroupAction.Ring
 
 #align_import data.polynomial.derivative from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
@@ -206,7 +207,7 @@ theorem degree_derivative_le {p : R[X]} : p.derivative.degree ≤ p.degree :=
 
 theorem natDegree_derivative_lt {p : R[X]} (hp : p.natDegree ≠ 0) :
     p.derivative.natDegree < p.natDegree := by
-  cases' eq_or_ne (derivative p) 0 with hp' hp'
+  rcases eq_or_ne (derivative p) 0 with hp' | hp'
   · rw [hp', Polynomial.natDegree_zero]
     exact hp.bot_lt
   · rw [natDegree_lt_natDegree_iff hp']
@@ -483,11 +484,11 @@ theorem pow_sub_one_dvd_derivative_of_pow_dvd {p q : R[X]} {n : ℕ}
 
 theorem pow_sub_dvd_iterate_derivative_of_pow_dvd {p q : R[X]} {n : ℕ} (m : ℕ)
     (dvd : q ^ n ∣ p) : q ^ (n - m) ∣ derivative^[m] p := by
-  revert p
-  induction' m with m ih <;> intro p h
-  · exact h
-  · rw [Nat.sub_succ, Function.iterate_succ']
-    exact pow_sub_one_dvd_derivative_of_pow_dvd (ih h)
+  induction m generalizing p with
+  | zero => simpa
+  | succ m ih =>
+    rw [Nat.sub_succ, Function.iterate_succ']
+    exact pow_sub_one_dvd_derivative_of_pow_dvd (ih dvd)
 
 theorem pow_sub_dvd_iterate_derivative_pow (p : R[X]) (n m : ℕ) :
     p ^ (n - m) ∣ derivative^[m] (p ^ n) := pow_sub_dvd_iterate_derivative_of_pow_dvd m dvd_rfl

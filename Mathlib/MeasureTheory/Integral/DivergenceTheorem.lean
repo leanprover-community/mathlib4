@@ -8,6 +8,7 @@ import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 #align_import measure_theory.integral.divergence_theorem from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -19,9 +20,10 @@ In this file we prove the Divergence theorem for Bochner integral on a box in
 
 Let `E` be a complete normed space. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is
 continuous on a rectangular box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, differentiable on its interior with
-derivative `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹`, and the divergence `λ x, ∑ i, f' x eᵢ i` is integrable on
-`[a, b]`, where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the
-sum of integrals of `f` over the faces of `[a, b]`, taken with appropriate signs. Moreover, the same
+derivative `f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹`, and the divergence `fun x ↦ ∑ i, f' x eᵢ i`
+is integrable on `[a, b]`, where `eᵢ = Pi.single i 1` is the `i`-th basis vector,
+then its integral is equal to the sum of integrals of `f` over the faces of `[a, b]`,
+taken with appropriate signs. Moreover, the same
 is true if the function is not differentiable at countably many points of the interior of `[a, b]`.
 
 Once we prove the general theorem, we deduce corollaries for functions `ℝ → E` and pairs of
@@ -284,8 +286,8 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable (hle : a ≤ b)
     rcases eq_or_ne i j with (rfl | hne)
     · simp [hi]
     · rcases Fin.exists_succAbove_eq hne with ⟨i, rfl⟩
-      have : Icc (a ∘ j.succAbove) (b ∘ j.succAbove) =ᵐ[volume] (∅ : Set ℝⁿ)
-      · rw [ae_eq_empty, Real.volume_Icc_pi, prod_eq_zero (Finset.mem_univ i)]
+      have : Icc (a ∘ j.succAbove) (b ∘ j.succAbove) =ᵐ[volume] (∅ : Set ℝⁿ) := by
+        rw [ae_eq_empty, Real.volume_Icc_pi, prod_eq_zero (Finset.mem_univ i)]
         simp [hi]
       rw [set_integral_congr_set_ae this, set_integral_congr_set_ae this, integral_empty,
         integral_empty, sub_self]
@@ -376,7 +378,7 @@ See also
 * `interval_integral.integral_eq_sub_of_has_deriv_right_of_le` for a version that only assumes right
 differentiability of `f`;
 
-* `MeasureTheory.integral_eq_of_has_deriv_within_at_off_countable` for a version that works both
+* `MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable` for a version that works both
   for `a ≤ b` and `b ≤ a` at the expense of using unordered intervals instead of `Set.Icc`. -/
 theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {a b : ℝ}
     (hle : a ≤ b) {s : Set ℝ} (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
@@ -401,10 +403,10 @@ theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {
       · exact fun x y => (OrderIso.funUnique (Fin 1) ℝ).symm.le_iff_le
       · exact (volume_preserving_funUnique (Fin 1) ℝ).symm _
       · intro x; rw [Fin.sum_univ_one, hF', e_symm, Pi.single_eq_same, one_smul]
-      · rw [intervalIntegrable_iff_integrable_Ioc_of_le hle] at Hi
+      · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hle] at Hi
         exact Hi.congr_set_ae Ioc_ae_eq_Icc.symm
     _ = f b - f a := by
-      simp only [Fin.sum_univ_one, e_symm]
+      simp only [e, Fin.sum_univ_one, e_symm]
       have : ∀ c : ℝ, const (Fin 0) c = isEmptyElim := fun c => Subsingleton.elim _ _
       simp [this, volume_pi, Measure.pi_of_empty fun _ : Fin 0 => volume]
 #align measure_theory.integral_eq_of_has_deriv_within_at_off_countable_of_le MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable_of_le
@@ -415,17 +417,17 @@ interval and is differentiable off a countable set `s`.
 See also `measure_theory.interval_integral.integral_eq_sub_of_has_deriv_right` for a version that
 only assumes right differentiability of `f`.
 -/
-theorem integral_eq_of_has_deriv_within_at_off_countable (f f' : ℝ → E) {a b : ℝ} {s : Set ℝ}
+theorem integral_eq_of_hasDerivWithinAt_off_countable (f f' : ℝ → E) {a b : ℝ} {s : Set ℝ}
     (hs : s.Countable) (Hc : ContinuousOn f [[a, b]])
     (Hd : ∀ x ∈ Ioo (min a b) (max a b) \ s, HasDerivAt f (f' x) x)
     (Hi : IntervalIntegrable f' volume a b) : ∫ x in a..b, f' x = f b - f a := by
-  cases' le_total a b with hab hab
+  rcases le_total a b with hab | hab
   · simp only [uIcc_of_le hab, min_eq_left hab, max_eq_right hab] at *
     exact integral_eq_of_hasDerivWithinAt_off_countable_of_le f f' hab hs Hc Hd Hi
   · simp only [uIcc_of_ge hab, min_eq_right hab, max_eq_left hab] at *
     rw [intervalIntegral.integral_symm, neg_eq_iff_eq_neg, neg_sub]
     exact integral_eq_of_hasDerivWithinAt_off_countable_of_le f f' hab hs Hc Hd Hi.symm
-#align measure_theory.integral_eq_of_has_deriv_within_at_off_countable MeasureTheory.integral_eq_of_has_deriv_within_at_off_countable
+#align measure_theory.integral_eq_of_has_deriv_within_at_off_countable MeasureTheory.integral_eq_of_hasDerivWithinAt_off_countable
 
 /-- **Divergence theorem** for functions on the plane along rectangles. It is formulated in terms of
 two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1] × [a.2, b.2]`, where

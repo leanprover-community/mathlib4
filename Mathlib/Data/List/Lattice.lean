@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Scott Morrison
 -/
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Basic
 import Mathlib.Algebra.Order.Monoid.MinMax
 
 #align_import data.list.lattice from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
@@ -150,7 +149,7 @@ theorem mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simp
 #align list.mem_of_mem_inter_right List.mem_of_mem_inter_right
 
 theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
-  mem_filter_of_mem h₁ $ by simpa using h₂
+  mem_filter_of_mem h₁ <| by simpa using h₂
 #align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
 
 #align list.mem_inter List.mem_inter_iff

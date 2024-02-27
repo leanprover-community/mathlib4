@@ -83,7 +83,7 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
       have : w ∈ x::y::l := mem_of_formPerm_ne_self _ _ hw
       obtain ⟨k, hk, rfl⟩ := nthLe_of_mem this
       use k
-      simp only [zpow_ofNat, formPerm_pow_apply_head _ _ hl k, Nat.mod_eq_of_lt hk]
+      simp only [zpow_coe_nat, formPerm_pow_apply_head _ _ hl k, Nat.mod_eq_of_lt hk]
 #align list.is_cycle_form_perm List.isCycle_formPerm
 
 theorem pairwise_sameCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
@@ -133,7 +133,7 @@ variable [DecidableEq α] (s s' : Cycle α)
 /-- A cycle `s : Cycle α`, given `Nodup s` can be interpreted as an `Equiv.Perm α`
 where each element in the list is permuted to the next one, defined as `formPerm`.
 -/
-def formPerm : ∀ (s : Cycle α) (_ : Nodup s), Equiv.Perm α :=
+def formPerm : ∀ s : Cycle α, Nodup s → Equiv.Perm α :=
   fun s => Quotient.hrecOn s (fun l _ => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
     apply Function.hfunext
     ext

@@ -37,13 +37,15 @@ function with finite support, module, linear algebra
 
 variable {ι : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
-variable [dec_ι : DecidableEq ι]
-
 namespace DFinsupp
 
 variable [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 variable [AddCommMonoid N] [Module R N]
+
+section DecidableEq
+
+variable [DecidableEq ι]
 
 /-- `DFinsupp.mk` as a `LinearMap`. -/
 def lmk (s : Finset ι) : (∀ i : (↑s : Set ι), M i) →ₗ[R] Π₀ i, M i where
@@ -137,8 +139,7 @@ def lsum [Semiring S] [Module S N] [SMulCommClass R S N] :
     (∀ i, M i →ₗ[R] N) ≃ₗ[S] (Π₀ i, M i) →ₗ[R] N where
   toFun F :=
     { toFun := sumAddHom fun i => (F i).toAddMonoidHom
-      -- Porting note: needed to (β := M) hint below
-      map_add' := (DFinsupp.liftAddHom (β := M) (fun (i : ι) => (F i).toAddMonoidHom)).map_add
+      map_add' := (DFinsupp.liftAddHom fun (i : ι) => (F i).toAddMonoidHom).map_add
       map_smul' := fun c f => by
         dsimp
         apply DFinsupp.induction f
@@ -174,11 +175,12 @@ theorem lsum_single [Semiring S] [Module S N] [SMulCommClass R S N] (F : ∀ i, 
 
 end Lsum
 
+end DecidableEq
+
 /-! ### Bundled versions of `DFinsupp.mapRange`
 
 The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 -/
-
 
 section mapRange
 
@@ -217,13 +219,10 @@ theorem mapRange.linearMap_comp (f : ∀ i, β₁ i →ₗ[R] β₂ i) (f₂ : �
     (fun i => (f i).map_zero) (fun i => (f₂ i).map_zero) (by simp)
 #align dfinsupp.map_range.linear_map_comp DFinsupp.mapRange.linearMap_comp
 
-theorem sum_mapRange_index.linearMap [∀ (i : ι) (x : β₁ i), Decidable (x ≠ 0)]
-    [∀ (i : ι) (x : β₂ i), Decidable (x ≠ 0)] {f : ∀ i, β₁ i →ₗ[R] β₂ i} {h : ∀ i, β₂ i →ₗ[R] N}
-    {l : Π₀ i, β₁ i} :
-    -- Porting note: Needed to add (M := ...) below
-    (DFinsupp.lsum ℕ (M := β₂)) h (mapRange.linearMap f l)
-      = (DFinsupp.lsum ℕ (M := β₁)) (fun i => (h i).comp (f i)) l := by
-  simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
+theorem sum_mapRange_index.linearMap [DecidableEq ι] {f : ∀ i, β₁ i →ₗ[R] β₂ i}
+    {h : ∀ i, β₂ i →ₗ[R] N} {l : Π₀ i, β₁ i} :
+    DFinsupp.lsum ℕ h (mapRange.linearMap f l) = DFinsupp.lsum ℕ (fun i => (h i).comp (f i)) l := by
+  classical simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
 #align dfinsupp.sum_map_range_index.linear_map DFinsupp.sum_mapRange_index.linearMap
 
 /-- `DFinsupp.mapRange.linearMap` as a `LinearEquiv`. -/
@@ -288,6 +287,10 @@ namespace Submodule
 variable [Semiring R] [AddCommMonoid N] [Module R N]
 
 open DFinsupp
+
+section DecidableEq
+
+variable [DecidableEq ι]
 
 theorem dfinsupp_sum_mem {β : ι → Type*} [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     (S : Submodule R N) (f : Π₀ i, β i) (g : ∀ i, β i → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
@@ -356,16 +359,6 @@ theorem mem_iSup_iff_exists_dfinsupp' (p : ι → Submodule R N) [∀ (i) (x : p
     LinearMap.toAddMonoidHom_coe, coeSubtype]
 #align submodule.mem_supr_iff_exists_dfinsupp' Submodule.mem_iSup_iff_exists_dfinsupp'
 
-lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
-    x ∈ iSup p ↔ ∃ (f : ι →₀ N), (∀ i, f i ∈ p i) ∧ (f.sum fun _i xi ↦ xi) = x := by
-  classical
-  rw [mem_iSup_iff_exists_dfinsupp']
-  refine ⟨fun ⟨f, hf⟩ ↦ ⟨⟨f.support, fun i ↦ (f i : N), by simp⟩, by simp, hf⟩, ?_⟩
-  rintro ⟨f, hf, rfl⟩
-  refine ⟨DFinsupp.mk f.support <| fun i ↦ ⟨f i, hf i⟩, Finset.sum_congr ?_ fun i hi ↦ ?_⟩
-  · ext; simp
-  · simp [Finsupp.mem_support_iff.mp hi]
-
 theorem mem_biSup_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N)
     (x : N) :
     (x ∈ ⨆ (i) (_ : p i), S i) ↔
@@ -373,6 +366,18 @@ theorem mem_biSup_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : �
         DFinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype) (f.filter p) = x :=
   SetLike.ext_iff.mp (biSup_eq_range_dfinsupp_lsum p S) x
 #align submodule.mem_bsupr_iff_exists_dfinsupp Submodule.mem_biSup_iff_exists_dfinsupp
+
+end DecidableEq
+
+lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
+    x ∈ iSup p ↔ ∃ (f : ι →₀ N), (∀ i, f i ∈ p i) ∧ (f.sum fun _i xi ↦ xi) = x := by
+  classical
+  rw [mem_iSup_iff_exists_dfinsupp']
+  refine ⟨fun ⟨f, hf⟩ ↦ ⟨⟨f.support, fun i ↦ (f i : N), by simp⟩, by simp, hf⟩, ?_⟩
+  rintro ⟨f, hf, rfl⟩
+  refine ⟨DFinsupp.mk f.support fun i ↦ ⟨f i, hf i⟩, Finset.sum_congr ?_ fun i hi ↦ ?_⟩
+  · ext; simp
+  · simp [Finsupp.mem_support_iff.mp hi]
 
 open BigOperators
 
@@ -391,8 +396,7 @@ theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N
         rw [mem_support_iff, not_ne_iff]
         ext
         rw [coe_zero, ← mem_bot R]
-        suffices : ⊥ = ⨆ (_ : x ∈ s), p x
-        · exact this.symm ▸ coe_mem (μ x)
+        suffices ⊥ = ⨆ (_ : x ∈ s), p x from this.symm ▸ coe_mem (μ x)
         exact (iSup_neg hx).symm
       · intro x _ hx
         rw [mem_support_iff, not_ne_iff] at hx
@@ -421,7 +425,7 @@ open DFinsupp
 
 section Semiring
 
-variable [Semiring R] [AddCommMonoid N] [Module R N]
+variable [DecidableEq ι] [Semiring R] [AddCommMonoid N] [Module R N]
 
 /-- Independence of a family of submodules can be expressed as a quantifier over `DFinsupp`s.
 
@@ -445,11 +449,10 @@ theorem independent_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
     Independent p := by
   rw [independent_iff_forall_dfinsupp]
   intro i x v hv
-  replace hv :
-    lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
-      lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x)
-  · simpa only [lsum_single] using hv
-  have := FunLike.ext_iff.mp (h hv) i
+  replace hv : lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
+      lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x) := by
+    simpa only [lsum_single] using hv
+  have := DFunLike.ext_iff.mp (h hv) i
   simpa [eq_comm] using this
 #align complete_lattice.independent_of_dfinsupp_lsum_injective CompleteLattice.independent_of_dfinsupp_lsum_injective
 
@@ -477,7 +480,7 @@ end Semiring
 
 section Ring
 
-variable [Ring R] [AddCommGroup N] [Module R N]
+variable [DecidableEq ι] [Ring R] [AddCommGroup N] [Module R N]
 
 /- If `DFinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 subgroups are independent. -/

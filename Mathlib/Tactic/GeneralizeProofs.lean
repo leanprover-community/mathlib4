@@ -3,7 +3,7 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Lean
+import Lean.Meta.AbstractNestedProofs
 import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -39,7 +39,7 @@ structure State where
 
 /-- Monad used by the `generalizeProofs` tactic, carries an expr cache and state with
 names to use and previous generalizations -/
-abbrev M := MonadCacheT ExprStructEq Expr $ StateRefT State MetaM
+abbrev M := MonadCacheT ExprStructEq Expr <| StateRefT State MetaM
 
 /-- generalize the given e -/
 private def mkGen (e : Expr) : M Unit := do

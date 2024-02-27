@@ -119,13 +119,13 @@ open Lean PrettyPrinter.Delaborator SubExpr in
 @[delab app.Prefunctor.obj]
 def delabPrefunctorObjExp : Delab := do
   let e ← getExpr
-  guard $ e.isAppOfArity' ``Prefunctor.obj 6
+  guard <| e.isAppOfArity' ``Prefunctor.obj 6
   let A ← withNaryArg 4 do
     let e ← getExpr
-    guard $ e.isAppOfArity' ``Functor.toPrefunctor 5
+    guard <| e.isAppOfArity' ``Functor.toPrefunctor 5
     withNaryArg 4 do
       let e ← getExpr
-      guard $ e.isAppOfArity' ``exp 5
+      guard <| e.isAppOfArity' ``exp 5
       withNaryArg 2 delab
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)

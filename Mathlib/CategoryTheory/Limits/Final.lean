@@ -3,11 +3,12 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.PUnit
 
 #align_import category_theory.limits.final from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
@@ -46,6 +47,10 @@ limit if and only if `F ⋙ G` does, and these limits are isomorphic via `limit.
 There is some discrepancy in the literature about naming; some say 'cofinal' instead of 'final'.
 The explanation for this is that the 'co' prefix here is *not* the usual category-theoretic one
 indicating duality, but rather indicating the sense of "along with".
+
+## See also
+In `CategoryTheory.Filtered.Final` we give additional equivalent conditions in the case that
+`C` is filtered.
 
 ## Future work
 Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial functors.
@@ -121,32 +126,30 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
 
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
-  {
-    out := fun c =>
+  { out := fun c =>
       let u : StructuredArrow c R := StructuredArrow.mk (adj.unit.app c)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
           (Relation.ReflTransGen.single
             (show Zag f u from
-              Or.inr ⟨StructuredArrow.homMk ((adj.homEquiv c f.right).symm f.hom) (by simp)⟩))
+              Or.inr ⟨StructuredArrow.homMk ((adj.homEquiv c f.right).symm f.hom) (by simp [u])⟩))
           (Relation.ReflTransGen.single
             (show Zag u g from
-              Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp)⟩)) }
+              Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp [u])⟩)) }
 #align category_theory.functor.final_of_adjunction CategoryTheory.Functor.final_of_adjunction
 
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
 theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Initial L :=
-  {
-    out := fun d =>
+  { out := fun d =>
       let u : CostructuredArrow L d := CostructuredArrow.mk (adj.counit.app d)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
           (Relation.ReflTransGen.single
             (show Zag f u from
-              Or.inl ⟨CostructuredArrow.homMk (adj.homEquiv f.left d f.hom) (by simp)⟩))
+              Or.inl ⟨CostructuredArrow.homMk (adj.homEquiv f.left d f.hom) (by simp [u])⟩))
           (Relation.ReflTransGen.single
             (show Zag u g from
-              Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp)⟩)) }
+              Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp [u])⟩)) }
 #align category_theory.functor.initial_of_adjunction CategoryTheory.Functor.initial_of_adjunction
 
 instance (priority := 100) final_of_isRightAdjoint (F : C ⥤ D) [h : IsRightAdjoint F] : Final F :=
@@ -395,18 +398,18 @@ namespace Final
 theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
     (t : EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
-  induction t
-  case rel x y r =>
+  induction t with
+  | rel x y r =>
     obtain ⟨f, w⟩ := r
     fconstructor
     swap; fconstructor
     left; fconstructor
     exact StructuredArrow.homMk f
-  case refl => fconstructor
-  case symm x y _ ih =>
+  | refl => fconstructor
+  | symm x y _ ih =>
     apply zigzag_symmetric
     exact ih
-  case trans x y z _ _ ih₁ ih₂ =>
+  | trans x y z _ _ ih₁ ih₂ =>
     apply Relation.ReflTransGen.trans
     exact ih₁; exact ih₂
 #align category_theory.functor.final.zigzag_of_eqv_gen_quot_rel CategoryTheory.Functor.Final.zigzag_of_eqvGen_quot_rel
@@ -434,11 +437,15 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
     exact Final.zigzag_of_eqvGen_quot_rel t⟩
 #align category_theory.functor.final.cofinal_of_colimit_comp_coyoneda_iso_punit CategoryTheory.Functor.cofinal_of_colimit_comp_coyoneda_iso_pUnit
 
-end LocallySmall
-
-section SmallCategory
-
-variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
+/-- A variant of `cofinal_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
+    about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
+    the presheaf `colimit (F ⋙ yoneda)`. -/
+theorem cofinal_of_isTerminal_colimit_comp_yoneda
+    (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
+  refine cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
+  refine Types.isTerminalEquivIsoPUnit _ ?_
+  let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
+  exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (F ⋙ yoneda)
 
 /-- If the universal morphism `colimit (F ⋙ coyoneda.obj (op d)) ⟶ colimit (coyoneda.obj (op d))`
 is an isomorphism (as it always is when `F` is cofinal),
@@ -449,6 +456,12 @@ def Final.colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d
     colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit :=
   asIso (colimit.pre (coyoneda.obj (op d)) F) ≪≫ Coyoneda.colimitCoyonedaIso (op d)
 #align category_theory.functor.final.colimit_comp_coyoneda_iso CategoryTheory.Functor.Final.colimitCompCoyonedaIso
+
+end LocallySmall
+
+section SmallCategory
+
+variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
 
 theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ Type v, IsIso (colimit.pre G F) :=
   ⟨fun _ => inferInstance,

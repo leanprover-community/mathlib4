@@ -79,7 +79,7 @@ theorem coeSubmodule_span (s : Set R) :
   rfl
 #align is_localization.coe_submodule_span IsLocalization.coeSubmodule_span
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]
@@ -107,7 +107,9 @@ variable {S M}
 @[mono]
 theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
     coeSubmodule S I ≤ coeSubmodule S J ↔ I ≤ J :=
-  Submodule.map_le_map_iff_of_injective (IsLocalization.injective _ h) _ _
+  -- Note: #8386 had to specify the value of `f` here:
+  Submodule.map_le_map_iff_of_injective (f := Algebra.linearMap R S) (IsLocalization.injective _ h)
+    _ _
 #align is_localization.coe_submodule_le_coe_submodule IsLocalization.coeSubmodule_le_coeSubmodule
 
 

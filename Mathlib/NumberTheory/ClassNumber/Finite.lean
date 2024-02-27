@@ -121,7 +121,7 @@ theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
   apply (Int.cast_le.mpr (norm_le abv bS a hy')).trans_lt
   simp only [Int.cast_mul, Int.cast_pow]
   apply mul_lt_mul' le_rfl
-  · exact pow_lt_pow_of_lt_left this (Int.cast_nonneg.mpr y'_nonneg) (Fintype.card_pos_iff.mpr ⟨i⟩)
+  · exact pow_lt_pow_left this (Int.cast_nonneg.mpr y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
   · exact pow_nonneg (Int.cast_nonneg.mpr y'_nonneg) _
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 #align class_group.norm_lt ClassGroup.norm_lt
@@ -236,7 +236,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   have μ_mul_a_eq : ∀ j, μ j • a = b • ∑ i, qs j i • bS i + ∑ i, rs j i • bS i := by
     intro j
     rw [← bS.sum_repr a]
-    simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
+    simp only [μ, qs, rs, Finset.smul_sum, ← Finset.sum_add_distrib]
     refine'
       Finset.sum_congr rfl fun i _ => _
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
@@ -248,7 +248,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
   refine' ⟨q, r, (mem_finsetApprox bS adm).mpr _, _⟩
   · exact ⟨k, j, j_ne_k.symm, rfl⟩
   have : r • a - b • q = ∑ x : ι, (rs k x • bS x - rs j x • bS x) := by
-    simp only [r_eq, sub_smul, μ_mul_a_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
+    simp only [q, r_eq, sub_smul, μ_mul_a_eq, Finset.smul_sum, ← Finset.sum_add_distrib,
       ← Finset.sum_sub_distrib, smul_sub]
     refine' Finset.sum_congr rfl fun x _ => _
     ring

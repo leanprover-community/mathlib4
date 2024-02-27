@@ -70,8 +70,8 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
   apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by
-    suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
-    exact measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
+    suffices Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s) from
+      measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
     rw [tendsto_pi_nhds] at lim ⊢
     intro x
     exact ((continuous_infNndist_pt s).tendsto (g x)).comp (lim x)
@@ -146,8 +146,7 @@ theorem measurable_of_tendsto_metrizable_ae {μ : Measure α} [μ.IsComplete] {f
 theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty ι] {μ : Measure α}
     {f : ι → α → β} {L : Filter ι} [L.IsCountablyGenerated] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) L (𝓝 l)) :
-    ∃ (f_lim : α → β) (hf_lim_meas : Measurable f_lim),
-      ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
+    ∃ f_lim : α → β, Measurable f_lim ∧ ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
   inhabit ι
   rcases eq_or_neBot L with (rfl | hL)
   · exact ⟨(hf default).mk _, (hf default).measurable_mk, eventually_of_forall fun x => tendsto_bot⟩

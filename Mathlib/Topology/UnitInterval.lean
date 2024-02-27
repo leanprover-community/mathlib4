@@ -48,7 +48,7 @@ theorem one_mem : (1 : ℝ) ∈ I :=
 #align unit_interval.one_mem unitInterval.one_mem
 
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
-  ⟨mul_nonneg hx.1 hy.1, (mul_le_mul hx.2 hy.2 hy.1 zero_le_one).trans_eq <| one_mul 1⟩
+  ⟨mul_nonneg hx.1 hy.1, mul_le_one hx.2 hy.1 hy.2⟩
 #align unit_interval.mul_mem unitInterval.mul_mem
 
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
@@ -94,11 +94,11 @@ instance : Mul I :=
 
 -- todo: we could set up a `LinearOrderedCommMonoidWithZero I` instance
 theorem mul_le_left {x y : I} : x * y ≤ x :=
-  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq <| mul_one x.1
+  Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 #align unit_interval.mul_le_left unitInterval.mul_le_left
 
 theorem mul_le_right {x y : I} : x * y ≤ y :=
-  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq <| one_mul y.1
+  Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 #align unit_interval.mul_le_right unitInterval.mul_le_right
 
 /-- Unit interval central symmetry. -/
@@ -226,10 +226,10 @@ lemma addNSMul_eq_right [Archimedean α] (hδ : 0 < δ) :
   obtain ⟨m, hm⟩ := Archimedean.arch (b - a) hδ
   refine ⟨m, fun n hn ↦ ?_⟩
   rw [addNSMul, coe_projIcc, add_comm, min_eq_left_iff.mpr, max_eq_right h]
-  exact sub_le_iff_le_add.mp (hm.trans <| nsmul_le_nsmul hδ.le hn)
+  exact sub_le_iff_le_add.mp (hm.trans <| nsmul_le_nsmul_left hδ.le hn)
 
 lemma monotone_addNSMul (hδ : 0 ≤ δ) : Monotone (addNSMul h δ) :=
-  fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul hδ hnm)
+  fun _ _ hnm ↦ monotone_projIcc h <| (add_le_add_iff_left _).mpr (nsmul_le_nsmul_left hδ hnm)
 
 lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (ht : t ∈ Icc (addNSMul h δ n) (addNSMul h δ (n+1))) :

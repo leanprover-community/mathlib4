@@ -38,11 +38,11 @@ def stdBasisMatrix (i : m) (j : n) (a : α) : Matrix m n α := fun i' j' =>
 #align matrix.std_basis_matrix Matrix.stdBasisMatrix
 
 @[simp]
-theorem smul_stdBasisMatrix (i : m) (j : n) (a b : α) :
-    b • stdBasisMatrix i j a = stdBasisMatrix i j (b • a) := by
+theorem smul_stdBasisMatrix [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
+    r • stdBasisMatrix i j a = stdBasisMatrix i j (r • a) := by
   unfold stdBasisMatrix
   ext
-  simp
+  simp [smul_ite]
 #align matrix.smul_std_basis_matrix Matrix.smul_stdBasisMatrix
 
 @[simp]
@@ -204,7 +204,7 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a
-  -- Porting note: was `simp [h₁, h, h.symm]`
+  -- porting note (#10745): was `simp [h₁, h, h.symm]`
   · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
     refine Finset.sum_eq_zero (fun x _ => ?_)
     apply if_neg
@@ -215,6 +215,8 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
 #align matrix.std_basis_matrix.mul_of_ne Matrix.StdBasisMatrix.mul_of_ne
 
 end
+
+end StdBasisMatrix
 
 section Commute
 
@@ -237,7 +239,7 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
 theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
-    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) :
+    (hM : Pairwise fun i j => Commute (stdBasisMatrix i j 1) M) :
     M ∈ Set.range (Matrix.scalar n) := by
   cases isEmpty_or_nonempty n
   · exact ⟨0, Subsingleton.elim _ _⟩
@@ -248,15 +250,27 @@ theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
   · rw [diagonal_apply_eq]
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rfl
-    · exact diag_eq_of_commute_stdBasisMatrix (hM _ _ hij)
+    · exact diag_eq_of_commute_stdBasisMatrix (hM hij)
   · push_neg at hkl
     rw [diagonal_apply_ne _ hkl]
     obtain rfl | hij := Decidable.eq_or_ne i j
-    · rw [col_eq_zero_of_commute_stdBasisMatrix (hM k i hkl.symm) hkl]
-    · rw [row_eq_zero_of_commute_stdBasisMatrix (hM i j hij) hkl.symm]
+    · rw [col_eq_zero_of_commute_stdBasisMatrix (hM hkl.symm) hkl]
+    · rw [row_eq_zero_of_commute_stdBasisMatrix (hM hij) hkl.symm]
+
+theorem mem_range_scalar_iff_commute_stdBasisMatrix {M : Matrix n n α} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M := by
+  refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm ?_, mem_range_scalar_of_commute_stdBasisMatrix⟩
+  rw [scalar_commute_iff]
+  simp
+
+/-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`.​ -/
+theorem mem_range_scalar_iff_commute_stdBasisMatrix' {M : Matrix n n α} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (stdBasisMatrix i j 1) M := by
+  refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
+    fun hM => mem_range_scalar_iff_commute_stdBasisMatrix.mpr <| fun i j _ => hM i j⟩
+  rw [scalar_commute_iff]
+  simp
 
 end Commute
-
-end StdBasisMatrix
 
 end Matrix

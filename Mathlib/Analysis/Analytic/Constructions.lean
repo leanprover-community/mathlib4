@@ -5,6 +5,7 @@ Authors: David Loeffler, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 /-!
 # Various ways to combine analytic functions
@@ -52,7 +53,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
       refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
       rw [norm_mul, norm_norm, norm_mul, norm_norm]
       refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
+      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
       try apply le_max_left
       try apply le_max_right }
   · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
@@ -62,7 +63,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ λ n ↦ ?_).trans this)
     rw [norm_mul, norm_norm, ← add_mul, norm_mul]
     refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
+    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
     refine (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)).trans ?_
     apply Real.le_norm_self
 
@@ -211,7 +212,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
   apply le_antisymm
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← coe_one, ENNReal.coe_le_coe]
+    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
     have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
     contrapose! this
@@ -243,7 +244,7 @@ lemma hasFPowerSeriesOnBall_inv_one_sub
         ContinuousMultilinearMap.mkPiAlgebraFin_apply,
         List.prod_ofFn, Finset.prod_const,
         Finset.card_univ, Fintype.card_fin]
-    apply hasSum_geometric_of_norm_lt_1
+    apply hasSum_geometric_of_norm_lt_one
     simpa only [← ofReal_one, Metric.emetric_ball, Metric.ball,
       dist_eq_norm, sub_zero] using hy
 
@@ -259,9 +260,9 @@ lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
   let f3 : 𝕝 → 𝕝 := fun c ↦ 1 - c / z
   have feq : f1 ∘ f2 ∘ f3 = Inv.inv := by
     ext1 x
-    dsimp only [Function.comp_apply]
+    dsimp only [f1, f2, f3, Function.comp_apply]
     field_simp
-  have f3val : f3 z = 0 := by simp only [div_self hz, sub_self]
+  have f3val : f3 z = 0 := by simp only [f3, div_self hz, sub_self]
   have f3an : AnalyticAt 𝕜 f3 z := by
     apply analyticAt_const.sub
     simpa only [div_eq_inv_mul] using analyticAt_const.mul (analyticAt_id 𝕜 z)

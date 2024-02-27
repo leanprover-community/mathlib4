@@ -5,6 +5,7 @@ Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Order.IntermediateValue
 import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Support
 
 #align_import topology.algebra.order.compact from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
@@ -25,9 +26,6 @@ We also prove that the image of a closed interval under a continuous map is a cl
 
 compact, extreme value theorem
 -/
-
-set_option autoImplicit true
-
 
 open Filter OrderDual TopologicalSpace Function Set
 
@@ -55,22 +53,30 @@ class CompactIccSpace (α : Type*) [TopologicalSpace α] [Preorder α] : Prop wh
 
 export CompactIccSpace (isCompact_Icc)
 
+variable {α : Type*}
+
 -- porting note: new lemma; TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]
     (h : ∀ {a b : α}, a ≤ b → IsCompact (Icc a b)) : CompactIccSpace α where
-  isCompact_Icc {a b} := by_cases h $ fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
+  isCompact_Icc {a b} := by_cases h fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
 
 -- porting note: new lemma; TODO: drop one `'`
 lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
     (h : ∀ {a b : α}, a < b → IsCompact (Icc a b)) : CompactIccSpace α :=
   .mk' fun hab => hab.eq_or_lt.elim (by rintro rfl; simp) h
 
+instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSpace (αᵒᵈ) where
+  isCompact_Icc := by
+    intro a b
+    convert isCompact_Icc (α := α) (a := b) (b := a) using 1
+    exact dual_Icc (α := α)
+
 /-- A closed interval in a conditionally complete linear order is compact. -/
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
   refine' .mk'' fun {a b} hlt => ?_
-  cases' le_or_lt a b with hab hab
+  rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]
   refine' isCompact_iff_ultrafilter_le_nhds.2 fun f hf => _
@@ -81,7 +87,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   set s := { x ∈ Icc a b | Icc a x ∉ f }
   have hsb : b ∈ upperBounds s := fun x hx => hx.1.2
   have sbd : BddAbove s := ⟨b, hsb⟩
-  have ha : a ∈ s := by simp [hpt, hab]
+  have ha : a ∈ s := by simp [s, hpt, hab]
   rcases hab.eq_or_lt with (rfl | _hlt)
   · exact ha.2
   -- porting note: the `obtain` below was instead
@@ -168,8 +174,8 @@ variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace α]
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
   haveI : Nonempty s := ne_s.to_subtype
-  suffices : (s ∩ ⋂ x ∈ s, Iic x).Nonempty
-  · exact ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
+  suffices (s ∩ ⋂ x ∈ s, Iic x).Nonempty from
+    ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
   rw [biInter_eq_iInter]
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H
@@ -192,6 +198,63 @@ theorem IsCompact.exists_isLUB [ClosedIciTopology α] {s : Set α} (hs : IsCompa
     (ne_s : s.Nonempty) : ∃ x ∈ s, IsLUB s x :=
   IsCompact.exists_isGLB (α := αᵒᵈ) hs ne_s
 #align is_compact.exists_is_lub IsCompact.exists_isLUB
+
+theorem cocompact_le_atBot_atTop [LinearOrder α] [CompactIccSpace α] :
+    cocompact α ≤ atBot ⊔ atTop := by
+  refine fun s hs ↦ mem_cocompact.mpr <| (isEmpty_or_nonempty α).casesOn ?_ ?_ <;> intro
+  · exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
+  · obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs.1
+    obtain ⟨u, hu⟩ := mem_atTop_sets.mp hs.2
+    refine ⟨Icc t u, isCompact_Icc, fun x hx ↦ ?_⟩
+    exact (not_and_or.mp hx).casesOn (fun h ↦ ht x (le_of_not_le h)) fun h ↦ hu x (le_of_not_le h)
+
+theorem cocompact_le_atBot [LinearOrder α] [OrderTop α] [CompactIccSpace α] :
+    cocompact α ≤ atBot := by
+  refine fun _ hs ↦ mem_cocompact.mpr <| (isEmpty_or_nonempty α).casesOn ?_ ?_ <;> intro
+  · exact ⟨∅, isCompact_empty, fun x _ ↦ (IsEmpty.false x).elim⟩
+  · obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
+    refine ⟨Icc t ⊤, isCompact_Icc, fun _ hx ↦ ?_⟩
+    exact (not_and_or.mp hx).casesOn (fun h ↦ ht _ (le_of_not_le h)) (fun h ↦ (h le_top).elim)
+
+theorem cocompact_le_atTop [LinearOrder α] [OrderBot α] [CompactIccSpace α] :
+    cocompact α ≤ atTop :=
+  cocompact_le_atBot (α := αᵒᵈ)
+
+theorem atBot_le_cocompact [LinearOrder α] [NoMinOrder α] [ClosedIicTopology α] :
+    atBot ≤ cocompact α := by
+  refine fun s hs ↦ ?_
+  obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
+  refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
+  · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
+    convert univ_mem
+  · haveI := h_nonempty.nonempty
+    obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
+    obtain ⟨b, hb⟩ := exists_lt a
+    exact Filter.mem_atBot_sets.mpr ⟨b, fun b' hb' ↦ hts <| Classical.byContradiction
+      fun hc ↦ LT.lt.false <| hb'.trans_lt <| hb.trans_le <| ha.2 (not_not_mem.mp hc)⟩
+
+theorem atTop_le_cocompact [LinearOrder α] [NoMaxOrder α] [ClosedIciTopology α] :
+    atTop ≤ cocompact α :=
+  atBot_le_cocompact (α := αᵒᵈ)
+
+theorem atBot_atTop_le_cocompact [LinearOrder α] [NoMinOrder α] [NoMaxOrder α]
+    [OrderClosedTopology α] : atBot ⊔ atTop ≤ cocompact α :=
+  sup_le atBot_le_cocompact atTop_le_cocompact
+
+@[simp 900]
+theorem cocompact_eq_atBot_atTop [LinearOrder α] [NoMaxOrder α] [NoMinOrder α]
+    [OrderClosedTopology α] [CompactIccSpace α] : cocompact α = atBot ⊔ atTop :=
+  cocompact_le_atBot_atTop.antisymm atBot_atTop_le_cocompact
+
+@[simp]
+theorem cocompact_eq_atBot [LinearOrder α] [NoMinOrder α] [OrderTop α]
+    [ClosedIicTopology α] [CompactIccSpace α] : cocompact α = atBot :=
+  cocompact_le_atBot.antisymm atBot_le_cocompact
+
+@[simp]
+theorem cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
+    [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
+  cocompact_le_atTop.antisymm atTop_le_cocompact
 
 -- porting note: new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
@@ -452,13 +515,13 @@ theorem IsCompact.exists_isMinOn_mem_subset [ClosedIicTopology α] {f : β → �
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z < f z') : ∃ x ∈ s, IsMinOn f t x :=
   let ⟨x, hxt, hfx⟩ := ht.exists_isMinOn ⟨z, hz⟩ hf
-  ⟨x, by_contra <| fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
+  ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
 
 theorem IsCompact.exists_isMaxOn_mem_subset [ClosedIciTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z' < f z) : ∃ x ∈ s, IsMaxOn f t x :=
   let ⟨x, hxt, hfx⟩ := ht.exists_isMaxOn ⟨z, hz⟩ hf
-  ⟨x, by_contra <| fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
+  ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
 
 @[deprecated IsCompact.exists_isMinOn_mem_subset]
 theorem IsCompact.exists_isLocalMinOn_mem_subset [ClosedIicTopology α] {f : β → α} {s t : Set β}

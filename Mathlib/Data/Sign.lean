@@ -5,7 +5,6 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Int.Lemmas
 
 #align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!
@@ -112,7 +111,7 @@ private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b :=
   cases a <;> cases b <;> trivial
 
 private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
-  cases a <;> cases b <;> cases c <;> first | tauto | constructor
+  cases a <;> cases b <;> cases c <;> tauto
 
 instance : LinearOrder SignType where
   le := (· ≤ ·)
@@ -251,6 +250,18 @@ instance : CoeTC SignType α :=
 
 -- Porting note: `cast_eq_coe` removed, syntactic equality
 
+/-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
+lemma map_cast' {β : Type*} [One β] [Neg β] [Zero β]
+    (f : α → β) (h₁ : f 1 = 1) (h₂ : f 0 = 0) (h₃ : f (-1) = -1) (s : SignType) :
+    f s = s := by
+  cases s <;> simp only [SignType.cast, h₁, h₂, h₃]
+
+/-- Casting out of `SignType` respects composition with suitable bundled homomorphism types. -/
+lemma map_cast {α β F : Type*} [AddGroupWithOne α] [One β] [SubtractionMonoid β]
+    [FunLike F α β] [AddMonoidHomClass F α β] [OneHomClass F α β] (f : F) (s : SignType) :
+    f s = s := by
+  apply map_cast' <;> simp
+
 @[simp]
 theorem coe_zero : ↑(0 : SignType) = (0 : α) :=
   rfl
@@ -265,6 +276,11 @@ theorem coe_one : ↑(1 : SignType) = (1 : α) :=
 theorem coe_neg_one : ↑(-1 : SignType) = (-1 : α) :=
   rfl
 #align sign_type.coe_neg_one SignType.coe_neg_one
+
+@[simp, norm_cast]
+lemma coe_neg {α : Type*} [One α] [SubtractionMonoid α] (s : SignType) :
+    (↑(-s) : α) = -↑s := by
+  cases s <;> simp
 
 end cast
 
@@ -355,6 +371,12 @@ section LinearOrder
 
 variable [Zero α] [LinearOrder α] {a : α}
 
+/-- `SignType.sign` respects strictly monotone zero-preserving maps. -/
+lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel ((· < ·) : β → β → _)]
+    [FunLike F α β] [ZeroHomClass F α β] {f : F} (hf : StrictMono f) (a : α) :
+    sign (f a) = sign a := by
+  simp only [sign_apply, ← map_zero f, hf.lt_iff_lt]
+
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
@@ -390,7 +412,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
 #align sign_one sign_one
@@ -518,7 +540,7 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
-    (@sum_attach _ _ t _ fun b => ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
+    (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 #align exists_signed_sum exists_signed_sum
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/

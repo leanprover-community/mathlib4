@@ -1,5 +1,4 @@
-import Std.Tactic.HaveI
-import Mathlib.Data.List.Basic
+import Std.Tactic.Alias
 
 attribute [simp] Array.toArrayAux_eq
 

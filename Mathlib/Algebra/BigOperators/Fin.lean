@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Data.List.FinRange
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Algebra.BigOperators.Ring
 
 #align_import algebra.big_operators.fin from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
@@ -113,6 +114,11 @@ theorem prod_univ_two [CommMonoid β] (f : Fin 2 → β) : ∏ i, f i = f 0 * f 
 #align fin.sum_univ_two Fin.sum_univ_two
 
 @[to_additive]
+theorem prod_univ_two' [CommMonoid β] (f : α → β) (a b : α) :
+    ∏ i, f (![a, b] i) = f a * f b :=
+  prod_univ_two _
+
+@[to_additive]
 theorem prod_univ_three [CommMonoid β] (f : Fin 3 → β) : ∏ i, f i = f 0 * f 1 * f 2 := by
   rw [prod_univ_castSucc, prod_univ_two]
   rfl
@@ -172,14 +178,14 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : ∑ _i : Fin n, x = n 
 @[to_additive]
 theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
     ∏ i in Ioi 0, v i = ∏ j : Fin n, v j.succ := by
-  rw [Ioi_zero_eq_map, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmbedding]
+  rw [Ioi_zero_eq_map, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmb]
 #align fin.prod_Ioi_zero Fin.prod_Ioi_zero
 #align fin.sum_Ioi_zero Fin.sum_Ioi_zero
 
 @[to_additive]
 theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
     ∏ j in Ioi i.succ, v j = ∏ j in Ioi i, v j.succ := by
-  rw [Ioi_succ, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmbedding]
+  rw [Ioi_succ, Finset.prod_map, RelEmbedding.coe_toEmbedding, val_succEmb]
 #align fin.prod_Ioi_succ Fin.prod_Ioi_succ
 #align fin.sum_Ioi_succ Fin.sum_Ioi_succ
 
@@ -230,7 +236,7 @@ theorem partialProd_zero (f : Fin n → α) : partialProd f 0 = 1 := by simp [pa
 @[to_additive]
 theorem partialProd_succ (f : Fin n → α) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
-  simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt, ← Option.coe_def]
+  simp [partialProd, List.take_succ, List.ofFnNthVal, dif_pos j.is_lt]
 #align fin.partial_prod_succ Fin.partialProd_succ
 #align fin.partial_sum_succ Fin.partialSum_succ
 
@@ -285,16 +291,18 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
     (partialProd g (j.succ.succAbove (Fin.castSucc k)))⁻¹ * partialProd g (j.succAbove k).succ =
       j.contractNth (· * ·) g k := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
-  · rwa [succAbove_below, succAbove_below, partialProd_right_inv, contractNth_apply_of_lt]
+  · rwa [succAbove_of_castSucc_lt, succAbove_of_castSucc_lt, partialProd_right_inv,
+    contractNth_apply_of_lt]
     · assumption
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
-  · rwa [succAbove_below, succAbove_above, partialProd_succ, castSucc_fin_succ, ← mul_assoc,
+  · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
+    castSucc_fin_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
-  · rwa [succAbove_above, succAbove_above, partialProd_succ, partialProd_succ,
+  · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,
       castSucc_fin_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
     · exact le_iff_val_le_val.2 (le_of_lt h)
     · rw [le_iff_val_le_val, val_succ]
@@ -326,7 +334,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       · exact b.elim0
       cases' m with m
       · dsimp only [Nat.zero_eq] at a -- porting note: added, wrong zero
-        rw [zero_pow n.succ_pos] at a
+        rw [zero_pow n.succ_ne_zero] at a
         exact a.elim0
       · exact Nat.mod_lt _ m.succ_pos⟩)
     fun a => by
@@ -417,7 +425,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         /-
         refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         swap
-        · convert Fin.prod_univ_succ (Fin.cons x xs : ∀ _, ℕ)
+        · convert Fin.prod_univ_succ (Fin.cons x xs : _ → ℕ)
           simp_rw [Fin.cons_succ]
         congr with i
         congr with j

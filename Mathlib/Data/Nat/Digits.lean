@@ -3,14 +3,14 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
-import Mathlib.Algebra.Parity
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 
@@ -76,8 +76,8 @@ In any base, we have `ofDigits b L = L.foldr (fun x y ↦ x + b * y) 0`.
 * For `b = 1`, we define `digits 1 n = List.replicate n 1`.
 * For `b = 0`, we define `digits 0 n = [n]`, except `digits 0 0 = []`.
 
-Note this differs from the existing `Nat.to_digits` in core, which is used for printing numerals.
-In particular, `Nat.to_digits b 0 = [0]`, while `digits b 0 = []`.
+Note this differs from the existing `Nat.toDigits` in core, which is used for printing numerals.
+In particular, `Nat.toDigits b 0 = ['0']`, while `digits b 0 = []`.
 -/
 def digits : ℕ → ℕ → List ℕ
   | 0 => digitsAux0
@@ -90,7 +90,7 @@ theorem digits_zero (b : ℕ) : digits b 0 = [] := by
   rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 #align nat.digits_zero Nat.digits_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
 #align nat.digits_zero_zero Nat.digits_zero_zero
@@ -110,7 +110,7 @@ theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 #align nat.digits_one Nat.digits_one
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 #align nat.digits_one_succ Nat.digits_one_succ
@@ -135,13 +135,13 @@ theorem digits_def' :
 @[simp]
 theorem digits_of_lt (b x : ℕ) (hx : x ≠ 0) (hxb : x < b) : digits b x = [x] := by
   rcases exists_eq_succ_of_ne_zero hx with ⟨x, rfl⟩
-  rcases exists_eq_add_of_le' ((Nat.le_add_left 1 x).trans_lt hxb) with ⟨b, rfl⟩
+  rcases Nat.exists_eq_add_of_le' ((Nat.le_add_left 1 x).trans_lt hxb) with ⟨b, rfl⟩
   rw [digits_add_two_add_one, div_eq_of_lt hxb, digits_zero, mod_eq_of_lt hxb]
 #align nat.digits_of_lt Nat.digits_of_lt
 
 theorem digits_add (b : ℕ) (h : 1 < b) (x y : ℕ) (hxb : x < b) (hxy : x ≠ 0 ∨ y ≠ 0) :
     digits b (x + b * y) = x :: digits b y := by
-  rcases exists_eq_add_of_le' h with ⟨b, rfl : _ = _ + 2⟩
+  rcases Nat.exists_eq_add_of_le' h with ⟨b, rfl : _ = _ + 2⟩
   cases y
   · simp [hxb, hxy.resolve_right (absurd rfl)]
   dsimp [digits]
@@ -448,7 +448,7 @@ theorem digits_len_le_digits_len_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · interval_cases b <;> simp_arith [digits_zero_succ', hn]
   simpa [digits_len, hb, hn] using log_mono_right (le_succ _)
 #align nat.digits_len_le_digits_len_succ Nat.digits_len_le_digits_len_succ
@@ -526,7 +526,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
   induction' i with i hi
   · simp
   · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
-      (List.drop i digits) <| fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
+      (List.drop i digits) fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
       List.drop_drop, add_comm]
 
 /-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
@@ -559,7 +559,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
           ← Nat.one_add] at ih
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
-        have h₁ : 1 ≤ tl.length :=  List.length_pos.mpr h'
+        have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
             ← this, sum_Ico_consecutive _  h₁ <| le_succ tl.length, ← sum_Ico_add _ 0 tl.length 1,
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
@@ -729,7 +729,7 @@ theorem eleven_dvd_iff :
 
 theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digits 10 n).length) :
     11 ∣ n := by
-  let dig := (digits 10 n).map (Coe.coe : ℕ → ℤ)
+  let dig := (digits 10 n).map fun n : ℕ => (n : ℤ)
   replace h : Even dig.length := by rwa [List.length_map]
   refine' eleven_dvd_iff.2 ⟨0, (_ : dig.alternatingSum = 0)⟩
   have := dig.alternatingSum_reverse

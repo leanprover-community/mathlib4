@@ -276,7 +276,7 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
 #align is_well_founded IsWellFounded
-#align is_well_founded_iff IsWellFounded_iff
+#align is_well_founded_iff isWellFounded_iff
 
 #align has_well_founded WellFoundedRelation
 set_option linter.uppercaseLean3 false in
@@ -289,7 +289,7 @@ instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
 theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a b : α} :
     WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
   fun hab hba => WellFoundedRelation.asymmetric hba hab
-termination_by _ => a
+termination_by a
 
 lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
     (hb : WellFounded rb) : WellFounded (Prod.Lex ra rb) :=
