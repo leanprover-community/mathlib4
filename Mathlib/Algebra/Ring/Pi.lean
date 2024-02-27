@@ -14,7 +14,7 @@ import Mathlib.Algebra.Ring.Hom.Defs
 This file defines instances for ring, semiring and related structures on Pi Types
 -/
 
--- Porting notes: used to import `tactic.pi_instances`
+-- Porting note: used to import `tactic.pi_instances`
 
 namespace Pi
 

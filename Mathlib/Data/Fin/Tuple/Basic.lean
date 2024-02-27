@@ -312,29 +312,29 @@ theorem append_right_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hv 
   · rw [append_left, Function.comp_apply]
     refine' congr_arg u (Fin.ext _)
     simp
-  · exact (Fin.cast hv r).elim0'
+  · exact (Fin.cast hv r).elim0
 #align fin.append_right_nil Fin.append_right_nil
 
 @[simp]
-theorem append_elim0' {α : Type*} (u : Fin m → α) :
-    append u Fin.elim0' = u ∘ Fin.cast (add_zero _) :=
+theorem append_elim0 {α : Type*} (u : Fin m → α) :
+    append u Fin.elim0 = u ∘ Fin.cast (add_zero _) :=
   append_right_nil _ _ rfl
-#align fin.append_elim0' Fin.append_elim0'
+#align fin.append_elim0 Fin.append_elim0
 
 theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
     append u v = v ∘ Fin.cast (by rw [hu, zero_add]) := by
   refine' funext (Fin.addCases (fun l => _) fun r => _)
-  · exact (Fin.cast hu l).elim0'
+  · exact (Fin.cast hu l).elim0
   · rw [append_right, Function.comp_apply]
     refine' congr_arg v (Fin.ext _)
     simp [hu]
 #align fin.append_left_nil Fin.append_left_nil
 
 @[simp]
-theorem elim0'_append {α : Type*} (v : Fin n → α) :
-    append Fin.elim0' v = v ∘ Fin.cast (zero_add _) :=
+theorem elim0_append {α : Type*} (v : Fin n → α) :
+    append Fin.elim0 v = v ∘ Fin.cast (zero_add _) :=
   append_left_nil _ _ rfl
-#align fin.elim0'_append Fin.elim0'_append
+#align fin.elim0_append Fin.elim0_append
 
 theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α) (c : Fin p → α) :
     append (append a b) c = append a (append b c) ∘ Fin.cast (add_assoc _ _ _) := by
@@ -409,8 +409,8 @@ theorem repeat_apply {α : Type*} (a : Fin n → α) (i : Fin (m * n)) :
 
 @[simp]
 theorem repeat_zero {α : Type*} (a : Fin n → α) :
-    Fin.repeat 0 a = Fin.elim0' ∘ cast (zero_mul _) :=
-  funext fun x => (cast (zero_mul _) x).elim0'
+    Fin.repeat 0 a = Fin.elim0 ∘ cast (zero_mul _) :=
+  funext fun x => (cast (zero_mul _) x).elim0
 #align fin.repeat_zero Fin.repeat_zero
 
 @[simp]
@@ -999,13 +999,13 @@ theorem find_spec :
     · rw [h] at hi
       dsimp at hi
       rw [← Option.some_inj.1 hi]
-      refine @find_spec n (fun i ↦ p (i.castLT (Nat.lt_succ_of_lt i.2))) _ _ h
+      exact @find_spec n (fun i ↦ p (i.castLT (Nat.lt_succ_of_lt i.2))) _ _ h
 #align fin.find_spec Fin.find_spec
 
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
 theorem isSome_find_iff :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p], (find p).isSome ↔ ∃ i, p i
-  | 0, p, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0' i
+  | 0, p, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0 i
   | n + 1, p, _ =>
     ⟨fun h ↦ by
       rw [Option.isSome_iff_exists] at h
@@ -1040,7 +1040,7 @@ theorem find_min :
       split_ifs at hi with hl
       · cases hi
         rw [find_eq_none_iff] at h
-        refine h ⟨j, hj⟩ hpj
+        exact h ⟨j, hj⟩ hpj
       · exact Option.not_mem_none _ hi
     · rw [h] at hi
       dsimp at hi

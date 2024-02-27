@@ -237,6 +237,9 @@ theorem smul_addMonoidHom_apply (c : Mᵈᵐᵃ) (f : A →+ B) (a : A) : (c •
 @[simp]
 theorem mk_smul_addMonoidHom_apply (c : M) (f : A →+ B) (a : A) : (mk c • f) a = f (c • a) := rfl
 
+theorem coe_smul_addMonoidHom (c : Mᵈᵐᵃ) (f : A →+ B) : ⇑(c • f) = c • ⇑f :=
+  rfl
+
 end DistribSMul
 
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :

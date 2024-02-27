@@ -612,12 +612,12 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt' {n : ℕ} :
       fun y hy => _, _⟩
     · refine' ((huf' y <| hwu hy).mono hwu).mono_of_mem _
       refine' mem_of_superset _ (inter_subset_inter_left _ (subset_insert _ _))
-      refine' inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
+      exact inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
     · exact hf'.mono_of_mem (nhdsWithin_mono _ (subset_insert _ _) hu)
   · rw [← contDiffWithinAt_insert, contDiffWithinAt_succ_iff_hasFDerivWithinAt,
       insert_eq_of_mem (mem_insert _ _)]
     rintro ⟨u, hu, hus, f', huf', hf'⟩
-    refine' ⟨u, hu, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
+    exact ⟨u, hu, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
 #align cont_diff_within_at_succ_iff_has_fderiv_within_at' contDiffWithinAt_succ_iff_hasFDerivWithinAt'
 
 /-! ### Smooth functions within a set -/

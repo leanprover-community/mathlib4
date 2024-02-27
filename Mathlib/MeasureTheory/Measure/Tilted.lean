@@ -333,7 +333,7 @@ lemma rnDeriv_tilted_left {ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
   refine Measure.rnDeriv_withDensity_left (μ := μ) (ν := ν) (f := g) ?_ ?_ ?_
   · exact ((measurable_exp.comp_aemeasurable hfμ).div_const _).ennreal_ofReal
   · exact ((measurable_exp.comp_aemeasurable hfν).div_const _).ennreal_ofReal
-  · exact ae_of_all _ (fun x ↦ by simp)
+  · exact ae_of_all _ (fun x ↦ by simp [g])
 
 lemma toReal_rnDeriv_tilted_left {ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
     (hfμ : AEMeasurable f μ) (hfν : AEMeasurable f ν) :
