@@ -7,7 +7,6 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Int.Order.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
 
 /-!
