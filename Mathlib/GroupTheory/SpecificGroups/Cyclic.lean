@@ -359,6 +359,16 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
       ← ZMod.int_cast_eq_int_cast_iff] at hy
     simp [hy]
 
+@[to_additive]
+lemma IsCyclic.ext {G : Type _} [Group G] [Fintype G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
+    (hGcard : Fintype.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
+  specialize h g
+  subst hGcard
+  rw [pow_eq_pow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers hg,
+    ← ZMod.nat_cast_eq_nat_cast_iff] at h
+  simpa [ZMod.nat_cast_val, ZMod.cast_id'] using h
+
 end
 
 section Totient
