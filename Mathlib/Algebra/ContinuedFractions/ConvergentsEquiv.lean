@@ -284,23 +284,23 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
       obtain ⟨⟨pa, pb⟩, s_n'th_eq⟩ : ∃ gp_n', g.s.get? n' = some gp_n' :=
         g.s.ge_stable n'.le_succ s_nth_eq
       -- Notations
-      let __g' := squashGCF g (n' + 1)
+      let g' := squashGCF g (n' + 1)
       set pred_conts := g.continuantsAux (n' + 1) with succ_n'th_conts_aux_eq
       set ppred_conts := g.continuantsAux n' with n'th_conts_aux_eq
-      let __pA := pred_conts.a
-      let __pB := pred_conts.b
-      let __ppA := ppred_conts.a
-      let __ppB := ppred_conts.b
-      set pred_conts' := __g'.continuantsAux (n' + 1) with succ_n'th_conts_aux_eq'
-      set ppred_conts' := __g'.continuantsAux n' with n'th_conts_aux_eq'
-      let __pA' := pred_conts'.a
-      let __pB' := pred_conts'.b
-      let __ppA' := ppred_conts'.a
-      let __ppB' := ppred_conts'.b
+      let pA := pred_conts.a
+      let pB := pred_conts.b
+      let ppA := ppred_conts.a
+      let ppB := ppred_conts.b
+      set pred_conts' := g'.continuantsAux (n' + 1) with succ_n'th_conts_aux_eq'
+      set ppred_conts' := g'.continuantsAux n' with n'th_conts_aux_eq'
+      let pA' := pred_conts'.a
+      let pB' := pred_conts'.b
+      let ppA' := ppred_conts'.a
+      let ppB' := ppred_conts'.b
       -- first compute the convergent of the squashed gcf
-      have : __g'.convergents (n' + 1) =
-          ((pb + a / b) * __pA' + pa * __ppA') / ((pb + a / b) * __pB' + pa * __ppB') := by
-        have : __g'.s.get? n' = some ⟨pa, pb + a / b⟩ :=
+      have : g'.convergents (n' + 1) =
+          ((pb + a / b) * pA' + pa * ppA') / ((pb + a / b) * pB' + pa * ppB') := by
+        have : g'.s.get? n' = some ⟨pa, pb + a / b⟩ :=
           squashSeq_nth_of_not_terminated s_n'th_eq s_nth_eq
         rw [convergent_eq_conts_a_div_conts_b,
           continuants_recurrenceAux this n'th_conts_aux_eq'.symm succ_n'th_conts_aux_eq'.symm]
@@ -308,28 +308,25 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
       -- then compute the convergent of the original gcf by recursively unfolding the continuants
       -- computation twice
       have : g.convergents (n' + 2) =
-          (b * (pb * __pA + pa * __ppA) + a * __pA) /
-            (b * (pb * __pB + pa * __ppB) + a * __pB) := by
+          (b * (pb * pA + pa * ppA) + a * pA) / (b * (pb * pB + pa * ppB) + a * pB) := by
         -- use the recurrence once
-        have : g.continuantsAux (n' + 2) = ⟨pb * __pA + pa * __ppA, pb * __pB + pa * __ppB⟩ :=
+        have : g.continuantsAux (n' + 2) = ⟨pb * pA + pa * ppA, pb * pB + pa * ppB⟩ :=
           continuantsAux_recurrence s_n'th_eq n'th_conts_aux_eq.symm succ_n'th_conts_aux_eq.symm
         -- and a second time
         rw [convergent_eq_conts_a_div_conts_b,
           continuants_recurrenceAux s_nth_eq succ_n'th_conts_aux_eq.symm this]
       rw [this]
       suffices
-        ((pb + a / b) * __pA + pa * __ppA) / ((pb + a / b) * __pB + pa * __ppB) =
-          (b * (pb * __pA + pa * __ppA) + a * __pA) /
-            (b * (pb * __pB + pa * __ppB) + a * __pB) by
-        obtain ⟨eq1, eq2, eq3, eq4⟩ : __pA' = __pA ∧ __pB' = __pB ∧
-            __ppA' = __ppA ∧ __ppB' = __ppB := by
-          simp [*, (continuantsAux_eq_continuantsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
+        ((pb + a / b) * pA + pa * ppA) / ((pb + a / b) * pB + pa * ppB) =
+          (b * (pb * pA + pa * ppA) + a * pA) / (b * (pb * pB + pa * ppB) + a * pB) by
+        obtain ⟨eq1, eq2, eq3, eq4⟩ : pA' = pA ∧ pB' = pB ∧ ppA' = ppA ∧ ppB' = ppB := by
+          simp [*, pA', pB', ppA', ppB',
+            (continuantsAux_eq_continuantsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
             (continuantsAux_eq_continuantsAux_squashGCF_of_le n'.le_succ).symm]
         symm
         simpa only [eq1, eq2, eq3, eq4, mul_div_cancel _ b_ne_zero]
       field_simp
       congr 1 <;> ring
-      -- v4.7.0-rc1 issues
 #align generalized_continued_fraction.succ_nth_convergent_eq_squash_gcf_nth_convergent GeneralizedContinuedFraction.succ_nth_convergent_eq_squashGCF_nth_convergent
 
 end Squash
