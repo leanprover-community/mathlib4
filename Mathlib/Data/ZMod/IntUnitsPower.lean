@@ -57,7 +57,8 @@ Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
 instance Int.instUnitsPow : Pow ℤˣ R where
   pow u r := Additive.toMul (r • Additive.ofMul u)
 
--- The above instance forms no typeclass diamonds with the standard power operators
+-- The above instances form no typeclass diamonds with the standard power operators
+-- but we will need `reducible_and_instances` which currently fails #10906
 example : Int.instUnitsPow = Monoid.toNatPow := rfl
 example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
