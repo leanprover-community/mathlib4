@@ -67,7 +67,6 @@ theorem equalizerCondition_iff_isIso_lift_aux_comp (P : Cᵒᵖ ⥤ Type*) {X B 
   apply equalizer.hom_ext
   simp only [Category.assoc, Types.equalizerIso_inv_comp_ι, limit.lift_π, Fork.ofι_pt,
     Fork.ofι_π_app]
-  ext
   rfl
 
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
@@ -80,8 +79,7 @@ theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCon
     exact IsIso.of_isIso_comp_right (equalizer.lift (P.map π.op)
       (equalizerCondition_iff_isIso_lift_w P π))
       (Types.equalizerIso _ _).hom
-  · specialize h X B π
-    rw [equalizerCondition_iff_isIso_lift_aux_comp, ← isIso_iff_bijective]
+  · rw [equalizerCondition_iff_isIso_lift_aux_comp, ← isIso_iff_bijective]
     infer_instance
 
 /-- An auxiliary isomorphism of two pullbacks used in the proof of `mapToEqualizer_pullback_comp` -/
@@ -140,7 +138,7 @@ theorem mapToEqualizer_pullback_comp {D : Type*} [Category D] (P : Cᵒᵖ ⥤ T
 theorem equalizerCondition_precomp_of_preservesPullback {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*)
     (F : D ⥤ C)
     [∀ {X B} (π : X ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) F]
-    [F.PreservesEffectiveEpis] -- merge the stuff from the effective epi file added in #10013
+    [F.PreservesEffectiveEpis]
     (hP : EqualizerCondition P) : EqualizerCondition (F.op ⋙ P) := by
   rw [equalizerCondition_iff_isIso_lift] at hP ⊢
   intro X B π _ _
@@ -157,8 +155,8 @@ theorem equalizerCondition_of_natIso_aux
       (equalizer.ι (P.map pullback.fst.op) (P.map pullback.snd.op) ≫ i.hom.app (op X)) ≫
       P'.map (pullback.snd  (f := π) (g := π)).op := by
   rw [Category.assoc, Category.assoc, ← i.hom.naturality (pullback.fst (f := π) (g := π)).op,
-    ← i.hom.naturality (pullback.snd (f := π) (g := π)).op, ← Category.assoc, equalizer.condition]
-  simp
+    ← i.hom.naturality (pullback.snd (f := π) (g := π)).op, ← Category.assoc, equalizer.condition,
+    Category.assoc, NatTrans.naturality]
 
 /--
 An auxiliary isomorphism of two equalizers used in the proof of `equalizerCondition_of_natIso`
@@ -175,11 +173,9 @@ def equalizerCondition_of_natIso_aux₂ {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ �
   inv_hom_id := by apply equalizer.hom_ext; simp
 
 theorem equalizerCondition_of_natIso {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ Type _} (i : P ≅ P')
-    (hP : EqualizerCondition P) :
-    EqualizerCondition P' := by
+    (hP : EqualizerCondition P) : EqualizerCondition P' := by
   rw [equalizerCondition_iff_isIso_lift] at hP ⊢
   intro X B π _ _
-  specialize hP X B π
   have h : equalizer.lift (P'.map π.op) (equalizerCondition_iff_isIso_lift_w P' π) =
       i.inv.app (op B) ≫
       equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π) ≫
