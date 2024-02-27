@@ -333,13 +333,13 @@ open scoped RealInnerProductSpace
 /-- The Fourier transform of a function on an inner product space, with respect to the standard
 additive character `ω ↦ exp (2 i π ω)`. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
-  VectorFourier.fourierIntegral Real.fourierChar volume (innerₗ V) f w
+  VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
 #align real.fourier_integral Real.fourierIntegral
 
 /-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
 transform but with opposite sign in the exponential. -/
 def fourierIntegralInv (f : V → E) (w : V) : E :=
-  VectorFourier.fourierIntegral Real.fourierChar volume (-innerₗ V) f w
+  VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
 @[inherit_doc] scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
 @[inherit_doc] scoped[FourierTransform] notation "𝓕⁻" => Real.fourierIntegralInv
@@ -374,7 +374,7 @@ lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V →
   simp [fourierIntegralInv_eq_fourierIntegral_neg, fourierIntegral_comp_linearIsometry]
 
 theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
-    fourierIntegral f w = ∫ v : ℝ, fourierChar[-(v * w)] • f v :=
+    fourierIntegral f w = ∫ v : ℝ, 𝐞[-(v * w)] • f v :=
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_real_eq
 
