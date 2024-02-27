@@ -202,6 +202,11 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
   let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
   unless ← isDefEq lhs subExpr do return none
 
+  let lhs ← instantiateMVars lhs
+  let rhs ← instantiateMVars rhs
+  -- for example we don't want to apply commutativity to `a+a`.
+  if lhs == rhs then return none
+
   let mut extraGoals := #[]
   for mvar in mvars, bi in bis do
     let mvarId := mvar.mvarId!
@@ -217,7 +222,7 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
         let extraGoal ← instantiateMVars (← mvarId.getType)
         extraGoals := extraGoals.push (← ppExprTagged extraGoal)
 
-  let replacement ← ppExprTagged (← instantiateMVars rhs)
+  let replacement ← ppExprTagged rhs
   let lemmaApplication ← instantiateMVars (mkAppN thm mvars)
 
   let location ← (do match loc.loc with
@@ -225,7 +230,6 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
     | .hypType fvarId _ => return s! " at {← fvarId.getUserName}"
     | _ => return "")
   let symm := if rwLemma.symm then "← " else ""
-  let lhs ← instantiateMVars lhs
   let positions ← findPositions lhs target
   let cfg := match positions.findIdx? (· == loc.pos) with
     | none => " /- Error: couldn't find a suitable occurrence -/"
@@ -242,19 +246,19 @@ def renderResults (results : Array (CodeWithInfos × Array RewriteApplication)) 
   let title := s! "{if isEverything then "All" else "Some"} rewrite suggestions:";
   <details «open»={true}>
     <summary className="mv2 pointer"> {.text title}</summary>
-    {.element "div" #[("style", json% {"margin-left" : "4px"})] htmls}
+    {.element "div" #[("style", json% {"marginLeft" : "4px"})] htmls}
   </details>
 where
   renderBlock (title : CodeWithInfos) (results : Array RewriteApplication) : Html :=
     let core :=
-      .element "ul" #[] <|--#[("style", json% {"margin-left" : "4px"})] <|
+      .element "ul" #[] <|--#[("style", json% {"marginLeft" : "4px"})] <|
       results.map fun rw =>
         let replacement := .text rw.replacement.stripTags -- < InteractiveCode fmt={rw.replacement}/>
         let button := Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic none)
               #[replacement] -- #[.text s! "{rw.name}"]
         let extraGoals := rw.extraGoals.concatMap
-          (#[<br/>, <strong «class»="goal-vdash">⊢ </strong>, <InteractiveCode fmt={·}/>]);
+          (#[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={·}/>]);
         <li> {.element "p" #[] (#[button] ++ extraGoals)} </li>;
     <details «open»={true}>
       <summary className="mv2 pointer"> {.text "Pattern "} <InteractiveCode fmt={title}/> </summary>
