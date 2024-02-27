@@ -338,8 +338,8 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
     have : (fun a : α => k a ^ z)⁻¹ = fun a : α => k a ^ (-z) := funext fun x => by simp
     rw [div_eq_mul_inv, mul_comm f, this]
     exact h (-z)
-  · suffices : (fun a : α => k a ^ z * f a) =O[l] fun a : α => (k a)⁻¹
-    exact IsBigO.trans_tendsto this hk.inv_tendsto_atTop
+  · suffices (fun a : α => k a ^ z * f a) =O[l] fun a : α => (k a)⁻¹ from
+      IsBigO.trans_tendsto this hk.inv_tendsto_atTop
     refine'
       ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans
         (IsBigO.of_bound 1 <| hk0.mono fun a ha0 => _)

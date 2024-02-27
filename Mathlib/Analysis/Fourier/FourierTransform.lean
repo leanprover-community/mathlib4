@@ -169,7 +169,7 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
   · exact hf.norm
   · rw [continuous_induced_rng] at he
     refine' ae_of_all _ fun v => (he.comp (continuous_ofAdd.comp _)).smul continuous_const
-    refine' (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
+    exact (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
 #align vector_fourier.fourier_integral_continuous VectorFourier.fourierIntegral_continuous
 
 end Continuous

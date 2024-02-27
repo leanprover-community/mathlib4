@@ -86,7 +86,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
     GradedAlgebra.ι Q m * GradedAlgebra.ι Q m = algebraMap R _ (Q m) := by
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
-  refine' DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
+  exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 #align clifford_algebra.graded_algebra.ι_sq_scalar CliffordAlgebra.GradedAlgebra.ι_sq_scalar
 
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
@@ -195,7 +195,7 @@ theorem evenOdd_induction (n : ZMod 2) {P : ∀ x, x ∈ evenOdd Q n → Prop}
         simp_rw [LinearMap.mem_range] at hm hn
         obtain ⟨m₁, rfl⟩ := hm; obtain ⟨m₂, rfl⟩ := hn
         simp_rw [mul_assoc _ y b]
-        refine' hιι_mul _ _ ihy
+        exact hιι_mul _ _ ihy
       | ha x hx y hy ihx ihy =>
         simp_rw [add_mul]
         apply hadd ihx ihy

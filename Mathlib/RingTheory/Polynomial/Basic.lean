@@ -1126,6 +1126,27 @@ end Polynomial
 
 namespace MvPolynomial
 
+lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
+    (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
+    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
+    (MvPolynomial.aeval f F).natDegree ≤ m * n := by
+  rw [MvPolynomial.aeval_def, MvPolynomial.eval₂]
+  apply (Polynomial.natDegree_sum_le _ _).trans
+  apply Finset.sup_le
+  intro d hd
+  simp_rw [Function.comp_apply, ← C_eq_algebraMap]
+  apply (Polynomial.natDegree_C_mul_le _ _).trans
+  apply (Polynomial.natDegree_prod_le _ _).trans
+  have : ∑ i in d.support, (d i) * n ≤ m * n := by
+    rw [← Finset.sum_mul]
+    apply mul_le_mul' (.trans _ hF) le_rfl
+    rw [MvPolynomial.totalDegree]
+    exact Finset.le_sup_of_le hd le_rfl
+  apply (Finset.sum_le_sum _).trans this
+  rintro i -
+  apply Polynomial.natDegree_pow_le.trans
+  exact mul_le_mul' le_rfl (hf i)
+
 theorem isNoetherianRing_fin_0 [IsNoetherianRing R] :
     IsNoetherianRing (MvPolynomial (Fin 0) R) := by
   apply isNoetherianRing_of_ringEquiv R

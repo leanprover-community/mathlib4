@@ -530,13 +530,11 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
   let S n := ∑ k in Ico 1 n, a ^ k * ‖p.rightInv i k‖
   have IRec : ∀ n, 1 ≤ n → S n ≤ (I + 1) * a := by
     apply Nat.le_induction
-    · simp only
+    · simp only [S]
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
       exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
     · intro n one_le_n hn
       have In : 2 ≤ n + 1 := by linarith only [one_le_n]
-      have Snonneg : 0 ≤ S n :=
-        sum_nonneg fun x _ => mul_nonneg (pow_nonneg apos.le _) (norm_nonneg _)
       have rSn : r * S n ≤ 1 / 2 :=
         calc
           r * S n ≤ r * ((I + 1) * a) := by gcongr
@@ -557,8 +555,8 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         _ ≤ (I + 1) * a := by gcongr
   -- conclude that all coefficients satisfy `aⁿ Qₙ ≤ (I + 1) a`.
   let a' : NNReal := ⟨a, apos.le⟩
-  suffices H : (a' : ENNReal) ≤ (p.rightInv i).radius
-  · apply lt_of_lt_of_le _ H
+  suffices H : (a' : ENNReal) ≤ (p.rightInv i).radius by
+    apply lt_of_lt_of_le _ H
     -- Prior to leanprover/lean4#2734, this was `exact_mod_cast apos`.
     simpa only [ENNReal.coe_pos]
   apply le_radius_of_bound _ ((I + 1) * a) fun n => ?_
