@@ -334,7 +334,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
         Fin.succ_last]
         exact last_append _ _ _
     · intro i
-      simpa [Fin.succ_castSucc] using hequiv.choose_spec i⟩
+      simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
 #align composition_series.equivalent.snoc CompositionSeries.Equivalent.snoc
 
 theorem length_eq {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : s₁.length = s₂.length := by
@@ -356,7 +356,7 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
     ne_of_lt (by simp [Fin.castSucc_lt_last])
   ⟨e, by
     intro i
-    dsimp only []
+    dsimp only [e]
     refine' Fin.lastCases _ (fun i => _) i
     · erw [Equiv.swap_apply_left, snoc_castSucc,
       show (snoc s x₁ hsat₁).toFun (Fin.last _) = x₁ from last_snoc _ _ _, Fin.succ_last,
