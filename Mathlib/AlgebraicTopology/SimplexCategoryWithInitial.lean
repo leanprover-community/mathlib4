@@ -225,15 +225,7 @@ def join :
     | (of x, of y) => Join.func.map_id (x,y)
   map_comp {X Y Z} f g := by
     match X, Y, Z, f, g with
-    | (star, star), (star, star), (star, star), f, g => rfl
-    | (star, star), (star, star), (star, of z), f, g => rfl
-    | (star, star), (star, star), (of z, star), f, g => rfl
-    | (star, star), (star, star), (of z1, of z2), f, g => rfl
-    | (star, star), (star, of y), (star, of z), f, g => rfl
-    | (star, star), (of y, star), (of z, star), f, g => rfl
-    | (star, star), (star, of y), (of z1, of z2), f, g => rfl
-    | (star, star), (of y, star), (of z1, of z2), f, g => rfl
-    | (star, star), (of y1, of y2), (of z1, of z2), f, g => rfl
+    | (star, star), liftStar_hom, _, f, g => rfl
     | (star, of x), (star, of y), (star, of z), f, g => rfl
     | (of x, star), (of y, star), (of z, star), f, g => rfl
     | (star, of x), (star, of y), (of z1, of z2), f, g => rfl
@@ -294,15 +286,12 @@ lemma toOrderHom_join_apply_on_lt_fst
     (f : X ⟶ Y) (a : Fin (len (join.obj X))) (ha : a.val < len (X.1)) :
     (toOrderHom (join.map f) a).val = (toOrderHom f.1 ⟨a, ha⟩).val := by
   match X, Y, f with
-  | (star, star), (star, star), _ => rfl
-  | (star, star), (star, of y), _ =>
-    simp [len] at ha
-  | (star, star), (of y, star), _ =>  rfl
-  | (star, star), (of y1, of y2), f =>
-    simp [len] at ha
-  | (star, of x), (star, of y), f =>
-    simp [len] at ha
+  | (star, star), _, _ =>
+    simp only [len, not_lt_zero'] at ha
+  | (star, of x), _, f =>
+    simp only [len, not_lt_zero'] at ha
   | (of x, star), (of y, star), f => rfl
+  | (of x1, star), (of y1, of y2), f => rfl
   | (of x1, of x2), (of y1, of y2), f =>
     simp only [toOrderHom]
     erw [OrderHom.coe_mk]
@@ -311,9 +300,6 @@ lemma toOrderHom_join_apply_on_lt_fst
     rename_i ht
     simp at ha
     exact (ht ha).elim
-  | (of x1, star), (of y1, of y2), f => rfl
-  | (star, of x2), (of y1, of y2), f =>
-    simp [len] at ha
 
 lemma toOrderHom_join_apply_on_fst_le
     {X Y : WithInitial SimplexCategory × WithInitial SimplexCategory}
@@ -647,9 +633,6 @@ lemma sourceValue_of_comp  {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g
       rw [Fin.find_eq_none_iff, toOrderHom_comp]
       exact (fun l => hk ((toOrderHom f) l))
 
-
-
-
 lemma splitValue_of_join {X Y : WithInitial SimplexCategory × WithInitial SimplexCategory}
     (f : X ⟶ Y) : Split.sourceValue (join.map f) ⟨len Y.1, len_of_fst_lt_len_of_join_plus_one Y⟩
     = ⟨len X.1, len_of_fst_lt_len_of_join_plus_one X⟩ := by
@@ -663,7 +646,7 @@ lemma splitValue_of_join {X Y : WithInitial SimplexCategory × WithInitial Simpl
   | some x =>
     rw [Fin.find_eq_some_iff] at hk
     by_cases hX2 : len X.2 = 0
-    · have hx :=  add_zero (len X.1) ▸ (hX2 ▸ (Eq.trans_gt (len_of_join _) x.prop))
+    · have hx :=  add_zero (len X.1) ▸ hX2 ▸ (Eq.trans_gt (len_of_join _) x.prop)
       refine ((Nat.not_le.mpr ((toOrderHom f.1) ⟨x.val, hx⟩).prop) ?_).elim
       exact (toOrderHom_join_apply_on_lt_fst f x hx) ▸ (Fin.coe_castSucc _) ▸ Fin.le_def.mp hk.left
     · have hx := Eq.trans_gt (len_of_join _).symm
@@ -672,24 +655,19 @@ lemma splitValue_of_join {X Y : WithInitial SimplexCategory × WithInitial Simpl
       have hkr := hk.right X1
       rw [Fin.le_def, Fin.coe_castSucc, toOrderHom_join_apply_on_fst_le] at hkr
       by_cases hlt : x < X1
-      · have hkl := Fin.le_def.mp hk.left
-        rw [Fin.coe_castSucc, toOrderHom_join_apply_on_lt_fst f x hlt] at hkl
-        exact ((Nat.not_le.mpr ((toOrderHom f.1) ⟨ x,hlt ⟩).prop) hkl).elim
-      · change Fin.castSucc x = Fin.castSucc X1
-        refine Fin.castSucc_inj.mpr ?_
-        rw [Fin.eq_iff_veq]
-        rw [Fin.lt_def, ← Nat.not_le] at  hlt
-        simp at hlt
-        exact Nat.le_antisymm (Fin.le_def.mp (hkr (Nat.le_add_left (len Y.1) _))) hlt
+      · refine ((Nat.not_le.mpr ((toOrderHom f.1) ⟨ x,hlt ⟩).prop) ?_).elim
+        exact (toOrderHom_join_apply_on_lt_fst f x hlt) ▸ Fin.coe_castSucc _ ▸ Fin.le_def.mp hk.left
+      · rw [Fin.eq_iff_veq]
+        exact Nat.le_antisymm (Fin.le_def.mp (hkr (Nat.le_add_left (len Y.1) _)))
+          (Fin.le_def.mp (Fin.not_lt.mp hlt))
       rfl
   | none =>
-    rw [Fin.find_eq_none_iff] at hk
-    simp at hk
     simp [Fin.eq_iff_veq, len_of_join]
     by_contra hX2
-    have hx := @Nat.lt_add_of_pos_right (len X.2) (len X.1) (Nat.pos_of_ne_zero hX2)
-    rw [← len_of_join] at hx
-    refine (Nat.not_le.mpr (Fin.lt_def.mp (hk ⟨len X.1, hx⟩))) ?_
+    have hx := Eq.trans_gt (len_of_join _).symm (@Nat.lt_add_of_pos_right (len X.2) (len X.1)
+       (Nat.pos_of_ne_zero hX2))
+    refine (Nat.not_le.mpr
+      (Fin.lt_def.mp (Fin.not_le.mp ((Fin.find_eq_none_iff.mp hk) ⟨len X.1, hx⟩)))) ?_
     rw [Fin.coe_castSucc, toOrderHom_join_apply_on_fst_le]
     exact  Nat.le_add_left (len Y.1) _
     rfl
@@ -712,8 +690,7 @@ def map {X Y : WithInitial SimplexCategory} (f : X ⟶ Y) (i : Fin (Nat.succ (le
       preimageIncl₁ (toOrderHom f (incl₁ a)) (toOrderHom_apply_on_lt_sourceValue' (a.prop))
     monotone' := by
       intro a b h
-      apply (toOrderHom f).monotone'
-      exact h
+      exact (toOrderHom f).monotone' h
   },
   homMk {
     toFun := fun a => preimageIncl₂ (toOrderHom f (incl₂ a)) (by
@@ -865,16 +842,16 @@ def splitJoinUnitEquiv (X Y : WithInitial SimplexCategory) (i : Fin (Nat.succ (l
     funext a
     rw [toOrderHom_comp, toOrderHom_comp, Split.joinSplitIso, Split.joinSplitIso]
     rw [toOrderHom_of_lenIso_hom, toOrderHom_of_lenIso_inv, Fin.eq_iff_veq]
-    simp only [OrderHom.comp_coe, OrderHomClass.coe_coe, Function.comp_apply, Fin.castIso_apply,
-      Fin.coe_cast]
     by_cases ha : a.val < len (Split.obj Y (Split.sourceValue f i)).1
-    rw [Split.toOrderHom_on_lt_fst_eq f i a ha]
-    exact toOrderHom_join_apply_on_lt_fst (Split.map f i)
-      (Fin.cast (Split.join_split_len Y (Split.sourceValue f i)) a) ha
-    rw [Split.toOrderHom_on_fst_le_eq f i a (Nat.not_lt.mp ha)]
-    rw [toOrderHom_join_apply_on_fst_le (Split.map f i) (Fin.cast _ a)]
-    simp [Split.obj, len_mk, preimageIncl₂]
-    simp_all [obj, len_mk]
+    · rw [Split.toOrderHom_on_lt_fst_eq f i a ha]
+      exact toOrderHom_join_apply_on_lt_fst (Split.map f i)
+        (Fin.cast (Split.join_split_len Y (Split.sourceValue f i)) a) ha
+    · rw [Split.toOrderHom_on_fst_le_eq f i a (Nat.not_lt.mp ha)]
+      simp only [OrderHom.comp_coe, OrderHomClass.coe_coe, Function.comp_apply, Fin.castIso_apply,
+        Fin.coe_cast]
+      rw [toOrderHom_join_apply_on_fst_le (Split.map f i) (Fin.cast _ a)]
+      simp [Split.obj, len_mk, preimageIncl₂]
+      simp_all [obj, len_mk]
 
 lemma splitJoinUnitEquiv_naturality (X : WithInitial SimplexCategory) (i : Fin (Nat.succ (len X)))
     {Z Y : WithInitial SimplexCategory} (f : Z ⟶ Y) :
