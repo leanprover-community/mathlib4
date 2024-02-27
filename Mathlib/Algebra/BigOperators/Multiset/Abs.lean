@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Johannes Hölzl, Rob Lewis
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.Order.Group.Abs
