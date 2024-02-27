@@ -26,9 +26,18 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One 
   toCommGroup := hf.commGroup f one mul inv div npow zpow
   toPartialOrder := PartialOrder.lift f hf
   __ := hf.orderedCommMonoid f one mul npow
-
 #align function.injective.ordered_comm_group Function.Injective.orderedCommGroup
 #align function.injective.ordered_add_comm_group Function.Injective.orderedAddCommGroup
+
+/-- Pullback an `OrderedCommGroup` under an injective map.
+See note [reducible non-instances]. -/
+@[to_additive (attr := reducible) "Pullback an `OrderedAddCommGroup` under an injective map."]
+def Function.Injective.orderedCommGroup' [OrderedCommGroup α] {β : Type*}
+    [CommGroup β] (f : β → α) {hf : Function.Injective f}
+    (mul : ∀ x y, f (x * y) = f x * f y) : OrderedCommGroup β where
+  toCommGroup := ‹CommGroup β›
+  toPartialOrder := PartialOrder.lift f hf
+  __ := hf.orderedCommMonoid' mul
 
 /-- Pullback a `LinearOrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
