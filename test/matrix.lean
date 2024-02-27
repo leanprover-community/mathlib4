@@ -80,17 +80,25 @@ end safety
 #guard !![1,2,;3,4,] = of ![![1,2], ![3,4]]
 
 example {a a' b b' c c' d d' : α} :
+    !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] := by
+  -- This works (using simp lemmas only):
+  rw [of_add_of, add_cons, add_cons, add_cons,
+    head_cons, head_cons, tail_cons, head_cons, tail_cons, tail_cons, const_fin1_add,
+    add_cons, head_cons, tail_cons, const_fin1_add,
+    EmbeddingLike.apply_eq_iff_eq, empty_add_empty]
+
+example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] :=
-by simp
+by simp -- broken
 
 example {a a' b b' c c' d d' : β} :
   !![a, b; c, d] - !![a', b'; c', d'] = !![a - a', b - b'; c - c', d - d'] :=
-by simp
+by simp -- broken
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] * !![a', b'; c', d'] =
     !![a * a' + b * c', a * b' + b * d'; c * a' + d * c', c * b' + d * d'] :=
-by simp
+by simp -- broken
 
 example {a b c d x y : α} :
   !![a, b; c, d] *ᵥ ![x, y] = ![a * x + b * y, c * x + d * y] :=

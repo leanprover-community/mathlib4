@@ -602,7 +602,32 @@ theorem tail_neg (a : Fin n.succ → α) : vecTail (-a) = -vecTail a :=
 
 end Neg
 
+@[simp]
 lemma const_fin1_eq (x : α) : (fun _ : Fin 1 => x) = ![x] :=
   (cons_fin_one x _).symm
+
+@[simp]
+lemma const_fin1_add (x y : α) [Add α] : ![x] + ![y] = ![x + y] := by
+  ext i
+  match i with
+  | 0 => rfl
+
+@[simp]
+lemma const_fin1_sub (x y : α) [Sub α] : ![x] - ![y] = ![x - y] := by
+  ext i
+  match i with
+  | 0 => rfl
+
+@[simp]
+lemma const_fin1_mul (x y : α) [Mul α] : ![x] * ![y] = ![x * y] := by
+  ext i
+  match i with
+  | 0 => rfl
+
+@[simp]
+lemma const_fin1_div (x y : α) [Div α] : ![x] / ![y] = ![x / y] := by
+  ext i
+  match i with
+  | 0 => rfl
 
 end Matrix

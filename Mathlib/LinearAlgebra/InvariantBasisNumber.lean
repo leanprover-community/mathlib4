@@ -203,8 +203,8 @@ theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   exact
     { toFun := 0
       invFun := 0
-      map_add' := by aesop
-      map_smul' := by aesop
+      map_add' := by aesop -- broken
+      map_smul' := by aesop -- broken
       left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
       right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
 #align nontrivial_of_invariant_basis_number nontrivial_of_invariantBasisNumber

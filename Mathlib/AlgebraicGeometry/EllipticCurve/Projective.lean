@@ -286,16 +286,17 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
     (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
   rw [fin3_def P, hPz] at hP ⊢
   rw [fin3_def Q, hQz] at hQ ⊢
+  -- This proof should be reworked.
   simp [nonsingular_iff, equation_iff] at hP hQ
   simp [pow_eq_zero hP.left.symm, pow_eq_zero hQ.left.symm] at *
-  exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp [div_mul_cancel _ hQ]⟩
+  exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp_rw [Matrix.smul_cons]; aesop⟩
 
 lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z = 0) :
     P ≈ ![0, 1, 0] :=
   equiv_of_Z_eq_zero h W.nonsingular_zero hPz rfl
 
 lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : P ≈ ![P x / P z, P y / P z, 1] :=
-  ⟨Units.mk0 _ hPz, by simp [← fin3_def P, mul_div_cancel' _ hPz]⟩
+  ⟨Units.mk0 _ hPz, by simp [← fin3_def P, mul_div_cancel' _ hPz]⟩ -- broken
 
 lemma nonsingular_iff_affine_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.nonsingular (P x / P z) (P y / P z) :=
