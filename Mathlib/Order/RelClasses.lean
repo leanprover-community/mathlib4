@@ -215,8 +215,8 @@ def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] 
       decidable_of_iff (¬r y x)
         ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
           h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
-  let _ := partialOrderOfSO r
-  { le_total := fun x y =>
+  { partialOrderOfSO r with
+    le_total := fun x y =>
       match y, trichotomous_of r x y with
       | y, Or.inl h => Or.inl (Or.inr h)
       | _, Or.inr (Or.inl rfl) => Or.inl (Or.inl rfl)
