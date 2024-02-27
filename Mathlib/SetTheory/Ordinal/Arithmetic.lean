@@ -1148,14 +1148,14 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
   bfamilyOfFamily'_typein _ f i
 #align ordinal.bfamily_of_family_typein Ordinal.bfamilyOfFamily_typein
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily' r ho f (enum r i (by rwa [ho])) = f i hi := by
   simp only [familyOfBFamily', typein_enum]
 #align ordinal.family_of_bfamily'_enum Ordinal.familyOfBFamily'_enum
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily o f
         (enum (· < ·) i
@@ -1450,7 +1450,7 @@ theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrde
   sup_eq_sup r _ ho _ f
 #align ordinal.sup_eq_bsup' Ordinal.sup_eq_bsup'
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     sSup (brange o f) = bsup.{_, v} o f := by
   congr

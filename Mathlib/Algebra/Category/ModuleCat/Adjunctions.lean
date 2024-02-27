@@ -200,7 +200,7 @@ instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
   · -- Porting note: broken ext
     apply LinearMap.ext_ring
-    -- Porting note: simp used to be able to close this goal
+    -- Porting note (#10959): simp used to be able to close this goal
     dsimp
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same, id_apply]
@@ -210,7 +210,7 @@ instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
     apply LinearMap.ext_ring
     apply Finsupp.ext
     intro ⟨⟩
-    -- Porting note: simp used to be able to close this goal
+    -- Porting note (#10959): simp used to be able to close this goal
     dsimp
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same]
@@ -323,7 +323,7 @@ def embedding : C ⥤ Free R C where
   map {X Y} f := Finsupp.single f 1
   map_id X := rfl
   map_comp {X Y Z} f g := by
-    -- Porting note: simp used to be able to close this goal
+    -- Porting note (#10959): simp used to be able to close this goal
     dsimp only []
     rw [single_comp_single, one_mul]
 #align category_theory.Free.embedding CategoryTheory.Free.embedding
@@ -341,7 +341,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
   map_comp {X Y Z} f g := by
     apply Finsupp.induction_linear f
-    · -- Porting note: simp used to be able to close this goal
+    · -- Porting note (#10959): simp used to be able to close this goal
       dsimp
       rw [Limits.zero_comp, sum_zero_index, Limits.zero_comp]
     · intro f₁ f₂ w₁ w₂
@@ -355,7 +355,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       · intros; simp only [add_smul]
     · intro f' r
       apply Finsupp.induction_linear g
-      · -- Porting note: simp used to be able to close this goal
+      · -- Porting note (#10959): simp used to be able to close this goal
         dsimp
         rw [Limits.comp_zero, sum_zero_index, Limits.comp_zero]
       · intro f₁ f₂ w₁ w₂
@@ -405,7 +405,7 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
     (by
       intro X Y f
       apply Finsupp.induction_linear f
-      · -- Porting note: simp used to be able to close this goal
+      · -- Porting note (#10959): simp used to be able to close this goal
         rw [Functor.map_zero, Limits.zero_comp, Functor.map_zero, Limits.comp_zero]
       · intro f₁ f₂ w₁ w₂
         -- Porting note: Using rw instead of simp
