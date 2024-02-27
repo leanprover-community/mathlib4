@@ -104,7 +104,7 @@ corresponds exactly to the one using the recurrence equation in `compExactValue`
 theorem compExactValue_correctness_of_stream_eq_some :
     ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n →
       v = compExactValue ((of v).continuantsAux n) ((of v).continuantsAux <| n + 1) ifp_n.fr := by
-  let g := of v
+  set g := of v with g_eq
   induction' n with n IH
   · intro ifp_zero stream_zero_eq
     -- Nat.zero
@@ -135,7 +135,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
         ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
     exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
     -- introduce some notation
-    let conts := g.continuantsAux (n + 2)
+    set conts := g.continuantsAux (n + 2) with conts_eq
     set pconts := g.continuantsAux (n + 1) with pconts_eq
     set ppconts := g.continuantsAux n with ppconts_eq
     cases' Decidable.em (ifp_succ_n.fr = 0) with ifp_succ_n_fr_eq_zero ifp_succ_n_fr_ne_zero
@@ -172,10 +172,10 @@ theorem compExactValue_correctness_of_stream_eq_some :
         get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero nth_stream_eq ifp_n_fract_ne_zero
       -- the claim now follows by unfolding the definitions and tedious calculations
       -- some shorthand notation
-      let ppA := ppconts.a
-      let ppB := ppconts.b
-      let pA := pconts.a
-      let pB := pconts.b
+      set ppA := ppconts.a with ppA_eq
+      set ppB := ppconts.b with ppB_eq
+      set pA := pconts.a with pA_eq
+      set pB := pconts.b with pB_eq
       have : compExactValue ppconts pconts ifp_n.fr =
           (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) := by
         -- unfold compExactValue and the convergent computation once
@@ -188,7 +188,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
         compExactValue_correctness_of_stream_eq_some_aux_comp pA ppA ifp_succ_n_fr_ne_zero
       have tmp_calc' :=
         compExactValue_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
-      let f := Int.fract (1 / ifp_n.fr)
+      set f := Int.fract (1 / ifp_n.fr) with f_eq
       have f_ne_zero : f ≠ 0 := by simpa using ifp_succ_n_fr_ne_zero
       rw [inv_eq_one_div] at tmp_calc tmp_calc'
       -- Porting note: the `tmp_calc`s need to be massaged, and some processing after `ac_rfl` done,
@@ -202,13 +202,15 @@ theorem compExactValue_correctness_of_stream_eq_some :
         rwa [right_distrib, div_mul_cancel (h := f_ne_zero),
           div_mul_cancel (h := f_ne_zero)] at this
       -- now unfold the recurrence one step and simplify both sides to arrive at the conclusion
+      rw [ppA_eq, ppB_eq, pA_eq, pB_eq, conts_eq, pconts_eq, ppconts_eq, g_eq]
       field_simp [compExactValue, continuantsAux_recurrence s_nth_eq ppconts_eq pconts_eq,
         nextContinuants, nextNumerator, nextDenominator]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
       rw [one_div, if_neg _, ← one_div, hfr]
-      field_simp [hA, hB]
-      ac_rfl
-      rwa [inv_eq_one_div, hfr]
+      · rw [f_eq]
+        field_simp [hA, hB]
+        ac_rfl
+      · rwa [inv_eq_one_div, hfr]
 #align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some
 
 open GeneralizedContinuedFraction (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
