@@ -1223,6 +1223,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 @[simp] theorem subset_insert (a : α) (s : Finset α) : s ⊆ insert a s := fun _b => mem_insert_of_mem
 #align finset.subset_insert Finset.subset_insert
 
+@[gcongr]
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t :=
   insert_subset_iff.2 ⟨mem_insert_self _ _, Subset.trans h (subset_insert _ _)⟩
 #align finset.insert_subset_insert Finset.insert_subset_insert
@@ -1441,14 +1442,17 @@ theorem subset_union_left (s₁ s₂ : Finset α) : s₁ ⊆ s₁ ∪ s₂ := fu
 theorem subset_union_right (s₁ s₂ : Finset α) : s₂ ⊆ s₁ ∪ s₂ := fun _x => mem_union_right _
 #align finset.subset_union_right Finset.subset_union_right
 
+@[gcongr]
 theorem union_subset_union (hsu : s ⊆ u) (htv : t ⊆ v) : s ∪ t ⊆ u ∪ v :=
   sup_le_sup (le_iff_subset.2 hsu) htv
 #align finset.union_subset_union Finset.union_subset_union
 
+@[gcongr]
 theorem union_subset_union_left (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
 #align finset.union_subset_union_left Finset.union_subset_union_left
 
+@[gcongr]
 theorem union_subset_union_right (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂ :=
   union_subset_union Subset.rfl h
 #align finset.union_subset_union_right Finset.union_subset_union_right
@@ -1756,17 +1760,19 @@ theorem inter_singleton_of_not_mem {a : α} {s : Finset α} (h : a ∉ s) : s �
   rw [inter_comm, singleton_inter_of_not_mem h]
 #align finset.inter_singleton_of_not_mem Finset.inter_singleton_of_not_mem
 
-@[mono]
+@[mono, gcongr]
 theorem inter_subset_inter {x y s t : Finset α} (h : x ⊆ y) (h' : s ⊆ t) : x ∩ s ⊆ y ∩ t := by
   intro a a_in
   rw [Finset.mem_inter] at a_in ⊢
   exact ⟨h a_in.1, h' a_in.2⟩
 #align finset.inter_subset_inter Finset.inter_subset_inter
 
+@[gcongr]
 theorem inter_subset_inter_left (h : t ⊆ u) : s ∩ t ⊆ s ∩ u :=
   inter_subset_inter Subset.rfl h
 #align finset.inter_subset_inter_left Finset.inter_subset_inter_left
 
+@[gcongr]
 theorem inter_subset_inter_right (h : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter h Subset.rfl
 #align finset.inter_subset_inter_right Finset.inter_subset_inter_right
@@ -2191,9 +2197,9 @@ theorem sdiff_empty : s \ ∅ = s :=
   sdiff_bot
 #align finset.sdiff_empty Finset.sdiff_empty
 
-@[mono]
+@[mono, gcongr]
 theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v :=
-  sdiff_le_sdiff (le_iff_subset.mpr hst) (le_iff_subset.mpr hvu)
+  sdiff_le_sdiff hst hvu
 #align finset.sdiff_subset_sdiff Finset.sdiff_subset_sdiff
 
 @[simp, norm_cast]
