@@ -116,7 +116,7 @@ theorem spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
   spec' g (SetLike.coe_mem ht.toRootsOfUnity)
 
 lemma id : χ n (RingEquiv.refl L) = 1 := by
-  refine ext (G := rootsOfUnity n L) rfl ?_
+  refine IsCyclic.ext (G := rootsOfUnity n L) rfl ?_
   intro ζ
   ext
   rw [Subgroup.coe_pow, ← spec]
@@ -130,7 +130,7 @@ lemma id : χ n (RingEquiv.refl L) = 1 := by
 
 lemma comp (g h : L ≃+* L) : χ n (g * h) =
     χ n g * χ n h := by
-  refine ext (G := rootsOfUnity n L) rfl ?_
+  refine IsCyclic.ext (G := rootsOfUnity n L) rfl ?_
   intro ζ
   ext
   rw [Subgroup.coe_pow, ← spec]
