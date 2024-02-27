@@ -294,7 +294,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Submonoid M) {C : ∀ x, (x ∈
   · exact ⟨_, hp _ _ hx⟩
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    refine' ⟨_, hmul _ _ _ _ Cx Cy⟩
+    exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 #align submonoid.supr_induction' Submonoid.iSup_induction'
 #align add_submonoid.supr_induction' AddSubmonoid.iSup_induction'
 
@@ -793,3 +793,9 @@ theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
 #align of_add_image_multiples_eq_powers_of_add ofAdd_image_multiples_eq_powers_ofAdd
 
 end mul_add
+
+/-- The submonoid of primal elements in a cancellative commutative monoid with zero. -/
+def Submonoid.isPrimal (α) [CancelCommMonoidWithZero α] : Submonoid α where
+  carrier := {a | IsPrimal a}
+  mul_mem' := IsPrimal.mul
+  one_mem' := isUnit_one.isPrimal

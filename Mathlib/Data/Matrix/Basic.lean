@@ -41,8 +41,8 @@ The locale `Matrix` gives the following notation:
 
 For convenience, `Matrix m n α` is defined as `m → n → α`, as this allows elements of the matrix
 to be accessed with `A i j`. However, it is not advisable to _construct_ matrices using terms of the
-form `λ i j, _` or even `(λ i j, _ : Matrix m n α)`, as these are not recognized by lean as having
-the right type. Instead, `Matrix.of` should be used.
+form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not recognized by Lean
+as having the right type. Instead, `Matrix.of` should be used.
 
 ## TODO
 
@@ -270,7 +270,7 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
--- Porting note: added the following section with simp lemmas because `simp` fails
+-- Porting note (#10756): added the following section with simp lemmas because `simp` fails
 -- to apply the corresponding lemmas in the namespace `Pi`.
 -- (e.g. `Pi.zero_apply` used on `OfNat.ofNat 0 i j`)
 section
@@ -1286,12 +1286,13 @@ theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s :
   (diagonal_injective.comp Function.const_injective).eq_iff
 #align matrix.scalar_inj Matrix.scalar_inj
 
+theorem scalar_commute_iff [Fintype n] [DecidableEq n] {r : α} {M : Matrix n n α} :
+    Commute (scalar n r) M ↔ r • M = MulOpposite.op r • M := by
+  simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
+
 theorem scalar_commute [Fintype n] [DecidableEq n] (r : α) (hr : ∀ r', Commute r r')
     (M : Matrix n n α) :
-    Commute (scalar n r) M := by
-  simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
-  ext i j'
-  exact hr _
+    Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
 #align matrix.scalar.commute Matrix.scalar_commuteₓ
 
 end Scalar
@@ -2240,7 +2241,7 @@ theorem conjTranspose_smul_non_comm [Star R] [Star α] [SMul R α] [SMul Rᵐᵒ
   Matrix.ext <| by simp [h]
 #align matrix.conj_transpose_smul_non_comm Matrix.conjTranspose_smul_non_comm
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem conjTranspose_smul_self [Mul α] [StarMul α] (c : α) (M : Matrix m n α) :
     (c • M)ᴴ = MulOpposite.op (star c) • Mᴴ :=
   conjTranspose_smul_non_comm c M star_mul
@@ -2264,6 +2265,13 @@ theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoi
   Matrix.ext <| by simp
 #align matrix.conj_transpose_nat_cast_smul Matrix.conjTranspose_natCast_smul
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem conjTranspose_ofNat_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
+    (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
+    ((no_index (OfNat.ofNat c : R)) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
+  conjTranspose_natCast_smul c M
+
 @[simp]
 theorem conjTranspose_intCast_smul [Ring R] [AddCommGroup α] [StarAddMonoid α] [Module R α] (c : ℤ)
     (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
@@ -2275,6 +2283,13 @@ theorem conjTranspose_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid α] [
     [Module R α] (c : ℕ) (M : Matrix m n α) : ((c : R)⁻¹ • M)ᴴ = (c : R)⁻¹ • Mᴴ :=
   Matrix.ext <| by simp
 #align matrix.conj_transpose_inv_nat_cast_smul Matrix.conjTranspose_inv_natCast_smul
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddCommMonoid α] [StarAddMonoid α]
+    [Module R α] (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
+    ((no_index (OfNat.ofNat c : R))⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
+  conjTranspose_inv_natCast_smul c M
 
 @[simp]
 theorem conjTranspose_inv_intCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMonoid α]
@@ -2618,7 +2633,7 @@ theorem reindex_apply (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
   rfl
 #align matrix.reindex_apply Matrix.reindex_apply
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem reindex_refl_refl (A : Matrix m n α) : reindex (Equiv.refl _) (Equiv.refl _) A = A :=
   A.submatrix_id_id
 #align matrix.reindex_refl_refl Matrix.reindex_refl_refl
@@ -2646,7 +2661,7 @@ theorem conjTranspose_reindex [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : M
   rfl
 #align matrix.conj_transpose_reindex Matrix.conjTranspose_reindex
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid α] [Mul α]
     (e : m ≃ n) (M : Matrix m n α) : M.submatrix id e * Mᵀ.submatrix e id = M * Mᵀ := by
   rw [submatrix_mul_equiv, submatrix_id_id]

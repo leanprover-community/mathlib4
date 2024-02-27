@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Tactic.SuppressCompilation
 
 #align_import algebra.direct_limit from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -31,6 +32,7 @@ so as to make the operations (addition etc.) "computable".
 
 -/
 
+suppress_compilation
 
 universe u v v' v'' w u₁
 

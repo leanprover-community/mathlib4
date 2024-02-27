@@ -165,7 +165,7 @@ end
 
 namespace IsHomogeneous
 
-variable [CommSemiring R] {φ ψ : MvPolynomial σ R} {m n : ℕ}
+variable [CommSemiring R] [CommSemiring S] {φ ψ : MvPolynomial σ R} {m n : ℕ}
 
 theorem coeff_eq_zero (hφ : IsHomogeneous φ n) (d : σ →₀ ℕ) (hd : ∑ i in d.support, d i ≠ n) :
     coeff d φ = 0 := by
@@ -206,6 +206,48 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     exact h j (Finset.mem_insert_of_mem hjs)
 #align mv_polynomial.is_homogeneous.prod MvPolynomial.IsHomogeneous.prod
 
+lemma C_mul (hφ : φ.IsHomogeneous m) (r : R) :
+    (C r * φ).IsHomogeneous m := by
+  simpa only [zero_add] using (isHomogeneous_C _ _).mul hφ
+
+lemma _root_.MvPolynomial.C_mul_X (r : R) (i : σ) :
+    (C r * X i).IsHomogeneous 1 :=
+  (isHomogeneous_X _ _).C_mul _
+
+lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
+  rw [show φ ^ n = ∏ _i in Finset.range n, φ by simp]
+  rw [show m * n = ∑ _i in Finset.range n, m by simp [mul_comm]]
+  apply IsHomogeneous.prod _ _ _ (fun _ _ ↦ hφ)
+
+lemma _root_.MvPolynomial.isHomogeneous_X_pow (i : σ) (n : ℕ) :
+    (X (R := R) i ^ n).IsHomogeneous n := by
+  simpa only [one_mul] using (isHomogeneous_X _ _).pow n
+
+lemma _root_.MvPolynomial.isHomogeneous_C_mul_X_pow (r : R) (i : σ) (n : ℕ) :
+    (C r * X i ^ n).IsHomogeneous n :=
+  (isHomogeneous_X_pow _ _).C_mul _
+
+lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S)
+    (hf : ∀ r, (f r).IsHomogeneous 0) (hg : ∀ i, (g i).IsHomogeneous n) :
+    (eval₂ f g φ).IsHomogeneous (n * m) := by
+  apply IsHomogeneous.sum
+  intro i hi
+  rw [← zero_add (n * m)]
+  apply IsHomogeneous.mul (hf _) _
+  convert IsHomogeneous.prod _ _ (fun k ↦ n * i k) _
+  · rw [Finsupp.mem_support_iff] at hi
+    rw [← Finset.mul_sum, hφ hi]
+  · rintro k -
+    apply (hg k).pow
+
+lemma map (hφ : φ.IsHomogeneous n) (f : R →+* S) : (map f φ).IsHomogeneous n := by
+  simpa only [one_mul] using hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
+
+lemma aeval [Algebra R S] (hφ : φ.IsHomogeneous m)
+    (g : σ → MvPolynomial τ S) (hg : ∀ i, (g i).IsHomogeneous n) :
+    (aeval g φ).IsHomogeneous (n * m) :=
+  hφ.eval₂ _ _ (fun _ ↦ isHomogeneous_C _ _) hg
+
 section CommRing
 
 -- In this section we shadow the semiring `R` with a ring `R`.
@@ -219,18 +261,22 @@ theorem sub (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneou
 
 end CommRing
 
+/-- The homogeneous degree bounds the total degree.
+
+See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero. -/
+lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
+  apply Finset.sup_le
+  intro d hd
+  rw [mem_support_iff] at hd
+  rw [Finsupp.sum, hφ hd]
+
 theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
-  rw [MvPolynomial.totalDegree]
-  apply le_antisymm
-  · apply Finset.sup_le
-    intro d hd
-    rw [mem_support_iff] at hd
-    rw [Finsupp.sum, hφ hd]
-  · obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
-    simp only [← hφ hd, Finsupp.sum]
-    replace hd := Finsupp.mem_support_iff.mpr hd
-    -- Porting note: Original proof did not define `f`
-    exact Finset.le_sup (f := fun s ↦ ∑ x in s.support, (⇑s) x) hd
+  apply le_antisymm hφ.totalDegree_le
+  obtain ⟨d, hd⟩ : ∃ d, coeff d φ ≠ 0 := exists_coeff_ne_zero h
+  simp only [← hφ hd, MvPolynomial.totalDegree, Finsupp.sum]
+  replace hd := Finsupp.mem_support_iff.mpr hd
+  -- Porting note: Original proof did not define `f`
+  exact Finset.le_sup (f := fun s ↦ ∑ x in s.support, s x) hd
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
 
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
@@ -254,6 +300,24 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) 
   have aux : 0 ∉ Finset.map (Fin.succEmb N).toEmbedding d.support := by simp [Fin.succ_ne_zero]
   simpa [Finset.sum_subset_zero_on_sdiff (g := d.cons i)
     (d.cons_support (y := i)) (by simp) (fun _ _ ↦ rfl), Finset.sum_insert aux, ← h] using hφ hd
+
+-- TODO: develop API for `optionEquivLeft` and get rid of the `[Fintype σ]` assumption
+lemma coeff_isHomogeneous_of_optionEquivLeft_symm
+    [hσ : Finite σ] {p : Polynomial (MvPolynomial σ R)}
+    (hp : ((optionEquivLeft R σ).symm p).IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
+    (p.coeff i).IsHomogeneous j := by
+  obtain ⟨k, ⟨e⟩⟩ := Finite.exists_equiv_fin σ
+  let e' := e.optionCongr.trans (_root_.finSuccEquiv _).symm
+  let F := renameEquiv R e
+  let F' := renameEquiv R e'
+  let φ := F' ((optionEquivLeft R σ).symm p)
+  have hφ : φ.IsHomogeneous n := hp.rename_isHomogeneous
+  suffices IsHomogeneous (F (p.coeff i)) j by
+    rwa [← (IsHomogeneous.rename_isHomogeneous_iff e.injective)]
+  convert hφ.finSuccEquiv_coeff_isHomogeneous i j h using 1
+  dsimp only [renameEquiv_apply]
+  rw [finSuccEquiv_rename_finSuccEquiv, AlgEquiv.apply_symm_apply]
+  simp
 
 open Polynomial in
 private

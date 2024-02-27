@@ -52,8 +52,8 @@ lemma rank_eq_zero_iff :
   · contrapose!
     rintro ⟨x, hx⟩
     rw [← Cardinal.one_le_iff_ne_zero]
-    have : LinearIndependent R (fun _ : Unit ↦ x)
-    · exact linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
+    have : LinearIndependent R (fun _ : Unit ↦ x) :=
+      linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
         hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
     simpa using this.cardinal_lift_le_rank
   · intro h

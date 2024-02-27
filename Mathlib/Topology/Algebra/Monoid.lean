@@ -28,7 +28,7 @@ open Classical Topology BigOperators Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
   @continuous_const _ _ _ _ 1
 #align continuous_one continuous_one
@@ -83,7 +83,7 @@ instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
 #align has_continuous_mul.to_has_continuous_smul_op ContinuousMul.to_continuousSMul_op
 #align has_continuous_add.to_has_continuous_vadd_op ContinuousAdd.to_continuousVAdd_op
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => f x * g x :=
   continuous_mul.comp (hf.prod_mk hg : _)
@@ -102,7 +102,7 @@ theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
 #align continuous_mul_right continuous_mul_right
 #align continuous_add_right continuous_add_right
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.mul {f g : X → M} {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x * g x) s :=
   (continuous_mul.comp_continuousOn (hf.prod hg) : _)
@@ -212,7 +212,7 @@ def Filter.Tendsto.units [TopologicalSpace N] [Monoid N] [ContinuousMul N] [T2Sp
 #align filter.tendsto.units Filter.Tendsto.units
 #align filter.tendsto.add_units Filter.Tendsto.addUnits
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousAt.mul {f g : X → M} {x : X} (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun x => f x * g x) x :=
   Filter.Tendsto.mul hf hg
@@ -585,7 +585,7 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 -- To properly fix this, we should make sure that `continuity` applies its
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
 -- is quite an invasive change.
-@[to_additive (attr := aesop safe -100 (rule_sets [Continuous]))]
+@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow
@@ -617,14 +617,14 @@ theorem ContinuousWithinAt.pow {f : X → M} {x : X} {s : Set X} (hf : Continuou
 #align continuous_within_at.pow ContinuousWithinAt.pow
 #align continuous_within_at.nsmul ContinuousWithinAt.nsmul
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousAt.pow {f : X → M} {x : X} (hf : ContinuousAt f x) (n : ℕ) :
     ContinuousAt (fun x => f x ^ n) x :=
   Filter.Tendsto.pow hf n
 #align continuous_at.pow ContinuousAt.pow
 #align continuous_at.nsmul ContinuousAt.nsmul
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.pow {f : X → M} {s : Set X} (hf : ContinuousOn f s) (n : ℕ) :
     ContinuousOn (fun x => f x ^ n) s := fun x hx => (hf x hx).pow n
 #align continuous_on.pow ContinuousOn.pow
@@ -786,8 +786,7 @@ theorem continuousOn_finset_prod {f : ι → X → M} (s : Finset ι) {t : Set X
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
     {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i in s, f i =ᶠ[l] ∏ i in s, g i := by
-  replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x
-  · rwa [eventually_all_finset]
+  replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x := by rwa [eventually_all_finset]
   filter_upwards [hs] with x hx
   simp only [Finset.prod_apply, Finset.prod_congr rfl hx]
 #align eventually_eq_prod eventuallyEq_prod

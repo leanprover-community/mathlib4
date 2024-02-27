@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
 import Qq
@@ -415,3 +416,34 @@ def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
     assertInstancesCommute
     pure (.positive q(Nat.ascFactorial_pos $n $k))
   | _, _, _ => throwError "failed to match Nat.ascFactorial"
+
+open Rat
+
+private alias ⟨_, num_pos_of_pos⟩ := num_pos
+private alias ⟨_, num_nonneg_of_nonneg⟩ := num_nonneg
+private alias ⟨_, num_ne_zero_of_ne_zero⟩ := num_ne_zero
+
+/-- The `positivity` extension which identifies expressions of the form `Rat.num a`,
+such that `positivity` successfully recognises `a`. -/
+@[positivity Rat.num _]
+def evalRatNum : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℤ), ~q(Rat.num $a) =>
+    let zα : Q(Zero ℚ) := q(inferInstance)
+    let pα : Q(PartialOrder ℚ) := q(inferInstance)
+    assumeInstancesCommute
+    match ← core zα pα a with
+    | .positive pa => pure $ .positive q(num_pos_of_pos $pa)
+    | .nonnegative pa => pure $ .nonnegative q(num_nonneg_of_nonneg $pa)
+    | .nonzero pa => pure $ .nonzero q(num_ne_zero_of_ne_zero $pa)
+    | .none => pure .none
+  | _, _ => throwError "not Rat.num"
+
+/-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
+@[positivity Rat.den _]
+def evalRatDen : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Rat.den $a) =>
+    assumeInstancesCommute
+    pure $ .positive q(den_pos $a)
+  | _, _ => throwError "not Rat.num"

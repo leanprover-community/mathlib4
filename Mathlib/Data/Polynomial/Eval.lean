@@ -637,7 +637,7 @@ theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
 
 @[simp]
 theorem nat_cast_mul_comp {n : ℕ} : ((n : R[X]) * p).comp r = n * p.comp r := by
-  rw [← C_eq_nat_cast, C_mul_comp, C_eq_nat_cast]
+  rw [← C_eq_nat_cast, C_mul_comp]
 #align polynomial.nat_cast_mul_comp Polynomial.nat_cast_mul_comp
 
 theorem mul_X_add_nat_cast_comp {n : ℕ} :
@@ -814,7 +814,7 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   rw [map, eval₂_def, coeff_sum, sum]
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
   refine' Finset.sum_congr rfl fun x _hx => _
-  -- Porting note: Was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
+  -- porting note (#10745): was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
   simp? [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul] says
     simp only [RingHom.coe_comp, Function.comp_apply, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
@@ -1070,6 +1070,31 @@ theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
 #align polynomial.iterate_comp_eval₂ Polynomial.iterate_comp_eval₂
 
 end
+
+section Algebra
+
+variable [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
+
+@[simp]
+theorem eval₂_mul' :
+    (p * q).eval₂ (algebraMap R S) x = p.eval₂ (algebraMap R S) x * q.eval₂ (algebraMap R S) x := by
+  exact eval₂_mul_noncomm _ _ fun k => Algebra.commute_algebraMap_left (coeff q k) x
+
+@[simp]
+theorem eval₂_pow' (n : ℕ) :
+    (p ^ n).eval₂ (algebraMap R S) x = (p.eval₂ (algebraMap R S) x) ^ n := by
+  induction n with
+  | zero => simp only [Nat.zero_eq, pow_zero, eval₂_one]
+  | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
+
+@[simp]
+theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
+    eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
+  induction p using Polynomial.induction_on' with
+    | h_add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
+    | h_monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
+
+end Algebra
 
 section
 
