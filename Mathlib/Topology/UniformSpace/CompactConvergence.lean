@@ -221,28 +221,33 @@ theorem mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) 
   simp [hasBasis_compactConvergenceUniformity.mem_iff, and_assoc]
 #align continuous_map.mem_compact_convergence_entourage_iff ContinuousMap.mem_compactConvergence_entourage_iff
 
+/-- If `K` is a compact exhaustion of `α`
+and `V i` bounded by `p i` is a basis of entourages of `β`,
+then `fun (n, i) ↦ {(f, g) | ∀ x ∈ K n, (f x, g x) ∈ V i}` bounded by `p i`
+is a basis of entourages of `C(α, β)`. -/
 theorem _root_.CompactExhaustion.hasBasis_compactConvergenceUniformity {ι : Type*}
     {p : ι → Prop} {V : ι → Set (β × β)} (K : CompactExhaustion α) (hb : (𝓤 β).HasBasis p V) :
     HasBasis (𝓤 C(α, β)) (fun i : ℕ × ι ↦ p i.2) fun i ↦
-      {fg | ∀ x ∈ K i.1, (fg.1 x, fg.2 x) ∈ V i.2} := by
-  refine hb.compactConvergenceUniformity.to_hasBasis ?_ fun i hi ↦
-    ⟨(K i.1, i.2), ⟨K.isCompact _, hi⟩, Subset.rfl⟩
-  rintro ⟨L, i⟩ ⟨hL, hi⟩
-  rcases K.exists_isCompact_subset hL with ⟨n, hn⟩
-  exact ⟨(n, i), hi, fun _fg h x hx ↦ h x <| hn hx⟩
+      {fg | ∀ x ∈ K i.1, (fg.1 x, fg.2 x) ∈ V i.2} :=
+  (UniformOnFun.hasBasis_uniformity_of_covering_of_basis {K | IsCompact K} K.isCompact
+    (Monotone.directed_le K.subset) (fun _ ↦ K.exists_isCompact_subset) hb).comap _
+
+theorem _root_.CompactExhaustion.hasAntitoneBasis_compactConvergenceUniformity
+    {V : ℕ → Set (β × β)} (K : CompactExhaustion α) (hb : (𝓤 β).HasAntitoneBasis V) :
+    HasAntitoneBasis (𝓤 C(α, β)) fun n ↦ {fg | ∀ x ∈ K n, (fg.1 x, fg.2 x) ∈ V n} :=
+  (UniformOnFun.hasAntitoneBasis_uniformity {K | IsCompact K} K.isCompact
+    K.subset (fun _ ↦ K.exists_isCompact_subset) hb).comap _
 
 /-- If `α` is a weakly locally compact σ-compact space
 (e.g., a proper pseudometric space or a compact spaces)
 and the uniformity on `β` is pseudometrizable,
 then the uniformity on `C(α, β)` is pseudometrizable too.
-
-TODO: prove a corollary in terms of pseudometrizable topologies,
-maybe after we redefine it without `MetricSpace`s, see #2032. -/
+-/
 instance [WeaklyLocallyCompactSpace α] [SigmaCompactSpace α] [IsCountablyGenerated (𝓤 β)] :
     IsCountablyGenerated (𝓤 (C(α, β))) :=
   let ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
-  HasCountableBasis.isCountablyGenerated
-    ⟨(CompactExhaustion.choice α).hasBasis_compactConvergenceUniformity hV.1, Set.to_countable _⟩
+  ((CompactExhaustion.choice α).hasAntitoneBasis_compactConvergenceUniformity
+    hV).isCountablyGenerated
 
 variable {ι : Type u₃} {p : Filter ι} {F : ι → C(α, β)} {f}
 
