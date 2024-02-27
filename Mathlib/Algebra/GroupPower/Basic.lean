@@ -476,14 +476,14 @@ lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one
 #align zpow_mul_comm zpow_mul_comm
 #align zsmul_add_comm zsmul_add_comm
 
-theorem zpow_eq_zpow_mod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
-    x ^ m = x ^ (m % n) := by
-calc
+theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
+    x ^ m = x ^ (m % n) :=
+  calc
     x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
     _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
 
-theorem zpow_eq_zpow_mod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
-    x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_mod m (by simpa)
+theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
+    x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_emod m (by simpa)
 
 section bit1
 
