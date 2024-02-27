@@ -430,186 +430,75 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
       -(A 0 0 * A 2 1) + A 0 1 * A 2 0,
       A 0 0 * A 1 1 - A 0 1 * A 1 0] := by
 
-    ext h1 h2
-    fin_cases h1
-    simp
-    rw [adjugate_apply]
-    rw [Matrix.det_fin_three]
+    ext i j
+    rw [adjugate_apply, det_fin_three]
+    fin_cases i <;> fin_cases j <;>
+    repeat {
+      try simp [updateRow_ne, Pi.single_eq_of_ne, Pi.single_eq_same]
+      try repeat rw [Matrix.updateRow_ne]
+      try repeat rw [Pi.single_eq_of_ne]
+      try simp
+      try repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
+      try repeat exact Fin.ne_of_gt Nat.le.refl}
+
+    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+    repeat rw [Fin.eq_mk_iff_val_eq]
     repeat rw [Matrix.updateRow_apply]
+    repeat rw [if_pos]
     simp
-    fin_cases h2
-    repeat
-      repeat simp
-      repeat rw [if_neg]
-      rw [Pi.single_apply]
-      repeat rw [if_neg]
-      simp
-
-      repeat
-        rw [← ne_eq]
-        rw [@ne_iff_lt_or_gt]
-        right
-        exact Fin.coe_sub_iff_lt.mp rfl
-    ---
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_pos]
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_pos]
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
+    repeat rw [Pi.single_eq_of_ne]
     simp
-    rw [Pi.single_apply]
-    rw [if_neg]
-    simp
+    exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
+    repeat exact rfl
 
-    rw [← ne_eq]
-    rw [@ne_iff_lt_or_gt]
-    right
-    exact Fin.coe_sub_iff_lt.mp rfl
-
-    repeat
-      rw [@Fin.eq_mk_iff_val_eq]
-      simp
-
-    ---
-
-    rw [Matrix.adjugate_apply]
-    rw [Matrix.det_fin_three]
+    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+    repeat rw [Fin.eq_mk_iff_val_eq]
     repeat rw [Matrix.updateRow_apply]
-    simp
-    fin_cases h2
-    simp
-    rw [Pi.single_apply]
-    rw [if_neg]
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_neg]
-    rw [Pi.single_apply]
-    rw [if_neg]
-    simp
-    --
-    rw [@Fin.eq_mk_iff_val_eq]
-    simp
-
-    repeat
-      rw [← ne_eq]
-      rw [@ne_iff_lt_or_gt]
-      right
-      exact Fin.coe_sub_iff_lt.mp rfl
-
-    rw [@Fin.eq_mk_iff_val_eq]
-    simp
-
-    rw [← ne_eq]
-    rw [@ne_iff_lt_or_gt]
-    right
-    exact Fin.coe_sub_iff_lt.mp rfl
-    ---
-    simp
     repeat rw [if_neg]
-    repeat rw [Pi.single_apply]
-    rw [if_pos]
-    rw [if_neg]
+    repeat rw [Pi.single_eq_of_ne]
     simp
-    --
-    rw [@Fin.eq_mk_iff_val_eq]
-    simp
+    exact Fin.ne_of_gt Nat.le.refl
+    repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
 
-    rw [@Fin.eq_mk_iff_val_eq]
-    simp
-
-    repeat
-      rw [← ne_eq]
-      rw [@ne_iff_lt_or_gt]
-      right
-      exact Fin.coe_sub_iff_lt.mp rfl
-
-    ---
-    simp
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_pos]
-    rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_pos]
-    simp
-    repeat rw [Pi.single_apply]
-    rw [if_neg]
-    rw [if_pos]
-    simp
-    --
-    repeat
-      rw [@Fin.eq_mk_iff_val_eq]
-      simp
-
-    rw [Matrix.adjugate_apply]
-    rw [Matrix.det_fin_three]
+    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+    repeat rw [Fin.eq_mk_iff_val_eq]
     repeat rw [Matrix.updateRow_apply]
     simp
-    fin_cases h2
+    repeat rw [if_pos]
+    repeat rw [Pi.single_eq_of_ne]
     simp
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_neg]
-    repeat rw [Pi.single_apply]
-    rw [if_neg]
-    rw [if_neg]
-    rw [if_pos]
-    simp
-    --
-    repeat
-      rw [@Fin.eq_mk_iff_val_eq]
-      simp
-    ---
-    simp
+    exact Fin.ne_of_gt Nat.le.refl
+    repeat exact rfl
 
+    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+    repeat rw [Matrix.updateRow_apply]
     repeat rw [if_neg]
-    repeat rw [Pi.single_apply]
-    rw [if_neg]
-    rw [if_pos]
-    rw [if_neg]
+    rw [Pi.single_apply]
+    repeat rw [if_pos]
     simp
-    --
-    repeat
-      rw [@Fin.eq_mk_iff_val_eq]
-      simp
+    rfl
+    repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
 
-    ---
-    repeat simp
-    repeat
-      rw [if_pos]
-      rw [if_neg]
-      rw [if_neg]
+    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+    repeat rw [Matrix.updateRow_apply]
+    repeat rw [if_neg]
+    rw [Pi.single_apply]
+    repeat rw [if_pos]
+    simp
+    rfl
+    repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
+    repeat exact Fin.ne_of_gt Nat.le.refl
 
+    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+    repeat rw [Matrix.updateRow_apply]
+    repeat rw [if_pos]
     repeat rw [Pi.single_apply]
     rw [if_pos]
-    rw [if_neg]
-    rw [if_neg]
-    --
+    repeat rw [if_neg]
     simp
-    repeat
-      rw [@Fin.eq_mk_iff_val_eq]
-      simp
+    exact Fin.ne_of_lt (Nat.le.step Nat.le.refl)
+    repeat exact Fin.ne_of_lt Nat.le.refl
+    repeat exact rfl
 
 
 @[simp]
