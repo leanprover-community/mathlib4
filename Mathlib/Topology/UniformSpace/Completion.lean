@@ -295,7 +295,7 @@ theorem inseparable_iff_of_le_nhds {f g : CauchyFilter α} {a b : α}
   rfl
 
 theorem inseparable_lim_iff [CompleteSpace α] {f g : CauchyFilter α} :
-    Inseparable (f.2.lim f.1) (g.2.lim g.1) ↔ Inseparable f g :=
+    haveI := f.2.1.nonempty; Inseparable (lim f.1) (lim g.1) ↔ Inseparable f g :=
   inseparable_iff_of_le_nhds f.2.le_nhds_lim g.2.le_nhds_lim
 
 end
