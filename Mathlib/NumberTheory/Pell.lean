@@ -555,7 +555,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
   rcases le_or_lt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
-    have hm : n = -m - 1 := by simp only [neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
+    have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
     exact H _ (by linarith [hn])
 #align pell.is_fundamental.y_strict_mono Pell.IsFundamental.y_strictMono
