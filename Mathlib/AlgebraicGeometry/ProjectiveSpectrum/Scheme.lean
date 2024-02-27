@@ -678,8 +678,9 @@ lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
     obtain ⟨⟨_, ⟨k, rfl⟩⟩, eq1⟩ := eq1
     dsimp at eq1
     rw [← mul_assoc, ← mul_assoc, ← pow_add, ← pow_add] at eq1
-    suffices mem : f^(k + i) * ∑ i in c.support.attach, acd (c i) _ * _ ∈ x.1.asHomogeneousIdeal
-    · exact x.1.isPrime.mem_of_pow_mem _ <| x.1.isPrime.mem_or_mem (eq1.symm ▸ mem)
+    suffices mem : f^(k + i) * ∑ i in c.support.attach, acd (c i) _ * _ ∈
+      x.1.asHomogeneousIdeal from
+      x.1.isPrime.mem_of_pow_mem _ <| x.1.isPrime.mem_or_mem (eq1.symm ▸ mem)
         |>.resolve_left fun r ↦ ProjectiveSpectrum.mem_basicOpen 𝒜 _ _
         |>.mp x.2 <| x.1.isPrime.mem_of_pow_mem _ r
     exact Ideal.mul_mem_left _ _ <| Ideal.sum_mem _ fun i _ ↦
