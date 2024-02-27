@@ -461,6 +461,11 @@ lemma ringEquivCongr_val {a b : ℕ} (h : a = b) (x : ZMod a) :
   subst h
   cases a <;> rfl
 
+lemma int_coe_ringEquivCongr {a b : ℕ} (h : a = b) (z : ℤ) :
+    ZMod.ringEquivCongr h z = z := by
+  subst h
+  cases a <;> rfl
+
 end CharEq
 
 end UniversalProperty
