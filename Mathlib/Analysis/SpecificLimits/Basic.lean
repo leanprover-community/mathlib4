@@ -215,7 +215,7 @@ theorem NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0} (hr : r < 1) 
   NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 
 @[simp]
-theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
+protected theorem NNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0} :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 :=
   ⟨fun h => by simpa [coe_pow, coe_zero, abs_eq, coe_lt_one, val_eq_coe] using
     tendsto_pow_atTop_nhds_zero_iff.mp <| tendsto_coe.mpr h, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
