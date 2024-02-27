@@ -182,7 +182,7 @@ theorem ofEven_ι (x y : M × R) :
   lift_lets
   intro f
   -- TODO: replacing `?_` with `_` takes way longer?
-  refine @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
+  exact @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι
 
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=

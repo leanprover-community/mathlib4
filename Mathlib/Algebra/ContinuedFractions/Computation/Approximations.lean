@@ -7,7 +7,6 @@ import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Algebra.GroupPower.Order
-import Std.Tactic.SolveByElim
 
 #align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -340,7 +339,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
     exact Option.ne_none_iff_exists'.1 not_terminated_at_n
     -- unfold the recurrence relation for `conts` once and simplify to derive the following
     suffices pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) = (-1) ^ (n + 1) by
-      simp only [continuantsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
+      simp only [conts, continuantsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
       have gp_a_eq_one : gp.a = 1 := of_part_num_eq_one (part_num_eq_s_a s_nth_eq)
       rw [gp_a_eq_one, this.symm]
       ring
@@ -465,7 +464,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
   have gp_a_eq_one : gp.a = 1 := of_part_num_eq_one (part_num_eq_s_a s_nth_eq)
   -- unfold the recurrence relation for `nextConts.b`
   have nextConts_b_eq : nextConts.b = pred_conts.b + gp.b * conts.b := by
-    simp [continuantsAux_recurrence s_nth_eq pred_conts_eq conts_eq, gp_a_eq_one,
+    simp [nextConts, continuantsAux_recurrence s_nth_eq pred_conts_eq conts_eq, gp_a_eq_one,
       pred_conts_eq.symm, conts_eq.symm, add_comm]
   let denom := conts.b * (pred_conts.b + gp.b * conts.b)
   suffices |v - g.convergents n| ≤ 1 / denom by rw [nextConts_b_eq]; congr 1

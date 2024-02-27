@@ -80,7 +80,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   obtain ⟨u, uT, hu⟩ : ∃ u ∈ T, ∀ v ∈ T, u ⊆ v → v = u := by
     refine' zorn_subset _ fun U UT hU => _
     refine' ⟨⋃₀ U, _, fun s hs => subset_sUnion_of_mem hs⟩
-    simp only [Set.sUnion_subset_iff, and_imp, exists_prop, forall_exists_index, mem_sUnion,
+    simp only [T, Set.sUnion_subset_iff, and_imp, exists_prop, forall_exists_index, mem_sUnion,
       Set.mem_setOf_eq]
     refine'
       ⟨fun u hu => (UT hu).1, (pairwiseDisjoint_sUnion hU.directedOn).2 fun u hu => (UT hu).2.1,
@@ -188,7 +188,7 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
-    refine' ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
+    exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
 #align vitali.exists_disjoint_subfamily_covering_enlargment_closed_ball Vitali.exists_disjoint_subfamily_covering_enlargment_closedBall
 
 /-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
@@ -332,7 +332,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     set k := ⋃ (a : v) (_ : a ∈ w), B a
     have k_closed : IsClosed k := isClosed_biUnion_finset fun i _ => h't _ (ut (vu i.2))
     have z_notmem_k : z ∉ k := by
-      simp only [not_exists, exists_prop, mem_iUnion, mem_sep_iff, forall_exists_index,
+      simp only [k, not_exists, exists_prop, mem_iUnion, mem_sep_iff, forall_exists_index,
         SetCoe.exists, not_and, exists_and_right, Subtype.coe_mk]
       intro b hbv _ h'z
       have : z ∈ (s \ ⋃ a ∈ u, B a) ∩ ⋃ a ∈ u, B a :=

@@ -952,8 +952,8 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
     _ = ⨆ n, ∫⁻ a, g n a ∂μ :=
       (lintegral_iSup (fun n => measurable_const.piecewise hs.2.1 (hf n))
         (monotone_nat_of_le_succ fun n a =>
-          _root_.by_cases (fun h : a ∈ s => by simp [if_pos h]) fun h : a ∉ s => by
-            simp only [if_neg h]; have := hs.1; rw [subset_def] at this; have := mt (this a) h
+          _root_.by_cases (fun h : a ∈ s => by simp [g, if_pos h]) fun h : a ∉ s => by
+            simp only [g, if_neg h]; have := hs.1; rw [subset_def] at this; have := mt (this a) h
             simp only [Classical.not_not, mem_setOf_eq] at this; exact this n))
     _ = ⨆ n, ∫⁻ a, f n a ∂μ := by simp only [lintegral_congr_ae (g_eq_f.mono fun _a ha => ha _)]
 #align measure_theory.lintegral_supr_ae MeasureTheory.lintegral_iSup_ae
@@ -1250,7 +1250,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
     ext1 b
     rw [lintegral_congr_ae]
     apply EventuallyEq.symm
-    refine' aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
+    exact aeSeq.aeSeq_n_eq_fun_n_ae hf hp _
 #align measure_theory.lintegral_supr_directed MeasureTheory.lintegral_iSup_directed
 
 end
@@ -1664,7 +1664,7 @@ theorem exists_pos_lintegral_lt_of_sigmaFinite (μ : Measure α) [SigmaFinite μ
   have hNs : ∀ n, N ⁻¹' {n} = s n := preimage_spanningSetsIndex_singleton μ
   refine' ⟨δ ∘ N, fun x => δpos _, measurable_from_nat.comp hN_meas, _⟩
   erw [lintegral_comp measurable_from_nat.coe_nnreal_ennreal hN_meas]
-  simpa [hNs, lintegral_countable', measurable_spanningSetsIndex, mul_comm] using δsum
+  simpa [N, hNs, lintegral_countable', measurable_spanningSetsIndex, mul_comm] using δsum
 #align measure_theory.exists_pos_lintegral_lt_of_sigma_finite MeasureTheory.exists_pos_lintegral_lt_of_sigmaFinite
 
 theorem lintegral_trim {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :

@@ -262,13 +262,13 @@ protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α
   refine' isTopologicalBasis_of_isOpen_of_nhds _ _
   · rintro _ ⟨V, hV, rfl⟩
     rw [hf.isOpen_iff]
-    refine' ⟨V, h.isOpen hV, rfl⟩
+    exact ⟨V, h.isOpen hV, rfl⟩
   · intro a U ha hU
     rw [hf.isOpen_iff] at hU
     obtain ⟨V, hV, rfl⟩ := hU
     obtain ⟨S, hS, rfl⟩ := h.open_eq_sUnion hV
     obtain ⟨W, hW, ha⟩ := ha
-    refine' ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
+    exact ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
 #align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
 
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
@@ -397,7 +397,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     choose y hyt hyu using this
     lift y to ∀ i : I, t i using hyt
     refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self _⟩
-    simp only [dif_pos hi]
+    simp only [f, dif_pos hi]
     exact hyu _
 
 instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
@@ -503,7 +503,7 @@ theorem IsSeparable.univ_pi {ι : Type*} [Countable ι] {X : ι → Type*} {s : 
     suffices H : ∀ i ∈ I, (u i ∩ c i).Nonempty by
       choose f hfu hfc using H
       refine ⟨fun i ↦ ⟨f i i.2, hfc i i.2⟩, fun i (hi : i ∈ I) ↦ ?_⟩
-      simpa only [dif_pos hi] using hfu i hi
+      simpa only [g, dif_pos hi] using hfu i hi
     intro i hi
     exact mem_closure_iff.1 (hc i <| hf _ trivial) _ (huo i hi).1 (huo i hi).2
 
