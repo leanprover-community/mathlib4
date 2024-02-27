@@ -103,7 +103,14 @@ theorem fderiv_norm_rpow {f : F → E} (hf : Differentiable ℝ f) {x : F} {p : 
 
 theorem norm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f) {x : F} {p : ℝ} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ p) x‖ ≤ p * ‖f x‖ ^ (p - 1) * ‖fderiv ℝ f x‖ := by
-  sorry
+  rw [fderiv_norm_rpow hf hp, norm_smul, norm_mul]
+  simp [- Real.norm_eq_abs, Real.norm_rpow_of_nonneg]
+  simp [abs_eq_self.mpr <| zero_le_one.trans hp.le, mul_assoc]
+  gcongr _ * ?_
+  refine mul_le_mul_of_nonneg_left (ContinuousLinearMap.opNorm_comp_le ..) (by positivity)
+    |>.trans_eq ?_
+  rw [innerSL_apply_norm, ← mul_assoc, ← Real.rpow_add_one' (by positivity) (by linarith)]
+  ring_nf
 
 theorem nnnorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
     {x : F} {p : ℝ≥0} (hp : 1 < p) :
@@ -121,10 +128,6 @@ theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E �
 theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp : 1 < p) :
     ContDiff ℝ 1 (fun x ↦ ‖f x‖ ^ p) :=
   contDiff_norm_rpow hp |>.comp hf
-
-theorem hasDerivAt_norm_rpow {p x : ℝ} (hp : 1 < p) :
-  HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * |x| ^ (p - 1)) x := sorry
-
 
 end ContDiffAbsPow
 
