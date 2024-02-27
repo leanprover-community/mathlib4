@@ -66,7 +66,8 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = k * m)
     (ha : 2 * a < m) (hb : 2 * b < m) (hc : 2 * c < m) (hd : 2 * d < m) :
     k < m := by
-  refine lt_of_mul_lt_mul_right (lt_of_mul_lt_mul_left ?_ (zero_le (2 ^ 2))) (zero_le m)
+  refine _root_.lt_of_mul_lt_mul_right
+    (_root_.lt_of_mul_lt_mul_left ?_ (zero_le (2 ^ 2))) (zero_le m)
   calc
     2 ^ 2 * (k * ↑m) = ∑ i : Fin 4, (2 * ![a, b, c, d] i) ^ 2 := by
       simp [← h, Fin.sum_univ_succ, mul_add, mul_pow, add_assoc]

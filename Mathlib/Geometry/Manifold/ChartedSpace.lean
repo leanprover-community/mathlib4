@@ -699,7 +699,7 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
   refine' locallyConnectedSpace_of_connected_bases (fun x s ↦ (e x).symm '' s)
       (fun x s ↦ (IsOpen s ∧ e x x ∈ s ∧ IsConnected s) ∧ s ⊆ (e x).target) _ _
   · intro x
-    simpa only [PartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
+    simpa only [e, PartialHomeomorph.symm_map_nhds_eq, mem_chart_source] using
       ((LocallyConnectedSpace.open_connected_basis (e x x)).restrict_subset
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
@@ -914,14 +914,14 @@ protected def partialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) :
       rw [ts]
       let f := e.symm.trans e'
       have : IsOpen (f ⁻¹' s ∩ f.source) := by
-        simpa [inter_comm] using (continuousOn_open_iff (c.open_source e e' he e'_atlas)).1
+        simpa [f, inter_comm] using (continuousOn_open_iff (c.open_source e e' he e'_atlas)).1
           (c.continuousOn_toFun e e' he e'_atlas) s s_open
       have A : e' ∘ e.symm ⁻¹' s ∩ (e.target ∩ e.symm ⁻¹' e'.source) =
           e.target ∩ (e' ∘ e.symm ⁻¹' s ∩ e.symm ⁻¹' e'.source) := by
         rw [← inter_assoc, ← inter_assoc]
         congr 1
         exact inter_comm _ _
-      simpa [PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
+      simpa [f, PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
 #align charted_space_core.local_homeomorph ChartedSpaceCore.partialHomeomorph
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
@@ -1041,7 +1041,7 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
   have hs : IsOpen s := by
     apply e.symm.continuousOn_toFun.isOpen_inter_preimage <;> apply open_source
   have xs : x ∈ s := by
-    simp only [mem_inter_iff, mem_preimage, mem_chart_source, and_true]
+    simp only [s, f, mem_inter_iff, mem_preimage, mem_chart_source, and_true]
     exact ((mem_inter_iff _ _ _).1 hx).1
   refine' ⟨s, hs, xs, _⟩
   have A : e.symm ≫ₕ f ∈ G := (mem_maximalAtlas_iff.1 he f (chart_mem_atlas _ _)).1
@@ -1305,7 +1305,8 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         apply (c.symm ≫ₕ f₁).continuousOn_toFun.isOpen_inter_preimage <;> apply open_source
       have : x ∈ s := by
         constructor
-        · simp only [trans_source, preimage_univ, inter_univ, Homeomorph.toPartialHomeomorph_source]
+        · simp only [f₁, trans_source, preimage_univ, inter_univ,
+            Homeomorph.toPartialHomeomorph_source]
           rw [trans_source] at hx
           exact hx.1
         · exact hg₂
@@ -1314,7 +1315,8 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       have A : F₁ ∈ G := G.trans (e.mem_groupoid c g hc hg₁) (e'.mem_groupoid g c' hg₁ hc')
       let F₂ := (c.symm ≫ₕ f ≫ₕ c').restr s
       have : F₁ ≈ F₂ := calc
-        F₁ ≈ c.symm ≫ₕ f₁ ≫ₕ (g ≫ₕ g.symm) ≫ₕ f₂ ≫ₕ c' := by simp only [trans_assoc, _root_.refl]
+        F₁ ≈ c.symm ≫ₕ f₁ ≫ₕ (g ≫ₕ g.symm) ≫ₕ f₂ ≫ₕ c' := by
+            simp only [F₁, trans_assoc, _root_.refl]
         _ ≈ c.symm ≫ₕ f₁ ≫ₕ ofSet g.source g.open_source ≫ₕ f₂ ≫ₕ c' :=
           EqOnSource.trans' (_root_.refl _) (EqOnSource.trans' (_root_.refl _)
             (EqOnSource.trans' (self_trans_symm g) (_root_.refl _)))
@@ -1324,7 +1326,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by rw [restr_trans]
         _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s :=
           by simp only [EqOnSource.restr, trans_assoc, _root_.refl]
-        _ ≈ F₂ := by simp only [feq, _root_.refl]
+        _ ≈ F₂ := by simp only [F₂, feq, _root_.refl]
       have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }
 #align structomorph.trans Structomorph.trans
@@ -1345,7 +1347,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
   rw [PartialHomeomorph.subtypeRestr_def, PartialHomeomorph.trans_refl]
   let goal := e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ (t.partialHomeomorphSubtypeCoe this)
   have : goal ≈ e.subtypeRestr (s := s) hs :=
-    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr ⟨by simp, by intro _ _; rfl⟩
+    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr ⟨by simp [s, goal], by intro _ _; rfl⟩
   exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he hs)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/

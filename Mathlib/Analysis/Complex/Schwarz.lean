@@ -126,7 +126,9 @@ theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div [CompleteSpace E] [St
     (differentiableOn_dslope (isOpen_ball.mem_nhds (mem_ball_self h_R₁))).mpr hd
   have : g z = g z₀ := eqOn_of_isPreconnected_of_isMaxOn_norm (convex_ball c R₁).isPreconnected
     isOpen_ball g_diff h_z₀ g_max hz
-  simp [← this]
+  simp [g] at this
+  simp [g, ← this]
+
 #align complex.affine_of_maps_to_ball_of_exists_norm_dslope_eq_div Complex.affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div
 
 theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div' [CompleteSpace E]

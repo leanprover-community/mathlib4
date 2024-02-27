@@ -107,8 +107,8 @@ theorem mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 
   letI ku := Units.map ↑ₐ.toMonoidHom (Units.mk0 k hk)
   rw [← inv_inv ‖(1 : A)‖,
     mul_inv_lt_iff (inv_pos.2 <| norm_pos_iff.2 (one_ne_zero : (1 : A) ≠ 0))] at h
-  have hku : ‖-a‖ < ‖(↑ku⁻¹ : A)‖⁻¹ := by simpa [norm_algebraMap] using h
-  simpa [sub_eq_add_neg, Algebra.algebraMap_eq_smul_one] using (ku.add (-a) hku).isUnit
+  have hku : ‖-a‖ < ‖(↑ku⁻¹ : A)‖⁻¹ := by simpa [ku, norm_algebraMap] using h
+  simpa [ku, sub_eq_add_neg, Algebra.algebraMap_eq_smul_one] using (ku.add (-a) hku).isUnit
 #align spectrum.mem_resolvent_set_of_norm_lt_mul spectrum.mem_resolventSet_of_norm_lt_mul
 
 theorem mem_resolventSet_of_norm_lt [NormOneClass A] {a : A} {k : 𝕜} (h : ‖a‖ < ‖k‖) : k ∈ ρ a :=
@@ -348,7 +348,7 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
     ContinuousMultilinearMap.mkPiRing ℂ (Fin n) (a ^ n)
   suffices h : (r : ℝ≥0∞) ≤ p.radius by
     convert h
-    simp only [p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
+    simp only [p, p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
     congr
     ext n
     rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), if_neg]

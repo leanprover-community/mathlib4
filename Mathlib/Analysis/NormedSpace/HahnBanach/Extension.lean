@@ -128,7 +128,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
   choose gi hgf _ using fun i ↦ exists_extension_norm_eq p (fi i)
   use (LinearMap.range f).subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
   ext x
-  simp [hgf]
+  simp [fi, e, hgf]
 
 /-- A finite dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
 lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)

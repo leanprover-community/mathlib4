@@ -496,8 +496,8 @@ lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
   rw [hxn, mul_one, Pi.nnnorm_def, Finset.sup_le_iff] at hN
   replace hN := hN i (Finset.mem_univ _)
   dsimp [mulVec, dotProduct] at hN
-  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq, nnnorm_one,
-    mul_one] at hN
+  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq,
+    nnnorm_one, mul_one] at hN
   exact hN
 
 @[deprecated]
