@@ -1125,21 +1125,15 @@ theorem range_diff_image {f : α → β} (H : Injective f) (s : Set α) : range 
 #align set.range_diff_image Set.range_diff_image
 
 @[simp]
+theorem exists_mem_coe_eq (h : s ⊆ t) : ∀ (x : t),
+    (∃ (a : α) (ha : a ∈ s), ⟨a, h ha⟩ = x) ↔ ↑x ∈ s := by
+  rintro ⟨x, hx⟩
+  simp
+
+@[simp]
 theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α) ∈ s } := by
-  ext ⟨x, hx⟩
-  -- Porting note: `simp [inclusion]` doesn't solve goal
-  apply Iff.intro
-  · rw [mem_range]
-    rintro ⟨a, ha⟩
-    rw [inclusion, Subtype.mk.injEq] at ha
-    rw [mem_setOf, Subtype.coe_mk, ← ha]
-    exact Subtype.coe_prop _
-  · rw [mem_setOf, Subtype.coe_mk, mem_range]
-    intro hx'
-    use ⟨x, hx'⟩
-    trivial
-  -- simp_rw [inclusion, mem_range, Subtype.mk_eq_mk]
-  -- rw [SetCoe.exists, Subtype.coe_mk, exists_prop, exists_eq_right, mem_set_of, Subtype.coe_mk]
+  ext x
+  simp
 #align set.range_inclusion Set.range_inclusion
 
 -- When `f` is injective, see also `Equiv.ofInjective`.
@@ -1353,6 +1347,11 @@ variable {E : Type*} [EquivLike E ι ι']
 @[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
   (EquivLike.surjective _).range_comp _
 #align equiv_like.range_comp EquivLike.range_comp
+
+/-- `EquivLike.exists_congr_left'` specialized to `x ∈ Set.range (f ∘ ⇑e)` so `simp` can apply it.-/
+@[simp, nolint simpNF] -- simpNF false positive. https://github.com/leanprover/std4/issue/671
+theorem memRange_congr_left' (f : ι' → α) (e : E) (x : α) : (∃ y, f (e y) = x) ↔ ∃ y, f y = x :=
+  EquivLike.exists_congr_left' e (P := fun y ↦ f y = x)
 
 end EquivLike
 

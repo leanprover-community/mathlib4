@@ -19,6 +19,11 @@ open List
 
 variable {α β : Type*} (l : List α)
 
+@[simp]
+theorem List.exists_nthLe_eq (x : α) : (∃ k : Fin l.length, l.nthLe k k.2 = x) ↔ x ∈ l := by
+  rw [mem_iff_get]
+  exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩, fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
+
 namespace Set
 
 theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x ∈ range f } := by
@@ -65,11 +70,25 @@ theorem range_list_getI [Inhabited α] (l : List α) : range l.getI = insert def
 
 end Set
 
+namespace List
+
+@[simp]
+theorem exists_getD_eq (d : α) (x : α) : (∃ y, List.getD l y d = x) ↔ x = d ∨ x ∈ l := by
+  rw [← Set.mem_range, Set.range_list_getD]
+  simp
+
+@[simp]
+theorem exists_getI_eq [Inhabited α] (l : List α) (x : α) :
+    (∃ y, List.getI l y = x) ↔ x = default ∨ x ∈ l :=
+  exists_getD_eq l default x
+
 /-- If each element of a list can be lifted to some type, then the whole list can be
 lifted to this type. -/
-instance List.canLift (c) (p) [CanLift α β c p] :
+instance canLift (c) (p) [CanLift α β c p] :
     CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x where
   prf l H := by
     rw [← Set.mem_range, Set.range_list_map]
     exact fun a ha => CanLift.prf a (H a ha)
 #align list.can_lift List.canLift
+
+end List

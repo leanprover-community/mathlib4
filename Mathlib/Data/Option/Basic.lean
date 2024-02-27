@@ -426,4 +426,19 @@ theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ →
 theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
+@[simp]
+theorem eq_none_or_exists_some_eq : ∀ x : Option α, x = none ∨ ∃ y, some y = x
+  | none => .inl rfl
+  | some y => .inr ⟨y, rfl⟩
+
+@[simp]
+theorem forall_not_some_eq_iff_eq_none (x : Option α) : (∀ y, ¬some y = x) ↔ x = none := by
+  simp [eq_comm, eq_none_iff_forall_not_mem, mem_iff]
+
+-- See library note [iff_true].
+@[simp]
+theorem ne_none_of_some_eq_iff_true (x : Option α) (y : α) :
+    (some y = x → ¬x = none) ↔ True :=
+  iff_true_intro <| by rintro rfl ⟨⟩
+
 end Option

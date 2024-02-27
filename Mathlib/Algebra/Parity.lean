@@ -279,6 +279,11 @@ theorem even_iff_exists_two_mul (m : α) : Even m ↔ ∃ c, m = 2 * c := by
   simp [even_iff_exists_two_nsmul]
 #align even_iff_exists_two_mul even_iff_exists_two_mul
 
+@[simp]
+theorem exists_two_mul_eq_iff_even (α : Type*) [Semiring α] (x : α) :
+    (∃ y, 2 * y = x) ↔ Even x := by
+  simp_rw [eq_comm, even_iff_exists_two_mul]
+
 theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
@@ -296,7 +301,7 @@ theorem Dvd.dvd.even (hn : m ∣ n) (hm : Even m) : Even n :=
 @[simp]
 theorem range_two_mul (α) [Semiring α] : (Set.range fun x : α => 2 * x) = { a | Even a } := by
   ext x
-  simp [eq_comm, two_mul, Even]
+  simp
 #align range_two_mul range_two_mul
 
 set_option linter.deprecated false in
@@ -353,10 +358,15 @@ set_option linter.deprecated false in
 #align odd_bit1 odd_bit1
 
 @[simp]
+theorem exists_two_mul_add_one_eq_iff_odd (α : Type*) [Semiring α] (x : α) :
+    (∃ y, 2 * y + 1 = x) ↔ Odd x := by
+  simp [Odd, eq_comm]
+
+@[simp]
 theorem range_two_mul_add_one (α : Type*) [Semiring α] :
     (Set.range fun x : α => 2 * x + 1) = { a | Odd a } := by
   ext x
-  simp [Odd, eq_comm]
+  simp
 #align range_two_mul_add_one range_two_mul_add_one
 
 theorem Even.add_odd : Even m → Odd n → Odd (m + n) := by

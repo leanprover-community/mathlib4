@@ -511,7 +511,7 @@ theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
     (G.map e.toEmbedding).cliqueSet n = map e.toEmbedding '' G.cliqueSet n := by
   obtain rfl | hn := eq_or_ne n 1
   · ext
-    simp [e.exists_congr_left]
+    simp
   · exact cliqueSet_map hn _ _
 #align simple_graph.clique_set_map_of_equiv SimpleGraph.cliqueSet_map_of_equiv
 

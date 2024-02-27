@@ -331,10 +331,7 @@ theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top
 
 /-- Composition of an order isomorphism with a principal segment, as a principal segment -/
 def equivLT (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
-  ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c =>
-    suffices (∃ a : β, g a = c) ↔ ∃ a : α, g (f a) = c by simpa [PrincipalSeg.down]
-    ⟨fun ⟨b, h⟩ => ⟨f.symm b, by simp only [h, RelIso.apply_symm_apply]⟩,
-      fun ⟨a, h⟩ => ⟨f a, h⟩⟩⟩
+  ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, by simp [PrincipalSeg.down]⟩
 #align principal_seg.equiv_lt PrincipalSeg.equivLT
 
 /-- Composition of a principal segment with an order isomorphism, as a principal segment -/
