@@ -55,9 +55,10 @@ lemma measurableSet_partitionFiltration_countablePartitionSet (n : ℕ) (t : α)
     MeasurableSet[partitionFiltration α n] (countablePartitionSet n t) :=
   measurableSet_partitionFiltration_of_mem n (countablePartitionSet_mem n t)
 
-lemma measurable_countablePartitionSet_aux (n : ℕ) (m : MeasurableSpace (countablePartition α n)) :
+lemma measurable_countablePartitionSet_subtype (n : ℕ)
+    (m : MeasurableSpace (countablePartition α n)) :
     @Measurable α (countablePartition α n) (partitionFiltration α n) m
-      (fun c : α ↦ ⟨countablePartitionSet n c, countablePartitionSet_mem n c⟩) := by
+      (fun a ↦ ⟨countablePartitionSet n a, countablePartitionSet_mem n a⟩) := by
   refine @measurable_to_countable' (countablePartition α n) α m _
     (partitionFiltration α n) _ (fun t ↦ ?_)
   rcases t with ⟨t, ht⟩
@@ -71,7 +72,7 @@ lemma measurable_countablePartitionSet_aux (n : ℕ) (m : MeasurableSpace (count
 lemma measurable_partitionFiltration_countablePartitionSet (α : Type*)
     [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
     Measurable[partitionFiltration α n] (countablePartitionSet n) :=
-  measurable_subtype_coe.comp (measurable_countablePartitionSet_aux _ _)
+  measurable_subtype_coe.comp (measurable_countablePartitionSet_subtype _ _)
 
 lemma measurable_countablePartitionSet (α : Type*) [MeasurableSpace α] [CountablyGenerated α]
     (n : ℕ) :

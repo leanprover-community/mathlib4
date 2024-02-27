@@ -203,7 +203,6 @@ lemma measurableSet_countablePartition (n : ℕ) {s : Set α} (hs : s ∈ counta
 /-- The set in `countablePartition α n` to which `a : α` belongs. -/
 def countablePartitionSet (n : ℕ) (a : α) : Set α :=
   memPartitionSet (enumerateCountable countable_countableGeneratingSet ∅) n a
-  --(exists_countablePartition_mem n a).choose
 
 lemma countablePartitionSet_mem (n : ℕ) (a : α) :
     countablePartitionSet n a ∈ countablePartition α n :=
