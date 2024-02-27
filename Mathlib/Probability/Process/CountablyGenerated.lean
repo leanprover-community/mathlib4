@@ -46,36 +46,38 @@ def partitionFiltration (α : Type*) [m : MeasurableSpace α] [CountablyGenerate
   mono' := monotone_nat_of_le_succ (generateFrom_countablePartition_le_succ _)
   le' := generateFrom_countablePartition_le α
 
-lemma measurableSet_partitionFiltration_of_mem_countablePartition (n : ℕ) {s : Set α}
+lemma measurableSet_partitionFiltration_of_mem (n : ℕ) {s : Set α}
     (hs : s ∈ countablePartition α n) :
     MeasurableSet[partitionFiltration α n] s :=
   measurableSet_generateFrom hs
 
-lemma measurableSet_partitionFiltration_partitionSet (n : ℕ) (t : α) :
-    MeasurableSet[partitionFiltration α n] (partitionSet n t) :=
-  measurableSet_partitionFiltration_of_mem_countablePartition n (partitionSet_mem n t)
+lemma measurableSet_partitionFiltration_countablePartitionSet (n : ℕ) (t : α) :
+    MeasurableSet[partitionFiltration α n] (countablePartitionSet n t) :=
+  measurableSet_partitionFiltration_of_mem n (countablePartitionSet_mem n t)
 
-lemma measurable_partitionSet_aux (n : ℕ) (m : MeasurableSpace (countablePartition α n)) :
+lemma measurable_countablePartitionSet_aux (n : ℕ) (m : MeasurableSpace (countablePartition α n)) :
     @Measurable α (countablePartition α n) (partitionFiltration α n) m
-      (fun c : α ↦ ⟨partitionSet n c, partitionSet_mem n c⟩) := by
+      (fun c : α ↦ ⟨countablePartitionSet n c, countablePartitionSet_mem n c⟩) := by
   refine @measurable_to_countable' (countablePartition α n) α m _
     (partitionFiltration α n) _ (fun t ↦ ?_)
   rcases t with ⟨t, ht⟩
-  suffices MeasurableSet[partitionFiltration α n] {x | partitionSet n x = t} by
+  suffices MeasurableSet[partitionFiltration α n] {x | countablePartitionSet n x = t} by
     convert this
     ext x
     simp
-  simp_rw [partitionSet_eq_iff _ ht]
-  exact measurableSet_partitionFiltration_of_mem_countablePartition _ ht
+  simp_rw [countablePartitionSet_eq_iff _ ht]
+  exact measurableSet_partitionFiltration_of_mem _ ht
 
-lemma measurable_partitionFiltration_partitionSet (α : Type*)
+lemma measurable_partitionFiltration_countablePartitionSet (α : Type*)
     [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
-    Measurable[partitionFiltration α n] (partitionSet n) :=
-  measurable_subtype_coe.comp (measurable_partitionSet_aux _ _)
+    Measurable[partitionFiltration α n] (countablePartitionSet n) :=
+  measurable_subtype_coe.comp (measurable_countablePartitionSet_aux _ _)
 
-lemma measurable_partitionSet (α : Type*) [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
-    Measurable (partitionSet (α := α) n) :=
-  (measurable_partitionFiltration_partitionSet α n).mono ((partitionFiltration α).le n) le_rfl
+lemma measurable_countablePartitionSet (α : Type*) [MeasurableSpace α] [CountablyGenerated α]
+    (n : ℕ) :
+    Measurable (countablePartitionSet (α := α) n) :=
+  (measurable_partitionFiltration_countablePartitionSet α n).mono ((partitionFiltration α).le n)
+    le_rfl
 
 lemma iSup_partitionFiltration (α : Type*) [m : MeasurableSpace α] [CountablyGenerated α] :
     ⨆ n, partitionFiltration α n = m := by
