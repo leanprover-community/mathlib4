@@ -231,7 +231,7 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
   ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
 
 @[simp]
-theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
+protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
   refine ⟨fun h ↦ ?_, tendsto_pow_atTop_nhds_zero_of_lt_one⟩
   lift r to NNReal
