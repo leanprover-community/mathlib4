@@ -16,7 +16,6 @@ This file contains lemmas on the relation between `Multiset.prod`/`Multiset.sum`
 ## Main declarations
 
 * `Multiset.abs_sum_le_sum_abs`: the multiset version of the triangle inequality.
-
 -/
 
 namespace Multiset
