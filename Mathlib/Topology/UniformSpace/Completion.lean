@@ -301,7 +301,8 @@ theorem inseparable_lim_iff [CompleteSpace α] {f g : CauchyFilter α} :
 end
 
 theorem cauchyFilter_eq {α : Type*} [UniformSpace α] [CompleteSpace α] [T0Space α]
-    {f g : CauchyFilter α} : f.2.lim f.1 = g.2.lim g.1 ↔ Inseparable f g := by
+    {f g : CauchyFilter α} :
+    haveI := f.2.1.nonempty; lim f.1 = lim g.1 ↔ Inseparable f g := by
   rw [← inseparable_iff_eq, inseparable_lim_iff]
 
 set_option linter.uppercaseLean3 false in
