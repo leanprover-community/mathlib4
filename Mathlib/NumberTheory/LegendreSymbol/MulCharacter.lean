@@ -419,7 +419,7 @@ end DefinitionAndGroup
 We introduce the properties of being nontrivial or quadratic and prove
 some basic facts about them.
 
-We now (mostly) assume that the target is a commutativ ring.
+We now (mostly) assume that the target is a commutative ring.
 -/
 
 
