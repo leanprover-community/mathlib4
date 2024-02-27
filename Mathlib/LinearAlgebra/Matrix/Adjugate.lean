@@ -421,7 +421,9 @@ theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b;
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i: α) :
     adjugate !![a, b, c; d, e, f; g, h, i] =
-    !![e * i - f * h, -(b * i) + c * h, b * f - c * e; -(d * i) + f * g, a * i - c * g, -(a * f) + c * d; d * h - e * g, -(a * h) + b * g, a * e - b * d] := by
+    !![e * i - f * h, -(b * i) + c * h, b * f - c * e;
+     -(d * i) + f * g, a * i - c * g, -(a * f) + c * d;
+      d * h - e * g, -(a * h) + b * g, a * e - b * d] := by
 
     ext h1 h2
     fin_cases h1
