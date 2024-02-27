@@ -475,9 +475,11 @@ def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
 #align star_ring_of_comm starRingOfComm
 
 instance Nat.instStarRing : StarRing ℕ := starRingOfComm
+instance Int.instStarRing : StarRing ℤ := starRingOfComm
 instance Rat.instStarRing : StarRing ℚ := starRingOfComm
 instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
+instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
 instance NNRat.instTrivialStar : TrivialStar ℚ≥0 := ⟨fun _ ↦ rfl⟩
 

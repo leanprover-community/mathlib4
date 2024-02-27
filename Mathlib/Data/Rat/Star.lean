@@ -6,7 +6,8 @@ Authors: Jireh Loreaux, Yaël Dillies
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Star.Order
-import Mathlib.RingTheory.Subsemiring.Order
+import Mathlib.GroupTheory.Submonoid.Order
+import Mathlib.Tactic.FieldSimp
 
 #align_import data.rat.star from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -26,12 +27,10 @@ namespace Rat
   refine le_antisymm (closure_le.2 <| range_subset_iff.2 hn.pow_nonneg) fun x hx ↦ ?_
   suffices x = (x.num.natAbs * x.den ^ (n - 1)) • (x.den : ℚ)⁻¹ ^ n by
     rw [this]; exact nsmul_mem (subset_closure <| mem_range_self _) _
-  rw [nsmul_eq_mul]
-  push_cast
-  rw [mul_assoc, pow_sub₀, pow_one, mul_right_comm, ← mul_pow, mul_inv_cancel, one_pow, one_mul,
-    ← Int.cast_ofNat, Int.coe_natAbs, abs_of_nonneg, ← div_eq_mul_inv, num_div_den]
-  rw [mem_nonneg] at hx
-  all_goals simp [x.den_pos.ne', Nat.one_le_iff_ne_zero, *]
+  refine (num_div_den _).symm.trans ?_
+  field_simp [x.den_pos.ne']
+  rw [Int.cast_natAbs, abs_of_nonneg (num_nonneg.2 hx), mul_assoc, ← pow_succ', Nat.sub_add_cancel]
+  rwa [Nat.one_le_iff_ne_zero]
 
 @[simp]
 lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℚ ↦ x * x) = nonneg _ := by
