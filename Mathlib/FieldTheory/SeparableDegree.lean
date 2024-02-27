@@ -634,29 +634,32 @@ variable {E K} in
 `x : K` is separable over `E`, then it's also separable over `F`. -/
 theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScalarTower F E K]
     [IsSeparable F E] {x : K} (hsep : (minpoly E x).Separable) : (minpoly F x).Separable := by
-  let f := minpoly E x
-  let E' : IntermediateField F E := adjoin F f.frange
-  haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
-  let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
-  have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
-  clear_value g
-  have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
-  have hzero : aeval x g = 0 := by
+  let __f := minpoly E x -- v4.7.0-rc1 issues
+  let __E' : IntermediateField F E := adjoin F __f.frange
+  haveI : FiniteDimensional F __E' :=
+    finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
+  let __g : __E'[X] := __f.toSubring __E'.toSubring (subset_adjoin F _)
+  have h : __g.map (algebraMap __E' E) = __f :=
+      __f.map_toSubring __E'.toSubring (subset_adjoin F _)
+  clear_value __g
+  have hx : x ∈ restrictScalars F __E'⟮x⟯ := mem_adjoin_simple_self _ x
+  have hzero : aeval x __g = 0 := by
     simpa only [← h, aeval_map_algebraMap] using minpoly.aeval E x
-  have halg : IsIntegral E' x :=
+  have halg : IsIntegral __E' x :=
     isIntegral_trans (IsSeparable.isAlgebraic F E).isIntegral _ hsep.isIntegral |>.tower_top
   simp_rw [← h, separable_map] at hsep
   replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
-  haveI : IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
+  haveI : IsSeparable F __E' := isSeparable_tower_bot_of_isSeparable F __E' E
   haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
   haveI := adjoin.finiteDimensional halg
-  haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
-  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯ (IsSeparable.isAlgebraic _ _)
-  rw [finSepDegree_eq_finrank_of_isSeparable F E',
-    finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
-    FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
-    eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
-  change IsSeparable F (restrictScalars F E'⟮x⟯) at this
+  haveI : FiniteDimensional F __E'⟮x⟯ := FiniteDimensional.trans F __E' __E'⟮x⟯
+  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F __E' __E'⟮x⟯
+    (IsSeparable.isAlgebraic _ _)
+  rw [finSepDegree_eq_finrank_of_isSeparable F __E',
+    finSepDegree_eq_finrank_of_isSeparable __E' __E'⟮x⟯,
+    FiniteDimensional.finrank_mul_finrank F __E' __E'⟮x⟯,
+    eq_comm, finSepDegree_eq_finrank_iff F __E'⟮x⟯] at this
+  change IsSeparable F (restrictScalars F __E'⟮x⟯) at this
   exact separable_of_mem_isSeparable F K hx
 
 /-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/

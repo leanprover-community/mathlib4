@@ -88,7 +88,8 @@ end FreeMagma
 /-- Lifts a function `α → β` to a magma homomorphism `FreeMagma α → β` given a magma `β`. -/
 def FreeMagma.liftAux {α : Type u} {β : Type v} [Mul β] (f : α → β) : FreeMagma α → β
   | FreeMagma.of x => f x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here, instead of `x * y`.
+  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
+  -- instead of `x * y`.
   | mul x y => liftAux f x * liftAux f y
 #align free_magma.lift_aux FreeMagma.liftAux
 
@@ -210,7 +211,8 @@ end FreeMagma
 protected def FreeMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) : FreeMagma α → m (FreeMagma β)
   | FreeMagma.of x => FreeMagma.of <$> F x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here, instead of `x * y`.
+  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
+  -- instead of `x * y`.
   | mul x y => (· * ·) <$> x.traverse F <*> y.traverse F
 #align free_magma.traverse FreeMagma.traverse
 
@@ -294,7 +296,8 @@ end FreeMagma
 /-- Representation of an element of a free magma. -/
 protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → Lean.Format
   | FreeMagma.of x => repr x
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here, instead of `x * y`.
+  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
+  -- instead of `x * y`.
   | mul x y => "( " ++ x.repr ++ " * " ++ y.repr ++ " )"
 #align free_magma.repr FreeMagma.repr
 
@@ -312,7 +315,8 @@ instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagm
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
   | FreeMagma.of _x => 1
-  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here, instead of `x * y`.
+  -- Adaptation note: around nightly-2024-02-25, we need to write `mul x y` in the pattern here,
+  -- instead of `x * y`.
   | mul x y => x.length + y.length
 #align free_magma.length FreeMagma.length
 
@@ -530,11 +534,9 @@ def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
     { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
       map_mul' := fun x y ↦ by
-        -- FIXME nightly-testing
-        sorry
-        -- simp only [head_mul, tail_mul, ← List.foldl_map f, List.foldl_append, List.foldl_cons,
-        --   List.foldl_assoc]
-        }
+        simp [head_mul, tail_mul, ← List.foldl_map, List.foldl_append, List.foldl_cons,
+          List.foldl_assoc] }
+        -- v4.7.0 issues
   invFun f := f ∘ of
   left_inv f := rfl
   right_inv f := hom_ext rfl

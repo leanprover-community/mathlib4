@@ -309,31 +309,29 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
   have hc₁₂' : ∀ i, IsColimit (c₁₂' i) := fun i => isColimitOfPreserves _ (h₁₂ i.1.1)
   let Z := (((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃
   let p' : I₁ × I₂ × I₃ → ρ₁₂.I₁₂ × I₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨ρ₁₂.p ⟨i₁, i₂⟩, i₃⟩
-  -- FIXME nightly-testing: aesop won't unfold lets
-  sorry
-  -- let e : ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), p' ⁻¹' {(i₁₂, i₃)} ≃ ρ₁₂.p ⁻¹' {i₁₂} := fun i₁₂ i₃ =>
-  --   { toFun := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => ⟨⟨i₁, i₂⟩, by aesop⟩
-  --     invFun := fun ⟨⟨i₁, i₂⟩, hi⟩ => ⟨⟨i₁, i₂, i₃⟩, by aesop⟩
-  --     left_inv := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => by
-  --       obtain rfl : i₃ = i₃' := by aesop
-  --       rfl
-  --     right_inv := fun _ => rfl }
-  -- let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
-  --   fun ⟨⟨i₁₂, i₃⟩, hi⟩ => by
-  --     refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence
-  --       (Discrete.equivalence (e i₁₂ i₃))).functor.obj (c₁₂' ⟨⟨i₁₂, i₃⟩, hi⟩))
-  --     refine' (Discrete.natIso (fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ =>
-  --       (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).mapIso (eqToIso _)))
-  --     obtain rfl : i₃' = i₃ := congr_arg _root_.Prod.snd hi
-  --     rfl
-  -- have h₁₂'' : ∀ i, IsColimit (c₁₂'' i) := fun _ =>
-  --   (IsColimit.precomposeHomEquiv _ _).symm (IsColimit.whiskerEquivalenceEquiv _ (hc₁₂' _))
-  -- refine' IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₁₂.q r ρ₁₂.hpq j
-  --   (fun ⟨i₁₂, i₃⟩ h => c₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) (fun ⟨i₁₂, i₃⟩ h => h₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) c hc)
-  --   (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩ => _))
-  -- dsimp [Cofan.inj]
-  -- rw [comp_id, Functor.map_id, id_comp]
-  -- rfl
+  let e : ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), p' ⁻¹' {(i₁₂, i₃)} ≃ ρ₁₂.p ⁻¹' {i₁₂} := fun i₁₂ i₃ =>
+    { toFun := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => ⟨⟨i₁, i₂⟩, by aesop_cat⟩
+      invFun := fun ⟨⟨i₁, i₂⟩, hi⟩ => ⟨⟨i₁, i₂, i₃⟩, by aesop_cat⟩
+      left_inv := fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ => by
+        obtain rfl : i₃ = i₃' := by aesop_cat
+        rfl
+      right_inv := fun _ => rfl }
+  let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
+    fun ⟨⟨i₁₂, i₃⟩, hi⟩ => by
+      refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence
+        (Discrete.equivalence (e i₁₂ i₃))).functor.obj (c₁₂' ⟨⟨i₁₂, i₃⟩, hi⟩))
+      refine' (Discrete.natIso (fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ =>
+        (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).mapIso (eqToIso _)))
+      obtain rfl : i₃' = i₃ := congr_arg _root_.Prod.snd hi
+      rfl
+  have h₁₂'' : ∀ i, IsColimit (c₁₂'' i) := fun _ =>
+    (IsColimit.precomposeHomEquiv _ _).symm (IsColimit.whiskerEquivalenceEquiv _ (hc₁₂' _))
+  refine' IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₁₂.q r ρ₁₂.hpq j
+    (fun ⟨i₁₂, i₃⟩ h => c₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) (fun ⟨i₁₂, i₃⟩ h => h₁₂'' ⟨⟨i₁₂, i₃⟩, h⟩) c hc)
+    (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩ => _))
+  dsimp [Cofan.inj, c₁₂'', Z]
+  rw [comp_id, Functor.map_id, id_comp]
+  rfl
 
 variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
 
@@ -452,30 +450,28 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
   have hc₂₃' : ∀ i, IsColimit (c₂₃' i) := fun i => isColimitOfPreserves _ (h₂₃ i.1.2)
   let Z := (((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃
   let p' : I₁ × I₂ × I₃ → I₁ × ρ₂₃.I₂₃ := fun ⟨i₁, i₂, i₃⟩ => ⟨i₁, ρ₂₃.p ⟨i₂, i₃⟩⟩
-  -- FIXME nightly-testing: aesop won't unfold lets
-  sorry
-  -- let e : ∀ (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃) , p' ⁻¹' {(i₁, i₂₃)} ≃ ρ₂₃.p ⁻¹' {i₂₃} := fun i₁ i₂₃ =>
-  --   { toFun := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => ⟨⟨i₂, i₃⟩, by aesop⟩
-  --     invFun := fun ⟨⟨i₂, i₃⟩, hi⟩  => ⟨⟨i₁, i₂, i₃⟩, by aesop⟩
-  --     left_inv := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => by
-  --       obtain rfl : i₁ = i₁' := by aesop
-  --       rfl
-  --     right_inv := fun _ => rfl }
-  -- let c₂₃'' : ∀ (i : ρ₂₃.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
-  --   fun ⟨⟨i₁, i₂₃⟩, hi⟩ => by
-  --     refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence
-  --       (Discrete.equivalence (e i₁ i₂₃))).functor.obj (c₂₃' ⟨⟨i₁, i₂₃⟩, hi⟩))
-  --     refine' Discrete.natIso (fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => eqToIso _)
-  --     obtain rfl : i₁' = i₁ := congr_arg _root_.Prod.fst hi
-  --     rfl
-  -- have h₂₃'' : ∀ i, IsColimit (c₂₃'' i) := fun _ =>
-  --   (IsColimit.precomposeHomEquiv _ _).symm (IsColimit.whiskerEquivalenceEquiv _ (hc₂₃' _))
-  -- refine' IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₂₃.q r ρ₂₃.hpq j
-  --   (fun ⟨i₁, i₂₃⟩ h => c₂₃'' ⟨⟨i₁, i₂₃⟩, h⟩) (fun ⟨i₁, i₂₃⟩ h => h₂₃'' ⟨⟨i₁, i₂₃⟩, h⟩) c hc)
-  --   (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩ => _))
-  -- dsimp [Cofan.inj]
-  -- rw [comp_id, id_comp]
-  -- rfl
+  let e : ∀ (i₁ : I₁) (i₂₃ : ρ₂₃.I₂₃) , p' ⁻¹' {(i₁, i₂₃)} ≃ ρ₂₃.p ⁻¹' {i₂₃} := fun i₁ i₂₃ =>
+    { toFun := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => ⟨⟨i₂, i₃⟩, by aesop_cat⟩
+      invFun := fun ⟨⟨i₂, i₃⟩, hi⟩  => ⟨⟨i₁, i₂, i₃⟩, by aesop_cat⟩
+      left_inv := fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => by
+        obtain rfl : i₁ = i₁' := by aesop_cat
+        rfl
+      right_inv := fun _ => rfl }
+  let c₂₃'' : ∀ (i : ρ₂₃.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
+    fun ⟨⟨i₁, i₂₃⟩, hi⟩ => by
+      refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence
+        (Discrete.equivalence (e i₁ i₂₃))).functor.obj (c₂₃' ⟨⟨i₁, i₂₃⟩, hi⟩))
+      refine' Discrete.natIso (fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => eqToIso _)
+      obtain rfl : i₁' = i₁ := congr_arg _root_.Prod.fst hi
+      rfl
+  have h₂₃'' : ∀ i, IsColimit (c₂₃'' i) := fun _ =>
+    (IsColimit.precomposeHomEquiv _ _).symm (IsColimit.whiskerEquivalenceEquiv _ (hc₂₃' _))
+  refine' IsColimit.ofIsoColimit (isColimitCofanMapObjComp Z p' ρ₂₃.q r ρ₂₃.hpq j
+    (fun ⟨i₁, i₂₃⟩ h => c₂₃'' ⟨⟨i₁, i₂₃⟩, h⟩) (fun ⟨i₁, i₂₃⟩ h => h₂₃'' ⟨⟨i₁, i₂₃⟩, h⟩) c hc)
+    (Cocones.ext (Iso.refl _) (fun ⟨⟨i₁, i₂, i₃⟩, h⟩ => _))
+  dsimp [Cofan.inj, c₂₃'']
+  rw [comp_id, id_comp]
+  rfl
 
 variable {F₁₂ G ρ₁₂ X₁ X₂ X₃}
 

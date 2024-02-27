@@ -60,13 +60,6 @@ def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Monoidal
     (pentagon := prod.pentagon)
     (triangle := prod.triangle)
     (associator_naturality := @prod.associator_naturality _ _ _)
-    -- FIXME nightly-testing: all of these were autoparams
-    (leftUnitor_naturality := sorry)
-    (rightUnitor_naturality := sorry)
-    (tensor_comp := sorry)
-    (tensorHom_id := sorry)
-    (id_tensorHom := sorry)
-    (tensor_id := sorry)
 #align category_theory.monoidal_of_has_finite_products CategoryTheory.monoidalOfHasFiniteProducts
 
 end
@@ -172,13 +165,6 @@ def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : Monoi
     (pentagon := coprod.pentagon)
     (triangle := coprod.triangle)
     (associator_naturality := @coprod.associator_naturality _ _ _)
-    -- FIXME nightly-testing: all of these were autoparams
-    (leftUnitor_naturality := sorry)
-    (rightUnitor_naturality := sorry)
-    (tensor_comp := sorry)
-    (tensorHom_id := sorry)
-    (id_tensorHom := sorry)
-    (tensor_id := sorry)
 #align category_theory.monoidal_of_has_finite_coproducts CategoryTheory.monoidalOfHasFiniteCoproducts
 
 end

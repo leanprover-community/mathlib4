@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean.Elab.Tactic.Location
 import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
 import Lean.Meta.Tactic.SolveByElim

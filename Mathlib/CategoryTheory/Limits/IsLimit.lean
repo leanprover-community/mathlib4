@@ -369,26 +369,21 @@ and the functor (up to natural isomorphism).
 @[simps]
 def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Cone G} (P : IsLimit s)
     (Q : IsLimit t) (e : J ≌ K) (w : e.functor ⋙ G ≅ F) : s.pt ≅ t.pt :=
-  -- FIXME nightly-testing: we really need a way to do unfoldable `let`.
   let w' : e.inverse ⋙ F ≅ G := (isoWhiskerLeft e.inverse w).symm ≪≫ invFunIdAssoc e G
   { hom := Q.lift ((Cones.equivalenceOfReindexing e.symm w').functor.obj s)
     inv := P.lift ((Cones.equivalenceOfReindexing e w).functor.obj t)
     hom_inv_id := by
       apply hom_ext P; intro j
-      dsimp
+      dsimp [w']
       simp only [Limits.Cone.whisker_π, Limits.Cones.postcompose_obj_π, fac, whiskerLeft_app,
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
-      -- FIXME nightly-testing
-      sorry
-      -- rw [counit_app_functor, ← Functor.comp_map]
-      -- have l :
-      --   NatTrans.app w.hom j = NatTrans.app w.hom (Prefunctor.obj (𝟭 J).toPrefunctor j) := by dsimp
-      -- rw [l,w.hom.naturality]
-      -- simp
+      rw [counit_app_functor, ← Functor.comp_map]
+      have l :
+        NatTrans.app w.hom j = NatTrans.app w.hom (Prefunctor.obj (𝟭 J).toPrefunctor j) := by dsimp
+      rw [l,w.hom.naturality]
+      simp
     inv_hom_id := by
       apply hom_ext Q
-      -- FIXME nightly-testing
-      unfold_let w'
       aesop_cat }
 #align category_theory.limits.is_limit.cone_points_iso_of_equivalence CategoryTheory.Limits.IsLimit.conePointsIsoOfEquivalence
 
@@ -893,18 +888,14 @@ def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t :
     inv := Q.desc ((Cocones.equivalenceOfReindexing e.symm w').functor.obj s)
     hom_inv_id := by
       apply hom_ext P; intro j
-      dsimp
+      dsimp [w']
       simp only [Limits.Cocone.whisker_ι, fac, invFunIdAssoc_inv_app, whiskerLeft_app, assoc,
         comp_id, Limits.Cocones.precompose_obj_ι, fac_assoc, NatTrans.comp_app]
-      -- FIXME nightly-testing
-      sorry
-      -- rw [counitInv_app_functor, ← Functor.comp_map, ← w.inv.naturality_assoc]
-      -- dsimp
-      -- simp
+      rw [counitInv_app_functor, ← Functor.comp_map, ← w.inv.naturality_assoc]
+      dsimp
+      simp
     inv_hom_id := by
       apply hom_ext Q
-      -- FIXME nightly-testing
-      unfold_let w'
       aesop_cat }
 #align category_theory.limits.is_colimit.cocone_points_iso_of_equivalence CategoryTheory.Limits.IsColimit.coconePointsIsoOfEquivalence
 

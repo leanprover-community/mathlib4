@@ -2265,6 +2265,13 @@ theorem conjTranspose_natCast_smul [Semiring R] [AddCommMonoid α] [StarAddMonoi
   Matrix.ext <| by simp
 #align matrix.conj_transpose_nat_cast_smul Matrix.conjTranspose_natCast_smul
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem conjTranspose_ofNat_smul [Semiring R] [AddCommMonoid α] [StarAddMonoid α] [Module R α]
+    (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
+    ((no_index (OfNat.ofNat c : R)) • M)ᴴ = (OfNat.ofNat c : R) • Mᴴ :=
+  conjTranspose_natCast_smul c M
+
 @[simp]
 theorem conjTranspose_intCast_smul [Ring R] [AddCommGroup α] [StarAddMonoid α] [Module R α] (c : ℤ)
     (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
@@ -2276,6 +2283,13 @@ theorem conjTranspose_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid α] [
     [Module R α] (c : ℕ) (M : Matrix m n α) : ((c : R)⁻¹ • M)ᴴ = (c : R)⁻¹ • Mᴴ :=
   Matrix.ext <| by simp
 #align matrix.conj_transpose_inv_nat_cast_smul Matrix.conjTranspose_inv_natCast_smul
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddCommMonoid α] [StarAddMonoid α]
+    [Module R α] (c : ℕ) [c.AtLeastTwo] (M : Matrix m n α) :
+    ((no_index (OfNat.ofNat c : R))⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
+  conjTranspose_inv_natCast_smul c M
 
 @[simp]
 theorem conjTranspose_inv_intCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMonoid α]
@@ -2586,9 +2600,9 @@ theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [Decidabl
   cases nonempty_fintype o
   let A := M.submatrix id e₁.symm
   have : M = A.submatrix id e₁ := by
-    simp only [submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
+    simp only [A, submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
   rw [this, submatrix_mul_equiv]
-  simp only [Matrix.mul_one, submatrix_submatrix, Function.comp_id, submatrix_id_id,
+  simp only [A, Matrix.mul_one, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 #align matrix.mul_submatrix_one Matrix.mul_submatrix_one
 
@@ -2598,9 +2612,9 @@ theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [Decidabl
   cases nonempty_fintype o
   let A := M.submatrix e₂.symm id
   have : M = A.submatrix e₂ id := by
-    simp only [submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
+    simp only [A, submatrix_submatrix, Function.comp_id, submatrix_id_id, Equiv.symm_comp_self]
   rw [this, submatrix_mul_equiv]
-  simp only [Matrix.one_mul, submatrix_submatrix, Function.comp_id, submatrix_id_id,
+  simp only [A, Matrix.one_mul, submatrix_submatrix, Function.comp_id, submatrix_id_id,
     Equiv.symm_comp_self]
 #align matrix.one_submatrix_mul Matrix.one_submatrix_mul
 

@@ -382,9 +382,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
   refine Cones.ext (Iso.refl _) ?_
   rintro (_ | _ | _)
   change _ = _ ≫ (_ ≫ _) ≫ _
-  -- FIXME nightly-testing: aesop_cat won't unfold lets
-  all_goals sorry
-  -- all_goals change _ = 𝟙 _ ≫ _ ≫ _; aesop_cat
+  all_goals change _ = 𝟙 _ ≫ _ ≫ _; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.V_pullback_cone_is_limit_of_map CategoryTheory.GlueData.vPullbackConeIsLimitOfMap
 
