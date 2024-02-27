@@ -455,17 +455,20 @@ lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι →
   intro s hs
   classical
   rw [← Finset.sup_erase_bot]
-  set t := s.erase ⊥
-  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by refine hf ?_ ?_ hij <;> aesop
-  have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
+  -- FIXME nightly-testing (Scott: I'm unhappy with this fix.
+  -- We need to change the simp_config in aesop, not mutilate the names.)
+  let __t := s.erase ⊥
+  replace hf : InjOn f (f ⁻¹' __t) := fun i hi j _ hij ↦ by refine hf ?_ ?_ hij <;> aesop
+  have : (Finset.erase (insert i (__t.preimage _ hf)) i).image f = __t := by
     ext a
     simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq, Finset.mem_insert, true_or, not_true,
       Finset.erase_insert_eq_erase, not_and, Finset.mem_image]
     refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
     obtain ⟨j, hj, rfl⟩ := hs has
     exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
+  change Disjoint (f i) (Finset.sup __t id)
   rw [← this, Finset.sup_image]
-  specialize h (insert i (t.preimage _ hf))
+  specialize h (insert i (__t.preimage _ hf))
   rw [Finset.supIndep_iff_disjoint_erase] at h
   exact h i (Finset.mem_insert_self i _)
 
