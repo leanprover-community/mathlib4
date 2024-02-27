@@ -480,7 +480,7 @@ theorem zpow_eq_zpow_zmod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) := by
 calc
     x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
-    _ = x ^ (m % (n : ℤ)) := by simp [zpow_add, zpow_mul, h]
+    _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
 
 theorem zpow_eq_zpow_mod {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_zmod m (by simpa)
