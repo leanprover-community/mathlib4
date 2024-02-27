@@ -349,7 +349,7 @@ local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
 /- A version for the extension to maps `ℂ → ℂ` that is nice to have for holomorphicity later -/
-lemma  eisensteinSeries_TendstoLocallyUniformlyOn3 {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
+lemma  eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
       ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ((eisensteinSeries_SIF a k).toFun ))
           Filter.atTop (UpperHalfPlane.coe '' ⊤) := by
