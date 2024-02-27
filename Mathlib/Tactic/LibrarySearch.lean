@@ -9,7 +9,7 @@ import Std.Lean.Parser
 import Std.Tactic.SolveByElim
 import Lean.Meta.Tactic.TryThis
 import Std.Data.MLList.Heartbeats
-import Std.Lean.Parser
+import Std.Control.Nondet.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.DiscrTree
 import Mathlib.Lean.Expr.Basic

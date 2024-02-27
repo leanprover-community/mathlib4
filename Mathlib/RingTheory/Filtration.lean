@@ -373,7 +373,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
   simp_rw [← F.submodule_eq_span_le_iff_stable_ge]
   constructor
   · rintro H
-    refine H.stablizes_of_iSup_eq
+    refine H.stabilizes_of_iSup_eq
         ⟨fun n₀ => Submodule.span _ (⋃ (i : ℕ) (_ : i ≤ n₀), single R i '' ↑(F.N i)), ?_⟩ ?_
     · intro n m e
       rw [Submodule.span_le, Set.iUnion₂_subset_iff]

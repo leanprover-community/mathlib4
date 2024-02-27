@@ -651,11 +651,11 @@ theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
   have : (NormalWord.prod (d := d) ⟨.empty, h, by simp⟩) = base φ h := by
     simp [NormalWord.prod]
   rw [← hw'prod, ← this] at heq
-  suffices : w'.toWord = .empty
-  · simp [this, @eq_comm _ []] at hw'map
+  suffices w'.toWord = .empty by
+    simp [this, @eq_comm _ []] at hw'map
     ext
     simp [hw'map]
-  · rw [← prod_injective heq]
+  rw [← prod_injective heq]
 
 end Reduced
 

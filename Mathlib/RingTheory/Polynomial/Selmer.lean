@@ -30,8 +30,8 @@ variable {n : ℕ}
 
 theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^ n + z ^ 2 = 0) := by
   rintro ⟨h1, h2⟩
-  replace h3 : z ^ 3 = 1
-  · linear_combination (1 - z - z ^ 2 - z ^ n) * h1 + (z ^ n - 2) * h2
+  replace h3 : z ^ 3 = 1 := by
+    linear_combination (1 - z - z ^ 2 - z ^ n) * h1 + (z ^ n - 2) * h2
   have key : z ^ n = 1 ∨ z ^ n = z ∨ z ^ n = z ^ 2 := by
     rw [← Nat.mod_add_div n 3, pow_add, pow_mul, h3, one_pow, mul_one]
     have : n % 3 < 3 := Nat.mod_lt n zero_lt_three

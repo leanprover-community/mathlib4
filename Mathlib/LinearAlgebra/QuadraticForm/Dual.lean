@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
+import Mathlib.LinearAlgebra.Dual
 
 #align_import linear_algebra.quadratic_form.dual from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
 
@@ -34,7 +35,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 /-- The symmetric bilinear form on `Module.Dual R M × M` defined as
 `B (f, x) (g, y) = f y + g x`. -/
 @[simps!]
-def dualProd : (Module.Dual R M × M) →ₗ[R] (Module.Dual R M × M) →ₗ[R] R :=
+def dualProd : LinearMap.BilinForm R (Module.Dual R M × M) :=
     (applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M) +
       ((applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M)).flip
 #align bilin_form.dual_prod LinearMap.dualProd
@@ -140,7 +141,7 @@ This is `σ` from Proposition 4.8, page 84 of
 def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (Q.prod <| -Q) →qᵢ QuadraticForm.dualProd R M where
   toLinearMap := LinearMap.prod
-    (Q.associated.toLin.comp (LinearMap.fst _ _ _) + Q.associated.toLin.comp (LinearMap.snd _ _ _))
+    (Q.associated.comp (LinearMap.fst _ _ _) + Q.associated.comp (LinearMap.snd _ _ _))
     (LinearMap.fst _ _ _ - LinearMap.snd _ _ _)
   map_app' x := by
     dsimp only [associated, associatedHom]

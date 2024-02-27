@@ -1763,8 +1763,8 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
     `m, n ≥ N`. -/
   rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, hb₀, hfb, hb_lim⟩
   -- Since `b → 0`, it suffices to show that `‖f n x - g x‖ ≤ b n * ‖x‖` for all `n` and `x`.
-  suffices : ∀ n x, ‖f n x - g x‖ ≤ b n * ‖x‖
-  exact tendsto_iff_norm_sub_tendsto_zero.2
+  suffices ∀ n x, ‖f n x - g x‖ ≤ b n * ‖x‖ from
+    tendsto_iff_norm_sub_tendsto_zero.2
     (squeeze_zero (fun n => norm_nonneg _) (fun n => opNorm_le_bound _ (hb₀ n) (this n)) hb_lim)
   intro n x
   -- Note that `f m x → g x`, hence `‖f n x - f m x‖ → ‖f n x - g x‖` as `m → ∞`
@@ -2273,7 +2273,7 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
     · intro ⟨C, hC⟩
       refine ⟨C.toNNReal • normSeminorm 𝕜 E,
         ((norm_withSeminorms 𝕜 E).continuous_seminorm 0).const_smul C.toNNReal, fun i x ↦ ?_⟩
-      refine (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
+      exact (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
   tfae_finish
 
 end Equicontinuous

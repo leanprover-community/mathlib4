@@ -138,8 +138,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
         simpa only [and_true_iff, id.def, Finset.coe_singleton, eq_self_iff_true,
           Finset.sup_singleton, Set.singleton_subset_iff]
       have Sne : S.Nonempty := by
-        suffices : ⊥ ∈ S
-        exact Set.nonempty_of_mem this
+        suffices ⊥ ∈ S from Set.nonempty_of_mem this
         use ∅
         simp only [Set.empty_subset, Finset.coe_empty, Finset.sup_empty, eq_self_iff_true,
           and_self_iff]
@@ -306,13 +305,13 @@ theorem WellFounded.finite_of_setIndependent (h : WellFounded ((· > ·) : α �
   classical
     refine' Set.not_infinite.mp fun contra => _
     obtain ⟨t, ht₁, ht₂⟩ := WellFounded.isSupFiniteCompact α h s
-    replace contra : ∃ x : α, x ∈ s ∧ x ≠ ⊥ ∧ x ∉ t
-    · have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.diff (Finset.finite_toSet _)
+    replace contra : ∃ x : α, x ∈ s ∧ x ≠ ⊥ ∧ x ∉ t := by
+      have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.diff (Finset.finite_toSet _)
       obtain ⟨x, hx₁, hx₂⟩ := this.nonempty
       exact ⟨x, hx₁, by simpa [not_or] using hx₂⟩
     obtain ⟨x, hx₀, hx₁, hx₂⟩ := contra
-    replace hs : x ⊓ sSup s = ⊥
-    · have := hs.mono (by simp [ht₁, hx₀, -Set.union_singleton] : ↑t ∪ {x} ≤ s) (by simp : x ∈ _)
+    replace hs : x ⊓ sSup s = ⊥ := by
+      have := hs.mono (by simp [ht₁, hx₀, -Set.union_singleton] : ↑t ∪ {x} ≤ s) (by simp : x ∈ _)
       simpa [Disjoint, hx₂, ← t.sup_id_eq_sSup, ← ht₂] using this.eq_bot
     apply hx₁
     rw [← hs, eq_comm, inf_eq_left]

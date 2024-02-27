@@ -121,13 +121,15 @@ theorem LieModule.ofAssociativeModule : LieModule R A M where
   lie_smul := smul_algebra_smul_comm
 #align lie_module.of_associative_module LieModule.ofAssociativeModule
 
-instance Module.End.lieRingModule : LieRingModule (Module.End R M) M :=
+instance Module.End.instLieRingModule : LieRingModule (Module.End R M) M :=
   LieRingModule.ofAssociativeModule
-#align module.End.lie_ring_module Module.End.lieRingModule
+#align module.End.lie_ring_module Module.End.instLieRingModule
 
-instance Module.End.lieModule : LieModule R (Module.End R M) M :=
+instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
   LieModule.ofAssociativeModule
-#align module.End.lie_module Module.End.lieModule
+#align module.End.lie_module Module.End.instLieModule
+
+@[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
 end AssociativeRepresentation
 

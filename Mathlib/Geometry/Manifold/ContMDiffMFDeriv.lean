@@ -232,8 +232,8 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       (fun p : H × E =>
         (f p.fst,
           (fderivWithin 𝕜 (writtenInExtChartAt I I' p.fst f) (I.symm ⁻¹' s ∩ range I)
-                ((extChartAt I p.fst) p.fst) : E →L[𝕜] E') p.snd)) (Prod.fst ⁻¹' s)
-  · have A := (tangentBundleModelSpaceHomeomorph H I).continuous
+                ((extChartAt I p.fst) p.fst) : E →L[𝕜] E') p.snd)) (Prod.fst ⁻¹' s) by
+    have A := (tangentBundleModelSpaceHomeomorph H I).continuous
     rw [continuous_iff_continuousOn_univ] at A
     have B :=
       ((tangentBundleModelSpaceHomeomorph H' I').symm.continuous.comp_continuousOn h).comp' A
@@ -255,11 +255,11 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     ContinuousOn
       (fun p : H × E =>
         (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I p.fst) : E →L[𝕜] E') p.snd)
-      (Prod.fst ⁻¹' s)
-  · dsimp [writtenInExtChartAt, extChartAt]
+      (Prod.fst ⁻¹' s) by
+    dsimp [writtenInExtChartAt, extChartAt]
     exact (ContinuousOn.comp hf.continuousOn continuous_fst.continuousOn Subset.rfl).prod h
-  suffices h : ContinuousOn (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)) (I '' s)
-  · have C := ContinuousOn.comp h I.continuous_toFun.continuousOn Subset.rfl
+  suffices h : ContinuousOn (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)) (I '' s) by
+    have C := ContinuousOn.comp h I.continuous_toFun.continuousOn Subset.rfl
     have A : Continuous fun q : (E →L[𝕜] E') × E => q.1 q.2 :=
       isBoundedBilinearMap_apply.continuous
     have B :
@@ -300,8 +300,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       (((fun p : H' × E' => (I' p.fst, p.snd)) ∘ TotalSpace.toProd H' E') ∘
         tangentMapWithin I I' f s ∘
           (TotalSpace.toProd H E).symm ∘ fun p : E × E => (I.symm p.fst, p.snd))
-      ((range I ∩ I.symm ⁻¹' s) ×ˢ univ)
-  · -- Porting note: was `simpa [(· ∘ ·)] using h`
+      ((range I ∩ I.symm ⁻¹' s) ×ˢ univ) by
+    -- Porting note: was `simpa [(· ∘ ·)] using h`
     convert h using 1
     · ext1 ⟨x, y⟩
       simp only [mfld_simps]; rfl
@@ -323,8 +323,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
   suffices C :
     ContDiffOn 𝕜 m
       (fun p : E × E => (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) p.1 : _) p.2)
-      ((range I ∩ I.symm ⁻¹' s) ×ˢ (univ : Set E))
-  · refine ContDiffOn.prod B ?_
+      ((range I ∩ I.symm ⁻¹' s) ×ˢ (univ : Set E)) by
+    refine ContDiffOn.prod B ?_
     refine C.congr fun p hp => ?_
     simp only [mfld_simps] at hp
     simp only [mfderivWithin, hf.mdifferentiableOn one_le_n _ hp.2, hp.1, if_pos, mfld_simps]
@@ -378,8 +378,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
   let s'l := l.target ∩ l.symm ⁻¹' s'
   let s'l_lift := π E (TangentSpace I) ⁻¹' s'l
   rcases continuousOn_iff'.1 hf'.1 r.source r.open_source with ⟨o, o_open, ho⟩
-  suffices h : ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s) s'_lift
-  · refine' ⟨π E (TangentSpace I) ⁻¹' (o ∩ l.source), _, _, _⟩
+  suffices h : ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s) s'_lift by
+    refine' ⟨π E (TangentSpace I) ⁻¹' (o ∩ l.source), _, _, _⟩
     show IsOpen (π E (TangentSpace I) ⁻¹' (o ∩ l.source));
     exact (o_open.inter l.open_source).preimage (FiberBundle.continuous_proj E _)
     show p ∈ π E (TangentSpace I) ⁻¹' (o ∩ l.source)
@@ -463,8 +463,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       · simp only [mfld_simps] at hp; simp only [hp, mfld_simps]
     have B : tangentMapWithin I I l.symm s'l (il.symm (Dl q)) = q := by
       have : tangentMapWithin I I l.symm s'l (il.symm (Dl q)) =
-        tangentMap I I l.symm (il.symm (Dl q))
-      · refine' tangentMapWithin_eq_tangentMap U'lq _
+          tangentMap I I l.symm (il.symm (Dl q)) := by
+        refine' tangentMapWithin_eq_tangentMap U'lq _
         -- Porting note: the arguments below were underscores.
         refine' mdifferentiableAt_atlas_symm I (chart_mem_atlas H (TotalSpace.proj p)) _
         simp only [hq, mfld_simps]
@@ -574,9 +574,9 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type _)) :=
       Bundle.smooth_zeroSection 𝕜 (TangentSpace I : M → Type _)
     this.mdifferentiableAt
-  have B :
-    fderivWithin 𝕜 (fun x' : E => (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v = (v, 0)
-  · rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prod]
+  have B : fderivWithin 𝕜 (fun x' : E ↦ (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v
+      = (v, 0) := by
+    rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prod]
     · simp
     · exact differentiableAt_id'
     · exact differentiableAt_const _

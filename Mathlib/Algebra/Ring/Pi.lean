@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import algebra.ring.pi from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
@@ -14,7 +14,7 @@ import Mathlib.Algebra.Ring.Hom.Defs
 This file defines instances for ring, semiring and related structures on Pi Types
 -/
 
--- Porting notes: used to import `tactic.pi_instances`
+-- Porting note: used to import `tactic.pi_instances`
 
 namespace Pi
 
