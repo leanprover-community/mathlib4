@@ -41,18 +41,12 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
 
 
 /-- Synthesize arguments `xs` either with typeclass synthesis, with funProp or with discharger. -/
-def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
-    (funProp : Expr → FunPropM (Option Result)) :
+def synthesizeArgs (thmId : Origin) (xs : Array Expr) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
   let mut postponed : Array Expr := #[]
-  for x in xs, bi in bis do
+  for x in xs do
     let type ← inferType x
-    if bi.isInstImplicit then
-      unless (← synthesizeInstance thmId x type) do
-        logError s!"Failed to synthesize instance {← ppExpr type} \
-        when applying theorem {← ppOrigin' thmId}."
-        return false
-    else if (← instantiateMVars x).isMVar then
+    if (← instantiateMVars x).isMVar then
 
       -- try type class
       if (← isClass? type).isSome then
@@ -104,7 +98,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
 
 /-- Try to apply theorem - core function -/
-def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr)
+def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
@@ -114,7 +108,7 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
   if (← isDefEq type e) then
 
-    if ¬(← synthesizeArgs thmId xs bis funProp) then
+    if ¬(← synthesizeArgs thmId xs funProp) then
       return none
     let proof ← instantiateMVars (mkAppN val xs)
 
@@ -126,14 +120,13 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
 
 /-- Try to apply a theorem provided some of the theorem arguments. -/
-def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
-    (hint : Array (Nat×Expr))
+def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin) (hint : Array (Nat×Expr))
     (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
     let type ← inferType thmProof
-    let (xs, bis, type) ← forallMetaTelescope type
+    let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
       try
@@ -143,8 +136,10 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
         trace[Meta.Tactic.fun_trans]
           "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
 
-    tryTheoremCore xs bis thmProof type e thmOrigin funProp
+    tryTheoremCore xs thmProof type e thmOrigin funProp
 
+  -- simplifier introduces new mctx depth here but it for `fun_prop` this does not seem to be
+  -- a good idea so by default we do not introduce new mctx depth.
   if newMCtxDepth then
     withNewMCtxDepth go
   else
