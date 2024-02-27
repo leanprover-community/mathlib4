@@ -35,7 +35,7 @@ syntax (name := letImplDetailStx) "let_impl_detail " ident " := " term "; " term
 
 open Lean Elab Term Meta
 
-@[term_elab letImplDetailStx]
+@[term_elab letImplDetailStx, inherit_doc letImplDetailStx]
 def elabLetImplDetail : TermElab := fun stx expectedType? =>
   match stx with
   | `(let_impl_detail $id := $valStx; $body) => do
