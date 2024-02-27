@@ -269,7 +269,7 @@ def reCLM : ℂ →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by simp [abs_re_le_abs]
 #align complex.re_clm Complex.reCLM
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 #align complex.continuous_re Complex.continuous_re
@@ -289,7 +289,7 @@ def imCLM : ℂ →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by simp [abs_im_le_abs]
 #align complex.im_clm Complex.imCLM
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 #align complex.continuous_im Complex.continuous_im
@@ -395,7 +395,7 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry
 #align complex.isometry_of_real Complex.isometry_ofReal
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 #align complex.continuous_of_real Complex.continuous_ofReal

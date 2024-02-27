@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Data.Real.CauSeq
+import Mathlib.Algebra.Order.CauSeq.Basic
 
 #align_import data.real.cau_seq_completion from "leanprover-community/mathlib"@"cf4c49c445991489058260d75dae0ff2b1abca28"
 
@@ -228,7 +228,7 @@ noncomputable instance : Inv (Cauchy abv) :=
         rw [mk_eq.2 fg, ← Ig] at If
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
--- porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
   congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]

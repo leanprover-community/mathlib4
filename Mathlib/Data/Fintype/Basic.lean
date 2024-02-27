@@ -97,13 +97,14 @@ theorem coe_eq_univ : (s : Set α) = Set.univ ↔ s = univ := by rw [← coe_uni
 
 theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
-  refine' eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
+  exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
 #align finset.nonempty.eq_univ Finset.Nonempty.eq_univ
 
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
 #align finset.univ_nonempty_iff Finset.univ_nonempty_iff
 
+@[aesop unsafe apply (rule_sets [finsetNonempty])]
 theorem univ_nonempty [Nonempty α] : (univ : Finset α).Nonempty :=
   univ_nonempty_iff.2 ‹_›
 #align finset.univ_nonempty Finset.univ_nonempty
@@ -675,7 +676,7 @@ theorem coe_toFinset (s : Set α) [Fintype s] : (↑s.toFinset : Set α) = s :=
   Set.ext fun _ => mem_toFinset
 #align set.coe_to_finset Set.coe_toFinset
 
-@[simp]
+@[simp, aesop safe apply (rule_sets [finsetNonempty])]
 theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, coe_toFinset]
 #align set.to_finset_nonempty Set.toFinset_nonempty

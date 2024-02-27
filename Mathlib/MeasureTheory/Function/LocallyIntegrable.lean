@@ -89,7 +89,7 @@ theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopolo
     rintro ⟨x, hx⟩
     rcases hf x hx with ⟨t, ht, h't⟩
     rcases mem_nhdsWithin.1 ht with ⟨u, u_open, x_mem, u_sub⟩
-    refine' ⟨u, u_open, x_mem, h't.mono_set u_sub⟩
+    exact ⟨u, u_open, x_mem, h't.mono_set u_sub⟩
   choose u u_open xu hu using this
   obtain ⟨T, T_count, hT⟩ : ∃ T : Set s, T.Countable ∧ s ⊆ ⋃ i ∈ T, u i := by
     have : s ⊆ ⋃ x : s, u x := fun y hy => mem_iUnion_of_mem ⟨y, hy⟩ (xu ⟨y, hy⟩)

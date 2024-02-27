@@ -26,8 +26,7 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
    value
 -/
 
-set_option autoImplicit true
-
+variable {ι α R S : Type*}
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy the triangle equality. -/
@@ -224,8 +223,7 @@ end Ring
 end OrderedRing
 
 section OrderedCommRing
-
-variable {R S : Type*} [Ring R] [OrderedCommRing S] (abv : AbsoluteValue R S)
+variable [OrderedCommRing S] [Ring R] (abv : AbsoluteValue R S)
 
 variable [NoZeroDivisors S]
 
@@ -248,14 +246,13 @@ protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
 lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
   simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
 
-end OrderedCommRing
-
-instance {R S : Type*} [Ring R] [OrderedCommRing S] [Nontrivial R] [IsDomain S] :
-    MulRingNormClass (AbsoluteValue R S) R S :=
+instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.subadditiveHomClass,
     AbsoluteValue.monoidWithZeroHomClass with
     map_neg_eq_map := fun f => f.map_neg
     eq_zero_of_map_eq_zero := fun f _ => f.eq_zero.1 }
+
+end OrderedCommRing
 
 section LinearOrderedRing
 
@@ -322,7 +319,7 @@ lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 
 open Lean Meta Mathlib Meta Positivity Qq in
 /-- The `positivity` extension which identifies expressions of the form `abv a`. -/
-@[positivity (_ : α)]
+@[positivity _]
 def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
   let (.app f a) ← whnfR e | throwError "not abv ·"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
@@ -420,14 +417,7 @@ end Ring
 end OrderedRing
 
 section OrderedCommRing
-
-variable {S : Type*} [OrderedCommRing S]
-
-section Ring
-
-variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
-
-variable [NoZeroDivisors S]
+variable [OrderedCommRing S] [NoZeroDivisors S] [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_neg (a : R) : abv (-a) = abv a :=
   (toAbsoluteValue abv).map_neg a
@@ -436,8 +426,6 @@ theorem abv_neg (a : R) : abv (-a) = abv a :=
 theorem abv_sub (a b : R) : abv (a - b) = abv (b - a) :=
   (toAbsoluteValue abv).map_sub a b
 #align is_absolute_value.abv_sub IsAbsoluteValue.abv_sub
-
-end Ring
 
 end OrderedCommRing
 

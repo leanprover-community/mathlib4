@@ -37,29 +37,24 @@ noncomputable section
 
 universe u v w z
 
-open Polynomial Matrix BigOperators
+open BigOperators Finset Matrix Polynomial
 
 variable {R : Type u} [CommRing R]
-
 variable {n G : Type v} [DecidableEq n] [Fintype n]
-
 variable {α β : Type v} [DecidableEq α]
-
-open Finset
-
 variable {M : Matrix n n R}
+
+namespace Matrix
 
 theorem charmatrix_apply_natDegree [Nontrivial R] (i j : n) :
     (charmatrix M i j).natDegree = ite (i = j) 1 0 := by
   by_cases h : i = j <;> simp [h, ← degree_eq_iff_natDegree_eq_of_pos (Nat.succ_pos 0)]
-#align charmatrix_apply_nat_degree charmatrix_apply_natDegree
+#align charmatrix_apply_nat_degree Matrix.charmatrix_apply_natDegree
 
 theorem charmatrix_apply_natDegree_le (i j : n) :
     (charmatrix M i j).natDegree ≤ ite (i = j) 1 0 := by
   split_ifs with h <;> simp [h, natDegree_X_le]
-#align charmatrix_apply_nat_degree_le charmatrix_apply_natDegree_le
-
-namespace Matrix
+#align charmatrix_apply_nat_degree_le Matrix.charmatrix_apply_natDegree_le
 
 variable (M)
 
@@ -262,7 +257,7 @@ end Matrix
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem matPolyEquiv_eq_x_pow_sub_c {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
+theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   -- porting note: `i` and `j` are used later on, but were not mentioned in mathlib3
@@ -280,7 +275,7 @@ theorem matPolyEquiv_eq_x_pow_sub_c {K : Type*} (k : ℕ) [Field K] (M : Matrix 
       simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne.def,
         not_false_iff]
 set_option linter.uppercaseLean3 false in
-#align mat_poly_equiv_eq_X_pow_sub_C matPolyEquiv_eq_x_pow_sub_c
+#align mat_poly_equiv_eq_X_pow_sub_C matPolyEquiv_eq_X_pow_sub_C
 
 namespace Matrix
 
@@ -297,8 +292,6 @@ TODO: add the statement for negative powers phrased with `zpow`. -/
 theorem pow_eq_aeval_mod_charpoly (M : Matrix n n R) (k : ℕ) :
     M ^ k = aeval M (X ^ k %ₘ M.charpoly) := by rw [← aeval_eq_aeval_mod_charpoly, map_pow, aeval_X]
 #align matrix.pow_eq_aeval_mod_charpoly Matrix.pow_eq_aeval_mod_charpoly
-
-end Matrix
 
 section Ideal
 
@@ -320,11 +313,9 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
     exact h (c i) i
   · rw [Nat.succ_eq_one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
     exact Submodule.mem_top
-#align coeff_charpoly_mem_ideal_pow coeff_charpoly_mem_ideal_pow
+#align coeff_charpoly_mem_ideal_pow Matrix.coeff_charpoly_mem_ideal_pow
 
 end Ideal
-
-namespace Matrix
 
 section reverse
 
@@ -350,8 +341,8 @@ lemma reverse_charpoly (M : Matrix n n R) :
     simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg M.charpolyRev = q := by
     simp [charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
-  suffices : t_inv ^ Fintype.card n * p = invert q
-  · apply toLaurent_injective
+  suffices t_inv ^ Fintype.card n * p = invert q by
+    apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
       invert.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
       ← mul_one (Fintype.card n : ℤ), ← T_pow, invert.map_pow, invert_T, mul_comm]

@@ -197,10 +197,9 @@
   ["Lean.Elab.BuiltinNotation", "Lean.Elab.BuiltinTerm"],
   "Std.Classes.SetNotation": ["Std.Util.ExtendedBinder"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
-  "Mathlib.Topology.Defs.Basic":
-  ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
   ["Mathlib.Topology.Algebra.UniformRing"],
   "Mathlib.Tactic.Widget.SelectPanelUtils":
@@ -231,6 +230,8 @@
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Init.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FunProp.Types": ["Mathlib.Logic.Function.Basic"],
+  "Mathlib.Tactic.FunProp.RefinedDiscrTree": ["Mathlib.Algebra.Group.Pi.Basic"],
+  "Mathlib.Tactic.FunProp.MorExt": ["Mathlib.Tactic.FunProp.ToStd"],
   "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
   "Mathlib.Tactic.FunProp.Measurable":
   ["Mathlib.Analysis.Calculus.ContDiff.Basic",
@@ -276,6 +277,7 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
+  "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
@@ -284,12 +286,14 @@
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
+  "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Equiv.Defs": ["Mathlib.Init.Data.Bool.Lemmas"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Defs"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
+  "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
@@ -298,6 +302,7 @@
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
   "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Data.Nat.Basic"],
   "Mathlib.Data.List.Basic": ["Mathlib.Init.Core"],
+  "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
@@ -314,5 +319,4 @@
   "Mathlib.Algebra.Module.LinearMap": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Category.Ring.Basic":
-  ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
-  "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"]}}
+  ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"]}}

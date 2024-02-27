@@ -664,8 +664,8 @@ See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
 -/
 theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
     Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
-  have : p * C (leadingCoeff p)⁻¹ ≠ 1
-  · contrapose! hpu
+  have : p * C (leadingCoeff p)⁻¹ ≠ 1 := by
+    contrapose! hpu
     exact isUnit_of_mul_eq_one _ _ hpu
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,
@@ -676,3 +676,11 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
 end Field
 
 end Polynomial
+
+/-- An irreducible polynomial over a field must have positive degree. -/
+theorem Irreducible.natDegree_pos {F : Type*} [Field F] {f : F[X]} (h : Irreducible f) :
+    0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
+  obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
+  by_cases hx : x = 0
+  · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
+  exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))

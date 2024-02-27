@@ -242,7 +242,7 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 
 end IsSymm
 
-theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.flip := by
+theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
     rw [← h, flip_apply, RingHom.id_apply]
@@ -365,8 +365,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
-  suffices hμzero : μ x = 0
-  · rw [hμzero, zero_smul, Submodule.mem_bot]
+  suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
   rw [isOrtho_def, map_smulₛₗ] at h
   exact Or.elim (smul_eq_zero.mp h)
       (fun y ↦ by simpa using y)
@@ -780,8 +779,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
-  suffices : B (v i) (v j) = 0
-  · rw [this, smul_zero]
+  suffices B (v i) (v j) = 0 by rw [this, smul_zero]
   obtain rfl | hij := eq_or_ne i j
   · exact ho
   · exact h hij

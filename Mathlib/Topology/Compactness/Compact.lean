@@ -493,8 +493,7 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
     {U : Set X} (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U := by
   obtain ⟨W, hsubW, W_op, hWU⟩ := exists_open_set_nhds hU
-  suffices : ∃ i, V i ⊆ W
-  · exact this.imp fun i hi => hi.trans hWU
+  suffices ∃ i, V i ⊆ W from this.imp fun i hi => hi.trans hWU
   by_contra! H
   replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)
   have : (⋂ i, V i ∩ Wᶜ).Nonempty := by
@@ -522,7 +521,7 @@ theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Se
     subst this
     obtain ⟨t, ht⟩ :=
       h₁.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
-    refine' ⟨t.image f', Set.Finite.intro inferInstance, le_antisymm _ _⟩
+    refine' ⟨t.image f', Set.toFinite _, le_antisymm _ _⟩
     · refine' Set.Subset.trans ht _
       simp only [Set.iUnion_subset_iff]
       intro i hi
@@ -864,8 +863,8 @@ theorem isClosedMap_snd_of_compactSpace [CompactSpace X] :
     IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro y hy
-  have : univ ×ˢ {y} ⊆ sᶜ
-  · exact fun (x, y') ⟨_, rfl⟩ hs => hy ⟨(x, y'), hs, rfl⟩
+  have : univ ×ˢ {y} ⊆ sᶜ := by
+    exact fun (x, y') ⟨_, rfl⟩ hs => hy ⟨(x, y'), hs, rfl⟩
   rcases generalized_tube_lemma isCompact_univ isCompact_singleton hs.isOpen_compl this
     with ⟨U, V, -, hVo, hU, hV, hs⟩
   refine mem_nhds_iff.2 ⟨V, ?_, hVo, hV rfl⟩

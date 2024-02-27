@@ -37,7 +37,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
   let u i := if h : w i = 0 then (1 : ℝˣ) else Units.mk0 (w i) h
   have hu' : ∀ i : ι, (Real.sign (u i) * u i) ^ (-(1 / 2 : ℝ)) ≠ 0 := by
     intro i
-    refine' (ne_of_lt (Real.rpow_pos_of_pos (sign_mul_pos_of_ne_zero _ <| Units.ne_zero _) _)).symm
+    exact (ne_of_lt (Real.rpow_pos_of_pos (sign_mul_pos_of_ne_zero _ <| Units.ne_zero _) _)).symm
   convert
     (weightedSumSquares ℝ w).isometryEquivBasisRepr
       ((Pi.basisFun ℝ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hu' i).unit)

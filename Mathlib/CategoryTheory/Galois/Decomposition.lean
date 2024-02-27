@@ -62,7 +62,7 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
   refine ⟨Empty, fun _ ↦ X, fun _ ↦ 𝟙 X, ?_⟩
   use mkCofanColimit _ (fun s ↦ IsInitial.to h s.pt) (fun s ↦ by aesop)
     (fun s m _ ↦ IsInitial.hom_ext h m _)
-  refine ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
+  exact ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
 
 /- Show decomposition by inducting on `Nat.card (F.obj X)`. -/
 private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]

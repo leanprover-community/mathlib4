@@ -220,8 +220,8 @@ theorem fib_le_of_continuantsAux_b :
         -- use the IH to get the inequalities for `pconts` and `ppconts`
         have ppred_nth_fib_le_ppconts_B : (fib n : K) ≤ ppconts.b :=
           IH n (lt_trans (Nat.lt.base n) <| Nat.lt.base <| n + 1) (Or.inr not_terminated_at_ppred_n)
-        suffices : (fib (n + 1) : K) ≤ gp.b * pconts.b
-        solve_by_elim [_root_.add_le_add ppred_nth_fib_le_ppconts_B]
+        suffices (fib (n + 1) : K) ≤ gp.b * pconts.b by
+          solve_by_elim [_root_.add_le_add ppred_nth_fib_le_ppconts_B]
         -- finally use the fact that `1 ≤ gp.b` to solve the goal
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
         have one_le_gp_b : (1 : K) ≤ gp.b :=
@@ -344,8 +344,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
       have gp_a_eq_one : gp.a = 1 := of_part_num_eq_one (part_num_eq_s_a s_nth_eq)
       rw [gp_a_eq_one, this.symm]
       ring
-    suffices : pA * ppB - pB * ppA = (-1) ^ (n + 1);
-    calc
+    suffices pA * ppB - pB * ppA = (-1) ^ (n + 1) by calc
       pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) =
           pA * ppB + pA * gp.b * pB - pB * ppA - pB * gp.b * pA := by ring
       _ = pA * ppB - pB * ppA := by ring
@@ -393,8 +392,8 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
     compExactValue_correctness_of_stream_eq_some stream_nth_eq
   obtain (ifp_fr_eq_zero | ifp_fr_ne_zero) := eq_or_ne ifp.fr 0
   · suffices v - g.convergents n = 0 by simpa [ifp_fr_eq_zero]
-    replace g_finite_correctness : v = g.convergents n;
-    · simpa [GeneralizedContinuedFraction.compExactValue, ifp_fr_eq_zero] using g_finite_correctness
+    replace g_finite_correctness : v = g.convergents n := by
+      simpa [GeneralizedContinuedFraction.compExactValue, ifp_fr_eq_zero] using g_finite_correctness
     exact sub_eq_zero.2 g_finite_correctness
   · -- more shorthand notation
     let A := conts.a
@@ -404,8 +403,8 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
     -- first, let's simplify the goal as `ifp.fr ≠ 0`
     suffices v - A / B = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) by simpa [ifp_fr_ne_zero]
     -- now we can unfold `g.compExactValue` to derive the following equality for `v`
-    replace g_finite_correctness : v = (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B)
-    · simpa [GeneralizedContinuedFraction.compExactValue, ifp_fr_ne_zero, nextContinuants,
+    replace g_finite_correctness : v = (pA + ifp.fr⁻¹ * A) / (pB + ifp.fr⁻¹ * B) := by
+      simpa [GeneralizedContinuedFraction.compExactValue, ifp_fr_ne_zero, nextContinuants,
         nextNumerator, nextDenominator, add_comm] using g_finite_correctness
     -- let's rewrite this equality for `v` in our goal
     suffices
@@ -522,8 +521,8 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
       nextConts_b_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     solve_by_elim [mul_pos]
   · -- we can cancel multiplication by `conts.b` and addition with `pred_conts.b`
-    suffices : gp.b * conts.b ≤ ifp_n.fr⁻¹ * conts.b
-    exact (mul_le_mul_left zero_lt_conts_b).2 <| (add_le_add_iff_left pred_conts.b).2 this
+    suffices gp.b * conts.b ≤ ifp_n.fr⁻¹ * conts.b from
+      (mul_le_mul_left zero_lt_conts_b).2 <| (add_le_add_iff_left pred_conts.b).2 this
     suffices (ifp_succ_n.b : K) * conts.b ≤ ifp_n.fr⁻¹ * conts.b by rwa [← ifp_succ_n_b_eq_gp_b]
     have : (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ :=
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq

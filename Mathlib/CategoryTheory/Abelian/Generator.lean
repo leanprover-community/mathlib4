@@ -39,8 +39,8 @@ theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG
   let T : C := Injective.under (piObj fun P : Subobject (op G) => unop P)
   refine' ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => _⟩
   refine' (Preadditive.isSeparator_iff _).1 hG _ fun h => _
-  suffices hh : factorThruImage (h ≫ f) = 0
-  · rw [← Limits.image.fac (h ≫ f), hh, zero_comp]
+  suffices hh : factorThruImage (h ≫ f) = 0 by
+    rw [← Limits.image.fac (h ≫ f), hh, zero_comp]
   let R := Subobject.mk (factorThruImage (h ≫ f)).op
   let q₁ : image (h ≫ f) ⟶ unop R :=
     (Subobject.underlyingIso (factorThruImage (h ≫ f)).op).unop.hom

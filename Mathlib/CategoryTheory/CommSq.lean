@@ -71,6 +71,10 @@ theorem unop {W X Y Z : Cᵒᵖ} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : 
   ⟨by simp only [← unop_comp, p.w]⟩
 #align category_theory.comm_sq.unop CategoryTheory.CommSq.unop
 
+theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
+    CommSq i g.inv h.inv f :=
+  ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, p.w]⟩
+
 end CommSq
 
 namespace Functor

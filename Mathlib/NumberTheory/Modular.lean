@@ -65,7 +65,7 @@ open Complex hiding abs_two
 
 open Matrix hiding mul_smul
 
-open Matrix.SpecialLinearGroup UpperHalfPlane
+open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup
 
 noncomputable section
 
@@ -289,7 +289,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
     Filter.Tendsto.exists_within_forall_le hs (tendsto_normSq_coprime_pair z)
   obtain ⟨g, -, hg⟩ := bottom_row_surj hp_coprime
   refine' ⟨g, fun g' => _⟩
-  rw [SpecialLinearGroup.im_smul_eq_div_normSq, SpecialLinearGroup.im_smul_eq_div_normSq,
+  rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
     div_le_div_left]
   · simpa [← hg] using hp ((↑ₘg') 1) (bottom_row_coprime g')
   · exact z.im_pos
@@ -345,7 +345,7 @@ variable {z}
 theorem exists_eq_T_zpow_of_c_eq_zero (hc : (↑ₘg) 1 0 = 0) :
     ∃ n : ℤ, ∀ z : ℍ, g • z = T ^ n • z := by
   have had := g.det_coe
-  replace had : (↑ₘg) 0 0 * (↑ₘg) 1 1 = 1; · rw [det_fin_two, hc] at had; linarith
+  replace had : (↑ₘg) 0 0 * (↑ₘg) 1 1 = 1 := by rw [det_fin_two, hc] at had; linarith
   rcases Int.eq_one_or_neg_one_of_mul_eq_one' had with (⟨ha, hd⟩ | ⟨ha, hd⟩)
   · use (↑ₘg) 0 1
     suffices g = T ^ (↑ₘg) 0 1 by intro z; conv_lhs => rw [this]
@@ -360,7 +360,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : (↑ₘg) 1 0 = 0) :
 -- If `c = 1`, then `g` factorises into a product terms involving only `T` and `S`.
 theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * T ^ (↑ₘg) 1 1 := by
   have hg := g.det_coe.symm
-  replace hg : (↑ₘg) 0 1 = (↑ₘg) 0 0 * (↑ₘg) 1 1 - 1; · rw [det_fin_two, hc] at hg; linarith
+  replace hg : (↑ₘg) 0 1 = (↑ₘg) 0 0 * (↑ₘg) 1 1 - 1 := by rw [det_fin_two, hc] at hg; linarith
   refine' Subtype.ext _
   conv_lhs => rw [Matrix.eta_fin_two (↑ₘg)]
   rw [hc, hg]
@@ -380,7 +380,7 @@ theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
     apply (lt_div_iff z.normSq_pos).mpr
     nlinarith
   convert this
-  simp only [SpecialLinearGroup.im_smul_eq_div_normSq]
+  simp only [ModularGroup.im_smul_eq_div_normSq]
   simp [denom, coe_S]
 #align modular_group.im_lt_im_S_smul ModularGroup.im_lt_im_S_smul
 
@@ -445,7 +445,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   -- `g` has same max im property as `g₀`
   have hg₀' : ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
     have hg'' : (g • z).im = (g₀ • z).im := by
-      rw [SpecialLinearGroup.im_smul_eq_div_normSq, SpecialLinearGroup.im_smul_eq_div_normSq,
+      rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
         denom_apply, denom_apply, hg]
     simpa only [hg''] using hg₀
   constructor
@@ -476,7 +476,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
   let c : ℝ := (c' : ℝ)
   suffices 3 * c ^ 2 < 4 by
     rw [← Int.cast_pow, ← Int.cast_three, ← Int.cast_four, ← Int.cast_mul, Int.cast_lt] at this
-    replace this : c' ^ 2 ≤ 1 ^ 2; · linarith
+    replace this : c' ^ 2 ≤ 1 ^ 2 := by linarith
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
@@ -485,8 +485,8 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
       specialize this hc
       linarith
   intro hc
-  replace hc : 0 < c ^ 4;
-  · change 0 < c ^ (2 * 2); rw [pow_mul]; apply sq_pos_of_pos (sq_pos_of_ne_zero _ hc)
+  replace hc : 0 < c ^ 4 := by
+    change 0 < c ^ (2 * 2); rw [pow_mul]; apply sq_pos_of_pos (sq_pos_of_ne_zero _ hc)
   have h₁ :=
     mul_lt_mul_of_pos_right
       (mul_lt_mul'' (three_lt_four_mul_im_sq_of_mem_fdo hg) (three_lt_four_mul_im_sq_of_mem_fdo hz)
@@ -500,7 +500,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
   calc
     9 * c ^ 4 < c ^ 4 * z.im ^ 2 * (g • z).im ^ 2 * 16 := by linarith
     _ = c ^ 4 * z.im ^ 4 / nsq ^ 2 * 16 := by
-      rw [SpecialLinearGroup.im_smul_eq_div_normSq, div_pow]
+      rw [ModularGroup.im_smul_eq_div_normSq, div_pow]
       ring
     _ ≤ 16 := by rw [← mul_pow]; linarith
 #align modular_group.abs_c_le_one ModularGroup.abs_c_le_one
@@ -520,7 +520,7 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : (↑ₘg) 1 
     linarith
   have hn : (↑ₘg) 1 0 ≠ -1 := by
     intro hc
-    replace hc : (↑ₘ(-g)) 1 0 = 1; · simp [← neg_eq_iff_eq_neg.mpr hc]
+    replace hc : (↑ₘ(-g)) 1 0 = 1 := by simp [← neg_eq_iff_eq_neg.mpr hc]
     replace hg : -g • z ∈ 𝒟ᵒ := (SL_neg_smul g z).symm ▸ hg
     exact hp hg hc
   specialize hp hg

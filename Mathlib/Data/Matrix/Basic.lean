@@ -41,8 +41,8 @@ The locale `Matrix` gives the following notation:
 
 For convenience, `Matrix m n α` is defined as `m → n → α`, as this allows elements of the matrix
 to be accessed with `A i j`. However, it is not advisable to _construct_ matrices using terms of the
-form `λ i j, _` or even `(λ i j, _ : Matrix m n α)`, as these are not recognized by lean as having
-the right type. Instead, `Matrix.of` should be used.
+form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not recognized by Lean
+as having the right type. Instead, `Matrix.of` should be used.
 
 ## TODO
 
@@ -2241,7 +2241,7 @@ theorem conjTranspose_smul_non_comm [Star R] [Star α] [SMul R α] [SMul Rᵐᵒ
   Matrix.ext <| by simp [h]
 #align matrix.conj_transpose_smul_non_comm Matrix.conjTranspose_smul_non_comm
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem conjTranspose_smul_self [Mul α] [StarMul α] (c : α) (M : Matrix m n α) :
     (c • M)ᴴ = MulOpposite.op (star c) • Mᴴ :=
   conjTranspose_smul_non_comm c M star_mul
@@ -2619,7 +2619,7 @@ theorem reindex_apply (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
   rfl
 #align matrix.reindex_apply Matrix.reindex_apply
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem reindex_refl_refl (A : Matrix m n α) : reindex (Equiv.refl _) (Equiv.refl _) A = A :=
   A.submatrix_id_id
 #align matrix.reindex_refl_refl Matrix.reindex_refl_refl
@@ -2647,7 +2647,7 @@ theorem conjTranspose_reindex [Star α] (eₘ : m ≃ l) (eₙ : n ≃ o) (M : M
   rfl
 #align matrix.conj_transpose_reindex Matrix.conjTranspose_reindex
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid α] [Mul α]
     (e : m ≃ n) (M : Matrix m n α) : M.submatrix id e * Mᵀ.submatrix e id = M * Mᵀ := by
   rw [submatrix_mul_equiv, submatrix_id_id]

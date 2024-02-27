@@ -214,7 +214,7 @@ theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x 
   Iff.rfl
 #align subsemiring.mem_to_submonoid Subsemiring.mem_toSubmonoid
 
--- `@[simp]` -- Porting note: simp can prove this
+-- `@[simp]` -- Porting note (#10618): simp can prove thisrove this
 theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subsemiring.mem_carrier Subsemiring.mem_carrier

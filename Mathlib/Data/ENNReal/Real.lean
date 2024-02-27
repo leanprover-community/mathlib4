@@ -79,6 +79,7 @@ theorem toReal_le_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal ≤ b.toRe
   norm_cast
 #align ennreal.to_real_le_to_real ENNReal.toReal_le_toReal
 
+@[gcongr]
 theorem toReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toReal ≤ b.toReal :=
   (toReal_le_toReal (ne_top_of_le_ne_top hb h) hb).2 h
 #align ennreal.to_real_mono ENNReal.toReal_mono
@@ -96,10 +97,12 @@ theorem toReal_lt_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal < b.toReal
   norm_cast
 #align ennreal.to_real_lt_to_real ENNReal.toReal_lt_toReal
 
+@[gcongr]
 theorem toReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=
   (toReal_lt_toReal h.ne_top hb).2 h
 #align ennreal.to_real_strict_mono ENNReal.toReal_strict_mono
 
+@[gcongr]
 theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal :=
   toReal_mono hb h
 #align ennreal.to_nnreal_mono ENNReal.toNNReal_mono
@@ -172,6 +175,7 @@ theorem toReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 <
   toReal_pos_iff.mpr ⟨bot_lt_iff_ne_bot.mpr ha₀, lt_top_iff_ne_top.mpr ha_top⟩
 #align ennreal.to_real_pos ENNReal.toReal_pos
 
+@[gcongr]
 theorem ofReal_le_ofReal {p q : ℝ} (h : p ≤ q) : ENNReal.ofReal p ≤ ENNReal.ofReal q := by
   simp [ENNReal.ofReal, Real.toNNReal_le_toNNReal h]
 #align ennreal.of_real_le_of_real ENNReal.ofReal_le_ofReal

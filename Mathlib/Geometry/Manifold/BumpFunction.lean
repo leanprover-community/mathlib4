@@ -334,13 +334,13 @@ on the source of the chart at `c`, then `f • g` is smooth on the whole manifol
 theorem smooth_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
     (hg : SmoothOn I 𝓘(ℝ, G) g (chartAt H c).source) : Smooth I 𝓘(ℝ, G) fun x => f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_
-  have : x ∈ (chartAt H c).source
+  have : x ∈ (chartAt H c).source :=
   -- porting note: was a more readable `calc`
   -- calc
   --   x ∈ tsupport fun x => f x • g x := hx
   --   _ ⊆ tsupport f := (tsupport_smul_subset_left _ _)
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
-  · exact f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
+    f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.smoothAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
 #align smooth_bump_function.smooth_smul SmoothBumpFunction.smooth_smul
 

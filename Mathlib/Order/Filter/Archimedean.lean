@@ -243,7 +243,7 @@ theorem Tendsto.atTop_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f 
     Tendsto (fun x => f x • r) l atTop := by
   refine' tendsto_atTop.mpr fun s => _
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
-  replace hn : s ≤ (n : ℤ) • r; · simpa
+  replace hn : s ≤ (n : ℤ) • r := by simpa
   exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (zsmul_le_zsmul hr.le ha)
 #align filter.tendsto.at_top_zsmul_const Filter.Tendsto.atTop_zsmul_const
 
