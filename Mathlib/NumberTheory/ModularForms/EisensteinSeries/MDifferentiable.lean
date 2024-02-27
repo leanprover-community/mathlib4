@@ -8,6 +8,13 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 
+/-!
+# Holomorphicity of Eisenstein series
+
+We show that  Eisenstein series of weight `k` and level `Γ(N)` with congruence condition
+`a : Fin 2 → ZMod N` are holomorphic on the upper half plane.
+-/
+
 noncomputable section
 
 open ModularForm EisensteinSeries UpperHalfPlane TopologicalSpace Set
