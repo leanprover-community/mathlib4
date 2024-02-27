@@ -79,7 +79,7 @@ variable [PartialOrder α] {s : LowerSet α}
   exact this.imp (fun ha ↦ (le_sup_left.trans_eq hst).antisymm <| Iic_le.2 ha) fun ha ↦
     (le_sup_right.trans_eq hst).antisymm <| Iic_le.2 ha
 
-@[simp] lemma  supIrred_iff_of_finite [Finite α] : SupIrred s ↔ ∃ a, Iic a = s := by
+@[simp] lemma supIrred_iff_of_finite [Finite α] : SupIrred s ↔ ∃ a, Iic a = s := by
   refine' ⟨fun hs ↦ _, _⟩
   · obtain ⟨a, ha, has⟩ := (s : Set α).toFinite.exists_maximal_wrt id _ (coe_nonempty.2 hs.ne_bot)
     exact ⟨a, (hs.2 <| erase_sup_Iic ha <| by simpa [eq_comm] using has).resolve_left
