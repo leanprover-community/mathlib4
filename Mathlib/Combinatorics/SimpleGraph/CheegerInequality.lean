@@ -23,11 +23,12 @@ def cut (s : Finset V) : ℕ := ∑ u in s, ∑ v in sᶜ, (if G.Adj u v then 1 
 
 noncomputable def conductance (s : Finset V) : α := cut G s / min (volume G s) (volume G sᶜ)
 
+lemma universe_powerSet_nonempty : (Finset.powerset (Finset.univ : Finset V)).Nonempty := by
+  apply Finset.powerset_nonempty
+
 -- Will need the set which attains the minimum
 noncomputable def min_conductance : ℝ := (Finset.powerset (Finset.univ : Finset V)).inf'
-  (by apply Finset.powerset_nonempty) (conductance ℝ G)
-
-#check Finset.exists_mem_eq_inf' sorry (conductance ℝ G)
+  (universe_powerSet_nonempty) (conductance ℝ G)
 
 noncomputable def eigenvalues_finset : Finset (Module.End.Eigenvalues (Matrix.toLin' (G.lapMatrix α)))
   := Finset.univ
@@ -55,8 +56,8 @@ theorem asdf (s : Finset V) (hs : conductance ℝ G s = min_conductance G) :
   ContinuousLinearMap.rayleighQuotient (LapMatrixContinuousLinearMap G) (my_vector G s) ≤ 2 * (min_conductance G) := sorry
 
 theorem cheeger_ineq_easy : spectral_gap G ≤ 2 * (min_conductance G) := by
-  sorry
-  --apply LE.le.trans (slkdgj G _ _) (asdf G _ _)
-
+  obtain ⟨s, _, h⟩ := Finset.exists_mem_eq_inf' universe_powerSet_nonempty (conductance ℝ G)
+  rw [← min_conductance] at h
+  apply LE.le.trans (slkdgj G s (Eq.symm h)) (asdf G s (Eq.symm h))
 
 theorem cheeger_ineq_hard : min_conductance G^2 / 2 ≤ spectral_gap G := sorry
