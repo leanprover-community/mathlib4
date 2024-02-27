@@ -6,15 +6,16 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Opposites
+import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.Finset.Pointwise
-import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Pointwise.BigOperators
+import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.LinearAlgebra.Basic
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
@@ -215,13 +216,13 @@ theorem bot_mul : ⊥ * M = ⊥ :=
   map₂_bot_left _ _
 #align submodule.bot_mul Submodule.bot_mul
 
--- @[simp] -- Porting note: simp can prove this once we have a monoid structure
+-- @[simp] -- Porting note (#10618): simp can prove this once we have a monoid structure
 protected theorem one_mul : (1 : Submodule R A) * M = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, one_mul, span_eq]
 #align submodule.one_mul Submodule.one_mul
 
--- @[simp] -- Porting note: simp can prove this once we have a monoid structure
+-- @[simp] -- Porting note (#10618): simp can prove this once we have a monoid structure
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
   erw [span_mul_span, mul_one, span_eq]
@@ -595,7 +596,7 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
   map_add' := span_union
   map_mul' s t := by
     dsimp only -- porting note: new, needed due to new-style structures
-    rw [SetSemiring.down_mul, span_mul_span, ← image_mul_prod]
+    rw [SetSemiring.down_mul, span_mul_span]
 #align submodule.span.ring_hom Submodule.span.ringHom
 
 section

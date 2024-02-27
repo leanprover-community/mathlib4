@@ -72,7 +72,7 @@ theorem IsCompact.induction_on (hs : IsCompact s) {p : Set X → Prop} (he : p �
     (hmono : ∀ ⦃s t⦄, s ⊆ t → p t → p s) (hunion : ∀ ⦃s t⦄, p s → p t → p (s ∪ t))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
   let f : Filter X := comk p he (fun _t ht _s hsub ↦ hmono hsub ht) (fun _s hs _t ht ↦ hunion hs ht)
-  have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa using hnhds)
+  have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa [f] using hnhds)
   rwa [← compl_compl s]
 #align is_compact.induction_on IsCompact.induction_on
 
@@ -493,8 +493,7 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
     {U : Set X} (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U := by
   obtain ⟨W, hsubW, W_op, hWU⟩ := exists_open_set_nhds hU
-  suffices : ∃ i, V i ⊆ W
-  · exact this.imp fun i hi => hi.trans hWU
+  suffices ∃ i, V i ⊆ W from this.imp fun i hi => hi.trans hWU
   by_contra! H
   replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)
   have : (⋂ i, V i ∩ Wᶜ).Nonempty := by
@@ -522,7 +521,7 @@ theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Se
     subst this
     obtain ⟨t, ht⟩ :=
       h₁.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
-    refine' ⟨t.image f', Set.Finite.intro inferInstance, le_antisymm _ _⟩
+    refine' ⟨t.image f', Set.toFinite _, le_antisymm _ _⟩
     · refine' Set.Subset.trans ht _
       simp only [Set.iUnion_subset_iff]
       intro i hi
@@ -570,7 +569,8 @@ theorem cocompact_eq_cofinite (X : Type*) [TopologicalSpace X] [DiscreteTopology
   simp only [cocompact, hasBasis_cofinite.eq_biInf, isCompact_iff_finite]
 #align filter.cocompact_eq_cofinite Filter.cocompact_eq_cofinite
 
-@[simp] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
+-- deprecated on 2024-02-07: see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`
+@[deprecated] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
   (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
 #align nat.cocompact_eq Nat.cocompact_eq
 
@@ -863,8 +863,8 @@ theorem isClosedMap_snd_of_compactSpace [CompactSpace X] :
     IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro y hy
-  have : univ ×ˢ {y} ⊆ sᶜ
-  · exact fun (x, y') ⟨_, rfl⟩ hs => hy ⟨(x, y'), hs, rfl⟩
+  have : univ ×ˢ {y} ⊆ sᶜ := by
+    exact fun (x, y') ⟨_, rfl⟩ hs => hy ⟨(x, y'), hs, rfl⟩
   rcases generalized_tube_lemma isCompact_univ isCompact_singleton hs.isOpen_compl this
     with ⟨U, V, -, hVo, hU, hV, hs⟩
   refine mem_nhds_iff.2 ⟨V, ?_, hVo, hV rfl⟩
@@ -1029,14 +1029,13 @@ variable {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 /-- **Tychonoff's theorem**: product of compact sets is compact. -/
 theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
     (∀ i, IsCompact (s i)) → IsCompact { x : ∀ i, X i | ∀ i, x i ∈ s i } := by
-  simp only [isCompact_iff_ultrafilter_le_nhds, nhds_pi, Filter.pi, exists_prop, mem_setOf_eq,
-    le_iInf_iff, le_principal_iff]
+  simp only [isCompact_iff_ultrafilter_le_nhds, nhds_pi, le_pi, le_principal_iff]
   intro h f hfs
   have : ∀ i : ι, ∃ x, x ∈ s i ∧ Tendsto (Function.eval i) f (𝓝 x) := by
     refine fun i => h i (f.map _) (mem_map.2 ?_)
     exact mem_of_superset hfs fun x hx => hx i
   choose x hx using this
-  exact ⟨x, fun i => (hx i).left, fun i => (hx i).right.le_comap⟩
+  exact ⟨x, fun i => (hx i).left, fun i => (hx i).right⟩
 #align is_compact_pi_infinite isCompact_pi_infinite
 
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/

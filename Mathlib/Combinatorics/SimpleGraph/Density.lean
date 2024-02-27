@@ -9,6 +9,7 @@ import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Positivity
 
 #align_import combinatorics.simple_graph.density from "leanprover-community/mathlib"@"a4ec43f53b0bd44c697bcc3f5a62edd56f269ef1"
 
@@ -78,7 +79,7 @@ variable (r)
 theorem card_interedges_add_card_interedges_compl (s : Finset α) (t : Finset β) :
     (interedges r s t).card + (interedges (fun x y ↦ ¬r x y) s t).card = s.card * t.card := by
   classical
-  rw [← card_product, interedges, interedges, ← card_union_eq, filter_union_filter_neg_eq]
+  rw [← card_product, interedges, interedges, ← card_union_of_disjoint, filter_union_filter_neg_eq]
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 #align rel.card_interedges_add_card_interedges_compl Rel.card_interedges_add_card_interedges_compl
 
@@ -378,7 +379,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     refine' filter_congr fun x hx ↦ _
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
-  rw [this, ← card_union_eq, filter_union_filter_neg_eq]
+  rw [this, ← card_union_of_disjoint, filter_union_filter_neg_eq]
   exact disjoint_filter.2 fun _ _ ↦ Classical.not_not.2
 #align simple_graph.card_interedges_add_card_interedges_compl SimpleGraph.card_interedges_add_card_interedges_compl
 

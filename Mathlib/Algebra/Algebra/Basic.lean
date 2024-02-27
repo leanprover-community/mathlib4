@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Basic
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.Module.ULift
+import Mathlib.RingTheory.Subring.Basic
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -56,12 +56,12 @@ structure morphism `algebraMap R A r * x`.
 
 As a result, there are two ways to talk about an `R`-algebra `A` when `A` is a semiring:
 1. ```lean
-   variables [CommSemiring R] [Semiring A]
-   variables [Algebra R A]
+   variable [CommSemiring R] [Semiring A]
+   variable [Algebra R A]
    ```
 2. ```lean
-   variables [CommSemiring R] [Semiring A]
-   variables [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+   variable [CommSemiring R] [Semiring A]
+   variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
    ```
 
 The first approach implies the second via typeclass search; so any lemma stated with the second set

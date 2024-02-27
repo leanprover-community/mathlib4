@@ -836,22 +836,27 @@ variable {S' T' : Type*}
 variable [Monoid S'] [DistribMulAction S' M] [SMulCommClass R S' M]
 variable [Monoid T'] [DistribMulAction T' M] [SMulCommClass R T' M]
 
-instance : SMul S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) :=
-  ⟨fun a f ↦
+instance : SMul S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
+  smul a f :=
     { toFun := a • (f : M → M₂)
       map_add' := fun x y ↦ by simp only [DomMulAct.smul_apply, f.map_add, smul_add]
-      map_smul' := fun c x ↦ by simp_rw [DomMulAct.smul_apply, ← smul_comm, f.map_smulₛₗ] }⟩
+      map_smul' := fun c x ↦ by simp_rw [DomMulAct.smul_apply, ← smul_comm, f.map_smulₛₗ] }
 
-@[simp]
-theorem smul_apply' (a : S'ᵈᵐᵃ) (f : M →ₛₗ[σ₁₂] M₂) (x : M) :
+theorem _root_.DomMulAct.smul_linearMap_apply (a : S'ᵈᵐᵃ) (f : M →ₛₗ[σ₁₂] M₂) (x : M) :
     (a • f) x = f (DomMulAct.mk.symm a • x) :=
   rfl
 
-theorem coe_smul' (a : S'ᵈᵐᵃ) (f : M →ₛₗ[σ₁₂] M₂) : (a • f : M →ₛₗ[σ₁₂] M₂) = a • (f : M → M₂) :=
+@[simp]
+theorem _root_.DomMulAct.mk_smul_linearMap_apply (a : S') (f : M →ₛₗ[σ₁₂] M₂) (x : M) :
+    (DomMulAct.mk a • f) x = f (a • x) :=
+  rfl
+
+theorem  _root_.DomMulAct.coe_smul_linearMap (a : S'ᵈᵐᵃ) (f : M →ₛₗ[σ₁₂] M₂) :
+    (a • f : M →ₛₗ[σ₁₂] M₂) = a • (f : M → M₂) :=
   rfl
 
 instance [SMulCommClass S' T' M] : SMulCommClass S'ᵈᵐᵃ T'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) :=
-  ⟨fun s t f ↦ ext fun m ↦ by simp_rw [smul_apply', smul_comm]⟩
+  ⟨fun s t f ↦ ext fun m ↦ by simp_rw [DomMulAct.smul_linearMap_apply, smul_comm]⟩
 
 end SMul
 
@@ -1015,7 +1020,7 @@ end SMul
 
 section Module
 
-variable [Semiring S] [Module S M₂] [SMulCommClass R₂ S M₂]
+variable [Semiring S] [Module S M] [Module S M₂] [SMulCommClass R₂ S M₂]
 
 instance module : Module S (M →ₛₗ[σ₁₂] M₂) where
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
@@ -1024,17 +1029,10 @@ instance module : Module S (M →ₛₗ[σ₁₂] M₂) where
 instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
-variable {S : Type*} [Semiring S] [Module S M]
-
-instance : Module Sᵈᵐᵃ (M →+ M₂) where
-  add_smul s s' f := AddMonoidHom.ext fun m ↦ by
-    simp_rw [AddMonoidHom.add_apply, DomMulAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
-  zero_smul _ := AddMonoidHom.ext fun _ ↦ by
-    erw [DomMulAct.smul_addMonoidHom_apply, zero_smul, map_zero]; rfl
-
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
-  add_smul _ _ _ := ext fun _ ↦ by simp_rw [add_apply, smul_apply', ← map_add, ← add_smul]; rfl
-  zero_smul _ := ext fun _ ↦ by erw [smul_apply', zero_smul, map_zero]; rfl
+  add_smul _ _ _ := ext fun _ ↦ by
+    simp_rw [add_apply, DomMulAct.smul_linearMap_apply, ← map_add, ← add_smul]; rfl
+  zero_smul _ := ext fun _ ↦ by erw [DomMulAct.smul_linearMap_apply, zero_smul, map_zero]; rfl
 
 end Module
 

@@ -9,6 +9,7 @@ import Mathlib.Logic.Basic
 import Mathlib.Init.Order.Defs
 import Mathlib.Tactic.Conv
 import Mathlib.Init.Set
+import Lean.Elab.Tactic.Location
 
 set_option autoImplicit true
 

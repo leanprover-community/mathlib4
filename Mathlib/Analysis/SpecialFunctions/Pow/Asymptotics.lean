@@ -80,7 +80,7 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
 
 lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
     Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
-  show Tendsto (fun z => b^z) atBot (nhds 0)
+  show Tendsto (fun z => b^z) atBot (𝓝 0)
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop
@@ -302,7 +302,7 @@ theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any integer `k` and positive `b`. -/
 theorem isLittleO_zpow_exp_pos_mul_atTop (k : ℤ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ k) =o[atTop] fun x => exp (b * x) := by
-  simpa only [rpow_int_cast] using isLittleO_rpow_exp_pos_mul_atTop k hb
+  simpa only [Real.rpow_int_cast] using isLittleO_rpow_exp_pos_mul_atTop k hb
 #align is_o_zpow_exp_pos_mul_at_top isLittleO_zpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any natural `k` and positive `b`. -/
@@ -347,7 +347,7 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
       IsBigO.of_bound 1 <|
         (tendsto_log_atTop.eventually_ge_atTop 1).mono fun x hx => by
           have hx₀ : 0 ≤ log x := zero_le_one.trans hx
-          simp [norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
+          simp [r', norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
             rpow_le_rpow_of_exponent_le (hx.trans (le_abs_self _))]
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|

@@ -447,8 +447,8 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
   have mk_yz_eq : IsLocalization.mk' L y' z' = IsLocalization.mk' L y ⟨_, hz0'⟩ := by
     rw [Algebra.smul_def, mul_comm _ y, mul_comm _ y'] at yz_eq
     exact IsLocalization.mk'_eq_of_eq (by rw [mul_comm _ y, mul_comm _ y', yz_eq])
-  suffices hy : algebraMap S L (a * y) ∈ Submodule.span K ((algebraMap S L) '' b)
-  · rw [mk_yz_eq, IsFractionRing.mk'_eq_div, ← IsScalarTower.algebraMap_apply,
+  suffices hy : algebraMap S L (a * y) ∈ Submodule.span K ((algebraMap S L) '' b) by
+    rw [mk_yz_eq, IsFractionRing.mk'_eq_div, ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R K L, div_eq_mul_inv, ← mul_assoc, mul_comm, ← map_inv₀, ←
       Algebra.smul_def, ← _root_.map_mul]
     exact (Submodule.span K _).smul_mem _ hy

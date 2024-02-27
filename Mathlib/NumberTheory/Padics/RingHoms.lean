@@ -109,8 +109,8 @@ theorem norm_sub_modPart_aux (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) :
     Int.cast_mul, zero_mul, add_zero] at this
   push_cast
   rw [mul_right_comm, mul_assoc, ← this]
-  suffices rdcp : r.den.Coprime p
-  · rw [rdcp.gcd_eq_one]
+  suffices rdcp : r.den.Coprime p by
+    rw [rdcp.gcd_eq_one]
     simp only [mul_one, cast_one, sub_self]
   apply Coprime.symm
   apply (coprime_or_dvd_of_prime hp_prime.1 _).resolve_right
@@ -272,7 +272,7 @@ This coercion is only a ring homomorphism if it coerces into a ring whose charac
 theorem toZMod_spec : x - (ZMod.cast (toZMod x) : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
   convert sub_zmodRepr_mem x using 2
   dsimp [toZMod, toZModHom]
-  rcases exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
+  rcases Nat.exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
   change ↑((_ : ZMod (0 + p' + 1)).val) = (_ : ℤ_[0 + p' + 1])
   simp only [ZMod.val_nat_cast, add_zero, add_def, Nat.cast_inj, zero_add]
   apply mod_eq_of_lt

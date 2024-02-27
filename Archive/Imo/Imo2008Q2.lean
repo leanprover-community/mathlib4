@@ -3,6 +3,7 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
+import Mathlib.Algebra.Parity
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Tactic.FieldSimp
@@ -71,7 +72,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
     simp only [Set.mem_setOf_eq] at hs_in_W ⊢
     rcases hs_in_W with ⟨x, y, z, h₁, t, ht_gt_zero, hx_t, hy_t, hz_t⟩
     use x, y, z
-    have key_gt_zero : t ^ 2 + t + 1 > 0; linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
+    have key_gt_zero : t ^ 2 + t + 1 > 0 := by linarith [pow_pos ht_gt_zero 2, ht_gt_zero]
     have h₂ : x ≠ 1 := by rw [hx_t]; field_simp; linarith [key_gt_zero]
     have h₃ : y ≠ 1 := by rw [hy_t]; field_simp; linarith [key_gt_zero]
     have h₄ : z ≠ 1 := by rw [hz_t]; linarith [key_gt_zero]
@@ -100,13 +101,13 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
         let x : ℚ := -(t + 1) / t ^ 2
         let y : ℚ := t / (t + 1) ^ 2
         set z : ℚ := -t * (t + 1) with hz_def
-        simp only [Set.mem_image, Prod.exists]
+        simp only [t, W, K, g, Set.mem_image, Prod.exists]
         use x, y, z; constructor
         simp only [Set.mem_setOf_eq]
         · use x, y, z; constructor
           rfl
           · use t; constructor
-            · simp only [gt_iff_lt, lt_max_iff]; right; trivial
+            · simp only [t, gt_iff_lt, lt_max_iff]; right; trivial
             exact ⟨rfl, rfl, rfl⟩
         · have hg : -z = g (x, y, z) := rfl
           rw [hg, hz_def]; ring

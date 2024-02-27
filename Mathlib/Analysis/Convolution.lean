@@ -228,8 +228,8 @@ theorem BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
   rw [← integrableOn_iff_integrable_of_support_subset h2s]
   set s' := (fun t => -t + x₀) ⁻¹' s
   have : ∀ᵐ t : G ∂μ.restrict s,
-      ‖L (f t) (g (x₀ - t))‖ ≤ s.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i : s', ‖g i‖) t
-  · refine' eventually_of_forall _
+      ‖L (f t) (g (x₀ - t))‖ ≤ s.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i : s', ‖g i‖) t := by
+    refine' eventually_of_forall _
     refine' le_indicator (fun t ht => _) fun t ht => _
     · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
       refine' (le_ciSup_set hbg <| mem_preimage.mpr _)
@@ -334,14 +334,15 @@ theorem HasCompactSupport.convolutionExistsAt {x₀ : G}
   let v := (Homeomorph.neg G).trans (Homeomorph.addLeft x₀)
   apply ((u.isCompact_preimage.mpr h).bddAbove_image hg.norm.continuousOn).convolutionExistsAt' L
     isClosed_closure.measurableSet subset_closure (hf.integrableOn_isCompact h)
-  have A : AEStronglyMeasurable (g ∘ v) (μ.restrict (tsupport fun t : G => L (f t) (g (x₀ - t))))
-  · apply (hg.comp v.continuous).continuousOn.aestronglyMeasurable_of_isCompact h
+  have A : AEStronglyMeasurable (g ∘ v)
+      (μ.restrict (tsupport fun t : G => L (f t) (g (x₀ - t)))) := by
+    apply (hg.comp v.continuous).continuousOn.aestronglyMeasurable_of_isCompact h
     exact (isClosed_tsupport _).measurableSet
   convert ((v.continuous.measurable.measurePreserving
       (μ.restrict (tsupport fun t => L (f t) (g (x₀ - t))))).aestronglyMeasurable_comp_iff
     v.measurableEmbedding).1 A
   ext x
-  simp only [Homeomorph.neg, sub_eq_add_neg, coe_toAddUnits, Homeomorph.trans_apply,
+  simp only [v, Homeomorph.neg, sub_eq_add_neg, val_toAddUnits_apply, Homeomorph.trans_apply,
     Equiv.neg_apply, Equiv.toFun_as_coe, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
     Homeomorph.coe_addLeft]
 #align has_compact_support.convolution_exists_at HasCompactSupport.convolutionExistsAt
@@ -634,7 +635,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rw [this]
     refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
       continuous_snd)).continuousOn ?_
-    simp (config := {contextual := true}) [MapsTo]
+    simp (config := {contextual := true}) [s', MapsTo]
   have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
     apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _
       (hf.integrableOn_isCompact k'_comp)
@@ -1314,8 +1315,8 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     constructor
     · rintro ⟨p, x⟩ ⟨hp, -⟩
       exact (A (p, x) hp).differentiableAt.differentiableWithinAt
-    · suffices H : ContDiffOn 𝕜 n (↿f') (s ×ˢ univ)
-      · apply H.congr
+    · suffices H : ContDiffOn 𝕜 n (↿f') (s ×ˢ univ) by
+        apply H.congr
         rintro ⟨p, x⟩ ⟨hp, -⟩
         exact (A (p, x) hp).fderiv
       have B : ∀ (p : P) (x : G), p ∈ s → x ∉ k → fderiv 𝕜 (uncurry g) (p, x) = 0 := by
@@ -1366,13 +1367,13 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine' contDiffOn_convolution_right_with_param_aux eL hes hek _ _ _
     · intro p x hp hx
-      simp only [(· ∘ ·), ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
+      simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
         ContinuousLinearEquiv.map_eq_zero_iff]
       exact hgs _ _ hp hx
     · apply (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2
       convert hf
       ext1 x
-      simp only [ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
+      simp only [ef, ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
         ContinuousLinearEquiv.apply_symm_apply]
     · apply isoE'.symm.contDiff.comp_contDiffOn
       apply hg.comp (isoP.prod isoG).contDiff.contDiffOn
@@ -1390,12 +1391,12 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     rintro ⟨p, x⟩
     simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prod_symm,
       ContinuousLinearEquiv.prod_apply]
-    simp only [convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
+    simp only [R, convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
     rw [ClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
     swap; · exact isoG.symm.toHomeomorph.closedEmbedding
     congr 1
     ext1 a
-    simp only [(· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
+    simp only [ef, eg, eL, (· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
       ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
       ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
       ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply]

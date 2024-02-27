@@ -519,7 +519,7 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
 end
 
 theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
-  -- Porting note: Was `simp`.
+  -- porting note (#10745): was `simp`.
   rw [of_apply, smul_single', mul_one]
 #align monoid_algebra.smul_of MonoidAlgebra.smul_of
 
@@ -611,10 +611,9 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
 
 theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
-  suffices :
-    (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
-      (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g)
-  exact DFunLike.congr_fun this φ
+  suffices (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
+      (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
+    DFunLike.congr_fun this φ
   -- Porting note: `ext` couldn't a find appropriate theorem.
   refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
   -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
@@ -755,7 +754,7 @@ def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
   { Finsupp.singleAddHom 1 with
     map_one' := rfl
     map_mul' := fun x y => by
-      -- Porting note: Was `rw`.
+      -- Porting note (#10691): Was `rw`.
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, singleAddHom_apply,
         single_mul_single, mul_one] }
 #align monoid_algebra.single_one_ring_hom MonoidAlgebra.singleOneRingHom
@@ -1152,12 +1151,12 @@ protected noncomputable def opRingEquiv [Monoid G] :
 #align monoid_algebra.op_ring_equiv_apply MonoidAlgebra.opRingEquiv_apply
 #align monoid_algebra.op_ring_equiv_symm_apply MonoidAlgebra.opRingEquiv_symm_apply
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
     MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
 #align monoid_algebra.op_ring_equiv_single MonoidAlgebra.opRingEquiv_single
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem opRingEquiv_symm_single [Monoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by simp
 #align monoid_algebra.op_ring_equiv_symm_single MonoidAlgebra.opRingEquiv_symm_single
@@ -1858,7 +1857,7 @@ section Algebra
 def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
   { Finsupp.singleAddHom 0 with
     map_one' := rfl
-    -- Porting note: Was `rw`.
+    -- Porting note (#10691): Was `rw`.
     map_mul' := fun x y => by simp only [singleAddHom, single_mul_single, zero_add] }
 #align add_monoid_algebra.single_zero_ring_hom AddMonoidAlgebra.singleZeroRingHom
 #align add_monoid_algebra.single_zero_ring_hom_apply AddMonoidAlgebra.singleZeroRingHom_apply
@@ -1917,12 +1916,12 @@ protected noncomputable def opRingEquiv [AddCommMonoid G] :
 #align add_monoid_algebra.op_ring_equiv_apply AddMonoidAlgebra.opRingEquiv_apply
 #align add_monoid_algebra.op_ring_equiv_symm_apply AddMonoidAlgebra.opRingEquiv_symm_apply
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem opRingEquiv_single [AddCommMonoid G] (r : k) (x : G) :
     AddMonoidAlgebra.opRingEquiv (op (single x r)) = single x (op r) := by simp
 #align add_monoid_algebra.op_ring_equiv_single AddMonoidAlgebra.opRingEquiv_single
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem opRingEquiv_symm_single [AddCommMonoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
     AddMonoidAlgebra.opRingEquiv.symm (single x r) = op (single x r.unop) := by simp
 #align add_monoid_algebra.op_ring_equiv_symm_single AddMonoidAlgebra.opRingEquiv_symm_single

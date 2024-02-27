@@ -459,6 +459,10 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩
 
+protected theorem IntegrableAtFilter.norm (hf : IntegrableAtFilter f l μ) :
+    IntegrableAtFilter (fun x => ‖f x‖) l μ :=
+  Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.norm⟩
+
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
   let ⟨s, hs, hsf⟩ := hl'
@@ -478,17 +482,20 @@ theorem IntegrableAtFilter.inf_of_right (hl : IntegrableAtFilter f l μ) :
 @[simp]
 theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
     IntegrableAtFilter f (l ⊓ μ.ae) μ ↔ IntegrableAtFilter f l μ := by
-  refine' ⟨_, fun h => h.filter_mono inf_le_left⟩
+  refine ⟨?_, fun h ↦ h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hf⟩
-  refine' ⟨t, ht, _⟩
-  refine' hf.integrable.mono_measure fun v hv => _
-  simp only [Measure.restrict_apply hv]
-  refine' measure_mono_ae (mem_of_superset hu fun x hx => _)
-  exact fun ⟨hv, ht⟩ => ⟨hv, ⟨ht, hx⟩⟩
+  refine ⟨t, ht, hf.congr_set_ae <| eventuallyEq_set.2 ?_⟩
+  filter_upwards [hu] with x hx using (and_iff_left hx).symm
 #align measure_theory.integrable_at_filter.inf_ae_iff MeasureTheory.IntegrableAtFilter.inf_ae_iff
 
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 #align measure_theory.integrable_at_filter.of_inf_ae MeasureTheory.IntegrableAtFilter.of_inf_ae
+
+@[simp]
+theorem integrableAtFilter_top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
+  obtain ⟨s, hsf, hs⟩ := h
+  exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/

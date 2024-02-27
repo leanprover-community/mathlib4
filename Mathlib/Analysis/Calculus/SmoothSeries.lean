@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 
@@ -127,7 +125,7 @@ then the series is differentiable and its derivative is the sum of the derivativ
 theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
     HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
-  let : NormedSpace ℝ E; exact NormedSpace.restrictScalars ℝ 𝕜 _
+  let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact hasFDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hf n x) (fun n x _ => hf' n x) (mem_univ _) hf0 (mem_univ _)
 #align has_fderiv_at_tsum hasFDerivAt_tsum
@@ -244,7 +242,7 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
       exact h'f _ _ _ hm
   · intro m hm
     have h'm : ((m + 1 : ℕ) : ℕ∞) ≤ N := by
-      simpa only [ENat.coe_add, Nat.cast_withBot, ENat.coe_one] using ENat.add_one_le_of_lt hm
+      simpa only [ENat.coe_add, ENat.coe_one] using ENat.add_one_le_of_lt hm
     rw [iteratedFDeriv_tsum hf hv h'f hm.le]
     have A :
       ∀ n x, HasFDerivAt (iteratedFDeriv 𝕜 m (f n)) (fderiv 𝕜 (iteratedFDeriv 𝕜 m (f n)) x) x :=
@@ -292,8 +290,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
       (hv k (hk.trans hm)).subtype _
     refine' contDiff_tsum (fun i => (hf i).of_le hm) h'u _
     rintro k ⟨i, hi⟩ x hk
-    dsimp
-    simp only [Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
+    simp only [t, T, Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
       exists_prop, not_exists, not_and, not_lt] at hi
     exact hi k (Nat.lt_succ_iff.2 (WithTop.coe_le_coe.1 hk)) x
 #align cont_diff_tsum_of_eventually contDiff_tsum_of_eventually

@@ -190,7 +190,7 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     exact card_le_card (slice_subset_falling _ _)
   rw [succ_eq_add_one] at *
   rw [sum_range_succ, ← slice_union_shadow_falling_succ,
-    card_disjoint_union (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
+    card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
     add_comm]
   rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
   exact
@@ -242,7 +242,7 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     rw [mem_range] at hr
     refine' div_le_div_of_le_left _ _ _ <;> norm_cast
     · exact Nat.zero_le _
-    · exact choose_pos (lt_succ_iff.1 hr)
+    · exact choose_pos (Nat.lt_succ_iff.1 hr)
     · exact choose_le_middle _ _
 #align finset.is_antichain.sperner Finset.IsAntichain.sperner
 
