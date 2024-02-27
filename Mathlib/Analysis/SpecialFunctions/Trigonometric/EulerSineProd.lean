@@ -227,7 +227,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     have aux' : 2 * n.succ = 2 * n + 2 := by rw [Nat.succ_eq_add_one, mul_add, mul_one]
     have : (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n.succ)) = (2 * (n : ℝ) + 1) / (2 * n + 2) * C := by
       rw [integral_cos_pow_eq]
-      dsimp only
+      dsimp only [C]
       rw [integral_cos_pow_eq, aux', integral_sin_pow, sin_zero, sin_pi, pow_succ,
         zero_mul, zero_mul, zero_mul, sub_zero, zero_div,
         zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_eq_ofNat]

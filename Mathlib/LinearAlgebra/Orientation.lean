@@ -241,7 +241,7 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
   have H : LinearIndependent R ![f x, 1] := by
     convert h.map' f.toLinearMap f.ker
     ext i
-    fin_cases i <;> simp
+    fin_cases i <;> simp [f]
   rw [linearIndependent_iff'] at H
   simpa using H Finset.univ ![1, -f x] (by simp [Fin.sum_univ_succ]) 0 (by simp)
 #align orientation.eq_or_eq_neg_of_is_empty Orientation.eq_or_eq_neg_of_isEmpty
