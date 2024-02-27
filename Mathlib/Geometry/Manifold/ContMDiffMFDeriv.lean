@@ -510,7 +510,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
         exact (chartAt (ModelProd H' E') (tangentMapWithin I I' f s p)).left_inv this
       · simp only [hq, mfld_simps]
     have E : tangentMapWithin I I' f s' q = tangentMapWithin I I' f s q := by
-      refine' tangentMapWithin_subset (by unfold_let ; mfld_set_tac) U'q _
+      refine' tangentMapWithin_subset (by unfold_let; mfld_set_tac) U'q _
       apply hf.mdifferentiableOn one_le_n
       simp only [hq, mfld_simps]
     dsimp only [Function.comp_def] at A B C D E ⊢

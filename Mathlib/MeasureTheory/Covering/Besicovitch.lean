@@ -791,8 +791,8 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
           (N / (N + 1) : ℝ≥0∞) ^ n * μ s := by
       intro n
       induction' n with n IH
-      · simp only [u, le_refl, diff_empty, one_mul, iUnion_false, iUnion_empty, pow_zero, Nat.zero_eq,
-          Function.iterate_zero, id.def, Finset.not_mem_empty]
+      · simp only [u, le_refl, diff_empty, one_mul, iUnion_false, iUnion_empty, pow_zero,
+          Nat.zero_eq, Function.iterate_zero, id.def, Finset.not_mem_empty]
       calc
         μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n.succ), closedBall p.fst p.snd) ≤
             N / (N + 1) * μ (s \ ⋃ (p : α × ℝ) (_ : p ∈ u n), closedBall p.fst p.snd) := by

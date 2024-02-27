@@ -455,7 +455,8 @@ lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι →
   intro s hs
   classical
   rw [← Finset.sup_erase_bot]
-  -- FIXME nightly-testing (Scott: I'm unhappy with this fix. We need to change the simp_config in aesop, not mutilate the names.)
+  -- FIXME nightly-testing (Scott: I'm unhappy with this fix.
+  -- We need to change the simp_config in aesop, not mutilate the names.)
   let __t := s.erase ⊥
   replace hf : InjOn f (f ⁻¹' __t) := fun i hi j _ hij ↦ by refine hf ?_ ?_ hij <;> aesop
   have : (Finset.erase (insert i (__t.preimage _ hf)) i).image f = __t := by
