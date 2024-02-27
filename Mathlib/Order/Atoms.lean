@@ -717,18 +717,18 @@ protected noncomputable def completeLattice : CompleteLattice α :=
 
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
-  { IsSimpleOrder.completeLattice,
-    IsSimpleOrder.booleanAlgebra with
+  let src := IsSimpleOrder.completeLattice
+  let src₁ := IsSimpleOrder.booleanAlgebra
+  { src, src₁ with
     iInf_sup_le_sup_sInf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp only [bot_sup_eq, ← sInf_eq_iInf]
-        exact le_rfl
+      · simp [bot_sup_eq, ← sInf_eq_iInf]
       · simp only [top_le_iff, top_sup_eq, iInf_top, le_sInf_iff, le_refl]
     inf_sSup_le_iSup_inf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp only [le_bot_iff, sSup_eq_bot, bot_inf_eq, iSup_bot, le_refl]
       · simp only [top_inf_eq, ← sSup_eq_iSup]
-        exact le_rfl }
+        exact le_rfl } -- v4.7.0-rc1 issues
 #align is_simple_order.complete_boolean_algebra IsSimpleOrder.completeBooleanAlgebra
 
 end IsSimpleOrder
