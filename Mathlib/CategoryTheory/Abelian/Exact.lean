@@ -98,8 +98,8 @@ open List in
 theorem exact_tfae :
     TFAE [Exact f g, f ≫ g = 0 ∧ kernel.ι g ≫ cokernel.π f = 0,
       imageSubobject f = kernelSubobject g] := by
-  tfae_have : 1 ↔ 2 := by apply exact_iff
-  tfae_have : 1 ↔ 3 := by apply exact_iff_image_eq_kernel
+  tfae_have 1 ↔ 2 := by apply exact_iff
+  tfae_have 1 ↔ 3 := by apply exact_iff_image_eq_kernel
   tfae_finish
 #align category_theory.abelian.exact_tfae CategoryTheory.Abelian.exact_tfae
 
@@ -252,11 +252,11 @@ variable (Z)
 
 open List in
 theorem tfae_mono : TFAE [Mono f, kernel.ι f = 0, Exact (0 : Z ⟶ X) f] := by
-  tfae_have : 3 → 2 := kernel_ι_eq_zero_of_exact_zero_left Z
-  tfae_have : 1 → 3 := by
+  tfae_have 3 → 2 := kernel_ι_eq_zero_of_exact_zero_left Z
+  tfae_have 1 → 3 := by
     intros
     exact exact_zero_left_of_mono Z
-  tfae_have : 2 → 1 := mono_of_kernel_ι_eq_zero _
+  tfae_have 2 → 1 := mono_of_kernel_ι_eq_zero _
   tfae_finish
 #align category_theory.abelian.tfae_mono CategoryTheory.Abelian.tfae_mono
 
@@ -268,15 +268,15 @@ theorem mono_iff_kernel_ι_eq_zero : Mono f ↔ kernel.ι f = 0 :=
 
 open List in
 theorem tfae_epi : TFAE [Epi f, cokernel.π f = 0, Exact f (0 : Y ⟶ Z)] := by
-  tfae_have : 3 → 2 := by
+  tfae_have 3 → 2 := by
     rw [exact_iff]
     rintro ⟨-, h⟩
     exact zero_of_epi_comp _ h
-  tfae_have : 1 → 3 := by
+  tfae_have 1 → 3 := by
     rw [exact_iff]
     intro
     exact ⟨by simp, by simp [cokernel.π_of_epi]⟩
-  tfae_have : 2 → 1 := epi_of_cokernel_π_eq_zero _
+  tfae_have 2 → 1 := epi_of_cokernel_π_eq_zero _
   tfae_finish
 #align category_theory.abelian.tfae_epi CategoryTheory.Abelian.tfae_epi
 

@@ -151,11 +151,11 @@ theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
 theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
-  tfae_have : 1 ↔ 2 := Iff.rfl
-  tfae_have : 2 → 3
+  tfae_have 1 ↔ 2 := Iff.rfl
+  tfae_have 2 → 3
   | h => by simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
-  tfae_have : 3 ↔ 4 := Icc_subset_Icc_iff I.lower_le_upper
-  tfae_have : 4 → 2
+  tfae_have 3 ↔ 4 := Icc_subset_Icc_iff I.lower_le_upper
+  tfae_have 4 → 2
   | h, x, hx, i => Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 #align box_integral.box.le_tfae BoxIntegral.Box.le_TFAE

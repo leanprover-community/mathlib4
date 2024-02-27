@@ -866,15 +866,15 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
       s ∈ 𝓝[Ioo a b] a,
       ∃ u ∈ Ioc a b, Ioo a u ⊆ s,
       ∃ u ∈ Ioi a, Ioo a u ⊆ s] := by
-  tfae_have : 1 ↔ 2 := by
+  tfae_have 1 ↔ 2 := by
     rw [nhdsWithin_Ioc_eq_nhdsWithin_Ioi hab]
-  tfae_have : 1 ↔ 3 := by
+  tfae_have 1 ↔ 3 := by
     rw [nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
-  tfae_have : 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
-  tfae_have : 5 → 1 := by
+  tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+  tfae_have 5 → 1 := by
     rintro ⟨u, hau, hu⟩
     exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi ⟨le_refl a, hau⟩) hu
-  tfae_have : 1 → 4
+  tfae_have 1 → 4
   | h => by
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
@@ -1014,13 +1014,13 @@ theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
       s ∈ 𝓝[Ico a b] a,
       ∃ u ∈ Ioc a b, Ico a u ⊆ s,
       ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
-  tfae_have : 1 ↔ 2 := by
+  tfae_have 1 ↔ 2 := by
     rw [nhdsWithin_Icc_eq_nhdsWithin_Ici hab]
-  tfae_have : 1 ↔ 3 := by
+  tfae_have 1 ↔ 3 := by
     rw [nhdsWithin_Ico_eq_nhdsWithin_Ici hab]
-  tfae_have : 1 ↔ 5 := (nhdsWithin_Ici_basis' ⟨b, hab⟩).mem_iff
-  tfae_have : 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
-  tfae_have : 5 → 4 := by
+  tfae_have 1 ↔ 5 := (nhdsWithin_Ici_basis' ⟨b, hab⟩).mem_iff
+  tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+  tfae_have 5 → 4 := by
     rintro ⟨u, hua, hus⟩
     exact
       ⟨min u b, ⟨lt_min hua hab, min_le_right _ _⟩,

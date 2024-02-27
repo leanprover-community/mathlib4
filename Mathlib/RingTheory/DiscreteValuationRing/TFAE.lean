@@ -171,16 +171,16 @@ theorem tfae_of_isNoetherianRing_of_localRing_of_isDomain
         (maximalIdeal R).IsPrincipal,
         finrank (ResidueField R) (CotangentSpace R) ≤ 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
-  tfae_have : 1 → 2 := fun _ ↦ inferInstance
-  tfae_have : 2 → 1 := fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
-  tfae_have : 1 → 4
+  tfae_have 1 → 2 := fun _ ↦ inferInstance
+  tfae_have 2 → 1 := fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
+  tfae_have 1 → 4
   | H => ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
-  tfae_have : 4 → 3 :=
+  tfae_have 4 → 3 :=
     fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
-  tfae_have : 3 → 5 := fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
-  tfae_have : 6 ↔ 5 := finrank_cotangentSpace_le_one_iff
-  tfae_have : 5 → 7 := exists_maximalIdeal_pow_eq_of_principal R
-  tfae_have : 7 → 2 := by
+  tfae_have 3 → 5 := fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
+  tfae_have 6 ↔ 5 := finrank_cotangentSpace_le_one_iff
+  tfae_have 5 → 7 := exists_maximalIdeal_pow_eq_of_principal R
+  tfae_have 7 → 2 := by
     rw [ValuationRing.iff_ideal_total]
     intro H
     constructor

@@ -54,13 +54,13 @@ theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical
-    tfae_have : 1 → 2
+    tfae_have 1 → 2
     | H => ⟨fun I => isPrincipal_of_FG _ (IsNoetherian.noetherian _)⟩
-    tfae_have : 2 → 3
+    tfae_have 2 → 3
     | _ => inferInstance
-    tfae_have : 3 → 4
+    tfae_have 3 → 4
     | _ => inferInstance
-    tfae_have : 4 → 1 := by
+    tfae_have 4 → 1 := by
       rintro ⟨h⟩
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
       apply RelEmbedding.wellFounded _ h

@@ -372,7 +372,7 @@ theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
           P (Scheme.Γ.map (𝒰.map i ≫ f).op),
         ∀ {U : Scheme} (g : U ⟶ X) [IsAffine U] [IsOpenImmersion g],
           P (Scheme.Γ.map (g ≫ f).op)] := by
-  tfae_have : 1 → 4
+  tfae_have 1 → 4
   | H, U, g, _, hg => by
     skip
     specialize H ⟨⟨_, hg.base_open.open_range⟩, rangeIsAffineOpenOfOpenImmersion g⟩
@@ -381,11 +381,11 @@ theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
       Subtype.range_coe.symm).hom.op),
       ← Scheme.Γ.map_comp, ← op_comp, IsOpenImmersion.isoOfRangeEq_hom_fac_assoc] at H
     exact H
-  tfae_have : 4 → 3
+  tfae_have 4 → 3
   | H, 𝒰, _, i => by skip; apply H
-  tfae_have : 3 → 2
+  tfae_have 3 → 2
   | H => by refine' ⟨X.affineCover, inferInstance, H _⟩
-  tfae_have : 2 → 1 := by
+  tfae_have 2 → 1 := by
     rintro ⟨𝒰, _, h𝒰⟩
     exact sourceAffineLocally_of_source_openCover hP f 𝒰 h𝒰
   tfae_finish
@@ -397,7 +397,7 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
         ∃ 𝒰 : Scheme.OpenCover.{u} X, ∀ i : 𝒰.J, sourceAffineLocally (@P) (𝒰.map i ≫ f),
         ∀ (𝒰 : Scheme.OpenCover.{u} X) (i : 𝒰.J), sourceAffineLocally (@P) (𝒰.map i ≫ f),
         ∀ {U : Scheme} (g : U ⟶ X) [IsOpenImmersion g], sourceAffineLocally (@P) (g ≫ f)] := by
-  tfae_have : 1 → 4
+  tfae_have 1 → 4
   | H, U, g, hg, V => by
     skip
     -- Porting note: this has metavariable if I put it directly into rw
@@ -409,11 +409,11 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
     have : IsOpenImmersion <| (Scheme.ofRestrict U (Opens.openEmbedding V.val)) ≫ g :=
       LocallyRingedSpace.IsOpenImmersion.comp _ _
     apply H
-  tfae_have : 4 → 3
+  tfae_have 4 → 3
   | H, 𝒰, _, i => by skip; apply H
-  tfae_have : 3 → 2
+  tfae_have 3 → 2
   | H => by refine' ⟨X.affineCover, H _⟩
-  tfae_have : 2 → 1 := by
+  tfae_have 2 → 1 := by
     rintro ⟨𝒰, h𝒰⟩
     -- Porting note: this has metavariable if I put it directly into rw
     have := (hP.affine_openCover_TFAE f).out 0 1

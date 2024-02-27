@@ -68,10 +68,10 @@ theorem effectiveEpi_tfae
     , Epi π
     , Function.Surjective π
     ] := by
-  tfae_have : 1 → 2
+  tfae_have 1 → 2
   | _ => inferInstance
-  tfae_have : 2 ↔ 3 := epi_iff_surjective π
-  tfae_have : 3 → 1 := fun hπ ↦ ⟨⟨struct π hπ⟩⟩
+  tfae_have 2 ↔ 3 := epi_iff_surjective π
+  tfae_have 3 → 1 := fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
 instance : Preregular Profinite where
@@ -96,12 +96,12 @@ theorem effectiveEpiFamily_tfae
     , Epi (Sigma.desc π)
     , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
     ] := by
-  tfae_have : 2 → 1
+  tfae_have 2 → 1
   | _ => by
     simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
-  tfae_have : 1 → 2
+  tfae_have 1 → 2
   | _ => inferInstance
-  tfae_have : 3 → 2
+  tfae_have 3 → 2
   | e => by
     rw [epi_iff_surjective]
     intro b
@@ -109,7 +109,7 @@ theorem effectiveEpiFamily_tfae
     refine ⟨Sigma.ι X t x, ?_⟩
     change (Sigma.ι X t ≫ Sigma.desc π) x = _
     simpa using h
-  tfae_have : 2 → 3
+  tfae_have 2 → 3
   | e => by
     rw [epi_iff_surjective] at e
     let i : ∐ X ≅ finiteCoproduct X :=
