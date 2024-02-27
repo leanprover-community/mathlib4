@@ -18,136 +18,177 @@ open Simplicial
 open WithInitial
 open SimplexCategory.WithInitial
 
---Computable version of tensor functor. Really just want to work with (
--- (MonoidalCategory.tensor (Type u))
-def tensorTypes : Type u × Type u ⥤  Type u where
-  obj := (MonoidalCategory.tensor (Type u)).obj
-  map {X Y} f := fun s => (f.1 s.1, f.2 s.2)
+namespace SSet
+namespace FromWithInitial
 
-lemma tensorEquiv : (MonoidalCategory.tensor (Type u)) = tensorTypes := rfl
-
-def joinPair (S T : SSet.FromWithInitial) :
+/-- The functor `(WithInitial SimplexCategory × WithInitial SimplexCategory)ᵒᵖ ⥤ Type u`
+induced by two objects `S` and `T` in `SSet.FromWithInitial` taking `(op X,op Z)`
+to `S.obj (op X) × T.obj (op Z)`. -/
+def pair (S T : SSet.FromWithInitial) :
     (WithInitial SimplexCategory × WithInitial SimplexCategory)ᵒᵖ ⥤ Type u :=
-  (prodOpEquiv (WithInitial SimplexCategory)).functor ⋙ S.prod T ⋙ tensorTypes
+  (prodOpEquiv (WithInitial SimplexCategory)).functor ⋙ S.prod T ⋙
+  {obj := (MonoidalCategory.tensor (Type u)).obj, map := fun f s => (f.1 s.1, f.2 s.2)}
 
-def joinNatTrans {S1 S2 T1 T2 : SSet.FromWithInitial}
-    (η1 : S1 ⟶ T1) (η2 : S2 ⟶ T2) : (joinPair S1 S2) ⟶ (joinPair T1 T2) :=
+/-- Given two morphisms in `SSet.FromWithInitial` the corresponding natural transformation
+between paired objects. -/
+def pairMap {S1 S2 T1 T2 : SSet.FromWithInitial}
+    (η1 : S1 ⟶ T1) (η2 : S2 ⟶ T2) : pair S1 S2 ⟶ pair T1 T2 :=
   whiskerRight
     (whiskerLeft
       (prodOpEquiv (WithInitial SimplexCategory)).functor
       (NatTrans.prod η1 η2))
-    tensorTypes
+    {obj := (MonoidalCategory.tensor (Type u)).obj, map := fun f s => (f.1 s.1, f.2 s.2)}
 
-inductive JoinStruct (S T : SSet.FromWithInitial)
+/-- Given an `X` in `WithInitial SimplexCategory` and `S`, `T` in `SSet.FromWithInitial`, the
+disjoint union of types `S.obj (op Z) × T.obj (op Y)` such that `Z` and `Y` split `X` -/
+inductive joinType (S T : SSet.FromWithInitial)
     (X : WithInitial SimplexCategory)  where
   | comp : (i : Fin (Nat.succ (len X)))
-    → (joinPair S T).obj (Opposite.op (Split.obj X i))
-    → JoinStruct S T X
+    → (pair S T).obj (Opposite.op (Split.obj X i))
+    → joinType S T X
 
-def joinMap (S T : SSet.FromWithInitial)
-    {X Y : WithInitial SimplexCategory} (f : X ⟶ Y)
-    (s : JoinStruct S T Y) : JoinStruct S T X :=
-  match s with
-  | JoinStruct.comp i s =>
-    JoinStruct.comp (Split.sourceValue f i) ((joinPair S T).map (Split.map f i).op s)
-
-lemma JoinStruct.ext {S T : SSet.FromWithInitial}
+lemma joinType_ext {S T : SSet.FromWithInitial}
     {X : WithInitial SimplexCategory}
-    (s t : JoinStruct S T X) (h1 : s.1 = t.1)
-    (h : (joinPair S T).map ((Split.objEquiv h1).inv).op s.2 =t.2):
+    (s t : joinType S T X) (h1 : s.1 = t.1)
+    (h : (pair S T).map ((Split.indexEqToIso h1).inv).op s.2 =t.2):
     s = t := by
   match s, t with
-  | JoinStruct.comp i s, JoinStruct.comp j t =>
+  | joinType.comp i s, joinType.comp j t =>
     simp at h1
     subst h1
     congr
-    rw [Split.objEquiv_refl] at h
+    rw [Split.indexEqToIso_refl] at h
     simp only [Iso.refl_inv, op_id, FunctorToTypes.map_id_apply] at h
     exact h
 
+/-- Given a morphism `f : X ⟶ Y` in `SSet.FromWithInitial`, a map from `joinType S T Y` to
+`joinType S T X`. -/
+def joinTypeMap (S T : SSet.FromWithInitial)
+    {X Y : WithInitial SimplexCategory} (f : X ⟶ Y)
+    (s : joinType S T Y) : joinType S T X :=
+  match s with
+  | joinType.comp i s =>
+    joinType.comp (Split.sourceValue f i) ((pair S T).map (Split.map f i).op s)
+
+/-- The join of two objects in `SSet.FromWithInitial`. -/
 def join (S T : SSet.FromWithInitial) : SSet.FromWithInitial where
-  obj X := JoinStruct S T (Opposite.unop X)
-  map f := joinMap S T f.unop
+  obj X := joinType S T (Opposite.unop X)
+  map f := joinTypeMap S T f.unop
   map_id Z := by
     match Z with
     | ⟨Z⟩ =>
     funext s
     simp
-    refine JoinStruct.ext _ _ (Split.sourceValue_id s.1) ?_
-    simp [joinMap]
-    rw [← types_comp_apply ((joinPair S T).map _) ((joinPair S T).map _),
-      ← (joinPair S T).map_comp, ← op_comp]
+    refine joinType_ext _ _ (Split.sourceValue_of_id s.1) ?_
+    simp [joinTypeMap]
+    rw [← types_comp_apply ((pair S T).map _) ((pair S T).map _),
+      ← (pair S T).map_comp, ← op_comp]
     rw [ Split.map_id s.1, op_id, FunctorToTypes.map_id_apply]
   map_comp {X Y Z} f g := by
     match X, Y, Z, f, g with
     | ⟨X⟩, ⟨Y⟩, ⟨Z⟩, ⟨f⟩, ⟨g⟩ =>
     funext s
     symm
-    refine JoinStruct.ext ((joinMap S T g ∘  joinMap S T f) s) (joinMap S T (g ≫ f) s)
-     (Split.sourceValue_comp g f s.1) ?_
-    simp [joinMap]
-    repeat rw [← types_comp_apply ((joinPair S T).map _) ((joinPair S T).map _),
-    ← (joinPair S T).map_comp, ← op_comp]
+    refine joinType_ext ((joinTypeMap S T g ∘  joinTypeMap S T f) s) (joinTypeMap S T (g ≫ f) s)
+     (Split.sourceValue_of_comp g f s.1) ?_
+    simp [joinTypeMap]
+    repeat rw [← types_comp_apply ((pair S T).map _) ((pair S T).map _),
+    ← (pair S T).map_comp, ← op_comp]
     apply congrFun
     repeat apply congrArg
     rw [Category.assoc, Split.map_comp g f s.1]
 
-def join.map {S1 T1 S2 T2: SSet.FromWithInitial} (η : S1 ⟶ S2)
+/-- The join of two morphisms in `SSet.FromWithInitial`. -/
+def joinMap {S1 T1 S2 T2: SSet.FromWithInitial} (η : S1 ⟶ S2)
     (ε : T1 ⟶ T2) : join S1 T1 ⟶ join S2 T2 where
-  app X := fun (s : JoinStruct S1 T1 (Opposite.unop X)) =>
-      JoinStruct.comp s.1
-        ((joinNatTrans η ε).app (Opposite.op (Split.obj (Opposite.unop X) s.1)) s.2)
+  app X := fun (s : joinType S1 T1 (Opposite.unop X)) =>
+      joinType.comp s.1
+        ((pairMap η ε).app (Opposite.op (Split.obj (Opposite.unop X) s.1)) s.2)
   naturality {X Y} f := by
     match X, Y, f with
     | ⟨X⟩, ⟨Y⟩, ⟨f⟩ =>
     funext s
-    apply JoinStruct.ext _ _ (by rfl) ?_
-    change (joinPair S2 T2).map _ (((joinPair S1 T1).map _ ≫ (joinNatTrans η ε).app _) _) =_
-    erw [(joinNatTrans η ε).naturality, Split.objEquiv_refl, op_id, (joinPair S2 T2).map_id]
+    apply joinType_ext _ _ (by rfl) ?_
+    change (pair S2 T2).map _ (((pair S1 T1).map _ ≫ (pairMap η ε).app _) _) =_
+    erw [(pairMap η ε).naturality, Split.indexEqToIso_refl, op_id, (pair S2 T2).map_id]
     rfl
 
-def join.func : (SSet.FromWithInitial × SSet.FromWithInitial) ⥤ SSet.FromWithInitial where
+/-- The functor from `SSet.FromWithInitial × SSet.FromWithInitial` to `SSet.FromWithInitial`
+taking pairs of objects and morphisms to their join. -/
+def joinFunc : (SSet.FromWithInitial × SSet.FromWithInitial) ⥤ SSet.FromWithInitial where
   obj S := join S.1 S.2
-  map η := join.map η.1 η.2
+  map η := joinMap η.1 η.2
 
-open SSet.FromWithInitial in
+section standardSimplex
+open SSet.FromWithInitial
+/-- The join of standard simplicies in `WithInitial SimplexCategory`-/
 def joinStandardSimplex (X : WithInitial SimplexCategory) (i : Fin (Nat.succ (len X))) :
-    standardSimplex.obj X ≅
-     ((standardSimplex.prod standardSimplex) ⋙ join.func).obj (Split.obj X i) where
-  hom := {
-    app := fun Δop => fun f => by
-      let f' := standardSimplex.objEquiv X Δop f
-      let p := Split.sourceValue f' i
-      let Δ1Δ2 :=  ((prodOpEquiv (WithInitial SimplexCategory)).functor.obj
-         (Opposite.op (Split.obj Δop.unop p)))
-      let m1 : (standardSimplex.obj (Split.obj X i).1).obj Δ1Δ2.1 :=
-         (standardSimplex.objEquiv (Split.obj X i).1 Δ1Δ2.1).invFun (Split.map f' i ).1
-      let m2 : (standardSimplex.obj (Split.obj X i).2).obj Δ1Δ2.2 :=
-         (standardSimplex.objEquiv (Split.obj X i).2 Δ1Δ2.2).invFun (Split.map f' i ).2
-      exact JoinStruct.comp p (m1,m2)
-    naturality := by
-      intro Y Z f
-      funext s
-      refine JoinStruct.ext _ _ ?_ ?_
-      sorry
-  }
-  inv := {
-    app := fun Δop => fun f => by
-      let p := f.1
-      let Δ1Δ2 :=  ((prodOpEquiv (WithInitial SimplexCategory)).functor.obj
-         (Opposite.op (Split.obj Δop.unop f.1)))
-      let m1 : (standardSimplex.obj (Split.obj X i).1).obj Δ1Δ2.1 := f.2.1
-      let f1 : (Opposite.unop Δ1Δ2.1) ⟶ (Split.obj X i).1 :=
-         (standardSimplex.objEquiv (Split.obj X i).1 Δ1Δ2.1).toFun f.2.1
-      let f2 : (Opposite.unop Δ1Δ2.2) ⟶ (Split.obj X i).2 :=
-         (standardSimplex.objEquiv (Split.obj X i).2 Δ1Δ2.2).toFun f.2.2
-      let o1 := SimplexCategory.WithInitial.join.obj ((Opposite.unop Δ1Δ2.1), (Opposite.unop Δ1Δ2.2))
-      let o2 := SimplexCategory.WithInitial.join.obj ((Split.obj X i).1, (Split.obj X i).2)
-      let f : o1 ⟶ o2 := SimplexCategory.WithInitial.join.map (f1,f2)
-      let f' : Δop.unop ⟶ X := sorry
+    SSet.FromWithInitial :=
+  ((standardSimplex.prod standardSimplex) ⋙ joinFunc).obj (Split.obj X i)
 
+/-- An equivalence between the type `(joinStandardSimplex X i).obj Δop` and the type
+`Split.hom Δop.unop X i`. -/
+def joinStandardSimplexTypeEquiv (X : WithInitial SimplexCategory) (i : Fin (Nat.succ (len X)))
+    (Δop : (WithInitial SimplexCategory)ᵒᵖ) :
+    (joinStandardSimplex X i).obj Δop ≃ Split.hom Δop.unop X i where
+  toFun s :=
+    Split.hom.split s.1
+      ((standardSimplex.objEquiv (Split.obj X i).1
+         (Opposite.op (Split.obj Δop.unop s.1).1)).toFun s.2.1,
+       (standardSimplex.objEquiv (Split.obj X i).2
+          (Opposite.op (Split.obj Δop.unop s.1).2)).toFun s.2.2)
+  invFun s :=
+    joinType.comp s.1
+      ((standardSimplex.objEquiv (Split.obj X i).1
+         (Opposite.op (Split.obj Δop.unop s.1).1)).invFun s.2.1,
+       (standardSimplex.objEquiv (Split.obj X i).2
+          (Opposite.op (Split.obj Δop.unop s.1).2)).invFun s.2.2)
+  left_inv := by
+    aesop_cat
+  right_inv := by
+    aesop_cat
 
+lemma joinStandardSimplexTypeEquiv_nat (X : WithInitial SimplexCategory) (i : Fin (Nat.succ (len X)))
+    {Δop1 Δop2 : (WithInitial SimplexCategory)ᵒᵖ} (f : Δop1 ⟶  Δop2) :
+    (Equiv.toIso (joinStandardSimplexTypeEquiv X i Δop2).symm).hom ∘ (Split.homMap X i f.unop)
+    = (joinStandardSimplex X i).map f ∘ (Equiv.toIso (joinStandardSimplexTypeEquiv X i Δop1).symm).hom := by
+  rfl
 
-      sorry
+lemma standardSimplexType_nat (X : WithInitial SimplexCategory)
+    {Δop1 Δop2 : (WithInitial SimplexCategory)ᵒᵖ} (f : Δop1 ⟶  Δop2) :
+    ((Equiv.toIso (standardSimplex.objEquiv X Δop2)).hom ∘ (standardSimplex.obj X).map f) =
+    (CategoryStruct.comp f.unop ) ∘ (Equiv.toIso (standardSimplex.objEquiv X Δop1)).hom := by
+  rfl
 
-  }
+/-- An equivalance between
+` (standardSimplex.obj X).obj Δop` and `(joinStandardSimplexEquiv X i).obj Δop` -/
+def joinStandardSimplexEquivStandard (X : WithInitial SimplexCategory) (i : Fin (Nat.succ (len X)))
+    (Δop : (WithInitial SimplexCategory)ᵒᵖ) :
+    (standardSimplex.obj X).obj Δop ≅ (joinStandardSimplex X i).obj Δop  :=
+  Equiv.toIso (standardSimplex.objEquiv X Δop) ≪≫
+  Equiv.toIso (Split.splitJoinUnitEquiv X Δop.unop i).symm ≪≫
+  Equiv.toIso (joinStandardSimplexTypeEquiv X i Δop).symm
+
+/-- An equivalence in  `WithInitial SimplexCategory` between the standard simplex
+`standardSimplex.obj X` and for any `i` in `Fin (Nat.succ (len X))` the object
+`joinStandardSimplex X i `. -/
+def joinStandardSimplexEquiv (X : WithInitial SimplexCategory) (i : Fin (Nat.succ (len X))) :
+    standardSimplex.obj X ≅ joinStandardSimplex X i :=  by
+  refine NatIso.ofComponents (joinStandardSimplexEquivStandard X i) ?_
+  intro Z1 Z2 f
+  change (
+    (Equiv.toIso (joinStandardSimplexTypeEquiv X i Z2).symm).hom
+    ∘ (Equiv.toIso (Split.splitJoinUnitEquiv X Z2.unop i).symm ).hom
+    ∘ (Equiv.toIso (standardSimplex.objEquiv X Z2)).hom
+    ∘ (standardSimplex.toPrefunctor.obj X).map f
+    )  =_
+  rw [standardSimplexType_nat]
+  rw [← Function.comp.assoc, ← Function.comp.assoc]
+  nth_rewrite 2 [Function.comp.assoc]
+  rw [Split.splitJoinUnitEquiv_naturality_equiv, ← Function.comp.assoc,
+    joinStandardSimplexTypeEquiv_nat]
+  rfl
+
+end standardSimplex
+end FromWithInitial
+end SSet
