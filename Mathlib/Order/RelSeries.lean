@@ -380,6 +380,10 @@ def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r
   delta cons
   rw [last_append]
 
+/--
+Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
+a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
+-/
 @[simps! length]
 def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r :=
   p.append (singleton r newLast) rel

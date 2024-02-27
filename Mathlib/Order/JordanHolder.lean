@@ -323,16 +323,12 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       _ ≃ Option (Fin s₂.length) := (Functor.mapEquiv Option hequiv.choose)
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
   ⟨e, fun i => by
-    refine' Fin.lastCases _ _ i
-    · erw [snoc_castSucc, snoc_castSucc]
+    refine Fin.lastCases ?_ ?_ i
+    · rw [snoc_castSucc, snoc_castSucc]
       convert hlast using 2
       · exact last_snoc _ _ _
-      · congr; ext; simp
-      · simp only [snoc, append_length, singleton_length, Nat.add_zero,
-        Equiv.instTransSortSortSortEquivEquivEquiv_trans, Equiv.trans_apply, finSuccEquivLast_last,
-        Functor.mapEquiv_apply, Option.map_eq_map, Option.map_none', finSuccEquivLast_symm_none,
-        Fin.succ_last]
-        exact last_append _ _ _
+      · aesop
+      · simpa using last_append _ _ _
     · intro i
       simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
 #align composition_series.equivalent.snoc CompositionSeries.Equivalent.snoc
