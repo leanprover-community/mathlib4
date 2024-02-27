@@ -108,6 +108,26 @@ def res' {K : Type*} [Field K] (σ : K ≃+* K) : 𝓞 K ≃+* 𝓞 K :=
 def res {K : Type*} [Field K] {τ : Type*} [EquivLike τ K K] [RingEquivClass τ K K] (σ : τ) : 𝓞 K ≃+* 𝓞 K :=
   res' (RingEquivClass.toRingEquiv σ)
 
+theorem keythm {K : Type*} [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K] :
+    Subgroup.closure (⋃ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), {σ : K ≃ₐ[ℚ] K | ∀ x : (𝓞 K), res σ x - x ∈ q}) = ⊤ := by
+  -- key idea: fixed field of this subgroup has no ramified primes
+  let G := K ≃ₐ[ℚ] K
+  let S := ⋃ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), {σ : G | ∀ x : (𝓞 K), res σ x - x ∈ q}
+  let H := Subgroup.closure S
+  let F := fixedField H
+  change H = ⊤
+  suffices h : F = ⊥ by
+    rw [← fixingSubgroup_fixedField H]
+    change fixingSubgroup F = ⊤
+    rw [h]
+    -- easy lemma for mathlib
+    ext
+    simp [IntermediateField.fixingSubgroup, _root_.fixingSubgroup, fixingSubmonoid, mem_bot]
+
+  sorry
+
+#check NumberField.abs_discr_gt_two
+
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
   let f : ℚ[X] := X ^ n - X - 1
@@ -121,7 +141,7 @@ theorem X_pow_sub_X_sub_one_gal :
   let R := 𝓞 K
   let S0 : Set f.Gal := ⋃ (q : Ideal R) (hq : q.IsMaximal), {σ | ∀ x : R, res σ x - x ∈ q}
   let S : Set f.Gal := S0 \ {1}
-  have hS0 : Subgroup.closure S0 = ⊤ := sorry
+  have hS0 : Subgroup.closure S0 = ⊤ := keythm
   have hS1 : Subgroup.closure S = ⊤ := by
     have h : Subgroup.closure (S0 ∩ {1}) = ⊥ := by
       rw [eq_bot_iff, ← Subgroup.closure_singleton_one]
@@ -160,7 +180,5 @@ theorem X_pow_sub_X_sub_one_gal :
   -- we need to know that if a subfield is fixed by ..., then it's ⊥
   -- key facts from algebraic number theory: p divides discriminant implies ramified
   -- ramified means there exists σ(x) = x (mod p)
-
-#check NumberField.abs_discr_gt_two
 
 end Polynomial
