@@ -197,7 +197,7 @@ theorem FormallySmooth.liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ
     ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)]
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
   rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective,
-    Ideal.quotientKerAlgEquivOfRightInverse.apply]
+    Ideal.quotientKerAlgEquivOfRightInverse_apply]
   exact (Ideal.kerLiftAlg_mk _ _).symm
 #align algebra.formally_smooth.lift_of_surjective_apply Algebra.FormallySmooth.liftOfSurjective_apply
 
