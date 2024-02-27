@@ -107,7 +107,26 @@ instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
+
+-- We cannot synth Mul s
+instance mul (s : NonUnitalSubsemiring R) : Mul s :=
+  inferInstanceAs (Mul s.toSubsemigroup)
+
+instance (priority := 100) toNonUnitalNonAssocSemiring (s : NonUnitalSubsemiring R) :
+    NonUnitalNonAssocSemiring s :=
+  Subtype.coe_injective.nonUnitalNonAssocSemiring' rfl (fun _ _ => rfl) fun _ _ => rfl
+
+/-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
+instance (priority := 100) toNonUnitalSemiring {R} [NonUnitalSemiring R]
+    (s : NonUnitalSubsemiring R) : NonUnitalSemiring s :=
+  Subtype.coe_injective.nonUnitalSemiring' fun _ _ => rfl
+
+/-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
+instance (priority := 100) toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R]
+    (s : NonUnitalSubsemiring R) : NonUnitalCommSemiring s :=
+  Subtype.coe_injective.nonUnitalCommSemiring' fun _ _ => rfl
+
+instance (priority := 75) : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
   zero_mem {s} := AddSubmonoid.zero_mem' s.toAddSubmonoid
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   mul_mem {s} := mul_mem' s

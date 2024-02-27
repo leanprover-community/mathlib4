@@ -70,11 +70,17 @@ class SubsemiringClass (S : Type*) (R : Type u) [NonAssocSemiring R]
 #align subsemiring_class SubsemiringClass
 
 -- See note [lower instance priority]
-instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
+instance (priority := 75) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
     (R : Type u) [NonAssocSemiring R] [SetLike S R] [h : SubsemiringClass S R] :
     AddSubmonoidWithOneClass S R :=
   { h with }
 #align subsemiring_class.add_submonoid_with_one_class SubsemiringClass.addSubmonoidWithOneClass
+
+-- See note [lower instance priority]
+instance (priority := 75) SubsemiringClass.toNonUnitalSubsemiringClass (S : Type*)
+    (R : Type u) [NonAssocSemiring R] [SetLike S R] [h : SubsemiringClass S R] :
+    NonUnitalSubsemiringClass S R :=
+  { h with }
 
 variable [SetLike S R] [hSR : SubsemiringClass S R] (s : S)
 
@@ -95,8 +101,9 @@ instance nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 #align subsemiring_class.nontrivial SubsemiringClass.nontrivial
 
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
-  Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ => rfl
+-- See note [lower instance priority]
+instance (priority := 75) noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
+  eq_zero_or_eq_zero_of_mul_eq_zero := fun h => eq_zero_or_eq_zero_of_mul_eq_zero h
 #align subsemiring_class.no_zero_divisors SubsemiringClass.noZeroDivisors
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
@@ -124,57 +131,93 @@ theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n
   · simp [pow_succ, ih]
 #align subsemiring_class.coe_pow SubsemiringClass.coe_pow
 
+-- See note [lower instance priority]
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
-instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
+instance (priority := 75) toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s :=
   Subtype.coe_injective.commSemiring' fun _ _ => rfl
 #align subsemiring_class.to_comm_semiring SubsemiringClass.toCommSemiring
 
+-- See note [lower instance priority]
 /-- A subsemiring of an `OrderedSemiring` is an `OrderedSemiring`. -/
-instance toOrderedSemiring {R} [OrderedSemiring R] [SetLike S R] [SubsemiringClass S R] :
-    OrderedSemiring s :=
+instance (priority := 75) toOrderedSemiring {R}
+    [OrderedSemiring R] [SetLike S R] [SubsemiringClass S R] : OrderedSemiring s :=
   Subtype.coe_injective.orderedSemiring' rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
 #align subsemiring_class.to_ordered_semiring SubsemiringClass.toOrderedSemiring
 
+-- See note [lower instance priority]
 /-- A subsemiring of a `StrictOrderedSemiring` is a `StrictOrderedSemiring`. -/
-instance toStrictOrderedSemiring {R} [StrictOrderedSemiring R] [SetLike S R]
+instance (priority := 75) toStrictOrderedSemiring {R} [StrictOrderedSemiring R] [SetLike S R]
     [SubsemiringClass S R] : StrictOrderedSemiring s :=
   Subtype.coe_injective.strictOrderedSemiring' rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl)
 #align subsemiring_class.to_strict_ordered_semiring SubsemiringClass.toStrictOrderedSemiring
 
+-- See note [lower instance priority]
 /-- A subsemiring of an `OrderedCommSemiring` is an `OrderedCommSemiring`. -/
-instance toOrderedCommSemiring {R} [OrderedCommSemiring R] [SetLike S R] [SubsemiringClass S R] :
-    OrderedCommSemiring s :=
+instance (priority := 75) toOrderedCommSemiring {R} [OrderedCommSemiring R] [SetLike S R]
+    [SubsemiringClass S R] : OrderedCommSemiring s :=
   Subtype.coe_injective.orderedCommSemiring' fun _ _ => rfl
 #align subsemiring_class.to_ordered_comm_semiring SubsemiringClass.toOrderedCommSemiring
 
+-- See note [lower instance priority]
 /-- A subsemiring of a `StrictOrderedCommSemiring` is a `StrictOrderedCommSemiring`. -/
-instance toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] [SetLike S R]
+instance (priority := 75) toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] [SetLike S R]
     [SubsemiringClass S R] : StrictOrderedCommSemiring s :=
   Subtype.coe_injective.strictOrderedCommSemiring' fun _ _ => rfl
 #align subsemiring_class.to_strict_ordered_comm_semiring SubsemiringClass.toStrictOrderedCommSemiring
 
+-- See note [lower instance priority]
 /-- A subsemiring of a `LinearOrderedSemiring` is a `LinearOrderedSemiring`. -/
-instance toLinearOrderedSemiring {R} [LinearOrderedSemiring R] [SetLike S R]
+instance (priority := 75) toLinearOrderedSemiring {R} [LinearOrderedSemiring R] [SetLike S R]
     [SubsemiringClass S R] : LinearOrderedSemiring s :=
   Subtype.coe_injective.linearOrderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 #align subsemiring_class.to_linear_ordered_semiring SubsemiringClass.toLinearOrderedSemiring
 
+-- See note [lower instance priority]
 /-- A subsemiring of a `LinearOrderedCommSemiring` is a `LinearOrderedCommSemiring`. -/
-instance toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] [SetLike S R]
-    [SubsemiringClass S R] : LinearOrderedCommSemiring s :=
-  Subtype.coe_injective.linearOrderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+instance (priority := 75) toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R]
+    [SetLike S R] [SubsemiringClass S R] : LinearOrderedCommSemiring s :=
+  { toStrictOrderedCommSemiring _, toLinearOrderedSemiring _ with }
 #align subsemiring_class.to_linear_ordered_comm_semiring SubsemiringClass.toLinearOrderedCommSemiring
 
-instance instCharZero [CharZero R] : CharZero s :=
+-- See note [lower instance priority]
+instance (priority := 75) instCharZero [CharZero R] : CharZero s :=
   ⟨Function.Injective.of_comp (f := Subtype.val) (g := Nat.cast (R := s)) Nat.cast_injective⟩
 
 end SubsemiringClass
 
 end SubsemiringClass
+
+section AddSubmonoidWithOne
+
+variable (R : Type*) [AddMonoidWithOne R]
+
+/-- An additive submonoid with the condition that unit also lies in the set. -/
+structure AddSubmonoidWithOne extends AddSubmonoid R where
+  one_mem' : (1 : R) ∈ carrier
+
+instance : SetLike (AddSubmonoidWithOne R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+theorem AddSubmonoidWithOne.natCast_mem {R : Type*} [AddMonoidWithOne R]
+    (s : AddSubmonoidWithOne R) (n : ℕ) : (n : R) ∈ s := by
+  induction' n with n ih
+  · rw [Nat.cast_zero]; apply s.zero_mem
+  · simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one]
+    apply s.add_mem ih s.one_mem'
+
+instance AddSubmonoidWithOne.toAddMonoidWithOne {R : Type*} [AddMonoidWithOne R]
+    (s : AddSubmonoidWithOne R) : AddMonoidWithOne s :=
+ { AddSubmonoid.toAddMonoid s.toAddSubmonoid with
+    one := ⟨_, one_mem' s⟩
+    natCast := fun n => ⟨n, AddSubmonoidWithOne.natCast_mem s n⟩
+    natCast_zero := Subtype.ext Nat.cast_zero
+    natCast_succ := fun _ => Subtype.ext (Nat.cast_succ _) }
+
+end AddSubmonoidWithOne
 
 variable [NonAssocSemiring S] [NonAssocSemiring T]
 
@@ -191,13 +234,33 @@ add_decl_doc Subsemiring.toAddSubmonoid
 
 namespace Subsemiring
 
-instance : SetLike (Subsemiring R) R
-    where
+instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance : SubsemiringClass (Subsemiring R) R
-    where
+/-- Construct a `AddSubmonoidWithOne` from a `Subsemiring` -/
+def addSubmonoidWithOne {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) :
+    AddSubmonoidWithOne R :=
+  { s with }
+
+/-- Construct a `NonUnitalSubsemiring` from a `Subsemiring` -/
+def nonUnitalSubsemiring {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) :
+    NonUnitalSubsemiring R :=
+  { s with }
+
+variable (s : Subsemiring R)
+
+/-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
+instance toNonAssocSemiring : NonAssocSemiring s :=
+  { s.nonUnitalSubsemiring.toNonUnitalNonAssocSemiring, s.toSubmonoid.toMulOneClass,
+    s.addSubmonoidWithOne.toAddMonoidWithOne with }
+#align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
+
+instance : SetLike (Subsemiring R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+instance (priority := 75) : SubsemiringClass (Subsemiring R) R where
   zero_mem := zero_mem'
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
@@ -362,12 +425,6 @@ protected theorem sum_mem (s : Subsemiring R) {ι : Type*} {t : Finset ι} {f : 
   sum_mem h
 #align subsemiring.sum_mem Subsemiring.sum_mem
 
-/-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
-instance toNonAssocSemiring : NonAssocSemiring s :=
-  -- Porting note: this used to be a specialized instance which needed to be expensively unified.
-  SubsemiringClass.toNonAssocSemiring _
-#align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
-
 @[simp, norm_cast]
 theorem coe_one : ((1 : s) : R) = (1 : R) :=
   rfl
@@ -457,15 +514,13 @@ instance toStrictOrderedCommSemiring {R} [StrictOrderedCommSemiring R] (s : Subs
 /-- A subsemiring of a `LinearOrderedSemiring` is a `LinearOrderedSemiring`. -/
 instance toLinearOrderedSemiring {R} [LinearOrderedSemiring R] (s : Subsemiring R) :
     LinearOrderedSemiring s :=
-  Subtype.coe_injective.linearOrderedSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  { toStrictOrderedSemiring _, AddSubmonoid.toLinearOrderedAddCommMonoid s.toAddSubmonoid with }
 #align subsemiring.to_linear_ordered_semiring Subsemiring.toLinearOrderedSemiring
 
 /-- A subsemiring of a `LinearOrderedCommSemiring` is a `LinearOrderedCommSemiring`. -/
 instance toLinearOrderedCommSemiring {R} [LinearOrderedCommSemiring R] (s : Subsemiring R) :
     LinearOrderedCommSemiring s :=
-  Subtype.coe_injective.linearOrderedCommSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  { toLinearOrderedSemiring _, toOrderedCommSemiring _ with }
 #align subsemiring.to_linear_ordered_comm_semiring Subsemiring.toLinearOrderedCommSemiring
 
 protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=

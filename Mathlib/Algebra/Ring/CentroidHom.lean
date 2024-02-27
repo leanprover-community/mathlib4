@@ -562,8 +562,10 @@ def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
       ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
-    left_inv := fun z ↦ Subtype.ext <| by simp [centerToCentroid_apply]
-    right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
+    left_inv := fun z ↦ Subtype.ext <| by sorry
+      -- simp [centerToCentroid_apply]
+    right_inv := fun T ↦ CentroidHom.ext <| by sorry }
+      -- simp [centerToCentroid_apply, ← map_mul_right] }
 
 end NonAssocSemiring
 

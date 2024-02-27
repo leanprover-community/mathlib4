@@ -425,12 +425,13 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
     by_contra fun hne =>
       have : F.derivative.eval soln + q * h = 0 :=
         (eq_zero_or_eq_zero_of_mul_eq_zero this).resolve_right hne
-      have : F.derivative.eval soln = -q * h := by simpa using eq_neg_of_add_eq_zero_left this
+      have : F.derivative.eval soln = -(q * h) := by
+        simpa using eq_neg_of_add_eq_zero_left this
       lt_irrefl ‖F.derivative.eval soln‖
         (calc
-          ‖F.derivative.eval soln‖ = ‖-q * h‖ := by rw [this]
+          ‖F.derivative.eval soln‖ = ‖-(q * h)‖ := by rw [this]
           _ ≤ 1 * ‖h‖ := by
-            rw [PadicInt.norm_mul]
+            rw [neg_mul_eq_neg_mul, PadicInt.norm_mul]
             exact mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (norm_nonneg _)
           _ = ‖z - soln‖ := by simp
           _ < ‖F.derivative.eval soln‖ := by rw [soln_deriv_norm]; apply soln_dist
@@ -456,7 +457,9 @@ private theorem a_soln_is_unique (ha : F.eval a = 0) (z' : ℤ_[p]) (hz' : F.eva
     by_contra fun hne =>
       have : F.derivative.eval a + q * h = 0 :=
         (eq_zero_or_eq_zero_of_mul_eq_zero this).resolve_right hne
-      have : F.derivative.eval a = -q * h := by simpa using eq_neg_of_add_eq_zero_left this
+      have : F.derivative.eval a = -q * h := by
+        rw [← neg_mul_eq_neg_mul]
+        simpa using eq_neg_of_add_eq_zero_left this
       lt_irrefl ‖F.derivative.eval a‖
         (calc
           ‖F.derivative.eval a‖ = ‖q‖ * ‖h‖ := by simp [this]

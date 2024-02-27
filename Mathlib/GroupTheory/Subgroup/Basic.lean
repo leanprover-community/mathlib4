@@ -5,7 +5,6 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.Order.Atoms
@@ -251,6 +250,7 @@ theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
 variable (H)
 
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
+/-- A subgroup of a `DivInvMonoid` inherits a `DivInvMonoid` structure. -/
 @[to_additive "An additive subgroup of a `SubNegMonoid` inherits a `SubNegMonoid`
 structure"]
 instance (priority := 75) toDivInvMonoid : DivInvMonoid H :=
@@ -290,8 +290,7 @@ instance (priority := 75) toOrderedCommGroup {G : Type*} [OrderedCommGroup G] [S
         `LinearOrderedAddCommGroup`."]
 instance (priority := 75) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G]
     [SetLike S G] [SubgroupClass S G] : LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  { toOrderedCommGroup _, Subtype.linearOrder _ with }
 #align subgroup_class.to_linear_ordered_comm_group SubgroupClass.toLinearOrderedCommGroup
 #align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
@@ -712,12 +711,6 @@ instance _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul �
   ⟨fun n a => ⟨n • a, H.zsmul_mem a.2 n⟩⟩
 #align add_subgroup.has_zsmul AddSubgroup.zsmul
 
-/-- A subgroup of a group inherits an integer power -/
-@[to_additive existing]
-instance zpow : Pow H ℤ :=
-  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
-#align subgroup.has_zpow Subgroup.zpow
-
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
   rfl
@@ -796,13 +789,10 @@ instance toOrderedCommGroup {G : Type*} [OrderedCommGroup G] (H : Subgroup G) :
 #align add_subgroup.to_ordered_add_comm_group AddSubgroup.toOrderedAddCommGroup
 
 /-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive
-      "An `AddSubgroup` of a `LinearOrderedAddCommGroup` is a
-        `LinearOrderedAddCommGroup`."]
+@[to_additive "An `AddSubgroup` of a `LinearOrderedAddCommGroup` is a `LinearOrderedAddCommGroup`."]
 instance toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Subgroup G) :
     LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  { toOrderedCommGroup _, Submonoid.toLinearOrderedCommMonoid _ with }
 #align subgroup.to_linear_ordered_comm_group Subgroup.toLinearOrderedCommGroup
 #align add_subgroup.to_linear_ordered_add_comm_group AddSubgroup.toLinearOrderedAddCommGroup
 

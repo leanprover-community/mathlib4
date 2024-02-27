@@ -549,17 +549,17 @@ theorem mul_def (x y : S') : x * y = ⟨x * y, mul_mem x.2 y.2⟩ :=
 
 /-- A subsemigroup of a semigroup inherits a semigroup structure. -/
 @[to_additive "An `AddSubsemigroup` of an `AddSemigroup` inherits an `AddSemigroup` structure."]
-instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
-    (S : A) : Semigroup S :=
-  Subtype.coe_injective.semigroup Subtype.val fun _ _ => rfl
+instance (priority := 75) toSemigroup {M : Type*} [Semigroup M]
+    {A : Type*} [SetLike A M] [MulMemClass A M] (S : A) : Semigroup S where
+  mul_assoc := fun _ _ _ => Subtype.ext (mul_assoc _ _ _)
 #align mul_mem_class.to_semigroup MulMemClass.toSemigroup
 #align add_mem_class.to_add_semigroup AddMemClass.toAddSemigroup
 
 /-- A subsemigroup of a `CommSemigroup` is a `CommSemigroup`. -/
 @[to_additive "An `AddSubsemigroup` of an `AddCommSemigroup` is an `AddCommSemigroup`."]
-instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
-    (S : A) : CommSemigroup S :=
-  Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
+instance (priority := 75) toCommSemigroup {M} [CommSemigroup M]
+    {A : Type*} [SetLike A M] [MulMemClass A M] (S : A) : CommSemigroup S where
+  mul_comm := fun _ _ => Subtype.ext <| mul_comm _ _
 #align mul_mem_class.to_comm_semigroup MulMemClass.toCommSemigroup
 #align add_mem_class.to_add_comm_semigroup AddMemClass.toAddCommSemigroup
 
@@ -582,6 +582,17 @@ end MulMemClass
 namespace Subsemigroup
 
 variable [Mul M] [Mul N] [Mul P] (S : Subsemigroup M)
+
+/-- A subsemigroup inherits a multiplication. -/
+@[to_additive]
+instance mul : Mul S :=
+  ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
+
+/-- A subsemigroup of a semigroup is a semigroup. -/
+@[to_additive]
+instance toSemigroup {G : Type*} [Semigroup G] (S : Subsemigroup G) : Semigroup S where
+  toMul := mul S
+  mul_assoc := fun _ _ _ => Subtype.ext <| mul_assoc _ _ _
 
 /-- The top subsemigroup is isomorphic to the semigroup. -/
 @[to_additive (attr := simps)

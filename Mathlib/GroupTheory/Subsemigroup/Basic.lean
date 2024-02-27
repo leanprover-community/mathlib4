@@ -103,7 +103,8 @@ instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
 @[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
+instance (priority := 75) : MulMemClass (Subsemigroup M) M where
+  mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 
 initialize_simps_projections Subsemigroup (carrier → coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe)
