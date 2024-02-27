@@ -105,8 +105,7 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedFi
   constructor
   · intro h i j
     by_contra! hn
-    suffices hc : toLinearMap₂' (G.lapMatrix α) x x > 0
-    · exact gt_irrefl _ (h ▸ hc)
+    suffices hc : toLinearMap₂' (G.lapMatrix α) x x > 0 from gt_irrefl _ (h ▸ hc)
     rw [lapMatrix_toLinearMap₂']
     refine div_pos (sum_pos' (fun k _ ↦ sum_nonneg' (fun l ↦ ?_)) ?_) two_pos
     · exact ite_nonneg (sq_nonneg _) le_rfl
@@ -117,7 +116,7 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedFi
   · intro h
     rw [lapMatrix_toLinearMap₂', div_eq_zero_iff]
     refine Or.inl <| sum_eq_zero fun i _ ↦ (sum_eq_zero fun j _ ↦ ?_)
-    simpa only [ite_eq_right_iff, zero_lt_two, pow_eq_zero_iff, sub_eq_zero] using h i j
+    simpa only [ite_eq_right_iff, pow_eq_zero_iff two_ne_zero, sub_eq_zero] using h i j
 
 theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
     Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
@@ -168,8 +167,8 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   rw [Fintype.linearIndependent_iff]
   intro g h0
   rw [Subtype.ext_iff] at h0
-  have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i)
-  · simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk, AddSubmonoid.coe_finset_sum]
+  have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i) := by
+    simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk, AddSubmonoid.coe_finset_sum]
     conv_lhs => enter [2, c, j]; rw [Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
     ext i
     simp only [Finset.sum_apply, sum_ite_eq, mem_univ, ite_true]
