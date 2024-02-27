@@ -360,7 +360,7 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
     simp [hy]
 
 @[to_additive]
-lemma IsCyclic.ext {G : Type _} [Group G] [Fintype G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
+lemma IsCyclic.ext {G : Type*} [Group G] [Fintype G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
     (hGcard : Fintype.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
   specialize h g
