@@ -131,7 +131,7 @@ theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Me
       (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr).ne measure_ball_lt_top.ne
   · -- The integral from 1 to ∞ is zero:
     have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
-      simp only [closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
+      simp only [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
     -- The integral over the constant zero function is finite:
     rw [set_lintegral_congr_fun measurableSet_Ioi (ae_of_all volume <| h_int''), lintegral_const 0,
       zero_mul]
