@@ -458,12 +458,12 @@ def C : R →+* HahnSeries Γ R where
   map_mul' x y := by rw [single_mul_single, zero_add]
 #align hahn_series.C HahnSeries.C
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem C_zero : C (0 : R) = (0 : HahnSeries Γ R) :=
   C.map_zero
 #align hahn_series.C_zero HahnSeries.C_zero
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem C_one : C (1 : R) = (1 : HahnSeries Γ R) :=
   C.map_one
 #align hahn_series.C_one HahnSeries.C_one

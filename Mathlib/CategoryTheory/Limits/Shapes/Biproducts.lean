@@ -807,7 +807,7 @@ theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
   biproduct.hom_ext' _ _ (by simp)
 #align category_theory.limits.biproduct.to_subtype_eq_desc CategoryTheory.Limits.biproduct.toSubtype_eq_desc
 
-@[reassoc] -- Porting note: simp can prove both versions
+@[reassoc] -- Porting note (#10618): simp can prove both versions
 theorem biproduct.ι_toSubtype_subtype (j : Subtype p) :
     biproduct.ι f j ≫ biproduct.toSubtype f p = biproduct.ι (Subtype.restrict p f) j := by
   ext
