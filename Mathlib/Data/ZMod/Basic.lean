@@ -456,6 +456,16 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
           rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
 #align zmod.ring_equiv_congr ZMod.ringEquivCongr
 
+lemma ringEquivCongr_val {a b : ℕ} (h : a = b) (x : ZMod a) :
+    ZMod.val ((ZMod.ringEquivCongr h) x) = ZMod.val x := by
+  subst h
+  cases a <;> rfl
+
+lemma int_coe_ringEquivCongr {a b : ℕ} (h : a = b) (z : ℤ) :
+    ZMod.ringEquivCongr h z = z := by
+  subst h
+  cases a <;> rfl
+
 end CharEq
 
 end UniversalProperty
