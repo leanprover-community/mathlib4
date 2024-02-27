@@ -83,27 +83,9 @@ between `B⋆` and `A⋆`
     rfl
 
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
-    Function.Surjective <| dual f := by
+    Function.Surjective <| dual f :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-  have inst1 : Injective (AddCommGroupCat.of <| ULift.{max uA uB, 0} <| AddCircle (1 : ℚ)) :=
-    AddCommGroupCat.injective_of_divisible _
-
-  rintro (g : _ →+ _)
-  let g' : AddCommGroupCat.of (ULift.{max uA uB} A) ⟶
-      AddCommGroupCat.of (ULift.{max uA uB} (AddCircle (1 : ℚ))) :=
-    AddCommGroupCat.ofHom <| (ULift.moduleEquiv (R := ℤ)).symm.toAddMonoidHom.comp g |>.comp
-      (ULift.moduleEquiv (R := ℤ)).toAddMonoidHom
-  let f' : AddCommGroupCat.of (ULift.{max uA uB} A) ⟶ AddCommGroupCat.of (ULift.{max uA uB} B) :=
-    AddCommGroupCat.ofHom <| (ULift.moduleEquiv (R := ℤ)).symm.toAddMonoidHom.comp f |>.comp
-      (ULift.moduleEquiv (R := ℤ)).toAddMonoidHom
-  have inst2 : Mono f'
-  · rw [AddCommGroupCat.mono_iff_injective]
-    exact (ULift.moduleEquiv (R := ℤ)).symm.injective.comp hf |>.comp
-      (ULift.moduleEquiv (R := ℤ)).injective
-  let L := Injective.factorThru g' f'
-  refine ⟨(ULift.moduleEquiv (R := ℤ)).toAddMonoidHom.comp L |>.comp
-    (ULift.moduleEquiv (R := ℤ)).symm.toAddMonoidHom, AddMonoidHom.ext fun _ ↦
-      (ULift.ext_iff _ _).mp <| DFunLike.congr_fun (Injective.comp_factorThru g' f') _⟩
+  (Module.Baer.of_divisible _).extension_property_addMonoidHom _ hf
 
 /--
 Two isomorphic modules have isomorphic character modules.
@@ -125,7 +107,7 @@ open TensorProduct
 /--
 Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ b ↦ L a b`
 -/
-@[simps] noncomputable def curry :
+@[simps] noncomputable def uncurry :
     (A →ₗ[R] CharacterModule B) →ₗ[R] CharacterModule (A ⊗[R] B) where
   toFun c := TensorProduct.liftAddHom c.toAddMonoidHom fun r a b ↦ by
     show c (r • a) b = c a (r • b)
@@ -150,7 +132,7 @@ Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ 
 /--
 Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ b ↦ c (a ⊗ b) `
 -/
-@[simps] noncomputable def uncurry :
+@[simps] noncomputable def curry :
     CharacterModule (A ⊗[R] B) →ₗ[R] (A →ₗ[R] CharacterModule B) where
   toFun c :=
   { toFun := fun a ↦ c.comp ((TensorProduct.mk R A B) a).toAddMonoidHom
@@ -179,7 +161,7 @@ Linear maps into a character module are exactly characters of tensor product.
 -/
 @[simps!] noncomputable def homEquiv :
     (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
-  LinearEquiv.ofLinear curry uncurry
+  LinearEquiv.ofLinear uncurry curry
     (LinearMap.ext fun c ↦ DFunLike.ext _ _ fun z ↦ by
       refine z.induction_on ?_ ?_ ?_ <;> aesop)
     (LinearMap.ext fun l ↦ DFunLike.ext _ _ fun _ ↦ by aesop)
