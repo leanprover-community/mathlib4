@@ -162,9 +162,9 @@ theorem pow_sub_mul_pow (a : M) {m n : ℕ} (h : m ≤ n) : a ^ (n - m) * a ^ m 
 @[to_additive nsmul_eq_mod_nsmul "If `n • x = 0`, then `m • x` is the same as `(m % n) • x`"]
 theorem pow_eq_pow_mod {M : Type*} [Monoid M] {x : M} (m : ℕ) {n : ℕ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) := by
-  have t : x ^ m = x ^ (n * (m / n) + m % n) :=
-    congr_arg (fun a => x ^ a) ((Nat.add_comm _ _).trans (Nat.mod_add_div _ _)).symm
-  rw [t, pow_add, pow_mul, h, one_pow, one_mul]
+  calc
+    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Nat.mod_add_div]
+    _ = x ^ (m % n) := by simp [pow_add, pow_mul, h]
 #align pow_eq_pow_mod pow_eq_pow_mod
 #align nsmul_eq_mod_nsmul nsmul_eq_mod_nsmul
 
@@ -475,6 +475,15 @@ lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one
   rw [← zpow_add, Int.add_comm, zpow_add]
 #align zpow_mul_comm zpow_mul_comm
 #align zsmul_add_comm zsmul_add_comm
+
+theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
+    x ^ m = x ^ (m % n) :=
+  calc
+    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
+    _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
+
+theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
+    x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_emod m (by simpa)
 
 section bit1
 
