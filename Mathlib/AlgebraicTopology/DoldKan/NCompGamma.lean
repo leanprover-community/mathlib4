@@ -165,7 +165,7 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₁.nat_trans AlgebraicTopology.DoldKan.Γ₂N₁.natTrans
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] natTrans
 
 end Γ₂N₁
@@ -187,7 +187,7 @@ lemma Γ₂N₂ToKaroubiIso_inv_app (X : SimplicialObject C) :
     Γ₂N₂ToKaroubiIso.inv.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.inv.app X) := by
   simp [Γ₂N₂ToKaroubiIso]
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] Γ₂N₂ToKaroubiIso
 
 namespace Γ₂N₂
@@ -208,7 +208,7 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.Γ₂N₂.nat_trans_app_f_app AlgebraicTopology.DoldKan.Γ₂N₂.natTrans_app_f_app
 
--- Porting note: added to speed up elaboration
+-- Porting note (#10694): added to speed up elaboration
 attribute [irreducible] natTrans
 
 end Γ₂N₂

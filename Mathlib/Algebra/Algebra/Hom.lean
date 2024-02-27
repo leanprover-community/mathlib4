@@ -57,7 +57,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
@@ -265,7 +265,7 @@ protected theorem map_pow (x : A) (n : ℕ) : φ (x ^ n) = φ x ^ n :=
   map_pow _ _ _
 #align alg_hom.map_pow AlgHom.map_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
 #align alg_hom.map_smul AlgHom.map_smul

@@ -411,6 +411,8 @@ variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
+theorem mk {f : α → β → σ} (hf : Primrec fun p : α × β => f p.1 p.2) : Primrec₂ f := hf
+
 theorem of_eq {f g : α → β → σ} (hg : Primrec₂ f) (H : ∀ a b, f a b = g a b) : Primrec₂ g :=
   (by funext a b; apply H : f = g) ▸ hg
 #align primrec₂.of_eq Primrec₂.of_eq
@@ -907,7 +909,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     refine hF.of_eq fun a => ?_
     rw [this, List.take_all_of_le (length_le_encode _)]
   introv
-  dsimp only
+  dsimp only [F]
   generalize f a = l
   generalize g a = x
   induction' n with n IH generalizing l x
@@ -1057,7 +1059,7 @@ theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β 
       to₂ <| pair ((list_cons.comp fst (fst.comp snd)).comp snd) hh
   (snd.comp this).of_eq fun a => by
     suffices F a = (f a, List.recOn (f a) (g a) fun b l IH => h a (b, l, IH)) by rw [this]
-    dsimp
+    dsimp [F]
     induction' f a with b l IH <;> simp [*]
 #align primrec.list_rec Primrec.list_rec
 
@@ -1079,7 +1081,7 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
     dsimp; symm
     induction' l with a l IH generalizing n; · rfl
     cases' n with n
-    · dsimp
+    · dsimp [F]
       clear IH
       induction' l with _ l IH <;> simp [*]
     · apply IH

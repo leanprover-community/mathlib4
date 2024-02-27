@@ -140,7 +140,7 @@ theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
   quadraticCharFun_eq_zero_iff
 #align quadratic_char_eq_zero_iff quadraticChar_eq_zero_iff
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
   simp only [quadraticChar_apply, quadraticCharFun_zero]
 #align quadratic_char_zero quadraticChar_zero
@@ -257,7 +257,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
         simp only [Finset.mem_filter, Finset.mem_univ, true_and_iff, List.toFinset_cons,
           List.toFinset_nil, insert_emptyc_eq, Finset.mem_insert, Finset.mem_singleton]
         rw [← pow_two] at h
-        simp only [h, Set.toFinset_setOf, Finset.mem_univ, Finset.mem_filter, true_and]
+        simp only [s, h, Set.toFinset_setOf, Finset.mem_univ, Finset.mem_filter, true_and]
         constructor
         · exact eq_or_eq_neg_of_sq_eq_sq _ _
         · rintro (h₂ | h₂) <;> rw [h₂]

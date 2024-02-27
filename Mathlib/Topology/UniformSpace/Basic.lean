@@ -675,6 +675,10 @@ theorem UniformSpace.isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) :
   hV.preimage <| continuous_const.prod_mk continuous_id
 #align uniform_space.is_open_ball UniformSpace.isOpen_ball
 
+theorem UniformSpace.isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) :
+    IsClosed (ball x V) :=
+  hV.preimage <| continuous_const.prod_mk continuous_id
+
 theorem mem_comp_comp {V W M : Set (β × β)} (hW' : SymmetricRel W) {p : β × β} :
     p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
   cases' p with x y
@@ -1257,6 +1261,10 @@ instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
   ⟨@UniformSpace.toCore _ default⟩
 #align inhabited_uniform_space_core inhabitedUniformSpaceCore
 
+instance [Subsingleton α] : Unique (UniformSpace α) where
+  uniq u := bot_unique <| le_principal_iff.2 <| by
+    rw [idRel, ← diagonal, diagonal_eq_univ]; exact univ_mem
+
 /-- Given `f : α → β` and a uniformity `u` on `β`, the inverse image of `u` under `f`
   is the inverse image in the filter sense of the induced function `α × α → β × β`.
   See note [reducible non-instances]. -/
@@ -1584,6 +1592,11 @@ theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
   rfl
 #align uniformity_prod uniformity_prod
 
+instance [UniformSpace α] [IsCountablyGenerated (𝓤 α)]
+    [UniformSpace β] [IsCountablyGenerated (𝓤 β)] : IsCountablyGenerated (𝓤 (α × β)) := by
+  rw [uniformity_prod]
+  infer_instance
+
 theorem uniformity_prod_eq_comap_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
       comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
@@ -1759,85 +1772,51 @@ open Sum
 /-- Uniformity on a disjoint union. Entourages of the diagonal in the union are obtained
 by taking independently an entourage of the diagonal in the first part, and an entourage of
 the diagonal in the second part. -/
-def UniformSpace.Core.sum : UniformSpace.Core (Sum α β) :=
-  UniformSpace.Core.mk'
-    (map (fun p : α × α => (inl p.1, inl p.2)) (𝓤 α) ⊔
-      map (fun p : β × β => (inr p.1, inr p.2)) (𝓤 β))
-    (fun r ⟨H₁, H₂⟩ x => by
-      cases x <;> [apply refl_mem_uniformity H₁; apply refl_mem_uniformity H₂])
-    (fun r ⟨H₁, H₂⟩ => ⟨symm_le_uniformity H₁, symm_le_uniformity H₂⟩)
-    (fun r ⟨Hrα, Hrβ⟩ => by
-      rcases comp_mem_uniformity_sets Hrα with ⟨tα, htα, Htα⟩
-      rcases comp_mem_uniformity_sets Hrβ with ⟨tβ, htβ, Htβ⟩
-      refine' ⟨_, ⟨mem_map_iff_exists_image.2 ⟨tα, htα, subset_union_left _ _⟩,
-        mem_map_iff_exists_image.2 ⟨tβ, htβ, subset_union_right _ _⟩⟩, _⟩
-      rintro ⟨_, _⟩ ⟨z, ⟨⟨a, b⟩, hab, ⟨⟩⟩ | ⟨⟨a, b⟩, hab, ⟨⟩⟩,
+instance Sum.instUniformSpace : UniformSpace (α ⊕ β) :=
+  .ofNhdsEqComap
+    { uniformity := map (fun p : α × α => (inl p.1, inl p.2)) (𝓤 α) ⊔
+        map (fun p : β × β => (inr p.1, inr p.2)) (𝓤 β)
+      refl := by
+        rintro s ⟨hs₁, hs₂⟩ ⟨x, y⟩ (rfl : x = y)
+        cases x <;> [apply refl_mem_uniformity hs₁; apply refl_mem_uniformity hs₂]
+      symm := fun s hs ↦ ⟨symm_le_uniformity hs.1, symm_le_uniformity hs.2⟩
+      comp := fun s hs ↦ by
+        rcases comp_mem_uniformity_sets hs.1 with ⟨tα, htα, Htα⟩
+        rcases comp_mem_uniformity_sets hs.2 with ⟨tβ, htβ, Htβ⟩
+        filter_upwards [mem_lift' (union_mem_sup (image_mem_map htα) (image_mem_map htβ))]
+        rintro ⟨_, _⟩ ⟨z, ⟨⟨a, b⟩, hab, ⟨⟩⟩ | ⟨⟨a, b⟩, hab, ⟨⟩⟩,
           ⟨⟨_, c⟩, hbc, ⟨⟩⟩ | ⟨⟨_, c⟩, hbc, ⟨⟩⟩⟩
-      · have A : (a, c) ∈ tα ○ tα := ⟨b, hab, hbc⟩
-        exact Htα A
-      · have A : (a, c) ∈ tβ ○ tβ := ⟨b, hab, hbc⟩
-        exact Htβ A)
-#align uniform_space.core.sum UniformSpace.Core.sum
+        exacts [@Htα (_, _) ⟨b, hab, hbc⟩, @Htβ (_, _) ⟨b, hab, hbc⟩] } inferInstance
+    fun x ↦ by
+      ext
+      cases x <;> simp [mem_comap', -mem_comap, nhds_inl, nhds_inr, nhds_eq_comap_uniformity,
+        Prod.ext_iff]
+#align sum.uniform_space Sum.instUniformSpace
+
+@[reducible, deprecated] alias Sum.uniformSpace := Sum.instUniformSpace -- 2024-02-15
 
 /-- The union of an entourage of the diagonal in each set of a disjoint union is again an entourage
 of the diagonal. -/
 theorem union_mem_uniformity_sum {a : Set (α × α)} (ha : a ∈ 𝓤 α) {b : Set (β × β)} (hb : b ∈ 𝓤 β) :
-    (fun p : α × α => (inl p.1, inl p.2)) '' a ∪ (fun p : β × β => (inr p.1, inr p.2)) '' b ∈
-      (@UniformSpace.Core.sum α β _ _).uniformity :=
-  ⟨mem_map_iff_exists_image.2 ⟨_, ha, subset_union_left _ _⟩,
-    mem_map_iff_exists_image.2 ⟨_, hb, subset_union_right _ _⟩⟩
+    Prod.map inl inl '' a ∪ Prod.map inr inr '' b ∈ 𝓤 (α ⊕ β) :=
+  union_mem_sup (image_mem_map ha) (image_mem_map hb)
 #align union_mem_uniformity_sum union_mem_uniformity_sum
 
-/- To prove that the topology defined by the uniform structure on the disjoint union coincides with
-the disjoint union topology, we need two lemmas saying that open sets can be characterized by
-the uniform structure -/
-theorem uniformity_sum_of_isOpen_aux {s : Set (Sum α β)} (hs : IsOpen s) {x : Sum α β}
-    (xs : x ∈ s) : { p : (α ⊕ β) × (α ⊕ β) | p.1 = x → p.2 ∈ s } ∈
-    (@UniformSpace.Core.sum α β _ _).uniformity := by
-  cases x
-  · refine' mem_of_superset
-      (union_mem_uniformity_sum (mem_nhds_uniformity_iff_right.1 (hs.1.mem_nhds xs)) univ_mem)
-        (union_subset _ _) <;> rintro _ ⟨⟨_, b⟩, h, ⟨⟩⟩ ⟨⟩
-    exact h rfl
-  · refine' mem_of_superset
-      (union_mem_uniformity_sum univ_mem (mem_nhds_uniformity_iff_right.1 (hs.2.mem_nhds xs)))
-        (union_subset _ _) <;> rintro _ ⟨⟨a, _⟩, h, ⟨⟩⟩ ⟨⟩
-    exact h rfl
-#align uniformity_sum_of_open_aux uniformity_sum_of_isOpen_aux
+#noalign uniform_space.core.sum
+#noalign uniformity_sum_of_open_aux
+#noalign open_of_uniformity_sum_aux
 
-theorem isOpen_of_uniformity_sum_aux {s : Set (Sum α β)}
-    (hs : ∀ x ∈ s,
-      { p : (α ⊕ β) × (α ⊕ β) | p.1 = x → p.2 ∈ s } ∈ (@UniformSpace.Core.sum α β _ _).uniformity) :
-    IsOpen s := by
-  constructor
-  · refine (isOpen_iff_mem_nhds (X := α)).2 fun a ha ↦ mem_nhds_uniformity_iff_right.2 ?_
-    rcases mem_map_iff_exists_image.1 (hs _ ha).1 with ⟨t, ht, st⟩
-    refine' mem_of_superset ht _
-    rintro p pt rfl
-    exact st ⟨_, pt, rfl⟩ rfl
-  · refine (@isOpen_iff_mem_nhds (X := β)).2 fun b hb ↦ mem_nhds_uniformity_iff_right.2 ?_
-    rcases mem_map_iff_exists_image.1 (hs _ hb).2 with ⟨t, ht, st⟩
-    refine' mem_of_superset ht _
-    rintro p pt rfl
-    exact st ⟨_, pt, rfl⟩ rfl
-#align open_of_uniformity_sum_aux isOpen_of_uniformity_sum_aux
-
--- We can now define the uniform structure on the disjoint union
-instance Sum.uniformSpace : UniformSpace (Sum α β) where
-  toCore := UniformSpace.Core.sum
-  isOpen_uniformity _ := ⟨uniformity_sum_of_isOpen_aux, isOpen_of_uniformity_sum_aux⟩
-#align sum.uniform_space Sum.uniformSpace
-
-theorem Sum.uniformity :
-    𝓤 (Sum α β) =
-      map (fun p : α × α => (inl p.1, inl p.2)) (𝓤 α) ⊔
-        map (fun p : β × β => (inr p.1, inr p.2)) (𝓤 β) :=
+theorem Sum.uniformity : 𝓤 (α ⊕ β) = map (Prod.map inl inl) (𝓤 α) ⊔ map (Prod.map inr inr) (𝓤 β) :=
   rfl
 #align sum.uniformity Sum.uniformity
 
--- porting note: 2 new lemmas
 lemma uniformContinuous_inl : UniformContinuous (Sum.inl : α → α ⊕ β) := le_sup_left
 lemma uniformContinuous_inr : UniformContinuous (Sum.inr : β → α ⊕ β) := le_sup_right
+
+instance [IsCountablyGenerated (𝓤 α)] [IsCountablyGenerated (𝓤 β)] :
+    IsCountablyGenerated (𝓤 (α ⊕ β)) := by
+  rw [Sum.uniformity]
+  infer_instance
 
 end Sum
 

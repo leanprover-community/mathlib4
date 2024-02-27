@@ -231,13 +231,12 @@ theorem smul [NormedField 𝕜] [NormedSpace 𝕜 β] (hT : DominatedFinMeasAddi
 
 theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeasAdditive μ T C)
     (hC : 0 ≤ C) : DominatedFinMeasAdditive μ' T C := by
-  have h' : ∀ s, MeasurableSet s → μ s = ∞ → μ' s = ∞ := by
-    intro s hs hμs; rw [eq_top_iff, ← hμs]; exact h s hs
-  refine' ⟨hT.1.of_eq_top_imp_eq_top h', fun s hs hμ's => _⟩
-  have hμs : μ s < ∞ := (h s hs).trans_lt hμ's
-  refine' (hT.2 s hs hμs).trans (mul_le_mul le_rfl _ ENNReal.toReal_nonneg hC)
-  rw [toReal_le_toReal hμs.ne hμ's.ne]
-  exact h s hs
+  have h' : ∀ s, μ s = ∞ → μ' s = ∞ := fun s hs ↦ top_unique <| hs.symm.trans_le (h _)
+  refine ⟨hT.1.of_eq_top_imp_eq_top fun s _ ↦ h' s, fun s hs hμ's ↦ ?_⟩
+  have hμs : μ s < ∞ := (h s).trans_lt hμ's
+  calc
+    ‖T s‖ ≤ C * (μ s).toReal := hT.2 s hs hμs
+    _ ≤ C * (μ' s).toReal := by gcongr; exacts [hμ's.ne, h _]
 #align measure_theory.dominated_fin_meas_additive.of_measure_le MeasureTheory.DominatedFinMeasAdditive.of_measure_le
 
 theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
@@ -1610,7 +1609,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
   apply hfμ.induction (P := fun f => setToFun μ T hT f = setToFun μ' T hT' f)
   · intro c s hs hμs
     have hμ's : μ' s ≠ ∞ := by
-      refine' ((hμ'_le s hs).trans_lt _).ne
+      refine ((hμ'_le s).trans_lt ?_).ne
       rw [Measure.smul_apply, smul_eq_mul]
       exact ENNReal.mul_lt_top hc' hμs.ne
     rw [setToFun_indicator_const hT hs hμs.ne, setToFun_indicator_const hT' hs hμ's]

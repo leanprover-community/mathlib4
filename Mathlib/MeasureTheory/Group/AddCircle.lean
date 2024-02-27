@@ -101,7 +101,7 @@ theorem volume_of_add_preimage_eq (s I : Set <| AddCircle T) (u x : AddCircle T)
   have hsG : ∀ g : G, (g +ᵥ s : Set <| AddCircle T) =ᵐ[volume] s := by
     rintro ⟨y, hy⟩; exact (vadd_ae_eq_self_of_mem_zmultiples hs hy : _)
   rw [(isAddFundamentalDomain_of_ae_ball I u x hu hI).measure_eq_card_smul_of_vadd_ae_eq_self s hsG,
-    ← Nat.card_zmultiples u, Nat.card_eq_fintype_card]
+    ← Nat.card_zmultiples u]
 #align add_circle.volume_of_add_preimage_eq AddCircle.volume_of_add_preimage_eq
 
 end AddCircle

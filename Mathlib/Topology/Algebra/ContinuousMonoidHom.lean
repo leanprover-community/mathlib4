@@ -3,7 +3,6 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Analysis.Complex.Circle
 import Mathlib.Topology.ContinuousFunction.Algebra
 
 #align_import topology.algebra.continuous_monoid_hom from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
@@ -57,7 +56,7 @@ section
 homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
--- porting note : Changed A B to outParam to help synthesizing order
+-- Porting note: Changed A B to outParam to help synthesizing order
 class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMonoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
     extends AddMonoidHomClass F A B : Prop where
@@ -69,7 +68,7 @@ class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMon
 homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
--- porting note : Changed A B to outParam to help synthesizing order
+-- Porting note: Changed A B to outParam to help synthesizing order
 @[to_additive]
 class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
@@ -380,84 +379,3 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
 #align continuous_add_monoid_hom.comp_right ContinuousAddMonoidHom.compRight
 
 end ContinuousMonoidHom
-
-
-
-/-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → circle`. -/
-def PontryaginDual :=
-  ContinuousMonoidHom A circle
-#align pontryagin_dual PontryaginDual
-
--- porting note: `deriving` doesn't derive these instances
-instance : TopologicalSpace (PontryaginDual A) :=
-  (inferInstance : TopologicalSpace (ContinuousMonoidHom A circle))
-
-instance : T2Space (PontryaginDual A) :=
-  (inferInstance : T2Space (ContinuousMonoidHom A circle))
-
--- porting note: instance is now noncomputable
-noncomputable instance : CommGroup (PontryaginDual A) :=
-  (inferInstance : CommGroup (ContinuousMonoidHom A circle))
-
-instance : TopologicalGroup (PontryaginDual A) :=
-  (inferInstance : TopologicalGroup (ContinuousMonoidHom A circle))
-
--- porting note: instance is now noncomputable
-noncomputable instance : Inhabited (PontryaginDual A) :=
-  (inferInstance : Inhabited (ContinuousMonoidHom A circle))
-
-
-variable {A B C D E}
-
-namespace PontryaginDual
-
-open ContinuousMonoidHom
-
-instance : FunLike (PontryaginDual A) A circle :=
-  ContinuousMonoidHom.funLike
-
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
-  ContinuousMonoidHom.ContinuousMonoidHomClass
-
-/-- `PontryaginDual` is a functor. -/
-noncomputable def map (f : ContinuousMonoidHom A B) :
-    ContinuousMonoidHom (PontryaginDual B) (PontryaginDual A) :=
-  f.compLeft circle
-#align pontryagin_dual.map PontryaginDual.map
-
-@[simp]
-theorem map_apply (f : ContinuousMonoidHom A B) (x : PontryaginDual B) (y : A) :
-    map f x y = x (f y) :=
-  rfl
-#align pontryagin_dual.map_apply PontryaginDual.map_apply
-
-@[simp]
-theorem map_one : map (one A B) = one (PontryaginDual B) (PontryaginDual A) :=
-  ext fun x => ext (fun _y => OneHomClass.map_one x)
-#align pontryagin_dual.map_one PontryaginDual.map_one
-
-@[simp]
-theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
-    map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
-  ext fun _x => ext fun _y => rfl
-#align pontryagin_dual.map_comp PontryaginDual.map_comp
-
-
-@[simp]
-nonrec theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
-  ext fun x => ext fun y => map_mul x (f y) (g y)
-#align pontryagin_dual.map_mul PontryaginDual.map_mul
-
-variable (A B C D E)
-
-/-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
-noncomputable def mapHom [LocallyCompactSpace E] :
-    ContinuousMonoidHom (ContinuousMonoidHom A E)
-      (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
-  toFun := map
-  map_one' := map_one
-  map_mul' := map_mul
-  continuous_toFun := continuous_of_continuous_uncurry _ continuous_comp
-#align pontryagin_dual.map_hom PontryaginDual.mapHom
-
-end PontryaginDual

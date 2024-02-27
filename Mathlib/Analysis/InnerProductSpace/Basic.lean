@@ -2074,7 +2074,7 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
   have hF₂ : ∀ i ∈ s₂ \ s₁, F i = -f i := fun i hi => if_neg (Finset.mem_sdiff.mp hi).2
   have hF : ∀ i, ‖F i‖ = ‖f i‖ := by
     intro i
-    dsimp only
+    dsimp only [F]
     split_ifs <;> simp only [eq_self_iff_true, norm_neg]
   have :
     ‖(∑ i in s₁ \ s₂, V i (F i)) + ∑ i in s₂ \ s₁, V i (F i)‖ ^ 2 =
@@ -2270,7 +2270,8 @@ end Continuous
 
 section ReApplyInnerSelf
 
-/-- Extract a real bilinear form from an operator `T`, by taking the pairing `λ x, re ⟪T x, x⟫`. -/
+/-- Extract a real bilinear form from an operator `T`,
+by taking the pairing `fun x ↦ re ⟪T x, x⟫`. -/
 def ContinuousLinearMap.reApplyInnerSelf (T : E →L[𝕜] E) (x : E) : ℝ :=
   re ⟪T x, x⟫
 #align continuous_linear_map.re_apply_inner_self ContinuousLinearMap.reApplyInnerSelf
