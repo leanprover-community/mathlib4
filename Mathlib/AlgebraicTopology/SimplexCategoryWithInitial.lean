@@ -23,7 +23,6 @@ Sometimes called the augmented simplex category.
 - We define the notion of a split of an object and morphism in `WithInitial SimplexCategory`. This
   is important in defining the join of functors `(WithInitial SimplexCategory)ᵒᵖ ⥤ Type u`.
 
-
 -/
 
 universe v
@@ -701,24 +700,21 @@ lemma splitValue_of_join {X Y : WithInitial SimplexCategory × WithInitial Simpl
       let X1 : Fin (len (join.obj X)) := ⟨len X.1, hx⟩
       have hkr := hk.right X1
       rw [Fin.le_def, Fin.coe_castSucc, toOrderHom_join_apply_on_fst_le] at hkr
-      have hkr2 : x ≤ X1 := hkr (Nat.le_add_left (len Y.1) _)
-      have hkl := hk.left
+      have hkl := Fin.le_def.mp hk.left
       by_cases hlt : x < X1
-      · rw [Fin.le_def, Fin.coe_castSucc, toOrderHom_join_apply_on_lt_fst f x hlt] at hkl
+      · rw [Fin.coe_castSucc, toOrderHom_join_apply_on_lt_fst f x hlt] at hkl
         exact ((Nat.not_le.mpr ((toOrderHom f.1) ⟨ x,hlt ⟩).prop) hkl).elim
       · change Fin.castSucc x = Fin.castSucc X1
         refine Fin.castSucc_inj.mpr ?_
         rw [Fin.eq_iff_veq]
-        rw [Fin.le_def] at hkr2
         rw [Fin.lt_def, ← Nat.not_le] at  hlt
-        simp at hlt hkr2
-        exact Nat.le_antisymm hkr2 hlt
+        simp at hlt
+        exact Nat.le_antisymm (Fin.le_def.mp (hkr (Nat.le_add_left (len Y.1) _))) hlt
       rfl
   | none =>
     rw [Fin.find_eq_none_iff] at hk
     simp at hk
-    rw [Fin.eq_iff_veq]
-    simp [len_of_join]
+    simp [Fin.eq_iff_veq, len_of_join]
     by_contra hX2
     have hx := @Nat.lt_add_of_pos_right (len X.2) (len X.1) (Nat.pos_of_ne_zero hX2)
     rw [← len_of_join] at hx
