@@ -89,7 +89,7 @@ variable (ι M)
 /-- We say that a collection of `SmoothBumpFunction`s is a `SmoothBumpCovering` of a set `s` if
 
 * `(f i).c ∈ s` for all `i`;
-* the family `λ i, support (f i)` is locally finite;
+* the family `fun i ↦ support (f i)` is locally finite;
 * for each point `x ∈ s` there exists `i` such that `f i =ᶠ[𝓝 x] 1`;
   in other words, `x` belongs to the interior of `{y | f i y = 1}`;
 
@@ -116,7 +116,7 @@ structure SmoothBumpCovering (s : Set M := univ) where
 /-- We say that a collection of functions form a smooth partition of unity on a set `s` if
 
 * all functions are infinitely smooth and nonnegative;
-* the family `λ i, support (f i)` is locally finite;
+* the family `fun i ↦ support (f i)` is locally finite;
 * for all `x ∈ s` the sum `∑ᶠ i, f i x` equals one;
 * for all `x`, the sum `∑ᶠ i, f i x` is less than or equal to one. -/
 structure SmoothPartitionOfUnity (s : Set M := univ) where
@@ -196,7 +196,7 @@ theorem smooth_smul {g : M → F} {i} (hg : ∀ x ∈ tsupport (f i), SmoothAt I
 
 /-- If `f` is a smooth partition of unity on a set `s : Set M` and `g : ι → M → F` is a family of
 functions such that `g i` is $C^n$ smooth at every point of the topological support of `f i`, then
-the sum `λ x, ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
+the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
 theorem contMDiff_finsum_smul {g : ι → M → F}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n (g i) x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
@@ -206,7 +206,7 @@ theorem contMDiff_finsum_smul {g : ι → M → F}
 
 /-- If `f` is a smooth partition of unity on a set `s : Set M` and `g : ι → M → F` is a family of
 functions such that `g i` is smooth at every point of the topological support of `f i`, then the sum
-`λ x, ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
+`fun x ↦ ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
 theorem smooth_finsum_smul {g : ι → M → F}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), SmoothAt I 𝓘(ℝ, F) (g i) x) :
     Smooth I 𝓘(ℝ, F) fun x => ∑ᶠ i, f i x • g i x :=
@@ -310,7 +310,7 @@ alias ⟨_, IsSubordinate.toPartitionOfUnity⟩ := isSubordinate_toPartitionOfUn
 
 /-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
 `U : ι → Set M` and `g : ι → M → F` is a family of functions such that `g i` is $C^n$ smooth on
-`U i`, then the sum `λ x, ∑ᶠ i, f i x • g i x` is $C^n$ smooth on the whole manifold. -/
+`U i`, then the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is $C^n$ smooth on the whole manifold. -/
 theorem IsSubordinate.contMDiff_finsum_smul {g : ι → M → F} (hf : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (hg : ∀ i, ContMDiffOn I 𝓘(ℝ, F) n (g i) (U i)) :
     ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
@@ -319,7 +319,7 @@ theorem IsSubordinate.contMDiff_finsum_smul {g : ι → M → F} (hf : f.IsSubor
 
 /-- If `f` is a smooth partition of unity on a set `s : Set M` subordinate to a family of open sets
 `U : ι → Set M` and `g : ι → M → F` is a family of functions such that `g i` is smooth on `U i`,
-then the sum `λ x, ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
+then the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -/
 theorem IsSubordinate.smooth_finsum_smul {g : ι → M → F} (hf : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (hg : ∀ i, SmoothOn I 𝓘(ℝ, F) (g i) (U i)) :
     Smooth I 𝓘(ℝ, F) fun x => ∑ᶠ i, f i x • g i x :=

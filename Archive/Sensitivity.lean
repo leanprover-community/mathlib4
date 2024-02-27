@@ -239,7 +239,7 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
       first
       | rw [ε, show q 0 = true from rfl, Bool.cond_true] at h
       | rw [ε, show q 0 = false from rfl, Bool.cond_false] at h
-      rwa [show p = π q by ext; simp [Fin.succ_ne_zero, π]]
+      rwa [show p = π q by ext; simp [q, Fin.succ_ne_zero, π]]
 #align sensitivity.epsilon_total Sensitivity.epsilon_total
 
 open Module

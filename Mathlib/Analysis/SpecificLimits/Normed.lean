@@ -60,7 +60,7 @@ theorem tendsto_norm_zpow_nhdsWithin_0_atTop {𝕜 : Type*} [NormedField 𝕜] {
     Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   rcases neg_surjective m with ⟨m, rfl⟩
   rw [neg_lt_zero] at hm; lift m to ℕ using hm.le; rw [Int.coe_nat_pos] at hm
-  simp only [norm_pow, zpow_neg, zpow_ofNat, ← inv_pow]
+  simp only [norm_pow, zpow_neg, zpow_coe_nat, ← inv_pow]
   exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
 #align normed_field.tendsto_norm_zpow_nhds_within_0_at_top NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop
 
@@ -453,12 +453,12 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
-    simp [hn, if_neg (not_lt.mpr hn)]
+    simp [v, hn, if_neg (not_lt.mpr hn)]
   refine'
     cauchySeq_sum_of_eventually_eq this (NormedAddCommGroup.cauchy_series_of_le_geometric' hr₁ _)
   · exact C
   intro n
-  simp only
+  simp only [v]
   split_ifs with H
   · rw [norm_zero]
     exact mul_nonneg hC (pow_nonneg hr₀.le _)

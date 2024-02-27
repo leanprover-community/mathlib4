@@ -462,6 +462,10 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
 the spectrum of `a` restricts via a function `f : S → R` if `f` is a left inverse of
 `algebraMap R S`, and `f` is a right inverse of `algebraMap R S` on `spectrum S a`.
 
+For example, when `f = Complex.re` (so `S := ℂ` and `R := ℝ`), `SpectrumRestricts a f` means that
+the `ℂ`-spectrum of `a` is contained within `ℝ`. This arises naturally when `a` is selfadjoint
+and `A` is a C⋆-algebra.
+
 This is the property allows us to restrict a continuous functional calculus over `S` to a
 continuous functional calculus over `R`. -/
 structure SpectrumRestricts {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
@@ -497,5 +501,23 @@ theorem apply_mem {s : S} (hs : s ∈ spectrum S a) : f s ∈ spectrum R a :=
 
 theorem subset_preimage : spectrum S a ⊆ f ⁻¹' spectrum R a :=
   h.image ▸ (spectrum S a).subset_preimage_image f
+
+lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
+    (h : spectrum S a = spectrum S b) : SpectrumRestricts b f where
+  rightInvOn := h ▸ ha.rightInvOn
+  left_inv := ha.left_inv
+
+protected lemma comp {R₁ R₂ R₃ A : Type*} [CommSemiring R₁] [CommSemiring R₂] [CommSemiring R₃]
+    [Ring A] [Algebra R₁ A] [Algebra R₂ A] [Algebra R₃ A] [Algebra R₁ R₂] [Algebra R₂ R₃]
+    [Algebra R₁ R₃] [IsScalarTower R₁ R₂ R₃] [IsScalarTower R₂ R₃ A]
+    {a : A} {f : R₃ → R₂} {g : R₂ → R₁} {e : R₃ → R₁} (hfge : g ∘ f = e)
+    (hf : SpectrumRestricts a f) (hg : SpectrumRestricts a g) :
+    SpectrumRestricts a e where
+  left_inv := by
+    convert hfge ▸ hf.left_inv.comp hg.left_inv
+    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
+  rightInvOn := by
+    convert hfge ▸ hg.rightInvOn.comp hf.rightInvOn fun _ ↦ hf.apply_mem
+    congrm(⇑$(IsScalarTower.algebraMap_eq R₁ R₂ R₃))
 
 end SpectrumRestricts

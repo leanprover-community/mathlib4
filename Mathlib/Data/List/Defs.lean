@@ -21,7 +21,7 @@ proofs about these definitions, those are contained in other files in `Data.List
 
 set_option autoImplicit true
 
--- Porting notes
+-- Porting note
 -- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
 -- These have been annotated with `#align`s
 -- To make this easier for review, the `#align`s have been placed in order of occurrence
@@ -49,7 +49,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 #noalign list.to_array
 
 #align list.nthd List.getD
--- porting notes: see
+-- Porting note: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
@@ -151,7 +151,7 @@ end foldIdxM
 
 section mapIdxM
 
--- porting notes: This was defined in `mathlib` with an `Applicative`
+-- Porting note: This was defined in `mathlib` with an `Applicative`
 -- constraint on `m` and have been `#align`ed to the `Std` versions defined
 -- with a `Monad` typeclass constraint.
 -- Since all `Monad`s are `Applicative` this won't cause issues
@@ -500,7 +500,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 #align list.to_chunks_aux List.toChunksAux
 #align list.to_chunks List.toChunks
 
--- porting notes -- was `unsafe` but removed for Lean 4 port
+-- porting note -- was `unsafe` but removed for Lean 4 port
 -- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/

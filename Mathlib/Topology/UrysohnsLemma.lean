@@ -434,14 +434,14 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
       have : mᶜ ⊆ (U n ∩ interior m)ᶜ := by
         simpa using (inter_subset_right _ _).trans interior_subset
       exact fm n (this hx)
-    simp [B]
+    simp [g, B]
   have I n x : u n * f n x ≤ u n := mul_le_of_le_one_right (u_pos n).le (f_range n x).2
   have S x : Summable (fun n ↦ u n * f n x) := Summable.of_nonneg_of_le
       (fun n ↦ mul_nonneg (u_pos n).le (f_range n x).1) (fun n ↦ I n x) u_sum
   refine ⟨⟨g, ?_⟩, ?_, hgmc.mono (subset_compl_comm.mp mt), ?_, fun x ↦ ⟨?_, ?_⟩⟩
   · apply continuous_tsum (fun n ↦ continuous_const.mul (f n).continuous) u_sum (fun n x ↦ ?_)
     simpa [abs_of_nonneg, (u_pos n).le, (f_range n x).1] using I n x
-  · apply Subset.antisymm (fun x hx ↦ by simp [fs _ hx, hu]) ?_
+  · apply Subset.antisymm (fun x hx ↦ by simp [g, fs _ hx, hu]) ?_
     apply compl_subset_compl.1
     intro x hx
     obtain ⟨n, hn⟩ : ∃ n, x ∉ U n := by simpa [hU] using hx
