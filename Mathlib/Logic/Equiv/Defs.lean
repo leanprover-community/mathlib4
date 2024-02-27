@@ -293,6 +293,22 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 @[simp] theorem self_comp_symm (e : α ≃ β) : e ∘ e.symm = id := funext e.apply_symm_apply
 #align equiv.self_comp_symm Equiv.self_comp_symm
 
+@[simp] lemma _root_.EquivLike.apply_coe_symm_apply {F} [EquivLike F α β] (e : F) (x : β) :
+    e ((e : α ≃ β).symm x) = x :=
+  (e : α ≃ β).apply_symm_apply x
+
+@[simp] lemma _root_.EquivLike.coe_symm_apply_apply {F} [EquivLike F α β] (e : F) (x : α) :
+    (e : α ≃ β).symm (e x) = x :=
+  (e : α ≃ β).symm_apply_apply x
+
+@[simp] lemma _root_.EquivLike.coe_symm_comp_self {F} [EquivLike F α β] (e : F) :
+    (e : α ≃ β).symm ∘ e = id :=
+  (e : α ≃ β).symm_comp_self
+
+@[simp] lemma _root_.EquivLike.self_comp_coe_symm {F} [EquivLike F α β] (e : F) :
+    e ∘ (e : α ≃ β).symm = id :=
+  (e : α ≃ β).self_comp_symm
+
 @[simp] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
 #align equiv.symm_trans_apply Equiv.symm_trans_apply
