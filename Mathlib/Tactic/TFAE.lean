@@ -183,7 +183,7 @@ The following currently relies on the 'old-style' parsers for implementation.
 `structFields` parser used for declaring structures.
 -/
 
-def tfaeFields := leading_parser manyIndent <| ppLine >> checkColGe >> ppGroup tfaeHaveDecl
+private def tfaeFields := leading_parser manyIndent <| ppLine >> checkColGe >> ppGroup tfaeHaveDecl
 
 /-- The `tfae` tactic is used for proving goals of the form `TFAE [P₁, P₂, ...]`. For example,
 given a goal `TFAE [P₁, P₂, P₃]`, we can prove it with
