@@ -217,7 +217,9 @@
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Basic":
-  ["Mathlib.Data.Int.CharZero", "Mathlib.Data.Nat.Factorial.Basic"],
+  ["Mathlib.Algebra.Order.Group.PosPart",
+   "Mathlib.Data.Int.CharZero",
+   "Mathlib.Data.Nat.Factorial.Basic"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators": ["Mathlib.Data.List.FinRange"],
