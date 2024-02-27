@@ -1,5 +1,4 @@
 import Std.Tactic.ShowTerm
-import Std.Tactic.SimpTrace
 import Mathlib.Tactic.Says
 import Aesop
 
