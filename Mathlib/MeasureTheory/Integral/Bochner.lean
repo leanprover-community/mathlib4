@@ -1344,7 +1344,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   let f' := fun n x ↦ f n x - f 0 x
   have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
     filter_upwards [h_mono] with a ha n
-    simp [ha (zero_le n)]
+    simp [f', ha (zero_le n)]
   have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
   suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
     simp_rw [integral_sub (hf _) (hf _), integral_sub' hF (hf 0), tendsto_sub_const_iff] at this
@@ -1366,7 +1366,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
   · filter_upwards [h_mono] with x hx n m hnm
     refine ENNReal.ofReal_le_ofReal ?_
-    simp only [tsub_le_iff_right, sub_add_cancel]
+    simp only [f', tsub_le_iff_right, sub_add_cancel]
     exact hx hnm
   · filter_upwards [h_tendsto] with x hx
     refine (ENNReal.continuous_ofReal.tendsto _).comp ?_

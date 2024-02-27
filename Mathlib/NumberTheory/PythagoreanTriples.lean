@@ -466,10 +466,10 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
   have hq : v ^ 2 + w ^ 2 = 1 := by
-    field_simp [sq]
+    field_simp [v, w, sq]
     norm_cast
   have hvz : v ≠ 0 := by
-    field_simp
+    field_simp [v]
     exact h0
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1

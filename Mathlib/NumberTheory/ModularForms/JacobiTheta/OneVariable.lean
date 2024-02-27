@@ -79,7 +79,7 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hR)
   refine' ⟨fun n => y ^ n.natAbs, summable_int_of_summable_nat _ _, fun hτ n => _⟩; pick_goal 3
   · refine' (norm_exp_mul_sq_le (hR.trans_le hτ) n).trans _
-    dsimp
+    dsimp [y]
     gcongr rexp ?_ ^ _
     rwa [mul_le_mul_left_of_neg (neg_lt_zero.mpr pi_pos)]
   all_goals

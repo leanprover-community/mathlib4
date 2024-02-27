@@ -591,7 +591,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
       exact (continuousOn_open_iff (Z.trivChange i j).open_source).1
         (Z.trivChange i j).continuousOn _ s_open
     convert this using 1
-    dsimp [PartialEquiv.trans_source]
+    dsimp [f, PartialEquiv.trans_source]
     rw [← preimage_comp, inter_assoc]
   toPartialEquiv := Z.localTrivAsPartialEquiv i
 #align fiber_bundle_core.local_triv FiberBundleCore.localTriv

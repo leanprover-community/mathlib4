@@ -247,7 +247,7 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopr
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption
     · exact coprime.symm
-  (Ideal.quotEquivOfEq (by simp [iInf, inf_comm])).trans <|
+  (Ideal.quotEquivOfEq (by simp [f, iInf, inf_comm])).trans <|
             (Ideal.quotientInfRingEquivPiQuotient f hf).trans <| RingEquiv.piFinTwo fun i => R ⧸ f i
 #align ideal.quotient_inf_equiv_quotient_prod Ideal.quotientInfEquivQuotientProd
 

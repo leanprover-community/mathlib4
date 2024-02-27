@@ -244,7 +244,7 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
   rw [torusIntegral, ← hem.map_eq, set_integral_map_equiv, heπ, Measure.volume_eq_prod,
     set_integral_prod, circleIntegral_def_Icc]
   · refine' set_integral_congr measurableSet_Icc fun θ _ => _
-    simp (config := { unfoldPartialApp := true }) only [torusIntegral, ← integral_smul,
+    simp (config := { unfoldPartialApp := true }) only [e, torusIntegral, ← integral_smul,
       deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
     refine' set_integral_congr measurableSet_Icc fun Θ _ => _
     simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,

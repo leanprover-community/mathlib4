@@ -1207,7 +1207,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     | succ n =>
       rw [coe_zeta_smul_apply]
       simp only [n.succ_ne_zero, forall_prop_of_true, succ_pos', if_false, ZeroHom.coe_mk]
-      simp only [coe_mk, succ_ne_zero, ite_false]
+      simp only [f', g', coe_mk, succ_ne_zero, ite_false]
       rw [sum_congr rfl fun x hx => ?_]
       rw [if_neg (Nat.pos_of_mem_divisors hx).ne']
   trans μ • g' = f'
@@ -1223,7 +1223,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
       simp only [n.succ_ne_zero, forall_prop_of_true, succ_pos', smul_apply, if_false,
         ZeroHom.coe_mk]
       -- porting note: added following `simp only`
-      simp only [Nat.isUnit_iff, coe_mk, ZeroHom.toFun_eq_coe, succ_ne_zero, ite_false]
+      simp only [f', g', Nat.isUnit_iff, coe_mk, ZeroHom.toFun_eq_coe, succ_ne_zero, ite_false]
       rw [sum_congr rfl fun x hx => ?_]
       rw [if_neg (Nat.pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)).ne']
 #align nat.arithmetic_function.sum_eq_iff_sum_smul_moebius_eq ArithmeticFunction.sum_eq_iff_sum_smul_moebius_eq

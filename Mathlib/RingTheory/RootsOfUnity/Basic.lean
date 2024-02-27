@@ -1025,7 +1025,7 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         dsimp only
         generalize_proofs h1
         have h := h1.choose_spec
-        dsimp only [AlgEquiv.one_apply, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+        dsimp only [μ', AlgEquiv.one_apply, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
           RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv] at *
         replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using h)
@@ -1038,7 +1038,7 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         have hxy := hxy'.choose_spec
         have hx := hx'.choose_spec
         have hy := hy'.choose_spec
-        dsimp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+        dsimp only [μ', AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
           RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.mul_apply] at *
         replace hxy : x (((μ' : Sˣ) : S) ^ hy'.choose) = ((μ' : Sˣ) : S) ^ hxy'.choose := hy ▸ hxy
         rw [x.map_pow] at hxy

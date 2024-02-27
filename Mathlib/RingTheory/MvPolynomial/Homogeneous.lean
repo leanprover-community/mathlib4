@@ -315,7 +315,7 @@ lemma coeff_isHomogeneous_of_optionEquivLeft_symm
   suffices IsHomogeneous (F (p.coeff i)) j by
     rwa [← (IsHomogeneous.rename_isHomogeneous_iff e.injective)]
   convert hφ.finSuccEquiv_coeff_isHomogeneous i j h using 1
-  dsimp only [renameEquiv_apply]
+  dsimp only [φ, F', F, renameEquiv_apply]
   rw [finSuccEquiv_rename_finSuccEquiv, AlgEquiv.apply_symm_apply]
   simp
 

@@ -873,7 +873,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubri
   let U : NonUnitalSubring R :=
     NonUnitalSubring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubsemigroup) (⨆ i, (S i).toAddSubgroup)
       (Subsemigroup.coe_iSup_of_directed hS) (AddSubgroup.coe_iSup_of_directed hS)
-  suffices ⨆ i, S i ≤ U by simpa using @this x
+  suffices ⨆ i, S i ≤ U by simpa [U] using @this x
   exact iSup_le fun i x hx ↦ Set.mem_iUnion.2 ⟨i, hx⟩
 
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → NonUnitalSubring R}

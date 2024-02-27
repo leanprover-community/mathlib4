@@ -211,7 +211,7 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
   set d : ℂ := ↑((↑ₘA).det : ℝ)
   have h1 : d ^ (k1 + k2 - 1) = d * d ^ (k1 - 1) * d ^ (k2 - 1) := by
     have : d ≠ 0 := by
-      dsimp
+      dsimp [d]
       norm_cast
       exact Matrix.GLPos.det_ne_zero A
     rw [← zpow_one_add₀ this, ← zpow_add₀ this]

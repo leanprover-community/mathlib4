@@ -1373,7 +1373,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
       · have : j = liminf_reparam f s p j := by simp only [liminf_reparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
-      · simp only [mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
+      · simp only [m, mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
         simp only [hj, empty_subset]
     · apply iUnion_subset (fun j ↦ ?_)
       exact subset_iUnion (fun (k : Subtype p) ↦ (⋂ (i : s k), Iic (f i))) (liminf_reparam f s p j)

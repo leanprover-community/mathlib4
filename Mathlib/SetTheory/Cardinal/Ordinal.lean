@@ -524,7 +524,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
       _
   · have : { q | s q p } ⊆ insert (g p) { x | x < g p } ×ˢ insert (g p) { x | x < g p } := by
       intro q h
-      simp only [Preimage, ge_iff_le, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
+      simp only [s, f, Preimage, ge_iff_le, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
         typein_inj, mem_setOf_eq] at h
       exact max_le_iff.1 (le_iff_lt_or_eq.2 <| h.imp_right And.left)
     suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ Sum { x | r x (g p) } PUnit from
@@ -1357,7 +1357,7 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
       ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))
-  refine' ⟨h, _⟩; rintro ⟨x, hx⟩; simp [Set.sumCompl_symm_apply_of_mem, hx]
+  refine' ⟨h, _⟩; rintro ⟨x, hx⟩; simp [h, Set.sumCompl_symm_apply_of_mem, hx]
 #align cardinal.extend_function Cardinal.extend_function
 
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)

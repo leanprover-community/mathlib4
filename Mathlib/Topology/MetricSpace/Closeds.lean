@@ -98,8 +98,8 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     completeness, by a standard completeness criterion.
     We use the shorthand `B n = 2^{-n}` in ennreal. -/
   let B : ℕ → ℝ≥0∞ := fun n => 2⁻¹ ^ n
-  have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [ENNReal.pow_pos]
-  have B_ne_top : ∀ n, B n ≠ ⊤ := by simp [ENNReal.pow_ne_top]
+  have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [B, ENNReal.pow_pos]
+  have B_ne_top : ∀ n, B n ≠ ⊤ := by simp [B, ENNReal.pow_ne_top]
   /- Consider a sequence of closed sets `s n` with `edist (s n) (s (n+1)) < B n`.
     We will show that it converges. The limit set is `t0 = ⋂n, closure (⋃m≥n, s m)`.
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
@@ -226,7 +226,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     · apply @Finite.of_finite_image _ _ F _
       · apply fs.finite_subsets.subset fun b => _
         exact fun s => (s : Set α)
-        simp only [and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
+        simp only [F, and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
         intro _ x hx hx'
         rwa [hx'] at hx
       · exact SetLike.coe_injective.injOn F
@@ -363,7 +363,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       have tc : ∀ x ∈ t, ∃ y ∈ c, edist x y ≤ δ := by
         intro x hx
         rcases tb x hx with ⟨y, yv, Dxy⟩
-        have : y ∈ c := by simp [-mem_image]; exact ⟨yv, ⟨x, hx, Dxy⟩⟩
+        have : y ∈ c := by simp [c, -mem_image]; exact ⟨yv, ⟨x, hx, Dxy⟩⟩
         exact ⟨y, this, le_of_lt Dxy⟩
       -- points in `c` are well approximated by points in `t`
       have ct : ∀ y ∈ c, ∃ x ∈ t, edist y x ≤ δ := by

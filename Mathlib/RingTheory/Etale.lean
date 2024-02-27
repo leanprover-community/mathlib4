@@ -529,7 +529,7 @@ theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmoot
       AlgHom.comp_algebraMap]
   use f
   ext
-  simp
+  simp [f]
 #align algebra.formally_smooth.localization_base Algebra.FormallySmooth.localization_base
 
 /-- This actually does not need the localization instance, and is stated here again for

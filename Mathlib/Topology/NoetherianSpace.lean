@@ -254,7 +254,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     · rw [Set.mem_diff, Decidable.not_and_iff_or_not_not, not_not, Set.mem_iUnion] at h
       rcases h with (h|⟨i, hi⟩)
       · refine ⟨irreducibleComponent a, Or.inr ?_, mem_irreducibleComponent⟩
-        simp only [Set.mem_diff, Set.mem_singleton_iff]
+        simp only [ι, Set.mem_diff, Set.mem_singleton_iff]
         refine ⟨irreducibleComponent_mem_irreducibleComponents _, ?_⟩
         rintro rfl
         exact h mem_irreducibleComponent

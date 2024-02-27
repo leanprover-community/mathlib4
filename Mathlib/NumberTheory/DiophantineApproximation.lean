@@ -106,7 +106,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
         -- Porting note: was
         -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, mul_zero, fract_zero,
         --   zero_mul, Set.left_mem_Ico, zero_lt_one]
-        simp only [cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
+        simp only [f, cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
       refine' Ne.lt_of_le (fun h => n_pos.ne _) (mem_Icc.mp hm).1
       exact mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
     refine' ⟨⌊ξ * m⌋ + 1, m, hm₀, (mem_Icc.mp hm).2, _⟩
@@ -266,7 +266,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
   set s := {q : ℚ | |ξ - q| < 1 / (q.den : ℚ) ^ 2}
   have hinj : Function.Injective f := by
     intro a b hab
-    simp only [Prod.mk.inj_iff] at hab
+    simp only [f, Prod.mk.inj_iff] at hab
     rw [← Rat.num_div_den a, ← Rat.num_div_den b, hab.1, hab.2]
   have H : f '' s ⊆ ⋃ (y : ℕ) (_ : y ∈ Ioc 0 ξ.den), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} := by
     intro xy hxy

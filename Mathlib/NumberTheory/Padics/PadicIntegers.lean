@@ -481,7 +481,7 @@ See `unitCoeff_spec`. -/
 def unitCoeff {x : ℤ_[p]} (hx : x ≠ 0) : ℤ_[p]ˣ :=
   let u : ℚ_[p] := x * (p : ℚ_[p]) ^ (-x.valuation)
   have hu : ‖u‖ = 1 := by
-    simp [hx, Nat.zpow_ne_zero_of_pos (mod_cast hp.1.pos) x.valuation, norm_eq_pow_val,
+    simp [u, hx, Nat.zpow_ne_zero_of_pos (mod_cast hp.1.pos) x.valuation, norm_eq_pow_val,
       zpow_neg, inv_mul_cancel]
   mkUnits hu
 #align padic_int.unit_coeff PadicInt.unitCoeff

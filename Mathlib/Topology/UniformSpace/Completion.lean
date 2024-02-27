@@ -97,7 +97,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         (monotone_setOf fun p => @Filter.monotone_mem _ (p.2.val ×ˢ p.1.val)))
       (by
         have h := fun p : CauchyFilter α × CauchyFilter α => @Filter.prod_comm _ _ p.2.val p.1.val
-        simp [Function.comp, h, mem_map']
+        simp [f, Function.comp, h, mem_map']
         exact le_rfl)
   exact h₁.trans_le h₂
 

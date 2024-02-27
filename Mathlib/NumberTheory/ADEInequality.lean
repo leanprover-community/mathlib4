@@ -264,7 +264,7 @@ theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
   rw [hpqr]
   rw [hpqr] at H
   apply admissible_of_one_lt_sumInv_aux hS _ H
-  simp only [ge_iff_le, insert_eq_cons, length_sort, card_cons, card_singleton]
+  simp only [S, ge_iff_le, insert_eq_cons, length_sort, card_cons, card_singleton]
 #align ADE_inequality.admissible_of_one_lt_sum_inv ADEInequality.admissible_of_one_lt_sumInv
 
 /-- A multiset `{p,q,r}` of positive natural numbers

@@ -1465,7 +1465,7 @@ theorem completeSpace_lp_of_cauchy_complete_ℒp [hp : Fact (1 ≤ p)]
   refine' H f1 (fun n => Lp.memℒp (f n)) B1 hB1 fun N n m hn hm => _
   specialize hf N n m hn hm
   rw [dist_def] at hf
-  dsimp only
+  dsimp only [f1]
   rwa [ENNReal.lt_ofReal_iff_toReal_lt]
   rw [snorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.snorm_ne_top _

@@ -213,7 +213,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
   have h_tendsto : ∀ x ∈ sᶜ, Tendsto (fun i => f (ns i) x) atTop (𝓝 (g x)) := by
     refine' fun x hx => Metric.tendsto_atTop.mpr fun ε hε => _
     rw [hs, limsup_eq_iInf_iSup_of_nat] at hx
-    simp only [Set.iSup_eq_iUnion, Set.iInf_eq_iInter, Set.compl_iInter, Set.compl_iUnion,
+    simp only [S, Set.iSup_eq_iUnion, Set.iInf_eq_iInter, Set.compl_iInter, Set.compl_iUnion,
       Set.mem_iUnion, Set.mem_iInter, Set.mem_compl_iff, Set.mem_setOf_eq, not_le] at hx
     obtain ⟨N, hNx⟩ := hx
     obtain ⟨k, hk_lt_ε⟩ := h_lt_ε_real ε hε

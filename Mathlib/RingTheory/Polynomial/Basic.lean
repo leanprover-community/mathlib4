@@ -899,10 +899,10 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
       apply ringHom_ext
       · intro
-        dsimp
+        dsimp [eqv]
         erw [iterToSum_C_C, rename_C, rename_C]
       · intro
-        dsimp
+        dsimp [eqv]
         erw [iterToSum_C_X, rename_X, rename_X]
         rfl
     rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomial p]

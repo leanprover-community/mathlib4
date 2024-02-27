@@ -411,7 +411,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp [preimage_preimage]
+    simp [f, preimage_preimage]
 #align is_closed.is_clopenable IsClosed.isClopenable
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :

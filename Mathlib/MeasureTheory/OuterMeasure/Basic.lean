@@ -1681,11 +1681,11 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
   simp only [trim_eq_iInf]; set ms := ⨅ (t : Set α) (_ : s ⊆ t) (_ : MeasurableSet t), m t
   by_cases hs : ms = ∞
   · simp only [hs]
-    simp only [iInf_eq_top] at hs
+    simp only [iInf_eq_top, ms] at hs
     exact ⟨univ, subset_univ s, MeasurableSet.univ, hs _ (subset_univ s) MeasurableSet.univ⟩
   · have : ∀ r > ms, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < r := by
       intro r hs
-      have : ∃t, MeasurableSet t ∧ s ⊆ t ∧ measureOf m t < r := by simpa [iInf_lt_iff] using hs
+      have : ∃t, MeasurableSet t ∧ s ⊆ t ∧ measureOf m t < r := by simpa [ms, iInf_lt_iff] using hs
       rcases this with ⟨t, hmt, hin, hlt⟩
       exists t
     have : ∀ n : ℕ, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < ms + (n : ℝ≥0∞)⁻¹ := by

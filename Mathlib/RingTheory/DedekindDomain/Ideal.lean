@@ -255,13 +255,13 @@ theorem isDedekindDomainInv_iff [Algebra A K] [IsFractionRing A K] :
     FractionalIdeal.mapEquiv (FractionRing.algEquiv A K)
   refine h.toEquiv.forall_congr (fun {x} => ?_)
   rw [← h.toEquiv.apply_eq_iff_eq]
-  simp [IsDedekindDomainInv]
+  simp [h, IsDedekindDomainInv]
 #align is_dedekind_domain_inv_iff isDedekindDomainInv_iff
 
 theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractionRing A K] (x : K)
     (hx : IsIntegral A x) (hI : IsUnit (adjoinIntegral A⁰ x hx)) : adjoinIntegral A⁰ x hx = 1 := by
   set I := adjoinIntegral A⁰ x hx
-  have mul_self : I * I = I := by apply coeToSubmodule_injective; simp
+  have mul_self : I * I = I := by apply coeToSubmodule_injective; simp [I]
   convert congr_arg (· * I⁻¹) mul_self <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 #align fractional_ideal.adjoin_integral_eq_one_of_is_unit FractionalIdeal.adjoinIntegral_eq_one_of_isUnit
