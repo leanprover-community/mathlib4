@@ -1,8 +1,6 @@
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Tactic.Relation.Rfl
-import Std.Tactic.GuardMsgs
-
 /-! # Tests for mathlib extensions to `Lean.Expr` and `Lean.Meta` -/
 
 namespace Tests

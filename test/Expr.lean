@@ -1,7 +1,5 @@
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Init.Data.Nat.Notation
-import Std.Tactic.GuardMsgs
-
 open Lean Meta Elab Command
 
 section replaceRec
