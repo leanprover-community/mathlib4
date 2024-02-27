@@ -9,15 +9,16 @@ import Mathlib.Data.Set.Finite
 # Partitions based on membership of a sequence of sets
 
 Let `f : ℕ → Set α` be a sequence of sets. For `n : ℕ`, we can form the set of points that are in
-`f 0 ∪ f 1 ∪ ... ∪ f n`; then the set of points in `(f 0)ᶜ ∪ f 1 ∪ ... ∪ f n` and so on for
-all 2^(n+1) choices of a set or its complement. The at most 2^(n+1) sets we obtain form a partition
+`f 0 ∪ f 1 ∪ ... ∪ f (n-1)`; then the set of points in `(f 0)ᶜ ∪ f 1 ∪ ... ∪ f (n-1)` and so on for
+all 2^n choices of a set or its complement. The at most 2^n sets we obtain form a partition
 of `univ : Set α`. We call that partition `memPartition f n` (the membership partition of `f`).
+For `n = 0` we set `memPartition f 0 = {univ}`.
 
 The partition `memPartition f (n + 1)` is finer than `memPartition f n`.
 
 ## Main definitions
 
-* `memPartition f n`: the membership partition of the first `n+1` sets in `f`.
+* `memPartition f n`: the membership partition of the first `n` sets in `f`.
 
 ## Main statements
 
@@ -34,14 +35,14 @@ variable {α : Type*}
 /-- `memPartition f n` is the partition containing at most `2^(n+1)` sets, where each set contains
 the points that for all `i` belong to one of `f i` or its complement. -/
 def memPartition (f : ℕ → Set α) : ℕ → Set (Set α)
-  | 0 => {f 0, (f 0)ᶜ}
-  | n + 1 => {s | ∃ u ∈ memPartition f n, s = u ∩ f (n + 1) ∨ s = u \ f (n + 1)}
+  | 0 => {univ}
+  | n + 1 => {s | ∃ u ∈ memPartition f n, s = u ∩ f n ∨ s = u \ f n}
 
 @[simp]
-lemma memPartition_zero (f : ℕ → Set α) : memPartition f 0 = {f 0, (f 0)ᶜ} := rfl
+lemma memPartition_zero (f : ℕ → Set α) : memPartition f 0 = {univ} := rfl
 
 lemma memPartition_succ (f : ℕ → Set α) (n : ℕ) :
-    memPartition f (n + 1) = {s | ∃ u ∈ memPartition f n, s = u ∩ f (n + 1) ∨ s = u \ f (n + 1)} :=
+    memPartition f (n + 1) = {s | ∃ u ∈ memPartition f n, s = u ∩ f n ∨ s = u \ f n} :=
   rfl
 
 lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
@@ -52,8 +53,8 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
   | zero =>
     intro u v hu hv huv
     simp only [Nat.zero_eq, memPartition_zero, mem_insert_iff, mem_singleton_iff] at hu hv
-    rcases hu with rfl | rfl <;> rcases hv with rfl | rfl
-    exacts [absurd rfl huv, disjoint_compl_right, disjoint_compl_left, absurd rfl huv]
+    rw [hu, hv] at huv
+    exact absurd rfl huv
   | succ n ih =>
     intro u v hu hv huv
     rw [memPartition_succ] at hu hv
@@ -78,9 +79,9 @@ lemma sUnion_memPartition (f : ℕ → Set α) (n : ℕ) : ⋃₀ memPartition f
     simp only [mem_sUnion, mem_iUnion, mem_insert_iff, mem_singleton_iff, exists_prop, mem_univ,
       iff_true] at this ⊢
     obtain ⟨t, ht, hxt⟩ := this
-    by_cases hxf : x ∈ f (n + 1)
-    · exact ⟨t ∩ f (n + 1), ⟨t, ht, Or.inl rfl⟩, hxt, hxf⟩
-    · exact ⟨t \ f (n + 1), ⟨t, ht, Or.inr rfl⟩, hxt, hxf⟩
+    by_cases hxf : x ∈ f n
+    · exact ⟨t ∩ f n, ⟨t, ht, Or.inl rfl⟩, hxt, hxf⟩
+    · exact ⟨t \ f n, ⟨t, ht, Or.inr rfl⟩, hxt, hxf⟩
 
 lemma finite_memPartition (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartition f n) := by
   induction n with

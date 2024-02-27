@@ -59,6 +59,9 @@ lemma generateFrom_countableGeneratingSet [m : MeasurableSpace α] [h : Countabl
     generateFrom (countableGeneratingSet α) = m :=
   (generateFrom_insert_empty _).trans <| h.isCountablyGenerated.choose_spec.2.symm
 
+lemma empty_mem_countableGeneratingSet [MeasurableSpace α] [CountablyGenerated α] :
+    ∅ ∈ countableGeneratingSet α := mem_insert _ _
+
 lemma nonempty_countableGeneratingSet [MeasurableSpace α] [CountablyGenerated α] :
     Set.Nonempty (countableGeneratingSet α) :=
   ⟨∅, mem_insert _ _⟩
@@ -95,6 +98,58 @@ instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [Measurabl
   rw [← forall_generateFrom_mem_iff_mem_iff, ← hb] at h
   simpa using h {y}
 
+section MeasurableMemPartition
+
+lemma measurableSet_succ_memPartition (t : ℕ → Set α) (n : ℕ) {s : Set α}
+    (hs : s ∈ memPartition t n) :
+    MeasurableSet[generateFrom (memPartition t (n + 1))] s := by
+  rw [← diff_union_inter s (t n)]
+  refine MeasurableSet.union ?_ ?_ <;>
+    · refine measurableSet_generateFrom ?_
+      rw [memPartition_succ]
+      exact ⟨s, hs, by simp⟩
+
+lemma generateFrom_memPartition_le_succ (t : ℕ → Set α) (n : ℕ) :
+    generateFrom (memPartition t n) ≤ generateFrom (memPartition t (n + 1)) :=
+  generateFrom_le (fun _ hs ↦ measurableSet_succ_memPartition t n hs)
+
+lemma measurableSet_generateFrom_memPartition (t : ℕ → Set α) (n : ℕ) :
+    MeasurableSet[generateFrom (memPartition t (n + 1))] (t n) := by
+  have : t n = ⋃ u ∈ memPartition t n, u ∩ t n := by
+    simp_rw [← iUnion_inter, ← sUnion_eq_biUnion, sUnion_memPartition, univ_inter]
+  rw [this]
+  refine MeasurableSet.biUnion (finite_memPartition _ _).countable (fun v hv ↦ ?_)
+  refine measurableSet_generateFrom ?_
+  rw [memPartition_succ]
+  exact ⟨v, hv, Or.inl rfl⟩
+
+lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
+    generateFrom (⋃ n, memPartition t n) = generateFrom (range t) := by
+  refine le_antisymm (generateFrom_le fun u hu ↦ ?_) (generateFrom_le fun u hu ↦ ?_)
+  · simp only [mem_iUnion] at hu
+    obtain ⟨n, hun⟩ := hu
+    induction n generalizing u with
+    | zero =>
+      simp only [Nat.zero_eq, memPartition_zero, mem_insert_iff, mem_singleton_iff] at hun
+      rw [hun]
+      exact MeasurableSet.univ
+    | succ n ih =>
+      simp only [memPartition_succ, mem_setOf_eq] at hun
+      obtain ⟨v, hv, huv⟩ := hun
+      rcases huv with rfl | rfl
+      · exact (ih v hv).inter (measurableSet_generateFrom ⟨n, rfl⟩)
+      · exact (ih v hv).diff (measurableSet_generateFrom ⟨n, rfl⟩)
+  · simp only [iUnion_singleton_eq_range, mem_range] at hu
+    obtain ⟨n, rfl⟩ := hu
+    exact generateFrom_mono (subset_iUnion _ _) _ (measurableSet_generateFrom_memPartition t n)
+
+lemma generateFrom_memPartition_le (t : ℕ → Set α) (n : ℕ) :
+    generateFrom (memPartition t n) ≤ generateFrom (range t) := by
+  conv_rhs => rw [← generateFrom_iUnion_memPartition t]
+  exact generateFrom_mono (subset_iUnion _ _)
+
+end MeasurableMemPartition
+
 variable [m : MeasurableSpace α] [h : CountablyGenerated α]
 
 /-- For each `n : ℕ`, `countablePartition α n` is a partition of the space in at most
@@ -120,57 +175,20 @@ lemma sUnion_countablePartition (α : Type*) [MeasurableSpace α] [CountablyGene
   sUnion_memPartition _ n
 
 lemma measurableSet_succ_countablePartition (n : ℕ) {s : Set α} (hs : s ∈ countablePartition α n) :
-    MeasurableSet[generateFrom (countablePartition α (n + 1))] s := by
-  let t : ℕ → Set α := enumerateCountable countable_countableGeneratingSet ∅
-  rw [← diff_union_inter s (t (n + 1))]
-  refine MeasurableSet.union ?_ ?_ <;>
-    · refine measurableSet_generateFrom ?_
-      rw [countablePartition, memPartition_succ]
-      exact ⟨s, hs, by simp⟩
+    MeasurableSet[generateFrom (countablePartition α (n + 1))] s :=
+  measurableSet_succ_memPartition _ _ hs
 
 lemma generateFrom_countablePartition_le_succ (α : Type*) [MeasurableSpace α] [CountablyGenerated α]
     (n : ℕ) :
     generateFrom (countablePartition α n) ≤ generateFrom (countablePartition α (n + 1)) :=
-  generateFrom_le (fun _ hs ↦ measurableSet_succ_countablePartition n hs)
-
-lemma measurableSet_generateFrom_memPartition (t : ℕ → Set α) (n : ℕ) :
-    MeasurableSet[generateFrom (memPartition t n)] (t n) := by
-  cases n with
-  | zero => exact measurableSet_generateFrom (by simp)
-  | succ n =>
-    have : t (n + 1) = ⋃ u ∈ memPartition t n, u ∩ t (n + 1) := by
-      simp_rw [← iUnion_inter, ← sUnion_eq_biUnion, sUnion_memPartition, univ_inter]
-    rw [this]
-    refine MeasurableSet.biUnion (finite_memPartition _ _).countable (fun v hv ↦ ?_)
-    refine measurableSet_generateFrom ?_
-    rw [memPartition_succ]
-    exact ⟨v, hv, Or.inl rfl⟩
+  generateFrom_memPartition_le_succ _ _
 
 lemma generateFrom_iUnion_countablePartition (α : Type*) [m : MeasurableSpace α]
     [CountablyGenerated α] :
     generateFrom (⋃ n, countablePartition α n) = m := by
-  let t : ℕ → Set α := enumerateCountable countable_countableGeneratingSet ∅
-  have ht_mem : ∀ n, t n ∈ countableGeneratingSet α :=
-    enumerateCountable_mem countable_countableGeneratingSet (mem_insert _ _)
   conv_rhs => rw [← generateFrom_countableGeneratingSet (α := α)]
-  refine le_antisymm (generateFrom_le fun u hu ↦ ?_) (generateFrom_le fun u hu ↦ ?_)
-  · simp only [mem_iUnion] at hu
-    obtain ⟨n, hun⟩ := hu
-    induction n generalizing u with
-    | zero =>
-      simp only [Nat.zero_eq, memPartition_zero, mem_insert_iff, mem_singleton_iff] at hun
-      rcases hun with rfl | rfl
-      · exact measurableSet_generateFrom (ht_mem _)
-      · exact (measurableSet_generateFrom (ht_mem _)).compl
-    | succ n ih =>
-      simp only [countablePartition, memPartition_succ, mem_setOf_eq] at hun
-      obtain ⟨v, hv, huv⟩ := hun
-      rcases huv with rfl | rfl
-      · exact (ih v hv).inter (measurableSet_generateFrom (ht_mem _))
-      · exact (ih v hv).diff (measurableSet_generateFrom (ht_mem _))
-  · obtain ⟨n, hn⟩ := mem_range.mpr (subset_range_enumerate countable_countableGeneratingSet ∅ hu)
-    rw [← hn]
-    exact generateFrom_mono (subset_iUnion _ _) _ (measurableSet_generateFrom_memPartition t n)
+  convert generateFrom_iUnion_memPartition _
+  rw [range_enumerateCountable_of_mem _ empty_mem_countableGeneratingSet]
 
 lemma generateFrom_countablePartition_le (α : Type*) [m : MeasurableSpace α] [CountablyGenerated α]
     (n : ℕ) :
@@ -179,10 +197,8 @@ lemma generateFrom_countablePartition_le (α : Type*) [m : MeasurableSpace α] [
   exact generateFrom_mono (subset_iUnion _ _)
 
 lemma measurableSet_countablePartition (n : ℕ) {s : Set α} (hs : s ∈ countablePartition α n) :
-    MeasurableSet s := by
-  have : MeasurableSet[generateFrom (countablePartition α n)] s :=
-    measurableSet_generateFrom hs
-  exact generateFrom_countablePartition_le α n _ this
+    MeasurableSet s :=
+  generateFrom_countablePartition_le α n _ (measurableSet_generateFrom hs)
 
 lemma exists_countablePartition_mem (n : ℕ) (a : α) : ∃ s, s ∈ countablePartition α n ∧ a ∈ s := by
   have h_univ := sUnion_countablePartition α n
