@@ -210,7 +210,7 @@
   "Mathlib.Tactic.TypeStar": ["Std"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
-  "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE"],
+  "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
   "Mathlib.Tactic.Rewrites": ["Mathlib.Init.Core"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
