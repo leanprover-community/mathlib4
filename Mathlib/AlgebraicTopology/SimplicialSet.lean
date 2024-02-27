@@ -403,6 +403,7 @@ set_option linter.uppercaseLean3 false in
 
 end Augmented
 
+/-- The category of contravariant functors from `WithInitial SimplexCategory` to `Type u`. -/
 abbrev FromWithInitial := (WithInitial SimplexCategory)ᵒᵖ ⥤ Type u
 
 namespace FromWithInitial

@@ -406,9 +406,6 @@ lemma preimageIncl₂_cond  {X : WithInitial SimplexCategory} {i : Fin (Nat.succ
   simp_all [obj, len_mk]
   refine lt_tsub_of_add_lt_right ?_
   rw [tsub_add_cancel_iff_le.mpr ha]
-  have h := a.prop
-  unfold obj at h
-  simp [len_mk] at h
   omega
 
 /-- The preimage of an object in `Fin (len X)` under `incl₂` when it exists. -/
@@ -730,6 +727,15 @@ lemma splitValue_of_join {X Y : WithInitial SimplexCategory × WithInitial Simpl
     exact  Nat.le_add_left (len Y.1) _
     rfl
 
+lemma sourceValue_of_joinSplitIso_comp_join_comp_joinSplitIso {X Y : WithInitial SimplexCategory}
+    (i : Fin (Nat.succ (len X))) (p : Fin (Nat.succ (len Y))) (f : (obj Y p) ⟶ (obj X i)) :
+    sourceValue ((joinSplitIso Y p).hom ≫ join.toPrefunctor.map f ≫ (joinSplitIso X i).inv) i
+    = p := by
+  have ht := (Fin.eq_iff_veq _ _).mp (Split.splitValue_of_join f)
+  simp [obj, len_mk] at ht
+  rw [← Split.sourceValue_of_comp, ← Split.sourceValue_of_comp,
+    Split.sourceValue_of_iso_hom, Split.sourceValue_of_iso_inv, Fin.eq_iff_veq, ← ht]
+
 /-- Given a morphism `f : X ⟶ Y`, and an element of `Fin (Nat.succ (len Y))`, the corresponding
 morphism between `obj X (sourceValue f i) ` and `obj Y i`. -/
 def map {X Y : WithInitial SimplexCategory} (f : X ⟶ Y) (i : Fin (Nat.succ (len Y))) :
@@ -869,52 +875,34 @@ def splitJoinUnitEquiv (X Y : WithInitial SimplexCategory) (i : Fin (Nat.succ (l
   invFun f := Split.hom.split (Split.sourceValue f i) (Split.map f i)
   left_inv := by
     intro s
-    have hs : s.1.val =
-        (⟨len (Split.obj Y s.1).1,
-        len_of_fst_lt_len_of_join_plus_one (Split.obj Y s.1)⟩ : Fin _).val := by
-      simp only [Split.obj, Fin.val_rev, Nat.succ_sub_succ_eq_sub, len_mk]
-    refine Split.hom_ext _ _ _ _ _ ?_ ?_
-    simp
-    rw [← Split.sourceValue_of_comp, ← Split.sourceValue_of_comp]
-    rw [Split.sourceValue_of_iso_hom (Split.joinSplitIso Y s.1)]
-    rw [Split.sourceValue_of_iso_inv (Split.joinSplitIso X i)]
-    simp [Fin.eq_iff_veq]
-    rw [hs, ← (Split.splitValue_of_join s.2)]
-    repeat apply congrArg
-    simp only [Split.obj, Fin.val_rev, Nat.succ_sub_succ_eq_sub, len_mk]
+    refine Split.hom_ext _ _ _ _ _
+      (sourceValue_of_joinSplitIso_comp_join_comp_joinSplitIso i s.1 s.2) ?_
     apply Prod.ext
     all_goals apply hom_eq_if_toOrderHom_eq
-    rw [prod_comp_fst, toOrderHom_comp]
-    apply OrderHom.ext
-    funext a
-    simp
-    rw [Split.toOrderHom_indexEqToIso_inv_fst_apply, Fin.eq_iff_veq, Split.toOrderHom_fst_apply]
-    simp [Split.incl₁, toOrderHom_comp, Split.joinSplitIso, toOrderHom_of_lenIso_hom,
-      toOrderHom_of_lenIso_inv]
-    rw [WithInitial.toOrderHom_fst_apply]
-    rw [prod_comp_snd, toOrderHom_comp]
-    apply OrderHom.ext
-    funext a
-    simp
-    rw [Split.toOrderHom_indexEqToIso_inv_snd_apply, Fin.eq_iff_veq, Split.toOrderHom_snd_apply]
-    simp only [Split.joinSplitIso, toOrderHom_comp, toOrderHom_of_lenIso_inv,
-      toOrderHom_of_lenIso_hom, Split.incl₂, OrderHom.comp_coe, OrderHomClass.coe_coe,
-      Function.comp_apply, Fin.castIso_apply, Fin.cast_mk, Fin.coe_cast]
-    rw [WithInitial.toOrderHom_snd_apply]
-    simp [Split.obj, len_mk]
-    apply congrFun
-    repeat apply congrArg
-    simp [Fin.eq_iff_veq, Split.obj, len_mk]
-    rw [← Split.sourceValue_of_comp, ← Split.sourceValue_of_comp, Split.sourceValue_of_iso_hom]
-    change (Split.sourceValue (join.map s.2) _).val =_
-    rw [hs, ← (Split.splitValue_of_join s.2)]
-    repeat apply congrArg
-    simp [Split.sourceValue_of_iso_inv, Split.obj, len_mk]
+    all_goals apply OrderHom.ext
+    all_goals funext a
+    · simp only [prod_comp_fst, toOrderHom_comp, prod_Hom, OrderHom.comp_coe, Function.comp_apply]
+      rw [Split.toOrderHom_indexEqToIso_inv_fst_apply, Fin.eq_iff_veq, Split.toOrderHom_fst_apply]
+      simp only [joinSplitIso, toOrderHom_comp, toOrderHom_of_lenIso_inv,
+        toOrderHom_of_lenIso_hom, incl₁, OrderHom.comp_coe, OrderHomClass.coe_coe,
+        Function.comp_apply, Fin.castIso_apply, Fin.cast_mk, Fin.coe_cast,
+        WithInitial.toOrderHom_fst_apply]
+    · simp only [prod_comp_snd, toOrderHom_comp, prod_Hom, OrderHom.comp_coe, Function.comp_apply]
+      rw [Split.toOrderHom_indexEqToIso_inv_snd_apply, Fin.eq_iff_veq, Split.toOrderHom_snd_apply]
+      simp only [Split.joinSplitIso, toOrderHom_comp, toOrderHom_of_lenIso_inv,
+        toOrderHom_of_lenIso_hom, Split.incl₂, OrderHom.comp_coe, OrderHomClass.coe_coe,
+        Function.comp_apply, Fin.castIso_apply, Fin.cast_mk, Fin.coe_cast,
+        WithInitial.toOrderHom_snd_apply]
+      simp [Split.obj, len_mk]
+      apply congrFun
+      repeat apply congrArg
+      simp [Split.obj, len_mk]
+      exact (Fin.eq_iff_veq _ _).mp
+          (sourceValue_of_joinSplitIso_comp_join_comp_joinSplitIso i s.1 s.2)
   right_inv := by
     intro f
     apply hom_eq_if_toOrderHom_eq
-    rw [toOrderHom_comp, toOrderHom_comp]
-    rw [Split.joinSplitIso, Split.joinSplitIso]
+    rw [toOrderHom_comp, toOrderHom_comp, Split.joinSplitIso, Split.joinSplitIso]
     rw [toOrderHom_of_lenIso_hom, toOrderHom_of_lenIso_inv]
     apply OrderHom.ext
     funext a
@@ -934,23 +922,18 @@ lemma splitJoinUnitEquiv_naturality (X : WithInitial SimplexCategory) (i : Fin (
     ((Split.splitJoinUnitEquiv X Z i).symm).toFun ∘ (CategoryStruct.comp f) =
     (homMap X i f) ∘ ((Split.splitJoinUnitEquiv X Y i).symm).toFun := by
   funext s
-  refine Split.hom_ext _ _ _ _ _ ?_ ?_
-  exact (Split.sourceValue_of_comp f s i).symm
+  refine Split.hom_ext _ _ _ _ _ (Split.sourceValue_of_comp f s i).symm ?_
   simp only [Split.splitJoinUnitEquiv,  Equiv.toFun_as_coe, Equiv.coe_fn_symm_mk,
     Function.comp_apply, homMap,  Fin.val_rev, Prod.mk.injEq]
   rw [Split.map_comp]
-  change _ = Split.map f (Split.sourceValue s i) ≫ Split.map s i
   repeat rw [← Category.assoc]
   apply congrFun
   apply congrArg
-  have h : Split.map f (Split.sourceValue s i) = 𝟙 _ ≫ Split.map f (Split.sourceValue s i) := by
-    simp
-  rw [h]
+  rw [← Category.id_comp (Split.map f (Split.sourceValue s i))]
   repeat rw [← Category.assoc]
   apply congrFun
   apply congrArg
-  rw [Category.comp_id]
-  rw [Split.indexEqToIso_inv_comp_symm_inv]
+  rw [Category.comp_id, indexEqToIso_inv_comp_symm_inv]
   rfl
 
 lemma splitJoinUnitEquiv_naturality_equiv (X : WithInitial SimplexCategory)
@@ -958,6 +941,7 @@ lemma splitJoinUnitEquiv_naturality_equiv (X : WithInitial SimplexCategory)
     (Equiv.toIso (Split.splitJoinUnitEquiv X Z i).symm).hom ∘ (CategoryStruct.comp f) =
     (homMap X i f) ∘ (Equiv.toIso (Split.splitJoinUnitEquiv X Y i).symm).hom := by
   exact Split.splitJoinUnitEquiv_naturality X i f
+
 end Split
 end WithInitial
 end SimplexCategory
