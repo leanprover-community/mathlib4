@@ -813,10 +813,9 @@ def StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : OrderedRin
 #align strict_ordered_ring.to_ordered_ring' StrictOrderedRing.toOrderedRing'
 
 -- see Note [lower instance priority]
-instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α :=
-  let _ := ‹StrictOrderedRing α›
-  { ‹StrictOrderedRing α› with
-    mul_nonneg := fun _ _ => mul_nonneg }
+instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α where
+  __ := ‹StrictOrderedRing α›
+  mul_nonneg := fun _ _ => mul_nonneg
 #align strict_ordered_ring.to_ordered_ring StrictOrderedRing.toOrderedRing
 
 end StrictOrderedRing
