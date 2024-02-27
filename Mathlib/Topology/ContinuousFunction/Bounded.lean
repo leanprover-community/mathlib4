@@ -3,13 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Algebra.Module.MinimalAxioms
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -1291,6 +1290,12 @@ instance : NatCast (α →ᵇ R) :=
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 #align bounded_continuous_function.coe_nat_cast BoundedContinuousFunction.coe_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp, norm_cast]
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index OfNat.ofNat n : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+  rfl
 
 instance : IntCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩

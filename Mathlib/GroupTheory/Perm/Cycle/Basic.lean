@@ -1026,9 +1026,8 @@ variable [DecidableEq α] [Fintype α]
 
 theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
-  refine'
-    ⟨s.toList.formPerm, _, fun x hx => by
-      simpa using List.mem_of_formPerm_apply_ne _ _ (Perm.mem_support.1 hx)⟩
+  refine ⟨s.toList.formPerm, ?_, fun x hx => by
+    simpa using List.mem_of_formPerm_apply_ne _ _ (Perm.mem_support.1 hx)⟩
   convert s.nodup_toList.isCycleOn_formPerm
   simp
 #align finset.exists_cycle_on Finset.exists_cycleOn
@@ -1042,18 +1041,16 @@ variable {f : Perm α} {s : Set α}
 theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
     ∃ f : Perm α, f.IsCycleOn s ∧ { x | f x ≠ x } ⊆ s := by
   classical
-    obtain hs' | hs' := s.finite_or_infinite
-    · refine'
-        ⟨hs'.toFinset.toList.formPerm, _, fun x hx => by
-          simpa using List.mem_of_formPerm_apply_ne _ _ hx⟩
-      convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
-      simp
-    haveI := hs.to_subtype
+  obtain hs' | hs' := s.finite_or_infinite
+  · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
+      simpa using List.mem_of_formPerm_apply_ne _ _ hx⟩
+    convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
+    simp
+  · haveI := hs.to_subtype
     haveI := hs'.to_subtype
     obtain ⟨f⟩ : Nonempty (ℤ ≃ s) := inferInstance
-    refine'
-      ⟨(Equiv.addRight 1).extendDomain f, _, fun x hx =>
-        of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
+    refine ⟨(Equiv.addRight 1).extendDomain f, ?_, fun x hx =>
+      of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
     convert Int.addRight_one_isCycle.isCycleOn.extendDomain f
     rw [Set.image_comp, Equiv.image_eq_preimage]
     ext

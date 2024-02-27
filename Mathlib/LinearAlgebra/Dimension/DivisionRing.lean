@@ -230,11 +230,11 @@ theorem rank_le_one_iff : Module.rank K V ≤ 1 ↔ ∃ v₀ : V, ∀ v, ∃ r :
     rw [← b.mk_eq_rank'', Cardinal.le_one_iff_subsingleton, subsingleton_coe] at hd
     rcases eq_empty_or_nonempty (ofVectorSpaceIndex K V) with (hb | ⟨⟨v₀, hv₀⟩⟩)
     · use 0
-      have h' : ∀ v : V, v = 0 := by simpa [hb, Submodule.eq_bot_iff] using b.span_eq.symm
+      have h' : ∀ v : V, v = 0 := by simpa [b, hb, Submodule.eq_bot_iff] using b.span_eq.symm
       intro v
       simp [h' v]
     · use v₀
-      have h' : (K ∙ v₀) = ⊤ := by simpa [hd.eq_singleton_of_mem hv₀] using b.span_eq
+      have h' : (K ∙ v₀) = ⊤ := by simpa [b, hd.eq_singleton_of_mem hv₀] using b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
@@ -410,13 +410,13 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
       have h : span K (f '' Set.range b') = map f (span K (Set.range b')) := span_image f
       have hf : f '' Set.range b' = Set.range b := by
         ext x
-        simp [Set.mem_image, Set.mem_range]
+        simp [f, Set.mem_image, Set.mem_range]
       rw [hf] at h
       have hx : (x : V) ∈ span K (Set.range b) := x.property
       conv at hx =>
         arg 2
         rw [h]
-      simpa [mem_map] using hx
+      simpa [f, mem_map] using hx
     have hi : LinearMap.ker f = ⊥ := ker_subtype _
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
 #align linear_independent_iff_card_eq_finrank_span linearIndependent_iff_card_eq_finrank_span
