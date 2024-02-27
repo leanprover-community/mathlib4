@@ -364,10 +364,10 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
-variable [Nontrivial ι]
+variable [Nontrivial ι] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
-compactly-supported real-valued function on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
+compactly-supported function on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
 `ι → ℝ` where `n := #ι` is finite and at least 2.)  Then the Lebesgue integral of the pointwise
 expression `|u x| ^ (n / (n - 1))` is bounded above by the `n / (n - 1)`-th power of the Lebesgue
 integral of the Fréchet derivative of `u`.
@@ -375,7 +375,7 @@ integral of the Fréchet derivative of `u`.
 For a basis-free version, see `lintegral_pow_le_pow_lintegral_fderiv`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv_aux
     {p : ℝ} (hp : Real.IsConjExponent #ι p)
-    {u : (ι → ℝ) → ℝ} (hu : ContDiff ℝ 1 u)
+    {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
     (h2u : HasCompactSupport u) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
   have : (1:ℝ) ≤ ↑#ι - 1 := by
@@ -429,14 +429,15 @@ section
 example (c : ℝ≥0) (μ : Measure E) : c • μ = (c : ℝ≥0∞) • μ := by rw [@ENNReal.smul_def]
 
 set_option linter.unusedVariables false in
+variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
-compactly-supported real-valued function on a normed space `E` of finite dimension `n ≥ 2`, equipped
+compactly-supported function on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. There exists a constant `C` depending only on `E`, such that the Lebesgue
 integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by `C` times the
 `n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
     {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
-    ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂μ ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ p := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
@@ -460,13 +461,14 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
     exact (NNReal.rpow_pos hc).ne'
   refine this.imp fun C hC u hu h2u ↦ ?_
   rw [h2c, ENNReal.smul_def, lintegral_smul_measure, lintegral_smul_measure]
-  let v : (ι → ℝ) → ℝ := u ∘ e.symm
+  let v : (ι → ℝ) → F := u ∘ e.symm
   have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
   have h2v : HasCompactSupport v := h2u.comp_homeomorph e.symm.toHomeomorph
   have :=
   calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂(volume : Measure (ι → ℝ)).map e.symm
       = ∫⁻ y, (‖v y‖₊ : ℝ≥0∞) ^ p := by
         refine lintegral_map ?_ e.symm.continuous.measurable
+        borelize F
         exact hu.continuous.measurable.nnnorm.coe_nnreal_ennreal.pow_const _
     _ ≤ (∫⁻ y, ‖fderiv ℝ v y‖₊) ^ p :=
         lintegral_pow_le_pow_lintegral_fderiv_aux hp hv h2v
@@ -496,18 +498,19 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
   exact this
 
 set_option linter.unusedVariables false in
+variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
-compactly-supported real-valued function on a normed space `E` of finite dimension `n ≥ 2`, equipped
+compactly-supported function on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
 theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
     {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
-    ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
   obtain ⟨m, hm⟩ : ∃ m, finrank ℝ E = m + 2 := Nat.exists_eq_add_of_le' hE
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
-  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv μ hE hp.coe
+  obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv F μ hE hp.coe
   use C ^ (p : ℝ)⁻¹
   intro u hu h2u
   rw [snorm_one_eq_lintegral_nnnorm,
@@ -523,9 +526,10 @@ example (a b c d : ℝ) (ha : a ≠ 0) (hb : b ≠ 0) (hd : d ≠ 0) : a * (b * 
 attribute [fun_prop] AEMeasurable Continuous.aemeasurable
   ENNReal.continuous_coe ENNReal.continuous_rpow_const ContDiff.continuous
 
+variable (F) in
 theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
-    ∃ C : ℝ≥0, ∀ {u : E → ℝ} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
@@ -533,10 +537,10 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
   have h1n : 1 ≤ (n : ℝ≥0) := hn.one_le
   have h2n : (0 : ℝ) < n - 1 := by simp_rw [sub_pos]; exact hn.coe.one_lt
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv μ hE hn
   rcases hp.eq_or_lt with rfl|hp
   -- the case `p = 1`
-  · refine ⟨C, @fun u hu h2u ↦ ?_⟩
+  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv F μ hE hn
+    refine ⟨C, @fun u hu h2u ↦ ?_⟩
     convert hC hu h2u
     ext
     rw [← inv_inj, hp']
@@ -569,6 +573,7 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
     field_simp; rw [this]; field_simp; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv ℝ μ hE hn
   refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
@@ -581,10 +586,9 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
   have h6u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
     ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
-  let v : E → ℝ := fun x ↦ |u x| ^ (γ : ℝ)
+  let v : E → ℝ := fun x ↦ ‖u x‖ ^ (γ : ℝ)
   have hv : ContDiff ℝ 1 v := sorry
-  have h2v : HasCompactSupport v := h2u.abs.rpow_const h4γ
-  specialize hC hv h2v
+  have h2v : HasCompactSupport v := h2u.norm.rpow_const h4γ
   have :=
   calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
         rw [← h2γ, snorm_nnreal_eq_lintegral hn.symm.pos.ne']
@@ -592,7 +596,7 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
         simp [Real.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul]
         rw [ENNReal.coe_rpow_of_nonneg]
         positivity
-    _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC
+    _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC hv h2v
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
     _ = C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
@@ -615,5 +619,3 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
       by rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
     _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
-
--- #lint
