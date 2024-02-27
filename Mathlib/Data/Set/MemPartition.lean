@@ -98,23 +98,38 @@ lemma finite_memPartition (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartit
 instance instFinite_memPartition (f : ℕ → Set α) (n : ℕ) : Finite (memPartition f n) :=
   Set.finite_coe_iff.mp (finite_memPartition _ _)
 
-lemma exists_memPartition_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
-    ∃ s, s ∈ memPartition f n ∧ a ∈ s := by
-  have h_univ := sUnion_memPartition f n
-  have h_mem_univ := mem_univ a
-  rw [← h_univ] at h_mem_univ
-  simpa only [mem_sUnion] using h_mem_univ
-
+open Classical in
 /-- The set in `memPartition f n` to which `a : α` belongs. -/
-def memPartitionSet (f : ℕ → Set α) (n : ℕ) (a : α) : Set α :=
-  (exists_memPartition_mem f n a).choose
+def memPartitionSet (f : ℕ → Set α) : ℕ → α → Set α
+  | 0 => fun _ ↦ univ
+  | n + 1 => fun a ↦ if a ∈ f n then memPartitionSet f n a ∩ f n else memPartitionSet f n a \ f n
+
+@[simp]
+lemma memPartitionSet_zero (f : ℕ → Set α) (a : α) : memPartitionSet f 0 a = univ := by
+  simp [memPartitionSet]
+
+lemma memPartitionSet_succ (f : ℕ → Set α) (n : ℕ) (a : α) [Decidable (a ∈ f n)] :
+    memPartitionSet f (n + 1) a
+      = if a ∈ f n then memPartitionSet f n a ∩ f n else memPartitionSet f n a \ f n := by
+  simp [memPartitionSet]
 
 lemma memPartitionSet_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
-    memPartitionSet f n a ∈ memPartition f n :=
-  (exists_memPartition_mem f n a).choose_spec.1
+    memPartitionSet f n a ∈ memPartition f n := by
+  induction n with
+  | zero => simp [memPartitionSet]
+  | succ n ih =>
+    classical
+    rw [memPartitionSet_succ, memPartition_succ]
+    refine ⟨memPartitionSet f n a, ?_⟩
+    split_ifs <;> simp [ih]
 
-lemma mem_memPartitionSet(f : ℕ → Set α) (n : ℕ) (a : α) : a ∈ memPartitionSet f n a :=
-  (exists_memPartition_mem f n a).choose_spec.2
+lemma mem_memPartitionSet(f : ℕ → Set α) (n : ℕ) (a : α) : a ∈ memPartitionSet f n a := by
+  induction n with
+  | zero => simp [memPartitionSet]
+  | succ n ih =>
+    classical
+    rw [memPartitionSet_succ]
+    split_ifs with h <;> exact ⟨ih, h⟩
 
 lemma memPartitionSet_eq_iff {f : ℕ → Set α} {n : ℕ} (a : α) {s : Set α}
     (hs : s ∈ memPartition f n) :
