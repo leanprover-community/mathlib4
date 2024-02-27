@@ -8,7 +8,16 @@ import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 /-!
-# Conditional cumulative distribution function of a Markov kernel
+# Building a Markov kernel from a conditional cumulative distribution function
+
+Let `μ : kernel α (β × ℝ)` and `ν : kernel α β` be two finite kernels.
+A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `μ` with respect
+to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
+if `fun t ↦ f (a, t) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all measurable
+sets `s : Set β`, `∫ t in s, f (a, t) x ∂(ν a) = (μ a (s ×ˢ Iic x)).toReal`.
+
+From such a function with property `hf : IsCondKernelCDF f μ ν`, we can build a `kernel (α × β) ℝ`
+denoted by `hf.toKernel f` such that `μ = ν ⊗ₖ hf.toKernel f`.
 
 ## Main definitions
 
