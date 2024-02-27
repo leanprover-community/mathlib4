@@ -123,7 +123,7 @@ lemma supIrredLowerSet_surjective : Function.Surjective (OrderEmbedding.supIrred
 to its lattice of sup-irreducible lower sets. This is one version of Birkhoff's representation
 theorem. -/
 noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
-    RelIso.ofSurjective  _ (supIrredLowerSet_surjective)
+  RelIso.ofSurjective _ supIrredLowerSet_surjective
 
 end PartialOrder
 section DistribLattice
