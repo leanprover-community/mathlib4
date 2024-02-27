@@ -433,7 +433,7 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
     ext i j
     rw [adjugate_apply, det_fin_three]
     fin_cases i <;> fin_cases j <;>
-    repeat {
+      repeat {
       try simp [updateRow_ne, Pi.single_eq_of_ne, Pi.single_eq_same]
       try repeat rw [Matrix.updateRow_ne]
       try repeat rw [Pi.single_eq_of_ne]
@@ -441,64 +441,64 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
       try repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
       try repeat exact Fin.ne_of_gt Nat.le.refl}
 
-    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-    repeat rw [Fin.eq_mk_iff_val_eq]
-    repeat rw [Matrix.updateRow_apply]
-    repeat rw [if_pos]
-    simp
-    repeat rw [Pi.single_eq_of_ne]
-    simp
-    exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
-    repeat exact rfl
+    . simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+      repeat rw [Fin.eq_mk_iff_val_eq]
+      repeat rw [Matrix.updateRow_apply]
+      repeat rw [if_pos]
+      simp
+      repeat rw [Pi.single_eq_of_ne]
+      simp
+      exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
+      repeat exact rfl
 
-    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-    repeat rw [Fin.eq_mk_iff_val_eq]
-    repeat rw [Matrix.updateRow_apply]
-    repeat rw [if_neg]
-    repeat rw [Pi.single_eq_of_ne]
-    simp
-    exact Fin.ne_of_gt Nat.le.refl
-    repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
+    . simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+      repeat rw [Fin.eq_mk_iff_val_eq]
+      repeat rw [Matrix.updateRow_apply]
+      repeat rw [if_neg]
+      repeat rw [Pi.single_eq_of_ne]
+      simp
+      exact Fin.ne_of_gt Nat.le.refl
+      repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
 
-    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-    repeat rw [Fin.eq_mk_iff_val_eq]
-    repeat rw [Matrix.updateRow_apply]
-    simp
-    repeat rw [if_pos]
-    repeat rw [Pi.single_eq_of_ne]
-    simp
-    exact Fin.ne_of_gt Nat.le.refl
-    repeat exact rfl
+    . simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+      repeat rw [Fin.eq_mk_iff_val_eq]
+      repeat rw [Matrix.updateRow_apply]
+      simp
+      repeat rw [if_pos]
+      repeat rw [Pi.single_eq_of_ne]
+      simp
+      exact Fin.ne_of_gt Nat.le.refl
+      repeat exact rfl
 
-    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-    repeat rw [Matrix.updateRow_apply]
-    repeat rw [if_neg]
-    rw [Pi.single_apply]
-    repeat rw [if_pos]
-    simp
-    rfl
-    repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
+    . simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+      repeat rw [Matrix.updateRow_apply]
+      repeat rw [if_neg]
+      rw [Pi.single_apply]
+      repeat rw [if_pos]
+      simp
+      rfl
+      repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
 
-    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-    repeat rw [Matrix.updateRow_apply]
-    repeat rw [if_neg]
-    rw [Pi.single_apply]
-    repeat rw [if_pos]
-    simp
-    rfl
-    repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
-    repeat exact Fin.ne_of_gt Nat.le.refl
+    . simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+      repeat rw [Matrix.updateRow_apply]
+      repeat rw [if_neg]
+      rw [Pi.single_apply]
+      repeat rw [if_pos]
+      simp
+      rfl
+      repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
+      repeat exact Fin.ne_of_gt Nat.le.refl
 
-    simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-    repeat rw [Matrix.updateRow_apply]
-    repeat rw [if_pos]
-    repeat rw [Pi.single_apply]
-    rw [if_pos]
-    repeat rw [if_neg]
-    simp
-    exact Fin.ne_of_lt (Nat.le.step Nat.le.refl)
-    repeat exact Fin.ne_of_lt Nat.le.refl
-    repeat exact rfl
+    . simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
+      repeat rw [Matrix.updateRow_apply]
+      repeat rw [if_pos]
+      repeat rw [Pi.single_apply]
+      rw [if_pos]
+      repeat rw [if_neg]
+      simp
+      exact Fin.ne_of_lt (Nat.le.step Nat.le.refl)
+      repeat exact Fin.ne_of_lt Nat.le.refl
+      repeat exact rfl
 
 
 @[simp]
