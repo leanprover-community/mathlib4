@@ -69,9 +69,14 @@ variable [DecidableEq ιAA] [GradedRing 𝒜𝒜]
 
 variable (p : Submodule A M) (I : Ideal A)
 
+/-- A subring `A'` is said to be homogeneous if for ever `a ∈ A'`, all homogeneous components
+of `a` are in `A'`
+-/
 def Subring.IsHomogeneous (A' : Subring AA) : Prop :=
   ∀ (i : ιAA) ⦃a : AA⦄, a ∈ A' → (DirectSum.decompose 𝒜𝒜 a i : AA) ∈ A'
 
+/-- We collect all homogeneous subring into a type
+-/
 structure HomogeneousSubring extends Subring AA :=
   is_homogeneous' : toSubring.IsHomogeneous 𝒜𝒜
 
@@ -193,6 +198,9 @@ is the largest homogeneous `A`-submodule contained in `p`, as an `A`-submodule. 
 def Submodule.homogeneousCore' (I : Submodule A M) : Submodule A M :=
   Submodule.span A ((↑) '' (((↑) : Subtype (Homogeneous ℳ) → M) ⁻¹' I))
 
+/-- For any subring `A'`, not necessarily homogeneous, `A.homogeneousCore' 𝒜` is the largest
+homogeneous subring contained in `A'` as a subring.
+-/
 def Subring.homogeneousCore' (R : Subring AA) : Subring AA :=
   Subring.closure ((↑) '' (((↑) : Subtype (Homogeneous 𝒜𝒜) → AA) ⁻¹' R))
 
