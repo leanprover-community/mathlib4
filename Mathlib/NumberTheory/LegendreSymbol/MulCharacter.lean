@@ -450,7 +450,7 @@ section quadratic_and_comp
 variable {R : Type u} [CommMonoid R] {R' : Type v} [CommRing R'] {R'' : Type w} [CommRing R'']
 
 /-- A multiplicative character is *quadratic* if it takes only the values `0`, `1`, `-1`. -/
-def IsQuadratic {R' : Type v} [CommRing R'] (χ : MulChar R R') : Prop :=
+def IsQuadratic (χ : MulChar R R') : Prop :=
   ∀ a, χ a = 0 ∨ χ a = 1 ∨ χ a = -1
 #align mul_char.is_quadratic MulChar.IsQuadratic
 
