@@ -1832,7 +1832,6 @@ import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.NNRat.BigOperators
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.NNRat.Lemmas
-import Mathlib.Data.NNRat.Star
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
