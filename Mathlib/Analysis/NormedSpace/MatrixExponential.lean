@@ -188,9 +188,9 @@ theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp (z • A) = exp A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · rw [zpow_ofNat, coe_nat_zsmul, exp_nsmul 𝕂]
+  · rw [zpow_coe_nat, coe_nat_zsmul, exp_nsmul 𝕂]
   · have : IsUnit (exp A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp 𝕂 _)
-    rw [Matrix.zpow_neg this, zpow_ofNat, neg_smul, exp_neg 𝕂, coe_nat_zsmul, exp_nsmul 𝕂]
+    rw [Matrix.zpow_neg this, zpow_coe_nat, neg_smul, exp_neg 𝕂, coe_nat_zsmul, exp_nsmul 𝕂]
 #align matrix.exp_zsmul Matrix.exp_zsmul
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :

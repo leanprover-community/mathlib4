@@ -351,6 +351,11 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
   map f := f.f
 #align homological_complex.forget HomologicalComplex.forget
 
+instance : Faithful (forget V c) where
+  map_injective h := by
+    ext i
+    exact congr_fun h i
+
 /-- Forgetting the differentials than picking out the `i`-th object is the same as
 just picking out the `i`-th object. -/
 @[simps!]
@@ -983,7 +988,7 @@ end OfHom
 
 section Mk
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Auxiliary structure for setting up the recursion in `mk`.
 This is purely an implementation detail: for some reason just using the dependent 6-tuple directly
 results in `mkAux` taking much longer (well over the `-T100000` limit) to elaborate.

@@ -62,7 +62,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   obtain ⟨V, hxV, g, rfl⟩ := X.presheaf.germ_exist x.1 g'
   let W := U ⊓ V
   have hxW : x.1 ∈ W := ⟨x.2, hxV⟩
-  -- Porting note : `erw` can't write into `HEq`, so this is replaced with another `HEq` in the
+  -- Porting note: `erw` can't write into `HEq`, so this is replaced with another `HEq` in the
   -- desired form
   replace heq : (X.presheaf.germ ⟨x.val, hxW⟩) ((X.presheaf.map (U.infLELeft V).op) f *
       (X.presheaf.map (U.infLERight V).op) g) = (X.presheaf.germ ⟨x.val, hxW⟩) 1 := by
@@ -87,7 +87,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x (h x)
   have hcover : U ≤ iSup V := by
     intro x hxU
-    -- Porting note : in Lean3 `rw` is sufficient
+    -- Porting note: in Lean3 `rw` is sufficient
     erw [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
   -- Let `g x` denote the inverse of `f` in `U x`.
@@ -98,19 +98,19 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     rintro ⟨z, hzVx, hzVy⟩
     erw [germ_res_apply, germ_res_apply]
     apply (IsUnit.mul_right_inj (h ⟨z, (iVU x).le hzVx⟩)).mp
-    -- Porting note : now need explicitly typing the rewrites
+    -- Porting note: now need explicitly typing the rewrites
     rw [← show X.presheaf.germ ⟨z, hzVx⟩ (X.presheaf.map (iVU x).op f) =
       X.presheaf.germ ⟨z, ((iVU x) ⟨z, hzVx⟩).2⟩ f from
       X.presheaf.germ_res_apply (iVU x) ⟨z, hzVx⟩ f]
-    -- Porting note : change was not necessary in Lean3
+    -- Porting note: change was not necessary in Lean3
     change X.presheaf.germ ⟨z, hzVx⟩ _ * (X.presheaf.germ ⟨z, hzVx⟩ _) =
       X.presheaf.germ ⟨z, hzVx⟩ _ * X.presheaf.germ ⟨z, hzVy⟩ (g y)
     rw [← RingHom.map_mul,
       congr_arg (X.presheaf.germ (⟨z, hzVx⟩ : V x)) (hg x),
-      -- Porting note : now need explicitly typing the rewrites
+      -- Porting note: now need explicitly typing the rewrites
       show X.presheaf.germ ⟨z, hzVx⟩ (X.presheaf.map (iVU x).op f) =
         X.presheaf.germ ⟨z, ((iVU x) ⟨z, hzVx⟩).2⟩ f from X.presheaf.germ_res_apply _ _ f,
-      -- Porting note : now need explicitly typing the rewrites
+      -- Porting note: now need explicitly typing the rewrites
       ← show X.presheaf.germ ⟨z, hzVy⟩ (X.presheaf.map (iVU y).op f) =
           X.presheaf.germ ⟨z, ((iVU x) ⟨z, hzVx⟩).2⟩ f from
           X.presheaf.germ_res_apply (iVU y) ⟨z, hzVy⟩ f,
@@ -130,7 +130,7 @@ set_option linter.uppercaseLean3 false in
 `x` is a unit.
 -/
 def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
-  -- Porting note : `coe` does not work
+  -- Porting note: `coe` does not work
   carrier := Subtype.val '' { x : U | IsUnit (X.presheaf.germ x f) }
   is_open' := by
     rw [isOpen_iff_forall_mem_open]
@@ -197,7 +197,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_res AlgebraicGeometry.RingedSpace.basicOpen_res
 
 -- This should fire before `basicOpen_res`.
--- Porting note : this lemma is not in simple normal form because of `basicOpen_res`, as in Lean3
+-- Porting note: this lemma is not in simple normal form because of `basicOpen_res`, as in Lean3
 -- it is specifically said "This should fire before `basic_open_res`", this lemma is marked with
 -- high priority
 @[simp (high)]

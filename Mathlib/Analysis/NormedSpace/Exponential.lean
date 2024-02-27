@@ -664,7 +664,7 @@ theorem exp_neg (x : 𝔸) : exp (-x) = (exp x)⁻¹ :=
 theorem exp_zsmul (z : ℤ) (x : 𝔸) : exp (z • x) = exp x ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · rw [zpow_ofNat, coe_nat_zsmul, exp_nsmul 𝕂]
-  · rw [zpow_neg, zpow_ofNat, neg_smul, exp_neg 𝕂, coe_nat_zsmul, exp_nsmul 𝕂]
+  · rw [zpow_neg, zpow_coe_nat, neg_smul, exp_neg 𝕂, coe_nat_zsmul, exp_nsmul 𝕂]
 #align exp_zsmul NormedSpace.exp_zsmul
 
 theorem exp_conj (y : 𝔸) (x : 𝔸) (hy : y ≠ 0) : exp (y * x * y⁻¹) = y * exp x * y⁻¹ :=

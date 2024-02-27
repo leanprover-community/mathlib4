@@ -103,11 +103,16 @@ lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : Ma
     ∀ᶠ g : C(X, Y) in 𝓝 f, MapsTo g K U :=
   (isOpen_setOf_mapsTo hK hU).mem_nhds h
 
+lemma nhds_compactOpen (f : C(X, Y)) :
+    𝓝 f = ⨅ (K : Set X) (_ : IsCompact K) (U : Set Y) (_ : IsOpen U) (_ : MapsTo f K U),
+      𝓟 {g : C(X, Y) | MapsTo g K U} := by
+  simp_rw [compactOpen_eq_mapsTo, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
+    ← image_prod, iInf_image, biInf_prod, mem_setOf_eq]
+
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
     Tendsto f l (𝓝 g) ↔
       ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → ∀ᶠ a in l, MapsTo (f a) K U := by
-  simp_rw [compactOpen_eq_mapsTo, tendsto_nhds_generateFrom_iff, forall_image2_iff,
-    mem_setOf, preimage_setOf_eq, eventually_iff]
+  simp [nhds_compactOpen]
 
 lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} := by
