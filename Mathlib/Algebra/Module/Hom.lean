@@ -71,7 +71,7 @@ instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : 
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }
 #align add_monoid_hom.module AddMonoidHom.instModule
 
-instance instDMAModule
+instance instDomMulActModule
     {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :
     Module Sᵈᵐᵃ (M →+ M₂) where
   add_smul s s' f := AddMonoidHom.ext fun m ↦ by
