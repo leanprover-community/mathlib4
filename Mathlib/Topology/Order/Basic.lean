@@ -564,16 +564,16 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
   have : ∀ x ∈ s, ∃ y, x ⋖ y := fun x => id
   choose! y hy using this
   have Hy : ∀ x z, x ∈ s → z < y x → z ≤ x := fun x z hx => (hy x hx).le_of_lt
-  suffices H : ∀ a : Set α, IsOpen a → Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a }
-  · have : s ⊆ ⋃ a ∈ countableBasis α, { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } := fun x hx => by
+  suffices H : ∀ a : Set α, IsOpen a → Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } by
+    have : s ⊆ ⋃ a ∈ countableBasis α, { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } := fun x hx => by
       rcases (isBasis_countableBasis α).exists_mem_of_ne (hy x hx).ne with ⟨a, ab, xa, ya⟩
       exact mem_iUnion₂.2 ⟨a, ab, hx, xa, ya⟩
     refine Set.Countable.mono this ?_
     refine' Countable.biUnion (countable_countableBasis α) fun a ha => H _ _
     exact isOpen_of_mem_countableBasis ha
   intro a ha
-  suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x }
-  · exact H.of_diff (subsingleton_isBot α).countable
+  suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x } from
+    H.of_diff (subsingleton_isBot α).countable
   simp only [and_assoc]
   let t := { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
   have : ∀ x ∈ t, ∃ z < x, Ioc z x ⊆ a := by
@@ -592,8 +592,8 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
       by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
-  suffices H : Ioc (z x) x = Ioo (z x) (y x)
-  · rw [H]
+  suffices H : Ioc (z x) x = Ioo (z x) (y x) by
+    rw [H]
     exact isOpen_Ioo
   exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
@@ -803,46 +803,6 @@ theorem pi_Ioo_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 #align pi_Ioo_mem_nhds' pi_Ioo_mem_nhds'
 
 end Pi
-
-theorem disjoint_nhds_atTop [NoMaxOrder α] (x : α) : Disjoint (𝓝 x) atTop := by
-  rcases exists_gt x with ⟨y, hy : x < y⟩
-  refine' disjoint_of_disjoint_of_mem _ (Iio_mem_nhds hy) (mem_atTop y)
-  exact disjoint_left.mpr fun z => not_le.2
-#align disjoint_nhds_at_top disjoint_nhds_atTop
-
-@[simp]
-theorem inf_nhds_atTop [NoMaxOrder α] (x : α) : 𝓝 x ⊓ atTop = ⊥ :=
-  disjoint_iff.1 (disjoint_nhds_atTop x)
-#align inf_nhds_at_top inf_nhds_atTop
-
-theorem disjoint_nhds_atBot [NoMinOrder α] (x : α) : Disjoint (𝓝 x) atBot :=
-  disjoint_nhds_atTop (α := αᵒᵈ) x
-#align disjoint_nhds_at_bot disjoint_nhds_atBot
-
-@[simp]
-theorem inf_nhds_atBot [NoMinOrder α] (x : α) : 𝓝 x ⊓ atBot = ⊥ :=
-  inf_nhds_atTop (α := αᵒᵈ) x
-#align inf_nhds_at_bot inf_nhds_atBot
-
-theorem not_tendsto_nhds_of_tendsto_atTop [NoMaxOrder α] {F : Filter β} [NeBot F] {f : β → α}
-    (hf : Tendsto f F atTop) (x : α) : ¬Tendsto f F (𝓝 x) :=
-  hf.not_tendsto (disjoint_nhds_atTop x).symm
-#align not_tendsto_nhds_of_tendsto_at_top not_tendsto_nhds_of_tendsto_atTop
-
-theorem not_tendsto_atTop_of_tendsto_nhds [NoMaxOrder α] {F : Filter β} [NeBot F] {f : β → α}
-    {x : α} (hf : Tendsto f F (𝓝 x)) : ¬Tendsto f F atTop :=
-  hf.not_tendsto (disjoint_nhds_atTop x)
-#align not_tendsto_at_top_of_tendsto_nhds not_tendsto_atTop_of_tendsto_nhds
-
-theorem not_tendsto_nhds_of_tendsto_atBot [NoMinOrder α] {F : Filter β} [NeBot F] {f : β → α}
-    (hf : Tendsto f F atBot) (x : α) : ¬Tendsto f F (𝓝 x) :=
-  hf.not_tendsto (disjoint_nhds_atBot x).symm
-#align not_tendsto_nhds_of_tendsto_at_bot not_tendsto_nhds_of_tendsto_atBot
-
-theorem not_tendsto_atBot_of_tendsto_nhds [NoMinOrder α] {F : Filter β} [NeBot F] {f : β → α}
-    {x : α} (hf : Tendsto f F (𝓝 x)) : ¬Tendsto f F atBot :=
-  hf.not_tendsto (disjoint_nhds_atBot x)
-#align not_tendsto_at_bot_of_tendsto_nhds not_tendsto_atBot_of_tendsto_nhds
 
 /-!
 ### Neighborhoods to the left and to the right on an `OrderTopology`

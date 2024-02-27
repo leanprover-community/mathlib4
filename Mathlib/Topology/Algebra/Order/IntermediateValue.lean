@@ -345,8 +345,7 @@ on a closed subset, contains `a`, and the set `s ∩ [a, b)` has no maximal poin
 theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
     (ha : a ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ico a b, (s ∩ Ioc x b).Nonempty) : b ∈ s := by
   let S := s ∩ Icc a b
-  replace ha : a ∈ S
-  exact ⟨ha, left_mem_Icc.2 hab⟩
+  replace ha : a ∈ S := ⟨ha, left_mem_Icc.2 hab⟩
   have Sbd : BddAbove S := ⟨b, fun z hz => hz.2.2⟩
   let c := sSup (s ∩ Icc a b)
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
@@ -396,8 +395,8 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
     (Icc a b ∩ (s ∩ t)).Nonempty := by
   have xyab : Icc x y ⊆ Icc a b := Icc_subset_Icc hx.1.1 hy.1.2
   by_contra hst
-  suffices : Icc x y ⊆ s
-  exact hst ⟨y, xyab <| right_mem_Icc.2 hxy, this <| right_mem_Icc.2 hxy, hy.2⟩
+  suffices Icc x y ⊆ s from
+    hst ⟨y, xyab <| right_mem_Icc.2 hxy, this <| right_mem_Icc.2 hxy, hy.2⟩
   apply (IsClosed.inter hs isClosed_Icc).Icc_subset_of_forall_mem_nhdsWithin hx.2
   rintro z ⟨zs, hz⟩
   have zt : z ∈ tᶜ := fun zt => hst ⟨z, xyab <| Ico_subset_Icc_self hz, zs, zt⟩

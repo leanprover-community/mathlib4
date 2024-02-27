@@ -591,8 +591,8 @@ theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} 
       simp [hn_ne_a, hn_mem, hft1_mem n hn_mem]
   have h_f_mem_pi : ∀ n ∈ s, f n ∈ π n := fun x hxS => h_f_mem x (by simp [hxS])
   have h_t1 : t1 = ⋂ n ∈ s, f n := by
-    suffices h_forall : ∀ n ∈ s, f n = ft1 n
-    · rw [ht1_eq]
+    suffices h_forall : ∀ n ∈ s, f n = ft1 n by
+      rw [ht1_eq]
       ext x
       simp_rw [Set.mem_iInter]
       conv => lhs; intro i hns; rw [← h_forall i hns]
@@ -639,7 +639,7 @@ theorem iIndepSets.iIndep [IsMarkovKernel κ] (m : ι → MeasurableSpace Ω)
     · have h_le_p : ∀ i ∈ S, m i ≤ m_p := by
         intros n hn
         rw [hS_eq_generate, h_generate n]
-        refine le_generateFrom_piiUnionInter (S : Set ι) hn
+        exact le_generateFrom_piiUnionInter (S : Set ι) hn
       have h_S_f : ∀ i ∈ S, MeasurableSet[m_p] (f i) :=
         fun i hi ↦ (h_le_p i hi) (f i) (hf_m_S i hi)
       exact S.measurableSet_biInter h_S_f

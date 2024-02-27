@@ -254,7 +254,7 @@ theorem neg_smul : -r • x = -(r • x) :=
   eq_neg_of_add_eq_zero_left <| by rw [← add_smul, add_left_neg, zero_smul]
 #align neg_smul neg_smul
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem neg_smul_neg : -r • -x = r • x := by rw [neg_smul, smul_neg, neg_neg]
 #align neg_smul_neg neg_smul_neg
@@ -758,13 +758,13 @@ instance (priority := 100) RatModule.noZeroSMulDivisors [AddCommGroup M] [Module
 
 end NoZeroSMulDivisors
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 #align nat.smul_one_eq_coe Nat.smul_one_eq_coe
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 --@[simp]
 theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]

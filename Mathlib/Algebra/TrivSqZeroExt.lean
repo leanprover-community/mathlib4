@@ -21,13 +21,13 @@ It is a square-zero extension because `M^2 = 0`.
 Note that expressing this requires bimodules; we write these in general for a
 not-necessarily-commutative `R` as:
 ```lean
-variables {R M : Type*} [Semiring R] [AddCommMonoid M]
-variables [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable {R M : Type*} [Semiring R] [AddCommMonoid M]
+variable [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 ```
 If we instead work with a commutative `R'` acting symmetrically on `M`, we write
 ```lean
-variables {R' M : Type*} [CommSemiring R'] [AddCommMonoid M]
-variables [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
+variable {R' M : Type*} [CommSemiring R'] [AddCommMonoid M]
+variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 ```
 noting that in this context `IsCentralScalar R' M` implies `SMulCommClass R' R'ᵐᵒᵖ M`.
 

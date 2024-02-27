@@ -133,13 +133,13 @@ theorem normalize_apply (x : α) : normalize x = x * normUnit x :=
   rfl
 #align normalize_apply normalize_apply
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_zero : normalize (0 : α) = 0 :=
   normalize.map_zero
 #align normalize_zero normalize_zero
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_one : normalize (1 : α) = 1 :=
   normalize.map_one
@@ -951,7 +951,7 @@ theorem normUnit_eq_one (x : α) : normUnit x = 1 :=
   rfl
 #align norm_unit_eq_one normUnit_eq_one
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_eq (x : α) : normalize x = x :=
   mul_one x
@@ -1145,7 +1145,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       dsimp only
       split_ifs with h h_1
       · rw [h, eq_zero_of_zero_dvd (dvd_lcm_left _ _), mul_zero, zero_mul]
-      · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _), mul_zero]
+      · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _)]
       rw [mul_comm, ← Classical.choose_spec (exists_gcd a b)]
     lcm_zero_left := fun a => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun a => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
