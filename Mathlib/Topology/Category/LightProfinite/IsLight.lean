@@ -81,7 +81,6 @@ instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
       obtain ⟨ai, hi⟩ := hi
       obtain ⟨aj, hj⟩ := hj
       rw [← hi, ← hj]
-      dsimp
       ext x
       refine ⟨fun ⟨hhi, hhj⟩ ↦ ?_, fun h ↦ by simp at h⟩
       simp only [Set.mem_preimage, Set.mem_singleton_iff] at hhi hhj
