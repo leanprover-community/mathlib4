@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pi
+import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Data.Finset.Interval
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Integral.MeanInequalities
 import Mathlib.MeasureTheory.Measure.Haar.Unique
+import Mathlib.Tactic.FunProp.AEMeasurable
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -17,9 +19,14 @@ import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 open scoped Classical BigOperators ENNReal NNReal
 open Set Function Finset MeasureTheory Measure
-set_option autoImplicit true
 
 noncomputable section
+
+section fun_prop
+
+attribute [fun_prop] ENNReal.continuous_coe ENNReal.continuous_rpow_const
+
+end fun_prop
 
 section RPow
 
@@ -44,7 +51,82 @@ theorem ENNReal.rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (
     simp [top_rpow_of_pos, hy, hz, add_pos hy hz]
   simp [coe_rpow_of_nonneg, hy, hz, add_nonneg hy hz, NNReal.rpow_add_of_nonneg _ hy hz]
 
+@[fun_prop]
+theorem Real.continuous_rpow_const {q : ℝ} (h : 0 < q) :
+    Continuous (fun x : ℝ => x ^ q) :=
+  continuous_iff_continuousAt.mpr fun x ↦ continuousAt_rpow_const x q (.inr h)
+
 end RPow
+
+section ContDiff
+
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
+
+theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
+    ∃ f' : E → E →L[𝕜] F, Continuous f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
+  convert contDiff_succ_iff_hasFDerivAt using 4; simp
+
+end ContDiff
+
+section ContDiffAbsPow
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+theorem hasStrictFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
+    HasStrictFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by
+  by_cases hx : x = 0
+  · simp [hx]
+    rw [HasStrictFDerivAt]
+    simp
+    sorry
+    -- isLittleO_pow_sub_sub is similar-ish, but for ℕ
+  · convert (hasStrictFDerivAt_norm_sq x).rpow_const (p := p / 2) (by simp [hx]) using 0
+    simp_rw [← Real.rpow_natCast_mul (norm_nonneg _), nsmul_eq_smul_cast ℝ, smul_smul]
+    ring_nf -- doesn't close the goal?
+    congr! 2
+    ring
+
+theorem hasStrictDerivAt_norm_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
+    HasStrictDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * ‖x‖ ^ (p - 2) * x) x := by
+  convert hasStrictFDerivAt_norm_rpow x hp |>.hasStrictDerivAt using 1; simp
+
+theorem hasStrictDerivAt_abs_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
+    HasStrictDerivAt (fun x : ℝ ↦ |x| ^ p) (p * |x| ^ (p - 2) * x) x := by
+  simpa using hasStrictDerivAt_norm_rpow x hp
+
+theorem fderiv_norm_rpow {f : F → E} (hf : Differentiable ℝ f) {x : F} {p : ℝ} (hp : 1 < p) :
+    fderiv ℝ (fun x ↦ ‖f x‖ ^ p) x =
+    (p * ‖f x‖ ^ (p - 2)) • (innerSL ℝ (f x)).comp (fderiv ℝ f x) :=
+  hasStrictFDerivAt_norm_rpow (f x) hp |>.hasFDerivAt.comp x (hf x).hasFDerivAt |>.fderiv
+
+theorem norm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f) {x : F} {p : ℝ} (hp : 1 < p) :
+    ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ p) x‖ ≤ p * ‖f x‖ ^ (p - 1) * ‖fderiv ℝ f x‖ := by
+  sorry
+
+theorem nnnorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
+    {x : F} {p : ℝ≥0} (hp : 1 < p) :
+    ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ (p : ℝ)) x‖₊ ≤ p * ‖f x‖₊ ^ ((p : ℝ) - 1) * ‖fderiv ℝ f x‖₊ :=
+  norm_fderiv_norm_rpow_le hf hp
+
+set_option trace.Meta.Tactic.fun_prop true
+-- todo: generalize 1 to n
+theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
+  sorry -- not so clear whether we can get this nicely from the previous result...
+  -- rw [contDiff_one_iff_hasFDerivAt]
+  -- refine ⟨_, ?_, fun x ↦ (hasStrictFDerivAt_norm_rpow hp).hasFDerivAt⟩
+  -- fun_prop
+
+theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp : 1 < p) :
+    ContDiff ℝ 1 (fun x ↦ ‖f x‖ ^ p) :=
+  contDiff_norm_rpow hp |>.comp hf
+
+theorem hasDerivAt_norm_rpow {p x : ℝ} (hp : 1 < p) :
+  HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * |x| ^ (p - 1)) x := sorry
+
+
+end ContDiffAbsPow
 
 namespace HasCompactSupport
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddGroup β] [Lattice β]
@@ -127,7 +209,7 @@ end MeasureTheory
 section NormedAddCommGroup
 variable {ι : Type*} [Fintype ι] {E : ι → Type _} [∀ i, NormedAddCommGroup (E i)]
 
-theorem Pi.nnnorm_single (y : E i) : ‖Pi.single i y‖₊ = ‖y‖₊ := by
+theorem Pi.nnnorm_single {i : ι} (y : E i) : ‖Pi.single i y‖₊ = ‖y‖₊ := by
   classical
   have H : ∀ b, ‖single i y b‖₊ = single (f := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
     intro b
@@ -136,7 +218,7 @@ theorem Pi.nnnorm_single (y : E i) : ‖Pi.single i y‖₊ = ‖y‖₊ := by
   simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite,
     Finset.filter_eq' (Finset.univ : Finset ι)]
 
-theorem Pi.norm_single (y : E i) : ‖Pi.single i y‖ = ‖y‖ :=
+theorem Pi.norm_single {i : ι} (y : E i) : ‖Pi.single i y‖ = ‖y‖ :=
   congr_arg Subtype.val (Pi.nnnorm_single y)
 
 end NormedAddCommGroup
@@ -367,7 +449,7 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
 variable [Nontrivial ι] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
-compactly-supported function on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
+compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
 `ι → ℝ` where `n := #ι` is finite and at least 2.)  Then the Lebesgue integral of the pointwise
 expression `|u x| ^ (n / (n - 1))` is bounded above by the `n / (n - 1)`-th power of the Lebesgue
 integral of the Fréchet derivative of `u`.
@@ -397,7 +479,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
         -- apply the grid-lines lemma
         apply lintegral_prod_lintegral_pow_le _ hp
         borelize ((ι → ℝ) →L[ℝ] ℝ)
-        have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv (le_refl _)).measurable
+        have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv le_rfl).measurable
         measurability
   gcongr with x i
   calc (‖u x‖₊ : ℝ≥0∞)
@@ -431,7 +513,7 @@ example (c : ℝ≥0) (μ : Measure E) : c • μ = (c : ℝ≥0∞) • μ := b
 set_option linter.unusedVariables false in
 variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
-compactly-supported function on a normed space `E` of finite dimension `n ≥ 2`, equipped
+compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. There exists a constant `C` depending only on `E`, such that the Lebesgue
 integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by `C` times the
 `n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
@@ -474,7 +556,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
         lintegral_pow_le_pow_lintegral_fderiv_aux hp hv h2v
     _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖₊) ^ p := by
         congr! with y
-        apply fderiv.comp _ (hu.differentiable (le_refl _) _)
+        apply fderiv.comp _ (hu.differentiable le_rfl _)
         exact e.symm.differentiableAt
     _ ≤ (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊ * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊) ^ p := by
         gcongr with y
@@ -484,14 +566,14 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ * ∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ p := by
         rw [lintegral_mul_const, mul_comm]
         refine (Continuous.nnnorm ?_).measurable.coe_nnreal_ennreal
-        exact (hu.continuous_fderiv (le_refl _)).comp e.symm.continuous
+        exact (hu.continuous_fderiv le_rfl).comp e.symm.continuous
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0) * (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ p := by
         rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, ENNReal.coe_rpow_of_nonneg _ h0p]
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0)
         * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂(volume : Measure (ι → ℝ)).map e.symm) ^ p := by
         congr
         rw [lintegral_map _ e.symm.continuous.measurable]
-        exact (hu.continuous_fderiv (le_refl _)).measurable.nnnorm.coe_nnreal_ennreal
+        exact (hu.continuous_fderiv le_rfl).measurable.nnnorm.coe_nnreal_ennreal
   rw [← ENNReal.mul_le_mul_left h3c ENNReal.coe_ne_top, ← mul_assoc, ← ENNReal.coe_mul, ← hC,
     ENNReal.coe_mul] at this
   rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, ← mul_assoc, ENNReal.coe_rpow_of_ne_zero hc.ne']
@@ -500,7 +582,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
 set_option linter.unusedVariables false in
 variable (F) in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
-compactly-supported function on a normed space `E` of finite dimension `n ≥ 2`, equipped
+compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
@@ -520,26 +602,30 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
     inv_mul_cancel h0p.ne', NNReal.rpow_one]
   exact hC hu h2u
 
-example (a b c d : ℝ) (ha : a ≠ 0) (hb : b ≠ 0) (hd : d ≠ 0) : a * (b * c) * d / ((d * b) * a) = c := by
-  field_simp; ring
+variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
+set_option linter.unusedVariables false in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
+with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
+There exists a constant `C` depending only on `E` and `p`, such that the `Lᵖ'` norm of `u`
+is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 
-attribute [fun_prop] AEMeasurable Continuous.aemeasurable
-  ENNReal.continuous_coe ENNReal.continuous_rpow_const ContDiff.continuous
-
-variable (F) in
-theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} (hp : 1 ≤ p)
+Note: The codomain of `u` needs to be an inner product space.
+-/
+theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
-    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ {u : E → F'} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
+  have h0n : 2 ≤ n := Nat.succ_le_of_lt <| Nat.one_lt_cast.mp <| hp.trans_lt h2p
   have hn : NNReal.IsConjExponent n n' := .conjExponent (by norm_cast)
   have h1n : 1 ≤ (n : ℝ≥0) := hn.one_le
   have h2n : (0 : ℝ) < n - 1 := by simp_rw [sub_pos]; exact hn.coe.one_lt
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
   rcases hp.eq_or_lt with rfl|hp
   -- the case `p = 1`
-  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv F μ hE hn
+  · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv F' μ h0n hn
     refine ⟨C, @fun u hu h2u ↦ ?_⟩
     convert hC hu h2u
     ext
@@ -573,7 +659,7 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
     field_simp; rw [this]; field_simp; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
-  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv ℝ μ hE hn
+  obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv ℝ μ h0n hn
   refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
@@ -586,8 +672,10 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
   have h6u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
     ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
+  have h7u := hu.continuous -- for fun_prop
+  have h8u := (hu.fderiv_right (m := 0) le_rfl).continuous -- for fun_prop
   let v : E → ℝ := fun x ↦ ‖u x‖ ^ (γ : ℝ)
-  have hv : ContDiff ℝ 1 v := sorry
+  have hv : ContDiff ℝ 1 v := hu.norm_rpow h1γ
   have h2v : HasCompactSupport v := h2u.norm.rpow_const h4γ
   have :=
   calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
@@ -598,20 +686,21 @@ theorem snorm_le_snorm_fderiv_of_eq (hE : 2 ≤ finrank ℝ E) {p p' : ℝ≥0} 
         positivity
     _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC hv h2v
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
-    _ = C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by sorry
+    _ ≤ C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by
+      rw [mul_assoc, ← lintegral_const_mul γ]
+      gcongr
+      simp_rw [← mul_assoc, ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.mpr h1γ.le)]
+      exact ENNReal.coe_le_coe.mpr <| nnnorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
+      fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
         (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ))) := by
         gcongr
         convert ENNReal.lintegral_mul_le_Lp_mul_Lq μ
           (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp) ?_ ?_ using 5
         · simp_rw [← ENNReal.rpow_mul, ← h3γ]
-        · -- `fun_prop` can do this with a bit of help
-          apply Continuous.aemeasurable
-          have := hu.continuous
+        · borelize F'
           fun_prop
-        · apply Continuous.aemeasurable
-          have := (hu.fderiv_right (m := 0) le_rfl).continuous
-          fun_prop
+        · fun_prop
     _ = C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) *
       (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) := by ring
   calc
