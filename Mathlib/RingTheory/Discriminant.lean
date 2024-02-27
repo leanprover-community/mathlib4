@@ -138,8 +138,8 @@ variable [Module.Finite K L] [IsAlgClosed E]
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
 theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
-  rw [discr_def, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
-  exact traceForm_nondegenerate _ _
+  rw [discr_def, traceMatrix_of_basis, ← LinearMap.separatingLeft_iff_det_ne_zero]
+  exact traceForm_separatingLeft _ _
 #align algebra.discr_not_zero_of_basis Algebra.discr_not_zero_of_basis
 
 /-- If `b` is a basis of a finite separable field extension `L/K`,

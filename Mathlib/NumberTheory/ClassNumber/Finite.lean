@@ -390,7 +390,7 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
   choose s b hb_int using FiniteDimensional.exists_is_basis_integral R K L
 -- Porting note: `this` and `f` below where solved at the end rather than being defined at first.
   have : LinearIndependent R ((Algebra.traceForm K L).dualBasis
-      (traceForm_nondegenerate K L) b) := by
+      (traceForm_separatingLeft K L) b) := by
     refine' (Basis.linearIndependent _).restrict_scalars _
     simp only [Algebra.smul_def, mul_one]
     apply IsFractionRing.injective

@@ -45,9 +45,10 @@ open nonZeroDivisors IsLocalization Matrix Algebra
 `Submodule B L` such that `x ∈ Iᵛ ↔ ∀ y ∈ I, Tr(x, y) ∈ A` -/
 noncomputable
 def Submodule.traceDual (I : Submodule B L) : Submodule B L where
-  __ := (traceForm K L).dualSubmodule (I.restrictScalars A)
+  __ := (traceForm K L).toBilin.dualSubmodule (I.restrictScalars A)
   smul_mem' c x hx a ha := by
-    rw [traceForm_apply, smul_mul_assoc, mul_comm, ← smul_mul_assoc, mul_comm]
+    rw [LinearMap.toBilin_apply, traceForm_apply, smul_mul_assoc, mul_comm, ← smul_mul_assoc,
+      mul_comm]
     exact hx _ (Submodule.smul_mem _ c ha)
 
 variable {A K}
@@ -176,7 +177,8 @@ lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRin
   simp only [restrictScalars_mem, traceForm_apply, AlgEquiv.toEquiv_eq_coe,
     EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
   refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)
-  rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
+  rw [LinearMap.toBilin_apply, traceForm_apply, mem_one,
+    Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
   swap
   · apply IsLocalization.ringHom_ext (M := A⁰); ext
@@ -444,6 +446,9 @@ lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) [NoZeroSMulDivisor
 
 variable (A K)
 
+#check traceForm_dualBasis_powerBasis_eq _ _
+
+--set_option maxHeartbeats 500000 in
 open Pointwise Polynomial in
 lemma traceForm_dualSubmodule_adjoin
     {x : L} (hx : Algebra.adjoin K {x} = ⊤) (hAx : IsIntegral A x) :
@@ -456,7 +461,7 @@ lemma traceForm_dualSubmodule_adjoin
     ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
   have pbgen : pb.gen = x := by simp
   have hpb : ⇑(BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
-    _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
+    _root_.funext (traceForm_dualBasis_powerBasis_eq _)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
       Submodule.span A (Set.range pb.basis) := by
     rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]

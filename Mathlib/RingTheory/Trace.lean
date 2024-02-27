@@ -3,7 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
--- import Mathlib.LinearAlgebra.Matrix.BilinearForm
+--import Mathlib.LinearAlgebra.BilinearForm.Hom
+--import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Determinant
@@ -15,6 +16,7 @@ import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.Galois
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.LinearAlgebra.SesquilinearForm.Properties
 
 #align_import ring_theory.trace from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -616,7 +618,6 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
   · rw [AlgHom.card, pb.finrank]
 #align det_trace_matrix_ne_zero' det_traceMatrix_ne_zero'
 
--- pb.basis.toMatrix_mul_toMatrix_flip b
 
 theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K L) :
     det (LinearMap.toMatrix₂ b b (traceForm K L)) ≠ 0 := by
@@ -626,40 +627,29 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
   rw [←det_comm']
   rw [←Matrix.mul_assoc]
   rw [det_mul]
-  --rw [←det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, det_mul]
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine'
     mul_ne_zero
       (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det _).ne_zero _
-  calc
+  · calc
       det (Basis.toMatrix pb.basis b * (Basis.toMatrix pb.basis b)ᵀ) *
-        det ((Basis.toMatrix b pb.basis)ᵀ * Basis.toMatrix b pb.basis) = 1 := by sorry
-
-  /-
-  calc
-      (pb.basis.toMatrix b * (pb.basis.toMatrix b)ᵀ).det *
-            ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =
-          (pb.basis.toMatrix b * (b.toMatrix pb.basis * pb.basis.toMatrix b)ᵀ *
-              b.toMatrix pb.basis).det :=
-        by simp  [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
+        det ((Basis.toMatrix b pb.basis)ᵀ * Basis.toMatrix b pb.basis) =
+        det ((Basis.toMatrix pb.basis b * (Basis.toMatrix pb.basis b)ᵀ) * ((Basis.toMatrix b pb.basis)ᵀ * Basis.toMatrix b pb.basis)) := by rw [← det_mul]
+      _ = det (Basis.toMatrix pb.basis b * ((Basis.toMatrix pb.basis b)ᵀ * (Basis.toMatrix b pb.basis)ᵀ) * Basis.toMatrix b pb.basis) := by simp [Matrix.mul_assoc]
+      _ = det (Basis.toMatrix pb.basis b * ((Basis.toMatrix b pb.basis) * (Basis.toMatrix pb.basis b))ᵀ * Basis.toMatrix b pb.basis) := by simp [Matrix.transpose_mul]
       _ = 1 := by
-        simp  [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
-          Matrix.det_one]
-        sorry
-  -/
+        simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one, Matrix.det_one]
   simpa only [traceMatrix_of_basis] using det_traceMatrix_ne_zero' pb
+  rw [Basis.toMatrix_mul_toMatrix_flip]
 #align det_trace_form_ne_zero det_traceForm_ne_zero
 
 variable (K L)
 
 -- separatingLeft_of_det_ne_zero
-theorem traceForm_nondegenerate [FiniteDimensional K L] [IsSeparable K L] :
-    (traceForm K L).SeparatingLeft := by
-  apply separatingLeft_of_det_ne_zero
-  sorry
---  BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
---    (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
-#align trace_form_nondegenerate traceForm_nondegenerate
+theorem traceForm_separatingLeft [FiniteDimensional K L] [IsSeparable K L] :
+    (traceForm K L).SeparatingLeft :=
+  separatingLeft_of_det_ne_zero _ (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
+#align trace_form_nondegenerate traceForm_separatingLeft
 
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [IsSeparable K L] :
     Algebra.trace K L ≠ 0 := by
@@ -685,10 +675,10 @@ with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 -/
 lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L]
     (pb : PowerBasis K L) (i) :
-    (Algebra.traceForm K L).dualBasis (traceForm_nondegenerate K L) pb.basis i =
+    (Algebra.traceForm K L).dualBasis (traceForm_separatingLeft K L) pb.basis i =
       (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
   classical
-  apply ((Algebra.traceForm K L).toDual (traceForm_nondegenerate K L)).injective
+  apply ((Algebra.traceForm K L).toDual (traceForm_separatingLeft K L)).injective
   apply pb.basis.ext
   intro j
   simp only [BilinForm.toDual_def, BilinForm.apply_dualBasis_left]
