@@ -176,7 +176,6 @@ powerset lattice. -/
 noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   exact (birkhoffSet _).trans Fintype.finsetOrderIsoSet.symm.toOrderEmbedding
 
-
 variable {α}
 
 @[simp] lemma coe_birkhoffFinset (a : α) : birkhoffFinset α a = birkhoffSet α a := by
@@ -237,9 +236,6 @@ lemma birkhoffFinset_injective : Injective (birkhoffFinset α) :=
   (OrderEmbedding.birkhoffFinset α).injective
 
 end LatticeHom
-
-variable [DecidableEq α] [@DecidablePred α SupIrred]
-
 
 lemma exists_birkhoff_representation.{u} (α : Type u) [Finite α] [DistribLattice α] :
     ∃ (β : Type u) (_ : DecidableEq β) (_ : Fintype β) (f : LatticeHom α (Finset β)),
