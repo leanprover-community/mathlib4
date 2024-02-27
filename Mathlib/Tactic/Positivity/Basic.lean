@@ -455,7 +455,7 @@ def evalPosPart : PositivityExt where eval zα pα e := do
   match e with
   | ~q(@posPart _ $instαlat $instαgrp $a) =>
     assertInstancesCommute
-    match ← core zα pα a with
+    match ← catchNone (core zα pα a) with
     | .positive pf => return .positive q(posPart_pos $pf)
     | _ => return .nonnegative q(posPart_nonneg $a)
   | _ => throwError "not `posPart`"
