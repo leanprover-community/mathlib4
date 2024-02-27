@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Integer
 
 #align_import ring_theory.localization.away.basic from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
@@ -310,3 +310,20 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
 #align exists_reduced_fraction' exists_reduced_fraction'
 
 end NumDen
+
+section clear_denominator
+
+/--
+For a finite set `s ⊆ R_f` of localized ring away from `f`, there exists an `n ∈ ℕ` such that every
+`x ∈ s`, `r^n • x = a/1` for some `a ∈ R`.
+
+This is a wrapper around `IsLocalization.exist_integer_multiples_of_finset`, the purpose is to
+expose `n` explicitly for easier use.
+-/
+lemma Localization.Away.den_one_smul_large_power {r : R} (s : Finset (Localization.Away r)) :
+    ∃ (n : ℕ), ∀ x ∈ s, (r^n) • x ∈ (algebraMap R (Localization.Away r)).rangeS := by
+  obtain ⟨⟨_, ⟨n, rfl⟩⟩, hn⟩ :=
+    IsLocalization.exist_integer_multiples_of_finset (Submonoid.powers r) s
+  exact ⟨n, fun x hx ↦ hn x hx⟩
+
+end clear_denominator
