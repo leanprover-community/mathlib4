@@ -51,7 +51,7 @@ open BigOperators
 universe u v w
 
 /-- `BilinForm R M` is the type of `R`-bilinear functions `M → M → R`. -/
-structure BilinForm (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] where
+structure BilinForm (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] where
   bilin : M → M → R
   bilin_add_left : ∀ x y z : M, bilin (x + y) z = bilin x z + bilin y z
   bilin_smul_left : ∀ (a : R) (x y : M), bilin (a • x) y = a * bilin x y
@@ -59,11 +59,11 @@ structure BilinForm (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Modu
   bilin_smul_right : ∀ (a : R) (x y : M), bilin x (a • y) = a * bilin x y
 #align bilin_form BilinForm
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
-variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
+variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
@@ -305,7 +305,7 @@ instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] :
     DistribMulAction α (BilinForm R M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance {α} [Semiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) :=
+instance {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) :=
   Function.Injective.module _ coeFnAddMonoidHom coe_injective coe_smul
 
 section flip

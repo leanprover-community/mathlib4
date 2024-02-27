@@ -40,9 +40,9 @@ bilinear form, bilin form, BilinearForm, matrix, basis
 -/
 
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
+variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 

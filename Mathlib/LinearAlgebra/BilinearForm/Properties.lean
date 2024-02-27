@@ -39,9 +39,9 @@ open BigOperators
 
 universe u v w
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
+variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
@@ -75,7 +75,7 @@ protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl :=
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 #align bilin_form.is_refl.neg BilinForm.IsRefl.neg
 
-protected theorem smul {α} [Semiring α] [Module α R] [SMulCommClass α R R] [NoZeroSMulDivisors α R]
+protected theorem smul {α} [CommSemiring α] [Module α R] [SMulCommClass α R R] [NoZeroSMulDivisors α R]
     (a : α) {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun _ _ h =>
   (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
     smul_eq_zero_of_right _ (hB _ _ hBz)
