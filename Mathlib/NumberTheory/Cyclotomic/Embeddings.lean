@@ -44,24 +44,16 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
     rw [nrRealPlaces_eq_zero K hn, zero_add, IsCyclotomicExtension.finrank (n := n) K
       (cyclotomic.irreducible_rat n.pos), hk, ← two_mul, Nat.mul_right_inj (by norm_num)] at key
     simp [hk, key, ← two_mul]
-  · have : n.1 = 0 ∨ n.1 = 1 ∨ n.1 = 2 := by
-      suffices n.1 ≤ 2 by
-        omega
-      exact not_lt.1 hn
-    rcases this with (h0 | h1 | h2)
-    · exfalso
-      exact n.2.ne' h0
-    · simp only [PNat.coe_eq_one_iff.1 h1, PNat.one_coe, totient_one, reduceDiv]
-      apply nrComplexPlaces_eq_zero_of_finrank_eq_one
-      rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.pos)]
-      convert totient_one
-    · have h2' : n = 2 := by
-        rw [← PNat.coe_inj]
-        exact h2
-      simp only [h2', show ((2 : ℕ+) : ℕ) = 2 from rfl, totient_two, reduceDiv]
-      apply nrComplexPlaces_eq_zero_of_finrank_eq_one
-      rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.pos)]
-      convert totient_two
+  · have : φ n = 1 := by
+      by_cases h1 : 1 < n.1
+      · convert totient_two
+        exact (eq_of_le_of_not_lt (succ_le_of_lt h1) hn).symm
+      · convert totient_one
+        rw [← PNat.one_coe, PNat.coe_inj]
+        exact eq_of_le_of_not_lt (not_lt.mp h1) (PNat.not_lt_one _)
+    rw [this]
+    apply nrComplexPlaces_eq_zero_of_finrank_eq_one
+    rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.pos), this]
 
 
 end IsCyclotomicExtension.Rat
