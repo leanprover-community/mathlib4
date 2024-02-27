@@ -6,6 +6,7 @@ Authors: Jireh Loreaux, Yaël Dillies
 import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Star.Order
+import Mathlib.Data.NNRat.Star
 import Mathlib.GroupTheory.Submonoid.Order
 import Mathlib.Tactic.FieldSimp
 
@@ -19,18 +20,17 @@ rational number is a sum of squares.
 -/
 
 open AddSubmonoid Set
+open scoped NNRat
 
 namespace Rat
 
 @[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn₀ : n ≠ 0) (hn : Even n) :
     closure (range fun x : ℚ ↦ x ^ n) = nonneg _ := by
-  refine le_antisymm (closure_le.2 <| range_subset_iff.2 hn.pow_nonneg) fun x hx ↦ ?_
-  suffices x = (x.num.natAbs * x.den ^ (n - 1)) • (x.den : ℚ)⁻¹ ^ n by
-    rw [this]; exact nsmul_mem (subset_closure <| mem_range_self _) _
-  refine (num_div_den _).symm.trans ?_
-  field_simp [x.den_pos.ne']
-  rw [Int.cast_natAbs, abs_of_nonneg (num_nonneg.2 hx), mul_assoc, ← pow_succ', Nat.sub_add_cancel]
-  rwa [Nat.one_le_iff_ne_zero]
+  convert (AddMonoidHom.map_mclosure NNRat.coeHom $ range fun x ↦ x ^ n).symm
+  · have (x : ℚ) : ∃ y : ℚ≥0, y ^ n = x ^ n := ⟨x.nnabs, by simp [hn.pow_abs]⟩
+    simp [subset_antisymm_iff, range_subset_iff, this]
+  · ext
+    simp [NNRat.addSubmonoid_closure_range_pow hn₀, NNRat.exists]
 
 @[simp]
 lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℚ ↦ x * x) = nonneg _ := by
