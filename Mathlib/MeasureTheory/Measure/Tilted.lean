@@ -201,7 +201,7 @@ lemma set_integral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : Me
   · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀ _ _ hs]
     · congr
     · suffices AEMeasurable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by
-        rw [← aEMeasurable_coe_nnreal_real_iff]
+        rw [← aemeasurable_coe_nnreal_real_iff]
         refine AEMeasurable.restrict ?_
         simpa only [NNReal.coe_mk]
       exact (measurable_exp.comp_aemeasurable hf).div_const _
@@ -218,7 +218,7 @@ lemma set_integral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set 
   · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀']
     · congr
     · suffices AEMeasurable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by
-        rw [← aEMeasurable_coe_nnreal_real_iff]
+        rw [← aemeasurable_coe_nnreal_real_iff]
         refine AEMeasurable.restrict ?_
         simpa only [NNReal.coe_mk]
       exact (measurable_exp.comp_aemeasurable hf).div_const _

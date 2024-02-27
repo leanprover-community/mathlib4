@@ -1651,6 +1651,25 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     exact hx.of_norm.hasSum
 #align measure_theory.integral_tsum MeasureTheory.integral_tsum
 
+lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
+    (hF_int : ∀  i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
+    HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
+  rw [integral_tsum (fun i ↦ (hF_int i).1)]
+  · exact (hF_sum.of_norm_bounded _ fun i ↦ norm_integral_le_integral_norm _).hasSum
+  have (i : ι) : ∫⁻ (a : α), ‖F i a‖₊ ∂μ = ‖(∫ a : α, ‖F i a‖ ∂μ)‖₊ := by
+    rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnnorm,
+      Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
+    rfl
+  rw [funext this, ← ENNReal.coe_tsum]
+  · apply coe_ne_top
+  · simp_rw [← NNReal.summable_coe, coe_nnnorm]
+    exact hF_sum.abs
+
+lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
+    (hF_int : ∀  i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
+    ∑' i, (∫ a, F i a ∂μ) = ∫ a, (∑' i, F i a) ∂μ :=
+  (hasSum_integral_of_summable_integral_norm hF_int hF_sum).tsum_eq
+
 @[simp]
 theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
     ∫ x, f x ∂c • μ = c.toReal • ∫ x, f x ∂μ := by
