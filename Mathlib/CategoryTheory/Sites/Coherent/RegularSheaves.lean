@@ -22,6 +22,8 @@ This file characterises sheaves for the regular topology.
   presheaf is a sheaf for the regular topology.
 -/
 
+universe w
+
 namespace CategoryTheory
 
 open Limits
@@ -148,7 +150,7 @@ theorem equalizerCondition_precomp_of_preservesPullback {D : Type*} [Category D]
   exact IsIso.comp_isIso
 
 theorem equalizerCondition_of_natIso_aux
-    {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ Type _} (i : P ≅ P') {X B : C} (π : X ⟶ B)
+    {P P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') {X B : C} (π : X ⟶ B)
     [HasPullback π π] :
     (equalizer.ι (P.map (pullback.fst (f := π) (g := π)).op) (P.map pullback.snd.op) ≫
       i.hom.app (op X)) ≫ P'.map pullback.fst.op =
@@ -162,7 +164,7 @@ theorem equalizerCondition_of_natIso_aux
 An auxiliary isomorphism of two equalizers used in the proof of `equalizerCondition_of_natIso`
 -/
 noncomputable
-def equalizerCondition_of_natIso_aux₂ {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ Type _} (i : P ≅ P') {X B : C}
+def equalizerCondition_of_natIso_aux₂ {P P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') {X B : C}
     (π : X ⟶ B) [HasPullback π π] :
     equalizer (P.map (pullback.fst (f := π) (g := π)).op) (P.map pullback.snd.op) ≅
     equalizer (P'.map (pullback.fst (f := π) (g := π)).op) (P'.map pullback.snd.op) where
@@ -172,7 +174,7 @@ def equalizerCondition_of_natIso_aux₂ {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ �
   hom_inv_id := by apply equalizer.hom_ext; simp
   inv_hom_id := by apply equalizer.hom_ext; simp
 
-theorem equalizerCondition_of_natIso {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ Type _} (i : P ≅ P')
+theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P')
     (hP : EqualizerCondition P) : EqualizerCondition P' := by
   rw [equalizerCondition_iff_isIso_lift] at hP ⊢
   intro X B π _ _
