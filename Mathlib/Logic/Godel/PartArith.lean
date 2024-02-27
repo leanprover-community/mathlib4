@@ -28,6 +28,7 @@ section
 universe u
 variable {n : ℕ} {α β : Type u}
 
+/-- notation `:>` is short for vecCons, which prepends an entry to a vector -/
 infixr:70 " :> " => vecCons
 
 lemma comp_vecCons (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (a :> s) x) = f a :> f ∘ s :=
@@ -49,12 +50,16 @@ variable {m n : ℕ}
 
 lemma pos_of_eq_one (h : n = 1) : 0 < n := by simp[h]
 
+/-- Returns 1 if m and n are equal and 0 otherwise -/
 def isEqNat (n m : ℕ) : ℕ := if n = m then 1 else 0
 
+/-- Returns 1 if n is less than m and 0 otherwise -/
 def isLtNat (n m : ℕ) : ℕ := if n < m then 1 else 0
 
+/-- Returns 1 if n is less than or equal to m and 0 otherwise -/
 def isLeNat (n m : ℕ) : ℕ := if n ≤ m then 1 else 0
 
+/-- Returns 1 if m is divisible by n and 0 otherwise -/
 def isDvdNat (n m : ℕ) : ℕ := if n ∣ m then 1 else 0
 
 @[simp] lemma isEqNat_pos_iff : 0 < isEqNat n m ↔ n = m := by
@@ -69,8 +74,10 @@ def isDvdNat (n m : ℕ) : ℕ := if n ∣ m then 1 else 0
 @[simp] lemma isDvdNat_pos_iff : 0 < isDvdNat n m ↔ n ∣ m := by
   simp[isDvdNat]; by_cases n ∣ m <;> simp[*]
 
+/-- Returns 1 if n is equal to 0 and 0 otherwise -/
 def inv (n : ℕ) : ℕ := isEqNat n 0
 
+/-- Returns 1 if n is positive and 0 otherwise -/
 def pos (n : ℕ) : ℕ := isLtNat 0 n
 
 @[simp] lemma inv_zero : inv 0 = 1 := rfl
@@ -83,8 +90,10 @@ def pos (n : ℕ) : ℕ := isLtNat 0 n
 
 @[simp] lemma pos_ne_zero (h : n ≠ 0) : pos n = 1 := by simp[pos, isLtNat, h]
 
+/-- Returns 1 if m and n are both positive and 0 otherwise -/
 def and (n m : ℕ) : ℕ := isLtNat 0 (n * m)
 
+/-- Returns 1 if either m or n is positive and 0 otherwise -/
 def or (n m : ℕ) : ℕ := isLtNat 0 (n + m)
 
 lemma and_eq (n m : ℕ) : and n m = if 0 < n ∧ 0 < m then 1 else 0 := by simp[and, isLtNat]
@@ -134,6 +143,7 @@ inductive PartArith : ∀ {n}, (Vector ℕ n →. ℕ) → Prop
   | rfind {n} {f : Vector ℕ (n + 1) → ℕ} :
     PartArith (n := n + 1) f → PartArith (fun v => rfind fun n => some (f (n ::ᵥ v) = 0))
 
+/-- f is a partial recursive function -/
 def Arith (f : Vector ℕ n → ℕ) := PartArith (n := n) f
 
 end Nat
@@ -255,6 +265,7 @@ lemma comp {m n f} (g : Fin n → Vector ℕ m → ℕ) (hf : Arith f) (hg : ∀
     Arith fun v => f (Vector.ofFn fun i => g i v) :=
   (Nat.PartArith.comp (fun i => g i : Fin n → Vector ℕ m →. ℕ) hf hg).of_eq <| by simp
 
+/-- The ith component of f v of is a partial recursive function -/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) : Prop := ∀ i, Arith fun v => (f v).get i
 
 protected lemma nil {n} : @Vec n 0 (fun _ => nil) := fun i => i.elim0
