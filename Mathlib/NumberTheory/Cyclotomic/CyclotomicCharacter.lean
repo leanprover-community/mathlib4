@@ -89,25 +89,12 @@ theorem ModularCyclotomicCharacter_aux_spec (g : L ≃+* L) (n : ℕ+) :
     ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ (ModularCyclotomicCharacter_aux g n) : Lˣ) :=
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose_spec
 
-/-- If `g` is a ring automorphism of `L`, and `n : ℕ+`, then
+/-- If `g` is a field automorphism of `L`, and `n : ℕ+`, then
   `ModularCyclotomicCharacter.toFun n g` is the `j : ZMod d` such that `g(ζ)=ζ^j` for all
   `n`'th roots of unity. Here `d` is the number of `n`th roots of unity in `L`. -/
-noncomputable def ModularCyclotomicCharacter.toFun (n : ℕ+) {d : ℕ}
-    (hd : d = Fintype.card (rootsOfUnity n L)) (g : L ≃+* L) :
-    ZMod d :=
+noncomputable def ModularCyclotomicCharacter.toFun (n : ℕ+) (g : L ≃+* L) :
+    ZMod (Fintype.card (rootsOfUnity n L)) :=
   ModularCyclotomicCharacter_aux g n
-
-theorem Group.zpow_eq_zpow_mod {G : Type _} [Group G] {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
-    x ^ m = x ^ (m % n) := by
-  have h2 : x ^ m = x ^ (n * (m / n) + m % n) :=
-    congr_arg (x ^ ·) ((Int.add_comm _ _).trans (Int.emod_add_ediv _ _)).symm
-  simp [h, h2, zpow_add, zpow_mul]
-
-theorem Group.pow_eq_pow_mod {G : Type _} [Group G] {x : G} (m : ℕ) {n : ℕ} (h : x ^ n = 1) :
-    x ^ m = x ^ (m % n) := by
-  have h2 : x ^ m = x ^ (n * (m / n) + m % n) :=
-    congr_arg (x ^ ·) ((Nat.add_comm _ _).trans (Nat.mod_add_div _ _)).symm
-  simp [h, h2, pow_add, pow_mul]
 
 namespace ModularCyclotomicCharacter
 
@@ -139,7 +126,7 @@ lemma ext {G : Type _} [Group G] [Fintype G] [IsCyclic G]
   subst hGcard
   simpa [ZMod.nat_cast_val, ZMod.cast_id'] using h
 
-lemma id : χ n rfl (RingEquiv.refl L) = 1 := by
+lemma id : χ n (RingEquiv.refl L) = 1 := by
   refine ext (G := rootsOfUnity n L) rfl ?_
   intro ζ
   ext
@@ -152,8 +139,8 @@ lemma id : χ n rfl (RingEquiv.refl L) = 1 := by
     obtain rfl : ζ = 1 := Subsingleton.elim ζ 1
     simp
 
-lemma comp (g h : L ≃+* L) : χ n rfl (g * h) =
-    χ n rfl g * χ n rfl h := by
+lemma comp (g h : L ≃+* L) : χ n (g * h) =
+    χ n g * χ n h := by
   refine ext (G := rootsOfUnity n L) rfl ?_
   intro ζ
   ext
