@@ -310,7 +310,7 @@ theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
     Multiset.map_singleton, Multiset.prod_singleton]
 
 theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
-  simp_rw [hsymm, map_sum, ←Multiset.prod_hom']
+  simp_rw [hsymm, map_sum, ← Multiset.prod_hom']
   simp only [Sym.val_eq_coe, map_X]
 
 theorem rename_hsymm (n : ℕ) (e : σ ≃ τ) : rename e (hsymm σ R n) = hsymm τ R n := by
