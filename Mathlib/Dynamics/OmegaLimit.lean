@@ -249,10 +249,10 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     exact Subset.trans (inter_subset_right _ _) hn₂
   rcases hk.elim_finite_subcover_image hj₁ hj₂ with ⟨g, hg₁ : ∀ u ∈ g, u ∈ f, hg₂, hg₃⟩
   let w := (⋂ u ∈ g, u) ∩ v
-  have hw₂ : w ∈ f := by simpa [*]
+  have hw₂ : w ∈ f := by simpa [w, *]
   have hw₃ : k \ n ⊆ (closure (image2 ϕ w s))ᶜ := by
     apply Subset.trans hg₃
-    simp only [iUnion_subset_iff, compl_subset_compl]
+    simp only [j, iUnion_subset_iff, compl_subset_compl]
     intros u hu
     mono
     refine' iInter_subset_of_subset u (iInter_subset_of_subset hu _)

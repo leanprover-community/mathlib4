@@ -157,7 +157,7 @@ theorem transfer_eq_pow_aux (g : G)
     have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out'
     replace key :=
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
-    simpa only [minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
+    simpa only [f, minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
       Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card] using key
 #align monoid_hom.transfer_eq_pow_aux MonoidHom.transfer_eq_pow_aux
 

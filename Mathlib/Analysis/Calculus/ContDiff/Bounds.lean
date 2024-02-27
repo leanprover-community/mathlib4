@@ -174,7 +174,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
     refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => _
     refine' ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
-    simp only [ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
+    simp only [Bu, ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
       Function.comp_apply, LinearIsometryEquiv.coe_coe'', ContinuousLinearMap.flip_apply,
       LinearIsometryEquiv.norm_map]
     rw [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.compL_apply,
@@ -190,8 +190,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   have hsu : UniqueDiffOn 𝕜 su := isoD.toContinuousLinearEquiv.uniqueDiffOn_preimage_iff.2 hs
   let xu := isoD.symm x
   have hxu : xu ∈ su := by
-    simpa only [Set.mem_preimage, LinearIsometryEquiv.apply_symm_apply] using hx
-  have xu_x : isoD xu = x := by simp only [LinearIsometryEquiv.apply_symm_apply]
+    simpa only [xu, su, Set.mem_preimage, LinearIsometryEquiv.apply_symm_apply] using hx
+  have xu_x : isoD xu = x := by simp only [xu, LinearIsometryEquiv.apply_symm_apply]
   have hfu : ContDiffOn 𝕜 n fu su :=
     isoE.symm.contDiff.comp_contDiffOn
       ((hf.of_le hn).comp_continuousLinearMap (isoD : Du →L[𝕜] D))
@@ -452,8 +452,9 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
   let tu := isoF ⁻¹' t
   have htu : UniqueDiffOn 𝕜 tu := isoF.toContinuousLinearEquiv.uniqueDiffOn_preimage_iff.2 ht
   have hstu : MapsTo fu s tu := fun y hy ↦ by
-    simpa only [mem_preimage, comp_apply, LinearIsometryEquiv.apply_symm_apply] using hst hy
-  have Ffu : isoF (fu x) = f x := by simp only [comp_apply, LinearIsometryEquiv.apply_symm_apply]
+    simpa only [fu, tu, mem_preimage, comp_apply, LinearIsometryEquiv.apply_symm_apply] using hst hy
+  have Ffu : isoF (fu x) = f x := by
+    simp only [fu, comp_apply, LinearIsometryEquiv.apply_symm_apply]
   -- All norms are preserved by the lifting process.
   have hfu : ContDiffOn 𝕜 n fu s := isoF.symm.contDiff.comp_contDiffOn (hf.of_le hn)
   have hgu : ContDiffOn 𝕜 n gu tu :=
@@ -473,7 +474,8 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
       ‖iteratedFDerivWithin 𝕜 n (g ∘ f) s x‖ = ‖iteratedFDerivWithin 𝕜 n (gu ∘ fu) s x‖ := by
     have : gu ∘ fu = isoG.symm ∘ g ∘ f := by
       ext x
-      simp only [comp_apply, LinearIsometryEquiv.map_eq_iff, LinearIsometryEquiv.apply_symm_apply]
+      simp only [fu, gu, comp_apply, LinearIsometryEquiv.map_eq_iff,
+        LinearIsometryEquiv.apply_symm_apply]
     rw [this, LinearIsometryEquiv.norm_iteratedFDerivWithin_comp_left _ _ hs hx]
   -- deduce the required bound from the one for `gu ∘ fu`.
   rw [Nfgu]
@@ -502,7 +504,7 @@ theorem norm_iteratedFDerivWithin_clm_apply {f : E → F →L[𝕜] G} {g : E �
         ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ := by
   let B : (F →L[𝕜] G) →L[𝕜] F →L[𝕜] G := ContinuousLinearMap.flip (ContinuousLinearMap.apply 𝕜 G)
   have hB : ‖B‖ ≤ 1 := by
-    simp only [ContinuousLinearMap.opNorm_flip, ContinuousLinearMap.apply]
+    simp only [B, ContinuousLinearMap.opNorm_flip, ContinuousLinearMap.apply]
     refine' ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => _
     simp only [ContinuousLinearMap.coe_id', id.def, one_mul]
     rfl

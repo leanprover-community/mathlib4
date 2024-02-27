@@ -754,7 +754,7 @@ theorem lowerCentralSeries_pi_le (n : ℕ) :
   · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_mono ih (le_refl _))
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]
+      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
       _ ≤ pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_pi_pi_le _ _)
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
 
@@ -788,7 +788,7 @@ theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
   · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]
+      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
       _ = pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_pi_pi_of_finite _ _)
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
 

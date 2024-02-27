@@ -102,7 +102,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
   set s := { x | f x ≤ B x } ∩ Icc a b
   have A : ContinuousOn (fun x => (f x, B x)) (Icc a b) := hf.prod hB
   have : IsClosed s := by
-    simp only [inter_comm]
+    simp only [s, inter_comm]
     exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
   apply this.Icc_subset_of_forall_exists_gt ha
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
@@ -349,7 +349,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
     intro x
     simpa using (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
   convert image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
-  simp only; rw [sub_self, norm_zero, sub_self, mul_zero]
+  simp only [g, B]; rw [sub_self, norm_zero, sub_self, mul_zero]
 #align norm_image_sub_le_of_norm_deriv_right_le_segment norm_image_sub_le_of_norm_deriv_right_le_segment
 
 /-- A function on `[a, b]` with the norm of the derivative within `[a, b]`
@@ -470,7 +470,7 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
       AffineMap.hasDerivWithinAt_lineMap segm
   have bound : ∀ t ∈ Ico (0 : ℝ) 1, ‖f' (g t) (y - x)‖ ≤ C * ‖y - x‖ := fun t ht =>
     le_of_opNorm_le _ (bound _ <| segm <| Ico_subset_Icc_self ht) _
-  simpa using norm_image_sub_le_of_norm_deriv_le_segment_01' hD bound
+  simpa [g] using norm_image_sub_le_of_norm_deriv_le_segment_01' hD bound
 #align convex.norm_image_sub_le_of_norm_has_fderiv_within_le Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
 
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C` on
@@ -729,7 +729,7 @@ variable (f f' : ℝ → ℝ) {a b : ℝ} (hab : a < b) (hfc : ContinuousOn f (I
 theorem exists_ratio_hasDerivAt_eq_ratio_slope :
     ∃ c ∈ Ioo a b, (g b - g a) * f' c = (f b - f a) * g' c := by
   let h x := (g b - g a) * f x - (f b - f a) * g x
-  have hI : h a = h b := by simp only; ring
+  have hI : h a = h b := by simp only [h]; ring
   let h' x := (g b - g a) * f' x - (f b - f a) * g' x
   have hhh' : ∀ x ∈ Ioo a b, HasDerivAt h (h' x) x := fun x hx =>
     ((hff' x hx).const_mul (g b - g a)).sub ((hgg' x hx).const_mul (f b - f a))
@@ -1415,7 +1415,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
   rcases hMVT with ⟨t, Ht, hMVT'⟩
   rw [segment_eq_image_lineMap, bex_image_iff]
   refine ⟨t, hsub Ht, ?_⟩
-  simpa using hMVT'.symm
+  simpa [g] using hMVT'.symm
 #align domain_mvt domain_mvt
 
 section IsROrC

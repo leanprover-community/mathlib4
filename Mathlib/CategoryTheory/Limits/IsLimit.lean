@@ -374,7 +374,7 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
     inv := P.lift ((Cones.equivalenceOfReindexing e w).functor.obj t)
     hom_inv_id := by
       apply hom_ext P; intro j
-      dsimp
+      dsimp [w']
       simp only [Limits.Cone.whisker_π, Limits.Cones.postcompose_obj_π, fac, whiskerLeft_app,
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
       rw [counit_app_functor, ← Functor.comp_map]
@@ -888,7 +888,7 @@ def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t :
     inv := Q.desc ((Cocones.equivalenceOfReindexing e.symm w').functor.obj s)
     hom_inv_id := by
       apply hom_ext P; intro j
-      dsimp
+      dsimp [w']
       simp only [Limits.Cocone.whisker_ι, fac, invFunIdAssoc_inv_app, whiskerLeft_app, assoc,
         comp_id, Limits.Cocones.precompose_obj_ι, fac_assoc, NatTrans.comp_app]
       rw [counitInv_app_functor, ← Functor.comp_map, ← w.inv.naturality_assoc]

@@ -1002,7 +1002,7 @@ theorem weightedVSub_mem_vectorSpan {s : Finset ι} {w : ι → k} (h : ∑ i in
       rw [Finsupp.total_apply, Finsupp.onFinset_sum hwx]
       · apply Finset.sum_congr rfl
         intro i hi
-        simp [Set.indicator_apply, if_pos hi]
+        simp [w', Set.indicator_apply, if_pos hi]
       · exact fun _ => zero_smul k _
 #align weighted_vsub_mem_vector_span weightedVSub_mem_vectorSpan
 
@@ -1161,7 +1161,7 @@ theorem mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd [Nontrivial k] (p : ι �
         · simp [Finset.sum_insert hj, Finset.sum_update_of_not_mem hj, hj]
       have hww : ∀ i, i ≠ j → w i = w' i := by
         intro i hij
-        simp [hij]
+        simp [w', hij]
       rw [s.weightedVSubOfPoint_eq_of_weights_eq p j w w' hww, ←
         s.weightedVSubOfPoint_insert w' p j, ←
         (insert j s).affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w' p h₁ (p j)]

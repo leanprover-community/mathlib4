@@ -201,7 +201,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
         intro i
         let fi := f.symm.toLinearMap.comp (DirectSum.lof _ _ _ i)
         obtain ⟨x, h0, h1⟩ := exists_smul_eq_zero_and_mk_eq hp hN hj fi; refine' ⟨x, h0, _⟩; rw [h1]
-        simp only [LinearMap.coe_comp, f.symm.coe_toLinearMap, f.apply_symm_apply,
+        simp only [fi, LinearMap.coe_comp, f.symm.coe_toLinearMap, f.apply_symm_apply,
           Function.comp_apply]
       refine ⟨?_, ⟨?_⟩⟩
       · exact fun a => (fun i => (Option.rec (pOrder hN (s j)) k i : ℕ)) (finSuccEquiv d a)
@@ -232,7 +232,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
         ⟨(@hN x).choose, by rw [← Quotient.mk_smul, (@hN x).choose_spec, Quotient.mk_zero]⟩
     · have hs' := congr_arg (Submodule.map <| mkQ <| R ∙ s j) hs
       rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
-      simp only; rw [← Function.comp.assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
+      simp only [s']; rw [← Function.comp.assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
         (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
       exact hs'

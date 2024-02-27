@@ -228,7 +228,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
   let e := Matrix.reindexLinearEquiv R R (Fintype.equivFin n) (Fintype.equivFin n)
   rw [← Matrix.det_reindexLinearEquiv_self R[X] (Fintype.equivFin n)]
   convert derivative_det_one_add_X_smul_aux (e M)
-  · ext; simp
+  · ext; simp [e]
   · delta trace
     rw [← (Fintype.equivFin n).symm.sum_comp]
     rfl
@@ -338,9 +338,9 @@ lemma reverse_charpoly (M : Matrix n n R) :
   let q : R[T;T⁻¹] := det (1 - scalar n t * M.map LaurentPolynomial.C)
   have ht : t_inv * t = 1 := by rw [← T_add, add_left_neg, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
-    simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
+    simp [p, charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg M.charpolyRev = q := by
-    simp [charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
+    simp [q, charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
   suffices t_inv ^ Fintype.card n * p = invert q by
     apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
@@ -348,7 +348,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
       ← mul_one (Fintype.card n : ℤ), ← T_pow, invert.map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
-  simp [map_smul', smul_eq_diagonal_mul]
+  simp [t, map_smul', smul_eq_diagonal_mul]
 
 @[simp] lemma eval_charpolyRev :
     eval 0 M.charpolyRev = 1 := by
@@ -388,7 +388,7 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
   let p : R[X] := M.charpolyRev
   have hp : p - 1 = X * (p /ₘ X) := by
     conv_lhs => rw [← modByMonic_add_div p monic_X]
-    simp [modByMonic_X]
+    simp [p, modByMonic_X]
   have : IsNilpotent (p /ₘ X) :=
     (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_isNilpotent hM)).2
   have aux : (M.charpoly - X ^ (Fintype.card n)).natDegree ≤ M.charpoly.natDegree :=

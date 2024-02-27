@@ -97,7 +97,7 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
     rw [← add_zero x₀] at hx₀
     exact disj.zero_not_mem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
   obtain ⟨f, hf₁, hf₂⟩ := separate_convex_open_set ‹0 ∈ C› ‹_› (hs₂.sub_right.vadd _) ‹x₀ ∉ C›
-  have : f b₀ = f a₀ + 1 := by simp [← hf₁]
+  have : f b₀ = f a₀ + 1 := by simp [x₀, ← hf₁]
   have forall_le : ∀ a ∈ s, ∀ b ∈ t, f a ≤ f b := by
     intro a ha b hb
     have := hf₂ (x₀ + (a - b)) (vadd_mem_vadd_set <| sub_mem_sub ha hb)

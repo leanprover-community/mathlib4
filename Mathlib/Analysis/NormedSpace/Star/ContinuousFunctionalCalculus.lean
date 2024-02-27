@@ -135,7 +135,7 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
   set u : Units (elementalStarAlgebra ℂ a) :=
     Units.map (algebraMap ℂ (elementalStarAlgebra ℂ a)).toMonoidHom (Units.mk0 _ h₁)
   refine' ⟨u.ofNearby _ _, rfl⟩
-  simp only [Units.coe_map, Units.val_inv_eq_inv_val, RingHom.toMonoidHom_eq_coe, Units.val_mk0,
+  simp only [u, Units.coe_map, Units.val_inv_eq_inv_val, RingHom.toMonoidHom_eq_coe, Units.val_mk0,
     Units.coe_map_inv, MonoidHom.coe_coe, norm_algebraMap', norm_inv, Complex.norm_eq_abs,
     Complex.abs_ofReal, abs_norm, inv_inv]
     --RingHom.coe_monoidHom,

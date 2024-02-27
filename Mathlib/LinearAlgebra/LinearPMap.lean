@@ -304,7 +304,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
   have fg_eq : ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain))
       (_H : (x' : E) + y' = z'), fg z' = f x' + g y' := by
     intro x' y' z' H
-    dsimp
+    dsimp [fg]
     rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← map_sub, ← map_sub]
     apply h
     simp only [← eq_sub_iff_add_eq] at hxy

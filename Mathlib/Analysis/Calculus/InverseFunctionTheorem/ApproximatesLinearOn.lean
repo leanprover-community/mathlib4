@@ -197,7 +197,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
       dist (f (g z)) y = ‖f (z + v) - y‖ := by rw [dist_eq_norm]
       _ = ‖f (z + v) - f z - f' v + f' v - (y - f z)‖ := by congr 1; abel
       _ = ‖f (z + v) - f z - f' (z + v - z)‖ := by
-        simp only [ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel',
+        simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel',
           sub_add_cancel]
       _ ≤ c * ‖z + v - z‖ := (hf _ (hε hgz) _ (hε hz))
       _ ≤ c * (f'symm.nnnorm * dist (f z) y) := by

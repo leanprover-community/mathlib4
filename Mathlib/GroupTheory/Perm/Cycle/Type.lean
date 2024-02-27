@@ -346,7 +346,7 @@ theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ
     this ▸ (card_compl_support_modEq hσ).symm
   suffices f.fixedPoints = (support σ)ᶜ by
     simp only [this]; apply Fintype.card_coe
-  simp [Set.ext_iff, IsFixedPt]
+  simp [σ, Set.ext_iff, IsFixedPt]
 
 theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p ∣ Fintype.card α)
     {σ : Perm α} (hσ : σ ^ p ^ n = 1) : ∃ a : α, σ a = a := by

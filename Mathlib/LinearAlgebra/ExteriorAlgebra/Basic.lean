@@ -279,7 +279,7 @@ def ιMulti (n : ℕ) : M [Λ^Fin n]→ₗ[R] ExteriorAlgebra R M :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
     map_eq_zero_of_eq' := fun f x y hfxy hxy => by
-      dsimp
+      dsimp [F]
       clear F
       wlog h : x < y
       · exact this R (A := A) n f y x hfxy.symm hxy.symm (hxy.lt_or_lt.resolve_left h)

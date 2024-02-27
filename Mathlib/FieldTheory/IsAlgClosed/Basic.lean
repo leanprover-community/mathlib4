@@ -293,7 +293,7 @@ instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K :=
   intro hfin
   set n := Fintype.card K
   set f := (X : K[X]) ^ (n + 1) - 1
-  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp) one_ne_zero
+  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp [n]) one_ne_zero
   apply Nat.not_succ_le_self (Fintype.card K)
   have hroot : n.succ = Fintype.card (f.rootSet K) := by
     erw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _), natDegree_X_pow_sub_C]

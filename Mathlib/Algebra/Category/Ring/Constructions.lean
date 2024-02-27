@@ -132,9 +132,8 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
       rw [this]
     apply Algebra.TensorProduct.ext'
     intro a b
-    simp only [PushoutCocone.ι_app_left, pushoutCocone_pt, coe_of, RingHom.toMonoidHom_eq_coe,
-      AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_coe, ← eq1, AlgHom.toRingHom_eq_coe,
-      PushoutCocone.ι_app_right, ← eq2, Algebra.TensorProduct.productMap_apply_tmul]
+    simp only [f', g', ← eq1, pushoutCocone_pt, ← eq2, AlgHom.toRingHom_eq_coe,
+      Algebra.TensorProduct.productMap_apply_tmul, AlgHom.coe_mk]
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl

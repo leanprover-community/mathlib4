@@ -435,7 +435,8 @@ instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
       match x, y, H with
       | _, _, R.intro n x => Quot.sound (R.intro _ _)
     refine bijective_iff_has_inverse.mpr ⟨f, fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_,
-      fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_⟩ <;> simp only [liftOn_mk, frobenius_mk, mk_succ_pow]
+      fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_⟩ <;>
+      simp only [f, liftOn_mk, frobenius_mk, mk_succ_pow]
 
 @[simp]
 theorem iterate_frobenius_mk (n : ℕ) (x : K) :

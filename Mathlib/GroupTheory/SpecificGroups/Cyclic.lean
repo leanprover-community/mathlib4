@@ -416,7 +416,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
       simp only [← filter_dvd_eq_divisors hc0.ne', sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
       apply congr_arg card
-      simp
+      simp [c]
     _ = ∑ m in c.divisors.erase d, (univ.filter fun a : α => orderOf a = m).card := by
       rw [eq_comm]
       refine' sum_subset (erase_subset _ _) fun m hm₁ hm₂ => _

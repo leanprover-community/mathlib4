@@ -414,7 +414,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       ring
     exact u1.smul_const (f t)
   have main := hasDerivAt_integral_of_dominated_loc_of_deriv_le hv0 h1 h2 h3 h4 h5 h6
-  simpa only [mul_smul] using main
+  simpa only [F', mul_smul] using main
 set_option linter.uppercaseLean3 false in
 #align mellin_has_deriv_of_is_O_rpow mellin_hasDerivAt_of_isBigO_rpow
 

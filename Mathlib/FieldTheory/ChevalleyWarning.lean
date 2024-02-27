@@ -113,7 +113,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   let S : Finset (σ → K) := { x ∈ univ | ∀ i ∈ s, eval x (f i) = 0 }.toFinset
   have hS : ∀ x : σ → K, x ∈ S ↔ ∀ i : ι, i ∈ s → eval x (f i) = 0 := by
     intro x
-    simp only [Set.toFinset_setOf, mem_univ, true_and, mem_filter]
+    simp only [S, Set.toFinset_setOf, mem_univ, true_and, mem_filter]
   /- The polynomial `F = ∏ i in s, (1 - (f i)^(q - 1))` has the nice property
     that it takes the value `1` on elements of `{x : σ → K // ∀ i ∈ s, (f i).eval x = 0}`
     while it is `0` outside that locus.

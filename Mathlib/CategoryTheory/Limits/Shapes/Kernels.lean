@@ -127,7 +127,7 @@ def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D)
     match j with
     | zero => Iso.refl _
     | one => Iso.refl _
-  NatIso.ofComponents app <| by rintro ⟨i⟩ ⟨j⟩ <;> intro g <;> cases g <;> simp
+  NatIso.ofComponents app <| by rintro ⟨i⟩ ⟨j⟩ <;> intro g <;> cases g <;> simp [app]
 #align category_theory.limits.comp_nat_iso CategoryTheory.Limits.compNatIso
 
 end

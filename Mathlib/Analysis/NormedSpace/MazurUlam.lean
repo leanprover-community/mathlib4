@@ -64,13 +64,13 @@ theorem midpoint_fixed {x y : PE} :
   -- Note that `f` doubles the value of `dist (e z) z`
   have hf_dist : ∀ e, dist (f e z) z = 2 * dist (e z) z := by
     intro e
-    dsimp
+    dsimp [f, R]
     rw [dist_pointReflection_fixed, ← e.dist_eq, e.apply_symm_apply,
       dist_pointReflection_self_real, dist_comm]
   -- Also note that `f` maps `s` to itself
   have hf_maps_to : MapsTo f s s := by
     rintro e ⟨hx, hy⟩
-    constructor <;> simp [hx, hy, e.symm_apply_eq.2 hx.symm, e.symm_apply_eq.2 hy.symm]
+    constructor <;> simp [f, R, z, hx, hy, e.symm_apply_eq.2 hx.symm, e.symm_apply_eq.2 hy.symm]
   -- Therefore, `dist (e z) z = 0` for all `e ∈ s`.
   set c := ⨆ e : s, dist ((e : PE ≃ᵢ PE) z) z
   have : c ≤ c / 2 := by
@@ -88,10 +88,10 @@ theorem map_midpoint (f : PE ≃ᵢ PF) (x y : PE) : f (midpoint ℝ x y) = midp
   set e : PE ≃ᵢ PE :=
     ((f.trans <| (pointReflection ℝ <| midpoint ℝ (f x) (f y)).toIsometryEquiv).trans f.symm).trans
       (pointReflection ℝ <| midpoint ℝ x y).toIsometryEquiv
-  have hx : e x = x := by simp
-  have hy : e y = y := by simp
+  have hx : e x = x := by simp [e]
+  have hy : e y = y := by simp [e]
   have hm := e.midpoint_fixed hx hy
-  simp only [trans_apply] at hm
+  simp only [e, trans_apply] at hm
   rwa [← eq_symm_apply, toIsometryEquiv_symm, pointReflection_symm, coe_toIsometryEquiv,
     coe_toIsometryEquiv, pointReflection_self, symm_apply_eq, @pointReflection_fixed_iff] at hm
 #align isometry_equiv.map_midpoint IsometryEquiv.map_midpoint

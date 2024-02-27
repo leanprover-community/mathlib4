@@ -542,15 +542,15 @@ theorem affineLocally_of_comp
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
     apply Scheme.Pullback.openCoverOfRight
     exact (pullback g (Z.affineCover.map i)).affineCover
-  have h𝒰 : ∀ i j, IsAffine ((𝒰 i).obj j) := by dsimp; infer_instance
+  have h𝒰 : ∀ i j, IsAffine ((𝒰 i).obj j) := by dsimp [𝒰]; infer_instance
   let 𝒰' := (Z.affineCover.pullbackCover g).bind fun i => Scheme.affineCover _
-  have h𝒰' : ∀ i, IsAffine (𝒰'.obj i) := by dsimp; infer_instance
+  have h𝒰' : ∀ i, IsAffine (𝒰'.obj i) := by dsimp [𝒰']; infer_instance
   rw [hP.affine_openCover_iff f 𝒰' fun i => Scheme.affineCover _]
   rw [hP.affine_openCover_iff (f ≫ g) Z.affineCover 𝒰] at h
   rintro ⟨i, j⟩ k
   dsimp at i j k
   specialize h i ⟨j, k⟩
-  dsimp only [Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
+  dsimp only [𝒰, 𝒰', Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
     Scheme.Pullback.openCoverOfRight_obj, Scheme.OpenCover.pushforwardIso_map,
     Scheme.Pullback.openCoverOfRight_map, Scheme.OpenCover.bind_obj,
     Scheme.OpenCover.pullbackCover_obj, Scheme.OpenCover.pullbackCover_map] at h ⊢
@@ -583,10 +583,10 @@ theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderCom
   apply (@affine_openCover_iff _ hP _ _ (f ≫ g) S.affineCover _ ?_ ?_).mpr
   rotate_left
   · exact 𝒰
-  · intro i j; dsimp at *; infer_instance
+  · intro i j; dsimp [𝒰] at *; infer_instance
   · rintro i ⟨j, k⟩
     dsimp at i j k
-    dsimp only [Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
+    dsimp only [𝒰, Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
       Scheme.Pullback.openCoverOfRight_obj, Scheme.OpenCover.pushforwardIso_map,
       Scheme.Pullback.openCoverOfRight_map, Scheme.OpenCover.bind_obj]
     rw [Category.assoc, Category.assoc, pullbackRightPullbackFstIso_hom_snd,

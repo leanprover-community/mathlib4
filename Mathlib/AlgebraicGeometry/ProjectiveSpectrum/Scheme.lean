@@ -478,7 +478,7 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
           (Quotient.mk'' ⟨_, ⟨proj 𝒜 (i - n) x ^ m, by mem_tac⟩, ⟨_, ?_⟩, ⟨i - n, rfl⟩⟩ : A⁰_ f)
     split_ifs with h
     · convert_to product ∈ q.1
-      · dsimp
+      · dsimp [product]
         erw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.mul_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.val_mk'']

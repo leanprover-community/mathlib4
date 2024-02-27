@@ -181,7 +181,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
   set F' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E := fun p => (f' (e p)).comp (e : ℝ × ℝ →L[ℝ] ℂ)
   have hF' : ∀ p : ℝ × ℝ, (-(I • F' p)) (1, 0) + F' p (0, 1) = -(I • f' (e p) 1 - f' (e p) I) := by
     rintro ⟨x, y⟩
-    simp only [ContinuousLinearMap.neg_apply, ContinuousLinearMap.smul_apply,
+    simp only [F', ContinuousLinearMap.neg_apply, ContinuousLinearMap.smul_apply,
       ContinuousLinearMap.comp_apply, ContinuousLinearEquiv.coe_coe, he₁, he₂, neg_add_eq_sub,
       neg_sub]
   set R : Set (ℝ × ℝ) := [[z.re, w.re]] ×ˢ [[w.im, z.im]]
@@ -314,13 +314,13 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   set g : ℂ → ℂ := (c + exp ·)
   have hdg : Differentiable ℂ g := differentiable_exp.const_add _
   replace hs : (g ⁻¹' s).Countable := (hs.preimage (add_right_injective c)).preimage_cexp
-  have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [dist_eq, abs_exp, hle] using h.symm
+  have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [g, A, dist_eq, abs_exp, hle] using h.symm
   replace hc : ContinuousOn (f ∘ g) R := hc.comp hdg.continuous.continuousOn h_maps
   replace hd : ∀ z ∈ Ioo (min a b) (max a b) ×ℂ Ioo (min 0 (2 * π)) (max 0 (2 * π)) \ g ⁻¹' s,
       DifferentiableAt ℂ (f ∘ g) z := by
     refine' fun z hz => (hd (g z) ⟨_, hz.2⟩).comp z (hdg _)
-    simpa [dist_eq, abs_exp, hle, and_comm] using hz.1.1
-  simpa [circleMap, exp_periodic _, sub_eq_zero, ← exp_add] using
+    simpa [g, dist_eq, abs_exp, hle, and_comm] using hz.1.1
+  simpa [g, circleMap, exp_periodic _, sub_eq_zero, ← exp_add] using
     integral_boundary_rect_eq_zero_of_differentiable_on_off_countable _ ⟨a, 0⟩ ⟨b, 2 * π⟩ _ hs hc hd
 #align complex.circle_integral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable Complex.circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable
 

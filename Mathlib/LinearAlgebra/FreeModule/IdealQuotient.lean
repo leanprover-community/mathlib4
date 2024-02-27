@@ -58,7 +58,7 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
   let I' : Submodule R (ι → R) := Submodule.pi Set.univ fun i => span ({a i} : Set R)
   have : Submodule.map (b'.equivFun : S →ₗ[R] ι → R) (I.restrictScalars R) = I' := by
     ext x
-    simp only [Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
+    simp only [I', Submodule.mem_map, Submodule.mem_pi, mem_span_singleton, Set.mem_univ,
       Submodule.restrictScalars_mem, mem_I_iff, smul_eq_mul, forall_true_left, LinearEquiv.coe_coe,
       Basis.equivFun_apply]
     constructor

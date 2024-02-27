@@ -249,7 +249,7 @@ theorem ae_exists_fderiv_of_countable
   let L : E →L[ℝ] ℝ :=
     LinearMap.toContinuousLinearMap (B.constr ℝ (fun i ↦ lineDeriv ℝ f x (B i)))
   refine ⟨L, fun v hv ↦ ?_⟩
-  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [B.sum_repr v]
+  have J : L v = lineDeriv ℝ f x v := by convert (hx v hv).symm <;> simp [L, B.sum_repr v]
   simpa [J] using (h'x v hv).hasLineDerivAt
 
 /-- If a Lipschitz functions has line derivatives in a dense set of directions, all of them given by

@@ -251,8 +251,8 @@ theorem QuasiCompact.affineProperty_stableUnderBaseChange :
   intro X Y S _ _ f g h
   rw [QuasiCompact.affineProperty] at h ⊢
   let 𝒰 := Scheme.Pullback.openCoverOfRight Y.affineCover.finiteSubcover f g
-  have : Finite 𝒰.J := by dsimp; infer_instance
-  have : ∀ i, CompactSpace (𝒰.obj i).carrier := by intro i; dsimp; infer_instance
+  have : Finite 𝒰.J := by dsimp [𝒰]; infer_instance
+  have : ∀ i, CompactSpace (𝒰.obj i).carrier := by intro i; dsimp [𝒰]; infer_instance
   exact 𝒰.compactSpace
 #align algebraic_geometry.quasi_compact.affine_property_stable_under_base_change AlgebraicGeometry.QuasiCompact.affineProperty_stableUnderBaseChange
 

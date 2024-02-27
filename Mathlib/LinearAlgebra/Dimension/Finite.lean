@@ -317,7 +317,8 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
     exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1
   · obtain ⟨x₁, x₁_mem', rfl⟩ := Finset.mem_map.mp x₁_mem
     have := mem_erase.mp x₁_mem'
-    exact ⟨x₁, by simpa only [Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
+    exact ⟨x₁, by
+      simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
 #align finite_dimensional.exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
 
 end

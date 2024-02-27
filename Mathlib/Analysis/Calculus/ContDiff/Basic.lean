@@ -651,12 +651,12 @@ theorem ContDiffOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg 
   have main : ContDiffOn 𝕜 n (gu ∘ fu) (isoE ⁻¹' s) := by
     apply ContDiffOn.comp_same_univ gu_diff fu_diff
     intro y hy
-    simp only [ContinuousLinearEquiv.coe_apply, Function.comp_apply, mem_preimage]
+    simp only [fu, ContinuousLinearEquiv.coe_apply, Function.comp_apply, mem_preimage]
     rw [isoF.apply_symm_apply (f (isoE y))]
     exact st hy
   have : gu ∘ fu = (isoG.symm ∘ g ∘ f) ∘ isoE := by
     ext y
-    simp only [Function.comp_apply]
+    simp only [fu, gu, Function.comp_apply]
     rw [isoF.apply_symm_apply (f (isoE y))]
   rwa [this, isoE.contDiffOn_comp_iff, isoG.symm.comp_contDiffOn_iff] at main
 #align cont_diff_on.comp ContDiffOn.comp
@@ -1859,7 +1859,7 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   have h₂ : ContDiff 𝕜 n O₂ := contDiff_const.clm_comp contDiff_id
   refine' h₁.contDiffAt.comp _ (ContDiffAt.comp _ _ h₂.contDiffAt)
   convert contDiffAt_ring_inverse 𝕜 (1 : (E →L[𝕜] E)ˣ)
-  simp [one_def]
+  simp [O₂, one_def]
 #align cont_diff_at_map_inverse contDiffAt_map_inverse
 
 end MapInverse

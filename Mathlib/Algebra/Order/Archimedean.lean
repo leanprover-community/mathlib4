@@ -66,7 +66,7 @@ theorem existsUnique_zsmul_near_of_pos {a : α} (ha : 0 < a) (g : α) :
     ∃! k : ℤ, k • a ≤ g ∧ g < (k + 1) • a := by
   let s : Set ℤ := { n : ℤ | n • a ≤ g }
   obtain ⟨k, hk : -g ≤ k • a⟩ := Archimedean.arch (-g) ha
-  have h_ne : s.Nonempty := ⟨-k, by simpa using neg_le_neg hk⟩
+  have h_ne : s.Nonempty := ⟨-k, by simpa [s] using neg_le_neg hk⟩
   obtain ⟨k, hk⟩ := Archimedean.arch g ha
   have h_bdd : ∀ n ∈ s, n ≤ (k : ℤ) := by
     intro n hn

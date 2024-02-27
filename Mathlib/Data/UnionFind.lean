@@ -222,7 +222,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
     let ⟨arr₁, root, H⟩ := self.findAux ⟨y, self.parent_lt _ x.2⟩
     have hx := ?hx
     let arr₂ := arr₁.set ⟨x, hx⟩ {arr₁.get ⟨x, hx⟩ with parent := root}
-    ⟨arr₂, ⟨root, by simp [root.2]⟩, ?b'⟩
+    ⟨arr₂, ⟨root, by simp [root.2, arr₂]⟩, ?b'⟩
   -- start proof
   case a' => -- FIXME: hygiene bug causes `case a` to fail
     let ⟨m, hm⟩ := self.model'
@@ -261,26 +261,26 @@ def link (self : UnionFind α) (x y : Fin self.size)
     else
       let arr₁ := self.arr.set x {nx with parent := y}
       let arr₂ := if nx.rank = ny.rank then
-        arr₁.set ⟨y, by simp; exact y.2⟩ {ny with rank := ny.rank + 1}
+        arr₁.set ⟨y, by simp [arr₁]; exact y.2⟩ {ny with rank := ny.rank + 1}
       else arr₁
       ⟨arr₂, ?b⟩
   -- start proof
   case a =>
     let ⟨m, hm⟩ := self.model'
-    exact ⟨_, _, hm.setParent y x (by simpa [hm.rank_eq] using h) _ _ rfl rfl⟩
+    exact ⟨_, _, hm.setParent y x (by simpa [hm.rank_eq, nx, ny] using h) _ _ rfl rfl⟩
   case b =>
     let ⟨m, hm⟩ := self.model'; let n := self.size
-    refine ⟨_, m.setParentBump x y (by simpa [hm.rank_eq] using h)
+    refine ⟨_, m.setParentBump x y (by simpa [nx, ny, hm.rank_eq] using h)
       (by simpa [← hm.parent_eq'] using yroot), ?_⟩
     let parent (i : Fin n) := (if x.1 = i then y else m.parent i).1
     have : UFModel.Agrees arr₁ (·.parent) parent :=
-      hm.1.set (fun i h ↦ by simp; rw [if_neg h.symm]) (fun _ ↦ by simp)
+      hm.1.set (fun i h ↦ by simp [parent]; rw [if_neg h.symm]) (fun _ ↦ by simp [parent])
     have H1 : UFModel.Agrees arr₂ (·.parent) parent := by
-      simp; split
-      · exact this.set (fun i h ↦ by simp [h.symm]) (fun h ↦ by simp [ne, hm.parent_eq'])
+      simp only [arr₂, getElem_fin]; split
+      · exact this.set (fun i h ↦ by simp [h.symm]) fun _ ↦ by simp [ne, hm.parent_eq', ny, parent]
       · exact this
     have : UFModel.Agrees arr₁ (·.rank) (fun i : Fin n ↦ m.rank i) :=
-      hm.2.set (fun i _ ↦ by simp) (fun _ ↦ by simp [hm.rank_eq])
+      hm.2.set (fun i _ ↦ by simp) (fun _ ↦ by simp [nx, hm.rank_eq])
     let rank (i : Fin n) := if y.1 = i ∧ m.rank x = m.rank y then m.rank y + 1 else m.rank i
     have H2 : UFModel.Agrees arr₂ (·.rank) rank := by
       simp; split <;> (rename_i xy; simp [hm.rank_eq] at xy; simp [xy])

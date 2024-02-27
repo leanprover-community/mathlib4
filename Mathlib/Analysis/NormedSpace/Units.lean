@@ -248,7 +248,8 @@ namespace Ideal
 /-- An ideal which contains an element within `1` of `1 : R` is the unit ideal. -/
 theorem eq_top_of_norm_lt_one (I : Ideal R) {x : R} (hxI : x ∈ I) (hx : ‖1 - x‖ < 1) : I = ⊤ :=
   let u := Units.oneSub (1 - x) hx
-  I.eq_top_iff_one.mpr <| by simpa only [show u.inv * x = 1 by simp] using I.mul_mem_left u.inv hxI
+  I.eq_top_iff_one.mpr <| by
+    simpa only [show u.inv * x = 1 by simp [u]] using I.mul_mem_left u.inv hxI
 #align ideal.eq_top_of_norm_lt_one Ideal.eq_top_of_norm_lt_one
 
 /-- The `Ideal.closure` of a proper ideal in a complete normed ring is proper. -/

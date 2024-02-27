@@ -116,7 +116,7 @@ instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi
     haveI : ReflectsIsomorphisms ((KaroubiKaroubi.equivalence C).inverse) :=
       reflectsIsomorphisms_of_full_and_faithful _
     have : IsIso (F.map f) := by
-      simp only
+      simp only [F]
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]
       apply Functor.map_isIso
     exact isIso_of_reflects_iso f F⟩

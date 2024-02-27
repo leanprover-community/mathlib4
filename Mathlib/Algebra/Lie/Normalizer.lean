@@ -203,7 +203,7 @@ theorem normalizer_eq_self_iff :
       rw [← LieModuleHom.map_lie, LieSubmodule.Quotient.mk_eq_zero, coe_bracket_of_module,
         Submodule.coe_mk, mem_toLieSubmodule]
       exact (H.mem_normalizer_iff' x).mp hx z hz
-    simpa using h y hy
+    simpa [y] using h y hy
 #align lie_subalgebra.normalizer_eq_self_iff LieSubalgebra.normalizer_eq_self_iff
 
 end LieSubalgebra

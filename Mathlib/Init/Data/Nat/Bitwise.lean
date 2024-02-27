@@ -290,6 +290,7 @@ theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (
 theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
+-- Not a `simp` lemma, as later `simp` will be able to prove this.
 theorem testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b

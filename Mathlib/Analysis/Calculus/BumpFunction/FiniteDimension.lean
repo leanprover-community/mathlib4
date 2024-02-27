@@ -105,7 +105,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   obtain ⟨g0, hg⟩ : ∃ g0 : ℕ → ι, T = range g0 := by
     apply Countable.exists_eq_range T_count
     rcases eq_empty_or_nonempty T with (rfl | hT)
-    · simp only [iUnion_false, iUnion_empty] at hT
+    · simp only [ι, iUnion_false, iUnion_empty] at hT
       simp only [← hT, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.not_nonempty_empty]
           at h's
     · exact hT

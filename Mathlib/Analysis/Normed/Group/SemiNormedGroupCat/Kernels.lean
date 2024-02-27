@@ -305,7 +305,7 @@ theorem explicitCokernel_hom_ext {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶ Y}
     (e₁ e₂ : explicitCokernel f ⟶ Z) (h : explicitCokernelπ f ≫ e₁ = explicitCokernelπ f ≫ e₂) :
     e₁ = e₂ := by
   let g : Y ⟶ Z := explicitCokernelπ f ≫ e₂
-  have w : f ≫ g = 0 := by simp
+  have w : f ≫ g = 0 := by simp [g]
   have : e₂ = explicitCokernelDesc w := by apply explicitCokernelDesc_unique; rfl
   rw [this]
   apply explicitCokernelDesc_unique

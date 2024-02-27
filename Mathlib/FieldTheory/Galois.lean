@@ -418,7 +418,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     apply @Fintype.card_congr _ _ _ (_) _
     rw [IntermediateField.adjoin_zero]
   intro K x hx hK
-  simp only at *
+  simp only [P] at *
   -- Porting note: need to specify two implicit arguments of `finrank_mul_finrank`
   letI := K⟮x⟯.module
   letI := K⟮x⟯.isScalarTower (R := F)
