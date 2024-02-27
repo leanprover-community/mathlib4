@@ -89,6 +89,7 @@ def toOrderHom {X Y : WithInitial SimplexCategory} (f : X ⟶ Y) : Fin (len X) �
   | star, of x, _ => (OrderEmbedding.ofIsEmpty.toOrderHom :  (Fin 0) →o (Fin (len (of x))))
   | star, star, _ => OrderHom.id
 
+@[simp]
 lemma toOrderHom_id {Z : WithInitial SimplexCategory} : toOrderHom (𝟙 Z) = OrderHom.id := by
   match Z with
   | of z => rfl
@@ -105,52 +106,24 @@ lemma toOrderHom_comp {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g : Y 
   | of x, of y, of z, f, g => rfl
 
 /-- Given an isomorphism `X ≅ Y` the corresponding OrderIso `Fin (len X) ≃o Fin (len Y)`. -/
-def toOrderHomIso {X Y : WithInitial SimplexCategory} (f : X ≅ Y) : Fin (len X) ≃o Fin (len Y) where
-  toFun := toOrderHom f.hom
-  invFun := toOrderHom f.inv
-  left_inv := by
-    intro s
-    change ((toOrderHom f.inv).comp (toOrderHom f.hom)) s = s
-    rw [← toOrderHom_comp]
-    rw [f.hom_inv_id]
-    rw [toOrderHom_id]
-    rfl
-  right_inv := by
-    intro s
-    change ((toOrderHom f.hom).comp (toOrderHom f.inv)) s = s
-    rw [← toOrderHom_comp]
-    rw [f.inv_hom_id]
-    rw [toOrderHom_id]
-    rfl
-  map_rel_iff' := by
-    intro a b
-    simp
-    apply Iff.intro
-    intro h1
-    by_contra hn
-    simp at hn
-    have h3 : (toOrderHom f.hom) a = (toOrderHom f.hom) b := by
-      rw [Fin.eq_iff_veq]
-      exact Nat.le_antisymm h1 ((toOrderHom f.hom).monotone'
-        (Fin.succ_le_succ_iff.mp (Nat.le.step hn)))
-    apply congrArg (toOrderHom f.inv) at h3
-    change ((toOrderHom f.inv).comp (toOrderHom f.hom)) a =
-      ((toOrderHom f.inv).comp (toOrderHom f.hom)) b at h3
-    rw [← toOrderHom_comp] at h3
-    rw [f.hom_inv_id] at h3
-    rw [toOrderHom_id] at h3
-    simp at h3
-    subst h3
-    simp_all only [lt_self_iff_false]
-    intro h1
-    exact (toOrderHom f.hom).monotone' h1
+def orderIsoOfIso {X Y : WithInitial SimplexCategory} (f : X ≅ Y) : Fin (len X) ≃o Fin (len Y) :=
+  Equiv.toOrderIso {
+    toFun := toOrderHom f.hom
+    invFun := toOrderHom f.inv
+    left_inv := fun i => by
+      simpa only [toOrderHom_comp, toOrderHom_id] using
+       congr_arg (fun φ => (toOrderHom φ) i) f.hom_inv_id
+    right_inv := fun i => by
+      simpa only [toOrderHom_comp, toOrderHom_id] using
+       congr_arg (fun φ => (toOrderHom φ) i) f.inv_hom_id}
+    (toOrderHom f.hom).monotone (toOrderHom f.inv).monotone
 
 lemma toOrderHomIso_apply {X Y : WithInitial SimplexCategory} (f : X ≅ Y) (a : Fin (len X)) :
     toOrderHom f.hom a = ⟨a, by rw [← len_iso f]; exact a.prop⟩ := by
   rw [Fin.eq_iff_veq]
-  exact Fin.coe_orderIso_apply (toOrderHomIso f) a
+  exact Fin.coe_orderIso_apply (orderIsoOfIso f) a
 
-lemma Hom.exe {X Y : WithInitial SimplexCategory} {f g: X ⟶ Y}
+lemma hom_eq_if_toOrderHom_eq {X Y : WithInitial SimplexCategory} {f g: X ⟶ Y}
     (h : toOrderHom f = toOrderHom g) : f = g := by
   match X, Y, f with
   | star, star, _ => rfl
@@ -162,14 +135,20 @@ lemma Hom.exe {X Y : WithInitial SimplexCategory} {f g: X ⟶ Y}
     change f' = g'
     exact Hom.ext f' g' h
 
+lemma orderIso_of_lenIso {X Y : WithInitial SimplexCategory} (h : len X = len Y) :
+    toOrderHom (lenIso h).hom = Fin.castIso h := by
+  match X, Y with
+  | star, star => rfl
+  | of x, of y => rfl
+
 lemma toOrderHom_of_lenIso_hom {X Y : WithInitial SimplexCategory} (h : len X = len Y) :
-    toOrderHom (lenIso h).hom = (Fin.castIso h : Fin (len X) →o Fin (len Y)) := by
+    toOrderHom (lenIso h).hom = Fin.castIso h := by
   match X, Y with
   | star, star => rfl
   | of x, of y => rfl
 
 lemma toOrderHom_of_lenIso_inv {X Y : WithInitial SimplexCategory} (h : len X = len Y) :
-    toOrderHom (lenIso h).inv = (Fin.castIso h.symm : Fin (len Y) →o Fin (len X)) := by
+    toOrderHom (lenIso h).inv = Fin.castIso h.symm := by
   match X, Y with
   | star, star => rfl
   | of x, of y => rfl
@@ -482,7 +461,7 @@ lemma indexEqToIso_inv_comp_symm_inv {X : WithInitial SimplexCategory}
   rw [prod_id]
   simp [indexEqToIso]
   apply And.intro <;>
-    apply Hom.exe
+    apply hom_eq_if_toOrderHom_eq
     <;> apply OrderHom.ext
     <;> funext a
     <;> rw [toOrderHom_comp, toOrderHom_homMk, toOrderHom_homMk, Fin.eq_iff_veq]
@@ -904,7 +883,7 @@ def splitJoinUnitEquiv (X Y : WithInitial SimplexCategory) (i : Fin (Nat.succ (l
     repeat apply congrArg
     simp only [Split.obj, Fin.val_rev, Nat.succ_sub_succ_eq_sub, len_mk]
     apply Prod.ext
-    all_goals apply Hom.exe
+    all_goals apply hom_eq_if_toOrderHom_eq
     rw [prod_comp_fst, toOrderHom_comp]
     apply OrderHom.ext
     funext a
@@ -933,7 +912,7 @@ def splitJoinUnitEquiv (X Y : WithInitial SimplexCategory) (i : Fin (Nat.succ (l
     simp [Split.sourceValue_of_iso_inv, Split.obj, len_mk]
   right_inv := by
     intro f
-    apply Hom.exe
+    apply hom_eq_if_toOrderHom_eq
     rw [toOrderHom_comp, toOrderHom_comp]
     rw [Split.joinSplitIso, Split.joinSplitIso]
     rw [toOrderHom_of_lenIso_hom, toOrderHom_of_lenIso_inv]
