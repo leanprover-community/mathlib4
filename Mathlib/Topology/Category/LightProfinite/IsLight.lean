@@ -47,6 +47,9 @@ instance (X Y : Profinite) [X.IsLight] [Y.IsLight] : (Profinite.of (X × Y)).IsL
   countable_clopens := Clopens.countable_prod
 
 instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
+  /- The idea is that the discrete quotients of `S` correspond to partitions of `S` into finitely
+  many clopen subsets. If `S` is light, i.e. there are countably many clopens, then there are
+  countably many such partitions. -/
   refine @Function.Surjective.countable ({t : Finset (Clopens S) //
     (∀ (i j : (Clopens S)), i ∈ t → j ∈ t → i ≠ j → i.1 ∩ j.1 = ∅) ∧
     ∀ (x : S), ∃ i, i ∈ t ∧ x ∈ i.1}) _ _ ?_ ?_
