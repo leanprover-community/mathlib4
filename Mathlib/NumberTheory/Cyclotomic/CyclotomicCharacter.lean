@@ -89,7 +89,7 @@ theorem ModularCyclotomicCharacter_aux_spec (g : L ≃+* L) (n : ℕ+) :
     ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ (ModularCyclotomicCharacter_aux g n) : Lˣ) :=
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose_spec
 
-/-- If `g` is a field automorphism of `L`, and `n : ℕ+`, then
+/-- If `g` is a ring automorphism of `L`, and `n : ℕ+`, then
   `ModularCyclotomicCharacter.toFun n g` is the `j : ZMod d` such that `g(ζ)=ζ^j` for all
   `n`'th roots of unity. Here `d` is the number of `n`th roots of unity in `L`. -/
 noncomputable def ModularCyclotomicCharacter.toFun (n : ℕ+) (g : L ≃+* L) :
