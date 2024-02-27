@@ -99,7 +99,7 @@ theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro ⟨y, y'⟩
-  -- Porting note: used to be dsimp [μ]
+  -- Porting note (#10934): used to be dsimp [μ]
   change (finsuppTensorFinsupp' R Y Y')
     (Finsupp.mapDomain f (Finsupp.single x 1) ⊗ₜ[R] Finsupp.mapDomain g (Finsupp.single x' 1)) _
     = (Finsupp.mapDomain (f ⊗ g) (finsuppTensorFinsupp' R X X'
@@ -122,7 +122,7 @@ theorem left_unitality (X : Type u) :
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro x'
-  -- Porting note: used to be dsimp [ε, μ]
+  -- Porting note (#10934): used to be dsimp [ε, μ]
   let q : X →₀ R := ((λ_ (of R (X →₀ R))).hom) (1 ⊗ₜ[R] Finsupp.single x 1)
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
@@ -143,7 +143,7 @@ theorem right_unitality (X : Type u) :
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro x'
-  -- Porting note: used to be dsimp [ε, μ]
+  -- Porting note (#10934): used to be dsimp [ε, μ]
   let q : X →₀ R := ((ρ_ (of R (X →₀ R))).hom) (Finsupp.single x 1 ⊗ₜ[R] 1)
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
@@ -171,7 +171,7 @@ theorem associativity (X Y Z : Type u) :
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro a
-  -- Porting note: used to be dsimp [μ]
+  -- Porting note (#10934): used to be dsimp [μ]
   change Finsupp.mapDomain (α_ X Y Z).hom (finsuppTensorFinsupp' R (X ⊗ Y) Z
     (finsuppTensorFinsupp' R X Y
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single y 1) ⊗ₜ[R] Finsupp.single z 1)) a =
@@ -224,7 +224,7 @@ variable [CommRing R]
 /-- The free functor `Type u ⥤ ModuleCat R`, as a monoidal functor. -/
 def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
   { LaxMonoidalFunctor.of (free R).obj with
-    -- Porting note: used to be dsimp
+    -- Porting note (#10934): used to be dsimp
     ε_isIso := (by infer_instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _))
     μ_isIso := fun X Y => by dsimp; infer_instance }
 #align Module.monoidal_free ModuleCat.monoidalFree
