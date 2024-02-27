@@ -102,7 +102,7 @@ lemma abscissaOfAbsConv_le_of_le_const {f : ArithmeticFunction ℂ}
 
 open Filter in
 /-- If `f` is `O(1)`, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
-lemma abscissaOfAbsConv_isBigO_one {f : ArithmeticFunction ℂ}
+lemma abscissaOfAbsConv_le_one_of_isBigO_one {f : ArithmeticFunction ℂ}
     (h : f =O[atTop] fun _ ↦ (1 : ℝ)) : abscissaOfAbsConv f ≤ 1 := by
   convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_
   · norm_num
