@@ -168,7 +168,7 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
   · exact ⟨_, hp i _ hx⟩
   · exact ⟨_, h1⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    refine' ⟨_, hmul _ _ _ _ Cx Cy⟩
+    exact ⟨_, hmul _ _ _ _ Cx Cy⟩
 #align subgroup.supr_induction' Subgroup.iSup_induction'
 #align add_subgroup.supr_induction' AddSubgroup.iSup_induction'
 

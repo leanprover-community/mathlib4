@@ -225,7 +225,7 @@ theorem prod_add (u v : PrimeMultiset) : (u + v).prod = u.prod * v.prod := by
 theorem prod_smul (d : ℕ) (u : PrimeMultiset) : (d • u).prod = u.prod ^ d := by
   induction d with
   | zero => simp only [Nat.zero_eq, zero_nsmul, pow_zero, prod_zero]
-  | succ n ih => rw [succ_nsmul, prod_add, ih, pow_succ, mul_comm]
+  | succ n ih => rw [succ_nsmul, prod_add, ih, pow_succ]
 #align prime_multiset.prod_smul PrimeMultiset.prod_smul
 
 end PrimeMultiset

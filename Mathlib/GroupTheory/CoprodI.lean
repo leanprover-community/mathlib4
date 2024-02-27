@@ -917,7 +917,7 @@ theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard :
     lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w'
   intro heq1
   apply hw'
-  simp [heq1]
+  simp [w', heq1]
 #align free_product.lift_word_prod_nontrivial_of_head_card Monoid.CoprodI.lift_word_prod_nontrivial_of_head_card
 
 theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f w.prod ≠ 1 := by
@@ -950,7 +950,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) : lift f
           lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w'
         intro heq1
         apply hw'
-        simp [heq1]
+        simp [w', heq1]
 #align free_product.lift_word_prod_nontrivial_of_not_empty Monoid.CoprodI.lift_word_prod_nontrivial_of_not_empty
 
 theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) : w = Word.empty := by
@@ -1070,7 +1070,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · exact fun i => Set.Nonempty.inl (hXnonempty i)
   show Pairwise fun i j => Disjoint (X' i) (X' j)
   · intro i j hij
-    simp only
+    simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right
     · exact hXdisj hij
     · exact hXYdisj i j
@@ -1087,9 +1087,9 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     have hnne0 : n ≠ 0 := by
       rintro rfl
       apply hne1
-      simp; rfl
+      simp [H]; rfl
     clear hne1
-    simp only
+    simp only [X']
     -- Positive and negative powers separately
     cases' (lt_or_gt_of_ne hnne0).symm with hlt hgt
     · have h1n : 1 ≤ n := hlt
@@ -1135,7 +1135,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · inhabit ι
     right
     use Inhabited.default
-    simp only
+    simp only [H]
     rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
     apply le_of_lt
     exact nat_lt_aleph0 3
