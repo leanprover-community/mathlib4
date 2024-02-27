@@ -12,6 +12,24 @@ import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
+/-! # The join of simplicial sets
+
+We construct the join of augmented simplicial sets defined as contravariant functors from
+`WithInitial SimplexCategory`.
+
+We show that the join of two augmented standard simplicies is equivalent to a augmented standard
+simplex.
+
+## ToDo
+
+1. Show that the join forms a monoidal structure on augmented simplicial sets.
+2. Define the join of simplicial sets.
+3. Show that the join of standard simplicies is equivalent to a standard simplex.
+4. Show that the join defines a monoidal structure on simplicial sets.
+
+-/
+
+
 universe v u
 open CategoryTheory CategoryTheory.Limits
 open Simplicial
