@@ -417,13 +417,18 @@ theorem adjugate_fin_two (A : Matrix (Fin 2) (Fin 2) α) :
 theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b; -c, a] :=
   adjugate_fin_two _
 #align matrix.adjugate_fin_two_of Matrix.adjugate_fin_two_of
-
-@[simp]
-theorem adjugate_fin_three_of (a b c d e f g h i: α) :
-    adjugate !![a, b, c; d, e, f; g, h, i] =
-    !![e * i - f * h, -(b * i) + c * h, b * f - c * e;
-     -(d * i) + f * g, a * i - c * g, -(a * f) + c * d;
-      d * h - e * g, -(a * h) + b * g, a * e - b * d] := by
+--adjugate !![a, b, c; d, e, f; g, h, i]
+theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
+    adjugate A =
+    !![(A 1 1) * (A 2 2) - (A 1 2) * (A 2 1),
+     -((A 0 1) * (A 2 2)) + (A 0 2) * (A 2 1),
+      (A 0 1) * (A 1 2) - (A 0 2) * (A 1 1);
+     -((A 1 0) * (A 2 2)) + (A 1 2) * (A 2 0),
+      (A 0 0) * (A 2 2) - (A 0 2) * (A 2 0),
+       -((A 0 0) * (A 1 2)) + (A 0 2) * (A 1 0);
+      (A 1 0) * (A 2 1) - (A 1 1) * (A 2 0),
+       -((A 0 0) * (A 2 1)) + (A 0 1) * (A 2 0),
+        (A 0 0) * (A 1 1) - (A 0 1) * (A 1 0)] := by
 
     ext h1 h2
     fin_cases h1
@@ -605,6 +610,17 @@ theorem adjugate_fin_three_of (a b c d e f g h i: α) :
     repeat
       rw [@Fin.eq_mk_iff_val_eq]
       simp
+
+
+@[simp]
+theorem adjugate_fin_three_of (a b c d e f g h i: α) :
+    adjugate !![a, b, c; d, e, f; g, h, i] =
+    !![e * i - f * h, -(b * i) + c * h, b * f - c * e;
+     -(d * i) + f * g, a * i - c * g, -(a * f) + c * d;
+      d * h - e * g, -(a * h) + b * g, a * e - b * d] :=
+    adjugate_fin_three _
+#align matrix.adjugate_fin_three_of Matrix.adjugate_fin_three_of
+
 
 theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
     adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
