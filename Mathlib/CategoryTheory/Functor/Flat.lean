@@ -204,7 +204,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    convert e₁.symm.trans e₂ <;> simp
+    convert e₁.symm.trans e₂ <;> simp [c₁, c₂]
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1

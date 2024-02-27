@@ -456,13 +456,13 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   set s : ι → Set (Σi, E i) := fun i => Sigma.fst ⁻¹' {i}
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
-    simp only [← range_sigmaMk]
+    simp only [s, ← range_sigmaMk]
     exact (isometry_mk i).uniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine' completeSpace_of_isComplete_univ _
   convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
-  simp only [← preimage_iUnion, iUnion_of_singleton, preimage_univ]
+  simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 #align metric.sigma.complete_space Metric.Sigma.completeSpace
 
 end Sigma

@@ -149,7 +149,7 @@ def ofNatCode : ℕ → Code
   | n + 4 =>
     let m := n.div2.div2
     have hm : m < n + 4 := by
-      simp only [div2_val]
+      simp only [m, div2_val]
       exact
         lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
           (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -171,7 +171,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
   | n + 4 => by
     let m := n.div2.div2
     have hm : m < n + 4 := by
-      simp only [div2_val]
+      simp only [m, div2_val]
       exact
         lt_of_le_of_lt (le_trans (Nat.div_le_self _ _) (Nat.div_le_self _ _))
           (Nat.succ_le_succ (Nat.le_add_right _ _))
@@ -1061,7 +1061,7 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
   ⟨curry cg (encode cF),
     funext fun n =>
       show eval (f (curry cg (encode cF))) n = eval (curry cg (encode cF)) n by
-        simp [eg', eF', Part.map_id']⟩
+        simp [g, eg', eF', Part.map_id']⟩
 #align nat.partrec.code.fixed_point Nat.Partrec.Code.fixed_point
 
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=

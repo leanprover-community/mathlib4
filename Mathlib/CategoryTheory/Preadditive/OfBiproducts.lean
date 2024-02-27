@@ -89,10 +89,10 @@ theorem isUnital_rightAdd : EckmannHilton.IsUnital (· +ᵣ ·) 0 := by
 
 theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ g +ₗ k := by
   let diag : X ⊞ X ⟶ Y ⊞ Y := biprod.lift (biprod.desc f g) (biprod.desc h k)
-  have hd₁ : biprod.inl ≫ diag = biprod.lift f h := by ext <;> simp
-  have hd₂ : biprod.inr ≫ diag = biprod.lift g k := by ext <;> simp
+  have hd₁ : biprod.inl ≫ diag = biprod.lift f h := by ext <;> simp [diag]
+  have hd₂ : biprod.inr ≫ diag = biprod.lift g k := by ext <;> simp [diag]
   have h₁ : biprod.lift (f +ᵣ g) (h +ᵣ k) = biprod.lift (𝟙 X) (𝟙 X) ≫ diag := by
-      ext <;> aesop_cat
+    ext <;> aesop_cat
   have h₂ : diag ≫ biprod.desc (𝟙 Y) (𝟙 Y) = biprod.desc (f +ₗ h) (g +ₗ k) := by
     ext <;> simp [reassoc_of% hd₁, reassoc_of% hd₂]
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]

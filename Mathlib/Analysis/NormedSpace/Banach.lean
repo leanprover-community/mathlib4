@@ -132,7 +132,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
         _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
         _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
-          simp only
+          simp only [δ]
           ring
         _ = ‖y‖ / 2 := by
           rw [inv_mul_cancel, one_mul]

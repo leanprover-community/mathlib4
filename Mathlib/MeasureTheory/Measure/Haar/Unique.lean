@@ -190,7 +190,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             contrapose! hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
-            simp only [mem_image, mem_prod, Prod.exists]
+            simp only [M, mem_image, mem_prod, Prod.exists]
             exact ⟨x, y⁻¹ * x, ⟨H, hxy⟩, by group⟩
           simp [this]
         apply HasCompactSupport.intro' (K_comp.prod M'_comp) ?_ this
@@ -222,7 +222,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
             contrapose! hxy
             simp only [mem_prod, H, true_and]
             apply subset_closure
-            simp only [mem_image, mem_prod, Prod.exists]
+            simp only [M, mem_image, mem_prod, Prod.exists]
             exact ⟨y * x, x, ⟨hxy, H⟩, by group⟩
           simp [this]
         apply HasCompactSupport.intro' (L_comp.prod M'_comp) ?_ this
@@ -450,7 +450,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
       · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, indicator_of_mem]
         norm_cast
         exact thickenedIndicator_le_one _ _ _
-      · simp only [Real.norm_eq_abs, NNReal.abs_eq, hx, not_false_eq_true, indicator_of_not_mem]
+      · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, not_false_eq_true, indicator_of_not_mem]
         rw [thickenedIndicator_zero]
         · simp
         · simpa [image_eq_zero_of_nmem_tsupport hx] using (u_mem n).2.le
@@ -463,7 +463,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
   have M n : ∫ (x : G), v n (f x) ∂μ' = ∫ (x : G), v n (f x) ∂(haarScalarFactor μ' μ • μ) := by
     apply integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ (vf_cont n)
     apply h'f.comp_left
-    simp only [thickenedIndicator_toFun, NNReal.coe_eq_zero]
+    simp only [v, thickenedIndicator_toFun, NNReal.coe_eq_zero]
     rw [thickenedIndicatorAux_zero (u_mem n).1]
     · simp only [ENNReal.zero_toNNReal]
     · simpa using (u_mem n).2.le
@@ -690,7 +690,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
     · simp only [iUnion_subset_iff]
       intro a ac x hx
-      simp only [subset_def, mem_setOf_eq] at cA
+      simp only [A, subset_def, mem_setOf_eq] at cA
       exact (cA _ ac).1 x hx
     · rintro x hx y hy hxy
       simp only [mem_iUnion, exists_prop] at hx hy
@@ -710,7 +710,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
         simpa using mem_leftCoset y (Set.mul_mem_mul one_k (Set.inv_mem_inv.mpr one_k))
       exact mem_biUnion ym this
     · obtain ⟨x, -, xm, z, zy, zx⟩ : ∃ x, y ≠ x ∧ x ∈ m ∧ ∃ z, z ∈ y • k ∧ z ∈ x • k := by
-        simpa [mA.1, hy, insert_subset_iff, pairwiseDisjoint_insert, mA.2, not_disjoint_iff]
+        simpa [A, mA.1, hy, insert_subset_iff, pairwiseDisjoint_insert, mA.2, not_disjoint_iff]
           using h'y
       have : y ∈ x • (k * k⁻¹) := by
         rw [show y = x * ((x⁻¹ * z) * (y⁻¹ * z)⁻¹) by group]
