@@ -245,14 +245,14 @@ open Int
 @[to_additive (attr := simp) one_zsmul]
 theorem zpow_one (a : G) : a ^ (1 : ℤ) = a := by
   convert pow_one a using 1
-  exact zpow_ofNat a 1
+  exact zpow_coe_nat a 1
 #align zpow_one zpow_one
 #align one_zsmul one_zsmul
 
 @[to_additive two_zsmul]
 theorem zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by
   convert pow_two a using 1
-  exact zpow_ofNat a 2
+  exact zpow_coe_nat a 2
 #align zpow_two zpow_two
 #align two_zsmul two_zsmul
 
@@ -284,7 +284,7 @@ theorem inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
 theorem one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
-  | (n : ℕ)       => by rw [zpow_ofNat, one_pow]
+  | (n : ℕ)       => by rw [zpow_coe_nat, one_pow]
   | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 #align one_zpow one_zpow
 #align zsmul_zero zsmul_zero
@@ -296,7 +296,7 @@ theorem zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
     change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
     simp
   | Int.negSucc n => by
-    rw [zpow_negSucc, inv_inv, ← zpow_ofNat]
+    rw [zpow_negSucc, inv_inv, ← zpow_coe_nat]
     rfl
 #align zpow_neg zpow_neg
 #align neg_zsmul neg_zsmul
@@ -309,7 +309,7 @@ theorem mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a 
 
 @[to_additive zsmul_neg]
 theorem inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
-  | (n : ℕ)    => by rw [zpow_ofNat, zpow_ofNat, inv_pow]
+  | (n : ℕ)    => by rw [zpow_coe_nat, zpow_coe_nat, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 #align inv_zpow inv_zpow
 #align zsmul_neg zsmul_neg
@@ -331,7 +331,7 @@ theorem one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp onl
 
 @[to_additive AddCommute.zsmul_add]
 protected theorem Commute.mul_zpow (h : Commute a b) : ∀ i : ℤ, (a * b) ^ i = a ^ i * b ^ i
-  | (n : ℕ)    => by simp [zpow_ofNat, h.mul_pow n]
+  | (n : ℕ)    => by simp [zpow_coe_nat, h.mul_pow n]
   | .negSucc n => by simp [h.mul_pow, (h.pow_pow _ _).eq, mul_inv_rev]
 #align commute.mul_zpow Commute.mul_zpow
 #align add_commute.zsmul_add AddCommute.zsmul_add
@@ -341,16 +341,16 @@ protected theorem Commute.mul_zpow (h : Commute a b) : ∀ i : ℤ, (a * b) ^ i 
 -- and therefore the more "natural" choice of lemma, is reversed.
 @[to_additive mul_zsmul'] lemma zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
   | (m : ℕ), (n : ℕ) => by
-    rw [zpow_ofNat, zpow_ofNat, ← pow_mul, ← zpow_ofNat]
+    rw [zpow_coe_nat, zpow_coe_nat, ← pow_mul, ← zpow_coe_nat]
     rfl
   | (m : ℕ), -[n+1] => by
-    rw [zpow_ofNat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg, inv_inj, ← zpow_ofNat]
+    rw [zpow_coe_nat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg, inv_inj, ← zpow_coe_nat]
   | -[m+1], (n : ℕ) => by
-    rw [zpow_ofNat, zpow_negSucc, ← inv_pow, ← pow_mul, negSucc_mul_ofNat, zpow_neg, inv_pow,
-      inv_inj, ← zpow_ofNat]
+    rw [zpow_coe_nat, zpow_negSucc, ← inv_pow, ← pow_mul, negSucc_mul_ofNat, zpow_neg, inv_pow,
+      inv_inj, ← zpow_coe_nat]
   | -[m+1], -[n+1] => by
     rw [zpow_negSucc, zpow_negSucc, negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
-      zpow_ofNat]
+      zpow_coe_nat]
     rfl
 #align zpow_mul zpow_mul
 #align mul_zsmul' mul_zsmul'
@@ -424,7 +424,7 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_ofNat, pow_succ']
+  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_coe_nat, pow_succ']
   | -[0+1] => by simp [negSucc_eq', Int.add_left_neg]
   | -[n + 1+1] => by
     rw [zpow_negSucc, pow_succ, mul_inv_rev, inv_mul_cancel_right]
@@ -527,7 +527,7 @@ end Group
 @[to_additive (attr := simp)]
 theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
-  | (n : ℕ)    => by simp [zpow_ofNat, h.pow_right n]
+  | (n : ℕ)    => by simp [zpow_coe_nat, h.pow_right n]
   | .negSucc n => by
     simp only [zpow_negSucc, inv_right_iff]
     apply pow_right h

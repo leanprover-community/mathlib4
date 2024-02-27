@@ -1521,7 +1521,7 @@ instance ring [TopologicalAddGroup M] : Ring (M →L[R] M) where
   __ := ContinuousLinearMap.semiring
   __ := ContinuousLinearMap.addCommGroup
   intCast z := z • (1 : M →L[R] M)
-  intCast_ofNat := ofNat_zsmul _
+  intCast_ofNat := coe_nat_zsmul _
   intCast_negSucc := negSucc_zsmul _
 #align continuous_linear_map.ring ContinuousLinearMap.ring
 

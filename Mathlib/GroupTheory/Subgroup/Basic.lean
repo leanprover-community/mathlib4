@@ -148,7 +148,7 @@ theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
 @[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
-    rw [zpow_ofNat]
+    rw [zpow_coe_nat]
     exact pow_mem hx n
   | -[n+1] => by
     rw [zpow_negSucc]
