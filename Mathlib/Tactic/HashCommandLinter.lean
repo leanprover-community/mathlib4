@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Std.Lean.Command
+import Std.Data.Array.Basic
 
 /-!
 #  `#`-command linter
@@ -28,9 +29,8 @@ namespace HashCommandLinter
 open Lean Elab
 
 /-- `getAtomStx stx` extracts the array of all `.atom` nodes in `stx`. -/
-partial
 def getAtomStx : Syntax → Array Syntax
-  | .node _ _ args => (args.map getAtomStx).foldl (· ++ ·) default
+  | .node _ _ args => (args.attach.map fun ⟨a, _h⟩ => getAtomStx a).foldl (· ++ ·) default
   | s@(.atom ..) => #[s]
   | _ => default
 
@@ -44,10 +44,10 @@ private abbrev whiteList : Array String := #["#align", "#align_import", "#noalig
 `whiteList`. -/
 def hashCommandLinter : Linter where run := withSetOptionIn fun stx => do
   if getLinterHash (← getOptions) && (← getInfoState).enabled then
-    for sa in [(getAtomStx stx)[0]!] do
-      let a := sa.getAtomVal
-      if ("#".isPrefixOf a && (!' ' ∈ a.toList) && whiteList.all (· != a)) then
-        logWarningAt sa f!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'\n\
-        [linter.hashCommand]"
+    let sa := (getAtomStx stx)[0]!
+    let a := sa.getAtomVal
+    if ("#".isPrefixOf a && (!' ' ∈ a.toList) && whiteList.all (· != a)) then
+      logWarningAt sa f!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'\n\
+      [linter.hashCommand]"
 
 initialize addLinter hashCommandLinter
