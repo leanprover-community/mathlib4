@@ -41,8 +41,8 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
 -- porting note: using `aesop` for automation
 
 -- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
-attribute [aesop norm unfold (rule_sets [SimpleGraph])] Symmetric
-attribute [aesop norm unfold (rule_sets [SimpleGraph])] Irreflexive
+attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Symmetric
+attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Irreflexive
 
 -- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 /--
@@ -58,7 +58,7 @@ macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, terminal := true })
-      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+      (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
 Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph`
@@ -67,7 +67,7 @@ macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, terminal := true })
-      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+      (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
 A variant of `aesop_graph` which does not fail if it is unable to solve the
@@ -78,7 +78,7 @@ macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, warnOnNonterminal := false })
-      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+      (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function
 
@@ -89,7 +89,7 @@ The relation describes which pairs of vertices are adjacent.
 There is exactly one edge for every pair of adjacent vertices;
 see `SimpleGraph.edgeSet` for the corresponding edge set.
 -/
-@[ext, aesop safe constructors (rule_sets [SimpleGraph])]
+@[ext, aesop safe constructors (rule_sets := [SimpleGraph])]
 structure SimpleGraph (V : Type u) where
   /-- The adjacency relation of a simple graph. -/
   Adj : V → V → Prop
@@ -141,8 +141,8 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
 #align simple_graph.from_rel_adj SimpleGraph.fromRel_adj
 
 -- porting note: attributes needed for `completeGraph`
-attribute [aesop safe (rule_sets [SimpleGraph])] Ne.symm
-attribute [aesop safe (rule_sets [SimpleGraph])] Ne.irrefl
+attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
+attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices
 adjacent. In `Mathlib`, this is usually referred to as `⊤`. -/
