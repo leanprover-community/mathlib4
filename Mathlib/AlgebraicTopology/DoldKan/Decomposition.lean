@@ -75,7 +75,7 @@ theorem decomposition_Q (n q : ℕ) :
           q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩
-        simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
+        simp only [q', Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
           forall_true_left, Finset.mem_filter, lt_self_iff_false, or_true, and_self, not_true,
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
         aesop

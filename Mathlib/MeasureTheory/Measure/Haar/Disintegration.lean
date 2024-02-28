@@ -72,7 +72,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
     obtain ⟨y, z, hyz⟩ : ∃ (y : S) (z : T), M.symm x = (y, z) := ⟨_, _, rfl⟩
     have : x = M (y, z) := by
       rw [← hyz]; simp only [LinearEquiv.apply_symm_apply]
-    simp [this]
+    simp [L', P, M, this]
   have I : μ.map L = ((μ.map M.symm).map P).map L' := by
     rw [Measure.map_map, Measure.map_map, A]
     · rfl
@@ -135,11 +135,11 @@ lemma ae_ae_add_linearMap_mem_iff [LocallyCompactSpace F] {s : Set F} (hs : Meas
   have M_cont : Continuous M := M.continuous_of_finiteDimensional
   -- Note: #8386 had to change `range_eq_top` into `range_eq_top (f := _)`
   have hM : Function.Surjective M := by
-    simp [← LinearMap.range_eq_top (f := _), LinearMap.range_coprod]
+    simp [M, ← LinearMap.range_eq_top (f := _), LinearMap.range_coprod]
   have A : ∀ x, M x ∈ s ↔ x ∈ M ⁻¹' s := fun x ↦ Iff.rfl
   simp_rw [← ae_comp_linearMap_mem_iff M (ν.prod μ) ν hM hs, A]
   rw [Measure.ae_prod_mem_iff_ae_ae_mem]
-  simp only [mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
+  simp only [M, mem_preimage, LinearMap.coprod_apply, LinearMap.id_coe, id_eq]
   exact M_cont.measurable hs
 
 /-- To check that a property holds almost everywhere with respect to an additive Haar measure, it

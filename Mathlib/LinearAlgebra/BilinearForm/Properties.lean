@@ -439,14 +439,11 @@ theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
   refine' eq_of_sub_eq_zero (b _ _)
   intro v
   rw [sub_left, ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
---#align bilin_form.comp_left_injective BilinForm.compLeft_injective
 
 theorem isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.Nondegenerate)
     (φ ψ₁ ψ₂ : M₁ →ₗ[R₁] M₁) (hψ₁ : IsAdjointPair B B ψ₁ φ) (hψ₂ : IsAdjointPair B B ψ₂ φ) :
     ψ₁ = ψ₂ :=
-  B.compLeft_injective b <| ext fun v w => by
-    rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
---#align bilin_form.is_adjoint_pair_unique_of_nondegenerate BilinForm.isAdjointPair_unique_of_nondegenerate
+  B.compLeft_injective b <| ext fun v w => by rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
 
 section FiniteDimensional
 
@@ -457,19 +454,13 @@ the linear equivalence between a vector space and its dual with the underlying l
 `B.toLin`. -/
 noncomputable def toDual (B : BilinForm K V) (b : B.Nondegenerate) : V ≃ₗ[K] Module.Dual K V :=
   LinearMap.BilinForm.toDual (BilinForm.toLin B) b
---#align bilin_form.to_dual BilinForm.toDual
 
 theorem toDual_def {B : BilinForm K V} (b : B.Nondegenerate) {m n : V} : B.toDual b m n = B m n :=
   rfl
---#align bilin_form.to_dual_def BilinForm.toDual_def
 
 lemma Nondegenerate.flip {B : BilinForm K V} (hB : B.Nondegenerate) :
-    B.flip.Nondegenerate := by
-  intro x hx
-  apply (Module.evalEquiv K V).injective
-  ext f
-  obtain ⟨y, rfl⟩ := (B.toDual hB).surjective f
-  simpa using hx y
+    B.flip.Nondegenerate :=
+  LinearMap.BilinForm.SeparatingLeft.flip (B := (BilinForm.toLin B)) hB
 
 lemma nonDegenerateFlip_iff {B : BilinForm K V} :
     B.flip.Nondegenerate ↔ B.Nondegenerate := ⟨Nondegenerate.flip, Nondegenerate.flip⟩
@@ -482,52 +473,38 @@ variable {ι : Type*} [DecidableEq ι] [Finite ι]
 `B (B.dualBasis hB b i) (b j) = B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0`,
 where `B` is a nondegenerate (symmetric) bilinear form and `b` is a finite basis. -/
 noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) :
-    Basis ι K V :=
-  haveI := FiniteDimensional.of_fintype_basis b
-  b.dualBasis.map (B.toDual hB).symm
---#align bilin_form.dual_basis BilinForm.dualBasis
+    Basis ι K V := LinearMap.BilinForm.dualBasis (BilinForm.toLin B) hB b
 
 @[simp]
 theorem dualBasis_repr_apply (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
-    (B.dualBasis hB b).repr x i = B x (b i) := by
-  rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Basis.dualBasis_repr, toDual_def]
---#align bilin_form.dual_basis_repr_apply BilinForm.dualBasis_repr_apply
+    (B.dualBasis hB b).repr x i = B x (b i) :=
+  LinearMap.BilinForm.dualBasis_repr_apply (BilinForm.toLin B) hB b _ _
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
-    B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
-  have := FiniteDimensional.of_fintype_basis b
-  rw [dualBasis, Basis.map_apply, Basis.coe_dualBasis, ← toDual_def hB,
-    LinearEquiv.apply_symm_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]
---#align bilin_form.apply_dual_basis_left BilinForm.apply_dualBasis_left
+    B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 :=
+  LinearMap.BilinForm.apply_dualBasis_left (BilinForm.toLin B) hB b _ _
 
 theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : B.IsSymm)
-    (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 := by
-  rw [sym, apply_dualBasis_left]
---#align bilin_form.apply_dual_basis_right BilinForm.apply_dualBasis_right
+    (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 :=
+  LinearMap.BilinForm.apply_dualBasis_right (BilinForm.toLin B) hB sym b _ _
 
 @[simp]
 lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
-    B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
-  ext i
-  refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
-  rw [toLin_apply, apply_dualBasis_left, toLin_apply, ← B.flip_apply (R₂ := K),
-    apply_dualBasis_left]
-  simp_rw [@eq_comm _ i j]
+    B.dualBasis hB (B.flip.dualBasis hB.flip b) = b :=
+  LinearMap.BilinForm.dualBasis_dualBasis_flip (BilinForm.toLin B) hB b
 
 @[simp]
 lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
     B.flip.dualBasis hB.flip (B.dualBasis hB b) = b :=
-  dualBasis_dualBasis_flip _ hB.flip b
+  LinearMap.BilinForm.dualBasis_flip_dualBasis (BilinForm.toLin B) hB b
 
 @[simp]
 lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm) {ι}
     [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
-    B.dualBasis hB (B.dualBasis hB b) = b := by
-  convert dualBasis_dualBasis_flip _ hB.flip b
-  rwa [eq_comm, ← isSymm_iff_flip]
+    B.dualBasis hB (B.dualBasis hB b) = b :=
+  LinearMap.BilinForm.dualBasis_dualBasis (BilinForm.toLin B) hB hB' b
 
 end DualBasis
 
@@ -537,43 +514,36 @@ section LinearAdjoints
 is the linear map `B₂.toLin⁻¹ ∘ B₁.toLin`. -/
 noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B₂.Nondegenerate) :
     V →ₗ[K] V :=
-  (B₂.toDual b₂).symm.toLinearMap.comp (BilinForm.toLin B₁)
---#align bilin_form.symm_comp_of_nondegenerate BilinForm.symmCompOfNondegenerate
+  LinearMap.BilinForm.symmCompOfSeparatingLeft (BilinForm.toLin B₁) (BilinForm.toLin B₂) b₂
 
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v : V) :
-    toLin B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = toLin B₁ v := by
-  erw [symmCompOfNondegenerate, LinearEquiv.apply_symm_apply (B₂.toDual b₂) _]
---#align bilin_form.comp_symm_comp_of_nondegenerate_apply BilinForm.comp_symmCompOfNondegenerate_apply
+    toLin B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = toLin B₁ v :=
+  LinearMap.BilinForm.comp_symmCompOfSeparatingLeft_apply
+    (B₂ := (BilinForm.toLin B₂)) (BilinForm.toLin B₁) b₂ v
 
 @[simp]
 theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
-    (b₂ : B₂.Nondegenerate) (v w : V) : B₂ (symmCompOfNondegenerate B₁ B₂ b₂ w) v = B₁ w v := by
-  conv_lhs => rw [← BilinForm.toLin_apply, comp_symmCompOfNondegenerate_apply]
---#align bilin_form.symm_comp_of_nondegenerate_left_apply BilinForm.symmCompOfNondegenerate_left_apply
+    (b₂ : B₂.Nondegenerate) (v w : V) : B₂ (symmCompOfNondegenerate B₁ B₂ b₂ w) v = B₁ w v :=
+  LinearMap.BilinForm.symmCompOfSeparatingLeft_left_apply (B₂ := (BilinForm.toLin B₂))
+    (BilinForm.toLin B₁) b₂ v w
 
 /-- Given the nondegenerate bilinear form `B` and the linear map `φ`,
 `leftAdjointOfNondegenerate` provides the left adjoint of `φ` with respect to `B`.
 The lemma proving this property is `BilinForm.isAdjointPairLeftAdjointOfNondegenerate`. -/
 noncomputable def leftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (φ : V →ₗ[K] V) : V →ₗ[K] V :=
-  symmCompOfNondegenerate (B.compRight φ) B b
---#align bilin_form.left_adjoint_of_nondegenerate BilinForm.leftAdjointOfNondegenerate
+  LinearMap.BilinForm.leftAdjointOfSeparatingLeft (BilinForm.toLin B) b φ
 
 theorem isAdjointPairLeftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
-    (φ : V →ₗ[K] V) : IsAdjointPair B B (B.leftAdjointOfNondegenerate b φ) φ := fun x y =>
-  (B.compRight φ).symmCompOfNondegenerate_left_apply b y x
---#align bilin_form.is_adjoint_pair_left_adjoint_of_nondegenerate BilinForm.isAdjointPairLeftAdjointOfNondegenerate
+    (φ : V →ₗ[K] V) : IsAdjointPair B B (B.leftAdjointOfNondegenerate b φ) φ :=
+  LinearMap.BilinForm.isAdjointPairLeftAdjointOfSeparatingLeft (BilinForm.toLin B) b φ
 
 /-- Given the nondegenerate bilinear form `B`, the linear map `φ` has a unique left adjoint given by
 `BilinForm.leftAdjointOfNondegenerate`. -/
 theorem isAdjointPair_iff_eq_of_nondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (ψ φ : V →ₗ[K] V) : IsAdjointPair B B ψ φ ↔ ψ = B.leftAdjointOfNondegenerate b φ :=
-  ⟨fun h =>
-    B.isAdjointPair_unique_of_nondegenerate b φ ψ _ h
-      (isAdjointPairLeftAdjointOfNondegenerate _ _ _),
-    fun h => h.symm ▸ isAdjointPairLeftAdjointOfNondegenerate _ _ _⟩
---#align bilin_form.is_adjoint_pair_iff_eq_of_nondegenerate BilinForm.isAdjointPair_iff_eq_of_nondegenerate
+  LinearMap.BilinForm.isAdjointPair_iff_eq_of_separatingLeft (BilinForm.toLin B) b ψ φ
 
 end LinearAdjoints
 
