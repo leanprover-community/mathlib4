@@ -306,7 +306,7 @@ protected def Function.Injective.divisionSemiring' [DivisionSemiring β] [Semiri
   toSemiring := ‹Semiring α›
   __ := hf.groupWithZero f zero one mul inv div npow zpow
 
-/-- Pullback a `DivisionSemiring` along an injective function.
+/-- Pullback a `DivisionRing` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.divisionRing [DivisionRing K] {K' : Type*}
@@ -332,7 +332,7 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K' : Type*}
     qsmul := (· • ·), qsmul_eq_mul' := fun a x ↦ hf (by erw [qsmul, mul, Rat.smul_def, rat_cast]) }
 #align function.injective.division_ring Function.Injective.divisionRing
 
-/-- Pullback a `DivisionSemiring` along an injective function.
+/-- Pullback a `DivisionRing` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.divisionRing' [DivisionRing K] {K' : Type*}
@@ -375,7 +375,7 @@ protected def Function.Injective.semifield [Semifield β] [Zero α] [Mul α] [Ad
 #align function.injective.semifield Function.Injective.semifield
 
 -- See note [reducible non-instances]
-/-- Pullback a `Field` along an injective function. -/
+/-- Pullback a `Semifield` along an injective function. -/
 @[reducible]
 protected def Function.Injective.semifield' [Semifield β]
     [CommSemiring α] [Inv α] [Div α] [Pow α ℤ]
@@ -389,7 +389,7 @@ protected def Function.Injective.semifield' [Semifield β]
     Semifield α :=
   { ‹CommSemiring α›, hf.commGroupWithZero f zero one mul inv div npow zpow with }
 
-/-- Pullback a `Field` along an injective function.
+/-- Pullback a `Semifield` along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'] [Neg K'] [Sub K']
@@ -492,4 +492,3 @@ theorem toLex_rat_cast [RatCast α] (n : ℚ) : toLex (n : α) = n :=
 theorem ofLex_rat_cast [RatCast α] (n : ℚ) : (ofLex n : α) = n :=
   rfl
 #align of_lex_rat_cast ofLex_rat_cast
-#lint
