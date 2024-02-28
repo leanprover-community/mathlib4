@@ -66,7 +66,9 @@ open Function (Surjective)
 
 open LinearMap (lsmul rTensor lTensor)
 
-open TensorProduct
+open Submodule TensorProduct
+
+ variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- An `R`-module `M` is flat if for all finitely generated ideals `I` of `R`,
 the canonical map `I ⊗ M →ₗ M` is injective. -/
@@ -79,11 +81,8 @@ class Flat : Prop where
 def Flat.rTensor_preserves_injectiveness : Prop :=
   ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
     (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M)
+
 namespace Flat
-
-variable (R : Type u) [CommRing R]
-
-open LinearMap Submodule
 
 instance self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
