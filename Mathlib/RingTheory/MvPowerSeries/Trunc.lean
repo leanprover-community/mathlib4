@@ -11,8 +11,11 @@ import Mathlib.Data.Finsupp.Interval
 
 # Formal (multivariate) power series - Truncation
 
-`trunc n φ` truncates a formal power series to the polynomial
-that has the same coefficients as `φ`, for all `m < n`, and `0` otherwise.
+`MvPowerSeries.trunc n φ` truncates a formal multivariate power series
+to the multivariate polynomial that has the same coefficients as `φ`,
+for all `m < n`, and `0` otherwise.
+
+Note that here, `m` and `n` have types `σ →₀ ℕ`, so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 
 -/
 

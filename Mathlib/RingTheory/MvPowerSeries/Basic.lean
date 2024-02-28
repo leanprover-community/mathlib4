@@ -871,7 +871,7 @@ theorem coe_eq_zero_iff : (φ : MvPowerSeries σ R) = 0 ↔ φ = 0 := by rw [←
 theorem coe_eq_one_iff : (φ : MvPowerSeries σ R) = 1 ↔ φ = 1 := by rw [← coe_one, coe_inj]
 #align mv_polynomial.coe_eq_one_iff MvPolynomial.coe_eq_one_iff
 
-/-- The coercion from multivariable polynomials to multivariable power series
+/-- The coercion from multivariate polynomials to multivariate power series
 as a ring homomorphism.
 -/
 def coeToMvPowerSeries.ringHom : MvPolynomial σ R →+* MvPowerSeries σ R where
@@ -899,7 +899,7 @@ section Algebra
 
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
-/-- The coercion from multivariable polynomials to multivariable power series
+/-- The coercion from multivariate polynomials to multivariate power series
 as an algebra homomorphism.
 -/
 def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :=

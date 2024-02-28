@@ -19,16 +19,16 @@ and develops the basic properties of these objects.
 A formal power series is to a polynomial like an infinite sum is to a finite sum.
 
 Formal power series in one variable are defined from multivariate
-poweries as `PowerSeries R := MvPowerSeries Unit R`.
+power series as `PowerSeries R := MvPowerSeries Unit R`.
 
 The file sets up the (semi)ring structure on univariate power series.
 
 We provide the natural inclusion from polynomials to formal power series.
 
 Additional results can be found in:
-* `Mathlib.RingTheory.PowerSeries.Trunc`, truncation of power series
+* `Mathlib.RingTheory.PowerSeries.Trunc`, truncation of power series;
 * `Mathlib.RingTheory.PowerSeries.Inverse`, about inverses of power series,
-and the fact that power series over a local ring form a local ring
+and the fact that power series over a local ring form a local ring;
 * `Mathlib.RingTheory.PowerSeries.Order`, the order of a power series at 0,
 and application to the fact that power series over an integral domain
 form an integral domain.

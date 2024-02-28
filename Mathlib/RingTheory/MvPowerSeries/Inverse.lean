@@ -13,13 +13,27 @@ import Mathlib.RingTheory.Ideal.LocalRing
 /-!
 # Formal (multivariate) power series - Inverses
 
-This file defines multivariate formal power series
-and develops the basic properties of these objects.
+This file defines multivariate formal power series and develops the basic
+properties of these objects, when it comes about multiplicative inverses.
 
-If the constant coefficient of a formal power series is invertible,
-then this formal power series is invertible.
+For `φ : MvPowerSeries σ R` and `u : Rˣ` is the constant coefficient of `φ`,
+`MvPowerSeries.invOfUnit φ u` is a formal power series such,
+and `MvPowerSeries.mul_invOfUnit` proves that `φ * invOfUnit φ u = 1`.
+The construction of the power series `invOfUnit` is done by writing that
+relation and solving and for its coefficients by induction.
 
-Formal power series over a local ring form a local ring.
+Over a field, all power series `φ` have an “inverse” `MvPowerSeries.inv φ`,
+which is `0` if and only if the constant coefficient of `φ` is zero
+(by `MvPowerSeries.inv_eq_zero`),
+and `MvPowerSeries.mul_inv_cancel` asserts the equality `φ * φ⁻¹ = 1` when
+the constant coefficient of `φ` is nonzero.
+
+Instances are defined:
+
+* Formal power series over a local ring form a local ring.
+* The morphism `MvPowerSeries.map σ f : MvPowerSeries σ A →* MvPowerSeries σ B`
+  induced by a local morphism `f : A →+* B` (`IsLocalRingHom f`)
+  of commutative rings is a *local* morphism.
 
 -/
 
