@@ -428,7 +428,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   erw [← this]
-                  dsimp
+                  dsimp [s']
                   -- Porting note: need a bit more hand holding here about function composition
                   rw [coe_comp, show ∀ f g, f ∘ g = fun x => f (g x) from fun _ _ => rfl]
                   erw [← Set.preimage_preimage]

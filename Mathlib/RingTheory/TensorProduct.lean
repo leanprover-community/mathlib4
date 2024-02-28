@@ -1084,7 +1084,8 @@ section Basis
 
 universe uM uι
 variable {M : Type uM} {ι : Type uι}
-variable [CommRing R] [Ring A] [Algebra R A] [AddCommMonoid M] [Module R M] (b : Basis ι R M)
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [AddCommMonoid M] [Module R M] (b : Basis ι R M)
 
 variable (A)
 
@@ -1151,8 +1152,8 @@ open Algebra.TensorProduct
 
 variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
   [Fintype ι] [Fintype ι₂] [DecidableEq ι] [DecidableEq ι₂]
-  [CommRing R] [CommRing A] [Algebra R A]
-  [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
+  [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
 @[simp]
 lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :

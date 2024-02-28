@@ -138,7 +138,7 @@ lemma pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : Me
 
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   induction' n with m m
-  · simpa only [Int.ofNat_eq_coe, zpow_ofNat] using hf.pow m
+  · simpa only [Int.ofNat_eq_coe, zpow_coe_nat] using hf.pow m
   · simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 
 /-- The order of vanishing of a meromorphic function, as an element of `ℤ ∪ ∞` (to include the
@@ -188,7 +188,8 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
       rw [eventually_nhdsWithin_iff]
       filter_upwards [hg_eq] with z hg_eq hz
       rwa [← smul_right_inj <| zpow_ne_zero _ (sub_ne_zero.mpr hz), ← mul_smul,
-      ← zpow_add₀ (sub_ne_zero.mpr hz), ← add_sub_assoc, add_sub_cancel', zpow_ofNat, zpow_ofNat]
+        ← zpow_add₀ (sub_ne_zero.mpr hz), ← add_sub_assoc, add_sub_cancel', zpow_coe_nat,
+        zpow_coe_nat]
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
       AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
@@ -199,7 +200,7 @@ lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : An
   · rw [ho, WithTop.map_top, order_eq_top_iff]
     exact (hf.order_eq_top_iff.mp ho).filter_mono nhdsWithin_le_nhds
   · obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp ho
-    simp_rw [← hn, WithTop.map_coe, order_eq_int_iff, zpow_ofNat]
+    simp_rw [← hn, WithTop.map_coe, order_eq_int_iff, zpow_coe_nat]
     rcases (hf.order_eq_nat_iff _).mp hn.symm with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
 
@@ -207,7 +208,7 @@ lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} {x : 𝕜} : Meromo
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   refine ⟨fun ⟨n, hn⟩ ↦ ⟨-n, _, ⟨hn, eventually_nhdsWithin_iff.mpr ?_⟩⟩, ?_⟩
   · filter_upwards with z hz
-    rw [← mul_smul, ← zpow_ofNat, ← zpow_add₀ (sub_ne_zero.mpr hz), add_left_neg,
+    rw [← mul_smul, ← zpow_coe_nat, ← zpow_add₀ (sub_ne_zero.mpr hz), add_left_neg,
       zpow_zero, one_smul]
   · refine fun ⟨n, g, hg_an, hg_eq⟩ ↦ MeromorphicAt.congr ?_ (EventuallyEq.symm hg_eq)
     exact (((MeromorphicAt.id x).sub (.const _ x)).zpow _).smul hg_an.meromorphicAt
