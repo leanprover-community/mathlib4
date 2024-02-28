@@ -72,7 +72,7 @@ lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : Ma
 lemma nhds_compactOpen (f : C(X, Y)) :
     𝓝 f = ⨅ (K : Set X) (_ : IsCompact K) (U : Set Y) (_ : IsOpen U) (_ : MapsTo f K U),
       𝓟 {g : C(X, Y) | MapsTo g K U} := by
-  simp_rw [compactOpen_eq_mapsTo, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
+  simp_rw [compactOpen_eq, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
     ← image_prod, iInf_image, biInf_prod, mem_setOf_eq]
 
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
@@ -268,7 +268,7 @@ it converges in the compact-open topology on each compact subset of `X`. -/
 theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2Space Y]
     {ι : Type*} {l : Filter ι} [Filter.NeBot l] (F : ι → C(X, Y)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
-    ∀ (s : Set X) (hs : IsCompact s), ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
+      ∀ s : Set X, IsCompact s → ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
   constructor
   · rintro ⟨f, hf⟩ s _
     exact ⟨f.restrict s, tendsto_compactOpen_restrict hf s⟩
@@ -358,14 +358,12 @@ theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
 #align continuous_map.continuous_of_continuous_uncurry ContinuousMap.continuous_of_continuous_uncurry
 
 /-- The currying process is a continuous map between function spaces. -/
-theorem continuous_curry [LocallyCompactPair (X × Y) Z] :
+theorem continuous_curry [LocallyCompactSpace (X × Y)] :
     Continuous (curry : C(X × Y, Z) → C(X, C(Y, Z))) := by
-  simp only [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen]
-  
-  -- apply continuous_of_continuous_uncurry
-  -- apply continuous_of_continuous_uncurry
-  -- rw [← (Homeomorph.prodAssoc _ _ _).symm.comp_continuous_iff']
-  -- exact continuous_eval
+  apply continuous_of_continuous_uncurry
+  apply continuous_of_continuous_uncurry
+  rw [← (Homeomorph.prodAssoc _ _ _).symm.comp_continuous_iff']
+  exact continuous_eval
 #align continuous_map.continuous_curry ContinuousMap.continuous_curry
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` is a continuous map `X × Y → Z`. -/
