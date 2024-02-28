@@ -213,14 +213,14 @@ theorem units_mem_involute_act_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pin
 #align pin_group.units_mem_involute_act_le pinGroup.units_mem_involute_act_le
 
 @[simp]
-theorem star_hMul_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x * x = 1 :=
+theorem star_mul_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x * x = 1 :=
   hx.2.1
-#align pin_group.star_mul_self_of_mem pinGroup.star_hMul_self_of_mem
+#align pin_group.star_mul_self_of_mem pinGroup.star_mul_self_of_mem
 
 @[simp]
-theorem hMul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : x * star x = 1 :=
+theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : x * star x = 1 :=
   hx.2.2
-#align pin_group.mul_star_self_of_mem pinGroup.hMul_star_self_of_mem
+#align pin_group.mul_star_self_of_mem pinGroup.mul_star_self_of_mem
 
 /-- See `star_mem_iff` for both directions. -/
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pinGroup Q := by
@@ -258,29 +258,29 @@ theorem coe_star {x : pinGroup Q} : ↑(star x) = (star x : CliffordAlgebra Q) :
   rfl
 #align pin_group.coe_star pinGroup.coe_star
 
-theorem coe_star_hMul_self (x : pinGroup Q) : (star x : CliffordAlgebra Q) * x = 1 :=
-  star_hMul_self_of_mem x.prop
-#align pin_group.coe_star_mul_self pinGroup.coe_star_hMul_self
+theorem coe_star_mul_self (x : pinGroup Q) : (star x : CliffordAlgebra Q) * x = 1 :=
+  star_mul_self_of_mem x.prop
+#align pin_group.coe_star_mul_self pinGroup.coe_star_mul_self
 
-theorem coe_hMul_star_self (x : pinGroup Q) : (x : CliffordAlgebra Q) * star x = 1 :=
-  hMul_star_self_of_mem x.prop
-#align pin_group.coe_mul_star_self pinGroup.coe_hMul_star_self
-
-@[simp]
-theorem star_hMul_self (x : pinGroup Q) : star x * x = 1 :=
-  Subtype.ext <| coe_star_hMul_self x
-#align pin_group.star_mul_self pinGroup.star_hMul_self
+theorem coe_mul_star_self (x : pinGroup Q) : (x : CliffordAlgebra Q) * star x = 1 :=
+  mul_star_self_of_mem x.prop
+#align pin_group.coe_mul_star_self pinGroup.coe_mul_star_self
 
 @[simp]
-theorem hMul_star_self (x : pinGroup Q) : x * star x = 1 :=
-  Subtype.ext <| coe_hMul_star_self x
-#align pin_group.mul_star_self pinGroup.hMul_star_self
+theorem star_mul_self (x : pinGroup Q) : star x * x = 1 :=
+  Subtype.ext <| coe_star_mul_self x
+#align pin_group.star_mul_self pinGroup.star_mul_self
+
+@[simp]
+theorem mul_star_self (x : pinGroup Q) : x * star x = 1 :=
+  Subtype.ext <| coe_mul_star_self x
+#align pin_group.mul_star_self pinGroup.mul_star_self
 
 /-- `pinGroup Q` forms a group where the inverse is `star`. -/
 instance : Group (pinGroup Q) :=
   { Submonoid.toMonoid _ with
     inv := star
-    mul_left_inv := star_hMul_self }
+    mul_left_inv := star_mul_self }
 
 instance : InvolutiveStar (pinGroup Q) :=
   ⟨fun _ => by
@@ -305,7 +305,7 @@ theorem star_eq_inv' : (star : pinGroup Q → pinGroup Q) = Inv.inv :=
 @[simps]
 def toUnits : pinGroup Q →* (CliffordAlgebra Q)ˣ
     where
-  toFun x := ⟨x, ↑x⁻¹, coe_hMul_star_self x, coe_star_hMul_self x⟩
+  toFun x := ⟨x, ↑x⁻¹, coe_mul_star_self x, coe_star_mul_self x⟩
   map_one' := Units.ext rfl
   map_mul' _x _y := Units.ext rfl
 #align pin_group.to_units pinGroup.toUnits
@@ -374,14 +374,14 @@ theorem units_mem_involute_act_le {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spi
 #align spin_group.units_mem_involute_act_le spinGroup.units_mem_involute_act_le
 
 @[simp]
-theorem star_hMul_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x * x = 1 :=
+theorem star_mul_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x * x = 1 :=
   hx.1.2.1
-#align spin_group.star_mul_self_of_mem spinGroup.star_hMul_self_of_mem
+#align spin_group.star_mul_self_of_mem spinGroup.star_mul_self_of_mem
 
 @[simp]
-theorem hMul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : x * star x = 1 :=
+theorem mul_star_self_of_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : x * star x = 1 :=
   hx.1.2.2
-#align spin_group.mul_star_self_of_mem spinGroup.hMul_star_self_of_mem
+#align spin_group.mul_star_self_of_mem spinGroup.mul_star_self_of_mem
 
 /-- See `star_mem_iff` for both directions. -/
 theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : star x ∈ spinGroup Q := by
@@ -412,29 +412,29 @@ theorem coe_star {x : spinGroup Q} : ↑(star x) = (star x : CliffordAlgebra Q) 
   rfl
 #align spin_group.coe_star spinGroup.coe_star
 
-theorem coe_star_hMul_self (x : spinGroup Q) : (star x : CliffordAlgebra Q) * x = 1 :=
-  star_hMul_self_of_mem x.prop
-#align spin_group.coe_star_mul_self spinGroup.coe_star_hMul_self
+theorem coe_star_mul_self (x : spinGroup Q) : (star x : CliffordAlgebra Q) * x = 1 :=
+  star_mul_self_of_mem x.prop
+#align spin_group.coe_star_mul_self spinGroup.coe_star_mul_self
 
-theorem coe_hMul_star_self (x : spinGroup Q) : (x : CliffordAlgebra Q) * star x = 1 :=
-  hMul_star_self_of_mem x.prop
-#align spin_group.coe_mul_star_self spinGroup.coe_hMul_star_self
-
-@[simp]
-theorem star_hMul_self (x : spinGroup Q) : star x * x = 1 :=
-  Subtype.ext <| coe_star_hMul_self x
-#align spin_group.star_mul_self spinGroup.star_hMul_self
+theorem coe_mul_star_self (x : spinGroup Q) : (x : CliffordAlgebra Q) * star x = 1 :=
+  mul_star_self_of_mem x.prop
+#align spin_group.coe_mul_star_self spinGroup.coe_mul_star_self
 
 @[simp]
-theorem hMul_star_self (x : spinGroup Q) : x * star x = 1 :=
-  Subtype.ext <| coe_hMul_star_self x
-#align spin_group.mul_star_self spinGroup.hMul_star_self
+theorem star_mul_self (x : spinGroup Q) : star x * x = 1 :=
+  Subtype.ext <| coe_star_mul_self x
+#align spin_group.star_mul_self spinGroup.star_mul_self
+
+@[simp]
+theorem mul_star_self (x : spinGroup Q) : x * star x = 1 :=
+  Subtype.ext <| coe_mul_star_self x
+#align spin_group.mul_star_self spinGroup.mul_star_self
 
 /-- `spinGroup Q` forms a group where the inverse is `star`. -/
 instance : Group (spinGroup Q) :=
   { Submonoid.toMonoid _ with
     inv := star
-    mul_left_inv := star_hMul_self }
+    mul_left_inv := star_mul_self }
 
 instance : InvolutiveStar (spinGroup Q) :=
   ⟨fun _ => by ext; simp only [coe_star, star_star]⟩
@@ -457,7 +457,7 @@ theorem star_eq_inv' : (star : spinGroup Q → spinGroup Q) = Inv.inv :=
 @[simps]
 def toUnits : spinGroup Q →* (CliffordAlgebra Q)ˣ
     where
-  toFun x := ⟨x, ↑x⁻¹, coe_hMul_star_self x, coe_star_hMul_self x⟩
+  toFun x := ⟨x, ↑x⁻¹, coe_mul_star_self x, coe_star_mul_self x⟩
   map_one' := Units.ext rfl
   map_mul' _x _y := Units.ext rfl
 #align spin_group.to_units spinGroup.toUnits
