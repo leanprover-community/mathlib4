@@ -114,7 +114,6 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.SeparatingLeft) {ι}
     [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
     B.dualBasis hB (dualBasis B.flip (LinearMap.BilinForm.SeparatingLeft.flip hB) b) = b := by
   ext i
-  -- refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
   refine LinearMap.ker_eq_bot.mp (LinearMap.separatingLeft_iff_ker_eq_bot.mp hB)
     ((dualBasis B.flip (LinearMap.BilinForm.SeparatingLeft.flip hB) b).ext (fun j ↦ ?_))
   rw [apply_dualBasis_left, ← B.flip_apply (R₂ := K),
