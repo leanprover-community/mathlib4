@@ -126,4 +126,88 @@ Linear maps into a character module are exactly characters of tensor product.
 
 end module
 
+
+/--
+`ℤ⋆`, the character module of `ℤ` in rational circle
+-/
+protected abbrev int : Type := CharacterModule ℤ
+
+/-- Given `n : ℕ`, the map `m ↦ m / n`. -/
+protected abbrev int.divByNat (n : ℕ) : CharacterModule.int  :=
+  LinearMap.toSpanSingleton ℤ _ (QuotientAddGroup.mk (n : ℚ)⁻¹) |>.toAddMonoidHom
+
+protected lemma int.divByNat_self (n : ℕ) :
+    int.divByNat n n = 0 := by
+  obtain rfl | h0 := eq_or_ne n 0
+  · apply map_zero
+  exact (AddCircle.coe_eq_zero_iff _).mpr
+    ⟨1, by simp [mul_inv_cancel (Nat.cast_ne_zero (R := ℚ).mpr h0)]⟩
+
+variable {A}
+
+/-- `ℤ ⧸ ⟨ord(a)⟩ ≃ aℤ` -/
+@[simps!] noncomputable def equivZModSpanAddOrderOf (a : A) :
+    (ℤ ∙ a) ≃ₗ[ℤ] ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} :=
+  (LinearEquiv.ofEq _ _ <| LinearMap.span_singleton_eq_range ℤ A a).trans <|
+    (LinearMap.quotKerEquivRange <| LinearMap.toSpanSingleton ℤ A a).symm.trans <|
+      Submodule.quotEquivOfEq _ _ <| by
+        ext1 x; rw [Ideal.mem_span_singleton, addOrderOf_dvd_iff_zsmul_eq_zero]; rfl
+
+lemma equivZModSpanAddOrderOf_apply_self (a : A) :
+    equivZModSpanAddOrderOf a ⟨a, Submodule.mem_span_singleton_self a⟩ =
+    Submodule.Quotient.mk 1 :=
+  (LinearEquiv.eq_symm_apply _).mp <| Subtype.ext <| Eq.symm <| one_zsmul _
+
+/--
+For an abelian group `M` and an element `a ∈ M`, there is a character `c : ℤ ∙ a → ℚ⧸ℤ` given by
+`m • a ↦ m / n` where `n` is the smallest natural number such that `na = 0` and when such `n` does
+not exist, `c` is defined by `m • a ↦ m / 2`
+-/
+noncomputable def ofSpanSingleton (a : A) : CharacterModule (ℤ ∙ a) :=
+  let l' :  ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] (AddCircle (1 : ℚ)):=
+    Submodule.liftQSpanSingleton _
+      (CharacterModule.int.divByNat <|
+        if addOrderOf a = 0 then 2 else addOrderOf a).toIntLinearMap <| by
+        simp only [CharacterModule.int.divByNat, Nat.cast_ite, Nat.cast_ofNat,
+          LinearMap.toSpanSingleton_apply, coe_nat_zsmul, Nat.isUnit_iff,
+          AddMonoid.addOrderOf_eq_one_iff]
+        by_cases h : addOrderOf a = 0
+        · rw [h]; simp
+        · rw [if_neg h]
+          apply CharacterModule.int.divByNat_self
+  l' ∘ₗ (equivZModSpanAddOrderOf a) |>.toAddMonoidHom
+
+lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
+    (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
+
+  erw [ofSpanSingleton, LinearMap.toAddMonoidHom_coe, LinearMap.comp_apply,
+     equivZModSpanAddOrderOf_apply_self, Submodule.liftQSpanSingleton_apply,
+    AddMonoidHom.coe_toIntLinearMap, int.divByNat, LinearMap.toSpanSingleton_one,
+    AddCircle.coe_eq_zero_iff] at h
+  rcases h with ⟨n, hn⟩
+  apply_fun Rat.den at hn
+  rw [zsmul_one, Rat.coe_int_den, Rat.inv_coe_nat_den_of_pos] at hn
+  · split_ifs at hn
+    · cases hn
+    · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn
+  · split_ifs with h
+    · norm_num
+    · exact Nat.pos_of_ne_zero h
+
+lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
+    ∃ (c : CharacterModule A), c a ≠ 0 := by
+  let L := AddCommGroupCat.ofHom <|
+    ((ULift.moduleEquiv (R := ℤ)).symm.toLinearMap.toAddMonoidHom.comp <|
+      CharacterModule.ofSpanSingleton a)
+  let ι : AddCommGroupCat.of (ℤ ∙ a) ⟶ AddCommGroupCat.of A :=
+    AddCommGroupCat.ofHom (Submodule.subtype _).toAddMonoidHom
+  have : Mono ι := (AddCommGroupCat.mono_iff_injective _).mpr Subtype.val_injective
+  refine ⟨(ULift.moduleEquiv (R := ℤ)).toLinearMap.toAddMonoidHom.comp <|
+    Injective.factorThru L ι, ?_⟩
+  intro rid
+  erw [AddMonoidHom.comp_apply, DFunLike.congr_fun (Injective.comp_factorThru L ι)
+    ⟨a, Submodule.mem_span_singleton_self _⟩] at rid
+  exact ne_zero <| eq_zero_of_ofSpanSingleton_apply_self a rid
+
+
 end CharacterModule

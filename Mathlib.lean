@@ -50,6 +50,7 @@ import Mathlib.Algebra.Category.GroupCat.Adjunctions
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Colimits
+import Mathlib.Algebra.Category.GroupCat.EnoughInjectives
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
