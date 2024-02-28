@@ -191,9 +191,12 @@ variable (R : Type u) [CommRing R]
 /-- A direct sum of flat `R`-modules is flat. -/
 instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup (M i)]
     [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))] : Flat R (⨁ i, M i) := by
-  classical
+  haveI := Classical.decEq ι
   rw [iff_rTensor_injective]
   intro I hI
+  -- This instance was added during PR #10828,
+  -- see https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2310828.20-.20generalizing.20CommRing.20to.20CommSemiring.20etc.2E/near/422684923
+  letI : ∀ i, AddCommGroup (I ⊗[R] M i) := inferInstance
   rw [← Equiv.comp_injective _ (TensorProduct.lid R (⨁ i, M i)).toEquiv]
   set η₁ := TensorProduct.lid R (⨁ i, M i)
   set η := (fun i ↦ TensorProduct.lid R (M i))
@@ -206,14 +209,14 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   rw [LinearEquiv.coe_toEquiv, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
   rw [LinearEquiv.coe_toEquiv, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
   rw [← psi_def, injective_iff_map_eq_zero ((η₁.comp ρ).comp ψ)]
-  have h₁ : ∀ (i : ι), (π i).comp ((η₁.comp ρ).comp ψ) = (η i).comp ((φ i).comp (τ i))
-  · intro i
+  have h₁ : ∀ (i : ι), (π i).comp ((η₁.comp ρ).comp ψ) = (η i).comp ((φ i).comp (τ i)) := by
+    intro i
     apply DirectSum.linearMap_ext
     intro j
     apply TensorProduct.ext'
     intro a m
-    simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, directSumRight_symm_lof_tmul,
-      rTensor_tmul, coeSubtype, lid_tmul, map_smul]
+    simp only [ρ, ψ, φ, η, η₁, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      directSumRight_symm_lof_tmul, rTensor_tmul, coeSubtype, lid_tmul, map_smul]
     rw [DirectSum.component.of, DirectSum.component.of]
     by_cases h₂ : j = i
     · subst j; simp
