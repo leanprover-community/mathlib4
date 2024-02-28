@@ -552,6 +552,12 @@ display as labels in the diagram. -/
 def mkStringDiag (e : Expr) : MetaM Html := do
   DiagramBuilderM.run do
     let l := (← eval e).toList
+    /- Check that the numbers of the start and end points of strings are the same. -/
+    for (x, y) in pairs l do
+      let (L, C, R) ← tarLists x
+      let (L', C', R') ← srcLists y
+      if L.length + C.length + R.length ≠ L'.length + C'.length + R'.length then
+        throwError "The number of the start and end points of a string does not match."
     /- Add 2-morphisms. -/
     for (i, x) in l.enumFrom 1 do
       let v : PenroseVar := ⟨"E", [i], x.atom.e⟩
