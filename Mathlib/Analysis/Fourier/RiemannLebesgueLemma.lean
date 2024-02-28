@@ -124,8 +124,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     exact
       let ⟨T, hT⟩ := this
       ⟨T, fun b hb v hv => hT v (hv.symm ▸ hb)⟩
-  obtain ⟨R, -, hR_bd⟩ : ∃ R : ℝ, 0 < R ∧ ∀ x : V, R ≤ ‖x‖ → f x = 0
-  exact hf2.exists_pos_le_norm
+  obtain ⟨R, -, hR_bd⟩ : ∃ R : ℝ, 0 < R ∧ ∀ x : V, R ≤ ‖x‖ → f x = 0 := hf2.exists_pos_le_norm
   let A := {v : V | ‖v‖ ≤ R + 1}
   have mA : MeasurableSet A := by
     suffices A = Metric.closedBall (0 : V) (R + 1) by
