@@ -284,7 +284,6 @@ protected theorem nonempty : (p : Set M).Nonempty :=
   ⟨0, p.zero_mem⟩
 #align submodule.nonempty Submodule.nonempty
 
-@[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 #align submodule.mk_eq_zero Submodule.mk_eq_zero

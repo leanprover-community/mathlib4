@@ -346,8 +346,8 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
   obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩
-  obtain ⟨C, hC⟩ : ∃ C, ∀ n, 1 / infDist (u n).1 sᶜ < C
-  · refine ⟨(1 / 2) ^ 0 + 1 / infDist (u 0).1 sᶜ, fun n ↦ ?_⟩
+  obtain ⟨C, hC⟩ : ∃ C, ∀ n, 1 / infDist (u n).1 sᶜ < C := by
+    refine ⟨(1 / 2) ^ 0 + 1 / infDist (u 0).1 sᶜ, fun n ↦ ?_⟩
     rw [← sub_lt_iff_lt_add]
     calc
       _ ≤ |1 / infDist (u n).1 sᶜ - 1 / infDist (u 0).1 sᶜ| := le_abs_self _
@@ -411,7 +411,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp [preimage_preimage]
+    simp [f, preimage_preimage]
 #align is_closed.is_clopenable IsClosed.isClopenable
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
@@ -430,7 +430,7 @@ theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ 
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs
   obtain ⟨t', t'm, -, t'_polish⟩ :
-    ∃ t' : TopologicalSpace α, (∀ n : ℕ, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' :=
+      ∃ t' : TopologicalSpace α, (∀ n : ℕ, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' :=
     exists_polishSpace_forall_le m mt m_polish
   have A : IsOpen[t'] (⋃ n, s n) := by
     apply isOpen_iUnion
