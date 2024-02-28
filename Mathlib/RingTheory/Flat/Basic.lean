@@ -25,7 +25,6 @@ the canonical map `I ⊗ M →ₗ M` is injective.
 This is equivalent to the claim that for all injective `R`-linear maps `f : M₁ → M₂`
 the induced map `M₁ ⊗ M → M₂ ⊗ M` is injective.
 See <https://stacks.math.columbia.edu/tag/00HD>.
-This result is not yet formalised.
 
 ## Main declaration
 
@@ -38,15 +37,11 @@ This result is not yet formalised.
 * `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
+* `Module.Flat.iff_rTensor_preserves_injectiveness`: a module is flat iff tensoring preserves
+  injectiveness.
 
 ## TODO
 
-* Show that tensoring with a flat module preserves injective morphisms.
-  Show that this is equivalent to be flat.
-  See <https://stacks.math.columbia.edu/tag/00HD>.
-  To do this, it is probably a good idea to think about a suitable
-  categorical induction principle that should be applied to the category of `R`-modules,
-  and that will take care of the administrative side of the proof.
 * Show that flatness is stable under base change (aka extension of scalars)
   For base change, it will be very useful to have a "characteristic predicate"
   instead of relying on the construction `A ⊗ B`.
@@ -64,16 +59,15 @@ namespace Module
 
 open Function (Surjective)
 
-open LinearMap (lsmul rTensor lTensor)
-
-open Submodule TensorProduct
+open LinearMap Submodule TensorProduct
 
  variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- An `R`-module `M` is flat if for all finitely generated ideals `I` of `R`,
 the canonical map `I ⊗ M →ₗ M` is injective. -/
 class Flat : Prop where
-  out : ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
+  out : ∀ ⦃I : Ideal R⦄ (_ : I.FG),
+    Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 #align module.flat Module.Flat
 
 /-- An `R`-module is flat if for all injectives `R`-linear maps `L : N → N'`, `L ⊗ 𝟙 M` is also
@@ -161,8 +155,8 @@ lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.c
     Flat R N := by
   rw [iff_rTensor_injective] at *
   intro I hI
-  have h₁ : Function.Injective (lTensor R i)
-  · apply Function.RightInverse.injective (g := (lTensor R r))
+  have h₁ : Function.Injective (lTensor R i) := by
+    apply Function.RightInverse.injective (g := (lTensor R r))
     intro x
     rw [← LinearMap.comp_apply, ← lTensor_comp, h]
     simp
@@ -215,7 +209,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     apply TensorProduct.ext'
     intro a m
     simp only [ρ, ψ, φ, η, η₁, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      directSumRight_symm_lof_tmul, rTensor_tmul, coeSubtype, lid_tmul, map_smul]
+      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coeSubtype, lid_tmul, map_smul]
     rw [DirectSum.component.of, DirectSum.component.of]
     by_cases h₂ : j = i
     · subst j; simp
