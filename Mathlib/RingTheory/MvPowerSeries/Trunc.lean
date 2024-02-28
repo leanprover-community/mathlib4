@@ -15,7 +15,8 @@ import Mathlib.Data.Finsupp.Interval
 to the multivariate polynomial that has the same coefficients as `φ`,
 for all `m < n`, and `0` otherwise.
 
-Note that here, `m` and `n` have types `σ →₀ ℕ`, so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
+Note that here, `m` and `n` have types `σ →₀ ℕ`,
+so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 
 -/
 
