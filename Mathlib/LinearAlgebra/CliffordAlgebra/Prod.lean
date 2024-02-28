@@ -53,9 +53,9 @@ nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
   -- the strategy; for each variable, induct on powers of `ι`, then on the exponent of each
   -- power.
   induction hm₁ using Submodule.iSup_induction' with
-  | h0 => rw [map_zero, zero_mul, mul_zero, smul_zero]
-  | hadd _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
-  | hp i₁' m₁' hm₁ =>
+  | zero => rw [map_zero, zero_mul, mul_zero, smul_zero]
+  | add _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
+  | mem i₁' m₁' hm₁ =>
     obtain ⟨i₁n, rfl⟩ := i₁'
     dsimp only at *
     induction hm₁ using Submodule.pow_induction_on_left' with
@@ -71,9 +71,9 @@ nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
       clear ih₁
       congr 2
       induction hm₂ using Submodule.iSup_induction' with
-      | h0 => rw [map_zero, zero_mul, mul_zero, smul_zero]
-      | hadd _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
-      | hp i₂' m₂' hm₂ =>
+      | zero => rw [map_zero, zero_mul, mul_zero, smul_zero]
+      | add _ _ _ _ ihx ihy => rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
+      | mem i₂' m₂' hm₂ =>
         clear m₂
         obtain ⟨i₂n, rfl⟩ := i₂'
         dsimp only at *

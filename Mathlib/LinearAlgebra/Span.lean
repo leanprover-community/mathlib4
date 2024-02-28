@@ -690,14 +690,14 @@ theorem iSup_induction {ι : Sort*} (p : ι → Submodule R M) {C : M → Prop} 
 /-- A dependent version of `submodule.iSup_induction`. -/
 @[elab_as_elim]
 theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {C : ∀ x, (x ∈ ⨆ i, p i) → Prop}
-    (mem : ∀ (i) (x) (hx : x ∈ p i), C x (mem_iSup_of_mem i hx)) (h0 : C 0 (zero_mem _))
+    (mem : ∀ (i) (x) (hx : x ∈ p i), C x (mem_iSup_of_mem i hx)) (zero : C 0 (zero_mem _))
     (add : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, p i) : C x hx := by
   refine' Exists.elim _ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
   refine' iSup_induction p (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), C x hx) hx
     (fun i x hx => _) _ fun x y => _
   · exact ⟨_, mem _ _ hx⟩
-  · exact ⟨_, h0⟩
+  · exact ⟨_, zero⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, add _ _ _ _ Cx Cy⟩
 #align submodule.supr_induction' Submodule.iSup_induction'

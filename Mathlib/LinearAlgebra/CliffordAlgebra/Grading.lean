@@ -96,30 +96,30 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   cases' x' with x' hx'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx' using Submodule.iSup_induction' with
-  | hp i x hx =>
+  | mem i x hx =>
     obtain ⟨i, rfl⟩ := i
     -- porting note: `dsimp only [Subtype.coe_mk] at hx` doesn't work, use `change` instead
     change x ∈ LinearMap.range (ι Q) ^ i at hx
     induction hx using Submodule.pow_induction_on_left' with
-    | hr r =>
+    | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-    | hadd x y i hx hy ihx ihy =>
+    | add x y i hx hy ihx ihy =>
       -- Note: in #8386 `map_add` had to be specialized to avoid a timeout
       -- (the definition was already very slow)
       rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl
-    | hmul m hm i x hx ih =>
+    | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
       rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
       refine' DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext _ _) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
-  | h0 =>
+  | zero =>
     rw [AlgHom.map_zero]
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl
-  | hadd x y hx hy ihx ihy =>
+  | add x y hx hy ihx ihy =>
     rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
 
@@ -177,28 +177,28 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
   simp_rw [pow_add, pow_mul]
   intro hxv
   induction hxv using Submodule.mul_induction_on' with
-  | hm a ha b hb =>
+  | mem_mul_mem a ha b hb =>
     induction ha using Submodule.pow_induction_on_left' with
-    | hr r =>
+    | algebraMap r =>
       simp_rw [← Algebra.smul_def]
       exact range_ι_pow _ (Submodule.smul_mem _ _ hb)
-    | hadd x y n hx hy ihx ihy =>
+    | add x y n hx hy ihx ihy =>
       simp_rw [add_mul]
       apply add _ _ _ _ ihx ihy
-    | hmul x hx n'' y hy ihy =>
+    | mem_mul x hx n'' y hy ihy =>
       revert hx
       simp_rw [pow_two]
       intro hx2
       induction hx2 using Submodule.mul_induction_on' with
-      | hm m hm n hn =>
+      | mem_mul_mem m hm n hn =>
         simp_rw [LinearMap.mem_range] at hm hn
         obtain ⟨m₁, rfl⟩ := hm; obtain ⟨m₂, rfl⟩ := hn
         simp_rw [mul_assoc _ y b]
         exact ι_mul_ι_mul _ _ _ _ ihy
-      | ha x hx y hy ihx ihy =>
+      | add x hx y hy ihx ihy =>
         simp_rw [add_mul]
         apply add _ _ _ _ ihx ihy
-  | ha x y hx hy ihx ihy =>
+  | add x y hx hy ihx ihy =>
     apply add _ _ _ _ ihx ihy
 #align clifford_algebra.even_odd_induction CliffordAlgebra.evenOdd_induction
 

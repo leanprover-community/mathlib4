@@ -147,15 +147,15 @@ theorem right_induction {P : CliffordAlgebra Q → Prop} (hr : ∀ r : R, P (alg
   have : x ∈ ⊤ := Submodule.mem_top (R := R)
   rw [← iSup_ι_range_eq_top] at this
   induction this using Submodule.iSup_induction' with -- _ this (fun i x hx => ?_) _ h_add
-  | hp i x hx =>
+  | mem i x hx =>
     induction hx using Submodule.pow_induction_on_right' with
     | hr r => exact hr r
     | hadd _x _y _i _ _ ihx ihy => exact h_add _ _ ihx ihy
     | hmul _i x _hx px m hm =>
       obtain ⟨m, rfl⟩ := hm
       exact h_ι_mul _ _ px
-  | h0 => simpa only [map_zero] using hr 0
-  | hadd _x _y _ _ ihx ihy =>
+  | zero => simpa only [map_zero] using hr 0
+  | add _x _y _ _ ihx ihy =>
     exact h_add _ _ ihx ihy
 #align clifford_algebra.right_induction CliffordAlgebra.right_induction
 
