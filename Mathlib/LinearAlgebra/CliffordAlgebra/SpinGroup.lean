@@ -321,7 +321,7 @@ open scoped Pointwise
 
 /-- `spinGroup Q` is defined as the infimum of `pinGroup Q` and `CliffordAlgebra.even Q`.
 See `mem_iff`. -/
-def spinGroup (Q : QuadraticForm R M) :=
+def spinGroup (Q : QuadraticForm R M) : Submonoid (CliffordAlgebra Q) :=
   pinGroup Q ⊓ (CliffordAlgebra.even Q).toSubring.toSubmonoid
 #align spin_group spinGroup
 
