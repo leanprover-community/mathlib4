@@ -6,9 +6,10 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Relation
+import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
 
-#align_import set_theory.game.pgame from "leanprover-community/mathlib"@"dc9e5ba64653e017743ba5d2c28e42f9f486bf99"
+#align_import set_theory.game.pgame from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
 
 /-!
 # Combinatorial (pre-)games.
@@ -566,7 +567,7 @@ theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏
   exact fun h₃ => h₂ (h₃.trans h₁)
 #align pgame.lf_of_le_of_lf SetTheory.PGame.lf_of_le_of_lf
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
 
 @[trans]
@@ -575,7 +576,7 @@ theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏
   exact fun h₃ => h₁ (h₂.trans h₃)
 #align pgame.lf_of_lf_of_le SetTheory.PGame.lf_of_lf_of_le
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 
 alias _root_.LE.le.trans_lf := lf_of_le_of_lf
@@ -730,6 +731,42 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
     0 ≤ (x.moveRight j).moveLeft (leftResponse h j) :=
   Classical.choose_spec <| (zero_le.1 h) j
 #align pgame.left_response_spec SetTheory.PGame.leftResponse_spec
+
+#noalign pgame.upper_bound
+#noalign pgame.upper_bound_right_moves_empty
+#noalign pgame.le_upper_bound
+#noalign pgame.upper_bound_mem_upper_bounds
+
+/-- A small family of pre-games is bounded above. -/
+lemma bddAbove_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (Set.range f) := by
+  let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+    fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
+  refine ⟨x, Set.forall_range_iff.2 fun i ↦ ?_⟩
+  rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
+
+/-- A small set of pre-games is bounded above. -/
+lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
+  simpa using bddAbove_range_of_small (Subtype.val : s → PGame.{u})
+#align pgame.bdd_above_of_small SetTheory.PGame.bddAbove_of_small
+
+#noalign pgame.lower_bound
+#noalign pgame.lower_bound_left_moves_empty
+#noalign pgame.lower_bound_le
+#noalign pgame.lower_bound_mem_lower_bounds
+
+/-- A small family of pre-games is bounded below. -/
+lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (Set.range f) := by
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
+    fun x ↦ moveRight _ x.2⟩
+  refine ⟨x, Set.forall_range_iff.2 fun i ↦ ?_⟩
+  rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
+
+/-- A small set of pre-games is bounded below. -/
+lemma bddBelow_of_small (s : Set PGame.{u}) [Small.{u} s] : BddBelow s := by
+  simpa using bddBelow_range_of_small (Subtype.val : s → PGame.{u})
+#align pgame.bdd_below_of_small SetTheory.PGame.bddBelow_of_small
 
 /-- The equivalence relation on pre-games. Two pre-games `x`, `y` are equivalent if `x ≤ y` and
 `y ≤ x`.

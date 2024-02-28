@@ -124,6 +124,26 @@ theorem mono {ν : Measure α} {φ : ι → Set α} (hφ : AECover μ l φ) (hle
 
 end AECover
 
+section MetricSpace
+
+variable [PseudoMetricSpace α] [OpensMeasurableSpace α]
+
+theorem aecover_ball {x : α} {r : ι → ℝ} (hr : Tendsto r l atTop) :
+    AECover μ l (fun i ↦ Metric.ball x (r i)) where
+  measurableSet _ := Metric.isOpen_ball.measurableSet
+  ae_eventually_mem := by
+    apply eventually_of_forall (fun y ↦ ?_)
+    filter_upwards [hr (Ioi_mem_atTop (dist x y))] with a ha using by simpa [dist_comm] using ha
+
+theorem aecover_closedBall {x : α} {r : ι → ℝ} (hr : Tendsto r l atTop) :
+    AECover μ l (fun i ↦ Metric.closedBall x (r i)) where
+  measurableSet _ := Metric.isClosed_ball.measurableSet
+  ae_eventually_mem := by
+    apply eventually_of_forall (fun y ↦ ?_)
+    filter_upwards [hr (Ici_mem_atTop (dist x y))] with a ha using by simpa [dist_comm] using ha
+
+end MetricSpace
+
 section Preorderα
 
 variable [Preorder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]

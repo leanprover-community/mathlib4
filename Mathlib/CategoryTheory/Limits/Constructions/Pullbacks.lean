@@ -39,7 +39,7 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
           (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
               rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π];
                 exact PullbackCone.condition _)
-          (by simp) (by simp) fun s m h₁ h₂ => by
+          (by simp [π₁, e]) (by simp [π₂, e]) fun s m h₁ h₂ => by
           ext
           · dsimp; simpa using h₁
           · simpa using h₂ }
@@ -77,7 +77,7 @@ theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type 
               (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <| by
             rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc]
             exact PushoutCocone.condition _)
-          (by simp) (by simp) fun s m h₁ h₂ => by
+          (by simp [ι₁, c]) (by simp [ι₂, c]) fun s m h₁ h₂ => by
           ext
           · simpa using h₁
           · simpa using h₂ }

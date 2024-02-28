@@ -82,6 +82,8 @@ variable {m n k l : ℕ}
 
 /-! ### Equalities and inequalities involving zero and one -/
 
+theorem _root_.NeZero.one_le [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)
+
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
 -- Porting note: already in Std

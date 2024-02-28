@@ -375,7 +375,7 @@ noncomputable instance forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget CommGroupCatMax.{v, u}) where
   preservesLimitsOfShape {J _} :=
   { preservesLimit := fun {F} =>
-    -- Porting note : add these instance to help Lean unify universe levels
+    -- Porting note: add these instance to help Lean unify universe levels
     letI : HasLimit (F ⋙ forget₂ CommGroupCatMax.{v, u} GroupCat.{max v u}) :=
       (GroupCat.hasLimitsOfSize.{v, u}.1 J).1 _
     letI h1 := CommGroupCat.forget₂CommMonPreservesLimitsOfSize.{v, u}
@@ -413,7 +413,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
         dsimp
         simp }
   inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by
-    -- porting note : used to be `tidy`, but `aesop` can't do it
+    -- Porting note (#10936): used to be `tidy`, but `aesop` can't do it
     refine DFunLike.ext _ _ ?_
     rintro ⟨x, (hx : f _ = 0)⟩
     exact hx
@@ -452,7 +452,7 @@ theorem kernelIsoKer_inv_comp_ι {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_inv_comp_ι AddCommGroupCat.kernelIsoKer_inv_comp_ι
 
--- Porting note : explicitly add what to be synthesized under `simps!`, because other lemmas
+-- Porting note: explicitly add what to be synthesized under `simps!`, because other lemmas
 -- automatically generated is not in normal form
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
 agrees with the `subtype` map.

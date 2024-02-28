@@ -33,13 +33,13 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     let g : α → β := fun x => if Disjoint (Iic x) s then a else sSup (f '' (Iic x ∩ s))
     have hgs : EqOn f g s := by
       intro x hx
-      simp only []
+      simp only [g]
       have : IsGreatest (Iic x ∩ s) x := ⟨⟨right_mem_Iic, hx⟩, fun y hy => hy.1⟩
       rw [if_neg this.nonempty.not_disjoint,
         ((h.mono <| inter_subset_right _ _).map_isGreatest this).csSup_eq]
     refine' ⟨g, fun x y hxy => _, hgs⟩
     by_cases hx : Disjoint (Iic x) s <;> by_cases hy : Disjoint (Iic y) s <;>
-      simp only [if_pos, if_neg, not_false_iff, *, refl]
+      simp only [g, if_pos, if_neg, not_false_iff, *, refl]
     · rcases not_disjoint_iff_nonempty_inter.1 hy with ⟨z, hz⟩
       exact le_csSup_of_le (hu' _) (mem_image_of_mem _ hz) (ha <| mem_image_of_mem _ hz.2)
     · exact (hx <| hy.mono_left <| Iic_subset_Iic.2 hxy).elim

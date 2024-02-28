@@ -59,7 +59,7 @@ def Hom (X Y : Scheme) : Type* :=
 instance : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
 
--- porting note: added to ease automation
+-- porting note (#10688): added to ease automation
 @[continuity]
 lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
@@ -96,11 +96,11 @@ def forgetToTop : Scheme ⥤ TopCat :=
   Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToTop
 #align algebraic_geometry.Scheme.forget_to_Top AlgebraicGeometry.Scheme.forgetToTop
 
--- Porting note : Lean seems not able to find this coercion any more
+-- Porting note: Lean seems not able to find this coercion any more
 instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
--- Porting note : added this unification hint just in case
+-- Porting note: added this unification hint just in case
 /-- forgetful functor to `TopCat` is the same as coercion -/
 unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
@@ -161,7 +161,7 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
   rfl
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
 
--- Porting note : in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
+-- Porting note: in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
 -- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
 lemma presheaf_map_eqToHom_op (X : Scheme) (U V : Opens X) (i : U = V) :
     X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
