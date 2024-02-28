@@ -89,7 +89,7 @@ def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (
 theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
     ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
   intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
   intro x
@@ -114,7 +114,7 @@ theorem left_unitality (X : Type u) :
     (λ_ ((free R).obj X)).hom =
       (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
   intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext_ring
   apply Finsupp.lhom_ext'
@@ -135,7 +135,7 @@ theorem right_unitality (X : Type u) :
     (ρ_ ((free R).obj X)).hom =
       (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).hom ≫ map (free R).obj (ρ_ X).hom := by
   intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
   intro x
@@ -157,7 +157,7 @@ theorem associativity (X Y Z : Type u) :
       (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).hom ≫
         (𝟙 ((free R).obj X) ⊗ (μ R Y Z).hom) ≫ (μ R X (Y ⊗ Z)).hom := by
   intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
@@ -198,13 +198,13 @@ instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
-  · -- Porting note: broken ext
+  · -- Porting note (#11041): broken ext
     apply LinearMap.ext_ring
     -- Porting note (#10959): simp used to be able to close this goal
     dsimp
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same, id_apply]
-  · -- Porting note: broken ext
+  · -- Porting note (#11041): broken ext
     apply Finsupp.lhom_ext'
     intro ⟨⟩
     apply LinearMap.ext_ring
