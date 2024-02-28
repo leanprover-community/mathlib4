@@ -68,27 +68,25 @@ theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
   induction hx using Subgroup.closure_induction'' with
   | Hk x hx =>
     obtain ⟨a, ha⟩ := hx
-    rintro y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
+    rintro y ⟨z, ⟨⟨b, rfl⟩, hz⟩⟩
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
     rw [LinearMap.mem_range]
     simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
                 ConjAct.ofConjAct_toConjAct, SetLike.mem_coe] at hz
-    subst hb
     suffices ∃ y : M, ι Q y = ι Q a * ι Q b * ⅟ (ι Q a) by simp_all only [invOf_units]
     rw [ι_mul_ι_mul_invOf_ι Q a b]
     use ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b)
   | Hk_inv x hx =>
     obtain ⟨a, ha⟩ := hx
-    rintro y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
+    rintro y ⟨z, ⟨⟨b, rfl⟩, hz⟩⟩
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
     rw [LinearMap.mem_range]
     simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply,
       ConjAct.ofConjAct_toConjAct, ConjAct.toConjAct_inv, map_inv, inv_inv] at hz
-    subst hb
     suffices ∃ y : M, ι Q y = ⅟ (ι Q a) * ι Q b * ι Q a by simp_all only [invOf_units]
     rw [invOf_ι_mul_ι_mul_ι Q a b]
     use ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b)
@@ -99,10 +97,9 @@ theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     suffices
       (ConjAct.toConjAct x * ConjAct.toConjAct y) • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) by
         exact this hz
-    rintro m ⟨a, ⟨b, hb⟩, ha⟩
+    rintro m ⟨a, ⟨b, rfl⟩, ha⟩
     simp only [HSMul.hSMul, SMul.smul, DistribMulAction.toLinearMap_apply, Units.val_mul,
       mul_inv_rev] at ha
-    subst hb
     have hb : ↑x * (↑y * (ι Q b) * ↑y⁻¹) * ↑x⁻¹ = m := by
       simp only [mul_assoc, ← ha, map_mul, ConjAct.ofConjAct_toConjAct, Units.val_mul, mul_inv_rev]
     have hy2 : ↑y * (ι Q) b * ↑y⁻¹ ∈ ConjAct.toConjAct y • LinearMap.range (ι Q) := by
