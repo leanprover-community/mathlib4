@@ -192,7 +192,8 @@ protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
     C r hr := by
   refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
   exact
-    Submodule.mul_induction_on hr (fun x hx y hy => ⟨_, mem_mul_mem _ hx _ hy⟩) fun x y ⟨_, hx⟩ ⟨_, hy⟩ =>
+    Submodule.mul_induction_on hr
+      (fun x hx y hy => ⟨_, mem_mul_mem _ hx _ hy⟩) fun x y ⟨_, hx⟩ ⟨_, hy⟩ =>
       ⟨_, add _ _ _ _ hx hy⟩
 #align submodule.mul_induction_on' Submodule.mul_induction_on'
 
