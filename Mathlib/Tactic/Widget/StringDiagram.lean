@@ -471,7 +471,11 @@ structure PenroseVar : Type where
   indices : List ℕ
   /-- The underlying expression of the variable. -/
   e : Expr
-  deriving Inhabited, BEq, Hashable
+  deriving Inhabited
+
+instance : BEq PenroseVar := ⟨fun x y => x.ident == y.ident && x.indices == y.indices⟩
+
+instance : Hashable PenroseVar := ⟨fun v ↦ hash (v.ident, v.indices)⟩
 
 instance : ToString PenroseVar :=
   ⟨fun v => v.ident ++ v.indices.foldl (fun s x => s ++ s!"_{x}") ""⟩
