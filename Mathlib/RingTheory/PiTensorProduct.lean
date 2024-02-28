@@ -168,7 +168,7 @@ lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
 The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 -/
 @[simps]
-def fromComponentAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
+def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
   toFun a := tprod R (MonoidHom.single _ i a)
   map_one' := by simp only [_root_.map_one]; rfl
   map_mul' a a' := by simp
