@@ -75,8 +75,6 @@ Mathlib/Init/Data/Nat/Basic.lean : line 10 : ERR_MOD : Module docstring missing,
 Mathlib/Init/Data/Nat/Lemmas.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Logic.lean : line 17 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Meta/WellFoundedTactics.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Lean/Exception.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Lean/Exception.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Lean/Exception.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Expr/ReplaceRec.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
@@ -130,8 +128,6 @@ Mathlib/Tactic/ApplyWith.lean : line 3 : ERR_COP : Malformed or missing copyrigh
 Mathlib/Tactic/ApplyWith.lean : line 5 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/ApplyWith.lean : line 5 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Basic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/ByContra.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/ByContra.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
@@ -141,11 +137,8 @@ Mathlib/Tactic/PushNeg.lean : line 14 : ERR_MOD : Module docstring missing, or t
 Mathlib/Tactic/Recover.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/RenameBVar.lean : line 11 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Set.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Set.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/SimpRw.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Substs.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/Substs.lean : line 4 : ERR_AUT : Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'
 Mathlib/Tactic/Substs.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyright header
 Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyright header
