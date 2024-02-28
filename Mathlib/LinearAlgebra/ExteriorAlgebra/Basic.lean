@@ -73,13 +73,13 @@ def ι : M →ₗ[R] ExteriorAlgebra R M :=
 
 section exteriorPower
 
-variable (n : ℕ) (N : Type u2) [AddCommGroup N] [Module R N]
--- New variables `n` and `N`, to get the correct order of variables in the notation.
+-- New variables `n` and `M`, to get the correct order of variables in the notation.
+variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- Definition of the `n`th exterior power of a `R`-module `N`. We introduce the notation
-`Λ[R]^n N` for `exteriorPower R n N`. -/
-abbrev exteriorPower : Submodule R (ExteriorAlgebra R N) :=
-  LinearMap.range (ι R : N →ₗ[R] ExteriorAlgebra R N) ^ n
+`Λ[R]^n M` for `exteriorPower R n M`. -/
+abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
+  LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
 
 @[inherit_doc exteriorPower]
 notation:max "Λ[" R "]^" n:arg => exteriorPower R n
