@@ -705,7 +705,6 @@ section
 
 variable [CompleteLattice α] {f g s t : ι → α} {a b : α}
 
--- TODO: this declaration gives error when starting smt state
 theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
   le_sSup ⟨i, rfl⟩
 #align le_supr le_iSup
@@ -722,8 +721,6 @@ theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 #align infi_le' iInf_le'
 
-/- TODO: this version would be more powerful, but, alas, the pattern matcher
-   doesn't accept it.
 -- lemma le_iSup' (f : ι → α) (i : ι) : (: f i :) ≤ (: iSup f :) :=
 le_sSup ⟨i, rfl⟩
 -/
