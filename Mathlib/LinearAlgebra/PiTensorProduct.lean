@@ -454,6 +454,9 @@ def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
   LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R)
+    -- Adaptation note: v4.7.0-rc1
+    -- An alternative here would be `aesop (simp_config := {zetaDelta := true})`
+    -- or a wrapper macro to that effect.
     (by aesop (add norm simp [f, g]))
     (by aesop (add norm simp [f, g]))
 #align pi_tensor_product.reindex PiTensorProduct.reindex

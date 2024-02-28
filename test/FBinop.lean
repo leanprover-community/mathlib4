@@ -54,7 +54,8 @@ example (s : Finset α) (_t : Finset (ℕ × α)) : ({1, 2, 3} ×ˢ' s).card = 2
 
 -- FIXME nightly-testing
 -- The following app_unexpanders have been lost in the shuffle.
--- Copy pasted here to mitigate the test, and Scott is following up.
+-- Copy pasted here to mitigate the test.
+-- This will be fixed on nightly-2024-02-28
 
 /-- Unexpander for the `{ x }` notation. -/
 @[app_unexpander singleton]
