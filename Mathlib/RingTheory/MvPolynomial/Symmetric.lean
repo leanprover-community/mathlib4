@@ -321,7 +321,8 @@ theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S 
 theorem rename_hsymm (n : ℕ) (e : σ ≃ τ) : rename e (hsymm σ R n) = hsymm τ R n := by
   simp_rw [hsymm, map_sum, ← prod_hom', rename_X]
   apply Fintype.sum_equiv (equivCongr e)
-  simp only [val_eq_coe, equivCongr_apply, Sym.coe_map, Multiset.map_map, Function.comp_apply, implies_true]
+  simp only [val_eq_coe, equivCongr_apply, Sym.coe_map, Multiset.map_map, Function.comp_apply,
+    implies_true]
 
 theorem hsymm_isSymmetric (n : ℕ) : IsSymmetric (hsymm σ R n) := rename_hsymm _ _ n
 
