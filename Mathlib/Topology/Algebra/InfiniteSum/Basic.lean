@@ -15,8 +15,6 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Filter Finset Function

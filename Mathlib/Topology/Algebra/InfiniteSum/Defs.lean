@@ -27,19 +27,19 @@ generally, see `HasSum.tendsto_sum_nat`.
 -/
 
 /- **NOTE**. This file is intended to be kept short, just enough to state the basic definitions and
-three key lemmas relating them together, namely
-`Summable.hasSum`, `HasSum.tsum_eq`, and `Summable.hasSum_iff`. Do not add further lemmas here --
-add them to `InfiniteSum.Basic` or (preferably) another, more specific file. -/
+three key lemmas relating them together, namely `Summable.hasSum`, `HasSum.tsum_eq`, and
+`Summable.hasSum_iff`.
 
-set_option autoImplicit true
+Do not add further lemmas here -- add them to `InfiniteSum.Basic` or (preferably) another, more
+specific file. -/
 
 noncomputable section
 
-open Filter Finset Function
+open Filter Function
 
 open scoped BigOperators Topology
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
+variable {α β γ : Type*}
 
 section HasSum
 
@@ -75,7 +75,7 @@ irreducible_def tsum {β} (f : β → α) :=
   When the support of `f` is finite, we make the most reasonable choice to use the finite sum over
   the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. -/
     if (support f).Finite then finsum f
-    else Classical.choose h
+    else choose h
   else 0
 #align tsum tsum
 

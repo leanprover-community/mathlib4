@@ -11,8 +11,6 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 Lemmas on topological sums in groups (as opposed to monoids).
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Filter Finset Function
@@ -337,7 +335,7 @@ theorem summable_const_iff [Infinite β] [T2Space G] (a : G) :
     exact summable_zero
 
 @[simp]
-theorem tsum_const [T2Space G] : ∑' _ : β, (a : G) = Nat.card β • a := by
+theorem tsum_const [T2Space G] (a : G) : ∑' _ : β, a = Nat.card β • a := by
   rcases finite_or_infinite β with hβ|hβ
   · letI : Fintype β := Fintype.ofFinite β
     rw [tsum_eq_sum (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
