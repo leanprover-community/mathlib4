@@ -186,7 +186,7 @@ lemma oneLePart_mul_leOnePart
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     a⁺ᵐ * a⁻ᵐ = |a|ₘ := by
   rw [oneLePart, sup_mul, one_mul, leOnePart, mul_sup, mul_one, mul_inv_self, sup_assoc,
-    ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
+    ← sup_assoc a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 #align lattice_ordered_comm_group.pos_mul_neg oneLePart_mul_leOnePart
 #align lattice_ordered_comm_group.pos_add_neg posPart_add_negPart
