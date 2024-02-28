@@ -455,8 +455,7 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (postcomposeEquivalence f).functor
     unitIso := NatIso.ofComponents fun c => Cones.ext (e.unitIso.app _)
-    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _)
-  }
+    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _) }
 #align category_theory.limits.cones.functoriality_equivalence CategoryTheory.Limits.Cones.functorialityEquivalence
 
 /-- If `F` reflects isomorphisms, then `Cones.functoriality F` reflects isomorphisms
@@ -652,8 +651,7 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f.symm).functor
     unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _)
-    counitIso :=
-      NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) }
+    counitIso := NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) }
 #align category_theory.limits.cocones.functoriality_equivalence CategoryTheory.Limits.Cocones.functorialityEquivalence
 
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms

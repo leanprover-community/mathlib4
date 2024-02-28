@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Split
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 #align_import analysis.box_integral.partition.additive from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -78,7 +78,7 @@ theorem coe_injective : Injective fun (f : ι →ᵇᵃ[I₀] M) x => f x :=
   DFunLike.coe_injective
 #align box_integral.box_additive_map.coe_injective BoxIntegral.BoxAdditiveMap.coe_injective
 
--- porting note: was @[simp], now can be proved by `simp`
+-- Porting note (#10618): was @[simp], now can be proved by `simp`
 theorem coe_inj {f g : ι →ᵇᵃ[I₀] M} : (f : Box ι → M) = g ↔ f = g := DFunLike.coe_fn_eq
 #align box_integral.box_additive_map.coe_inj BoxIntegral.BoxAdditiveMap.coe_inj
 

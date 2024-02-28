@@ -267,7 +267,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
       mem_adjoin_of_map_mul R LinearMap.inr_map_mul hb
     replace Ha : (a, (0 : B)) ∈ P := adjoin_mono (Set.subset_union_left _ _) Ha
     replace Hb : ((0 : A), b) ∈ P := adjoin_mono (Set.subset_union_right _ _) Hb
-    simpa using Subalgebra.add_mem _ Ha Hb
+    simpa [P] using Subalgebra.add_mem _ Ha Hb
 #align algebra.adjoin_inl_union_inr_eq_prod Algebra.adjoin_inl_union_inr_eq_prod
 
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
