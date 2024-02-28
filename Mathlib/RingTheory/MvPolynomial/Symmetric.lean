@@ -25,6 +25,8 @@ We also prove some basic facts about them.
 
 * `MvPolynomial.esymm`
 
+* `MvPolynomial.hsymm`
+
 * `MvPolynomial.psum`
 
 ## Notation
