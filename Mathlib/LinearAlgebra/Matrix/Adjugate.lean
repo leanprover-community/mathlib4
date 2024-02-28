@@ -418,7 +418,6 @@ theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b;
   adjugate_fin_two _
 #align matrix.adjugate_fin_two_of Matrix.adjugate_fin_two_of
 
-
 theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
     adjugate A =
     !![A 1 1 * A 2 2 - A 1 2 * A 2 1,
