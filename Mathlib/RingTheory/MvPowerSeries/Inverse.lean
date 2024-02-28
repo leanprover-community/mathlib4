@@ -16,8 +16,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 This file defines multivariate formal power series
 and develops the basic properties of these objects.
 
-If the constant coefficient of a formal power series is invertible,
-then this formal power series is invertible.
+The definition `invOfUnit` shows that if the constant coefficient of a formal power series is invertible, then this formal power series is invertible.
 
 Formal power series over a local ring form a local ring.
 
