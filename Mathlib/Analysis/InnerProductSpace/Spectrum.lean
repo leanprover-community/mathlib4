@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.Data.Fin.Tuple.Sort
 
 #align_import analysis.inner_product_space.spectrum from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -215,6 +216,9 @@ noncomputable irreducible_def eigenvalues (i : Fin n) : ℝ :=
   @IsROrC.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 #align linear_map.is_symmetric.eigenvalues LinearMap.IsSymmetric.eigenvalues
+
+noncomputable def eigenvalues_sorted (i : Fin n) : ℝ :=
+  (eigenvalues hT hn ∘ Tuple.sort (eigenvalues hT hn)) i
 
 theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
     HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by

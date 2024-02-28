@@ -2,6 +2,7 @@ import Mathlib.Combinatorics.SimpleGraph.LapMatrix
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Analysis.NormedSpace.Star.Matrix
+import Mathlib.Data.Fin.Tuple.Sort
 
 
 open BigOperators Finset Matrix
@@ -40,24 +41,37 @@ noncomputable def pos_eigenvalues :=
 -- how to get rid of this?
 variable [LinearOrder (Module.End.Eigenvalues (toLin' (SimpleGraph.lapMatrix ℝ G)))]
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] (T : E →L[ℝ] E)
-variable [NormedAddCommGroup (V → ℝ)] [InnerProductSpace ℝ (V → ℝ)] (T' : (V → ℝ) →L[ℝ] V → ℝ)
-
 noncomputable def spectral_gap := (pos_eigenvalues G).min' sorry
 
 noncomputable def my_vector (s : Finset V): V → ℝ := (Set.indicator s 1) - (fun _ => (volume G s : ℝ)/(volume G univ))
 
 noncomputable def LapMatrixContinuousLinearMap := (Matrix.toEuclideanClm (𝕜 := ℝ) (G.lapMatrix ℝ))
 
-theorem slkdgj (s : Finset V) (hs : conductance ℝ G s = min_conductance G) :
+theorem gap_leq_rayleigh (s : Finset V) (hs : conductance ℝ G s = min_conductance G) :
   spectral_gap G ≤ ContinuousLinearMap.rayleighQuotient (LapMatrixContinuousLinearMap G) (my_vector G s) := sorry
 
-theorem asdf (s : Finset V) (hs : conductance ℝ G s = min_conductance G) :
+theorem rayleigh_leq_my_vec (s : Finset V) (hs : conductance ℝ G s = min_conductance G) :
   ContinuousLinearMap.rayleighQuotient (LapMatrixContinuousLinearMap G) (my_vector G s) ≤ 2 * (min_conductance G) := sorry
 
 theorem cheeger_ineq_easy : spectral_gap G ≤ 2 * (min_conductance G) := by
   obtain ⟨s, _, h⟩ := Finset.exists_mem_eq_inf' universe_powerSet_nonempty (conductance ℝ G)
   rw [← min_conductance] at h
-  apply LE.le.trans (slkdgj G s (Eq.symm h)) (asdf G s (Eq.symm h))
+  apply LE.le.trans (gap_leq_rayleigh G s (Eq.symm h)) (rayleigh_leq_my_vec G s (Eq.symm h))
 
 theorem cheeger_ineq_hard : min_conductance G^2 / 2 ≤ spectral_gap G := sorry
+
+
+-- Eigenvalues of a real symmetric positive semidefinite matrix
+
+variable (M : Matrix V V ℝ) (n : ℕ) (hn : FiniteDimensional.finrank ℝ (V → ℝ) = n)
+
+theorem foo : LinearMap.IsSymmetric (toEuclideanLin M) := sorry
+
+noncomputable def eigenvalues_tuple (i : Fin n) : NNReal :=
+  ⟨LinearMap.IsSymmetric.eigenvalues (foo M) hn i, sorry⟩
+
+noncomputable def eigenvalues_tuple_sorted (i : Fin n) : NNReal :=
+  ((eigenvalues_tuple M n hn) ∘ Tuple.sort (eigenvalues_tuple M n hn)) i
+
+#check eigenvalues_tuple G n hn
+#check eigenvalues_tuple_sorted G n hn
