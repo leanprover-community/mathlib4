@@ -10,6 +10,7 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 import Std.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Std.Data.LazyList
 import Std.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"

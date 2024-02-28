@@ -283,7 +283,7 @@ def link (self : UnionFind α) (x y : Fin self.size)
       hm.2.set (fun i _ ↦ by simp) (fun _ ↦ by simp [nx, hm.rank_eq])
     let rank (i : Fin n) := if y.1 = i ∧ m.rank x = m.rank y then m.rank y + 1 else m.rank i
     have H2 : UFModel.Agrees arr₂ (·.rank) rank := by
-      simp (config := {zetaDelta := true})
+      simp [rank, arr₂, nx, ny]
       split <;> rename_i xy <;> simp only [hm.rank_eq] at xy <;>
         simp only [xy, and_true, and_false, ↓reduceIte]
       · exact this.set (fun i h ↦ by rw [if_neg h.symm]) (fun h ↦ by simp [hm.rank_eq])

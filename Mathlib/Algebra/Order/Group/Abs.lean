@@ -255,7 +255,6 @@ variable [Group α] [LinearOrder α] {a b : α}
   refine' ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
   obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
     simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inv, inv_inj, or_comm] using mabs_choice b
-  -- v4.7.0-rc1 issues
 #align abs_eq_abs abs_eq_abs
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}

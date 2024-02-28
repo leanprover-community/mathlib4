@@ -63,6 +63,7 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
     | 0, _, _ => rfl
     | i + 1, j + 1, h => by
       -- FIXME nightly-testing: failure, will require Lean patch.
+      -- Will be fixed on nightly-2024-02-28.
       sorry
       -- simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
   d_comp_d'

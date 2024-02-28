@@ -132,7 +132,10 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
       intro a b hab
       have : ((a, b), (a, a)) ∈ t1 ×ˢ t2 := ⟨hab, refl_mem_uniformity ht2⟩
       have I := ht this
-      -- https://github.com/leanprover/lean4/issues/3501
+      -- FIXME nightly-testing. This was
+      -- simp? [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I says
+      -- But this breaks because of https://github.com/leanprover/lean4/issues/3501
+      -- This will be fixed on nightly-2024-02-28.
       simp only [r, Real.dist_eq, mem_setOf_eq, preimage_setOf_eq, Completion.dist_self,
         Completion.dist_comm, zero_sub, abs_neg] at I
       exact lt_of_le_of_lt (le_abs_self _) I

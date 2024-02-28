@@ -112,7 +112,8 @@ def matches' : RegularExpression α → Language α
   | 1 => 1
   | char a => {[a]}
   | P + Q => P.matches' + Q.matches'
-  -- FIXME nightly-testing: we used to be able to match on `P * Q` here
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
   | comp P Q => P.matches' * Q.matches'
   | star P => P.matches'∗
 #align regular_expression.matches RegularExpression.matches'
@@ -160,7 +161,8 @@ def matchEpsilon : RegularExpression α → Bool
   | 1 => true
   | char _ => false
   | P + Q => P.matchEpsilon || Q.matchEpsilon
-  -- FIXME nightly-testing: we used to be able to match on `P * Q` here
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
   | comp P Q => P.matchEpsilon && Q.matchEpsilon
   | star _P => true
 #align regular_expression.match_epsilon RegularExpression.matchEpsilon
@@ -173,7 +175,8 @@ def deriv : RegularExpression α → α → RegularExpression α
   | 1, _ => 0
   | char a₁, a₂ => if a₁ = a₂ then 1 else 0
   | P + Q, a => deriv P a + deriv Q a
-  -- FIXME nightly-testing: we used to be able to match on `P * Q` here
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
   | comp P Q, a => if P.matchEpsilon then deriv P a * Q + deriv Q a else deriv P a * Q
   | star P, a => deriv P a * star P
 #align regular_expression.deriv RegularExpression.deriv
@@ -381,7 +384,8 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
   | 1 => 1
   | char a => char (f a)
   | R + S => map f R + map f S
-  -- FIXME nightly-testing: we used to be able to match on `P * Q` here
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
   | comp R S => map f R * map f S
   | star R => star (map f R)
 #align regular_expression.map RegularExpression.map

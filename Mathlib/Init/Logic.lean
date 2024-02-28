@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Std.Tactic.Lint.Basic
 import Std.Tactic.Relation.Rfl
-import Std.Logic
 import Mathlib.Tactic.Lemma
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
