@@ -57,7 +57,7 @@ For the definition or many statements, `α` does not need to be a topological mo
 this assumption later, for the lemmas where it is relevant.
 -/
 def HasSum (f : β → α) (a : α) : Prop :=
-  Tendsto (fun s : Finset β => ∑ b in s, f b) atTop (𝓝 a)
+  Tendsto (fun s : Finset β ↦ ∑ b in s, f b) atTop (𝓝 a)
 #align has_sum HasSum
 
 /-- `Summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value. -/
@@ -137,7 +137,7 @@ theorem HasSum.tsum_eq (ha : HasSum f a) : ∑' b, f b = a :=
 #align has_sum.tsum_eq HasSum.tsum_eq
 
 theorem Summable.hasSum_iff (h : Summable f) : HasSum f a ↔ ∑' b, f b = a :=
-  Iff.intro HasSum.tsum_eq fun eq => eq ▸ h.hasSum
+  Iff.intro HasSum.tsum_eq fun eq ↦ eq ▸ h.hasSum
 #align summable.has_sum_iff Summable.hasSum_iff
 
 end HasSum

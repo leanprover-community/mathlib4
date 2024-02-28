@@ -27,39 +27,39 @@ variable [AddCommGroup α] [TopologicalSpace α] [TopologicalAddGroup α]
 variable {f g : β → α} {a a₁ a₂ : α}
 
 -- `by simpa using` speeds up elaboration. Why?
-theorem HasSum.neg (h : HasSum f a) : HasSum (fun b => -f b) (-a) := by
+theorem HasSum.neg (h : HasSum f a) : HasSum (fun b ↦ -f b) (-a) := by
   simpa only using h.map (-AddMonoidHom.id α) continuous_neg
 #align has_sum.neg HasSum.neg
 
-theorem Summable.neg (hf : Summable f) : Summable fun b => -f b :=
+theorem Summable.neg (hf : Summable f) : Summable fun b ↦ -f b :=
   hf.hasSum.neg.summable
 #align summable.neg Summable.neg
 
-theorem Summable.of_neg (hf : Summable fun b => -f b) : Summable f := by
+theorem Summable.of_neg (hf : Summable fun b ↦ -f b) : Summable f := by
   simpa only [neg_neg] using hf.neg
 #align summable.of_neg Summable.of_neg
 
-theorem summable_neg_iff : (Summable fun b => -f b) ↔ Summable f :=
+theorem summable_neg_iff : (Summable fun b ↦ -f b) ↔ Summable f :=
   ⟨Summable.of_neg, Summable.neg⟩
 #align summable_neg_iff summable_neg_iff
 
 theorem HasSum.sub (hf : HasSum f a₁) (hg : HasSum g a₂) :
-    HasSum (fun b => f b - g b) (a₁ - a₂) := by
+    HasSum (fun b ↦ f b - g b) (a₁ - a₂) := by
   simp only [sub_eq_add_neg]
   exact hf.add hg.neg
 #align has_sum.sub HasSum.sub
 
-theorem Summable.sub (hf : Summable f) (hg : Summable g) : Summable fun b => f b - g b :=
+theorem Summable.sub (hf : Summable f) (hg : Summable g) : Summable fun b ↦ f b - g b :=
   (hf.hasSum.sub hg.hasSum).summable
 #align summable.sub Summable.sub
 
-theorem Summable.trans_sub (hg : Summable g) (hfg : Summable fun b => f b - g b) : Summable f := by
+theorem Summable.trans_sub (hg : Summable g) (hfg : Summable fun b ↦ f b - g b) : Summable f := by
   simpa only [sub_add_cancel] using hfg.add hg
 #align summable.trans_sub Summable.trans_sub
 
-theorem summable_iff_of_summable_sub (hfg : Summable fun b => f b - g b) :
+theorem summable_iff_of_summable_sub (hfg : Summable fun b ↦ f b - g b) :
     Summable f ↔ Summable g :=
-  ⟨fun hf => hf.trans_sub <| by simpa only [neg_sub] using hfg.neg, fun hg => hg.trans_sub hfg⟩
+  ⟨fun hf ↦ hf.trans_sub <| by simpa only [neg_sub] using hfg.neg, fun hg ↦ hg.trans_sub hfg⟩
 #align summable_iff_of_summable_sub summable_iff_of_summable_sub
 
 theorem HasSum.update (hf : HasSum f a₁) (b : β) [DecidableEq β] (a : α) :
@@ -79,7 +79,7 @@ theorem Summable.update (hf : Summable f) (b : β) [DecidableEq β] (a : α) :
 
 theorem HasSum.hasSum_compl_iff {s : Set β} (hf : HasSum (f ∘ (↑) : s → α) a₁) :
     HasSum (f ∘ (↑) : ↑sᶜ → α) a₂ ↔ HasSum f (a₁ + a₂) := by
-  refine' ⟨fun h => hf.add_compl h, fun h => _⟩
+  refine' ⟨fun h ↦ hf.add_compl h, fun h ↦ _⟩
   rw [hasSum_subtype_iff_indicator] at hf ⊢
   rw [Set.indicator_compl]
   simpa only [add_sub_cancel'] using h.sub hf
@@ -92,22 +92,22 @@ theorem HasSum.hasSum_iff_compl {s : Set β} (hf : HasSum (f ∘ (↑) : s → �
 
 theorem Summable.summable_compl_iff {s : Set β} (hf : Summable (f ∘ (↑) : s → α)) :
     Summable (f ∘ (↑) : ↑sᶜ → α) ↔ Summable f :=
-  ⟨fun ⟨_, ha⟩ => (hf.hasSum.hasSum_compl_iff.1 ha).summable, fun ⟨_, ha⟩ =>
+  ⟨fun ⟨_, ha⟩ ↦ (hf.hasSum.hasSum_compl_iff.1 ha).summable, fun ⟨_, ha⟩ ↦
     (hf.hasSum.hasSum_iff_compl.1 ha).summable⟩
 #align summable.summable_compl_iff Summable.summable_compl_iff
 
 protected theorem Finset.hasSum_compl_iff (s : Finset β) :
-    HasSum (fun x : { x // x ∉ s } => f x) a ↔ HasSum f (a + ∑ i in s, f i) :=
+    HasSum (fun x : { x // x ∉ s } ↦ f x) a ↔ HasSum f (a + ∑ i in s, f i) :=
   (s.hasSum f).hasSum_compl_iff.trans <| by rw [add_comm]
 #align finset.has_sum_compl_iff Finset.hasSum_compl_iff
 
 protected theorem Finset.hasSum_iff_compl (s : Finset β) :
-    HasSum f a ↔ HasSum (fun x : { x // x ∉ s } => f x) (a - ∑ i in s, f i) :=
+    HasSum f a ↔ HasSum (fun x : { x // x ∉ s } ↦ f x) (a - ∑ i in s, f i) :=
   (s.hasSum f).hasSum_iff_compl
 #align finset.has_sum_iff_compl Finset.hasSum_iff_compl
 
 protected theorem Finset.summable_compl_iff (s : Finset β) :
-    (Summable fun x : { x // x ∉ s } => f x) ↔ Summable f :=
+    (Summable fun x : { x // x ∉ s } ↦ f x) ↔ Summable f :=
   (s.summable f).summable_compl_iff
 #align finset.summable_compl_iff Finset.summable_compl_iff
 
@@ -117,7 +117,7 @@ theorem Set.Finite.summable_compl_iff {s : Set β} (hs : s.Finite) :
 #align set.finite.summable_compl_iff Set.Finite.summable_compl_iff
 
 theorem hasSum_ite_sub_hasSum [DecidableEq β] (hf : HasSum f a) (b : β) :
-    HasSum (fun n => ite (n = b) 0 (f n)) (a - f b) := by
+    HasSum (fun n ↦ ite (n = b) 0 (f n)) (a - f b) := by
   convert hf.update b 0 using 1
   · ext n
     rw [Function.update_apply]
@@ -229,13 +229,13 @@ theorem summable_iff_tsum_vanishing : Summable f ↔
 theorem Summable.summable_of_eq_zero_or_self (hf : Summable f) (h : ∀ b, g b = 0 ∨ g b = f b) :
     Summable g := by
   classical
-  exact summable_iff_vanishing.2 fun e he =>
+  exact summable_iff_vanishing.2 fun e he ↦
     let ⟨s, hs⟩ := summable_iff_vanishing.1 hf e he
-    ⟨s, fun t ht =>
-      have eq : ∑ b in t.filter fun b => g b = f b, f b = ∑ b in t, g b :=
+    ⟨s, fun t ht ↦
+      have eq : ∑ b in t.filter fun b ↦ g b = f b, f b = ∑ b in t, g b :=
         calc
-          ∑ b in t.filter fun b => g b = f b, f b = ∑ b in t.filter fun b => g b = f b, g b :=
-            Finset.sum_congr rfl fun b hb => (Finset.mem_filter.1 hb).2.symm
+          ∑ b in t.filter fun b ↦ g b = f b, f b = ∑ b in t.filter fun b ↦ g b = f b, g b :=
+            Finset.sum_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
           _ = ∑ b in t, g b := by
            {refine' Finset.sum_subset (Finset.filter_subset _ _) _
             intro b hbt hb
@@ -251,7 +251,7 @@ protected theorem Summable.indicator (hf : Summable f) (s : Set β) : Summable (
 theorem Summable.comp_injective {i : γ → β} (hf : Summable f) (hi : Injective i) :
     Summable (f ∘ i) := by
   simpa only [Set.indicator_range_comp] using
-    (hi.summable_iff (fun x hx => Set.indicator_of_not_mem hx _)).2 (hf.indicator (Set.range i))
+    (hi.summable_iff (fun x hx ↦ Set.indicator_of_not_mem hx _)).2 (hf.indicator (Set.range i))
 #align summable.comp_injective Summable.comp_injective
 
 theorem Summable.subtype (hf : Summable f) (s : Set β) : Summable (f ∘ (↑) : s → α) :=
@@ -259,8 +259,8 @@ theorem Summable.subtype (hf : Summable f) (s : Set β) : Summable (f ∘ (↑) 
 #align summable.subtype Summable.subtype
 
 theorem summable_subtype_and_compl {s : Set β} :
-    ((Summable fun x : s => f x) ∧ Summable fun x : ↑sᶜ => f x) ↔ Summable f :=
-  ⟨and_imp.2 Summable.add_compl, fun h => ⟨h.subtype s, h.subtype sᶜ⟩⟩
+    ((Summable fun x : s ↦ f x) ∧ Summable fun x : ↑sᶜ ↦ f x) ↔ Summable f :=
+  ⟨and_imp.2 Summable.add_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
 #align summable_subtype_and_compl summable_subtype_and_compl
 
 theorem tsum_subtype_add_tsum_subtype_compl [T2Space α] {f : β → α} (hf : Summable f) (s : Set β) :
@@ -316,7 +316,7 @@ theorem Summable.tendsto_cofinite_zero (hf : Summable f) : Tendsto f cofinite (�
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
-  refine' s.eventually_cofinite_nmem.mono fun x hx => _
+  refine' s.eventually_cofinite_nmem.mono fun x hx ↦ _
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 #align summable.tendsto_cofinite_zero Summable.tendsto_cofinite_zero
 
