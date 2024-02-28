@@ -19,7 +19,7 @@ and develops the basic properties of these objects.
 
 A formal power series is to a polynomial like an infinite sum is to a finite sum.
 
-We provide the natural inclusion from polynomials to formal power series.
+We provide the natural inclusion from multivariate polynomials to multivariate formal power series.
 
 ## Note
 
