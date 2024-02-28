@@ -121,21 +121,23 @@ theorem IsSemisimple.minpoly_squarefree (hf : f.IsSemisimple) : Squarefree (minp
   IsRadical.squarefree (minpoly.ne_zero <| isIntegral _) <| by
     rw [isRadical_iff_span_singleton, span_minpoly_eq_annihilator]; exact hf.annihilator_isRadical
 
+section PerfectField
+
 variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
 
 theorem isSemisimple_of_mem_adjoin {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
     a.IsSemisimple := by
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   let S := AdjoinRoot ((minpoly K g).map <| algebraMap K R)
-  haveI : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
-  haveI : Finite R S := (AdjoinRoot.powerBasis' <| (minpoly.monic <| isIntegral g).map _).finite
-  haveI : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
-  haveI : Finite K S := .trans R S
-  haveI : IsArtinianRing R := .of_finite K R
-  haveI : IsArtinianRing S := .of_finite R S
-  haveI : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
+  have : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
+  have : Finite R S := (AdjoinRoot.powerBasis' <| (minpoly.monic <| isIntegral g).map _).finite
+  have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
+  have : Finite K S := .trans R S
+  have : IsArtinianRing R := .of_finite K R
+  have : IsArtinianRing S := .of_finite R S
+  have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
     span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
-  haveI : IsReduced S := by
+  have : IsReduced S := by
     simp_rw [AdjoinRoot, ← Ideal.isRadical_iff_quotient_reduced, ← isRadical_iff_span_singleton]
     exact (PerfectField.separable_iff_squarefree.mpr hg.minpoly_squarefree).map.squarefree.isRadical
   let φ : S →ₐ[K] End K M := Ideal.Quotient.liftₐ _ (eval₂AlgHom' (Ideal.Quotient.liftₐ _ (aeval f)
@@ -161,6 +163,8 @@ theorem isSemisimple_add_of_commute : (f + g).IsSemisimple := isSemisimple_of_me
 
 theorem isSemisimple_mul_of_commute : (f * g).IsSemisimple := isSemisimple_of_mem_adjoin comm
   hf hg <| mul_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)
+
+end PerfectField
 
 end field
 

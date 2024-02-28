@@ -143,7 +143,7 @@ theorem IsSimpleModule.annihilator_isMaximal {R} [CommRing R] [Module R M]
   have ⟨I, max, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp simple
   rwa [e.annihilator_eq, I.annihilator_quotient]
 
--- TODO: IsSeimpleModule R R ↔ ∃ (x : R) ≠ 0, IsUnit x
+-- TODO: IsSimpleModule R R ↔ ∃ (x : R) ≠ 0, IsUnit x
 instance (R) [DivisionRing R] : IsSimpleModule R R :=
   isSimpleModule_iff_quot_maximal.mpr
     ⟨⊥, Ideal.bot_isMaximal, ⟨(Submodule.quotEquivOfEqBot _ rfl).symm⟩⟩
