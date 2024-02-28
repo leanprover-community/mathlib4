@@ -22,7 +22,7 @@ abelian groups.
 
 open CategoryTheory
 
-universe v v' u
+universe v u
 variable (R : Type u) [Ring R]
 
 instance : EnoughInjectives (ModuleCat.{v} ℤ) :=
