@@ -230,16 +230,7 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
     -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
     --               different type, so we do golf here.
     congr_fun <| List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
-  cases s₁
-  cases s₂
-  -- Porting note: `dsimp at *` doesn't work. Why?
-  dsimp at h h₁ h₂
-  subst h₁
-  -- Porting note: `[heq_iff_eq, eq_self_iff_true, true_and_iff]`
-  --             → `[mk.injEq, heq_eq_eq, true_and]`
-  simp only [mk.injEq, heq_eq_eq, true_and]
-  simp only [Fin.cast_refl] at h₂
-  exact funext h₂
+  exact ext_fun h₁ h₂
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 
 theorem chain'_toList (s : CompositionSeries X) : List.Chain' IsMaximal s.toList :=
