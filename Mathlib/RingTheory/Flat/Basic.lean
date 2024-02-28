@@ -324,19 +324,7 @@ lemma of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
     Flat R M := by
   rw [Flat.iff_rTensor_injective']
   intro I x y eq1
-  let e : I ⊗[R] M ≃ₗ[R] (Shrink I) ⊗[R] M := LinearEquiv.ofLinear
-    ((Shrink.linearEquiv I R).symm.toLinearMap.rTensor M)
-    ((Shrink.linearEquiv I R).toLinearMap.rTensor M)
-    (LinearMap.ext fun z ↦ z.induction_on (by aesop)
-      (fun i m ↦ by
-        simp only [coe_comp, Function.comp_apply, rTensor_tmul, LinearEquiv.coe_coe,
-          Shrink.linearEquiv_apply, Shrink.linearEquiv_symm_apply, id_coe, id_eq]
-        erw [Equiv.symm_apply_apply]) (by aesop))
-    (LinearMap.ext fun z ↦ z.induction_on (by aesop)
-      (fun i m ↦ by
-        simp only [coe_comp, Function.comp_apply, rTensor_tmul, LinearEquiv.coe_coe,
-          Shrink.linearEquiv_apply, Shrink.linearEquiv_symm_apply, id_coe, id_eq]
-        erw [Equiv.symm_apply_apply]) (by aesop))
+  let e := TensorProduct.congr (Shrink.linearEquiv I R).symm (LinearEquiv.refl R M)
   apply_fun e using e.injective
   have H := @h (Shrink I) (Shrink R) _ _ _ _
     ((Shrink.linearEquiv R R).symm.toLinearMap ∘ₗ I.subtype ∘ₗ (Shrink.linearEquiv I R).toLinearMap)
@@ -349,11 +337,11 @@ lemma of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
     (rTensor M (Shrink.linearEquiv R R).symm.toLinearMap) ∘ₗ rTensor M (Submodule.subtype I) by
     erw [congr($eq2 x), congr($eq2 y), LinearMap.comp_apply, eq1, LinearMap.comp_apply]
   refine TensorProduct.ext <| LinearMap.ext fun i ↦ LinearMap.ext fun m ↦ ?_
-  simp only [compr₂_apply, mk_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    LinearEquiv.ofLinear_apply, rTensor_tmul, Shrink.linearEquiv_symm_apply, Submodule.coeSubtype,
+  simp only [compr₂_apply, mk_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply, congr_tmul,
+    Shrink.linearEquiv_symm_apply, LinearEquiv.refl_apply, rTensor_tmul, Submodule.coeSubtype,
     Shrink.linearEquiv_apply]
-  congr
-  erw [Equiv.symm_symm_apply, Equiv.symm_apply_apply]
+  congr 1
+  erw [Equiv.symm_symm_apply, Equiv.symm_apply_apply, Equiv.symm_symm_apply]
 
 lemma iff_rTensor_preserves_injectiveness [UnivLE.{u, v}] :
     Flat R M ↔ Flat.rTensor_preserves_injectiveness R M where
