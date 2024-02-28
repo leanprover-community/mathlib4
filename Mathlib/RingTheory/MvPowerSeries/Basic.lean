@@ -97,7 +97,7 @@ section Semiring
 
 variable (R) [Semiring R]
 
-/-- The `n`th monomial with coefficient `a` as multivariate formal power series.-/
+/-- The `n`th monomial as multivariate formal power series: it is defined as the `R`-linear map from `R` to the semi-ring of multivariate formal power series associating to each `a` the map sending `n : σ→ₒ ℕ` to the value `a` and sending all other `x : σ →ₒ ℕ` different from `n` to `0`.-/
 def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   letI := Classical.decEq σ
   LinearMap.stdBasis R (fun _ ↦ R) n
