@@ -250,8 +250,8 @@ theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ p
   exact (star_star x).symm
 #align pin_group.star_mem_iff pinGroup.star_mem_iff
 
-instance : Star (pinGroup Q) :=
-  ⟨fun x => ⟨star x, star_mem x.prop⟩⟩
+instance : Star (pinGroup Q) where
+  star x := ⟨star x, star_mem x.prop⟩
 
 @[simp, norm_cast]
 theorem coe_star {x : pinGroup Q} : ↑(star x) = (star x : CliffordAlgebra Q) :=
@@ -277,18 +277,14 @@ theorem mul_star_self (x : pinGroup Q) : x * star x = 1 :=
 #align pin_group.mul_star_self pinGroup.mul_star_self
 
 /-- `pinGroup Q` forms a group where the inverse is `star`. -/
-instance : Group (pinGroup Q) :=
-  { Submonoid.toMonoid _ with
-    inv := star
-    mul_left_inv := star_mul_self }
+instance : Group (pinGroup Q) where
+  __ : Monoid (pinGroup Q) := inferInstance
+  inv := star
+  mul_left_inv := star_mul_self
 
-instance : InvolutiveStar (pinGroup Q) :=
-  ⟨fun _ => by
-    ext; simp only [coe_star, star_star]
-  ⟩
-
-instance : StarMul (pinGroup Q) :=
-  ⟨fun _ _ => by ext; simp only [coe_star, Submonoid.coe_mul, star_mul]⟩
+instance : StarMul (pinGroup Q) where
+  star_involutive _ := Subtype.ext <| star_involutive _
+  star_mul _ _ := Subtype.ext <| star_mul _ _
 
 instance : Inhabited (pinGroup Q) :=
   ⟨1⟩
@@ -303,8 +299,7 @@ theorem star_eq_inv' : (star : pinGroup Q → pinGroup Q) = Inv.inv :=
 
 /-- The elements in `pinGroup Q` embed into (CliffordAlgebra Q)ˣ. -/
 @[simps]
-def toUnits : pinGroup Q →* (CliffordAlgebra Q)ˣ
-    where
+def toUnits : pinGroup Q →* (CliffordAlgebra Q)ˣ where
   toFun x := ⟨x, ↑x⁻¹, coe_mul_star_self x, coe_star_mul_self x⟩
   map_one' := Units.ext rfl
   map_mul' _x _y := Units.ext rfl
@@ -404,8 +399,8 @@ theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ 
   exact (star_star x).symm
 #align spin_group.star_mem_iff spinGroup.star_mem_iff
 
-instance : Star (spinGroup Q) :=
-  ⟨fun x => ⟨star x, star_mem x.prop⟩⟩
+instance : Star (spinGroup Q) where
+  star x := ⟨star x, star_mem x.prop⟩
 
 @[simp, norm_cast]
 theorem coe_star {x : spinGroup Q} : ↑(star x) = (star x : CliffordAlgebra Q) :=
@@ -431,16 +426,14 @@ theorem mul_star_self (x : spinGroup Q) : x * star x = 1 :=
 #align spin_group.mul_star_self spinGroup.mul_star_self
 
 /-- `spinGroup Q` forms a group where the inverse is `star`. -/
-instance : Group (spinGroup Q) :=
-  { Submonoid.toMonoid _ with
-    inv := star
-    mul_left_inv := star_mul_self }
+instance : Group (spinGroup Q) where
+  __ : Monoid _ := inferInstance
+  inv := star
+  mul_left_inv := star_mul_self
 
-instance : InvolutiveStar (spinGroup Q) :=
-  ⟨fun _ => by ext; simp only [coe_star, star_star]⟩
-
-instance : StarMul (spinGroup Q) :=
-  ⟨fun _ _ => by ext; simp only [coe_star, Submonoid.coe_mul, star_mul]⟩
+instance : StarMul (spinGroup Q) where
+  star_involutive _ := Subtype.ext <| star_involutive _
+  star_mul _ _ := Subtype.ext <| star_mul _ _
 
 instance : Inhabited (spinGroup Q) :=
   ⟨1⟩
@@ -455,8 +448,7 @@ theorem star_eq_inv' : (star : spinGroup Q → spinGroup Q) = Inv.inv :=
 
 /-- The elements in `spinGroup Q` embed into (CliffordAlgebra Q)ˣ. -/
 @[simps]
-def toUnits : spinGroup Q →* (CliffordAlgebra Q)ˣ
-    where
+def toUnits : spinGroup Q →* (CliffordAlgebra Q)ˣ where
   toFun x := ⟨x, ↑x⁻¹, coe_mul_star_self x, coe_star_mul_self x⟩
   map_one' := Units.ext rfl
   map_mul' _x _y := Units.ext rfl
