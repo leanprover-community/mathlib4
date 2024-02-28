@@ -553,8 +553,8 @@ lemma SigmaFinite.withDensity_of_ne_top [SigmaFinite μ] {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     SigmaFinite (μ.withDensity f) := by
   let f' := fun x ↦ if f x = ∞ then 0 else f x
-  have hff' : f =ᵐ[μ] f' := by filter_upwards [hf_ne_top] with x hx using by simp [hx]
-  have hf'_ne_top : ∀ x, f' x ≠ ∞ := fun x ↦ by by_cases hfx : f x = ∞ <;> simp [hfx]
+  have hff' : f =ᵐ[μ] f' := by filter_upwards [hf_ne_top] with x hx using by simp [f', hx]
+  have hf'_ne_top : ∀ x, f' x ≠ ∞ := fun x ↦ by by_cases hfx : f x = ∞ <;> simp [f', hfx]
   rw [withDensity_congr_ae hff']
   exact SigmaFinite.withDensity_of_ne_top' (hf.congr hff') hf'_ne_top
 

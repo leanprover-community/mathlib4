@@ -632,7 +632,8 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
       rw [leftRel_apply]
       change h⁻¹ * (h * n) ∈ N
       rwa [← mul_assoc, inv_mul_self, one_mul]
-  (quotientMulEquivOfEq (by simp [← comap_ker])).trans (quotientKerEquivOfSurjective φ φ_surjective)
+  (quotientMulEquivOfEq (by simp [φ, ← comap_ker])).trans
+    (quotientKerEquivOfSurjective φ φ_surjective)
 #align quotient_group.quotient_inf_equiv_prod_normal_quotient QuotientGroup.quotientInfEquivProdNormalQuotient
 #align quotient_add_group.quotient_inf_equiv_sum_normal_quotient QuotientAddGroup.quotientInfEquivSumNormalQuotient
 

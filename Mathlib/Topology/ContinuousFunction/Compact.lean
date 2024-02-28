@@ -7,6 +7,7 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 #align_import topology.continuous_function.compact from "leanprover-community/mathlib"@"d3af0609f6db8691dffdc3e1fb7feb7da72698f2"
 
