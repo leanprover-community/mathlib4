@@ -43,12 +43,42 @@ def Mor₁.toList : Mor₁ → List Expr
   | .comp f g => f.toList ++ g.toList
   | .of f => [f.e]
 
+/-- Returns `𝟙_ C` if the expression `e` is of the form `𝟙_ C`. -/
+def isTensorUnit? (e : Expr) : MetaM (Option Expr) := do
+  let v ← mkFreshLevelMVar
+  let u ← mkFreshLevelMVar
+  let C ← mkFreshExprMVar none
+  let instC ← mkFreshExprMVar none
+  let instMC ← mkFreshExprMVar none
+  let unit := mkAppN (.const ``MonoidalCategoryStruct.tensorUnit [v, u]) #[C, instC, instMC]
+  if ← isDefEq e unit then
+    return ← instantiateMVars unit
+  else
+    return none
+
+/-- Returns `(f, g)` if the expression `e` is of the form `f ⊗ g`. -/
+def isTensorObj? (e : Expr) : MetaM (Option (Expr × Expr)) := do
+  let v ← mkFreshLevelMVar
+  let u ← mkFreshLevelMVar
+  let C ← mkFreshExprMVar none
+  let f ← mkFreshExprMVar C
+  let g ← mkFreshExprMVar C
+  let instC ← mkFreshExprMVar none
+  let instMC ← mkFreshExprMVar none
+  let fg := mkAppN (.const ``MonoidalCategoryStruct.tensorObj [v, u]) #[C, instC, instMC, f, g]
+  if ← withDefault <| isDefEq e fg then
+    return (← instantiateMVars f, ← instantiateMVars g)
+  else
+    return none
+
 /-- Construct a `Mor₁` expression from a Lean expression. -/
-partial def toMor₁ (e : Expr) : Mor₁ :=
-  match e.getAppFnArgs with
-  | (``MonoidalCategoryStruct.tensorUnit, #[_, _, _]) => Mor₁.id
-  | (``MonoidalCategoryStruct.tensorObj, #[_, _, _, f, g]) => (toMor₁ f).comp (toMor₁ g)
-  | _ => Mor₁.of ⟨e⟩
+partial def toMor₁ (e : Expr) : MetaM Mor₁ := do
+  if let some _ ← isTensorUnit? e then
+    return Mor₁.id
+  else if let some (f, g) ← isTensorObj? e then
+    return (← toMor₁ f).comp (← toMor₁ g)
+  else
+    return Mor₁.of ⟨e⟩
 
 /-- Expressions for atomic structural 2-morphisms. -/
 inductive StructuralAtom : Type
@@ -67,23 +97,23 @@ inductive StructuralAtom : Type
   deriving Inhabited
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
-def structuralAtom? (e : Expr) : Option StructuralAtom := do
+def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
   match e.getAppFnArgs with
   | (``Iso.hom, #[_, _, _, _, η]) =>
-    match η.getAppFnArgs with
+    match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
-      return .associator (toMor₁ f) (toMor₁ g) (toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return .leftUnitor (toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return .rightUnitor (toMor₁ f)
-    | _ => none
+      return some <| .associator (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
+    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return some <| .leftUnitor (← toMor₁ f)
+    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return some <| .rightUnitor (← toMor₁ f)
+    | _ => return none
   | (``Iso.inv, #[_, _, _, _, η]) =>
-    match η.getAppFnArgs with
+    match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
-      return .associatorInv (toMor₁ f) (toMor₁ g) (toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return .leftUnitorInv (toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return .rightUnitorInv (toMor₁ f)
-    | _ => none
-  | _ => none
+      return some <| .associatorInv (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
+    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return some <| .leftUnitorInv (← toMor₁ f)
+    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return some <| .rightUnitorInv (← toMor₁ f)
+    | _ => return none
+  | _ => return none
 
 /-- Expressions for atomic non-structural 2-morphisms. -/
 structure Atom where
@@ -134,13 +164,13 @@ inductive NormalExpr : Type
 /-- The domain of a morphism. -/
 def src (η : Expr) : MetaM Mor₁ := do
   match (← inferType η).getAppFnArgs with
-  | (``Quiver.Hom, #[_, _, f, _]) => return toMor₁ f
+  | (``Quiver.Hom, #[_, _, f, _]) => toMor₁ f
   | _ => throwError "{η} is not a morphism"
 
 /-- The codomain of a morphism. -/
 def tar (η : Expr) : MetaM Mor₁ := do
   match (← inferType η).getAppFnArgs with
-  | (``Quiver.Hom, #[_, _, _, g]) => return toMor₁ g
+  | (``Quiver.Hom, #[_, _, _, g]) => toMor₁ g
   | _ => throwError "{η} is not a morphism"
 
 /-- The domain of a 2-morphism. -/
@@ -253,14 +283,14 @@ partial def structural? (e : Expr) : MetaM Structural := do
   match (← whnfR e).getAppFnArgs with
   | (``CategoryStruct.comp, #[_, _, _, α, β]) =>
     return .comp (← structural? α) (← structural? β)
-  | (``CategoryStruct.id, #[_, f]) => return .id (toMor₁ f)
+  | (``CategoryStruct.id, #[_, f]) => return .id (← toMor₁ f)
   | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) =>
-    return .whiskerLeft (toMor₁ f) (← structural? η)
+    return .whiskerLeft (← toMor₁ f) (← structural? η)
   | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
-    return .whiskerRight (← structural? η) (toMor₁ f)
+    return .whiskerRight (← structural? η) (← toMor₁ f)
   | (``Mathlib.Tactic.Coherence.MonoidalCoherence.hom, #[_, _, f, g, _, _, inst]) =>
-    return .monoidalCoherence (toMor₁ f) (toMor₁ g) inst
-  | _ => match structuralAtom? e with
+    return .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
+  | _ => match ← structuralAtom? e with
     | some η => return .atom η
     | none => throwError "not a structural 2-morphism"
 
@@ -357,19 +387,19 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
 
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MetaM NormalExpr := do
-  if let .some e' := structuralAtom? e then return .nil <| .atom e' else
+  if let .some e' ← structuralAtom? e then return .nil <| .atom e' else
     match e.getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]) =>
-      return .nil (.id (toMor₁ f))
+      return .nil (.id (← toMor₁ f))
     | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
       let η_e ← eval η
       let θ_e ← eval θ
       let ηθ ← evalComp η_e θ_e
       return ηθ
     | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
-      evalWhiskerLeftExpr (toMor₁ f) (← eval η)
+      evalWhiskerLeftExpr (← toMor₁ f) (← eval η)
     | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
-      evalWhiskerRightExpr (← eval η) (toMor₁ h)
+      evalWhiskerRightExpr (← eval η) (← toMor₁ h)
     | (``monoidalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) =>
       let η_e ← eval η
       let α₀' ← structuralOfMonoidalComp C e
@@ -382,13 +412,13 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
       /- Evaluate `η ⊗ 𝟙 f` and `𝟙 f ⊗ θ` as whiskerings. -/
       match η.getAppFnArgs, θ.getAppFnArgs with
       | _, (``CategoryStruct.id, #[_, _, f]) =>
-        evalWhiskerRightExpr (← eval η) (toMor₁ f)
+        evalWhiskerRightExpr (← eval η) (← toMor₁ f)
       | (``CategoryStruct.id, #[_, _, f]), _ =>
-        evalWhiskerLeftExpr (toMor₁ f) (← eval θ)
+        evalWhiskerLeftExpr (← toMor₁ f) (← eval θ)
       /- Otherwise, expand `tensorHom` by using `tensorHom_def`. -/
       | _, _ =>
-        let η' ← evalWhiskerRightExpr (← eval η) (toMor₁ f₂)
-        let θ' ← evalWhiskerLeftExpr (toMor₁ g₁) (← eval θ)
+        let η' ← evalWhiskerRightExpr (← eval η) (← toMor₁ f₂)
+        let θ' ← evalWhiskerLeftExpr (← toMor₁ g₁) (← eval θ)
         evalComp η' θ'
     | _ => NormalExpr.of e
 
