@@ -721,9 +721,6 @@ theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 #align infi_le' iInf_le'
 
--- lemma le_iSup' (f : ι → α) (i : ι) : (: f i :) ≤ (: iSup f :) :=
-le_sSup ⟨i, rfl⟩
--/
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _
 #align is_lub_supr isLUB_iSup
