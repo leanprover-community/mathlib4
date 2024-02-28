@@ -6,12 +6,6 @@ Authors: Johan Commelin, Kenny Lau
 
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.Interval
--- import Mathlib.LinearAlgebra.StdBasis
--- import Mathlib.Tactic.Linarith
--- import Mathlib.Data.MvPolynomial.Basic
--- import Mathlib.RingTheory.Multiplicity
--- import Mathlib.Data.Finset.PiAntidiagonal
-
 
 /-!
 
