@@ -53,7 +53,7 @@ open scoped Pointwise
 
 /-- `lipschitzGroup` is the subgroup closure of all the invertible elements in the form of `ι Q m`
 where `ι` is the canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
-def lipschitzGroup (Q : QuadraticForm R M) :=
+def lipschitzGroup (Q : QuadraticForm R M) : Subgroup (CliffordAlgebra Q)ˣ :=
   Subgroup.closure ((↑) ⁻¹' Set.range (ι Q) : Set (CliffordAlgebra Q)ˣ)
 #align lipschitz lipschitzGroup
 
@@ -65,8 +65,10 @@ theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     [Invertible (2 : R)] :
     ConjAct.toConjAct x • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) := by
   unfold lipschitzGroup at hx
-  apply Subgroup.closure_induction'' hx
-  · rintro x ⟨a, ha⟩ y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
+  induction hx using Subgroup.closure_induction'' with
+  | Hk x hx =>
+    obtain ⟨a, ha⟩ := hx
+    rintro y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
@@ -77,7 +79,9 @@ theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     suffices ∃ y : M, ι Q y = ι Q a * ι Q b * ⅟ (ι Q a) by simp_all only [invOf_units]
     rw [ι_mul_ι_mul_invOf_ι Q a b]
     use ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b)
-  · rintro x ⟨a, ha⟩ y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
+  | Hk_inv x hx =>
+    obtain ⟨a, ha⟩ := hx
+    rintro y ⟨z, ⟨⟨b, hb⟩, hz⟩⟩
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
@@ -88,8 +92,9 @@ theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     suffices ∃ y : M, ι Q y = ⅟ (ι Q a) * ι Q b * ι Q a by simp_all only [invOf_units]
     rw [invOf_ι_mul_ι_mul_ι Q a b]
     use ((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b)
-  · simp only [ConjAct.toConjAct_one, (one_smul _ (LinearMap.range (ι Q))), le_refl]
-  · intro x y hx1 hy1 z hz
+  | H1 => simp only [ConjAct.toConjAct_one, (one_smul _ (LinearMap.range (ι Q))), le_refl]
+  | Hmul x y _ _ hx1 hy1 =>
+    intro z hz
     simp only [ConjAct.toConjAct_mul] at hz
     suffices
       (ConjAct.toConjAct x * ConjAct.toConjAct y) • LinearMap.range (ι Q) ≤ LinearMap.range (ι Q) by
@@ -118,10 +123,10 @@ theorem mem_conjAct_le {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
 theorem mem_involute_le [Invertible (2 : R)]
     {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q) (b : M) :
       involute (Q := Q) ↑x * ι Q b * ↑x⁻¹ ∈ LinearMap.range (ι Q) := by
-  revert b
   unfold lipschitzGroup at hx
-  apply Subgroup.closure_induction'' hx
-  · rintro x ⟨a, ha⟩ b
+  induction hx using Subgroup.closure_induction'' generalizing b with
+  | Hk x hx =>
+    obtain ⟨a, ha⟩ := hx
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
@@ -130,7 +135,8 @@ theorem mem_involute_le [Invertible (2 : R)]
     refine'
       ⟨-((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b), by
         simp only [map_neg, neg_mul, ι_mul_ι_mul_invOf_ι Q a b]⟩
-  · rintro x ⟨a, ha⟩ b
+  | Hk_inv x hx =>
+    obtain ⟨a, ha⟩ := hx
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
@@ -141,9 +147,9 @@ theorem mem_involute_le [Invertible (2 : R)]
     refine'
       ⟨-((⅟ (Q a) * QuadraticForm.polar Q a b) • a - b), by
         simp only [map_neg, neg_mul, invOf_ι_mul_ι_mul_ι Q a b]⟩
-  · simp only [Units.val_one, map_one, one_mul, inv_one, mul_one, LinearMap.mem_range,
+  | H1 => simp only [Units.val_one, map_one, one_mul, inv_one, mul_one, LinearMap.mem_range,
       exists_apply_eq_apply, forall_const]
-  · intro y z hy hz b
+  | Hmul y z _ _ hy hz =>
     simp only [Units.val_mul, map_mul, mul_inv_rev, LinearMap.mem_range]
     let ⟨z', hz'⟩ := hz b
     let ⟨y', hy'⟩ := hy z'
