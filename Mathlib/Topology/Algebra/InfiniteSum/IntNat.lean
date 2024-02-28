@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 
 import Mathlib.Topology.Algebra.InfiniteSum.Group
+import Mathlib.Logic.Encodable.Lattice
 
 /-!
 # Infinite sums over `ℕ` and `ℤ`

@@ -3,10 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Nat.Parity
-import Mathlib.Logic.Encodable.Lattice
-import Mathlib.Topology.Algebra.UniformGroup
-import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Separation
+import Mathlib.Algebra.BigOperators.Finprod
 
 #align_import topology.algebra.infinite_sum.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
