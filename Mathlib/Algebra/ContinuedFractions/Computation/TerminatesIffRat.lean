@@ -89,8 +89,8 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_conts_aux :
         · -- invoke the IH a second time
           cases' IH n <| lt_of_le_of_lt n.le_succ <| lt_add_one <| n + 1 with ppred_conts
             ppred_conts_eq
-          obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K);
-          exact of_part_num_eq_one_and_exists_int_part_denom_eq s_ppred_nth_eq
+          obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K) :=
+            of_part_num_eq_one_and_exists_int_part_denom_eq s_ppred_nth_eq
           -- finally, unfold the recurrence to obtain the required rational value.
           simp only [a_eq_one, b_eq_z,
             continuantsAux_recurrence s_ppred_nth_eq ppred_conts_eq pred_conts_eq]
@@ -128,10 +128,10 @@ variable {v}
 
 /-- Every terminating continued fraction corresponds to a rational number. -/
 theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : ℚ, v = ↑q := by
-  obtain ⟨n, v_eq_conv⟩ : ∃ n, v = (of v).convergents n;
-  exact of_correctness_of_terminates terminates
-  obtain ⟨q, conv_eq_q⟩ : ∃ q : ℚ, (of v).convergents n = (↑q : K)
-  exact exists_rat_eq_nth_convergent v n
+  obtain ⟨n, v_eq_conv⟩ : ∃ n, v = (of v).convergents n :=
+    of_correctness_of_terminates terminates
+  obtain ⟨q, conv_eq_q⟩ : ∃ q : ℚ, (of v).convergents n = (↑q : K) :=
+    exists_rat_eq_nth_convergent v n
   have : v = (↑q : K) := Eq.trans v_eq_conv conv_eq_q
   use q, this
 #align generalized_continued_fraction.exists_rat_eq_of_terminates GeneralizedContinuedFraction.exists_rat_eq_of_terminates
@@ -283,8 +283,8 @@ theorem stream_succ_nth_fr_num_lt_nth_fr_num_rat {ifp_n ifp_succ_n : IntFractPai
   obtain ⟨ifp_n', stream_nth_eq', ifp_n_fract_ne_zero, IntFractPair.of_eq_ifp_succ_n⟩ :
     ∃ ifp_n',
       IntFractPair.stream q n = some ifp_n' ∧
-        ifp_n'.fr ≠ 0 ∧ IntFractPair.of ifp_n'.fr⁻¹ = ifp_succ_n
-  exact succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq
+        ifp_n'.fr ≠ 0 ∧ IntFractPair.of ifp_n'.fr⁻¹ = ifp_succ_n :=
+    succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq
   have : ifp_n = ifp_n' := by injection Eq.trans stream_nth_eq.symm stream_nth_eq'
   cases this
   rw [← IntFractPair.of_eq_ifp_succ_n]
