@@ -642,7 +642,7 @@ theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re
   simp only [add_zero]
 
 theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
-    (ι : Type*) [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
+    {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
     Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖^2 + c * ⟪w, v⟫)) := by
   have := EuclideanSpace.volume_preserving_measurableEquiv ι
   rw [← MeasurePreserving.integrable_comp_emb this.symm (MeasurableEquiv.measurableEmbedding _)]
@@ -664,12 +664,12 @@ theorem integrable_cexp_neg_mul_sq_norm_add (hb : 0 < b.re) (c : ℂ) (w : V) :
   let e := (stdOrthonormalBasis ℝ V).repr.symm
   rw [← e.measurePreserving.integrable_comp_emb e.toHomeomorph.measurableEmbedding]
   convert integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
-    (Fin (FiniteDimensional.finrank ℝ V)) hb c (e.symm w) with v
+    hb c (e.symm w) with v
   simp only [neg_mul, Function.comp_apply, LinearIsometryEquiv.norm_map,
     LinearIsometryEquiv.symm_symm, conj_trivial, ofReal_sum,
     ofReal_mul, LinearIsometryEquiv.inner_map_eq_flip]
 
-theorem integral_cexp_neg_mul_sum_add (ι : Type*) [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
+theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
     ∫ v : ι → ℝ, cexp (- b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)
       = (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp ((∑ i, (c i) ^ 2) / (4 * b)) := by
   simp_rw [Finset.mul_sum, ← Finset.sum_add_distrib, Complex.exp_sum]
@@ -690,7 +690,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   have := (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
   rw [← this.integral_comp (MeasurableEquiv.measurableEmbedding _)]
   simp only [neg_mul, Function.comp_def]
-  convert integral_cexp_neg_mul_sum_add ι hb (fun i ↦ c * w i) using 5 with _x y
+  convert integral_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 5 with _x y
   · simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
       EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, neg_mul,
       neg_inj, mul_eq_mul_left_iff]
