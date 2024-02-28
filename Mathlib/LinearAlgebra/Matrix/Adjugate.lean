@@ -435,7 +435,7 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
   fin_cases i <;> fin_cases j <;> simp [updateRow, Fin.succAbove, Fin.lt_def] <;> ring
 
 @[simp]
-theorem adjugate_fin_three_of (a b c d e f g h i: α) :
+theorem adjugate_fin_three_of (a b c d e f g h i : α) :
     adjugate !![a, b, c; d, e, f; g, h, i] =
       !![  e * i  - f * h, -(b * i) + c * h,   b * f  - c * e;
          -(d * i) + f * g,   a * i  - c * g, -(a * f) + c * d;
