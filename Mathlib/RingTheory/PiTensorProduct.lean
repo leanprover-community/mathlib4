@@ -182,29 +182,12 @@ def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
 /--
 Lifting a multilinear map to an algebra homomorphism from tensor product
 -/
-@[simps]
+@[simps!]
 def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
     (f : MultilinearMap R A S)
-    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : (⨂[R] i, A i) →ₐ[R] S where
-  toFun := lift f
-  map_one' := show lift f (tprod R 1) = 1 by simp [one]
-  map_mul' x y := show lift f (x * y) = lift f x * lift f y by
-    induction x using PiTensorProduct.induction_on with
-    | smul_tprod =>
-      induction y using PiTensorProduct.induction_on with
-      | smul_tprod =>
-        simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, tprod_mul_tprod, map_smul,
-          lift.tprod, mul]
-      | add _ _ hy1 hy2 =>
-        simp only [Algebra.smul_mul_assoc, map_smul, lift.tprod, map_add] at hy1 hy2 ⊢
-        rw [mul_add, map_add, smul_add, hy1, hy2, mul_add, smul_add]
-    | add _ _ hx1 hx2 =>
-      simp only [map_add] at hx1 hx2 ⊢
-      rw [add_mul, map_add, hx1, hx2, add_mul]
-  map_zero' := by simp only [map_zero]
-  map_add' x y := by simp only [map_add]
-  commutes' r := show lift f (r • tprod R 1) = _ by
-    rw [map_smul, lift.tprod, one, Algebra.algebraMap_eq_smul_one]
+    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : (⨂[R] i, A i) →ₐ[R] S :=
+  AlgHom.ofLinearMap (lift f) (show lift f (tprod R 1) = 1 by simp [one]) <|
+    LinearMap.map_mul_iff _ |>.mpr <| by aesop
 
 end Semiring
 
