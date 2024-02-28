@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andreas Swerdlow, Kexing Ying
+Authors: Andreas Swerdlow, Kexing Ying, Christopher Hoskin
 -/
 import Mathlib.LinearAlgebra.SesquilinearForm
 
@@ -9,18 +9,6 @@ import Mathlib.LinearAlgebra.SesquilinearForm
 # Bilinear form and linear maps
 
 This file describes the relation between bilinear forms and linear maps.
-
-## Notations
-
-Given any term `B` of type `BilinForm`, due to a coercion, can use
-the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
-
-In this file we use the following type variables:
- - `M`, `M'`, ... are modules over the semiring `R`,
- - `M₁`, `M₁'`, ... are modules over the ring `R₁`,
- - `M₂`, `M₂'`, ... are modules over the commutative semiring `R₂`,
- - `M₃`, `M₃'`, ... are modules over the commutative ring `R₃`,
- - `V`, ... is a vector space over the field `K`.
 
 ## References
 
@@ -37,7 +25,7 @@ namespace LinearMap
 
 namespace BilinForm
 
-variable {R R₁ R₂ R₃ M M₁ M₂ M₃ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type*}
+variable {R M : Type*}
 
 variable [CommSemiring R]
 
