@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Junyan Xu
 
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
+import Mathlib.Algebra.Category.GroupCat.EpiMono
 
 /-!
 
