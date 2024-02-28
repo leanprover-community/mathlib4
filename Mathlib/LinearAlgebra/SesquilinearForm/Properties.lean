@@ -29,7 +29,7 @@ variable [Field K] [AddCommGroup V] [Module K V]
 
 variable [FiniteDimensional K V]
 
-/-- Given a nondegenerate bilinear form `B` on a finite-dimensional vector space, `B.toDual` is
+/-- Given a left-separating bilinear form `B` on a finite-dimensional vector space, `B.toDual` is
 the linear equivalence between a vector space and its dual with the underlying linear map
 `B.toLin`. -/
 noncomputable def toDual (B : BilinForm K V) (b : B.SeparatingLeft) : V ≃ₗ[K] Module.Dual K V :=
@@ -58,7 +58,7 @@ variable {ι : Type*} [DecidableEq ι] [Finite ι]
 
 /-- The `B`-dual basis `B.dualBasis hB b` to a finite basis `b` satisfies
 `B (B.dualBasis hB b i) (b j) = B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0`,
-where `B` is a nondegenerate (symmetric) bilinear form and `b` is a finite basis. -/
+where `B` is a left-separating (symmetric) bilinear form and `b` is a finite basis. -/
 noncomputable def dualBasis (B : BilinForm K V) (hB : B.SeparatingLeft) (b : Basis ι K V) :
     Basis ι K V :=
   haveI := FiniteDimensional.of_fintype_basis b
@@ -115,47 +115,47 @@ end DualBasis
 
 section LinearAdjoints
 
-/-- Given bilinear forms `B₁, B₂` where `B₂` is nondegenerate, `symmCompOfNondegenerate`
+/-- Given bilinear forms `B₁, B₂` where `B₂` is left-separating, `symmCompOfSeparatingLeft`
 is the linear map `B₂.toLin⁻¹ ∘ B₁.toLin`. -/
-noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B₂.SeparatingLeft) :
+noncomputable def symmCompOfSeparatingLeft (B₁ B₂ : BilinForm K V) (b₂ : B₂.SeparatingLeft) :
     V →ₗ[K] V :=
   (B₂.toDual b₂).symm.toLinearMap.comp B₁
-#align bilin_form.symm_comp_of_nondegenerate LinearMap.BilinForm.symmCompOfNondegenerate
+#align bilin_form.symm_comp_of_nondegenerate LinearMap.BilinForm.symmCompOfSeparatingLeft
 
-theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
+theorem comp_symmCompOfSeparatingLeft_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.SeparatingLeft) (v : V) :
-    B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = B₁ v := by
-  erw [symmCompOfNondegenerate, LinearEquiv.apply_symm_apply (B₂.toDual b₂) _]
-#align bilin_form.comp_symm_comp_of_nondegenerate_apply LinearMap.BilinForm.comp_symmCompOfNondegenerate_apply
+    B₂ (B₁.symmCompOfSeparatingLeft B₂ b₂ v) = B₁ v := by
+  erw [symmCompOfSeparatingLeft, LinearEquiv.apply_symm_apply (B₂.toDual b₂) _]
+#align bilin_form.comp_symm_comp_of_nondegenerate_apply LinearMap.BilinForm.comp_symmCompOfSeparatingLeft_apply
 
 @[simp]
-theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
-    (b₂ : B₂.SeparatingLeft) (v w : V) : B₂ (symmCompOfNondegenerate B₁ B₂ b₂ w) v = B₁ w v := by
-  conv_lhs => rw [comp_symmCompOfNondegenerate_apply]
-#align bilin_form.symm_comp_of_nondegenerate_left_apply LinearMap.BilinForm.symmCompOfNondegenerate_left_apply
+theorem symmCompOfSeparatingLeft_left_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
+    (b₂ : B₂.SeparatingLeft) (v w : V) : B₂ (symmCompOfSeparatingLeft B₁ B₂ b₂ w) v = B₁ w v := by
+  conv_lhs => rw [comp_symmCompOfSeparatingLeft_apply]
+#align bilin_form.symm_comp_of_nondegenerate_left_apply LinearMap.BilinForm.symmCompOfSeparatingLeft_left_apply
 
-/-- Given the nondegenerate bilinear form `B` and the linear map `φ`,
-`leftAdjointOfNondegenerate` provides the left adjoint of `φ` with respect to `B`.
-The lemma proving this property is `BilinForm.isAdjointPairLeftAdjointOfNondegenerate`. -/
-noncomputable def leftAdjointOfNondegenerate (B : BilinForm K V) (b : B.SeparatingLeft)
+/-- Given the left-separating bilinear form `B` and the linear map `φ`,
+`leftAdjointOfSeparatingLeft` provides the left adjoint of `φ` with respect to `B`.
+The lemma proving this property is `BilinForm.isAdjointPairLeftAdjointOfSeparatingLeft`. -/
+noncomputable def leftAdjointOfSeparatingLeft (B : BilinForm K V) (b : B.SeparatingLeft)
     (φ : V →ₗ[K] V) : V →ₗ[K] V :=
-  symmCompOfNondegenerate (B.compRight φ) B b
-#align bilin_form.left_adjoint_of_nondegenerate LinearMap.BilinForm.leftAdjointOfNondegenerate
+  symmCompOfSeparatingLeft (B.compRight φ) B b
+#align bilin_form.left_adjoint_of_nondegenerate LinearMap.BilinForm.leftAdjointOfSeparatingLeft
 
-theorem isAdjointPairLeftAdjointOfNondegenerate (B : BilinForm K V) (b : B.SeparatingLeft)
-    (φ : V →ₗ[K] V) : IsAdjointPair B B (B.leftAdjointOfNondegenerate b φ) φ := fun x y =>
-  LinearMap.BilinForm.symmCompOfNondegenerate_left_apply (B.compRight φ) b y x
-#align bilin_form.is_adjoint_pair_left_adjoint_of_nondegenerate LinearMap.BilinForm.isAdjointPairLeftAdjointOfNondegenerate
+theorem isAdjointPairLeftAdjointOfSeparatingLeft (B : BilinForm K V) (b : B.SeparatingLeft)
+    (φ : V →ₗ[K] V) : IsAdjointPair B B (B.leftAdjointOfSeparatingLeft b φ) φ := fun x y =>
+  LinearMap.BilinForm.symmCompOfSeparatingLeft_left_apply (B.compRight φ) b y x
+#align bilin_form.is_adjoint_pair_left_adjoint_of_nondegenerate LinearMap.BilinForm.isAdjointPairLeftAdjointOfSeparatingLeft
 
-/-- Given the nondegenerate bilinear form `B`, the linear map `φ` has a unique left adjoint given by
-`BilinForm.leftAdjointOfNondegenerate`. -/
-theorem isAdjointPair_iff_eq_of_nondegenerate (B : BilinForm K V) (b : B.SeparatingLeft)
-    (ψ φ : V →ₗ[K] V) : IsAdjointPair B B ψ φ ↔ ψ = B.leftAdjointOfNondegenerate b φ :=
+/-- Given the left-separating bilinear form `B`, the linear map `φ` has a unique left adjoint given
+by `BilinForm.leftAdjointOfSeparatingLeft`. -/
+theorem isAdjointPair_iff_eq_of_separatingLeft (B : BilinForm K V) (b : B.SeparatingLeft)
+    (ψ φ : V →ₗ[K] V) : IsAdjointPair B B ψ φ ↔ ψ = B.leftAdjointOfSeparatingLeft b φ :=
   ⟨fun h =>
-    B.isAdjointPair_unique_of_nondegenerate b φ ψ _ h
-      (isAdjointPairLeftAdjointOfNondegenerate _ _ _),
-    fun h => h.symm ▸ isAdjointPairLeftAdjointOfNondegenerate _ _ _⟩
-#align bilin_form.is_adjoint_pair_iff_eq_of_nondegenerate LinearMap.BilinForm.isAdjointPair_iff_eq_of_nondegenerate
+    B.isAdjointPair_unique_of_separatingLeft b φ ψ _ h
+      (isAdjointPairLeftAdjointOfSeparatingLeft _ _ _),
+    fun h => h.symm ▸ isAdjointPairLeftAdjointOfSeparatingLeft _ _ _⟩
+#align bilin_form.is_adjoint_pair_iff_eq_of_nondegenerate LinearMap.BilinForm.isAdjointPair_iff_eq_of_separatingLeft
 
 end LinearAdjoints
 

@@ -523,20 +523,20 @@ section LinearAdjoints
 is the linear map `B₂.toLin⁻¹ ∘ B₁.toLin`. -/
 noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B₂.Nondegenerate) :
     V →ₗ[K] V :=
-  LinearMap.BilinForm.symmCompOfNondegenerate (BilinForm.toLin B₁) (BilinForm.toLin B₂) b₂
+  LinearMap.BilinForm.symmCompOfSeparatingLeft (BilinForm.toLin B₁) (BilinForm.toLin B₂) b₂
 --#align bilin_form.symm_comp_of_nondegenerate BilinForm.symmCompOfNondegenerate
 
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v : V) :
     toLin B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = toLin B₁ v :=
-  LinearMap.BilinForm.comp_symmCompOfNondegenerate_apply
+  LinearMap.BilinForm.comp_symmCompOfSeparatingLeft_apply
     (B₂ := (BilinForm.toLin B₂)) (BilinForm.toLin B₁) b₂ v
 --#align bilin_form.comp_symm_comp_of_nondegenerate_apply BilinForm.comp_symmCompOfNondegenerate_apply
 
 @[simp]
 theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v w : V) : B₂ (symmCompOfNondegenerate B₁ B₂ b₂ w) v = B₁ w v :=
-  LinearMap.BilinForm.symmCompOfNondegenerate_left_apply (B₂ := (BilinForm.toLin B₂))
+  LinearMap.BilinForm.symmCompOfSeparatingLeft_left_apply (B₂ := (BilinForm.toLin B₂))
     (BilinForm.toLin B₁) b₂ v w
 --#align bilin_form.symm_comp_of_nondegenerate_left_apply BilinForm.symmCompOfNondegenerate_left_apply
 
@@ -545,19 +545,19 @@ theorem symmCompOfNondegenerate_left_apply (B₁ : BilinForm K V) {B₂ : BilinF
 The lemma proving this property is `BilinForm.isAdjointPairLeftAdjointOfNondegenerate`. -/
 noncomputable def leftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (φ : V →ₗ[K] V) : V →ₗ[K] V :=
-  LinearMap.BilinForm.leftAdjointOfNondegenerate (BilinForm.toLin B) b φ
+  LinearMap.BilinForm.leftAdjointOfSeparatingLeft (BilinForm.toLin B) b φ
 --#align bilin_form.left_adjoint_of_nondegenerate BilinForm.leftAdjointOfNondegenerate
 
 theorem isAdjointPairLeftAdjointOfNondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (φ : V →ₗ[K] V) : IsAdjointPair B B (B.leftAdjointOfNondegenerate b φ) φ :=
-  LinearMap.BilinForm.isAdjointPairLeftAdjointOfNondegenerate (BilinForm.toLin B) b φ
+  LinearMap.BilinForm.isAdjointPairLeftAdjointOfSeparatingLeft (BilinForm.toLin B) b φ
 --#align bilin_form.is_adjoint_pair_left_adjoint_of_nondegenerate BilinForm.isAdjointPairLeftAdjointOfNondegenerate
 
 /-- Given the nondegenerate bilinear form `B`, the linear map `φ` has a unique left adjoint given by
 `BilinForm.leftAdjointOfNondegenerate`. -/
 theorem isAdjointPair_iff_eq_of_nondegenerate (B : BilinForm K V) (b : B.Nondegenerate)
     (ψ φ : V →ₗ[K] V) : IsAdjointPair B B ψ φ ↔ ψ = B.leftAdjointOfNondegenerate b φ :=
-  LinearMap.BilinForm.isAdjointPair_iff_eq_of_nondegenerate (BilinForm.toLin B) b ψ φ
+  LinearMap.BilinForm.isAdjointPair_iff_eq_of_separatingLeft (BilinForm.toLin B) b ψ φ
 --#align bilin_form.is_adjoint_pair_iff_eq_of_nondegenerate BilinForm.isAdjointPair_iff_eq_of_nondegenerate
 
 end LinearAdjoints

@@ -67,15 +67,13 @@ theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.SeparatingLeft) :
   rw [map_sub, sub_apply, ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
 #align bilin_form.comp_left_injective LinearMap.BilinForm.compLeft_injective
 
-theorem isAdjointPair_unique_of_nondegenerate (B : BilinForm R₁ M₁) (b : B.SeparatingLeft)
+theorem isAdjointPair_unique_of_separatingLeft (B : BilinForm R₁ M₁) (b : B.SeparatingLeft)
     (φ ψ₁ ψ₂ : M₁ →ₗ[R₁] M₁) (hψ₁ : IsAdjointPair B B ψ₁ φ) (hψ₂ : IsAdjointPair B B ψ₂ φ) :
     ψ₁ = ψ₂ := by
   apply B.compLeft_injective b
   ext v w
   rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
-#align bilin_form.is_adjoint_pair_unique_of_nondegenerate LinearMap.BilinForm.isAdjointPair_unique_of_nondegenerate
-
-
+#align bilin_form.is_adjoint_pair_unique_of_nondegenerate LinearMap.BilinForm.isAdjointPair_unique_of_separatingLeft
 
 end BilinForm
 
