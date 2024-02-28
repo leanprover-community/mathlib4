@@ -288,9 +288,10 @@ theorem IsCompact.inter_iInter_nonempty {ι : Type v} (hs : IsCompact s) (t : ι
 
 /-- Cantor's intersection theorem for `iInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
-theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed {ι : Type v} [hι : Nonempty ι]
-    (t : ι → Set X) (htd : Directed (· ⊇ ·) t) (htn : ∀ i, (t i).Nonempty)
-    (htc : ∀ i, IsCompact (t i)) (htcl : ∀ i, IsClosed (t i)) : (⋂ i, t i).Nonempty := by
+theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
+    {ι : Type v} [hι : Nonempty ι] (t : ι → Set X) (htd : Directed (· ⊇ ·) t)
+    (htn : ∀ i, (t i).Nonempty) (htc : ∀ i, IsCompact (t i)) (htcl : ∀ i, IsClosed (t i)) :
+    (⋂ i, t i).Nonempty := by
   let i₀ := hι.some
   suffices (t i₀ ∩ ⋂ i, t i).Nonempty by
     rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
@@ -303,7 +304,8 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed {ι : 
   exact (htn j).mono (subset_inter hji₀ hji)
 #align is_compact.nonempty_Inter_of_directed_nonempty_compact_closed IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
 
-@[deprecated] alias IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed :=
+@[deprecated] -- deprecated on 2024-02-28
+alias IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed :=
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
 
 /-- Cantor's intersection theorem for `sInter`:
@@ -327,7 +329,8 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (t : �
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed t htd htn htc htcl
 #align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
-@[deprecated] alias IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed :=
+@[deprecated] -- deprecated on 2024-02-28
+alias IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed :=
   IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
 /-- For every open cover of a compact set, there exists a finite subcover. -/
@@ -513,7 +516,7 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   replace H : ∀ i, (V i ∩ Wᶜ).Nonempty := fun i => Set.inter_compl_nonempty_iff.mpr (H i)
   have : (⋂ i, V i ∩ Wᶜ).Nonempty := by
     refine'
-      IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ (fun i j => _) H
+      IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun i j => _) H
         (fun i => (hV_cpct i).inter_right W_op.isClosed_compl) fun i =>
         (hV_closed i).inter W_op.isClosed_compl
     rcases hV i j with ⟨k, hki, hkj⟩
@@ -1126,7 +1129,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
           · ext
             simp only [not_exists, exists_prop, not_and, Set.mem_iInter, Subtype.forall,
               mem_setOf_eq, mem_compl_iff, mem_sUnion]
-          apply IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+          apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
           · rintro ⟨U, hU⟩ ⟨U', hU'⟩
             obtain ⟨V, hVc, hVU, hVU'⟩ := hz.directedOn U hU U' hU'
             exact ⟨⟨V, hVc⟩, Set.compl_subset_compl.mpr hVU, Set.compl_subset_compl.mpr hVU'⟩
