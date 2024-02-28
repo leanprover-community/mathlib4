@@ -154,9 +154,6 @@ end SemiNormed
 
 section Normed
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 namespace ContinuousLinearMap
 
 section FirstSecond
@@ -164,19 +161,21 @@ section FirstSecond
 variable (𝕜 E F)
 
 /-- The operator norm of the first projection `E × F → E` is exactly 1 if `E` is nontrivial. -/
-lemma norm_fst [Nontrivial E] :
+@[simp] lemma norm_fst [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
     ‖fst 𝕜 E F‖ = 1 := by
-  refine le_antisymm (norm_fst_le _ _ _) ?_
-  obtain ⟨e, he⟩ := exists_ne (0 : E)
+  refine le_antisymm (norm_fst_le ..) ?_
+  let ⟨e, he⟩ := exists_ne (0 : E)
   have : ‖e‖ ≤ _ * max ‖e‖ ‖0‖ := (fst 𝕜 E F).le_opNorm (e, 0)
   rw [norm_zero, max_eq_left (norm_nonneg e)] at this
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr he), one_mul]
 
 /-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
-lemma norm_snd [Nontrivial F] :
+@[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F]  :
     ‖snd 𝕜 E F‖ = 1 := by
-  refine le_antisymm (norm_snd_le _ _ _) ?_
-  obtain ⟨f, hf⟩ := exists_ne (0 : F)
+  refine le_antisymm (norm_snd_le ..) ?_
+  let ⟨f, hf⟩ := exists_ne (0 : F)
   have : ‖f‖ ≤ _ * max ‖0‖ ‖f‖ := (snd 𝕜 E F).le_opNorm (0, f)
   rw [norm_zero, max_eq_right (norm_nonneg f)] at this
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr hf), one_mul]
