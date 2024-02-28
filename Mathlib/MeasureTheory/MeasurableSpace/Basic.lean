@@ -2002,7 +2002,7 @@ theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoint
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
 
-instance Subtype.separatesPoints [MeasurableSpace α] [h : SeparatesPoints α] {s : Set α} :
+instance (priority := 100) Subtype.separatesPoints [MeasurableSpace α] [h : SeparatesPoints α] {s : Set α} :
     SeparatesPoints s :=
   ⟨fun _ _ hxy ↦ Subtype.val_injective $ h.1 _ _ fun _ ht ↦ hxy _ $ measurable_subtype_coe ht⟩
 
@@ -2016,14 +2016,14 @@ theorem separating_of_generateFrom (S : Set (Set α))
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
   exact h.separates _ _ hxy
 
-instance separatesPoints_of_measurableSingletonClass [MeasurableSpace α]
+instance (priority := 100) separatesPoints_of_measurableSingletonClass [MeasurableSpace α]
     [MeasurableSingletonClass α] : SeparatesPoints α := by
   refine' ⟨fun x y h ↦ _⟩
   specialize h _ (MeasurableSet.singleton y)
   simp_rw [mem_singleton_iff, iff_true] at h
   assumption
 
-instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [SeparatesPoints s] :
+instance(priority := 100) [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [SeparatesPoints s] :
     HasCountableSeparatingOn α MeasurableSet s := by
   suffices HasCountableSeparatingOn s MeasurableSet univ from this.of_subtype fun _ ↦ id
   rcases h.1 with ⟨b, hbc, hb⟩
@@ -2089,7 +2089,7 @@ theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
 
 variable {α}
 
-instance (priority := 50) measurableSingletonClass_of_hasCountableSeparatingPoints
+instance (priority := 500) measurableSingletonClass_of_hasCountableSeparatingPoints
     [MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
     MeasurableSingletonClass α := by
   rcases measurable_injection_nat_bool_of_countablyGenerated α with ⟨f, fmeas, finj⟩
