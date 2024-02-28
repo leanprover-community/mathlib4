@@ -319,7 +319,7 @@ theorem FiniteDimensional.finrank_fintype_fun_eq_card : finrank R (η → R) = F
 #align finite_dimensional.finrank_fintype_fun_eq_card FiniteDimensional.finrank_fintype_fun_eq_card
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem FiniteDimensional.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 #align finite_dimensional.finrank_fin_fun FiniteDimensional.finrank_fin_fun
 

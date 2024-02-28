@@ -46,7 +46,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   set b : ℕ → ℝ := fun i => (1 / 2) ^ i * (ε * ‖h‖ / 2) / C
   have b_pos : ∀ i, 0 < b i := by
     intro i
-    field_simp [hC]
+    field_simp [b, hC]
     exact
       div_pos (mul_pos hε (norm_pos_iff.mpr hyp_h)) (mul_pos (by norm_num : (0 : ℝ) < 2 ^ i * 2) hC)
   obtain
@@ -74,7 +74,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   · -- We indeed get a preimage. First note:
     have : f ∘ s = fun n => ∑ k in range (n + 1), v k := by
       ext n
-      simp [map_sum, hu]
+      simp [s, map_sum, hu]
     /- In the above equality, the left-hand-side converges to `f g` by continuity of `f` and
       definition of `g` while the right-hand-side converges to `h` by construction of `v` so
       `g` is indeed a preimage of `h`. -/

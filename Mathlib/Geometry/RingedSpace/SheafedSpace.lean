@@ -26,7 +26,7 @@ variable (C : Type*) [Category C]
 -- Porting note: removed
 -- local attribute [tidy] tactic.op_induction'
 -- as it isn't needed here. If it is useful elsewhere
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
 -- should suffice, but may need
 -- https://github.com/JLimperg/aesop/issues/59
 

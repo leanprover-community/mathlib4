@@ -445,74 +445,25 @@ protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
 
 /-! ### `/` and ordering -/
 
-
-protected theorem ediv_mul_le (a : ℤ) {b : ℤ} (H : b ≠ 0) : a / b * b ≤ a :=
-  le_of_sub_nonneg <| by rw [mul_comm, ← emod_def]; apply emod_nonneg _ H
 #align int.div_mul_le Int.ediv_mul_le
-
-protected theorem ediv_le_of_le_mul {a b c : ℤ} (H : 0 < c) (H' : a ≤ b * c) : a / c ≤ b :=
-  le_of_mul_le_mul_right (le_trans (Int.ediv_mul_le _ (ne_of_gt H)) H') H
 #align int.div_le_of_le_mul Int.ediv_le_of_le_mul
-
-protected theorem mul_lt_of_lt_ediv {a b c : ℤ} (H : 0 < c) (H3 : a < b / c) : a * c < b :=
-  lt_of_not_ge <| mt (Int.ediv_le_of_le_mul H) (not_le_of_gt H3)
 #align int.mul_lt_of_lt_div Int.mul_lt_of_lt_ediv
-
-protected theorem mul_le_of_le_ediv {a b c : ℤ} (H1 : 0 < c) (H2 : a ≤ b / c) : a * c ≤ b :=
-  le_trans (mul_le_mul_of_nonneg_right H2 (le_of_lt H1)) (Int.ediv_mul_le _ (ne_of_gt H1))
 #align int.mul_le_of_le_div Int.mul_le_of_le_ediv
-
-protected theorem le_ediv_of_mul_le {a b c : ℤ} (H1 : 0 < c) (H2 : a * c ≤ b) : a ≤ b / c :=
-  le_of_lt_add_one <|
-    lt_of_mul_lt_mul_right (lt_of_le_of_lt H2 (lt_ediv_add_one_mul_self _ H1)) (le_of_lt H1)
 #align int.le_div_of_mul_le Int.le_ediv_of_mul_le
-
-protected theorem le_ediv_iff_mul_le {a b c : ℤ} (H : 0 < c) : a ≤ b / c ↔ a * c ≤ b :=
-  ⟨Int.mul_le_of_le_ediv H, Int.le_ediv_of_mul_le H⟩
 #align int.le_div_iff_mul_le Int.le_ediv_iff_mul_le
-
-protected theorem ediv_le_ediv {a b c : ℤ} (H : 0 < c) (H' : a ≤ b) : a / c ≤ b / c :=
-  Int.le_ediv_of_mul_le H (le_trans (Int.ediv_mul_le _ (ne_of_gt H)) H')
 #align int.div_le_div Int.ediv_le_ediv
-
-protected theorem ediv_lt_of_lt_mul {a b c : ℤ} (H : 0 < c) (H' : a < b * c) : a / c < b :=
-  lt_of_not_ge <| mt (Int.mul_le_of_le_ediv H) (not_le_of_gt H')
 #align int.div_lt_of_lt_mul Int.ediv_lt_of_lt_mul
-
-protected theorem lt_mul_of_ediv_lt {a b c : ℤ} (H1 : 0 < c) (H2 : a / c < b) : a < b * c :=
-  lt_of_not_ge <| mt (Int.le_ediv_of_mul_le H1) (not_le_of_gt H2)
 #align int.lt_mul_of_div_lt Int.lt_mul_of_ediv_lt
-
-protected theorem ediv_lt_iff_lt_mul {a b c : ℤ} (H : 0 < c) : a / c < b ↔ a < b * c :=
-  ⟨Int.lt_mul_of_ediv_lt H, Int.ediv_lt_of_lt_mul H⟩
 #align int.div_lt_iff_lt_mul Int.ediv_lt_iff_lt_mul
-
-protected theorem le_mul_of_ediv_le {a b c : ℤ} (H1 : 0 ≤ b) (H2 : b ∣ a) (H3 : a / b ≤ c) :
-    a ≤ c * b := by rw [← Int.ediv_mul_cancel H2]; exact mul_le_mul_of_nonneg_right H3 H1
 #align int.le_mul_of_div_le Int.le_mul_of_ediv_le
-
-protected theorem lt_ediv_of_mul_lt {a b c : ℤ} (H1 : 0 ≤ b) (H2 : b ∣ c) (H3 : a * b < c) :
-    a < c / b :=
-  lt_of_not_ge <| mt (Int.le_mul_of_ediv_le H1 H2) (not_le_of_gt H3)
 #align int.lt_div_of_mul_lt Int.lt_ediv_of_mul_lt
-
-protected theorem lt_ediv_iff_mul_lt {a b : ℤ} (c : ℤ) (H : 0 < c) (H' : c ∣ b) :
-    a < b / c ↔ a * c < b :=
-  ⟨Int.mul_lt_of_lt_ediv H, Int.lt_ediv_of_mul_lt (le_of_lt H) H'⟩
 #align int.lt_div_iff_mul_lt Int.lt_ediv_iff_mul_lt
-
-theorem ediv_pos_of_pos_of_dvd {a b : ℤ} (H1 : 0 < a) (H2 : 0 ≤ b) (H3 : b ∣ a) : 0 < a / b :=
-  Int.lt_ediv_of_mul_lt H2 H3 (by rwa [zero_mul])
 #align int.div_pos_of_pos_of_dvd Int.ediv_pos_of_pos_of_dvd
 
 theorem natAbs_eq_of_dvd_dvd {s t : ℤ} (hst : s ∣ t) (hts : t ∣ s) : natAbs s = natAbs t :=
   Nat.dvd_antisymm (natAbs_dvd_natAbs.mpr hst) (natAbs_dvd_natAbs.mpr hts)
 #align int.nat_abs_eq_of_dvd_dvd Int.natAbs_eq_of_dvd_dvd
 
-theorem ediv_eq_ediv_of_mul_eq_mul {a b c d : ℤ} (H2 : d ∣ c) (H3 : b ≠ 0) (H4 : d ≠ 0)
-    (H5 : a * d = b * c) : a / b = c / d :=
-  Int.ediv_eq_of_eq_mul_right H3 <| by
-    rw [← Int.mul_ediv_assoc _ H2]; exact (Int.ediv_eq_of_eq_mul_left H4 H5.symm).symm
 #align int.div_eq_div_of_mul_eq_mul Int.ediv_eq_ediv_of_mul_eq_mul
 
 theorem ediv_dvd_of_dvd {s t : ℤ} (hst : s ∣ t) : t / s ∣ t := by
@@ -586,7 +537,7 @@ variable {G : Type*} [Group G]
 
 @[to_additive (attr := simp) abs_zsmul_eq_zero]
 lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
-  rw [← Int.coe_natAbs, zpow_ofNat, pow_natAbs_eq_one]
+  rw [← Int.coe_natAbs, zpow_coe_nat, pow_natAbs_eq_one]
 
 end Group
 
