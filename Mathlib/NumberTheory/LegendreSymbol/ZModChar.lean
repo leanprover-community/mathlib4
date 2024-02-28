@@ -47,7 +47,7 @@ def χ₄ : MulChar (ZMod 4) ℤ where
 /-- `χ₄` takes values in `{0, 1, -1}` -/
 theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
   intro a
-  -- Porting note: was `decide!`
+  -- Porting note (#11043): was `decide!`
   fin_cases a
   all_goals decide
 #align zmod.is_quadratic_χ₄ ZMod.isQuadratic_χ₄

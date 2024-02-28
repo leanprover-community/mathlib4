@@ -463,7 +463,7 @@ theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Ioi 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, x ≤ 0 → ‖f x‖ ≤ C) (him : ∀ x : ℝ, 0 ≤ x → ‖f (x * I)‖ ≤ C) (hz_re : z.re ≤ 0)
     (hz_im : 0 ≤ z.im) : ‖f z‖ ≤ C := by
-  obtain ⟨z, rfl⟩ : ∃ z', z' * I = z; exact ⟨z / I, div_mul_cancel _ I_ne_zero⟩
+  obtain ⟨z, rfl⟩ : ∃ z', z' * I = z := ⟨z / I, div_mul_cancel _ I_ne_zero⟩
   simp only [mul_I_re, mul_I_im, neg_nonpos] at hz_re hz_im
   change ‖(f ∘ (· * I)) z‖ ≤ C
   have H : MapsTo (· * I) (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Ioi 0) := fun w hw ↦ by
@@ -531,7 +531,7 @@ theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, x ≤ 0 → ‖f x‖ ≤ C) (him : ∀ x : ℝ, x ≤ 0 → ‖f (x * I)‖ ≤ C) (hz_re : z.re ≤ 0)
     (hz_im : z.im ≤ 0) : ‖f z‖ ≤ C := by
-  obtain ⟨z, rfl⟩ : ∃ z', -z' = z; exact ⟨-z, neg_neg z⟩
+  obtain ⟨z, rfl⟩ : ∃ z', -z' = z := ⟨-z, neg_neg z⟩
   simp only [neg_re, neg_im, neg_nonpos] at hz_re hz_im
   change ‖(f ∘ Neg.neg) z‖ ≤ C
   have H : MapsTo Neg.neg (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Iio 0) := by

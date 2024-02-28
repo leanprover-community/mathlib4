@@ -132,8 +132,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
     -- Nat.succ
     obtain ⟨ifp_n, nth_stream_eq, nth_fract_ne_zero, -⟩ :
       ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
-        ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
-    exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
+        ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
+      IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
     -- introduce some notation
     let conts := g.continuantsAux (n + 2)
     set pconts := g.continuantsAux (n + 1) with pconts_eq
@@ -143,8 +143,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
     · suffices v = conts.a / conts.b by simpa [compExactValue, ifp_succ_n_fr_eq_zero]
       -- use the IH and the fact that ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋ to prove this case
       obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_inv_eq_floor⟩ :
-        ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋
-      exact IntFractPair.exists_succ_nth_stream_of_fr_zero succ_nth_stream_eq ifp_succ_n_fr_eq_zero
+          ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋ :=
+        IntFractPair.exists_succ_nth_stream_of_fr_zero succ_nth_stream_eq ifp_succ_n_fr_eq_zero
       have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
       cases this
       have s_nth_eq : g.s.get? n = some ⟨1, ⌊ifp_n.fr⁻¹⌋⟩ :=
@@ -163,8 +163,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
       -- get the correspondence between ifp_n and ifp_succ_n
       obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_ne_zero, ⟨refl⟩⟩ :
         ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
-          ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
-      exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
+          ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
+        IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
       have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
       cases this
       -- get the correspondence between ifp_n and g.s.nth n
@@ -269,8 +269,7 @@ be `v`.
 theorem of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
     ∀ᶠ n in atTop, v = (of v).convergents n := by
   rw [eventually_atTop]
-  obtain ⟨n, terminated_at_n⟩ : ∃ n, (of v).TerminatedAt n
-  exact terminates
+  obtain ⟨n, terminated_at_n⟩ : ∃ n, (of v).TerminatedAt n := terminates
   use n
   intro m m_geq_n
   rw [convergents_stable_of_terminated m_geq_n terminated_at_n]

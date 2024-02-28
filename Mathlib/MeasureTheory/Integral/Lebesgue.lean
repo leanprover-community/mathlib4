@@ -209,8 +209,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
       le_iSup_of_le (φ.map ENNReal.toNNReal) (le_iSup_of_le this (ge_of_eq <| lintegral_congr h))
   · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_zero_iff_ae_nmem.1 h
     refine' le_trans le_top (ge_of_eq <| (iSup_eq_top _).2 fun b hb => _)
-    obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞})
-    exact exists_nat_mul_gt h_meas (ne_of_lt hb)
+    obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
     use (const α (n : ℝ≥0)).restrict (φ ⁻¹' {∞})
     simp only [lt_iSup_iff, exists_prop, coe_restrict, φ.measurableSet_preimage, coe_const,
       ENNReal.coe_indicator, map_coe_ennreal_restrict, SimpleFunc.map_const, ENNReal.coe_nat,
@@ -1657,8 +1656,8 @@ theorem exists_pos_lintegral_lt_of_sigmaFinite (μ : Measure α) [SigmaFinite μ
   set s : ℕ → Set α := disjointed (spanningSets μ)
   have : ∀ n, μ (s n) < ∞ := fun n =>
     (measure_mono <| disjointed_subset _ _).trans_lt (measure_spanningSets_lt_top μ n)
-  obtain ⟨δ, δpos, δsum⟩ : ∃ δ : ℕ → ℝ≥0, (∀ i, 0 < δ i) ∧ (∑' i, μ (s i) * δ i) < ε
-  exact ENNReal.exists_pos_tsum_mul_lt_of_countable ε0 _ fun n => (this n).ne
+  obtain ⟨δ, δpos, δsum⟩ : ∃ δ : ℕ → ℝ≥0, (∀ i, 0 < δ i) ∧ (∑' i, μ (s i) * δ i) < ε :=
+    ENNReal.exists_pos_tsum_mul_lt_of_countable ε0 _ fun n => (this n).ne
   set N : α → ℕ := spanningSetsIndex μ
   have hN_meas : Measurable N := measurable_spanningSetsIndex μ
   have hNs : ∀ n, N ⁻¹' {n} = s n := preimage_spanningSetsIndex_singleton μ
