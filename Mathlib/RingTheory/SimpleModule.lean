@@ -45,6 +45,7 @@ abbrev IsSemisimpleModule :=
   ComplementedLattice (Submodule R M)
 #align is_semisimple_module IsSemisimpleModule
 
+/-- A ring is semisimple if it is semisimple as a module over itself. -/
 abbrev IsSemisimpleRing := IsSemisimpleModule R R
 
 theorem RingEquiv.isSemisimpleRing (e : R ≃+* S) [IsSemisimpleRing R] : IsSemisimpleRing S :=
@@ -123,6 +124,7 @@ theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
 
 end IsSimpleModule
 
+-- Note: I is not necessarily unique
 open IsSimpleModule in
 theorem isSimpleModule_iff_quot_maximal :
     IsSimpleModule R M ↔ ∃ I : Ideal R, I.IsMaximal ∧ Nonempty (M ≃ₗ[R] R ⧸ I) := by
@@ -133,6 +135,15 @@ theorem isSimpleModule_iff_quot_maximal :
       ⟨(LinearMap.quotKerEquivOfSurjective _ <| toSpanSingleton_surjective hm).symm⟩⟩
   · convert congr equiv; rwa [isSimpleModule_iff_isCoatom]
 
+/-- In general, the annihilator of a simple module is called a primitive ideal, and it is
+always a two-sided prime ideal, but mathlib's `Ideal.IsPrime` is not the correct definition
+for noncommutative rings. -/
+theorem IsSimpleModule.annihilator_isMaximal {R} [CommRing R] [Module R M]
+    [simple : IsSimpleModule R M] : (Module.annihilator R M).IsMaximal := by
+  have ⟨I, max, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp simple
+  rwa [e.annihilator_eq, I.annihilator_quotient]
+
+-- TODO: IsSeimpleModule R R ↔ ∃ (x : R) ≠ 0, IsUnit x
 instance (R) [DivisionRing R] : IsSimpleModule R R :=
   isSimpleModule_iff_quot_maximal.mpr
     ⟨⊥, Ideal.bot_isMaximal, ⟨(Submodule.quotEquivOfEqBot _ rfl).symm⟩⟩
@@ -153,6 +164,11 @@ theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = 
   exact sSup_atoms_eq_top
 #align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.sSup_simples_eq_top
 
+theorem annihilator_isRadical {R} [CommRing R] [Module R M] [IsSemisimpleModule R M] :
+    (Module.annihilator R M).IsRadical := by
+  rw [← Submodule.annihilator_top, ← sSup_simples_eq_top, sSup_eq_iSup', Submodule.annihilator_iSup]
+  exact Ideal.isRadical_iInf _ fun i ↦ (i.2.annihilator_isMaximal).isPrime.isRadical
+
 instance is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
   haveI f : Submodule R m ≃o Set.Iic m := Submodule.MapSubtype.relIso m
   f.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
@@ -167,6 +183,7 @@ instance : IsSemisimpleModule R (M ⧸ m) :=
   have ⟨P, compl⟩ := exists_isCompl m
   .congr (m.quotientEquivOfIsCompl P compl)
 
+-- does not work as an instance, not sure why
 protected theorem range [IsSemisimpleModule R M] (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
   .congr (quotKerEquivRange _).symm
 
@@ -192,9 +209,7 @@ end IsSemisimpleModule
 
 theorem is_semisimple_iff_top_eq_sSup_simples :
     sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ ↔ IsSemisimpleModule R M :=
-  ⟨is_semisimple_of_sSup_simples_eq_top, by
-    intro
-    exact IsSemisimpleModule.sSup_simples_eq_top⟩
+  ⟨is_semisimple_of_sSup_simples_eq_top, fun _ ↦ IsSemisimpleModule.sSup_simples_eq_top⟩
 #align is_semisimple_iff_top_eq_Sup_simples is_semisimple_iff_top_eq_sSup_simples
 
 lemma isSemisimpleModule_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
@@ -225,8 +240,9 @@ lemma isSemisimpleModule_of_isSemisimpleModule_submodule' {p : ι → Submodule 
     IsSemisimpleModule R M :=
   isSemisimpleModule_of_isSemisimpleModule_submodule (s := Set.univ) (fun i _ ↦ hp i) (by simpa)
 
-instance IsSemisimpleModule.sup {p q : Submodule R M}
-    (_ : IsSemisimpleModule R p) (_ : IsSemisimpleModule R q) : IsSemisimpleModule R ↥(p ⊔ q) := by
+theorem IsSemisimpleModule.sup {p q : Submodule R M}
+    (_ : IsSemisimpleModule R p) (_ : IsSemisimpleModule R q) :
+    IsSemisimpleModule R ↥(p ⊔ q) := by
   let f : Bool → Submodule R M := Bool.rec q p
   rw [show p ⊔ q = ⨆ i ∈ Set.univ, f i by rw [iSup_univ, iSup_bool_eq]]
   exact isSemisimpleModule_biSup_of_isSemisimpleModule_submodule (by rintro (_|_) _ <;> assumption)
@@ -248,7 +264,7 @@ instance {ι} [Finite ι] (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsSemis
   exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single ·))
     (fun i ↦ .range _) (by simp_rw [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
 
--- e₁, e₂ got falsely flagged
+-- e₁, e₂ got falsely flagged by the unused argument linter
 instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := by
   letI : Module (R × S) R := Module.compHom _ (.fst R S)
   letI : Module (R × S) S := Module.compHom _ (.snd R S)
@@ -268,6 +284,7 @@ theorem RingHom.isSemisimpleRing_of_surjective (f : R →+* S) (hf : Function.Su
   rw [IsSemisimpleRing, ← e.isSemisimpleModule_iff_of_bijective Function.bijective_id]
   infer_instance
 
+-- TODO: add import and IsPrincipalRing instance?
 theorem IsSemisimpleRing.ideal_eq_span_idempotent [IsSemisimpleRing R] (I : Ideal R) :
     ∃ e : R, IsIdempotentElem e ∧ I = .span {e} := by
   obtain ⟨J, h⟩ := exists_isCompl I
@@ -285,9 +302,12 @@ proof_wanted IsSemisimpleRing.module_end [IsSemisimpleRing R] [Module.Finite R M
 proof_wanted IsSemisimpleRing.matrix [Fintype ι] [DecidableEq ι] [IsSemisimpleRing R] :
     IsSemisimpleRing (Matrix ι ι R)
 
--- TODO: IsSemisimpleRing → IsPrincipalIdealRing (generated by idempotent)
--- Simple submodule ↔ minimal (left) ideals
--- Isotypic components ↔ minimal two-sided ideals
+universe u in
+/- The existence part of the Artin–Wedderburn theorem. -/
+proof_wanted isSemisimpleRing_iff_pi_matrix_divisionRing {R : Type u} [Ring R] :
+    IsSemisimpleRing R ↔
+    ∃ (n : ℕ) (S : Fin n → Type u) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (S i)),
+      Nonempty (R ≃+* ∀ i, Matrix (Fin (d i)) (Fin (d i)) (S i))
 
 variable {ι R}
 

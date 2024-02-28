@@ -233,7 +233,7 @@ def IsTorsion :=
 #align module.is_torsion Module.IsTorsion
 
 theorem isTorsionBySet_annihilator : IsTorsionBySet R M (Module.annihilator R M) :=
-  fun _ r ↦ Submodule.mem_annihilator.mp r.2 _ trivial
+  fun _ r ↦ Module.mem_annihilator.mp r.2 _
 
 end Module
 

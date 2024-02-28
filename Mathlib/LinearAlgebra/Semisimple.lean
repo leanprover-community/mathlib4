@@ -5,10 +5,12 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Module.PID
 import Mathlib.Data.Polynomial.Module.FiniteDimensional
-import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.FieldTheory.Perfect
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.Order.CompleteSublattice
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.SimpleModule
 
 /-!
@@ -78,39 +80,16 @@ lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Mo
 @[simp] lemma isSemisimple_neg : (-f).IsSemisimple ↔ f.IsSemisimple := by simp [isSemisimple_iff]
 
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
-  nontriviality M
-  set k := nilpotencyClass f
-  wlog hk : 2 ≤ k
-  · replace hk : k = 0 ∨ k = 1 := by omega
-    rcases hk with (hk₀ : nilpotencyClass f = 0) | (hk₁ : nilpotencyClass f = 1)
-    · rw [← pos_nilpotencyClass_iff, hk₀] at hn; contradiction
-    · exact eq_zero_of_nilpotencyClass_eq_one hk₁
-  let p := LinearMap.ker (f ^ (k - 1))
-  have hp : p ≤ p.comap f := fun x hx ↦ by
-    rw [Submodule.mem_comap, LinearMap.mem_ker, ← LinearMap.mul_apply, ← pow_succ', add_comm,
-      pow_add, pow_one, LinearMap.mul_apply, hx, map_zero]
-  obtain ⟨q, hq₀, hq₁, hq₂⟩ := isSemisimple_iff.mp hs p hp
-  replace hq₂ : q ≠ ⊥ := hq₂.ne_bot_of_ne_top <|
-    fun contra ↦ pow_pred_nilpotencyClass hn <| LinearMap.ker_eq_top.mp contra
-  obtain ⟨m, hm₁ : m ∈ q, hm₀ : m ≠ 0⟩ := q.ne_bot_iff.mp hq₂
-  suffices m ∈ p by
-    exfalso
-    apply hm₀
-    rw [← Submodule.mem_bot (R := R), ← hq₁.eq_bot]
-    exact ⟨this, hm₁⟩
-  replace hm₁ : f m = 0 := by
-    rw [← Submodule.mem_bot (R := R), ← hq₁.eq_bot]
-    refine ⟨(?_ : f m ∈ p), hq₀ hm₁⟩
-    rw [LinearMap.mem_ker, ← LinearMap.mul_apply, ← pow_succ', (by omega : k - 1 + 1 = k),
-      pow_nilpotencyClass hn, LinearMap.zero_apply]
-  rw [LinearMap.mem_ker]
-  exact LinearMap.pow_map_zero_of_le (by omega : 1 ≤ k - 1) hm₁
+  have ⟨n, h0⟩ := hn
+  rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
+  rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
+  exact hs.annihilator_isRadical ⟨n, h0⟩
 
 end CommRing
 
 section field
 
-variable {K : Type*} [Field K] [Module K M] {f : End K M}
+variable {K : Type*} [Field K] [Module K M] {f g : End K M}
 
 lemma IsSemisimple_smul_iff {t : K} (ht : t ≠ 0) :
     (t • f).IsSemisimple ↔ f.IsSemisimple := by
@@ -121,23 +100,67 @@ lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
   wlog ht : t ≠ 0; · simp [not_not.mp ht]
   rwa [IsSemisimple_smul_iff ht]
 
-open UniqueFactorizationMonoid in
 theorem isSemisimple_of_squarefree_aeval_eq_zero [FiniteDimensional K M]
     {p : K[X]} (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
-  classical
-  have := (Submodule.isInternal_prime_power_torsion_of_pid <|
-    AEval.isTorsion_of_finiteDimensional K M f).submodule_iSup_eq_top
-  rw [AEval.annihilator_top_eq_ker_aeval, minpoly.ker_aeval_eq_span_minpoly,
-    Ideal.submodule_span_eq, factors_eq_normalizedFactors] at this
-  refine isSemisimpleModule_of_isSemisimpleModule_submodule'
-    (fun ⟨q, hq₁⟩ ↦ Submodule.isSemisimple_torsionBy_of_irreducible <| Prime.irreducible ?_) this
-  simp only [Multiset.mem_toFinset] at hq₁
-  simp only [prime_pow_iff]
-  refine ⟨Ideal.prime_generator_of_prime (prime_of_normalized_factor q hq₁),
-    Multiset.count_eq_one_of_mem ?_ hq₁⟩
-  have hf : Ideal.span {minpoly K f} ≠ 0 := by simpa using minpoly.ne_zero_of_finite K f
-  rw [← squarefree_iff_nodup_normalizedFactors hf, Ideal.squarefree_span_singleton]
-  exact hp.squarefree_of_dvd (minpoly.dvd K f hpf)
+  rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
+      ← IsTorsionBy, ← isTorsionBySet_singleton_iff, isTorsionBySet_iff_is_torsion_by_span] at hpf
+  let R := K[X] ⧸ Ideal.span {p}
+  have : IsReduced R :=
+    (Ideal.isRadical_iff_quotient_reduced _).mp (isRadical_iff_span_singleton.mp hp.isRadical)
+  have : FiniteDimensional K R := (AdjoinRoot.powerBasis hp.ne_zero).finite
+  haveI : IsArtinianRing R := .of_finite K R
+  letI : Module R (AEval' f) := Module.IsTorsionBySet.module hpf
+  let e : AEval' f →ₛₗ[Ideal.Quotient.mk (Ideal.span {p})] AEval' f :=
+    { AddMonoidHom.id _ with map_smul' := fun _ _ ↦ rfl }
+  exact (e.isSemisimpleModule_iff_of_bijective bijective_id).mpr inferInstance
+
+variable [FiniteDimensional K M]
+
+/-- The minimal polynomial of a semisimple endomorphism is square free -/
+theorem IsSemisimple.minpoly_squarefree (hf : f.IsSemisimple) : Squarefree (minpoly K f) :=
+  IsRadical.squarefree (minpoly.ne_zero <| isIntegral _) <| by
+    rw [isRadical_iff_span_singleton, span_minpoly_eq_annihilator]; exact hf.annihilator_isRadical
+
+variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
+
+theorem isSemisimple_of_mem_adjoin {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
+    a.IsSemisimple := by
+  let R := K[X] ⧸ Ideal.span {minpoly K f}
+  let S := AdjoinRoot ((minpoly K g).map <| algebraMap K R)
+  haveI : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
+  haveI : Finite R S := (AdjoinRoot.powerBasis' <| (minpoly.monic <| isIntegral g).map _).finite
+  haveI : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
+  haveI : Finite K S := .trans R S
+  haveI : IsArtinianRing R := .of_finite K R
+  haveI : IsArtinianRing S := .of_finite R S
+  haveI : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
+    span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
+  haveI : IsReduced S := by
+    simp_rw [AdjoinRoot, ← Ideal.isRadical_iff_quotient_reduced, ← isRadical_iff_span_singleton]
+    exact (PerfectField.separable_iff_squarefree.mpr hg.minpoly_squarefree).map.squarefree.isRadical
+  let φ : S →ₐ[K] End K M := Ideal.Quotient.liftₐ _ (eval₂AlgHom' (Ideal.Quotient.liftₐ _ (aeval f)
+    fun a ↦ ?_) g ?_) ((Ideal.span_singleton_le_iff_mem _).mpr ?_ : _ ≤ RingHom.ker _)
+  rotate_left 1
+  · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
+  · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [Algebra.commute_algebraMap_left])
+      (fun p q hp hq ↦ by simpa using hp.add_left hq)
+      fun n k ↦ by simpa [pow_succ', ← mul_assoc _ _ X] using (·.mul_left comm)
+  · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
+      using minpoly.aeval K g
+  have : Algebra.adjoin K {f, g} ≤ φ.range := Algebra.adjoin_le fun x ↦ by
+    rintro (hx | hx) <;> rw [hx]
+    · exact ⟨AdjoinRoot.of _ (AdjoinRoot.root _), (eval₂_C _ _).trans (aeval_X f)⟩
+    · exact ⟨AdjoinRoot.root _, eval₂_X _ _⟩
+  obtain ⟨p, rfl⟩ := (AlgHom.mem_range _).mp (this ha)
+  refine isSemisimple_of_squarefree_aeval_eq_zero
+    ((minpoly.isRadical K p).squarefree <| minpoly.ne_zero <| .of_finite K p) ?_
+  rw [aeval_algHom, φ.comp_apply, minpoly.aeval, φ.map_zero]
+
+theorem isSemisimple_add_of_commute : (f + g).IsSemisimple := isSemisimple_of_mem_adjoin comm
+  hf hg <| add_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)
+
+theorem isSemisimple_mul_of_commute : (f * g).IsSemisimple := isSemisimple_of_mem_adjoin comm
+  hf hg <| mul_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)
 
 end field
 

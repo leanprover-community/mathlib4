@@ -527,12 +527,15 @@ lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   simp_rw [← isPrime_iff_isMaximal]
   apply primeSpectrum_finite R
 
+local instance : Finite {I : Ideal R | I.IsMaximal} := (maximal_ideals_finite R).to_subtype
+
+noncomputable local instance (I : {I : Ideal R | I.IsMaximal}) : Field (R ⧸ I.1) :=
+  have := mem_setOf.mp I.2; Ideal.Quotient.field I.1
+
 /-- The quotient of a commutative artinian ring by its nilradical is isomorphic to
 a product of finitely many fields, namely the quotients by the maximal ideals. -/
 noncomputable def quotNilradicalEquivPi :
     R ⧸ nilradical R ≃+* ∀ I : {I : Ideal R | I.IsMaximal}, R ⧸ I.1 :=
-  letI := Set.finite_coe_iff.mpr (maximal_ideals_finite R)
-  letI := Fintype.ofFinite -- to remove
   .trans (Ideal.quotEquivOfEq <| ext fun x ↦ by simp_rw [mem_nilradical,
     nilpotent_iff_mem_prime, Submodule.mem_iInf, Subtype.forall, isPrime_iff_isMaximal, mem_setOf])
   (Ideal.quotientInfRingEquivPiQuotient _ fun I J h ↦
@@ -544,14 +547,12 @@ noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : {I : Ideal R | I.IsMax
   .trans (.symm <| .quotientBot R) <| .trans
     (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
 
-instance [IsReduced R] : DecompositionMonoid R :=
-  letI := fun I : {I : Ideal R | I.IsMaximal} ↦ have := mem_setOf.mp I.2; Ideal.Quotient.field I.1
-  MulEquiv.decompositionMonoid (equivPi R)
+instance [IsReduced R] : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
 
-instance [IsReduced R] : IsSemisimpleRing R :=
-  letI := Set.finite_coe_iff.mpr (maximal_ideals_finite R)
-  letI := fun I : {I : Ideal R | I.IsMaximal} ↦ have := mem_setOf.mp I.2; Ideal.Quotient.field I.1
-  (equivPi R).symm.isSemisimpleRing
+instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
+  MulEquiv.decompositionMonoid <| (Polynomial.mapEquiv <| equivPi R).trans (Polynomial.piEquiv _)
+
+instance [IsReduced R] : IsSemisimpleRing R := (equivPi R).symm.isSemisimpleRing
 
 proof_wanted IsSemisimpleRing.isArtinianRing [IsSemisimpleRing R] : IsArtinianRing R
 
