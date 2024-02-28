@@ -111,6 +111,7 @@ scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
+It also turns on `zetaDelta` in the `simp` config, allowing `aesop_cat` to unfold any `let`s.
 This tactic fails when it is unable to solve the goal, making it suitable for
 use in auto-params.
 -/
