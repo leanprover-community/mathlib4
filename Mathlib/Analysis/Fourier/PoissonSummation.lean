@@ -97,7 +97,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
     -- Minor tidying to finish
     _ = 𝓕 f m := by
-      rw [fourierIntegral_eq_integral_exp_smul]
+      rw [fourierIntegral_real_eq_integral_exp_smul]
       congr 1 with x : 1
       rw [smul_eq_mul, comp_apply, coe_mk, coe_mk, ContinuousMap.toFun_eq_coe, fourier_coe_apply]
       congr 2
