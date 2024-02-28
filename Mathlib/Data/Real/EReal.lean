@@ -203,7 +203,7 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
 /-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that the relation is symmetric. -/
 @[elab_as_elim]
-theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ ⦃x y⦄, P x y → P y x)
+theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x y → P y x)
     (top_top : P ⊤ ⊤) (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0)
     (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x) (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥)
     (coe_coe : ∀ x y : ℝ, P x y) (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥)
@@ -1160,7 +1160,7 @@ infinite. This version eliminates some cases by assuming that `P` is symmetric a
 `P (-x) y` for all `x`, `y`. -/
 @[elab_as_elim]
 theorem induction₂_symm_neg {P : EReal → EReal → Prop}
-    (symm : ∀ ⦃x y⦄, P x y → P y x)
+    (symm : ∀ {x y}, P x y → P y x)
     (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
     (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
     ∀ x y, P x y :=
