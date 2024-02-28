@@ -532,28 +532,13 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
   Multiset.mem_add
 #align sym.mem_append_iff Sym.mem_append_iff
 
-/-- An element of type α can be seen as an element of Sym α 1 --/
-def one (i : α) : Sym α 1 := ⟨[i], by simp only [Multiset.coe_singleton,
-  Multiset.card_singleton]⟩
-
-lemma one_coe (i : α) : (one i : Multiset α) = {i} := rfl
-
-variable (α) in
-lemma one_bijective : Function.Bijective (one : α → Sym α 1) := by
-  refine ⟨fun _ _ h ↦ Multiset.singleton_inj.1 <| by simp [← one_coe, h], fun x ↦ ?_⟩
-  obtain ⟨i, hi⟩ := Multiset.card_eq_one.1 x.2
-  exact ⟨i, ext <| by simp [one_coe, ← hi]⟩
-
 open Multiset Classical in
 @[simps apply]
 noncomputable def one_equiv : α ≃ Sym α 1 where
-  toFun := fun i ↦ ⟨[i], by simp only [coe_singleton, card_singleton]⟩
-  invFun := fun x ↦ choose <| card_eq_one.1 x.2
-  left_inv := fun i ↦ by simpa using (choose_spec <| card_eq_one.1
-      (⟨[i], by simp only [coe_singleton, card_singleton]⟩ : Sym α 1).2).symm
-  right_inv := fun x ↦ by
-    simp only [val_eq_coe, coe_singleton]
-    exact ext <| by simp_rw [← choose_spec <| card_eq_one.1 x.2]; rfl
+  toFun := fun i ↦ ⟨{i}, by simp⟩
+  invFun := fun x ↦ (card_eq_one.1 x.2).choose
+  left_inv := fun i ↦ by simpa using (card_eq_one.1 (⟨{i}, by simp⟩ : Sym α 1).2).choose_spec.symm
+  right_inv := fun x ↦ ext <| by simp_rw [← choose_spec <| card_eq_one.1 x.2]; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
