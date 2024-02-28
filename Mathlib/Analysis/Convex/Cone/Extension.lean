@@ -64,8 +64,7 @@ submodule without breaking the non-negativity condition. -/
 theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) (hdom : f.domain ≠ ⊤) :
     ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x := by
-  obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain :=
-    @SetLike.exists_of_lt (Submodule ℝ E) _ _ _ _ (lt_top_iff_ne_top.2 hdom)
+  obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain := SetLike.exists_of_lt (lt_top_iff_ne_top.2 hdom)
   obtain ⟨c, le_c, c_le⟩ :
       ∃ c, (∀ x : f.domain, -(x : E) - y ∈ s → f x ≤ c) ∧
         ∀ x : f.domain, (x : E) + y ∈ s → c ≤ f x := by

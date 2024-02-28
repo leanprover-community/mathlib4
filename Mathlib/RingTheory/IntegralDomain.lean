@@ -214,10 +214,9 @@ theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G 
 -/
 theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
   classical
-    obtain ⟨x, hx⟩ :
-      ∃ x : MonoidHom.range f.toHomUnits,
-        ∀ y : MonoidHom.range f.toHomUnits, y ∈ Submonoid.powers x
-    exact IsCyclic.exists_monoid_generator
+    obtain ⟨x, hx⟩ : ∃ x : MonoidHom.range f.toHomUnits,
+        ∀ y : MonoidHom.range f.toHomUnits, y ∈ Submonoid.powers x :=
+      IsCyclic.exists_monoid_generator
     have hx1 : x ≠ 1 := by
       rintro rfl
       apply hf

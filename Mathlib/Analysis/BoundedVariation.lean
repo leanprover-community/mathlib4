@@ -474,10 +474,9 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
   obtain ⟨v, m, hv, vst, xv, huv⟩ : ∃ (v : ℕ → α) (m : ℕ),
     Monotone v ∧ (∀ i, v i ∈ s ∪ t) ∧ x ∈ v '' Iio m ∧
       (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
-        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j))
-  exact eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
-  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x
-  exact xv
+        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
+    eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
+  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x := xv
   calc
     (∑ j in Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
         ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=

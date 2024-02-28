@@ -959,8 +959,8 @@ theorem eq_pow_of_pell {m n k} :
     have na : n ≤ a := nw.trans (n_lt_xn w1 w).le
     set x := xn a1 k
     set y := yn a1 k
-    obtain ⟨z, ze⟩ : w ∣ yn w1 w
-    exact modEq_zero_iff_dvd.1 ((yn_modEq_a_sub_one w1 w).trans dvd_rfl.modEq_zero_nat)
+    obtain ⟨z, ze⟩ : w ∣ yn w1 w :=
+      modEq_zero_iff_dvd.1 ((yn_modEq_a_sub_one w1 w).trans dvd_rfl.modEq_zero_nat)
     have nt : (↑(n ^ k) : ℤ) < 2 * a * n - n * n - 1 := by
       refine' eq_pow_of_pell_lem hn.ne' hk.ne' _
       calc

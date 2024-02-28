@@ -123,10 +123,10 @@ theorem squashSeq_nth_of_lt {m : ℕ} (m_lt_n : m < n) : (squashSeq s n).get? m 
   cases s_succ_nth_eq : s.get? (n + 1) with
   | none => rw [squashSeq_eq_self_of_terminated s_succ_nth_eq]
   | some =>
-    obtain ⟨gp_n, s_nth_eq⟩ : ∃ gp_n, s.get? n = some gp_n
-    exact s.ge_stable n.le_succ s_succ_nth_eq
-    obtain ⟨gp_m, s_mth_eq⟩ : ∃ gp_m, s.get? m = some gp_m
-    exact s.ge_stable (le_of_lt m_lt_n) s_nth_eq
+    obtain ⟨gp_n, s_nth_eq⟩ : ∃ gp_n, s.get? n = some gp_n :=
+      s.ge_stable n.le_succ s_succ_nth_eq
+    obtain ⟨gp_m, s_mth_eq⟩ : ∃ gp_m, s.get? m = some gp_m :=
+      s.ge_stable (le_of_lt m_lt_n) s_nth_eq
     simp [*, squashSeq, m_lt_n.ne]
 #align generalized_continued_fraction.squash_seq_nth_of_lt GeneralizedContinuedFraction.squashSeq_nth_of_lt
 
@@ -139,8 +139,8 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
     cases s_succ_nth_eq : s.get? (n + 1) <;>
       simp only [squashSeq, Stream'.Seq.get?_tail, s_succ_nth_eq, s_succ_succ_nth_eq]
   | some gp_succ_succ_n =>
-    obtain ⟨gp_succ_n, s_succ_nth_eq⟩ : ∃ gp_succ_n, s.get? (n + 1) = some gp_succ_n;
-    exact s.ge_stable (n + 1).le_succ s_succ_succ_nth_eq
+    obtain ⟨gp_succ_n, s_succ_nth_eq⟩ : ∃ gp_succ_n, s.get? (n + 1) = some gp_succ_n :=
+      s.ge_stable (n + 1).le_succ s_succ_succ_nth_eq
     -- apply extensionality with `m` and continue by cases `m = n`.
     ext1 m
     cases' Decidable.em (m = n) with m_eq_n m_ne_n
@@ -162,14 +162,14 @@ theorem succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squashSeq :
   | some gp_succ_n =>
     induction n generalizing s gp_succ_n with
     | zero =>
-      obtain ⟨gp_head, s_head_eq⟩ : ∃ gp_head, s.head = some gp_head
-      exact s.ge_stable zero_le_one s_succ_nth_eq
+      obtain ⟨gp_head, s_head_eq⟩ : ∃ gp_head, s.head = some gp_head :=
+        s.ge_stable zero_le_one s_succ_nth_eq
       have : (squashSeq s 0).head = some ⟨gp_head.a, gp_head.b + gp_succ_n.a / gp_succ_n.b⟩ :=
         squashSeq_nth_of_not_terminated s_head_eq s_succ_nth_eq
       simp_all [convergents'Aux, Stream'.Seq.head, Stream'.Seq.get?_tail]
     | succ m IH =>
-      obtain ⟨gp_head, s_head_eq⟩ : ∃ gp_head, s.head = some gp_head
-      exact s.ge_stable (m + 2).zero_le s_succ_nth_eq
+      obtain ⟨gp_head, s_head_eq⟩ : ∃ gp_head, s.head = some gp_head :=
+        s.ge_stable (m + 2).zero_le s_succ_nth_eq
       suffices
         gp_head.a / (gp_head.b + convergents'Aux s.tail (m + 2)) =
           convergents'Aux (squashSeq s (m + 1)) (m + 2)
@@ -267,8 +267,8 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
   cases' Decidable.em (g.TerminatedAt n) with terminated_at_n not_terminated_at_n
   · have : squashGCF g n = g := squashGCF_eq_self_of_terminated terminated_at_n
     simp only [this, convergents_stable_of_terminated n.le_succ terminated_at_n]
-  · obtain ⟨⟨a, b⟩, s_nth_eq⟩ : ∃ gp_n, g.s.get? n = some gp_n
-    exact Option.ne_none_iff_exists'.mp not_terminated_at_n
+  · obtain ⟨⟨a, b⟩, s_nth_eq⟩ : ∃ gp_n, g.s.get? n = some gp_n :=
+      Option.ne_none_iff_exists'.mp not_terminated_at_n
     have b_ne_zero : b ≠ 0 := nth_part_denom_ne_zero (part_denom_eq_s_b s_nth_eq)
     cases n with
     | zero =>
@@ -362,10 +362,10 @@ theorem convergents_eq_convergents' [LinearOrderedField K]
         cases' m_lt_n with n succ_m_lt_n
         · -- the difficult case at the squashed position: we first obtain the values from
           -- the sequence
-          obtain ⟨gp_succ_m, s_succ_mth_eq⟩ : ∃ gp_succ_m, g.s.get? (m + 1) = some gp_succ_m
-          exact Option.ne_none_iff_exists'.mp not_terminated_at_n
-          obtain ⟨gp_m, mth_s_eq⟩ : ∃ gp_m, g.s.get? m = some gp_m
-          exact g.s.ge_stable m.le_succ s_succ_mth_eq
+          obtain ⟨gp_succ_m, s_succ_mth_eq⟩ : ∃ gp_succ_m, g.s.get? (m + 1) = some gp_succ_m :=
+            Option.ne_none_iff_exists'.mp not_terminated_at_n
+          obtain ⟨gp_m, mth_s_eq⟩ : ∃ gp_m, g.s.get? m = some gp_m :=
+            g.s.ge_stable m.le_succ s_succ_mth_eq
           -- we then plug them into the recurrence
           suffices 0 < gp_m.a ∧ 0 < gp_m.b + gp_succ_m.a / gp_succ_m.b by
             have ot : g'.s.get? m = some ⟨gp_m.a, gp_m.b + gp_succ_m.a / gp_succ_m.b⟩ :=
@@ -385,8 +385,8 @@ theorem convergents_eq_convergents' [LinearOrderedField K]
       -- as established in `succ_nth_convergent_eq_squashGCF_nth_convergent`.
       have : ∀ ⦃b⦄, g.partialDenominators.get? n = some b → b ≠ 0 := by
         intro b nth_part_denom_eq
-        obtain ⟨gp, s_nth_eq, ⟨refl⟩⟩ : ∃ gp, g.s.get? n = some gp ∧ gp.b = b
-        exact exists_s_b_of_part_denom nth_part_denom_eq
+        obtain ⟨gp, s_nth_eq, ⟨refl⟩⟩ : ∃ gp, g.s.get? n = some gp ∧ gp.b = b :=
+          exists_s_b_of_part_denom nth_part_denom_eq
         exact (ne_of_lt (s_pos (lt_add_one n) s_nth_eq).right).symm
       exact succ_nth_convergent_eq_squashGCF_nth_convergent @this
 #align generalized_continued_fraction.convergents_eq_convergents' GeneralizedContinuedFraction.convergents_eq_convergents'
