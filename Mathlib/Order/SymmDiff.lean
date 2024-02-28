@@ -741,7 +741,7 @@ theorem compl_bihimp : (a ⇔ b)ᶜ = a ∆ b :=
 
 @[simp]
 theorem compl_symmDiff_compl : aᶜ ∆ bᶜ = a ∆ b :=
-  sup_comm.trans <| by simp_rw [compl_sdiff_compl, sdiff_eq, symmDiff_eq]
+  (sup_comm _ _).trans <| by simp_rw [compl_sdiff_compl, sdiff_eq, symmDiff_eq]
 #align compl_symm_diff_compl compl_symmDiff_compl
 
 @[simp]

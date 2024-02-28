@@ -65,7 +65,7 @@ theorem boundary_top : ∂ (⊤ : α) = ⊥ := by rw [boundary, hnot_top, inf_bo
 #align coheyting.boundary_top Coheyting.boundary_top
 
 theorem boundary_hnot_le (a : α) : ∂ (￢a) ≤ ∂ a :=
-  inf_comm.trans_le <| inf_le_inf_right _ hnot_hnot_le
+  (inf_comm _ _).trans_le <| inf_le_inf_right _ hnot_hnot_le
 #align coheyting.boundary_hnot_le Coheyting.boundary_hnot_le
 
 @[simp]
