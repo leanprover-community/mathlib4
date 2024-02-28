@@ -317,9 +317,9 @@ theorem hsymm_zero : hsymm σ R 0 = 1 := by
 theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
   simp only [hsymm, univ_unique]
   symm
-  apply Fintype.sum_equiv one_equiv
+  apply Fintype.sum_equiv oneEquiv
   intro i
-  simp only [one_equiv_apply, Multiset.map_singleton, Multiset.prod_singleton]
+  simp only [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton]
 
 theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
   simp_rw [hsymm, map_sum, ← Multiset.prod_hom']
