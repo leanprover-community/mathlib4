@@ -633,6 +633,10 @@ theorem rangeRestrict_surjective (f : A →ₐ[R] B):
   let ⟨x, hx⟩ := hy
   ⟨x, SetCoe.ext hx⟩
 
+theorem ker_rangeRestrict (f : A →ₐ[R] B) :
+    RingHom.ker f.rangeRestrict = RingHom.ker f :=
+  Ideal.ext fun _ ↦ Subtype.ext_iff
+
 /-- The equalizer of two R-algebra homomorphisms -/
 def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
