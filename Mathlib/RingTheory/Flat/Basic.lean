@@ -47,10 +47,6 @@ This result is not yet formalised.
   To do this, it is probably a good idea to think about a suitable
   categorical induction principle that should be applied to the category of `R`-modules,
   and that will take care of the administrative side of the proof.
-* Define flat `R`-algebras
-* Define flat ring homomorphisms
-  - Show that the identity is flat
-  - Show that composition of flat morphisms is flat
 * Show that flatness is stable under base change (aka extension of scalars)
   For base change, it will be very useful to have a "characteristic predicate"
   instead of relying on the construction `A ⊗ B`.
@@ -74,14 +70,13 @@ open TensorProduct
 
 /-- An `R`-module `M` is flat if for all finitely generated ideals `I` of `R`,
 the canonical map `I ⊗ M →ₗ M` is injective. -/
-class Flat (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] : Prop where
+class Flat : Prop where
   out : ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 #align module.flat Module.Flat
 
 /-- An `R`-module is flat if for all injectives `R`-linear maps `L : N → N'`, `L ⊗ 𝟙 M` is also
   injective. -/
-def Flat.rTensor_preserves_injectiveness
-    (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] : Prop :=
+def Flat.rTensor_preserves_injectiveness : Prop :=
   ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
     (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M)
 namespace Flat
