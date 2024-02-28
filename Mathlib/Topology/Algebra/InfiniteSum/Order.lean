@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.IntNat
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 

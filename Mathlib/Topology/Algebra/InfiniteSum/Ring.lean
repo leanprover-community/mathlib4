@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
 
 #align_import topology.algebra.infinite_sum.ring from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
