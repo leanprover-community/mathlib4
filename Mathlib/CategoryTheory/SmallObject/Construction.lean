@@ -62,8 +62,7 @@ variable {C : Type u} [Category.{v} C] {I : Type w} {A B : I → C} (f : ∀ i, 
 
 section
 
-variable {S : C} {X Y Z : C} (πX : X ⟶ S) (πY : Y ⟶ S) (πZ : Z ⟶ S)
-  (φ : X ⟶ Y) (hφ : φ ≫ πY = πX) (ψ : Y ⟶ Z) (hψ : ψ ≫ πZ = πY)
+variable {S : C} {X Y Z : C} (πX : X ⟶ S) (πY : Y ⟶ S) (φ : X ⟶ Y) (hφ : φ ≫ πY = πX)
 
 /-- Given a family of morphisms `f i : A i ⟶ B i` and a morphism `πX : X ⟶ S`,
 this type parametrizes the commutative squares with a morphism `f i` on the left
@@ -81,7 +80,6 @@ attribute [reassoc (attr := simp)] FunctorObjIndex.w
 
 variable [HasColimitsOfShape (Discrete (FunctorObjIndex f πX)) C]
   [HasColimitsOfShape (Discrete (FunctorObjIndex f πY)) C]
-  [HasColimitsOfShape (Discrete (FunctorObjIndex f πZ)) C]
 
 /-- The family of objects `A x.i` parametrized by `x : FunctorObjIndex f πX`. -/
 abbrev functorObjSrcFamily (x : FunctorObjIndex f πX) : C := A x.i
@@ -105,7 +103,6 @@ noncomputable abbrev functorObjLeft :
 
 variable [HasPushout (functorObjTop f πX) (functorObjLeft f πX)]
   [HasPushout (functorObjTop f πY) (functorObjLeft f πY)]
-  [HasPushout (functorObjTop f πZ) (functorObjLeft f πZ)]
 
 /-- The functor `SmallObject.functor f S : Over S ⥤ Over S` that is part of
 the small object argument for a family of morphisms `f`, on an object given
