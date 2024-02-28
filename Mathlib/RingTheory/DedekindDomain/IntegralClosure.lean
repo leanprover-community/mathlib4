@@ -3,7 +3,6 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.RingTheory.DedekindDomain.Basic
@@ -103,7 +102,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*}
   rw [← LinearMap.BilinForm.dualSubmodule_span_of_basis,
     ← LinearMap.BilinForm.le_flip_dualSubmodule, Submodule.span_le]
   rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
-  simp only [LinearMap.coe_restrictScalars, linearMap_apply, BilinForm.flip_apply, traceForm_apply]
+  simp only [LinearMap.coe_restrictScalars, linearMap_apply, LinearMap.flip_apply, traceForm_apply]
   refine IsIntegrallyClosed.isIntegral_iff.mp ?_
   exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis

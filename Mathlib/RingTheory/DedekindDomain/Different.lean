@@ -3,7 +3,6 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
@@ -178,7 +177,6 @@ lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRin
   simp only [restrictScalars_mem, traceForm_apply, AlgEquiv.toEquiv_eq_coe,
     EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
   refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)
-  simp only [BilinForm.toLin_apply, traceForm_apply, mem_one]
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
   swap
