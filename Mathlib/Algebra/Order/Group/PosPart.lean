@@ -92,7 +92,7 @@ def leOnePart (a : α) : α := a⁻¹ ⊔ 1
 @[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _
 
-@[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem
+@[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
 #align lattice_ordered_comm_group.pos_one oneLePart_one
 #align lattice_ordered_comm_group.pos_zero posPart_zero
 
