@@ -464,8 +464,7 @@ end Sup
 variable (α) [SemilatticeSup β]
 
 /-- The constant function as a `SupHom`. -/
-def const (b : β) : SupHom α β :=
-  ⟨fun _ => b, fun _ _ => sup_idem.symm⟩
+def const (b : β) : SupHom α β := ⟨fun _ ↦ b, fun _ _ ↦ (sup_idem _).symm⟩
 #align sup_hom.const SupHom.const
 
 @[simp]
@@ -649,8 +648,7 @@ end Inf
 variable (α) [SemilatticeInf β]
 
 /-- The constant function as an `InfHom`. -/
-def const (b : β) : InfHom α β :=
-  ⟨fun _ => b, fun _ _ => inf_idem.symm⟩
+def const (b : β) : InfHom α β := ⟨fun _ ↦ b, fun _ _ ↦ (inf_idem _).symm⟩
 #align inf_hom.const InfHom.const
 
 @[simp]

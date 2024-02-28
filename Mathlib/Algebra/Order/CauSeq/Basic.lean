@@ -903,22 +903,16 @@ protected theorem lt_inf {a b c : CauSeq α abs} (hb : a < b) (hc : a < c) : a <
   exact this.trans_eq (min_sub_sub_right _ _ _)
 #align cau_seq.lt_inf CauSeq.lt_inf
 
-@[simp]
-protected theorem sup_idem (a : CauSeq α abs) : a ⊔ a = a :=
-  Subtype.ext sup_idem
+@[simp] protected lemma sup_idem (a : CauSeq α abs) : a ⊔ a = a := Subtype.ext (sup_idem _)
 #align cau_seq.sup_idem CauSeq.sup_idem
 
-@[simp]
-protected theorem inf_idem (a : CauSeq α abs) : a ⊓ a = a :=
-  Subtype.ext inf_idem
+@[simp] protected lemma inf_idem (a : CauSeq α abs) : a ⊓ a = a := Subtype.ext (inf_idem _)
 #align cau_seq.inf_idem CauSeq.inf_idem
 
-protected theorem sup_comm (a b : CauSeq α abs) : a ⊔ b = b ⊔ a :=
-  Subtype.ext sup_comm
+protected lemma sup_comm (a b : CauSeq α abs) : a ⊔ b = b ⊔ a := Subtype.ext (sup_comm _ _)
 #align cau_seq.sup_comm CauSeq.sup_comm
 
-protected theorem inf_comm (a b : CauSeq α abs) : a ⊓ b = b ⊓ a :=
-  Subtype.ext inf_comm
+protected lemma inf_comm (a b : CauSeq α abs) : a ⊓ b = b ⊓ a := Subtype.ext (inf_comm _ _)
 #align cau_seq.inf_comm CauSeq.inf_comm
 
 protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈ b := by
