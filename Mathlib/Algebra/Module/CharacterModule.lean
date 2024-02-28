@@ -39,7 +39,7 @@ variable (A : Type uA) [AddCommGroup A]
 variable (B : Type uB) [AddCommGroup B]
 
 /--
-the character module of abelian group `A` in unit rational circle is `A⋆ := Hom_ℤ(A, ℚ ⧸ ℤ)`
+The character module of an abelian group `A` in the unit rational circle is `A⋆ := Hom_ℤ(A, ℚ ⧸ ℤ)`.
 -/
 def CharacterModule : Type uA := A →+ AddCircle (1 : ℚ)
 
@@ -70,8 +70,8 @@ variable {R A B}
 @[simp] lemma smul_apply (c : CharacterModule A) (r : R) (a : A) : (r • c) a = c (r • a) := rfl
 
 /--
-Given an abelian group homomorphism `f : A → B`, then `f⋆(L) := L ∘ f` defines a linear map
-between `B⋆` and `A⋆`
+Given an abelian group homomorphism `f : A → B`, `f⋆(L) := L ∘ f` defines a linear map
+from `B⋆` to `A⋆`.
 -/
 @[simps] def dual (f : A →ₗ[R] B) : CharacterModule B →ₗ[R] CharacterModule A where
   toFun L := L.comp f.toAddMonoidHom
@@ -94,7 +94,7 @@ def congr (e : A ≃ₗ[R] B) : CharacterModule A ≃ₗ[R] CharacterModule B :=
 open TensorProduct
 
 /--
-Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ b ↦ L a b`
+Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ b ↦ L a b`.
 -/
 @[simps] noncomputable def uncurry :
     (A →ₗ[R] CharacterModule B) →ₗ[R] CharacterModule (A ⊗[R] B) where
@@ -104,7 +104,7 @@ Any linear map `L : A → B⋆` induces a character in `(A ⊗ B)⋆` by `a ⊗ 
     (by simp_rw [map_zero]) (fun a b ↦ congr($(c.map_smul r a) b).symm) (by aesop)
 
 /--
-Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ b ↦ c (a ⊗ b) `
+Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ b ↦ c (a ⊗ b)`.
 -/
 @[simps] noncomputable def curry :
     CharacterModule (A ⊗[R] B) →ₗ[R] (A →ₗ[R] CharacterModule B) where
@@ -117,7 +117,7 @@ Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ 
   map_smul' r c := by ext; exact congr(c $(TensorProduct.tmul_smul _ _ _)).symm
 
 /--
-Linear maps into a character module are exactly characters of tensor product.
+Linear maps into a character module are exactly characters of the tensor product.
 -/
 @[simps!] noncomputable def homEquiv :
     (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
@@ -125,9 +125,8 @@ Linear maps into a character module are exactly characters of tensor product.
 
 end module
 
-
 /--
-`ℤ⋆`, the character module of `ℤ` in rational circle
+`ℤ⋆`, the character module of `ℤ` in the unit rational circle.
 -/
 protected abbrev int : Type := CharacterModule ℤ
 
@@ -159,19 +158,19 @@ lemma intSpanEquivQuotAddOrderOf_apply_self (a : A) :
   (LinearEquiv.eq_symm_apply _).mp <| Subtype.ext (one_zsmul _).symm
 
 /--
-For an abelian group `M` and an element `a ∈ M`, there is a character `c : ℤ ∙ a → ℚ⧸ℤ` given by
-`m • a ↦ m / n` where `n` is the smallest natural number such that `na = 0` and when such `n` does
-not exist, `c` is defined by `m • a ↦ m / 2`
+For an abelian group `A` and an element `a ∈ A`, there is a character `c : ℤ ∙ a → ℚ ⧸ ℤ` given by
+`m • a ↦ m / n` where `n` is the smallest positive integer such that `n • a = 0` and when such `n`
+does not exist, `c` is defined by `m • a ↦ m / 2`.
 -/
 noncomputable def ofSpanSingleton (a : A) : CharacterModule (ℤ ∙ a) :=
-  let l' :  ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
+  let l :  ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} →ₗ[ℤ] AddCircle (1 : ℚ) :=
     Submodule.liftQSpanSingleton _
       (CharacterModule.int.divByNat <|
         if addOrderOf a = 0 then 2 else addOrderOf a).toIntLinearMap <| by
         split_ifs with h
         · rw [h, Nat.cast_zero, map_zero]
         · apply CharacterModule.int.divByNat_self
-  l' ∘ₗ intSpanEquivQuotAddOrderOf a |>.toAddMonoidHom
+  l ∘ₗ intSpanEquivQuotAddOrderOf a |>.toAddMonoidHom
 
 lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
