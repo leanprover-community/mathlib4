@@ -39,10 +39,6 @@ namespace BilinForm
 
 variable {R R₁ R₂ R₃ M M₁ M₂ M₃ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type*}
 
-variable [CommRing R₁]
-
-variable [AddCommGroup M₁] [Module R₁ M₁]
-
 variable [CommSemiring R]
 
 variable [AddCommMonoid M] [Module R M]
@@ -50,6 +46,7 @@ variable [AddCommMonoid M] [Module R M]
 /-- Apply a linear map to the left argument of a bilinear form. -/
 def compLeft (B : BilinForm R M) (f : M →ₗ[R] M) : BilinForm R M :=
   B.compl₁₂ f LinearMap.id
+#align bilin_form.comp_left LinearMap.BilinForm.compLeft
 
 /-- Apply a linear map to the right argument of a bilinear form. -/
 def compRight (B : BilinForm R M) (f : M →ₗ[R] M) : BilinForm R M :=
@@ -58,22 +55,6 @@ def compRight (B : BilinForm R M) (f : M →ₗ[R] M) : BilinForm R M :=
 @[simp]
 theorem compLeft_apply (B : BilinForm R M) (f : M →ₗ[R] M) (v w) : B.compLeft f v w = B (f v) w :=
   rfl
-
-theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.SeparatingLeft) :
-    Function.Injective (B.compLeft) := fun φ ψ h => by
-  ext w
-  refine' eq_of_sub_eq_zero (b _ _)
-  intro v
-  rw [map_sub, sub_apply, ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
-#align bilin_form.comp_left_injective LinearMap.BilinForm.compLeft_injective
-
-theorem isAdjointPair_unique_of_separatingLeft (B : BilinForm R₁ M₁) (b : B.SeparatingLeft)
-    (φ ψ₁ ψ₂ : M₁ →ₗ[R₁] M₁) (hψ₁ : IsAdjointPair B B ψ₁ φ) (hψ₂ : IsAdjointPair B B ψ₂ φ) :
-    ψ₁ = ψ₂ := by
-  apply B.compLeft_injective b
-  ext v w
-  rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
-#align bilin_form.is_adjoint_pair_unique_of_nondegenerate LinearMap.BilinForm.isAdjointPair_unique_of_separatingLeft
 
 end BilinForm
 

@@ -273,7 +273,6 @@ def comp (B : BilinForm R M') (l r : M →ₗ[R] M') : BilinForm R M where
 /-- Apply a linear map to the left argument of a bilinear form. -/
 def compLeft (B : BilinForm R M) (f : M →ₗ[R] M) : BilinForm R M :=
   B.comp f LinearMap.id
-#align bilin_form.comp_left BilinForm.compLeft
 
 /-- Apply a linear map to the right argument of a bilinear form. -/
 def compRight (B : BilinForm R M) (f : M →ₗ[R] M) : BilinForm R M :=

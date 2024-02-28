@@ -23,6 +23,30 @@ namespace LinearMap
 
 namespace BilinForm
 
+section
+
+variable [CommRing R₁]
+
+variable [AddCommGroup M₁] [Module R₁ M₁]
+
+theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.SeparatingLeft) :
+    Function.Injective (B.compLeft) := fun φ ψ h => by
+  ext w
+  refine' eq_of_sub_eq_zero (b _ _)
+  intro v
+  rw [map_sub, sub_apply, ← compLeft_apply, ← compLeft_apply, ← h, sub_self]
+#align bilin_form.comp_left_injective LinearMap.BilinForm.compLeft_injective
+
+theorem isAdjointPair_unique_of_separatingLeft (B : BilinForm R₁ M₁) (b : B.SeparatingLeft)
+    (φ ψ₁ ψ₂ : M₁ →ₗ[R₁] M₁) (hψ₁ : IsAdjointPair B B ψ₁ φ) (hψ₂ : IsAdjointPair B B ψ₂ φ) :
+    ψ₁ = ψ₂ := by
+  apply B.compLeft_injective b
+  ext v w
+  rw [compLeft_apply, compLeft_apply, hψ₁, hψ₂]
+#align bilin_form.is_adjoint_pair_unique_of_nondegenerate LinearMap.BilinForm.isAdjointPair_unique_of_separatingLeft
+
+end
+
 section FiniteDimensional
 
 variable [Field K] [AddCommGroup V] [Module K V]
