@@ -418,6 +418,13 @@ theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b;
   adjugate_fin_two _
 #align matrix.adjugate_fin_two_of Matrix.adjugate_fin_two_of
 
+theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
+    adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
+  simp_rw [adjugate_apply, det_succ_row _ j, updateRow_self, submatrix_updateRow_succAbove]
+  rw [Fintype.sum_eq_single i fun h hjk => ?_, Pi.single_eq_same, mul_one]
+  rw [Pi.single_eq_of_ne hjk, mul_zero, zero_mul]
+#align matrix.adjugate_fin_succ_eq_det_submatrix Matrix.adjugate_fin_succ_eq_det_submatrix
+
 theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
     adjugate A =
     !![A 1 1 * A 2 2 - A 1 2 * A 2 1,
@@ -431,75 +438,8 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
       A 0 0 * A 1 1 - A 0 1 * A 1 0] := by
 
     ext i j
-    rw [adjugate_apply, det_fin_three]
-    fin_cases i <;> fin_cases j <;>
-      repeat {
-      try simp [updateRow_ne, Pi.single_eq_of_ne, Pi.single_eq_same]
-      try repeat rw [Matrix.updateRow_ne]
-      try repeat rw [Pi.single_eq_of_ne]
-      try simp
-      try repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
-      try repeat exact Fin.ne_of_gt Nat.le.refl}
-
-    · simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-      repeat rw [Fin.eq_mk_iff_val_eq]
-      repeat rw [Matrix.updateRow_apply]
-      repeat rw [if_pos]
-      simp
-      repeat rw [Pi.single_eq_of_ne]
-      simp
-      exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
-      repeat exact rfl
-
-    · simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-      repeat rw [Fin.eq_mk_iff_val_eq]
-      repeat rw [Matrix.updateRow_apply]
-      repeat rw [if_neg]
-      repeat rw [Pi.single_eq_of_ne]
-      simp
-      exact Fin.ne_of_gt Nat.le.refl
-      repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
-
-    · simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-      repeat rw [Fin.eq_mk_iff_val_eq]
-      repeat rw [Matrix.updateRow_apply]
-      simp
-      repeat rw [if_pos]
-      repeat rw [Pi.single_eq_of_ne]
-      simp
-      exact Fin.ne_of_gt Nat.le.refl
-      repeat exact rfl
-
-    · simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-      repeat rw [Matrix.updateRow_apply]
-      repeat rw [if_neg]
-      rw [Pi.single_apply]
-      repeat rw [if_pos]
-      simp
-      rfl
-      repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
-
-    · simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-      repeat rw [Matrix.updateRow_apply]
-      repeat rw [if_neg]
-      rw [Pi.single_apply]
-      repeat rw [if_pos]
-      simp
-      rfl
-      repeat exact Fin.pos_iff_ne_zero.mp (Nat.le.step Nat.le.refl)
-      repeat exact Fin.ne_of_gt Nat.le.refl
-
-    · simp [Fin.eq_mk_iff_val_eq, Pi.single_eq_of_ne, Pi.single_eq_same]
-      repeat rw [Matrix.updateRow_apply]
-      repeat rw [if_pos]
-      repeat rw [Pi.single_apply]
-      rw [if_pos]
-      repeat rw [if_neg]
-      simp
-      exact Fin.ne_of_lt (Nat.le.step Nat.le.refl)
-      repeat exact Fin.ne_of_lt Nat.le.refl
-      repeat exact rfl
-
+    rw [adjugate_fin_succ_eq_det_submatrix, det_fin_two]
+    fin_cases i <;> fin_cases j <;> simp [updateRow, Fin.succAbove, Fin.lt_def] <;> ring
 
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i: α) :
@@ -508,14 +448,6 @@ theorem adjugate_fin_three_of (a b c d e f g h i: α) :
      -(d * i) + f * g, a * i - c * g, -(a * f) + c * d;
       d * h - e * g, -(a * h) + b * g, a * e - b * d] :=
     adjugate_fin_three _
-
-
-theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
-    adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
-  simp_rw [adjugate_apply, det_succ_row _ j, updateRow_self, submatrix_updateRow_succAbove]
-  rw [Fintype.sum_eq_single i fun h hjk => ?_, Pi.single_eq_same, mul_one]
-  rw [Pi.single_eq_of_ne hjk, mul_zero, zero_mul]
-#align matrix.adjugate_fin_succ_eq_det_submatrix Matrix.adjugate_fin_succ_eq_det_submatrix
 
 theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :
     det A = ∑ j : n, A i j * adjugate A j i := by
