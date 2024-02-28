@@ -98,22 +98,41 @@ instance {α β : Type*} [Monoid α] [Subsingleton β] [MulAction α β] :
 
 open NumberField
 
-def reshom {K : Type*} [Field K] (σ : K →+* K) : 𝓞 K →+* 𝓞 K :=
-  σ.restrict (𝓞 K) (𝓞 K) (fun _ ↦ map_isIntegral_int σ)
+abbrev galoisGroup (K : Type*) [Field K] [Algebra ℚ K] := K ≃ₐ[ℚ] K
 
-def res' {K : Type*} [Field K] (σ : K ≃+* K) : 𝓞 K ≃+* 𝓞 K :=
-  RingEquiv.ofHomInv (reshom σ) (reshom σ.symm)
-    (by ext x; exact σ.symm_apply_apply x) (by ext x; exact σ.apply_symm_apply x)
+def _root_.AlgEquiv.mapRingOfIntegers {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K]
+    [Algebra F L] (σ : K ≃ₐ[F] L) : 𝓞 K ≃ₐ[𝓞 F] 𝓞 L :=
+  AlgEquiv.ofRingEquiv (f := (σ.restrictScalars ℤ).mapIntegralClosure.toRingEquiv)
+    fun x ↦ Subtype.ext (σ.commutes' x)
 
-def res {K : Type*} [Field K] {τ : Type*} [EquivLike τ K K] [RingEquivClass τ K K] (σ : τ) : 𝓞 K ≃+* 𝓞 K :=
-  res' (RingEquivClass.toRingEquiv σ)
+def _root_.AlgEquiv.mapRingOfIntegers' {F K : Type*} [Field F] [Field K] [Algebra F K] :
+    (K ≃ₐ[F] K) →* (𝓞 K ≃ₐ[𝓞 F] 𝓞 K) :=
+  MonoidHom.mk' AlgEquiv.mapRingOfIntegers fun _ _ ↦ rfl
+
+abbrev inertiaSubgroup {K : Type*} [Field K] [Algebra ℚ K] (q : Ideal (𝓞 K)) : Subgroup (galoisGroup K) where
+  carrier := {σ : galoisGroup K | ∀ x : (𝓞 K), AlgEquiv.mapRingOfIntegers' σ x - x ∈ q}
+  one_mem' := by simp
+  inv_mem' := by
+    intro σ hσ x
+    specialize hσ (AlgEquiv.mapRingOfIntegers' σ⁻¹ x)
+    rw [map_inv] at hσ ⊢
+    rw [sub_mem_comm_iff]
+    convert hσ
+    symm
+    apply apply_symm_apply
+  mul_mem' := by
+    intro σ τ hσ hτ x
+    specialize hσ (AlgEquiv.mapRingOfIntegers' τ x)
+    specialize hτ x
+    rw [map_mul, AlgEquiv.mul_apply]
+    have key := add_mem hσ hτ
+    rwa [sub_add_sub_cancel] at key
 
 theorem keythm {K : Type*} [Field K] [Algebra ℚ K] [FiniteDimensional ℚ K] :
-    Subgroup.closure (⋃ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), {σ : K ≃ₐ[ℚ] K | ∀ x : (𝓞 K), res σ x - x ∈ q}) = ⊤ := by
+    ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q = ⊤ := by
   -- key idea: fixed field of this subgroup has no ramified primes
   let G := K ≃ₐ[ℚ] K
-  let S := ⋃ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), {σ : G | ∀ x : (𝓞 K), res σ x - x ∈ q}
-  let H := Subgroup.closure S
+  let H := ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q
   let F := fixedField H
   change H = ⊤
   suffices h : F = ⊥ by
@@ -139,9 +158,12 @@ theorem X_pow_sub_X_sub_one_gal :
     exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
   let K := f.SplittingField
   let R := 𝓞 K
-  let S0 : Set f.Gal := ⋃ (q : Ideal R) (hq : q.IsMaximal), {σ | ∀ x : R, res σ x - x ∈ q}
+  let S0 : Set f.Gal := ⋃ (q : Ideal R) (hq : q.IsMaximal),
+    (↑(inertiaSubgroup q : Set (f.SplittingField ≃ₐ[ℚ] f.SplittingField)))
   let S : Set f.Gal := S0 \ {1}
-  have hS0 : Subgroup.closure S0 = ⊤ := keythm
+  have hS0 : Subgroup.closure S0 = ⊤ := by
+    simp only [Subgroup.closure_iUnion, Subgroup.closure_eq]
+    exact keythm
   have hS1 : Subgroup.closure S = ⊤ := by
     have h : Subgroup.closure (S0 ∩ {1}) = ⊥ := by
       rw [eq_bot_iff, ← Subgroup.closure_singleton_one]
@@ -152,7 +174,7 @@ theorem X_pow_sub_X_sub_one_gal :
     rw [Set.mem_iUnion] at hσ
     obtain ⟨q, hσ⟩ := hσ
     rw [Set.mem_iUnion] at hσ
-    obtain ⟨hq, hσ : ∀ x : R, res σ x - x ∈ q⟩ := hσ
+    obtain ⟨hq, hσ : ∀ x : R, σ.mapRingOfIntegers x - x ∈ q⟩ := hσ
     let F := R ⧸ q
     let π : R →+* F := Ideal.Quotient.mk q
     have : Field F := Ideal.Quotient.field q
