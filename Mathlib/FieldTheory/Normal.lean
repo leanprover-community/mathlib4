@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.Extension
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.GroupTheory.Solvable
 
@@ -273,7 +273,7 @@ theorem AlgHom.fieldRange_of_normal [Algebra F K] {E : IntermediateField F K} [N
 -- Porting note: this was `IsScalarTower F E E := by infer_instance`.
   letI : Algebra E E := Algebra.id E
   let g := f.restrictNormal' E
-  rw [← show E.val.comp ↑g = f from FunLike.ext_iff.mpr (f.restrictNormal_commutes E),
+  rw [← show E.val.comp ↑g = f from DFunLike.ext_iff.mpr (f.restrictNormal_commutes E),
     ← AlgHom.map_fieldRange, AlgEquiv.fieldRange_eq_top g, ← AlgHom.fieldRange_eq_map,
     IntermediateField.fieldRange_val]
 #align alg_hom.field_range_of_normal AlgHom.fieldRange_of_normal

@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Basic
 
 #align_import group_theory.subgroup.zpowers from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -59,7 +62,7 @@ theorem zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
 #align subgroup.zpow_mem_zpowers Subgroup.zpow_mem_zpowers
 
 theorem npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
-  zpow_ofNat g k ▸ zpow_mem_zpowers g k
+  zpow_coe_nat g k ▸ zpow_mem_zpowers g k
 #align subgroup.npow_mem_zpowers Subgroup.npow_mem_zpowers
 
 theorem forall_zpowers {x : G} {p : zpowers x → Prop} : (∀ g, p g) ↔ ∀ m : ℤ, p ⟨x ^ m, m, rfl⟩ :=

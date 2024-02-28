@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
 import Mathlib.Topology.VectorBundle.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm
 
 #align_import topology.vector_bundle.hom from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
@@ -61,7 +60,7 @@ Porting note: after the port is done, we may want to remove this definition.
 -/
 @[reducible]
 protected def Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
-    [∀ x, TopologicalSpace (E₂ x)] : ∀ _ : B, Type _ := fun x => E₁ x →SL[σ] E₂ x
+    [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x => E₁ x →SL[σ] E₂ x
 #align bundle.continuous_linear_map Bundle.ContinuousLinearMap
 
 -- Porting note: possibly remove after the port

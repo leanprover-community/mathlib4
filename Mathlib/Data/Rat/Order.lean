@@ -3,8 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Data.Rat.Basic
+import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 
 #align_import data.rat.order from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
@@ -12,15 +12,15 @@ import Mathlib.Data.Int.Cast.Lemmas
 /-!
 # Order for Rational Numbers
 
-## Summary
+This file constructs the order on `ℚ` and proves that `ℚ` is a discrete, linearly ordered
+commutative ring.
 
-We define the order on `ℚ`, prove that `ℚ` is a discrete, linearly ordered field, and define
-functions such as `abs` and `sqrt` that depend on this order.
-
+`ℚ` is in fact a linearly ordered field, but this fact is located in `Data.Rat.Field` instead of
+here because we need the order on `ℚ` to define `ℚ≥0`, which we itself need to define `Field`.
 
 ## Tags
 
-rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering, sqrt, abs
+rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
 
@@ -239,9 +239,9 @@ theorem nonneg_iff_zero_le {a} : Rat.Nonneg a ↔ 0 ≤ a := by
   simp
 #align rat.nonneg_iff_zero_le Rat.nonneg_iff_zero_le
 
-theorem num_nonneg_iff_zero_le : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
+@[simp] lemma num_nonneg : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
   | ⟨n, d, h, c⟩ => @nonneg_iff_zero_le ⟨n, d, h, c⟩
-#align rat.num_nonneg_iff_zero_le Rat.num_nonneg_iff_zero_le
+#align rat.num_nonneg_iff_zero_le Rat.num_nonneg
 
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_Nonneg, add_sub_add_left_eq_sub, Rat.le_iff_Nonneg]
@@ -251,17 +251,14 @@ protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a
   rw [← nonneg_iff_zero_le] at ha hb ⊢; exact Rat.nonneg_mul ha hb
 #align rat.mul_nonneg Rat.mul_nonneg
 
-instance : LinearOrderedField ℚ :=
-  { Rat.field, Rat.linearOrder, Rat.semiring with
-    zero_le_one := by decide
-    add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
-    mul_pos := fun a b ha hb =>
-      lt_of_le_of_ne (Rat.mul_nonneg (le_of_lt ha) (le_of_lt hb))
-        (mul_ne_zero (ne_of_lt ha).symm (ne_of_lt hb).symm).symm }
+instance instLinearOrderedCommRing : LinearOrderedCommRing ℚ where
+  __ := Rat.linearOrder
+  __ := Rat.commRing
+  zero_le_one := by decide
+  add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
+  mul_pos a b ha hb := (Rat.mul_nonneg ha.le hb.le).lt_of_ne' (mul_ne_zero ha.ne' hb.ne')
 
 -- Extra instances to short-circuit type class resolution
-instance : LinearOrderedCommRing ℚ := by infer_instance
-
 instance : LinearOrderedRing ℚ := by infer_instance
 
 instance : OrderedRing ℚ := by infer_instance
@@ -278,10 +275,13 @@ instance : OrderedCancelAddCommMonoid ℚ := by infer_instance
 
 instance : OrderedAddCommMonoid ℚ := by infer_instance
 
-theorem num_pos_iff_pos {a : ℚ} : 0 < a.num ↔ 0 < a :=
-  lt_iff_lt_of_le_iff_le <| by
-    simpa [(by cases a; rfl : (-a).num = -a.num)] using @num_nonneg_iff_zero_le (-a)
-#align rat.num_pos_iff_pos Rat.num_pos_iff_pos
+@[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by simpa using @num_nonneg (-a)
+@[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
+#align rat.num_pos_iff_pos Rat.num_pos
+@[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
+
+@[deprecated] alias num_nonneg_iff_zero_le := num_nonneg -- 2024-02-16
+@[deprecated] alias num_pos_iff_pos := num_pos -- 2024-02-16
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by

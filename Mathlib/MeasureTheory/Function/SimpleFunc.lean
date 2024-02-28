@@ -79,23 +79,23 @@ theorem measurableSet_fiber (f : α →ₛ β) (x : β) : MeasurableSet (f ⁻¹
   f.measurableSet_fiber' x
 #align measure_theory.simple_func.measurable_set_fiber MeasureTheory.SimpleFunc.measurableSet_fiber
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem apply_mk (f : α → β) (h h') (x : α) : SimpleFunc.mk f h h' x = f x :=
   rfl
 #align measure_theory.simple_func.apply_mk MeasureTheory.SimpleFunc.apply_mk
 
-/-- Simple function defined on the empty type. -/
-def ofIsEmpty [IsEmpty α] : α →ₛ β where
-  toFun := isEmptyElim
-  measurableSet_fiber' x := Subsingleton.measurableSet
-  finite_range' := by simp [range_eq_empty]
-#align measure_theory.simple_func.of_is_empty MeasureTheory.SimpleFunc.ofIsEmpty
-
 /-- Simple function defined on a finite type. -/
-def ofFintype [Fintype α] [MeasurableSingletonClass α] (f : α → β) : α →ₛ β where
+def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →ₛ β where
   toFun := f
-  measurableSet_fiber' x := Finite.measurableSet (toFinite (f ⁻¹' {x}))
+  measurableSet_fiber' x := (toFinite (f ⁻¹' {x})).measurableSet
   finite_range' := Set.finite_range f
+
+@[deprecated] -- Since 2024/02/05
+alias ofFintype := ofFinite
+
+/-- Simple function defined on the empty type. -/
+def ofIsEmpty [IsEmpty α] : α →ₛ β := ofFinite isEmptyElim
+#align measure_theory.simple_func.of_is_empty MeasureTheory.SimpleFunc.ofIsEmpty
 
 /-- Range of a simple function `α →ₛ β` as a `Finset β`. -/
 protected def range (f : α →ₛ β) : Finset β :=
@@ -574,19 +574,24 @@ theorem map_mul [Mul β] [Mul γ] {g : β → γ} (hg : ∀ x y, g (x * y) = g x
 
 variable {K : Type*}
 
+@[to_additive]
 instance instSMul [SMul K β] : SMul K (α →ₛ β) :=
   ⟨fun k f => f.map (k • ·)⟩
 #align measure_theory.simple_func.has_smul MeasureTheory.SimpleFunc.instSMul
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_smul [SMul K β] (c : K) (f : α →ₛ β) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align measure_theory.simple_func.coe_smul MeasureTheory.SimpleFunc.coe_smul
 
+@[to_additive (attr := simp)]
 theorem smul_apply [SMul K β] (k : K) (f : α →ₛ β) (a : α) : (k • f) a = k • f a :=
   rfl
 #align measure_theory.simple_func.smul_apply MeasureTheory.SimpleFunc.smul_apply
 
+instance hasNatSMul [AddMonoid β] : SMul ℕ (α →ₛ β) := inferInstance
+
+@[to_additive existing hasNatSMul]
 instance hasNatPow [Monoid β] : Pow (α →ₛ β) ℕ :=
   ⟨fun f n => f.map (· ^ n)⟩
 #align measure_theory.simple_func.has_nat_pow MeasureTheory.SimpleFunc.hasNatPow
@@ -1007,9 +1012,7 @@ theorem const_mul_lintegral (f : α →ₛ ℝ≥0∞) (x : ℝ≥0∞) :
     (const α x * f).lintegral μ = x * f.lintegral μ :=
   calc
     (f.map fun a => x * a).lintegral μ = ∑ r in f.range, x * r * μ (f ⁻¹' {r}) := map_lintegral _ _
-    _ = ∑ r in f.range, x * (r * μ (f ⁻¹' {r})) :=
-      (Finset.sum_congr rfl fun _ _ => mul_assoc _ _ _)
-    _ = x * f.lintegral μ := Finset.mul_sum.symm
+    _ = x * ∑ r in f.range, r * μ (f ⁻¹' {r}) := by simp_rw [Finset.mul_sum, mul_assoc]
 #align measure_theory.simple_func.const_mul_lintegral MeasureTheory.SimpleFunc.const_mul_lintegral
 
 /-- Integral of a simple function `α →ₛ ℝ≥0∞` as a bilinear map. -/
@@ -1109,10 +1112,9 @@ theorem lintegral_mono {f g : α →ₛ ℝ≥0∞} (hfg : f ≤ g) (hμν : μ 
     f.lintegral μ ≤ g.lintegral ν :=
   calc
     f.lintegral μ ≤ f.lintegral μ ⊔ g.lintegral μ := le_sup_left
-    _ ≤ (f ⊔ g).lintegral μ := (le_sup_lintegral _ _)
+    _ ≤ (f ⊔ g).lintegral μ := le_sup_lintegral _ _
     _ = g.lintegral μ := by rw [sup_of_le_right hfg]
-    _ ≤ g.lintegral ν :=
-      Finset.sum_le_sum fun y _ => ENNReal.mul_left_mono <| hμν _ (g.measurableSet_preimage _)
+    _ ≤ g.lintegral ν := Finset.sum_le_sum fun y _ => ENNReal.mul_left_mono <| hμν _
 #align measure_theory.simple_func.lintegral_mono MeasureTheory.SimpleFunc.lintegral_mono
 
 /-- `SimpleFunc.lintegral` depends only on the measures of `f ⁻¹' {y}`. -/
@@ -1285,7 +1287,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
     let g := SimpleFunc.piecewise (f ⁻¹' {x}) mx 0 f
     have Pg : P g := by
       apply ih
-      simp only [SimpleFunc.coe_piecewise, range_piecewise]
+      simp only [g, SimpleFunc.coe_piecewise, range_piecewise]
       rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
         insert_diff_self_of_not_mem, diff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
@@ -1295,12 +1297,12 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
     convert h_add _ Pg (h_ind x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
-      · simpa [piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
-      · simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
+      · simpa [g, piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
+      · simp [g, piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
     rw [disjoint_iff_inf_le]
     rintro y
     by_cases hy : y ∈ f ⁻¹' {x}
-    · simp [piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
+    · simp [g, piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
     · simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
 #align measure_theory.simple_func.induction MeasureTheory.SimpleFunc.induction
 

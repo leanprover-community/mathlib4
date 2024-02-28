@@ -11,8 +11,10 @@ import Mathlib.Data.Nat.Choose.Cast
 /-!
 # Bounds on higher derivatives
 
+`norm_iteratedFDeriv_comp_le` gives the bound `n! * C * D ^ n` for the `n`-th derivative
+  of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
+  derivative of `f` is bounded by `D ^ i`.
 -/
-
 
 noncomputable section
 
@@ -50,7 +52,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
   induction' n with n IH generalizing Eu Fu Gu
   · simp only [Nat.zero_eq, norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
       Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
-    apply B.le_op_norm₂
+    apply B.le_opNorm₂
   · have In : (n : ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
     -- Porting note: the next line is a hack allowing Lean to find the operator norm instance.
     let norm := @ContinuousLinearMap.hasOpNorm _ _ Eu ((Du →L[𝕜] Fu) →L[𝕜] Du →L[𝕜] Gu) _ _ _ _ _ _
@@ -67,8 +69,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
           IH _ (hf.of_le (Nat.cast_le.2 (Nat.le_succ n))) (hg.fderivWithin hs In)
         _ ≤ ‖B‖ * ∑ i : ℕ in Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
               ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 g s) s x‖ :=
-          (mul_le_mul_of_nonneg_right (B.norm_precompR_le Du)
-            (Finset.sum_nonneg' fun i => by positivity))
+            mul_le_mul_of_nonneg_right (B.norm_precompR_le Du) (by positivity)
         _ = _ := by
           congr 1
           apply Finset.sum_congr rfl fun i hi => ?_
@@ -90,8 +91,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
         _ ≤ ‖B‖ * ∑ i : ℕ in Finset.range (n + 1),
             n.choose i * ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 f s) s x‖ *
               ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ :=
-          (mul_le_mul_of_nonneg_right (B.norm_precompL_le Du)
-            (Finset.sum_nonneg' fun i => by positivity))
+            mul_le_mul_of_nonneg_right (B.norm_precompL_le Du) (by positivity)
         _ = _ := by
           congr 1
           apply Finset.sum_congr rfl fun i _ => ?_
@@ -120,7 +120,6 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       (fun i j => ‖iteratedFDerivWithin 𝕜 i f s x‖ * ‖iteratedFDerivWithin 𝕜 j g s x‖) n).symm
 #align continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear_aux ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux
 
-set_option maxHeartbeats 700000 in -- 3.5× the default limit
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear:
 `‖D^n (x ↦ B (f x) (g x))‖ ≤ ‖B‖ ∑_{k ≤ n} n.choose k ‖D^k f‖ ‖D^{n-k} g‖` -/
@@ -147,8 +146,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   -- lift the bilinear map `B` to a bilinear map `Bu` on the lifted spaces.
   set Bu₀ : Eu →L[𝕜] Fu →L[𝕜] G := ((B.comp (isoE : Eu →L[𝕜] E)).flip.comp (isoF : Fu →L[𝕜] F)).flip
     with hBu₀
-  let Bu : Eu →L[𝕜] Fu →L[𝕜] Gu;
-  exact ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
+  let Bu : Eu →L[𝕜] Fu →L[𝕜] Gu :=
+   ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
     (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀
   have hBu : Bu = ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
       (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀ := rfl
@@ -173,9 +172,9 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
     simp only [Function.comp_apply]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
-    refine' ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg _) fun y => _
-    refine' ContinuousLinearMap.op_norm_le_bound _ (by positivity) fun x => _
-    simp only [ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
+    refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => _
+    refine' ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
+    simp only [Bu, ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
       Function.comp_apply, LinearIsometryEquiv.coe_coe'', ContinuousLinearMap.flip_apply,
       LinearIsometryEquiv.norm_map]
     rw [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.compL_apply,
@@ -184,15 +183,15 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
       Function.comp_apply]
     simp only [LinearIsometryEquiv.coe_coe'', LinearIsometryEquiv.norm_map]
     calc
-      ‖B (isoE y) (isoF x)‖ ≤ ‖B (isoE y)‖ * ‖isoF x‖ := ContinuousLinearMap.le_op_norm _ _
-      _ ≤ ‖B‖ * ‖isoE y‖ * ‖isoF x‖ := by gcongr; apply ContinuousLinearMap.le_op_norm
+      ‖B (isoE y) (isoF x)‖ ≤ ‖B (isoE y)‖ * ‖isoF x‖ := ContinuousLinearMap.le_opNorm _ _
+      _ ≤ ‖B‖ * ‖isoE y‖ * ‖isoF x‖ := by gcongr; apply ContinuousLinearMap.le_opNorm
       _ = ‖B‖ * ‖y‖ * ‖x‖ := by simp only [LinearIsometryEquiv.norm_map]
   let su := isoD ⁻¹' s
   have hsu : UniqueDiffOn 𝕜 su := isoD.toContinuousLinearEquiv.uniqueDiffOn_preimage_iff.2 hs
   let xu := isoD.symm x
   have hxu : xu ∈ su := by
-    simpa only [Set.mem_preimage, LinearIsometryEquiv.apply_symm_apply] using hx
-  have xu_x : isoD xu = x := by simp only [LinearIsometryEquiv.apply_symm_apply]
+    simpa only [xu, su, Set.mem_preimage, LinearIsometryEquiv.apply_symm_apply] using hx
+  have xu_x : isoD xu = x := by simp only [xu, LinearIsometryEquiv.apply_symm_apply]
   have hfu : ContDiffOn 𝕜 n fu su :=
     isoE.symm.contDiff.comp_contDiffOn
       ((hf.of_le hn).comp_continuousLinearMap (isoD : Du →L[𝕜] D))
@@ -222,8 +221,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
         ‖iteratedFDerivWithin 𝕜 (n - i) gu su xu‖ :=
     Bu.norm_iteratedFDerivWithin_le_of_bilinear_aux hfu hgu hsu hxu
   simp only [Nfu, Ngu, NBu] at this
-  apply this.trans (mul_le_mul_of_nonneg_right Bu_le ?_)
-  exact Finset.sum_nonneg' fun i => by positivity
+  exact this.trans (mul_le_mul_of_nonneg_right Bu_le (by positivity))
 #align continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear
 
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` in terms of the
@@ -249,8 +247,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
       ∑ i in Finset.range (n + 1), (n.choose i : ℝ) * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
         ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ := by
   apply (B.norm_iteratedFDerivWithin_le_of_bilinear hf hg hs hx hn).trans
-  apply mul_le_of_le_one_left (Finset.sum_nonneg' fun i => ?_) hB
-  positivity
+  exact mul_le_of_le_one_left (by positivity) hB
 #align continuous_linear_map.norm_iterated_fderiv_within_le_of_bilinear_of_le_one ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
 
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` in terms of the
@@ -278,7 +275,7 @@ theorem norm_iteratedFDerivWithin_smul_le {f : E → 𝕜'} {g : E → F} {N : �
         ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ :=
   (ContinuousLinearMap.lsmul 𝕜 𝕜' :
     𝕜' →L[𝕜] F →L[𝕜] F).norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
-      hf hg hs hx hn ContinuousLinearMap.op_norm_lsmul_le
+      hf hg hs hx hn ContinuousLinearMap.opNorm_lsmul_le
 #align norm_iterated_fderiv_within_smul_le norm_iteratedFDerivWithin_smul_le
 
 theorem norm_iteratedFDeriv_smul_le {f : E → 𝕜'} {g : E → F} {N : ℕ∞} (hf : ContDiff 𝕜 N f)
@@ -286,7 +283,7 @@ theorem norm_iteratedFDeriv_smul_le {f : E → 𝕜'} {g : E → F} {N : ℕ∞}
     ‖iteratedFDeriv 𝕜 n (fun y => f y • g y) x‖ ≤ ∑ i in Finset.range (n + 1),
       (n.choose i : ℝ) * ‖iteratedFDeriv 𝕜 i f x‖ * ‖iteratedFDeriv 𝕜 (n - i) g x‖ :=
   (ContinuousLinearMap.lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] F →L[𝕜] F).norm_iteratedFDeriv_le_of_bilinear_of_le_one
-    hf hg x hn ContinuousLinearMap.op_norm_lsmul_le
+    hf hg x hn ContinuousLinearMap.opNorm_lsmul_le
 #align norm_iterated_fderiv_smul_le norm_iteratedFDeriv_smul_le
 
 end
@@ -302,7 +299,7 @@ theorem norm_iteratedFDerivWithin_mul_le {f : E → A} {g : E → A} {N : ℕ∞
         ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ :=
   (ContinuousLinearMap.mul 𝕜 A :
     A →L[𝕜] A →L[𝕜] A).norm_iteratedFDerivWithin_le_of_bilinear_of_le_one
-      hf hg hs hx hn (ContinuousLinearMap.op_norm_mul_le _ _)
+      hf hg hs hx hn (ContinuousLinearMap.opNorm_mul_le _ _)
 #align norm_iterated_fderiv_within_mul_le norm_iteratedFDerivWithin_mul_le
 
 theorem norm_iteratedFDeriv_mul_le {f : E → A} {g : E → A} {N : ℕ∞} (hf : ContDiff 𝕜 N f)
@@ -345,8 +342,8 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     simpa only [pow_one] using (norm_nonneg _).trans (hD 1 le_rfl this)
   -- use the inductive assumption to bound the derivatives of `g' ∘ f`.
   have I : ∀ i ∈ Finset.range (n + 1),
-      ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ ≤ i ! * C * D ^ i
-  · intro i hi
+      ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ ≤ i ! * C * D ^ i := by
+    intro i hi
     simp only [Finset.mem_range_succ_iff] at hi
     apply IH i hi
     · apply hg.fderivWithin ht
@@ -366,8 +363,8 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
   have J : ∀ i, ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ ≤ D ^ (n - i + 1) := by
     intro i
     have : ‖iteratedFDerivWithin 𝕜 (n - i) (fderivWithin 𝕜 f s) s x‖ =
-        ‖iteratedFDerivWithin 𝕜 (n - i + 1) f s x‖
-    · rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, comp_apply, LinearIsometryEquiv.norm_map]
+        ‖iteratedFDerivWithin 𝕜 (n - i + 1) f s x‖ := by
+      rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, comp_apply, LinearIsometryEquiv.norm_map]
     rw [this]
     apply hD
     · simp only [le_add_iff_nonneg_left, zero_le']
@@ -455,8 +452,9 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
   let tu := isoF ⁻¹' t
   have htu : UniqueDiffOn 𝕜 tu := isoF.toContinuousLinearEquiv.uniqueDiffOn_preimage_iff.2 ht
   have hstu : MapsTo fu s tu := fun y hy ↦ by
-    simpa only [mem_preimage, comp_apply, LinearIsometryEquiv.apply_symm_apply] using hst hy
-  have Ffu : isoF (fu x) = f x := by simp only [comp_apply, LinearIsometryEquiv.apply_symm_apply]
+    simpa only [fu, tu, mem_preimage, comp_apply, LinearIsometryEquiv.apply_symm_apply] using hst hy
+  have Ffu : isoF (fu x) = f x := by
+    simp only [fu, comp_apply, LinearIsometryEquiv.apply_symm_apply]
   -- All norms are preserved by the lifting process.
   have hfu : ContDiffOn 𝕜 n fu s := isoF.symm.contDiff.comp_contDiffOn (hf.of_le hn)
   have hgu : ContDiffOn 𝕜 n gu tu :=
@@ -476,7 +474,8 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
       ‖iteratedFDerivWithin 𝕜 n (g ∘ f) s x‖ = ‖iteratedFDerivWithin 𝕜 n (gu ∘ fu) s x‖ := by
     have : gu ∘ fu = isoG.symm ∘ g ∘ f := by
       ext x
-      simp only [comp_apply, LinearIsometryEquiv.map_eq_iff, LinearIsometryEquiv.apply_symm_apply]
+      simp only [fu, gu, comp_apply, LinearIsometryEquiv.map_eq_iff,
+        LinearIsometryEquiv.apply_symm_apply]
     rw [this, LinearIsometryEquiv.norm_iteratedFDerivWithin_comp_left _ _ hs hx]
   -- deduce the required bound from the one for `gu ∘ fu`.
   rw [Nfgu]
@@ -505,8 +504,8 @@ theorem norm_iteratedFDerivWithin_clm_apply {f : E → F →L[𝕜] G} {g : E �
         ‖iteratedFDerivWithin 𝕜 (n - i) g s x‖ := by
   let B : (F →L[𝕜] G) →L[𝕜] F →L[𝕜] G := ContinuousLinearMap.flip (ContinuousLinearMap.apply 𝕜 G)
   have hB : ‖B‖ ≤ 1 := by
-    simp only [ContinuousLinearMap.op_norm_flip, ContinuousLinearMap.apply]
-    refine' ContinuousLinearMap.op_norm_le_bound _ zero_le_one fun f => _
+    simp only [B, ContinuousLinearMap.opNorm_flip, ContinuousLinearMap.apply]
+    refine' ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => _
     simp only [ContinuousLinearMap.coe_id', id.def, one_mul]
     rfl
   exact B.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one hf hg hs hx hn hB
@@ -529,9 +528,9 @@ theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c 
   have h := g.norm_compContinuousMultilinearMap_le (iteratedFDerivWithin 𝕜 n f s x)
   rw [← g.iteratedFDerivWithin_comp_left hf hs hx hn] at h
   refine' h.trans (mul_le_mul_of_nonneg_right _ (norm_nonneg _))
-  refine' g.op_norm_le_bound (norm_nonneg _) fun f => _
+  refine' g.opNorm_le_bound (norm_nonneg _) fun f => _
   rw [ContinuousLinearMap.apply_apply, mul_comm]
-  exact f.le_op_norm c
+  exact f.le_opNorm c
 #align norm_iterated_fderiv_within_clm_apply_const norm_iteratedFDerivWithin_clm_apply_const
 
 theorem norm_iteratedFDeriv_clm_apply_const {f : E → F →L[𝕜] G} {c : F} {x : E} {N : ℕ∞} {n : ℕ}

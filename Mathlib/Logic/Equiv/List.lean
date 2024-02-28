@@ -139,7 +139,7 @@ def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : T
 
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
 It is not made into a global instance, since it involves an arbitrary choice.
-This can be locally made into an instance with `local attribute [instance] Fintype.toEncodable`. -/
+This can be locally made into an instance with `attribute [local instance] Fintype.toEncodable`. -/
 noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodable α := by
   classical exact (Fintype.truncEncodable α).out
 #align fintype.to_encodable Fintype.toEncodable
@@ -276,8 +276,7 @@ theorem list_ofNat_succ (v : ℕ) :
     show decodeList (succ v) = _ by
       cases' e : unpair v with v₁ v₂
       simp [decodeList, e]
-      rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some,
-        Option.some.injEq]
+      rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some]
 #align denumerable.list_of_nat_succ Denumerable.list_ofNat_succ
 
 end List

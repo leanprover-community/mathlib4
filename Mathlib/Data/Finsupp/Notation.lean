@@ -22,7 +22,7 @@ open Lean.Parser.Term
 -- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping.
 @[nolint docBlame] -- we do not want any doc hover on this notation.
 def fun₀.matchAlts : Parser :=
-  leading_parser withPosition $ ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
+  leading_parser withPosition <| ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
 
 /-- `fun₀ | i => a` is notation for `Finsupp.single i a`, and with multiple match arms,
 `fun₀ ... | i => a` is notation for `Finsupp.update (fun₀ ...) i a`.

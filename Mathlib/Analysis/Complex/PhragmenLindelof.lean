@@ -113,8 +113,8 @@ Then `‖f z‖` is bounded by the same constant on the closed strip
 only for sufficiently large values of `|re z|`.
 -/
 theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
-    (hB : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.re|)))
+    (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.re|)))
     (hle_a : ∀ z : ℂ, im z = a → ‖f z‖ ≤ C) (hle_b : ∀ z, im z = b → ‖f z‖ ≤ C) (hza : a ≤ im z)
     (hzb : im z ≤ b) : ‖f z‖ ≤ C := by
   -- If `im z = a` or `im z = b`, then we apply `hle_a` or `hle_b`, otherwise `im z ∈ Ioo a b`.
@@ -144,8 +144,8 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   set g := fun (ε : ℝ) (w : ℂ) => exp (ε * (exp (aff w) + exp (-aff w)))
   /- Since `g ε z → 1` as `ε → 0⁻`, it suffices to prove that `‖g ε z • f z‖ ≤ C`
     for all negative `ε`. -/
-  suffices : ∀ᶠ ε : ℝ in 𝓝[<] (0 : ℝ), ‖g ε z • f z‖ ≤ C
-  · refine' le_of_tendsto (Tendsto.mono_left _ nhdsWithin_le_nhds) this
+  suffices ∀ᶠ ε : ℝ in 𝓝[<] (0 : ℝ), ‖g ε z • f z‖ ≤ C by
+    refine' le_of_tendsto (Tendsto.mono_left _ nhdsWithin_le_nhds) this
     apply ((continuous_ofReal.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
     simp
   filter_upwards [self_mem_nhdsWithin] with ε ε₀; change ε < 0 at ε₀
@@ -158,11 +158,11 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
         mul_neg_of_neg_of_pos ε₀
           (Real.cos_pos_of_mem_Ioo <| abs_lt.1 <| (abs_of_pos (mul_pos hd₀ hb)).symm ▸ hb'),
         fun w hw => _⟩
-    replace hw : |im (aff w)| ≤ d * b
-    · rw [← Real.closedBall_eq_Icc] at hw
-      rwa [ofReal_mul_im, sub_im, mul_I_im, ofReal_re, _root_.abs_mul, abs_of_pos hd₀,
+    replace hw : |im (aff w)| ≤ d * b := by
+      rw [← Real.closedBall_eq_Icc] at hw
+      rwa [im_ofReal_mul, sub_im, mul_I_im, ofReal_re, _root_.abs_mul, abs_of_pos hd₀,
         mul_le_mul_left hd₀]
-    simpa only [ofReal_mul_re, _root_.abs_mul, abs_of_pos hd₀, sub_re, mul_I_re, ofReal_im,
+    simpa only [aff, re_ofReal_mul, _root_.abs_mul, abs_of_pos hd₀, sub_re, mul_I_re, ofReal_im,
       zero_mul, neg_zero, sub_zero] using
       abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le ε₀.le hw hb'.le
   -- `abs (g ε w) ≤ 1` on the lines `w.im = a ± b` (actually, it holds everywhere in the strip)
@@ -178,9 +178,9 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     rcases hO.exists_pos with ⟨A, hA₀, hA⟩
     simp only [isBigOWith_iff, eventually_inf_principal, eventually_comap, mem_Ioo, ← abs_lt,
       mem_preimage, (· ∘ ·), Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)] at hA
-    suffices :
-        Tendsto (fun R => expR (δ * expR (d * R) + B * expR (c * R) + Real.log A)) atTop (𝓝 0)
-    · filter_upwards [this.eventually (ge_mem_nhds hC₀), hA] with R hR Hle w hre him
+    suffices
+        Tendsto (fun R => expR (δ * expR (d * R) + B * expR (c * R) + Real.log A)) atTop (𝓝 0) by
+      filter_upwards [this.eventually (ge_mem_nhds hC₀), hA] with R hR Hle w hre him
       calc
         ‖g ε w • f w‖ ≤ expR (δ * expR (d * R) + B * expR (c * R) + Real.log A) := ?_
         _ ≤ C := hR
@@ -188,8 +188,8 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
       gcongr
       exacts [hδ <| Ioo_subset_Icc_self him, Hle _ hre him]
     refine' Real.tendsto_exp_atBot.comp _
-    suffices H : Tendsto (fun R => δ + B * (expR ((d - c) * R))⁻¹) atTop (𝓝 (δ + B * 0))
-    · rw [mul_zero, add_zero] at H
+    suffices H : Tendsto (fun R => δ + B * (expR ((d - c) * R))⁻¹) atTop (𝓝 (δ + B * 0)) by
+      rw [mul_zero, add_zero] at H
       refine' Tendsto.atBot_add _ tendsto_const_nhds
       simpa only [id, (· ∘ ·), add_mul, mul_assoc, ← div_eq_inv_mul, ← Real.exp_sub, ← sub_mul,
         sub_sub_cancel]
@@ -205,8 +205,8 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   have hgd : Differentiable ℂ (g ε) :=
     ((((differentiable_id.sub_const _).const_mul _).cexp.add
             ((differentiable_id.sub_const _).const_mul _).neg.cexp).const_mul _).cexp
-  replace hd : DiffContOnCl ℂ (fun w => g ε w • f w) (Ioo (-R) R ×ℂ Ioo (a - b) (a + b))
-  exact (hgd.diffContOnCl.smul hfd).mono (inter_subset_right _ _)
+  replace hd : DiffContOnCl ℂ (fun w => g ε w • f w) (Ioo (-R) R ×ℂ Ioo (a - b) (a + b)) :=
+    (hgd.diffContOnCl.smul hfd).mono (inter_subset_right _ _)
   convert norm_le_of_forall_mem_frontier_norm_le ((isBounded_Ioo _ _).reProdIm (isBounded_Ioo _ _))
     hd (fun w hw => _) _
   · rw [frontier_reProdIm, closure_Ioo (neg_lt_self hR₀).ne, frontier_Ioo hab, closure_Ioo hab.ne,
@@ -214,7 +214,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     by_cases him : w.im = a - b ∨ w.im = a + b
     · rw [norm_smul, ← one_mul C]
       exact mul_le_mul (hg₁ _ him) (him.by_cases (hle_a _) (hle_b _)) (norm_nonneg _) zero_le_one
-    · replace hw : w ∈ {-R, R} ×ℂ Icc (a - b) (a + b); exact hw.resolve_left fun h => him h.2
+    · replace hw : w ∈ {-R, R} ×ℂ Icc (a - b) (a + b) := hw.resolve_left fun h ↦ him h.2
       have hw' := eq_endpoints_or_mem_Ioo_of_mem_Icc hw.2; rw [← or_assoc] at hw'
       exact hR _ ((abs_eq hR₀.le).2 hw.1.symm) (hw'.resolve_left him)
   · rw [closure_reProdIm, closure_Ioo hab.ne, closure_Ioo (neg_lt_self hR₀).ne]
@@ -231,8 +231,8 @@ Let `f : ℂ → E` be a function such that
 Then `f` is equal to zero on the closed strip `{z : ℂ | a ≤ im z ≤ b}`.
 -/
 theorem eq_zero_on_horizontal_strip (hd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
-    (hB : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.re|)))
+    (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.re|)))
     (ha : ∀ z : ℂ, z.im = a → f z = 0) (hb : ∀ z : ℂ, z.im = b → f z = 0) :
     EqOn f 0 (im ⁻¹' Icc a b) := fun _z hz =>
   norm_le_zero_iff.1 <| horizontal_strip hd hB (fun z hz => (ha z hz).symm ▸ norm_zero.le)
@@ -250,11 +250,11 @@ Let `f g : ℂ → E` be functions such that
 Then `f` is equal to `g` on the closed strip `{z : ℂ | a ≤ im z ≤ b}`.
 -/
 theorem eqOn_horizontal_strip {g : ℂ → E} (hdf : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
-    (hBf : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.re|)))
+    (hBf : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.re|)))
     (hdg : DiffContOnCl ℂ g (im ⁻¹' Ioo a b))
-    (hBg : ∃ c < π / (b - a), ∃ B,
-      g =O[comap (Abs.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.re|)))
+    (hBg : ∃ c < π / (b - a), ∃ B, g =O[comap (_root_.abs ∘ re) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.re|)))
     (ha : ∀ z : ℂ, z.im = a → f z = g z) (hb : ∀ z : ℂ, z.im = b → f z = g z) :
     EqOn f g (im ⁻¹' Icc a b) := fun _z hz =>
   sub_eq_zero.1 (eq_zero_on_horizontal_strip (hdf.sub hdg) (isBigO_sub_exp_exp hBf hBg)
@@ -277,8 +277,8 @@ Then `‖f z‖` is bounded by the same constant on the closed strip
 only for sufficiently large values of `|im z|`.
 -/
 theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
-    (hB : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.im|)))
+    (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.im|)))
     (hle_a : ∀ z : ℂ, re z = a → ‖f z‖ ≤ C) (hle_b : ∀ z, re z = b → ‖f z‖ ≤ C) (hza : a ≤ re z)
     (hzb : re z ≤ b) : ‖f z‖ ≤ C := by
   suffices ‖f (z * I * -I)‖ ≤ C by simpa [mul_assoc] using this
@@ -306,8 +306,8 @@ Let `f : ℂ → E` be a function such that
 Then `f` is equal to zero on the closed strip `{z : ℂ | a ≤ re z ≤ b}`.
 -/
 theorem eq_zero_on_vertical_strip (hd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
-    (hB : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.im|)))
+    (hB : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.im|)))
     (ha : ∀ z : ℂ, re z = a → f z = 0) (hb : ∀ z : ℂ, re z = b → f z = 0) :
     EqOn f 0 (re ⁻¹' Icc a b) := fun _z hz =>
   norm_le_zero_iff.1 <| vertical_strip hd hB (fun z hz => (ha z hz).symm ▸ norm_zero.le)
@@ -325,11 +325,11 @@ Let `f g : ℂ → E` be functions such that
 Then `f` is equal to `g` on the closed strip `{z : ℂ | a ≤ re z ≤ b}`.
 -/
 theorem eqOn_vertical_strip {g : ℂ → E} (hdf : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
-    (hBf : ∃ c < π / (b - a), ∃ B,
-      f =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.im|)))
+    (hBf : ∃ c < π / (b - a), ∃ B, f =O[comap (_root_.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.im|)))
     (hdg : DiffContOnCl ℂ g (re ⁻¹' Ioo a b))
-    (hBg : ∃ c < π / (b - a), ∃ B,
-      g =O[comap (Abs.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)] fun z ↦ expR (B * expR (c * |z.im|)))
+    (hBg : ∃ c < π / (b - a), ∃ B, g =O[comap (_root_.abs ∘ im) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)]
+      fun z ↦ expR (B * expR (c * |z.im|)))
     (ha : ∀ z : ℂ, re z = a → f z = g z) (hb : ∀ z : ℂ, re z = b → f z = g z) :
     EqOn f g (re ⁻¹' Icc a b) := fun _z hz =>
   sub_eq_zero.1 (eq_zero_on_vertical_strip (hdf.sub hdg) (isBigO_sub_exp_exp hBf hBg)
@@ -386,17 +386,16 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       have hc : ContinuousWithinAt f (Ioi 0 ×ℂ Ioi 0) 0 := by
         refine' (hd.continuousOn _ _).mono subset_closure
         simp [closure_reProdIm, mem_reProdIm]
-      refine'
-        ((hc.tendsto.comp <| tendsto_exp_comap_re_atBot.inf H.tendsto).isBigO_one ℝ).trans
-          (isBigO_of_le _ fun w => _)
+      refine ((hc.tendsto.comp <| tendsto_exp_comap_re_atBot.inf H.tendsto).isBigO_one ℝ).trans
+        (isBigO_of_le _ fun w => ?_)
       rw [norm_one, Real.norm_of_nonneg (Real.exp_pos _).le, Real.one_le_exp_iff]
-      exact mul_nonneg (le_max_right _ _) (Real.exp_pos _).le
+      positivity
     · -- For the estimate as `ζ.re → ∞`, we reuse the upper estimate on `f`
       simp only [eventually_inf_principal, eventually_comap, comp_apply, one_mul,
         Real.norm_of_nonneg (Real.exp_pos _).le, abs_exp, ← Real.exp_mul, Real.exp_le_exp]
       refine' (eventually_ge_atTop 0).mono fun x hx z hz _ => _
       rw [hz, _root_.abs_of_nonneg hx, mul_comm _ c]
-      exact mul_le_mul_of_nonneg_right (le_max_left _ _) (Real.exp_pos _).le
+      gcongr; apply le_max_left
   · -- If `ζ.im = 0`, then `Complex.exp ζ` is a positive real number
     intro ζ hζ; lift ζ to ℝ using hζ
     rw [comp_apply, ← ofReal_exp]
@@ -464,7 +463,7 @@ theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Ioi 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, x ≤ 0 → ‖f x‖ ≤ C) (him : ∀ x : ℝ, 0 ≤ x → ‖f (x * I)‖ ≤ C) (hz_re : z.re ≤ 0)
     (hz_im : 0 ≤ z.im) : ‖f z‖ ≤ C := by
-  obtain ⟨z, rfl⟩ : ∃ z', z' * I = z; exact ⟨z / I, div_mul_cancel _ I_ne_zero⟩
+  obtain ⟨z, rfl⟩ : ∃ z', z' * I = z := ⟨z / I, div_mul_cancel _ I_ne_zero⟩
   simp only [mul_I_re, mul_I_im, neg_nonpos] at hz_re hz_im
   change ‖(f ∘ (· * I)) z‖ ≤ C
   have H : MapsTo (· * I) (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Ioi 0) := fun w hw ↦ by
@@ -532,7 +531,7 @@ theorem quadrant_III (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Iio 0))
       f =O[cobounded ℂ ⊓ 𝓟 (Iio 0 ×ℂ Iio 0)] fun z => expR (B * abs z ^ c))
     (hre : ∀ x : ℝ, x ≤ 0 → ‖f x‖ ≤ C) (him : ∀ x : ℝ, x ≤ 0 → ‖f (x * I)‖ ≤ C) (hz_re : z.re ≤ 0)
     (hz_im : z.im ≤ 0) : ‖f z‖ ≤ C := by
-  obtain ⟨z, rfl⟩ : ∃ z', -z' = z; exact ⟨-z, neg_neg z⟩
+  obtain ⟨z, rfl⟩ : ∃ z', -z' = z := ⟨-z, neg_neg z⟩
   simp only [neg_re, neg_im, neg_nonpos] at hz_re hz_im
   change ‖(f ∘ Neg.neg) z‖ ≤ C
   have H : MapsTo Neg.neg (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Iio 0) := by
@@ -711,15 +710,15 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
     have hlt : ‖(0 : E)‖ < ‖f x₀‖ := by rwa [norm_zero, norm_pos_iff]
     suffices ∀ᶠ x : ℝ in cocompact ℝ ⊓ 𝓟 (Ici 0), ‖f x‖ ≤ ‖f x₀‖ by
       simpa only [exists_prop] using hfc.norm.exists_forall_ge' isClosed_Ici hx₀ this
-    rw [Real.cocompact_eq, inf_sup_right, (disjoint_atBot_principal_Ici (0 : ℝ)).eq_bot,
+    rw [cocompact_eq_atBot_atTop, inf_sup_right, (disjoint_atBot_principal_Ici (0 : ℝ)).eq_bot,
       bot_sup_eq]
     exact (hre.norm.eventually <| ge_mem_nhds hlt).filter_mono inf_le_left
   rcases le_or_lt ‖f x₀‖ C with h | h
   ·-- If `‖f x₀‖ ≤ C`, then `hle` implies the required estimate
     simpa only [max_eq_left h] using hle _ hmax
   · -- Otherwise, `‖f z‖ ≤ ‖f x₀‖` for all `z` in the right half-plane due to `hle`.
-    replace hmax : IsMaxOn (norm ∘ f) {z | 0 < z.re} x₀
-    · rintro z (hz : 0 < z.re)
+    replace hmax : IsMaxOn (norm ∘ f) {z | 0 < z.re} x₀ := by
+      rintro z (hz : 0 < z.re)
       simpa [max_eq_right h.le] using hle _ hmax _ hz.le
     -- Due to the maximum modulus principle applied to the closed ball of radius `x₀.re`,
     -- `‖f 0‖ = ‖f x₀‖`.
@@ -764,10 +763,10 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
     simp
   filter_upwards [self_mem_nhdsWithin] with ε ε₀; change ε < 0 at ε₀
   set g : ℂ → E := fun z => exp (ε * z) • f z; change ‖g z‖ ≤ C
-  replace hd : DiffContOnCl ℂ g {z : ℂ | 0 < z.re}
-  exact (differentiable_id.const_mul _).cexp.diffContOnCl.smul hd
+  replace hd : DiffContOnCl ℂ g {z : ℂ | 0 < z.re} :=
+    (differentiable_id.const_mul _).cexp.diffContOnCl.smul hd
   have hgn : ∀ z, ‖g z‖ = expR (ε * z.re) * ‖f z‖ := fun z ↦ by
-    rw [norm_smul, norm_eq_abs, abs_exp, ofReal_mul_re]
+    rw [norm_smul, norm_eq_abs, abs_exp, re_ofReal_mul]
   refine' right_half_plane_of_tendsto_zero_on_real hd _ _ (fun y => _) hz
   · rcases hexp with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, (IsBigO.of_bound 1 ?_).trans hO⟩
@@ -779,7 +778,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
     have h₀ : Tendsto (fun x : ℝ => expR (ε * x)) atTop (𝓝 0) :=
       Real.tendsto_exp_atBot.comp (tendsto_const_nhds.neg_mul_atTop ε₀ tendsto_id)
     exact h₀.zero_smul_isBoundedUnder_le hre
-  · rw [hgn, ofReal_mul_re, I_re, mul_zero, mul_zero, Real.exp_zero,
+  · rw [hgn, re_ofReal_mul, I_re, mul_zero, mul_zero, Real.exp_zero,
       one_mul]
     exact him y
 #align phragmen_lindelof.right_half_plane_of_bounded_on_real PhragmenLindelof.right_half_plane_of_bounded_on_real
@@ -807,11 +806,11 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   -- Consider $g_n(z)=e^{nz}f(z)$.
   set g : ℕ → ℂ → E := fun (n : ℕ) (z : ℂ) => exp z ^ n • f z
   have hg : ∀ n z, ‖g n z‖ = expR z.re ^ n * ‖f z‖ := fun n z ↦ by
-    simp only [norm_smul, norm_eq_abs, Complex.abs_pow, abs_exp]
+    simp only [g, norm_smul, norm_eq_abs, Complex.abs_pow, abs_exp]
   intro z hz
   -- Since `e^{nz} → ∞` as `n → ∞`, it suffices to show that each `g_n` is bounded from above by `C`
-  suffices H : ∀ n : ℕ, ‖g n z‖ ≤ C
-  · contrapose! H
+  suffices H : ∀ n : ℕ, ‖g n z‖ ≤ C by
+    contrapose! H
     simp only [hg]
     exact (((tendsto_pow_atTop_atTop_of_one_lt (Real.one_lt_exp_iff.2 hz)).atTop_mul
       (norm_pos_iff.2 H) tendsto_const_nhds).eventually (eventually_gt_atTop C)).exists
@@ -833,7 +832,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
     exacts [le_max_left _ _, hz, le_max_left _ _]
   · rw [tendsto_zero_iff_norm_tendsto_zero]; simp only [hg]
     exact hre n
-  · rw [hg, ofReal_mul_re, I_re, mul_zero, Real.exp_zero, one_pow, one_mul]
+  · rw [hg, re_ofReal_mul, I_re, mul_zero, Real.exp_zero, one_pow, one_mul]
     exact hC y
 #align phragmen_lindelof.eq_zero_on_right_half_plane_of_superexponential_decay PhragmenLindelof.eq_zero_on_right_half_plane_of_superexponential_decay
 

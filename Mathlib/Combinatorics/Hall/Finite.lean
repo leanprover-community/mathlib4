@@ -52,7 +52,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     (s' : Finset { x' : ι | x' ≠ x }) : s'.card ≤ (s'.biUnion fun x' => (t x').erase a).card := by
   haveI := Classical.decEq ι
   specialize ha (s'.image fun z => z.1)
-  rw [Nonempty.image_iff, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
+  rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases he : s'.Nonempty
   · have ha' : s'.card < (s'.biUnion fun x => t x).card := by
       convert ha he fun h => by simpa [← h] using mem_univ x using 2
@@ -110,7 +110,7 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
   · rintro z₁ z₂
     have key : ∀ {x}, y ≠ f' x := by
       intro x h
-      simpa [← h] using hfr x
+      simpa [t', ← h] using hfr x
     by_cases h₁ : z₁ = x <;> by_cases h₂ : z₂ = x <;> simp [h₁, h₂, hfinj.eq_iff, key, key.symm]
   · intro z
     simp only [ne_eq, Set.mem_setOf_eq]
@@ -147,7 +147,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
   rw [this, hus]
   refine' (tsub_le_tsub_right (ht _) _).trans _
   rw [← card_sdiff]
-  · refine' (card_le_of_subset _).trans le_rfl
+  · refine' (card_le_card _).trans le_rfl
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union, exists_and_right,
       exists_imp]
@@ -261,7 +261,7 @@ theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type*} [Fi
   · exact HallMarriageTheorem.hall_hard_inductive
   · rintro ⟨f, hf₁, hf₂⟩ s
     rw [← card_image_of_injective s hf₁]
-    apply card_le_of_subset
+    apply card_le_card
     intro
     rw [mem_image, mem_biUnion]
     rintro ⟨x, hx, rfl⟩

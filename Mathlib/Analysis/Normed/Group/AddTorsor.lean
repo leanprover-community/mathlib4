@@ -46,7 +46,7 @@ variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [
 
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
-    -- Porting note: was `simp [NormedAddTorsor.dist_eq_norm']`
+    -- porting note (#10745): was `simp [NormedAddTorsor.dist_eq_norm']`
     rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', vadd_vsub_vadd_cancel_left]⟩
 #align normed_add_torsor.to_has_isometric_vadd NormedAddTorsor.to_isometricVAdd
 
@@ -112,7 +112,7 @@ theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) 
 
 @[simp]
 theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
-  -- Porting note: was `simp [dist_eq_norm_vsub V _ x]`
+  -- porting note (#10745): was `simp [dist_eq_norm_vsub V _ x]`
   rw [dist_eq_norm_vsub V _ x, vadd_vsub]
 #align dist_vadd_left dist_vadd_left
 
@@ -326,10 +326,10 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
   -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
   -- but we don't yet have a nice way to state it.
   refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
-  choose! a v ha hv hav using husv
+  choose! a ha v hv hav using husv
   rcases ht.isSeqCompact hv with ⟨q, hqt, φ, φ_mono, hφq⟩
-  refine ⟨p -ᵥ q, q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
-    (eventually_of_forall fun n ↦ ?_), hqt, vsub_vadd _ _⟩
+  refine ⟨p -ᵥ q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
+    (eventually_of_forall fun n ↦ ?_), q, hqt, vsub_vadd _ _⟩
   convert ha (φ n) using 1
   exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).symm
 

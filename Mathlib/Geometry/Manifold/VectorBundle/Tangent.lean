@@ -124,6 +124,51 @@ theorem tangentBundleCore_coordChange_achart (x x' z : M) :
   rfl
 #align tangent_bundle_core_coord_change_achart tangentBundleCore_coordChange_achart
 
+section tangentCoordChange
+
+/-- In a manifold `M`, given two preferred charts indexed by `x y : M`, `tangentCoordChange I x y`
+is the family of derivatives of the corresponding change-of-coordinates map. It takes junk values
+outside the intersection of the sources of the two charts.
+
+Note that this definition takes advantage of the fact that `tangentBundleCore` has the same base
+sets as the preferred charts of the base manifold. -/
+abbrev tangentCoordChange (x y : M) : M → E →L[𝕜] E :=
+  (tangentBundleCore I M).coordChange (achart H x) (achart H y)
+
+variable {I}
+
+lemma tangentCoordChange_def {x y z : M} : tangentCoordChange I x y z =
+    fderivWithin 𝕜 (extChartAt I y ∘ (extChartAt I x).symm) (range I) (extChartAt I x z) := rfl
+
+lemma tangentCoordChange_self {x z : M} {v : E} (h : z ∈ (extChartAt I x).source) :
+    tangentCoordChange I x x z v = v := by
+  apply (tangentBundleCore I M).coordChange_self
+  rw [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
+  exact h
+
+lemma tangentCoordChange_comp {w x y z : M} {v : E}
+    (h : z ∈ (extChartAt I w).source ∩ (extChartAt I x).source ∩ (extChartAt I y).source) :
+    tangentCoordChange I x y z (tangentCoordChange I w x z v) = tangentCoordChange I w y z v := by
+  apply (tangentBundleCore I M).coordChange_comp
+  simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
+  exact h
+
+lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
+    (h : z ∈ (extChartAt I x).source ∩ (extChartAt I y).source) :
+    HasFDerivWithinAt ((extChartAt I y) ∘ (extChartAt I x).symm) (tangentCoordChange I x y z)
+      (range I) (extChartAt I x z) :=
+  have h' : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source := by
+    rw [PartialEquiv.trans_source'', PartialEquiv.symm_symm, PartialEquiv.symm_target]
+    exact mem_image_of_mem _ h
+  ((contDiffWithinAt_ext_coord_change I y x h').differentiableWithinAt (by simp)).hasFDerivWithinAt
+
+lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
+    ((extChartAt I x).source ∩ (extChartAt I y).source) := by
+  convert (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
+  simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
+
+end tangentCoordChange
+
 /-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
 `(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
 kernel.

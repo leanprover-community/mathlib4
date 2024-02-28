@@ -3,9 +3,8 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Dimension
-import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 #align_import linear_algebra.free_module.finite.basic from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
 
@@ -31,13 +30,6 @@ section Ring
 
 variable [Ring R] [AddCommGroup M] [Module R M] [Module.Free R M]
 
-/-- If a free module is finite, then any arbitrary basis is finite. -/
-lemma finite_basis {R M} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
-    {ι} [Module.Finite R M] (b : Basis ι R M) :
-    _root_.Finite ι :=
-  let ⟨s, hs⟩ := ‹Module.Finite R M›
-  basis_finite_of_finite_spans (↑s) s.finite_toSet hs b
-
 /-- If a free module is finite, then the arbitrary basis is finite. -/
 noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
     Fintype (Module.Free.ChooseBasisIndex R M) := by
@@ -46,7 +38,7 @@ noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
   · have := Module.subsingleton R M
     rw [ChooseBasisIndex]
     infer_instance
-  · exact finite_basis (chooseBasis _ _)
+  · exact Module.Finite.finite_basis (chooseBasis _ _)
 #align module.free.choose_basis_index.fintype Module.Free.ChooseBasisIndex.fintype
 
 end Ring

@@ -212,6 +212,88 @@ end Stabilizers
 
 end MulAction
 
+section FixedPoints
+
+variable (M : Type u) (α : Type v) [Monoid M]
+
+section Monoid
+
+variable [Monoid α] [MulDistribMulAction M α]
+
+/-- The submonoid of elements fixed under the whole action. -/
+def FixedPoints.submonoid : Submonoid α where
+  carrier := MulAction.fixedPoints M α
+  one_mem' := smul_one
+  mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
+
+@[simp]
+lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+end Monoid
+
+section Group
+
+variable [Group α] [MulDistribMulAction M α]
+
+/-- The subgroup of elements fixed under the whole action. -/
+def FixedPoints.subgroup : Subgroup α where
+  __ := submonoid M α
+  inv_mem' ha _ := by rw [smul_inv', ha]
+
+/-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
+notation α "^*" M:51 => FixedPoints.subgroup M α
+
+@[simp]
+lemma FixedPoints.mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+@[simp]
+lemma FixedPoints.subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+  rfl
+
+end Group
+
+section AddMonoid
+
+variable [AddMonoid α] [DistribMulAction M α]
+
+/-- The additive submonoid of elements fixed under the whole action. -/
+def FixedPoints.addSubmonoid : AddSubmonoid α where
+  carrier := MulAction.fixedPoints M α
+  zero_mem' := smul_zero
+  add_mem' ha hb _ := by rw [smul_add, ha, hb]
+
+@[simp]
+lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+end AddMonoid
+
+section AddGroup
+
+variable [AddGroup α] [DistribMulAction M α]
+
+/-- The additive subgroup of elements fixed under the whole action. -/
+def FixedPoints.addSubgroup : AddSubgroup α where
+  __ := addSubmonoid M α
+  neg_mem' ha _ := by rw [smul_neg, ha]
+
+/-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
+notation α "^+" M:51 => FixedPoints.addSubgroup M α
+
+@[simp]
+lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+@[simp]
+lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
+  rfl
+
+end AddGroup
+
+end FixedPoints
+
 /-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
@@ -313,7 +395,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image_iff_bex]
-    refine' ⟨g⁻¹ • a, _, by simp only [Quotient.eq']; use g⁻¹⟩
+    refine' ⟨g⁻¹ • a, _, by simp only [f, Quotient.eq']; use g⁻¹⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]
@@ -355,6 +437,23 @@ def orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 #align mul_action.orbit_rel.quotient MulAction.orbitRel.Quotient
 #align add_action.orbit_rel.quotient AddAction.orbitRel.Quotient
+
+/-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
+subsingleton. -/
+theorem pretransitive_iff_subsingleton_quotient :
+    IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
+  refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
+  · refine Quot.inductionOn a (fun x ↦ ?_)
+    exact Quot.inductionOn b (fun y ↦ Quot.sound <| exists_smul_eq G y x)
+  · have h : Quotient.mk (orbitRel G α) b = ⟦a⟧ := Subsingleton.elim _ _
+    exact Quotient.eq_rel.mp h
+
+/-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
+element. -/
+theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
+    IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
+  rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]
+  exact fun _ ↦ (nonempty_quotient_iff _).mpr inferInstance
 
 variable {G α}
 
@@ -472,12 +571,12 @@ lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_right [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
     stabilizer G (a • b) = stabilizer G b :=
-  (le_stabilizer_smul_right _ _).antisymm' $ (le_stabilizer_smul_right a⁻¹ _).trans_eq $ by
+  (le_stabilizer_smul_right _ _).antisymm' <| (le_stabilizer_smul_right a⁻¹ _).trans_eq <| by
     rw [inv_smul_smul]
 
 @[to_additive (attr := simp)]
 lemma stabilizer_mul_eq_left [Group α] [IsScalarTower G α α] (a b : α)  :
-    stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ $ mul_left_injective _
+    stabilizer G (a * b) = stabilizer G a := stabilizer_smul_eq_left a _ <| mul_left_injective _
 
 @[to_additive (attr := simp)]
 lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
@@ -531,3 +630,9 @@ end AddAction
 
 attribute [to_additive existing] MulAction.stabilizer_smul_eq_stabilizer_map_conj
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel
+
+theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :
+    Equiv.swap a b ∈ MulAction.stabilizer (Equiv.Perm α) S ↔ (a ∈ S ↔ b ∈ S) := by
+  rw [MulAction.mem_stabilizer_iff, Set.ext_iff, ← swap_inv]
+  simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
+  exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩

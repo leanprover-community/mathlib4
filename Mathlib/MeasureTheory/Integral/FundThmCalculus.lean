@@ -1035,7 +1035,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     have : ContinuousOn (fun t => (g t - g a, ∫ u in a..t, (G' u).toReal)) (Icc a b) := by
       rw [← uIcc_of_le hab] at G'int hcont ⊢
       exact (hcont.sub continuousOn_const).prod (continuousOn_primitive_interval G'int)
-    simp only [inter_comm]
+    simp only [s, inter_comm]
     exact this.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
   have main : Icc a b ⊆ {t | g t - g a ≤ ∫ u in a..t, (G' u).toReal} := by
     -- to show that the set `s` is all `[a, b]`, it suffices to show that any point `t` in `s`
@@ -1133,7 +1133,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
     have : ContinuousOn (fun t => (g b - g t, ∫ u in t..b, φ u)) (Icc a b) := by
       rw [← uIcc_of_le hab] at hcont φint ⊢
       exact (continuousOn_const.sub hcont).prod (continuousOn_primitive_interval_left φint)
-    simp only [inter_comm]
+    simp only [s, inter_comm]
     exact this.preimage_isClosed_of_isClosed isClosed_Icc isClosed_le_prod
   have A : closure (Ioc a b) ⊆ s := by
     apply s_closed.closure_subset_iff.2
@@ -1230,7 +1230,7 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
       refine' (hb.congr' _).mono_left (nhdsWithin_mono _ Ico_subset_Iio_self)
       filter_upwards [Ioo_mem_nhdsWithin_Iio (right_mem_Ioc.2 hab)] with _ hz using
         (update_noteq hz.1.ne' _ _).symm
-  simpa [hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
+  simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 #align interval_integral.integral_eq_sub_of_has_deriv_at_of_tendsto intervalIntegral.integral_eq_sub_of_hasDerivAt_of_tendsto
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and
@@ -1258,16 +1258,16 @@ lemma integral_unitInterval_deriv_eq_sub [IsROrC 𝕜] [NormedSpace 𝕜 E] [IsS
   let γ (t : ℝ) : 𝕜 := z₀ + t • z₁
   have hint : IntervalIntegrable (z₁ • (f' ∘ γ)) MeasureTheory.volume 0 1 :=
     (ContinuousOn.const_smul hcont z₁).intervalIntegrable_of_Icc zero_le_one
-  have hderiv' : ∀ t ∈ Set.uIcc (0 : ℝ) 1, HasDerivAt (f ∘ γ) (z₁ • (f' ∘ γ) t) t
-  · intro t ht
+  have hderiv' : ∀ t ∈ Set.uIcc (0 : ℝ) 1, HasDerivAt (f ∘ γ) (z₁ • (f' ∘ γ) t) t := by
+    intro t ht
     refine (hderiv t <| (Set.uIcc_of_le (α := ℝ) zero_le_one).symm ▸ ht).scomp t ?_
-    have : HasDerivAt (fun t : ℝ ↦ t • z₁) z₁ t
-    · convert (hasDerivAt_id t).smul_const (F := 𝕜) _ using 1
+    have : HasDerivAt (fun t : ℝ ↦ t • z₁) z₁ t := by
+      convert (hasDerivAt_id t).smul_const (F := 𝕜) _ using 1
       simp only [one_smul]
     exact this.const_add z₀
   convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
   · simp_rw [← integral_smul, Function.comp_apply]
-  · simp only [Function.comp_apply, one_smul, zero_smul, add_zero]
+  · simp only [γ, Function.comp_apply, one_smul, zero_smul, add_zero]
 
 /-!
 ### Automatic integrability for nonnegative derivatives
@@ -1296,7 +1296,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
   let F : ℝ → ℝ := (↑) ∘ f
   have intF : IntegrableOn F (Ioo a b) := by
     refine' ⟨f.measurable.coe_nnreal_real.aestronglyMeasurable, _⟩
-    simpa only [HasFiniteIntegral, comp_apply, NNReal.nnnorm_eq] using fint
+    simpa only [F, HasFiniteIntegral, comp_apply, NNReal.nnnorm_eq] using fint
   have A : ∫⁻ x : ℝ in Ioo a b, f x = ENNReal.ofReal (∫ x in Ioo a b, F x) :=
     lintegral_coe_eq_integral _ intF
   rw [A] at hf

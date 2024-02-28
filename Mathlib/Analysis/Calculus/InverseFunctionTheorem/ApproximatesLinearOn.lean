@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.Banach
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Topology.PartialHomeomorph
 
 #align_import analysis.calculus.inverse from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 /-!
@@ -61,7 +63,7 @@ variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {ε : ℝ}
 
-open Asymptotics Filter Metric Set
+open Filter Metric Set
 
 open ContinuousLinearMap (id)
 
@@ -195,7 +197,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
       dist (f (g z)) y = ‖f (z + v) - y‖ := by rw [dist_eq_norm]
       _ = ‖f (z + v) - f z - f' v + f' v - (y - f z)‖ := by congr 1; abel
       _ = ‖f (z + v) - f z - f' (z + v - z)‖ := by
-        simp only [ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel',
+        simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel',
           sub_add_cancel]
       _ ≤ c * ‖z + v - z‖ := (hf _ (hε hgz) _ (hε hz))
       _ ≤ c * (f'symm.nnnorm * dist (f z) y) := by
@@ -252,8 +254,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         apply IH.1
       _ = ((c : ℝ) * f'symm.nnnorm) ^ n.succ * dist (f b) y := by simp only [pow_succ']; ring
   -- Deduce from the inductive bound that `uₙ` is a Cauchy sequence, therefore converging.
-  have : CauchySeq u
-  · refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
+  have : CauchySeq u := by
+    refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
     calc
       dist (u n) (u (n + 1)) = dist (g (u n)) (u n) := by rw [usucc, dist_comm]
       _ ≤ f'symm.nnnorm * dist (f (u n)) y := (A _)
@@ -276,7 +278,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   have T2 : Tendsto (f ∘ u) atTop (𝓝 y) := by
     rw [tendsto_iff_dist_tendsto_zero]
     refine' squeeze_zero (fun _ => dist_nonneg) (fun n => (D n).1) _
-    simpa using (tendsto_pow_atTop_nhds_0_of_lt_1 (by positivity) Icf').mul tendsto_const_nhds
+    simpa using (tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) Icf').mul tendsto_const_nhds
   exact tendsto_nhds_unique T1 T2
 #align approximates_linear_on.surj_on_closed_ball_of_nonlinear_right_inverse ApproximatesLinearOn.surjOn_closedBall_of_nonlinearRightInverse
 
@@ -355,7 +357,7 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
     exact fun R h y hy => h hy
 #align approximates_linear_on.surjective ApproximatesLinearOn.surjective
 
-/-- A map approximating a linear equivalence on a set defines a local equivalence on this set.
+/-- A map approximating a linear equivalence on a set defines a partial equivalence on this set.
 Should not be used outside of this file, because it is superseded by `toPartialHomeomorph` below.
 
 This is a first step towards the inverse function. -/
@@ -403,7 +405,7 @@ section
 variable (f s)
 
 /-- Given a function `f` that approximates a linear equivalence on an open set `s`,
-returns a local homeomorph with `toFun = f` and `source = s`. -/
+returns a partial homeomorphism with `toFun = f` and `source = s`. -/
 def toPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : PartialHomeomorph E F where
   toPartialEquiv := hf.toPartialEquiv hc

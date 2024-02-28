@@ -3,7 +3,8 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Cases
 
 #align_import data.finite.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -49,11 +50,34 @@ open Function
 
 variable {α β : Sort*}
 
-/-- A type is `Finite` if it is in bijective correspondence to some
-`Fin n`.
+/-- A type is `Finite` if it is in bijective correspondence to some `Fin n`.
 
-While this could be defined as `Nonempty (Fintype α)`, it is defined
-in this way to allow there to be `Finite` instances for propositions.
+This is similar to `Fintype`, but `Finite` is a proposition rather than data.
+A particular benefit to this is that `Finite` instances are definitionally equal to one another
+(due to proof irrelevance) rather than being merely propositionally equal,
+and, furthermore, `Finite` instances generally avoid the need for `Decidable` instances.
+One other notable difference is that `Finite` allows there to be `Finite p` instances
+for all `p : Prop`, which is not allowed by `Fintype` due to universe constraints.
+An application of this is that `Finite (x ∈ s → β x)` follows from the general instance for pi
+types, assuming `[∀ x, Finite (β x)]`.
+Implementation note: this is a reason `Finite α` is not defined as `Nonempty (Fintype α)`.
+
+Every `Fintype` instance provides a `Finite` instance via `Finite.of_fintype`.
+Conversely, one can noncomputably create a `Fintype` instance from a `Finite` instance
+via `Fintype.ofFinite`. In a proof one might write
+```lean
+  have := Fintype.ofFinite α
+```
+to obtain such an instance.
+
+Do not write noncomputable `Fintype` instances; instead write `Finite` instances
+and use this `Fintype.ofFinite` interface.
+The `Fintype` instances should be relied upon to be computable for evaluation purposes.
+
+Theorems should use `Finite` instead of `Fintype`, unless definitions in the theorem statement
+require `Fintype`.
+Definitions should prefer `Finite` as well, unless it is important that the definitions
+are meant to be computable in the reduction or `#eval` sense.
 -/
 class inductive Finite (α : Sort*) : Prop
   | intro {n : ℕ} : α ≃ Fin n → Finite _

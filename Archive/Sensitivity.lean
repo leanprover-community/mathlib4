@@ -239,7 +239,7 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
       first
       | rw [ε, show q 0 = true from rfl, Bool.cond_true] at h
       | rw [ε, show q 0 = false from rfl, Bool.cond_false] at h
-      rwa [show p = π q by ext; simp [Fin.succ_ne_zero, π]]
+      rwa [show p = π q by ext; simp [q, Fin.succ_ne_zero, π]]
 #align sensitivity.epsilon_total Sensitivity.epsilon_total
 
 open Module
@@ -248,7 +248,7 @@ open Module
 and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval := duality
-  Total := @epsilon_total _
+  total := @epsilon_total _
 #align sensitivity.dual_bases_e_ε Sensitivity.dualBases_e_ε
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
@@ -436,15 +436,14 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [Finsupp.mem_support_iff] at p_in
     rw [Set.mem_toFinset]
     exact (dualBases_e_ε _).mem_of_mem_span y_mem_H p p_in
-  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y|
-  exact Finite.exists_max _
+  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y| :=
+    Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
   refine' ⟨q, (dualBases_e_ε _).mem_of_mem_span y_mem_H q (abs_pos.mp H_q_pos), _⟩
   let s := √ (m + 1)
-  suffices : s * |ε q y| ≤ _ * |ε q y|
-  exact (mul_le_mul_right H_q_pos).mp ‹_›
+  suffices s * |ε q y| ≤ _ * |ε q y| from (mul_le_mul_right H_q_pos).mp ‹_›
   let coeffs := (dualBases_e_ε m.succ).coeffs
   calc
     s * |ε q y| = |ε q (s • y)| := by
@@ -470,7 +469,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ ≤ Finset.card (H ∩ q.adjacent).toFinset * |ε q y| := by
       refine' (mul_le_mul_right H_q_pos).2 _
       norm_cast
-      apply Finset.card_le_of_subset
+      apply Finset.card_le_card
       rw [Set.toFinset_inter]
       convert Finset.inter_subset_inter_right coeffs_support
 #align sensitivity.huang_degree_theorem Sensitivity.huang_degree_theorem

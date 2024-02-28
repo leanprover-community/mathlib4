@@ -170,10 +170,10 @@ instance instPreorder : Preorder (Booleanisation α) where
     | lift a => LE.lift le_rfl
     | comp a => LE.comp le_rfl
   le_trans x y z hxy hyz := match x, y, z, hxy, hyz with
-    | lift a, lift b, lift c, LE.lift hab, LE.lift hbc => LE.lift $ hab.trans hbc
-    | lift a, lift b, comp c, LE.lift hab, LE.sep hbc => LE.sep $ hbc.mono_left hab
-    | lift a, comp b, comp c, LE.sep hab, LE.comp hcb => LE.sep $ hab.mono_right hcb
-    | comp a, comp b, comp c, LE.comp hba, LE.comp hcb => LE.comp $ hcb.trans hba
+    | lift a, lift b, lift c, LE.lift hab, LE.lift hbc => LE.lift <| hab.trans hbc
+    | lift a, lift b, comp c, LE.lift hab, LE.sep hbc => LE.sep <| hbc.mono_left hab
+    | lift a, comp b, comp c, LE.sep hab, LE.comp hcb => LE.sep <| hab.mono_right hcb
+    | comp a, comp b, comp c, LE.comp hba, LE.comp hcb => LE.comp <| hcb.trans hba
 
 instance instPartialOrder : PartialOrder (Booleanisation α) where
   le_antisymm x y hxy hyx := match x, y, hxy, hyx with
@@ -194,11 +194,11 @@ instance instSemilatticeSup : SemilatticeSup (Booleanisation α) where
     | comp a, lift b => LE.sep disjoint_sdiff_self_right
     | comp a, comp b => LE.comp inf_le_right
   sup_le x y z hxz hyz := match x, y, z, hxz, hyz with
-    | lift a, lift b, lift c, LE.lift hac, LE.lift hbc => LE.lift $ sup_le hac hbc
-    | lift a, lift b, comp c, LE.sep hac, LE.sep hbc => LE.sep $ hac.sup_left hbc
-    | lift a, comp b, comp c, LE.sep hac, LE.comp hcb => LE.comp $ le_sdiff.2 ⟨hcb, hac.symm⟩
-    | comp a, lift b, comp c, LE.comp hca, LE.sep hbc => LE.comp $ le_sdiff.2 ⟨hca, hbc.symm⟩
-    | comp a, comp b, comp c, LE.comp hca, LE.comp hcb => LE.comp $ le_inf hca hcb
+    | lift a, lift b, lift c, LE.lift hac, LE.lift hbc => LE.lift <| sup_le hac hbc
+    | lift a, lift b, comp c, LE.sep hac, LE.sep hbc => LE.sep <| hac.sup_left hbc
+    | lift a, comp b, comp c, LE.sep hac, LE.comp hcb => LE.comp <| le_sdiff.2 ⟨hcb, hac.symm⟩
+    | comp a, lift b, comp c, LE.comp hca, LE.sep hbc => LE.comp <| le_sdiff.2 ⟨hca, hbc.symm⟩
+    | comp a, comp b, comp c, LE.comp hca, LE.comp hcb => LE.comp <| le_inf hca hcb
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
@@ -214,11 +214,11 @@ instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
     | comp a, lift b => LE.lift sdiff_le
     | comp a, comp b => LE.comp le_sup_right
   le_inf x y z hxz hyz := match x, y, z, hxz, hyz with
-    | lift a, lift b, lift c, LE.lift hab, LE.lift hac => LE.lift $ le_inf hab hac
-    | lift a, lift b, comp c, LE.lift hab, LE.sep hac => LE.lift $ le_sdiff.2 ⟨hab, hac⟩
-    | lift a, comp b, lift c, LE.sep hab, LE.lift hac => LE.lift $ le_sdiff.2 ⟨hac, hab⟩
-    | lift a, comp b, comp c, LE.sep hab, LE.sep hac => LE.sep $ hab.sup_right hac
-    | comp a, comp b, comp c, LE.comp hba, LE.comp hca => LE.comp $ sup_le hba hca
+    | lift a, lift b, lift c, LE.lift hab, LE.lift hac => LE.lift <| le_inf hab hac
+    | lift a, lift b, comp c, LE.lift hab, LE.sep hac => LE.lift <| le_sdiff.2 ⟨hab, hac⟩
+    | lift a, comp b, lift c, LE.sep hab, LE.lift hac => LE.lift <| le_sdiff.2 ⟨hac, hab⟩
+    | lift a, comp b, comp c, LE.sep hab, LE.sep hac => LE.sep <| hab.sup_right hac
+    | comp a, comp b, comp c, LE.comp hba, LE.comp hca => LE.comp <| sup_le hba hca
 
 instance instDistribLattice : DistribLattice (Booleanisation α) where
   inf_le_left _ _ := inf_le_left
@@ -226,12 +226,12 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
   le_inf _ _ _ := le_inf
   le_sup_inf x y z := match x, y, z with
     | lift a, lift b, lift c => LE.lift le_sup_inf
-    | lift a, lift b, comp c => LE.lift $ by simp [sup_left_comm, sup_comm]
-    | lift a, comp b, lift c => LE.lift $ by simp [sup_left_comm, sup_comm (a := b \ a)]
-    | lift a, comp b, comp c => LE.comp $ by rw [sup_sdiff]
-    | comp a, lift b, lift c => LE.comp $ by rw [sdiff_inf]
-    | comp a, lift b, comp c => LE.comp $ by rw [sdiff_sdiff_right']
-    | comp a, comp b, lift c => LE.comp $ by rw [sdiff_sdiff_right', sup_comm]
+    | lift a, lift b, comp c => LE.lift <| by simp [sup_left_comm, sup_comm]
+    | lift a, comp b, lift c => LE.lift <| by simp [sup_left_comm, sup_comm (a := b \ a)]
+    | lift a, comp b, comp c => LE.comp <| by rw [sup_sdiff]
+    | comp a, lift b, lift c => LE.comp <| by rw [sdiff_inf]
+    | comp a, lift b, comp c => LE.comp <| by rw [sdiff_sdiff_right']
+    | comp a, comp b, lift c => LE.comp <| by rw [sdiff_sdiff_right', sup_comm]
     | comp a, comp b, comp c => LE.comp inf_sup_left.le
 
 -- The linter significantly hinders readability here.

@@ -97,11 +97,13 @@ This allows us to simply write `W n` or `W_ ℤ n`. -/
 -- mathport name: witt_polynomial
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W_" => wittPolynomial p
 
 -- mathport name: witt_polynomial.infer
 -- Notation with ring of coefficients implicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
 open Witt
@@ -237,7 +239,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   rw [mem_range] at H
   simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
-  apply pow_pos hp.1.pos
+  exact pow_ne_zero _ hp.1.ne_zero
 set_option linter.uppercaseLean3 false in
 #align constant_coeff_X_in_terms_of_W constantCoeff_xInTermsOfW
 

@@ -48,7 +48,7 @@ theorem one_mem : (1 : ℝ) ∈ I :=
 #align unit_interval.one_mem unitInterval.one_mem
 
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
-  ⟨mul_nonneg hx.1 hy.1, (mul_le_mul hx.2 hy.2 hy.1 zero_le_one).trans_eq <| one_mul 1⟩
+  ⟨mul_nonneg hx.1 hy.1, mul_le_one hx.2 hy.1 hy.2⟩
 #align unit_interval.mul_mem unitInterval.mul_mem
 
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
@@ -94,11 +94,11 @@ instance : Mul I :=
 
 -- todo: we could set up a `LinearOrderedCommMonoidWithZero I` instance
 theorem mul_le_left {x y : I} : x * y ≤ x :=
-  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_left y.2.2 x.2.1).trans_eq <| mul_one x.1
+  Subtype.coe_le_coe.mp <| mul_le_of_le_one_right x.2.1 y.2.2
 #align unit_interval.mul_le_left unitInterval.mul_le_left
 
 theorem mul_le_right {x y : I} : x * y ≤ y :=
-  Subtype.coe_le_coe.mp <| (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq <| one_mul y.1
+  Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 #align unit_interval.mul_le_right unitInterval.mul_le_right
 
 /-- Unit interval central symmetry. -/
@@ -123,8 +123,9 @@ theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_symm unitInterval.symm_symm
 
-theorem symm_bijective : Function.Bijective (symm : I → I) :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+theorem symm_involutive : Function.Involutive (symm : I → I) := symm_symm
+
+theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.bijective
 
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
@@ -137,11 +138,21 @@ theorem continuous_symm : Continuous σ :=
   (continuous_const.add continuous_induced_dom.neg).subtype_mk _
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
+/-- `unitInterval.symm` as a `Homeomorph`. -/
+@[simps]
+def symmHomeomorph : I ≃ₜ I where
+  toFun := symm
+  invFun := symm
+  left_inv := symm_symm
+  right_inv := symm_symm
+
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-theorem involutive_symm : Function.Involutive σ := symm_symm
+-- 2024-02-27
+@[deprecated] alias involutive_symm := symm_involutive
 
-theorem bijective_symm : Function.Bijective σ := involutive_symm.bijective
+-- 2024-02-27
+@[deprecated] alias bijective_symm := symm_bijective
 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]

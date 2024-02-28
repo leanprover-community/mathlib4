@@ -3,6 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Std.Tactic.CoeExt
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
@@ -102,9 +103,13 @@ instance : EquivLike (α ≃ β) α β where
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
 /-- Helper instance when inference gets stuck on following the normal chain
-`EquivLike → EmbeddingLike → FunLike → CoeFun`. -/
-instance : FunLike (α ≃ β) α (fun _ => β) :=
-  EmbeddingLike.toFunLike
+`EquivLike → FunLike`.
+
+TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
+-/
+instance : FunLike (α ≃ β) α β where
+  coe := Equiv.toFun
+  coe_injective' := DFunLike.coe_injective
 
 @[simp, norm_cast]
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
@@ -116,25 +121,25 @@ lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
 theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
-  FunLike.coe_injective'
+  DFunLike.coe_injective'
 #align equiv.coe_fn_injective Equiv.coe_fn_injective
 
 protected theorem coe_inj {e₁ e₂ : α ≃ β} : (e₁ : α → β) = e₂ ↔ e₁ = e₂ :=
-  @FunLike.coe_fn_eq _ _ _ _ e₁ e₂
+  @DFunLike.coe_fn_eq _ _ _ _ e₁ e₂
 #align equiv.coe_inj Equiv.coe_inj
 
-@[ext] theorem ext {f g : Equiv α β} (H : ∀ x, f x = g x) : f = g := FunLike.ext f g H
+@[ext] theorem ext {f g : Equiv α β} (H : ∀ x, f x = g x) : f = g := DFunLike.ext f g H
 #align equiv.ext Equiv.ext
 
 protected theorem congr_arg {f : Equiv α β} {x x' : α} : x = x' → f x = f x' :=
-  FunLike.congr_arg f
+  DFunLike.congr_arg f
 #align equiv.congr_arg Equiv.congr_arg
 
 protected theorem congr_fun {f g : Equiv α β} (h : f = g) (x : α) : f x = g x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align equiv.congr_fun Equiv.congr_fun
 
-theorem ext_iff {f g : Equiv α β} : f = g ↔ ∀ x, f x = g x := FunLike.ext_iff
+theorem ext_iff {f g : Equiv α β} : f = g ↔ ∀ x, f x = g x := DFunLike.ext_iff
 #align equiv.ext_iff Equiv.ext_iff
 
 @[ext] theorem Perm.ext {σ τ : Equiv.Perm α} (H : ∀ x, σ x = τ x) : σ = τ := Equiv.ext H
@@ -186,7 +191,7 @@ instance : Trans Equiv Equiv Equiv where
   trans := Equiv.trans
 
 -- porting note: this is not a syntactic tautology any more because
--- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
+-- the coercion from `e` to a function is now `DFunLike.coe` not `e.toFun`
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
 
@@ -287,6 +292,22 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 
 @[simp] theorem self_comp_symm (e : α ≃ β) : e ∘ e.symm = id := funext e.apply_symm_apply
 #align equiv.self_comp_symm Equiv.self_comp_symm
+
+@[simp] lemma _root_.EquivLike.apply_coe_symm_apply {F} [EquivLike F α β] (e : F) (x : β) :
+    e ((e : α ≃ β).symm x) = x :=
+  (e : α ≃ β).apply_symm_apply x
+
+@[simp] lemma _root_.EquivLike.coe_symm_apply_apply {F} [EquivLike F α β] (e : F) (x : α) :
+    (e : α ≃ β).symm (e x) = x :=
+  (e : α ≃ β).symm_apply_apply x
+
+@[simp] lemma _root_.EquivLike.coe_symm_comp_self {F} [EquivLike F α β] (e : F) :
+    (e : α ≃ β).symm ∘ e = id :=
+  (e : α ≃ β).symm_comp_self
+
+@[simp] lemma _root_.EquivLike.self_comp_coe_symm {F} [EquivLike F α β] (e : F) :
+    e ∘ (e : α ≃ β).symm = id :=
+  (e : α ≃ β).self_comp_symm
 
 @[simp] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
@@ -700,19 +721,19 @@ def psigmaCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ 
 #align equiv.psigma_congr_right Equiv.psigmaCongrRight
 #align equiv.psigma_congr_right_apply Equiv.psigmaCongrRight_apply
 
--- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now simplify the LHS, so I have removed `@[simp]`
 theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (psigmaCongrRight F).trans (psigmaCongrRight G) =
       psigmaCongrRight fun a => (F a).trans (G a) := rfl
 #align equiv.psigma_congr_right_trans Equiv.psigmaCongrRight_trans
 
--- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now simplify the LHS, so I have removed `@[simp]`
 theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (psigmaCongrRight F).symm = psigmaCongrRight fun a => (F a).symm := rfl
 #align equiv.psigma_congr_right_symm Equiv.psigmaCongrRight_symm
 
--- Porting note: simp can now prove this, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now prove this, so I have removed `@[simp]`
 theorem psigmaCongrRight_refl {α} {β : α → Sort*} :
     (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := rfl
 #align equiv.psigma_congr_right_refl Equiv.psigmaCongrRight_refl
@@ -728,19 +749,19 @@ def sigmaCongrRight {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β
 #align equiv.sigma_congr_right Equiv.sigmaCongrRight
 #align equiv.sigma_congr_right_apply Equiv.sigmaCongrRight_apply
 
--- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now simplify the LHS, so I have removed `@[simp]`
 theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) =
       sigmaCongrRight fun a => (F a).trans (G a) := rfl
 #align equiv.sigma_congr_right_trans Equiv.sigmaCongrRight_trans
 
--- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now simplify the LHS, so I have removed `@[simp]`
 theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm := rfl
 #align equiv.sigma_congr_right_symm Equiv.sigmaCongrRight_symm
 
--- Porting note: simp can now prove this, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now prove this, so I have removed `@[simp]`
 theorem sigmaCongrRight_refl {α} {β : α → Type*} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 #align equiv.sigma_congr_right_refl Equiv.sigmaCongrRight_refl
@@ -917,6 +938,27 @@ protected theorem exists_congr_left {α β} (f : α ≃ β) {p : α → Prop} :
     (∃ a, p a) ↔ ∃ b, p (f.symm b) :=
   ⟨fun ⟨a, h⟩ => ⟨f a, by simpa using h⟩, fun ⟨b, h⟩ => ⟨_, h⟩⟩
 #align equiv.exists_congr_left Equiv.exists_congr_left
+
+/-- If `f` is a bijective function, then its domain is equivalent to its codomain. -/
+@[simps apply]
+noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
+  toFun := f
+  invFun := surjInv hf.surjective
+  left_inv := leftInverse_surjInv hf
+  right_inv := rightInverse_surjInv _
+#align equiv.of_bijective Equiv.ofBijective
+#align equiv.of_bijective_apply Equiv.ofBijective_apply
+
+lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
+    f ((ofBijective f hf).symm x) = x :=
+  (ofBijective f hf).apply_symm_apply x
+#align equiv.of_bijective_apply_symm_apply Equiv.ofBijective_apply_symm_apply
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
+    (ofBijective f hf).symm (f x) = x :=
+  (ofBijective f hf).symm_apply_apply x
+#align equiv.of_bijective_symm_apply_apply Equiv.ofBijective_symm_apply_apply
 
 end Equiv
 

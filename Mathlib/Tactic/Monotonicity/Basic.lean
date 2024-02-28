@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SolveByElim
+import Std.Tactic.SolveByElim
+import Std.Lean.Parser
 
 /-! # Monotonicity tactic
 
@@ -24,7 +25,7 @@ for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior 
 -/
 
 open Lean Elab Tactic Parser Tactic
-open Mathlib Tactic SolveByElim
+open Std Tactic SolveByElim
 
 namespace Mathlib.Tactic.Monotonicity
 

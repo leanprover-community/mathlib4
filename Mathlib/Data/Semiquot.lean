@@ -24,7 +24,7 @@ predicate `S`) but are not completely determined.
   of the set `s`. The specific element of `s` that the VM computes
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
-  -- porting notes: removed universe parameter
+  -- Porting note: removed universe parameter
 structure Semiquot (α : Type*) where mk' ::
   /-- Set containing some element of `α`-/
   s : Set α
@@ -263,7 +263,7 @@ theorem mem_univ [Inhabited α] : ∀ a, a ∈ @univ α _ :=
 
 @[congr]
 theorem univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
-  ext.2 <| fun a => refl (a ∈ univ)
+  ext.2 fun a => refl (a ∈ univ)
 #align semiquot.univ_unique Semiquot.univ_unique
 
 @[simp]

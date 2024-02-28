@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Data.Fintype.Perm
 import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import group_theory.perm.subgroup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

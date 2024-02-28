@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Measure.Regular
 
 #align_import analysis.box_integral.integrability from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -15,6 +14,8 @@ import Mathlib.MeasureTheory.Measure.Regular
 In this file we prove that any Bochner integrable function is McShane integrable (hence, it is
 Henstock and `GP` integrable) with the same integral. The proof is based on
 [Russel A. Gordon, *The integrals of Lebesgue, Denjoy, Perron, and Henstock*][Gordon55].
+
+We deduce that the same is true for the Riemann integral for continuous functions.
 
 ## Tags
 
@@ -75,10 +76,10 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   set t := (π.filter (π.tag · ∈ s)).iUnion
   change abs ((μ t).toReal - (μ (s ∩ I)).toReal) ≤ ε
   have htU : t ⊆ U ∩ I := by
-    simp only [TaggedPrepartition.iUnion_def, iUnion_subset_iff, TaggedPrepartition.mem_filter,
+    simp only [t, TaggedPrepartition.iUnion_def, iUnion_subset_iff, TaggedPrepartition.mem_filter,
       and_imp]
     refine' fun J hJ hJs x hx => ⟨hrsU _ ⟨hJs, π.tag_mem_Icc J⟩ _, π.le_of_mem' J hJ hx⟩
-    simpa only [s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
+    simpa only [r, s.piecewise_eq_of_mem _ _ hJs] using hπ.1 J hJ (Box.coe_subset_Icc hx)
   refine' abs_sub_le_iff.2 ⟨_, _⟩
   · refine' (ENNReal.le_toReal_sub B).trans (ENNReal.toReal_le_coe_of_le_coe _)
     refine' (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans _)
@@ -89,13 +90,13 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine' le_measure_diff.trans ((measure_mono _).trans hμF.le)
     rintro x ⟨⟨hxs, hxI⟩, hxt⟩
     refine' ⟨⟨hxs, Box.coe_subset_Icc hxI⟩, fun hxF => hxt _⟩
-    simp only [TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
+    simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
       exists_prop]
     rcases hπp x hxI with ⟨J, hJπ, hxJ⟩
     refine' ⟨J, ⟨hJπ, _⟩, hxJ⟩
     contrapose hxF
     refine' hrs'F _ ⟨π.tag_mem_Icc J, hxF⟩ _
-    simpa only [s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)
+    simpa only [r, s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)
 #align box_integral.has_integral_indicator_const BoxIntegral.hasIntegralIndicatorConst
 
 /-- If `f` is a.e. equal to zero on a rectangular box, then it has McShane integral zero on this
@@ -111,7 +112,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   haveI := Fact.mk (I.measure_coe_lt_top μ)
   change μ.restrict I {x | f x ≠ 0} = 0 at hf
   set N : (ι → ℝ) → ℕ := fun x => ⌈‖f x‖⌉₊
-  have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp
+  have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp [N]
   have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
     refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
     cases' n with n
@@ -252,7 +253,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     (∑ J in π.boxes, ∫ x in J, f (Nx <| π.tag J) x ∂μ) _).trans _
   rw [add_mul, add_mul, one_mul]
   refine' add_le_add_three _ _ _
-  · /- Since each `f (Nx $ π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
+  · /- Since each `f (Nx <| π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
         the former in the formula for the integral sum changes the sum at most by `μ I * ε`. -/
     rw [← hπp.iUnion_eq, π.measure_iUnion_toReal, sum_mul, integralSum]
     refine' dist_sum_sum_le_of_le _ fun J _ => _; dsimp
@@ -301,5 +302,17 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     refine' norm_integral_le_of_norm_le (hfgi _ J hJ) (eventually_of_forall fun x => _)
     exact hfg_mono x (hNx (π.tag J))
 #align measure_theory.integrable_on.has_box_integral MeasureTheory.IntegrableOn.hasBoxIntegral
+
+/-- If `f : ℝⁿ → E` is continuous on a rectangular box `I`, then it is Box integrable on `I`
+w.r.t. a locally finite measure `μ` with the same integral. -/
+theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (μ : Measure (ι → ℝ))
+    [IsLocallyFiniteMeasure μ] {I : Box ι} (hc : ContinuousOn f (Box.Icc I))
+    (l : IntegrationParams) :
+    HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
+  obtain ⟨y, hy⟩ := BoxIntegral.integrable_of_continuousOn l hc μ
+  convert hy
+  have : IntegrableOn f I μ :=
+    IntegrableOn.mono_set (hc.integrableOn_compact I.isCompact_Icc) Box.coe_subset_Icc
+  exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
 
 end MeasureTheory

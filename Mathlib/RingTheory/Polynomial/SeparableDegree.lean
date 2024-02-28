@@ -22,7 +22,7 @@ This file contains basics about the separable degree of a polynomial.
 - `HasSeparableContraction`: the condition of having a separable contraction
 - `HasSeparableContraction.degree`: the separable degree, defined as the degree of some
   separable contraction
-- `Irreducible.HasSeparableContraction`: any irreducible polynomial can be contracted
+- `Irreducible.hasSeparableContraction`: any irreducible polynomial can be contracted
   to a separable polynomial
 - `HasSeparableContraction.dvd_degree'`: the degree of a separable contraction divides the degree,
   in function of the exponential characteristic of the field
@@ -69,6 +69,10 @@ def HasSeparableContraction.degree : ℕ :=
   hf.contraction.natDegree
 #align polynomial.has_separable_contraction.degree Polynomial.HasSeparableContraction.degree
 
+/-- The `HasSeparableContraction.contraction` is indeed a separable contraction. -/
+theorem HasSeparableContraction.isSeparableContraction :
+    IsSeparableContraction q f hf.contraction := Classical.choose_spec hf
+
 /-- The separable degree divides the degree, in function of the exponential characteristic of F. -/
 theorem IsSeparableContraction.dvd_degree' {g} (hf : IsSeparableContraction q f g) :
     ∃ m : ℕ, g.natDegree * q ^ m = f.natDegree := by
@@ -104,13 +108,13 @@ variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 
 /-- Every irreducible polynomial can be contracted to a separable polynomial.
 https://stacks.math.columbia.edu/tag/09H0 -/
-theorem Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] (f : F[X])
+theorem _root_.Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] {f : F[X]}
     (irred : Irreducible f) : HasSeparableContraction q f := by
   cases hF
   · exact ⟨f, irred.separable, ⟨0, by rw [pow_zero, expand_one]⟩⟩
   · rcases exists_separable_of_irreducible q irred ‹q.Prime›.ne_zero with ⟨n, g, hgs, hge⟩
     exact ⟨g, hgs, n, hge⟩
-#align irreducible.has_separable_contraction Polynomial.Irreducible.hasSeparableContraction
+#align irreducible.has_separable_contraction Irreducible.hasSeparableContraction
 
 /-- If two expansions (along the positive characteristic) of two separable polynomials `g` and `g'`
 agree, then they have the same degree. -/

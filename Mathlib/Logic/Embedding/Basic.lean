@@ -20,7 +20,7 @@ universe u v w x
 
 namespace Function
 
--- port note: in Lean 3 this was tagged @[nolint has_nonempty_instance]
+-- Porting note: in Lean 3 this was tagged @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
 structure Embedding (α : Sort*) (β : Sort*) where
   /-- An embedding as a function. Use coercion instead. -/
@@ -32,15 +32,25 @@ structure Embedding (α : Sort*) (β : Sort*) where
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
-instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
+instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
-  injective' := Embedding.inj'
   coe_injective' f g h := by { cases f; cases g; congr }
+
+instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
+  injective' := Embedding.inj'
 
 initialize_simps_projections Embedding (toFun → apply)
 
 -- porting note: this needs `tactic.lift`.
 --instance {α β : Sort*} : CanLift (α → β) (α ↪ β) coeFn Injective where prf f hf := ⟨⟨f, hf⟩, rfl⟩
+
+theorem exists_surjective_iff :
+    (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
+  ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
+    (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
+
+instance : CanLift (α → β) (α ↪ β) (↑) Injective where
+  prf _ h := ⟨⟨_, h⟩, rfl⟩
 
 end Function
 
@@ -74,6 +84,9 @@ theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 #align equiv.to_embedding_apply Equiv.toEmbedding_apply
 
+theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
+  fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
+
 instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
 #align equiv.coe_embedding Equiv.coeEmbedding
@@ -83,7 +96,7 @@ instance Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
   Equiv.coeEmbedding
 #align equiv.perm.coe_embedding Equiv.Perm.coeEmbedding
 
--- port note : `theorem Equiv.coe_eq_to_embedding : ↑f = f.toEmbedding` is a
+-- Porting note : `theorem Equiv.coe_eq_to_embedding : ↑f = f.toEmbedding` is a
 -- syntactic tautology in Lean 4
 
 end Equiv
@@ -93,17 +106,17 @@ namespace Function
 namespace Embedding
 
 theorem coe_injective {α β} : @Injective (α ↪ β) (α → β) (λ f => ↑f) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align function.embedding.coe_injective Function.Embedding.coe_injective
 
 @[ext]
 theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
--- port note : in Lean 3 `FunLike.ext_iff.symm` works
+-- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
-  Iff.symm (FunLike.ext_iff)
+  Iff.symm (DFunLike.ext_iff)
 #align function.embedding.ext_iff Function.Embedding.ext_iff
 
 @[simp]
@@ -202,10 +215,16 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     · exact h ⟩
 #align function.embedding.set_value Function.Embedding.setValue
 
+@[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a = b := by
   simp [setValue]
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
+
+@[simp]
+theorem setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = b)] : setValue f a b a' = b ↔ a' = a :=
+  (setValue f a b).injective.eq_iff' <| setValue_eq ..
 
 /-- Embedding into `Option α` using `some`. -/
 @[simps (config := .asFn)]
@@ -277,7 +296,8 @@ theorem coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) 
   rfl
 #align function.embedding.coe_prod_map Function.Embedding.coe_prodMap
 
-/-- If `e₁` and `e₂` are embeddings, then so is `λ ⟨a, b⟩, ⟨e₁ a, e₂ b⟩ : PProd α γ → PProd β δ`. -/
+/-- If `e₁` and `e₂` are embeddings,
+  then so is `fun ⟨a, b⟩ ↦ ⟨e₁ a, e₂ b⟩ : PProd α γ → PProd β δ`. -/
 def pprodMap {α β γ δ : Sort*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : PProd α γ ↪ PProd β δ :=
   ⟨fun x => ⟨e₁ x.1, e₂ x.2⟩, e₁.injective.pprod_map e₂.injective⟩
 #align function.embedding.pprod_map Function.Embedding.pprodMap
@@ -348,7 +368,7 @@ def arrowCongrRight {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) : 
 #align function.embedding.arrow_congr_right Function.Embedding.arrowCongrRight
 
 @[simp]
-theorem arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ ↪ α) :
+theorem arrowCongrRight_apply {α : Sort u} {β : Sort v} {γ : Sort w} (e : α ↪ β) (f : γ → α) :
     arrowCongrRight e f = e ∘ f :=
   rfl
 #align function.embedding.arrow_congr_right_apply Function.Embedding.arrowCongrRight_apply

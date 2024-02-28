@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.Algebra.Homology.Homology
+import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.CategoryTheory.Abelian.Basic
 
@@ -75,7 +75,7 @@ which the `H` field is `Abelian.coimage (kernel.ι S.g ≫ cokernel.π S.f)`. -/
 noncomputable def ofAbelian : S.LeftHomologyData := by
   let γ := kernel.ι S.g ≫ cokernel.π S.f
   let f' := kernel.lift S.g S.f S.zero
-  have hf' : f' = kernel.lift γ f' (by simp) ≫ kernel.ι γ := by rw [kernel.lift_ι]
+  have hf' : f' = kernel.lift γ f' (by simp [γ, f']) ≫ kernel.ι γ := by rw [kernel.lift_ι]
   have wπ : f' ≫ cokernel.π (kernel.ι γ) = 0 := by
     rw [hf']
     simp only [assoc, cokernel.condition, comp_zero]
@@ -85,7 +85,7 @@ noncomputable def ofAbelian : S.LeftHomologyData := by
     IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingParallelPair.zero
   have fac : f' = Abelian.factorThruImage S.f ≫ e.hom ≫ kernel.ι γ := by
     rw [hf', he]
-    simp only [kernel.lift_ι, abelianImageToKernel, ← cancel_mono (kernel.ι S.g), assoc]
+    simp only [f', kernel.lift_ι, abelianImageToKernel, ← cancel_mono (kernel.ι S.g), assoc]
   have hπ : IsColimit (CokernelCofork.ofπ _ wπ) :=
     CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => cokernel.desc _ x (by
@@ -143,7 +143,7 @@ which the `H` field is `Abelian.image (kernel.ι S.g ≫ cokernel.π S.f)`. -/
 noncomputable def ofAbelian : S.RightHomologyData := by
   let γ := kernel.ι S.g ≫ cokernel.π S.f
   let g' := cokernel.desc S.f S.g S.zero
-  have hg' : g' = cokernel.π γ ≫ cokernel.desc γ g' (by simp) := by rw [cokernel.π_desc]
+  have hg' : g' = cokernel.π γ ≫ cokernel.desc γ g' (by simp [γ, g']) := by rw [cokernel.π_desc]
   have wι : kernel.ι (cokernel.π γ) ≫ g' = 0 := by rw [hg', kernel.condition_assoc, zero_comp]
   let e : cokernel γ ≅ Abelian.coimage S.g :=
     IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) S.cokernelToAbelianCoimageIsCokernel
@@ -151,7 +151,7 @@ noncomputable def ofAbelian : S.RightHomologyData := by
     IsColimit.comp_coconePointUniqueUpToIso_hom _ _ WalkingParallelPair.one
   have fac : g' = cokernel.π γ ≫ e.hom ≫ Abelian.factorThruCoimage S.g := by
     rw [hg', reassoc_of% he]
-    simp only [cokernel.π_desc, ← cancel_epi (cokernel.π S.f),
+    simp only [g', cokernel.π_desc, ← cancel_epi (cokernel.π S.f),
       cokernel_π_comp_cokernelToAbelianCoimage_assoc]
   have hι : IsLimit (KernelFork.ofι _ wι) :=
     KernelFork.IsLimit.ofι _ _

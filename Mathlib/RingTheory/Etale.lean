@@ -71,9 +71,8 @@ variable {R A}
 
 theorem FormallyEtale.iff_unramified_and_smooth :
     FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A := by
-  rw [FormallyUnramified_iff, FormallySmooth_iff, FormallyEtale_iff]
-  simp_rw [← forall_and]
-  rfl
+  rw [formallyUnramified_iff, formallySmooth_iff, formallyEtale_iff]
+  simp_rw [← forall_and, Function.Bijective]
 #align algebra.formally_etale.iff_unramified_and_smooth Algebra.FormallyEtale.iff_unramified_and_smooth
 
 instance (priority := 100) FormallyEtale.to_unramified [h : FormallyEtale R A] :
@@ -530,7 +529,7 @@ theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmoot
       AlgHom.comp_algebraMap]
   use f
   ext
-  simp
+  simp [f]
 #align algebra.formally_smooth.localization_base Algebra.FormallySmooth.localization_base
 
 /-- This actually does not need the localization instance, and is stated here again for

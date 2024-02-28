@@ -139,11 +139,11 @@ theorem isClopen_preimage (A : Set S) : IsClopen (S.proj ⁻¹' A) :=
 #align discrete_quotient.is_clopen_preimage DiscreteQuotient.isClopen_preimage
 
 theorem isOpen_preimage (A : Set S) : IsOpen (S.proj ⁻¹' A) :=
-  (S.isClopen_preimage A).1
+  (S.isClopen_preimage A).2
 #align discrete_quotient.is_open_preimage DiscreteQuotient.isOpen_preimage
 
 theorem isClosed_preimage (A : Set S) : IsClosed (S.proj ⁻¹' A) :=
-  (S.isClopen_preimage A).2
+  (S.isClopen_preimage A).1
 #align discrete_quotient.is_closed_preimage DiscreteQuotient.isClosed_preimage
 
 theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
@@ -382,7 +382,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
     rw [← compat _ _ h]
     exact fiber_subset_ofLE _ _
   obtain ⟨x, hx⟩ : Set.Nonempty (⋂ Q, proj Q ⁻¹' {Qs Q}) :=
-    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+    IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
       (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_isDirected_ge H₁)
       (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
       (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _
