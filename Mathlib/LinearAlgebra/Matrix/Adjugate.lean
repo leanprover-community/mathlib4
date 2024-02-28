@@ -447,7 +447,7 @@ theorem adjugate_fin_three_of (a b c d e f g h i: α) :
     !![e * i - f * h, -(b * i) + c * h, b * f - c * e;
      -(d * i) + f * g, a * i - c * g, -(a * f) + c * d;
       d * h - e * g, -(a * h) + b * g, a * e - b * d] :=
-    adjugate_fin_three _
+  adjugate_fin_three _
 
 theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :
     det A = ∑ j : n, A i j * adjugate A j i := by
