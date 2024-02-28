@@ -741,29 +741,29 @@ theorem le_sup_inf : ∀ {x y z : α}, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
   fun {x y z} => DistribLattice.le_sup_inf x y z
 #align le_sup_inf le_sup_inf
 
-theorem sup_inf_left : x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z) :=
+lemma sup_inf_left (a b c : α) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
   le_antisymm sup_inf_le le_sup_inf
 #align sup_inf_left sup_inf_left
 
-theorem sup_inf_right : y ⊓ z ⊔ x = (y ⊔ x) ⊓ (z ⊔ x) := by
-  simp only [sup_inf_left, fun y : α => @sup_comm α _ y x, eq_self_iff_true]
+lemma sup_inf_right (a b c : α) : a ⊓ b ⊔ c = (a ⊔ c) ⊓ (b ⊔ c) := by
+  simp only [sup_inf_left, sup_comm _ c, eq_self_iff_true]
 #align sup_inf_right sup_inf_right
 
-theorem inf_sup_left : x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z :=
+lemma inf_sup_left (a b c : α) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c :=
   calc
-    x ⊓ (y ⊔ z) = x ⊓ (x ⊔ z) ⊓ (y ⊔ z) := by rw [inf_sup_self]
-    _ = x ⊓ (x ⊓ y ⊔ z) := by simp only [inf_assoc, sup_inf_right, eq_self_iff_true]
-    _ = (x ⊔ x ⊓ y) ⊓ (x ⊓ y ⊔ z) := by rw [sup_inf_self]
-    _ = (x ⊓ y ⊔ x) ⊓ (x ⊓ y ⊔ z) := by rw [sup_comm]
-    _ = x ⊓ y ⊔ x ⊓ z := by rw [sup_inf_left]
+    a ⊓ (b ⊔ c) = a ⊓ (a ⊔ c) ⊓ (b ⊔ c) := by rw [inf_sup_self]
+    _ = a ⊓ (a ⊓ b ⊔ c) := by simp only [inf_assoc, sup_inf_right, eq_self_iff_true]
+    _ = (a ⊔ a ⊓ b) ⊓ (a ⊓ b ⊔ c) := by rw [sup_inf_self]
+    _ = (a ⊓ b ⊔ a) ⊓ (a ⊓ b ⊔ c) := by rw [sup_comm]
+    _ = a ⊓ b ⊔ a ⊓ c := by rw [sup_inf_left]
 #align inf_sup_left inf_sup_left
 
 instance OrderDual.distribLattice (α : Type*) [DistribLattice α] : DistribLattice αᵒᵈ where
   __ := inferInstanceAs (Lattice αᵒᵈ)
-  le_sup_inf := fun _ _ _ => le_of_eq (@inf_sup_left α).symm
+  le_sup_inf _ _ _ := (inf_sup_left _ _ _).le
 
-theorem inf_sup_right : (y ⊔ z) ⊓ x = y ⊓ x ⊔ z ⊓ x := by
-  simp only [inf_sup_left, fun y : α => @inf_comm α _ y x, eq_self_iff_true]
+lemma inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by
+  simp only [inf_sup_left, inf_comm _ c, eq_self_iff_true]
 #align inf_sup_right inf_sup_right
 
 theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y ⊔ z) : x ≤ y :=
@@ -771,14 +771,12 @@ theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y �
     x ≤ y ⊓ z ⊔ x := le_sup_right
     _ = (y ⊔ x) ⊓ (x ⊔ z) := by rw [sup_inf_right, sup_comm x]
     _ ≤ (y ⊔ x) ⊓ (y ⊔ z) := inf_le_inf_left _ h₂
-    _ = y ⊔ x ⊓ z := sup_inf_left.symm
+    _ = y ⊔ x ⊓ z := by rw [← sup_inf_left]
     _ ≤ y ⊔ y ⊓ z := sup_le_sup_left h₁ _
     _ ≤ _ := sup_le (le_refl y) inf_le_left
 #align le_of_inf_le_sup_le le_of_inf_le_sup_le
 
-theorem eq_of_inf_eq_sup_eq {α : Type u} [DistribLattice α] {a b c : α} (h₁ : b ⊓ a = c ⊓ a)
-    (h₂ : b ⊔ a = c ⊔ a) :
-    b = c :=
+lemma eq_of_inf_eq_sup_eq {a b c : α} (h₁ : b ⊓ a = c ⊓ a) (h₂ : b ⊔ a = c ⊔ a) : b = c :=
   le_antisymm (le_of_inf_le_sup_le (le_of_eq h₁) (le_of_eq h₂))
     (le_of_inf_le_sup_le (le_of_eq h₁.symm) (le_of_eq h₂.symm))
 #align eq_of_inf_eq_sup_eq eq_of_inf_eq_sup_eq
