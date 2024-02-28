@@ -840,7 +840,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
       use ψ
       apply MvPolynomial.ext
       intro i
-      simp only [coeff_C_mul, coeff_sum, coeff_monomial, Finset.sum_ite_eq']
+      simp only [ψ, c', coeff_C_mul, coeff_sum, coeff_monomial, Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]
       · rw [not_mem_support_iff] at hi

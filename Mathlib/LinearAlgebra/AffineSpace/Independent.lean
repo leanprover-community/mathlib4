@@ -111,7 +111,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         set f2 : ι → V := fun x => f x • (p x -ᵥ p i1) with hf2def
         set g2 : { x // x ≠ i1 } → V := fun x => g x • (p x -ᵥ p i1)
         have hf2g2 : ∀ x : { x // x ≠ i1 }, f2 x = g2 x := by
-          simp only [hf2def]
+          simp only [g2, hf2def]
           refine' fun x => _
           rw [hfg]
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s2 f p hf (p i1),
@@ -220,14 +220,14 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
           fun _ _ hne => Function.update_noteq hne _ _
       let w2 := w + w1
       have hw2 : ∑ i in s, w2 i = 1 := by
-        simp_all only [Pi.add_apply, Finset.sum_add_distrib, zero_add]
+        simp_all only [w2, Pi.add_apply, Finset.sum_add_distrib, zero_add]
       have hw2s : s.affineCombination k p w2 = p i0 := by
-        simp_all only [← Finset.weightedVSub_vadd_affineCombination, zero_vadd]
+        simp_all only [w2, ← Finset.weightedVSub_vadd_affineCombination, zero_vadd]
       replace ha := ha s s w2 w1 hw2 hw1 (hw1s.symm ▸ hw2s)
       have hws : w2 i0 - w1 i0 = 0 := by
         rw [← Finset.mem_coe] at hi0
         rw [← Set.indicator_of_mem hi0 w2, ← Set.indicator_of_mem hi0 w1, ha, sub_self]
-      simpa using hws
+      simpa [w2] using hws
 #align affine_independent_iff_indicator_eq_of_affine_combination_eq affineIndependent_iff_indicator_eq_of_affineCombination_eq
 
 /-- A finite family is affinely independent if and only if any affine
@@ -321,7 +321,7 @@ protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
   convert ha.comp_embedding fe
   ext
-  simp [hf]
+  simp [fe, hf]
 #align affine_independent.range AffineIndependent.range
 
 theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
@@ -581,7 +581,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     rw [Basis.coe_ofVectorSpace] at hsvi hsvt
     have h0 : ∀ v : V, v ∈ Basis.ofVectorSpaceIndex _ _ → v ≠ 0 := by
       intro v hv
-      simpa using hsv.ne_zero ⟨v, hv⟩
+      simpa [hsv] using hsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     exact
       ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' _, Set.empty_subset _, hsvi,
@@ -594,7 +594,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     have hsv := h.subset_extend (Set.subset_univ _)
     have h0 : ∀ v : V, v ∈ h.extend _ → v ≠ 0 := by
       intro v hv
-      simpa using bsv.ne_zero ⟨v, hv⟩
+      simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine' ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), _, _⟩
     · refine' Set.Subset.trans _ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
@@ -661,9 +661,9 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
     by_cases his : i ∈ s ∧ w i ≠ 0
     · refine' False.elim (hi _)
       let wm : ι → k := -(w i)⁻¹ • w
-      have hms : s.weightedVSub p wm = (0 : V) := by simp [hs]
-      have hwm : ∑ i in s, wm i = 0 := by simp [← Finset.mul_sum, hw]
-      have hwmi : wm i = -1 := by simp [his.2]
+      have hms : s.weightedVSub p wm = (0 : V) := by simp [wm, hs]
+      have hwm : ∑ i in s, wm i = 0 := by simp [wm, ← Finset.mul_sum, hw]
+      have hwmi : wm i = -1 := by simp [wm, his.2]
       let w' : { y // y ≠ i } → k := fun x => wm x
       have hw' : ∑ x in s', w' x = 1 := by
         simp_rw [Finset.sum_subtype_eq_sum_filter]

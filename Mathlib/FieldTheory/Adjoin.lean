@@ -740,7 +740,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
   let P : Set ι → Prop := fun s => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L)
   change P Set.univ
   apply Set.Finite.induction_on
-  all_goals dsimp only
+  all_goals dsimp only [P]
   · exact Set.finite_univ
   · rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional

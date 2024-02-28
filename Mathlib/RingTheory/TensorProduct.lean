@@ -213,40 +213,15 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
-/-- (Implementation detail)
-The multiplication map on `A ⊗[R] B`,
-for a fixed pure tensor in the first argument,
-as an `R`-linear map.
--/
-def mulAux (a₁ : A) (b₁ : B) : A ⊗[R] B →ₗ[R] A ⊗[R] B :=
-  TensorProduct.map (LinearMap.mulLeft R a₁) (LinearMap.mulLeft R b₁)
-#align algebra.tensor_product.mul_aux Algebra.TensorProduct.mulAux
-
-@[simp]
-theorem mulAux_apply (a₁ a₂ : A) (b₁ b₂ : B) :
-    (mulAux a₁ b₁) (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
-  rfl
-#align algebra.tensor_product.mul_aux_apply Algebra.TensorProduct.mulAux_apply
+#noalign algebra.tensor_product.mul_aux
+#noalign algebra.tensor_product.mul_aux_apply
 
 /-- (Implementation detail)
 The multiplication map on `A ⊗[R] B`,
 as an `R`-bilinear map.
 -/
 def mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B :=
-  TensorProduct.lift <|
-    LinearMap.mk₂ R mulAux
-      (fun x₁ x₂ y =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.add_apply, add_mul, add_tmul])
-      (fun c x y =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.smul_apply, smul_tmul', smul_mul_assoc])
-      (fun x y₁ y₂ =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.add_apply, add_mul, tmul_add])
-      fun c x y =>
-      TensorProduct.ext' fun x' y' => by
-        simp only [mulAux_apply, LinearMap.smul_apply, smul_tmul, smul_tmul', smul_mul_assoc]
+  TensorProduct.map₂ (LinearMap.mul R A) (LinearMap.mul R B)
 #align algebra.tensor_product.mul Algebra.TensorProduct.mul
 
 @[simp]
@@ -1084,7 +1059,8 @@ section Basis
 
 universe uM uι
 variable {M : Type uM} {ι : Type uι}
-variable [CommRing R] [Ring A] [Algebra R A] [AddCommMonoid M] [Module R M] (b : Basis ι R M)
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [AddCommMonoid M] [Module R M] (b : Basis ι R M)
 
 variable (A)
 
@@ -1151,8 +1127,8 @@ open Algebra.TensorProduct
 
 variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
   [Fintype ι] [Fintype ι₂] [DecidableEq ι] [DecidableEq ι₂]
-  [CommRing R] [CommRing A] [Algebra R A]
-  [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
+  [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
 @[simp]
 lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :

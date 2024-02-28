@@ -325,14 +325,14 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
     Finset.univ.biUnion   fun X : J =>
       Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
+        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
-  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
+  refine' ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.comp_id]
   apply w
-  simp only [Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image, PSigma.mk.injEq,
+  simp only [O, H, Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image, PSigma.mk.injEq,
     true_and, exists_and_left]
   exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_filtered.cocone_nonempty CategoryTheory.IsFiltered.cocone_nonempty
@@ -800,15 +800,15 @@ theorem cone_nonempty (F : J ⥤ C) : Nonempty (Cone F) := by
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
     Finset.univ.biUnion fun X : J =>
       Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
+        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := inf_exists O H
-  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
+  refine' ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.id_comp]
   symm
   apply w
-  simp only [Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image,
+  simp only [O, H, Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image,
     PSigma.mk.injEq, true_and, exists_and_left]
   exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_cofiltered.cone_nonempty CategoryTheory.IsCofiltered.cone_nonempty
