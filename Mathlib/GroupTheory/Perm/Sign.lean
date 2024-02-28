@@ -366,26 +366,9 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
     if h : f⁻¹ b < f⁻¹ a then by
       simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
         if_neg (mem_finPairsLT.1 hab).not_le]
-      split_ifs with h₁
-      · dsimp [finPairsLT] at hab
-        simp? at hab says
-          simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
-            true_and] at hab
-        exact absurd h₁ (not_le_of_gt hab)
-      · rfl
     else by
       simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
         if_pos (mem_finPairsLT.1 hab).le]
-      split_ifs with h₁ h₂ h₃
-      · rfl
-      · exact absurd h (not_le_of_gt h₁)
-      · rfl
-      · dsimp at *
-        dsimp [finPairsLT] at hab
-        simp? at * says
-          simp only [mem_sigma, mem_univ, mem_attachFin, mem_range, Fin.val_fin_lt,
-            true_and, not_lt, apply_inv_self, not_le, neg_units_ne_self] at *
-        exact absurd h₃ (asymm_of LT.lt hab)
 #align equiv.perm.sign_aux_inv Equiv.Perm.signAux_inv
 
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
@@ -400,9 +383,6 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
   by_cases h : g b < g a
   · rw [dif_pos h]
     simp only [not_le_of_gt hab, mul_one, mul_ite, mul_neg, Perm.inv_apply_self, if_false]
-    split_ifs with h₁ h₂ h₃ <;> dsimp at *
-    · exact absurd hab (not_lt_of_ge h₂)
-    · exact absurd hab (not_lt_of_ge h₃)
   · rw [dif_neg h, inv_apply_self, inv_apply_self, if_pos hab.le]
     by_cases h₁ : f (g b) ≤ f (g a)
     · have : f (g b) ≠ f (g a) := by

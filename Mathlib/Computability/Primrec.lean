@@ -169,7 +169,7 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
 
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
-  { Encodable.ofEquiv α e with
+  { __ := Encodable.ofEquiv α e
     prim := (@Primcodable.prim α _).of_eq fun n => by
       rw [decode_ofEquiv]
       cases (@decode α _ n) <;>
@@ -839,7 +839,7 @@ theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
 
 theorem nat_bodd : Primrec Nat.bodd :=
   (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n => by
-    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]; rfl
+    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]
 #align primrec.nat_bodd Primrec.nat_bodd
 
 theorem nat_div2 : Primrec Nat.div2 :=

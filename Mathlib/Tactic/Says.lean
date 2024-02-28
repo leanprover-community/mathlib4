@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
 import Std.Data.String.Basic
-import Std.Tactic.GuardMsgs
 import Lean.Meta.Tactic.TryThis
 import Std.Linter.UnreachableTactic
 import Qq.Match

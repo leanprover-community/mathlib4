@@ -135,11 +135,13 @@ lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
   set f : ℕ → M := fun n ↦ β + (2 * n : ℤ) • (α - β)
   have hf : ∀ n : ℕ, (sαβ^[n]) β = f n := by
     intro n
-    induction' n with n ih; simp
-    simp only [iterate_succ', ih, hα, hβ, two_smul, smul_add, mul_add, add_smul, comp_apply,
-      map_zsmul, zsmul_sub, map_add, neg_sub, map_neg, smul_neg, map_sub, Nat.cast_succ, mul_one,
-      LinearEquiv.trans_apply, reflection_apply_self]
-    abel
+    induction' n with n ih
+    · simp [f]
+    · simp only [f, α, β, sα, sβ, sαβ, iterate_succ', ih, hα, hβ, two_smul, smul_add,
+        mul_add, add_smul, comp_apply, map_zsmul, zsmul_sub, map_add, neg_sub, map_neg,
+        smul_neg, map_sub, Nat.cast_succ, mul_one, LinearEquiv.trans_apply,
+        reflection_apply_self] -- v4.7.0-rc1 issues
+      abel
   set f' : ℕ → range P.root := fun n ↦ ⟨f n, by
     rw [← IsFixedPt.image_iterate hb.image_eq n, ← hf]; exact mem_image_of_mem _ (mem_range_self j)⟩
   have : ¬ Injective f' := not_injective_infinite_finite f'
@@ -201,11 +203,14 @@ lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top' [CharZero R] [NoZeroSMul
   have hij : preReflection (sα β) (p.toLin.flip (sα' β')) = sα ∘ₗ sβ ∘ₗ sα := by
     ext
     have hpi : (p.toLin.flip (coroot i)) (root i) = 2 := by rw [LinearMap.flip_apply, hp i]
-    simp [← preReflection_preReflection β (p.toLin.flip β') hpi, preReflection_apply]
+    simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.toLin.flip β') hpi,
+      preReflection_apply] -- v4.7.0-rc1 issues
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
   apply p.bijectiveRight.injective
   apply Dual.eq_of_preReflection_mapsTo hk₀ (finite_range root) hsp (hp k) (hs k)
-  · simp [hk, preReflection_apply, hp i, hp j, mul_two, mul_comm (p.toLin α β')]
+  · simp [α, β, α', β', sα, sβ, sα', hk, preReflection_apply, hp i, hp j, mul_two,
+      mul_comm (p.toLin α β')]
+    ring -- v4.7.0-rc1 issues
   · rw [hk, hij]
     exact (hs i).comp <| (hs j).comp (hs i)
 

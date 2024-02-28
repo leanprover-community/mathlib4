@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean.Elab.Tactic.Conv.Basic
-import Std.Lean.Parser
 import Lean.Elab.Command
 
 /-!
