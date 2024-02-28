@@ -105,7 +105,6 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     simp only [map_sum, map_smul]
     apply sum_mem
     rintro j -
-    -- ((algebraMap R S) (f j) * if j = i then 1 else 0) ∈ 1
     rw [← IsScalarTower.algebraMap_smul S (f j), map_smul, apply_dualBasis_left, smul_eq_mul,
       mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
     exact ⟨_, rfl⟩
