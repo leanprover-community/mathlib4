@@ -47,6 +47,7 @@ noncomputable
 def Submodule.traceDual (I : Submodule B L) : Submodule B L where
   __ := (traceForm K L).dualSubmodule (I.restrictScalars A)
   smul_mem' c x hx a ha := by
+    simp only [BilinForm.toLin_apply]
     rw [traceForm_apply, smul_mul_assoc, mul_comm, ← smul_mul_assoc, mul_comm]
     exact hx _ (Submodule.smul_mem _ c ha)
 
@@ -176,6 +177,7 @@ lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRin
   simp only [restrictScalars_mem, traceForm_apply, AlgEquiv.toEquiv_eq_coe,
     EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
   refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)
+  simp only [BilinForm.toLin_apply, traceForm_apply, mem_one]
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
   swap

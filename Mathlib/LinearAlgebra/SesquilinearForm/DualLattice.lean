@@ -11,7 +11,8 @@ import Mathlib.LinearAlgebra.SesquilinearForm.Properties
 
 ## Main definitions and results
 - `LinearMap.BilinForm.dualSubmodule`: The dual submodule with respect to a bilinear form.
-- `LinearMap.BilinForm.dualSubmodule_span_of_basis`: The dual of a lattice is spanned by the dual basis.
+- `LinearMap.BilinForm.dualSubmodule_span_of_basis`: The dual of a lattice is spanned by the dual
+  basis.
 
 ## TODO
 Properly develop the material in the context of lattices.

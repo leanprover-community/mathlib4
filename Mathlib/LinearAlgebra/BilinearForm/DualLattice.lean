@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.BilinearForm.Properties
+import Mathlib.LinearAlgebra.SesquilinearForm.DualLattice
 
 /-!
 
@@ -25,107 +26,60 @@ namespace BilinForm
 variable (B : BilinForm S M)
 
 /-- The dual submodule of a submodule with respect to a bilinear form. -/
-def dualSubmodule (N : Submodule R M) : Submodule R M where
-  carrier := { x | ∀ y ∈ N, B x y ∈ (1 : Submodule R S) }
-  add_mem' {a b} ha hb y hy := by simpa using add_mem (ha y hy) (hb y hy)
-  zero_mem' y _ := by rw [B.zero_left]; exact zero_mem _
-  smul_mem' r a ha y hy := by
-    convert (1 : Submodule R S).smul_mem r (ha y hy)
-    rw [← IsScalarTower.algebraMap_smul S r a, bilin_smul_left, Algebra.smul_def]
+def dualSubmodule (N : Submodule R M) : Submodule R M :=
+  LinearMap.BilinForm.dualSubmodule (BilinForm.toLin B) N
 
 lemma mem_dualSubmodule {N : Submodule R M} {x} :
     x ∈ B.dualSubmodule N ↔ ∀ y ∈ N, B x y ∈ (1 : Submodule R S) := Iff.rfl
 
 lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
-    N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ := by
-  show (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
-  simp only [mem_dualSubmodule, Submodule.mem_one, flip_apply]
-  exact forall₂_swap
+    N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ :=
+  LinearMap.BilinForm.le_flip_dualSubmodule (BilinForm.toLin B)
 
 /-- The natural paring of `B.dualSubmodule N` and `N`.
 This is bundled as a bilinear map in `BilinForm.dualSubmoduleToDual`. -/
 noncomputable
 def dualSubmoduleParing {N : Submodule R M} (x : B.dualSubmodule N) (y : N) : R :=
-  (x.prop y y.prop).choose
+  LinearMap.BilinForm.dualSubmoduleParing (BilinForm.toLin B) x y
 
 @[simp]
 lemma dualSubmoduleParing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y : N) :
     algebraMap R S (B.dualSubmoduleParing x y) = B x y :=
-  (x.prop y y.prop).choose_spec
+  LinearMap.BilinForm.dualSubmoduleParing_spec (BilinForm.toLin B) x y
 
 /-- The natural paring of `B.dualSubmodule N` and `N`. -/
 -- TODO: Show that this is perfect when `N` is a lattice and `B` is nondegenerate.
-@[simps]
+@[simps!]
 noncomputable
 def dualSubmoduleToDual [NoZeroSMulDivisors R S] (N : Submodule R M) :
     B.dualSubmodule N →ₗ[R] Module.Dual R N :=
-  { toFun := fun x ↦
-    { toFun := B.dualSubmoduleParing x
-      map_add' := fun x y ↦ NoZeroSMulDivisors.algebraMap_injective R S (by simp)
-      map_smul' := fun r m ↦ NoZeroSMulDivisors.algebraMap_injective R S
-        (by simp [← Algebra.smul_def]) }
-    map_add' := fun x y ↦ LinearMap.ext fun z ↦ NoZeroSMulDivisors.algebraMap_injective R S
-      (by simp)
-    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ NoZeroSMulDivisors.algebraMap_injective R S
-      (by simp [← Algebra.smul_def]) }
+  LinearMap.BilinForm.dualSubmoduleToDual (BilinForm.toLin B) N
 
 lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R S]
     (N : Submodule R M) (hN : Submodule.span S (N : Set M) = ⊤) :
-    Function.Injective (B.dualSubmoduleToDual N) := by
-  intro x y e
-  ext
-  apply LinearMap.ker_eq_bot.mp hB.ker_eq_bot
-  apply LinearMap.ext_on hN
-  intro z hz
-  simpa using congr_arg (algebraMap R S) (LinearMap.congr_fun e ⟨z, hz⟩)
+    Function.Injective (B.dualSubmoduleToDual N) :=
+  LinearMap.BilinForm.dualSubmoduleToDual_injective (BilinForm.toLin B) hB N hN
 
 lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.dualSubmodule (Submodule.span R (Set.range b)) =
-      Submodule.span R (Set.range <| B.dualBasis hB b) := by
-  cases nonempty_fintype ι
-  apply le_antisymm
-  · intro x hx
-    rw [← (B.dualBasis hB b).sum_repr x]
-    apply sum_mem
-    rintro i -
-    obtain ⟨r, hr⟩ := hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
-    simp only [dualBasis_repr_apply, ← hr, Algebra.linearMap_apply, algebraMap_smul]
-    apply Submodule.smul_mem
-    exact Submodule.subset_span ⟨_, rfl⟩
-  · rw [Submodule.span_le]
-    rintro _ ⟨i, rfl⟩ y hy
-    obtain ⟨f, rfl⟩ := (mem_span_range_iff_exists_fun _).mp hy
-    simp only [sum_right, bilin_smul_right]
-    apply sum_mem
-    rintro j -
-    rw [← IsScalarTower.algebraMap_smul S (f j), B.bilin_smul_right, apply_dualBasis_left,
-      mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
-    exact ⟨_, rfl⟩
+      Submodule.span R (Set.range <| B.dualBasis hB b) :=
+  LinearMap.BilinForm.dualSubmodule_span_of_basis (BilinForm.toLin B) hB b
 
 lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.dualSubmodule (B.flip.dualSubmodule (Submodule.span R (Set.range b))) =
-      Submodule.span R (Set.range b) := by
-  classical
-  letI := FiniteDimensional.of_fintype_basis b
-  rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
-    dualBasis_dualBasis_flip B hB]
+      Submodule.span R (Set.range b) :=
+  LinearMap.BilinForm.dualSubmodule_dualSubmodule_flip_of_basis (BilinForm.toLin B) hB b
 
 lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.flip.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
-      Submodule.span R (Set.range b) := by
-  classical
-  letI := FiniteDimensional.of_fintype_basis b
-  rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis _ hB.flip,
-    dualBasis_flip_dualBasis B hB]
+      Submodule.span R (Set.range b) :=
+  LinearMap.BilinForm.dualSubmodule_flip_dualSubmodule_of_basis (BilinForm.toLin B) hB b
 
 lemma dualSubmodule_dualSubmodule_of_basis
     {ι} [Finite ι] (hB : B.Nondegenerate) (hB' : B.IsSymm) (b : Basis ι S M) :
     B.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
-      Submodule.span R (Set.range b) := by
-  classical
-  letI := FiniteDimensional.of_fintype_basis b
-  rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
-    dualBasis_dualBasis B hB hB']
+      Submodule.span R (Set.range b) :=
+  LinearMap.BilinForm.dualSubmodule_dualSubmodule_of_basis (BilinForm.toLin B) hB hB' b
