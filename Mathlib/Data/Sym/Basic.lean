@@ -533,43 +533,27 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
 #align sym.mem_append_iff Sym.mem_append_iff
 
 /-- An element of type α can be seen as an element of Sym α 1 --/
-def one {α : Type*} (i : α) : Sym α 1 := ⟨[i], by simp only [Multiset.coe_singleton,
+def one (i : α) : Sym α 1 := ⟨[i], by simp only [Multiset.coe_singleton,
   Multiset.card_singleton]⟩
 
-lemma one_injective : Function.Injective (Sym.one : α → Sym α 1) := by
-  intros i j h
-  have hi : (Sym.one i).1 = [i] := by
-      simp only [Sym.one, Multiset.coe_singleton]
-  have hj : (Sym.one j).1 = [j] := by
-    simp only [Sym.one, Multiset.coe_singleton]
-  rw [h] at hi
-  rw [hi] at hj
-  apply List.singleton_inj.mp
-  exact Multiset.coe_eq_singleton.mp hj
+lemma one_coe (i : α) : (one i : Multiset α) = {i} := rfl
 
-lemma singleton_of_len_one (s : Sym α 1) : ∃! i, Sym.one i = s := by
-  have : ∃ i, s.toMultiset = {i} := by
-    simp_rw [Sym] at s
-    apply Multiset.card_eq_one.mp
-    exact s.2
-  obtain ⟨i, hi⟩ := this
-  have : s = one i := by
-    simp only [Sym.one, Multiset.coe_singleton]
-    simp_rw [← hi]
-    rfl
-  use i
-  constructor
-  · exact this.symm
-  · intro j hj
-    apply Sym.one_injective
-    rw [hj]
-    exact this
+variable (α) in
+lemma one_bijective : Function.Bijective (one : α → Sym α 1) := by
+  refine ⟨fun _ _ h ↦ Multiset.singleton_inj.1 <| by simp [← one_coe, h], fun x ↦ ?_⟩
+  obtain ⟨i, hi⟩ := Multiset.card_eq_one.1 x.2
+  exact ⟨i, ext <| by simp [one_coe, ← hi]⟩
 
-lemma one_bijective : Function.Bijective (Sym.one : α → Sym α 1) := by
-  rw [Function.bijective_iff_existsUnique]
-  exact Sym.singleton_of_len_one
-
-lemma one_equiv : α ≃ Sym α 1 := Equiv.ofBijective _ Sym.one_bijective
+open Multiset Classical in
+@[simps apply]
+noncomputable def one_equiv : α ≃ Sym α 1 where
+  toFun := fun i ↦ ⟨[i], by simp only [coe_singleton, card_singleton]⟩
+  invFun := fun x ↦ choose <| card_eq_one.1 x.2
+  left_inv := fun i ↦ by simpa using (choose_spec <| card_eq_one.1
+      (⟨[i], by simp only [coe_singleton, card_singleton]⟩ : Sym α 1).2).symm
+  right_inv := fun x ↦ by
+    simp only [val_eq_coe, coe_singleton]
+    exact ext <| by simp_rw [← choose_spec <| card_eq_one.1 x.2]; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
