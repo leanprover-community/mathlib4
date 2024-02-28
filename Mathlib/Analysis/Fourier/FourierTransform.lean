@@ -43,7 +43,7 @@ The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplicatio
 `e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)` (for which we
 introduce the notation `𝐞` in the locale `FourierTransform`).
 
-Another familiar case (which generalize the previous one) is when `V = W` is an inner product space
+Another familiar case (which generalizes the previous one) is when `V = W` is an inner product space
 over `ℝ` and `L` is the scalar product. We introduce two notations `𝓕` for the Fourier transform in
 this case and `𝓕⁻ f (v) = 𝓕 f (-v)` for the inverse Fourier transform. These notations make
 in particular sense for `V = W = ℝ`.
@@ -180,7 +180,7 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
   · exact hf.norm
   · rw [continuous_induced_rng] at he
     refine' ae_of_all _ fun v => (he.comp (continuous_ofAdd.comp _)).smul continuous_const
-    refine' (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
+    exact (hL.comp (continuous_prod_mk.mpr ⟨continuous_const, continuous_id⟩)).neg
 #align vector_fourier.fourier_integral_continuous VectorFourier.fourierIntegral_continuous
 
 end Continuous
@@ -333,13 +333,13 @@ open scoped RealInnerProductSpace
 /-- The Fourier transform of a function on an inner product space, with respect to the standard
 additive character `ω ↦ exp (2 i π ω)`. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
-  VectorFourier.fourierIntegral Real.fourierChar volume (innerₗ V) f w
+  VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
 #align real.fourier_integral Real.fourierIntegral
 
 /-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
 transform but with opposite sign in the exponential. -/
 def fourierIntegralInv (f : V → E) (w : V) : E :=
-  VectorFourier.fourierIntegral Real.fourierChar volume (-innerₗ V) f w
+  VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
 @[inherit_doc] scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
 @[inherit_doc] scoped[FourierTransform] notation "𝓕⁻" => Real.fourierIntegralInv
@@ -374,7 +374,7 @@ lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V →
   simp [fourierIntegralInv_eq_fourierIntegral_neg, fourierIntegral_comp_linearIsometry]
 
 theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
-    fourierIntegral f w = ∫ v : ℝ, fourierChar[-(v * w)] • f v :=
+    fourierIntegral f w = ∫ v : ℝ, 𝐞[-(v * w)] • f v :=
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_real_eq
 

@@ -1141,7 +1141,7 @@ theorem sInf_eq_boundedBy_sInfGen (m : Set (OuterMeasure α)) :
     apply sInf_le hμ
   · refine' le_sInf _
     intro μ hμ t
-    refine' le_trans (boundedBy_le t) (iInf₂_le μ hμ)
+    exact le_trans (boundedBy_le t) (iInf₂_le μ hμ)
 #align measure_theory.outer_measure.Inf_eq_bounded_by_Inf_gen MeasureTheory.OuterMeasure.sInf_eq_boundedBy_sInfGen
 
 theorem iSup_sInfGen_nonempty {m : Set (OuterMeasure α)} (h : m.Nonempty) (t : Set α) :
@@ -1151,7 +1151,7 @@ theorem iSup_sInfGen_nonempty {m : Set (OuterMeasure α)} (h : m.Nonempty) (t : 
     rw [eq_false Set.not_nonempty_empty, iSup_false, eq_comm]
     simp_rw [empty']
     apply bot_unique
-    refine' iInf_le_of_le μ (iInf_le _ hμ)
+    exact iInf_le_of_le μ (iInf_le _ hμ)
   · simp [ht, sInfGen_def]
 #align measure_theory.outer_measure.supr_Inf_gen_nonempty MeasureTheory.OuterMeasure.iSup_sInfGen_nonempty
 
@@ -1475,7 +1475,7 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
     refine' le_trans _ (extend_iUnion_le_tsum_nat' _ msU _)
     refine' le_iInf _
     intro h2f
-    refine' iInf_le_of_le _ (iInf_le_of_le h2f <| iInf_le _ hf)
+    exact iInf_le_of_le _ (iInf_le_of_le h2f <| iInf_le _ hf)
 #align measure_theory.induced_outer_measure_eq_infi MeasureTheory.inducedOuterMeasure_eq_iInf
 
 theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f ⁻¹' s) ↔ P s)
@@ -1681,11 +1681,11 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
   simp only [trim_eq_iInf]; set ms := ⨅ (t : Set α) (_ : s ⊆ t) (_ : MeasurableSet t), m t
   by_cases hs : ms = ∞
   · simp only [hs]
-    simp only [iInf_eq_top] at hs
+    simp only [iInf_eq_top, ms] at hs
     exact ⟨univ, subset_univ s, MeasurableSet.univ, hs _ (subset_univ s) MeasurableSet.univ⟩
   · have : ∀ r > ms, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < r := by
       intro r hs
-      have : ∃t, MeasurableSet t ∧ s ⊆ t ∧ measureOf m t < r := by simpa [iInf_lt_iff] using hs
+      have : ∃t, MeasurableSet t ∧ s ⊆ t ∧ measureOf m t < r := by simpa [ms, iInf_lt_iff] using hs
       rcases this with ⟨t, hmt, hin, hlt⟩
       exists t
     have : ∀ n : ℕ, ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t < ms + (n : ℝ≥0∞)⁻¹ := by
@@ -1701,7 +1701,7 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     · exact le_trans (m.mono' <| iInter_subset t n) (hm' n).le
     · refine' iInf_le_of_le (⋂ n, t n) _
       refine' iInf_le_of_le (subset_iInter hsub) _
-      refine' iInf_le _ (MeasurableSet.iInter hm)
+      exact iInf_le _ (MeasurableSet.iInter hm)
 #align measure_theory.outer_measure.exists_measurable_superset_eq_trim MeasureTheory.OuterMeasure.exists_measurable_superset_eq_trim
 
 theorem exists_measurable_superset_of_trim_eq_zero {m : OuterMeasure α} {s : Set α}
