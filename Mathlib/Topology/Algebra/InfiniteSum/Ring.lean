@@ -131,7 +131,7 @@ theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
 end DivisionSemiring
 
 /-!
-### Multipliying two infinite sums
+### Multiplying two infinite sums
 
 In this section, we prove various results about `(∑' x : ι, f x) * (∑' y : κ, g y)`. Note that we
 always assume that the family `fun x : ι × κ ↦ f x.1 * g x.2` is summable, since there is no way to
