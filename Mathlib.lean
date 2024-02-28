@@ -28,6 +28,7 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Module
+import Mathlib.Algebra.BigOperators.Multiset.Abs
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
@@ -2700,6 +2701,7 @@ import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Constructions.Projective
+import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Covering.Besicovitch
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.MeasureTheory.Covering.DensityTheorem
