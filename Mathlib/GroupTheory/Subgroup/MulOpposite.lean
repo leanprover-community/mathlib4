@@ -91,13 +91,13 @@ def opEquiv : Subgroup G ≃o Subgroup Gᵐᵒᵖ where
 #align add_subgroup.opposite AddSubgroup.opEquiv
 
 @[to_additive (attr := simp)]
-theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot
+theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv (G := G) |>.map_bot
 
 @[to_additive (attr := simp)]
 theorem unop_bot : (⊥ : Subgroup Gᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 
 @[to_additive (attr := simp)]
-theorem op_top : (⊤ : Subgroup G).op = ⊤ := opEquiv.map_top
+theorem op_top : (⊤ : Subgroup G).op = ⊤ := opEquiv (G := G) |>.map_top
 
 @[to_additive (attr := simp)]
 theorem unop_top : (⊤ : Subgroup Gᵐᵒᵖ).unop = ⊤ := opEquiv.symm.map_top
@@ -111,11 +111,11 @@ theorem unop_sup (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊔ S₂).unop = S₁
   opEquiv.symm.map_sup _ _
 
 @[to_additive]
-theorem op_inf (S₁ S₂ : Subgroup G) : (S₁ ⊓ S₂).op = S₁.op ⊓ S₂.op := opEquiv.map_inf _ _
+theorem op_inf (S₁ S₂ : Subgroup G) : (S₁ ⊓ S₂).op = S₁.op ⊓ S₂.op := opEquiv (G := G) |>.map_inf _ _
 
 @[to_additive]
 theorem unop_inf (S₁ S₂ : Subgroup Gᵐᵒᵖ) : (S₁ ⊓ S₂).unop = S₁.unop ⊓ S₂.unop :=
-  opEquiv.symm.map_inf _ _
+  opEquiv (G := G) |>.symm.map_inf _ _
 
 @[to_additive]
 theorem op_sSup (S : Set (Subgroup G)) : (sSup S).op = sSup (.unop ⁻¹' S) :=

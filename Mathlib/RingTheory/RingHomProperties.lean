@@ -87,7 +87,7 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
     convert this
   apply IsLocalization.ringHom_ext (Submonoid.powers r) _
   ext1 x
-  dsimp [IsLocalization.Away.map]
+  dsimp [e, e₁, e₂, IsLocalization.Away.map]
   simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
 #align ring_hom.respects_iso.is_localization_away_iff RingHom.RespectsIso.is_localization_away_iff
 
@@ -149,7 +149,7 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
     congr 1
     apply TensorProduct.ext'
     intro x y
-    simp [IsBaseChange.equiv_tmul, Algebra.smul_def]
+    simp [e, f', IsBaseChange.equiv_tmul, Algebra.smul_def]
   -- Porting Note: This had a lot of implicit inferences which didn't resolve anymore.
   -- Added those in
   convert h₁.1 (_ : R' →+* TensorProduct R R' S) (_ : TensorProduct R R' S ≃+* S')

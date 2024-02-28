@@ -740,7 +740,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
   let P : Set ι → Prop := fun s => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L)
   change P Set.univ
   apply Set.Finite.induction_on
-  all_goals dsimp only
+  all_goals dsimp only [P]
   · exact Set.finite_univ
   · rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
@@ -1181,7 +1181,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
   convert natDegree_le_of_dvd dvd_g
-    ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
+    ((g.monic_toSubring K'.toSubring _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
 
 variable {F} in

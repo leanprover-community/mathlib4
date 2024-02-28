@@ -180,11 +180,17 @@ theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => h
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
   toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
-  map_one' := funext fun v => map_one _
-  map_mul' x y := by simp only [Submonoid.coe_mul, Subgroup.coe_toSubmonoid, map_mul]; rfl
+  map_one' :=
+    letI : CommGroup Kˣ := Units.instCommGroupUnits
+    funext fun v => map_one _
+  map_mul' x y := by
+    dsimp
+    letI : CommGroup Kˣ := Units.instCommGroupUnits
+    simp only [Submonoid.coe_mul, Subgroup.coe_toSubmonoid, map_mul]; convert rfl
 #align is_dedekind_domain.selmer_group.valuation IsDedekindDomain.selmerGroup.valuation
 
 theorem valuation_ker_eq :
+    letI : CommGroup Kˣ := Units.instCommGroupUnits
     valuation.ker = K⟮(∅ : Set <| HeightOneSpectrum R),n⟯.subgroupOf (K⟮S,n⟯) := by
   ext ⟨_, hx⟩
   constructor

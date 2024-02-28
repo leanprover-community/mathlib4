@@ -122,7 +122,7 @@ class AddSubgroupClass (S G : Type*) [SubNegMonoid G] [SetLike S G] extends AddS
 
 attribute [to_additive] InvMemClass SubgroupClass
 
-attribute [aesop safe apply (rule_sets [SetLike])] inv_mem neg_mem
+attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
 
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
@@ -138,17 +138,17 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
-@[to_additive (attr := aesop safe apply (rule_sets [SetLike]))
+@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))
   "An additive subgroup is closed under subtraction."]
 theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 #align div_mem div_mem
 #align sub_mem sub_mem
 
-@[to_additive (attr := aesop safe apply (rule_sets [SetLike]))]
+@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
 theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
   | (n : ℕ) => by
-    rw [zpow_ofNat]
+    rw [zpow_coe_nat]
     exact pow_mem hx n
   | -[n+1] => by
     rw [zpow_negSucc]
@@ -250,18 +250,18 @@ theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
 variable (H)
 
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of a `DivInvMonoid` inherits a `DivInvMonoid` structure. -/
-@[to_additive "An additive subgroup of a `SubNegMonoid` inherits a `SubNegMonoid`
-structure"]
+/-- A subgroup of a group inherits a `DivInvMonoid` structure. -/
+@[to_additive "An additive subgroup of an `SubNegMonoid` inherits an `SubNegMonoid` structure."]
 instance (priority := 75) toDivInvMonoid : DivInvMonoid H :=
-  Subtype.coe_injective.divInvMonoid' (f := (↑)) rfl (fun _ _ => rfl) (fun _ => rfl)
-     (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an `AddGroup` structure."]
 instance (priority := 75) toGroup : Group H :=
-  Subtype.coe_injective.group' rfl (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_group SubgroupClass.toGroup
 #align add_subgroup_class.to_add_group AddSubgroupClass.toAddGroup
 
@@ -270,29 +270,10 @@ instance (priority := 75) toGroup : Group H :=
 @[to_additive "An additive subgroup of an `AddCommGroup` is an `AddCommGroup`."]
 instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H :=
-  Subtype.coe_injective.commGroup' fun _ _ => rfl
+  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_comm_group SubgroupClass.toCommGroup
 #align add_subgroup_class.to_add_comm_group AddSubgroupClass.toAddCommGroup
-
--- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
-@[to_additive "An additive subgroup of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance (priority := 75) toOrderedCommGroup {G : Type*} [OrderedCommGroup G] [SetLike S G]
-    [SubgroupClass S G] : OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup' fun _ _ => rfl
-#align subgroup_class.to_ordered_comm_group SubgroupClass.toOrderedCommGroup
-#align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
-
--- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive
-      "An additive subgroup of a `LinearOrderedAddCommGroup` is a
-        `LinearOrderedAddCommGroup`."]
-instance (priority := 75) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G]
-    [SetLike S G] [SubgroupClass S G] : LinearOrderedCommGroup H :=
-  { toOrderedCommGroup _, Subtype.linearOrder _ with }
-#align subgroup_class.to_linear_ordered_comm_group SubgroupClass.toLinearOrderedCommGroup
-#align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
@@ -377,14 +358,14 @@ end SubgroupClass
 
 /-- A subgroup of a group `G` is a subset containing 1, closed under multiplication
 and closed under multiplicative inverse. -/
-structure Subgroup (G : Type*) [Group G] extends Submonoid G where
+structure Subgroup (G : Type*) [DivInvMonoid G] extends Submonoid G where
   /-- `G` is closed under inverses -/
   inv_mem' {x} : x ∈ carrier → x⁻¹ ∈ carrier
 #align subgroup Subgroup
 
 /-- An additive subgroup of an additive group `G` is a subset containing 0, closed
 under addition and additive inverse. -/
-structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
+structure AddSubgroup (G : Type*) [SubNegMonoid G] extends AddSubmonoid G where
   /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 #align add_subgroup AddSubgroup
@@ -404,6 +385,8 @@ add_decl_doc AddSubgroup.toAddSubmonoid
 
 namespace Subgroup
 
+variable {G : Type*} [DivInvMonoid G]
+
 @[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
@@ -414,7 +397,7 @@ instance : SetLike (Subgroup G) G where
 
 -- Porting note: Below can probably be written more uniformly
 @[to_additive]
-instance : SubgroupClass (Subgroup G) G where
+instance (priority := 75) {G : Type*} [DivInvMonoid G] : SubgroupClass (Subgroup G) G where
   inv_mem := Subgroup.inv_mem' _
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
@@ -711,6 +694,12 @@ instance _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul �
   ⟨fun n a => ⟨n • a, H.zsmul_mem a.2 n⟩⟩
 #align add_subgroup.has_zsmul AddSubgroup.zsmul
 
+/-- A subgroup of a group inherits an integer power -/
+@[to_additive existing]
+instance zpow : Pow H ℤ :=
+  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
+#align subgroup.has_zpow Subgroup.zpow
+
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=
   rfl
@@ -761,40 +750,26 @@ theorem mk_eq_one_iff {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
 #align add_subgroup.mk_eq_zero_iff AddSubgroup.mk_eq_zero_iff
 
 /-- A subgroup of a group inherits a group structure. -/
-@[to_additive "An `AddSubGroup` of an `AddGroup` inherits an `SubNegMonoid` structure."]
-instance toSubNegMonoid {G : Type*} [Group G] (H : Subgroup G) : DivInvMonoid H :=
-  Subtype.coe_injective.divInvMonoid' rfl (fun _ _ => rfl) (fun _ => rfl)
+@[to_additive "An `SubNegMonoid` of an `AddGroup` inherits an `SubNegMonoid` structure."]
+instance toDivInvMonoid {G : Type*} [DivInvMonoid G] (H : Subgroup G) : DivInvMonoid H :=
+  Subtype.coe_injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
 instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
-  Subtype.coe_injective.group' rfl (fun _ _ => rfl) (fun _ => rfl)
+  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_group Subgroup.toGroup
 #align add_subgroup.to_add_group AddSubgroup.toAddGroup
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`."]
 instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
-  Subtype.coe_injective.commGroup' fun _ _ => rfl
+  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_comm_group Subgroup.toCommGroup
 #align add_subgroup.to_add_comm_group AddSubgroup.toAddCommGroup
-
-/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
-@[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance toOrderedCommGroup {G : Type*} [OrderedCommGroup G] (H : Subgroup G) :
-    OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup' fun _ _ => rfl
-#align subgroup.to_ordered_comm_group Subgroup.toOrderedCommGroup
-#align add_subgroup.to_ordered_add_comm_group AddSubgroup.toOrderedAddCommGroup
-
-/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive "An `AddSubgroup` of a `LinearOrderedAddCommGroup` is a `LinearOrderedAddCommGroup`."]
-instance toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Subgroup G) :
-    LinearOrderedCommGroup H :=
-  { toOrderedCommGroup _, Submonoid.toLinearOrderedCommMonoid _ with }
-#align subgroup.to_linear_ordered_comm_group Subgroup.toLinearOrderedCommGroup
-#align add_subgroup.to_linear_ordered_add_comm_group AddSubgroup.toLinearOrderedAddCommGroup
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive "The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`."]
@@ -1125,7 +1100,7 @@ theorem mem_closure {x : G} : x ∈ closure k ↔ ∀ K : Subgroup G, k ⊆ K �
 #align add_subgroup.mem_closure AddSubgroup.mem_closure
 
 /-- The subgroup generated by a set includes the set. -/
-@[to_additive (attr := simp, aesop safe 20 apply (rule_sets [SetLike]))
+@[to_additive (attr := simp, aesop safe 20 apply (rule_sets := [SetLike]))
   "The `AddSubgroup` generated by a set includes the set."]
 theorem subset_closure : k ⊆ closure k := fun _ hx => mem_closure.2 fun _ hK => hK hx
 #align subgroup.subset_closure Subgroup.subset_closure
@@ -1708,7 +1683,7 @@ theorem subgroupOf_bot_eq_top : H.subgroupOf ⊥ = ⊤ :=
 
 @[to_additive (attr := simp)]
 theorem subgroupOf_self : H.subgroupOf H = ⊤ :=
-  top_unique fun g _hg => g.2
+  top_unique (a := H.subgroupOf H) fun g _hg => g.2
 #align subgroup.subgroup_of_self Subgroup.subgroupOf_self
 #align add_subgroup.add_subgroup_of_self AddSubgroup.addSubgroupOf_self
 

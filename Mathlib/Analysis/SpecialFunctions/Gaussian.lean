@@ -582,7 +582,7 @@ theorem _root_.fourier_transform_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
   have h : (-↑π * b).re < 0 := by
     simpa only [neg_mul, neg_re, re_ofReal_mul, neg_lt_zero] using mul_pos pi_pos hb
   ext1 t
-  simp_rw [fourierIntegral_eq_integral_exp_smul, smul_eq_mul, ← Complex.exp_add, ← add_assoc]
+  simp_rw [fourierIntegral_real_eq_integral_exp_smul, smul_eq_mul, ← Complex.exp_add, ← add_assoc]
   have (x : ℝ) : ↑(-2 * π * x * t) * I + -π * b * x ^ 2 + 2 * π * c * x =
     -π * b * x ^ 2 + (-2 * π * I * t + 2 * π * c) * x + 0 := by push_cast; ring
   simp_rw [this, integral_cexp_quadratic h, neg_mul, neg_neg]
@@ -596,7 +596,7 @@ theorem _root_.fourier_transform_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     ring
 
 theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
-    (𝓕 fun x ↦ cexp (-π * b * x ^ 2)) =
+    (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
     fun t : ℝ ↦ 1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using fourier_transform_gaussian_pi' hb 0
 #align fourier_transform_gaussian_pi fourier_transform_gaussian_pi
@@ -695,7 +695,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
       (?_) (-2 * ↑π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
     rwa [neg_div, neg_re, neg_lt_zero]
   convert Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay hCf one_lt_two f_bd Ff_bd 0 using 1
-  · simp only [zero_add, ofReal_int_cast]
+  · simp only [f, zero_add, ofReal_int_cast]
   · rw [← tsum_mul_left]
     simp only [QuotientAddGroup.mk_zero, fourier_eval_zero, mul_one, hFf, ofReal_int_cast]
 

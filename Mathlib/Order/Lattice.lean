@@ -91,18 +91,11 @@ def SemilatticeSup.mk' {α : Type*} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b =
   sup := (· ⊔ ·)
   le a b := a ⊔ b = b
   le_refl := sup_idem
-  le_trans a b c hab hbc := by
-    -- Porting note: dsimp doesn't work here?
-    -- This is the same issue as discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unfolding.20earlier.20fields
-    show a ⊔ c = c
-    rw [← hbc, ← sup_assoc, hab]
-  le_antisymm a b hab hba := by
-    rwa [← hba, sup_comm]
-  le_sup_left a b := show a ⊔ (a ⊔ b) = a ⊔ b by rw [← sup_assoc, sup_idem]
-  le_sup_right a b := show b ⊔ (a ⊔ b) = a ⊔ b by rw [sup_comm, sup_assoc, sup_idem]
-  sup_le a b c hac hbc := by
-    show (a ⊔ b) ⊔ c = c
-    rwa [sup_assoc, hbc]
+  le_trans a b c hab hbc := by dsimp; rw [← hbc, ← sup_assoc, hab]
+  le_antisymm a b hab hba := by rwa [← hba, sup_comm]
+  le_sup_left a b := by dsimp; rw [← sup_assoc, sup_idem]
+  le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
+  sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
 #align semilattice_sup.mk' SemilatticeSup.mk'
 
 instance instSupOrderDual (α : Type*) [Inf α] : Sup αᵒᵈ :=
@@ -120,8 +113,6 @@ theorem le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 #align le_sup_left le_sup_left
 
--- Porting note: no ematch attribute
---@[ematch]
 theorem le_sup_left' : a ≤ a ⊔ b :=
   le_sup_left
 #align le_sup_left' le_sup_left'
@@ -131,8 +122,6 @@ theorem le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
 #align le_sup_right le_sup_right
 
--- Porting note: no ematch attribute
---@[ematch]
 theorem le_sup_right' : b ≤ a ⊔ b :=
   le_sup_right
 #align le_sup_right' le_sup_right'
@@ -229,7 +218,6 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 #align sup_le_sup_right sup_le_sup_right
 
--- Porting note: was @[simp], but now proved by simp so not needed.
 theorem sup_idem : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
@@ -250,11 +238,9 @@ theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, @sup_comm _ _ a, sup_assoc]
 #align sup_left_right_swap sup_left_right_swap
 
--- Porting note: was @[simp], but now proved by simp so not needed.
 theorem sup_left_idem : a ⊔ (a ⊔ b) = a ⊔ b := by simp
 #align sup_left_idem sup_left_idem
 
--- Porting note: was @[simp], but now proved by simp so not needed.
 theorem sup_right_idem : a ⊔ b ⊔ b = a ⊔ b := by simp
 #align sup_right_idem sup_right_idem
 
@@ -375,8 +361,6 @@ theorem inf_le_left : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 #align inf_le_left inf_le_left
 
--- Porting note: no ematch attribute
---@[ematch]
 theorem inf_le_left' : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 #align inf_le_left' inf_le_left'
@@ -386,8 +370,6 @@ theorem inf_le_right : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
 #align inf_le_right inf_le_right
 
--- Porting note: no ematch attribute
---@[ematch]
 theorem inf_le_right' : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
 #align inf_le_right' inf_le_right'
@@ -475,9 +457,7 @@ theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c 
   inf_le_inf le_rfl h
 #align inf_le_inf_left inf_le_inf_left
 
--- Porting note: was @[simp]
-theorem inf_idem : a ⊓ a = a :=
-  @sup_idem αᵒᵈ _ _
+theorem inf_idem : a ⊓ a = a := by simp
 #align inf_idem inf_idem
 
 instance : Std.IdempotentOp (α := α) (· ⊓ ·) :=
@@ -501,14 +481,10 @@ theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
   @sup_left_right_swap αᵒᵈ _ _ _ _
 #align inf_left_right_swap inf_left_right_swap
 
--- Porting note: was @[simp]
-theorem inf_left_idem : a ⊓ (a ⊓ b) = a ⊓ b :=
-  @sup_left_idem αᵒᵈ _ a b
+theorem inf_left_idem : a ⊓ (a ⊓ b) = a ⊓ b := by simp
 #align inf_left_idem inf_left_idem
 
--- Porting note: was @[simp]
-theorem inf_right_idem : a ⊓ b ⊓ b = a ⊓ b :=
-  @sup_right_idem αᵒᵈ _ a b
+theorem inf_right_idem : a ⊓ b ⊓ b = a ⊓ b := by simp
 #align inf_right_idem inf_right_idem
 
 theorem inf_left_comm (a b c : α) : a ⊓ (b ⊓ c) = b ⊓ (a ⊓ c) :=
@@ -667,7 +643,6 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
   inf_le_left.trans le_sup_left
 #align inf_le_sup inf_le_sup
 
--- Porting note: was @[simp]
 theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
 #align sup_le_inf sup_le_inf
 
@@ -850,11 +825,10 @@ theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
     fun h => h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩
 #align lt_sup_iff lt_sup_iff
 
--- Porting note: why does sup_ind need an explicit motive?
 @[simp]
 theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
   ⟨fun h => ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩,
-   fun h => @sup_ind α _ b c (fun x => x < a) h.1 h.2⟩
+   fun h => sup_ind (p := (· < a)) b c h.1 h.2⟩
 #align sup_lt_iff sup_lt_iff
 
 theorem inf_ind (a b : α) {p : α → Prop} : p a → p b → p (a ⊓ b) :=

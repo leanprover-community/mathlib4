@@ -244,7 +244,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
-            exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num)
+            exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
           _ ≤ p := eq₁
       linarith
   · intro h
@@ -306,7 +306,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
         have : w' ∈ K := Submodule.add_mem _ hw hv
         have h₁ := h w' this
         have h₂ : w' - v = w := by
-          simp only [add_neg_cancel_right, sub_eq_add_neg]
+          simp only [w', add_neg_cancel_right, sub_eq_add_neg]
         rw [h₂] at h₁
         exact h₁
       have ge : ⟪u - v, w⟫_ℝ ≥ 0 := by
@@ -314,7 +314,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
         have : w'' ∈ K := Submodule.add_mem _ (Submodule.neg_mem _ hw) hv
         have h₁ := h w'' this
         have h₂ : w'' - v = -w := by
-          simp only [neg_inj, add_neg_cancel_right, sub_eq_add_neg]
+          simp only [w'', neg_inj, add_neg_cancel_right, sub_eq_add_neg]
         rw [h₂, inner_neg_right] at h₁
         linarith
       exact le_antisymm le ge)
@@ -683,9 +683,9 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
           LinearEquiv.coe_ofInvolutive, LinearMap.sub_apply, LinearMap.id_apply, two_smul,
           LinearMap.add_apply, LinearMap.comp_apply, Submodule.subtype_apply,
           ContinuousLinearMap.coe_coe]
-        dsimp
+        dsimp [v]
         abel
-      · simp only [add_sub_cancel'_right, eq_self_iff_true] }
+      · simp only [v, add_sub_cancel'_right, eq_self_iff_true] }
 #align reflection reflection
 
 variable {K}
