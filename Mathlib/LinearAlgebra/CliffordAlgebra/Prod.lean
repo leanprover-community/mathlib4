@@ -59,11 +59,11 @@ nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
     obtain ⟨i₁n, rfl⟩ := i₁'
     dsimp only at *
     induction hm₁ using Submodule.pow_induction_on_left' with
-    | hr =>
+    | algebraMap =>
       rw [AlgHom.commutes, Nat.cast_zero, mul_zero, uzpow_zero, one_smul, Algebra.commutes]
-    | hadd _ _ _ _ _ ihx ihy =>
+    | add _ _ _ _ _ ihx ihy =>
       rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
-    | hmul m₁ hm₁ i x₁ _hx₁ ih₁ =>
+    | mem_mul m₁ hm₁ i x₁ _hx₁ ih₁ =>
       obtain ⟨v₁, rfl⟩ := hm₁
       -- this is the first interesting goal
       rw [map_mul, mul_assoc, ih₁, mul_smul_comm, map_apply_ι, Nat.cast_succ, mul_add_one,
@@ -78,11 +78,11 @@ nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
         obtain ⟨i₂n, rfl⟩ := i₂'
         dsimp only at *
         induction hm₂ using Submodule.pow_induction_on_left' with
-        | hr =>
+        | algebraMap =>
           rw [AlgHom.commutes, Nat.cast_zero, uzpow_zero, one_smul, Algebra.commutes]
-        | hadd _ _ _ _ _ ihx ihy =>
+        | add _ _ _ _ _ ihx ihy =>
           rw [map_add, add_mul, mul_add, ihx, ihy, smul_add]
-        | hmul m₂ hm₂ i x₂ _hx₂ ih₂ =>
+        | mem_mul m₂ hm₂ i x₂ _hx₂ ih₂ =>
           obtain ⟨v₂, rfl⟩ := hm₂
           -- this is the second interesting goal
           rw [map_mul, map_apply_ι, Nat.cast_succ, ← mul_assoc,

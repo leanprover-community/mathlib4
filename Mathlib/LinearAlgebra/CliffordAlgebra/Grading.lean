@@ -224,7 +224,7 @@ vectors, closed under addition, and under left-multiplication by a pair of vecto
 @[elab_as_elim]
 theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
     (ι : ∀ v, P (ι Q v) (ι_mem_evenOdd_one _ _))
-    (add : ∀ {x y hx hy}, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
+    (add : ∀ x y hx hy, P x hx → P y hy → P (x + y) (Submodule.add_mem _ hx hy))
     (ι_mul_ι_mul :
       ∀ m₁ m₂ x hx,
         P x hx →

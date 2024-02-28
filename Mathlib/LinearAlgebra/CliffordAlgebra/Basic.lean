@@ -205,7 +205,7 @@ See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.righ
 -/
 @[elab_as_elim]
 theorem induction {C : CliffordAlgebra Q → Prop}
-    (algebraMap : ∀ r, C (algebraMap R (CliffordAlgebra Q) r)) (h_grade1 : ∀ x, C (ι Q x))
+    (algebraMap : ∀ r, C (algebraMap R (CliffordAlgebra Q) r)) (ι : ∀ x, C (ι Q x))
     (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
     (a : CliffordAlgebra Q) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
@@ -217,7 +217,8 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   -- porting note: Added `h`. `h` is needed for `of`.
   letI h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
-    ⟨(ι Q).codRestrict (Subalgebra.toSubmodule s) h_grade1, fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+    ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
+      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
     ext
