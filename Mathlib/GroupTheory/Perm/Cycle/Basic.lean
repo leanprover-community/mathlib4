@@ -9,9 +9,6 @@ import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.Algebra.Module.BigOperators
 
--- import Mathlib.Data.Finset.NoncommProd
--- import Mathlib.Data.Int.ModEq
-
 #align_import group_theory.perm.cycle.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!

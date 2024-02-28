@@ -7,8 +7,6 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 
--- import Mathlib.Data.Finset.Card
-
 #align_import group_theory.perm.support from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!

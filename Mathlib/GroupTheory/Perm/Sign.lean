@@ -5,13 +5,11 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.GroupTheory.Perm.Support
--- import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Finset.Sort
 import Mathlib.GroupTheory.Subgroup.Finite
---
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Int.Order.Units
 
