@@ -174,10 +174,13 @@ protected def Function.Injective.semiring' {α β : Type*} [Semiring α]
 /-- Pullback a `Semiring` instance along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Injective.semiring'' {α β : Type*} [Semiring α] [NonAssocSemiring β]
-  {f : β → α} (hf : Injective f) (mul : ∀ x y, f (x * y) = f x * f y) : Semiring β where
+protected def Function.Injective.semiring'' {α β : Type*} [Semiring α] [NonAssocSemiring β] [Pow β ℕ]
+  {f : β → α} (hf : Injective f)
+  (one : f 1 = 1)
+  (mul : ∀ x y, f (x * y) = f x * f y)
+  (npow : ∀ x n, f (x ^ n) = f x ^ n) : Semiring β where
   __ := ‹NonAssocSemiring β›
-  __ := hf.semigroup f mul
+  __ := hf.monoid f one mul npow
 
 /-- Pushforward a `NonUnitalNonAssocSemiring` instance along a surjective function.
 See note [reducible non-instances]. -/

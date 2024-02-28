@@ -166,8 +166,11 @@ protected def leftCancelMonoid [LeftCancelMonoid M₂] (f : M₁ → M₂) (hf :
 #align function.injective.left_cancel_monoid Function.Injective.leftCancelMonoid
 #align function.injective.add_left_cancel_monoid Function.Injective.addLeftCancelMonoid
 
-/-- Alternative constructor using bundled classes -/
-@[to_additive (attr := reducible)]
+/-- A type endowed with `1` and `*` is a left cancel monoid, if it admits an injective map that
+preserves `1` and `*` to a left cancel monoid. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `0` and `+` is an additive left cancel monoid, if it
+admits an injective map that preserves `0` and `+` to an additive left cancel monoid."]
 protected def leftCancelMonoid' {M₁ : Type*} [LeftCancelMonoid M₂] [Monoid M₁]
     {f : M₁ → M₂} (hf : Injective f) (mul : ∀ x y, f (x * y) = f x * f y) :
     LeftCancelMonoid M₁ :=
@@ -185,8 +188,11 @@ protected def rightCancelMonoid [RightCancelMonoid M₂] (f : M₁ → M₂) (hf
 #align function.injective.right_cancel_monoid Function.Injective.rightCancelMonoid
 #align function.injective.add_right_cancel_monoid Function.Injective.addRightCancelMonoid
 
-/-- Alternative constructor using bundled classes -/
-@[to_additive (attr := reducible)]
+/-- A type endowed with `1` and `*` is a right cancel monoid, if it admits an injective map that
+preserves `1` and `*` to a right cancel monoid. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `0` and `+` is an additive left cancel monoid,if it
+admits an injective map that preserves `0` and `+` to an additive left cancel monoid."]
 protected def rightCancelMonoid' {M₁ : Type*} [RightCancelMonoid M₂] [Monoid M₁]
     {f : M₁ → M₂} (hf : Injective f) (mul : ∀ x y, f (x * y) = f x * f y) :
     RightCancelMonoid M₁ :=
@@ -204,8 +210,11 @@ protected def cancelMonoid [CancelMonoid M₂] (f : M₁ → M₂) (hf : Injecti
 #align function.injective.add_cancel_monoid Function.Injective.addCancelMonoid
 #align function.injective.cancel_monoid Function.Injective.cancelMonoid
 
-/-- Alternative constructor using bundled classes -/
-@[to_additive (attr := reducible)]
+/-- A type endowed with `1` and `*` is a cancel monoid, if it admits an injective map that preserves
+`1` and `*` to a cancel monoid. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `0` and `+` is an additive left cancel monoid,if it
+admits an injective map that preserves `0` and `+` to an additive left cancel monoid."]
 protected def cancelMonoid' {M₁ : Type*} [CancelMonoid M₂] [Monoid M₁]
     {f : M₁ → M₂} (hf : Injective f) (mul : ∀ x y, f (x * y) = f x * f y) :
     RightCancelMonoid M₁ :=
@@ -262,6 +271,8 @@ protected def cancelCommMonoid [CancelCommMonoid M₂] (f : M₁ → M₂) (hf :
 #align function.injective.cancel_comm_monoid Function.Injective.cancelCommMonoid
 #align function.injective.add_cancel_comm_monoid Function.Injective.addCancelCommMonoid
 
+/-- A type endowed with `1` and `*` is a cancel commutative monoid, if it admits an injective map
+that preserves `1` and `*` to a cancel commutative monoid.  See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
 "A type endowed with `0` and `+` is an additive cancel commutative monoid,
 if it admits an injective map that preserves `0` and `+` to an additive cancel commutative monoid."]

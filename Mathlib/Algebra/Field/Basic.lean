@@ -298,7 +298,7 @@ protected def Function.Injective.divisionSemiring [DivisionSemiring β] [Zero α
 /-- Pullback a `DivisionSemiring` along an injective function. -/
 @[reducible]
 protected def Function.Injective.divisionSemiring' [DivisionSemiring β] [Semiring α]
-    [Inv α] [Div α] [NatCast α] [Pow α ℤ] {f : α → β} (hf : Injective f)
+    [Inv α] [Div α] [Pow α ℤ] {f : α → β} (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
@@ -378,7 +378,7 @@ protected def Function.Injective.semifield [Semifield β] [Zero α] [Mul α] [Ad
 /-- Pullback a `Field` along an injective function. -/
 @[reducible]
 protected def Function.Injective.semifield' [Semifield β]
-    [CommSemiring α] [Inv α] [Div α] [NatCast α] [Pow α ℤ]
+    [CommSemiring α] [Inv α] [Div α] [Pow α ℤ]
     {f : α → β} (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1 )
     (mul : ∀ x y, f (x * y) = f x * f y)
@@ -492,3 +492,4 @@ theorem toLex_rat_cast [RatCast α] (n : ℚ) : toLex (n : α) = n :=
 theorem ofLex_rat_cast [RatCast α] (n : ℚ) : (ofLex n : α) = n :=
   rfl
 #align of_lex_rat_cast ofLex_rat_cast
+#lint

@@ -301,14 +301,14 @@ theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
 
 /-- Turn a subalgebra satisfying `IsField` into an intermediate_field -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
-  S.toIntermediateField fun x hx => by
+  { hS.toField, S.toIntermediateField fun x hx => by
     by_cases hx0 : x = 0
     · rw [hx0, inv_zero]
       exact S.zero_mem
     letI hS' := hS.toField
     obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.ne_of_val_ne hx0)
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
-    exact hy.symm ▸ y.2
+    exact hy.symm ▸ y.2 with }
 #align subalgebra.to_intermediate_field' Subalgebra.toIntermediateField'
 
 @[simp]
@@ -317,10 +317,6 @@ theorem toSubalgebra_toIntermediateField' (S : Subalgebra K L) (hS : IsField S) 
   ext
   rfl
 #align to_subalgebra_to_intermediate_field' toSubalgebra_toIntermediateField'
-
-set_option trace.Meta.synthInstance true in
-#synth Semiring S
-#check Subsemiring.toSemiring
 
 @[simp]
 theorem toIntermediateField'_toSubalgebra (S : IntermediateField K L) :

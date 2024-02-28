@@ -120,7 +120,7 @@ theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
     Semiring s :=
-  Subtype.coe_injective.semiring'' fun _ _ => rfl
+  Subtype.coe_injective.semiring'' rfl (fun _ _ => rfl) fun _ _ => rfl
 #align subsemiring_class.to_semiring SubsemiringClass.toSemiring
 
 @[simp, norm_cast]
