@@ -172,6 +172,11 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
   ∑ t in powersetCard n univ, ∏ i in t, X i
 #align mv_polynomial.esymm MvPolynomial.esymm
 
+lemma esymm_def (n : ℕ) : esymm σ R n = ∑ t in powersetCard n univ, ∏ i in t, X i := rfl
+
+def esymm_mu {n : ℕ} (μ : Nat.Partition n) : MvPolynomial σ R :=
+  Multiset.prod (μ.parts.map (esymm σ R))
+
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
 theorem esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm := by
@@ -300,6 +305,9 @@ def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 
 lemma hsymm_def (n : ℕ) : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
 
+def hsymm_mu {n : ℕ} (μ : Nat.Partition n) : MvPolynomial σ R :=
+  Multiset.prod (μ.parts.map (hsymm σ R))
+
 @[simp]
 theorem hsymm_zero : hsymm σ R 0 = 1 := by
   simp only [hsymm, univ_unique, eq_nil_of_card_zero, val_eq_coe, Sym.coe_nil, Multiset.map_zero,
@@ -335,6 +343,9 @@ open Finset
 def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
 lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
+
+def psum_mu {n : ℕ} (μ : Nat.Partition n) : MvPolynomial σ R :=
+  Multiset.prod (μ.parts.map (psum σ R))
 
 @[simp]
 theorem psum_zero : psum σ R 0 = Fintype.card σ := by
