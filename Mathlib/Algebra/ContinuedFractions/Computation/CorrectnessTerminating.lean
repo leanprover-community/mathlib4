@@ -193,13 +193,11 @@ theorem compExactValue_correctness_of_stream_eq_some :
       rw [inv_eq_one_div] at tmp_calc tmp_calc'
       -- Porting note: the `tmp_calc`s need to be massaged, and some processing after `ac_rfl` done,
       -- because `field_simp` is not as powerful
-      have hA : (↑⌊1 / ifp_n.fr⌋ * pA + ppA) + pA * f =
-          pA * (1 / ifp_n.fr) + ppA := by
+      have hA : (↑⌊1 / ifp_n.fr⌋ * pA + ppA) + pA * f = pA * (1 / ifp_n.fr) + ppA := by
         have := congrFun (congrArg HMul.hMul tmp_calc) f
         rwa [right_distrib, div_mul_cancel (h := f_ne_zero),
           div_mul_cancel (h := f_ne_zero)] at this
-      have hB : (↑⌊1 / ifp_n.fr⌋ * pB + ppB) + pB * f =
-          pB * (1 / ifp_n.fr) + ppB := by
+      have hB : (↑⌊1 / ifp_n.fr⌋ * pB + ppB) + pB * f = pB * (1 / ifp_n.fr) + ppB := by
         have := congrFun (congrArg HMul.hMul tmp_calc') f
         rwa [right_distrib, div_mul_cancel (h := f_ne_zero),
           div_mul_cancel (h := f_ne_zero)] at this
