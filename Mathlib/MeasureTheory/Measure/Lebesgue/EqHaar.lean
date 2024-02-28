@@ -40,6 +40,9 @@ We also show that a Lebesgue density point `x` of a set `s` (with respect to clo
 density one for the rescaled copies `{x} + r • t` of a given set `t` with positive measure, in
 `tendsto_addHaar_inter_smul_one_of_density_one`. In particular, `s` intersects `{x} + r • t` for
 small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
+
+Statements on integrals of functions with respect to an additive Haar measure can be found in
+`MeasureTheory.Measure.Haar.NormedSpace`.
 -/
 
 assert_not_exists MeasureTheory.integral
@@ -335,6 +338,16 @@ theorem addHaar_image_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
   μ.addHaar_image_linearMap (f : E →ₗ[ℝ] E) s
 #align measure_theory.measure.add_haar_image_continuous_linear_equiv MeasureTheory.Measure.addHaar_image_continuousLinearEquiv
 
+theorem LinearMap.quasiMeasurePreserving (f : E →ₗ[ℝ] E) (hf : LinearMap.det f ≠ 0) :
+    QuasiMeasurePreserving f μ μ := by
+  refine ⟨f.continuous_of_finiteDimensional.measurable, ?_⟩
+  rw [map_linearMap_addHaar_eq_smul_addHaar μ hf]
+  exact smul_absolutelyContinuous
+
+theorem ContinuousLinearMap.quasiMeasurePreserving (f : E →L[ℝ] E) (hf : f.det ≠ 0) :
+    QuasiMeasurePreserving f μ μ :=
+  LinearMap.quasiMeasurePreserving μ (f : E →ₗ[ℝ] E) hf
+
 /-!
 ### Basic properties of Haar measures on real vector spaces
 -/
@@ -350,6 +363,12 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
     exact hr (pow_eq_zero h)
   simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
 #align measure_theory.measure.map_add_haar_smul MeasureTheory.Measure.map_addHaar_smul
+
+theorem quasiMeasurePreserving_smul {r : ℝ} (hr : r ≠ 0) :
+    QuasiMeasurePreserving (r • ·) μ μ := by
+  refine ⟨measurable_const_smul r, ?_⟩
+  rw [map_addHaar_smul μ hr]
+  exact smul_absolutelyContinuous
 
 @[simp]
 theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
