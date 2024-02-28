@@ -11,10 +11,13 @@ import Mathlib.RingTheory.MvPowerSeries.Inverse
 
 /-! # Formal power series - Inverses
 
-If the constant coefficient of a formal power series is invertible,
+If the constant coefficient of a formal (univariate) power series is invertible,
 then this formal power series is invertible.
+(See the discussion in `Mathlib.RingTheory.MvPowerSeries.Inverse` for
+the construction.)
 
-Formal power series over a local ring form a local ring.
+Formal (univariate) power series over a local ring form a local ring.
+
 
 -/
 

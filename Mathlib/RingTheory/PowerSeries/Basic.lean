@@ -41,7 +41,7 @@ a lot of proofs and properties from the multivariate case
 can be ported to the single variable case.
 However, it means that formal power series are indexed by `Unit →₀ ℕ`,
 which is of course canonically isomorphic to `ℕ`.
-We then build some glue to treat formal power series as if they are indexed by `ℕ`.
+We then build some glue to treat formal power series as if they were indexed by `ℕ`.
 Occasionally this leads to proofs that are uglier than expected.
 
 -/
@@ -52,7 +52,7 @@ open BigOperators
 
 open Finset (antidiagonal mem_antidiagonal)
 
-/-- Formal power series over the coefficient ring `R`.-/
+/-- Formal power series over a coefficient type `R` -/
 def PowerSeries (R : Type*) :=
   MvPowerSeries Unit R
 #align power_series PowerSeries

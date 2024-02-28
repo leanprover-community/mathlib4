@@ -11,13 +11,14 @@ import Mathlib.Algebra.CharP.Basic
 
 /-! # Formal power series (in one variable) - Order
 
-The `order` of a formal power series `φ` is the multiplicity of the variable `X` in `φ`.
+The `PowerSeries.order` of a formal power series `φ` is the multiplicity of the variable `X` in `φ`.
 
-If the coefficients form an integral domain, then `order` is a valuation
-(`order_mul`, `le_order_add`).
+If the coefficients form an integral domain, then `PowerSeries.order` is an
+additive valuation (`PowerSeries.order_mul`, `PowerSeries.le_order_add`).
 
-We prove that if the ring of coefficients is an integral domain,
-then formal power series in one variable form an integral domain.
+We prove that if the commutative ring `R` of coefficients is an integral domain,
+then the ring `R⟦X⟧` of formal power series in one variable over `R`
+is an integral domain.
 
 -/
 noncomputable section

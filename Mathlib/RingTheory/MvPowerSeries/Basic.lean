@@ -26,8 +26,8 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 This file sets up the (semi)ring structure on multivariate power series:
 additional results are in:
 * `Mathlib.RingTheory.MvPowerSeries.Inverse` : invertibility,
-  formal power series over a local ring form a local ring
-* `Mathlib.RingTheory.MvPowerSeries.Trunc`: truncation of power series
+  formal power series over a local ring form a local ring;
+* `Mathlib.RingTheory.MvPowerSeries.Trunc`: truncation of power series.
 
 In `Mathlib.RingTheory.PowerSeries.Basic`, formal power series in one variable
 will be obtained as a particular case, defined by
