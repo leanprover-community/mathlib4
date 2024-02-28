@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -33,6 +33,9 @@ positive cone which is the _closure_ of the sums of elements `star r * r`. A wea
 [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
 the advantage of not requiring a topology.
 -/
+
+open Set
+open scoped NNRat
 
 universe u
 
@@ -294,3 +297,11 @@ instance (priority := 100) StarRingHomClass.instOrderIsoClass [EquivLike F R S] 
     exact f_inv.map_le_map_of_map_star f_inv_star h
 
 end OrderClass
+
+instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
+  le_iff a b := by
+    have : AddSubmonoid.closure (range fun x : ℕ ↦ x * x) = ⊤ :=
+      eq_top_mono
+        (AddSubmonoid.closure_mono <| singleton_subset_iff.2 <| mem_range.2 ⟨1, one_mul _⟩)
+        Nat.addSubmonoid_closure_one
+    simp [this, le_iff_exists_add]
