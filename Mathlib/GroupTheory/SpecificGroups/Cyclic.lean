@@ -215,7 +215,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     rw [← zpow_mod_orderOf] at hk
     have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (mod_cast ho.orderOf_pos.ne')
     refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
-    rwa [← zpow_ofNat, Int.toNat_of_nonneg this]
+    rwa [← zpow_coe_nat, Int.toNat_of_nonneg this]
 #align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
 #align infinite.add_order_of_eq_zero_of_forall_mem_zmultiples Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples
 
@@ -238,7 +238,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         Nat.pos_of_ne_zero fun h => hx₂ <| by
           rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
             cases' k with k k
-            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_ofNat, ← Int.ofNat_eq_coe, hk]
+            · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_coe_nat, ← Int.ofNat_eq_coe, hk]
               exact hx₁
             · rw [Int.natAbs_negSucc, ← Subgroup.inv_mem_iff H]; simp_all⟩
     ⟨⟨⟨g ^ Nat.find hex, (Nat.find_spec hex).2⟩, fun ⟨x, hx⟩ =>
@@ -254,7 +254,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         have hk₄ : k % Nat.find hex = (k % Nat.find hex).natAbs := by
           rw [Int.natAbs_of_nonneg
               (Int.emod_nonneg _ (Int.coe_nat_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
-        have hk₅ : g ^ (k % Nat.find hex).natAbs ∈ H := by rwa [← zpow_ofNat, ← hk₄]
+        have hk₅ : g ^ (k % Nat.find hex).natAbs ∈ H := by rwa [← zpow_coe_nat, ← hk₄]
         have hk₆ : (k % (Nat.find hex : ℤ)).natAbs = 0 :=
           by_contradiction fun h =>
             Nat.find_min hex
@@ -297,7 +297,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
             have hgmn : g ^ (m * Nat.gcd n (Fintype.card α)) = 1 := by
               rw [pow_mul, hm, ← pow_gcd_card_eq_one_iff]; exact (mem_filter.1 hx).2
             dsimp only
-            rw [zpow_ofNat, ← pow_mul, Nat.mul_div_cancel_left', hm]
+            rw [zpow_coe_nat, ← pow_mul, Nat.mul_div_cancel_left', hm]
             refine' Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) _
             conv_lhs =>
               rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ←
@@ -369,7 +369,7 @@ private theorem card_pow_eq_one_eq_orderOf_aux (a : α) :
               mem_filter.2
                 ⟨mem_univ _, by
                   let ⟨i, hi⟩ := b.2
-                  rw [← hi, ← zpow_ofNat, ← zpow_mul, mul_comm, zpow_mul, zpow_ofNat,
+                  rw [← hi, ← zpow_coe_nat, ← zpow_mul, mul_comm, zpow_mul, zpow_coe_nat,
                     pow_orderOf_eq_one, one_zpow]⟩⟩)
           fun _ _ h => Subtype.eq (Subtype.mk.inj h))
       _ = (univ.filter fun b : α => b ^ orderOf a = 1).card := Fintype.card_ofFinset _ _
@@ -416,7 +416,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
       simp only [← filter_dvd_eq_divisors hc0.ne', sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
       apply congr_arg card
-      simp
+      simp [c]
     _ = ∑ m in c.divisors.erase d, (univ.filter fun a : α => orderOf a = m).card := by
       rw [eq_comm]
       refine' sum_subset (erase_subset _ _) fun m hm₁ hm₂ => _

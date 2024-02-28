@@ -71,8 +71,8 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
   refine' ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => _⟩
   convert LinearMap.congr_fun (LinearMap.range_le_ker_iff.1 hΛ') x using 1
   -- squeezed `simp [mul_comm]` to speed up elaboration
-  simp only [smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prod_apply, LinearEquiv.refl_apply,
-    LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
+  simp only [e, smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prod_apply,
+    LinearEquiv.refl_apply, LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
     ContinuousLinearMap.coe_prod, LinearMap.coprod_comp_prod, LinearMap.add_apply,
     LinearMap.coe_comp, ContinuousLinearMap.coe_coe, Function.comp_apply, LinearMap.coe_smulRight,
     LinearMap.one_apply, mul_comm]

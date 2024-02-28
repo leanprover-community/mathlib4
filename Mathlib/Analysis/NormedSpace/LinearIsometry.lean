@@ -129,9 +129,9 @@ theorem diam_range [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
   (SemilinearIsometryClass.isometry f).diam_range
 #align semilinear_isometry_class.diam_range SemilinearIsometryClass.diam_range
 
-instance (priority := 100) [s : SemilinearIsometryClass 𝓕 σ₁₂ E E₂] :
-    ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ :=
-  { s with map_continuous := SemilinearIsometryClass.continuous }
+instance (priority := 100) SemilinearIsometryClass.toContinuousSemilinearMapClass
+    [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] : ContinuousSemilinearMapClass 𝓕 σ₁₂ E E₂ where
+  map_continuous := SemilinearIsometryClass.continuous
 
 end SemilinearIsometryClass
 
@@ -148,11 +148,11 @@ theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = 
   toLinearMap_injective.eq_iff
 #align linear_isometry.to_linear_map_inj LinearIsometry.toLinearMap_inj
 
-instance : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
+instance instFunLike : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
   coe_injective' _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
 
-instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+instance instSemilinearIsometryClass : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
   norm_map f := f.norm_map'
@@ -394,8 +394,7 @@ theorem id_toContinuousLinearMap : id.toContinuousLinearMap = ContinuousLinearMa
   rfl
 #align linear_isometry.id_to_continuous_linear_map LinearIsometry.id_toContinuousLinearMap
 
-instance : Inhabited (E →ₗᵢ[R] E) :=
-  ⟨id⟩
+instance instInhabited : Inhabited (E →ₗᵢ[R] E) := ⟨id⟩
 
 /-- Composition of linear isometries. -/
 def comp (g : E₂ →ₛₗᵢ[σ₂₃] E₃) (f : E →ₛₗᵢ[σ₁₂] E₂) : E →ₛₗᵢ[σ₁₃] E₃ :=
@@ -422,7 +421,7 @@ theorem comp_assoc (f : E₃ →ₛₗᵢ[σ₃₄] E₄) (g : E₂ →ₛₗᵢ
   rfl
 #align linear_isometry.comp_assoc LinearIsometry.comp_assoc
 
-instance : Monoid (E →ₗᵢ[R] E) where
+instance instMonoid : Monoid (E →ₗᵢ[R] E) where
   one := id
   mul := comp
   mul_assoc := comp_assoc
@@ -534,8 +533,8 @@ namespace SemilinearIsometryEquivClass
 variable (𝓕)
 
 -- `σ₂₁` becomes a metavariable, but it's OK since it's an outparam
-instance (priority := 100) [EquivLike 𝓕 E E₂] [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] :
-    SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
+instance (priority := 100) SemilinearIsometryEquivClass.toSemilinearIsometryClass [EquivLike 𝓕 E E₂]
+    [s : SemilinearIsometryEquivClass 𝓕 σ₁₂ E E₂] : SemilinearIsometryClass 𝓕 σ₁₂ E E₂ :=
   { s with }
 
 end SemilinearIsometryEquivClass
@@ -553,7 +552,7 @@ theorem toLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toLinearEqui
   toLinearEquiv_injective.eq_iff
 #align linear_isometry_equiv.to_linear_equiv_inj LinearIsometryEquiv.toLinearEquiv_inj
 
-instance : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
+instance instEquivLike : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe e := e.toFun
   inv e := e.invFun
   coe_injective' f g h₁ h₂ := by
@@ -566,16 +565,16 @@ instance : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   left_inv e := e.left_inv
   right_inv e := e.right_inv
 
-instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+instance instSemilinearIsometryEquivClass :
+    SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
 
+-- TODO: Shouldn't these `CoeFun` instances be scrapped?
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly.
--/
-instance : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
-  ⟨DFunLike.coe⟩
+directly. -/
+instance instCoeFun : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ ↦ E → E₂ := ⟨DFunLike.coe⟩
 
 theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=
   DFunLike.coe_injective
@@ -736,8 +735,7 @@ def ulift : ULift E ≃ₗᵢ[R] E :=
 
 variable {R E}
 
-instance : Inhabited (E ≃ₗᵢ[R] E) :=
-  ⟨refl R E⟩
+instance instInhabited : Inhabited (E ≃ₗᵢ[R] E) := ⟨refl R E⟩
 
 @[simp]
 theorem coe_refl : ⇑(refl R E) = id :=
@@ -871,7 +869,7 @@ theorem trans_assoc (eEE₂ : E ≃ₛₗᵢ[σ₁₂] E₂) (eE₂E₃ : E₂ �
   rfl
 #align linear_isometry_equiv.trans_assoc LinearIsometryEquiv.trans_assoc
 
-instance : Group (E ≃ₗᵢ[R] E) where
+instance instGroup : Group (E ≃ₗᵢ[R] E) where
   mul e₁ e₂ := e₂.trans e₁
   one := refl _ _
   inv := symm
@@ -937,10 +935,10 @@ theorem mul_refl (e : E ≃ₗᵢ[R] E) : e * refl _ _ = e :=
 #align linear_isometry_equiv.mul_refl LinearIsometryEquiv.mul_refl
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
-instance : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
+instance instCoeTCContinuousLinearEquiv : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
   ⟨fun e => ⟨e.toLinearEquiv, e.continuous, e.toIsometryEquiv.symm.continuous⟩⟩
 
-instance : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
+instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
 @[simp]

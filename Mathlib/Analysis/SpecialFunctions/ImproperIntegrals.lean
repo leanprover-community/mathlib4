@@ -181,7 +181,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
 
 theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻¹ := by
   suffices Integrable fun (x : ℝ) ↦ (1 + ‖x‖ ^ 2) ^ ((-2 : ℝ) / 2) by simpa [rpow_neg_one]
-  exact integrable_rpow_neg_one_add_norm_sq (by simpa using by norm_num)
+  exact integrable_rpow_neg_one_add_norm_sq (by simp)
 
 @[simp]
 theorem integral_Iic_inv_one_add_sq {i : ℝ} :
