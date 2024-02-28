@@ -3,11 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fintype.Perm
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Option
---
+import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.Fintype.Prod
+import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Logic.Equiv.Option
 
 #align_import group_theory.perm.option from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
