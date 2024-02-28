@@ -365,10 +365,10 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_antisymm a b hab hba := ext fun s => le_antisymm (hab s) (hba s)
 #align measure_theory.outer_measure.outer_measure.partial_order MeasureTheory.OuterMeasure.instPartialOrder
 
-instance OuterMeasure.orderBot : OrderBot (OuterMeasure α) :=
+instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
     bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, coe_bot, zero_le] }
-#align measure_theory.outer_measure.outer_measure.order_bot MeasureTheory.OuterMeasure.OuterMeasure.orderBot
+#align measure_theory.outer_measure.outer_measure.order_bot MeasureTheory.OuterMeasure.orderBot
 
 theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
   ⟨fun h => bot_unique fun s => (m.mono' <| subset_univ s).trans_eq h, fun h => h.symm ▸ rfl⟩
