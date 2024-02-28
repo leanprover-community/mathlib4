@@ -194,12 +194,13 @@ lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
   have ⟨c, hc⟩ := dual_surjective_of_injective _ (Submodule.injective_subtype _) (ofSpanSingleton a)
   ⟨c, fun h ↦ ne_zero <| eq_zero_of_ofSpanSingleton_apply_self a <| by rwa [← hc]⟩
 
-lemma eq_zero_of_characterModule_apply {a : A} (h : ∀ c : CharacterModule A, c a = 0) : a = 0 := by
+lemma eq_zero_of_character_apply {a : A} (h : ∀ c : CharacterModule A, c a = 0) : a = 0 := by
   contrapose! h; exact exists_character_apply_ne_zero_of_ne_zero h
 
 lemma dual_surjective_iff_injective [Module R A] [Module R B] (f : A →ₗ[R] B) :
     Function.Surjective (dual f) ↔ Function.Injective f :=
-  ⟨fun h ↦ (injective_iff_map_eq_zero _).2 fun a h0 ↦ eq_zero_of_characterModule_apply fun c ↦ by
+  ⟨fun h ↦ (injective_iff_map_eq_zero _).2 fun a h0 ↦ eq_zero_of_character_apply fun c ↦ by
     obtain ⟨c, rfl⟩ := h c; exact congr(c $h0).trans c.map_zero,
   dual_surjective_of_injective f⟩
+
 end CharacterModule
