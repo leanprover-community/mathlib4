@@ -214,8 +214,10 @@ def NormedCommGroup.ofSeparation [SeminormedCommGroup E] (h : ∀ x : E, ‖x‖
 #align normed_comm_group.of_separation NormedCommGroup.ofSeparation
 #align normed_add_comm_group.of_separation NormedAddCommGroup.ofSeparation
 
+-- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant distance. -/
-@[to_additive "Construct a seminormed group from a translation-invariant distance."]
+@[to_additive (attr := reducible)
+  "Construct a seminormed group from a translation-invariant distance."]
 def SeminormedGroup.ofMulDist [Norm E] [Group E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist x y ≤ dist (x * z) (y * z)) :
     SeminormedGroup E where
@@ -226,8 +228,10 @@ def SeminormedGroup.ofMulDist [Norm E] [Group E] [PseudoMetricSpace E]
 #align seminormed_group.of_mul_dist SeminormedGroup.ofMulDist
 #align seminormed_add_group.of_add_dist SeminormedAddGroup.ofAddDist
 
+-- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
-@[to_additive "Construct a seminormed group from a translation-invariant pseudodistance."]
+@[to_additive (attr := reducible)
+  "Construct a seminormed group from a translation-invariant pseudodistance."]
 def SeminormedGroup.ofMulDist' [Norm E] [Group E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) :
     SeminormedGroup E where
@@ -238,8 +242,10 @@ def SeminormedGroup.ofMulDist' [Norm E] [Group E] [PseudoMetricSpace E]
 #align seminormed_group.of_mul_dist' SeminormedGroup.ofMulDist'
 #align seminormed_add_group.of_add_dist' SeminormedAddGroup.ofAddDist'
 
+-- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
-@[to_additive "Construct a seminormed group from a translation-invariant pseudodistance."]
+@[to_additive (attr := reducible)
+  "Construct a seminormed group from a translation-invariant pseudodistance."]
 def SeminormedCommGroup.ofMulDist [Norm E] [CommGroup E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist x y ≤ dist (x * z) (y * z)) :
     SeminormedCommGroup E :=
@@ -248,8 +254,10 @@ def SeminormedCommGroup.ofMulDist [Norm E] [CommGroup E] [PseudoMetricSpace E]
 #align seminormed_comm_group.of_mul_dist SeminormedCommGroup.ofMulDist
 #align seminormed_add_comm_group.of_add_dist SeminormedAddCommGroup.ofAddDist
 
+-- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
-@[to_additive "Construct a seminormed group from a translation-invariant pseudodistance."]
+@[to_additive (attr := reducible)
+  "Construct a seminormed group from a translation-invariant pseudodistance."]
 def SeminormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [PseudoMetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) :
     SeminormedCommGroup E :=
@@ -258,8 +266,10 @@ def SeminormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [PseudoMetricSpace E]
 #align seminormed_comm_group.of_mul_dist' SeminormedCommGroup.ofMulDist'
 #align seminormed_add_comm_group.of_add_dist' SeminormedAddCommGroup.ofAddDist'
 
+-- See note [reducible non-instances]
 /-- Construct a normed group from a multiplication-invariant distance. -/
-@[to_additive "Construct a normed group from a translation-invariant distance."]
+@[to_additive (attr := reducible)
+  "Construct a normed group from a translation-invariant distance."]
 def NormedGroup.ofMulDist [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E, ‖x‖ = dist x 1)
     (h₂ : ∀ x y z : E, dist x y ≤ dist (x * z) (y * z)) : NormedGroup E :=
   { SeminormedGroup.ofMulDist h₁ h₂ with
@@ -267,8 +277,10 @@ def NormedGroup.ofMulDist [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E, 
 #align normed_group.of_mul_dist NormedGroup.ofMulDist
 #align normed_add_group.of_add_dist NormedAddGroup.ofAddDist
 
+-- See note [reducible non-instances]
 /-- Construct a normed group from a multiplication-invariant pseudodistance. -/
-@[to_additive "Construct a normed group from a translation-invariant pseudodistance."]
+@[to_additive (attr := reducible)
+  "Construct a normed group from a translation-invariant pseudodistance."]
 def NormedGroup.ofMulDist' [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E, ‖x‖ = dist x 1)
     (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) : NormedGroup E :=
   { SeminormedGroup.ofMulDist' h₁ h₂ with
@@ -276,8 +288,10 @@ def NormedGroup.ofMulDist' [Norm E] [Group E] [MetricSpace E] (h₁ : ∀ x : E,
 #align normed_group.of_mul_dist' NormedGroup.ofMulDist'
 #align normed_add_group.of_add_dist' NormedAddGroup.ofAddDist'
 
+-- See note [reducible non-instances]
 /-- Construct a normed group from a multiplication-invariant pseudodistance. -/
-@[to_additive "Construct a normed group from a translation-invariant pseudodistance."]
+@[to_additive (attr := reducible)
+"Construct a normed group from a translation-invariant pseudodistance."]
 def NormedCommGroup.ofMulDist [Norm E] [CommGroup E] [MetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist x y ≤ dist (x * z) (y * z)) :
     NormedCommGroup E :=
@@ -286,8 +300,10 @@ def NormedCommGroup.ofMulDist [Norm E] [CommGroup E] [MetricSpace E]
 #align normed_comm_group.of_mul_dist NormedCommGroup.ofMulDist
 #align normed_add_comm_group.of_add_dist NormedAddCommGroup.ofAddDist
 
+-- See note [reducible non-instances]
 /-- Construct a normed group from a multiplication-invariant pseudodistance. -/
-@[to_additive "Construct a normed group from a translation-invariant pseudodistance."]
+@[to_additive (attr := reducible)
+  "Construct a normed group from a translation-invariant pseudodistance."]
 def NormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [MetricSpace E]
     (h₁ : ∀ x : E, ‖x‖ = dist x 1) (h₂ : ∀ x y z : E, dist (x * z) (y * z) ≤ dist x y) :
     NormedCommGroup E :=
@@ -296,11 +312,13 @@ def NormedCommGroup.ofMulDist' [Norm E] [CommGroup E] [MetricSpace E]
 #align normed_comm_group.of_mul_dist' NormedCommGroup.ofMulDist'
 #align normed_add_comm_group.of_add_dist' NormedAddCommGroup.ofAddDist'
 
+-- See note [reducible non-instances]
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
 pseudometric space structure from the seminorm properties. Note that in most cases this instance
 creates bad definitional equalities (e.g., it does not take into account a possibly existing
 `UniformSpace` instance on `E`). -/
-@[to_additive "Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
+@[to_additive (attr := reducible)
+  "Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`)."]
@@ -316,11 +334,13 @@ def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : Seminormed
 #align group_seminorm.to_seminormed_group GroupSeminorm.toSeminormedGroup
 #align add_group_seminorm.to_seminormed_add_group AddGroupSeminorm.toSeminormedAddGroup
 
+-- See note [reducible non-instances]
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
 pseudometric space structure from the seminorm properties. Note that in most cases this instance
 creates bad definitional equalities (e.g., it does not take into account a possibly existing
 `UniformSpace` instance on `E`). -/
-@[to_additive "Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
+@[to_additive (attr := reducible)
+  "Construct a seminormed group from a seminorm, i.e., registering the pseudodistance
 and the pseudometric space structure from the seminorm properties. Note that in most cases this
 instance creates bad definitional equalities (e.g., it does not take into account a possibly
 existing `UniformSpace` instance on `E`)."]
@@ -331,11 +351,13 @@ def GroupSeminorm.toSeminormedCommGroup [CommGroup E] (f : GroupSeminorm E) :
 #align group_seminorm.to_seminormed_comm_group GroupSeminorm.toSeminormedCommGroup
 #align add_group_seminorm.to_seminormed_add_comm_group AddGroupSeminorm.toSeminormedAddCommGroup
 
+-- See note [reducible non-instances]
 /-- Construct a normed group from a norm, i.e., registering the distance and the metric space
 structure from the norm properties. Note that in most cases this instance creates bad definitional
 equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
 `E`). -/
-@[to_additive "Construct a normed group from a norm, i.e., registering the distance and the metric
+@[to_additive (attr := reducible)
+  "Construct a normed group from a norm, i.e., registering the distance and the metric
 space structure from the norm properties. Note that in most cases this instance creates bad
 definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`)."]
@@ -345,11 +367,13 @@ def GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E :=
 #align group_norm.to_normed_group GroupNorm.toNormedGroup
 #align add_group_norm.to_normed_add_group AddGroupNorm.toNormedAddGroup
 
+-- See note [reducible non-instances]
 /-- Construct a normed group from a norm, i.e., registering the distance and the metric space
 structure from the norm properties. Note that in most cases this instance creates bad definitional
 equalities (e.g., it does not take into account a possibly existing `UniformSpace` instance on
 `E`). -/
-@[to_additive "Construct a normed group from a norm, i.e., registering the distance and the metric
+@[to_additive (attr := reducible)
+  "Construct a normed group from a norm, i.e., registering the distance and the metric
 space structure from the norm properties. Note that in most cases this instance creates bad
 definitional equalities (e.g., it does not take into account a possibly existing `UniformSpace`
 instance on `E`)."]
@@ -1448,7 +1472,8 @@ def SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E
 `SeminormedCommGroup` structure on the domain. -/
 @[to_additive (attr := reducible) "A group homomorphism from an `AddCommGroup` to a
 `SeminormedAddGroup` induces a `SeminormedAddCommGroup` structure on the domain."]
-def SeminormedCommGroup.induced [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
+def SeminormedCommGroup.induced
+    [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
   { SeminormedGroup.induced E F f with
     mul_comm := mul_comm }
@@ -1460,7 +1485,8 @@ def SeminormedCommGroup.induced [CommGroup E] [SeminormedGroup F] [MonoidHomClas
 structure on the domain. -/
 @[to_additive (attr := reducible) "An injective group homomorphism from an `AddGroup` to a
 `NormedAddGroup` induces a `NormedAddGroup` structure on the domain."]
-def NormedGroup.induced [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
+def NormedGroup.induced
+    [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
     NormedGroup E :=
   { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
 #align normed_group.induced NormedGroup.induced
@@ -2042,10 +2068,10 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
     CauchySeq fun n => ∏ k in range (n + 1), u k := by
   let d : ℕ → E := fun n => ∏ k in range (n + 1), u k / v k
   rw [show (fun n => ∏ k in range (n + 1), u k) = d * fun n => ∏ k in range (n + 1), v k
-      by ext n; simp]
+      by ext n; simp [d]]
   suffices ∀ n ≥ N, d n = d N from (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn
-  dsimp
+  dsimp [d]
   rw [eventually_constant_prod _ (add_le_add_right hn 1)]
   intro m hm
   simp [huv m (le_of_lt hm)]

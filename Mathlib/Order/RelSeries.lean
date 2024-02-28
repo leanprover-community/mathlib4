@@ -200,7 +200,7 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
       change r (Fin.append p q x) (Fin.append p q y)
       have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
           i.2.trans <| by linarith!⟩ := by
-        ext; dsimp; rw [Nat.add_sub_cancel']; exact hi
+        ext; dsimp [x, y]; rw [Nat.add_sub_cancel']; exact hi
       have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
           (by exact i.2)⟩ := by
         ext

@@ -648,8 +648,8 @@ theorem isOfFinOrder_inv_iff {x : G} : IsOfFinOrder x⁻¹ ↔ IsOfFinOrder x :=
 @[to_additive]
 theorem orderOf_dvd_iff_zpow_eq_one : (orderOf x : ℤ) ∣ i ↔ x ^ i = 1 := by
   rcases Int.eq_nat_or_neg i with ⟨i, rfl | rfl⟩
-  · rw [Int.coe_nat_dvd, orderOf_dvd_iff_pow_eq_one, zpow_ofNat]
-  · rw [dvd_neg, Int.coe_nat_dvd, zpow_neg, inv_eq_one, zpow_ofNat, orderOf_dvd_iff_pow_eq_one]
+  · rw [Int.coe_nat_dvd, orderOf_dvd_iff_pow_eq_one, zpow_coe_nat]
+  · rw [dvd_neg, Int.coe_nat_dvd, zpow_neg, inv_eq_one, zpow_coe_nat, orderOf_dvd_iff_pow_eq_one]
 #align order_of_dvd_iff_zpow_eq_one orderOf_dvd_iff_zpow_eq_one
 #align add_order_of_dvd_iff_zsmul_eq_zero addOrderOf_dvd_iff_zsmul_eq_zero
 
@@ -684,7 +684,7 @@ lemma zpow_mod_orderOf (x : G) (z : ℤ) : x ^ (z % (orderOf x : ℤ)) = x ^ z :
 @[to_additive (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
   by_cases h : IsOfFinOrder x
-  · rw [← zpow_ofNat, ← zpow_mul, mul_comm, zpow_mul, zpow_ofNat, pow_orderOf_eq_one, one_zpow]
+  · rw [← zpow_coe_nat, ← zpow_mul, mul_comm, zpow_mul, zpow_coe_nat, pow_orderOf_eq_one, one_zpow]
   · rw [orderOf_eq_zero h, _root_.pow_zero]
 #align zpow_pow_order_of zpow_pow_orderOf
 #align zsmul_smul_order_of zsmul_smul_addOrderOf
@@ -731,8 +731,8 @@ lemma IsOfFinOrder.mem_powers_iff_mem_zpowers (hx : IsOfFinOrder x) :
     y ∈ powers x ↔ y ∈ zpowers x :=
   ⟨fun ⟨n, hn⟩ ↦ ⟨n, by simp_all⟩, fun ⟨i, hi⟩ ↦ ⟨(i % orderOf x).natAbs, by
     dsimp only
-    rwa [← zpow_ofNat, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <| Int.coe_nat_ne_zero_iff_pos.2 <|
-      hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
+    rwa [← zpow_coe_nat, Int.natAbs_of_nonneg <| Int.emod_nonneg _ <|
+      Int.coe_nat_ne_zero_iff_pos.2 <| hx.orderOf_pos, zpow_mod_orderOf]⟩⟩
 
 @[to_additive IsOfFinAddOrder.multiples_eq_zmultiples]
 lemma IsOfFinOrder.powers_eq_zpowers (hx : IsOfFinOrder x) : (powers x : Set G) = zpowers x :=
@@ -755,7 +755,7 @@ noncomputable def finEquivZPowers (x : G) (hx : IsOfFinOrder x) :
 -- This lemma has always been bad, but the linter only noticed after leaprover/lean4#2644.
 @[to_additive (attr := simp, nolint simpNF) finEquivZMultiples_apply]
 lemma finEquivZPowers_apply (hx) {n : Fin (orderOf x)} :
-    finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_ofNat x n⟩ := rfl
+    finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_coe_nat x n⟩ := rfl
 #align fin_equiv_zpowers_apply finEquivZPowers_apply
 #align fin_equiv_zmultiples_apply finEquivZMultiples_apply
 
@@ -908,7 +908,7 @@ variable [Finite G] {x y : G}
 theorem exists_zpow_eq_one (x : G) : ∃ (i : ℤ) (_ : i ≠ 0), x ^ (i : ℤ) = 1 := by
   obtain ⟨w, hw1, hw2⟩ := isOfFinOrder_of_finite x
   refine' ⟨w, Int.coe_nat_ne_zero.mpr (_root_.ne_of_gt hw1), _⟩
-  rw [zpow_ofNat]
+  rw [zpow_coe_nat]
   exact (isPeriodicPt_mul_iff_pow_eq_one _).mp hw2
 #align exists_zpow_eq_one exists_zpow_eq_one
 #align exists_zsmul_eq_zero exists_zsmul_eq_zero
@@ -971,7 +971,7 @@ noncomputable def zpowersEquivZPowers (h : orderOf x = orderOf y) :
 -- that looks the same as the current LHS even with `pp.explicit`
 @[to_additive (attr := simp, nolint simpNF) zmultiples_equiv_zmultiples_apply]
 theorem zpowersEquivZPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
-    zpowersEquivZPowers h ⟨x ^ n, n, zpow_ofNat x n⟩ = ⟨y ^ n, n, zpow_ofNat y n⟩ := by
+    zpowersEquivZPowers h ⟨x ^ n, n, zpow_coe_nat x n⟩ = ⟨y ^ n, n, zpow_coe_nat y n⟩ := by
   rw [zpowersEquivZPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZPowers_symm_apply, ←
     Equiv.eq_symm_apply, finEquivZPowers_symm_apply]
   simp [h]
@@ -1098,13 +1098,13 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
   left_inv g := by
     have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
     dsimp only at key
-    rwa [zpow_add, zpow_mul, zpow_mul, zpow_ofNat, zpow_ofNat, zpow_ofNat, h.gcd_eq_one, pow_one,
-      pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
+    rwa [zpow_add, zpow_mul, zpow_mul, zpow_coe_nat, zpow_coe_nat, zpow_coe_nat, h.gcd_eq_one,
+      pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
   right_inv g := by
     have key := congr_arg (g ^ ·) ((Nat.card G).gcd_eq_gcd_ab n)
     dsimp only at key
-    rwa [zpow_add, zpow_mul, zpow_mul', zpow_ofNat, zpow_ofNat, zpow_ofNat, h.gcd_eq_one, pow_one,
-      pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
+    rwa [zpow_add, zpow_mul, zpow_mul', zpow_coe_nat, zpow_coe_nat, zpow_coe_nat, h.gcd_eq_one,
+      pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
 #align pow_coprime powCoprime
 #align nsmul_coprime nsmulCoprime
 

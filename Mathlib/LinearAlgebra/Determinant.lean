@@ -553,7 +553,7 @@ theorem is_basis_iff_det {v : ι → M} :
     rw [e.det_apply]
     convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
     ext i j
-    simp
+    simp [v']
   · intro h
     rw [Basis.det_apply, Basis.toMatrix_eq_toMatrix_constr] at h
     set v' := Basis.map e (LinearEquiv.ofIsUnitDet h) with v'_def
