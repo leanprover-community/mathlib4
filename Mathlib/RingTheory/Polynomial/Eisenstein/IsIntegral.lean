@@ -243,7 +243,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   -- First define some abbreviations.
   have hndiv : ¬p ^ 2 ∣ (minpoly R B.gen).coeff 0 := fun h =>
     hei.not_mem ((span_singleton_pow p 2).symm ▸ Ideal.mem_span_singleton.2 h)
-  letI := finiteDimensional B
+  have := B.finite
   set P := minpoly R B.gen with hP
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
   haveI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans R K L
