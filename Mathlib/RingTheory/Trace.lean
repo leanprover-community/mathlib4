@@ -3,8 +3,6 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
---import Mathlib.LinearAlgebra.BilinearForm.Hom
---import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Determinant
@@ -623,22 +621,21 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
     det (LinearMap.toMatrix₂ b b (traceForm K L)) ≠ 0 := by
   haveI : FiniteDimensional K L := FiniteDimensional.of_fintype_basis b
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
-  rw [← LinearMap.toMatrix₂_mul_basis_toMatrix pb.basis pb.basis]
-  rw [←det_comm']
-  rw [←Matrix.mul_assoc]
-  rw [det_mul]
+  rw [← LinearMap.toMatrix₂_mul_basis_toMatrix pb.basis pb.basis, ← det_comm', ← Matrix.mul_assoc,
+    det_mul]
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine'
     mul_ne_zero
       (isUnit_of_mul_eq_one _ ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det _).ne_zero _
   · calc
-      det (Basis.toMatrix pb.basis b * (Basis.toMatrix pb.basis b)ᵀ) *
-        det ((Basis.toMatrix b pb.basis)ᵀ * Basis.toMatrix b pb.basis) =
-        det ((Basis.toMatrix pb.basis b * (Basis.toMatrix pb.basis b)ᵀ) * ((Basis.toMatrix b pb.basis)ᵀ * Basis.toMatrix b pb.basis)) := by rw [← det_mul]
-      _ = det (Basis.toMatrix pb.basis b * ((Basis.toMatrix pb.basis b)ᵀ * (Basis.toMatrix b pb.basis)ᵀ) * Basis.toMatrix b pb.basis) := by simp [Matrix.mul_assoc]
-      _ = det (Basis.toMatrix pb.basis b * ((Basis.toMatrix b pb.basis) * (Basis.toMatrix pb.basis b))ᵀ * Basis.toMatrix b pb.basis) := by simp [Matrix.transpose_mul]
+      (pb.basis.toMatrix b * (pb.basis.toMatrix b)ᵀ).det *
+            ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =
+          (pb.basis.toMatrix b * (b.toMatrix pb.basis * pb.basis.toMatrix b)ᵀ *
+              b.toMatrix pb.basis).det :=
+        by simp only [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
       _ = 1 := by
-        simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one, Matrix.det_one]
+        simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
+          Matrix.det_one]
   simpa only [traceMatrix_of_basis] using det_traceMatrix_ne_zero' pb
   rw [Basis.toMatrix_mul_toMatrix_flip]
 #align det_trace_form_ne_zero det_traceForm_ne_zero

@@ -98,9 +98,9 @@ variable {A K L}
 theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
-    Submodule.span A (Set.range <| (traceForm K L).toBilin.dualBasis (traceForm_separatingLeft K L) b) := by
-  rw [← BilinForm.dualSubmodule_span_of_basis, ← BilinForm.le_flip_dualSubmodule,
-    Submodule.span_le]
+    Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_separatingLeft K L) b) := by
+  rw [← LinearMap.BilinForm.dualSubmodule_span_of_basis,
+    ← LinearMap.BilinForm.le_flip_dualSubmodule, Submodule.span_le]
   rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
   simp only [LinearMap.coe_restrictScalars, linearMap_apply, BilinForm.flip_apply, traceForm_apply]
   refine IsIntegrallyClosed.isIntegral_iff.mp ?_
@@ -110,7 +110,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*}
 theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
     (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     Subalgebra.toSubmodule (integralClosure A L) ≤
-    Submodule.span A (Set.range <| (traceForm K L).toBilin.dualBasis (traceForm_separatingLeft K L) b) := by
+    Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_separatingLeft K L) b) := by
   refine' le_trans _ (IsIntegralClosure.range_le_span_dualBasis (integralClosure A L) b hb_int)
   intro x hx
   exact ⟨⟨x, hx⟩, rfl⟩

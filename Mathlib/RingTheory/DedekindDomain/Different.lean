@@ -45,9 +45,8 @@ open nonZeroDivisors IsLocalization Matrix Algebra
 `Submodule B L` such that `x ∈ Iᵛ ↔ ∀ y ∈ I, Tr(x, y) ∈ A` -/
 noncomputable
 def Submodule.traceDual (I : Submodule B L) : Submodule B L where
-  __ := (traceForm K L).toBilin.dualSubmodule (I.restrictScalars A)
+  __ := (traceForm K L).dualSubmodule (I.restrictScalars A)
   smul_mem' c x hx a ha := by
-    simp only [BilinForm.toLin_apply]
     rw [traceForm_apply, smul_mul_assoc, mul_comm, ← smul_mul_assoc, mul_comm]
     exact hx _ (Submodule.smul_mem _ c ha)
 
@@ -446,9 +445,6 @@ lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) [NoZeroSMulDivisor
 
 variable (A K)
 
-#check traceForm_dualBasis_powerBasis_eq _ _
-
---set_option maxHeartbeats 500000 in
 open Pointwise Polynomial in
 lemma traceForm_dualSubmodule_adjoin
     {x : L} (hx : Algebra.adjoin K {x} = ⊤) (hAx : IsIntegral A x) :
@@ -460,7 +456,7 @@ lemma traceForm_dualSubmodule_adjoin
   let pb := (Algebra.adjoin.powerBasis' hKx).map
     ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
   have pbgen : pb.gen = x := by simp [pb]
-  have hpb : ⇑(BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
+  have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
     _root_.funext (traceForm_dualBasis_powerBasis_eq _)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
       Submodule.span A (Set.range pb.basis) := by
@@ -474,7 +470,7 @@ lemma traceForm_dualSubmodule_adjoin
     exact ⟨fun ⟨a, b, c⟩ ↦ ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ ↦ ⟨a, b, c⟩⟩
   clear_value pb
   conv_lhs => rw [this]
-  rw [← span_coeff_minpolyDiv hAx, BilinForm.dualSubmodule_span_of_basis,
+  rw [← span_coeff_minpolyDiv hAx, LinearMap.BilinForm.dualSubmodule_span_of_basis,
     Submodule.smul_span, hpb]
   show _ = Submodule.span A (_ '' _)
   simp only [← Set.range_comp, smul_eq_mul, div_eq_inv_mul, pbgen,
@@ -521,7 +517,7 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
   simp_rw [← Subalgebra.mem_toSubmodule, ← Submodule.mul_mem_smul_iff (y := y * _)
     (mem_nonZeroDivisors_of_ne_zero hne₂)]
   rw [← traceForm_dualSubmodule_adjoin A K hx this]
-  simp only [BilinForm.mem_dualSubmodule, traceForm_apply, Subalgebra.mem_toSubmodule,
+  simp only [LinearMap.BilinForm.mem_dualSubmodule, traceForm_apply, Subalgebra.mem_toSubmodule,
     minpoly.isIntegrallyClosed_eq_field_fractions K L hAx,
     derivative_map, aeval_map_algebraMap, aeval_algebraMap_apply, mul_assoc,
     FractionalIdeal.mem_one_iff, forall_exists_index, forall_apply_eq_imp_iff]
