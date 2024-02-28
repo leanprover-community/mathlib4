@@ -13,9 +13,9 @@ import Mathlib.Topology.ContinuousFunction.Basic
 # Category instance for topological spaces
 
 We introduce the bundled category `TopCat` of topological spaces together with the functors
-`discrete` and `trivial` from the category of types to `TopCat` which equip a type with the
-corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `topology.category.TopCat.adjunctions`.
+`TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
+with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
+resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
 -/
 
 
@@ -63,12 +63,12 @@ attribute [instance] ConcreteCategory.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.id_app TopCat.id_app
 
--- Porting note: simp can prove this; removed simp
+-- Porting note (#10618): simp can prove this; removed simp
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 set_option linter.uppercaseLean3 false in

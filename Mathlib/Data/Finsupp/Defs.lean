@@ -741,7 +741,7 @@ theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
   classical convert filter_subset (f · ≠ 0) s
 #align finsupp.support_on_finset_subset Finsupp.support_onFinset_subset
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_support_onFinset {s : Finset α} {f : α → M} (hf : ∀ a : α, f a ≠ 0 → a ∈ s) {a : α} :
     a ∈ (Finsupp.onFinset s f hf).support ↔ f a ≠ 0 := by
   rw [Finsupp.mem_support_iff, Finsupp.onFinset_apply]
@@ -1062,6 +1062,11 @@ noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
   __ := Equiv.finsuppUnique
   map_add' _ _ := rfl
 
+  lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
+      AddEquiv.finsuppUnique.symm d = single () d := by
+  rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
+  rfl
+
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
 
@@ -1231,7 +1236,8 @@ theorem mapRange_add [AddZeroClass N] {f : M → N} {hf : f 0 = 0}
   ext fun _ => by simp only [hf', add_apply, mapRange_apply]
 #align finsupp.map_range_add Finsupp.mapRange_add
 
-theorem mapRange_add' [AddZeroClass N] [AddMonoidHomClass β M N] {f : β} (v₁ v₂ : α →₀ M) :
+theorem mapRange_add' [AddZeroClass N] [FunLike β M N] [AddMonoidHomClass β M N]
+    {f : β} (v₁ v₂ : α →₀ M) :
     mapRange f (map_zero f) (v₁ + v₂) = mapRange f (map_zero f) v₁ + mapRange f (map_zero f) v₂ :=
   mapRange_add (map_add f) v₁ v₂
 #align finsupp.map_range_add' Finsupp.mapRange_add'
@@ -1296,8 +1302,9 @@ theorem mapRange_neg [NegZeroClass G] [NegZeroClass H] {f : G → H} {hf : f 0 =
   ext fun _ => by simp only [hf', neg_apply, mapRange_apply]
 #align finsupp.map_range_neg Finsupp.mapRange_neg
 
-theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G H] {f : β}
-    (v : α →₀ G) : mapRange f (map_zero f) (-v) = -mapRange f (map_zero f) v :=
+theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [FunLike β G H] [AddMonoidHomClass β G H]
+    {f : β} (v : α →₀ G) :
+    mapRange f (map_zero f) (-v) = -mapRange f (map_zero f) v :=
   mapRange_neg (map_neg f) v
 #align finsupp.map_range_neg' Finsupp.mapRange_neg'
 
@@ -1318,8 +1325,8 @@ theorem mapRange_sub [SubNegZeroMonoid G] [SubNegZeroMonoid H] {f : G → H} {hf
   ext fun _ => by simp only [hf', sub_apply, mapRange_apply]
 #align finsupp.map_range_sub Finsupp.mapRange_sub
 
-theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [AddMonoidHomClass β G H] {f : β}
-    (v₁ v₂ : α →₀ G) :
+theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [FunLike β G H] [AddMonoidHomClass β G H]
+    {f : β} (v₁ v₂ : α →₀ G) :
     mapRange f (map_zero f) (v₁ - v₂) = mapRange f (map_zero f) v₁ - mapRange f (map_zero f) v₂ :=
   mapRange_sub (map_sub f) v₁ v₂
 #align finsupp.map_range_sub' Finsupp.mapRange_sub'

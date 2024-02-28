@@ -40,13 +40,13 @@ def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : P
 distances. -/
 theorem isometry_iff_nndist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, nndist (f x) (f y) = nndist x y := by
-  simp only [Isometry, edist_nndist, ENNReal.coe_eq_coe]
+  simp only [Isometry, edist_nndist, ENNReal.coe_inj]
 #align isometry_iff_nndist_eq isometry_iff_nndist_eq
 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves distances. -/
 theorem isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, dist (f x) (f y) = dist x y := by
-  simp only [isometry_iff_nndist_eq, ← coe_nndist, NNReal.coe_eq]
+  simp only [isometry_iff_nndist_eq, ← coe_nndist, NNReal.coe_inj]
 #align isometry_iff_dist_eq isometry_iff_dist_eq
 
 /-- An isometry preserves distances. -/

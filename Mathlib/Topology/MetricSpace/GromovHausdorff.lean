@@ -304,8 +304,8 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     let F : Sum X Y × Sum X Y → ℝ := fun p => dist (f p.1) (f p.2)
     -- check that the induced "distance" is a candidate
     have Fgood : F ∈ candidates X Y := by
-      simp only [candidates, forall_const, and_true_iff, add_comm, eq_self_iff_true, dist_eq_zero,
-        and_self_iff, Set.mem_setOf_eq]
+      simp only [F, candidates, forall_const, and_true_iff, add_comm, eq_self_iff_true,
+        dist_eq_zero, and_self_iff, Set.mem_setOf_eq]
       repeat' constructor
       · exact fun x y =>
           calc
@@ -412,7 +412,6 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
     exact (hausdorffDist_image (kuratowskiEmbedding.isometry _)).symm
 #align Gromov_Hausdorff.GH_dist_eq_Hausdorff_dist GromovHausdorff.ghDist_eq_hausdorffDist
 
-set_option maxHeartbeats 300000 in
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where
   dist := dist
@@ -442,6 +441,10 @@ instance : MetricSpace GHSpace where
       funext
       simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
       congr
+      -- The next line had `singlePass := true` before #9928,
+      -- then was changed to be `simp only [hausdorffDist_comm]`,
+      -- then `singlePass := true` was readded in #8386 because of timeouts.
+      -- TODO: figure out what causes the slowdown and make it a `simp only` again?
       simp (config := { singlePass := true }) only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
@@ -712,14 +715,14 @@ instance : SecondCountableTopology GHSpace := by
       have C2 : Fin.cast Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
       have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by
         rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
-      have : Φ z = y := by simp only; rw [C1, C2, C3]
+      have : Φ z = y := by simp only [Φ, Ψ]; rw [C1, C2, C3]
       rw [this]
       exact le_of_lt hy
     show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
     · /- the distance between `x` and `y` is encoded in `F p`, and the distance between
             `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
             As `F p = F q`, the distances are almost equal. -/
-      -- porting note : we have to circumvent the absence of `change … with … `
+      -- Porting note: we have to circumvent the absence of `change … with … `
       intro x y
       -- have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
       rw [show dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) from rfl]
@@ -727,13 +730,13 @@ instance : SecondCountableTopology GHSpace := by
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [Equiv.apply_symm_apply, Fin.coe_cast]
+      have i' : i = (E q) (Ψ x) := by simp only [Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `fin (N p) = fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
       have j' : j = ((E q) (Ψ y)).1 := by
-        simp only [Equiv.apply_symm_apply, Fin.coe_cast]
+        simp only [Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
       -- Express `dist x y` in terms of `F p`
       have : (F p).2 ((E p) x) ((E p) y) = ⌊ε⁻¹ * dist x y⌋ := by
         simp only [(E p).symm_apply_apply]
@@ -752,7 +755,7 @@ instance : SecondCountableTopology GHSpace := by
         have hpq' : HEq (F p).snd (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
         rw [Fin.heq_fun₂_iff Npq Npq] at hpq'
         rw [← hpq']
-        -- porting note : new version above, because `change … with…` is not implemented
+        -- Porting note: new version above, because `change … with…` is not implemented
         -- we want to `subst hpq` where `hpq : F p = F q`, except that `subst` only works
         -- with a constant, so replace `F q` (and everything that depends on it) by a constant `f`
         -- then `subst`
@@ -864,7 +867,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have C2 : Fin.cast Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
       have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by
         rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
-      have : Φ z = y := by simp only; rw [C1, C2, C3]
+      have : Φ z = y := by simp only [Ψ, Φ]; rw [C1, C2, C3]
       rw [this]
       exact le_trans (le_of_lt hy) u_le_ε
     show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
@@ -878,12 +881,12 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [Equiv.apply_symm_apply, Fin.coe_cast]
+      have i' : i = (E q) (Ψ x) := by simp only [Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
       -- introduce `j`, that codes both `y` and `Φ y` in `fin (N p) = fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
-      have j' : j = (E q) (Ψ y) := by simp only [Equiv.apply_symm_apply, Fin.coe_cast]
+      have j' : j = (E q) (Ψ y) := by simp only [Ψ, Equiv.apply_symm_apply, Fin.coe_cast]
       -- Express `dist x y` in terms of `F p`
       have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ⌊ε⁻¹ * dist x y⌋₊ :=
         calc
@@ -950,7 +953,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
   calc
     dist p q = ghDist p.Rep q.Rep := dist_ghDist p q
     _ ≤ ε + ε / 2 + ε := main
-    _ = δ / 2 := by simp only [one_div]; ring
+    _ = δ / 2 := by simp only [ε, one_div]; ring
     _ < δ := half_lt_self δpos
 #align Gromov_Hausdorff.totally_bounded GromovHausdorff.totallyBounded
 
@@ -1016,9 +1019,9 @@ instance : CompleteSpace GHSpace := by
   have E :
     ∀ n : ℕ,
       GlueSpace (Y n).isom (isometry_optimalGHInjl (X n) (X (n + 1))) = (Y (n + 1)).Space :=
-    fun n => by dsimp only [auxGluing]; rfl
+    fun n => by dsimp only [Y, auxGluing]; rfl
   let c n := cast (E n)
-  have ic : ∀ n, Isometry (c n) := fun n x y => by dsimp only [auxGluing]; exact rfl
+  have ic : ∀ n, Isometry (c n) := fun n x y => by dsimp only [Y, auxGluing]; exact rfl
   -- there is a canonical embedding of `Y n` in `Y (n+1)`, by construction
   let f : ∀ n, (Y n).Space → (Y (n + 1)).Space := fun n =>
     c n ∘ toGlueL (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ))
@@ -1043,9 +1046,9 @@ instance : CompleteSpace GHSpace := by
     change X2 n = range (coeZ ∘ Φ n.succ ∘ c n ∘
       toGlueR (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ)) ∘
       optimalGHInjl (X n) (X n.succ))
-    simp only --[X2, Φ]
+    simp only [X2, Φ]
     rw [← toInductiveLimit_commute I]
-    simp only --[f]
+    simp only [f]
     rw [← toGlue_commute]
     rfl
   -- simp_rw [range_comp] at X2n

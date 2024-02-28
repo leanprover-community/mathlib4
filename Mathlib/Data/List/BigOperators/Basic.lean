@@ -14,7 +14,7 @@ import Mathlib.Data.Int.Basic
 # Sums and products from lists
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
-of elements of a list and `List.alternating_prod`, `List.alternating_sum`, their alternating
+of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
 counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
 -/
 
@@ -113,7 +113,7 @@ theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * 
 #align list.rel_sum List.rel_sum
 
 @[to_additive]
-theorem prod_hom (l : List M) {F : Type*} [MonoidHomClass F M N] (f : F) :
+theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldl_map, ← map_one f]
   exact l.foldl_hom f (· * ·) (· * f ·) 1 (fun x y => (map_mul f x y).symm)
@@ -150,7 +150,8 @@ theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
 #align list.prod_map_neg List.prod_map_neg
 
 @[to_additive]
-theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [MonoidHomClass G M N] (g : G) :
+theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [FunLike G M N] [MonoidHomClass G M N]
+    (g : G) :
     (L.map (g ∘ f)).prod = g (L.map f).prod := by rw [← prod_hom, map_map]
 #align list.prod_map_hom List.prod_map_hom
 #align list.sum_map_hom List.sum_map_hom
@@ -580,7 +581,7 @@ theorem prod_map_erase [DecidableEq ι] [CommMonoid M] (f : ι → M) {a} :
   | b :: l, h => by
     obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
     · simp only [map, erase_cons_head, prod_cons]
-    · simp only [map, erase_cons_tail _ ne.symm, prod_cons, prod_map_erase _ h,
+    · simp only [map, erase_cons_tail _ (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 #align list.prod_map_erase List.prod_map_erase
 #align list.sum_map_erase List.sum_map_erase
@@ -706,7 +707,7 @@ section MonoidHom
 variable [Monoid M] [Monoid N]
 
 @[to_additive]
-theorem map_list_prod {F : Type*} [MonoidHomClass F M N] (f : F) (l : List M) :
+theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) (l : List M) :
     f l.prod = (l.map f).prod :=
   (l.prod_hom f).symm
 #align map_list_prod map_list_prod

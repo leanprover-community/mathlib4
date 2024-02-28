@@ -258,7 +258,7 @@ def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const
     where
   toFun := toLoop i
   invFun := fromLoop i
-  left_inv p := by ext; exact congr_arg p (Equiv.apply_symm_apply _ _)
+  left_inv p := by ext; exact congr_arg p (by dsimp; exact Equiv.apply_symm_apply _ _)
   right_inv := to_from i
   continuous_toFun := continuous_toLoop i
   continuous_invFun := continuous_fromLoop i
@@ -332,18 +332,16 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     obtain rfl | h := eq_or_ne j i
     · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
     · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
-    /- porting note: the following is indented two spaces more than it should be due to
-      strange behavior of `erw` -/
-    all_goals
-      intro
-      apply (homotopyFrom_apply _ _ _).trans
-      first
-      | rw [H.apply_zero]
-      | rw [H.apply_one]
-      first
-      | apply congr_arg p
-      | apply congr_arg q
-      apply (Cube.splitAt i).left_inv
+  all_goals
+    intro
+    apply (homotopyFrom_apply _ _ _).trans
+    first
+    | rw [H.apply_zero]
+    | rw [H.apply_one]
+    first
+    | apply congr_arg p
+    | apply congr_arg q
+    apply (Cube.splitAt i).left_inv
 #align gen_loop.homotopic_from GenLoop.homotopicFrom
 
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
@@ -517,8 +515,10 @@ def auxGroup (i : N) : Group (HomotopyGroup N X x) :=
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
 theorem isUnital_auxGroup (i : N) :
-    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) :=
-  ⟨⟨(auxGroup i).one_mul⟩, ⟨(auxGroup i).mul_one⟩⟩
+    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) := {
+    left_id := (auxGroup i).one_mul,
+    right_id := (auxGroup i).mul_one
+  }
 #align homotopy_group.is_unital_aux_group HomotopyGroup.isUnital_auxGroup
 
 theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by

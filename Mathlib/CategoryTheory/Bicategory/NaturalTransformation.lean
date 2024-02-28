@@ -187,21 +187,8 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
     exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
     exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
     · rw [whisker_exchange_assoc]
-      -- Porting note: this used to be just `simp`
-      simp only [comp_whiskerLeft, assoc, Iso.inv_hom_id_assoc, whiskerLeft_naturality_comp_assoc,
-        whiskerRight_naturality_comp_assoc, pentagon_assoc, whiskerRight_comp,
-        pentagon_hom_inv_inv_inv_inv_assoc]
+      simp
     · simp
-  naturality_id _ := by
-    -- Porting note: this used to be automatic via `tidy`, which did `intros, simp`
-    simp only [comp_whiskerLeft, assoc, Iso.inv_hom_id_assoc, whiskerLeft_naturality_id_assoc,
-      whiskerLeft_rightUnitor_inv, Iso.hom_inv_id, comp_id, whiskerRight_naturality_id_assoc,
-      leftUnitor_whiskerRight, triangle_assoc, inv_hom_whiskerRight_assoc, whiskerRight_comp]
-  naturality_naturality {_ _ _ _} _ := by
-    -- Porting note: this used to be automatic via `tidy`, which did `intros, simp`
-    simp only [whiskerRight_comp, assoc, Iso.hom_inv_id_assoc,
-      whiskerRight_naturality_naturality_assoc, Iso.inv_hom_id_assoc,
-      whiskerLeft_naturality_naturality_assoc, comp_whiskerLeft]
 #align category_theory.oplax_nat_trans.vcomp CategoryTheory.OplaxNatTrans.vcomp
 
 variable (B C)
@@ -284,10 +271,6 @@ end
 @[simps]
 def vcomp (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
   app a := Γ.app a ≫ Δ.app a
-  naturality := by
-    -- Porting note: this used to be automatic via `tidy`, which did `intros, simp`
-    intros
-    simp only [whiskerLeft_comp, assoc, naturality, naturality_assoc, comp_whiskerRight]
 #align category_theory.oplax_nat_trans.modification.vcomp CategoryTheory.OplaxNatTrans.Modification.vcomp
 
 end Modification

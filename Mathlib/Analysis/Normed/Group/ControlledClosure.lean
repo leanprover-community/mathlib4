@@ -46,7 +46,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   set b : ℕ → ℝ := fun i => (1 / 2) ^ i * (ε * ‖h‖ / 2) / C
   have b_pos : ∀ i, 0 < b i := by
     intro i
-    field_simp [hC]
+    field_simp [b, hC]
     exact
       div_pos (mul_pos hε (norm_pos_iff.mpr hyp_h)) (mul_pos (by norm_num : (0 : ℝ) < 2 ^ i * 2) hC)
   obtain
@@ -74,15 +74,15 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   · -- We indeed get a preimage. First note:
     have : f ∘ s = fun n => ∑ k in range (n + 1), v k := by
       ext n
-      simp [map_sum, hu]
+      simp [s, map_sum, hu]
     /- In the above equality, the left-hand-side converges to `f g` by continuity of `f` and
       definition of `g` while the right-hand-side converges to `h` by construction of `v` so
       `g` is indeed a preimage of `h`. -/
     rw [← this] at lim_v
     exact tendsto_nhds_unique ((f.continuous.tendsto g).comp hg) lim_v
   · -- Then we need to estimate the norm of `g`, using our careful choice of `b`.
-    suffices : ∀ n, ‖s n‖ ≤ (C + ε) * ‖h‖
-    exact le_of_tendsto' (continuous_norm.continuousAt.tendsto.comp hg) this
+    suffices ∀ n, ‖s n‖ ≤ (C + ε) * ‖h‖ from
+      le_of_tendsto' (continuous_norm.continuousAt.tendsto.comp hg) this
     intro n
     have hnorm₀ : ‖u 0‖ ≤ C * b 0 + C * ‖h‖ := by
       have :=
@@ -122,8 +122,8 @@ theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Ty
     [SeminormedAddCommGroup K] {j : NormedAddGroupHom K H} (hj : ∀ x, ‖j x‖ = ‖x‖) {C ε : ℝ}
     (hC : 0 < C) (hε : 0 < ε) (hyp : ∀ k, ∃ g, f g = j k ∧ ‖g‖ ≤ C * ‖k‖) :
     f.SurjectiveOnWith j.range.topologicalClosure (C + ε) := by
-  replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖
-  · intro h h_in
+  replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖ := by
+    intro h h_in
     rcases (j.mem_range _).mp h_in with ⟨k, rfl⟩
     rw [hj]
     exact hyp k

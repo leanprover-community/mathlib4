@@ -3,6 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
+import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -196,6 +197,8 @@ def LinearMap.dualMap (f : M₁ →ₗ[R] M₂) : Dual R M₂ →ₗ[R] Dual R M
   Module.Dual.transpose (R := R) f
 #align linear_map.dual_map LinearMap.dualMap
 
+lemma LinearMap.dualMap_eq_lcomp (f : M₁ →ₗ[R] M₂) : f.dualMap = f.lcomp R := rfl
+
 -- Porting note: with reducible def need to specify some parameters to transpose explicitly
 theorem LinearMap.dualMap_def (f : M₁ →ₗ[R] M₂) : f.dualMap = Module.Dual.transpose (R := R) f :=
   rfl
@@ -262,6 +265,21 @@ theorem LinearEquiv.dualMap_trans {M₃ : Type*} [AddCommGroup M₃] [Module R M
     (g : M₂ ≃ₗ[R] M₃) : g.dualMap.trans f.dualMap = (f.trans g).dualMap :=
   rfl
 #align linear_equiv.dual_map_trans LinearEquiv.dualMap_trans
+
+@[simp]
+lemma Dual.apply_one_mul_eq (f : Dual R R) (r : R) :
+    f 1 * r = f r := by
+  conv_rhs => rw [← mul_one r, ← smul_eq_mul]
+  rw [map_smul, smul_eq_mul, mul_comm]
+
+@[simp]
+lemma LinearMap.range_dualMap_dual_eq_span_singleton (f : Dual R M₁) :
+    range f.dualMap = R ∙ f := by
+  ext m
+  rw [Submodule.mem_span_singleton]
+  refine ⟨fun ⟨r, hr⟩ ↦ ⟨r 1, ?_⟩, fun ⟨r, hr⟩ ↦ ⟨r • LinearMap.id, ?_⟩⟩
+  · ext; simp [dualMap_apply', ← hr]
+  · ext; simp [dualMap_apply', ← hr]
 
 end DualMap
 
@@ -340,7 +358,7 @@ theorem toDual_eq_repr (m : M) (i : ι) : b.toDual m (b i) = b.repr m i :=
   b.toDual_apply_left m i
 #align basis.to_dual_eq_repr Basis.toDual_eq_repr
 
-theorem toDual_eq_equivFun [Fintype ι] (m : M) (i : ι) : b.toDual m (b i) = b.equivFun m i := by
+theorem toDual_eq_equivFun [Finite ι] (m : M) (i : ι) : b.toDual m (b i) = b.equivFun m i := by
   rw [b.equivFun_apply, toDual_eq_repr]
 #align basis.to_dual_eq_equiv_fun Basis.toDual_eq_equivFun
 
@@ -461,7 +479,7 @@ theorem toDual_toDual : b.dualBasis.toDual.comp b.toDual = Dual.eval R M := by
 
 end Finite
 
-theorem dualBasis_equivFun [Fintype ι] (l : Dual R M) (i : ι) :
+theorem dualBasis_equivFun [Finite ι] (l : Dual R M) (i : ι) :
     b.dualBasis.equivFun l i = l (b i) := by rw [Basis.equivFun_apply, dualBasis_repr]
 #align basis.dual_basis_equiv_fun Basis.dualBasis_equivFun
 
@@ -676,7 +694,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       (dualProdDualEquivDual R M N).dualMap.trans
         (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
     have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
-      ext m f <;> simp
+      ext m f <;> simp [e]
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
@@ -740,11 +758,11 @@ def evalUseFiniteInstance : TacticM Unit := do
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
-  Total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
-  Finite : ∀ m : M, { i | ε i m ≠ 0 }.Finite := by
+  protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
+  protected finite : ∀ m : M, { i | ε i m ≠ 0 }.Finite := by
       use_finite_instance
 #align module.dual_bases Module.DualBases
 
@@ -763,10 +781,8 @@ variable {e : ι → M} {ε : ι → Dual R M}
 /-- The coefficients of `v` on the basis `e` -/
 def coeffs [DecidableEq ι] (h : DualBases e ε) (m : M) : ι →₀ R where
   toFun i := ε i m
-  support := (h.Finite m).toFinset
-  mem_support_toFun := by
-    intro i
-    rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+  support := (h.finite m).toFinset
+  mem_support_toFun i := by rw [Set.Finite.mem_toFinset, Set.mem_setOf_eq]
 #align module.dual_bases.coeffs Module.DualBases.coeffs
 
 @[simp]
@@ -807,12 +823,11 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
 /-- For any m : M n, \sum_{p ∈ Q n} (ε p m) • e p = m -/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
-  refine' eq_of_sub_eq_zero (h.Total _)
-  intro i
+  refine eq_of_sub_eq_zero <| h.total fun i ↦ ?_
   simp [LinearMap.map_sub, h.dual_lc, sub_eq_zero]
 #align module.dual_bases.lc_coeffs Module.DualBases.lc_coeffs
 
-/-- `(h : dual_bases e ε).basis` shows the family of vectors `e` forms a basis. -/
+/-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
 @[simps]
 def basis : Basis ι R M :=
   Basis.ofRepr
@@ -828,7 +843,7 @@ def basis : Basis ι R M :=
         exact (ε i).map_smul c v }
 #align module.dual_bases.basis Module.DualBases.basis
 
--- Porting note : from simpNF the LHS simplifies; it yields lc_def.symm
+-- Porting note: from simpNF the LHS simplifies; it yields lc_def.symm
 -- probably not a useful simp lemma; nolint simpNF since it cannot see this removal
 attribute [-simp, nolint simpNF] basis_repr_symm_apply
 
@@ -850,7 +865,7 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   rwa [← lc_def, h.dual_lc] at hi
 #align module.dual_bases.mem_of_mem_span Module.DualBases.mem_of_mem_span
 
-theorem coe_dualBasis [Fintype ι] : ⇑h.basis.dualBasis = ε :=
+theorem coe_dualBasis [_root_.Finite ι] : ⇑h.basis.dualBasis = ε :=
   funext fun i =>
     h.basis.ext fun j => by
       rw [h.basis.dualBasis_apply_self, h.coe_basis, h.eval, if_congr eq_comm rfl rfl]
@@ -1521,7 +1536,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
   refine' le_antisymm _ (sup_dualAnnihilator_le_inf W W')
   let F : V₁ →ₗ[K] (V₁ ⧸ W) × V₁ ⧸ W' := (Submodule.mkQ W).prod (Submodule.mkQ W')
   -- Porting note: broken dot notation lean4#1910 LinearMap.ker
-  have : LinearMap.ker F = W ⊓ W' := by simp only [LinearMap.ker_prod, ker_mkQ]
+  have : LinearMap.ker F = W ⊓ W' := by simp only [F, LinearMap.ker_prod, ker_mkQ]
   rw [← this, ← LinearMap.range_dualMap_eq_dualAnnihilator_ker]
   intro φ
   rw [LinearMap.mem_range]
@@ -1547,7 +1562,7 @@ theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K 
   · intro α β h hyp W
     rw [← h.iInf_comp, hyp _, ← h.iSup_comp]
   · intro W
-    rw [iSup_of_empty', iInf_of_empty', sInf_empty, sSup_empty, dualAnnihilator_top]
+    rw [iSup_of_empty', iInf_of_isEmpty, sInf_empty, sSup_empty, dualAnnihilator_top]
   · intro α _ h W
     rw [iInf_option, iSup_option, dualAnnihilator_inf_eq, h]
 #align subspace.dual_annihilator_infi_eq Subspace.dualAnnihilator_iInf_eq

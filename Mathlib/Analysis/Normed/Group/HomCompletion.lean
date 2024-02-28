@@ -182,8 +182,8 @@ theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
   obtain ⟨g' : G, hgg' : f g' = f g, hfg : ‖g'‖ ≤ C' * ‖f g‖⟩ := hC' (f g) (mem_range_self _ g)
   have mem_ker : g - g' ∈ f.ker := by rw [f.mem_ker, map_sub, sub_eq_zero.mpr hgg'.symm]
   refine ⟨_, ⟨⟨g - g', mem_ker⟩, rfl⟩, ?_⟩
-  have : ‖f g‖ ≤ ‖f‖ * δ
-  calc ‖f g‖ ≤ ‖f‖ * ‖hatg - g‖ := by simpa [hatg_in] using f.completion.le_opNorm (hatg - g)
+  have : ‖f g‖ ≤ ‖f‖ * δ := calc
+    ‖f g‖ ≤ ‖f‖ * ‖hatg - g‖ := by simpa [hatg_in] using f.completion.le_opNorm (hatg - g)
     _ ≤ ‖f‖ * δ := by gcongr
   calc ‖hatg - ↑(g - g')‖ = ‖hatg - g + g'‖ := by rw [Completion.coe_sub, sub_add]
     _ ≤ ‖hatg - g‖ + ‖(g' : Completion G)‖ := norm_add_le _ _

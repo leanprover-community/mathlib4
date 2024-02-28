@@ -15,7 +15,6 @@ A monoidal category is `MonoidalPreadditive` if it is preadditive and tensor pro
 is linear in both factors.
 -/
 
-
 noncomputable section
 
 open Classical
@@ -116,7 +115,7 @@ theorem tensor_sum {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
   let tQ := (((tensoringLeft C).obj Q).mapAddHom : (R ⟶ S) →+ _)
   change _ ≫ tQ _ = _
   rw [map_sum, Preadditive.comp_sum]
-  dsimp [Functor.mapAddHom]
+  dsimp [tQ, Functor.mapAddHom]
   simp only [tensor_id_comp_id_tensor]
 #align category_theory.tensor_sum CategoryTheory.tensor_sum
 
@@ -126,7 +125,7 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
   let tQ := (((tensoringRight C).obj P).mapAddHom : (R ⟶ S) →+ _)
   change tQ _ ≫ _ = _
   rw [map_sum, Preadditive.sum_comp]
-  dsimp [Functor.mapAddHom]
+  dsimp [tQ, Functor.mapAddHom]
   simp only [tensor_id_comp_id_tensor]
 #align category_theory.sum_tensor CategoryTheory.sum_tensor
 
@@ -302,7 +301,7 @@ theorem leftDistributor_ext_left {J : Type} [Fintype J] {X Y : C} {f : J → C} 
   ext
   simp? [leftDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
     simp only [leftDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp,
-      zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp, ite_true]
+      zero_comp, Finset.sum_dite_eq, Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.id_comp]
   apply w
 
 @[ext]
@@ -311,10 +310,10 @@ theorem leftDistributor_ext_right {J : Type} [Fintype J] {X Y : C} {f : J → C}
   apply (cancel_mono (leftDistributor Y f).hom).mp
   ext
   simp? [leftDistributor_hom, Preadditive.sum_comp, Preadditive.comp_sum_assoc, biproduct.ι_π,
-    comp_dite] says
-    simp only [leftDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π,
-      comp_dite, comp_zero, Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id,
-      ite_true]
+      comp_dite] says
+    simp only [leftDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π, comp_dite,
+      comp_zero, Finset.sum_dite_eq', Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.comp_id]
+
   apply w
 
 -- One might wonder how many iterated tensor products we need simp lemmas for.
@@ -344,9 +343,9 @@ theorem rightDistributor_ext_left {J : Type} [Fintype J]
   apply (cancel_epi (rightDistributor f X).inv).mp
   ext
   simp? [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
-    simp only [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc,
-      dite_comp, zero_comp, Finset.sum_dite_eq, Finset.mem_univ, eqToHom_refl, Category.id_comp,
-      ite_true]
+    simp only [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp,
+      zero_comp, Finset.sum_dite_eq, Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.id_comp]
+
   apply w
 
 @[ext]
@@ -356,10 +355,10 @@ theorem rightDistributor_ext_right {J : Type} [Fintype J]
   apply (cancel_mono (rightDistributor f Y).hom).mp
   ext
   simp? [rightDistributor_hom, Preadditive.sum_comp, Preadditive.comp_sum_assoc, biproduct.ι_π,
-    comp_dite] says
-    simp only [rightDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π,
-      comp_dite, comp_zero, Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id,
-      ite_true]
+      comp_dite] says
+    simp only [rightDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π, comp_dite,
+      comp_zero, Finset.sum_dite_eq', Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.comp_id]
+
   apply w
 
 @[ext]

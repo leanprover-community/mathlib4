@@ -110,7 +110,7 @@ theorem condexpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : �
   rw [condexpIndSMul_smul hs hμs c x]
   refine' (Lp.coeFn_smul _ _).trans _
   refine' (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x).mono fun y hy => _
-  rw [Pi.smul_apply, Pi.smul_apply, hy]
+  simp only [Pi.smul_apply, hy]
 #align measure_theory.condexp_ind_L1_fin_smul MeasureTheory.condexpIndL1Fin_smul
 
 theorem condexpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs : MeasurableSet s)
@@ -122,7 +122,7 @@ theorem condexpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs
   rw [condexpIndSMul_smul' hs hμs c x]
   refine' (Lp.coeFn_smul _ _).trans _
   refine' (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x).mono fun y hy => _
-  rw [Pi.smul_apply, Pi.smul_apply, hy]
+  simp only [Pi.smul_apply, hy]
 #align measure_theory.condexp_ind_L1_fin_smul' MeasureTheory.condexpIndL1Fin_smul'
 
 theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
@@ -309,7 +309,7 @@ theorem norm_condexpInd_apply_le (x : G) : ‖condexpInd G hm μ s x‖ ≤ (μ 
 #align measure_theory.norm_condexp_ind_apply_le MeasureTheory.norm_condexpInd_apply_le
 
 theorem norm_condexpInd_le : ‖(condexpInd G hm μ s : G →L[ℝ] α →₁[μ] G)‖ ≤ (μ s).toReal :=
-  ContinuousLinearMap.op_norm_le_bound _ ENNReal.toReal_nonneg norm_condexpInd_apply_le
+  ContinuousLinearMap.opNorm_le_bound _ ENNReal.toReal_nonneg norm_condexpInd_apply_le
 #align measure_theory.norm_condexp_ind_le MeasureTheory.norm_condexpInd_le
 
 theorem condexpInd_disjoint_union_apply (hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -484,7 +484,7 @@ theorem condexpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condexpL1CLM F' hm μ (f : α →₁[μ] F') = ↑f := by
   let g := lpMeasToLpTrimLie F' ℝ 1 μ hm f
   have hfg : f = (lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g := by
-    simp only [LinearIsometryEquiv.symm_apply_apply]
+    simp only [g, LinearIsometryEquiv.symm_apply_apply]
   rw [hfg]
   refine' @Lp.induction α F' m _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
     condexpL1CLM F' hm μ ((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g : α →₁[μ] F') =

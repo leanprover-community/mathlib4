@@ -303,8 +303,8 @@ lemma growsPolynomially_id : GrowsPolynomially (fun x => x) := by
 
 protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomially f)
     (hg : GrowsPolynomially g) : GrowsPolynomially fun x => f x * g x := by
-  suffices : GrowsPolynomially fun x => |f x| * |g x|
-  · cases eventually_atTop_nonneg_or_nonpos hf with
+  suffices GrowsPolynomially fun x => |f x| * |g x| by
+    cases eventually_atTop_nonneg_or_nonpos hf with
     | inl hf' =>
       cases eventually_atTop_nonneg_or_nonpos hg with
       | inl hg' =>
@@ -516,8 +516,8 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     intro u hu
     simp only [hx, inv_zero, mul_zero, Set.Icc_self, Set.mem_singleton_iff, hx' u hu.1]
   | inr hf_pos_or_neg =>
-    suffices : GrowsPolynomially fun x => |(f x)⁻¹|
-    · cases hf_pos_or_neg with
+    suffices GrowsPolynomially fun x => |(f x)⁻¹| by
+      cases hf_pos_or_neg with
       | inl hf' =>
         have hmain : (fun x => (f x)⁻¹) =ᶠ[atTop] fun x => |(f x)⁻¹| := by
           filter_upwards [hf'] with x hx₁

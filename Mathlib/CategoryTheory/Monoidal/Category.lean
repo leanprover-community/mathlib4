@@ -348,6 +348,20 @@ theorem inv_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     inv (X ◁ f) = X ◁ inv f := by
   aesop_cat
 
+@[simp]
+lemma whiskerLeftIso_refl (W X : C) :
+    whiskerLeftIso W (Iso.refl X) = Iso.refl (W ⊗ X) :=
+  Iso.ext (whiskerLeft_id W X)
+
+@[simp]
+lemma whiskerLeftIso_trans (W : C) {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) :
+    whiskerLeftIso W (f ≪≫ g) = whiskerLeftIso W f ≪≫ whiskerLeftIso W g :=
+  Iso.ext (whiskerLeft_comp W f.hom g.hom)
+
+@[simp]
+lemma whiskerLeftIso_symm (W : C) {X Y : C} (f : X ≅ Y) :
+    (whiskerLeftIso W f).symm = whiskerLeftIso W f.symm := rfl
+
 /-- The right whiskering of an isomorphism is an isomorphism. -/
 @[simps!]
 def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
@@ -361,6 +375,20 @@ instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f
 theorem inv_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] :
     inv (f ▷ Z) = inv f ▷ Z := by
   aesop_cat
+
+@[simp]
+lemma whiskerRightIso_refl (X W : C) :
+    whiskerRightIso (Iso.refl X) W = Iso.refl (X ⊗ W) :=
+  Iso.ext (id_whiskerRight X W)
+
+@[simp]
+lemma whiskerRightIso_trans {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) (W : C) :
+    whiskerRightIso (f ≪≫ g) W = whiskerRightIso f W ≪≫ whiskerRightIso g W :=
+  Iso.ext (comp_whiskerRight f.hom g.hom W)
+
+@[simp]
+lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
+    (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
 end MonoidalCategory
 
@@ -464,17 +492,29 @@ theorem tensor_whiskerLeft_symm (X Y : C) {Z Z' : C} (f : Z ⟶ Z') :
     X ◁ Y ◁ f = (α_ X Y Z).inv ≫ (X ⊗ Y) ◁ f ≫ (α_ X Y Z').hom := by simp
 
 @[reassoc]
-theorem leftUnitor_inv_naturality' {X Y : C} (f : X ⟶ Y) :
-    f ≫ (λ_ Y).inv = (λ_ X).inv ≫ (_ ◁ f) := by simp
+theorem leftUnitor_naturality' {X Y : C} (f : X ⟶ Y) :
+    (𝟙_ C) ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
+  simp
 
+@[reassoc]
+theorem leftUnitor_inv_naturality' {X Y : C} (f : X ⟶ Y) :
+    f ≫ (λ_ Y).inv = (λ_ X).inv ≫ _ ◁ f := by simp
+
+@[reassoc]
 theorem id_whiskerLeft_symm {X X' : C} (f : X ⟶ X') :
     f = (λ_ X).inv ≫ 𝟙_ C ◁ f ≫ (λ_ X').hom := by
   simp only [id_whiskerLeft, assoc, inv_hom_id, comp_id, inv_hom_id_assoc]
 
 @[reassoc]
-theorem rightUnitor_inv_naturality' {X X' : C} (f : X ⟶ X') :
-    f ≫ (ρ_ X').inv = (ρ_ X).inv ≫ (f ▷ _) := by simp
+theorem rightUnitor_naturality' {X Y : C} (f : X ⟶ Y) :
+    f ▷ (𝟙_ C) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
+  simp
 
+@[reassoc]
+theorem rightUnitor_inv_naturality' {X X' : C} (f : X ⟶ X') :
+    f ≫ (ρ_ X').inv = (ρ_ X).inv ≫ f ▷ _ := by simp
+
+@[reassoc]
 theorem whiskerRight_id_symm {X Y : C} (f : X ⟶ Y) :
     f = (ρ_ X).inv ≫ f ▷ 𝟙_ C ≫ (ρ_ Y).hom := by
   simp
@@ -822,16 +862,6 @@ theorem leftUnitor_conjugation {X Y : C} (f : X ⟶ Y) :
     𝟙 (𝟙_ C) ⊗ f = (λ_ X).hom ≫ f ≫ (λ_ Y).inv := by
   simp
 #align category_theory.monoidal_category.left_unitor_conjugation CategoryTheory.MonoidalCategory.leftUnitor_conjugation
-
-@[reassoc]
-theorem leftUnitor_naturality' {X Y : C} (f : X ⟶ Y) :
-    (𝟙 (𝟙_ C) ⊗ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f :=
-  by simp
-
-@[reassoc]
-theorem rightUnitor_naturality' {X Y : C} (f : X ⟶ Y) :
-    (f ⊗ 𝟙 (𝟙_ C)) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
-  simp
 
 @[reassoc]
 theorem leftUnitor_inv_naturality {X X' : C} (f : X ⟶ X') :

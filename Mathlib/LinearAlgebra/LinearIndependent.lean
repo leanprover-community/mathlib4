@@ -10,6 +10,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Lean.Expr.ExtraRecognizers
+import Mathlib.Data.Set.Basic
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -408,7 +409,7 @@ theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
   rw [Finset.mem_map] at hx hy
   obtain ⟨a, _ha, rfl⟩ := hx
   obtain ⟨b, _hb, rfl⟩ := hy
-  simp only [imp_self, Subtype.mk_eq_mk]
+  simp only [f, imp_self, Subtype.mk_eq_mk]
 #align linear_independent_finset_map_embedding_subtype linearIndependent_finset_map_embedding_subtype
 
 /-- If every finite set of linearly independent vectors has cardinality at most `n`,
@@ -612,7 +613,8 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
     exact (hgs i hi).symm ▸ smul_zero _
   · rw [← hsum, Finset.sum_congr rfl _]
     intros
-    erw [Pi.smul_apply, smul_assoc, smul_comm]
+    dsimp
+    rw [smul_assoc, smul_comm]
 #align linear_independent.group_smul LinearIndependent.group_smul
 
 -- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
@@ -994,7 +996,7 @@ theorem exists_maximal_independent' (s : ι → M) :
   let r : X → X → Prop := fun I J => I.1 ⊆ J.1
   have key : ∀ c : Set X, IsChain r c → indep (⋃ (I : X) (_ : I ∈ c), I) := by
     intro c hc
-    dsimp
+    dsimp [indep]
     rw [linearIndependent_comp_subtype]
     intro f hsupport hsum
     rcases eq_empty_or_nonempty c with (rfl | hn)
@@ -1021,7 +1023,7 @@ theorem exists_maximal_independent (s : ι → M) :
     specialize hImaximal (I ∪ {i}) (by simp)
     set J := I ∪ {i} with hJ
     have memJ : ∀ {x}, x ∈ J ↔ x = i ∨ x ∈ I := by simp [hJ]
-    have hiJ : i ∈ J := by simp
+    have hiJ : i ∈ J := by simp [J]
     have h := by
       refine mt hImaximal ?_
       · intro h2
@@ -1053,14 +1055,14 @@ theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndep
   let repr : (span R (range (v ∘ f)) : Type _) → ι' →₀ R := (hv.comp f f.injective).repr
   let l := (repr ⟨v i, hss (mem_range_self i)⟩).mapDomain f
   have h_total_l : Finsupp.total ι M R v l = v i := by
-    dsimp only []
+    dsimp only [l]
     rw [Finsupp.total_mapDomain]
     rw [(hv.comp f f.injective).total_repr]
     -- Porting note: `rfl` isn't necessary.
   have h_total_eq : (Finsupp.total ι M R v) l = (Finsupp.total ι M R v) (Finsupp.single i 1) := by
     rw [h_total_l, Finsupp.total_single, one_smul]
   have l_eq : l = _ := LinearMap.ker_eq_bot.1 hv h_total_eq
-  dsimp only [] at l_eq
+  dsimp only [l] at l_eq
   rw [← Finsupp.embDomain_eq_mapDomain] at l_eq
   rcases Finsupp.single_of_embDomain_single (repr ⟨v i, _⟩) f i (1 : R) zero_ne_one.symm l_eq with
     ⟨i', hi'⟩
@@ -1074,7 +1076,7 @@ theorem eq_of_linearIndependent_of_span_subtype [Nontrivial R] {s t : Set M}
     ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
-    convert hst <;> simp [comp]
+    convert hst <;> simp [f, comp]
   show s = t
   · apply Subset.antisymm _ h
     intro x hx
@@ -1099,7 +1101,8 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     (ht : LinearIndependent R (fun x => x : t → M')) :
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
   refine' (hs.image_subtype _).union (ht.image_subtype _) _ <;> [simp; simp; skip]
-  simp only [span_image]
+  -- Note: #8386 had to change `span_image` into `span_image _`
+  simp only [span_image _]
   simp [disjoint_iff, prod_inf_prod]
 #align linear_independent.inl_union_inr LinearIndependent.inl_union_inr
 

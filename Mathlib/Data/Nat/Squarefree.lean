@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Squarefree
+import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.RingTheory.Int.Basic
 
@@ -126,7 +126,7 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
         lt_of_le_of_lt (Nat.sub_le_sub_right (Nat.sqrt_le_sqrt <| Nat.div_le_self _ _) k) this
         if k ∣ n' then some k else minSqFacAux n' (k + 2)
       else minSqFacAux n (k + 2)
-termination_by _ n k => sqrt n + 2 - k
+termination_by n k => sqrt n + 2 - k
 #align nat.min_sq_fac_aux Nat.minSqFacAux
 
 /-- Returns the smallest prime factor `p` of `n` such that `p^2 ∣ n`, or `none` if there is no
@@ -201,7 +201,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
   · specialize IH (n / k) (div_dvd_of_dvd dk) dkk
     exact minSqFacProp_div _ (pk dk) dk (mt (Nat.dvd_div_iff dk).2 dkk) IH
   · exact IH n (dvd_refl _) dk
-termination_by _ => n.sqrt + 2 - k
+termination_by n.sqrt + 2 - k
 #align nat.min_sq_fac_aux_has_prop Nat.minSqFacAux_has_prop
 
 theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
@@ -338,10 +338,10 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   have hSne : S.Nonempty := by
     use 1
     have h1 : 0 < n ∧ ∃ x : ℕ, 1 = x ^ 2 := ⟨hn, ⟨1, (one_pow 2).symm⟩⟩
-    simp [h1]
+    simp [S, h1]
   let s := Finset.max' S hSne
   have hs : s ∈ S := Finset.max'_mem S hSne
-  simp only [Finset.mem_filter, Finset.mem_range] at hs
+  simp only [S, Finset.mem_filter, Finset.mem_range] at hs
   obtain ⟨-, ⟨a, hsa⟩, ⟨b, hsb⟩⟩ := hs
   rw [hsa] at hn
   obtain ⟨hlts, hlta⟩ := CanonicallyOrderedCommSemiring.mul_pos.mp hn
@@ -357,7 +357,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
       using 1
     rw [mul_pow]
   · simp_rw [hsa, Finset.mem_filter, Finset.mem_range]
-    refine' ⟨lt_succ_iff.mpr (le_of_dvd hn _), _, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
+    refine' ⟨Nat.lt_succ_iff.mpr (le_of_dvd hn _), _, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
 #align nat.sq_mul_squarefree_of_pos Nat.sq_mul_squarefree_of_pos
 
 theorem sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :

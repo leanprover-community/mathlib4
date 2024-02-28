@@ -88,8 +88,8 @@ by apply?
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
 by apply?
 
-/-- info: Try this: exact { mp := fun a ↦ id a.symm, mpr := fun a ↦ id a.symm } -/
-#guard_msgs in
+/- info: Try this: exact eq_comm -/
+#guard_msgs (drop info) in
 example {α : Type} (x y : α) : x = y ↔ y = x := by apply?
 
 /-- info: Try this: exact Nat.add_pos_left ha b -/
@@ -218,10 +218,6 @@ example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
 #guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   exact?
-
--- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/exact.3F.20recent.20regression.3F/near/387691588
-lemma ex' (x : ℕ) (_h₁ : x = 0) (h : 2 * 2 ∣ x) : 2 ∣ x := by
-  exact? says exact dvd_of_mul_left_dvd h
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
 example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by

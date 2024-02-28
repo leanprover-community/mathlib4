@@ -328,8 +328,8 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
 
 /-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
 
-* `0 + b = 0`
-* `a + 0 = 0`
+* `0 + b = b`
+* `a + 0 = a`
 * `a * x + a * y = a * (x + y)` (for `x`, `y` coefficients; uses `evalAddOverlap`)
 * `(a₁ + a₂) + (b₁ + b₂) = a₁ + (a₂ + (b₁ + b₂))` (if `a₁.lt b₁`)
 * `(a₁ + a₂) + (b₁ + b₂) = b₁ + ((a₁ + a₂) + b₂)` (if not `a₁.lt b₁`)
@@ -639,7 +639,7 @@ partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
     have lit : Q(ℕ) := a.appArg!
     haveI : $a =Q Nat.rawCast $lit := ⟨⟩
     haveI p : Nat.ble 1 $lit =Q true := ⟨⟩
-    by exact some (q(const_pos $lit $p))
+    some q(const_pos $lit $p)
   | .mul (e := ea₁) vxa₁ _ va₂ => do
     let pa₁ ← vxa₁.evalPos
     let pa₂ ← va₂.evalPos
@@ -785,7 +785,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
   match va, vb with
   | va, .const 1 =>
     haveI : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
-    ⟨_, va, by exact q(pow_one_cast $a)⟩
+    ⟨_, va, q(pow_one_cast $a)⟩
   | .zero, vb => match vb.evalPos with
     | some p => ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
     | none => evalPowAtom sα (.sum .zero) vb
