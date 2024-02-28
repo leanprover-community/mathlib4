@@ -497,32 +497,27 @@ theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Bas
 --#align bilin_form.apply_dual_basis_left BilinForm.apply_dualBasis_left
 
 theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : B.IsSymm)
-    (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 := by
-  rw [sym, apply_dualBasis_left]
+    (b : Basis ι K V) (i j) : B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0 :=
+  LinearMap.BilinForm.apply_dualBasis_right (BilinForm.toLin B) hB sym b _ _
 --#align bilin_form.apply_dual_basis_right BilinForm.apply_dualBasis_right
 
 @[simp]
 lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
-    B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
-  ext i
-  refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
-  rw [toLin_apply, apply_dualBasis_left, toLin_apply, ← B.flip_apply (R₂ := K),
-    apply_dualBasis_left]
-  simp_rw [@eq_comm _ i j]
+    B.dualBasis hB (B.flip.dualBasis hB.flip b) = b :=
+  LinearMap.BilinForm.dualBasis_dualBasis_flip (BilinForm.toLin B) hB b
 
 @[simp]
 lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
     B.flip.dualBasis hB.flip (B.dualBasis hB b) = b :=
-  dualBasis_dualBasis_flip _ hB.flip b
+  LinearMap.BilinForm.dualBasis_flip_dualBasis (BilinForm.toLin B) hB b
 
 @[simp]
 lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm) {ι}
     [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
-    B.dualBasis hB (B.dualBasis hB b) = b := by
-  convert dualBasis_dualBasis_flip _ hB.flip b
-  rwa [eq_comm, ← isSymm_iff_flip]
+    B.dualBasis hB (B.dualBasis hB b) = b :=
+  LinearMap.BilinForm.dualBasis_dualBasis (BilinForm.toLin B) hB hB' b
 
 end DualBasis
 
@@ -537,8 +532,9 @@ noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B�
 
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v : V) :
-    toLin B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = toLin B₁ v := by
-  erw [symmCompOfNondegenerate, LinearEquiv.apply_symm_apply (B₂.toDual b₂) _]
+    toLin B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = toLin B₁ v :=
+  LinearMap.BilinForm.comp_symmCompOfNondegenerate_apply
+    (B₂ := (BilinForm.toLin B₂)) (BilinForm.toLin B₁) b₂ v
 --#align bilin_form.comp_symm_comp_of_nondegenerate_apply BilinForm.comp_symmCompOfNondegenerate_apply
 
 @[simp]
