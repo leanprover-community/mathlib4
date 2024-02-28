@@ -44,7 +44,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 -- Defining this instance manually, because Lean doesn't seem to be able to synthesize it.
 -- Strangely, this problem only appears when we use the abbreviation or notation for the
 -- exterior powers.
-instance : SetLike.GradedMonoid fun (i : ℕ) ↦ Λ[R]^i M :=
+instance : SetLike.GradedMonoid fun i : ℕ ↦ Λ[R]^i M :=
   Submodule.nat_power_gradedMonoid (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
@@ -82,8 +82,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : Λ[R]^i M) :
 #align exterior_algebra.graded_algebra.lift_ι_eq ExteriorAlgebra.GradedAlgebra.liftι_eq
 
 /-- The exterior algebra is graded by the powers of the submodule `(ExteriorAlgebra.ι R).range`. -/
-instance gradedAlgebra :
-    GradedAlgebra (fun (i : ℕ) ↦ Λ[R]^i M) :=
+instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ Λ[R]^i M) :=
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply GradedAlgebra.liftι R M)
