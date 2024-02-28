@@ -147,7 +147,7 @@ theorem right_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R
   intro x
   have : x ∈ ⊤ := Submodule.mem_top (R := R)
   rw [← iSup_ι_range_eq_top] at this
-  induction this using Submodule.iSup_induction' with -- _ this (fun i x hx => ?_) _ add
+  induction this using Submodule.iSup_induction' with
   | mem i x hx =>
     induction hx using Submodule.pow_induction_on_right' with
     | algebraMap r => exact algebraMap r
