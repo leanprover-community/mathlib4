@@ -268,7 +268,7 @@ def preservesLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J 
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
         refine' Cones.ext (Iso.refl _) fun j => _
         · dsimp
-          simp [← Functor.map_comp] }
+          simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_limits_of_shape_of_equiv CategoryTheory.Limits.preservesLimitsOfShapeOfEquiv
 
 /-- A functor preserving larger limits also preserves smaller limits. -/
@@ -337,7 +337,7 @@ def preservesColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : 
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
         refine' Cocones.ext (Iso.refl _) fun j => _
         · dsimp
-          simp [← Functor.map_comp] }
+          simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_colimits_of_shape_of_equiv CategoryTheory.Limits.preservesColimitsOfShapeOfEquiv
 
 /-- A functor preserving larger colimits also preserves smaller colimits. -/

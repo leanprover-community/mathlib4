@@ -210,7 +210,11 @@ theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 :=
 
 section LE
 
-variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
+variable [DecidableEq ι]
+
+section
+
+variable [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
 
 theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
@@ -234,9 +238,11 @@ instance decidableLE [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE
 
 variable {α}
 
+end
+
 @[simp]
-theorem single_le_iff {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i :=
-  (le_iff' support_single_subset).trans <| by simp
+theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i := by
+  classical exact (le_iff' support_single_subset).trans <| by simp
 #align dfinsupp.single_le_iff DFinsupp.single_le_iff
 
 end LE

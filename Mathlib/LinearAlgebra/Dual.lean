@@ -694,7 +694,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       (dualProdDualEquivDual R M N).dualMap.trans
         (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
     have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
-      ext m f <;> simp
+      ext m f <;> simp [e]
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
@@ -758,7 +758,7 @@ def evalUseFiniteInstance : TacticM Unit := do
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
   protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
@@ -843,7 +843,7 @@ def basis : Basis ι R M :=
         exact (ε i).map_smul c v }
 #align module.dual_bases.basis Module.DualBases.basis
 
--- Porting note : from simpNF the LHS simplifies; it yields lc_def.symm
+-- Porting note: from simpNF the LHS simplifies; it yields lc_def.symm
 -- probably not a useful simp lemma; nolint simpNF since it cannot see this removal
 attribute [-simp, nolint simpNF] basis_repr_symm_apply
 
@@ -1536,7 +1536,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
   refine' le_antisymm _ (sup_dualAnnihilator_le_inf W W')
   let F : V₁ →ₗ[K] (V₁ ⧸ W) × V₁ ⧸ W' := (Submodule.mkQ W).prod (Submodule.mkQ W')
   -- Porting note: broken dot notation lean4#1910 LinearMap.ker
-  have : LinearMap.ker F = W ⊓ W' := by simp only [LinearMap.ker_prod, ker_mkQ]
+  have : LinearMap.ker F = W ⊓ W' := by simp only [F, LinearMap.ker_prod, ker_mkQ]
   rw [← this, ← LinearMap.range_dualMap_eq_dualAnnihilator_ker]
   intro φ
   rw [LinearMap.mem_range]

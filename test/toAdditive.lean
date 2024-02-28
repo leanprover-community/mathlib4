@@ -224,7 +224,7 @@ run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namesp
 section
 
 set_option linter.unusedVariables false
--- porting note : not sure what the tests do, but the linter complains.
+-- Porting note: not sure what the tests do, but the linter complains.
 
 def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f i)]
   [Add I] [Mul L] : true := by trivial

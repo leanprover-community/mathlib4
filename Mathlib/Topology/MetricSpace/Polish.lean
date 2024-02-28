@@ -101,6 +101,11 @@ def upgradePolishSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
 
 namespace PolishSpace
 
+instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
+    MetrizableSpace α := by
+  letI := upgradePolishSpace α
+  infer_instance
+
 instance (priority := 100) t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] :
     T2Space α := by
   letI := upgradePolishSpace α
@@ -406,7 +411,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp [preimage_preimage]
+    simp [f, preimage_preimage]
 #align is_closed.is_clopenable IsClosed.isClopenable
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
