@@ -164,7 +164,7 @@ theorem pentagon (W X Y Z : ModuleCat R) :
 
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext_ring
   apply LinearMap.ext; intro x
@@ -178,7 +178,7 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext; intro x
   apply LinearMap.ext_ring
