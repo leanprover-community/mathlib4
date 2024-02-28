@@ -195,7 +195,7 @@ noncomputable def lapMatrix_ker_basis :=
     (top_le_span_range_lapMatrix_ker_basis_aux G)
 
 /-- The number of connected components in `G` is the dimension of the nullspace its Laplacian. -/
-theorem rank_ker_lapMatrix_eq_card_ConnectedComponent : Fintype.card G.ConnectedComponent =
+theorem card_ConnectedComponent_eq_rank_ker_lapMatrix : Fintype.card G.ConnectedComponent =
     FiniteDimensional.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
   rw [FiniteDimensional.finrank_eq_card_basis (lapMatrix_ker_basis G)]
 
