@@ -288,7 +288,7 @@ theorem IsCompact.inter_iInter_nonempty {ι : Type v} (hs : IsCompact s) (t : ι
 
 /-- Cantor's intersection theorem for `iInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
-theorem IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type v} [hι : Nonempty ι]
+theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed {ι : Type v} [hι : Nonempty ι]
     (t : ι → Set X) (htd : Directed (· ⊇ ·) t) (htn : ∀ i, (t i).Nonempty)
     (htc : ∀ i, IsCompact (t i)) (htcl : ∀ i, IsClosed (t i)) : (⋂ i, t i).Nonempty := by
   let i₀ := hι.some
@@ -301,7 +301,10 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed {ι : Type
   refine' ⟨htd, fun i => _⟩
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
   exact (htn j).mono (subset_inter hji₀ hji)
-#align is_compact.nonempty_Inter_of_directed_nonempty_compact_closed IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+#align is_compact.nonempty_Inter_of_directed_nonempty_compact_closed IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
+
+@[deprecated] alias IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed :=
+  IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
 
 /-- Cantor's intersection theorem for `sInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
@@ -309,20 +312,23 @@ theorem IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed
     {S : Set (Set X)} [hS : Nonempty S] (hSd : DirectedOn (· ⊇ ·) S) (hSn : ∀ U ∈ S, U.Nonempty)
     (hSc : ∀ U ∈ S, IsCompact U) (hScl : ∀ U ∈ S, IsClosed U) : (⋂₀ S).Nonempty := by
   rw [sInter_eq_iInter]
-  exact IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _
+  exact IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
     (DirectedOn.directed_val hSd) (fun i ↦ hSn i i.2) (fun i ↦ hSc i i.2) (fun i ↦ hScl i i.2)
 
 /-- Cantor's intersection theorem for sequences indexed by `ℕ`:
 the intersection of a decreasing sequence of nonempty compact closed sets is nonempty. -/
-theorem IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (t : ℕ → Set X)
+theorem IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (t : ℕ → Set X)
     (htd : ∀ i, t (i + 1) ⊆ t i) (htn : ∀ i, (t i).Nonempty) (ht0 : IsCompact (t 0))
     (htcl : ∀ i, IsClosed (t i)) : (⋂ i, t i).Nonempty :=
   have tmono : Antitone t := antitone_nat_of_succ_le htd
   have htd : Directed (· ⊇ ·) t := tmono.directed_ge
   have : ∀ i, t i ⊆ t 0 := fun i => tmono <| zero_le i
   have htc : ∀ i, IsCompact (t i) := fun i => ht0.of_isClosed_subset (htcl i) (this i)
-  IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed t htd htn htc htcl
-#align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
+  IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed t htd htn htc htcl
+#align is_compact.nonempty_Inter_of_sequence_nonempty_compact_closed IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
+
+@[deprecated] alias IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed :=
+  IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
 /-- For every open cover of a compact set, there exists a finite subcover. -/
 theorem IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set X} (hs : IsCompact s)
