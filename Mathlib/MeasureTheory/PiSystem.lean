@@ -106,10 +106,7 @@ theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : �
   rintro _ ⟨s, hs_mem, rfl⟩ _ ⟨t, ht_mem, rfl⟩ hst
   rw [← Set.preimage_inter] at hst ⊢
   refine' ⟨s ∩ t, h_pi s hs_mem t ht_mem _, rfl⟩
-  by_contra h
-  rw [Set.not_nonempty_iff_eq_empty] at h
-  rw [h] at hst
-  simp at hst
+  exact nonempty_of_nonempty_preimage hst
 #align is_pi_system.comap IsPiSystem.comap
 
 theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
