@@ -323,16 +323,8 @@ lemma mul_div_le_mul_div_assoc (a b c : ℕ) : a * (b / c) ≤ a * b / c :=
       (by rw [Nat.mul_assoc]; exact Nat.mul_le_mul_left _ (Nat.div_mul_le_self _ _))
 #align nat.mul_div_le_mul_div_assoc Nat.mul_div_le_mul_div_assoc
 
-protected lemma eq_mul_of_div_eq_right (H1 : b ∣ a) (H2 : a / b = c) : a = b * c := by
-  rw [← H2, Nat.mul_div_cancel' H1]
 #align nat.eq_mul_of_div_eq_right Nat.eq_mul_of_div_eq_right
-
-protected lemma div_eq_iff_eq_mul_right (H : 0 < b) (H' : b ∣ a) : a / b = c ↔ a = b * c :=
-  ⟨Nat.eq_mul_of_div_eq_right H', Nat.div_eq_of_eq_mul_right H⟩
 #align nat.div_eq_iff_eq_mul_right Nat.div_eq_iff_eq_mul_right
-
-protected lemma div_eq_iff_eq_mul_left (H : 0 < b) (H' : b ∣ a) : a / b = c ↔ a = c * b := by
-  rw [Nat.mul_comm]; exact Nat.div_eq_iff_eq_mul_right H H'
 #align nat.div_eq_iff_eq_mul_left Nat.div_eq_iff_eq_mul_left
 
 protected lemma eq_mul_of_div_eq_left (H1 : b ∣ a) (H2 : a / b = c) : a = c * b := by
@@ -711,7 +703,7 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 #align nat.find_eq_zero Nat.find_eq_zero
 
-lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :  Nat.find hp ≤ Nat.find hq :=
+lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
   Nat.find_min' _ (h _ (Nat.find_spec hq))
 #align nat.find_mono Nat.find_mono
 
@@ -722,17 +714,17 @@ lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
 lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ _⟩
-  cases' n with n
+  cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 #align nat.find_comp_succ Nat.find_comp_succ
 
 end Find
 
-/-! ### `find_greatest` -/
+/-! ### `Nat.findGreatest` -/
 
 section FindGreatest
 
-/-- `find_greatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
+/-- `Nat.findGreatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
 exists -/
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0

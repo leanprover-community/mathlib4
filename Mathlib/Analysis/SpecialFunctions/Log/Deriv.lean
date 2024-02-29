@@ -75,7 +75,7 @@ theorem deriv_log' : deriv log = Inv.inv :=
 #align real.deriv_log' Real.deriv_log'
 
 theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
-  suffices : ContDiffOn ℝ ⊤ log {0}ᶜ; exact this.of_le le_top
+  suffices ContDiffOn ℝ ⊤ log {0}ᶜ from this.of_le le_top
   refine' (contDiffOn_top_iff_deriv_of_isOpen isOpen_compl_singleton).2 _
   simp [differentiableOn_log, contDiffOn_inv]
 #align real.cont_diff_on_log Real.contDiffOn_log
@@ -247,7 +247,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   -- second step: show that the derivative of `F` is small
   have B : ∀ y ∈ Icc (-|x|) |x|, |F' y| ≤ |x| ^ n / (1 - |x|) := fun y hy ↦
     calc
-      |F' y| = |y| ^ n / |1 - y| := by simp [abs_div]
+      |F' y| = |y| ^ n / |1 - y| := by simp [F', abs_div]
       _ ≤ |x| ^ n / (1 - |x|) := by
         have : |y| ≤ |x| := abs_le.2 hy
         have : 1 - |x| ≤ |1 - y| := le_trans (by linarith [hy.2]) (le_abs_self _)
@@ -261,7 +261,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     · simp
     · simp [le_abs_self x, neg_le.mp (neg_le_abs x)]
   -- fourth step: conclude by massaging the inequality of the third step
-  simpa [div_mul_eq_mul_div, pow_succ'] using C
+  simpa [F, div_mul_eq_mul_div, pow_succ'] using C
 #align real.abs_log_sub_add_sum_range_le Real.abs_log_sub_add_sum_range_le
 
 /-- Power series expansion of the logarithm around `1`. -/
@@ -299,7 +299,7 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
   have h_term_eq_goal :
       term ∘ (2 * ·) = fun k : ℕ => 2 * (1 / (2 * k + 1)) * x ^ (2 * k + 1) := by
     ext n
-    dsimp only [(· ∘ ·)]
+    dsimp only [term, (· ∘ ·)]
     rw [Odd.neg_pow (⟨n, rfl⟩ : Odd (2 * n + 1)) x]
     push_cast
     ring_nf
@@ -309,7 +309,7 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     ring_nf
   · intro m hm
     rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
-    dsimp
+    dsimp [term]
     rw [Even.neg_pow hm, neg_one_mul, neg_add_self]
 #align real.has_sum_log_sub_log_of_abs_lt_1 Real.hasSum_log_sub_log_of_abs_lt_one
 @[deprecated] alias hasSum_log_sub_log_of_abs_lt_1 := hasSum_log_sub_log_of_abs_lt_one

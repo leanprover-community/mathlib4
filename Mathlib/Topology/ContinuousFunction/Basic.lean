@@ -52,7 +52,7 @@ end
 
 export ContinuousMapClass (map_continuous)
 
-attribute [continuity] map_continuous
+attribute [continuity, fun_prop] map_continuous
 
 section ContinuousMapClass
 

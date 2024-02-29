@@ -2,6 +2,9 @@ import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.SlimCheck.Functions
+import Mathlib.Tactic.Have
+
+private axiom test_sorry : ∀ {α}, α
 
 /--
 warning: Gave up 91 times
@@ -27,8 +30,8 @@ example (z : Nat) (h : z ≤ 37) : z ≤ 37 := by
 -- Hopefully Henrik Böving and/or Simon Hudon could look at this.
 
 example : true := by
-  have : ∀ i j : ℕ, i < j → j < i
-  success_if_fail_with_msg "
+  have : ∀ i j : ℕ, i < j → j < i := by
+    success_if_fail_with_msg "
 ===================
 Found problems!
 i := 0
@@ -38,14 +41,13 @@ issue: 1 < 0 does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example : true := by
-  have : (∀ x : ℕ, 2 ∣ x → x < 100)
-  success_if_fail_with_msg
-  "
+  have : (∀ x : ℕ, 2 ∣ x → x < 100) := by
+    success_if_fail_with_msg "
 ===================
 Found problems!
 x := 116
@@ -54,8 +56,8 @@ issue: 116 < 100 does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257, maxSize := 200 })
-  admit
+      slim_check (config := { randomSeed := some 257, maxSize := 200 })
+    exact test_sorry
   trivial
 
 -- example (xs : List ℕ) (w : ∃ x ∈ xs, x < 3) : true := by
@@ -76,9 +78,9 @@ issue: 116 < 100 does not hold
 --   admit
 --   trivial
 
-example (x : ℕ) (h : 2 ∣ x) : true := by
-  have : x < 100
-  success_if_fail_with_msg
+example (x : ℕ) (_h : 2 ∣ x) : true := by
+  have : x < 100 := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -88,13 +90,13 @@ issue: 116 < 100 does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257, maxSize := 200 })
-  admit
+      slim_check (config := { randomSeed := some 257, maxSize := 200 })
+    exact test_sorry
   trivial
 
 example (α : Type) (xs ys : List α) : true := by
-  have : xs ++ ys = ys ++ xs
-  success_if_fail_with_msg
+  have : xs ++ ys = ys ++ xs := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -105,13 +107,13 @@ issue: [0, 1] = [1, 0] does not hold
 (4 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example : true := by
   have _this : ∀ x ∈ [1,2,3], x < 4
-  slim_check (config := { randomSeed := some 257, quiet := true })
+  · slim_check (config := { randomSeed := some 257, quiet := true })
     -- success
   trivial
 
@@ -148,9 +150,9 @@ open Function SlimCheck
 --   admit
 --   trivial
 
-example (f : ℤ → ℤ) (h : Injective f) (g : ℤ → ℤ) (h : Injective g) (i : ℤ) : true := by
-  have : f i = g i
-  success_if_fail_with_msg
+example (f : ℤ → ℤ) (_h : Injective f) (g : ℤ → ℤ) (_h : Injective g) (i : ℤ) : true := by
+  have : f i = g i := by
+    success_if_fail_with_msg
 "
 ===================
 Found problems!
@@ -163,13 +165,13 @@ issue: 0 = -2 does not hold
 (3 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
-example (f : ℤ → ℤ) (h : Injective f) : true := by
-  have : Monotone f
-  success_if_fail_with_msg
+example (f : ℤ → ℤ) (_h : Injective f) : true := by
+  have : Monotone f := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -182,13 +184,13 @@ issue: 7 ≤ 1 does not hold
 (4 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example (f : ℤ → ℤ) : true := by
-  have : Injective f
-  success_if_fail_with_msg
+  have : Injective f := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -200,13 +202,13 @@ issue: 0 = 1 does not hold
 (3 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example (f : ℤ → ℤ) : true := by
-  have : Monotone f
-  success_if_fail_with_msg
+  have : Monotone f := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -218,14 +220,14 @@ issue: -1 ≤ -2 does not hold
 (2 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 open scoped List in
-example (xs ys : List ℤ) (h : xs ~ ys) : true := by
-  have : Array.qsort ⟨xs⟩ (fun x y => x != y) = Array.qsort ⟨ys⟩ (fun x y => x != y)
-  success_if_fail_with_msg
+example (xs ys : List ℤ) (_h : xs ~ ys) : true := by
+  have : Array.qsort ⟨xs⟩ (fun x y => x != y) = Array.qsort ⟨ys⟩ (fun x y => x != y) := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -236,13 +238,13 @@ issue: #[-2, -1] = #[-1, -2] does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257, maxSize := 3, numRetries := 1 })
-  admit
+      slim_check (config := { randomSeed := some 257, maxSize := 3, numRetries := 1 })
+    exact test_sorry
   trivial
 
 example (x y : ℕ) : true := by
-  have : y ≤ x → x + y < 100
-  success_if_fail_with_msg
+  have : y ≤ x → x + y < 100 := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -253,13 +255,13 @@ issue: 102 < 100 does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example (x : ℤ) : true := by
-  have : x ≤ 3 → 3 ≤ x
-  success_if_fail_with_msg
+  have : x ≤ 3 → 3 ≤ x := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -269,13 +271,13 @@ issue: 3 ≤ 0 does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example (x y : ℤ) : true := by
-  have : y ≤ x → x + y < 100
-  success_if_fail_with_msg
+  have : y ≤ x → x + y < 100 := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -286,13 +288,13 @@ issue: 146 < 100 does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
-  have : x ∨ y → y ∧ x
-  success_if_fail_with_msg
+  have : x ∨ y → y ∧ x := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -303,13 +305,13 @@ issue: false does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
-  have : (¬x ↔ y) → y ∧ x
-  success_if_fail_with_msg
+  have : (¬x ↔ y) → y ∧ x := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -320,14 +322,14 @@ issue: false does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
   -- deterministic
-  have : (x ↔ y) → y ∨ x
-  success_if_fail_with_msg
+  have : (x ↔ y) → y ∨ x := by
+    success_if_fail_with_msg
   "
 ===================
 Found problems!
@@ -339,14 +341,14 @@ issue: false does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check
-  admit
+      slim_check
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
   -- deterministic
-  have : y ∨ x
-  success_if_fail_with_msg
+  have : y ∨ x := by
+    success_if_fail_with_msg
   "
 ===================
 Found problems!
@@ -357,13 +359,13 @@ issue: false does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check
-  admit
+      slim_check
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
-  have : x ↔ y
-  success_if_fail_with_msg
+  have : x ↔ y := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -374,16 +376,16 @@ issue: true ≠ true does not hold
 (0 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 -- TODO: fails without this line!
 attribute [-instance] Finsupp.instReprFinsupp in
 
 example (f : ℕ →₀ ℕ) : true := by
-  have : f = 0
-  success_if_fail_with_msg
+  have : f = 0 := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -392,13 +394,13 @@ issue: ⋯ does not hold
 (3 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
-example (f : Π₀ n : ℕ, ℕ) : true := by
-  have : f.update 0 0 = 0
-  success_if_fail_with_msg
+example (f : Π₀ _n : ℕ, ℕ) : true := by
+  have : f.update 0 0 = 0 := by
+    success_if_fail_with_msg
     "
 ===================
 Found problems!
@@ -407,8 +409,8 @@ issue: ⋯ does not hold
 (3 shrinks)
 -------------------
 "
-    slim_check (config := { randomSeed := some 257 })
-  admit
+      slim_check (config := { randomSeed := some 257 })
+    exact test_sorry
   trivial
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20question/near/412709012

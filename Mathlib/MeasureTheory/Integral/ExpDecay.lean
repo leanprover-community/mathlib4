@@ -44,6 +44,5 @@ theorem integrable_of_isBigO_exp_neg {f : ℝ → ℝ} {a b : ℝ} (h0 : 0 < b)
   integrableOn_Ici_iff_integrableOn_Ioi.mp <|
     (hf.locallyIntegrableOn measurableSet_Ici).integrableOn_of_isBigO_atTop
     ho ⟨Ioi b, Ioi_mem_atTop b, exp_neg_integrableOn_Ioi b h0⟩
-
 set_option linter.uppercaseLean3 false in
 #align integrable_of_is_O_exp_neg integrable_of_isBigO_exp_neg

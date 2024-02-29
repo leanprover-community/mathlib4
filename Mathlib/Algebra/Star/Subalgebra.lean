@@ -79,7 +79,7 @@ instance algebra (s : StarSubalgebra R A) : Algebra R s :=
 instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
 
-@[simp, nolint simpNF] -- porting note: `simpNF` says `simp` can prove this, but it can't
+@[simp, nolint simpNF] -- porting note (#10618): `simpNF` says `simp` can prove this, but it can't
 theorem mem_carrier {s : StarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align star_subalgebra.mem_carrier StarSubalgebra.mem_carrier
@@ -445,7 +445,7 @@ theorem adjoin_toSubalgebra (s : Set A) :
   rfl
 #align star_subalgebra.adjoin_to_subalgebra StarSubalgebra.adjoin_toSubalgebra
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans Algebra.subset_adjoin
 #align star_subalgebra.subset_adjoin StarSubalgebra.subset_adjoin

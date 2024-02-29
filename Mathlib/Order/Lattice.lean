@@ -91,18 +91,11 @@ def SemilatticeSup.mk' {α : Type*} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b =
   sup := (· ⊔ ·)
   le a b := a ⊔ b = b
   le_refl := sup_idem
-  le_trans a b c hab hbc := by
-    -- Porting note: dsimp doesn't work here?
-    -- This is the same issue as discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unfolding.20earlier.20fields
-    show a ⊔ c = c
-    rw [← hbc, ← sup_assoc, hab]
-  le_antisymm a b hab hba := by
-    rwa [← hba, sup_comm]
-  le_sup_left a b := show a ⊔ (a ⊔ b) = a ⊔ b by rw [← sup_assoc, sup_idem]
-  le_sup_right a b := show b ⊔ (a ⊔ b) = a ⊔ b by rw [sup_comm, sup_assoc, sup_idem]
-  sup_le a b c hac hbc := by
-    show (a ⊔ b) ⊔ c = c
-    rwa [sup_assoc, hbc]
+  le_trans a b c hab hbc := by dsimp; rw [← hbc, ← sup_assoc, hab]
+  le_antisymm a b hab hba := by rwa [← hba, sup_comm]
+  le_sup_left a b := by dsimp; rw [← sup_assoc, sup_idem]
+  le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
+  sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
 #align semilattice_sup.mk' SemilatticeSup.mk'
 
 instance instSupOrderDual (α : Type*) [Inf α] : Sup αᵒᵈ :=
@@ -120,8 +113,6 @@ theorem le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 #align le_sup_left le_sup_left
 
--- Porting note: no ematch attribute
---@[ematch]
 theorem le_sup_left' : a ≤ a ⊔ b :=
   le_sup_left
 #align le_sup_left' le_sup_left'
@@ -131,8 +122,6 @@ theorem le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
 #align le_sup_right le_sup_right
 
--- Porting note: no ematch attribute
---@[ematch]
 theorem le_sup_right' : b ≤ a ⊔ b :=
   le_sup_right
 #align le_sup_right' le_sup_right'
@@ -229,7 +218,6 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 #align sup_le_sup_right sup_le_sup_right
 
--- Porting note: was @[simp], but now proved by simp so not needed.
 theorem sup_idem : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
@@ -250,11 +238,9 @@ theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, @sup_comm _ _ a, sup_assoc]
 #align sup_left_right_swap sup_left_right_swap
 
--- Porting note: was @[simp], but now proved by simp so not needed.
 theorem sup_left_idem : a ⊔ (a ⊔ b) = a ⊔ b := by simp
 #align sup_left_idem sup_left_idem
 
--- Porting note: was @[simp], but now proved by simp so not needed.
 theorem sup_right_idem : a ⊔ b ⊔ b = a ⊔ b := by simp
 #align sup_right_idem sup_right_idem
 
@@ -375,8 +361,6 @@ theorem inf_le_left : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 #align inf_le_left inf_le_left
 
--- Porting note: no ematch attribute
---@[ematch]
 theorem inf_le_left' : a ⊓ b ≤ a :=
   SemilatticeInf.inf_le_left a b
 #align inf_le_left' inf_le_left'
@@ -386,8 +370,6 @@ theorem inf_le_right : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
 #align inf_le_right inf_le_right
 
--- Porting note: no ematch attribute
---@[ematch]
 theorem inf_le_right' : a ⊓ b ≤ b :=
   SemilatticeInf.inf_le_right a b
 #align inf_le_right' inf_le_right'
@@ -475,9 +457,7 @@ theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c 
   inf_le_inf le_rfl h
 #align inf_le_inf_left inf_le_inf_left
 
--- Porting note: was @[simp]
-theorem inf_idem : a ⊓ a = a :=
-  @sup_idem αᵒᵈ _ _
+theorem inf_idem : a ⊓ a = a := by simp
 #align inf_idem inf_idem
 
 instance : Std.IdempotentOp (α := α) (· ⊓ ·) :=
@@ -501,14 +481,10 @@ theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
   @sup_left_right_swap αᵒᵈ _ _ _ _
 #align inf_left_right_swap inf_left_right_swap
 
--- Porting note: was @[simp]
-theorem inf_left_idem : a ⊓ (a ⊓ b) = a ⊓ b :=
-  @sup_left_idem αᵒᵈ _ a b
+theorem inf_left_idem : a ⊓ (a ⊓ b) = a ⊓ b := by simp
 #align inf_left_idem inf_left_idem
 
--- Porting note: was @[simp]
-theorem inf_right_idem : a ⊓ b ⊓ b = a ⊓ b :=
-  @sup_right_idem αᵒᵈ _ a b
+theorem inf_right_idem : a ⊓ b ⊓ b = a ⊓ b := by simp
 #align inf_right_idem inf_right_idem
 
 theorem inf_left_comm (a b c : α) : a ⊓ (b ⊓ c) = b ⊓ (a ⊓ c) :=
@@ -602,8 +578,9 @@ def SemilatticeInf.mk' {α : Type*} [Inf α] (inf_comm : ∀ a b : α, a ⊓ b =
 class Lattice (α : Type u) extends SemilatticeSup α, SemilatticeInf α
 #align lattice Lattice
 
-instance OrderDual.lattice (α) [Lattice α] : Lattice αᵒᵈ :=
-  { OrderDual.semilatticeSup α, OrderDual.semilatticeInf α with }
+instance OrderDual.lattice (α) [Lattice α] : Lattice αᵒᵈ where
+  __ := OrderDual.semilatticeSup α
+  __ := OrderDual.semilatticeInf α
 
 /-- The partial orders from `SemilatticeSup_mk'` and `SemilatticeInf_mk'` agree
 if `sup` and `inf` satisfy the lattice absorption laws `sup_inf_self` (`a ⊔ a ⊓ b = a`)
@@ -666,7 +643,6 @@ theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
   inf_le_left.trans le_sup_left
 #align inf_le_sup inf_le_sup
 
--- Porting note: was @[simp]
 theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, and_comm]
 #align sup_le_inf sup_le_inf
 
@@ -796,9 +772,9 @@ end DistribLattice
 /-- Prove distributivity of an existing lattice from the dual distributive law. -/
 @[reducible]
 def DistribLattice.ofInfSupLe [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c) :
-    DistribLattice α :=
-  { le_sup_inf := (@OrderDual.distribLattice αᵒᵈ {inferInstanceAs (Lattice αᵒᵈ) with
-      le_sup_inf := inf_sup_le}).le_sup_inf, }
+    DistribLattice α where
+  le_sup_inf := (@OrderDual.distribLattice αᵒᵈ {inferInstanceAs (Lattice αᵒᵈ) with
+      le_sup_inf := inf_sup_le}).le_sup_inf
 #align distrib_lattice.of_inf_sup_le DistribLattice.ofInfSupLe
 
 /-!
@@ -807,12 +783,12 @@ def DistribLattice.ofInfSupLe [Lattice α] (inf_sup_le : ∀ a b c : α, a ⊓ (
 
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrder.toLattice {α : Type u} [o : LinearOrder α] : Lattice α :=
-  { o with
-    sup := max,
-    le_sup_left := le_max_left, le_sup_right := le_max_right, sup_le := fun _ _ _ => max_le,
-    inf := min,
-    inf_le_left := min_le_left, inf_le_right := min_le_right, le_inf := fun _ _ _ => le_min }
+instance (priority := 100) LinearOrder.toLattice {α : Type u} [o : LinearOrder α] : Lattice α where
+  __ := o
+  sup := max
+  le_sup_left := le_max_left; le_sup_right := le_max_right; sup_le _ _ _ := max_le
+  inf := min
+  inf_le_left := min_le_left; inf_le_right := min_le_right; le_inf _ _ _ := le_min
 
 section LinearOrder
 
@@ -849,11 +825,10 @@ theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
     fun h => h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩
 #align lt_sup_iff lt_sup_iff
 
--- Porting note: why does sup_ind need an explicit motive?
 @[simp]
 theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
   ⟨fun h => ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩,
-   fun h => @sup_ind α _ b c (fun x => x < a) h.1 h.2⟩
+   fun h => sup_ind (p := (· < a)) b c h.1 h.2⟩
 #align sup_lt_iff sup_lt_iff
 
 theorem inf_ind (a b : α) {p : α → Prop} : p a → p b → p (a ⊓ b) :=
@@ -911,21 +886,20 @@ See note [reducible non-instances]. -/
 @[reducible]
 def Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
     [DecidableRel ((· ≤ ·) : α → α → Prop)]
-    [DecidableRel ((· < ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α :=
-  { ‹Lattice α› with
-    decidableLE := ‹_›,
-    decidableEq := ‹_›,
-    decidableLT := ‹_›,
-    le_total := total_of (· ≤ ·),
-    max := (· ⊔ ·),
-    max_def := by exact congr_fun₂ sup_eq_maxDefault,
-    min := (· ⊓ ·),
-    min_def := by exact congr_fun₂ inf_eq_minDefault }
+    [DecidableRel ((· < ·) : α → α → Prop)] [IsTotal α (· ≤ ·)] : LinearOrder α where
+  __ := ‹Lattice α›
+  decidableLE := ‹_›
+  decidableEq := ‹_›
+  decidableLT := ‹_›
+  le_total := total_of (· ≤ ·)
+  max := (· ⊔ ·)
+  max_def := by exact congr_fun₂ sup_eq_maxDefault
+  min := (· ⊓ ·)
+  min_def := by exact congr_fun₂ inf_eq_minDefault
 #align lattice.to_linear_order Lattice.toLinearOrder
 
 -- see Note [lower instance priority]
-instance (priority := 100) {α : Type u} [LinearOrder α] :
-  DistribLattice α where
+instance (priority := 100) {α : Type u} [LinearOrder α] : DistribLattice α where
   __ := inferInstanceAs (Lattice α)
   le_sup_inf _ b c :=
     match le_total b c with
@@ -1382,12 +1356,11 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def semilatticeSup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
-    SemilatticeSup { x : α // P x } :=
-  { inferInstanceAs (PartialOrder (Subtype P)) with
-    sup := fun x y => ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩,
-    le_sup_left := fun _ _ => le_sup_left,
-    le_sup_right := fun _ _ => le_sup_right,
-    sup_le := fun _ _ _ h1 h2 => sup_le h1 h2 }
+    SemilatticeSup { x : α // P x } where
+  sup x y := ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩
+  le_sup_left _ _ := le_sup_left
+  le_sup_right _ _ := le_sup_right
+  sup_le _ _ _ h1 h2 := sup_le h1 h2
 #align subtype.semilattice_sup Subtype.semilatticeSup
 
 /-- A subtype forms a `⊓`-semilattice if `⊓` preserves the property.
@@ -1395,20 +1368,20 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def semilatticeInf [SemilatticeInf α] {P : α → Prop}
     (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
-    SemilatticeInf { x : α // P x } :=
-  { inferInstanceAs (PartialOrder (Subtype P)) with
-    inf := fun x y => ⟨x.1 ⊓ y.1, Pinf x.2 y.2⟩,
-    inf_le_left := fun _ _ => inf_le_left,
-    inf_le_right := fun _ _ => inf_le_right,
-    le_inf := fun _ _ _ h1 h2 => le_inf h1 h2 }
+    SemilatticeInf { x : α // P x } where
+  inf x y := ⟨x.1 ⊓ y.1, Pinf x.2 y.2⟩
+  inf_le_left _ _ := inf_le_left
+  inf_le_right _ _ := inf_le_right
+  le_inf _ _ _ h1 h2 := le_inf h1 h2
 #align subtype.semilattice_inf Subtype.semilatticeInf
 
 /-- A subtype forms a lattice if `⊔` and `⊓` preserve the property.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def lattice [Lattice α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y))
-    (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) : Lattice { x : α // P x } :=
-  { Subtype.semilatticeInf Pinf, Subtype.semilatticeSup Psup with }
+    (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) : Lattice { x : α // P x } where
+  __ := Subtype.semilatticeInf Pinf
+  __ := Subtype.semilatticeSup Psup
 #align subtype.lattice Subtype.lattice
 
 @[simp, norm_cast]
@@ -1450,21 +1423,22 @@ preserves `⊔` to a `SemilatticeSup`.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.semilatticeSup [Sup α] [SemilatticeSup β] (f : α → β)
-    (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) : SemilatticeSup α :=
-  { PartialOrder.lift f hf_inj with
-    sup := Sup.sup,
-    le_sup_left := fun a b => by
-      change f a ≤ f (a ⊔ b)
-      rw [map_sup]
-      exact le_sup_left,
-    le_sup_right := fun a b => by
-      change f b ≤ f (a ⊔ b)
-      rw [map_sup]
-      exact le_sup_right,
-    sup_le := fun a b c ha hb => by
-      change f (a ⊔ b) ≤ f c
-      rw [map_sup]
-      exact sup_le ha hb }
+    (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
+    SemilatticeSup α where
+  __ := PartialOrder.lift f hf_inj
+  sup := Sup.sup
+  le_sup_left a b := by
+    change f a ≤ f (a ⊔ b)
+    rw [map_sup]
+    exact le_sup_left
+  le_sup_right a b := by
+    change f b ≤ f (a ⊔ b)
+    rw [map_sup]
+    exact le_sup_right
+  sup_le a b c ha hb := by
+    change f (a ⊔ b) ≤ f c
+    rw [map_sup]
+    exact sup_le ha hb
 #align function.injective.semilattice_sup Function.Injective.semilatticeSup
 
 /-- A type endowed with `⊓` is a `SemilatticeInf`, if it admits an injective map that
@@ -1472,21 +1446,22 @@ preserves `⊓` to a `SemilatticeInf`.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.semilatticeInf [Inf α] [SemilatticeInf β] (f : α → β)
-    (hf_inj : Function.Injective f) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) : SemilatticeInf α :=
-  { PartialOrder.lift f hf_inj with
-    inf := Inf.inf,
-    inf_le_left := fun a b => by
-      change f (a ⊓ b) ≤ f a
-      rw [map_inf]
-      exact inf_le_left,
-    inf_le_right := fun a b => by
-      change f (a ⊓ b) ≤ f b
-      rw [map_inf]
-      exact inf_le_right,
-    le_inf := fun a b c ha hb => by
-      change f a ≤ f (b ⊓ c)
-      rw [map_inf]
-      exact le_inf ha hb }
+    (hf_inj : Function.Injective f) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
+    SemilatticeInf α where
+  __ := PartialOrder.lift f hf_inj
+  inf := Inf.inf
+  inf_le_left a b := by
+    change f (a ⊓ b) ≤ f a
+    rw [map_inf]
+    exact inf_le_left
+  inf_le_right a b := by
+    change f (a ⊓ b) ≤ f b
+    rw [map_inf]
+    exact inf_le_right
+  le_inf a b c ha hb := by
+    change f a ≤ f (b ⊓ c)
+    rw [map_inf]
+    exact le_inf ha hb
 #align function.injective.semilattice_inf Function.Injective.semilatticeInf
 
 /-- A type endowed with `⊔` and `⊓` is a `Lattice`, if it admits an injective map that
@@ -1495,8 +1470,10 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def Function.Injective.lattice [Sup α] [Inf α] [Lattice β] (f : α → β)
     (hf_inj : Function.Injective f)
-    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) : Lattice α :=
-  { hf_inj.semilatticeSup f map_sup, hf_inj.semilatticeInf f map_inf with }
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
+    Lattice α where
+  __ := hf_inj.semilatticeSup f map_sup
+  __ := hf_inj.semilatticeInf f map_inf
 #align function.injective.lattice Function.Injective.lattice
 
 /-- A type endowed with `⊔` and `⊓` is a `DistribLattice`, if it admits an injective map that
@@ -1506,12 +1483,12 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.distribLattice [Sup α] [Inf α] [DistribLattice β] (f : α → β)
     (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
-    DistribLattice α :=
-  { hf_inj.lattice f map_sup map_inf with
-    le_sup_inf := fun a b c => by
-      change f ((a ⊔ b) ⊓ (a ⊔ c)) ≤ f (a ⊔ b ⊓ c)
-      rw [map_inf, map_sup, map_sup, map_sup, map_inf]
-      exact le_sup_inf }
+    DistribLattice α where
+  __ := hf_inj.lattice f map_sup map_inf
+  le_sup_inf a b c := by
+    change f ((a ⊔ b) ⊓ (a ⊔ c)) ≤ f (a ⊔ b ⊓ c)
+    rw [map_inf, map_sup, map_sup, map_sup, map_inf]
+    exact le_sup_inf
 #align function.injective.distrib_lattice Function.Injective.distribLattice
 
 end lift
