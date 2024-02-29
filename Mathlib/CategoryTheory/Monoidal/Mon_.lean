@@ -376,7 +376,7 @@ theorem one_associator {M N P : Mon_ C} :
   slice_lhs 1 3 => rw [← Category.id_comp P.one, tensor_comp]
   slice_lhs 2 3 => rw [associator_naturality]
   slice_rhs 1 2 => rw [← Category.id_comp M.one, tensor_comp]
-  slice_lhs 1 2 => rw [← leftUnitor_tensor_inv]
+  slice_lhs 1 2 => rw [tensorHom_id, ← leftUnitor_tensor_inv]
   rw [← cancel_epi (λ_ (𝟙_ C)).inv]
   slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
   simp

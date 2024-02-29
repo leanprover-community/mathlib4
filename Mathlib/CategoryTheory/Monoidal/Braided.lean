@@ -735,11 +735,10 @@ monoidal opposite, upgraded to a braided functor. -/
 @[simps!] def mopBraidedFunctor : BraidedFunctor C Cᴹᵒᵖ where
   μ X Y := (β_ (mop X) (mop Y)).hom
   ε := 𝟙 (𝟙_ Cᴹᵒᵖ)
-  -- `id_tensorHom`, `tensorHom_id` should be simp lemmas when #6307 is merged
-  -- we could then make this fully automated if we mark `yang_baxter` as simp
+  -- we could make this fully automated if we mark `← yang_baxter_assoc` as simp
   -- should it be marked as such?
   associativity X Y Z := by
-    simp [id_tensorHom, tensorHom_id, ← yang_baxter_assoc]
+    simp [← yang_baxter_assoc]
   __ := mopFunctor C
 
 /-- The identity functor on `C`, viewed as a functor from the
@@ -748,7 +747,7 @@ monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
   μ X Y := (β_ (unmop X) (unmop Y)).hom
   ε := 𝟙 (𝟙_ C)
   associativity X Y Z := by
-    simp [id_tensorHom, tensorHom_id, ← yang_baxter_assoc]
+    simp [← yang_baxter_assoc]
   __ := unmopFunctor C
 
 end MonoidalOpposite

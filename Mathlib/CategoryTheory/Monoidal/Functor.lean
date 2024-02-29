@@ -168,7 +168,7 @@ def LaxMonoidalFunctor.ofTensorHom (F : C ⥤ D)
 --Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.left_unitality_inv (F : LaxMonoidalFunctor C D) (X : C) :
-    (λ_ (F.obj X)).inv ≫ (F.ε ▷ F.obj X) ≫ F.μ (𝟙_ C) X = F.map (λ_ X).inv := by
+    (λ_ (F.obj X)).inv ≫ F.ε ▷ F.obj X ≫ F.μ (𝟙_ C) X = F.map (λ_ X).inv := by
   rw [Iso.inv_comp_eq, F.left_unitality, Category.assoc, Category.assoc, ← F.toFunctor.map_comp,
     Iso.hom_inv_id, F.toFunctor.map_id, comp_id]
 #align category_theory.lax_monoidal_functor.left_unitality_inv CategoryTheory.LaxMonoidalFunctor.left_unitality_inv
@@ -176,7 +176,7 @@ theorem LaxMonoidalFunctor.left_unitality_inv (F : LaxMonoidalFunctor C D) (X : 
 --Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.right_unitality_inv (F : LaxMonoidalFunctor C D) (X : C) :
-    (ρ_ (F.obj X)).inv ≫ (F.obj X ◁ F.ε) ≫ F.μ X (𝟙_ C) = F.map (ρ_ X).inv := by
+    (ρ_ (F.obj X)).inv ≫ F.obj X ◁ F.ε ≫ F.μ X (𝟙_ C) = F.map (ρ_ X).inv := by
   rw [Iso.inv_comp_eq, F.right_unitality, Category.assoc, Category.assoc, ← F.toFunctor.map_comp,
     Iso.hom_inv_id, F.toFunctor.map_id, comp_id]
 #align category_theory.lax_monoidal_functor.right_unitality_inv CategoryTheory.LaxMonoidalFunctor.right_unitality_inv
@@ -185,7 +185,7 @@ theorem LaxMonoidalFunctor.right_unitality_inv (F : LaxMonoidalFunctor C D) (X :
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.associativity_inv (F : LaxMonoidalFunctor C D) (X Y Z : C) :
     (F.obj X ◁ F.μ Y Z) ≫ F.μ X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv =
-      (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ (F.μ X Y ▷ F.obj Z) ≫ F.μ (X ⊗ Y) Z := by
+      (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ F.μ X Y ▷ F.obj Z ≫ F.μ (X ⊗ Y) Z := by
   rw [Iso.eq_inv_comp, ← F.associativity_assoc, ← F.toFunctor.map_comp, Iso.hom_inv_id,
     F.toFunctor.map_id, comp_id]
 #align category_theory.lax_monoidal_functor.associativity_inv CategoryTheory.LaxMonoidalFunctor.associativity_inv
@@ -335,14 +335,14 @@ theorem ε_hom_inv_id : F.ε ≫ F.εIso.inv = 𝟙 _ :=
 @[simps!]
 noncomputable def commTensorLeft (X : C) :
     F.toFunctor ⋙ tensorLeft (F.toFunctor.obj X) ≅ tensorLeft X ⋙ F.toFunctor :=
-  NatIso.ofComponents (fun Y => F.μIso X Y) fun f => F.μ_natural_right' X f
+  NatIso.ofComponents (fun Y => F.μIso X Y) fun f => F.μ_natural_right X f
 #align category_theory.monoidal_functor.comm_tensor_left CategoryTheory.MonoidalFunctor.commTensorLeft
 
 /-- Monoidal functors commute with right tensoring up to isomorphism -/
 @[simps!]
 noncomputable def commTensorRight (X : C) :
     F.toFunctor ⋙ tensorRight (F.toFunctor.obj X) ≅ tensorRight X ⋙ F.toFunctor :=
-  NatIso.ofComponents (fun Y => F.μIso Y X) fun f => F.μ_natural_left' f X
+  NatIso.ofComponents (fun Y => F.μIso Y X) fun f => F.μ_natural_left f X
 #align category_theory.monoidal_functor.comm_tensor_right CategoryTheory.MonoidalFunctor.commTensorRight
 
 end
