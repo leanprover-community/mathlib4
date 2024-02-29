@@ -46,4 +46,9 @@ example {α : Type*} [Fintype α] [Nonempty α] : 0 < (univ : Finset α).card :=
 example {α : Type*} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
 example {α : Type*} [Fintype α] : 0 ≤ Fintype.card α := by positivity
 
+example {G : Type*} {A : Finset G} :
+  let f := fun _ : G ↦ 1; (∀ s, f s ^ 2 = 1) → 0 ≤ A.card := by
+  intros
+  positivity -- Should succeed despite failing to prove `A` is nonempty.
+
 end Mathlib.Meta.Positivity
