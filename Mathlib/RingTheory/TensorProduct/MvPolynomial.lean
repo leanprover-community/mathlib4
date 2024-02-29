@@ -39,6 +39,8 @@ section Module
 
 variable   [AddCommMonoid N] [Module R N]
 
+/-- A tensor product of a polynomial ring by a module is
+  linearly equivalent to a Finsupp of a tensor product -/
 noncomputable def rTensor' :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
   TensorProduct.finsuppLeft'
@@ -56,6 +58,8 @@ lemma rTensor'_symm_apply_single (d : σ →₀ ℕ) (s : S) (n : N) :
       (monomial d s) ⊗ₜ[R] n :=
   TensorProduct.finsuppLeft_symm_apply_single d s n
 
+/-- The tensor product of the polynomial algebra by a module
+  is linearly equivalent to a Finsupp of that module -/
 noncomputable def rTensor :
     MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
   TensorProduct.finsuppScalarLeft
@@ -78,6 +82,8 @@ section Algebra
 
 variable [CommSemiring N] [Algebra R N]
 
+/-- The algebra morphism from a tensor product of a polynomial algebra
+  by an algebra to a polynomial algebra -/
 noncomputable def rTensorAlgHom :
     (MvPolynomial σ S) ⊗[R] N →ₐ[S] MvPolynomial σ (S ⊗[R] N) :=
   Algebra.TensorProduct.lift
@@ -119,6 +125,8 @@ lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
   rw [← AlgHom.toLinearMap_apply, rTensorAlgHom_toLinearMap]
   rfl
 
+/-- The tensor product of a polynomial algebra by an algebra
+  is algebraically equivalent to a polynomial algebra -/
 noncomputable def rTensorAlgEquiv :
     (MvPolynomial σ S) ⊗[R] N ≃ₐ[S] MvPolynomial σ (S ⊗[R] N) := by
   apply AlgEquiv.ofLinearEquiv
@@ -132,6 +140,9 @@ noncomputable def rTensorAlgEquiv :
     simp only [_root_.map_mul, rTensorAlgHom_apply_eq]
     rfl
 
+/-- The tensor product of the polynomial algebra by an algebra
+  is algebraically equivalent to a polynomial algebra with
+  coefficients in that algegra -/
 noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
