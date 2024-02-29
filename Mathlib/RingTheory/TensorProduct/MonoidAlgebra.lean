@@ -39,15 +39,11 @@ It remains to prove that this is a functor.
   `MonoidAlgebra (M ⊗[R] N) (α × β)`.
 -/
 
-open TensorProduct
-
-variable {α : Type*} [Monoid α] [DecidableEq α]
-  {R : Type*} [CommSemiring R]
-  {M N P : Type*}
-
+variable {α R M N P : Type*}
 
 section Finsupp
 
+variable [DecidableEq α]
 namespace Finsupp
 
 lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
@@ -60,8 +56,6 @@ lemma mapRange.addMonoidHom_apply_single
     [AddCommMonoid N] [AddCommMonoid P] (e : N →+ P) (a : α) (n : N) :
     mapRange.addMonoidHom e (single a n) = single a (e n) := by
     simp only [addMonoidHom_apply, mapRange_single]
---    ext b
---    exact apply_single e a n b
 
 end Finsupp
 
@@ -71,23 +65,19 @@ section Functoriality
 
 namespace MonoidAlgebra
 
+variable [DecidableEq α]
+
 open Finsupp
 
 variable [Semiring N] [Semiring P]
-
-/- noncomputable example
-    {P : Type*} [Semiring P] [Algebra R P] (e : N ≃ₗ[R] P) :
-    MonoidAlgebra N α ≃ₗ[R] MonoidAlgebra P α :=
-  Finsupp.mapRange.linearEquiv e -/
 
 lemma apply_single
     (e : N →+ P) (a : α) (n : N) (b : α) :
     e ((single a n) b) = single a (e n) b :=
   Finsupp.apply_single e a n b
 
-
 /-- RingHom functoriality for the monoid algebra -/
-noncomputable def ringHom (e : N →+* P) :
+noncomputable def ringHom [MulOneClass α] (e : N →+* P) :
     MonoidAlgebra N α →+* MonoidAlgebra P α := {
     mapRange.addMonoidHom e with
     map_one' := ext (fun _ => by simp [one_def])
@@ -106,28 +96,30 @@ noncomputable def ringHom (e : N →+* P) :
       rw [← _root_.map_mul]
       exact apply_single e.toAddMonoidHom (b * c) _ a) }
 
-lemma ringHom_apply (e : N →+* P) (x : MonoidAlgebra N α) :
+lemma ringHom_apply [MulOneClass α] (e : N →+* P) (x : MonoidAlgebra N α) :
     ringHom e x = mapRange.addMonoidHom e.toAddMonoidHom x :=
   rfl
 
-lemma ringHom_apply_single (e : N →+* P) (a  : α) (n : N) :
+lemma ringHom_apply_single [MulOneClass α] (e : N →+* P) (a  : α) (n : N) :
     ringHom e (single a n) = single a (e n) :=
   mapRange.addMonoidHom_apply_single e.toAddMonoidHom a n
 
 /-- RingHom functoriality for the monoid algebra (equivalence) -/
-noncomputable def equivRingHom (e : N ≃+* P) :
+noncomputable def equivRingHom [MulOneClass α] (e : N ≃+* P) :
     MonoidAlgebra N α ≃+* MonoidAlgebra P α := {
   mapRange.addEquiv e.toAddEquiv with
   map_mul' := (ringHom e.toRingHom).map_mul' }
 
 /-- LinearMap functoriality for the monoid algebra -/
-noncomputable def linearMap [Module R N] [Module R P] (e : N →ₗ[R] P) :
+noncomputable def linearMap [Semiring R] [Module R N] [Module R P] (e : N →ₗ[R] P) :
     MonoidAlgebra N α →ₗ[R] MonoidAlgebra P α := {
   mapRange.linearMap e with
   toFun := mapRange.addMonoidHom e.toAddMonoidHom }
 
+variable [Monoid α] [CommSemiring R] [Algebra R N] [Algebra R P]
+
 /-- AlgHom functoriality for the monoid algebra -/
-noncomputable def algHom [Algebra R N] [Algebra R P] (e : N →ₐ[R] P) :
+noncomputable def algHom (e : N →ₐ[R] P) :
     MonoidAlgebra N α →ₐ[R] MonoidAlgebra P α := {
   ringHom e.toRingHom with
   toFun := mapRange.addMonoidHom e.toAddMonoidHom
@@ -136,17 +128,15 @@ noncomputable def algHom [Algebra R N] [Algebra R P] (e : N →ₐ[R] P) :
       Function.comp_apply, mapRange.addMonoidHom_apply, AddMonoidHom.coe_coe,
       RingHom.coe_coe, mapRange_single, AlgHom.commutes] }
 
-lemma algHom_apply_apply [Algebra R N] [Algebra R P]
-    (e : N →ₐ[R] P) (x : MonoidAlgebra N α) (a : α) :
+lemma algHom_apply_apply (e : N →ₐ[R] P) (x : MonoidAlgebra N α) (a : α) :
     (algHom e) x a = e (x a) := by
   simp [algHom]
 
-lemma algHom_apply_single [Algebra R N] [Algebra R P]
-    (e : N →ₐ[R] P) (a : α) (n : N) :
+lemma algHom_apply_single (e : N →ₐ[R] P) (a : α) (n : N) :
     algHom e (single a n) = single a (e n) := by
   simp [algHom]
 
-noncomputable def algEquiv [Algebra R N] [Algebra R P] (e : N ≃ₐ[R] P) :
+noncomputable def algEquiv (e : N ≃ₐ[R] P) :
     MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra P α := {
   mapRange.linearEquiv e.toLinearEquiv,
   algHom e.toAlgHom with }
@@ -157,6 +147,10 @@ end Functoriality
 
 section TensorProduct
 
+open TensorProduct
+
+variable [Monoid α] [DecidableEq α]
+variable [CommSemiring R]
 variable {S : Type*} [CommSemiring S] [Algebra R S]
 variable [Semiring M] [Algebra R M] [Algebra S M] [IsScalarTower R S M]
 variable  [Semiring N] [Algebra R N]
