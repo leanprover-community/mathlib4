@@ -70,12 +70,6 @@ class Flat : Prop where
     Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 #align module.flat Module.Flat
 
-/-- An `R`-module is flat if for all injectives `R`-linear maps `L : N → N'`, `L ⊗ 𝟙 M` is also
-  injective. -/
-def Flat.rTensor_preserves_injectiveness : Prop :=
-  ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
-    (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M)
-
 namespace Flat
 
 instance self (R : Type u) [CommRing R] : Flat R R :=
@@ -254,7 +248,8 @@ If the character module of `M` is an injective module then `L ⊗ 𝟙 M` is inj
 -/
 lemma rTensor_preserves_injectiveness_of_injective_characterModule
     (h : Module.Injective R <| CharacterModule M) :
-    Flat.rTensor_preserves_injectiveness R M := by
+    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N'] (L : N →ₗ[R] N'),
+      Function.Injective L → Function.Injective (L.rTensor M) := by
   intros A B _ _ _ _ L hL
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   rintro z (hz : _ = 0)
@@ -283,7 +278,6 @@ lemma rTensor_preserves_injectiveness_of_injective_characterModule
   -- Since `B → M⋆`  is naturally isomorphic to `(B ⊗ M)⋆`, we get a character `g' : (B ⊗ M)⋆`
   let g' : (CharacterModule <| B ⊗[R] M) :=
     CharacterModule.homEquiv f'
-
 
   have mem : z ∈ (⊤ : Submodule R _) := ⟨⟩
   rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem
@@ -321,7 +315,7 @@ lemma rTensor_preserves_injectiveness_of_injective_characterModule
 lemma _root_.Module.Baer.characterModule_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     Module.Baer R (CharacterModule M) := by
-  letI : Module.Injective ℤ (AddCircle (1 : ℚ)) := by
+  have : Module.Injective ℤ (AddCircle (1 : ℚ)) := by
     erw [Module.injective_iff_injective_object, AddCommGroupCat.injective_as_module_iff]
     have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
     apply AddCommGroupCat.injective_of_divisible _
@@ -329,29 +323,40 @@ lemma _root_.Module.Baer.characterModule_of_ideal
   rintro I (L : _ →ₗ[_] _)
   letI :  AddCommGroup (I ⊗[R] M) := inferInstance
   -- We know that every linear map `f : A → B` induces `f⋆ : B⋆ → A⋆` and if `f` is injective then
-  -- `f ↦ f⋆` is surjective.
-  -- Under our assumption `I ⊗ M → M` is injective, so there is a character `F : M⋆` that is equal
-  -- to
+  -- `f⋆` is surjective.
+  -- Under our assumption `ι : I ⊗ M → M` is injective, so `ι⋆ : M⋆ → (I ⊗ M)⋆` is surjective, so
+  -- there is a character `F : M⋆` such that `ι⋆F (i ⊗ m) = L i m`
   obtain ⟨F, hF⟩ := CharacterModule.dual_surjective_of_injective _ (inj I) <|
       TensorProduct.liftAddHom
         { toFun := fun i => L i
           map_zero' := by aesop
           map_add' := by aesop } <| by aesop
+  -- Since `R ⊗ M ≃ M`, `M⋆ ≃ (R ⊗ M)⋆ ≃ Hom(R, M⋆)`, under this equivalence, we can reinterpret
+  -- `F` as `F' : R → M⋆`. Indeed `F' i = L i m` by definition
   refine ⟨CharacterModule.curry (CharacterModule.congr (TensorProduct.lid R M).symm F), ?_⟩
   intros x hx
   ext m
   exact congr($hF (⟨x, hx⟩ ⊗ₜ m))
 
+/--
+If `I ⊗ M → M` is injective for every ideal `I`, then `f ⊗ 𝟙 M` is injective for every injective
+linear map `f`.
+-/
 lemma rTensor_preserves_injectiveness_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
-    Flat.rTensor_preserves_injectiveness R M := by
+    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N'](L : N →ₗ[R] N'),
+      Function.Injective L → Function.Injective (L.rTensor M) := by
   apply rTensor_preserves_injectiveness_of_injective_characterModule
   apply Module.Baer.injective
   apply Module.Baer.characterModule_of_ideal
   assumption
 
+/--
+If `f ⊗ 𝟙 M` is injective for every injective linear map `f`, then `M` is flat.
+-/
 lemma of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
-    (h : rTensor_preserves_injectiveness R M) :
+    (h : ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+      (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M)) :
     Flat R M := by
   rw [Flat.iff_rTensor_injective']
   intro I x y eq1
@@ -375,8 +380,11 @@ lemma of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
   erw [Equiv.symm_symm_apply, Equiv.symm_apply_apply, Equiv.symm_symm_apply]
 
 lemma iff_rTensor_preserves_injectiveness [UnivLE.{u, v}] :
-    Flat R M ↔ Flat.rTensor_preserves_injectiveness R M where
-  mp h := by
+    Flat R M ↔
+    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+      (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) := by
+  constructor
+  · intro h
     apply rTensor_preserves_injectiveness_of_ideal
     rw [Flat.iff_rTensor_injective'] at h
     intro I x y eq1
@@ -389,7 +397,7 @@ lemma iff_rTensor_preserves_injectiveness [UnivLE.{u, v}] :
     simp only [compr₂_apply, mk_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       lift.tmul, Submodule.coeSubtype, lsmul_apply, map_smul, lid_symm_apply, rTensor_tmul]
     rw [smul_tmul', smul_eq_mul, mul_one]
-  mpr := of_rTensor_preserves_injectiveness R M
+  · exact of_rTensor_preserves_injectiveness R M
 
 
 end Flat
