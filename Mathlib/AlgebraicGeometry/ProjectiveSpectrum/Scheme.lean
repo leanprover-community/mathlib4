@@ -664,7 +664,7 @@ end toSpecFromSpec
 
 section fromSpecToSpec
 
-lemma fromSpecToSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Proj.T| pbo f) :
+lemma fromSpec_toSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Proj.T| pbo f) :
     FromSpec.toFun f_deg hm (toSpec x) = x := by
   classical
   refine Subtype.ext <| ProjectiveSpectrum.ext _ _ <| HomogeneousIdeal.ext <| Ideal.ext fun z ↦ ?_
