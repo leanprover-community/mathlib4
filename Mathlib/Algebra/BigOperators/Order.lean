@@ -633,9 +633,8 @@ theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) 
 end PosMulMono
 
 section PosMulStrictMono
-variable [PosMulStrictMono R] [MulPosMono R] [Nontrivial R] {f g : ι → R} {s t : Finset ι}
+variable [PosMulStrictMono R] [Nontrivial R] {f g : ι → R} {s t : Finset ι}
 
--- This is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i in s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
 #align finset.prod_pos Finset.prod_pos
