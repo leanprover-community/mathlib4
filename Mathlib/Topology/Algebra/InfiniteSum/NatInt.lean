@@ -303,6 +303,8 @@ theorem summable_int_of_summable_nat {f : ℤ → α} (hp : Summable fun n : ℕ
     ((summable_nat_add_iff 1).mpr hn).hasSum).summable
 #align summable_int_of_summable_nat summable_int_of_summable_nat
 
+
+
 end Nat
 
 end TopologicalGroup
@@ -330,6 +332,7 @@ theorem summable_iff_nat_tsum_vanishing {f : ℕ → α} : Summable f ↔
     ∀ e ∈ 𝓝 (0 : α), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
   rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tsum_vanishing]
 
+/-- "iff" version of `summable_int_of_summable_nat`. -/
 lemma summable_int_iff_summable_nat {f : ℤ → α} :
     Summable f ↔ (Summable fun (n : ℕ) ↦ f ↑n) ∧ (Summable fun (n : ℕ) ↦ f (-↑n)) := by
   refine ⟨fun p ↦ ⟨?_, ?_⟩, fun p ↦ summable_int_of_summable_nat p.1 p.2⟩ <;>
