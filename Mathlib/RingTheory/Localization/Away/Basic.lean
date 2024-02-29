@@ -302,7 +302,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     exact IsLocalization.injective B (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
   simp only [← hy] at H
   classical
-  obtain ⟨m, a, hyp1, hyp2⟩ := max_power_factor ha₀ hx
+  obtain ⟨m, a, hyp1, hyp2⟩ := WfDvdMonoid.max_power_factor ha₀ hx
   refine' ⟨a, m - d, _⟩
   rw [← mk'_one (M := Submonoid.powers x) B, selfZPow_pow_sub, selfZPow_coe_nat, selfZPow_coe_nat,
     ← map_pow _ _ d, mul_comm _ b, H, hyp2, map_mul, map_pow _ _ m]
