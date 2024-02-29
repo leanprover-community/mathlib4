@@ -610,7 +610,7 @@ end FromSpec
 
 section toSpecFromSpec
 
-lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Spec.T (A⁰_ f)) :
+lemma toSpec_fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Spec.T (A⁰_ f)) :
     toSpec (FromSpec.toFun f_deg hm x) = x := show _ = (_ : PrimeSpectrum _) by
   ext (z : A⁰_ f); fconstructor <;> intro hz
   · change z ∈ ToSpec.carrier _ at hz
@@ -699,12 +699,12 @@ lemma toSpec_injective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
     Function.Injective (toSpec (𝒜 := 𝒜) (f := f)) := by
   intro x₁ x₂ h
   have := congr_arg (FromSpec.toFun f_deg hm) h
-  rwa [fromSpecToSpec, fromSpecToSpec] at this
+  rwa [fromSpec_toSpec, fromSpec_toSpec] at this
 
 lemma toSpec_surjective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
     Function.Surjective (toSpec (𝒜 := 𝒜) (f := f)) :=
   Function.surjective_iff_hasRightInverse |>.mpr
-    ⟨FromSpec.toFun f_deg hm, toSpecFromSpec 𝒜 hm f_deg⟩
+    ⟨FromSpec.toFun f_deg hm, toSpec_fromSpec 𝒜 hm f_deg⟩
 
 lemma toSpec_bijective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
     Function.Bijective (toSpec (𝒜 := 𝒜) (f := f)) :=
