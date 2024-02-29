@@ -899,11 +899,11 @@ theorem degreeOf_C_mul (j : σ) (c : F) (hc : c ≠ 0) :
     degreeOf j (C c * p) = degreeOf j p := by
   rw [Nat.eq_iff_le_and_ge]
   constructor
-  · convert degreeOf_C_mul_le p j c
-  · have := degreeOf_C_mul_le (C (c) * p) j (1/c)
-    simp only [← mul_assoc, ← C_mul, one_div, ne_eq, hc, not_false_eq_true, inv_mul_cancel, map_one,
+  · exact degreeOf_C_mul_le p j c
+  · have := degreeOf_C_mul_le (C c * p) j (c⁻¹)
+    simp only [← mul_assoc, ← C_mul, ne_eq, hc, not_false_eq_true, inv_mul_cancel, map_one,
       one_mul] at this
-    convert this
+    exact this
 
 end Field
 
