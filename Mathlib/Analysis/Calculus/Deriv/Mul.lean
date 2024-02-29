@@ -283,6 +283,38 @@ theorem deriv_const_mul_field' (u : 𝕜') : (deriv fun x => u * v x) = fun x =>
 
 end Mul
 
+section Prod
+
+variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+  {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
+
+theorem HasDerivAt.finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
+    HasDerivAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) x := by
+  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+    (HasFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivAt)).hasDerivAt
+
+theorem HasDerivWithinAt.finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
+    HasDerivWithinAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) s x := by
+  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+    (HasFDerivWithinAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivWithinAt)).hasDerivWithinAt
+
+theorem HasStrictDerivAt.finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
+    HasStrictDerivAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) x := by
+  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+    (HasStrictFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasStrictFDerivAt)).hasStrictDerivAt
+
+theorem deriv_finset_prod (hf : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
+    deriv (∏ i in u, f i ·) x = ∑ i in u, (∏ j in u.erase i, f j x) • deriv (f i) x :=
+  (HasDerivAt.finset_prod fun i hi ↦ (hf i hi).hasDerivAt).deriv
+
+theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
+    derivWithin (∏ i in u, f i ·) s x =
+      ∑ i in u, (∏ j in u.erase i, f j x) • derivWithin (f i) s x :=
+  (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hxs
+
+end Prod
+
 section Div
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
