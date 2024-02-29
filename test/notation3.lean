@@ -155,8 +155,9 @@ local notation3 (prettyPrint := false) "#" n => Fin.mk n (by decide)
 example : Fin 5 := #1
 
 /--
-error: failed to reduce to 'true'
-  false
+error: tactic 'decide' proved that the proposition
+  6 < 5
+is false
 -/
 #guard_msgs in example : Fin 5 := #6
 
