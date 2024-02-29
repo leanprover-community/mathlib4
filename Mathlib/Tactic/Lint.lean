@@ -43,6 +43,8 @@ Linter that checks whether a theorem statement contains `Classical.propDecidable
   noErrorsFound := "no classicality in theorem statements found."
   errorsFound := "FOUND PROPDECIDABLE IN THEOREM STATEMENTS."
   test declName := do
+    if ← isAutoDecl declName then
+      return none
     let declInfo ← getConstInfo declName
     if declInfo.type.getUsedConstants.contains `Classical.propDecidable then
       return m!"theorem statement contains `Classical.propDecidable`."
