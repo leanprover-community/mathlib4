@@ -190,7 +190,6 @@ variable {α}
     birkhoffSet α (a ⊔ b) = birkhoffSet α a ∪ birkhoffSet α b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
-
 @[simp] lemma birkhoffSet_inf (a b : α) :
     birkhoffSet α (a ⊓ b) = birkhoffSet α a ∩ birkhoffSet α b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
