@@ -379,6 +379,9 @@ lemma of_rTensor_preserves_injectiveness [UnivLE.{u, v}]
   congr 1
   erw [Equiv.symm_symm_apply, Equiv.symm_apply_apply, Equiv.symm_symm_apply]
 
+/--
+M is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective lienar map.
+-/
 lemma iff_rTensor_preserves_injectiveness [UnivLE.{u, v}] :
     Flat R M ↔
     ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
