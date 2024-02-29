@@ -2090,7 +2090,7 @@ theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
 
 variable {α}
 
-instance (priority := 500) measurableSingletonClass_of_hasCountableSeparatingPoints
+theorem measurableSingletonClass_of_hasCountableSeparatingPoints
     [MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
     MeasurableSingletonClass α := by
   rcases measurable_injection_nat_bool_of_countablyGenerated α with ⟨f, fmeas, finj⟩
