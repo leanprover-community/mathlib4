@@ -572,7 +572,7 @@ theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h 
   simp only [degreeOf, degrees_rename_of_injective h, Multiset.count_map_eq_count' f p.degrees h]
 #align mv_polynomial.degree_of_rename_of_injective MvPolynomial.degreeOf_rename_of_injective
 
-theorem MvPolynomial.degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
+theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
   have := degrees_mul (C c) p
@@ -895,13 +895,13 @@ section Field
 
 variable [Field F] {p q : MvPolynomial σ F}
 
-theorem MvPolynomial.degreeOf_C_mul (j : σ) (c : F) (hc : c ≠ 0) :
-    MvPolynomial.degreeOf j (MvPolynomial.C c * p) = MvPolynomial.degreeOf j p := by
+theorem degreeOf_C_mul (j : σ) (c : F) (hc : c ≠ 0) :
+    degreeOf j (C c * p) = degreeOf j p := by
   rw [Nat.eq_iff_le_and_ge]
   constructor
-  · convert MvPolynomial.degreeOf_C_mul_le p j c
-  · have := MvPolynomial.degreeOf_C_mul_le (C (c) * p) j (1/c)
-    simp only [←mul_assoc, ←C_mul, one_div, ne_eq, hc, not_false_eq_true, inv_mul_cancel, map_one,
+  · convert degreeOf_C_mul_le p j c
+  · have := degreeOf_C_mul_le (C (c) * p) j (1/c)
+    simp only [← mul_assoc, ← C_mul, one_div, ne_eq, hc, not_false_eq_true, inv_mul_cancel, map_one,
       one_mul] at this
     convert this
 
