@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
+Authors: Johan Commelin, Jujian Zhang
 -/
 import Mathlib.RingTheory.Noetherian
 import Mathlib.Algebra.DirectSum.Module
@@ -61,7 +61,7 @@ open Function (Surjective)
 
 open LinearMap Submodule TensorProduct
 
- variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- An `R`-module `M` is flat if for all finitely generated ideals `I` of `R`,
 the canonical map `I ⊗ M →ₗ M` is injective. -/
@@ -225,9 +225,9 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     h₃, LinearMap.map_eq_zero_iff] at f
   simp [f]
 
+open Classical in
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
-  classical
   of_linearEquiv R _ _ (finsuppLEquivDirectSum R R ι)
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
@@ -247,16 +247,26 @@ instance of_projective [h : Projective R M] : Flat R M := by
     | _ e he => exact of_retract R _ _ _ _ he
 
 open BigOperators in
+/--
+Define character module of `M` to be `M → ℚ ⧸ ℤ`
+If the character module of `M` is an injective module then `L ⊗ 𝟙 M` is injective for any linear map
+`L`.
+-/
 lemma rTensor_preserves_injectiveness_of_injective_characterModule
     (h : Module.Injective R <| CharacterModule M) :
     Flat.rTensor_preserves_injectiveness R M := by
   intros A B _ _ _ _ L hL
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   rintro z (hz : _ = 0)
+  -- Consider an injective linear map `L : A → B`, we want to prove that `(L ⊗ 𝟙 M) z = 0`
+  -- implies `z = 0`
   show z = 0
   by_contra rid
+  -- Let's prove by contradication
+  -- If `z ≠ 0`, then there would be some character `g ∈ (A ⊗ M)⋆` such that `g z ≠ 0`
   obtain ⟨g, hg⟩ := CharacterModule.exists_character_apply_ne_zero_of_ne_zero (a := z) rid
 
+  -- Then we can define a linear map `f : A → M⋆` by `f a m = g (a ⊗ m)`.
   let f : A →ₗ[R] (CharacterModule M) :=
   { toFun := fun a =>
     { toFun := fun m => g (a ⊗ₜ m)
@@ -268,30 +278,46 @@ lemma rTensor_preserves_injectiveness_of_injective_characterModule
     map_smul' := fun _ _ => AddMonoidHom.ext fun _ => by
       change g _ = g _
       aesop }
+  -- Since `M⋆` is an injective module, we can factor `f` to `f' ∘ L` where `f' : B → M⋆`.
   obtain ⟨f', hf'⟩ := h.out L hL f
+  -- Since `B → M⋆`  is naturally isomorphic to `(B ⊗ M)⋆`, we get a character `g' : (B ⊗ M)⋆`
+  let g' : (CharacterModule <| B ⊗[R] M) :=
+    CharacterModule.homEquiv f'
+
+
   have mem : z ∈ (⊤ : Submodule R _) := ⟨⟩
   rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem
   obtain ⟨c, hc, (eq1 : ∑ i in c.support, _ • _ = z)⟩ := mem
   choose a m H using hc
+  -- Let's write `z ∈ A ⊗ M` as `∑ aᵢ ⊗ mᵢ`
   replace eq1 : ∑ i in c.support.attach, (c i • a i.2) ⊗ₜ (m i.2) = z := by
     conv_rhs => rw [← eq1, ← Finset.sum_attach]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     rw [← smul_tmul']
     exact congr(c i • $(H i.2))
   subst eq1
-  let g' : (CharacterModule <| B ⊗[R] M) :=
-    CharacterModule.homEquiv f'
+  -- Then `g'(∑ L aᵢ ⊗ mᵢ)` is zero because `(L ⊗ 𝟙 M) z = 0 = ∑ L aᵢ ⊗ mᵢ`
   have EQ : g' (∑ i in c.support.attach, L (c i • a i.2) ⊗ₜ m i.2) = 0 := by
     simp only [map_sum, rTensor_tmul] at hz
     rw [hz, map_zero]
+  -- Now, we aim to show that `g z = 0` and obtain the desired contradiction.
   refine hg ?_
   rw [map_sum] at EQ ⊢
+  -- Since `∑ g'(L aᵢ ⊗ mᵢ) = 0` and `g'` is obtained by `f' : B → M⋆`,
+  -- we now know `∑ f'(L aᵢ)(mᵢ) = 0` so that `∑ f(aᵢ)(mᵢ) = 0`
+  -- But by definition of `f`, this is saying `∑ g (aᵢ ⊗ mᵢ) = 0`, i.e. `g z = 0`
   convert EQ using 1
   refine Finset.sum_congr rfl fun x _ => ?_
   dsimp [CharacterModule.homEquiv]
   erw [liftAddHom_tmul, L.map_smul, f'.map_smul, hf', CharacterModule.smul_apply, smul_tmul]
   rfl
 
+-- We have established a connection between preserving injectiveness of linear map and character
+-- module being an injective module. We use Baer's criterion to investigate this connection further.
+
+/--
+`M⋆` is Baer, if `I ⊗ M → M` is injective for every ideal `I`
+-/
 lemma _root_.Module.Baer.characterModule_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     Module.Baer R (CharacterModule M) := by
@@ -299,8 +325,13 @@ lemma _root_.Module.Baer.characterModule_of_ideal
     erw [Module.injective_iff_injective_object, AddCommGroupCat.injective_as_module_iff]
     have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
     apply AddCommGroupCat.injective_of_divisible _
+  -- Let `I` be an ideal and `L : I → M⋆`, we want to extend `L` to the entire ring
   rintro I (L : _ →ₗ[_] _)
   letI :  AddCommGroup (I ⊗[R] M) := inferInstance
+  -- We know that every linear map `f : A → B` induces `f⋆ : B⋆ → A⋆` and if `f` is injective then
+  -- `f ↦ f⋆` is surjective.
+  -- Under our assumption `I ⊗ M → M` is injective, so there is a character `F : M⋆` that is equal
+  -- to
   obtain ⟨F, hF⟩ := CharacterModule.dual_surjective_of_injective _ (inj I) <|
       TensorProduct.liftAddHom
         { toFun := fun i => L i
