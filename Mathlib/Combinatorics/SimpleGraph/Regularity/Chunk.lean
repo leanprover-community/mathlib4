@@ -233,7 +233,7 @@ private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
   rw [sub_le_sub_iff_left, ← le_div_iff' (show (0 : ℝ) < 2 by norm_num), div_div,
     one_div_le coe_m_add_one_pos, one_div_div]
   refine' le_trans _ (le_add_of_nonneg_right zero_le_one)
-  norm_num
+  set_option tactic.skipAssignedInstances false in norm_num
   apply hundred_div_ε_pow_five_le_m hPα hPε
   sz_positivity
 
