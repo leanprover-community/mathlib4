@@ -227,7 +227,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
 
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
-  let _ := Classical.decEq ι
+  classical
   of_linearEquiv R _ _ (finsuppLEquivDirectSum R R ι)
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
