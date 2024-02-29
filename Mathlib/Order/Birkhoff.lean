@@ -100,8 +100,8 @@ variable (α)
 /-- **Birkhoff's Embedding Theorem**. Any nonempty finite distributive lattice can be embedded
 into its lattice of sup-irreducible lower sets. -/
 def OrderEmbedding.supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} where
-  toFun := fun a => ⟨LowerSet.Iic a, by simp only [supIrred_Iic]⟩
-  inj' := fun _ => by simp_all only [Subtype.mk.injEq, LowerSet.Iic_inj, implies_true]
+  toFun a := ⟨LowerSet.Iic a, by simp only [supIrred_Iic]⟩
+  inj' _ := by simp_all only [Subtype.mk.injEq, LowerSet.Iic_inj, implies_true]
   map_rel_iff' := by simp only [Function.Embedding.coeFn_mk, Subtype.mk_le_mk, Iic_le, mem_Iic_iff,
     implies_true]
 
