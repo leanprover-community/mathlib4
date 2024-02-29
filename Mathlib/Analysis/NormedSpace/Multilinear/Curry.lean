@@ -267,7 +267,7 @@ def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G)
         ext
         simp }
   f'.mkContinuous ‖f‖ fun m => by
-    simp only [MultilinearMap.coe_mk]
+    simp only [f', MultilinearMap.coe_mk]
     exact LinearMap.mkContinuous_norm_le _ (by positivity) _
 #align continuous_multilinear_map.curry_right ContinuousMultilinearMap.curryRight
 

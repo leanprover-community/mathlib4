@@ -175,7 +175,7 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace
   /- Prove that `⋂ n : ℕ, closure (K n)` is not empty, as an intersection of a decreasing sequence
     of nonempty compact closed subsets. -/
   have hK_nonempty : (⋂ n, closure (K n) : Set X).Nonempty :=
-    IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed _
+    IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed _
       (fun n => closure_mono <| hK_anti n) (fun n => (K n).nonempty.closure)
       (K 0).isCompact.closure fun n => isClosed_closure
   exact hK_nonempty.mono hK_subset

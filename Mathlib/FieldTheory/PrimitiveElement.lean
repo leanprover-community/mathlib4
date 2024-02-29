@@ -90,7 +90,8 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   let s := (sf.bind fun α' => sg.map fun β' => -(α' - α) / (β' - β)).toFinset
   let s' := s.preimage ϕ fun x _ y _ h => ϕ.injective h
   obtain ⟨c, hc⟩ := Infinite.exists_not_mem_finset s'
-  simp_rw [Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map] at hc
+  simp_rw [s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
+    at hc
   push_neg at hc
   exact ⟨c, hc⟩
 #align field.primitive_element_inf_aux_exists_c Field.primitive_element_inf_aux_exists_c
@@ -162,11 +163,11 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
     by_contra a
     apply hc
     apply (div_eq_iff (sub_ne_zero.mpr a)).mpr
-    simp only [Algebra.smul_def, RingHom.map_add, RingHom.map_mul, RingHom.comp_apply]
+    simp only [γ, Algebra.smul_def, RingHom.map_add, RingHom.map_mul, RingHom.comp_apply]
     ring
   rw [← eq_X_sub_C_of_separable_of_root_eq h_sep h_root h_splits h_roots]
   trans EuclideanDomain.gcd (?_ : E[X]) (?_ : E[X])
-  · dsimp only
+  · dsimp only [γ]
     convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
       map_C, AdjoinSimple.algebraMap_gen, map_add, Polynomial.map_mul, map_X]
@@ -186,6 +187,7 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
   · rw [adjoin_le_iff]
     have αxβ_in_K : α + x • β ∈ F⟮α + x • β⟯ := mem_adjoin_simple_self F _
     have αyβ_in_K : α + y • β ∈ F⟮α + y • β⟯ := mem_adjoin_simple_self F _
+    dsimp [f] at *
     simp only [← heq] at αyβ_in_K
     have β_in_K := sub_mem αxβ_in_K αyβ_in_K
     rw [show (α + x • β) - (α + y • β) = (x - y) • β by rw [sub_smul]; abel1] at β_in_K
@@ -267,12 +269,12 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
       have hndvd : ¬ n ∣ n * s.natDegree + m := by
         rw [← Nat.dvd_add_iff_right (n.dvd_mul_right s.natDegree)]
         exact Nat.not_dvd_of_pos_of_lt hm hmn
-      simp only [coeff_sub, coeff_X_pow_mul, s.coeff_expand_mul' hn, coeff_natDegree,
+      simp only [f, coeff_sub, coeff_X_pow_mul, s.coeff_expand_mul' hn, coeff_natDegree,
         coeff_expand hn r, hndvd, ite_false, sub_zero]
       exact leadingCoeff_ne_zero.2 hzero
     intro h
     simp only [h, coeff_zero, ne_eq, not_true_eq_false] at this
-  · simp only [map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
+  · simp only [f, map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
 theorem isAlgebraic_of_finite_intermediateField
     [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := fun α ↦
