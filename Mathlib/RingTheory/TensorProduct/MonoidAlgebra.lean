@@ -136,6 +136,7 @@ lemma algHom_apply_single (e : N →ₐ[R] P) (a : α) (n : N) :
     algHom e (single a n) = single a (e n) := by
   simp [algHom]
 
+/-- The alg equiv of monoid algebras induced by an alg equiv between their coefficients. -/
 noncomputable def algEquiv (e : N ≃ₐ[R] P) :
     MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra P α := {
   mapRange.linearEquiv e.toLinearEquiv,
