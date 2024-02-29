@@ -738,13 +738,6 @@ lemma torsion_int {G} [AddCommGroup G] :
   refine ((isOfFinAddOrder_iff_zsmul_eq_zero (x := x)).trans ?_).symm
   simp [mem_nonZeroDivisors_iff_ne_zero]
 
-lemma AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors {G : Type*} [AddCommGroup G] :
-    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
-  rw [Submodule.noZeroSMulDivisors_iff_torsion_eq_bot,
-    AddMonoid.isTorsionFree_iff_torsion_eq_bot,
-    ← Submodule.toAddSubgroup_injective.eq_iff,
-    Submodule.torsion_int, Submodule.bot_toAddSubgroup]
-
 end Torsion
 
 namespace QuotientTorsion

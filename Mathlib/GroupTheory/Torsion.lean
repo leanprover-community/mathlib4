@@ -462,5 +462,8 @@ lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
     noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
   exact forall₂_congr fun _ _ ↦ by tauto
 
+@[deprecated] -- 2024-02-29
+alias AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors := isTorsionFree_iff_noZeroSMulDivisors_int
+
 lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
     AddMonoid.IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›
