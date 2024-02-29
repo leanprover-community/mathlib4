@@ -40,13 +40,13 @@ variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 namespace DirectedSystem
 
 /-- A copy of `DirectedSystem.map_self` specialized to `L`-embeddings, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
   DirectedSystem.map_self (fun i j h => f i j h) i x h
 #align first_order.language.directed_system.map_self FirstOrder.Language.DirectedSystem.map_self
 
 /-- A copy of `DirectedSystem.map_map` specialized to `L`-embeddings, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
   DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
@@ -80,7 +80,7 @@ instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i 
 
 end DirectedSystem
 
--- Porting note : Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
+-- Porting note: Instead of `Σ i, G i`, we use the alias `Language.Structure.Sigma`
 -- which depends on `f`. This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
 -- Otherwise we have a "cannot find synthesization order" error. See the discussion at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
@@ -166,7 +166,7 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
 
 attribute [local instance] DirectLimit.setoid
 
--- Porting note: Added local instance
+-- Porting note (#10754): Added local instance
 attribute [local instance] DirectLimit.sigmaStructure
 
 
@@ -406,7 +406,7 @@ theorem cg {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     refine' hS (out x).1 ⟨(out x).2, _, _⟩
     · rw [(Classical.choose_spec (h (out x).1).out).2]
       trivial
-    · simp only [Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
+    · simp only [out, Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
 #align first_order.language.direct_limit.cg FirstOrder.Language.DirectLimit.cg
 
 instance cg' {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]

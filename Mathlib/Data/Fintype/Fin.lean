@@ -46,7 +46,7 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _).toEmbedd
   · refine' cases _ _ i
     · rintro ⟨⟨⟩⟩
     · intro i hi
-      refine' ⟨i, succ_lt_succ_iff.mp hi, rfl⟩
+      exact ⟨i, succ_lt_succ_iff.mp hi, rfl⟩
   · rintro ⟨i, hi, rfl⟩
     simpa
 #align fin.Ioi_succ Fin.Ioi_succ

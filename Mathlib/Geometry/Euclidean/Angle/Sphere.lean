@@ -330,9 +330,9 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
     (h : (2 : ℤ) • ∡ (t.points i₁) p (t.points i₃) =
       (2 : ℤ) • ∡ (t.points i₁) (t.points i₂) (t.points i₃)) : p ∈ t.circumsphere := by
   let t'p : Fin 3 → P := Function.update t.points i₂ p
-  have h₁ : t'p i₁ = t.points i₁ := by simp [h₁₂]
-  have h₂ : t'p i₂ = p := by simp
-  have h₃ : t'p i₃ = t.points i₃ := by simp [h₂₃.symm]
+  have h₁ : t'p i₁ = t.points i₁ := by simp [t'p, h₁₂]
+  have h₂ : t'p i₂ = p := by simp [t'p]
+  have h₃ : t'p i₃ = t.points i₃ := by simp [t'p, h₂₃.symm]
   have ha : AffineIndependent ℝ t'p := by
     rw [affineIndependent_iff_not_collinear_of_ne h₁₂ h₁₃ h₂₃, h₁, h₂, h₃,
       collinear_iff_of_two_zsmul_oangle_eq h, ←
