@@ -23,7 +23,7 @@ Unfortunately, because we do not have a definitional equality `op (op X) = X`,
 there are quite a few variations that are needed in practice.
 -/
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 open Opposite
@@ -168,7 +168,7 @@ namespace Functor
 
 section
 
-variable {D : Type u₂} [Category.{v₂} D]
+variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 
 /-- The opposite of a functor, i.e. considering a functor `F : C ⥤ D` as a functor `Cᵒᵖ ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made between these. -/
@@ -223,6 +223,23 @@ def opInv : (Cᵒᵖ ⥤ Dᵒᵖ) ⥤ (C ⥤ D)ᵒᵖ where
 #align category_theory.functor.op_inv CategoryTheory.Functor.opInv
 
 variable {C D}
+
+/-- Taking the opposite of a functor preserves the identity. -/
+@[simps!]
+def opIdIso : (𝟭 C).op ≅ 𝟭 Cᵒᵖ := Iso.refl _
+
+/-- Taking the unopposite of a functor preserves the identity. -/
+@[simps!]
+def unopIdIso : (𝟭 Cᵒᵖ).unop ≅ 𝟭 C := Iso.refl _
+
+/-- Taking the opposite of a functor preserves composition. -/
+@[simps!]
+def opCompIso (F : C ⥤ D) (G : D ⥤ E) : (F ⋙ G).op ≅ F.op ⋙ G.op := Iso.refl _
+
+/-- Taking the unopposite of a functor preserves composition. -/
+@[simps!]
+def unopCompIso (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Eᵒᵖ) :
+    (F ⋙ G).unop ≅ F.unop ⋙ G.unop := Iso.refl _
 
 /--
 Another variant of the opposite of functor, turning a functor `C ⥤ Dᵒᵖ` into a functor `Cᵒᵖ ⥤ D`.

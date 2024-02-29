@@ -33,12 +33,55 @@ We also show these natural isomorphisms satisfy the triangle and pentagon identi
 
 namespace CategoryTheory
 
-universe u₁ v₁ u₂ v₂ u₃ v₃ u₄ v₄
+universe u₁ v₁ u₂ v₂ u₃ v₃ u₄ v₄ u₅ v₅
+
+variable {A : Type u₁} [Category.{v₁} A]
+variable {B : Type u₂} [Category.{v₂} B]
+variable {C : Type u₃} [Category.{v₃} C]
+variable {D : Type u₄} [Category.{v₄} D]
+variable {E : Type u₅} [Category.{v₅} E]
+
+namespace Functor
+
+/-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
+-/
+@[simps]
+def leftUnitor (F : A ⥤ B) :
+    𝟭 A ⋙ F ≅ F where
+  hom := { app := fun X => 𝟙 (F.obj X) }
+  inv := { app := fun X => 𝟙 (F.obj X) }
+#align category_theory.functor.left_unitor CategoryTheory.Functor.leftUnitor
+#align category_theory.functor.left_unitor_inv_app CategoryTheory.Functor.leftUnitor_inv_app
+#align category_theory.functor.left_unitor_hom_app CategoryTheory.Functor.leftUnitor_hom_app
+
+/-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
+-/
+@[simps]
+def rightUnitor (F : A ⥤ B) :
+    F ⋙ 𝟭 B ≅ F where
+  hom := { app := fun X => 𝟙 (F.obj X) }
+  inv := { app := fun X => 𝟙 (F.obj X) }
+#align category_theory.functor.right_unitor CategoryTheory.Functor.rightUnitor
+#align category_theory.functor.right_unitor_hom_app CategoryTheory.Functor.rightUnitor_hom_app
+#align category_theory.functor.right_unitor_inv_app CategoryTheory.Functor.rightUnitor_inv_app
+
+/-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
+
+(In fact, `iso.refl _` will work here, but it tends to make Lean slow later,
+and it's usually best to insert explicit associators.)
+-/
+@[simps]
+def associator (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) :
+    (F ⋙ G) ⋙ H ≅ F ⋙ G ⋙ H where
+  hom := { app := fun _ => 𝟙 _ }
+  inv := { app := fun _ => 𝟙 _ }
+#align category_theory.functor.associator CategoryTheory.Functor.associator
+#align category_theory.functor.associator_inv_app CategoryTheory.Functor.associator_inv_app
+#align category_theory.functor.associator_hom_app CategoryTheory.Functor.associator_hom_app
+
+end Functor
 
 section
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
-  [Category.{v₃} E]
 
 /-- If `α : G ⟶ H` then
 `whiskerLeft F α : (F ⋙ G) ⟶ (F ⋙ H)` has components `α.app (F.obj X)`.
@@ -196,78 +239,42 @@ instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso 
   IsIso.of_iso (isoWhiskerRight (asIso α) F)
 #align category_theory.is_iso_whisker_right CategoryTheory.isIso_whiskerRight
 
-variable {B : Type u₄} [Category.{v₄} B]
-
 -- Porting note: it was `attribute [local elab_without_expected_type]`,
 -- but now `elab_without_expected-type` must be global
 attribute [elab_without_expected_type] whiskerLeft whiskerRight
 
 @[simp]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
-    whiskerLeft F (whiskerLeft G α) = whiskerLeft (F ⋙ G) α :=
-  rfl
+    whiskerLeft F (whiskerLeft G α) =
+      (Functor.associator _ _ _).inv ≫ whiskerLeft (F ⋙ G) α ≫
+        (Functor.associator _ _ _).hom :=
+  Eq.symm <| Eq.trans (Category.id_comp _) (Category.comp_id _)
 #align category_theory.whisker_left_twice CategoryTheory.whiskerLeft_twice
 
 @[simp]
 theorem whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶ K) :
-    whiskerRight (whiskerRight α F) G = whiskerRight α (F ⋙ G) :=
-  rfl
+    whiskerRight (whiskerRight α F) G =
+      (Functor.associator _ _ _).hom ≫ whiskerRight α (F ⋙ G) ≫
+        (Functor.associator _ _ _).inv :=
+  Eq.symm <| Eq.trans (Category.id_comp _) (Category.comp_id _)
 #align category_theory.whisker_right_twice CategoryTheory.whiskerRight_twice
 
 theorem whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D ⥤ E) :
-    whiskerRight (whiskerLeft F α) K = whiskerLeft F (whiskerRight α K) :=
-  rfl
+    whiskerRight (whiskerLeft F α) K =
+      (Functor.associator _ _ _).hom ≫ whiskerLeft F (whiskerRight α K) ≫
+        (Functor.associator _ _ _).inv :=
+  Eq.symm <| Eq.trans (Category.id_comp _) (Category.comp_id _)
 #align category_theory.whisker_right_left CategoryTheory.whiskerRight_left
+
+theorem whiskerLeft_right (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D ⥤ E) :
+    whiskerLeft F (whiskerRight α K) =
+      (Functor.associator _ _ _).inv ≫ whiskerRight (whiskerLeft F α) K ≫
+        (Functor.associator _ _ _).hom :=
+  Eq.symm <| Eq.trans (Category.id_comp _) (Category.comp_id _)
 
 end
 
 namespace Functor
-
-universe u₅ v₅
-
-variable {A : Type u₁} [Category.{v₁} A]
-
-variable {B : Type u₂} [Category.{v₂} B]
-
-/-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
--/
-@[simps]
-def leftUnitor (F : A ⥤ B) :
-    𝟭 A ⋙ F ≅ F where
-  hom := { app := fun X => 𝟙 (F.obj X) }
-  inv := { app := fun X => 𝟙 (F.obj X) }
-#align category_theory.functor.left_unitor CategoryTheory.Functor.leftUnitor
-#align category_theory.functor.left_unitor_inv_app CategoryTheory.Functor.leftUnitor_inv_app
-#align category_theory.functor.left_unitor_hom_app CategoryTheory.Functor.leftUnitor_hom_app
-
-/-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
--/
-@[simps]
-def rightUnitor (F : A ⥤ B) :
-    F ⋙ 𝟭 B ≅ F where
-  hom := { app := fun X => 𝟙 (F.obj X) }
-  inv := { app := fun X => 𝟙 (F.obj X) }
-#align category_theory.functor.right_unitor CategoryTheory.Functor.rightUnitor
-#align category_theory.functor.right_unitor_hom_app CategoryTheory.Functor.rightUnitor_hom_app
-#align category_theory.functor.right_unitor_inv_app CategoryTheory.Functor.rightUnitor_inv_app
-
-variable {C : Type u₃} [Category.{v₃} C]
-
-variable {D : Type u₄} [Category.{v₄} D]
-
-/-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
-
-(In fact, `iso.refl _` will work here, but it tends to make Lean slow later,
-and it's usually best to insert explicit associators.)
--/
-@[simps]
-def associator (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) :
-    (F ⋙ G) ⋙ H ≅ F ⋙ G ⋙ H where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
-#align category_theory.functor.associator CategoryTheory.Functor.associator
-#align category_theory.functor.associator_inv_app CategoryTheory.Functor.associator_inv_app
-#align category_theory.functor.associator_hom_app CategoryTheory.Functor.associator_hom_app
 
 protected theorem assoc (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
   rfl
@@ -279,8 +286,6 @@ theorem triangle (F : A ⥤ B) (G : B ⥤ C) :
 #align category_theory.functor.triangle CategoryTheory.Functor.triangle
 
 -- See note [dsimp, simp].
-variable {E : Type u₅} [Category.{v₅} E]
-
 variable (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
 theorem pentagon :

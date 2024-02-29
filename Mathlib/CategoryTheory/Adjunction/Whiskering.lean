@@ -25,7 +25,7 @@ variable (C : Type*) {D E : Type*} [Category C] [Category D] [Category E] {F : D
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringRight C _ _).obj F ⊣ (whiskeringRight C _ _).obj G`. -/
-@[simps! unit_app_app counit_app_app]
+@[simps! unit_app_app counit_app_app homEquiv_apply homEquiv_symm_apply]
 protected def whiskerRight (adj : F ⊣ G) :
     (whiskeringRight C D E).obj F ⊣ (whiskeringRight C E D).obj G :=
   mkOfUnitCounit
@@ -44,7 +44,7 @@ protected def whiskerRight (adj : F ⊣ G) :
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
-@[simps! unit_app_app counit_app_app]
+@[simps! unit_app_app counit_app_app  homEquiv_apply homEquiv_symm_apply]
 protected def whiskerLeft (adj : F ⊣ G) :
     (whiskeringLeft E D C).obj G ⊣ (whiskeringLeft D E C).obj F :=
   mkOfUnitCounit

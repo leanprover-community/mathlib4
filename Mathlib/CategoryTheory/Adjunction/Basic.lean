@@ -120,6 +120,17 @@ def Adjunction.ofRightAdjoint (right : C ⥤ D) [IsRightAdjoint right] :
   IsRightAdjoint.adj
 #align category_theory.adjunction.of_right_adjoint CategoryTheory.Adjunction.ofRightAdjoint
 
+-- should these be scoped?
+instance leftAdjointIsLeftAdjoint (R : D ⥤ C) [IsRightAdjoint R] :
+    IsLeftAdjoint (leftAdjoint R) where
+  right := R
+  adj := .ofRightAdjoint R
+
+instance rightAdjointIsRightAdjoint (L : C ⥤ D) [IsLeftAdjoint L] :
+    IsRightAdjoint (rightAdjoint L) where
+  left := L
+  adj := .ofLeftAdjoint L
+
 namespace Adjunction
 
 -- porting note: Workaround not needed in Lean 4
@@ -462,6 +473,7 @@ variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
 
 See <https://stacks.math.columbia.edu/tag/0DV0>.
 -/
+@[simps]
 def comp (adj₁ : F ⊣ G) (adj₂ : H ⊣ I) : F ⋙ H ⊣ I ⋙ G
     where
   homEquiv X Z := Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)

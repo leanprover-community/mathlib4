@@ -12,14 +12,15 @@ The associator functor `((C × D) × E) ⥤ (C × (D × E))` and its inverse for
 -/
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 open CategoryTheory
 
 namespace CategoryTheory.prod
 
-variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] (E : Type u₃)
-  [Category.{v₃} E]
+variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
+  (E : Type u₃) [Category.{v₃} E] (C' : Type u₄) [Category.{v₄} C']
+  (D' : Type u₅) [Category.{v₅} D'] (E' : Type u₆) [Category.{v₆} E']
 
 /-- The associator functor `(C × D) × E ⥤ C × (D × E)`.
 -/
@@ -41,6 +42,7 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E
 
 /-- The equivalence of categories expressing associativity of products of categories.
 -/
+@[simps (config := {rhsMd := .default})]
 def associativity : (C × D) × E ≌ C × D × E :=
   Equivalence.mk (associator C D E) (inverseAssociator C D E)
     (NatIso.ofComponents fun X => eqToIso (by simp))
@@ -54,6 +56,14 @@ instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
 instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
   (by infer_instance : IsEquivalence (associativity C D E).inverse)
 #align category_theory.prod.inverse_associator_is_equivalence CategoryTheory.prod.inverseAssociatorIsEquivalence
+
+variable {C D E C' D' E'}
+
+@[simps!]
+def associator_naturality (F : C ⥤ C') (G : D ⥤ D') (H : E ⥤ E') :
+    associator C D E ⋙ F.prod (G.prod H) ≅
+      (F.prod G).prod H ⋙ associator C' D' E' :=
+  Iso.refl _ -- significanelty faster than writing out components! weird!
 
 -- TODO unitors?
 -- TODO pentagon natural transformation? ...satisfying?

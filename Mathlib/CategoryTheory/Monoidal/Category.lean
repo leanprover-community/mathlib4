@@ -3,7 +3,8 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Products.Associator
+import Mathlib.CategoryTheory.Functor.Currying
 
 #align_import category_theory.monoidal.category from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
@@ -211,15 +212,15 @@ attribute [reassoc, simp] MonoidalCategory.id_whiskerRight
 attribute [simp] MonoidalCategory.tensor_id
 attribute [reassoc] MonoidalCategory.tensor_comp
 attribute [simp] MonoidalCategory.tensor_comp
-attribute [reassoc] MonoidalCategory.associator_naturality
-attribute [reassoc] MonoidalCategory.leftUnitor_naturality
-attribute [reassoc] MonoidalCategory.rightUnitor_naturality
+attribute [reassoc, simp] MonoidalCategory.associator_naturality
+attribute [reassoc, simp] MonoidalCategory.leftUnitor_naturality
+attribute [reassoc, simp] MonoidalCategory.rightUnitor_naturality
 attribute [reassoc (attr := simp)] MonoidalCategory.pentagon
 attribute [reassoc (attr := simp)] MonoidalCategory.triangle
 
-namespace MonoidalCategory
-
 variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
+
+namespace MonoidalCategory
 
 -- Note: this will be a simp lemma after merging #6307.
 theorem id_tensorHom (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) :
@@ -270,10 +271,8 @@ theorem whiskerRight_tensor {X X' : C} (f : X ⟶ X') (Y Z : C) :
 @[reassoc, simp]
 theorem whisker_assoc (X : C) {Y Y' : C} (f : Y ⟶ Y') (Z : C) :
     (X ◁ f) ▷ Z = (α_ X Y Z).hom ≫ X ◁ f ▷ Z ≫ (α_ X Y' Z).inv := by
-  intros
-  simp only [← id_tensorHom, ← tensorHom_id]
-  rw [← assoc, ← associator_naturality]
-  simp
+  simp_rw [← id_tensorHom, ← tensorHom_id, ← assoc, ← associator_naturality,
+    assoc, Iso.hom_inv_id, comp_id]
 
 @[reassoc]
 theorem whisker_exchange {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
@@ -289,8 +288,6 @@ end MonoidalCategory
 
 open scoped MonoidalCategory
 open MonoidalCategory
-
-variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
 
 namespace MonoidalCategory
 
@@ -407,10 +404,6 @@ infixr:70 " ⊗ " => tensorIso
 
 namespace MonoidalCategory
 
-section
-
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
-
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
   IsIso.of_iso (asIso f ⊗ asIso g)
 #align category_theory.monoidal_category.tensor_is_iso CategoryTheory.MonoidalCategory.tensor_isIso
@@ -420,6 +413,8 @@ theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g]
     inv (f ⊗ g) = inv f ⊗ inv g := by
   simp [tensorHom_def ,whisker_exchange]
 #align category_theory.monoidal_category.inv_tensor CategoryTheory.MonoidalCategory.inv_tensor
+
+section
 
 variable {U V W X Y Z : C}
 
@@ -879,6 +874,8 @@ end
 
 open Opposite
 
+variable (C)
+
 attribute [local simp] id_tensorHom tensorHom_id in
 attribute [local ext] Quiver.Hom.unop_inj in
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
@@ -892,6 +889,8 @@ instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   leftUnitor X := (λ_ (unop X)).symm.op
   rightUnitor X := (ρ_ (unop X)).symm.op
 #align category_theory.monoidal_category_op CategoryTheory.MonoidalCategory.monoidalCategoryOp
+
+variable {C}
 
 section OppositeLemmas
 
@@ -955,7 +954,7 @@ end
 
 section
 
-variable (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
+variable (C)
 
 /-- The tensor product expressed as a functor. -/
 @[simps]
@@ -965,49 +964,63 @@ def tensor : C × C ⥤ C where
 #align category_theory.monoidal_category.tensor CategoryTheory.MonoidalCategory.tensor
 
 /-- The left-associated triple tensor product as a functor. -/
-def leftAssocTensor : C × C × C ⥤ C
-    where
-  obj X := (X.1 ⊗ X.2.1) ⊗ X.2.2
-  map {X Y : C × C × C} (f : X ⟶ Y) := (f.1 ⊗ f.2.1) ⊗ f.2.2
+@[simps!]
+def leftAssocTensor : C × C × C ⥤ C :=
+  prod.inverseAssociator C C C ⋙ .prod (tensor C) (𝟭 C) ⋙ (tensor C)
 #align category_theory.monoidal_category.left_assoc_tensor CategoryTheory.MonoidalCategory.leftAssocTensor
 
-@[simp]
-theorem leftAssocTensor_obj (X) : (leftAssocTensor C).obj X = (X.1 ⊗ X.2.1) ⊗ X.2.2 :=
-  rfl
-#align category_theory.monoidal_category.left_assoc_tensor_obj CategoryTheory.MonoidalCategory.leftAssocTensor_obj
-
-@[simp]
-theorem leftAssocTensor_map {X Y} (f : X ⟶ Y) : (leftAssocTensor C).map f = (f.1 ⊗ f.2.1) ⊗ f.2.2 :=
-  rfl
-#align category_theory.monoidal_category.left_assoc_tensor_map CategoryTheory.MonoidalCategory.leftAssocTensor_map
-
 /-- The right-associated triple tensor product as a functor. -/
-def rightAssocTensor : C × C × C ⥤ C
-    where
-  obj X := X.1 ⊗ X.2.1 ⊗ X.2.2
-  map {X Y : C × C × C} (f : X ⟶ Y) := f.1 ⊗ f.2.1 ⊗ f.2.2
+@[simps!]
+def rightAssocTensor : C × C × C ⥤ C :=
+  .prod (𝟭 C) (tensor C) ⋙ (tensor C)
 #align category_theory.monoidal_category.right_assoc_tensor CategoryTheory.MonoidalCategory.rightAssocTensor
 
-@[simp]
-theorem rightAssocTensor_obj (X) : (rightAssocTensor C).obj X = X.1 ⊗ X.2.1 ⊗ X.2.2 :=
-  rfl
-#align category_theory.monoidal_category.right_assoc_tensor_obj CategoryTheory.MonoidalCategory.rightAssocTensor_obj
+section
 
-@[simp]
-theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = f.1 ⊗ f.2.1 ⊗ f.2.2 :=
-  rfl
-#align category_theory.monoidal_category.right_assoc_tensor_map CategoryTheory.MonoidalCategory.rightAssocTensor_map
+attribute [local simp] id_tensorHom tensorHom_id whisker_exchange
+
+variable {C}
+
+/-- Tensoring on the left with a fixed object, as a functor. -/
+@[simps!]
+def tensorLeft (X : C) : C ⥤ C := Prod.sectr X C ⋙ tensor C
+#align category_theory.monoidal_category.tensor_left CategoryTheory.MonoidalCategory.tensorLeft
+
+/-- Tensoring on the right with a fixed object, as a functor. -/
+@[simps!]
+def tensorRight (X : C) : C ⥤ C := Prod.sectl C X ⋙ tensor C
+#align category_theory.monoidal_category.tensor_right CategoryTheory.MonoidalCategory.tensorRight
+
+variable (C)
+
+/-- Tensoring on the left, as a functor from `C` into endofunctors of `C`.
+
+TODO: show this is a colax monoidal functor.
+-/
+@[simps obj map_app]
+def tensoringLeft : C ⥤ C ⥤ C where
+  obj := tensorLeft
+  map f := { app := fun Z => f ⊗ 𝟙 Z }
+#align category_theory.monoidal_category.tensoring_left CategoryTheory.MonoidalCategory.tensoringLeft
+
+/-- Tensoring on the right, as a functor from `C` into endofunctors of `C`.
+
+We later show this is a monoidal functor.
+-/
+@[simps obj map_app]
+def tensoringRight : C ⥤ C ⥤ C where
+  obj := tensorRight
+  map {X} {Y} f := { app := fun Z => 𝟙 Z ⊗ f }
+#align category_theory.monoidal_category.tensoring_right CategoryTheory.MonoidalCategory.tensoringRight
 
 /-- The functor `fun X ↦ 𝟙_ C ⊗ X`. -/
-def tensorUnitLeft : C ⥤ C where
-  obj X := 𝟙_ C ⊗ X
-  map {X Y : C} (f : X ⟶ Y) := 𝟙 (𝟙_ C) ⊗ f
+@[simps!]
+def tensorUnitLeft : C ⥤ C := tensorLeft (𝟙_ C)
 #align category_theory.monoidal_category.tensor_unit_left CategoryTheory.MonoidalCategory.tensorUnitLeft
 
 /-- The functor `fun X ↦ X ⊗ 𝟙_ C`. -/
-def tensorUnitRight : C ⥤ C where
-  obj X := X ⊗ 𝟙_ C
-  map {X Y : C} (f : X ⟶ Y) := f ⊗ 𝟙 (𝟙_ C)
+@[simps!]
+def tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 #align category_theory.monoidal_category.tensor_unit_right CategoryTheory.MonoidalCategory.tensorUnitRight
 
 -- We can express the associator and the unitors, given componentwise above,
@@ -1016,92 +1029,24 @@ def tensorUnitRight : C ⥤ C where
 /-- The associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
-  NatIso.ofComponents
-    (by
-      intros
-      apply MonoidalCategory.associator)
-    (by
-      intros
-      apply MonoidalCategory.associator_naturality)
+  NatIso.ofComponents (fun (X, Y, Z) => associator X Y Z)
 #align category_theory.monoidal_category.associator_nat_iso CategoryTheory.MonoidalCategory.associatorNatIso
 
 -- Porting Note: same as above
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
-  NatIso.ofComponents
-    (by
-      intros
-      apply MonoidalCategory.leftUnitor)
-    (by
-      intros
-      apply MonoidalCategory.leftUnitor_naturality)
+  NatIso.ofComponents leftUnitor
 #align category_theory.monoidal_category.left_unitor_nat_iso CategoryTheory.MonoidalCategory.leftUnitorNatIso
 
 -- Porting Note: same as above
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
-  NatIso.ofComponents
-    (by
-      intros
-      apply MonoidalCategory.rightUnitor)
-    (by
-      intros
-      apply MonoidalCategory.rightUnitor_naturality)
+  NatIso.ofComponents rightUnitor
 #align category_theory.monoidal_category.right_unitor_nat_iso CategoryTheory.MonoidalCategory.rightUnitorNatIso
 
-section
-
-attribute [local simp] id_tensorHom tensorHom_id whisker_exchange
-
--- Porting Note: This used to be `variable {C}` but it seems like Lean 4 parses that differently
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
-
-/-- Tensoring on the left with a fixed object, as a functor. -/
-@[simps]
-def tensorLeft (X : C) : C ⥤ C where
-  obj Y := X ⊗ Y
-  map {Y} {Y'} f := 𝟙 X ⊗ f
-#align category_theory.monoidal_category.tensor_left CategoryTheory.MonoidalCategory.tensorLeft
-
-/-- Tensoring on the left with `X ⊗ Y` is naturally isomorphic to
-tensoring on the left with `Y`, and then again with `X`.
--/
-def tensorLeftTensor (X Y : C) : tensorLeft (X ⊗ Y) ≅ tensorLeft Y ⋙ tensorLeft X :=
-  NatIso.ofComponents (associator _ _) fun {Z} {Z'} f => by simp
-#align category_theory.monoidal_category.tensor_left_tensor CategoryTheory.MonoidalCategory.tensorLeftTensor
-
-@[simp]
-theorem tensorLeftTensor_hom_app (X Y Z : C) :
-    (tensorLeftTensor X Y).hom.app Z = (associator X Y Z).hom :=
-  rfl
-#align category_theory.monoidal_category.tensor_left_tensor_hom_app CategoryTheory.MonoidalCategory.tensorLeftTensor_hom_app
-
-@[simp]
-theorem tensorLeftTensor_inv_app (X Y Z : C) :
-    (tensorLeftTensor X Y).inv.app Z = (associator X Y Z).inv := by simp [tensorLeftTensor]
-#align category_theory.monoidal_category.tensor_left_tensor_inv_app CategoryTheory.MonoidalCategory.tensorLeftTensor_inv_app
-
-/-- Tensoring on the right with a fixed object, as a functor. -/
-@[simps]
-def tensorRight (X : C) : C ⥤ C where
-  obj Y := Y ⊗ X
-  map {Y} {Y'} f := f ⊗ 𝟙 X
-#align category_theory.monoidal_category.tensor_right CategoryTheory.MonoidalCategory.tensorRight
-
--- Porting Note: This used to be `variable (C)` but it seems like Lean 4 parses that differently
-variable (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
-
-/-- Tensoring on the left, as a functor from `C` into endofunctors of `C`.
-
-TODO: show this is an op-monoidal functor.
--/
-@[simps]
-def tensoringLeft : C ⥤ C ⥤ C where
-  obj := tensorLeft
-  map {X} {Y} f := { app := fun Z => f ⊗ 𝟙 Z }
-#align category_theory.monoidal_category.tensoring_left CategoryTheory.MonoidalCategory.tensoringLeft
+variable {C}
 
 instance : Faithful (tensoringLeft C) where
   map_injective {X} {Y} f g h := by
@@ -1109,41 +1054,32 @@ instance : Faithful (tensoringLeft C) where
     replace h := congr_fun h (𝟙_ C)
     simpa using h
 
-/-- Tensoring on the right, as a functor from `C` into endofunctors of `C`.
-
-We later show this is a monoidal functor.
--/
-@[simps]
-def tensoringRight : C ⥤ C ⥤ C where
-  obj := tensorRight
-  map {X} {Y} f := { app := fun Z => 𝟙 Z ⊗ f }
-#align category_theory.monoidal_category.tensoring_right CategoryTheory.MonoidalCategory.tensoringRight
-
 instance : Faithful (tensoringRight C) where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)
     simpa using h
 
--- Porting Note: This used to be `variable {C}` but it seems like Lean 4 parses that differently
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
+-- This could theoretically be defined in terms of `associatorNatIso` but it's a hassle
+/-- Tensoring on the left with `X ⊗ Y` is naturally isomorphic to
+tensoring on the left with `Y`, and then again with `X`. This is the
+structure map of a colax monoidal structure on `tensoringLeft`. -/
+@[simps!]
+def tensorLeftTensor (X Y : C) :
+    tensorLeft (X ⊗ Y) ≅ tensorLeft Y ⋙ tensorLeft X :=
+  NatIso.ofComponents (associator X Y)
+#align category_theory.monoidal_category.tensor_left_tensor CategoryTheory.MonoidalCategory.tensorLeftTensor
+#align category_theory.monoidal_category.tensor_left_tensor_hom_app CategoryTheory.MonoidalCategory.tensorLeftTensor_hom_app
+#align category_theory.monoidal_category.tensor_left_tensor_inv_app CategoryTheory.MonoidalCategory.tensorLeftTensor_inv_app
 
 /-- Tensoring on the right with `X ⊗ Y` is naturally isomorphic to
 tensoring on the right with `X`, and then again with `Y`.
 -/
+@[simps!]
 def tensorRightTensor (X Y : C) : tensorRight (X ⊗ Y) ≅ tensorRight X ⋙ tensorRight Y :=
   NatIso.ofComponents (fun Z => (associator Z X Y).symm) fun {Z} {Z'} f => by simp
 #align category_theory.monoidal_category.tensor_right_tensor CategoryTheory.MonoidalCategory.tensorRightTensor
-
-@[simp]
-theorem tensorRightTensor_hom_app (X Y Z : C) :
-    (tensorRightTensor X Y).hom.app Z = (associator Z X Y).inv :=
-  rfl
 #align category_theory.monoidal_category.tensor_right_tensor_hom_app CategoryTheory.MonoidalCategory.tensorRightTensor_hom_app
-
-@[simp]
-theorem tensorRightTensor_inv_app (X Y Z : C) :
-    (tensorRightTensor X Y).inv.app Z = (associator Z X Y).hom := by simp [tensorRightTensor]
 #align category_theory.monoidal_category.tensor_right_tensor_inv_app CategoryTheory.MonoidalCategory.tensorRightTensor_inv_app
 
 end

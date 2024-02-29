@@ -31,7 +31,7 @@ and products of functors and natural transformations, written `F.prod G` and `α
 namespace CategoryTheory
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 section
 
@@ -258,8 +258,7 @@ def prod'CompSnd (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod
 
 section
 
-variable (C)
-
+variable (C D)
 /-- The diagonal functor. -/
 def diag : C ⥤ C × C :=
   (𝟭 C).prod' (𝟭 C)
@@ -275,7 +274,18 @@ theorem diag_map {X Y : C} (f : X ⟶ Y) : (diag C).map f = (f, f) :=
   rfl
 #align category_theory.functor.diag_map CategoryTheory.Functor.diag_map
 
+/-- The isomorphism witnessing that taking products preserves identity functors. -/
+@[simps!] def prodIdIso : 𝟭 (C × D) ≅ .prod (𝟭 C) (𝟭 D) := Iso.refl _
+
 end
+
+variable {A' : Type u₄} [Category.{v₄} A'] {B' : Type u₅} [Category.{v₅} B']
+  {C' : Type u₆} [Category.{v₆} C']
+
+/-- The isomorphism witnessing that taking products preserves composition. -/
+@[simps!]
+def prodCompIso (F : A ⥤ B) (G : B ⥤ C) (F' : A' ⥤ B') (G' : B' ⥤ C') :
+    .prod (F ⋙ G) (F' ⋙ G') ≅ (.prod F F') ⋙ (.prod G G') := Iso.refl _
 
 end Functor
 
@@ -294,7 +304,13 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
     repeat {rw [naturality]}
 #align category_theory.nat_trans.prod CategoryTheory.NatTrans.prod
 
-/- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
+@[simp]
+lemma prod_vcomp {F G H : A ⥤ B} {K I J : C ⥤ D}
+    (α : F ⟶ G) (β : G ⟶ H) (γ : K ⟶ I) (δ : I ⟶ J) :
+    NatTrans.prod (α ≫ β) (γ ≫ δ) =
+      (NatTrans.prod α γ) ≫ (NatTrans.prod β δ) := rfl
+
+/- Again, it is inadvisable in Lean 4 to setup a notation `α × β`;
    use instead `α.prod β` or `NatTrans.prod α β`. -/
 end NatTrans
 
@@ -396,5 +412,21 @@ def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
     ext <;> simpa using Category.id_comp _
 
 end Opposite
+
+namespace Prod
+
+/-- The section `X ↦ (X, Z)` is isomorphic to the product of the identity
+`X ↦ X` and the constant functor `X ↦ Z`. -/
+@[simps!]
+def sectlIsoProd' (Z : D) :
+    sectl C Z ≅ (𝟭 C).prod' ((Functor.const C).obj Z) := Iso.refl _
+
+/-- The section `X ↦ (Z, X)` is isomorphic to the product of the constant
+functor `X ↦ Z` and the identity `X ↦ X`. -/
+@[simps!]
+def sectrIsoProd' (Z : D) :
+    sectr Z C ≅ ((Functor.const C).obj Z).prod' (𝟭 C) := Iso.refl _
+
+end Prod
 
 end CategoryTheory

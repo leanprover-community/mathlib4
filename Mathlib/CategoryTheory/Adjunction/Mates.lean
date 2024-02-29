@@ -75,6 +75,7 @@ This can be seen as a bijection of the 2-cells:
 
 Note that if one of the transformations is an iso, it does not imply the other is an iso.
 -/
+@[simps]
 def transferNatTrans : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂)
     where
   toFun h :=
@@ -126,6 +127,26 @@ theorem unit_transferNatTrans (f : G ⋙ L₂ ⟶ L₁ ⋙ H) (X : C) :
     Functor.comp_map, ← H.map_comp]
   dsimp; simp
 #align category_theory.unit_transfer_nat_trans CategoryTheory.unit_transferNatTrans
+
+open Functor
+
+lemma transferNatTrans_apply (α : G ⋙ L₂ ⟶ L₁ ⋙ H) :
+    transferNatTrans adj₁ adj₂ α =
+      (rightUnitor _).inv ≫ whiskerLeft (R₁ ⋙ G) adj₂.unit ≫
+        (associator _ _ _).inv ≫ whiskerRight (associator _ _ _).hom R₂ ≫
+          whiskerLeft R₁ (whiskerRight α R₂) ≫
+            whiskerRight (associator _ _ _).inv R₂ ≫  (associator _ _ _).hom ≫
+              whiskerRight adj₁.counit (H ⋙ R₂) ≫ (leftUnitor _).hom :=
+  by ext; dsimp; simp only [Functor.map_comp, Functor.map_id, comp_id, id_comp]
+
+lemma transferNatTrans_symm_apply (α : R₁ ⋙ G ⟶ H ⋙ R₂) :
+    (transferNatTrans adj₁ adj₂).symm α =
+      (leftUnitor _).inv ≫ whiskerRight adj₁.unit (G ⋙ L₂) ≫
+        (associator _ _ _).hom ≫ whiskerLeft L₁ (associator _ _ _).inv ≫
+          whiskerLeft L₁ (whiskerRight α L₂) ≫
+            whiskerLeft L₁ (associator _ _ _).hom ≫ (associator _ _ _).inv ≫
+              whiskerLeft (L₁ ⋙ H) adj₂.counit ≫ (rightUnitor _).hom :=
+  by ext; dsimp; simp only [map_comp, assoc, comp_id, id_comp]
 
 -- See library note [dsimp, simp]
 end Square
