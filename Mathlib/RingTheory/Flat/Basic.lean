@@ -305,10 +305,6 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
 lemma CharacterModule.baer_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     Module.Baer R (CharacterModule M) := by
-  have : Module.Injective ℤ (AddCircle (1 : ℚ)) := by
-    erw [Module.injective_iff_injective_object, AddCommGroupCat.injective_as_module_iff]
-    have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
-    apply AddCommGroupCat.injective_of_divisible _
   -- Let `I` be an ideal and `L : I → M⋆`, we want to extend `L` to the entire ring
   rintro I (L : _ →ₗ[_] _)
   letI :  AddCommGroup (I ⊗[R] M) := inferInstance
@@ -394,6 +390,5 @@ lemma iff_rTensor_preserves_injective_linearMap [UnivLE.{u, v}] :
 
 
 end Flat
-
 
 end Module
