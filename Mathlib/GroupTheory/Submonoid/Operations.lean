@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
+import Mathlib.Data.Nat.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -641,6 +642,9 @@ theorem coe_one : ((1 : S) : M) = 1 :=
   rfl
 #align submonoid.coe_one Submonoid.coe_one
 #align add_submonoid.coe_zero AddSubmonoid.coe_zero
+
+@[to_additive (attr := simp)]
+lemma mk_eq_one {a : M} {ha} : (⟨a, ha⟩ : S) = 1 ↔ a = 1 := by simp [← SetLike.coe_eq_coe]
 
 @[to_additive (attr := simp)]
 theorem mk_mul_mk (x y : M) (hx : x ∈ S) (hy : y ∈ S) :
@@ -1502,3 +1506,14 @@ noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] :
 end Submonoid
 
 end Units
+
+open AddSubmonoid Set
+
+namespace Nat
+
+@[simp] lemma addSubmonoid_closure_one : closure ({1} : Set ℕ) = ⊤ := by
+  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) ?_
+  simp_rw [Nat.succ_eq_add_one]
+  exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
+
+end Nat

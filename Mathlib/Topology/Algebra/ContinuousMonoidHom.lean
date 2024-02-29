@@ -98,8 +98,7 @@ namespace ContinuousMonoidHom
 variable {A B C D E}
 
 @[to_additive]
-instance ContinuousMonoidHom.funLike :
-    FunLike (ContinuousMonoidHom A B) A B where
+instance funLike : FunLike (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
@@ -107,8 +106,7 @@ instance ContinuousMonoidHom.funLike :
     congr
 
 @[to_additive]
-instance ContinuousMonoidHom.ContinuousMonoidHomClass :
-    ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
+instance ContinuousMonoidHomClass : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_continuous f := f.continuous_toFun
