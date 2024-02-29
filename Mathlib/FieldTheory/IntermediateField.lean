@@ -72,18 +72,13 @@ def toSubfield : Subfield L :=
     inv_mem' := S.inv_mem' }
 #align intermediate_field.to_subfield IntermediateField.toSubfield
 
-instance (priority := 75) : SubfieldClass (IntermediateField K L) L where
+instance : SubfieldClass (IntermediateField K L) L where
   add_mem {s} := s.add_mem'
   zero_mem {s} := s.zero_mem'
   neg_mem {s} := s.neg_mem
   mul_mem {s} := s.mul_mem'
   one_mem {s} := s.one_mem'
   inv_mem {s} := s.inv_mem' _
-
-/-- An intermediate field inherits a field structure -/
-instance (priority := 75) toField : Field S :=
-  S.toSubfield.toField
-#align intermediate_field.to_field IntermediateField.toField
 
 --@[simp] Porting note (#10618): simp can prove it
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
@@ -301,14 +296,14 @@ theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
 
 /-- Turn a subalgebra satisfying `IsField` into an intermediate_field -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
-  { hS.toField, S.toIntermediateField fun x hx => by
+  S.toIntermediateField fun x hx => by
     by_cases hx0 : x = 0
     · rw [hx0, inv_zero]
       exact S.zero_mem
     letI hS' := hS.toField
     obtain ⟨y, hy⟩ := hS.mul_inv_cancel (show (⟨x, hx⟩ : S) ≠ 0 from Subtype.ne_of_val_ne hx0)
     rw [Subtype.ext_iff, S.coe_mul, S.coe_one, Subtype.coe_mk, mul_eq_one_iff_inv_eq₀ hx0] at hy
-    exact hy.symm ▸ y.2 with }
+    exact hy.symm ▸ y.2
 #align subalgebra.to_intermediate_field' Subalgebra.toIntermediateField'
 
 @[simp]
@@ -333,6 +328,11 @@ def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, alge
 #align subfield.to_intermediate_field Subfield.toIntermediateField
 
 namespace IntermediateField
+
+/-- An intermediate field inherits a field structure -/
+instance toField : Field S :=
+  S.toSubfield.toField
+#align intermediate_field.to_field IntermediateField.toField
 
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by

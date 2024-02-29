@@ -102,8 +102,8 @@ instance nontrivial [Nontrivial R] : Nontrivial s :=
 #align subsemiring_class.nontrivial SubsemiringClass.nontrivial
 
 -- See note [lower instance priority]
-instance (priority := 75) noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
-  eq_zero_or_eq_zero_of_mul_eq_zero := fun h => eq_zero_or_eq_zero_of_mul_eq_zero h
+instance (priority := 75) noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
+  Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ => rfl
 #align subsemiring_class.no_zero_divisors SubsemiringClass.noZeroDivisors
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
@@ -118,8 +118,8 @@ theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
 
 -- Prefer subclasses of `Semiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
-instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
-    Semiring s :=
+instance (priority := 75) toSemiring {R : Type*} [Semiring R] [SetLike S R]
+    [SubsemiringClass S R] : Semiring s :=
   Subtype.coe_injective.semiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_semiring SubsemiringClass.toSemiring
@@ -134,8 +134,8 @@ theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n
 
 -- See note [lower instance priority]
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
-instance (priority := 75) toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
-    CommSemiring s :=
+instance (priority := 75) toCommSemiring {R} [CommSemiring R]
+    [SetLike S R] [SubsemiringClass S R] : CommSemiring s :=
   Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_comm_semiring SubsemiringClass.toCommSemiring

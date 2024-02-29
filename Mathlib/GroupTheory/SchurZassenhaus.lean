@@ -249,9 +249,9 @@ private theorem step6 : IsPGroup (Fintype.card N).minFac N := by
 theorem step7 : IsCommutative N := by
   haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
   haveI : Fact (Fintype.card N).minFac.Prime := ⟨step4 h1 h3⟩
-  exact sorry
-    -- ⟨⟨fun g h => ((eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left
-    --   (step6 h1 h2 h3).bot_lt_center.ne') (mem_top h)).comm g).symm⟩⟩
+  exact
+    ⟨⟨fun g h => ((eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left
+      (step6 h1 h2 h3).bot_lt_center.ne') (mem_top h)).comm g).symm⟩⟩
 #align subgroup.schur_zassenhaus_induction.step7 Subgroup.SchurZassenhausInduction.step7
 
 end SchurZassenhausInduction
@@ -266,10 +266,9 @@ private theorem exists_right_complement'_of_coprime_aux' [Fintype G] (hG : Finty
   apply Nat.strongInductionOn n
   rintro n ih G _ _ rfl N _ hN
   refine' not_forall_not.mp fun h3 => _
-  -- haveI := SchurZassenhausInduction.step7 hN (fun G' _ _ hG' => by apply ih _ hG'; rfl) h3
+  haveI := SchurZassenhausInduction.step7 hN (fun G' _ _ hG' => by apply ih _ hG'; rfl) h3
   rw [← Nat.card_eq_fintype_card] at hN
-  sorry
-  -- exact not_exists_of_forall_not h3 (exists_right_complement'_of_coprime_aux hN)
+  exact not_exists_of_forall_not h3 (exists_right_complement'_of_coprime_aux hN)
 
 /-- **Schur-Zassenhaus** for normal subgroups:
   If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a

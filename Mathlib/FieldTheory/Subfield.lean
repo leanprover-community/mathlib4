@@ -93,7 +93,7 @@ theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
 #align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
 
-instance ratCast (s : S) : RatCast s :=
+instance (s : S) : RatCast s :=
   ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
 
 @[simp]
@@ -120,6 +120,7 @@ theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : ↑(a • x) = a • (x : K) :=
   rfl
 #align subfield_class.coe_rat_smul SubfieldClass.coe_rat_smul
 
+variable (S)
 
 /-- A subfield inherits a division ring structure -/
 instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
@@ -155,11 +156,6 @@ add_decl_doc Subfield.toSubring
 
 namespace Subfield
 
-/-- The `Subgroup` of a subfield -/
-def toSubgroup (s : Subfield K) : Subgroup K :=
-  { s.toSubmonoid with
-    inv_mem' := inv_mem' _ _}
-
 /-- The underlying `AddSubgroup` of a subfield. -/
 def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
   { s.toSubring.toAddSubgroup with }
@@ -175,44 +171,7 @@ instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance (s : Subfield K) : DivInvMonoid s :=
-  inferInstanceAs <| DivInvMonoid s.toSubgroup
-
-theorem div_mem {s : Subfield K} {x y : K} (hx : x ∈ s) (hy : y ∈ s) : x / y ∈ s := sorry
-  -- s.toSubgroup.div_mem hx hy
-
-@[aesop safe apply (rule_sets := [SetLike])]
-theorem coe_rat_mem (s : Subfield K) (x : ℚ) : (x : K) ∈ s := by sorry
-  -- simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
-
-instance ratCast (s : Subfield K) : RatCast s :=
-  ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
-
-@[simp]
-theorem coe_rat_cast (s : Subfield K) (x : ℚ) : ((x : s) : K) = x :=
-  rfl
-
-@[aesop safe apply (rule_sets := [SetLike])]
-theorem rat_smul_mem (s : Subfield K) (a : ℚ) (x : s) : a • (x : K) ∈ s := by sorry
-  -- simpa only [Rat.smul_def] using mul_mem (coe_rat_mem s a) x.prop
-
-instance (s : Subfield K) : SMul ℚ s :=
-  ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
-
-@[simp]
-theorem coe_rat_smul (s : Subfield K) (a : ℚ) (x : s) : ↑(a • x) = a • (x : K) :=
-  rfl
-
-/-- A subfield inherits a field structure -/
-instance (priority := 75) toField {K} [Field K] (s : Subfield K) : Field s :=
-  Subtype.coe_injective.field ((↑) : s → K)
-    (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _; rfl)
-    (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
-#align subfield.to_field Subfield.toField
-
-instance (priority := 75) : SubfieldClass (Subfield K) K where
+instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
   zero_mem s := s.zero_mem'
   neg_mem {s} := s.neg_mem'
@@ -323,9 +282,9 @@ protected theorem inv_mem {x : K} : x ∈ s → x⁻¹ ∈ s :=
   inv_mem
 #align subfield.inv_mem Subfield.inv_mem
 
--- /-- A subfield is closed under division. -/
--- protected theorem div_mem {x y : K} : x ∈ s → y ∈ s → x / y ∈ s :=
---   div_mem
+/-- A subfield is closed under division. -/
+protected theorem div_mem {x y : K} : x ∈ s → y ∈ s → x / y ∈ s :=
+  div_mem
 #align subfield.div_mem Subfield.div_mem
 
 /-- Product of a list of elements in a subfield is in the subfield. -/
@@ -361,9 +320,6 @@ protected theorem coe_int_mem (n : ℤ) : (n : K) ∈ s :=
   coe_int_mem s n
 #align subfield.coe_int_mem Subfield.coe_int_mem
 
--- protected theorem coe_rat_mem (x : ℚ) : (x : K) ∈ s :=
---   SubfieldClass.coe_rat_mem s x
-
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
   · simpa using s.pow_mem hx _
@@ -373,14 +329,26 @@ theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
 instance : Ring s :=
   s.toSubring.toRing
 
-instance div : Div s :=
+instance : Div s :=
   ⟨fun x y => ⟨x / y, s.div_mem x.2 y.2⟩⟩
 
-instance inv : Inv s :=
+instance : Inv s :=
   ⟨fun x => ⟨x⁻¹, s.inv_mem x.2⟩⟩
 
-instance pow : Pow s ℤ :=
+instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
+
+instance toDivisionRing (s : Subfield K) : DivisionRing s :=
+  Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) fun _ ↦ rfl
+
+/-- A subfield inherits a field structure -/
+instance toField {K} [Field K] (s : Subfield K) : Field s :=
+  Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) fun _ => rfl
+#align subfield.to_field Subfield.toField
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=

@@ -36,17 +36,6 @@ def Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type*} [On
 #align function.injective.ordered_comm_monoid Function.Injective.orderedCommMonoid
 #align function.injective.ordered_add_comm_monoid Function.Injective.orderedAddCommMonoid
 
-/-- Pullback an `OrderedCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) "Pullback an `OrderedAddCommMonoid` under an injective map."]
-def Function.Injective.orderedCommMonoid' [OrderedCommMonoid α] {β : Type*} [CommMonoid β]
-    {f : β → α} (hf : Function.Injective f) (mul : ∀ x y, f (x * y) = f x * f y) :
-    OrderedCommMonoid β where
-  toCommMonoid := ‹CommMonoid β›
-  toPartialOrder := PartialOrder.lift f hf
-  mul_le_mul_left a b ab c := show f (c * a) ≤ f (c * b) by
-    rw [mul, mul]; apply mul_le_mul_left'; exact ab
-
 /-- Pullback an `OrderedCancelCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible) Function.Injective.orderedCancelAddCommMonoid
@@ -60,18 +49,6 @@ def Function.Injective.orderedCancelCommMonoid [OrderedCancelCommMonoid α] [One
 #align function.injective.ordered_cancel_comm_monoid Function.Injective.orderedCancelCommMonoid
 #align function.injective.ordered_cancel_add_comm_monoid Function.Injective.orderedCancelAddCommMonoid
 
-/-- Pullback an `OrderedCancelCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) Function.Injective.orderedCancelAddCommMonoid'
-    "Pullback an `OrderedCancelAddCommMonoid` under an injective map."]
-def Function.Injective.orderedCancelCommMonoid'
-    [OrderedCancelCommMonoid α] [OrderedCommMonoid β]
-    {f : β → α} (hf : Injective f) (mul : ∀ x y, f (x * y) = f x * f y) :
-    OrderedCancelCommMonoid β where
-  toOrderedCommMonoid := hf.orderedCommMonoid' mul
-  le_of_mul_le_mul_left a b c (bc : f (a * b) ≤ f (a * c)) :=
-    (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul])
-
 /-- Pullback a `LinearOrderedCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible) "Pullback an `OrderedAddCommMonoid` under an injective map."]
@@ -84,17 +61,6 @@ def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β 
   __ := LinearOrder.lift f hf sup inf
 #align function.injective.linear_ordered_comm_monoid Function.Injective.linearOrderedCommMonoid
 #align function.injective.linear_ordered_add_comm_monoid Function.Injective.linearOrderedAddCommMonoid
-
-/-- Pullback a `LinearOrderedCommMonoid` under an injective map.
-See note [reducible non-instances]. -/
-@[to_additive (attr := reducible) "Pullback an `OrderedAddCommMonoid` under an injective map."]
-def Function.Injective.linearOrderedCommMonoid' [LinearOrderedCommMonoid α] {β : Type*}
-    [OrderedCommMonoid β] [Sup β] [Inf β] {f : β → α} (hf : Function.Injective f)
-    (mul : ∀ x y, f (x * y) = f x * f y) (sup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
-    (inf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
-    LinearOrderedCommMonoid β where
-  toOrderedCommMonoid := hf.orderedCommMonoid' mul
-  __ := LinearOrder.lift f hf sup inf
 
 /-- Pullback a `LinearOrderedCancelCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
