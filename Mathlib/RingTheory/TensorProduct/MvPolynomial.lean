@@ -10,11 +10,22 @@ import Mathlib.RingTheory.TensorProduct
 import Mathlib.Data.MvPolynomial.Equiv
 /-!
 
-# Tensor Product of polynomial rings
+# Tensor Product of (multivariate) polynomial rings
 
-TODO : use what has been done for monoid algebras to get alg hom equiv
-(or do it directly)
+* `MvPolynomial.rTensor`, `MvPolynomial.scalarRTensor`:  the tensor product of
+  a polynomial algebra by a module is linearly equivalent
+  to a Finsupp of a tensor product
+* `MvPolynomial.rTensorAlgHom`, the algebra morphism from the tensor product
+  of a polynomial algebra by an algebra to a polynomial algebra
+* `MvPolynomial.rTensorAlgEquiv`, `MvPolynomial.scalarRTensorAlgEquiv`,
+  the tensor product of a polynomial algebra by an algebra
+  is algebraically equivalent to a polynomial algebra
 
+## TODO :
+* `MvPolynomial.rTensor` could be phrased in terms of `AddMonoidAlgebra`, and
+  `MvPolynomial.rTensor` then has `smul` by the polynomial algebra.
+* `MvPolynomial.rTensorAlgHom` and `MvPolynomial.scalarRTensorAlgEquiv`
+  are morphisms for the algebra structure by `MvPolynomial σ R`.
 -/
 
 
@@ -39,41 +50,41 @@ section Module
 
 variable   [AddCommMonoid N] [Module R N]
 
-/-- A tensor product of a polynomial ring by a module is
+/-- The tensor product of a polynomial ring by a module is
   linearly equivalent to a Finsupp of a tensor product -/
-noncomputable def rTensor' :
+noncomputable def rTensor :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
   TensorProduct.finsuppLeft'
 
-lemma rTensor'_apply_tmul (p : MvPolynomial σ S) (n : N) :
-    rTensor' (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
+lemma rTensor_apply_tmul (p : MvPolynomial σ S) (n : N) :
+    rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
   TensorProduct.finsuppLeft_apply_tmul p n
 
-lemma rTensor'_apply_tmul_apply (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
-    rTensor' (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n :=
+lemma rTensor_apply_tmul_apply (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
+    rTensor (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n :=
   TensorProduct.finsuppLeft_apply_tmul_apply p n d
 
-lemma rTensor'_symm_apply_single (d : σ →₀ ℕ) (s : S) (n : N) :
-    rTensor'.symm (Finsupp.single d (s ⊗ₜ n)) =
+lemma rTensor_symm_apply_single (d : σ →₀ ℕ) (s : S) (n : N) :
+    rTensor.symm (Finsupp.single d (s ⊗ₜ n)) =
       (monomial d s) ⊗ₜ[R] n :=
   TensorProduct.finsuppLeft_symm_apply_single d s n
 
 /-- The tensor product of the polynomial algebra by a module
   is linearly equivalent to a Finsupp of that module -/
-noncomputable def rTensor :
+noncomputable def scalarRTensor :
     MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
   TensorProduct.finsuppScalarLeft
 
-lemma rTensor_apply_tmul (p : MvPolynomial σ R) (n : N) :
-    rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m • n)) :=
+lemma scalarRTensor_apply_tmul (p : MvPolynomial σ R) (n : N) :
+    scalarRTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m • n)) :=
   TensorProduct.finsuppScalarLeft_apply_tmul p n
 
-lemma rTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ):
-    rTensor (p ⊗ₜ[R] n) d = (coeff d p) • n :=
+lemma scalarRTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ):
+    scalarRTensor (p ⊗ₜ[R] n) d = (coeff d p) • n :=
   TensorProduct.finsuppScalarLeft_apply_tmul_apply p n d
 
-lemma rTensor_symm_apply_single (d : σ →₀ ℕ) (n : N) :
-    rTensor.symm (Finsupp.single d n) = (monomial d 1) ⊗ₜ[R] n :=
+lemma scalarRTensor_symm_apply_single (d : σ →₀ ℕ) (n : N) :
+    scalarRTensor.symm (Finsupp.single d n) = (monomial d 1) ⊗ₜ[R] n :=
   TensorProduct.finsuppScalarLeft_symm_apply_single d n
 
 end Module
