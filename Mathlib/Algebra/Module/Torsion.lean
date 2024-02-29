@@ -74,7 +74,7 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 /-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`.-/
 @[simps!]
 def torsionOf (x : M) : Ideal R :=
-  -- Porting note: broken dot notation on LinearMap.ker Lean4#1910
+  -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
   LinearMap.ker (LinearMap.toSpanSingleton R M x)
 #align ideal.torsion_of Ideal.torsionOf
 
@@ -163,7 +163,7 @@ namespace Submodule
   `a • x = 0`. -/
 @[simps!]
 def torsionBy (a : R) : Submodule R M :=
-  -- Porting note: broken dot notation on LinearMap.ker Lean4#1910
+  -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
   LinearMap.ker (DistribMulAction.toLinearMap R M a)
 #align submodule.torsion_by Submodule.torsionBy
 
@@ -415,8 +415,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf :
     · rw [mem_torsionBySet_iff] at hx ⊢
       rintro ⟨a, ha⟩
       rw [smul_smul]
-      suffices : a * μ i ∈ ⨅ i ∈ S, p i
-      exact hx ⟨_, this⟩
+      suffices a * μ i ∈ ⨅ i ∈ S, p i from hx ⟨_, this⟩
       rw [mem_iInf]
       intro j
       rw [mem_iInf]
@@ -623,7 +622,7 @@ theorem mem_torsion'_iff (x : M) : x ∈ torsion' R M S ↔ ∃ a : S, a • x =
   Iff.rfl
 #align submodule.mem_torsion'_iff Submodule.mem_torsion'_iff
 
--- @[simp] Porting note : simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem mem_torsion_iff (x : M) : x ∈ torsion R M ↔ ∃ a : R⁰, a • x = 0 :=
   Iff.rfl
 #align submodule.mem_torsion_iff Submodule.mem_torsion_iff
@@ -662,7 +661,7 @@ theorem torsion'_torsion'_eq_top : torsion' R (torsion' R M S) S = ⊤ :=
 
 /-- The torsion submodule of the torsion submodule (viewed as a module) is the full
 torsion module. -/
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem torsion_torsion_eq_top : torsion R (torsion R M) = ⊤ :=
   torsion'_torsion'_eq_top R⁰
 #align submodule.torsion_torsion_eq_top Submodule.torsion_torsion_eq_top
@@ -859,7 +858,7 @@ theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
     obtain ⟨n, hn⟩ := @h x
-    refine' ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
+    exact ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
 #align add_monoid.is_torsion_iff_is_torsion_nat AddMonoid.isTorsion_iff_isTorsion_nat
 
 theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :

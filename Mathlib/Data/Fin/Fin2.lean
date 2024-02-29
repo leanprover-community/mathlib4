@@ -3,9 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Tactic.NoMatch
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Mathport.Rename
+import Mathlib.Data.Fintype.Basic
 
 #align_import data.fin.fin2 from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -130,5 +130,12 @@ def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
 
 instance : Inhabited (Fin2 1) :=
   ⟨fz⟩
+
+instance instFintype : ∀ n, Fintype (Fin2 n)
+  | 0   => ⟨∅, Fin2.elim0⟩
+  | n+1 =>
+    let ⟨elems, compl⟩ := instFintype n
+    { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)
+      complete := by rintro (_|i) <;> simp [compl] }
 
 end Fin2

@@ -3,7 +3,8 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.Combinatorics.Partition
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Finset.NatAntidiagonal
@@ -202,6 +203,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         simp only [Multiset.mem_toFinset, not_not, mem_filter] }
   refine' Finset.card_congr φ _ _ _
   · intro a  ha
+    unfold_let
     simp only [not_forall, not_exists, not_and, exists_prop, mem_filter]
     rw [mem_piAntidiagonal']
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
@@ -224,7 +226,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     apply Nat.Partition.ext
     simp only [true_and_iff, mem_univ, mem_filter] at hp₁ hp₂
     ext i
-    simp only [ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.mk.injEq] at h
+    simp only [φ, ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.mk.injEq] at h
     by_cases hi : i = 0
     · rw [hi]
       rw [Multiset.count_eq_zero_of_not_mem]
@@ -234,11 +236,11 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     · rw [← mul_left_inj' hi]
       rw [Function.funext_iff] at h
       exact h.2 i
-  · simp only [mem_filter, mem_piAntidiagonal, mem_univ, exists_prop, true_and_iff, and_assoc]
+  · simp only [φ, mem_filter, mem_piAntidiagonal, mem_univ, exists_prop, true_and_iff, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
-    suffices hf' : f ∈ piAntidiagonal s n
+    have hf' : f ∈ piAntidiagonal s n := mem_piAntidiagonal.mpr ⟨hf, hf₃⟩
     simp only [mem_piAntidiagonal'] at hf'
-    refine' ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, _, _⟩, _, _, _⟩
+    refine ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
       simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
       rcases hi with ⟨t, ht, z⟩
@@ -271,7 +273,6 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       · apply symm
         rw [← Finsupp.not_mem_support_iff]
         exact not_mem_mono hf h
-    · exact mem_piAntidiagonal.mpr ⟨hf, hf₃⟩
 #align theorems_100.partial_gf_prop Theorems100.partialGF_prop
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :

@@ -132,7 +132,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
   rw [pairwise_cons']
   have mem : ∀ x ∈ t, a ∈ insert a t \ {x} := fun x hx ↦ by
     rw [mem_sdiff, mem_singleton]
-    refine ⟨mem_insert_self _ _, fun ha ↦ hat (ha ▸ hx)⟩
+    exact ⟨mem_insert_self _ _, fun ha ↦ hat (ha ▸ hx)⟩
   constructor
   · rintro ⟨μ, hμ⟩
     rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat] at hμ
@@ -288,7 +288,7 @@ theorem pairwise_isRelPrime_iff_isRelPrime_prod [DecidableEq I] :
   refine' ⟨fun hp i hi ↦ IsRelPrime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
-    refine @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
+    exact @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsRelPrime.prod_right_iff.mp (hp i hi)
     exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩

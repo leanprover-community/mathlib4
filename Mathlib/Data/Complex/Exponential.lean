@@ -1623,10 +1623,9 @@ theorem cos_two_neg : cos 2 < 0 :=
 
 theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     Real.exp x < 1 / (1 - x) := by
-  have H : 0 < 1 - (1 + x + x ^ 2) * (1 - x)
-  · calc
-      0 < x ^ 3 := by positivity
-      _ = 1 - (1 + x + x ^ 2) * (1 - x) := by ring
+  have H : 0 < 1 - (1 + x + x ^ 2) * (1 - x) := calc
+    0 < x ^ 3 := by positivity
+    _ = 1 - (1 + x + x ^ 2) * (1 - x) := by ring
   calc
     exp x ≤ _ := exp_bound' h1.le h2.le zero_lt_three
     _ ≤ 1 + x + x ^ 2 := by

@@ -362,14 +362,14 @@ theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) 
 #align min_mul_distrib' min_mul_distrib'
 #align min_add_distrib' min_add_distrib'
 
--- Porting note: no longer `@[simp]`, as `simp` can prove this.
+-- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
   min_eq_left (one_le a)
 #align one_min one_min
 #align zero_min zero_min
 
--- Porting note: no longer `@[simp]`, as `simp` can prove this.
+-- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right (one_le a)

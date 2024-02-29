@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Set
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
@@ -194,7 +194,7 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
   rfl
 #align cardinal.mk_ulift Cardinal.mk_uLift
 
--- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
@@ -202,7 +202,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 #align cardinal.lift_umax Cardinal.lift_umax
 
--- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
 @[simp, nolint simpNF]
@@ -210,7 +210,7 @@ theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 #align cardinal.lift_umax' Cardinal.lift_umax'
 
--- Porting note : simpNF is not happy with universe levels, but this is needed as simp lemma
+-- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
 -- further down in this file
 /-- A cardinal lifted to a lower or equal universe equals itself. -/
 @[simp, nolint simpNF]
@@ -225,7 +225,7 @@ theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
 #align cardinal.lift_id Cardinal.lift_id
 
 /-- A cardinal lifted to the zero universe equals itself. -/
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
   lift_id'.{0, u} a
@@ -558,12 +558,12 @@ theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
   inductionOn a fun _ => mk_eq_one _
 #align cardinal.one_power Cardinal.one_power
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_bool : #Bool = 2 := by simp
 #align cardinal.mk_bool Cardinal.mk_bool
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_Prop : #Prop = 2 := by simp
 #align cardinal.mk_Prop Cardinal.mk_Prop
@@ -600,6 +600,10 @@ theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) 
 @[simp]
 theorem lift_one : lift 1 = 1 := mk_eq_one _
 #align cardinal.lift_one Cardinal.lift_one
+
+@[simp]
+theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
+  lift_injective.eq_iff' lift_one
 
 @[simp]
 theorem lift_add (a b : Cardinal.{u}) : lift.{v} (a + b) = lift.{v} a + lift.{v} b :=
@@ -1030,7 +1034,7 @@ lemma exists_eq_of_iSup_eq_of_not_isLimit
   rw [← le_zero_iff] at h ⊢
   exact (le_ciSup hf _).trans h
 
--- Portin note: simpNF is not happy with universe levels.
+-- Porting note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
@@ -1291,7 +1295,7 @@ theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ :
 
 /-! ### Properties about the cast from `ℕ` -/
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_fin (n : ℕ) : #(Fin n) = n := by simp
 #align cardinal.mk_fin Cardinal.mk_fin
@@ -1300,10 +1304,21 @@ theorem mk_fin (n : ℕ) : #(Fin n) = n := by simp
 theorem lift_natCast (n : ℕ) : lift.{u} (n : Cardinal.{v}) = n := by induction n <;> simp [*]
 #align cardinal.lift_nat_cast Cardinal.lift_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
+    lift.{u} (no_index (OfNat.ofNat n : Cardinal.{v})) = OfNat.ofNat n :=
+  lift_natCast n
+
 @[simp]
 theorem lift_eq_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a = n :=
   lift_injective.eq_iff' (lift_natCast n)
 #align cardinal.lift_eq_nat_iff Cardinal.lift_eq_nat_iff
+
+@[simp]
+theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    lift.{v} a = (no_index (OfNat.ofNat n)) ↔ a = OfNat.ofNat n :=
+  lift_eq_nat_iff
 
 @[simp]
 theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
@@ -1312,9 +1327,36 @@ theorem nat_eq_lift_iff {n : ℕ} {a : Cardinal.{u}} :
 #align cardinal.nat_eq_lift_iff Cardinal.nat_eq_lift_iff
 
 @[simp]
+theorem zero_eq_lift_iff {a : Cardinal.{u}} :
+    (0 : Cardinal) = lift.{v} a ↔ 0 = a := by
+  simpa using nat_eq_lift_iff (n := 0)
+
+@[simp]
+theorem one_eq_lift_iff {a : Cardinal.{u}} :
+    (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
+  simpa using nat_eq_lift_iff (n := 1)
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : Cardinal)) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a :=
+  nat_eq_lift_iff
+
+@[simp]
 theorem lift_le_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
   rw [← lift_natCast.{v,u}, lift_le]
 #align cardinal.lift_le_nat_iff Cardinal.lift_le_nat_iff
+
+@[simp]
+theorem lift_le_one_iff {a : Cardinal.{u}} :
+    lift.{v} a ≤ 1 ↔ a ≤ 1 := by
+  simpa using lift_le_nat_iff (n := 1)
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    lift.{v} a ≤ (no_index (OfNat.ofNat n)) ↔ a ≤ OfNat.ofNat n :=
+  lift_le_nat_iff
 
 @[simp]
 theorem nat_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n ≤ a := by
@@ -1322,14 +1364,48 @@ theorem nat_le_lift_iff {n : ℕ} {a : Cardinal.{u}} : n ≤ lift.{v} a ↔ n �
 #align cardinal.nat_le_lift_iff Cardinal.nat_le_lift_iff
 
 @[simp]
+theorem one_le_lift_iff {a : Cardinal.{u}} :
+    (1 : Cardinal) ≤ lift.{v} a ↔ 1 ≤ a := by
+  simpa using nat_le_lift_iff (n := 1)
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : Cardinal)) ≤ lift.{v} a ↔ (OfNat.ofNat n : Cardinal) ≤ a :=
+  nat_le_lift_iff
+
+@[simp]
 theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
   rw [← lift_natCast.{v,u}, lift_lt]
 #align cardinal.lift_lt_nat_iff Cardinal.lift_lt_nat_iff
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    lift.{v} a < (no_index (OfNat.ofNat n)) ↔ a < OfNat.ofNat n :=
+  lift_lt_nat_iff
 
 @[simp]
 theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a := by
   rw [← lift_natCast.{v,u}, lift_lt]
 #align cardinal.nat_lt_lift_iff Cardinal.nat_lt_lift_iff
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem zero_lt_lift_iff {a : Cardinal.{u}} :
+    (0 : Cardinal) < lift.{v} a ↔ 0 < a := by
+  simpa using nat_lt_lift_iff (n := 0)
+
+@[simp]
+theorem one_lt_lift_iff {a : Cardinal.{u}} :
+    (1 : Cardinal) < lift.{v} a ↔ 1 < a := by
+  simpa using nat_lt_lift_iff (n := 1)
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_lt_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : Cardinal)) < lift.{v} a ↔ (OfNat.ofNat n : Cardinal) < a :=
+  nat_lt_lift_iff
 
 theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
 #align cardinal.lift_mk_fin Cardinal.lift_mk_fin
@@ -1355,14 +1431,14 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 #align cardinal.card_le_of_finset Cardinal.card_le_of_finset
 
--- Porting note: was `simp`. LHS is not normal form.
+-- porting note: was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
   induction n <;> simp [pow_succ', power_add, *, Pow.pow]
 #align cardinal.nat_cast_pow Cardinal.natCast_pow
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := by
@@ -1370,7 +1446,7 @@ theorem natCast_le {m n : ℕ} : (m : Cardinal) ≤ n ↔ m ≤ n := by
     Fintype.card_fin, Fintype.card_fin]
 #align cardinal.nat_cast_le Cardinal.natCast_le
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := by
@@ -1401,13 +1477,19 @@ theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 #align cardinal.succ_zero Cardinal.succ_zero
 
+theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
+    ∃ s : Finset α, n ≤ s.card := by
+  obtain hα|hα := finite_or_infinite α
+  · let hα := Fintype.ofFinite α
+    use Finset.univ
+    simpa only [mk_fintype, Nat.cast_le] using h
+  · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
+    exact ⟨s, hs.ge⟩
+
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
-  refine' le_of_lt_succ (lt_of_not_ge fun hn => _)
-  rw [← Cardinal.nat_succ, ← lift_mk_fin n.succ] at hn
-  cases' hn with f
-  refine' (H <| Finset.univ.map f).not_lt _
-  rw [Finset.card_map, ← Fintype.card, Fintype.card_ulift, Fintype.card_fin]
-  exact n.lt_succ_self
+  contrapose! H
+  apply exists_finset_le_card α (n+1)
+  simpa only [nat_succ, succ_le_iff] using H
 #align cardinal.card_le_of Cardinal.card_le_of
 
 theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by
@@ -1422,6 +1504,10 @@ theorem one_le_iff_pos {c : Cardinal} : 1 ≤ c ↔ 0 < c := by
 theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
   rw [one_le_iff_pos, pos_iff_ne_zero]
 #align cardinal.one_le_iff_ne_zero Cardinal.one_le_iff_ne_zero
+
+@[simp]
+theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
+  simpa using lt_succ_bot_iff (a := c)
 
 theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
   succ_le_iff.1
@@ -1502,7 +1588,7 @@ theorem lt_aleph0_of_finite (α : Type u) [Finite α] : #α < ℵ₀ :=
   lt_aleph0_iff_finite.2 ‹_›
 #align cardinal.lt_aleph_0_of_finite Cardinal.lt_aleph0_of_finite
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem lt_aleph0_iff_set_finite {S : Set α} : #S < ℵ₀ ↔ S.Finite :=
   lt_aleph0_iff_finite.trans finite_coe_iff
@@ -1525,7 +1611,7 @@ theorem mk_le_aleph0 [Countable α] : #α ≤ ℵ₀ :=
   mk_le_aleph0_iff.mpr ‹_›
 #align cardinal.mk_le_aleph_0 Cardinal.mk_le_aleph0
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable := mk_le_aleph0_iff
 #align cardinal.le_aleph_0_iff_set_countable Cardinal.le_aleph0_iff_set_countable
@@ -1591,9 +1677,9 @@ theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 
     rw [← Ne, ← one_le_iff_ne_zero] at ha hb
     constructor
     · rw [← mul_one a]
-      refine' (mul_le_mul' le_rfl hb).trans_lt h
+      exact (mul_le_mul' le_rfl hb).trans_lt h
     · rw [← one_mul b]
-      refine' (mul_le_mul' ha le_rfl).trans_lt h
+      exact (mul_le_mul' ha le_rfl).trans_lt h
   rintro (rfl | rfl | ⟨ha, hb⟩) <;> simp only [*, mul_lt_aleph0, aleph0_pos, zero_mul, mul_zero]
 #align cardinal.mul_lt_aleph_0_iff Cardinal.mul_lt_aleph0_iff
 
@@ -1649,7 +1735,7 @@ theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ #α = ℵ�
     exact ⟨Denumerable.mk' <| f.trans Equiv.ulift⟩⟩
 #align cardinal.denumerable_iff Cardinal.denumerable_iff
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_denumerable (α : Type u) [Denumerable α] : #α = ℵ₀ :=
   denumerable_iff.1 ⟨‹_›⟩
@@ -1745,19 +1831,19 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
     exact hc i a (congr_fun h _)
 #align cardinal.sum_lt_prod Cardinal.sum_lt_prod
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_empty : #Empty = 0 :=
   mk_eq_zero _
 #align cardinal.mk_empty Cardinal.mk_empty
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_pempty : #PEmpty = 0 :=
   mk_eq_zero _
 #align cardinal.mk_pempty Cardinal.mk_pempty
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_punit : #PUnit = 1 :=
   mk_eq_one PUnit
@@ -1767,19 +1853,19 @@ theorem mk_unit : #Unit = 1 :=
   mk_punit
 #align cardinal.mk_unit Cardinal.mk_unit
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_singleton {α : Type u} (x : α) : #({x} : Set α) = 1 :=
   mk_eq_one _
 #align cardinal.mk_singleton Cardinal.mk_singleton
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_plift_true : #(PLift True) = 1 :=
   mk_eq_one _
 #align cardinal.mk_plift_true Cardinal.mk_plift_true
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_plift_false : #(PLift False) = 0 :=
   mk_eq_zero _
@@ -1809,7 +1895,7 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
   ⟨Embedding.subtypeMap (Embedding.refl α) h⟩
 #align cardinal.mk_subtype_le_of_subset Cardinal.mk_subtype_le_of_subset
 
--- Porting note : simp can prove this
+-- porting note (#10618): simp can prove this
 -- @[simp]
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
@@ -2005,7 +2091,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
     Finset.card_image_of_injOn (injOn_of_injective Subtype.coe_injective _)
   rw [← this]
   apply H
-  simp only [Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+  simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=
@@ -2140,8 +2226,8 @@ theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length 
 #align cardinal.exists_not_mem_of_length_lt Cardinal.exists_not_mem_of_length_lt
 
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
-  have : ↑(3 : ℕ) ≤ #α; simpa using h
-  have : ↑(2 : ℕ) < #α; rwa [← succ_le_iff, ← Cardinal.nat_succ]
+  have : ↑(3 : ℕ) ≤ #α := by simpa using h
+  have : ↑(2 : ℕ) < #α := by rwa [← succ_le_iff, ← Cardinal.nat_succ]
   have := exists_not_mem_of_length_lt [x, y] this
   simpa [not_or] using this
 #align cardinal.three_le Cardinal.three_le
