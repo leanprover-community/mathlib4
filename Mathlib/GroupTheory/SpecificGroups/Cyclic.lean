@@ -351,11 +351,10 @@ theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
 theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
     ∃! n : ZMod (Fintype.card α), x = a ^ n.val := by
   obtain ⟨n, rfl⟩ := ha x
-  refine ⟨n, (?_ : a ^ n = _), ?_⟩
+  refine ⟨n, (?_ : a ^ n = _), fun y (hy : a ^ n = _) ↦ ?_⟩
   · rw [← zpow_coe_nat, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.int_coe_zmod_eq_iff]
-  · intro y hy
-    rw [← zpow_coe_nat, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
+  · rw [← zpow_coe_nat, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       ← ZMod.int_cast_eq_int_cast_iff] at hy
     simp [hy]
 
