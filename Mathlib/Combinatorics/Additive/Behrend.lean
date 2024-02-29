@@ -431,7 +431,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
   · apply le_trans _ (div_le_div_of_le_left _ _ (ceil_lt_mul _).le)
     rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
-    · norm_num; exact le_sqrt_log hN
+    · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
     · norm_num1
     · apply log_nonneg
       rw [one_le_cast]
