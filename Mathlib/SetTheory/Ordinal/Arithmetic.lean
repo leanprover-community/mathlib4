@@ -1148,14 +1148,14 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
   bfamilyOfFamily'_typein _ f i
 #align ordinal.bfamily_of_family_typein Ordinal.bfamilyOfFamily_typein
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily' r ho f (enum r i (by rwa [ho])) = f i hi := by
   simp only [familyOfBFamily', typein_enum]
 #align ordinal.family_of_bfamily'_enum Ordinal.familyOfBFamily'_enum
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily o f
         (enum (· < ·) i
@@ -1450,7 +1450,7 @@ theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrde
   sup_eq_sup r _ ho _ f
 #align ordinal.sup_eq_bsup' Ordinal.sup_eq_bsup'
 
-@[simp, nolint simpNF] -- Porting note: simp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     sSup (brange o f) = bsup.{_, v} o f := by
   congr
@@ -2308,39 +2308,45 @@ theorem one_add_nat_cast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
   rfl
 #align ordinal.one_add_nat_cast Ordinal.one_add_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
+    1 + (no_index (OfNat.ofNat m : Ordinal)) = Order.succ (OfNat.ofNat m : Ordinal) :=
+  one_add_nat_cast m
+
 @[simp, norm_cast]
 theorem nat_cast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
   | 0 => by simp
   | n + 1 => by rw [Nat.mul_succ, Nat.cast_add, nat_cast_mul m n, Nat.cast_succ, mul_add_one]
 #align ordinal.nat_cast_mul Ordinal.nat_cast_mul
 
-@[simp, norm_cast]
+/-- Alias of `Nat.cast_le`, specialized to `Ordinal` --/
 theorem nat_cast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := by
   rw [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_le_ord, Cardinal.natCast_le]
 #align ordinal.nat_cast_le Ordinal.nat_cast_le
 
-@[simp, norm_cast]
-theorem nat_cast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := by
-  simp only [lt_iff_le_not_le, nat_cast_le]
-#align ordinal.nat_cast_lt Ordinal.nat_cast_lt
-
-@[simp, norm_cast]
+/-- Alias of `Nat.cast_inj`, specialized to `Ordinal` --/
 theorem nat_cast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := by
   simp only [le_antisymm_iff, nat_cast_le]
 #align ordinal.nat_cast_inj Ordinal.nat_cast_inj
 
-@[simp, norm_cast]
-theorem nat_cast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 :=
-  @nat_cast_inj n 0
+instance charZero : CharZero Ordinal where
+  cast_injective _ _ := nat_cast_inj.mp
+
+/-- Alias of `Nat.cast_lt`, specialized to `Ordinal` --/
+theorem nat_cast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
+#align ordinal.nat_cast_lt Ordinal.nat_cast_lt
+
+/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
+theorem nat_cast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_zero
 #align ordinal.nat_cast_eq_zero Ordinal.nat_cast_eq_zero
 
-theorem nat_cast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 :=
-  not_congr nat_cast_eq_zero
+/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
+theorem nat_cast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
 #align ordinal.nat_cast_ne_zero Ordinal.nat_cast_ne_zero
 
-@[simp, norm_cast]
-theorem nat_cast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n :=
-  @nat_cast_lt 0 n
+/-- Alias of `Nat.cast_pos'`, specialized to `Ordinal` --/
+theorem nat_cast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
 #align ordinal.nat_cast_pos Ordinal.nat_cast_pos
 
 @[simp, norm_cast]
@@ -2376,6 +2382,12 @@ theorem lift_nat_cast : ∀ n : ℕ, lift.{u, v} n = n
   | 0 => by simp
   | n + 1 => by simp [lift_nat_cast n]
 #align ordinal.lift_nat_cast Ordinal.lift_nat_cast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
+    lift.{u, v} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  lift_nat_cast n
 
 end Ordinal
 
