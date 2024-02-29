@@ -76,7 +76,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
         -- porting note: used to work with `norm_cast`
-        simp only [PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff]
+        simp only [t_succ, PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff]
         left
         rfl
       _ = (∏ i in Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / m pk) := by

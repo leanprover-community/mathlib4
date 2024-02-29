@@ -71,7 +71,7 @@ theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeft
       Measure.restrict_apply₀' 𝓕meas, Measure.restrict_apply₀' 𝓕meas]
     set π_preA := π ⁻¹' A
     have : π ⁻¹' ((fun x : G ⧸ Γ => g • x) ⁻¹' A) = (g * ·) ⁻¹' π_preA := by
-      ext1; simp
+      ext1; simp [π_preA, π]
     rw [this]
     have : μ ((g * ·) ⁻¹' π_preA ∩ 𝓕) = μ (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕) := by
       trans μ ((g * ·) ⁻¹' (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕))
@@ -85,8 +85,8 @@ theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeft
     rw [h𝓕.measure_set_eq h𝓕_translate_fundom meas_πA, ← preimage_smul_inv]; rfl
     rintro ⟨γ, γ_in_Γ⟩
     ext x
-    have : π (x * MulOpposite.unop γ) = π x := by simpa [QuotientGroup.eq'] using γ_in_Γ
-    simp only [(· • ·), ← this, mem_preimage]
+    have : π (x * MulOpposite.unop γ) = π x := by simpa [π, QuotientGroup.eq'] using γ_in_Γ
+    simp only [π_preA, (· • ·), ← this, mem_preimage]
     rfl
 #align measure_theory.is_fundamental_domain.smul_invariant_measure_map MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map
 #align measure_theory.is_add_fundamental_domain.vadd_invariant_measure_map MeasureTheory.IsAddFundamentalDomain.vaddInvariantMeasure_map

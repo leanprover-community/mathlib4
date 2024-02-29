@@ -481,6 +481,14 @@ lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i 
 
 lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
 
+variable {X Y} in
+@[reassoc (attr := simp)]
+lemma ιMapObjOrZero_mapMap :
+    X.ιMapObjOrZero p i j ≫ mapMap φ p j = φ i ≫ Y.ιMapObjOrZero p i j := by
+  by_cases h : p i = j
+  · simp only [ιMapObjOrZero_eq _ _ _ _ h, ι_mapMap]
+  · simp only [ιMapObjOrZero_eq_zero _ _ _ _ h, zero_comp, comp_zero]
+
 end GradedObject
 
 end CategoryTheory
