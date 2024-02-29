@@ -148,6 +148,23 @@ theorem WfDvdMonoid.iff_wellFounded_associates [CancelCommMonoidWithZero α] :
   ⟨by apply WfDvdMonoid.wellFounded_associates, WfDvdMonoid.of_wellFounded_associates⟩
 #align wf_dvd_monoid.iff_well_founded_associates WfDvdMonoid.iff_wellFounded_associates
 
+theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
+    (h : a₀ ≠ 0) (hx : ¬IsUnit x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
+  obtain ⟨a, ⟨n, rfl⟩, hm⟩ := wellFounded_dvdNotUnit.has_min
+    {a | ∃ n, x ^ n * a = a₀} ⟨a₀, 0, by rw [pow_zero, one_mul]⟩
+  refine ⟨n, a, ?_, rfl⟩; rintro ⟨d, rfl⟩
+  exact hm d ⟨n + 1, by rw [pow_succ', mul_assoc]⟩
+    ⟨(right_ne_zero_of_mul <| right_ne_zero_of_mul h), x, hx, mul_comm _ _⟩
+
+theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
+    (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
+  max_power_factor' h hx.not_unit
+
+theorem multiplicity.finite_of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+    {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : multiplicity.Finite a b := by
+  obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
+  exact ⟨n, by rwa [pow_succ', mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
+
 section Prio
 
 -- set_option default_priority 100
@@ -1046,19 +1063,11 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 #align unique_factorization_monoid.count_normalized_factors_eq' UniqueFactorizationMonoid.count_normalizedFactors_eq'
 
-
-theorem max_power_factor {a₀ : R} {x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
-    ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := by
-  classical
-    let n := (normalizedFactors a₀).count (normalize x)
-    obtain ⟨a, ha1, ha2⟩ := @exists_eq_pow_mul_and_not_dvd R _ _ x a₀
-      (ne_top_iff_finite.mp (PartENat.ne_top_iff.mpr
-        -- Porting note: this was a hole that was filled at the end of the proof with `use`:
-        ⟨n, multiplicity_eq_count_normalizedFactors hx h⟩))
-    simp_rw [← (multiplicity_eq_count_normalizedFactors hx h).symm] at ha1
-    use n, a, ha2, ha1
+/-- Deprecated. Use `WfDvdMonoid.max_power_factor` instead. -/
+@[deprecated WfDvdMonoid.max_power_factor]
+theorem max_power_factor {a₀ x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
+    ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := WfDvdMonoid.max_power_factor h hx
 #align unique_factorization_monoid.max_power_factor UniqueFactorizationMonoid.max_power_factor
-
 
 end multiplicity
 
