@@ -164,6 +164,16 @@ def ModularCyclotomicCharacter' (n : ℕ+) :
     map_one' := ModularCyclotomicCharacter.id n
     map_mul' := ModularCyclotomicCharacter.comp n }
 
+lemma spec' (g : L ≃+* L) {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
+    g t = t ^ ((ModularCyclotomicCharacter' L n g) : ZMod
+      (Fintype.card { x // x ∈ rootsOfUnity n L })).val :=
+  ModularCyclotomicCharacter.toFun_spec' g ht
+
+lemma unique' (g : L ≃+* L) {c : ZMod (Fintype.card { x // x ∈ rootsOfUnity n L })}
+    (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) :
+    c = ModularCyclotomicCharacter' L n g :=
+  ModularCyclotomicCharacter.toFun_unique' _ _ _ hc
+
 /-- Given a positive integer `n` and a field `L` containing `n` `n`th roots
 of unity, `ModularCyclotomicCharacter n` is a multiplicative homomorphism from the
 automorphisms of `L` to `(ℤ/nℤ)ˣ`. It is uniquely characterised by the property that
