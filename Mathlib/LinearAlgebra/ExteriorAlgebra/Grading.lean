@@ -29,14 +29,14 @@ open scoped DirectSum
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 -- porting note: protected
 protected def GradedAlgebra.ι :
-    M →ₗ[R] ⨁ i : ℕ, Λ[R]^i M :=
-  DirectSum.lof R ℕ (fun i => Λ[R]^i M) 1 ∘ₗ
+    M →ₗ[R] ⨁ i : ℕ, ⋀[R]^i M :=
+  DirectSum.lof R ℕ (fun i => ⋀[R]^i M) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
 #align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
-      DirectSum.of (fun i : ℕ => Λ[R]^i M) 1
+      DirectSum.of (fun i : ℕ => ⋀[R]^i M) 1
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
 #align exterior_algebra.graded_algebra.ι_apply ExteriorAlgebra.GradedAlgebra.ι_apply
@@ -44,7 +44,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 -- Defining this instance manually, because Lean doesn't seem to be able to synthesize it.
 -- Strangely, this problem only appears when we use the abbreviation or notation for the
 -- exterior powers.
-instance : SetLike.GradedMonoid fun i : ℕ ↦ Λ[R]^i M :=
+instance : SetLike.GradedMonoid fun i : ℕ ↦ ⋀[R]^i M :=
   Submodule.nat_power_gradedMonoid (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
@@ -58,12 +58,12 @@ theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebr
 /-- `ExteriorAlgebra.GradedAlgebra.ι` lifted to exterior algebra. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 def GradedAlgebra.liftι :
-    ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ, Λ[R]^i M :=
+    ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ, ⋀[R]^i M :=
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
-theorem GradedAlgebra.liftι_eq (i : ℕ) (x : Λ[R]^i M) :
-    GradedAlgebra.liftι R M x = DirectSum.of (fun i => Λ[R]^i M) i x := by
+theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
+    GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
   cases' x with x hx
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   -- Porting note: original statement was
@@ -82,7 +82,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : Λ[R]^i M) :
 #align exterior_algebra.graded_algebra.lift_ι_eq ExteriorAlgebra.GradedAlgebra.liftι_eq
 
 /-- The exterior algebra is graded by the powers of the submodule `(ExteriorAlgebra.ι R).range`. -/
-instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ Λ[R]^i M) :=
+instance gradedAlgebra : GradedAlgebra (fun i : ℕ ↦ ⋀[R]^i M) :=
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply GradedAlgebra.liftι R M)
@@ -101,7 +101,7 @@ lemma ιMulti_span :
     Submodule.span R (Set.range fun x : Σ n, (Fin n → M) => ιMulti R x.1 x.2) = ⊤ := by
   rw [Submodule.eq_top_iff']
   intro x
-  induction x using DirectSum.Decomposition.inductionOn fun i => Λ[R]^i M with
+  induction x using DirectSum.Decomposition.inductionOn fun i => ⋀[R]^i M with
   | h_zero => exact Submodule.zero_mem _
   | h_add _ _ hm hm' => exact Submodule.add_mem _ hm hm'
   | h_homogeneous hm =>
