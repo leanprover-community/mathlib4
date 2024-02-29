@@ -895,12 +895,12 @@ section Field
 
 variable [Field F] {p q : MvPolynomial σ F}
 
-theorem degreeOf_C_mul (j : σ) (c : F) (hc : c ≠ 0) :
-    degreeOf j (C c * p) = degreeOf j p := by
+theorem degreeOf_C_mul (i : σ) (c : F) (hc : c ≠ 0) :
+    degreeOf i (C c * p) = degreeOf i p := by
   rw [Nat.eq_iff_le_and_ge]
   constructor
-  · exact degreeOf_C_mul_le p j c
-  · have := degreeOf_C_mul_le (C c * p) j (c⁻¹)
+  · exact degreeOf_C_mul_le p i c
+  · have := degreeOf_C_mul_le (C c * p) i (c⁻¹)
     simp only [← mul_assoc, ← C_mul, ne_eq, hc, not_false_eq_true, inv_mul_cancel, map_one,
       one_mul] at this
     exact this
