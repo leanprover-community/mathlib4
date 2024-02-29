@@ -127,8 +127,6 @@ instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment 
     convert F.map_id _
     simp
   assoc P Q R S := by
-    -- simp only [← id_tensorHom, ← tensorHom_id]
-    dsimp only
     rw [comp_whiskerRight, Category.assoc, F.μ_natural_left_assoc,
       ← F.associativity_inv_assoc, ← F.map_comp, ← F.map_comp, e_assoc,
       F.map_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc,

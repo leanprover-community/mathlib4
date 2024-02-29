@@ -184,7 +184,7 @@ theorem LaxMonoidalFunctor.right_unitality_inv (F : LaxMonoidalFunctor C D) (X :
 --Porting note: was `[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem LaxMonoidalFunctor.associativity_inv (F : LaxMonoidalFunctor C D) (X Y Z : C) :
-    (F.obj X ◁ F.μ Y Z) ≫ F.μ X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv =
+    F.obj X ◁ F.μ Y Z ≫ F.μ X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv =
       (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ F.μ X Y ▷ F.obj Z ≫ F.μ (X ⊗ Y) Z := by
   rw [Iso.eq_inv_comp, ← F.associativity_assoc, ← F.toFunctor.map_comp, Iso.hom_inv_id,
     F.toFunctor.map_id, comp_id]
