@@ -458,7 +458,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     have := average_density_near_total_density hPα hPε hε₁
       (Subset.refl (chunk hP G ε hU).parts) (Subset.refl (chunk hP G ε hV).parts)
     simp_rw [← sup_eq_biUnion, sup_parts, card_chunk (m_pos hPα).ne', cast_pow] at this
-    norm_num at this
+    set_option tactic.skipAssignedInstances false in norm_num at this
     exact this
   have hε' : ε ^ 5 ≤ ε := by
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by norm_num)
@@ -470,6 +470,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   left; linarith
   right; linarith
 
+set_option tactic.skipAssignedInstances false in
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/
 theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)

@@ -264,7 +264,7 @@ theorem exists_large_sphere (n d : ℕ) :
   apply one_le_mul_of_one_le_of_one_le
   · rwa [one_le_cast]
   rw [_root_.le_sub_iff_add_le]
-  norm_num
+  set_option tactic.skipAssignedInstances false in norm_num
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere
 

@@ -56,6 +56,7 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
   | var _ => 1
   | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
 
+set_option tactic.skipAssignedInstances false in
 /-- Normalizes the expression at the same time as assigning all variables in
 `e` to the literal booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
@@ -92,28 +93,11 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         · -- normalized
           have := ht₃ v
           have := he₃ v
-          simp_all -- used to be done here v4.7.0-rc1 issues
-          intro _
-          constructor <;> intro h <;> apply Option.some_ne_none _ <;>
-            rw [← AList.lookup_insert l]
-          · exact ht₃ _ h
-          · exact he₃ _ h
-          -- ◾-- aesop times out now
+          ◾
         · -- lookup = none
-          by_cases h' : w = v
-          · rwa [h']
-          · split_ifs at b with h
-            · rw [h] at b
-              have := he₃ w b
-              rwa [AList.lookup_insert_ne h'] at this
-            · simp_all
-              match b with
-              | .inr h'' =>
-                have := he₃ w h''
-                rwa [AList.lookup_insert_ne h'] at this
-              | .inl h'' =>
-                have := ht₃ w h''
-                rwa [AList.lookup_insert_ne h'] at this ⟩ -- ◾⟩
+          have := ht₃ w
+          have := he₃ w
+          by_cases w = v <;> ◾⟩
     | some b =>
       have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
   termination_by e => e.normSize
