@@ -98,33 +98,37 @@ noncomputable def ModularCyclotomicCharacter.toFun (n : ℕ+) (g : L ≃+* L) :
 
 namespace ModularCyclotomicCharacter
 
-local notation "χ" => ModularCyclotomicCharacter.toFun
+local notation "χ₀" => ModularCyclotomicCharacter.toFun
 
 /-- The formula which characterises the output of `ModularCyclotomicCharacter g n`. -/
-theorem spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
-    g (t : Lˣ) = (t ^ (χ n g).val : Lˣ) := by
+theorem toFun_spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
+    g (t : Lˣ) = (t ^ (χ₀ n g).val : Lˣ) := by
   rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_coe_nat, ModularCyclotomicCharacter.toFun,
     ZMod.val_int_cast, ← Subgroup.coe_zpow]
   exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| zpow_eq_zpow_emod _ pow_card_eq_one
 
+theorem toFun_spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
+    g t = t ^ (χ₀ n g).val :=
+  toFun_spec g ⟨t, ht⟩
+
+theorem toFun_spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
+    g t = t ^ (χ₀ n g).val :=
+  toFun_spec' g (SetLike.coe_mem ht.toRootsOfUnity)
+
 /-- If g(t)=t^c for all roots of unity, then c=χ(g). -/
-theorem unique (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
-    (hc : ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ c.val : Lˣ)) : c = χ n g := by
+theorem toFun_unique (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
+    (hc : ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ c.val : Lˣ)) : c = χ₀ n g := by
   apply IsCyclic.ext rfl (fun ζ ↦ ?_)
   specialize hc ζ
-  suffices ((ζ ^ c.val : Lˣ) : L) = (ζ ^ (χ n g).val : Lˣ) by exact_mod_cast this
-  rw [← spec g ζ, hc]
+  suffices ((ζ ^ c.val : Lˣ) : L) = (ζ ^ (χ₀ n g).val : Lˣ) by exact_mod_cast this
+  rw [← toFun_spec g ζ, hc]
 
-theorem spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
-    g t = t ^ (χ n g).val :=
-  spec g ⟨t, ht⟩
+theorem toFun_unique' (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
+    (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) : c = χ₀ n g :=
+  toFun_unique n g c (fun ⟨_, ht⟩ ↦ hc _ ht)
 
-theorem spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
-    g t = t ^ (χ n g).val :=
-  spec' g (SetLike.coe_mem ht.toRootsOfUnity)
-
-lemma id : χ n (RingEquiv.refl L) = 1 := by
-  refine (unique n (RingEquiv.refl L) 1 <| fun t ↦ ?_).symm
+lemma id : χ₀ n (RingEquiv.refl L) = 1 := by
+  refine (toFun_unique n (RingEquiv.refl L) 1 <| fun t ↦ ?_).symm
   have : 1 ≤ Fintype.card { x // x ∈ rootsOfUnity n L } := Fin.size_positive'
   obtain (h | h) := this.lt_or_eq
   · have := Fact.mk h
@@ -133,11 +137,12 @@ lemma id : χ n (RingEquiv.refl L) = 1 := by
     obtain rfl : t = 1 := Subsingleton.elim t 1
     simp
 
-lemma comp (g h : L ≃+* L) : χ n (g * h) =
-    χ n g * χ n h := by
-  refine (unique n (g * h) _ <| fun ζ ↦ ?_).symm
+lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
+    χ₀ n g * χ₀ n h := by
+  refine (toFun_unique n (g * h) _ <| fun ζ ↦ ?_).symm
   change g (h (ζ : Lˣ)) = _
-  rw [spec, ← Subgroup.coe_pow, spec, mul_comm, Subgroup.coe_pow, ← pow_mul, ← Subgroup.coe_pow]
+  rw [toFun_spec, ← Subgroup.coe_pow, toFun_spec, mul_comm, Subgroup.coe_pow, ← pow_mul,
+    ← Subgroup.coe_pow]
   congr 2
   norm_cast
   simp only [pow_eq_pow_iff_modEq, ← ZMod.nat_cast_eq_nat_cast_iff, SubmonoidClass.coe_pow,
@@ -159,20 +164,35 @@ def ModularCyclotomicCharacter' (n : ℕ+) :
     map_one' := ModularCyclotomicCharacter.id n
     map_mul' := ModularCyclotomicCharacter.comp n }
 
--- *TODO* -- add spec and unique
-
 /-- Given a positive integer `n` and a field `L` containing `n` `n`th roots
 of unity, `ModularCyclotomicCharacter n` is a multiplicative homomorphism from the
 automorphisms of `L` to `(ℤ/nℤ)ˣ`. It is uniquely characterised by the property that
 `g(ζ)=ζ^(ModularCyclotomicCharacter n g)` for `g` an automorphism of `L` and `ζ` any `n`th root
 of unity. -/
-noncomputable def ModularCyclotomicCharacter (n : ℕ+)
+noncomputable def ModularCyclotomicCharacter {n : ℕ+}
     (hn : Fintype.card { x // x ∈ rootsOfUnity n L } = n) :
     (L ≃+* L) →* (ZMod n)ˣ :=
   (Units.mapEquiv <| (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
   (ModularCyclotomicCharacter' L n)
 
--- *TODO* -- add spec and unique
+namespace ModularCyclotomicCharacter
+
+variable {n : ℕ+} (hn : Fintype.card { x // x ∈ rootsOfUnity n L } = n)
+
+lemma spec (g : L ≃+* L) {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
+    g t = t ^ ((ModularCyclotomicCharacter L hn g) : ZMod n).val := by
+  rw [toFun_spec' g ht]
+  congr 1
+  exact (ZMod.ringEquivCongr_val _ _).symm
+
+lemma unique (g : L ≃+* L) {c : ZMod n}  (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) :
+    c = ModularCyclotomicCharacter L hn g := by
+  have := toFun_unique' n g (ZMod.ringEquivCongr hn.symm c) ?_
+  · exact (ZMod.ringEquivCongr_symm hn.symm _ _ this.symm)
+  · intro t ht
+    rw [hc t ht, ZMod.ringEquivCongr_val]
+
+end ModularCyclotomicCharacter
 
 variable {L}
 
@@ -181,9 +201,9 @@ variable {L}
 needs an explicit root of unity, and also an auxiliary "base ring" `R`. -/
 lemma IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter (n : ℕ+)
     (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : L ≃ₐ[R] L) :
-    hμ.autToPow R g = ModularCyclotomicCharacter L n hμ.card_rootsOfUnity g := by
+    hμ.autToPow R g = ModularCyclotomicCharacter L hμ.card_rootsOfUnity g := by
   ext
   apply ZMod.val_injective
   apply hμ.pow_inj (ZMod.val_lt _) (ZMod.val_lt _)
   simpa [autToPow_spec R hμ g, ModularCyclotomicCharacter', ModularCyclotomicCharacter,
-    ZMod.ringEquivCongr_val] using ModularCyclotomicCharacter.spec'' g hμ
+    ZMod.ringEquivCongr_val] using ModularCyclotomicCharacter.toFun_spec'' g hμ
