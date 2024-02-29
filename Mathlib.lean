@@ -3660,8 +3660,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Algebra.InfiniteSum.IntNat
 import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
