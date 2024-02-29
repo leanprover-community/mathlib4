@@ -14,9 +14,9 @@ they don't know about ordered fields) or in `Tactic.Positivity.Basic` (because i
 know about finiteness).
 -/
 
-open Finset
 namespace Mathlib.Meta.Positivity
-open Qq Lean Meta
+
+open Qq Lean Meta Finset
 
 /-- Extension for `Finset.card`. `s.card` is positive if `s` is nonempty.
 
