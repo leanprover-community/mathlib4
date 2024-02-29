@@ -182,7 +182,7 @@ def valuation : Valuation K (ValueGroup A K) where
   map_one' := rfl
   map_mul' _ _ := rfl
   map_add_le_max' := by
-    -- FIXME nightly-testing: something wrong here?
+    -- FIXME nightly-testing: field_simp is broken
     sorry
     -- intro a b
     -- obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
