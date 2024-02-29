@@ -21,7 +21,7 @@ It is endowed with the structure of an `R`-algebra.
 The `n`th exterior power of the `R`-module `M` is denoted by `exteriorPower R n M`;
 it is of type `Submodule R (ExteriorAlgebra R M)` and defined as
 `LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n`.
-We also introduce the notation `Λ[R]^n M` for `exteriorPower R n M`.
+We also introduce the notation `⋀[R]^n M` for `exteriorPower R n M`.
 
 Given a linear morphism `f : M → A` from a module `M` to another `R`-algebra `A`, such that
 `cond : ∀ m : M, f m * f m = 0`, there is a (unique) lift of `f` to an `R`-algebra morphism,
@@ -77,12 +77,12 @@ section exteriorPower
 variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- Definition of the `n`th exterior power of a `R`-module `N`. We introduce the notation
-`Λ[R]^n M` for `exteriorPower R n M`. -/
+`⋀[R]^n M` for `exteriorPower R n M`. -/
 abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
   LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
 
 @[inherit_doc exteriorPower]
-notation:max "Λ[" R "]^" n:arg => exteriorPower R n
+notation:max "⋀[" R "]^" n:arg => exteriorPower R n
 
 end exteriorPower
 
@@ -353,7 +353,7 @@ variable (R)
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power. -/
 lemma ιMulti_range (n : ℕ) :
-    Set.range (ιMulti R n (M := M)) ⊆ ↑(Λ[R]^n M) := by
+    Set.range (ιMulti R n (M := M)) ⊆ ↑(⋀[R]^n M) := by
   rw [Set.range_subset_iff]
   intro v
   rw [ιMulti_apply]
@@ -364,7 +364,7 @@ lemma ιMulti_range (n : ℕ) :
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
 of the exterior algebra. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
-    Submodule.span R (Set.range (ιMulti R n)) = Λ[R]^n M := by
+    Submodule.span R (Set.range (ιMulti R n)) = ⋀[R]^n M := by
   refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
   rw [exteriorPower, Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
