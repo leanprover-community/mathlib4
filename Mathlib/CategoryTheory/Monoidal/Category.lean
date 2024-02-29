@@ -927,13 +927,13 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = 
 /-- The functor `fun X ↦ 𝟙_ C ⊗ X`. -/
 def tensorUnitLeft : C ⥤ C where
   obj X := 𝟙_ C ⊗ X
-  map {X Y : C} (f : X ⟶ Y) := 𝟙 (𝟙_ C) ⊗ f
+  map {X Y : C} (f : X ⟶ Y) := 𝟙_ C ◁ f
 #align category_theory.monoidal_category.tensor_unit_left CategoryTheory.MonoidalCategory.tensorUnitLeft
 
 /-- The functor `fun X ↦ X ⊗ 𝟙_ C`. -/
 def tensorUnitRight : C ⥤ C where
   obj X := X ⊗ 𝟙_ C
-  map {X Y : C} (f : X ⟶ Y) := f ⊗ 𝟙 (𝟙_ C)
+  map {X Y : C} (f : X ⟶ Y) := f ▷ 𝟙_ C
 #align category_theory.monoidal_category.tensor_unit_right CategoryTheory.MonoidalCategory.tensorUnitRight
 
 -- We can express the associator and the unitors, given componentwise above,
@@ -961,7 +961,7 @@ def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
       apply MonoidalCategory.leftUnitor)
     (by
       intros
-      apply MonoidalCategory.leftUnitor_naturality)
+      apply MonoidalCategory.leftUnitor_naturality')
 #align category_theory.monoidal_category.left_unitor_nat_iso CategoryTheory.MonoidalCategory.leftUnitorNatIso
 
 -- Porting Note: same as above
@@ -974,7 +974,7 @@ def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
       apply MonoidalCategory.rightUnitor)
     (by
       intros
-      apply MonoidalCategory.rightUnitor_naturality)
+      apply MonoidalCategory.rightUnitor_naturality')
 #align category_theory.monoidal_category.right_unitor_nat_iso CategoryTheory.MonoidalCategory.rightUnitorNatIso
 
 section
@@ -988,7 +988,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 @[simps]
 def tensorLeft (X : C) : C ⥤ C where
   obj Y := X ⊗ Y
-  map {Y} {Y'} f := 𝟙 X ⊗ f
+  map {Y} {Y'} f := X ◁ f
 #align category_theory.monoidal_category.tensor_left CategoryTheory.MonoidalCategory.tensorLeft
 
 /-- Tensoring on the left with `X ⊗ Y` is naturally isomorphic to
@@ -1013,7 +1013,7 @@ theorem tensorLeftTensor_inv_app (X Y Z : C) :
 @[simps]
 def tensorRight (X : C) : C ⥤ C where
   obj Y := Y ⊗ X
-  map {Y} {Y'} f := f ⊗ 𝟙 X
+  map {Y} {Y'} f := f ▷ X
 #align category_theory.monoidal_category.tensor_right CategoryTheory.MonoidalCategory.tensorRight
 
 -- Porting Note: This used to be `variable (C)` but it seems like Lean 4 parses that differently
@@ -1026,7 +1026,7 @@ TODO: show this is an op-monoidal functor.
 @[simps]
 def tensoringLeft : C ⥤ C ⥤ C where
   obj := tensorLeft
-  map {X} {Y} f := { app := fun Z => f ⊗ 𝟙 Z }
+  map {X} {Y} f := { app := fun Z => f ▷ Z }
 #align category_theory.monoidal_category.tensoring_left CategoryTheory.MonoidalCategory.tensoringLeft
 
 instance : Faithful (tensoringLeft C) where
@@ -1042,7 +1042,7 @@ We later show this is a monoidal functor.
 @[simps]
 def tensoringRight : C ⥤ C ⥤ C where
   obj := tensorRight
-  map {X} {Y} f := { app := fun Z => 𝟙 Z ⊗ f }
+  map {X} {Y} f := { app := fun Z => Z ◁ f }
 #align category_theory.monoidal_category.tensoring_right CategoryTheory.MonoidalCategory.tensoringRight
 
 instance : Faithful (tensoringRight C) where
