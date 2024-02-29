@@ -115,7 +115,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       simpa using ENNReal.add_lt_add_left ?aux this
     case aux =>
       classical
-      simpa [hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const,
+      simpa [f, hs, hc, lt_top_iff_ne_top, true_and_iff, SimpleFunc.coe_const,
         Function.const_apply, lintegral_const, ENNReal.coe_indicator, Set.univ_inter,
         ENNReal.coe_ne_top, MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
         or_false_iff, lintegral_indicator, ENNReal.coe_eq_zero, Ne.def, not_false_iff,
@@ -278,7 +278,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
     convert fint.aestronglyMeasurable.real_toNNReal.aemeasurable
     simp only [Real.toNNReal_coe]
   lift ε to ℝ≥0 using εpos.le
-  obtain ⟨δ, δpos, hδε⟩ : ∃ δ : ℝ≥0, 0 < δ ∧ δ < ε; exact exists_between εpos
+  obtain ⟨δ, δpos, hδε⟩ : ∃ δ : ℝ≥0, 0 < δ ∧ δ < ε := exists_between εpos
   have int_f_ne_top : (∫⁻ a : α, f a ∂μ) ≠ ∞ :=
     (hasFiniteIntegral_iff_ofNNReal.1 fint.hasFiniteIntegral).ne
   rcases exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable μ f fmeas
@@ -497,11 +497,11 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
         _ ≤ (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ((∫ x : α, ↑(fm x) ∂μ) - δ) := (sub_le_sub_left gmint _)
         _ = (∫ x : α, f x ∂μ) + 2 * δ := by
           simp_rw [integral_eq_integral_pos_part_sub_integral_neg_part hf]; ring
-        _ = (∫ x : α, f x ∂μ) + ε := by congr 1; field_simp [mul_comm]
+        _ = (∫ x : α, f x ∂μ) + ε := by congr 1; field_simp [δ, mul_comm]
   case aelt =>
     show ∀ᵐ x : α ∂μ, g x < ⊤
     filter_upwards [gp_lt_top] with ?_ hx
-    simp only [sub_eq_add_neg, Ne.def, (EReal.add_lt_top _ _).ne, lt_top_iff_ne_top,
+    simp only [g, sub_eq_add_neg, Ne.def, (EReal.add_lt_top _ _).ne, lt_top_iff_ne_top,
       lt_top_iff_ne_top.1 hx, EReal.coe_ennreal_eq_top_iff, not_false_iff, EReal.neg_eq_top_iff,
       EReal.coe_ennreal_ne_bot]
   case lt =>
