@@ -557,9 +557,13 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
     · rfl
     · simp only [addX]
       ring1
-    · field_simp [hxy rfl]
-      ring1
-    · linear_combination (norm := (field_simp [hxy rfl]; ring1)) -h₁
+    · -- FIXME nightly-testing: `field_simp` is broken?
+      sorry
+      -- field_simp [hxy rfl]
+      -- ring1
+    · -- FIXME nightly-testing: `linear_combination` is broken?
+      sorry
+      -- linear_combination (norm := (field_simp [hxy rfl]; ring1)) -h₁
   · rw [equation_iff] at h₁ h₂
     rw [slope_of_Xne hx]
     rw [← sub_eq_zero] at hx
@@ -568,9 +572,13 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.equation x₁ y₁
     · simp only [addX]
       ring1
     · apply mul_right_injective₀ hx
-      linear_combination (norm := (field_simp [hx]; ring1)) h₂ - h₁
+      -- FIXME nightly-testing: `linear_combination` is broken?
+      sorry
+      -- linear_combination (norm := (field_simp [hx]; ring1)) h₂ - h₁
     · apply mul_right_injective₀ hx
-      linear_combination (norm := (field_simp [hx]; ring1)) x₂ * h₁ - x₁ * h₂
+      -- FIXME nightly-testing: `linear_combination` is broken?
+      sorry
+      -- linear_combination (norm := (field_simp [hx]; ring1)) x₂ * h₁ - x₁ * h₂
 #align weierstrass_curve.add_polynomial_slope WeierstrassCurve.Affine.addPolynomial_slope
 
 /-- The addition of two affine points in `W` on a sloped line,

@@ -465,6 +465,7 @@ lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι →
     refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
     obtain ⟨j, hj, rfl⟩ := hs has
     exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
+  change Disjoint (f i) (Finset.sup t id)
   rw [← this, Finset.sup_image]
   specialize h (insert i (t.preimage _ hf))
   rw [Finset.supIndep_iff_disjoint_erase] at h

@@ -1096,8 +1096,7 @@ noncomputable def finsetEquivSet : Finset α ≃ Set α where
 #align fintype.finset_equiv_set_apply Fintype.finsetEquivSet_apply
 
 @[simp] lemma finsetEquivSet_symm_apply (s : Set α) [Fintype s] :
-    finsetEquivSet.symm s = s.toFinset := by
-  simp [finsetEquivSet]; congr; exact Subsingleton.elim _ _
+    finsetEquivSet.symm s = s.toFinset := by simp [finsetEquivSet]
 #align fintype.finset_equiv_set_symm_apply Fintype.finsetEquivSet_symm_apply
 
 /-- Given a fintype `α`, `finsetOrderIsoSet` is the order isomorphism between `Finset α` and `Set α`

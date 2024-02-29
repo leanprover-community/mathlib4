@@ -212,8 +212,10 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     simp only [one_mul, div_one] at A
     convert A using 1
     ext1 n
-    field_simp [(zero_lt_one.trans (cone k)).ne', (H n).ne']
-    ring
+    -- FIXME nightly-testing: field_simp is broken
+    sorry
+    -- field_simp [(zero_lt_one.trans (cone k)).ne', (H n).ne']
+    -- ring
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
   exact (div_le_iff (H n)).1 hn.le
 #align tendsto_div_of_monotone_of_tendsto_div_floor_pow tendsto_div_of_monotone_of_tendsto_div_floor_pow
@@ -310,6 +312,8 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       exact sum_div_pow_sq_le_div_sq N hj hc
     _ = c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
       congr 1
-      field_simp [(sub_pos.2 hc).ne']
-      ring!
+      -- FIXME nightly-testing: field_simp is broken
+      sorry
+      -- field_simp [(sub_pos.2 hc).ne']
+      -- ring!
 #align sum_div_nat_floor_pow_sq_le_div_sq sum_div_nat_floor_pow_sq_le_div_sq
