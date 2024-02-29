@@ -16,11 +16,11 @@ The `#`-command linter produces a warning when a command starting with `#` is us
 namespace Mathlib.Linter
 
 /--
-Enables the '`#`-command' linter. This will warn on any command beginning with `#`.
-For example, `#eval, #guard, #guard_msgs` all trigger a message.
+Setting to `true` enables the '`#`-command' linter.  When `true`, Lean warns on any command
+beginning with `#`.  For example, `#eval, #guard, #guard_msgs` all trigger a message.
 -/
 register_option linter.hashCommand : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `#`-command linter"
 }
 
