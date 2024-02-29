@@ -107,6 +107,14 @@ theorem spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
     ZMod.val_int_cast, ← Subgroup.coe_zpow]
   exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| zpow_eq_zpow_emod _ pow_card_eq_one
 
+/-- If g(t)=t^c for all roots of unity, then c=χ(g). -/
+theorem unique (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
+    (hc : ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ c.val : Lˣ)) : c = χ n g := by
+  apply IsCyclic.ext rfl (fun ζ ↦ ?_)
+  specialize hc ζ
+  suffices ((ζ ^ c.val : Lˣ) : L) = (ζ ^ (χ n g).val : Lˣ) by exact_mod_cast this
+  rw [← spec g ζ, hc]
+
 theorem spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
     g t = t ^ (χ n g).val :=
   spec g ⟨t, ht⟩
@@ -116,27 +124,22 @@ theorem spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
   spec' g (SetLike.coe_mem ht.toRootsOfUnity)
 
 lemma id : χ n (RingEquiv.refl L) = 1 := by
-  refine IsCyclic.ext (G := rootsOfUnity n L) rfl ?_
-  intro ζ
-  ext
-  rw [Subgroup.coe_pow, ← spec]
+  refine (unique n (RingEquiv.refl L) 1 <| fun t ↦ ?_).symm
   have : 1 ≤ Fintype.card { x // x ∈ rootsOfUnity n L } := Fin.size_positive'
   obtain (h | h) := this.lt_or_eq
   · have := Fact.mk h
     simp [ZMod.val_one]
   · have := Fintype.card_le_one_iff_subsingleton.mp h.ge
-    obtain rfl : ζ = 1 := Subsingleton.elim ζ 1
+    obtain rfl : t = 1 := Subsingleton.elim t 1
     simp
 
 lemma comp (g h : L ≃+* L) : χ n (g * h) =
     χ n g * χ n h := by
-  refine IsCyclic.ext (G := rootsOfUnity n L) rfl ?_
-  intro ζ
-  ext
-  rw [Subgroup.coe_pow, ← spec]
+  refine (unique n (g * h) _ <| fun ζ ↦ ?_).symm
   change g (h (ζ : Lˣ)) = _
   rw [spec, ← Subgroup.coe_pow, spec, mul_comm, Subgroup.coe_pow, ← pow_mul, ← Subgroup.coe_pow]
   congr 2
+  norm_cast
   simp only [pow_eq_pow_iff_modEq, ← ZMod.nat_cast_eq_nat_cast_iff, SubmonoidClass.coe_pow,
     ZMod.nat_cast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
 
@@ -145,7 +148,7 @@ end ModularCyclotomicCharacter
 variable (L)
 
 /-- Given a positive integer `n`, `ModularCyclotomicCharacter' n` is a
-multiplicative homomorphism from the automorphisms of a field `L` to `ℤ/dℤˣ`,
+multiplicative homomorphism from the automorphisms of a field `L` to `(ℤ/dℤ)ˣ`,
 where `d` is the number of `n`'th roots of unity in `L`. It is uniquely
 characterised by the property that `g(ζ)=ζ^(ModularCyclotomicCharacter n g)`
 for `g` an automorphism of `L` and `ζ` an `n`th root of unity. -/
@@ -156,9 +159,11 @@ def ModularCyclotomicCharacter' (n : ℕ+) :
     map_one' := ModularCyclotomicCharacter.id n
     map_mul' := ModularCyclotomicCharacter.comp n }
 
+-- *TODO* -- add spec and unique
+
 /-- Given a positive integer `n` and a field `L` containing `n` `n`th roots
 of unity, `ModularCyclotomicCharacter n` is a multiplicative homomorphism from the
-automorphisms of `L` to `ℤ/nℤ`. It is uniquely characterised by the property that
+automorphisms of `L` to `(ℤ/nℤ)ˣ`. It is uniquely characterised by the property that
 `g(ζ)=ζ^(ModularCyclotomicCharacter n g)` for `g` an automorphism of `L` and `ζ` any `n`th root
 of unity. -/
 noncomputable def ModularCyclotomicCharacter (n : ℕ+)
@@ -166,6 +171,8 @@ noncomputable def ModularCyclotomicCharacter (n : ℕ+)
     (L ≃+* L) →* (ZMod n)ˣ :=
   (Units.mapEquiv <| (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
   (ModularCyclotomicCharacter' L n)
+
+-- *TODO* -- add spec and unique
 
 variable {L}
 
