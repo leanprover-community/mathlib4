@@ -55,9 +55,7 @@ theorem boundary_le_hnot : ∂ a ≤ ￢a :=
   inf_le_right
 #align coheyting.boundary_le_hnot Coheyting.boundary_le_hnot
 
-@[simp]
-theorem boundary_bot : ∂ (⊥ : α) = ⊥ :=
-  bot_inf_eq
+@[simp] lemma boundary_bot : ∂ (⊥ : α) = ⊥ := bot_inf_eq _
 #align coheyting.boundary_bot Coheyting.boundary_bot
 
 @[simp]
