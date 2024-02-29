@@ -11,13 +11,6 @@ import Mathlib.LinearAlgebra.TensorPower
 
 We introduce the exterior powers of a module `M` over a commutative ring `R`.
 
--- This notation is in another PR and should ultimately vanish from here
-## Notation
-
-The `n`th exterior power of the `R`-module `M` is denoted by `exteriorPower R n M`; it is of
-type `Submodule R (ExteriorAlgebra R M)` and defined as `LinearMap.range (ExteriorAlgebra.ι R :
-M →ₗ[R] ExteriorAlgebra R M) ^ n`. We also introduce the notation `⋀[R]^n M` for
-`exteriorPower R n M`.
 
 ## Definitions
 
@@ -62,16 +55,6 @@ variable {K : Type v} {E : Type uE} {F: Type uF} [Field K] [AddCommGroup E] [Mod
   [AddCommGroup F] [Module K F]
 
 variable (R M n)
-
--- This part should be erased if the other PR is merged.
-/-- Definition of the `n`th exterior power of a `R`-module `M`. We introduce the notation
-`⋀[R]^n M` for `exteriorPower R n M`. -/
-@[reducible]
-def exteriorPower := (LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n)
-
-@[inherit_doc]
-notation:100 "⋀[" R "]^" n:arg => exteriorPower R n
--- End of part to erase.
 
 variable {M}
 
