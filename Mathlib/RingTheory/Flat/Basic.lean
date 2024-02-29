@@ -262,17 +262,7 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
   obtain ⟨g, hg⟩ := CharacterModule.exists_character_apply_ne_zero_of_ne_zero (a := z) rid
 
   -- Then we can define a linear map `f : A → M⋆` by `f a m = g (a ⊗ m)`.
-  let f : A →ₗ[R] (CharacterModule M) :=
-  { toFun := fun a =>
-    { toFun := fun m => g (a ⊗ₜ m)
-      map_add' := fun _ _ => by simp only [tmul_add, map_add]
-      map_zero' := by simp }
-    map_add' := fun _ _ => AddMonoidHom.ext fun _ => by
-      change g _ = g _ + g _
-      rw [add_tmul, map_add]
-    map_smul' := fun _ _ => AddMonoidHom.ext fun _ => by
-      change g _ = g _
-      aesop }
+  let f : A →ₗ[R] (CharacterModule M) := CharacterModule.homEquiv.symm g
   -- Since `M⋆` is an injective module, we can factor `f` to `f' ∘ L` where `f' : B → M⋆`.
   obtain ⟨f', hf'⟩ := h.out L hL f
   -- Since `B → M⋆`  is naturally isomorphic to `(B ⊗ M)⋆`, we get a character `g' : (B ⊗ M)⋆`
