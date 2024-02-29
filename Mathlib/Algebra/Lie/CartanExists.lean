@@ -92,10 +92,9 @@ lemma Polynomial.Monic.eq_X_pow_of_natTrailingDegree_eq_natDegree
 lemma _root_.MvPolynomial.IsHomogeneous.totalDegree_le {R : Type*} [CommSemiring R]
     {σ : Type*} {n : ℕ} (F : MvPolynomial σ R) (hF : F.IsHomogeneous n) :
     F.totalDegree ≤ n := by
-  apply Finset.sup_le
-  intro d hd
-  rw [MvPolynomial.mem_support_iff] at hd
-  rw [Finsupp.sum, hF hd]
+  by_cases h : F = 0
+  · simp only [h, MvPolynomial.totalDegree_zero, zero_le]
+  · rw [hF.totalDegree h]
 
 -- move to Mathlib.RingTheory.Polynomial.Basic
 open BigOperators MvPolynomial Polynomial in
