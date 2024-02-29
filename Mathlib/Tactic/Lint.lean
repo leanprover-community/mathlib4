@@ -34,3 +34,24 @@ Linter that checks whether a structure should be in Prop.
     let allProofs ← projs.allM (do isProof <| ← mkConstWithLevelParams <| declName ++ ·)
     unless allProofs do return none
     return m!"all fields are propositional but the structure isn't."
+
+/--
+Linter that checks whether a theorem statement contains `Classical.propDecidable`.
+-/
+-- To do: maybe also check definition bodies? I expect more false positives there.
+@[std_linter] def illegalClassical : Linter where
+  noErrorsFound := "no classicality in theorem statements found."
+  errorsFound := "FOUND PROPDECIDABLE IN THEOREM STATEMENTS."
+  test declName := do
+    let declInfo ← getConstInfo declName
+    if declInfo.type.getUsedConstants.contains `Classical.propDecidable then
+      return m!"theorem statement contains `Classical.propDecidable`."
+    return none
+
+-- open Classical
+-- variable (p : Prop)
+
+-- theorem f : 0 = if p then 0 else 1 := sorry
+-- theorem g [Decidable p] : 0 = if p then 0 else 1 := sorry
+
+-- #lint
