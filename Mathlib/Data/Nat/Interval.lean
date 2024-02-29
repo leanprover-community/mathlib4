@@ -22,7 +22,7 @@ and subsequently be moved upstream to `Data.Finset.LocallyFinite`.
 
 open Finset Nat
 
-instance : LocallyFiniteOrder ℕ where
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range' _ _⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩

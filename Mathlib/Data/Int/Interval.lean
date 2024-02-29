@@ -19,8 +19,7 @@ intervals as finsets and fintypes.
 
 open Finset Int
 
-instance : LocallyFiniteOrder ℤ
-    where
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
   finsetIcc a b :=
     (Finset.range (b + 1 - a).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding a
   finsetIco a b := (Finset.range (b - a).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding a

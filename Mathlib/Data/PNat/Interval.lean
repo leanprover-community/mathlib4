@@ -18,8 +18,7 @@ intervals as finsets and fintypes.
 
 open Finset Function PNat
 
-instance : LocallyFiniteOrder ℕ+ :=
-  Subtype.instLocallyFiniteOrder _
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ+ := Subtype.instLocallyFiniteOrder _
 
 namespace PNat
 

@@ -43,10 +43,10 @@ open BigOperators
 
 variable (n : ℕ)
 
-instance : LocallyFiniteOrder (Fin n) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
   OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
 
-instance : LocallyFiniteOrderBot (Fin n) :=
+instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) :=
   OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
 
 instance : ∀ n, LocallyFiniteOrderTop (Fin n)
