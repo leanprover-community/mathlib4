@@ -1066,7 +1066,6 @@ theorem _root_.Set.prod_self_eq_iUnion_perm (hf : f.IsCycleOn s) :
 
 end Set
 
-
 namespace Finset
 
 variable {f : Perm α} {s : Finset α}
