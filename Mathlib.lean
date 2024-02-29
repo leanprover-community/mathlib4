@@ -3374,8 +3374,8 @@ import Mathlib.RingTheory.Subsemiring.Order
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.RingTheory.TensorProduct
 import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
-import Mathlib.LinearAlgebra.TensorProduct.MvPolynomial
-import Mathlib.LinearAlgebra.TensorProduct.Polynomial
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
+import Mathlib.RingTheory.TensorProduct.Polynomial
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
