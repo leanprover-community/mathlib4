@@ -358,14 +358,14 @@ end SubgroupClass
 
 /-- A subgroup of a group `G` is a subset containing 1, closed under multiplication
 and closed under multiplicative inverse. -/
-structure Subgroup (G : Type*) [DivInvMonoid G] extends Submonoid G where
+structure Subgroup (G : Type*) [Group G] extends Submonoid G where
   /-- `G` is closed under inverses -/
   inv_mem' {x} : x ∈ carrier → x⁻¹ ∈ carrier
 #align subgroup Subgroup
 
 /-- An additive subgroup of an additive group `G` is a subset containing 0, closed
 under addition and additive inverse. -/
-structure AddSubgroup (G : Type*) [SubNegMonoid G] extends AddSubmonoid G where
+structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
   /-- `G` is closed under negation -/
   neg_mem' {x} : x ∈ carrier → -x ∈ carrier
 #align add_subgroup AddSubgroup
@@ -385,7 +385,7 @@ add_decl_doc AddSubgroup.toAddSubmonoid
 
 namespace Subgroup
 
-variable {G : Type*} [DivInvMonoid G]
+variable {G : Type*} [Group G]
 
 @[to_additive]
 instance : SetLike (Subgroup G) G where
@@ -397,7 +397,7 @@ instance : SetLike (Subgroup G) G where
 
 -- Porting note: Below can probably be written more uniformly
 @[to_additive]
-instance (priority := 75) {G : Type*} [DivInvMonoid G] : SubgroupClass (Subgroup G) G where
+instance (priority := 75) {G : Type*} [Group G] : SubgroupClass (Subgroup G) G where
   inv_mem := Subgroup.inv_mem' _
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
@@ -751,7 +751,7 @@ theorem mk_eq_one_iff {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `SubNegMonoid` of an `AddGroup` inherits an `SubNegMonoid` structure."]
-instance toDivInvMonoid {G : Type*} [DivInvMonoid G] (H : Subgroup G) : DivInvMonoid H :=
+instance toDivInvMonoid {G : Type*} [Group G] (H : Subgroup G) : DivInvMonoid H :=
   Subtype.coe_injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
