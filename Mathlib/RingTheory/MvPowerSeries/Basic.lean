@@ -611,46 +611,6 @@ set_option linter.uppercaseLean3 false in
 
 end Map
 
-section Algebra
-
-variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
-instance : Algebra R (MvPowerSeries σ A) :=
-  {
-    show Module R (MvPowerSeries σ A) by infer_instance with
-    commutes' := fun a φ => by
-      ext n
-      simp [Algebra.commutes]
-    smul_def' := fun a σ => by
-      ext n
-      simp [(coeff A n).map_smul_of_tower a, Algebra.smul_def]
-    toRingHom := (MvPowerSeries.map σ (algebraMap R A)).comp (C σ R) }
-
-theorem c_eq_algebraMap : C σ R = algebraMap R (MvPowerSeries σ R) :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align mv_power_series.C_eq_algebra_map MvPowerSeries.c_eq_algebraMap
-
-theorem algebraMap_apply {r : R} :
-    algebraMap R (MvPowerSeries σ A) r = C σ A (algebraMap R A r) := by
-  change (MvPowerSeries.map σ (algebraMap R A)).comp (C σ R) r = _
-  simp
-#align mv_power_series.algebra_map_apply MvPowerSeries.algebraMap_apply
-
-instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
-  ⟨⟨⊥, ⊤, by
-      classical
-      rw [Ne.def, SetLike.ext_iff, not_forall]
-      inhabit σ
-      refine' ⟨X default, _⟩
-      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
-      intro x
-      rw [ext_iff, not_forall]
-      refine' ⟨Finsupp.single default 1, _⟩
-      simp [algebraMap_apply, coeff_C]⟩⟩
-
-end Algebra
-
 section Semiring
 
 variable [Semiring R]
@@ -765,6 +725,47 @@ theorem coeff_prod [DecidableEq σ]
       exact h rfl huv.symm
 
 end CommSemiring
+
+section Algebra
+
+variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
+instance : Algebra R (MvPowerSeries σ A) :=
+  {
+    show Module R (MvPowerSeries σ A) by infer_instance with
+    commutes' := fun a φ => by
+      ext n
+      simp [Algebra.commutes]
+    smul_def' := fun a σ => by
+      ext n
+      simp [(coeff A n).map_smul_of_tower a, Algebra.smul_def]
+    toRingHom := (MvPowerSeries.map σ (algebraMap R A)).comp (C σ R) }
+
+theorem c_eq_algebraMap : C σ R = algebraMap R (MvPowerSeries σ R) :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align mv_power_series.C_eq_algebra_map MvPowerSeries.c_eq_algebraMap
+
+theorem algebraMap_apply {r : R} :
+    algebraMap R (MvPowerSeries σ A) r = C σ A (algebraMap R A r) := by
+  change (MvPowerSeries.map σ (algebraMap R A)).comp (C σ R) r = _
+  simp
+#align mv_power_series.algebra_map_apply MvPowerSeries.algebraMap_apply
+
+instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
+  ⟨⟨⊥, ⊤, by
+      classical
+      rw [Ne.def, SetLike.ext_iff, not_forall]
+      inhabit σ
+      refine' ⟨X default, _⟩
+      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
+      intro x
+      rw [ext_iff, not_forall]
+      refine' ⟨Finsupp.single default 1, _⟩
+      simp [algebraMap_apply, coeff_C]⟩⟩
+
+end Algebra
+
 
 end MvPowerSeries
 
