@@ -51,7 +51,7 @@ instance instHasAntidiagonal : Finset.HasAntidiagonal (Additive ℕ+) where
 
 @[norm_cast]
 theorem coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
-    ↑(∏ i in s, f i) = (∏ i in s, f i : Nat) :=
+    ↑(∏ i in s, f i) = (∏ i in s, f i : ℕ) :=
   map_prod coeMonoidHom _ _
 
 end PNat
@@ -309,7 +309,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
   · apply Nat.gcd_dvd_right
 
 theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
-    Finset.card ((n.divisors ×ˢ n.divisors).filter fun ⟨x, y⟩ => x.lcm y = n) = 3 ^ ω n := by
+    Finset.card ((n.divisors ×ˢ n.divisors).filter fun p => p.1.lcm p.2 = n) = 3 ^ ω n := by
   rw [← card_finMulAntidiagonal_of_squarefree hn, eq_comm]
   apply Finset.card_congr f (f_img hn) (f_inj) (f_surj hn.ne_zero)
 
