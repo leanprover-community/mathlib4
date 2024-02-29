@@ -62,10 +62,7 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
     | i + 2, 0, _ => rfl
     | 0, _, _ => rfl
     | i + 1, j + 1, h => by
-      -- FIXME nightly-testing: failure, will require Lean patch.
-      -- Will be fixed on nightly-2024-02-28.
-      sorry
-      -- simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
+      simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
   d_comp_d'
     | _, _, 0, rfl, rfl => w
     | _, _, k + 1, rfl, rfl => C.d_comp_d _ _ _
@@ -148,19 +145,15 @@ def augmentTruncate (C : ChainComplex V ℕ) :
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
         | 0 | 1 | n+2 =>
-          -- FIXME nightly-testing will require Lean patch
-          sorry
-          -- cases' j with j <;> dsimp [augment, truncate] <;> simp
+          cases' j with j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
     { f := fun i => by cases i <;> exact 𝟙 _
       comm' := fun i j => by
         -- Porting note: was an rcases n with (_|_|n) but that was causing issues
         match i with
-          -- FIXME nightly-testing will require Lean patch
           | 0 | 1 | n+2 =>
-          sorry
-          -- cases' j with j <;> dsimp [augment, truncate] <;> simp
+          cases' j with j <;> dsimp [augment, truncate] <;> simp
     }
   hom_inv_id := by
     ext i
