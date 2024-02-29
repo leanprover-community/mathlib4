@@ -40,6 +40,9 @@ alternating group permutation
 
 -/
 
+-- An example on how to determine the order of an element of a finite group.
+example : orderOf (-1 : ℤˣ) = 2 :=
+  orderOf_eq_prime (Int.units_sq _) (by decide)
 
 open Equiv Equiv.Perm Subgroup Fintype
 

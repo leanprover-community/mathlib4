@@ -25,7 +25,6 @@ Other lemmas have been moved to `Mathlib.GroupTheory.Perm.Fintype`
 
 -/
 
-
 universe u v
 
 open Equiv Function Fintype Finset
@@ -33,14 +32,6 @@ open Equiv Function Fintype Finset
 open BigOperators
 
 variable {α : Type u} [DecidableEq α] {β : Type v}
-
-/-
-  -- Split note: This example was there but does not compile anymore because
-  -- the file does not import Mathlib.GroupTheory.OrderOfElement
--- An example on how to determine the order of an element of a finite group.
-example : orderOf (-1 : ℤˣ) = 2 :=
-  orderOf_eq_prime (Int.units_sq _) (by decide)
--/
 
 namespace Equiv.Perm
 
