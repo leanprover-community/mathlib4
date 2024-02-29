@@ -241,6 +241,8 @@ lemma rTensorAlgHom_apply_eq (p : Polynomial S ⊗[R] N) :
   rw [← AlgHom.toLinearMap_apply, rTensorAlgHom_toLinearMap]
   rfl
 
+/-- The alg equiv from the tensor product of a polynomial ring and an algebra
+  to a polynomial ring -/
 noncomputable def rTensorAlgEquiv :
     (Polynomial S) ⊗[R] N ≃ₐ[S] Polynomial (S ⊗[R] N) := by
   apply AlgEquiv.ofLinearEquiv
@@ -262,5 +264,3 @@ noncomputable def scalarRTensorAlgEquiv :
 end Polynomial
 
 end Algebra
-
-#lint
