@@ -71,7 +71,7 @@ protected theorem zero : padicNorm p 0 = 0 := by simp [padicNorm]
 #align padic_norm.zero padicNorm.zero
 
 /-- The `p`-adic norm of `1` is `1`. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 #align padic_norm.one padicNorm.one
 
@@ -281,8 +281,7 @@ theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
       exact (Nat.not_lt_zero p h).elim
     · have : 1 < (p : ℚ) := by norm_cast; exact Nat.Prime.one_lt (Fact.out : Nat.Prime p)
       rw [← zpow_neg_one, zpow_lt_iff_lt this]
-      have : 0 ≤ padicValRat p m
-      simp only [of_int, Nat.cast_nonneg]
+      have : 0 ≤ padicValRat p m := by simp only [of_int, Nat.cast_nonneg]
       intro h
       rw [← zpow_zero (p : ℚ), zpow_inj] <;> linarith
 #align padic_norm.int_eq_one_iff padicNorm.int_eq_one_iff

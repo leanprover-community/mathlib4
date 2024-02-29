@@ -293,6 +293,22 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
 @[simp] theorem self_comp_symm (e : α ≃ β) : e ∘ e.symm = id := funext e.apply_symm_apply
 #align equiv.self_comp_symm Equiv.self_comp_symm
 
+@[simp] lemma _root_.EquivLike.apply_coe_symm_apply {F} [EquivLike F α β] (e : F) (x : β) :
+    e ((e : α ≃ β).symm x) = x :=
+  (e : α ≃ β).apply_symm_apply x
+
+@[simp] lemma _root_.EquivLike.coe_symm_apply_apply {F} [EquivLike F α β] (e : F) (x : α) :
+    (e : α ≃ β).symm (e x) = x :=
+  (e : α ≃ β).symm_apply_apply x
+
+@[simp] lemma _root_.EquivLike.coe_symm_comp_self {F} [EquivLike F α β] (e : F) :
+    (e : α ≃ β).symm ∘ e = id :=
+  (e : α ≃ β).symm_comp_self
+
+@[simp] lemma _root_.EquivLike.self_comp_coe_symm {F} [EquivLike F α β] (e : F) :
+    e ∘ (e : α ≃ β).symm = id :=
+  (e : α ≃ β).self_comp_symm
+
 @[simp] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
     (f.trans g).symm a = f.symm (g.symm a) := rfl
 #align equiv.symm_trans_apply Equiv.symm_trans_apply
@@ -705,19 +721,19 @@ def psigmaCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ 
 #align equiv.psigma_congr_right Equiv.psigmaCongrRight
 #align equiv.psigma_congr_right_apply Equiv.psigmaCongrRight_apply
 
--- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now simplify the LHS, so I have removed `@[simp]`
 theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (psigmaCongrRight F).trans (psigmaCongrRight G) =
       psigmaCongrRight fun a => (F a).trans (G a) := rfl
 #align equiv.psigma_congr_right_trans Equiv.psigmaCongrRight_trans
 
--- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now simplify the LHS, so I have removed `@[simp]`
 theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (psigmaCongrRight F).symm = psigmaCongrRight fun a => (F a).symm := rfl
 #align equiv.psigma_congr_right_symm Equiv.psigmaCongrRight_symm
 
--- Porting note: simp can now prove this, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now prove this, so I have removed `@[simp]`
 theorem psigmaCongrRight_refl {α} {β : α → Sort*} :
     (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := rfl
 #align equiv.psigma_congr_right_refl Equiv.psigmaCongrRight_refl
@@ -733,19 +749,19 @@ def sigmaCongrRight {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β
 #align equiv.sigma_congr_right Equiv.sigmaCongrRight
 #align equiv.sigma_congr_right_apply Equiv.sigmaCongrRight_apply
 
--- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now simplify the LHS, so I have removed `@[simp]`
 theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) =
       sigmaCongrRight fun a => (F a).trans (G a) := rfl
 #align equiv.sigma_congr_right_trans Equiv.sigmaCongrRight_trans
 
--- Porting note: simp can now simplify the LHS, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now simplify the LHS, so I have removed `@[simp]`
 theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β₂ a) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm := rfl
 #align equiv.sigma_congr_right_symm Equiv.sigmaCongrRight_symm
 
--- Porting note: simp can now prove this, so I have removed `@[simp]`
+-- Porting note (#10618): simp can now prove this, so I have removed `@[simp]`
 theorem sigmaCongrRight_refl {α} {β : α → Type*} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 #align equiv.sigma_congr_right_refl Equiv.sigmaCongrRight_refl

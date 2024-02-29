@@ -775,6 +775,23 @@ instance (priority := 100) instStarAlgHomClass (F R A B : Type*) {_ : CommSemiri
     StarAlgHomClass F R A B :=
   { }
 
+/-- Turn an element of a type `F` satisfying `StarAlgEquivClass F R A B` into an actual
+`StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
+@[coe]
+def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
+    [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B]
+    (f : F) : A ≃⋆ₐ[R] B :=
+  { (f : A ≃+* B) with
+    map_star' := map_star f
+    map_smul' := map_smul f}
+
+/-- Any type satisfying `StarAlgEquivClass` can be cast into `StarAlgEquiv` via
+`StarAlgEquivClass.toStarAlgEquiv`. -/
+instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
+    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
+    [StarAlgEquivClass F R A B] : CoeHead F (A ≃⋆ₐ[R] B) :=
+  ⟨toStarAlgEquiv⟩
+
 end StarAlgEquivClass
 
 namespace StarAlgEquiv

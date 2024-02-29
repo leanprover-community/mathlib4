@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.Multiset.Basic
 
@@ -539,11 +538,6 @@ theorem le_prod_nonempty_of_submultiplicative [CommMonoid α] [OrderedCommMonoid
 theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α)).sum = s :=
   Multiset.induction_on s (by simp) (by simp)
 #align multiset.sum_map_singleton Multiset.sum_map_singleton
-
-theorem abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
-    abs s.sum ≤ (s.map abs).sum :=
-  le_sum_of_subadditive _ abs_zero abs_add s
-#align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
 
 theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by
   induction s using Multiset.induction <;> simp [Nat.add_mod, *]

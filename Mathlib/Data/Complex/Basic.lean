@@ -3,6 +3,7 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Data.Real.Basic
@@ -415,7 +416,7 @@ instance addCommGroup : AddCommGroup ℂ :=
     add_left_neg := by intros; ext <;> simp }
 
 
-instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
+instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
     natCast_zero := by
@@ -435,7 +436,7 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
 
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
-  { Complex.addGroupWithOne with
+  { addGroupWithOne with
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp [add_comm]

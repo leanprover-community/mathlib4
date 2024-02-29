@@ -143,7 +143,7 @@ instance {A B : NonemptyFinLinOrd.{u}} : FunLike (A ⟶ B) A B where
     ext x
     exact congr_fun h x
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
   map_rel f _ _ h := f.monotone h
 
@@ -204,7 +204,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         exact h₂ (le_of_lt h₁)
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
-    simp [DFunLike.coe] at h
+    simp [Y, DFunLike.coe] at h
   · intro h
     exact ConcreteCategory.epi_of_surjective f h
 set_option linter.uppercaseLean3 false in

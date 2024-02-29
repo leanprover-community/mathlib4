@@ -3,8 +3,9 @@ Copyright (c) 2024 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Data.ENat.Basic
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
@@ -169,10 +170,13 @@ lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (ofENat_le_aleph0 n).trans hx]
 
-lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := by
+theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
   cases lt_or_le x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
-  | inr hx => simpa [toENatAux_eq_top hx] using ((nat_lt_aleph0 n).trans_le hx).ne'
+  | inr hx => simp [toENatAux_eq_top hx, (nat_lt_aleph0 n).trans_le hx]
+
+lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := by
+  simp only [le_antisymm_iff, toENatAux_le_nat, ← toENatAux_gc _, ofENat_nat]
 
 lemma toENatAux_eq_zero {x : Cardinal} : toENatAux x = 0 ↔ x = 0 := toENatAux_eq_nat
 
@@ -236,14 +240,25 @@ lemma ofENat_toENat_eq_self {a : Cardinal} : toENat a = a ↔ a ≤ ℵ₀ := by
 
 lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
 
+@[simp] lemma toENat_le_nat {a : Cardinal} {n : ℕ} : toENat a ≤ n ↔ a ≤ n := toENatAux_le_nat
 @[simp] lemma toENat_eq_nat {a : Cardinal} {n : ℕ} : toENat a = n ↔ a = n := toENatAux_eq_nat
 @[simp] lemma toENat_eq_zero {a : Cardinal} : toENat a = 0 ↔ a = 0 := toENatAux_eq_zero
+@[simp] lemma toENat_le_one {a : Cardinal} : toENat a ≤ 1 ↔ a ≤ 1 := toENat_le_nat
 @[simp] lemma toENat_eq_one {a : Cardinal} : toENat a = 1 ↔ a = 1 := toENat_eq_nat
+
+@[simp] lemma toENat_le_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
+    toENat a ≤ no_index (OfNat.ofNat n) ↔ a ≤ OfNat.ofNat n := toENat_le_nat
 
 @[simp] lemma toENat_eq_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
     toENat a = no_index (OfNat.ofNat n) ↔ a = OfNat.ofNat n := toENat_eq_nat
 
 @[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
+
+@[simp]
+theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
+  cases le_total a ℵ₀ with
+  | inl ha => lift a to ℕ∞ using ha; simp
+  | inr ha => simp [toENat_eq_top.2, ha]
 
 @[simp, norm_cast]
 lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injOn <;> simp
@@ -272,11 +287,5 @@ def ofENatHom : ℕ∞ →+*o Cardinal where
   map_zero' := ofENat_zero
   map_add' := ofENat_add
   monotone' := ofENat_mono
-
-@[simp] -- TODO: redefine `Cardinal.toNat` as the composition of `ENat.toNat` and `Cardinal.toENat`
-lemma toNat_toENat (a : Cardinal) : ENat.toNat (toENat a) = toNat a :=
-  match lt_or_le a ℵ₀ with
-  | .inl h => by lift a to ℕ using h; simp
-  | .inr h => by rw [toENat_eq_top.2 h, ENat.toNat_top, toNat_apply_of_aleph0_le h]
 
 end Cardinal
