@@ -248,8 +248,8 @@ If the character module of `M` is an injective module then `L ⊗ 𝟙 M` is inj
 -/
 lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
     (h : Module.Injective R <| CharacterModule M) :
-    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N'] (L : N →ₗ[R] N'),
-      Function.Injective L → Function.Injective (L.rTensor M) := by
+    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+      (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) := by
   intros A B _ _ _ _ L hL
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   rintro z (hz : _ = 0)
