@@ -6,7 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Relation
-import Mathlib.Logic.Small.Defs
+import Mathlib.Logic.Small.Basic
 import Mathlib.Order.GameAdd
 
 #align_import set_theory.game.pgame from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
@@ -739,34 +739,24 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
 
 /-- A small family of pre-games is bounded above. -/
 lemma bddAbove_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (Set.range f) := by
-  let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
-    fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
+  let x : PGame.{u} := ⟨Shrink.{u} ι, PEmpty, f ∘ (equivShrink ι).symm, PEmpty.elim⟩
   refine ⟨x, Set.forall_range_iff.2 fun i ↦ ?_⟩
-  rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
-  simpa using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
+  rw [← (equivShrink ι).symm_apply_apply i]
+  simpa using fun j ↦ @moveLeft_le x (equivShrink ι i)
 
 /-- A small set of pre-games is bounded above. -/
 lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
   simpa using bddAbove_range_of_small (Subtype.val : s → PGame.{u})
 #align pgame.bdd_above_of_small SetTheory.PGame.bddAbove_of_small
 
+lemma foo [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (Set.range f) := bddAbove_of_small _
+#print foo
+
+
 #noalign pgame.lower_bound
 #noalign pgame.lower_bound_left_moves_empty
 #noalign pgame.lower_bound_le
 #noalign pgame.lower_bound_mem_lower_bounds
-
-/-- A small family of pre-games is bounded below. -/
-lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (Set.range f) := by
-  let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
-    fun x ↦ moveRight _ x.2⟩
-  refine ⟨x, Set.forall_range_iff.2 fun i ↦ ?_⟩
-  rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
-  simpa using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
-
-/-- A small set of pre-games is bounded below. -/
-lemma bddBelow_of_small (s : Set PGame.{u}) [Small.{u} s] : BddBelow s := by
-  simpa using bddBelow_range_of_small (Subtype.val : s → PGame.{u})
-#align pgame.bdd_below_of_small SetTheory.PGame.bddBelow_of_small
 
 /-- The equivalence relation on pre-games. Two pre-games `x`, `y` are equivalent if `x ≤ y` and
 `y ≤ x`.
@@ -1961,3 +1951,107 @@ theorem zero_lf_one : (0 : PGame) ⧏ 1 :=
 #align pgame.zero_lf_one SetTheory.PGame.zero_lf_one
 
 end PGame
+
+end SetTheory
+
+namespace OrderDual
+
+
+-- Equiv.image_eq_preimage
+variable {α : Type*} [Preorder α]
+
+@[simp]
+theorem preimage_toDual_preimage (s : Set α) : toDual ⁻¹' (ofDual ⁻¹' s) = s := by
+  ext x
+  simp
+
+@[simp]
+theorem preimage_ofDual_preimage (s : Set α) : ofDual ⁻¹' (toDual ⁻¹' s) = s := by
+  ext x
+  simp
+
+@[simp]
+theorem image_toDual : (Set.image toDual : Set α → Set αᵒᵈ) = Set.preimage ofDual := by
+  ext s x
+  simp
+
+@[simp]
+theorem image_ofDual : (Set.image ofDual : Set αᵒᵈ → Set α) = Set.preimage toDual := by
+  ext s x
+  simp
+
+@[simp]
+theorem upperBounds_eq : upperBounds =
+    Set.preimage ofDual ∘ (lowerBounds : Set α → Set α) ∘ Set.preimage toDual := by
+  ext s x
+  simp [mem_upperBounds, mem_lowerBounds, toDual_le]
+
+@[simp]
+theorem lowerBounds_eq : lowerBounds =
+    Set.preimage ofDual ∘ (upperBounds : Set α → Set α) ∘ Set.preimage toDual := by
+  ext s x
+  simp [mem_upperBounds, mem_lowerBounds, le_toDual]
+
+theorem dual_upperBounds (s : Set α) :
+    upperBounds s = toDual ⁻¹' lowerBounds (ofDual ⁻¹' s) := by
+  simp
+
+theorem dual_lowerBounds (s : Set α) :
+    lowerBounds s = toDual ⁻¹' upperBounds (ofDual ⁻¹' s) := by
+  simp
+
+end OrderDual
+
+namespace Function.Involutive
+
+lemma image_eq_preimage {α : Type*} {f : α → α} (hf : f.Involutive) (s : Set α) :
+    f '' s = f ⁻¹' s := by
+  rw [← hf.preimage (f '' s), Set.preimage_image_eq s hf.injective]
+
+end Function.Involutive
+
+namespace SetTheory.PGame
+
+/-- A small family of pre-games is bounded below. -/
+lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (Set.range f) := by
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
+    fun x ↦ moveRight _ x.2⟩
+  refine ⟨x, Set.forall_range_iff.2 fun i ↦ ?_⟩
+  rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
+
+theorem neg_involutive : Function.Involutive (fun x : PGame.{u} ↦ -x) :=
+  neg_neg
+
+def negOrderIso : PGame.{u} ≃o PGame.{u}ᵒᵈ :=
+  { _root_.Equiv.trans (neg_involutive.toPerm) OrderDual.toDual with
+    map_rel_iff' := neg_le_neg_iff }
+
+@[simp]
+lemma negOrderIso_apply (x : PGame.{u}) : negOrderIso x = -(OrderDual.toDual x) := rfl
+
+@[simp]
+lemma negOrderIso_symm_apply (x : PGame.{u}ᵒᵈ) : negOrderIso.symm x = -(OrderDual.ofDual x) := rfl
+
+@[simp]
+lemma image_negOrderIso (s : Set PGame.{u}) :
+    negOrderIso '' s = (-·) '' (OrderDual.ofDual ⁻¹' s) := by
+  rw [← OrderDual.image_toDual, Set.image_image]
+  rfl
+
+@[simp]
+lemma preimage_negOrderIso_symm (s : Set PGame.{u}) :
+    negOrderIso.symm ⁻¹' s = OrderDual.ofDual ⁻¹' ((-·) ⁻¹' s) :=
+  rfl
+
+-- TODO add PGame.{u} ≃o PGame.{u}ᵒᵈ := neg
+
+/-- A small set of pre-games is bounded below. -/
+lemma bddBelow_of_small (s : Set PGame.{u}) [Small.{u} s] : BddBelow s := by
+  rw [← OrderIso.bddBelow_preimage negOrderIso.symm, preimage_negOrderIso_symm]
+  apply BddAbove.dual
+  rw [← (neg_involutive).image_eq_preimage]
+  exact bddAbove_of_small _
+#align pgame.bdd_below_of_small SetTheory.PGame.bddBelow_of_small
+
+end SetTheory.PGame
