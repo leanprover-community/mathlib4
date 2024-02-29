@@ -51,6 +51,7 @@ import Mathlib.Algebra.Category.GroupCat.Adjunctions
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Colimits
+import Mathlib.Algebra.Category.GroupCat.EnoughInjectives
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
@@ -1467,6 +1468,7 @@ import Mathlib.Combinatorics.SimpleGraph.Girth
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
+import Mathlib.Combinatorics.SimpleGraph.LapMatrix
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Combinatorics.SimpleGraph.Matching
 import Mathlib.Combinatorics.SimpleGraph.Metric
@@ -1723,6 +1725,7 @@ import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
+import Mathlib.Data.Int.Star
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
 import Mathlib.Data.IsROrC.Basic

@@ -1761,8 +1761,7 @@ theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s :
       apply u_in
     · apply s.div_mem <;> apply u_in
   · intro l hl
-    obtain ⟨k, rfl⟩ : ∃ k, l = k + 1
-    exact Nat.exists_eq_succ_of_ne_zero hl.ne'
+    obtain ⟨k, rfl⟩ : ∃ k, l = k + 1 := Nat.exists_eq_succ_of_ne_zero hl.ne'
     apply hφ
 #align controlled_prod_of_mem_closure controlled_prod_of_mem_closure
 #align controlled_sum_of_mem_closure controlled_sum_of_mem_closure

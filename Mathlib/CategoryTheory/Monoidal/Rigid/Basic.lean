@@ -402,6 +402,8 @@ theorem tensorLeftHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : 
   simp [tensorLeftHomEquiv, tensorHom_def']
 #align category_theory.tensor_left_hom_equiv_tensor CategoryTheory.tensorLeftHomEquiv_tensor
 
+attribute [local simp] id_tensorHom tensorHom_id
+
 /-- `tensorRightHomEquiv` commutes with tensoring on the left -/
 theorem tensorRightHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⟶ Z ⊗ Y')
     (g : X' ⟶ Z') :
