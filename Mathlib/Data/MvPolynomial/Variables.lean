@@ -575,9 +575,8 @@ theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h 
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
-  have := degrees_mul (C c) p
-  simp [degrees_C] at this
-  convert Multiset.count_le_of_le i this
+  convert Multiset.count_le_of_le i <| degrees_mul (C c) p
+  simp [degrees_C]
 
 end DegreeOf
 
