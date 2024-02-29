@@ -5,7 +5,9 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Units
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+
 
 #align_import analysis.normed_space.bounded_linear_maps from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
@@ -573,7 +575,7 @@ protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜
   · rintro ⟨w, hw⟩
     use (unitsEquiv 𝕜 E w).trans e
     ext x
-    simp [hw]
+    simp [O, hw]
 #align continuous_linear_equiv.is_open ContinuousLinearEquiv.isOpen
 
 protected theorem nhds [CompleteSpace E] (e : E ≃L[𝕜] F) :

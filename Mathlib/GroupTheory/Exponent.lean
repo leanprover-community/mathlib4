@@ -138,6 +138,14 @@ theorem exponent_eq_zero_of_order_zero {g : G} (hg : orderOf g = 0) : exponent G
 #align monoid.exponent_eq_zero_of_order_zero Monoid.exponent_eq_zero_of_order_zero
 #align add_monoid.exponent_eq_zero_of_order_zero AddMonoid.exponent_eq_zero_addOrder_zero
 
+/-- The exponent is zero iff for all nonzero `n`, one can find a `g` such that `g ^ n ≠ 1`. -/
+@[to_additive "The exponent is zero iff for all nonzero `n`, one can find a `g` such that
+`n • g ≠ 0`."]
+theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g ^ n ≠ 1 := by
+  rw [exponent_eq_zero_iff, ExponentExists]
+  push_neg
+  rfl
+
 @[to_additive exponent_nsmul_eq_zero]
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
   by_cases h : ExponentExists G
@@ -180,16 +188,21 @@ theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G,
 #align monoid.exponent_min Monoid.exponent_min
 #align add_monoid.exponent_min AddMonoid.exponent_min
 
-@[to_additive (attr := simp)]
-theorem exp_eq_one_of_subsingleton [Subsingleton G] : exponent G = 1 := by
-  apply le_antisymm
+@[to_additive AddMonoid.exp_eq_one_iff]
+theorem exp_eq_one_iff : exponent G = 1 ↔ Subsingleton G := by
+  refine ⟨fun eq_one => ⟨fun a b => ?a_eq_b⟩, fun h => le_antisymm ?le ?ge⟩
+  · rw [← pow_one a, ← pow_one b, ← eq_one, Monoid.pow_exponent_eq_one, Monoid.pow_exponent_eq_one]
   · apply exponent_min' _ Nat.one_pos
     simp [eq_iff_true_of_subsingleton]
   · apply Nat.succ_le_of_lt
     apply exponent_pos_of_exists 1 Nat.one_pos
     simp [eq_iff_true_of_subsingleton]
+
+@[to_additive (attr := simp) AddMonoid.exp_eq_one_of_subsingleton]
+theorem exp_eq_one_of_subsingleton [hs : Subsingleton G] : exponent G = 1 :=
+  exp_eq_one_iff.mpr hs
 #align monoid.exp_eq_one_of_subsingleton Monoid.exp_eq_one_of_subsingleton
-#align add_monoid.exp_eq_zero_of_subsingleton AddMonoid.exp_eq_zero_of_subsingleton
+#align add_monoid.exp_eq_zero_of_subsingleton AddMonoid.exp_eq_one_of_subsingleton
 
 @[to_additive addOrder_dvd_exponent]
 theorem order_dvd_exponent (g : G) : orderOf g ∣ exponent G :=
@@ -335,7 +348,49 @@ theorem lcm_orderOf_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm order
 @[to_additive (attr := deprecated) AddMonoid.lcm_addOrder_eq_exponent] -- 2024-01-26
 alias lcm_order_eq_exponent := lcm_orderOf_eq_exponent
 
+variable {H : Type*} [Monoid H]
+
+/--
+If there exists an injective, multiplication-preserving map from `G` to `H`,
+then the exponent of `G` divides the exponent of `H`.
+-/
+@[to_additive "If there exists an injective, addition-preserving map from `G` to `H`,
+then the exponent of `G` divides the exponent of `H`."]
+theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) :
+    Monoid.exponent G ∣ Monoid.exponent H :=
+  exponent_dvd_of_forall_pow_eq_one fun g => e_inj (by
+    rw [map_pow, pow_exponent_eq_one, map_one])
+
+/--
+If there exists a multiplication-preserving equivalence between `G` and `H`,
+then the exponent of `G` is equal to the exponent of `H`.
+-/
+@[to_additive "If there exists a addition-preserving equivalence between `G` and `H`,
+then the exponent of `G` is equal to the exponent of `H`."]
+theorem exponent_eq_of_mulEquiv (e : G ≃* H) : Monoid.exponent G = Monoid.exponent H :=
+  Nat.dvd_antisymm
+    (exponent_dvd_of_monoidHom e e.injective)
+    (exponent_dvd_of_monoidHom e.symm e.symm.injective)
+
 end Monoid
+
+section Submonoid
+
+variable [Monoid G]
+
+variable (G) in
+@[to_additive (attr := simp)]
+theorem _root_.Submonoid.exponent_top :
+    Monoid.exponent (⊤ : Submonoid G) = Monoid.exponent G :=
+  exponent_eq_of_mulEquiv Submonoid.topEquiv
+
+@[to_additive]
+theorem _root_.Submonoid.pow_exponent_eq_one {S : Submonoid G} {g : G} (g_in_s : g ∈ S) :
+    g ^ (Monoid.exponent S) = 1 := by
+  have := Monoid.pow_exponent_eq_one (⟨g, g_in_s⟩ : S)
+  rwa [SubmonoidClass.mk_pow, ← OneMemClass.coe_eq_one] at this
+
+end Submonoid
 
 section LeftCancelMonoid
 
@@ -355,6 +410,12 @@ theorem exponent_ne_zero_of_finite [Finite G] : exponent G ≠ 0 :=
   ExponentExists.of_finite.exponent_ne_zero
 #align monoid.exponent_ne_zero_of_finite Monoid.exponent_ne_zero_of_finite
 #align add_monoid.exponent_ne_zero_of_finite AddMonoid.exponent_ne_zero_of_finite
+
+@[to_additive AddMonoid.one_lt_exponent]
+lemma one_lt_exponent [LeftCancelMonoid G] [Finite G] [Nontrivial G] :
+    1 < Monoid.exponent G := by
+  rw [Nat.one_lt_iff_ne_zero_and_ne_one]
+  exact ⟨exponent_ne_zero_of_finite, mt exp_eq_one_iff.mp (not_subsingleton G)⟩
 
 end LeftCancelMonoid
 
@@ -455,23 +516,29 @@ section Group
 
 variable [Group G]
 
-@[to_additive AddGroup.one_lt_exponent]
-lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G := by
-  let _inst := Fintype.ofFinite G
-  obtain ⟨g, hg⟩ := exists_ne (1 : G)
-  rw [← Monoid.lcm_orderOf_eq_exponent]
-  have hg' : 2 ≤ orderOf g := Nat.lt_of_le_of_ne (orderOf_pos g) <| by
-    simpa [eq_comm, orderOf_eq_one_iff] using hg
-  refine hg'.trans <| Nat.le_of_dvd ?_ <| Finset.dvd_lcm (by simp)
-  rw [Nat.pos_iff_ne_zero, Ne.def, Finset.lcm_eq_zero_iff]
-  rintro ⟨x, -, hx⟩
-  exact (orderOf_pos x).ne' hx
+-- Deprecated: 2024-02-17
+@[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent]
+lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
+  Monoid.one_lt_exponent
 
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
   Monoid.exponent_dvd.mpr <| fun _ => orderOf_dvd_card
 
 theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
   Monoid.exponent_dvd.mpr orderOf_dvd_natCard
+
+@[to_additive]
+theorem Subgroup.exponent_toSubmonoid (H : Subgroup G) :
+    Monoid.exponent H.toSubmonoid = Monoid.exponent H :=
+  Monoid.exponent_eq_of_mulEquiv (MulEquiv.subgroupCongr rfl)
+
+@[to_additive (attr := simp)]
+theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.exponent G :=
+  Monoid.exponent_eq_of_mulEquiv topEquiv
+
+@[to_additive]
+theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H) :
+    g ^ Monoid.exponent H = 1 := exponent_toSubmonoid H ▸ Submonoid.pow_exponent_eq_one g_in_H
 
 end Group
 

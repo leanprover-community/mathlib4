@@ -585,7 +585,7 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 -- To properly fix this, we should make sure that `continuity` applies its
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
 -- is quite an invasive change.
-@[to_additive (attr := aesop safe -100 (rule_sets [Continuous]), fun_prop)]
+@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow

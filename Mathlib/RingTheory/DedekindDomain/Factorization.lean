@@ -89,7 +89,7 @@ theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
     (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)).Finite := by
   rw [mulSupport]
-  simp_rw [Ne.def, zpow_ofNat, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
+  simp_rw [Ne.def, zpow_coe_nat, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
   exact finite_mulSupport hI
 #align ideal.finite_mul_support_coe Ideal.finite_mulSupport_coe
 
@@ -173,7 +173,7 @@ theorem finprod_heightOneSpectrum_factorization_coe (I : Ideal R) (hI : I ≠ 0)
   conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization I hI]
   rw [FractionalIdeal.coeIdeal_finprod R⁰ K (le_refl _)]
   simp_rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, FractionalIdeal.coeIdeal_pow,
-    zpow_ofNat]
+    zpow_coe_nat]
 #align ideal.finprod_height_one_spectrum_factorization_coe Ideal.finprod_heightOneSpectrum_factorization_coe
 
 end Ideal
