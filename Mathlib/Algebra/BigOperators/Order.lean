@@ -587,13 +587,12 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : ∏ i
 
 end LinearOrderedCancelCommMonoid
 
-section OrderedCommSemiring
+section CommMonoidWithZero
+variable [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R]
 
-variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
+section PosMulMono
+variable [PosMulMono R] {f g : ι → R} {s t : Finset ι}
 
-open Classical
-
--- this is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=
   prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
 #align finset.prod_nonneg Finset.prod_nonneg
@@ -603,14 +602,15 @@ product of `f i` is less than or equal to the product of `g i`. See also `Finset
 the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     ∏ i in s, f i ≤ ∏ i in s, g i := by
-  induction' s using Finset.induction with a s has ih h
+  induction' s using Finset.cons_induction with a s has ih h
   · simp
-  · simp only [prod_insert has]
+  · simp only [prod_cons]
+    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
     apply mul_le_mul
-    · exact h1 a (mem_insert_self a s)
-    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact mem_insert_of_mem H
-    · apply prod_nonneg fun x H ↦ h0 x (mem_insert_of_mem H)
-    · apply le_trans (h0 a (mem_insert_self a s)) (h1 a (mem_insert_self a s))
+    · exact h1 a (mem_cons_self a s)
+    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact subset_cons _ H
+    · apply prod_nonneg fun x H ↦ h0 x (subset_cons _ H)
+    · apply le_trans (h0 a (mem_cons_self a s)) (h1 a (mem_cons_self a s))
 #align finset.prod_le_prod Finset.prod_le_prod
 
 /-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
@@ -630,33 +630,11 @@ theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) 
   exact Finset.prod_const_one
 #align finset.prod_le_one Finset.prod_le_one
 
-/-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
-theorem prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
-    (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
-    (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
-  simp_rw [prod_eq_mul_prod_diff_singleton hi]
-  refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
-  · rw [right_distrib]
-    refine add_le_add ?_ ?_ <;>
-    · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_
-        <;> simp (config := { contextual := true }) [*]
-      · try apply_assumption
-        try assumption
-  · apply prod_nonneg
-    simp only [and_imp, mem_sdiff, mem_singleton]
-    intro j h1j h2j
-    exact le_trans (hg j h1j) (hgf j h1j h2j)
-#align finset.prod_add_prod_le Finset.prod_add_prod_le
+end PosMulMono
 
-end OrderedCommSemiring
+section PosMulStrictMono
+variable [PosMulStrictMono R] [Nontrivial R] {f g : ι → R} {s t : Finset ι}
 
-section StrictOrderedCommSemiring
-
-variable [StrictOrderedCommSemiring R] {f g : ι → R} {s : Finset ι}
-
--- This is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i in s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
 #align finset.prod_pos Finset.prod_pos
@@ -667,11 +645,12 @@ theorem prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i
   classical
   obtain ⟨i, hi, hilt⟩ := hlt
   rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
-  apply mul_lt_mul hilt
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
+  refine mul_lt_mul_of_le_of_lt' hilt ?_ ?_ ?_
   · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
       (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
+  · exact (hf i hi).le.trans hilt.le
   · exact prod_pos fun j hj => hf j (mem_of_mem_erase hj)
-  · exact le_of_lt <| (hf i hi).trans hilt
 
 theorem prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i < g i)
     (h_ne : s.Nonempty) :
@@ -680,7 +659,36 @@ theorem prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s,
   obtain ⟨i, hi⟩ := h_ne
   exact ⟨i, hi, hfg i hi⟩
 
+end PosMulStrictMono
+end CommMonoidWithZero
+
+section StrictOrderedCommSemiring
+
 end StrictOrderedCommSemiring
+
+section OrderedCommSemiring
+variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
+
+/-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
+  sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
+lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
+    (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
+    (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
+  classical
+  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
+  · rw [right_distrib]
+    refine add_le_add ?_ ?_ <;>
+    · refine mul_le_mul_of_nonneg_left ?_ ?_
+      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
+      · try apply_assumption
+        try assumption
+  · apply prod_nonneg
+    simp only [and_imp, mem_sdiff, mem_singleton]
+    exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
+#align finset.prod_add_prod_le Finset.prod_add_prod_le
+
+end OrderedCommSemiring
 
 section LinearOrderedCommSemiring
 variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
