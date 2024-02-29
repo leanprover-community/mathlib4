@@ -235,6 +235,9 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = nat
   -- | inr hn => rw [tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]
   ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
     mul_comm (r ^ _), ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
+  -- Adaptation note: v4.7.0-rc1
+  -- Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
+  -- but this now causes a max rec depth error.
   rw [mul_assoc, ← pow_add]
   cases lt_or_le (natDegree (p + q)) n with
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Lean.Meta.Tactic.TryThis
-import Lean.Elab.Tactic.LibrarySearch
+import Lean.Elab.Tactic.ElabTerm
+import Lean.Meta.Tactic.LibrarySearch
 
 /-!
 # The `observe` tactic.
