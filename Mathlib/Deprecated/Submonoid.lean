@@ -214,7 +214,8 @@ theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n 
     exact hs.mul_mem h (IsSubmonoid.pow_mem hs h)
 #align is_submonoid.pow_mem IsSubmonoid.pow_mem
 
-/-- The set of natural number powers of an element of a submonoid is a subset of the submonoid. -/
+/-- The set of natural number powers of an element of a `Submonoid` is a subset of the
+`Submonoid`. -/
 @[to_additive
       "The set of natural number multiples of an element of an `AddSubmonoid` is a subset of
       the `AddSubmonoid`."]
