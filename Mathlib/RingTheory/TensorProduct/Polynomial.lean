@@ -18,7 +18,8 @@ Adaptations of `TensorProduct.finsuppLeft` when the `Finsupp` is a `Polynomial`.
   to the right or to the left gives a linear equivalence;
 * `LinearEquiv.rTensor'`, `LinearEquiv.lTensor'` : tensor a linear equivalence
   to the right or to the left gives a linear equivalence, with more `smul` properties;
-* `Polynomial.toFinsuppLinearEquiv`, the equivalen of the polynomial ring with a Finsupp type, as a linear equivalence;
+* `Polynomial.toFinsuppLinearEquiv`, the equivalen of the polynomial ring
+  with a Finsupp type, as a linear equivalence;
 * `Polynomial.rTensor`, `Polynomial.rTensor'`, the linear map
   from the tensor product of a polynomial ring to a Finsupp type;
 * `Polynomial.mapAlgHom`, `Polynomial.mapAlgEquiv`, the alg hom and the alg equiv
