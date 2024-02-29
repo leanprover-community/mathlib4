@@ -76,7 +76,7 @@ namespace TensorProduct
 
 variable {ι : Type*} [DecidableEq ι]
 
-/-- The tensor product of `i →₀ M` and `N` is linearly equivalent to `i →₀ M ⊗[R] N` -/
+/-- The tensor product of `ι →₀ M` and `N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
 noncomputable def finsuppLeft :
     (ι →₀ M) ⊗[R] N ≃ₗ[R] ι →₀ (M ⊗[R] N) :=
   (congr (finsuppLEquivDirectSum R M ι) (LinearEquiv.refl R N)).trans
@@ -110,7 +110,7 @@ lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
       Finsupp.single i m ⊗ₜ[R] n := by
   simp [finsuppLeft, Finsupp.lsum]
 
-/-- The tensor product of `M` and `i →₀ N` is linearly equivalent to `i →₀ M ⊗[R] N` -/
+/-- The tensor product of `M` and `ι →₀ N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
 noncomputable def finsuppRight :
     M ⊗[R] (ι →₀ N) ≃ₗ[R] ι →₀ (M ⊗[R] N) :=
   (congr (LinearEquiv.refl R M) (finsuppLEquivDirectSum R N ι)).trans
@@ -170,7 +170,7 @@ noncomputable example :
     (finsuppLEquivDirectSum S M ι) (LinearEquiv.refl R N)).trans
     (f.trans (finsuppLEquivDirectSum S (M ⊗[R] N) ι).symm) -/
 
-/-- The tensor product of `i →₀ R` and `N` is linearly equivalent to `i →₀ N` -/
+/-- The tensor product of `ι →₀ R` and `N` is linearly equivalent to `ι →₀ N` -/
 noncomputable def finsuppScalarLeft :
     (ι →₀ R) ⊗[R] N ≃ₗ[R] ι →₀ N :=
   finsuppLeft.trans (Finsupp.mapRange.linearEquiv (TensorProduct.lid R N))
