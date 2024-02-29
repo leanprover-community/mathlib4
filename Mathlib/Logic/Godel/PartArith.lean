@@ -22,26 +22,6 @@ arithmetizes facts about partial recursive functions.
 Gödel, partial recursive function
 -/
 
-namespace Matrix
-open Fin
-section
-universe u
-variable {n : ℕ} {α β : Type u}
-
-/-- notation `:>` is short for vecCons, which prepends an entry to a vector -/
-infixr:70 " :> " => vecCons
-
-lemma comp_vecCons (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (a :> s) x) = f a :> f ∘ s :=
-funext (fun i => cases (by simp) (by simp) i)
-
-lemma comp_vecCons' (f : α → β) (a : α) (s : Fin n → α) :
-    (fun x => f $ (a :> s) x) = f a :> fun i => f (s i) :=
-  comp_vecCons f a s
-
-end
-
-end Matrix
-
 open Vector Part
 
 namespace Nat
@@ -113,7 +93,7 @@ lemma or_eq (n m : ℕ) : or n m = if 0 < n ∨ 0 < m then 1 else 0 := by simp[o
 
 @[simp] lemma pos_pos_iff (n : ℕ) : 0 < pos n ↔ 0 < n := by simp[pos]
 
-/-- Bounded universal (for all) quantifier -/
+/-- Ball -/
 def ball (n : ℕ) (p : ℕ → ℕ) : ℕ := n.rec 1 (fun n ih => (p n).pos.and ih)
 
 @[simp] lemma ball_pos_iff {p : ℕ → ℕ} {n : ℕ} : 0 < ball n p ↔ ∀ m < n, 0 < p m := by
@@ -149,6 +129,26 @@ inductive PartArith : ∀ {n}, (Vector ℕ n →. ℕ) → Prop
 def Arith (f : Vector ℕ n → ℕ) := PartArith (n := n) f
 
 end Nat
+
+namespace Matrix
+open Fin
+section
+universe u
+variable {n : ℕ} {α β : Type u}
+
+/-- notation `:>` is short for vecCons, which prepends an entry to a vector -/
+infixr:70 " :> " => vecCons
+
+lemma comp_vecCons (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (a :> s) x) = f a :> f ∘ s :=
+funext (fun i => cases (by simp) (by simp) i)
+
+lemma comp_vecCons' (f : α → β) (a : α) (s : Fin n → α) :
+    (fun x => f $ (a :> s) x) = f a :> fun i => f (s i) :=
+  comp_vecCons f a s
+
+end
+
+end Matrix
 
 namespace Nat.PartArith
 
