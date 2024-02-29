@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pi
+import Mathlib.Analysis.Calculus.FDeriv.Measurable
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Data.Finset.Interval
 import Mathlib.MeasureTheory.Integral.Bochner
@@ -11,21 +12,23 @@ import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.MeasureTheory.Integral.MeanInequalities
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.Tactic.FunProp.AEMeasurable
+import Mathlib.Tactic.FunProp.Measurable
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
 -/
 
 
-open scoped Classical BigOperators ENNReal NNReal
-open Set Function Finset MeasureTheory Measure
+open scoped Classical BigOperators ENNReal NNReal Topology
+open Set Function Finset MeasureTheory Measure Filter
 
 noncomputable section
 
 section fun_prop
 
 attribute [fun_prop] ENNReal.continuous_coe ENNReal.continuous_rpow_const
-
+  Measurable.coe_nnreal_ennreal Measurable.nnnorm
+  measurable_fderiv
 end fun_prop
 
 section RPow
@@ -68,6 +71,32 @@ theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
   convert contDiff_succ_iff_hasFDerivAt using 4; simp
 
 end ContDiff
+
+section ClosedEmbedding
+variable {ι : Type*} {β : ι → Type*} [DecidableEq ι]
+  [(i : ι) → TopologicalSpace (β i)]
+  (x : (i : ι) → β i) (i : ι) {s : Set (β i)}
+
+theorem forall_and_left {ι : Sort*} [Nonempty ι] {q : Prop} {p : ι → Prop} :
+    (∀ x, q ∧ p x) ↔ (q ∧ ∀ x, p x) := by rw [forall_and, forall_const]
+
+theorem forall_and_right {ι : Sort*} [Nonempty ι] {p : ι → Prop} {q : Prop} :
+    (∀ x, p x ∧ q) ↔ (∀ x, p x) ∧ q := by rw [forall_and, forall_const]
+
+theorem image_update : update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
+  ext y
+  simp [update_eq_iff, and_left_comm (a := _ ∈ s), forall_update_iff, eq_comm (a := y _)]
+
+theorem closedEmbedding_update [(i : ι) → T1Space (β i)] : ClosedEmbedding (update x i) := by
+  apply closedEmbedding_of_continuous_injective_closed
+  · exact continuous_const.update i continuous_id
+  · exact update_injective x i
+  · intro s hs
+    rw [image_update]
+    apply isClosed_set_pi
+    simp [forall_update_iff, hs, isClosed_singleton]
+
+end ClosedEmbedding
 
 section ContDiffAbsPow
 
@@ -129,6 +158,10 @@ theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp :
     ContDiff ℝ 1 (fun x ↦ ‖f x‖ ^ p) :=
   contDiff_norm_rpow hp |>.comp hf
 
+theorem Differentiable.norm_rpow {f : F → E} (hf : Differentiable ℝ f) {p : ℝ} (hp : 1 < p) :
+    Differentiable ℝ (fun x ↦ ‖f x‖ ^ p) :=
+  contDiff_norm_rpow hp |>.differentiable le_rfl |>.comp hf
+
 end ContDiffAbsPow
 
 namespace HasCompactSupport
@@ -141,6 +174,11 @@ protected theorem abs {f : α → β} (hf : HasCompactSupport f) : HasCompactSup
 protected theorem rpow_const {f : α → ℝ} (hf : HasCompactSupport f) {r : ℝ} (hr : r ≠ 0) :
     HasCompactSupport (fun x ↦ f x ^ r) :=
   hf.comp_left (g := (· ^ r)) (Real.zero_rpow hr)
+variable (𝕜 : Type*) {E : Type*} {F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F}
+protected theorem fderiv_apply (hf : HasCompactSupport f) (v : E) :
+    HasCompactSupport (fderiv 𝕜 f · v) :=
+  hf.fderiv 𝕜 |>.comp_left (g := fun L : E →L[𝕜] F ↦ L v) rfl
 
 end HasCompactSupport
 
@@ -210,7 +248,7 @@ namespace MeasureTheory
 end MeasureTheory
 
 section NormedAddCommGroup
-variable {ι : Type*} [Fintype ι] {E : ι → Type _} [∀ i, NormedAddCommGroup (E i)]
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] {E : ι → Type _} [∀ i, NormedAddCommGroup (E i)]
 
 theorem Pi.nnnorm_single {i : ι} (y : E i) : ‖Pi.single i y‖₊ = ‖y‖₊ := by
   classical
@@ -226,18 +264,7 @@ theorem Pi.norm_single {i : ι} (y : E i) : ‖Pi.single i y‖ = ‖y‖ :=
 
 end NormedAddCommGroup
 
-section ClosedEmbedding
-variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T2Space (X i)]
-
-theorem closedEmbedding_update  (x : ∀ i, X i) (i : ι) : ClosedEmbedding (update x i) := by
-  have h : LeftInverse (fun v ↦ v i) (update x i) := fun t ↦ update_same i t x
-  apply h.closedEmbedding (continuous_apply i)
-  have : Continuous (fun t : X i ↦ (x, t)) := continuous_const.prod_mk continuous_id
-  exact (continuous_update i).comp this
-
-end ClosedEmbedding
-
-variable {ι : Type*} [Fintype ι]
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 local prefix:max "#" => Fintype.card
 
@@ -284,7 +311,8 @@ set_option maxHeartbeats 500000 in
 The grid-lines operation `GridLines.T` on a nonnegative function on a finitary product type is
 less than or equal to the grid-lines operation of its partial integral in one co-ordinate
 (the latter intuitively considered as a function on a space "one dimension down"). -/
-theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι) (hp : (s.card : ℝ) * p ≤ 1)
+theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
+    (hp : (s.card : ℝ) * p ≤ 1)
     (i : ι) (hi : i ∉ s) {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
     T μ p f (insert i s) ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := by
   calc T μ p f (insert i s)
@@ -304,7 +332,7 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι) (hp 
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
             refine (hf.pow_const _).mul <| Finset.measurable_prod _ ?_
             exact fun _ _ ↦ hf.lmarginal μ |>.pow_const _
-    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (fun x ↦ ?_)
+    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s:=s) (fun x ↦ ?_)
   simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
   have hF₁ : ∀ {j : ι}, Measurable fun t ↦ (∫⋯∫⁻_{j}, f ∂μ) (update x i t) :=
     fun {_} ↦ hf.lmarginal μ |>.comp <| measurable_update _
@@ -451,6 +479,18 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
 
 variable [Nontrivial ι] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
+-- move
+theorem MeasureTheory.Integrable.ae_integrable_update {f : (∀ i, A i) → F}
+    (hf : Integrable f (.pi μ)) (i : ι) :
+    ∀ᵐ x ∂.pi μ, Integrable (fun t ↦ f (update x i t)) (μ i) := by
+  sorry
+
+theorem MeasureTheory.Integrable.ae_integrable_update' {A : ι → Type*}
+    [∀ i, MeasureSpace (A i)] {f : (∀ i, A i) → F}
+    (hf : Integrable f) (i : ι) :
+    ∀ᵐ x, Integrable (fun t : A i ↦ f (update x i t)) :=
+  MeasureTheory.Integrable.ae_integrable_update _ hf i
+
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
 `ι → ℝ` where `n := #ι` is finite and at least 2.)  Then the Lebesgue integral of the pointwise
@@ -460,8 +500,9 @@ integral of the Fréchet derivative of `u`.
 For a basis-free version, see `lintegral_pow_le_pow_lintegral_fderiv`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv_aux
     {p : ℝ} (hp : Real.IsConjExponent #ι p)
-    {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
-    (h2u : HasCompactSupport u) :
+    {u : (ι → ℝ) → F} (hu : Differentiable ℝ u)
+    (h2u : ∀ (i : ι), ∀ᵐ (x : ι → ℝ), IntegrableOn (deriv (u ∘ update x i)) (Set.Iic (x i)))
+    (h3u : ∀ (i : ι), ∀ᵐ (x : ι → ℝ), Tendsto (u ∘ update x i) atBot (𝓝 0)) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
   have : (1:ℝ) ≤ ↑#ι - 1 := by
     have hι : (2:ℝ) ≤ #ι := by exact_mod_cast Fintype.one_lt_card
@@ -478,27 +519,27 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
         simp_rw [prod_const, card_univ]
         norm_cast
     _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
-    _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
+    _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p :=
         -- apply the grid-lines lemma
-        apply lintegral_prod_lintegral_pow_le _ hp
-        borelize ((ι → ℝ) →L[ℝ] ℝ)
-        have : Measurable (fun x ↦ fderiv ℝ u x) := (hu.continuous_fderiv le_rfl).measurable
-        measurability
-  gcongr with x i
+        lintegral_prod_lintegral_pow_le _ hp (by measurability)
+  apply lintegral_mono_ae
+  rw [← Filter.eventually_all] at h2u h3u
+  filter_upwards [h2u, h3u] with x hx h2x
+  gcongr with i
   calc (‖u x‖₊ : ℝ≥0∞)
       = (‖∫ xᵢ in Iic (x i), deriv (u ∘ update x i) xᵢ‖₊ : ℝ≥0∞) := by
         -- apply the half-infinite fundamental theorem of calculus
-        have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp (contDiff_update 1 x i)
-        have h4u : HasCompactSupport (u ∘ update x i) :=
-          h2u.comp_closedEmbedding (closedEmbedding_update x i)
-        simp [HasCompactSupport.integral_Iic_deriv_eq h3u h4u (x i), neg_le_self_iff]
+        have h4u : ∀ y ∈ Set.Iic (x i), HasDerivAt (u ∘ update x i) (deriv (u ∘ update x i) y) y :=
+          -- todo: contDiff_update needs DecidableEq so that we can remove the by convert here
+          fun y _ ↦ by convert hu.comp ((contDiff_update 1 x i).differentiable le_rfl) y |>.hasDerivAt
+        simp [integral_Iic_of_hasDerivAt_of_tendsto' h4u (hx i) (h2x i)]
     _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖₊ :=
         ennnorm_integral_le_lintegral_ennnorm _ -- apply the triangle inequality
     _ ≤ ∫⁻ xᵢ, (‖fderiv ℝ u (update x i xᵢ)‖₊ : ℝ≥0∞) := ?_
   gcongr with y; swap; exact Measure.restrict_le_self
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
-        rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
+        rw [fderiv.comp_deriv _ hu.differentiableAt
           (hasDerivAt_update x i y).differentiableAt]
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ :=
         ContinuousLinearMap.le_opNNNorm ..
@@ -511,7 +552,7 @@ open FiniteDimensional
 
 section
 
-example (c : ℝ≥0) (μ : Measure E) : c • μ = (c : ℝ≥0∞) • μ := by rw [@ENNReal.smul_def]
+example (c : ℝ≥0) (μ : Measure E) : c • μ = (c : ℝ≥0∞) • μ := by rw [ENNReal.smul_def]
 
 set_option linter.unusedVariables false in
 variable (F) in
@@ -522,17 +563,19 @@ integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by
 `n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
     {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
-    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ (u : E → F) (hu : Differentiable ℝ u)
+    (h2u : ∀ v : E, Integrable (fderiv ℝ u · v) μ)
+    (h3u : Tendsto u (cocompact E) (𝓝 0)),
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂μ ≤ C * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂μ) ^ p := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `lintegral_pow_le_pow_lintegral_fderiv_aux`.
   let ι := Fin (finrank ℝ E)
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : Nontrivial ι := by rwa [Fin.nontrivial_iff_two_le]
-  haveI : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
+  have : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp
   have e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
-  haveI : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
+  have : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
     (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
   have hp : Real.IsConjExponent #ι p := by rwa [hιcard]
   have h0p : 0 ≤ p := hp.symm.nonneg
@@ -544,11 +587,27 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
     use (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹
     rw [inv_mul_cancel_right₀]
     exact (NNReal.rpow_pos hc).ne'
-  refine this.imp fun C hC u hu h2u ↦ ?_
+  refine this.imp fun C hC u hu h2u h3u ↦ ?_
   rw [h2c, ENNReal.smul_def, lintegral_smul_measure, lintegral_smul_measure]
   let v : (ι → ℝ) → F := u ∘ e.symm
-  have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
-  have h2v : HasCompactSupport v := h2u.comp_homeomorph e.symm.toHomeomorph
+  have hv : Differentiable ℝ v := hu.comp e.symm.differentiable
+  have h2v : ∀ (i : ι), ∀ᵐ (x : ι → ℝ), IntegrableOn (deriv (v ∘ update x i)) (Set.Iic (x i)) := by
+    intro i
+    have : ∀ y, Integrable (fderiv ℝ v · y) := by
+      intro y
+      specialize h2u (e.symm y)
+      rw [h2c, ENNReal.smul_def, integrable_smul_measure h3c ENNReal.coe_ne_top] at h2u
+      simp_rw [fun x ↦ fderiv.comp x (hu (e.symm x)) e.symm.differentiableAt, e.symm.fderiv]
+      exact h2u.comp_measurable e.symm.continuous.measurable
+    filter_upwards [this (Pi.single i 1) |>.ae_integrable_update' i] with x hx
+    simp_rw [funext fun z ↦ fderiv.comp_deriv z (hv (update x i z))
+      (by convert (contDiff_update 1 x i).differentiable le_rfl z), deriv_update]
+    exact hx.integrableOn
+  have h3v : ∀ (i : ι), ∀ᵐ (x : ι → ℝ), Tendsto (v ∘ update x i) atBot (𝓝 0) := by
+    refine fun i ↦ eventually_of_forall (fun x ↦ ?_)
+    refine Tendsto.mono_left ?_ atBot_le_cocompact
+    exact h3u.comp <|
+      e.symm.toHomeomorph.closedEmbedding.comp (closedEmbedding_update x i) |>.tendsto_cocompact
   have :=
   calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂(volume : Measure (ι → ℝ)).map e.symm
       = ∫⁻ y, (‖v y‖₊ : ℝ≥0∞) ^ p := by
@@ -556,11 +615,10 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
         borelize F
         exact hu.continuous.measurable.nnnorm.coe_nnreal_ennreal.pow_const _
     _ ≤ (∫⁻ y, ‖fderiv ℝ v y‖₊) ^ p :=
-        lintegral_pow_le_pow_lintegral_fderiv_aux hp hv h2v
+        lintegral_pow_le_pow_lintegral_fderiv_aux hp hv (by convert h2v using 5) (by exact h3v)
     _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖₊) ^ p := by
         congr! with y
-        apply fderiv.comp _ (hu.differentiable le_rfl _)
-        exact e.symm.differentiableAt
+        exact fderiv.comp y (hu _) e.symm.differentiableAt
     _ ≤ (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊ * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊) ^ p := by
         gcongr with y
         norm_cast
@@ -568,15 +626,14 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
         apply ContinuousLinearMap.opNNNorm_comp_le
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ * ∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ p := by
         rw [lintegral_mul_const, mul_comm]
-        refine (Continuous.nnnorm ?_).measurable.coe_nnreal_ennreal
-        exact (hu.continuous_fderiv le_rfl).comp e.symm.continuous
+        fun_prop
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0) * (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊) ^ p := by
         rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, ENNReal.coe_rpow_of_nonneg _ h0p]
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0)
         * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂(volume : Measure (ι → ℝ)).map e.symm) ^ p := by
         congr
         rw [lintegral_map _ e.symm.continuous.measurable]
-        exact (hu.continuous_fderiv le_rfl).measurable.nnnorm.coe_nnreal_ennreal
+        fun_prop
   rw [← ENNReal.mul_le_mul_left h3c ENNReal.coe_ne_top, ← mul_assoc, ← ENNReal.coe_mul, ← hC,
     ENNReal.coe_mul] at this
   rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, ← mul_assoc, ENNReal.coe_rpow_of_ne_zero hc.ne']
@@ -591,19 +648,21 @@ with Haar measure. There exists a constant `C` depending only on `E`, such that 
 of `u`. -/
 theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
     {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
-    ∃ C : ℝ≥0, ∀ {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ (u : E → F) (hu : Differentiable ℝ u)
+    (h2u : ∀ v : E, Integrable (fderiv ℝ u · v) μ)
+    (h3u : Tendsto u (cocompact E) (𝓝 0)),
     snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
   obtain ⟨m, hm⟩ : ∃ m, finrank ℝ E = m + 2 := Nat.exists_eq_add_of_le' hE
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
   obtain ⟨C, hC⟩ := lintegral_pow_le_pow_lintegral_fderiv F μ hE hp.coe
   use C ^ (p : ℝ)⁻¹
-  intro u hu h2u
+  intro u hu h2u h3u
   rw [snorm_one_eq_lintegral_nnnorm,
     ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
     ENNReal.coe_rpow_of_nonneg _ h0p.le, ← NNReal.rpow_mul,
     snorm_nnreal_pow_eq_lintegral hp.symm.pos.ne',
     inv_mul_cancel h0p.ne', NNReal.rpow_one]
-  exact hC hu h2u
+  exact hC u hu h2u h3u
 
 variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
 set_option linter.unusedVariables false in
@@ -617,7 +676,10 @@ Note: The codomain of `u` needs to be an inner product space.
 -/
 theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
-    ∃ C : ℝ≥0, ∀ {u : E → F'} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    ∃ C : ℝ≥0, ∀ (u : E → F') (hu : Differentiable ℝ u)
+    (h2u : ∀ v : E, Integrable (fderiv ℝ u · v) μ)
+    (h3u : Tendsto u (cocompact E) (𝓝 0))
+    (hup' : snorm u p' μ ≠ ⊤),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
@@ -629,8 +691,8 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
   rcases hp.eq_or_lt with rfl|hp
   -- the case `p = 1`
   · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv F' μ h0n hn
-    refine ⟨C, @fun u hu h2u ↦ ?_⟩
-    convert hC hu h2u
+    refine ⟨C, fun u hu h2u h3u _ ↦ ?_⟩
+    convert hC u hu h2u h3u
     ext
     rw [← inv_inj, hp']
     field_simp [NNReal.conjExponent]
@@ -639,7 +701,6 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
   have hq : Real.IsConjExponent p q := .conjExponent hp
   have h0p : p ≠ 0 := zero_lt_one.trans hp |>.ne'
   have h1p : (p : ℝ) ≠ 1 := hq.one_lt.ne'
-  -- have h3p : (p : ℝ) ≠ 0 := hq.pos.ne'
   have h3p : (p : ℝ) - 1 ≠ 0 := sub_ne_zero_of_ne h1p
   have h0p' : p' ≠ 0 := by
     suffices 0 < (p' : ℝ) from (show 0 < p' from this) |>.ne'
@@ -663,23 +724,25 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
     field_simp; rw [this]; field_simp; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
   obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv ℝ μ h0n hn
-  refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
-  by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
-  · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
-  have h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := by
+  refine ⟨C * γ, fun u hu h2u h3u hup' ↦ ?_⟩
+  by_cases h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
+  · rw [snorm_nnreal_eq_lintegral h0p', h4u, ENNReal.zero_rpow_of_pos] <;> positivity
+  have h5u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := by
     refine lintegral_rpow_nnnorm_lt_top_of_snorm'_lt_top (pos_iff_ne_zero.mpr h0p') ?_ |>.ne
     dsimp only
     rw [NNReal.val_eq_coe, ← snorm_nnreal_eq_snorm' h0p']
-    exact hu.continuous.memℒp_of_hasCompactSupport (μ := μ) h2u |>.snorm_lt_top
-  have h5u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
-    ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
-  have h6u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
-    ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
-  have h7u := hu.continuous -- for fun_prop
-  have h8u := (hu.fderiv_right (m := 0) le_rfl).continuous -- for fun_prop
+    exact hup'.lt_top
+  have h6u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
+    ENNReal.rpow_pos (pos_iff_ne_zero.mpr h4u) h5u |>.ne'
+  have h7u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
+    ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h5u
+  have h8u := hu.continuous -- for fun_prop
+  -- have h9u := (hu.fderiv_right (m := 0) le_rfl).continuous -- for fun_prop
   let v : E → ℝ := fun x ↦ ‖u x‖ ^ (γ : ℝ)
-  have hv : ContDiff ℝ 1 v := hu.norm_rpow h1γ
-  have h2v : HasCompactSupport v := h2u.norm.rpow_const h4γ
+  have hv : Differentiable ℝ v := hu.norm_rpow h1γ
+  have h2v : ∀ w : E, Integrable (fderiv ℝ v · w) μ := sorry
+  have h3v : Tendsto v (cocompact E) (𝓝 0) := sorry
+  -- have h2v : HasCompactSupport v := h2u.norm.rpow_const h4γ
   have :=
   calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
         rw [← h2γ, snorm_nnreal_eq_lintegral hn.symm.pos.ne']
@@ -687,13 +750,16 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
         simp [Real.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul]
         rw [ENNReal.coe_rpow_of_nonneg]
         positivity
-    _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC hv h2v
+    _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC v hv h2v h3v
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
       gcongr
       simp_rw [← mul_assoc, ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.mpr h1γ.le)]
-      exact ENNReal.coe_le_coe.mpr <| nnnorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
+      exact ENNReal.coe_le_coe.mpr <| nnnorm_fderiv_norm_rpow_le hu h1γ
+      borelize F'
+      have := measurable_fderiv ℝ u -- there is a weird type-class inference bug that makes this
+      -- necessary https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/tricky.20failure.20with.20type-class.20inference
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
         (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ))) := by
@@ -709,5 +775,17 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
   calc
     snorm u p' μ = (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (p' : ℝ)) := snorm_nnreal_eq_lintegral h0p'
     _ ≤ C * γ * (∫⁻ x, ‖fderiv ℝ u x‖₊ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
-      by rwa [← h2q, ENNReal.rpow_sub _ _ h3u h4u, ENNReal.div_le_iff h5u h6u]
+      by rwa [← h2q, ENNReal.rpow_sub _ _ h4u h5u, ENNReal.div_le_iff h6u h7u]
     _ = C * γ *  snorm (fderiv ℝ u) (↑p) μ := by rw [snorm_nnreal_eq_lintegral h0p]
+
+set_option linter.unusedVariables false in
+/-- Todo: update above docstrings -/
+protected theorem HasCompactSupport.snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
+    (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+    ∃ C : ℝ≥0, ∀ (u : E → F') (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
+  refine snorm_le_snorm_fderiv_of_eq μ F' hp h2p hp' |>.imp fun C hC u hu h2u ↦ ?_
+  refine hC u (hu.differentiable le_rfl) ?_ (is_zero_at_infty h2u) ?_
+  · exact fun v ↦ hu.continuous_fderiv le_rfl |>.clm_apply continuous_const
+      |>.integrable_of_hasCompactSupport <| h2u.fderiv_apply ℝ v
+  · exact hu.continuous.memℒp_of_hasCompactSupport (μ := μ) h2u |>.snorm_lt_top.ne
