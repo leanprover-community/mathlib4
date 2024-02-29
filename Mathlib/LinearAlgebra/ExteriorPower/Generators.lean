@@ -22,7 +22,7 @@ of `b`.
 * `exteriorPower.Finite`: The `n`th exterior power of a finite module is a finite module.
 
 * `exteriorPower.span_top_of_span_top` and `exteriorPower.span_top_of_span_top'`: If a family of
-vectors spans `M`, then the family of its `n`-fold exterior products spans `Λ[R]^n M`. (We give
+vectors spans `M`, then the family of its `n`-fold exterior products spans `⋀[R]^n M`. (We give
 versions in the exterior algebra and in the exterior power.)
 
 * `exteriorPower.FreeOfFree`: If `M` is a free module, then so is its `n`th exterior power.
@@ -52,7 +52,7 @@ namespace exteriorPower
 /-! Finiteness of the exterior power. -/
 
 /-- The `n`th exterior power of a finite module is a finite module. -/
-theorem finite [Module.Finite R M]: Module.Finite R ((Λ[R]^n) M) :=
+theorem finite [Module.Finite R M]: Module.Finite R (⋀[R]^n M) :=
   Module.Finite.mk ((Submodule.fg_top _).mpr (Submodule.FG.pow (by
   rw [LinearMap.range_eq_map]; exact Submodule.FG.map _  (Module.finite_def.mp inferInstance)) _ ))
 
@@ -62,10 +62,10 @@ variable (R n)
 
 open Finset in
 /-- If a family of vectors spans `M`, then the family of its `n`-fold exterior products spans
-`Λ[R]^n M`. Here we work in the exterior algebra. -/
+`⋀[R]^n M`. Here we work in the exterior algebra. -/
 lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
     (hv : Submodule.span R (Set.range v) = ⊤) :
-    Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) = (Λ[R]^n) M := by
+    Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) = ⋀[R]^n M := by
   apply le_antisymm
   · rw [Submodule.span_le, Set.range_subset_iff]
     exact fun _ ↦ by simp only [ιMulti_family_coe, Submodule.coeSubtype, Function.comp_apply,
@@ -151,7 +151,7 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
       simp only [SetLike.mem_coe, Submodule.zero_mem]
 
 /-- If a family of vectors spans `M`, then the family of its `n`-fold exterior products spans
-`Λ[R]^n M`. This is a variant of `exteriorPower.span_top_of_span_top` where we
+`⋀[R]^n M`. This is a variant of `exteriorPower.span_top_of_span_top` where we
 work in the exterior power and not the exterior algebra. -/
 lemma span_top_of_span_top' {I : Type*} [LinearOrder I]
     {v : I → M} (hv : Submodule.span R (Set.range v) = ⊤) :
@@ -187,7 +187,7 @@ lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
     rw [← Set.range_comp]
     congr
 
-/-! We construct a basis of `Λ[R]^n M` from a basis of `M`. -/
+/-! We construct a basis of `⋀[R]^n M` from a basis of `M`. -/
 
 /-- If `b` is a basis of `M` indexed by a linearly ordered type `I` and `s` is a finset of
 `I` of cardinality `n`, then we get a linear form on the `n`th exterior power of `M` by
@@ -195,7 +195,7 @@ applying the `exteriorPower.linearFormOfFamily` construction to the fanily of li
 given by the coordinates of `b` indexed by elements of `s` (ordered using the given order on
 `I`). -/
 noncomputable def linearFormOfBasis {I : Type*} [LinearOrder I] (b : Basis I R M)
-    {s : Finset I} (hs : Finset.card s = n) : (Λ[R]^n) M →ₗ[R] R :=
+    {s : Finset I} (hs : Finset.card s = n) : ⋀[R]^n M →ₗ[R] R :=
   linearFormOfFamily R n (fun i => b.coord (Finset.orderIsoOfFin s hs i))
 
 @[simp]
@@ -209,7 +209,7 @@ lemma linearFormOfBasis_apply_ιMulti {I : Type*} [LinearOrder I] (b : Basis I R
     Basis.coord_apply]
 
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`
-of cardinality `n`. If we apply the linear form on `Λ[R]^n M` defined by `b` and `s`
+of cardinality `n`. If we apply the linear form on `⋀[R]^n M` defined by `b` and `s`
 to the exterior product of the `b i` for `i ∈ s`, then we get `1`. -/
 lemma linearFormOfBasis_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s : Finset I} (hs : Finset.card s = n) :
@@ -262,7 +262,7 @@ lemma linearFormOfBasis_apply_nondiag_aux {I : Type*} [LinearOrder I] {s t : Fin
 
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`
 of cardinality `n`. Let `t` be a finset of `I` of cardinality `n` such that `s ≠ t`. If we apply
-the linear form on `Λ[R]^n M` defined by `b` and `s` to the exterior product of the
+the linear form on `⋀[R]^n M` defined by `b` and `s` to the exterior product of the
 `b i` for `i ∈ t`, then we get `0`. -/
 lemma linearFormOfBasis_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s t : Finset I} (hs : Finset.card s = n) (ht : Finset.card t = n) (hst : s ≠ t) :
@@ -293,7 +293,7 @@ lemma ιMulti_family_linearIndependent_ofBasis {I : Type*} [LinearOrder I] (b : 
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), the basis of the `n`th
 exterior power of `M` formed by the `n`-fold exterior products of elements of `b`. -/
 noncomputable def BasisOfBasis {I : Type*} [LinearOrder I] (b : Basis I R M) :
-    Basis {s : Finset I // Finset.card s = n} R ((Λ[R]^n) M) :=
+    Basis {s : Finset I // Finset.card s = n} R (⋀[R]^n M) :=
   Basis.mk (v := ιMulti_family R n b) (ιMulti_family_linearIndependent_ofBasis _ _ _)
   (by rw [span_top_of_span_top']; rw [Basis.span_eq])
 
@@ -326,10 +326,10 @@ lemma BasisOfBasis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
   · simp only [linearFormOfBasis_apply_nondiag R n b hs ht heq, Basis.coord_apply,
       Basis.repr_self_apply, Subtype.mk.injEq, Ne.symm heq, ite_false]
 
-/-! ### Freeness and dimension of `Λ[R]^n M. -/
+/-! ### Freeness and dimension of `⋀[R]^n M. -/
 
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
-lemma FreeOfFree (hfree : Module.Free R M) : Module.Free R ((Λ[R]^n) M) :=
+lemma FreeOfFree (hfree : Module.Free R M) : Module.Free R (⋀[R]^n M) :=
   let ⟨I, b⟩ := (Classical.choice hfree.exists_basis)
   letI := WellFounded.wellOrderExtension (emptyWf (α := I)).wf
   Module.Free.of_basis (BasisOfBasis R n b)
@@ -339,7 +339,7 @@ variable [StrongRankCondition R]
 /-- If `R` satisfies the strong rank condition and `M` is finite free of rank `r`, then
 the `n`th exterior power of `M` is of finrank `Nat.choose r n`. -/
 lemma FinrankOfFiniteFree (hfree : Module.Free R M) [Module.Finite R M] :
-    FiniteDimensional.finrank R ((Λ[R]^n) M) =
+    FiniteDimensional.finrank R (⋀[R]^n M) =
     Nat.choose (FiniteDimensional.finrank R M) n :=
   letI := WellFounded.wellOrderExtension (emptyWf (α := hfree.ChooseBasisIndex)).wf
   let B :=  BasisOfBasis R n (hfree.chooseBasis)
@@ -374,7 +374,7 @@ lemma ιMulti_family_linearIndependent_field {I : Type*} [LinearOrder I] {v : I 
 lemma nonemptyOfNonempty {I : Type*} [LinearOrder I]
     (hne : Nonempty {v : I → E // LinearIndependent K v}) :
     Nonempty {v : {s : Finset I // Finset.card s = n} →
-    (Λ[K]^n) E // LinearIndependent K v} :=
+    (⋀[K]^n) E // LinearIndependent K v} :=
   let v := Classical.choice hne
   Nonempty.intro ⟨ιMulti_family K n v, ιMulti_family_linearIndependent_field n v.2⟩
 

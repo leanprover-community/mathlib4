@@ -16,12 +16,12 @@ We introduce the exterior powers of a module `M` over a commutative ring `R`.
 
 The `n`th exterior power of the `R`-module `M` is denoted by `exteriorPower R n M`; it is of
 type `Submodule R (ExteriorAlgebra R M)` and defined as `LinearMap.range (ExteriorAlgebra.ι R :
-M →ₗ[R] ExteriorAlgebra R M) ^ n`. We also introduce the notation `Λ[R]^n M` for
+M →ₗ[R] ExteriorAlgebra R M) ^ n`. We also introduce the notation `⋀[R]^n M` for
 `exteriorPower R n M`.
 
 ## Definitions
 
-* `exteriorPower.ιMulti` is the canonical alternating map on `M` with values in `Λ[R]^n M`.
+* `exteriorPower.ιMulti` is the canonical alternating map on `M` with values in `⋀[R]^n M`.
 
 * If `f` is a `R`-linear map from `M` to `N`, then `exteriorPower.map n f` is the linear map
 between `n`th exterior powers induced by `f`.
@@ -32,10 +32,10 @@ exterior powers).
 
 ## Theorems
 
-* The image of `exteriorPower.ιMulti` spans `Λ[R]^n M`.
+* The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
 * `exteriorPower.liftAlternatingEquiv` (universal property of the `n`th exterior power of `M`):
-the linear equivalence between linear maps from `Λ[R]^n M` to a module `N` and `n`-fold
+the linear equivalence between linear maps from `⋀[R]^n M` to a module `N` and `n`-fold
 alternating maps from `M` to `N`.
 
 * `exteriorPower.map_injective_field`: If `f : M →ₗ[R] N` is injective and `R` is a field, then
@@ -44,8 +44,8 @@ alternating maps from `M` to `N`.
 * `exteriorPower.map_surjective`: If `f : M →ₗ[R] N` is surjective, then `exteriorPower.map n f`
 is surjective.
 
-* `exteriorPower.mem_exteriorPower_is_mem_finite`: Every element of `Λ[R]^n M` is in the image of
-`Λ[R]^n P` for some finitely generated submodule `P` of `M`.
+* `exteriorPower.mem_exteriorPower_is_mem_finite`: Every element of `⋀[R]^n M` is in the image of
+`⋀[R]^n P` for some finitely generated submodule `P` of `M`.
 
 -/
 
@@ -65,25 +65,25 @@ variable (R M n)
 
 -- This part should be erased if the other PR is merged.
 /-- Definition of the `n`th exterior power of a `R`-module `M`. We introduce the notation
-`Λ[R]^n M` for `exteriorPower R n M`. -/
+`⋀[R]^n M` for `exteriorPower R n M`. -/
 @[reducible]
 def exteriorPower := (LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n)
 
 @[inherit_doc]
-notation:100 "Λ[" R "]^" n:arg => exteriorPower R n
+notation:100 "⋀[" R "]^" n:arg => exteriorPower R n
 -- End of part to erase.
 
 variable {M}
 
 namespace exteriorPower
 
-/-! The canonical alternating from `Fin n → M` to `Λ[R]^n M`. -/
+/-! The canonical alternating from `Fin n → M` to `⋀[R]^n M`. -/
 
-/-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `Λ[r]^n M`
+/-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
-def ιMulti : AlternatingMap R M ((Λ[R]^n) M) (Fin n) :=
-  AlternatingMap.codRestrict (ExteriorAlgebra.ιMulti R n) ((Λ[R]^n) M)
+def ιMulti : AlternatingMap R M (⋀[R]^n M) (Fin n) :=
+  AlternatingMap.codRestrict (ExteriorAlgebra.ιMulti R n) (⋀[R]^n M)
   (fun _ => ExteriorAlgebra.ιMulti_range R n (by simp only [Set.mem_range, exists_apply_eq_apply]))
 
 @[simp] lemma ιMulti_apply (a : Fin n → M) :
@@ -94,26 +94,26 @@ def ιMulti : AlternatingMap R M ((Λ[R]^n) M) (Fin n) :=
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power. Variant of
 `ExteriorAlgebra.ιMulti_span_fixedDegree`, useful in rewrites. -/
 lemma ιMulti_span_fixedDegree :
-    Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = (Λ[R]^n) M :=
+    Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = ⋀[R]^n M :=
   ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-/-- The image of `exteriorPower.ιMulti` spans `Λ[R]^n M`. -/
+/-- The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`. -/
 lemma ιMulti_span :
-    Submodule.span R (Set.range (ιMulti R n)) = (⊤ : Submodule R ((Λ[R]^n) M)) := by
-  apply LinearMap.map_injective (Submodule.ker_subtype ((Λ[R]^n) M))
+    Submodule.span R (Set.range (ιMulti R n)) = (⊤ : Submodule R (⋀[R]^n M)) := by
+  apply LinearMap.map_injective (Submodule.ker_subtype (⋀[R]^n M))
   rw [LinearMap.map_span, ← Set.image_univ, Set.image_image]
   simp only [Submodule.coeSubtype, ιMulti_apply, Set.image_univ, Submodule.map_top,
     Submodule.range_subtype]
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-/-- Two linear maps on `Λ[R]^n M` that agree on the image of `exteriorPower.ιMulti`
+/-- Two linear maps on `⋀[R]^n M` that agree on the image of `exteriorPower.ιMulti`
 are equal. -/
 @[ext]
-lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N⦄
+lemma lhom_ext ⦃f : ⋀[R]^n M →ₗ[R] N⦄ ⦃g : ⋀[R]^n M →ₗ[R] N⦄
     (heq : (LinearMap.compAlternatingMap f) (ιMulti R n) =
     (LinearMap.compAlternatingMap g) (ιMulti R n)) : f = g := by
   ext u
-  have hu : u ∈ (⊤ : Submodule R ((Λ[R]^n) M)) := Submodule.mem_top
+  have hu : u ∈ (⊤ : Submodule R (⋀[R]^n M)) := Submodule.mem_top
   rw [← ιMulti_span] at hu
   apply Submodule.span_induction hu (p := fun u => f u = g u)
   · exact fun _ h ↦ by
@@ -125,16 +125,16 @@ lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N�
   · exact fun _ _ h => by rw [LinearMap.map_smul, LinearMap.map_smul, h]
 
 /-! The universal property of the `n`th exterior power of `M`: linear maps from
-`Λ[R]^n M` to a module `N` are in linear equivalence with `n`-fold alternating maps from
+`⋀[R]^n M` to a module `N` are in linear equivalence with `n`-fold alternating maps from
 `M` to `N`. -/
 
 variable {R}
 
 /-- The linear map from `n`-fold alternating maps from `M` to `N` to linear maps from
-`Λ[R]^n M` to `N`-/
-def liftAlternating : (AlternatingMap R M N (Fin n)) →ₗ[R] (Λ[R]^n) M →ₗ[R] N where
+`⋀[R]^n M` to `N`-/
+def liftAlternating : (AlternatingMap R M N (Fin n)) →ₗ[R] ⋀[R]^n M →ₗ[R] N where
   toFun f := LinearMap.domRestrict (LinearMap.comp (ExteriorAlgebra.liftAlternating (R := R)
-    (M := M) (N :=N)) (LinearMap.single n) f) ((Λ[R]^n) M)
+    (M := M) (N :=N)) (LinearMap.single n) f) (⋀[R]^n M)
   map_add' f g := by ext u; simp only [map_add, LinearMap.coe_comp, Function.comp_apply,
     LinearMap.compAlternatingMap_apply, LinearMap.domRestrict_apply, ιMulti_apply,
     LinearMap.add_apply, ExteriorAlgebra.liftAlternating_apply_ιMulti]
@@ -164,9 +164,9 @@ variable (R)
     LinearMap.id_coe, id_eq]
 
 /-- If `f` is an alternating map from `M` to `N`, `liftAlternating n f` is the corresponding
-linear map from `Λ[R]^n M` to `N` and `g` is a linear map from `N` to `N'`, then
+linear map from `⋀[R]^n M` to `N` and `g` is a linear map from `N` to `N'`, then
 the alternating map `g.compAlternatingMap f` from `M` to `N'` corresponds to the linear
-map `g.comp (liftAlternating n f)` on `Λ[R]^n M`. -/
+map `g.comp (liftAlternating n f)` on `⋀[R]^n M`. -/
 @[simp]
 lemma liftAlternating_comp (g : N →ₗ[R] N') (f : AlternatingMap R M N (Fin n)) :
     liftAlternating n (g.compAlternatingMap f) = g.comp (liftAlternating n f) := by
@@ -175,9 +175,9 @@ lemma liftAlternating_comp (g : N →ₗ[R] N') (f : AlternatingMap R M N (Fin n
     Function.comp_apply, liftAlternating_apply_ιMulti]
 
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
-`Λ[R]^n M` to `N`. -/
+`⋀[R]^n M` to `N`. -/
 @[simps!]
-def liftAlternatingEquiv : AlternatingMap R M N (Fin n) ≃ₗ[R] (Λ[R]^n) M →ₗ[R] N :=
+def liftAlternatingEquiv : AlternatingMap R M N (Fin n) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N :=
   LinearEquiv.ofLinear (liftAlternating n)
   {toFun := fun F ↦ F.compAlternatingMap (ιMulti R n)
    map_add' := by intro F G; ext x
@@ -192,11 +192,11 @@ def liftAlternatingEquiv : AlternatingMap R M N (Fin n) ≃ₗ[R] (Λ[R]^n) M �
   (by ext _; simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         liftAlternating_comp_ιMulti, LinearMap.id_coe, id_eq])
 
-lemma liftAlternatingEquiv_apply (f :AlternatingMap R M N (Fin n)) (x : (Λ[R]^n) M) :
+lemma liftAlternatingEquiv_apply (f :AlternatingMap R M N (Fin n)) (x : ⋀[R]^n M) :
     exteriorPower.liftAlternatingEquiv R n f x = exteriorPower.liftAlternating n f x := rfl
 
 @[simp]
-lemma liftAlternatingEquiv_symm_apply (F : (Λ[R]^n) M →ₗ[R] N) (m : Fin n → M) :
+lemma liftAlternatingEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin n → M) :
     (exteriorPower.liftAlternatingEquiv R n).symm F m = F.compAlternatingMap (ιMulti R n) m := rfl
 
 /-! Functoriality of the exterior powers. -/
@@ -204,7 +204,7 @@ lemma liftAlternatingEquiv_symm_apply (F : (Λ[R]^n) M →ₗ[R] N) (m : Fin n �
 variable {R}
 
 /-- The linear map between `n`th exterior powers induced by a linear map between the modules. -/
-def map (f : M →ₗ[R] N) : (Λ[R]^n) M →ₗ[R] (Λ[R]^n) N :=
+def map (f : M →ₗ[R] N) : ⋀[R]^n M →ₗ[R] (⋀[R]^n) N :=
   liftAlternating _ (AlternatingMap.compLinearMap (ιMulti _ _) f)
 
 @[simp]
@@ -219,7 +219,7 @@ theorem map_comp_ιMulti (f : M →ₗ[R] N) :
 
 @[simp]
 theorem map_id :
-    map n (LinearMap.id) = LinearMap.id (R := R) (M := (Λ[R]^n) M) :=
+    map n (LinearMap.id) = LinearMap.id (R := R) (M := ⋀[R]^n M) :=
   liftAlternating_ιMulti _ _
 
 @[simp]
@@ -266,7 +266,7 @@ variable (R)
 family of `n`fold exterior products of elements of `v`, seen as members of the
 `n`th exterior power. -/
 noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
-    {s : Finset I // Finset.card s = n} → (Λ[R]^n) M :=
+    {s : Finset I // Finset.card s = n} → ⋀[R]^n M :=
   fun ⟨s, hs⟩ => ιMulti R n (fun i => v (Finset.orderIsoOfFin s hs i))
 
 @[simp]
@@ -291,7 +291,7 @@ variable (M)
 
 /-- The linear map from the `n`th exterior power to the `n`th tensor power induced by
 `MultilinearMap.alternarization`. -/
-noncomputable def toTensorPower : (Λ[R]^n) M →ₗ[R] (⨂[R]^n) M :=
+noncomputable def toTensorPower : ⋀[R]^n M →ₗ[R] (⨂[R]^n) M :=
   liftAlternatingEquiv R n
   (MultilinearMap.alternatization (PiTensorProduct.tprod R (s := fun (_ : Fin n) => M)))
 
@@ -315,11 +315,11 @@ exterior power of `M`, by composing the map `exteriorPower.toTensorPower` to the
 power and then applying `TensorPower.linearFormOfFamily` (which takes the product of the
 components of `f`). -/
 noncomputable def linearFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
-    (Λ[R]^n) M →ₗ[R] R :=
+    ⋀[R]^n M →ₗ[R] R :=
   LinearMap.comp (TensorPower.linearFormOfFamily R n f) (toTensorPower R n M)
 
 @[simp]
-lemma linearFormOfFamily_apply (f : (_ : Fin n) → (M →ₗ[R] R)) (x : (Λ[R]^n) M) :
+lemma linearFormOfFamily_apply (f : (_ : Fin n) → (M →ₗ[R] R)) (x : ⋀[R]^n M) :
     linearFormOfFamily R n f x = TensorPower.linearFormOfFamily R n f (toTensorPower R n M x) := by
   unfold linearFormOfFamily
   simp only [LinearMap.coe_comp, Function.comp_apply]
@@ -345,13 +345,13 @@ lemma linearFormOfFamily_comp_map (f : (_ : Fin n) → (M →ₗ[R] R)) (p : N �
     TensorPower.linearFormOfFamily_apply_tprod]
 
 lemma linearFormOfFamily_comp_map_apply (f : (_ : Fin n) → (M →ₗ[R] R))
-    (p : N →ₗ[R] M) (x : (Λ[R]^n) N) :
+    (p : N →ₗ[R] M) (x : (⋀[R]^n) N) :
     (linearFormOfFamily R n f) (map n p x) =
     linearFormOfFamily R n (fun (i : Fin n) => (f i).comp p) x := by
   rw [← LinearMap.comp_apply, linearFormOfFamily_comp_map]
 
 /-- A family `f` of linear forms on `M` indexed by `Fin n` defines an `n`-fold alternating form
-on `M`, by composing the linear form on `Λ[R]^n M` indeuced by `f` (defined in
+on `M`, by composing the linear form on `⋀[R]^n M` indeuced by `f` (defined in
 `exteriorPower.linearFormOfFamily`) with the canonical `n`-fold alternating map from `M` to its
 `n`th exterior power. -/
 noncomputable def alternatingFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
@@ -378,11 +378,11 @@ lemma sum_range_map (f : N →ₗ[R] M) (f' : N' →ₗ[R] M) (f'' : N''→ₗ[R
   rw [← hx, ← hy, ← hy', ← hg, ← hg', ← map_comp_map, ← map_comp_map, map_add,
     LinearMap.comp_apply, LinearMap.comp_apply]
 
-/-- Every element of `Λ[R]^n M` is in the image of `Λ[R]^n P` for some finitely generated
+/-- Every element of `⋀[R]^n M` is in the image of `⋀[R]^n P` for some finitely generated
 submodule `P` of `M`. -/
-lemma mem_exteriorPower_is_mem_finite (x : (Λ[R]^n) M) :
+lemma mem_exteriorPower_is_mem_finite (x : ⋀[R]^n M) :
     ∃ (P : Submodule R M), Submodule.FG P ∧ x ∈ LinearMap.range (map n (Submodule.subtype P)) := by
-  have hx : x ∈ (⊤ : Submodule R ((Λ[R]^n) M)) := by simp only [Submodule.mem_top]
+  have hx : x ∈ (⊤ : Submodule R (⋀[R]^n M)) := by simp only [Submodule.mem_top]
   rw [← ιMulti_span] at hx
   refine Submodule.span_induction hx (p := fun x => ∃ (P : Submodule R M),
     P.FG ∧ x ∈ LinearMap.range (map n P.subtype)) ?_ ⟨(⊥ : Submodule R M), ⟨Submodule.fg_bot,
