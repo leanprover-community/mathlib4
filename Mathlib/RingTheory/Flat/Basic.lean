@@ -302,7 +302,7 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
 /--
 `M⋆` is Baer, if `I ⊗ M → M` is injective for every ideal `I`
 -/
-lemma _root_.Module.Baer.characterModule_of_ideal
+lemma CharacterModule.baer_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     Module.Baer R (CharacterModule M) := by
   have : Module.Injective ℤ (AddCircle (1 : ℚ)) := by
@@ -338,7 +338,7 @@ lemma rTensor_preserves_injective_linearMap_of_ideal
       Function.Injective L → Function.Injective (L.rTensor M) := by
   apply rTensor_preserves_injective_linearMap_of_injective_characterModule
   apply Module.Baer.injective
-  apply Module.Baer.characterModule_of_ideal
+  apply CharacterModule.baer_of_ideal
   assumption
 
 /--
