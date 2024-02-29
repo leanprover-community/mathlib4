@@ -1907,7 +1907,7 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [SemilatticeSup α]
   obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
   let xs : ℕ → α := fun n => Finset.sup' (Finset.range (n + 1)) Finset.nonempty_range_succ ys
   have h_mono : Monotone xs := fun i j hij ↦ by
-    simp only -- Need to unfold `xs` and do alpha reduction, otherwise `gcongr` fails
+    simp only [xs] -- Need to unfold `xs` and do alpha reduction, otherwise `gcongr` fails
     gcongr
   refine ⟨xs, h_mono, tendsto_atTop_mono (fun n ↦ Finset.le_sup' _ ?_) h⟩
   simp
