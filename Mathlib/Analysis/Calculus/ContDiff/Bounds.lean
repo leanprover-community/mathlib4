@@ -357,7 +357,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       ring
     refine Finset.prod_congr rfl ?_
     intro j hj
-    have hji : j ≠ i := fun h ↦ hi <| by simpa [h] using hj
+    have hji : j ≠ i := mt (· ▸ hj) hi
     rw [Sym.count_coe_fill_of_ne hji]
 
 theorem norm_iteratedFDeriv_prod_le [DecidableEq ι] [NormOneClass A'] {u : Finset ι}
