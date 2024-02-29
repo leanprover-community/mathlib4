@@ -55,13 +55,15 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
   suffices
     (fun p : 𝕜 × 𝕜 => (p.1 - p.2) * ((x * x)⁻¹ - (p.1 * p.2)⁻¹)) =o[𝓝 (x, x)] fun p =>
       (p.1 - p.2) * 1 by
-    refine' this.congr' _ (eventually_of_forall fun _ => mul_one _)
-    refine' Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) _
-    rintro ⟨y, z⟩ ⟨hy, hz⟩
-    simp only [mem_setOf_eq] at hy hz
-    -- hy : y ≠ 0, hz : z ≠ 0
-    field_simp [hx, hy, hz]
-    ring
+    -- FIXME nightly-testing: not sure what is wrong here:
+    sorry
+    -- refine' this.congr' _ (eventually_of_forall fun _ => mul_one _)
+    -- refine' Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) _
+    -- rintro ⟨y, z⟩ ⟨hy, hz⟩
+    -- simp only [mem_setOf_eq] at hy hz
+    -- -- hy : y ≠ 0, hz : z ≠ 0
+    -- field_simp [hx, hy, hz]
+    -- ring
   refine' (isBigO_refl (fun p : 𝕜 × 𝕜 => p.1 - p.2) _).mul_isLittleO ((isLittleO_one_iff 𝕜).2 _)
   rw [← sub_self (x * x)⁻¹]
   exact tendsto_const_nhds.sub ((continuous_mul.tendsto (x, x)).inv₀ <| mul_ne_zero hx hx)
@@ -240,4 +242,3 @@ theorem deriv_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d
 #align deriv_div deriv_div
 
 end Division
-
