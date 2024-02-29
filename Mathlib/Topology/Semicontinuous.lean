@@ -46,10 +46,23 @@ Similar results are stated and proved for upper semicontinuity.
 We also prove that a function is continuous if and only if it is both lower and upper
 semicontinuous.
 
+We have some equivalent definitions of lower- and upper-semicontinuity (under certain
+restrictions on the order on the codomain):
+* `lowerSemicontinuous_iff_isOpen_preimage` in a linear order;
+* `lowerSemicontinuous_iff_isClosed_preimage` in a linear order;
+* `lowerSemicontinuousAt_iff_le_liminf` in a dense complete linear order;
+* `lowerSemicontinuous_iff_IsClosed_epigraph` in a dense complete linear order with the order
+  topology.
+
 ## Implementation details
 
 All the nontrivial results for upper semicontinuous functions are deduced from the corresponding
 ones for lower semicontinuous functions using `OrderDual`.
+
+## References
+
+* <https://en.wikipedia.org/wiki/Closed_convex_function>
+* <https://en.wikipedia.org/wiki/Semi-continuity>
 
 -/
 
@@ -294,6 +307,62 @@ theorem ContinuousOn.lowerSemicontinuousOn {f : α → γ} (h : ContinuousOn f s
 theorem Continuous.lowerSemicontinuous {f : α → γ} (h : Continuous f) : LowerSemicontinuous f :=
   fun _x => h.continuousAt.lowerSemicontinuousAt
 #align continuous.lower_semicontinuous Continuous.lowerSemicontinuous
+
+end
+
+/-! #### Equivalent definitions -/
+
+section
+
+variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
+
+theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuousWithinAt f s x ↔ f x ≤ liminf f (𝓝[s] x) := by
+  constructor
+  · intro hf; unfold LowerSemicontinuousWithinAt at hf
+    contrapose! hf
+    obtain ⟨y, lty, ylt⟩ := exists_between hf; use y
+    exact ⟨ylt, fun h => lty.not_le
+      (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ hx => le_of_lt hx))⟩
+  exact fun hf y ylt => eventually_lt_of_lt_liminf (ylt.trans_le hf)
+
+alias ⟨LowerSemicontinuousWithinAt.le_liminf, _⟩ := lowerSemicontinuousWithinAt_iff_le_liminf
+
+theorem lowerSemicontinuousAt_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuousAt f x ↔ f x ≤ liminf f (𝓝 x) := by
+  rw [← lowerSemicontinuousWithinAt_univ_iff, lowerSemicontinuousWithinAt_iff_le_liminf,
+    ← nhdsWithin_univ]
+
+alias ⟨LowerSemicontinuousAt.le_liminf, _⟩ := lowerSemicontinuousAt_iff_le_liminf
+
+theorem lowerSemicontinuous_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuous f ↔ ∀ x, f x ≤ liminf f (𝓝 x) := by
+  simp only [← lowerSemicontinuousAt_iff_le_liminf, LowerSemicontinuous]
+
+alias ⟨LowerSemicontinuous.le_liminf, _⟩ := lowerSemicontinuous_iff_le_liminf
+
+theorem lowerSemicontinuousOn_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuousOn f s ↔ ∀ x ∈ s, f x ≤ liminf f (𝓝[s] x) := by
+  simp only [← lowerSemicontinuousWithinAt_iff_le_liminf, LowerSemicontinuousOn]
+
+alias ⟨LowerSemicontinuousOn.le_liminf, _⟩ := lowerSemicontinuousOn_iff_le_liminf
+
+variable [TopologicalSpace γ] [OrderTopology γ]
+
+theorem lowerSemicontinuous_iff_IsClosed_epigraph {f : α → γ} :
+    LowerSemicontinuous f ↔ IsClosed {p : α × γ | f p.1 ≤ p.2} := by
+  constructor
+  · rw [lowerSemicontinuous_iff_le_liminf, isClosed_iff_forall_filter]
+    rintro hf ⟨x, y⟩ F F_ne h h'
+    rw [nhds_prod_eq, le_prod] at h'
+    calc f x ≤ liminf f (𝓝 x) := hf x
+    _ ≤ liminf f (map Prod.fst F) := liminf_le_liminf_of_le h'.1
+    _ ≤ liminf Prod.snd F := liminf_le_liminf <| (eventually_principal.2 fun _ ↦ id).filter_mono h
+    _ = y := h'.2.liminf_eq
+  · rw [lowerSemicontinuous_iff_isClosed_preimage]
+    exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
+
+alias ⟨LowerSemicontinuous.IsClosed_epigraph, _⟩ := lowerSemicontinuous_iff_IsClosed_epigraph
 
 end
 
@@ -823,8 +892,47 @@ theorem Continuous.upperSemicontinuous {f : α → γ} (h : Continuous f) : Uppe
 
 end
 
-/-! ### Composition -/
+/-! #### Equivalent definitions -/
 
+section
+
+variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
+
+theorem upperSemicontinuousWithinAt_iff_limsup_le {f : α → γ} :
+    UpperSemicontinuousWithinAt f s x ↔ limsup f (𝓝[s] x) ≤ f x :=
+  lowerSemicontinuousWithinAt_iff_le_liminf (γ := γᵒᵈ)
+
+alias ⟨UpperSemicontinuousWithinAt.limsup_le, _⟩ := upperSemicontinuousWithinAt_iff_limsup_le
+
+theorem upperSemicontinuousAt_iff_limsup_le {f : α → γ} :
+    UpperSemicontinuousAt f x ↔ limsup f (𝓝 x) ≤ f x :=
+  lowerSemicontinuousAt_iff_le_liminf (γ := γᵒᵈ)
+
+alias ⟨UpperSemicontinuousAt.limsup_le, _⟩ := upperSemicontinuousAt_iff_limsup_le
+
+theorem upperSemicontinuous_iff_limsup_le {f : α → γ} :
+    UpperSemicontinuous f ↔ ∀ x, limsup f (𝓝 x) ≤ f x :=
+  lowerSemicontinuous_iff_le_liminf (γ := γᵒᵈ)
+
+alias ⟨UpperSemicontinuous.limsup_le, _⟩ := upperSemicontinuous_iff_limsup_le
+
+theorem upperSemicontinuousOn_iff_limsup_le {f : α → γ} :
+    UpperSemicontinuousOn f s ↔ ∀ x ∈ s, limsup f (𝓝[s] x) ≤ f x :=
+  lowerSemicontinuousOn_iff_le_liminf (γ := γᵒᵈ)
+
+alias ⟨UpperSemicontinuousOn.limsup_le, _⟩ := upperSemicontinuousOn_iff_limsup_le
+
+variable [TopologicalSpace γ] [OrderTopology γ]
+
+theorem upperSemicontinuous_iff_IsClosed_hypograph {f : α → γ} :
+    UpperSemicontinuous f ↔ IsClosed {p : α × γ | p.2 ≤ f p.1} :=
+  lowerSemicontinuous_iff_IsClosed_epigraph (γ := γᵒᵈ)
+
+alias ⟨UpperSemicontinuous.IsClosed_hypograph, _⟩ := upperSemicontinuous_iff_IsClosed_hypograph
+
+end
+
+/-! ### Composition -/
 
 section
 
