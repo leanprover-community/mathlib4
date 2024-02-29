@@ -966,7 +966,9 @@ theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonem
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
 
-/-- A version of `Finset.sup'_mono` acceptable for `@[gcongr]`. -/
+/-- A version of `Finset.sup'_mono` acceptable for `@[gcongr]`.
+Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
+this version takes it as an argument. -/
 @[gcongr]
 lemma _root_.GCongr.finset_sup'_le {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
     {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₁.sup' h₁ f ≤ s₂.sup' h₂ f :=
@@ -1143,7 +1145,9 @@ theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonem
     s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
   Finset.le_inf' h₁ _ (fun _ hb => inf'_le _ (h hb))
 
-/-- A version of `Finset.inf'_mono` acceptable for `@[gcongr]`. -/
+/-- A version of `Finset.inf'_mono` acceptable for `@[gcongr]`.
+Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
+this version takes it as an argument. -/
 @[gcongr]
 lemma _root_.GCongr.finset_inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
     {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₂.inf' h₂ f ≤ s₁.inf' h₁ f :=
