@@ -69,7 +69,7 @@ If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `�
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
-## tags
+## Tags
 
 graded ring, filtered ring, direct sum, add_submonoid
 -/
