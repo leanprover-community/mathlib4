@@ -216,8 +216,6 @@ open Classical in
 instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
   of_linearEquiv R _ _ (finsuppLEquivDirectSum R R ι)
 
-variable (M : Type v) [AddCommGroup M] [Module R M]
-
 instance of_free [Free R M] : Flat R M := of_linearEquiv R _ _ (Free.repr R M)
 
 /-- A projective module with a discrete type of generator is flat -/
@@ -324,11 +322,9 @@ linear map `f`.
 lemma rTensor_preserves_injective_linearMap_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N'](L : N →ₗ[R] N'),
-      Function.Injective L → Function.Injective (L.rTensor M) := by
-  apply rTensor_preserves_injective_linearMap_of_injective_characterModule
-  apply Module.Baer.injective
-  apply CharacterModule.baer_of_ideal
-  assumption
+      Function.Injective L → Function.Injective (L.rTensor M) :=
+  rTensor_preserves_injective_linearMap_of_injective_characterModule _ _ <|
+    Module.Baer.injective <| CharacterModule.baer_of_ideal _ _ inj
 
 -- Implementation note:
 -- In this lemma we require the universe level of the ring is lower than or equal to that of the
