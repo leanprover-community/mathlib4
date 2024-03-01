@@ -449,12 +449,11 @@ theorem prod_drop_succ :
 
 /-- Cancellation of a telescoping product. -/
 @[to_additive "Cancellation of a telescoping product"]
-theorem prod_map_range_cancel (n : ℕ) (f : ℕ → G) :
-    ((range n).map fun k ↦ (f k)⁻¹ * f (k + 1)).prod = (f 0)⁻¹ * f n := by
-  induction' n with n ih
-  · exact (mul_left_inv (f 0)).symm
-  · rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, ih,
-        mul_assoc, mul_inv_cancel_left]
+theorem prod_range_div (n : ℕ) (f : ℕ → G) :
+    ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
+  induction' n with n h
+  · exact (div_self' (f 0)).symm
+  · rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel']
 
 end Group
 

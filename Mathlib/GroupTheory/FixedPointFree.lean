@@ -26,7 +26,8 @@ variable {G : Type*} [Group G]
 
 variable {F : Type*} [FunLike F G G] [MonoidHomClass F G G] {φ : F} (hφ : FixedPointFree φ)
 
-theorem injective_commutatorMap : Function.Injective fun g => g⁻¹ * φ g := by
+-- todo: fix proofs now that definition of commutatorMap has changed
+theorem injective_commutatorMap : Function.Injective fun g => g / φ g := by
   refine' fun x y h ↦ mul_inv_eq_one.mp <| hφ _ _
   rwa [map_mul, map_inv, mul_inv_eq_iff_eq_mul, mul_assoc, ← inv_mul_eq_iff_eq_mul]
 
