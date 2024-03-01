@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
 
@@ -66,7 +67,7 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 #align polynomial.to_finsupp Polynomial.toFinsupp
 
 -- mathport name: polynomial
-scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
+@[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
 open AddMonoidAlgebra
 open Finsupp hiding single
@@ -382,7 +383,7 @@ def toFinsuppIso : R[X] ≃+* R[ℕ] where
 #align polynomial.to_finsupp_iso_symm_apply Polynomial.toFinsuppIso_symm_apply
 
 instance [DecidableEq R] : DecidableEq R[X] :=
-  @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.decidableEq)
+  @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.instDecidableEq)
 
 end AddMonoidAlgebra
 
@@ -428,9 +429,9 @@ theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨Finsupp.single n t⟩
-  -- Porting note: Was `simp`.
+  -- porting note (#10745): was `simp`.
   map_add' x y := by simp; rw [ofFinsupp_add]
-  -- Porting note: Was `simp [← ofFinsupp_smul]`.
+  -- porting note (#10745): was `simp [← ofFinsupp_smul]`.
   map_smul' r x := by simp; rw [← ofFinsupp_smul, smul_single']
 #align polynomial.monomial Polynomial.monomial
 
@@ -444,7 +445,7 @@ theorem ofFinsupp_single (n : ℕ) (r : R) : (⟨Finsupp.single n r⟩ : R[X]) =
   simp [monomial]
 #align polynomial.of_finsupp_single Polynomial.ofFinsupp_single
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
   (monomial n).map_zero
 #align polynomial.monomial_zero_right Polynomial.monomial_zero_right
@@ -533,13 +534,13 @@ theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r)
 #align polynomial.smul_C Polynomial.smul_C
 
 set_option linter.deprecated false in
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_bit0 : C (bit0 a) = bit0 (C a) :=
   C_add
 #align polynomial.C_bit0 Polynomial.C_bit0
 
 set_option linter.deprecated false in
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_bit1 : C (bit1 a) = bit1 (C a) := by simp [bit1, C_bit0]
 #align polynomial.C_bit1 Polynomial.C_bit1
 
@@ -547,7 +548,7 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
   C.map_pow a n
 #align polynomial.C_pow Polynomial.C_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_eq_nat_cast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 #align polynomial.C_eq_nat_cast Polynomial.C_eq_nat_cast
@@ -673,7 +674,7 @@ theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 theorem coeff_injective : Injective (coeff : R[X] → ℕ → R) := by
   rintro ⟨p⟩ ⟨q⟩
   -- Porting note: `ofFinsupp.injEq` is required.
-  simp only [coeff, FunLike.coe_fn_eq, imp_self, ofFinsupp.injEq]
+  simp only [coeff, DFunLike.coe_fn_eq, imp_self, ofFinsupp.injEq]
 #align polynomial.coeff_injective Polynomial.coeff_injective
 
 @[simp]
@@ -685,7 +686,7 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 #align polynomial.to_finsupp_apply Polynomial.toFinsupp_apply
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  -- Porting note: Was `simp [← ofFinsupp_single, coeff, LinearMap.coe_mk]`.
+  -- porting note (#10745): was `simp [← ofFinsupp_single, coeff, LinearMap.coe_mk]`.
   rw [← ofFinsupp_single]
   simp only [coeff, LinearMap.coe_mk]
   rw [Finsupp.single_apply]
@@ -823,11 +824,10 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 #align polynomial.forall_eq_iff_forall_eq Polynomial.forall_eq_iff_forall_eq
 
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
-  rcases p with ⟨⟩
-  rcases q with ⟨⟩
-  -- Porting note: Was `simp [coeff, FunLike.ext_iff]`
-  simp only [ofFinsupp.injEq, coeff._eq_1]
-  exact FunLike.ext_iff (F := ℕ →₀ R)
+  rcases p with ⟨f : ℕ →₀ R⟩
+  rcases q with ⟨g : ℕ →₀ R⟩
+  -- porting note (#10745): was `simp [coeff, DFunLike.ext_iff]`
+  simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
 #align polynomial.ext_iff Polynomial.ext_iff
 
 @[ext]
@@ -856,7 +856,7 @@ theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
 @[ext high]
 theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
-  addHom_ext fun n => FunLike.congr_fun (h n)
+  addHom_ext fun n => DFunLike.congr_fun (h n)
 #align polynomial.add_hom_ext' Polynomial.addHom_ext'
 
 @[ext high]
@@ -954,7 +954,7 @@ theorem support_X (H : ¬(1 : R) = 0) : (X : R[X]).support = singleton 1 := by
 
 theorem monomial_left_inj {a : R} (ha : a ≠ 0) {i j : ℕ} :
     monomial i a = monomial j a ↔ i = j := by
-  -- Porting note: Was `simp [← ofFinsupp_single, Finsupp.single_left_inj ha]`
+  -- porting note (#10745): was `simp [← ofFinsupp_single, Finsupp.single_left_inj ha]`
   rw [← ofFinsupp_single, ← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
 #align polynomial.monomial_left_inj Polynomial.monomial_left_inj
 
@@ -1208,10 +1208,14 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
   rw [← ofFinsupp_sub, coeff, coeff, coeff]; apply Finsupp.sub_apply
 #align polynomial.coeff_sub Polynomial.coeff_sub
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_self, monomial_zero_right]
 #align polynomial.monomial_neg Polynomial.monomial_neg
+
+theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
+ rw [sub_eq_add_neg, monomial_add, monomial_neg]
+ rfl
 
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by

@@ -185,14 +185,19 @@ instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algeb
     Algebra ℝ A :=
   RestrictScalars.algebra ℝ ℂ A
 
--- try to make sure we're not introducing diamonds.
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
 example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
 example {ι : Type*} [Fintype ι] :
     Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
   rfl
+
 example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
     (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
-  rfl
+  by with_reducible_and_instances rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -304,7 +309,7 @@ theorem toMatrix_conjAe :
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
   refine'
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
-    refine' fun h => algHom_ext _
+    refine fun h => algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
@@ -472,7 +477,7 @@ theorem realPart_I_smul (a : A) : ℜ (I • a) = -ℑ a := by
   ext
   -- Porting note: was
   -- simp [smul_comm I, smul_sub, sub_eq_add_neg, add_comm]
-  rw [realPart_apply_coe, AddSubgroupClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
+  rw [realPart_apply_coe, NegMemClass.coe_neg, imaginaryPart_apply_coe, neg_smul, neg_neg,
     smul_comm I, star_smul, star_def, conj_I, smul_sub, neg_smul, sub_eq_add_neg]
 set_option linter.uppercaseLean3 false in
 #align real_part_I_smul realPart_I_smul
@@ -582,6 +587,19 @@ lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
   _          = z.re := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
     simp [conj_ofReal, ← two_mul]
+
+lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalRing A] [StarRing A]
+    [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :
+    star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
+  have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
+  calc
+    star a * a + a * star a = _ :=
+      congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
+    _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
+      simp [mul_add, add_mul, smul_smul, two_smul, mul_smul_comm,
+        smul_mul_assoc]
+      abel
+
 end RealImaginaryPart
 
 section Rational

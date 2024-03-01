@@ -3,10 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
@@ -225,7 +225,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
--- Porting note: broken proof was
+-- Porting note (#11039): broken proof was
 /-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
@@ -290,7 +290,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-variable (k G A : Type) [CommRing k] [Monoid G] [AddCommGroup A]
+variable (k G A : Type u) [CommRing k] [Monoid G] [AddCommGroup A]
   [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
@@ -313,8 +313,8 @@ variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 `ℤ`-linear `M`-representation on `Additive G`. -/
 def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
 
-@[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : G) :
-    (ofMulDistribMulAction M G).ρ g a = g • a := rfl
+@[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
+    (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • Additive.toMul a) := rfl
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `Sˣ`. -/
@@ -331,7 +331,7 @@ variable {k G}
 noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
   comm g := by
-    refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
+    refine Finsupp.lhom_ext' fun y => LinearMap.ext_ring ?_
 /- Porting note: rest of broken proof was
     simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
       Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,

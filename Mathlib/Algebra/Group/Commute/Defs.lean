@@ -5,6 +5,7 @@ Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Algebra.Classes
 
 #align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
@@ -36,6 +37,12 @@ def Commute {S : Type*} [Mul S] (a b : S) : Prop :=
   SemiconjBy a b b
 #align commute Commute
 #align add_commute AddCommute
+
+/--
+Two elements `a` and `b` commute if `a * b = b * a`.
+-/
+@[to_additive]
+theorem commute_iff_eq {S : Type*} [Mul S] (a b : S) : Commute a b ↔ a * b = b * a := Iff.rfl
 
 namespace Commute
 

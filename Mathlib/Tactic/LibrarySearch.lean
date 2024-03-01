@@ -5,11 +5,14 @@ Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
 import Std.Util.Cache
+import Std.Lean.Parser
 import Std.Tactic.SolveByElim
+import Std.Tactic.TryThis
 import Std.Data.MLList.Heartbeats
-import Mathlib.Lean.Name
+import Std.Control.Nondet.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.DiscrTree
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Library search
@@ -104,7 +107,8 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
   -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
   let cfg : SolveByElim.Config :=
-    { maxDepth := depth, exfalso := exfalso, symm := true, commitIndependentGoals := true }
+    { maxDepth := depth, exfalso := exfalso, symm := true, commitIndependentGoals := true,
+      transparency := ← getTransparency }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 

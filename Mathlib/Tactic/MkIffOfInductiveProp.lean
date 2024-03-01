@@ -7,7 +7,7 @@ import Lean
 import Std.Tactic.LeftRight
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Name
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 
 /-!
 # mk_iff_of_inductive_prop

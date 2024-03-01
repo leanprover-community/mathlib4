@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-!
 ## Cauchy sequences in (pseudo-)metric spaces
@@ -75,7 +75,7 @@ theorem Metric.uniformCauchySeqOn_iff {γ : Type*} {F : β → γ → α} {s : S
   constructor
   · intro h ε hε
     let u := { a : α × α | dist a.fst a.snd < ε }
-    have hu : u ∈ 𝓤 α := Metric.mem_uniformity_dist.mpr ⟨ε, hε, by simp⟩
+    have hu : u ∈ 𝓤 α := Metric.mem_uniformity_dist.mpr ⟨ε, hε, by simp [u]⟩
     rw [← @Filter.eventually_atTop_prod_self' _ _ _ fun m =>
       ∀ x ∈ s, dist (F m.fst x) (F m.snd x) < ε]
     specialize h u hu

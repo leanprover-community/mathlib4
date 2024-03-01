@@ -1,11 +1,9 @@
 /-
 Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot
+Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Partition.Finpartition
 
 #align_import data.setoid.partition from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
@@ -326,7 +324,7 @@ def IsPartition.finpartition {c : Finset (Set α)} (hc : Setoid.IsPartition (c :
     Finpartition (Set.univ : Set α) where
   parts := c
   supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr <| eqv_classes_disjoint hc.2
-  supParts := c.sup_id_set_eq_sUnion.trans hc.sUnion_eq_univ
+  sup_parts := c.sup_id_set_eq_sUnion.trans hc.sUnion_eq_univ
   not_bot_mem := hc.left
 #align setoid.is_partition.finpartition Setoid.IsPartition.finpartition
 
@@ -336,7 +334,7 @@ end Setoid
 theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α)) :
     Setoid.IsPartition (f.parts : Set (Set α)) :=
   ⟨f.not_bot_mem,
-    Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_sUnion.symm.trans f.supParts)
+    Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_sUnion.symm.trans f.sup_parts)
       f.supIndep.pairwiseDisjoint⟩
 #align finpartition.is_partition_parts Finpartition.isPartition_parts
 
@@ -501,5 +499,52 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
     simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]
     exact Quotient.eq''
 #align indexed_partition.proj_fiber IndexedPartition.proj_fiber
+
+/-- Combine functions with disjoint domains into a new function.
+You can use the regular expression `def.*piecewise` to search for
+other ways to define piecewise functions in mathlib4.-/
+def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
+
+lemma piecewise_apply {β : Type*} {f : ι → α → β} (x : α) : hs.piecewise f x = f (hs.index x) x :=
+  rfl
+
+open Function
+
+/-- A family of injective functions with pairwise disjoint
+domains and pairwise disjoint ranges can be glued together
+to form an injective function.-/
+theorem piecewise_inj {β : Type*} {f : ι → α → β}
+    (h_injOn : ∀ i, InjOn (f i) (s i))
+    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)) :
+    Injective (piecewise hs f) := by
+  intro x y h
+  suffices hs.index x = hs.index y by
+    apply h_injOn (hs.index x) (hs.mem_index x) (this ▸ hs.mem_index y)
+    simpa only [piecewise_apply, this] using h
+  apply h_disjoint.elim trivial trivial
+  contrapose! h
+  exact h.ne_of_mem (mem_image_of_mem _ (hs.mem_index x)) (mem_image_of_mem _ (hs.mem_index y))
+
+/-- A family of bijective functions with pairwise disjoint
+domains and pairwise disjoint ranges can be glued together
+to form a bijective function.-/
+theorem piecewise_bij {β : Type*} {f : ι → α → β}
+    {t : ι → Set β} (ht : IndexedPartition t)
+    (hf : ∀ i, BijOn (f i) (s i) (t i)) :
+    Bijective (piecewise hs f) := by
+  set g := piecewise hs f with hg
+  have hg_bij : ∀ i, BijOn g (s i) (t i) := by
+    intro i
+    refine BijOn.congr (hf i) ?_
+    intro x hx
+    rw [hg, piecewise_apply, hs.mem_iff_index_eq.mp hx]
+  have hg_inj : InjOn g (⋃ i, s i) := by
+    refine injOn_of_injective ?_ (⋃ (i : ι), s i)
+    refine piecewise_inj hs (fun i ↦ BijOn.injOn (hf i)) ?h_disjoint
+    simp only [fun i ↦ BijOn.image_eq (hf i)]
+    rintro i - j - hij
+    exact ht.disjoint hij
+  rw [bijective_iff_bijOn_univ, ← hs.iUnion, ← ht.iUnion]
+  exact bijOn_iUnion hg_bij hg_inj
 
 end IndexedPartition

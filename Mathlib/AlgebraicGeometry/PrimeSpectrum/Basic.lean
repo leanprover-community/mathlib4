@@ -639,21 +639,14 @@ variable (S)
 
 theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalization M S] :
     Inducing (comap (algebraMap R S)) := by
-  constructor
-  rw [TopologicalSpace.ext_iff]
-  intro U
-  rw [← isClosed_compl_iff, ← @isClosed_compl_iff (α := PrimeSpectrum S) (s := U)]
-  generalize Uᶜ = Z
-  simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus]
+  refine ⟨TopologicalSpace.ext_isClosed fun Z ↦ ?_⟩
+  simp_rw [isClosed_induced_iff, isClosed_iff_zeroLocus, @eq_comm _ _ (zeroLocus _),
+    exists_exists_eq_and, preimage_comap_zeroLocus]
   constructor
   · rintro ⟨s, rfl⟩
-    refine ⟨_, ⟨algebraMap R S ⁻¹' Ideal.span s, rfl⟩, ?_⟩
-    rw [preimage_comap_zeroLocus, ← zeroLocus_span, ← zeroLocus_span s]
-    congr 2
-    exact congr_arg (zeroLocus ·) <| Submodule.carrier_inj.mpr
-      (IsLocalization.map_comap M S (Ideal.span s))
-  · rintro ⟨_, ⟨t, rfl⟩, rfl⟩
-    rw [preimage_comap_zeroLocus]
+    refine ⟨(Ideal.span s).comap (algebraMap R S), ?_⟩
+    rw [← zeroLocus_span, ← zeroLocus_span s, ← Ideal.map, IsLocalization.map_comap M S]
+  · rintro ⟨s, rfl⟩
     exact ⟨_, rfl⟩
 #align prime_spectrum.localization_comap_inducing PrimeSpectrum.localization_comap_inducing
 
@@ -973,8 +966,8 @@ end CommSemiRing
 
 end PrimeSpectrum
 
-section CommRing
-variable [CommRing R]
+section CommSemiring
+variable [CommSemiring R]
 
 open PrimeSpectrum in
 /--
@@ -1024,7 +1017,7 @@ lemma zeroLocus_ideal_mem_irreducibleComponents {I : Ideal R} :
 
 end PrimeSpectrum
 
-end CommRing
+end CommSemiring
 
 namespace LocalRing
 
@@ -1039,7 +1032,7 @@ variable {R}
 
 theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
     (f : R →+* S) : IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
-  -- Porting note : inline `this` does **not** work
+  -- Porting note: inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
   rfl

@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Join
 
 #align_import analysis.convex.stone_separation from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
@@ -90,8 +91,8 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
       s ⟨hs, hst⟩
   refine'
     ⟨C, hC.1, convex_iff_segment_subset.2 fun x hx y hy z hz hzC => _, hsC, hC.2.subset_compl_left⟩
-  suffices h : ∀ c ∈ Cᶜ, ∃ a ∈ C, (segment 𝕜 c a ∩ t).Nonempty
-  · obtain ⟨p, hp, u, hu, hut⟩ := h x hx
+  suffices h : ∀ c ∈ Cᶜ, ∃ a ∈ C, (segment 𝕜 c a ∩ t).Nonempty by
+    obtain ⟨p, hp, u, hu, hut⟩ := h x hx
     obtain ⟨q, hq, v, hv, hvt⟩ := h y hy
     refine'
       not_disjoint_segment_convexHull_triple hz hu hv
@@ -99,8 +100,8 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
     simpa [insert_subset_iff, hp, hq, singleton_subset_iff.2 hzC]
   rintro c hc
   by_contra! h
-  suffices h : Disjoint (convexHull 𝕜 (insert c C)) t
-  · rw [←
+  suffices h : Disjoint (convexHull 𝕜 (insert c C)) t by
+    rw [←
       hCmax _ ⟨convex_convexHull _ _, h⟩ ((subset_insert _ _).trans <| subset_convexHull _ _)] at hc
     exact hc (subset_convexHull _ _ <| mem_insert _ _)
   rw [convexHull_insert ⟨z, hzC⟩, convexJoin_singleton_left]

@@ -27,7 +27,7 @@ For many applications we can take `L = ContinuousLinearMap.lsmul ℝ ℝ` or
 
 We also define `ConvolutionExists` and `ConvolutionExistsAt` to state that the convolution is
 well-defined (everywhere or at a single point). These conditions are needed for pointwise
-computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not stong enough for any
+computations (e.g. `ConvolutionExistsAt.distrib_add`), but are generally not strong enough for any
 local (or global) properties of the convolution. For this we need stronger assumptions on `f`
 and/or `g`, and generally if we impose stronger conditions on one of the functions, we can impose
 weaker conditions on the other.
@@ -121,7 +121,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
     ‖L (f t) (g (x - t))‖ ≤ u.indicator (fun t => ‖L‖ * ‖f t‖ * C) t := by
   -- porting note: had to add `f := _`
   refine' le_indicator (f := fun t ↦ ‖L (f t) (g (x - t))‖) (fun t _ => _) (fun t ht => _) t
-  · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
+  · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
   · have : x - t ∉ support g := by
       refine mt (fun hxt => hu ?_) ht
       refine' ⟨_, Set.neg_mem_neg.mpr (subset_closure hxt), _, hx, _⟩
@@ -152,7 +152,7 @@ theorem HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupp
     ‖L (f (x - t)) (g t)‖ ≤
       (-tsupport f + s).indicator (fun t => (‖L‖ * ⨆ i, ‖f i‖) * ‖g t‖) t := by
   convert hcf.convolution_integrand_bound_right L.flip hf hx using 1
-  simp_rw [L.op_norm_flip, mul_right_comm]
+  simp_rw [L.opNorm_flip, mul_right_comm]
 #align has_compact_support.convolution_integrand_bound_left HasCompactSupport.convolution_integrand_bound_left
 
 end NoMeasurability
@@ -228,10 +228,10 @@ theorem BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
   rw [← integrableOn_iff_integrable_of_support_subset h2s]
   set s' := (fun t => -t + x₀) ⁻¹' s
   have : ∀ᵐ t : G ∂μ.restrict s,
-      ‖L (f t) (g (x₀ - t))‖ ≤ s.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i : s', ‖g i‖) t
-  · refine' eventually_of_forall _
+      ‖L (f t) (g (x₀ - t))‖ ≤ s.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i : s', ‖g i‖) t := by
+    refine' eventually_of_forall _
     refine' le_indicator (fun t ht => _) fun t ht => _
-    · apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl]
+    · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
       refine' (le_ciSup_set hbg <| mem_preimage.mpr _)
       rwa [neg_sub, sub_add_cancel]
     · have : t ∉ support fun t => L (f t) (g (x₀ - t)) := mt (fun h => h2s h) ht
@@ -249,7 +249,7 @@ theorem ConvolutionExistsAt.ofNorm' {x₀ : G}
   refine'
     (h.const_mul ‖L‖).mono' (hmf.convolution_integrand_snd' L hmg) (eventually_of_forall fun x => _)
   rw [mul_apply', ← mul_assoc]
-  apply L.le_op_norm₂
+  apply L.le_opNorm₂
 #align convolution_exists_at.of_norm' ConvolutionExistsAt.ofNorm'
 
 end
@@ -312,7 +312,7 @@ theorem MeasureTheory.Integrable.convolution_integrand (hf : Integrable f ν) (h
   · simp_rw [← integral_mul_left]
     rw [Real.norm_of_nonneg]
     · exact integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-        ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_op_norm₂ _ _)
+        ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_opNorm₂ _ _)
     exact integral_nonneg fun x => norm_nonneg _
 #align measure_theory.integrable.convolution_integrand MeasureTheory.Integrable.convolution_integrand
 
@@ -334,14 +334,15 @@ theorem HasCompactSupport.convolutionExistsAt {x₀ : G}
   let v := (Homeomorph.neg G).trans (Homeomorph.addLeft x₀)
   apply ((u.isCompact_preimage.mpr h).bddAbove_image hg.norm.continuousOn).convolutionExistsAt' L
     isClosed_closure.measurableSet subset_closure (hf.integrableOn_isCompact h)
-  have A : AEStronglyMeasurable (g ∘ v) (μ.restrict (tsupport fun t : G => L (f t) (g (x₀ - t))))
-  · apply (hg.comp v.continuous).continuousOn.aestronglyMeasurable_of_isCompact h
+  have A : AEStronglyMeasurable (g ∘ v)
+      (μ.restrict (tsupport fun t : G => L (f t) (g (x₀ - t)))) := by
+    apply (hg.comp v.continuous).continuousOn.aestronglyMeasurable_of_isCompact h
     exact (isClosed_tsupport _).measurableSet
   convert ((v.continuous.measurable.measurePreserving
       (μ.restrict (tsupport fun t => L (f t) (g (x₀ - t))))).aestronglyMeasurable_comp_iff
     v.measurableEmbedding).1 A
   ext x
-  simp only [Homeomorph.neg, sub_eq_add_neg, coe_toAddUnits, Homeomorph.trans_apply,
+  simp only [v, Homeomorph.neg, sub_eq_add_neg, val_toAddUnits_apply, Homeomorph.trans_apply,
     Equiv.neg_apply, Equiv.toFun_as_coe, Homeomorph.homeomorph_mk_coe, Equiv.coe_fn_mk,
     Homeomorph.coe_addLeft]
 #align has_compact_support.convolution_exists_at HasCompactSupport.convolutionExistsAt
@@ -634,7 +635,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rw [this]
     refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
       continuous_snd)).continuousOn ?_
-    simp (config := {contextual := true}) [MapsTo]
+    simp (config := {contextual := true}) [s', MapsTo]
   have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
     apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _
       (hf.integrableOn_isCompact k'_comp)
@@ -683,7 +684,7 @@ theorem BddAbove.continuous_convolution_right_of_integrable
   refine' continuous_iff_continuousAt.mpr fun x₀ => _
   have : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t : G ∂μ, ‖L (f t) (g (x - t))‖ ≤ ‖L‖ * ‖f t‖ * ⨆ i, ‖g i‖ := by
     refine' eventually_of_forall fun x => eventually_of_forall fun t => _
-    apply_rules [L.le_of_op_norm₂_le_of_le, le_rfl, le_ciSup hbg (x - t)]
+    apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl, le_ciSup hbg (x - t)]
   refine' continuousAt_of_dominated _ this _ _
   · exact eventually_of_forall fun x =>
       hf.aestronglyMeasurable.convolution_integrand_snd' L hg.aestronglyMeasurable
@@ -824,7 +825,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
       rw [mem_ball_zero_iff] at h2t
       specialize hg (x₀ - t)
       rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
-      refine' ((L (f t)).dist_le_op_norm _ _).trans _
+      refine' ((L (f t)).dist_le_opNorm _ _).trans _
       exact mul_le_mul_of_nonneg_left (hg h2t) (norm_nonneg _)
     · rw [nmem_support] at ht
       simp_rw [ht, L.map_zero₂, L.map_zero, norm_zero, zero_mul, dist_self]
@@ -838,7 +839,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
   refine' mul_le_mul_of_nonneg_right _ hε
   have h3 : ∀ t, ‖L (f t)‖ ≤ ‖L‖ * ‖f t‖ := by
     intro t
-    exact L.le_op_norm (f t)
+    exact L.le_opNorm (f t)
   refine' (integral_mono (L.integrable_comp hif).norm (hif.norm.const_mul _) h3).trans_eq _
   rw [integral_mul_left]
 #align dist_convolution_le' dist_convolution_le'
@@ -858,7 +859,7 @@ theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} 
   convert (dist_convolution_le' (lsmul ℝ ℝ) hε hif hf hmg hg).trans _
   · simp_rw [lsmul_apply, integral_smul_const, hintf, one_smul]
   · simp_rw [Real.norm_of_nonneg (hnf _), hintf, mul_one]
-    exact (mul_le_mul_of_nonneg_right op_norm_lsmul_le hε).trans_eq (one_mul ε)
+    exact (mul_le_mul_of_nonneg_right opNorm_lsmul_le hε).trans_eq (one_mul ε)
 #align dist_convolution_le dist_convolution_le
 
 /-- `(φ i ⋆ g i) (k i)` tends to `z₀` as `i` tends to some filter `l` if
@@ -1025,7 +1026,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     · refine' integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
         ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => _)
       simp only [← mul_assoc ‖L₄‖]
-      apply_rules [ContinuousLinearMap.le_of_op_norm₂_le_of_le, le_rfl]
+      apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
     exact integral_nonneg fun x => norm_nonneg _
 #align convolution_assoc convolution_assoc
 
@@ -1178,14 +1179,13 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
         true_or_iff]
     obtain ⟨ε, εpos, hε, h'ε⟩ :
       ∃ ε : ℝ, 0 < ε ∧ thickening ε ({q₀.fst} ×ˢ k) ⊆ t ∧ ball q₀.1 ε ⊆ s := by
-      obtain ⟨ε, εpos, hε⟩ : ∃ ε : ℝ, 0 < ε ∧ thickening ε (({q₀.fst} : Set P) ×ˢ k) ⊆ t
-      · exact A.exists_thickening_subset_open t_open kt
-      obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ, 0 < δ ∧ ball q₀.1 δ ⊆ s
-      · exact Metric.isOpen_iff.1 hs _ hq₀
+      obtain ⟨ε, εpos, hε⟩ : ∃ ε : ℝ, 0 < ε ∧ thickening ε (({q₀.fst} : Set P) ×ˢ k) ⊆ t :=
+        A.exists_thickening_subset_open t_open kt
+      obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ, 0 < δ ∧ ball q₀.1 δ ⊆ s := Metric.isOpen_iff.1 hs _ hq₀
       refine' ⟨min ε δ, lt_min εpos δpos, _, _⟩
       · exact Subset.trans (thickening_mono (min_le_left _ _) _) hε
       · exact Subset.trans (ball_subset_ball (min_le_right _ _)) hδ
-    obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ g' '' t ⊆ closedBall 0 C; exact ht.subset_closedBall_lt 0 0
+    obtain ⟨C, Cpos, hC⟩ : ∃ C, 0 < C ∧ g' '' t ⊆ closedBall 0 C := ht.subset_closedBall_lt 0 0
     refine' ⟨ε, C, εpos, h'ε, fun p x hp => _⟩
     have hps : p ∈ s := h'ε (mem_ball_iff_norm.2 hp)
     by_cases hx : x ∈ k
@@ -1226,8 +1226,8 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
   set K' := (-k + {q₀.2} : Set G) with K'_def
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
-  obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ
-  exact hf.integrableOn_nhds_isCompact hK'
+  obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ :=
+    hf.integrableOn_nhds_isCompact hK'
   obtain ⟨δ, δpos, δε, hδ⟩ : ∃ δ, (0 : ℝ) < δ ∧ δ ≤ ε ∧ K' + ball 0 δ ⊆ U := by
     obtain ⟨V, V_mem, hV⟩ : ∃ V ∈ 𝓝 (0 : G), K' + V ⊆ U :=
       compact_open_separated_add_right hK' U_open K'U
@@ -1314,8 +1314,8 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     constructor
     · rintro ⟨p, x⟩ ⟨hp, -⟩
       exact (A (p, x) hp).differentiableAt.differentiableWithinAt
-    · suffices H : ContDiffOn 𝕜 n (↿f') (s ×ˢ univ)
-      · apply H.congr
+    · suffices H : ContDiffOn 𝕜 n (↿f') (s ×ˢ univ) by
+        apply H.congr
         rintro ⟨p, x⟩ ⟨hp, -⟩
         exact (A (p, x) hp).fderiv
       have B : ∀ (p : P) (x : G), p ∈ s → x ∉ k → fderiv 𝕜 (uncurry g) (p, x) = 0 := by
@@ -1366,13 +1366,13 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine' contDiffOn_convolution_right_with_param_aux eL hes hek _ _ _
     · intro p x hp hx
-      simp only [(· ∘ ·), ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
+      simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
         ContinuousLinearEquiv.map_eq_zero_iff]
       exact hgs _ _ hp hx
     · apply (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2
       convert hf
       ext1 x
-      simp only [ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
+      simp only [ef, ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
         ContinuousLinearEquiv.apply_symm_apply]
     · apply isoE'.symm.contDiff.comp_contDiffOn
       apply hg.comp (isoP.prod isoG).contDiff.contDiffOn
@@ -1390,12 +1390,12 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     rintro ⟨p, x⟩
     simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prod_symm,
       ContinuousLinearEquiv.prod_apply]
-    simp only [convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
+    simp only [R, convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
     rw [ClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
     swap; · exact isoG.symm.toHomeomorph.closedEmbedding
     congr 1
     ext1 a
-    simp only [(· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
+    simp only [ef, eg, eL, (· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
       ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
       ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
       ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply]

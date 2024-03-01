@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.UniformSpace.CompleteSeparated
+import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Bounded
 
 #align_import topology.metric_space.antilipschitz from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -254,7 +256,7 @@ theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}
     apply hst.1
     rw [Set.image2_singleton_right] at h
     replace h := (hf b).isBounded_preimage h
-    refine' h.subset (subset_preimage_image _ _)
+    exact h.subset (subset_preimage_image _ _)
   exact mt (IsBounded.subset · (image2_subset subset_rfl (singleton_subset_iff.mpr hb))) this
 #align antilipschitz_with.bounded_of_image2_left AntilipschitzWith.isBounded_of_image2_left
 

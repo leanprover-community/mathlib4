@@ -283,13 +283,17 @@ noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [C
   PerfectRing.ofSurjective k p fun _ => IsAlgClosed.exists_pow_nat_eq _ <| NeZero.pos p
 #align is_alg_closed.perfect_ring IsAlgClosed.perfectRing
 
+noncomputable instance (priority := 100) perfectField [IsAlgClosed k] : PerfectField k := by
+  obtain _ | ⟨p, _, _⟩ := CharP.exists' k
+  exacts [.ofCharZero, PerfectRing.toPerfectField k p]
+
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
 instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K := by
   apply Infinite.of_not_fintype
   intro hfin
   set n := Fintype.card K
   set f := (X : K[X]) ^ (n + 1) - 1
-  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp) one_ne_zero
+  have hfsep : Separable f := separable_X_pow_sub_C 1 (by simp [n]) one_ne_zero
   apply Nat.not_succ_le_self (Fintype.card K)
   have hroot : n.succ = Fintype.card (f.rootSet K) := by
     erw [card_rootSet_eq_natDegree hfsep (IsAlgClosed.splits_domain _), natDegree_X_pow_sub_C]
@@ -313,7 +317,7 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 noncomputable def equiv : L ≃ₐ[R] M :=
-  -- Porting note: added to replace local instance above
+  -- Porting note (#10754): added to replace local instance above
   haveI : IsAlgClosed L := IsAlgClosure.alg_closed R
   haveI : IsAlgClosed M := IsAlgClosure.alg_closed R
   AlgEquiv.ofBijective _ (IsAlgClosure.algebraic.algHom_bijective₂

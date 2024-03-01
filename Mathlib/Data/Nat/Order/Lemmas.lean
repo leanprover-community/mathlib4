@@ -214,7 +214,7 @@ theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b :=
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   -- porting note: Needed to give an explicit argument to `mul_add_one`
   rw [← mul_add_one n] at h
-  exact mul_le_mul_left' (lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
+  exact mul_le_mul_left' (Nat.lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
 #align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd
 
 #align nat.mod_div_self Nat.mod_div_self

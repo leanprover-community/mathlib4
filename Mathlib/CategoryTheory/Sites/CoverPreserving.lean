@@ -120,7 +120,7 @@ theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
 theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
     x.functorPushforward G (G.map f) (image_mem_functorPushforward G T hf) = x f hf := by
   unfold FamilyOfElements.functorPushforward
-  rcases e₁ : getFunctorPushforwardStructure (image_mem_functorPushforward G T hf) with
+  rcases getFunctorPushforwardStructure (image_mem_functorPushforward G T hf) with
     ⟨X, g, f', hg, eq⟩
   simpa using hG.compatible ℱ h f' (𝟙 _) hg hf (by simp [eq])
 #align category_theory.compatible_preserving.apply_map CategoryTheory.CompatiblePreserving.apply_map
@@ -142,11 +142,11 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   let c' := IsCofiltered.cone (c.toStructuredArrow ⋙ StructuredArrow.pre _ _ _)
   have eq₁ : f₁ = (c'.pt.hom ≫ G.map (c'.π.app left).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app left).w]
-    dsimp
+    dsimp [c]
     simp
   have eq₂ : f₂ = (c'.pt.hom ≫ G.map (c'.π.app right).right) ≫ eqToHom (by simp) := by
     erw [← (c'.π.app right).w]
-    dsimp
+    dsimp [c]
     simp
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]

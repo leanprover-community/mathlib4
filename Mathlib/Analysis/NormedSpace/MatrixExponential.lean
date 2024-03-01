@@ -29,7 +29,7 @@ Lemmas like `exp_add_of_commute` require a canonical norm on the type; while the
 sensible choices for the norm of a `Matrix` (`Matrix.normedAddCommGroup`,
 `Matrix.frobeniusNormedAddCommGroup`, `Matrix.linftyOpNormedAddCommGroup`), none of them
 are canonical. In an application where a particular norm is chosen using
-`local attribute [instance]`, then the usual lemmas about `exp` are fine. When choosing a norm is
+`attribute [local instance]`, then the usual lemmas about `exp` are fine. When choosing a norm is
 undesirable, the results in this file can be used.
 
 In this file, we copy across the lemmas about `exp`, but hide the requirement for a norm inside the
@@ -188,9 +188,9 @@ theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp 𝕂 A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · rw [zpow_ofNat, coe_nat_zsmul, exp_nsmul]
+  · rw [zpow_coe_nat, coe_nat_zsmul, exp_nsmul]
   · have : IsUnit (exp 𝕂 A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp _ _)
-    rw [Matrix.zpow_neg this, zpow_ofNat, neg_smul, exp_neg, coe_nat_zsmul, exp_nsmul]
+    rw [Matrix.zpow_neg this, zpow_coe_nat, neg_smul, exp_neg, coe_nat_zsmul, exp_nsmul]
 #align matrix.exp_zsmul Matrix.exp_zsmul
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :

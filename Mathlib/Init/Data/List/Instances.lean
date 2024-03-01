@@ -3,7 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Init.Data.List.Lemmas
+import Std.Data.List.Lemmas
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Tactic.Cases
 
 #align_import init.data.list.instances from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
 
@@ -17,7 +19,7 @@ namespace List
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
   append_nil (f x)

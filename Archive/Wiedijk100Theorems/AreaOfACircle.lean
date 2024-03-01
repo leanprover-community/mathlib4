@@ -131,7 +131,7 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
       integral_eq_sub_of_hasDerivAt_of_le (neg_le_self r.2) hcont hderiv
         (continuous_const.mul hf).continuousOn.intervalIntegrable
     _ = NNReal.pi * (r : ℝ) ^ 2 := by
-      norm_num [inv_mul_cancel hlt.ne', ← mul_div_assoc, mul_comm π]
+      norm_num [F, inv_mul_cancel hlt.ne', ← mul_div_assoc, mul_comm π]
 #align theorems_100.area_disc Theorems100.area_disc
 
 end Theorems100

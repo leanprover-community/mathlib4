@@ -154,14 +154,16 @@ theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).
 #align multiset.nsmul_count Multiset.nsmul_count
 
 @[to_additive]
-theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [MonoidHomClass F α β] (f : F) :
+theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F) :
     (s.map f).prod = f s.prod :=
   Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, coe_map, coe_prod]
 #align multiset.prod_hom Multiset.prod_hom
 #align multiset.sum_hom Multiset.sum_hom
 
 @[to_additive]
-theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [MonoidHomClass F α β] (f : F)
+theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F)
     (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
@@ -537,11 +539,6 @@ theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α
   Multiset.induction_on s (by simp) (by simp)
 #align multiset.sum_map_singleton Multiset.sum_map_singleton
 
-theorem abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
-    abs s.sum ≤ (s.map abs).sum :=
-  le_sum_of_subadditive _ abs_zero abs_add s
-#align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
-
 theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by
   induction s using Multiset.induction <;> simp [Nat.add_mod, *]
 #align multiset.sum_nat_mod Multiset.sum_nat_mod
@@ -561,7 +558,8 @@ theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)
 end Multiset
 
 @[to_additive]
-theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [MonoidHomClass F α β] (f : F)
+theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F)
     (s : Multiset α) : f s.prod = (s.map f).prod :=
   (s.prod_hom f).symm
 #align map_multiset_prod map_multiset_prod

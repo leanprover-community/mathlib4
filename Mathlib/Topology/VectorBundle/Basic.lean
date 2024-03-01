@@ -54,8 +54,6 @@ notes" section of `Mathlib.Topology.FiberBundle.Basic`.
 Vector bundle
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Bundle Set Classical
@@ -522,8 +520,8 @@ variable {R}
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π F E)) [e.IsLinear R]
     (b : B) (hb : b ∈ e.baseSet) (z : F) :
     e.toPartialHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
-  have h : (b, z) ∈ e.target
-  · rw [e.target_eq]
+  have h : (b, z) ∈ e.target := by
+    rw [e.target_eq]
     exact ⟨hb, mem_univ _⟩
   apply e.injOn (e.map_target h)
   · simpa only [e.source_eq, mem_preimage]
@@ -680,7 +678,7 @@ def localTriv (i : ι) : Trivialization F (π F Z.Fiber) :=
 
 -- porting note: moved from below to fix the next instance
 @[simp, mfld_simps]
-theorem localTriv_apply (p : Z.TotalSpace) :
+theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 #align vector_bundle_core.local_triv_apply VectorBundleCore.localTriv_apply

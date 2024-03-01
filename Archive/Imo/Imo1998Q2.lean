@@ -3,10 +3,10 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Int.Parity
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Tactic.Ring
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 
 #align_import imo.imo1998_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
@@ -131,7 +131,7 @@ theorem A_fibre_over_contestant_card (c : C) :
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).card := by
   rw [A_fibre_over_contestant r]
   apply Finset.card_image_of_injOn
-  -- porting note: used to be `tidy`. TODO: remove `ext` after `extCore` to `aesop`.
+  -- Porting note (#10936): used to be `tidy`. TODO: remove `ext` after `extCore` to `aesop`.
   unfold Set.InjOn; intros; ext; all_goals aesop
 #align imo1998_q2.A_fibre_over_contestant_card Imo1998Q2.A_fibre_over_contestant_card
 
@@ -151,7 +151,7 @@ theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
       ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
   rw [A_fibre_over_judgePair r h]
   apply Finset.card_image_of_injOn
-  -- porting note: used to be `tidy`
+  -- Porting note (#10936): used to be `tidy`
   unfold Set.InjOn; intros; ext; all_goals aesop
 #align imo1998_q2.A_fibre_over_judge_pair_card Imo1998Q2.A_fibre_over_judgePair_card
 
@@ -191,7 +191,7 @@ theorem judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2 * z + 1)
   let x := (Finset.univ.filter fun j => r c j).card
   let y := (Finset.univ.filter fun j => ¬r c j).card
   have h : (Finset.univ.filter fun p : JudgePair J => p.Agree r c).card = x * x + y * y := by
-    simp [← Finset.filter_product_card]
+    simp [x, y, ← Finset.filter_product_card]
   rw [h]; apply Int.le_of_ofNat_le_ofNat; simp only [Int.ofNat_add, Int.ofNat_mul]
   apply norm_bound_of_odd_sum
   suffices x + y = 2 * z + 1 by simp [← Int.ofNat_add, this]
@@ -204,9 +204,11 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   let t := Finset.univ.filter fun p : JudgePair J => p.Distinct
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
   have hst : s \ t = Finset.univ.diag := by
-    ext p; constructor <;> intros
-    · aesop
-    · suffices p.judge₁ = p.judge₂ by simp [this]
+    ext p; constructor <;> intros hp
+    · unfold_let s t at hp
+      aesop
+    · unfold_let s t
+      suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
   have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ]; rfl
   rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff]
