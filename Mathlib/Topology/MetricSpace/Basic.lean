@@ -131,7 +131,7 @@ theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Sub
 #align metric.subsingleton_sphere Metric.subsingleton_sphere
 
 -- see Note [lower instance priority]
-instance (priority := 100) _root_.MetricSpace.to_separated : T0Space γ where
+instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
   t0 _ _ h := eq_of_dist_eq_zero <| Metric.inseparable_iff.1 h
 #align metric_space.to_separated MetricSpace.to_separated
 
@@ -383,7 +383,7 @@ theorem SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace α] (p q : �
 instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α] :
     MetricSpace (SeparationQuotient α) :=
   EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 edist_ne_top) <|
-   surjective_mk.forall₂.2 dist_edist
+    surjective_mk.forall₂.2 dist_edist
 
 end EqRel
 

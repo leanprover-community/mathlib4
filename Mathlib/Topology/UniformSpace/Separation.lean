@@ -151,7 +151,7 @@ theorem Filter.Tendsto.inseparable_iff_uniformity {l : Filter β} [NeBot l] {f g
   rw [inseparable_iff_clusterPt_uniformity]
   exact (ClusterPt.of_le_nhds (ha.prod_mk_nhds hb)).mono h
 
-#noalign id_rel_sub_separation_relation
+#align id_rel_sub_separation_relation Inseparable.rfl
 #align separation_rel_comap Inducing.inseparable_iff
 #noalign filter.has_basis.separation_rel
 #noalign separation_rel_eq_inter_closure

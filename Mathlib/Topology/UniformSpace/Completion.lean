@@ -599,7 +599,7 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     refine SeparationQuotient.surjective_mk.forall.2 fun a ↦ ?_
     rw [extension_coe (uniformContinuous_lift' _), lift'_mk (uniformContinuous_coe α),
       map_coe uniformContinuous_mk]
-  · refine Completion.induction_on a
+  · refine induction_on a
       (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a ↦ ?_
     rw [map_coe uniformContinuous_mk, extension_coe (uniformContinuous_lift' _),
       lift'_mk (uniformContinuous_coe _)]
