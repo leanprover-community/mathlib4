@@ -104,15 +104,19 @@ def structuralAtom? (e : Expr) : MetaM (Option StructuralAtom) := do
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
       return some <| .associator (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return some <| .leftUnitor (← toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return some <| .rightUnitor (← toMor₁ f)
+    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
+      return some <| .leftUnitor (← toMor₁ f)
+    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
+      return some <| .rightUnitor (← toMor₁ f)
     | _ => return none
   | (``Iso.inv, #[_, _, _, _, η]) =>
     match (← whnfR η).getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
       return some <| .associatorInv (← toMor₁ f) (← toMor₁ g) (← toMor₁ h)
-    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return some <| .leftUnitorInv (← toMor₁ f)
-    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return some <| .rightUnitorInv (← toMor₁ f)
+    | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) =>
+      return some <| .leftUnitorInv (← toMor₁ f)
+    | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) =>
+      return some <| .rightUnitorInv (← toMor₁ f)
     | _ => return none
   | _ => return none
 
