@@ -17,22 +17,27 @@ An automorphism `φ` of a group `G` is fixed-point-free if `1 : G` is the only f
 
 namespace MonoidHom
 
-variable {G : Type*} {F : Type*} [FunLike F G G] (φ : F)
+-- todo: refactor Mathlib/Algebra/GroupPower/IterateHom to generalize φ to MonoidHomClass
+variable {G : Type*}
+
+section Definitions
+
+variable (φ : G → G)
 
 /-- A function `φ : G → G` is fixed-point-free if `1 : G` is the only fixed point of `φ`. -/
 def FixedPointFree [One G] := ∀ g, φ g = g → g = 1
 
-namespace FixedPointFree
-
-variable [Group G]
-
 /-- The commutator map `g ↦ g / φ g`. If `φ g = h * g * h⁻¹`, then `g / φ g` is exactly the
   commutator `[g, h] = g * h * g⁻¹ * h⁻¹`. -/
-def CommutatorMap (g : G) := g / φ g
+def CommutatorMap [Div G] (g : G) := g / φ g
 
-@[simp] theorem commutatorMap_apply (g : G) : CommutatorMap φ g = g / φ g := rfl
+@[simp] theorem commutatorMap_apply [Div G] (g : G) : CommutatorMap φ g = g / φ g := rfl
 
-variable {φ} [MonoidHomClass F G G] (hφ : FixedPointFree φ)
+end Definitions
+
+namespace FixedPointFree
+
+variable [Group G] {φ : G →* G} (hφ : FixedPointFree φ)
 
 theorem injective_commutatorMap : Function.Injective (CommutatorMap φ) := by
   refine' fun x y h ↦ inv_mul_eq_one.mp <| hφ _ _
@@ -49,14 +54,13 @@ theorem prod_pow_eq_one {n : ℕ} (hn : φ^[n] = _root_.id) (g : G) :
   simp only [commutatorMap_apply, iterate_map_div, ← Function.iterate_succ_apply]
   rw [List.prod_range_div, Function.iterate_zero_apply, hn, Function.id_def, div_self']
 
-theorem eq_inv_of_sq_eq_one (hn : φ^[2] = _root_.id) : ⇑φ = (·⁻¹) := by
+theorem eq_inv_of_sq_eq_one (h2 : φ^[2] = _root_.id) : ⇑φ = (·⁻¹) := by
   ext g
-  have key : 1 * g * φ g = 1 := hφ.prod_pow_eq_one hn g
+  have key : 1 * g * φ g = 1 := hφ.prod_pow_eq_one h2 g
   rwa [one_mul, ← inv_eq_iff_mul_eq_one, eq_comm] at key
 
-lemma eq_inv_of_involutive {F : Type*} [FunLike F G G] [MonoidHomClass F G G] {φ : F}
-    (hφ₁ : FixedPointFree φ) (hφ₂ : Function.Involutive φ) : ⇑φ = (·⁻¹) :=
-  eq_inv_of_sq_eq_one hφ₁  (funext hφ₂)
+lemma eq_inv_of_involutive (h2 : Function.Involutive φ) : ⇑φ = (·⁻¹) :=
+  eq_inv_of_sq_eq_one hφ  (funext h2)
 
 end FixedPointFree
 
