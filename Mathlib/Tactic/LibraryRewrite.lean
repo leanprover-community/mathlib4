@@ -182,17 +182,15 @@ def RewriteLemma.pattern (rwLemma : RewriteLemma) : MetaM CodeWithInfos := do
     let side := if rwLemma.symm then rhs else lhs
     ppExprTagged side
 
-structure RewriteApplication extends RewriteLemma where
-  tactic : String
-  replacement : CodeWithInfos
-  extraGoals : Array CodeWithInfos
-
-
 open PrettyPrinter Delaborator SubExpr in
 /-- if `e` is an application of a rewrite lemma,
-return `e` as a string for pasting into the editor. -/
+return `e` as a string for pasting into the editor.
+
+if `explicit = true`, we print the lemma application explicitly. This is for when the rewrite
+creates new goals.
+We avoid printing instance arguments or universe levels by setting their options to `false`.
+We ignore any `Options` set by the user. -/
 def printRewriteLemma (e : Expr) (explicit : Bool) : MetaM String :=
-  -- we ignore the `Options` given by the user
   withOptions (fun _ => Options.empty
     |>.setBool `pp.universes false
     |>.setBool `pp.instances false
@@ -210,14 +208,17 @@ where
     let paramKinds ← getParamKinds e.getAppFn e.getAppArgs
     delabAppExplicitCore e.getAppNumArgs delabConst paramKinds tagAppFn
 
+structure RewriteApplication extends RewriteLemma where
+  tactic : String
+  replacement : CodeWithInfos
+  extraGoals : Array CodeWithInfos
 
-def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
+def rewriteCall (rwLemma : RewriteLemma)
+    (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
     MetaM (Option RewriteApplication) := do
   let thm ← mkConstWithFreshMVarLevels rwLemma.name
   let (mvars, bis, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
-  let target ← loc.rootExpr
-  let subExpr ← Core.viewSubexpr loc.pos target
   let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
   unless ← isDefEq lhs subExpr do return none
 
@@ -235,27 +236,24 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
       unless (← trySynthInstance (← mvarId.getType)) matches .some _ do
         return none
     else if !(← mvarId.isAssigned) then
-        allAssigned := false
-        -- if the userName has macro scopes, we can't use the name, so we use `?_` instead
-        if (← mvarId.getDecl).userName.hasMacroScopes then
-          mvarId.setUserName `«_»
-        let extraGoal ← instantiateMVars (← mvarId.getType)
-        extraGoals := extraGoals.push (← ppExprTagged extraGoal)
+      allAssigned := false
+      -- if the userName has macro scopes, we can't use the name, so we use `?_` instead
+      if (← mvarId.getDecl).userName.hasMacroScopes then
+        mvarId.setUserName `«_»
+      let extraGoal ← instantiateMVars (← mvarId.getType)
+      extraGoals := extraGoals.push (← ppExprTagged extraGoal)
 
   let replacement ← ppExprTagged rhs
   let lemmaApplication ← instantiateMVars (mkAppN thm mvars)
 
-  let location ← (do match loc.loc with
+  let location ← (do match loc with
     | .hyp fvarId
     | .hypType fvarId _ => return s! " at {← fvarId.getUserName}"
     | _ => return "")
   let symm := if rwLemma.symm then "← " else ""
-  let positions ← findPositions lhs target
-  let cfg := match positions.findIdx? (· == loc.pos) with
-    | none => " /- Error: couldn't find a suitable occurrence -/"
-    | some pos =>
-      if positions.size == 1 then "" else
-        s! " (config := \{ occs := .pos [{pos+1}]})"
+  let cfg := match occ with
+    | none => ""
+    | some occ => s! " (config := \{ occs := .pos [{occ}]})"
   let tactic := s! "rw{cfg} [{symm}{← printRewriteLemma lemmaApplication !allAssigned}]{location}"
   return some { rwLemma with tactic, extraGoals, replacement }
 
@@ -273,7 +271,7 @@ where
     let core :=
       .element "ul" #[] <|--#[("style", json% {"marginLeft" : "4px"})] <|
       results.map fun rw =>
-        let replacement := .text rw.replacement.stripTags -- < InteractiveCode fmt={rw.replacement}/>
+        let replacement := .text rw.replacement.stripTags --< InteractiveCode fmt={rw.replacement}/>
         let button := Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic none)
               #[replacement] -- #[.text s! "{rw.name}"]
@@ -295,15 +293,15 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
   return allResults
 
 /-- `Props` for interactive tactics.
-    Keeps track of the range in the text document of the piece of syntax to replace. -/
-structure InteractiveTacticProps extends PanelWidgetProps where
+Keeps track of the range in the text document of the piece of syntax to replace. -/
+structure LibraryRewriteProps extends PanelWidgetProps where
   replaceRange : Lsp.Range
   factor : Nat
 deriving RpcEncodable
 
 @[specialize]
-def filterLemmata (ass : Array (Array RewriteLemma × Nat)) (loc : SubExpr.GoalsLocation)
-    (maxTotal := 10000) (max := 1000) :
+def filterLemmata (ass : Array (Array RewriteLemma × Nat))
+    (maxTotal max : Nat) (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
     MetaM (Array (CodeWithInfos × Array RewriteApplication) × Bool) :=
   let maxTotal := maxTotal * 1000
   let max := max * 1000
@@ -311,7 +309,7 @@ def filterLemmata (ass : Array (Array RewriteLemma × Nat)) (loc : SubExpr.Goals
     withTheReader Core.Context ({· with
       initHeartbeats := currHeartbeats
       maxHeartbeats := max }) do
-        withoutCatchingRuntimeEx (rewriteCall loc a)
+        withoutCatchingRuntimeEx (rewriteCall a loc subExpr occ)
 
   withCatchingRuntimeEx do
   let startHeartbeats ← IO.getNumHeartbeats
@@ -339,7 +337,7 @@ def filterLemmata (ass : Array (Array RewriteLemma × Nat)) (loc : SubExpr.Goals
   return (bss, isEverything)
 
 @[server_rpc_method]
-def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask Html) :=
+def LibraryRewrite.rpc (props : LibraryRewriteProps) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back?
@@ -352,20 +350,25 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
-      let subExpr ← Core.viewSubexpr loc.pos (← loc.rootExpr)
+    profileitM Exception "libraryRewrite" (← getOptions) do
+      let e ← loc.rootExpr
+      let subExpr ← Core.viewSubexpr loc.pos e
       if subExpr.hasLooseBVars then
-        return <p> rw doesn't work with bound variables. </p>
+        return <p> rw doesn't work on expressions with bound variables. </p>
       let rwLemmas ← getCandidates subExpr
       if rwLemmas.isEmpty then
         return <p> No rewrite lemmata found. </p>
-      let (results, isEverything) ← filterLemmata rwLemmas loc
-        (max := props.factor * 1000) (maxTotal := props.factor * 10000)
+      let positions ← findPositions subExpr e
+      let occurrence := if positions.size == 1 then none else
+        positions.findIdx? (· == loc.pos) |>.map (· + 1)
+      let (results, isEverything) ← filterLemmata rwLemmas loc.loc subExpr occurrence
+        (max := props.factor * 800) (maxTotal := props.factor * 8000)
       if results.isEmpty then
         return <p> No applicable rewrite lemmata found. </p>
       return renderResults results isEverything props.replaceRange doc
 
 @[widget_module]
-def LibraryRewrite : Component InteractiveTacticProps :=
+def LibraryRewrite : Component LibraryRewriteProps :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 /--
