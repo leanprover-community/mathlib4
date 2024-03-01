@@ -17,7 +17,6 @@ An automorphism `φ` of a group `G` is fixed-point-free if `1 : G` is the only f
 
 namespace MonoidHom
 
--- todo: refactor Mathlib/Algebra/GroupPower/IterateHom to generalize φ to MonoidHomClass
 variable {G : Type*}
 
 section Definitions
@@ -37,6 +36,7 @@ end Definitions
 
 namespace FixedPointFree
 
+-- todo: refactor Mathlib/Algebra/GroupPower/IterateHom to generalize φ to MonoidHomClass
 variable [Group G] {φ : G →* G} (hφ : FixedPointFree φ)
 
 theorem injective_commutatorMap : Function.Injective (CommutatorMap φ) := by
