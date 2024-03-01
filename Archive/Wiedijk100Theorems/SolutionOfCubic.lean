@@ -87,9 +87,7 @@ theorem cubic_monic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp : p = (3 * c - 
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
   have h₁ : x ^ 3 + b * x ^ 2 + c * x + d = y ^ 3 + 3 * p * y - 2 * q := by
     rw [hp, hq]
-    -- FIXME nightly-testing: field_simp is broken
-    sorry
-    -- field_simp [y, h9, h54]; ring
+    field_simp [y, h9, h54]; ring
   rw [h₁, cubic_basic_eq_zero_iff hω hp_nonzero hr hs3 ht y]
   simp_rw [eq_sub_iff_add_eq]
 #align theorems_100.cubic_monic_eq_zero_iff Theorems100.cubic_monic_eq_zero_iff
@@ -109,8 +107,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d
     = a * (x ^ 3 + b / a * x ^ 2 + c / a * x + d / a) := by field_simp; ring
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
-  have hp' : p = (3 * (c / a) - (b / a) ^ 2) / 9 := by
-    field_simp [hp, h9]; ring_nf
+  have hp' : p = (3 * (c / a) - (b / a) ^ 2) / 9 := by field_simp [hp, h9]; ring_nf
   have hq' : q = (9 * (b / a) * (c / a) - 2 * (b / a) ^ 3 - 27 * (d / a)) / 54 := by
     rw [hq, h54]
     simp [field_simps, ha]
@@ -138,18 +135,13 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
   have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz; rw [hpz]
   have hb3 : b ^ 3 = 3 * a * b * c := by rw [pow_succ, hb2]; ring
   have h₂ :=
-    -- FIXME nightly-testing: field_simp is broken
     calc
       a * x ^ 3 + b * x ^ 2 + c * x + d =
       a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) := by
-        sorry
-        -- field_simp; ring
+        field_simp; ring
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
-        sorry
-        -- simp only [hb2, hb3]; field_simp; ring
-      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by
-        sorry
-        -- rw [hs3, hq]; field_simp [h54]; ring
+        simp only [hb2, hb3]; field_simp; ring
+      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring
   have h₃ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by
     intro x

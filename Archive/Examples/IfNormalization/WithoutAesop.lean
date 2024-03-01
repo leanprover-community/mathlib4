@@ -98,9 +98,9 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           split <;> rename_i h'
           · subst h'
             simp_all
-          · -- FIXME nightly-testing: used to be a `simp_all? says`
-            sorry
-            -- simp_all? says
+          · simp_all? says simp_all only [hasNestedIf, Bool.or_self, hasConstantIf, and_self,
+              hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, ne_eq, not_false_eq_true,
+              disjoint, List.disjoint, decide_True, Bool.and_self]
         · have := ht₃ w
           have := he₃ w
           by_cases h : w = v
