@@ -3,9 +3,9 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Group.Aut
+import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Data.Fintype.Card
+import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Fixed-point-free automorphisms
@@ -59,8 +59,37 @@ theorem eq_inv_of_sq_eq_one (h2 : φ^[2] = _root_.id) : ⇑φ = (·⁻¹) := by
   have key : 1 * g * φ g = 1 := hφ.prod_pow_eq_one h2 g
   rwa [one_mul, ← inv_eq_iff_mul_eq_one, eq_comm] at key
 
-lemma eq_inv_of_involutive (h2 : Function.Involutive φ) : ⇑φ = (·⁻¹) :=
+section Involutive
+
+variable (h2 : Function.Involutive φ)
+
+theorem eq_inv_of_involutive : ⇑φ = (·⁻¹) :=
   eq_inv_of_sq_eq_one hφ  (funext h2)
+
+theorem commutative_of_involutive (g h : G) : g * h = h * g := by
+  have key := map_mul φ g h
+  rwa [hφ.eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
+
+def CommGroupOfInvolutive : CommGroup G :=
+  CommGroup.mk (hφ.commutative_of_involutive h2)
+
+theorem orderOf_ne_two_of_involutive (g : G) : orderOf g ≠ 2 := by
+  intro hg
+  have key : φ g = g := by
+    rw [hφ.eq_inv_of_involutive h2, inv_eq_iff_mul_eq_one, ← sq, ← hg, pow_orderOf_eq_one]
+  rw [hφ g key, orderOf_one] at hg
+  contradiction
+
+theorem odd_card_of_involutive : Odd (Nat.card G) := by
+  by_contra h
+  rw [← Nat.even_iff_not_odd, even_iff_two_dvd] at h
+  obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card 2 h
+  exact hφ.orderOf_ne_two_of_involutive h2 g hg
+
+theorem odd_orderOf_of_involutive (g : G) : Odd (orderOf g) :=
+  Odd.of_dvd_nat (hφ.odd_card_of_involutive h2) (orderOf_dvd_natCard g)
+
+end Involutive
 
 end FixedPointFree
 
