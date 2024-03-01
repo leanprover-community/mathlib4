@@ -129,7 +129,7 @@ structure LambdaTheorem where
 /-- -/
 structure LambdaTheorems where
   /-- map: function property name × theorem type → lambda theorem -/
-  theorems : HashMap (Name × LambdaTheoremType) LambdaTheorem := {}
+  theorems : HashMap (Name × LambdaTheoremType) (Array LambdaTheorem) := {}
   deriving Inhabited
 
 
@@ -146,13 +146,15 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
-      {d with theorems := d.theorems.insert (e.funPropName, e.thmArgs.type) e}
+      {d with theorems :=
+        let es := d.theorems.findD (e.funPropName, e.thmArgs.type) #[]
+        d.theorems.insert (e.funPropName, e.thmArgs.type) (es.push e)}
   }
 
 /-- -/
-def getLambdaTheorem (funPropName : Name) (type : LambdaTheoremType) :
-    CoreM (Option LambdaTheorem) := do
-  return (lambdaTheoremsExt.getState (← getEnv)).theorems.find? (funPropName,type)
+def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
+    CoreM (Array LambdaTheorem) := do
+  return (lambdaTheoremsExt.getState (← getEnv)).theorems.findD (funPropName,type) #[]
 
 
 --------------------------------------------------------------------------------
