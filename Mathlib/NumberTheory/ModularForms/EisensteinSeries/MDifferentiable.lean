@@ -95,7 +95,7 @@ lemma eisensteinSeries_SIF_complex_differentiableOn {N : ℕ} (a : Fin 2 → ZMo
   convert @TendstoLocallyUniformlyOn.differentiableOn (E := ℂ) (ι := (Finset ↑(gammaSet N a))) _ _ _
     (UpperHalfPlane.coe '' ⊤) atTop (fun (s : Finset (gammaSet N a )) =>
       ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ((eisensteinSeries_SIF a k).toFun ))
-        (by apply atTop_neBot) (eisensteinSeries_TendstoLocallyUniformlyOn hk N a)
+        (by apply atTop_neBot) (eisensteinSeries_tendstoLocallyUniformlyOn hk a)
           ((eventually_of_forall fun s => ?_)) ?_
   · apply DifferentiableOn.sum
     intro v _
