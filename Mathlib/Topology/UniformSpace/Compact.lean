@@ -30,7 +30,7 @@ import Mathlib.Topology.Support
 The construction `uniformSpace_of_compact_t2` is not declared as an instance, as it would badly
 loop.
 
-## tags
+## Tags
 
 uniform space, uniform continuity, compact space
 -/
