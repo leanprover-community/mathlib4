@@ -119,13 +119,13 @@ theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂
     f = g := by
   rw [EvenHom.ext_iff] at h
   ext ⟨x, hx⟩
-  refine' even_induction _ _ _ _ _ hx
-  · intro r
+  induction x, hx using even_induction with
+  | algebraMap r =>
     exact (f.commutes r).trans (g.commutes r).symm
-  · intro x y hx hy ihx ihy
+  | add x y hx hy ihx ihy =>
     have := congr_arg₂ (· + ·) ihx ihy
     exact (f.map_add _ _).trans (this.trans <| (g.map_add _ _).symm)
-  · intro m₁ m₂ x hx ih
+  | ι_mul_ι_mul m₁ m₂ x hx ih =>
     have := congr_arg₂ (· * ·) (LinearMap.congr_fun (LinearMap.congr_fun h m₁) m₂) ih
     exact (f.map_mul _ _).trans (this.trans <| (g.map_mul _ _).symm)
 #align clifford_algebra.even.alg_hom_ext CliffordAlgebra.even.algHom_ext
@@ -234,14 +234,14 @@ theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   cases y
   refine' (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans _
   dsimp only
-  refine' even_induction Q _ _ _ _ x_property
-  · intro r
+  induction x, x_property using even_induction Q with
+  | algebraMap r =>
     rw [foldr_algebraMap, aux_algebraMap]
     exact Algebra.smul_def r _
-  · intro x y hx hy ihx ihy
+  | add x y hx hy ihx ihy =>
     rw [LinearMap.map_add, Prod.fst_add, ihx, ihy, ← add_mul, ← LinearMap.map_add]
     rfl
-  · rintro m₁ m₂ x (hx : x ∈ even Q) ih
+  | ι_mul_ι_mul m₁ m₂ x hx ih =>
     rw [aux_apply, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold, ih, ← mul_assoc,
       Subtype.coe_mk, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold]
     rfl
