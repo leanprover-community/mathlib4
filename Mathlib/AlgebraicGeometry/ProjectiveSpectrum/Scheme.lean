@@ -610,7 +610,7 @@ end FromSpec
 
 section toSpecFromSpec
 
-lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Spec.T (A⁰_ f)) :
+lemma toSpec_fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Spec.T (A⁰_ f)) :
     toSpec (FromSpec.toFun f_deg hm x) = x := show _ = (_ : PrimeSpectrum _) by
   ext (z : A⁰_ f); fconstructor <;> intro hz
   · change z ∈ ToSpec.carrier _ at hz
@@ -661,6 +661,55 @@ lemma toSpecFromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : 
         HomogeneousLocalization.zero_val, Localization.mk_zero]
 
 end toSpecFromSpec
+
+section fromSpecToSpec
+
+lemma fromSpec_toSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x : Proj.T| pbo f) :
+    FromSpec.toFun f_deg hm (toSpec x) = x := by
+  classical
+  refine Subtype.ext <| ProjectiveSpectrum.ext _ _ <| HomogeneousIdeal.ext <| Ideal.ext fun z ↦ ?_
+  constructor <;> intro hz
+  · rw [← DirectSum.sum_support_decompose 𝒜 z]
+    refine Ideal.sum_mem _ fun i _ ↦ ?_
+    obtain ⟨c, N, acd, eq1⟩ := ToSpec.MemCarrier.clear_denominator x (hz i)
+    rw [HomogeneousLocalization.val_mk'', smul_mk, ← mk_one_eq_algebraMap, mk_eq_mk_iff,
+      r_iff_exists, OneMemClass.coe_one, one_mul] at eq1
+    obtain ⟨⟨_, ⟨k, rfl⟩⟩, eq1⟩ := eq1
+    dsimp at eq1
+    rw [← mul_assoc, ← mul_assoc, ← pow_add, ← pow_add] at eq1
+    suffices mem : f^(k + i) * ∑ i in c.support.attach, acd (c i) _ * _ ∈
+      x.1.asHomogeneousIdeal from
+      x.1.isPrime.mem_of_pow_mem _ <| x.1.isPrime.mem_or_mem (eq1.symm ▸ mem)
+        |>.resolve_left fun r ↦ ProjectiveSpectrum.mem_basicOpen 𝒜 _ _
+        |>.mp x.2 <| x.1.isPrime.mem_of_pow_mem _ r
+    exact Ideal.mul_mem_left _ _ <| Ideal.sum_mem _ fun i _ ↦
+      Ideal.mul_mem_left _ _ i.1.2.choose_spec.1
+
+  · intro i
+    erw [ToSpec.mem_carrier_iff, HomogeneousLocalization.val_mk'']
+    dsimp only [GradedAlgebra.proj_apply]
+    rw [show (mk (decompose 𝒜 z i ^ m) ⟨f^i, ⟨i, rfl⟩⟩: Away f) =
+      (decompose 𝒜 z i ^ m : A) • (mk 1 ⟨f^i, ⟨i, rfl⟩⟩ : Away f) by
+      · rw [smul_mk, smul_eq_mul, mul_one], Algebra.smul_def]
+    exact Ideal.mul_mem_right _ _ <|
+      Ideal.subset_span ⟨_, ⟨Ideal.pow_mem_of_mem _ (x.1.asHomogeneousIdeal.2 i hz) _ hm, rfl⟩⟩
+
+lemma toSpec_injective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
+    Function.Injective (toSpec (𝒜 := 𝒜) (f := f)) := by
+  intro x₁ x₂ h
+  have := congr_arg (FromSpec.toFun f_deg hm) h
+  rwa [fromSpec_toSpec, fromSpec_toSpec] at this
+
+lemma toSpec_surjective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
+    Function.Surjective (toSpec (𝒜 := 𝒜) (f := f)) :=
+  Function.surjective_iff_hasRightInverse |>.mpr
+    ⟨FromSpec.toFun f_deg hm, toSpec_fromSpec 𝒜 hm f_deg⟩
+
+lemma toSpec_bijective {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m):
+    Function.Bijective (toSpec (𝒜 := 𝒜) (f := f)) :=
+  ⟨toSpec_injective 𝒜 hm f_deg, toSpec_surjective 𝒜 hm f_deg⟩
+
+end fromSpecToSpec
 
 end ProjIsoSpecTopComponent
 
