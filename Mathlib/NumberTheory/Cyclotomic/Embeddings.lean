@@ -20,7 +20,7 @@ then there are no real places of `K`.
 universe u
 
 namespace IsCyclotomicExtension.Rat
-v
+
 open NumberField InfinitePlace FiniteDimensional Complex Nat Polynomial
 
 variable {n : ℕ+} (K : Type u) [Field K] [CharZero K]
