@@ -220,11 +220,11 @@ theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : S
 
 instance : Inhabited (Opens α) := ⟨⊥⟩
 
--- porting note: new instance
+-- porting note (#10754): new instance
 instance [IsEmpty α] : Unique (Opens α) where
   uniq _ := ext <| Subsingleton.elim _ _
 
--- porting note: new instance
+-- porting note (#10754): new instance
 instance [Nonempty α] : Nontrivial (Opens α) where
   exists_pair_ne := ⟨⊥, ⊤, mt coe_inj.2 empty_ne_univ⟩
 
@@ -286,7 +286,7 @@ theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α
   exact U.2
 #align topological_space.opens.eq_bot_or_top TopologicalSpace.Opens.eq_bot_or_top
 
--- porting note: new instance
+-- porting note (#10754): new instance
 instance [Nonempty α] [Subsingleton α] : IsSimpleOrder (Opens α) where
   eq_bot_or_eq_top := eq_bot_or_top <| Subsingleton.elim _ _
 
@@ -459,7 +459,7 @@ instance : Inhabited (OpenNhdsOf x) := ⟨⊤⟩
 instance : Inf (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
 instance : Sup (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
 
--- porting note: new instance
+-- porting note (#10754): new instance
 instance [Subsingleton α] : Unique (OpenNhdsOf x) where
   uniq U := SetLike.ext' <| Subsingleton.eq_univ_of_nonempty ⟨x, U.mem⟩
 
