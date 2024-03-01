@@ -26,19 +26,6 @@ namespace EisensteinSeries
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
-lemma comp_eq_const_iff {α β γ: Type*} (b : β) (f : α → β) (g : β → γ)
-    (hg : Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
-  hg.comp_left.eq_iff' rfl
-
-lemma comp_eq_zero_iff {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
-    (hg : Injective g) (hg0 : g 0 = 0) : g ∘ f = 0 ↔ f = 0 := by
-  convert (comp_eq_const_iff 0 f g hg)
-  simp only [hg0, const_zero]
-
-lemma comp_inj_ne_zero {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
-    (hg : Injective g) (hg0 : g 0 = 0) : (g ∘ f) ≠ 0 ↔ f ≠ 0 :=
-  (Iff.ne (comp_eq_zero_iff f g hg hg0))
-
 variable (k : ℤ) (a : Fin 2 → ℤ)
 
 theorem complex_denom_HasDerivAt (z : ℂ) (h : (a 0 : ℂ) * z + a 1 ≠ 0) :
@@ -55,7 +42,7 @@ lemma UpperHalfPlane.coe_linear_ne_zero (a : Fin 2 → ℤ) (x : UpperHalfPlane.
   obtain ⟨y, hy⟩ := hx
   rw [← hy]
   apply UpperHalfPlane.linear_ne_zero ((Int.cast (R := ℝ)) ∘ a) y
-      ((comp_inj_ne_zero _ _ Int.cast_injective Int.cast_zero).mpr ha)
+      ((Function.comp_inj_ne_zero _ _ Int.cast_injective Int.cast_zero).mpr ha)
 
 lemma complex_eisSummand_differentiableOn (hk : k ≠ 0) :
     DifferentiableOn ℂ (fun z : ℂ => 1/(a 0 * z + a 1) ^ k) (UpperHalfPlane.coe '' ⊤) := by
