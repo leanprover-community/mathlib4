@@ -44,9 +44,9 @@ structure GPseudoMetric
     where
   /-- A distance function on α with values in β -/
   toFun (x y : α):β
-  gdist_self : ∀ x : α, toFun x x = 0
-  comm' : ∀ x y : α, toFun x y = toFun y x
-  triangle' : ∀ x y z : α, toFun x z ≤ toFun x y + toFun y z
+  protected gdist_self : ∀ x : α, toFun x x = 0
+  protected comm' : ∀ x y : α, toFun x y = toFun y x
+  protected triangle' : ∀ x y z : α, toFun x z ≤ toFun x y + toFun y z
 
 variable {α β :Type*} [LinearOrder β] [AddCommMonoid β] [CovariantClass β β (.+.) (.≤.)]
 @[ext]

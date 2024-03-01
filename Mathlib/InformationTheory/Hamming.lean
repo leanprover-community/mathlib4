@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.GMetric.Basic
 
 #align_import information_theory.hamming from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
@@ -238,6 +239,41 @@ theorem hammingDist_eq_hammingNorm [∀ i, AddGroup (β i)] (x y : ∀ i, β i) 
 #align hamming_dist_eq_hamming_norm hammingDist_eq_hammingNorm
 
 end HammingDistNorm
+
+section HammingGDist
+open GMetric
+variable {α ι : Type*} {β : ι → Type*} [Fintype ι] [∀ i, DecidableEq (β i)]
+variable {γ : ι → Type*} [∀ i, DecidableEq (γ i)]
+
+def hammingENatDist : GMetric (∀ i:ι, β i) ℕ∞ where
+  toFun := fun x y => hammingDist x y
+  gdist_self := by simp
+  comm' := fun x y => by
+    simp only [Nat.cast_inj]
+    exact hammingDist_comm x y
+  triangle' := fun x y z => by
+    simp_rw [← ENat.coe_add,@Nat.cast_le]
+    exact hammingDist_triangle x y z
+  eq_of_dist_eq_zero := fun h => hammingDist_eq_zero.mp (Nat.cast_eq_zero.mp h)
+
+@[simp, push_cast]
+theorem hammingENatdist_eq_cast_hammingDist (x y : ∀ i, β i) :
+    hammingENatDist x y = ↑(hammingDist x y) :=
+  rfl
+
+def hammingNatDist : GMetric (∀ i:ι,β i) ℕ where
+  toFun := hammingDist
+  gdist_self := hammingDist_self
+  comm' := hammingDist_comm
+  triangle' := hammingDist_triangle
+  eq_of_dist_eq_zero := hammingDist_eq_zero.mp
+
+@[simp, push_cast]
+theorem hammingNatdist_eq_cast_hammingDist (x y : ∀ i, β i) :
+    hammingNatDist x y = hammingDist x y :=
+  rfl
+
+end HammingGDist
 
 /-! ### The `Hamming` type synonym -/
 
