@@ -35,7 +35,7 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 ## Notations
 
 * `⨂[R] i, s i` is defined as localized notation in locale `TensorProduct`.
-* `⨂ₜ[R] i, f i` with `f : ∀ i, f i` is defined globally as the tensor product of all the `f i`'s.
+* `⨂ₜ[R] i, f i` with `f : ∀ i, s i` is defined globally as the tensor product of all the `f i`'s.
 
 ## Implementation notes
 
@@ -301,7 +301,9 @@ instance : IsScalarTower R R (⨂[R] i, s i) :=
 
 variable (R)
 
-/-- The canonical `MultilinearMap R s (⨂[R] i, s i)`. -/
+/-- The canonical `MultilinearMap R s (⨂[R] i, s i)`.
+
+`tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
 def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
   map_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
@@ -312,8 +314,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 variable {R}
 
 unsuppress_compilation in
-/-- pure tensor in tensor product over some index type -/
--- TODO(kmill) The generated delaborator never applies; figure out why this doesn't pretty print.
+@[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
