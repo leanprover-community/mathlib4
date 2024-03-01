@@ -119,7 +119,7 @@ lemma bounded (hf : IsCauSeq abv f) : ∃ r, ∀ i, abv (f i) < r := by
   have : ∀ i, ∀ j ≤ i, abv (f j) ≤ R i := by
     refine' Nat.rec (by simp [hR]) _
     rintro i hi j (rfl | hj)
-    · simp
+    · simp [R]
     · exact (hi j hj).trans (le_max_left _ _)
   refine ⟨R i + 1, fun j ↦ ?_⟩
   obtain hji | hij := le_total j i
