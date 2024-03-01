@@ -229,8 +229,7 @@ def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 
   right_inv := DFinsupp.toFinsupp_toDFinsupp
 #align finsupp_equiv_dfinsupp finsuppEquivDFinsupp
 
-/-- The additive version of `finsupp.toFinsupp`. Note that this is `noncomputable` because
-`Finsupp.add` is noncomputable. -/
+/-- The additive version of `finsuppEquivDFinsupp`. -/
 @[simps (config := .asFn)]
 def finsuppAddEquivDFinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃+ Π₀ _ : ι, M :=
@@ -242,10 +241,8 @@ def finsuppAddEquivDFinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decida
 
 variable (R)
 
-/-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
-`Finsupp.add` is noncomputable. -/
--- Porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
---@[simps? (config := .asFn)]
+/-- The additive version of `finsuppEquivDFinsupp`. -/
+@[simps]
 def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -255,18 +252,11 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDFinsupp_add }
 #align finsupp_lequiv_dfinsupp finsuppLequivDFinsupp
 
--- Porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
       (↑(finsuppLequivDFinsupp (M := M) R) : (ι →₀ M) → _) = Finsupp.toDFinsupp := by
-       simp only [@LinearEquiv.coe_coe]; rfl
-
-@[simp]
-theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
-    [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
-    ↑(LinearEquiv.symm (finsuppLequivDFinsupp (ι := ι) (M := M) R)) = DFinsupp.toFinsupp :=
-  rfl
+  ext; simp only [finsuppLequivDFinsupp_apply, Finsupp.toDFinsupp_coe]
 
 -- Porting note: moved noncomputable declaration into section begin
 noncomputable section Sigma
@@ -291,9 +281,7 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η 
         Finset.mem_sigma.mpr ⟨_, mem_support_iff.mpr hg⟩
     simp only [Ne.def, DFinsupp.mem_support_toFun]
     intro h
-    dsimp at hg
-    rw [h] at hg
-    simp only [coe_zero, Pi.zero_apply, not_true] at hg
+    simp only [h, coe_zero, Pi.zero_apply, not_true, Ne] at hg
   left_inv f := by ext; simp [split]
   right_inv f := by ext; simp [split]
 #align sigma_finsupp_equiv_dfinsupp sigmaFinsuppEquivDFinsupp
@@ -322,7 +310,7 @@ theorem sigmaFinsuppEquivDFinsupp_support [DecidableEq ι] [Zero N]
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σi, η i) (n : N) :
     sigmaFinsuppEquivDFinsupp (Finsupp.single a n) =
-      @DFinsupp.single _ (fun i => η i →₀ N) _ _ a.1 (Finsupp.single a.2 n) := by
+      DFinsupp.single a.1 (Finsupp.single a.2 n) := by
   obtain ⟨i, a⟩ := a
   ext j b
   by_cases h : i = j
@@ -369,14 +357,7 @@ attribute [-instance] Finsupp.instAddMonoid
 @[simps]
 def sigmaFinsuppLequivDFinsupp [AddCommMonoid N] [Module R N] :
     ((Σi, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
-    -- Porting note: was
-    -- sigmaFinsuppAddEquivDFinsupp with map_smul' := sigmaFinsuppEquivDFinsupp_smul
-    -- but times out
-  { sigmaFinsuppEquivDFinsupp with
-    toFun := sigmaFinsuppEquivDFinsupp
-    invFun := sigmaFinsuppEquivDFinsupp.symm
-    map_add' := sigmaFinsuppEquivDFinsupp_add
-    map_smul' := sigmaFinsuppEquivDFinsupp_smul }
+  { sigmaFinsuppAddEquivDFinsupp with map_smul' := sigmaFinsuppEquivDFinsupp_smul }
 #align sigma_finsupp_lequiv_dfinsupp sigmaFinsuppLequivDFinsupp
 
 end Sigma
