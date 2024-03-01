@@ -133,11 +133,7 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 #align alg_hom.to_fun_eq_coe AlgHom.toFun_eq_coe
 
-attribute [coe] AlgHom.toRingHom
-
-instance coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
-  ⟨AlgHom.toRingHom⟩
-#align alg_hom.coe_ring_hom AlgHom.coeOutRingHom
+#noalign alg_hom.coe_ring_hom
 
 -- Porting note: A new definition underlying a coercion `↑`.
 @[coe]

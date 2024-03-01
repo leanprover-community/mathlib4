@@ -72,8 +72,8 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     refine' ⟨U, {j}, _, _⟩
     · simp only [Finset.mem_singleton]
       rintro i rfl
-      simpa
-    · simp
+      simpa [U]
+    · simp [U]
   · rintro ⟨U, G, h1, h2⟩
     obtain ⟨j, hj⟩ := IsCofiltered.inf_objs_exists G
     let g : ∀ e ∈ G, j ⟶ e := fun _ he => (hj he).some
@@ -99,7 +99,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       -- use the intermediate claim to finish off the goal using `univ` and `inter`.
       refine' this _ _ _ (univ _) (inter _) _
       intro e he
-      dsimp
+      dsimp [Vs]
       rw [dif_pos he]
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...

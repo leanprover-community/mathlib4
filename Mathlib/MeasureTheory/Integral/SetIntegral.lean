@@ -803,11 +803,11 @@ lemma integral_le_measure {f : α → ℝ} {s : Set α}
   · intro x
     apply ENNReal.ofReal_le_of_le_toReal
     by_cases H : x ∈ s
-    · simpa using hs x H
+    · simpa [g] using hs x H
     · apply le_trans _ zero_le_one
-      simpa using h's x H
+      simpa [g] using h's x H
   · intro x hx
-    simpa using h's x hx
+    simpa [g] using h's x hx
 
 end Nonneg
 
