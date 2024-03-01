@@ -27,8 +27,6 @@ namespace EisensteinSeries
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
-/-I'll move these lemmas once find_home is working again-/
-
 lemma comp_eq_const_iff {α β γ: Type*} (b : β) (f : α → β) (g : β → γ)
     (hg : Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
   hg.comp_left.eq_iff' rfl
