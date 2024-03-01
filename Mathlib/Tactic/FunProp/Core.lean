@@ -569,6 +569,7 @@ mutual
   /-- Main `funProp` function. Returns proof of `e`. -/
   partial def funProp (e : Expr) : FunPropM (Option Result) := do
 
+    let e ← instantiateMVars e
     -- check cache
     if let .some { expr := _, proof? := .some proof } := (← get).cache.find? e then
       trace[Meta.Tactic.fun_prop.cache] "cached result for {e}"
@@ -587,7 +588,6 @@ mutual
             | return none
           cacheResult e {proof := ← mkLambdaFVars xs r.proof }
       | .mdata _ e' => funProp e'
-      | .mvar _ => instantiateMVars e >>= funProp
       | _ =>
         let .some r ← main e
           | return none
@@ -634,7 +634,6 @@ mutual
             bvarAppCase funPropDecl e fData funProp
           else
             fvarAppCase funPropDecl e fData funProp
-        | .mvar .. => funProp (← instantiateMVars e)
         | .const .. | .proj .. => do
           constAppCase funPropDecl e fData funProp
         | _ =>

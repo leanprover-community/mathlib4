@@ -383,3 +383,9 @@ def diag (f : α → α → α) (x : α) := f x x
 
 theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
   fun_prop [diag,myUncurry]
+
+
+-- These used to get into infinite loop
+-- todo: how do I turn off warrnings?
+-- #check_failure ((by fun_prop) : ?m)
+-- #check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))
