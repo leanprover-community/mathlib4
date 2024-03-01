@@ -5,7 +5,6 @@ Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Brendan Murphy
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Adjunction.Mates
 
 #align_import category_theory.monoidal.functor from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -363,81 +362,66 @@ theorem associativity_inv' (X Y Z : C) :
       (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ (F.μ X Y ▷ F.obj Z) ≫ F.μ (X ⊗ Y) Z := by
   simp [← id_tensorHom, ← tensorHom_id]
 
-#check F.associativity
+namespace associativity_coherences
 
-/-
-(F.obj X ⊗ F.obj Y) ⊗ F.obj Z ⟶ F.obj (X ⊗ Y ⊗ Z)
+variable (F : C ⥤ D)
 
-F.toFunctor.prod (F.toFunctor.prod F.toFunctor) ⋙ leftAssocTensor D ⟶
-rightAssocTensor C ⋙ F.toFunctor
--/
+@[simps! hom_app]
+def coherence1 :
+    F.prod (F.prod F) ⋙ leftAssocTensor D ≅
+      prod.inverseAssociator C C C ⋙ (F.prod F ⋙ tensor D).prod F ⋙ tensor D :=
+  -- we can write this as a composition of associators etc but it's much slower to typecheck
+  Iso.refl _
 
-/-
-(μ X Y ⊗ 𝟙 (F.obj Z)) ≫
-  μ (X ⊗ Y) Z ≫
-    map (α_ X Y Z).hom =
-(α_ (obj X) (obj Y) (obj Z)).hom ≫
-  (𝟙 (obj X) ⊗ μ Y Z) ≫
-    μ X (Y ⊗ Z)
--/
+@[simps! hom_app]
+def coherence2 :
+    prod.inverseAssociator C C C ⋙ (tensor C ⋙ F).prod F ⋙ tensor D ≅
+    (prod.inverseAssociator C C C ⋙ (tensor C).prod (𝟭 C)) ⋙ F.prod F ⋙ tensor D :=
+  Iso.refl _
 
-namespace associativity_nat_trans
--- TODO: make these coherences isos
-def coherence1 :=
-  (Functor.associator _ _ _).inv ≫
-    whiskerRight ((transferNatTrans (prod.associativity C C C).symm.toAdjunction
-                                    (prod.associativity D D D).symm.toAdjunction).symm
-                    (prod.associator_naturality _ _ _).hom)
-                  ((tensor D).prod (𝟭 D) ⋙ tensor D) ≫
-      (Functor.associator _ _ _).hom ≫
-        whiskerLeft (prod.inverseAssociator C C C) ((Functor.associator _ _ _).inv ≫
-          whiskerRight ((prodCompIso _ _ _ _).inv ≫
-            .prod (𝟙 (F.toFunctor.prod F.toFunctor ⋙ tensor D))
-                  F.toFunctor.rightUnitor.hom) (tensor D))
+@[simps! hom_app]
+def coherence3 :
+    (prod.inverseAssociator C C C ⋙ (tensor C).prod (𝟭 C)) ⋙ tensor C ⋙ F ≅
+      (prod.inverseAssociator C C C ⋙ (tensor C).prod (𝟭 C) ⋙ tensor C) ⋙ F :=
+  Iso.refl _
 
-@[simp]
-lemma coherence1_app (X : C × C × C) :
-    (coherence1 F).app X = 𝟙 ((F.obj X.1 ⊗ F.obj X.2.1) ⊗ F.obj X.2.2) := by
-  dsimp [coherence1, Equivalence.symm]
-  simp only [map_id, comp_id, tensor_id]
+@[simps! hom_app]
+def coherence4 :
+    (𝟭 C).prod (F.prod F) ⋙ F.prod (tensor D) ⋙ tensor D ≅
+      F.prod (F.prod F ⋙ tensor D) ⋙ tensor D :=
+  Iso.refl _
 
-def coherence2 :=
-  whiskerLeft (prod.inverseAssociator C C C)
-    (whiskerRight (.prod (𝟙 _) F.toFunctor.leftUnitor.inv) (tensor D) ≫
-      whiskerRight (prodCompIso _ _ _ _).hom (tensor D) ≫
-        (((tensor C).prod (𝟭 C)).associator (.prod F.toFunctor F.toFunctor) _).hom)
+@[simps! hom_app]
+def coherence5 :
+    F.prod (tensor C ⋙ F) ⋙ tensor D ≅
+      (𝟭 C).prod (tensor C) ⋙ F.prod F ⋙ tensor D :=
+  Iso.refl _
 
-@[simp]
-lemma coherence2_app (X : C × C × C) :
-    (coherence2 F).app X = 𝟙 (F.obj (X.1 ⊗ X.2.1) ⊗ F.obj X.2.2) := by
-  dsimp [coherence2]
-  simp only [tensor_id, comp_id]
+@[simps! hom_app]
+def coherence6 :
+    (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ F ≅
+      ((𝟭 C).prod (tensor C) ⋙ tensor C) ⋙ F :=
+  Iso.refl _
 
-def coherence3 :=
-  whiskerLeft (prod.inverseAssociator C C C)
-    (Functor.associator ((tensor C).prod (𝟭 C)) (tensor C) F.toFunctor).inv ≫
-    (Functor.associator _ _ _).inv
+end associativity_coherences
 
-@[simp]
-lemma coherence3_app (X : C × C × C) :
-    (coherence3 F).app X = 𝟙 (F.obj ((X.1 ⊗ X.2.1) ⊗ X.2.2)) := by
-  dsimp [coherence3]
-  simp only [comp_id]
-
--- lemma thm :
---     coherence1 F ≫ whiskerLeft _ (whiskerRight (.prod F.μNatTrans (𝟙 _)) _) ≫
---       coherence2 F ≫ whiskerLeft _ (whiskerLeft _ F.μNatTrans) ≫
---         coherence3 F ≫ whiskerRight (associatorNatIso C).hom _ =
---   --   (α_ (obj X) (obj Y) (obj Z)).hom ≫
---   -- (𝟙 (obj X) ⊗ μ Y Z) ≫
---   --   μ X (Y ⊗ Z)
-
---     (by
---       let a := (associatorNatIso C).hom
---       unfold leftAssocTensor at
---       admit) := sorry
-
-end associativity_nat_trans
+open associativity_coherences in
+lemma associativity_nat_trans :
+    (coherence1 F.toFunctor).hom ≫
+      whiskerLeft _ (whiskerRight (.prod F.μNatTrans (𝟙 _)) _) ≫
+        (coherence2 F.toFunctor).hom ≫
+          whiskerLeft _ F.μNatTrans ≫
+            (coherence3 F.toFunctor).hom ≫
+              whiskerRight (associatorNatIso C).hom _ =
+    whiskerLeft _ (associatorNatIso D).hom ≫
+      (coherence4 F.toFunctor).hom ≫
+        whiskerRight (NatTrans.prod (𝟙 F.toFunctor) F.μNatTrans) (tensor D) ≫
+          (coherence5 F.toFunctor).hom ≫
+            whiskerLeft (.prod (𝟭 C) (tensor C)) F.μNatTrans ≫
+              (coherence6 F.toFunctor).hom := by
+  ext
+  dsimp
+  simp only [id_comp, comp_id, associativity]
 
 end
 
@@ -538,6 +522,65 @@ theorem coassociativity_inv' (X Y Z : C) :
     F.map (α_ X Y Z).inv ≫ F.δ (X ⊗ Y) Z ≫ (F.δ X Y ▷ F.obj Z) =
       F.δ X (Y ⊗ Z) ≫ (F.obj X ◁ F.δ Y Z) ≫ (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv := by
   convert op_inj (F.op.associativity' (.op X) (.op Y) (.op Z)) using 1 <;> simp
+
+namespace coassociativity_coherences
+
+variable (F : C ⥤ D)
+
+@[simps! hom_app]
+def coherence1 :
+    rightAssocTensor C ⋙ F ≅ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ F :=
+  Iso.refl _
+
+@[simps! hom_app]
+def coherence2 :
+    (𝟭 C).prod (tensor C) ⋙ F.prod F ⋙ tensor D ≅
+      F.prod (tensor C ⋙ F) ⋙ tensor D :=
+  Iso.refl _
+
+@[simps! hom_app]
+def coherence3 :
+    F.prod (F.prod F ⋙ tensor D) ⋙ tensor D ≅
+      F.prod (F.prod F) ⋙ rightAssocTensor D :=
+  Iso.refl _
+
+@[simps! hom_app]
+def coherence4 :
+    leftAssocTensor C ⋙ F ≅
+      (prod.inverseAssociator C C C ⋙ (tensor C).prod (𝟭 C)) ⋙ tensor C ⋙ F :=
+  Iso.refl _
+
+@[simps! hom_app]
+def coherence5 :
+    (prod.inverseAssociator C C C ⋙ (tensor C).prod (𝟭 C)) ⋙ F.prod F ⋙ tensor D ≅
+      prod.inverseAssociator C C C ⋙ (tensor C ⋙ F).prod F ⋙ tensor D :=
+  Iso.refl _
+
+@[simps! hom_app]
+def coherence6 :
+    prod.inverseAssociator C C C ⋙ (F.prod F ⋙ tensor D).prod F ⋙ tensor D ≅
+      F.prod (F.prod F) ⋙ leftAssocTensor D :=
+  Iso.refl _
+
+end coassociativity_coherences
+
+open coassociativity_coherences in
+lemma coassociativity_nat_trans :
+    whiskerRight (associatorNatIso C).hom F.toFunctor ≫
+      (coherence1 F.toFunctor).hom ≫
+        whiskerLeft ((𝟭 C).prod (tensor C)) F.δNatTrans ≫
+          (coherence2 F.toFunctor).hom ≫
+            whiskerRight (.prod (𝟙 F.toFunctor) F.δNatTrans) (tensor D) ≫
+              (coherence3 F.toFunctor).hom =
+    (coherence4 F.toFunctor).hom ≫
+      whiskerLeft _ F.δNatTrans ≫
+        (coherence5 F.toFunctor).hom ≫
+          whiskerLeft (prod.inverseAssociator C C C) (whiskerRight (.prod F.δNatTrans (𝟙 F.toFunctor)) (tensor D)) ≫
+            (coherence6 F.toFunctor).hom ≫
+              whiskerLeft _ (associatorNatIso D).hom := by
+  ext
+  dsimp
+  simp only [id_comp, comp_id, coassociativity]
 
 end
 

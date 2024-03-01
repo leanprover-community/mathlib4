@@ -156,6 +156,7 @@ namespace LaxMonoidalFunctor
 
 variable (F : C ⥤⊗ℓ D) [IsRightAdjoint F.toFunctor]
 #check ColaxMonoidalFunctor.δNatTrans
+open associativity_coherences in
 @[simps ε δ toFunctor]
 def leftAdjoint : D ⥤⊗c C :=
   let G := CategoryTheory.leftAdjoint F.toFunctor
@@ -164,7 +165,17 @@ def leftAdjoint : D ⥤⊗c C :=
   .ofTensorHom G ((h.homEquiv _ _).symm F.η) (fun X Y => δ.app (X, Y))
     (fun {X Y X' Y'} f g => δ.naturality (X := (X, X')) (Y := (Y, Y')) (f, g))
     (fun X Y Z => by
-      have := F.associativity (G.obj X) (G.obj Y) (G.obj Z)
+      have h1 := F.associativity_nat_trans
+      have h2 := congrArg (transferNatTrans (h.prod (h.prod h)) h).symm h1
+      have h3 := congrArg (NatTrans.app · (X, Y, Z)) h2
+      -- erw [comp_id, id_comp, id_comp, id_comp, id_comp, id_comp] at h3
+      -- simp only [comp_id] at h3
+      -- dsimp [leftAssocTensor] at h3 ⊢
+      dsimp only [coherence1, coherence2, coherence3,
+        coherence4, coherence5, coherence6, Iso.refl_hom] at h3
+      erw [comp_id, id_comp, id_comp, id_comp, id_comp, id_comp] at h3
+
+      -- repeat erw [id_comp] at h3; erw [comp_id, id_comp] at h3
       admit)
     sorry
     sorry
