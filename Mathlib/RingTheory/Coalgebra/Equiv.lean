@@ -1,4 +1,4 @@
-import Mathlib.RingTheory.CoalgHom
+import Mathlib.RingTheory.Coalgebra.Hom
 
 set_option autoImplicit true
 

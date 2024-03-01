@@ -1,4 +1,4 @@
-import Mathlib.RingTheory.Coalgebra
+import Mathlib.RingTheory.Coalgebra.Basic
 set_option autoImplicit true
 open TensorProduct Coalgebra
 

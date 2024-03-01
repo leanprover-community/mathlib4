@@ -1,6 +1,7 @@
-import Mathlib.Algebra.Category.AlgebraCat.Monoidal
-import Mathlib.RingTheory.BialgEquiv
-import Mathlib.RingTheory.CoalgCat
+import Mathlib.RingTheory.Coalgebra.Bialgebra.Equiv
+import Mathlib.RingTheory.Coalgebra.Cat
+import Mathlib.Algebra.Category.AlgebraCat.Basic
+
 open CategoryTheory
 
 open CategoryTheory.Limits
@@ -10,17 +11,6 @@ open CategoryTheory.Limits.WalkingParallelPair
 universe v u
 
 variable (R : Type u) [CommRing R]
-
-namespace AlgebraCat
-
-@[simps] noncomputable instance : BraidedCategory (AlgebraCat R) where
-  braiding := fun X Y => (Algebra.TensorProduct.comm _ _ _).toAlgebraIso
-  braiding_naturality_right := sorry
-  braiding_naturality_left := sorry
-  hexagon_forward := sorry
-  hexagon_reverse := sorry
-
-end AlgebraCat
 
 structure BialgCat where
   /-- the underlying type of an object in `BialgCat R` -/
@@ -273,95 +263,3 @@ def coalgEquivIsoBialgIso {X Y : Type u} [Ring X] [Ring Y] [Bialgebra R X]
   inv i := i.toBialgEquiv
 
 end
-
-namespace Bialgebra
-open scoped TensorProduct
-/-  refine' Bialgebra.mk' R (A ⊗[R] B) _ _ _ _
-  have : Coalgebra.comul = Algebra.TensorProduct.tensorTensorTensorComm R A A B B
-    ∘ₗ Algebra.TensorProduct.map (Bialgebra.comulAlgHom R A) (Bialgebra.comulAlgHom R B) := rfl
--/
-
-variable {A B C D : Type u} [Ring A] [Ring B] [Ring C] [Ring D]
-    [Bialgebra R A] [Bialgebra R B] [Bialgebra R C] [Bialgebra R D]
-
-instance hmmmmmm {A B : Type u} [Ring A] [Ring B]
-    [Bialgebra R A] [Bialgebra R B] : Bialgebra R (A ⊗[R] B) :=
-    { counit_one := by
-        simp only [Coalgebra.tensorProductCoalgebraStruct_counit, LinearMap.coe_comp,
-          Function.comp_apply, Algebra.TensorProduct.one_def, TensorProduct.map_tmul, counit_one,
-          LinearMap.mul'_apply, mul_one]
-      mul_compr₂_counit := by
-        ext w x y z
-        simp only [Coalgebra.tensorProductCoalgebraStruct_counit, TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-          LinearMap.coe_restrictScalars, LinearMap.compr₂_apply, LinearMap.mul_apply',
-          Algebra.TensorProduct.tmul_mul_tmul, LinearMap.coe_comp, Function.comp_apply,
-          TensorProduct.map_tmul, counit_mul, LinearMap.mul'_apply, LinearMap.compl₁₂_apply,
-          mul_mul_mul_comm]
-      comul_one := by
-        simp only [Coalgebra.tensorProductCoalgebraStruct_comul, LinearMap.coe_comp,
-          LinearEquiv.coe_coe, Function.comp_apply, Algebra.TensorProduct.one_def,
-          TensorProduct.map_tmul, comul_one, TensorProduct.tensorTensorTensorComm_tmul]
-      mul_compr₂_comul := by
-        simp only [Coalgebra.tensorProductCoalgebraStruct_comul]
-        ext w x y z
-        simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-          LinearMap.coe_restrictScalars, LinearMap.compr₂_apply, LinearMap.mul_apply',
-          Algebra.TensorProduct.tmul_mul_tmul, LinearMap.coe_comp, LinearEquiv.coe_coe,
-          Function.comp_apply, TensorProduct.map_tmul, comul_mul, LinearMap.compl₁₂_apply]
-        sorry
-         }
-
-def tensorMap (f : A →b[R] B) (g : C →b[R] D) :
-    A ⊗[R] C →b[R] B ⊗[R] D := _
-
-
-end Bialgebra
-
-@[simps] noncomputable def toMonObj (X : BialgCat R) : Mon_ (AlgebraCat R)ᵒᵖ where
-  X := Opposite.op (AlgebraCat.of R X)
-  one := (AlgebraCat.ofHom (Bialgebra.counitAlgHom R X)).op
-  mul := (AlgebraCat.ofHom (Bialgebra.comulAlgHom R X)).op
-  one_mul := by
-    simp only [MonoidalCategory.whiskerRight, ← op_comp]
-    congr 1
-    exact AlgHom.toLinearMap_injective Coalgebra.rTensor_counit_comp_comul
-  mul_one := by
-    simp only [MonoidalCategory.whiskerLeft, ← op_comp]
-    congr 1
-    exact AlgHom.toLinearMap_injective Coalgebra.lTensor_counit_comp_comul
-  mul_assoc := by
-    simp only [MonoidalCategory.whiskerRight, MonoidalCategory.whiskerLeft, ← op_comp,
-      MonoidalCategory.associator, Iso.op_hom, Iso.symm_hom]
-    congr 1
-    simp only [← Category.assoc, Iso.eq_comp_inv]
-    exact AlgHom.toLinearMap_injective Coalgebra.coassoc
-
-@[simps] def toMonMap {X Y : BialgCat R} (f : X ⟶ Y) : toMonObj Y ⟶ toMonObj X where
-  hom := (AlgebraCat.ofHom f.toAlgHom).op
-  one_hom := by
-    simp only [toMonObj_X, toMonObj_one, ← op_comp]
-    congr
-    exact AlgHom.toLinearMap_injective f.counit_comp
-  mul_hom := by
-    simp only [toMonObj_X, toMonObj_mul, Opposite.unop_op, ← op_comp]
-    congr 1
-    exact AlgHom.toLinearMap_injective f.map_comp_comul.symm
-
-@[simps] noncomputable def toMon : (BialgCat R)ᵒᵖ ⥤ Mon_ (AlgebraCat R)ᵒᵖ where
-  obj := fun X => toMonObj X.unop
-  map := fun f => toMonMap f.unop
-
-@[simps] instance ofMonObjCoalgebraStruct (X : Mon_ (AlgebraCat R)ᵒᵖ) :
-    CoalgebraStruct R X.X.unop where
-  comul := X.mul.unop.toLinearMap
-  counit := X.one.unop.toLinearMap
-
-noncomputable abbrev monAlgebraOpToModule :
-    Mon_ (AlgebraCat R)ᵒᵖ ⥤ Mon_ (ModuleCat R)ᵒᵖ :=
-  (AlgebraCat.toModuleCatMonoidalFunctor R).mapOpposite.toLaxMonoidalFunctor.mapMon
-
-noncomputable def toMonCompMonAlgebraOpToModule : toMon ⋙ monAlgebraOpToModule
-    ≅ Functor.op (forget₂ (BialgCat R) (CoalgCat R)) ⋙ CoalgCat.toMon :=
-  NatIso.ofComponents (fun X => sorry) sorry
-
-end Bialgebra

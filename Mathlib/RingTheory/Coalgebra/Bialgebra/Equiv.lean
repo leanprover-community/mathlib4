@@ -1,5 +1,5 @@
-import Mathlib.RingTheory.CoalgEquiv
-import Mathlib.RingTheory.BialgHom
+import Mathlib.RingTheory.Coalgebra.Equiv
+import Mathlib.RingTheory.Coalgebra.Bialgebra.Hom
 
 set_option autoImplicit true
 
@@ -15,7 +15,7 @@ open Coalgebra
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
 structure BialgEquiv (R : Type u) [CommSemiring R] (A : Type v) (B : Type w)
   [Semiring A] [Semiring B]
-  [Bialgebra R A] [Bialgebra R B] extends A →b[R] B, A ≃c[R] B where
+  [Bialgebra R A] [Bialgebra R B] extends A →ₗ[R] B, A →b[R] B, A ≃c[R] B where
 
 attribute [coe] BialgEquiv.toBialgHom
 

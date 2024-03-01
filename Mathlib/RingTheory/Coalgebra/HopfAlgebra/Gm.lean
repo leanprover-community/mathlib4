@@ -1,6 +1,7 @@
-import Mathlib.RingTheory.HopfAlgebra
-import Mathlib.RingTheory.BialgHom
-
+import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Basic
+import Mathlib.RingTheory.Coalgebra.Bialgebra.Hom
+import Mathlib.Data.Polynomial.Laurent
+import Mathlib.Data.Polynomial.RingDivision
 open scoped LaurentPolynomial TensorProduct
 /- Lol none of the zpow stuff is necessary i don't think -/
 set_option autoImplicit false
@@ -305,11 +306,10 @@ variable (R)
   simp only [Bialgebra.counit_mul, counit_C, counit_T, mul_one]
 
 @[simp] lemma antipode_T (m : ℤ) :
-    HopfAlgebra.S (R := R) (T m) = T (R := R) (-m) := by
-  show HopfAlgebra.S (AddMonoidAlgebra.single _ _) = _
-  simp only [HopfAlgebra.AddMonoidAlgebra.instHopfAlgebra_S,
-    HopfAlgebra.AddMonoidAlgebra.S_single]
-  erw [CommSemiring.antipode_apply] -- yeugh fix
+    HopfAlgebra.antipode (R := R) (T m) = T (R := R) (-m) := by
+  show HopfAlgebra.antipode (AddMonoidAlgebra.single _ _) = _
+  simp only [HopfAlgebra.AddMonoidAlgebra.instHopfAlgebra_antipode,
+    HopfAlgebra.AddMonoidAlgebra.antipode_single, CommSemiring.antipode_eq_id]
   rfl
 
 @[simps!] noncomputable def Finsupp.cmapDomain (A : Type*) {α β : Type*}

@@ -1,5 +1,5 @@
-import Mathlib.RingTheory.Bialgebra
-import Mathlib.RingTheory.CoalgHom
+import Mathlib.RingTheory.Coalgebra.Bialgebra.Basic
+import Mathlib.RingTheory.Coalgebra.Hom
 
 set_option autoImplicit true
 open TensorProduct Bialgebra
@@ -416,5 +416,4 @@ protected theorem map_sub (x y) : φ (x - y) = φ x - φ y :=
   map_sub _ _ _
 
 end Ring
-
-end Bialgebra
+end BialgHom
