@@ -4038,10 +4038,13 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   let mvar := goal.mvarId!
   -- We want this to be fast, so use only the basic and `Finset.Nonempty`-specific rules.
   let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `finsetNonempty]
-  -- Fail if the new goal is not closed.
-  let rules ← Aesop.mkLocalRuleSet rulesets { terminal := true, generateScript := false }
+  let options : Aesop.Options' :=
+    { terminal := true, -- Fail if the new goal is not closed.
+      generateScript := false,
+      warnOnNonterminal := false } -- Don't show a warning on failure, simply return `none`.
+  let rules ← Aesop.mkLocalRuleSet rulesets options
   let (remainingGoals, _) ←
-    try Aesop.search mvar (.some rules)
+    try Aesop.search (options := options.toOptions) mvar (.some rules)
     catch _ => return none
   -- Fail if there are open goals remaining, this serves as an extra check for the
   -- Aesop configuration option `terminal := true`.
