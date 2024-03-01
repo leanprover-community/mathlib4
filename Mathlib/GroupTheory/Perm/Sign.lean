@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.Data.Finset.Sort
-import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.Data.Finset.Fin
+import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Int.Order.Units
+import Mathlib.GroupTheory.Perm.Support
+import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.Logic.Equiv.Fin
+import Mathlib.Tactic.NormNum.Ineq
 
 #align_import group_theory.perm.sign from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 

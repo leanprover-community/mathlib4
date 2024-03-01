@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
 
-import Mathlib.Data.Fintype.Perm
-import Mathlib.GroupTheory.Perm.List
-import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Data.Fintype.Perm
+import Mathlib.GroupTheory.Perm.Finite
+import Mathlib.GroupTheory.Perm.List
 
 #align_import group_theory.perm.cycle.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
-
 # Cycles of a permutation
 
 This file starts the theory of cycles in permutations.
@@ -42,13 +41,11 @@ open BigOperators
 
 variable {ι α β : Type*}
 
+namespace Equiv.Perm
 
 /-! ### `SameCycle` -/
 
-
 section SameCycle
-
-namespace Equiv.Perm
 
 variable {f g : Perm α} {p : α → Prop} {x y z : α}
 
@@ -259,8 +256,6 @@ instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f
         rw [← zpow_ofNat, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
           Int.coe_nat_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
 
-end Equiv.Perm
-
 end SameCycle
 
 /-!
@@ -268,8 +263,6 @@ end SameCycle
 -/
 
 section IsCycle
-
-namespace Equiv.Perm
 
 variable {f g : Perm α} {x y : α}
 
@@ -716,9 +709,7 @@ theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf 
     exact support_pow_le f n
 #align equiv.perm.is_cycle.is_cycle_pow_pos_of_lt_prime_order Equiv.Perm.IsCycle.isCycle_pow_pos_of_lt_prime_order
 
-end Equiv.Perm
-
-namespace Int
+end IsCycle
 
 open Equiv
 
@@ -730,11 +721,7 @@ theorem _root_.Int.addRight_one_isCycle : (Equiv.addRight 1 : Perm ℤ).IsCycle 
   ⟨0, one_ne_zero, fun n _ => ⟨n, by simp⟩⟩
 #align int.add_right_one_is_cycle Int.addRight_one_isCycle
 
-end Int
-
 section Conjugation
-
-namespace Equiv.Perm
 
 variable [Fintype α] [DecidableEq α] {σ τ : Perm α}
 
@@ -774,19 +761,11 @@ theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     hσ.isConj hτ⟩
 #align equiv.perm.is_cycle.is_conj_iff Equiv.Perm.IsCycle.isConj_iff
 
-end Equiv.Perm
-
 end Conjugation
-
-end IsCycle
-
 
 /-! ### `IsCycleOn` -/
 
-
 section IsCycleOn
-
-namespace Equiv.Perm
 
 variable {f g : Perm α} {s t : Set α} {a b x y : α}
 
@@ -992,6 +971,8 @@ protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
 #align equiv.perm.is_cycle_on.countable Equiv.Perm.IsCycleOn.countable
 
 
+end IsCycleOn
+
 end Equiv.Perm
 
 namespace List
@@ -1001,7 +982,7 @@ section
 variable [DecidableEq α] {l : List α}
 
 set_option linter.deprecated false in -- nthLe
-theorem _root_.List.Nodup.isCycleOn_formPerm (h : l.Nodup) :
+theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine' ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => _⟩
   rw [Set.mem_setOf, ← List.indexOf_lt_length] at ha hb
@@ -1034,7 +1015,7 @@ namespace Set
 
 variable {f : Perm α} {s : Set α}
 
-theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
+theorem Countable.exists_cycleOn (hs : s.Countable) :
     ∃ f : Perm α, f.IsCycleOn s ∧ { x | f x ≠ x } ⊆ s := by
   classical
   obtain hs' | hs' := s.finite_or_infinite
@@ -1053,7 +1034,7 @@ theorem _root_.Set.Countable.exists_cycleOn (hs : s.Countable) :
     simp
 #align set.countable.exists_cycle_on Set.Countable.exists_cycleOn
 
-theorem _root_.Set.prod_self_eq_iUnion_perm (hf : f.IsCycleOn s) :
+theorem prod_self_eq_iUnion_perm (hf : f.IsCycleOn s) :
     s ×ˢ s = ⋃ n : ℤ, (fun a => (a, (f ^ n) a)) '' s := by
   ext ⟨a, b⟩
   simp only [Set.mem_prod, Set.mem_iUnion, Set.mem_image]
@@ -1070,7 +1051,7 @@ namespace Finset
 
 variable {f : Perm α} {s : Finset α}
 
-theorem _root_.Finset.product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
+theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     (range s.card : Set ℕ).PairwiseDisjoint fun k =>
       s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩ := by
   obtain hs | _ := (s : Set α).subsingleton_or_nontrivial
@@ -1098,7 +1079,7 @@ theorem _root_.Finset.product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
 
 The diagonals are given by the cycle `f`.
 -/
-theorem _root_.Finset.product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
+theorem product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
     s ×ˢ s =
       (range s.card).disjiUnion
         (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun i j => congr_arg Prod.fst⟩)
@@ -1119,17 +1100,15 @@ namespace Finset
 
 variable [Semiring α] [AddCommMonoid β] [Module α β] {s : Finset ι} {σ : Perm ι}
 
-theorem _root_.Finset.sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :
+theorem sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :
     ((∑ i in s, f i) • ∑ i in s, g i) = ∑ k in range s.card, ∑ i in s, f i • g ((σ ^ k) i) := by
   simp_rw [sum_smul_sum, product_self_eq_disjiUnion_perm hσ, sum_disjiUnion, sum_map]
   rfl
 #align finset.sum_smul_sum_eq_sum_perm Finset.sum_smul_sum_eq_sum_perm
 
-theorem _root_.Finset.sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι → α) :
+theorem sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι → α) :
     ((∑ i in s, f i) * ∑ i in s, g i) = ∑ k in range s.card, ∑ i in s, f i * g ((σ ^ k) i) :=
   sum_smul_sum_eq_sum_perm hσ f g
 #align finset.sum_mul_sum_eq_sum_perm Finset.sum_mul_sum_eq_sum_perm
 
 end Finset
-
-end IsCycleOn
