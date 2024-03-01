@@ -385,6 +385,19 @@ theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x =>
   fun_prop [diag,myUncurry]
 
 
+namespace MultipleLambdaTheorems
+
+opaque A : Prop
+opaque B : Prop
+@[local fun_prop] theorem Con_comp' (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := silentSorry
+@[local fun_prop] theorem Con_comp'' (f : β → γ) (g : α → β) (b : B) : Con (fun x => f (g x)) := silentSorry
+
+example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop (disch:=assumption)
+example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop (disch:=assumption)
+
+end MultipleLambdaTheorems
+
+
 -- These used to get into infinite loop
 -- todo: how do I turn off warrnings?
 -- #check_failure ((by fun_prop) : ?m)
