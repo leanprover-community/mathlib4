@@ -149,7 +149,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     refine' IsLocalization.coeSubmodule_mono _ hJM ⟨c, _, hc⟩
     have := Submodule.mul_mem_mul (ha M hM) (Submodule.mem_span_singleton_self v)
     rwa [← hc] at this
-  simp_rw [Finset.mul_sum, mul_smul_comm] at hmem
+  simp_rw [v, Finset.mul_sum, mul_smul_comm] at hmem
   rw [← s.add_sum_erase _ hM, Submodule.add_mem_iff_left] at hmem
   · refine' hm M hM _
     obtain ⟨c, hc : algebraMap R A c = a M * b M⟩ := this _ (ha M hM) _ (hb M hM)

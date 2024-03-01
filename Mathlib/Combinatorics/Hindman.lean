@@ -143,7 +143,7 @@ theorem exists_idempotent_ultrafilter_le_FP {M} [Semigroup M] (a : Stream' M) :
     refine' ⟨U, U_idem, _⟩
     convert Set.mem_iInter.mp hU 0
   · exact Ultrafilter.continuous_mul_left
-  · apply IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed
+  · apply IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
     · intro n U hU
       apply Eventually.mono hU
       rw [add_comm, ← Stream'.drop_drop, ← Stream'.tail_eq_drop]
