@@ -151,6 +151,11 @@ elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
   let cfg ← elabSimpConfig (cfg.getD ⟨.missing⟩) .simp
+  -- The `field_simp` discharger relies on recursively calling the discharger.
+  -- Prior to https://github.com/leanprover/lean4/pull/3523,
+  -- the maxDischargeDepth wasn't actually being checked: now we have to set it higher.
+  let cfg := { cfg with maxDischargeDepth := 7 }
+
   let loc := expandOptLocation (mkOptionalNode loc)
 
   let dis ← match dis with

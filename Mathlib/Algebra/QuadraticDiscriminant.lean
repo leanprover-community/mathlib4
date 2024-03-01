@@ -88,10 +88,8 @@ theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s)
   rw [quadratic_eq_zero_iff_discrim_eq_sq ha, h, sq, mul_self_eq_mul_self_iff]
   field_simp
   apply or_congr
-  -- FIXME nightly-testing: something is wrong in `linear_combination`
-  all_goals sorry
-  -- · constructor <;> intro h' <;> linear_combination -h'
-  -- · constructor <;> intro h' <;> linear_combination h'
+  · constructor <;> intro h' <;> linear_combination -h'
+  · constructor <;> intro h' <;> linear_combination h'
 #align quadratic_eq_zero_iff quadratic_eq_zero_iff
 
 /-- A quadratic has roots if its discriminant has square roots -/
@@ -134,12 +132,10 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * x * x + b * x + c) : discrim a
       rw [mul_div_cancel' _ hb] at this
       linarith
   -- if a > 0
-  · -- FIXME nightly-testing: not sure what is going wrong here
-    sorry
-    -- have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
-    -- convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
-    -- field_simp
-    -- ring
+  · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
+    convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
+    field_simp
+    ring
 #align discrim_le_zero discrim_le_zero
 
 lemma discrim_le_zero_of_nonpos (h : ∀ x : K, a * x * x + b * x + c ≤ 0) : discrim a b c ≤ 0 :=

@@ -202,10 +202,8 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     (x * cexp (-b * x ^ 2)) x := by
     intro x
     convert ((hasDerivAt_pow 2 x).const_mul (-b)).cexp.const_mul (-(2 * b)⁻¹) using 1
-    -- FIXME nightly-testing: field_simp is broken
-    sorry
-    -- field_simp [hb']
-    -- ring
+    field_simp [hb']
+    ring
   have B : Tendsto (fun y : ℝ ↦ -(2 * b)⁻¹ * cexp (-b * (y : ℂ) ^ 2))
     atTop (𝓝 (-(2 * b)⁻¹ * 0)) := by
     refine' Tendsto.const_mul _ (tendsto_zero_iff_norm_tendsto_zero.mpr _)
@@ -248,10 +246,8 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       simp only [integral_const, Measure.restrict_apply', measurableSet_Ioo, univ_inter, volume_Ioo,
         sub_neg_eq_add, ENNReal.toReal_ofReal, this]
       rw [← two_mul, real_smul, mul_one, ofReal_mul, ofReal_ofNat, integral_mul_cexp_neg_mul_sq hb]
-      -- FIXME nightly-testing: field_simp is broken
-      sorry
-      -- field_simp [(by contrapose! hb; rw [hb, zero_re] : b ≠ 0)]
-      -- ring
+      field_simp [(by contrapose! hb; rw [hb, zero_re] : b ≠ 0)]
+      ring
 #align integral_gaussian_sq_complex integral_gaussian_sq_complex
 
 theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = sqrt (π / b) := by
@@ -563,10 +559,8 @@ theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
       cexp (- -b * (x + c / (2 * b)) ^ 2) * cexp (d - c ^ 2 / (4 * b)) := by
     simp_rw [← Complex.exp_add]
     congr 1
-    -- FIXME nightly-testing: field_simp is broken
-    sorry
-    -- field_simp
-    -- ring_nf
+    field_simp
+    ring_nf
   simp_rw [h, integral_mul_right]
   rw [← re_add_im (c / (2 * b))]
   simp_rw [← add_assoc, ← ofReal_add]
@@ -596,12 +590,10 @@ theorem _root_.fourier_transform_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
   · rw [← div_div, div_self <| ofReal_ne_zero.mpr pi_ne_zero, one_div, inv_cpow, ← one_div]
     rw [Ne.def, arg_eq_pi_iff, not_and_or, not_lt]
     exact Or.inl hb.le
-  · -- FIXME nightly-testing: field_simp is broken
-    sorry
-    -- field_simp [ofReal_ne_zero.mpr pi_ne_zero]
-    -- ring_nf
-    -- simp only [I_sq]
-    -- ring
+  · field_simp [ofReal_ne_zero.mpr pi_ne_zero]
+    ring_nf
+    simp only [I_sq]
+    ring
 
 theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =

@@ -55,15 +55,13 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
   suffices
     (fun p : 𝕜 × 𝕜 => (p.1 - p.2) * ((x * x)⁻¹ - (p.1 * p.2)⁻¹)) =o[𝓝 (x, x)] fun p =>
       (p.1 - p.2) * 1 by
-    -- FIXME nightly-testing: not sure what is wrong here:
-    sorry
-    -- refine' this.congr' _ (eventually_of_forall fun _ => mul_one _)
-    -- refine' Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) _
-    -- rintro ⟨y, z⟩ ⟨hy, hz⟩
-    -- simp only [mem_setOf_eq] at hy hz
-    -- -- hy : y ≠ 0, hz : z ≠ 0
-    -- field_simp [hx, hy, hz]
-    -- ring
+    refine' this.congr' _ (eventually_of_forall fun _ => mul_one _)
+    refine' Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) _
+    rintro ⟨y, z⟩ ⟨hy, hz⟩
+    simp only [mem_setOf_eq] at hy hz
+    -- hy : y ≠ 0, hz : z ≠ 0
+    field_simp [hx, hy, hz]
+    ring
   refine' (isBigO_refl (fun p : 𝕜 × 𝕜 => p.1 - p.2) _).mul_isLittleO ((isLittleO_one_iff 𝕜).2 _)
   rw [← sub_self (x * x)⁻¹]
   exact tendsto_const_nhds.sub ((continuous_mul.tendsto (x, x)).inv₀ <| mul_ne_zero hx hx)
@@ -188,20 +186,16 @@ theorem HasDerivWithinAt.div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWith
     HasDerivWithinAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) s x := by
   convert hc.mul ((hasDerivAt_inv hx).comp_hasDerivWithinAt x hd) using 1
   · simp only [div_eq_mul_inv, (· ∘ ·)]
-  · -- FIXME nightly-testing: field_simp is broken?
-    sorry
-    -- field_simp
-    -- ring
+  · field_simp
+    ring
 #align has_deriv_within_at.div HasDerivWithinAt.div
 
 theorem HasStrictDerivAt.div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)
     (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   convert hc.mul ((hasStrictDerivAt_inv hx).comp x hd) using 1
   · simp only [div_eq_mul_inv, (· ∘ ·)]
-  · -- FIXME nightly-testing: field_simp is broken?
-    sorry
-    -- field_simp
-    -- ring
+  · field_simp
+    ring
 #align has_strict_deriv_at.div HasStrictDerivAt.div
 
 theorem HasDerivAt.div (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) (hx : d x ≠ 0) :
