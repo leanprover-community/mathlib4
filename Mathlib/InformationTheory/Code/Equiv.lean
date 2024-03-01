@@ -55,7 +55,7 @@ section linearcode
 set_option variable?.maxSteps 20
 variable (T₃ K: Type*) {γ Tₖ M Tₘ M₂ Tₘ₂ :Type*}
 variable [Field K] [AddCommMonoid M] [AddCommMonoid M₂] [Module K M] [Module K M₂]
-variable [Semiring γ] [CompleteLinearOrder γ] [ContravariantClass γ γ (.+.) (.≤.)]
+variable [Semiring γ] [CompleteLinearOrder γ] [ContravariantClass γ γ (.+.) (.<.)]
 variable (gdist_k : Tₖ)
 variable (gdist_m : Tₘ) (s:Submodule K M)
 variable
@@ -70,9 +70,9 @@ variable [FunLike Tₘ₂ M₂ (M₂ → γ)]
   [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdist_m₂] [IsDelone gdist_m₂ ↑s₂]
   [StrictModuleGNorm K M₂ gdist_k gdist_m₂] [_Code γ gdist_m₂ ↑s₂]
   [_LinearCode γ K gdist_k gdist_m₂ s₂]
-variable [EquivLike T₃ M M₂] [GIsometryClass T₃ gdist_m gdist_m₂]
-  [CodeHomClass T₃ gdist_m (↑s) gdist_m₂ ↑s₂]
-  [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂]
+variable [EquivLike T₃ M M₂]
+  [GIsometryClass T₃ gdist_m gdist_m₂] [CodeHomClass T₃ gdist_m (↑s) gdist_m₂ ↑s₂]
+  [LinearMapClass T₃ K M M₂] [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂]
 
 @[ext]
 structure LinearCodeEquiv [_LinearCode γ K gdist_k gdist_m s]

@@ -25,7 +25,7 @@ end code
 section linearcode
 
 variable (γ :Type*) [CompleteLinearOrder γ] [Semiring γ] [CovariantClass γ γ (. + .) (. ≤ .)]
-  [Nontrivial γ] [ContravariantClass γ γ (.+.) (.≤.)] [PosMulStrictMono γ] [MulPosStrictMono γ]
+  [Nontrivial γ] [ContravariantClass γ γ (.+.) (.<.)] [PosMulStrictMono γ] [MulPosStrictMono γ]
   [ZeroLEOneClass γ]
 variable (K : Type*) [Field K] {Tₖ : Type*} (gdist_k:Tₖ)
 variable {M : Type*} {Tₘ : Type*} (gdist_m:Tₘ)
@@ -33,7 +33,7 @@ variable? [AddGNorm K γ gdist_k] [StrictModuleGNorm K K gdist_k gdist_k] -- [No
 variable? [StrictModuleGNorm K M gdist_k gdist_m] -- [NormedSpace K M]
 variable (s : Submodule K M) [IsDelone gdist_m s]
 
-class _LinearCode [Nontrivial γ] [ContravariantClass γ γ (.+.) (.≤.)]
+class _LinearCode [Nontrivial γ] [ContravariantClass γ γ (.+.) (.<.)]
   [PosMulStrictMono γ] [MulPosStrictMono γ] [ZeroLEOneClass γ]
   [StrictModuleGNorm K K gdist_k gdist_k] [StrictModuleGNorm K M gdist_k gdist_m] [_Code γ gdist_m s]
 end linearcode

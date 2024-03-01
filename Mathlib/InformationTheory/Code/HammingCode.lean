@@ -110,6 +110,11 @@ noncomputable instance Hamming.instStrictModuleGNorm_Module
   smul_norm_le' := fun a b => (norm_eq_smul a b).ge
 
 end hamming
-variable (n n' p:ℕ) [Fact (p.Prime)]
+variable (n n' p:ℕ) [Fact (p.Prime)] [DecidableEq (GaloisField p n)]
 
 abbrev CodeWord := Fin (n') → GaloisField p n
+open Code
+
+variable (s : Submodule (GaloisField p n) (CodeWord n n' p)) [IsDelone hdist (s:Set (CodeWord n n' p))]
+
+def h: _LinearCode ℕ∞ (GaloisField p n) trivdist hdist s:= inferInstance
