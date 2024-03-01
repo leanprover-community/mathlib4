@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Order.UpperLower
+import Mathlib.Topology.MetricSpace.Sequences
 
 #align_import analysis.normed.order.upper_lower from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
@@ -251,7 +252,6 @@ The closure and frontier of an antichain might not be antichains. Take for examp
 of the open segments from `(0, 2)` to `(1, 1)` and from `(2, 1)` to `(3, 0)`. `(1, 1)` and `(2, 1)`
 are comparable and both in the closure/frontier.
 -/
-
 
 protected theorem IsClosed.upperClosure (hs : IsClosed s) (hs' : BddBelow s) :
     IsClosed (upperClosure s : Set (ι → ℝ)) := by
