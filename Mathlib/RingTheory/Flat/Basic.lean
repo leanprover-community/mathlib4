@@ -37,8 +37,18 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 * `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
-* `Module.Flat.iff_rTensor_preserves_injectiveness`: a module is flat iff tensoring preserves
+* `Module.Flat.iff_rTensor_preserves_injective_linearMap`: a module is flat iff tensoring preserves
   injectiveness.
+
+## Implementation notes
+In `Module.Flat.iff_rTensor_preserves_injective_linearMap`, we require that the universe level of
+the ring is lower than or equal to that of the ring. This requirement is to make sure ideals of the
+ring can be lifited to the universe of the module. It is possible that this lemma also holds even
+when module lives in a lower universe.
+
+This requirement also appears in `Algebra/ModuleCat/Injective`.
+There are some ideas proposed by Junyan Xu about potentially circumvent at
+[here](https://github.com/leanprover-community/mathlib4/pull/8905#discussion_r1428509361)
 
 ## TODO
 
@@ -325,13 +335,6 @@ lemma rTensor_preserves_injective_linearMap_of_ideal
       Function.Injective L → Function.Injective (L.rTensor M) :=
   rTensor_preserves_injective_linearMap_of_injective_characterModule _ _ <|
     Module.Baer.injective <| CharacterModule.baer_of_ideal _ _ inj
-
--- Implementation note:
--- In this lemma we require the universe level of the ring is lower than or equal to that of the
--- ring. This requirement is to make sure ideals of the ring can be lifited to the universe of the
--- module. This requirement already appears in `Algebra/ModuleCat/Injective.lean`. It is possible
--- that the lemmas also holds even when module lives in a lower universe. For example, idea at
--- [here](https://github.com/leanprover-community/mathlib4/pull/8905#discussion_r1428509361)
 
 /--
 If `f ⊗ 𝟙 M` is injective for every injective linear map `f`, then `M` is flat.
