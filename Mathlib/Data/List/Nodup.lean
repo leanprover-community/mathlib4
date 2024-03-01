@@ -310,13 +310,28 @@ theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
     symm
     rw [filter_eq_self]
     simpa [@eq_comm α] using m
-  · rw [erase_cons_tail _ h, filter_cons_of_pos, IH]
+  · rw [erase_cons_tail _ (not_beq_of_ne h), filter_cons_of_pos, IH]
     simp [h]
 #align list.nodup.erase_eq_filter List.Nodup.erase_eq_filter
 
 theorem Nodup.erase [DecidableEq α] (a : α) : Nodup l → Nodup (l.erase a) :=
   Nodup.sublist <| erase_sublist _ _
 #align list.nodup.erase List.Nodup.erase
+
+theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) :
+    ∀ i : Fin l.length, l.erase (l.get i) = l.eraseIdx ↑i := by
+  induction l with
+  | nil => simp
+  | cons a l IH =>
+    intro i
+    cases i using Fin.cases with
+    | zero => simp
+    | succ i =>
+      rw [nodup_cons] at hl
+      rw [erase_cons_tail]
+      · simp [IH hl.2]
+      · rw [beq_iff_eq, get_cons_succ']
+        exact mt (· ▸ l.get_mem i i.isLt) hl.1
 
 theorem Nodup.diff [DecidableEq α] : l₁.Nodup → (l₁.diff l₂).Nodup :=
   Nodup.sublist <| diff_sublist _ _

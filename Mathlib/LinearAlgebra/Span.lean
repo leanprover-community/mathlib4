@@ -60,7 +60,7 @@ theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p
   mem_iInter₂
 #align submodule.mem_span Submodule.mem_span
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 #align submodule.subset_span Submodule.subset_span
 
@@ -172,6 +172,7 @@ theorem span_induction₂ {p : M → M → Prop} {a b : M} (ha : a ∈ Submodule
     (H0_left b) (fun x₁ x₂ => Hadd_left x₁ x₂ b) fun r x => Hsmul_left r x b
 
 /-- A dependent version of `Submodule.span_induction`. -/
+@[elab_as_elim]
 theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_span h))
     (H0 : p 0 (Submodule.zero_mem _))
@@ -209,6 +210,7 @@ theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (H0 : p 0)
   exact H2 r m hm
 
 /-- A dependent version of `Submodule.closure_induction`. -/
+@[elab_as_elim]
 theorem closure_induction' {p : ∀ x, x ∈ span R s → Prop}
     (H0 : p 0 (Submodule.zero_mem _))
     (H1 : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))

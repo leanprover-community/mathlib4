@@ -3007,7 +3007,7 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
   rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
 #align list.pmap_eq_map_attach List.pmap_eq_map_attach
 
--- @[simp] -- Porting note: lean 4 simp can't rewrite with this
+-- @[simp] -- Porting note (#10959): lean 4 simp can't rewrite with this
 theorem attach_map_coe' (l : List α) (f : α → β) :
     (l.attach.map fun (i : {i // i ∈ l}) => f i) = l.map f := by
   rw [attach, map_pmap]; exact pmap_eq_map _ _ _ _
@@ -3663,14 +3663,35 @@ variable [DecidableEq α]
 
 theorem map_erase [DecidableEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
-  have this : Eq a = Eq (f a) ∘ f := by ext b; simp [finj.eq_iff]
-  simp [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
+  have this : (a == ·) = (f a == f ·) := by ext b; simp [beq_eq_decide, finj.eq_iff]
+  rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 #align list.map_erase List.map_erase
 
 theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
     map f (foldl List.erase l₁ l₂) = foldl (fun l a => l.erase (f a)) (map f l₁) l₂ := by
   induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
 #align list.map_foldl_erase List.map_foldl_erase
+
+theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
+    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) := by
+  induction l with
+  | nil => simp
+  | cons a l IH =>
+    cases i using Fin.cases with
+    | zero => simp
+    | succ i =>
+      by_cases ha : a = l.get i
+      · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
+      · simpa [ha] using IH i
+
+theorem eraseIdx_eq_take_drop_succ {l : List ι} {i : ℕ} :
+    l.eraseIdx i = l.take i ++ l.drop i.succ := by
+  induction l generalizing i with
+  | nil => simp
+  | cons a l IH =>
+    cases i with
+    | zero => simp
+    | succ i => simp [IH]
 
 end Erase
 
@@ -3720,7 +3741,7 @@ theorem erase_diff_erase_sublist_of_sublist {a : α} :
   | b :: l₁, l₂, h =>
     if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
     else by
-      simp only [erase_cons_head b l₁, erase_cons_tail l₁ heq,
+      simp only [erase_cons_head b l₁, erase_cons_tail l₁ (not_beq_of_ne heq),
         diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
       have h' := h.erase b
       rw [erase_cons_head] at h'

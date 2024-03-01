@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Group.Lemmas
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -399,7 +398,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
   intro x y hxy
   calc
     dist x y ≤ dist x (Φ x) + dist (Φ x) y := dist_triangle _ _ _
-    _ = dist x (Φ x) + dist y (Φ y) := by simp [hxy, dist_comm]
+    _ = dist x (Φ x) + dist y (Φ y) := by simp [Φ, hxy, dist_comm]
     _ ≤ ε := by linarith [hn x, hn y]
 
 theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
@@ -475,7 +474,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
   let g := fun n : ℕ => c • f n
   have A : ∀ n, g n ∈ Metric.closedBall (0 : E) r := by
     intro n
-    simp only [norm_smul, dist_zero_right, Metric.mem_closedBall]
+    simp only [g, norm_smul, dist_zero_right, Metric.mem_closedBall]
     calc
       ‖c‖ * ‖f n‖ ≤ r / R * R := by gcongr; exact hc.2.le; apply fle
       _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
@@ -489,7 +488,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
   calc
     ‖c‖ ≤ dist (g (φ (N + 1))) (g (φ N)) := by
       conv_lhs => rw [← mul_one ‖c‖]
-      simp only [dist_eq_norm, ← smul_sub, norm_smul]
+      simp only [g, dist_eq_norm, ← smul_sub, norm_smul]
       gcongr
       apply lef (ne_of_gt _)
       exact φmono (Nat.lt_succ_self N)

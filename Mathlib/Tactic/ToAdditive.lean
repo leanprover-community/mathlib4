@@ -945,6 +945,8 @@ def nameDict : String → List String
   | "rootable"    => ["divisible"]
   | "commute"     => ["add", "Commute"]
   | "semiconj"    => ["add", "Semiconj"]
+  | "zpowers"     => ["zmultiples"]
+  | "powers"      => ["multiples"]
   | x             => [x]
 
 /--
@@ -995,7 +997,7 @@ def fixAbbreviation : List String → List String
   | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
   | "is" :: "Square" :: s             => "even" :: fixAbbreviation s
   | "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
-  -- "Regular" is well-used in mathlib3 with various meanings (e.g. in
+  -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
   -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
   | "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
