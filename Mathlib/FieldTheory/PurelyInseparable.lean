@@ -360,7 +360,7 @@ alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
 
 end map
 
-/-- If `E` is a perfect field of characteristic `p`, then the (relative) perfect closure
+/-- If `E` is a perfect field of exponential characteristic `p`, then the (relative) perfect closure
 `perfectClosure F E` is perfect. -/
 instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
     [PerfectRing E p] : PerfectRing (perfectClosure F E) p := .ofSurjective _ p fun x ↦ by
@@ -961,7 +961,7 @@ theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F
 
 end Field
 
-variable {K} in
+variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any subset `S` of `K` such that `F(S) / F` is algebraic, the `E(S) / E` and `F(S) / F` have
 the same separable degree. -/
@@ -1004,11 +1004,11 @@ for any intermediate field `S` of `K / F` such that `S / F` is algebraic, the `E
 theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable'
     (S : IntermediateField F K) (halg : Algebra.IsAlgebraic F S) [IsPurelyInseparable F E] :
     sepDegree E (adjoin E (S : Set K)) = sepDegree F S := by
-  have := sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable F E (S : Set K)
+  have := sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable E (S : Set K)
     (by rwa [adjoin_self])
   rwa [adjoin_self] at this
 
-variable {K} in
+variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any element `x` of `K` separable over `F`, it has the same minimal polynomials over `F` and
 over `E`. -/
@@ -1026,7 +1026,7 @@ theorem minpoly.map_eq_of_separable_of_isPurelyInseparable (x : K)
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
     ← finSepDegree_eq_finrank_of_isSeparable F _, ← finSepDegree_eq_finrank_of_isSeparable E _,
     finSepDegree_eq _ _ halg, finSepDegree_eq _ _ (IsSeparable.isAlgebraic E _),
-    sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable F E _ halg]
+    sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable E _ halg]
 
 variable {F} in
 /-- If `E / F` is a purely inseparable field extension, `f` is a separable irreducible polynomial
@@ -1041,7 +1041,7 @@ theorem Polynomial.Separable.map_irreducible_of_isPurelyInseparable {f : F[X]} (
     exact ⟨this.unit, by rw [IsUnit.unit_spec, minpoly.eq_of_irreducible hirr hx]⟩
   have ha' : Associated (f.map (algebraMap F E)) ((minpoly F x).map (algebraMap F E)) :=
     ha.map (mapRingHom (algebraMap F E)).toMonoidHom
-  have heq := minpoly.map_eq_of_separable_of_isPurelyInseparable F E x (ha.separable hsep)
+  have heq := minpoly.map_eq_of_separable_of_isPurelyInseparable E x (ha.separable hsep)
   rw [ha'.irreducible_iff, heq]
   exact minpoly.irreducible (AlgebraicClosure.isAlgebraic E x).isIntegral
 
