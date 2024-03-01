@@ -250,14 +250,16 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
   rw [Submodule.mem_bot]
   by_contra rid
   -- Let's prove by contradication
-  -- If `z ≠ 0`, then there would be some character `g ∈ (A ⊗ M)⋆` such that `g z ≠ 0`
+  -- If `z ≠ 0`, then there would be some character `g ∈ CharacterModule (A ⊗ M)` such that `g z ≠ 0`
   obtain ⟨g, hg⟩ := CharacterModule.exists_character_apply_ne_zero_of_ne_zero (a := z) rid
 
-  -- Then we can define a linear map `f : A → M⋆` by `f a m = g (a ⊗ m)`.
+  -- Then we can define a linear map `f : A → CharacterModule M` by `f a m = g (a ⊗ m)`.
   let f : A →ₗ[R] (CharacterModule M) := CharacterModule.homEquiv.symm g
-  -- Since `M⋆` is an injective module, we can factor `f` to `f' ∘ L` where `f' : B → M⋆`.
+  -- Since `CharacterModule M` is an injective module, we can factor `f` to `f' ∘ L` where
+  -- `f' : B → CharacterModule M`.
   obtain ⟨f', hf'⟩ := h.out L hL f
-  -- Since `B → M⋆`  is naturally isomorphic to `(B ⊗ M)⋆`, we get a character `g' : (B ⊗ M)⋆`
+  -- Since `B → CharacterModule M`  is naturally isomorphic to `CharacterModule (B ⊗ M)`, we get a
+  -- character `g' : CharacterModule (B ⊗ M)`
   let g' : (CharacterModule <| B ⊗[R] M) := CharacterModule.homEquiv f'
 
   have mem : z ∈ (⊤ : Submodule R _) := ⟨⟩
@@ -278,7 +280,7 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
   -- Now, we aim to show that `g z = 0` and obtain the desired contradiction.
   refine hg ?_
   rw [map_sum] at EQ ⊢
-  -- Since `∑ g'(L aᵢ ⊗ mᵢ) = 0` and `g'` is obtained by `f' : B → M⋆`,
+  -- Since `∑ g'(L aᵢ ⊗ mᵢ) = 0` and `g'` is obtained by `f' : B → CharacterModule M`,
   -- we now know `∑ f'(L aᵢ)(mᵢ) = 0` so that `∑ f(aᵢ)(mᵢ) = 0`
   -- But by definition of `f`, this is saying `∑ g (aᵢ ⊗ mᵢ) = 0`, i.e. `g z = 0`
   convert EQ using 1
@@ -291,23 +293,25 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
 -- module being an injective module. We use Baer's criterion to investigate this connection further.
 
 /--
-`M⋆` is Baer, if `I ⊗ M → M` is injective for every ideal `I`
+`CharacterModule M` is Baer, if `I ⊗ M → M` is injective for every ideal `I`
 -/
 lemma CharacterModule.baer_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     Module.Baer R (CharacterModule M) := by
-  -- Let `I` be an ideal and `L : I → M⋆`, we want to extend `L` to the entire ring
+  -- Let `I` be an ideal and `L : I → CharacterModule M`, we want to extend `L` to the entire ring
   rintro I (L : _ →ₗ[_] _)
   letI :  AddCommGroup (I ⊗[R] M) := inferInstance
-  -- We know that every linear map `f : A → B` induces `f⋆ : B⋆ → A⋆` and if `f` is injective then
-  -- `f⋆` is surjective.
-  -- Under our assumption `ι : I ⊗ M → M` is injective, so `ι⋆ : M⋆ → (I ⊗ M)⋆` is surjective, so
-  -- there is a character `F : M⋆` such that `ι⋆F (i ⊗ m) = L i m`
+  -- We know that every linear map `f : A → B` induces `f⋆ : CharacterModule B → CharacterModule A`
+  -- and if `f` is injective then `f⋆` is surjective.
+  -- Under our assumption `ι : I ⊗ M → M` is injective,
+  -- so `ι⋆ : CharacterModule M → CharacterModule (I ⊗ M)` is surjective, consequently, there is a
+  -- character `F : CharacterModule M` such that `ι⋆F (i ⊗ m) = L i m`
   obtain ⟨F, hF⟩ := CharacterModule.dual_surjective_of_injective _ (inj I) <|
     TensorProduct.liftAddHom L.toAddMonoidHom <| fun r i n ↦
     show L (r • i) n = L i (r • n) by simp [L.map_smul]
-  -- Since `R ⊗ M ≃ M`, `M⋆ ≃ (R ⊗ M)⋆ ≃ Hom(R, M⋆)`, under this equivalence, we can reinterpret
-  -- `F` as `F' : R → M⋆`. Indeed `F' i = L i m` by definition
+  -- Since `R ⊗ M ≃ M`, `CharacterModule M ≃ CharacterModule (R ⊗ M) ≃ Hom(R, CharacterModule M)`,
+  -- under this equivalence, we can reinterpret `F` as `F' : R → M⋆`.
+  -- Indeed `F' i = L i m` by definition, finishing the proof
   refine ⟨CharacterModule.curry (CharacterModule.congr (TensorProduct.lid R M).symm F), ?_⟩
   intros x hx
   ext m
