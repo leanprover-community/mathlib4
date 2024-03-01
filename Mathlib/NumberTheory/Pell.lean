@@ -242,7 +242,7 @@ theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare 
   have hp := a.prop
   rintro ⟨b, rfl⟩
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
-  rcases hp with (⟨hp₁, hp₂⟩ | ⟨hp₁, hp₂⟩) <;> linarith [ha, hp₁, hp₂]
+  rcases hp with (⟨hp₁, hp₂⟩ | ⟨hp₁, hp₂⟩) <;> omega
 #align pell.solution₁.d_nonsquare_of_one_lt_x Pell.Solution₁.d_nonsquare_of_one_lt_x
 
 /-- A solution with `x = 1` is trivial. -/
@@ -557,7 +557,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
   · let m : ℤ := -n - 1
     have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
-    exact H _ (by linarith [hn])
+    exact H _ (by omega)
 #align pell.is_fundamental.y_strict_mono Pell.IsFundamental.y_strictMono
 
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
