@@ -692,7 +692,6 @@ theorem toMeasure_apply₀ (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s 
     m.toMeasure h s = m.toMeasure h t := measure_congr heq.symm
     _ = m t := (toMeasure_apply m h htm)
     _ ≤ m s := m.mono hts
-
 #align measure_theory.to_measure_apply₀ MeasureTheory.toMeasure_apply₀
 
 @[simp]
@@ -813,23 +812,11 @@ variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
--- TODO: refactor
 instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
       m_iUnion := fun s hs hd => by
-        rw [← smul_one_smul ℝ≥0∞ c (_ : OuterMeasure α)]
-        conv_lhs =>
-          change OuterMeasure.measureOf
-            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (⋃ i, s i)
-          change (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
-            OuterMeasure.measureOf μ.toOuterMeasure (⋃ i, s i)
-        conv_rhs =>
-          change ∑' i, OuterMeasure.measureOf
-            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (s i)
-          change ∑' i, (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
-            OuterMeasure.measureOf (μ.toOuterMeasure) (s i)
-        simp_rw [measure_iUnion hd hs, ENNReal.tsum_mul_left]
+        simp only [OuterMeasure.smul_apply, ENNReal.tsum_const_smul, measure_iUnion hd hs]
       trimmed := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 #align measure_theory.measure.has_smul MeasureTheory.Measure.instSMul
 
@@ -1627,14 +1614,12 @@ protected theorem smul [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower
   simp only [h hνs, smul_eq_mul, smul_apply, smul_zero]
 #align measure_theory.measure.absolutely_continuous.smul MeasureTheory.Measure.AbsolutelyContinuous.smul
 
-protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
-  intro s hs
-  simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := fun s hs ↦ by
+  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
   exact ⟨h1 hs.1, h2 hs.2⟩
 
-lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
-  intro s hs
-  simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := fun s hs ↦ by
+  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
   exact h1 hs.1
 
 end AbsolutelyContinuous
