@@ -113,6 +113,9 @@ theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := 
 lemma abs_add_mul_I (x y : ℝ) : abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := by
   rw [← normSq_add_mul_I]; rfl
 
+lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : abs z = (z.re ^ 2 + z.im ^ 2).sqrt := by
+  rw [abs_apply, normSq_apply, sq, sq]
+
 @[simp]
 theorem abs_I : Complex.abs I = 1 := by simp [Complex.abs]
 set_option linter.uppercaseLean3 false in
