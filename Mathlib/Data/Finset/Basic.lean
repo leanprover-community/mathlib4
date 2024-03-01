@@ -4041,6 +4041,7 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   let options : Aesop.Options' :=
     { terminal := true, -- Fail if the new goal is not closed.
       generateScript := false,
+      enableSimp := false, -- Don't try to simplify the goals and hypotheses.
       warnOnNonterminal := false } -- Don't show a warning on failure, simply return `none`.
   let rules ← Aesop.mkLocalRuleSet rulesets options
   let (remainingGoals, _) ←
