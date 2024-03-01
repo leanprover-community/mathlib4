@@ -101,13 +101,63 @@ theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin
   exact h
 #align bitvec.of_fin_le_of_fin_of_le Std.BitVec.ofFin_le_ofFin_of_le
 
-theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
-  Fin.eq_of_veq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
+theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i := rfl
 #align bitvec.to_fin_of_fin Std.BitVec.toFin_ofFin
 
-theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
-  rfl
+theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
+
+/-!
+### Indexing
+Lemmas about `Std.BitVec.getLsb'` and `Std.BitVec.getMsb'`
+-/
+
+proof_wanted toNat_concat {n} (x : BitVec n) (b : Bool) :
+    (concat x b).toNat = bit b x.toNat
+
+proof_wanted getLsb'_concat {n} (x : BitVec n) (b : Bool) :
+    getLsb' (concat x b) = Fin.cons b x.getLsb'
+
+proof_wanted getLsb'_cons {n} (x : BitVec n) (b : Bool) :
+    getLsb' (cons b x) = Fin.snoc x.getLsb' b
+
+proof_wanted getMsb'_concat {n} (x : BitVec n) (b : Bool) :
+    getMsb' (concat x b) = Fin.snoc x.getMsb' b
+
+proof_wanted getMsb'_cons {n} (x : BitVec n) (b : Bool) :
+    getMsb' (cons b x) = Fin.cons b x.getMsb'
+
+/-!
+### `Std.BitVec.ofLEFn` and `Std.BitVec.ofBEFn`
+-/
+
+@[simp] lemma ofLEFn_zero (f : Fin 0 → Bool) : ofLEFn f = nil := rfl
+
+@[simp] lemma ofLEFn_cons {w} (b : Bool) (f : Fin w → Bool) :
+    ofLEFn (Fin.cons b f) = concat (ofLEFn f) b :=
+  rfl
+
+proof_wanted ofLEFn_snoc {w} (b : Bool) (f : Fin w → Bool) :
+    ofLEFn (Fin.snoc f b) = cons b (ofLEFn f)
+
+@[simp] lemma ofBEFn_zero (f : Fin 0 → Bool) : ofBEFn f = nil := rfl
+
+proof_wanted ofBEFn_cons {w} (b : Bool) (f : Fin w → Bool) :
+    ofBEFn (Fin.cons b f) = cons b (ofBEFn f)
+
+proof_wanted ofBEFn_snoc {w} (b : Bool) (f : Fin w → Bool) :
+    ofBEFn (Fin.snoc f b) = concat (ofBEFn f) b
+
+proof_wanted ofLEFn_eq_finRange_map_fold (f : Fin w → Bool) :
+    ofLEFn f = (
+      List.finRange w
+        |>.map (fun i =>
+            shiftLeftZeroExtend (ofBool (f i)) i.val |>.zeroExtend' (by
+              rw [Nat.add_comm]; exact i.prop
+            )
+          )
+        |>.foldr (· ||| ·) 0#w
+      )
 
 /-!
 ### Distributivity of `Std.BitVec.ofFin`
