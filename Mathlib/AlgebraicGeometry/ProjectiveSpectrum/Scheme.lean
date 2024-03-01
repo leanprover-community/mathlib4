@@ -668,11 +668,11 @@ lemma fromSpec_toSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) (x :
     FromSpec.toFun f_deg hm (toSpec x) = x := by
   classical
   refine Subtype.ext <| ProjectiveSpectrum.ext _ _ <| HomogeneousIdeal.ext <| Ideal.ext fun z ↦ ?_
-  fconstructor <;> intro hz
+  constructor <;> intro hz
   · rw [← DirectSum.sum_support_decompose 𝒜 z]
     refine Ideal.sum_mem _ fun i _ ↦ ?_
-    specialize hz i
-    obtain ⟨c, N, acd, eq1⟩ := ToSpec.MemCarrier.clear_denominator x hz
+    refine Ideal.sum_mem _ fun i _ ↦ ?_
+    obtain ⟨c, N, acd, eq1⟩ := ToSpec.MemCarrier.clear_denominator x (hz i)
     rw [HomogeneousLocalization.val_mk'', smul_mk, ← mk_one_eq_algebraMap, mk_eq_mk_iff,
       r_iff_exists, OneMemClass.coe_one, one_mul] at eq1
     obtain ⟨⟨_, ⟨k, rfl⟩⟩, eq1⟩ := eq1
