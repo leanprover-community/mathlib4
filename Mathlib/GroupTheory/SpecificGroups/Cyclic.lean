@@ -351,6 +351,27 @@ theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
 #align is_cyclic.image_range_card IsCyclic.image_range_card
 #align is_add_cyclic.image_range_card IsAddCyclic.image_range_card
 
+@[to_additive]
+theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
+    ∃! n : ZMod (Fintype.card α), x = a ^ n.val := by
+  obtain ⟨n, rfl⟩ := ha x
+  refine ⟨n, (?_ : a ^ n = _), fun y (hy : a ^ n = _) ↦ ?_⟩
+  · rw [← zpow_coe_nat, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
+      Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.int_coe_zmod_eq_iff]
+  · rw [← zpow_coe_nat, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
+      ← ZMod.int_cast_eq_int_cast_iff] at hy
+    simp [hy]
+
+@[to_additive]
+lemma IsCyclic.ext {G : Type*} [Group G] [Fintype G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
+    (hGcard : Fintype.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
+  specialize h g
+  subst hGcard
+  rw [pow_eq_pow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers hg,
+    ← ZMod.nat_cast_eq_nat_cast_iff] at h
+  simpa [ZMod.nat_cast_val, ZMod.cast_id'] using h
+
 end
 
 section Totient
