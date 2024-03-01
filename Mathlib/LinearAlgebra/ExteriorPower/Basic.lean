@@ -66,13 +66,10 @@ namespace exteriorPower
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
 def ιMulti : M [Λ^Fin n]→ₗ[R] (⋀[R]^n M) :=
-  AlternatingMap.codRestrict (ExteriorAlgebra.ιMulti R n) (⋀[R]^n M)
-  (fun _ => ExteriorAlgebra.ιMulti_range R n (by simp only [Set.mem_range, exists_apply_eq_apply]))
+  (ExteriorAlgebra.ιMulti R n).codRestrict (⋀[R]^n M) fun _ =>
+    ExteriorAlgebra.ιMulti_range R n <| Set.mem_range_self _
 
-@[simp] lemma ιMulti_apply (a : Fin n → M) :
-ιMulti R n a = ExteriorAlgebra.ιMulti R n a := by
-  unfold ιMulti
-  simp only [AlternatingMap.codRestrict_apply_coe]
+@[simp] lemma ιMulti_apply (a : Fin n → M) : ιMulti R n a = ExteriorAlgebra.ιMulti R n a := rfl
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power. Variant of
 `ExteriorAlgebra.ιMulti_span_fixedDegree`, useful in rewrites. -/
@@ -93,8 +90,7 @@ lemma ιMulti_span :
 are equal. -/
 @[ext]
 lemma lhom_ext ⦃f : ⋀[R]^n M →ₗ[R] N⦄ ⦃g : ⋀[R]^n M →ₗ[R] N⦄
-    (heq : (LinearMap.compAlternatingMap f) (ιMulti R n) =
-    (LinearMap.compAlternatingMap g) (ιMulti R n)) : f = g := by
+    (heq : f.compAlternatingMap (ιMulti R n) = g.compAlternatingMap (ιMulti R n)) : f = g := by
   ext u
   have hu : u ∈ (⊤ : Submodule R (⋀[R]^n M)) := Submodule.mem_top
   rw [← ιMulti_span] at hu
@@ -115,30 +111,18 @@ variable {R}
 
 /-- The linear map from `n`-fold alternating maps from `M` to `N` to linear maps from
 `⋀[R]^n M` to `N`-/
-def liftAlternating : (M [Λ^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N where
-  toFun f := LinearMap.domRestrict (LinearMap.comp (ExteriorAlgebra.liftAlternating (R := R)
-    (M := M) (N :=N)) (LinearMap.single n) f) (⋀[R]^n M)
-  map_add' f g := by ext u; simp only [map_add, LinearMap.coe_comp, Function.comp_apply,
-    LinearMap.compAlternatingMap_apply, LinearMap.domRestrict_apply, ιMulti_apply,
-    LinearMap.add_apply, ExteriorAlgebra.liftAlternating_apply_ιMulti]
-  map_smul' a f := by ext u; simp only [map_smul, LinearMap.coe_comp, Function.comp_apply,
-    LinearMap.compAlternatingMap_apply, LinearMap.domRestrict_apply, ιMulti_apply,
-    LinearMap.smul_apply, ExteriorAlgebra.liftAlternating_apply_ιMulti, RingHom.id_apply]
+def liftAlternating : (M [Λ^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N :=
+  (ExteriorAlgebra.liftAlternating ∘ₗ LinearMap.single n).domRestrict₂ (⋀[R]^n M)
 
 variable (R)
 
-@[simp] lemma liftAlternating_apply_ιMulti (f : M [Λ^Fin n]→ₗ[R] N) (a : Fin n → M) :
-    liftAlternating n f (ιMulti R n a) = f a := by
-  unfold liftAlternating
-  simp only [LinearMap.coe_comp, LinearMap.coe_single, Function.comp_apply, LinearMap.coe_mk,
-    AddHom.coe_mk, LinearMap.domRestrict_apply, ιMulti_apply,
-    ExteriorAlgebra.liftAlternating_apply_ιMulti, Pi.single_eq_same]
-
 @[simp] lemma liftAlternating_comp_ιMulti (f : M [Λ^Fin n]→ₗ[R] N) :
-    (LinearMap.compAlternatingMap (liftAlternating n f)) (ιMulti R n) = f := by
-  ext a
-  simp only [LinearMap.compAlternatingMap_apply]
-  rw [liftAlternating_apply_ιMulti]
+    (liftAlternating n f).compAlternatingMap (ιMulti R n) = f :=
+  (ExteriorAlgebra.liftAlternating_comp_ιMulti _).trans <| Pi.single_eq_same _ _
+
+@[simp] lemma liftAlternating_apply_ιMulti (f : M [Λ^Fin n]→ₗ[R] N) (a : Fin n → M) :
+    liftAlternating n f (ιMulti R n a) = f a :=
+  DFunLike.congr_fun (liftAlternating_comp_ιMulti _ _ _) a
 
 @[simp] lemma liftAlternating_ιMulti :
     liftAlternating n (R := R) (M := M) (ιMulti R n) = LinearMap.id := by
@@ -160,7 +144,7 @@ lemma liftAlternating_comp (g : N →ₗ[R] N') (f : M [Λ^Fin n]→ₗ[R] N) :
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
 `⋀[R]^n M` to `N`. -/
 @[simps!]
-def liftAlternatingEquiv : M [Λ^Fin n]→ₗ[R] N ≃ₗ[R] ⋀[R]^n M →ₗ[R] N :=
+def liftAlternatingEquiv : (M [Λ^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N :=
   LinearEquiv.ofLinear (liftAlternating n)
   {toFun := fun F ↦ F.compAlternatingMap (ιMulti R n)
    map_add' := by intro F G; ext x
@@ -175,7 +159,7 @@ def liftAlternatingEquiv : M [Λ^Fin n]→ₗ[R] N ≃ₗ[R] ⋀[R]^n M →ₗ[R
   (by ext _; simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         liftAlternating_comp_ιMulti, LinearMap.id_coe, id_eq])
 
-lemma liftAlternatingEquiv_apply (f :M [Λ^Fin n]→ₗ[R] N) (x : ⋀[R]^n M) :
+lemma liftAlternatingEquiv_apply (f : M [Λ^Fin n]→ₗ[R] N) (x : ⋀[R]^n M) :
     exteriorPower.liftAlternatingEquiv R n f x = exteriorPower.liftAlternating n f x := rfl
 
 @[simp]
@@ -187,12 +171,12 @@ lemma liftAlternatingEquiv_symm_apply (F : ⋀[R]^n M →ₗ[R] N) (m : Fin n �
 variable {R}
 
 /-- The linear map between `n`th exterior powers induced by a linear map between the modules. -/
-def map (f : M →ₗ[R] N) : ⋀[R]^n M →ₗ[R] (⋀[R]^n) N :=
+def map (f : M →ₗ[R] N) : ⋀[R]^n M →ₗ[R] ⋀[R]^n N :=
   liftAlternating _ (AlternatingMap.compLinearMap (ιMulti _ _) f)
 
 @[simp]
 theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
-    (map n f) ((ιMulti R n) m) = (ιMulti R n) (f ∘ m) :=
+    map n f (ιMulti R n m) = ιMulti R n (f ∘ m) :=
   liftAlternating_apply_ιMulti _ _ _ _
 
 @[simp]
@@ -207,7 +191,7 @@ theorem map_id :
 
 @[simp]
 theorem map_comp_map (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
-    LinearMap.comp (map n g) (map n f) = map n (LinearMap.comp g f) := by
+    map n g ∘ₗ map n f = map n (g ∘ₗ f) := by
   ext M
   simp only [LinearMap.compAlternatingMap_apply, LinearMap.coe_comp, Function.comp_apply,
     map_apply_ιMulti, Function.comp_def, ιMulti_apply, map_comp_ιMulti,
@@ -275,15 +259,16 @@ variable (M)
 /-- The linear map from the `n`th exterior power to the `n`th tensor power induced by
 `MultilinearMap.alternarization`. -/
 noncomputable def toTensorPower : ⋀[R]^n M →ₗ[R] (⨂[R]^n) M :=
-  liftAlternatingEquiv R n
-  (MultilinearMap.alternatization (PiTensorProduct.tprod R (s := fun (_ : Fin n) => M)))
+  liftAlternatingEquiv R n <|
+    MultilinearMap.alternatization (PiTensorProduct.tprod R (s := fun (_ : Fin n) => M))
 
 variable {M}
 
 open Equiv in
 @[simp]
-lemma toTensorPower_apply_ιMulti (v : Fin n → M) : toTensorPower R n M (ιMulti R n v) =
-    ∑ σ : Perm (Fin n), Perm.sign σ • (PiTensorProduct.tprod R (fun i => v (σ i))) := by
+lemma toTensorPower_apply_ιMulti (v : Fin n → M) :
+    toTensorPower R n M (ιMulti R n v) =
+      ∑ σ : Perm (Fin n), Perm.sign σ • PiTensorProduct.tprod R (fun i => v (σ i)) := by
   unfold toTensorPower
   simp only [liftAlternatingEquiv_apply, liftAlternating_apply_ιMulti]
   rw [MultilinearMap.alternatization_apply]
@@ -299,13 +284,12 @@ power and then applying `TensorPower.linearFormOfFamily` (which takes the produc
 components of `f`). -/
 noncomputable def linearFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
     ⋀[R]^n M →ₗ[R] R :=
-  LinearMap.comp (TensorPower.linearFormOfFamily R n f) (toTensorPower R n M)
+  TensorPower.linearFormOfFamily R n f ∘ₗ toTensorPower R n M
 
 @[simp]
 lemma linearFormOfFamily_apply (f : (_ : Fin n) → (M →ₗ[R] R)) (x : ⋀[R]^n M) :
-    linearFormOfFamily R n f x = TensorPower.linearFormOfFamily R n f (toTensorPower R n M x) := by
-  unfold linearFormOfFamily
-  simp only [LinearMap.coe_comp, Function.comp_apply]
+    linearFormOfFamily R n f x = TensorPower.linearFormOfFamily R n f (toTensorPower R n M x) :=
+  rfl
 
 lemma linearFormOfFamily_apply_ιMulti (f : (_ : Fin n) → (M →ₗ[R] R)) (m : Fin n → M) :
     linearFormOfFamily R n f (ιMulti R n m) =
@@ -328,7 +312,7 @@ lemma linearFormOfFamily_comp_map (f : (_ : Fin n) → (M →ₗ[R] R)) (p : N �
     TensorPower.linearFormOfFamily_apply_tprod]
 
 lemma linearFormOfFamily_comp_map_apply (f : (_ : Fin n) → (M →ₗ[R] R))
-    (p : N →ₗ[R] M) (x : (⋀[R]^n) N) :
+    (p : N →ₗ[R] M) (x : ⋀[R]^n N) :
     (linearFormOfFamily R n f) (map n p x) =
     linearFormOfFamily R n (fun (i : Fin n) => (f i).comp p) x := by
   rw [← LinearMap.comp_apply, linearFormOfFamily_comp_map]
@@ -343,9 +327,8 @@ noncomputable def alternatingFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) 
 
 @[simp]
 lemma alternatingFormOfFamily_apply (f : (_ : Fin n) → (M →ₗ[R] R)) (m : Fin n → M) :
-    alternatingFormOfFamily R n f m = linearFormOfFamily R n f (ιMulti R n m) := by
-  unfold alternatingFormOfFamily
-  rw [LinearMap.compAlternatingMap_apply]
+    alternatingFormOfFamily R n f m = linearFormOfFamily R n f (ιMulti R n m) :=
+  rfl
 
 variable {R}
 
