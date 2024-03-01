@@ -14,7 +14,7 @@ This file defines the sign function for types with zero and a decidable less-tha
 proves some basic theorems about it.
 -/
 
--- Porting note: Cannot automatically derive Fintype, added manually
+-- Porting note (#11081): cannot automatically derive Fintype, added manually
 /-- The type of signs. -/
 inductive SignType
   | zero
