@@ -200,6 +200,23 @@ theorem iff_quotient_mvPolynomial'' :
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R (Fin n)) f hsur
 #align algebra.finite_type.iff_quotient_mv_polynomial'' Algebra.FiniteType.iff_quotient_mvPolynomial''
 
+/-- A commutative algebra is finitely generated if and only if it is a quotient
+of a polynomial ring whose variables are indexed by a finset. -/
+theorem iff_quotient_mvPolynomial''' :
+    FiniteType R S ↔
+    ∃ (s : Finset S),
+      Surjective
+        (MvPolynomial.aeval (Subtype.val : s → S) : MvPolynomial { x // x ∈ s } R →ₐ[R] S) := by
+  constructor
+  · rintro ⟨s, hs⟩
+    use s -- , MvPolynomial.aeval (↑)
+    intro x
+    have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
+    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, ← hrw, hs]
+    exact Set.mem_univ x
+  · rintro ⟨s, hsur⟩
+    exact FiniteType.of_surjective (FiniteType.mvPolynomial R { x // x ∈ s }) _ hsur
+
 instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B) :=
   ⟨by rw [← Subalgebra.prod_top]; exact hA.1.prod hB.1⟩
 #align algebra.finite_type.prod Algebra.FiniteType.prod

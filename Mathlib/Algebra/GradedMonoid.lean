@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
 import Lean.Elab.Tactic
@@ -595,6 +595,33 @@ namespace SetLike
 variable {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι]
 
 variable {A : ι → S} [SetLike.GradedMonoid A]
+
+namespace GradeZero
+variable (A) in
+
+/-- The submonoid `A 0` of `R`. -/
+@[simps]
+def submonoid : Submonoid R where
+  carrier := A 0
+  mul_mem' ha hb := add_zero (0 : ι) ▸ SetLike.mul_mem_graded ha hb
+  one_mem' := SetLike.one_mem_graded A
+
+/-- The monoid `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instMonoid : Monoid (A 0) := inferInstanceAs <| Monoid (GradeZero.submonoid A)
+
+/-- The linter message "error: SetLike.GradeZero.coe_one.{u_3, u_2, u_1} Left-hand side does
+  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_one : ↑(1 : A 0) = (1 : R) := rfl
+
+/-- The linter message "error: SetLike.GradeZero.coe_mul.{u_3, u_2, u_1} Left-hand side does
+  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_mul (a b : A 0) : ↑(a * b) = (↑a * ↑b : R) := rfl
+
+/-- The linter message "error: SetLike.GradeZero.coe_pow.{u_3, u_2, u_1} Left-hand side does
+  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_pow (a : A 0) (n : ℕ) : ↑(a ^ n) = (↑a : R) ^ n := rfl
+
+end GradeZero
 
 theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A (n • i) := by
   match n with
