@@ -258,7 +258,7 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
   rw [Submodule.mem_bot]
   by_contra rid
   -- Let's prove by contradication
-  -- If `z ≠ 0`, then there would be some character `g ∈ CharacterModule (A ⊗ M)` such that `g z ≠ 0`
+  -- If `z ≠ 0`, then there would be a character `g ∈ CharacterModule (A ⊗ M)` such that `g z ≠ 0`
   obtain ⟨g, hg⟩ := CharacterModule.exists_character_apply_ne_zero_of_ne_zero (a := z) rid
 
   -- Then we can define a linear map `f : A → CharacterModule M` by `f a m = g (a ⊗ m)`.
