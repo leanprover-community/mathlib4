@@ -13,7 +13,7 @@ import Mathlib.Data.Finset.LocallyFinite.Basic
 This file proves that `ℕ` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 
-## TOace
+## TODO
 
 Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMonoid` or `SuccOrder`
 and subsequently be moved upstream to `Data.Finset.LocallyFinite`.
