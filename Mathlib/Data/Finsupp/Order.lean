@@ -138,7 +138,7 @@ end Zero
 
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.addCommMonoid, Finsupp.partialorder with
+  { Finsupp.instAddCommMonoid, Finsupp.partialorder with
     add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
