@@ -669,11 +669,44 @@ end Multilinear
 
 section map
 
+open LinearMap
+
+variable {s}
+
 variable {s' : ι → Type*} [∀ i, AddCommMonoid (s' i)] [∀ i, Module R (s' i)]
 
-variable (f : ι → (s i →ₗ[R] s' i))
+variable (f : (i : ι) → (s i →ₗ[R] s' i))
 
-noncomputable def map : ⊗[R] i, s i →ₗ[R] ⊗[R] i, s' i := sorry
+noncomputable def map : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, s' i :=
+  lift (MultilinearMap.compLinearMap (tprod R) f)
+
+@[simp]
+theorem map_tprod (m : (i : ι) → s i) : map f (tprod R m) = tprod R (fun i ↦ f i (m i)) := by
+  unfold map
+  simp only [lift.tprod, MultilinearMap.compLinearMap_apply]
+
+theorem map_reindex (e : ι ≃ ι₂) :
+    map (fun i ↦ f (e.symm i)) ∘ₗ reindex R s e = reindex R s' e ∘ₗ map f := by
+  ext m
+  simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    LinearMap.comp_apply, reindex_tprod, map_tprod]
+
+theorem map_reindex_apply (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
+    map (fun i ↦ f (e.symm i)) (reindex R s e x) = reindex R s' e (map f x) :=
+  DFunLike.congr_fun (map_reindex _ _) _
+
+-- No lemmas about associativity, because we don't have associativity of `PiTensorProduct` yet.
+
+theorem span_tprod_eq_top : Submodule.span R { t | ∃ (m : (i : ι) → s i), tprod R m = t } = ⊤ :=
+  Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on (fun _ _ ↦ Submodule.smul_mem _ _
+  (Submodule.subset_span (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply])))
+  (fun _ _ hx hy ↦ Submodule.add_mem _ hx hy)
+
+theorem map_range_eq_span_tprod : range (map f) =
+    Submodule.span R { t | ∃ (m : (i : ι) → s i), tprod R (fun i ↦ f i (m i)) = t } := by
+  simp only [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span]
+  congr; ext t
+  simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_eq_and, map_tprod]
 
 end map
 
