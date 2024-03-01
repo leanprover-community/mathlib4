@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
+Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Decomposition
@@ -99,6 +99,54 @@ theorem decompose_symm_mul (x y : ⨁ i, 𝒜 i) :
 #align direct_sum.decompose_symm_mul DirectSum.decompose_symm_mul
 
 end DirectSum
+
+section HomogeneousComponents
+
+/--
+For each `a : A`, `GradedRing.homogeneousComponents 𝒜 a` is the collection of the
+homogeneous components of `a`, which is a finite subset of `A`.
+-/
+def GradedRing.homogeneousComponents [DecidableEq A] (a : A) : Finset A :=
+    (DirectSum.decompose 𝒜 a).support.image (DirectSum.decompose 𝒜 a ·)
+
+lemma GradedRing.homogeneousComponents_def [DecidableEq A] (a : A) :
+    GradedRing.homogeneousComponents 𝒜 a = Finset.image (λ i ↦ (DirectSum.decompose 𝒜 a) i)
+    (DFinsupp.support (DirectSum.decompose 𝒜 a)) := rfl
+
+lemma GradedRing.ne_zero_of_mem_homogeneousComponents [DecidableEq A] (a c : A) :
+    c ∈ GradedRing.homogeneousComponents 𝒜 a → c ≠ 0 := λ hc ↦ by
+  rw [homogeneousComponents, Finset.mem_image] at hc; rcases hc with ⟨i, hi1, hi2⟩; subst hi2;
+  rw [DFinsupp.mem_support_iff] at hi1; simp only [ne_eq, ZeroMemClass.coe_eq_zero]; exact hi1
+
+lemma GradedRing.exists_of_mem_homogeneousComponents [DecidableEq A] (a c : A) :
+    c ∈ GradedRing.homogeneousComponents 𝒜 a → ∃ (i : ι), DirectSum.decompose 𝒜 a i = c :=
+  λ hc ↦ by
+  rw [GradedRing.homogeneousComponents] at hc;
+  simp only [Finset.mem_image, DFinsupp.mem_support_toFun, ne_eq] at *;
+  rcases hc with ⟨i, _, _⟩; use i
+
+lemma GradedRing.mem_homogeneousComponents_of_ne_zero_and_exists [DecidableEq A] (a c : A) :
+    (c ≠ 0 ∧ ∃ (i : ι), DirectSum.decompose 𝒜 a i = c) →
+    c ∈ GradedRing.homogeneousComponents 𝒜 a := λ ⟨hc1, i, hi⟩ ↦ by
+  rw [homogeneousComponents, Finset.mem_image]; exact ⟨i, by
+  rw [DFinsupp.mem_support_iff]; subst hi;
+  simp only [ne_eq, ZeroMemClass.coe_eq_zero] at hc1;
+  exact hc1, hi⟩
+
+lemma GradedRing.mem_homogeneousComponents_iff [DecidableEq A] (a c : A) :
+    c ∈ GradedRing.homogeneousComponents 𝒜 a ↔
+    c ≠ 0 ∧ ∃ (i : ι), DirectSum.decompose 𝒜 a i = c :=
+  ⟨λ hc ↦ ⟨ne_zero_of_mem_homogeneousComponents 𝒜 a c hc, exists_of_mem_homogeneousComponents
+  𝒜 a c hc⟩, λ hc ↦ mem_homogeneousComponents_of_ne_zero_and_exists 𝒜 a c hc⟩
+
+lemma GradedRing.mem_homogeneousSubmonoid_of_mem_homogeneousComponents [DecidableEq A]
+    (a c : A) (hc : c ∈ GradedRing.homogeneousComponents 𝒜 a) :
+    c ∈ SetLike.homogeneousSubmonoid 𝒜 := by
+  rw [← (GradedRing.exists_of_mem_homogeneousComponents 𝒜 a c hc).choose_spec]
+  dsimp [SetLike.homogeneousSubmonoid]
+  simp only [Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_setOf_eq, SetLike.homogeneous_coe]
+
+end HomogeneousComponents
 
 /-- The projection maps of a graded ring -/
 def GradedRing.proj (i : ι) : A →+ A :=
@@ -306,6 +354,31 @@ def GradedRing.projZeroRingHom : A →+* A where
       simp only at ha hb -- Porting note: added
       simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
 #align graded_ring.proj_zero_ring_hom GradedRing.projZeroRingHom
+
+section GradeZero
+
+/--
+The semiring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
+-/
+def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
+  A →+* SetLike.GradeZero.subsemiring 𝒜)
+
+@[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
+    (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
+
+@[simp] lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
+    GradedRing.projZeroRingHom' 𝒜 a = a := by
+  ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+
+/--
+The semiring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective.
+-/
+lemma GradedRing.projZeroRingHom'_surjective :
+    Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
+  Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
+
+end GradeZero
 
 variable {a b : A} {n i : ι}
 
