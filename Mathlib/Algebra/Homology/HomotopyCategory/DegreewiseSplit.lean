@@ -29,14 +29,14 @@ variable (S : ShortComplex (CochainComplex C ℤ))
 /-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
-    (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by linarith) (by
+    (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by omega) (by
       ext p _ rfl
       have := mono_of_mono_fac (σ (p + 2)).f_r
       have r_f := fun n => (σ n).r_f
       have s_g := fun n => (σ n).s_g
       dsimp at this r_f s_g ⊢
-      rw [δ_v 1 2 (by linarith) _ p (p + 2) (by linarith) (p + 1) (p + 1)
-        (by linarith) (by linarith), Cochain.mk_v, Cochain.mk_v,
+      rw [δ_v 1 2 (by omega) _ p (p + 2) (by omega) (p + 1) (p + 1)
+        (by omega) (by omega), Cochain.mk_v, Cochain.mk_v,
         show Int.negOnePow 2 = 1 by rfl, one_smul, assoc, assoc,
         ← cancel_mono (S.f.f (p + 2)), add_comp, assoc, assoc, assoc,
         assoc, assoc, assoc, zero_comp, ← S.f.comm, reassoc_of% (r_f (p + 1)),
@@ -76,8 +76,8 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
     (mappingCone (homOfDegreewiseSplit S σ)).X p ≅ S.X₂.X q where
   hom := (mappingCone.fst (homOfDegreewiseSplit S σ)).1.v p q hpq ≫ (σ q).s -
     (mappingCone.snd (homOfDegreewiseSplit S σ)).v p p (add_zero p) ≫
-      by exact (Cochain.ofHom S.f).v (p + 1) q (by linarith)
-  inv := S.g.f q ≫ (mappingCone.inl (homOfDegreewiseSplit S σ)).v q p (by linarith) -
+      by exact (Cochain.ofHom S.f).v (p + 1) q (by omega)
+  inv := S.g.f q ≫ (mappingCone.inl (homOfDegreewiseSplit S σ)).v q p (by omega) -
     by exact (σ q).r ≫ (S.X₁.XIsoOfEq hpq.symm).hom ≫
       (mappingCone.inr (homOfDegreewiseSplit S σ)).f p
   hom_inv_id := by
@@ -113,7 +113,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     have s_g := (σ (p + 1)).s_g
     dsimp at r_f s_g
     simp [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
-      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by linarith),
+      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by omega) (by omega),
       cocycleOfDegreewiseSplit, r_f]
     rw [← S.g.comm_assoc, reassoc_of% s_g]
     abel)
@@ -169,7 +169,7 @@ cochain complexes. -/
 @[simps]
 noncomputable def triangleRotateShortComplexSplitting (n : ℤ) :
     ((triangleRotateShortComplex φ).map (eval _ _ n)).Splitting where
-  s := -(inl φ).v (n + 1) n (by linarith)
+  s := -(inl φ).v (n + 1) n (by omega)
   r := (snd φ).v n n (add_zero n)
   id := by simp [ext_from_iff φ _ _ rfl]
 
