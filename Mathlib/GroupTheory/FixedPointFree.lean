@@ -70,6 +70,7 @@ theorem commutative_of_involutive (g h : G) : g * h = h * g := by
   have key := map_mul φ g h
   rwa [hφ.eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
 
+/-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
 def CommGroupOfInvolutive : CommGroup G :=
   CommGroup.mk (hφ.commutative_of_involutive h2)
 
