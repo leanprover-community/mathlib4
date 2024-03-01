@@ -107,8 +107,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d
     = a * (x ^ 3 + b / a * x ^ 2 + c / a * x + d / a) := by field_simp; ring
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
-  have hp' : p = (3 * (c / a) - (b / a) ^ 2) / 9 := by
-    field_simp [hp, h9]; ring_nf
+  have hp' : p = (3 * (c / a) - (b / a) ^ 2) / 9 := by field_simp [hp, h9]; ring_nf
   have hq' : q = (9 * (b / a) * (c / a) - 2 * (b / a) ^ 3 - 27 * (d / a)) / 54 := by
     rw [hq, h54]
     simp [field_simps, ha]
@@ -142,8 +141,7 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
         field_simp; ring
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
         simp only [hb2, hb3]; field_simp; ring
-      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by
-        rw [hs3, hq]; field_simp [h54]; ring
+      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring
   have h₃ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by
     intro x
