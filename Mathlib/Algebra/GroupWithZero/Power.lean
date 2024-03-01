@@ -56,8 +56,6 @@ open Int
 
 variable {G₀ : Type*} [GroupWithZero G₀]
 
--- Porting note: removed `attribute [local ematch] le_of_lt`
-
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : G₀) ^ z = 0
   | (n : ℕ), h => by
     rw [zpow_coe_nat, zero_pow]
