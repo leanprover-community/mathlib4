@@ -288,7 +288,6 @@ theorem PerfectRing.lift_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
     lift i j p x = (iterateFrobeniusEquiv M p n).symm (j y) :=
   liftAux_apply i j p _ _ _ h
 
-@[simp]
 theorem PerfectRing.lift_self_apply [PerfectRing L p] (x : L) : lift i i p x = x :=
   liftAux_self_apply i p x
 
@@ -296,7 +295,6 @@ theorem PerfectRing.lift_self_apply [PerfectRing L p] (x : L) : lift i i p x = x
 theorem PerfectRing.lift_self [PerfectRing L p] : lift i i p = RingHom.id L :=
   RingHom.ext (liftAux_self_apply i p)
 
-@[simp]
 theorem PerfectRing.lift_id_apply (x : K) : lift (RingHom.id K) j p x = j x :=
   liftAux_id_apply j p x
 
@@ -312,7 +310,6 @@ theorem PerfectRing.lift_comp_apply (x : K) : lift i j p (i x) = j x := by
 theorem PerfectRing.lift_comp : (lift i j p).comp i = j :=
   RingHom.ext (lift_comp_apply i j p)
 
-@[simp]
 theorem PerfectRing.comp_lift_apply (x : L) : lift i (f.comp i) p x = f x := by
   obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
   rw [lift_apply i _ p _ _ _ h, RingHom.comp_apply, h, ← iterate_frobenius, f.map_iterate_frobenius,
@@ -337,7 +334,6 @@ theorem PerfectRing.liftEquiv_apply : liftEquiv M i p j = lift i j p := rfl
 
 theorem PerfectRing.liftEquiv_symm_apply : (liftEquiv M i p).symm f = f.comp i := rfl
 
-@[simp]
 theorem PerfectRing.liftEquiv_id_apply : liftEquiv M (RingHom.id K) p j = j :=
   lift_id j p
 
@@ -378,7 +374,6 @@ section liftEquiv_comp
 
 variable [IsPRadical g p] [IsPRadical (g.comp i) p]
 
-@[simp]
 theorem PerfectRing.lift_lift_apply (x : N) :
     lift g (lift i j p) p x = lift (g.comp i) j p x := by
   obtain ⟨n, y, h⟩ := IsPRadical.pow_mem (g.comp i) p x
@@ -434,7 +429,6 @@ theorem IsPerfectClosure.equiv_symm_apply (x : M) (n : ℕ) (y : K) (h : j y = x
     haveI := perfectRing i p; (equiv i j p).symm x = (iterateFrobeniusEquiv L p n).symm (i y) := by
   rw [equiv_symm, equiv_apply j i p _ _ _ h]
 
-@[simp]
 theorem IsPerfectClosure.equiv_self_apply (x : L) : equiv i i p x = x :=
   haveI := perfectRing i p; PerfectRing.liftAux_self_apply i p x
 
@@ -447,7 +441,7 @@ theorem IsPerfectClosure.equiv_comp_apply (x : K) : equiv i j p (i x) = j x :=
   haveI := perfectRing j p; PerfectRing.lift_comp_apply i j p x
 
 @[simp]
-theorem IsPerfectClosure.equiv_comp : (equiv i j p).toRingHom.comp i = j :=
+theorem IsPerfectClosure.equiv_comp : RingHom.comp (equiv i j p) i = j :=
   RingHom.ext (equiv_comp_apply i j p)
 
 section comp
