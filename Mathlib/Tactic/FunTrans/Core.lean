@@ -99,7 +99,7 @@ def tryTheoremCore (lhs : Expr) (xs : Array Expr) (bis : Array BinderInfo) (val 
   let rhs := (← instantiateMVars type).appArg!
   if e == rhs then
     return none
-  trace[Meta.Tactic.fun_trans.rewrite] "{← ppOrigin' thmId}, \n{e}\n==>\n{rhs}"
+  trace[Meta.Tactic.fun_trans] "{← ppOrigin' thmId}, \n{e}\n==>\n{rhs}"
   return .some { expr := rhs, proof? := proof }
 
 
@@ -507,6 +507,12 @@ def constAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.Funct
 
   return none
 
+local instance {ε} : ExceptToEmoji ε (Simp.Step) :=
+  ⟨fun s =>
+    match s with
+    | .ok (.continue .none) => crossEmoji
+    | .ok _ => checkEmoji
+    | .error _ => bombEmoji⟩
 
 /-- Main `funProp` function. Returns proof of `e`. -/
 partial def funTrans (e : Expr) : SimpM Simp.Step := do
@@ -518,7 +524,8 @@ partial def funTrans (e : Expr) : SimpM Simp.Step := do
   if e.approxDepth > 60 then
     throwError "fun_trans, expression is too deep({e.approxDepth})\n{← ppExpr e}"
 
-  trace[Meta.Tactic.fun_trans] s!"runing fun_trans on {← ppExpr e}"
+  withTraceNode `Meta.Tactic.fun_trans
+    (fun r => return s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
 
   -- bubble leading lets infront of function transformationx
   if f.isLet then

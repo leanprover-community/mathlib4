@@ -382,3 +382,32 @@ def diag (f : α → α → α) (x : α) := f x x
 
 theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
   fun_prop [diag,myUncurry]
+
+
+
+-- These used to get into infinite loop
+/--
+warning: `fun_prop` was unable to prove `?m`
+
+Try running with discharger `fun_prop (disch:=aesop)` or with a different discharger tactic like `assumption`, `linarith`, `omega`.
+Sometimes it is useful to run `fun_prop (disch:=trace_state; sorry)` which will print all the necessary subgoals for `fun_prop` to succeed.
+
+Potential issues to fix:
+
+For more detailed information use `set_option trace.Meta.Tactic.fun_prop true`
+-/
+#guard_msgs in
+#check_failure ((by fun_prop) : ?m)
+
+/--
+warning: `fun_prop` was unable to prove `?m.67491 → ?m.67492`
+
+Try running with discharger `fun_prop (disch:=aesop)` or with a different discharger tactic like `assumption`, `linarith`, `omega`.
+Sometimes it is useful to run `fun_prop (disch:=trace_state; sorry)` which will print all the necessary subgoals for `fun_prop` to succeed.
+
+Potential issues to fix:
+
+For more detailed information use `set_option trace.Meta.Tactic.fun_prop true`
+-/
+#guard_msgs in
+#check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))

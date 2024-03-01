@@ -40,7 +40,7 @@ theorem ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by
 example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
   by fun_prop
 
--- Notice that no theorems about measuability of log are used. It is infered from continuity.
+-- Notice that no theoremess about measuability of log are used. It is infered from continuity.
 example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
   by fun_prop
 

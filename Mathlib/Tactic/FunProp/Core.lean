@@ -128,13 +128,14 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin) (hint : Array (Nat×Expr
     let type ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
-    for (i,x) in hint do
-      try
-        for (id,v) in hint do
-          xs[id]!.mvarId!.assignIfDefeq v
-      catch _ =>
-        trace[Meta.Tactic.fun_trans]
-          "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
+    try
+      for (id,v) in hint do
+        xs[id]!.mvarId!.assignIfDefeq v
+    catch _ =>
+      let hintsString ← hint.mapM fun (n,e) => do pure s!"{n}: {← ppExpr e}"
+      trace[Meta.Tactic.fun_prop]
+        "failed to use `{← FunProp.ppOrigin thmOrigin}` with hints `{hintsString}` on `{e}`"
+      return .none
 
     tryTheoremCore xs thmProof type e thmOrigin funProp
 
@@ -519,7 +520,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   let .some (funName,_) := fData.fn.const?
-    | throwError "fun_prop bug: invelid use of const app case"
+    | throwError "fun_prop bug: invalid use of const app case"
   let globalThms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
   trace[Meta.Tactic.fun_prop]
@@ -564,6 +565,7 @@ mutual
   /-- Main `funProp` function. Returns proof of `e`. -/
   partial def funProp (e : Expr) : FunPropM (Option Result) := do
 
+    let e ← instantiateMVars e
     -- check cache
     if let .some { expr := _, proof? := .some proof } := (← get).cache.find? e then
       trace[Meta.Tactic.fun_prop.cache] "cached result for {e}"
@@ -582,7 +584,6 @@ mutual
             | return none
           cacheResult e {proof := ← mkLambdaFVars xs r.proof }
       | .mdata _ e' => funProp e'
-      | .mvar _ => instantiateMVars e >>= funProp
       | _ =>
         let .some r ← main e
           | return none
@@ -629,7 +630,10 @@ mutual
             bvarAppCase funPropDecl e fData funProp
           else
             fvarAppCase funPropDecl e fData funProp
-        | .mvar .. => funProp (← instantiateMVars e)
+        -- | .mvar .. =>
+        --   let fn := (← instantiateMVars fData.fn)
+        --   unless fn.isMVar do
+        --   -- funProp (← instantiateMVars e)
         | .const .. | .proj .. => do
           constAppCase funPropDecl e fData funProp
         | _ =>
