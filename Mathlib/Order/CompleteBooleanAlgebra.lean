@@ -373,7 +373,7 @@ section CompleteDistribLattice
 
 variable [CompleteDistribLattice α] {a b : α} {s t : Set α}
 
--- Porting note: this is mysteriously slow. Minimised in
+-- Porting note (#11083): this is mysteriously slow. Minimised in
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Performance.20issue.20with.20.60CompleteBooleanAlgebra.60
 -- but not yet resolved.
 instance OrderDual.completeDistribLattice (α) [CompleteDistribLattice α] :

@@ -71,7 +71,7 @@ def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.mul with
     mul_assoc := fun U V W =>
       Ultrafilter.coe_inj.mp <|
-        -- porting note: `simp` was slow to typecheck, replaced by `simp_rw`
+        -- porting note (#11083): `simp` was slow to typecheck, replaced by `simp_rw`
         Filter.ext' fun p => by simp_rw [Ultrafilter.eventually_mul, mul_assoc] }
 #align ultrafilter.semigroup Ultrafilter.semigroup
 #align ultrafilter.add_semigroup Ultrafilter.addSemigroup

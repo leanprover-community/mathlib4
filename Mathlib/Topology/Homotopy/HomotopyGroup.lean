@@ -289,7 +289,7 @@ def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary
       (cCompInsert i).comp H.toContinuousMap.curry).uncurry
 #align gen_loop.homotopy_to GenLoop.homotopyTo
 
--- porting note: `@[simps]` no longer too slow in Lean 4 but does not generate this lemma.
+-- porting note (#11083): `@[simps]` no longer too slow in Lean 4 but does not generate this lemma.
 theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| Cube.boundary N)
     (t : I × I) (tₙ : I^{ j // j ≠ i }) :
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
@@ -320,7 +320,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
           (ContinuousMap.comp ⟨Subtype.val, by continuity⟩ H.toContinuousMap).curry).uncurry.comp <|
     (ContinuousMap.id I).prodMap (Cube.splitAt i).toContinuousMap
 #align gen_loop.homotopy_from GenLoop.homotopyFrom
--- porting note: @[simps!] no longer too slow in Lean 4.
+-- porting note (#11083): @[simps!] no longer too slow in Lean 4.
 #align gen_loop.homotopy_from_apply GenLoop.homotopyFrom_apply
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
