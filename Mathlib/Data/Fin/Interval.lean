@@ -41,6 +41,8 @@ open Finset Fin Function
 
 open BigOperators
 
+namespace Fin
+
 variable (n : ℕ)
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
@@ -49,11 +51,9 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
 instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) :=
   OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
 
-instance : ∀ n, LocallyFiniteOrderTop (Fin n)
+instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderTop
   | _ + 1 => inferInstance
-
-namespace Fin
 
 variable {n} (a b : Fin n)
 

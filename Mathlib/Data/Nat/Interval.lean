@@ -13,7 +13,7 @@ import Mathlib.Data.Finset.LocallyFinite.Basic
 This file proves that `ℕ` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 
-## TODO
+## TOace
 
 Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMonoid` or `SuccOrder`
 and subsequently be moved upstream to `Data.Finset.LocallyFinite`.
@@ -21,6 +21,10 @@ and subsequently be moved upstream to `Data.Finset.LocallyFinite`.
 
 
 open Finset Nat
+
+variable (a b c : ℕ)
+
+namespace Nat
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩
@@ -56,10 +60,6 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
     | inr h =>
       rw [tsub_eq_zero_iff_le.2 h.le, add_zero]
       exact iff_of_false (fun hx => hx.2.not_le hx.1) fun hx => h.not_le (hx.1.trans hx.2)
-
-variable (a b c : ℕ)
-
-namespace Nat
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩ :=
   rfl
