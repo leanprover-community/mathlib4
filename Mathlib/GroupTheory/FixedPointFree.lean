@@ -43,13 +43,13 @@ variable [Finite G]
 theorem surjective_commutatorMap : Function.Surjective (CommutatorMap φ) :=
   Finite.surjective_of_injective hφ.injective_commutatorMap
 
-theorem prod_pow_eq_one {n : ℕ} (hn : φ^[n] = id G) (g : G) :
+theorem prod_pow_eq_one {n : ℕ} (hn : φ^[n] = _root_.id) (g : G) :
     ((List.range n).map (fun k ↦ φ^[k] g)).prod = 1 := by
   obtain ⟨g, rfl⟩ := surjective_commutatorMap hφ g
   simp only [commutatorMap_apply, iterate_map_div, ← Function.iterate_succ_apply]
-  rw [List.prod_range_div, Function.iterate_zero_apply, hn, id_apply, div_self']
+  rw [List.prod_range_div, Function.iterate_zero_apply, hn, Function.id_def, div_self']
 
-theorem eq_inv_of_sq_eq_one (hn : φ^[2] = id G) : ⇑φ = (·⁻¹) := by
+theorem eq_inv_of_sq_eq_one (hn : φ^[2] = _root_.id) : ⇑φ = (·⁻¹) := by
   ext g
   have key : 1 * g * φ g = 1 := hφ.prod_pow_eq_one hn g
   rwa [one_mul, ← inv_eq_iff_mul_eq_one, eq_comm] at key
