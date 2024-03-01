@@ -173,7 +173,7 @@ def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
   return none
 
 /-- Apply lambda calculus rule P fun x => y` -/
-def applyConstRule (funPropDecl : FunPropDecl) (e X y : Expr)
+def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   let thms ← getLambdaTheorems funPropDecl.funPropName .const
   if thms.size = 0 then
@@ -181,8 +181,8 @@ def applyConstRule (funPropDecl : FunPropDecl) (e X y : Expr)
     return none
 
   for thm in thms do
-    let .const id_X id_y := thm.thmArgs | return none
-    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X),(id_y,y)] funProp then
+    let .const := thm.thmArgs | return none
+    if let .some r ← tryTheorem? e (.decl thm.thmName) funProp then
       return r
 
   return none
@@ -644,7 +644,7 @@ mutual
       if fData.isIdentityFun then
         applyIdRule funPropDecl e (← fData.domainType) funProp
       else if fData.isConstantFun then
-        applyConstRule funPropDecl e (← fData.domainType) (Mor.mkAppN fData.fn fData.args) funProp
+        applyConstRule funPropDecl e funProp
       else
         match fData.fn with
         | .fvar id =>

@@ -49,6 +49,7 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
 -- Lin is missing `const` theorem
 @[fun_prop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
+@[fun_prop] theorem Lin_const {β} [Obj β] [Zero β] : Lin (fun x : α => (0 : β)) := silentSorry
 @[fun_prop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
@@ -320,6 +321,8 @@ example (f : α ->> α -o α ->> α) (y) : Lin (fun x  => f y x y) := by fun_pro
 example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
+
+example [Zero α] : Lin (fun x : α => (0:α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
 noncomputable
 def foo : α ->> α ->> α := silentSorry

@@ -33,7 +33,7 @@ is represented by
  -/
 inductive LambdaTheoremArgs
   | id (X : Nat)
-  | const (X y : Nat)
+  | const
   | proj (x Y : Nat)
   | projDep (x Y : Nat)
   | comp (f g : Nat)
@@ -76,16 +76,13 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
 
   match f with
   | .lam xName xType xBody xBi =>
+    if ¬xBody.hasLooseBVars then
+      return .some .const
     match xBody with
     | .bvar 0 =>
       -- fun x => x
       let .some argId_X := ctxVars.findIdx? (fun x => x == xType) | return none
       return .some (.id argId_X)
-    | .fvar yId =>
-      -- fun x => y
-      let .some argId_X := ctxVars.findIdx? (fun x => x == xType) | return none
-      let .some argId_y := ctxVars.findIdx? (fun x => x == (.fvar yId)) | return none
-      return .some (.const argId_X argId_y)
     | .app (.bvar 0) (.fvar xId) =>
       -- fun f => f x
       let fType := xType
