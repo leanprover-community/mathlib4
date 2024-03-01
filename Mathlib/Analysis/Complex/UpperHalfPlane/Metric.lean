@@ -386,44 +386,40 @@ instance : IsometricSMul SL(2, ℝ) ℍ :=
 
 section slices
 
-/--The verticel strip of width A and height B-/
+/--The vertical strip of width A and height B-/
 def upperHalfPlaneSlice (A B : ℝ) :=
-  {z : ℍ | Complex.abs z.1.1 ≤ A ∧ Complex.abs z.1.2 ≥ B}
+  {z : ℍ | Complex.abs z.1.1 ≤ A ∧ B ≤ Complex.abs z.1.2}
 
 theorem slice_mem_iff (A B : ℝ) (z : ℍ) :
-    z ∈ upperHalfPlaneSlice A B ↔ Complex.abs z.1.1 ≤ A ∧ Complex.abs z.1.2 ≥ B := Iff.rfl
+    z ∈ upperHalfPlaneSlice A B ↔ Complex.abs z.1.1 ≤ A ∧ B ≤ Complex.abs z.1.2 := Iff.rfl
 
-lemma subset_slice_of_isCompact {K : Set ℍ} (hK : IsCompact K) : ∃  A B : ℝ, 0 < B ∧
-    K ⊆ upperHalfPlaneSlice A B  := by
-  by_cases hne : Set.Nonempty K
-  · have hcts : ContinuousOn (fun t =>  t.im) K := by
-       apply Continuous.continuousOn UpperHalfPlane.continuous_im
-    obtain ⟨b, _, HB⟩ :=  IsCompact.exists_isMinOn hK hne hcts
-    let t := (⟨Complex.I, by simp⟩ : ℍ)
-    have  ht : UpperHalfPlane.im t = I.im := by rfl
-    obtain ⟨r, _, hr2⟩ := Bornology.IsBounded.subset_closedBall_lt hK.isBounded 0 t
-    refine' ⟨Real.sinh (r) + Complex.abs ((UpperHalfPlane.center t r)), b.im, b.2, _⟩
-    intro z hz
-    simp only [I_im, slice_mem_iff, abs_ofReal, ge_iff_le] at *
-    constructor
-    have hr3 := hr2 hz
+lemma subset_slice_of_isCompact {K : Set ℍ} (hK : IsCompact K) : ∃ A B : ℝ, 0 < B ∧
+    K ⊆ upperHalfPlaneSlice A B := by
+  obtain rfl | hne := K.eq_empty_or_nonempty
+  exact ⟨1, 1, Real.zero_lt_one, by simp⟩
+  have hcts : ContinuousOn (fun t => t.im) K := by
+      apply Continuous.continuousOn UpperHalfPlane.continuous_im
+  obtain ⟨b, _, HB⟩ := IsCompact.exists_isMinOn hK hne hcts
+  obtain ⟨r, _, hr2⟩ := Bornology.IsBounded.subset_closedBall_lt hK.isBounded 0 UpperHalfPlane.I
+  refine' ⟨Real.sinh r + Complex.abs ((UpperHalfPlane.center UpperHalfPlane.I r)), b.im, b.2, _⟩
+  intro z hz
+  simp only [I_im, slice_mem_iff, abs_ofReal, ge_iff_le] at *
+  constructor
+  · have hr3 := hr2 hz
     simp only [Metric.mem_closedBall] at hr3
     apply le_trans (abs_re_le_abs z)
-    have := Complex.abs.sub_le (z : ℂ) (UpperHalfPlane.center t r) 0
+    have := Complex.abs.sub_le (z : ℂ) (UpperHalfPlane.center UpperHalfPlane.I r) 0
     simp only [sub_zero, ge_iff_le] at this
     rw [dist_le_iff_dist_coe_center_le] at hr3
     apply le_trans this
-    have htim : UpperHalfPlane.im t = 1 := by
-      simp only [ht]
-    rw [htim] at hr3
-    simp only [one_mul, add_le_add_iff_right, ge_iff_le] at *
+    simp only [I_im, one_mul, add_le_add_iff_right] at *
     exact hr3
-    have hbz := HB  hz
+  · have hbz := HB hz
     simp only [mem_setOf_eq, ge_iff_le] at *
     convert hbz
     rw [UpperHalfPlane.im]
     apply abs_eq_self.mpr z.2.le
-  · exact ⟨1, 1, Real.zero_lt_one, by simp [not_nonempty_iff_eq_empty.1 hne]⟩
+
 
 end slices
 

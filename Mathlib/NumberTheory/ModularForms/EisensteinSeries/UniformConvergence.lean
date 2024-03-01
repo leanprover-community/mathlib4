@@ -17,24 +17,10 @@ We show that `eisSummand` converges locally uniformly on `ℍ` to the Eisenstein
 and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
 -/
 
-open Finset
-
-lemma fun_ne_zero_cases {G : Type*} [OfNat G 0] (x : Fin 2 → G) : x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
-  rw [Function.ne_iff]; exact Fin.exists_fin_two
-
-lemma mem_box_ne_zero_iff_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : (x 0, x 1) ∈ box n) :
-    x ≠ 0 ↔ n ≠ 0 := by
-  constructor
-  intro h h0
-  simp only [h0, Nat.cast_zero, box_zero, mem_singleton, Prod.ext_iff] at hx
-  rw [fun_ne_zero_cases, hx.1, hx.2] at h
-  · simp at h
-  rintro hn rfl
-  simp only [Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self, eq_comm, hn] at hx
 
 noncomputable section
 
-open Complex Filter UpperHalfPlane Set
+open Complex Filter UpperHalfPlane Set Finset
 
 open scoped BigOperators NNReal Classical Filter Matrix UpperHalfPlane Complex
 
@@ -42,14 +28,14 @@ namespace EisensteinSeries
 
 section bounding_functions
 
-/-- Auxilary function used for bounding Eisentein series-/
-def r1 (z : ℍ) : ℝ := ((z.im ^ (2 : ℕ)) / (z.re ^ (2 : ℕ) + z.im ^ (2 : ℕ)))
+/-- Auxiliary function used for bounding Eisenstein series-/
+def r1 (z : ℍ) : ℝ := ((z.im ^ 2) / (z.re ^ 2 + z.im ^ 2))
 
-lemma r1' (z : ℍ) : r1 z = 1/((z.re / z.im) ^ (2 : ℕ) + 1) := by
+lemma r1' (z : ℍ) : r1 z = 1/((z.re / z.im) ^ 2 + 1) := by
   field_simp [r1, im_pos z]
 
 theorem r1_pos (z : ℍ) : 0 < r1 z := by
-  have H2 : 0 < (z.re ^ (2 : ℕ) + z.im ^ (2 : ℕ)) := by
+  have H2 : 0 < (z.re ^ 2 + z.im ^ 2) := by
     apply_rules [pow_pos, add_pos_of_nonneg_of_pos, pow_two_nonneg, z.2]
   exact div_pos (pow_pos z.im_pos 2) H2
 
@@ -63,13 +49,13 @@ theorem r1_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
     (z.im ^ 2) / (z.re ^ 2 + z.im ^ 2) ≤ (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 := by
   have H1 : (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 =
         δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2 := by ring
-  have H4 : (δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2) * (z.re ^ 2 + z.im ^ 2)
+  have H2 : (δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2) * (z.re ^ 2 + z.im ^ 2)
     - (z.im ^ 2) = (δ * (z.re ^ 2 + z.im ^ 2)+ ε * z.re)^2 + (ε^2 - 1)* (z.im)^2 := by ring
-  rw [H1, div_le_iff, ← sub_nonneg, H4]
+  rw [H1, div_le_iff, ← sub_nonneg, H2]
   · apply add_nonneg (pow_two_nonneg _) ?_
     apply mul_nonneg
-    linarith
-    apply pow_two_nonneg
+    · linarith
+    · apply pow_two_nonneg
   · apply_rules [add_pos_of_nonneg_of_pos, pow_two_nonneg, (pow_pos z.im_pos 2)]
 
 theorem auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
@@ -113,7 +99,7 @@ lemma ne_zero_if_max {x : Fin 2 → ℤ} (hx : x ≠ 0)
 
 lemma ne_zero_if_max' {x : Fin 2 → ℤ} (hx : x ≠ 0)
     (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
-  apply ne_zero_if_max (x :=![x 1, x 0]) ?_ (by simpa using h)
+  apply ne_zero_if_max (x := ![x 1, x 0]) ?_ (by simpa using h)
   simp only [ne_eq, Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true, not_and]
   intro h1 h0
   rw [fun_ne_zero_cases, h1, h0] at hx
@@ -124,7 +110,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
       (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 := by
   cases' (max_choice (x 0).natAbs (x 1).natAbs) with H1 H2
   · left
-    rw [H1, div_pow, Int.cast_natAbs (x 0),Int.cast_abs]
+    rw [H1, div_pow, Int.cast_natAbs (x 0), Int.cast_abs]
     have : (x 0 : ℝ) ≠ 0 := by
       simpa using (ne_zero_if_max hx H1)
     have h1 : (x 0 : ℝ)^2/(_root_.abs (x 0 : ℝ))^2 = 1 := by
@@ -132,7 +118,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
         this, div_self]
     exact h1.symm.le
   · right
-    rw [H2,div_pow, Int.cast_natAbs (x 1),Int.cast_abs]
+    rw [H2,div_pow, Int.cast_natAbs (x 1), Int.cast_abs]
     have : (x 1 : ℝ) ≠ 0 := by
       simpa using (ne_zero_if_max' hx H2)
     have h1 : (x 1 : ℝ)^2/(_root_.abs (x 1 : ℝ))^2 = 1 := by
@@ -309,7 +295,7 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
 
 end summability
 
-theorem eisensteinSeries_TendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
+theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) =>
       (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
         (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop := by
@@ -349,12 +335,12 @@ local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
 /- A version for the extension to maps `ℂ → ℂ` that is nice to have for holomorphicity later -/
-lemma  eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
+lemma  eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
       ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ((eisensteinSeries_SIF a k).toFun ))
           Filter.atTop (UpperHalfPlane.coe '' ⊤) := by
   apply TendstoLocallyUniformlyOn.comp (s := ⊤)
   simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
-  apply eisensteinSeries_TendstoLocallyUniformly hk
+  apply eisensteinSeries_tendstoLocallyUniformly hk
   simp only [Set.top_eq_univ, image_univ, mapsTo_range_iff, Set.mem_univ, forall_const]
   apply PartialHomeomorph.continuousOn_symm
