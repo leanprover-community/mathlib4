@@ -12,7 +12,6 @@ import Mathlib.Data.Fintype.Card
 This file defines fixed-point-free automorphisms and proves some basic properties.
 
 An automorphism `φ` of a group `G` is fixed-point-free if `1 : G` is the only fixed point of `φ`.
-
 -/
 
 namespace MulEquiv
@@ -39,9 +38,11 @@ theorem surjective_commutatorMap : Function.Surjective fun g => g⁻¹ * φ g :=
 
 end MonoidHom
 
+variable [Finite G]
+
 section MulEquiv
 
-variable [Finite G] {φ : G ≃* G} (hφ : FixedPointFree φ)
+variable {φ : G ≃* G} (hφ : FixedPointFree φ)
 
 theorem prod_pow_eq_one {n : ℕ} (hn : φ ^ n = 1) (g : G) :
     ((List.range n).map (fun k ↦ (φ ^ k) g)).prod = 1:= by
@@ -56,9 +57,9 @@ theorem eq_inv_of_sq_eq_one (hn : φ ^ 2 = 1) : ⇑φ = (·⁻¹) := by
 
 end MulEquiv
 
-lemma eq_inv_of_involutive_of_fixed_point_free {G : Type*} [Group G] [Finite G]
-    (φ : G →* G) (hφ₁ : FixedPointFree φ) (hφ₂ : Function.Involutive φ) : ⇑φ = (·⁻¹) :=
-  FixedPointFree.eq_inv_of_sq_eq_one (φ := ofBijective φ hφ₂.bijective) hφ₁ (ext hφ₂)
+lemma eq_inv_of_involutive {F : Type*} [FunLike F G G] [MonoidHomClass F G G] {φ : F}
+    (hφ₁ : FixedPointFree φ) (hφ₂ : Function.Involutive φ) : ⇑φ = (·⁻¹) :=
+  eq_inv_of_sq_eq_one (φ := ofBijective φ hφ₂.bijective) hφ₁ (ext hφ₂)
 
 end FixedPointFree
 
