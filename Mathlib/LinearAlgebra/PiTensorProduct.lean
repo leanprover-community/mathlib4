@@ -667,6 +667,16 @@ end Tmul
 
 end Multilinear
 
+section map
+
+variable {s' : ι → Type*} [∀ i, AddCommMonoid (s' i)] [∀ i, Module R (s' i)]
+
+variable (f : ι → (s i →ₗ[R] s' i))
+
+noncomputable def map : ⊗[R] i, s i →ₗ[R] ⊗[R] i, s' i := sorry
+
+end map
+
 end PiTensorProduct
 
 end Semiring
