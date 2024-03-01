@@ -304,13 +304,11 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       ring -- Porting note: rfl is not enough to close this
     simp only [Prod.mk.inj_iff, Subtype.mk_eq_mk]
     constructor
-    -- FIXME nightly-testing: not sure what is wrong here:
-    all_goals sorry
-    -- · field_simp [h3]
-    --   ring
-    -- · field_simp [h3]
-    --   rw [← add_neg_eq_iff_eq_add.mpr hxy.symm]
-    --   ring
+    · field_simp [h3]
+      ring
+    · field_simp [h3]
+      rw [← add_neg_eq_iff_eq_add.mpr hxy.symm]
+      ring
 #align circle_equiv_gen circleEquivGen
 
 @[simp]

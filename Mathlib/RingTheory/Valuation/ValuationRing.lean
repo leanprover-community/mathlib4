@@ -182,27 +182,25 @@ def valuation : Valuation K (ValueGroup A K) where
   map_one' := rfl
   map_mul' _ _ := rfl
   map_add_le_max' := by
-    -- FIXME nightly-testing: something wrong here?
-    sorry
-    -- intro a b
-    -- obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
-    -- obtain ⟨xb, yb, hyb, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective b
-    -- have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
-    -- have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
-    -- obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
-    -- dsimp
-    -- · apply le_trans _ (le_max_left _ _)
-    --   use c + 1
-    --   rw [Algebra.smul_def]
-    --   field_simp
-    --   simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
-    --   congr 1; ring
-    -- · apply le_trans _ (le_max_right _ _)
-    --   use c + 1
-    --   rw [Algebra.smul_def]
-    --   field_simp
-    --   simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
-    --   congr 1; ring
+    intro a b
+    obtain ⟨xa, ya, hya, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective a
+    obtain ⟨xb, yb, hyb, rfl⟩ : ∃ a b : A, _ := IsFractionRing.div_surjective b
+    have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
+    have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
+    obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
+    dsimp
+    · apply le_trans _ (le_max_left _ _)
+      use c + 1
+      rw [Algebra.smul_def]
+      field_simp
+      simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
+      congr 1; ring
+    · apply le_trans _ (le_max_right _ _)
+      use c + 1
+      rw [Algebra.smul_def]
+      field_simp
+      simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
+      congr 1; ring
 #align valuation_ring.valuation ValuationRing.valuation
 
 theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by

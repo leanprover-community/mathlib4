@@ -717,10 +717,8 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
         div_eq_iff (ofReal_ne_zero.mpr pi_pos.ne'), mul_comm _ (π : ℂ), mul_div_assoc'] at this]
   rw [(by rw [← neg_sub] : (2 : ℂ) ^ (1 - s) = (2 : ℂ) ^ (-(s - 1))), cpow_neg, h_Ga_eq]
   suffices (π : ℂ) ^ ((1 - s) / 2) = (π : ℂ) ^ (-s) * sqrt π * (π : ℂ) ^ (s / 2) by
-    -- FIXME nightly-testing: field_simp is broken
-    sorry
-    -- rw [this]; field_simp;
-    -- ring_nf; rw [← ofReal_pow, sq_sqrt pi_pos.le]; ring
+    rw [this]; field_simp;
+    ring_nf; rw [← ofReal_pow, sq_sqrt pi_pos.le]; ring
   simp_rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ← cpow_add _ _ (ofReal_ne_zero.mpr pi_pos.ne')]
   congr 1
   push_cast

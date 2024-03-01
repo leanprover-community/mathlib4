@@ -42,10 +42,8 @@ theorem antideriv_cos_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   have b : HasDerivAt (fun y : ℂ => Complex.sin (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_sin (x * (2 * z))) a
   have c := b.comp_ofReal.div_const (2 * z)
-  -- FIXME nightly-testing: field_simp is broken
-  sorry
-  -- field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
-  -- exact c
+  field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
+  exact c
 #align euler_sine.antideriv_cos_comp_const_mul EulerSine.antideriv_cos_comp_const_mul
 
 theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
@@ -54,10 +52,8 @@ theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   have b : HasDerivAt (fun y : ℂ => Complex.cos (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_cos (x * (2 * z))) a
   have c := (b.comp_ofReal.div_const (2 * z)).neg
-  -- FIXME nightly-testing: field_simp is broken
-  sorry
-  -- field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
-  -- exact c
+  field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
+  exact c
 #align euler_sine.antideriv_sin_comp_const_mul EulerSine.antideriv_sin_comp_const_mul
 
 theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
@@ -162,10 +158,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
   have := integral_cos_mul_cos_pow_aux hn hz
   rw [integral_sin_mul_sin_mul_cos_pow_eq hn hz, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
     at this
-  convert congr_arg (fun u : ℂ => -u * (2 * z) ^ 2 / n ^ 2) this using 1
-  -- FIXME nightly-testing: field_simp is broken
-  all_goals sorry
-  -- <;> field_simp <;> ring
+  convert congr_arg (fun u : ℂ => -u * (2 * z) ^ 2 / n ^ 2) this using 1 <;> field_simp <;> ring
 #align euler_sine.integral_cos_mul_cos_pow EulerSine.integral_cos_mul_cos_pow
 
 /-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
@@ -225,10 +218,8 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,
       (by push_cast; field_simp; ring : 2 * z * ↑(π / 2) = π * z)]
-    -- FIXME nightly-testing: field_simp is broken
-    sorry
-    -- field_simp [Complex.ofReal_ne_zero.mpr pi_pos.ne']
-    -- ring
+    field_simp [Complex.ofReal_ne_zero.mpr pi_pos.ne']
+    ring
   · rw [hn, Finset.prod_range_succ]
     set A := ∏ j in Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)
     set B := ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)
@@ -268,9 +259,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       have : 2 * (n : ℂ) + 2 ≠ 0 := by
         convert (Nat.cast_add_one_ne_zero (2 * n + 1) : (↑(2 * n + 1) + 1 : ℂ) ≠ 0) using 1
         push_cast; ring
-      -- FIXME nightly-testing: field_simp is broken
-      sorry
-      -- field_simp; ring
+      field_simp; ring
     convert integral_cos_mul_cos_pow_even n hz
     rw [Nat.cast_succ]
 #align euler_sine.sin_pi_mul_eq EulerSine.sin_pi_mul_eq

@@ -227,12 +227,6 @@ lemma mul_scaleRoots_of_noZeroDivisors (p q : R[X]) (r : R) [NoZeroDivisors R] :
 lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = natDegree q) :
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
-  -- Was:
-  -- ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
-  --   mul_comm (r ^ _), mul_assoc, ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
-  -- cases lt_or_le (natDegree (p + q)) n with
-  -- | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
-  -- | inr hn => rw [tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]
   ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
     mul_comm (r ^ _), ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
   -- Adaptation note: v4.7.0-rc1

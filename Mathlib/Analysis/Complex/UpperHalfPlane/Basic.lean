@@ -552,10 +552,8 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
     rw [mul_assoc, ← mul_add, add_comm]
     exact mul_ne_zero hc h_denom
   replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
-  -- FIXME nightly-testing: `field_simp` and `linear_combination` are broken?
-  sorry
-  -- field_simp
-  -- linear_combination (-(z * (c:ℂ) ^ 2) - c * d) * h
+  field_simp
+  linear_combination (-(z * (c:ℂ) ^ 2) - c * d) * h
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero
 
 end UpperHalfPlane

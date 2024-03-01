@@ -239,10 +239,8 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     convert this using 1
     calc
       -y ^ n / (1 - y) = ∑ i in Finset.range n, y ^ i + -1 / (1 - y) := by
-        -- FIXME nightly-testing: field_simp is broken
-        sorry
-        -- field_simp [geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne']
-        -- ring
+        field_simp [geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne']
+        ring
       _ = ∑ i in Finset.range n, ↑(i + 1) * y ^ i / (↑i + 1) + -1 / (1 - y) := by
         congr with i
         rw [Nat.cast_succ, mul_div_cancel_left _ (Nat.cast_add_one_pos i).ne']
