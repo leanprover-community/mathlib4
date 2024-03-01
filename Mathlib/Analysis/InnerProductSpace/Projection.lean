@@ -1301,15 +1301,15 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
   -- porting note: switch to the better `induction _ using`. Need the primed induction principle,
   -- the unprimed one doesn't work with `induction` (as it isn't as syntactically general)
   induction hx using Submodule.iSup_induction' with
-  | hp i x hx =>
+  | mem i x hx =>
     refine'
       (Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hij => _).trans
         (orthogonalProjection_eq_self_iff.mpr hx)
     rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero, Submodule.coe_zero]
     exact hV.isOrtho hij.symm hx
-  | h0 =>
+  | zero =>
     simp_rw [map_zero, Submodule.coe_zero, Finset.sum_const_zero]
-  | hadd x y _ _ hx hy =>
+  | add x y _ _ hx hy =>
     simp_rw [map_add, Submodule.coe_add, Finset.sum_add_distrib]
     exact congr_arg₂ (· + ·) hx hy
 #align orthogonal_family.sum_projection_of_mem_supr OrthogonalFamily.sum_projection_of_mem_iSup
