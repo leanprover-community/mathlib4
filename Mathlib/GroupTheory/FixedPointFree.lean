@@ -45,7 +45,7 @@ section MulEquiv
 variable {φ : G ≃* G} (hφ : FixedPointFree φ)
 
 theorem prod_pow_eq_one {n : ℕ} (hn : φ ^ n = 1) (g : G) :
-    ((List.range n).map (fun k ↦ (φ ^ k) g)).prod = 1:= by
+    ((List.range n).map (fun k ↦ (φ ^ k) g)).prod = 1 := by
   obtain ⟨g, rfl⟩ := surjective_commutatorMap hφ g
   simp only [MonoidHom.coe_coe, map_mul, map_inv, ← MulAut.mul_apply, ← pow_succ']
   rw [List.prod_map_range_cancel, pow_zero, hn, inv_mul_self]
