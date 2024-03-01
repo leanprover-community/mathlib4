@@ -91,7 +91,8 @@ lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by
 
 end Int
 
-lemma Finset.fun_ne_zero_cases {G : Type*} [OfNat G 0] (x : Fin 2 → G) : x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
+lemma Finset.fun_ne_zero_cases {G : Type*} [OfNat G 0] (x : Fin 2 → G) :
+    x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
   rw [Function.ne_iff]; exact Fin.exists_fin_two
 
 lemma Finset.mem_box_ne_zero_iff_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : (x 0, x 1) ∈ box n) :
