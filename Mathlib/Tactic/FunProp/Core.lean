@@ -162,7 +162,9 @@ def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   let thms ← getLambdaTheorems funPropDecl.funPropName .id
   if thms.size = 0 then
-    trace[Meta.Tactic.fun_prop] "missing identity rule to prove `{← ppExpr e}`"
+    let msg := s!"missing identity rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
     return none
 
   for thm in thms do
@@ -177,7 +179,9 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   let thms ← getLambdaTheorems funPropDecl.funPropName .const
   if thms.size = 0 then
-    trace[Meta.Tactic.fun_prop] "missing constant rule to prove `{← ppExpr e}`"
+    let msg := s!"missing constant rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
     return none
 
   for thm in thms do
@@ -208,7 +212,9 @@ def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
   let thms' ← getLambdaTheorems funPropDecl.funPropName .projDep
 
   if thms.size = 0 ∧ thms'.size = 0 then
-    trace[Meta.Tactic.fun_prop] "missing projection rule to prove `{← ppExpr e}`"
+    let msg := s!"missing projection rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
     return none
 
   for thm in thms' do
@@ -224,7 +230,9 @@ def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
 
   let thms ← getLambdaTheorems funPropDecl.funPropName .comp
   if thms.size = 0 then
-    trace[Meta.Tactic.fun_prop] "missing composition rule to prove `{← ppExpr e}`"
+    let msg := s!"missing composition rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
     return none
 
   for thm in thms do
@@ -240,7 +248,9 @@ def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
 
   let thms ← getLambdaTheorems funPropDecl.funPropName .pi
   if thms.size = 0 then
-    trace[Meta.Tactic.fun_prop] "missing pi rule to prove `{← ppExpr e}`"
+    let msg := s!"missing pi rule to prove `{← ppExpr e}`"
+    logError msg
+    trace[Meta.Tactic.fun_prop] msg
     return none
 
   for thm in thms do

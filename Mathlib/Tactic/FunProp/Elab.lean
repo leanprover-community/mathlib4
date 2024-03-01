@@ -51,6 +51,10 @@ def funPropTac : Tactic
     goal.withContext do
       let goalType ← goal.getType
 
+      unless (← getFunProp? goalType).isSome do
+        throwError "`{← ppExpr goalType}` is not a `fun_prop` goal! Maybe you forgot marking \
+                    `{← ppExpr goalType.getAppFn}` with `@[fun_prop]`."
+
       let cfg : Config := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
       let (r?, s) ← funProp goalType cfg |>.run {}
       if let .some r := r? then
