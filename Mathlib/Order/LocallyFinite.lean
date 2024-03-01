@@ -818,7 +818,7 @@ following is defeq:
 lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) : _) = (Icc a b : _) := rfl
 ```
 -/
-instance OrderDual.locallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
+instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
   finsetIcc a b := @Icc α _ _ (ofDual b) (ofDual a)
   finsetIco a b := @Ioc α _ _ (ofDual b) (ofDual a)
   finsetIoc a b := @Ico α _ _ (ofDual b) (ofDual a)
@@ -896,7 +896,7 @@ instead of `(Ici a).map toDual.toEmbedding` as this means the following is defeq
 lemma this : (Iic (toDual (toDual a)) : _) = (Iic a : _) := rfl
 ```
 -/
-instance : LocallyFiniteOrderBot αᵒᵈ where
+instance OrderDual.instLocallyFiniteOrderBot : LocallyFiniteOrderBot αᵒᵈ where
   finsetIic a := @Ici α _ _ (ofDual a)
   finsetIio a := @Ioi α _ _ (ofDual a)
   finset_mem_Iic _ _ := mem_Ici (α := α)
@@ -930,7 +930,7 @@ instead of `(Iic a).map toDual.toEmbedding` as this means the following is defeq
 lemma this : (Ici (toDual (toDual a)) : _) = (Ici a : _) := rfl
 ```
 -/
-instance : LocallyFiniteOrderTop αᵒᵈ where
+instance OrderDual.instLocallyFiniteOrderTop : LocallyFiniteOrderTop αᵒᵈ where
   finsetIci a := @Iic α _ _ (ofDual a)
   finsetIoi a := @Iio α _ _ (ofDual a)
   finset_mem_Ici _ _ := mem_Iic (α := α)
@@ -1170,8 +1170,8 @@ namespace WithBot
 
 variable (α) [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α]
 
-instance : LocallyFiniteOrder (WithBot α) :=
-  OrderDual.locallyFiniteOrder (α := WithTop αᵒᵈ)
+instance instLocallyFiniteOrder : LocallyFiniteOrder (WithBot α) :=
+  OrderDual.instLocallyFiniteOrder (α := WithTop αᵒᵈ)
 
 variable (a b : α)
 
