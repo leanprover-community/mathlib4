@@ -59,7 +59,7 @@ namespace Module
 
 open Function (Surjective)
 
-open LinearMap Submodule TensorProduct
+open LinearMap Submodule TensorProduct DirectSum
 
 variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 
@@ -167,14 +167,6 @@ lemma of_linearEquiv [f : Flat R M] (e : N ≃ₗ[R] M) : Flat R N := by
   have h : e.symm.toLinearMap.comp e.toLinearMap = LinearMap.id := by simp
   exact of_retract _ _ _ e.toLinearMap e.symm.toLinearMap h
 
-end Flat
-
-namespace Flat
-
-open DirectSum LinearMap Submodule
-
-variable (R : Type u) [CommRing R]
-
 /-- A direct sum of flat `R`-modules is flat. -/
 instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup (M i)]
     [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))] : Flat R (⨁ i, M i) := by
@@ -255,7 +247,7 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
   rintro z (hz : _ = 0)
   -- Consider an injective linear map `L : A → B`, we want to prove that `(L ⊗ 𝟙 M) z = 0`
   -- implies `z = 0`
-  show z = 0
+  rw [Submodule.mem_bot]
   by_contra rid
   -- Let's prove by contradication
   -- If `z ≠ 0`, then there would be some character `g ∈ (A ⊗ M)⋆` such that `g z ≠ 0`
@@ -266,8 +258,7 @@ lemma rTensor_preserves_injective_linearMap_of_injective_characterModule
   -- Since `M⋆` is an injective module, we can factor `f` to `f' ∘ L` where `f' : B → M⋆`.
   obtain ⟨f', hf'⟩ := h.out L hL f
   -- Since `B → M⋆`  is naturally isomorphic to `(B ⊗ M)⋆`, we get a character `g' : (B ⊗ M)⋆`
-  let g' : (CharacterModule <| B ⊗[R] M) :=
-    CharacterModule.homEquiv f'
+  let g' : (CharacterModule <| B ⊗[R] M) := CharacterModule.homEquiv f'
 
   have mem : z ∈ (⊤ : Submodule R _) := ⟨⟩
   rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem
@@ -313,10 +304,8 @@ lemma CharacterModule.baer_of_ideal
   -- Under our assumption `ι : I ⊗ M → M` is injective, so `ι⋆ : M⋆ → (I ⊗ M)⋆` is surjective, so
   -- there is a character `F : M⋆` such that `ι⋆F (i ⊗ m) = L i m`
   obtain ⟨F, hF⟩ := CharacterModule.dual_surjective_of_injective _ (inj I) <|
-      TensorProduct.liftAddHom
-        { toFun := fun i => L i
-          map_zero' := by aesop
-          map_add' := by aesop } <| by aesop
+    TensorProduct.liftAddHom L.toAddMonoidHom <| fun r i n ↦
+    show L (r • i) n = L i (r • n) by simp [L.map_smul]
   -- Since `R ⊗ M ≃ M`, `M⋆ ≃ (R ⊗ M)⋆ ≃ Hom(R, M⋆)`, under this equivalence, we can reinterpret
   -- `F` as `F' : R → M⋆`. Indeed `F' i = L i m` by definition
   refine ⟨CharacterModule.curry (CharacterModule.congr (TensorProduct.lid R M).symm F), ?_⟩
@@ -337,6 +326,13 @@ lemma rTensor_preserves_injective_linearMap_of_ideal
   apply CharacterModule.baer_of_ideal
   assumption
 
+-- Implementation note:
+-- In this lemma we require the universe level of the ring is lower than or equal to that of the
+-- ring. This requirement is to make sure ideals of the ring can be lifited to the universe of the
+-- module. This requirement already appears in `Algebra/ModuleCat/Injective.lean`. It is possible
+-- that the lemmas also holds even when module lives in a lower universe. For example, idea at
+-- [here](https://github.com/leanprover-community/mathlib4/pull/8905#discussion_r1428509361)
+
 /--
 If `f ⊗ 𝟙 M` is injective for every injective linear map `f`, then `M` is flat.
 -/
@@ -348,11 +344,10 @@ lemma of_rTensor_preserves_injective_linearMap [UnivLE.{u, v}]
   intro I x y eq1
   let e := TensorProduct.congr (Shrink.linearEquiv I R).symm (LinearEquiv.refl R M)
   apply_fun e using e.injective
-  have H := @h (Shrink I) (Shrink R) _ _ _ _
-    ((Shrink.linearEquiv R R).symm.toLinearMap ∘ₗ I.subtype ∘ₗ (Shrink.linearEquiv I R).toLinearMap)
+  refine (h
+    ((Shrink.linearEquiv R R).symm.toLinearMap ∘ₗ I.subtype ∘ₗ (Shrink.linearEquiv I R))
     ((Shrink.linearEquiv R R).symm.injective.comp
-      (Subtype.val_injective.comp (Shrink.linearEquiv I R).injective))
-  refine @H (e x) (e y) ?_
+      (Subtype.val_injective.comp (Shrink.linearEquiv I R).injective))) ?_
   set L : Shrink I ⊗[R] M →ₗ[R] Shrink R ⊗[R] M := _
   convert_to L (e x) = L (e y)
   suffices eq2 : L ∘ₗ e.toLinearMap =
@@ -373,19 +368,12 @@ lemma iff_rTensor_preserves_injective_linearMap [UnivLE.{u, v}] :
     ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) := by
   constructor
-  · intro h
-    apply rTensor_preserves_injective_linearMap_of_ideal
-    rw [Flat.iff_rTensor_injective'] at h
-    intro I x y eq1
-    specialize h I
-    apply h
+  · refine fun h ↦ rTensor_preserves_injective_linearMap_of_ideal _ _ fun I x y eq1 ↦
+      (Flat.iff_rTensor_injective' _ _).mp h I ?_
     suffices (TensorProduct.lid _ _).symm.toLinearMap ∘ₗ
       (lift (lsmul R M ∘ₗ Submodule.subtype I)) = rTensor M (Submodule.subtype I) by
       rw [← this, LinearMap.comp_apply, LinearMap.comp_apply, eq1]
-    refine TensorProduct.ext <| LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ ?_
-    simp only [compr₂_apply, mk_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      lift.tmul, Submodule.coeSubtype, lsmul_apply, map_smul, lid_symm_apply, rTensor_tmul]
-    rw [smul_tmul', smul_eq_mul, mul_one]
+    exact TensorProduct.ext <| LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by simp [smul_tmul']
   · exact of_rTensor_preserves_injective_linearMap R M
 
 
