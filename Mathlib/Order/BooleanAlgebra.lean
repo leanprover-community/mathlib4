@@ -852,7 +852,6 @@ protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bo
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     GeneralizedBooleanAlgebra α where
-  __ := hf.distribLattice f map_sup map_inf
   __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
   __ := hf.distribLattice f map_sup map_inf
   sup_inf_sdiff a b := hf <| by erw [map_sup, map_sdiff, map_inf, sup_inf_sdiff]
