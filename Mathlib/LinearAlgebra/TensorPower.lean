@@ -306,7 +306,8 @@ variable (R)
 
 /-- A family `f` of linear forms on `M` indexed by `Fin n` defines a linear form on
 `⨂[R]^n M`, by multiplying the components of `f`. -/
-noncomputable def linearFormOfFamily (f : (_ : Fin n) → Module.Dual R M) : Module.Dual R (⨂[R]^n M) :=
+noncomputable def linearFormOfFamily (f : (_ : Fin n) → Module.Dual R M) :
+    Module.Dual R (⨂[R]^n M) :=
   PiTensorProduct.lift (MultilinearMap.compLinearMap (MultilinearMap.mkPiRing R (Fin n) 1) f)
 
 open BigOperators in
