@@ -49,8 +49,8 @@ def pair (S T : SSet.FromWithInitial) :
 
 /-- Given two morphisms in `SSet.FromWithInitial` the corresponding natural transformation
 between paired objects. -/
-def pairMap {S1 S2 T1 T2 : SSet.FromWithInitial}
-    (η1 : S1 ⟶ T1) (η2 : S2 ⟶ T2) : pair S1 S2 ⟶ pair T1 T2 :=
+def pairMap {S1 S2 T1 T2 : SSet.FromWithInitial} (η1 : S1 ⟶ T1) (η2 : S2 ⟶ T2) :
+    pair S1 S2 ⟶ pair T1 T2 :=
   whiskerRight
     (whiskerLeft
       (prodOpEquiv (WithInitial SimplexCategory)).functor
@@ -78,6 +78,11 @@ lemma joinType_ext {S T : SSet.FromWithInitial}
     rw [Split.indexEqToIso_refl] at h
     simp only [Iso.refl_inv, op_id, FunctorToTypes.map_id_apply] at h
     exact h
+
+@[simp]
+lemma joinType_fst {S T : SSet.FromWithInitial} {X : WithInitial SimplexCategory}
+    (i : Fin (Nat.succ (len X))) (s : (pair S T).obj (Opposite.op (Split.obj X i))) :
+  (joinType.comp i s).1 = i := rfl
 
 /-- Given a morphism `f : X ⟶ Y` in `SSet.FromWithInitial`, a map from `joinType S T Y` to
 `joinType S T X`. -/
@@ -136,6 +141,170 @@ taking pairs of objects and morphisms to their join. -/
 def joinFunc : (SSet.FromWithInitial × SSet.FromWithInitial) ⥤ SSet.FromWithInitial where
   obj S := join S.1 S.2
   map η := joinMap η.1 η.2
+
+section Associator
+
+def assocTypeMap1 {S T L : SSet.FromWithInitial} {X : WithInitial SimplexCategory}
+    (s : (join (join S T) L).obj (Opposite.op X)) : (join S (join T L)).obj (Opposite.op X) :=
+  joinType.comp
+      (Split.inclSucc₁ s.2.1.1)
+      (S.map (Split.swap₃ s.1 s.2.1.1).inv.op s.2.1.2.1,
+      joinType.comp
+        (Split.preimageInclSucc₂' s.1 s.2.1.1)
+        (T.map ((Split.swap₁ s.1 s.2.1.1).inv.op) s.2.1.2.2,
+           L.map (Split.swap₂ s.1 s.2.1.1).inv.op s.2.2))
+
+def assocTypeMap2 {S T L : SSet.FromWithInitial} {X : WithInitial SimplexCategory}
+    (s : (join S (join T L)).obj (Opposite.op X)) : (join (join S T) L).obj (Opposite.op X)  :=
+  joinType.comp
+      (Split.inclSucc₂ s.2.2.1)
+      (joinType.comp
+        (Split.preimageInclSucc₁' s.1 s.2.2.1)
+        (S.map (Split.swap₃' s.1 s.2.2.1).inv.op s.2.1,
+          T.map (Split.swap₁' s.1 s.2.2.1).inv.op s.2.2.2.1),
+      (L.map (Split.swap₂' s.1 s.2.2.1).inv.op s.2.2.2.2))
+
+lemma left_inv_assocType (S T L : SSet.FromWithInitial) (X : WithInitial SimplexCategory) :
+    Function.LeftInverse (@assocTypeMap2 S T L X) (@assocTypeMap1 S T L X)  := fun s => by
+  refine joinType_ext _ _ (Split.preimageInclSucc₂'_inclSucc₂ s.1 s.2.1.1) ?_
+  simp [pair, assocTypeMap1, assocTypeMap2]
+  apply Prod.ext
+  simp [join, joinTypeMap]
+  refine joinType_ext _ _ ?_ ?_
+  simp
+  rw [Split.indexEqToIso, Split.sourceValue_of_iso_inv, Fin.eq_iff_veq]
+  rfl
+  simp [pair]
+  apply Prod.ext
+  all_goals
+    simp
+    repeat rw [← types_comp_apply (Prefunctor.map _ _) (Prefunctor.map _ _), ← Functor.map_comp]
+    repeat rw [← Category.assoc]
+    rw [← op_comp, ← Iso.trans_inv]
+    try rw [Split.swap₁_swap₁']
+    try rw [Split.swap₂_swap₂']
+    try rw [Split.swap₃_swap₃']
+    try refine @Eq.trans _ _ (S.map (𝟙 (_)).op s.2.1.2.1) _ ?_ (by rw [op_id, S.map_id]; rfl)
+    try refine @Eq.trans _ _ (T.map (𝟙 _).op s.2.1.2.2) _ ?_ (by rw [op_id, T.map_id]; rfl)
+    try refine @Eq.trans _ _ (L.map (𝟙 (_)).op s.2.2) _ ?_ (by rw [op_id, L.map_id]; rfl)
+    apply congrFun
+    repeat rw [← op_comp]
+    repeat apply congrArg
+    simp [Split.indexEqToIso]
+    apply hom_eq_if_toOrderHom_eq
+    apply OrderHom.ext
+    funext a
+    repeat rw [toOrderHom_comp]
+  · rw [Split.map_lenIso_inv_fst]
+    simp [toOrderHomIso_apply_inv]
+    rw [@toOrderHom_id (Split.obj (Split.obj X s.1).1 s.2.1.1).1]
+    rfl
+  · rw [Split.map_lenIso_inv_snd]
+    simp [toOrderHomIso_apply_inv]
+  · simp [toOrderHomIso_apply_inv]
+
+def assocTypeEquiv (S T L : SSet.FromWithInitial) (X : WithInitial SimplexCategory) :
+    (join (join S T) L).obj (Opposite.op X) ≃ (join S (join T L)).obj (Opposite.op X)  where
+  toFun := assocTypeMap1
+  invFun := assocTypeMap2
+  left_inv := left_inv_assocType S T L X
+  right_inv := fun s => by
+    refine joinType_ext _ _ (Split.preimageInclSucc₁'_inclSucc₁ s.1 s.2.2.1) ?_
+    simp [pair, assocTypeMap1, assocTypeMap2]
+    apply Prod.ext
+    swap
+    simp [join, joinTypeMap]
+    refine joinType_ext _ _ ?_ ?_
+    simp
+    rw [Split.indexEqToIso, Split.sourceValue_of_iso_inv, Fin.eq_iff_veq]
+    simp [Split.preimageInclSucc₂', Split.preimageInclSucc₂, Split.len_obj₁, Split.inclSucc₂,
+    Split.inclSucc₁, Split.preimageInclSucc₁', Split.preimageInclSucc₁]
+    simp [pair]
+    apply Prod.ext
+    all_goals
+      simp
+      repeat rw [← types_comp_apply (Prefunctor.map _ _) (Prefunctor.map _ _), ← Functor.map_comp]
+      repeat rw [← Category.assoc]
+      rw [← op_comp, ← Iso.trans_inv]
+      try rw [Split.swap₁'_swap₁]
+      try rw [Split.swap₂'_swap₂]
+      try rw [Split.swap₃'_swap₃]
+      try refine @Eq.trans _ _ (S.map (𝟙 (_)).op s.2.1) _ ?_ (by rw [op_id, S.map_id]; rfl)
+      try refine @Eq.trans _ _ (T.map (𝟙 _).op s.2.2.2.1) _ ?_ (by rw [op_id, T.map_id]; rfl)
+      try refine @Eq.trans _ _ (L.map (𝟙 (_)).op  s.2.2.2.2) _ ?_ (by rw [op_id, L.map_id]; rfl)
+      apply congrFun
+      repeat rw [← op_comp]
+      repeat apply congrArg
+      simp [Split.indexEqToIso]
+      apply hom_eq_if_toOrderHom_eq
+      apply OrderHom.ext
+      funext a
+      repeat rw [toOrderHom_comp]
+    · rw [Split.map_lenIso_inv_fst]
+      simp [toOrderHomIso_apply_inv]
+    · rw [Split.map_lenIso_inv_snd]
+      simp [toOrderHomIso_apply_inv]
+    · simp [toOrderHomIso_apply_inv]
+      rw [@toOrderHom_id (Split.obj X s.1).1]
+      rfl
+
+lemma assocTypeNat (S T L : SSet.FromWithInitial) {X Y : WithInitial SimplexCategory} (f : X ⟶ Y) :
+    (assocTypeEquiv S T L X).toFun ∘ (join (join S T) L).map f.op =
+    (join S (join T L)).map f.op ∘ (assocTypeEquiv S T L Y).toFun  := by
+  funext s
+  simp [assocTypeEquiv, assocTypeMap1]
+  match s with
+  | joinType.comp i (s1, s2) =>
+  match s1 with
+  | joinType.comp p s3 =>
+  refine joinType_ext _ _ ?_ ?_
+  simp [join, joinTypeMap, pair]
+  exact Split.sourceValue_map₁
+  sorry
+  simp [pair]
+  apply Prod.ext
+  swap
+  simp [join, joinTypeMap]
+  refine joinType_ext _ _ ?_ ?_
+ -- simp [join, pair, joinTypeMap, Split.indexEqToIso, Split.sourceValue_of_iso_inv]
+  -- rw [Fin.eq_iff_veq]
+  -- simp
+  sorry
+  simp [pair]
+  apply Prod.ext
+  all_goals
+    simp [join, joinTypeMap, pair]
+    repeat rw [← types_comp_apply (Prefunctor.map _ _) (Prefunctor.map _ _), ← Functor.map_comp]
+    apply congrFun
+    repeat rw [← op_comp]
+    repeat apply congrArg
+    simp [Split.indexEqToIso]
+    apply hom_eq_if_toOrderHom_eq
+    apply OrderHom.ext
+    funext a
+    repeat rw [toOrderHom_comp]
+  · rw [Fin.eq_iff_veq]
+    simp [toOrderHomIso_apply_inv]
+    simp [Split.toOrderHom_snd_apply, Split.toOrderHom_fst_apply, Split.incl₂, Split.incl₁,
+    toOrderHomIso_apply_inv, Split.inclSucc₁]
+    apply congrFun
+    repeat apply congrArg
+    rw [Fin.eq_iff_veq]
+    simp
+
+
+
+
+
+
+
+
+
+
+
+
+
+end Associator
 
 section standardSimplex
 open SSet.FromWithInitial
