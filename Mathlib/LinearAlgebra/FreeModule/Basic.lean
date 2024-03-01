@@ -9,7 +9,6 @@ import Mathlib.LinearAlgebra.TensorProductBasis
 #align_import linear_algebra.free_module.basic from "leanprover-community/mathlib"@"4e7e7009099d4a88a750de710909b95487bf0124"
 
 /-!
-
 # Free modules
 
 We introduce a class `Module.Free R M`, for `R` a `Semiring` and `M` an `R`-module and we provide
@@ -20,7 +19,6 @@ Use `Finsupp.total_id_surjective` to prove that any module is the quotient of a 
 ## Main definition
 
 * `Module.Free R M` : the class of free `R`-modules.
-
 -/
 
 
@@ -191,11 +189,10 @@ instance directSum {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M
 
 end Semiring
 
-section CommRing
+section CommSemiring
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [Module.Free R M]
-
-variable [AddCommGroup N] [Module R N] [Module.Free R N]
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
+  [AddCommMonoid N] [Module R N] [Module.Free R N]
 
 instance tensor : Module.Free R (M ⊗[R] N) :=
   let ⟨bM⟩ := exists_basis (R := R) (M := M)
@@ -203,6 +200,6 @@ instance tensor : Module.Free R (M ⊗[R] N) :=
   of_basis (bM.2.tensorProduct bN.2)
 #align module.free.tensor Module.Free.tensor
 
-end CommRing
+end CommSemiring
 
 end Module.Free

@@ -120,7 +120,7 @@ def map (d : ℕ) : (Fin n → ℕ) →+ ℕ where
   map_add' a b := by simp_rw [Pi.add_apply, add_mul, sum_add_distrib]
 #align behrend.map Behrend.map
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 #align behrend.map_zero Behrend.map_zero
 

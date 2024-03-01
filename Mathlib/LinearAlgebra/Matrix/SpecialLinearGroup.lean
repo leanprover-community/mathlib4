@@ -239,7 +239,7 @@ def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL Matrix.SpecialLinearGroup.toGL
 
--- Porting note: broken dot notation
+-- Porting note (#11036): broken dot notation
 theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -309,8 +309,9 @@ def center_equiv_rootsOfUnity' (i : n) :
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
   right_inv a := by
     obtain ⟨⟨a, _⟩, ha⟩ := a
-    refine SetCoe.ext <| Units.eq_iff.mp <| by simp
+    exact SetCoe.ext <| Units.eq_iff.mp <| by simp
   map_mul' A B := by
+    dsimp
     ext
     simp only [Submonoid.coe_mul, coe_mul, rootsOfUnity.val_mkOfPowEq_coe, Units.val_mul]
     rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]

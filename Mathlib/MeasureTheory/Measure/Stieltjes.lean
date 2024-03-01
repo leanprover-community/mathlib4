@@ -217,7 +217,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     rw [sub_add_sub_cancel]
     exact sub_le_sub_right (f.mono bd.le) _
   · rintro x ⟨h₁, h₂⟩
-    refine' (cv ⟨h₁, le_trans h₂ (le_of_lt cb)⟩).resolve_left (mt And.left (not_lt_of_le h₂))
+    exact (cv ⟨h₁, le_trans h₂ (le_of_lt cb)⟩).resolve_left (mt And.left (not_lt_of_le h₂))
 #align stieltjes_function.length_subadditive_Icc_Ioo StieltjesFunction.length_subadditive_Icc_Ioo
 
 @[simp]
@@ -241,7 +241,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
         apply outer_le_length)
       (le_iInf₂ fun s hs => ENNReal.le_of_forall_pos_le_add fun ε εpos h => _)
   let δ := ε / 2
-  have δpos : 0 < (δ : ℝ≥0∞) := by simpa using εpos.ne'
+  have δpos : 0 < (δ : ℝ≥0∞) := by simpa [δ] using εpos.ne'
   rcases ENNReal.exists_pos_sum_of_countable δpos.ne' ℕ with ⟨ε', ε'0, hε⟩
   obtain ⟨a', ha', aa'⟩ : ∃ a', f a' - f a < δ ∧ a < a' := by
     have A : ContinuousWithinAt (fun r => f r - f a) (Ioi a) a := by
@@ -281,7 +281,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
         (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
     _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [ENNReal.tsum_add]
     _ ≤ ∑' i, f.length (s i) + δ + δ := (add_le_add (add_le_add le_rfl hε.le) le_rfl)
-    _ = ∑' i : ℕ, f.length (s i) + ε := by simp [add_assoc, ENNReal.add_halves]
+    _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 #align stieltjes_function.outer_Ioc StieltjesFunction.outer_Ioc
 
 theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
@@ -445,6 +445,12 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
   simp_rw [measure_Iic f hfl]
   exact ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)
 #align stieltjes_function.measure_univ StieltjesFunction.measure_univ
+
+lemma isFiniteMeasure {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
+    IsFiniteMeasure f.measure := ⟨by simp [f.measure_univ hfl hfu]⟩
+
+lemma isProbabilityMeasure (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
+    IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
 instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩

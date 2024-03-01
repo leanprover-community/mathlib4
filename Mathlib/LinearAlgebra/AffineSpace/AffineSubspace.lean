@@ -1204,6 +1204,7 @@ theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ aff
 #align affine_span_induction affineSpan_induction
 
 /-- A dependent version of `affineSpan_induction`. -/
+@[elab_as_elim]
 theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → Prop}
     (Hs : ∀ (y) (hys : y ∈ s), p y (subset_affineSpan k _ hys))
     (Hc :
@@ -1508,7 +1509,7 @@ theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p1 : P} (hp1 : p1 �
   · rintro ⟨r, p3, hp3, rfl⟩
     use r • (p2 -ᵥ p1), Submodule.mem_span_singleton.2 ⟨r, rfl⟩, p3 -ᵥ p1,
       vsub_mem_direction hp3 hp1
-    rw [vadd_vsub_assoc, add_comm]
+    rw [vadd_vsub_assoc]
 #align affine_subspace.mem_affine_span_insert_iff AffineSubspace.mem_affineSpan_insert_iff
 
 end AffineSubspace
