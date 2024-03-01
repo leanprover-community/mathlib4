@@ -1204,6 +1204,7 @@ theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ aff
 #align affine_span_induction affineSpan_induction
 
 /-- A dependent version of `affineSpan_induction`. -/
+@[elab_as_elim]
 theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → Prop}
     (Hs : ∀ (y) (hys : y ∈ s), p y (subset_affineSpan k _ hys))
     (Hc :

@@ -187,15 +187,15 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     rw [Algebra.smul_def, f.contract]
   · ext m₁
     change f.bilin _ _ * g m = Q m • g m₁
-    apply Submodule.span_induction' _ _ _ _ hg
+    refine Submodule.span_induction' ?_ ?_ ?_ ?_ hg
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
     · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- porting note: `•` now needs the type of `0`
       rw [mul_zero, smul_zero]
-    · rintro x hx y hy ihx ihy
+    · rintro x _hx y _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
-    · rintro x hx c ihx
+    · rintro x hx _c ihx
       rw [LinearMap.smul_apply, LinearMap.smul_apply, mul_smul_comm, ihx, smul_comm]
 
 -- Porting note: In Lean 3, `aux_apply` isn't a simp lemma. I changed `{ attrs := [] }` to

@@ -567,6 +567,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     H0_left H0_right Hadd_left Hadd_right Hsmul_left Hsmul_right
 
 /-- The difference with `NonUnitalAlgebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
     (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
