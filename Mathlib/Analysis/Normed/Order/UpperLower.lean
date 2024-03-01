@@ -64,13 +64,13 @@ protected theorem IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
 #align is_lower_set.cthickening' IsLowerSet.cthickening'
 #align is_lower_set.cthickening IsLowerSet.cthickening
 
-@[to_additive upper_closure_interior_subset] lemma upperClosure_interior_subset' (s : Set α) :
+@[to_additive upperClosure_interior_subset] lemma upperClosure_interior_subset' (s : Set α) :
     (upperClosure (interior s) : Set α) ⊆ interior (upperClosure s) :=
   upperClosure_min (interior_mono subset_upperClosure) (upperClosure s).upper.interior
 #align upper_closure_interior_subset' upperClosure_interior_subset'
 #align upper_closure_interior_subset upper_closure_interior_subset
 
-@[to_additive lower_closure_interior_subset] lemma lower_closure_interior_subset' (s : Set α) :
+@[to_additive lowerClosure_interior_subset] lemma lowerClosure_interior_subset' (s : Set α) :
     (upperClosure (interior s) : Set α) ⊆ interior (upperClosure s) :=
   upperClosure_min (interior_mono subset_upperClosure) (upperClosure s).upper.interior
 #align lower_closure_interior_subset' lower_closure_interior_subset'
