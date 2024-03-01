@@ -26,8 +26,6 @@ namespace EisensteinSeries
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
-/-I'll move these lemmas once find_home is working again-/
-
 lemma comp_eq_const_iff {α β γ: Type*} (b : β) (f : α → β) (g : β → γ)
     (hg : Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
   hg.comp_left.eq_iff' rfl
@@ -92,9 +90,9 @@ lemma eisSummad_complex_extension_differentiableOn (hk : k ≠ 0) :
 lemma eisensteinSeries_SIF_complex_differentiableOn {N : ℕ} (a : Fin 2 → ZMod N) (hk : 3 ≤ k) :
     DifferentiableOn ℂ (↑ₕ(eisensteinSeries_SIF a k).toFun) (UpperHalfPlane.coe '' ⊤) := by
   convert @TendstoLocallyUniformlyOn.differentiableOn (E := ℂ) (ι := (Finset ↑(gammaSet N a))) _ _ _
-    (UpperHalfPlane.coe '' ⊤) atTop (fun (s : Finset (gammaSet N a)) =>
-      ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z)) (↑ₕ(eisensteinSeries_SIF a k).toFun)
-        (by apply atTop_neBot) (eisensteinSeries_TendstoLocallyUniformlyOn hk N a)
+    (UpperHalfPlane.coe '' ⊤) atTop (fun (s : Finset (gammaSet N a )) =>
+      ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ((eisensteinSeries_SIF a k).toFun ))
+        (by apply atTop_neBot) (eisensteinSeries_tendstoLocallyUniformlyOn hk a)
           ((eventually_of_forall fun s => ?_)) ?_
   · apply DifferentiableOn.sum
     intro v _
