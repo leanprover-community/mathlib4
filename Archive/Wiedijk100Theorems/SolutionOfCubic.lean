@@ -111,11 +111,10 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have hp' : p = (3 * (c / a) - (b / a) ^ 2) / 9 := by
     field_simp [hp, h9]; ring_nf
   have hq' : q = (9 * (b / a) * (c / a) - 2 * (b / a) ^ 3 - 27 * (d / a)) / 54 := by
-    -- FIXME nightly-testing
-    -- This `field_simp` call perhaps needs an even higher `maxDischargeDepth`.
-    -- However the higher we set that the slower every `field_simp` call gets.
-    sorry
-    -- field_simp [hq, h54]; ring_nf
+  have hq' : q = (9 * (b / a) * (c / a) - 2 * (b / a) ^ 3 - 27 * (d / a)) / 54 := by
+    rw [hq, h54]
+    simp [field_simps, ha]
+    ring_nf
   rw [h₁, h₂, cubic_monic_eq_zero_iff (b / a) (c / a) (d / a) hω hp' hp_nonzero hq' hr hs3 ht x]
   have h₄ :=
     calc
