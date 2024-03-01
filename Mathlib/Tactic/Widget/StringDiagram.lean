@@ -7,7 +7,6 @@ import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
 import Mathlib.Tactic.CategoryTheory.Coherence
 
-
 /-!
 # String Diagrams
 
@@ -38,10 +37,10 @@ inductive Mor₁ : Type
   deriving Inhabited
 
 /-- Converts a 1-morphism into a list of its underlying expressions. -/
-def Mor₁.toList : Mor₁ → List Expr
+def Mor₁.toList : Mor₁ → List Atom₁
   | .id => []
   | .comp f g => f.toList ++ g.toList
-  | .of f => [f.e]
+  | .of f => [f]
 
 /-- Returns `𝟙_ C` if the expression `e` is of the form `𝟙_ C`. -/
 def isTensorUnit? (e : Expr) : MetaM (Option Expr) := do
@@ -152,12 +151,13 @@ inductive Structural : Type
   /-- Expressions for the composition `α ≫ β`. -/
   | comp (α β : Structural) : Structural
   /-- Expressions for the left whiskering `f ◁ α`. -/
-  | whiskerLeft (f : Mor₁) (η : Structural) : Structural
+  | whiskerLeft (f : Mor₁) (α : Structural) : Structural
   /-- Expressions for the right whiskering `α ▷ f`. -/
-  | whiskerRight (η : Structural) (f : Mor₁) : Structural
+  | whiskerRight (α : Structural) (f : Mor₁) : Structural
   /-- Expressions for the tensor `α ⊗ β`. -/
   | tensorHom (α β : Structural) : Structural
-  /-- Expressions for `α` in the monoidal composition `η ⊗≫ θ := η ≫ α ≫ θ`. -/
+  /-- Expressions for `α : f ⟶ g` in the monoidal composition `η ⊗≫ θ := η ≫ α ≫ θ` where
+  `e` is the expression for an instance of `MonoidalCoherence f g`. -/
   | monoidalCoherence (f g : Mor₁) (e : Expr) : Structural
   deriving Inhabited
 
@@ -183,6 +183,7 @@ def tar (η : Expr) : MetaM Mor₁ := do
 
 /-- The domain of a 2-morphism. -/
 def Atom.src (η : Atom) : MetaM Mor₁ := do StringDiagram.src η.e
+
 /-- The codomain of a 2-morphism. -/
 def Atom.tar (η : Atom) : MetaM Mor₁ := do StringDiagram.tar η.e
 
@@ -196,10 +197,12 @@ def WhiskerRightExpr.tar : WhiskerRightExpr → MetaM Mor₁
   | WhiskerRightExpr.of η => η.tar
   | WhiskerRightExpr.whisker η f => return (← η.tar).comp (Mor₁.of f)
 
+/-- The domain of a 2-morphism. -/
 def TensorHomExpr.src : TensorHomExpr → MetaM Mor₁
   | TensorHomExpr.of η => η.src
   | TensorHomExpr.cons η ηs => return (← η.src).comp (← ηs.src)
 
+/-- The codomain of a 2-morphism. -/
 def TensorHomExpr.tar : TensorHomExpr → MetaM Mor₁
   | TensorHomExpr.of η => η.tar
   | TensorHomExpr.cons η ηs => return (← η.tar).comp (← ηs.tar)
@@ -249,7 +252,7 @@ def Structural.tar : Structural → Mor₁
   | .comp _ β => β.tar
   | .whiskerLeft f α => f.comp α.tar
   | .whiskerRight α f => α.tar.comp f
-  | .tensorHom α β => α.tar.comp β.src
+  | .tensorHom α β => α.tar.comp β.tar
   | .monoidalCoherence _ g _ => g
 
 /-- The domain of a 2-morphism. -/
@@ -286,16 +289,6 @@ def NormalExpr.rightUnitor (f : Mor₁) : NormalExpr :=
 def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
 
-/-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
-  | WhiskerRightExpr.of η => η
-  | WhiskerRightExpr.whisker η _ => η.atom
-
--- /-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
--- def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
---   | WhiskerLeftExpr.of η => η.atom
---   | WhiskerLeftExpr.whisker _ η => η.atom
-
 /-- Construct a `Structural` expression from a Lean expression for a structural 2-morphism. -/
 partial def structural? (e : Expr) : MetaM Structural := do
   match (← whnfR e).getAppFnArgs with
@@ -312,10 +305,6 @@ partial def structural? (e : Expr) : MetaM Structural := do
     | some η => return .atom η
     | none => throwError "not a structural 2-morphism"
 
--- /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
--- def NormalExpr.of (η : Expr) : MetaM NormalExpr := do
---   return .cons (.id (← StringDiagram.src η)) (.of (.nil (.of ⟨η⟩))) (.nil (.id (← StringDiagram.tar η)))
-
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
   return .cons (.id (← η.src)) η (.nil (.id (← η.tar)))
@@ -323,7 +312,6 @@ def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
 def NormalExpr.ofExpr (η : Expr) : MetaM NormalExpr :=
   NormalExpr.of <| .of <| .of <| .of ⟨η⟩
-  -- .cons (.id (← StringDiagram.src η)) (.of (.nil (.of ⟨η⟩))) (.nil (.id (← StringDiagram.tar η)))
 
 /-- If `e` is an expression of the form `η ⊗≫ θ := η ≫ α ≫ θ` in the monoidal category `C`,
 return the expression for `α` .-/
@@ -345,68 +333,32 @@ def structuralOfMonoidalComp (C e : Expr) : MetaM Structural := do
   _ ← isDefEq e fαg
   structural? α₀
 
--- def NormalExpr.ofWhiskerLeftExpr (α : Structural) (η : WhiskerLeftExpr) : MetaM NormalExpr := do
---   match η with
---     | .nil β => do
---       return .nil (α.comp β)
---     | .cons β η ηs => do
---       return .cons (α.comp β) η ηs
-
+/-- Construct a `NormalExpr` expression from another `NormalExpr` expression by adding a structural
+2-morphism at the head. -/
 def NormalExpr.ofNormalExpr (α : Structural) (e : NormalExpr) : MetaM NormalExpr :=
-  match α with
-  | .id _ => return e
-  | _ => do
-    match e with
-    | .nil β => do
-      match β with
-      | .id _ => return .nil α
-      | _ => return .nil (α.comp β)
-    | .cons β η ηs => do
-      match β with
-      | .id _ => do
-        return .cons α η ηs
-      | _ => do
-        return .cons (α.comp β) η ηs
+  match e with
+  | .nil β => return .nil (α.comp β)
+  | .cons β η ηs => return .cons (α.comp β) η ηs
 
 mutual
+
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
 partial def evalComp : NormalExpr → NormalExpr → MetaM NormalExpr
   | .nil α, .cons β η ηs => do
-    match α, β with
-    | .id _, _ => do
-      return .cons β η ηs
-    | _, .id _ => do
-      return .cons α η ηs
-    | _, _ =>
-      return (.cons (α.comp β) η ηs)
-  | .nil α, .nil β => do
-    match α, β with
-    | .id _, _ => do
-      return .nil β
-    | _, .id _ => do
-      return .nil α
-    | _, _ =>
-      return .nil (α.comp β)
+    return (.cons (α.comp β) η ηs)
+  | .nil α, .nil α' => do
+    return .nil (α.comp α')
   | .cons α η ηs, θ => do
     let ι ← evalComp ηs θ
     return .cons α η ι
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
 partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
-  | f, .nil α => do
-    match α with
-    | .id g => do
-      return .nil (.id (f.comp g))
-    | _ =>
-      return .nil (.whiskerLeft f α)
+  | f, .nil α => return .nil (.whiskerLeft f α)
   | .of f, .cons α η ηs => do
     let η' := WhiskerLeftExpr.whisker f η
     let θ ← evalWhiskerLeftExpr (.of f) ηs
-    match α with
-    | .id g => do
-      return .cons (.id <| .comp (.of f) g) η' θ
-    | _ => do
-      return .cons (.whiskerLeft (.of f) α) η' θ
+    return .cons (.whiskerLeft (.of f) α) η' θ
   | .comp f g, η => do
     let θ ← evalWhiskerLeftExpr g η
     let ι ← evalWhiskerLeftExpr f θ
@@ -422,6 +374,7 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
     let η'' ← evalComp (NormalExpr.leftUnitor f) η'
     return η''
 
+/-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def tensorHomWhiskerRight : TensorHomExpr → Atom₁ → MetaM NormalExpr
   | .of η, f => NormalExpr.of <| .of <| .of <| .whisker η f
   | .cons η ηs, f => do
@@ -433,39 +386,13 @@ partial def tensorHomWhiskerRight : TensorHomExpr → Atom₁ → MetaM NormalEx
 
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
-  | .nil α, h => do
-    match α with
-    | .id g => do
-      return .nil (.id (g.comp h))
-    | _ => do
-      return .nil (.whiskerRight α h)
+  | .nil α, h => return .nil (.whiskerRight α h)
   | .cons α (.of η) ηs, .of f => do
-
     let ηs₁ ← evalWhiskerRightExpr ηs (.of f)
     let η₁ ← tensorHomWhiskerRight η f
     let η₂ ← evalComp η₁ ηs₁
-    match α with
-    | .id _ => do
-      return η₂
-    | _ => do
-      NormalExpr.ofNormalExpr (.whiskerRight α (.of f)) η₂
-
-
-    -- match η with
-    -- | .of η₁ => do
-    --   return NormalExpr.cons α (.of <| .of <| .whisker η₁ f) (.id _)
-    -- | .cons _ _ => do
-    --   let η₁ := WhiskerRightExpr.whisker η f
-    --   let η₁ ← evalWhiskerRightExpr (← NormalExpr.of (.of η)) (.of f)
-    --   let α₁ := Structural.whiskerRight α (.of f)
-    --   let η₂ ← evalComp η₁ ηs₁
-    --   match η₂ with
-    --   | .nil γ => do
-    --     return .nil (α₁.comp γ)
-    --   | .cons γ η₃ ηs₃ => do
-    --     return .cons (α₁.comp γ) η₃ ηs₃
-
-
+    let η₃ ← NormalExpr.ofNormalExpr (.whiskerRight α (.of f)) η₂
+    return η₃
   | .cons α (.whisker f η) ηs, h => do
     let g ← η.src
     let g' ← η.tar
@@ -475,14 +402,8 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
     let ηs₂ ← evalComp (.associatorInv (.of f) g' h) ηs₁
     let η₃ ← evalComp η₂ ηs₂
     let η₄ ← evalComp (.associator (.of f) g h) η₃
-    match α with
-    | .id _ => do
-      return η₄
-    | _ =>
-      NormalExpr.ofNormalExpr (.whiskerRight α h) η₄
-      -- let α' := Structural.whiskerRight α h
-      -- let η₅ ← evalComp (.nil α') η₄
-      -- return η₅
+    let η₅ ← NormalExpr.ofNormalExpr (.whiskerRight α h) η₄
+    return η₅
   | η, .comp g h => do
     let η₁ ← evalWhiskerRightExpr η g
     let η₂ ← evalWhiskerRightExpr η₁ h
@@ -498,6 +419,7 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
     let η₂ ← evalComp (.rightUnitor f) η₁
     return η₂
 
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
 partial def tensorHomTensor : TensorHomExpr → TensorHomExpr → MetaM NormalExpr
   | .of η, θ => NormalExpr.of <| .of <| .cons η θ
   | .cons η ηs, θ => do
@@ -509,9 +431,9 @@ partial def tensorHomTensor : TensorHomExpr → TensorHomExpr → MetaM NormalEx
     let ηθ₂ ← evalComp α ηθ₁
     return ηθ₂
 
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
 partial def evalTensorHomAux : WhiskerLeftExpr → WhiskerLeftExpr → MetaM NormalExpr
-  | .of η, .of θ => do
-      tensorHomTensor η θ
+  | .of η, .of θ => tensorHomTensor η θ
   | .whisker f η, θ => do
     let ηθ ← evalTensorHomAux η θ
     let ηθ₁ ← evalWhiskerLeftExpr (.of f) ηθ
@@ -524,10 +446,8 @@ partial def evalTensorHomAux : WhiskerLeftExpr → WhiskerLeftExpr → MetaM Nor
     let ηθ₁ ← evalComp ηθ (.associator (← η.tar) (.of f) (← θ.tar))
     let ηθ₂ ← evalComp (.associatorInv (← η.src) (.of f) (← θ.src)) ηθ₁
     return ηθ₂
-    -- | .whisker g η₁ => do
-    --   let ηθ ← evalTensorHomAux η₁ θ
-    --   _
 
+/-- Evaluate the expression `η ⊗ θ` into a normalized form. -/
 partial def evalTensorHomExpr : NormalExpr → NormalExpr → MetaM NormalExpr
   | .nil α, .nil β => do
     return .nil (α.tensorHom β)
@@ -535,29 +455,21 @@ partial def evalTensorHomExpr : NormalExpr → NormalExpr → MetaM NormalExpr
     let η₁ ← evalWhiskerLeftExpr α.tar (← NormalExpr.of η)
     let ηs₁ ← evalWhiskerLeftExpr α.tar ηs
     let η₂ ← evalComp η₁ ηs₁
-    match η₂ with
-    | .nil γ => do
-      return .nil ((α.tensorHom β).comp γ)
-    | .cons γ η₃ ηs₃ => do
-      return NormalExpr.cons ((α.tensorHom β).comp γ) η₃ ηs₃
+    let η₃ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
+    return η₃
   | .cons α η ηs, .nil β => do
     let η₁ ← evalWhiskerRightExpr (← NormalExpr.of η) β.tar
     let ηs₁ ← evalWhiskerRightExpr ηs β.tar
     let η₂ ← evalComp η₁ ηs₁
-    match η₂ with
-    | .nil γ => do
-      return .nil ((α.tensorHom β).comp γ)
-    | .cons γ η₃ ηs₃ => do
-      return .cons ((α.tensorHom β).comp γ) η₃ ηs₃
+    let η₃ ← NormalExpr.ofNormalExpr (α.tensorHom β) η₂
+    return η₃
   | .cons α η ηs, .cons β θ θs => do
     let ηθ ← evalTensorHomAux η θ
     let ηθs ← evalTensorHomExpr ηs θs
     let ηθ₁ ← evalComp ηθ ηθs
-    match ηθ₁ with
-    | .nil γ => do
-      return .nil ((α.tensorHom β).comp γ)
-    | .cons γ η₃ ηs₃ => do
-      return .cons ((α.tensorHom β).comp γ) η₃ ηs₃
+    let ηθ₂ ← NormalExpr.ofNormalExpr (α.tensorHom β) ηθ₁
+    return ηθ₂
+
 end
 
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
@@ -592,35 +504,101 @@ def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
   | NormalExpr.nil _ => []
   | NormalExpr.cons _ η ηs => η :: NormalExpr.toList ηs
 
-/-- Return `[f₁, ..., fₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η`. -/
-def leftMor₁List (η : WhiskerLeftExpr) : List Expr :=
-  match η with
-  | WhiskerLeftExpr.of _ => []
-  | WhiskerLeftExpr.whisker f η => f.e :: leftMor₁List η
+structure AtomNode : Type where
+  vPos : ℕ
+  hPosSrc : ℕ
+  hPosTar : ℕ
+  atom : Atom
 
-/-- Return `[gₙ, ..., g₁]` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def rightMor₁ListAux (η : WhiskerRightExpr) : List Expr :=
-  match η with
-  | WhiskerRightExpr.of _ => []
-  | WhiskerRightExpr.whisker η f => f.e :: rightMor₁ListAux η
+structure IdNode : Type where
+  vPos : ℕ
+  hPosSrc : ℕ
+  hPosTar : ℕ
+  id : Atom₁
 
--- /-- Return `[gₙ, ..., g₁]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
--- def rightMor₁ListReversed (η : WhiskerLeftExpr) : List Expr :=
---   match η with
---   | WhiskerLeftExpr.of η => rightMor₁ListAux η
---   | WhiskerLeftExpr.whisker _ η => rightMor₁ListReversed η
+inductive Node : Type
+  | atom : AtomNode → Node
+  | id : IdNode → Node
 
--- /-- Return `[g₁, ..., gₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
--- def rightMor₁List (η : WhiskerLeftExpr) : List Expr :=
---   (rightMor₁ListReversed η).reverse
+def Node.e : Node → Expr
+  | Node.atom n => n.atom.e
+  | Node.id n => n.id.e
 
--- /-- Returns domain 1-morphisms as a list of components.` -/
--- def srcLists (η : WhiskerLeftExpr) : MetaM (List Expr × List Expr × List Expr) := do
---   return (leftMor₁List η, (← η.atom.src).toList, rightMor₁List η)
+def Node.srcLength : Node → MetaM ℕ
+  | Node.atom n => do return (← n.atom.src).toList.length
+  | Node.id _ => return 1
 
--- /-- Returns codomain 1-morphisms as a list of components.` -/
--- def tarLists (η : WhiskerLeftExpr) : MetaM (List Expr × List Expr × List Expr) := do
---   return (leftMor₁List η, (← η.atom.tar).toList, rightMor₁List η)
+def Node.tarLength : Node → MetaM ℕ
+  | Node.atom n => do return (← n.atom.tar).toList.length
+  | Node.id _ => return 1
+
+def Node.vPos : Node → ℕ
+  | Node.atom n => n.vPos
+  | Node.id n => n.vPos
+
+def Node.hPosSrc : Node → ℕ
+  | Node.atom n => n.hPosSrc
+  | Node.id n => n.hPosSrc
+
+def Node.hPosTar : Node → ℕ
+  | Node.atom n => n.hPosTar
+  | Node.id n => n.hPosTar
+
+def Node.lengthSumSrc : List Node → MetaM ℕ
+  | [] => return 0
+  | n :: ns => do
+    let l ← n.srcLength
+    let ls ← Node.lengthSumSrc ns
+    return l + ls
+
+def Node.lengthSumTar : List Node → MetaM ℕ
+  | [] => return 0
+  | n :: ns => do
+    let l ← n.tarLength
+    let ls ← Node.lengthSumTar ns
+    return l + ls
+
+def WhiskerRightExpr.nodes (v h₁ h₂ : ℕ) : WhiskerRightExpr → MetaM (List Node)
+  | WhiskerRightExpr.of η => do
+    return [.atom ⟨v, h₁, h₂, η⟩]
+  | WhiskerRightExpr.whisker η f => do
+    let ηs ← η.nodes v h₁ h₂
+    let k₁ ← Node.lengthSumSrc ηs
+    let k₂ ← Node.lengthSumTar ηs
+    let s : Node := .id ⟨v, h₁ + k₁, h₂ + k₂, f⟩
+    return ηs ++ [s]
+
+def TensorHomExpr.nodes (v h₁ h₂ : ℕ) : TensorHomExpr → MetaM (List Node)
+  | TensorHomExpr.of η => η.nodes v h₁ h₂
+  | TensorHomExpr.cons η ηs => do
+    let s₁ ← η.nodes v h₁ h₂
+    let k₁ ← Node.lengthSumSrc s₁
+    let k₂ ← Node.lengthSumTar s₁
+    let s₂ ← ηs.nodes v (h₁ + k₁) (h₂ + k₂)
+    return s₁ ++ s₂
+
+def WhiskerLeftExpr.nodes (v h₁ h₂ : ℕ) : WhiskerLeftExpr → MetaM (List Node)
+  | WhiskerLeftExpr.of η => η.nodes v h₁ h₂
+  | WhiskerLeftExpr.whisker f η => do
+    let s : Node := .id ⟨v, h₁, h₂, f⟩
+    let ss ← η.nodes v (h₁ + 1) (h₂ + 1)
+    return s :: ss
+
+def topNodes (η : WhiskerLeftExpr) : MetaM (List Node) := do
+  return (← η.src).toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
+
+def NormalExpr.nodesAux (v : ℕ) : NormalExpr → MetaM (List (List Node))
+  | NormalExpr.nil α => return [(α.src).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
+  | NormalExpr.cons _ η ηs => do
+    let s₁ ← η.nodes v 0 0
+    let s₂ ← ηs.nodesAux (v + 1)
+    return s₁ :: s₂
+
+def NormalExpr.nodes (e : NormalExpr) : MetaM (List (List Node)) := do
+  let l := e.toList
+  match l.head? with
+  | some x₁ => return (← topNodes x₁) :: (← e.nodesAux 1)
+  | _ => return []
 
 /-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
 def pairs {α : Type} : List α → List (α × α)
@@ -714,109 +692,57 @@ def DiagramBuilderM.run {α : Type} (x : DiagramBuilderM α) : MetaM α :=
 open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkStringDiag (e : Expr) : MetaM Html := do sorry
-  -- DiagramBuilderM.run do
-  --   let l := (← eval e).toList
-  --   /- Check that the numbers of the start and end points of strings are the same. -/
-  --   for (x, y) in pairs l do
-  --     let (L, C, R) ← tarLists x
-  --     let (L', C', R') ← srcLists y
-  --     if L.length + C.length + R.length ≠ L'.length + C'.length + R'.length then
-  --       throwError "The number of the start and end points of a string does not match."
-  --   /- Add 2-morphisms. -/
-  --   for (i, x) in l.enumFrom 1 do
-  --     let v : PenroseVar := ⟨"E", [i], x.atom.e⟩
-  --     addPenroseVar "Atom" v
-  --     let (L, C, R) ← srcLists x
-  --     let C' := (← x.atom.tar).toList
-  --     for (j, X) in L.enum do
-  --       let v' : PenroseVar := ⟨"I_left", [i, j], X⟩
-  --       addPenroseVar "Id" v'
-  --       addInstruction s!"Left({v'}, {v})"
-  --       let v_mor : PenroseVar := ⟨"f", [i, j], X⟩
-  --       let v_mor' : PenroseVar := ⟨"f", [i + 1, j], X⟩
-  --       modify fun st => { st with
-  --         endPoint := st.endPoint.insert v_mor v'
-  --         startPoint := st.startPoint.insert v_mor' v' }
-  --     for (j, X) in R.enum do
-  --       let v' : PenroseVar := ⟨"I_right", [i, j], X⟩
-  --       addPenroseVar "Id" v'
-  --       addInstruction s!"Left({v}, {v'})"
-  --       let v_mor : PenroseVar := ⟨"f", [i, j + L.length + C.length], X⟩
-  --       let v_mor' : PenroseVar := ⟨"f", [i + 1, j + L.length + C'.length], X⟩
-  --       modify fun st => { st with
-  --         endPoint := st.endPoint.insert v_mor v'
-  --         startPoint := st.startPoint.insert v_mor' v' }
-  --     for (j, X) in C.enum do
-  --       let v_mor : PenroseVar := ⟨"f", [i, j + L.length], X⟩
-  --       modify fun st => { st with endPoint := st.endPoint.insert v_mor v }
-  --     for (j, X) in C'.enum do
-  --       let v_mor' : PenroseVar := ⟨"f", [i + 1, j + L.length], X⟩
-  --       modify fun st => { st with startPoint := st.startPoint.insert v_mor' v }
-  --     /- Add constraints. -/
-  --     for (j, (X, Y)) in (pairs L).enum do
-  --       let v₁ : PenroseVar := ⟨"I_left", [i, j], X⟩
-  --       let v₂ : PenroseVar := ⟨"I_left", [i, j + 1], Y⟩
-  --       addInstruction s!"Left({v₁}, {v₂})"
-  --     /- Add constraints. -/
-  --     for (j, (X, Y)) in (pairs R).enum do
-  --       let v₁ : PenroseVar := ⟨"I_right", [i, j], X⟩
-  --       let v₂ : PenroseVar := ⟨"I_right", [i, j + 1], Y⟩
-  --       addInstruction s!"Left({v₁}, {v₂})"
-  --   /- Add constraints. -/
-  --   for (i, (x, y)) in (pairs l).enumFrom 1 do
-  --     let v₁ : PenroseVar := ⟨"E", [i], x.atom.e⟩
-  --     let v₂ : PenroseVar := ⟨"E", [i + 1], y.atom.e⟩
-  --     addInstruction s!"Above({v₁}, {v₂})"
-  --   /- The top of the diagram. -/
-  --   if let some x₀ := l.head? then
-  --     let v₀ : PenroseVar := ⟨"E", [1], x₀.atom.e⟩
-  --     let (L, C, R) ← srcLists x₀
-  --     for (j, X) in (L ++ C ++ R).enum do
-  --       let v' : PenroseVar := ⟨"I_left", [0, j], X⟩
-  --       addPenroseVar "Id" v'
-  --       addInstruction s!"Above({v'}, {v₀})"
-  --       let v_mor : PenroseVar := ⟨"f", [1, j], X⟩
-  --       modify fun st => { st with startPoint := st.startPoint.insert v_mor v' }
-  --     for (j, (X, Y)) in (pairs (L ++ C ++ R)).enum do
-  --       let v₁ : PenroseVar := ⟨"I_left", [0, j], X⟩
-  --       let v₂ : PenroseVar := ⟨"I_left", [0, j + 1], Y⟩
-  --       addInstruction s!"Left({v₁}, {v₂})"
-  --   /- The bottom of the diagram. -/
-  --   if let some xₙ := l.getLast? then
-  --     let vₙ : PenroseVar := ⟨"E", [l.length], xₙ.atom.e⟩
-  --     let (L, C', R) ← tarLists xₙ
-  --     for (j, X) in (L ++ C' ++ R).enum do
-  --       let v' : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
-  --       addPenroseVar "Id" v'
-  --       addInstruction s!"Above({vₙ}, {v'})"
-  --       let v_mor : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
-  --       modify fun st => { st with endPoint := st.endPoint.insert v_mor v' }
-  --     for (j, (X, Y)) in (pairs (L ++ C' ++ R)).enum do
-  --       let v₁ : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
-  --       let v₂ : PenroseVar := ⟨"I_left", [l.length + 1, j + 1], Y⟩
-  --       addInstruction s!"Left({v₁}, {v₂})"
-  --   /- Add 1-morphisms as strings. -/
-  --   for (i, x) in l.enumFrom 1 do
-  --     let (L, C, R) ← srcLists x
-  --     for (j, X) in (L ++ C ++ R).enum do
-  --       let v : PenroseVar := ⟨"f", [i, j], X⟩
-  --       let st ← get
-  --       if let .some vStart := st.startPoint.find? v then
-  --         if let .some vEnd := st.endPoint.find? v then
-  --           addConstructor "Mor1" v "MakeString" [vStart, vEnd]
-  --   /- Add strings in the last row. -/
-  --   if let some xₙ := l.getLast? then
-  --     let (L, C', R) ← tarLists xₙ
-  --     for (j, X) in (L ++ C' ++ R).enum do
-  --       let v : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
-  --       let st ← get
-  --       if let .some vStart := st.startPoint.find? v then
-  --         if let .some vEnd := st.endPoint.find? v then
-  --           addConstructor "Mor1" v "MakeString" [vStart, vEnd]
-    -- match ← buildDiagram with
-    -- | some html => return html
-    -- | none => return <span>No 2-morphisms.</span>
+def mkStringDiag (e : Expr) : MetaM Html := do
+  DiagramBuilderM.run do
+    let nodes ← (← eval e).nodes
+    /- Check that the numbers of the start and end points of strings are the same. -/
+    for (l₁, l₂) in pairs nodes do
+      if (← Node.lengthSumTar l₁) ≠ (← Node.lengthSumSrc l₂) then
+        throwError "The number of the start and end points of a string does not match."
+    for x in nodes.join do
+      match x with
+      | .atom x => do
+        let v : PenroseVar := ⟨"E", [x.vPos, x.hPosSrc, x.hPosTar], x.atom.e⟩
+        addPenroseVar "Atom" v
+        for (k, y) in (← x.atom.src).toList.enum do
+          let v_mor : PenroseVar := ⟨"f", [x.vPos, x.hPosSrc + k], y.e⟩
+          modify fun st => { st with endPoint := st.endPoint.insert v_mor v }
+        for (k, y) in (← x.atom.tar).toList.enum do
+          let v_mor : PenroseVar := ⟨"f", [x.vPos + 1, x.hPosTar + k], y.e⟩
+          modify fun st => { st with startPoint := st.startPoint.insert v_mor v }
+      | .id x => do
+        let v : PenroseVar := ⟨"E", [x.vPos, x.hPosSrc, x.hPosTar], x.id.e⟩
+        addPenroseVar "Id" v
+        let v_mor : PenroseVar := ⟨"f", [x.vPos, x.hPosSrc], x.id.e⟩
+        let v_mor' : PenroseVar := ⟨"f", [x.vPos + 1, x.hPosTar], x.id.e⟩
+        modify fun st => { st with
+          endPoint := st.endPoint.insert v_mor v
+          startPoint := st.startPoint.insert v_mor' v }
+    for l in nodes do
+      for (x, y) in pairs l do
+        let v₁ : PenroseVar := ⟨"E", [x.vPos, x.hPosSrc, x.hPosTar], x.e⟩
+        let v₂ : PenroseVar := ⟨"E", [y.vPos, y.hPosSrc, y.hPosTar], y.e⟩
+        addInstruction s!"Left({v₁}, {v₂})"
+    for (l₁, l₂) in pairs nodes do
+      if let .some x := l₁.head? then
+        if let .some y := l₂.head? then
+          let v₁ : PenroseVar := ⟨"E", [x.vPos, x.hPosSrc, x.hPosTar], x.e⟩
+          let v₂ : PenroseVar := ⟨"E", [y.vPos, y.hPosSrc, y.hPosTar], y.e⟩
+          addInstruction s!"Above({v₁}, {v₂})"
+    for l in nodes do
+      for x in l do
+        let s ← show MetaM (List Atom₁) from match x with
+        | .atom x => do return (← x.atom.src).toList
+        | .id x => return [x.id]
+        for (k, f) in s.enum do
+          let v : PenroseVar := ⟨"f", [x.vPos, x.hPosSrc + k], f.e⟩
+          let st ← get
+          if let .some vStart := st.startPoint.find? v then
+            if let .some vEnd := st.endPoint.find? v then
+              addConstructor "Mor1" v "MakeString" [vStart, vEnd]
+    match ← buildDiagram with
+    | some html => return html
+    | none => return <span>No 2-morphisms.</span>
 
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
 def stringM? (e : Expr) : MetaM (Option Html) := do
