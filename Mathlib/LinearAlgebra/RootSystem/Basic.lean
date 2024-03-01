@@ -41,7 +41,10 @@ variable {ι R M N : Type*}
 
 namespace RootPairing
 
-variable (P : RootPairing ι R M N) (i : ι)
+variable (P : RootPairing ι R M N) (i j : ι)
+
+lemma root_ne (h: i ≠ j) : P.root i ≠ P.root j := by
+  simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, not_false_eq_true]
 
 lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
@@ -50,11 +53,11 @@ lemma ne_zero' [CharZero R] : (P.coroot i : N) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
 
 @[simp]
-lemma root_coroot_eq_pairing (j : ι) :
+lemma root_coroot_eq_pairing :
     P.toLin (P.root i) (P.coroot j) = P.pairing i j :=
   rfl
 
-lemma coroot_root_eq_pairing (j : ι) :
+lemma coroot_root_eq_pairing :
     P.toLin.flip (P.coroot i) (P.root j) = P.pairing j i := by
   simp
 
@@ -71,7 +74,7 @@ lemma reflection_apply (x : M) :
     P.reflection i x = x - (P.toLin x (P.coroot i)) • P.root i :=
   rfl
 
-lemma reflection_apply_root (j : ι) :
+lemma reflection_apply_root :
     P.reflection i (P.root j) = P.root j - (P.pairing j i) • P.root i :=
   rfl
 
@@ -129,12 +132,44 @@ lemma reflection_dualMap_eq_coreflection :
   ext n m
   simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
 
+lemma reflection_mul (x : M) :
+    (P.reflection i * P.reflection j) x = P.reflection i (P.reflection j x) := rfl
+
 lemma isCrystallographic_iff :
     P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
   rw [IsCrystallographic]
   refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
   · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
   · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
+
+lemma isReduced_iff : P.IsReduced ↔ ∀ (i j : ι), i ≠ j →
+    ¬ LinearIndependent R ![P.root i, P.root j] → P.root i = - P.root j := by
+  rw [IsReduced]
+  refine ⟨fun h i j hij hLin ↦ ?_, fun h i j hLin  ↦ ?_⟩
+  · specialize h i j hLin
+    simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, false_or]
+  · by_cases h' : i = j
+    · exact Or.inl (congrArg (⇑P.root) h')
+    · exact Or.inr (h i j h' hLin)
+
+section pairs
+
+lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
+  simp only [coxeterWeight, mul_comm]
+
+lemma IsOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
+  simp only [IsOrthogonal, and_comm]
+
+lemma IsOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
+  rw [Commute, SemiconjBy]
+  ext v
+  simp_all only [IsOrthogonal, reflection_mul, reflection_apply, smul_sub]
+  simp_all only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply,
+    root_coroot_eq_pairing, smul_eq_mul, mul_zero, sub_zero]
+  exact sub_right_comm v ((P.toLin v) (P.coroot j) • P.root j)
+      ((P.toLin v) (P.coroot i) • P.root i)
+
+end pairs
 
 variable [Finite ι]
 
