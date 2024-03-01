@@ -1904,28 +1904,13 @@ theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
 theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [SemilatticeSup α] [Nonempty α]
     [(atTop : Filter α).IsCountablyGenerated] :
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
-  haveI h_ne_bot : (atTop : Filter α).NeBot := atTop_neBot
   obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
   let xs : ℕ → α := fun n => Finset.sup' (Finset.range (n + 1)) Finset.nonempty_range_succ ys
-  have h_mono : Monotone xs := by
-    intro i j hij
-    rw [Finset.sup'_le_iff]
-    intro k hk
-    refine' Finset.le_sup'_of_le _ _ le_rfl
-    rw [Finset.mem_range] at hk ⊢
-    exact hk.trans_le (add_le_add_right hij _)
-  refine' ⟨xs, h_mono, _⟩
-  · refine' tendsto_atTop_atTop_of_monotone h_mono _
-    have : ∀ a : α, ∃ n : ℕ, a ≤ ys n := by
-      rw [tendsto_atTop_atTop] at h
-      intro a
-      obtain ⟨i, hi⟩ := h a
-      exact ⟨i, hi i le_rfl⟩
-    intro a
-    obtain ⟨i, hi⟩ := this a
-    refine' ⟨i, hi.trans _⟩
-    refine' Finset.le_sup'_of_le _ _ le_rfl
-    rw [Finset.mem_range_succ_iff]
+  have h_mono : Monotone xs := fun i j hij ↦ by
+    simp only [xs] -- Need to unfold `xs` and do alpha reduction, otherwise `gcongr` fails
+    gcongr
+  refine ⟨xs, h_mono, tendsto_atTop_mono (fun n ↦ Finset.le_sup' _ ?_) h⟩
+  simp
 #align exists_seq_monotone_tendsto_at_top_at_top Filter.exists_seq_monotone_tendsto_atTop_atTop
 
 theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type*) [SemilatticeInf α] [Nonempty α]
