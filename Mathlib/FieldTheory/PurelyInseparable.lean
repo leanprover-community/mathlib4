@@ -72,6 +72,9 @@ of fields.
 - `le_perfectClosure_iff`: an intermediate field of `E / F` is contained in the relative perfect
   closure of `F` in `E` if and only if it is purely inseparable over `F`.
 
+- `perfectClosure.perfectRing`, `perfectClosure.perfectField`: if `E` is a perfect field, then the
+  (relative) perfect closure `perfectClosure F E` is perfect.
+
 - `IsPurelyInseparable.injective_comp_algebraMap`: if `E / F` is purely inseparable, then for any
   reduced ring `L`, the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective.
   In particular, a purely inseparable field extension is an epimorphism in the category of fields.
@@ -85,11 +88,25 @@ of fields.
   and the degree of `(separableClosure F E) / F` are both finite or infinite, and when they are
   finite, they coincide.
 
-- `finSepDegree_mul_finInsepDegree`: the finite separable degree multiply by the finite
+- `Field.finSepDegree_mul_finInsepDegree`: the finite separable degree multiply by the finite
   inseparable degree is equal to the (finite) field extension degree.
 
 - `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`: the separable degrees satisfy the
   tower law: $[E:F]_s [K:E]_s = [K:F]_s$.
+
+- `IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable`,
+  `IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable'`:
+  if `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
+  for any subset `S` of `K` such that `F(S) / F` is algebraic, the `E(S) / E` and `F(S) / F` have
+  the same separable degree. In particular, if `S` is an intermediate field of `K / F` such that
+  `S / F` is algebraic, the `E(S) / E` and `S / F` have the same separable degree.
+
+- `minpoly.map_eq_of_separable_of_isPurelyInseparable`: if `K / E / F` is a field extension tower,
+  such that `E / F` is purely inseparable, then for any element `x` of `K` separable over `F`,
+  it has the same minimal polynomials over `F` and over `E`.
+
+- `Polynomial.Separable.map_irreducible_of_isPurelyInseparable`: if `E / F` is purely inseparable,
+  `f` is a separable irreducible polynomial over `F`, then it is also irreducible over `E`.
 
 ## Tags
 
