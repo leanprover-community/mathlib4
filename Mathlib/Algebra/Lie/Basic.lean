@@ -41,7 +41,7 @@ are partially unbundled.
 ## References
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
-## Tagsc
+## Tags
 
 lie bracket, jacobi identity, lie ring, lie algebra, lie module
 -/

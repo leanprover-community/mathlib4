@@ -35,7 +35,7 @@ When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
-## tags
+## Tags
 
 internally graded ring
 -/

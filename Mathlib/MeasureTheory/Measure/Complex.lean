@@ -28,7 +28,7 @@ in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
 * `MeasureTheory.ComplexMeasure.equivSignedMeasure`: is the equivalence between the complex
   measures and the type of the product of the signed measures with itself.
 
-# Tags
+## Tags
 
 Complex measure
 -/
