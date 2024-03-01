@@ -17,10 +17,9 @@ We show that  Eisenstein series of weight `k` and level `Γ(N)` with congruence 
 
 noncomputable section
 
-open ModularForm EisensteinSeries UpperHalfPlane TopologicalSpace Set
-  Metric Filter Function Complex Pointwise Manifold
+open ModularForm EisensteinSeries UpperHalfPlane Set Filter Function Complex Manifold
 
-open scoped Interval Real NNReal ENNReal Topology BigOperators Nat Classical
+open scoped Topology BigOperators Nat Classical
 
 namespace EisensteinSeries
 
@@ -80,7 +79,7 @@ lemma complex_eisSummand_differentiableOn (hk : k ≠ 0) :
     exact differentiableOn_const 0
 
 lemma eisSummad_complex_extension_differentiableOn (hk : k ≠ 0) :
-    DifferentiableOn ℂ (↑ₕ(eisSummand k a)) (UpperHalfPlane.coe '' ⊤) := by
+    DifferentiableOn ℂ (↑ₕeisSummand k a) (UpperHalfPlane.coe '' ⊤) := by
   apply DifferentiableOn.congr (complex_eisSummand_differentiableOn k a hk)
   intro z hz
   simp only [eisSummand, one_div, comp_apply, inv_inj]
@@ -91,10 +90,10 @@ lemma eisSummad_complex_extension_differentiableOn (hk : k ≠ 0) :
   rw [this]
 
 lemma eisensteinSeries_SIF_complex_differentiableOn {N : ℕ} (a : Fin 2 → ZMod N) (hk : 3 ≤ k) :
-    DifferentiableOn ℂ (↑ₕ((eisensteinSeries_SIF a k).toFun )) (UpperHalfPlane.coe '' ⊤) := by
+    DifferentiableOn ℂ (↑ₕ(eisensteinSeries_SIF a k).toFun) (UpperHalfPlane.coe '' ⊤) := by
   convert @TendstoLocallyUniformlyOn.differentiableOn (E := ℂ) (ι := (Finset ↑(gammaSet N a))) _ _ _
-    (UpperHalfPlane.coe '' ⊤) atTop (fun (s : Finset (gammaSet N a )) =>
-      ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ((eisensteinSeries_SIF a k).toFun ))
+    (UpperHalfPlane.coe '' ⊤) atTop (fun (s : Finset (gammaSet N a)) =>
+      ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z)) (↑ₕ(eisensteinSeries_SIF a k).toFun)
         (by apply atTop_neBot) (eisensteinSeries_TendstoLocallyUniformlyOn hk N a)
           ((eventually_of_forall fun s => ?_)) ?_
   · apply DifferentiableOn.sum
