@@ -22,7 +22,7 @@ import Mathlib.GroupTheory.Perm.Cycle.Basic
 Let `β` be a `Fintype` and `f : Equiv.Perm β`.
 
 * `Equiv.Perm.cycleOf`: `f.cycleOf x` is the cycle of `f` that `x` belongs to.
-* `Equiv.Perm.cycleFactors`: `f.cycleFactors` is a list of disjoint cyclic permutations 
+* `Equiv.Perm.cycleFactors`: `f.cycleFactors` is a list of disjoint cyclic permutations
   that multiply to `f`.
 -/
 
