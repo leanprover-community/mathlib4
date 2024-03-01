@@ -730,14 +730,14 @@ def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
     dsimp only [Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier,
       LocallyRingedSpace.restrict_carrier]
 
-    suffices o1 : IsOpen <| toSpec '' (Subtype.val ⁻¹' (pbo a).1 : Set (Proj.T| (pbo f)))
-    · convert o1
+    suffices o1 : IsOpen <| toSpec '' (Subtype.val ⁻¹' (pbo a).1 : Set (Proj.T| (pbo f))) by
+      convert o1
       ext s x
       simp only [Set.mem_preimage, LocallyRingedSpace.restrict_carrier,
         Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier, Set.mem_image]
       constructor
-      · intro h; exact ⟨_, h, toSpecFromSpec 𝒜 hm f_deg _⟩
-      · rintro ⟨x, hx', rfl⟩; erw [fromSpecToSpec 𝒜 hm f_deg x]; exact hx'
+      · intro h; exact ⟨_, h, toSpec_fromSpec 𝒜 hm f_deg _⟩
+      · rintro ⟨x, hx', rfl⟩; erw [fromSpec_toSpec 𝒜 hm f_deg x]; exact hx'
 
     rw [calc
       Subtype.val ⁻¹' (pbo a).1
@@ -757,11 +757,11 @@ def fromSpec {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m) :
       rfl, Set.image_iUnion]
     refine isOpen_iUnion fun i ↦ ?_
 
-    suffices : toSpec (f := f) '' {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} =
+    suffices toSpec (f := f) '' {x | x.1 ∈ (pbo f) ⊓ pbo (decompose 𝒜 a i)} =
       (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
         Quotient.mk'' ⟨m * i, ⟨decompose 𝒜 a i ^ m, SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
-          ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1
-    · erw [this]; exact (PrimeSpectrum.basicOpen _).2
+          ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 by
+      erw [this]; exact (PrimeSpectrum.basicOpen _).2
 
     apply_fun _ using Set.preimage_injective.mpr (toSpec_surjective 𝒜 hm f_deg)
     erw [Set.preimage_image_eq _ (toSpec_injective 𝒜 hm f_deg), ToSpec.preimage_eq,
@@ -782,8 +782,8 @@ def projIsoSpecTopComponent {f : A} {m : ℕ} (hm : 0 < m) (f_deg : f ∈ 𝒜 m
   hom := ProjIsoSpecTopComponent.toSpec
   inv := ProjIsoSpecTopComponent.fromSpec hm f_deg
   hom_inv_id := ConcreteCategory.hom_ext _ _ fun x ↦
-    ProjIsoSpecTopComponent.fromSpecToSpec 𝒜 hm f_deg x
+    ProjIsoSpecTopComponent.fromSpec_toSpec 𝒜 hm f_deg x
   inv_hom_id := ConcreteCategory.hom_ext _ _ fun x ↦
-    ProjIsoSpecTopComponent.toSpecFromSpec 𝒜 hm f_deg x
+    ProjIsoSpecTopComponent.toSpec_fromSpec 𝒜 hm f_deg x
 
 end AlgebraicGeometry
