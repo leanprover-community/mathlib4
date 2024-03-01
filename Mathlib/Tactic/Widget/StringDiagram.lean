@@ -21,6 +21,8 @@ open Lean Meta Elab
 open CategoryTheory
 open Mathlib.Tactic.Coherence
 
+/-! ## Normal form of 2-morphisms -/
+
 /-- Expressions for atomic 1-morphisms. -/
 structure Atom₁ : Type where
   /-- Extract a Lean expression from an `Atom₁` expression. -/
@@ -30,13 +32,13 @@ structure Atom₁ : Type where
 inductive Mor₁ : Type
   /-- `id` is the expression for `𝟙_ C`. -/
   | id : Mor₁
-  /-- `comp X Y` is the expression for `X ⊗ Y` -/
+  /-- `comp f g` is the expression for `f ⊗ g` -/
   | comp : Mor₁ → Mor₁ → Mor₁
   /-- Construct the expression for an atomic 1-morphism. -/
   | of : Atom₁ → Mor₁
   deriving Inhabited
 
-/-- Converts a 1-morphism into a list of its underlying expressions. -/
+/-- Converts a 1-morphism into a list of its components. -/
 def Mor₁.toList : Mor₁ → List Atom₁
   | .id => []
   | .comp f g => f.toList ++ g.toList
@@ -504,79 +506,92 @@ def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
   | NormalExpr.nil _ => []
   | NormalExpr.cons _ η ηs => η :: NormalExpr.toList ηs
 
+/-! ## Objects in string diagrams -/
+
+/-- Nodes for 2-morphisms in a string diagram. -/
 structure AtomNode : Type where
+  /-- The vertical position of the node in the string diagram. -/
   vPos : ℕ
+  /-- The horizontal position of the node in the string diagram, counting strings in domains. -/
   hPosSrc : ℕ
+  /-- The horizontal position of the node in the string diagram, counting strings in codomains. -/
   hPosTar : ℕ
+  /-- The underlying expression of the node. -/
   atom : Atom
 
+/-- Nodes for identity 2-morphisms in a string diagram. -/
 structure IdNode : Type where
+  /-- The vertical position of the node in the string diagram. -/
   vPos : ℕ
+  /-- The horizontal position of the node in the string diagram, counting strings in domains. -/
   hPosSrc : ℕ
+  /-- The horizontal position of the node in the string diagram, counting strings in codomains. -/
   hPosTar : ℕ
+  /-- The underlying expression of the node. -/
   id : Atom₁
 
+/-- Nodes in a string diagram. -/
 inductive Node : Type
   | atom : AtomNode → Node
   | id : IdNode → Node
 
+/-- The underlying expression of a node. -/
 def Node.e : Node → Expr
   | Node.atom n => n.atom.e
   | Node.id n => n.id.e
 
-def Node.srcLength : Node → MetaM ℕ
-  | Node.atom n => do return (← n.atom.src).toList.length
-  | Node.id _ => return 1
+/-- The domain of the 2-morphism associated with a node as a list
+(the first component is the node itself). -/
+def Node.srcList : Node → MetaM (List (Node × Atom₁))
+  | Node.atom n => return (← n.atom.src).toList.map (fun f ↦ (.atom n, f))
+  | Node.id n => return [(.id n, n.id)]
 
-def Node.tarLength : Node → MetaM ℕ
-  | Node.atom n => do return (← n.atom.tar).toList.length
-  | Node.id _ => return 1
+/-- The codomain of the 2-morphism associated with a node as a list
+(the first component is the node itself). -/
+def Node.tarList : Node → MetaM (List (Node × Atom₁))
+  | Node.atom n => return (← n.atom.tar).toList.map (fun f ↦ (.atom n, f))
+  | Node.id n => return [(.id n, n.id)]
 
+/-- The vertical position of a node in a string diagram. -/
 def Node.vPos : Node → ℕ
   | Node.atom n => n.vPos
   | Node.id n => n.vPos
 
+/-- The horizontal position of a node in a string diagram, counting strings in domains. -/
 def Node.hPosSrc : Node → ℕ
   | Node.atom n => n.hPosSrc
   | Node.id n => n.hPosSrc
 
+/-- The horizontal position of a node in a string diagram, counting strings in codomains. -/
 def Node.hPosTar : Node → ℕ
   | Node.atom n => n.hPosTar
   | Node.id n => n.hPosTar
 
-def Node.lengthSumSrc : List Node → MetaM ℕ
-  | [] => return 0
-  | n :: ns => do
-    let l ← n.srcLength
-    let ls ← Node.lengthSumSrc ns
-    return l + ls
-
-def Node.lengthSumTar : List Node → MetaM ℕ
-  | [] => return 0
-  | n :: ns => do
-    let l ← n.tarLength
-    let ls ← Node.lengthSumTar ns
-    return l + ls
-
+/-- The list of nodes associated with a 2-morphism. The position is counted from the
+specified natural numbers. -/
 def WhiskerRightExpr.nodes (v h₁ h₂ : ℕ) : WhiskerRightExpr → MetaM (List Node)
   | WhiskerRightExpr.of η => do
     return [.atom ⟨v, h₁, h₂, η⟩]
   | WhiskerRightExpr.whisker η f => do
     let ηs ← η.nodes v h₁ h₂
-    let k₁ ← Node.lengthSumSrc ηs
-    let k₂ ← Node.lengthSumTar ηs
+    let k₁ := (← ηs.mapM (fun n ↦ n.srcList)).join.length
+    let k₂ := (← ηs.mapM (fun n ↦ n.tarList)).join.length
     let s : Node := .id ⟨v, h₁ + k₁, h₂ + k₂, f⟩
     return ηs ++ [s]
 
+/-- The list of nodes associated with a 2-morphism. The position is counted from the
+specified natural numbers. -/
 def TensorHomExpr.nodes (v h₁ h₂ : ℕ) : TensorHomExpr → MetaM (List Node)
   | TensorHomExpr.of η => η.nodes v h₁ h₂
   | TensorHomExpr.cons η ηs => do
     let s₁ ← η.nodes v h₁ h₂
-    let k₁ ← Node.lengthSumSrc s₁
-    let k₂ ← Node.lengthSumTar s₁
+    let k₁ := (← s₁.mapM (fun n ↦ n.srcList)).join.length
+    let k₂ := (← s₁.mapM (fun n ↦ n.tarList)).join.length
     let s₂ ← ηs.nodes v (h₁ + k₁) (h₂ + k₂)
     return s₁ ++ s₂
 
+/-- The list of nodes associated with a 2-morphism. The position is counted from the
+specified natural numbers. -/
 def WhiskerLeftExpr.nodes (v h₁ h₂ : ℕ) : WhiskerLeftExpr → MetaM (List Node)
   | WhiskerLeftExpr.of η => η.nodes v h₁ h₂
   | WhiskerLeftExpr.whisker f η => do
@@ -584,9 +599,12 @@ def WhiskerLeftExpr.nodes (v h₁ h₂ : ℕ) : WhiskerLeftExpr → MetaM (List 
     let ss ← η.nodes v (h₁ + 1) (h₂ + 1)
     return s :: ss
 
+/-- The list of nodes at the top of a string diagram. -/
 def topNodes (η : WhiskerLeftExpr) : MetaM (List Node) := do
   return (← η.src).toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
 
+/-- The list of nodes at the top of a string diagram. The position is counted from the
+specified natural number. -/
 def NormalExpr.nodesAux (v : ℕ) : NormalExpr → MetaM (List (List Node))
   | NormalExpr.nil α => return [(α.src).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
   | NormalExpr.cons _ η ηs => do
@@ -594,17 +612,44 @@ def NormalExpr.nodesAux (v : ℕ) : NormalExpr → MetaM (List (List Node))
     let s₂ ← ηs.nodesAux (v + 1)
     return s₁ :: s₂
 
+/-- The list of nodes associated with a 2-morphism. -/
 def NormalExpr.nodes (e : NormalExpr) : MetaM (List (List Node)) := do
   let l := e.toList
   match l.head? with
   | some x₁ => return (← topNodes x₁) :: (← e.nodesAux 1)
   | _ => return []
 
+/-- Strings in a string diagram. -/
+structure Strand : Type where
+  /-- The horizontal position of the strand in the string diagram. -/
+  hPos : ℕ
+  /-- The start point of the strand in the string diagram. -/
+  startPoint : Node
+  /-- The end point of the strand in the string diagram. -/
+  endPoint : Node
+  /-- The underlying expression of the strand. -/
+  atom₁ : Atom₁
+
+/-- The vertical position of a strand in a string diagram. -/
+def Strand.vPos (s : Strand) : ℕ :=
+  s.startPoint.vPos
+
 /-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
 def pairs {α : Type} : List α → List (α × α)
   | [] => []
   | [_] => []
   | (x :: y :: ys) => (x, y) :: pairs (y :: ys)
+
+/-- The list of strands associated with a 2-morphism. -/
+def NormalExpr.strands (e : NormalExpr) : MetaM (List (List Strand)) := do
+  let l ← e.nodes
+  (pairs l).mapM fun (x, y) ↦ do
+    let xs := (← x.mapM (fun n ↦ n.tarList)).join
+    let ys := (← y.mapM (fun n ↦ n.srcList)).join
+    if xs.length ≠ ys.length then
+      throwError "The number of the start and end points of a string does not match."
+    (xs.zip ys).enum.mapM fun (k, (n₁, f₁), (n₂, _)) => do
+      return ⟨n₁.hPosTar + k, n₁, n₂, f₁⟩
 
 /-- A type for Penrose variables. -/
 structure PenroseVar : Type where
@@ -614,14 +659,17 @@ structure PenroseVar : Type where
   indices : List ℕ
   /-- The underlying expression of the variable. -/
   e : Expr
-  deriving Inhabited
-
-instance : BEq PenroseVar := ⟨fun x y => x.ident == y.ident && x.indices == y.indices⟩
-
-instance : Hashable PenroseVar := ⟨fun v ↦ hash (v.ident, v.indices)⟩
 
 instance : ToString PenroseVar :=
   ⟨fun v => v.ident ++ v.indices.foldl (fun s x => s ++ s!"_{x}") ""⟩
+
+/-- The penrose variable assciated with a node. -/
+def Node.toPenroseVar (n : Node) : PenroseVar :=
+  ⟨"E", [n.vPos, n.hPosSrc, n.hPosTar], n.e⟩
+
+/-- The penrose variable assciated with a strand. -/
+def Strand.toPenroseVar (s : Strand) : PenroseVar :=
+  ⟨"f", [s.vPos, s.hPos], s.atom₁.e⟩
 
 /-- Expressions to display as labels in a diagram. -/
 abbrev ExprEmbeds := Array (String × Expr)
@@ -638,10 +686,6 @@ structure DiagramState where
   /-- Components to display as labels in the diagram,
   mapped as name ↦ (type, html). -/
   embeds : HashMap String (String × Html) := .empty
-  /-- The start point of a string. -/
-  startPoint : HashMap PenroseVar PenroseVar := .empty
-  /-- The end point of a string. -/
-  endPoint : HashMap PenroseVar PenroseVar := .empty
 
 /-- The monad for building a string diagram. -/
 abbrev DiagramBuilderM := StateT DiagramState MetaM
@@ -694,52 +738,28 @@ open scoped Jsx in
 display as labels in the diagram. -/
 def mkStringDiag (e : Expr) : MetaM Html := do
   DiagramBuilderM.run do
-    let nodes ← (← eval e).nodes
-    /- Check that the numbers of the start and end points of strings are the same. -/
-    for (l₁, l₂) in pairs nodes do
-      if (← Node.lengthSumTar l₁) ≠ (← Node.lengthSumSrc l₂) then
-        throwError "The number of the start and end points of a string does not match."
+    let e' ← eval e
+    let nodes ← e'.nodes
+    let strands ← e'.strands
+    /- Add 2-morphisms. -/
     for x in nodes.join do
       match x with
-      | .atom x => do
-        let v : PenroseVar := ⟨"E", [x.vPos, x.hPosSrc, x.hPosTar], x.atom.e⟩
-        addPenroseVar "Atom" v
-        for (k, y) in (← x.atom.src).toList.enum do
-          let v_mor : PenroseVar := ⟨"f", [x.vPos, x.hPosSrc + k], y.e⟩
-          modify fun st => { st with endPoint := st.endPoint.insert v_mor v }
-        for (k, y) in (← x.atom.tar).toList.enum do
-          let v_mor : PenroseVar := ⟨"f", [x.vPos + 1, x.hPosTar + k], y.e⟩
-          modify fun st => { st with startPoint := st.startPoint.insert v_mor v }
-      | .id x => do
-        let v : PenroseVar := ⟨"E", [x.vPos, x.hPosSrc, x.hPosTar], x.id.e⟩
-        addPenroseVar "Id" v
-        let v_mor : PenroseVar := ⟨"f", [x.vPos, x.hPosSrc], x.id.e⟩
-        let v_mor' : PenroseVar := ⟨"f", [x.vPos + 1, x.hPosTar], x.id.e⟩
-        modify fun st => { st with
-          endPoint := st.endPoint.insert v_mor v
-          startPoint := st.startPoint.insert v_mor' v }
+      | .atom _ => do addPenroseVar "Atom" x.toPenroseVar
+      | .id _ => do addPenroseVar "Id" x.toPenroseVar
+    /- Add constraints. -/
     for l in nodes do
-      for (x, y) in pairs l do
-        let v₁ : PenroseVar := ⟨"E", [x.vPos, x.hPosSrc, x.hPosTar], x.e⟩
-        let v₂ : PenroseVar := ⟨"E", [y.vPos, y.hPosSrc, y.hPosTar], y.e⟩
-        addInstruction s!"Left({v₁}, {v₂})"
+      for (x₁, x₂) in pairs l do
+        addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
+    /- Add constraints. -/
     for (l₁, l₂) in pairs nodes do
-      if let .some x := l₁.head? then
-        if let .some y := l₂.head? then
-          let v₁ : PenroseVar := ⟨"E", [x.vPos, x.hPosSrc, x.hPosTar], x.e⟩
-          let v₂ : PenroseVar := ⟨"E", [y.vPos, y.hPosSrc, y.hPosTar], y.e⟩
-          addInstruction s!"Above({v₁}, {v₂})"
-    for l in nodes do
-      for x in l do
-        let s ← show MetaM (List Atom₁) from match x with
-        | .atom x => do return (← x.atom.src).toList
-        | .id x => return [x.id]
-        for (k, f) in s.enum do
-          let v : PenroseVar := ⟨"f", [x.vPos, x.hPosSrc + k], f.e⟩
-          let st ← get
-          if let .some vStart := st.startPoint.find? v then
-            if let .some vEnd := st.endPoint.find? v then
-              addConstructor "Mor1" v "MakeString" [vStart, vEnd]
+      if let .some x₁ := l₁.head? then
+        if let .some x₂ := l₂.head? then
+          addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
+    /- Add 1-morphisms as strings. -/
+    for l in strands do
+      for s in l do
+        addConstructor "Mor1" s.toPenroseVar
+          "MakeString" [s.startPoint.toPenroseVar, s.endPoint.toPenroseVar]
     match ← buildDiagram with
     | some html => return html
     | none => return <span>No 2-morphisms.</span>
