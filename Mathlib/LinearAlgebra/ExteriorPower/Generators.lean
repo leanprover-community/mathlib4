@@ -110,11 +110,11 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
           simp only [Subtype.mk.injEq]
           exact ha.2
       have hcard : (image α univ).card = n := by
-        suffices h : Fintype.card (image α univ) = n
-        · conv_rhs => rw [← h]
+        suffices h : Fintype.card (image α univ) = n by
+          conv_rhs => rw [← h]
           simp only [mem_image, mem_univ, true_and, Fintype.card_coe]
-        · rw [← Fintype.card_of_bijective hbij]
-          simp only [Fintype.card_fin]
+        rw [← Fintype.card_of_bijective hbij]
+        simp only [Fintype.card_fin]
       set g' : Fin n → M := fun i => v (orderIsoOfFin _ hcard i)
       have hg' : ExteriorAlgebra.ιMulti R n g' ∈ Submodule.span R (Set.range
         (ExteriorAlgebra.ιMulti_family R n v)) := by
