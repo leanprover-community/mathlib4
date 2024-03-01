@@ -791,6 +791,53 @@ theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ :=
   lt_iff_lt_of_le_iff_le (inv_le_of_neg hb ha)
 #align lt_inv_of_neg lt_inv_of_neg
 
+/-!
+### Monotonicity results involving inversion
+-/
+
+
+theorem sub_inv_antitoneOn_Ioi :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Ioi c) :=
+  antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
+    inv_le_inv (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+
+theorem sub_inv_antitoneOn_Iio :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Iio c) :=
+  antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
+    inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+
+theorem sub_inv_antitoneOn_Icc_right (ha : c < a) :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+  by_cases hab : a ≤ b
+  · exact sub_inv_antitoneOn_Ioi.mono <| (Set.Icc_subset_Ioi_iff hab).mpr ha
+  · simp [hab, Set.Subsingleton.antitoneOn]
+
+theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+  by_cases hab : a ≤ b
+  · exact sub_inv_antitoneOn_Iio.mono <| (Set.Icc_subset_Iio_iff hab).mpr ha
+  · simp [hab, Set.Subsingleton.antitoneOn]
+
+theorem inv_antitoneOn_Ioi :
+    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Ioi 0) := by
+  convert sub_inv_antitoneOn_Ioi
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Iio :
+    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Iio 0) := by
+  convert sub_inv_antitoneOn_Iio
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
+    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+  convert sub_inv_antitoneOn_Icc_right ha
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Icc_left (hb : b < 0) :
+    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+  convert sub_inv_antitoneOn_Icc_left hb
+  exact (sub_zero _).symm
+
 /-! ### Relating two divisions -/
 
 
