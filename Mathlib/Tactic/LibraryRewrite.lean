@@ -187,10 +187,29 @@ structure RewriteApplication extends RewriteLemma where
   replacement : CodeWithInfos
   extraGoals : Array CodeWithInfos
 
-/-- Return `e` as a string for pasting into the editor. -/
-def toPasteString (e : Expr) : MetaM String :=
-  withOptions (·.setBool ``pp.universes false) do
-    return Format.pretty (← ppExpr e)
+
+open PrettyPrinter Delaborator SubExpr in
+/-- if `e` is an application of a rewrite lemma,
+return `e` as a string for pasting into the editor. -/
+def printRewriteLemma (e : Expr) (explicit : Bool) : MetaM String :=
+  -- we ignore the `Options` given by the user
+  withOptions (fun _ => Options.empty
+    |>.setBool `pp.universes false
+    |>.setBool `pp.instances false
+    |>.setBool `pp.unicode.fun true) do
+  if explicit then
+    let (stx, _) ← delabCore e (delab := delabExplicit)
+    return Format.pretty (← ppTerm stx)
+  else
+    return Format.pretty (← Meta.ppExpr e)
+where
+  /-- See `delabApp` and `delabAppCore`. -/
+  delabExplicit : Delab := do
+    let tagAppFn ← getPPOption getPPTagAppFns
+    let e ← getExpr
+    let paramKinds ← getParamKinds e.getAppFn e.getAppArgs
+    delabAppExplicitCore e.getAppNumArgs delabConst paramKinds tagAppFn
+
 
 def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
     MetaM (Option RewriteApplication) := do
@@ -208,14 +227,15 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
   if lhs == rhs then return none
 
   let mut extraGoals := #[]
+  let mut allAssigned := true
   for mvar in mvars, bi in bis do
     let mvarId := mvar.mvarId!
     -- we need to check that all instances can be synthesized
     if bi.isInstImplicit then
       unless (← trySynthInstance (← mvarId.getType)) matches .some _ do
         return none
-    else if bi.isExplicit then
-      if !(← mvarId.isAssigned) then
+    else if !(← mvarId.isAssigned) then
+        allAssigned := false
         -- if the userName has macro scopes, we can't use the name, so we use `?_` instead
         if (← mvarId.getDecl).userName.hasMacroScopes then
           mvarId.setUserName `«_»
@@ -236,7 +256,7 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
     | some pos =>
       if positions.size == 1 then "" else
         s! " (config := \{ occs := .pos [{pos+1}]})"
-  let tactic := s! "rw{cfg} [{symm}{← toPasteString lemmaApplication}]{location}"
+  let tactic := s! "rw{cfg} [{symm}{← printRewriteLemma lemmaApplication !allAssigned}]{location}"
   return some { rwLemma with tactic, extraGoals, replacement }
 
 
