@@ -284,7 +284,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
   use y, hy
   simp only [sub_self, zero_pow, Ne.def, Nat.succ_ne_zero, not_false_iff, zero_sub, mul_neg] at h
   rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
-  field_simp [xy_ne y hy, Nat.factorial];  ring
+  field_simp [xy_ne y hy, Nat.factorial]; ring
 #align taylor_mean_remainder_lagrange taylor_mean_remainder_lagrange
 
 /-- **Taylor's theorem** with the Cauchy form of the remainder.
