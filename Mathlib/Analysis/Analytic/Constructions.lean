@@ -5,6 +5,7 @@ Authors: David Loeffler, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 /-!
 # Various ways to combine analytic functions
@@ -259,9 +260,9 @@ lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
   let f3 : 𝕝 → 𝕝 := fun c ↦ 1 - c / z
   have feq : f1 ∘ f2 ∘ f3 = Inv.inv := by
     ext1 x
-    dsimp only [Function.comp_apply]
+    dsimp only [f1, f2, f3, Function.comp_apply]
     field_simp
-  have f3val : f3 z = 0 := by simp only [div_self hz, sub_self]
+  have f3val : f3 z = 0 := by simp only [f3, div_self hz, sub_self]
   have f3an : AnalyticAt 𝕜 f3 z := by
     apply analyticAt_const.sub
     simpa only [div_eq_inv_mul] using analyticAt_const.mul (analyticAt_id 𝕜 z)

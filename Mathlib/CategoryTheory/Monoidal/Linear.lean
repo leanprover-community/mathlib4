@@ -32,9 +32,9 @@ variable [MonoidalCategory C]
 /-- A category is `MonoidalLinear R` if tensoring is `R`-linear in both factors.
 -/
 class MonoidalLinear [MonoidalPreadditive C] : Prop where
-  whiskerLeft_smul : ∀ (X : C) {Y Z : C} (r : R) (f : Y ⟶ Z) , 𝟙 X ⊗ (r • f) = r • (𝟙 X ⊗ f) := by
+  whiskerLeft_smul : ∀ (X : C) {Y Z : C} (r : R) (f : Y ⟶ Z) , X ◁ (r • f) = r • (X ◁ f) := by
     aesop_cat
-  smul_whiskerRight : ∀ (r : R) {Y Z : C} (f : Y ⟶ Z) (X : C), (r • f) ⊗ 𝟙 X = r • (f ⊗ 𝟙 X) := by
+  smul_whiskerRight : ∀ (r : R) {Y Z : C} (f : Y ⟶ Z) (X : C), (r • f) ▷ X = r • (f ▷ X) := by
     aesop_cat
 #align category_theory.monoidal_linear CategoryTheory.MonoidalLinear
 
@@ -63,12 +63,12 @@ theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linea
   { whiskerLeft_smul := by
       intros X Y Z r f
       apply F.toFunctor.map_injective
-      rw [F.map_whiskerLeft]
+      rw [F.map_whiskerLeft']
       simp
     smul_whiskerRight := by
       intros r X Y f Z
       apply F.toFunctor.map_injective
-      rw [F.map_whiskerRight]
+      rw [F.map_whiskerRight']
       simp }
 #align category_theory.monoidal_linear_of_faithful CategoryTheory.monoidalLinearOfFaithful
 

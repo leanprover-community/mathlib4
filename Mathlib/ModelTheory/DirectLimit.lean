@@ -166,7 +166,7 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
 
 attribute [local instance] DirectLimit.setoid
 
--- Porting note: Added local instance
+-- Porting note (#10754): Added local instance
 attribute [local instance] DirectLimit.sigmaStructure
 
 
@@ -406,7 +406,7 @@ theorem cg {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     refine' hS (out x).1 ⟨(out x).2, _, _⟩
     · rw [(Classical.choose_spec (h (out x).1).out).2]
       trivial
-    · simp only [Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
+    · simp only [out, Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
 #align first_order.language.direct_limit.cg FirstOrder.Language.DirectLimit.cg
 
 instance cg' {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]

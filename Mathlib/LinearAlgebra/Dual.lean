@@ -369,12 +369,12 @@ theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
   b.toDual_injective (by rwa [_root_.map_zero])
 #align basis.to_dual_inj Basis.toDual_inj
 
--- Porting note: broken dot notation lean4#1910 LinearMap.ker
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
 theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
   ker_eq_bot'.mpr b.toDual_inj
 #align basis.to_dual_ker Basis.toDual_ker
 
--- Porting note: broken dot notation lean4#1910 LinearMap.range
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
   refine' eq_top_iff'.2 fun f => _
   let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
@@ -491,7 +491,7 @@ theorem eval_ker {ι : Type*} (b : Basis ι R M) :
   exact (Basis.forall_coord_eq_zero_iff _).mp fun i => hm (b.coord i)
 #align basis.eval_ker Basis.eval_ker
 
--- Porting note: broken dot notation lean4#1910 LinearMap.range
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
     LinearMap.range (Dual.eval R M) = ⊤ := by
   classical
@@ -543,7 +543,7 @@ section
 
 variable (K) (V)
 
--- Porting note: broken dot notation lean4#1910 LinearMap.ker
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
 theorem eval_ker : LinearMap.ker (eval K V) = ⊥ := by
   classical exact (Module.Free.chooseBasis K V).eval_ker
 #align module.eval_ker Module.eval_ker
@@ -619,7 +619,7 @@ theorem dual_rank_eq [Module.Finite K V] :
   (Module.Free.chooseBasis K V).dual_rank_eq
 #align module.dual_rank_eq Module.dual_rank_eq
 
--- Porting note: broken dot notation lean4#1910 LinearMap.range
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem erange_coe [Module.Finite K V] : LinearMap.range (eval K V) = ⊤ :=
   (Module.Free.chooseBasis K V).eval_range
 #align module.erange_coe Module.erange_coe
@@ -694,7 +694,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       (dualProdDualEquivDual R M N).dualMap.trans
         (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
     have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
-      ext m f <;> simp
+      ext m f <;> simp [e]
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
@@ -758,7 +758,7 @@ def evalUseFiniteInstance : TacticM Unit := do
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
--- @[nolint has_nonempty_instance] Porting note: removed
+-- @[nolint has_nonempty_instance] Porting note (#10927): removed
 structure Module.DualBases (e : ι → M) (ε : ι → Dual R M) : Prop where
   eval : ∀ i j : ι, ε i (e j) = if i = j then 1 else 0
   protected total : ∀ {m : M}, (∀ i, ε i m = 0) → m = 0
@@ -902,7 +902,7 @@ theorem dualRestrict_apply (W : Submodule R M) (φ : Module.Dual R M) (x : W) :
   that `φ w = 0` for all `w ∈ W`. -/
 def dualAnnihilator {R : Type u} {M : Type v} [CommSemiring R] [AddCommMonoid M] [Module R M]
     (W : Submodule R M) : Submodule R <| Module.Dual R M :=
--- Porting note: broken dot notation lean4#1910 LinearMap.ker
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
   LinearMap.ker W.dualRestrict
 #align submodule.dual_annihilator Submodule.dualAnnihilator
 
@@ -916,7 +916,7 @@ theorem mem_dualAnnihilator (φ : Module.Dual R M) : φ ∈ W.dualAnnihilator �
 /-- That $\operatorname{ker}(\iota^* : V^* \to W^*) = \operatorname{ann}(W)$.
 This is the definition of the dual annihilator of the submodule $W$. -/
 theorem dualRestrict_ker_eq_dualAnnihilator (W : Submodule R M) :
-    -- Porting note: broken dot notation lean4#1910 LinearMap.ker
+    -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
     LinearMap.ker W.dualRestrict = W.dualAnnihilator :=
   rfl
 #align submodule.dual_restrict_ker_eq_dual_annihilator Submodule.dualRestrict_ker_eq_dualAnnihilator
@@ -1171,7 +1171,7 @@ theorem quotAnnihilatorEquiv_apply (W : Subspace K V) (φ : Module.Dual K V) :
 #align subspace.quot_annihilator_equiv_apply Subspace.quotAnnihilatorEquiv_apply
 
 /-- The natural isomorphism from the dual of a subspace `W` to `W.dualLift.range`. -/
--- Porting note: broken dot notation lean4#1910 LinearMap.range
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 noncomputable def dualEquivDual (W : Subspace K V) :
     Module.Dual K W ≃ₗ[K] LinearMap.range W.dualLift :=
   LinearEquiv.ofInjective _ dualLift_injective
@@ -1216,7 +1216,7 @@ theorem dualAnnihilator_dualAnnihilator_eq (W : Subspace K V) :
 #align subspace.dual_annihilator_dual_annihilator_eq Subspace.dualAnnihilator_dualAnnihilator_eq
 
 /-- The quotient by the dual is isomorphic to its dual annihilator.  -/
--- Porting note: broken dot notation lean4#1910 LinearMap.range
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 noncomputable def quotDualEquivAnnihilator (W : Subspace K V) :
     (Module.Dual K V ⧸ LinearMap.range W.dualLift) ≃ₗ[K] W.dualAnnihilator :=
   LinearEquiv.quotEquivOfQuotEquiv <| LinearEquiv.trans W.quotAnnihilatorEquiv W.dualEquivDual
@@ -1268,7 +1268,7 @@ variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M�
 
 variable (f : M₁ →ₗ[R] M₂)
 
--- Porting note: broken dot notation lean4#1910 LinearMap.ker
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
 theorem ker_dualMap_eq_dualAnnihilator_range :
     LinearMap.ker f.dualMap = f.range.dualAnnihilator := by
   ext
@@ -1277,7 +1277,7 @@ theorem ker_dualMap_eq_dualAnnihilator_range :
   rfl
 #align linear_map.ker_dual_map_eq_dual_annihilator_range LinearMap.ker_dualMap_eq_dualAnnihilator_range
 
--- Porting note: broken dot notation lean4#1910 LinearMap.range
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem range_dualMap_le_dualAnnihilator_ker :
     LinearMap.range f.dualMap ≤ f.ker.dualAnnihilator := by
   rintro _ ⟨ψ, rfl⟩
@@ -1339,7 +1339,7 @@ theorem dualPairing_apply {W : Submodule R M} (φ : Module.Dual R M) (x : W) :
   rfl
 #align submodule.dual_pairing_apply Submodule.dualPairing_apply
 
--- Porting note: broken dot notation lean4#1910 LinearMap.range
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 /-- That $\operatorname{im}(q^* : (V/W)^* \to V^*) = \operatorname{ann}(W)$. -/
 theorem range_dualMap_mkQ_eq (W : Submodule R M) :
     LinearMap.range W.mkQ.dualMap = W.dualAnnihilator := by
@@ -1362,7 +1362,7 @@ def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
   LinearEquiv.ofLinear
     (W.mkQ.dualMap.codRestrict W.dualAnnihilator fun φ =>
--- Porting note: broken dot notation lean4#1910 LinearMap.mem_range_self
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.mem_range_self
       W.range_dualMap_mkQ_eq ▸ LinearMap.mem_range_self W.mkQ.dualMap φ)
     W.dualCopairing (by ext; rfl) (by ext; rfl)
 #align submodule.dual_quot_equiv_dual_annihilator Submodule.dualQuotEquivDualAnnihilator
@@ -1421,7 +1421,7 @@ namespace LinearMap
 
 open Submodule
 
--- Porting note: broken dot notation lean4#1910 LinearMap.range
+-- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
     (hf : Function.Surjective f) : LinearMap.range f.dualMap = f.ker.dualAnnihilator :=
   ((f.quotKerEquivOfSurjective hf).dualMap.range_comp _).trans f.ker.range_dualMap_mkQ_eq
@@ -1436,7 +1436,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
     rw [← range_eq_top, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
   convert this using 1
-  -- Porting note: broken dot notation lean4#1910
+  -- Porting note (#11036): broken dot notation lean4#1910
   · calc
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
       _ = _ := ?_
@@ -1479,7 +1479,7 @@ theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function
   ⟨φ.comp f', ext fun x ↦ congr(φ <| $hf' x)⟩
 #align linear_map.dual_map_surjective_of_injective LinearMap.dualMap_surjective_of_injective
 
-  -- Porting note: broken dot notation lean4#1910 LinearMap.range
+  -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem range_dualMap_eq_dualAnnihilator_ker (f : V₁ →ₗ[K] V₂) :
     LinearMap.range f.dualMap = f.ker.dualAnnihilator :=
   range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective f <|
@@ -1535,8 +1535,8 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
     (W ⊓ W').dualAnnihilator = W.dualAnnihilator ⊔ W'.dualAnnihilator := by
   refine' le_antisymm _ (sup_dualAnnihilator_le_inf W W')
   let F : V₁ →ₗ[K] (V₁ ⧸ W) × V₁ ⧸ W' := (Submodule.mkQ W).prod (Submodule.mkQ W')
-  -- Porting note: broken dot notation lean4#1910 LinearMap.ker
-  have : LinearMap.ker F = W ⊓ W' := by simp only [LinearMap.ker_prod, ker_mkQ]
+  -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
+  have : LinearMap.ker F = W ⊓ W' := by simp only [F, LinearMap.ker_prod, ker_mkQ]
   rw [← this, ← LinearMap.range_dualMap_eq_dualAnnihilator_ker]
   intro φ
   rw [LinearMap.mem_range]
@@ -1594,7 +1594,7 @@ namespace LinearMap
 
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
-    -- Porting note: broken dot notation lean4#1910
+    -- Porting note (#11036): broken dot notation lean4#1910
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
   rw [congr_arg dualMap (show f = (range f).subtype.comp f.rangeRestrict by rfl),
     ← dualMap_comp_dualMap, range_comp,

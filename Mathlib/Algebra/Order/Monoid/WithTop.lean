@@ -163,12 +163,12 @@ theorem add_eq_coe :
   | some a, some b, c => by norm_cast; simp
 #align with_top.add_eq_coe WithTop.add_eq_coe
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 theorem add_coe_eq_top_iff {x : WithTop α} {y : α} : x + y = ⊤ ↔ x = ⊤ := by simp
 #align with_top.add_coe_eq_top_iff WithTop.add_coe_eq_top_iff
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by simp
 #align with_top.coe_add_eq_top_iff WithTop.coe_add_eq_top_iff
@@ -428,7 +428,7 @@ theorem zero_lt_top [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=
   coe_lt_top 0
 #align with_top.zero_lt_top WithTop.zero_lt_top
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 @[norm_cast]
 theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
@@ -638,13 +638,13 @@ theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a
   WithTop.add_eq_coe
 #align with_bot.add_eq_coe WithBot.add_eq_coe
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 theorem add_coe_eq_bot_iff : a + y = ⊥ ↔ a = ⊥ :=
   WithTop.add_coe_eq_top_iff
 #align with_bot.add_coe_eq_bot_iff WithBot.add_coe_eq_bot_iff
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 theorem coe_add_eq_bot_iff : ↑x + b = ⊥ ↔ b = ⊥ :=
   WithTop.coe_add_eq_top_iff
