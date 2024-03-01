@@ -186,6 +186,9 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
   Subtype.ext_iff_val.symm
 #align set_like.coe_eq_coe SetLike.coe_eq_coe
 
+-- porting note: this is not necessary anymore due to the way coercions work
+ #noalign set_like.coe_mk
+
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
