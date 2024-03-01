@@ -42,8 +42,8 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 
 ## Implementation notes
 In `Module.Flat.iff_rTensor_preserves_injective_linearMap`, we require that the universe level of
-the ring is lower than or equal to that of the ring. This requirement is to make sure ideals of the
-ring can be lifited to the universe of the module. It is possible that this lemma also holds even
+the ring is lower than or equal to that of the module. This requirement is to make sure ideals of 
+the ring can be lifited to the universe of the module. It is unclear if this lemma also holds 
 when module lives in a lower universe.
 
 This requirement also appears in `Algebra/ModuleCat/Injective`.
