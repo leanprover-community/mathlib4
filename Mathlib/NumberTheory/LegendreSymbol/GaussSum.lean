@@ -291,7 +291,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   -- Porting note: The type is actually `PrimitiveAddChar (ZMod (8 : ℕ+)) F`, but this seems faster.
   let ψ₈ : PrimitiveAddChar (ZMod 8) F :=
     primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
-  -- Porting note: unifying this is very slow, so only do it once.
+  -- Porting note (#11083): unifying this is very slow, so only do it once.
   let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
   let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
