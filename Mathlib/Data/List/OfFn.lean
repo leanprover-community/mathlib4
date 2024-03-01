@@ -52,7 +52,7 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by s
   simp only [getElem, Array.get] at this
   simp only [Fin.cast_mk]
   rw [← this]
-  congr <;> simp [ofFn]
+  congr
 
 /-- The `n`th element of a list -/
 @[simp]

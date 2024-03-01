@@ -85,11 +85,12 @@ lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
   | 0 => by simp [Prod.ext_iff]
   | n + 1 => by
     simp [box_succ_eq_sdiff, Prod.le_def]
-    -- FIXME nightly-testing: apparent omega regression?
-    -- There is an expected regression because we no longer identify atoms up to defeq,
-    -- but I don't see that being a problem here:
-    sorry
-    -- omega
+    -- Adaptation note: v4.7.0-rc1. `omega` no longer identifies atoms up to defeq.
+    -- (This had become a performance bottleneck.)
+    -- We need a tactic for normalising instances, to avoid the `have`/`simp` dance below:
+    have : @Nat.cast ℤ instNatCastInt n = @Nat.cast ℤ AddMonoidWithOne.toNatCast n := rfl
+    simp only [this]
+    omega
 
 -- TODO: Can this be generalised to locally finite archimedean ordered rings?
 lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by
