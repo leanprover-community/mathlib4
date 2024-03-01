@@ -266,7 +266,14 @@ theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α �
   exact fun h => False.elim (b.property h)
 #align equiv.option_subtype_symm_apply_symm_apply Equiv.optionSubtype_symm_apply_symm_apply
 
-def toOption (x : α) [DecidableEq α] : α ≃ Option {y : α // y ≠ x} :=
+def toOption [DecidableEq α] (x : α) : α ≃ Option {y : α // y ≠ x} :=
   optionSubtype x |>.symm (.refl _) |>.1.symm
+
+lemma toOption_apply_some [DecidableEq α] (x y : α) (h : y ≠ x) :
+    toOption x y = some ⟨y, h⟩ := by
+  simp [toOption, optionSubtype, dif_neg h]
+
+lemma toOption_apply_none [DecidableEq α] (x : α) : toOption x x = none := by
+  simp [toOption, optionSubtype, dif_pos rfl]
 
 end Equiv
