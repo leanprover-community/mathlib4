@@ -57,7 +57,7 @@ lemma sin_le (hx : 0 ≤ x) : sin x ≤ x := by
 lemma lt_sin (hx : x < 0) : x < sin x := by simpa using sin_lt <| neg_pos.2 hx
 lemma le_sin (hx : x ≤ 0) : x ≤ sin x := by simpa using sin_le <| neg_nonneg.2 hx
 
-lemma cos_quadratic_lower_bound : 1 - x ^ 2 / 2 ≤ cos x := by
+lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   wlog hx₀ : 0 ≤ x
   · simpa using this $ neg_nonneg.2 $ le_of_not_le hx₀
   suffices MonotoneOn (fun x ↦ cos x + x ^ 2 / 2) (Ici 0) by
