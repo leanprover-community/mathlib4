@@ -12,6 +12,7 @@ import Mathlib.FieldTheory.RatFunc
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.Quotient
 
 
 /-!
@@ -389,9 +390,12 @@ theorem gauss_Monic (n k : ℕ) (hkn : k ≤ n) : Monic (gauss n k) := by
 --theorem gauss_eq_zero_iff {n k : ℕ} : n.gauss k = 0 ↔ n < k := by sorry
 
 def q_factorial'_desc : ℕ → ℕ → ℤ[X]
-  | n, 0 => X ^ n - 1
+  | _, 0 => 1
   | 0, _ + 1 => 0
-  | n, k + 1 => (X ^ n - X ^ (k + 1)) * q_factorial'_desc n k
+  | n, k + 1 => (X ^ n - X ^ k) * q_factorial'_desc n k
+
+@[simp] theorem q_factorial'_desc_zero (n : ℕ) : q_factorial'_desc n 0 = 1 := by
+  rw [q_factorial'_desc]
 
 end Nat
 
@@ -401,7 +405,7 @@ variable {K : Type u} {V : Type v}
 
 section subspacesCard
 
-variable [DivisionRing K] [AddCommGroup V] [Module K V]
+variable [Field K] [AddCommGroup V] [Module K V]
 
 /- Auxiliary function to construct the list of all sublists of a given length. Given an
 integer `n`, a list `l`, a function `f` and an auxiliary list `L`, it returns the list made of
@@ -436,7 +440,54 @@ def Grassmannian (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 [Fintype K] [FiniteDimensional K V] (k : ℕ) :=
 {W : Submodule K V | FiniteDimensional.finrank K W = k}
 
-variable [Fintype K] [FiniteDimensional K V] [DecidableEq V] [DecidableEq (Submodule K V)]
+variable [FiniteDimensional K V] [Fintype K] [Fintype V] [DecidableEq (Submodule K V)]
+variable [∀ n : ℕ, DecidablePred fun (v : ((Fin n) → V)) ↦ LinearIndependent K v]
+
+-- show bijection with projection first
+-- count linear independent sets as subtype of powerset?
+
+-- needs a decidablepred instance that i don't like
+/-- Finset of linear independent vectors of card n in V -/
+
+def succDimSubspaces_equivDimSubspaces (a : V) (ha : a ≠ 0) (k : ℕ) :
+  {W : Submodule K V | FiniteDimensional.finrank K W = k + 1 ∧ a ∈ W} ≃
+  {W : Submodule K (V ⧸ (K ∙ a)) | FiniteDimensional.finrank K W = k} where
+    toFun := λ x => ⟨Submodule.map (K ∙ a).mkQ x, by
+      simp
+      obtain ⟨hx1, hx2⟩ := x.2
+      rw [← Submodule.finrank_quotient_add_finrank (K ∙ ⟨a, hx2⟩), finrank_span_singleton] at hx1
+      simp [Order.succ_eq_succ_iff] at hx1
+      simp [← hx1]
+
+      sorry
+      simp
+      apply ha⟩
+    invFun := λ y => ⟨Submodule.comapMkQOrderEmbedding (K ∙ a) y ⊔ (K ∙ a), by sorry⟩
+    left_inv := λ x => by
+      simp
+      sorry
+    right_inv := λ y => by
+      simp
+      sorry
+
+def linIndCard (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] [Fintype K] [Fintype V]
+[FiniteDimensional K V] [∀ n : ℕ, DecidablePred fun (v : ((Fin n) → V)) ↦ LinearIndependent K v]
+(n : ℕ) : Finset ((Fin n) → V) :=
+  (@Finset.univ ((Fin n) → V)).filter (λ v => LinearIndependent K v)
+
+lemma linIndCardEqQFactDesc (n k : ℕ) :
+  (q_factorial'_desc n k).eval ↑(Fintype.card K) = (linIndCard K V k).card := by
+  induction' k with k hk
+  rw [linIndCard, q_factorial'_desc_zero]
+  simp
+  rw [Finset.filter_singleton, if_pos]
+  simp
+  rw [default]
+  rw [Fintype.linearIndependent_iff]
+  intros g hg i
+  sorry
+
+  sorry
 
 lemma dim_unique_subspaces [Nontrivial V] (h : 0 < FiniteDimensional.finrank K V) :
 ∃ (X : Finset (Submodule K V)), ∀ (y : Submodule K V), y ∈ X → FiniteDimensional.finrank K y = 1 ∧
@@ -444,9 +495,19 @@ Finset.card X = FiniteDimensional.finrank K V ∧ (Sup X) = V := by
   have B := (FiniteDimensional.finBasis K V)
   use Finset.image (λ x => K ∙ ((DFunLike.coe B) x)) (@Finset.univ (Fin (FiniteDimensional.finrank K V)) _)
   intros y hyX
-  rw [Finset.mem_image] at hyX
-  obtain ⟨a, ⟨ha1, ha2⟩⟩ := hyX
-  rw [← ha2]
+  obtain ⟨a, ⟨ha1, rfl⟩⟩ := Finset.mem_image.1 hyX
+  refine ⟨finrank_span_singleton (B.ne_zero a), ⟨?_, ?_⟩⟩
+  apply Eq.symm
+  apply FiniteDimensional.finrank_eq_of_rank_eq
+  rw [rank_eq_card_basis B]
+  sorry
+  --rw [← Submodule.span_iUnion]
+  --rw [Submodule.span_eq_iSup_of_singleton_spans]
+  --simp
+  --have h2 := FiniteDimensional.finrank_eq_card_basis B
+
+  --rw [FiniteDimensional.finrank_eq_card_basis']
+
   --simp
   --rw [← ⊤.range_subtype, ← Submodule.map_top, ← B.span_eq]
 
@@ -455,6 +516,7 @@ Finset.card X = FiniteDimensional.finrank K V ∧ (Sup X) = V := by
   have M2 := set.image M (@univ (fin (finite_dimensional.finrank K ↥S)) _),
   use M2,-/
   sorry
+
 
 -- linearIndependent_fin_cons
 theorem grassmannian_finite [Fintype K] [FiniteDimensional K V] (k : ℕ) :
