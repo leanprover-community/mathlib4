@@ -54,7 +54,7 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
   Q
   ```
 -/
-class Module.Injective : Prop where
+@[mk_iff] class Module.Injective : Prop where
   out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
     (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] Q),
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x

@@ -80,7 +80,7 @@ from `B⋆` to `A⋆`.
   map_smul' r c := by ext x; exact congr(c $(f.map_smul r x)).symm
 
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
-    Function.Surjective <| dual f :=
+    Function.Surjective (dual f) :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   (Module.Baer.of_divisible _).extension_property_addMonoidHom _ hf
 
@@ -124,8 +124,8 @@ Linear maps into a character module are exactly characters of the tensor product
     (A →ₗ[R] CharacterModule B) ≃ₗ[R] CharacterModule (A ⊗[R] B) :=
   .ofLinear uncurry curry (by ext _ z; refine z.induction_on ?_ ?_ ?_ <;> aesop) (by aesop)
 
-theorem dual_rTensor_conj_homEquiv (l : A →ₗ[R] A') :
-    homEquiv.symm.toLinearMap ∘ₗ dual (l.rTensor B) ∘ₗ homEquiv.toLinearMap = l.lcomp R _ := rfl
+theorem dual_rTensor_conj_homEquiv (f : A →ₗ[R] A') :
+    homEquiv.symm.toLinearMap ∘ₗ dual (f.rTensor B) ∘ₗ homEquiv.toLinearMap = f.lcomp R _ := rfl
 
 end module
 
@@ -202,7 +202,7 @@ lemma eq_zero_of_character_apply {a : A} (h : ∀ c : CharacterModule A, c a = 0
 
 variable [Module R A] [Module R A'] [Module R B]
 
-lemma dual_surjective_iff_injective (f : A →ₗ[R] B) :
+lemma dual_surjective_iff_injective (f : A →ₗ[R] A') :
     Function.Surjective (dual f) ↔ Function.Injective f :=
   ⟨fun h ↦ (injective_iff_map_eq_zero _).2 fun a h0 ↦ eq_zero_of_character_apply fun c ↦ by
     obtain ⟨c, rfl⟩ := h c; exact congr(c $h0).trans c.map_zero,
