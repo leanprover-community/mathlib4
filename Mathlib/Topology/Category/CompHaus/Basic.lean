@@ -97,15 +97,15 @@ theorem coe_of : (CompHaus.of X : Type _) = X :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
   show TopologicalSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
   show T2Space X.toTop from inferInstance
 
@@ -191,11 +191,11 @@ instance : Full compHausToTop :=
 instance : Faithful compHausToTop :=
   show Faithful <| inducedFunctor _ from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
