@@ -255,7 +255,7 @@ theorem one_act_left' : (R.one ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
   slice_lhs 2 3 => rw [whiskerLeft_π_actLeft]
   slice_lhs 1 2 => rw [associator_inv_naturality_left]
   slice_lhs 2 3 => rw [← comp_whiskerRight, one_actLeft]
-  slice_rhs 1 2 => rw [leftUnitor_naturality']
+  slice_rhs 1 2 => rw [leftUnitor_naturality]
   coherence
 set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.one_act_left' Bimod.TensorBimod.one_act_left'
@@ -668,7 +668,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   dsimp only [hom, inv, TensorBimod.X]
   ext; dsimp
   slice_lhs 1 2 => rw [coequalizer.π_desc]
-  slice_lhs 1 2 => rw [leftUnitor_inv_naturality']
+  slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
   slice_lhs 2 3 => rw [whisker_exchange]
   slice_lhs 3 3 => rw [← Iso.inv_hom_id_assoc (α_ R.X R.X P.X) (R.X ◁ P.actLeft)]
   slice_lhs 4 6 => rw [← Category.assoc, ← coequalizer.condition]
@@ -736,7 +736,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   dsimp only [hom, inv, TensorBimod.X]
   ext; dsimp
   slice_lhs 1 2 => rw [coequalizer.π_desc]
-  slice_lhs 1 2 => rw [rightUnitor_inv_naturality']
+  slice_lhs 1 2 => rw [rightUnitor_inv_naturality]
   slice_lhs 2 3 => rw [← whisker_exchange]
   slice_lhs 3 4 => rw [coequalizer.condition]
   slice_lhs 2 3 => rw [associator_naturality_right]
@@ -858,7 +858,7 @@ theorem id_whiskerLeft_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [LeftUnitorBimod.inv]
   slice_rhs 1 2 => rw [Hom.left_act_hom]
-  slice_rhs 2 3 => rw [leftUnitor_inv_naturality']
+  slice_rhs 2 3 => rw [leftUnitor_inv_naturality]
   slice_rhs 3 4 => rw [whisker_exchange]
   slice_rhs 4 4 => rw [← Iso.inv_hom_id_assoc (α_ X.X X.X N.X) (X.X ◁ N.actLeft)]
   slice_rhs 5 7 => rw [← Category.assoc, ← coequalizer.condition]
@@ -918,7 +918,7 @@ theorem whiskerRight_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [RightUnitorBimod.inv]
   slice_rhs 1 2 => rw [Hom.right_act_hom]
-  slice_rhs 2 3 => rw [rightUnitor_inv_naturality']
+  slice_rhs 2 3 => rw [rightUnitor_inv_naturality]
   slice_rhs 3 4 => rw [← whisker_exchange]
   slice_rhs 4 5 => rw [coequalizer.condition]
   slice_rhs 3 4 => rw [associator_naturality_right]

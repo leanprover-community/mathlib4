@@ -72,7 +72,7 @@ def unitClosed : Closed (𝟙_ C) where
                 right_inv := by aesop_cat }
             homEquiv_naturality_left_symm := fun f g => by
               dsimp
-              rw [leftUnitor_naturality'_assoc]
+              rw [leftUnitor_naturality_assoc]
             -- This used to be automatic before leanprover/lean4#2644
             homEquiv_naturality_right := by  -- aesop failure
               dsimp

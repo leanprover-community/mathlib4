@@ -206,37 +206,37 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left'_assoc, w, Functor.map_comp,
-      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right']
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_left_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_left_assoc, LaxMonoidalFunctor.μ_natural_right]
   braiding_naturality_right := by
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ ?_ ?_)).1 ?_
-    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right'_assoc, w, Functor.map_comp,
-      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left']
+    rw [Functor.map_comp, ← LaxMonoidalFunctor.μ_natural_right_assoc, w, Functor.map_comp,
+      reassoc_of% w, braiding_naturality_right_assoc, LaxMonoidalFunctor.μ_natural_left]
   hexagon_forward := by
     intros
     apply F.map_injective
     refine (cancel_epi (F.μ _ _)).1 ?_
     refine (cancel_epi (F.μ _ _ ▷ _)).1 ?_
     rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp, ←
-      LaxMonoidalFunctor.μ_natural_left'_assoc, ← comp_whiskerRight_assoc, w,
-      comp_whiskerRight_assoc, LaxMonoidalFunctor.associativity'_assoc,
-      LaxMonoidalFunctor.associativity'_assoc, ← LaxMonoidalFunctor.μ_natural_right', ←
+      LaxMonoidalFunctor.μ_natural_left_assoc, ← comp_whiskerRight_assoc, w,
+      comp_whiskerRight_assoc, LaxMonoidalFunctor.associativity_assoc,
+      LaxMonoidalFunctor.associativity_assoc, ← LaxMonoidalFunctor.μ_natural_right, ←
       MonoidalCategory.whiskerLeft_comp_assoc, w, MonoidalCategory.whiskerLeft_comp_assoc,
       reassoc_of% w, braiding_naturality_right_assoc,
-      LaxMonoidalFunctor.associativity', hexagon_forward_assoc]
+      LaxMonoidalFunctor.associativity, hexagon_forward_assoc]
   hexagon_reverse := by
     intros
     apply F.toFunctor.map_injective
     refine (cancel_epi (F.μ _ _)).1 ?_
     refine (cancel_epi (_ ◁ F.μ _ _)).1 ?_
     rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp, ←
-      LaxMonoidalFunctor.μ_natural_right'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, w,
-      MonoidalCategory.whiskerLeft_comp_assoc, LaxMonoidalFunctor.associativity_inv'_assoc,
-      LaxMonoidalFunctor.associativity_inv'_assoc, ← LaxMonoidalFunctor.μ_natural_left',
+      LaxMonoidalFunctor.μ_natural_right_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, w,
+      MonoidalCategory.whiskerLeft_comp_assoc, LaxMonoidalFunctor.associativity_inv_assoc,
+      LaxMonoidalFunctor.associativity_inv_assoc, ← LaxMonoidalFunctor.μ_natural_left,
       ← comp_whiskerRight_assoc, w, comp_whiskerRight_assoc, reassoc_of% w,
-      braiding_naturality_left_assoc, LaxMonoidalFunctor.associativity_inv', hexagon_reverse_assoc]
+      braiding_naturality_left_assoc, LaxMonoidalFunctor.associativity_inv, hexagon_reverse_assoc]
 #align category_theory.braided_category_of_faithful CategoryTheory.braidedCategoryOfFaithful
 
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
@@ -290,7 +290,7 @@ theorem braiding_leftUnitor_aux₂ (X : C) :
     _ = (α_ _ _ _).hom ≫ (_ ◁ (λ_ _).hom) ≫ (β_ _ _).hom ≫ (β_ X _).inv :=
       by (slice_lhs 2 3 => rw [← braiding_naturality_right]); simp only [assoc]
     _ = (α_ _ _ _).hom ≫ (_ ◁ (λ_ _).hom) := by rw [Iso.hom_inv_id, comp_id]
-    _ = (ρ_ X).hom ▷ 𝟙_ C := by rw [triangle']
+    _ = (ρ_ X).hom ▷ 𝟙_ C := by rw [triangle]
 
 #align category_theory.braiding_left_unitor_aux₂ CategoryTheory.braiding_leftUnitor_aux₂
 
@@ -323,7 +323,7 @@ theorem braiding_rightUnitor_aux₂ (X : C) :
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ▷ _) ≫ (β_ _ X).hom ≫ (β_ _ _).inv :=
       by (slice_lhs 2 3 => rw [← braiding_naturality_left]); simp only [assoc]
     _ = (α_ _ _ _).inv ≫ ((ρ_ _).hom ▷ _) := by rw [Iso.hom_inv_id, comp_id]
-    _ = 𝟙_ C ◁ (λ_ X).hom := by rw [triangle_assoc_comp_right']
+    _ = 𝟙_ C ◁ (λ_ X).hom := by rw [triangle_assoc_comp_right]
 
 #align category_theory.braiding_right_unitor_aux₂ CategoryTheory.braiding_rightUnitor_aux₂
 
@@ -552,8 +552,6 @@ theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : 
   simp only [assoc]
 #align category_theory.tensor_μ_natural CategoryTheory.tensor_μ_natural
 
-attribute [local simp] id_tensorHom tensorHom_id
-
 @[reassoc]
 theorem tensor_μ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁: X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
     (f₁ ⊗ f₂) ▷ (Z₁ ⊗ Z₂) ≫ tensor_μ C (Y₁, Y₂) (Z₁, Z₂) =
@@ -737,11 +735,10 @@ monoidal opposite, upgraded to a braided functor. -/
 @[simps!] def mopBraidedFunctor : BraidedFunctor C Cᴹᵒᵖ where
   μ X Y := (β_ (mop X) (mop Y)).hom
   ε := 𝟙 (𝟙_ Cᴹᵒᵖ)
-  -- `id_tensorHom`, `tensorHom_id` should be simp lemmas when #6307 is merged
-  -- we could then make this fully automated if we mark `yang_baxter` as simp
+  -- we could make this fully automated if we mark `← yang_baxter_assoc` as simp
   -- should it be marked as such?
   associativity X Y Z := by
-    simp [id_tensorHom, tensorHom_id, ← yang_baxter_assoc]
+    simp [← yang_baxter_assoc]
   __ := mopFunctor C
 
 /-- The identity functor on `C`, viewed as a functor from the
@@ -750,7 +747,7 @@ monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
   μ X Y := (β_ (unmop X) (unmop Y)).hom
   ε := 𝟙 (𝟙_ C)
   associativity X Y Z := by
-    simp [id_tensorHom, tensorHom_id, ← yang_baxter_assoc]
+    simp [← yang_baxter_assoc]
   __ := unmopFunctor C
 
 end MonoidalOpposite
