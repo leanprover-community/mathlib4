@@ -62,7 +62,7 @@ theorem decomposition_Q (n q : ℕ) :
       congr 1
       ext ⟨x, hx⟩
       simp only [Nat.succ_eq_add_one, Finset.mem_filter, Finset.mem_univ, true_and]
-      constructor <;> intro <;> linarith
+      omega
     · cases' Nat.le.dest (Nat.succ_le_succ_iff.mp hqn) with a ha
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
