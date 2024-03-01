@@ -2,6 +2,8 @@ import Mathlib.Topology.GMetric.WellSpaced
 import Mathlib.Topology.GMetric.Isometry
 import Mathlib.Topology.GMetric.GNorm
 import Mathlib.InformationTheory.Hamming
+import Mathlib.InformationTheory.Code.Equiv
+import Mathlib.FieldTheory.Finite.GaloisField
 
 open Set
 open GMetric
@@ -107,43 +109,7 @@ noncomputable instance Hamming.instStrictModuleGNorm_Module
   norm_smul_le' := fun a b => (norm_eq_smul a b).le
   smul_norm_le' := fun a b => (norm_eq_smul a b).ge
 
-
 end hamming
+variable (n n' p:ℕ) [Fact (p.Prime)]
 
-section code_def
--- these are all the parameters needed to assume s ⊆ α.univ is a code with metric to γ
-
--- [LinearlyOrderedAddCommMonoid γ] [CompleteLinearOrder γ] but no diamond
-variable {γ : Type*} [CompleteLinearOrder γ] [AddCommMonoid γ] [CovariantClass γ γ (.+.) (.≤.)]
-
--- [PseudoMetricSpace M]
-variable {M : Type*}
-variable {Tₘ : Type*} [FunLike Tₘ M (M → γ)] [GPseudoMetricClass Tₘ M γ]
-variable (gdist:Tₘ)
-
---
-variable (s:Set M) {hdel:IsDelone gdist s}
-
-end code_def
-
-section linearcode
--- these are the variables needed to assume that s ⊆ M.univ is a K-linear code with metrics to γ
-
--- [LinearlyOrderedSemiRing γ] [CompleteLinearOrder γ] but no diamond
-variable {γ : Type*} [Nontrivial γ] [CompleteLinearOrder γ] [Semiring γ]
-variable [CovariantClass γ γ (.+.) (.≤.)] [ContravariantClass γ γ (.+.) (.≤.)]
-variable [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ]
-
--- [NormedField K]
-variable {K : Type*} [Field K]
-variable {Tₖ : Type*} [FunLike Tₖ K (K → γ)] [GPseudoMetricClass Tₖ K γ]
-variable (gdist_k:Tₖ) [AddGNorm K γ gdist_k] [StrictModuleGNorm K K gdist_k gdist_k]
-
--- [NormedSpace K M]
-variable {M : Type*} [AddCommGroup M] [Module K M]
-variable {Tₘ : Type*} [FunLike Tₘ M (M → γ)] [GPseudoMetricClass Tₘ M γ]
-variable (gdist_m:Tₘ) [AddGNorm M γ gdist_m] [StrictModuleGNorm K M gdist_k gdist_m]
-
---
-variable (s : Submodule K M) {hdel:IsDelone gdist_m s}
-end linearcode
+abbrev CodeWord := Fin (n') → GaloisField p n

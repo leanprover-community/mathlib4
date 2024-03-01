@@ -200,7 +200,8 @@ structure IsDeloneWith (r R:γ):Prop :=
   isOpenPacking : IsOpenPackingWith gdist s r
   isClosedCoveringWith: IsClosedCoveringWith gdist s R
 
-def IsDelone : Prop := ∃ (r R :γ),IsDeloneWith gdist s r R
+class IsDelone : Prop :=
+  isDeloneWith: ∃ (r R :γ),IsDeloneWith gdist s r R
 
 end net_delone
 
