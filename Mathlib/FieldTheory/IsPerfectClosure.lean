@@ -68,6 +68,12 @@ nilradical if `p > 1` (`pNilradical_eq_nilradical`), and defined to be the zero 
 `x ^ p ^ n = 0` for some `n` (`mem_pNilradical`). -/
 def pNilradical (R : Type*) [CommSemiring R] (p : ℕ) : Ideal R := if 1 < p then nilradical R else ⊥
 
+theorem pNilradical_le_nilradical {R : Type*} [CommSemiring R] {p : ℕ} :
+    pNilradical R p ≤ nilradical R := by
+  by_cases hp : 1 < p
+  · rw [pNilradical, if_pos hp]
+  simp_rw [pNilradical, if_neg hp, bot_le]
+
 theorem pNilradical_eq_nilradical {R : Type*} [CommSemiring R] {p : ℕ} (hp : 1 < p) :
     pNilradical R p = nilradical R := by rw [pNilradical, if_pos hp]
 
@@ -98,6 +104,24 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     haveI := subsingleton_of_zero_eq_one h.symm
     exact Subsingleton.elim _ _
   rwa [hp, one_pow, pow_one] at h
+
+theorem sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [CommRing R] {p : ℕ} [ExpChar R p]
+    {x y : R} : x - y ∈ pNilradical R p ↔ ∃ n : ℕ, x ^ p ^ n = y ^ p ^ n := by
+  simp_rw [mem_pNilradical, sub_pow_expChar_pow, sub_eq_zero]
+
+theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+    (h : pNilradical R p = ⊥) (n : ℕ) : Function.Injective fun x : R ↦ x ^ p ^ n := fun _ _ H ↦
+  sub_eq_zero.1 <| Ideal.mem_bot.1 <| h ▸ sub_mem_pNilradical_iff_pow_expChar_pow_eq.2 ⟨n, H⟩
+
+theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+    (h : Function.Injective (frobenius R p)) : pNilradical R p = ⊥ := bot_unique fun x ↦ by
+  rw [mem_pNilradical, Ideal.mem_bot]
+  intro ⟨n, hx⟩
+  exact h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
+
+theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+    [PerfectRing R p] : pNilradical R p = ⊥ :=
+  pNilradical_eq_bot_of_frobenius_inj R p (injective_frobenius R p)
 
 section IsPerfectClosure
 
@@ -230,6 +254,25 @@ section CommRing
 variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
   (i : K →+* L) (j : K →+* M) (k : K →+* N) (f : L →+* M) (g : L →+* N)
   (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p] [ExpChar N p]
+
+/-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential charactistic `p` whose
+`p`-nilradical is zero, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+This generalizes `IsPurelyInseparable.injective_comp_algebraMap`. -/
+theorem IsPRadical.injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M p = ⊥) :
+    Function.Injective fun f : L →+* M ↦ f.comp i := fun f g heq ↦ by
+  ext x
+  obtain ⟨n, y, hx⟩ := IsPRadical.pow_mem i p x
+  apply_fun _ using pow_expChar_pow_inj_of_pNilradical_eq_bot M p h n
+  rw [← map_pow, ← map_pow, ← hx]
+  exact congr($(heq) y)
+
+/-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential charactistic `p`,
+the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`. -/
+theorem IsPRadical.injective_comp [IsPRadical i p] [IsReduced M] :
+    Function.Injective fun f : L →+* M ↦ f.comp i :=
+  injective_comp_of_pNilradical_eq_bot i p <| bot_unique <|
+    pNilradical_le_nilradical.trans (nilradical_eq_zero M).le
 
 section PerfectRing.lift
 
