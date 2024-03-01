@@ -23,7 +23,7 @@ integrable function over a box.
 In this file we define box-additive functions and prove that a function such that
 `f J = f (J ∩ {x | x i < y}) + f (J ∩ {x | y ≤ x i})` is box-additive.
 
-### Tags
+## Tags
 
 rectangular box, additive function
 -/
