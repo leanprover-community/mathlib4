@@ -572,6 +572,12 @@ theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
   convert Multiset.count_le_of_le i <| degrees_mul (C c) p
   simp [degrees_C]
 
+theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
+    (p * C c).degreeOf i ≤ p.degreeOf i := by
+  unfold degreeOf
+  convert Multiset.count_le_of_le i <| degrees_mul p (C c)
+  simp [degrees_C]
+
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)
     (i : σ) : degreeOf (f i) (rename f p) = degreeOf i p := by
   classical
