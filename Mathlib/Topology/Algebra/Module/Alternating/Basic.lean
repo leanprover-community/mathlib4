@@ -43,7 +43,7 @@ add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
 /-- Projection to `AlternatingMap`s. -/
 add_decl_doc ContinuousAlternatingMap.toAlternatingMap
 
-notation M "[Λ^" ι "]→L[" R "]" N:100 => ContinuousAlternatingMap R M N ι
+notation M " [Λ^" ι "]→L[" R "] " N:100 => ContinuousAlternatingMap R M N ι
 
 namespace ContinuousAlternatingMap
 
@@ -541,6 +541,13 @@ def toContinuousMultilinearMapLinear :
   toFun := toContinuousMultilinearMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+/-- Linear map version of the map `toAlternatingMap` associating to a continuous alternating map
+the corresponding alternating map. -/
+def toAlternatingMapLinear : (M [Λ^ι]→L[A] N) →ₗ[R] (M [Λ^ι]→ₗ[A] N) where
+  toFun := toAlternatingMap
+  map_add' := by simp
+  map_smul' := by simp
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]
