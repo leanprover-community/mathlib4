@@ -217,14 +217,14 @@ theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (
         ⟨-N,
           le_of_lt
             (by
-              rw [zpow_neg y ↑N, zpow_ofNat]
+              rw [zpow_neg y ↑N, zpow_coe_nat]
               exact (inv_lt hx (lt_trans (inv_pos.2 hx) hN)).1 hN)⟩
       let ⟨M, hM⟩ := pow_unbounded_of_one_lt x hy
       have hb : ∃ b : ℤ, ∀ m, y ^ m ≤ x → m ≤ b :=
         ⟨M, fun m hm =>
           le_of_not_lt fun hlt =>
             not_lt_of_ge (zpow_le_of_le hy.le hlt.le)
-              (lt_of_le_of_lt hm (by rwa [← zpow_ofNat] at hM))⟩
+              (lt_of_le_of_lt hm (by rwa [← zpow_coe_nat] at hM))⟩
       let ⟨n, hn₁, hn₂⟩ := Int.exists_greatest_of_bdd hb he
       ⟨n, hn₁, lt_of_not_ge fun hge => not_le_of_gt (Int.lt_succ _) (hn₂ _ hge)⟩
 #align exists_mem_Ico_zpow exists_mem_Ico_zpow
