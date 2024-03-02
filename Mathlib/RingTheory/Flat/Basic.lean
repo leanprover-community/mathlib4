@@ -53,9 +53,7 @@ There are some ideas proposed by Junyan Xu about potentially circumvent at
 ## TODO
 
 * Show that flatness is stable under base change (aka extension of scalars)
-  For base change, it will be very useful to have a "characteristic predicate"
-  instead of relying on the construction `A ⊗ B`.
-  Indeed, such a predicate should allow us to treat both
+  Using the `IsBaseChange` predicate should allow us to treat both
   `A[X]` and `A ⊗ R[X]` as the base change of `R[X]` to `A`.
   (Similar examples exist with `Fin n → R`, `R × R`, `ℤ[i] ⊗ ℝ`, etc...)
 * Generalize flatness to noncommutative rings.
@@ -251,20 +249,20 @@ theorem preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Module R N
 lemma CharacterModule.baer_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     Module.Baer R (CharacterModule M) := by
-  -- Let `I` be an ideal and `L : I → CharacterModule M`, we want to extend `L` to the entire ring
+  -- Let `I` be an ideal and `L : I → CharacterModule M`. We want to extend `L` to the entire ring.
   rintro I (L : _ →ₗ[_] _)
   letI :  AddCommGroup (I ⊗[R] M) := inferInstance
   -- We know that every linear map `f : A → B` induces `f⋆ : CharacterModule B → CharacterModule A`
   -- and if `f` is injective then `f⋆` is surjective.
   -- Under our assumption `ι : I ⊗ M → M` is injective,
-  -- so `ι⋆ : CharacterModule M → CharacterModule (I ⊗ M)` is surjective, consequently, there is a
+  -- so `ι⋆ : CharacterModule M → CharacterModule (I ⊗ M)` is surjective. Hence there is a
   -- character `F : CharacterModule M` such that `ι⋆F (i ⊗ m) = L i m`
   obtain ⟨F, hF⟩ := CharacterModule.dual_surjective_of_injective _ (inj I) <|
     TensorProduct.liftAddHom L.toAddMonoidHom <| fun r i n ↦
     show L (r • i) n = L i (r • n) by simp [L.map_smul]
   -- Since `R ⊗ M ≃ M`, `CharacterModule M ≃ CharacterModule (R ⊗ M) ≃ Hom(R, CharacterModule M)`,
   -- under this equivalence, we can reinterpret `F` as `F' : R → M⋆`.
-  -- Indeed `F' i = L i m` by definition, finishing the proof
+  -- Indeed `F' i = L i m` by definition, finishing the proof.
   refine ⟨CharacterModule.curry (CharacterModule.congr (TensorProduct.lid R M).symm F), ?_⟩
   intros x hx
   ext m
