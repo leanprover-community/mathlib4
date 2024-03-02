@@ -980,6 +980,9 @@ end ContinuousSetIntegral
 
 end MeasureTheory
 
+/-! Fundamental theorem of calculus for set integrals -/
+section FTC
+
 open MeasureTheory Asymptotics Metric
 
 variable {ι : Type*} [NormedAddCommGroup E]
@@ -1075,6 +1078,8 @@ theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace α] [Ope
     ⟨t, self_mem_nhdsWithin, hft.aestronglyMeasurable ht⟩ hs m hsμ
 #align continuous_on.integral_sub_linear_is_o_ae ContinuousOn.integral_sub_linear_isLittleO_ae
 
+end FTC
+
 section
 
 /-! ### Continuous linear maps composed with integration
@@ -1086,11 +1091,10 @@ the composition, as we are dealing with classes of functions, but it has already
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
 
-
 open scoped ComplexConjugate
 
-variable {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {p : ENNReal}
+variable {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
 
@@ -1402,6 +1406,8 @@ end MeasureTheory
 end BilinearMap
 
 section ParametricIntegral
+
+variable [NormedAddCommGroup E]
 
 variable {α β F G 𝕜 : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace β]
   [OpensMeasurableSpace β] {μ : Measure β} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
