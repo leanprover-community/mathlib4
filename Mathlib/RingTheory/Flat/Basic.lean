@@ -47,7 +47,7 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 In `Module.Flat.iff_rTensor_preserves_injective_linearMap`, we require that the universe level of
 the ring is lower than or equal to that of the module. This requirement is to make sure ideals of
 the ring can be lifted to the universe of the module. It is unclear if this lemma also holds
-when module lives in a lower universe.
+when the module lives in a lower universe.
 
 ## TODO
 
@@ -240,7 +240,7 @@ theorem iff_characterModule_injective [Small.{v} R] :
   iff_characterModule_baer.trans Module.Baer.iff_injective
 
 /--
-If `f ⊗ 𝟙 M` is injective for all injective linear maps, then `M` is a flat module.
+If `M` is a flat module, then `f ⊗ 𝟙 M` is injective for all injective linear maps `f`.
 -/
 theorem preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Module R N'] [h : Flat R M]
     (L : N →ₗ[R] N') (hL : Function.Injective L) : Function.Injective (L.rTensor M) :=
@@ -257,5 +257,6 @@ lemma iff_rTensor_preserves_injective_linearMap [Small.{v} R] :
   rw [iff_characterModule_injective,
     injective_characterModule_iff_rTensor_preserves_injective_linearMap]
 end Flat
+
 
 end Module
