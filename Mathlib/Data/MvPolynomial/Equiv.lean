@@ -306,6 +306,25 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
           Polynomial.aeval_X, AlgHom.coe_id, id.def, aevalTower_X])
 #align mv_polynomial.option_equiv_right MvPolynomial.optionEquivRight
 
+@[simp]
+lemma optionEquivRight_X_some (R : Type u) (S₁ : Type v) [CommSemiring R] (x : S₁) :
+    optionEquivRight R S₁ (X (some x)) = X x := by
+  unfold optionEquivRight AlgEquiv.ofAlgHom
+  simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
+
+@[simp]
+lemma optionEquivRight_X_none (R : Type u) (S₁ : Type v) [CommSemiring R] :
+    optionEquivRight R S₁ (X (none)) = C (Polynomial.X) := by
+  unfold optionEquivRight AlgEquiv.ofAlgHom
+  simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
+
+@[simp]
+lemma optionEquivRight_C (R : Type u) (S₁ : Type v) [CommSemiring R] (r : R) :
+    optionEquivRight R S₁ (C r) = C (Polynomial.C r) := by
+  unfold optionEquivRight AlgEquiv.ofAlgHom
+  simp only [Option.elim, AlgEquiv.coe_mk, aeval_C]
+  rfl
+
 variable (n : ℕ)
 
 /-- The algebra isomorphism between multivariable polynomials in `Fin (n + 1)` and
