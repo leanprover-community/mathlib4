@@ -144,7 +144,7 @@ theorem coe_prod (v : PrimeMultiset) : (v.prod : ℕ) = (v : Multiset ℕ).prod 
   rw [Multiset.map_map] at h
   have : (Coe.coe : ℕ+ → ℕ) ∘ (Coe.coe : Nat.Primes → ℕ+) = Coe.coe := funext fun p => rfl
   rw [this] at h; exact h
-#align prime_Multiset.prod_coe PrimeMultiset.prod_coe
+#align prime_multiset.coe_prod PrimeMultiset.coe_prod
 
 theorem prod_ofPrime (p : Nat.Primes) : (ofPrime p).prod = (p : ℕ+) :=
   Multiset.prod_singleton _
@@ -259,7 +259,7 @@ namespace PrimeMultiset
 theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := by
   apply PrimeMultiset.coeNat_injective
   suffices toNatMultiset (PNat.factorMultiset (prod v)) = toNatMultiset v by exact this
-  rw [v.prod.coeNat_factorMultiset, PrimeMultiset.prod_coe]
+  rw [v.prod.coeNat_factorMultiset, PrimeMultiset.coe_prod]
   rcases v with ⟨l⟩
   --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
