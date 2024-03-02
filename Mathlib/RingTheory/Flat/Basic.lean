@@ -38,10 +38,10 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
 * `Module.Flat.preserves_injective_linearMap`: If `M` is a flat module then tensoring with `M`
-  preserves injectiveness of linear maps. This lemma is fully universally polymorphic in all
+  preserves injectivity of linear maps. This lemma is fully universally polymorphic in all
   arguments, i.e. `R`, `M` and linear maps `N → N'` can all have different universe levels.
 * `Module.Flat.iff_rTensor_preserves_injective_linearMap`: a module is flat iff tensoring preserves
-  injectiveness.
+  injectivity in the ring's universe (or higher).
 
 ## Implementation notes
 In `Module.Flat.iff_rTensor_preserves_injective_linearMap`, we require that the universe level of
@@ -253,6 +253,7 @@ lemma iff_rTensor_preserves_injective_linearMap [Small.{v} R] :
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) := by
   rw [iff_characterModule_injective,
     injective_characterModule_iff_rTensor_preserves_injective_linearMap]
+
 end Flat
 
 end Module
