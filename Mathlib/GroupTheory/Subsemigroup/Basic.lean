@@ -252,7 +252,7 @@ theorem mem_sInf {S : Set (Subsemigroup M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈
 
 @[to_additive]
 theorem mem_iInf {ι : Sort*} {S : ι → Subsemigroup M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align subsemigroup.mem_infi Subsemigroup.mem_iInf
 #align add_subsemigroup.mem_infi AddSubsemigroup.mem_iInf
 

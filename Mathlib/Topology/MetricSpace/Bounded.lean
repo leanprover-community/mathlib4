@@ -199,7 +199,7 @@ theorem mem_cocompact_iff_closedBall_compl_subset [ProperSpace α] (c : α) :
 
 /-- Characterization of the boundedness of the range of a function -/
 theorem isBounded_range_iff {f : β → α} : IsBounded (range f) ↔ ∃ C, ∀ x y, dist (f x) (f y) ≤ C :=
-  isBounded_iff.trans <| by simp only [forall_range_iff]
+  isBounded_iff.trans <| by simp only [forall_mem_range]
 #align metric.bounded_range_iff Metric.isBounded_range_iff
 
 theorem isBounded_image_iff {f : β → α} {s : Set β} :

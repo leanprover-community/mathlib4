@@ -88,7 +88,7 @@ theorem IsGδ.biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set 
 
 theorem IsGδ.iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
-  ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
+  ⟨range f, by rwa [forall_mem_range], countable_range _, by rw [sInter_range]⟩
 #align is_Gδ_Inter_of_open IsGδ.iInter_of_isOpen
 
 @[deprecated] alias isGδ_iInter_of_isOpen := IsGδ.iInter_of_isOpen -- 2024-02-15
@@ -169,7 +169,7 @@ alias isGδ_biUnion := IsGδ.biUnion
 
 /-- The union of finitely many Gδ sets is a Gδ set, bounded indexed union version. -/
 theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
-  .sUnion (finite_range _) <| forall_range_iff.2 h
+  .sUnion (finite_range _) <| forall_mem_range.2 h
 
 theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
     (hs : IsClosed s) : IsGδ s := by

@@ -82,7 +82,7 @@ theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : �
     refine' le_antisymm _ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
-    exact ciInf_le ⟨0, forall_range_iff.2 A⟩ p
+    exact ciInf_le ⟨0, forall_mem_range.2 A⟩ p
   simp only [glueDist, this, zero_add]
 #align metric.glue_dist_glued_points Metric.glueDist_glued_points
 
@@ -116,7 +116,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
   refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
-  · exact forall_range_iff.2 fun _ => add_nonneg dist_nonneg dist_nonneg
+  · exact forall_mem_range.2 fun _ => add_nonneg dist_nonneg dist_nonneg
   · linarith [dist_triangle_left z (Ψ p) y]
 
 private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)

@@ -105,7 +105,7 @@ protected lemma sUnion (hT : T.Finite) (hs : ∀ t ∈ T, Absorbs M s t) :
 @[simp]
 lemma _root_.absorbs_iUnion {ι : Sort*} [Finite ι] {t : ι → Set α} :
     Absorbs M s (⋃ i, t i) ↔ ∀ i, Absorbs M s (t i) :=
-  (finite_range t).absorbs_sUnion.trans forall_range_iff
+  (finite_range t).absorbs_sUnion.trans forall_mem_range
 
 protected alias ⟨_, iUnion⟩ := absorbs_iUnion
 
@@ -180,7 +180,7 @@ protected lemma inter (hs : Absorbs G₀ s u) (ht : Absorbs G₀ t u) : Absorbs 
 @[simp]
 lemma _root_.absorbs_iInter {ι : Sort*} [Finite ι] {s : ι → Set α} :
     Absorbs G₀ (⋂ i, s i) t ↔ ∀ i, Absorbs G₀ (s i) t :=
-  (finite_range s).absorbs_sInter.trans forall_range_iff
+  (finite_range s).absorbs_sInter.trans forall_mem_range
 
 protected alias ⟨_, iInter⟩ := absorbs_iInter
 

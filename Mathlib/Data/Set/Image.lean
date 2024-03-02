@@ -659,8 +659,8 @@ section Range
 
 variable {f : ι → α} {s t : Set α}
 
-theorem forall_range_iff {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
-#align set.forall_range_iff Set.forall_range_iff
+theorem forall_mem_range {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
+#align set.forall_mem_range Set.forall_mem_range
 
 theorem forall_subtype_range_iff {p : range f → Prop} :
     (∀ a : range f, p a) ↔ ∀ i, p ⟨f i, mem_range_self _⟩ :=
@@ -731,7 +731,7 @@ theorem range_comp (g : α → β) (f : ι → α) : range (g ∘ f) = g '' rang
 #align set.range_comp Set.range_comp
 
 theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
-  forall_range_iff
+  forall_mem_range
 #align set.range_subset_iff Set.range_subset_iff
 
 theorem range_subset_range_iff_exists_comp {f : α → γ} {g : β → γ} :
@@ -818,7 +818,7 @@ theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
 
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
-  rw [← forall_range_iff, range_image]; rfl
+  rw [← forall_mem_range, range_image]; rfl
 
 @[simp]
 theorem preimage_subset_preimage_iff {s t : Set α} {f : β → α} (hs : s ⊆ range f) :
@@ -1221,7 +1221,7 @@ theorem subsingleton_of_preimage {f : α → β} (hf : Function.Surjective f) (s
 #align set.subsingleton_of_preimage Set.subsingleton_of_preimage
 
 theorem subsingleton_range {α : Sort*} [Subsingleton α] (f : α → β) : (range f).Subsingleton :=
-  forall_range_iff.2 fun x => forall_range_iff.2 fun y => congr_arg f (Subsingleton.elim x y)
+  forall_mem_range.2 fun x => forall_mem_range.2 fun y => congr_arg f (Subsingleton.elim x y)
 #align set.subsingleton_range Set.subsingleton_range
 
 /-- The preimage of a nontrivial set under a surjective map is nontrivial. -/

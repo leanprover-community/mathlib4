@@ -48,7 +48,7 @@ theorem countable_sInter_mem {S : Set (Set α)} (hSc : S.Countable) : ⋂₀ S �
 #align countable_sInter_mem countable_sInter_mem
 
 theorem countable_iInter_mem [Countable ι] {s : ι → Set α} : (⋂ i, s i) ∈ l ↔ ∀ i, s i ∈ l :=
-  sInter_range s ▸ (countable_sInter_mem (countable_range _)).trans forall_range_iff
+  sInter_range s ▸ (countable_sInter_mem (countable_range _)).trans forall_mem_range
 #align countable_Inter_mem countable_iInter_mem
 
 theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : ∀ i ∈ S, Set α} :

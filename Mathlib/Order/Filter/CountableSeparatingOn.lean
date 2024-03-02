@@ -106,7 +106,7 @@ theorem exists_seq_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p 
   rcases exists_nonempty_countable_separating α hp t with ⟨S, hSne, hSc, hS⟩
   rcases hSc.exists_eq_range hSne with ⟨S, rfl⟩
   use S
-  simpa only [forall_range_iff] using hS
+  simpa only [forall_mem_range] using hS
 
 theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t₂ : Set α}
     [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :

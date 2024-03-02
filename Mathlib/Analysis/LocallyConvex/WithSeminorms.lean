@@ -694,7 +694,7 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
       simpa using (hx k).le
     have bdd : BddAbove (range fun k ↦ (q i).comp (f k)) :=
       Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
-        (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
+        (fun x hx ↦ ⟨1, forall_mem_range.mpr hx⟩)
     rw [← Seminorm.coe_iSup_eq bdd]
     refine ⟨bdd, Seminorm.continuous' (r := 1) ?_⟩
     filter_upwards [this] with x hx

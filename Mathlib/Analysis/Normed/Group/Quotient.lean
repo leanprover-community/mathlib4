@@ -211,7 +211,7 @@ theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ �
   rcases And.intro (mk_surjective x) (mk_surjective y) with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
   simp only [← mk'_apply, ← map_add, quotient_norm_mk_eq, sInf_image']
   refine le_ciInf_add_ciInf fun a b ↦ ?_
-  refine ciInf_le_of_le ⟨0, forall_range_iff.2 fun _ ↦ norm_nonneg _⟩ (a + b) ?_
+  refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ norm_nonneg _⟩ (a + b) ?_
   exact (congr_arg norm (add_add_add_comm _ _ _ _)).trans_le (norm_add_le _ _)
 #align quotient_norm_add_le quotient_norm_add_le
 

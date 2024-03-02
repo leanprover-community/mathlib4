@@ -69,8 +69,8 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
       by_contra! h
       obtain ⟨x, h⟩ := h
       have := csSup_le _ _ (range_nonempty Nat.cast)
-        (forall_range_iff.2 fun m =>
-          le_sub_iff_add_le.2 <| le_csSup _ _ ⟨x, forall_range_iff.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
+        (forall_mem_range.2 fun m =>
+          le_sub_iff_add_le.2 <| le_csSup _ _ ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
       linarith)
 #align conditionally_complete_linear_ordered_field.to_archimedean ConditionallyCompleteLinearOrderedField.to_archimedean
 

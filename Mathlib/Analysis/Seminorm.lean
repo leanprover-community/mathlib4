@@ -567,7 +567,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
               -- A type ascription on `_` would have also worked, but would have been more verbose.
               (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun x) ⟨q x, _⟩ i)
               (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, _⟩ i)
-          <;> rw [mem_upperBounds, forall_range_iff]
+          <;> rw [mem_upperBounds, forall_mem_range]
           <;> exact fun j => hq (mem_image_of_mem _ j.2) _
         neg' := fun x => by
           simp only [iSup_apply]
@@ -596,7 +596,7 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
       rw [Seminorm.coe_sSup_eq' H, iSup_apply]
       rcases H with ⟨q, hq⟩
       exact
-        le_ciSup ⟨q x, forall_range_iff.mpr fun i : s => hq (mem_image_of_mem _ i.2) x⟩ ⟨p, hp⟩⟩⟩
+        le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq (mem_image_of_mem _ i.2) x⟩ ⟨p, hp⟩⟩⟩
 #align seminorm.bdd_above_iff Seminorm.bddAbove_iff
 
 protected theorem bddAbove_range_iff {p : ι → Seminorm 𝕜 E} :
@@ -632,7 +632,7 @@ private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbov
   refine' ⟨fun p hp x => _, fun p hp x => _⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
     dsimp <;> rw [Seminorm.coe_sSup_eq hs₁, iSup_apply]
   · rcases hs₁ with ⟨q, hq⟩
-    exact le_ciSup ⟨q x, forall_range_iff.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
+    exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact ciSup_le fun q => hp q.2 x
 
 /-- `Seminorm 𝕜 E` is a conditionally complete lattice.
@@ -1391,7 +1391,7 @@ lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absor
   obtain ⟨c, hc₀, hc⟩ : ∃ c ≠ 0, (c : 𝕜) • x ∈ s :=
     (eventually_mem_nhdsWithin.and (hs.eventually_nhdsWithin_zero x)).exists
   rcases h _ hc with ⟨M, hM⟩
-  refine ⟨M / ‖c‖, forall_range_iff.mpr fun i ↦ (le_div_iff' (norm_pos_iff.2 hc₀)).2 ?_⟩
+  refine ⟨M / ‖c‖, forall_mem_range.mpr fun i ↦ (le_div_iff' (norm_pos_iff.2 hc₀)).2 ?_⟩
   exact hM ⟨i, map_smul_eq_mul ..⟩
 
 end NontriviallyNormedField

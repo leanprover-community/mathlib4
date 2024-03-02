@@ -105,7 +105,7 @@ theorem isOpen_fold {t : TopologicalSpace X} : t.IsOpen s = IsOpen[t] s :=
 variable [TopologicalSpace X]
 
 theorem isOpen_iUnion {f : ι → Set X} (h : ∀ i, IsOpen (f i)) : IsOpen (⋃ i, f i) :=
-  isOpen_sUnion (forall_range_iff.2 h)
+  isOpen_sUnion (forall_mem_range.2 h)
 #align is_open_Union isOpen_iUnion
 
 theorem isOpen_biUnion {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
@@ -142,7 +142,7 @@ theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
-  (finite_range _).isOpen_sInter  (forall_range_iff.2 h)
+  (finite_range _).isOpen_sInter  (forall_mem_range.2 h)
 #align is_open_Inter isOpen_iInter_of_finite
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
@@ -187,7 +187,7 @@ theorem isClosed_sInter {s : Set (Set X)} : (∀ t ∈ s, IsClosed t) → IsClos
 #align is_closed_sInter isClosed_sInter
 
 theorem isClosed_iInter {f : ι → Set X} (h : ∀ i, IsClosed (f i)) : IsClosed (⋂ i, f i) :=
-  isClosed_sInter <| forall_range_iff.2 h
+  isClosed_sInter <| forall_mem_range.2 h
 #align is_closed_Inter isClosed_iInter
 
 theorem isClosed_biInter {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsClosed (f i)) :
