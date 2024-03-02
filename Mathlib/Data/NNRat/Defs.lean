@@ -88,6 +88,9 @@ theorem coe_mk (q : ℚ) (hq) : ((⟨q, hq⟩ : ℚ≥0) : ℚ) = q :=
   rfl
 #align nnrat.coe_mk NNRat.coe_mk
 
+lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Subtype.forall
+lemma «exists» {p : ℚ≥0 → Prop} : (∃ q, p q) ↔ ∃ q hq, p ⟨q, hq⟩ := Subtype.exists
+
 /-- Reinterpret a rational number `q` as a non-negative rational number. Returns `0` if `q ≤ 0`. -/
 def _root_.Rat.toNNRat (q : ℚ) : ℚ≥0 :=
   ⟨max q 0, le_max_right _ _⟩
@@ -194,12 +197,13 @@ def coeHom : ℚ≥0 →+* ℚ where
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
-  map_natCast coeHom n
+  rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
-  ext (coe_natCast n).symm
+  rfl
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 
 @[simp]
