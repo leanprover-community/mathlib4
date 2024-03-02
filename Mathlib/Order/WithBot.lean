@@ -484,8 +484,8 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
       | (a₁ : α), (a₂ : α), ⊥ => inf_le_right
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
 
--- porting note: added, previously this was found via unfolding `WithBot`
-instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) := instDecidableEqOption
+instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
+  inferInstanceAs <| DecidableEq (Option α)
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
   | none, x => isTrue fun a h => Option.noConfusion h
@@ -1185,7 +1185,7 @@ instance preorder [Preorder α] : Preorder (WithTop α) where
   le_trans := @le_trans (WithBot αᵒᵈ)ᵒᵈ _
 
 instance partialOrder [PartialOrder α] : PartialOrder (WithTop α) where
-  le_antisymm := @le_antisymm  (WithBot αᵒᵈ)ᵒᵈ _
+  le_antisymm := @le_antisymm (WithBot αᵒᵈ)ᵒᵈ _
 #align with_top.partial_order WithTop.partialOrder
 
 section Preorder
@@ -1279,8 +1279,8 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
   { WithTop.lattice with
     le_sup_inf := @le_sup_inf (WithBot αᵒᵈ)ᵒᵈ _ }
 
--- porting note: added, previously this was found via unfolding `WithTop`
-instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidableEqOption
+instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
+  inferInstanceAs <| DecidableEq (Option α)
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>

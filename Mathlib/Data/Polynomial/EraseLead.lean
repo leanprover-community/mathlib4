@@ -346,7 +346,7 @@ theorem map_natDegree_eq_sub {S F : Type*} [Semiring S]
     {p : R[X]} {k : ℕ} (φ_k : ∀ f : R[X], f.natDegree < k → φ f = 0)
     (φ_mon : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n - k) :
     (φ p).natDegree = p.natDegree - k :=
-  mono_map_natDegree_eq k (fun j => j - k) (by simp)
+  mono_map_natDegree_eq k (fun j => j - k) (by simp_all)
     (@fun m n h => (tsub_lt_tsub_iff_right h).mpr)
     (φ_k _) φ_mon
 #align polynomial.map_nat_degree_eq_sub Polynomial.map_natDegree_eq_sub

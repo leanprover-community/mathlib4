@@ -199,6 +199,15 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
     congr
 #align category_theory.quotient.lift_unique CategoryTheory.Quotient.lift_unique
 
+lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = functor r ⋙ F₂) :
+    F₁ = F₂ := by
+  rw [lift_unique r (functor r ⋙ F₂) _ F₂ rfl]; swap
+  · rintro X Y f g h
+    dsimp
+    rw [Quotient.sound r h]
+  apply lift_unique
+  rw [h]
+
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
   NatIso.ofComponents fun X ↦ Iso.refl _

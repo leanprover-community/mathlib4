@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Tactic.FinCases
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Sets.Closeds
 
 #align_import topology.locally_constant.basic from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -149,7 +149,7 @@ theorem comp_continuous [TopologicalSpace Y] {g : Y → Z} {f : X → Y} (hg : I
 theorem apply_eq_of_isPreconnected {f : X → Y} (hf : IsLocallyConstant f) {s : Set X}
     (hs : IsPreconnected s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) : f x = f y := by
   let U := f ⁻¹' {f y}
-  suffices : x ∉ Uᶜ; exact Classical.not_not.1 this
+  suffices x ∉ Uᶜ from Classical.not_not.1 this
   intro hxV
   specialize hs U Uᶜ (hf {f y}) (hf {f y}ᶜ) _ ⟨y, ⟨hy, rfl⟩⟩ ⟨x, ⟨hx, hxV⟩⟩
   · simp only [union_compl_self, subset_univ]
@@ -600,6 +600,18 @@ def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ Lo
     intro
     rw [comap_comap _ _ e.symm.continuous e.continuous]
     simp
+
+variable (X) in
+/--
+The set of clopen subsets of a topological space is equivalent to the locally constant maps to
+a two-element set
+-/
+def equivClopens [∀ (s : Set X) x, Decidable (x ∈ s)] :
+    LocallyConstant X (Fin 2) ≃ TopologicalSpace.Clopens X where
+  toFun f := ⟨f ⁻¹' {0}, f.2.isClopen_fiber _⟩
+  invFun s := ofIsClopen s.2
+  left_inv _ := locallyConstant_eq_of_fiber_zero_eq _ _ (by simp)
+  right_inv _ := by simp
 
 end Equiv
 

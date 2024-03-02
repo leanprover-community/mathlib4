@@ -234,12 +234,10 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- use m is positive to exclude m = - i ^ 2
   have hi' : ¬m = -i ^ 2 := by
     by_contra h1
-    have hit : -i ^ 2 ≤ 0
-    apply neg_nonpos.mpr (sq_nonneg i)
+    have hit : -i ^ 2 ≤ 0 := neg_nonpos.mpr (sq_nonneg i)
     rw [← h1] at hit
     apply absurd h4 (not_lt.mpr hit)
-  replace hi : m = i ^ 2
-  · apply Or.resolve_right hi hi'
+  replace hi : m = i ^ 2 := Or.resolve_right hi hi'
   rw [mul_comm] at hs
   rw [Int.gcd_comm] at hcp
   -- obtain d such that r * s = d ^ 2
@@ -253,8 +251,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
       exact neg_nonpos.mpr ((mul_nonneg_iff_of_pos_right h4).mpr (sq_nonneg d))
     have h2' : 0 ≤ b' ^ 2 := by apply sq_nonneg b'
     exact absurd (lt_of_le_of_ne h2' (Ne.symm (pow_ne_zero _ h2b0))) (not_lt.mpr h2)
-  replace hd : r * s = d ^ 2
-  · apply Or.resolve_right hd hd'
+  replace hd : r * s = d ^ 2 := Or.resolve_right hd hd'
   -- r = +/- j ^ 2
   obtain ⟨j, hj⟩ := Int.sq_of_gcd_eq_one htt4 hd
   have hj0 : j ≠ 0 := by

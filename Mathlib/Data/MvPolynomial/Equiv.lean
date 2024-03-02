@@ -71,10 +71,10 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
     show ∀ p, f.comp g p = p
     apply is_id
     · ext a
-      dsimp
+      dsimp [f, g]
       rw [eval₂_C, Polynomial.eval₂_C]
     · rintro ⟨⟩
-      dsimp
+      dsimp [f, g]
       rw [eval₂_X, Polynomial.eval₂_X]
   right_inv p :=
     Polynomial.induction_on p (fun a => by rw [Polynomial.eval₂_C, MvPolynomial.eval₂_C])
@@ -399,7 +399,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   congr 2
   apply MvPolynomial.algHom_ext
   rw [Fin.forall_fin_succ]
-  simp only [aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
+  simp only [φ, aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
     Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk, RingHom.toFun_eq_coe,
     Polynomial.coe_mapRingHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',
     Fin.cases_zero, Polynomial.map_X, Polynomial.eval_X, Fin.cons_succ,
@@ -518,6 +518,27 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
     (f := fun (g : Fin (Nat.succ n) →₀ ℕ) => g (Fin.succ j))
     (support_coeff_finSuccEquiv.1 hm)
 #align mv_polynomial.degree_of_coeff_fin_succ_equiv MvPolynomial.degreeOf_coeff_finSuccEquiv
+
+/-- Consider a multivariate polynomial `φ` whose variables are indexed by `Option σ`,
+and suppose that `σ ≃ Fin n`.
+Then one may view `φ` as a polynomial over `MvPolynomial (Fin n) R`, by
+
+1. renaming the variables via `Option σ ≃ Fin (n+1)`, and then singling out the `0`-th variable
+    via `MvPolynomial.finSuccEquiv`;
+2. first viewing it as polynomial over `MvPolynomial σ R` via `MvPolynomial.optionEquivLeft`,
+    and then renaming the variables.
+
+This lemma shows that both constructions are the same. -/
+lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Option σ) R) :
+    ((finSuccEquiv R n) ((rename ((Equiv.optionCongr e).trans (_root_.finSuccEquiv n).symm)) φ)) =
+      Polynomial.map (rename e).toRingHom (optionEquivLeft R σ φ) := by
+  suffices (finSuccEquiv R n).toRingEquiv.toRingHom.comp (rename ((Equiv.optionCongr e).trans
+        (_root_.finSuccEquiv n).symm)).toRingHom =
+      (Polynomial.mapRingHom (rename e).toRingHom).comp (optionEquivLeft R σ) by
+    exact DFunLike.congr_fun this φ
+  apply ringHom_ext
+  · simp [Polynomial.algebraMap_apply, algebraMap_eq]
+  · rintro (i|i) <;> simp
 
 end
 
