@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.ConeCategory
 
 #align_import category_theory.limits.over from "leanprover-community/mathlib"@"3e0dd193514c9380edc69f1da92e80c02713c41d"
 
@@ -61,6 +62,13 @@ example [HasColimits C] : PreservesColimits (forget X) :=
 
 example : ReflectsColimits (forget X) :=
   inferInstance
+
+section
+
+def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit c.toOver :=
+  isColimitOfReflects (forget c.pt) <| IsColimit.equivIsoColimit (Cocone.mapConeToOver c).symm hc
+
+end
 
 theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=
   CostructuredArrow.epi_left_of_epi _

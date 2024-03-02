@@ -3,7 +3,6 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-<<<<<<< HEAD
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Filtered
@@ -11,21 +10,14 @@ import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.Logic.Small.Set
 import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-=======
-import Mathlib.CategoryTheory.Limits.FinallySmall
-import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Filtered.Small
->>>>>>> origin/master
+import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Ind-objects
 
 For a presheaf `A : Cᵒᵖ ⥤ Type v` we define the type `IndObjectPresentation A` of presentations
-<<<<<<< HEAD
-of `A` as small filtered colimits of representable presheaves and define the predicate
-=======
 of `A` as a small filtered colimit of representable presheaves and define the predicate
->>>>>>> origin/master
 `IsIndObject A` asserting that there is at least one such presentation.
 
 A presheaf is an ind-object if and only if the category `CostructuredArrow yoneda A` is filtered
@@ -51,33 +43,18 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 
-<<<<<<< HEAD
 universe w v u
 
 namespace CategoryTheory.Limits
 
 open CategoryTheory
 
-=======
-universe v u
-
-namespace CategoryTheory.Limits
-
->>>>>>> origin/master
 variable {C : Type u} [Category.{v} C]
 
 /-- The data that witnesses that a presheaf `A` is an ind-object. It consists of a small
     filtered indexing category `I`, a diagram `F : I ⥤ C` and the data for a colimit cocone on
     `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v` with cocone point `A`. -/
 structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
-<<<<<<< HEAD
-  (I : Type v)
-  [ℐ : SmallCategory I]
-  [hI : IsFiltered I]
-  (F : I ⥤ C)
-  (ι : F ⋙ yoneda ⟶ (Functor.const I).obj A)
-  (isColimit : IsColimit (Cocone.mk A ι))
-=======
   /-- The indexing category of the filtered colimit presentation -/
   I : Type v
   /-- The indexing category of the filtered colimit presentation -/
@@ -89,7 +66,6 @@ structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
   ι : F ⋙ yoneda ⟶ (Functor.const I).obj A
   /-- Use `IndObjectPresenation.coconeIsColimit` instead. -/
   isColimit : IsColimit (Cocone.mk A ι)
->>>>>>> origin/master
 
 namespace IndObjectPresentation
 
@@ -99,11 +75,7 @@ instance : SmallCategory P.I := P.ℐ
 instance : IsFiltered P.I := P.hI
 
 /-- The (colimit) cocone with cocone point `A`. -/
-<<<<<<< HEAD
-@[simps]
-=======
 @[simps pt]
->>>>>>> origin/master
 def cocone : Cocone (P.F ⋙ yoneda) where
   pt := A
   ι := P.ι
@@ -114,11 +86,7 @@ def coconeIsColimit : IsColimit P.cocone :=
 
 /-- The canonical comparison functor between the indexing category of the presentation and the
     comma category `CostructuredArrow yoneda A`. This functor is always final. -/
-<<<<<<< HEAD
-@[simps!]
-=======
 @[simps! obj_left obj_right_as obj_hom map_left]
->>>>>>> origin/master
 def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
   P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
 
@@ -165,11 +133,7 @@ theorem finallySmall (h : IsIndObject A) : FinallySmall.{v} (CostructuredArrow y
 
 end IsIndObject
 
-<<<<<<< HEAD
-open IsFiltered SmallFilteredIntermediate
-=======
 open IsFiltered.SmallFilteredIntermediate
->>>>>>> origin/master
 
 theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
@@ -229,6 +193,145 @@ variable {I : Type v} [SmallCategory I] [IsFilteredOrEmpty I] (F : I ⥤ Cᵒᵖ
 variable {J : Type v} [SmallCategory J] [FinCategory J]
 
 variable (G : J ⥤ CostructuredArrow yoneda (colimit F))
+
+theorem step₁ : Nonempty <| limit <|
+  G.op ⋙
+    (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
+    yoneda.toPrefunctor.obj (Over.mk (𝟙 (colimit F))) := by
+  refine ⟨Types.Limit.mk _ (fun j => Over.mkIdTerminal.from _) ?_⟩
+  intros
+  simp only [Functor.comp_obj, Functor.op_obj, Opposite.unop_op, yoneda_obj_obj, Functor.comp_map,
+    Functor.op_map, Quiver.Hom.unop_op, yoneda_obj_map, IsTerminal.comp_from]
+
+theorem step₂ : Nonempty <| limit <|
+  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
+    yoneda.obj (colimit.cocone F).toOver.pt :=
+  step₁ _ _
+
+theorem step₃ : Nonempty <| limit <|
+  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
+    yoneda.obj (colimit ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _)) := by
+  refine Nonempty.map ?_ (step₂ F G)
+  let t : (colimit.cocone F).toOver.pt ≅ (colimit ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _)) :=
+    IsColimit.coconePointUniqueUpToIso (Over.isColimitToOver (colimit.isColimit F)) (colimit.isColimit _)
+  let t' := whiskerLeft (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op) (yoneda.map t.hom)
+  exact limMap t'
+
+@[simps! obj]
+noncomputable def myFunctor : I ⥤ (Over (colimit.cocone F).pt)ᵒᵖ ⥤ Type (max u v) :=
+  (colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ yoneda
+
+def curriedYonedaLemmaPt {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type v) :
+    yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u} :=
+  NatIso.ofComponents (fun X => yonedaSections _ _) (by
+    intros X Y f
+    ext g
+    rw [← ULift.down_inj]
+    simpa using congrFun (g.naturality f) (𝟙 _))
+
+noncomputable def fullCurriedYonedaLemma (C : Type u) [Category.{v} C] :
+    yoneda.op ⋙ coyoneda ≅ evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} :=
+  NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => yonedaSections _ _) (by aesop_cat)) (by
+    intros X Y f
+    dsimp
+    ext g x
+    dsimp
+    rw [← ULift.down_inj]
+    simpa using congrFun (x.naturality f) (𝟙 _))
+
+noncomputable def want : (CostructuredArrow yoneda (colimit.cocone F).pt)ᵒᵖ ⥤ I ⥤ Type (max u v) :=
+  yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj
+    ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙
+        (overEquivPresheafCostructuredArrow (colimit.cocone F).pt).functor)
+@[simps!]
+noncomputable def want₂ : (CostructuredArrow yoneda (colimit.cocone F).pt)ᵒᵖ ⥤ I ⥤ Type (max u v) :=
+  evaluation _ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{max u v} ⋙
+    (whiskeringLeft _ _ _).obj
+    ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙
+        (overEquivPresheafCostructuredArrow (colimit.cocone F).pt).functor)
+
+@[simps!]
+noncomputable def hv : (CostructuredArrow yoneda (colimit.cocone F).pt)ᵒᵖ ⥤ I ⥤ Type (max u v) :=
+  Functor.flip
+      (((Cocone.toCostructuredArrow (colimit.cocone F) ⋙ CostructuredArrow.toOver F (colimit.cocone F).pt) ⋙
+          (overEquivPresheafCostructuredArrow (colimit.cocone F).pt).functor) ⋙
+        (whiskeringRight (CostructuredArrow yoneda (colimit.cocone F).pt)ᵒᵖ (Type v) (Type (max u v))).toPrefunctor.obj
+          uliftFunctor.{max u v, v})
+
+noncomputable def myIso : hv F ≅ want₂ F :=
+  Iso.refl _
+
+noncomputable def interchange :
+  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
+    yoneda.obj (colimit ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _)) ≅
+  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
+    colimit (myFunctor F) := by
+  dsimp only [myFunctor]
+  refine isoWhiskerLeft G.op ((CostructuredArrow.toOverCompYoneda (colimit.cocone F).pt _) ≪≫ ?_)
+  refine curriedYonedaLemmaPt _ ≪≫ ?_
+  let u := isoWhiskerRight (preservesColimitIso (overEquivPresheafCostructuredArrow (colimit.cocone F).pt).functor
+    (Cocone.toCostructuredArrow (colimit.cocone F) ⋙ CostructuredArrow.toOver F (colimit.cocone F).pt)) uliftFunctor
+  refine u ≪≫ ?_
+  refine isoWhiskerRight (colimitIsoFlipCompColim _) uliftFunctor ≪≫ ?_
+  refine Functor.associator _ _ _ ≪≫ ?_
+  refine isoWhiskerLeft _ (preservesColimitNatIso _) ≪≫ ?_
+  refine (Functor.associator _ _ _).symm ≪≫ ?_
+  refine isoWhiskerRight (flipCompWhiskeringRightObj _ _) _ ≪≫ ?_
+  refine isoWhiskerRight (myIso F) colim ≪≫ ?_
+  dsimp only [want₂]
+  refine isoWhiskerRight (Functor.associator _ _ _).symm _ ≪≫ ?_
+
+  let x := (fullCurriedYonedaLemma (CostructuredArrow yoneda (colimit.cocone F).pt)).symm
+  refine isoWhiskerRight (isoWhiskerRight x _) _ ≪≫ ?_
+
+  let a := (Functor.associator (Cocone.toCostructuredArrow (colimit.cocone F))
+          (CostructuredArrow.toOver F (colimit.cocone F).pt)
+            ((overEquivPresheafCostructuredArrow (colimit.cocone F).pt).functor)).symm
+  let a' := (whiskeringLeft _ _ (Type (max u v))).mapIso a
+  refine isoWhiskerRight (isoWhiskerLeft _ a') _ ≪≫ ?_
+  clear u x a a'
+  refine isoWhiskerRight (isoWhiskerLeft _ (whiskeringLeftComp _ _)) _ ≪≫ ?_
+  refine isoWhiskerRight (Functor.associator _ _ _) _ ≪≫ ?_
+  let y := CostructuredArrow.yoneda' (colimit.cocone F).pt
+
+  refine isoWhiskerRight (isoWhiskerRight y.symm
+    ((whiskeringLeft I (Over (colimit.cocone F).pt) (Type (max u v))).toPrefunctor.obj
+            (Cocone.toCostructuredArrow (colimit.cocone F) ⋙ CostructuredArrow.toOver F (colimit.cocone F).pt))) colim ≪≫ ?_
+
+  refine ?_ ≪≫ isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
+  exact Iso.refl _
+
+  -- NatIso.ofComponents (fun j => by
+  --   dsimp [myFunctor]
+
+  --   ) _
+
+theorem step₄ : Nonempty <| limit <|
+  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
+    colimit ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ yoneda) := by
+  refine Nonempty.map ?_ (step₃ F G)
+  exact limMap (interchange F G).hom
+
+noncomputable def myBetterFunctor : I ⥤ Jᵒᵖ ⥤ Type (max u v) :=
+  (colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ yoneda ⋙
+    (whiskeringLeft _ _ _).obj (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op)
+
+noncomputable def interchange₂ :
+  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
+    colimit ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ yoneda) ≅
+    colimit (myBetterFunctor F G) := by
+  dsimp only [myBetterFunctor]
+  refine isoWhiskerLeft _ (isoWhiskerLeft _ (colimitIsoFlipCompColim _)) ≪≫ ?_
+  refine ?_ ≪≫ (colimitIsoFlipCompColim _).symm
+  rfl
+
+theorem step₅ : Nonempty <| limit <| colimit <| myBetterFunctor F G := by
+  refine Nonempty.map ?_ (step₄ F G)
+  exact limMap (interchange₂ F G).hom
+
+theorem step₆ : Nonempty <| colimit <| limit <| (myBetterFunctor F G).flip := by
+  -- let i := colimitLimitIso (myBetterFunctor F G).flip
+  sorry
 
 @[pp_with_univ]
 structure IsGood (K : Jᵒᵖ ⥤ Type w) : Prop where
@@ -293,6 +396,7 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFilteredOrEmpty I]
       simp [-EmbeddingLike.apply_eq_iff_eq, hy, yonedaEquiv_comp]
 
   refine IsFiltered.iff_nonempty_limit.mpr (fun {J _ _} G => ?_)
+  -- have h₁ : Nonempty ()
   refine (IsGood.goal F G).implies_nonempty ⟨?_⟩
   refine Types.Limit.mk _ (fun j => Over.mkIdTerminal.from _) ?_
   intros

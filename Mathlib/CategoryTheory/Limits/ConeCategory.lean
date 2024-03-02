@@ -231,6 +231,17 @@ lemma Cocone.toCostructuredArrow_comp_toOver_comp_forget {F : J ⥤ C} (c : Coco
     c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ Over.forget _ = F :=
   rfl
 
+/-- A cocone `c` on `F : J ⥤ C` lifts to a cocone in `Over c.pt` with cone point `𝟙 c.pt`. -/
+@[simps]
+def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
+    Cocone (c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _) where
+  pt := Over.mk (𝟙 c.pt)
+  ι := { app := fun j => Over.homMk (c.ι.app j) (by simp) }
+
+@[simps!]
+def Cocone.mapConeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
+  Iso.refl _
+
 /-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
 @[simps!]
 def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredArrow F X) :

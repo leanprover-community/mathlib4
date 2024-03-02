@@ -376,28 +376,94 @@ def colimitCoconeIsColimit (F : J ⥤ TypeMax.{v, u}) : IsColimit (colimitCocone
     exact congr_fun (hm x.1) x.2
 #align category_theory.limits.types.colimit_cocone_is_colimit CategoryTheory.Limits.Types.colimitCoconeIsColimit
 
-/-- The category of types has all colimits.
+namespace Small
 
-See <https://stacks.math.columbia.edu/tag/002U>.
--/
-instance hasColimitsOfSize : HasColimitsOfSize.{w', v} TypeMax.{v, u} where
-  has_colimits_of_shape _ :=
-    { has_colimit := fun F =>
-        HasColimit.mk
-          { cocone := colimitCocone.{v, u} F
-            isColimit := colimitCoconeIsColimit F } }
-#align category_theory.limits.types.has_colimits_of_size CategoryTheory.Limits.Types.hasColimitsOfSize
+variable [Small.{u} J]
 
-instance : HasColimitsOfSize.{w', v} (Type v) := hasColimitsOfSize.{v, v}
+def Quot.Rel (F : J ⥤ Type u) :
+    (Σ j, F.obj ((equivShrink.{u} J).symm j)) → (Σ j, F.obj ((equivShrink.{u} J).symm j)) → Prop :=
+  fun p p' => ∃ f, p'.2 = F.map f p.2
 
-instance : HasColimits (Type u) :=
-  Types.hasColimitsOfSize.{u, u, u}
+def Quot (F : J ⥤ Type u) : Type u :=
+  _root_.Quot (Quot.Rel F)
 
-instance hasColimit (F : J ⥤ TypeMax.{v, u}) : HasColimit F :=
-  (Types.hasColimitsOfSize.has_colimits_of_shape J).has_colimit F
+noncomputable def colimitCocone (F : J ⥤ Type u) : Cocone F where
+  pt := Quot F
+  ι :=
+    { app := fun j x => Quot.mk _ ⟨equivShrink J j, F.map (eqToHom (Equiv.symm_apply_apply _ _).symm) x⟩
+      naturality := fun j j' f => funext fun x =>
+        Eq.symm (Quot.sound ⟨eqToHom (by simp) ≫ f ≫ eqToHom (by simp), by simp⟩) }
 
-instance hasColimit' (F : J ⥤ Type v) : HasColimit F :=
-  hasColimit.{v, v} F
+noncomputable def colimitCoconeIsColimit (F : J ⥤ Type u) : IsColimit (colimitCocone F) where
+  desc s :=
+    Quot.lift (fun p => s.ι.app _ p.2) <| by
+      rintro ⟨j, x⟩ ⟨j', x'⟩ ⟨f, hf⟩
+      dsimp at hf
+      rw [hf]
+      exact (congr_fun (Cocone.w s f) x).symm
+  fac s j := by
+    ext x
+    let t : j ⟶ (equivShrink J).symm ((equivShrink J) j) := eqToHom (by simp)
+    simpa using congrFun (s.ι.naturality t) x
+  uniq s m hm := by
+    ext x
+    induction' x using Quot.ind with x
+    have := hm ((equivShrink J).symm x.1)
+    dsimp
+    rw [← congrFun this x.2]
+    dsimp [colimitCocone]
+    congr 1
+    apply Quot.sound
+    exact ⟨_, rfl⟩
+
+end Small
+
+section UnivLE
+
+instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
+  HasColimit.mk
+    { cocone := Small.colimitCocone.{v, u} F
+      isColimit := Small.colimitCoconeIsColimit F }
+
+instance (priority := 1300) hasColimitsOfSize [UnivLE.{v, u}] : HasColimitsOfSize.{w', v} (Type u) where
+  has_colimits_of_shape _ := { }
+
+end UnivLE
+
+section instances
+
+example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
+example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
+
+example : HasColimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
+example : HasColimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
+
+example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u+1} (Type u) := inferInstance
+
+end instances
+
+-- /-- The category of types has all colimits.
+
+-- See <https://stacks.math.columbia.edu/tag/002U>.
+-- -/
+-- instance hasColimitsOfSize : HasColimitsOfSize.{w', v} TypeMax.{v, u} where
+--   has_colimits_of_shape _ :=
+--     { has_colimit := fun F =>
+--         HasColimit.mk
+--           { cocone := colimitCocone.{v, u} F
+--             isColimit := colimitCoconeIsColimit F } }
+-- #align category_theory.limits.types.has_colimits_of_size CategoryTheory.Limits.Types.hasColimitsOfSize
+
+-- instance : HasColimitsOfSize.{w', v} (Type v) := hasColimitsOfSize.{v, v}
+
+-- instance : HasColimits (Type u) :=
+--   Types.hasColimitsOfSize.{u, u, u}
+
+-- instance hasColimit (F : J ⥤ TypeMax.{v, u}) : HasColimit F :=
+--   (Types.hasColimitsOfSize.has_colimits_of_shape J).has_colimit F
+
+-- instance hasColimit' (F : J ⥤ Type v) : HasColimit F :=
+--   hasColimit.{v, v} F
 
 /-- The equivalence between the abstract colimit of `F` in `Type u`
 and the "concrete" definition as a quotient.
@@ -493,6 +559,7 @@ theorem jointly_surjective' {F : J ⥤ TypeMax.{v, u}} (x : colimit F) :
     ∃ j y, colimit.ι F j y = x :=
   jointly_surjective F (colimit.isColimit F) x
 #align category_theory.limits.types.jointly_surjective' CategoryTheory.Limits.Types.jointly_surjective'
+
 
 namespace FilteredColimit
 

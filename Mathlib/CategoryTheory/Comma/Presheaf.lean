@@ -3,6 +3,7 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -571,5 +572,33 @@ def overEquivPresheafCostructuredArrow (A : Cᵒᵖ ⥤ Type v) :
 def CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow (A : Cᵒᵖ ⥤ Type v) :
     CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda :=
   toOverYonedaCompRestrictedYoneda A
+
+/-- This isomorphism says that hom-sets in the category `Over A` for a presheaf `A` where the domain
+    is of the form `(CostructuredArrow.toOver yoneda A).obj X` can instead be interpreted as
+    hom-sets in the category `(CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` where the domain is of the
+    form `yoneda.obj X` after adjusting the codomain accordingly. This is desirable because in the
+    latter case the Yoneda lemma can be applied. -/
+@[simps! hom_app_app_coe inv_app_left_app]
+def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ Type v) (T : Over A) :
+    (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj T ≅
+      yoneda.op ⋙ yoneda.obj ((overEquivPresheafCostructuredArrow A).functor.obj T) :=
+  NatIso.ofComponents (fun X =>
+    (equivOfFullyFaithful (overEquivPresheafCostructuredArrow A).functor).toIso ≪≫
+      (Iso.homCongr
+        ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
+        (Iso.refl _)).toIso)
+    (by aesop_cat)
+
+def CostructuredArrow.yoneda' (A : Cᵒᵖ ⥤ Type v) :
+  (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ≅
+    (@yoneda (CostructuredArrow yoneda A)).op ⋙ coyoneda ⋙
+      (whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).functor :=
+  NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y =>
+    (equivOfFullyFaithful (overEquivPresheafCostructuredArrow A).functor).toIso ≪≫
+      (Iso.homCongr
+        ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
+        (Iso.refl _)).toIso)) (by aesop_cat)
+      -- (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙
+      --   (whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).inverse := sorry
 
 end CategoryTheory
