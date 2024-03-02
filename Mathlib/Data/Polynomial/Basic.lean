@@ -1254,6 +1254,7 @@ instance nontrivial : Nontrivial R[X] := by
   simp [hxy]
 #align polynomial.nontrivial Polynomial.nontrivial
 
+@[simp]
 theorem X_ne_zero : (X : R[X]) ≠ 0 :=
   mt (congr_arg fun p => coeff p 1) (by simp)
 #align polynomial.X_ne_zero Polynomial.X_ne_zero

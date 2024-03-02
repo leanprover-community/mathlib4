@@ -41,7 +41,10 @@ variable {ι R M N : Type*}
 
 namespace RootPairing
 
-variable (P : RootPairing ι R M N) (i : ι)
+variable (P : RootPairing ι R M N) (i j : ι)
+
+lemma root_ne (h: i ≠ j) : P.root i ≠ P.root j := by
+  simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, not_false_eq_true]
 
 lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
@@ -49,14 +52,30 @@ lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
 lemma ne_zero' [CharZero R] : (P.coroot i : N) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
 
+@[simp]
+lemma root_coroot_eq_pairing :
+    P.toLin (P.root i) (P.coroot j) = P.pairing i j :=
+  rfl
+
+lemma coroot_root_eq_pairing :
+    P.toLin.flip (P.coroot i) (P.root j) = P.pairing j i := by
+  simp
+
+@[simp]
+lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
+
 lemma coroot_root_two :
-    (P.toLin.flip (P.coroot i)) (P.root i) = 2 := by
-  rw [LinearMap.flip_apply, P.root_coroot_two i]
+    P.toLin.flip (P.coroot i) (P.root i) = 2 := by
+  simp
 
 @[simp] lemma flip_flip : P.flip.flip = P := rfl
 
 lemma reflection_apply (x : M) :
     P.reflection i x = x - (P.toLin x (P.coroot i)) • P.root i :=
+  rfl
+
+lemma reflection_apply_root :
+    P.reflection i (P.root j) = P.root j - (P.pairing j i) • P.root i :=
   rfl
 
 @[simp]
@@ -113,23 +132,57 @@ lemma reflection_dualMap_eq_coreflection :
   ext n m
   simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
 
+lemma reflection_mul (x : M) :
+    (P.reflection i * P.reflection j) x = P.reflection i (P.reflection j x) := rfl
+
+lemma isCrystallographic_iff :
+    P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
+  rw [IsCrystallographic]
+  refine ⟨fun h i j ↦ ?_, fun h i _ ⟨j, hj⟩ ↦ ?_⟩
+  · simpa [AddSubgroup.mem_zmultiples_iff] using h i (mem_range_self j)
+  · simpa [← hj, AddSubgroup.mem_zmultiples_iff] using h i j
+
+lemma isReduced_iff : P.IsReduced ↔ ∀ (i j : ι), i ≠ j →
+    ¬ LinearIndependent R ![P.root i, P.root j] → P.root i = - P.root j := by
+  rw [IsReduced]
+  refine ⟨fun h i j hij hLin ↦ ?_, fun h i j hLin  ↦ ?_⟩
+  · specialize h i j hLin
+    simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, false_or]
+  · by_cases h' : i = j
+    · exact Or.inl (congrArg (⇑P.root) h')
+    · exact Or.inr (h i j h' hLin)
+
+section pairs
+
+lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
+  simp only [coxeterWeight, mul_comm]
+
+lemma IsOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
+  simp only [IsOrthogonal, and_comm]
+
+lemma IsOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
+  rw [Commute, SemiconjBy]
+  ext v
+  simp_all only [IsOrthogonal, reflection_mul, reflection_apply, smul_sub]
+  simp_all only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply,
+    root_coroot_eq_pairing, smul_eq_mul, mul_zero, sub_zero]
+  exact sub_right_comm v ((P.toLin v) (P.coroot j) • P.root j)
+      ((P.toLin v) (P.coroot i) • P.root i)
+
+end pairs
+
 variable [Finite ι]
 
-/-- Even though the roots may not span, coroots are distinguished by their pairing with the
-roots. The proof depends crucially on the fact that there are finitely-many roots.
-
-Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI.
-See also `RootPairing.injOn_dualMap_subtype_span_root_coroot` for a more useful restatement. -/
-lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
-    (h : ∀ k, P.toLin (P.root k) (P.coroot i) = P.toLin (P.root k) (P.coroot j)) :
+lemma eq_of_pairing_pairing_eq_two [NoZeroSMulDivisors ℤ M] (i j : ι)
+    (hij : P.pairing i j = 2) (hji : P.pairing j i = 2) :
     i = j := by
   set α := P.root i
   set β := P.root j
   set sα : M ≃ₗ[R] M := P.reflection i
   set sβ : M ≃ₗ[R] M := P.reflection j
   set sαβ : M ≃ₗ[R] M := sβ.trans sα
-  have hα : sα β = β - (2 : R) • α := by rw [P.reflection_apply, h j, P.root_coroot_two j]
-  have hβ : sβ α = α - (2 : R) • β := by rw [P.reflection_apply, ← h i, P.root_coroot_two i]
+  have hα : sα β = β - (2 : R) • α := by rw [P.reflection_apply_root, hji]
+  have hβ : sβ α = α - (2 : R) • β := by rw [P.reflection_apply_root, hij]
   have hb : BijOn sαβ (range P.root) (range P.root) :=
     (P.bijOn_reflection_root i).comp (P.bijOn_reflection_root j)
   set f : ℕ → M := fun n ↦ β + (2 * n : ℤ) • (α - β)
@@ -151,11 +204,17 @@ lemma eq_of_forall_coroot_root_eq [NoZeroSMulDivisors ℤ M] (i j : ι)
     sub_eq_zero] at hnm
   linarith [hnm.resolve_right (P.root.injective.ne this)]
 
+/-- Even though the roots may not span, coroots are distinguished by their pairing with the
+roots. The proof depends crucially on the fact that there are finitely-many roots.
+
+Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI. -/
 lemma injOn_dualMap_subtype_span_root_coroot [NoZeroSMulDivisors ℤ M] :
     InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ P.toLin.flip) (range P.coroot) := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
   congr
-  refine P.eq_of_forall_coroot_root_eq i j fun k ↦ ?_
+  suffices ∀ k, P.pairing k i = P.pairing k j from
+    P.eq_of_pairing_pairing_eq_two i j (by simp [← this i]) (by simp [this j])
+  intro k
   simpa using LinearMap.congr_fun hij ⟨P.root k, Submodule.subset_span (mem_range_self k)⟩
 
 /-- In characteristic zero if there is no torsion, the correspondence between roots and coroots is

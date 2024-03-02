@@ -356,6 +356,8 @@ open MultilinearMap
 
 variable {s}
 
+section lift
+
 /-- Auxiliary function to constructing a linear map `(⨂[R] i, s i) → E` given a
 `MultilinearMap R s E` with the property that its composition with the canonical
 `MultilinearMap R s (⨂[R] i, s i)` is the given multilinear map. -/
@@ -444,6 +446,84 @@ theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) : lift.symm φ' = φ'.comp
 theorem lift_tprod : lift (tprod R : MultilinearMap R s _) = LinearMap.id :=
   Eq.symm <| lift.unique' rfl
 #align pi_tensor_product.lift_tprod PiTensorProduct.lift_tprod
+
+end lift
+
+section map
+
+variable {t t' : ι → Type*}
+variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
+variable [∀ i, AddCommMonoid (t' i)] [∀ i, Module R (t' i)]
+
+/--
+Let `sᵢ` and `tᵢ` be two families of `R`-modules.
+Let `f` be a family of `R`-linear maps between `sᵢ` and `tᵢ`, i.e. `f : Πᵢ sᵢ → tᵢ`,
+then there is an induced map `⨂ᵢ sᵢ → ⨂ᵢ tᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
+
+This is `TensorProduct.map` for an arbitrary family of modules.
+-/
+def map (f : Π i, s i →ₗ[R] t i) : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
+  lift <| (tprod R).compLinearMap f
+
+@[simp] lemma map_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
+    map f (tprod R x) = tprod R fun i ↦ f i (x i) :=
+  lift.tprod _
+
+/--
+Let `sᵢ` and `tᵢ` be families of `R`-modules.
+Then there is an `R`-linear map between `⨂ᵢ Hom(sᵢ, tᵢ)` and `Hom(⨂ᵢ sᵢ, ⨂ tᵢ)` defined by
+`⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ fᵢ aᵢ`.
+
+This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
+
+Note that `PiTensorProduct.piTensorHomMap (tprod R f)` is equal to `PiTensorProduct.map f`.
+-/
+def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
+  lift.toLinearMap ∘ₗ lift (MultilinearMap.piLinearMap <| tprod R)
+
+@[simp] lemma piTensorHomMap_tprod_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
+    piTensorHomMap (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by
+  simp [piTensorHomMap]
+
+lemma piTensorHomMap_tprod_eq_map (f : Π i, s i →ₗ[R] t i) :
+    piTensorHomMap (tprod R f) = map f := by
+  ext; simp
+
+/--
+Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, then `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
+element of `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))` defined by `⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
+
+This is `PiTensorProduct.map` for two arbitrary families of modules.
+This is `TensorProduct.map₂` for families of modules.
+-/
+def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
+    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=
+  lift <| LinearMap.compMultilinearMap piTensorHomMap <| (tprod R).compLinearMap f
+
+lemma map₂_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : Π i, s i) (y : Π i, t i) :
+    map₂ f (tprod R x) (tprod R y) = tprod R fun i ↦ f i (x i) (y i) := by
+  simp [map₂]
+
+/--
+Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules.
+Then there is an linear map from `⨂ᵢ Hom(sᵢ, Hom(tᵢ, t'ᵢ))` to `Hom(⨂ᵢ sᵢ, Hom(⨂ tᵢ, ⨂ᵢ t'ᵢ))`
+defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
+
+This is `TensorProduct.homTensorHomMap` for two arbitrary families of modules.
+-/
+def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
+    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] (⨂[R] i, t' i) where
+  toFun φ := lift <| LinearMap.compMultilinearMap piTensorHomMap <|
+    (lift <| MultilinearMap.piLinearMap <| tprod R) φ
+  map_add' x y := by dsimp; ext; simp
+  map_smul' r x := by dsimp; ext; simp
+
+@[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
+    (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
+    piTensorHomMap₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
+  simp [piTensorHomMap₂]
+
+end map
 
 section
 
