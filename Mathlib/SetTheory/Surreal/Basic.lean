@@ -258,6 +258,9 @@ theorem sub {x y : PGame} (ox : Numeric x) (oy : Numeric y) : Numeric (x - y) :=
   ox.add oy.neg
 #align pgame.numeric.sub SetTheory.PGame.Numeric.sub
 
+lemma exists_ge (x : PGame) : ∃ y, x ≤ y ∧ y.Numeric := sorry
+lemma exists_le (x : PGame) : ∃ y ≤ x, y.Numeric := sorry
+
 end Numeric
 
 /-- Pre-games defined by natural numbers are numeric. -/
@@ -293,7 +296,15 @@ def mk (x : PGame) (h : x.Numeric) : Surreal :=
   ⟦⟨x, h⟩⟧
 #align surreal.mk Surreal.mk
 
-@[simp] lemma mk_val_out (x : Surreal.{u}) : mk x.out x.out.2 = x := sorry
+@[simp]
+theorem mk_eq_mk (x y : PGame) (hx : x.Numeric) (hy : y.Numeric) : mk x hx = mk y hy ↔ x ≈ y :=
+  Quotient.eq
+
+@[elab_as_elim]
+theorem inductionOn (x : Surreal) {P : Surreal → Prop} (h : ∀ y h, P (mk y h)) : P x := by
+  induction' x using Quotient.inductionOn with x
+  rcases x with ⟨x, hx⟩
+  apply h
 
 instance : Zero Surreal :=
   ⟨mk 0 numeric_zero⟩
@@ -306,7 +317,7 @@ instance : Inhabited Surreal :=
 
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
 def lift {α} (f : ∀ x, Numeric x → α)
-    (H : ∀ {x y} (hx : Numeric x) (hy : Numeric y), x.Equiv y → f x hx = f y hy) : Surreal → α :=
+    (H : ∀ {x y} (hx : Numeric x) (hy : Numeric y), x ≈ y → f x hx = f y hy) : Surreal → α :=
   Quotient.lift (fun x : { x // Numeric x } => f x.1 x.2) fun x y => H x.2 y.2
 #align surreal.lift Surreal.lift
 
@@ -314,7 +325,7 @@ def lift {α} (f : ∀ x, Numeric x → α)
 def lift₂ {α} (f : ∀ x y, Numeric x → Numeric y → α)
     (H :
       ∀ {x₁ y₁ x₂ y₂} (ox₁ : Numeric x₁) (oy₁ : Numeric y₁) (ox₂ : Numeric x₂) (oy₂ : Numeric y₂),
-        x₁.Equiv x₂ → y₁.Equiv y₂ → f x₁ y₁ ox₁ oy₁ = f x₂ y₂ ox₂ oy₂) :
+        x₁ ≈ x₂ → y₁ ≈ y₂ → f x₁ y₁ ox₁ oy₁ = f x₂ y₂ ox₂ oy₂) :
     Surreal → Surreal → α :=
   lift (fun x ox => lift (fun y oy => f x y ox oy) fun _ _ => H _ _ _ _ equiv_rfl)
     fun _ _ h => funext <| Quotient.ind fun _ => H _ _ _ _ h equiv_rfl
@@ -368,7 +379,7 @@ instance : AddMonoidWithOne Surreal :=
 
 /-- Casts a `Surreal` number into a `Game`. -/
 def toGame : Surreal →+o Game where
-  toFun := lift (fun x _ => ⟦x⟧) fun _ _ => Quot.sound
+  toFun := lift (fun x _ => ⟦x⟧) fun _ _ => Quotient.sound
   map_zero' := rfl
   map_add' := by rintro ⟨_, _⟩ ⟨_, _⟩; rfl
   monotone' := by rintro ⟨_, _⟩ ⟨_, _⟩; exact id
@@ -386,88 +397,80 @@ theorem one_toGame : toGame 1 = 1 :=
 @[simp]
 theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
   map_natCast' _ one_toGame
-#align surreal.nat_to_game Surreal.nat_toGamer
+#align surreal.nat_to_game Surreal.nat_toGame
+
+@[simp]
+theorem toGame_mk (x : PGame) (hx : x.Numeric) : toGame (mk x hx) = (⟦x⟧ : Game) := rfl
+
+theorem toGame_injective : Function.Injective toGame := by
+  intro x y h
+  induction' x using inductionOn with x hx
+  induction' y using inductionOn with y hy
+  simpa using h
+theorem toGame_strictMono : StrictMono toGame :=
+  (OrderHom.monotone toGame).strictMono_of_injective toGame_injective
+
+@[simp] lemma _root_.SetTheory.Game.mk_le_mk {x y : PGame.{u}} : (⟦x⟧ : Game) ≤ ⟦y⟧ ↔ x ≤ y :=
+  Iff.rfl
 
 @[simp] lemma mk_le_mk {x y : PGame.{u}} {hx hy}: mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
 
-@[simp] lemma out_le_out {x y : Surreal.{u}} : x.out ≤ y.out ↔ x ≤ y := by
-  rw [← Subtype.coe_le_coe, ← mk_le_mk, mk_val_out, mk_val_out]
+-- /-- A small family of surreals is bounded above. -/
+-- lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
+--     BddAbove (Set.range f) := by
+--   let g : ι → Game.{u} := toGame ∘ f
+--   have ⟨x, hx⟩ := Game.bddAbove_range_of_small g
+--   induction' x using Quotient.ind with x
+--   have ⟨y, hxy, hy⟩ := Numeric.exists_ge x
+--   refine ⟨mk y hy, fun z ⟨i, hfi⟩ ↦ ?_⟩
+--   induction' z using inductionOn with z hz
+--   specialize @hx ⟦z⟧ ⟨i, by simp [hfi]⟩
+--   simp only [Game.mk_le_mk, mk_le_mk] at hx ⊢
+--   exact hx.trans hxy
 
-/-- A small family of games is bounded above. -/
+/-- A small family of surreals is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddAbove (Set.range f) := by
-  let g : Shrink.{u} ι → PGame.{u} := Subtype.val ∘ Quotient.out ∘ f ∘ (equivShrink.{u} ι).symm
+  induction' f using Quotient.induction_on_pi with f
+  let g : ι → PGame.{u} := Subtype.val ∘ f
   have hg (i) : (g i).Numeric := Subtype.prop _
-  let x : Surreal.{u} := mk ⟨Σ i, (g i).LeftMoves, PEmpty,
-    fun x ↦ moveLeft _ x.2, PEmpty.elim⟩ $ .mk (by simp) (fun _ ↦ (hg _).moveLeft _) (by simp)
-  refine ⟨x, Set.forall_range_iff.2 fun i ↦ ?_⟩
-  rw [← (equivShrink ι).symm_apply_apply i, ← out_le_out, ← Subtype.coe_le_coe,
-    PGame.le_iff_forall_lf]
-  simpa using fun j ↦ @moveLeft_lf x.out.val ⟨equivShrink ι i, j⟩
-  obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
-  refine ⟨⟦x⟧, Set.forall_range_iff.2 fun i ↦ ?_⟩
-  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+  conv in (⟦f _⟧) =>
+    change mk (g i) (hg i)
+  clear_value g
+  clear f
+  let x : PGame.{u} := ⟨Σ i, (g $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+    fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
+  refine ⟨mk x (.mk (by simp) (fun _ ↦ (hg _).moveLeft _) (by simp)),
+    Set.forall_range_iff.2 fun i ↦ ?_⟩
+  rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
 
-/-- A small set of games is bounded above. -/
-lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
-  simpa using bddAbove_range_of_small (Subtype.val : s → Game.{u})
-#align game.bdd_above_of_small SetTheory.Game.bddAbove_of_small
-
-/-- A small family of games is bounded below. -/
-lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
-    BddBelow (Set.range f) := by
-  obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
-  refine ⟨⟦x⟧, Set.forall_range_iff.2 fun i ↦ ?_⟩
-  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
-
-/-- A small set of games is bounded below. -/
-lemma bddBelow_of_small (s : Set Game.{u}) [Small.{u} s] : BddBelow s := by
-  simpa using bddBelow_range_of_small (Subtype.val : s → Game.{u})
-#align game.bdd_below_of_small SetTheory.Game.bddBelow_of_small
-
-/-- A small set `s` of surreals is bounded above. -/
-theorem bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s :=
-  by
-  let g := Subtype.val ∘ Quotient.out ∘ Subtype.val ∘ (equivShrink s).symm
-  refine' ⟨mk (upper_bound g) (upper_bound_numeric fun i => Subtype.prop _), fun i hi => _⟩
-  rw [← Quotient.out_eq i]
-  show i.out.1 ≤ _
-  simpa [g] using le_upper_bound g (equivShrink s ⟨i, hi⟩)
+/-- A small set of surreals is bounded above. -/
+lemma bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s := by
+  simpa using bddAbove_range_of_small (Subtype.val : s → Surreal.{u})
 #align surreal.bdd_above_of_small Surreal.bddAbove_of_small
 
-/-- A small set `s` of surreals is bounded below. -/
-theorem bddBelow_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddBelow s :=
-  by
-  let g := Subtype.val ∘ Quotient.out ∘ Subtype.val ∘ (equivShrink s).symm
-  refine' ⟨mk (lower_bound g) (lower_bound_numeric fun i => Subtype.prop _), fun i hi => _⟩
-  rw [← Quotient.out_eq i]
-  show _ ≤ i.out.1
-  simpa [g] using lower_bound_le g (equivShrink s ⟨i, hi⟩)
-#align surreal.bdd_below_of_small Surreal.bddBelow_of_small
-
-/-- A small family of games is bounded above. -/
-lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
-    BddAbove (Set.range f) := by
-  obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
-  refine ⟨⟦x⟧, Set.forall_range_iff.2 fun i ↦ ?_⟩
-  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
-
-/-- A small set of games is bounded above. -/
-lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
-  simpa using bddAbove_range_of_small (Subtype.val : s → Game.{u})
-#align game.bdd_above_of_small SetTheory.Game.bddAbove_of_small
-
-/-- A small family of games is bounded below. -/
-lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
+/-- A small family of surreals is bounded below. -/
+lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddBelow (Set.range f) := by
-  obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
-  refine ⟨⟦x⟧, Set.forall_range_iff.2 fun i ↦ ?_⟩
-  simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
+  induction' f using Quotient.induction_on_pi with f
+  let g : ι → PGame.{u} := Subtype.val ∘ f
+  have hg (i) : (g i).Numeric := Subtype.prop _
+  conv in (⟦f _⟧) =>
+    change mk (g i) (hg i)
+  clear_value g
+  clear f
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (g $ (equivShrink.{u} ι).symm i).RightMoves,
+    PEmpty.elim, fun x ↦ moveRight _ x.2⟩
+  refine ⟨mk x (.mk (by simp) (by simp) (fun _ ↦ (hg _).moveRight _) ),
+    Set.forall_range_iff.2 fun i ↦ ?_⟩
+  rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
 
-/-- A small set of games is bounded below. -/
-lemma bddBelow_of_small (s : Set Game.{u}) [Small.{u} s] : BddBelow s := by
-  simpa using bddBelow_range_of_small (Subtype.val : s → Game.{u})
-#align game.bdd_below_of_small SetTheory.Game.bddBelow_of_small
+/-- A small set of surreals is bounded Below. -/
+lemma bddBelow_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddBelow s := by
+  simpa using bddBelow_range_of_small (Subtype.val : s → Surreal.{u})
+#align surreal.bdd_below_of_small Surreal.bddBelow_of_small
 
 end Surreal
 
