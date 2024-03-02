@@ -318,8 +318,8 @@ theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : Norm
 theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :
     ‖S.normedMk‖ = 1 := by
   refine le_antisymm (norm_normedMk_le S) ?_
-  obtain ⟨x, hx⟩ : ∃ x : M, 0 < ‖(x : M ⧸ S)‖
-  · refine (Set.nonempty_compl.2 h).imp fun x hx ↦ ?_
+  obtain ⟨x, hx⟩ : ∃ x : M, 0 < ‖(x : M ⧸ S)‖ := by
+    refine (Set.nonempty_compl.2 h).imp fun x hx ↦ ?_
     exact (norm_nonneg _).lt_of_ne' <| mt (quotient_norm_eq_zero_iff S x).1 hx
   refine (le_mul_iff_one_le_left hx).1 ?_
   exact norm_lift_apply_le S.normedMk (fun x ↦ (eq_zero_iff x).2) x

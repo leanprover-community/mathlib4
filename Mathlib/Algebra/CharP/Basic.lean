@@ -333,7 +333,7 @@ theorem CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1
   have := (CharP.cast_eq_zero_iff R p 2).mp h
   have := Nat.le_of_dvd (by decide) this
   rw [fact_iff] at *
-  linarith
+  omega
 #align char_p.neg_one_ne_one CharP.neg_one_ne_one
 
 theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
@@ -652,6 +652,6 @@ namespace Fin
 
 instance charP (n : ℕ) : CharP (Fin (n + 1)) (n + 1) where
     cast_eq_zero_iff' := by
-      simp [Fin.eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
+      simp [Fin.ext_iff, Nat.dvd_iff_mod_eq_zero]
 
 end Fin

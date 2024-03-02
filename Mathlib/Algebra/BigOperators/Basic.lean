@@ -2322,14 +2322,20 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
 end Fintype
 
 namespace Finset
-variable [Fintype ι] [CommMonoid α]
+variable [CommMonoid α]
 
 @[to_additive (attr := simp)]
-lemma prod_attach_univ (f : {i // i ∈ @univ ι _} → α) :
+lemma prod_attach_univ [Fintype ι] (f : {i // i ∈ @univ ι _} → α) :
     ∏ i in univ.attach, f i = ∏ i, f ⟨i, mem_univ _⟩ :=
   Fintype.prod_equiv (Equiv.subtypeUnivEquiv mem_univ) _ _ $ by simp
 #align finset.prod_attach_univ Finset.prod_attach_univ
 #align finset.sum_attach_univ Finset.sum_attach_univ
+
+@[to_additive]
+theorem prod_erase_attach [DecidableEq ι] {s : Finset ι} (f : ι → α) (i : ↑s) :
+    ∏ j in s.attach.erase i, f ↑j = ∏ j in s.erase ↑i, f j := by
+  rw [← Function.Embedding.coe_subtype, ← prod_map]
+  simp [attach_map_val]
 
 end Finset
 

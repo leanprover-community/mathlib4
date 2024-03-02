@@ -3672,6 +3672,27 @@ theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l
   induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
 #align list.map_foldl_erase List.map_foldl_erase
 
+theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
+    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) := by
+  induction l with
+  | nil => simp
+  | cons a l IH =>
+    cases i using Fin.cases with
+    | zero => simp
+    | succ i =>
+      by_cases ha : a = l.get i
+      · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
+      · simpa [ha] using IH i
+
+theorem eraseIdx_eq_take_drop_succ {l : List ι} {i : ℕ} :
+    l.eraseIdx i = l.take i ++ l.drop i.succ := by
+  induction l generalizing i with
+  | nil => simp
+  | cons a l IH =>
+    cases i with
+    | zero => simp
+    | succ i => simp [IH]
+
 end Erase
 
 /-! ### diff -/
