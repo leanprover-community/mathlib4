@@ -115,7 +115,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     dsimp at r_f s_g
     set_option tactic.skipAssignedInstances false in
     simp [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
-      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by omega),
+      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by linarith),
       cocycleOfDegreewiseSplit, r_f]
     rw [← S.g.comm_assoc, reassoc_of% s_g]
     abel)
