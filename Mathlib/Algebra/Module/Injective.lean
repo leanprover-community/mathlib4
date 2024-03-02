@@ -54,7 +54,7 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
   Q
   ```
 -/
-class Module.Injective : Prop where
+@[mk_iff] class Module.Injective : Prop where
   out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
     (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] Q),
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
@@ -462,7 +462,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
-protected theorem of_injective [UnivLE.{u, v}] (inj : Module.Injective R Q) : Module.Baer R Q := by
+protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
   let eI := Shrink.linearEquiv I R
   let eR := Shrink.linearEquiv R R
@@ -470,7 +470,7 @@ protected theorem of_injective [UnivLE.{u, v}] (inj : Module.Injective R Q) : Mo
     (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
   exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa [eI,eR] using hg' (equivShrink I ⟨x, mx⟩)⟩
 
-protected theorem iff_injective [UnivLE.{u, v}] : Module.Baer R Q ↔ Module.Injective R Q :=
+protected theorem iff_injective [Small.{v} R] : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective⟩
 
 end Module.Baer
@@ -479,7 +479,7 @@ section ULift
 
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
-lemma Module.ulift_injective_of_injective [UnivLE.{u, v}]
+lemma Module.ulift_injective_of_injective [Small.{v} R]
     (inj : Module.Injective R M) :
     Module.Injective R (ULift.{v'} M) := Module.Baer.injective fun I g ↦
   have ⟨g', hg'⟩ := Module.Baer.iff_injective.mpr inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
@@ -496,7 +496,7 @@ lemma Module.injective_of_ulift_injective
     ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
       fun x ↦ by exact congr(ULift.down $(hg' ⟨x⟩))⟩
 
-variable (M) [UnivLE.{u, v}]
+variable (M) [Small.{v} R]
 
 lemma Module.injective_iff_ulift_injective :
     Module.Injective R M ↔ Module.Injective R (ULift.{v'} M) :=
@@ -516,8 +516,7 @@ section lifting_property
 
 universe uR uM uP uP'
 
-variable [UnivLE.{uR, uM}]
-variable (R : Type uR) [Ring R]
+variable (R : Type uR) [Ring R] [Small.{uM} R]
 variable (M : Type uM) [AddCommGroup M] [Module R M] [inj : Module.Injective R M]
 variable (P : Type uP) [AddCommGroup P] [Module R P]
 variable (P' : Type uP') [AddCommGroup P'] [Module R P']

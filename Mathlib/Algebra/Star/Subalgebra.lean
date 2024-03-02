@@ -533,6 +533,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
 #align star_subalgebra.adjoin_induction₂ StarSubalgebra.adjoin_induction₂
 
 /-- The difference with `StarSubalgebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (Halg : ∀ r, p (algebraMap R _ r))
     (Hadd : ∀ x y, p x → p y → p (x + y)) (Hmul : ∀ x y, p x → p y → p (x * y))
