@@ -3,16 +3,14 @@ Copyright (c) 2024 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
 
 /-!
 # Colimits of connected index categories
 
-This file proves that a category $\mathsf{C}$ is connected if and only if
-$\operatorname{colim}_{c \in \mathsf{C}} \{*\} \cong \{*\}$ in the category
-$\mathsf{Set}$ (i.e. `Type v`).
+This file proves that a category $\mathsf{C}$ is connected if and only if `colim F` is a singleton,
+where `F.obj _ = PUnit` (in a `Type _` category).
 
 See `connected_iff_colimit_const_pUnit_iso_pUnit` for the proof of this characterization and
 `unitValuedFunctor` for the definition of the constant functor used in the statement.
@@ -22,8 +20,7 @@ See `connected_iff_colimit_const_pUnit_iso_pUnit` for the proof of this characte
 unit-valued, singleton, colimit
 -/
 
-
-universe v u
+universe u v w
 
 namespace CategoryTheory.Limits.Types
 
@@ -49,11 +46,6 @@ noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
   hom := fun _ => PUnit.unit
   inv := fun _ => colimit.ι (unitValuedFunctor C) Classical.ofNonempty PUnit.unit
 
-/-- If a colimit is nonempty, also its index category is nonempty. -/
-theorem nonempty_of_nonempty_colimit {F : C ⥤ TypeMax.{u, v}} :
-    Nonempty (colimit F) → Nonempty C :=
-  Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivQuot F).toFun
-
 /-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
 element of `colimit F`, then `c` and `d` are related by a `Zigzag`.
 -/
@@ -71,7 +63,7 @@ singleton.
 theorem connected_iff_colimit_const_pUnit_iso_pUnit :
     IsConnected C ↔ Nonempty (colimit (unitValuedFunctor C) ≅ PUnit) := by
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit C⟩, fun ⟨h⟩ => ?_⟩
-  have : Nonempty C := nonempty_of_nonempty_colimit _ <| Nonempty.map h.inv inferInstance
+  have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
   refine zigzag_isConnected <| fun c d => ?_
   refine zigzag_of_eqvGen_quot_rel _ (unitValuedFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl

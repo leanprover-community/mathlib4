@@ -487,6 +487,11 @@ theorem jointly_surjective' {F : J ⥤ TypeMax.{v, u}} (x : colimit F) :
   jointly_surjective F (colimit.isColimit F) x
 #align category_theory.limits.types.jointly_surjective' CategoryTheory.Limits.Types.jointly_surjective'
 
+/-- If a colimit is nonempty, also its index category is nonempty. -/
+theorem nonempty_of_nonempty_colimit {F : J ⥤ TypeMax.{v, w}} :
+    Nonempty (colimit F) → Nonempty J :=
+  Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivQuot F).toFun
+
 namespace FilteredColimit
 
 /- For filtered colimits of types, we can give an explicit description
