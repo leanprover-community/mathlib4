@@ -407,3 +407,22 @@ end MultipleLambdaTheorems
 -- todo: how do I turn off warrnings?
 -- #check_failure ((by fun_prop) : ?m)
 -- #check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))
+
+open Lean Meta Qq in
+#eval show MetaM Unit from do
+
+  let f : Q(ℕ×(ℕ→ℕ) → ℕ→ℕ) ←
+    withLocalDeclD `x q(ℕ×(ℕ→ℕ)) fun x => do
+      mkLambdaFVars #[x] (.proj ``Prod 1 x)
+
+  IO.println (← isTypeCorrect f)
+  IO.println (← ppExpr f)
+
+  let e := q(Con fun x => $f x 10)
+
+  let (prf,_) ← Mathlib.Meta.FunProp.funProp e {} {}
+
+  if prf.isSome then
+    IO.println "success"
+  else
+    throwError "failed to prove"
