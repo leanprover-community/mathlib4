@@ -438,7 +438,7 @@ section ToList
 
 @[to_additive (attr := simp)]
 theorem prod_to_list (s : Finset α) (f : α → β) : (s.toList.map f).prod = s.prod f := by
-  rw [Finset.prod, ← Multiset.coe_prod, ← Multiset.coe_map, Finset.coe_toList]
+  rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.coe_map, Finset.coe_toList]
 #align finset.prod_to_list Finset.prod_to_list
 #align finset.sum_to_list Finset.sum_to_list
 
@@ -2371,7 +2371,7 @@ theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
 theorem disjoint_sum_left {a : Multiset α} {i : Multiset (Multiset α)} :
     Multiset.Disjoint i.sum a ↔ ∀ b ∈ i, Multiset.Disjoint b a :=
   Quotient.inductionOn i fun l => by
-    rw [quot_mk_to_coe, Multiset.coe_sum]
+    rw [quot_mk_to_coe, Multiset.sum_coe]
     exact disjoint_list_sum_left
 #align multiset.disjoint_sum_left Multiset.disjoint_sum_left
 
