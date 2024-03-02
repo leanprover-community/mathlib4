@@ -927,7 +927,7 @@ theorem strictMono_of_deriv_pos {f : ℝ → ℝ} (hf' : ∀ x, 0 < deriv f x) :
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
 of the real line. If `f` is differentiable on the interior of `D` and `f'` is strictly positive,
 then `f` is a strictly monotone function on `D`. -/
-lemma StrictMonoOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f f' : ℝ → ℝ}
+lemma strictMonoOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f f' : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : ∀ x ∈ interior D, HasDerivWithinAt f (f' x) (interior D) x)
     (hf'₀ : ∀ x ∈ interior D, 0 < f' x) : StrictMonoOn f D :=
   strictMonoOn_of_deriv_pos hD hf fun x hx ↦ by
@@ -1000,7 +1000,7 @@ theorem strictAnti_of_deriv_neg {f : ℝ → ℝ} (hf' : ∀ x, deriv f x < 0) :
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
 of the real line. If `f` is differentiable on the interior of `D` and `f'` is strictly positive,
 then `f` is a strictly monotone function on `D`. -/
-lemma StrictAntiOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f f' : ℝ → ℝ}
+lemma strictAntiOn_of_hasDerivWithinAt_neg {D : Set ℝ} (hD : Convex ℝ D) {f f' : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : ∀ x ∈ interior D, HasDerivWithinAt f (f' x) (interior D) x)
     (hf'₀ : ∀ x ∈ interior D, f' x < 0) : StrictAntiOn f D :=
   strictAntiOn_of_deriv_neg hD hf fun x hx ↦ by
@@ -1008,7 +1008,7 @@ lemma StrictAntiOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f 
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
 `f` is a strictly monotone function. -/
-lemma strictAnti_of_hasDerivAt_pos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
+lemma strictAnti_of_hasDerivAt_neg {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
     (hf' : ∀ x, f' x < 0) : StrictAnti f :=
   strictAnti_of_deriv_neg fun x ↦ by rw [(hf _).deriv]; exact hf' _
 
