@@ -508,8 +508,7 @@ instance : MetricSpace GHSpace where
               (toGlueL hΦ hΨ '' range (optimalGHInjr X Y)) +
             hausdorffDist (toGlueR hΦ hΨ '' range (optimalGHInjl Y Z))
               (toGlueR hΦ hΨ '' range (optimalGHInjr Y Z)) := by
-        -- Adaptation note: after nightly-2024-03-02 we can remove `_root_.` again below.
-        simp only [← range_comp, Comm, eq_self_iff_true, _root_.add_right_inj]
+        simp only [← range_comp, Comm, eq_self_iff_true, add_right_inj]
       _ = hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) +
             hausdorffDist (range (optimalGHInjl Y Z)) (range (optimalGHInjr Y Z)) := by
         rw [hausdorffDist_image (toGlueL_isometry hΦ hΨ),

@@ -154,8 +154,7 @@ section OrderedSemiring
 variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
 
 theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
-  -- Adaptation note: after nightly-2024-03-02 we can drop the `_root_.` again.
-  | 0 => (_root_.pow_zero _).le
+  | 0 => (pow_zero _).le
   | n + 1 => by rw [zero_pow n.succ_ne_zero]; exact zero_le_one
 #align zero_pow_le_one zero_pow_le_one
 
@@ -193,8 +192,7 @@ theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → 
 #align pow_lt_one pow_lt_one
 
 theorem one_le_pow_of_one_le (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
-  -- Adaptation note: after nightly-2024-03-02 we can drop the `_root_.` again.
-  | 0 => by rw [_root_.pow_zero]
+  | 0 => by rw [pow_zero]
   | n + 1 => by
     rw [pow_succ]
     simpa only [mul_one] using
@@ -396,11 +394,9 @@ theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b := b
 variable [ExistsAddOfLE R]
 
 lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
-  -- Adaptation note: after nightly-2024-03-02 we can drop the `_root_.` form `pow_zero` again.
   calc
     (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
-        simp_rw [pow_succ, _root_.pow_zero, mul_one, add_mul, mul_add, add_comm (b * a),
-          add_add_add_comm]
+        simp_rw [pow_succ, pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
     _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
     _ = _ := by simp_rw [pow_succ, _root_.pow_zero, mul_one, two_mul]
   cases le_total a b

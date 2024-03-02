@@ -1329,12 +1329,11 @@ theorem _root_.Measurable.add_simpleFunc
         = (Function.support f).piecewise (g + (f : α → E)) (g + f') := by
       ext x
       by_cases hx : x ∈ Function.support f
-      -- Adaptation note: after nightly-2024-03-02 we can remove `_root_.` again below.
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_right_inj, add_right_eq_self]
+          Set.piecewise_eq_of_mem _ _ _ hx, add_right_inj, add_right_eq_self]
           using Set.disjoint_left.1 hff' hx
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_right_inj, add_left_eq_self] using hx
+          Set.piecewise_eq_of_not_mem _ _ _ hx, add_right_inj, add_left_eq_self] using hx
     rw [this]
     exact Measurable.piecewise f.measurableSet_support hf hf'
 
@@ -1355,12 +1354,11 @@ theorem _root_.Measurable.simpleFunc_add
         = (Function.support f).piecewise ((f : α → E) + g) (f' + g) := by
       ext x
       by_cases hx : x ∈ Function.support f
-      -- Adaptation note: after nightly-2024-03-02 we can remove `_root_.` again below.
       · simpa only [coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_left_inj, add_right_eq_self]
+          Set.piecewise_eq_of_mem _ _ _ hx, add_left_inj, add_right_eq_self]
           using Set.disjoint_left.1 hff' hx
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_left_inj, add_left_eq_self] using hx
+          Set.piecewise_eq_of_not_mem _ _ _ hx, add_left_inj, add_left_eq_self] using hx
     rw [this]
     exact Measurable.piecewise f.measurableSet_support hf hf'
 

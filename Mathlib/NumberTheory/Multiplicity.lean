@@ -309,8 +309,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   have hxy_even : Even (x - y) := even_iff_two_dvd.mpr (dvd_trans (by decide) hxy)
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
   cases' n with n
-  -- Adaptation note: after nightly-2024-03-02 we can drop the `_root_.` again.
-  · simp only [_root_.pow_zero, sub_self, multiplicity.zero, Int.ofNat_zero, Nat.zero_eq, add_top]
+  · simp only [pow_zero, sub_self, multiplicity.zero, Int.ofNat_zero, Nat.zero_eq, add_top]
   have h : (multiplicity 2 n.succ).Dom := multiplicity.finite_nat_iff.mpr ⟨by norm_num, n.succ_pos⟩
   rcases multiplicity.eq_coe_iff.mp (PartENat.natCast_get h).symm with ⟨⟨k, hk⟩, hpn⟩
   rw [hk, pow_mul, pow_mul, multiplicity.pow_sub_pow_of_prime,

@@ -343,9 +343,8 @@ theorem convergents'_succ :
   · obtain ⟨a, rfl⟩ : ∃ a : ℤ, v = a := ⟨⌊v⌋, eq_of_sub_eq_zero h⟩
     rw [convergents'_of_int, fract_intCast, inv_zero, ← cast_zero, convergents'_of_int, cast_zero,
       div_zero, add_zero, floor_intCast]
-  · -- Adaptation note: after nightly-2024-03-02 we can remove `_root_.` again below.
-    rw [convergents', of_h_eq_floor, _root_.add_right_inj, convergents'Aux_succ_some (of_s_head h)]
-    exact congr_arg (1 / ·) (by rw [convergents', of_h_eq_floor, _root_.add_right_inj, of_s_tail])
+  · rw [convergents', of_h_eq_floor, _root_.add_right_inj, convergents'Aux_succ_some (of_s_head h)]
+    exact congr_arg (1 / ·) (by rw [convergents', of_h_eq_floor, add_right_inj, of_s_tail])
 #align generalized_continued_fraction.convergents'_succ GeneralizedContinuedFraction.convergents'_succ
 
 end Values
