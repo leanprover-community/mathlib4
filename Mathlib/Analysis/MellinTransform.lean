@@ -154,7 +154,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
   rw [set_integral_congr measurableSet_Ioi this, integral_smul,
     integral_comp_mul_left_Ioi (fun u ↦ (u : ℂ) ^ (s - 1) • f u) _ ha,
     mul_zero, ← Complex.coe_smul, ← mul_smul, sub_eq_add_neg,
-    cpow_add _ _ (ofReal_ne_zero.mpr ha.ne'), cpow_one, abs_of_pos (inv_pos.mpr ha), ofReal_inv,
+    cpow_add _ _ (ofReal_ne_zero.mpr ha.ne'), cpow_one, ofReal_inv,
     mul_assoc, mul_comm, inv_mul_cancel_right₀ (ofReal_ne_zero.mpr ha.ne')]
 #align mellin_comp_mul_left mellin_comp_mul_left
 
