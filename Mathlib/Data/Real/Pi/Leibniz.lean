@@ -89,7 +89,7 @@ theorem tendsto_sum_pi_div_four :
         simp only [id.def]
         ring
       · simp
-        rw [← mul_assoc, @div_mul_cancel _ _ (2 * (i : ℝ) + 1) _ (by norm_cast; linarith),
+        rw [← mul_assoc, @div_mul_cancel _ _ (2 * (i : ℝ) + 1) _ (by norm_cast; omega),
           pow_mul x 2 i, ← mul_pow (-1 : ℝ) (x ^ 2) i]
         ring_nf
     convert (hasDerivAt_arctan x).sub (HasDerivAt.sum has_deriv_at_b) using 1

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
-import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
@@ -100,7 +99,7 @@ variable {n m : ℕ}
 #align fin.fin_to_nat Fin.coeToNat
 
 theorem val_injective : Function.Injective (@Fin.val n) :=
-  @Fin.eq_of_veq n
+  @Fin.eq_of_val_eq n
 #align fin.val_injective Fin.val_injective
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
@@ -143,12 +142,13 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   ext_iff.symm
 #align fin.coe_eq_coe Fin.val_eq_val
 
+@[deprecated ext_iff] -- 2024-02-20
 theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
-  ⟨veq_of_eq, eq_of_veq⟩
+  ext_iff
 #align fin.eq_iff_veq Fin.eq_iff_veq
 
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
-  ⟨vne_of_ne, ne_of_vne⟩
+  ext_iff.not
 #align fin.ne_iff_vne Fin.ne_iff_vne
 
 -- porting note: I'm not sure if this comment still applies.
@@ -540,8 +540,8 @@ section Monoid
 
 instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add := (· + ·)
-  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
-  add_comm := by simp [eq_iff_veq, add_def, add_comm]
+  add_assoc := by simp [ext_iff, add_def, add_assoc]
+  add_comm := by simp [ext_iff, add_def, add_comm]
 #align fin.add_comm_semigroup Fin.addCommSemigroup
 
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
@@ -551,7 +551,7 @@ protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
 
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
-  simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
+  simp [ext_iff, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
 instance [NeZero n] : OfNat (Fin n) a where
@@ -577,8 +577,8 @@ section from_ad_hoc
 end from_ad_hoc
 
 instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
-  add_comm := by simp [eq_iff_veq, add_def, add_comm]
+  add_assoc := by simp [ext_iff, add_def, add_assoc]
+  add_comm := by simp [ext_iff, add_def, add_comm]
 
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
@@ -590,7 +590,7 @@ instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast n := Fin.ofNat'' n
   natCast_zero := rfl
-  natCast_succ _ := eq_of_veq (add_mod _ _ _)
+  natCast_succ _ := ext (add_mod _ _ _)
 #align fin.add_monoid_with_one Fin.instAddMonoidWithOne
 
 end Monoid
@@ -637,7 +637,7 @@ set_option linter.deprecated false
 @[simp, deprecated]
 theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
     (⟨bit0 m, h⟩ : Fin n) = (bit0 ⟨m, (Nat.le_add_right m m).trans_lt h⟩ : Fin _) :=
-  eq_of_veq (Nat.mod_eq_of_lt h).symm
+  eq_of_val_eq (Nat.mod_eq_of_lt h).symm
 #align fin.mk_bit0 Fin.mk_bit0
 
 @[simp, deprecated]
@@ -687,7 +687,7 @@ theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a 
 @[simp] lemma nat_cast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
 
 @[simp] lemma nat_cast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
-  simp [eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
+  simp [ext_iff, Nat.dvd_iff_mod_eq_zero]
 
 @[simp]
 theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
@@ -792,7 +792,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 -/
 @[simp]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
-  ⟨fun h => Fin.eq_of_veq <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_refl _⟩
+  ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact le_rfl⟩
 #align fin.le_zero_iff Fin.le_zero_iff'
 
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
@@ -868,10 +868,10 @@ theorem coe_of_injective_castLEEmb_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (h
 #align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
 
 theorem leftInverse_cast (eq : n = m) : LeftInverse (cast eq.symm) (cast eq) :=
-  fun _ => eq_of_veq rfl
+  fun _ => rfl
 
 theorem rightInverse_cast (eq : n = m) : RightInverse (cast eq.symm) (cast eq) :=
-  fun _ => eq_of_veq rfl
+  fun _ => rfl
 
 theorem cast_le_cast (eq : n = m) {a b : Fin n} : cast eq a ≤ cast eq b ↔ a ≤ b :=
   Iff.rfl
@@ -1675,7 +1675,7 @@ protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
   · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]
-  simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
+  simp [ext_iff, mul_def, mod_eq_of_lt (is_lt k)]
 #align fin.mul_one Fin.mul_one'
 
 #align fin.mul_comm Fin.mul_comm
@@ -1684,11 +1684,11 @@ protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
   rw [Fin.mul_comm, Fin.mul_one']
 #align fin.one_mul Fin.one_mul'
 
-protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
+protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [ext_iff, mul_def]
 #align fin.mul_zero Fin.mul_zero'
 
 protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [eq_iff_veq, mul_def]
+  simp [ext_iff, mul_def]
 #align fin.zero_mul Fin.zero_mul'
 
 end Mul

@@ -479,7 +479,7 @@ theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
   rw [lp.ext_iff, coeFn_zero]
 #align lp.eq_zero_iff_coe_fn_eq_zero lp.eq_zero_iff_coeFn_eq_zero
 
--- porting note: this was very slow, so I squeezed the `simp` calls
+-- porting note (#11083): this was very slow, so I squeezed the `simp` calls
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -504,7 +504,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
         · cases isEmpty_or_nonempty α
           · -- porting note (#10745): was `simp [lp.eq_zero' f]`
             rw [lp.eq_zero' f]
-            simp only [zero_add, norm_zero, le_refl] -- porting note: just `simp` was slow
+            simp only [zero_add, norm_zero, le_refl] -- porting note (#11083): just `simp` was slow
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add

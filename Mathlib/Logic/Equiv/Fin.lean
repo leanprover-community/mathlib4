@@ -442,7 +442,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
   · simp [finRotate_last]
   · cases i
     simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
-    simp [finRotate_of_lt h, Fin.eq_iff_veq, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
+    simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 #align fin_rotate_succ_apply finRotate_succ_apply
 
 -- porting note: was a @[simp]
@@ -478,18 +478,18 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
   left_inv := fun ⟨x, y⟩ =>
     have H : 0 < n := Nat.pos_of_ne_zero fun H => Nat.not_lt_zero y.1 <| H ▸ y.2
     Prod.ext
-      (Fin.eq_of_veq <|
+      (Fin.eq_of_val_eq <|
         calc
           (y.1 + n * x.1) / n = y.1 / n + x.1 := Nat.add_mul_div_left _ _ H
           _ = 0 + x.1 := by rw [Nat.div_eq_of_lt y.2]
           _ = x.1 := Nat.zero_add x.1
           )
-      (Fin.eq_of_veq <|
+      (Fin.eq_of_val_eq <|
         calc
           (y.1 + n * x.1) % n = y.1 % n := Nat.add_mul_mod_self_left _ _ _
           _ = y.1 := Nat.mod_eq_of_lt y.2
           )
-  right_inv x := Fin.eq_of_veq <| Nat.mod_add_div _ _
+  right_inv x := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
 #align fin_prod_fin_equiv finProdFinEquiv
 #align fin_prod_fin_equiv_apply_val finProdFinEquiv_apply_val
 #align fin_prod_fin_equiv_symm_apply finProdFinEquiv_symm_apply

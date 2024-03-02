@@ -25,8 +25,12 @@ and reconstructing numbers from their digits.
 We also prove some divisibility tests based on digits, in particular completing
 Theorem #85 from https://www.cs.ru.nl/~freek/100/.
 
-A basic `norm_digits` tactic is also provided for proving goals of the form
-`Nat.digits a b = l` where `a` and `b` are numerals.
+Also included is a bound on the length of `Nat.toDigits` from core.
+
+## TODO
+
+A basic `norm_digits` tactic for proving goals of the form `Nat.digits a b = l` where `a` and `b`
+are numerals is not yet ported.
 -/
 
 set_option autoImplicit true
@@ -737,6 +741,87 @@ theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digit
   exact eq_zero_of_neg_eq this.symm
 #align nat.eleven_dvd_of_palindrome Nat.eleven_dvd_of_palindrome
 
+/-! ### `Nat.toDigits` length -/
+
+lemma toDigitsCore_lens_eq_aux (b f : Nat) :
+    ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
+    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
+  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
+  | zero => assumption
+  | succ f ih =>
+    if hx : n / b = 0 then
+      simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
+    else
+      simp only [hx, if_false]
+      specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
+      simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
+      exact ih trivial
+-- deprecated 2024-02-19
+@[deprecated] alias to_digits_core_lens_eq_aux:= toDigitsCore_lens_eq_aux
+
+lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
+    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
+  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
+  | succ f ih =>
+    if hnb : (n / b) = 0 then
+      simp only [hnb, if_true, List.length]
+    else
+      generalize hx: Nat.digitChar (n % b) = x
+      simp only [hx, hnb, if_false] at ih
+      simp only [hnb, if_false]
+      specialize ih (n / b) c (x :: tl)
+      rw [← ih]
+      have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
+      apply toDigitsCore_lens_eq_aux
+      exact lens_eq
+-- deprecated 2024-02-19
+@[deprecated] alias to_digits_core_lens_eq:= toDigitsCore_lens_eq
+
+lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
+  simp only [Nat.pow_succ]
+  exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
+
+/-- The String representation produced by toDigitsCore has the proper length relative to
+the number of digits in `n < e` for some base `b`. Since this works with any base greater
+than one, it can be used for binary, decimal, and hex. -/
+lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
+    (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
+  induction f generalizing n e hlt h_e_pos with
+    simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
+  | succ f ih =>
+    cases e with
+    | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
+    | succ e =>
+      if h_pred_pos : 0 < e then
+        have _ : 0 < b := Nat.lt_trans (by decide) h
+        specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
+        if hdiv_ten : n / b = 0 then
+          simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
+        else
+          simp only [hdiv_ten,
+            toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b), if_false]
+          exact Nat.succ_le_succ ih
+      else
+        obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
+        have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
+        have _ : n < b := ‹b ^ 1 = b› ▸ hlt
+        simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
+-- deprecated 2024-02-19
+@[deprecated] alias to_digits_core_length := toDigitsCore_length
+
+/-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
+number of digits in the decimal number (represented by `e`). For example, the decimal string
+representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e := by
+  cases n with
+    (intro e0 he; simp only [Nat.repr, Nat.toDigits, String.length, List.asString])
+  | zero => assumption
+  | succ n =>
+    if hterm : n.succ / 10 = 0 then
+      simp only [hterm, Nat.toDigitsCore]; assumption
+    else
+      exact toDigitsCore_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
+
 /-! ### `norm_digits` tactic -/
 
 
@@ -745,7 +830,7 @@ namespace NormDigits
 theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
     (h : Nat.digits b m = l ∧ 1 < b ∧ 0 < m) : (Nat.digits b n = r :: l) ∧ 1 < b ∧ 0 < n := by
   rcases h with ⟨h, b2, m0⟩
-  have b0 : 0 < b := by linarith
+  have b0 : 0 < b := by omega
   have n0 : 0 < n := by linarith [mul_pos b0 m0]
   refine' ⟨_, b2, n0⟩
   obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
