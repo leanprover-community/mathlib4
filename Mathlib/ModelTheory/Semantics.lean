@@ -17,7 +17,7 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 ## Main Definitions
 * `FirstOrder.Language.Term.realize` is defined so that `t.realize v` is the term `t` evaluated at
 variables `v`.
-* `FirstOrder.Language.BoundedFormula.Realize` is defined so that `φ.Realize v xs` is the bounded
+* `FirstOrder.Language.Semiformula.Realize` is defined so that `φ.Realize v xs` is the bounded
 formula `φ` evaluated at tuples of variables `v` and `xs`.
 * `FirstOrder.Language.Formula.Realize` is defined so that `φ.Realize v` is the formula `φ`
 evaluated at variables `v`.
@@ -27,17 +27,17 @@ evaluated in the structure `M`. Also denoted `M ⊨ φ`.
 sentence of `T` is realized in `M`. Also denoted `T ⊨ φ`.
 
 ## Main Results
-* `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
+* `FirstOrder.Language.Semiformula.realize_toPrenex` shows that the prenex normal form of a
 formula has the same realization as the original formula.
 * Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
 `liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
 sentences, and theories.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
+* Formulas use a modified version of de Bruijn variables. Specifically, a `L.Semiformula α n`
 is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
+indexed by `Fin n`, which can. For any `φ : L.Semiformula α (n + 1)`, we define the formula
+`∀' φ : L.Semiformula α n` by universally quantifying over the variable indexed by
 `n : Fin (n + 1)`.
 
 ## References
@@ -242,126 +242,126 @@ theorem Equiv.realize_term {v : α → M} (t : L.Term α) (g : M ≃[L] N) :
 
 variable {n : ℕ}
 
-namespace BoundedFormula
+namespace Semiformula
 
 open Term
 
 -- Porting note: universes in different order
 /-- A bounded formula can be evaluated as true or false by giving values to each free variable. -/
-def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l → M), Prop
+def Realize : ∀ {l} (_f : L.Semiformula α l) (_v : α → M) (_xs : Fin l → M), Prop
   | _, falsum, _v, _xs => False
   | _, equal t₁ t₂, v, xs => t₁.realize (Sum.elim v xs) = t₂.realize (Sum.elim v xs)
   | _, rel R ts, v, xs => RelMap R fun i => (ts i).realize (Sum.elim v xs)
   | _, imp f₁ f₂, v, xs => Realize f₁ v xs → Realize f₂ v xs
   | _, all f, v, xs => ∀ x : M, Realize f v (snoc xs x)
-#align first_order.language.bounded_formula.realize FirstOrder.Language.BoundedFormula.Realize
+#align first_order.language.bounded_formula.realize FirstOrder.Language.Semiformula.Realize
 
-variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
+variable {l : ℕ} {φ ψ : L.Semiformula α l} {θ : L.Semiformula α l.succ}
 
 variable {v : α → M} {xs : Fin l → M}
 
 @[simp]
-theorem realize_bot : (⊥ : L.BoundedFormula α l).Realize v xs ↔ False :=
+theorem realize_bot : (⊥ : L.Semiformula α l).Realize v xs ↔ False :=
   Iff.rfl
-#align first_order.language.bounded_formula.realize_bot FirstOrder.Language.BoundedFormula.realize_bot
+#align first_order.language.bounded_formula.realize_bot FirstOrder.Language.Semiformula.realize_bot
 
 @[simp]
 theorem realize_not : φ.not.Realize v xs ↔ ¬φ.Realize v xs :=
   Iff.rfl
-#align first_order.language.bounded_formula.realize_not FirstOrder.Language.BoundedFormula.realize_not
+#align first_order.language.bounded_formula.realize_not FirstOrder.Language.Semiformula.realize_not
 
 @[simp]
 theorem realize_bdEqual (t₁ t₂ : L.Term (Sum α (Fin l))) :
     (t₁.bdEqual t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) = t₂.realize (Sum.elim v xs) :=
   Iff.rfl
-#align first_order.language.bounded_formula.realize_bd_equal FirstOrder.Language.BoundedFormula.realize_bdEqual
+#align first_order.language.bounded_formula.realize_bd_equal FirstOrder.Language.Semiformula.realize_bdEqual
 
 @[simp]
-theorem realize_top : (⊤ : L.BoundedFormula α l).Realize v xs ↔ True := by simp [Top.top]
-#align first_order.language.bounded_formula.realize_top FirstOrder.Language.BoundedFormula.realize_top
+theorem realize_top : (⊤ : L.Semiformula α l).Realize v xs ↔ True := by simp [Top.top]
+#align first_order.language.bounded_formula.realize_top FirstOrder.Language.Semiformula.realize_top
 
 @[simp]
 theorem realize_inf : (φ ⊓ ψ).Realize v xs ↔ φ.Realize v xs ∧ ψ.Realize v xs := by
   simp [Inf.inf, Realize]
-#align first_order.language.bounded_formula.realize_inf FirstOrder.Language.BoundedFormula.realize_inf
+#align first_order.language.bounded_formula.realize_inf FirstOrder.Language.Semiformula.realize_inf
 
 @[simp]
-theorem realize_foldr_inf (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
-    (l.foldr (· ⊓ ·) ⊤).Realize v xs ↔ ∀ φ ∈ l, BoundedFormula.Realize φ v xs := by
+theorem realize_foldr_inf (l : List (L.Semiformula α n)) (v : α → M) (xs : Fin n → M) :
+    (l.foldr (· ⊓ ·) ⊤).Realize v xs ↔ ∀ φ ∈ l, Semiformula.Realize φ v xs := by
   induction' l with φ l ih
   · simp
   · simp [ih]
-#align first_order.language.bounded_formula.realize_foldr_inf FirstOrder.Language.BoundedFormula.realize_foldr_inf
+#align first_order.language.bounded_formula.realize_foldr_inf FirstOrder.Language.Semiformula.realize_foldr_inf
 
 @[simp]
 theorem realize_imp : (φ.imp ψ).Realize v xs ↔ φ.Realize v xs → ψ.Realize v xs := by
   simp only [Realize]
-#align first_order.language.bounded_formula.realize_imp FirstOrder.Language.BoundedFormula.realize_imp
+#align first_order.language.bounded_formula.realize_imp FirstOrder.Language.Semiformula.realize_imp
 
 @[simp]
 theorem realize_rel {k : ℕ} {R : L.Relations k} {ts : Fin k → L.Term _} :
-    (R.boundedFormula ts).Realize v xs ↔ RelMap R fun i => (ts i).realize (Sum.elim v xs) :=
+    (R.semiformula ts).Realize v xs ↔ RelMap R fun i => (ts i).realize (Sum.elim v xs) :=
   Iff.rfl
-#align first_order.language.bounded_formula.realize_rel FirstOrder.Language.BoundedFormula.realize_rel
+#align first_order.language.bounded_formula.realize_rel FirstOrder.Language.Semiformula.realize_rel
 
 @[simp]
 theorem realize_rel₁ {R : L.Relations 1} {t : L.Term _} :
-    (R.boundedFormula₁ t).Realize v xs ↔ RelMap R ![t.realize (Sum.elim v xs)] := by
-  rw [Relations.boundedFormula₁, realize_rel, iff_eq_eq]
+    (R.semiformula₁ t).Realize v xs ↔ RelMap R ![t.realize (Sum.elim v xs)] := by
+  rw [Relations.semiformula₁, realize_rel, iff_eq_eq]
   refine' congr rfl (funext fun _ => _)
   simp only [Matrix.cons_val_fin_one]
-#align first_order.language.bounded_formula.realize_rel₁ FirstOrder.Language.BoundedFormula.realize_rel₁
+#align first_order.language.bounded_formula.realize_rel₁ FirstOrder.Language.Semiformula.realize_rel₁
 
 @[simp]
 theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
-    (R.boundedFormula₂ t₁ t₂).Realize v xs ↔
+    (R.semiformula₂ t₁ t₂).Realize v xs ↔
       RelMap R ![t₁.realize (Sum.elim v xs), t₂.realize (Sum.elim v xs)] := by
-  rw [Relations.boundedFormula₂, realize_rel, iff_eq_eq]
+  rw [Relations.semiformula₂, realize_rel, iff_eq_eq]
   refine' congr rfl (funext (Fin.cases _ _))
   · simp only [Matrix.cons_val_zero]
   · simp only [Matrix.cons_val_succ, Matrix.cons_val_fin_one, forall_const]
-#align first_order.language.bounded_formula.realize_rel₂ FirstOrder.Language.BoundedFormula.realize_rel₂
+#align first_order.language.bounded_formula.realize_rel₂ FirstOrder.Language.Semiformula.realize_rel₂
 
 @[simp]
 theorem realize_sup : (φ ⊔ ψ).Realize v xs ↔ φ.Realize v xs ∨ ψ.Realize v xs := by
   simp only [realize, Sup.sup, realize_not, eq_iff_iff]
   tauto
-#align first_order.language.bounded_formula.realize_sup FirstOrder.Language.BoundedFormula.realize_sup
+#align first_order.language.bounded_formula.realize_sup FirstOrder.Language.Semiformula.realize_sup
 
 @[simp]
-theorem realize_foldr_sup (l : List (L.BoundedFormula α n)) (v : α → M) (xs : Fin n → M) :
-    (l.foldr (· ⊔ ·) ⊥).Realize v xs ↔ ∃ φ ∈ l, BoundedFormula.Realize φ v xs := by
+theorem realize_foldr_sup (l : List (L.Semiformula α n)) (v : α → M) (xs : Fin n → M) :
+    (l.foldr (· ⊔ ·) ⊥).Realize v xs ↔ ∃ φ ∈ l, Semiformula.Realize φ v xs := by
   induction' l with φ l ih
   · simp
   · simp_rw [List.foldr_cons, realize_sup, ih, List.mem_cons, or_and_right, exists_or,
       exists_eq_left]
-#align first_order.language.bounded_formula.realize_foldr_sup FirstOrder.Language.BoundedFormula.realize_foldr_sup
+#align first_order.language.bounded_formula.realize_foldr_sup FirstOrder.Language.Semiformula.realize_foldr_sup
 
 @[simp]
 theorem realize_all : (all θ).Realize v xs ↔ ∀ a : M, θ.Realize v (Fin.snoc xs a) :=
   Iff.rfl
-#align first_order.language.bounded_formula.realize_all FirstOrder.Language.BoundedFormula.realize_all
+#align first_order.language.bounded_formula.realize_all FirstOrder.Language.Semiformula.realize_all
 
 @[simp]
 theorem realize_ex : θ.ex.Realize v xs ↔ ∃ a : M, θ.Realize v (Fin.snoc xs a) := by
-  rw [BoundedFormula.ex, realize_not, realize_all, not_forall]
+  rw [Semiformula.ex, realize_not, realize_all, not_forall]
   simp_rw [realize_not, Classical.not_not]
-#align first_order.language.bounded_formula.realize_ex FirstOrder.Language.BoundedFormula.realize_ex
+#align first_order.language.bounded_formula.realize_ex FirstOrder.Language.Semiformula.realize_ex
 
 @[simp]
 theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Realize v xs) := by
-  simp only [BoundedFormula.iff, realize_inf, realize_imp, and_imp, ← iff_def]
-#align first_order.language.bounded_formula.realize_iff FirstOrder.Language.BoundedFormula.realize_iff
+  simp only [Semiformula.iff, realize_inf, realize_imp, and_imp, ← iff_def]
+#align first_order.language.bounded_formula.realize_iff FirstOrder.Language.Semiformula.realize_iff
 
-theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
+theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.Semiformula α m}
     {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ cast h) := by
   subst h
   simp only [castLE_rfl, cast_refl, OrderIso.coe_refl, Function.comp_id]
-#align first_order.language.bounded_formula.realize_cast_le_of_eq FirstOrder.Language.BoundedFormula.realize_castLE_of_eq
+#align first_order.language.bounded_formula.realize_cast_le_of_eq FirstOrder.Language.Semiformula.realize_castLE_of_eq
 
 theorem realize_mapTermRel_id [L'.Structure M]
     {ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Term (Sum β (Fin n))}
-    {fr : ∀ n, L.Relations n → L'.Relations n} {n} {φ : L.BoundedFormula α n} {v : α → M}
+    {fr : ∀ n, L.Relations n → L'.Relations n} {n} {φ : L.Semiformula α n} {v : α → M}
     {v' : β → M} {xs : Fin n → M}
     (h1 :
       ∀ (n) (t : L.Term (Sum α (Fin n))) (xs : Fin n → M),
@@ -374,11 +374,11 @@ theorem realize_mapTermRel_id [L'.Structure M]
   · simp [mapTermRel, Realize, h1, h2]
   · simp [mapTermRel, Realize, ih1, ih2]
   · simp only [mapTermRel, Realize, ih, id.def]
-#align first_order.language.bounded_formula.realize_map_term_rel_id FirstOrder.Language.BoundedFormula.realize_mapTermRel_id
+#align first_order.language.bounded_formula.realize_map_term_rel_id FirstOrder.Language.Semiformula.realize_mapTermRel_id
 
 theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
     {ft : ∀ n, L.Term (Sum α (Fin n)) → L'.Term (Sum β (Fin (k + n)))}
-    {fr : ∀ n, L.Relations n → L'.Relations n} {n} {φ : L.BoundedFormula α n}
+    {fr : ∀ n, L.Relations n → L'.Relations n} {n} {φ : L.Semiformula α n}
     (v : ∀ {n}, (Fin (k + n) → M) → α → M) {v' : β → M} (xs : Fin (k + n) → M)
     (h1 :
       ∀ (n) (t : L.Term (Sum α (Fin n))) (xs' : Fin (k + n) → M),
@@ -393,17 +393,17 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
   · simp [mapTermRel, Realize, h1, h2]
   · simp [mapTermRel, Realize, ih1, ih2]
   · simp [mapTermRel, Realize, ih, hv]
-#align first_order.language.bounded_formula.realize_map_term_rel_add_cast_le FirstOrder.Language.BoundedFormula.realize_mapTermRel_add_castLe
+#align first_order.language.bounded_formula.realize_map_term_rel_add_cast_le FirstOrder.Language.Semiformula.realize_mapTermRel_add_castLe
 
 @[simp]
-theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → Sum β (Fin m)} {v : β → M}
+theorem realize_relabel {m n : ℕ} {φ : L.Semiformula α n} {g : α → Sum β (Fin m)} {v : β → M}
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
       φ.Realize (Sum.elim v (xs ∘ Fin.castAdd n) ∘ g) (xs ∘ Fin.natAdd m) :=
   by rw [relabel, realize_mapTermRel_add_castLe] <;> intros <;> simp
-#align first_order.language.bounded_formula.realize_relabel FirstOrder.Language.BoundedFormula.realize_relabel
+#align first_order.language.bounded_formula.realize_relabel FirstOrder.Language.Semiformula.realize_relabel
 
-theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
+theorem realize_liftAt {n n' m : ℕ} {φ : L.Semiformula α n} {v : α → M} {xs : Fin (n + n') → M}
     (hmn : m + n' ≤ n + 1) :
     (φ.liftAt n' m).Realize v xs ↔
       φ.Realize v (xs ∘ fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n') := by
@@ -431,25 +431,25 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
       refine' (congr rfl (ext _)).trans (snoc_castSucc _ _ _)
       simp only [coe_castSucc, coe_cast]
       split_ifs <;> simp
-#align first_order.language.bounded_formula.realize_lift_at FirstOrder.Language.BoundedFormula.realize_liftAt
+#align first_order.language.bounded_formula.realize_lift_at FirstOrder.Language.Semiformula.realize_liftAt
 
-theorem realize_liftAt_one {n m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + 1) → M}
+theorem realize_liftAt_one {n m : ℕ} {φ : L.Semiformula α n} {v : α → M} {xs : Fin (n + 1) → M}
     (hmn : m ≤ n) :
     (φ.liftAt 1 m).Realize v xs ↔
       φ.Realize v (xs ∘ fun i => if ↑i < m then castSucc i else i.succ) := by
   simp [realize_liftAt (add_le_add_right hmn 1), castSucc]
-#align first_order.language.bounded_formula.realize_lift_at_one FirstOrder.Language.BoundedFormula.realize_liftAt_one
+#align first_order.language.bounded_formula.realize_lift_at_one FirstOrder.Language.Semiformula.realize_liftAt_one
 
 @[simp]
-theorem realize_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α → M}
+theorem realize_liftAt_one_self {n : ℕ} {φ : L.Semiformula α n} {v : α → M}
     {xs : Fin (n + 1) → M} : (φ.liftAt 1 n).Realize v xs ↔ φ.Realize v (xs ∘ castSucc) := by
   rw [realize_liftAt_one (refl n), iff_eq_eq]
   refine' congr rfl (congr rfl (funext fun i => _))
   rw [if_pos i.is_lt]
-#align first_order.language.bounded_formula.realize_lift_at_one_self FirstOrder.Language.BoundedFormula.realize_liftAt_one_self
+#align first_order.language.bounded_formula.realize_lift_at_one_self FirstOrder.Language.Semiformula.realize_liftAt_one_self
 
 @[simp]
-theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : β → M} {xs : Fin n → M} :
+theorem realize_subst {φ : L.Semiformula α n} {tf : α → L.Term β} {v : β → M} {xs : Fin n → M} :
     (φ.subst tf).Realize v xs ↔ φ.Realize (fun a => (tf a).realize v) xs :=
   realize_mapTermRel_id
     (fun n t x => by
@@ -459,10 +459,10 @@ theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : 
         · simp only [Sum.elim_inl, Function.comp_apply, Term.realize_relabel, Sum.elim_comp_inl]
         · rfl)
     (by simp)
-#align first_order.language.bounded_formula.realize_subst FirstOrder.Language.BoundedFormula.realize_subst
+#align first_order.language.bounded_formula.realize_subst FirstOrder.Language.Semiformula.realize_subst
 
 @[simp]
-theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n} {s : Set α}
+theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.Semiformula α n} {s : Set α}
     (h : ↑φ.freeVarFinset ⊆ s) {v : α → M} {xs : Fin n → M} :
     (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
@@ -471,10 +471,10 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
   · simp [restrictFreeVar, Realize]
   · simp [restrictFreeVar, Realize, ih1, ih2]
   · simp [restrictFreeVar, Realize, ih3]
-#align first_order.language.bounded_formula.realize_restrict_free_var FirstOrder.Language.BoundedFormula.realize_restrictFreeVar
+#align first_order.language.bounded_formula.realize_restrict_free_var FirstOrder.Language.Semiformula.realize_restrictFreeVar
 
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
+    {n} {φ : L[[α]].Semiformula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by
   refine' realize_mapTermRel_id (fun n t xs => realize_constantsVarsEquivLeft) fun n R xs => _
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -485,21 +485,21 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
   · -- This used to be `simp` before leanprover/lean4#2644
     simp; erw [Equiv.sumEmpty_apply_inl]
   · exact isEmptyElim R
-#align first_order.language.bounded_formula.realize_constants_vars_equiv FirstOrder.Language.BoundedFormula.realize_constantsVarsEquiv
+#align first_order.language.bounded_formula.realize_constants_vars_equiv FirstOrder.Language.Semiformula.realize_constantsVarsEquiv
 
 @[simp]
-theorem realize_relabelEquiv {g : α ≃ β} {k} {φ : L.BoundedFormula α k} {v : β → M}
+theorem realize_relabelEquiv {g : α ≃ β} {k} {φ : L.Semiformula α k} {v : β → M}
     {xs : Fin k → M} : (relabelEquiv g φ).Realize v xs ↔ φ.Realize (v ∘ g) xs := by
   simp only [relabelEquiv, mapTermRelEquiv_apply, Equiv.coe_refl]
   refine' realize_mapTermRel_id (fun n t xs => _) fun _ _ _ => rfl
   simp only [relabelEquiv_apply, Term.realize_relabel]
   refine' congr (congr rfl _) rfl
   ext (i | i) <;> rfl
-#align first_order.language.bounded_formula.realize_relabel_equiv FirstOrder.Language.BoundedFormula.realize_relabelEquiv
+#align first_order.language.bounded_formula.realize_relabel_equiv FirstOrder.Language.Semiformula.realize_relabelEquiv
 
 variable [Nonempty M]
 
-theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α → M}
+theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.Semiformula α n} {v : α → M}
     {xs : Fin n → M} : (φ.liftAt 1 n).all.Realize v xs ↔ φ.Realize v xs := by
   inhabit M
   simp only [realize_all, realize_liftAt_one_self]
@@ -508,9 +508,9 @@ theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : 
     simp
   · refine' (congr rfl (funext fun i => _)).mp h
     simp
-#align first_order.language.bounded_formula.realize_all_lift_at_one_self FirstOrder.Language.BoundedFormula.realize_all_liftAt_one_self
+#align first_order.language.bounded_formula.realize_all_lift_at_one_self FirstOrder.Language.Semiformula.realize_all_liftAt_one_self
 
-theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ)
+theorem realize_toPrenexImpRight {φ ψ : L.Semiformula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ)
     {v : α → M} {xs : Fin n → M} :
     (φ.toPrenexImpRight ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs := by
   induction' hψ with _ _ hψ _ _ _hψ ih _ _ _hψ ih
@@ -530,9 +530,9 @@ theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ)
         exact ⟨a, fun _ => ha⟩
       · inhabit M
         exact ⟨default, fun h'' => (h h'').elim⟩
-#align first_order.language.bounded_formula.realize_to_prenex_imp_right FirstOrder.Language.BoundedFormula.realize_toPrenexImpRight
+#align first_order.language.bounded_formula.realize_to_prenex_imp_right FirstOrder.Language.Semiformula.realize_toPrenexImpRight
 
-theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ)
+theorem realize_toPrenexImp {φ ψ : L.Semiformula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ)
     {v : α → M} {xs : Fin n → M} : (φ.toPrenexImp ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs := by
   revert ψ
   induction' hφ with _ _ hφ _ _ _hφ ih _ _ _hφ ih <;> intro ψ hψ
@@ -552,10 +552,10 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
         exact ⟨a, fun h => (ha h).elim⟩
   · refine' _root_.trans (forall_congr' fun _ => ih hψ.liftAt) _
     simp
-#align first_order.language.bounded_formula.realize_to_prenex_imp FirstOrder.Language.BoundedFormula.realize_toPrenexImp
+#align first_order.language.bounded_formula.realize_to_prenex_imp FirstOrder.Language.Semiformula.realize_toPrenexImp
 
 @[simp]
-theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
+theorem realize_toPrenex (φ : L.Semiformula α n) {v : α → M} :
     ∀ {xs : Fin n → M}, φ.toPrenex.Realize v xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ f1 f2 h1 h2 _ _ h
   · exact Iff.rfl
@@ -567,9 +567,9 @@ theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
   · intros
     rw [realize_all, toPrenex, realize_all]
     exact forall_congr' fun a => h
-#align first_order.language.bounded_formula.realize_to_prenex FirstOrder.Language.BoundedFormula.realize_toPrenex
+#align first_order.language.bounded_formula.realize_to_prenex FirstOrder.Language.Semiformula.realize_toPrenex
 
-end BoundedFormula
+end Semiformula
 
 
 -- Porting note: no `protected` attribute in Lean4
@@ -579,23 +579,23 @@ end BoundedFormula
 
 namespace LHom
 
-open BoundedFormula
+open Semiformula
 
 @[simp]
-theorem realize_onBoundedFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] {n : ℕ}
-    (ψ : L.BoundedFormula α n) {v : α → M} {xs : Fin n → M} :
-    (φ.onBoundedFormula ψ).Realize v xs ↔ ψ.Realize v xs := by
+theorem realize_onSemiformula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] {n : ℕ}
+    (ψ : L.Semiformula α n) {v : α → M} {xs : Fin n → M} :
+    (φ.onSemiformula ψ).Realize v xs ↔ ψ.Realize v xs := by
   induction' ψ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp only [onBoundedFormula, realize_bdEqual, realize_onTerm]
+  · simp only [onSemiformula, realize_bdEqual, realize_onTerm]
     rfl
-  · simp only [onBoundedFormula, realize_rel, LHom.map_onRelation,
+  · simp only [onSemiformula, realize_rel, LHom.map_onRelation,
       Function.comp_apply, realize_onTerm]
     rfl
-  · simp only [onBoundedFormula, ih1, ih2, realize_imp]
-  · simp only [onBoundedFormula, ih3, realize_all]
+  · simp only [onSemiformula, ih1, ih2, realize_imp]
+  · simp only [onSemiformula, ih3, realize_all]
 set_option linter.uppercaseLean3 false in
-#align first_order.language.Lhom.realize_on_bounded_formula FirstOrder.Language.LHom.realize_onBoundedFormula
+#align first_order.language.Lhom.realize_on_bounded_formula FirstOrder.Language.LHom.realize_onSemiformula
 
 end LHom
 
@@ -625,23 +625,23 @@ theorem realize_bot : (⊥ : L.Formula α).Realize v ↔ False :=
 
 @[simp]
 theorem realize_top : (⊤ : L.Formula α).Realize v ↔ True :=
-  BoundedFormula.realize_top
+  Semiformula.realize_top
 #align first_order.language.formula.realize_top FirstOrder.Language.Formula.realize_top
 
 @[simp]
 theorem realize_inf : (φ ⊓ ψ).Realize v ↔ φ.Realize v ∧ ψ.Realize v :=
-  BoundedFormula.realize_inf
+  Semiformula.realize_inf
 #align first_order.language.formula.realize_inf FirstOrder.Language.Formula.realize_inf
 
 @[simp]
 theorem realize_imp : (φ.imp ψ).Realize v ↔ φ.Realize v → ψ.Realize v :=
-  BoundedFormula.realize_imp
+  Semiformula.realize_imp
 #align first_order.language.formula.realize_imp FirstOrder.Language.Formula.realize_imp
 
 @[simp]
 theorem realize_rel {k : ℕ} {R : L.Relations k} {ts : Fin k → L.Term α} :
     (R.formula ts).Realize v ↔ RelMap R fun i => (ts i).realize v :=
-  BoundedFormula.realize_rel.trans (by simp)
+  Semiformula.realize_rel.trans (by simp)
 #align first_order.language.formula.realize_rel FirstOrder.Language.Formula.realize_rel
 
 @[simp]
@@ -663,24 +663,24 @@ theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
 
 @[simp]
 theorem realize_sup : (φ ⊔ ψ).Realize v ↔ φ.Realize v ∨ ψ.Realize v :=
-  BoundedFormula.realize_sup
+  Semiformula.realize_sup
 #align first_order.language.formula.realize_sup FirstOrder.Language.Formula.realize_sup
 
 @[simp]
 theorem realize_iff : (φ.iff ψ).Realize v ↔ (φ.Realize v ↔ ψ.Realize v) :=
-  BoundedFormula.realize_iff
+  Semiformula.realize_iff
 #align first_order.language.formula.realize_iff FirstOrder.Language.Formula.realize_iff
 
 @[simp]
 theorem realize_relabel {φ : L.Formula α} {g : α → β} {v : β → M} :
     (φ.relabel g).Realize v ↔ φ.Realize (v ∘ g) := by
-  rw [Realize, Realize, relabel, BoundedFormula.realize_relabel, iff_eq_eq, Fin.castAdd_zero]
+  rw [Realize, Realize, relabel, Semiformula.realize_relabel, iff_eq_eq, Fin.castAdd_zero]
   exact congr rfl (funext finZeroElim)
 #align first_order.language.formula.realize_relabel FirstOrder.Language.Formula.realize_relabel
 
 theorem realize_relabel_sum_inr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
-    (BoundedFormula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
-  rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
+    (Semiformula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
+  rw [Semiformula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
     cast_refl, Function.comp_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 #align first_order.language.formula.realize_relabel_sum_inr FirstOrder.Language.Formula.realize_relabel_sum_inr
@@ -702,7 +702,7 @@ end Formula
 @[simp]
 theorem LHom.realize_onFormula [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] (ψ : L.Formula α)
     {v : α → M} : (φ.onFormula ψ).Realize v ↔ ψ.Realize v :=
-  φ.realize_onBoundedFormula ψ
+  φ.realize_onSemiformula ψ
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Lhom.realize_on_formula FirstOrder.Language.LHom.realize_onFormula
 
@@ -737,8 +737,8 @@ theorem realize_equivSentence_symm_con [L[[α]].Structure M]
     [(L.lhomWithConstants α).IsExpansionOn M] (φ : L[[α]].Sentence) :
     ((equivSentence.symm φ).Realize fun a => (L.con a : M)) ↔ φ.Realize M := by
   simp only [equivSentence, _root_.Equiv.symm_symm, Equiv.coe_trans, Realize,
-    BoundedFormula.realize_relabelEquiv, Function.comp]
-  refine' _root_.trans _ BoundedFormula.realize_constantsVarsEquiv
+    Semiformula.realize_relabelEquiv, Function.comp]
+  refine' _root_.trans _ Semiformula.realize_constantsVarsEquiv
   rw [iff_iff_eq]
   congr with (_ | a)
   · simp
@@ -886,30 +886,30 @@ theorem realize_iff_of_model_completeTheory [N ⊨ L.completeTheory M] (φ : L.S
 
 variable {M N}
 
-namespace BoundedFormula
+namespace Semiformula
 
 @[simp]
-theorem realize_alls {φ : L.BoundedFormula α n} {v : α → M} :
+theorem realize_alls {φ : L.Semiformula α n} {v : α → M} :
     φ.alls.Realize v ↔ ∀ xs : Fin n → M, φ.Realize v xs := by
   induction' n with n ih
   · exact Unique.forall_iff.symm
   · simp only [alls, ih, Realize]
     exact ⟨fun h xs => Fin.snoc_init_self xs ▸ h _ _, fun h xs x => h (Fin.snoc xs x)⟩
-#align first_order.language.bounded_formula.realize_alls FirstOrder.Language.BoundedFormula.realize_alls
+#align first_order.language.bounded_formula.realize_alls FirstOrder.Language.Semiformula.realize_alls
 
 @[simp]
-theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
+theorem realize_exs {φ : L.Semiformula α n} {v : α → M} :
     φ.exs.Realize v ↔ ∃ xs : Fin n → M, φ.Realize v xs := by
   induction' n with n ih
   · exact Unique.exists_iff.symm
-  · simp only [BoundedFormula.exs, ih, realize_ex]
+  · simp only [Semiformula.exs, ih, realize_ex]
     constructor
     · rintro ⟨xs, x, h⟩
       exact ⟨_, h⟩
     · rintro ⟨xs, h⟩
       rw [← Fin.snoc_init_self xs] at h
       exact ⟨_, _, h⟩
-#align first_order.language.bounded_formula.realize_exs FirstOrder.Language.BoundedFormula.realize_exs
+#align first_order.language.bounded_formula.realize_exs FirstOrder.Language.Semiformula.realize_exs
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iAlls
@@ -933,7 +933,7 @@ theorem _root_.FirstOrder.Language.Formula.realize_iAlls
 @[simp]
 theorem realize_iAlls [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
-    BoundedFormula.Realize (φ.iAlls f) v v' ↔
+    Semiformula.Realize (φ.iAlls f) v v' ↔
       ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
@@ -960,17 +960,17 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExs
 @[simp]
 theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
-    BoundedFormula.Realize (φ.iExs f) v v' ↔
+    Semiformula.Realize (φ.iExs f) v v' ↔
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
-theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M) :
+theorem realize_toFormula (φ : L.Semiformula α n) (v : Sum α (Fin n) → M) :
     φ.toFormula.Realize v ↔ φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr) := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3 a8 a9 a0
   · rfl
-  · simp [BoundedFormula.Realize]
-  · simp [BoundedFormula.Realize]
+  · simp [Semiformula.Realize]
+  · simp [Semiformula.Realize]
   · rw [toFormula, Formula.Realize, realize_imp, ← Formula.Realize, ih1, ← Formula.Realize, ih2,
       realize_imp]
   · rw [toFormula, Formula.Realize, realize_all, realize_all]
@@ -991,36 +991,36 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : Sum α (Fin n) → M
           rw [← castSucc]
           simp
     · exact Fin.elim0 x
-#align first_order.language.bounded_formula.realize_to_formula FirstOrder.Language.BoundedFormula.realize_toFormula
+#align first_order.language.bounded_formula.realize_to_formula FirstOrder.Language.Semiformula.realize_toFormula
 
 @[simp]
-theorem realize_iSup (s : Finset β) (f : β → L.BoundedFormula α n)
+theorem realize_iSup (s : Finset β) (f : β → L.Semiformula α n)
     (v : α → M) (v' : Fin n → M) :
     (iSup s f).Realize v v' ↔ ∃ b ∈ s, (f b).Realize v v' := by
   simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList,
     exists_exists_and_eq_and]
 
 @[simp]
-theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
+theorem realize_iInf (s : Finset β) (f : β → L.Semiformula α n)
     (v : α → M) (v' : Fin n → M) :
     (iInf s f).Realize v v' ↔ ∀ b ∈ s, (f b).Realize v v' := by
   simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 
-end BoundedFormula
+end Semiformula
 
 namespace Equiv
 
 @[simp]
-theorem realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v : α → M}
+theorem realize_semiformula (g : M ≃[L] N) (φ : L.Semiformula α n) {v : α → M}
     {xs : Fin n → M} : φ.Realize (g ∘ v) (g ∘ xs) ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
   · rfl
-  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, Equiv.realize_term, g.injective.eq_iff]
-  · simp only [BoundedFormula.Realize, ← Sum.comp_elim, Equiv.realize_term]
+  · simp only [Semiformula.Realize, ← Sum.comp_elim, Equiv.realize_term, g.injective.eq_iff]
+  · simp only [Semiformula.Realize, ← Sum.comp_elim, Equiv.realize_term]
     exact g.map_rel _ _
-  · rw [BoundedFormula.Realize, ih1, ih2, BoundedFormula.Realize]
-  · rw [BoundedFormula.Realize, BoundedFormula.Realize]
+  · rw [Semiformula.Realize, ih1, ih2, Semiformula.Realize]
+  · rw [Semiformula.Realize, Semiformula.Realize]
     constructor
     · intro h a
       have h' := h (g a)
@@ -1030,12 +1030,12 @@ theorem realize_boundedFormula (g : M ≃[L] N) (φ : L.BoundedFormula α n) {v 
       have h' := h (g.symm a)
       rw [← ih3, Fin.comp_snoc, g.apply_symm_apply] at h'
       exact h'
-#align first_order.language.equiv.realize_bounded_formula FirstOrder.Language.Equiv.realize_boundedFormula
+#align first_order.language.equiv.realize_bounded_formula FirstOrder.Language.Equiv.realize_semiformula
 
 @[simp]
 theorem realize_formula (g : M ≃[L] N) (φ : L.Formula α) {v : α → M} :
     φ.Realize (g ∘ v) ↔ φ.Realize v := by
-  rw [Formula.Realize, Formula.Realize, ← g.realize_boundedFormula φ, iff_eq_eq,
+  rw [Formula.Realize, Formula.Realize, ← g.realize_semiformula φ, iff_eq_eq,
     Unique.eq_default (g ∘ default)]
 #align first_order.language.equiv.realize_formula FirstOrder.Language.Equiv.realize_formula
 
@@ -1056,7 +1056,7 @@ end Equiv
 
 namespace Relations
 
-open BoundedFormula
+open Semiformula
 
 variable {r : L.Relations 2}
 
@@ -1103,8 +1103,8 @@ variable (L)
 @[simp]
 theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M := by
   rw [← lift_mk_fin, ← lift_le.{0}, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
-    BoundedFormula.realize_exs]
-  simp_rw [BoundedFormula.realize_foldr_inf]
+    Semiformula.realize_exs]
+  simp_rw [Semiformula.realize_foldr_inf]
   simp only [Function.comp_apply, List.mem_map, Prod.exists, Ne.def, List.mem_product,
     List.mem_finRange, forall_exists_index, and_imp, List.mem_filter, true_and_iff]
   refine' ⟨_, fun xs => ⟨xs.some, _⟩⟩
@@ -1112,7 +1112,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
     refine' ⟨⟨xs, fun i j ij => _⟩⟩
     contrapose! ij
     have hij := h _ i j (by simpa using ij) rfl
-    simp only [BoundedFormula.realize_not, Term.realize, BoundedFormula.realize_bdEqual,
+    simp only [Semiformula.realize_not, Term.realize, Semiformula.realize_bdEqual,
       Sum.elim_inr] at hij
     exact hij
   · rintro _ i j ij rfl

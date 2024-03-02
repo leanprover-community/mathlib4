@@ -164,7 +164,7 @@ theorem iInter_setOf_subset {ι : Type*} (S : ι → L[[α]].Theory) :
 theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset (L[[α]]).Sentence} :
     t.toList.foldr (· ⊓ ·) ⊤ ∈ p ↔ (t : L[[α]].Theory) ⊆ ↑p := by
   simp_rw [subset_def, ← SetLike.mem_coe, p.isMaximal.mem_iff_models, models_sentence_iff,
-    Sentence.Realize, Formula.Realize, BoundedFormula.realize_foldr_inf, Finset.mem_toList]
+    Sentence.Realize, Formula.Realize, Semiformula.realize_foldr_inf, Finset.mem_toList]
   exact ⟨fun h φ hφ M => h _ _ hφ, fun h M φ hφ => h _ hφ _⟩
 #align first_order.language.Theory.complete_type.to_list_foldr_inf_mem FirstOrder.Language.Theory.CompleteType.toList_foldr_inf_mem
 

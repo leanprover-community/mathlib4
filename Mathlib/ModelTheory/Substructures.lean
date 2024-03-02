@@ -686,12 +686,12 @@ theorem coe_topEquiv :
 #align first_order.language.substructure.coe_top_equiv FirstOrder.Language.Substructure.coe_topEquiv
 
 @[simp]
-theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
+theorem realize_semiformula_top {α : Type*} {n : ℕ} {φ : L.Semiformula α n}
     {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
     φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
-  rw [← Substructure.topEquiv.realize_boundedFormula φ]
+  rw [← Substructure.topEquiv.realize_semiformula φ]
   simp
-#align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
+#align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_semiformula_top
 
 @[simp]
 theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :

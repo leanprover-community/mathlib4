@@ -75,12 +75,12 @@ section IsOrdered
 variable [IsOrdered L]
 
 /-- Joins two terms `t₁, t₂` in a formula representing `t₁ ≤ t₂`. -/
-def Term.le (t₁ t₂ : L.Term (Sum α (Fin n))) : L.BoundedFormula α n :=
-  leSymb.boundedFormula₂ t₁ t₂
+def Term.le (t₁ t₂ : L.Term (Sum α (Fin n))) : L.Semiformula α n :=
+  leSymb.semiformula₂ t₁ t₂
 #align first_order.language.term.le FirstOrder.Language.Term.le
 
 /-- Joins two terms `t₁, t₂` in a formula representing `t₁ < t₂`. -/
-def Term.lt (t₁ t₂ : L.Term (Sum α (Fin n))) : L.BoundedFormula α n :=
+def Term.lt (t₁ t₂ : L.Term (Sum α (Fin n))) : L.Semiformula α n :=
   t₁.le t₂ ⊓ ∼(t₂.le t₁)
 #align first_order.language.term.lt FirstOrder.Language.Term.lt
 
@@ -229,8 +229,8 @@ section LE
 variable [LE M]
 
 theorem realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoTopOrder M := by
-  simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
-    BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
+  simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, Semiformula.realize_all,
+    Semiformula.realize_ex, Semiformula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
   refine' ⟨fun h => ⟨fun a => h a⟩, _⟩
   intro h a
@@ -243,8 +243,8 @@ theorem realize_noTopOrder [h : NoTopOrder M] : M ⊨ Language.order.noTopOrderS
 #align first_order.language.realize_no_top_order FirstOrder.Language.realize_noTopOrder
 
 theorem realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoBotOrder M := by
-  simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
-    BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
+  simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, Semiformula.realize_all,
+    Semiformula.realize_ex, Semiformula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
   refine' ⟨fun h => ⟨fun a => h a⟩, _⟩
   intro h a
@@ -261,8 +261,8 @@ end LE
 theorem realize_denselyOrdered_iff [Preorder M] :
     M ⊨ Language.order.denselyOrderedSentence ↔ DenselyOrdered M := by
   simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
-    BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
-    Sum.elim_inr, BoundedFormula.realize_ex, BoundedFormula.realize_inf]
+    Semiformula.realize_imp, Semiformula.realize_all, Term.realize, Term.realize_lt,
+    Sum.elim_inr, Semiformula.realize_ex, Semiformula.realize_inf]
   refine' ⟨fun h => ⟨fun a b ab => h a b ab⟩, _⟩
   intro h a b ab
   exact exists_between ab

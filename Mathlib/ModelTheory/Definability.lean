@@ -59,12 +59,12 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
 
 theorem definable_iff_exists_formula_sum :
     A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
-  rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
+  rw [Definable, Equiv.exists_congr_left (Semiformula.constantsVarsEquiv)]
   refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = .) ?_))
   ext
-  simp only [Formula.Realize, BoundedFormula.constantsVarsEquiv, constantsOn, mk₂_Relations,
-    BoundedFormula.mapTermRelEquiv_symm_apply, mem_setOf_eq]
-  refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
+  simp only [Formula.Realize, Semiformula.constantsVarsEquiv, constantsOn, mk₂_Relations,
+    Semiformula.mapTermRelEquiv_symm_apply, mem_setOf_eq]
+  refine Semiformula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
   intros
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
     coe_con, Term.realize_relabel]
@@ -201,10 +201,10 @@ theorem definable_iff_finitely_definable :
       · exact Sum.inl (Sum.inl ⟨a, by simpa [A0] using ha⟩)
       · exact Sum.inl (Sum.inr a)
     · ext v
-      simp only [Formula.Realize, BoundedFormula.realize_relabel,
+      simp only [Formula.Realize, Semiformula.realize_relabel,
         Set.mem_setOf_eq]
       apply Iff.symm
-      convert BoundedFormula.realize_restrictFreeVar _
+      convert Semiformula.realize_restrictFreeVar _
       · ext a
         rcases a with ⟨_ | _, _⟩ <;> simp
   · rintro ⟨A0, hA0, hd⟩
@@ -214,10 +214,10 @@ theorem definable_iff_finitely_definable :
 theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
   obtain ⟨φ, rfl⟩ := h
-  refine' ⟨(BoundedFormula.relabel id φ).exs, _⟩
+  refine' ⟨(Semiformula.relabel id φ).exs, _⟩
   ext x
-  simp only [Set.mem_image, mem_setOf_eq, BoundedFormula.realize_exs,
-    BoundedFormula.realize_relabel, Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
+  simp only [Set.mem_image, mem_setOf_eq, Semiformula.realize_exs,
+    Semiformula.realize_relabel, Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
   constructor
   · rintro ⟨y, hy, rfl⟩
     exact
