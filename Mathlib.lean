@@ -3327,6 +3327,7 @@ import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Perfection
+import Mathlib.RingTheory.PiTensorProduct
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.RingTheory.Polynomial.Chebyshev
