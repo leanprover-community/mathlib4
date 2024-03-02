@@ -209,7 +209,6 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
     exact (degree_eq_one_of_irreducible_of_root hp hz).trans_le one_le_two
   | inr hz0 =>
     obtain ⟨q, rfl⟩ := p.quadratic_dvd_of_aeval_eq_zero_im_ne_zero hz hz0
-    set_option tactic.skipAssignedInstances false in
     have hd : degree (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2)) = 2 := by
       compute_degree!
     have hq : IsUnit q := by
