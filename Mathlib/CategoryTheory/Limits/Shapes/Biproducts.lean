@@ -1364,16 +1364,23 @@ namespace Bicone
 
 /-- Convert a `Bicone` over a function on `WalkingPair` to a BinaryBicone. -/
 @[simps]
-def toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y where
-  pt := b.pt
-  fst := b.π WalkingPair.left
-  snd := b.π WalkingPair.right
-  inl := b.ι WalkingPair.left
-  inr := b.ι WalkingPair.right
-  inl_fst := by simp [Bicone.ι_π]
-  inr_fst := by simp [Bicone.ι_π]
-  inl_snd := by simp [Bicone.ι_π]
-  inr_snd := by simp [Bicone.ι_π]
+def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone X Y where
+  obj b :=
+    { pt := b.pt
+      fst := b.π WalkingPair.left
+      snd := b.π WalkingPair.right
+      inl := b.ι WalkingPair.left
+      inr := b.ι WalkingPair.right
+      inl_fst := by simp [Bicone.ι_π]
+      inr_fst := by simp [Bicone.ι_π]
+      inl_snd := by simp [Bicone.ι_π]
+      inr_snd := by simp [Bicone.ι_π] }
+  map f :=
+    { hom := f.hom }
+
+/-- A shorthand for `toBinaryBiconeFunctor.obj` -/
+abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y :=
+  toBinaryBiconeFunctor.obj b
 #align category_theory.limits.bicone.to_binary_bicone CategoryTheory.Limits.Bicone.toBinaryBicone
 
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
