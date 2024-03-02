@@ -43,12 +43,8 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 ## Implementation notes
 In `Module.Flat.iff_rTensor_preserves_injective_linearMap`, we require that the universe level of
 the ring is lower than or equal to that of the module. This requirement is to make sure ideals of
-the ring can be lifited to the universe of the module. It is unclear if this lemma also holds
+the ring can be lifted to the universe of the module. It is unclear if this lemma also holds
 when module lives in a lower universe.
-
-This requirement also appears in `Algebra/ModuleCat/Injective`.
-There are some ideas proposed by Junyan Xu about potentially circumvent at
-[here](https://github.com/leanprover-community/mathlib4/pull/8905#discussion_r1428509361)
 
 ## TODO
 
@@ -243,30 +239,30 @@ theorem preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Module R N
   rw [rTensor_injective_iff_lcomp_surjective]
   exact (iff_characterModule_baer.mp h).extension_property _ hL
 
-/-- Do we still want this?
-`CharacterModule M` is Baer, if `I ⊗ M → M` is injective for every ideal `I`.
--/
-lemma CharacterModule.baer_of_ideal
-    (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
-    Module.Baer R (CharacterModule M) := by
-  -- Let `I` be an ideal and `L : I → CharacterModule M`. We want to extend `L` to the entire ring.
-  rintro I (L : _ →ₗ[_] _)
-  letI :  AddCommGroup (I ⊗[R] M) := inferInstance
-  -- We know that every linear map `f : A → B` induces `f⋆ : CharacterModule B → CharacterModule A`
-  -- and if `f` is injective then `f⋆` is surjective.
-  -- Under our assumption `ι : I ⊗ M → M` is injective,
-  -- so `ι⋆ : CharacterModule M → CharacterModule (I ⊗ M)` is surjective. Hence there is a
-  -- character `F : CharacterModule M` such that `ι⋆F (i ⊗ m) = L i m`
-  obtain ⟨F, hF⟩ := CharacterModule.dual_surjective_of_injective _ (inj I) <|
-    TensorProduct.liftAddHom L.toAddMonoidHom <| fun r i n ↦
-    show L (r • i) n = L i (r • n) by simp [L.map_smul]
-  -- Since `R ⊗ M ≃ M`, `CharacterModule M ≃ CharacterModule (R ⊗ M) ≃ Hom(R, CharacterModule M)`,
-  -- under this equivalence, we can reinterpret `F` as `F' : R → M⋆`.
-  -- Indeed `F' i = L i m` by definition, finishing the proof.
-  refine ⟨CharacterModule.curry (CharacterModule.congr (TensorProduct.lid R M).symm F), ?_⟩
-  intros x hx
-  ext m
-  exact congr($hF (⟨x, hx⟩ ⊗ₜ m))
+-- /-- Do we still want this?
+-- `CharacterModule M` is Baer, if `I ⊗ M → M` is injective for every ideal `I`.
+-- -/
+-- lemma CharacterModule.baer_of_ideal
+--     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
+--     Module.Baer R (CharacterModule M) := by
+--   -- Let `I` be an ideal and `L : I → CharacterModule M`. We want to extend `L` to the entire ring.
+--   rintro I (L : _ →ₗ[_] _)
+--   letI :  AddCommGroup (I ⊗[R] M) := inferInstance
+--   -- We know that every linear map `f : A → B` induces `f⋆ : CharacterModule B → CharacterModule A`
+--   -- and if `f` is injective then `f⋆` is surjective.
+--   -- Under our assumption `ι : I ⊗ M → M` is injective,
+--   -- so `ι⋆ : CharacterModule M → CharacterModule (I ⊗ M)` is surjective. Hence there is a
+--   -- character `F : CharacterModule M` such that `ι⋆F (i ⊗ m) = L i m`
+--   obtain ⟨F, hF⟩ := CharacterModule.dual_surjective_of_injective _ (inj I) <|
+--     TensorProduct.liftAddHom L.toAddMonoidHom <| fun r i n ↦
+--     show L (r • i) n = L i (r • n) by simp [L.map_smul]
+--   -- Since `R ⊗ M ≃ M`, `CharacterModule M ≃ CharacterModule (R ⊗ M) ≃ Hom(R, CharacterModule M)`,
+--   -- under this equivalence, we can reinterpret `F` as `F' : R → M⋆`.
+--   -- Indeed `F' i = L i m` by definition, finishing the proof.
+--   refine ⟨CharacterModule.curry (CharacterModule.congr (TensorProduct.lid R M).symm F), ?_⟩
+--   intros x hx
+--   ext m
+--   exact congr($hF (⟨x, hx⟩ ⊗ₜ m))
 
 /--
 If `I ⊗ M → M` is injective for every ideal `I`, then `f ⊗ 𝟙 M` is injective for every injective
@@ -274,10 +270,11 @@ linear map `f`.
 -/
 lemma rTensor_preserves_injective_linearMap_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
-    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N'] (L : N →ₗ[R] N'),
-      Function.Injective L → Function.Injective (L.rTensor M) :=
+    ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
+      (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) :=
+
   (injective_characterModule_iff_rTensor_preserves_injective_linearMap _ _).mp <|
-    Module.Baer.injective <| CharacterModule.baer_of_ideal _ _ inj
+    (injective_characterModule_iff_rTensor_preserves_injective_linearMap _ _).mpr inj
 
 /--
 If `f ⊗ 𝟙 M` is injective for every injective linear map `f`, then `M` is flat.
