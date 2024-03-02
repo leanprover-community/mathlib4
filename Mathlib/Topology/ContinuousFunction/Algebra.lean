@@ -825,7 +825,7 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
     (s : Set C(α, 𝕜)).SeparatesPointsStrongly := fun v x y => by
   by_cases n : x = y
   · subst n
-    refine' ⟨_, (v x • (1 : s) : s).prop, mul_one _, mul_one _⟩
+    exact ⟨_, (v x • (1 : s) : s).prop, mul_one _, mul_one _⟩
   obtain ⟨_, ⟨f, hf, rfl⟩, hxy⟩ := h n
   replace hxy : f x - f y ≠ 0 := sub_ne_zero_of_ne hxy
   let a := v x
@@ -833,8 +833,8 @@ theorem Subalgebra.SeparatesPoints.strongly {s : Subalgebra 𝕜 C(α, 𝕜)} (h
   let f' : s :=
     ((b - a) * (f x - f y)⁻¹) • (algebraMap _ s (f x) - (⟨f, hf⟩ : s)) + algebraMap _ s a
   refine' ⟨f', f'.prop, _, _⟩
-  · simp
-  · simp [inv_mul_cancel_right₀ hxy]
+  · simp [f']
+  · simp [f', inv_mul_cancel_right₀ hxy]
 #align subalgebra.separates_points.strongly Subalgebra.SeparatesPoints.strongly
 
 end ContinuousMap

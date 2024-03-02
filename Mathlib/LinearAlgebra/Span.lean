@@ -60,7 +60,7 @@ theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p
   mem_iInter₂
 #align submodule.mem_span Submodule.mem_span
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 #align submodule.subset_span Submodule.subset_span
 
@@ -172,6 +172,7 @@ theorem span_induction₂ {p : M → M → Prop} {a b : M} (ha : a ∈ Submodule
     (H0_left b) (fun x₁ x₂ => Hadd_left x₁ x₂ b) fun r x => Hsmul_left r x b
 
 /-- A dependent version of `Submodule.span_induction`. -/
+@[elab_as_elim]
 theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_span h))
     (H0 : p 0 (Submodule.zero_mem _))
@@ -209,6 +210,7 @@ theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (H0 : p 0)
   exact H2 r m hm
 
 /-- A dependent version of `Submodule.closure_induction`. -/
+@[elab_as_elim]
 theorem closure_induction' {p : ∀ x, x ∈ span R s → Prop}
     (H0 : p 0 (Submodule.zero_mem _))
     (H1 : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
@@ -690,16 +692,16 @@ theorem iSup_induction {ι : Sort*} (p : ι → Submodule R M) {C : M → Prop} 
 /-- A dependent version of `submodule.iSup_induction`. -/
 @[elab_as_elim]
 theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {C : ∀ x, (x ∈ ⨆ i, p i) → Prop}
-    (hp : ∀ (i) (x) (hx : x ∈ p i), C x (mem_iSup_of_mem i hx)) (h0 : C 0 (zero_mem _))
-    (hadd : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
+    (mem : ∀ (i) (x) (hx : x ∈ p i), C x (mem_iSup_of_mem i hx)) (zero : C 0 (zero_mem _))
+    (add : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, p i) : C x hx := by
   refine' Exists.elim _ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
   refine' iSup_induction p (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), C x hx) hx
     (fun i x hx => _) _ fun x y => _
-  · exact ⟨_, hp _ _ hx⟩
-  · exact ⟨_, h0⟩
+  · exact ⟨_, mem _ _ hx⟩
+  · exact ⟨_, zero⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
+    exact ⟨_, add _ _ _ _ Cx Cy⟩
 #align submodule.supr_induction' Submodule.iSup_induction'
 
 theorem singleton_span_isCompactElement (x : M) :
@@ -839,7 +841,7 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
   simp [SetLike.le_def]; intro xx yy hxx hyy
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
-  refine' mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
+  exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
 #align submodule.prod_sup_prod Submodule.prod_sup_prod
 
 end AddCommMonoid

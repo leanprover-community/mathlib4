@@ -56,7 +56,7 @@ section
 homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousAddMonoidHom`. -/
--- porting note : Changed A B to outParam to help synthesizing order
+-- Porting note: Changed A B to outParam to help synthesizing order
 class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMonoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
     extends AddMonoidHomClass F A B : Prop where
@@ -68,7 +68,7 @@ class ContinuousAddMonoidHomClass (A B : outParam (Type*)) [AddMonoid A] [AddMon
 homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/
--- porting note : Changed A B to outParam to help synthesizing order
+-- Porting note: Changed A B to outParam to help synthesizing order
 @[to_additive]
 class ContinuousMonoidHomClass (A B : outParam (Type*)) [Monoid A] [Monoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
@@ -98,8 +98,7 @@ namespace ContinuousMonoidHom
 variable {A B C D E}
 
 @[to_additive]
-instance ContinuousMonoidHom.funLike :
-    FunLike (ContinuousMonoidHom A B) A B where
+instance funLike : FunLike (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨ _ , _ ⟩, _⟩, _⟩ := f
@@ -107,8 +106,7 @@ instance ContinuousMonoidHom.funLike :
     congr
 
 @[to_additive]
-instance ContinuousMonoidHom.ContinuousMonoidHomClass :
-    ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
+instance ContinuousMonoidHomClass : ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_continuous f := f.continuous_toFun

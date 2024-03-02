@@ -83,7 +83,7 @@ variable {p q : ℚ≥0}
 lemma num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   ext : 1
   rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_ofNat,
-    Int.natAbs_of_nonneg (Rat.num_nonneg_iff_zero_le.2 q.prop)]
+    Int.natAbs_of_nonneg (Rat.num_nonneg.2 q.prop)]
   exact Rat.num_div_den q
 #align nnrat.num_div_denom NNRat.num_div_den
 

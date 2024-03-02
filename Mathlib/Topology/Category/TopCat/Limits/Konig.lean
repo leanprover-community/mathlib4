@@ -93,13 +93,13 @@ theorem partialSections.directed :
     have : ιA f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_left
       rw [Finset.mem_image]
-      refine' ⟨f, hf, rfl⟩
+      exact ⟨f, hf, rfl⟩
     exact hu this
   · rintro u hu f hf
     have : ιB f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_right
       rw [Finset.mem_image]
-      refine' ⟨f, hf, rfl⟩
+      exact ⟨f, hf, rfl⟩
     exact hu this
 #align Top.partial_sections.directed TopCat.partialSections.directed
 
@@ -132,7 +132,7 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCatMax.
     Nonempty (TopCat.limitCone F).pt := by
   classical
   obtain ⟨u, hu⟩ :=
-    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed (fun G => partialSections F _)
+    IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed (fun G => partialSections F _)
       (partialSections.directed F) (fun G => partialSections.nonempty F _)
       (fun G => IsClosed.isCompact (partialSections.closed F _)) fun G =>
       partialSections.closed F _
