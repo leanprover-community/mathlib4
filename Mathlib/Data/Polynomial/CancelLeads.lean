@@ -49,7 +49,6 @@ theorem neg_cancelLeads : -p.cancelLeads q = q.cancelLeads p :=
   neg_sub _ _
 #align polynomial.neg_cancel_leads Polynomial.neg_cancelLeads
 
-set_option tactic.skipAssignedInstances false in
 theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     (comm : p.leadingCoeff * q.leadingCoeff = q.leadingCoeff * p.leadingCoeff)
     (h : p.natDegree ≤ q.natDegree) (hq : 0 < q.natDegree) :
