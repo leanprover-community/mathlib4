@@ -214,8 +214,10 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     rw [X.δ_comp_δ_self'_assoc]
     swap
     · ext
+      cases j
       dsimp
-      linarith
+      dsimp only [Nat.succ_eq_add_one] at *
+      omega
     simp only [← assoc, v j (by omega), zero_comp]
 #align algebraic_topology.dold_kan.higher_faces_vanish.induction AlgebraicTopology.DoldKan.HigherFacesVanish.induction
 
