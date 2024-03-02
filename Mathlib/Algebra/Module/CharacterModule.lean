@@ -200,15 +200,15 @@ lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
 lemma eq_zero_of_character_apply {a : A} (h : ∀ c : CharacterModule A, c a = 0) : a = 0 := by
   contrapose! h; exact exists_character_apply_ne_zero_of_ne_zero h
 
-variable [Module R A] [Module R A'] [Module R B]
+variable [Module R A] [Module R A'] [Module R B] {R A' B}
 
-lemma dual_surjective_iff_injective (f : A →ₗ[R] A') :
+lemma dual_surjective_iff_injective {f : A →ₗ[R] A'} :
     Function.Surjective (dual f) ↔ Function.Injective f :=
   ⟨fun h ↦ (injective_iff_map_eq_zero _).2 fun a h0 ↦ eq_zero_of_character_apply fun c ↦ by
     obtain ⟨c, rfl⟩ := h c; exact congr(c $h0).trans c.map_zero,
   dual_surjective_of_injective f⟩
 
-theorem _root_.rTensor_injective_iff_lcomp_surjective (f : A →ₗ[R] A') :
+theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
     Function.Injective (f.rTensor B) ↔ Function.Surjective (f.lcomp R <| CharacterModule B) := by
   simp [← dual_rTensor_conj_homEquiv, dual_surjective_iff_injective]
 

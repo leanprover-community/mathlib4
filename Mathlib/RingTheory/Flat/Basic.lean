@@ -235,90 +235,47 @@ theorem iff_characterModule_baer : Flat R M ↔ Module.Baer R (CharacterModule M
 variable (R M)
 
 theorem preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Module R N'] [h : Flat R M]
-    (L : N →ₗ[R] N') (hL : Function.Injective L) : Function.Injective (L.rTensor M) := by
-  rw [rTensor_injective_iff_lcomp_surjective]
-  exact (iff_characterModule_baer.mp h).extension_property _ hL
+    (L : N →ₗ[R] N') (hL : Function.Injective L) : Function.Injective (L.rTensor M) :=
+  rTensor_injective_iff_lcomp_surjective.2 ((iff_characterModule_baer.1 h).extension_property _ hL)
 
--- /-- Do we still want this?
--- `CharacterModule M` is Baer, if `I ⊗ M → M` is injective for every ideal `I`.
--- -/
--- lemma CharacterModule.baer_of_ideal
---     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
---     Module.Baer R (CharacterModule M) := by
---   -- Let `I` be an ideal and `L : I → CharacterModule M`. We want to extend `L` to the entire ring.
---   rintro I (L : _ →ₗ[_] _)
---   letI :  AddCommGroup (I ⊗[R] M) := inferInstance
---   -- We know that every linear map `f : A → B` induces `f⋆ : CharacterModule B → CharacterModule A`
---   -- and if `f` is injective then `f⋆` is surjective.
---   -- Under our assumption `ι : I ⊗ M → M` is injective,
---   -- so `ι⋆ : CharacterModule M → CharacterModule (I ⊗ M)` is surjective. Hence there is a
---   -- character `F : CharacterModule M` such that `ι⋆F (i ⊗ m) = L i m`
---   obtain ⟨F, hF⟩ := CharacterModule.dual_surjective_of_injective _ (inj I) <|
---     TensorProduct.liftAddHom L.toAddMonoidHom <| fun r i n ↦
---     show L (r • i) n = L i (r • n) by simp [L.map_smul]
---   -- Since `R ⊗ M ≃ M`, `CharacterModule M ≃ CharacterModule (R ⊗ M) ≃ Hom(R, CharacterModule M)`,
---   -- under this equivalence, we can reinterpret `F` as `F' : R → M⋆`.
---   -- Indeed `F' i = L i m` by definition, finishing the proof.
---   refine ⟨CharacterModule.curry (CharacterModule.congr (TensorProduct.lid R M).symm F), ?_⟩
---   intros x hx
---   ext m
---   exact congr($hF (⟨x, hx⟩ ⊗ₜ m))
+/- Do we still want these?
+`CharacterModule M` is Baer, if `I ⊗ M → M` is injective for every ideal `I`.
 
-/--
+lemma CharacterModule.baer_of_ideal
+    (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
+    Module.Baer R (CharacterModule M) := by
+  rw [← iff_characterModule_baer]; constructor; intro _ _; apply inj
+
 If `I ⊗ M → M` is injective for every ideal `I`, then `f ⊗ 𝟙 M` is injective for every injective
 linear map `f`.
--/
+
 lemma rTensor_preserves_injective_linearMap_of_ideal
     (inj : ∀ (I : Ideal R), Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))) :
     ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
-      (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) :=
-
-  (injective_characterModule_iff_rTensor_preserves_injective_linearMap _ _).mp <|
-    (injective_characterModule_iff_rTensor_preserves_injective_linearMap _ _).mpr inj
+      (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) := by
+  have : Flat R M := ⟨fun I _ ↦ inj I⟩; intros; apply preserves_injective_linearMap; assumption -/
 
 /--
 If `f ⊗ 𝟙 M` is injective for every injective linear map `f`, then `M` is flat.
 -/
-lemma of_rTensor_preserves_injective_linearMap [UnivLE.{u, v}]
+lemma of_rTensor_preserves_injective_linearMap [Small.{v} R]
     (h : ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M)) :
     Flat R M := by
-  rw [Flat.iff_rTensor_injective']
-  intro I x y eq1
-  let e := TensorProduct.congr (Shrink.linearEquiv I R).symm (LinearEquiv.refl R M)
-  apply_fun e using e.injective
-  refine (h
-    ((Shrink.linearEquiv R R).symm.toLinearMap ∘ₗ I.subtype ∘ₗ (Shrink.linearEquiv I R))
-    ((Shrink.linearEquiv R R).symm.injective.comp
-      (Subtype.val_injective.comp (Shrink.linearEquiv I R).injective))) ?_
-  set L : Shrink I ⊗[R] M →ₗ[R] Shrink R ⊗[R] M := _
-  convert_to L (e x) = L (e y)
-  suffices eq2 : L ∘ₗ e.toLinearMap =
-    (rTensor M (Shrink.linearEquiv R R).symm.toLinearMap) ∘ₗ rTensor M (Submodule.subtype I) by
-    erw [congr($eq2 x), congr($eq2 y), LinearMap.comp_apply, eq1, LinearMap.comp_apply]
-  refine TensorProduct.ext <| LinearMap.ext fun i ↦ LinearMap.ext fun m ↦ ?_
-  simp only [compr₂_apply, mk_apply, coe_comp, LinearEquiv.coe_coe, Function.comp_apply, congr_tmul,
-    Shrink.linearEquiv_symm_apply, LinearEquiv.refl_apply, rTensor_tmul, Submodule.coeSubtype,
-    Shrink.linearEquiv_apply]
-  congr 1
-  erw [Equiv.symm_symm_apply, Equiv.symm_apply_apply, Equiv.symm_symm_apply]
+  simp_rw [iff_characterModule_baer, Baer.iff_injective, injective_iff, DFunLike.ext_iff]
+  simp_rw [rTensor_injective_iff_lcomp_surjective, Surjective, DFunLike.ext_iff] at h
+  exact h
 
 /--
-M is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective lienar map.
+M is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective linear map.
 -/
-lemma iff_rTensor_preserves_injective_linearMap [UnivLE.{u, v}] :
+lemma iff_rTensor_preserves_injective_linearMap [Small.{v} R] :
     Flat R M ↔
     ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) := by
   constructor
-  · refine fun h ↦ rTensor_preserves_injective_linearMap_of_ideal _ _ fun I x y eq1 ↦
-      (Flat.iff_rTensor_injective' _ _).mp h I ?_
-    suffices (TensorProduct.lid _ _).symm.toLinearMap ∘ₗ
-      (lift (lsmul R M ∘ₗ Submodule.subtype I)) = rTensor M (Submodule.subtype I) by
-      rw [← this, LinearMap.comp_apply, LinearMap.comp_apply, eq1]
-    exact TensorProduct.ext <| LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ by simp [smul_tmul']
+  · intros; apply preserves_injective_linearMap; assumption
   · exact of_rTensor_preserves_injective_linearMap R M
-
 
 end Flat
 
