@@ -81,13 +81,19 @@ instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs,
       norm_algebraMap']
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
 instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
   NormedSpace.restrictScalars ℝ ℂ E
 #align normed_space.complex_to_real NormedSpace.complexToReal
+
+-- see Note [lower instance priority]
+/-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
+instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
+    [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
+  NormedAlgebra.restrictScalars ℝ ℂ A
 
 theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
@@ -165,7 +171,7 @@ theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
 #align complex.norm_nat Complex.norm_nat
 
 @[simp 1100]
-theorem norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := (int_cast_abs n).symm
+lemma norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
 #align complex.norm_int Complex.norm_int
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
@@ -263,7 +269,7 @@ def reCLM : ℂ →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by simp [abs_re_le_abs]
 #align complex.re_clm Complex.reCLM
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 #align complex.continuous_re Complex.continuous_re
@@ -283,7 +289,7 @@ def imCLM : ℂ →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by simp [abs_im_le_abs]
 #align complex.im_clm Complex.imCLM
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 #align complex.continuous_im Complex.continuous_im
@@ -389,7 +395,7 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry
 #align complex.isometry_of_real Complex.isometry_ofReal
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 #align complex.continuous_of_real Complex.continuous_ofReal
@@ -718,8 +724,8 @@ lemma nat_cast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
 
 @[simp]
-lemma ofNat_mem_slitPlane (n : ℕ) [h : n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
-  nat_cast_mem_slitPlane.2 h.ne_zero
+lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
+  nat_cast_mem_slitPlane.2 (NeZero.ne n)
 
 lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
   mem_slitPlane_iff.trans not_le_zero_iff.symm

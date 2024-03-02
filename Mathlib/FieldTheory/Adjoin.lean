@@ -740,7 +740,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
   let P : Set ι → Prop := fun s => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L)
   change P Set.univ
   apply Set.Finite.induction_on
-  all_goals dsimp only
+  all_goals dsimp only [P]
   · exact Set.finite_univ
   · rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
@@ -946,7 +946,7 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
 
 @[simp]
 theorem adjoin_int (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  refine' adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
+  exact adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
 #align intermediate_field.adjoin_int IntermediateField.adjoin_int
 
 @[simp]
@@ -979,6 +979,12 @@ theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by rw [ran
 @[simp] protected
 theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finrank_eq_one_iff]
 #align intermediate_field.finrank_bot IntermediateField.finrank_bot
+
+@[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
+  rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
+
+@[simp] theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
+  congr(Cardinal.toNat $(rank_bot'))
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
@@ -1163,12 +1169,12 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     rintro ⟨n, -, rfl⟩
     rw [coeff_map]
     apply Subtype.mem
-  have dvd_g : minpoly K' α ∣ g.toSubring K'.toSubring (subset_adjoin F _)
-  · apply minpoly.dvd
+  have dvd_g : minpoly K' α ∣ g.toSubring K'.toSubring (subset_adjoin F _) := by
+    apply minpoly.dvd
     erw [aeval_def, eval₂_eq_eval_map, g.map_toSubring K'.toSubring, eval_map, ← aeval_def]
     exact minpoly.aeval K α
-  have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α)
-  · intro K
+  have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α) := by
+    intro K
     have := adjoin.finrank (.of_finite K α)
     erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
     exact this
@@ -1275,8 +1281,8 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     Irreducible (f.comp g) := by
   have hf' : natDegree f ≠ 0 :=
     fun e ↦ not_irreducible_C (f.coeff 0) (eq_C_of_natDegree_eq_zero e ▸ hf)
-  have hg' : natDegree g ≠ 0
-  · have := Fact.mk hf
+  have hg' : natDegree g ≠ 0 := by
+    have := Fact.mk hf
     intro e
     apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
     -- Needed to specialize `map_sub` to avoid a timeout #8386
@@ -1292,21 +1298,21 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
   have := Fact.mk hp₁
   let Kx := AdjoinRoot p
   letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finiteDimensional
-  have key₁ : f = minpoly K (aeval (root p) g)
-  · refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
+  have key₁ : f = minpoly K (aeval (root p) g) := by
+    refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
     rw [← aeval_comp]
     exact aeval_eq_zero_of_dvd_aeval_eq_zero hp₂ (AdjoinRoot.eval₂_root p)
-  have key₁' : finrank K K⟮aeval (root p) g⟯ = natDegree f
-  · rw [adjoin.finrank, ← key₁]
+  have key₁' : finrank K K⟮aeval (root p) g⟯ = natDegree f := by
+    rw [adjoin.finrank, ← key₁]
     exact IsIntegral.of_finite _ _
   have key₂ : g.map (algebraMap _ _) - C (AdjoinSimple.gen K (aeval (root p) g)) =
-      minpoly K⟮aeval (root p) g⟯ (root p)
-  · exact minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
+      minpoly K⟮aeval (root p) g⟯ (root p) :=
+    minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
       (Monic.sub_of_left (hgm.map _) (degree_lt_degree (by simpa [Nat.pos_iff_ne_zero] using hg')))
-  have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g
-  · trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
-    · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤
-      · apply restrictScalars_injective K
+  have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g := by
+    trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
+    · have : K⟮aeval (root p) g⟯⟮root p⟯ = ⊤ := by
+        apply restrictScalars_injective K
         rw [restrictScalars_top, adjoin_adjoin_left, Set.union_comm, ← adjoin_adjoin_left,
           adjoin_root_eq_top p, restrictScalars_adjoin]
         simp

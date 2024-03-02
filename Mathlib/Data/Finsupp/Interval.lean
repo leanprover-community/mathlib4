@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Finsupp
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.Finsupp.Order
 
 #align_import data.finsupp.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
@@ -89,7 +89,7 @@ section PartialOrder
 
 variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
 
-instance : LocallyFiniteOrder (ι →₀ α) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
   -- porting note: Not needed (due to open Classical), in mathlib3 too
   -- haveI := Classical.decEq ι
   -- haveI := Classical.decEq α

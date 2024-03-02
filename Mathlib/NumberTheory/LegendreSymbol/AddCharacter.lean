@@ -177,10 +177,9 @@ instance commGroup : CommGroup (AddChar R R') :=
 
 end GroupStructure
 
-section Additive
+section nontrivial
 
--- The domain and target of our additive characters. Now we restrict to rings on both sides.
-variable {R : Type u} [CommRing R] {R' : Type v} [CommRing R']
+variable {R : Type u} [AddMonoid R] {R' : Type v} [CommMonoid R']
 
 /-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
 def IsNontrivial (ψ : AddChar R R') : Prop :=
@@ -193,6 +192,13 @@ theorem isNontrivial_iff_ne_trivial (ψ : AddChar R R') : IsNontrivial ψ ↔ ψ
   rw [DFunLike.ext_iff]
   rfl
 #align add_char.is_nontrivial_iff_ne_trivial AddChar.isNontrivial_iff_ne_trivial
+
+end nontrivial
+
+section Additive
+
+-- The domain and target of our additive characters. Now we restrict to a ring in the domain.
+variable {R : Type u} [CommRing R] {R' : Type v} [CommMonoid R']
 
 /-- Define the multiplicative shift of an additive character.
 This satisfies `mulShift ψ a x = ψ (a * x)`. -/
@@ -271,7 +277,7 @@ theorem IsNontrivial.isPrimitive {F : Type u} [Field F] {ψ : AddChar F R'} (hψ
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout/near/365719262 and
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout
 -- In Lean4, `set_option genInjectivity false in` may solve this issue.
--- can't prove that they always exist
+-- can't prove that they always exist (referring to providing an `Inhabited` instance)
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
@@ -290,7 +296,7 @@ noncomputable def PrimitiveAddChar.char {R : Type u} [CommRing R] {R' : Type v} 
     ∀ χ : PrimitiveAddChar R R', AddChar R (CyclotomicField χ.n R') := fun χ => χ.2.1
 #align add_char.primitive_add_char.char AddChar.PrimitiveAddChar.char
 
-/-- The third projection from `PrimitiveAddChar`, showing that `χ.2` is primitive. -/
+/-- The third projection from `PrimitiveAddChar`, showing that `χ.char` is primitive. -/
 theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
     ∀ χ : PrimitiveAddChar R R', IsPrimitive χ.char := fun χ => χ.2.2
 #align add_char.primitive_add_char.prim AddChar.PrimitiveAddChar.prim
@@ -299,14 +305,15 @@ theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R']
 ### Additive characters on `ZMod n`
 -/
 
+section ZModChar
 
-variable {C : Type v} [CommRing C]
+variable {C : Type v} [CommMonoid C]
 
 section ZModCharDef
 
 open Multiplicative
-
 -- so we can write simply `toAdd`, which we need here again
+
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
 def zmodChar (n : ℕ+) {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) : AddChar (ZMod n) C where
   toFun := fun a : Multiplicative (ZMod n) => ζ ^ a.toAdd.val
@@ -378,6 +385,10 @@ noncomputable def primitiveZModChar (n : ℕ+) (F' : Type v) [Field F'] (h : (n 
     zmodChar_primitive_of_primitive_root n (IsCyclotomicExtension.zeta_spec n F' _)⟩
 #align add_char.primitive_zmod_char AddChar.primitiveZModChar
 
+end ZModChar
+
+end Additive
+
 /-!
 ### Existence of a primitive additive character on a finite field
 -/
@@ -412,9 +423,11 @@ noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] 
 -/
 
 
+section sum
+
 open scoped BigOperators
 
-variable [Fintype R]
+variable {R : Type*} [AddGroup R] [Fintype R] {R' : Type*} [CommRing R']
 
 /-- The sum over the values of a nontrivial additive character vanishes if the target ring
 is a domain. -/
@@ -438,9 +451,13 @@ theorem sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) 
   rfl
 #align add_char.sum_eq_card_of_is_trivial AddChar.sum_eq_card_of_is_trivial
 
+end sum
+
+open scoped BigOperators in
 /-- The sum over the values of `mulShift ψ b` for `ψ` primitive is zero when `b ≠ 0`
 and `#R` otherwise. -/
-theorem sum_mulShift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
+theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
+    {R' : Type*} [CommRing R'] [IsDomain R'] {ψ : AddChar R R'} (b : R)
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`
@@ -450,7 +467,5 @@ theorem sum_mulShift [DecidableEq R] [IsDomain R'] {ψ : AddChar R R'} (b : R)
     simp_rw [mul_comm]
     exact mod_cast sum_eq_zero_of_isNontrivial (hψ b h)
 #align add_char.sum_mul_shift AddChar.sum_mulShift
-
-end Additive
 
 end AddChar

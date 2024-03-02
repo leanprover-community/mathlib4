@@ -67,7 +67,7 @@ theorem hermite_zero : hermite 0 = C 1 :=
   rfl
 #align polynomial.hermite_zero Polynomial.hermite_zero
 
--- Porting note: There was initially @[simp] on this line but it was removed
+-- Porting note (#10618): There was initially @[simp] on this line but it was removed
 -- because simp can prove this theorem
 theorem hermite_one : hermite 1 = X := by
   rw [hermite_succ, hermite_zero]
@@ -169,7 +169,7 @@ theorem coeff_hermite_explicit :
         hermite_explicit (n + 1) (k + 1) =
           hermite_explicit (n + 1) k - (k + 2) * hermite_explicit n (k + 2) := by
       intro n k
-      simp only
+      simp only [hermite_explicit]
       -- Factor out (-1)'s.
       rw [mul_comm (↑k + _ : ℤ), sub_eq_add_neg]
       nth_rw 3 [neg_eq_neg_one_mul]
@@ -203,7 +203,7 @@ theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
     -- porting note: linarith failed to find a contradiction by itself
-    rw [(by linarith [by rwa [Nat.sub_eq_iff_eq_add h_le] at hm] : n = 2 * m + k),
+    rw [(by omega : n = 2 * m + k),
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 #align polynomial.coeff_hermite_of_even_add Polynomial.coeff_hermite_of_even_add

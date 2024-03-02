@@ -155,7 +155,7 @@ private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
 
 private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
   | 0 | 1 | 2 | 3 => by decide
-  | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
+  | n + 4 => by omega
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
@@ -173,15 +173,15 @@ decreasing_by all_goals { simp_wf; omega }
 
 lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
     reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by
-  have h1 : n ≠ 1
-  · rintro rfl
+  have h1 : n ≠ 1 := by
+    rintro rfl
     norm_num at h2
   rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_pos h2]
 
 lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
     reciprocalFactors n = n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
-  have h0 : n ≠ 0
-  · rintro rfl
+  have h0 : n ≠ 0 := by
+    rintro rfl
     norm_num at h2
   rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_neg (Nat.odd_iff_not_even.mp h2)]
 

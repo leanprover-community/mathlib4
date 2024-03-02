@@ -77,9 +77,9 @@ variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 -- Note that this function is not functorial
 -- (consider the two functors from [0] to [1], and the natural transformation between them).
 /-- A functor from a groupoid to a category C factors through the core of C. -/
-noncomputable def functorToCore (F : G ⥤ C) : G ⥤ Core C where
+def functorToCore (F : G ⥤ C) : G ⥤ Core C where
   obj X := F.obj X
-  map f := ⟨F.map f, F.map (inv f), _, _⟩
+  map f := ⟨F.map f, F.map (Groupoid.inv f), _, _⟩
 #align category_theory.core.functor_to_core CategoryTheory.Core.functorToCore
 
 /-- We can functorially associate to any functor from a groupoid to the core of a category `C`,

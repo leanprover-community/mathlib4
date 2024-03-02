@@ -5,7 +5,9 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Units
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+
 
 #align_import analysis.normed_space.bounded_linear_maps from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
@@ -398,8 +400,8 @@ open Asymptotics in
 /-- Useful to use together with `Continuous.comp₂`. -/
 theorem IsBoundedBilinearMap.continuous (h : IsBoundedBilinearMap 𝕜 f) : Continuous f := by
   refine continuous_iff_continuousAt.2 fun x ↦ tendsto_sub_nhds_zero_iff.1 ?_
-  suffices : Tendsto (λ y : E × F ↦ f (y.1 - x.1, y.2) + f (x.1, y.2 - x.2)) (𝓝 x) (𝓝 (0 + 0))
-  · simpa only [h.map_sub_left, h.map_sub_right, sub_add_sub_cancel, zero_add] using this
+  suffices Tendsto (λ y : E × F ↦ f (y.1 - x.1, y.2) + f (x.1, y.2 - x.2)) (𝓝 x) (𝓝 (0 + 0)) by
+    simpa only [h.map_sub_left, h.map_sub_right, sub_add_sub_cancel, zero_add] using this
   apply Tendsto.add
   · rw [← isLittleO_one_iff ℝ, ← one_mul 1]
     refine h.isBigO_comp.trans_isLittleO ?_
@@ -573,7 +575,7 @@ protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜
   · rintro ⟨w, hw⟩
     use (unitsEquiv 𝕜 E w).trans e
     ext x
-    simp [hw]
+    simp [O, hw]
 #align continuous_linear_equiv.is_open ContinuousLinearEquiv.isOpen
 
 protected theorem nhds [CompleteSpace E] (e : E ≃L[𝕜] F) :
