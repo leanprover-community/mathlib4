@@ -23,13 +23,13 @@ this proof uses is Abel's limit theorem, which allows us to extend the Maclaurin
 `arctan x`, which has radius of convergence 1, to `x = 1`. -/
 theorem tendsto_sum_pi_div_four :
     Tendsto (fun k => ∑ i in range k, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
-  -- The series is alternating with terms of decreasing magnitude, so it converges to _some_ limit
+  -- The series is alternating with terms of decreasing magnitude, so it converges to some limit
   obtain ⟨l, h⟩ :
       ∃ l, Tendsto (fun n ↦ ∑ i in range n, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 l) := by
-    apply (antitone_iff_forall_lt.mpr
-      (fun _ _ _ ↦ by dsimp; gcongr)).tendsto_alternating_series_of_tendsto_zero
-      (Tendsto.inv_tendsto_atTop (tendsto_atTop_add_const_right _ _ _))
-    exact tendsto_nat_cast_atTop_atTop.const_mul_atTop zero_lt_two
+    apply Antitone.tendsto_alternating_series_of_tendsto_zero
+    · exact antitone_iff_forall_lt.mpr fun _ _ _ ↦ by gcongr
+    · apply Tendsto.inv_tendsto_atTop; apply tendsto_atTop_add_const_right
+      exact tendsto_nat_cast_atTop_atTop.const_mul_atTop zero_lt_two
   -- Abel's limit theorem states that the corresponding power series has the same limit as `x → 1⁻`
   have abel := tendsto_tsum_powerSeries_nhdsWithin_lt h
   -- Massage the expression to get `x ^ (2 * n + 1)` in the tsum rather than `x ^ n`...
