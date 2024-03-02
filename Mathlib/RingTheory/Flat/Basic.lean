@@ -232,7 +232,8 @@ theorem iff_characterModule_baer : Flat R M ↔ Module.Baer R (CharacterModule M
     Surjective, DFunLike.ext_iff, Subtype.forall]; rfl
 
 /-- `CharacterModule M` is an injective module iff `M` is flat.-/
-theorem iff_characterModule_injective [Small.{v} R] : Flat R M ↔ Module.Injective R (CharacterModule M) :=
+theorem iff_characterModule_injective [Small.{v} R] :
+    Flat R M ↔ Module.Injective R (CharacterModule M) :=
   iff_characterModule_baer.trans Module.Baer.iff_injective
 
 variable (R M) in
