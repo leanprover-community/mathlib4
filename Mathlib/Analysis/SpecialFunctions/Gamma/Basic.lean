@@ -324,7 +324,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
-  · rw [Nat.floor_of_nonpos]; linarith; linarith
+  · rw [Nat.floor_of_nonpos]; omega; linarith
 #align complex.Gamma_eq_Gamma_aux Complex.Gamma_eq_GammaAux
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -477,7 +477,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
     have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
       ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm
     rw [this]
-    refine' Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
+    exact Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
   apply eventuallyEq_of_mem this
   intro t ht; rw [mem_setOf_eq] at ht
   apply Gamma_eq_GammaAux; linarith
@@ -594,18 +594,21 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   rw [← ofReal_cpow (le_of_lt ht), IsROrC.ofReal_mul]
   rfl
 
-open Lean.Meta Qq in
+open Lean.Meta Qq Mathlib.Meta.Positivity in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
 @[positivity Gamma (_ : ℝ)]
-def _root_.Mathlib.Meta.Positivity.evalGamma :
-    Mathlib.Meta.Positivity.PositivityExt where eval {_ _α} zα pα (e : Q(ℝ)) := do
-  let ~q(Gamma $a) := e | throwError "failed to match on Gamma application"
-  match ← Mathlib.Meta.Positivity.core zα pα a with
-  | .positive (pa : Q(0 < $a)) =>
-    pure (.positive (q(Gamma_pos_of_pos $pa) : Q(0 < $e)))
-  | .nonnegative (pa : Q(0 ≤ $a)) =>
-    pure (.nonnegative (q(Gamma_nonneg_of_nonneg $pa) : Q(0 ≤ $e)))
-  | _ => pure .none
+def _root_.Mathlib.Meta.Positivity.evalGamma : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Gamma $a) =>
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa =>
+      assertInstancesCommute
+      pure (.positive q(Gamma_pos_of_pos $pa))
+    | .nonnegative pa =>
+      assertInstancesCommute
+      pure (.nonnegative q(Gamma_nonneg_of_nonneg $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "failed to match on Gamma application"
 
 /-- The Gamma function does not vanish on `ℝ` (except at non-positive integers, where the function
 is mathematically undefined and we set it to `0` by convention). -/

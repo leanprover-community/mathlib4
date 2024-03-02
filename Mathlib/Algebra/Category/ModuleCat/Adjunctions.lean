@@ -89,7 +89,7 @@ def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (
 theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
     ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
   intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
   intro x
@@ -99,7 +99,7 @@ theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro ⟨y, y'⟩
-  -- Porting note: used to be dsimp [μ]
+  -- Porting note (#10934): used to be dsimp [μ]
   change (finsuppTensorFinsupp' R Y Y')
     (Finsupp.mapDomain f (Finsupp.single x 1) ⊗ₜ[R] Finsupp.mapDomain g (Finsupp.single x' 1)) _
     = (Finsupp.mapDomain (f ⊗ g) (finsuppTensorFinsupp' R X X'
@@ -114,7 +114,7 @@ theorem left_unitality (X : Type u) :
     (λ_ ((free R).obj X)).hom =
       (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
   intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext_ring
   apply Finsupp.lhom_ext'
@@ -122,7 +122,7 @@ theorem left_unitality (X : Type u) :
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro x'
-  -- Porting note: used to be dsimp [ε, μ]
+  -- Porting note (#10934): used to be dsimp [ε, μ]
   let q : X →₀ R := ((λ_ (of R (X →₀ R))).hom) (1 ⊗ₜ[R] Finsupp.single x 1)
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
@@ -135,7 +135,7 @@ theorem right_unitality (X : Type u) :
     (ρ_ ((free R).obj X)).hom =
       (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).hom ≫ map (free R).obj (ρ_ X).hom := by
   intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
   intro x
@@ -143,7 +143,7 @@ theorem right_unitality (X : Type u) :
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro x'
-  -- Porting note: used to be dsimp [ε, μ]
+  -- Porting note (#10934): used to be dsimp [ε, μ]
   let q : X →₀ R := ((ρ_ (of R (X →₀ R))).hom) (Finsupp.single x 1 ⊗ₜ[R] 1)
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
@@ -157,7 +157,7 @@ theorem associativity (X Y Z : Type u) :
       (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).hom ≫
         (𝟙 ((free R).obj X) ⊗ (μ R Y Z).hom) ≫ (μ R X (Y ⊗ Z)).hom := by
   intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
@@ -171,7 +171,7 @@ theorem associativity (X Y Z : Type u) :
   apply LinearMap.ext_ring
   apply Finsupp.ext
   intro a
-  -- Porting note: used to be dsimp [μ]
+  -- Porting note (#10934): used to be dsimp [μ]
   change Finsupp.mapDomain (α_ X Y Z).hom (finsuppTensorFinsupp' R (X ⊗ Y) Z
     (finsuppTensorFinsupp' R X Y
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single y 1) ⊗ₜ[R] Finsupp.single z 1)) a =
@@ -198,19 +198,19 @@ instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
-  · -- Porting note: broken ext
+  · -- Porting note (#11041): broken ext
     apply LinearMap.ext_ring
-    -- Porting note: simp used to be able to close this goal
+    -- Porting note (#10959): simp used to be able to close this goal
     dsimp
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same, id_apply]
-  · -- Porting note: broken ext
+  · -- Porting note (#11041): broken ext
     apply Finsupp.lhom_ext'
     intro ⟨⟩
     apply LinearMap.ext_ring
     apply Finsupp.ext
     intro ⟨⟩
-    -- Porting note: simp used to be able to close this goal
+    -- Porting note (#10959): simp used to be able to close this goal
     dsimp
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same]
@@ -285,7 +285,7 @@ section
 -- accordingly
 
 instance : Preadditive (Free R C) where
-  homGroup X Y := Finsupp.addCommGroup
+  homGroup X Y := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
     dsimp [CategoryTheory.categoryFree]
     rw [Finsupp.sum_add_index'] <;> · simp [add_mul]
@@ -323,7 +323,7 @@ def embedding : C ⥤ Free R C where
   map {X Y} f := Finsupp.single f 1
   map_id X := rfl
   map_comp {X Y Z} f g := by
-    -- Porting note: simp used to be able to close this goal
+    -- Porting note (#10959): simp used to be able to close this goal
     dsimp only []
     rw [single_comp_single, one_mul]
 #align category_theory.Free.embedding CategoryTheory.Free.embedding
@@ -341,7 +341,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
   map_comp {X Y Z} f g := by
     apply Finsupp.induction_linear f
-    · -- Porting note: simp used to be able to close this goal
+    · -- Porting note (#10959): simp used to be able to close this goal
       dsimp
       rw [Limits.zero_comp, sum_zero_index, Limits.zero_comp]
     · intro f₁ f₂ w₁ w₂
@@ -355,7 +355,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       · intros; simp only [add_smul]
     · intro f' r
       apply Finsupp.induction_linear g
-      · -- Porting note: simp used to be able to close this goal
+      · -- Porting note (#10959): simp used to be able to close this goal
         dsimp
         rw [Limits.comp_zero, sum_zero_index, Limits.comp_zero]
       · intro f₁ f₂ w₁ w₂
@@ -405,7 +405,7 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
     (by
       intro X Y f
       apply Finsupp.induction_linear f
-      · -- Porting note: simp used to be able to close this goal
+      · -- Porting note (#10959): simp used to be able to close this goal
         rw [Functor.map_zero, Limits.zero_comp, Functor.map_zero, Limits.comp_zero]
       · intro f₁ f₂ w₁ w₂
         -- Porting note: Using rw instead of simp

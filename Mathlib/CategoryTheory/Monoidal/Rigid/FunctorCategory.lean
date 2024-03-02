@@ -37,7 +37,7 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
             dsimp
             rw [Category.comp_id, Functor.map_inv, ← id_tensor_comp_tensor_id, Category.assoc,
               id_tensorHom, tensorHom_id,
-              rightAdjointMate_comp_evaluation, ← whiskerLeft_comp_assoc,
+              rightAdjointMate_comp_evaluation, ← MonoidalCategory.whiskerLeft_comp_assoc,
               IsIso.hom_inv_id, MonoidalCategory.whiskerLeft_id, Category.id_comp] }
       coevaluation' :=
         { app := fun X => η_ _ _

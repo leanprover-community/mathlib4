@@ -5,3 +5,4 @@ block_labels = ["not-ready-to-merge", "WIP", "blocked-by-other-PR", "merge-confl
 delete_merged_branches = true
 update_base_for_deletes = true
 cut_body_after = "---"
+max_batch_size = 16

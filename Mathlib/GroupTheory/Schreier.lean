@@ -41,13 +41,13 @@ theorem closure_mul_image_mul_eq_top
   let U : Set G := (R * S).image fun g => g * (f g : G)⁻¹
   change (closure U : Set G) * R = ⊤
   refine' top_le_iff.mp fun g _ => _
-  apply closure_induction_right (eq_top_iff.mp hS (mem_top g))
+  refine closure_induction_right ?_ ?_ ?_ (eq_top_iff.mp hS (mem_top g))
   · exact ⟨1, (closure U).one_mem, 1, hR1, one_mul 1⟩
-  · rintro - s hs ⟨u, hu, r, hr, rfl⟩
+  · rintro - - s hs ⟨u, hu, r, hr, rfl⟩
     rw [show u * r * s = u * (r * s * (f (r * s) : G)⁻¹) * f (r * s) by group]
     refine' Set.mul_mem_mul ((closure U).mul_mem hu _) (f (r * s)).coe_prop
     exact subset_closure ⟨r * s, Set.mul_mem_mul hr hs, rfl⟩
-  · rintro - s hs ⟨u, hu, r, hr, rfl⟩
+  · rintro - - s hs ⟨u, hu, r, hr, rfl⟩
     rw [show u * r * s⁻¹ = u * (f (r * s⁻¹) * s * r⁻¹)⁻¹ * f (r * s⁻¹) by group]
     refine' Set.mul_mem_mul ((closure U).mul_mem hu ((closure U).inv_mem _)) (f (r * s⁻¹)).2
     refine' subset_closure ⟨f (r * s⁻¹) * s, Set.mul_mem_mul (f (r * s⁻¹)).2 hs, _⟩

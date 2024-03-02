@@ -865,7 +865,7 @@ theorem id_whiskerLeft_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 3 4 => rw [associator_inv_naturality_left]
   slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_.one_mul]
   have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ▷ N.X) = 𝟙 _ := by
-    pure_coherence
+    coherence
   slice_rhs 2 4 => rw [this]
   slice_rhs 1 2 => rw [Category.comp_id]
 set_option linter.uppercaseLean3 false in
@@ -907,7 +907,7 @@ theorem comp_whiskerRight_bimod {X Y Z : Mon_ C} {M N P : Bimod X Y} (f : M ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Bimod.comp_whisker_right_Bimod Bimod.comp_whiskerRight_bimod
 
-theorem whisker_right_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
+theorem whiskerRight_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
     whiskerRight f (regular Y) = (rightUnitorBimod M).hom ≫ f ≫ (rightUnitorBimod N).inv := by
   dsimp [tensorHom, regular, rightUnitorBimod]
   ext
@@ -925,9 +925,9 @@ theorem whisker_right_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 4 5 => rw [← MonoidalCategory.whiskerLeft_comp, Mon_.mul_one]
   simp
 set_option linter.uppercaseLean3 false in
-#align Bimod.whisker_right_id_Bimod Bimod.whisker_right_id_bimod
+#align Bimod.whisker_right_id_Bimod Bimod.whiskerRight_id_bimod
 
-theorem whisker_right_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶ M') (N : Bimod X Y)
+theorem whiskerRight_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶ M') (N : Bimod X Y)
     (P : Bimod Y Z) :
     whiskerRight f (N.tensorBimod P) =
       (associatorBimod M N P).inv ≫
@@ -953,7 +953,7 @@ theorem whisker_right_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M �
   slice_rhs 1 3 => rw [Iso.inv_hom_id_assoc]
   slice_lhs 1 2 => rw [whisker_exchange]
 set_option linter.uppercaseLean3 false in
-#align Bimod.whisker_right_comp_Bimod Bimod.whisker_right_comp_bimod
+#align Bimod.whisker_right_comp_Bimod Bimod.whiskerRight_comp_bimod
 
 theorem whisker_assoc_bimod {W X Y Z : Mon_ C} (M : Bimod W X) {N N' : Bimod X Y} (f : N ⟶ N')
     (P : Bimod Y Z) :
@@ -1084,8 +1084,8 @@ noncomputable def monBicategory : Bicategory (Mon_ C) where
   comp_whiskerLeft M N _ _ f := comp_whiskerLeft_bimod M N f
   id_whiskerRight _ _ := id_whiskerRight_bimod
   comp_whiskerRight f g Q := comp_whiskerRight_bimod f g Q
-  whiskerRight_id := whisker_right_id_bimod
-  whiskerRight_comp := whisker_right_comp_bimod
+  whiskerRight_id := whiskerRight_id_bimod
+  whiskerRight_comp := whiskerRight_comp_bimod
   whisker_assoc M _ _ f P := whisker_assoc_bimod M f P
   whisker_exchange := whisker_exchange_bimod
   pentagon := pentagon_bimod

@@ -75,7 +75,7 @@ def bind {β γ} (f : α →o Part β) (g : α →o β → Part γ) : α →o Pa
     intro x y h a
     simp only [and_imp, exists_prop, Part.bind_eq_bind, Part.mem_bind_iff, exists_imp]
     intro b hb ha
-    refine' ⟨b, f.monotone h _ hb, g.monotone h _ _ ha⟩
+    exact ⟨b, f.monotone h _ hb, g.monotone h _ _ ha⟩
 #align order_hom.bind OrderHom.bind
 #align order_hom.bind_coe OrderHom.bind_coe
 
@@ -95,6 +95,7 @@ namespace Chain
 variable {α : Type u} {β : Type v} {γ : Type*}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
+instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
 instance : CoeFun (Chain α) fun _ => ℕ → α := ⟨DFunLike.coe⟩
 
@@ -398,7 +399,7 @@ noncomputable instance omegaCompletePartialOrder :
   le_ωSup c i := by
     intro x hx
     rw [← eq_some_iff] at hx ⊢
-    rw [ωSup_eq_some, ← hx]
+    rw [ωSup_eq_some]
     rw [← hx]
     exact ⟨i, rfl⟩
   ωSup_le := by
@@ -622,9 +623,11 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 @[inherit_doc] infixr:25 " →𝒄 " => ContinuousHom -- Input: \r\MIc
 
-instance : OrderHomClass (α →𝒄 β) α β where
+instance : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
+
+instance : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h
 
 -- Porting note: removed to avoid conflict with the generic instance

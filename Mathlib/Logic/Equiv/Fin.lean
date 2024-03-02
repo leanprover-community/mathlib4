@@ -146,12 +146,12 @@ theorem finSuccEquiv'_succAbove (i : Fin (n + 1)) (j : Fin n) :
 
 theorem finSuccEquiv'_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i) (Fin.castSucc m) = m := by
-  rw [← Fin.succAbove_below _ _ h, finSuccEquiv'_succAbove]
+  rw [← Fin.succAbove_of_castSucc_lt _ _ h, finSuccEquiv'_succAbove]
 #align fin_succ_equiv'_below finSuccEquiv'_below
 
 theorem finSuccEquiv'_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
     (finSuccEquiv' i) m.succ = some m := by
-  rw [← Fin.succAbove_above _ _ h, finSuccEquiv'_succAbove]
+  rw [← Fin.succAbove_of_le_castSucc _ _ h, finSuccEquiv'_succAbove]
 #align fin_succ_equiv'_above finSuccEquiv'_above
 
 @[simp]
@@ -167,12 +167,12 @@ theorem finSuccEquiv'_symm_some (i : Fin (n + 1)) (j : Fin n) :
 
 theorem finSuccEquiv'_symm_some_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
     (finSuccEquiv' i).symm (some m) = Fin.castSucc m :=
-  Fin.succAbove_below i m h
+  Fin.succAbove_of_castSucc_lt i m h
 #align fin_succ_equiv'_symm_some_below finSuccEquiv'_symm_some_below
 
 theorem finSuccEquiv'_symm_some_above {i : Fin (n + 1)} {m : Fin n} (h : i ≤ Fin.castSucc m) :
     (finSuccEquiv' i).symm (some m) = m.succ :=
-  Fin.succAbove_above i m h
+  Fin.succAbove_of_le_castSucc i m h
 #align fin_succ_equiv'_symm_some_above finSuccEquiv'_symm_some_above
 
 theorem finSuccEquiv'_symm_coe_below {i : Fin (n + 1)} {m : Fin n} (h : Fin.castSucc m < i) :
@@ -314,6 +314,12 @@ def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fi
 #align equiv.pi_fin_succ_apply Equiv.piFinSucc_apply
 #align equiv.pi_fin_succ_symm_apply Equiv.piFinSucc_symm_apply
 
+/-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)` which separates out the last
+element of the tuple. -/
+@[simps! (config := .asFn)]
+def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fin n → β) :=
+  Equiv.piFinSuccAbove (fun _ => β) (.last _)
+
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
 def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n)
     where
@@ -436,7 +442,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
   · simp [finRotate_last]
   · cases i
     simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
-    simp [finRotate_of_lt h, Fin.eq_iff_veq, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
+    simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 #align fin_rotate_succ_apply finRotate_succ_apply
 
 -- porting note: was a @[simp]
@@ -472,18 +478,18 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
   left_inv := fun ⟨x, y⟩ =>
     have H : 0 < n := Nat.pos_of_ne_zero fun H => Nat.not_lt_zero y.1 <| H ▸ y.2
     Prod.ext
-      (Fin.eq_of_veq <|
+      (Fin.eq_of_val_eq <|
         calc
           (y.1 + n * x.1) / n = y.1 / n + x.1 := Nat.add_mul_div_left _ _ H
           _ = 0 + x.1 := by rw [Nat.div_eq_of_lt y.2]
           _ = x.1 := Nat.zero_add x.1
           )
-      (Fin.eq_of_veq <|
+      (Fin.eq_of_val_eq <|
         calc
           (y.1 + n * x.1) % n = y.1 % n := Nat.add_mul_mod_self_left _ _ _
           _ = y.1 := Nat.mod_eq_of_lt y.2
           )
-  right_inv x := Fin.eq_of_veq <| Nat.mod_add_div _ _
+  right_inv x := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
 #align fin_prod_fin_equiv finProdFinEquiv
 #align fin_prod_fin_equiv_apply_val finProdFinEquiv_apply_val
 #align fin_prod_fin_equiv_symm_apply finProdFinEquiv_symm_apply

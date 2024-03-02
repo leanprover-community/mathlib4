@@ -114,12 +114,12 @@ theorem sum_whiskerRight {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ 
 
 theorem tensor_sum {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (f ⊗ ∑ j in s, g j) = ∑ j in s, f ⊗ g j := by
-  simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.comp_sum, tensorHom_def]
+  simp only [tensorHom_def, whiskerLeft_sum, Preadditive.comp_sum]
 #align category_theory.tensor_sum CategoryTheory.tensor_sum
 
 theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (R ⟶ S)) :
     (∑ j in s, g j) ⊗ f = ∑ j in s, g j ⊗ f := by
-  simp [whiskerLeft_sum, sum_whiskerRight, Preadditive.sum_comp, tensorHom_def]
+  simp only [tensorHom_def, sum_whiskerRight, Preadditive.sum_comp]
 #align category_theory.sum_tensor CategoryTheory.sum_tensor
 
 -- In a closed monoidal category, this would hold because
@@ -177,8 +177,8 @@ theorem leftDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
     (X ◁ biproduct.ι _ j) ≫ (leftDistributor X f).hom = biproduct.ι (fun j => X ⊗ f j) j := by
-  simp [leftDistributor_hom, Preadditive.comp_sum, ← whiskerLeft_comp_assoc, biproduct.ι_π,
-    whiskerLeft_dite, dite_comp]
+  simp [leftDistributor_hom, Preadditive.comp_sum, ← MonoidalCategory.whiskerLeft_comp_assoc,
+    biproduct.ι_π, whiskerLeft_dite, dite_comp]
 
 @[reassoc (attr := simp)]
 theorem leftDistributor_inv_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :

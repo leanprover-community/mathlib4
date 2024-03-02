@@ -77,8 +77,6 @@ end FunctorCategory
 
 open CategoryTheory.Monoidal.FunctorCategory
 
-attribute [local simp] tensorHom_def
-
 /-- When `C` is any category, and `D` is a monoidal category,
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
 where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.

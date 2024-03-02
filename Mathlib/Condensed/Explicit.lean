@@ -3,10 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Equivalence
-import Mathlib.Topology.Category.Profinite.EffectiveEpi
-import Mathlib.Topology.Category.Stonean.EffectiveEpi
 /-!
 
 # The explicit sheaf condition for condensed sets

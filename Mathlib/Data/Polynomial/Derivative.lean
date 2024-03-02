@@ -484,11 +484,11 @@ theorem pow_sub_one_dvd_derivative_of_pow_dvd {p q : R[X]} {n : ℕ}
 
 theorem pow_sub_dvd_iterate_derivative_of_pow_dvd {p q : R[X]} {n : ℕ} (m : ℕ)
     (dvd : q ^ n ∣ p) : q ^ (n - m) ∣ derivative^[m] p := by
-  revert p
-  induction' m with m ih <;> intro p h
-  · exact h
-  · rw [Nat.sub_succ, Function.iterate_succ']
-    exact pow_sub_one_dvd_derivative_of_pow_dvd (ih h)
+  induction m generalizing p with
+  | zero => simpa
+  | succ m ih =>
+    rw [Nat.sub_succ, Function.iterate_succ']
+    exact pow_sub_one_dvd_derivative_of_pow_dvd (ih dvd)
 
 theorem pow_sub_dvd_iterate_derivative_pow (p : R[X]) (n m : ℕ) :
     p ^ (n - m) ∣ derivative^[m] (p ^ n) := pow_sub_dvd_iterate_derivative_of_pow_dvd m dvd_rfl

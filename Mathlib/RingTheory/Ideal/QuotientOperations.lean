@@ -6,6 +6,7 @@ Authors: Kenny Lau, Patrick Massot
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Algebra.Ring.Fin
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 #align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 
@@ -14,8 +15,12 @@ import Mathlib.Algebra.Ring.Fin
 
 ## Main results:
 
- - `quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
- - `quotientKerEquivRangeS` : the **first isomorphism theorem**
+ - `RingHom.quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
+ - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
+  for a morphism from a commutative ring to a semiring.
+ - `AlgHom.quotientKerEquivRange` : the **first isomorphism theorem**
+  for a morphism of algebras (over a commutative semiring)
+ - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
   for a morphism from a commutative ring to a semiring.
  - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
    ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
@@ -164,7 +169,7 @@ lemma ker_Pi_Quotient_mk {ι : Type*} (I : ι → Ideal R) :
 theorem bot_quotient_isMaximal_iff (I : Ideal R) : (⊥ : Ideal (R ⧸ I)).IsMaximal ↔ I.IsMaximal :=
   ⟨fun hI =>
     @mk_ker _ _ I ▸
-      @comap_isMaximal_of_surjective _ _ _ _ _ _ (Quotient.mk I) Quotient.mk_surjective ⊥ hI,
+      comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective (K := ⊥) (H := hI),
     fun hI => by
     skip
     letI := Quotient.field I
@@ -207,9 +212,10 @@ rfl
 lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) : Injective (quotientInfToPiQuotient I) := by
   rw [quotientInfToPiQuotient, injective_lift_iff, ker_Pi_Quotient_mk]
 
-lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
+lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
     (hI : Pairwise fun i j => IsCoprime (I i) (I j)) : Surjective (quotientInfToPiQuotient I) := by
   classical
+  cases nonempty_fintype ι
   intro g
   choose f hf using fun i ↦ mk_surjective (g i)
   have key : ∀ i, ∃ e : R, mk (I i) e = 1 ∧ ∀ j, j ≠ i → mk (I j) e = 0 := by
@@ -221,7 +227,6 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
     replace he : ∀ j, j ≠ i → e ∈ I j := by simpa using he
     refine ⟨e, ?_, ?_⟩
     · simp [eq_sub_of_add_eq' hue, map_sub, eq_zero_iff_mem.mpr hu]
-      rfl
     · exact fun j hj ↦ eq_zero_iff_mem.mpr (he j hj)
   choose e he using key
   use mk _ (∑ i, f i*e i)
@@ -232,7 +237,7 @@ lemma quotientInfToPiQuotient_surj [Fintype ι] {I : ι → Ideal R}
     simp [(he j).2 i hj.symm]
 
 /-- Chinese Remainder Theorem. Eisenbud Ex.2.6. Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
-noncomputable def quotientInfRingEquivPiQuotient [Fintype ι] (f : ι → Ideal R)
+noncomputable def quotientInfRingEquivPiQuotient [Finite ι] (f : ι → Ideal R)
     (hf : Pairwise fun i j => IsCoprime (f i) (f j)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
@@ -247,7 +252,7 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopr
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption
     · exact coprime.symm
-  (Ideal.quotEquivOfEq (by simp [iInf, inf_comm])).trans <|
+  (Ideal.quotEquivOfEq (by simp [f, iInf, inf_comm])).trans <|
             (Ideal.quotientInfRingEquivPiQuotient f hf).trans <| RingEquiv.piFinTwo fun i => R ⧸ f i
 #align ideal.quotient_inf_equiv_quotient_prod Ideal.quotientInfEquivQuotientProd
 
@@ -497,12 +502,10 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J �
 def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
     R ⧸ I ≃+* S ⧸ J :=
   {
-    quotientMap J (↑f)
-      (by
-        rw [hIJ]
-        exact
-          @le_comap_map _ S _ _ _ _ _
-            _) with
+    quotientMap J (↑f) (by
+      rw [hIJ]
+      exact le_comap_map)
+  with
     invFun :=
       quotientMap I (↑f.symm)
         (by
@@ -645,6 +648,14 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
 lemma comap_map_mk {I J : Ideal R} (h : I ≤ J) :
     Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J :=
   by ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
+
+/-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
+noncomputable def quotientKerEquivRange
+  {A B : Type*} [CommRing A] [Algebra R A] [Semiring B] [Algebra R B]
+  (f : A →ₐ[R] B) :
+  (A ⧸ RingHom.ker f) ≃ₐ[R] f.range :=
+  (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
+    Ideal.quotientKerAlgEquivOfSurjective f.rangeRestrict_surjective
 
 end QuotientAlgebra
 

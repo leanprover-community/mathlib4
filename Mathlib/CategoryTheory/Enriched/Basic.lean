@@ -53,10 +53,10 @@ class EnrichedCategory (C : Type u₁) where
   Hom : C → C → V
   id (X : C) : 𝟙_ V ⟶ Hom X X
   comp (X Y Z : C) : Hom X Y ⊗ Hom Y Z ⟶ Hom X Z
-  id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ (id X ▷ _) ≫ comp X X Y = 𝟙 _ := by aesop_cat
-  comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ (_ ◁ id Y) ≫ comp X Y Y = 𝟙 _ := by aesop_cat
-  assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ (comp W X Y ▷ _) ≫ comp W Y Z =
-    (_ ◁ comp X Y Z) ≫ comp W X Z := by aesop_cat
+  id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ id X ▷ _ ≫ comp X X Y = 𝟙 _ := by aesop_cat
+  comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ _ ◁ id Y ≫ comp X Y Y = 𝟙 _ := by aesop_cat
+  assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
+    _ ◁ comp X Y Z ≫ comp W X Z := by aesop_cat
 #align category_theory.enriched_category CategoryTheory.EnrichedCategory
 
 notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
@@ -78,20 +78,20 @@ def eComp (X Y Z : C) : ((X ⟶[V] Y) ⊗ Y ⟶[V] Z) ⟶ X ⟶[V] Z :=
 -- We don't just use `restate_axiom` here; that would leave `V` as an implicit argument.
 @[reassoc (attr := simp)]
 theorem e_id_comp (X Y : C) :
-    (λ_ (X ⟶[V] Y)).inv ≫ (eId V X ▷ _) ≫ eComp V X X Y = 𝟙 (X ⟶[V] Y) :=
+    (λ_ (X ⟶[V] Y)).inv ≫ eId V X ▷ _ ≫ eComp V X X Y = 𝟙 (X ⟶[V] Y) :=
   EnrichedCategory.id_comp X Y
 #align category_theory.e_id_comp CategoryTheory.e_id_comp
 
 @[reassoc (attr := simp)]
 theorem e_comp_id (X Y : C) :
-    (ρ_ (X ⟶[V] Y)).inv ≫ (_ ◁ eId V Y) ≫ eComp V X Y Y = 𝟙 (X ⟶[V] Y) :=
+    (ρ_ (X ⟶[V] Y)).inv ≫ _ ◁ eId V Y ≫ eComp V X Y Y = 𝟙 (X ⟶[V] Y) :=
   EnrichedCategory.comp_id X Y
 #align category_theory.e_comp_id CategoryTheory.e_comp_id
 
 @[reassoc (attr := simp)]
 theorem e_assoc (W X Y Z : C) :
-    (α_ _ _ _).inv ≫ (eComp V W X Y ▷ _) ≫ eComp V W Y Z =
-      (_ ◁ eComp V X Y Z) ≫ eComp V W X Z :=
+    (α_ _ _ _).inv ≫ eComp V W X Y ▷ _ ≫ eComp V W Y Z =
+      _ ◁ eComp V X Y Z ≫ eComp V W X Z :=
   EnrichedCategory.assoc W X Y Z
 #align category_theory.e_assoc CategoryTheory.e_assoc
 
@@ -127,13 +127,10 @@ instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment 
     convert F.map_id _
     simp
   assoc P Q R S := by
-    simp only [← id_tensorHom, ← tensorHom_id]
-    rw [comp_tensor_id, Category.assoc, ← F.toFunctor.map_id, F.μ_natural_assoc,
-      F.toFunctor.map_id, ← F.associativity_inv'_assoc, ← F.toFunctor.map_comp, ←
-      F.toFunctor.map_comp, id_tensorHom, tensorHom_id, e_assoc, id_tensor_comp,
-      Category.assoc, ← F.toFunctor.map_id,
-      F.μ_natural_assoc, F.toFunctor.map_comp]
-    simp
+    rw [comp_whiskerRight, Category.assoc, F.μ_natural_left_assoc,
+      ← F.associativity_inv_assoc, ← F.map_comp, ← F.map_comp, e_assoc,
+      F.map_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc,
+      LaxMonoidalFunctor.μ_natural_right_assoc]
 
 end
 

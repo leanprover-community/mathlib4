@@ -31,10 +31,14 @@ def exactPairingOfFaithful [Faithful F.toFunctor] {X Y : C} (eval : Y ⊗ X ⟶ 
     (map_coeval : F.map coeval = inv F.ε ≫ η_ _ _ ≫ F.μ _ _) : ExactPairing X Y where
   evaluation' := eval
   coevaluation' := coeval
-  evaluation_coevaluation' := F.toFunctor.map_injective <| by
-    simp [map_eval, map_coeval, F.map_whiskerRight, F.map_whiskerLeft]
-  coevaluation_evaluation' := F.toFunctor.map_injective <| by
-    simp [map_eval, map_coeval, F.map_whiskerRight, F.map_whiskerLeft]
+  evaluation_coevaluation' :=
+    F.toFunctor.map_injective <| by
+      simp [map_eval, map_coeval,
+        MonoidalFunctor.map_whiskerLeft, MonoidalFunctor.map_whiskerRight]
+  coevaluation_evaluation' :=
+    F.toFunctor.map_injective <| by
+      simp [map_eval, map_coeval,
+        MonoidalFunctor.map_whiskerLeft, MonoidalFunctor.map_whiskerRight]
 #align category_theory.exact_pairing_of_faithful CategoryTheory.exactPairingOfFaithful
 
 /-- Given a pair of objects which are sent by a fully faithful functor to a pair of objects
