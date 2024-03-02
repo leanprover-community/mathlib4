@@ -144,10 +144,8 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 
 @[to_additive (attr := simp)]
 theorem prod_map_one {α : Type*} [CommMonoid α] {l : List ι} :
-    (l.map fun i => 1).prod = 1 := by
-  induction l with
-  | nil => rfl
-  | cons h t ih => rw [List.map_cons, List.prod_cons, ih, mul_one]
+    (l.map fun _ => (1 : α)).prod = 1 := by
+  simp only [map_const', prod_replicate, one_pow]
 
 @[simp]
 theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
