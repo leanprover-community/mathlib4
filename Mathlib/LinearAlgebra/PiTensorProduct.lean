@@ -794,10 +794,48 @@ variable {R s s'}
 @[simp]
 theorem mapMultilinear_apply : mapMultilinear R s s' f = map f := rfl
 
-/-
 @[simp]
-theorem homTensorHomMap_apply : homTensorHomMap R s s' f = map f := rfl
--/
+theorem homTensorHomMap_apply : homTensorHomMap R s s' (tprod R f) = map f := by
+  ext
+  simp only [homTensorHomMap, lift.tprod, mapMultilinear_apply, compMultilinearMap_apply, map_tprod]
+
+@[simp]
+theorem map_coord_zero (i : ι) (h : f i = 0) : map f = 0 := by
+  ext
+  simp only [compMultilinearMap_apply, map_tprod, zero_apply]
+  apply MultilinearMap.map_coord_zero _ i
+  rw [h, zero_apply]
+
+@[simp]
+theorem map_update_zero [DecidableEq ι] (i : ι) : map (Function.update f i 0) = 0 := by
+  rw [map_coord_zero _ i]; simp only [update_same]
+
+@[simp]
+theorem map_zero [Nonempty ι] : map (0 : (i : ι) → (s i →ₗ[R] s' i)) = 0 := by
+  ext
+  simp only [Pi.zero_apply, compMultilinearMap_apply, map_tprod, zero_apply]
+  apply MultilinearMap.map_zero
+
+/-- If `s i` and `s' i` are linearly equivalent for every `i` in `ι`, then `⨂[R] i, s i` and
+`⨂[R] i, s' i` are linearly equivalent. -/
+noncomputable def congr (f : (i : ι) → (s i ≃ₗ[R] s' i)) :
+    (⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, s' i := by
+  refine LinearEquiv.ofLinear (map (fun i ↦ f i)) (map (fun i ↦ (f i).symm)) ?_ ?_
+  all_goals (rw [← map_comp, ← map_id]; congr; ext i)
+  · simp only [LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
+    id_coe, id_eq]
+  · simp only [LinearEquiv.comp_coe, LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap,
+    id_coe, id_eq]
+
+@[simp]
+theorem congr_tprod (f : (i : ι) → (s i ≃ₗ[R] s' i)) (m : (i : ι) → s i) :
+    congr f (tprod R m) = tprod R (fun (i : ι) ↦ (f i) (m i)) := by
+  simp only [congr, LinearEquiv.ofLinear_apply, map_tprod, LinearEquiv.coe_coe]
+
+@[simp]
+theorem congr_symm_tprod (f : (i : ι) → (s i ≃ₗ[R] s' i)) (p : (i : ι) → s' i) :
+    (congr f).symm (tprod R p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
+  simp only [congr, LinearEquiv.ofLinear_symm_apply, map_tprod, LinearEquiv.coe_coe]
 
 end map
 
