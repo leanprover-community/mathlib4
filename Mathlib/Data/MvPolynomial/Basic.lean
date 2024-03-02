@@ -396,6 +396,10 @@ theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolyno
   simp only [X_pow_eq_monomial, ← monomial_finsupp_sum_index, Finsupp.sum_single]
 #align mv_polynomial.monomial_eq MvPolynomial.monomial_eq
 
+@[simp]
+lemma prod_X_pow_eq_monomial : ∏ x in s.support, X x ^ s x = monomial s (1 : R) := by
+  simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
+
 theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (C a))
     (h_X : ∀ p n, M p → M (p * X n)) : ∀ s a, M (monomial s a) := by
   intro s a
