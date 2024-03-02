@@ -323,7 +323,7 @@ instance instLE : LE Surreal :=
 #align surreal.has_le Surreal.instLE
 
 @[simp]
-theorem mk_le_mk {x y : PGame.{u}} {hx hy}: mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
+lemma mk_le_mk {x y : PGame.{u}} {hx hy} : mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
 
 instance instLT : LT Surreal :=
   ⟨lift₂ (fun x y _ _ => x < y) fun _ _ _ _ hx hy => propext (lt_congr hx hy)⟩
