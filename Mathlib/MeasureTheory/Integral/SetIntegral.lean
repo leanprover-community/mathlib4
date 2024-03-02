@@ -1409,7 +1409,7 @@ section ParametricIntegral
 
 variable [NormedAddCommGroup E]
 
-variable {α β F G 𝕜 : Type*} [TopologicalSpace α] [TopologicalSpace β] [MeasurableSpace β]
+variable {X β F G 𝕜 : Type*} [TopologicalSpace X] [TopologicalSpace β] [MeasurableSpace β]
   [OpensMeasurableSpace β] {μ : Measure β} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
@@ -1420,7 +1420,7 @@ open Metric Function ContinuousLinearMap
 integral depends continuously on `a`. -/
 lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     [NormedSpace 𝕜 E] (L : F →L[𝕜] G →L[𝕜] E)
-    {f : α → β → G} {s : Set α} {k : Set β} {g : β → F}
+    {f : X → β → G} {s : Set X} {k : Set β} {g : β → F}
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
     ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
@@ -1487,7 +1487,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
 /-- Consider a parameterized integral `a ↦ ∫ x, f a x` where `f` is continuous and uniformly
 compactly supported. Then the integral depends continuously on `a`. -/
 lemma continuousOn_integral_of_compact_support
-    {f : α → β → E} {s : Set α} {k : Set β} [IsFiniteMeasureOnCompacts μ]
+    {f : X → β → E} {s : Set X} {k : Set β} [IsFiniteMeasureOnCompacts μ]
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
     ContinuousOn (fun a ↦ ∫ x, f a x ∂μ) s := by
