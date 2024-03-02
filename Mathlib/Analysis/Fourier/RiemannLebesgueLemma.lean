@@ -61,10 +61,10 @@ variable [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProduct
 /-- The integrand in the Riemann-Lebesgue lemma for `f` is integrable iff `f` is. -/
 theorem fourier_integrand_integrable (w : V) :
     Integrable f ↔ Integrable fun v : V => 𝐞[-⟪v, w⟫] • f v := by
-  have hL : Continuous fun p : V × V => BilinForm.toLin bilinFormOfRealInner p.1 p.2 :=
+  have hL : Continuous fun p : V × V => bilinFormOfRealInner p.1 p.2 :=
     continuous_inner
   rw [VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar hL w]
-  simp only [BilinForm.toLin_apply, bilinFormOfRealInner_apply]
+  simp only [bilinFormOfRealInner_apply_apply, ofAdd_neg, map_inv, coe_inv_unitSphere]
 #align fourier_integrand_integrable fourier_integrand_integrable
 
 variable [CompleteSpace E]
@@ -234,7 +234,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
       ← smul_sub, ← Pi.sub_apply]
     exact
       VectorFourier.norm_fourierIntegral_le_integral_norm 𝐞 volume
-        (BilinForm.toLin bilinFormOfRealInner) (f - g) w
+        (bilinFormOfRealInner) (f - g) w
   replace := add_lt_add_of_le_of_lt this hI
   rw [add_halves] at this
   refine' ((le_of_eq _).trans (norm_add_le _ _)).trans_lt this
