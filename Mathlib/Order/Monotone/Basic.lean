@@ -920,7 +920,7 @@ theorem Antitone.strictAnti_iff_injective (hf : Antitone f) : StrictAnti f ↔ I
 #align antitone.strict_anti_iff_injective Antitone.strictAnti_iff_injective
 
 /-- If a monotone function is equal at two points, it is equal between all of them -/
-theorem Monotone.stabilizing {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂):
+theorem Monotone.stabilizing {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a₁ = f a₂) :
     ∀ i, a₂ ≥ i → i ≥ a₁ → f i = f a₁ := by
   intro i h₂ h₁
   apply le_antisymm
@@ -928,7 +928,7 @@ theorem Monotone.stabilizing {a₁ a₂ : α} (h_mon : Monotone f) (h_fa : f a�
   · exact h_mon h₁
 
 /-- If an antitone function is equal at two points, it is equal between all of them -/
-theorem Antitone.stabilizing {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂):
+theorem Antitone.stabilizing {a₁ a₂ : α} (h_anti : Antitone f) (h_fa : f a₁ = f a₂) :
     ∀ i, a₂ ≥ i → i ≥ a₁ → f i = f a₁ := by
   intro i h₂ h₁
   apply le_antisymm
