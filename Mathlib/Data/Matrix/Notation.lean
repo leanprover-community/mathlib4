@@ -114,6 +114,24 @@ macro_rules
     `(@Matrix.of (Fin $(quote semicolons.size)) (Fin 0) _ ![$emptyVecs,*])
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
 
+open Lean PrettyPrinter.Delaborator SubExpr Qq -- in
+@[delab app.DFunLike.coe]
+def delabMatrixOf : Delab :=
+  whenPPOption getPPNotation <| do
+    let e ← getExpr
+    let ⟨_, ~q(Matrix (Fin (OfNat.ofNat $n)) (Fin (OfNat.ofNat $m)) $α), ~q(Matrix.of $e)⟩ ← inferTypeQ' e | failure
+    let some m := m.natLit? | failure
+    let some n := n.natLit? | failure
+    if m = 0 then
+      let semicolons : Term := ⟨mkNullNode <| .mk <| List.replicate n <| Syntax.atom (← MonadRef.mkInfoFromRefPos)  ";"⟩
+      return (← `(!![$semicolons]))
+    failure
+
+#check !![;;]
+#check !![,]
+
+#exit
+
 end Parser
 
 variable (a b : ℕ)
