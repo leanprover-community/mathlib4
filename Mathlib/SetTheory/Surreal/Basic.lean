@@ -428,7 +428,7 @@ lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u
   rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
   simpa using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
 
-/-- A small set of surreals is bounded Below. -/
+/-- A small set of surreals is bounded below. -/
 lemma bddBelow_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddBelow s := by
   simpa using bddBelow_range_of_small (Subtype.val : s → Surreal.{u})
 #align surreal.bdd_below_of_small Surreal.bddBelow_of_small
