@@ -615,10 +615,10 @@ lemma eventually_atTop_sumTransform_le :
          _ ≤ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
                 gcongr with u hu
                 rw [Finset.mem_Ico] at hu
-                have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by linarith⟩
+                have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
                 refine hn₂ u ?_
                 rw [Set.mem_Icc]
-                refine ⟨?_, by norm_cast; linarith⟩
+                refine ⟨?_, by norm_cast; omega⟩
                 calc c₁ * n ≤ r i n := by exact hn₁ i
                           _ ≤ u := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u in Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
@@ -647,10 +647,10 @@ lemma eventually_atTop_sumTransform_le :
          _ ≤ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
                 gcongr with u hu
                 rw [Finset.mem_Ico] at hu
-                have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by linarith⟩
+                have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
                 refine hn₂ u ?_
                 rw [Set.mem_Icc]
-                refine ⟨?_, by norm_cast; linarith⟩
+                refine ⟨?_, by norm_cast; omega⟩
                 calc c₁ * n ≤ r i n      := by exact hn₁ i
                           _ ≤ u          := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u in Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
@@ -694,10 +694,10 @@ lemma eventually_atTop_sumTransform_ge :
          _ ≥ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
                 gcongr with u hu
                 rw [Finset.mem_Ico] at hu
-                have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by linarith⟩
+                have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
                 refine hn₂ u ?_
                 rw [Set.mem_Icc]
-                refine ⟨?_, by norm_cast; linarith⟩
+                refine ⟨?_, by norm_cast; omega⟩
                 calc c₁ * n ≤ r i n      := by exact hn₁ i
                           _ ≤ u            := by exact_mod_cast hu'.1
          _ ≥ n ^ (p a b) * (∑ _u in Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
@@ -728,10 +728,10 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
              gcongr with u hu
              rw [Finset.mem_Ico] at hu
-             have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by linarith⟩
+             have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
              refine hn₂ u ?_
              rw [Set.mem_Icc]
-             refine ⟨?_, by norm_cast; linarith⟩
+             refine ⟨?_, by norm_cast; omega⟩
              calc c₁ * n ≤ r i n := by exact hn₁ i
                        _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u in Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by

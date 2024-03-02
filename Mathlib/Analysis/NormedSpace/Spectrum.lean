@@ -210,7 +210,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   simp only [← add_assoc]
   refine' (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans _
   norm_cast
-  exact mul_le_mul_left' (hN (n + N + 1) (by linarith)) _
+  exact mul_le_mul_left' (hN (n + N + 1) (by omega)) _
 #align spectrum.spectral_radius_le_liminf_pow_nnnorm_pow_one_div spectrum.spectralRadius_le_liminf_pow_nnnorm_pow_one_div
 
 end SpectrumCompact

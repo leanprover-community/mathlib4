@@ -190,7 +190,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
 
 theorem IsStoppingTime.measurableSet_lt (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | τ ω < i} := by
-  obtain ⟨i', hi'_lub⟩ : ∃ i', IsLUB (Set.Iio i) i'; exact exists_lub_Iio i
+  obtain ⟨i', hi'_lub⟩ : ∃ i', IsLUB (Set.Iio i) i' := exists_lub_Iio i
   cases' lub_Iio_eq_self_or_Iio_eq_Iic i hi'_lub with hi'_eq_i h_Iio_eq_Iic
   · rw [← hi'_eq_i] at hi'_lub ⊢
     exact hτ.measurableSet_lt_of_isLUB i' hi'_lub
@@ -287,8 +287,7 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → ℕ} (hτ : IsStopping
     convert @MeasurableSet.empty _ (f.1 j)
     ext ω
     simp only [Set.mem_empty_iff_false, iff_false_iff, Set.mem_setOf]
-    intro hx
-    linarith
+    omega
 #align measure_theory.is_stopping_time.add_const_nat MeasureTheory.IsStoppingTime.add_const_nat
 
 -- generalize to certain countable type?
@@ -300,7 +299,7 @@ theorem add {f : Filtration ℕ m} {τ π : Ω → ℕ} (hτ : IsStoppingTime f 
       MeasurableSet.iUnion fun hk => (hπ.measurableSet_eq_le hk).inter (hτ.add_const_nat i)
   ext ω
   simp only [Pi.add_apply, Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_prop]
-  refine' ⟨fun h => ⟨π ω, by linarith, rfl, h⟩, _⟩
+  refine' ⟨fun h => ⟨π ω, by omega, rfl, h⟩, _⟩
   rintro ⟨j, hj, rfl, h⟩
   assumption
 #align measure_theory.is_stopping_time.add MeasureTheory.IsStoppingTime.add

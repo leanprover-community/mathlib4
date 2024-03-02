@@ -216,6 +216,7 @@
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
+  "Mathlib.Tactic.Positivity.Finset": ["Mathlib.Data.Fintype.Card"],
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Data.Int.CharZero", "Mathlib.Data.Nat.Factorial.Basic"],
   "Mathlib.Tactic.NormNum.Ineq":
