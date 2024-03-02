@@ -47,6 +47,9 @@ variable {R : Type*} [Semiring R] (r : R) (p : R[X]) {S : Type*} [AddCommMonoid 
 /-- Scalar multiplication together with taking a natural number power. -/
 def smul_pow : ℕ → R → S := fun n r => r • x^n
 
+@[simp]
+theorem smul_pow_apply : smul_pow x = fun n (r : R) => r • x ^ n := rfl
+
 /-- Evaluate a polynomial `p` in the scalar semiring `R` at an element `x` in the target `S` using
 scalar multiple `R`-action. -/
 irreducible_def smeval : S := p.sum (smul_pow x)
@@ -63,15 +66,14 @@ theorem smeval_monomial (n : ℕ) :
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_monomial_index]
 
 theorem eval_eq_smeval : p.eval r = p.smeval r := by
-  rw [eval_eq_sum, smeval_eq_sum]
-  rfl
+  simp [eval_eq_sum, smeval_eq_sum]
 
 theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] (f : R →+* S) (p : R[X])
     (x: S) : letI : Module R S := RingHom.toModule f
     p.eval₂ f x = p.smeval x := by
   letI : Module R S := RingHom.toModule f
-  rw [smeval_eq_sum, eval₂_eq_sum]
-  rfl
+  have (r s) : r • s = f r * s := rfl
+  simp [smeval_eq_sum, eval₂_eq_sum, this]
 
 variable (R)
 
@@ -85,13 +87,11 @@ theorem smeval_one : (1 : R[X]).smeval x = 1 • x ^ 0 := by
   simp only [Nat.cast_one, one_smul]
 
 @[simp]
-theorem smeval_X :
-    (X : R[X]).smeval x = x ^ 1 := by
+theorem smeval_X : (X : R[X]).smeval x = x ^ 1 := by
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_X_index, one_smul]
 
 @[simp]
-theorem smeval_X_pow {n : ℕ} :
-    (X ^ n : R[X]).smeval x = x ^ n := by
+theorem smeval_X_pow {n : ℕ} : (X ^ n : R[X]).smeval x = x ^ n := by
   simp only [smeval_eq_sum, smul_pow, X_pow_eq_monomial, zero_smul, sum_monomial_index, one_smul]
 
 end MulActionWithZero
@@ -134,8 +134,7 @@ theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
   rw [Function.funext_iff]
   intro
-  rw [leval_apply, smeval_def, eval_eq_sum]
-  rfl
+  simp [leval_apply, smeval_def, eval_eq_sum]
 
 theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) :
     leval r = smeval.linearMap R r := by
