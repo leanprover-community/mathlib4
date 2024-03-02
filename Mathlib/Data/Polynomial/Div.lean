@@ -412,6 +412,11 @@ theorem dvd_iff_modByMonic_eq_zero (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.some_lt_some.1 this)⟩
 #align polynomial.dvd_iff_mod_by_monic_eq_zero Polynomial.dvd_iff_modByMonic_eq_zero
 
+@[simp]
+lemma mul_right_modByMonic (hq : q.Monic) : (q * p) %ₘ q = 0 := by
+  rw [dvd_iff_modByMonic_eq_zero hq]
+  exact dvd_mul_right q p
+
 theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : R[X]}
     (hx : x.Monic) : x.map f ∣ y.map f ↔ x ∣ y := by
   rw [← dvd_iff_modByMonic_eq_zero hx, ← dvd_iff_modByMonic_eq_zero (hx.map f), ←
@@ -695,6 +700,11 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
         (monic_X_sub_C _) hp)
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)
 #align polynomial.eval_div_by_monic_pow_root_multiplicity_ne_zero Polynomial.eval_divByMonic_pow_rootMultiplicity_ne_zero
+
+@[simp]
+lemma mul_left_modByMonic (hq : q.Monic) : (p * q) %ₘ q = 0 := by
+  rw [dvd_iff_modByMonic_eq_zero hq]
+  exact dvd_mul_left q p
 
 end CommRing
 
