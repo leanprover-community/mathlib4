@@ -307,19 +307,19 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
 #align mv_polynomial.option_equiv_right MvPolynomial.optionEquivRight
 
 @[simp]
-lemma optionEquivRight_X_some (R : Type u) (S₁ : Type v) [CommSemiring R] (x : S₁) :
+lemma optionEquivRight_X_some (x : S₁) :
     optionEquivRight R S₁ (X (some x)) = X x := by
   unfold optionEquivRight AlgEquiv.ofAlgHom
   simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
 
 @[simp]
-lemma optionEquivRight_X_none (R : Type u) (S₁ : Type v) [CommSemiring R] :
+lemma optionEquivRight_X_none :
     optionEquivRight R S₁ (X (none)) = C (Polynomial.X) := by
   unfold optionEquivRight AlgEquiv.ofAlgHom
   simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
 
 @[simp]
-lemma optionEquivRight_C (R : Type u) (S₁ : Type v) [CommSemiring R] (r : R) :
+lemma optionEquivRight_C (r : R) :
     optionEquivRight R S₁ (C r) = C (Polynomial.C r) := by
   unfold optionEquivRight AlgEquiv.ofAlgHom
   simp only [Option.elim, AlgEquiv.coe_mk, aeval_C]
