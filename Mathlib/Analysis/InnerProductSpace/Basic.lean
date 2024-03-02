@@ -8,7 +8,6 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
-import Mathlib.LinearAlgebra.BilinearForm.Basic
 
 #align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
@@ -70,6 +69,8 @@ noncomputable section
 open IsROrC Real Filter
 
 open BigOperators Topology ComplexConjugate
+
+open LinearMap (BilinForm)
 
 variable {𝕜 E F : Type*} [IsROrC 𝕜]
 
@@ -498,14 +499,11 @@ def sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜 :=
     (fun _x _y _z => inner_add_left _ _ _) fun _r _x _y => inner_smul_left _ _ _
 #align sesq_form_of_inner sesqFormOfInner
 
-/-- The real inner product as a bilinear form. -/
-@[simps]
-def bilinFormOfRealInner : BilinForm ℝ F where
-  bilin := inner
-  bilin_add_left := inner_add_left
-  bilin_smul_left _a _x _y := inner_smul_left _ _ _
-  bilin_add_right := inner_add_right
-  bilin_smul_right _a _x _y := inner_smul_right _ _ _
+/-- The real inner product as a bilinear form.
+
+Note that unlike `sesqFormOfInner`, this does not reverse the order of the arguments. -/
+@[simps!]
+def bilinFormOfRealInner : BilinForm ℝ F := sesqFormOfInner.flip
 #align bilin_form_of_real_inner bilinFormOfRealInner
 
 /-- An inner product with a sum on the left. -/
