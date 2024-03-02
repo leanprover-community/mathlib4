@@ -75,7 +75,7 @@ lemma modByMonic_eq_zero_iff_quotient_eq_zero (p q : R[X]) (hq : q.Monic) :
   rw [dvd_iff_modByMonic_eq_zero hq, Ideal.Quotient.eq_zero_iff_dvd]
 
 @[simp]
-lemma quotient_singleton_eq (p : R[X]) : (Ideal.Quotient.mk (Ideal.span {p})) p = 0 := by
+lemma quotient_singleton_eq (p : R[X]) : Ideal.Quotient.mk (Ideal.span {p}) p = 0 := by
   rw [Ideal.Quotient.eq_zero_iff_dvd]
 
 end Polynomial
