@@ -70,8 +70,8 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
 /-- **Jordan's inequality**. -/
 lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by
   rw [← sub_nonneg]
-  suffices : ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x)
-  · refine (le_min ?_ ?_).trans $ this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
+  suffices ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x) by
+    refine (le_min ?_ ?_).trans $ this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
   exact concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
     (Continuous.continuousOn $ by continuity)
     (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
