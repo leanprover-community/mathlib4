@@ -1415,6 +1415,29 @@ variable {X β F G 𝕜 : Type*} [TopologicalSpace X] [TopologicalSpace β] [Mea
 
 open Metric Function ContinuousLinearMap
 
+/-- The parametric integral over a continuous function on a compact set is continuous,
+  under mild assumptions on the topologies involved. -/
+theorem continuous_parametric_integral_of_continuous
+    [FirstCountableTopology X] [LocallyCompactSpace X]
+    [OpensMeasurableSpace β] [SecondCountableTopologyEither β E] [IsLocallyFiniteMeasure μ]
+    {F : X → β → E} (hF : Continuous fun p : X × β ↦ F p.1 p.2) {s : Set β} (hs : IsCompact s) :
+    Continuous fun x ↦ ∫ a in s, F x a ∂μ := by
+  rw [continuous_iff_continuousAt]
+  intro x₀
+  rcases exists_compact_mem_nhds x₀ with ⟨U, U_cpct, U_nhds⟩
+  rcases(U_cpct.prod hs).bddAbove_image hF.norm.continuousOn with ⟨M, hM⟩
+  apply continuousAt_of_dominated
+  · exact eventually_of_forall fun x ↦ (hF.comp (Continuous.Prod.mk x)).aestronglyMeasurable
+  · refine Eventually.mono U_nhds fun x x_in ↦ ?_
+    rw [ae_restrict_iff]
+    · exact eventually_of_forall fun t t_in ↦ hM (mem_image_of_mem _ <| mk_mem_prod x_in t_in)
+    · exact (isClosed_le (hF.comp <| Continuous.Prod.mk x).norm continuous_const).measurableSet
+  · exact integrableOn_const.mpr (Or.inr hs.measure_lt_top)
+  · apply ae_of_all
+    intro a
+    -- TODO: can fun_prop show this?
+    exact (hF.comp₂ continuous_id continuous_const).continuousAt
+
 /-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
 integral depends continuously on `a`. -/
