@@ -73,7 +73,6 @@ section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
--- --@[ematch] Porting note: attribute removed
 theorem le_sSup : a ∈ s → a ≤ sSup s :=
   CompleteSemilatticeSup.le_sSup s a
 #align le_Sup le_sSup
@@ -144,7 +143,6 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
--- --@[ematch] Porting note: attribute removed
 theorem sInf_le : a ∈ s → sInf s ≤ a :=
   CompleteSemilatticeInf.sInf_le s a
 #align Inf_le sInf_le
@@ -707,8 +705,6 @@ section
 
 variable [CompleteLattice α] {f g s t : ι → α} {a b : α}
 
--- TODO: this declaration gives error when starting smt state
-----@[ematch] Porting note: attribute removed
 theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
   le_sSup ⟨i, rfl⟩
 #align le_supr le_iSup
@@ -717,21 +713,14 @@ theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 #align infi_le iInf_le
 
--- --@[ematch] Porting note: attribute removed
 theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f :=
   le_sSup ⟨i, rfl⟩
 #align le_supr' le_iSup'
 
-----@[ematch] Porting note: attribute removed
 theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 #align infi_le' iInf_le'
 
-/- TODO: this version would be more powerful, but, alas, the pattern matcher
-   doesn't accept it.
---@[ematch] lemma le_iSup' (f : ι → α) (i : ι) : (: f i :) ≤ (: iSup f :) :=
-le_sSup ⟨i, rfl⟩
--/
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _
 #align is_lub_supr isLUB_iSup
@@ -1153,8 +1142,6 @@ theorem iSup_iSup_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨆ x, ⨆ 
 theorem iInf_iInf_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨅ x, ⨅ h : b = x, f x h = f b rfl :=
   @iSup_iSup_eq_right αᵒᵈ _ _ _ _
 #align infi_infi_eq_right iInf_iInf_eq_right
-
--- attribute [ematch] le_refl Porting note: removed attribute
 
 theorem iSup_subtype {p : ι → Prop} {f : Subtype p → α} : iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ :=
   le_antisymm (iSup_le fun ⟨i, h⟩ => @le_iSup₂ _ _ p _ (fun i h => f ⟨i, h⟩) i h)

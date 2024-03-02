@@ -708,11 +708,20 @@ theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (
   ae_eq_comp' hf h AbsolutelyContinuous.rfl
 #align measure_theory.ae_eq_comp MeasureTheory.ae_eq_comp
 
-theorem sub_ae_eq_zero {β} [AddGroup β] (f g : α → β) : f - g =ᵐ[μ] 0 ↔ f =ᵐ[μ] g := by
-  refine' ⟨fun h => h.mono fun x hx => _, fun h => h.mono fun x hx => _⟩
-  · rwa [Pi.sub_apply, Pi.zero_apply, sub_eq_zero] at hx
-  · rwa [Pi.sub_apply, Pi.zero_apply, sub_eq_zero]
+@[to_additive]
+theorem div_ae_eq_one {β} [Group β] (f g : α → β) : f / g =ᵐ[μ] 1 ↔ f =ᵐ[μ] g := by
+  refine ⟨fun h ↦ h.mono fun x hx ↦ ?_, fun h ↦ h.mono fun x hx ↦ ?_⟩
+  · rwa [Pi.div_apply, Pi.one_apply, div_eq_one] at hx
+  · rwa [Pi.div_apply, Pi.one_apply, div_eq_one]
 #align measure_theory.sub_ae_eq_zero MeasureTheory.sub_ae_eq_zero
+
+@[to_additive sub_nonneg_ae]
+lemma one_le_div_ae {β : Type*} [Group β] [LE β]
+    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] (f g : α → β) :
+    1 ≤ᵐ[μ] g / f ↔ f ≤ᵐ[μ] g := by
+  refine ⟨fun h ↦ h.mono fun a ha ↦ ?_, fun h ↦ h.mono fun a ha ↦ ?_⟩
+  · rwa [Pi.one_apply, Pi.div_apply, one_le_div'] at ha
+  · rwa [Pi.one_apply, Pi.div_apply, one_le_div']
 
 theorem le_ae_restrict : μ.ae ⊓ 𝓟 s ≤ (μ.restrict s).ae := fun _s hs =>
   eventually_inf_principal.2 (ae_imp_of_ae_restrict hs)

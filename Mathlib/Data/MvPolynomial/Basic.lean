@@ -101,7 +101,7 @@ section Instances
 
 instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq R] :
     DecidableEq (MvPolynomial σ R) :=
-  Finsupp.decidableEq
+  Finsupp.instDecidableEq
 #align mv_polynomial.decidable_eq_mv_polynomial MvPolynomial.decidableEqMvPolynomial
 
 instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
@@ -819,6 +819,13 @@ theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0
 #align mv_polynomial.ne_zero_iff MvPolynomial.ne_zero_iff
 
 @[simp]
+theorem X_ne_zero [Nontrivial R] (s : σ) :
+    X (R := R) s ≠ 0 := by
+  rw [ne_zero_iff]
+  use Finsupp.single s 1
+  simp only [coeff_X, ne_eq, one_ne_zero, not_false_eq_true]
+
+@[simp]
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
   Finsupp.support_eq_empty
 #align mv_polynomial.support_eq_empty MvPolynomial.support_eq_empty
@@ -840,7 +847,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
       use ψ
       apply MvPolynomial.ext
       intro i
-      simp only [coeff_C_mul, coeff_sum, coeff_monomial, Finset.sum_ite_eq']
+      simp only [ψ, c', coeff_C_mul, coeff_sum, coeff_monomial, Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]
       · rw [not_mem_support_iff] at hi
