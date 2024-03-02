@@ -1064,7 +1064,7 @@ theorem finrank_le_one_iff [FiniteDimensional K V] :
       haveI := finrank_zero_iff.mp h'
       apply Subsingleton.elim
     · replace h' := zero_lt_iff.mpr h'
-      have : finrank K V = 1 := by linarith
+      have : finrank K V = 1 := by omega
       obtain ⟨v, -, p⟩ := finrank_eq_one_iff'.mp this
       use v, p
   · rintro ⟨v, p⟩
