@@ -500,21 +500,8 @@ def sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜 :=
 #align sesq_form_of_inner sesqFormOfInner
 
 /-- The real inner product as a bilinear form. -/
-@[simps]
-def bilinFormOfRealInner : BilinForm ℝ F where
-  toFun := fun x => {
-    toFun := fun y => inner x y
-    map_add' := by
-      simp only [inner_add_right, forall_const]
-    map_smul' := fun r z => by
-      simp only [inner_smul_right, RingHom.id_apply, smul_eq_mul]
-  }
-  map_add' := fun w z => by
-    simp only [inner_add_left]
-    rfl
-  map_smul' := fun r z => by
-    simp only [inner_smul_left, conj_trivial, RingHom.id_apply]
-    rfl
+@[simps!]
+def bilinFormOfRealInner : BilinForm ℝ F := sesqFormOfInner.flip
 #align bilin_form_of_real_inner bilinFormOfRealInner
 
 /-- An inner product with a sum on the left. -/
