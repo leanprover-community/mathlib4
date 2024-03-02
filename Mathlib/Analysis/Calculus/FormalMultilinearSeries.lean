@@ -308,7 +308,6 @@ theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by
   rw [← mkPiRing_coeff_eq p, ContinuousMultilinearMap.mkPiRing_eq_zero_iff]
 #align formal_multilinear_series.coeff_eq_zero FormalMultilinearSeries.coeff_eq_zero
 
-@[simp]
 theorem apply_eq_pow_smul_coeff : (p n fun _ => z) = z ^ n • p.coeff n := by simp
 #align formal_multilinear_series.apply_eq_pow_smul_coeff FormalMultilinearSeries.apply_eq_pow_smul_coeff
 

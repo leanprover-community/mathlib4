@@ -1344,7 +1344,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   let f' := fun n x ↦ f n x - f 0 x
   have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
     filter_upwards [h_mono] with a ha n
-    simp [ha (zero_le n)]
+    simp [f', ha (zero_le n)]
   have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
   suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
     simp_rw [integral_sub (hf _) (hf _), integral_sub' hF (hf 0), tendsto_sub_const_iff] at this
@@ -1366,7 +1366,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
   · filter_upwards [h_mono] with x hx n m hnm
     refine ENNReal.ofReal_le_ofReal ?_
-    simp only [tsub_le_iff_right, sub_add_cancel]
+    simp only [f', tsub_le_iff_right, sub_add_cancel]
     exact hx hnm
   · filter_upwards [h_tendsto] with x hx
     refine (ENNReal.continuous_ofReal.tendsto _).comp ?_
@@ -1650,6 +1650,25 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
   · filter_upwards [hhh] with x hx
     exact hx.of_norm.hasSum
 #align measure_theory.integral_tsum MeasureTheory.integral_tsum
+
+lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
+    (hF_int : ∀  i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
+    HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
+  rw [integral_tsum (fun i ↦ (hF_int i).1)]
+  · exact (hF_sum.of_norm_bounded _ fun i ↦ norm_integral_le_integral_norm _).hasSum
+  have (i : ι) : ∫⁻ (a : α), ‖F i a‖₊ ∂μ = ‖(∫ a : α, ‖F i a‖ ∂μ)‖₊ := by
+    rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnnorm,
+      Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
+    rfl
+  rw [funext this, ← ENNReal.coe_tsum]
+  · apply coe_ne_top
+  · simp_rw [← NNReal.summable_coe, coe_nnnorm]
+    exact hF_sum.abs
+
+lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
+    (hF_int : ∀  i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
+    ∑' i, (∫ a, F i a ∂μ) = ∫ a, (∑' i, F i a) ∂μ :=
+  (hasSum_integral_of_summable_integral_norm hF_int hF_sum).tsum_eq
 
 @[simp]
 theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :

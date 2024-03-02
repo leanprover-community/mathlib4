@@ -203,7 +203,7 @@ def elementalStarAlgebra (x : A) : StarSubalgebra R A :=
 
 namespace elementalStarAlgebra
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elementalStarAlgebra R x :=
   SetLike.le_def.mp (le_topologicalClosure _) (self_mem_adjoin_singleton R x)
 #align elemental_star_algebra.self_mem elementalStarAlgebra.self_mem
@@ -257,7 +257,7 @@ theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
   have : StarAlgHomClass F R (↥(topologicalClosure (adjoin R {a}))) B :=
     inferInstanceAs (StarAlgHomClass F R (elementalStarAlgebra R a) B)
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
-  apply adjoin_induction' x ?_ ?_ ?_ ?_ ?_
+  refine adjoin_induction' x ?_ ?_ ?_ ?_ ?_
   exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
     fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]

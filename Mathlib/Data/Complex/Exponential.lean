@@ -1459,7 +1459,7 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
   field_simp [mul_comm]
-  linarith
+  omega
 #align real.exp_approx_end Real.exp_approx_end
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
@@ -1487,7 +1487,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
     |exp 1 - expNear n 1 a₁| ≤ |1| ^ n / n.factorial * b₁ := by
   subst er
   refine' exp_approx_succ _ en _ _ _ h
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast; linarith]
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; omega]
 #align real.exp_1_approx_succ_eq Real.exp_1_approx_succ_eq
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
