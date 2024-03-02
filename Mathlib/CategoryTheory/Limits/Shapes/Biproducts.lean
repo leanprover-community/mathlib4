@@ -1324,12 +1324,21 @@ instance (c : BinaryBicone P Q) : IsSplitEpi c.snd :=
 
 /-- Convert a `BinaryBicone` into a `Bicone` over a pair. -/
 @[simps]
-def toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) where
-  pt := b.pt
-  π j := WalkingPair.casesOn j b.fst b.snd
-  ι j := WalkingPair.casesOn j b.inl b.inr
-  ι_π j j' := by
-    rcases j with ⟨⟩ <;> rcases j' with ⟨⟩ <;> simp
+def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) where
+  obj b :=
+    { pt := b.pt
+      π := fun j => WalkingPair.casesOn j b.fst b.snd
+      ι := fun j => WalkingPair.casesOn j b.inl b.inr
+      ι_π := fun j j' => by
+        rcases j with ⟨⟩ <;> rcases j' with ⟨⟩ <;> simp }
+  map f := {
+    hom := f.hom
+    wπ := fun i => WalkingPair.casesOn i f.wfst f.wsnd
+    wι := fun i => WalkingPair.casesOn i f.winl f.winr }
+
+/-- A shorthand for `toBiconeFunctor.obj` -/
+abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
+  toBiconeFunctor.obj b
 #align category_theory.limits.binary_bicone.to_bicone CategoryTheory.Limits.BinaryBicone.toBicone
 
 /-- A binary bicone is a limit cone if and only if the corresponding bicone is a limit cone. -/
