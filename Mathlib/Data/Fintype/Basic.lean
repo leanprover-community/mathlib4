@@ -627,7 +627,6 @@ def ofIsEmpty [IsEmpty α] : Fintype α :=
 
 /-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
-@[simp]
 theorem univ_ofIsEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
 #align fintype.univ_of_is_empty Fintype.univ_ofIsEmpty
