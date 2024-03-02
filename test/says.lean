@@ -1,4 +1,3 @@
-import Std.Tactic.ShowTerm
 import Mathlib.Tactic.Says
 import Aesop
 

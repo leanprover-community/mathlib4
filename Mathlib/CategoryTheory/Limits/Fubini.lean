@@ -462,6 +462,7 @@ noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
+  set_option tactic.skipAssignedInstances false in
   simp [limitIsoLimitCurryCompLim, Trans.simple, HasLimit.isoOfNatIso, limitUncurryIsoLimitCompLim]
 #align category_theory.limits.limit_iso_limit_curry_comp_lim_hom_π_π CategoryTheory.Limits.limitIsoLimitCurryCompLim_hom_π_π
 
@@ -499,6 +500,7 @@ noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry
 theorem colimitIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
     colimit.ι ((curry.obj G).obj j) k ≫ colimit.ι (curry.obj G ⋙ colim) j ≫
       (colimitIsoColimitCurryCompColim G).inv  = colimit.ι _ (j, k) := by
+  set_option tactic.skipAssignedInstances false in
   simp [colimitIsoColimitCurryCompColim, Trans.simple, HasColimit.isoOfNatIso,
     colimitUncurryIsoColimitCompColim]
 

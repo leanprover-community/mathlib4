@@ -324,6 +324,7 @@ noncomputable def shiftTriangleIso (n : ℤ) :
         Triangle.mk_obj₂, Triangle.mk_mor₁, Preadditive.smul_iso_hom, Iso.refl_hom,
         Linear.comp_smul, comp_id, smul_smul, Int.units_coe_mul_self, one_smul, id_comp]
   · ext p
+    set_option tactic.skipAssignedInstances false in
     dsimp
     simp? [shiftIso, Units.smul_def, ext_to_iff _ _ (p + 1) rfl, Cochain.shift_v'] says
       simp only [Units.smul_def, HomologicalComplex.zsmul_f_apply, shiftFunctor_obj_X',
