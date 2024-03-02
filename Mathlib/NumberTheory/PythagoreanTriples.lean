@@ -9,6 +9,7 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.pythagorean_triples from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -218,8 +219,8 @@ theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrim
   convert h.normalize.mul_isClassified (Int.gcd x y)
         (isClassified_of_isPrimitiveClassified h.normalize hc) <;>
     rw [Int.mul_ediv_cancel']
-  · exact Int.gcd_dvd_left x y
-  · exact Int.gcd_dvd_right x y
+  · exact Int.gcd_dvd_left
+  · exact Int.gcd_dvd_right
   · exact h.gcd_dvd
 #align pythagorean_triple.is_classified_of_normalize_is_primitive_classified PythagoreanTriple.isClassified_of_normalize_isPrimitiveClassified
 
@@ -445,8 +446,7 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
     (hw2 : (y : ℚ) / z = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2))
     (H : Int.gcd (m ^ 2 - n ^ 2) (m ^ 2 + n ^ 2) = 1) (co : Int.gcd m n = 1)
     (pp : m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) : h.IsPrimitiveClassified := by
-  have hz : z ≠ 0
-  apply ne_of_gt hzpos
+  have hz : z ≠ 0 := ne_of_gt hzpos
   have h2 : y = m ^ 2 - n ^ 2 ∧ z = m ^ 2 + n ^ 2 := by
     apply Rat.div_int_inj hzpos hm2n2 (h.coprime_of_coprime hc) H
     rw [hw2]
@@ -466,10 +466,10 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
   have hq : v ^ 2 + w ^ 2 = 1 := by
-    field_simp [sq]
+    field_simp [v, w, sq]
     norm_cast
   have hvz : v ≠ 0 := by
-    field_simp
+    field_simp [v]
     exact h0
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
@@ -638,7 +638,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) ∧ 0 ≤ m := by
   obtain ⟨m, n, ht1, ht2, ht3, ht4⟩ :=
     PythagoreanTriple.coprime_classification.mp (And.intro h h_coprime)
-  cases' le_or_lt 0 m with hm hm
+  rcases le_or_lt 0 m with hm | hm
   · use m, n
     cases' ht1 with h_odd h_even
     · apply And.intro h_odd.1

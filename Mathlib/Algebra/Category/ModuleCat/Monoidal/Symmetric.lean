@@ -77,7 +77,8 @@ attribute [local ext] TensorProduct.ext
 /-- The symmetric monoidal structure on `Module R`. -/
 instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   braiding := braiding
-  braiding_naturality f g := braiding_naturality f g
+  braiding_naturality_left := braiding_naturality_left
+  braiding_naturality_right := braiding_naturality_right
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
   -- porting note: this proof was automatic in Lean3

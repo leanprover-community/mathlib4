@@ -314,17 +314,21 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     | ρ_hom_inv => dsimp only [projectMapAux]; rw [Iso.hom_inv_id]
     | ρ_inv_hom => dsimp only [projectMapAux]; rw [Iso.inv_hom_id]
     | ρ_naturality =>
-        dsimp only [projectMapAux, projectObj]; rw [MonoidalCategory.rightUnitor_naturality]
+        dsimp only [projectMapAux, projectObj]
+        rw [tensorHom_id, MonoidalCategory.rightUnitor_naturality]
     | l_hom_inv => dsimp only [projectMapAux]; rw [Iso.hom_inv_id]
     | l_inv_hom => dsimp only [projectMapAux]; rw [Iso.inv_hom_id]
     | l_naturality =>
         dsimp only [projectMapAux, projectObj]
+        rw [id_tensorHom]
         exact MonoidalCategory.leftUnitor_naturality _
     | pentagon =>
         dsimp only [projectMapAux]
+        simp only [tensorHom_id, id_tensorHom]
         exact MonoidalCategory.pentagon _ _ _ _
     | triangle =>
         dsimp only [projectMapAux]
+        simp only [tensorHom_id, id_tensorHom]
         exact MonoidalCategory.triangle _ _
 #align category_theory.free_monoidal_category.project_map CategoryTheory.FreeMonoidalCategory.projectMap
 
@@ -341,13 +345,19 @@ def project : MonoidalFunctor (F C) D where
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
   ε := 𝟙 _
   μ X Y := 𝟙 _
-  μ_natural := @fun _ _ _ _ f g => by
+  μ_natural_left := fun f _ => by
     induction' f using Quotient.recOn
-    · induction' g using Quotient.recOn
-      · dsimp
-        simp
-        rfl
-      · rfl
+    · dsimp
+      simp
+      rw [← tensorHom_id, ← tensorHom_id]
+      rfl
+    · rfl
+  μ_natural_right := fun _ f => by
+    induction' f using Quotient.recOn
+    · dsimp
+      simp
+      rw [← id_tensorHom, ← id_tensorHom]
+      rfl
     · rfl
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
 

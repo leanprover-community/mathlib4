@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Std.Lean.Meta.DiscrTree
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Util.Qq
+import Lean.Elab.Tactic.Location
 
 /-!
 ## `norm_num` core functionality
@@ -69,7 +70,7 @@ initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums 
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
   /- Insert `v : NormNumExt` into the tree `dt` on all key sequences given in `kss`. -/
-  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v discrTreeConfig) dt
+  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
   registerScopedEnvExtension {
     mkInitial := pure {}
     ofOLeanEntry := fun _ e@(_, n) ↦ return (e, ← mkNormNumExt n)
@@ -190,9 +191,11 @@ initialize registerBuiltinAttribute {
 }
 
 /-- A simp plugin which calls `NormNum.eval`. -/
-def tryNormNum? (post := false) (e : Expr) : SimpM (Option Simp.Step) := do
-  try return some (.done (← eval e post))
-  catch _ => return none
+def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
+  try
+    return .done (← eval e post)
+  catch _ =>
+    return .continue
 
 variable (ctx : Simp.Context) (useSimp := true) in
 mutual
@@ -202,14 +205,12 @@ mutual
   /-- A `Methods` implementation which calls `norm_num`. -/
   partial def methods : Simp.Methods :=
     if useSimp then {
-      pre := fun e ↦ do
-        Simp.andThen (← Simp.preDefault e discharge) tryNormNum?
-      post := fun e ↦ do
-        Simp.andThen (← Simp.postDefault e discharge) (tryNormNum? (post := true))
+      pre := Simp.preDefault #[] >> tryNormNum
+      post := Simp.postDefault #[] >> tryNormNum (post := true)
       discharge? := discharge
     } else {
-      pre := fun e ↦ Simp.andThen (.visit { expr := e }) tryNormNum?
-      post := fun e ↦ Simp.andThen (.visit { expr := e }) (tryNormNum? (post := true))
+      pre := tryNormNum
+      post := tryNormNum (post := true)
       discharge? := discharge
     }
 
@@ -269,12 +270,13 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
 
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
-def getSimpContext (args : Syntax) (simpOnly := false) :
-    TacticM Simp.Context := do
+def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Context := do
+  let config ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, starArg } ← elabSimpArgs args[0] (eraseLocal := false) (kind := .simp)
-    { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
+  let mut { ctx, simprocs := _, starArg } ←
+    elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
+      { config, simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems
   for h in ← getPropHyps do
@@ -292,9 +294,8 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
   of `simp` will be used, not any of the post-processing that `simp only` does without lemmas
 -/
 -- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
-def elabNormNum (args : Syntax) (loc : Syntax)
-    (simpOnly := false) (useSimp := true) : TacticM Unit := do
-  let ctx ← getSimpContext args (!useSimp || simpOnly)
+def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit := do
+  let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let g ← getMainGoal
   let res ← match expandOptLocation loc with
   | .targets hyps simplifyTarget => normNumAt g ctx (← getFVarIds hyps) simplifyTarget useSimp
@@ -314,12 +315,13 @@ over numerical types such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general 
 and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where `A` and `B` are
 numerical expressions. It also has a relatively simple primality prover.
 -/
-elab (name := normNum) "norm_num" only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
-  elabNormNum args loc (simpOnly := only.isSome) (useSimp := true)
+elab (name := normNum)
+    "norm_num" cfg:(config ?) only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
+  elabNormNum cfg args loc (simpOnly := only.isSome) (useSimp := true)
 
 /-- Basic version of `norm_num` that does not call `simp`. -/
 elab (name := normNum1) "norm_num1" loc:(location ?) : tactic =>
-  elabNormNum mkNullNode loc (simpOnly := true) (useSimp := false)
+  elabNormNum mkNullNode mkNullNode loc (simpOnly := true) (useSimp := false)
 
 open Lean Elab Tactic
 
@@ -327,14 +329,15 @@ open Lean Elab Tactic
 
 /-- Elaborator for `norm_num1` conv tactic. -/
 @[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ ↦ withMainContext do
-  let ctx ← getSimpContext mkNullNode true
+  let ctx ← getSimpContext mkNullNode mkNullNode true
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
 
-@[inherit_doc normNum] syntax (name := normNumConv) "norm_num" &" only"? (simpArgs)? : conv
+@[inherit_doc normNum] syntax (name := normNumConv)
+    "norm_num" (config)? &" only"? (simpArgs)? : conv
 
 /-- Elaborator for `norm_num` conv tactic. -/
 @[tactic normNumConv] def elabNormNumConv : Tactic := fun stx ↦ withMainContext do
-  let ctx ← getSimpContext stx[2] !stx[1].isNone
+  let ctx ← getSimpContext stx[1] stx[3] !stx[2].isNone
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := true))
 
 /--
@@ -353,6 +356,6 @@ Unlike `norm_num`, this command does not fail when no simplifications are made.
 
 `#norm_num` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := normNumCmd) "#norm_num" o:(&" only")?
+macro (name := normNumCmd) "#norm_num" cfg:(config)? o:(&" only")?
     args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
-  `(command| #conv norm_num $[only%$o]? $(args)? => $e)
+  `(command| #conv norm_num $(cfg)? $[only%$o]? $(args)? => $e)

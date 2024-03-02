@@ -43,7 +43,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   have pow_pos : ∀ k : ℕ, (0 : ℝ≥0∞) < 2⁻¹ ^ k := fun k =>
     ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.two_ne_top) _
   have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := @fun m n h =>
-    pow_le_pow_of_le_one' (ENNReal.inv_le_one.2 ENNReal.one_lt_two.le) h
+    pow_le_pow_right_of_le_one' (ENNReal.inv_le_one.2 ENNReal.one_lt_two.le) h
   have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n => by
     simp [pow_succ, ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
   -- Consider an open covering `S : Set (Set α)`
@@ -127,13 +127,13 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rw [disjoint_iff_inf_le]
       rintro y ⟨hym, hyx⟩
       rcases memD.1 hym with ⟨z, rfl, _hzi, H, hz⟩
-      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by linarith) i (hsub hz')
+      have : z ∉ ball x (2⁻¹ ^ k) := fun hz' => H n (by omega) i (hsub hz')
       apply this
       calc
         edist z x ≤ edist y z + edist y x := edist_triangle_left _ _ _
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) := (ENNReal.add_lt_add hz hyx)
         _ ≤ 2⁻¹ ^ (k + 1) + 2⁻¹ ^ (k + 1) :=
-          (add_le_add (hpow_le <| by linarith) (hpow_le <| by linarith))
+          (add_le_add (hpow_le <| by omega) (hpow_le <| by omega))
         _ = 2⁻¹ ^ k := by rw [← two_mul, h2pow]
     -- For each `m ≤ n + k` there is at most one `j` such that `D m j ∩ B` is nonempty.
     have Hle : ∀ m ≤ n + k, Set.Subsingleton { j | (D m j ∩ B).Nonempty } := by
@@ -143,8 +143,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_lt.resolve_left h)
       rcases memD.1 hyD with ⟨y', rfl, hsuby, -, hdisty⟩
       rcases memD.1 hzD with ⟨z', rfl, -, -, hdistz⟩
-      suffices : edist z' y' < 3 * 2⁻¹ ^ m
-      exact nmem_of_lt_ind h (hsuby this)
+      suffices edist z' y' < 3 * 2⁻¹ ^ m from nmem_of_lt_ind h (hsuby this)
       calc
         edist z' y' ≤ edist z' x + edist x y' := edist_triangle _ _ _
         _ ≤ edist z z' + edist z x + (edist y x + edist y y') :=

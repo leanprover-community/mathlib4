@@ -93,20 +93,20 @@ nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c 
 #align continuous_within_at.const_smul ContinuousWithinAt.const_smul
 #align continuous_within_at.const_vadd ContinuousWithinAt.const_vadd
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
     ContinuousAt (fun x => c • g x) b :=
   hg.const_smul c
 #align continuous_at.const_smul ContinuousAt.const_smul
 #align continuous_at.const_vadd ContinuousAt.const_vadd
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
     ContinuousOn (fun x => c • g x) s := fun x hx => (hg x hx).const_smul c
 #align continuous_on.const_smul ContinuousOn.const_smul
 #align continuous_on.const_vadd ContinuousOn.const_vadd
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
   (continuous_const_smul _).comp hg
 #align continuous.const_smul Continuous.const_smul
@@ -529,7 +529,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
+    simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 #align t2_space_of_properly_discontinuous_smul_of_t2_space t2Space_of_properlyDiscontinuousSMul_of_t2Space
 #align t2_space_of_properly_discontinuous_vadd_of_t2_space t2Space_of_properlyDiscontinuousVAdd_of_t2Space

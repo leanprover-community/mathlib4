@@ -27,11 +27,7 @@ open Filter Finset
 
 local notation "d" => dist
 
-@[simp]
-theorem pos_div_pow_pos {α : Type*} [LinearOrderedSemifield α] {a b : α} (ha : 0 < a) (hb : 0 < b)
-    (k : ℕ) : 0 < a / b ^ k :=
-  div_pos ha (pow_pos hb k)
-#align pos_div_pow_pos pos_div_pow_pos
+#noalign pos_div_pow_pos
 
 theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (ε_pos : 0 < ε)
     {ϕ : X → ℝ} (cont : Continuous ϕ) (nonneg : ∀ y, 0 ≤ ϕ y) : ∃ ε' > 0, ∃ x' : X,
@@ -42,11 +38,11 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     rw [div_mul_eq_mul_div, le_div_iff, mul_assoc, mul_le_mul_left ε_pos, mul_comm]
     positivity
   -- Now let's specialize to `ε/2^k`
-  replace H :
-    ∀ k : ℕ, ∀ x', d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' → ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y
-  · intro k x'
+  replace H : ∀ k : ℕ, ∀ x', d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' →
+      ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y := by
+    intro k x'
     push_neg at H
-    have := H (ε / 2 ^ k) (by simp [ε_pos]) x' (by simp [ε_pos.le, one_le_two])
+    have := H (ε / 2 ^ k) (by positivity) x' (by simp [ε_pos.le, one_le_two])
     simpa [reformulation] using this
   clear reformulation
   haveI : Nonempty X := ⟨x⟩
@@ -66,8 +62,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) := by
     intro n
     induction' n using Nat.case_strong_induction_on with n IH
-    · specialize hu 0
-      simpa [mul_nonneg_iff, zero_le_one, ε_pos.le, le_refl] using hu
+    · simpa [u, ε_pos.le] using hu 0
     have A : d (u (n + 1)) x ≤ 2 * ε := by
       rw [dist_comm]
       let r := range (n + 1) -- range (n+1) = {0, ..., n}
@@ -75,10 +70,10 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
         d (u 0) (u (n + 1)) ≤ ∑ i in r, d (u i) (u <| i + 1) := dist_le_range_sum_dist u (n + 1)
         _ ≤ ∑ i in r, ε / 2 ^ i :=
           (sum_le_sum fun i i_in => (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
-        _ = ∑ i in r, (1 / 2) ^ i * ε := by
+        _ = (∑ i in r, (1 / 2 : ℝ) ^ i) * ε := by
+          rw [Finset.sum_mul]
           congr with i
           field_simp
-        _ = (∑ i in r, ((1 : ℝ) / 2) ^ i) * ε := Finset.sum_mul.symm
         _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
     have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
       refine' @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => _
@@ -91,16 +86,14 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     refine' cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => _
     simpa only [one_div, inv_pow] using key₁ n
   -- So u converges to some y
-  obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y)
-  exact CompleteSpace.complete cauchy_u
+  obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y) := CompleteSpace.complete cauchy_u
   -- And ϕ ∘ u goes to +∞
   have lim_top : Tendsto (ϕ ∘ u) atTop atTop := by
     let v n := (ϕ ∘ u) (n + 1)
     suffices Tendsto v atTop atTop by rwa [tendsto_add_atTop_iff_nat] at this
     have hv₀ : 0 < v 0 := by
-      have : 0 ≤ ϕ (u 0) := nonneg x
       calc
-        0 ≤ 2 * ϕ (u 0) := (zero_le_mul_left zero_lt_two).mpr this
+        0 ≤ 2 * ϕ (u 0) := by specialize nonneg x; positivity
         _ < ϕ (u (0 + 1)) := key₂ 0
     apply tendsto_atTop_of_geom_le hv₀ one_lt_two
     exact fun n => (key₂ (n + 1)).le

@@ -156,6 +156,9 @@ theorem ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::�
   rfl
 #align sym.of_vector_cons Sym.ofVector_cons
 
+@[simp]
+theorem card_coe : Multiset.card (s : Multiset α) = n := s.prop
+
 /-- `α ∈ s` means that `a` appears as one of the factors in `s`.
 -/
 instance : Membership α (Sym α n) :=
@@ -188,7 +191,7 @@ theorem mem_cons_of_mem (h : a ∈ s) : a ∈ b ::ₛ s :=
   Multiset.mem_cons_of_mem h
 #align sym.mem_cons_of_mem Sym.mem_cons_of_mem
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
   Multiset.mem_cons_self a s.1
 #align sym.mem_cons_self Sym.mem_cons_self
@@ -365,7 +368,7 @@ instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
 /-- A function `α → β` induces a function `Sym α n → Sym β n` by applying it to every element of
 the underlying `n`-tuple. -/
 def map {n : ℕ} (f : α → β) (x : Sym α n) : Sym β n :=
-  ⟨x.val.map f, by simpa [Multiset.card_map] using x.property⟩
+  ⟨x.val.map f, by simp⟩
 #align sym.map Sym.map
 
 @[simp]
@@ -597,6 +600,17 @@ theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α 
         exact hb.2 hb.1.2.symm
       · exact fun a ha ha' => h <| ha'.symm ▸ ha)
 #align sym.filter_ne_fill Sym.filter_ne_fill
+
+theorem count_coe_fill_self_of_not_mem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
+    (hx : a ∉ s) :
+    count a (fill a i s : Multiset α) = i := by
+  simp [coe_fill, coe_replicate, hx]
+
+theorem count_coe_fill_of_ne [DecidableEq α] {a x : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
+    (hx : x ≠ a) :
+    count x (fill a i s : Multiset α) = count x s := by
+  suffices x ∉ Multiset.replicate i a by simp [coe_fill, coe_replicate, this]
+  simp [Multiset.mem_replicate, hx]
 
 end Sym
 

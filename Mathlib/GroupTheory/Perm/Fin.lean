@@ -123,7 +123,7 @@ theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
   refine' ⟨0, by simp, fun x hx' => ⟨x, _⟩⟩
   clear hx'
   cases' x with x hx
-  rw [zpow_ofNat, Fin.ext_iff, Fin.val_mk]
+  rw [zpow_coe_nat, Fin.ext_iff, Fin.val_mk]
   induction' x with x ih; · rfl
   rw [pow_succ, Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
   rw [Ne.def, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
@@ -256,15 +256,15 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
   · have : castSucc (j + 1) = j.succ := by
       ext
       rw [coe_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
-    rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_below, this, swap_apply_of_ne_of_ne]
+    rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_of_castSucc_lt, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
     · rw [Fin.lt_iff_val_lt_val]
       simpa [this] using hlt
-  · rw [heq, Fin.cycleRange_self, Fin.succAbove_below, swap_apply_right, Fin.castSucc_zero]
+  · rw [heq, Fin.cycleRange_self, Fin.succAbove_of_castSucc_lt, swap_apply_right, Fin.castSucc_zero]
     · rw [Fin.castSucc_zero]
       apply Fin.succ_pos
-  · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_above, swap_apply_of_ne_of_ne]
+  · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_of_le_castSucc, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · apply (Fin.succ_injective _).ne hgt.ne.symm
     · simpa [Fin.le_iff_val_le_val] using hgt
@@ -274,8 +274,8 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
 theorem cycleRange_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange (i.succAbove j) = j.succ := by
   cases' lt_or_ge (castSucc j) i with h h
-  · rw [Fin.succAbove_below _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
-  · rw [Fin.succAbove_above _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
+  · rw [Fin.succAbove_of_castSucc_lt _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
+  · rw [Fin.succAbove_of_le_castSucc _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
 #align fin.cycle_range_succ_above Fin.cycleRange_succAbove
 
 @[simp]
@@ -307,7 +307,7 @@ theorem cycleType_cycleRange {n : ℕ} {i : Fin (n + 1)} (h0 : i ≠ 0) :
 #align fin.cycle_type_cycle_range Fin.cycleType_cycleRange
 
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
-  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.eq_iff_veq]
+  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
 #align fin.is_three_cycle_cycle_range_two Fin.isThreeCycle_cycleRange_two
 
 end Fin

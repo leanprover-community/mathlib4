@@ -47,7 +47,7 @@ def χ₄ : MulChar (ZMod 4) ℤ where
 /-- `χ₄` takes values in `{0, 1, -1}` -/
 theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
   intro a
-  -- Porting note: was `decide!`
+  -- Porting note (#11043): was `decide!`
   fin_cases a
   all_goals decide
 #align zmod.is_quadratic_χ₄ ZMod.isQuadratic_χ₄
@@ -205,7 +205,7 @@ theorem χ₈'_nat_eq_if_mod_eight (n : ℕ) :
 #align zmod.χ₈'_nat_eq_if_mod_eight ZMod.χ₈'_nat_eq_if_mod_eight
 
 /-- The relation between `χ₄`, `χ₈` and `χ₈'` -/
-theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ a * χ₈ a := by
+theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ (cast a) * χ₈ a := by
     --porting note: was `decide!`
   fin_cases a
   all_goals decide

@@ -72,8 +72,8 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
   rw [mem_ball] at hz
   filter_upwards [Ioo_mem_nhdsWithin_Iio ⟨hz, le_rfl⟩] with r hr
   have hr₀ : 0 < r := dist_nonneg.trans_lt hr.1
-  replace hd : DiffContOnCl ℂ (dslope f c) (ball c r)
-  · refine' DifferentiableOn.diffContOnCl _
+  replace hd : DiffContOnCl ℂ (dslope f c) (ball c r) := by
+    refine DifferentiableOn.diffContOnCl ?_
     rw [closure_ball c hr₀.ne']
     exact ((differentiableOn_dslope <| ball_mem_nhds _ hR₁).mpr hd).mono
       (closedBall_subset_ball hr.2)
@@ -94,7 +94,7 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
     ‖dslope f c z‖ ≤ R₂ / R₁ := by
   have hR₁ : 0 < R₁ := nonempty_ball.1 ⟨z, hz⟩
   have hR₂ : 0 < R₂ := nonempty_ball.1 ⟨f z, h_maps hz⟩
-  cases' eq_or_ne (dslope f c z) 0 with hc hc
+  rcases eq_or_ne (dslope f c z) 0 with hc | hc
   · rw [hc, norm_zero]; exact div_nonneg hR₂.le hR₁.le
   rcases exists_dual_vector ℂ _ hc with ⟨g, hg, hgf⟩
   have hg' : ‖g‖₊ = 1 := NNReal.eq hg
@@ -126,7 +126,9 @@ theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div [CompleteSpace E] [St
     (differentiableOn_dslope (isOpen_ball.mem_nhds (mem_ball_self h_R₁))).mpr hd
   have : g z = g z₀ := eqOn_of_isPreconnected_of_isMaxOn_norm (convex_ball c R₁).isPreconnected
     isOpen_ball g_diff h_z₀ g_max hz
-  simp [← this]
+  simp [g] at this
+  simp [g, ← this]
+
 #align complex.affine_of_maps_to_ball_of_exists_norm_dslope_eq_div Complex.affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div
 
 theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div' [CompleteSpace E]
@@ -194,7 +196,7 @@ point `z` of this disk we have `abs (f z) ≤ abs z`. -/
 theorem abs_le_abs_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball 0 R))
     (h_maps : MapsTo f (ball 0 R) (ball 0 R)) (h₀ : f 0 = 0) (hz : abs z < R) :
     abs (f z) ≤ abs z := by
-  replace hz : z ∈ ball (0 : ℂ) R; exact mem_ball_zero_iff.2 hz
+  replace hz : z ∈ ball (0 : ℂ) R := mem_ball_zero_iff.2 hz
   simpa only [dist_zero_right] using dist_le_dist_of_mapsTo_ball_self hd h_maps h₀ hz
 #align complex.abs_le_abs_of_maps_to_ball_self Complex.abs_le_abs_of_mapsTo_ball_self
 

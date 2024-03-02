@@ -39,7 +39,7 @@ structure LinearPMap (R : Type u) [Ring R] (E : Type v) [AddCommGroup E] [Module
   toFun : domain →ₗ[R] F
 #align linear_pmap LinearPMap
 
-notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap R E F
+@[inherit_doc] notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap R E F
 
 variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E] {F : Type*}
   [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
@@ -304,7 +304,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
   have fg_eq : ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain))
       (_H : (x' : E) + y' = z'), fg z' = f x' + g y' := by
     intro x' y' z' H
-    dsimp
+    dsimp [fg]
     rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← map_sub, ← map_sub]
     apply h
     simp only [← eq_sub_iff_add_eq] at hxy
@@ -605,7 +605,7 @@ end
 
 private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) :
     ∃ f : ↥(sSup (domain '' c)) →ₗ[R] F, (⟨_, f⟩ : E →ₗ.[R] F) ∈ upperBounds c := by
-  cases' c.eq_empty_or_nonempty with ceq cne
+  rcases c.eq_empty_or_nonempty with ceq | cne
   · subst c
     simp
   have hdir : DirectedOn (· ≤ ·) (domain '' c) :=

@@ -30,13 +30,10 @@ theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
 #align nat.prod_factorial_pos Nat.prod_factorial_pos
 
 theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s, f i)! := by
-  classical
-    induction' s using Finset.induction with a' s' has ih
-    · simp only [prod_empty, factorial, dvd_refl]
-    · simp only [Finset.prod_insert has, Finset.sum_insert has]
-      refine' dvd_trans (mul_dvd_mul_left (f a')! ih) _
-      apply Nat.factorial_mul_factorial_dvd_factorial_add
-#align nat.prod_factorial_dvd_factorial_sum Nat.prod_factorial_dvd_factorial_sum
+  induction' s using Finset.cons_induction_on with a s has ih
+  · simp
+  · rw [prod_cons, Finset.sum_cons]
+    exact (mul_dvd_mul_left _ ih).trans (Nat.factorial_mul_factorial_dvd_factorial_add _ _)
 
 theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i in range k, (n - i)
   | 0 => rfl

@@ -41,15 +41,15 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
   let t : ℕ → ℕ → R := fun n m ↦ x ^ m * y ^ (n - m) * choose n m
   change (x + y) ^ n = ∑ m in range (n + 1), t n m
   have h_first : ∀ n, t n 0 = y ^ n := fun n ↦ by
-    simp only [choose_zero_right, _root_.pow_zero, Nat.cast_one, mul_one, one_mul, tsub_zero]
+    simp only [t, choose_zero_right, _root_.pow_zero, Nat.cast_one, mul_one, one_mul, tsub_zero]
   have h_last : ∀ n, t n n.succ = 0 := fun n ↦ by
-    simp only [ge_iff_le, choose_succ_self, cast_zero, mul_zero]
+    simp only [t, ge_iff_le, choose_succ_self, cast_zero, mul_zero]
   have h_middle :
     ∀ n i : ℕ, i ∈ range n.succ → (t n.succ ∘ Nat.succ) i =
       x * t n i + y * t n i.succ := by
     intro n i h_mem
     have h_le : i ≤ n := Nat.le_of_lt_succ (mem_range.mp h_mem)
-    dsimp only
+    dsimp only [t]
     rw [Function.comp_apply, choose_succ_succ, Nat.cast_add, mul_add]
     congr 1
     · rw [pow_succ x, succ_sub_succ, mul_assoc, mul_assoc, mul_assoc]
@@ -60,7 +60,7 @@ theorem add_pow (h : Commute x y) (n : ℕ) :
         rw [pow_succ y, mul_assoc, mul_assoc, mul_assoc, mul_assoc]
   induction' n with n ih
   · rw [_root_.pow_zero, sum_range_succ, range_zero, sum_empty, zero_add]
-    dsimp only
+    dsimp only [t]
     rw [_root_.pow_zero, _root_.pow_zero, choose_self, Nat.cast_one, mul_one, mul_one]
   · rw [sum_range_succ', h_first]
     erw [sum_congr rfl (h_middle n), sum_add_distrib, add_assoc]
@@ -106,20 +106,20 @@ theorem sum_range_choose_halfway (m : Nat) : (∑ i in range (m + 1), choose (2 
             ∑ i in Ico (m + 1) (2 * m + 2), choose (2 * m + 1) i := by
         { rw [range_eq_Ico, sum_Ico_reflect]
           · congr
-            have A : m + 1 ≤ 2 * m + 1 := by linarith
+            have A : m + 1 ≤ 2 * m + 1 := by omega
             rw [add_comm, add_tsub_assoc_of_le A, ← add_comm]
             congr
             rw [tsub_eq_iff_eq_add_of_le A]
             ring
-          · linarith }
-      _ = ∑ i in range (2 * m + 2), choose (2 * m + 1) i := sum_range_add_sum_Ico _ (by linarith)
+          · omega }
+      _ = ∑ i in range (2 * m + 2), choose (2 * m + 1) i := sum_range_add_sum_Ico _ (by omega)
       _ = 2 ^ (2 * m + 1) := sum_range_choose (2 * m + 1)
       _ = 2 * 4 ^ m := by rw [pow_succ, pow_mul, mul_comm]; rfl
 #align nat.sum_range_choose_halfway Nat.sum_range_choose_halfway
 
 theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by
   have t : choose (2 * n + 1) n ≤ ∑ i in range (n + 1), choose (2 * n + 1) i :=
-    single_le_sum (fun x _ ↦ by linarith) (self_mem_range_succ n)
+    single_le_sum (fun x _ ↦ by omega) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
 #align nat.choose_middle_le_pow Nat.choose_middle_le_pow
 
@@ -127,20 +127,29 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     4 ^ n ≤ (2 * n + 1) * choose (2 * n) n :=
   calc
     4 ^ n = (1 + 1) ^ (2 * n) := by norm_num [pow_mul]
-    _ = ∑ m in range (2 * n + 1), choose (2 * n) m := by simp [add_pow]
+    _ = ∑ m in range (2 * n + 1), choose (2 * n) m := by set_option simprocs false in simp [add_pow]
     _ ≤ ∑ m in range (2 * n + 1), choose (2 * n) (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
 #align nat.four_pow_le_two_mul_add_one_mul_central_binom Nat.four_pow_le_two_mul_add_one_mul_central_binom
+
+/-- **Zhu Shijie's identity** aka hockey-stick identity. -/
+theorem sum_Icc_choose (n k : ℕ) : ∑ m in Icc k n, m.choose k = (n + 1).choose (k + 1) := by
+  cases' le_or_gt k n with h h
+  · induction' n, h using le_induction with n _ ih; · simp
+    rw [← Ico_insert_right (by omega), sum_insert (by simp),
+      show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
+  · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
 
 end Nat
 
 theorem Int.alternating_sum_range_choose {n : ℕ} :
     (∑ m in range (n + 1), ((-1) ^ m * ↑(choose n m) : ℤ)) = if n = 0 then 1 else 0 := by
-  cases n; · simp
-  case succ n =>
+  cases n with
+  | zero => simp
+  | succ n =>
     have h := add_pow (-1 : ℤ) 1 n.succ
     simp only [one_pow, mul_one, add_left_neg] at h
-    rw [← h, zero_pow (Nat.succ_pos n), if_neg (Nat.succ_ne_zero n)]
+    rw [← h, zero_pow n.succ_ne_zero, if_neg (Nat.succ_ne_zero n)]
 #align int.alternating_sum_range_choose Int.alternating_sum_range_choose
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
@@ -157,7 +166,7 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     intro y hy
     rw [mem_range, Nat.lt_succ_iff]
     rw [mem_powerset] at hy
-    exact card_le_of_subset hy
+    exact card_le_card hy
   · refine' sum_congr rfl fun y _ ↦ _
     rw [← card_powersetCard, ← sum_const]
     refine' sum_congr powersetCard_eq_filter.symm fun z hz ↦ _
@@ -187,8 +196,8 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
       (∏ i in range (n + 1), f i (n + 1 - i) ^ n.choose i) *
         ∏ i in range (n + 1), f (i + 1) (n - i) ^ n.choose i := by
   have A : (∏ i in range (n + 1), f (i + 1) (n - i) ^ (n.choose (i + 1))) * f 0 (n + 1) =
-    ∏ i in range (n + 1), f i (n + 1 - i) ^ (n.choose i)
-  · rw [prod_range_succ, prod_range_succ']
+      ∏ i in range (n + 1), f i (n + 1 - i) ^ (n.choose i) := by
+    rw [prod_range_succ, prod_range_succ']
     simp
   rw [prod_range_succ']
   simpa [Nat.choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _

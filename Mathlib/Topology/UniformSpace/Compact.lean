@@ -30,7 +30,7 @@ import Mathlib.Topology.Support
 The construction `uniformSpace_of_compact_t2` is not declared as an instance, as it would badly
 loop.
 
-## tags
+## Tags
 
 uniform space, uniform continuity, compact space
 -/
@@ -94,7 +94,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     by_contra H
     haveI : NeBot (F ⊓ 𝓟 Vᶜ) := ⟨H⟩
     -- Hence compactness would give us a cluster point (x, y) for F ⊓ 𝓟 Vᶜ
-    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := cluster_point_of_compact _
+    obtain ⟨⟨x, y⟩, hxy⟩ : ∃ p : γ × γ, ClusterPt p (F ⊓ 𝓟 Vᶜ) := exists_clusterPt_of_compactSpace _
     -- In particular (x, y) is a cluster point of 𝓟 Vᶜ, hence is not in the interior of V,
     -- and a fortiori not in Δ, so x ≠ y
     have clV : ClusterPt (x, y) (𝓟 <| Vᶜ) := hxy.of_inf_right
@@ -119,7 +119,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
       rintro ⟨z, z'⟩ (rfl : z = z')
       refine' IsOpen.mem_nhds _ _
       · apply_rules [IsOpen.union, IsOpen.prod]
-      · simp only [mem_union, mem_prod, and_self_iff]
+      · simp only [W, mem_union, mem_prod, and_self_iff]
         exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h
     -- So W ○ W ∈ F by definition of F
     have : W ○ W ∈ F := @mem_lift' _ _ _ (fun s => s ○ s) _ W_in

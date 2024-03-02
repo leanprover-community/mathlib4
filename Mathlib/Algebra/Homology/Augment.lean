@@ -237,7 +237,7 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     | i + 1, j + 1 => C.d i j
     | _, _ => 0
   shape i j s := by
-    simp at s
+    simp? at s says simp only [ComplexShape.up_Rel] at s
     rcases j with (_ | _ | j) <;> cases i <;> try simp
     · contradiction
     · rw [C.shape]
@@ -334,14 +334,14 @@ def augmentTruncate (C : CochainComplex V ℕ) :
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;>
           · dsimp
-            -- Porting note: simp can't handle this now but aesop does
+            -- Porting note (#10959): simp can't handle this now but aesop does
             aesop }
   inv :=
     { f := fun i => by cases i <;> exact 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases' i with i <;>
           · dsimp
-            -- Porting note: simp can't handle this now but aesop does
+            -- Porting note (#10959): simp can't handle this now but aesop does
             aesop }
   hom_inv_id := by
     ext i

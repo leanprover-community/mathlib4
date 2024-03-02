@@ -111,7 +111,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
         span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) ≤
       span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) := by
     rw [span_mul_span, span_le, coe_insert]
-    rintro _ ⟨yi, yj, rfl | hyi, rfl | hyj, rfl⟩ <;> dsimp
+    rintro _ ⟨yi, rfl | hyi, yj, rfl | hyj, rfl⟩ <;> dsimp
     · rw [mul_one]
       exact subset_span (Set.mem_insert _ _)
     · rw [one_mul]
@@ -157,7 +157,6 @@ theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
     Subalgebra.fg_of_submodule_fg <|
       have : IsNoetherianRing B₀ := isNoetherianRing_of_fg hAB₀
       have : Module.Finite B₀ C := ⟨hB₀C⟩
-      have : IsNoetherian B₀ C := isNoetherian_of_isNoetherianRing_of_finite B₀ C
       fg_of_injective (IsScalarTower.toAlgHom B₀ B C).toLinearMap hBCi
 #align fg_of_fg_of_fg fg_of_fg_of_fg
 

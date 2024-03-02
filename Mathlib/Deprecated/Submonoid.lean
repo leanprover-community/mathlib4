@@ -59,7 +59,7 @@ structure IsSubmonoid (s : Set M) : Prop where
 #align is_submonoid IsSubmonoid
 
 theorem Additive.isAddSubmonoid {s : Set M} :
-    ∀ _ : IsSubmonoid s, @IsAddSubmonoid (Additive M) _ s
+    IsSubmonoid s → @IsAddSubmonoid (Additive M) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
 #align additive.is_add_submonoid Additive.isAddSubmonoid
 
@@ -69,7 +69,7 @@ theorem Additive.isAddSubmonoid_iff {s : Set M} :
 #align additive.is_add_submonoid_iff Additive.isAddSubmonoid_iff
 
 theorem Multiplicative.isSubmonoid {s : Set A} :
-    ∀ _ : IsAddSubmonoid s, @IsSubmonoid (Multiplicative A) _ s
+    IsAddSubmonoid s → @IsSubmonoid (Multiplicative A) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
 #align multiplicative.is_submonoid Multiplicative.isSubmonoid
 
@@ -122,7 +122,7 @@ theorem isSubmonoid_iUnion_of_directed {ι : Type*} [hι : Nonempty ι] {s : ι 
 section powers
 
 /-- The set of natural number powers `1, x, x², ...` of an element `x` of a monoid. -/
-@[to_additive multiples
+@[to_additive
       "The set of natural number multiples `0, x, 2x, ...` of an element `x` of an `AddMonoid`."]
 def powers (x : M) : Set M :=
   { y | ∃ n : ℕ, x ^ n = y }
@@ -214,14 +214,16 @@ theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n 
     exact hs.mul_mem h (IsSubmonoid.pow_mem hs h)
 #align is_submonoid.pow_mem IsSubmonoid.pow_mem
 
-/-- The set of natural number powers of an element of a submonoid is a subset of the submonoid. -/
-@[to_additive IsAddSubmonoid.multiples_subset
+/-- The set of natural number powers of an element of a `Submonoid` is a subset of the
+`Submonoid`. -/
+@[to_additive
       "The set of natural number multiples of an element of an `AddSubmonoid` is a subset of
       the `AddSubmonoid`."]
-theorem IsSubmonoid.power_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
+theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
-#align is_submonoid.power_subset IsSubmonoid.power_subset
+#align is_submonoid.power_subset IsSubmonoid.powers_subset
 #align is_add_submonoid.multiples_subset IsAddSubmonoid.multiples_subset
+/- 2024-02-21 -/ @[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 
@@ -337,7 +339,7 @@ theorem closure_mono {s t : Set M} (h : s ⊆ t) : Closure s ⊆ Closure t :=
 theorem closure_singleton {x : M} : Closure ({x} : Set M) = powers x :=
   Set.eq_of_subset_of_subset
       (closure_subset (powers.isSubmonoid x) <| Set.singleton_subset_iff.2 <| powers.self_mem) <|
-    IsSubmonoid.power_subset (closure.isSubmonoid _) <|
+    IsSubmonoid.powers_subset (closure.isSubmonoid _) <|
       Set.singleton_subset_iff.1 <| subset_closure
 #align monoid.closure_singleton Monoid.closure_singleton
 #align add_monoid.closure_singleton AddMonoid.closure_singleton
@@ -370,10 +372,10 @@ a list of elements of `s` whose product is `a`. -/
       a set `s`, there exists a list of elements of `s` whose sum is `a`."]
 theorem exists_list_of_mem_closure {s : Set M} {a : M} (h : a ∈ Closure s) :
     ∃ l : List M, (∀ x ∈ l, x ∈ s) ∧ l.prod = a := by
-  induction h
-  case basic a ha => exists [a]; simp [ha]
-  case one => exists []; simp
-  case mul a b _ _ ha hb =>
+  induction h with
+  | @basic a ha => exists [a]; simp [ha]
+  | one => exists []; simp
+  | mul _ _ ha hb =>
     rcases ha with ⟨la, ha, eqa⟩
     rcases hb with ⟨lb, hb, eqb⟩
     exists la ++ lb
@@ -425,6 +427,6 @@ def Submonoid.of {s : Set M} (h : IsSubmonoid s) : Submonoid M :=
 
 @[to_additive]
 theorem Submonoid.isSubmonoid (S : Submonoid M) : IsSubmonoid (S : Set M) := by
-  refine' ⟨S.2, S.1.2⟩
+  exact ⟨S.2, S.1.2⟩
 #align submonoid.is_submonoid Submonoid.isSubmonoid
 #align add_submonoid.is_add_submonoid AddSubmonoid.isAddSubmonoid

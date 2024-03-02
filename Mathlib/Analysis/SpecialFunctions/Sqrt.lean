@@ -28,7 +28,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := sqrt
   source := Ioi 0
@@ -41,7 +41,7 @@ noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   open_target := isOpen_Ioi
   continuousOn_toFun := (continuous_pow 2).continuousOn
   continuousOn_invFun := continuousOn_id.sqrt
-#align real.sq_local_homeomorph Real.sqLocalHomeomorph
+#align real.sq_local_homeomorph Real.sqPartialHomeomorph
 
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ n, ContDiffAt ℝ n sqrt x := by
@@ -53,8 +53,8 @@ theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
         contDiffAt_const.congr_of_eventuallyEq this⟩
   · have : ↑2 * sqrt x ^ (2 - 1) ≠ 0 := by simp [(sqrt_pos.2 hx).ne', @two_ne_zero ℝ]
     constructor
-    · simpa using sqLocalHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
-    · exact fun n => sqLocalHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (sqrt x))
+    · simpa using sqPartialHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
+    · exact fun n => sqPartialHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (sqrt x))
         (contDiffAt_id.pow 2)
 #align real.deriv_sqrt_aux Real.deriv_sqrt_aux
 

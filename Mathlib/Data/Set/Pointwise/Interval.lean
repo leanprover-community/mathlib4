@@ -27,6 +27,93 @@ variable {α : Type*}
 
 namespace Set
 
+/-! ### Binary pointwise operations
+
+Note that the subset operations below only cover the cases with the largest possible intervals on
+the LHS: to conclude that `Ioo a b * Ioo c d ⊆ Ioo (a * c) (c * d)`, you can use monotonicity of `*`
+and `Set.Ico_mul_Ioc_subset`.
+
+TODO: repeat these lemmas for the generality of `mul_le_mul` (which assumes nonnegativity), which
+the unprimed names have been reserved for
+-/
+
+section ContravariantLE
+
+variable [Mul α] [Preorder α]
+variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
+
+@[to_additive Icc_add_Icc_subset]
+theorem Icc_mul_Icc_subset' (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (b * d) := by
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_le_mul' hya hzc, mul_le_mul' hyb hzd⟩
+
+@[to_additive Iic_add_Iic_subset]
+theorem Iic_mul_Iic_subset' (a b : α) : Iic a * Iic b ⊆ Iic (a * b) := by
+  rintro x ⟨y, hya, z, hzb, rfl⟩
+  exact mul_le_mul' hya hzb
+
+@[to_additive Ici_add_Ici_subset]
+theorem Ici_mul_Ici_subset' (a b : α) : Ici a * Ici b ⊆ Ici (a * b) := by
+  rintro x ⟨y, hya, z, hzb, rfl⟩
+  exact mul_le_mul' hya hzb
+
+end ContravariantLE
+
+section ContravariantLT
+
+variable [Mul α] [PartialOrder α]
+variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
+
+@[to_additive Icc_add_Ico_subset]
+theorem Icc_mul_Ico_subset' (a b c d : α) : Icc a b * Ico c d ⊆ Ico (a * c) (b * d) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
+
+@[to_additive Ico_add_Icc_subset]
+theorem Ico_mul_Icc_subset' (a b c d : α) : Ico a b * Icc c d ⊆ Ico (a * c) (b * d) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
+
+@[to_additive Ioc_add_Ico_subset]
+theorem Ioc_mul_Ico_subset' (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_lt_mul_of_lt_of_le hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
+
+@[to_additive Ico_add_Ioc_subset]
+theorem Ico_mul_Ioc_subset' (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
+
+@[to_additive Iic_add_Iio_subset]
+theorem Iic_mul_Iio_subset' (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, hya, z, hzb, rfl⟩
+  exact mul_lt_mul_of_le_of_lt hya hzb
+
+@[to_additive Iio_add_Iic_subset]
+theorem Iio_mul_Iic_subset' (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, hya, z, hzb, rfl⟩
+  exact mul_lt_mul_of_lt_of_le hya hzb
+
+@[to_additive Ioi_add_Ici_subset]
+theorem Ioi_mul_Ici_subset' (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, hya, z, hzb, rfl⟩
+  exact mul_lt_mul_of_lt_of_le hya hzb
+
+@[to_additive Ici_add_Ioi_subset]
+theorem Ici_mul_Ioi_subset' (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, hya, z, hzb, rfl⟩
+  exact mul_lt_mul_of_le_of_lt hya hzb
+
+end ContravariantLT
+
 section OrderedAddCommGroup
 
 variable [OrderedAddCommGroup α] (a b c : α)
@@ -259,11 +346,11 @@ theorem preimage_const_sub_Ioo : (fun x => a - x) ⁻¹' Ioo b c = Ioo (a - c) (
 -/
 
 
--- @[simp] -- Porting note: simp can prove this modulo `add_comm`
+-- @[simp] -- Porting note (#10618): simp can prove this modulo `add_comm`
 theorem image_const_add_Iic : (fun x => a + x) '' Iic b = Iic (a + b) := by simp [add_comm]
 #align set.image_const_add_Iic Set.image_const_add_Iic
 
--- @[simp] -- Porting note: simp can prove this modulo `add_comm`
+-- @[simp] -- Porting note (#10618): simp can prove this modulo `add_comm`
 theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp [add_comm]
 #align set.image_const_add_Iio Set.image_const_add_Iio
 
@@ -272,11 +359,11 @@ theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp
 -/
 
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_Iic : (fun x => x + a) '' Iic b = Iic (b + a) := by simp
 #align set.image_add_const_Iic Set.image_add_const_Iic
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_Iio : (fun x => x + a) '' Iio b = Iio (b + a) := by simp
 #align set.image_add_const_Iio Set.image_add_const_Iio
 
@@ -449,11 +536,11 @@ theorem preimage_const_sub_uIcc : (fun x => a - x) ⁻¹' [[b, c]] = [[a - b, a 
   simp only [sub_eq_add_neg, min_add_add_left, max_add_add_left, min_neg_neg, max_neg_neg]
 #align set.preimage_const_sub_uIcc Set.preimage_const_sub_uIcc
 
--- @[simp] -- Porting note: simp can prove this module `add_comm`
+-- @[simp] -- Porting note (#10618): simp can prove this module `add_comm`
 theorem image_const_add_uIcc : (fun x => a + x) '' [[b, c]] = [[a + b, a + c]] := by simp [add_comm]
 #align set.image_const_add_uIcc Set.image_const_add_uIcc
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_uIcc : (fun x => x + a) '' [[b, c]] = [[b + a, c + a]] := by simp
 #align set.image_add_const_uIcc Set.image_add_const_uIcc
 

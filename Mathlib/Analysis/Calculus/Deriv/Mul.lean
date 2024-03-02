@@ -49,7 +49,7 @@ variable {s t : Set 𝕜}
 
 variable {L L₁ L₂ : Filter 𝕜}
 
-section Smul
+section SMul
 
 /-! ### Derivative of the multiplication of a scalar function and a vector function -/
 
@@ -113,9 +113,9 @@ theorem deriv_smul_const (hc : DifferentiableAt 𝕜 c x) (f : F) :
   (hc.hasDerivAt.smul_const f).deriv
 #align deriv_smul_const deriv_smul_const
 
-end Smul
+end SMul
 
-section ConstSmul
+section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
 
@@ -150,7 +150,7 @@ theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
   (hf.hasDerivAt.const_smul c).deriv
 #align deriv_const_smul deriv_const_smul
 
-end ConstSmul
+end ConstSMul
 
 section Mul
 
@@ -283,6 +283,38 @@ theorem deriv_const_mul_field' (u : 𝕜') : (deriv fun x => u * v x) = fun x =>
 
 end Mul
 
+section Prod
+
+variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+  {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
+
+theorem HasDerivAt.finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
+    HasDerivAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) x := by
+  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+    (HasFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivAt)).hasDerivAt
+
+theorem HasDerivWithinAt.finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
+    HasDerivWithinAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) s x := by
+  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+    (HasFDerivWithinAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivWithinAt)).hasDerivWithinAt
+
+theorem HasStrictDerivAt.finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
+    HasStrictDerivAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) x := by
+  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+    (HasStrictFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasStrictFDerivAt)).hasStrictDerivAt
+
+theorem deriv_finset_prod (hf : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
+    deriv (∏ i in u, f i ·) x = ∑ i in u, (∏ j in u.erase i, f j x) • deriv (f i) x :=
+  (HasDerivAt.finset_prod fun i hi ↦ (hf i hi).hasDerivAt).deriv
+
+theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
+    derivWithin (∏ i in u, f i ·) s x =
+      ∑ i in u, (∏ j in u.erase i, f j x) • derivWithin (f i) s x :=
+  (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hxs
+
+end Prod
+
 section Div
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
@@ -334,7 +366,7 @@ theorem deriv_div_const (d : 𝕜') : deriv (fun x => c x / d) x = deriv c x / d
 
 end Div
 
-section ClmCompApply
+section CLMCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
 
@@ -410,5 +442,4 @@ theorem deriv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt 
   (hc.hasDerivAt.clm_apply hu.hasDerivAt).deriv
 #align deriv_clm_apply deriv_clm_apply
 
-end ClmCompApply
-
+end CLMCompApply

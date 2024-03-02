@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Arrow
 
 #align_import algebraic_topology.cech_nerve from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 
@@ -162,7 +162,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
       ext ⟨a, ha⟩
       change a < 1 at ha
       change 0 = a
-      linarith
+      omega
     · rfl
   right_inv := by
     intro A
@@ -337,7 +337,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       ext ⟨a, ha⟩
       change a < 1 at ha
       change 0 = a
-      linarith
+      omega
 #align category_theory.cosimplicial_object.cech_conerve_equiv CategoryTheory.CosimplicialObject.cechConerveEquiv
 
 /-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/

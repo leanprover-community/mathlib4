@@ -3,10 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Order.Hom.Basic
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.tropical.basic from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 
@@ -512,10 +513,10 @@ instance covariant_swap_mul [LE R] [Add R] [CovariantClass R R (Function.swap (�
 
 instance covariant_add [LinearOrder R] : CovariantClass (Tropical R) (Tropical R) (· + ·) (· ≤ ·) :=
   ⟨fun x y z h => by
-    cases' le_total x y with hx hy
+    rcases le_total x y with hx | hy
     · rw [add_eq_left hx, add_eq_left (hx.trans h)]
     · rw [add_eq_right hy]
-      cases' le_total x z with hx hx
+      rcases le_total x z with hx | hx
       · rwa [add_eq_left hx]
       · rwa [add_eq_right hx]⟩
 #align tropical.covariant_add Tropical.covariant_add
@@ -543,9 +544,9 @@ instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R (· + �
 theorem add_pow [LinearOrder R] [AddMonoid R] [CovariantClass R R (· + ·) (· ≤ ·)]
     [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
-  cases' le_total x y with h h
-  · rw [add_eq_left h, add_eq_left (pow_le_pow_of_le_left' h _)]
-  · rw [add_eq_right h, add_eq_right (pow_le_pow_of_le_left' h _)]
+  rcases le_total x y with h | h
+  · rw [add_eq_left h, add_eq_left (pow_le_pow_left' h _)]
+  · rw [add_eq_right h, add_eq_right (pow_le_pow_left' h _)]
 #align tropical.add_pow Tropical.add_pow
 
 end Distrib

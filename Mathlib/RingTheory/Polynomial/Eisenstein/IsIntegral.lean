@@ -253,8 +253,8 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   rw [adjoin_singleton_eq_range_aeval] at hz
   obtain ⟨Q₁, hQ⟩ := hz
   set Q := Q₁ %ₘ P with hQ₁
-  replace hQ : aeval B.gen Q = p • z
-  · rw [← modByMonic_add_div Q₁ (minpoly.monic hBint)] at hQ
+  replace hQ : aeval B.gen Q = p • z := by
+    rw [← modByMonic_add_div Q₁ (minpoly.monic hBint)] at hQ
     simpa using hQ
   by_cases hQzero : Q = 0
   · simp only [hQzero, Algebra.smul_def, zero_eq_mul, aeval_zero] at hQ
@@ -290,8 +290,9 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     -- By induction hypothesis we can find `g : ℕ → R` such that
     -- `k ∈ range (j + 1) → Q.coeff k • B.gen ^ k = (algebraMap R L) p * g k • B.gen ^ k`-
     choose! g hg using hind
-    replace hg : ∀ k ∈ range (j + 1), Q.coeff k • B.gen ^ k = algebraMap R L p * g k • B.gen ^ k
-    · intro k hk
+    replace hg : ∀ k ∈ range (j + 1), Q.coeff k • B.gen ^ k =
+        algebraMap R L p * g k • B.gen ^ k := by
+      intro k hk
       rw [hg k (mem_range_succ_iff.1 hk)
         (mem_range_succ_iff.2
           (le_trans (mem_range_succ_iff.1 hk) (succ_le_iff.1 (mem_range_succ_iff.1 hj)).le)),
@@ -327,7 +328,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         (minpoly.monic hBint).natDegree_map (algebraMap R K), ←
         minpoly.isIntegrallyClosed_eq_field_fractions' K hBint, natDegree_minpoly, hn, Nat.sub_one,
         Nat.pred_succ]
-      linarith
+      omega
 
     -- Using `hQ : aeval B.gen Q = p • z`, we write `p • z` as a sum of terms of degree less than
     -- `j+1`, that are multiples of `p` by induction, and terms of degree at least `j+1`.
@@ -370,7 +371,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     have hppdiv : p ^ B.dim ∣ p ^ B.dim * r := dvd_mul_of_dvd_left dvd_rfl _
     rwa [← IsFractionRing.injective R K hQ, mul_comm, ← Units.coe_neg_one, mul_pow, ←
       Units.val_pow_eq_pow_val, ← Units.val_pow_eq_pow_val, mul_assoc,
-      IsUnit.dvd_mul_left _ _ _ ⟨_, rfl⟩, mul_comm, ← Nat.succ_eq_add_one, hn] at hppdiv
+      Units.dvd_mul_left, mul_comm, ← Nat.succ_eq_add_one, hn] at hppdiv
 #align mem_adjoin_of_smul_prime_smul_of_minpoly_is_eiseinstein_at mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt
 
 /-- Let `K` be the field of fraction of an integrally closed domain `R` and let `L` be a separable

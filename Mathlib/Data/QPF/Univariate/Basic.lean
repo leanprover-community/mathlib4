@@ -192,10 +192,10 @@ set_option linter.uppercaseLean3 false in
 theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
   intro h
-  induction h
-  case ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp, ih]
-  case abs a f a' f' h => simp only [recF_eq', abs_map, h]
-  case trans x y z _ _ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
+  induction h with
+  | ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp, ih]
+  | abs a f a' f' h => simp only [recF_eq', abs_map, h]
+  | trans x y z _ _ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
 set_option linter.uppercaseLean3 false in
 #align qpf.recF_eq_of_Wequiv QPF.recF_eq_of_Wequiv
 
@@ -215,10 +215,10 @@ set_option linter.uppercaseLean3 false in
 
 theorem Wequiv.symm (x y : q.P.W) : Wequiv x y → Wequiv y x := by
   intro h
-  induction h
-  case ind a f f' _ ih => exact Wequiv.ind _ _ _ ih
-  case abs a f a' f' h => exact Wequiv.abs _ _ _ _ h.symm
-  case trans x y z _ _ ih₁ ih₂ => exact QPF.Wequiv.trans _ _ _ ih₂ ih₁
+  induction h with
+  | ind a f f' _ ih => exact Wequiv.ind _ _ _ ih
+  | abs a f a' f' h => exact Wequiv.abs _ _ _ _ h.symm
+  | trans x y z _ _ ih₁ ih₂ => exact QPF.Wequiv.trans _ _ _ ih₂ ih₁
 set_option linter.uppercaseLean3 false in
 #align qpf.Wequiv.symm QPF.Wequiv.symm
 
@@ -451,7 +451,7 @@ private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, 
     have h₁ : ∀ u v : q.P.M, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
-      simp only
+      simp only [r']
       rw [Quot.sound cuv]
       apply h'
     let f : Quot r → Quot r' :=
@@ -464,7 +464,7 @@ private theorem Cofix.bisim_aux (r : Cofix F → Cofix F → Prop) (h' : ∀ x, 
     rw [← this, ← PFunctor.map_map _ _ f, ← PFunctor.map_map _ _ (Quot.mk r), abs_map, abs_map,
       abs_map, h₀]
     rw [← PFunctor.map_map _ _ f, ← PFunctor.map_map _ _ (Quot.mk r), abs_map, abs_map, abs_map]
-  refine' ⟨r', this, rxy⟩
+  exact ⟨r', this, rxy⟩
 
 theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     (h : ∀ x y, r x y → Quot.mk r <$> Cofix.dest x = Quot.mk r <$> Cofix.dest y) :
@@ -480,7 +480,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     · rw [r'xy]
     have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
     rw [← Quot.factor_mk_eq _ _ this]
-    dsimp
+    dsimp [r']
     rw [@comp_map _ _ q _ _ _ (Quot.mk r), @comp_map _ _ q _ _ _ (Quot.mk r)]
     rw [h _ _ r'xy]
   right; exact rxy
@@ -506,7 +506,7 @@ theorem Cofix.bisim' {α : Type*} (Q : α → Prop) (u v : α → Cofix F)
     (fun x y ⟨x', Qx', xeq, yeq⟩ => by
       rcases h x' Qx' with ⟨a, f, f', ux'eq, vx'eq, h'⟩
       rw [liftr_iff]
-      refine' ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
+      exact ⟨a, f, f', xeq.symm ▸ ux'eq, yeq.symm ▸ vx'eq, h'⟩)
     _ _ ⟨x, Qx, rfl, rfl⟩
 #align qpf.cofix.bisim' QPF.Cofix.bisim'
 
@@ -541,7 +541,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     conv =>
       rhs
       rw [← abs_repr x]
-    cases' h : repr x with a f
+    cases' repr x with a f
     dsimp
     congr with x
     cases' h' : repr (f x) with b g
@@ -613,7 +613,7 @@ theorem mem_supp {α : Type u} (x : F α) (u : α) :
   · intro h a f haf
     have : Liftp (fun u => u ∈ f '' univ) x := by
       rw [liftp_iff]
-      refine' ⟨a, f, haf.symm, fun i => mem_image_of_mem _ (mem_univ _)⟩
+      exact ⟨a, f, haf.symm, fun i => mem_image_of_mem _ (mem_univ _)⟩
     exact h this
   intro h p; rw [liftp_iff]
   rintro ⟨a, f, xeq, h'⟩

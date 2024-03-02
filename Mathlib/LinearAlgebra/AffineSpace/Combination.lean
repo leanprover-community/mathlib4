@@ -3,7 +3,6 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -103,7 +102,7 @@ theorem weightedVSubOfPoint_eq_of_weights_eq (p : ι → P) (j : ι) (w₁ w₂ 
   simp only [Finset.weightedVSubOfPoint_apply]
   congr
   ext i
-  cases' eq_or_ne i j with h h
+  rcases eq_or_ne i j with h | h
   · simp [h]
   · simp [hw i h]
 #align finset.weighted_vsub_of_point_eq_of_weights_eq Finset.weightedVSubOfPoint_eq_of_weights_eq
@@ -165,8 +164,8 @@ theorem weightedVSubOfPoint_indicator_subset (w : ι → k) (p : ι → P) (b : 
     (h : s₁ ⊆ s₂) :
     s₁.weightedVSubOfPoint p b w = s₂.weightedVSubOfPoint p b (Set.indicator (↑s₁) w) := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply]
-  exact
-    Set.sum_indicator_subset_of_eq_zero w (fun i wi => wi • (p i -ᵥ b : V)) h fun i => zero_smul k _
+  exact Eq.symm <|
+    sum_indicator_subset_of_eq_zero w (fun i wi => wi • (p i -ᵥ b : V)) h fun i => zero_smul k _
 #align finset.weighted_vsub_of_point_indicator_subset Finset.weightedVSubOfPoint_indicator_subset
 
 /-- A weighted sum, over the image of an embedding, equals a weighted
@@ -576,9 +575,9 @@ corresponding indexed family whose index type is the subtype
 corresponding to that subset. -/
 theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V} {x : k} {s : Set ι}
     {p : ι → P} {b : P} :
-    (∃ (fs : Finset ι) (_ : ↑fs ⊆ s) (w : ι → k) (_ : ∑ i in fs, w i = x),
+    (∃ fs : Finset ι, ↑fs ⊆ s ∧ ∃ w : ι → k, ∑ i in fs, w i = x ∧
         v = fs.weightedVSubOfPoint p b w) ↔
-      ∃ (fs : Finset s) (w : s → k) (_ : ∑ i in fs, w i = x),
+      ∃ (fs : Finset s) (w : s → k), ∑ i in fs, w i = x ∧
         v = fs.weightedVSubOfPoint (fun i : s => p i) b w := by
   classical
     simp_rw [weightedVSubOfPoint_apply]
@@ -601,9 +600,9 @@ only if it can be expressed as `weightedVSub` with sum of weights 0
 for the corresponding indexed family whose index type is the subtype
 corresponding to that subset. -/
 theorem eq_weightedVSub_subset_iff_eq_weightedVSub_subtype {v : V} {s : Set ι} {p : ι → P} :
-    (∃ (fs : Finset ι) (_ : ↑fs ⊆ s) (w : ι → k) (_ : ∑ i in fs, w i = 0),
+    (∃ fs : Finset ι, ↑fs ⊆ s ∧ ∃ w : ι → k, ∑ i in fs, w i = 0 ∧
         v = fs.weightedVSub p w) ↔
-      ∃ (fs : Finset s) (w : s → k) (_ : ∑ i in fs, w i = 0),
+      ∃ (fs : Finset s) (w : s → k), ∑ i in fs, w i = 0 ∧
         v = fs.weightedVSub (fun i : s => p i) w :=
   eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype
 #align finset.eq_weighted_vsub_subset_iff_eq_weighted_vsub_subtype Finset.eq_weightedVSub_subset_iff_eq_weightedVSub_subtype
@@ -619,9 +618,9 @@ indexed family whose index type is the subtype corresponding to that
 subset. -/
 theorem eq_affineCombination_subset_iff_eq_affineCombination_subtype {p0 : P} {s : Set ι}
     {p : ι → P} :
-    (∃ (fs : Finset ι) (_ : ↑fs ⊆ s) (w : ι → k) (_ : ∑ i in fs, w i = 1),
+    (∃ fs : Finset ι, ↑fs ⊆ s ∧ ∃ w : ι → k, ∑ i in fs, w i = 1 ∧
         p0 = fs.affineCombination k p w) ↔
-      ∃ (fs : Finset s) (w : s → k) (_ : ∑ i in fs, w i = 1),
+      ∃ (fs : Finset s) (w : s → k), ∑ i in fs, w i = 1 ∧
         p0 = fs.affineCombination k (fun i : s => p i) w := by
   simp_rw [affineCombination_apply, eq_vadd_iff_vsub_eq]
   exact eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype
@@ -903,7 +902,7 @@ theorem centroidWeightsIndicator_def :
 /-- The sum of the weights for the centroid indexed by a `Fintype`. -/
 theorem sum_centroidWeightsIndicator [Fintype ι] :
     ∑ i, s.centroidWeightsIndicator k i = ∑ i in s, s.centroidWeights k i :=
-  (Set.sum_indicator_subset _ (subset_univ _)).symm
+  sum_indicator_subset _ (subset_univ _)
 #align finset.sum_centroid_weights_indicator Finset.sum_centroidWeightsIndicator
 
 /-- In the characteristic zero case, the weights in the centroid
@@ -943,7 +942,7 @@ stated in terms of a set equal to the image to provide control of
 definitional equality for the index type used for the centroid of the
 image. -/
 theorem centroid_eq_centroid_image_of_inj_on {p : ι → P}
-    (hi : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), p i = p j → i = j) {ps : Set P} [Fintype ps]
+    (hi : ∀ i ∈ s, ∀ j ∈ s, p i = p j → i = j) {ps : Set P} [Fintype ps]
     (hps : ps = p '' ↑s) : s.centroid k p = (univ : Finset ps).centroid k fun x => (x : P) := by
   let f : p '' ↑s → ι := fun x => x.property.choose
   have hf : ∀ x, f x ∈ s ∧ p (f x) = x := fun x => x.property.choose_spec
@@ -973,8 +972,8 @@ theorem centroid_eq_centroid_image_of_inj_on {p : ι → P}
 `Finset`s and with the same points in the image of those `Finset`s
 have the same centroid. -/
 theorem centroid_eq_of_inj_on_of_image_eq {p : ι → P}
-    (hi : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), p i = p j → i = j) {p₂ : ι₂ → P}
-    (hi₂ : ∀ (i) (_ : i ∈ s₂) (j) (_ : j ∈ s₂), p₂ i = p₂ j → i = j) (he : p '' ↑s = p₂ '' ↑s₂) :
+    (hi : ∀ i ∈ s, ∀ j ∈ s, p i = p j → i = j) {p₂ : ι₂ → P}
+    (hi₂ : ∀ i ∈ s₂, ∀ j ∈ s₂, p₂ i = p₂ j → i = j) (he : p '' ↑s = p₂ '' ↑s₂) :
     s.centroid k p = s₂.centroid k p₂ := by
   classical rw [s.centroid_eq_centroid_image_of_inj_on k hi rfl,
       s₂.centroid_eq_centroid_image_of_inj_on k hi₂ he]
@@ -1003,7 +1002,7 @@ theorem weightedVSub_mem_vectorSpan {s : Finset ι} {w : ι → k} (h : ∑ i in
       rw [Finsupp.total_apply, Finsupp.onFinset_sum hwx]
       · apply Finset.sum_congr rfl
         intro i hi
-        simp [Set.indicator_apply, if_pos hi]
+        simp [w', Set.indicator_apply, if_pos hi]
       · exact fun _ => zero_smul k _
 #align weighted_vsub_mem_vector_span weightedVSub_mem_vectorSpan
 
@@ -1019,7 +1018,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     cases' hn with i1 hi1
     let w1 : ι → k := Function.update (Function.const ι 0) i1 1
     have hw1 : ∑ i in s, w1 i = 1 := by
-      simp only [Pi.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
+      simp only [Function.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
           Finset.sum_const_zero, add_zero]
     have hw1s : s.affineCombination k p w1 = p i1 :=
       s.affineCombination_of_eq_one_of_eq_zero w1 p hi1 (Function.update_same _ _ _) fun _ _ hne =>
@@ -1041,7 +1040,7 @@ variable (k)
 if it is a `weightedVSub` with sum of weights 0. -/
 theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
     v ∈ vectorSpan k (Set.range p) ↔
-      ∃ (s : Finset ι) (w : ι → k) (_ : ∑ i in s, w i = 0), v = s.weightedVSub p w := by
+      ∃ (s : Finset ι) (w : ι → k), ∑ i in s, w i = 0 ∧ v = s.weightedVSub p w := by
   classical
     constructor
     · rcases isEmpty_or_nonempty ι with (hι | ⟨⟨i0⟩⟩)
@@ -1087,7 +1086,7 @@ variable {k}
 `eq_affineCombination_of_mem_affineSpan_of_fintype`. -/
 theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     (h : p1 ∈ affineSpan k (Set.range p)) :
-    ∃ (s : Finset ι) (w : ι → k) (_ : ∑ i in s, w i = 1), p1 = s.affineCombination k p w := by
+    ∃ (s : Finset ι) (w : ι → k), ∑ i in s, w i = 1 ∧ p1 = s.affineCombination k p w := by
   classical
     have hn : (affineSpan k (Set.range p) : Set P).Nonempty := ⟨p1, h⟩
     rw [affineSpan_nonempty, Set.range_nonempty_iff_nonempty] at hn
@@ -1100,7 +1099,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     let s' := insert i0 s
     let w' := Set.indicator (↑s) w
     have h' : ∑ i in s', w' i = 0 := by
-      rw [← h, Set.sum_indicator_subset _ (Finset.subset_insert i0 s)]
+      rw [← h, Finset.sum_indicator_subset _ (Finset.subset_insert i0 s)]
     have hs' : s'.weightedVSub p w' = p1 -ᵥ p i0 := by
       rw [hs]
       exact (Finset.weightedVSub_indicator_subset _ _ (Finset.subset_insert i0 s)).symm
@@ -1112,17 +1111,15 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
     have hw0s : s'.affineCombination k p w0 = p i0 :=
       s'.affineCombination_of_eq_one_of_eq_zero w0 p (Finset.mem_insert_self _ _)
         (Function.update_same _ _ _) fun _ _ hne => Function.update_noteq hne _ _
-    use s', w0 + w'
-    constructor
-    · rw [add_comm, ← Finset.weightedVSub_vadd_affineCombination, hw0s, hs', vsub_vadd]
+    refine ⟨s', w0 + w', ?_, ?_⟩
     · -- Porting note: proof was `simp [Pi.add_apply, Finset.sum_add_distrib, hw0, h']`
-      change (Finset.sum s' fun i => w0 i + w' i) = 1
-      simp only [Finset.sum_add_distrib, hw0, h', add_zero]
+      simp only [Pi.add_apply, Finset.sum_add_distrib, hw0, h', add_zero]
+    · rw [add_comm, ← Finset.weightedVSub_vadd_affineCombination, hw0s, hs', vsub_vadd]
 #align eq_affine_combination_of_mem_affine_span eq_affineCombination_of_mem_affineSpan
 
 theorem eq_affineCombination_of_mem_affineSpan_of_fintype [Fintype ι] {p1 : P} {p : ι → P}
     (h : p1 ∈ affineSpan k (Set.range p)) :
-    ∃ (w : ι → k) (_ : ∑ i, w i = 1), p1 = Finset.univ.affineCombination k p w := by
+    ∃ w : ι → k, ∑ i, w i = 1 ∧ p1 = Finset.univ.affineCombination k p w := by
   classical
     obtain ⟨s, w, hw, rfl⟩ := eq_affineCombination_of_mem_affineSpan h
     refine'
@@ -1138,7 +1135,7 @@ if it is an `affineCombination` with sum of weights 1, provided the
 underlying ring is nontrivial. -/
 theorem mem_affineSpan_iff_eq_affineCombination [Nontrivial k] {p1 : P} {p : ι → P} :
     p1 ∈ affineSpan k (Set.range p) ↔
-      ∃ (s : Finset ι) (w : ι → k) (_ : ∑ i in s, w i = 1), p1 = s.affineCombination k p w := by
+      ∃ (s : Finset ι) (w : ι → k), ∑ i in s, w i = 1 ∧ p1 = s.affineCombination k p w := by
   constructor
   · exact eq_affineCombination_of_mem_affineSpan
   · rintro ⟨s, w, hw, rfl⟩
@@ -1164,7 +1161,7 @@ theorem mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd [Nontrivial k] (p : ι �
         · simp [Finset.sum_insert hj, Finset.sum_update_of_not_mem hj, hj]
       have hww : ∀ i, i ≠ j → w i = w' i := by
         intro i hij
-        simp [hij]
+        simp [w', hij]
       rw [s.weightedVSubOfPoint_eq_of_weights_eq p j w w' hww, ←
         s.weightedVSubOfPoint_insert w' p j, ←
         (insert j s).affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w' p h₁ (p j)]

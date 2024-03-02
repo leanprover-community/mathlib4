@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 #align_import data.real.pi.leibniz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -49,7 +50,7 @@ theorem tendsto_sum_pi_div_four :
     convert (((tendsto_rpow_div_mul_add (-1) 2 1 two_ne_zero.symm).neg.const_add 1).add
         tendsto_inv_atTop_zero).comp tendsto_nat_cast_atTop_atTop using 1
     · ext k
-      simp only [NNReal.coe_nat_cast, Function.comp_apply, NNReal.coe_rpow]
+      simp only [u, NNReal.coe_nat_cast, Function.comp_apply, NNReal.coe_rpow]
       rw [← rpow_mul (Nat.cast_nonneg k) (-1 / (2 * (k : ℝ) + 1)) (2 * (k : ℝ) + 1),
         @div_mul_cancel _ _ (2 * (k : ℝ) + 1) _
           (by norm_cast; simp only [Nat.succ_ne_zero, not_false_iff]),
@@ -63,14 +64,14 @@ theorem tendsto_sum_pi_div_four :
   -- (3) We introduce an auxiliary function `f`
   let b (i : ℕ) x := (-(1 : ℝ)) ^ i * x ^ (2 * i + 1) / (2 * i + 1)
   let f x := arctan x - ∑ i in Finset.range k, b i x
-  suffices f_bound : |f 1 - f 0| ≤ (1 : ℝ) - U + U ^ (2 * (k : ℝ) + 1)
-  · rw [← norm_neg]
+  suffices f_bound : |f 1 - f 0| ≤ (1 : ℝ) - U + U ^ (2 * (k : ℝ) + 1) by
+    rw [← norm_neg]
     convert f_bound using 1
-    simp
+    simp [b, f]
   -- We show that `U` is indeed in [0,1]
   have hU1 : (U : ℝ) ≤ 1 := by
     by_cases hk : k = 0
-    · simp [hk]
+    · simp [U, u, hk]
     · exact rpow_le_one_of_one_le_of_nonpos
         (by norm_cast; exact Nat.succ_le_iff.mpr (Nat.pos_of_ne_zero hk)) (le_of_lt
           (@div_neg_of_neg_of_pos _ _ (-(1 : ℝ)) (2 * k + 1) (neg_neg_iff_pos.mpr zero_lt_one)
@@ -88,7 +89,7 @@ theorem tendsto_sum_pi_div_four :
         simp only [id.def]
         ring
       · simp
-        rw [← mul_assoc, @div_mul_cancel _ _ (2 * (i : ℝ) + 1) _ (by norm_cast; linarith),
+        rw [← mul_assoc, @div_mul_cancel _ _ (2 * (i : ℝ) + 1) _ (by norm_cast; omega),
           pow_mul x 2 i, ← mul_pow (-1 : ℝ) (x ^ 2) i]
         ring_nf
     convert (hasDerivAt_arctan x).sub (HasDerivAt.sum has_deriv_at_b) using 1
@@ -112,13 +113,13 @@ theorem tendsto_sum_pi_div_four :
     exact (le_add_of_nonneg_right (sq_nonneg x) : (1 : ℝ) ≤ _)
   have hbound1 : ∀ x ∈ Ico (U : ℝ) 1, |f' x| ≤ 1 := by
     rintro x ⟨hx_left, hx_right⟩
-    have hincr := pow_le_pow_of_le_left (le_trans hU2 hx_left) (le_of_lt hx_right) (2 * k)
+    have hincr := pow_le_pow_left (le_trans hU2 hx_left) (le_of_lt hx_right) (2 * k)
     rw [one_pow (2 * k), ← abs_of_nonneg (le_trans hU2 hx_left)] at hincr
     rw [← abs_of_nonneg (le_trans hU2 hx_left)] at hx_right
     linarith [f'_bound x (mem_Icc.mpr (abs_le.mp (le_of_lt hx_right)))]
   have hbound2 : ∀ x ∈ Ico 0 (U : ℝ), |f' x| ≤ U ^ (2 * k) := by
     rintro x ⟨hx_left, hx_right⟩
-    have hincr := pow_le_pow_of_le_left hx_left (le_of_lt hx_right) (2 * k)
+    have hincr := pow_le_pow_left hx_left (le_of_lt hx_right) (2 * k)
     rw [← abs_of_nonneg hx_left] at hincr hx_right
     rw [← abs_of_nonneg hU2] at hU1 hx_right
     exact (f'_bound x (mem_Icc.mpr (abs_le.mp (le_trans (le_of_lt hx_right) hU1)))).trans hincr

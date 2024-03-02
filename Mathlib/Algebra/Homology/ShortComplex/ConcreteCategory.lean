@@ -55,7 +55,7 @@ lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
-lemma Preadditive.epi_iff_injective {X Y : C} (f : X ⟶ Y) :
+lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget₂ C Ab).map f) := by
   rw [← AddCommGroupCat.epi_iff_surjective]
   constructor
@@ -65,7 +65,7 @@ lemma Preadditive.epi_iff_injective {X Y : C} (f : X ⟶ Y) :
 
 lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget C).map f) := by
-  simp only [epi_iff_injective, ← CategoryTheory.epi_iff_surjective]
+  simp only [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective]
   apply (MorphismProperty.RespectsIso.epimorphisms (Type w)).arrow_mk_iso_iff
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   exact Arrow.isoOfNatIso e (Arrow.mk f)
@@ -91,8 +91,24 @@ lemma ShortExact.injective_f (hS : S.ShortExact) :
 
 lemma ShortExact.surjective_g (hS : S.ShortExact) :
     Function.Surjective ((forget₂ C Ab).map S.g) := by
-  rw [← Preadditive.epi_iff_injective]
+  rw [← Preadditive.epi_iff_surjective]
   exact hS.epi_g
+
+variable (S)
+
+/-- Constructor for cycles of short complexes in a concrete category. -/
+noncomputable def cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
+    (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
+    (forget₂ C Ab).obj S.cycles :=
+  (S.mapCyclesIso (forget₂ C Ab)).hom ((ShortComplex.abCyclesIso _).inv ⟨x₂, hx₂⟩)
+
+@[simp]
+lemma i_cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
+    (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
+    (forget₂ C Ab).map S.iCycles (S.cyclesMk x₂ hx₂) = x₂ := by
+  dsimp [cyclesMk]
+  erw [← comp_apply, S.mapCyclesIso_hom_iCycles (forget₂ C Ab),
+    ← comp_apply, abCyclesIso_inv_apply_iCycles ]
 
 end ShortComplex
 
@@ -105,7 +121,7 @@ section abelian
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C Ab]
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 namespace ShortComplex
 
@@ -126,7 +142,7 @@ lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
     (Limits.Concrete.pullbackMk D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂)
   have eq₁ := Concrete.pullbackMk_fst D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂
   have eq₂ := Concrete.pullbackMk_snd D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂
-  dsimp [FunLike.coe] at eq₁ eq₂
+  dsimp [DFunLike.coe] at eq₁ eq₂
   rw [Functor.map_comp, types_comp_apply, FunctorToTypes.map_comp_apply] at eq
   rw [eq₂] at eq
   refine' eq.trans (congr_arg ((forget C).map D.v₂₃.τ₁) _)
@@ -135,6 +151,31 @@ lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
   dsimp [φ₂]
   rw [Functor.map_comp, types_comp_apply, eq₁]
   exact h₁.symm
+
+/-- This lemma allows the computation of the connecting homomorphism
+`D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
+lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
+    (x₂ : (forget₂ C Ab).obj D.L₁.X₂) (x₁ : (forget₂ C Ab).obj D.L₂.X₁)
+    (h₂ : (forget₂ C Ab).map D.L₁.g x₂ = (forget₂ C Ab).map D.v₀₁.τ₃ x₃)
+    (h₁ : (forget₂ C Ab).map D.L₂.f x₁ = (forget₂ C Ab).map D.v₁₂.τ₂ x₂) :
+    (forget₂ C Ab).map D.δ x₃ = (forget₂ C Ab).map D.v₂₃.τ₁ x₁ := by
+  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
+  apply (mono_iff_injective (e.hom.app _)).1 inferInstance
+  refine (congr_hom (e.hom.naturality D.δ) x₃).trans
+    ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_ ).trans
+    (congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
+  · refine ((congr_hom (e.hom.naturality D.L₁.g) x₂).symm.trans ?_).trans
+      (congr_hom (e.hom.naturality D.v₀₁.τ₃) x₃)
+    dsimp
+    rw [comp_apply, comp_apply]
+    erw [h₂]
+    rfl
+  · refine ((congr_hom (e.hom.naturality D.L₂.f) x₁).symm.trans ?_).trans
+      (congr_hom (e.hom.naturality D.v₁₂.τ₂) x₂)
+    dsimp
+    rw [comp_apply, comp_apply]
+    erw [h₁]
+    rfl
 
 end SnakeInput
 

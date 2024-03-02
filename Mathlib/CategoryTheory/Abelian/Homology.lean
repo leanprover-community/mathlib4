@@ -87,11 +87,11 @@ instance : Epi (homologyCToK f g w) := by
   apply Pseudoelement.epi_of_pseudo_surjective
   intro a
   let b := kernel.ι (cokernel.desc f g w) a
-  obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b
-  apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
+  obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b := by
+    apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
   have : g c = 0 := by
     rw [show g = cokernel.π f ≫ cokernel.desc f g w by simp, Pseudoelement.comp_apply, hc]
-    simp [← Pseudoelement.comp_apply]
+    simp [b, ← Pseudoelement.comp_apply]
   obtain ⟨d, hd⟩ : ∃ d, kernel.ι g d = c := by
     apply (Pseudoelement.pseudo_exact_of_exact exact_kernel_ι).2 _ this
   use cokernel.π (kernel.lift g f w) d
@@ -129,7 +129,7 @@ def desc' {W : A} (e : kernel g ⟶ W) (he : kernel.lift g f w ≫ e = 0) : homo
   (homology'IsoCokernelLift _ _ _).hom ≫ cokernel.desc _ e he
 #align homology.desc' homology'.desc'
 
-/-- Obtain a moprhism to the homology, given a morphism to the kernel. -/
+/-- Obtain a morphism to the homology, given a morphism to the kernel. -/
 def lift {W : A} (e : W ⟶ cokernel f) (he : e ≫ cokernel.desc f g w = 0) : W ⟶ homology' f g w :=
   kernel.lift _ e he ≫ (homology'IsoKernelDesc _ _ _).inv
 #align homology.lift homology'.lift

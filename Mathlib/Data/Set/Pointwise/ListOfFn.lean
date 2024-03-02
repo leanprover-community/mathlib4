@@ -28,7 +28,7 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :
   induction' n with n ih generalizing a
   · simp_rw [List.ofFn_zero, List.prod_nil, Fin.exists_fin_zero_pi, eq_comm, Set.mem_one]
   · simp_rw [List.ofFn_succ, List.prod_cons, Fin.exists_fin_succ_pi, Fin.cons_zero, Fin.cons_succ,
-      mem_mul, @ih, exists_and_left, exists_exists_eq_and, SetCoe.exists, exists_prop]
+      mem_mul, @ih, exists_exists_eq_and, SetCoe.exists, exists_prop]
 #align set.mem_prod_list_of_fn Set.mem_prod_list_ofFn
 #align set.mem_sum_list_of_fn Set.mem_sum_list_ofFn
 

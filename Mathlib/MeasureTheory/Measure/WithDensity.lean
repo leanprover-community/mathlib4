@@ -89,7 +89,7 @@ theorem withDensity_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) :
 
 lemma withDensity_mono {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) :
     μ.withDensity f ≤ μ.withDensity g := by
-  intro s hs
+  refine le_iff.2 fun s hs ↦ ?_
   rw [withDensity_apply _ hs, withDensity_apply _ hs]
   refine set_lintegral_mono_ae' hs ?_
   filter_upwards [hfg] with x h_le using fun _ ↦ h_le
@@ -177,7 +177,7 @@ theorem withDensity_tsum {f : ℕ → α → ℝ≥0∞} (h : ∀ i, Measurable 
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
   change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i : ℕ, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
-  refine' lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
+  exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 #align measure_theory.with_density_tsum MeasureTheory.withDensity_tsum
 
 theorem withDensity_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
@@ -295,7 +295,7 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
       rw [ae_restrict_iff' A]
       filter_upwards [hg']
       intro a ha h'a
-      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using h'a
+      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, ENNReal.coe_eq_zero] using h'a
       rw [ha this]
     · filter_upwards [ae_restrict_mem A.compl]
       intro x hx
@@ -540,7 +540,7 @@ lemma SigmaFinite.withDensity [SigmaFinite μ] {f : α → ℝ≥0} (hf : AEMeas
         norm_cast
         exact (hs i).2.2 x hxs
   _ = i * μ (s i) := by rw [set_lintegral_const]
-  _ < ⊤ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
+  _ < ∞ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
 
 lemma SigmaFinite.withDensity_of_ne_top' [SigmaFinite μ] {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_top : ∀ x, f x ≠ ∞) :
@@ -553,14 +553,14 @@ lemma SigmaFinite.withDensity_of_ne_top [SigmaFinite μ] {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     SigmaFinite (μ.withDensity f) := by
   let f' := fun x ↦ if f x = ∞ then 0 else f x
-  have hff' : f =ᵐ[μ] f' := by filter_upwards [hf_ne_top] with x hx using by simp [hx]
-  have hf'_ne_top : ∀ x, f' x ≠ ∞ := fun x ↦ by by_cases hfx : f x = ∞ <;> simp [hfx]
+  have hff' : f =ᵐ[μ] f' := by filter_upwards [hf_ne_top] with x hx using by simp [f', hx]
+  have hf'_ne_top : ∀ x, f' x ≠ ∞ := fun x ↦ by by_cases hfx : f x = ∞ <;> simp [f', hfx]
   rw [withDensity_congr_ae hff']
   exact SigmaFinite.withDensity_of_ne_top' (hf.congr hff') hf'_ne_top
 
 lemma SigmaFinite.withDensity_ofReal [SigmaFinite μ] {f : α → ℝ} (hf : AEMeasurable f μ) :
     SigmaFinite (μ.withDensity (fun x ↦ ENNReal.ofReal (f x))) := by
-  refine SigmaFinite.withDensity_of_ne_top hf.ennreal_ofReal (ae_of_all _ (by simp))
+  exact SigmaFinite.withDensity_of_ne_top hf.ennreal_ofReal (ae_of_all _ (by simp))
 
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
 

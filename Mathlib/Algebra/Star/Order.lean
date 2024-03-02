@@ -3,8 +3,8 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -33,6 +33,9 @@ positive cone which is the _closure_ of the sums of elements `star r * r`. A wea
 [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
 the advantage of not requiring a topology.
 -/
+
+open Set
+open scoped NNRat
 
 universe u
 
@@ -185,4 +188,120 @@ theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star
   by simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
+@[simp]
+lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by
+  suffices ∀ x y, x ≤ y → star x ≤ star y from
+    ⟨by simpa only [star_star] using this (star x) (star y), this x y⟩
+  intro x y h
+  rw [StarOrderedRing.le_iff] at h ⊢
+  obtain ⟨d, hd, rfl⟩ := h
+  refine ⟨starAddEquiv d, ?_, star_add _ _⟩
+  refine AddMonoidHom.mclosure_preimage_le _ _ <| AddSubmonoid.closure_mono ?_ hd
+  rintro - ⟨s, rfl⟩
+  exact ⟨s, by simp⟩
+
+@[simp]
+lemma star_lt_star_iff {x y : R} : star x < star y ↔ x < y := by
+  by_cases h : x = y
+  · simp [h]
+  · simpa [le_iff_lt_or_eq, h] using star_le_star_iff (x := x) (y := y)
+
+lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [← star_le_star_iff, star_star]
+
+lemma star_lt_iff {x y : R} : star x < y ↔ x < star y := by rw [← star_lt_star_iff, star_star]
+
+@[simp]
+lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
+  simpa using star_le_star_iff (x := 0) (y := x)
+
+@[simp]
+lemma star_nonpos_iff {x : R} : star x ≤ 0 ↔ x ≤ 0 := by
+  simpa using star_le_star_iff (x := x) (y := 0)
+
+@[simp]
+lemma star_pos_iff {x : R} : 0 < star x ↔ 0 < x := by
+  simpa using star_lt_star_iff (x := 0) (y := x)
+
+@[simp]
+lemma star_neg_iff {x : R} : star x < 0 ↔ x < 0 := by
+  simpa using star_lt_star_iff (x := x) (y := 0)
+
+lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
+  rw [StarOrderedRing.le_iff] at h
+  obtain ⟨d, hd, rfl⟩ := h
+  rw [IsSelfAdjoint, star_add, hx.star_eq]
+  congr
+  refine AddMonoidHom.eqOn_closureM (f := starAddEquiv (R := R)) (g := .id R) ?_ hd
+  rintro - ⟨s, rfl⟩
+  simp
+
+lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
+  (isSelfAdjoint_zero R).mono hx
+
 end NonUnitalSemiring
+
+section Semiring
+variable [Semiring R] [PartialOrder R] [StarOrderedRing R]
+
+@[simp]
+lemma one_le_star_iff {x : R} : 1 ≤ star x ↔ 1 ≤ x := by
+  simpa using star_le_star_iff (x := 1) (y := x)
+
+@[simp]
+lemma star_le_one_iff {x : R} : star x ≤ 1 ↔ x ≤ 1 := by
+  simpa using star_le_star_iff (x := x) (y := 1)
+
+@[simp]
+lemma one_lt_star_iff {x : R} : 1 < star x ↔ 1 < x := by
+  simpa using star_lt_star_iff (x := 1) (y := x)
+
+@[simp]
+lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
+  simpa using star_lt_star_iff (x := x) (y := 1)
+
+end Semiring
+
+section OrderClass
+
+variable {F R S : Type*} [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R]
+variable [NonUnitalSemiring S] [PartialOrder S] [StarOrderedRing S]
+
+-- we prove this auxiliary lemma in order to avoid duplicating the proof twice below.
+lemma NonUnitalRingHom.map_le_map_of_map_star (f : R →ₙ+* S) (hf : ∀ r, f (star r) = star (f r))
+    {x y : R} (hxy : x ≤ y) : f x ≤ f y := by
+  rw [StarOrderedRing.le_iff] at hxy ⊢
+  obtain ⟨p, hp, rfl⟩ := hxy
+  refine ⟨f p, ?_, map_add f _ _⟩
+  induction hp using AddSubmonoid.closure_induction'
+  all_goals aesop
+
+instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S] [StarHomClass F R S]
+    [NonUnitalRingHomClass F R S] : OrderHomClass F R S where
+  map_rel f := (f : R →ₙ+* S).map_le_map_of_map_star (map_star f)
+
+-- This doesn't require any module structure, but the only morphism we currently have bundling
+-- `star` is `starAlgHom`. So we have to build the inverse morphism by hand.
+instance (priority := 100) StarRingHomClass.instOrderIsoClass [EquivLike F R S] [StarHomClass F R S]
+    [RingEquivClass F R S] : OrderIsoClass F R S where
+  map_le_map_iff f x y := by
+    refine ⟨fun h ↦ ?_, map_rel f⟩
+    let f_inv : S →ₙ+* R :=
+      { toFun := EquivLike.inv f
+        map_mul' := fun _ _ ↦ EmbeddingLike.injective f <| by simp
+        map_add' := fun _ _ ↦ EmbeddingLike.injective f <| by simp
+        map_zero' := EmbeddingLike.injective f <| by simp }
+    have f_inv_star (s : S) : f_inv (star s) = star (f_inv s) := EmbeddingLike.injective f <| by
+      simp only [map_star f, show ∀ s, f (f_inv s) = s from EquivLike.apply_inv_apply f]
+    have f_inv_f (r : R) : f_inv (f r) = r := EquivLike.inv_apply_apply f r
+    rw [← f_inv_f x, ← f_inv_f y]
+    exact f_inv.map_le_map_of_map_star f_inv_star h
+
+end OrderClass
+
+instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
+  le_iff a b := by
+    have : AddSubmonoid.closure (range fun x : ℕ ↦ x * x) = ⊤ :=
+      eq_top_mono
+        (AddSubmonoid.closure_mono <| singleton_subset_iff.2 <| mem_range.2 ⟨1, one_mul _⟩)
+        Nat.addSubmonoid_closure_one
+    simp [this, le_iff_exists_add]

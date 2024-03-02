@@ -58,7 +58,7 @@ theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x
   Iff.rfl
 #align subalgebra.mem_to_subsemiring Subalgebra.mem_toSubsemiring
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subalgebra.mem_carrier Subalgebra.mem_carrier
@@ -104,7 +104,7 @@ variable (S : Subalgebra R A)
 instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
   smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
 theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
     algebraMap R A r ∈ s :=
@@ -278,56 +278,6 @@ instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebr
   S.toSubring.toCommRing
 #align subalgebra.to_comm_ring Subalgebra.toCommRing
 
-instance toOrderedSemiring {R A} [CommSemiring R] [OrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedSemiring S :=
-  S.toSubsemiring.toOrderedSemiring
-#align subalgebra.to_ordered_semiring Subalgebra.toOrderedSemiring
-
-instance toStrictOrderedSemiring {R A} [CommSemiring R] [StrictOrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : StrictOrderedSemiring S :=
-  S.toSubsemiring.toStrictOrderedSemiring
-#align subalgebra.to_strict_ordered_semiring Subalgebra.toStrictOrderedSemiring
-
-instance toOrderedCommSemiring {R A} [CommSemiring R] [OrderedCommSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedCommSemiring S :=
-  S.toSubsemiring.toOrderedCommSemiring
-#align subalgebra.to_ordered_comm_semiring Subalgebra.toOrderedCommSemiring
-
-instance toStrictOrderedCommSemiring {R A} [CommSemiring R] [StrictOrderedCommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) : StrictOrderedCommSemiring S :=
-  S.toSubsemiring.toStrictOrderedCommSemiring
-#align subalgebra.to_strict_ordered_comm_semiring Subalgebra.toStrictOrderedCommSemiring
-
-instance toOrderedRing {R A} [CommRing R] [OrderedRing A] [Algebra R A] (S : Subalgebra R A) :
-    OrderedRing S :=
-  S.toSubring.toOrderedRing
-#align subalgebra.to_ordered_ring Subalgebra.toOrderedRing
-
-instance toOrderedCommRing {R A} [CommRing R] [OrderedCommRing A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedCommRing S :=
-  S.toSubring.toOrderedCommRing
-#align subalgebra.to_ordered_comm_ring Subalgebra.toOrderedCommRing
-
-instance toLinearOrderedSemiring {R A} [CommSemiring R] [LinearOrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedSemiring S :=
-  S.toSubsemiring.toLinearOrderedSemiring
-#align subalgebra.to_linear_ordered_semiring Subalgebra.toLinearOrderedSemiring
-
-instance toLinearOrderedCommSemiring {R A} [CommSemiring R] [LinearOrderedCommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) : LinearOrderedCommSemiring S :=
-  S.toSubsemiring.toLinearOrderedCommSemiring
-#align subalgebra.to_linear_ordered_comm_semiring Subalgebra.toLinearOrderedCommSemiring
-
-instance toLinearOrderedRing {R A} [CommRing R] [LinearOrderedRing A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedRing S :=
-  S.toSubring.toLinearOrderedRing
-#align subalgebra.to_linear_ordered_ring Subalgebra.toLinearOrderedRing
-
-instance toLinearOrderedCommRing {R A} [CommRing R] [LinearOrderedCommRing A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedCommRing S :=
-  S.toSubring.toLinearOrderedCommRing
-#align subalgebra.to_linear_ordered_comm_ring Subalgebra.toLinearOrderedCommRing
-
 end
 
 /-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
@@ -338,7 +288,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
           carrier := S
           smul_mem' := fun c {x} hx ↦
             (Algebra.smul_def c x).symm ▸ mul_mem (S.range_le ⟨c, rfl⟩) hx }
-      inj' := fun _ _ h ↦ ext <| fun x ↦ SetLike.ext_iff.mp h x }
+      inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 #align subalgebra.to_submodule Subalgebra.toSubmodule
 
@@ -360,7 +310,8 @@ section
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
 
-instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
+instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
+    Module R' S :=
   S.toSubmodule.module'
 #align subalgebra.module' Subalgebra.module'
 
@@ -370,7 +321,14 @@ instance : Module R S :=
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
-instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R' R A] :
+/- More general form of `Subalgebra.algebra`.
+
+This instance should have low priority since it is slow to fail:
+before failing, it will cause a search through all `SMul R' R` instances,
+which can quickly get expensive.
+-/
+instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
+    [IsScalarTower R' R A] :
     Algebra R' S :=
   { (algebraMap R' A).codRestrict S fun x => by
       rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
@@ -499,7 +457,7 @@ theorem mem_map {S : Subalgebra R A} {f : A →ₐ[R] B} {y : B} : y ∈ map f S
 #align subalgebra.mem_map Subalgebra.mem_map
 
 theorem map_toSubmodule {S : Subalgebra R A} {f : A →ₐ[R] B} :
-    (toSubmodule $ S.map f) = S.toSubmodule.map f.toLinearMap :=
+    (toSubmodule <| S.map f) = S.toSubmodule.map f.toLinearMap :=
   SetLike.coe_injective rfl
 #align subalgebra.map_to_submodule Subalgebra.map_toSubmodule
 
@@ -668,6 +626,16 @@ def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 #align alg_hom.range_restrict AlgHom.rangeRestrict
 
+theorem rangeRestrict_surjective (f : A →ₐ[R] B):
+    Function.Surjective (f.rangeRestrict) :=
+  fun ⟨_y, hy⟩ =>
+  let ⟨x, hx⟩ := hy
+  ⟨x, SetCoe.ext hx⟩
+
+theorem ker_rangeRestrict (f : A →ₐ[R] B) :
+    RingHom.ker f.rangeRestrict = RingHom.ker f :=
+  Ideal.ext fun _ ↦ Subtype.ext_iff
+
 /-- The equalizer of two R-algebra homomorphisms -/
 def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
   carrier := { a | ϕ a = ψ a }
@@ -744,7 +712,7 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 #align alg_equiv.of_injective_field AlgEquiv.ofInjectiveField
 
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
-`subalgebra_map` is the induced equivalence between `S` and `S.map e` -/
+`subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
@@ -1098,6 +1066,25 @@ theorem equivOfEq_rfl (S : Subalgebra R A) : equivOfEq S S rfl = AlgEquiv.refl :
 theorem equivOfEq_trans (S T U : Subalgebra R A) (hST : S = T) (hTU : T = U) :
     (equivOfEq S T hST).trans (equivOfEq T U hTU) = equivOfEq S U (hST.trans hTU) := rfl
 #align subalgebra.equiv_of_eq_trans Subalgebra.equivOfEq_trans
+
+section equivMapOfInjective
+
+variable (f : A →ₐ[R] B)
+
+theorem range_comp_val : (f.comp S.val).range = S.map f := by
+  rw [AlgHom.range_comp, range_val]
+
+variable (hf : Function.Injective f)
+
+/-- A subalgebra is isomorphic to its image under an injective `AlgHom` -/
+noncomputable def equivMapOfInjective : S ≃ₐ[R] S.map f :=
+  (AlgEquiv.ofInjective (f.comp S.val) (hf.comp Subtype.val_injective)).trans
+    (equivOfEq _ _ (range_comp_val S f))
+
+@[simp]
+theorem coe_equivMapOfInjective_apply (x : S) : ↑(equivMapOfInjective S f hf x) = f x := rfl
+
+end equivMapOfInjective
 
 section Prod
 

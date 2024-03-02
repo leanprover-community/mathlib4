@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import data.multiset.bind from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -76,9 +77,9 @@ theorem card_join (S) : card (@join α S) = sum (map card S) :=
 #align multiset.card_join Multiset.card_join
 
 theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.join t.join := by
-  induction h
-  case zero => simp
-  case cons a b s t hab hst ih => simpa using hab.add ih
+  induction h with
+  | zero => simp
+  | cons hab hst ih => simpa using hab.add ih
 #align multiset.rel_join Multiset.rel_join
 
 /-! ### Bind -/

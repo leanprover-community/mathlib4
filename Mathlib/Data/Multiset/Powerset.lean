@@ -78,7 +78,7 @@ theorem powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux l
     (powerset_aux'_perm p).trans powersetAux_perm_powersetAux'.symm
 #align multiset.powerset_aux_perm Multiset.powersetAux_perm
 
---Porting note: slightly slower implementation due to `map ofList`
+--Porting note (#11083): slightly slower implementation due to `map ofList`
 /-- The power set of a multiset. -/
 def powerset (s : Multiset α) : Multiset (Multiset α) :=
   Quot.liftOn s
@@ -258,6 +258,10 @@ theorem powersetCard_cons (n : ℕ) (a : α) (s) :
   Quotient.inductionOn s fun l => by simp [powersetCard_coe']
 #align multiset.powerset_len_cons Multiset.powersetCard_cons
 
+theorem powersetCard_one (s : Multiset α) : powersetCard 1 s = s.map singleton :=
+  Quotient.inductionOn s fun l ↦ by
+    simp [powersetCard_coe, sublistsLen_one, map_reverse, Function.comp]
+
 @[simp]
 theorem mem_powersetCard {n : ℕ} {s t : Multiset α} : s ∈ powersetCard n t ↔ s ≤ t ∧ card s = n :=
   Quotient.inductionOn t fun l => by simp [powersetCard_coe']
@@ -283,15 +287,15 @@ theorem powersetCard_mono (n : ℕ) {s t : Multiset α} (h : s ≤ t) :
 #align multiset.powerset_len_mono Multiset.powersetCard_mono
 
 @[simp]
-theorem powersetCard_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card s < n) :
+theorem powersetCard_eq_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card s < n) :
     powersetCard n s = 0 :=
   card_eq_zero.mp (Nat.choose_eq_zero_of_lt h ▸ card_powersetCard _ _)
-#align multiset.powerset_len_empty Multiset.powersetCard_empty
+#align multiset.powerset_len_empty Multiset.powersetCard_eq_empty
 
 @[simp]
 theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
     s.powersetCard (card s + i) = 0 :=
-  powersetCard_empty _ (lt_add_of_pos_right (card s) hi)
+  powersetCard_eq_empty _ (lt_add_of_pos_right (card s) hi)
 #align multiset.powerset_len_card_add Multiset.powersetCard_card_add
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :

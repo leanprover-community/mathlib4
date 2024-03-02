@@ -5,7 +5,6 @@ Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.Topology.Sheaves.SheafOfFunctions
 import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.Topology.LocalHomeomorph
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 #align_import topology.sheaves.local_predicate from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
@@ -245,7 +244,7 @@ def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.s
 set_option linter.uppercaseLean3 false in
 #align Top.stalk_to_fiber TopCat.stalkToFiber
 
--- Porting note : removed `simp` attribute, due to left hand side is not in simple normal form.
+-- Porting note: removed `simp` attribute, due to left hand side is not in simple normal form.
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ x f) = f.1 x := by
   dsimp [Presheaf.germ, stalkToFiber]

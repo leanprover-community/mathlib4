@@ -83,7 +83,7 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     cases' hh with i hh
     revert h₁; generalize succ (Nat.find h₀) = j; intro h₁
     wlog case : i ≤ j
-    · cases' le_total i j with H H <;> [skip; symm] <;> apply_assumption <;> assumption
+    · rcases le_total i j with H | H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
   · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
@@ -282,13 +282,13 @@ theorem uncurry_curry_continuous :
 
 end Curry
 
-instance Pi.lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
+instance lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
     LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]
     conv =>
       lhs
       erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
-#align pi.pi.lawful_fix' Pi.Pi.lawfulFix'
+#align pi.pi.lawful_fix' Pi.lawfulFix'
 
 end Pi

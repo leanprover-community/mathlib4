@@ -81,9 +81,11 @@ associative, commutative operation and a list of "operand atoms" and rearranges 
 To work with a general associative, commutative binary operation, `move_oper`
 needs to have inbuilt the lemmas asserting the analogues of
 `add_comm, add_assoc, add_left_comm` for the new operation.
-Currently, `move_oper` supports `HAdd.hAdd`, `HAdd.hAdd`, `and`, `or`, `max`, `min`.
+Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`, `Min.min`.
 
 These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
+
+See `test/MoveAdd.lean` for sample usage of `move_oper`.
 
 ## Implementation notes
 
@@ -215,18 +217,25 @@ def prepareOp (sum : Expr) : Expr :=
   let opargs := sum.getAppArgs
   (opargs.toList.take (opargs.size - 2)).foldl (fun x y => Expr.app x y) sum.getAppFn
 
-/-- `sumList prepOp exs` assumes that `prepOp` is an `Expr`ession representing a binary operation
-already fully applied up until its last two arguments and assumes that the last two arguments
-are the operands of the operation.
+/-- `sumList prepOp left_assoc? exs` assumes that `prepOp` is an `Expr`ession representing a
+binary operation already fully applied up until its last two arguments and assumes that the
+last two arguments are the operands of the operation.
 Such an expression is the result of `prepareOp`.
-If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp exs` returns
-`prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`.
+
+If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList prepOp left_assoc? exs`
+returns
+* `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`, if `left_assoc?` is `false`, and
+* `prepOp e₁ (prepOp e₂ (... prepOp (prepOp eₙ₋₁  eₙ))`, if `left_assoc?` is `true`.
 -/
 partial
-def sumList (prepOp : Expr) : List Expr → Expr
+def sumList (prepOp : Expr) (left_assoc? : Bool) : List Expr → Expr
   | []    => default
-  | [a]    => a
-  | a::as => as.foldl (fun x y => Expr.app (prepOp.app x) y) a
+  | [a]   => a
+  | a::as =>
+    if left_assoc? then
+      Expr.app (prepOp.app a) (sumList prepOp true as)
+    else
+      as.foldl (fun x y => Expr.app (prepOp.app x) y) a
 
 end ExprProcessing
 
@@ -273,7 +282,8 @@ def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Ex
   let sums ← getOps op (← instantiateMVars tgt)
   let candidates := sums.map fun (addends, sum) => do
     let reord := reorderUsing addends.toList instructions
-    let resummed := sumList (prepareOp sum) reord
+    let left_assoc? := sum.getAppFn.isConstOf `And || sum.getAppFn.isConstOf `Or
+    let resummed := sumList (prepareOp sum) left_assoc? reord
     if (resummed != sum) then some (sum, resummed) else none
   return (candidates.toList.reduceOption.toArray.qsort
     (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
@@ -350,7 +360,7 @@ operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
   `op`-analogues of `add_comm, add_assoc, add_left_comm`.
 -/
 def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
-    MetaM (List MVarId) := do
+    MetaM (List MVarId) := mv.withContext do
   let permExpr ← permuteExpr op (← mv.getType'') instr
   -- generate the implication `permutedMv → mv = permutedMv → mv`
   let eqmpr ← mkAppM ``Eq.mpr #[← mkFreshExprMVar (← mkEq (← mv.getType) permExpr)]
@@ -380,8 +390,9 @@ def unifyMovements (data : Array (Expr × Bool × Syntax)) (tgt : Expr) :
   let atoms := (ops.map Prod.fst).flatten.toList.filter (!isBVar ·)
   -- `instr` are the unified user-provided terms, `neverMatched` are non-unified ones
   let (instr, neverMatched) ← pairUp data.toList atoms
-  let dbgMsg := #[m!"Matching of input variables:\n* pre-match:  {
-    data.map (Prod.snd ∘ Prod.snd)}\n* post-match: {instr}",
+  let dbgMsg := #[m!"Matching of input variables:\n\
+    * pre-match:  {data.map (Prod.snd ∘ Prod.snd)}\n\
+    * post-match: {instr}",
     m!"\nMaximum number of iterations: {ops.size}"]
   -- if there are `neverMatched` terms, return the parsed terms and the syntax
   let errMsg := neverMatched.map fun (t, a, stx) => (if a then m!"← {t}" else m!"{t}", stx)

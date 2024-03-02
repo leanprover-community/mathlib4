@@ -27,9 +27,9 @@ theorem MeasureTheory.integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Typ
       calc
         _ = ∫ x : E 0 × ((i : Fin n) → E (Fin.succ i)),
             f 0 x.1 * ∏ i : Fin n, f (Fin.succ i) (x.2 i) := by
-          rw [volume_pi, ← ((measurePreserving_piFinSuccAboveEquiv
+          rw [volume_pi, ← ((measurePreserving_piFinSuccAbove
             (fun i => (volume : Measure (E i))) 0).symm).integral_comp']
-          simp_rw [MeasurableEquiv.piFinSuccAboveEquiv_symm_apply,
+          simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply,
             Fin.prod_univ_succ, Fin.insertNth_zero, Fin.cons_succ]
           rfl
         _ = (∫ x, f 0 x) *  ∏ i : Fin n, ∫ (x : E (Fin.succ i)), f (Fin.succ i) x := by

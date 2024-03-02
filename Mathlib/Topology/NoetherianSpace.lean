@@ -45,7 +45,7 @@ variable (α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
 namespace TopologicalSpace
 
 /-- Type class for noetherian spaces. It is defined to be spaces whose open sets satisfies ACC. -/
-@[mk_iff noetherianSpace_iff]
+@[mk_iff]
 class NoetherianSpace : Prop where
   wellFounded_opens : WellFounded ((· > ·) : Opens α → Opens α → Prop)
 #align topological_space.noetherian_space TopologicalSpace.NoetherianSpace
@@ -121,7 +121,7 @@ instance {α} : NoetherianSpace (CofiniteTopology α) := by
 
 theorem noetherianSpace_of_surjective [NoetherianSpace α] (f : α → β) (hf : Continuous f)
     (hf' : Function.Surjective f) : NoetherianSpace β :=
-  noetherianSpace_iff_isCompact.2 $ (Set.image_surjective.mpr hf').forall.2 $ fun s =>
+  noetherianSpace_iff_isCompact.2 <| (Set.image_surjective.mpr hf').forall.2 fun s =>
     (NoetherianSpace.isCompact s).image hf
 #align topological_space.noetherian_space_of_surjective TopologicalSpace.noetherianSpace_of_surjective
 
@@ -240,24 +240,24 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
         rw [Set.diff_eq_empty] at r
         exact r)
     simp only [Set.Finite.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hZ'
-    exact hZ'.1.2 $ le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
+    exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
 
-  have hU1 : U = (⋃ (x : ι), x.1) ᶜ
-  · rw [Set.compl_eq_univ_diff]
-    refine le_antisymm (Set.diff_subset_diff le_top $ subset_refl _) ?_
+  have hU1 : U = (⋃ (x : ι), x.1) ᶜ := by
+    rw [Set.compl_eq_univ_diff]
+    refine le_antisymm (Set.diff_subset_diff le_top <| subset_refl _) ?_
     rw [← Set.compl_eq_univ_diff]
     refine Set.compl_subset_iff_union.mpr (le_antisymm le_top ?_)
     rw [Set.union_comm, ← Set.sUnion_eq_iUnion, ← Set.sUnion_insert]
     rintro a -
     by_cases h : a ∈ U
     · exact ⟨U, Set.mem_insert _ _, h⟩
-    · rw [Set.mem_diff, Decidable.not_and, not_not, Set.mem_iUnion] at h
+    · rw [Set.mem_diff, Decidable.not_and_iff_or_not_not, not_not, Set.mem_iUnion] at h
       rcases h with (h|⟨i, hi⟩)
       · refine ⟨irreducibleComponent a, Or.inr ?_, mem_irreducibleComponent⟩
-        simp only [Set.mem_diff, Set.mem_singleton_iff]
+        simp only [ι, Set.mem_diff, Set.mem_singleton_iff]
         refine ⟨irreducibleComponent_mem_irreducibleComponents _, ?_⟩
         rintro rfl
-        refine h mem_irreducibleComponent
+        exact h mem_irreducibleComponent
       · exact ⟨i, Or.inr i.2, hi⟩
 
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Extr
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Algebra.Group.Defs
 
 #align_import topology.local_extr from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
