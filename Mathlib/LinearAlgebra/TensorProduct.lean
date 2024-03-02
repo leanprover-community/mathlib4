@@ -1268,6 +1268,9 @@ theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTens
 
 variable {N}
 
+theorem lid_comp_rTensor (f : N →ₗ[R] R) :
+    (TensorProduct.lid R M).comp (rTensor M f) = lift ((lsmul R M).comp f) := ext' fun _ _ ↦ rfl
+
 @[simp]
 theorem lTensor_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g.lTensor P).comp (f.rTensor N) = map f g := by
