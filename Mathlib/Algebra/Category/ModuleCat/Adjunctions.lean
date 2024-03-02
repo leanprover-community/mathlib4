@@ -285,7 +285,7 @@ section
 -- accordingly
 
 instance : Preadditive (Free R C) where
-  homGroup X Y := Finsupp.addCommGroup
+  homGroup X Y := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
     dsimp [CategoryTheory.categoryFree]
     rw [Finsupp.sum_add_index'] <;> · simp [add_mul]

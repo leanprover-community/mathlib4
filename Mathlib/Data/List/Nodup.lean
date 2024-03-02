@@ -98,7 +98,7 @@ theorem nodup_iff_injective_get {l : List α} :
       · exact (h ⟨i, hi⟩ ⟨j, hj⟩ hij hg).elim
       · rfl
       · exact (h ⟨j, hj⟩ ⟨i, hi⟩ hji hg.symm).elim,
-      fun hinj i j hij h => Nat.ne_of_lt hij (Fin.veq_of_eq (hinj h))⟩
+      fun hinj i j hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (hinj h))⟩
 
 set_option linter.deprecated false in
 @[deprecated nodup_iff_injective_get]
@@ -164,7 +164,7 @@ theorem nthLe_eq_of_ne_imp_not_nodup (xs : List α) (n m : ℕ) (hn : n < xs.len
 theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
     indexOf (get l i) l = i :=
   suffices (⟨indexOf (get l i) l, indexOf_lt_length.2 (get_mem _ _ _)⟩ : Fin l.length) = i
-    from Fin.veq_of_eq this
+    from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
 
 set_option linter.deprecated false in

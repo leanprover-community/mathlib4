@@ -139,7 +139,7 @@ instance isArtinian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] 
   isArtinian_pi
 #align is_artinian_pi' isArtinian_pi'
 
---porting note: new instance
+--porting note (#10754): new instance
 instance isArtinian_finsupp {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
     [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
