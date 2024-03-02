@@ -675,6 +675,10 @@ variable {s}
 
 variable {s' : ι → Type*} [∀ i, AddCommMonoid (s' i)] [∀ i, Module R (s' i)]
 
+variable {s'' : ι → Type*} [∀ i, AddCommMonoid (s'' i)] [∀ i, Module R (s'' i)]
+
+variable (g : (i : ι) → (s' i →ₗ[R] s'' i))
+
 variable (f : (i : ι) → (s i →ₗ[R] s' i))
 
 noncomputable def map : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, s' i :=
@@ -707,6 +711,93 @@ theorem map_range_eq_span_tprod : range (map f) =
   simp only [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span]
   congr; ext t
   simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_eq_and, map_tprod]
+
+/-- Given submodules `p i ⊆ s i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, s i`. -/
+@[simp]
+def mapIncl (p : (i : ι) → Submodule R (s i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, s i :=
+  map (fun (i : ι) ↦ (p i).subtype)
+
+theorem map_comp : map (fun (i : ι) ↦ (g i).comp (f i)) = (map g).comp (map f) := by
+  ext
+  simp only [compMultilinearMap_apply, map_tprod, coe_comp, Function.comp_apply]
+
+theorem lift_comp_map (h : MultilinearMap R s' E) :
+    lift h ∘ₗ map f = lift (h.compLinearMap f) := by
+  ext
+  simp only [compMultilinearMap_apply, coe_comp, Function.comp_apply, map_tprod, lift.tprod,
+    MultilinearMap.compLinearMap_apply]
+
+attribute [local ext high] ext
+
+@[simp]
+theorem map_id : map (fun (i : ι) ↦ (id : s i →ₗ[R] s i))  = .id := by
+  ext
+  simp only [compMultilinearMap_apply, map_tprod, id_coe, id_eq]
+
+@[simp]
+theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
+  map_id
+
+theorem map_mul (f₁ f₂ : (i : ι) → (s i →ₗ[R] s i))  :
+    map (fun (i : ι) ↦ (f₁ i) * (f₂ i)) = map f₁ * map f₂ :=
+  map_comp f₁ f₂
+
+@[simp]
+protected theorem map_pow (f : (i : ι) → (s i →ₗ[R] s i)) (n : ℕ) : map f ^ n = map (f ^ n) := by
+  induction' n with n ih
+  · simp only [Nat.zero_eq, pow_zero]; rw [← map_one]; rfl
+  · simp only [pow_succ', ih]; rw [← map_mul]; rfl
+
+open Function in
+theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : (i : ι) → s i) (u : s i →ₗ[R] s' i) :
+     (fun (j : ι) ↦ (update f i u j) (x j)) = update (fun (j : ι) ↦ (f j) (x j)) i (u (x i)) := by
+    ext j
+    by_cases h : j = i
+    · rw [h]; simp only [update_same]
+    · simp only [ne_eq, h, not_false_eq_true, update_noteq]
+
+open Function in
+theorem map_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] s' i) :
+    map (update f i (u + v)) = map (update f i u) + map (update f i v) := by
+  ext x
+  simp only [compMultilinearMap_apply, map_tprod, add_apply]
+  rw [map_add_smul_aux]
+  simp only [add_apply, MultilinearMap.map_add]
+  congr
+  all_goals (rw [map_add_smul_aux])
+
+open Function in
+theorem map_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] s' i) :
+    map (update f i (c • u)) = c • map (update f i u) := by
+  ext x
+  simp only [compMultilinearMap_apply, map_tprod, smul_apply]
+  repeat (rw [map_add_smul_aux])
+  simp only [smul_apply, MultilinearMap.map_smul]
+
+variable (R s s')
+
+noncomputable def mapMultilinear :
+    MultilinearMap R (fun (i : ι) ↦ (s i →ₗ[R] s' i)) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s' i) where
+  toFun := map
+  map_smul' _ _ _ _ := map_smul _ _ _ _
+  map_add' _ _ _ _ := map_add _ _ _ _
+
+/-- The linear map from `⨂[R] i, s i →ₗ[R] s' i` to `⨂[R] i, s i →ₗ[R] ⨂[R] i, s' i` sending
+`⨂ₜ[R] i, f i` to the `PiTensorProduct.map f`, the tensor product of the family `f`.
+-/
+noncomputable def homTensorHomMap :
+    (⨂[R] i, s i →ₗ[R] s' i) →ₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, s' i :=
+  lift (mapMultilinear R s s')
+
+variable {R s s'}
+
+@[simp]
+theorem mapMultilinear_apply : mapMultilinear R s s' f = map f := rfl
+
+/-
+@[simp]
+theorem homTensorHomMap_apply : homTensorHomMap R s s' f = map f := rfl
+-/
 
 end map
 
