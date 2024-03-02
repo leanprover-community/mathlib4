@@ -155,6 +155,7 @@ import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Field.Power
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.Free
 import Mathlib.Algebra.FreeAlgebra
@@ -386,6 +387,7 @@ import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Algebra.Order.Field.Subfield
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Floor.Div
 import Mathlib.Algebra.Order.Group.Abs
@@ -2207,8 +2209,6 @@ import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.FieldTheory.Subfield
-import Mathlib.FieldTheory.Subfield.Order
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
@@ -3666,7 +3666,8 @@ import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.ContinuousAffineMap
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.Equicontinuity
-import Mathlib.Topology.Algebra.Field
+import Mathlib.Topology.Algebra.Field.Basic
+import Mathlib.Topology.Algebra.Field.Subfield
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
