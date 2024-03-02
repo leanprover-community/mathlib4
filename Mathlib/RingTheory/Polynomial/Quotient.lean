@@ -70,6 +70,14 @@ noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
       (Ideal.Quotient.algebra R) _ :=
 ((quotientSpanCXSubCAlgEquiv (X - C x) y).restrictScalars R).trans <| quotientSpanXSubCAlgEquiv x
 
+lemma Polynomial.modByMonic_eq_zero_iff_quotient_eq_zero (p q : R[X]) (hq : q.Monic) :
+    p %ₘ q = 0 ↔ (p : R[X] ⧸ Ideal.span {q}) = 0 := by
+  rw [Polynomial.dvd_iff_modByMonic_eq_zero hq, Ideal.Quotient.eq_zero_iff_dvd]
+
+@[simp]
+lemma Polynomial.quotient_singleton_eq (p : R[X]) : (Ideal.Quotient.mk (Ideal.span {p})) p = 0 := by
+  rw [Ideal.Quotient.eq_zero_iff_dvd]
+
 end Polynomial
 
 namespace Ideal
