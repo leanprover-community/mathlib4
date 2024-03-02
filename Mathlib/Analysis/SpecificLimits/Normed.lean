@@ -628,7 +628,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 
-/-- **Dirichlet's Test** for monotone sequences. -/
+/-- **Dirichlet's test** for monotone sequences. -/
 theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) (hgb : ∀ n, ‖∑ i in range n, z i‖ ≤ b) :
     CauchySeq fun n ↦ ∑ i in range n, f i • z i := by
