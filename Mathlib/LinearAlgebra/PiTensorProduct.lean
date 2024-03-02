@@ -349,6 +349,13 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
     exact MultilinearMap.congr_fun H f
 #align pi_tensor_product.ext PiTensorProduct.ext
 
+/-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
+the tensor product.-/
+theorem span_tprod_eq_top : Submodule.span R { t | ∃ (m : (i : ι) → s i), tprod R m = t } = ⊤ :=
+  Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on (fun _ _ ↦ Submodule.smul_mem _ _
+  (Submodule.subset_span (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply])))
+  (fun _ _ hx hy ↦ Submodule.add_mem _ hx hy)
+
 end Module
 
 section Multilinear
@@ -669,6 +676,8 @@ end Multilinear
 
 section map
 
+/-! Functoriality of the tensor product.-/
+
 open LinearMap
 
 variable {s}
@@ -681,6 +690,7 @@ variable (g : (i : ι) → (s' i →ₗ[R] s'' i))
 
 variable (f : (i : ι) → (s i →ₗ[R] s' i))
 
+/-- The tensor of a family of linear maps from `s i` to `s' i`.-/
 noncomputable def map : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, s' i :=
   lift (MultilinearMap.compLinearMap (tprod R) f)
 
@@ -689,6 +699,8 @@ theorem map_tprod (m : (i : ι) → s i) : map f (tprod R m) = tprod R (fun i �
   unfold map
   simp only [lift.tprod, MultilinearMap.compLinearMap_apply]
 
+/-- Re-indexing the components of the tensor product by an equivalence `e` is compatible
+with `PiTensorProduct.map`.-/
 theorem map_reindex (e : ι ≃ ι₂) :
     map (fun i ↦ f (e.symm i)) ∘ₗ reindex R s e = reindex R s' e ∘ₗ map f := by
   ext m
@@ -700,11 +712,6 @@ theorem map_reindex_apply (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
   DFunLike.congr_fun (map_reindex _ _) _
 
 -- No lemmas about associativity, because we don't have associativity of `PiTensorProduct` yet.
-
-theorem span_tprod_eq_top : Submodule.span R { t | ∃ (m : (i : ι) → s i), tprod R m = t } = ⊤ :=
-  Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on (fun _ _ ↦ Submodule.smul_mem _ _
-  (Submodule.subset_span (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply])))
-  (fun _ _ hx hy ↦ Submodule.add_mem _ hx hy)
 
 theorem map_range_eq_span_tprod : range (map f) =
     Submodule.span R { t | ∃ (m : (i : ι) → s i), tprod R (fun i ↦ f i (m i)) = t } := by
@@ -750,11 +757,11 @@ protected theorem map_pow (f : (i : ι) → (s i →ₗ[R] s i)) (n : ℕ) : map
 
 open Function in
 theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : (i : ι) → s i) (u : s i →ₗ[R] s' i) :
-     (fun (j : ι) ↦ (update f i u j) (x j)) = update (fun (j : ι) ↦ (f j) (x j)) i (u (x i)) := by
-    ext j
-    by_cases h : j = i
-    · rw [h]; simp only [update_same]
-    · simp only [ne_eq, h, not_false_eq_true, update_noteq]
+    (fun (j : ι) ↦ (update f i u j) (x j)) = update (fun (j : ι) ↦ (f j) (x j)) i (u (x i)) := by
+  ext j
+  by_cases h : j = i
+  · rw [h]; simp only [update_same]
+  · simp only [ne_eq, h, not_false_eq_true, update_noteq]
 
 open Function in
 theorem map_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] s' i) :
@@ -776,6 +783,9 @@ theorem map_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] s' i) :
 
 variable (R s s')
 
+/-- The tensor of a family of linear maps from `s i` to `s' i`, as a multilinear map of
+the family.
+-/
 noncomputable def mapMultilinear :
     MultilinearMap R (fun (i : ι) ↦ (s i →ₗ[R] s' i)) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s' i) where
   toFun := map
