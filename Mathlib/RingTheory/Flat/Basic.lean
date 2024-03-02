@@ -224,9 +224,6 @@ lemma injective_characterModule_iff_rTensor_preserves_injective_linearMap :
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.rTensor M) := by
   simp_rw [injective_iff, rTensor_injective_iff_lcomp_surjective, Surjective, DFunLike.ext_iff]; rfl
 
--- We have established a connection between preserving injectiveness of linear map and character
--- module being an injective module. We use Baer's criterion to investigate this connection further.
-
 variable {R M N}
 
 /-- `CharacterModule M` is Baer iff `M` is flat. -/
@@ -257,6 +254,5 @@ lemma iff_rTensor_preserves_injective_linearMap [Small.{v} R] :
   rw [iff_characterModule_injective,
     injective_characterModule_iff_rTensor_preserves_injective_linearMap]
 end Flat
-
 
 end Module
