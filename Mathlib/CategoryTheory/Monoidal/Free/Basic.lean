@@ -348,14 +348,14 @@ def project : MonoidalFunctor (F C) D where
   μ_natural_left := fun f _ => by
     induction' f using Quotient.recOn
     · dsimp
-      simp
+      simp only [Category.comp_id, Category.id_comp]
       rw [← tensorHom_id, ← tensorHom_id]
       rfl
     · rfl
   μ_natural_right := fun _ f => by
     induction' f using Quotient.recOn
     · dsimp
-      simp
+      simp only [Category.comp_id, Category.id_comp]
       rw [← id_tensorHom, ← id_tensorHom]
       rfl
     · rfl
