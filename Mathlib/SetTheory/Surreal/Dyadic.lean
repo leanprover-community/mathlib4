@@ -218,7 +218,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
   cases' h₂ with h₂ h₂
   · rw [h₂, add_comm, zsmul_pow_two_powHalf m₂ c y₁]
   · have := Nat.one_le_pow y₁ 2 Nat.succ_pos'
-    norm_cast at h₂; linarith
+    norm_cast at h₂; omega
 #align surreal.dyadic_aux Surreal.dyadic_aux
 
 /-- The additive monoid morphism `dyadicMap` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
@@ -239,7 +239,7 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
         apply dyadic_aux
         rwa [ha₁, ha₂, mul_comm, mul_comm m₂]
       · have : (1 : ℤ) ≤ 2 ^ y₃ := mod_cast Nat.one_le_pow y₃ 2 Nat.succ_pos'
-        linarith
+        omega
   map_zero' := Localization.liftOn_zero _ _
   map_add' x y :=
     Localization.induction_on₂ x y <| by

@@ -107,10 +107,7 @@ namespace HigherFacesVanish
 /-- This lemma expresses the vanishing of
 `(P q).f (n+1) ≫ X.δ k : X _[n+1] ⟶ X _[n]` when `k≠0` and `k≥n-q+2` -/
 theorem of_P : ∀ q n : ℕ, HigherFacesVanish q ((P q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1])
-  | 0 => fun n j hj₁ => by
-    exfalso
-    have hj₂ := Fin.is_lt j
-    linarith
+  | 0 => fun n j hj₁ => by omega
   | q + 1 => fun n => by
     simp only [P_succ]
     exact (of_P q n).induction
@@ -128,9 +125,9 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFa
     by_cases hqn : n < q
     · exact v.of_succ.comp_Hσ_eq_zero hqn
     · obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
-      have hnaq : n = a + q := by linarith
+      have hnaq : n = a + q := by omega
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
-      have eq := v ⟨a, by linarith⟩ (by
+      have eq := v ⟨a, by omega⟩ (by
         simp only [hnaq, Nat.succ_eq_add_one, add_assoc]
         rfl)
       simp only [Fin.succ_mk] at eq

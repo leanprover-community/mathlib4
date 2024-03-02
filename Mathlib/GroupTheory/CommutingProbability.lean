@@ -155,7 +155,7 @@ private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
 
 private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
   | 0 | 1 | 2 | 3 => by decide
-  | n + 4 => by intros; linarith [n.add_div_right four_pos, n.div_le_self 4]
+  | n + 4 => by omega
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=

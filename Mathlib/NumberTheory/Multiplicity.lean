@@ -386,7 +386,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · convert Nat.two_pow_sub_pow hxy hx hneven using 2
   · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
-  · linarith
+  · omega
   · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
 #align padic_val_nat.pow_two_sub_pow padicValNat.pow_two_sub_pow
 

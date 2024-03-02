@@ -626,7 +626,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       · positivity
       · refine' (div_le_one <| mod_cast hn).mpr _
         norm_cast
-        linarith)
+        omega)
 #align tendsto_factorial_div_pow_self_at_top tendsto_factorial_div_pow_self_atTop
 
 /-!

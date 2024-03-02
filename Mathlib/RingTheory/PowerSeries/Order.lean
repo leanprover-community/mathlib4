@@ -242,7 +242,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   refine' mul_eq_zero_of_right (coeff R x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt _ h))
   rw [mem_antidiagonal] at hx
   norm_cast
-  linarith
+  omega
 #align power_series.coeff_mul_of_lt_order PowerSeries.coeff_mul_of_lt_order
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : R⟦X⟧} (n : ℕ)

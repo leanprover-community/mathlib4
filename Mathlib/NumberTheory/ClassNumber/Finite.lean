@@ -221,7 +221,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     have := abv.nonneg b
     rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel, rpow_neg_one,
       mul_left_comm, mul_inv_cancel, mul_one, rpow_nat_cast] <;>
-      try norm_cast; linarith
+      try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
     · linarith
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm with hμ

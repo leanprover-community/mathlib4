@@ -829,7 +829,7 @@ theorem balanceL_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : S
     rcases H with (⟨l', e, H | ⟨_, H₂⟩⟩ | ⟨r', e, H | ⟨_, H₂⟩⟩)
     · exact le_trans (le_trans (Nat.le_add_left _ _) H) (mul_pos (by decide) l1 : (0 : ℕ) < _)
     · exact le_trans H₂ (Nat.mul_le_mul_left _ (raised_iff.1 e).1)
-    · cases raised_iff.1 e; unfold delta; linarith
+    · cases raised_iff.1 e; unfold delta; omega
     · exact le_trans (raised_iff.1 e).1 H₂
 #align ordnode.balance_l_eq_balance' Ordnode.balanceL_eq_balance'
 
@@ -1139,22 +1139,22 @@ theorem Valid'.node3R {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
 #align ordnode.valid'.node3_r Ordnode.Valid'.node3R
 
 theorem Valid'.node4L_lemma₁ {a b c d : ℕ} (lr₂ : 3 * (b + c + 1 + d) ≤ 16 * a + 9)
-    (mr₂ : b + c + 1 ≤ 3 * d) (mm₁ : b ≤ 3 * c) : b < 3 * a + 1 := by linarith
+    (mr₂ : b + c + 1 ≤ 3 * d) (mm₁ : b ≤ 3 * c) : b < 3 * a + 1 := by omega
 #align ordnode.valid'.node4_l_lemma₁ Ordnode.Valid'.node4L_lemma₁
 
-theorem Valid'.node4L_lemma₂ {b c d : ℕ} (mr₂ : b + c + 1 ≤ 3 * d) : c ≤ 3 * d := by linarith
+theorem Valid'.node4L_lemma₂ {b c d : ℕ} (mr₂ : b + c + 1 ≤ 3 * d) : c ≤ 3 * d := by omega
 #align ordnode.valid'.node4_l_lemma₂ Ordnode.Valid'.node4L_lemma₂
 
 theorem Valid'.node4L_lemma₃ {b c d : ℕ} (mr₁ : 2 * d ≤ b + c + 1) (mm₁ : b ≤ 3 * c) : d ≤ 3 * c :=
-  by linarith
+  by omega
 #align ordnode.valid'.node4_l_lemma₃ Ordnode.Valid'.node4L_lemma₃
 
 theorem Valid'.node4L_lemma₄ {a b c d : ℕ} (lr₁ : 3 * a ≤ b + c + 1 + d) (mr₂ : b + c + 1 ≤ 3 * d)
-    (mm₁ : b ≤ 3 * c) : a + b + 1 ≤ 3 * (c + d + 1) := by linarith
+    (mm₁ : b ≤ 3 * c) : a + b + 1 ≤ 3 * (c + d + 1) := by omega
 #align ordnode.valid'.node4_l_lemma₄ Ordnode.Valid'.node4L_lemma₄
 
 theorem Valid'.node4L_lemma₅ {a b c d : ℕ} (lr₂ : 3 * (b + c + 1 + d) ≤ 16 * a + 9)
-    (mr₁ : 2 * d ≤ b + c + 1) (mm₂ : c ≤ 3 * b) : c + d + 1 ≤ 3 * (a + b + 1) := by linarith
+    (mr₁ : 2 * d ≤ b + c + 1) (mm₂ : c ≤ 3 * b) : c + d + 1 ≤ 3 * (a + b + 1) := by omega
 #align ordnode.valid'.node4_l_lemma₅ Ordnode.Valid'.node4L_lemma₅
 
 theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hm : Valid' x m y)
@@ -1173,7 +1173,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
   rcases H with (⟨l0, m1, r0⟩ | ⟨l0, mr₁, lr₁, lr₂, mr₂⟩)
   · rw [hm.2.size_eq, Nat.succ_inj', add_eq_zero_iff] at m1
     rw [l0, m1.1, m1.2]; revert r0; rcases size r with (_ | _ | _) <;>
-      [decide; decide; (intro r0; unfold BalancedSz delta; linarith)]
+      [decide; decide; (intro r0; unfold BalancedSz delta; omega)]
   · rcases Nat.eq_zero_or_pos (size r) with r0 | r0
     · rw [r0] at mr₂; cases not_le_of_lt Hm mr₂
     rw [hm.2.size_eq] at lr₁ lr₂ mr₁ mr₂
@@ -1216,19 +1216,19 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
 #align ordnode.valid'.node4_l Ordnode.Valid'.node4L
 
 theorem Valid'.rotateL_lemma₁ {a b c : ℕ} (H2 : 3 * a ≤ b + c) (hb₂ : c ≤ 3 * b) : a ≤ 3 * b := by
-  linarith
+  omega
 #align ordnode.valid'.rotate_l_lemma₁ Ordnode.Valid'.rotateL_lemma₁
 
 theorem Valid'.rotateL_lemma₂ {a b c : ℕ} (H3 : 2 * (b + c) ≤ 9 * a + 3) (h : b < 2 * c) :
-    b < 3 * a + 1 := by linarith
+    b < 3 * a + 1 := by omega
 #align ordnode.valid'.rotate_l_lemma₂ Ordnode.Valid'.rotateL_lemma₂
 
 theorem Valid'.rotateL_lemma₃ {a b c : ℕ} (H2 : 3 * a ≤ b + c) (h : b < 2 * c) : a + b < 3 * c :=
-  by linarith
+  by omega
 #align ordnode.valid'.rotate_l_lemma₃ Ordnode.Valid'.rotateL_lemma₃
 
 theorem Valid'.rotateL_lemma₄ {a b : ℕ} (H3 : 2 * b ≤ 9 * a + 3) : 3 * b ≤ 16 * a + 9 := by
-  linarith
+  omega
 #align ordnode.valid'.rotate_l_lemma₄ Ordnode.Valid'.rotateL_lemma₄
 
 theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
@@ -1244,8 +1244,8 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
     exact
       (or_iff_right_of_imp fun h => (mul_le_mul_left (by decide)).1 (le_trans h (by decide))).1 H3
   have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
-    (or_iff_left_of_imp <| by intro; linarith).1 H3
-  have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by intros; linarith
+    (or_iff_left_of_imp <| by omega).1 H3
+  have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega
   have hlp : size l > 0 → ¬size rl + size rr ≤ 1 := fun l0 hb =>
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
   rw [Ordnode.rotateL]; split_ifs with h
@@ -1318,7 +1318,7 @@ theorem Valid'.balance'_lemma {α l l' r r'} (H1 : BalancedSz l' r')
   suffices @size α r ≤ 3 * (size l + 1) by
     rcases Nat.eq_zero_or_pos (size l) with l0 | l0
     · apply Or.inr; rwa [l0] at this
-    change 1 ≤ _ at l0; apply Or.inl; linarith
+    change 1 ≤ _ at l0; apply Or.inl; omega
   rcases H2 with (⟨hl, rfl⟩ | ⟨hr, rfl⟩) <;> rcases H1 with (h | ⟨_, h₂⟩)
   · exact le_trans (Nat.le_add_left _ _) (le_trans h (Nat.le_add_left _ _))
   · exact
@@ -1326,7 +1326,7 @@ theorem Valid'.balance'_lemma {α l l' r r'} (H1 : BalancedSz l' r')
         (Nat.mul_le_mul_left _ <| le_trans (Nat.dist_tri_right _ _) (Nat.add_le_add_left hl _))
   · exact
       le_trans (Nat.dist_tri_left' _ _)
-        (le_trans (add_le_add hr (le_trans (Nat.le_add_left _ _) h)) (by linarith))
+        (le_trans (add_le_add hr (le_trans (Nat.le_add_left _ _) h)) (by omega))
   · rw [Nat.mul_succ]
     exact le_trans (Nat.dist_tri_right' _ _) (add_le_add h₂ (le_trans hr (by decide)))
 #align ordnode.valid'.balance'_lemma Ordnode.Valid'.balance'_lemma
@@ -1355,7 +1355,7 @@ theorem Valid'.balanceL_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (h
   · rw [r0]; exact Nat.zero_le _
   rcases Nat.eq_zero_or_pos (size l) with l0 | l0
   · rw [l0]; exact le_trans (Nat.mul_le_mul_left _ (H₁ l0)) (by decide)
-  replace H₂ : _ ≤ 3 * _ := H₂ l0 r0; linarith
+  replace H₂ : _ ≤ 3 * _ := H₂ l0 r0; omega
 #align ordnode.valid'.balance_l_aux Ordnode.Valid'.balanceL_aux
 
 theorem Valid'.balanceL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
@@ -1455,7 +1455,7 @@ theorem Valid'.glue {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Vali
 #align ordnode.valid'.glue Ordnode.Valid'.glue
 
 theorem Valid'.merge_lemma {a b c : ℕ} (h₁ : 3 * a < b + c + 1) (h₂ : b ≤ 3 * c) :
-    2 * (a + b) ≤ 9 * c + 5 := by linarith
+    2 * (a + b) ≤ 9 * c + 5 := by omega
 #align ordnode.valid'.merge_lemma Ordnode.Valid'.merge_lemma
 
 theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
@@ -1464,7 +1464,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
     Valid' o₁ (.balanceL t rx rr) o₂ ∧ size (.balanceL t rx rr) = ls + rs := by
   rw [hl.2.1] at e
   rw [hl.2.1, hr.2.1, delta] at h
-  rcases hr.3.1 with (H | ⟨hr₁, hr₂⟩); · linarith
+  rcases hr.3.1 with (H | ⟨hr₁, hr₂⟩); · omega
   suffices H₂ : _ by
     suffices H₁ : _ by
       refine' ⟨Valid'.balanceL_aux v hr.right H₁ H₂ _, _⟩
@@ -1473,7 +1473,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
           size_balance' v.2 hr.2.2.2, e, hl.2.1, hr.2.1]
         abel
     · rw [e, add_right_comm]; rintro ⟨⟩
-  · intro _ _; rw [e]; unfold delta at hr₂ ⊢; linarith
+  · intro _ _; rw [e]; unfold delta at hr₂ ⊢; omega
 #align ordnode.valid'.merge_aux₁ Ordnode.Valid'.merge_aux₁
 
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)

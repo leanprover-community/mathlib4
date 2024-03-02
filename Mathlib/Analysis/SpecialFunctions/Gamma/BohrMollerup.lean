@@ -285,8 +285,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
   · rw [f_nat_eq @hf_feq, Nat.add_sub_cancel, Nat.cast_add_one, add_sub_cancel]
     · ring
     · exact Nat.succ_ne_zero _
-  · apply Nat.succ_le_succ
-    linarith [Nat.pos_of_ne_zero hn]
+  · omega
 #align real.bohr_mollerup.ge_log_gamma_seq Real.BohrMollerup.ge_logGammaSeq
 
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)

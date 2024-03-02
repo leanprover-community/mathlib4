@@ -557,7 +557,7 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
   have h1 := calc
     4 = 2 ^ 2 := by norm_num
     _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
-  have h2 : 1 ≤ 2 ^ p := by linarith
+  have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
     rw [sMod', sMod, Int.ofNat_emod]
