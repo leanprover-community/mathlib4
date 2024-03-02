@@ -78,7 +78,7 @@ theorem powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux l
     (powerset_aux'_perm p).trans powersetAux_perm_powersetAux'.symm
 #align multiset.powerset_aux_perm Multiset.powersetAux_perm
 
---Porting note: slightly slower implementation due to `map ofList`
+--Porting note (#11083): slightly slower implementation due to `map ofList`
 /-- The power set of a multiset. -/
 def powerset (s : Multiset α) : Multiset (Multiset α) :=
   Quot.liftOn s

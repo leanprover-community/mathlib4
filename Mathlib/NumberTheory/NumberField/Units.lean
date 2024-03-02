@@ -314,6 +314,8 @@ sequence defining the same ideal and their quotient is the desired unit `u_w₁`
 
 open NumberField.mixedEmbedding NNReal
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/

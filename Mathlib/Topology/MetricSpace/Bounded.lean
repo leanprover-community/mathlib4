@@ -98,7 +98,7 @@ theorem _root_.Bornology.IsBounded.subset_closedBall_lt (h : IsBounded s) (a : �
 
 theorem isBounded_closure_of_isBounded (h : IsBounded s) : IsBounded (closure s) :=
   let ⟨C, h⟩ := isBounded_iff.1 h
-  isBounded_iff.2 ⟨C, fun _a ha _b hb => (isClosed_le' C).closure_subset <|
+  isBounded_iff.2 ⟨C, fun _a ha _b hb => isClosed_Iic.closure_subset <|
     map_mem_closure₂ continuous_dist ha hb h⟩
 #align metric.bounded_closure_of_bounded Metric.isBounded_closure_of_isBounded
 

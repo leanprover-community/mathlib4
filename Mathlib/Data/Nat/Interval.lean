@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 
 #align_import data.nat.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -22,7 +22,11 @@ and subsequently be moved upstream to `Data.Finset.LocallyFinite`.
 
 open Finset Nat
 
-instance : LocallyFiniteOrder ℕ where
+variable (a b c : ℕ)
+
+namespace Nat
+
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range' _ _⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩
@@ -56,10 +60,6 @@ instance : LocallyFiniteOrder ℕ where
     | inr h =>
       rw [tsub_eq_zero_iff_le.2 h.le, add_zero]
       exact iff_of_false (fun hx => hx.2.not_le hx.1) fun hx => h.not_le (hx.1.trans hx.2)
-
-variable (a b c : ℕ)
-
-namespace Nat
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩ :=
   rfl
@@ -136,37 +136,37 @@ theorem card_Iic : (Iic b).card = b + 1 := by rw [Iic_eq_Icc, card_Icc, bot_eq_z
 theorem card_Iio : (Iio b).card = b := by rw [Iio_eq_Ico, card_Ico, bot_eq_zero, tsub_zero]
 #align nat.card_Iio Nat.card_Iio
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [Fintype.card_ofFinset, card_Icc]
 #align nat.card_fintype_Icc Nat.card_fintypeIcc
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
   rw [Fintype.card_ofFinset, card_Ico]
 #align nat.card_fintype_Ico Nat.card_fintypeIco
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [Fintype.card_ofFinset, card_Ioc]
 #align nat.card_fintype_Ioc Nat.card_fintypeIoc
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [Fintype.card_ofFinset, card_Ioo]
 #align nat.card_fintype_Ioo Nat.card_fintypeIoo
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
   rw [Fintype.card_ofFinset, card_Iic]
 #align nat.card_fintype_Iic Nat.card_fintypeIic
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 #align nat.card_fintype_Iio Nat.card_fintypeIio

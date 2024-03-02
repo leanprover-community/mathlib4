@@ -93,7 +93,7 @@ def _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : B
   { ‹HeytingAlgebra α›,
     GeneralizedHeytingAlgebra.toDistribLattice with
     himp_eq := fun a b =>
-      eq_of_forall_le_iff fun c => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
+      eq_of_forall_le_iff fun _ => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
     inf_compl_le_bot := fun a => (this _).1.le_bot
     top_le_sup_compl := fun a => (this _).2.top_le }
 #align boolean_algebra.of_regular BooleanAlgebra.ofRegular

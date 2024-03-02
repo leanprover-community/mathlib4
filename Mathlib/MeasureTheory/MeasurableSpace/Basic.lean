@@ -612,7 +612,7 @@ theorem MeasurableSet.subtype_image {s : Set α} {t : Set s} (hs : MeasurableSet
     MeasurableSet t → MeasurableSet (((↑) : s → α) '' t) := by
   rintro ⟨u, hu, rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact hu.inter hs
+  exact hs.inter hu
 #align measurable_set.subtype_image MeasurableSet.subtype_image
 
 @[measurability]
@@ -866,8 +866,8 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
   inhabit ι
   set g' : (i : ι) → t i → β := fun i => g i ∘ (↑)
   -- see #2184
-  have ht' : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), g' i ⟨x, hxi⟩ = g' j ⟨x, hxj⟩
-  · intro i j x hxi hxj
+  have ht' : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), g' i ⟨x, hxi⟩ = g' j ⟨x, hxj⟩ := by
+    intro i j x hxi hxj
     rcases eq_or_ne i j with rfl | hij
     · rfl
     · exact ht hij ⟨hxi, hxj⟩
@@ -907,18 +907,18 @@ theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Mea
     MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
 #align measurable_pi_iff measurable_pi_iff
 
-@[aesop safe 100 apply (rule_sets [Measurable])]
+@[aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
   measurable_pi_iff.1 measurable_id a
 #align measurable_pi_apply measurable_pi_apply
 
-@[aesop safe 100 apply (rule_sets [Measurable])]
+@[aesop safe 100 apply (rule_sets := [Measurable])]
 theorem Measurable.eval {a : δ} {g : α → ∀ a, π a} (hg : Measurable g) :
     Measurable fun x => g x a :=
   (measurable_pi_apply a).comp hg
 #align measurable.eval Measurable.eval
 
-@[aesop safe 100 apply (rule_sets [Measurable])]
+@[aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
@@ -1209,18 +1209,18 @@ instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonCl
 
 lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
 
-@[aesop safe 100 apply (rule_sets [Measurable])]
+@[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
 
-@[aesop safe 100 apply (rule_sets [Measurable])]
+@[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (measurable_discrete Not).comp <| measurable_set_mem a
 
-@[aesop safe 100 apply (rule_sets [Measurable])]
+@[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
   measurableSet_setOf.2 <| measurable_set_mem _
 
-@[aesop safe 100 apply (rule_sets [Measurable])]
+@[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_not_mem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
   measurableSet_setOf.2 <| measurable_set_not_mem _
 
@@ -2075,13 +2075,28 @@ instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyG
   choose U hUf hU using fun i => IsMeasurablyGenerated.exists_measurable_subset (hVf i)
   refine' ⟨⋂ i : t, U i, _, _, _⟩
   · rw [← Equiv.plift.surjective.iInf_comp, mem_iInf]
-    refine' ⟨t, ht, U, hUf, rfl⟩
+    exact ⟨t, ht, U, hUf, rfl⟩
   · haveI := ht.countable.toEncodable.countable
     exact MeasurableSet.iInter fun i => (hU i).1
   · exact iInter_mono fun i => (hU i).2
 #align filter.infi_is_measurably_generated Filter.iInf_isMeasurablyGenerated
 
 end Filter
+
+/-- The set of points for which a sequence of measurable functions converges to a given value
+is measurable. -/
+@[measurability]
+lemma measurableSet_tendsto {_ : MeasurableSpace β} [MeasurableSpace γ]
+    [Countable δ] {l : Filter δ} [l.IsCountablyGenerated]
+    (l' : Filter γ) [l'.IsCountablyGenerated] [hl' : l'.IsMeasurablyGenerated]
+    {f : δ → β → γ} (hf : ∀ i, Measurable (f i)) :
+    MeasurableSet { x | Tendsto (fun n ↦ f n x) l l' } := by
+  rcases l.exists_antitone_basis with ⟨u, hu⟩
+  rcases (Filter.hasBasis_self.mpr hl'.exists_measurable_subset).exists_antitone_subbasis with
+    ⟨v, v_meas, hv⟩
+  simp only [hu.tendsto_iff hv.toHasBasis, true_imp_iff, true_and, setOf_forall, setOf_exists]
+  exact .iInter fun n ↦ .iUnion fun _ ↦ .biInter (to_countable _) fun i _ ↦
+    (v_meas n).2.preimage (hf i)
 
 /-- We say that a collection of sets is countably spanning if a countable subset spans the
   whole type. This is a useful condition in various parts of measure theory. For example, it is

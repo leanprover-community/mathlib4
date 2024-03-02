@@ -556,8 +556,8 @@ theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
     ∫ x : ℝ, cexp (b * x ^ 2 + c * x + d) = (π / -b) ^ (1 / 2 : ℂ) * cexp (d - c^2 / (4 * b)) := by
   have hb' : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
   have h (x : ℝ) : cexp (b * x ^ 2 + c * x + d) =
-      cexp (- -b * (x + c / (2 * b)) ^ 2) * cexp (d - c ^ 2 / (4 * b))
-  · simp_rw [← Complex.exp_add]
+      cexp (- -b * (x + c / (2 * b)) ^ 2) * cexp (d - c ^ 2 / (4 * b)) := by
+    simp_rw [← Complex.exp_add]
     congr 1
     field_simp
     ring_nf
@@ -579,13 +579,12 @@ theorem _root_.fourier_transform_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
     1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t + I * c) ^ 2) := by
   haveI : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
-  have h : (-↑π * b).re < 0
-  · simpa only [neg_mul, neg_re, re_ofReal_mul, neg_lt_zero] using mul_pos pi_pos hb
+  have h : (-↑π * b).re < 0 := by
+    simpa only [neg_mul, neg_re, re_ofReal_mul, neg_lt_zero] using mul_pos pi_pos hb
   ext1 t
-  simp_rw [fourierIntegral_eq_integral_exp_smul, smul_eq_mul, ← Complex.exp_add, ← add_assoc]
+  simp_rw [fourierIntegral_real_eq_integral_exp_smul, smul_eq_mul, ← Complex.exp_add, ← add_assoc]
   have (x : ℝ) : ↑(-2 * π * x * t) * I + -π * b * x ^ 2 + 2 * π * c * x =
-    -π * b * x ^ 2 + (-2 * π * I * t + 2 * π * c) * x + 0
-  · push_cast; ring
+    -π * b * x ^ 2 + (-2 * π * I * t + 2 * π * c) * x + 0 := by push_cast; ring
   simp_rw [this, integral_cexp_quadratic h, neg_mul, neg_neg]
   congr 2
   · rw [← div_div, div_self <| ofReal_ne_zero.mpr pi_ne_zero, one_div, inv_cpow, ← one_div]
@@ -597,7 +596,7 @@ theorem _root_.fourier_transform_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     ring
 
 theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
-    (𝓕 fun x ↦ cexp (-π * b * x ^ 2)) =
+    (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
     fun t : ℝ ↦ 1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * t ^ 2) := by
   simpa only [mul_zero, zero_mul, add_zero] using fourier_transform_gaussian_pi' hb 0
 #align fourier_transform_gaussian_pi fourier_transform_gaussian_pi
@@ -614,12 +613,12 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 lemma rexp_neg_quadratic_isLittleO_rpow_atTop {a : ℝ} (ha : a < 0) (b s : ℝ) :
     (fun x ↦ rexp (a * x ^ 2 + b * x)) =o[atTop] (· ^ s) := by
-  suffices : (fun x ↦ rexp (a * x ^ 2 + b * x)) =o[atTop] (fun x ↦ rexp (-x))
-  · refine this.trans ?_
+  suffices (fun x ↦ rexp (a * x ^ 2 + b * x)) =o[atTop] (fun x ↦ rexp (-x)) by
+    refine this.trans ?_
     simpa only [neg_one_mul] using isLittleO_exp_neg_mul_rpow_atTop zero_lt_one s
   rw [isLittleO_exp_comp_exp_comp]
-  have : (fun x ↦ -x - (a * x ^ 2 + b * x)) = fun x ↦ x * (-a * x - (b + 1))
-  · ext1 x; ring_nf
+  have : (fun x ↦ -x - (a * x ^ 2 + b * x)) = fun x ↦ x * (-a * x - (b + 1)) := by
+    ext1 x; ring_nf
   rw [this]
   exact tendsto_id.atTop_mul_atTop <|
     Filter.tendsto_atTop_add_const_right _ _ <| tendsto_id.const_mul_atTop (neg_pos.mpr ha)
@@ -668,12 +667,12 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     (∑' n : ℤ, cexp (-π * a * n ^ 2 + 2 * π * b * n)) =
       1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n + I * b) ^ 2) := by
   let f : ℝ → ℂ := fun x ↦ cexp (-π * a * x ^ 2 + 2 * π * b * x)
-  have hCf : Continuous f
-  · refine Complex.continuous_exp.comp (Continuous.add ?_ ?_)
+  have hCf : Continuous f := by
+    refine Complex.continuous_exp.comp (Continuous.add ?_ ?_)
     · exact continuous_const.mul (Complex.continuous_ofReal.pow 2)
     · exact continuous_const.mul Complex.continuous_ofReal
-  have hFf : 𝓕 f = fun x : ℝ ↦ 1 / a ^ (1 / 2 : ℂ) * cexp (-π / a * (x + I * b) ^ 2)
-  · exact fourier_transform_gaussian_pi' ha b
+  have hFf : 𝓕 f = fun x : ℝ ↦ 1 / a ^ (1 / 2 : ℂ) * cexp (-π / a * (x + I * b) ^ 2) :=
+    fourier_transform_gaussian_pi' ha b
   have h1 : 0 < (↑π * a).re := by
     rw [re_ofReal_mul]
     exact mul_pos pi_pos ha
@@ -685,18 +684,18 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
   have f_bd : f =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
     convert (cexp_neg_quadratic_isLittleO_abs_rpow_cocompact ?_ _ (-2)).isBigO
     rwa [neg_mul, neg_re, neg_lt_zero]
-  have Ff_bd : (𝓕 f) =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ))
-  · rw [hFf]
+  have Ff_bd : (𝓕 f) =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by
+    rw [hFf]
     have : ∀ (x : ℝ), -↑π / a * (↑x + I * b) ^ 2 =
-      -↑π / a * x ^ 2 + (-2 * π * I * b) / a * x + π * b ^ 2 / a
-    · intro x; ring_nf; rw [I_sq]; ring
+        -↑π / a * x ^ 2 + (-2 * π * I * b) / a * x + π * b ^ 2 / a := by
+      intro x; ring_nf; rw [I_sq]; ring
     simp_rw [this]
     conv => enter [2, x]; rw [Complex.exp_add, ← mul_assoc _ _ (Complex.exp _), mul_comm]
     refine ((cexp_neg_quadratic_isLittleO_abs_rpow_cocompact
       (?_) (-2 * ↑π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
     rwa [neg_div, neg_re, neg_lt_zero]
   convert Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay hCf one_lt_two f_bd Ff_bd 0 using 1
-  · simp only [zero_add, ofReal_int_cast]
+  · simp only [f, zero_add, ofReal_int_cast]
   · rw [← tsum_mul_left]
     simp only [QuotientAddGroup.mk_zero, fourier_eval_zero, mul_one, hFf, ofReal_int_cast]
 

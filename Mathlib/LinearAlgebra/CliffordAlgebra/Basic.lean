@@ -88,7 +88,9 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
   RingQuot.instAlgebra _
 
 -- verify there are no diamonds
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
@@ -205,23 +207,24 @@ See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.righ
 -/
 @[elab_as_elim]
 theorem induction {C : CliffordAlgebra Q → Prop}
-    (h_grade0 : ∀ r, C (algebraMap R (CliffordAlgebra Q) r)) (h_grade1 : ∀ x, C (ι Q x))
-    (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
+    (algebraMap : ∀ r, C (algebraMap R (CliffordAlgebra Q) r)) (ι : ∀ x, C (ι Q x))
+    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
     (a : CliffordAlgebra Q) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (CliffordAlgebra Q) :=
     { carrier := C
-      mul_mem' := @h_mul
-      add_mem' := @h_add
-      algebraMap_mem' := h_grade0 }
+      mul_mem' := @mul
+      add_mem' := @add
+      algebraMap_mem' := algebraMap }
   -- porting note: Added `h`. `h` is needed for `of`.
   letI h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
-  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = algebraMap _ _ (Q m) } :=
-    ⟨(ι Q).codRestrict (Subalgebra.toSubmodule s) h_grade1, fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
+    ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
+      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
     ext
-    simp
+    simp [of]
     -- porting note: `simp` can't apply this
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra
@@ -249,7 +252,7 @@ theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (
     (f : M →ₗ[R] A) :
     (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
       (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =
-        Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
+        Q.polarBilin.compr₂ (Algebra.linearMap R A) := by
   simp_rw [DFunLike.ext_iff]
   refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
   change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
@@ -350,6 +353,26 @@ theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
     (ι Q₁).range.map (map f).toLinearMap = f.range.map (ι Q₂) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 #align clifford_algebra.ι_range_map_map CliffordAlgebra.ι_range_map_map
+
+open Function in
+/-- If `f` is a linear map from `M₁` to `M₂` that preserves the quadratic forms, and if it has
+a linear retraction `g` that also preserves the quadratic forms, then `CliffordAlgebra.map g`
+is a retraction of `CliffordAlgebra.map f`. -/
+lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (f : Q₁ →qᵢ Q₂) (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
+  refine fun x => ?_
+  replace h : g.comp f = QuadraticForm.Isometry.id Q₁ := DFunLike.ext _ _ h
+  rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
+
+/-- If a linear map preserves the quadratic forms and is surjective, then the algebra
+maps it induces between Clifford algebras is also surjective.-/
+lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
+    (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) :=
+  CliffordAlgebra.induction
+    (fun r ↦ ⟨algebraMap R (CliffordAlgebra Q₁) r, by simp only [AlgHom.commutes]⟩)
+    (fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x, by simp only [map_apply_ι, hx]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x * y, by simp only [map_mul, hx, hy]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simp only [map_add, hx, hy]⟩)
 
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/

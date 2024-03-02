@@ -187,14 +187,14 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
 #align set_like.coe_eq_coe SetLike.coe_eq_coe
 
 -- porting note: this is not necessary anymore due to the way coercions work
-#noalign set_like.coe_mk
+ #noalign set_like.coe_mk
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 #align set_like.coe_mem SetLike.coe_mem
 
-@[aesop 5% apply (rule_sets [SetLike])]
+@[aesop 5% apply (rule_sets := [SetLike])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
 -- porting note: removed `@[simp]` because `simpNF` linter complained

@@ -10,6 +10,8 @@ import Mathlib.Topology.Metrizable.Urysohn
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Topology.Separation.NotNormal
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Baire.LocallyCompactRegular
 
 #align_import sorgenfrey_line from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -87,8 +89,8 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
     iInf_iInf_eq_right, mem_Ico]
   simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal,
     ← inf_iInf, ← iInf_inf, this, iInf_subtype]
-  suffices : (⨅ x ∈ Ioi a, 𝓟 (Iio x)).HasBasis (a < ·) Iio; exact this.principal_inf _
-  refine' hasBasis_biInf_principal _ nonempty_Ioi
+  suffices (⨅ x ∈ Ioi a, 𝓟 (Iio x)).HasBasis (a < ·) Iio from this.principal_inf _
+  refine hasBasis_biInf_principal ?_ nonempty_Ioi
   exact directedOn_iff_directed.2 <| Monotone.directed_ge fun x y hxy ↦ Iio_subset_Iio hxy
 #align counterexample.sorgenfrey_line.nhds_basis_Ico Counterexample.SorgenfreyLine.nhds_basis_Ico
 
@@ -312,15 +314,16 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   have H : {x : ℝ | Irrational x} ⊆ ⋃ n, C n := fun x hx =>
     mem_iUnion.2 ⟨_, subset_closure ⟨hx, rfl⟩⟩
   have Hd : Dense (⋃ n, interior (C n)) :=
-    isGδ_irrational.dense_iUnion_interior_of_closed dense_irrational (fun _ => isClosed_closure) H
-  obtain ⟨N, hN⟩ : ∃ n : ℕ+, (interior <| C n).Nonempty; exact nonempty_iUnion.mp Hd.nonempty
+    IsGδ.setOf_irrational.dense_iUnion_interior_of_closed dense_irrational
+      (fun _ => isClosed_closure) H
+  obtain ⟨N, hN⟩ : ∃ n : ℕ+, (interior <| C n).Nonempty := nonempty_iUnion.mp Hd.nonempty
   /- Choose a rational number `r` in the interior of the closure of `C N`, then choose `n ≥ N > 0`
     such that `Ico r (r + n⁻¹) × Ico (-r) (-r + n⁻¹) ⊆ U`. -/
   rcases Rat.denseRange_cast.exists_mem_open isOpen_interior hN with ⟨r, hr⟩
   have hrU : ((r, -r) : ℝₗ × ℝₗ) ∈ U := @SU (r, -r) ⟨add_neg_self _, r, rfl⟩
   obtain ⟨n, hnN, hn⟩ :
-    ∃ n, N ≤ n ∧ Ico (r : ℝₗ) (r + (n : ℝₗ)⁻¹) ×ˢ Ico (-r : ℝₗ) (-r + (n : ℝₗ)⁻¹) ⊆ U
-  exact ((nhds_prod_antitone_basis_inv_pnat _ _).hasBasis_ge N).mem_iff.1 (Uo.mem_nhds hrU)
+      ∃ n, N ≤ n ∧ Ico (r : ℝₗ) (r + (n : ℝₗ)⁻¹) ×ˢ Ico (-r : ℝₗ) (-r + (n : ℝₗ)⁻¹) ⊆ U :=
+    ((nhds_prod_antitone_basis_inv_pnat _ _).hasBasis_ge N).mem_iff.1 (Uo.mem_nhds hrU)
   /- Finally, choose `x ∈ Ioo (r : ℝ) (r + n⁻¹) ∩ C N`. Then `(x, -r)` belongs both to `U` and `V`,
     so they are not disjoint. This contradiction completes the proof. -/
   obtain ⟨x, hxn, hx_irr, rfl⟩ :

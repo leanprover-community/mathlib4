@@ -395,11 +395,11 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)]
 #align sylow.conj_eq_normalizer_conj_of_mem Sylow.conj_eq_normalizer_conj_of_mem
 
 /-- Sylow `p`-subgroups are in bijection with cosets of the normalizer of a Sylow `p`-subgroup -/
-noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Fintype (Sylow p G)]
+noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : Sylow p G ≃ G ⧸ (P : Subgroup G).normalizer :=
   calc
     Sylow p G ≃ (⊤ : Set (Sylow p G)) := (Equiv.Set.univ (Sylow p G)).symm
-    _ ≃ orbit G P := by rw [P.orbit_eq_top]
+    _ ≃ orbit G P := Equiv.setCongr P.orbit_eq_top.symm
     _ ≃ G ⧸ stabilizer G P := (orbitEquivQuotientStabilizer G P)
     _ ≃ G ⧸ (P : Subgroup G).normalizer := by rw [P.stabilizer_eq_normalizer]
 
@@ -854,7 +854,6 @@ noncomputable def directProductOfNormal [Fintype G]
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
       _ = (card G).factorization.prod (· ^ ·) := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero
-
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal
 
 end Sylow
