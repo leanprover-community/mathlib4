@@ -293,12 +293,6 @@ def mk (x : PGame) (h : x.Numeric) : Surreal :=
   ⟦⟨x, h⟩⟧
 #align surreal.mk Surreal.mk
 
-@[elab_as_elim]
-theorem inductionOn (x : Surreal) {P : Surreal → Prop} (h : ∀ y h, P (mk y h)) : P x := by
-  induction' x using Quotient.inductionOn with x
-  rcases x with ⟨x, hx⟩
-  apply h
-
 instance : Zero Surreal :=
   ⟨mk 0 numeric_zero⟩
 
@@ -310,7 +304,7 @@ instance : Inhabited Surreal :=
 
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
 def lift {α} (f : ∀ x, Numeric x → α)
-    (H : ∀ {x y} (hx : Numeric x) (hy : Numeric y), x ≈ y → f x hx = f y hy) : Surreal → α :=
+    (H : ∀ {x y} (hx : Numeric x) (hy : Numeric y), x.Equiv y → f x hx = f y hy) : Surreal → α :=
   Quotient.lift (fun x : { x // Numeric x } => f x.1 x.2) fun x y => H x.2 y.2
 #align surreal.lift Surreal.lift
 
@@ -318,7 +312,7 @@ def lift {α} (f : ∀ x, Numeric x → α)
 def lift₂ {α} (f : ∀ x y, Numeric x → Numeric y → α)
     (H :
       ∀ {x₁ y₁ x₂ y₂} (ox₁ : Numeric x₁) (oy₁ : Numeric y₁) (ox₂ : Numeric x₂) (oy₂ : Numeric y₂),
-        x₁ ≈ x₂ → y₁ ≈ y₂ → f x₁ y₁ ox₁ oy₁ = f x₂ y₂ ox₂ oy₂) :
+        x₁.Equiv x₂ → y₁.Equiv y₂ → f x₁ y₁ ox₁ oy₁ = f x₂ y₂ ox₂ oy₂) :
     Surreal → Surreal → α :=
   lift (fun x ox => lift (fun y oy => f x y ox oy) fun _ _ => H _ _ _ _ equiv_rfl)
     fun _ _ h => funext <| Quotient.ind fun _ => H _ _ _ _ h equiv_rfl
@@ -372,7 +366,7 @@ instance : AddMonoidWithOne Surreal :=
 
 /-- Casts a `Surreal` number into a `Game`. -/
 def toGame : Surreal →+o Game where
-  toFun := lift (fun x _ => ⟦x⟧) fun _ _ => Quotient.sound
+  toFun := lift (fun x _ => ⟦x⟧) fun _ _ => Quot.sound
   map_zero' := rfl
   map_add' := by rintro ⟨_, _⟩ ⟨_, _⟩; rfl
   monotone' := by rintro ⟨_, _⟩ ⟨_, _⟩; exact id
@@ -400,8 +394,13 @@ theorem toGame_mk (x : PGame) (hx : x.Numeric) : toGame (mk x hx) = (⟦x⟧ : G
 
 @[simp] lemma mk_le_mk {x y : PGame.{u}} {hx hy}: mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
 
+@[elab_as_elim]
+theorem inductionOn (x : Surreal) {P : Surreal → Prop} (h : ∀ y h, P (mk y h)) : P x := by
+  induction' x using Quotient.inductionOn with x
+  rcases x with ⟨x, hx⟩
+  apply h
+
 lemma _root_.SetTheory.PGame.Numeric.exists_ge (x : PGame) : ∃ y, x ≤ y ∧ y.Numeric := sorry
-lemma _root_.SetTheory.PGame.Numeric.exists_le (x : PGame) : ∃ y ≤ x, y.Numeric := sorry
 
 /-- A small family of surreals is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
