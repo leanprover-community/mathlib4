@@ -59,7 +59,7 @@ theorem not_injective_limitation : ¬ Injective (limitation g) := by
   have h₁ := by apply lift_mk_le_lift_mk_of_injective h_inj
   have mk_initialSeg_subtype :
       #{ i : Ordinal // i < (ord <| succ #α) } = lift.{u+1, u} (succ #α) := by
-    simpa using mk_initialSeg (ord <| succ #α)
+    simpa only [card_typein, Set.coe_setOf, card_ord] using mk_initialSeg (ord <| succ #α)
   rw[mk_initialSeg_subtype, Cardinal.lift_lift, Cardinal.lift_le] at h₁
   have h₂ := not_le_of_lt (Cardinal.succ_lt #α)
   exact h₂ h₁
@@ -83,7 +83,9 @@ decreasing_by exact h
 
 theorem lfpApprox_monotone : Monotone (lfpApprox f) := by
   unfold Monotone; intros a b h; unfold lfpApprox
-  refine sSup_le_sSup ?h; simp
+  refine sSup_le_sSup ?h
+  simp only [exists_prop, Set.setOf_subset_setOf, forall_exists_index,
+    and_imp, forall_apply_eq_imp_iff₂]
   intros a' h'
   use a'
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
@@ -91,10 +93,13 @@ theorem lfpApprox_monotone : Monotone (lfpApprox f) := by
 theorem lfpApprox_addition (a : Ordinal.{u}) : f (lfpApprox f a) = lfpApprox f (a+1) := by
   apply le_antisymm
   · conv => right; unfold lfpApprox
-    apply le_sSup; simp
+    apply le_sSup
+    simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop, Set.mem_setOf_eq]
     use a
   · conv => left; unfold lfpApprox
-    apply sSup_le; simp
+    apply sSup_le
+    simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop, Set.mem_setOf_eq,
+      forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intros a' h
     apply f.2; apply lfpApprox_monotone; exact h
 
@@ -106,18 +111,22 @@ theorem lfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixe
   induction b using Ordinal.induction with | h b IH =>
   apply le_antisymm
   · conv => left; unfold lfpApprox
-    apply sSup_le; simp
+    apply sSup_le
+    simp only [exists_prop, Set.mem_setOf_eq, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂]
     intro a' ha'b
     by_cases haa : a' < a
     · rw[lfpApprox_addition]
       apply lfpApprox_monotone
-      simp; exact haa
-    · simp at haa
+      simp only [Ordinal.add_one_eq_succ, succ_le_iff]
+      exact haa
+    · simp only [not_lt] at haa
       cases le_iff_lt_or_eq.mp haa with
       | inl haa => specialize IH a' ha'b haa; rw[IH, h]
       | inr haa => rw[← haa, h]
   · conv => right; unfold lfpApprox
-    apply le_sSup; simp
+    apply le_sSup
+    simp only [exists_prop, Set.mem_setOf_eq]
     use a
 
 /-- Every value after a fixed point of f is also a fixed point of f -/
@@ -180,7 +189,9 @@ theorem lfpApprox_le_fixedPoint : ∀ a : fixedPoints f, ∀ i : Ordinal, lfpApp
   induction i using Ordinal.induction with
   | h i IH =>
     unfold lfpApprox
-    apply sSup_le; simp
+    apply sSup_le
+    simp only [exists_prop, Set.mem_setOf_eq, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂]
     intro j h_j
     rw[← h_a]
     apply f.monotone'
@@ -193,7 +204,8 @@ theorem lfpApprox_cardinal_is_lfp : lfpApprox f (ord <| succ #α) = lfp f := by
     let ⟨x, h_x⟩ := h_lfp; rw[h_x]
     exact lfpApprox_le_fixedPoint f x (ord <| succ #α)
   · have h_fix : ∃ x: fixedPoints f, lfpApprox f (ord <| succ #α) = x := by
-      simpa using lfpApprox_has_fixedPoint_cardinal f
+      simpa only [Subtype.exists, mem_fixedPoints, exists_prop, exists_eq_right'] using
+        lfpApprox_has_fixedPoint_cardinal f
     let ⟨x, h_x⟩ := h_fix; rw[h_x]
     exact lfp_le_fixed f x.prop
 
