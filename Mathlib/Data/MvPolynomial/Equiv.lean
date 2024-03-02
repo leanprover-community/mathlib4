@@ -312,7 +312,7 @@ lemma optionEquivRight_X_some (x : S₁) : optionEquivRight R S₁ (X (some x)) 
   simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
 
 @[simp]
-lemma optionEquivRight_X_none : optionEquivRight R S₁ (X (none)) = C (Polynomial.X) := by
+lemma optionEquivRight_X_none : optionEquivRight R S₁ (X none) = C (Polynomial.X) := by
   unfold optionEquivRight AlgEquiv.ofAlgHom
   simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
 
