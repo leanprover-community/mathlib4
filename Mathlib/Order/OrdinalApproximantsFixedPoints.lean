@@ -100,7 +100,7 @@ theorem lfpApprox_addition (a : Ordinal.{u}) : f (lfpApprox f a) = lfpApprox f (
 
 /-- The ordinal approximants of the least fixed points are stabilizing
   when reaching a fixed point of f -/
-theorem lfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixedPoints f):
+theorem lfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixedPoints f) :
     ∀ b > a, lfpApprox f b = lfpApprox f a := by
   intro b hab; rw[mem_fixedPoints_iff] at h
   induction b using Ordinal.induction with | h b IH =>
@@ -121,7 +121,7 @@ theorem lfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixe
     use a
 
 /-- Every value after a fixed point of f is also a fixed point of f -/
-theorem lfpApprox_eq_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixedPoints f):
+theorem lfpApprox_eq_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixedPoints f) :
     ∀ b > a, lfpApprox f b ∈ fixedPoints f  := by
   intro b h_ab
   rw[mem_fixedPoints_iff]
@@ -145,7 +145,7 @@ theorem lfpApprox_equal_value : ∃ i < ord <| succ #α, ∃ j < ord <| succ #α
 
 /-- If there are distinct ordinals with equal value then the values are fixed points -/
 lemma lfpApprox_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
-    (h_fab : lfpApprox f a = lfpApprox f b):
+    (h_fab : lfpApprox f a = lfpApprox f b) :
     lfpApprox f a ∈ fixedPoints f := by
   rw[mem_fixedPoints_iff,lfpApprox_addition]
   apply Monotone.stabilizing (lfpApprox_monotone f)
@@ -154,7 +154,7 @@ lemma lfpApprox_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
 /-- If there are disctinct ordinals with equal value then
   every value succeding the smaller ordinal are fixed points -/
 lemma lfpApprox_many_fixedPoints (a b : Ordinal.{u}) (h : a < b)
-    (h_fab : lfpApprox f a = lfpApprox f b):
+    (h_fab : lfpApprox f a = lfpApprox f b) :
     ∀ i ≥ a, lfpApprox f i ∈ fixedPoints f := by
   intro i h_i
   obtain rfl | h_ia := eq_or_ne i a
@@ -218,12 +218,12 @@ theorem gfpApprox_addition (a : Ordinal.{u}) : f (gfpApprox f a) = gfpApprox f (
 
 /-- The ordinal approximants of the least fixed points are stabilizing
   when reaching a fixed point of f -/
-theorem gfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: gfpApprox f a ∈ fixedPoints f):
+theorem gfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: gfpApprox f a ∈ fixedPoints f) :
     ∀ b > a, gfpApprox f b = gfpApprox f a :=
   lfpApprox_stabilizing_at_fp (OrderHom.dual f) a h
 
 /-- Every value after a fixed point of f is also a fixed point of f -/
-theorem gfpApprox_eq_fp (a : Ordinal.{u}) (h: gfpApprox f a ∈ fixedPoints f):
+theorem gfpApprox_eq_fp (a : Ordinal.{u}) (h: gfpApprox f a ∈ fixedPoints f) :
     ∀ b > a, gfpApprox f b ∈ fixedPoints f :=
   lfpApprox_eq_fp (OrderHom.dual f) a h
 

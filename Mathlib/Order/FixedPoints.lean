@@ -111,9 +111,6 @@ theorem le_gfp {a : α} (h : a ≤ f a) : a ≤ gfp f :=
   le_sSup h
 #align order_hom.le_gfp OrderHom.le_gfp
 
-theorem fixed_le_gfp {a : α} (h : f a = a) : a ≤ gfp f  :=
-  f.le_gfp h.ge
-
 theorem gfp_le {a : α} (h : ∀ b, b ≤ f b → b ≤ a) : gfp f ≤ a :=
   sSup_le h
 #align order_hom.gfp_le OrderHom.gfp_le
