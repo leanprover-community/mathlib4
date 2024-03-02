@@ -7,12 +7,13 @@ import Mathlib.FieldTheory.Finite.GaloisField
 
 open Set
 open GMetric
+open Code
 
 section hamming
 variable {ι K:Type*} [Fintype ι] [DecidableEq K]
 
 abbrev hdist :GMetric (∀ _:ι,K) ℕ∞ := hammingENatDist
-
+variable (s:Set (ι → K)) [IsDelone hdist s]
 -- maybe sensitive to universe problems? because the choice of ι is *very* unimportant
 def trivdist : GMetric K ℕ∞ where
   toFun := fun x y => hammingENatDist (Function.const (Fin 1) x) (Function.const (Fin 1) y)
@@ -85,7 +86,6 @@ noncomputable instance Hamming.instStrictModuleGNorm_SemiRing_Domain
     else
       simp_all only [or_self, ite_false]
 
-
 -- look into: hamming distance as measure on the set of indices where the things differ
 -- look into: hamming distance as the sum of trivial distances in each of the dimensions
 
@@ -109,12 +109,15 @@ noncomputable instance Hamming.instStrictModuleGNorm_Module
   norm_smul_le' := fun a b => (norm_eq_smul a b).le
   smul_norm_le' := fun a b => (norm_eq_smul a b).ge
 
+instance Hamming.inst_Code : _Code ℕ∞ hdist s where
+
 end hamming
 variable (n n' p:ℕ) [Fact (p.Prime)] [DecidableEq (GaloisField p n)]
 
 abbrev CodeWord := Fin (n') → GaloisField p n
 open Code
 
-variable (s : Submodule (GaloisField p n) (CodeWord n n' p)) [IsDelone hdist (s:Set (CodeWord n n' p))]
+variable (s : Submodule (GaloisField p n) (CodeWord n n' p)) [IsDelone hdist (SetLike.coe s)]
+noncomputable instance Hamming.inst_LinearCode: _LinearCode ℕ∞ (GaloisField p n) trivdist hdist s where
 
-def h: _LinearCode ℕ∞ (GaloisField p n) trivdist hdist s:= inferInstance
+#check (inferInstance : _LinearCode ℕ∞ (GaloisField p n) trivdist hdist s)

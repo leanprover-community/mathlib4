@@ -62,7 +62,7 @@ variable
   [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] [FunLike Tₖ K (K → γ)]
   [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdist_k] [FunLike Tₘ M (M → γ)]
   [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdist_m] [IsDelone gdist_m ↑s] [Nontrivial γ]
-  [PosMulStrictMono γ] [MulPosStrictMono γ] [ZeroLEOneClass γ]
+  [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ]
   [StrictModuleGNorm K K gdist_k gdist_k] [StrictModuleGNorm K M gdist_k gdist_m]
   [_Code γ gdist_m ↑s] [_LinearCode γ K gdist_k gdist_m s]
 variable (gdist_m₂ : Tₘ₂) (s₂:Submodule K M₂)
