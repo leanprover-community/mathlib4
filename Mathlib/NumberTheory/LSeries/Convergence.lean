@@ -18,9 +18,7 @@ real part `x` and provide some results about it.
 L-series, abscissa of convergence
 -/
 
--- namespace LSeries
-
-open Complex Nat
+open Complex
 
 /-- The abscissa `x : EReal` of absolute convergence of the L-series associated to `f`:
 the series converges absolutely at `s` when `re s > x` and does not converge absolutely
@@ -43,8 +41,8 @@ lemma LSeriesSummable_lt_re_of_abscissaOfAbsConv_lt_re {f : ℕ → ℂ} {s : �
   obtain ⟨x, hx₁, hx₂⟩ := EReal.exists_between_coe_real hs
   exact ⟨x, EReal.coe_lt_coe_iff.mp hx₂, LSeriesSummable_of_abscissaOfAbsConv_lt_re hx₁⟩
 
-lemma LSeriesSummable.abscissaOfAbsConv_le {f : ℕ → ℂ} {s : ℂ}
-    (h : LSeriesSummable f s) : abscissaOfAbsConv f ≤ s.re := by
+lemma LSeriesSummable.abscissaOfAbsConv_le {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummable f s) :
+    abscissaOfAbsConv f ≤ s.re := by
   refine sInf_le <| Membership.mem.out ?_
   simp only [Set.mem_setOf_eq, Set.mem_image, EReal.coe_eq_coe_iff, exists_eq_right]
   exact h.of_re_le_re <| by simp only [ofReal_re, le_refl]
@@ -88,7 +86,8 @@ open Filter in
 /-- If `‖f n‖` is `O(n^x)`, then the abscissa of absolute convergence
 of `f` is bounded by `x + 1`. -/
 lemma LSeries.abscissaOfAbsConv_le_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ}
-    (h : f =O[atTop] fun n ↦ (n : ℝ) ^ x) : abscissaOfAbsConv f ≤ x + 1 := by
+    (h : f =O[atTop] fun n ↦ (n : ℝ) ^ x) :
+    abscissaOfAbsConv f ≤ x + 1 := by
   rw [show x = x + 1 - 1 by ring] at h
   by_contra! H
   obtain ⟨y, hy₁, hy₂⟩ := EReal.exists_between_coe_real H
@@ -96,18 +95,16 @@ lemma LSeries.abscissaOfAbsConv_le_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ}
     |>.abscissaOfAbsConv_le.trans_lt hy₂).false
 
 /-- If `f` is bounded, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
-lemma LSeries.abscissaOfAbsConv_le_of_le_const {f : ℕ → ℂ}
-    (h : ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C) : abscissaOfAbsConv f ≤ 1 := by
+lemma LSeries.abscissaOfAbsConv_le_of_le_const {f : ℕ → ℂ} (h : ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C) :
+    abscissaOfAbsConv f ≤ 1 := by
   convert abscissaOfAbsConv_le_of_le_const_mul_rpow (x := 0) ?_
   · norm_num
   · simpa only [norm_eq_abs, Real.rpow_zero, mul_one] using h
 
 open Filter in
 /-- If `f` is `O(1)`, then the abscissa of absolute convergence of `f` is bounded above by `1`. -/
-lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ}
-    (h : f =O[atTop] fun _ ↦ (1 : ℝ)) : abscissaOfAbsConv f ≤ 1 := by
+lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ} (h : f =O[atTop] (1 : ℕ → ℝ)) :
+    abscissaOfAbsConv f ≤ 1 := by
   convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_
   · norm_num
   · simpa only [Real.rpow_zero] using h
-
--- end LSeries
