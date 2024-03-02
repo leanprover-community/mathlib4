@@ -37,8 +37,8 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 * `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
-* `Module.Flat.preserves_injective_linearMap`: if tensoring with `M` preserves injectiveness of
-  linear maps then `M` is a flat `R`-module. This lemma is fully universally polymorphic in all
+* `Module.Flat.preserves_injective_linearMap`: If `M` is a flat module then tensoring with `M`
+  preserves injectiveness of linear maps. This lemma is fully universally polymorphic in all
   arguments, i.e. `R`, `M` and linear maps `N → N'` can all have different universe levels.
 * `Module.Flat.iff_rTensor_preserves_injective_linearMap`: a module is flat iff tensoring preserves
   injectiveness.
