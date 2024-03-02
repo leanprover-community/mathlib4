@@ -358,7 +358,8 @@ elements of `E`. -/
 @[simp]
 protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
     (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
-    (hV.linearIsometryEquiv (W₀.sum fun i => V i) : ∀ i, G i) = W₀ := by
+    ((W₀.sum (γ := lp G 2) fun a b ↦ hV.linearIsometryEquiv (V a b)) : ∀ i, G i) = W₀ := by
+  rw [← map_dfinsupp_sum]
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i
