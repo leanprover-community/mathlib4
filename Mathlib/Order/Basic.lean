@@ -163,11 +163,6 @@ section
 
 variable [Preorder α] {a b c : α}
 
-/-- A version of `le_refl` where the argument is implicit -/
-theorem le_rfl : a ≤ a :=
-  le_refl a
-#align le_rfl le_rfl
-
 @[simp]
 theorem lt_self_iff_false (x : α) : x < x ↔ False :=
   ⟨lt_irrefl x, False.elim⟩

@@ -45,6 +45,11 @@ theorem le_refl : ∀ a : α, a ≤ a :=
   Preorder.le_refl
 #align le_refl le_refl
 
+/-- A version of `le_refl` where the argument is implicit -/
+theorem le_rfl {a : α} : a ≤ a :=
+  le_refl a
+#align le_rfl le_rfl
+
 /-- The relation `≤` on a preorder is transitive. -/
 @[trans]
 theorem le_trans : ∀ {a b c : α}, a ≤ b → b ≤ c → a ≤ c :=
