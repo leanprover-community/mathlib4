@@ -142,6 +142,13 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 #align list.prod_map_mul List.prod_map_mul
 #align list.sum_map_add List.sum_map_add
 
+@[to_additive (attr := simp)]
+theorem prod_map_one {α : Type*} [CommMonoid α] {l : List ι} :
+    (l.map fun i => 1).prod = 1 := by
+  induction l with
+  | nil => rfl
+  | cons h t ih => rw [List.map_cons, List.prod_cons, ih, mul_one]
+
 @[simp]
 theorem prod_map_neg {α} [CommMonoid α] [HasDistribNeg α] (l : List α) :
     (l.map Neg.neg).prod = (-1) ^ l.length * l.prod := by
