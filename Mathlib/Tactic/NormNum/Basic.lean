@@ -524,7 +524,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 theorem isNat_natMod : {a b : ℕ} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.mod a' b' = c → IsNat (a % b) c
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by aesop⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by omega⟩
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.mod a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -543,7 +543,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 theorem isNat_natDiv : {a b : ℕ} → {a' b' c : ℕ} →
     IsNat a a' → IsNat b b' → Nat.div a' b' = c → IsNat (a / b) c
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by aesop⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by omega⟩
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.div a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
