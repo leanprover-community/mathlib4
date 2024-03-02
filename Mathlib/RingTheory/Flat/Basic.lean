@@ -37,6 +37,9 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 * `Module.Flat.directSum`: arbitrary direct sums of flat modules are flat
 * `Module.Flat.of_free`: free modules are flat
 * `Module.Flat.of_projective`: projective modules are flat
+* `Module.Flat.preserves_injective_linearMap`: if tensoring with `M` preserves injectiveness of
+  linear maps then `M` is a flat `R`-module. This lemma is fully universally polymorphic in all
+  arguments, i.e. `R`, `M` and linear maps `N → N'` can all have different universe levels.
 * `Module.Flat.iff_rTensor_preserves_injective_linearMap`: a module is flat iff tensoring preserves
   injectiveness.
 
@@ -235,6 +238,13 @@ theorem iff_characterModule_baer : Flat R M ↔ Module.Baer R (CharacterModule M
 theorem iff_characterModule_injective [Small.{v} R] :
     Flat R M ↔ Module.Injective R (CharacterModule M) :=
   iff_characterModule_baer.trans Module.Baer.iff_injective
+
+/--
+If `f ⊗ 𝟙 M` is injective for all injective linear maps, then `M` is a flat module.
+-/
+theorem preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Module R N'] [h : Flat R M]
+    (L : N →ₗ[R] N') (hL : Function.Injective L) : Function.Injective (L.rTensor M) :=
+  rTensor_injective_iff_lcomp_surjective.2 ((iff_characterModule_baer.1 h).extension_property _ hL)
 
 variable (R M) in
 /--
