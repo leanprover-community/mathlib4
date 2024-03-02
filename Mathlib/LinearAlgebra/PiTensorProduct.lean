@@ -674,6 +674,56 @@ end Tmul
 
 end Multilinear
 
+section
+
+open BigOperators Function
+
+variable [Fintype ι] [DecidableEq ι]
+
+variable (R ι)
+
+/-- The linear map from the tensor product of the constant family with value `R` to `R`, given
+by multiplication of the entries.
+-/
+def constantBaseRingLinear : (⨂[R] (_ : ι), R) →ₗ[R] R := lift (MultilinearMap.mkPiAlgebra R ι R)
+
+/-- If `ι` is nonempty, the linear equivalence from the tensor product of the constant family with
+value `R` to `R`, given by multiplication of the entries.
+-/
+noncomputable def constantBaseRingEquiv [Nonempty ι] : (⨂[R] (_ : ι), R) ≃ₗ[R] R := by
+  refine LinearEquiv.ofLinear (constantBaseRingLinear ι R) ?_ ?_ ?_
+  · set i : ι := Classical.choice inferInstance
+    exact MultilinearMap.toLinearMap (tprod R (s := fun (_ : ι) ↦ R)) (fun (_ : ι) ↦ 1) i
+  · ext
+    simp only [constantBaseRingLinear, LinearMap.coe_comp, comp_apply,
+      MultilinearMap.toLinearMap_apply, update_eq_self, lift.tprod,
+      MultilinearMap.mkPiAlgebra_apply, Finset.prod_const_one, LinearMap.id_coe, id_eq]
+  · ext x
+    simp only [constantBaseRingLinear, LinearMap.compMultilinearMap_apply, LinearMap.coe_comp,
+      comp_apply, lift.tprod, MultilinearMap.mkPiAlgebra_apply, MultilinearMap.toLinearMap_apply,
+      LinearMap.id_coe, id_eq]
+    have heq : ∏ i, x i = (∏ i, x i) • 1 := by simp only [smul_eq_mul, mul_one]
+    rw [heq]
+    rw [(tprod R).map_smul]
+    have heq : x = fun i ↦ (x i) • 1 := by ext; simp only [smul_eq_mul, mul_one]
+    conv_rhs => rw [heq, MultilinearMap.map_smul_univ]
+    congr
+    simp only [update_eq_self]
+
+variable {R ι}
+
+@[simp]
+theorem constantBaseRingLinear_tprod (x : (_ : ι) → R) :
+    constantBaseRingLinear ι R (tprod R x) = ∏ i, x i := by
+  simp only [constantBaseRingLinear, lift.tprod, MultilinearMap.mkPiAlgebra_apply]
+
+@[simp]
+theorem constantBaseRingEquiv_tprod [Nonempty ι] (x : (_ : ι) → R) :
+    constantBaseRingEquiv ι R (tprod R x) = ∏ i, x i := by
+  simp only [constantBaseRingEquiv, LinearEquiv.ofLinear_apply, constantBaseRingLinear_tprod]
+
+end
+
 section map
 
 /-! Functoriality of the tensor product.-/

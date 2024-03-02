@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.TensorProduct
+import Mathlib.LinearAlgebra.PiTensorProduct
 
 #align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
@@ -1871,7 +1872,7 @@ variable (R : Type*) [CommSemiring R]
 
 variable (s : ι → Type*) [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
 
-variable [DecidableEq ι]
+--variable [DecidableEq ι]
 
 variable [Fintype ι]
 
@@ -1883,24 +1884,29 @@ attribute [local ext] PiTensorProduct.ext
 
 open LinearMap
 
+open scoped TensorProduct
+
 section
 
-/-- The canonical linear map from `⨂[R] i, Dual (s i)` to `Dual (⨂[R] i, s i)`,
+/-- The canonical linear map from `⨂[R] i, Dual R (s i)` to `Dual R (⨂[R] i, s i)`,
 sending `tprod R f` to the composition of `PiTensorProduct.map f` with
-the natural isomorphism `⨂[R] i, R ≃ R`.
+the linear map `⨂[R] i, R →ₗ R` given by multiplication.
 -/
-def dualDistrib : Dual R M ⊗[R] Dual R N →ₗ[R] Dual R (M ⊗[R] N) :=
-  compRight ↑(TensorProduct.lid R R) ∘ₗ homTensorHomMap R M N R R
+def dualDistrib : (⨂[R] i, Dual R (s i)) →ₗ[R] Dual R (⨂[R] i, s i) :=
+  LinearMap.comp (LinearMap.compRight (constantBaseRingLinear ι R))
+    (homTensorHomMap R s (fun _ ↦ R))
 
-variable {R M N}
+variable {R s}
 
 @[simp]
-theorem dualDistrib_apply (f : Dual R M) (g : Dual R N) (m : M) (n : N) :
-    dualDistrib R M N (f ⊗ₜ g) (m ⊗ₜ n) = f m * g n :=
-  rfl
-#align tensor_product.dual_distrib_apply TensorProduct.dualDistrib_apply
+theorem dualDistrib_apply (f : (i : ι) → Dual R (s i)) (m : (i : ι) → s i) :
+    dualDistrib R s (tprod R f) (tprod R m) = ∏ i, (f i) (m i) := by
+  simp only [dualDistrib, coe_comp, Function.comp_apply, homTensorHomMap_apply, compRight_apply,
+    map_tprod, constantBaseRingLinear_tprod]
 
 end
+
+#exit
 
 namespace AlgebraTensorModule
 variable [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M] [AddCommMonoid N]
