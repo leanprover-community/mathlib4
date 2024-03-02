@@ -501,7 +501,7 @@ def sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜 :=
 
 /-- The real inner product as a bilinear form.
 
- Note that unlike `sesqFormOfInner`, this does not reverse the order of the arguments. -/
+Note that unlike `sesqFormOfInner`, this does not reverse the order of the arguments. -/
 @[simps!]
 def bilinFormOfRealInner : BilinForm ℝ F := sesqFormOfInner.flip
 #align bilin_form_of_real_inner bilinFormOfRealInner
