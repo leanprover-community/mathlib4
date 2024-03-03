@@ -49,7 +49,7 @@ theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 
   simp only [Int.reduceNeg, show ((5 : ℕ+) : ℕ) = 5 by rfl, succ_sub_succ_eq_sub, tsub_zero,
     reduceDiv, even_two, Even.neg_pow, one_pow, cast_ofNat, Int.reducePow, one_mul, Int.cast_abs,
     Int.int_cast_ofNat, div_pow, gt_iff_lt, show 4! = 24 by rfl, abs_of_pos
-    (show (0 : ℝ) < 125 from by norm_num)]
+    (show (0 : ℝ) < 125 by norm_num)]
   suffices (2 * (3 ^ 2 / 4 ^ 2) * (4 ^ 4 / 24)) ^ 2 < (2 * (π ^ 2 / 4 ^ 2) * (4 ^ 4 / 24)) ^ 2 from
     lt_trans (by norm_num) this
   gcongr
