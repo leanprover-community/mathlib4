@@ -3,23 +3,187 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.TensorProduct
 
-open TensorProduct FreeAddMonoid
+/-! # Tensors come from finitely generated submodules
 
+* Any tensor `t : M ⊗[R] N` comes from a tensor product `u: M' ⊗[R] N'`
+  of finitely generated submodules `M' : Submodule R M`
+  and `N' : Submodule R N`.
+
+* Any such two tensors `u₁ u₂ : M' ⊗[R] N'`
+  are actually equal in a tensor product `M'' ⊗[R] N''`
+  where `M'' : Submodule R M` and `N'' : Submodule R N`
+  are finitely generated submodules such that `M' ≤ M''` and `N' ≤ N''`.
+
+-/
 universe u v
+
+/- ## Lemmas about List -/
+
+namespace List
+
+variable {α β : Type*} {f : α → β}
+
+theorem map_eq_cons_iff {x : List α} {b : β} {y : List β} :
+    map f x = b :: y ↔ ∃ a x', x = a :: x' ∧ f a = b ∧ map f x' = y := by
+  constructor
+  · intro h
+    induction x with
+    | nil =>
+      simp only [map_nil] at h
+    | cons a x' _ =>
+      use a, x'
+      simp only [map_cons, cons.injEq] at h
+      exact ⟨rfl, h.1, h.2⟩
+  · rintro ⟨a, x', rfl, rfl, rfl⟩
+    simp only [map_cons]
+
+theorem map_eq_single_iff {x : List α} {b : β} :
+    map f x = [b] ↔ ∃ a, x = [a] ∧ f a = b := by
+  simp only [map_eq_cons_iff, map_eq_nil, exists_eq_right_right]
+
+theorem map_eq_append_iff_exists {x : List α} {y₁ y₂ : List β} :
+    map f x = y₁ ++ y₂ ↔
+      ∃ x₁ x₂, x = x₁ ++ x₂ ∧ map f x₁ = y₁ ∧ map f x₂ = y₂ := by
+  refine ⟨map_eq_append_split, ?_⟩
+  rintro ⟨x₁, x₂, rfl, rfl, rfl⟩
+  simp only [map_append]
+
+end List
+
+/- ## Lemmas about `FreeAddMonoid` -/
+
+namespace FreeAddMonoid
+
+variable {α β : Type*} {f : α → β}
+
+theorem of_add_neq_zero (a : α) (x : FreeAddMonoid α) :
+    of a + x ≠ 0 := List.cons_ne_nil a x
+
+theorem exists_add_of_of_ne_zero {x : FreeAddMonoid α} :
+    x ≠ 0 → ∃ a y, x = of a + y := List.exists_cons_of_ne_nil
+
+theorem of_add_eq_iff {a b : α} {x y : FreeAddMonoid α} :
+    of a + x = of b + y ↔ a = b ∧ x = y := List.cons_eq_cons
+
+theorem of_add_eq_of_iff {a b : α} {x : FreeAddMonoid α} :
+    of a + x = of b ↔ a = b ∧ x = 0 := List.cons_eq_cons
+
+theorem FreeAddMonoid.map_eq_zero_iff {x : FreeAddMonoid α} :
+    (map f x = 0) ↔ (x = 0) := List.map_eq_nil
+
+theorem map_eq_of_add_iff_exists {x : FreeAddMonoid α} {b : β} {y : FreeAddMonoid β} :
+    (map f x = of b + y) ↔ ∃ a z, x = of a + z ∧ f a = b ∧ map f z = y :=
+  List.map_eq_cons_iff
+
+theorem map_eq_of_iff_exists {x : FreeAddMonoid α} {b : β} :
+    (map f x = of b) ↔ ∃ a, x = of a ∧ f a = b := List.map_eq_single_iff
+
+theorem map_eq_add_iff_exists {x : FreeAddMonoid α} {y₁ y₂ : FreeAddMonoid β} :
+    map f x = y₁ + y₂ ↔ ∃ x₁ x₂, x = x₁ + x₂ ∧ map f x₁ = y₁ ∧ map f x₂ = y₂ :=
+  List.map_eq_append_iff_exists
+
+theorem FreeAddMonoid.map_injective_iff {α β : Type*} {f : α → β} :
+    (Function.Injective (FreeAddMonoid.map f)) ↔ Function.Injective f :=
+  List.map_injective_iff
+
+end FreeAddMonoid
+
+/- ## Tensor products -/
+
+namespace TensorProduct
+
+open TensorProduct FreeAddMonoid Submodule
 
 variable {R : Type u} {M N : Type*}
   [CommSemiring R]
   [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
-namespace TensorProduct
+section Submodules
+
+theorem freeAddMonoid_mem_mrange_map_submodule_iff {x : FreeAddMonoid (M × N)}
+    {M' : Submodule R M} {N' : Submodule R N} :
+    x ∈ AddMonoidHom.mrange (FreeAddMonoid.map (Prod.map M'.subtype N'.subtype))
+      ↔ ∀ p ∈ toList x, p.1 ∈ M' ∧ p.2 ∈ N' := by
+  induction x using recOn with
+  | h0 =>
+    simp only [toList_zero, List.not_mem_nil,
+      IsEmpty.forall_iff, Prod.forall, forall_const, iff_true, zero_mem]
+  | ih p x ih =>
+    simp only [toList_add, toList_of, List.singleton_append,
+      List.mem_cons, forall_eq_or_imp]
+    constructor
+    · rintro ⟨y', hy'⟩
+      rw [FreeAddMonoid.map_eq_of_add_iff_exists] at hy'
+      obtain ⟨q, y, rfl, rfl, hy'⟩ := hy'
+      simp only [coeSubtype, map_add, map_of] at hy'
+      rw [← ih]
+      simp only [coeSubtype, Prod_map, SetLike.coe_mem, and_self, AddMonoidHom.mem_mrange, true_and]
+      exact ⟨y, hy'⟩
+    · rintro ⟨hp, hx⟩
+      apply add_mem
+      · rw [AddMonoidHom.mem_mrange]
+        use of ⟨⟨p.1, hp.1⟩, ⟨p.2, hp.2⟩⟩
+        simp only [coeSubtype, map_of, Prod_map, Prod.mk.eta]
+      · simpa only [← ih] using hx
+
 
 section mem_FG
 
-theorem mem_of_fg_freeAddMonoid (x : FreeAddMonoid (M × N)) :
+example {α β : Type*} (l : List (α × β)) : List α :=
+  List.map (fun ⟨a, _⟩ ↦ a) l
+
+/-  These are three proofs of the same result.
+  I don't know what proof is preferable.
+  The first one constructs the adequate submodules by playing with sets,
+  the second one uses an induction and rewrites the property to be proved,
+  the third one works directly.
+  -/
+
+theorem freeAddMonoid_mem_of_exists_fg (x : FreeAddMonoid (M × N)) :
     ∃ (M' : Submodule R M), Submodule.FG M' ∧
       ∃ (N' : Submodule R N), Submodule.FG N' ∧
         ∃ x' : FreeAddMonoid (M' × N'),
-          x = FreeAddMonoid.map (Prod.map (M'.subtype) (N'.subtype)) x' := by
+          FreeAddMonoid.map (Prod.map (M'.subtype) (N'.subtype)) x' = x := by
+    let lM := (FreeAddMonoid.toList x).map (fun ⟨m, _⟩ ↦ m)
+    let lN := (FreeAddMonoid.toList x).map (fun ⟨_, n⟩ ↦ n)
+    let M' := Submodule.span R {m | m ∈ lM }
+    let N' := Submodule.span R {m | m ∈ lN }
+    use M', Submodule.fg_span (List.finite_toSet lM)
+    use N', Submodule.fg_span (List.finite_toSet lN)
+    simp only [← AddMonoidHom.mem_mrange, freeAddMonoid_mem_mrange_map_submodule_iff]
+    intro p hp
+    simp only [List.mem_map, Prod.exists, exists_and_right, exists_eq_right]
+    exact ⟨subset_span (⟨p.2, hp⟩), subset_span (⟨p.1, hp⟩)⟩
+
+theorem freeAddMonoid_mem_of_fg2 (x : FreeAddMonoid (M × N)) :
+    ∃ (M' : Submodule R M), Submodule.FG M' ∧
+      ∃ (N' : Submodule R N), Submodule.FG N' ∧
+        ∃ x' : FreeAddMonoid (M' × N'),
+          FreeAddMonoid.map (Prod.map (M'.subtype) (N'.subtype)) x' = x := by
+  simp only [← AddMonoidHom.mem_mrange, freeAddMonoid_mem_mrange_map_submodule_iff]
+  induction x using recOn with
+  | h0 =>
+    use ⊥, Submodule.fg_bot, ⊥, Submodule.fg_bot
+    simp
+  | ih p y ih =>
+    obtain ⟨M', hM', N', hN', hy⟩ := ih
+    rcases p with ⟨m, n⟩
+    use span R {m} ⊔ M', Submodule.FG.sup (Submodule.fg_span_singleton m) hM'
+    use span R {n} ⊔ N', Submodule.FG.sup (Submodule.fg_span_singleton n) hN'
+    simp only [toList_add, toList_of, List.singleton_append, List.mem_cons]
+    intro p
+    rintro (hp | hp)
+    · simp only [hp]
+      exact ⟨(le_sup_left : span R {m} ≤ _) (mem_span_singleton_self m),
+        (le_sup_left : span R {n} ≤ _) (mem_span_singleton_self n)⟩
+    · exact ⟨(le_sup_right : M' ≤ _) (hy p hp).left,
+        (le_sup_right : N' ≤ _) (hy p hp).right⟩
+
+theorem freeAddMonoid_mem_of_fg3 (x : FreeAddMonoid (M × N)) :
+    ∃ (M' : Submodule R M), Submodule.FG M' ∧
+      ∃ (N' : Submodule R N), Submodule.FG N' ∧
+        ∃ x' : FreeAddMonoid (M' × N'),
+          FreeAddMonoid.map (Prod.map (M'.subtype) (N'.subtype)) x' = x := by
   induction x using FreeAddMonoid.recOn with
   | h0 =>
     use ⊥, Submodule.fg_bot, ⊥, Submodule.fg_bot, 0
@@ -62,9 +226,21 @@ lemma addCon_map_eq_map_addCon
     apply congr_arg₂ _ _ rfl
     rfl
 
+/- Two proofs of the same result,
+  the first one uses lift to FreeAddMonoid,
+  the second one uses induction on tensor products -/
 
--- Redo by just using FreeAddMonoid (induction already done)
-def mem_map_subtype_of_exists_FG (x : M ⊗[R] N) :
+theorem mem_map_of_exists_fg (x : M ⊗[R] N) :
+    ∃ M₀, Submodule.FG M₀ ∧ ∃ N₀, Submodule.FG N₀ ∧
+    x ∈ LinearMap.range
+        (TensorProduct.map (Submodule.subtype M₀) (Submodule.subtype N₀)) := by
+  obtain ⟨sx, rfl⟩ := AddCon.mk'_surjective x
+  obtain ⟨M', hM', N', hN', ⟨x, rfl⟩⟩ := freeAddMonoid_mem_of_exists_fg (R := R) sx
+  use M', hM', N', hN'
+  rw [addCon_map_eq_map_addCon]
+  apply LinearMap.mem_range_self
+
+theorem mem_map_subtype_of_exists_FG2 (x : M ⊗[R] N) :
     ∃ M₀, Submodule.FG M₀ ∧ ∃ N₀, Submodule.FG N₀ ∧
     x ∈ LinearMap.range
         (TensorProduct.map (Submodule.subtype M₀) (Submodule.subtype N₀)) := by
@@ -94,14 +270,14 @@ def mem_map_subtype_of_exists_FG (x : M ⊗[R] N) :
       rw [TensorProduct.map_comp]
       apply LinearMap.range_comp_le_range
 
-def TensorProduct.le_map_subtype_of_exists_FG (P : Submodule R (M ⊗[R] N)) (hP : Submodule.FG P) :
+theorem le_map_of_exists_FG (P : Submodule R (M ⊗[R] N)) (hP : Submodule.FG P) :
     ∃ M₀, Submodule.FG M₀ ∧ ∃ N₀, Submodule.FG N₀ ∧
       P ≤ LinearMap.range
         (TensorProduct.map (Submodule.subtype M₀) (Submodule.subtype N₀)) := by
   apply Submodule.fg_induction _ _ _ _ _ P hP
   · intro x
     simp only [Submodule.span_singleton_le_iff_mem, LinearMap.mem_range]
-    apply TensorProduct.mem_map_subtype_of_exists_FG
+    apply mem_map_of_exists_fg
   · rintro P₁ P₂ ⟨M₁, hM₁, N₁, hN₁, hP₁⟩ ⟨M₂, hM₂, N₂, hN₂, hP₂⟩
     use M₁ ⊔ M₂, Submodule.FG.sup hM₁ hM₂
     use N₁ ⊔ N₂, Submodule.FG.sup hN₁ hN₂
@@ -123,6 +299,8 @@ def TensorProduct.le_map_subtype_of_exists_FG (P : Submodule R (M ⊗[R] N)) (hP
 -- variant? : if the stuff lives somewhere, it can be defined there
 
 end mem_FG
+
+end Submodules
 
 end TensorProduct
 
@@ -212,29 +390,8 @@ namespace Submodule
 
 open FreeAddMonoid
 
-example (M' : Submodule R M) (N' : Submodule R N) (x : FreeAddMonoid (M × N)) :
-    x ∈ AddMonoidHom.mrange (FreeAddMonoid.map (Prod.map M'.subtype N'.subtype))
-    ↔ ∀ p ∈ FreeAddMonoid.toList x, p.1 ∈ M' ∧ p.2 ∈ N' := by
-  induction x using recOn with
-  | h0 =>
-    simp only [toList_zero, List.not_mem_nil,
-      IsEmpty.forall_iff, Prod.forall, forall_const, iff_true, zero_mem]
-  | ih p x ih =>
-    simp only [toList_add, toList_of, List.singleton_append,
-      List.mem_cons, forall_eq_or_imp]
-    constructor
-    · rintro ⟨y', hy'⟩
-      suffices ∃ q y, y' = of q + y by
-        obtain ⟨q, y, rfl⟩ := this
-        simp only [coeSubtype, map_add, map_of] at hy'
-        sorry
-      sorry
-    · rintro ⟨hp, hx⟩
-      apply add_mem
-      · rw [AddMonoidHom.mem_mrange]
-        use of ⟨⟨p.1, hp.1⟩, ⟨p.2, hp.2⟩⟩
-        simp only [coeSubtype, map_of, Prod_map, Prod.mk.eta]
-      · simpa only [← ih] using hx
+variable {R M N: Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  [AddCommMonoid N] [Module R N]
 
 
 private def h (M' : Submodule R M) (N' : Submodule R N) : (M × N) → Prop :=
@@ -312,74 +469,22 @@ theorem mem_of_exists_fg (x : FreeAddMonoid (M × N)) :
         Submodule.mem_span_singleton_self n⟩
     · exact toProp_imp (h_mono le_sup_left le_sup_left) ih
 
-theorem FreeAddMonoid.of_add_neq_zero {α : Type*} (a : α) (x : FreeAddMonoid α) :
-    ¬ (of a + x = 0) := by
-  exact List.cons_ne_nil a x
+/- theorem List.neq_nil_iff_cons {α : Type*} {x : List α} :
+    ¬ (x = []) ↔ (∃ a y, x = a :: y) := by
+  induction x with
+  | nil => simp
+  | cons a x => simp
 
 theorem FreeAddMonoid.neq_zero_iff_exists {α : Type*} {x : FreeAddMonoid α} :
-    ¬ (x = 0) ↔ ∃ a y, x = of a + y := by
-  constructor
-  · intro h
-    obtain ⟨a, y, rfl⟩ := List.exists_cons_of_ne_nil h
-    use a, y
-    rfl
-  · rintro ⟨a, y, rfl⟩
-    apply List.cons_ne_nil
+    ¬ (x = 0) ↔ ∃ a y, x = of a + y :=
+  List.neq_nil_iff_cons
+-/
 
-theorem FreeAddMonoid.of_add_eq_iff {α : Type*} {a b : α} {x y : FreeAddMonoid α} :
-    of a + x = of b + y ↔ a = b ∧ x = y := List.cons_eq_cons
+#check List.exists_cons_of_ne_nil
 
-theorem FreeAddMonoid.of_add_eq_of_iff {α : Type*} {a b : α} {x : FreeAddMonoid α} :
-    of a + x = of b ↔ a = b ∧ x = 0 := by
-  rw [← add_zero (of b), of_add_eq_iff]
-
-theorem FreeAddMonoid.map_eq_zero_iff {α β : Type*} {f : α → β}
-    {x : FreeAddMonoid α} :
-    (FreeAddMonoid.map f x = 0) ↔ (x = 0) :=
-  List.map_eq_nil
-
-theorem FreeAddMonoid.map_eq_of_add_iff_exists {α β : Type*} {f : α → β}
-    {x : FreeAddMonoid α} {b : β} {y : FreeAddMonoid β} :
-    (FreeAddMonoid.map f x = of b + y) ↔
-      ∃ a z, f a = b ∧ FreeAddMonoid.map f z = y ∧ x = of a + z := by
-  constructor
-  · intro h
-    induction x using FreeAddMonoid.recOn generalizing y with
-    | h0 =>
-      rw [map_zero] at h
-      exact False.elim (of_add_neq_zero _ _ h.symm)
-    | ih a z _ =>
-      rw [map_add, map_of, of_add_eq_iff] at h
-      exact ⟨a, z, h.1, h.2, rfl⟩
-  · rintro ⟨a, z, rfl, rfl, rfl⟩
-    simp only [map_add, map_of]
-
-theorem FreeAddMonoid.map_eq_of_iff_exists {α β : Type*} {f : α → β}
-    {x : FreeAddMonoid α} {b : β} :
-    (FreeAddMonoid.map f x = of b) ↔
-      ∃ a, f a = b ∧ x = of a := by
-  rw [← add_zero (of b), map_eq_of_add_iff_exists]
-  simp only [exists_and_left]
-  constructor
-  · rintro ⟨a, rfl, x, hx, rfl⟩
-    use a, rfl
-    simp only [of_add_eq_of_iff, true_and]
-    simpa only [map_eq_zero_iff] using hx
-  · rintro ⟨a, rfl, rfl⟩
-    exact ⟨a, rfl, 0, by simp only [map_zero, add_zero, and_self]⟩
-
-theorem FreeAddMonoid.map_eq_add_iff_exists {α β : Type*} {f : α → β}
-  {x : FreeAddMonoid α} {y₁ y₂ : FreeAddMonoid β} :
-    FreeAddMonoid.map f x = y₁ + y₂ ↔
-    ∃ x₁ x₂, x = x₁ + x₂ ∧ FreeAddMonoid.map f x₁ = y₁ ∧ FreeAddMonoid.map f x₂ = y₂ := by
-  constructor
-  · exact List.map_eq_append_split
-  · rintro ⟨x₁, x₂, rfl, rfl, rfl⟩
-    rw [map_add]
-
-theorem FreeAddMonoid.map_injective_iff {α β : Type*} {f : α → β} :
-    (Function.Injective (FreeAddMonoid.map f)) ↔ Function.Injective f :=
-  List.map_injective_iff
+example {α : Type*} {a b : α} {x : List α} :
+  a :: x = [b] ↔ a = b ∧ x = [] :=
+  List.cons_eq_cons
 
 theorem TensorProduct.Eqv_subtype_injective
     {M' : Submodule R M} {N' : Submodule R N} :
@@ -558,7 +663,7 @@ theorem exists_fg_of_addConGenEqv {x y : FreeAddMonoid (M × N)}
     use M', hM', N', hN', x', y', hx', hy'
     exact AddConGen.Rel.of x' y' h
   | refl x =>
-    obtain ⟨M', hM', N', hN', x', hx'⟩ := mem_of_fg (R := R) x
+    obtain ⟨M', hM', N', hN', x', hx'⟩ := mem_of_exists_fg (R := R) x
     use M', hM', N', hN', x', x', hx'.symm, hx'.symm
     exact AddConGen.Rel.refl x'
   | symm _ ih =>
