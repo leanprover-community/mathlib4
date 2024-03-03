@@ -204,12 +204,10 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   let k := PNat.lcm ⟨p, hppos⟩ ⟨q, hqpos⟩
   obtain ⟨xu, rfl⟩ := hx.isUnit hppos
   let yu := (hy.isUnit hqpos).unit
-  have hxmem : xu ∈ rootsOfUnity k L :=  by
-    rw [mem_rootsOfUnity, ← Units.val_eq_one, Units.val_pow_eq_pow_val]
-    exact (hx.pow_eq_one_iff_dvd _).2 (Nat.dvd_lcm_left _ _)
-  have hymem : yu ∈ rootsOfUnity k L := by
-    rw [mem_rootsOfUnity, ← Units.val_eq_one, Units.val_pow_eq_pow_val, IsUnit.unit_spec]
-    exact (hy.pow_eq_one_iff_dvd _).2 (Nat.dvd_lcm_right _ _)
+  have hxmem : xu ∈ rootsOfUnity k L := rootsOfUnity_le_of_dvd (dvd_lcm_left _ _) <|
+    IsPrimitiveRoot.mem_rootsOfUnity (by exact IsPrimitiveRoot.coe_units_iff.1 hx)
+  have hymem : yu ∈ rootsOfUnity k L := rootsOfUnity_le_of_dvd (dvd_lcm_right _ _) <|
+    IsPrimitiveRoot.mem_rootsOfUnity (by exact IsPrimitiveRoot.coe_units_iff.1 hy)
   have hxuord : orderOf (⟨xu, hxmem⟩ : rootsOfUnity k L) = p := by
     rw [← orderOf_injective (rootsOfUnity k L).subtype Subtype.coe_injective,
       Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units]
