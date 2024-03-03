@@ -93,13 +93,13 @@ theorem algebraMap_smul [SMul R M] [IsScalarTower R A M] (r : R) (x : M) :
   rw [Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
 #align is_scalar_tower.algebra_map_smul IsScalarTower.algebraMap_smul
 
-variable {A}
-
+variable {A} in
 theorem of_algebraMap_smul [SMul R M] (h : ∀ (r : R) (x : M), algebraMap R A r • x = r • x) :
     IsScalarTower R A M where
   smul_assoc r a x := by rw [Algebra.smul_def, mul_smul, h]
 
-instance : letI := MulAction.compHom M (algebraMap R A : R →* A); IsScalarTower R A M :=
+variable (R M) in
+theorem of_compHom : letI := MulAction.compHom M (algebraMap R A : R →* A); IsScalarTower R A M :=
   letI := MulAction.compHom M (algebraMap R A : R →* A); of_algebraMap_smul fun _ _ ↦ rfl
 
 end Module

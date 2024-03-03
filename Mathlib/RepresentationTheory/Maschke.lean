@@ -151,8 +151,11 @@ variable {W : Type u} [AddCommGroup W] [Module (MonoidAlgebra k G) W]
 theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
     (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id := by
-  letI : Module k W := .compHom W (algebraMap _ <| MonoidAlgebra k G)
-  letI : Module k V := .compHom V (algebraMap _ <| MonoidAlgebra k G)
+  let A := MonoidAlgebra k G
+  letI : Module k W := .compHom W (algebraMap k A)
+  letI : Module k V := .compHom V (algebraMap k A)
+  have := IsScalarTower.of_compHom k A W
+  have := IsScalarTower.of_compHom k A V
   obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
     simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
   refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
