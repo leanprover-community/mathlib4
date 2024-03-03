@@ -313,12 +313,24 @@ open CategoryTheory
 
 structure Context where
   C : Expr
+  -- instC : Expr
+  -- instMC : Expr
+  proof : Bool
 
 /-- Populate a `context` object for evaluating `e`. -/
-def mkContext (e : Expr) : MetaM Context := do
+def mkContext (e : Expr) (proof := false) : MetaM Context := do
   match (← inferType e).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) =>
-    return { C := (← inferType f) }
+    let C ← inferType f
+    let v ← mkFreshLevelMVar
+    let u ← mkFreshLevelMVar
+    let instC ← synthInstance (mkAppN (.const ``Category [v, u]) #[C])
+    let instMC ← synthInstance (mkAppN (.const ``MonoidalCategory [v, u]) #[C, instC])
+    let lctx ← Lean.MonadLCtx.getLCtx
+    for decl in lctx do
+      println! "{← ppExpr decl.toExpr} : {← ppExpr decl.type}"
+    println! "instC: {instC}"
+    return ⟨C, proof⟩
   | _ => throwError "not a morphism"
 
 /-- The monad for `Abel` contains, in addition to the `AtomM` state,
@@ -664,6 +676,7 @@ section
 open scoped MonoidalCategory
 -- universe v u
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+-- (instC : Category.{v} C) (instMC : MonoidalCategory C)
 variable {f f' g g' h i j : C}
 
 theorem evalComp_nil_cons {f g h i j : C} (α : f ⟶ g) (β : g ⟶ h) (η : h ⟶ i) (ηs : i ⟶ j) :
@@ -1171,3 +1184,38 @@ example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) 
     congrArg₂ (· ≫ ·) (by sorry) <| congrArg₂ (· ≫ ·) rfl <|
     congrArg₂ (· ≫ ·) (by sorry) <| congrArg₂ (· ≫ ·) rfl
     (by sorry)
+
+
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+variable {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+
+example : normalize% (X ⊗ Y) ◁ f = sorry := by
+  sorry
+
+#check normalize% (f ≫ g) ▷ Y
+
+#check normalize% (f ≫ g)
+
+#guard_expr normalize% X ◁ 𝟙 Y = X ◁ 𝟙 Y
+#guard_expr normalize% 𝟙 X ▷ Y = 𝟙 X ▷ Y
+#guard_expr normalize% X ◁ (f ≫ g) = _ ≫ X ◁ f ≫ _ ≫ X ◁ g ≫ _
+#guard_expr normalize% (f ≫ g) ▷ Y = _ ≫ f ▷ Y ≫ _ ≫ g ▷ Y ≫ _
+#guard_expr normalize% 𝟙_ C ◁ f = _ ≫ f ≫ _
+#guard_expr normalize% (X ⊗ Y) ◁ f = _ ≫ X ◁ Y ◁ f ≫ _
+#guard_expr normalize% f ▷ 𝟙_ C = _ ≫ f ≫ _
+#guard_expr normalize% f ▷ (X ⊗ Y) = _ ≫ f ▷ X ▷ Y ≫ _
+#guard_expr normalize% (X ◁ f) ▷ Y = _ ≫ X ◁ f ▷ Y ≫ _
+#guard_expr normalize% (λ_ X).hom = (λ_ X).hom
+#guard_expr normalize% (λ_ X).inv = (λ_ X).inv
+#guard_expr normalize% (ρ_ X).hom = (ρ_ X).hom
+#guard_expr normalize% (ρ_ X).inv = (ρ_ X).inv
+#guard_expr normalize% (α_ X Y Z).hom = (α_ _ _ _).hom
+#guard_expr normalize% (α_ X Y Z).inv = (α_ _ _ _).inv
+#guard_expr normalize% 𝟙 (X ⊗ Y) = 𝟙 (X ⊗ Y)
+#guard_expr normalize% f ⊗ g = _ ≫ f ▷ _ ≫ _ ≫ _ ◁ g ≫ _
+variable {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) in
+#guard_expr normalize% R V₁ V₂ ▷ V₃ ⊗≫ V₂ ◁ R V₁ V₃ = _ ≫ R V₁ V₂ ▷ V₃ ≫ _ ≫ V₂ ◁ R V₁ V₃ ≫ _
+
+
+example : 5 + 4 = 9 := by
+  ring
