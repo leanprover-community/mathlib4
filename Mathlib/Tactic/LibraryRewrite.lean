@@ -233,15 +233,16 @@ def rewriteCall (rwLemma : RewriteLemma)
     let mvarId := mvar.mvarId!
     -- we need to check that all instances can be synthesized
     if bi.isInstImplicit then
-      unless (← trySynthInstance (← mvarId.getType)) matches .some _ do
-        return none
+      let .some _  ← trySynthInstance (← mvarId.getType) | return none
+      -- maybe check that the synthesized instance and `mvar` are `isDefEq`
     else if !(← mvarId.isAssigned) then
       allAssigned := false
       -- if the userName has macro scopes, we can't use the name, so we use `?_` instead
       if (← mvarId.getDecl).userName.hasMacroScopes then
         mvarId.setUserName `«_»
-      let extraGoal ← instantiateMVars (← mvarId.getType)
-      extraGoals := extraGoals.push (← ppExprTagged extraGoal)
+      if bi.isExplicit then
+        let extraGoal ← instantiateMVars (← mvarId.getType)
+        extraGoals := extraGoals.push (← ppExprTagged extraGoal)
 
   let replacement ← ppExprTagged rhs
   let lemmaApplication ← instantiateMVars (mkAppN thm mvars)
