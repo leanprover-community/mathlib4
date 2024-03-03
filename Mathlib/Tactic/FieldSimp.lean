@@ -151,7 +151,7 @@ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
 elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
-  let cfg ← elabSimpConfig (cfg.getD ⟨.missing⟩) .simp
+  let cfg ← elabSimpConfig (mkOptionalNode cfg) .simp
   let loc := expandOptLocation (mkOptionalNode loc)
 
   let dis ← match dis with
