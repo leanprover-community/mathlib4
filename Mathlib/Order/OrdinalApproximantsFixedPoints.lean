@@ -105,7 +105,7 @@ theorem lfpApprox_addition (a : Ordinal.{u}) : f (lfpApprox f a) = lfpApprox f (
 
 /-- The ordinal approximants of the least fixed points are stabilizing
   when reaching a fixed point of f -/
-theorem lfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixedPoints f) :
+theorem lfpApprox_stabilizing_at_fixedPoint (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixedPoints f) :
     ∀ b > a, lfpApprox f b = lfpApprox f a := by
   intro b hab; rw[mem_fixedPoints_iff] at h
   induction b using Ordinal.induction with | h b IH =>
@@ -130,17 +130,17 @@ theorem lfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixe
     use a
 
 /-- Every value after a fixed point of f is also a fixed point of f -/
-theorem lfpApprox_eq_fp (a : Ordinal.{u}) (h: lfpApprox f a ∈ fixedPoints f) :
-    ∀ b > a, lfpApprox f b ∈ fixedPoints f  := by
+theorem lfpApprox_ordinals_after_fixed_are_fixed (a : Ordinal.{u})
+    (h: lfpApprox f a ∈ fixedPoints f) : ∀ b > a, lfpApprox f b ∈ fixedPoints f  := by
   intro b h_ab
   rw[mem_fixedPoints_iff]
-  have h_stab := lfpApprox_stabilizing_at_fp f a h b h_ab
+  have h_stab := lfpApprox_stabilizing_at_fixedPoint f a h b h_ab
   rw[h_stab]
   exact mem_fixedPoints_iff.mp h
 
 /-- There are distinct ordinals smaller than the successor of the domains cardinals
   with equal value -/
-theorem lfpApprox_equal_value : ∃ i < ord <| succ #α, ∃ j < ord <| succ #α,
+theorem disctinct_ordinal_eq_lfpApprox : ∃ i < ord <| succ #α, ∃ j < ord <| succ #α,
     i ≠ j ∧ lfpApprox f i = lfpApprox f j := by
   have h_ninj := Function.Injective.exists_ne_of_not_injective
     (not_injective_limitation <| lfpApprox f)
@@ -153,7 +153,7 @@ theorem lfpApprox_equal_value : ∃ i < ord <| succ #α, ∃ j < ord <| succ #α
   · exact h_fab
 
 /-- If there are distinct ordinals with equal value then the values are fixed points -/
-lemma lfpApprox_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
+lemma lfpApprox_has_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
     (h_fab : lfpApprox f a = lfpApprox f b) :
     lfpApprox f a ∈ fixedPoints f := by
   rw[mem_fixedPoints_iff,lfpApprox_addition]
@@ -162,25 +162,25 @@ lemma lfpApprox_one_fixedPoint (a b : Ordinal.{u}) (h : a < b)
 
 /-- If there are disctinct ordinals with equal value then
   every value succeding the smaller ordinal are fixed points -/
-lemma lfpApprox_many_fixedPoints (a b : Ordinal.{u}) (h : a < b)
+lemma lfpApprox_has_many_fixedPoints (a b : Ordinal.{u}) (h : a < b)
     (h_fab : lfpApprox f a = lfpApprox f b) :
     ∀ i ≥ a, lfpApprox f i ∈ fixedPoints f := by
   intro i h_i
   obtain rfl | h_ia := eq_or_ne i a
-  · exact lfpApprox_one_fixedPoint f i b h h_fab
-  · apply lfpApprox_eq_fp f a
-    · exact lfpApprox_one_fixedPoint f a b h h_fab
+  · exact lfpApprox_has_one_fixedPoint f i b h h_fab
+  · apply ordinals_after_fixed_are_fixed f a
+    · exact lfpApprox_has_one_fixedPoint f a b h h_fab
     · exact Ne.lt_of_le' h_ia h_i
 
 /-- A fixed point of f is reached after the successor of the domains cardinality -/
 theorem lfpApprox_has_fixedPoint_cardinal : lfpApprox f (ord <| succ #α) ∈ fixedPoints f := by
-  let ⟨a, h_a, b, h_b, h_nab, h_fab⟩ := lfpApprox_equal_value f
+  let ⟨a, h_a, b, h_b, h_nab, h_fab⟩ := disctinct_ordinal_eq_lfpApprox f
   cases le_total a b with
   | inl h_ab =>
-    exact lfpApprox_many_fixedPoints f a b (h_nab.lt_of_le h_ab) h_fab
+    exact lfpApprox_has_many_fixedPoints f a b (h_nab.lt_of_le h_ab) h_fab
       (ord <| succ #α) (le_of_lt h_a)
   | inr h_ba =>
-    exact lfpApprox_many_fixedPoints f b a (h_nab.symm.lt_of_le h_ba)
+    exact lfpApprox_has_many_fixedPoints f b a (h_nab.symm.lt_of_le h_ba)
       (h_fab.symm) (ord <| succ #α) (le_of_lt h_b)
 
 /-- Every value of the ordinal approximants are less or equal than every fixed point of f -/
@@ -230,20 +230,20 @@ theorem gfpApprox_addition (a : Ordinal.{u}) : f (gfpApprox f a) = gfpApprox f (
 
 /-- The ordinal approximants of the least fixed points are stabilizing
   when reaching a fixed point of f -/
-theorem gfpApprox_stabilizing_at_fp (a : Ordinal.{u}) (h: gfpApprox f a ∈ fixedPoints f) :
+theorem gfpApprox_stabilizing_at_fixedPoint (a : Ordinal.{u}) (h: gfpApprox f a ∈ fixedPoints f) :
     ∀ b > a, gfpApprox f b = gfpApprox f a :=
-  lfpApprox_stabilizing_at_fp (OrderHom.dual f) a h
+  lfpApprox_stabilizing_at_fixedPoint (OrderHom.dual f) a h
 
 /-- Every value after a fixed point of f is also a fixed point of f -/
-theorem gfpApprox_eq_fp (a : Ordinal.{u}) (h: gfpApprox f a ∈ fixedPoints f) :
-    ∀ b > a, gfpApprox f b ∈ fixedPoints f :=
-  lfpApprox_eq_fp (OrderHom.dual f) a h
+theorem gfpApprox_ordinals_after_fixed_are_fixed (a : Ordinal.{u})
+    (h: gfpApprox f a ∈ fixedPoints f) : ∀ b > a, gfpApprox f b ∈ fixedPoints f :=
+  lfpApprox_ordinals_after_fixed_are_fixed (OrderHom.dual f) a h
 
 /-- There are distinct ordinals smaller than the successor of the domains cardinals with
   equal value -/
-theorem gfpApprox_equal_value : ∃ i < ord <| succ #α, ∃ j < ord <| succ #α,
+theorem disctinct_ordinal_eq_gfpApprox : ∃ i < ord <| succ #α, ∃ j < ord <| succ #α,
     i ≠ j ∧ gfpApprox f i = gfpApprox f j :=
-  lfpApprox_equal_value (OrderHom.dual f)
+  disctinct_ordinal_eq_lfpApprox (OrderHom.dual f)
 
 /-- A fixed point of f is reached after the successor of the domains cardinality -/
 lemma gfpApprox_has_fixedPoint_cardinal : gfpApprox f (ord <| succ #α) ∈ fixedPoints f :=
