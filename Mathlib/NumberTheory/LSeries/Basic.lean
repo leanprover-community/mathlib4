@@ -23,7 +23,7 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
     coefficients. This is not the analytic continuation (which does not necessarily exist),
     just the sum of the infinite series if it exists and zero otherwise.
 
- * `LSeriesSummable f` indicates that the L-series of `f` converges at a given point.
+ * `LSeriesSummable f s` indicates that the L-series of `f` converges at `s : ℂ`.
 
  * `LSeriesHasSum f s a` expresses that the L-series of `f` converges (absolutely)
     at `s : ℂ` to `a : ℂ`.
@@ -100,7 +100,7 @@ lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 lemma norm_term_le {f g : ℕ → ℂ} (s : ℂ) {n : ℕ} (h : ‖f n‖ ≤ ‖g n‖) :
     ‖term f s n‖ ≤ ‖term g s n‖ := by
   simp only [norm_term_eq]
-  split_ifs with hn
+  split
   · rfl
   · gcongr
 
@@ -128,7 +128,7 @@ to `a : ℂ`.
 
 open LSeries
 
-/-- The values of the L-series of the sequence `f` at the point `s`. -/
+/-- The value of the L-series of the sequence `f` at the point `s` (if it converges absolutely there). -/
 noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
@@ -138,7 +138,7 @@ lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) :
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
 
-/-- `LSeriesSummable f s` indicates that the L-series of `f` converges (absolutely) at `s`. -/
+/-- `LSeriesSummable f s` indicates that the L-series of `f` converges absolutely at `s`. -/
 def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
   Summable (term f s)
 #align nat.arithmetic_function.l_series_summable LSeriesSummable
@@ -292,16 +292,15 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ℕ → ℂ} {m : ℝ}
 -- TODO: Move this to a separate file on concrete L-series
 
 open Set in
-/-- The `LSeries` with all coefficients `1` converges at `s`if and only if `re s > 1`. -/
+/-- The `LSeries` with all coefficients `1` converges at `s` if and only if `re s > 1`. -/
 theorem LSeriesSummable.one_iff_one_lt_re {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re := by
   rw [← LSeriesSummable_iff_of_re_eq_re (Complex.ofReal_re s.re), LSeriesSummable,
     ← summable_norm_iff, ← Real.summable_one_div_nat_rpow]
   simp_rw [← Finite.summable_compl_iff (finite_singleton 0), summable_subtype_iff_indicator]
   refine summable_congr fun n ↦ ?_
   by_cases hn : n ∈ ({0}ᶜ :Set ℕ)
-  · have hn₀ : n ≠ 0 := hn
-    simp only [indicator_of_mem hn, norm_term_eq]
-    simp only [hn₀, ↓reduceIte, Pi.one_apply, norm_one, ofReal_re]
+  · simp only [indicator_of_mem hn, norm_term_eq]
+    simp only [show n ≠ 0 from hn, ↓reduceIte, Pi.one_apply, norm_one, ofReal_re]
   · simp only [indicator_of_not_mem hn]
 
 open scoped ArithmeticFunction in
