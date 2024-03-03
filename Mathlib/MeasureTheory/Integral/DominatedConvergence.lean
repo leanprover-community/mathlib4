@@ -5,6 +5,7 @@ Authors: TODO NAME
 -/
 --import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
 --import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 -- TODO: minimize imports!
 
@@ -176,3 +177,125 @@ theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) 
 #align antitone.tendsto_set_integral Antitone.tendsto_set_integral
 
 end TendstoMono
+
+section DCTParametric -- from IntervalIntegral
+
+namespace intervalIntegral
+
+-- TODO: minimize this prelude!
+open MeasureTheory Set Classical Filter Function
+
+open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
+
+variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
+variable [CompleteSpace E] [NormedSpace ℝ E]
+variable {a b c d : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+
+/-- Lebesgue dominated convergence theorem for filters with a countable basis -/
+nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι}
+    [l.IsCountablyGenerated] {F : ι → ℝ → E} (bound : ℝ → ℝ)
+    (hF_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
+    (h_bound : ∀ᶠ n in l, ∀ᵐ x ∂μ, x ∈ Ι a b → ‖F n x‖ ≤ bound x)
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_lim : ∀ᵐ x ∂μ, x ∈ Ι a b → Tendsto (fun n => F n x) l (𝓝 (f x))) :
+    Tendsto (fun n => ∫ x in a..b, F n x ∂μ) l (𝓝 <| ∫ x in a..b, f x ∂μ) := by
+  simp only [intervalIntegrable_iff, intervalIntegral_eq_integral_uIoc,
+    ← ae_restrict_iff' (α := ℝ) (μ := μ) measurableSet_uIoc] at *
+  exact tendsto_const_nhds.smul <|
+    tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_lim
+#align interval_integral.tendsto_integral_filter_of_dominated_convergence intervalIntegral.tendsto_integral_filter_of_dominated_convergence
+
+/-- Lebesgue dominated convergence theorem for series. -/
+nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
+    (bound : ι → ℝ → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
+    (h_bound : ∀ n, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F n t‖ ≤ bound n t)
+    (bound_summable : ∀ᵐ t ∂μ, t ∈ Ι a b → Summable fun n => bound n t)
+    (bound_integrable : IntervalIntegrable (fun t => ∑' n, bound n t) μ a b)
+    (h_lim : ∀ᵐ t ∂μ, t ∈ Ι a b → HasSum (fun n => F n t) (f t)) :
+    HasSum (fun n => ∫ t in a..b, F n t ∂μ) (∫ t in a..b, f t ∂μ) := by
+  simp only [intervalIntegrable_iff, intervalIntegral_eq_integral_uIoc, ←
+    ae_restrict_iff' (α := ℝ) (μ := μ) measurableSet_uIoc] at *
+  exact
+    (hasSum_integral_of_dominated_convergence bound hF_meas h_bound bound_summable bound_integrable
+          h_lim).const_smul
+      _
+#align interval_integral.has_sum_integral_of_dominated_convergence intervalIntegral.hasSum_integral_of_dominated_convergence
+
+/-- Interval integrals commute with countable sums, when the supremum norms are summable (a
+special case of the dominated convergence theorem). -/
+theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}
+    (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
+    HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by
+  apply hasSum_integral_of_dominated_convergence
+    (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
+    (fun i => (map_continuous <| f i).aestronglyMeasurable)
+  · refine fun i => ae_of_all _ fun x hx => ?_
+    apply ContinuousMap.norm_coe_le_norm ((f i).restrict _) ⟨x, _⟩
+    exact ⟨hx.1.le, hx.2⟩
+  · exact ae_of_all _ fun x _ => hf_sum
+  · exact intervalIntegrable_const
+  · refine ae_of_all _ fun x hx => Summable.hasSum ?_
+    let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ?_⟩; swap; exact ⟨hx.1.le, hx.2⟩
+    have := hf_sum.of_norm
+    simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
+      using ContinuousMap.summable_apply this x
+#align interval_integral.has_sum_interval_integral_of_summable_norm intervalIntegral.hasSum_intervalIntegral_of_summable_norm
+
+theorem tsum_intervalIntegral_eq_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}
+    (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
+    ∑' i : ι, ∫ x in a..b, f i x = ∫ x in a..b, ∑' i : ι, f i x :=
+  (hasSum_intervalIntegral_of_summable_norm hf_sum).tsum_eq
+#align interval_integral.tsum_interval_integral_eq_of_summable_norm intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm
+
+variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
+
+/-- Continuity of interval integral with respect to a parameter, at a point within a set.
+  Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
+  neighborhood of `x₀` within `s` and at `x₀`, and assume it is bounded by a function integrable
+  on `[a, b]` independent of `x` in a neighborhood of `x₀` within `s`. If `(fun x ↦ F x t)`
+  is continuous at `x₀` within `s` for almost every `t` in `[a, b]`
+  then the same holds for `(fun x ↦ ∫ t in a..b, F x t ∂μ) s x₀`. -/
+theorem continuousWithinAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X} {bound : ℝ → ℝ} {a b : ℝ}
+    {s : Set X} (hF_meas : ∀ᶠ x in 𝓝[s] x₀, AEStronglyMeasurable (F x) (μ.restrict <| Ι a b))
+    (h_bound : ∀ᶠ x in 𝓝[s] x₀, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F x t‖ ≤ bound t)
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_cont : ∀ᵐ t ∂μ, t ∈ Ι a b → ContinuousWithinAt (fun x => F x t) s x₀) :
+    ContinuousWithinAt (fun x => ∫ t in a..b, F x t ∂μ) s x₀ :=
+  tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_cont
+#align interval_integral.continuous_within_at_of_dominated_interval intervalIntegral.continuousWithinAt_of_dominated_interval
+
+/-- Continuity of interval integral with respect to a parameter at a point.
+  Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
+  neighborhood of `x₀`, and assume it is bounded by a function integrable on
+  `[a, b]` independent of `x` in a neighborhood of `x₀`. If `(fun x ↦ F x t)`
+  is continuous at `x₀` for almost every `t` in `[a, b]`
+  then the same holds for `(fun x ↦ ∫ t in a..b, F x t ∂μ) s x₀`. -/
+theorem continuousAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X} {bound : ℝ → ℝ} {a b : ℝ}
+    (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) (μ.restrict <| Ι a b))
+    (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F x t‖ ≤ bound t)
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_cont : ∀ᵐ t ∂μ, t ∈ Ι a b → ContinuousAt (fun x => F x t) x₀) :
+    ContinuousAt (fun x => ∫ t in a..b, F x t ∂μ) x₀ :=
+  tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_cont
+#align interval_integral.continuous_at_of_dominated_interval intervalIntegral.continuousAt_of_dominated_interval
+
+/-- Continuity of interval integral with respect to a parameter.
+  Given `F : X → ℝ → E`, assume each `F x` is ae-measurable on `[a, b]`,
+  and assume it is bounded by a function integrable on `[a, b]` independent of `x`.
+  If `(fun x ↦ F x t)` is continuous for almost every `t` in `[a, b]`
+  then the same holds for `(fun x ↦ ∫ t in a..b, F x t ∂μ) s x₀`. -/
+theorem continuous_of_dominated_interval {F : X → ℝ → E} {bound : ℝ → ℝ} {a b : ℝ}
+    (hF_meas : ∀ x, AEStronglyMeasurable (F x) <| μ.restrict <| Ι a b)
+    (h_bound : ∀ x, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F x t‖ ≤ bound t)
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_cont : ∀ᵐ t ∂μ, t ∈ Ι a b → Continuous fun x => F x t) :
+    Continuous fun x => ∫ t in a..b, F x t ∂μ :=
+  continuous_iff_continuousAt.mpr fun _ =>
+    continuousAt_of_dominated_interval (eventually_of_forall hF_meas) (eventually_of_forall h_bound)
+        bound_integrable <|
+      h_cont.mono fun _ himp hx => (himp hx).continuousAt
+#align interval_integral.continuous_of_dominated_interval intervalIntegral.continuous_of_dominated_interval
+
+end intervalIntegral
+
+end DCTParametric
