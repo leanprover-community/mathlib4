@@ -191,7 +191,6 @@ instance submodule {m : Submodule R M} : IsSemisimpleModule R m :=
   haveI f : Submodule R m ≃o Set.Iic m := Submodule.MapSubtype.relIso m
   f.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
 #align is_semisimple_module.is_semisimple_submodule IsSemisimpleModule.submodule
-@[deprecated] alias is_semisimple_submodule := IsSemisimpleModule.submodule
 
 open LinearMap
 
