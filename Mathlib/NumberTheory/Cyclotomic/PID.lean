@@ -35,8 +35,8 @@ theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞
   simp only [Int.reduceNeg, show ((3 : ℕ+) : ℕ) = 3 by rfl, succ_sub_succ_eq_sub, tsub_zero,
     zero_lt_two, Nat.div_self, pow_one, cast_ofNat, neg_mul, one_mul, abs_neg, Int.cast_abs,
     Int.int_cast_ofNat, factorial_two, gt_iff_lt, abs_of_pos (show (0 : ℝ) < 3 by norm_num)]
-  suffices (2 * (3 / 4) * (2 ^ 2 / 2)) ^ 2 < (2 * (π / 4) * (2 ^ 2 / 2)) ^ 2 by
-    exact lt_trans (by norm_num) this
+  suffices (2 * (3 / 4) * (2 ^ 2 / 2)) ^ 2 < (2 * (π / 4) * (2 ^ 2 / 2)) ^ 2 from
+    lt_trans (by norm_num) this
   gcongr
   exact pi_gt_three
 
