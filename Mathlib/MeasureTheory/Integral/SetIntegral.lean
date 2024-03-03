@@ -721,7 +721,7 @@ end Mono
 
 section Nonneg
 
-variable {μ : Measure α} {f : α → ℝ} {s : Set α}
+variable {X : Type*} [MeasurableSpace X] {μ : Measure X} {f : X → ℝ} {s : Set X}
 
 theorem set_integral_nonneg_of_ae_restrict (hf : 0 ≤ᵐ[μ.restrict s] f) : 0 ≤ ∫ a in s, f a ∂μ :=
   integral_nonneg_of_ae hf
@@ -741,7 +741,7 @@ theorem set_integral_nonneg_ae (hs : MeasurableSet s) (hf : ∀ᵐ a ∂μ, a �
   set_integral_nonneg_of_ae_restrict <| by rwa [EventuallyLE, ae_restrict_iff' hs]
 #align measure_theory.set_integral_nonneg_ae MeasureTheory.set_integral_nonneg_ae
 
-theorem set_integral_le_nonneg {s : Set α} (hs : MeasurableSet s) (hf : StronglyMeasurable f)
+theorem set_integral_le_nonneg {s : Set X} (hs : MeasurableSet s) (hf : StronglyMeasurable f)
     (hfi : Integrable f μ) : ∫ x in s, f x ∂μ ≤ ∫ x in {y | 0 ≤ f y}, f x ∂μ := by
   rw [← integral_indicator hs, ←
     integral_indicator (stronglyMeasurable_const.measurableSet_le hf)]
@@ -769,7 +769,7 @@ theorem set_integral_nonpos (hs : MeasurableSet s) (hf : ∀ a, a ∈ s → f a 
   set_integral_nonpos_ae hs <| ae_of_all μ hf
 #align measure_theory.set_integral_nonpos MeasureTheory.set_integral_nonpos
 
-theorem set_integral_nonpos_le {s : Set α} (hs : MeasurableSet s) (hf : StronglyMeasurable f)
+theorem set_integral_nonpos_le {s : Set X} (hs : MeasurableSet s) (hf : StronglyMeasurable f)
     (hfi : Integrable f μ) : ∫ x in {y | f y ≤ 0}, f x ∂μ ≤ ∫ x in s, f x ∂μ := by
   rw [← integral_indicator hs, ←
     integral_indicator (hf.measurableSet_le stronglyMeasurable_const)]
@@ -778,8 +778,8 @@ theorem set_integral_nonpos_le {s : Set α} (hs : MeasurableSet s) (hf : Strongl
       (hfi.indicator hs) (indicator_nonpos_le_indicator s f)
 #align measure_theory.set_integral_nonpos_le MeasureTheory.set_integral_nonpos_le
 
-lemma Integrable.measure_le_integral {f : α → ℝ} (f_int : Integrable f μ) (f_nonneg : 0 ≤ᵐ[μ] f)
-    {s : Set α} (hs : ∀ x ∈ s, 1 ≤ f x) :
+lemma Integrable.measure_le_integral {f : X → ℝ} (f_int : Integrable f μ) (f_nonneg : 0 ≤ᵐ[μ] f)
+    {s : Set X} (hs : ∀ x ∈ s, 1 ≤ f x) :
     μ s ≤ ENNReal.ofReal (∫ x, f x ∂μ) := by
   rw [ofReal_integral_eq_lintegral_ofReal f_int f_nonneg]
   apply meas_le_lintegral₀
@@ -787,7 +787,7 @@ lemma Integrable.measure_le_integral {f : α → ℝ} (f_int : Integrable f μ) 
   · intro x hx
     simpa using ENNReal.ofReal_le_ofReal (hs x hx)
 
-lemma integral_le_measure {f : α → ℝ} {s : Set α}
+lemma integral_le_measure {f : X → ℝ} {s : Set X}
     (hs : ∀ x ∈ s, f x ≤ 1) (h's : ∀ x ∈ sᶜ, f x ≤ 0) :
     ENNReal.ofReal (∫ x, f x ∂μ) ≤ μ s := by
   by_cases H : Integrable f μ; swap
