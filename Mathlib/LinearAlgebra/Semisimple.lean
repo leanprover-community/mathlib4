@@ -100,7 +100,7 @@ lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
   wlog ht : t ≠ 0; · simp [not_not.mp ht]
   rwa [IsSemisimple_smul_iff ht]
 
-theorem isSemisimple_of_squarefree_aeval_eq_zero [FiniteDimensional K M]
+theorem isSemisimple_of_squarefree_aeval_eq_zero
     {p : K[X]} (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
       ← IsTorsionBy, ← isTorsionBySet_singleton_iff, isTorsionBySet_iff_is_torsion_by_span] at hpf
@@ -159,7 +159,6 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
   have : Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R
-  have : IsArtinianRing S := .of_finite R S
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
     span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
   have : IsReduced S := by
