@@ -13,27 +13,28 @@ We construct generating families and bases for the exterior powers of a module.
 
 ## Definitions
 
-* `exteriorPower.BasisOfBasis`: If `b` is a basis of `M` (indexed by a linearly ordered type),
+* `Basis.exteriorPower`: If `b` is a basis of `M` (indexed by a linearly ordered type),
 the basis of the `n`th exterior power of `M` formed by the `n`-fold exterior products of elements
 of `b`.
 
 ## Theorems
 
-* `exteriorPower.Finite`: The `n`th exterior power of a finite module is a finite module.
-
 * `exteriorPower.span_top_of_span_top` and `exteriorPower.span_top_of_span_top'`: If a family of
 vectors spans `M`, then the family of its `n`-fold exterior products spans `⋀[R]^n M`. (We give
 versions in the exterior algebra and in the exterior power.)
 
-* `exteriorPower.FreeOfFree`: If `M` is a free module, then so is its `n`th exterior power.
-
-* `exteriorPower.FinrankOfFiniteFree`: If `R` satisfies the strong rank condition and `M` is
+* `exteriorPower.finrank_eq`: If `R` satisfies the strong rank condition and `M` is
 finite free of rank `r`, then the `n`th exterior power of `M` is of finrank `Nat.choose r n`.
 
 * `exteriorPower.ιMulti_family_linearIndependent_field`: If `R` is a field, and if `v` is a
 linearly independent family of vectors (indexed by a linearly ordered type), then the family of
 its `n`-fold exterior products is also linearly independent.
 
+## Instances
+
+* `exteriorPower.instFinite`: The `n`th exterior power of a finite module is a finite module.
+
+* `exteriorPower.instFree`: If `M` is a free module, then so is its `n`th exterior power.
 -/
 
 universe u v uM uN uN' uN'' uE uF
@@ -52,7 +53,7 @@ namespace exteriorPower
 /-! Finiteness of the exterior power. -/
 
 /-- The `n`th exterior power of a finite module is a finite module. -/
-theorem finite [Module.Finite R M]: Module.Finite R (⋀[R]^n M) :=
+instance instFinite [Module.Finite R M] : Module.Finite R (⋀[R]^n M) :=
   Module.Finite.mk ((Submodule.fg_top _).mpr (Submodule.FG.pow (by
   rw [LinearMap.range_eq_map]; exact Submodule.FG.map _  (Module.finite_def.mp inferInstance)) _ ))
 
@@ -292,32 +293,32 @@ lemma ιMulti_family_linearIndependent_ofBasis {I : Type*} [LinearOrder I] (b : 
 
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), the basis of the `n`th
 exterior power of `M` formed by the `n`-fold exterior products of elements of `b`. -/
-noncomputable def BasisOfBasis {I : Type*} [LinearOrder I] (b : Basis I R M) :
+noncomputable def _root_.Basis.exteriorPower {I : Type*} [LinearOrder I] (b : Basis I R M) :
     Basis {s : Finset I // Finset.card s = n} R (⋀[R]^n M) :=
   Basis.mk (v := ιMulti_family R n b) (ιMulti_family_linearIndependent_ofBasis _ _ _)
   (by rw [span_top_of_span_top']; rw [Basis.span_eq])
 
 @[simp]
-lemma BasisOfBasis_coe {I : Type*} [LinearOrder I] (b : Basis I R M) :
-    DFunLike.coe (BasisOfBasis R n b) = ιMulti_family R n b := Basis.coe_mk _ _
+lemma coe_basis {I : Type*} [LinearOrder I] (b : Basis I R M) :
+    DFunLike.coe (Basis.exteriorPower R n b) = ιMulti_family R n b := Basis.coe_mk _ _
 
 @[simp]
-lemma BasisOfBasis_apply {I : Type*} [LinearOrder I] (b : Basis I R M)
+lemma basis_apply {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s : Finset I} (hs : Finset.card s = n) :
-    BasisOfBasis R n b ⟨s, hs⟩ = ιMulti_family R n b ⟨s, hs⟩ := by rw [BasisOfBasis_coe]
+    Basis.exteriorPower R n b ⟨s, hs⟩ = ιMulti_family R n b ⟨s, hs⟩ := by rw [coe_basis]
 
 /-- If `b` is a basis of `M` indexed by a linearly ordered type `I` and `B` is the corresponding
 basis of the `n`th exterior power of `M`, indexed by the set of finsets `s` of `I` of cardinality
 `n`, then the coordinate function of `B` at `s` is the linear form on the `n`th exterior power
 defined by `b` and `s` in `exteriorPower.linearFormOfBasis`. -/
-lemma BasisOfBasis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
+lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s : Finset I} (hs : Finset.card s = n) :
-    Basis.coord (BasisOfBasis R n b) ⟨s, hs⟩ = linearFormOfBasis R n b hs := by
+    Basis.coord (Basis.exteriorPower R n b) ⟨s, hs⟩ = linearFormOfBasis R n b hs := by
   apply LinearMap.ext_on (span_top_of_span_top' R n (Basis.span_eq b))
   intro x hx
   obtain ⟨⟨t, ht⟩, htx⟩ := Set.mem_range.mp hx
   rw [← htx]
-  conv_lhs => rw [← BasisOfBasis_apply]
+  conv_lhs => rw [← basis_apply]
   by_cases heq : s = t
   · have heq' : (⟨s, hs⟩ : {s : Finset I // Finset.card s = n}) = ⟨t, ht⟩ := by
       simp only [Subtype.mk.injEq]; exact heq
@@ -329,20 +330,20 @@ lemma BasisOfBasis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
 /-! ### Freeness and dimension of `⋀[R]^n M. -/
 
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
-lemma FreeOfFree (hfree : Module.Free R M) : Module.Free R (⋀[R]^n M) :=
+instance instFree [hfree : Module.Free R M] : Module.Free R (⋀[R]^n M) :=
   let ⟨I, b⟩ := (Classical.choice hfree.exists_basis)
   letI := WellFounded.wellOrderExtension (emptyWf (α := I)).wf
-  Module.Free.of_basis (BasisOfBasis R n b)
+  Module.Free.of_basis (Basis.exteriorPower R n b)
 
 variable [StrongRankCondition R]
 
 /-- If `R` satisfies the strong rank condition and `M` is finite free of rank `r`, then
 the `n`th exterior power of `M` is of finrank `Nat.choose r n`. -/
-lemma FinrankOfFiniteFree (hfree : Module.Free R M) [Module.Finite R M] :
+lemma finrank_eq [hfree : Module.Free R M] [Module.Finite R M] :
     FiniteDimensional.finrank R (⋀[R]^n M) =
     Nat.choose (FiniteDimensional.finrank R M) n :=
   letI := WellFounded.wellOrderExtension (emptyWf (α := hfree.ChooseBasisIndex)).wf
-  let B :=  BasisOfBasis R n (hfree.chooseBasis)
+  let B := Basis.exteriorPower R n (hfree.chooseBasis)
   by rw [FiniteDimensional.finrank_eq_card_basis hfree.chooseBasis,
     FiniteDimensional.finrank_eq_card_basis B, Fintype.card_finset_len]
 
@@ -366,16 +367,14 @@ lemma ιMulti_family_linearIndependent_field {I : Type*} [LinearOrder I] {v : I 
     simp only [Submodule.mem_top, iff_true, ← Submodule.apply_mem_span_image_iff_mem_span
       (Submodule.injective_subtype W), ← Set.range_comp, ← h]
     simp only [Submodule.coeSubtype, SetLike.coe_mem]
-  have heq : ιMulti_family K n v' = BasisOfBasis K n (Basis.mk (LinearIndependent.of_comp
-    (W.subtype) (by rw [← h]; exact hv)) hv'span) := by simp only [BasisOfBasis_coe, Basis.coe_mk]
+  have heq : ιMulti_family K n v' = Basis.exteriorPower K n (Basis.mk (LinearIndependent.of_comp
+    (W.subtype) (by rw [← h]; exact hv)) hv'span) := by simp only [coe_basis, Basis.coe_mk]
   rw [heq]
   apply Basis.linearIndependent
 
-lemma nonemptyOfNonempty {I : Type*} [LinearOrder I]
-    (hne : Nonempty {v : I → E // LinearIndependent K v}) :
-    Nonempty {v : {s : Finset I // Finset.card s = n} →
-    (⋀[K]^n) E // LinearIndependent K v} :=
-  let v := Classical.choice hne
-  Nonempty.intro ⟨ιMulti_family K n v, ιMulti_family_linearIndependent_field n v.2⟩
+instance instNonempty {I : Type*} [LinearOrder I] [Nonempty {v : I → E // LinearIndependent K v}] :
+    Nonempty {v : {s : Finset I // Finset.card s = n} → (⋀[K]^n) E // LinearIndependent K v} :=
+  Nonempty.map (fun v : {v : I → E // LinearIndependent K v} ↦
+    ⟨ιMulti_family K n v, ιMulti_family_linearIndependent_field n v.2⟩) ‹_›
 
 end exteriorPower
