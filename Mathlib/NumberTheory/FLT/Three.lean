@@ -7,7 +7,7 @@ import Mathlib.Data.ZMod.Basic
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
-The goal of this file is to prove Fermats Last theorem in the case `n = 3`.
+The goal of this file is to prove Fermat Last theorem in the case `n = 3`.
 
 ## Main results
 * `fermatLastTheoremThree_case_1`: the first case of Fermat Last Theorem when `n = 3`:
