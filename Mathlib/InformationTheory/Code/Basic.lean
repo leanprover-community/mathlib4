@@ -18,7 +18,9 @@ class IsDecodingMap {r:γ} (hUDis:UniformlyDiscreteWith gdist s r) (decode : α 
 variable (γ) (gdist) (s)
 class _Code [GPseudoMetricClass T α γ] [IsDelone gdist s] : Prop
   where
--- use: [_Code γ gdist s]
+
+instance Code.inst_Code [GPseudoMetricClass T α γ] [IsDelone gdist s]: _Code γ gdist s where
+
 end code
 
 
@@ -35,5 +37,12 @@ variable (s : Submodule K M) [IsDelone gdist_m s]
 
 class _LinearCode [Nontrivial γ] [ContravariantClass γ γ (.+.) (.<.)]
   [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ]
-  [StrictModuleGNorm K K gdist_k gdist_k] [StrictModuleGNorm K M gdist_k gdist_m] [_Code γ gdist_m s]
+  [StrictModuleGNorm K K gdist_k gdist_k]
+  [StrictModuleGNorm K M gdist_k gdist_m] [_Code γ gdist_m s] where
+
+instance Code.inst_LinearCode [Nontrivial γ][ContravariantClass γ γ (.+.) (.<.)]
+  [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ]
+  [StrictModuleGNorm K K gdist_k gdist_k] [StrictModuleGNorm K M gdist_k gdist_m]
+  [_Code γ gdist_m s] : _LinearCode γ K gdist_k gdist_m s where
+
 end linearcode
