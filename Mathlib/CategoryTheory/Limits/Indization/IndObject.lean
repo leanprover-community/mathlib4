@@ -373,8 +373,19 @@ noncomputable def isColimitTo : IsColimit (Kc F hF G).toOver :=
 noncomputable def isColimitMappedCone : IsColimit (mappedCone F hF G) :=
   isColimitOfPreserves (Over.map (colimit.ι F (i F G))) (isColimitTo F hF G)
 
+noncomputable def indexing : (hF (i F G)).presentation.I ⥤ Over (colimit.cocone F).pt :=
+  (Cocone.toCostructuredArrow (Kc F hF G) ⋙
+        CostructuredArrow.toOver ((IsIndObject.presentation _).F ⋙ yoneda) (Kc F hF G).pt) ⋙
+      Over.map (colimit.ι F (i F G))
 
-
+theorem step₁₀ : Nonempty <| limit <|
+    G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
+      yoneda.obj (colimit (indexing F hF G)) := by
+  refine Nonempty.map ?_ (step₉ F G)
+  let y := IsColimit.coconePointUniqueUpToIso (isColimitMappedCone F hF G) (colimit.isColimit _)
+  let y' := whiskerLeft (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op)
+    (yoneda.map y.hom)
+  exact limMap y'
 
 noncomputable example : SmallCategory (K F hF G) := inferInstance
 
