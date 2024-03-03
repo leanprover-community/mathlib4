@@ -27,7 +27,7 @@ directly. In this file we prove some theorems about dependence of `∫ x in s, f
 
 We use the property `IntegrableOn f s μ := Integrable f (μ.restrict s)`, defined in
 `MeasureTheory.IntegrableOn`. We also defined in that same file a predicate
-`IntegrableAtFilter (f : α → E) (l : Filter α) (μ : Measure α)` saying that `f` is integrable at
+`IntegrableAtFilter (f : X → E) (l : Filter X) (μ : Measure X)` saying that `f` is integrable at
 some set `s ∈ l`.
 
 Finally, we prove a version of the
@@ -59,7 +59,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Classical Topology BigOperators ENNReal NNReal
 
-variable {α X β E F : Type*} [MeasurableSpace α] [MeasurableSpace X]
+variable {X β E F : Type*} [MeasurableSpace X]
 
 namespace MeasureTheory
 
@@ -889,17 +889,17 @@ end TendstoMono
 /-! ### Continuity of the set integral
 
 We prove that for any set `s`, the function
-`fun f : α →₁[μ] E => ∫ x in s, f x ∂μ` is continuous. -/
+`fun f : X →₁[μ] E => ∫ x in s, f x ∂μ` is continuous. -/
 
 
 section ContinuousSetIntegral
 
 variable [NormedAddCommGroup E] {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure α}
+  [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memℒp f).restrict s).toLp f`. This map is additive. -/
-theorem Lp_toLp_restrict_add (f g : Lp E p μ) (s : Set α) :
+theorem Lp_toLp_restrict_add (f g : Lp E p μ) (s : Set X) :
     ((Lp.memℒp (f + g)).restrict s).toLp (⇑(f + g)) =
       ((Lp.memℒp f).restrict s).toLp f + ((Lp.memℒp g).restrict s).toLp g := by
   ext1
@@ -916,7 +916,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memℒp f).restrict s).toLp f`. This map commutes with scalar multiplication. -/
-theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set α) :
+theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
     ((Lp.memℒp (c • f)).restrict s).toLp (⇑(c • f)) = c • ((Lp.memℒp f).restrict s).toLp f := by
   ext1
   refine' (ae_restrict_of_ae (Lp.coeFn_smul c f)).mp _
@@ -930,7 +930,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memℒp f).restrict s).toLp f`. This map is non-expansive. -/
-theorem norm_Lp_toLp_restrict_le (s : Set α) (f : Lp E p μ) :
+theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top _) (Lp.snorm_ne_top _)]
   refine' (le_of_eq _).trans (snorm_mono_measure _ Measure.restrict_le_self)
@@ -938,10 +938,10 @@ theorem norm_Lp_toLp_restrict_le (s : Set α) (f : Lp E p μ) :
 set_option linter.uppercaseLean3 false in
 #align measure_theory.norm_Lp_to_Lp_restrict_le MeasureTheory.norm_Lp_toLp_restrict_le
 
-variable (α F 𝕜) in
+variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in
 `Lp F p (μ.restrict s)`. -/
-def LpToLpRestrictCLM (μ : Measure α) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (s : Set α) :
+def LpToLpRestrictCLM (μ : Measure X) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (s : Set X) :
     Lp F p μ →L[𝕜] Lp F p (μ.restrict s) :=
   @LinearMap.mkContinuous 𝕜 𝕜 (Lp F p μ) (Lp F p (μ.restrict s)) _ _ _ _ _ _ (RingHom.id 𝕜)
     ⟨⟨fun f => Memℒp.toLp f ((Lp.memℒp f).restrict s), fun f g => Lp_toLp_restrict_add f g s⟩,
@@ -952,8 +952,8 @@ set_option linter.uppercaseLean3 false in
 
 variable (𝕜)
 
-theorem LpToLpRestrictCLM_coeFn [Fact (1 ≤ p)] (s : Set α) (f : Lp F p μ) :
-    LpToLpRestrictCLM α F 𝕜 μ p s f =ᵐ[μ.restrict s] f :=
+theorem LpToLpRestrictCLM_coeFn [Fact (1 ≤ p)] (s : Set X) (f : Lp F p μ) :
+    LpToLpRestrictCLM X F 𝕜 μ p s f =ᵐ[μ.restrict s] f :=
   Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp_to_Lp_restrict_clm_coe_fn MeasureTheory.LpToLpRestrictCLM_coeFn
@@ -961,16 +961,16 @@ set_option linter.uppercaseLean3 false in
 variable {𝕜}
 
 @[continuity]
-theorem continuous_set_integral [NormedSpace ℝ E] (s : Set α) :
-    Continuous fun f : α →₁[μ] E => ∫ x in s, f x ∂μ := by
+theorem continuous_set_integral [NormedSpace ℝ E] (s : Set X) :
+    Continuous fun f : X →₁[μ] E => ∫ x in s, f x ∂μ := by
   haveI : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
   have h_comp :
-    (fun f : α →₁[μ] E => ∫ x in s, f x ∂μ) =
-      integral (μ.restrict s) ∘ fun f => LpToLpRestrictCLM α E ℝ μ 1 s f := by
+    (fun f : X →₁[μ] E => ∫ x in s, f x ∂μ) =
+      integral (μ.restrict s) ∘ fun f => LpToLpRestrictCLM X E ℝ μ 1 s f := by
     ext1 f
     rw [Function.comp_apply, integral_congr_ae (LpToLpRestrictCLM_coeFn ℝ s f)]
   rw [h_comp]
-  exact continuous_integral.comp (LpToLpRestrictCLM α E ℝ μ 1 s).continuous
+  exact continuous_integral.comp (LpToLpRestrictCLM X E ℝ μ 1 s).continuous
 #align measure_theory.continuous_set_integral MeasureTheory.continuous_set_integral
 
 end ContinuousSetIntegral
