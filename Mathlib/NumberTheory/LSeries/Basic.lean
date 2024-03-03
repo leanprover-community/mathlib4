@@ -76,28 +76,28 @@ lemma term_def (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 @[simp]
 lemma term_zero (f : ℕ → ℂ) (s : ℂ) : term f s 0 = 0 := rfl
 
--- We put `hn` first for convnience, so that we can write `rw [LSeries.term_ne_zero hn]` etc.
+-- We put `hn` first for convnience, so that we can write `rw [LSeries.term_of_ne_zero hn]` etc.
 @[simp]
-lemma term_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
+lemma term_of_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
   if_neg hn
 
 @[simp]
-lemma term_pos {n : ℕ} (hn : 0 < n) (f : ℕ → ℂ) (s : ℂ) :
+lemma term_of_pos {n : ℕ} (hn : 0 < n) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
-  term_ne_zero (Nat.pos_iff_ne_zero.mp hn) f s
+  term_of_ne_zero (Nat.pos_iff_ne_zero.mp hn) f s
 
 lemma term_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) (n : ℕ) :
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero]
-  · simp only [ne_eq, hn, not_false_eq_true, term_ne_zero, h]
+  · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, h]
 
 lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     ‖term f s n‖ = if n = 0 then 0 else ‖f n‖ / n ^ s.re := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero, norm_zero, ↓reduceIte]
-  · rw [if_neg hn, term_ne_zero hn, norm_div, norm_natCast_cpow_of_pos <| Nat.pos_of_ne_zero hn]
+  · rw [if_neg hn, term_of_ne_zero hn, norm_div, norm_natCast_cpow_of_pos <| Nat.pos_of_ne_zero hn]
 
 lemma norm_term_le {f g : ℕ → ℂ} (s : ℂ) {n : ℕ} (h : ‖f n‖ ≤ ‖g n‖) :
     ‖term f s n‖ ≤ ‖term g s n‖ := by
@@ -111,7 +111,7 @@ lemma norm_term_le_of_re_le_re (f : ℕ → ℂ) {s s' : ℂ} (h : s.re ≤ s'.r
   rcases n.eq_zero_or_pos with rfl | hn
   · simp only [term_zero, norm_zero, le_refl]
   have hn' := norm_natCast_cpow_pos_of_pos hn s
-  simp_rw [term_pos hn, norm_div]
+  simp_rw [term_of_pos hn, norm_div]
   suffices H : ‖(n : ℂ) ^ s‖ ≤ ‖(n : ℂ) ^ s'‖ from div_le_div (norm_nonneg _) le_rfl hn' H
   refine (one_le_div hn').mp ?_
   rw [← norm_div, ← cpow_sub _ _ <| Nat.cast_ne_zero.mpr hn.ne', norm_natCast_cpow_of_pos hn]
@@ -248,7 +248,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
   · simp only [term_zero, norm_zero]
     exact norm_nonneg _
   have hn' : 0 < (n : ℝ) ^ s.re := Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
-  simp_rw [term_pos hn, norm_div, norm_natCast_cpow_of_pos hn, div_le_iff hn', norm_eq_abs (C : ℂ),
+  simp_rw [term_of_pos hn, norm_div, norm_natCast_cpow_of_pos hn, div_le_iff hn', norm_eq_abs (C : ℂ),
     abs_ofReal, _root_.abs_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
     ← Real.rpow_neg <| Nat.cast_nonneg _, ← Real.rpow_add <| Nat.cast_pos.mpr hn]
   simp only [add_re, sub_re, one_re, ofReal_re, neg_add_rev, neg_sub, neg_add_cancel_right]
@@ -321,7 +321,7 @@ lemma LSeries.term_add (f g : ℕ → ℂ) (s : ℂ) :
     term (f + g) s = term f s + term g s := by
   ext ⟨- | n⟩
   · simp only [term_zero, Pi.add_apply, add_zero]
-  · simp only [term_ne_zero (Nat.succ_ne_zero _), Pi.add_apply, _root_.add_div]
+  · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.add_apply, _root_.add_div]
 
 lemma LSeries.term_add_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term (f + g) s n = term f s n + term g s n := by
