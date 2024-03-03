@@ -674,7 +674,7 @@ end NormedAddCommGroup
 
 section Mono
 
-variable {μ : Measure α} {f g : α → ℝ} {s t : Set α} (hf : IntegrableOn f s μ)
+variable {X : Type*} [MeasurableSpace X] {μ : Measure X} {f g : X → ℝ} {s t : Set X} (hf : IntegrableOn f s μ)
   (hg : IntegrableOn g s μ)
 
 theorem set_integral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
@@ -711,7 +711,7 @@ theorem set_integral_le_integral (hfi : Integrable f μ) (hf : 0 ≤ᵐ[μ] f) :
   integral_mono_measure (Measure.restrict_le_self) hf hfi
 
 theorem set_integral_ge_of_const_le {c : ℝ} (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
-    (hf : ∀ x ∈ s, c ≤ f x) (hfint : IntegrableOn (fun x : α => f x) s μ) :
+    (hf : ∀ x ∈ s, c ≤ f x) (hfint : IntegrableOn (fun x : X => f x) s μ) :
     c * (μ s).toReal ≤ ∫ x in s, f x ∂μ := by
   rw [mul_comm, ← smul_eq_mul, ← set_integral_const c]
   exact set_integral_mono_on (integrableOn_const.2 (Or.inr hμs.lt_top)) hfint hs hf
