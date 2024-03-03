@@ -65,9 +65,8 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] {f g : X → E} {s t : Set X} {μ ν : Measure X} {l l' : Filter X}
-
-variable [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {f g : X → E} {s t : Set X} {μ ν : Measure X} {l l' : Filter X}
 
 theorem set_integral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
@@ -861,8 +860,7 @@ end IntegrableUnion
 
 section TendstoMono
 
-variable {μ : Measure X}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set X} {f : X → E}
+variable {μ : Measure X} [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set X} {f : X → E}
 
 theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
     (hfi : IntegrableOn f (s 0) μ) :
@@ -894,8 +892,8 @@ We prove that for any set `s`, the function
 
 section ContinuousSetIntegral
 
-variable [NormedAddCommGroup E] {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
+variable [NormedAddCommGroup E]
+  {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memℒp f).restrict s).toLp f`. This map is additive. -/
