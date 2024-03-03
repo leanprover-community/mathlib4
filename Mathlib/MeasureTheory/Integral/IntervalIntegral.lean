@@ -69,7 +69,10 @@ def IntervalIntegrable (f : ℝ → E) (μ : Measure ℝ) (a b : ℝ) : Prop :=
   IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ
 #align interval_integrable IntervalIntegrable
 
-section -- basic iff's for `IntervalIntegrable`
+/-!
+## Basic iff's for `IntervalIntegrable`
+-/
+section
 
 variable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
 
@@ -135,10 +138,13 @@ theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
 
 end
 
--- basic properties: interval integrability is symmetric, reflexive, transitive;
--- monotonicity and strong measurability of the interval integral;
--- if `f` is interval integrable, so are its absolute value and norm
--- arithmetic properties
+/-!
+## Basic properties of interval integrability
+- interval integrability is symmetric, reflexive, transitive
+- monotonicity and strong measurability of the interval integral
+- if `f` is interval integrable, so are its absolute value and norm
+- arithmetic properties
+-/
 namespace IntervalIntegrable
 
 section
@@ -357,7 +363,10 @@ theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
 
 end IntervalIntegrable
 
-section -- continuous functions are interval integrable
+/-!
+## Continuous functions are interval integrable
+-/
+section
 
 variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
@@ -380,7 +389,10 @@ theorem Continuous.intervalIntegrable {u : ℝ → E} (hu : Continuous u) (a b :
 
 end
 
-section -- monotone and antitone functions are integral integrable
+/-!
+## Monotone and antitone functions are integral integrable
+-/
+section
 
 variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] [ConditionallyCompleteLinearOrder E]
   [OrderTopology E] [SecondCountableTopology E]
@@ -690,7 +702,11 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm (L : E →L[𝕜] 
 
 end ContinuousLinearMap
 
-section Comp -- basic arithmetic: addition, scalar multiplication, affine transformations
+/-!
+## Basic arithmetic
+Includes addition, scalar multiplication and affine transformations.
+-/
+section Comp
 
 variable {a b c d : ℝ} (f : ℝ → E)
 
@@ -1031,8 +1047,10 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
 
 end OrderClosedTopology
 
--- The Lebesgue dominated convergence theorem for interval integrals.
--- As an application, we show continuity of parametric integrals.
+/-!
+## The Lebesgue dominated convergence theorem for interval integrals
+As an application, we show continuity of parametric integrals.
+-/
 section DominatedConvergence
 
 variable {a b c d : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
@@ -1295,7 +1313,7 @@ theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bo
 
 variable [NoAtoms μ]
 
-theorem continuousOn_primitive [NoAtoms μ] (h_int : IntegrableOn f (Icc a b) μ) :
+theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
     ContinuousOn (fun x => ∫ t in Ioc a x, f t ∂μ) (Icc a b) := by
   by_cases h : a ≤ b
   · have : ∀ x ∈ Icc a b, ∫ t in Ioc a x, f t ∂μ = ∫ t in a..x, f t ∂μ := by
