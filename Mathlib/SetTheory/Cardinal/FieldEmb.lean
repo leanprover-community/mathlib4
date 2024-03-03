@@ -6,6 +6,7 @@ Authors: Junyan Xu
 import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.FieldTheory.PurelyInseparable
 
 /-!
 # Number of embeddings of an infinite algebraic field extension into the algebraic closure
@@ -162,7 +163,7 @@ private def IsNatEquiv {s : Set ι} (equiv : ∀ j : s, F j ≃ piLT X j) : Prop
     equiv ⟨k, hk⟩ (f h x) = piLTProj h (equiv ⟨j, hj⟩ x)
 
 abbrev Order.IsSuccLimit.mid {ι} [LT ι] {i j : ι} (hi : IsSuccLimit i) (hj : j < i) :
-    {k // j < k ∧ k < i} := Classical.indefiniteDescription _ ((not_covby_iff hj).mp <| hi j)
+    {k // j < k ∧ k < i} := Classical.indefiniteDescription _ ((not_covBy_iff hj).mp <| hi j)
 
 variable {ι : Type*} [LinearOrder ι] {X : ι → Type*} {i : ι} (hi : IsSuccLimit i)
 
@@ -515,7 +516,7 @@ instance (i : ι) : IsSeparable (F⟮<i⟯) (F⟮<i⟯⟮b (φ i)⟯) :=
 open Field in
 theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
   rw [← Nat.cast_eq_ofNat, ← toNat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 _) (deg_lt_aleph0 _ i),
-    toNat_cast, ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable, Nat.succ_le]
+    toNat_natCast, ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable, Nat.succ_le]
   by_contra!
   obtain ⟨x, hx⟩ := finrank_adjoin_simple_eq_one_iff.mp (this.antisymm finrank_pos)
   refine (isLeast_φ (alg := alg) i).1 (hx ▸ ?_)
@@ -619,7 +620,10 @@ theorem Field.cardinal_emb_of_isSeparable [IsSeparable F E] :
     ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable]
 
 theorem Field.cardinal_emb_separableClosure (alg : Algebra.IsAlgebraic F E) :
-    #(Field.Emb F <| separableClosure F E) = #(Field.Emb F E) := sorry
+    #(Field.Emb F <| separableClosure F E) = #(Field.Emb F E) := by
+  have := separableClosure.isPurelyInseparable F E alg
+  rw [← (embProdEmbOfIsAlgebraic F (separableClosure F E) E <| alg.tower_top _).cardinal_eq,
+    mk_prod, mk_eq_one (Emb _ E), lift_one, mul_one, lift_id]
 
 theorem Field.cardinal_emb_of_aleph0_le_sepDegree (alg : Algebra.IsAlgebraic F E)
     (rank_inf : ℵ₀ ≤ sepDegree F E) : #(Field.Emb F E) = 2 ^ sepDegree F E := by
