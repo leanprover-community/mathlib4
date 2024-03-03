@@ -140,6 +140,36 @@ def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
       wι := fun j => φ.comp_inv_eq.mpr (wι j).symm
       wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm  }
 
+/--
+Functorially compose a cone for `F` by a natural isomorphism `F ≅ G` to give a cone for `G`.
+-/
+@[simps]
+def compose {G : J → C} (α : F ≅ G) : Bicone F ⥤ Bicone G where
+  obj c :=
+    { pt := c.pt
+      π := fun i => c.π i ≫ α.hom i
+      ι := fun i => α.inv i ≫ c.ι i
+      ι_π := fun i j => by
+        obtain rfl | hij := eq_or_ne i j
+        · have := congr_fun (α.inv_hom_id) i
+          aesop
+        · aesop }
+  map f := { hom := f.hom }
+
+
+/-- If `F` and `G` are naturally isomorphic functors, then they have equivalent categories of
+cones. -/
+@[simps]
+def composeEquivalence {G : J → C} (α : F ≅ G) : Bicone F ≌ Bicone G where
+  functor := compose α
+  inverse := compose α.symm
+  unitIso := NatIso.ofComponents fun s => Bicones.ext (Iso.refl _)
+    (fun i => by have := congr_fun (α.hom_inv_id_assoc s.ι) i; aesop)
+    (fun i => by have := congr_fun α.hom_inv_id i; aesop)
+  counitIso := NatIso.ofComponents fun s => Bicones.ext (Iso.refl _)
+    (fun i => by have := congr_fun (α.inv_hom_id_assoc s.ι) i; aesop)
+    (fun i => by have := congr_fun α.inv_hom_id i; aesop)
+
 variable (F) in
 /-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
 @[simps]
@@ -172,6 +202,23 @@ instance functorialityFaithful [Functor.PreservesZeroMorphisms G] [Faithful G] :
     apply BiconeMorphism.ext f g
     let f := BiconeMorphism.mk.inj e
     apply G.map_injective f
+
+/-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
+equivalence between bicones over `F` and bicones over `F ⋙ e.functor`.
+-/
+@[simps]
+def functorialityEquivalence (e : C ≌ D) [Functor.PreservesZeroMorphisms e.functor] :
+    Bicone F ≌ Bicone (e.functor.obj ∘ F) :=
+  let f : e.inverse.obj ∘ (e.functor.obj ∘ F) ≅ F := sorry
+    -- Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
+  { functor := functoriality F e.functor
+    inverse := composeEquivalence _ ⋙ functoriality (e.functor.obj ∘ F) e.inverse
+    unitIso := NatIso.ofComponents fun c => Bicones.ext (e.unitIso.app _)
+    counitIso := NatIso.ofComponents fun c => Bicones.ext (e.counitIso.app _)
+    functor_unitIso_comp := _ }
+
+#exit
+
 
 end Bicones
 
