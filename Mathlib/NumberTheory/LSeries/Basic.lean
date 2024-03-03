@@ -89,9 +89,7 @@ lemma term_of_pos {n : ℕ} (hn : 0 < n) (f : ℕ → ℂ) (s : ℂ) :
 
 lemma term_congr {f g : ℕ → ℂ} (h : ∀ n ≠ 0, f n = g n) (s : ℂ) (n : ℕ) :
     term f s n = term g s n := by
-  rcases eq_or_ne n 0 with rfl | hn
-  · simp only [term_zero]
-  · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, h]
+  rcases eq_or_ne n 0 with hn | hn <;> simp [hn, h]
 
 lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     ‖term f s n‖ = if n = 0 then 0 else ‖f n‖ / n ^ s.re := by
