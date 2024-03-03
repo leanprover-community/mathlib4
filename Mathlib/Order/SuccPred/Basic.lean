@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Cover
 import Mathlib.Order.Iterate
+import Mathlib.Order.WellFounded
 
 #align_import order.succ_pred.basic from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -192,6 +193,23 @@ def PredOrder.ofLePredIff (pred : α → α) (hle_pred_iff : ∀ {a b}, a ≤ pr
     le_pred_of_lt := fun h => hle_pred_iff.2 h
     le_of_pred_lt := fun {_ _} h => le_of_not_lt ((not_congr hle_pred_iff).1 h.not_le) }
 #align pred_order.of_le_pred_iff PredOrder.ofLePredIff
+
+open scoped Classical
+
+variable (α)
+
+/-- A well-order is a `SuccOrder`. -/
+noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder α :=
+  ofCore (fun a ↦ if h : (Ioi a).Nonempty then wellFounded_lt.min _ h else a)
+    (fun ha _ ↦ by
+      rw [not_isMax_iff] at ha
+      simp_rw [Set.Nonempty, mem_Ioi, dif_pos ha]
+      exact ⟨(wellFounded_lt.min_le · ha), lt_of_lt_of_le (wellFounded_lt.min_mem _ ha)⟩)
+    fun a ha ↦ dif_neg (not_not_intro ha <| not_isMax_iff.mpr ·)
+
+/-- A linear order with well-founded greater-than relation is a `PredOrder`. -/
+noncomputable def PredOrder.ofLinearWellFoundedGT (α) [LinearOrder α] [WellFoundedGT α] :
+    PredOrder α := letI := SuccOrder.ofLinearWellFoundedLT αᵒᵈ; inferInstanceAs (PredOrder αᵒᵈᵒᵈ)
 
 end LinearOrder
 
