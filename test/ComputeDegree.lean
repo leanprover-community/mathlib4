@@ -4,11 +4,6 @@ open Polynomial
 
 variable {R : Type*}
 
--- Adaptation note: v4.7.0-rc1
--- Unfortunately compute_degree! fails, slowly, without using the backwards compatibility flag
--- for `rw` and `simp`:
-set_option tactic.skipAssignedInstances false
-
 section native_mathlib4_tests
 
 variable {n : ℕ} {z : ℤ} {f : ℤ[X]} (hn : natDegree f ≤ 5) (hd : degree f ≤ 5)
