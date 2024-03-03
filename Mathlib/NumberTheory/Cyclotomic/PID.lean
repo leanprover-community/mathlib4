@@ -34,7 +34,7 @@ theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞
     (irreducible_rat (by norm_num)), nrComplexPlaces_eq_totient_div_two 3, totient_prime hp.1]
   simp only [Int.reduceNeg, show ((3 : ℕ+) : ℕ) = 3 by rfl, succ_sub_succ_eq_sub, tsub_zero,
     zero_lt_two, Nat.div_self, pow_one, cast_ofNat, neg_mul, one_mul, abs_neg, Int.cast_abs,
-    Int.int_cast_ofNat, factorial_two, gt_iff_lt, abs_of_pos (show (0 : ℝ) < 3 from by norm_num)]
+    Int.int_cast_ofNat, factorial_two, gt_iff_lt, abs_of_pos (show (0 : ℝ) < 3 by norm_num)]
   suffices (2 * (3 / 4) * (2 ^ 2 / 2)) ^ 2 < (2 * (π / 4) * (2 ^ 2 / 2)) ^ 2 by
     exact lt_trans (by norm_num) this
   gcongr
