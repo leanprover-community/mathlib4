@@ -197,10 +197,10 @@ lemma spec (g : L ≃+* L) {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
 
 lemma unique (g : L ≃+* L) {c : ZMod n}  (hc : ∀ t ∈ rootsOfUnity n L, g t = t ^ c.val) :
     c = ModularCyclotomicCharacter L hn g := by
-  have := toFun_unique' n g (ZMod.ringEquivCongr hn.symm c) ?_
-  · exact (ZMod.ringEquivCongr_symm hn.symm _ _ this.symm)
-  · intro t ht
-    rw [hc t ht, ZMod.ringEquivCongr_val]
+  change c = (ZMod.ringEquivCongr hn) (toFun n g)
+  rw [← toFun_unique' n g (ZMod.ringEquivCongr hn.symm c)
+    (fun t ht ↦ by rw [hc t ht, ZMod.ringEquivCongr_val]), ← ZMod.ringEquivCongr_symm hn,
+    RingEquiv.apply_symm_apply]
 
 end ModularCyclotomicCharacter
 
