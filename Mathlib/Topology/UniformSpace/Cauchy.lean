@@ -318,8 +318,8 @@ theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq u ↔ CauchySeq f
     intro V mV
     obtain ⟨N, h⟩ := h V mV
     use N + k
-    intro a _ b _
-    convert h (a - k) (by omega) (b - k) (by omega) <;> omega
+    intro a ha b hb
+    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> omega
 
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}
     {s : γ → Set (α × α)} (h : (𝓤 α).HasBasis p s) :
