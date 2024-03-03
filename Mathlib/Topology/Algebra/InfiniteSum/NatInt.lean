@@ -28,26 +28,19 @@ section Monoid
 
 variable [AddCommMonoid α] [TopologicalSpace α]
 
-section HasSum
+namespace HasSum
 
 variable {a b : α}
 
 /-- If `f : ℕ → α` has sum `a`, then the partial sums `∑_{i=0}^{n-1} f i` converge to `a`. -/
-theorem HasSum.tendsto_sum_nat {f : ℕ → α} (h : HasSum f a) :
+theorem tendsto_sum_nat {f : ℕ → α} (h : HasSum f a) :
     Tendsto (fun n : ℕ ↦ ∑ i in range n, f i) atTop (𝓝 a) :=
   h.comp tendsto_finset_range
 #align has_sum.tendsto_sum_nat HasSum.tendsto_sum_nat
 
-theorem Summable.hasSum_iff_tendsto_nat [T2Space α] {f : ℕ → α} {a : α} (hf : Summable f) :
-    HasSum f a ↔ Tendsto (fun n : ℕ ↦ ∑ i in range n, f i) atTop (𝓝 a) := by
-  refine ⟨fun h ↦ h.tendsto_sum_nat, fun h ↦ ?_⟩
-  rw [tendsto_nhds_unique h hf.hasSum.tendsto_sum_nat]
-  exact hf.hasSum
-#align summable.has_sum_iff_tendsto_nat Summable.hasSum_iff_tendsto_nat
-
 /-- Variant of `HasSum.sum_nat_of_sum_int` directly using the two constructors of `ℤ`. Note
 we do not need `[ContinuousAdd α]` for this. -/
-theorem HasSum.sum_nat_of_sum_int' {f : ℤ → α} (hf : HasSum f a) :
+theorem sum_nat_of_sum_int' {f : ℤ → α} (hf : HasSum f a) :
     HasSum (fun n : ℕ ↦ f n + f (Int.negSucc n)) a := by
   have : Injective Int.negSucc := @Int.negSucc.inj
   refine hf.hasSum_of_sum_eq fun u ↦ ?_
@@ -64,52 +57,50 @@ section ContinuousAdd
 
 variable [ContinuousAdd α]
 
-theorem HasSum.sum_range_add {f : ℕ → α}
+theorem sum_range_add {f : ℕ → α}
     {k : ℕ} {a : α} (h : HasSum (fun n ↦ f (n + k)) a) : HasSum f ((∑ i in range k, f i) + a) := by
   refine ((range k).hasSum f).add_compl ?_
   rwa [← (notMemRangeEquiv k).symm.hasSum_iff]
 
-theorem HasSum.even_add_odd {f : ℕ → α} (he : HasSum (fun k ↦ f (2 * k)) a)
+theorem zero_add {f : ℕ → α} {a : α} (h : HasSum (fun n ↦ f (n + 1)) a) :
+    HasSum f (f 0 + a) := by
+  simpa only [sum_range_one] using h.sum_range_add
+
+theorem even_add_odd {f : ℕ → α} (he : HasSum (fun k ↦ f (2 * k)) a)
     (ho : HasSum (fun k ↦ f (2 * k + 1)) b) : HasSum f (a + b) := by
   have := mul_right_injective₀ (two_ne_zero' ℕ)
-  replace he := this.hasSum_range_iff.2 he
   replace ho := ((add_left_injective 1).comp this).hasSum_range_iff.2 ho
-  refine' he.add_isCompl _ ho
+  refine' (this.hasSum_range_iff.2 he).add_isCompl _ ho
   simpa [(· ∘ ·)] using Nat.isCompl_even_odd
 #align has_sum.even_add_odd HasSum.even_add_odd
 
-/-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both convergent then so is the `ℤ`-indexed
-sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...`. -/
-theorem HasSum.int_rec {f g : ℕ → α} (hf : HasSum f a) (hg : HasSum g b) :
-    HasSum (Int.rec f g) (a + b) := by
-  -- note this proof works for any two-case inductive
-  have h₁ : Injective ((↑) : ℕ → ℤ) := @Int.ofNat.inj
-  have h₂ : Injective Int.negSucc := @Int.negSucc.inj
+theorem nonneg_add_neg {a b : α} {f : ℤ → α} (hs₁ : HasSum (fun n : ℕ ↦ f n) a)
+    (hs₂ : HasSum (fun n : ℕ ↦ f (-n.succ)) b) : HasSum f (a + b) := by
+  have hi₁ : Injective ((↑) : ℕ → ℤ) := @Int.ofNat.inj
+  have hi₂ : Injective Int.negSucc := @Int.negSucc.inj
   have : IsCompl (Set.range ((↑) : ℕ → ℤ)) (Set.range Int.negSucc) := by
     constructor
     · rw [disjoint_iff_inf_le]
       rintro _ ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
     · rw [codisjoint_iff_le_sup]
-      rintro (i | j) _
-      exacts [Or.inl ⟨_, rfl⟩, Or.inr ⟨_, rfl⟩]
-  exact HasSum.add_isCompl this (h₁.hasSum_range_iff.mpr hf) (h₂.hasSum_range_iff.mpr hg)
-#align has_sum.int_rec HasSum.int_rec
-
-theorem HasSum.nonneg_add_neg {a b : α} {f : ℤ → α} (hnonneg : HasSum (fun n : ℕ ↦ f n) a)
-    (hneg : HasSum (fun n : ℕ ↦ f (-n.succ)) b) : HasSum f (a + b) := by
-  simp_rw [← Int.negSucc_coe] at hneg
-  convert hnonneg.int_rec hneg using 1
-  ext (i | j) <;> rfl
+      rintro (i | j) <;> simp
+  exact (hi₁.hasSum_range_iff.mpr hs₁).add_isCompl this (hi₂.hasSum_range_iff.mpr hs₂)
 #align has_sum.nonneg_add_neg HasSum.nonneg_add_neg
 
-theorem HasSum.pos_add_zero_add_neg {a b : α} {f : ℤ → α} (hpos : HasSum (fun n : ℕ ↦ f (n + 1)) a)
-    (hneg : HasSum (fun n : ℕ ↦ f (-n.succ)) b) : HasSum f (a + f 0 + b) :=
-  haveI : ∀ g : ℕ → α, HasSum (fun k ↦ g (k + 1)) a → HasSum g (a + g 0) :=
-    fun g hg ↦ by simpa using (add_comm _ a ▸ hg.sum_range_add :)
-  (this (fun n ↦ f n) hpos).nonneg_add_neg hneg
-#align has_sum.pos_add_zero_add_neg HasSum.pos_add_zero_add_neg
+/-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have sums `a`, `b` respectively, then the `ℤ`-indexed
+sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` has sum `a + b`. -/
+theorem int_rec {f g : ℕ → α} (hf : HasSum f a) (hg : HasSum g b) : HasSum (Int.rec f g) (a + b) :=
+  nonneg_add_neg hf hg
+#align has_sum.int_rec HasSum.int_rec
 
-theorem HasSum.sum_nat_of_sum_int {f : ℤ → α} (hf : HasSum f a) :
+-- theorem pos_add_zero_add_neg {a b : α} {f : ℤ → α} (hpos : HasSum (fun n : ℕ ↦ f (n + 1)) a)
+--     (hneg : HasSum (fun n : ℕ ↦ f (-n.succ)) b) : HasSum f (a + f 0 + b) :=
+--   haveI : ∀ g : ℕ → α, HasSum (fun k ↦ g (k + 1)) a → HasSum g (a + g 0) :=
+--     fun g hg ↦ by simpa using (add_comm _ a ▸ hg.sum_range_add :)
+--   (this (fun n ↦ f n) hpos).nonneg_add_neg hneg
+#noalign has_sum.pos_add_zero_add_neg
+
+theorem sum_nat_of_sum_int {f : ℤ → α} (hf : HasSum f a) :
     HasSum (fun n : ℕ ↦ f n + f (-n)) (a + f 0) := by
   apply (hf.add (hasSum_ite_eq (0 : ℤ) (f 0))).hasSum_of_sum_eq fun u ↦ ?_
   refine' ⟨u.image Int.natAbs, fun v' hv' ↦ _⟩
@@ -157,6 +148,47 @@ theorem HasSum.sum_nat_of_sum_int {f : ℤ → α} (hf : HasSum f a) :
 end ContinuousAdd
 
 end HasSum
+
+namespace Summable
+
+theorem hasSum_iff_tendsto_nat [T2Space α] {f : ℕ → α} {a : α} (hf : Summable f) :
+    HasSum f a ↔ Tendsto (fun n : ℕ ↦ ∑ i in range n, f i) atTop (𝓝 a) := by
+  refine ⟨fun h ↦ h.tendsto_sum_nat, fun h ↦ ?_⟩
+  rw [tendsto_nhds_unique h hf.hasSum.tendsto_sum_nat]
+  exact hf.hasSum
+#align summable.has_sum_iff_tendsto_nat Summable.hasSum_iff_tendsto_nat
+
+theorem of_summable_int' {f : ℤ → α} (hf : Summable f) :
+    Summable (fun n : ℕ ↦ f n + f (Int.negSucc n)) :=
+  hf.hasSum.sum_nat_of_sum_int'.summable
+
+section ContinuousAdd
+
+variable [ContinuousAdd α]
+
+theorem comp_nat_add {f : ℕ → α} {k : ℕ} (h : Summable fun n ↦ f (n + k)) : Summable f :=
+  h.hasSum.sum_range_add.summable
+
+theorem even_add_odd {f : ℕ → α} (he : Summable fun k ↦ f (2 * k))
+    (ho : Summable fun k ↦ f (2 * k + 1)) : Summable f :=
+  (he.hasSum.even_add_odd ho.hasSum).summable
+
+theorem nonneg_add_neg {f : ℤ → α} (hs₁ : Summable fun n : ℕ ↦ f n)
+    (hs₂ : Summable fun n : ℕ ↦ f (-n.succ)) : Summable f :=
+  (hs₁.hasSum.nonneg_add_neg hs₂.hasSum).summable
+
+/-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` are both summable then so is the `ℤ`-indexed
+sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...`. -/
+theorem int_rec {f g : ℕ → α} (hf : Summable f) (hg : Summable g) : Summable (Int.rec f g) :=
+  nonneg_add_neg hf hg
+
+theorem of_summable_int {f : ℤ → α} (hf : Summable f) :
+    Summable fun n : ℕ ↦ f n + f (-n) :=
+  hf.hasSum.sum_nat_of_sum_int.summable
+
+end ContinuousAdd
+
+end Summable
 
 section tsum
 
@@ -303,15 +335,13 @@ theorem summable_int_of_summable_nat {f : ℤ → α} (hp : Summable fun n : ℕ
     ((summable_nat_add_iff 1).mpr hn).hasSum).summable
 #align summable_int_of_summable_nat summable_int_of_summable_nat
 
-
-
 end Nat
 
 end TopologicalGroup
 
 section UniformGroup
 
-variable [AddCommGroup α] [UniformSpace α] [UniformAddGroup α] {f g : β → α} {a a₁ a₂ : α}
+variable [AddCommGroup α] [UniformSpace α] [UniformAddGroup α]
 
 theorem cauchySeq_finset_iff_nat_tsum_vanishing {f : ℕ → α} :
     (CauchySeq fun s : Finset ℕ ↦ ∑ n in s, f n) ↔
@@ -339,7 +369,7 @@ lemma summable_int_iff_summable_nat {f : ℤ → α} :
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
 
-/-- Variant of `summable_int_iff_summable_nat` with a RHS matching `HasSum.int_rec`. -/
+/-- Variant of `summable_int_iff_summable_nat` with a RHS matching `HasSum.nonneg_add_neg`. -/
 lemma summable_int_iff_summable_nat' {f : ℤ → α} :
     Summable f ↔ (Summable fun (n : ℕ) ↦ f ↑n) ∧ (Summable fun (n : ℕ) ↦ f (Int.negSucc n)) := by
   rw [summable_int_iff_summable_nat]
@@ -349,15 +379,15 @@ end UniformGroup
 
 section TopologicalGroup
 
-variable {G : Type*} [TopologicalSpace G] [AddCommGroup G] [TopologicalAddGroup G] {f : α → G}
+variable [TopologicalSpace α] [AddCommGroup α] [TopologicalAddGroup α]
 
-theorem Summable.nat_tsum_vanishing {f : ℕ → G} (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 0) :
+theorem Summable.nat_tsum_vanishing {f : ℕ → α} (hf : Summable f) ⦃e : Set α⦄ (he : e ∈ 𝓝 0) :
     ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e :=
-  letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
-  have : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
+  letI : UniformSpace α := TopologicalAddGroup.toUniformSpace α
+  have : UniformAddGroup α := comm_topologicalAddGroup_is_uniform
   cauchySeq_finset_iff_nat_tsum_vanishing.1 hf.hasSum.cauchySeq e he
 
-theorem Summable.tendsto_atTop_zero {f : ℕ → G} (hf : Summable f) : Tendsto f atTop (𝓝 0) := by
+theorem Summable.tendsto_atTop_zero {f : ℕ → α} (hf : Summable f) : Tendsto f atTop (𝓝 0) := by
   rw [← Nat.cofinite_eq_atTop]
   exact hf.tendsto_cofinite_zero
 #align summable.tendsto_at_top_zero Summable.tendsto_atTop_zero
