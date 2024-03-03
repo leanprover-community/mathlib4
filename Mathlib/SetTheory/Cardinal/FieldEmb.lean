@@ -30,9 +30,9 @@ and used to show `leastExt` is a total function from `ι` to itself. It is proba
 mathematically the most nontrivial part of the whole argument, but turned out easy to
 formalize and was done the earliest.
 
-Once we have the filtration `F⟮<i⟯` for `i : ι`, we may build an embedding `E →ₐ[F] Ē` step by
-step. To extend an embedding `F⟮<i⟯ →ₐ[F] Ē` to the successor `F⟮<i⁺⟯`, the number of choices
-is equal to the (finite) separable degree of `F⟮<i⁺⟯ / F⟮<i⟯`, which is equal to its rank if
+Once we have the filtration `E⟮<i⟯` for `i : ι`, we may build an embedding `E →ₐ[F] Ē` step by
+step. To extend an embedding `E⟮<i⟯ →ₐ[F] Ē` to the successor `E⟮<i⁺⟯`, the number of choices
+is equal to the (finite) separable degree of `E⟮<i⁺⟯ / E⟮<i⟯`, which is equal to its rank if
 `E/F` is separable. Since each extension is nontrivial, the degree is at least two (`two_le_deg`)
 but always finite. Intuitively, these choices multiply together to give the cardinality of
 `Field.Emb F E := (E →ₐ[F] Ē)`, and since the total times of choices to be made is the length of
@@ -40,8 +40,8 @@ the filtration `#ι`, we conclude that `2 ^ #ι ≤ #(Field.Emb F E) ≤ ℵ₀ 
 both sides are equal, so we get an equality `#(Field.Emb F E) = 2 ^ #ι = 2 ^ Module.rank F E`.
 
 To rigorize the argument we formalize the choice at step `i` as a type `X i` of cardinality
-equal to `Field.Emb F⟮<i⟯ F⟮<i⁺⟯` (the separable degree of `F⟮<i⁺⟯ / F⟮<i⟯`) together with a
-bijection `F i⁺ ≃ F i × X i`, where `F i := (F⟮<i⟯ →ₐ[F] Ē)` (sorry for the confusing notation),
+equal to `Field.Emb E⟮<i⟯ E⟮<i⁺⟯` (the separable degree of `E⟮<i⁺⟯ / E⟮<i⟯`) together with a
+bijection `F i⁺ ≃ F i × X i`, where `F i := (E⟮<i⟯ →ₐ[F] Ē)` (sorry for the confusing notation),
 and we formalize the combination of choices as the Pi type `∀ i : ι, X i`. We use transfinite
 recursion (`SuccOrder.limitRecOn`) to build a bijection `Field.Emb F E ≃ ∀ i, X i` with the
 Pi type by successively extending (`piEquivSucc`) bijections `F i ≃ ∀ j : Iio i, X j` using
@@ -55,33 +55,7 @@ universe u v
 
 noncomputable section
 
-theorem Cardinal.noMaxOrder {c} [Fact (ℵ₀ ≤ c)] : NoMaxOrder c.ord.out.α :=
-  Ordinal.out_no_max_of_succ_lt (ord_isLimit Fact.out).2
-
-open scoped Classical in
-/-- A well-order is a `SuccOrder`. -/
-abbrev SuccOrder.ofWellOrder {ι} [LinearOrder ι] [WellFoundedLT ι] : SuccOrder ι :=
-  SuccOrder.ofCore (fun i ↦ if h : (Ioi i).Nonempty then wellFounded_lt.min _ h else i)
-    (fun hi _ ↦ by
-      rw [not_isMax_iff] at hi
-      simp_rw [Set.Nonempty, mem_Ioi, dif_pos hi]
-      exact ⟨(wellFounded_lt.min_le · hi), lt_of_lt_of_le (wellFounded_lt.min_mem _ hi)⟩)
-    fun i hi ↦ dif_neg (not_not_intro hi <| not_isMax_iff.mpr ·)
-
 local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
-
-open scoped Classical in
-/-- Recursion principle on a well-founded partial `SuccOrder`. -/
-@[elab_as_elim]
-def SuccOrder.limitRecOn {ι} [PartialOrder ι] [WellFoundedLT ι] [SuccOrder ι]
-    {C : ι → Sort*} (i : ι)
-    (H_succ : ∀ i, ¬IsMax i → C i → C (i⁺))
-    (H_lim : ∀ i, IsSuccLimit i → (∀ j < i, C j) → C i) : C i :=
-  wellFounded_lt.fix
-    (fun i IH ↦ if h : IsSuccLimit i then H_lim i h IH else
-      let x := Classical.indefiniteDescription _ (not_isSuccLimit_iff.mp h)
-      x.2.2 ▸ H_succ x x.2.1 (IH x <| x.2.2.subst <| lt_succ_of_not_isMax x.2.1))
-    i
 
 section InverseLimit
 
@@ -92,7 +66,7 @@ well-order in which every map between successive nodes has constant fiber `X i`,
 node is the `inverseLimit` of the inverse subsystem formed by all previous nodes.
 This part might be considered mathematically trivial but took the longest to formalize.
 
-The most tricky part of the whole argument happens at limit nodes: at a limit node `i : ι`,
+The most tricky part of the whole argument happens at limit nodes: if `i : ι` is a limit,
 what we have in hand is a family of bijections `F j ≃ ∀ l : Iio j, X l` for every `j < i`,
 which we would like to "glue" up to a bijection `F i ≃ ∀ l : Iio i, X l`. We denote
 `∀ l : Iio i, X l` by `PiLT X i`, and they form an inverse system just like the `F i`.
@@ -127,12 +101,12 @@ the distinguished bijection that is compatible with the projections to all `X i`
 
 Note that the bottom element in `ι` is technically also a limit according to `IsSuccLimit`,
 but the only place it requires special treatment is in `equivLim` (the bijection between
-`F⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `F⟮<j⟯ →ₐ[F] Ē` over `j < i`).
+`E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] Ē` over `j < i`).
 
-The final technical details is that, since we construct `PEquivOn`s on `Iic` intervals and
+The final technical detail is that, since we construct `PEquivOn`s on `Iic` intervals and
 since `ι` is a limit ordinal, we need to adjoin a top element to `ι` in order to obtain a
 `PEquivOn` on all of `ι`. Its node is the top intermediate field, namely `E` itself, so
-we finally obtain `Field.Emb F E ≃ (⊤ →ₐ[F] Ē) ≃ ∀ i < ⊤, X i ≃ ∀ i : ι, Field.Emb F⟮<i⟯ F⟮<i⁺⟯`. ∎
+we finally obtain `Field.Emb F E ≃ (⊤ →ₐ[F] Ē) ≃ ∀ i < ⊤, X i ≃ ∀ i : ι, Field.Emb E⟮<i⟯ E⟮<i⁺⟯`. ∎
 
 -/
 
@@ -295,7 +269,7 @@ theorem unique_pEquivOn (hs : IsLowerSet s) {e₁ e₂ : PEquivOn f equivSucc s}
   obtain ⟨e₁, nat₁, compat₁⟩ := e₁
   obtain ⟨e₂, nat₂, compat₂⟩ := e₂
   ext1; ext1 i; dsimp only
-  refine SuccOrder.limitRecOn (C := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩) i
+  refine SuccOrder.limitRecOn i.1 (C := fun i ↦ ∀ h : i ∈ s, e₁ ⟨i, h⟩ = e₂ ⟨i, h⟩)
     (fun i nmax ih hi ↦ ?_) (fun i lim ih hi ↦ ?_) i.2
   · ext x; funext ⟨j, hj⟩
     obtain rfl | hj := ((lt_succ_iff_of_not_isMax nmax).mp hj).eq_or_lt
@@ -365,12 +339,12 @@ set_option quotPrecheck false
 
 /-- Index a basis of E/F using the initial ordinal of `Module.rank F E`. -/
 local notation "ι" => (Module.rank F E).ord.out.α
-instance : SuccOrder ι := SuccOrder.ofWellOrder
+local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
 
 variable {F E} in
 private lemma wf : WellFounded ((· : ι) < ·) := (Module.rank F E).ord.out.wo.wf
 private lemma card_ι : #ι = Module.rank F E := (mk_ordinal_out _).trans (card_ord _)
-instance : Nonempty ι := mk_ne_zero_iff.mp (rank_pos.trans_eq (card_ι F E).symm).ne'
+local instance : Nonempty ι := mk_ne_zero_iff.mp (rank_pos.trans_eq (card_ι F E).symm).ne'
 
 /-- A basis of E/F indexed by the initial ordinal. -/
 private def wellOrderedBasis : Basis ι F E :=
@@ -393,10 +367,6 @@ theorem Algebra.rank_adjoin_le (s : Set E) : Module.rank F (adjoin F s) ≤ max 
   · exact (le_one_iff_subsingleton.mpr inferInstance).trans (le_max_of_le_right one_le_aleph0)
   · exact (mk_finsupp_nat _).le
 
--- or call it `mk_lt_ord_out_α`? The `le` version also hold for `c` infinite.
-theorem Cardinal.mk_initialSeg {c : Cardinal} (i : c.ord.out.α) : #(Iio i) < c :=
-  card_typein_out_lt c i
-
 private theorem adjoin_basis_eq_top : adjoin F (range b) = ⊤ :=
   toSubalgebra_injective <| Subalgebra.toSubmodule_injective <| top_unique <|
     (Basis.span_eq b).ge.trans <| (Algebra.span_le_adjoin F _).trans <| algebra_adjoin_le_adjoin _ _
@@ -405,7 +375,7 @@ section Algebraic
 
 variable [rank_inf : Fact (ℵ₀ ≤ Module.rank F E)] (alg : Algebra.IsAlgebraic F E)
 
-attribute [local instance] Cardinal.noMaxOrder
+local instance : NoMaxOrder ι := Cardinal.noMaxOrder Fact.out
 
 /-- `leastExt i` is defined to be the smallest `k : ι` that generates a nontrival extension over
 (i.e. does not lie in) the subalgebra (= intermediate field) generated by all previous
@@ -421,7 +391,7 @@ private def leastExt : ι → ι :=
     apply_fun Module.rank F at this
     refine ne_of_lt ?_ this
     conv_rhs => rw [topEquiv (E := E) |>.toLinearEquiv.rank_eq]
-    have := mk_initialSeg i
+    have := mk_Iio_ord_out_α i
     obtain eq | lt := rank_inf.out.eq_or_lt
     · replace this := mk_lt_aleph0_iff.mp (this.trans_eq eq.symm)
       have : FiniteDimensional F (adjoin F s) :=
@@ -433,7 +403,7 @@ private def leastExt : ι → ι :=
 local notation "φ" => leastExt alg
 
 section
-local notation F"⟮<"i"⟯" => adjoin F (b ∘ φ '' Iio i)
+local notation "E⟮<"i"⟯" => adjoin F (b ∘ φ '' Iio i)
 
 variable {alg}
 
@@ -441,7 +411,7 @@ private theorem isLeast_φ' (i : ι) :
     IsLeast {k | b k ∉ adjoin F (range fun j : Iio i ↦ b (φ j))} (φ i) := by
   rw [leastExt, wf.fix_eq]; exact ⟨wf.min_mem _ _, fun _ ↦ (wf.min_le ·)⟩
 
-private theorem isLeast_φ (i : ι) : IsLeast {k | b k ∉ F⟮<i⟯} (φ i) := by
+private theorem isLeast_φ (i : ι) : IsLeast {k | b k ∉ E⟮<i⟯} (φ i) := by
   rw [image_eq_range]; exact isLeast_φ' i
 
 private theorem strictMono_φ : StrictMono φ := fun i j h ↦ by
@@ -452,32 +422,32 @@ private theorem strictMono_φ : StrictMono φ := fun i j h ↦ by
   · refine ((least i).2 <| mt (adjoin.mono _ _ _ (image_mono ?_) ·) (least j).1).not_lt lt
     exact fun k (hk : k < i) ↦ hk.trans h
 
-private theorem adjoin_image_φ (i : ι) : F⟮<i⟯ = adjoin F (b '' Iio (φ i)) := by
+private theorem adjoin_image_φ (i : ι) : E⟮<i⟯ = adjoin F (b '' Iio (φ i)) := by
   refine le_antisymm (adjoin.mono _ _ _ ?_) (adjoin_le_iff.mpr ?_)
   · rw [image_comp]; apply image_mono; rintro _ ⟨j, hj, rfl⟩; exact strictMono_φ hj
   · rintro _ ⟨j, hj, rfl⟩; contrapose! hj; exact ((isLeast_φ i).2 hj).not_lt
 
-private theorem iSup_adjoin_eq_top : ⨆ i : ι, F⟮<i⟯ = ⊤ := by
+private theorem iSup_adjoin_eq_top : ⨆ i : ι, E⟮<i⟯ = ⊤ := by
   simp_rw [adjoin_image_φ, eq_top_iff, ← adjoin_basis_eq_top, adjoin_le_iff]
   rintro _ ⟨i, rfl⟩
   refine le_iSup (α := IntermediateField F E) _ (i⁺) (subset_adjoin _ _ ⟨i, ?_, rfl⟩)
   exact (lt_succ i).trans_le (wf.self_le_of_strictMono strictMono_φ _)
 
-def strictMono_filtration : StrictMono (F⟮<·⟯) := fun i _ h ↦
+def strictMono_filtration : StrictMono (E⟮<·⟯) := fun i _ h ↦
   ⟨adjoin.mono _ _ _ (image_mono <| Iio_subset_Iio h.le),
     fun incl ↦ (isLeast_φ i).1 (incl <| subset_adjoin _ _ ⟨i, h, rfl⟩)⟩
 
-theorem filtration_succ (i : ι) : F⟮<i⁺⟯ = F⟮<i⟯⟮b (φ i)⟯.restrictScalars F := by
+theorem filtration_succ (i : ι) : E⟮<i⁺⟯ = E⟮<i⟯⟮b (φ i)⟯.restrictScalars F := by
   rw [Iio_succ, ← Iio_insert, image_insert_eq, ← union_singleton, adjoin_adjoin_left]; rfl
 
-local notation "X" i => Field.Emb (F⟮<i⟯) <| F⟮<i⟯⟮b (φ i)⟯
+local notation "X" i => Field.Emb (E⟮<i⟯) <| E⟮<i⟯⟮b (φ i)⟯
 
 variable (alg)
 
 -- slow
-def succEquiv (i : ι) : (F⟮<i⁺⟯ →ₐ[F] Ē) ≃ (F⟮<i⟯ →ₐ[F] Ē) × X i :=
-  (((show _ ≃ₐ[F] F⟮<i⟯⟮b (φ i)⟯ from equivOfEq (filtration_succ i))).arrowCongr .refl).trans <|
-    algHomEquivSigma (B := F⟮<i⟯).trans <| .sigmaEquivProdOfEquiv fun _ ↦
+def succEquiv (i : ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē) × X i :=
+  (((show _ ≃ₐ[F] E⟮<i⟯⟮b (φ i)⟯ from equivOfEq (filtration_succ i))).arrowCongr .refl).trans <|
+    algHomEquivSigma (B := E⟮<i⟯).trans <| .sigmaEquivProdOfEquiv fun _ ↦
       (@Field.embEquivOfIsAlgClosed _ _ _ _ _ _ _ (_) <|
         (alg.tower_top _).of_injective (val _) Subtype.val_injective).symm
 
@@ -488,15 +458,15 @@ theorem succEquiv_coherence (i f) : (succEquiv alg i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
   ext; simp [succEquiv]; rfl
 
-instance (i : ι) : FiniteDimensional (F⟮<i⟯) (F⟮<i⟯⟮b (φ i)⟯) :=
+instance (i : ι) : FiniteDimensional (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
   adjoin.finiteDimensional (alg.tower_top _ _).isIntegral
 
 theorem deg_lt_aleph0 (i : ι) : #(X i) < ℵ₀ :=
-  (toNat_ne_zero.mp (Field.instNeZeroFinSepDegree (F⟮<i⟯) <| F⟮<i⟯⟮b (φ i)⟯).out).2
+  (toNat_ne_zero.mp (Field.instNeZeroFinSepDegree (E⟮<i⟯) <| E⟮<i⟯⟮b (φ i)⟯).out).2
 
 open WithTop in
 @[simps!] def filtration : WithTop ι ↪o IntermediateField F E :=
-  .ofStrictMono (fun i ↦ i.recTopCoe ⊤ (F⟮<·⟯)) fun i j h ↦ by
+  .ofStrictMono (fun i ↦ i.recTopCoe ⊤ (E⟮<·⟯)) fun i j h ↦ by
     cases j
     · obtain ⟨i, rfl⟩ := ne_top_iff_exists.mp h.ne
       exact ⟨le_top, fun incl ↦ (isLeast_φ i).1 (incl trivial)⟩
@@ -508,9 +478,9 @@ def factor (i : WithTop ι) : Type _ := i.recTopCoe PUnit (X ·)
 variable [IsSeparable F E] -- implies `alg`, but we keep using `alg` for convenience
 
 -- slow (typeclass inference reasonable, type checking takes 8s)
-instance (i : ι) : IsSeparable (F⟮<i⟯) (F⟮<i⟯⟮b (φ i)⟯) :=
-  haveI := isSeparable_tower_top_of_isSeparable F (F⟮<i⟯) E
-  haveI : IsScalarTower (F⟮<i⟯) (F⟮<i⟯⟮b (φ i)⟯) E := .of_algebraMap_eq' rfl
+instance (i : ι) : IsSeparable (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
+  haveI := isSeparable_tower_top_of_isSeparable F (E⟮<i⟯) E
+  haveI : IsScalarTower (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) E := .of_algebraMap_eq' rfl
   isSeparable_tower_bot_of_isSeparable _ _ E
 
 open Field in
@@ -524,16 +494,16 @@ theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
 
 end
 
-local notation "F⟮<"i"⟯" => filtration alg i
+local notation "E⟮<"i"⟯" => filtration alg i
 
-def embFunctor ⦃i j : WithTop ι⦄ (h : i ≤ j) (f : F⟮<j⟯ →ₐ[F] Ē) : F⟮<i⟯ →ₐ[F] Ē :=
+def embFunctor ⦃i j : WithTop ι⦄ (h : i ≤ j) (f : E⟮<j⟯ →ₐ[F] Ē) : E⟮<i⟯ →ₐ[F] Ē :=
   f.comp (Subalgebra.inclusion <| (filtration _).monotone h)
 
 instance : InverseSystem (embFunctor alg) where
   map_self _ _ := rfl
   map_map _ _ _ _ _ _ := rfl
 
-def equivSucc (i : WithTop ι) : (F⟮<i⁺⟯ →ₐ[F] Ē) ≃ (F⟮<i⟯ →ₐ[F] Ē) × factor alg i :=
+def equivSucc (i : WithTop ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē) × factor alg i :=
   i.recTopCoe (((equivOfEq <| by rw [succ_top]).arrowCongr .refl).trans <| .symm <| .prodPUnit _) <|
     (succEquiv alg ·)
 
@@ -566,7 +536,7 @@ lemma eq_bot_of_not_nonempty (hi : ¬ Nonempty (Iio i)) : filtration alg i = ⊥
   · exact bot_unique <| adjoin_le_iff.mpr fun _ ⟨j, hj, _⟩ ↦ (hi ⟨j, coe_lt_coe.mpr hj⟩).elim
 
 open Classical in
-def equivLim : (F⟮<i⟯ →ₐ[F] Ē) ≃ inverseLimit (embFunctor alg) i where
+def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ inverseLimit (embFunctor alg) i where
   toFun f := ⟨fun j ↦ embFunctor _ (id j.2 : j < i).le f, fun _ _ _ ↦ rfl⟩
   invFun f := if h : Nonempty (Iio i) then
     Subalgebra.iSupLift _ (directed_filtration _) f.1
