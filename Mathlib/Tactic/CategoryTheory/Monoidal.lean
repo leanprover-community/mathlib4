@@ -66,12 +66,11 @@ def Mor₁.toList : Mor₁ → List Atom₁
 
 /-- Returns `𝟙_ C` if the expression `e` is of the form `𝟙_ C`. -/
 def isTensorUnit? (e : Expr) : MetaM (Option Expr) := do
-  -- let v ← mkFreshLevelMVar
-  -- let u ← mkFreshLevelMVar
   let C ← mkFreshExprMVar none
   let instC ← mkFreshExprMVar none
   let instMC ← mkFreshExprMVar none
-  let unit := mkAppN (← mkConstWithFreshMVarLevels ``MonoidalCategoryStruct.tensorUnit) #[C, instC, instMC]
+  let unit := mkAppN (← mkConstWithFreshMVarLevels
+    ``MonoidalCategoryStruct.tensorUnit) #[C, instC, instMC]
   if ← withDefault <| isDefEq e unit then
     return ← instantiateMVars unit
   else
@@ -79,14 +78,13 @@ def isTensorUnit? (e : Expr) : MetaM (Option Expr) := do
 
 /-- Returns `(f, g)` if the expression `e` is of the form `f ⊗ g`. -/
 def isTensorObj? (e : Expr) : MetaM (Option (Expr × Expr)) := do
-  -- let v ← mkFreshLevelMVar
-  -- let u ← mkFreshLevelMVar
   let C ← mkFreshExprMVar none
   let f ← mkFreshExprMVar C
   let g ← mkFreshExprMVar C
   let instC ← mkFreshExprMVar none
   let instMC ← mkFreshExprMVar none
-  let fg := mkAppN (← mkConstWithFreshMVarLevels ``MonoidalCategoryStruct.tensorObj) #[C, instC, instMC, f, g]
+  let fg := mkAppN (← mkConstWithFreshMVarLevels
+    ``MonoidalCategoryStruct.tensorObj) #[C, instC, instMC, f, g]
   if ← withDefault <| isDefEq e fg then
     return (← instantiateMVars f, ← instantiateMVars g)
   else
@@ -377,14 +375,15 @@ theorem evalWhiskerLeft_nil (f : C) (α : g ⟶ h) :
     f ◁ α = f ◁ α := by
   simp
 
-theorem evalWhiskerLeft_of_cons {f g h i j : C}
+theorem evalWhiskerLeft_of_cons
     (α : g ⟶ h) (η : h ⟶ i) {ηs : i ⟶ j} {θ : f ⊗ i ⟶ f ⊗ j} (pf_θ : f ◁ ηs = θ) :
     f ◁ (α ≫ η ≫ ηs) = f ◁ α ≫ f ◁ η ≫ θ := by
   simp [pf_θ]
 
-theorem evalWhiskerLeft_comp {f g h i : C} {η : h ⟶ i} {θ : g ⊗ h ⟶ g ⊗ i} {ι : f ⊗ g ⊗ h ⟶ f ⊗ g ⊗ i}
+theorem evalWhiskerLeft_comp {η : h ⟶ i} {θ : g ⊗ h ⟶ g ⊗ i} {ι : f ⊗ g ⊗ h ⟶ f ⊗ g ⊗ i}
     {ι' : f ⊗ g ⊗ h ⟶ (f ⊗ g) ⊗ i} {ι'' : (f ⊗ g) ⊗ h ⟶ (f ⊗ g) ⊗ i}
-    (pf_θ : g ◁ η = θ) (pf_ι : f ◁ θ = ι) (pf_ι' : ι ≫ (α_ _ _ _).inv = ι') (pf_ι'' : (α_ _ _ _).hom ≫ ι' = ι'') :
+    (pf_θ : g ◁ η = θ) (pf_ι : f ◁ θ = ι)
+    (pf_ι' : ι ≫ (α_ _ _ _).inv = ι') (pf_ι'' : (α_ _ _ _).hom ≫ ι' = ι'') :
     (f ⊗ g) ◁ η = ι'' := by
   simp [pf_θ, pf_ι, pf_ι', pf_ι'']
 
@@ -431,7 +430,8 @@ theorem evalWhiskerRight_cons_whisker
     {η₁ : h ⊗ k ⟶ i ⊗ k} {η₂ : f ⊗ (h ⊗ k) ⟶ f ⊗ (i ⊗ k)} {ηs₁ : (f ⊗ i) ⊗ k ⟶ j ⊗ k}
     {ηs₂ : f ⊗ (i ⊗ k) ⟶ j ⊗ k} {η₃ : f ⊗ (h ⊗ k) ⟶ j ⊗ k} {η₄ : (f ⊗ h) ⊗ k ⟶ j ⊗ k}
     {η₅ : g ⊗ k ⟶ j ⊗ k}
-    (pf_η₁ : (𝟙 _ ≫ η ≫ 𝟙 _ ) ▷ k = η₁) (pf_η₂ : f ◁ η₁ = η₂) (pf_ηs₁ : ηs ▷ k = ηs₁) (pf_ηs₂ : (α_ _ _ _).inv ≫ ηs₁ = ηs₂)
+    (pf_η₁ : (𝟙 _ ≫ η ≫ 𝟙 _ ) ▷ k = η₁) (pf_η₂ : f ◁ η₁ = η₂)
+    (pf_ηs₁ : ηs ▷ k = ηs₁) (pf_ηs₂ : (α_ _ _ _).inv ≫ ηs₁ = ηs₂)
     (pf_η₃ : η₂ ≫ ηs₂ = η₃) (pf_η₄ : (α_ _ _ _).hom ≫ η₃ = η₄) (pf_η₅ : α ▷ k ≫ η₄ = η₅) :
     (α ≫ (f ◁ η) ≫ ηs) ▷ k = η₅ := by
   simp at pf_η₁
@@ -440,7 +440,8 @@ theorem evalWhiskerRight_cons_whisker
 theorem evalWhiskerRight_comp
     {η : f ⟶ f'} {η₁ : f ⊗ g ⟶ f' ⊗ g} {η₂ : (f ⊗ g) ⊗ h ⟶ (f' ⊗ g) ⊗ h}
     {η₃ : (f ⊗ g) ⊗ h ⟶ f' ⊗ (g ⊗ h)} {η₄ : f ⊗ (g ⊗ h) ⟶ f' ⊗ (g ⊗ h)}
-    (pf_η₁ : η ▷ g = η₁) (pf_η₂ : η₁ ▷ h = η₂) (pf_η₃ : η₂ ≫ (α_ _ _ _).hom = η₃) (pf_η₄ : (α_ _ _ _).inv ≫ η₃ = η₄) :
+    (pf_η₁ : η ▷ g = η₁) (pf_η₂ : η₁ ▷ h = η₂)
+    (pf_η₃ : η₂ ≫ (α_ _ _ _).hom = η₃) (pf_η₄ : (α_ _ _ _).inv ≫ η₃ = η₄) :
     η ▷ (g ⊗ h) = η₄ := by
   simp [pf_η₁, pf_η₂, pf_η₃, pf_η₄]
 
@@ -582,7 +583,9 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
     let ⟨η₃, pf_η₃⟩ ← evalComp η₂ ηs₂
     let ⟨η₄, pf_η₄⟩ ← evalComp (.associator (.of f) g h) η₃
     let ⟨η₅, pf_η₅⟩ ← evalComp (.nil α') η₄
-    try return ⟨η₅, ← mkAppM ``evalWhiskerRight_cons_whisker #[pf_η₁, pf_η₂, pf_ηs₁, pf_ηs₂, pf_η₃, pf_η₄, pf_η₅]⟩
+    try return ⟨η₅,
+      ← mkAppM ``evalWhiskerRight_cons_whisker
+        #[pf_η₁, pf_η₂, pf_ηs₁, pf_ηs₂, pf_η₃, pf_η₄, pf_η₅]⟩
     catch _ => return ⟨η₅, mkConst ``True⟩
   | η, .comp g h => do
     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr η g
