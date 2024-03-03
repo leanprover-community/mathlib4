@@ -232,8 +232,8 @@ theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factoriz
   induction' k with k ih; · simp
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
-  rw [pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih, succ_eq_one_add, add_smul,
-   one_smul]
+  rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih, succ_eq_one_add,
+    add_smul, one_smul]
 #align nat.factorization_pow Nat.factorization_pow
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
@@ -751,7 +751,7 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
       haveI htp : 0 < t := hp.factorization_pos_of_dvd (k + 1).succ_ne_zero (k + 2).minFac_dvd
       convert h ((k + 2) / p ^ t) p t hp _ htp (hk _ (Nat.div_lt_of_lt_mul _)) using 1
       · rw [Nat.mul_div_cancel' hpt]
-      · rw [Nat.dvd_div_iff hpt, ← pow_succ]
+      · rw [Nat.dvd_div_iff hpt, ← Nat.pow_succ]
         exact pow_succ_factorization_not_dvd (k + 1).succ_ne_zero hp
       · simp [lt_mul_iff_one_lt_left Nat.succ_pos', one_lt_pow_iff htp.ne', hp.one_lt]
 #align nat.rec_on_prime_pow Nat.recOnPrimePow
@@ -787,7 +787,7 @@ def recOnPrimeCoprime {P : ℕ → Sort*} (h0 : P 0) (hp : ∀ p n : ℕ, Prime 
 def recOnMul {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → P p)
     (h : ∀ a b, P a → P b → P (a * b)) : ∀ a, P a :=
   let hp : ∀ p n : ℕ, Prime p → P (p ^ n) := fun p n hp' =>
-    n.recOn h1 (fun n hn => by rw [pow_succ]; apply h _ _ hn (hp p hp'))
+    n.recOn h1 (fun n hn => by rw [Nat.pow_succ]; apply h _ _ hn (hp p hp'))
     -- Porting note: was
     -- match n with
     -- | 0 => h1

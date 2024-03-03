@@ -138,7 +138,7 @@ protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] 
   induction m with
   | zero => rfl
   | succ d hd =>
-    rw[pow_succ, pow_succ]
+    rw [Nat.pow_succ, Nat.pow_succ]
     exact hd.mul h
 #align nat.modeq.pow Nat.ModEq.pow
 

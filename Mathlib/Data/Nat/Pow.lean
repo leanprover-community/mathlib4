@@ -67,7 +67,7 @@ theorem one_lt_pow (n m : ℕ) (h₀ : n ≠ 0) (h₁ : 1 < m) : 1 < m ^ n := by
   exact Nat.pow_lt_pow_left h₁ h₀
 #align nat.one_lt_pow Nat.one_lt_pow
 
-theorem two_pow_succ (n : ℕ) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two]
+theorem two_pow_succ (n : ℕ) : 2^(n + 1) = 2^n + 2^n := by simp [Nat.pow_succ, mul_two]
 
 theorem one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
   one_lt_pow (n + 1) (m + 2) n.succ_ne_zero (Nat.lt_of_sub_eq_succ rfl)
@@ -98,7 +98,7 @@ protected theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (. ^ n : ℕ �
 #align nat.pow_left_strict_mono Nat.pow_left_strictMono
 
 theorem mul_lt_mul_pow_succ {n a q : ℕ} (a0 : 0 < a) (q1 : 1 < q) : n * q < a * q ^ (n + 1) := by
-  rw [pow_succ, ← mul_assoc, mul_lt_mul_right (zero_lt_one.trans q1)]
+  rw [Nat.pow_succ, ← mul_assoc, mul_lt_mul_right (zero_lt_one.trans q1)]
   exact lt_mul_of_one_le_of_lt (Nat.succ_le_iff.mpr a0) (Nat.lt_pow_self q1 n)
 #align nat.mul_lt_mul_pow_succ Nat.mul_lt_mul_pow_succ
 
@@ -145,7 +145,7 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
       · -- base case: p < b^succ w
         have h₂ : p / b < b ^ w := by
           rw [div_lt_iff_lt_mul b_pos]
-          simpa [pow_succ] using h₁
+          simpa [Nat.pow_succ] using h₁
         rw [mod_eq_of_lt h₁, mod_eq_of_lt h₂]
         simp [div_add_mod]
       · -- step: p ≥ b^succ w
