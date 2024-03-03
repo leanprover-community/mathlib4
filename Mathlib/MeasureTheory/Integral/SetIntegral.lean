@@ -1093,7 +1093,8 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 
 open scoped ComplexConjugate
 
-variable {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {X : Type*} [MeasurableSpace X] {μ : Measure X}
+  {𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
@@ -1106,21 +1107,21 @@ theorem integral_compLp (L : E →L[𝕜] F) (φ : Lp E p μ) :
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.integral_comp_Lp ContinuousLinearMap.integral_compLp
 
-theorem set_integral_compLp (L : E →L[𝕜] F) (φ : Lp E p μ) {s : Set α} (hs : MeasurableSet s) :
+theorem set_integral_compLp (L : E →L[𝕜] F) (φ : Lp E p μ) {s : Set X} (hs : MeasurableSet s) :
     ∫ a in s, (L.compLp φ) a ∂μ = ∫ a in s, L (φ a) ∂μ :=
   set_integral_congr_ae hs ((L.coeFn_compLp φ).mono fun _x hx _ => hx)
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.set_integral_comp_Lp ContinuousLinearMap.set_integral_compLp
 
 theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
-    Continuous fun φ : α →₁[μ] E => ∫ a : α, L (φ a) ∂μ := by
+    Continuous fun φ : X →₁[μ] E => ∫ a : X, L (φ a) ∂μ := by
   rw [← funext L.integral_compLp]; exact continuous_integral.comp (L.compLpL 1 μ).continuous
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.continuous_integral_comp_L1 ContinuousLinearMap.continuous_integral_comp_L1
 
 variable [CompleteSpace E] [CompleteSpace F] [NormedSpace ℝ E]
 
-theorem integral_comp_comm (L : E →L[𝕜] F) {φ : α → E} (φ_int : Integrable φ μ) :
+theorem integral_comp_comm (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ a, L (φ a) ∂μ = L (∫ a, φ a ∂μ) := by
   apply φ_int.induction (P := fun φ => ∫ a, L (φ a) ∂μ = L (∫ a, φ a ∂μ))
   · intro e s s_meas _
@@ -1139,12 +1140,12 @@ theorem integral_comp_comm (L : E →L[𝕜] F) {φ : α → E} (φ_int : Integr
     · rw [integral_congr_ae hfg.symm]
 #align continuous_linear_map.integral_comp_comm ContinuousLinearMap.integral_comp_comm
 
-theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : α → H →L[𝕜] E}
+theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ a, φ a ∂μ) v = ∫ a, φ a v ∂μ :=
   ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
 #align continuous_linear_map.integral_apply ContinuousLinearMap.integral_apply
 
-theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L) (φ : α → E) :
+theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L) (φ : X → E) :
     ∫ a, L (φ a) ∂μ = L (∫ a, φ a ∂μ) := by
   by_cases h : Integrable φ μ
   · exact integral_comp_comm L h
@@ -1154,7 +1155,7 @@ theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L
   simp [integral_undef, h, this]
 #align continuous_linear_map.integral_comp_comm' ContinuousLinearMap.integral_comp_comm'
 
-theorem integral_comp_L1_comm (L : E →L[𝕜] F) (φ : α →₁[μ] E) :
+theorem integral_comp_L1_comm (L : E →L[𝕜] F) (φ : X →₁[μ] E) :
     ∫ a, L (φ a) ∂μ = L (∫ a, φ a ∂μ) :=
   L.integral_comp_comm (L1.integrable_coeFn φ)
 set_option linter.uppercaseLean3 false in
@@ -1166,7 +1167,7 @@ namespace LinearIsometry
 
 variable [CompleteSpace F] [NormedSpace ℝ F] [CompleteSpace E] [NormedSpace ℝ E]
 
-theorem integral_comp_comm (L : E →ₗᵢ[𝕜] F) (φ : α → E) : ∫ a, L (φ a) ∂μ = L (∫ a, φ a ∂μ) :=
+theorem integral_comp_comm (L : E →ₗᵢ[𝕜] F) (φ : X → E) : ∫ a, L (φ a) ∂μ = L (∫ a, φ a ∂μ) :=
   L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
 #align linear_isometry.integral_comp_comm LinearIsometry.integral_comp_comm
 
@@ -1176,7 +1177,7 @@ namespace ContinuousLinearEquiv
 
 variable [NormedSpace ℝ F] [NormedSpace ℝ E]
 
-theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : α → E) : ∫ a, L (φ a) ∂μ = L (∫ a, φ a ∂μ) := by
+theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ a, L (φ a) ∂μ = L (∫ a, φ a ∂μ) := by
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.uniformEmbedding
   obtain ⟨_, _⟩|⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
@@ -1187,25 +1188,25 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : α → E) : ∫ a, L (φ a
 end ContinuousLinearEquiv
 
 @[norm_cast]
-theorem integral_ofReal {f : α → ℝ} : ∫ a, (f a : 𝕜) ∂μ = ↑(∫ a, f a ∂μ) :=
+theorem integral_ofReal {f : X → ℝ} : ∫ a, (f a : 𝕜) ∂μ = ↑(∫ a, f a ∂μ) :=
   (@IsROrC.ofRealLI 𝕜 _).integral_comp_comm f
 #align integral_of_real integral_ofReal
 
-theorem integral_re {f : α → 𝕜} (hf : Integrable f μ) :
+theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
     ∫ a, IsROrC.re (f a) ∂μ = IsROrC.re (∫ a, f a ∂μ) :=
   (@IsROrC.reCLM 𝕜 _).integral_comp_comm hf
 #align integral_re integral_re
 
-theorem integral_im {f : α → 𝕜} (hf : Integrable f μ) :
+theorem integral_im {f : X → 𝕜} (hf : Integrable f μ) :
     ∫ a, IsROrC.im (f a) ∂μ = IsROrC.im (∫ a, f a ∂μ) :=
   (@IsROrC.imCLM 𝕜 _).integral_comp_comm hf
 #align integral_im integral_im
 
-theorem integral_conj {f : α → 𝕜} : ∫ a, conj (f a) ∂μ = conj (∫ a, f a ∂μ) :=
+theorem integral_conj {f : X → 𝕜} : ∫ a, conj (f a) ∂μ = conj (∫ a, f a ∂μ) :=
   (@IsROrC.conjLIE 𝕜 _).toLinearIsometry.integral_comp_comm f
 #align integral_conj integral_conj
 
-theorem integral_coe_re_add_coe_im {f : α → 𝕜} (hf : Integrable f μ) :
+theorem integral_coe_re_add_coe_im {f : X → 𝕜} (hf : Integrable f μ) :
     ∫ x, (IsROrC.re (f x) : 𝕜) ∂μ + (∫ x, (IsROrC.im (f x) : 𝕜) ∂μ) * IsROrC.I = ∫ x, f x ∂μ := by
   rw [mul_comm, ← smul_eq_mul, ← integral_smul, ← integral_add]
   · congr
@@ -1215,13 +1216,13 @@ theorem integral_coe_re_add_coe_im {f : α → 𝕜} (hf : Integrable f μ) :
   · exact hf.im.ofReal.smul (𝕜 := 𝕜) (β := 𝕜) IsROrC.I
 #align integral_coe_re_add_coe_im integral_coe_re_add_coe_im
 
-theorem integral_re_add_im {f : α → 𝕜} (hf : Integrable f μ) :
+theorem integral_re_add_im {f : X → 𝕜} (hf : Integrable f μ) :
     ((∫ x, IsROrC.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x, IsROrC.im (f x) ∂μ : ℝ) * IsROrC.I =
       ∫ x, f x ∂μ := by
   rw [← integral_ofReal, ← integral_ofReal, integral_coe_re_add_coe_im hf]
 #align integral_re_add_im integral_re_add_im
 
-theorem set_integral_re_add_im {f : α → 𝕜} {i : Set α} (hf : IntegrableOn f i μ) :
+theorem set_integral_re_add_im {f : X → 𝕜} {i : Set X} (hf : IntegrableOn f i μ) :
     ((∫ x in i, IsROrC.re (f x) ∂μ : ℝ) : 𝕜) + (∫ x in i, IsROrC.im (f x) ∂μ : ℝ) * IsROrC.I =
       ∫ x in i, f x ∂μ :=
   integral_re_add_im hf
@@ -1229,10 +1230,10 @@ theorem set_integral_re_add_im {f : α → 𝕜} {i : Set α} (hf : IntegrableOn
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
-lemma swap_integral (f : α → E × F) : (∫ x, f x ∂μ).swap = ∫ x, (f x).swap ∂μ :=
+lemma swap_integral (f : X → E × F) : (∫ x, f x ∂μ).swap = ∫ x, (f x).swap ∂μ :=
   .symm <| (ContinuousLinearEquiv.prodComm ℝ E F).integral_comp_comm f
 
-theorem fst_integral [CompleteSpace F] {f : α → E × F} (hf : Integrable f μ) :
+theorem fst_integral [CompleteSpace F] {f : X → E × F} (hf : Integrable f μ) :
     (∫ x, f x ∂μ).1 = ∫ x, (f x).1 ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.fst ℝ E F).integral_comp_comm hf).symm
@@ -1240,13 +1241,13 @@ theorem fst_integral [CompleteSpace F] {f : α → E × F} (hf : Integrable f μ
     simp [integral, *]
 #align fst_integral fst_integral
 
-theorem snd_integral [CompleteSpace E] {f : α → E × F} (hf : Integrable f μ) :
+theorem snd_integral [CompleteSpace E] {f : X → E × F} (hf : Integrable f μ) :
     (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
   rw [← Prod.fst_swap, swap_integral]
   exact fst_integral <| hf.snd.prod_mk hf.fst
 #align snd_integral snd_integral
 
-theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : α → E} {g : α → F}
+theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : X → E} {g : X → F}
     (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ x, (f x, g x) ∂μ = (∫ x, f x ∂μ, ∫ x, g x ∂μ) :=
   have := hf.prod_mk hg
@@ -1254,7 +1255,7 @@ theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : α → E} {g : α
 #align integral_pair integral_pair
 
 theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
-    (f : α → 𝕜) (c : E) :
+    (f : X → 𝕜) (c : E) :
     ∫ x, f x • c ∂μ = (∫ x, f x ∂μ) • c := by
   by_cases hf : Integrable f μ
   · exact ((1 : 𝕜 →L[𝕜] 𝕜).smulRight c).integral_comp_comm hf
@@ -1265,7 +1266,7 @@ theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [C
     simp_rw [hf, not_false_eq_true]
 #align integral_smul_const integral_smul_const
 
-theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f) (g : α → E) :
+theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ a, g a ∂μ.withDensity (fun x => f x) = ∫ a, f a • g a ∂μ := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
   by_cases hg : Integrable g (μ.withDensity fun x => f x); swap
@@ -1287,7 +1288,7 @@ theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Mea
       simp only [NNReal.nnnorm_eq]
   · intro u u' _ u_int u'_int h h'
     change
-      (∫ a : α, u a + u' a ∂μ.withDensity fun x : α => ↑(f x)) = ∫ a : α, f a • (u a + u' a) ∂μ
+      (∫ a : X, u a + u' a ∂μ.withDensity fun x : X => ↑(f x)) = ∫ a : X, f a • (u a + u' a) ∂μ
     simp_rw [smul_add]
     rw [integral_add u_int u'_int, h, h', integral_add]
     · exact (integrable_withDensity_iff_integrable_smul f_meas).1 u_int
@@ -1313,7 +1314,7 @@ theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Mea
       simpa only [Ne.def, ENNReal.coe_eq_zero] using h'x
 #align integral_with_density_eq_integral_smul integral_withDensity_eq_integral_smul
 
-theorem integral_withDensity_eq_integral_smul₀ {f : α → ℝ≥0} (hf : AEMeasurable f μ) (g : α → E) :
+theorem integral_withDensity_eq_integral_smul₀ {f : X → ℝ≥0} (hf : AEMeasurable f μ) (g : X → E) :
     ∫ a, g a ∂μ.withDensity (fun x => f x) = ∫ a, f a • g a ∂μ := by
   let f' := hf.mk _
   calc
@@ -1329,20 +1330,20 @@ theorem integral_withDensity_eq_integral_smul₀ {f : α → ℝ≥0} (hf : AEMe
       rw [hx]
 #align integral_with_density_eq_integral_smul₀ integral_withDensity_eq_integral_smul₀
 
-theorem set_integral_withDensity_eq_set_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f)
-    (g : α → E) {s : Set α} (hs : MeasurableSet s) :
+theorem set_integral_withDensity_eq_set_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f)
+    (g : X → E) {s : Set X} (hs : MeasurableSet s) :
     ∫ a in s, g a ∂μ.withDensity (fun x => f x) = ∫ a in s, f a • g a ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul f_meas]
 #align set_integral_with_density_eq_set_integral_smul set_integral_withDensity_eq_set_integral_smul
 
-theorem set_integral_withDensity_eq_set_integral_smul₀ {f : α → ℝ≥0} {s : Set α}
-    (hf : AEMeasurable f (μ.restrict s)) (g : α → E) (hs : MeasurableSet s) :
+theorem set_integral_withDensity_eq_set_integral_smul₀ {f : X → ℝ≥0} {s : Set X}
+    (hf : AEMeasurable f (μ.restrict s)) (g : X → E) (hs : MeasurableSet s) :
     ∫ a in s, g a ∂μ.withDensity (fun x => f x) = ∫ a in s, f a • g a ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
 #align set_integral_with_density_eq_set_integral_smul₀ set_integral_withDensity_eq_set_integral_smul₀
 
-theorem set_integral_withDensity_eq_set_integral_smul₀' [SFinite μ] {f : α → ℝ≥0} (s : Set α)
-    (hf : AEMeasurable f (μ.restrict s)) (g : α → E)  :
+theorem set_integral_withDensity_eq_set_integral_smul₀' [SFinite μ] {f : X → ℝ≥0} (s : Set X)
+    (hf : AEMeasurable f (μ.restrict s)) (g : X → E)  :
     ∫ a in s, g a ∂μ.withDensity (fun x => f x) = ∫ a in s, f a • g a ∂μ := by
   rw [restrict_withDensity' s, integral_withDensity_eq_integral_smul₀ hf]
 
