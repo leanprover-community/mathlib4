@@ -116,7 +116,7 @@ variable {J : Type u} [Category.{v} J]
 
 /-- The sections of a functor `J ⥤ Type` are
 the choices of a point `u j : F.obj j` for each `j`,
-such that `F.map f (u j) = u j` for every morphism `f : j ⟶ j'`.
+such that `F.map f (u j) = u j'` for every morphism `f : j ⟶ j'`.
 
 We later use these to define limits in `Type` and in many concrete categories.
 -/
