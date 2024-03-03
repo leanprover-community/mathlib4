@@ -107,11 +107,13 @@ open LinearMap
 theorem span_singleton_eq_top {m : M} (hm : m ≠ 0) : Submodule.span R {m} = ⊤ :=
   (eq_bot_or_eq_top _).resolve_left fun h ↦ hm (h.le <| Submodule.mem_span_singleton_self m)
 
--- needs import to use Submodule.IsPrincipal
-theorem exists_span_singleton_eq_top : ∃ m : M, Submodule.span R {m} = ⊤ :=
-  have := IsSimpleModule.nontrivial R M
-  have ⟨m, hm⟩ := exists_ne (0 : M)
-  ⟨m, span_singleton_eq_top hm⟩
+instance (S : Submodule R M) : S.IsPrincipal where
+  principal' := by
+    obtain rfl | rfl := eq_bot_or_eq_top S
+    · exact ⟨0, Submodule.span_zero.symm⟩
+    have := IsSimpleModule.nontrivial R M
+    have ⟨m, hm⟩ := exists_ne (0 : M)
+    exact ⟨m, (span_singleton_eq_top hm).symm⟩
 
 theorem toSpanSingleton_surjective {m : M} (hm : m ≠ 0) :
     Function.Surjective (toSpanSingleton R M m) := by
@@ -284,13 +286,15 @@ theorem RingHom.isSemisimpleRing_of_surjective (f : R →+* S) (hf : Function.Su
   rw [IsSemisimpleRing, ← e.isSemisimpleModule_iff_of_bijective Function.bijective_id]
   infer_instance
 
--- TODO: add import and IsPrincipalRing instance?
 theorem IsSemisimpleRing.ideal_eq_span_idempotent [IsSemisimpleRing R] (I : Ideal R) :
     ∃ e : R, IsIdempotentElem e ∧ I = .span {e} := by
   obtain ⟨J, h⟩ := exists_isCompl I
   obtain ⟨f, idem, rfl⟩ := I.isIdempotentElemEquiv.symm (I.isComplEquivProj ⟨J, h⟩)
   exact ⟨f 1, LinearMap.isIdempotentElem_apply_one_iff.mpr idem, by
     erw [LinearMap.range_eq_map, ← Ideal.span_one, LinearMap.map_span, Set.image_singleton]; rfl⟩
+
+instance [IsSemisimpleRing R] : IsPrincipalIdealRing R where
+  principal I := have ⟨e, _, he⟩ := IsSemisimpleRing.ideal_eq_span_idempotent I; ⟨e, he⟩
 
 variable (ι R)
 
