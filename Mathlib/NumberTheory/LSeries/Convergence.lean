@@ -98,7 +98,7 @@ lemma LSeries.abscissaOfAbsConv_le_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ}
 lemma LSeries.abscissaOfAbsConv_le_of_le_const {f : ℕ → ℂ} (h : ∃ C, ∀ n ≠ 0, ‖f n‖ ≤ C) :
     abscissaOfAbsConv f ≤ 1 := by
   convert abscissaOfAbsConv_le_of_le_const_mul_rpow (x := 0) ?_
-  · norm_num
+  · simp only [EReal.coe_zero, zero_add]
   · simpa only [norm_eq_abs, Real.rpow_zero, mul_one] using h
 
 open Filter in
