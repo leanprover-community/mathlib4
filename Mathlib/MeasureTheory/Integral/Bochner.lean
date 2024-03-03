@@ -1559,60 +1559,6 @@ theorem integral_sum_measure {ι} {_ : MeasurableSpace α} {f : α → G} {μ : 
   (hasSum_integral_measure hf).tsum_eq.symm
 #align measure_theory.integral_sum_measure MeasureTheory.integral_sum_measure
 
-#exit
-
-theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖₊ ∂μ ≠ ∞) :
-    ∫ a : α, ∑' i, f i a ∂μ = ∑' i, ∫ a : α, f i a ∂μ := by
-  by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
-  have hf'' : ∀ i, AEMeasurable (fun x => (‖f i x‖₊ : ℝ≥0∞)) μ := fun i => (hf i).ennnorm
-  have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
-    rw [← lintegral_tsum hf''] at hf'
-    refine' (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono _
-    intro x hx
-    rw [← ENNReal.tsum_coe_ne_top_iff_summable_coe]
-    exact hx.ne
-  convert (MeasureTheory.hasSum_integral_of_dominated_convergence (fun i a => ‖f i a‖₊) hf _ hhh
-          ⟨_, _⟩ _).tsum_eq.symm
-  · intro n
-    filter_upwards with x
-    rfl
-  · simp_rw [← NNReal.coe_tsum]
-    rw [aestronglyMeasurable_iff_aemeasurable]
-    apply AEMeasurable.coe_nnreal_real
-    apply AEMeasurable.nnreal_tsum
-    exact fun i => (hf i).nnnorm.aemeasurable
-  · dsimp [HasFiniteIntegral]
-    have : ∫⁻ a, ∑' n, ‖f n a‖₊ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
-    convert this using 1
-    apply lintegral_congr_ae
-    simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, NNReal.nnnorm_eq]
-    filter_upwards [hhh] with a ha
-    exact ENNReal.coe_tsum (NNReal.summable_coe.mp ha)
-  · filter_upwards [hhh] with x hx
-    exact hx.of_norm.hasSum
-#align measure_theory.integral_tsum MeasureTheory.integral_tsum
-
-lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
-    (hF_int : ∀  i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
-    HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
-  rw [integral_tsum (fun i ↦ (hF_int i).1)]
-  · exact (hF_sum.of_norm_bounded _ fun i ↦ norm_integral_le_integral_norm _).hasSum
-  have (i : ι) : ∫⁻ (a : α), ‖F i a‖₊ ∂μ = ‖(∫ a : α, ‖F i a‖ ∂μ)‖₊ := by
-    rw [lintegral_coe_eq_integral _ (hF_int i).norm, coe_nnreal_eq, coe_nnnorm,
-      Real.norm_of_nonneg (integral_nonneg (fun a ↦ norm_nonneg (F i a)))]
-    rfl
-  rw [funext this, ← ENNReal.coe_tsum]
-  · apply coe_ne_top
-  · simp_rw [← NNReal.summable_coe, coe_nnnorm]
-    exact hF_sum.abs
-
-lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
-    (hF_int : ∀  i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
-    ∑' i, (∫ a, F i a ∂μ) = ∫ a, (∑' i, F i a) ∂μ :=
-  (hasSum_integral_of_summable_integral_norm hF_int hF_sum).tsum_eq
-
 @[simp]
 theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
     ∫ x, f x ∂c • μ = c.toReal • ∫ x, f x ∂μ := by
