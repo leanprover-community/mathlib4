@@ -73,10 +73,6 @@ lemma term_def (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term f s n = if n = 0 then 0 else f n / n ^ s :=
   rfl
 
-lemma term_def' (f : ℕ → ℂ) (s : ℂ) :
-    term f s = fun n ↦ if n = 0 then 0 else f n / n ^ s :=
-  rfl
-
 @[simp]
 lemma term_zero (f : ℕ → ℂ) (s : ℂ) : term f s 0 = 0 := rfl
 
@@ -160,7 +156,8 @@ theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
 
 @[simp]
 theorem LSeriesSummable_zero {s : ℂ} : LSeriesSummable 0 s := by
-  simp only [LSeriesSummable, term_def', Pi.zero_apply, zero_div, ite_self, summable_zero]
+  simp only [LSeriesSummable, funext (term_def 0 s), Pi.zero_apply, zero_div, ite_self,
+    summable_zero]
 #align nat.arithmetic_function.l_series_summable_zero LSeriesSummable_zero
 
 /-- This states that the L-series of the sequence `f` converges (absolutely) at `s` to `a`. -/
