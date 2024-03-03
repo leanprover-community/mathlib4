@@ -17,8 +17,6 @@ for the Bochner integral.
 
 -/
 
--- TODO: minimise opens and variables, everywhere!
-
 open MeasureTheory
 
 /-!
@@ -26,22 +24,15 @@ open MeasureTheory
 -/
 section DominatedConvergenceTheorem
 
-open scoped Topology BigOperators NNReal ENNReal MeasureTheory
-
-open Set Filter TopologicalSpace ENNReal EMetric
+open Set Filter TopologicalSpace ENNReal
+open scoped Topology BigOperators
 
 namespace MeasureTheory
 
-variable {α E F 𝕜 : Type*}
-
-open ContinuousLinearMap MeasureTheory.SimpleFunc
-
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
-  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-
-variable {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
-
+variable {α E G: Type*}
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
 
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
