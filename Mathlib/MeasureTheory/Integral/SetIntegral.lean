@@ -64,9 +64,8 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] {f g : α → E} {s t : Set α} {μ ν : Measure α} {l l' : Filter α}
-
-variable [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {f g : α → E} {s t : Set α} {μ ν : Measure α} {l l' : Filter α}
 
 theorem set_integral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
@@ -866,8 +865,8 @@ We prove that for any set `s`, the function
 
 section ContinuousSetIntegral
 
-variable [NormedAddCommGroup E] {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure α}
+variable [NormedAddCommGroup E]
+  {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure α}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memℒp f).restrict s).toLp f`. This map is additive. -/
