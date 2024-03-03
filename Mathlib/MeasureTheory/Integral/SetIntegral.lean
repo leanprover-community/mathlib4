@@ -1409,9 +1409,10 @@ section ParametricIntegral
 
 variable [NormedAddCommGroup E]
 
-variable {X β F G 𝕜 : Type*} [TopologicalSpace X] [TopologicalSpace β] [MeasurableSpace β]
-  [OpensMeasurableSpace β] {μ : Measure β} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {X Y F G 𝕜 : Type*} [TopologicalSpace X]
+  [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
+  [NontriviallyNormedField 𝕜] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open Metric ContinuousLinearMap
 
@@ -1419,8 +1420,8 @@ open Metric ContinuousLinearMap
   under mild assumptions on the topologies involved. -/
 theorem continuous_parametric_integral_of_continuous
     [FirstCountableTopology X] [LocallyCompactSpace X]
-    [OpensMeasurableSpace β] [SecondCountableTopologyEither β E] [IsLocallyFiniteMeasure μ]
-    {F : X → β → E} (hF : Continuous fun p : X × β ↦ F p.1 p.2) {s : Set β} (hs : IsCompact s) :
+    [OpensMeasurableSpace Y] [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]
+    {F : X → Y → E} (hF : Continuous fun p : X × Y ↦ F p.1 p.2) {s : Set Y} (hs : IsCompact s) :
     Continuous fun x ↦ ∫ a in s, F x a ∂μ := by
   rw [continuous_iff_continuousAt]
   intro x₀
@@ -1443,7 +1444,7 @@ theorem continuous_parametric_integral_of_continuous
 integral depends continuously on `a`. -/
 lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     [NormedSpace 𝕜 E] (L : F →L[𝕜] G →L[𝕜] E)
-    {f : X → β → G} {s : Set X} {k : Set β} {g : β → F}
+    {f : X → Y → G} {s : Set X} {k : Set Y} {g : Y → F}
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
     ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
@@ -1510,7 +1511,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
 /-- Consider a parameterized integral `a ↦ ∫ x, f a x` where `f` is continuous and uniformly
 compactly supported. Then the integral depends continuously on `a`. -/
 lemma continuousOn_integral_of_compact_support
-    {f : X → β → E} {s : Set X} {k : Set β} [IsFiniteMeasureOnCompacts μ]
+    {f : X → Y → E} {s : Set X} {k : Set Y} [IsFiniteMeasureOnCompacts μ]
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
     ContinuousOn (fun a ↦ ∫ x, f a x ∂μ) s := by
