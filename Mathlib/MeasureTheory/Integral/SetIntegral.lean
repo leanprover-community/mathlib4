@@ -813,17 +813,17 @@ end Nonneg
 
 section IntegrableUnion
 
-variable {μ : Measure α} [NormedAddCommGroup E] [Countable β]
+variable {X : Type*} [MeasurableSpace X] {μ : Measure X} [NormedAddCommGroup E] [Countable β]
 
-theorem integrableOn_iUnion_of_summable_integral_norm {f : α → E} {s : β → Set α}
+theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : β → Set X}
     (hs : ∀ b : β, MeasurableSet (s b)) (hi : ∀ b : β, IntegrableOn f (s b) μ)
-    (h : Summable fun b : β => ∫ a : α in s b, ‖f a‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
+    (h : Summable fun b : β => ∫ a : X in s b, ‖f a‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine' ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt _⟩
-  have B := fun b : β => lintegral_coe_eq_integral (fun a : α => ‖f a‖₊) (hi b).norm
+  have B := fun b : β => lintegral_coe_eq_integral (fun a : X => ‖f a‖₊) (hi b).norm
   rw [tsum_congr B]
   have S' :
     Summable fun b : β =>
-      (⟨∫ a : α in s b, ‖f a‖₊ ∂μ, set_integral_nonneg (hs b) fun a _ => NNReal.coe_nonneg _⟩ :
+      (⟨∫ a : X in s b, ‖f a‖₊ ∂μ, set_integral_nonneg (hs b) fun a _ => NNReal.coe_nonneg _⟩ :
         NNReal) :=
     by rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
@@ -831,11 +831,11 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : α → E} {s : β →
   convert ENNReal.ofReal_lt_top
 #align measure_theory.integrable_on_Union_of_summable_integral_norm MeasureTheory.integrableOn_iUnion_of_summable_integral_norm
 
-variable [TopologicalSpace α] [BorelSpace α] [MetrizableSpace α] [IsLocallyFiniteMeasure μ]
+variable [TopologicalSpace X] [BorelSpace X] [MetrizableSpace X] [IsLocallyFiniteMeasure μ]
 
 /-- If `s` is a countable family of compact sets, `f` is a continuous function, and the sequence
 `‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable on the union of the `s i`. -/
-theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(α, E)} {s : β → Compacts α}
+theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(X, E)} {s : β → Compacts X}
     (hf : Summable fun i : β => ‖f.restrict (s i)‖ * ENNReal.toReal (μ <| s i)) :
     IntegrableOn f (⋃ i : β, s i) μ := by
   refine'
@@ -846,14 +846,14 @@ theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(α, E)} {s : β →
   exact
     norm_set_integral_le_of_norm_le_const' (s i).isCompact.measure_lt_top
       (s i).isCompact.isClosed.measurableSet fun x hx =>
-      (norm_norm (f x)).symm ▸ (f.restrict (s i : Set α)).norm_coe_le_norm ⟨x, hx⟩
+      (norm_norm (f x)).symm ▸ (f.restrict (s i : Set X)).norm_coe_le_norm ⟨x, hx⟩
 #align measure_theory.integrable_on_Union_of_summable_norm_restrict MeasureTheory.integrableOn_iUnion_of_summable_norm_restrict
 
-/-- If `s` is a countable family of compact sets covering `α`, `f` is a continuous function, and
+/-- If `s` is a countable family of compact sets covering `X`, `f` is a continuous function, and
 the sequence `‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable. -/
-theorem integrable_of_summable_norm_restrict {f : C(α, E)} {s : β → Compacts α}
+theorem integrable_of_summable_norm_restrict {f : C(X, E)} {s : β → Compacts X}
     (hf : Summable fun i : β => ‖f.restrict (s i)‖ * ENNReal.toReal (μ <| s i))
-    (hs : ⋃ i : β, ↑(s i) = (univ : Set α)) : Integrable f μ := by
+    (hs : ⋃ i : β, ↑(s i) = (univ : Set X)) : Integrable f μ := by
   simpa only [hs, integrableOn_univ] using integrableOn_iUnion_of_summable_norm_restrict hf
 #align measure_theory.integrable_of_summable_norm_restrict MeasureTheory.integrable_of_summable_norm_restrict
 
