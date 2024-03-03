@@ -474,7 +474,7 @@ lemma ringEquivCongr_trans {a b c : ℕ} (hab : a = b) (hbc : b = c) :
   cases a <;> rfl
 
 lemma ringEquivCongr_trans_apply {a b c : ℕ} (hab : a = b) (hbc : b = c) (x : ZMod a) :
-    (ringEquivCongr hbc) ((ringEquivCongr hab) x) = (ringEquivCongr (hab ▸ hbc)) x := by
+    (ringEquivCongr hbc) (ringEquivCongr hab x) = ringEquivCongr (hab ▸ hbc) x := by
   rw [← ringEquivCongr_trans hab hbc]
   rfl
 
