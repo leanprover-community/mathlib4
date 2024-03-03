@@ -402,7 +402,7 @@ lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u
     change mk (g i) (hg i)
   clear_value g
   clear f
-  let x : PGame.{u} := ⟨Σ i, (g $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+  let x : PGame.{u} := ⟨Σ i, (g <| (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
   refine ⟨mk x (.mk (by simp) (fun _ ↦ (hg _).moveLeft _) (by simp)),
     Set.forall_range_iff.2 fun i ↦ ?_⟩
@@ -424,7 +424,7 @@ lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u
     change mk (g i) (hg i)
   clear_value g
   clear f
-  let x : PGame.{u} := ⟨PEmpty, Σ i, (g $ (equivShrink.{u} ι).symm i).RightMoves,
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (g <| (equivShrink.{u} ι).symm i).RightMoves,
     PEmpty.elim, fun x ↦ moveRight _ x.2⟩
   refine ⟨mk x (.mk (by simp) (by simp) (fun _ ↦ (hg _).moveRight _) ),
     Set.forall_range_iff.2 fun i ↦ ?_⟩
