@@ -632,14 +632,7 @@ variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) (hgb : ∀ n, ‖∑ i in range n, z i‖ ≤ b) :
     CauchySeq fun n ↦ ∑ i in range n, f i • z i := by
-  suffices CauchySeq fun n ↦ ∑ i in range (n + 1), f i • z i by
-    rw [Metric.cauchySeq_iff] at this ⊢
-    intro ε hε
-    replace this := this ε hε
-    obtain ⟨N, this⟩ := this
-    use N + 1
-    intro m hm n hn
-    convert this (m - 1) (by omega) (n - 1) (by omega) <;> omega
+  rw [cauchySeq_shift 1]
   simp_rw [Finset.sum_range_by_parts _ _ (Nat.succ _), sub_eq_add_neg, Nat.succ_sub_succ_eq_sub,
     tsub_zero]
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
