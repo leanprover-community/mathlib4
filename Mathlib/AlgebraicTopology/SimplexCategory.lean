@@ -218,7 +218,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   rcases k with ⟨k, _⟩
-  split_ifs <;> · simp at * <;> linarith
+  split_ifs <;> · simp at * <;> omega
 #align simplex_category.δ_comp_δ SimplexCategory.δ_comp_δ
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
@@ -286,7 +286,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
     Fin.coe_castLT, dite_eq_ite]
   split_ifs
   any_goals simp
-  all_goals linarith
+  all_goals omega
 #align simplex_category.δ_comp_σ_self SimplexCategory.δ_comp_σ_self
 
 @[reassoc]
@@ -303,7 +303,7 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ([n] :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-  split_ifs <;> simp <;> simp at * <;> linarith
+  split_ifs <;> simp <;> simp at * <;> omega
 #align simplex_category.δ_comp_σ_succ SimplexCategory.δ_comp_σ_succ
 
 @[reassoc]

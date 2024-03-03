@@ -1299,7 +1299,7 @@ def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
     (Sum.elim f g) fun ab h => by
     cases' ab with a b <;>
     letI := Classical.decEq α <;> letI := Classical.decEq β <;>
-    -- porting note: had to add these `DecidableEq` instances
+    -- porting note (#10754): had to add these `DecidableEq` instances
     simp only [Sum.elim_inl, Sum.elim_inr] at h <;>
     simpa
 #align finsupp.sum_elim Finsupp.sumElim
@@ -1861,7 +1861,7 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne.def, ← support_eq_empty, ← Ne.def, ←
     Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
-  -- porting note: had to add the `Classical.decEq` instance manually
+  -- porting note (#10754): had to add the `Classical.decEq` instance manually
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne.def]
 #align finsupp.mem_split_support_iff_nonzero Finsupp.mem_splitSupport_iff_nonzero
@@ -1882,7 +1882,7 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
   simp only [Finset.ext_iff, splitSupport, split, comapDomain, @mem_image _ _ (Classical.decEq _),
     mem_preimage, Sigma.forall, mem_sigma]
-  -- porting note: had to add the `Classical.decEq` instance manually
+  -- porting note (#10754): had to add the `Classical.decEq` instance manually
   tauto
 #align finsupp.sigma_support Finsupp.sigma_support
 

@@ -105,7 +105,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   obtain ⟨g0, hg⟩ : ∃ g0 : ℕ → ι, T = range g0 := by
     apply Countable.exists_eq_range T_count
     rcases eq_empty_or_nonempty T with (rfl | hT)
-    · simp only [iUnion_false, iUnion_empty] at hT
+    · simp only [ι, iUnion_false, iUnion_empty] at hT
       simp only [← hT, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.not_nonempty_empty]
           at h's
     · exact hT
@@ -123,8 +123,8 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).2.2.1
   have g_nonneg : ∀ n x, 0 ≤ g n x := fun n x => ((g0 n).2.2.2.2 (mem_range_self x)).1
   obtain ⟨δ, δpos, c, δc, c_lt⟩ :
-    ∃ δ : ℕ → ℝ≥0, (∀ i : ℕ, 0 < δ i) ∧ ∃ c : NNReal, HasSum δ c ∧ c < 1
-  exact NNReal.exists_pos_sum_of_countable one_ne_zero ℕ
+      ∃ δ : ℕ → ℝ≥0, (∀ i : ℕ, 0 < δ i) ∧ ∃ c : NNReal, HasSum δ c ∧ c < 1 :=
+    NNReal.exists_pos_sum_of_countable one_ne_zero ℕ
   have : ∀ n : ℕ, ∃ r : ℝ, 0 < r ∧ ∀ i ≤ n, ∀ x, ‖iteratedFDeriv ℝ i (r • g n) x‖ ≤ δ n := by
     intro n
     have : ∀ i, ∃ R, ∀ x, ‖iteratedFDeriv ℝ i (fun x => g n x) x‖ ≤ R := by
@@ -172,7 +172,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
         exact g_s n hx
       simp only [this, mul_zero, tsum_zero]
     · intro x hx
-      obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n); exact s_g x hx
+      obtain ⟨n, hn⟩ : ∃ n, x ∈ support (g n) := s_g x hx
       have I : 0 < r n * g n x := mul_pos (rpos n) (lt_of_le_of_ne (g_nonneg n x) (Ne.symm hn))
       exact ne_of_gt (tsum_pos (S x) (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
   · refine'
@@ -215,8 +215,8 @@ theorem u_exists :
       ContDiff ℝ ⊤ u ∧ (∀ x, u x ∈ Icc (0 : ℝ) 1) ∧ support u = ball 0 1 ∧ ∀ x, u (-x) = u x := by
   have A : IsOpen (ball (0 : E) 1) := isOpen_ball
   obtain ⟨f, f_support, f_smooth, f_range⟩ :
-    ∃ f : E → ℝ, f.support = ball (0 : E) 1 ∧ ContDiff ℝ ⊤ f ∧ Set.range f ⊆ Set.Icc 0 1
-  exact A.exists_smooth_support_eq
+      ∃ f : E → ℝ, f.support = ball (0 : E) 1 ∧ ContDiff ℝ ⊤ f ∧ Set.range f ⊆ Set.Icc 0 1 :=
+    A.exists_smooth_support_eq
   have B : ∀ x, f x ∈ Icc (0 : ℝ) 1 := fun x => f_range (mem_range_self x)
   refine' ⟨fun x => (f x + f (-x)) / 2, _, _, _, _⟩
   · exact (f_smooth.add (f_smooth.comp contDiff_neg)).div_const _

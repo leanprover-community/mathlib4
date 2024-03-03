@@ -50,7 +50,7 @@ noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
 lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
     (inl φ).v p q hpq ≫ (triangle φ).mor₃.f q =
       -(K.shiftFunctorObjXIso 1 q p (by rw [← hpq, neg_add_cancel_right])).inv := by
-  simp [triangle, Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by linarith)]
+  simp [triangle, Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega)]
 
 @[reassoc (attr := simp)]
 lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.f p = 0 := by
@@ -206,19 +206,19 @@ noncomputable def rotateHomotopyEquiv :
       ext n
       simp? [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
         δ_zero_cochain_comp _ _ _ (neg_add_self 1),
-        (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by linarith),
-        (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by linarith),
-        Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by linarith)] says
+        (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
+        (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
+        Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by omega)] says
         simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
           Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
           shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_self 1), δ_inl,
           Int.reduceNeg, Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
           Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
           neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
-          Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by linarith),
+          Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by omega),
           Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
           ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
-          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by linarith),
+          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
           shiftFunctor_obj_X, mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero,
           shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp,
           Preadditive.add_comp, Preadditive.neg_comp, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero,
@@ -227,7 +227,7 @@ noncomputable def rotateHomotopyEquiv :
           inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
           Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
           liftCochain_v_snd_v,
-          (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by linarith),
+          (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
           Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
           inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, add_left_neg]⟩
 
@@ -239,10 +239,10 @@ noncomputable def rotateHomotopyEquivComm₂Homotopy :
         ext p
         dsimp [rotateHomotopyEquiv]
         simp [ext_from_iff _ _ _ rfl, ext_to_iff _ _ _ rfl,
-          (inl φ).leftShift_v 1 0 (neg_add_self 1) p p (add_zero p) (p + 1) (by linarith),
+          (inl φ).leftShift_v 1 0 (neg_add_self 1) p p (add_zero p) (p + 1) (by omega),
           δ_zero_cochain_comp _ _ _ (neg_add_self 1),
-          Cochain.comp_v _ _ (add_neg_self 1) p (p + 1) p rfl (by linarith),
-          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by linarith)]⟩
+          Cochain.comp_v _ _ (add_neg_self 1) p (p + 1) p rfl (by omega),
+          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]⟩
 
 @[reassoc (attr := simp)]
 lemma rotateHomotopyEquiv_comm₂ :
@@ -258,7 +258,7 @@ lemma rotateHomotopyEquiv_comm₃ :
   ext p
   dsimp [rotateHomotopyEquiv]
   simp [lift_f _ _ _ _ _ (p + 1) rfl,
-    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by linarith)]
+    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]
 
 /-- The canonical isomorphism of triangles `(triangleh φ).rotate ≅ (triangleh (inr φ))`. -/
 noncomputable def rotateTrianglehIso :
@@ -336,12 +336,12 @@ noncomputable def shiftTriangleIso (n : ℤ) :
     simp? [shiftIso, Units.smul_def, shiftFunctorComm_hom_app_f, triangle, Cochain.shift_v',
       (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
       (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n)
-        (add_zero (p + n)) (p + 1 + n) (by linarith)] says
+        (add_zero (p + n)) (p + 1 + n) (by omega)] says
       simp only [triangle, Triangle.mk_mor₃, Units.smul_def, HomologicalComplex.zsmul_f_apply,
         shiftFunctor_obj_X', HomologicalComplex.comp_f, shiftFunctor_map_f', Cocycle.homOf_f,
         Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg, Cochain.neg_v,
         (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n) (add_zero (p + n)) (p + 1 + n)
-          (by linarith),
+          (by omega),
         shiftFunctor_obj_X, shiftFunctorObjXIso, shiftFunctorComm_hom_app_f, Preadditive.neg_comp,
         assoc, Iso.inv_hom_id, comp_id, smul_neg, shiftIso,
         (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
@@ -446,9 +446,9 @@ lemma complete_distinguished_triangle_morphism
   let γ := e₁.hom ≫ CochainComplex.mappingCone.trianglehMapOfHomotopy H ≫ e₂.inv
   have comm₂ := γ.comm₂
   have comm₃ := γ.comm₃
-  dsimp at comm₂ comm₃
+  dsimp [γ] at comm₂ comm₃
   simp only [ha', hb'] at comm₂ comm₃
-  exact ⟨γ.hom₃, by simpa using comm₂, by simpa using comm₃⟩
+  exact ⟨γ.hom₃, by simpa [γ] using comm₂, by simpa [γ] using comm₃⟩
 
 end Pretriangulated
 

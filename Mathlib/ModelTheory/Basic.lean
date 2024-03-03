@@ -96,7 +96,8 @@ theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
-    simp only [Sequence₂, mk_uLift, mk_fintype, Nat.cast_zero, lift_zero, Fintype.card_pempty]
+    simp only [Sequence₂, mk_uLift, Nat.succ_ne_zero, IsEmpty.forall_iff, Nat.succ.injEq,
+      add_eq_zero, OfNat.ofNat_ne_zero, and_false, one_ne_zero, mk_eq_zero, lift_zero]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]

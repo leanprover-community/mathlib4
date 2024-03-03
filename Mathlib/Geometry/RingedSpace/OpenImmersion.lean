@@ -429,7 +429,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   erw [← this]
-                  dsimp
+                  dsimp [s']
                   -- Porting note: need a bit more hand holding here about function composition
                   rw [coe_comp, show ∀ f g, f ∘ g = fun x => f (g x) from fun _ _ => rfl]
                   erw [← Set.preimage_preimage]
@@ -921,7 +921,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
-      -- Porting note: just `convert` is very slow, so helps it a bit
+      -- Porting note (#11083): just `convert` is very slow, so helps it a bit
       convert this using 2 <;> congr
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]

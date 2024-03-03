@@ -140,7 +140,7 @@ instance isArtinian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] 
   isArtinian_pi
 #align is_artinian_pi' isArtinian_pi'
 
---porting note: new instance
+--porting note (#10754): new instance
 instance isArtinian_finsupp {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
     [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
@@ -457,7 +457,7 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥ := calc
     Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by rw [pow_succ, ← mul_assoc]
     _ ≤ J * Jac ^ n := (mul_le_mul (by rwa [mul_comm]) le_rfl)
-    _ = ⊥ := by simp
+    _ = ⊥ := by simp [J]
   refine' hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 _)
   refine' this (mul_mem_mul (mem_span_singleton_self x) _)
   rwa [← hn (n + 1) (Nat.le_succ _)]

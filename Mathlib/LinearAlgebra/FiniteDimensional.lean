@@ -228,15 +228,16 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
   set bS := Basis.ofVectorSpace K S with bS_eq
   have : LinearIndependent K ((↑) : ((↑) '' Basis.ofVectorSpaceIndex K S : Set V) → V) :=
     LinearIndependent.image_subtype (f := Submodule.subtype S)
-      (by simpa using bS.linearIndependent) (by simp)
+      (by simpa [bS] using bS.linearIndependent) (by simp)
   set b := Basis.extend this with b_eq
   -- porting note: `letI` now uses `this` so we need to give different names
   letI i1 : Fintype (this.extend _) :=
-    (LinearIndependent.set_finite_of_isNoetherian (by simpa using b.linearIndependent)).fintype
+    (LinearIndependent.set_finite_of_isNoetherian (by simpa [b] using b.linearIndependent)).fintype
   letI i2 : Fintype (((↑) : S → V) '' Basis.ofVectorSpaceIndex K S) :=
     (LinearIndependent.set_finite_of_isNoetherian this).fintype
   letI i3 : Fintype (Basis.ofVectorSpaceIndex K S) :=
-    (LinearIndependent.set_finite_of_isNoetherian (by simpa using bS.linearIndependent)).fintype
+    (LinearIndependent.set_finite_of_isNoetherian
+      (by simpa [bS] using bS.linearIndependent)).fintype
   have : (↑) '' Basis.ofVectorSpaceIndex K S = this.extend (Set.subset_univ _) :=
     Set.eq_of_subset_of_card_le (this.subset_extend _)
       (by
@@ -1063,7 +1064,7 @@ theorem finrank_le_one_iff [FiniteDimensional K V] :
       haveI := finrank_zero_iff.mp h'
       apply Subsingleton.elim
     · replace h' := zero_lt_iff.mpr h'
-      have : finrank K V = 1 := by linarith
+      have : finrank K V = 1 := by omega
       obtain ⟨v, -, p⟩ := finrank_eq_one_iff'.mp this
       use v, p
   · rintro ⟨v, p⟩

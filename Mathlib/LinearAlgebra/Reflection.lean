@@ -119,9 +119,10 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
   let u := reflection hg₁ * reflection hf₁
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
-    simp only [reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul, LinearMap.id_coe,
-      LinearEquiv.coe_coe, LinearMap.mul_apply, LinearMap.add_apply, id_eq, LinearMap.coe_smulRight,
-      LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel', smul_neg, sub_neg_eq_add, sub_smul]
+    simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
+      LinearMap.id_coe, LinearEquiv.coe_coe, LinearMap.mul_apply, LinearMap.add_apply, id_eq,
+      LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel', smul_neg,
+      sub_neg_eq_add, sub_smul]
     abel
   replace hu : ∀ (n : ℕ),
       ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
@@ -148,13 +149,13 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
   set Φ' : Set (span R Φ) := range (inclusion <| Submodule.subset_span (R := R) (s := Φ))
   rw [← finite_coe_iff] at hΦ₁
   have hΦ'₁ : Φ'.Finite := finite_range (inclusion Submodule.subset_span)
-  have hΦ'₂ : span R Φ' = ⊤ := by simp
+  have hΦ'₂ : span R Φ' = ⊤ := by simp [Φ']
   let x' : span R Φ := ⟨x, hx'⟩
   have hx' : x' ≠ 0 := Subtype.ne_of_val_ne hx
   have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
-    simp only [range_inclusion, SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
+    simp only [Φ', range_inclusion, SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
     exact hF hy'
   exact eq_of_preReflection_mapsTo hx' hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
 
