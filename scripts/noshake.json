@@ -276,6 +276,7 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
+  "Mathlib.RingTheory.SimpleModule": ["Mathlib.RingTheory.Finiteness"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
