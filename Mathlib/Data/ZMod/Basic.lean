@@ -473,7 +473,7 @@ lemma ringEquivCongr_symm_apply {a b : ℕ} (hab : a = b) (y : ZMod b) :
   rw [ringEquivCongr_symm]
 
 lemma ringEquivCongr_trans {a b c : ℕ} (hab : a = b) (hbc : b = c) :
-    (ringEquivCongr hab).trans (ringEquivCongr hbc) = (ringEquivCongr (hab ▸ hbc)) := by
+    (ringEquivCongr hab).trans (ringEquivCongr hbc) = ringEquivCongr (hab ▸ hbc) := by
   subst hab hbc
   cases a <;> rfl
 
