@@ -220,7 +220,7 @@ def rewriteCall (rwLemma : RewriteLemma)
   let (mvars, bis, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
-  unless ← isDefEq lhs subExpr do return none
+  unless ← withReducible (isDefEq lhs subExpr) do return none
 
   let lhs ← instantiateMVars lhs
   let rhs ← instantiateMVars rhs
