@@ -153,7 +153,7 @@ theorem rightUnitor_hom_toLinearMap :
 end CoalgCat.MonoidalCategoryAux
 namespace Coalgebra
 open CategoryTheory
-open scoped TensorProduct MonoidalCategory
+open scoped TensorProduct
 
 variable {R M N P Q : Type u} [CommRing R]
   [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q] [Module R M] [Module R N]
@@ -164,6 +164,7 @@ variable {R M N P Q : Type u} [CommRing R]
   comul := TensorProduct.tensorTensorTensorComm R M M N N ∘ₗ TensorProduct.map comul comul
   counit := LinearMap.mul' R R ∘ₗ TensorProduct.map counit counit
 
+open scoped MonoidalCategory in
 noncomputable instance instTensorProduct : Coalgebra R (M ⊗[R] N) :=
   Coalgebra.ofLinearEquiv (CoalgCat.MonoidalCategoryAux.tensorObj_equiv R M N)
   (by
@@ -267,7 +268,7 @@ lemma TensorProduct.counit_eq'' :
 end CoalgCat.MonoidalCategoryAux
 namespace Coalgebra
 
-open CategoryTheory MonoidalCategory CoalgCat.MonoidalCategoryAux
+open CategoryTheory CoalgCat.MonoidalCategoryAux
 open scoped TensorProduct
 
 variable {R M N P Q : Type u} [CommRing R]
@@ -276,6 +277,7 @@ variable {R M N P Q : Type u} [CommRing R]
 
 set_option profiler true
 
+open scoped MonoidalCategory in
 @[simps! toLinearMap] noncomputable def TensorProduct.map (f : M →c[R] N) (g : P →c[R] Q) :
     M ⊗[R] P →c[R] N ⊗[R] Q :=
   let I := CoalgCat.instMonoidalCategoryAux (R := R)
@@ -298,6 +300,7 @@ noncomputable abbrev rTensor (f : N →c[R] P) : N ⊗[R] M →c[R] P ⊗[R] M :
 variable (R N P)
 
 /- get innnnn -/
+open scoped MonoidalCategory in
 @[simps! toCoalgHom] noncomputable def TensorProduct.assoc :
     (M ⊗[R] N) ⊗[R] P ≃c[R] M ⊗[R] (N ⊗[R] P) :=
   let I := CoalgCat.instMonoidalCategoryAux (R := R)
@@ -311,6 +314,7 @@ variable (R N P)
       simp_rw [← associator_hom_toLinearMap, ← TensorProduct.comul_eq', ← TensorProduct.comul_eq'']
       exact CoalgHom.map_comp_comul (α_ (CoalgCat.of R M) (CoalgCat.of R N) (CoalgCat.of R P)).hom }
 
+open scoped MonoidalCategory in
 @[simps! toCoalgHom] noncomputable def TensorProduct.lid : R ⊗[R] M ≃c[R] M :=
   let I := CoalgCat.instMonoidalCategoryAux (R := R)
   { _root_.TensorProduct.lid R M with
@@ -321,6 +325,7 @@ variable (R N P)
       simp_rw [← leftUnitor_hom_toLinearMap, ← TensorProduct.comul_eq]
       apply CoalgHom.map_comp_comul (λ_ (CoalgCat.of R M)).hom }
 
+open scoped MonoidalCategory in
 @[simps! toCoalgHom] noncomputable def TensorProduct.rid : M ⊗[R] R ≃c[R] M :=
   let I := CoalgCat.instMonoidalCategoryAux (R := R)
   { _root_.TensorProduct.rid R M with
@@ -332,35 +337,3 @@ variable (R N P)
       apply CoalgHom.map_comp_comul (ρ_ (CoalgCat.of R M)).hom }
 
 end Coalgebra
-namespace CoalgCat
-variable (R : Type u) [CommRing R]
-open  CategoryTheory MonoidalCategory Coalgebra
-open scoped TensorProduct
-
-@[simps] noncomputable instance : MonoidalCategoryStruct.{u} (CoalgCat R) where
-  tensorObj := fun X Y => CoalgCat.of R (X ⊗[R] Y)
-  whiskerLeft := fun X _ _ f => CoalgCat.ofHom (lTensor X f)
-  whiskerRight := fun f X => CoalgCat.ofHom (rTensor X f)
-  tensorHom := fun f g => CoalgCat.ofHom (Coalgebra.TensorProduct.map f g)
-  tensorUnit := CoalgCat.of R R
-  associator := fun X Y Z => (Coalgebra.TensorProduct.assoc R X Y Z).toCoalgIso
-  leftUnitor := fun X => (Coalgebra.TensorProduct.lid R X).toCoalgIso
-  rightUnitor := fun X => (Coalgebra.TensorProduct.rid R X).toCoalgIso
-
-set_option profiler true
-
-@[simps] noncomputable def inducingFunctorData :
-    Monoidal.InducingFunctorData (forget₂ (CoalgCat R) (ModuleCat R)) where
-  μIso := fun X Y => Iso.refl _
-  whiskerLeft_eq := fun X Y Z f => by ext; rfl
-  whiskerRight_eq := fun X f => by ext; rfl
-  tensorHom_eq := fun f g => by ext; rfl
-  εIso := Iso.refl _
-  associator_eq := fun X Y Z => TensorProduct.ext <| TensorProduct.ext <| by ext; rfl
-  leftUnitor_eq := fun X => TensorProduct.ext <| by ext; rfl
-  rightUnitor_eq := fun X => TensorProduct.ext <| by ext; rfl
-
-noncomputable instance : MonoidalCategory (CoalgCat R) :=
-  Monoidal.induced (forget₂ _ (ModuleCat R)) (inducingFunctorData R)
-
-end CoalgCat
