@@ -157,6 +157,22 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
       wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
       wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
 
+variable (G : C ⥤ D)
+
+instance functorialityFull [Functor.PreservesZeroMorphisms G] [Full G] [Faithful G] :
+    Full (functoriality F G) where
+  preimage t :=
+    { hom := G.preimage t.hom
+      wι := fun j => G.map_injective (by simpa using t.wι j)
+      wπ := fun j => G.map_injective (by simpa using t.wπ j) }
+
+instance functorialityFaithful [Functor.PreservesZeroMorphisms G] [Faithful G] :
+    Faithful (functoriality F G) where
+  map_injective {c} {c'} f g e := by
+    apply BiconeMorphism.ext f g
+    let f := BiconeMorphism.mk.inj e
+    apply G.map_injective f
+
 end Bicones
 
 namespace Bicone
@@ -1217,11 +1233,12 @@ def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
       winl := φ.comp_inv_eq.mpr winl.symm
       winr := φ.comp_inv_eq.mpr winr.symm }
 
+variable (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F]
+
 /-- A functor `F : C ⥤ D` sends binary bicones for `P` and `Q`
 to binary bicones for `G.obj P` and `G.obj Q` functorially. -/
 @[simps]
-def functoriality (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F] :
-    BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
+def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
   obj A :=
     { pt := F.obj A.pt
       fst := F.map A.fst
@@ -1238,6 +1255,20 @@ def functoriality (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F] :
       wsnd := by simp [-BinaryBiconeMorphism.wsnd, ← f.wsnd]
       winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
+
+instance functorialityFull [Full F] [Faithful F] : Full (functoriality P Q F) where
+  preimage t :=
+    { hom := F.preimage t.hom
+      winl := F.map_injective (by simpa using t.winl)
+      winr := F.map_injective (by simpa using t.winr)
+      wfst := F.map_injective (by simpa using t.wfst)
+      wsnd := F.map_injective (by simpa using t.wsnd) }
+
+instance functorialityFaithful [Faithful F] : Faithful (functoriality P Q F) where
+  map_injective {c} {c'} f g e := by
+    apply BinaryBiconeMorphism.ext f g
+    let f := BinaryBiconeMorphism.mk.inj e
+    apply F.map_injective f
 
 end BinaryBicones
 
