@@ -30,11 +30,11 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
 
 ## Main Results
 
- * `LSeriesSummable_of_le_const_mul_rpow`: the `LSeries` of a
-    sequence bounded by a constant times `n^(x-1)` converges at `s` when `x < s.re`.
+ * `LSeriesSummable_of_isBigO_rpow`: the `LSeries` of a sequence `f` such that
+    `f = O(n^(x-1))` converges at `s` when `x < s.re`.
 
- * `LSeriesSummable.le_const_mul_rpow`: if the `LSeries` of `f` is summable at `s`,
-    then `f n` is bounded in absolute value by a constant times `n^(re s)`.
+ * `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
+    then `f = O(n^(re s))`.
 
 ## Tags
 
