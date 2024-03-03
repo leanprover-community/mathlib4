@@ -542,15 +542,13 @@ lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   simp_rw [← isPrime_iff_isMaximal]
   apply primeSpectrum_finite R
 
-lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} :=
+@[local instance] lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} :=
   (maximal_ideals_finite R).to_subtype
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
-private noncomputable def fieldOfSubtypeIsMaximal
+@[local instance] noncomputable def fieldOfSubtypeIsMaximal
     (I : {I : Ideal R | I.IsMaximal}) : Field (R ⧸ I.1) :=
   have := mem_setOf.mp I.2; Ideal.Quotient.field I.1
-
-attribute [local instance] subtype_isMaximal_finite fieldOfSubtypeIsMaximal
 
 /-- The quotient of a commutative artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/
@@ -572,7 +570,8 @@ instance [IsReduced R] : DecompositionMonoid R := MulEquiv.decompositionMonoid (
 instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
   MulEquiv.decompositionMonoid <| (Polynomial.mapEquiv <| equivPi R).trans (Polynomial.piEquiv _)
 
-instance [IsReduced R] : IsSemisimpleRing R := (equivPi R).symm.isSemisimpleRing
+theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
+  (equivPi R).symm.isSemisimpleRing
 
 proof_wanted IsSemisimpleRing.isArtinianRing [IsSemisimpleRing R] : IsArtinianRing R
 
