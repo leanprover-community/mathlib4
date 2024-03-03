@@ -123,7 +123,8 @@ to `a : ℂ`.
 
 open LSeries
 
-/-- The value of the L-series of the sequence `f` at the point `s` (if it converges absolutely there). -/
+/-- The value of the L-series of the sequence `f` at the point `s`
+(if it converges absolutely there). -/
 noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
