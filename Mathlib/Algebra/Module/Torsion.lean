@@ -545,7 +545,10 @@ instance IsTorsionBySet.isScalarTower
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
 #align module.is_torsion_by_set.is_scalar_tower Module.IsTorsionBySet.isScalarTower
 
-instance : Module (R ⧸ Module.annihilator R M) M := (isTorsionBySet_annihilator R M).module
+/-- Any module is also a modle over the quotient of the ring by the annihilator.
+Not an instance because it causes synthesis failures / timeouts. -/
+def Module.quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
+  (isTorsionBySet_annihilator R M).module
 
 instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
   IsTorsionBySet.module (R := R) (I := I) fun x r => by
