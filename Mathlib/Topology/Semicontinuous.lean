@@ -51,7 +51,7 @@ restrictions on the order on the codomain):
 * `lowerSemicontinuous_iff_isOpen_preimage` in a linear order;
 * `lowerSemicontinuous_iff_isClosed_preimage` in a linear order;
 * `lowerSemicontinuousAt_iff_le_liminf` in a dense complete linear order;
-* `lowerSemicontinuous_iff_IsClosed_epigraph` in a dense complete linear order with the order
+* `lowerSemicontinuous_iff_isClosed_epigraph` in a dense complete linear order with the order
   topology.
 
 ## Implementation details
@@ -349,7 +349,7 @@ alias ⟨LowerSemicontinuousOn.le_liminf, _⟩ := lowerSemicontinuousOn_iff_le_l
 
 variable [TopologicalSpace γ] [OrderTopology γ]
 
-theorem lowerSemicontinuous_iff_IsClosed_epigraph {f : α → γ} :
+theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
     LowerSemicontinuous f ↔ IsClosed {p : α × γ | f p.1 ≤ p.2} := by
   constructor
   · rw [lowerSemicontinuous_iff_le_liminf, isClosed_iff_forall_filter]
@@ -362,7 +362,13 @@ theorem lowerSemicontinuous_iff_IsClosed_epigraph {f : α → γ} :
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
     exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
 
-alias ⟨LowerSemicontinuous.IsClosed_epigraph, _⟩ := lowerSemicontinuous_iff_IsClosed_epigraph
+@[deprecated] -- 2024-03-02
+alias lowerSemicontinuous_iff_IsClosed_epigraph := lowerSemicontinuous_iff_isClosed_epigraph
+
+alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_isClosed_epigraph
+
+@[deprecated] -- 2024-03-02
+alias LowerSemicontinuous.IsClosed_epigraph := LowerSemicontinuous.isClosed_epigraph
 
 end
 
@@ -926,7 +932,7 @@ variable [TopologicalSpace γ] [OrderTopology γ]
 
 theorem upperSemicontinuous_iff_IsClosed_hypograph {f : α → γ} :
     UpperSemicontinuous f ↔ IsClosed {p : α × γ | p.2 ≤ f p.1} :=
-  lowerSemicontinuous_iff_IsClosed_epigraph (γ := γᵒᵈ)
+  lowerSemicontinuous_iff_isClosed_epigraph (γ := γᵒᵈ)
 
 alias ⟨UpperSemicontinuous.IsClosed_hypograph, _⟩ := upperSemicontinuous_iff_IsClosed_hypograph
 

@@ -66,7 +66,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
   exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩
 
 -- An ugly technical lemma
-private lemma stolzCone_subset_StolzSet_aux' (s : ℝ) :
+private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ ∀ x y, 0 < x → x < ε → |y| < s * x →
       sqrt (x ^ 2 + y ^ 2) < M * (1 - sqrt ((1 - x) ^ 2 + y ^ 2)) := by
   refine ⟨2 * sqrt (1 + s ^ 2) + 1, 1 / (1 + s ^ 2), by positivity, by positivity,
@@ -90,9 +90,9 @@ private lemma stolzCone_subset_StolzSet_aux' (s : ℝ) :
     _ < (2 * sqrt (1 + s ^ 2) + 1) * (x / 2) := by gcongr; exact lt_add_one _
     _ ≤ _ := by gcongr; exact le_sub_comm.mpr H
 
-lemma stolzCone_subset_StolzSet_aux {s : ℝ} (hs : 0 < s) :
+lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ {z : ℂ | 1 - ε < z.re} ∩ stolzCone s ⊆ stolzSet M := by
-  peel stolzCone_subset_StolzSet_aux' s with M ε hM hε H
+  peel stolzCone_subset_stolzSet_aux' s with M ε hM hε H
   rintro z ⟨hzl, hzr⟩
   rw [Set.mem_setOf_eq, sub_lt_comm, ← one_re, ← sub_re] at hzl
   rw [stolzCone, Set.mem_setOf_eq, ← one_re, ← sub_re] at hzr
@@ -104,9 +104,12 @@ lemma stolzCone_subset_StolzSet_aux {s : ℝ} (hs : 0 < s) :
     ← abs_eq_sqrt_sq_add_sq, ← norm_eq_abs] at H
   exact ⟨sub_pos.mp <| (mul_pos_iff_of_pos_left hM).mp <| (norm_nonneg _).trans_lt H, H⟩
 
+@[deprecated] -- 2024-03-02
+alias stolzCone_subset_StolzSet_aux := stolzCone_subset_stolzSet_aux
+
 lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
     ∃ M, 𝓝[stolzCone s] 1 ≤ 𝓝[stolzSet M] 1 := by
-  obtain ⟨M, ε, _, hε, H⟩ := stolzCone_subset_StolzSet_aux hs
+  obtain ⟨M, ε, _, hε, H⟩ := stolzCone_subset_stolzSet_aux hs
   use M
   rw [nhdsWithin_le_iff, mem_nhdsWithin]
   refine ⟨{w | 1 - ε < w.re}, isOpen_lt continuous_const continuous_re, ?_, H⟩
