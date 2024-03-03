@@ -153,7 +153,8 @@ theorem LSeriesSummable_zero {s : ℂ} : LSeriesSummable 0 s := by
     summable_zero]
 #align nat.arithmetic_function.l_series_summable_zero LSeriesSummable_zero
 
-/-- This states that the L-series of the sequence `f` converges (absolutely) at `s` to `a`. -/
+/-- This states that the L-series of the sequence `f` converges absolutely at `s` and that
+the value there is `a`. -/
 def LSeriesHasSum (f : ℕ → ℂ) (s a : ℂ) : Prop :=
   HasSum (term f s) a
 
