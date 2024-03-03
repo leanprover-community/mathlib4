@@ -986,7 +986,7 @@ section FTC
 open MeasureTheory Asymptotics Metric
 
 variable {X : Type*} [MeasurableSpace X] {μ : Measure X}
-  {ι : Type*} [NormedAddCommGroup E]
+  {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
@@ -998,7 +998,7 @@ Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the ac
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
-theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae [NormedSpace ℝ E] [CompleteSpace E]
+theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     {μ : Measure X} {l : Filter X} [l.IsMeasurablyGenerated] {f : X → E} {b : E}
     (h : Tendsto f (l ⊓ μ.ae) (𝓝 b)) (hfm : StronglyMeasurableAtFilter f l μ)
     (hμ : μ.FiniteAtFilter l) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li l.smallSets)
@@ -1031,7 +1031,7 @@ Often there is a good formula for `(μ (s i)).toReal`, so the formalization can 
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X]
-    [OpensMeasurableSpace X] [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure X}
+    [OpensMeasurableSpace X] {μ : Measure X}
     [IsLocallyFiniteMeasure μ] {a : X} {t : Set X} {f : X → E} (ha : ContinuousWithinAt f t a)
     (ht : MeasurableSet t) (hfm : StronglyMeasurableAtFilter f (𝓝[t] a) μ) {s : ι → Set X}
     {li : Filter ι} (hs : Tendsto s li (𝓝[t] a).smallSets) (m : ι → ℝ := fun i => (μ (s i)).toReal)
@@ -1052,7 +1052,7 @@ Often there is a good formula for `(μ (s i)).toReal`, so the formalization can 
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
-    [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure X} [IsLocallyFiniteMeasure μ] {a : X}
+    {μ : Measure X} [IsLocallyFiniteMeasure μ] {a : X}
     {f : X → E} (ha : ContinuousAt f a) (hfm : StronglyMeasurableAtFilter f (𝓝 a) μ) {s : ι → Set X}
     {li : Filter ι} (hs : Tendsto s li (𝓝 a).smallSets) (m : ι → ℝ := fun i => (μ (s i)).toReal)
     (hsμ : (fun i => (μ (s i)).toReal) =ᶠ[li] m := by rfl) :
@@ -1069,7 +1069,7 @@ Often there is a good formula for `(μ (s i)).toReal`, so the formalization can 
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
-    [NormedSpace ℝ E] [CompleteSpace E] [SecondCountableTopologyEither X E] {μ : Measure X}
+    [SecondCountableTopologyEither X E] {μ : Measure X}
     [IsLocallyFiniteMeasure μ] {a : X} {t : Set X} {f : X → E} (hft : ContinuousOn f t) (ha : a ∈ t)
     (ht : MeasurableSet t) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li (𝓝[t] a).smallSets)
     (m : ι → ℝ := fun i => (μ (s i)).toReal)
