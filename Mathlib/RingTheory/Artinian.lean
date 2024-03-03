@@ -544,11 +544,13 @@ lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
 
 lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} :=
   (maximal_ideals_finite R).to_subtype
-attribute [local instance] subtype_isMaximal_finite
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
-noncomputable local instance (I : {I : Ideal R | I.IsMaximal}) : Field (R ⧸ I.1) :=
+private noncomputable def fieldOfSubtypeIsMaximal
+    (I : {I : Ideal R | I.IsMaximal}) : Field (R ⧸ I.1) :=
   have := mem_setOf.mp I.2; Ideal.Quotient.field I.1
+
+attribute [local instance] subtype_isMaximal_finite fieldOfSubtypeIsMaximal
 
 /-- The quotient of a commutative artinian ring by its nilradical is isomorphic to
 a finite product of fields, namely the quotients by the maximal ideals. -/
