@@ -193,7 +193,6 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     rfl
   -- now, we assume j ≠ a (i.e. a < j)
   have haj : a < j := (Ne.le_iff_lt hj₂).mp (by omega)
-  have hj₃ := j.is_lt
   have ham : a ≤ m := by
     by_contra h
     rw [not_le, ← Nat.succ_le_iff] at h
