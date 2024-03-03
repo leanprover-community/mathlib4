@@ -277,8 +277,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
 #align nat.totient_eq_one_iff Nat.totient_eq_one_iff
 
 theorem totient_le_one_dvd_two {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
-  have : a.totient = 1 := by linarith [Nat.totient_pos han]
-  cases' Nat.totient_eq_one_iff.1 this with h h <;> simp [h]
+  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos han with rfl | rfl <;> norm_num
 
 /-! ### Euler's product formula for the totient function
 
