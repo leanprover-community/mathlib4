@@ -65,6 +65,10 @@ theorem fg_bot : (⊥ : L.Substructure M).FG :=
   ⟨∅, by rw [Finset.coe_empty, closure_empty]⟩
 #align first_order.language.substructure.fg_bot FirstOrder.Language.Substructure.fg_bot
 
+theorem inhabited_finiteEquiv : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
+
+instance instInhabited_finiteEquiv : Inhabited { S : L.Substructure M // S.FG } := ⟨⊥, fg_bot⟩
+
 theorem fg_closure {s : Set M} (hs : s.Finite) : FG (closure L s) :=
   ⟨hs.toFinset, by rw [hs.coe_toFinset]⟩
 #align first_order.language.substructure.fg_closure FirstOrder.Language.Substructure.fg_closure
@@ -342,7 +346,7 @@ instance Substructure.instCountable_fg_substructures_if_countable [Countable M] 
     Countable { S : L.Substructure M // S.FG } :=
   countable_fg_substructures_if_countable
 
-theorem Substructure.countable_finiteEquiv_if_countable [Countable M] :
+theorem Substructure.countable_self_finiteEquiv_if_countable [Countable M] :
     Countable { f : M ≃ₚ[L] M // f.sub_dom.FG } := by
   let g : { f : M ≃ₚ[L] M // f.sub_dom.FG } →
       Σ U : { S : L.Substructure M // S.FG }, U.val →[L] M :=
@@ -358,6 +362,12 @@ theorem Substructure.countable_finiteEquiv_if_countable [Countable M] :
   have : ∀ U : { S : L.Substructure M // S.FG }, Structure.FG L U.val :=
     fun U ↦ (U.val.fg_iff_structure_fg.1 U.prop)
   exact Function.Embedding.countable ⟨g, g_inj⟩
+
+theorem inhabited_self_finiteEquiv : Inhabited { f : M ≃ₚ[L] M // f.sub_dom.FG } :=
+  ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
+
+noncomputable instance instInhabited_self_finiteEquiv :
+    Inhabited { f : M ≃ₚ[L] M // f.sub_dom.FG } := inhabited_self_finiteEquiv
 
 end Language
 end FirstOrder

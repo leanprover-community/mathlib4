@@ -1082,6 +1082,10 @@ namespace SubEquivalence
 
 variable {L} {M} {N}
 
+theorem inhabited_self : Inhabited (M ≃ₚ[L] M) := ⟨⊤, ⊤, Equiv.refl L (⊤ : L.Substructure M)⟩
+
+noncomputable instance instInhabited_self : Inhabited (M ≃ₚ[L] M) := inhabited_self
+
 /-- Maps to the symmetric equivalence. -/
 def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
   sub_dom := f.sub_cod
@@ -1267,6 +1271,12 @@ noncomputable def map (f : M ↪[L] N) (g : M ≃ₚ[L] M) : N ≃ₚ[L] N where
   sub_cod := g.sub_cod.map f.toHom
   equiv := (f.substructureEquivMap g.sub_cod).comp <|
     g.equiv.comp (f.substructureEquivMap g.sub_dom).symm
+
+@[simp]
+theorem map_dom (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).sub_dom = g.sub_dom.map f.toHom := rfl
+
+@[simp]
+theorem map_cod (f : M ↪[L] N) (g : M ≃ₚ[L] M) : (g.map f).sub_cod = g.sub_cod.map f.toHom := rfl
 
 theorem map_commutes (f : M ↪[L] N) (g : M ≃ₚ[L] M) :
     (g.map f).equiv.comp (f.substructureEquivMap g.sub_dom) =

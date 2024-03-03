@@ -356,6 +356,8 @@ theorem iSup_range_of_eq_top : ⨆ i, (of L ι G f i).toHom.range = ⊤ :=
   eq_top_iff.2 (fun x _ ↦ DirectLimit.inductionOn x
     (fun i _ ↦ le_iSup (fun i ↦ Hom.range (Embedding.toHom (of L ι G f i))) i (mem_range_self _)))
 
+/-- Every finitely generated substructure of the direct limit corresponds to some
+substructure in some component of the directed system. -/
 theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (S_fg : S.FG) :
     ∃ i, ∃ T : L.Substructure (G i), T.map (of L ι G f i).toHom = S := by
   let ⟨A, A_closure⟩ := S_fg

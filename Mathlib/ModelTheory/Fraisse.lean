@@ -167,22 +167,35 @@ theorem age.jointEmbedding : JointEmbedding (L.age M) := fun _ hN _ hP =>
     ⟨Embedding.comp (inclusion le_sup_right) hP.2.some.equivRange.toEmbedding⟩⟩
 #align first_order.language.age.joint_embedding FirstOrder.Language.age.jointEmbedding
 
+variable {M}
+
+theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S ∈ L.age M := by
+  exact ⟨(Substructure.fg_iff_structure_fg _).1 fg, ⟨subtype _⟩⟩
+
+variable (M)
+
+/-- Any class in the age of a structure has a representant which is a finitely generated
+substructure. -/
+theorem age.has_representant_as_substructure :
+    ∀ C ∈ Quotient.mk' '' L.age M, ∃ V : {V : L.Substructure M // FG V},
+      ⟦Bundled.mk V⟧ = C := by
+  rintro _ ⟨N, ⟨N_fg, ⟨N_incl⟩⟩, N_eq⟩
+  refine N_eq.symm ▸ ⟨⟨N_incl.toHom.range, ?_⟩, Quotient.sound ⟨N_incl.equivRange.symm⟩⟩
+  exact FG.range N_fg (Embedding.toHom N_incl)
+
 /-- The age of a countable structure is essentially countable (has countably many isomorphism
 classes). -/
 theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Countable := by
-  classical
-  refine' (congr_arg _ (Set.ext <| Quotient.forall.2 fun N => _)).mp
-    (countable_range fun s : Finset M => ⟦⟨closure L (s : Set M), inferInstance⟩⟧)
-  constructor
-  · rintro ⟨s, hs⟩
-    use Bundled.of (closure L (s : Set M))
-    exact ⟨⟨(fg_iff_structure_fg _).1 (fg_closure s.finite_toSet), ⟨Substructure.subtype _⟩⟩, hs⟩
-  · simp only [mem_range, Quotient.eq]
-    rintro ⟨P, ⟨⟨s, hs⟩, ⟨PM⟩⟩, hP2⟩
-    have : P ≈ N := by apply Quotient.eq'.mp; rw [hP2]; rfl -- Porting note: added
-    refine' ⟨s.image PM, Setoid.trans (b := P) _ this⟩
-    rw [← Embedding.coe_toHom, Finset.coe_image, closure_image PM.toHom, hs, ← Hom.range_eq_map]
-    exact ⟨PM.equivRange.symm⟩
+  rw [← countable_coe_iff]
+  let f : Quotient.mk' '' L.age M → {V : L.Substructure M // FG V} :=
+    fun ⟨C, C_in⟩ ↦ (age.has_representant_as_substructure M C C_in).choose
+  have f_inj : Function.Injective f := by
+    intro C C' h
+    ext
+    simp only at h
+    exact (age.has_representant_as_substructure M C.1 C.2).choose_spec.symm.trans <|
+      (by rw [h] : _ = _).trans (age.has_representant_as_substructure M C'.1 C'.2).choose_spec
+  exact Function.Embedding.countable ⟨f, f_inj⟩
 #align first_order.language.age.countable_quotient FirstOrder.Language.age.countable_quotient
 
 /-- The age of a direct limit of structures is the union of the ages of the structures. -/
@@ -415,6 +428,177 @@ theorem unique_FraisseLimit : Nonempty (M ≃[L] N) := by
   exact ⟨Exists.choose (BackAndForth.equiv_between_cg (cg_if_countable) (cg_if_countable) v
     ((Substructure.fg_iff_structure_fg _).2 S_fg) (extend_finite_SubEquiv hM hN)
       (BackAndForth.back_iff_symm_of_forth.2 (extend_finite_SubEquiv hN hM)))⟩
+
+instance [K_fraisse : IsFraisse K] : Nonempty ↑(Quotient.mk' '' K) :=
+  (K_fraisse.is_nonempty.image Quotient.mk').coe_sort
+
+instance [K_fraisse : IsFraisse K] : ∀ S : K, Countable S :=
+  fun S ↦ Structure.cg_iff_countable.mp (K_fraisse.FG _ S.prop).cg
+
+variable (K_fraisse : IsFraisse K)
+
+/-- An essentially surjective sequence of L.structures in a Fraisse class. -/
+noncomputable def ess_surj_sequence : ℕ → K := by
+  intro n
+  let l' n := (countable_iff_exists_surjective.1
+    (countable_coe_iff.2 K_fraisse.is_essentially_countable)).choose n
+  let A := (Quot.out (l' n).1)
+  have A_in_K : A ∈ K := by
+    let ⟨V, V_in_K, quot_V⟩ := (mem_image Quotient.mk' K _).1 (l' n).2
+    have : Nonempty (V ≃[L] A) := by
+      show V ≈ A
+      apply Quotient.exact
+      convert quot_V
+      apply Quot.out_eq
+    exact (K_fraisse.is_equiv_invariant _ _ this).1 V_in_K
+  exact ⟨A, A_in_K⟩
+
+theorem ess_surj_sequence_is_ess_surj : ∀ V : K, ∃ n,
+    Nonempty (V ≃[L] ess_surj_sequence K_fraisse n) := by
+  rintro ⟨V, V_in_K⟩
+  simp only
+  let ⟨n, n_prop⟩ := (countable_iff_exists_surjective.1
+    (countable_coe_iff.2 K_fraisse.is_essentially_countable)).choose_spec
+      ⟨Quotient.mk' V, mem_image_of_mem _ V_in_K⟩
+  use n
+  show V ≈ (ess_surj_sequence K_fraisse n)
+  apply Quotient.exact
+  convert (congr_arg (Subtype.val) n_prop).symm
+  apply Quot.out_eq
+
+theorem can_extend_finiteEquiv_in_class : ∀ S : K, ∀ f : S ≃ₚ[L] S, ∀ _ : f.sub_dom.FG,
+    ∃ T : K, ∃ incl : S ↪[L] T, ∃ g : T ≃ₚ[L] T,
+    f.map incl ≤ g ∧ incl.toHom.range ≤ g.sub_dom := by
+  rintro ⟨S, S_in_K⟩ f f_fg
+  obtain ⟨R, g₁, g₂, R_in_K, eq⟩ := K_fraisse.amalgamation (Bundled.mk f.sub_dom) S S
+    (subtype _) ((subtype _).comp f.equiv.toEmbedding) (K_fraisse.hereditary S S_in_K
+      (age.fg_substructure f_fg)) S_in_K S_in_K
+  use ⟨R, R_in_K⟩
+  use g₂
+  use ⟨g₂.toHom.range, g₁.toHom.range, g₁.equivRange.comp g₂.equivRange.symm⟩
+  simp only [le_refl, and_true, SubEquivalence.le_def, SubEquivalence.map_dom]
+  use Hom.map_le_range
+  ext ⟨x, x_prop⟩
+  let ⟨y, y_in_dom_f, eq_xy⟩ := Substructure.mem_map.1 x_prop
+  apply_fun (fun f ↦ f ⟨y, y_in_dom_f⟩) at eq
+  simp only [Embedding.comp_apply, coeSubtype, Equiv.coe_toEmbedding] at eq
+  cases eq_xy
+  change g₁ ((g₂.equivRange.symm (g₂.equivRange y))) = _
+  simp only [Equiv.symm_apply_apply, eq, SubEquivalence.map_cod, Embedding.coe_toHom,
+    Embedding.comp_apply, Equiv.coe_toEmbedding, coeSubtype, map_coe]
+  have := SubEquivalence.map_commutes_apply g₂ f ⟨y, y_in_dom_f⟩
+  simp only [SubEquivalence.map_cod, SubEquivalence.map_dom] at this
+  rw [this]
+
+noncomputable def extend_finiteEquiv_in_class (S : K) (f : S ≃ₚ[L] S) (f_fg : f.sub_dom.FG) :
+    (T : K) × (incl : S ↪[L] T) × (g : T ≃ₚ[L] T) ×'
+    f.map incl ≤ g ∧ incl.toHom.range ≤ g.sub_dom := by
+  choose a b c d using can_extend_finiteEquiv_in_class K_fraisse
+  exact ⟨a S f f_fg, b .., c .., d ..⟩
+
+noncomputable def join (S : K) (T : K) : (U : K) × (S ↪[L] U) × (T ↪[L] U) := by
+  let h := K_fraisse.jointEmbedding S S.prop T T.prop
+  exact ⟨⟨h.choose, h.choose_spec.1⟩, Classical.choice h.choose_spec.2.1,
+    Classical.choice h.choose_spec.2.2⟩
+
+noncomputable def init_system : ℕ →
+    (A : K) × (ℕ → (B : K) × (B ↪[L] A))
+  | 0 => ⟨ess_surj_sequence K_fraisse 0,
+    fun _ => ⟨_, Embedding.refl L _⟩⟩
+  | n + 1 => by
+    let ⟨m1, m2⟩ := Nat.unpair n
+    let ⟨An, Sn⟩ := init_system n
+    let ⟨B, B_to_An⟩ := Sn m1
+    let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
+      (Substructure.countable_self_finiteEquiv_if_countable (L := L) (M := B))).choose m2
+    let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
+      (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
+    let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
+    exact ⟨A', fun m ↦
+      if m ≤ n then ⟨(Sn m).1, A_to_A'.comp (An_to_A.comp (Sn m).2)⟩
+        else ⟨A', Embedding.refl L A'⟩⟩
+
+noncomputable def system : ℕ → K :=
+  fun n ↦ (init_system K_fraisse n).1
+
+  theorem system_eq {m n} (h : m ≤ n) : ((init_system K_fraisse n).2 m).1 = system K_fraisse m := by
+  match n with
+  | 0 => cases h; rfl
+  | n+1 =>
+    simp [init_system]; split <;> simp <;> rename_i h'
+    · apply system_eq h'
+    · cases (Nat.le_or_eq_of_le_succ h).resolve_left h'
+      rfl
+
+theorem init_system_succ (n : ℕ) :
+    ((init_system K_fraisse n).2 n).2.comp
+      (system_eq K_fraisse (le_refl n) ▸ Embedding.refl L _) =
+      Embedding.refl L (system K_fraisse n) := by
+  match n with
+  | 0 => rfl
+  | n+1 =>
+    simp [init_system]; split <;> simp
+    · sorry
+    · sorry
+
+  have : (n + 1 ≤ n) = False := by simp only [eq_iff_iff, iff_false, not_le,
+        Nat.lt_succ_self]
+  let ⟨m1, m2⟩ := Nat.unpair n
+  let ⟨An, Sn⟩ := init_system K_fraisse n
+  let ⟨B, B_to_An⟩ := Sn m1
+  let ⟨f, f_fg⟩ := (countable_iff_exists_surjective.1
+    (Substructure.countable_self_finiteEquiv_if_countable (L := L) (M := B))).choose m2
+  let ⟨A, An_to_A, _, _⟩ := extend_finiteEquiv_in_class K_fraisse An (f.map B_to_An)
+    (SubEquivalence.map_dom B_to_An f ▸ FG.map _ f_fg)
+  let ⟨A', A_to_A', _⟩ := join K_fraisse A (ess_surj_sequence K_fraisse (n+1))
+  have eq1 : ((init_system K_fraisse (n + 1)).2 (n + 1)) =
+    if n + 1 ≤ n then ⟨(Sn (n + 1)).1, A_to_A'.comp (An_to_A.comp (Sn (n + 1)).2)⟩
+      else ⟨A', Embedding.refl L A'⟩
+
+noncomputable def maps_system {m n : ℕ} (h : m ≤ n): system K_fraisse m ↪[L] system K_fraisse n :=
+  system_eq K_fraisse h ▸ ((init_system K_fraisse n).2 m).2
+
+theorem transitive_maps_system {m n k : ℕ} (h : m ≤ n) (h' : n ≤ k) :
+    (maps_system K_fraisse h').comp (maps_system K_fraisse h) =
+      maps_system K_fraisse (h.trans h') := by
+  classical
+  let r := (Nat.exists_eq_add_of_le h').choose
+  have : k = n + r := (Nat.exists_eq_add_of_le h').choose_spec
+  match r_eq : r with
+  | 0 =>
+    have : k = n := by simp only [this, add_zero]
+    cases this
+    cases n with
+    | zero => rfl
+    | succ n =>
+      have truc : (Nat.succ n ≤ n) = False := by simp only [eq_iff_iff, iff_false, not_le,
+        Nat.lt_succ_self]
+      have {α : Type*} (t e : α) : (if (Nat.succ n ≤ n) then t else e) = e := by
+        convert (congr_arg (fun x ↦ if x then t else e) truc).trans (if_false _ _)
+        infer_instance
+        exact t
+
+
+
+
+
+
+
+
+
+theorem exists_fraisse_limit : ∃ M : Bundled.{w} L.Structure, ∃ _ : Countable M,
+    IsFraisseLimit K M := by
+  let l : ℕ → Bundled.{w} L.Structure :=
+    ess_surj_sequence K_fraisse
+  have l_image_in_K : ∀ n, l n ∈ K :=
+    ess_surj_sequence_in_fraisse_class K_fraisse
+  have l_ess_surj : ∀ V : K, ∃ n, Nonempty (V ≃[L] l n) :=
+    ess_surj_sequence_is_ess_surj K_fraisse
+  let rec V : (n : ℕ) → Σ f : Fin (n + 1) → Bundled.{w} L.Structure, (k : Fin (n + 1)) →
+      (f k ↪[L] f n)
+    | 0 => ⟨fun _ ↦ l 0, fun k ↦ Embedding.refl _ _⟩
+    | n + 1 => by
+      have : ℕ ≃ ℕ × ℕ := by exact Denumerable.equiv₂ ℕ (ℕ × ℕ)
 
 
 
