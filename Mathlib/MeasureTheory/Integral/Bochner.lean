@@ -1048,9 +1048,6 @@ lemma tendsto_set_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F
   simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
   exact hF
 
--- XXX!
-#exit
-
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
 theorem continuousWithinAt_of_dominated {F : X → α → G} {x₀ : X} {bound : α → ℝ} {s : Set X}
@@ -1561,6 +1558,8 @@ theorem integral_sum_measure {ι} {_ : MeasurableSpace α} {f : α → G} {μ : 
     (hf : Integrable f (Measure.sum μ)) : ∫ a, f a ∂Measure.sum μ = ∑' i, ∫ a, f a ∂μ i :=
   (hasSum_integral_measure hf).tsum_eq.symm
 #align measure_theory.integral_sum_measure MeasureTheory.integral_sum_measure
+
+#exit
 
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖₊ ∂μ ≠ ∞) :
