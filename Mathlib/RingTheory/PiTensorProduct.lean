@@ -51,8 +51,7 @@ def mul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
 
 @[simp] lemma mul_tprod_tprod (x y : (i : ι) → A i) :
     mul (tprod R x) (tprod R y) = tprod R (x * y) := by
-  simp only [mul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply']
-  rfl
+  simp only [mul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply', Pi.mul_def]
 
 instance instMul : Mul (⨂[R] i, A i) where
   mul x y := mul x y
@@ -65,9 +64,7 @@ lemma mul_def (x y : ⨂[R] i, A i) : x * y = mul x y := rfl
 
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • tprod R (x * y) := by
-  change mul _ _ = _
-  rw [map_smul, map_smul, mul_comm r s, mul_smul]
-  simp only [LinearMap.smul_apply, mul_tprod_tprod]
+  simp only [mul_def, map_smul, LinearMap.smul_apply, mul_tprod_tprod, mul_comm r s, mul_smul]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (⨂[R] i, A i) where
   __ := instMul
@@ -161,8 +158,8 @@ lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
   change r • tprod R 1 = _
   have : Pi.mulSingle i (algebraMap R' (A i) r) = update (fun i ↦ 1) i (r • 1) := by
     rw [Algebra.algebraMap_eq_smul_one]; rfl
-  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul]
-  congr
+  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul,
+    Pi.one_def]
 
 /--
 The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
