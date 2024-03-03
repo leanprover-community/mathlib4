@@ -225,7 +225,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
--- Porting note: broken proof was
+-- Porting note (#11039): broken proof was
 /-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
@@ -331,7 +331,7 @@ variable {k G}
 noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
   comm g := by
-    refine' Finsupp.lhom_ext' fun y => LinearMap.ext_ring _
+    refine Finsupp.lhom_ext' fun y => LinearMap.ext_ring ?_
 /- Porting note: rest of broken proof was
     simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
       Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,

@@ -649,7 +649,7 @@ theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureG
     obtain ⟨e, he, hfe, hxe⟩ := hf h2x
     refine' ⟨e.restr f.source, closedUnderRestriction' he f.open_source, _, _, hxe, _⟩
     · simp_rw [PartialHomeomorph.restr_source]
-      refine' (inter_subset_right _ _).trans interior_subset
+      exact (inter_subset_right _ _).trans interior_subset
     · intro x' hx'
       exact hfe ⟨hx'.1, hx'.2.1⟩
     · rw [f.open_source.interior_eq]

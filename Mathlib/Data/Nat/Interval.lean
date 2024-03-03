@@ -22,7 +22,11 @@ and subsequently be moved upstream to `Data.Finset.LocallyFinite`.
 
 open Finset Nat
 
-instance : LocallyFiniteOrder ℕ where
+variable (a b c : ℕ)
+
+namespace Nat
+
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range' _ _⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩
@@ -56,10 +60,6 @@ instance : LocallyFiniteOrder ℕ where
     | inr h =>
       rw [tsub_eq_zero_iff_le.2 h.le, add_zero]
       exact iff_of_false (fun hx => hx.2.not_le hx.1) fun hx => h.not_le (hx.1.trans hx.2)
-
-variable (a b c : ℕ)
-
-namespace Nat
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩ :=
   rfl
