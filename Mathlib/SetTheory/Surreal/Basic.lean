@@ -389,6 +389,9 @@ theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
   map_natCast' _ one_toGame
 #align surreal.nat_to_game Surreal.nat_toGame
 
+#noalign upper_bound_numeric
+#noalign lower_bound_numeric
+
 /-- A small family of surreals is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
     BddAbove (Set.range f) := by
