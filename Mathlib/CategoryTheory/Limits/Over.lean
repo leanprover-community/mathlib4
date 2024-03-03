@@ -63,6 +63,14 @@ example [HasColimits C] : PreservesColimits (forget X) :=
 example : ReflectsColimits (forget X) :=
   inferInstance
 
+instance createsColimitOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
+    CreatesColimitsOfSize.{w, w'} (map f ⋙ forget Y) :=
+  show CreatesColimitsOfSize.{w, w'} (forget X) from inferInstance
+
+instance preservesColimitsOfSizeMap [HasColimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+    PreservesColimitsOfSize.{w, w'} (map f) :=
+  preservesColimitsOfReflectsOfPreserves (map f) (forget Y)
+
 section
 
 def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit c.toOver :=

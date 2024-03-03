@@ -478,6 +478,10 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ 
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_comp CategoryTheory.Under.mapComp
 
+@[simps!]
+def mapCompForget (f : X ⟶ Y) : map f ⋙ forget X ≅ forget Y :=
+  Iso.refl _
+
 end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where

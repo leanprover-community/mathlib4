@@ -360,6 +360,22 @@ noncomputable def Kc : Cocone ((hF (i F G)).presentation.F ⋙ yoneda) :=
 noncomputable def Kcl : IsColimit (Kc F hF G) :=
   (hF (i F G)).presentation.coconeIsColimit
 
+lemma Kcpt : (Kc F hF G).pt = F.obj (i F G) := rfl
+
+noncomputable def mappedCone := (Over.map (colimit.ι F (i F G))).mapCocone (Kc F hF G).toOver
+
+lemma mappedCone_pt : (mappedCone F hF G).pt = Over.mk (colimit.ι F (i F G)) :=
+  rfl
+
+noncomputable def isColimitTo : IsColimit (Kc F hF G).toOver :=
+  Over.isColimitToOver <| Kcl F hF G
+
+noncomputable def isColimitMappedCone : IsColimit (mappedCone F hF G) :=
+  isColimitOfPreserves (Over.map (colimit.ι F (i F G))) (isColimitTo F hF G)
+
+
+
+
 noncomputable example : SmallCategory (K F hF G) := inferInstance
 
 @[pp_with_univ]
