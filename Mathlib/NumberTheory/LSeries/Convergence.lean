@@ -106,5 +106,5 @@ open Filter in
 lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ} (h : f =O[atTop] (1 : ℕ → ℝ)) :
     abscissaOfAbsConv f ≤ 1 := by
   convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_
-  · norm_num
+  · simp only [EReal.coe_zero, zero_add]
   · simpa only [Real.rpow_zero] using h
