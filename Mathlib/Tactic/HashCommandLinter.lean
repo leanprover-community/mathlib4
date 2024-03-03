@@ -42,7 +42,7 @@ def hashCommandLinter : Linter where run := withSetOptionIn fun stx => do
     match stx.getHead? with
       | some sa =>
         let a := sa.getAtomVal
-        if ("#".isPrefixOf a && (!' ' ∈ a.toList) && whitelist.all (· != a)) then
+        if ("#".isPrefixOf a && whitelist.all (· != a)) then
           logWarningAt sa f!"`#`-commands, such as '{a}', are not allowed in 'Mathlib'\n\
             [linter.hashCommand]"
       | none => return
