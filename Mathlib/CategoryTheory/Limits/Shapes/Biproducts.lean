@@ -1045,7 +1045,10 @@ def biproduct.matrixEquiv : (⨁ f ⟶ ⨁ g) ≃ ∀ j k, f j ⟶ g k where
 
 end FiniteBiproducts
 
-variable {J : Type w} {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
+universe uD uD'
+variable {J : Type w}
+variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
+variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 instance biproduct.ι_mono (f : J → C) [HasBiproduct f] (b : J) : IsSplitMono (biproduct.ι f b) :=
   IsSplitMono.mk' { retraction := biproduct.desc <| Pi.single b _ }
@@ -1158,6 +1161,86 @@ attribute [inherit_doc BinaryBicone] BinaryBicone.pt BinaryBicone.fst BinaryBico
 attribute [reassoc (attr := simp)]
   BinaryBicone.inl_fst BinaryBicone.inl_snd BinaryBicone.inr_fst BinaryBicone.inr_snd
 
+
+/-- A binary bicone morphism between two binary bicones for the same diagram is a morphism of the
+binary bicone points which commutes with the cone and cocone legs. -/
+structure BinaryBiconeMorphism {P Q : C} (A B : BinaryBicone P Q) where
+  /-- A morphism between the two vertex objects of the bicones -/
+  hom : A.pt ⟶ B.pt
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  wfst : hom ≫ B.fst = A.fst := by aesop_cat
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  wsnd : hom ≫ B.snd = A.snd := by aesop_cat
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  winl : A.inl ≫ hom = B.inl := by aesop_cat
+  /-- The triangle consisting of the two natural transformations and `hom` commutes -/
+  winr : A.inr ≫ hom = B.inr := by aesop_cat
+
+
+attribute [reassoc (attr := simp)] BinaryBiconeMorphism.wfst BinaryBiconeMorphism.wsnd
+attribute [reassoc (attr := simp)] BinaryBiconeMorphism.winl BinaryBiconeMorphism.winr
+
+/-- The category of binary bicones on a given diagram. -/
+@[simps]
+instance BinaryBicone.category {P Q : C} : Category (BinaryBicone P Q) where
+  Hom A B := BinaryBiconeMorphism A B
+  comp f g := { hom := f.hom ≫ g.hom }
+  id B := { hom := 𝟙 B.pt }
+
+-- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
+-- the `hom` field of a category, we need to write the `ext` lemma in terms of the categorical
+-- morphism, rather than the underlying structure.
+@[ext]
+theorem BinaryBiconeMorphism.ext {P Q : C} {c c' : BinaryBicone P Q}
+    (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
+  cases f
+  cases g
+  congr
+
+namespace BinaryBicones
+
+/-- To give an isomorphism between cocones, it suffices to give an
+  isomorphism between their vertices which commutes with the cocone
+  maps. -/
+-- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
+@[aesop apply safe (rule_sets := [CategoryTheory]), simps]
+def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
+    (winl : c.inl ≫ φ.hom = c'.inl := by aesop_cat)
+    (winr : c.inr ≫ φ.hom = c'.inr := by aesop_cat)
+    (wfst : φ.hom ≫ c'.fst = c.fst := by aesop_cat)
+    (wsnd : φ.hom ≫ c'.snd = c.snd := by aesop_cat) : c ≅ c' where
+  hom := { hom := φ.hom }
+  inv :=
+    { hom := φ.inv
+      wfst := φ.inv_comp_eq.mpr wfst.symm
+      wsnd := φ.inv_comp_eq.mpr wsnd.symm
+      winl := φ.comp_inv_eq.mpr winl.symm
+      winr := φ.comp_inv_eq.mpr winr.symm }
+
+/-- A functor `F : C ⥤ D` sends binary bicones for `P` and `Q`
+to binary bicones for `G.obj P` and `G.obj Q` functorially. -/
+@[simps]
+def functoriality (P Q : C) (F : C ⥤ D) [Functor.PreservesZeroMorphisms F] :
+    BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
+  obj A :=
+    { pt := F.obj A.pt
+      fst := F.map A.fst
+      snd := F.map A.snd
+      inl := F.map A.inl
+      inr := F.map A.inr
+      inl_fst := by rw [← F.map_comp, A.inl_fst, F.map_id]
+      inl_snd := by rw [← F.map_comp, A.inl_snd, F.map_zero]
+      inr_fst := by rw [← F.map_comp, A.inr_fst, F.map_zero]
+      inr_snd := by rw [← F.map_comp, A.inr_snd, F.map_id] }
+  map f :=
+    { hom := F.map f.hom
+      wfst := by simp [-BinaryBiconeMorphism.wfst, ← f.wfst]
+      wsnd := by simp [-BinaryBiconeMorphism.wsnd, ← f.wsnd]
+      winl := by simp [-BinaryBiconeMorphism.winl, ← f.winl]
+      winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
+
+end BinaryBicones
+
 namespace BinaryBicone
 
 variable {P Q : C}
@@ -1241,12 +1324,21 @@ instance (c : BinaryBicone P Q) : IsSplitEpi c.snd :=
 
 /-- Convert a `BinaryBicone` into a `Bicone` over a pair. -/
 @[simps]
-def toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) where
-  pt := b.pt
-  π j := WalkingPair.casesOn j b.fst b.snd
-  ι j := WalkingPair.casesOn j b.inl b.inr
-  ι_π j j' := by
-    rcases j with ⟨⟩ <;> rcases j' with ⟨⟩ <;> simp
+def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) where
+  obj b :=
+    { pt := b.pt
+      π := fun j => WalkingPair.casesOn j b.fst b.snd
+      ι := fun j => WalkingPair.casesOn j b.inl b.inr
+      ι_π := fun j j' => by
+        rcases j with ⟨⟩ <;> rcases j' with ⟨⟩ <;> simp }
+  map f := {
+    hom := f.hom
+    wπ := fun i => WalkingPair.casesOn i f.wfst f.wsnd
+    wι := fun i => WalkingPair.casesOn i f.winl f.winr }
+
+/-- A shorthand for `toBiconeFunctor.obj` -/
+abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
+  toBiconeFunctor.obj b
 #align category_theory.limits.binary_bicone.to_bicone CategoryTheory.Limits.BinaryBicone.toBicone
 
 /-- A binary bicone is a limit cone if and only if the corresponding bicone is a limit cone. -/
@@ -1272,16 +1364,23 @@ namespace Bicone
 
 /-- Convert a `Bicone` over a function on `WalkingPair` to a BinaryBicone. -/
 @[simps]
-def toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y where
-  pt := b.pt
-  fst := b.π WalkingPair.left
-  snd := b.π WalkingPair.right
-  inl := b.ι WalkingPair.left
-  inr := b.ι WalkingPair.right
-  inl_fst := by simp [Bicone.ι_π]
-  inr_fst := by simp [Bicone.ι_π]
-  inl_snd := by simp [Bicone.ι_π]
-  inr_snd := by simp [Bicone.ι_π]
+def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone X Y where
+  obj b :=
+    { pt := b.pt
+      fst := b.π WalkingPair.left
+      snd := b.π WalkingPair.right
+      inl := b.ι WalkingPair.left
+      inr := b.ι WalkingPair.right
+      inl_fst := by simp [Bicone.ι_π]
+      inr_fst := by simp [Bicone.ι_π]
+      inl_snd := by simp [Bicone.ι_π]
+      inr_snd := by simp [Bicone.ι_π] }
+  map f :=
+    { hom := f.hom }
+
+/-- A shorthand for `toBinaryBiconeFunctor.obj` -/
+abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y :=
+  toBinaryBiconeFunctor.obj b
 #align category_theory.limits.bicone.to_binary_bicone CategoryTheory.Limits.Bicone.toBinaryBicone
 
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
