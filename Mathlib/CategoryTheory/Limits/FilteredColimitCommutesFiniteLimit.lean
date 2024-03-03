@@ -28,7 +28,7 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 
-universe v u
+universe w v u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits.Types
   CategoryTheory.Limits.Types.FilteredColimit
@@ -338,6 +338,8 @@ noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
   · exact asIso (colimitLimitToLimitColimitCone.{v, v + 1} F)
 #align category_theory.limits.filtered_colim_preserves_finite_limits_of_types CategoryTheory.Limits.filteredColimPreservesFiniteLimitsOfTypes
 
+section LocallySmall
+
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 
 section
@@ -398,6 +400,79 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
 #align category_theory.limits.ι_colimit_limit_iso_limit_π CategoryTheory.Limits.ι_colimitLimitIso_limit_π
 
 end
+
+end LocallySmall
+
+section Max
+
+abbrev Lift (C : Type u) [SmallCategory C] [UnivLE.{u, v}] : Type v :=
+  ShrinkHoms.{v} (Shrink.{v} C)
+
+noncomputable def liftEquiv (C : Type u) [SmallCategory C] [UnivLE.{u, v}] :
+    C ≌ Lift.{v} C :=
+  (Shrink.equivalence _).trans (ShrinkHoms.equivalence _)
+
+-- instance essentiallySmall_of_univLE {C : Type u} [SmallCategory C] [UnivLE.{u, v}] :
+--     EssentiallySmall.{v} C := essentiallySmall_of_small_of_locallySmall _
+
+noncomputable def adjustIndex (F : J ⥤ K ⥤ Type w) [UnivLE.{v, w}] :
+    Lift.{w} J ⥤ Lift.{w} K ⥤ Type w :=
+  (liftEquiv J).inverse ⋙ F ⋙ (whiskeringLeft _ _ _).obj (liftEquiv K).inverse
+  -- AsSmall.equiv.inverse ⋙ F ⋙ (whiskeringLeft _ _ _).obj AsSmall.equiv.inverse
+
+instance isFilteredLiftEquiv [IsFiltered J] [UnivLE.{v, w}] : IsFiltered (Lift.{w} J) :=
+  IsFiltered.of_equivalence (liftEquiv J)
+
+-- instance [IsFiltered J] [EssentiallySmall.{w} J] : IsFiltered (SmallModel.{w} J) :=
+--   IsFiltered.of_equivalence (equivSmallModel.{w} J)
+
+noncomputable instance finCategorySmallModel [FinCategory J] [UnivLE.{v, w}] : FinCategory (Lift.{w} J) where
+  fintypeObj := Fintype.ofEquiv J (equivShrink _)
+  fintypeHom _ _ := Fintype.ofEquiv _ (equivShrink _)
+
+noncomputable def colimitLimitIsoMax (F : J ⥤ K ⥤ Type w) [UnivLE.{v, w}] :
+    colimit (limit F) ≅ limit (colimit F.flip) := by
+  -- let F' := adjustIndex.{w} F
+  let t := colimitLimitIso (adjustIndex.{w} F)
+  dsimp only [adjustIndex] at t
+  have : HasLimit F := inferInstance
+  let q := HasLimit.isoOfEquivalence (G := F) (liftEquiv.{w} J).symm (Iso.refl _)
+  dsimp at q
+  let q' := HasColimit.isoOfEquivalence (G := limit ((liftEquiv J).inverse ⋙ F)) (liftEquiv.{w} K).symm (Iso.refl _)
+  dsimp at q'
+  let q₂ := colim.mapIso q
+  dsimp at q₂
+  let qq := q' ≪≫ q₂
+  let rr : (liftEquiv.{w} K).inverse ⋙ limit ((liftEquiv.{w} J).inverse ⋙ F) ≅
+    limit (((liftEquiv.{w} J).inverse ⋙ F) ⋙ (whiskeringLeft _ _ _).obj (liftEquiv.{w} K).inverse) := by
+    refine isoWhiskerLeft _ (limitIsoFlipCompLim ((liftEquiv.{w} J).inverse ⋙ F)) ≪≫ ?_
+    refine ?_ ≪≫ (limitIsoFlipCompLim _).symm
+    refine (Functor.associator _ _ _).symm ≪≫ ?_
+    refine isoWhiskerRight ?_ _
+    exact Iso.refl _
+  let rr₂ := colim.mapIso rr
+  dsimp at rr₂
+  refine qq.symm ≪≫ rr₂ ≪≫ t ≪≫ ?_
+
+  let a := HasColimit.isoOfEquivalence (G := F.flip) (liftEquiv.{w} K).symm (Iso.refl _)
+  let a' := HasLimit.isoOfEquivalence (G := colimit ((liftEquiv K).inverse ⋙ F.flip)) (liftEquiv.{w} J).symm (Iso.refl _)
+  let a₂ := lim.mapIso a
+  dsimp at a' a₂
+
+  let aa := a' ≪≫ a₂
+  let bb : (liftEquiv.{w} J).inverse ⋙ colimit ((liftEquiv.{w} K).inverse ⋙ F.flip) ≅
+      colimit (((liftEquiv.{w} K).inverse ⋙ F.flip) ⋙ (whiskeringLeft _ _ _).obj (liftEquiv.{w} J).inverse) := by
+    refine isoWhiskerLeft _ (colimitIsoFlipCompColim ((liftEquiv.{w} K).inverse ⋙ F.flip)) ≪≫ ?_
+    refine ?_ ≪≫ (colimitIsoFlipCompColim _).symm
+    refine (Functor.associator _ _ _).symm ≪≫ ?_
+    refine isoWhiskerRight ?_ _
+    exact Iso.refl _
+  let bb₂ := lim.mapIso bb
+  dsimp at bb₂
+  refine bb₂.symm ≪≫ ?_
+  exact aa
+
+end Max
 
 end CategoryTheory.Limits
 

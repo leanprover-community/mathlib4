@@ -136,4 +136,9 @@ instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
   fintypeHom := fun _ _ => ULift.fintype _
 #align category_theory.fin_category_ulift CategoryTheory.finCategoryUlift
 
+instance finCategoryAsSmall {J : Type v} [SmallCategory J] [FinCategory J] :
+    FinCategory (AsSmall.{w} J) where
+  fintypeObj := Fintype.ofEquiv J ⟨AsSmall.up.obj, AsSmall.down.obj, by aesop_cat, by aesop_cat⟩
+  fintypeHom j j' := Fintype.ofInjective _ AsSmall.equiv.inverse.map_injective
+
 end CategoryTheory

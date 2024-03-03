@@ -187,7 +187,7 @@ theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
 
 section Good
 
-variable {I : Type v} [SmallCategory I] [IsFilteredOrEmpty I] (F : I ⥤ Cᵒᵖ ⥤ Type v)
+variable {I : Type v} [SmallCategory I] [IsFiltered I] (F : I ⥤ Cᵒᵖ ⥤ Type v)
   (hF : ∀ i, IsIndObject (F.obj i))
 
 variable {J : Type v} [SmallCategory J] [FinCategory J]
@@ -301,11 +301,6 @@ noncomputable def interchange :
   refine ?_ ≪≫ isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
   exact Iso.refl _
 
-  -- NatIso.ofComponents (fun j => by
-  --   dsimp [myFunctor]
-
-  --   ) _
-
 theorem step₄ : Nonempty <| limit <|
   G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
     colimit ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ yoneda) := by
@@ -330,8 +325,42 @@ theorem step₅ : Nonempty <| limit <| colimit <| myBetterFunctor F G := by
   exact limMap (interchange₂ F G).hom
 
 theorem step₆ : Nonempty <| colimit <| limit <| (myBetterFunctor F G).flip := by
-  -- let i := colimitLimitIso (myBetterFunctor F G).flip
-  sorry
+  let i := colimitLimitIsoMax (myBetterFunctor F G).flip
+  refine Nonempty.map ?_ (step₅ F G)
+  exact i.inv
+
+theorem step₇ : ∃ i, Nonempty <| limit <| (myBetterFunctor F G).obj i := by
+  obtain ⟨t⟩ := step₆ F G
+  obtain ⟨i, y, -⟩ := Types.jointly_surjective'.{v, max u v} t
+  refine ⟨i, ⟨?_⟩⟩
+  let z := (limitObjIsoLimitCompEvaluation (myBetterFunctor F G).flip i).hom y
+  let y := flipCompEvaluation (myBetterFunctor F G) i
+  exact (lim.mapIso y).hom z
+
+noncomputable def i : I := (step₇ F G).choose
+
+theorem step₈ : Nonempty <| limit <| (myBetterFunctor F G).obj (i F G) :=
+  (step₇ F G).choose_spec
+
+noncomputable def pointwiseFunctor : Jᵒᵖ ⥤ Type (max u v) :=
+  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
+    yoneda.obj (Over.mk <| colimit.ι F (i F G))
+
+noncomputable def betterIsoPointwise : (myBetterFunctor F G).obj (i F G) ≅ pointwiseFunctor F G :=
+  Iso.refl _
+
+theorem step₉ : Nonempty <| limit <| pointwiseFunctor F G :=
+  step₈ F G
+
+abbrev K : Type v := (hF (i F G)).presentation.I
+
+noncomputable def Kc : Cocone ((hF (i F G)).presentation.F ⋙ yoneda) :=
+  (hF (i F G)).presentation.cocone
+
+noncomputable def Kcl : IsColimit (Kc F hF G) :=
+  (hF (i F G)).presentation.coconeIsColimit
+
+noncomputable example : SmallCategory (K F hF G) := inferInstance
 
 @[pp_with_univ]
 structure IsGood (K : Jᵒᵖ ⥤ Type w) : Prop where
