@@ -19,9 +19,9 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
  * `LSeries.term f s n` is the `n`th term of the L-series of the sequence `f` at `s : ℂ`.
     We define it to be zero when `n = 0`.
 
- * `LSeries f` is the L-Series with a given sequence `f` as its
+ * `LSeries f` is the L-series with a given sequence `f` as its
     coefficients. This is not the analytic continuation (which does not necessarily exist),
-    just the infinite series.
+    just the sum of the infinite series if it exists and zero otherwise.
 
  * `LSeriesSummable f` indicates that the L-series of `f` converges at a given point.
 
@@ -56,7 +56,7 @@ open Complex
 /-!
 ### The terms of an L-series
 
-We define the `n`th term evalutated at a complex number `s` of the L-series associated
+We define the `n`th term evaluated at a complex number `s` of the L-series associated
 to a sequence `f : ℕ → ℂ`, `LSeries.term f s n`, and provide some basic API.
 
 We set `LSeries.term f s 0 = 0`, and for positive `n`, `LSeries.term f s n = f n / n ^ s`.
@@ -101,13 +101,13 @@ lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     ‖term f s n‖ = if n = 0 then 0 else ‖f n‖ / n ^ s.re := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero, norm_zero, ↓reduceIte]
-  rw [if_neg hn, term_ne_zero hn, norm_div, norm_natCast_cpow_of_pos <| Nat.pos_of_ne_zero hn]
+  · rw [if_neg hn, term_ne_zero hn, norm_div, norm_natCast_cpow_of_pos <| Nat.pos_of_ne_zero hn]
 
 lemma norm_term_le {f g : ℕ → ℂ} (s : ℂ) {n : ℕ} (h : ‖f n‖ ≤ ‖g n‖) :
     ‖term f s n‖ ≤ ‖term g s n‖ := by
   simp only [norm_term_eq]
   split_ifs with hn
-  · exact le_rfl
+  · rfl
   · gcongr
 
 lemma norm_term_le_of_re_le_re (f : ℕ → ℂ) {s s' : ℂ} (h : s.re ≤ s'.re) (n : ℕ) :
