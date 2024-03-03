@@ -1350,9 +1350,9 @@ end
 
 section thickenedIndicator
 
-variable [PseudoEMetricSpace α]
+variable {X : Type*} [MeasurableSpace X] [PseudoEMetricSpace X]
 
-theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure α) {E : Set α}
+theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) (δ : ℝ) : μ E ≤ ∫⁻ a, (thickenedIndicatorAux δ E a : ℝ≥0∞) ∂μ := by
   convert_to lintegral μ (E.indicator fun _ => (1 : ℝ≥0∞)) ≤ lintegral μ (thickenedIndicatorAux δ E)
   · rw [lintegral_indicator _ E_mble]
@@ -1361,7 +1361,7 @@ theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure α) {E : Set α
     apply indicator_le_thickenedIndicatorAux
 #align measure_le_lintegral_thickened_indicator_aux measure_le_lintegral_thickenedIndicatorAux
 
-theorem measure_le_lintegral_thickenedIndicator (μ : Measure α) {E : Set α}
+theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) {δ : ℝ} (δ_pos : 0 < δ) :
     μ E ≤ ∫⁻ a, (thickenedIndicator δ_pos E a : ℝ≥0∞) ∂μ := by
   convert measure_le_lintegral_thickenedIndicatorAux μ E_mble δ
