@@ -11,11 +11,13 @@ variable {α γ :Type*} [CompleteLinearOrder γ] [AddCommMonoid γ]
 
 variable {T:Type*} (gdist:T)
 variable (s:Set α)
-variable [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1]
-  [FunLike T α (α → γ)] [GPseudoMetricClass T α γ] [IsDelone gdist s] [_Code γ gdist s]
+variable--? [_Code γ gdist s] =>
+  [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1]
+  [FunLike T α (α → γ)] [GPseudoMetricClass T α γ] [IsDelone gdist s]
 variable {α₂ T₂ :Type*} (gdist₂:T₂)(s₂ : Set α₂)
-variable [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₂ α₂ γ]
-  [IsDelone gdist₂ s₂] [_Code γ gdist₂ s₂]
+variable--? [_Code γ gdist₂ s₂] =>
+  [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₂ α₂ γ]
+  [IsDelone gdist₂ s₂]
 
 @[ext]
 structure CodeEquiv extends CodeHom gdist s gdist₂ s₂, α ≃ α₂ where
@@ -45,7 +47,7 @@ class CodeEquivClass
     extends CodeHomClass T₃ gdist s gdist₂ s₂ :Prop where
   invMap_code : ∀ (φ:T₃), Equiv.invFun φ '' s₂ ⊆ s
 
-instance CodeEquiv.instCodeEquivClass :
+instance CodeEquiv.instCodeEquivClass:
     CodeEquivClass (CodeEquiv gdist s gdist₂ s₂) gdist s gdist₂ s₂ where
   map_code := fun φ => φ.map_code
   invMap_code := fun φ => φ.invMap_code
@@ -58,21 +60,19 @@ variable [Field K] [AddCommMonoid M] [AddCommMonoid M₂] [Module K M] [Module K
 variable [Semiring γ] [CompleteLinearOrder γ] [ContravariantClass γ γ (.+.) (.<.)]
 variable (gdist_k : Tₖ)
 variable (gdist_m : Tₘ) (s:Submodule K M)
-variable
+variable--? [_LinearCode γ K gdist_k gdist_m s] =>
   [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] [FunLike Tₖ K (K → γ)]
   [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdist_k] [FunLike Tₘ M (M → γ)]
   [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdist_m] [IsDelone gdist_m ↑s] [Nontrivial γ]
   [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ]
   [StrictModuleGNorm K K gdist_k gdist_k] [StrictModuleGNorm K M gdist_k gdist_m]
-  [_Code γ gdist_m ↑s] [_LinearCode γ K gdist_k gdist_m s]
 variable (gdist_m₂ : Tₘ₂) (s₂:Submodule K M₂)
-variable [FunLike Tₘ₂ M₂ (M₂ → γ)]
-  [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdist_m₂] [IsDelone gdist_m₂ ↑s₂]
-  [StrictModuleGNorm K M₂ gdist_k gdist_m₂] [_Code γ gdist_m₂ ↑s₂]
-  [_LinearCode γ K gdist_k gdist_m₂ s₂]
-variable [EquivLike T₃ M M₂]
-  [GIsometryClass T₃ gdist_m gdist_m₂] [CodeHomClass T₃ gdist_m (↑s) gdist_m₂ ↑s₂]
-  [LinearMapClass T₃ K M M₂] [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂]
+variable--? [_LinearCode γ K gdist_k gdist_m₂ s₂] =>
+  [FunLike Tₘ₂ M₂ (M₂ → γ)] [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdist_m₂]
+  [IsDelone gdist_m₂ ↑s₂] [StrictModuleGNorm K M₂ gdist_k gdist_m₂]
+variable--? [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂] =>
+  [EquivLike T₃ M M₂] [GIsometryClass T₃ gdist_m gdist_m₂]
+  [CodeHomClass T₃ gdist_m (↑s) gdist_m₂ ↑s₂] [LinearMapClass T₃ K M M₂]
 
 @[ext]
 structure LinearCodeEquiv [_LinearCode γ K gdist_k gdist_m s]
@@ -109,16 +109,16 @@ instance LinearCodeEquiv.inst_LinearCodeHomClass:
   _LinearCodeHomClass (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂)
     K gdist_k gdist_m s gdist_m₂ s₂ where
 
+-- @[abbrev_class].
 class _LinearCodeEquivClass
-  [_LinearCode γ K gdist_k gdist_m s]
-  [_LinearCode γ K gdist_k gdist_m₂ s₂]
   [CodeEquivClass T₃ gdist_m s gdist_m₂ s₂]
-  [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂]
   [LinearEquivClass T₃ K M M₂]
+  [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂] :Prop
   where
 
-instance LinearCodeEquiv.inst_LinearCodeEquivClass :
-  _LinearCodeEquivClass (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂)
-    K gdist_k gdist_m s gdist_m₂ s₂ where
+instance inst_LinearCodeEquivClass [CodeEquivClass T₃ gdist_m s gdist_m₂ s₂]
+  [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂]
+  [LinearEquivClass T₃ K M M₂]:
+  _LinearCodeEquivClass T₃ K gdist_k gdist_m s gdist_m₂ s₂ where
 
 end linearcode

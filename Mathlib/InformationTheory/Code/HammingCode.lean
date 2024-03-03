@@ -89,7 +89,7 @@ noncomputable instance Hamming.instStrictModuleGNorm_SemiRing_Domain
 -- look into: hamming distance as measure on the set of indices where the things differ
 -- look into: hamming distance as the sum of trivial distances in each of the dimensions
 
-private lemma norm_eq_smul
+lemma norm_eq_smul
     [Semiring K] [IsCancelAdd K] [IsDomain K] (a : K) (b : ι → K) :
     addGNorm hdist (a • b) = addGNorm trivdist a * addGNorm hdist b := by
   rw [addGNorm,addGNorm,addGNorm]
@@ -112,9 +112,12 @@ noncomputable instance Hamming.instStrictModuleGNorm_Module
 end hamming
 variable (n n' p:ℕ) [Fact (p.Prime)] [DecidableEq (GaloisField p n)]
 
+section linearHamming
 abbrev CodeWord := Fin (n') → GaloisField p n
 open Code
 
 variable (s : Submodule (GaloisField p n) (CodeWord n n' p)) [IsDelone hdist (SetLike.coe s)]
 
 #check (inferInstance : _LinearCode ℕ∞ (GaloisField p n) trivdist hdist s)
+
+end linearHamming
