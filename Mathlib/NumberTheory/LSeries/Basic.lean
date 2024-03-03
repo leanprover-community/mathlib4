@@ -82,11 +82,6 @@ lemma term_of_ne_zero {n : ℕ} (hn : n ≠ 0) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
   if_neg hn
 
-@[simp]
-lemma term_of_pos {n : ℕ} (hn : 0 < n) (f : ℕ → ℂ) (s : ℂ) :
-    term f s n = f n / n ^ s :=
-  term_of_ne_zero (Nat.pos_iff_ne_zero.mp hn) f s
-
 lemma term_congr {f g : ℕ → ℂ} (h : ∀ n ≠ 0, f n = g n) (s : ℂ) (n : ℕ) :
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with hn | hn <;> simp [hn, h]
@@ -109,7 +104,7 @@ lemma norm_term_le_of_re_le_re (f : ℕ → ℂ) {s s' : ℂ} (h : s.re ≤ s'.r
   rcases n.eq_zero_or_pos with rfl | hn
   · simp only [term_zero, norm_zero, le_refl]
   have hn' := norm_natCast_cpow_pos_of_pos hn s
-  simp_rw [term_of_pos hn, norm_div]
+  simp_rw [term_of_ne_zero hn.ne', norm_div]
   suffices H : ‖(n : ℂ) ^ s‖ ≤ ‖(n : ℂ) ^ s'‖ from div_le_div (norm_nonneg _) le_rfl hn' H
   refine (one_le_div hn').mp ?_
   rw [← norm_div, ← cpow_sub _ _ <| Nat.cast_ne_zero.mpr hn.ne', norm_natCast_cpow_of_pos hn]
@@ -246,7 +241,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
   · simp only [term_zero, norm_zero]
     exact norm_nonneg _
   have hn' : 0 < (n : ℝ) ^ s.re := Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
-  simp_rw [term_of_pos hn, norm_div, norm_natCast_cpow_of_pos hn, div_le_iff hn',
+  simp_rw [term_of_ne_zero hn.ne', norm_div, norm_natCast_cpow_of_pos hn, div_le_iff hn',
     norm_eq_abs (C : ℂ), abs_ofReal, _root_.abs_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
     ← Real.rpow_neg <| Nat.cast_nonneg _, ← Real.rpow_add <| Nat.cast_pos.mpr hn]
   simp only [add_re, sub_re, one_re, ofReal_re, neg_add_rev, neg_sub, neg_add_cancel_right]
