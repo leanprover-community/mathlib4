@@ -25,8 +25,12 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
   and the kernel of `i` is contained in the `p`-nilradical of `K`.
   A generalization of purely inseparable extension for fields.
 
-- `IsPerfectClosure`: a ring homomorphism `i : K →+* L` of characteristic `p` rings makes `L` a
-  perfect closure of `K`, if `L` is perfect, and `i` is `p`-radical.
+- `IsPerfectClosure`: if `i : K →+* L` is `p`-radical ring homomorphism, then it makes `L` a
+  perfect closure of `K`, if `L` is perfect.
+
+  Our definition makes it synonymous to `IsPRadical` if `PerfectRing L p` is present. A caveat is
+  that you need to write `[PerfectRing L p] [IsPerfectClosure i p]`. This is similar to
+  `PerfectRing` which has `ExpChar` as a prerequisite.
 
 - `PerfectRing.lift`: if a `p`-radical ring homomorphism `K →+* L` is given, `M` is a perfect ring,
   then any ring homomorphism `K →+* M` can be lifted to `L →+* M`.
@@ -41,14 +45,14 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 
 - `IsPRadical.trans`: composition of `p`-radical ring homomorphisms is also `p`-radical.
 
-- `PerfectClosure.isPerfectClosure`: the absolute perfect closure `PerfectClosure` is a
-  perfect closure.
+- `PerfectClosure.isPRadical`: the absolute perfect closure `PerfectClosure` is a `p`-radical
+  extension over the base ring, in particular, it is a perfect closure of the base ring.
 
 - `IsPRadical.isPurelyInseparable`, `IsPurelyInseparable.isPRadical`: `p`-radical and
   purely inseparable are equivalent for fields.
 
-- `perfectClosure.isPerfectClosure`: the (relative) perfect closure `perfectClosure` is a
-  perfect closure.
+- The (relative) perfect closure `perfectClosure` is a perfect closure
+  (inferred from `IsPurelyInseparable.isPRadical` automatically by Lean).
 
 ## Tags
 
@@ -177,19 +181,16 @@ theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
     rw [RingHom.mem_ker, RingHom.comp_apply, ← RingHom.mem_ker] at h
     simpa only [← Ideal.mem_comap, comap_pNilradical] using ker_le f p h
 
-/-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it makes `L`
-a perfect closure of `K` if the following conditions are satisfied:
-
-- `L` is a perfect ring.
-- `i : K →+* L` is `p`-radical.
-
+/-- If `i : K →+* L` is a `p`-radical ring homomorphism , then it makes `L` a perfect closure
+of `K`, if `L` is perfect.
 In this case the kernel of `i` is equal to the `p`-nilradical of `K`
-(see `IsPerfectClosure.ker_eq`). -/
-@[mk_iff]
-class IsPerfectClosure extends IsPRadical i p : Prop where
-  [perfectRing' : PerfectRing L p]
+(see `IsPerfectClosure.ker_eq`).
 
-theorem IsPerfectClosure.perfectRing [IsPerfectClosure i p] : PerfectRing L p := perfectRing' i
+Our definition makes it synonymous to `IsPRadical` if `PerfectRing L p` is present. A caveat is
+that you need to write `[PerfectRing L p] [IsPerfectClosure i p]`. This is similar to
+`PerfectRing` which has `ExpChar` as a prerequisite.-/
+@[nolint unusedArguments]
+abbrev IsPerfectClosure [PerfectRing L p] := IsPRadical i p
 
 /-- If `i : K →+* L` is a ring homomorphism of exponential characteristic `p` rings, such that `L`
 is perfect, then the `p`-nilradical of `K` is contained in the kernel of `i`. -/
@@ -200,12 +201,9 @@ theorem RingHom.pNilradical_le_ker_of_perfectRing [PerfectRing L p] :
   rwa [map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply,
     map_zero, map_zero] at h
 
-theorem IsPerfectClosure.ker_eq [IsPerfectClosure i p] : RingHom.ker i = pNilradical K p :=
-  toIsPRadical.ker_le'.antisymm (haveI := perfectRing i p; i.pNilradical_le_ker_of_perfectRing p)
-
-/-- A perfect ring is its perfect closure. -/
-instance IsPerfectClosure.self_of_perfect [PerfectRing M p] :
-    IsPerfectClosure (RingHom.id M) p where
+theorem IsPerfectClosure.ker_eq [PerfectRing L p] [IsPerfectClosure i p] :
+    RingHom.ker i = pNilradical K p :=
+  IsPRadical.ker_le'.antisymm (i.pNilradical_le_ker_of_perfectRing p)
 
 section PerfectRing.lift
 
@@ -443,37 +441,34 @@ end PerfectRing.lift
 
 section equiv
 
-variable [IsPerfectClosure i p] [IsPerfectClosure j p]
+variable [PerfectRing L p] [IsPerfectClosure i p] [PerfectRing M p] [IsPerfectClosure j p]
 
 /-- If `L` and `M` are both perfect closures of `K`, then there is a ring isomorphism `L ≃+* M`.
 This is similar to `IsAlgClosure.equiv` and `IsSepClosure.equiv`. -/
 def IsPerfectClosure.equiv : L ≃+* M where
-  __ := haveI := perfectRing j p; PerfectRing.lift i j p
-  invFun := haveI := perfectRing i p; PerfectRing.liftAux j i p
-  left_inv := haveI := perfectRing i p; haveI := perfectRing j p;
-    PerfectRing.lift_comp_lift_apply_eq_self i j p
-  right_inv := haveI := perfectRing i p; haveI := perfectRing j p;
-    PerfectRing.lift_comp_lift_apply_eq_self j i p
+  __ := PerfectRing.lift i j p
+  invFun := PerfectRing.liftAux j i p
+  left_inv := PerfectRing.lift_comp_lift_apply_eq_self i j p
+  right_inv := PerfectRing.lift_comp_lift_apply_eq_self j i p
 
-theorem IsPerfectClosure.equiv_toRingHom : haveI := perfectRing j p;
-    (equiv i j p).toRingHom = PerfectRing.lift i j p := rfl
+theorem IsPerfectClosure.equiv_toRingHom : (equiv i j p).toRingHom = PerfectRing.lift i j p := rfl
 
 @[simp]
 theorem IsPerfectClosure.equiv_symm : (equiv i j p).symm = equiv j i p := rfl
 
-theorem IsPerfectClosure.equiv_symm_toRingHom : haveI := perfectRing i p;
+theorem IsPerfectClosure.equiv_symm_toRingHom :
     (equiv i j p).symm.toRingHom = PerfectRing.lift j i p := rfl
 
 theorem IsPerfectClosure.equiv_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
-    haveI := perfectRing j p; equiv i j p x = (iterateFrobeniusEquiv M p n).symm (j y) :=
-  haveI := perfectRing j p; PerfectRing.liftAux_apply i j p _ _ _ h
+    equiv i j p x = (iterateFrobeniusEquiv M p n).symm (j y) :=
+  PerfectRing.liftAux_apply i j p _ _ _ h
 
 theorem IsPerfectClosure.equiv_symm_apply (x : M) (n : ℕ) (y : K) (h : j y = x ^ p ^ n) :
-    haveI := perfectRing i p; (equiv i j p).symm x = (iterateFrobeniusEquiv L p n).symm (i y) := by
+    (equiv i j p).symm x = (iterateFrobeniusEquiv L p n).symm (i y) := by
   rw [equiv_symm, equiv_apply j i p _ _ _ h]
 
 theorem IsPerfectClosure.equiv_self_apply (x : L) : equiv i i p x = x :=
-  haveI := perfectRing i p; PerfectRing.liftAux_self_apply i p x
+  PerfectRing.liftAux_self_apply i p x
 
 @[simp]
 theorem IsPerfectClosure.equiv_self : equiv i i p = RingEquiv.refl L :=
@@ -481,7 +476,7 @@ theorem IsPerfectClosure.equiv_self : equiv i i p = RingEquiv.refl L :=
 
 @[simp]
 theorem IsPerfectClosure.equiv_comp_apply (x : K) : equiv i j p (i x) = j x :=
-  haveI := perfectRing j p; PerfectRing.lift_comp_apply i j p x
+  PerfectRing.lift_comp_apply i j p x
 
 @[simp]
 theorem IsPerfectClosure.equiv_comp : RingHom.comp (equiv i j p) i = j :=
@@ -489,12 +484,11 @@ theorem IsPerfectClosure.equiv_comp : RingHom.comp (equiv i j p) i = j :=
 
 section comp
 
-variable [IsPerfectClosure k p]
+variable [PerfectRing N p] [IsPerfectClosure k p]
 
 @[simp]
 theorem IsPerfectClosure.equiv_comp_equiv_apply (x : L) :
     equiv j k p (equiv i j p x) = equiv i k p x :=
-  haveI := perfectRing j p; haveI := perfectRing k p;
   PerfectRing.lift_comp_lift_apply i j k p x
 
 @[simp]
@@ -521,7 +515,9 @@ variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
 variable (K)
 
-/-- The absolute perfect closure `PerfectClosure` is a `p`-radical extension over the base ring. -/
+/-- The absolute perfect closure `PerfectClosure` is a `p`-radical extension over the base ring.
+In particular, it is a perfect closure of the base ring, that is,
+`IsPerfectClosure (PerfectClosure.of K p) p`. -/
 instance isPRadical : IsPRadical (PerfectClosure.of K p) p where
   pow_mem' x := PerfectClosure.induction_on x fun x ↦ ⟨x.1, x.2, by
     rw [← iterate_frobenius, iterate_frobenius_mk K p x.1 x.2]⟩
@@ -531,9 +527,6 @@ instance isPRadical : IsPRadical (PerfectClosure.of K p) p where
     simp_rw [zero_add, ← coe_iterateFrobenius, map_zero] at h
     exact mem_pNilradical.2 ⟨n, h⟩
 
-/-- The absolute perfect closure `PerfectClosure` is a perfect closure. -/
-instance isPerfectClosure : IsPerfectClosure (PerfectClosure.of K p) p where
-
 end PerfectClosure
 
 section Field
@@ -542,19 +535,18 @@ variable [Field K] [Field L] [Algebra K L] (p : ℕ) [ExpChar K p]
 
 variable (K L)
 
+/-- If `L / K` is a `p`-radical field extension, then it is purely inseparable. -/
 theorem IsPRadical.isPurelyInseparable [IsPRadical (algebraMap K L) p] :
     IsPurelyInseparable K L :=
   (isPurelyInseparable_iff_pow_mem K p).2 (IsPRadical.pow_mem (algebraMap K L) p)
 
+/-- If `L / K` is a purely inseparable field extension, then it is `p`-radical. In particular, if
+`L` is perfect, then the (relative) perfect closure `perfectClosure K L` is a perfect closure
+of `K`, that is, `IsPerfectClosure (algebraMap K (perfectClosure K L)) p`. -/
 instance IsPurelyInseparable.isPRadical [IsPurelyInseparable K L] :
     IsPRadical (algebraMap K L) p where
   pow_mem' := (isPurelyInseparable_iff_pow_mem K p).1 ‹_›
   ker_le' := (RingHom.injective_iff_ker_eq_bot _).1 (algebraMap K L).injective ▸ bot_le
-
-/-- If `L` is a perfect field of characteristic `p`, then the (relative) perfect closure
-`perfectClosure K L` is a perfect closure of `K`. -/
-instance perfectClosure.isPerfectClosure [ExpChar L p] [PerfectRing L p] :
-    IsPerfectClosure (algebraMap K (perfectClosure K L)) p where
 
 end Field
 
