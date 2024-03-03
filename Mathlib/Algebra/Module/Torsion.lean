@@ -547,7 +547,7 @@ instance IsTorsionBySet.isScalarTower
 
 /-- Any module is also a modle over the quotient of the ring by the annihilator.
 Not an instance because it causes synthesis failures / timeouts. -/
-def Module.quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
+def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
   (isTorsionBySet_annihilator R M).module
 
 instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
