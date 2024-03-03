@@ -1425,7 +1425,7 @@ theorem continuous_parametric_integral_of_continuous
   rw [continuous_iff_continuousAt]
   intro x₀
   rcases exists_compact_mem_nhds x₀ with ⟨U, U_cpct, U_nhds⟩
-  rcases(U_cpct.prod hs).bddAbove_image hF.norm.continuousOn with ⟨M, hM⟩
+  rcases (U_cpct.prod hs).bddAbove_image hF.norm.continuousOn with ⟨M, hM⟩
   apply continuousAt_of_dominated
   · exact eventually_of_forall fun x ↦ (hF.comp (Continuous.Prod.mk x)).aestronglyMeasurable
   · refine Eventually.mono U_nhds fun x x_in ↦ ?_
