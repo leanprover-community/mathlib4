@@ -144,38 +144,35 @@ end NonUnitalSemiring
 noncomputable section Semiring
 
 variable [CommSemiring R'] [CommSemiring R] [∀ i, Semiring (A i)]
-variable [Algebra R' R] [∀ i, Algebra R (A i)] [∀ i, Algebra R' (A i)]
-variable [∀ i, IsScalarTower R' R (A i)]
+variable [Algebra R' R] [∀ i, Algebra R (A i)]
 
 instance instSemiring : Semiring (⨂[R] i, A i) where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
+
+private lemma mul_smul_left {x y : ⨂[R] i, A i} {s : R'} : (s • y) * x = s • (y * x) := by
+  rw [mul_def, mul_def, LinearMap.map_smul_of_tower, LinearMap.smul_apply]
+
+private lemma mul_smul_right {x y : ⨂[R] i, A i} {s : R'} : x * (s • y) = s • (x * y) := by
+  rw [mul_def, mul_def, LinearMap.map_smul_of_tower]
 
 instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   __ := hasSMul'
   algebraMap :=
   { toFun := (· • 1)
     map_one' := by simp
-    map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
-      rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
-        mul_smul]
-      congr
-      change (1 : ⨂[R] i, A i) = 1 * 1
-      rw [mul_one]
+    map_mul' r s := by
+      rw [mul_smul_right, mul_smul_left, mul_one, mul_comm, mul_smul]
     map_zero' := by simp
     map_add' := by simp [add_smul] }
   commutes' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-    change mul _ _ = mul _ _
-    rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply]
-    change r • (1 * x) = r • (x * 1)
-    rw [mul_one, one_mul]
+    rw [mul_smul_right, mul_smul_left, one_mul, mul_one]
   smul_def' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-    change _ = mul _ _
-    rw [LinearMap.map_smul_of_tower, LinearMap.smul_apply]
-    change _ = r • (1 * x)
-    rw [one_mul]
+    rw [mul_smul_left, one_mul]
+
+variable [∀ i, Algebra R' (A i)] [∀ i, IsScalarTower R' R (A i)]
 
 lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
     algebraMap R' (⨂[R] i, A i) r = tprod R (Pi.mulSingle i (algebraMap R' (A i) r)) := by
