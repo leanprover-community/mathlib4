@@ -16,11 +16,8 @@ open Filter Finset
 
 open scoped BigOperators Topology
 
-/-- **Leibniz's series for `π`**. The alternating sum of odd number reciprocals is `π / 4`.
-
-Note that this is a conditionally rather than absolutely convergent series. The main tool that
-this proof uses is Abel's limit theorem, which allows us to extend the Maclaurin series of
-`arctan x`, which has radius of convergence 1, to `x = 1`. -/
+/-- **Leibniz's series for `π`**. The alternating sum of odd number reciprocals is `π / 4`,
+proved by using Abel's limit theorem to extend the Maclaurin series of `arctan` to 1. -/
 theorem tendsto_sum_pi_div_four :
     Tendsto (fun k => ∑ i in range k, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
   -- The series is alternating with terms of decreasing magnitude, so it converges to some limit
@@ -54,8 +51,7 @@ theorem tendsto_sum_pi_div_four :
     rw [Set.mem_Iio] at hy2
     have ny : ‖y‖ < 1 := by rw [norm_eq_abs, abs_lt]; constructor <;> linarith
     rw [← (hasSum_arctan ny).tsum_eq, Function.comp_apply, ← tsum_mul_right]
-    congr with n
-    rw [mul_assoc, ← pow_mul, ← pow_succ', div_mul_eq_mul_div]
+    simp_rw [mul_assoc, ← pow_mul, ← pow_succ', div_mul_eq_mul_div]
     norm_cast
   -- But `arctan` is continuous everywhere, so the limit is `arctan 1 = π / 4`
   rwa [tendsto_nhds_unique abel ((continuous_arctan.tendsto 1).mono_left m), arctan_one] at h
