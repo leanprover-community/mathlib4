@@ -922,15 +922,12 @@ def LpToLpRestrictCLM (μ : Measure α) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp_to_Lp_restrict_clm MeasureTheory.LpToLpRestrictCLM
 
-variable (𝕜)
-
+variable (𝕜) in
 theorem LpToLpRestrictCLM_coeFn [Fact (1 ≤ p)] (s : Set α) (f : Lp F p μ) :
     LpToLpRestrictCLM α F 𝕜 μ p s f =ᵐ[μ.restrict s] f :=
   Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp_to_Lp_restrict_clm_coe_fn MeasureTheory.LpToLpRestrictCLM_coeFn
-
-variable {𝕜}
 
 @[continuity]
 theorem continuous_set_integral [NormedSpace ℝ E] (s : Set α) :
