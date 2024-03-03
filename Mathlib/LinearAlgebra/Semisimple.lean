@@ -116,10 +116,35 @@ theorem isSemisimple_of_squarefree_aeval_eq_zero [FiniteDimensional K M]
 
 variable [FiniteDimensional K M]
 
+section
+
+variable (hf : f.IsSemisimple)
+
 /-- The minimal polynomial of a semisimple endomorphism is square free -/
-theorem IsSemisimple.minpoly_squarefree (hf : f.IsSemisimple) : Squarefree (minpoly K f) :=
+theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
   IsRadical.squarefree (minpoly.ne_zero <| isIntegral _) <| by
     rw [isRadical_iff_span_singleton, span_minpoly_eq_annihilator]; exact hf.annihilator_isRadical
+
+protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
+  let R := K[X] ⧸ Ideal.span {minpoly K f}
+  have : Finite K R := (AdjoinRoot.powerBasis' <| minpoly.monic <| isIntegral f).finite
+  have : IsArtinianRing R := .of_finite K R
+  have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|
+    span_minpoly_eq_annihilator K f ▸ hf.annihilator_isRadical
+  isSemisimple_of_squarefree_aeval_eq_zero ((minpoly.isRadical K _).squarefree <|
+    minpoly.ne_zero <| .of_finite K <| Ideal.Quotient.mkₐ K (.span {minpoly K f}) p) <| by
+      rw [← Ideal.Quotient.liftₐ_comp (.span {minpoly K f}) (aeval f)
+        fun a h ↦ by rwa [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly] at h, aeval_algHom,
+        AlgHom.comp_apply, AlgHom.comp_apply, ← aeval_algHom_apply, minpoly.aeval, map_zero]
+
+theorem IsSemisimple.of_mem_adjoin_singleton {a : End K M} (ha : a ∈ Algebra.adjoin K {f}) :
+    a.IsSemisimple := by
+  rw [Algebra.adjoin_singleton_eq_range_aeval] at ha; obtain ⟨p, rfl⟩ := ha; exact .aeval hf _
+
+protected theorem IsSemisimple.pow (n : ℕ) : (f ^ n).IsSemisimple :=
+  .of_mem_adjoin_singleton hf (pow_mem (Algebra.self_mem_adjoin_singleton _ _) _)
+
+end
 
 section PerfectField
 
@@ -158,12 +183,6 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     ((minpoly.isRadical K p).squarefree <| minpoly.ne_zero <| .of_finite K p) ?_
   rw [aeval_algHom, φ.comp_apply, minpoly.aeval, φ.map_zero]
 
-theorem IsSemisimple.of_mem_adjoin_singleton {a : End K M} (ha : a ∈ Algebra.adjoin K {f}) :
-    a.IsSemisimple := .of_mem_adjoin_pair (.refl _) hf hf <| by simpa using ha
-
-protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
-  .of_mem_adjoin_singleton hf (aeval_mem_adjoin_singleton _ _)
-
 theorem IsSemisimple.add_of_commute : (f + g).IsSemisimple := .of_mem_adjoin_pair
   comm hf hg <| add_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)
 
@@ -172,9 +191,6 @@ theorem IsSemisimple.sub_of_commute : (f - g).IsSemisimple := .of_mem_adjoin_pai
 
 theorem IsSemisimple.mul_of_commute : (f * g).IsSemisimple := .of_mem_adjoin_pair
   comm hf hg <| mul_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)
-
-protected theorem IsSemisimple.pow (n : ℕ) : (f ^ n).IsSemisimple :=
-  .of_mem_adjoin_singleton hf (pow_mem (Algebra.self_mem_adjoin_singleton _ _) _)
 
 end PerfectField
 
