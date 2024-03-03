@@ -857,7 +857,9 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
     · exact (isEmptyAlgEquiv R (Fin 0)).toMulEquiv.symm.prime_iff
     · rw [hd, ← Polynomial.prime_C_iff]
       convert (finSuccEquiv R d).toMulEquiv.symm.prime_iff (p := Polynomial.C (C r))
-      rw [← finSuccEquiv_comp_C_eq_C]; rfl
+      rw [← finSuccEquiv_comp_C_eq_C]
+      simp_rw [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, MulEquiv.symm_mk,
+        AlgEquiv.toEquiv_eq_coe, AlgEquiv.symm_toEquiv_eq_symm, MulEquiv.coe_mk, EquivLike.coe_coe]
 
 theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
   ⟨comap_prime C constantCoeff (constantCoeff_C _), fun hr =>
@@ -932,20 +934,21 @@ instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [Wf
       split_ifs with hac
       · rw [hac, Polynomial.leadingCoeff_zero]
         apply Prod.Lex.left
-        exact lt_of_le_of_ne le_top WithTop.coe_ne_top
+        exact WithTop.coe_lt_top _
       have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
       simp only [cne0, ane0, Polynomial.leadingCoeff_mul]
-      by_cases hdeg : c.degree = 0
-      · simp only [hdeg, add_zero]
+      by_cases hdeg : c.degree = (0 : ℕ)
+      · simp only [hdeg, Nat.cast_zero, add_zero]
         refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
         · rwa [Ne, Polynomial.leadingCoeff_eq_zero]
         rw [Polynomial.isUnit_iff, Polynomial.eq_C_of_degree_eq_zero hdeg]
         use c.leadingCoeff, unit_c
-        rw [Polynomial.leadingCoeff, Polynomial.natDegree_eq_of_degree_eq_some hdeg]; rfl
+        rw [Polynomial.leadingCoeff, Polynomial.natDegree_eq_of_degree_eq_some hdeg]
       · apply Prod.Lex.left
         rw [Polynomial.degree_eq_natDegree cne0] at *
+        simp only [Nat.cast_inj] at hdeg
         rw [WithTop.coe_lt_coe, Polynomial.degree_eq_natDegree ane0, ← Nat.cast_add, Nat.cast_lt]
-        exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero fun h => hdeg (h.symm ▸ WithBot.coe_zero))
+        exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero hdeg)
 
 end Polynomial
 
