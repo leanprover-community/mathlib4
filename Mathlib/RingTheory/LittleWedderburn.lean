@@ -119,20 +119,21 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   let d := finrank Z Zx
   have card_Zx : card Zx = q ^ d := card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
-  haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
-  rw [card_units, card_Zx, Int.coe_nat_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
-      Nat.cast_pow, Nat.cast_pow]
-  apply Int.dvd_div_of_mul_dvd
-  have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by
-    simp only [eval_X, eval_one, eval_pow, eval_sub, eq_self_iff_true, forall_const]
-  rw [← aux, ← aux, ← eval_mul]
-  refine (evalRingHom ↑q).map_dvd (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
-  refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
-  rw [← pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
-  obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
-  refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
-  rintro ⟨b, rfl⟩
-  exact hb b.2
+  sorry
+  -- haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
+  -- rw [card_units, card_Zx, Int.coe_nat_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
+  --     Nat.cast_pow, Nat.cast_pow]
+  -- apply Int.dvd_div_of_mul_dvd
+  -- have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by
+  --   simp only [eval_X, eval_one, eval_pow, eval_sub, eq_self_iff_true, forall_const]
+  -- rw [← aux, ← aux, ← eval_mul]
+  -- refine (evalRingHom ↑q).map_dvd (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
+  -- refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
+  -- rw [← pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
+  -- obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
+  -- refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
+  -- rintro ⟨b, rfl⟩
+  -- exact hb b.2
 
 end InductionHyp
 

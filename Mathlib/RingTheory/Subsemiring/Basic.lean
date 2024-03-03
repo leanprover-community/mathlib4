@@ -69,11 +69,17 @@ class SubsemiringClass (S : Type*) (R : Type u) [NonAssocSemiring R]
 #align subsemiring_class SubsemiringClass
 
 -- See note [lower instance priority]
-instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
+instance (priority := 75) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
     (R : Type u) [NonAssocSemiring R] [SetLike S R] [h : SubsemiringClass S R] :
     AddSubmonoidWithOneClass S R :=
   { h with }
 #align subsemiring_class.add_submonoid_with_one_class SubsemiringClass.addSubmonoidWithOneClass
+
+-- See note [lower instance priority]
+instance (priority := 75) SubsemiringClass.toNonUnitalSubsemiringClass (S : Type*)
+    (R : Type u) [NonAssocSemiring R] [SetLike S R] [h : SubsemiringClass S R] :
+    NonUnitalSubsemiringClass S R :=
+  { h with }
 
 variable [SetLike S R] [hSR : SubsemiringClass S R] (s : S)
 
@@ -95,7 +101,8 @@ instance nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 #align subsemiring_class.nontrivial SubsemiringClass.nontrivial
 
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
+-- See note [lower instance priority]
+instance (priority := 75) noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
   Subtype.coe_injective.noZeroDivisors _ rfl fun _ _ => rfl
 #align subsemiring_class.no_zero_divisors SubsemiringClass.noZeroDivisors
 
@@ -111,8 +118,8 @@ theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
 
 -- Prefer subclasses of `Semiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
-instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
-    Semiring s :=
+instance (priority := 75) toSemiring {R : Type*} [Semiring R] [SetLike S R]
+    [SubsemiringClass S R] : Semiring s :=
   Subtype.coe_injective.semiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_semiring SubsemiringClass.toSemiring
@@ -125,19 +132,50 @@ theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n
   · simp [pow_succ, ih]
 #align subsemiring_class.coe_pow SubsemiringClass.coe_pow
 
+-- See note [lower instance priority]
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
-instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
-    CommSemiring s :=
+instance (priority := 75) toCommSemiring {R} [CommSemiring R]
+    [SetLike S R] [SubsemiringClass S R] : CommSemiring s :=
   Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 #align subsemiring_class.to_comm_semiring SubsemiringClass.toCommSemiring
 
-instance instCharZero [CharZero R] : CharZero s :=
+-- See note [lower instance priority]
+instance (priority := 75) instCharZero [CharZero R] : CharZero s :=
   ⟨Function.Injective.of_comp (f := Subtype.val) (g := Nat.cast (R := s)) Nat.cast_injective⟩
 
 end SubsemiringClass
 
 end SubsemiringClass
+
+section AddSubmonoidWithOne
+
+variable (R : Type*) [AddMonoidWithOne R]
+
+/-- An additive submonoid with the condition that unit also lies in the set. -/
+structure AddSubmonoidWithOne extends AddSubmonoid R where
+  one_mem' : (1 : R) ∈ carrier
+
+instance : SetLike (AddSubmonoidWithOne R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+theorem AddSubmonoidWithOne.natCast_mem {R : Type*} [AddMonoidWithOne R]
+    (s : AddSubmonoidWithOne R) (n : ℕ) : (n : R) ∈ s := by
+  induction' n with n ih
+  · rw [Nat.cast_zero]; apply s.zero_mem
+  · simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one]
+    apply s.add_mem ih s.one_mem'
+
+instance AddSubmonoidWithOne.toAddMonoidWithOne {R : Type*} [AddMonoidWithOne R]
+    (s : AddSubmonoidWithOne R) : AddMonoidWithOne s :=
+ { AddSubmonoid.toAddMonoid s.toAddSubmonoid with
+    one := ⟨_, one_mem' s⟩
+    natCast := fun n => ⟨n, AddSubmonoidWithOne.natCast_mem s n⟩
+    natCast_zero := Subtype.ext Nat.cast_zero
+    natCast_succ := fun _ => Subtype.ext (Nat.cast_succ _) }
+
+end AddSubmonoidWithOne
 
 variable [NonAssocSemiring S] [NonAssocSemiring T]
 
@@ -154,13 +192,49 @@ add_decl_doc Subsemiring.toAddSubmonoid
 
 namespace Subsemiring
 
-instance : SetLike (Subsemiring R) R
-    where
+instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance : SubsemiringClass (Subsemiring R) R
-    where
+/-- Construct a `AddSubmonoidWithOne` from a `Subsemiring` -/
+def addSubmonoidWithOne {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) :
+    AddSubmonoidWithOne R :=
+  { s with }
+
+/-- Construct a `NonUnitalSubsemiring` from a `Subsemiring` -/
+def nonUnitalSubsemiring {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) :
+    NonUnitalSubsemiring R :=
+  { s with }
+
+instance (priority := 100) {R : Type*} [NonAssocSemiring R] (s : Subsemiring R) :
+    AddMonoidWithOne s :=
+  inferInstanceAs (AddMonoidWithOne s.addSubmonoidWithOne)
+
+variable (s : Subsemiring R)
+
+/-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
+instance (priority := 100) toNonAssocSemiring : NonAssocSemiring s :=
+  Subtype.coe_injective.nonAssocSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ => rfl
+#align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
+
+/-- A subsemiring of a `Semiring` is a `Semiring`. -/
+instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
+  Subtype.coe_injective.semiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ => rfl
+#align subsemiring.to_semiring Subsemiring.toSemiring
+
+/-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
+instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
+  Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ => rfl
+#align subsemiring.to_comm_semiring Subsemiring.toCommSemiring
+
+instance : SetLike (Subsemiring R) R where
+  coe s := s.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+instance (priority := 75) : SubsemiringClass (Subsemiring R) R where
   zero_mem := zero_mem'
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
@@ -325,12 +399,6 @@ protected theorem sum_mem (s : Subsemiring R) {ι : Type*} {t : Finset ι} {f : 
   sum_mem h
 #align subsemiring.sum_mem Subsemiring.sum_mem
 
-/-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
-instance toNonAssocSemiring : NonAssocSemiring s :=
-  -- Porting note: this used to be a specialized instance which needed to be expensively unified.
-  SubsemiringClass.toNonAssocSemiring _
-#align subsemiring.to_non_assoc_semiring Subsemiring.toNonAssocSemiring
-
 @[simp, norm_cast]
 theorem coe_one : ((1 : s) : R) = (1 : R) :=
   rfl
@@ -351,7 +419,7 @@ theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
   rfl
 #align subsemiring.coe_mul Subsemiring.coe_mul
 
-instance nontrivial [Nontrivial R] : Nontrivial s :=
+instance (priority := 100) nontrivial [Nontrivial R] : Nontrivial s :=
   nontrivial_of_ne 0 1 fun H => zero_ne_one (congr_arg Subtype.val H)
 #align subsemiring.nontrivial Subsemiring.nontrivial
 
@@ -360,15 +428,10 @@ protected theorem pow_mem {R : Type*} [Semiring R] (s : Subsemiring R) {x : R} (
   pow_mem hx n
 #align subsemiring.pow_mem Subsemiring.pow_mem
 
-instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
+instance (priority := 100) noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
   eq_zero_or_eq_zero_of_mul_eq_zero {_ _} h :=
     (eq_zero_or_eq_zero_of_mul_eq_zero <| Subtype.ext_iff.mp h).imp Subtype.eq Subtype.eq
 #align subsemiring.no_zero_divisors Subsemiring.noZeroDivisors
-
-/-- A subsemiring of a `Semiring` is a `Semiring`. -/
-instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
-  { s.toNonAssocSemiring, s.toSubmonoid.toMonoid with }
-#align subsemiring.to_semiring Subsemiring.toSemiring
 
 @[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
@@ -377,11 +440,6 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
   · simp
   · simp [pow_succ, ih]
 #align subsemiring.coe_pow Subsemiring.coe_pow
-
-/-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
-instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
-  { s.toSemiring with mul_comm := fun _ _ => Subtype.eq <| mul_comm _ _ }
-#align subsemiring.to_comm_semiring Subsemiring.toCommSemiring
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=
@@ -1344,11 +1402,8 @@ instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring 
     MulActionWithZero S α :=
   MulActionWithZero.compHom _ S.subtype.toMonoidWithZeroHom
 
--- Porting note: instance named explicitly for use in `RingTheory/Subring/Basic`
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module S α :=
-  -- Porting note: copying over the `smul` field causes a timeout
-  -- { Module.compHom _ S.subtype with smul := (· • ·) }
   Module.compHom _ S.subtype
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/

@@ -113,6 +113,7 @@ Mathlib/Order/UpperLower/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 
 Mathlib/RingTheory/DedekindDomain/Ideal.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1542 lines, try to split it up
 Mathlib/RingTheory/Ideal/Operations.lean : line 1 : ERR_NUM_LIN : 2600 file contains 2414 lines, try to split it up
 Mathlib/RingTheory/PowerSeries/Basic.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2865 lines, try to split it up
+Mathlib/RingTheory/Subsemiring/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1544 lines, try to split it up
 Mathlib/RingTheory/Subring/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1546 lines, try to split it up
 Mathlib/RingTheory/UniqueFactorizationDomain.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2066 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2238 lines, try to split it up

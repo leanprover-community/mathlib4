@@ -250,6 +250,13 @@ theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
 variable (H)
 
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
+/-- A subgroup of a group inherits a `DivInvMonoid` structure. -/
+@[to_additive "An additive subgroup of an `SubNegMonoid` inherits an `SubNegMonoid` structure."]
+instance (priority := 75) toDivInvMonoid : DivInvMonoid H :=
+  Subtype.coe_injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
+
+-- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an `AddGroup` structure."]
 instance (priority := 75) toGroup : Group H :=
@@ -378,6 +385,8 @@ add_decl_doc AddSubgroup.toAddSubmonoid
 
 namespace Subgroup
 
+variable {G : Type*} [Group G]
+
 @[to_additive]
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
@@ -388,7 +397,7 @@ instance : SetLike (Subgroup G) G where
 
 -- Porting note: Below can probably be written more uniformly
 @[to_additive]
-instance : SubgroupClass (Subgroup G) G where
+instance (priority := 75) {G : Type*} [Group G] : SubgroupClass (Subgroup G) G where
   inv_mem := Subgroup.inv_mem' _
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
@@ -738,6 +747,12 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := by simp
 #align subgroup.mk_eq_one_iff Subgroup.mk_eq_one
 #align add_subgroup.mk_eq_zero_iff AddSubgroup.mk_eq_zero
+
+/-- A subgroup of a group inherits a group structure. -/
+@[to_additive "An `SubNegMonoid` of an `AddGroup` inherits an `SubNegMonoid` structure."]
+instance toDivInvMonoid {G : Type*} [Group G] (H : Subgroup G) : DivInvMonoid H :=
+  Subtype.coe_injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
@@ -1667,7 +1682,7 @@ theorem subgroupOf_bot_eq_top : H.subgroupOf ⊥ = ⊤ :=
 
 @[to_additive (attr := simp)]
 theorem subgroupOf_self : H.subgroupOf H = ⊤ :=
-  top_unique fun g _hg => g.2
+  top_unique (a := H.subgroupOf H) fun g _hg => g.2
 #align subgroup.subgroup_of_self Subgroup.subgroupOf_self
 #align add_subgroup.add_subgroup_of_self AddSubgroup.addSubgroupOf_self
 
