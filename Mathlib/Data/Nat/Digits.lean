@@ -637,7 +637,7 @@ theorem ofDigits_mod (b k : ℕ) (L : List ℕ) : ofDigits b L % k = ofDigits (b
   ofDigits_modEq b k L
 #align nat.of_digits_mod Nat.ofDigits_mod
 
-theorem Nat.ofDigits_mod_eq_head (b : ℕ) (l : List ℕ) : (Nat.ofDigits b l) % b = l.head! %b := by
+theorem ofDigits_mod_eq_head (b : ℕ) (l : List ℕ) : (Nat.ofDigits b l) % b = l.head! %b := by
   induction l
   · rfl
   · simp [Nat.ofDigits, Int.ModEq]
