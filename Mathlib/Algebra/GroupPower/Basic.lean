@@ -347,10 +347,10 @@ protected theorem Commute.mul_zpow (h : Commute a b) : ∀ i : ℤ, (a * b) ^ i 
     rw [zpow_coe_nat, zpow_negSucc, ← pow_mul, Int.ofNat_mul_negSucc, zpow_neg, inv_inj,
       ← zpow_coe_nat]
   | -[m+1], (n : ℕ) => by
-    rw [zpow_coe_nat, zpow_negSucc, ← inv_pow, ← pow_mul,  Int.negSucc_mul_ofNat, zpow_neg, inv_pow,
+    rw [zpow_coe_nat, zpow_negSucc, ← inv_pow, ← pow_mul, Int.negSucc_mul_ofNat, zpow_neg, inv_pow,
       inv_inj, ← zpow_coe_nat]
   | -[m+1], -[n+1] => by
-    rw [zpow_negSucc, zpow_negSucc,  Int.negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
+    rw [zpow_negSucc, zpow_negSucc, Int.negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
       zpow_coe_nat]
     rfl
 #align zpow_mul zpow_mul
