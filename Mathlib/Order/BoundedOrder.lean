@@ -622,11 +622,11 @@ theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 #align pi.top_def Pi.top_def
 
-instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
-  { inferInstanceAs (Top (∀ i, α' i)) with le_top := fun _ _ => le_top }
+instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) where
+  le_top _ := fun _ => le_top
 
-instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
-  { inferInstanceAs (Bot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
+instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) where
+  bot_le _ := fun _ => bot_le
 
 instance boundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
   __ := inferInstanceAs (OrderTop (∀ i, α' i))
@@ -691,8 +691,10 @@ def OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
 /-- Pullback a `BoundedOrder`. -/
 @[reducible]
 def BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
-    (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : BoundedOrder α :=
-  { OrderTop.lift f map_le map_top, OrderBot.lift f map_le map_bot with }
+    (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
+    BoundedOrder α where
+  __ := OrderTop.lift f map_le map_top
+  __ := OrderBot.lift f map_le map_bot
 #align bounded_order.lift BoundedOrder.lift
 
 end lift
@@ -724,8 +726,9 @@ protected def orderTop [LE α] [OrderTop α] (htop : p ⊤) : OrderTop { x : α 
 /-- A subtype remains a bounded order if the property holds at `⊥` and `⊤`. -/
 @[reducible]
 protected def boundedOrder [LE α] [BoundedOrder α] (hbot : p ⊥) (htop : p ⊤) :
-    BoundedOrder (Subtype p) :=
-  { Subtype.orderTop htop, Subtype.orderBot hbot with }
+    BoundedOrder (Subtype p) where
+  __ := Subtype.orderTop htop
+  __ := Subtype.orderBot hbot
 #align subtype.bounded_order Subtype.boundedOrder
 
 variable [PartialOrder α]

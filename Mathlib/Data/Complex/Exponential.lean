@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
@@ -18,311 +18,8 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 
 -/
 
-open IsAbsoluteValue
-
-open Classical BigOperators ComplexConjugate
-
-section
-
-open Real IsAbsoluteValue Finset
-
-section
-
-variable {α : Type*} {β : Type*} [Ring β] [LinearOrderedField α] [Archimedean α] {abv : β → α}
-  [IsAbsoluteValue abv]
-
-theorem isCauSeq_of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
-    (hnm : ∀ n ≥ m, f n.succ ≤ f n) : IsCauSeq abs f := fun ε ε0 => by
-  let ⟨k, hk⟩ := Archimedean.arch a ε0
-  have h : ∃ l, ∀ n ≥ m, a - l • ε < f n :=
-    ⟨k + k + 1, fun n hnm =>
-      lt_of_lt_of_le
-        (show a - (k + (k + 1)) • ε < -|f n| from
-          lt_neg.1 <|
-            lt_of_le_of_lt (ham n hnm)
-              (by
-                rw [neg_sub, lt_sub_iff_add_lt, add_nsmul, add_nsmul, one_nsmul]
-                exact add_lt_add_of_le_of_lt hk (lt_of_le_of_lt hk (lt_add_of_pos_right _ ε0))))
-        (neg_le.2 <| abs_neg (f n) ▸ le_abs_self _)⟩
-  let l := Nat.find h
-  have hl : ∀ n : ℕ, n ≥ m → f n > a - l • ε := Nat.find_spec h
-  have hl0 : l ≠ 0 := fun hl0 =>
-    not_lt_of_ge (ham m le_rfl)
-      (lt_of_lt_of_le (by have := hl m (le_refl m); simpa [hl0] using this) (le_abs_self (f m)))
-  cases' not_forall.1 (Nat.find_min h (Nat.pred_lt hl0)) with i hi
-  rw [not_imp, not_lt] at hi
-  exists i
-  intro j hj
-  have hfij : f j ≤ f i := (Nat.rel_of_forall_rel_succ_of_le_of_le (· ≥ ·) hnm hi.1 hj).le
-  rw [abs_of_nonpos (sub_nonpos.2 hfij), neg_sub, sub_lt_iff_lt_add']
-  calc
-    f i ≤ a - Nat.pred l • ε := hi.2
-    _ = a - l • ε + ε := by
-      conv =>
-        rhs
-        rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul', sub_add,
-          add_sub_cancel]
-    _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
-#align is_cau_of_decreasing_bounded isCauSeq_of_decreasing_bounded
-
-theorem isCauSeq_of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
-    (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f := by
-  refine'
-    @Eq.ndrecOn (ℕ → α) _ (IsCauSeq abs) _ _
-      (-⟨_, @isCauSeq_of_decreasing_bounded _ _ _ (fun n => -f n) a m (by simpa) (by simpa)⟩ :
-          CauSeq α abs).2
-  ext
-  exact neg_neg _
-#align is_cau_of_mono_bounded isCauSeq_of_mono_bounded
-
-end
-
-section NoArchimedean
-
-variable {α : Type*} {β : Type*} [Ring β] [LinearOrderedField α] {abv : β → α}
-  [IsAbsoluteValue abv]
-
-theorem isCauSeq_series_of_abv_le_of_isCauSeq {f : ℕ → β} {g : ℕ → α} (n : ℕ) :
-    (∀ m, n ≤ m → abv (f m) ≤ g m) →
-      (IsCauSeq abs fun n => ∑ i in range n, g i) → IsCauSeq abv fun n => ∑ i in range n, f i := by
-  intro hm hg ε ε0
-  cases' hg (ε / 2) (div_pos ε0 (by norm_num)) with i hi
-  exists max n i
-  intro j ji
-  have hi₁ := hi j (le_trans (le_max_right n i) ji)
-  have hi₂ := hi (max n i) (le_max_right n i)
-  have sub_le :=
-    abs_sub_le (∑ k in range j, g k) (∑ k in range i, g k) (∑ k in range (max n i), g k)
-  have := add_lt_add hi₁ hi₂
-  rw [abs_sub_comm (∑ k in range (max n i), g k), add_halves ε] at this
-  refine' lt_of_le_of_lt (le_trans (le_trans _ (le_abs_self _)) sub_le) this
-  generalize hk : j - max n i = k
-  clear this hi₂ hi₁ hi ε0 ε hg sub_le
-  rw [tsub_eq_iff_eq_add_of_le ji] at hk
-  rw [hk]
-  dsimp only
-  clear hk ji j
-  induction' k with k' hi
-  · simp [abv_zero abv]
-  · simp only [Nat.succ_add, Nat.succ_eq_add_one, Finset.sum_range_succ_comm]
-    simp only [add_assoc, sub_eq_add_neg]
-    refine le_trans (abv_add _ _ _) ?_
-    simp only [sub_eq_add_neg] at hi
-    refine add_le_add (hm _ (le_add_of_nonneg_of_le (Nat.zero_le _) (le_max_left _ _))) hi
-#align is_cau_series_of_abv_le_cau isCauSeq_series_of_abv_le_of_isCauSeq
-
-theorem isCauSeq_series_of_abv_isCauSeq {f : ℕ → β} :
-    (IsCauSeq abs fun m => ∑ n in range m, abv (f n)) → IsCauSeq abv fun m => ∑ n in range m, f n :=
-  isCauSeq_series_of_abv_le_of_isCauSeq 0 fun _ _ => le_rfl
-#align is_cau_series_of_abv_cau isCauSeq_series_of_abv_isCauSeq
-
-end NoArchimedean
-
-section
-
-variable {α : Type*} [LinearOrderedField α] [Archimedean α]
-
-theorem isCauSeq_geo_series {β : Type*} [Ring β] [Nontrivial β] {abv : β → α} [IsAbsoluteValue abv]
-    (x : β) (hx1 : abv x < 1) : IsCauSeq abv fun n => ∑ m in range n, x ^ m :=
-  have hx1' : abv x ≠ 1 := fun h => by simp [h, lt_irrefl] at hx1
-  isCauSeq_series_of_abv_isCauSeq
-    (by
-      simp only [abv_pow abv, geom_sum_eq hx1']
-      conv in _ / _ => rw [← neg_div_neg_eq, neg_sub, neg_sub]
-      have : 0 < 1 - abv x := sub_pos.2 hx1
-      refine' @isCauSeq_of_mono_bounded _ _ _ _ ((1 : α) / (1 - abv x)) 0 _ _
-      · intro n _
-        rw [abs_of_nonneg]
-        gcongr
-        · exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
-        refine' div_nonneg (sub_nonneg.2 _) (sub_nonneg.2 <| le_of_lt hx1)
-        exact pow_le_one _ (by positivity) hx1.le
-      · intro n _
-        rw [← one_mul (abv x ^ n), pow_succ]
-        gcongr)
-#align is_cau_geo_series isCauSeq_geo_series
-
-theorem isCauSeq_geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
-    IsCauSeq abs fun m => ∑ n in range m, (a * x ^ n) := by
-  have : IsCauSeq abs fun m => a * ∑ n in range m, (x ^ n) :=
-    (CauSeq.const abs a *
-      (show CauSeq α abs from ⟨fun n => ∑ m in range n, x ^ m, isCauSeq_geo_series x hx1⟩)).2
-  simpa [mul_sum] using this
-#align is_cau_geo_series_const isCauSeq_geo_series_const
-
-variable {β : Type*} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
-
-theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1 : r < 1)
-    (h : ∀ m, n ≤ m → abv (f m.succ) ≤ r * abv (f m)) :
-    IsCauSeq abv fun m => ∑ n in range m, f n := by
-  have har1 : |r| < 1 := by rwa [abs_of_nonneg hr0]
-  refine'
-    isCauSeq_series_of_abv_le_of_isCauSeq n.succ _
-      (isCauSeq_geo_series_const (abv (f n.succ) * r⁻¹ ^ n.succ) har1)
-  intro m hmn
-  cases' Classical.em (r = 0) with r_zero r_ne_zero
-  · have m_pos := lt_of_lt_of_le (Nat.succ_pos n) hmn
-    have := h m.pred (Nat.le_of_succ_le_succ (by rwa [Nat.succ_pred_eq_of_pos m_pos]))
-    simpa [r_zero, Nat.succ_pred_eq_of_pos m_pos, pow_succ] using this
-  generalize hk : m - n.succ = k
-  have r_pos : 0 < r := lt_of_le_of_ne hr0 (Ne.symm r_ne_zero)
-  replace hk : m = k + n.succ := (tsub_eq_iff_eq_add_of_le hmn).1 hk
-  induction' k with k ih generalizing m n
-  · rw [hk, Nat.zero_add, mul_right_comm, inv_pow _ _, ← div_eq_mul_inv, mul_div_cancel]
-    exact (ne_of_lt (pow_pos r_pos _)).symm
-  · have kn : k + n.succ ≥ n.succ := by
-      rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
-    erw [hk, Nat.succ_add, pow_succ' r, ← mul_assoc]
-    refine
-      le_trans (by rw [mul_comm] <;> exact h _ (Nat.le_of_succ_le kn))
-        (mul_le_mul_of_nonneg_right ?_ hr0)
-    exact ih _ h _ (by simp) rfl
-#align series_ratio_test series_ratio_test
-
-theorem sum_range_diag_flip {α : Type*} [AddCommMonoid α] (n : ℕ) (f : ℕ → ℕ → α) :
-    (∑ m in range n, ∑ k in range (m + 1), f k (m - k)) =
-      ∑ m in range n, ∑ k in range (n - m), f m k := by
-  rw [sum_sigma', sum_sigma']
-  refine sum_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
-    simp (config := { contextual := true }) only [mem_sigma, mem_range, lt_tsub_iff_left,
-      Nat.lt_succ_iff, le_add_iff_nonneg_right, zero_le, and_true, and_imp, imp_self, implies_true,
-      Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
-      add_tsub_cancel_left, heq_eq_eq]
-  · exact fun a b han hba ↦ lt_of_le_of_lt hba han
-#align sum_range_diag_flip sum_range_diag_flip
-
-end
-
-section NoArchimedean
-
-variable {α : Type*} {β : Type*} [LinearOrderedField α] {abv : β → α}
-
-section
-
-variable [Semiring β] [IsAbsoluteValue abv]
-
-theorem abv_sum_le_sum_abv {γ : Type*} (f : γ → β) (s : Finset γ) :
-    abv (∑ k in s, f k) ≤ ∑ k in s, abv (f k) :=
-  haveI := Classical.decEq γ
-  Finset.induction_on s (by simp [abv_zero abv]) fun a s has ih => by
-    rw [sum_insert has, sum_insert has]; exact le_trans (abv_add abv _ _) (add_le_add_left ih _)
-#align abv_sum_le_sum_abv abv_sum_le_sum_abv
-
-end
-
-section
-
-variable [Ring β] [IsAbsoluteValue abv]
-
-theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in range m, abv (a n))
-    (hb : IsCauSeq abv fun m => ∑ n in range m, b n) (ε : α) (ε0 : 0 < ε) :
-    ∃ i : ℕ,
-      ∀ j ≥ i,
-        abv
-            (((∑ k in range j, a k) * ∑ k in range j, b k) -
-              ∑ n in range j, ∑ m in range (n + 1), a m * b (n - m)) <
-          ε :=
-  let ⟨Q, hQ⟩ := CauSeq.bounded ⟨_, hb⟩
-  let ⟨P, hP⟩ := CauSeq.bounded ⟨_, ha⟩
-  have hP0 : 0 < P := lt_of_le_of_lt (abs_nonneg _) (hP 0)
-  have hPε0 : 0 < ε / (2 * P) := div_pos ε0 (mul_pos (show (2 : α) > 0 by norm_num) hP0)
-  let ⟨N, hN⟩ := CauSeq.cauchy₂ ⟨_, hb⟩ hPε0
-  have hQε0 : 0 < ε / (4 * Q) :=
-    div_pos ε0 (mul_pos (show (0 : α) < 4 by norm_num) (lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)))
-  let ⟨M, hM⟩ := CauSeq.cauchy₂ ⟨_, ha⟩ hQε0
-  ⟨2 * (max N M + 1), fun K hK => by
-    have h₁ :
-      (∑ m in range K, ∑ k in range (m + 1), a k * b (m - k)) =
-        ∑ m in range K, ∑ n in range (K - m), a m * b n :=
-      by simpa using sum_range_diag_flip K fun m n => a m * b n
-    have h₂ :
-      (fun i => ∑ k in range (K - i), a i * b k) = fun i => a i * ∑ k in range (K - i), b k := by
-      simp [Finset.mul_sum]
-    have h₃ :
-      (∑ i in range K, a i * ∑ k in range (K - i), b k) =
-        (∑ i in range K, a i * ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) +
-          ∑ i in range K, a i * ∑ k in range K, b k :=
-      by rw [← sum_add_distrib]; simp [(mul_add _ _ _).symm]
-    have two_mul_two : (4 : α) = 2 * 2 := by norm_num
-    have hQ0 : Q ≠ 0 := fun h => by simp [h, lt_irrefl] at hQε0
-    have h2Q0 : 2 * Q ≠ 0 := mul_ne_zero two_ne_zero hQ0
-    have hε : ε / (2 * P) * P + ε / (4 * Q) * (2 * Q) = ε := by
-      rw [← div_div, div_mul_cancel _ (Ne.symm (ne_of_lt hP0)), two_mul_two, mul_assoc, ← div_div,
-        div_mul_cancel _ h2Q0, add_halves]
-    have hNMK : max N M + 1 < K :=
-      lt_of_lt_of_le (by rw [two_mul]; exact lt_add_of_pos_left _ (Nat.succ_pos _)) hK
-    have hKN : N < K :=
-      calc
-        N ≤ max N M := le_max_left _ _
-        _ < max N M + 1 := (Nat.lt_succ_self _)
-        _ < K := hNMK
-
-    have hsumlesum :
-      (∑ i in range (max N M + 1),
-          abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) ≤
-        ∑ i in range (max N M + 1), abv (a i) * (ε / (2 * P))
-    · gcongr with m hmJ
-      exact le_of_lt
-            (hN (K - m)
-              (le_tsub_of_add_le_left
-                (le_trans
-                  (by
-                    rw [two_mul]
-                    gcongr
-                    · exact le_of_lt (mem_range.1 hmJ)
-                    · exact le_trans (le_max_left _ _) (le_of_lt (lt_add_one _)))
-                  hK))
-              K (le_of_lt hKN))
-    have hsumltP : (∑ n in range (max N M + 1), abv (a n)) < P :=
-      calc
-        (∑ n in range (max N M + 1), abv (a n)) = |∑ n in range (max N M + 1), abv (a n)| :=
-          Eq.symm (abs_of_nonneg (sum_nonneg fun x _ => abv_nonneg abv (a x)))
-        _ < P := hP (max N M + 1)
-
-    rw [h₁, h₂, h₃, sum_mul, ← sub_sub, sub_right_comm, sub_self, zero_sub, abv_neg abv]
-    refine' lt_of_le_of_lt (abv_sum_le_sum_abv _ _) _
-    suffices
-      (∑ i in range (max N M + 1),
-            abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) +
-          ((∑ i in range K, abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) -
-            ∑ i in range (max N M + 1),
-              abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) <
-        ε / (2 * P) * P + ε / (4 * Q) * (2 * Q) by
-      rw [hε] at this
-      simpa [abv_mul abv] using this
-    gcongr
-    · exact lt_of_le_of_lt hsumlesum
-          (by rw [← sum_mul, mul_comm]; gcongr)
-    rw [sum_range_sub_sum_range (le_of_lt hNMK)]
-    calc
-      (∑ i in (range K).filter fun k => max N M + 1 ≤ k,
-            abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) ≤
-          ∑ i in (range K).filter fun k => max N M + 1 ≤ k, abv (a i) * (2 * Q) := by
-          gcongr
-          rw [sub_eq_add_neg]
-          refine' le_trans (abv_add _ _ _) _
-          rw [two_mul, abv_neg abv]
-          gcongr <;> exact le_of_lt (hQ _)
-      _ < ε / (4 * Q) * (2 * Q) := by
-          rw [← sum_mul, ← sum_range_sub_sum_range (le_of_lt hNMK)]
-          have := lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)
-          gcongr
-          refine'
-               lt_of_le_of_lt (le_abs_self _)
-                (hM _ (le_trans (Nat.le_succ_of_le (le_max_right _ _)) (le_of_lt hNMK)) _
-                  (Nat.le_succ_of_le (le_max_right _ _)))
-      ⟩
-#align cauchy_product cauchy_product
-
-end
-
-end NoArchimedean
-
-end
-
-open Finset
-
-open CauSeq
+open CauSeq Finset IsAbsoluteValue
+open scoped BigOperators Classical ComplexConjugate
 
 namespace Complex
 
@@ -330,7 +27,7 @@ theorem isCauSeq_abs_exp (z : ℂ) :
     IsCauSeq _root_.abs fun n => ∑ m in range n, abs (z ^ m / m.factorial) :=
   let ⟨n, hn⟩ := exists_nat_gt (abs z)
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
-  series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
+  IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff hn0, one_mul]) fun m hm => by
       rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ, mul_comm m.succ, Nat.cast_mul, ← div_div,
         mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
@@ -341,7 +38,7 @@ theorem isCauSeq_abs_exp (z : ℂ) :
 noncomputable section
 
 theorem isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n => ∑ m in range n, z ^ m / m.factorial :=
-  isCauSeq_series_of_abv_isCauSeq (isCauSeq_abs_exp z)
+  (isCauSeq_abs_exp z).of_abv
 #align complex.is_cau_exp Complex.isCauSeq_exp
 
 /-- The Cauchy sequence consisting of partial sums of the Taylor series of
@@ -1620,7 +1317,7 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
-      (abv_sum_le_sum_abv (abv := Complex.abs) _ _)
+      (IsAbsoluteValue.abv_sum Complex.abs _ _)
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
       simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
       gcongr
@@ -1647,7 +1344,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
   calc
     abs (∑ i : ℕ in range k, x ^ (n + i) / ((n + i).factorial : ℂ)) ≤
         ∑ i : ℕ in range k, abs (x ^ (n + i) / ((n + i).factorial : ℂ)) :=
-      abv_sum_le_sum_abv _ _
+      IsAbsoluteValue.abv_sum _ _ _
     _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / (n + i).factorial := by
       simp [Complex.abs_natCast, map_div₀, abv_pow abs]
     _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
@@ -1762,7 +1459,7 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
   field_simp [mul_comm]
-  linarith
+  omega
 #align real.exp_approx_end Real.exp_approx_end
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
@@ -1790,7 +1487,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
     |exp 1 - expNear n 1 a₁| ≤ |1| ^ n / n.factorial * b₁ := by
   subst er
   refine' exp_approx_succ _ en _ _ _ h
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast; linarith]
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; omega]
 #align real.exp_1_approx_succ_eq Real.exp_1_approx_succ_eq
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
@@ -1926,10 +1623,9 @@ theorem cos_two_neg : cos 2 < 0 :=
 
 theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     Real.exp x < 1 / (1 - x) := by
-  have H : 0 < 1 - (1 + x + x ^ 2) * (1 - x)
-  · calc
-      0 < x ^ 3 := by positivity
-      _ = 1 - (1 + x + x ^ 2) * (1 - x) := by ring
+  have H : 0 < 1 - (1 + x + x ^ 2) * (1 - x) := calc
+    0 < x ^ 3 := by positivity
+    _ = 1 - (1 + x + x ^ 2) * (1 - x) := by ring
   calc
     exp x ≤ _ := exp_bound' h1.le h2.le zero_lt_three
     _ ≤ 1 + x + x ^ 2 := by

@@ -194,7 +194,8 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
     rw [length, Nat.succ_inj']
-    refine' Fin.veq_of_eq (@hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩ ⟨tl.length, by simp⟩ _)
+    refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
+      ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
     rw [← get?_eq_get, dropLast_eq_take, get?_take, get?, get?_eq_get, Option.some_inj] at hk'
     rw [hk']
@@ -217,7 +218,7 @@ theorem prev_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
     prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dif_pos hx]
 #align list.prev_cons_cons_eq' List.prev_cons_cons_eq'
 
---@[simp] Porting note: `simp` can prove it
+--@[simp] Porting note (#10618): `simp` can prove it
 theorem prev_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) :
     prev (x :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) :=
   prev_cons_cons_eq' l x x z h rfl
@@ -275,7 +276,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       intro H
       suffices (i + 1 : ℕ) = 0 by simpa
       rw [nodup_iff_injective_get] at hn
-      refine' Fin.veq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ _)
+      refine' Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ _)
       simpa using H
     have hi' : i ≤ l.length := Nat.le_of_lt_succ (Nat.succ_lt_succ_iff.1 hi)
     rcases hi'.eq_or_lt with (hi' | hi')
@@ -938,7 +939,7 @@ theorem chain_coe_cons (r : α → α → Prop) (a : α) (l : List α) :
   Iff.rfl
 #align cycle.chain_coe_cons Cycle.chain_coe_cons
 
---@[simp] Porting note: `simp` can prove it
+--@[simp] Porting note (#10618): `simp` can prove it
 theorem chain_singleton (r : α → α → Prop) (a : α) : Chain r [a] ↔ r a a := by
   rw [chain_coe_cons, nil_append, List.chain_singleton]
 #align cycle.chain_singleton Cycle.chain_singleton

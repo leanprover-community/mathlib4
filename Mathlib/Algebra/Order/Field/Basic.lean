@@ -108,19 +108,19 @@ theorem div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤
 
 theorem zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
   | (n : ℕ) => by
-    rw [zpow_ofNat]
+    rw [zpow_coe_nat]
     exact pow_nonneg ha _
   | -(n + 1 : ℕ) => by
-    rw [zpow_neg, inv_nonneg, zpow_ofNat]
+    rw [zpow_neg, inv_nonneg, zpow_coe_nat]
     exact pow_nonneg ha _
 #align zpow_nonneg zpow_nonneg
 
 theorem zpow_pos_of_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by
-    rw [zpow_ofNat]
+    rw [zpow_coe_nat]
     exact pow_pos ha _
   | -(n + 1 : ℕ) => by
-    rw [zpow_neg, inv_pos, zpow_ofNat]
+    rw [zpow_neg, inv_pos, zpow_coe_nat]
     exact pow_pos ha _
 #align zpow_pos_of_pos zpow_pos_of_pos
 
@@ -242,6 +242,12 @@ lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c)
 theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
   div_le_of_nonneg_of_le_mul hb zero_le_one <| by rwa [one_mul]
 #align div_le_one_of_le div_le_one_of_le
+
+lemma mul_inv_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 := by
+  simpa only [← div_eq_mul_inv] using div_le_one_of_le h hb
+
+lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := by
+  simpa only [← div_eq_inv_mul] using div_le_one_of_le h hb
 
 /-!
 ### Bi-implications of inequalities using inversions
@@ -784,6 +790,53 @@ theorem inv_lt_of_neg (ha : a < 0) (hb : b < 0) : a⁻¹ < b ↔ b⁻¹ < a :=
 theorem lt_inv_of_neg (ha : a < 0) (hb : b < 0) : a < b⁻¹ ↔ b < a⁻¹ :=
   lt_iff_lt_of_le_iff_le (inv_le_of_neg hb ha)
 #align lt_inv_of_neg lt_inv_of_neg
+
+/-!
+### Monotonicity results involving inversion
+-/
+
+
+theorem sub_inv_antitoneOn_Ioi :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Ioi c) :=
+  antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
+    inv_le_inv (sub_pos.mpr hb) (sub_pos.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+
+theorem sub_inv_antitoneOn_Iio :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Iio c) :=
+  antitoneOn_iff_forall_lt.mpr fun _ ha _ hb hab ↦
+    inv_le_inv_of_neg (sub_neg.mpr hb) (sub_neg.mpr ha) |>.mpr <| sub_le_sub (le_of_lt hab) le_rfl
+
+theorem sub_inv_antitoneOn_Icc_right (ha : c < a) :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+  by_cases hab : a ≤ b
+  · exact sub_inv_antitoneOn_Ioi.mono <| (Set.Icc_subset_Ioi_iff hab).mpr ha
+  · simp [hab, Set.Subsingleton.antitoneOn]
+
+theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
+    AntitoneOn (fun x ↦ (x-c)⁻¹) (Set.Icc a b) := by
+  by_cases hab : a ≤ b
+  · exact sub_inv_antitoneOn_Iio.mono <| (Set.Icc_subset_Iio_iff hab).mpr ha
+  · simp [hab, Set.Subsingleton.antitoneOn]
+
+theorem inv_antitoneOn_Ioi :
+    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Ioi 0) := by
+  convert sub_inv_antitoneOn_Ioi
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Iio :
+    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Iio 0) := by
+  convert sub_inv_antitoneOn_Iio
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
+    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+  convert sub_inv_antitoneOn_Icc_right ha
+  exact (sub_zero _).symm
+
+theorem inv_antitoneOn_Icc_left (hb : b < 0) :
+    AntitoneOn (fun x:α ↦ x⁻¹) (Set.Icc a b) := by
+  convert sub_inv_antitoneOn_Icc_left hb
+  exact (sub_zero _).symm
 
 /-! ### Relating two divisions -/
 

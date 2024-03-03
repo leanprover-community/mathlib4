@@ -52,8 +52,8 @@ lemma rank_eq_zero_iff :
   · contrapose!
     rintro ⟨x, hx⟩
     rw [← Cardinal.one_le_iff_ne_zero]
-    have : LinearIndependent R (fun _ : Unit ↦ x)
-    · exact linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
+    have : LinearIndependent R (fun _ : Unit ↦ x) :=
+      linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
         hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
     simpa using this.cardinal_lift_le_rank
   · intro h
@@ -317,7 +317,8 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
     exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1
   · obtain ⟨x₁, x₁_mem', rfl⟩ := Finset.mem_map.mp x₁_mem
     have := mem_erase.mp x₁_mem'
-    exact ⟨x₁, by simpa only [Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
+    exact ⟨x₁, by
+      simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
 #align finite_dimensional.exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
 
 end

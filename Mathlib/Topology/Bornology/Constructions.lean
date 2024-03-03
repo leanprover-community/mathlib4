@@ -20,7 +20,7 @@ open Set Filter Bornology Function
 
 open Filter
 
-variable {α β ι : Type*} {π : ι → Type*} [Finite ι] [Bornology α] [Bornology β]
+variable {α β ι : Type*} {π : ι → Type*} [Bornology α] [Bornology β]
   [∀ i, Bornology (π i)]
 
 instance Prod.instBornology : Bornology (α × β) where
@@ -31,13 +31,12 @@ instance Prod.instBornology : Bornology (α × β) where
 
 instance Pi.instBornology : Bornology (∀ i, π i) where
   cobounded' := Filter.coprodᵢ fun i => cobounded (π i)
-  le_cofinite' := @coprodᵢ_cofinite ι π _ ▸ Filter.coprodᵢ_mono fun _ => Bornology.le_cofinite _
+  le_cofinite' := iSup_le fun _ ↦ (comap_mono (Bornology.le_cofinite _)).trans (comap_cofinite_le _)
 #align pi.bornology Pi.instBornology
 
 /-- Inverse image of a bornology. -/
 @[reducible]
-def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α
-    where
+def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α where
   cobounded' := comap f (cobounded β)
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 #align bornology.induced Bornology.induced

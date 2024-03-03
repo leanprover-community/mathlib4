@@ -3,6 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Sébastien Gouëzel, Yury G. Kudryashov, Dylan MacKenzie, Patrick Massot
 -/
+import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
@@ -59,7 +60,7 @@ theorem tendsto_norm_zpow_nhdsWithin_0_atTop {𝕜 : Type*} [NormedField 𝕜] {
     Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   rcases neg_surjective m with ⟨m, rfl⟩
   rw [neg_lt_zero] at hm; lift m to ℕ using hm.le; rw [Int.coe_nat_pos] at hm
-  simp only [norm_pow, zpow_neg, zpow_ofNat, ← inv_pow]
+  simp only [norm_pow, zpow_neg, zpow_coe_nat, ← inv_pow]
   exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
 #align normed_field.tendsto_norm_zpow_nhds_within_0_at_top NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop
 
@@ -192,11 +193,11 @@ theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : 
   obtain ⟨r' : ℝ, hr' : r' ^ k < r, h1 : 1 < r'⟩ :=
     ((this.eventually (gt_mem_nhds hr)).and self_mem_nhdsWithin).exists
   have h0 : 0 ≤ r' := zero_le_one.trans h1.le
-  suffices : (fun n ↦ (n : R) ^ k : ℕ → R) =O[atTop] fun n : ℕ ↦ (r' ^ k) ^ n
-  exact this.trans_isLittleO (isLittleO_pow_pow_of_lt_left (pow_nonneg h0 _) hr')
+  suffices (fun n ↦ (n : R) ^ k : ℕ → R) =O[atTop] fun n : ℕ ↦ (r' ^ k) ^ n from
+    this.trans_isLittleO (isLittleO_pow_pow_of_lt_left (pow_nonneg h0 _) hr')
   conv in (r' ^ _) ^ _ => rw [← pow_mul, mul_comm, pow_mul]
-  suffices : ∀ n : ℕ, ‖(n : R)‖ ≤ (r' - 1)⁻¹ * ‖(1 : R)‖ * ‖r' ^ n‖
-  exact (isBigO_of_le' _ this).pow _
+  suffices ∀ n : ℕ, ‖(n : R)‖ ≤ (r' - 1)⁻¹ * ‖(1 : R)‖ * ‖r' ^ n‖ from
+    (isBigO_of_le' _ this).pow _
   intro n
   rw [mul_right_comm]
   refine' n.norm_cast_le.trans (mul_le_mul_of_nonneg_right _ (norm_nonneg _))
@@ -452,12 +453,12 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     (mul_nonneg_iff_of_pos_right <| pow_pos hr₀ N).mp ((norm_nonneg _).trans <| h N <| le_refl N)
   have : ∀ n ≥ N, u n = v n := by
     intro n hn
-    simp [hn, if_neg (not_lt.mpr hn)]
+    simp [v, hn, if_neg (not_lt.mpr hn)]
   refine'
     cauchySeq_sum_of_eventually_eq this (NormedAddCommGroup.cauchy_series_of_le_geometric' hr₁ _)
   · exact C
   intro n
-  simp only
+  simp only [v]
   split_ifs with H
   · rw [norm_zero]
     exact mul_nonneg hC (pow_nonneg hr₀.le _)
@@ -627,10 +628,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 
-/-- **Dirichlet's Test** for monotone sequences. -/
+/-- **Dirichlet's test** for monotone sequences. -/
 theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) (hgb : ∀ n, ‖∑ i in range n, z i‖ ≤ b) :
-    CauchySeq fun n ↦ ∑ i in range (n + 1), f i • z i := by
+    CauchySeq fun n ↦ ∑ i in range n, f i • z i := by
+  rw [← cauchySeq_shift 1]
   simp_rw [Finset.sum_range_by_parts _ _ (Nat.succ _), sub_eq_add_neg, Nat.succ_sub_succ_eq_sub,
     tsub_zero]
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
@@ -649,7 +651,7 @@ theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone
 /-- **Dirichlet's test** for antitone sequences. -/
 theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone f)
     (hf0 : Tendsto f atTop (𝓝 0)) (hzb : ∀ n, ‖∑ i in range n, z i‖ ≤ b) :
-    CauchySeq fun n ↦ ∑ i in range (n + 1), f i • z i := by
+    CauchySeq fun n ↦ ∑ i in range n, f i • z i := by
   have hfa' : Monotone fun n ↦ -f n := fun _ _ hab ↦ neg_le_neg <| hfa hab
   have hf0' : Tendsto (fun n ↦ -f n) atTop (𝓝 0) := by
     convert hf0.neg
@@ -667,7 +669,7 @@ theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i in range n, (-1 : ℝ) ^ i�
 /-- The **alternating series test** for monotone sequences.
 See also `Monotone.tendsto_alternating_series_of_tendsto_zero`. -/
 theorem Monotone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Monotone f)
-    (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i := by
+    (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n ↦ ∑ i in range n, (-1) ^ i * f i := by
   simp_rw [mul_comm]
   exact hfa.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0 norm_sum_neg_one_pow_le
 #align monotone.cauchy_seq_alternating_series_of_tendsto_zero Monotone.cauchySeq_alternating_series_of_tendsto_zero
@@ -675,14 +677,14 @@ theorem Monotone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Monotone f)
 /-- The **alternating series test** for monotone sequences. -/
 theorem Monotone.tendsto_alternating_series_of_tendsto_zero (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) :
-    ∃ l, Tendsto (fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i) atTop (𝓝 l) :=
+    ∃ l, Tendsto (fun n ↦ ∑ i in range n, (-1) ^ i * f i) atTop (𝓝 l) :=
   cauchySeq_tendsto_of_complete <| hfa.cauchySeq_alternating_series_of_tendsto_zero hf0
 #align monotone.tendsto_alternating_series_of_tendsto_zero Monotone.tendsto_alternating_series_of_tendsto_zero
 
 /-- The **alternating series test** for antitone sequences.
 See also `Antitone.tendsto_alternating_series_of_tendsto_zero`. -/
 theorem Antitone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Antitone f)
-    (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i := by
+    (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n ↦ ∑ i in range n, (-1) ^ i * f i := by
   simp_rw [mul_comm]
   exact hfa.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0 norm_sum_neg_one_pow_le
 #align antitone.cauchy_seq_alternating_series_of_tendsto_zero Antitone.cauchySeq_alternating_series_of_tendsto_zero
@@ -690,7 +692,7 @@ theorem Antitone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Antitone f)
 /-- The **alternating series test** for antitone sequences. -/
 theorem Antitone.tendsto_alternating_series_of_tendsto_zero (hfa : Antitone f)
     (hf0 : Tendsto f atTop (𝓝 0)) :
-    ∃ l, Tendsto (fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i) atTop (𝓝 l) :=
+    ∃ l, Tendsto (fun n ↦ ∑ i in range n, (-1) ^ i * f i) atTop (𝓝 l) :=
   cauchySeq_tendsto_of_complete <| hfa.cauchySeq_alternating_series_of_tendsto_zero hf0
 #align antitone.tendsto_alternating_series_of_tendsto_zero Antitone.tendsto_alternating_series_of_tendsto_zero
 
@@ -774,8 +776,8 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
   have A : (0 : ℝ) < ⌊‖x‖⌋₊ + 1 := zero_lt_one.trans_le (by simp)
   have B : ‖x‖ / (⌊‖x‖⌋₊ + 1) < 1 := (div_lt_one A).2 (Nat.lt_floor_add_one _)
   -- Then we apply the ratio test. The estimate works for `n ≥ ⌊‖x‖⌋₊`.
-  suffices : ∀ n ≥ ⌊‖x‖⌋₊, ‖x ^ (n + 1) / (n + 1)!‖ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / ↑n !‖
-  exact summable_of_ratio_norm_eventually_le B (eventually_atTop.2 ⟨⌊‖x‖⌋₊, this⟩)
+  suffices ∀ n ≥ ⌊‖x‖⌋₊, ‖x ^ (n + 1) / (n + 1)!‖ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / ↑n !‖ from
+    summable_of_ratio_norm_eventually_le B (eventually_atTop.2 ⟨⌊‖x‖⌋₊, this⟩)
   -- Finally, we prove the upper estimate
   intro n hn
   calc

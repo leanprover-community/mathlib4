@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.DFinsupp.Order
@@ -162,7 +162,7 @@ variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
 variable [∀ i, PartialOrder (α i)] [∀ i, Zero (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
-instance : LocallyFiniteOrder (Π₀ i, α i) :=
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
   LocallyFiniteOrder.ofIcc (Π₀ i, α i)
     (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
     (fun f g x => by

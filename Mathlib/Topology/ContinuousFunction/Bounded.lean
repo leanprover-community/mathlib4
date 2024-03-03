@@ -3,13 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Algebra.Module.MinimalAxioms
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -217,7 +216,7 @@ instance : PseudoMetricSpace (α →ᵇ β) where
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle f g h := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun x => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
-  -- Porting note: Added proof for `edist_dist`
+  -- Porting note (#10888): added proof for `edist_dist`
   edist_dist x y := by dsimp; congr; simp [dist_nonneg']
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
@@ -544,9 +543,11 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     We extract finitely many of these sets that cover the whole space, by compactness. -/
   rcases isCompact_univ.elim_finite_subcover_image (fun x _ => (hU x).2.1) fun x _ =>
       mem_biUnion (mem_univ _) (hU x).1 with
-    ⟨tα, _, ⟨_⟩, htα⟩
+    ⟨tα, _, hfin, htα⟩
+  rcases hfin.nonempty_fintype with ⟨_⟩
   -- `tα: Set α`, `htα : univ ⊆ ⋃x ∈ tα, U x`
-  rcases @finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0 with ⟨tβ, _, ⟨_⟩, htβ⟩
+  rcases @finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0 with ⟨tβ, _, hfin, htβ⟩
+  rcases hfin.nonempty_fintype with ⟨_⟩
   -- `tβ : Set β`, `htβ : univ ⊆ ⋃y ∈ tβ, ball y ε₂`
   -- Associate to every point `y` in the space a nearby point `F y` in `tβ`
   choose F hF using fun y => show ∃ z ∈ tβ, dist y z < ε₂ by simpa using htβ (mem_univ y)
@@ -997,7 +998,7 @@ instance seminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
 instance normedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
   { BoundedContinuousFunction.seminormedAddCommGroup with
-    -- Porting note: Added a proof for `eq_of_dist_eq_zero`
+    -- Porting note (#10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
@@ -1290,6 +1291,12 @@ instance : NatCast (α →ᵇ R) :=
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 #align bounded_continuous_function.coe_nat_cast BoundedContinuousFunction.coe_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp, norm_cast]
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index OfNat.ofNat n : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+  rfl
+
 instance : IntCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩
 
@@ -1332,12 +1339,12 @@ instance commRing [SeminormedCommRing R] : CommRing (α →ᵇ R) :=
 
 instance [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) :=
   { BoundedContinuousFunction.commRing, BoundedContinuousFunction.seminormedAddCommGroup with
-    -- Porting note: Added proof for `norm_mul`
+    -- Porting note (#10888): added proof for `norm_mul`
     norm_mul := norm_mul_le }
 
 instance [NormedCommRing R] : NormedCommRing (α →ᵇ R) :=
   { BoundedContinuousFunction.commRing, BoundedContinuousFunction.normedAddCommGroup with
-    -- Porting note: Added proof for `norm_mul`
+    -- Porting note (#10888): added proof for `norm_mul`
     norm_mul := norm_mul_le }
 
 end NormedCommRing
@@ -1576,7 +1583,7 @@ instance : NormedLatticeAddCommGroup (α →ᵇ β) :=
       have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t)
-    -- Porting note: Added a proof for `eq_of_dist_eq_zero`
+    -- Porting note (#10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 end NormedLatticeOrderedGroup

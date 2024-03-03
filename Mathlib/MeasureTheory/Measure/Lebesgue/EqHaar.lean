@@ -157,8 +157,8 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E)
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (hu : IsBounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
-  suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0
-  · apply le_antisymm _ (zero_le _)
+  suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0 by
+    apply le_antisymm _ (zero_le _)
     calc
       μ s ≤ ∑' n : ℕ, μ (s ∩ closedBall 0 n) := by
         conv_lhs => rw [← iUnion_inter_closedBall_nat s 0]
@@ -241,7 +241,7 @@ theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : Linear
   -- matrices in `map_linearMap_addHaar_pi_eq_smul_addHaar`.
   let ι := Fin (finrank ℝ E)
   haveI : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
-  have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp
+  have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [ι]
   have e : E ≃ₗ[ℝ] ι → ℝ := LinearEquiv.ofFinrankEq E (ι → ℝ) this
   -- next line is to avoid `g` getting reduced by `simp`.
   obtain ⟨g, hg⟩ : ∃ g, g = (e : E →ₗ[ℝ] ι → ℝ).comp (f.comp (e.symm : (ι → ℝ) →ₗ[ℝ] E)) := ⟨_, rfl⟩
@@ -345,10 +345,10 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
-    simp only [mul_one, LinearMap.det_smul, Ne.def, MonoidHom.map_one]
+    simp only [f, mul_one, LinearMap.det_smul, Ne.def, MonoidHom.map_one]
     intro h
     exact hr (pow_eq_zero h)
-  simp only [map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
+  simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
 #align measure_theory.measure.map_add_haar_smul MeasureTheory.Measure.map_addHaar_smul
 
 @[simp]
@@ -576,12 +576,12 @@ variable [FiniteDimensional ℝ G] {n : ℕ} [_i : Fact (finrank ℝ G = n)]
 /-- The Lebesgue measure associated to an alternating map. It gives measure `|ω v|` to the
 parallelepiped spanned by the vectors `v₁, ..., vₙ`. Note that it is not always a Haar measure,
 as it can be zero, but it is always locally finite and translation invariant. -/
-noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) :
+noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) :
     Measure G :=
   ‖ω (finBasisOfFinrankEq ℝ G _i.out)‖₊ • (finBasisOfFinrankEq ℝ G _i.out).addHaar
 #align alternating_map.measure AlternatingMap.measure
 
-theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ)
+theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ)
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
@@ -589,10 +589,10 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [Λ^Fin n]→ₗ[�
     Real.ennnorm_eq_ofReal_abs]
 #align alternating_map.measure_parallelepiped AlternatingMap.measure_parallelepiped
 
-instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
+instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
-instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
+instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
 end
@@ -681,7 +681,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux2 (s : Set E) (x : E)
   set u' := R⁻¹ • u with hu'
   have A : Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t')) / μ ({x} + r • u')) (𝓝[>] 0) (𝓝 0) := by
     apply tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 μ s x h t' u'
-    · simp only [h'u, (pow_pos Rpos _).ne', abs_nonpos_iff, addHaar_smul, not_false_iff,
+    · simp only [u', h'u, (pow_pos Rpos _).ne', abs_nonpos_iff, addHaar_smul, not_false_iff,
         ENNReal.ofReal_eq_zero, inv_eq_zero, inv_pow, Ne.def, or_self_iff, mul_eq_zero]
     · refine (smul_set_mono t_bound).trans_eq ?_
       rw [smul_closedBall _ _ Rpos.le, smul_zero, Real.norm_of_nonneg (inv_nonneg.2 Rpos.le),
@@ -715,8 +715,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
   refine' tendsto_order.2 ⟨fun a' ha' => (ENNReal.not_lt_zero ha').elim, fun ε (εpos : 0 < ε) => _⟩
   rcases eq_or_ne (μ t) 0 with (h't | h't)
   · apply eventually_of_forall fun r => ?_
-    suffices H : μ (s ∩ ({x} + r • t)) = 0
-    · rw [H]; simpa only [ENNReal.zero_div] using εpos
+    suffices H : μ (s ∩ ({x} + r • t)) = 0 by
+      rw [H]; simpa only [ENNReal.zero_div] using εpos
     apply le_antisymm _ (zero_le _)
     calc
       μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono (inter_subset_right _ _)
