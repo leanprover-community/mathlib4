@@ -559,7 +559,7 @@ theorem Ideal.le_toIdeal_homogeneousHull : I ≤ (Ideal.homogeneousHull 𝒜 I).
 theorem Ideal.homogeneousHull_mono : Monotone (Ideal.homogeneousHull 𝒜) := fun I J I_le_J => by
   apply Ideal.span_mono
   rintro r ⟨hr1, ⟨x, hx⟩, rfl⟩
-  refine' ⟨hr1, ⟨⟨x, I_le_J hx⟩, rfl⟩⟩
+  exact ⟨hr1, ⟨⟨x, I_le_J hx⟩, rfl⟩⟩
 #align ideal.homogeneous_hull_mono Ideal.homogeneousHull_mono
 
 variable {I 𝒜}

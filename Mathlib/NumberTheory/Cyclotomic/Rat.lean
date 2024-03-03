@@ -133,7 +133,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
     IsIntegralClosure (CyclotomicRing (p ^ k) ℤ ℚ) ℤ (CyclotomicField (p ^ k) ℚ) := by
   haveI : CharZero ℚ := StrictOrderedSemiring.to_charZero
   have hζ := zeta_spec (p ^ k) ℚ (CyclotomicField (p ^ k) ℚ)
-  refine' ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, _⟩, rfl⟩, _⟩⟩
+  refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
 -- Porting note: having `.isIntegral_iff` inside the definition of `this` causes an error.
   · have := (isIntegralClosure_adjoin_singleton_of_prime_pow hζ)
     obtain ⟨y, rfl⟩ := this.isIntegral_iff.1 h

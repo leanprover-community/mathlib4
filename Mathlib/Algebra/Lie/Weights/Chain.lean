@@ -3,6 +3,7 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Data.Int.Interval
 import Mathlib.LinearAlgebra.Trace
@@ -24,16 +25,23 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 
 ## Main definitions / results
 
+ * `LieModule.exists₂_weightSpace_smul_add_eq_bot`: given weights `χ₁`, `χ₂` if `χ₁ ≠ 0`, we can
+   find `p < 0` and `q > 0` such that the weight spaces `p • χ₁ + χ₂` and `q • χ₁ + χ₂` are both
+   trivial.
  * `LieModule.weightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`, this
    is the sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
  * `LieModule.trace_toEndomorphism_weightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
    subalgebra `H`, there is a natural ideal `(rootSpaceProductNegSelf α).range` in `H`. This lemma
    states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
    `α`-chain, provided the weight spaces at the endpoints are both trivial.
+ * `LieModule.exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero`: given a (potential) root
+   `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
+   `(rootSpaceProductNegSelf α).range` of `H`, we may find an integral linear combination between
+   `α` and any weight `χ` of a representation.
 
 -/
 
-open Set
+open BigOperators FiniteDimensional Function Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -43,6 +51,40 @@ namespace LieModule
 section IsNilpotent
 
 variable [LieAlgebra.IsNilpotent R L] (χ₁ χ₂ : L → R) (p q : ℤ)
+
+section
+
+variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+
+lemma eventually_weightSpace_smul_add_eq_bot :
+    ∀ᶠ (k : ℕ) in Filter.atTop, weightSpace M (k • χ₁ + χ₂) = ⊥ := by
+  let f : ℕ → L → R := fun k ↦ k • χ₁ + χ₂
+  suffices Injective f by
+    rw [← Nat.cofinite_eq_atTop, Filter.eventually_cofinite, ← finite_image_iff (this.injOn _)]
+    apply (finite_weightSpace_ne_bot R L M).subset
+    simp [f]
+  intro k l hkl
+  replace hkl : (k : ℤ) • χ₁ = (l : ℤ) • χ₁ := by
+    simpa only [f, add_left_inj, coe_nat_zsmul] using hkl
+  exact Nat.cast_inj.mp <| smul_left_injective ℤ hχ₁ hkl
+
+lemma exists_weightSpace_smul_add_eq_bot :
+    ∃ k > 0, weightSpace M (k • χ₁ + χ₂) = ⊥ :=
+  (Nat.eventually_pos.and <| eventually_weightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁).exists
+
+lemma exists₂_weightSpace_smul_add_eq_bot :
+    ∃ᵉ (p < (0 : ℤ)) (q > (0 : ℤ)),
+      weightSpace M (p • χ₁ + χ₂) = ⊥ ∧
+      weightSpace M (q • χ₁ + χ₂) = ⊥ := by
+  obtain ⟨q, hq₀, hq⟩ := exists_weightSpace_smul_add_eq_bot M χ₁ χ₂ hχ₁
+  obtain ⟨p, hp₀, hp⟩ := exists_weightSpace_smul_add_eq_bot M (-χ₁) χ₂ (neg_ne_zero.mpr hχ₁)
+  refine ⟨-(p : ℤ), by simpa, q, by simpa, ?_, ?_⟩
+  · rw [neg_smul, ← smul_neg, coe_nat_zsmul]
+    exact hp
+  · rw [coe_nat_zsmul]
+    exact hq
+
+end
 
 /-- Given two (potential) weights `χ₁` and `χ₂` together with integers `p` and `q`, it is often
 useful to study the sum of weight spaces associated to the family of weights `k • χ₁ + χ₂` for
@@ -64,7 +106,7 @@ lemma weightSpaceChain_neg :
     weightSpaceChain M (-χ₁) χ₂ (-q) (-p) = weightSpaceChain M χ₁ χ₂ p q := by
   let e : ℤ ≃ ℤ := neg_involutive.toPerm
   simp_rw [weightSpaceChain, ← e.biSup_comp (Ioo p q)]
-  simp [-mem_Ioo, neg_mem_Ioo_iff]
+  simp [e, -mem_Ioo, neg_mem_Ioo_iff]
 
 lemma weightSpace_le_weightSpaceChain {k : ℤ} (hk : k ∈ Ioo p q) :
     weightSpace M (k • χ₁ + χ₂) ≤ weightSpaceChain M χ₁ χ₂ p q :=
@@ -72,7 +114,7 @@ lemma weightSpace_le_weightSpaceChain {k : ℤ} (hk : k ∈ Ioo p q) :
 
 end IsNilpotent
 
-section IsNilpotentSubalgebra
+section LieSubalgebra
 
 open LieAlgebra
 
@@ -107,7 +149,11 @@ lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left [LieAlgebra.IsNilpoten
   rw [← weightSpaceChain_neg] at hy ⊢
   exact lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right M (-α) χ (-q) (-p) hp hx hy
 
-lemma trace_toEndomorphism_weightSpaceChain_eq_zero [IsNoetherian R L] [H.IsCartanSubalgebra]
+section IsCartanSubalgebra
+
+variable [H.IsCartanSubalgebra] [IsNoetherian R L]
+
+lemma trace_toEndomorphism_weightSpaceChain_eq_zero
     (hp : weightSpace M (p • α + χ) = ⊥)
     (hq : weightSpace M (q • α + χ) = ⊥)
     {x : H} (hx : x ∈ (rootSpaceProductNegSelf α).range) :
@@ -125,10 +171,48 @@ lemma trace_toEndomorphism_weightSpaceChain_eq_zero [IsNoetherian R L] [H.IsCart
           lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hp z.property hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
-    have hfg : toEndomorphism R H _ (rootSpaceProductNegSelf α (y ⊗ₜ z)) = ⁅f, g⁆ := by ext; simp
+    have hfg : toEndomorphism R H _ (rootSpaceProductNegSelf α (y ⊗ₜ z)) = ⁅f, g⁆ := by
+      ext; simp [f, g]
     simp [hfg]
   · rw [LieModuleHom.map_add, LieHom.map_add, map_add, h₁, h₂, zero_add]
 
-end IsNilpotentSubalgebra
+/-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
+`I = (rootSpaceProductNegSelf α).range` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
+integral linear combination between `α` and any weight `χ` of a representation.
+
+This is Proposition 4.4 from [carter2005] and is a key step in the proof that the roots of a
+semisimple Lie algebra form a root system. It shows that the restriction of `α` to `I` vanishes iff
+the restriction of every root to `I` vanishes (which cannot happen in a semisimple Lie algebra). -/
+lemma exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero
+    [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+    (hα : α ≠ 0) (hχ : weightSpace M χ ≠ ⊥) :
+    ∃ a b : ℤ, 0 < b ∧ ∀ x ∈ (rootSpaceProductNegSelf α).range, (a • α + b • χ) x = 0 := by
+  obtain ⟨p, hp₀, q, hq₀, hp, hq⟩ := exists₂_weightSpace_smul_add_eq_bot M α χ hα
+  let a := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ)) • i
+  let b := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ))
+  have hb : 0 < b := by
+    replace hχ : Nontrivial (weightSpace M χ) := by rwa [LieSubmodule.nontrivial_iff_ne_bot]
+    refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
+    rw [zero_smul, zero_add]
+    exact finrank_pos
+  refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
+  let N : ℤ → Submodule R M := fun k ↦ weightSpace M (k • α + χ)
+  have h₁ : CompleteLattice.Independent fun (i : Finset.Ioo p q) ↦ N i := by
+    rw [← LieSubmodule.independent_iff_coe_toSubmodule]
+    refine (independent_weightSpace R H M).comp fun i j hij ↦ ?_
+    exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
+  have h₂ : ∀ i, MapsTo (toEndomorphism R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
+  have h₃ : weightSpaceChain M α χ p q = ⨆ i ∈ Finset.Ioo p q, N i := by
+    simp_rw [weightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]
+  rw [← trace_toEndomorphism_weightSpaceChain_eq_zero M α χ p q hp hq hx,
+    ← LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism,
+    LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (weightSpaceChain M α χ p q) h₃]
+  simp_rw [LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism,
+    trace_toEndomorphism_weightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
+    Finset.sum_add_distrib, ← Finset.sum_smul, coe_nat_zsmul]
+
+end IsCartanSubalgebra
+
+end LieSubalgebra
 
 end LieModule

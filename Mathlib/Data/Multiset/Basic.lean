@@ -1052,7 +1052,7 @@ theorem erase_cons_head (a : α) (s : Multiset α) : (a ::ₘ s).erase a = s :=
 @[simp]
 theorem erase_cons_tail {a b : α} (s : Multiset α) (h : b ≠ a) :
     (b ::ₘ s).erase a = b ::ₘ s.erase a :=
-  Quot.inductionOn s fun l => congr_arg _ <| List.erase_cons_tail l h
+  Quot.inductionOn s fun l => congr_arg _ <| List.erase_cons_tail l (not_beq_of_ne h)
 #align multiset.erase_cons_tail Multiset.erase_cons_tail
 
 @[simp]
@@ -2686,6 +2686,15 @@ theorem inter_replicate (s : Multiset α) (n : ℕ) (x : α) :
   rw [inter_comm, replicate_inter, min_comm]
 #align multiset.inter_replicate Multiset.inter_replicate
 
+theorem erase_attach_map_val [DecidableEq α] (s : Multiset α) (x : {x // x ∈ s}) :
+    (s.attach.erase x).map (↑) = s.erase x := by
+  rw [Multiset.map_erase _ val_injective, attach_map_val]
+
+theorem erase_attach_map [DecidableEq α] (s : Multiset α) (f : α → β) (x : {x // x ∈ s}) :
+    (s.attach.erase x).map (fun j : {x // x ∈ s} ↦ f j) = (s.erase x).map f := by
+  simp only [← Function.comp_apply (f := f)]
+  rw [← map_map, erase_attach_map_val]
+
 end
 
 @[ext]
@@ -2928,7 +2937,7 @@ theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t
   · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
     simp only [decide_eq_true_eq, add_right_inj]
-    refine' (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
+    exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
 #align multiset.rel.countp_eq Multiset.Rel.countP_eq
 
 end Rel

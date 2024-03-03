@@ -740,7 +740,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
   let P : Set ι → Prop := fun s => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L)
   change P Set.univ
   apply Set.Finite.induction_on
-  all_goals dsimp only
+  all_goals dsimp only [P]
   · exact Set.finite_univ
   · rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
@@ -946,7 +946,7 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
 
 @[simp]
 theorem adjoin_int (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  refine' adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
+  exact adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
 #align intermediate_field.adjoin_int IntermediateField.adjoin_int
 
 @[simp]
@@ -979,6 +979,12 @@ theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by rw [ran
 @[simp] protected
 theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finrank_eq_one_iff]
 #align intermediate_field.finrank_bot IntermediateField.finrank_bot
+
+@[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
+  rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
+
+@[simp] theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
+  congr(Cardinal.toNat $(rank_bot'))
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩

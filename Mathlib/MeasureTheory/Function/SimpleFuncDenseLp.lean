@@ -964,7 +964,7 @@ theorem Memℒp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α
     · intro f g hfg hf hg int_fg
       rw [SimpleFunc.coe_add,
         memℒp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable] at int_fg
-      refine' h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
+      exact h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
   have : ∀ f : Lp.simpleFunc E p μ, P f := by
     intro f
     exact

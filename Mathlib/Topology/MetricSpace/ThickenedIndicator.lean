@@ -175,7 +175,7 @@ def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ
     have key := @thickenedIndicatorAux_le_one _ _ δ E
     apply add_le_add <;>
       · norm_cast
-        refine' (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
+        exact (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
 #align thickened_indicator thickenedIndicator
 
 theorem thickenedIndicator.coeFn_eq_comp {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :

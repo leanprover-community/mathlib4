@@ -368,7 +368,7 @@ theorem exists_minimal_degree_vertex [DecidableRel G.Adj] [Nonempty V] :
     ∃ v, G.minDegree = G.degree v := by
   obtain ⟨t, ht : _ = _⟩ := min_of_nonempty (univ_nonempty.image fun v => G.degree v)
   obtain ⟨v, _, rfl⟩ := mem_image.mp (mem_of_min ht)
-  refine' ⟨v, by simp [minDegree, ht]⟩
+  exact ⟨v, by simp [minDegree, ht]⟩
 #align simple_graph.exists_minimal_degree_vertex SimpleGraph.exists_minimal_degree_vertex
 
 /-- The minimum degree in the graph is at most the degree of any particular vertex. -/
