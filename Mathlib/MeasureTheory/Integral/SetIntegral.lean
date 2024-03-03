@@ -59,13 +59,13 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Classical Topology BigOperators ENNReal NNReal
 
-variable {α β E F : Type*} [MeasurableSpace α]
+variable {α X β E F : Type*} [MeasurableSpace α] [MeasurableSpace X]
 
 namespace MeasureTheory
 
 section NormedAddCommGroup
 
-variable {X : Type*} [MeasurableSpace X] [NormedAddCommGroup E] {f g : X → E} {s t : Set X} {μ ν : Measure X} {l l' : Filter X}
+variable [NormedAddCommGroup E] {f g : X → E} {s t : Set X} {μ ν : Measure X} {l l' : Filter X}
 
 variable [NormedSpace ℝ E]
 
@@ -674,7 +674,7 @@ end NormedAddCommGroup
 
 section Mono
 
-variable {X : Type*} [MeasurableSpace X] {μ : Measure X} {f g : X → ℝ} {s t : Set X} (hf : IntegrableOn f s μ)
+variable {μ : Measure X} {f g : X → ℝ} {s t : Set X} (hf : IntegrableOn f s μ)
   (hg : IntegrableOn g s μ)
 
 theorem set_integral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
@@ -721,7 +721,7 @@ end Mono
 
 section Nonneg
 
-variable {X : Type*} [MeasurableSpace X] {μ : Measure X} {f : X → ℝ} {s : Set X}
+variable {μ : Measure X} {f : X → ℝ} {s : Set X}
 
 theorem set_integral_nonneg_of_ae_restrict (hf : 0 ≤ᵐ[μ.restrict s] f) : 0 ≤ ∫ a in s, f a ∂μ :=
   integral_nonneg_of_ae hf
@@ -813,7 +813,7 @@ end Nonneg
 
 section IntegrableUnion
 
-variable {X : Type*} [MeasurableSpace X] {μ : Measure X} [NormedAddCommGroup E] [Countable β]
+variable {μ : Measure X} [NormedAddCommGroup E] [Countable β]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : β → Set X}
     (hs : ∀ b : β, MeasurableSet (s b)) (hi : ∀ b : β, IntegrableOn f (s b) μ)
@@ -861,7 +861,7 @@ end IntegrableUnion
 
 section TendstoMono
 
-variable {X : Type*} [MeasurableSpace X] {μ : Measure X}
+variable {μ : Measure X}
   [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set X} {f : X → E}
 
 theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
@@ -982,8 +982,7 @@ section FTC
 
 open MeasureTheory Asymptotics Metric
 
-variable {X : Type*} [MeasurableSpace X] {μ : Measure X}
-  {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {μ : Measure X} {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
@@ -1091,7 +1090,7 @@ as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 
 open scoped ComplexConjugate
 
-variable {X : Type*} [MeasurableSpace X] {μ : Measure X}
+variable {μ : Measure X}
   {𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
@@ -1349,7 +1348,7 @@ end
 
 section thickenedIndicator
 
-variable {X : Type*} [MeasurableSpace X] [PseudoEMetricSpace X]
+variable [PseudoEMetricSpace X]
 
 theorem measure_le_lintegral_thickenedIndicatorAux (μ : Measure X) {E : Set X}
     (E_mble : MeasurableSet E) (δ : ℝ) : μ E ≤ ∫⁻ a, (thickenedIndicatorAux δ E a : ℝ≥0∞) ∂μ := by
@@ -1374,7 +1373,7 @@ section BilinearMap
 
 namespace MeasureTheory
 
-variable {X : Type*} {f : X → ℝ} {m m0 : MeasurableSpace X} {μ : Measure X}
+variable {f : X → ℝ} {m m0 : MeasurableSpace X} {μ : Measure X}
 
 theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) :
     Integrable (⇑g * f) μ := by
