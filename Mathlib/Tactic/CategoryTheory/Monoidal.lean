@@ -396,11 +396,12 @@ theorem evalWhiskerLeft_id {f g : C} {η : f ⟶ g}
 theorem eval_comp
     {η η' : f ⟶ g} {θ θ' : g ⟶ h} {ι : f ⟶ h}
     (pf_η : η = η') (pf_θ : θ = θ') (pf_ηθ : η' ≫ θ' = ι) :
-    η ≫ θ = ι := by simp [pf_η, pf_θ, pf_ηθ]
+    η ≫ θ = ι := by
+  simp [pf_η, pf_θ, pf_ηθ]
 
 theorem eval_whiskerLeft
-  {η η' : g ⟶ h} {θ : f ⊗ g ⟶ f ⊗ h}
-  (pf_η : η = η') (pf_θ : f ◁ η' = θ) :
+    {η η' : g ⟶ h} {θ : f ⊗ g ⟶ f ⊗ h}
+    (pf_η : η = η') (pf_θ : f ◁ η' = θ) :
     f ◁ η = θ := by
   simp [pf_η, pf_θ]
 
