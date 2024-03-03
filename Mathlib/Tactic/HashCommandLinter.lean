@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Std.Lean.Command
-import Std.Data.Array.Basic
 
 /-!
 #  `#`-command linter
