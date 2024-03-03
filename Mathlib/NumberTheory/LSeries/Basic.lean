@@ -120,7 +120,7 @@ to `a : ℂ`.
 open LSeries
 
 /-- The value of the L-series of the sequence `f` at the point `s`
-(if it converges absolutely there). -/
+if it converges absolutely there, and `0` otherwise. -/
 noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
@@ -182,7 +182,7 @@ lemma LSeriesSummable.of_re_le_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re ≤ s
 
 theorem LSeriesSummable_iff_of_re_eq_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re = s'.re) :
     LSeriesSummable f s ↔ LSeriesSummable f s' :=
-  ⟨fun H ↦  H.of_re_le_re h.le, fun H ↦ H.of_re_le_re h.symm.le⟩
+  ⟨fun H ↦ H.of_re_le_re h.le, fun H ↦ H.of_re_le_re h.symm.le⟩
 #align nat.arithmetic_function.l_series_summable_iff_of_re_eq_re LSeriesSummable_iff_of_re_eq_re
 
 
