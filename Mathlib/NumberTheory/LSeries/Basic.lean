@@ -101,14 +101,10 @@ lemma norm_term_le {f g : ℕ → ℂ} (s : ℂ) {n : ℕ} (h : ‖f n‖ ≤ �
 
 lemma norm_term_le_of_re_le_re (f : ℕ → ℂ) {s s' : ℂ} (h : s.re ≤ s'.re) (n : ℕ) :
     ‖term f s' n‖ ≤ ‖term f s n‖ := by
-  rcases n.eq_zero_or_pos with rfl | hn
-  · simp only [term_zero, norm_zero, le_refl]
-  have hn' := norm_natCast_cpow_pos_of_pos hn s
-  simp_rw [term_of_ne_zero hn.ne', norm_div]
-  suffices H : ‖(n : ℂ) ^ s‖ ≤ ‖(n : ℂ) ^ s'‖ from div_le_div (norm_nonneg _) le_rfl hn' H
-  refine (one_le_div hn').mp ?_
-  rw [← norm_div, ← cpow_sub _ _ <| Nat.cast_ne_zero.mpr hn.ne', norm_natCast_cpow_of_pos hn]
-  exact Real.one_le_rpow (Nat.one_le_cast.mpr hn) <| by simp only [sub_re, sub_nonneg, h]
+  simp only [norm_term_eq]
+  split
+  next => rfl
+  next hn => gcongr; exact Nat.one_le_cast.mpr <| Nat.one_le_iff_ne_zero.mpr hn
 
 end LSeries
 
