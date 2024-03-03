@@ -19,11 +19,9 @@ Prove case 2.
 
 open ZMod
 
-private lemma three_dvd_nine : 3 ∣ 9 := by norm_num
-
-private lemma cube_of_castHom_ne_zero {n : ZMod 9} (h : castHom three_dvd_nine (ZMod 3) n ≠ 0) :
-    n ^ 3 = 1 ∨ n ^ 3 = 8 := by
-  revert h; fin_cases n <;> decide
+private lemma cube_of_castHom_ne_zero {n : ZMod 9} :
+    castHom (show 3 ∣ 9 by norm_num) (ZMod 3) n ≠ 0 → n ^ 3 = 1 ∨ n ^ 3 = 8 := by
+  fin_cases n <;> decide
 
 private lemma cube_of_not_dvd {n : ℕ} (h : ¬ 3 ∣ n) :
     (n : ZMod 9) ^ 3 = 1 ∨ (n : ZMod 9) ^ 3 = 8 := by
