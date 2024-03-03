@@ -3,20 +3,28 @@ Copyright (c) 20XX WHO WHO??. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: TODO NAME
 -/
---import Mathlib.Data.Set.Intervals.Disjoint
-import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
---import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
--- TODO: minimize imports!
 
 /-!
-## TODO a docstring
+## The dominated convergence theorem
+
+This file collects various results related to the Lebesgue dominated convergence theorem
+for the Bochner integral.
+
+## Main results
+- `tendsto_integral_of_dominated_convergence`: the Lebesgue dominated convergence theorem
+- TODO: complete this!
 
 -/
 
+-- TODO: minimise opens and variables, everywhere!
 
--- from Bochner
--- TODO: minimise opens and variables
+open MeasureTheory
+
+/-!
+## The Lebesgue dominated convergence theorem for the Bochner integral
+-/
+section DominatedConvergenceTheorem
 
 open scoped Topology BigOperators NNReal ENNReal MeasureTheory
 
@@ -148,9 +156,7 @@ lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α
 
 end MeasureTheory
 
-section TendstoMono -- from SetIntegral
-
-open MeasureTheory
+section TendstoMono
 
 variable {α E : Type*} [MeasurableSpace α]
   {μ : Measure α} [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set α}
@@ -178,18 +184,14 @@ theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) 
 
 end TendstoMono
 
-section DCTParametric -- from IntervalIntegral
-
+/-!
+## The Lebesgue dominated convergence theorem for interval integrals
+As an application, we show continuity of parametric integrals.
+-/
 namespace intervalIntegral
 
--- TODO: minimize this prelude!
-open MeasureTheory Set Classical Filter Function
-
-open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
-
-variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
-variable [CompleteSpace E] [NormedSpace ℝ E]
-variable {a b c d : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+variable {ι 𝕜 E F : Type*} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+  {a b : ℝ} {f : ℝ → E} {μ : Measure ℝ}
 
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι}
@@ -297,5 +299,3 @@ theorem continuous_of_dominated_interval {F : X → ℝ → E} {bound : ℝ → 
 #align interval_integral.continuous_of_dominated_interval intervalIntegral.continuous_of_dominated_interval
 
 end intervalIntegral
-
-end DCTParametric
