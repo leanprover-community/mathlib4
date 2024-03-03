@@ -68,6 +68,9 @@ theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
   natPred_injective.eq_iff
 #align pnat.nat_pred_inj PNat.natPred_inj
 
+@[simp]
+lemma val_ofNat (n : ℕ) : ((no_index (OfNat.ofNat n.succ) : ℕ+) : ℕ) = n.succ := rfl
+
 end PNat
 
 namespace Nat
