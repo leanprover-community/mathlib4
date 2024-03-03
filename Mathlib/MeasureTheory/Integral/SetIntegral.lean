@@ -56,7 +56,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
 
-open scoped Classical Topology Interval BigOperators Filter ENNReal NNReal MeasureTheory
+open scoped Classical Topology BigOperators ENNReal NNReal
 
 variable {α β E F : Type*} [MeasurableSpace α]
 
@@ -1385,7 +1385,7 @@ variable {α β F G 𝕜 : Type*} [TopologicalSpace α] [TopologicalSpace β] [M
   [OpensMeasurableSpace β] {μ : Measure β} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open Metric Function ContinuousLinearMap
+open Metric ContinuousLinearMap
 
 /-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
