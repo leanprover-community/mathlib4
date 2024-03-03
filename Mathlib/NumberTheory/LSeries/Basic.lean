@@ -87,7 +87,7 @@ lemma term_of_pos {n : ℕ} (hn : 0 < n) (f : ℕ → ℂ) (s : ℂ) :
     term f s n = f n / n ^ s :=
   term_of_ne_zero (Nat.pos_iff_ne_zero.mp hn) f s
 
-lemma term_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) (n : ℕ) :
+lemma term_congr {f g : ℕ → ℂ} (h : ∀ n ≠ 0, f n = g n) (s : ℂ) (n : ℕ) :
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero]
@@ -138,7 +138,7 @@ def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
 
 lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) :
     LSeries f s = LSeries g s :=
-  tsum_congr <| term_congr s h
+  tsum_congr <| term_congr h s
 
 /-- `LSeriesSummable f s` indicates that the L-series of `f` converges (absolutely) at `s`. -/
 def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
@@ -147,7 +147,7 @@ def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
 
 lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ n ≠ 0, f n = g n) :
     LSeriesSummable f s ↔ LSeriesSummable g s :=
-  summable_congr <| term_congr s h
+  summable_congr <| term_congr h s
 
 theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
     ¬ LSeriesSummable f s → LSeries f s = 0 :=
