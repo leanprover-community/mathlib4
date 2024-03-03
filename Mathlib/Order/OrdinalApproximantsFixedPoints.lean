@@ -20,15 +20,15 @@ We loosly follow the proof from [Echenique2005].
 
 ## Main definitions
 
-* `OrdinalApprox.lfp_approx`: The ordinal approximation of
+* `OrdinalApprox.lfpApprox`: The ordinal approximation of
   the least fixed point of a bundled monotone function.
-* `OrdinalApprox.gfp_approx`: The ordinal approximation of
+* `OrdinalApprox.gfpApprox`: The ordinal approximation of
   the greatest fixed point of a bundled monotone function.
 
 ## Main theorems
-* `OrdinalApprox.lfp_is_lfp_approx`: The approximation of
+* `OrdinalApprox.lfp_is_lfpApprox`: The approximation of
   the least fixed point eventually reaches the least fixed point
-* `OrdinalApprox.gfp_is_gfp_approx`: The approximation of
+* `OrdinalApprox.gfp_is_gfpApprox`: The approximation of
   the greatest fixed point eventually reaches the greatest fixed point
 
 ## References
