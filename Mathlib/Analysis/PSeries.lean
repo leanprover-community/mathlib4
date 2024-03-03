@@ -89,21 +89,20 @@ theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f
     ∑ k in range (n + 1), (u (k + 1) - u k) • f (u k) ≤
     (u 1 - u 0) • f (u 0) + C • ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
   rw [sum_range_succ', add_comm]
-  convert add_le_add_left _ ((u 1 - u 0) • f (u 0))
+  refine' add_le_add_left _ ((u 1 - u 0) • f (u 0))
+  suffices ∑ k in range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤ C • ∑ k in range n, ((u (k + 1) - u k) • f (u (k + 1))) by
+    refine' le_trans this _
+    apply nsmul_le_nsmul_right
+    exact sum_schlomilch_le' hf h_pos hu n
   have : ∀ k ∈ range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤
     C • ((u (k + 1) - u k) • f (u (k + 1))) := by
     intro k _
     rw [smul_smul]
     gcongr
     · exact h_nonneg (u (k + 1))
-    exact_mod_cast h_succ_diff k
-  calc
-    ∑ k in range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤
-    ∑ k in range n, C • ((u (k + 1) - u k) • f (u (k + 1))) := sum_le_sum this
-    _ = C • ∑ k in range n, (u (k + 1) - u k) • f (u (k + 1)) := by rw [smul_sum]
-    _ ≤ C • ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
-      gcongr
-      exact (sum_schlomilch_le' hf h_pos hu n)
+    exact mod_cast h_succ_diff k
+  convert sum_le_sum this
+  simp [smul_sum]
 end Finset
 
 namespace ENNReal
