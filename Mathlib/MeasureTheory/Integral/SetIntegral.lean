@@ -938,8 +938,7 @@ theorem norm_Lp_toLp_restrict_le (s : Set α) (f : Lp E p μ) :
 set_option linter.uppercaseLean3 false in
 #align measure_theory.norm_Lp_to_Lp_restrict_le MeasureTheory.norm_Lp_toLp_restrict_le
 
-variable (α F 𝕜)
-
+variable (α F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in
 `Lp F p (μ.restrict s)`. -/
 def LpToLpRestrictCLM (μ : Measure α) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (s : Set α) :
@@ -950,8 +949,6 @@ def LpToLpRestrictCLM (μ : Measure α) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (
     1 (by intro f; rw [one_mul]; exact norm_Lp_toLp_restrict_le s f)
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp_to_Lp_restrict_clm MeasureTheory.LpToLpRestrictCLM
-
-variable {α F 𝕜}
 
 variable (𝕜)
 
