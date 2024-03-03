@@ -57,7 +57,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
 
-open scoped Classical Topology Interval BigOperators Filter ENNReal NNReal MeasureTheory
+open scoped Classical Topology BigOperators ENNReal NNReal
 
 variable {α β E F : Type*} [MeasurableSpace α]
 
@@ -1413,7 +1413,7 @@ variable {X β F G 𝕜 : Type*} [TopologicalSpace X] [TopologicalSpace β] [Mea
   [OpensMeasurableSpace β] {μ : Measure β} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open Metric Function ContinuousLinearMap
+open Metric ContinuousLinearMap
 
 /-- The parametric integral over a continuous function on a compact set is continuous,
   under mild assumptions on the topologies involved. -/
