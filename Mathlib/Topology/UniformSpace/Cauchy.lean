@@ -310,6 +310,17 @@ theorem tendsto_nhds_of_cauchySeq_of_subseq [Preorder β] {u : β → α} (hu : 
   le_nhds_of_cauchy_adhp hu (mapClusterPt_of_comp hf ha)
 #align tendsto_nhds_of_cauchy_seq_of_subseq tendsto_nhds_of_cauchySeq_of_subseq
 
+/-- Any shift of a Cauchy sequence is also a Cauchy sequence. -/
+theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n + k)) ↔ CauchySeq u := by
+  constructor <;> intro h
+  · rw [cauchySeq_iff] at h ⊢
+    intro V mV
+    obtain ⟨N, h⟩ := h V mV
+    use N + k
+    intro a ha b hb
+    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> omega
+  · exact h.comp_tendsto (tendsto_add_atTop_nat k)
+
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}
     {s : γ → Set (α × α)} (h : (𝓤 α).HasBasis p s) :
     CauchySeq u ↔ ∀ i, p i → ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → (u m, u n) ∈ s i := by
