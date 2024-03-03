@@ -542,8 +542,11 @@ lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   simp_rw [← isPrime_iff_isMaximal]
   apply primeSpectrum_finite R
 
-local instance : Finite {I : Ideal R | I.IsMaximal} := (maximal_ideals_finite R).to_subtype
+lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} :=
+  (maximal_ideals_finite R).to_subtype
+attribute [local instance] subtype_isMaximal_finite
 
+/-- A temporary field instance on the quotients by maximal ideals. -/
 noncomputable local instance (I : {I : Ideal R | I.IsMaximal}) : Field (R ⧸ I.1) :=
   have := mem_setOf.mp I.2; Ideal.Quotient.field I.1
 
