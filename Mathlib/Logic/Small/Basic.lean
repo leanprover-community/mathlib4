@@ -27,7 +27,7 @@ open Classical
 -- While this instance isn't applicable to literally every `Small α` synthesis problem,
 -- it does apply to every problem of the form `Small ↥s` for some set `s`,
 -- and we have lots of more specific instances for small sets.
-instance (priority := 110) small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) :
+instance (priority := 100) small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) :
     Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
 #align small_subtype small_subtype
