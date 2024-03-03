@@ -30,6 +30,21 @@ Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodul
   implemented as the predicate that the `<` relation on submodules is well founded.
 * `IsArtinianRing R` is the proposition that `R` is a left Artinian ring.
 
+## Main results
+
+* `IsArtinianRing.localization_surjective`: the canonical homomorphism from a commutative artinian
+  ring to any localization of itself is surjective.
+
+* `IsArtinianRing.isNilpotent_jacobson_bot`: the Jacobson radical of a commutative artinian ring
+  is a nilpotent ideal. (TODO: generalize to noncommutative rings.)
+
+* `IsArtinianRing.primeSpectrum_finite`, `IsArtinianRing.isMaximal_of_isPrime`: there are only
+  finitely prime ideals in a commutative artinian ring, and each of them is maximal.
+
+* `IsArtinianRing.equivPi`: a reduced commutative artinian ring `R` is isomorphic to a finite
+  product of fields (and therefore is a semisimple ring and a decomposition monoid; moreover
+  `R[X]` is also a decomposition monoid).
+
 ## References
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
@@ -533,7 +548,7 @@ noncomputable local instance (I : {I : Ideal R | I.IsMaximal}) : Field (R ⧸ I.
   have := mem_setOf.mp I.2; Ideal.Quotient.field I.1
 
 /-- The quotient of a commutative artinian ring by its nilradical is isomorphic to
-a product of finitely many fields, namely the quotients by the maximal ideals. -/
+a finite product of fields, namely the quotients by the maximal ideals. -/
 noncomputable def quotNilradicalEquivPi :
     R ⧸ nilradical R ≃+* ∀ I : {I : Ideal R | I.IsMaximal}, R ⧸ I.1 :=
   .trans (Ideal.quotEquivOfEq <| ext fun x ↦ by simp_rw [mem_nilradical,
@@ -541,8 +556,8 @@ noncomputable def quotNilradicalEquivPi :
   (Ideal.quotientInfRingEquivPiQuotient _ fun I J h ↦
     Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <| by rwa [Ne, Subtype.coe_inj])
 
-/-- Any reduced commutative artinian ring is isomorphic to a product of
-finitely many fields, namely the quotients by the maximal ideals. -/
+/-- A reduced commutative artinian ring is isomorphic to a finite product of fields,
+namely the quotients by the maximal ideals. -/
 noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : {I : Ideal R | I.IsMaximal}, R ⧸ I.1 :=
   .trans (.symm <| .quotientBot R) <| .trans
     (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
