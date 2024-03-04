@@ -884,18 +884,23 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
     have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
       apply ringHom_ext
       · intro
-        dsimp [eqv]
-        erw [iterToSum_C_C, rename_C, rename_C]
+        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_C,
+          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
+          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
+          iterToSum_C_C, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
       · intro
-        dsimp [eqv]
-        erw [iterToSum_C_X, rename_X, rename_X]
-        rfl
-    rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomial p]
-    rw [@MulEquiv.prime_iff (MvPolynomial ↑sᶜ (MvPolynomial ↑s R)) (MvPolynomial σ R) (_) (_)]
-    rotate_left
-    exact eqv.toMulEquiv
-    convert Iff.rfl
-    apply RingHom.congr_fun this p
+        simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_X,
+          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
+          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
+          iterToSum_C_X, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
+          Equiv.Set.sumCompl_apply_inl]
+    apply_fun (· p) at this
+    simp_rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at this
+    rw [← prime_C_iff, eqv.toMulEquiv.prime_iff, this]
+    simp only [MulEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, AlgEquiv.trans_apply,
+      MvPolynomial.sumAlgEquiv_symm_apply, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply,
+      AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, RingHom.coe_coe,
+      AlgEquiv.coe_trans, Function.comp_apply]
 #align mv_polynomial.prime_rename_iff MvPolynomial.prime_rename_iff
 
 end MvPolynomial
