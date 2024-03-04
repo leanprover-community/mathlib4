@@ -280,20 +280,20 @@ theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
 -- TODO: are there other limits lemmas that should have `_apply` versions?
 -- Can we generate these like with `@[reassoc]`?
 -- PROJECT: prove these for any concrete category where the forgetful functor preserves limits?
---porting note: @[simp] was removed because the linter said it was useless
+-- Porting note (#11119): @[simp] was removed because the linter said it was useless
 --@[simp]
 theorem Limit.w_apply {F : J ⥤ Type u} {j j' : J} {x : limit F} (f : j ⟶ j') :
     F.map f (limit.π F j x) = limit.π F j' x :=
   congr_fun (limit.w F f) x
 #align category_theory.limits.types.limit.w_apply CategoryTheory.Limits.Types.Limit.w_apply
 
---porting note: @[simp] was removed because the linter said it was useless
+-- Porting note (#11119): @[simp] was removed because the linter said it was useless
 theorem Limit.lift_π_apply (F : J ⥤ Type u) (s : Cone F) (j : J) (x : s.pt) :
     limit.π F j (limit.lift F s x) = s.π.app j x :=
   congr_fun (limit.lift_π s j) x
 #align category_theory.limits.types.limit.lift_π_apply CategoryTheory.Limits.Types.Limit.lift_π_apply
 
---porting note: @[simp] was removed because the linter said it was useless
+-- Porting note (#11119): @[simp] was removed because the linter said it was useless
 theorem Limit.map_π_apply {F G : J ⥤ Type u} (α : F ⟶ G) (j : J) (x : limit F) :
     limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
   congr_fun (limMap_π α j) x
@@ -419,19 +419,19 @@ theorem colimitEquivQuot_apply (F : J ⥤ TypeMax.{v, u}) (j : J) (x : F.obj j) 
   simp
 #align category_theory.limits.types.colimit_equiv_quot_apply CategoryTheory.Limits.Types.colimitEquivQuot_apply
 
---porting note: @[simp] was removed because the linter said it was useless
+-- Porting note (#11119): @[simp] was removed because the linter said it was useless
 theorem Colimit.w_apply {F : J ⥤ TypeMax.{v, u}} {j j' : J} {x : F.obj j} (f : j ⟶ j') :
     colimit.ι F j' (F.map f x) = colimit.ι F j x :=
   congr_fun (colimit.w F f) x
 #align category_theory.limits.types.colimit.w_apply CategoryTheory.Limits.Types.Colimit.w_apply
 
---porting note: @[simp] was removed because the linter said it was useless
+-- Porting note (#11119): @[simp] was removed because the linter said it was useless
 theorem Colimit.ι_desc_apply (F : J ⥤ TypeMax.{v, u}) (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
    congr_fun (colimit.ι_desc s j) x
 #align category_theory.limits.types.colimit.ι_desc_apply CategoryTheory.Limits.Types.Colimit.ι_desc_apply
 
---porting note: @[simp] was removed because the linter said it was useless
+-- Porting note (#11119): @[simp] was removed because the linter said it was useless
 theorem Colimit.ι_map_apply {F G : J ⥤ TypeMax.{v, u}} (α : F ⟶ G) (j : J) (x : F.obj j) :
     colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
   congr_fun (colimit.ι_map α j) x

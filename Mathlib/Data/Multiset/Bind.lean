@@ -219,7 +219,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
     exact ⟨x, hx, rfl⟩
 #align multiset.le_bind Multiset.le_bind
 
--- Porting note: @[simp] removed because not in normal form
+-- Porting note (#11119): @[simp] removed because not in normal form
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _

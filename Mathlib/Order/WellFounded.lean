@@ -210,7 +210,7 @@ theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
   WellFounded.min_mem _ _ _
 #align function.argmin_on_mem Function.argminOn_mem
 
---Porting note: @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
   WellFounded.not_lt_min (InvImage.wf f h) s hs ha
@@ -222,12 +222,12 @@ section LinearOrder
 
 variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
 
---Porting note: @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
   not_lt.mp <| not_lt_argmin f h a
 #align function.argmin_le Function.argmin_le
 
---Porting note: @[simp] removed as it will never apply
+-- sPorting note (#11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f h s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f h s ha hs
