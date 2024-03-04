@@ -203,7 +203,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   · simp
   let k := PNat.lcm ⟨p, hppos⟩ ⟨q, hqpos⟩
   obtain ⟨xu, rfl⟩ := hx.isUnit hppos
-  let yu := (hy.isUnit hqpos).unit
+  obtain ⟨yu, rfl⟩ := hy.isUnit hqpos
   have hxmem : xu ∈ rootsOfUnity k L := rootsOfUnity_le_of_dvd (dvd_lcm_left _ _) <|
     IsPrimitiveRoot.mem_rootsOfUnity (by exact IsPrimitiveRoot.coe_units_iff.1 hx)
   have hymem : yu ∈ rootsOfUnity k L := rootsOfUnity_le_of_dvd (dvd_lcm_right _ _) <|
@@ -214,20 +214,15 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
     exact hx.eq_orderOf.symm
   have hyuord : orderOf (⟨yu, hymem⟩ : rootsOfUnity k L) = q := by
     rw [← orderOf_injective (rootsOfUnity k L).subtype Subtype.coe_injective,
-      Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units, IsUnit.unit_spec]
+      Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units]
     exact hy.eq_orderOf.symm
-  obtain ⟨g : rootsOfUnity k L, hg⟩ := IsCyclic.exists_monoid_generator (α := rootsOfUnity k L)
-  obtain ⟨nx, hnx⟩ := hg ⟨xu, hxmem⟩
-  obtain ⟨ny, hny⟩ := hg ⟨yu, hymem⟩
+  obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := rootsOfUnity k L)
   have H : orderOf g = k := by
-    refine' Nat.dvd_antisymm (orderOf_dvd_of_pow_eq_one _) (Nat.lcm_dvd _ _)
-    · have := (mem_rootsOfUnity _ _).1 g.2
-      simp only [PNat.mk_coe] at this
-      exact_mod_cast this
-    · simp_rw [← hxuord, ← hnx, orderOf_pow]
-      exact Nat.div_dvd_of_dvd ((orderOf g).gcd_dvd_left nx)
-    · simp_rw [← hyuord, ← hny, orderOf_pow]
-      exact Nat.div_dvd_of_dvd ((orderOf g).gcd_dvd_left ny)
+    refine le_antisymm ?_ (le_of_dvd (orderOf_pos g) ?_)
+    · rw [hg, card_eq_fintype_card]
+      exact card_rootsOfUnity L k
+    · rw [lcm_coe, PNat.mk_coe, PNat.mk_coe, hg]
+      exact Nat.lcm_dvd (hxuord.symm ▸ orderOf_dvd_natCard _) (hyuord.symm ▸ orderOf_dvd_natCard _)
   have hroot := IsPrimitiveRoot.orderOf g
   rw [H, ← IsPrimitiveRoot.coe_submonoidClass_iff, ← IsPrimitiveRoot.coe_units_iff] at hroot
   haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K hroot
