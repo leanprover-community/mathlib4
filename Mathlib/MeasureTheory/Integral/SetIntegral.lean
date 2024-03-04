@@ -445,7 +445,7 @@ theorem set_integral_const [CompleteSpace E] (c : E) : ∫ _ in s, c ∂μ = (μ
 
 @[simp]
 theorem integral_indicator_const [CompleteSpace E] (e : E) ⦃s : Set X⦄ (s_meas : MeasurableSet s) :
-    ∫ a : X, s.indicator (fun _ : X => e) a ∂μ = (μ s).toReal • e := by
+    ∫ x : X, s.indicator (fun _ : X => e) x ∂μ = (μ s).toReal • e := by
   rw [integral_indicator s_meas, ← set_integral_const]
 #align measure_theory.integral_indicator_const MeasureTheory.integral_indicator_const
 
@@ -816,13 +816,13 @@ variable {μ : Measure X} [NormedAddCommGroup E] [Countable Y]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : Y → Set X}
     (hs : ∀ b : Y, MeasurableSet (s b)) (hi : ∀ b : Y, IntegrableOn f (s b) μ)
-    (h : Summable fun b : Y => ∫ a : X in s b, ‖f a‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
+    (h : Summable fun b : Y => ∫ x : X in s b, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine' ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt _⟩
-  have B := fun b : Y => lintegral_coe_eq_integral (fun a : X => ‖f a‖₊) (hi b).norm
+  have B := fun b : Y => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi b).norm
   rw [tsum_congr B]
   have S' :
     Summable fun b : Y =>
-      (⟨∫ a : X in s b, ‖f a‖₊ ∂μ, set_integral_nonneg (hs b) fun a _ => NNReal.coe_nonneg _⟩ :
+      (⟨∫ x : X in s b, ‖f x‖₊ ∂μ, set_integral_nonneg (hs b) fun a _ => NNReal.coe_nonneg _⟩ :
         NNReal) :=
     by rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
@@ -1000,13 +1000,13 @@ argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X]
     [OpensMeasurableSpace X] [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure X}
-    [IsLocallyFiniteMeasure μ] {a : X} {t : Set X} {f : X → E} (ha : ContinuousWithinAt f t a)
-    (ht : MeasurableSet t) (hfm : StronglyMeasurableAtFilter f (𝓝[t] a) μ) {s : ι → Set X}
-    {li : Filter ι} (hs : Tendsto s li (𝓝[t] a).smallSets) (m : ι → ℝ := fun i => (μ (s i)).toReal)
+    [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hx : ContinuousWithinAt f t x)
+    (ht : MeasurableSet t) (hfm : StronglyMeasurableAtFilter f (𝓝[t] x) μ) {s : ι → Set X}
+    {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets) (m : ι → ℝ := fun i => (μ (s i)).toReal)
     (hsμ : (fun i => (μ (s i)).toReal) =ᶠ[li] m := by rfl) :
-    (fun i => (∫ x in s i, f x ∂μ) - m i • f a) =o[li] m :=
-  haveI : (𝓝[t] a).IsMeasurablyGenerated := ht.nhdsWithin_isMeasurablyGenerated _
-  (ha.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhdsWithin a t) hs m
+    (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
+  haveI : (𝓝[t] x).IsMeasurablyGenerated := ht.nhdsWithin_isMeasurablyGenerated _
+  (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhdsWithin x t) hs m
     hsμ
 #align continuous_within_at.integral_sub_linear_is_o_ae ContinuousWithinAt.integral_sub_linear_isLittleO_ae
 
@@ -1020,12 +1020,12 @@ Often there is a good formula for `(μ (s i)).toReal`, so the formalization can 
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
-    [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure X} [IsLocallyFiniteMeasure μ] {a : X}
-    {f : X → E} (ha : ContinuousAt f a) (hfm : StronglyMeasurableAtFilter f (𝓝 a) μ) {s : ι → Set X}
-    {li : Filter ι} (hs : Tendsto s li (𝓝 a).smallSets) (m : ι → ℝ := fun i => (μ (s i)).toReal)
+    [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure X} [IsLocallyFiniteMeasure μ] {x : X}
+    {f : X → E} (hx : ContinuousAt f x) (hfm : StronglyMeasurableAtFilter f (𝓝 x) μ) {s : ι → Set X}
+    {li : Filter ι} (hs : Tendsto s li (𝓝 x).smallSets) (m : ι → ℝ := fun i => (μ (s i)).toReal)
     (hsμ : (fun i => (μ (s i)).toReal) =ᶠ[li] m := by rfl) :
-    (fun i => (∫ x in s i, f x ∂μ) - m i • f a) =o[li] m :=
-  (ha.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhds a) hs m hsμ
+    (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
+  (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhds x) hs m hsμ
 #align continuous_at.integral_sub_linear_is_o_ae ContinuousAt.integral_sub_linear_isLittleO_ae
 
 /-- Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
@@ -1038,12 +1038,12 @@ argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
     [NormedSpace ℝ E] [CompleteSpace E] [SecondCountableTopologyEither X E] {μ : Measure X}
-    [IsLocallyFiniteMeasure μ] {a : X} {t : Set X} {f : X → E} (hft : ContinuousOn f t) (ha : a ∈ t)
-    (ht : MeasurableSet t) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li (𝓝[t] a).smallSets)
+    [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hft : ContinuousOn f t) (hx : x ∈ t)
+    (ht : MeasurableSet t) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets)
     (m : ι → ℝ := fun i => (μ (s i)).toReal)
     (hsμ : (fun i => (μ (s i)).toReal) =ᶠ[li] m := by rfl) :
-    (fun i => (∫ x in s i, f x ∂μ) - m i • f a) =o[li] m :=
-  (hft a ha).integral_sub_linear_isLittleO_ae ht
+    (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
+  (hft x hx).integral_sub_linear_isLittleO_ae ht
     ⟨t, self_mem_nhdsWithin, hft.aestronglyMeasurable ht⟩ hs m hsμ
 #align continuous_on.integral_sub_linear_is_o_ae ContinuousOn.integral_sub_linear_isLittleO_ae
 
@@ -1081,7 +1081,7 @@ set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.set_integral_comp_Lp ContinuousLinearMap.set_integral_compLp
 
 theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
-    Continuous fun φ : X →₁[μ] E => ∫ a : X, L (φ a) ∂μ := by
+    Continuous fun φ : X →₁[μ] E => ∫ x : X, L (φ x) ∂μ := by
   rw [← funext L.integral_compLp]; exact continuous_integral.comp (L.compLpL 1 μ).continuous
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.continuous_integral_comp_L1 ContinuousLinearMap.continuous_integral_comp_L1
@@ -1155,7 +1155,7 @@ theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ a, L (φ a)
 end ContinuousLinearEquiv
 
 @[norm_cast]
-theorem integral_ofReal {f : X → ℝ} : ∫ a, (f a : 𝕜) ∂μ = ↑(∫ a, f a ∂μ) :=
+theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ a, f a ∂μ) :=
   (@IsROrC.ofRealLI 𝕜 _).integral_comp_comm f
 #align integral_of_real integral_ofReal
 
