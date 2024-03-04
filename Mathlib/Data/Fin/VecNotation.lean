@@ -610,6 +610,7 @@ section
 
 variable {n : ℕ} {α : Type u} {β : Type v}
 
+/-- Infix notation for `vecCons` -/
 infixr:70 " :> " => vecCons
 
 @[simp] lemma vecCons_zero {a : α} {s : Fin n → α} :
@@ -621,9 +622,11 @@ infixr:70 " :> " => vecCons
 @[simp] lemma vecCons_last {C : Type v}  (a : C) (s : Fin (n + 1) → C) :
     (a :> s) (Fin.last (n + 1)) = s (Fin.last n) := vecCons_succ (Fin.last n)
 
+/-- `vecConsLast t h` appends an entry `h` to a vector `t`, analogous to `vecCons` -/
 def vecConsLast {n : ℕ} (t : Fin n → α) (h : α) : Fin n.succ → α :=
   Fin.lastCases h t
 
+/-- Infix notation for `vecConsLast` -/
 infixl:70 " <: " => vecConsLast
 
 @[simp] lemma rightConcat_last  {a : α} {s : Fin n → α} : (s <: a) (last n) = a := by

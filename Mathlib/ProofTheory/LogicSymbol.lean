@@ -24,13 +24,17 @@ namespace ProofTheory
 
 universe u
 
+/-- `Polarity` is a data type for managing quantifier alternation -/
 inductive Polarity := | sigma | pi
 
 namespace Polarity
 
+/-- Notation for `sigma` -/
 notation "Σ" => sigma
+/-- Notation for `pi` -/
 notation "Π" => pi
 
+/-- `alt` specifies how quantifiers alternate -/
 def alt : Polarity → Polarity
   | Σ => Π
   | Π => Σ
@@ -45,37 +49,50 @@ end Polarity
 
 section logicNotation
 
+/-- `Tilde` class describes proof systems using tilda (for negation) -/
 @[notation_class] class Tilde (α : Type*) where
   tilde : α → α
 
+/-- `Arrow` class describes proof systems using arrow (for implication) -/
 @[notation_class] class Arrow (α : Type*) where
   arrow : α → α → α
 
+/-- `Wedge` class describes proof systems using wedge (for conjunction) -/
 @[notation_class] class Wedge (α : Type*) where
   wedge : α → α → α
 
+/-- `Vee` class describes proof systems using vee (for disjunction) -/
 @[notation_class] class Vee (α : Type*) where
   vee : α → α → α
 
+/-- `LogicSymbol` class describes a proof system's logical symbols -/
 class LogicSymbol (α : Type*)
   extends Top α, Bot α, Tilde α, Arrow α, Wedge α, Vee α
 
+/-- `UnivQuantifier` class describes proof systems using universal quantifers -/
 @[notation_class] class UnivQuantifier (α : ℕ → Type*) where
   univ : ∀ {n}, α (n + 1) → α n
 
+/-- `ExQuantifier` class describes proof systems using existential quantifers -/
 @[notation_class] class ExQuantifier (α : ℕ → Type*) where
   ex : ∀ {n}, α (n + 1) → α n
 
+/-- Prefix notation for `tilde` -/
 prefix:75 "~" => Tilde.tilde
 
+/-- Infix notation for `arrow` -/
 infixr:60 " ⭢ " => Arrow.arrow
 
+/-- Infix notation for `wedge` -/
 infixr:69 " ⋏ " => Wedge.wedge
 
+/-- Infix notation for `vee` -/
 infixr:68 " ⋎ " => Vee.vee
 
+/-- Infix notation for `univ` -/
 prefix:64 "∀' " => UnivQuantifier.univ
 
+/-- Infix notation for `ex` -/
 prefix:64 "∃' " => ExQuantifier.ex
 
 attribute [match_pattern]
@@ -90,10 +107,12 @@ section UnivQuantifier
 
 variable {α : ℕ → Type*} [UnivQuantifier α]
 
+/-- Universal closure over `∀'` -/
 def univClosure : {n : ℕ} → α n → α 0
   | 0,     a => a
   | _ + 1, a => univClosure (∀' a)
 
+/-- Prefix notation for `univClosure` -/
 prefix:64 "∀* " => univClosure
 
 @[simp] lemma univClosure_zero (a : α 0) : ∀* a = a := rfl
@@ -106,10 +125,12 @@ section ExQuantifier
 
 variable {α : ℕ → Type*} [ExQuantifier α]
 
+/-- Existential closure over `∃'` -/
 def exClosure : {n : ℕ} → α n → α 0
   | 0,     a => a
   | _ + 1, a => exClosure (∃' a)
 
+/-- Prefix notation for `exClosure` -/
 prefix:64 "∃* " => exClosure
 
 @[simp] lemma exClosure_zero (a : α 0) : ∃* a = a := rfl
@@ -118,18 +139,23 @@ lemma exClosure_succ {n} (a : α (n + 1)) : ∃* a = ∃* ∃' a := rfl
 
 end ExQuantifier
 
+/-- `HasTurnstile` describes proof systems with turnstile (proves) -/
 @[notation_class] class HasTurnstile (α : Sort _) (β : Sort _) where
   turnstile : Set α → α → β
 
+/-- Infix notation for `turnstile` -/
 infix:45 " ⊢ " => HasTurnstile.turnstile
 
+/-- `HasVdash` describes proof systems with vdash (implication) -/
 @[notation_class] class HasVdash (α : Sort _) (β : outParam (Sort _)) where
   vdash : α → β
 
+/-- Prefix notation for `vdash` -/
 prefix:45 "⊩ " => HasVdash.vdash
 
 end logicNotation
 
+/-- `DeMorgan` class describes proof systems implementing De Morgan's laws -/
 class DeMorgan (F : Type*) [LogicSymbol F] where
   verum           : ~(⊤ : F) = ⊥
   falsum          : ~(⊥ : F) = ⊤
@@ -140,6 +166,7 @@ class DeMorgan (F : Type*) [LogicSymbol F] where
 
 attribute [simp] DeMorgan.verum DeMorgan.falsum DeMorgan.and DeMorgan.or DeMorgan.neg
 
+/-- `NegDefinition` class describes proof systems implementing negation -/
 class NegDefinition (F : Type*) [LogicSymbol F] where
   neg {p : F} : ~p = p ⭢ ⊥
 
@@ -150,8 +177,10 @@ namespace LogicSymbol
 section
 variable {α : Sort _} [LogicSymbol α]
 
+/-- `iff` specifies if and only if notation -/
 @[match_pattern] def iff (a b : α) := (a ⭢ b) ⋏ (b ⭢ a)
 
+/-- Infix notation for `iff` -/
 infix:61 " ⭤ " => LogicSymbol.iff
 
 end
@@ -188,7 +217,9 @@ instance : DeMorgan Prop where
   or := fun _ _ ↦ by simp[not_or]
   neg := fun _ ↦ by simp
 
-class HomClass (F : Type*) (α β : outParam Type*) [LogicSymbol α] [LogicSymbol β] [FunLike F α β] where
+/-- `HomClass` specifies the homomorphism preserving connectives -/
+class HomClass (F : Type*) (α β : outParam Type*) [LogicSymbol α] [LogicSymbol β] [FunLike F α β]
+    where
   map_top : ∀ (f : F), f ⊤ = ⊤
   map_bot : ∀ (f : F), f ⊥ = ⊥
   map_neg : ∀ (f : F) (p : α), f (~ p) = ~f p
@@ -214,7 +245,7 @@ variable (α β γ : Type*) [LogicSymbol α] [LogicSymbol β] [LogicSymbol γ]
 
 /-- α →ˡᶜ β is the type of functions α → β that preserve the logical connectives -/
 structure Hom where
-  toFun : α → β
+  toFun : α → β -- Function for homomorphism
   map_top' : toFun ⊤ = ⊤
   map_bot' : toFun ⊥ = ⊥
   map_neg' : ∀ p, toFun (~ p) = ~toFun p
@@ -222,6 +253,7 @@ structure Hom where
   map_and' : ∀ p q, toFun (p ⋏ q) = toFun p ⋏ toFun q
   map_or'  : ∀ p q, toFun (p ⋎ q) = toFun p ⋎ toFun q
 
+/-- Infix notation for `Hom` -/
 infix:25 " →ˡᶜ " => Hom
 
 namespace Hom
@@ -244,6 +276,7 @@ instance : HomClass (α →ˡᶜ β) α β where
   map_and := map_and'
   map_or := map_or'
 
+/-- `id` defines the identity homomorphism preserving connectives -/
 protected def id : α →ˡᶜ α where
   toFun := id
   map_top' := by simp
@@ -255,6 +288,7 @@ protected def id : α →ˡᶜ α where
 
 @[simp] lemma app_id (a : α) : LogicSymbol.Hom.id a = a := rfl
 
+/-- `comp` defines the composition of homomorphisms preserving connectives -/
 def comp (g : β →ˡᶜ γ) (f : α →ˡᶜ β) : α →ˡᶜ γ where
   toFun := g ∘ f
   map_top' := by simp
@@ -272,22 +306,28 @@ end Hom
 section quantifier
 variable {α : ℕ → Type u} [∀ i, LogicSymbol (α i)] [UnivQuantifier α] [ExQuantifier α]
 
+/-- `ball` defines a bounded universal quantifier -/
 def ball {n : ℕ} (p : α (n + 1)) (q : α (n + 1)) : α n := ∀' (p ⭢ q)
 
+/-- `bex` defines a bounded existential quantifier -/
 def bex {n : ℕ} (p : α (n + 1)) (q : α (n + 1)) : α n := ∃' (p ⋏ q)
 
+/-- Notation for `ball` -/
 notation:64 "∀[" p "] " q => ball p q
 
+/-- Notation for `bex` -/
 notation:64 "∃[" p "] " q => bex p q
 
 end quantifier
 
+/-- `AndOrClosed` class describes proof systems with closure under and and or -/
 class AndOrClosed {F} [LogicSymbol F] (C : F → Prop) where
   verum  : C ⊤
   falsum : C ⊥
   and {f g : F} : C f → C g → C (f ⋏ g)
   or  {f g : F} : C f → C g → C (f ⋎ g)
 
+/-- `Closed` class describes proof systems also with closure under negation and implication -/
 class Closed {F} [LogicSymbol F] (C : F → Prop) extends AndOrClosed C where
   not {f : F} : C f → C (~f)
   imply {f g : F} : C f → C g → C (f ⭢ g)
@@ -307,13 +347,12 @@ section And
 variable {α β : Type*}
 variable [LogicSymbol α] [LogicSymbol β]
 
+/-- `Matrix.conj` defines conjunction over a vector -/
 def conj : {n : ℕ} → (Fin n → α) → α
   | 0,     _ => ⊤
   | _ + 1, v => v 0 ⋏ conj (vecTail v)
 
 @[simp] lemma conj_nil (v : Fin 0 → α) : conj v = ⊤ := rfl
-
---infixr:70 " :> " ↦ vecCons
 
 @[simp] lemma conj_cons {n} {a : α} {v : Fin n → α} : conj (a :> v) = a ⋏ conj v := rfl
 
@@ -342,6 +381,7 @@ section
 
 variable {α : Type*} [LogicSymbol α]
 
+/-- `List.conj` defines conjunction over a list -/
 def conj : List α → α
   | []      => ⊤
   | a :: as => a ⋏ as.conj
@@ -354,6 +394,7 @@ lemma map_conj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop]
     (f : F) (l : List α) : f l.conj ↔ ∀ a ∈ l, f a := by
   induction l <;> simp[*]
 
+/-- `List.disj` defines disjunction over a list -/
 def disj : List α → α
   | []      => ⊥
   | a :: as => a ⋎ as.disj
@@ -376,16 +417,18 @@ section
 
 variable {α : Type*} [LogicSymbol α]
 
+/-- `Finset.conj` defines conjunction over a set -/
 noncomputable def conj (s : Finset α) : α := s.toList.conj
 
-lemma map_conj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop] (f : F) (s : Finset α) :
-    f s.conj ↔ ∀ a ∈ s, f a := by
+lemma map_conj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop] (f : F)
+    (s : Finset α) : f s.conj ↔ ∀ a ∈ s, f a := by
   simpa using List.map_conj f s.toList
 
+/-- `Finset.disj` defines disjunction over a set -/
 noncomputable def disj (s : Finset α) : α := s.toList.disj
 
-lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop] (f : F) (s : Finset α) :
-    f s.disj ↔ ∃ a ∈ s, f a := by
+lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop] (f : F)
+    (s : Finset α) : f s.disj ↔ ∃ a ∈ s, f a := by
   simpa using List.map_disj f s.toList
 
 end
