@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 
 #align_import analysis.calculus.fderiv.linear from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
-set_option trace.Meta.Tactic.fun_prop.attr true
+
 /-!
 # The derivative of bounded linear maps
 
