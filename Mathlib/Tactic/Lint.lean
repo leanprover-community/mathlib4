@@ -85,7 +85,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
           let nm := declName.components
           let some (dup, _) := nm.zip nm.tail! |>.find? fun (x, y) => x == y
             | return
-          logWarningAt id m!"The namespace '{dup}' is duplicated in the '{id}'\n\
+          logWarningAt id m!"The namespace '{dup}' is duplicated in the declaration '{declName}'\n\
             [linter.dupNamespace]"
       | _ => return
 
