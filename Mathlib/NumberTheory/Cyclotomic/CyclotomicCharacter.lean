@@ -35,7 +35,7 @@ of `1` in `L`.
 
 In theory this could be set up as some theory about monoids, being a character
 on monoid isomorphisms, but under the hypotheses that the `n`'th roots of unity
-are cyclic of order `n`. The advantage of sticking to integral domains is that finite subgroups
+are cyclic. The advantage of sticking to integral domains is that finite subgroups
 are guaranteed to be cyclic, so the weaker assumption that there are `n` `n`th
 roots of unity is enough. All the applications I'm aware of are when `L` is a
 field anyway.
