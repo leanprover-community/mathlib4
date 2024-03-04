@@ -225,7 +225,7 @@ noncomputable def isColimitCoconeOfSmall :
 
 end
 
-lemma hasColimit_iff_small_sections : HasColimit F ↔ Small.{w} (Quot' F) :=
+lemma hasColimit_iff_small_quot' : HasColimit F ↔ Small.{w} (Quot' F) :=
   ⟨fun _ => Small.mk ⟨_, ⟨Equiv.ofBijective _
       (bijective_fromQuot'_of_isColimit (colimit.isColimit F))⟩⟩,
     fun _ => ⟨_, Types.isColimitCoconeOfSmall F⟩⟩
