@@ -413,6 +413,8 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.some_lt_some.1 this)⟩
 #align polynomial.dvd_iff_mod_by_monic_eq_zero Polynomial.modByMonic_eq_zero_iff_dvd
 
+/-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
+this one, requires commutativity. -/
 @[simp]
 lemma mul_right_modByMonic (hq : q.Monic) : (q * p) %ₘ q = 0 := by
   rw [modByMonic_eq_zero_iff_dvd hq]
@@ -702,6 +704,8 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)
 #align polynomial.eval_div_by_monic_pow_root_multiplicity_ne_zero Polynomial.eval_divByMonic_pow_rootMultiplicity_ne_zero
 
+/-- See `Polynomial.mul_right_modByMonic` for the other multiplication order. This version, unlike
+that one, requires commutativity. -/
 @[simp]
 lemma mul_left_modByMonic (hq : q.Monic) : (p * q) %ₘ q = 0 := by
   rw [modByMonic_eq_zero_iff_dvd hq]
