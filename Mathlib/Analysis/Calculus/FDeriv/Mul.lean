@@ -220,7 +220,6 @@ theorem DifferentiableOn.continuousMultilinear_apply_const (hc : DifferentiableO
 theorem Differentiable.continuousMultilinear_apply_const (hc : Differentiable 𝕜 c) (u : ∀ i, M i) :
     Differentiable 𝕜 fun y ↦ (c y) u := fun x ↦ (hc x).continuousMultilinear_apply_const u
 
-@[fun_prop]
 theorem fderivWithin_continuousMultilinear_apply_const (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) :
     fderivWithin 𝕜 (fun y ↦ (c y) u) s x = ((fderivWithin 𝕜 c s x).flipMultilinear u) :=
