@@ -1150,7 +1150,7 @@ def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R]
     toFun := Equiv.prodAssoc E E₂ E₃
     invFun := (Equiv.prodAssoc E E₂ E₃).symm
     map_add' := by simp [-_root_.map_add] --  Fix timeout from #8386
-    map_smul' := by
+    map_smul' := by -- was `by simp` before #6057 caused that to time out.
       rintro m ⟨⟨e, f⟩, g⟩
       simp only [Prod.smul_mk, Equiv.prodAssoc_apply, RingHom.id_apply]
     norm_map' := by

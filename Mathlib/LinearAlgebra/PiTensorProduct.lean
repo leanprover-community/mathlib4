@@ -525,7 +525,7 @@ theorem reindex_refl : reindex R s (Equiv.refl ι) = LinearEquiv.refl R _ := by
   ext
   simp only [Equiv.refl_symm, Equiv.refl_apply, reindex, domDomCongrLinearEquiv',
     LinearEquiv.coe_symm_mk, LinearMap.compMultilinearMap_apply, LinearEquiv.coe_coe,
-    LinearEquiv.refl_toLinearMap, LinearMap.id_coe, id_eq]
+    LinearEquiv.refl_toLinearMap, LinearMap.id_coe]
   erw [lift.tprod]
   congr
 #align pi_tensor_product.reindex_refl PiTensorProduct.reindex_refl
@@ -545,7 +545,8 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
       simp only [map_smulₛₗ _, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
         smul_eq_mul, mul_one]
       congr
-      simp only [Unique.uniq _]
+      aesop
+      -- ACL -- simp only [Unique.uniq _]
     · simp only
       intro x y hx hy
       rw [map_add, add_smul, hx, hy]
@@ -583,8 +584,7 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     · intro x y hx hy
       rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_add, ← this 0 (lift _ _), hx,
         ← this 0 (lift _ _), hy]
-  right_inv t := by
-    simp only [lift.tprod, ofSubsingleton_apply_apply, LinearMap.id_coe, id_eq]
+  right_inv t := by simp only [lift.tprod, ofSubsingleton_apply_apply, LinearMap.id_coe]
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
     simp only

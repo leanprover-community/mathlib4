@@ -124,14 +124,14 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     map_add' := fun a b ↦ by simp [add_smul]; abel
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
-      simp only [map_add, LinearMapClass.map_smul, map_sub, smul_eq_mul]
-      simp only [Gx, mul_sub, mul_one, add_sub_cancel'_right]
+      simp only [map_add, LinearMapClass.map_smul, map_sub, smul_eq_mul,
+        Gx, mul_sub, mul_one, add_sub_cancel'_right]
       rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel Gy]
       simp only [smul_sub, one_mul]
       abel
     right_inv := fun z ↦ by
-      simp only [map_add, LinearMapClass.map_smul, map_sub, smul_eq_mul]
-      simp only [Gx, mul_sub, mul_one]
+      simp only [map_add, LinearMapClass.map_smul, map_sub, smul_eq_mul,
+        Gx, mul_sub, mul_one]
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel Gy]
       simp only [smul_sub, one_mul, add_sub_cancel'_right]
       abel
