@@ -622,9 +622,9 @@ theorem integral_Ico_eq_integral_Ioo' (hx : μ {x} = 0) :
   set_integral_congr_set_ae (Ioo_ae_eq_Ico' hx).symm
 #align measure_theory.integral_Ico_eq_integral_Ioo' MeasureTheory.integral_Ico_eq_integral_Ioo'
 
-theorem integral_Icc_eq_integral_Ioo' (hx : μ {x} = 0) (hb : μ {y} = 0) :
+theorem integral_Icc_eq_integral_Ioo' (hx : μ {x} = 0) (hy : μ {y} = 0) :
     ∫ t in Icc x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
-  set_integral_congr_set_ae (Ioo_ae_eq_Icc' hx hb).symm
+  set_integral_congr_set_ae (Ioo_ae_eq_Icc' hx hy).symm
 #align measure_theory.integral_Icc_eq_integral_Ioo' MeasureTheory.integral_Icc_eq_integral_Ioo'
 
 theorem integral_Iic_eq_integral_Iio' (hx : μ {x} = 0) :
@@ -815,14 +815,14 @@ section IntegrableUnion
 variable {μ : Measure X} [NormedAddCommGroup E] [Countable Y]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : Y → Set X}
-    (hs : ∀ b : Y, MeasurableSet (s b)) (hi : ∀ b : Y, IntegrableOn f (s b) μ)
-    (h : Summable fun b : Y => ∫ x : X in s b, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
+    (hs : ∀ y : Y, MeasurableSet (s y)) (hi : ∀ y : Y, IntegrableOn f (s y) μ)
+    (h : Summable fun y : Y => ∫ x : X in s y, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine' ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt _⟩
-  have B := fun b : Y => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi b).norm
+  have B := fun y : Y => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi y).norm
   rw [tsum_congr B]
   have S' :
-    Summable fun b : Y =>
-      (⟨∫ x : X in s b, ‖f x‖₊ ∂μ, set_integral_nonneg (hs b) fun x _ => NNReal.coe_nonneg _⟩ :
+    Summable fun y : Y =>
+      (⟨∫ x : X in s y, ‖f x‖₊ ∂μ, set_integral_nonneg (hs y) fun x _ => NNReal.coe_nonneg _⟩ :
         NNReal) :=
     by rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
