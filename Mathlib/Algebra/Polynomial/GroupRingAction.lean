@@ -138,10 +138,10 @@ protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] w
   map_smul' m p :=
     Polynomial.induction_on p
       (fun b ↦ by rw [smul_C, map_C, coe_fn_coe, g.map_smul, map_C,
-          coe_fn_coe, smul_C, MonoidHom.id_apply, id_eq])
+          coe_fn_coe, smul_C, MonoidHom.id_apply])
       (fun p q ihp ihq ↦ by
         rw [smul_add, Polynomial.map_add, ihp, ihq, Polynomial.map_add, smul_add])
-      fun n b _ ↦ by rw [MonoidHom.id_apply, id_eq, smul_mul', smul_C, smul_pow', smul_X,
+      fun n b _ ↦ by rw [MonoidHom.id_apply, smul_mul', smul_C, smul_pow', smul_X,
         Polynomial.map_mul, map_C, Polynomial.map_pow,
         map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,
         smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
