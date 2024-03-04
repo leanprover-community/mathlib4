@@ -395,6 +395,7 @@ theorem map_modByMonic [Ring S] (f : R →+* S) (hq : Monic q) :
   (map_mod_divByMonic f hq).2
 #align polynomial.map_mod_by_monic Polynomial.map_modByMonic
 
+@[deprecated dvd_iff_modByMonic_eq_zero]
 theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
   ⟨fun h => by rw [← modByMonic_add_div p hq, h, zero_add]; exact dvd_mul_right _ _, fun h => by
     nontriviality R
