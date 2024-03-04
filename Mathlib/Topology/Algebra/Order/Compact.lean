@@ -263,8 +263,8 @@ theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCom
   rcases (hs.image_of_continuousOn hf).exists_isLeast (ne_s.image f) with ⟨_, ⟨x, hxs, rfl⟩, hx⟩
   exact ⟨x, hxs, ball_image_iff.1 hx⟩
 
-/-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set `s`.
-  This variant is for functions into a `NoMaxOrder`, without the assumption `s.Nonempty`. -/
+/-- If a continuous function lies strictly above `a` on a compact set,
+  it has a lower bound strictly above `a`. -/
 theorem IsCompact.exists_forall_le' [ClosedIicTopology α] [NoMaxOrder α] {f : β → α}
     {s : Set β} (hs : IsCompact s) (hf : ContinuousOn f s) {a : α} (hf' : ∀ b ∈ s, a < f b) :
     ∃ a', a < a' ∧ ∀ b ∈ s, a' ≤ f b := by
