@@ -169,7 +169,8 @@ theorem finsuppPiTensorProduct_symm_single (p : (i : ι) → κ i) (m : (i : ι)
 
 variable [(x : R) → Decidable (x ≠ 0)]
 
--- A variant of `finsuppPiTensorProduct` where all modules `M i` are the ground ring. -/
+/-- A variant of `finsuppPiTensorProduct` where all modules `M i` are the ground ring.
+-/
 def finsuppPiTensorProduct' : (⨂[R] i, (κ i →₀ R)) ≃ₗ[R] ((i : ι) → κ i) →₀ R :=
   finsuppPiTensorProduct R κ (fun _ ↦ R) ≪≫ₗ
   Finsupp.lcongr (Equiv.refl ((i : ι) → κ i)) (constantBaseRingEquiv ι R)
