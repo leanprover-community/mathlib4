@@ -133,7 +133,12 @@ lemma surjective_fromQuot' : Function.Surjective (fromQuot' (cocone c)) := by
 
 end SurjectiveFromQuot'OfIsColimit
 
-lemma surjective_fromQuot'_of_isColimit (hc : IsColimit c) :
+section
+
+variable {c}
+variable (hc : IsColimit c)
+
+lemma surjective_fromQuot'_of_isColimit :
     Function.Surjective (fromQuot' c) := by
   rw [← fromQuot'_naturality (IsColimit.uniqueUpToIso
     (SurjectiveFromQuot'OfIsColimit.isColimit hc) hc).hom]
@@ -141,6 +146,89 @@ lemma surjective_fromQuot'_of_isColimit (hc : IsColimit c) :
   · exact (IsColimit.coconePointUniqueUpToIso
       (SurjectiveFromQuot'OfIsColimit.isColimit hc) hc).toEquiv.surjective
   · apply SurjectiveFromQuot'OfIsColimit.surjective_fromQuot'
+
+lemma injective_fromQuot'_of_isColimit :
+    Function.Injective (fromQuot' c) := by
+  classical
+  have := hc
+  rintro ⟨j₁, x₁⟩ ⟨j₂, x₂⟩ h
+  dsimp at h
+  let π : Quot' F → ULift.{w} (Fin 2) :=
+    fun x => if (Quot.mk _ ⟨j₁, x₁⟩ = x) then ULift.up 0 else ULift.up 1
+  by_contra!
+  have : π (Quot.mk _ ⟨j₁, x₁⟩) ≠ π (Quot.mk _ ⟨j₂, x₂⟩) := by
+    dsimp only [π]
+    rw [if_pos rfl, if_neg (by assumption)]
+    simp
+  let s : Cocone F := Cocone.mk (ULift.{w} (Fin 2))
+    { app := fun j x => π (Quot.mk _ ⟨j, x⟩)
+      naturality := fun j j' f => by
+        ext x
+        exact congr_arg π (Quot.sound ⟨f, rfl⟩).symm }
+  have hs : ∀ (j : J) (x : F.obj j),
+      (hc.desc s) (c.ι.app j x) = π (Quot.mk _ ⟨j, x⟩) :=
+    fun j x => congr_fun (hc.fac s j) x
+  apply this
+  rw [← hs, ← hs, h]
+
+lemma bijective_fromQuot'_of_isColimit :
+    Function.Bijective (fromQuot' c) :=
+  ⟨injective_fromQuot'_of_isColimit hc, surjective_fromQuot'_of_isColimit hc⟩
+
+end
+
+lemma nonempty_isColimit_iff_bijective_fromQuot' :
+    Nonempty (IsColimit c) ↔ Function.Bijective (fromQuot' c) := by
+  refine' ⟨fun hc => bijective_fromQuot'_of_isColimit hc.some, fun hc => ⟨_⟩⟩
+  let e := Equiv.ofBijective _ hc
+  have h : ∀ (j : J) (x : F.obj j), e.symm (c.ι.app j x) = Quot.mk _ ⟨j, x⟩ :=
+    fun j x => e.injective (Equiv.ofBijective_apply_symm_apply _ _ _)
+  exact
+    { desc := fun s => (fromQuot' s).comp e.symm
+      fac := fun s j => by
+        ext x
+        simp [h]
+      uniq := fun s m hm => by
+        ext t
+        obtain ⟨⟨j, x⟩, rfl⟩ := e.surjective t
+        dsimp
+        rw [h, fromQuot'_mk]
+        exact congr_fun (hm j) x }
+
+variable (F)
+
+section
+
+variable [Small.{w} (Quot' F)]
+
+@[simps!]
+noncomputable def coconeOfSmall : Cocone F where
+  pt := Shrink (Quot' F)
+  ι :=
+    { app := fun j x => equivShrink.{w} (Quot' F) (Quot.mk _ ⟨j, x⟩)
+      naturality := fun j j' φ => by
+        ext x
+        dsimp
+        congr 1
+        exact (Quot.sound ⟨φ, rfl⟩).symm }
+
+@[simp]
+lemma fromQuot'_coconeOfSmall :
+    fromQuot' (coconeOfSmall F) = (equivShrink.{w} (Quot' F)) := by
+  ext ⟨j, x⟩
+  rfl
+
+noncomputable def isColimitCoconeOfSmall :
+    IsColimit (Types.coconeOfSmall F) :=
+  Nonempty.some (by simpa only [nonempty_isColimit_iff_bijective_fromQuot',
+    fromQuot'_coconeOfSmall] using (equivShrink.{w} (Quot' F)).bijective)
+
+end
+
+lemma hasColimit_iff_small_sections : HasColimit F ↔ Small.{w} (Quot' F) :=
+  ⟨fun _ => Small.mk ⟨_, ⟨Equiv.ofBijective _
+      (bijective_fromQuot'_of_isColimit (colimit.isColimit F))⟩⟩,
+    fun _ => ⟨_, Types.isColimitCoconeOfSmall F⟩⟩
 
 end Colimits
 
