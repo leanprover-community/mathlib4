@@ -122,8 +122,10 @@ variable [∀ i, Module R (M i)]
 
 variable [(i : ι) → (x : M i) → Decidable (x ≠ 0)]
 
-/-- The tensor product of the family `κ i →₀ M i` indexed by `ι` is linearly equivalent to
-`∏ i, κ i →₀ ⨂[R] i, M i`. -/
+/-- If `ι` is a `Fintype`, `κ i` is a family of types indexed by `ι` and `M i` is a family
+of modules indexed by `ι`, then the tensor product of the family `κ i →₀ M i` is linearly
+equivalent to `∏ i, κ i →₀ ⨂[R] i, M i`.
+-/
 def finsuppPiTensorProduct : (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) → κ i) →₀ ⨂[R] i, M i :=
   PiTensorProduct.congr (fun i ↦ finsuppLEquivDirectSum R (M i) (κ i)) ≪≫ₗ
   (PiTensorProduct.directSum R (fun (i : ι) ↦ fun (_ : κ i) ↦ M i)) ≪≫ₗ
