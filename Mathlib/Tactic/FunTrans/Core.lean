@@ -43,14 +43,7 @@ private def ppOrigin' (origin : FunProp.Origin) : MetaM String := do
 def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array BinderInfo) : SimpM Bool := do
   for x in xs, bi in bis do
     let type ← inferType x
-    -- Note that the binderInfo may be misleading here:
-    -- `simp [foo _]` uses `abstractMVars` to turn the elaborated term with
-    -- mvars into the lambda expression `fun α x inst => foo x`, and all
-    -- its bound variables have default binderInfo!
-    if bi.isInstImplicit then
-      unless (← synthesizeInstance x type) do
-        return false
-    else if (← instantiateMVars x).isMVar then
+    if (← instantiateMVars x).isMVar then
       -- A hypothesis can be both a type class instance as well as a proposition,
       -- in that case we try both TC synthesis and the discharger
       -- (because we don't know whether the argument was originally explicit or instance-implicit).
@@ -62,6 +55,11 @@ def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array Binde
 
       if (← isProp type) then
         if let .some r ← runFunProp type then
+          x.mvarId!.assign r
+          continue
+
+        let disch := (← funTransConfig.get).funPropConfig.disch
+        if let .some r ← disch type then
           x.mvarId!.assign r
           continue
 
