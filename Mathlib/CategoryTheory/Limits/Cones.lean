@@ -439,7 +439,7 @@ instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) wher
 #align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
 
 instance functoriality_faithful [Faithful G] : Faithful (Cones.functoriality F G) where
-  map_injective {c} {c'} f g e :=
+  map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
 #align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functoriality_faithful
 
