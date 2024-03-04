@@ -120,7 +120,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 #align measure_theory.add_haar_measure_eq_volume_pi MeasureTheory.addHaarMeasure_eq_volume_pi
 
--- porting note: TODO: remove this instance?
+-- Porting note: TODO: remove this instance?
 instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
@@ -564,7 +564,7 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
   have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
-    -- porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
+    -- Porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
     refine congr_arg _ <| funext fun i ↦ ?_
     exact (b.constr_basis ℕ v i).symm
   rw [A, addHaar_image_linearMap, b.addHaar_self, mul_one, ← LinearMap.det_toMatrix b,

@@ -75,7 +75,7 @@ theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 #align finset.mem_univ Finset.mem_univ
 
---Porting note: removing @[simp], simp can prove it
+-- Porting note: removing @[simp], simp can prove it
 theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 :=
   mem_univ
 #align finset.mem_univ_val Finset.mem_univ_val
@@ -818,7 +818,7 @@ theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) [Fintype (S
   simp
 #align set.to_finset_range Set.toFinset_range
 
-@[simp] -- porting note: new attribute
+@[simp] -- Porting note: new attribute
 theorem toFinset_singleton (a : α) [Fintype ({a} : Set α)] : ({a} : Set α).toFinset = {a} := by
   ext
   simp
@@ -913,7 +913,7 @@ instance Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
   Fintype.subtype {y} (by simp [eq_comm])
 #align fintype.subtype_eq' Fintype.subtypeEq'
 
---Porting note: removing @[simp], simp can prove it
+-- Porting note: removing @[simp], simp can prove it
 theorem Fintype.univ_empty : @univ Empty _ = ∅ :=
   rfl
 #align fintype.univ_empty Fintype.univ_empty

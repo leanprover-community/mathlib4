@@ -68,7 +68,7 @@ open Structure Cardinal Fin
 
 namespace Term
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- A term `t` with variables indexed by `α` can be evaluated by giving a value to each variable. -/
 def realize (v : α → M) : ∀ _t : L.Term α, M
   | var k => v k
@@ -165,13 +165,13 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
   · cases n
     · cases f
       · simp only [realize, ih, Nat.zero_eq, constantsOn, mk₂_Functions]
-        --Porting note: below lemma does not work with simp for some reason
+        -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
         rfl
     · cases' f with _ f
       · simp only [realize, ih, constantsOn, mk₂_Functions]
-        --Porting note: below lemma does not work with simp for some reason
+        -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · exact isEmptyElim f
 #align first_order.language.term.realize_constants_to_vars FirstOrder.Language.Term.realize_constantsToVars
@@ -182,11 +182,11 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     t.varsToConstants.realize v = t.realize (Sum.elim (fun a => ↑(L.con a)) v) := by
   induction' t with ab n f ts ih
   · cases' ab with a b
-    --Porting note: both cases were `simp [Language.con]`
+    -- Porting note: both cases were `simp [Language.con]`
     · simp [Language.con, realize, funMap_eq_coe_constants]
     · simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
-    --Porting note: below lemma does not work with simp for some reason
+    -- Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
 #align first_order.language.term.realize_vars_to_constants FirstOrder.Language.Term.realize_varsToConstants
 
@@ -246,7 +246,7 @@ namespace BoundedFormula
 
 open Term
 
---Porting note: universes in different order
+-- Porting note: universes in different order
 /-- A bounded formula can be evaluated as true or false by giving values to each free variable. -/
 def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l → M), Prop
   | _, falsum, _v, _xs => False
@@ -572,7 +572,7 @@ theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
 end BoundedFormula
 
 
---Porting note: no `protected` attribute in Lean4
+-- Porting note: no `protected` attribute in Lean4
 -- attribute [protected] bounded_formula.falsum bounded_formula.equal bounded_formula.rel
 
 -- attribute [protected] bounded_formula.imp bounded_formula.all
@@ -599,7 +599,7 @@ set_option linter.uppercaseLean3 false in
 
 end LHom
 
---Porting note: no `protected` attribute in Lean4
+-- Porting note: no `protected` attribute in Lean4
 -- attribute [protected] bounded_formula.falsum bounded_formula.equal bounded_formula.rel
 
 -- attribute [protected] bounded_formula.imp bounded_formula.all

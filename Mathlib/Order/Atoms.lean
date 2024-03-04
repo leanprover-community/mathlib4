@@ -737,7 +737,8 @@ namespace IsSimpleOrder
 
 variable [CompleteLattice α] [IsSimpleOrder α]
 
---set_option default_priority 100 --Porting note: not supported, done for each instance individually
+--set_option default_priority 100
+-- Porting note: not supported, done for each instance individually
 
 instance (priority := 100) : IsAtomistic α :=
   ⟨fun b =>

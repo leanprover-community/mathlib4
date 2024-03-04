@@ -32,7 +32,7 @@ theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fi
 #align fintype.card_embedding_eq_of_unique Fintype.card_embedding_eq_of_unique
 
 -- Establishes the cardinality of the type of all injections between two finite types.
--- porting note: `induction'` is broken so instead we make an ugly refine and `dsimp` a lot.
+-- Porting note: `induction'` is broken so instead we make an ugly refine and `dsimp` a lot.
 @[simp]
 theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖.descFactorial ‖α‖ := by

@@ -461,7 +461,7 @@ theorem card_withConstants :
 #align first_order.language.card_with_constants FirstOrder.Language.card_withConstants
 
 /-- The language map adding constants.  -/
-@[simps!] --Porting note: add `!` to `simps`
+@[simps!] -- Porting note: add `!` to `simps`
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
 #align first_order.language.Lhom_with_constants FirstOrder.Language.lhomWithConstants
