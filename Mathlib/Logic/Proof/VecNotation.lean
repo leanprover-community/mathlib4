@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Shogo Saito. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
+-/
 import Mathlib.Data.Fin.VecNotation
 
 namespace Matrix
@@ -22,13 +27,14 @@ def vecConsLast {n : ℕ} (t : Fin n → α) (h : α) : Fin n.succ → α :=
 
 infixl:70 " <: " => vecConsLast
 
-@[simp] lemma rightConcat_last  {a : α} {s : Fin n → α} : (s <: a) (last n) = a := by simp[vecConsLast]
+@[simp] lemma rightConcat_last  {a : α} {s : Fin n → α} : (s <: a) (last n) = a := by
+  simp[vecConsLast]
 
 @[simp] lemma rightConcat_castSucc (i : Fin n)  {a : α} {s : Fin n → α} :
     (s <: a) (Fin.castSucc i) = s i := by simp[vecConsLast]
 
-lemma comp_vecConsLast (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (s <: a) x) = f ∘ s <: f a :=
-funext (fun i => lastCases (by simp) (by simp) i)
+lemma comp_vecConsLast (f : α → β) (a : α) (s : Fin n → α) :
+    (fun x => f $ (s <: a) x) = f ∘ s <: f a := funext (fun i => lastCases (by simp) (by simp) i)
 
 @[simp] lemma vecHead_comp (f : α → β) (v : Fin (n + 1) → α) : vecHead (f ∘ v) = f (vecHead v) :=
   by simp[vecHead]

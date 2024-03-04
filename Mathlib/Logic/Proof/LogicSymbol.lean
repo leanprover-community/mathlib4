@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Shogo Saito. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
+-/
 import Mathlib.Logic.Proof.VecNotation
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.FunLike.Basic
@@ -409,7 +414,7 @@ lemma hom_conj [LogicSymbol.HomClass F α β] (f : F) (v : Fin n → α) :
   induction' n with n ih <;> simp[*, conj]
 
 lemma hom_conj' [LogicSymbol.HomClass F α β] (f : F) (v : Fin n → α) :
-  f (conj v) = conj fun i => f (v i) := hom_conj f v
+    f (conj v) = conj fun i => f (v i) := hom_conj f v
 
 end And
 
