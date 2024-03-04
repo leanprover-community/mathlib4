@@ -456,23 +456,23 @@ theorem integral_indicator_one ⦃s : Set X⦄ (hs : MeasurableSet s) :
 #align measure_theory.integral_indicator_one MeasureTheory.integral_indicator_one
 
 theorem set_integral_indicatorConstLp [CompleteSpace E]
-    {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (x : E) :
-    ∫ a in s, indicatorConstLp p ht hμt x a ∂μ = (μ (t ∩ s)).toReal • x :=
+    {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
+    ∫ x in s, indicatorConstLp p ht hμt e x ∂μ = (μ (t ∩ s)).toReal • e :=
   calc
-    ∫ a in s, indicatorConstLp p ht hμt x a ∂μ = ∫ a in s, t.indicator (fun _ => x) a ∂μ := by
+    ∫ x in s, indicatorConstLp p ht hμt e x ∂μ = ∫ x in s, t.indicator (fun _ => e) x ∂μ := by
       rw [set_integral_congr_ae hs (indicatorConstLp_coeFn.mono fun x hx _ => hx)]
-    _ = (μ (t ∩ s)).toReal • x := by rw [integral_indicator_const _ ht, Measure.restrict_apply ht]
+    _ = (μ (t ∩ s)).toReal • e := by rw [integral_indicator_const _ ht, Measure.restrict_apply ht]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.set_integral_indicator_const_Lp MeasureTheory.set_integral_indicatorConstLp
 
 theorem integral_indicatorConstLp [CompleteSpace E]
-    {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (x : E) :
-    ∫ a, indicatorConstLp p ht hμt x a ∂μ = (μ t).toReal • x :=
+    {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
+    ∫ x, indicatorConstLp p ht hμt e x ∂μ = (μ t).toReal • e :=
   calc
-    ∫ a, indicatorConstLp p ht hμt x a ∂μ = ∫ a in univ, indicatorConstLp p ht hμt x a ∂μ := by
+    ∫ x, indicatorConstLp p ht hμt e x ∂μ = ∫ x in univ, indicatorConstLp p ht hμt e x ∂μ := by
       rw [integral_univ]
-    _ = (μ (t ∩ univ)).toReal • x := (set_integral_indicatorConstLp MeasurableSet.univ ht hμt x)
-    _ = (μ t).toReal • x := by rw [inter_univ]
+    _ = (μ (t ∩ univ)).toReal • e := (set_integral_indicatorConstLp MeasurableSet.univ ht hμt e)
+    _ = (μ t).toReal • e := by rw [inter_univ]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_indicator_const_Lp MeasureTheory.integral_indicatorConstLp
 
