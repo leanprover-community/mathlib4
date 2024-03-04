@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics
 
 #align_import analysis.calculus.fderiv.basic from "leanprover-community/mathlib"@"41bef4ae1254365bc190aee63b947674d2977f01"
-set_option trace.Meta.Tactic.fun_prop.attr true
+
 /-!
 # The Fréchet derivative
 
