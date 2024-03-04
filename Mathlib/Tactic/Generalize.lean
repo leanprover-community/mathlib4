@@ -8,11 +8,14 @@ import Lean.Elab.Tactic.Generalize
 /-!
 # Backwards compatibility shim for `generalize`.
 
-In https://github.com/leanprover/lean4/pull/3575 the reducibility setting for `generalize` was
+In https://github.com/leanprover/lean4/pull/3575 the transparency setting for `generalize` was
 changed to `instances`. This file provides a shim for the old setting, so that users who
 haven't updated their code yet can still use `generalize` with the old setting.
 
 This file can be removed once all uses of the compatibility shim have been removed from Mathlib.
+
+(Possibly we will instead add a `transparency` argument to `generalize`.
+This would also allow removing this file.
 -/
 
 open Lean Elab Tactic Meta in
