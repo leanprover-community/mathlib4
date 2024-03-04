@@ -121,10 +121,6 @@ class SemilinearMapClass (F : Type*)
     (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂]
     extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂ : Prop
-  -- where
-  -- /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
-  -- See also `_root_.map_smul` for the case where `σ` is the identity. -/
-  -- map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_map_class SemilinearMapClass
 
 end
@@ -132,12 +128,6 @@ end
 -- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
 -- `σ` becomes a metavariable but that's fine because it's an `outParam`
 -- attribute [nolint dangerousInstance] SemilinearMapClass.toAddHomClass
-
-/- now unnecessary
-
-export SemilinearMapClass (map_smulₛₗ)
-
--/
 
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to `lean4#3701`.
 -- attribute [simp] map_smulₛₗ
@@ -155,8 +145,7 @@ abbrev LinearMapClass (F : Type*) (R : outParam (Type*)) (M M₂ : Type*)
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam (Type*)} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
-    f (r • x) = r • f x := by
-      rw [map_smulₛₗ, RingHom.id_apply]
+    f (r • x) = r • f x := by rw [_root_.map_smul]
 
 namespace SemilinearMapClass
 

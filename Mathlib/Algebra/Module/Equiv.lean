@@ -187,7 +187,6 @@ instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
--- TODO : was map_smulₛₗ
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more

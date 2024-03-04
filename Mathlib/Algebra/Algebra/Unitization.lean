@@ -732,21 +732,8 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →
 def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   toFun := NonUnitalAlgHom.toAlgHom
   invFun φ := φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)
-  -- It used to be : by ext; simp
-  left_inv φ := by
-    ext a
-    unfold inrNonUnitalAlgHom
-    simp only [Function.comp_id, AlgHom.toNonUnitalAlgHom_eq_coe]
-    rw [NonUnitalAlgHom.comp_apply]
-    simp only [NonUnitalAlgHom.coe_mk, NonUnitalAlgHom.toAlgHom_apply,
-      fst_inr, map_zero, snd_inr, zero_add]
-  -- It used to be : by ext; simp
-  right_inv φ := Unitization.algHom_ext' <| by
-    ext a
-    unfold inrNonUnitalAlgHom
-    simp only [AlgHom.toNonUnitalAlgHom_eq_coe, MonoidHom.coe_mk, OneHom.coe_mk,
-      NonUnitalAlgHom.coe_comp, NonUnitalAlgHom.coe_mk, Function.comp_apply,
-      NonUnitalAlgHom.toAlgHom_apply, fst_inr, map_zero, snd_inr, zero_add]
+  left_inv φ := by ext; simp
+  right_inv φ := by ext; simp
 #align unitization.lift Unitization.lift
 
 theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
@@ -776,9 +763,6 @@ theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
     φ = ψ :=
   Unitization.algHom_ext'' <| DFunLike.congr_fun h
 
-example (φ : A →⋆ₙₐ[R] C) (a : A) : φ.toNonUnitalAlgHom a = φ a := by
-  rw [← NonUnitalStarAlgHom.coe_toNonUnitalAlgHom]
-
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
 @[simps! apply symm_apply apply_apply]
@@ -787,21 +771,15 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
     map_star' := fun x => by
       induction x using Unitization.ind
-      -- simp [map_star]
-      simp only [MonoidHom.coe_mk, OneHom.coe_mk, lift, AlgHom.toNonUnitalAlgHom_eq_coe,
-        Equiv.coe_fn_mk, AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, star_add,
-        OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_add, RingHom.coe_coe,
-        NonUnitalAlgHom.toAlgHom_apply, fst_star, fst_inl, algebraMap_star_comm, snd_star, snd_inl,
-        star_zero, map_zero, add_zero, fst_inr, snd_inr, zero_add]
-      rw [NonUnitalStarAlgHom.coe_toNonUnitalAlgHom, map_star] }
+      simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv := fun φ => by -- ext; simp,
     ext
-    simp [lift]
+    simp
   right_inv := fun φ => Unitization.algHom_ext'' <| by
-    simp [lift] }
+    simp }
 
--- @[simp]
+@[simp]
 theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl

@@ -333,21 +333,6 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
     (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     ClassGroup.mk0 ⟨ClassGroup.integralRep I, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩
       = ClassGroup.mk I := by
-/- old proof
-  let a := I.1.2.choose
-  have a_ne_zero' := I.1.2.choose_spec.1
-  have ha := I.1.2.choose_spec.2
-  have fa_ne_zero : (algebraMap R (FractionRing R)) a ≠ 0 :=
-    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors a_ne_zero'
-  symm
-  apply Quotient.sound
-  change @Setoid.r _
-    (QuotientGroup.leftRel (toPrincipalIdeal R (FractionRing R)).range) _ _
-  rw [canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id, MonoidHom.id_apply,
-      MonoidHom.id_apply, QuotientGroup.leftRel_apply]
-  refine ⟨Units.mk0 (algebraMap R _ a) fa_ne_zero, ?_⟩
-  rw [_root_.eq_inv_mul_iff_mul_eq, eq_comm, id_eq, id_eq, mul_comm I]
--/
   rw [← ClassGroup.mk_mk0 (FractionRing R), eq_comm, ClassGroup.mk_eq_mk]
   have fd_ne_zero : (algebraMap R (FractionRing R)) I.1.den ≠ 0 := by
     refine IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (SetLike.coe_mem _)
