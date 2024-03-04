@@ -124,6 +124,7 @@ example (n : ℕ) : foo.rfl.toFun n = n := by rw [foo.rfl_toFun, id]
 example (n : ℕ) : foo.rfl.invFun n = n := by rw [foo.rfl_invFun]
 
 /- the declarations are `simp` lemmas -/
+set_option linter.dupNamespace false in
 @[simps] def foo : ℕ × ℤ := (1, 2)
 
 -- note: in Lean 4 the first test succeeds without `@[simps]`, however, the remaining tests don't
