@@ -298,8 +298,10 @@ lemma HasSum.natCast_add_negSucc {f : ℤ → α} (hf : HasSum f a) :
     cases x
     · exact Or.inl ⟨_, hv' (by simpa using Or.inl hx), rfl⟩
     · exact Or.inr ⟨_, hv' (by simpa using Or.inr hx), rfl⟩
-  · simp [sum_image (Nat.cast_injective.injOn _), sum_image (this.injOn _),
-      sum_add_distrib, sum_union, disjoint_iff_ne]
+  · rw [sum_union, sum_image (Nat.cast_injective.injOn _), sum_image (this.injOn _),
+      sum_add_distrib]
+    simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const]
 
 lemma Summable.natCast_add_negSucc {f : ℤ → α} (hf : Summable f) :
     Summable (fun n : ℕ ↦ f n + f (Int.negSucc n)) :=
@@ -389,7 +391,8 @@ theorem HasSum.natCast_add_neg_natCast {f : ℤ → α} (hf : HasSum f a) :
       · intro x hx
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
-        simp [u1, u2] at hx
+        simp only [mem_sdiff, mem_union, mem_image, Nat.cast_eq_zero, exists_eq_right, neg_eq_zero,
+          or_self, mem_inter, and_self, and_not_self] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image, exists_prop] at hx
         have : x = 0 := by
@@ -400,7 +403,8 @@ theorem HasSum.natCast_add_neg_natCast {f : ℤ → α} (hf : HasSum f a) :
             simp only [Nat.cast_nonneg]
         simp only [this, eq_self_iff_true, if_true]
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
-    _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by simp [u1, u2]
+    _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by
+      simp only [Nat.cast_inj, imp_self, implies_true, forall_const, sum_image, neg_inj]
     _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm
 #align has_sum.sum_nat_of_sum_int HasSum.natCast_add_neg_natCast
 
