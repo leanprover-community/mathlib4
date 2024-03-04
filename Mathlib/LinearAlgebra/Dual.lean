@@ -91,6 +91,20 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `Subspace.dualQuotDistrib W` is an equivalence
     `Dual K (V₁ ⧸ W) ≃ₗ[K] Dual K V₁ ⧸ W.dualLift.range` from an arbitrary choice of
     splitting of `V₁`.
+* Tensor products:
+  * `TensorProduct.dualDistrib`: The canonical linear map from `Dual M ⊗ Dual N` to
+  `Dual (M ⊗ N)`, sending `f ⊗ g` to the composition of `TensorProduct.map f g` with the
+  natural isomorphism `R ⊗ R ≃ R`.
+  * `TensorProduct.dualDistribEquiv`: A linear equivalence between `Dual M ⊗ Dual N` and
+  `Dual (M ⊗ N)` when `M` and `N` are finite free modules. It sends `f ⊗ g` to the composition
+  of `TensorProduct.map f g` with the natural isomorphism `R ⊗ R ≃ R`.
+  * `PiTensorProduct.dualDistrib`: The canonical linear map from `⨂[R] i, Dual R (M i)` to
+  `Dual R (⨂[R] i, M i)`, sending `⨂ₜ[R] i, f i` to the composition of
+  `PiTensorProduct.map f` with the linear equivalence `⨂[R] i, R →ₗ R` given by multiplication.
+  * `PiTensorProduct.dualDistribEquiv`: A linear equivalence between `⨂[R] i, Dual R (M i)`
+  and `Dual R (⨂[R] i, M i)` when all `M i` are finite free modules. If
+  `f : (i : ι) → Dual R (M i)`, then this equivalence sends `⨂ₜ[R] i, f i` to the composition of
+  `PiTensorProduct.map f` with the natural isomorphism `⨂[R] i, R ≃ R` given by multipliccation.
 -/
 
 noncomputable section
@@ -1865,11 +1879,9 @@ end TensorProduct
 
 namespace PiTensorProduct
 
-open PiTensorProduct BigOperators
+open PiTensorProduct BigOperators LinearMap
 
 attribute [local ext] PiTensorProduct.ext
-
-open LinearMap
 
 open scoped TensorProduct
 
@@ -1889,7 +1901,7 @@ def dualDistrib : (⨂[R] i, Dual R (M i)) →ₗ[R] Dual R (⨂[R] i, M i) :=
 variable {R M}
 
 @[simp]
-theorem dualDistrib_apply (f : (i : ι) → Dual R (M i)) (m : (i : ι) → M i) :
+theorem dualDistrib_apply (f : Π i, Dual R (M i)) (m : Π i, M i) :
     dualDistrib R M (⨂ₜ[R] i, f i) (⨂ₜ[R] i, m i) = ∏ i, (f i) (m i) := by
   simp only [dualDistrib, coe_comp, Function.comp_apply, compRight_apply, LinearEquiv.coe_coe,
     piTensorHomMap_tprod_tprod, constantBaseRingEquiv_tprod]
@@ -1905,23 +1917,21 @@ variable {κ : ι → Type*} [Π i, Fintype (κ i)] [Π i, DecidableEq (κ i)]
 variable [(x : R) → Decidable (x ≠ 0)]
 
 /-- An inverse to `PiTensorProduct.dualDistrib` given bases. -/
-noncomputable def dualDistribInvOfBasis (b : (i : ι) → Basis (κ i) R (M i)) :
+noncomputable def dualDistribInvOfBasis (b : Π i, Basis (κ i) R (M i)) :
     Dual R (⨂[R] i, M i) →ₗ[R] ⨂[R] i, Dual R (M i) :=
-  ∑ p : (i : ι) → κ i, (ringLmapEquivSelf R ℕ _).symm (⨂ₜ[R] i, (b i).dualBasis (p i)) ∘ₗ
+  ∑ p : (Π i, κ i), (ringLmapEquivSelf R ℕ _).symm (⨂ₜ[R] i, (b i).dualBasis (p i)) ∘ₗ
     (applyₗ (⨂ₜ[R] i, b i (p i)))
 
 @[simp]
-theorem dualDistribInvOfBasis_apply (b : (i : ι) → Basis (κ i) R (M i))
+theorem dualDistribInvOfBasis_apply (b : Π i, Basis (κ i) R (M i))
     (f : Dual R (⨂[R] i, M i)) : dualDistribInvOfBasis b f =
-    ∑ p : (i : ι) → κ i, f (⨂ₜ[R] i, b i (p i)) • (⨂ₜ[R] i, (b i).dualBasis (p i)) := by
+    ∑ p : (Π i,  κ i), f (⨂ₜ[R] i, b i (p i)) • (⨂ₜ[R] i, (b i).dualBasis (p i)) := by
   simp [dualDistribInvOfBasis]
 
-theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : (i : ι) → Basis (κ i) R (M i)) :
+theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Π i, Basis (κ i) R (M i)) :
     comp (dualDistrib R M) (dualDistribInvOfBasis b) = LinearMap.id := by
-  apply (Basis.piTensorProduct b).dualBasis.ext
-  intro p
-  apply (Basis.piTensorProduct b).ext
-  intro q
+  refine (Basis.piTensorProduct b).dualBasis.ext (fun p ↦ ?_)
+  refine (Basis.piTensorProduct b).ext (fun q ↦ ?_)
   simp only [dualDistrib, constantBaseRingEquiv, Basis.piTensorProduct, LinearEquiv.trans_symm,
     Finsupp.lcongr_symm, Equiv.refl_symm, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.map_repr, LinearEquiv.symm_symm,
@@ -1942,10 +1952,9 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : (i : ι) → Basis (
     rw [Finsupp.single_eq_of_ne (Ne.symm h), Finset.prod_eq_zero (Finset.mem_univ i)
       (by rw [Finsupp.single_eq_of_ne (Ne.symm hi)])]
 
-theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : (i : ι) → Basis (κ i) R (M i)) :
+theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Π i, Basis (κ i) R (M i)) :
     comp (dualDistribInvOfBasis b) (dualDistrib R M) = LinearMap.id := by
-  apply (Basis.piTensorProduct (fun i ↦ (b i).dualBasis)).ext
-  intro p
+  refine (Basis.piTensorProduct (fun i ↦ (b i).dualBasis)).ext (fun p ↦ ?_)
   simp only [dualDistrib, constantBaseRingEquiv, Basis.piTensorProduct, LinearEquiv.trans_symm,
     Finsupp.lcongr_symm, Equiv.refl_symm, Basis.map_apply, Finsupp.coe_basisSingleOne,
     LinearEquiv.trans_apply, Finsupp.lcongr_single, Equiv.refl_apply,
@@ -1967,21 +1976,19 @@ given bases for all `M i`. If `f : (i : ι) → Dual R (s i)`, then this equival
 `⨂ₜ[R] i, f i` to the composition of `PiTensorProduct.map f` with the natural
 isomorphism `⨂[R] i, R ≃ R` given by multipliccation (`constantBaseRingEquiv`). -/
 @[simps!]
-noncomputable def dualDistribEquivOfBasis (b : (i : ι) → Basis (κ i) R (M i)) :
+noncomputable def dualDistribEquivOfBasis (b : Π i, Basis (κ i) R (M i)) :
     (⨂[R] i, Dual R (M i)) ≃ₗ[R] Dual R (⨂[R] i, M i) := by
   refine' LinearEquiv.ofLinear (dualDistrib R M) (dualDistribInvOfBasis b) _ _
   · exact dualDistrib_dualDistribInvOfBasis_left_inverse _
   · exact dualDistrib_dualDistribInvOfBasis_right_inverse _
 
 variable (R M)
-variable [(i : ι) → Module.Finite R (M i)] [(i : ι) → Module.Free R (M i)]
+variable [Π i, Module.Finite R (M i)] [Π i, Module.Free R (M i)]
 
-/--
-A linear equivalence between `⨂[R] i, Dual R (M i)` and `Dual R (⨂[R] i, M i)` when all `M i`
-are finite free modules. If `f : (i : ι) → Dual R (M i)`, then this equivalence sends
+/-- A linear equivalence between `⨂[R] i, Dual R (M i)` and `Dual R (⨂[R] i, M i)` when all
+`M i` are finite free modules. If `f : (i : ι) → Dual R (M i)`, then this equivalence sends
 `⨂ₜ[R] i, f i` to the composition of `PiTensorProduct.map f` with the natural
-isomorphism `⨂[R] i, R ≃ R` given by multipliccation (`constantBaseRingEquiv`).
--/
+isomorphism `⨂[R] i, R ≃ R` given by multipliccation (`constantBaseRingEquiv`). -/
 @[simp]
 noncomputable def dualDistribEquiv : (⨂[R] i, Dual R (M i)) ≃ₗ[R] Dual R (⨂[R] i, M i) :=
   dualDistribEquivOfBasis (fun i ↦ Module.Free.chooseBasis R (M i))

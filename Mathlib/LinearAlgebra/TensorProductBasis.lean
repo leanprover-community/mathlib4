@@ -67,14 +67,18 @@ open scoped TensorProduct
 
 variable {ι R : Type*} [CommSemiring R]
 
-variable {s : ι → Type*} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
+variable {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 variable {κ : ι → Type*}
 
 variable [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)] [(x : R) → Decidable (x ≠ 0)]
 
-def Basis.piTensorProduct (b : (i : ι) → Basis (κ i) R (s i)) :
-    Basis ((i : ι) → κ i) R (⨂[R] i, s i) :=
+/-- Let `ι` be a `Fintype` and `M` be a family of modules indexed by `ι`. If `b i : κ i → M i`
+is a basis for every `i` in `ι`, then `fun (p : Π i, κ i) ↦ ⨂ₜ[R] i, b i (p i)` is a basis
+of `⨂[R] i, M i`.
+-/
+def Basis.piTensorProduct (b : Π i, Basis (κ i) R (M i)) :
+    Basis (Π i, κ i) R (⨂[R] i, M i) :=
   Finsupp.basisSingleOne.map
     ((PiTensorProduct.congr (fun i ↦ (b i).repr)).trans <|
         (finsuppPiTensorProduct R _ _).trans <|
