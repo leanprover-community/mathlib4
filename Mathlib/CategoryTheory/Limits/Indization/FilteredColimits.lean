@@ -37,20 +37,6 @@ theorem step₁ : Nonempty <| limit <|
   simp only [Functor.comp_obj, Functor.op_obj, Opposite.unop_op, yoneda_obj_obj, Functor.comp_map,
     Functor.op_map, Quiver.Hom.unop_op, yoneda_obj_map, IsTerminal.comp_from]
 
-theorem step₂ : Nonempty <| limit <|
-  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
-    yoneda.obj (colimit.cocone F).toOver.pt :=
-  step₁ _ _
-
-theorem step₃ : Nonempty <| limit <|
-  G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
-    yoneda.obj (colimit ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _)) := by
-  refine Nonempty.map ?_ (step₂ F G)
-  let t : (colimit.cocone F).toOver.pt ≅ (colimit ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _)) :=
-    IsColimit.coconePointUniqueUpToIso (Over.isColimitToOver (colimit.isColimit F)) (colimit.isColimit _)
-  let t' := whiskerLeft (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op) (yoneda.map t.hom)
-  exact limMap t'
-
 section Interchange
 
 variable {K : Type v} [SmallCategory K] (H : K ⥤ Over (colimit.cocone F).pt)
@@ -87,6 +73,14 @@ theorem full_interchange [IsFiltered K] (h : Nonempty <| limit <|
     k
   exact (lim.mapIso y).hom z
 
+theorem fuller_interchange [IsFiltered K] {c : Cocone H} (hc : IsColimit c) (T : Over (colimit.cocone F).pt)
+  (hT : c.pt ≅ T) (h : Nonempty <| limit <| G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙ yoneda.obj T) :
+    ∃ k, Nonempty <| limit <| G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙ yoneda.obj (H.obj k) := by
+  refine full_interchange F G H ?_
+  suffices T ≅ colimit H from Nonempty.map (lim.map (whiskerLeft
+    (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op) (yoneda.map this.hom))) h
+  refine hT.symm ≪≫ IsColimit.coconePointUniqueUpToIso hc (colimit.isColimit _)
+
 end Interchange
 
 noncomputable def myBetterFunctor : I ⥤ Jᵒᵖ ⥤ Type (max u v) :=
@@ -94,8 +88,8 @@ noncomputable def myBetterFunctor : I ⥤ Jᵒᵖ ⥤ Type (max u v) :=
     (whiskeringLeft _ _ _).obj (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op)
 
 theorem step₇ : ∃ i, Nonempty <| limit <| (myBetterFunctor F G).obj i :=
-  full_interchange F G ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _)
-  (step₃ _ _)
+  fuller_interchange F G ((colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _)
+    (Over.isColimitToOver (colimit.isColimit F)) _ (Iso.refl _) (step₁ F G)
 
 noncomputable def i : I := (step₇ F G).choose
 
@@ -108,9 +102,6 @@ noncomputable def pointwiseFunctor : Jᵒᵖ ⥤ Type (max u v) :=
 
 noncomputable def betterIsoPointwise : (myBetterFunctor F G).obj (i F G) ≅ pointwiseFunctor F G :=
   Iso.refl _
-
-theorem step₉ : Nonempty <| limit <| pointwiseFunctor F G :=
-  step₈ F G
 
 abbrev K : Type v := (hF (i F G)).presentation.I
 
@@ -138,18 +129,9 @@ noncomputable def indexing : (hF (i F G)).presentation.I ⥤ Over (colimit.cocon
         CostructuredArrow.toOver ((IsIndObject.presentation _).F ⋙ yoneda) (Kc F hF G).pt) ⋙
       Over.map (colimit.ι F (i F G))
 
-theorem step₁₀ : Nonempty <| limit <|
-    G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
-      yoneda.obj (colimit (indexing F hF G)) := by
-  refine Nonempty.map ?_ (step₉ F G)
-  let y := IsColimit.coconePointUniqueUpToIso (isColimitMappedCone F hF G) (colimit.isColimit _)
-  let y' := whiskerLeft (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op)
-    (yoneda.map y.hom)
-  exact limMap y'
-
 theorem step₁₁ : ∃ k, Nonempty <| limit <| G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
     yoneda.obj ((indexing F hF G).obj k) :=
-  full_interchange F G (indexing F hF G) (step₁₀ _ _ _)
+  fuller_interchange F G (indexing F hF G) (isColimitMappedCone F hF G) _ (Iso.refl _) (step₈ F G)
 
 noncomputable def k : K F hF G := (step₁₁ F hF G).choose
 
