@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Std.Tactic.Lint
-import Mathlib.Lean.Expr.Basic
+import Std.Lean.Command
+import Lean.Server.Completion
 
 /-!
 # Linters for Mathlib
@@ -62,26 +63,26 @@ register_option linter.dupNamespace : Bool := {
 
 namespace DupNamespaceLinter
 
-open Lean
+open Lean Parser Elab Command Meta
 
 /-- Gets the value of the `linter.dupNamespace` option. -/
 def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
 
-open Parser.Command in
 /-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`. -/
 partial
 def getIds : Syntax → Array Syntax
   | stx@(.node _ _ args) => ((args.map getIds).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
 
+open private isBlackListed from Lean.Server.Completion in
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx => do
   if getLinterDupNamespace (← getOptions) then
     match (getIds stx) with
       | #[id] =>
-        let ns := (← Elab.Command.getScope).currNamespace
+        let ns := (← getScope).currNamespace
         let declName := ns ++ id[0].getId
-        unless (← declName.isBlackListed) do
+        unless (← liftCoreM <| MetaM.run <| isBlackListed declName).1 do
           let nm := declName.components
           let some (dup, _) := nm.zip nm.tail! |>.find? fun (x, y) => x == y
             | return
@@ -90,3 +91,5 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
       | _ => return
 
 initialize addLinter dupNamespace
+
+end Mathlib.Linter.DupNamespaceLinter
