@@ -123,15 +123,15 @@ lemma max_min_distrib_left (a b c : α) : max a (min b c) = min (max a b) (max a
   sup_inf_left _ _ _
 #align max_min_distrib_left max_min_distrib_left
 
-lemma max_min_distrib_right(a b c : α) : max (min a b) c = min (max a c) (max b c) :=
+lemma max_min_distrib_right (a b c : α) : max (min a b) c = min (max a c) (max b c) :=
   sup_inf_right _ _ _
 #align max_min_distrib_right max_min_distrib_right
 
-lemma min_max_distrib_left(a b c : α) : min a (max b c) = max (min a b) (min a c) :=
+lemma min_max_distrib_left (a b c : α) : min a (max b c) = max (min a b) (min a c) :=
   inf_sup_left _ _ _
 #align min_max_distrib_left min_max_distrib_left
 
-lemma min_max_distrib_right(a b c : α) : min (max a b) c = max (min a c) (min b c) :=
+lemma min_max_distrib_right (a b c : α) : min (max a b) c = max (min a c) (min b c) :=
   inf_sup_right _ _ _
 #align min_max_distrib_right min_max_distrib_right
 
