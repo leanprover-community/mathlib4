@@ -398,9 +398,9 @@ set_option linter.uppercaseLean3 false in
 
 namespace GaussianFourier
 
-/-! ## Fourier transform of the Gaussian integral
+/-!
+## Fourier integral of Gaussian functions
 -/
-
 
 open intervalIntegral
 
