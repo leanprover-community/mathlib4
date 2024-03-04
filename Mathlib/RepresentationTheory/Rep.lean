@@ -64,7 +64,7 @@ instance (V : Rep k G) : Module k V := by
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
--- porting note: was `V.ρ`
+-- Porting note: was `V.ρ`
   Action.ρ V
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ Rep.ρ

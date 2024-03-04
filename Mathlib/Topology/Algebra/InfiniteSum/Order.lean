@@ -142,7 +142,7 @@ theorem tsum_nonpos (h : ∀ i, f i ≤ 0) : ∑' i, f i ≤ 0 := by
   · rw [tsum_eq_zero_of_not_summable hf]
 #align tsum_nonpos tsum_nonpos
 
--- porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
+-- Porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
 theorem hasSum_zero_iff_of_nonneg (hf : ∀ i, 0 ≤ f i) : HasSum f 0 ↔ f = 0 := by
   refine' ⟨fun hf' ↦ _, _⟩
   · ext i

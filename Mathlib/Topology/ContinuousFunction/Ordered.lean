@@ -28,7 +28,7 @@ on continuous functions.
 
 instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
   PartialOrder.lift (fun f => f.toFun) (fun f g _ => by cases f; cases g; congr)
-  -- porting note: was `by tidy`, and `by aesop` alone didn't work
+  -- Porting note: was `by tidy`, and `by aesop` alone didn't work
 #align continuous_map.partial_order ContinuousMap.partialOrder
 
 theorem le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=

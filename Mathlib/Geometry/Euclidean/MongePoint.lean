@@ -483,7 +483,7 @@ theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h�
   rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton, coe_insert,
     coe_singleton, vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
   simp [h₂₃, Submodule.span_insert_eq_span]
-  -- porting note: this didn't need the `congr` and the `fin_cases`
+  -- Porting note: this didn't need the `congr` and the `fin_cases`
   congr
   fin_cases i₂ <;> fin_cases i₃ <;> simp (config := {decide := true}) at h₂₃ ⊢
 #align affine.triangle.altitude_eq_monge_plane Affine.Triangle.altitude_eq_mongePlane
