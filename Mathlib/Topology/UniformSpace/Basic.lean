@@ -1795,7 +1795,7 @@ theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K
   exact ⟨ind y y.2, fun z hz ↦ hWU _ _ ⟨x, hxy, mem_iInter₂.1 hz _ hyt⟩⟩
 #align lebesgue_number_lemma lebesgue_number_lemma
 
-/-- Let `U : ι → Set α` be an open covering of a comapct set `K`.
+/-- Let `U : ι → Set α` be an open cover of a compact set `K`.
 Then there exists an entourage `V`
 such that for each `x ∈ K` its `V`-neighborhood is included in some `U i`.
 
