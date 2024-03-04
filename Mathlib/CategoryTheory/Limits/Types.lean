@@ -550,7 +550,6 @@ theorem jointly_surjective' {F : J ⥤ TypeMax.{v, u}} (x : colimit F) :
   jointly_surjective F (colimit.isColimit F) x
 #align category_theory.limits.types.jointly_surjective' CategoryTheory.Limits.Types.jointly_surjective'
 
-
 namespace FilteredColimit
 
 /- For filtered colimits of types, we can give an explicit description
