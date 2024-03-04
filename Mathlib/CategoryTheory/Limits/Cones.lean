@@ -438,12 +438,10 @@ instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) wher
       w := fun j => G.map_injective (by simpa using t.w j) }
 #align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
 
-instance functorialityFaithful [Faithful G] : Faithful (Cones.functoriality F G) where
-  map_injective {c} {c'} f g e := by
-    apply ConeMorphism.ext f g
-    let f := ConeMorphism.mk.inj e
-    apply G.map_injective f
-#align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functorialityFaithful
+instance functoriality_faithful [Faithful G] : Faithful (Cones.functoriality F G) where
+  map_injective {_X} {_Y} f g h :=
+    ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
+#align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functoriality_faithful
 
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
@@ -635,10 +633,8 @@ instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) wher
 #align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functorialityFull
 
 instance functoriality_faithful [Faithful G] : Faithful (functoriality F G) where
-  map_injective {X} {Y} f g e := by
-    apply CoconeMorphism.ext
-    let h := CoconeMorphism.mk.inj e
-    apply G.map_injective h
+  map_injective {_X} {_Y} f g h :=
+    CoconeMorphism.ext f g <| G.map_injective <| congr_arg CoconeMorphism.hom h
 #align category_theory.limits.cocones.functoriality_faithful CategoryTheory.Limits.Cocones.functoriality_faithful
 
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
