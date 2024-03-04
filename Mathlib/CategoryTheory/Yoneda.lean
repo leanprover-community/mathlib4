@@ -28,7 +28,7 @@ namespace CategoryTheory
 
 open Opposite
 
-universe v₁ u₁ u₂
+universe v₁ v₂ u₁ u₂
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {C : Type u₁} [Category.{v₁} C]
@@ -110,6 +110,37 @@ def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y)) (q : ∀ {Z : C}, (
 theorem isIso {X Y : C} (f : X ⟶ Y) [IsIso (yoneda.map f)] : IsIso f :=
   isIso_of_fully_faithful yoneda f
 #align category_theory.yoneda.is_iso CategoryTheory.Yoneda.isIso
+
+section FullyFaithful
+
+-- This is stupid
+-- def natIsoOfFullyFaithful {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) [Full F] [Faithful F]
+--     (X : C) : F.op ⋙ yoneda.obj (F.obj X) ⋙ uliftFunctor.{v₁} ≅
+--       yoneda.obj X ⋙ uliftFunctor.{v₂} := NatIso.ofComponents (fun T => Equiv.toIso
+--         (
+--            Equiv.ulift.trans ((equivOfFullyFaithful F).symm.trans Equiv.ulift.symm))
+--           ) (by
+--           intros Y Z f
+--           ext x
+
+--           simp [t1]
+--           erw [t1]
+--           rcases x with ⟨x⟩
+--           rw [← ULift.down_inj]
+
+--           simp
+--           erw [t2 ((F.preimage (Equiv.ulift.{v₁} { down := F.toPrefunctor.map f.unop ≫ x.down })))]
+--           change (ULift.up _).down = _ ≫ (ULift.up _).down
+--           simp
+--           rfl
+--           )
+
+/-- Natural version of `equivOfFullyFaithful`. -/
+def natIsoOfFullyFaithful {D : Type u₂} [Category.{max v₁ v₂} D] (F : C ⥤ D) [Full F] [Faithful F]
+    (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
+  NatIso.ofComponents (fun Y => Equiv.toIso ((equivOfFullyFaithful F).symm.trans Equiv.ulift.symm))
+
+end FullyFaithful
 
 end Yoneda
 

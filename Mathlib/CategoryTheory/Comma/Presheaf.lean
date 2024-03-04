@@ -597,7 +597,7 @@ def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ Type v) (T : Over A) :
     form `yoneda.obj X` after adjusting the codomain accordingly. This is desirable because in the
     latter case the Yoneda lemma can be applied. -/
 def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
-  (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ≅
+    (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ≅
     yoneda.op ⋙ coyoneda ⋙
       (whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).functor :=
   NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y =>
