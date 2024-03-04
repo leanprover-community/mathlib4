@@ -290,18 +290,18 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
   induction f using Hom.inductionOn
   case comp f g ihf ihg => simp [ihg, reassoc_of% (ihf _)]
   case whiskerLeft X' X Y f ih =>
-      intro n
-      dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
-        Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
-      rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
-      simp
+    intro n
+    dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
+      Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
+    rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
+    simp
   case whiskerRight X Y h η' ih =>
-      intro n
-      dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
-        Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
-      rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih]
-      have := dcongr_arg (fun x => (normalizeIsoApp' C η' x).hom) (normalizeObj_congr n h)
-      simp [this]
+    intro n
+    dsimp only [normalizeObj_tensor, normalizeIsoApp', tensor_eq_tensor, Iso.trans_hom,
+      Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
+    rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih]
+    have := dcongr_arg (fun x => (normalizeIsoApp' C η' x).hom) (normalizeObj_congr n h)
+    simp [this]
   all_goals simp
 
 end
