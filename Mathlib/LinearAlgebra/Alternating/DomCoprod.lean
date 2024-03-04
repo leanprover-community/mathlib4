@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-
+import Mathlib.GroupTheory.GroupAction.Quotient
 /-!
 # Exterior product of alternating maps
 
