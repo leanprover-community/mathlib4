@@ -71,8 +71,14 @@ variable {s : ι → Type*} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
 
 variable {κ : ι → Type*}
 
+variable [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)] [(x : R) → Decidable (x ≠ 0)]
+
 def Basis.piTensorProduct (b : (i : ι) → Basis (κ i) R (s i)) :
-    Basis ((i : ι) → κ i) R (⨂[R] i, s i) := sorry
+    Basis ((i : ι) → κ i) R (⨂[R] i, s i) :=
+  Finsupp.basisSingleOne.map
+    ((PiTensorProduct.congr (fun i ↦ (b i).repr)).trans <|
+        (finsuppPiTensorProduct R _ _).trans <|
+          Finsupp.lcongr (Equiv.refl _) (constantBaseRingEquiv _ R)).symm
 
 end PiTensorProduct
 

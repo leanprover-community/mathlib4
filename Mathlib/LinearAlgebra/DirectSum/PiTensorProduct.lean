@@ -30,11 +30,15 @@ attribute [local ext] TensorProduct.ext
 
 variable (R : Type*) [CommSemiring R]
 
-variable {ι : Type*} (κ : ι → Type*)
+variable {ι : Type*}
 
 variable [Fintype ι]
 
-variable [DecidableEq ι] [(i : ι) → DecidableEq (κ i)]
+variable [DecidableEq ι]
+
+section fromDirectSum
+
+variable (κ : ι → Type*) [(i : ι) → DecidableEq (κ i)]
 
 variable {M : (i : ι) → κ i → Type*} {M' : Type*}
 
@@ -155,6 +159,9 @@ def fromDirectSumEquiv : ((p : (i : ι) → κ i) → MultilinearMap R (fun i �
       intro i hi
       exact (f p).map_coord_zero i hi
 
+
+-- hsub should be a lemma, it has already been used three times
+
 @[simp]
 theorem fromDirectSumEquiv_apply (f : (p : (i : ι) → κ i) → MultilinearMap R (fun i ↦ M i (p i)) M')
     (x : (i : ι) → ⨁ (j : κ i), M i j) : fromDirectSumEquiv R κ f x =
@@ -164,6 +171,8 @@ theorem fromDirectSumEquiv_apply (f : (p : (i : ι) → κ i) → MultilinearMap
 theorem fromDirectSumEquiv_symm_apply (f : MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M')
     (p : (i : ι) → κ i) : (fromDirectSumEquiv R κ).symm f p =
     f.compLinearMap (fun i ↦ DirectSum.lof R (κ i) _ (p i)) := rfl
+
+end fromDirectSum
 
 end MultilinearMap
 
@@ -230,86 +239,9 @@ protected def directSum :
     rw [funext (fun i ↦ Eq.symm (DirectSum.sum_support_of (fun j ↦ M i j) (x i)))]
     rw [MultilinearMap.map_sum_finset]
     rfl
--- We are doing stuff that we did in the cnostruction of `MultilinearMap.fromDirectSumEquiv`,
+-- We are doing stuff that we did in the construction of `MultilinearMap.fromDirectSumEquiv`,
 -- so there must be a better way.
 
-#exit
-
-/-- Tensor products distribute over a direct sum on the left . -/
-def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i ⊗[R] M₂' :=
-  LinearEquiv.ofLinear
-    (lift <|
-      DirectSum.toModule R _ _ fun i =>
-        (mk R _ _).compr₂ <| DirectSum.lof R ι₁ (fun i => M₁ i ⊗[R] M₂') _)
-    (DirectSum.toModule R _ _ fun i => rTensor _ (DirectSum.lof R ι₁ _ _))
-    (DirectSum.linearMap_ext R fun i =>
-      TensorProduct.ext <|
-        LinearMap.ext₂ fun m₁ m₂ => by
-          dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
-          simp_rw [DirectSum.toModule_lof, rTensor_tmul, lift.tmul, DirectSum.toModule_lof,
-            compr₂_apply, mk_apply])
-    (TensorProduct.ext <|
-      DirectSum.linearMap_ext R fun i =>
-        LinearMap.ext₂ fun m₁ m₂ => by
-          dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
-          simp_rw [lift.tmul, DirectSum.toModule_lof, compr₂_apply,
-            mk_apply, DirectSum.toModule_lof, rTensor_tmul])
-#align tensor_product.direct_sum_left TensorProduct.directSumLeft
-
-/-- Tensor products distribute over a direct sum on the right. -/
-def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[R] ⨁ i, M₁' ⊗[R] M₂ i :=
-  TensorProduct.comm R _ _ ≪≫ₗ directSumLeft R M₂ M₁' ≪≫ₗ
-    DFinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
-#align tensor_product.direct_sum_right TensorProduct.directSumRight
-
-variable {M₁ M₁' M₂ M₂'}
-
-@[simp]
-theorem directSum_lof_tmul_lof (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
-    TensorProduct.directSum R M₁ M₂ (DirectSum.lof R ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) =
-      DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂) := by
-  simp [TensorProduct.directSum]
-#align tensor_product.direct_sum_lof_tmul_lof TensorProduct.directSum_lof_tmul_lof
-
-@[simp]
-theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
-    (TensorProduct.directSum R M₁ M₂).symm
-      (DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂)) =
-      (DirectSum.lof R ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) := by
-  rw [LinearEquiv.symm_apply_eq, directSum_lof_tmul_lof]
-
-@[simp]
-theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :
-    directSumLeft R M₁ M₂' (DirectSum.lof R _ _ i x ⊗ₜ[R] y) =
-    DirectSum.lof R _ _ i (x ⊗ₜ[R] y) := by
-  dsimp only [directSumLeft, LinearEquiv.ofLinear_apply, lift.tmul]
-  rw [DirectSum.toModule_lof R i]
-  rfl
-#align tensor_product.direct_sum_left_tmul_lof TensorProduct.directSumLeft_tmul_lof
-
-@[simp]
-theorem directSumLeft_symm_lof_tmul (i : ι₁) (x : M₁ i) (y : M₂') :
-    (directSumLeft R M₁ M₂').symm (DirectSum.lof R _ _ i (x ⊗ₜ[R] y)) =
-      DirectSum.lof R _ _ i x ⊗ₜ[R] y := by
-  rw [LinearEquiv.symm_apply_eq, directSumLeft_tmul_lof]
-#align tensor_product.direct_sum_left_symm_lof_tmul TensorProduct.directSumLeft_symm_lof_tmul
-
-@[simp]
-theorem directSumRight_tmul_lof (x : M₁') (i : ι₂) (y : M₂ i) :
-    directSumRight R M₁' M₂ (x ⊗ₜ[R] DirectSum.lof R _ _ i y) =
-    DirectSum.lof R _ _ i (x ⊗ₜ[R] y) := by
-  dsimp only [directSumRight, LinearEquiv.trans_apply, TensorProduct.comm_tmul]
-  rw [directSumLeft_tmul_lof]
-  exact DFinsupp.mapRange_single (hf := fun _ => rfl)
-#align tensor_product.direct_sum_right_tmul_lof TensorProduct.directSumRight_tmul_lof
-
-@[simp]
-theorem directSumRight_symm_lof_tmul (x : M₁') (i : ι₂) (y : M₂ i) :
-    (directSumRight R M₁' M₂).symm (DirectSum.lof R _ _ i (x ⊗ₜ[R] y)) =
-      x ⊗ₜ[R] DirectSum.lof R _ _ i y := by
-  rw [LinearEquiv.symm_apply_eq, directSumRight_tmul_lof]
-#align tensor_product.direct_sum_right_symm_lof_tmul TensorProduct.directSumRight_symm_lof_tmul
-
-end TensorProduct
+end PiTensorProduct
 
 end Ring
