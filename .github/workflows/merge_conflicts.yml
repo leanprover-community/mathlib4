@@ -1,0 +1,15 @@
+name: Merge conflicts
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # run every 15 minutes
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check if prs are dirty
+        uses: eps1lon/actions-label-merge-conflict@releases/2.x
+        with:
+          dirtyLabel: "merge-conflict"
+          repoToken: "${{ secrets.MERGE_CONFLICTS_TOKEN }}"
