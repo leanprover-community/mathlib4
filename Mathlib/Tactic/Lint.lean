@@ -6,7 +6,6 @@ Authors: Floris van Doorn
 import Std.Tactic.Lint
 import Mathlib.Lean.Expr.Basic
 
-
 /-!
 # Linters for Mathlib
 
@@ -63,12 +62,12 @@ register_option linter.dupNamespace : Bool := {
 
 namespace DupNamespaceLinter
 
-open Lean Elab
+open Lean
 
 /-- Gets the value of the `linter.dupNamespace` option. -/
 def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
 
-open Lean.Parser.Command in
+open Parser.Command in
 partial
 def getIds : Syntax → Array Syntax
   | stx@(.node _ _ args) => ((args.map getIds).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
