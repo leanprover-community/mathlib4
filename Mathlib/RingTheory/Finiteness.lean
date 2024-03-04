@@ -207,6 +207,14 @@ theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
 #align submodule.fg.map Submodule.FG.map
 
+theorem FG.map' {S : Type*} [Semiring S]  {P : Type*} [AddCommMonoid P] [Module S P]
+    {σ : R →+* S} [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] P)
+    {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
+  let ⟨t, ht⟩ := fg_def.1 hs
+  fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
+
+
 variable {f}
 
 theorem fg_of_fg_map_injective (f : M →ₗ[R] P) (hf : Function.Injective f) {N : Submodule R M}
@@ -577,6 +585,46 @@ theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.spa
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
+lemma exists_strictMono_of_not_finite.aux (h : ¬ Finite R M) :
+    ∀ (S : Finset M), ∃ (m : M), m ∉ S ∧ m ∉ span R S:= by
+  classical
+  rw [finite_def] at h
+  delta FG at h
+  push_neg at h
+  replace h : ∀ (S : Finset M), ∃ (m : M), m ∉ S ∧ m ∉ span R S := by
+    intro S
+    specialize h S
+    contrapose! h
+    rw [eq_top_iff]
+    intro x _
+    by_cases hx : x ∈ S
+    · refine subset_span hx
+    apply h; assumption
+  exact h
+
+lemma exists_strictMono_of_not_finite (h : ¬ Finite R M) :
+    ∃ f : ℕ → Submodule R M, StrictMono f := by
+  classical
+  have h1 := exists_strictMono_of_not_finite.aux h
+  have h2 : ∀ (S : Finset M), ∃ (S' : Finset M),
+      S ⊂ S' ∧ (span R S : Submodule R M) < span R S' := by
+    intro S
+    specialize h1 S
+    obtain ⟨m, hm1, hm2⟩ := h1
+    refine ⟨insert m S, Finset.ssubset_insert hm1,
+      lt_of_le_of_ne (span_mono <| Finset.subset_insert _ _) ?_⟩
+    contrapose! hm2
+    rw [hm2]
+    refine subset_span <| by simp
+  choose S _ hS2 using h2
+  let f : ℕ → Submodule R M := fun m : ℕ ↦ span R <| S^[m] ∅
+  have hf1 : StrictMono f := by
+    refine strictMono_nat_of_lt_succ fun n ↦ ?_
+    simp only [Function.Embedding.coeFn_mk]
+    rw [Function.iterate_succ', Function.comp_apply]
+    apply hS2
+  refine ⟨f, hf1⟩
+
 lemma exists_fin' (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite R M] :
     ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
@@ -587,6 +635,14 @@ theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) 
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 #align module.finite.of_surjective Module.Finite.of_surjective
+
+theorem of_surjective' [hM : Finite R M]
+    {S : Type*} [Semiring S] {σ : R →+* S} [RingHomSurjective σ]
+    {N : Type*} [AddCommMonoid N] [Module S N]
+    (f : M →ₛₗ[σ] N) (hf : Surjective f) : Finite S N :=
+  ⟨by
+    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
+    exact hM.1.map' f⟩
 
 instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
     [SMul R A] [IsScalarTower R A M] [Finite R M]
