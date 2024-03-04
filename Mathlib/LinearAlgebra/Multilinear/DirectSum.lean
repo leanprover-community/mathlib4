@@ -1,6 +1,7 @@
 /-
 Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sophie Morel
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.LinearAlgebra.Multilinear.Basic
@@ -118,6 +119,13 @@ theorem fromDirectSumₗ_apply (f : Π (p : Π i, κ i), MultilinearMap R (fun i
     (x : Π i, ⨁ (j : κ i), M i j) : fromDirectSumₗ R κ f x =
     ∑ p in Fintype.piFinset (fun i ↦ (x i).support), f p (fun i ↦ x i (p i)) := rfl
 
+theorem _root_.piFinset_support_lof_sub (p : Π i, κ i) (a : Π i, M i (p i)) :
+    Fintype.piFinset (fun i ↦ DFinsupp.support (lof R (κ i) (M i) (p i) (a i))) ⊆ {p} := by
+  intro q
+  simp only [Fintype.mem_piFinset, ne_eq, Finset.mem_singleton]
+  simp_rw [DirectSum.lof_eq_of]
+  exact fun hq ↦ funext fun i ↦ Finset.mem_singleton.mp (DirectSum.support_of_subset _ (hq i))
+
 def fromDirectSumEquiv : ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (p i)) M') ≃ₗ[R]
     MultilinearMap R (fun i ↦ ⨁ j : κ i, M i j) M' := by
   refine LinearEquiv.ofLinear (fromDirectSumₗ R κ) (LinearMap.pi
@@ -132,23 +140,13 @@ def fromDirectSumEquiv : ((p : Π i, κ i) → MultilinearMap R (fun i ↦ M i (
   · ext f p a
     simp only [coe_comp, Function.comp_apply, LinearMap.pi_apply, compLinearMapₗ_apply,
       compLinearMap_apply, fromDirectSumₗ_apply, id_coe, id_eq]
-    have hsub : Fintype.piFinset (fun i ↦ DFinsupp.support ((lof R (κ i) (M i) (p i)) (a i)))
-        ⊆ {p} := by
-      intro q
-      simp only [Fintype.mem_piFinset, ne_eq, Finset.mem_singleton]
-      simp_rw [DirectSum.lof_eq_of]
-      exact fun hq ↦
-          funext fun i ↦ Finset.mem_singleton.mp (DirectSum.support_of_subset _ (hq i))
-    rw [Finset.sum_subset hsub]
+    rw [Finset.sum_subset (piFinset_support_lof_sub R κ p a)]
     · rw [Finset.sum_singleton]
       simp only [lof_apply]
     · simp only [Finset.mem_singleton, Fintype.mem_piFinset, DFinsupp.mem_support_toFun, ne_eq,
         not_forall, not_not, forall_exists_index, forall_eq, lof_apply]
       intro i hi
       exact (f p).map_coord_zero i hi
-
-
--- hsub should be a lemma, it has already been used three times
 
 @[simp]
 theorem fromDirectSumEquiv_apply (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) M')
