@@ -1092,20 +1092,9 @@ variable {R}
 
 variable (I)
 
-theorem radical_pow (n : ℕ) (H : n > 0) : radical (I ^ n) = radical I :=
-  Nat.recOn n (Not.elim (by decide))
-    (fun n ih H =>
-      Or.casesOn (lt_or_eq_of_le <| Nat.le_of_lt_succ H)
-        (fun H =>
-          calc
-            radical (I ^ (n + 1)) = radical I ⊓ radical (I ^ n) := by
-              rw [pow_succ]
-              exact radical_mul _ _
-            _ = radical I ⊓ radical I := by rw [ih H]
-            _ = radical I := inf_idem
-            )
-        fun H => H ▸ (pow_one I).symm ▸ rfl)
-    H
+lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
+  | 1, _ => by simp
+  | n + 2, _ => by rw [pow_succ, radical_mul, radical_pow n.succ_ne_zero, inf_idem]
 #align ideal.radical_pow Ideal.radical_pow
 
 theorem IsPrime.mul_le {I J P : Ideal R} (hp : IsPrime P) : I * J ≤ P ↔ I ≤ P ∨ J ≤ P := by
