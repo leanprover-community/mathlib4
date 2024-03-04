@@ -6,7 +6,8 @@ Authors: Thomas Browning
 import Mathlib.Algebra.GCDMonoid.Multiset
 import Mathlib.Combinatorics.Partition
 import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.GroupTheory.Perm.Cycle.Factors
+import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.NormNum.GCD
 
@@ -194,14 +195,14 @@ theorem orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f 
 theorem two_dvd_card_support {σ : Perm α} (hσ : σ ^ 2 = 1) : 2 ∣ σ.support.card :=
   (congr_arg (Dvd.dvd 2) σ.sum_cycleType).mp
     (Multiset.dvd_sum fun n hn => by
-      rw [le_antisymm
+      rw [_root_.le_antisymm
           (Nat.le_of_dvd zero_lt_two <|
             (dvd_of_mem_cycleType hn).trans <| orderOf_dvd_of_pow_eq_one hσ)
           (two_le_of_mem_cycleType hn)])
 #align equiv.perm.two_dvd_card_support Equiv.Perm.two_dvd_card_support
 
 theorem cycleType_prime_order {σ : Perm α} (hσ : (orderOf σ).Prime) :
-    ∃ n : ℕ, σ.cycleType = replicate (n + 1) (orderOf σ) := by
+    ∃ n : ℕ, σ.cycleType = Multiset.replicate (n + 1) (orderOf σ) := by
   refine ⟨Multiset.card σ.cycleType - 1, eq_replicate.2 ⟨?_, fun n hn ↦ ?_⟩⟩
   · rw [tsub_add_cancel_of_le]
     rw [Nat.succ_le_iff, card_cycleType_pos, Ne.def, ← orderOf_eq_one_iff]
@@ -532,7 +533,7 @@ variable [DecidableEq α]
 
 /-- The partition corresponding to a permutation -/
 def partition (σ : Perm α) : (Fintype.card α).Partition where
-  parts := σ.cycleType + replicate (Fintype.card α - σ.support.card) 1
+  parts := σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1
   parts_pos {n hn} := by
     cases' mem_add.mp hn with hn hn
     · exact zero_lt_one.trans (one_lt_of_mem_cycleType hn)
@@ -543,7 +544,7 @@ def partition (σ : Perm α) : (Fintype.card α).Partition where
 #align equiv.perm.partition Equiv.Perm.partition
 
 theorem parts_partition {σ : Perm α} :
-    σ.partition.parts = σ.cycleType + replicate (Fintype.card α - σ.support.card) 1 :=
+    σ.partition.parts = σ.cycleType + Multiset.replicate (Fintype.card α - σ.support.card) 1 :=
   rfl
 #align equiv.perm.parts_partition Equiv.Perm.parts_partition
 
