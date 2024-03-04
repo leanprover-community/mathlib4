@@ -77,7 +77,7 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
       ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ bd n := by
   let y := rexp (-π * R)
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hR)
-  refine' ⟨fun n => y ^ n.natAbs, summable_int_of_summable_nat _ _, fun hτ n => _⟩; pick_goal 3
+  refine' ⟨fun n => y ^ n.natAbs, Summable.of_natCast_neg_natCast _ _, fun hτ n => _⟩; pick_goal 3
   · refine' (norm_exp_mul_sq_le (hR.trans_le hτ) n).trans _
     dsimp [y]
     gcongr rexp ?_ ^ _
