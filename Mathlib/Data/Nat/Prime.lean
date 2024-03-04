@@ -175,6 +175,8 @@ theorem prime_two : Prime 2 := by decide
 theorem prime_three : Prime 3 := by decide
 #align nat.prime_three Nat.prime_three
 
+theorem prime_five : Prime 5 := by decide
+
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
     (h_three : p ≠ 3) : 5 ≤ p := by
   by_contra! h
