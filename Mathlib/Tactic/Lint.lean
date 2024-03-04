@@ -3,9 +3,10 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Std.Tactic.Lint
-import Std.Lean.Command
 import Lean.Server.Completion
+import Std.Data.Array.Basic
+import Std.Lean.Command
+import Std.Tactic.Lint
 
 /-!
 # Linters for Mathlib
@@ -73,9 +74,9 @@ open Lean Parser Elab Command Meta
 def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
 
 /-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`. -/
-partial
 def getIds : Syntax → Array Syntax
-  | stx@(.node _ _ args) => ((args.map getIds).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
+  | stx@(.node _ _ args) =>
+    ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
 
 open private isBlackListed from Lean.Server.Completion in
