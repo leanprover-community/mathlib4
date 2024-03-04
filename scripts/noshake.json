@@ -69,6 +69,7 @@
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.GCongr",
   "Mathlib.Tactic.GCongr.Core",
+  "Mathlib.Tactic.Generalize",
   "Mathlib.Tactic.GeneralizeProofs",
   "Mathlib.Tactic.Group",
   "Mathlib.Tactic.GuardHypNums",
