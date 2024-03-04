@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Probability.IdentDistrib
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
