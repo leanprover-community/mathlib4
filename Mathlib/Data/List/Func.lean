@@ -111,7 +111,7 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
     simp [set, length, @length_set m, Nat.succ_max_succ]
 #align list.func.length_set List.Func.length_set
 
--- Porting note: @[simp] has been removed since `#lint` says this is
+-- Porting note (#11119): @[simp] has been removed since `#lint` says this is
 theorem get_nil {k : ℕ} : (get k [] : α) = default := by cases k <;> rfl
 #align list.func.get_nil List.Func.get_nil
 
