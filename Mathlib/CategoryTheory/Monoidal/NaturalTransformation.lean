@@ -206,8 +206,8 @@ def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
         Iso.hom_inv_id_app_assoc, tensorHom_def']
       slice_rhs 3 4 => erw [Iso.hom_inv_id_app]
       simp only [id_obj, id_comp, assoc, whisker_exchange_assoc]
-      simp only [← whiskerLeft_comp_assoc, ← comp_whiskerRight_assoc]
-      simp [- whiskerLeft_comp, - comp_whiskerRight] }
+      simp only [← MonoidalCategory.whiskerLeft_comp_assoc, ← comp_whiskerRight_assoc]
+      simp [- MonoidalCategory.whiskerLeft_comp, - comp_whiskerRight] }
 #align category_theory.monoidal_unit CategoryTheory.monoidalUnit
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalUnit F) :=

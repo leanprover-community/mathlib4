@@ -337,11 +337,9 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     | l_inv_hom => dsimp only [projectMapAux]; rw [Iso.inv_hom_id]
     | pentagon =>
         dsimp only [projectMapAux]
-        simp only [tensorHom_id, id_tensorHom]
         exact MonoidalCategory.pentagon _ _ _ _
     | triangle =>
         dsimp only [projectMapAux]
-        simp only [tensorHom_id, id_tensorHom]
         exact MonoidalCategory.triangle _ _
     | whisker_exchange =>
         dsimp only [projectMapAux, projectObj]; simp [MonoidalCategory.whisker_exchange]
@@ -366,14 +364,12 @@ def project : MonoidalFunctor (F C) D where
     induction' f using Quotient.recOn
     · dsimp
       simp
-      rw [← tensorHom_id, ← tensorHom_id]
       rfl
     · rfl
   μ_natural_right := fun _ f => by
     induction' f using Quotient.recOn
     · dsimp
       simp
-      rw [← id_tensorHom, ← id_tensorHom]
       rfl
     · rfl
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project

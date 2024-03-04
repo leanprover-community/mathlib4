@@ -267,17 +267,25 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
   leftUnitor X := (ρ_ (unmop X)).mop
   rightUnitor X := (λ_ (unmop X)).mop
-  whiskerLeft_id X Y := unmop_inj (by simp)
-  whiskerLeft_comp W X Y Z f g := unmop_inj (by simp)
-  id_whiskerLeft f := unmop_inj (by simp)
-  tensor_whiskerLeft W X Y Z f := unmop_inj (by simp)
-  id_whiskerRight X Y := unmop_inj (by simp)
-  comp_whiskerRight f g X := unmop_inj (by simp)
-  whiskerRight_id f := unmop_inj (by simp)
-  whisker_assoc W X Y f Z := unmop_inj (by simp)
-  whisker_exchange f g := unmop_inj (whisker_exchange g.unmop f.unmop).symm
-  pentagon W X Y Z := unmop_inj (by dsimp; coherence)
-  triangle X Y := unmop_inj (by dsimp; coherence)
+  whiskerLeft_id X Y := Quiver.Hom.unmop_inj (by simp)
+  whiskerLeft_comp W X Y Z f g := Quiver.Hom.unmop_inj (by simp)
+  id_whiskerLeft f := Quiver.Hom.unmop_inj (by simp)
+  tensor_whiskerLeft W X Y Z f := Quiver.Hom.unmop_inj (by simp)
+  id_whiskerRight X Y := Quiver.Hom.unmop_inj (by simp)
+  comp_whiskerRight f g X := Quiver.Hom.unmop_inj (by simp)
+  whiskerRight_id f := Quiver.Hom.unmop_inj (by simp)
+  whisker_assoc W X Y f Z := Quiver.Hom.unmop_inj (by simp)
+  whisker_exchange f g := Quiver.Hom.unmop_inj (whisker_exchange g.unmop f.unmop).symm
+  pentagon W X Y Z := Quiver.Hom.unmop_inj (by dsimp; coherence)
+  triangle X Y := Quiver.Hom.unmop_inj (by dsimp; coherence)
+#align category_theory.monoidal_category_mop CategoryTheory.monoidalCategoryMop
+
+-- it would be nice if we could autogenerate all of these somehow
+section MonoidalOppositeLemmas
+
+@[simp] lemma mop_tensorObj (X Y : C) : mop (X ⊗ Y) = mop Y ⊗ mop X := rfl
+@[simp] lemma unmop_tensorObj (X Y : Cᴹᵒᵖ) : unmop (X ⊗ Y) = unmop Y ⊗ unmop X := rfl
+
 @[simp] lemma mop_tensorUnit : mop (𝟙_ C) = 𝟙_ Cᴹᵒᵖ := rfl
 @[simp] lemma unmop_tensorUnit : unmop (𝟙_ Cᴹᵒᵖ) = 𝟙_ C := rfl
 
