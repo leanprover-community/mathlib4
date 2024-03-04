@@ -146,7 +146,7 @@ theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cy
 theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   induction σ using cycle_induction_on with
   | base_one => simp
-  | base_cycles σ hσ => rw [hσ.cycleType, coe_sum, List.sum_singleton]
+  | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
 #align equiv.perm.sum_cycle_type Equiv.Perm.sum_cycleType
 
