@@ -69,6 +69,9 @@ def IntervalIntegrable (f : ℝ → E) (μ : Measure ℝ) (a b : ℝ) : Prop :=
   IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ
 #align interval_integrable IntervalIntegrable
 
+/-!
+## Basic iff's for `IntervalIntegrable`
+-/
 section
 
 variable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
@@ -135,6 +138,13 @@ theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
 
 end
 
+/-!
+## Basic properties of interval integrability
+- interval integrability is symmetric, reflexive, transitive
+- monotonicity and strong measurability of the interval integral
+- if `f` is interval integrable, so are its absolute value and norm
+- arithmetic properties
+-/
 namespace IntervalIntegrable
 
 section
@@ -146,7 +156,7 @@ nonrec theorem symm (h : IntervalIntegrable f μ a b) : IntervalIntegrable f μ 
   h.symm
 #align interval_integrable.symm IntervalIntegrable.symm
 
-@[refl, simp] -- porting note: added `simp`
+@[refl, simp] -- Porting note: added `simp`
 theorem refl : IntervalIntegrable f μ a a := by constructor <;> simp
 #align interval_integrable.refl IntervalIntegrable.refl
 
@@ -308,7 +318,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 #align interval_integrable.comp_mul_left IntervalIntegrable.comp_mul_left
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
       IntervalIntegrable f volume a b :=
@@ -353,6 +363,9 @@ theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
 
 end IntervalIntegrable
 
+/-!
+## Continuous functions are interval integrable
+-/
 section
 
 variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
@@ -376,6 +389,9 @@ theorem Continuous.intervalIntegrable {u : ℝ → E} (hu : Continuous u) (a b :
 
 end
 
+/-!
+## Monotone and antitone functions are integral integrable
+-/
 section
 
 variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] [ConditionallyCompleteLinearOrder E]
@@ -653,7 +669,7 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 
 end Basic
 
--- porting note: TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
+-- Porting note: TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
 nonrec theorem _root_.IsROrC.interval_integral_ofReal {𝕜 : Type*} [IsROrC 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, IsROrC.ofReal_sub]
@@ -686,6 +702,10 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm (L : E →L[𝕜] 
 
 end ContinuousLinearMap
 
+/-!
+## Basic arithmetic
+Includes addition, scalar multiplication and affine transformations.
+-/
 section Comp
 
 variable {a b c d : ℝ} (f : ℝ → E)
@@ -874,8 +894,8 @@ end Comp
 In this section we prove that `∫ x in a..b, f x ∂μ + ∫ x in b..c, f x ∂μ = ∫ x in a..c, f x ∂μ`
 as well as a few other identities trivially equivalent to this one. We also prove that
 `∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ` provided that `support f ⊆ Ioc a b`.
--/
 
+-/
 
 section OrderClosedTopology
 
@@ -1025,7 +1045,7 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
   all_goals apply measurableSet_Iic
 #align interval_integral.integral_indicator intervalIntegral.integral_indicator
 
-end OrderClosedTopology
+end DominatedConvergence
 
 
 

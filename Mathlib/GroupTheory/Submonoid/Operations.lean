@@ -680,7 +680,7 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 #align submonoid.pow_mem Submonoid.pow_mem
 #align add_submonoid.nsmul_mem AddSubmonoid.nsmul_mem
 
--- porting note: coe_pow removed, syntactic tautology
+-- Porting note: coe_pow removed, syntactic tautology
 #noalign submonoid.coe_pow
 #noalign add_submonoid.coe_smul
 

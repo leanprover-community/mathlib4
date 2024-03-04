@@ -376,6 +376,81 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     rwa [closure_Icc]
 #align interval_integral.continuous_within_at_primitive intervalIntegral.continuousWithinAt_primitive
 
+variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+
+theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bound : ℝ → ℝ) (a b : ℝ)
+    {a₀ b₀ : ℝ} {x₀ : X} (hF_meas : ∀ x, AEStronglyMeasurable (F x) (μ.restrict <| Ι a b))
+    (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t ∂μ.restrict <| Ι a b, ‖F x t‖ ≤ bound t)
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_cont : ∀ᵐ t ∂μ.restrict <| Ι a b, ContinuousAt (fun x ↦ F x t) x₀) (ha₀ : a₀ ∈ Ioo a b)
+    (hb₀ : b₀ ∈ Ioo a b) (hμb₀ : μ {b₀} = 0) :
+    ContinuousAt (fun p : X × ℝ ↦ ∫ t : ℝ in a₀..p.2, F p.1 t ∂μ) (x₀, b₀) := by
+  have hsub : ∀ {a₀ b₀}, a₀ ∈ Ioo a b → b₀ ∈ Ioo a b → Ι a₀ b₀ ⊆ Ι a b := fun ha₀ hb₀ ↦
+    (ordConnected_Ioo.uIoc_subset ha₀ hb₀).trans (Ioo_subset_Ioc_self.trans Ioc_subset_uIoc)
+  have Ioo_nhds : Ioo a b ∈ 𝓝 b₀ := Ioo_mem_nhds hb₀.1 hb₀.2
+  have Icc_nhds : Icc a b ∈ 𝓝 b₀ := Icc_mem_nhds hb₀.1 hb₀.2
+  have hx₀ : ∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x₀ t‖ ≤ bound t := h_bound.self_of_nhds
+  have : ∀ᶠ p : X × ℝ in 𝓝 (x₀, b₀),
+      ∫ s in a₀..p.2, F p.1 s ∂μ =
+        ∫ s in a₀..b₀, F p.1 s ∂μ + ∫ s in b₀..p.2, F x₀ s ∂μ +
+          ∫ s in b₀..p.2, F p.1 s - F x₀ s ∂μ := by
+    rw [nhds_prod_eq]
+    refine (h_bound.prod_mk Ioo_nhds).mono ?_
+    rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
+    dsimp (config := { eta := false })
+    have hiF : ∀ {x a₀ b₀},
+        (∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t) → a₀ ∈ Ioo a b → b₀ ∈ Ioo a b →
+          IntervalIntegrable (F x) μ a₀ b₀ := fun {x a₀ b₀} hx ha₀ hb₀ ↦
+      (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀).mono_fun'
+        ((hF_meas x).mono_set <| hsub ha₀ hb₀)
+        (ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
+    rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel'_right,
+      intervalIntegral.integral_add_adjacent_intervals]
+    · exact hiF hx ha₀ hb₀
+    · exact hiF hx hb₀ ht
+    · exact hiF hx hb₀ ht
+    · exact hiF hx₀ hb₀ ht
+  rw [continuousAt_congr this]; clear this
+  refine (ContinuousAt.add ?_ ?_).add ?_
+  · exact (intervalIntegral.continuousAt_of_dominated_interval
+        (eventually_of_forall fun x ↦ (hF_meas x).mono_set <| hsub ha₀ hb₀)
+          (h_bound.mono fun x hx ↦
+            ae_imp_of_ae_restrict <| ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
+          (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀) <|
+          ae_imp_of_ae_restrict <| ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) h_cont).fst'
+  · refine (?_ : ContinuousAt (fun t ↦ ∫ s in b₀..t, F x₀ s ∂μ) b₀).snd'
+    apply ContinuousWithinAt.continuousAt _ (Icc_mem_nhds hb₀.1 hb₀.2)
+    apply intervalIntegral.continuousWithinAt_primitive hμb₀
+    rw [min_eq_right hb₀.1.le, max_eq_right hb₀.2.le]
+    exact bound_integrable.mono_fun' (hF_meas x₀) hx₀
+  · suffices Tendsto (fun x : X × ℝ ↦ ∫ s in b₀..x.2, F x.1 s - F x₀ s ∂μ) (𝓝 (x₀, b₀)) (𝓝 0) by
+      simpa [ContinuousAt]
+    have : ∀ᶠ p : X × ℝ in 𝓝 (x₀, b₀),
+        ‖∫ s in b₀..p.2, F p.1 s - F x₀ s ∂μ‖ ≤ |∫ s in b₀..p.2, 2 * bound s ∂μ| := by
+      rw [nhds_prod_eq]
+      refine (h_bound.prod_mk Ioo_nhds).mono ?_
+      rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
+      have H : ∀ᵐ t : ℝ ∂μ.restrict (Ι b₀ t), ‖F x t - F x₀ t‖ ≤ 2 * bound t := by
+        apply (ae_restrict_of_ae_restrict_of_subset (hsub hb₀ ht) (hx.and hx₀)).mono
+        rintro s ⟨hs₁, hs₂⟩
+        calc
+          ‖F x s - F x₀ s‖ ≤ ‖F x s‖ + ‖F x₀ s‖ := norm_sub_le _ _
+          _ ≤ 2 * bound s := by linarith only [hs₁, hs₂]
+      exact intervalIntegral.norm_integral_le_of_norm_le H
+        ((bound_integrable.mono_set' <| hsub hb₀ ht).const_mul 2)
+    apply squeeze_zero_norm' this
+    have : Tendsto (fun t ↦ ∫ s in b₀..t, 2 * bound s ∂μ) (𝓝 b₀) (𝓝 0) := by
+      suffices ContinuousAt (fun t ↦ ∫ s in b₀..t, 2 * bound s ∂μ) b₀ by
+        simpa [ContinuousAt] using this
+      apply ContinuousWithinAt.continuousAt _ Icc_nhds
+      apply intervalIntegral.continuousWithinAt_primitive hμb₀
+      apply IntervalIntegrable.const_mul
+      apply bound_integrable.mono_set'
+      rw [min_eq_right hb₀.1.le, max_eq_right hb₀.2.le]
+    rw [nhds_prod_eq]
+    exact (continuous_abs.tendsto' _ _ abs_zero).comp (this.comp tendsto_snd)
+
 variable [NoAtoms μ]
 
 theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
