@@ -9,7 +9,7 @@ import Mathlib.Data.FunLike.Basic
 /-!
 # Logic Symbols
 
-ProofTheory studies proofs as mathematical objects, including axiomatic (Hilbert), deductive,
+Proof Theory studies proofs as mathematical objects, including axiomatic (Hilbert), deductive,
 and sequent-based systems. This file defines logical symbols as objects abstractly to encompass
 these approaches. It also defines homomorphisms that preserve these connectives.
 
@@ -20,7 +20,7 @@ these approaches. It also defines homomorphisms that preserve these connectives.
 preserves logical connectives.
 -/
 
-namespace LO
+namespace Proof
 
 universe u
 
@@ -381,9 +381,9 @@ attribute [simp] AndOrClosed.verum AndOrClosed.falsum
 
 end LogicSymbol
 
-end LO
+end Proof
 
-open LO
+open Proof
 
 namespace Matrix
 
