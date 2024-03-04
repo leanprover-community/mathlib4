@@ -153,7 +153,9 @@ theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
 
 @[simp, norm_cast]
 theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
-  induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [add_succ, cast_succ, ih, cast_succ, add_assoc]
 #align nat.cast_add Nat.cast_addₓ
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
