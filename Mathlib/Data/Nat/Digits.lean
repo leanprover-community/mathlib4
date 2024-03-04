@@ -637,25 +637,21 @@ theorem ofDigits_mod (b k : ℕ) (L : List ℕ) : ofDigits b L % k = ofDigits (b
   ofDigits_modEq b k L
 #align nat.of_digits_mod Nat.ofDigits_mod
 
+@[simp]
+theorem ofDigits_empty (b : ℕ) : ofDigits b [] % b = 0 := rfl
+
 theorem ofDigits_mod_eq_head (b : ℕ) (l : List ℕ) : (Nat.ofDigits b l) % b = l.head! %b := by
-  induction l
-  · rfl
-  · simp [Nat.ofDigits, Int.ModEq]
+  induction l <;> simp [Nat.ofDigits, Int.ModEq]
 
 theorem digits_head {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b := by
   by_cases hb : 1 < b
   · rcases n with _ | n
-    · simp only [Nat.zero_eq, Nat.digits_zero, Nat.zero_mod]
-      rfl
+    · simp
     · nth_rw 2 [← Nat.ofDigits_digits b n.succ]
       rw [Nat.ofDigits_mod_eq_head _ _]
       exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
           Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
-  · interval_cases b
-    · rcases n with _ | _
-      · rfl
-      · rfl
-    · tauto
+  · rcases n with _ | _ <;> simp_all [show b = 0 by omega]
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by
