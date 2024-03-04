@@ -144,13 +144,6 @@ def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
       uniq := fun _ _ _ => by funext x; cases x }
 #align category_theory.limits.types.initial_colimit_cocone CategoryTheory.Limits.Types.initialColimitCocone
 
-instance : HasColimitsOfShape (Discrete PEmpty.{1}) (Type u) where
-  has_colimit _ := inferInstance
-
-lemma tt : HasLimitsOfShape (Discrete PEmpty.{1}) (Type u) := inferInstance
-
-example : HasColimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
-
 /-- The initial object in `Type u` is `PEmpty`. -/
 noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
   colimit.isoColimitCocone initialColimitCocone.{u, 0}
