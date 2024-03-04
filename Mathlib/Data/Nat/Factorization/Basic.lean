@@ -97,7 +97,7 @@ theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) 
 @[simp]
 theorem factorization_prod_pow_eq_self {n : ℕ} (hn : n ≠ 0) : n.factorization.prod (· ^ ·) = n := by
   rw [factorization_eq_factors_multiset n]
-  simp only [← prod_toMultiset, factorization, Multiset.coe_prod, Multiset.toFinsupp_toMultiset]
+  simp only [← prod_toMultiset, factorization, Multiset.prod_coe, Multiset.toFinsupp_toMultiset]
   exact prod_factors hn
 #align nat.factorization_prod_pow_eq_self Nat.factorization_prod_pow_eq_self
 

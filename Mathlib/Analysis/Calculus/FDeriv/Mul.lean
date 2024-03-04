@@ -624,7 +624,7 @@ theorem hasFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // 
 /--
 Auxiliary lemma for `hasStrictFDerivAt_multiset_prod`.
 
-For `NormedCommRing 𝔸'`, can rewrite as `Multiset` using `Multiset.coe_prod`.
+For `NormedCommRing 𝔸'`, can rewrite as `Multiset` using `Multiset.prod_coe`.
 -/
 theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.map x).prod)

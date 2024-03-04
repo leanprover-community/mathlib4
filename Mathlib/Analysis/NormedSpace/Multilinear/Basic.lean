@@ -881,7 +881,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n.succ A‖ ≤ 1 := by
   refine opNorm_le_bound _ zero_le_one fun m => ?_
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
-    Fin.prod_univ_def, Multiset.coe_map, Multiset.coe_prod]
+    Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
   refine' (List.norm_prod_le' _).trans_eq _
   · rw [Ne.def, List.map_eq_nil, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
