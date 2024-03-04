@@ -223,7 +223,7 @@ theorem DifferentiableAt.add_const (hf : DifferentiableAt 𝕜 f x) (c : F) :
   (hf.hasFDerivAt.add_const c).differentiableAt
 #align differentiable_at.add_const DifferentiableAt.add_const
 
-@[simp, fun_prop]
+@[simp]
 theorem differentiableAt_add_const_iff (c : F) :
     DifferentiableAt 𝕜 (fun y => f y + c) x ↔ DifferentiableAt 𝕜 f x :=
   ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
