@@ -58,7 +58,7 @@ open Set Filter TopologicalSpace MeasureTheory Function
 
 open scoped Classical Topology Interval BigOperators Filter ENNReal NNReal MeasureTheory
 
-variable {X β E F : Type*} [MeasurableSpace X]
+variable {X Y E F : Type*} [MeasurableSpace X]
 
 namespace MeasureTheory
 
@@ -476,7 +476,7 @@ theorem integral_indicatorConstLp [CompleteSpace E]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_indicator_const_Lp MeasureTheory.integral_indicatorConstLp
 
-theorem set_integral_map {β} [MeasurableSpace β] {g : X → β} {f : β → E} {s : Set β}
+theorem set_integral_map {Y} [MeasurableSpace Y] {g : X → Y} {f : Y → E} {s : Set Y}
     (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (Measure.map g μ)) (hg : AEMeasurable g μ) :
     ∫ y in s, f y ∂Measure.map g μ = ∫ x in g ⁻¹' s, f (g x) ∂μ := by
   rw [Measure.restrict_map_of_aemeasurable hg hs,
@@ -484,31 +484,31 @@ theorem set_integral_map {β} [MeasurableSpace β] {g : X → β} {f : β → E}
   exact Measure.map_mono_of_aemeasurable Measure.restrict_le_self hg
 #align measure_theory.set_integral_map MeasureTheory.set_integral_map
 
-theorem _root_.MeasurableEmbedding.set_integral_map {β} {_ : MeasurableSpace β} {f : X → β}
-    (hf : MeasurableEmbedding f) (g : β → E) (s : Set β) :
+theorem _root_.MeasurableEmbedding.set_integral_map {Y} {_ : MeasurableSpace Y} {f : X → Y}
+    (hf : MeasurableEmbedding f) (g : Y → E) (s : Set Y) :
     ∫ y in s, g y ∂Measure.map f μ = ∫ x in f ⁻¹' s, g (f x) ∂μ := by
   rw [hf.restrict_map, hf.integral_map]
 #align measurable_embedding.set_integral_map MeasurableEmbedding.set_integral_map
 
-theorem _root_.ClosedEmbedding.set_integral_map [TopologicalSpace X] [BorelSpace X] {β}
-    [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β] {g : X → β} {f : β → E} (s : Set β)
+theorem _root_.ClosedEmbedding.set_integral_map [TopologicalSpace X] [BorelSpace X] {Y}
+    [MeasurableSpace Y] [TopologicalSpace Y] [BorelSpace Y] {g : X → Y} {f : Y → E} (s : Set Y)
     (hg : ClosedEmbedding g) : ∫ y in s, f y ∂Measure.map g μ = ∫ x in g ⁻¹' s, f (g x) ∂μ :=
   hg.measurableEmbedding.set_integral_map _ _
 #align closed_embedding.set_integral_map ClosedEmbedding.set_integral_map
 
-theorem MeasurePreserving.set_integral_preimage_emb {β} {_ : MeasurableSpace β} {f : X → β} {ν}
-    (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : β → E) (s : Set β) :
+theorem MeasurePreserving.set_integral_preimage_emb {Y} {_ : MeasurableSpace Y} {f : X → Y} {ν}
+    (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : Y → E) (s : Set Y) :
     ∫ x in f ⁻¹' s, g (f x) ∂μ = ∫ y in s, g y ∂ν :=
   (h₁.restrict_preimage_emb h₂ s).integral_comp h₂ _
 #align measure_theory.measure_preserving.set_integral_preimage_emb MeasureTheory.MeasurePreserving.set_integral_preimage_emb
 
-theorem MeasurePreserving.set_integral_image_emb {β} {_ : MeasurableSpace β} {f : X → β} {ν}
-    (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : β → E) (s : Set X) :
+theorem MeasurePreserving.set_integral_image_emb {Y} {_ : MeasurableSpace Y} {f : X → Y} {ν}
+    (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : Y → E) (s : Set X) :
     ∫ y in f '' s, g y ∂ν = ∫ x in s, g (f x) ∂μ :=
   Eq.symm <| (h₁.restrict_image_emb h₂ s).integral_comp h₂ _
 #align measure_theory.measure_preserving.set_integral_image_emb MeasureTheory.MeasurePreserving.set_integral_image_emb
 
-theorem set_integral_map_equiv {β} [MeasurableSpace β] (e : X ≃ᵐ β) (f : β → E) (s : Set β) :
+theorem set_integral_map_equiv {Y} [MeasurableSpace Y] (e : X ≃ᵐ Y) (f : Y → E) (s : Set Y) :
     ∫ y in s, f y ∂Measure.map e μ = ∫ x in e ⁻¹' s, f (e x) ∂μ :=
   e.measurableEmbedding.set_integral_map f s
 #align measure_theory.set_integral_map_equiv MeasureTheory.set_integral_map_equiv
@@ -812,16 +812,16 @@ end Nonneg
 
 section IntegrableUnion
 
-variable {μ : Measure X} [NormedAddCommGroup E] [Countable β]
+variable {μ : Measure X} [NormedAddCommGroup E] [Countable Y]
 
-theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : β → Set X}
-    (hs : ∀ b : β, MeasurableSet (s b)) (hi : ∀ b : β, IntegrableOn f (s b) μ)
-    (h : Summable fun b : β => ∫ a : X in s b, ‖f a‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
+theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : Y → Set X}
+    (hs : ∀ b : Y, MeasurableSet (s b)) (hi : ∀ b : Y, IntegrableOn f (s b) μ)
+    (h : Summable fun b : Y => ∫ a : X in s b, ‖f a‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine' ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt _⟩
-  have B := fun b : β => lintegral_coe_eq_integral (fun a : X => ‖f a‖₊) (hi b).norm
+  have B := fun b : Y => lintegral_coe_eq_integral (fun a : X => ‖f a‖₊) (hi b).norm
   rw [tsum_congr B]
   have S' :
-    Summable fun b : β =>
+    Summable fun b : Y =>
       (⟨∫ a : X in s b, ‖f a‖₊ ∂μ, set_integral_nonneg (hs b) fun a _ => NNReal.coe_nonneg _⟩ :
         NNReal) :=
     by rw [← NNReal.summable_coe]; exact h
@@ -834,9 +834,9 @@ variable [TopologicalSpace X] [BorelSpace X] [MetrizableSpace X] [IsLocallyFinit
 
 /-- If `s` is a countable family of compact sets, `f` is a continuous function, and the sequence
 `‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable on the union of the `s i`. -/
-theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(X, E)} {s : β → Compacts X}
-    (hf : Summable fun i : β => ‖f.restrict (s i)‖ * ENNReal.toReal (μ <| s i)) :
-    IntegrableOn f (⋃ i : β, s i) μ := by
+theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(X, E)} {s : Y → Compacts X}
+    (hf : Summable fun i : Y => ‖f.restrict (s i)‖ * ENNReal.toReal (μ <| s i)) :
+    IntegrableOn f (⋃ i : Y, s i) μ := by
   refine'
     integrableOn_iUnion_of_summable_integral_norm (fun i => (s i).isCompact.isClosed.measurableSet)
       (fun i => (map_continuous f).continuousOn.integrableOn_compact (s i).isCompact)
@@ -850,9 +850,9 @@ theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(X, E)} {s : β → 
 
 /-- If `s` is a countable family of compact sets covering `X`, `f` is a continuous function, and
 the sequence `‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable. -/
-theorem integrable_of_summable_norm_restrict {f : C(X, E)} {s : β → Compacts X}
-    (hf : Summable fun i : β => ‖f.restrict (s i)‖ * ENNReal.toReal (μ <| s i))
-    (hs : ⋃ i : β, ↑(s i) = (univ : Set X)) : Integrable f μ := by
+theorem integrable_of_summable_norm_restrict {f : C(X, E)} {s : Y → Compacts X}
+    (hf : Summable fun i : Y => ‖f.restrict (s i)‖ * ENNReal.toReal (μ <| s i))
+    (hs : ⋃ i : Y, ↑(s i) = (univ : Set X)) : Integrable f μ := by
   simpa only [hs, integrableOn_univ] using integrableOn_iUnion_of_summable_norm_restrict hf
 #align measure_theory.integrable_of_summable_norm_restrict MeasureTheory.integrable_of_summable_norm_restrict
 
