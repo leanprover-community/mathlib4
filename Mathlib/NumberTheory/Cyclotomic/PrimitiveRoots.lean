@@ -209,13 +209,9 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   have hymem : yu ∈ rootsOfUnity k L := rootsOfUnity_le_of_dvd (dvd_lcm_right _ _) <|
     IsPrimitiveRoot.mem_rootsOfUnity (by exact IsPrimitiveRoot.coe_units_iff.1 hy)
   have hxuord : orderOf (⟨xu, hxmem⟩ : rootsOfUnity k L) = p := by
-    rw [← orderOf_injective (rootsOfUnity k L).subtype Subtype.coe_injective,
-      Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units]
-    exact hx.eq_orderOf.symm
+    rw [Subgroup.orderOf_mk, ← orderOf_units, hx.eq_orderOf]
   have hyuord : orderOf (⟨yu, hymem⟩ : rootsOfUnity k L) = q := by
-    rw [← orderOf_injective (rootsOfUnity k L).subtype Subtype.coe_injective,
-      Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units]
-    exact hy.eq_orderOf.symm
+    rw [Subgroup.orderOf_mk, ← orderOf_units, hy.eq_orderOf]
   obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := rootsOfUnity k L)
   have H : orderOf g = k := by
     refine le_antisymm ?_ (le_of_dvd (orderOf_pos g) ?_)
