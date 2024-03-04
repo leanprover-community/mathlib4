@@ -5,8 +5,8 @@ Authors: Koundinya Vajjha, Thomas Browning
 -/
 
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Padics.PadicNumbers
-
 
 /-!
 
@@ -17,23 +17,6 @@ Reference:
 https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
 
 -/
-
-open BigOperators
-
-/-- The nth-harmonic number defined as a finset sum of consecutive reciprocals. -/
-def harmonic : ℕ → ℚ := fun n => ∑ i in Finset.range n, (↑(i + 1))⁻¹
-
-@[simp]
-lemma harmonic_zero : harmonic 0 = 0 :=
-  rfl
-
-@[simp]
-lemma harmonic_succ (n : ℕ) : harmonic (n + 1) = harmonic n + (↑(n + 1))⁻¹ := by
-  apply Finset.sum_range_succ
-
-lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n :=
-  Finset.sum_pos (fun _ _ => inv_pos.mpr (by norm_cast; linarith))
-  (by rwa [Finset.nonempty_range_iff])
 
 /-- The 2-adic valuation of the n-th harmonic number is the negative of the logarithm
     of n. -/

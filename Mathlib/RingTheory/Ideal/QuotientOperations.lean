@@ -119,7 +119,7 @@ variable {R : Type u} {S : Type v} {F : Type w} [CommRing R] [Semiring S]
 theorem map_quotient_self (I : Ideal R) : map (Quotient.mk I) I = ⊥ :=
   eq_bot_iff.2 <|
     Ideal.map_le_iff_le_comap.2 fun _ hx =>
-    -- porting note: Lean can't infer `Module (R ⧸ I) (R ⧸ I)` on its own
+    -- Porting note: Lean can't infer `Module (R ⧸ I) (R ⧸ I)` on its own
       (@Submodule.mem_bot (R ⧸ I) _ _ _ Semiring.toModule _).2 <|
           Ideal.Quotient.eq_zero_iff_mem.2 hx
 #align ideal.map_quotient_self Ideal.map_quotient_self

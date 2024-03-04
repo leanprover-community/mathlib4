@@ -695,7 +695,9 @@ import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.Calculus.Taylor
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.Complex.AbsMax
+import Mathlib.Analysis.Complex.Angle
 import Mathlib.Analysis.Complex.Arg
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Complex.CauchyIntegral
@@ -1830,6 +1832,7 @@ import Mathlib.Data.MvPolynomial.Cardinal
 import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Counit
+import Mathlib.Data.MvPolynomial.Degrees
 import Mathlib.Data.MvPolynomial.Derivation
 import Mathlib.Data.MvPolynomial.Division
 import Mathlib.Data.MvPolynomial.Equiv
@@ -2090,6 +2093,7 @@ import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
+import Mathlib.Data.Set.Subset
 import Mathlib.Data.Set.Sups
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
@@ -2338,13 +2342,16 @@ import Mathlib.GroupTheory.Order.Min
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.GroupTheory.Perm.ClosureSwap
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
+import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.DomMulAct
 import Mathlib.GroupTheory.Perm.Fin
+import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.GroupTheory.Perm.Sign
@@ -2778,6 +2785,7 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.CircleTransform
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.Gamma
@@ -2892,7 +2900,9 @@ import Mathlib.NumberTheory.ClassNumber.FunctionField
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.NumberTheory.Cyclotomic.CyclotomicCharacter
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
+import Mathlib.NumberTheory.Cyclotomic.Embeddings
 import Mathlib.NumberTheory.Cyclotomic.Gal
+import Mathlib.NumberTheory.Cyclotomic.PID
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.NumberTheory.Dioph
@@ -2905,9 +2915,13 @@ import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
+import Mathlib.NumberTheory.FLT.Three
 import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.FunctionField
+import Mathlib.NumberTheory.Harmonic.Bounds
+import Mathlib.NumberTheory.Harmonic.Defs
+import Mathlib.NumberTheory.Harmonic.Int
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.NumberTheory.LSeries.Convergence
@@ -2947,7 +2961,6 @@ import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Units
-import Mathlib.NumberTheory.Padics.Harmonic
 import Mathlib.NumberTheory.Padics.Hensel
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicNorm
@@ -3323,6 +3336,7 @@ import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Perfection
+import Mathlib.RingTheory.PiTensorProduct
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.RingTheory.Polynomial.Chebyshev
@@ -3735,6 +3749,9 @@ import Mathlib.Topology.Algebra.UniformRing
 import Mathlib.Topology.Algebra.Valuation
 import Mathlib.Topology.Algebra.ValuedField
 import Mathlib.Topology.Algebra.WithZeroTopology
+import Mathlib.Topology.Baire.CompleteMetrizable
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Baire.LocallyCompactRegular
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Basic
 import Mathlib.Topology.Bornology.Absorbs
@@ -3867,7 +3884,6 @@ import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Topology.MetricSpace.Baire
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Topology.MetricSpace.CantorScheme

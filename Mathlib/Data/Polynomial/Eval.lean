@@ -570,7 +570,7 @@ theorem C_comp : (C a).comp p = C a :=
 theorem nat_cast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_nat_cast, C_comp]
 #align polynomial.nat_cast_comp Polynomial.nat_cast_comp
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
   nat_cast_comp
@@ -785,7 +785,7 @@ protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
 #align polynomial.map_nat_cast Polynomial.map_nat_cast
 
---Porting note: new theorem
+-- Porting note: new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
