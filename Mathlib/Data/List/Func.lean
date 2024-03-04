@@ -104,7 +104,6 @@ theorem length_set : ∀ {m : ℕ} {as : List α}, as {m ↦ a}.length = max as.
     rw [max_eq_left]
     · rfl
     · simp [Nat.le_add_right]
-      exact Nat.succ_le_succ (Nat.zero_le _)
   | m + 1, [] => by
     simp [set, length, @length_set m, Nat.zero_max]
   | m + 1, _ :: as => by
