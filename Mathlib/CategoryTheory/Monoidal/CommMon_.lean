@@ -67,7 +67,8 @@ set_option linter.uppercaseLean3 false in
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext _ _ h
 
--- porting note: the following two lemmas `id'` and `comp'` have been added to ease automation;
+-- Porting note (#10688): the following two lemmas `id'` and `comp'`
+-- have been added to ease automation;
 @[simp]
 lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
 
@@ -144,7 +145,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (C) (D)
 
--- porting note: added @[simps] to ease automation
+-- Porting note (#10688): added @[simps] to ease automation
 /-- `mapCommMon` is functorial in the lax braided functor. -/
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
@@ -170,8 +171,6 @@ def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommM
   map α := ((mapCommMonFunctor (Discrete PUnit.{u+1}) C).map α).app _
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPUnit.laxBraidedToCommMon
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
 @[simps]

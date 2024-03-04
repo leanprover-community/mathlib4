@@ -540,7 +540,7 @@ theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (revers
   simp only [reverse_cons, concat_eq_append]
 #align list.reverse_cons' List.reverse_cons'
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem reverse_singleton (a : α) : reverse [a] = [a] :=
   rfl
@@ -651,7 +651,7 @@ theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne
 theorem getLast_singleton' (a : α) : getLast [a] (cons_ne_nil a []) = a := rfl
 #align list.last_singleton List.getLast_singleton'
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem getLast_cons_cons (a₁ a₂ : α) (l : List α) :
     getLast (a₁ :: a₂ :: l) (cons_ne_nil _ _) = getLast (a₂ :: l) (cons_ne_nil a₂ l) :=
@@ -2369,7 +2369,7 @@ theorem foldr_join (f : α → β → β) :
 
 #align list.foldr_reverse List.foldr_reverse
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem foldr_eta : ∀ l : List α, foldr cons [] l = l :=
   by simp only [foldr_self_append, append_nil, forall_const]
@@ -3007,7 +3007,7 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
   rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
 #align list.pmap_eq_map_attach List.pmap_eq_map_attach
 
--- @[simp] -- Porting note: lean 4 simp can't rewrite with this
+-- @[simp] -- Porting note (#10959): lean 4 simp can't rewrite with this
 theorem attach_map_coe' (l : List α) (f : α → β) :
     (l.attach.map fun (i : {i // i ∈ l}) => f i) = l.map f := by
   rw [attach, map_pmap]; exact pmap_eq_map _ _ _ _
@@ -3663,14 +3663,35 @@ variable [DecidableEq α]
 
 theorem map_erase [DecidableEq β] {f : α → β} (finj : Injective f) {a : α} (l : List α) :
     map f (l.erase a) = (map f l).erase (f a) := by
-  have this : Eq a = Eq (f a) ∘ f := by ext b; simp [finj.eq_iff]
-  simp [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
+  have this : (a == ·) = (f a == f ·) := by ext b; simp [beq_eq_decide, finj.eq_iff]
+  rw [erase_eq_eraseP, erase_eq_eraseP, eraseP_map, this]; rfl
 #align list.map_erase List.map_erase
 
 theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
     map f (foldl List.erase l₁ l₂) = foldl (fun l a => l.erase (f a)) (map f l₁) l₂ := by
   induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
 #align list.map_foldl_erase List.map_foldl_erase
+
+theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
+    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) := by
+  induction l with
+  | nil => simp
+  | cons a l IH =>
+    cases i using Fin.cases with
+    | zero => simp
+    | succ i =>
+      by_cases ha : a = l.get i
+      · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
+      · simpa [ha] using IH i
+
+theorem eraseIdx_eq_take_drop_succ {l : List ι} {i : ℕ} :
+    l.eraseIdx i = l.take i ++ l.drop i.succ := by
+  induction l generalizing i with
+  | nil => simp
+  | cons a l IH =>
+    cases i with
+    | zero => simp
+    | succ i => simp [IH]
 
 end Erase
 
@@ -3720,7 +3741,7 @@ theorem erase_diff_erase_sublist_of_sublist {a : α} :
   | b :: l₁, l₂, h =>
     if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
     else by
-      simp only [erase_cons_head b l₁, erase_cons_tail l₁ heq,
+      simp only [erase_cons_head b l₁, erase_cons_tail l₁ (not_beq_of_ne heq),
         diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
       have h' := h.erase b
       rw [erase_cons_head] at h'
@@ -3928,7 +3949,7 @@ theorem map₂Right'_nil_right : map₂Right' f as [] = ([], as) :=
   rfl
 #align list.map₂_right'_nil_right List.map₂Right'_nil_right
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem map₂Right'_nil_cons : map₂Right' f [] (b :: bs) = (f none b :: bs.map (f none), []) :=
   rfl
@@ -3960,7 +3981,7 @@ theorem zipLeft'_nil_left : zipLeft' ([] : List α) bs = ([], bs) :=
   rfl
 #align list.zip_left'_nil_left List.zipLeft'_nil_left
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem zipLeft'_cons_nil :
     zipLeft' (a :: as) ([] : List β) = ((a, none) :: as.map fun a => (a, none), []) :=
@@ -3993,7 +4014,7 @@ theorem zipRight'_nil_right : zipRight' as ([] : List β) = ([], as) :=
   rfl
 #align list.zip_right'_nil_right List.zipRight'_nil_right
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem zipRight'_nil_cons :
     zipRight' ([] : List α) (b :: bs) = ((none, b) :: bs.map fun b => (none, b), []) :=
@@ -4056,7 +4077,7 @@ theorem map₂Right_nil_right : map₂Right f as [] = [] :=
   rfl
 #align list.map₂_right_nil_right List.map₂Right_nil_right
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem map₂Right_nil_cons : map₂Right f [] (b :: bs) = f none b :: bs.map (f none) :=
   rfl
@@ -4096,7 +4117,7 @@ theorem zipLeft_nil_left : zipLeft ([] : List α) bs = [] :=
   rfl
 #align list.zip_left_nil_left List.zipLeft_nil_left
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem zipLeft_cons_nil :
     zipLeft (a :: as) ([] : List β) = (a, none) :: as.map fun a => (a, none) :=
@@ -4137,7 +4158,7 @@ theorem zipRight_nil_right : zipRight as ([] : List β) = [] :=
   rfl
 #align list.zip_right_nil_right List.zipRight_nil_right
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem zipRight_nil_cons :
     zipRight ([] : List α) (b :: bs) = (none, b) :: bs.map fun b => (none, b) :=

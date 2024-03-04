@@ -162,7 +162,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
       ext ⟨a, ha⟩
       change a < 1 at ha
       change 0 = a
-      linarith
+      omega
     · rfl
   right_inv := by
     intro A
@@ -337,7 +337,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       ext ⟨a, ha⟩
       change a < 1 at ha
       change 0 = a
-      linarith
+      omega
 #align category_theory.cosimplicial_object.cech_conerve_equiv CategoryTheory.CosimplicialObject.cechConerveEquiv
 
 /-- The augmented Čech conerve construction is left adjoint to the `toArrow` functor. -/

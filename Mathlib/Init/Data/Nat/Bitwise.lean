@@ -126,8 +126,8 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
     refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
     cases bodd n <;> simp [cond, not]
-    · rw [Nat.add_comm, Nat.add_succ]
-    · rw [succ_mul, Nat.add_comm 1, Nat.add_succ]
+    · rw [Nat.add_comm]
+    · rw [succ_mul, Nat.add_comm 1]
 #align nat.bodd_add_div2 Nat.bodd_add_div2
 
 theorem div2_val (n) : div2 n = n / 2 := by
@@ -290,6 +290,7 @@ theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (
 theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
+-- Not a `simp` lemma, as later `simp` will be able to prove this.
 theorem testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b

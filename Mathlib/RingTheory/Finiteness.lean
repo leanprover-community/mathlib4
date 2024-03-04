@@ -74,7 +74,7 @@ theorem fg_iff_exists_fin_generating_family {N : Submodule R M} :
     obtain ⟨n, f, rfl⟩ := Sfin.fin_embedding
     exact ⟨n, f, hS⟩
   · rintro ⟨n, s, hs⟩
-    refine' ⟨range s, finite_range s, hs⟩
+    exact ⟨range s, finite_range s, hs⟩
 #align submodule.fg_iff_exists_fin_generating_family Submodule.fg_iff_exists_fin_generating_family
 
 /-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2,
@@ -368,7 +368,7 @@ theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebr
   exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
 #align submodule.fg_restrict_scalars Submodule.fg_restrictScalars
 
-theorem FG.stablizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
+theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
   obtain ⟨S, hS⟩ := hM'
   have : ∀ s : S, ∃ n, (s : M) ∈ N n := fun s =>
@@ -385,7 +385,7 @@ theorem FG.stablizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o
     exact N.2 (Finset.le_sup <| S.mem_attach ⟨s, hs⟩) (hf _)
   · rw [← H]
     exact le_iSup _ _
-#align submodule.fg.stablizes_of_supr_eq Submodule.FG.stablizes_of_iSup_eq
+#align submodule.fg.stablizes_of_supr_eq Submodule.FG.stabilizes_of_iSup_eq
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
 theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by

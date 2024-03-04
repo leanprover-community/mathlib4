@@ -154,7 +154,7 @@ theorem second_continuant_aux_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some 
 theorem first_continuant_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.continuants 1 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
   simp [nth_cont_eq_succ_nth_cont_aux]
-  -- porting note: simp used to work here, but now it can't figure out that 1 + 1 = 2
+  -- Porting note (#10959): simp used to work here, but now it can't figure out that 1 + 1 = 2
   convert second_continuant_aux_eq zeroth_s_eq
 #align generalized_continued_fraction.first_continuant_eq GeneralizedContinuedFraction.first_continuant_eq
 

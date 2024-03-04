@@ -849,7 +849,7 @@ theorem roots_list_prod (L : List R[X]) :
 
 theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.roots = m.bind roots := by
   rcases m with ⟨L⟩
-  simpa only [Multiset.coe_prod, quot_mk_to_coe''] using roots_list_prod L
+  simpa only [Multiset.prod_coe, quot_mk_to_coe''] using roots_list_prod L
 #align polynomial.roots_multiset_prod Polynomial.roots_multiset_prod
 
 theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
@@ -1394,14 +1394,19 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R
     (fun i : s ↦ heval i i.prop) (hcard.trans_eq (Fintype.card_coe s).symm)
 
 open Cardinal in
-lemma exists_eval_ne_zero_of_natDegree_lt_card (f : R[X]) (hf : f ≠ 0) (hfR : f.natDegree < #R) :
-    ∃ r, f.eval r ≠ 0 := by
-  contrapose! hf
+lemma eq_zero_of_forall_eval_zero_of_natDegree_lt_card
+    (f : R[X]) (hf : ∀ r, f.eval r = 0) (hfR : f.natDegree < #R) : f = 0 := by
   obtain hR|hR := finite_or_infinite R
   · have := Fintype.ofFinite R
     apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero f Function.injective_id hf
-    aesop
+    simpa only [mk_fintype, Nat.cast_lt] using hfR
   · exact zero_of_eval_zero _ hf
+
+open Cardinal in
+lemma exists_eval_ne_zero_of_natDegree_lt_card (f : R[X]) (hf : f ≠ 0) (hfR : f.natDegree < #R) :
+    ∃ r, f.eval r ≠ 0 := by
+  contrapose! hf
+  exact eq_zero_of_forall_eval_zero_of_natDegree_lt_card f hf hfR
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=

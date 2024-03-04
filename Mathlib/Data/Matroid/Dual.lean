@@ -101,7 +101,7 @@ section dual
       refine hI.mem_of_insert_indep ⟨hB₁.subset_ground he, heX⟩
         (hB₁.indep.subset (insert_subset he ?_))
       refine (subset_union_of_subset_right (subset_diff.mpr ⟨hIB',?_⟩) _).trans hI'B₁
-      refine disjoint_of_subset_left hI.subset disjoint_sdiff_left
+      exact disjoint_of_subset_left hI.subset disjoint_sdiff_left
 
     subst this
 
@@ -247,7 +247,7 @@ theorem coindep_iff_subset_compl_base : M.Coindep X ↔ ∃ B, M.Base B ∧ X �
   exact ⟨fun ⟨⟨B, hB, _, hBX⟩, hX⟩ ↦ ⟨B, hB, hX, hBX.symm⟩,
     fun ⟨B, hB, hXE, hXB⟩ ↦ ⟨⟨B, hB, hB.subset_ground,  hXB.symm⟩, hXE⟩⟩
 
-@[aesop unsafe 10% (rule_sets [Matroid])]
+@[aesop unsafe 10% (rule_sets := [Matroid])]
 theorem Coindep.subset_ground (hX : M.Coindep X) : X ⊆ M.E :=
   hX.indep.subset_ground
 
