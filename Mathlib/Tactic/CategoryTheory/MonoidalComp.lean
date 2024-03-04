@@ -29,6 +29,7 @@ Used by the `⊗≫` monoidal composition operator, and the `coherence` tactic.
 -/
 -- We could likely turn this into a `Prop` valued existential if that proves useful.
 class MonoidalCoherence (X Y : C) where
+  /-- A monoidal structural isomorphism between two objects. -/
   hom : X ⟶ Y
   [isIso : IsIso hom]
 
