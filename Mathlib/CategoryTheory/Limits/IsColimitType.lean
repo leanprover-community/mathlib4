@@ -214,7 +214,7 @@ noncomputable def coconeOfSmall : Cocone F where
 
 @[simp]
 lemma fromQuot'_coconeOfSmall :
-    fromQuot' (coconeOfSmall F) = (equivShrink.{w} (Quot' F)) := by
+    fromQuot' (coconeOfSmall F) = equivShrink.{w} (Quot' F) := by
   ext ⟨j, x⟩
   rfl
 
