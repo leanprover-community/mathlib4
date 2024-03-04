@@ -337,9 +337,8 @@ noncomputable def shiftTriangleIso (n : ℤ) :
       (fst (φ⟦n⟧')).1.rightShift_v 1 0 (zero_add 1) p p (add_zero p) (p + 1) rfl,
       (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n)
         (add_zero (p + n)) (p + 1 + n) (by omega)] says
-      simp only [triangle, Triangle.mk_mor₃, Units.smul_def, HomologicalComplex.zsmul_f_apply,
-        shiftFunctor_obj_X', HomologicalComplex.comp_f, shiftFunctor_map_f', Cocycle.homOf_f,
-        Cocycle.rightShift_coe, Cocycle.coe_neg, Cochain.rightShift_neg, Cochain.neg_v,
+      simp only [triangle, Triangle.mk_mor₃, Cocycle.homOf_f, Cocycle.rightShift_coe,
+        Cocycle.coe_neg, Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
         (fst φ).1.rightShift_v 1 0 (zero_add 1) (p + n) (p + n) (add_zero (p + n)) (p + 1 + n)
           (by omega),
         shiftFunctor_obj_X, shiftFunctorObjXIso, shiftFunctorComm_hom_app_f, Preadditive.neg_comp,
