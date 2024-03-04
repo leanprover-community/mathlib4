@@ -146,7 +146,8 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
         let lift_symm_of : ∀ {H : Type u} [Group H], ∀ (f : G →* H) (a), lift.symm f a = f (of a) :=
           by intro H _ f a; simp [← lift_of (lift.symm f)]
         apply lift.symm.injective; ext x
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of, lift_of, lift_symm_of])
+        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply,
+          FreeGroup.lift.of, lift_of, lift_symm_of])
 
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it admits a free group basis based on this type. Here
