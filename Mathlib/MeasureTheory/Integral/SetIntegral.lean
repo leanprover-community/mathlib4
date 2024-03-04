@@ -1391,7 +1391,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
     ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
-    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
+    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
   intro q hq
   apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
@@ -1401,26 +1401,26 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     hk.mem_uniformity_of_prod
       (hf.mono (Set.prod_mono_right (subset_univ k))) hq (dist_mem_uniformity δpos)
   simp_rw [dist_eq_norm] at hv ⊢
-  have I : ∀ p ∈ s, IntegrableOn (fun x ↦ L (g x) (f p x)) k μ := by
+  have I : ∀ p ∈ s, IntegrableOn (fun y ↦ L (g y) (f p y)) k μ := by
     intro p hp
-    obtain ⟨C, hC⟩ : ∃ C, ∀ x, ‖f p x‖ ≤ C := by
+    obtain ⟨C, hC⟩ : ∃ C, ∀ y, ‖f p y‖ ≤ C := by
       have : ContinuousOn (f p) k := by
-        have : ContinuousOn (fun x ↦ (p, x)) k := (Continuous.Prod.mk p).continuousOn
+        have : ContinuousOn (fun y ↦ (p, y)) k := (Continuous.Prod.mk p).continuousOn
         exact hf.comp this (by simp [MapsTo, hp])
       rcases IsCompact.exists_bound_of_continuousOn hk this with ⟨C, hC⟩
-      refine ⟨max C 0, fun x ↦ ?_⟩
-      by_cases hx : x ∈ k
-      · exact (hC x hx).trans (le_max_left _ _)
-      · simp [hfs p x hp hx]
-    have : IntegrableOn (fun x ↦ ‖L‖ * ‖g x‖ * C) k μ :=
+      refine ⟨max C 0, fun y ↦ ?_⟩
+      by_cases hx : y ∈ k
+      · exact (hC y hx).trans (le_max_left _ _)
+      · simp [hfs p y hp hx]
+    have : IntegrableOn (fun y ↦ ‖L‖ * ‖g y‖ * C) k μ :=
       (hg.norm.const_mul _).mul_const _
     apply Integrable.mono' this ?_ ?_
     · borelize G
       apply L.aestronglyMeasurable_comp₂ hg.aestronglyMeasurable
       apply StronglyMeasurable.aestronglyMeasurable
       apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
-      apply support_subset_iff'.2 (fun x hx ↦ hfs p x hp hx)
-    · apply eventually_of_forall (fun x ↦ (le_opNorm₂ L (g x) (f p x)).trans ?_)
+      apply support_subset_iff'.2 (fun y hy ↦ hfs p y hp hy)
+    · apply eventually_of_forall (fun y ↦ (le_opNorm₂ L (g y) (f p y)).trans ?_)
       gcongr
       apply hC
   filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
@@ -1428,25 +1428,25 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
   ‖∫ x, L (g x) (f p x) ∂μ - ∫ x, L (g x) (f q x) ∂μ‖
     = ‖∫ x in k, L (g x) (f p x) ∂μ - ∫ x in k, L (g x) (f q x) ∂μ‖ := by
       congr 2
-      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
-        simp [hfs p x h'p hx]
-      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
-        simp [hfs q x hq hx]
+      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)).symm
+        simp [hfs p y h'p hy]
+      · refine (set_integral_eq_integral_of_forall_compl_eq_zero (fun y hy ↦ ?_)).symm
+        simp [hfs q y hq hy]
   _ = ‖∫ x in k, L (g x) (f p x) - L (g x) (f q x) ∂μ‖ := by rw [integral_sub (I p h'p) (I q hq)]
   _ ≤ ∫ x in k, ‖L (g x) (f p x) - L (g x) (f q x)‖ ∂μ := norm_integral_le_integral_norm _
   _ ≤ ∫ x in k, ‖L‖ * ‖g x‖ * δ ∂μ := by
-      apply integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity))
+      apply integral_mono_of_nonneg (eventually_of_forall (fun y ↦ by positivity))
       · exact (hg.norm.const_mul _).mul_const _
-      · apply eventually_of_forall (fun x ↦ ?_)
-        by_cases hx : x ∈ k
+      · apply eventually_of_forall (fun y ↦ ?_)
+        by_cases hy : y ∈ k
         · dsimp only
-          specialize hv p hp x hx
+          specialize hv p hp y hy
           calc
-          ‖L (g x) (f p x) - L (g x) (f q x)‖
-            = ‖L (g x) (f p x - f q x)‖ := by simp only [map_sub]
-          _ ≤ ‖L‖ * ‖g x‖ * ‖f p x - f q x‖ := le_opNorm₂ _ _ _
-          _ ≤ ‖L‖ * ‖g x‖ * δ := by gcongr
-        · simp only [hfs p x h'p hx, hfs q x hq hx, sub_self, norm_zero, mul_zero]
+          ‖L (g y) (f p y) - L (g y) (f q y)‖
+            = ‖L (g y) (f p y - f q y)‖ := by simp only [map_sub]
+          _ ≤ ‖L‖ * ‖g y‖ * ‖f p y - f q y‖ := le_opNorm₂ _ _ _
+          _ ≤ ‖L‖ * ‖g y‖ * δ := by gcongr
+        · simp only [hfs p y h'p hy, hfs q y hq hy, sub_self, norm_zero, mul_zero]
           positivity
   _ < ε := hδ
 
