@@ -1430,7 +1430,7 @@ theorem modifyNth_eq_set (f : α → α) :
   | 0, l => by cases l <;> rfl
   | n + 1, [] => rfl
   | n + 1, b :: l =>
-    (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases get? l n <;> rfl
+    (congr_arg (cons b) (modifyNth_eq_set f n l)).trans <| by cases h : get? l n <;> simp [h]
 #align list.modify_nth_eq_update_nth List.modifyNth_eq_set
 
 #align list.nth_modify_nth List.get?_modifyNth

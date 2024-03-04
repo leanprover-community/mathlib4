@@ -782,7 +782,7 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
     rw [castPred_succAbove _ _ hlt] at hk; cases hk
     intro; rfl
   · generalize_proofs H₁ H₂; revert H₂
-    generalize hk : pred ((succAboveEmb i).toEmbedding j) H₁ = k
+    generalize hk : pred (succAbove i j) H₁ = k
     erw [pred_succAbove _ _ (le_of_not_lt hlt)] at hk; cases hk
     intro; rfl
 #align fin.insert_nth_apply_succ_above Fin.insertNth_apply_succAbove
