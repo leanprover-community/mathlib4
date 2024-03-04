@@ -146,7 +146,7 @@ theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cy
 theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   induction σ using cycle_induction_on with
   | base_one => simp
-  | base_cycles σ hσ => rw [hσ.cycleType, coe_sum, List.sum_singleton]
+  | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
 #align equiv.perm.sum_cycle_type Equiv.Perm.sum_cycleType
 
@@ -598,10 +598,7 @@ theorem _root_.card_support_eq_three_iff : σ.support.card = 3 ↔ σ.IsThreeCyc
     rw [IsThreeCycle, ← cons_erase hn, h1, h, ← cons_zero]
   obtain ⟨m, hm⟩ := exists_mem_of_ne_zero h1
   rw [← sum_cycleType, ← cons_erase hn, ← cons_erase hm, Multiset.sum_cons, Multiset.sum_cons] at h
-  -- TODO: linarith [...] should solve this directly
-  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False := by
-    intros
-    linarith
+  have : ∀ {k}, 2 ≤ m → 2 ≤ n → n + (m + k) = 3 → False := by omega
   cases this (two_le_of_mem_cycleType (mem_of_mem_erase hm)) (two_le_of_mem_cycleType hn) h
 #align card_support_eq_three_iff card_support_eq_three_iff
 

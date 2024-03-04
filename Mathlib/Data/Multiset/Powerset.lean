@@ -78,7 +78,7 @@ theorem powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux l
     (powerset_aux'_perm p).trans powersetAux_perm_powersetAux'.symm
 #align multiset.powerset_aux_perm Multiset.powersetAux_perm
 
---Porting note: slightly slower implementation due to `map ofList`
+--Porting note (#11083): slightly slower implementation due to `map ofList`
 /-- The power set of a multiset. -/
 def powerset (s : Multiset α) : Multiset (Multiset α) :=
   Quot.liftOn s
@@ -112,7 +112,7 @@ theorem mem_powerset {s t : Multiset α} : s ∈ powerset t ↔ s ≤ t :=
 
 theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset s :=
   Quotient.inductionOn s fun l => by
-    simp only [powerset_coe, quot_mk_to_coe, coe_le, coe_map]
+    simp only [powerset_coe, quot_mk_to_coe, coe_le, map_coe]
     show l.map (((↑) : List α → Multiset α) ∘ List.ret) <+~ (sublists l).map (↑)
     rw [← List.map_map]
     exact ((map_ret_sublist_sublists _).map _).subperm

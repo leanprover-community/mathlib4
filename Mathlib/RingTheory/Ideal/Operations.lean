@@ -1090,9 +1090,9 @@ variable {R}
 
 variable (I)
 
-lemma radical_pow : ∀ n, 0 < n → radical (I ^ n) = radical I
+lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
   | 1, _ => by simp
-  | n + 2, _ => by rw [pow_succ, radical_mul, radical_pow _ n.succ_pos, inf_idem]
+  | n + 2, _ => by rw [pow_succ, radical_mul, radical_pow n.succ_ne_zero, inf_idem]
 #align ideal.radical_pow Ideal.radical_pow
 
 theorem IsPrime.mul_le {I J P : Ideal R} (hp : IsPrime P) : I * J ≤ P ↔ I ≤ P ∨ J ≤ P := by

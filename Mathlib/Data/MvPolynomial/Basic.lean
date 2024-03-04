@@ -101,7 +101,7 @@ section Instances
 
 instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq R] :
     DecidableEq (MvPolynomial σ R) :=
-  Finsupp.decidableEq
+  Finsupp.instDecidableEq
 #align mv_polynomial.decidable_eq_mv_polynomial MvPolynomial.decidableEqMvPolynomial
 
 instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
@@ -395,6 +395,10 @@ theorem monomial_eq_monomial_iff {α : Type*} (a₁ a₂ : α →₀ ℕ) (b₁ 
 theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolynomial σ R) := by
   simp only [X_pow_eq_monomial, ← monomial_finsupp_sum_index, Finsupp.sum_single]
 #align mv_polynomial.monomial_eq MvPolynomial.monomial_eq
+
+@[simp]
+lemma prod_X_pow_eq_monomial : ∏ x in s.support, X x ^ s x = monomial s (1 : R) := by
+  simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
 
 theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (C a))
     (h_X : ∀ p n, M p → M (p * X n)) : ∀ s a, M (monomial s a) := by
@@ -817,6 +821,13 @@ theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0
   push_neg
   rfl
 #align mv_polynomial.ne_zero_iff MvPolynomial.ne_zero_iff
+
+@[simp]
+theorem X_ne_zero [Nontrivial R] (s : σ) :
+    X (R := R) s ≠ 0 := by
+  rw [ne_zero_iff]
+  use Finsupp.single s 1
+  simp only [coeff_X, ne_eq, one_ne_zero, not_false_eq_true]
 
 @[simp]
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
