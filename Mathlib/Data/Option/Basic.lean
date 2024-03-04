@@ -255,7 +255,7 @@ theorem pmap_eq_some_iff {hf} {y : β} :
   · constructor
     · intro h
       simp only [pmap, Option.some_inj] at h
-      refine ⟨x, rfl, h⟩
+      exact ⟨x, rfl, h⟩
     · rintro ⟨a, H, rfl⟩
       simp only [mem_def, Option.some_inj] at H
       simp only [H, pmap]
@@ -370,7 +370,7 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
     casesOn' o (f none) (f ∘ (fun a ↦ ↑a)) = f o := by cases o <;> rfl
 #align option.cases_on'_none_coe Option.casesOn'_none_coe
 
--- porting note: workaround for leanprover/lean4#2049
+-- Porting note: workaround for leanprover/lean4#2049
 compile_inductive% Option
 
 theorem orElse_eq_some (o o' : Option α) (x : α) :

@@ -41,7 +41,7 @@ are partially unbundled.
 ## References
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
-## Tagsc
+## Tags
 
 lie bracket, jacobi identity, lie ring, lie algebra, lie module
 -/
@@ -740,6 +740,8 @@ instance : FunLike (M →ₗ⁅R, L⁆ N) M N :=
   { coe := fun f => f.toFun,
     coe_injective' := fun x y h =>
       by cases x; cases y; simp at h; simp [h] }
+
+initialize_simps_projections LieModuleHom (toFun → apply)
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M → N) = f :=
