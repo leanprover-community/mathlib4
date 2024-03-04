@@ -219,6 +219,32 @@ instance : MonoidalCategory (F C) where
   pentagon W X Y Z := Quotient.sound pentagon
   triangle X Y := Quotient.sound triangle
 
+theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C} (t : X ⟶ Y)
+    (id : (X : F C) → motive (𝟙 X))
+    (α_hom : (X Y Z : F C) → motive (α_ X Y Z).hom)
+    (α_inv : (X Y Z : F C) → motive (α_ X Y Z).inv)
+    (l_hom : (X : F C) → motive (λ_ X).hom)
+    (l_inv : (X : F C) → motive (λ_ X).inv)
+    (ρ_hom : (X : F C) → motive (ρ_ X).hom)
+    (ρ_inv : (X : F C) → motive (ρ_ X).inv)
+    (comp : {X Y Z : F C} → (f : X ⟶ Y) → (g : Y ⟶ Z) → motive f → motive g → motive (f ≫ g))
+    (whiskerLeft : (X : F C) → {Y Z : F C} → (f : Y ⟶ Z) → motive f → motive (X ◁ f))
+    (whiskerRight : {X Y : F C} → (f : X ⟶ Y) → (Z : F C) → motive f → motive (f ▷ Z)) :
+    motive t := by
+  apply Quotient.inductionOn
+  intro f
+  induction f with
+  | id X => exact id X
+  | α_hom X Y Z => exact α_hom X Y Z
+  | α_inv X Y Z => exact α_inv X Y Z
+  | l_hom X => exact l_hom X
+  | l_inv X => exact l_inv X
+  | ρ_hom X => exact ρ_hom X
+  | ρ_inv X => exact ρ_inv X
+  | comp f g hf hg => exact comp _ _ (hf ⟦f⟧) (hg ⟦g⟧)
+  | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
+  | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
+
 @[simp]
 theorem mk_comp {X Y Z : F C} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
     ⟦f.comp g⟧ = @CategoryStruct.comp (F C) _ _ _ _ ⟦f⟧ ⟦g⟧ :=
