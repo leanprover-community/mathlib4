@@ -11,6 +11,23 @@ import Mathlib.CategoryTheory.Monoidal.Category
 We provide `f ⊗≫ g`, the `monoidal_comp` operation,
 which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
+
+## Example
+
+Suppose we have a braiding morphism `R X Y : X ⊗ Y ⟶ Y ⊗ X` in a monoidal category, and that we
+want to define the morphism with the type `V₁ ⊗ V₂ ⊗ V₃ ⊗ V₄ ⊗ V₅ ⟶ V₁ ⊗ V₃ ⊗ V₂ ⊗ V₄ ⊗ V₅` that
+transposes the second and third components by `R V₂ V₃`. How to do this? The first guess would be
+to use the whiskering operators `◁` and `▷`, and define the morphism as `V₁ ◁ R V₂ V₃ ▷ V₄ ▷ V₅`.
+However, this morphism has the type `V₁ ⊗ ((V₂ ⊗ V₃) ⊗ V₄) ⊗ V₅ ⟶ V₁ ⊗ ((V₃ ⊗ V₂) ⊗ V₄) ⊗ V₅`,
+which is not what we need. We should insert suitable associators. The desired associators can,
+in principle, be defined by using the primitive three-components associator
+`α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)` as a building block, but writing down actual definitions
+are quite tedious, and we usually don't want to see them.
+
+The monoidal composition `⊗≫` is designed to solve such a problem. In this case, we can define
+the desired morphism as `𝟙 _ ⊗≫ V₁ ◁ R V₂ V₃ ▷ V₄ ▷ V₅ ⊗≫ 𝟙 _`, where both `𝟙 _` are
+completed as `𝟙 (V₁ ⊗ V₂ ⊗ V₃ ⊗ V₄ ⊗ V₅)`.
+
 -/
 
 universe v u
