@@ -408,7 +408,7 @@ theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
 theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
     (hx : x ∈ closure s) : ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
   obtain ⟨l, h1, h2⟩ := exists_list_of_mem_closure hx
-  exact ⟨l, h1, (Multiset.coe_prod l).trans h2⟩
+  exact ⟨l, h1, (Multiset.prod_coe l).trans h2⟩
 #align submonoid.exists_multiset_of_mem_closure Submonoid.exists_multiset_of_mem_closure
 #align add_submonoid.exists_multiset_of_mem_closure AddSubmonoid.exists_multiset_of_mem_closure
 
