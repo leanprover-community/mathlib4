@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.DirectLimit
 
 #align_import algebra.category.Module.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
@@ -50,9 +50,9 @@ instance moduleObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule (F : J ⥤ ModuleCatMax.{v, w, u} R) : Submodule R (∀ j, F.obj j) :=
-  { AddGroupCat.sectionsAddSubgroup.{v, w}
-      (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat.{max v w} ⋙
-          forget₂ AddCommGroupCat AddGroupCat.{max v w}) with
+  { AddGrp.sectionsAddSubgroup.{v, w}
+      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v w} ⋙
+          forget₂ AddCommGrp AddGrp.{max v w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
       simp only [forget_map, Functor.comp_map, Pi.smul_apply, map_smul]
@@ -141,23 +141,23 @@ instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ ModuleCatMax.{v, w, u} R) :
-    IsLimit ((forget₂ (ModuleCat R) AddCommGroupCat).mapCone (limitCone F)) :=
-  AddCommGroupCat.limitConeIsLimit
-    (F ⋙ forget₂ (ModuleCatMax.{v, w, u} R) _ : J ⥤ AddCommGroupCat.{max v w})
+    IsLimit ((forget₂ (ModuleCat R) AddCommGrp).mapCone (limitCone F)) :=
+  AddCommGrp.limitConeIsLimit
+    (F ⋙ forget₂ (ModuleCatMax.{v, w, u} R) _ : J ⥤ AddCommGrp.{max v w})
 #align Module.forget₂_AddCommGroup_preserves_limits_aux ModuleCat.forget₂AddCommGroupPreservesLimitsAux
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
 instance forget₂AddCommGroupPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v}
-      (forget₂ (ModuleCatMax.{v, w, u} R) AddCommGroupCat.{max v w}) where
+      (forget₂ (ModuleCatMax.{v, w, u} R) AddCommGrp.{max v w}) where
   preservesLimitsOfShape :=
     { preservesLimit := preservesLimitOfPreservesLimitCone (limitConeIsLimit _)
           (forget₂AddCommGroupPreservesLimitsAux _) }
 #align Module.forget₂_AddCommGroup_preserves_limits_of_size ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :
-    PreservesLimits (forget₂ (ModuleCat R) AddCommGroupCat.{w}) :=
+    PreservesLimits (forget₂ (ModuleCat R) AddCommGrp.{w}) :=
   ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize.{w, w}
 #align Module.forget₂_AddCommGroup_preserves_limits ModuleCat.forget₂AddCommGroupPreservesLimits
 

@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.GroupCat.Adjunctions
+import Mathlib.Algebra.Category.Grp.Adjunctions
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.Condensed.Abelian
 
@@ -22,15 +22,15 @@ universe u
 open CategoryTheory
 
 /-- The forgetful functor from condensed abelian groups to condensed sets. -/
-def Condensed.abForget : CondensedAb ⥤ CondensedSet := sheafCompose _ (forget AddCommGroupCat)
+def Condensed.abForget : CondensedAb ⥤ CondensedSet := sheafCompose _ (forget AddCommGrp)
 
 /--
 The left adjoint to the forgetful functor. The *free condensed abelian group* on a condensed set.
 -/
 noncomputable
 def Condensed.freeAb : CondensedSet ⥤ CondensedAb :=
-  Sheaf.composeAndSheafify _ AddCommGroupCat.free
+  Sheaf.composeAndSheafify _ AddCommGrp.free
 
 /-- The condensed version of the free-forgetful adjunction. -/
 noncomputable
-def Condensed.setAbAdjunction : freeAb ⊣ abForget := Sheaf.adjunction _ AddCommGroupCat.adj
+def Condensed.setAbAdjunction : freeAb ⊣ abForget := Sheaf.adjunction _ AddCommGrp.adj

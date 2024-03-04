@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.GroupPower.NegOnePow
-import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
@@ -566,9 +566,9 @@ open HomComplex
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
 @[simps! X d_apply]
-def HomComplex : CochainComplex AddCommGroupCat ℤ where
-  X i := AddCommGroupCat.of (Cochain F G i)
-  d i j := AddCommGroupCat.ofHom (δ_hom ℤ F G i j)
+def HomComplex : CochainComplex AddCommGrp ℤ where
+  X i := AddCommGrp.of (Cochain F G i)
+  d i j := AddCommGrp.ofHom (δ_hom ℤ F G i j)
   shape _ _ hij := by ext; apply δ_shape _ _ hij
   d_comp_d' _ _ _ _ _  := by ext; apply δ_δ
 

@@ -943,6 +943,8 @@ def nameDict : String → List String
   | "units"       => ["add", "Units"]
   | "cyclic"      => ["add", "Cyclic"]
   | "rootable"    => ["divisible"]
+  | "semigrp"     => ["add", "Semigrp"]
+  | "grp"         => ["add", "Grp"]
   | "commute"     => ["add", "Commute"]
   | "semiconj"    => ["add", "Semiconj"]
   | "zpowers"     => ["zmultiples"]

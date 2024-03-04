@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.RingTheory.Subring.Basic
 
 #align_import algebra.category.Ring.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
@@ -339,11 +339,11 @@ set_option linter.uppercaseLean3 false in
 /-- The flat sections of a functor into `RingCat` form a subring of all sections.
 -/
 def sectionsSubring (F : J ⥤ RingCatMax.{v, u}) : Subring.{max v u} (∀ j, F.obj j) :=
-  letI f : J ⥤ AddGroupCat.{max v u} :=
-    F ⋙ forget₂ RingCatMax.{v, u} AddCommGroupCat.{max v u} ⋙
-    forget₂ AddCommGroupCat.{max v u} AddGroupCat.{max v u}
+  letI f : J ⥤ AddGrp.{max v u} :=
+    F ⋙ forget₂ RingCatMax.{v, u} AddCommGrp.{max v u} ⋙
+    forget₂ AddCommGrp.{max v u} AddGrp.{max v u}
   letI g : J ⥤ SemiRingCatMax.{v, u} := F ⋙ forget₂ RingCatMax.{v, u} SemiRingCat.{max v u}
-  { AddGroupCat.sectionsAddSubgroup.{v, u} (J := J) f,
+  { AddGrp.sectionsAddSubgroup.{v, u} (J := J) f,
     SemiRingCat.sectionsSubsemiring.{v, u} (J := J) g with
     carrier := (F ⋙ forget RingCatMax.{v, u}).sections }
 set_option linter.uppercaseLean3 false in
@@ -426,17 +426,17 @@ set_option linter.uppercaseLean3 false in
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ RingCatMax.{v, u}) :
-    IsLimit ((forget₂ RingCatMax.{v, u} AddCommGroupCat).mapCone (limitCone.{v, u} F)) := by
+    IsLimit ((forget₂ RingCatMax.{v, u} AddCommGrp).mapCone (limitCone.{v, u} F)) := by
   -- Porting note: inline `f` would not compile
-  letI f := (F ⋙ forget₂ RingCatMax.{v, u} AddCommGroupCat.{max v u})
-  apply AddCommGroupCat.limitConeIsLimit.{v, u} f
+  letI f := (F ⋙ forget₂ RingCatMax.{v, u} AddCommGrp.{max v u})
+  apply AddCommGrp.limitConeIsLimit.{v, u} f
 set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_AddCommGroup_preserves_limits_aux RingCat.forget₂AddCommGroupPreservesLimitsAux
 
 /-- The forgetful functor from rings to additive commutative groups preserves all limits.
 -/
 instance forget₂AddCommGroupPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ RingCatMax.{v, u} AddCommGroupCat.{max v u}) where
+    PreservesLimitsOfSize.{v, v} (forget₂ RingCatMax.{v, u} AddCommGrp.{max v u}) where
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
@@ -445,7 +445,7 @@ set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_AddCommGroup_preserves_limits_of_size RingCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :
-    PreservesLimits (forget₂ RingCat AddCommGroupCat.{u}) :=
+    PreservesLimits (forget₂ RingCat AddCommGrp.{u}) :=
   RingCat.forget₂AddCommGroupPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Ring.forget₂_AddCommGroup_preserves_limits RingCat.forget₂AddCommGroupPreservesLimits

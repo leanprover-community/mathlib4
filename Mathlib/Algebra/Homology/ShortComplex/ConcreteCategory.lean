@@ -42,7 +42,7 @@ variable [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).Preserves
 
 lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
-  rw [← AddCommGroupCat.mono_iff_injective]
+  rw [← AddCommGrp.mono_iff_injective]
   constructor
   · intro
     infer_instance
@@ -57,7 +57,7 @@ lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
 
 lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget₂ C Ab).map f) := by
-  rw [← AddCommGroupCat.epi_iff_surjective]
+  rw [← AddCommGrp.epi_iff_surjective]
   constructor
   · intro
     infer_instance

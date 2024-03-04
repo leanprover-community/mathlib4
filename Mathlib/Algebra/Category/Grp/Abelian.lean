@@ -3,11 +3,11 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.GroupCat.Colimits
-import Mathlib.Algebra.Category.GroupCat.FilteredColimits
-import Mathlib.Algebra.Category.GroupCat.Kernels
-import Mathlib.Algebra.Category.GroupCat.Limits
-import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
+import Mathlib.Algebra.Category.Grp.Colimits
+import Mathlib.Algebra.Category.Grp.FilteredColimits
+import Mathlib.Algebra.Category.Grp.Kernels
+import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
@@ -24,26 +24,26 @@ universe u
 
 noncomputable section
 
-namespace AddCommGroupCat
+namespace AddCommGrp
 
-variable {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {X Y Z : AddCommGrp.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- In the category of abelian groups, every monomorphism is normal. -/
 def normalMono (_ : Mono f) : NormalMono f :=
-  equivalenceReflectsNormalMono (forget₂ (ModuleCat.{u} ℤ) AddCommGroupCat.{u}).inv <|
+  equivalenceReflectsNormalMono (forget₂ (ModuleCat.{u} ℤ) AddCommGrp.{u}).inv <|
     ModuleCat.normalMono _ inferInstance
 set_option linter.uppercaseLean3 false in
-#align AddCommGroup.normal_mono AddCommGroupCat.normalMono
+#align AddCommGroup.normal_mono AddCommGrp.normalMono
 
 /-- In the category of abelian groups, every epimorphism is normal. -/
 def normalEpi (_ : Epi f) : NormalEpi f :=
-  equivalenceReflectsNormalEpi (forget₂ (ModuleCat.{u} ℤ) AddCommGroupCat.{u}).inv <|
+  equivalenceReflectsNormalEpi (forget₂ (ModuleCat.{u} ℤ) AddCommGrp.{u}).inv <|
     ModuleCat.normalEpi _ inferInstance
 set_option linter.uppercaseLean3 false in
-#align AddCommGroup.normal_epi AddCommGroupCat.normalEpi
+#align AddCommGroup.normal_epi AddCommGrp.normalEpi
 
 /-- The category of abelian groups is abelian. -/
-instance : Abelian AddCommGroupCat.{u} where
+instance : Abelian AddCommGrp.{u} where
   has_finite_products := ⟨HasFiniteProducts.out⟩
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
@@ -58,7 +58,7 @@ theorem exact_iff : Exact f g ↔ f.range = g.ker := by
 
 /-- The category of abelian groups satisfies Grothedieck's Axiom AB5. -/
 instance {J : Type u} [SmallCategory J] [IsFiltered J] :
-    PreservesFiniteLimits <| colim (J := J) (C := AddCommGroupCat.{u}) := by
+    PreservesFiniteLimits <| colim (J := J) (C := AddCommGrp.{u}) := by
   refine Functor.preservesFiniteLimitsOfMapExact _
     fun F G H η γ h => (exact_iff _ _).mpr (le_antisymm ?_ ?_)
   all_goals replace h : ∀ j : J, Exact (η.app j) (γ.app j) :=
@@ -77,4 +77,4 @@ instance {J : Type u} [SmallCategory J] [IsFiltered J] :
     erw [← comp_apply, colimit.ι_map, comp_apply, ht]
     exact colimit.w_apply G e₁ y
 
-end AddCommGroupCat
+end AddCommGrp

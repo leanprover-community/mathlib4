@@ -33,7 +33,7 @@ set_option autoImplicit true in
 described as a presheaf of abelian groups, and the extra data of the action at each object,
 and a condition relating functoriality and scalar multiplication. -/
 structure PresheafOfModules (R : Cᵒᵖ ⥤ RingCat.{u}) where
-  presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v}
+  presheaf : Cᵒᵖ ⥤ AddCommGrp.{v}
   module : ∀ X : Cᵒᵖ, Module (R.obj X) (presheaf.obj X)
   map_smul : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (x : presheaf.obj X),
     presheaf.map f (r • x) = R.map f r • presheaf.map f x
@@ -141,7 +141,7 @@ variable {P Q}
 
 instance : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
   intros
-  simp only [NatTrans.app_add, AddCommGroupCat.hom_add_apply, map_smul, smul_add])⟩
+  simp only [NatTrans.app_add, AddCommGrp.hom_add_apply, map_smul, smul_add])⟩
 
 @[simp]
 lemma add_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f + g).app X = f.app X + g.app X := rfl
@@ -181,8 +181,7 @@ variable (R)
 /-- The functor from presheaves of modules over a specified presheaf of rings,
 to presheaves of abelian groups.
 -/
-@[simps obj]
-def toPresheaf : PresheafOfModules R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
+def toPresheaf : PresheafOfModules R ⥤ (Cᵒᵖ ⥤ AddCommGrp) where
   obj P := P.presheaf
   map f := f.hom
 

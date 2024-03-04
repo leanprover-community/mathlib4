@@ -270,7 +270,7 @@ theorem functorCategoryMonoidalEquivalence.inverse_map {A B : SingleObj G ⥤ V}
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inverse_map Action.functorCategoryMonoidalEquivalence.inverse_map
 
-variable (H : GroupCat.{u})
+variable (H : Grp.{u})
 
 instance [RightRigidCategory V] : RightRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
   change RightRigidCategory (SingleObj H ⥤ V); infer_instance
