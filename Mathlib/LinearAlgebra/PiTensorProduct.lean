@@ -669,7 +669,7 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     · intro x y hx hy
       rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_add, ← this 0 (lift _ _), hx,
         ← this 0 (lift _ _), hy]
-  right_inv t := by simp only [lift.tprod, ofSubsingleton_apply_apply, LinearMap.id_coe]
+  right_inv t := by simp only [lift.tprod, ofSubsingleton_apply_apply, LinearMap.id_coe, id_eq]
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
     simp only
