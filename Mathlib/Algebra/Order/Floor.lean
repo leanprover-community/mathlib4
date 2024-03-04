@@ -1578,9 +1578,8 @@ theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
         linarith
       · norm_num
         linarith [fract_lt_one x]
-    -- Adaptation note: after nightly-2024-03-02 we can remove `_root_.` again below.
     rw [if_neg (not_lt.mpr hx), ← fract_add_floor x, add_assoc, add_left_comm, floor_int_add,
-      ceil_add_int, add_comm _ ⌊x⌋, _root_.add_right_inj, ceil_eq_iff, this, cast_one, sub_self]
+      ceil_add_int, add_comm _ ⌊x⌋, add_right_inj, ceil_eq_iff, this, cast_one, sub_self]
     constructor
     · linarith
     · linarith [fract_lt_one x]
