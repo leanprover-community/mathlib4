@@ -68,11 +68,13 @@ open Lean
 def getLinterDupNamespace (o : Options) : Bool := Linter.getLinterValue linter.dupNamespace o
 
 open Parser.Command in
+/-- `getIds stx` extracts the `declId` nodes from the `Syntax` `stx`. -/
 partial
 def getIds : Syntax → Array Syntax
   | stx@(.node _ _ args) => ((args.map getIds).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
 
+@[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx => do
   if getLinterDupNamespace (← getOptions) then
     match (getIds stx) with
