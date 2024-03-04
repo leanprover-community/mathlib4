@@ -135,7 +135,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
 #align measure_theory.integral_tsum MeasureTheory.integral_tsum
 
 lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
-    (hF_int : ∀  i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
+    (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
     HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
   rw [integral_tsum (fun i ↦ (hF_int i).1)]
   · exact (hF_sum.of_norm_bounded _ fun i ↦ norm_integral_le_integral_norm _).hasSum
@@ -149,7 +149,7 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
     exact hF_sum.abs
 
 lemma integral_tsum_of_summable_integral_norm {ι} [Countable ι] {F : ι → α → E}
-    (hF_int : ∀  i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
+    (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
     ∑' i, (∫ a, F i a ∂μ) = ∫ a, (∑' i, F i a) ∂μ :=
   (hasSum_integral_of_summable_integral_norm hF_int hF_sum).tsum_eq
 
@@ -208,7 +208,7 @@ nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter
     tendsto_integral_filter_of_dominated_convergence bound hF_meas h_bound bound_integrable h_lim
 #align interval_integral.tendsto_integral_filter_of_dominated_convergence intervalIntegral.tendsto_integral_filter_of_dominated_convergence
 
-/-- Lebesgue dominated convergence theorem for series. -/
+/-- Lebesgue dominated convergence theorem for parametric interval integrals. -/
 nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
     (bound : ι → ℝ → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
     (h_bound : ∀ n, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F n t‖ ≤ bound n t)
