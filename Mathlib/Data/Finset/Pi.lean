@@ -48,7 +48,7 @@ theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi 
 @[simp]
 theorem mem_pi {s : Finset α} {t : ∀ a, Finset (β a)} {f : ∀ a ∈ s, β a} :
     f ∈ s.pi t ↔ ∀ (a) (h : a ∈ s), f a h ∈ t a :=
-  Multiset.mem_pi _ _ _
+  Multiset.mem_pi
 #align finset.mem_pi Finset.mem_pi
 
 /-- Given a function `f` defined on a finset `s`, define a new function on the finset `s ∪ {a}`,
