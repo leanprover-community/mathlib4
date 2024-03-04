@@ -21,6 +21,7 @@ This would also allow removing this file.
 -/
 
 open Lean Elab Tactic Meta in
+/-- Backwards compatibility shim for `generalize`. -/
 elab "generalize'" h:ident " : " t:term:51 " = " x:ident : tactic => do
   withMainContext do
       let mut xIdents := #[]
