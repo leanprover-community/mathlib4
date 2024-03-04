@@ -281,17 +281,8 @@ theorem _root_.IsPrimitiveRoot.exists_pow_or_neg_mul_pow_of_pow_eq_one [NumberFi
     ∃ (r : ℕ), r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
   obtain ⟨r, hr⟩ := hζ.exists_neg_pow_mul_pow_of_pow_eq_one hno hx
   refine ⟨r % n, Nat.mod_lt _ n.2, ?_⟩
-  rcases Nat.even_or_odd r with (heven | hodd)
-  · left
-    rw [heven.neg_one_pow, one_mul] at hr
-    convert hr using 1
-    nth_rewrite 2 [← Nat.div_add_mod r n]
-    rw [pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul]
-  · right
-    rw [hodd.neg_one_pow, neg_one_mul] at hr
-    convert hr using 2
-    nth_rewrite 2 [← Nat.div_add_mod r n]
-    rw [pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul]
+  rw [show ζ ^ (r % ↑n) = ζ ^ r from (IsPrimitiveRoot.eq_orderOf hζ).symm ▸ pow_mod_orderOf .., hr]
+  rcases Nat.even_or_odd r with (h | h) <;> simp [h.neg_one_pow]
 
 end IsCyclotomicExtension
 
