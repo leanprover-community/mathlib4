@@ -69,6 +69,9 @@ def IntervalIntegrable (f : ℝ → E) (μ : Measure ℝ) (a b : ℝ) : Prop :=
   IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ
 #align interval_integrable IntervalIntegrable
 
+/-!
+## Basic iff's for `IntervalIntegrable`
+-/
 section
 
 variable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ}
@@ -135,6 +138,13 @@ theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
 
 end
 
+/-!
+## Basic properties of interval integrability
+- interval integrability is symmetric, reflexive, transitive
+- monotonicity and strong measurability of the interval integral
+- if `f` is interval integrable, so are its absolute value and norm
+- arithmetic properties
+-/
 namespace IntervalIntegrable
 
 section
@@ -353,6 +363,9 @@ theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
 
 end IntervalIntegrable
 
+/-!
+## Continuous functions are interval integrable
+-/
 section
 
 variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
@@ -376,6 +389,9 @@ theorem Continuous.intervalIntegrable {u : ℝ → E} (hu : Continuous u) (a b :
 
 end
 
+/-!
+## Monotone and antitone functions are integral integrable
+-/
 section
 
 variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] [ConditionallyCompleteLinearOrder E]
@@ -686,6 +702,10 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm (L : E →L[𝕜] 
 
 end ContinuousLinearMap
 
+/-!
+## Basic arithmetic
+Includes addition, scalar multiplication and affine transformations.
+-/
 section Comp
 
 variable {a b c d : ℝ} (f : ℝ → E)
@@ -874,8 +894,8 @@ end Comp
 In this section we prove that `∫ x in a..b, f x ∂μ + ∫ x in b..c, f x ∂μ = ∫ x in a..c, f x ∂μ`
 as well as a few other identities trivially equivalent to this one. We also prove that
 `∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ` provided that `support f ⊆ Ioc a b`.
--/
 
+-/
 
 section OrderClosedTopology
 
@@ -1025,6 +1045,16 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
   all_goals apply measurableSet_Iic
 #align interval_integral.integral_indicator intervalIntegral.integral_indicator
 
+end OrderClosedTopology
+
+/-!
+## The Lebesgue dominated convergence theorem for interval integrals
+As an application, we show continuity of parametric integrals.
+-/
+section DominatedConvergence
+
+variable {a b c d : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+
 /-- Lebesgue dominated convergence theorem for filters with a countable basis -/
 nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι}
     [l.IsCountablyGenerated] {F : ι → ℝ → E} (bound : ℝ → ℝ)
@@ -1132,11 +1162,9 @@ theorem continuous_of_dominated_interval {F : X → ℝ → E} {bound : ℝ → 
       h_cont.mono fun _ himp hx => (himp hx).continuousAt
 #align interval_integral.continuous_of_dominated_interval intervalIntegral.continuous_of_dominated_interval
 
-end OrderClosedTopology
+end DominatedConvergence
 
 section ContinuousPrimitive
-
-open TopologicalSpace
 
 variable {a b b₀ b₁ b₂ : ℝ} {μ : Measure ℝ} {f g : ℝ → E}
 
@@ -1208,7 +1236,84 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     rwa [closure_Icc]
 #align interval_integral.continuous_within_at_primitive intervalIntegral.continuousWithinAt_primitive
 
-theorem continuousOn_primitive [NoAtoms μ] (h_int : IntegrableOn f (Icc a b) μ) :
+variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+
+theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bound : ℝ → ℝ) (a b : ℝ)
+    {a₀ b₀ : ℝ} {x₀ : X} (hF_meas : ∀ x, AEStronglyMeasurable (F x) (μ.restrict <| Ι a b))
+    (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t ∂μ.restrict <| Ι a b, ‖F x t‖ ≤ bound t)
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_cont : ∀ᵐ t ∂μ.restrict <| Ι a b, ContinuousAt (fun x ↦ F x t) x₀) (ha₀ : a₀ ∈ Ioo a b)
+    (hb₀ : b₀ ∈ Ioo a b) (hμb₀ : μ {b₀} = 0) :
+    ContinuousAt (fun p : X × ℝ ↦ ∫ t : ℝ in a₀..p.2, F p.1 t ∂μ) (x₀, b₀) := by
+  have hsub : ∀ {a₀ b₀}, a₀ ∈ Ioo a b → b₀ ∈ Ioo a b → Ι a₀ b₀ ⊆ Ι a b := fun ha₀ hb₀ ↦
+    (ordConnected_Ioo.uIoc_subset ha₀ hb₀).trans (Ioo_subset_Ioc_self.trans Ioc_subset_uIoc)
+  have Ioo_nhds : Ioo a b ∈ 𝓝 b₀ := Ioo_mem_nhds hb₀.1 hb₀.2
+  have Icc_nhds : Icc a b ∈ 𝓝 b₀ := Icc_mem_nhds hb₀.1 hb₀.2
+  have hx₀ : ∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x₀ t‖ ≤ bound t := h_bound.self_of_nhds
+  have : ∀ᶠ p : X × ℝ in 𝓝 (x₀, b₀),
+      ∫ s in a₀..p.2, F p.1 s ∂μ =
+        ∫ s in a₀..b₀, F p.1 s ∂μ + ∫ s in b₀..p.2, F x₀ s ∂μ +
+          ∫ s in b₀..p.2, F p.1 s - F x₀ s ∂μ := by
+    rw [nhds_prod_eq]
+    refine (h_bound.prod_mk Ioo_nhds).mono ?_
+    rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
+    dsimp (config := { eta := false })
+    have hiF : ∀ {x a₀ b₀},
+        (∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t) → a₀ ∈ Ioo a b → b₀ ∈ Ioo a b →
+          IntervalIntegrable (F x) μ a₀ b₀ := fun {x a₀ b₀} hx ha₀ hb₀ ↦
+      (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀).mono_fun'
+        ((hF_meas x).mono_set <| hsub ha₀ hb₀)
+        (ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
+    rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel'_right,
+      intervalIntegral.integral_add_adjacent_intervals]
+    · exact hiF hx ha₀ hb₀
+    · exact hiF hx hb₀ ht
+    · exact hiF hx hb₀ ht
+    · exact hiF hx₀ hb₀ ht
+  rw [continuousAt_congr this]; clear this
+  refine (ContinuousAt.add ?_ ?_).add ?_
+  · exact (intervalIntegral.continuousAt_of_dominated_interval
+        (eventually_of_forall fun x ↦ (hF_meas x).mono_set <| hsub ha₀ hb₀)
+          (h_bound.mono fun x hx ↦
+            ae_imp_of_ae_restrict <| ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
+          (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀) <|
+          ae_imp_of_ae_restrict <| ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) h_cont).fst'
+  · refine (?_ : ContinuousAt (fun t ↦ ∫ s in b₀..t, F x₀ s ∂μ) b₀).snd'
+    apply ContinuousWithinAt.continuousAt _ (Icc_mem_nhds hb₀.1 hb₀.2)
+    apply intervalIntegral.continuousWithinAt_primitive hμb₀
+    rw [min_eq_right hb₀.1.le, max_eq_right hb₀.2.le]
+    exact bound_integrable.mono_fun' (hF_meas x₀) hx₀
+  · suffices Tendsto (fun x : X × ℝ ↦ ∫ s in b₀..x.2, F x.1 s - F x₀ s ∂μ) (𝓝 (x₀, b₀)) (𝓝 0) by
+      simpa [ContinuousAt]
+    have : ∀ᶠ p : X × ℝ in 𝓝 (x₀, b₀),
+        ‖∫ s in b₀..p.2, F p.1 s - F x₀ s ∂μ‖ ≤ |∫ s in b₀..p.2, 2 * bound s ∂μ| := by
+      rw [nhds_prod_eq]
+      refine (h_bound.prod_mk Ioo_nhds).mono ?_
+      rintro ⟨x, t⟩ ⟨hx : ∀ᵐ t ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t, ht : t ∈ Ioo a b⟩
+      have H : ∀ᵐ t : ℝ ∂μ.restrict (Ι b₀ t), ‖F x t - F x₀ t‖ ≤ 2 * bound t := by
+        apply (ae_restrict_of_ae_restrict_of_subset (hsub hb₀ ht) (hx.and hx₀)).mono
+        rintro s ⟨hs₁, hs₂⟩
+        calc
+          ‖F x s - F x₀ s‖ ≤ ‖F x s‖ + ‖F x₀ s‖ := norm_sub_le _ _
+          _ ≤ 2 * bound s := by linarith only [hs₁, hs₂]
+      exact intervalIntegral.norm_integral_le_of_norm_le H
+        ((bound_integrable.mono_set' <| hsub hb₀ ht).const_mul 2)
+    apply squeeze_zero_norm' this
+    have : Tendsto (fun t ↦ ∫ s in b₀..t, 2 * bound s ∂μ) (𝓝 b₀) (𝓝 0) := by
+      suffices ContinuousAt (fun t ↦ ∫ s in b₀..t, 2 * bound s ∂μ) b₀ by
+        simpa [ContinuousAt] using this
+      apply ContinuousWithinAt.continuousAt _ Icc_nhds
+      apply intervalIntegral.continuousWithinAt_primitive hμb₀
+      apply IntervalIntegrable.const_mul
+      apply bound_integrable.mono_set'
+      rw [min_eq_right hb₀.1.le, max_eq_right hb₀.2.le]
+    rw [nhds_prod_eq]
+    exact (continuous_abs.tendsto' _ _ abs_zero).comp (this.comp tendsto_snd)
+
+variable [NoAtoms μ]
+
+theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
     ContinuousOn (fun x => ∫ t in Ioc a x, f t ∂μ) (Icc a b) := by
   by_cases h : a ≤ b
   · have : ∀ x ∈ Icc a b, ∫ t in Ioc a x, f t ∂μ = ∫ t in a..x, f t ∂μ := by
@@ -1224,7 +1329,7 @@ theorem continuousOn_primitive [NoAtoms μ] (h_int : IntegrableOn f (Icc a b) μ
     exact continuousOn_empty _
 #align interval_integral.continuous_on_primitive intervalIntegral.continuousOn_primitive
 
-theorem continuousOn_primitive_Icc [NoAtoms μ] (h_int : IntegrableOn f (Icc a b) μ) :
+theorem continuousOn_primitive_Icc (h_int : IntegrableOn f (Icc a b) μ) :
     ContinuousOn (fun x => ∫ t in Icc a x, f t ∂μ) (Icc a b) := by
   have aux : (fun x => ∫ t in Icc a x, f t ∂μ) = fun x => ∫ t in Ioc a x, f t ∂μ := by
     ext x
@@ -1234,26 +1339,24 @@ theorem continuousOn_primitive_Icc [NoAtoms μ] (h_int : IntegrableOn f (Icc a b
 #align interval_integral.continuous_on_primitive_Icc intervalIntegral.continuousOn_primitive_Icc
 
 /-- Note: this assumes that `f` is `IntervalIntegrable`, in contrast to some other lemmas here. -/
-theorem continuousOn_primitive_interval' [NoAtoms μ] (h_int : IntervalIntegrable f μ b₁ b₂)
+theorem continuousOn_primitive_interval' (h_int : IntervalIntegrable f μ b₁ b₂)
     (ha : a ∈ [[b₁, b₂]]) : ContinuousOn (fun b => ∫ x in a..b, f x ∂μ) [[b₁, b₂]] := fun _ _ ↦ by
   refine continuousWithinAt_primitive (measure_singleton _) ?_
   rw [min_eq_right ha.1, max_eq_right ha.2]
   simpa [intervalIntegrable_iff, uIoc] using h_int
 #align interval_integral.continuous_on_primitive_interval' intervalIntegral.continuousOn_primitive_interval'
 
-theorem continuousOn_primitive_interval [NoAtoms μ] (h_int : IntegrableOn f (uIcc a b) μ) :
+theorem continuousOn_primitive_interval (h_int : IntegrableOn f (uIcc a b) μ) :
     ContinuousOn (fun x => ∫ t in a..x, f t ∂μ) (uIcc a b) :=
   continuousOn_primitive_interval' h_int.intervalIntegrable left_mem_uIcc
 #align interval_integral.continuous_on_primitive_interval intervalIntegral.continuousOn_primitive_interval
 
-theorem continuousOn_primitive_interval_left [NoAtoms μ] (h_int : IntegrableOn f (uIcc a b) μ) :
+theorem continuousOn_primitive_interval_left (h_int : IntegrableOn f (uIcc a b) μ) :
     ContinuousOn (fun x => ∫ t in x..b, f t ∂μ) (uIcc a b) := by
   rw [uIcc_comm a b] at h_int ⊢
   simp only [integral_symm b]
   exact (continuousOn_primitive_interval h_int).neg
 #align interval_integral.continuous_on_primitive_interval_left intervalIntegral.continuousOn_primitive_interval_left
-
-variable [NoAtoms μ]
 
 theorem continuous_primitive (h_int : ∀ a b, IntervalIntegrable f μ a b) (a : ℝ) :
     Continuous fun b => ∫ x in a..b, f x ∂μ := by
