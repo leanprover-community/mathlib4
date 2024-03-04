@@ -5,6 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.LinearAlgebra.PiTensorProduct
 
 #align_import linear_algebra.tensor_product_basis from "leanprover-community/mathlib"@"f784cc6142443d9ee623a20788c282112c322081"
 
@@ -53,4 +54,32 @@ theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι R M) (c : Basis κ R N
 #align basis.tensor_product_repr_tmul_apply Basis.tensorProduct_repr_tmul_apply
 
 end CommSemiring
+
+section PiTensorProduct
+
+open PiTensorProduct BigOperators
+
+attribute [local ext] PiTensorProduct.ext
+
+open LinearMap
+
+open scoped TensorProduct
+
+variable {ι R : Type*} [CommSemiring R]
+
+variable {s : ι → Type*} [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
+
+variable {κ : ι → Type*}
+
+variable [Fintype ι] [DecidableEq ι] [(i : ι) → DecidableEq (κ i)] [(x : R) → Decidable (x ≠ 0)]
+
+def Basis.piTensorProduct (b : (i : ι) → Basis (κ i) R (s i)) :
+    Basis ((i : ι) → κ i) R (⨂[R] i, s i) :=
+  Finsupp.basisSingleOne.map
+    ((PiTensorProduct.congr (fun i ↦ (b i).repr)).trans <|
+        (finsuppPiTensorProduct R _ _).trans <|
+          Finsupp.lcongr (Equiv.refl _) (constantBaseRingEquiv _ R)).symm
+
+end PiTensorProduct
+
 end
