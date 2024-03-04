@@ -123,10 +123,9 @@ theorem prime_two : (2 : ℕ+).Prime :=
   Nat.prime_two
 #align pnat.prime_two PNat.prime_two
 
-instance fact_prime_two : Fact (2 : ℕ+).Prime :=
-  ⟨prime_two⟩
+instance {p : ℕ+} [h : Fact p.Prime] : Fact (p : ℕ).Prime := h
 
-instance fact_prime_two' : Fact ((2 : ℕ+) : ℕ).Prime :=
+instance fact_prime_two : Fact (2 : ℕ+).Prime :=
   ⟨prime_two⟩
 
 theorem prime_three : (3 : ℕ+).Prime :=
@@ -135,16 +134,10 @@ theorem prime_three : (3 : ℕ+).Prime :=
 instance fact_prime_three : Fact (3 : ℕ+).Prime :=
   ⟨prime_three⟩
 
-instance fact_prime_three' : Fact ((3 : ℕ+) : ℕ).Prime :=
-  ⟨prime_three⟩
-
 theorem prime_five : (5 : ℕ+).Prime :=
   Nat.prime_five
 
 instance fact_prime_five : Fact (5 : ℕ+).Prime :=
-  ⟨prime_five⟩
-
-instance fact_prime_five' : Fact ((5 : ℕ+) : ℕ).Prime :=
   ⟨prime_five⟩
 
 theorem dvd_prime {p m : ℕ+} (pp : p.Prime) : m ∣ p ↔ m = 1 ∨ m = p := by
