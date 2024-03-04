@@ -600,71 +600,71 @@ unprimed ones use `[NoAtoms μ]`.
 
 section PartialOrder
 
-variable [PartialOrder X] {a b : X}
+variable [PartialOrder X] {x y : X}
 
-theorem integral_Icc_eq_integral_Ioc' (ha : μ {a} = 0) :
-    ∫ t in Icc a b, f t ∂μ = ∫ t in Ioc a b, f t ∂μ :=
-  set_integral_congr_set_ae (Ioc_ae_eq_Icc' ha).symm
+theorem integral_Icc_eq_integral_Ioc' (hx : μ {x} = 0) :
+    ∫ t in Icc x y, f t ∂μ = ∫ t in Ioc x y, f t ∂μ :=
+  set_integral_congr_set_ae (Ioc_ae_eq_Icc' hx).symm
 #align measure_theory.integral_Icc_eq_integral_Ioc' MeasureTheory.integral_Icc_eq_integral_Ioc'
 
-theorem integral_Icc_eq_integral_Ico' (hb : μ {b} = 0) :
-    ∫ t in Icc a b, f t ∂μ = ∫ t in Ico a b, f t ∂μ :=
-  set_integral_congr_set_ae (Ico_ae_eq_Icc' hb).symm
+theorem integral_Icc_eq_integral_Ico' (hy : μ {y} = 0) :
+    ∫ t in Icc x y, f t ∂μ = ∫ t in Ico x y, f t ∂μ :=
+  set_integral_congr_set_ae (Ico_ae_eq_Icc' hy).symm
 #align measure_theory.integral_Icc_eq_integral_Ico' MeasureTheory.integral_Icc_eq_integral_Ico'
 
-theorem integral_Ioc_eq_integral_Ioo' (hb : μ {b} = 0) :
-    ∫ t in Ioc a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ :=
-  set_integral_congr_set_ae (Ioo_ae_eq_Ioc' hb).symm
+theorem integral_Ioc_eq_integral_Ioo' (hy : μ {y} = 0) :
+    ∫ t in Ioc x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
+  set_integral_congr_set_ae (Ioo_ae_eq_Ioc' hy).symm
 #align measure_theory.integral_Ioc_eq_integral_Ioo' MeasureTheory.integral_Ioc_eq_integral_Ioo'
 
-theorem integral_Ico_eq_integral_Ioo' (ha : μ {a} = 0) :
-    ∫ t in Ico a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ :=
-  set_integral_congr_set_ae (Ioo_ae_eq_Ico' ha).symm
+theorem integral_Ico_eq_integral_Ioo' (hx : μ {x} = 0) :
+    ∫ t in Ico x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
+  set_integral_congr_set_ae (Ioo_ae_eq_Ico' hx).symm
 #align measure_theory.integral_Ico_eq_integral_Ioo' MeasureTheory.integral_Ico_eq_integral_Ioo'
 
-theorem integral_Icc_eq_integral_Ioo' (ha : μ {a} = 0) (hb : μ {b} = 0) :
-    ∫ t in Icc a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ :=
-  set_integral_congr_set_ae (Ioo_ae_eq_Icc' ha hb).symm
+theorem integral_Icc_eq_integral_Ioo' (hx : μ {x} = 0) (hb : μ {y} = 0) :
+    ∫ t in Icc x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
+  set_integral_congr_set_ae (Ioo_ae_eq_Icc' hx hb).symm
 #align measure_theory.integral_Icc_eq_integral_Ioo' MeasureTheory.integral_Icc_eq_integral_Ioo'
 
-theorem integral_Iic_eq_integral_Iio' (ha : μ {a} = 0) :
-    ∫ t in Iic a, f t ∂μ = ∫ t in Iio a, f t ∂μ :=
-  set_integral_congr_set_ae (Iio_ae_eq_Iic' ha).symm
+theorem integral_Iic_eq_integral_Iio' (hx : μ {x} = 0) :
+    ∫ t in Iic x, f t ∂μ = ∫ t in Iio x, f t ∂μ :=
+  set_integral_congr_set_ae (Iio_ae_eq_Iic' hx).symm
 #align measure_theory.integral_Iic_eq_integral_Iio' MeasureTheory.integral_Iic_eq_integral_Iio'
 
-theorem integral_Ici_eq_integral_Ioi' (ha : μ {a} = 0) :
-    ∫ t in Ici a, f t ∂μ = ∫ t in Ioi a, f t ∂μ :=
-  set_integral_congr_set_ae (Ioi_ae_eq_Ici' ha).symm
+theorem integral_Ici_eq_integral_Ioi' (hx : μ {x} = 0) :
+    ∫ t in Ici x, f t ∂μ = ∫ t in Ioi x, f t ∂μ :=
+  set_integral_congr_set_ae (Ioi_ae_eq_Ici' hx).symm
 #align measure_theory.integral_Ici_eq_integral_Ioi' MeasureTheory.integral_Ici_eq_integral_Ioi'
 
 variable [NoAtoms μ]
 
-theorem integral_Icc_eq_integral_Ioc : ∫ t in Icc a b, f t ∂μ = ∫ t in Ioc a b, f t ∂μ :=
-  integral_Icc_eq_integral_Ioc' <| measure_singleton a
+theorem integral_Icc_eq_integral_Ioc : ∫ t in Icc x y, f t ∂μ = ∫ t in Ioc x y, f t ∂μ :=
+  integral_Icc_eq_integral_Ioc' <| measure_singleton x
 #align measure_theory.integral_Icc_eq_integral_Ioc MeasureTheory.integral_Icc_eq_integral_Ioc
 
-theorem integral_Icc_eq_integral_Ico : ∫ t in Icc a b, f t ∂μ = ∫ t in Ico a b, f t ∂μ :=
-  integral_Icc_eq_integral_Ico' <| measure_singleton b
+theorem integral_Icc_eq_integral_Ico : ∫ t in Icc x y, f t ∂μ = ∫ t in Ico x y, f t ∂μ :=
+  integral_Icc_eq_integral_Ico' <| measure_singleton y
 #align measure_theory.integral_Icc_eq_integral_Ico MeasureTheory.integral_Icc_eq_integral_Ico
 
-theorem integral_Ioc_eq_integral_Ioo : ∫ t in Ioc a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ :=
-  integral_Ioc_eq_integral_Ioo' <| measure_singleton b
+theorem integral_Ioc_eq_integral_Ioo : ∫ t in Ioc x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
+  integral_Ioc_eq_integral_Ioo' <| measure_singleton y
 #align measure_theory.integral_Ioc_eq_integral_Ioo MeasureTheory.integral_Ioc_eq_integral_Ioo
 
-theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ :=
-  integral_Ico_eq_integral_Ioo' <| measure_singleton a
+theorem integral_Ico_eq_integral_Ioo : ∫ t in Ico x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ :=
+  integral_Ico_eq_integral_Ioo' <| measure_singleton x
 #align measure_theory.integral_Ico_eq_integral_Ioo MeasureTheory.integral_Ico_eq_integral_Ioo
 
-theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc a b, f t ∂μ = ∫ t in Ioo a b, f t ∂μ := by
+theorem integral_Icc_eq_integral_Ioo : ∫ t in Icc x y, f t ∂μ = ∫ t in Ioo x y, f t ∂μ := by
   rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]
 #align measure_theory.integral_Icc_eq_integral_Ioo MeasureTheory.integral_Icc_eq_integral_Ioo
 
-theorem integral_Iic_eq_integral_Iio : ∫ t in Iic a, f t ∂μ = ∫ t in Iio a, f t ∂μ :=
-  integral_Iic_eq_integral_Iio' <| measure_singleton a
+theorem integral_Iic_eq_integral_Iio : ∫ t in Iic x, f t ∂μ = ∫ t in Iio x, f t ∂μ :=
+  integral_Iic_eq_integral_Iio' <| measure_singleton x
 #align measure_theory.integral_Iic_eq_integral_Iio MeasureTheory.integral_Iic_eq_integral_Iio
 
-theorem integral_Ici_eq_integral_Ioi : ∫ t in Ici a, f t ∂μ = ∫ t in Ioi a, f t ∂μ :=
-  integral_Ici_eq_integral_Ioi' <| measure_singleton a
+theorem integral_Ici_eq_integral_Ioi : ∫ t in Ici x, f t ∂μ = ∫ t in Ioi x, f t ∂μ :=
+  integral_Ici_eq_integral_Ioi' <| measure_singleton x
 #align measure_theory.integral_Ici_eq_integral_Ioi MeasureTheory.integral_Ici_eq_integral_Ioi
 
 end PartialOrder
