@@ -64,7 +64,7 @@ instance (V : Rep k G) : Module k V := by
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
--- porting note: was `V.ρ`
+-- Porting note: was `V.ρ`
   Action.ρ V
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ Rep.ρ
@@ -225,7 +225,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
--- Porting note: broken proof was
+-- Porting note (#11039): broken proof was
 /-simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
   apply IsIso.inv_eq_of_hom_inv_id _
   exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/

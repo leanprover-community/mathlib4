@@ -42,7 +42,7 @@ The next three functions make it easier to construct functions from a small
 `Fin`.
 -/
 
--- porting note: using `![_, _]` notation instead
+-- Porting note: using `![_, _]` notation instead
 #noalign prop_encodable.mk_fn0
 #noalign prop_encodable.mk_fn1
 #noalign prop_encodable.mk_fn2

@@ -2720,7 +2720,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
 -- Porting note: now in std
 #align list.mfoldl_append List.foldlM_append
 
---Porting note: now in std
+-- Porting note: now in std
 #align list.mfoldr_append List.foldrM_append
 
 end FoldlMFoldrM
@@ -3020,7 +3020,7 @@ theorem attach_map_val' (l : List α) (f : α → β) : (l.attach.map fun i => f
 @[simp]
 theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l :=
   (attach_map_coe' _ _).trans l.map_id
--- porting note: coe is expanded eagerly, so "attach_map_coe" would have the same syntactic form.
+-- Porting note: coe is expanded eagerly, so "attach_map_coe" would have the same syntactic form.
 #align list.attach_map_coe List.attach_map_val
 #align list.attach_map_val List.attach_map_val
 
@@ -3476,7 +3476,7 @@ lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α
   simp [(· ∘ ·), map_filter' _ Subtype.coe_injective]
 #align list.filter_attach' List.filter_attach'
 
--- porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
+-- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
 lemma filter_attach (l : List α) (p : α → Bool) :
     (l.attach.filter fun x => p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
@@ -3523,7 +3523,7 @@ theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length)
     by_cases hp : p hd
     · simp [hp, IH]
     · simp [hp, nthLe_cons]
--- porting note: How did the Lean 3 proof work,
+-- Porting note: How did the Lean 3 proof work,
 -- without mentioning nthLe_cons?
 -- Same question for takeWhile_eq_nil_iff below
 #align list.drop_while_nth_le_zero_not List.dropWhile_nthLe_zero_not
@@ -3671,6 +3671,27 @@ theorem map_foldl_erase [DecidableEq β] {f : α → β} (finj : Injective f) {l
     map f (foldl List.erase l₁ l₂) = foldl (fun l a => l.erase (f a)) (map f l₁) l₂ := by
   induction l₂ generalizing l₁ <;> [rfl; simp only [foldl_cons, map_erase finj, *]]
 #align list.map_foldl_erase List.map_foldl_erase
+
+theorem erase_get [DecidableEq ι] {l : List ι} (i : Fin l.length) :
+    Perm (l.erase (l.get i)) (l.eraseIdx ↑i) := by
+  induction l with
+  | nil => simp
+  | cons a l IH =>
+    cases i using Fin.cases with
+    | zero => simp
+    | succ i =>
+      by_cases ha : a = l.get i
+      · simpa [ha] using .trans (perm_cons_erase (l.get_mem i i.isLt)) (.cons _ (IH i))
+      · simpa [ha] using IH i
+
+theorem eraseIdx_eq_take_drop_succ {l : List ι} {i : ℕ} :
+    l.eraseIdx i = l.take i ++ l.drop i.succ := by
+  induction l generalizing i with
+  | nil => simp
+  | cons a l IH =>
+    cases i with
+    | zero => simp
+    | succ i => simp [IH]
 
 end Erase
 
