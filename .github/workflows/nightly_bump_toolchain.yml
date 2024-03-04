@@ -1,0 +1,34 @@
+name: Bump lean-toolchain on nightly-testing
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # 11AM CET/2AM PT, 3 hours after lean4 starts building the nightly.
+
+jobs:
+  update-toolchain:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        ref: nightly-testing # checkout nightly-testing branch
+        token: ${{ secrets.NIGHTLY_TESTING }}
+
+    - name: Get latest release tag from leanprover/lean4-nightly
+      id: get-latest-release
+      run: |
+        RELEASE_TAG=$(curl -s "https://api.github.com/repos/leanprover/lean4-nightly/releases" | jq -r '.[0].tag_name')
+        echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+
+    - name: Update lean-toolchain file
+      run: |
+        echo "leanprover/lean4:${RELEASE_TAG}" > lean-toolchain
+
+    - name: Commit and push changes
+      run: |
+        git config user.name "leanprover-community-mathlib4-bot"
+        git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+        git add lean-toolchain
+        git commit -m "chore: bump to ${RELEASE_TAG}"
+        git push origin nightly-testing
