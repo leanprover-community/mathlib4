@@ -39,7 +39,7 @@ namespace Pointed
 instance : CoeSort Pointed (Type*) :=
   ⟨X⟩
 
--- porting note: protected attribute does not work
+-- Porting note: protected attribute does not work
 --attribute [protected] Pointed.X
 
 /-- Turns a point into a pointed type. -/

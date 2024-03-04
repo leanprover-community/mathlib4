@@ -133,7 +133,7 @@ theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ 
   set_eventuallyLE_iff_inf_principal_le.symm.trans set_eventuallyLE_iff_mem_inf_principal
 #align nhds_within_le_iff nhdsWithin_le_iff
 
--- porting note: golfed, dropped an unneeded assumption
+-- Porting note: golfed, dropped an unneeded assumption
 theorem preimage_nhdsWithin_coinduced' {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
     π ⁻¹' s ∈ 𝓝[t] a := by
@@ -660,7 +660,7 @@ theorem continuousOn_iff_continuous_restrict {f : α → β} {s : Set α} :
   exact (continuousWithinAt_iff_continuousAt_restrict f xs).mpr (h ⟨x, xs⟩)
 #align continuous_on_iff_continuous_restrict continuousOn_iff_continuous_restrict
 
--- porting note: 2 new lemmas
+-- Porting note: 2 new lemmas
 alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
 
 theorem ContinuousOn.restrict_mapsTo {f : α → β} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
@@ -1123,7 +1123,7 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
   rwa [ContinuousWithinAt, ← nhdsWithin_restrict _ xt open_t] at this
 #align continuous_on_of_locally_continuous_on continuousOn_of_locally_continuousOn
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
@@ -1132,7 +1132,7 @@ theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α
       and_imp]
     exact forall_congr' fun t => forall_swap
 
--- porting note: dropped an unneeded assumption
+-- Porting note: dropped an unneeded assumption
 theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
     @ContinuousOn α β _ (.generateFrom T) f s :=

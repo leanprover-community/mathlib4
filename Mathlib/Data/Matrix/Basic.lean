@@ -198,7 +198,7 @@ instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
   -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
   instInhabitedForAll_1 _
 
--- porting note: new, Lean3 found this automatically
+-- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
   Fintype.decidablePiFintype
 
@@ -240,7 +240,7 @@ instance unique [Unique α] : Unique (Matrix m n α) :=
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
   instSubsingletonForAll
---Porting note: this instance was `Pi.subsingleton` in lean3-core
+-- Porting note: this instance was `Pi.subsingleton` in lean3-core
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial

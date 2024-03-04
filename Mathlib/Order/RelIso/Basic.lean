@@ -228,7 +228,7 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
---Porting note: removed
+-- Porting note: removed
 -- see Note [function coercion]
 -- instance : CoeFun (r ↪r s) fun _ => α → β :=
 --   ⟨fun o => o.toEmbedding⟩
@@ -656,7 +656,7 @@ instance : EquivLike (r ≃r s) α β where
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
 
---Porting note: helper instance
+-- Porting note: helper instance
 -- see Note [function coercion]
 instance : CoeFun (r ≃r s) fun _ => α → β :=
   ⟨DFunLike.coe⟩

@@ -89,7 +89,7 @@ theorem _root_.NeZero.one_le [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZ
 -- Porting note: already in Std
 #align nat.mul_eq_zero Nat.mul_eq_zero
 
---Porting note: removing `simp` attribute
+-- Porting note: removing `simp` attribute
 protected theorem zero_eq_mul : 0 = m * n ↔ m = 0 ∨ n = 0 := by rw [eq_comm, Nat.mul_eq_zero]
 #align nat.zero_eq_mul Nat.zero_eq_mul
 
@@ -435,7 +435,7 @@ protected theorem div_div_self (h : n ∣ m) (hm : m ≠ 0) : m / (m / n) = n :=
   rw [mul_div_right _ (Nat.pos_of_ne_zero hm.1), mul_div_left _ (Nat.pos_of_ne_zero hm.2)]
 #align nat.div_div_self Nat.div_div_self
 
---Porting note: later `simp [mod_zero]` can be changed to `simp` once `mod_zero` is given
+-- Porting note: later `simp [mod_zero]` can be changed to `simp` once `mod_zero` is given
 --a `simp` attribute.
 theorem mod_mul_right_div_self (m n k : ℕ) : m % (n * k) / n = m / n % k := by
   rcases Nat.eq_zero_or_pos n with (rfl | hn); simp [mod_zero]
@@ -523,7 +523,7 @@ section Find
 
 variable {p q : ℕ → Prop} [DecidablePred p] [DecidablePred q]
 
---Porting note: removing `simp` attribute as `simp` can prove it
+-- Porting note: removing `simp` attribute as `simp` can prove it
 theorem find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 := by
   rw [pos_iff_ne_zero, Ne, Nat.find_eq_zero]
 #align nat.find_pos Nat.find_pos
