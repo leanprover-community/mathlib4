@@ -61,6 +61,14 @@ theorem Real.continuous_rpow_const {q : ℝ} (h : 0 < q) :
 
 end RPow
 
+namespace Filter
+
+theorem eventually_of_isEmpty {α : Type*} {p : α → Prop} [IsEmpty α] {l : Filter α} :
+    ∀ᶠ (x : α) in l, p x :=
+  eventually_of_forall <| fun x ↦ isEmptyElim x
+
+end Filter
+
 section ContDiff
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -263,6 +271,137 @@ theorem Pi.norm_single {i : ι} (y : E i) : ‖Pi.single i y‖ = ‖y‖ :=
   congr_arg Subtype.val (Pi.nnnorm_single y)
 
 end NormedAddCommGroup
+
+section updateFinset
+
+variable {ι : Sort _} {π α : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]
+
+-- this would be slightly nicer if we had a version of `Equiv.piFinsetUnion` for `insert`.
+theorem update_updateFinset {s y i z} (hi : i ∉ s) :
+    Function.update (updateFinset x s y) i z = updateFinset x (s ∪ {i})
+      ((Equiv.piFinsetUnion π <| Finset.disjoint_singleton_right.mpr hi) (y, uniqueElim z)) := by
+  rw [update_eq_updateFinset, updateFinset_updateFinset]
+
+theorem updateFinset_congr {s t : Finset ι} {y : ∀ i : s, π i} (h : s = t) :
+    updateFinset x s y = updateFinset x t (fun i ↦ y ⟨i, h ▸ i.prop⟩) := by
+  subst h; rfl
+
+theorem updateFinset_univ [Fintype ι] {y : ∀ i : Finset.univ, π i} :
+    updateFinset x .univ y = fun i : ι ↦ y ⟨i, Finset.mem_univ i⟩ := by
+  simp [updateFinset_def]
+
+lemma Finset.singleton_union {s : Finset ι} {i : ι} : {i} ∪ s = insert i s := by ext; simp
+lemma Finset.union_singleton {s : Finset ι} {i : ι} : s ∪ {i} = insert i s := by ext; simp [or_comm]
+
+namespace Equiv
+-- todo: rename `Finset.union_symm_inl`, `Finset.union_symm_inr`
+
+theorem Finset.union_symm_left {s t : Finset ι} (h : Disjoint s t) {i : ι} (hi : i ∈ s)
+  (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
+
+theorem Finset.union_symm_right {s t : Finset ι} (h : Disjoint s t) {i : ι} (hi : i ∈ t)
+  (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
+  simp [Equiv.symm_apply_eq]
+
+lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
+    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ s) (hi' : i ∈ s ∪ t) :
+    Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = f ⟨i, hi⟩ := by
+  simp [Equiv.piFinsetUnion, eqRec_eq_cast]
+  -- painful dependent type manipulations. The library hasn't much to help
+  show cast ?h' ((sumPiEquivProdPi fun b ↦ α ↑((Finset.union s t h) b)).symm (f, g) _) = _
+  generalize ?h' = h'
+  set x := ((Finset.union s t h).symm { val := i, property := hi' })
+  have : x = Sum.inl ⟨i, hi⟩ := Finset.union_symm_left h hi hi'
+  show cast h' ((sumPiEquivProdPi fun b ↦ α ↑((Finset.union s t h) b)).symm (f, g) x) = _
+  clear_value x
+  subst this
+  rfl
+
+lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
+    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ t) (hi' : i ∈ s ∪ t) :
+    Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = g ⟨i, hi⟩ := by
+  simp [Equiv.piFinsetUnion, eqRec_eq_cast]
+  -- painful dependent type manipulations. The library hasn't much to help
+  show cast ?h' ((sumPiEquivProdPi fun b ↦ α ↑((Finset.union s t h) b)).symm (f, g) _) = _
+  generalize ?h' = h'
+  set x := ((Finset.union s t h).symm { val := i, property := hi' })
+  have : x = Sum.inr ⟨i, hi⟩ := Finset.union_symm_right h hi hi'
+  show cast h' ((sumPiEquivProdPi fun b ↦ α ↑((Finset.union s t h) b)).symm (f, g) x) = _
+  clear_value x
+  subst this
+  rfl
+
+end Equiv
+
+end updateFinset
+
+
+section IntegralPi
+variable {ι F : Type*} [Fintype ι] [DecidableEq ι] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {A : ι → Type*} [∀ i, MeasureSpace (A i)]
+variable (μ : ∀ i, Measure (A i)) [∀ i, SigmaFinite (μ i)]
+
+theorem measure_eq_measure_subtype_mul {s : Finset ι} (t : Set (∀ i : s, A i)) :
+    Measure.pi μ ((· ∘' _) ⁻¹' t) = Measure.pi (fun i : s ↦ μ i) t * ∏ j in sᶜ, μ j univ := by
+  sorry
+
+variable {μ} in
+theorem ae_pi_subtype_iff {s : Finset ι} (p : (∀ i : s, A i) → Prop) :
+    (∀ᵐ y ∂.pi μ, p (y ∘' _)) ↔ ∀ᵐ y ∂.pi (fun i : s ↦ μ i), p y := by
+  sorry
+
+variable {μ} in
+theorem ae_lt_top_of_marginal_lt_top {s : Finset ι} {f : (∀ i, A i) → ℝ≥0∞} {x : ∀ i, A i}
+    (hf : Measurable f) (h : (∫⋯∫⁻_s, f ∂μ) x < ∞) :
+    ∀ᵐ y ∂.pi μ, f (updateFinset x s (y ∘' _)) < ∞ :=
+  ae_pi_subtype_iff _ |>.mpr <| ae_lt_top (hf.comp measurable_updateFinset) h.ne
+
+
+-- move
+variable {μ} in
+theorem MeasureTheory.Integrable.ae_integrable_update
+    {f : (∀ i, A i) → F} (hf : Integrable f (.pi μ)) (i : ι) :
+    ∀ᵐ x ∂.pi μ, Integrable (fun t ↦ f (update x i t)) (μ i) := by
+  borelize F
+  have hmf : StronglyMeasurable f := sorry -- todo: show that the statement is invariant under ae
+  have := hf.2
+  rcases isEmpty_or_nonempty (∀ i, A i) with h|h
+  · simp [h, eventually_of_isEmpty]
+  obtain ⟨x⟩ := h
+  rw [hasFiniteIntegral_def, lintegral_eq_lmarginal_univ x,
+    ← Finset.insert_erase (Finset.mem_univ i),
+    lmarginal_insert' _ hmf.measurable.ennnorm (by simp)] at this
+  have := ae_lt_top_of_marginal_lt_top ?_ this
+  swap
+  · exact Measurable.lintegral_prod_right (hmf.measurable.comp measurable_update').ennnorm
+  refine this.mono fun y hy => ?_
+  simp at hy
+  refine ⟨hmf.comp_measurable (measurable_update y) |>.aestronglyMeasurable, ?_⟩
+  simp_rw [update_updateFinset (Finset.not_mem_erase _ _),
+    updateFinset_congr (union_singleton.trans <| insert_erase (Finset.mem_univ i)),
+    updateFinset_univ] at hy
+  rw [HasFiniteIntegral]
+  convert hy with x' j
+  unfold dcomp
+  simp
+  by_cases h : j = i
+  · have : j ∈ {i} := by subst j; exact Finset.mem_singleton_self _
+    subst h
+    simp [Equiv.piFinsetUnion_right A _ this]
+    rfl
+  · have : j ∈ Finset.univ.erase i := by simp [h]
+    simp [Equiv.piFinsetUnion_left A _ this, h]
+
+theorem MeasureTheory.Integrable.ae_integrable_update'
+    {A : ι → Type*}
+    [∀ i, MeasureSpace (A i)] [∀ i, SigmaFinite (volume : Measure (A i))] {f : (∀ i, A i) → F}
+    (hf : Integrable f) (i : ι) :
+    ∀ᵐ x, Integrable (fun t : A i ↦ f (update x i t)) :=
+  MeasureTheory.Integrable.ae_integrable_update hf i
+
+
+end IntegralPi
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
@@ -479,18 +618,6 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
 
 variable [Nontrivial ι] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
--- move
-theorem MeasureTheory.Integrable.ae_integrable_update {f : (∀ i, A i) → F}
-    (hf : Integrable f (.pi μ)) (i : ι) :
-    ∀ᵐ x ∂.pi μ, Integrable (fun t ↦ f (update x i t)) (μ i) := by
-  sorry
-
-theorem MeasureTheory.Integrable.ae_integrable_update' {A : ι → Type*}
-    [∀ i, MeasureSpace (A i)] {f : (∀ i, A i) → F}
-    (hf : Integrable f) (i : ι) :
-    ∀ᵐ x, Integrable (fun t : A i ↦ f (update x i t)) :=
-  MeasureTheory.Integrable.ae_integrable_update _ hf i
-
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
 `ι → ℝ` where `n := #ι` is finite and at least 2.)  Then the Lebesgue integral of the pointwise
@@ -646,7 +773,7 @@ compactly-supported function `u` on a normed space `E` of finite dimension `n �
 with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
 `u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
 of `u`. -/
-theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
+theorem snorm_le_snorm_fderiv' (hE : 2 ≤ finrank ℝ E)
     {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
     ∃ C : ℝ≥0, ∀ (u : E → F) (hu : Differentiable ℝ u)
     (h2u : ∀ v : E, Integrable (fderiv ℝ u · v) μ)
@@ -664,6 +791,22 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
     inv_mul_cancel h0p.ne', NNReal.rpow_one]
   exact hC u hu h2u h3u
 
+set_option linter.unusedVariables false in
+variable (F) in
+/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
+with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
+`u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
+of `u`. -/
+theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
+    {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
+    ∃ C : ℝ≥0, ∀ (u : E → F) (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u),
+    snorm u p μ ≤ C * snorm (fderiv ℝ u) 1 μ := by
+  refine snorm_le_snorm_fderiv' F μ hE hp |>.imp fun C hC u hu h2u ↦ ?_
+  refine hC u (hu.differentiable le_rfl) ?_ h2u.is_zero_at_infty
+  exact fun v ↦ hu.continuous_fderiv le_rfl |>.clm_apply continuous_const
+    |>.integrable_of_hasCompactSupport <| h2u.fderiv_apply ℝ v
+
 variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
 set_option linter.unusedVariables false in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
@@ -674,10 +817,10 @@ is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
 
 Note: The codomain of `u` needs to be an inner product space.
 -/
-theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
+theorem snorm_le_snorm_fderiv_of_eq' {p p' : ℝ≥0} (hp : 1 ≤ p)
     (h2p : p < finrank ℝ E) (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     ∃ C : ℝ≥0, ∀ (u : E → F') (hu : Differentiable ℝ u)
-    (h2u : ∀ v : E, Integrable (fderiv ℝ u · v) μ)
+    (h2u : ∀ v : E, Memℒp (fderiv ℝ u · v) (p * (finrank ℝ E - 1) / (finrank ℝ E - p)) μ)
     (h3u : Tendsto u (cocompact E) (𝓝 0))
     (hup' : snorm u p' μ ≠ ⊤),
     snorm u p' μ ≤ C * snorm (fderiv ℝ u) p μ := by
@@ -692,7 +835,14 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
   -- the case `p = 1`
   · obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv F' μ h0n hn
     refine ⟨C, fun u hu h2u h3u _ ↦ ?_⟩
-    convert hC u hu h2u h3u
+    have h4u : ∀ v : E, Integrable (fderiv ℝ u · v) μ := by
+      simp_rw [← memℒp_one_iff_integrable]
+      convert h2u
+      have h3n : (n : ℝ≥0∞) - 1 ≠ 0 := by
+        norm_cast; exact Nat.sub_ne_zero_iff_lt.mpr <| Nat.lt_of_succ_le h0n
+      rw [ENNReal.coe_one, one_mul,
+        ENNReal.div_self h3n (ENNReal.sub_ne_top ENNReal.coe_ne_top)]
+    convert hC u hu h4u h3u
     ext
     rw [← inv_inj, hp']
     field_simp [NNReal.conjExponent]
@@ -740,8 +890,13 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
   -- have h9u := (hu.fderiv_right (m := 0) le_rfl).continuous -- for fun_prop
   let v : E → ℝ := fun x ↦ ‖u x‖ ^ (γ : ℝ)
   have hv : Differentiable ℝ v := hu.norm_rpow h1γ
-  have h2v : ∀ w : E, Integrable (fderiv ℝ v · w) μ := sorry
-  have h3v : Tendsto v (cocompact E) (𝓝 0) := sorry
+  have h2v : ∀ w : E, Integrable (fderiv ℝ v · w) μ := by
+    intro w
+    apply (h2u w).integrable_norm_rpow
+    sorry
+  have h3v : Tendsto v (cocompact E) (𝓝 0) := by
+    convert h3u.norm.rpow_const <| .inr <| zero_le_one.trans h1γ.le
+    rw [norm_zero, Real.zero_rpow h4γ]
   -- have h2v : HasCompactSupport v := h2u.norm.rpow_const h4γ
   have :=
   calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
@@ -789,3 +944,5 @@ protected theorem HasCompactSupport.snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0}
   · exact fun v ↦ hu.continuous_fderiv le_rfl |>.clm_apply continuous_const
       |>.integrable_of_hasCompactSupport <| h2u.fderiv_apply ℝ v
   · exact hu.continuous.memℒp_of_hasCompactSupport (μ := μ) h2u |>.snorm_lt_top.ne
+
+-- #lint
