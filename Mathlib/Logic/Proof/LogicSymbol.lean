@@ -259,7 +259,8 @@ instance : DeMorgan Prop where
   or := fun _ _ => by simp[not_or]
   neg := fun _ => by simp
 
-class HomClass (F : Type _) (α β : outParam (Type _)) [LogicSymbol α] [LogicSymbol β] extends FunLike F α (fun _ => β) where
+class HomClass (F : Type _) (α β : outParam (Type _)) [LogicSymbol α] [LogicSymbol β]
+    extends FunLike F α (fun _ => β) where
   map_top : ∀ (f : F), f ⊤ = ⊤
   map_bot : ∀ (f : F), f ⊥ = ⊥
   map_neg : ∀ (f : F) (p : α), f (~ p) = ~f p
@@ -267,7 +268,8 @@ class HomClass (F : Type _) (α β : outParam (Type _)) [LogicSymbol α] [LogicS
   map_and : ∀ (f : F) (p q : α), f (p ⋏ q) = f p ⋏ f q
   map_or  : ∀ (f : F) (p q : α), f (p ⋎ q) = f p ⋎ f q
 
-attribute [simp] HomClass.map_top HomClass.map_bot HomClass.map_neg HomClass.map_imply HomClass.map_and HomClass.map_or
+attribute [simp] HomClass.map_top HomClass.map_bot HomClass.map_neg HomClass.map_imply
+  HomClass.map_and HomClass.map_or
 
 namespace HomClass
 
@@ -402,10 +404,12 @@ def conj : {n : ℕ} → (Fin n → α) → α
     · intro ⟨hz, hs⟩ i; cases i using Fin.cases; { exact hz }; { exact hs _ }
     · intro h; exact ⟨h 0, fun i => h _⟩
 
-lemma hom_conj [LogicSymbol.HomClass F α β] (f : F) (v : Fin n → α) : f (conj v) = conj (f ∘ v) := by
+lemma hom_conj [LogicSymbol.HomClass F α β] (f : F) (v : Fin n → α) :
+    f (conj v) = conj (f ∘ v) := by
   induction' n with n ih <;> simp[*, conj]
 
-lemma hom_conj' [LogicSymbol.HomClass F α β] (f : F) (v : Fin n → α) : f (conj v) = conj fun i => f (v i) := hom_conj f v
+lemma hom_conj' [LogicSymbol.HomClass F α β] (f : F) (v : Fin n → α) :
+  f (conj v) = conj fun i => f (v i) := hom_conj f v
 
 end And
 
@@ -451,12 +455,14 @@ variable [LogicSymbol α]
 
 noncomputable def conj (s : Finset α) : α := s.toList.conj
 
-lemma map_conj [LogicSymbol.HomClass F α Prop] (f : F) (s : Finset α) : f s.conj ↔ ∀ a ∈ s, f a := by
+lemma map_conj [LogicSymbol.HomClass F α Prop] (f : F) (s : Finset α) :
+    f s.conj ↔ ∀ a ∈ s, f a := by
   simpa using List.map_conj f s.toList
 
 noncomputable def disj (s : Finset α) : α := s.toList.disj
 
-lemma map_disj [LogicSymbol.HomClass F α Prop] (f : F) (s : Finset α) : f s.disj ↔ ∃ a ∈ s, f a := by
+lemma map_disj [LogicSymbol.HomClass F α Prop] (f : F) (s : Finset α) :
+    f s.disj ↔ ∃ a ∈ s, f a := by
   simpa using List.map_disj f s.toList
 
 end
