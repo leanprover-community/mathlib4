@@ -266,16 +266,18 @@ theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α �
   exact fun h => False.elim (b.property h)
 #align equiv.option_subtype_symm_apply_symm_apply Equiv.optionSubtype_symm_apply_symm_apply
 
-/-- Any type with an element is equivalent to an `Option` type on the subtype excluding that
-element-/
-def toOption [DecidableEq α] (x : α) : α ≃ Option {y : α // y ≠ x} :=
-  optionSubtype x |>.symm (.refl _) |>.1.symm
+variable [DecidableEq α] {a b : α}
 
-lemma toOption_apply_some [DecidableEq α] (x y : α) (h : y ≠ x) :
-    toOption x y = some ⟨y, h⟩ := by
-  simp [toOption, optionSubtype, dif_neg h]
+/-- Any type with a distinguished element is equivalent to an `Option` type on the subtype excluding
+that element. -/
+@[simps!]
+def optionSubtypeNe (a : α) : Option {b // b ≠ a} ≃ α := optionSubtype a |>.symm (.refl _) |>.1
 
-lemma toOption_apply_none [DecidableEq α] (x : α) : toOption x x = none := by
-  simp [toOption, optionSubtype, dif_pos rfl]
+lemma optionSubtypeNe_symm_self (a : α) : (optionSubtypeNe a).symm a = none := by simp
+lemma optionSubtypeNe_symm_of_ne (hba : b ≠ a) : (optionSubtypeNe a).symm b = some ⟨b, hba⟩ := by
+  simp [hba]
+
+@[simp] lemma optionSubtypeNe_none (a : α) : optionSubtypeNe a none = a := rfl
+@[simp] lemma optionSubtypeNe_some (a : α) (b) : optionSubtypeNe a (some b) = b := rfl
 
 end Equiv
