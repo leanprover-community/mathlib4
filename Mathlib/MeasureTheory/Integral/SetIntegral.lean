@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.ContinuousFunction.Compact
 
