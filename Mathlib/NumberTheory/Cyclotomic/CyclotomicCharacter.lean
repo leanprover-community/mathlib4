@@ -47,7 +47,7 @@ where `d` is the number of `n`th roots of unity in `L`.
 ## Todo
 
 * Prove the compatibility of `ModularCyclotomicCharacter n` and `ModularCyclotomicCharacter m`
-if `n ∣ m`.
+  if `n ∣ m`.
 
 * Define the cyclotomic character.
 
