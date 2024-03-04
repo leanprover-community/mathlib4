@@ -374,9 +374,9 @@ theorem zeroLocus_singleton_mul (f g : R) :
 #align prime_spectrum.zero_locus_singleton_mul PrimeSpectrum.zeroLocus_singleton_mul
 
 @[simp]
-theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : 0 < n) :
+theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
     zeroLocus ((I ^ n : Ideal R) : Set R) = zeroLocus I :=
-  zeroLocus_radical (I ^ n) ▸ (I.radical_pow n hn).symm ▸ zeroLocus_radical I
+  zeroLocus_radical (I ^ n) ▸ (I.radical_pow hn).symm ▸ zeroLocus_radical I
 #align prime_spectrum.zero_locus_pow PrimeSpectrum.zeroLocus_pow
 
 @[simp]
