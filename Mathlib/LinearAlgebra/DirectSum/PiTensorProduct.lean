@@ -49,9 +49,9 @@ variable [∀ i (j : κ i), Module R (M i j)] [Module R M']
 variable [(i : ι) → (j : κ i) → (x : M i j) → Decidable (x ≠ 0)]
 
 theorem fromDirectSum_aux1 (f : (p : (i : ι) → κ i) → MultilinearMap R (fun i ↦ M i (p i)) M')
-   (x : (i : ι) → ⨁ (j : κ i), M i j) {p : (i : ι) → κ i}
-   (hp : p ∉ Fintype.piFinset (fun i ↦ (x i).support)) :
-   (f p) (fun j ↦ (x j) (p j)) = 0 := by
+    (x : (i : ι) → ⨁ (j : κ i), M i j) {p : (i : ι) → κ i}
+    (hp : p ∉ Fintype.piFinset (fun i ↦ (x i).support)) :
+    (f p) (fun j ↦ (x j) (p j)) = 0 := by
   simp only [Fintype.mem_piFinset, DFinsupp.mem_support_toFun, ne_eq, not_forall, not_not] at hp
   obtain ⟨i, hi⟩ := hp
   exact (f p).map_coord_zero i hi
