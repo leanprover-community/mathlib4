@@ -90,7 +90,8 @@ theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f
     (u 1 - u 0) • f (u 0) + C • ∑ k in Ico (u 0 + 1) (u n + 1), f k := by
   rw [sum_range_succ', add_comm]
   refine' add_le_add_left _ ((u 1 - u 0) • f (u 0))
-  suffices ∑ k in range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤ C • ∑ k in range n, ((u (k + 1) - u k) • f (u (k + 1))) by
+  suffices ∑ k in range n, (u (k + 2) - u (k + 1)) • f (u (k + 1)) ≤
+  C • ∑ k in range n, ((u (k + 1) - u k) • f (u (k + 1))) by
     refine' le_trans this _
     apply nsmul_le_nsmul_right
     exact sum_schlomilch_le' hf h_pos hu n
