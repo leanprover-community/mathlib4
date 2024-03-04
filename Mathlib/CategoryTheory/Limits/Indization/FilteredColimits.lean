@@ -192,7 +192,7 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
   have t := step₁₂ F hF G
   dsimp [indexing] at t
   rw [bla F hF G] at t
-  let q := natIsoOfFullyFaithful.{v, max u v} (CostructuredArrow.toOver yoneda (colimit F))
+  let q := Yoneda.natIsoOfFullyFaithful.{v, max u v} (CostructuredArrow.toOver yoneda (colimit F))
   obtain ⟨t'⟩ := Nonempty.map (limMap (isoWhiskerLeft G.op (q _)).hom) t
   let v := preservesLimitIso uliftFunctor.{max u v, v} (G.op ⋙
     yoneda.toPrefunctor.obj
