@@ -1,0 +1,18 @@
+name: Cross off linked issues
+
+on:
+  # the closed event type causes unchecked checkbox references to be checked / marked complete
+  # the reopened event type causes checked checkbox references to be unchecked / marked incomplete
+  issues:
+    types: [closed, reopened]
+
+  # the action works on pull request events as well
+  pull_request:
+    types: [closed, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cross off any linked issue and PR references
+        uses: jonabc/sync-task-issues@v1
