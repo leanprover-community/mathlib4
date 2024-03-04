@@ -35,7 +35,7 @@ I haven't checked exactly what they are).
 * `riemannCompletedZeta₀_one_sub`, `riemannCompletedZeta_one_sub`, and `riemannZeta_one_sub` :
   functional equation relating values at `s` and `1 - s`
 * `riemannZeta_neg_nat_eq_bernoulli` : for any `k ∈ ℕ` we have the formula
-  `riemannZeta (-k) = (-1) ^ k * bernoulli (k + 1) / (k + 1)`
+  `riemannZeta (-k) = -bernoulli (k + 1) / (k + 1)`
 * `riemannZeta_two_mul_nat`: formula for `ζ(2 * k)` for `k ∈ ℕ, k ≠ 0` in terms of Bernoulli
   numbers
 
@@ -727,23 +727,19 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
 #align riemann_zeta_one_sub riemannZeta_one_sub
 
 theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
-    riemannZeta (-k) = (-1 : ℂ) ^ k * bernoulli (k + 1) / (k + 1) := by
+    riemannZeta (-k) = -bernoulli (k + 1) / (k + 1) := by
   rcases Nat.even_or_odd' k with ⟨m, rfl | rfl⟩
   · cases' m with m m
-    ·-- k = 0 : evaluate explicitly
-      rw [Nat.zero_eq, mul_zero, Nat.cast_zero, pow_zero, one_mul, zero_add, neg_zero, zero_add,
+    · -- k = 0 : evaluate explicitly
+      rw [Nat.zero_eq, mul_zero, Nat.cast_zero, zero_add, neg_zero, zero_add,
         div_one, bernoulli_one, riemannZeta_zero]
       norm_num
     · -- k = 2 * (m + 1) : both sides "trivially" zero
       rw [Nat.cast_mul, ← neg_mul, Nat.cast_two, Nat.cast_succ, riemannZeta_neg_two_mul_nat_add_one,
-        bernoulli_eq_bernoulli'_of_ne_one]
-      swap; · apply ne_of_gt; norm_num
-      rw [bernoulli'_odd_eq_zero ⟨m + 1, rfl⟩ (by norm_num), Rat.cast_zero, mul_zero,
-        zero_div]
+        bernoulli_odd_eq_zero ⟨m + 1, rfl⟩ (by norm_num)]
+      norm_num
   · -- k = 2 * m + 1 : the interesting case
-    rw [Odd.neg_one_pow ⟨m, rfl⟩]
-    rw [show -(↑(2 * m + 1) : ℂ) = 1 - (2 * m + 2) by push_cast; ring]
-    rw [riemannZeta_one_sub]
+    rw [show -(↑(2 * m + 1) : ℂ) = 1 - (2 * m + 2) by push_cast; ring, riemannZeta_one_sub]
     rotate_left
     · intro n
       rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), ← Int.cast_neg_natCast, ← Int.cast_ofNat,
@@ -774,7 +770,7 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
           Complex.Gamma_nat_eq_factorial, (by ring : 2 * (m + 1) = 2 * m + 1 + 1),
           Nat.factorial_succ, Nat.cast_mul, mul_comm]
         norm_num]
-    rw [← div_div, neg_one_mul]
+    rw [← div_div]
     congr 1
     rw [div_eq_iff (Gamma_ne_zero_of_re_pos _)]
     swap; · rw [(by norm_num : 2 * (m : ℂ) + 2 = ↑(2 * (m : ℝ) + 2)), ofReal_re]; positivity
