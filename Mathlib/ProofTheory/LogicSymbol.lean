@@ -51,18 +51,22 @@ section logicNotation
 
 /-- `Tilde` class describes proof systems using tilda (for negation) -/
 @[notation_class] class Tilde (α : Type*) where
+  /-- tilde symbol -/
   tilde : α → α
 
 /-- `Arrow` class describes proof systems using arrow (for implication) -/
 @[notation_class] class Arrow (α : Type*) where
+  /-- arrow symbol -/
   arrow : α → α → α
 
 /-- `Wedge` class describes proof systems using wedge (for conjunction) -/
 @[notation_class] class Wedge (α : Type*) where
+  /-- wedge symbol -/
   wedge : α → α → α
 
 /-- `Vee` class describes proof systems using vee (for disjunction) -/
 @[notation_class] class Vee (α : Type*) where
+  /-- vee symbol -/
   vee : α → α → α
 
 /-- `LogicSymbol` class describes a proof system's logical symbols -/
@@ -71,10 +75,12 @@ class LogicSymbol (α : Type*)
 
 /-- `UnivQuantifier` class describes proof systems using universal quantifers -/
 @[notation_class] class UnivQuantifier (α : ℕ → Type*) where
+  /-- universal quantifier symbol -/
   univ : ∀ {n}, α (n + 1) → α n
 
 /-- `ExQuantifier` class describes proof systems using existential quantifers -/
 @[notation_class] class ExQuantifier (α : ℕ → Type*) where
+  /-- existential quantifier symbol -/
   ex : ∀ {n}, α (n + 1) → α n
 
 /-- Prefix notation for `tilde` -/
@@ -141,6 +147,7 @@ end ExQuantifier
 
 /-- `HasTurnstile` describes proof systems with turnstile (proves) -/
 @[notation_class] class HasTurnstile (α : Sort _) (β : Sort _) where
+  /-- turnstile symbol -/
   turnstile : Set α → α → β
 
 /-- Infix notation for `turnstile` -/
@@ -148,6 +155,7 @@ infix:45 " ⊢ " => HasTurnstile.turnstile
 
 /-- `HasVdash` describes proof systems with vdash (implication) -/
 @[notation_class] class HasVdash (α : Sort _) (β : outParam (Sort _)) where
+  /-- vdash symbol -/
   vdash : α → β
 
 /-- Prefix notation for `vdash` -/
@@ -245,7 +253,8 @@ variable (α β γ : Type*) [LogicSymbol α] [LogicSymbol β] [LogicSymbol γ]
 
 /-- α →ˡᶜ β is the type of functions α → β that preserve the logical connectives -/
 structure Hom where
-  toFun : α → β -- Function for homomorphism
+  /-- Function for homomorphism -/
+  toFun : α → β
   map_top' : toFun ⊤ = ⊤
   map_bot' : toFun ⊥ = ⊥
   map_neg' : ∀ p, toFun (~ p) = ~toFun p
