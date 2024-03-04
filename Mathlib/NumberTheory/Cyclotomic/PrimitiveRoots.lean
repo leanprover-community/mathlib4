@@ -273,6 +273,26 @@ theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField
   rw [neg_pow] at hs
   exact ⟨s, hs.symm⟩
 
+/-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension, where `n` is odd, and `ζ`
+is a primitive `n`-th root of unity, then there exist `r < n` such that `x = ζ^r` or `x = -ζ^r`. -/
+theorem _root_.IsPrimitiveRoot.exists_pow_or_neg_mul_pow_of_pow_eq_one [NumberField K]
+    [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
+    (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) :
+    ∃ (r : ℕ), r < n ∧ (x = ζ ^ r ∨ x = -ζ ^ r) :=  by
+  obtain ⟨r, hr⟩ := hζ.exists_neg_pow_mul_pow_of_pow_eq_one hno hx
+  refine ⟨r % n, Nat.mod_lt _ n.2, ?_⟩
+  rcases Nat.even_or_odd r with (heven | hodd)
+  · left
+    rw [heven.neg_one_pow, one_mul] at hr
+    convert hr using 1
+    nth_rewrite 2 [← Nat.div_add_mod r n]
+    rw [pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul]
+  · right
+    rw [hodd.neg_one_pow, neg_one_mul] at hr
+    convert hr using 2
+    nth_rewrite 2 [← Nat.div_add_mod r n]
+    rw [pow_add, pow_mul, hζ.pow_eq_one, one_pow, one_mul]
+
 end IsCyclotomicExtension
 
 end NoOrder
