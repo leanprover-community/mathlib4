@@ -18,7 +18,7 @@ computer science such as the POSIX standard.
 
 * Show that this regular expressions and DFA/NFA's are equivalent. -/
 
--- porting note: this has been commented out
+-- Porting note: this has been commented out
 -- * `attribute [pattern] has_mul.mul` has been added into this file, it could be moved.
 
 
@@ -50,7 +50,7 @@ inductive RegularExpression (α : Type u) : Type u
 #align regular_expression RegularExpression
 
 
--- porting note: `simpNF` gets grumpy about how the `foo_def`s below can simplify these..
+-- Porting note: `simpNF` gets grumpy about how the `foo_def`s below can simplify these..
 attribute [nolint simpNF] RegularExpression.zero.sizeOf_spec
 attribute [nolint simpNF] RegularExpression.epsilon.sizeOf_spec
 attribute [nolint simpNF] RegularExpression.plus.sizeOf_spec
@@ -80,7 +80,7 @@ instance : Zero (RegularExpression α) :=
 instance : Pow (RegularExpression α) ℕ :=
   ⟨fun n r => npowRec r n⟩
 
--- porting note: declaration in an imported module
+-- Porting note: declaration in an imported module
 --attribute [match_pattern] Mul.mul
 
 @[simp]
@@ -103,9 +103,9 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 #align regular_expression.comp_def RegularExpression.comp_def
 
--- porting note: `matches` is reserved, moved to `matches'`
+-- Porting note: `matches` is reserved, moved to `matches'`
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
--- porting note: was '@[simp] but removed based on
+-- Porting note: was '@[simp] but removed based on
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simpNF.20issues.20in.20Computability.2ERegularExpressions.20!4.232306/near/328355362
 def matches' : RegularExpression α → Language α
   | 0 => 0
@@ -428,7 +428,7 @@ theorem matches'_map (f : α → β) :
   | char a => by
     rw [eq_comm]
     exact image_singleton
-  -- porting note: the following close with last `rw` but not with `simp`?
+  -- Porting note: the following close with last `rw` but not with `simp`?
   | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
   -- FIXME nightly-testing: we used to be able to match on `P * Q` here,
   -- and the `erw` was just `rw`

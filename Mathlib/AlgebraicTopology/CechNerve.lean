@@ -403,24 +403,24 @@ instance hasWidePullback [Finite ι] (X : C) :
   exact ⟨⟨wideCospan.limitCone ι X⟩⟩
 #align category_theory.cech_nerve_terminal_from.has_wide_pullback CategoryTheory.CechNerveTerminalFrom.hasWidePullback
 
--- porting note: added to make the following definitions work
+-- Porting note: added to make the following definitions work
 instance hasWidePullback' [Finite ι] (X : C) :
     HasWidePullback (⊤_ C)
       (fun _ : ι => X)
       (fun _ => terminal.from X) :=
   hasWidePullback _ _
 
--- porting note: added to make the following definitions work
+-- Porting note: added to make the following definitions work
 instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) := hasWidePullback _ _
 
--- porting note: added to ease the definition of `iso`
+-- Porting note: added to ease the definition of `iso`
 /-- the isomorphism to the product induced by the limit cone `wideCospan ι X` -/
 def wideCospan.limitIsoPi [Finite ι] (X : C) :
     limit (wideCospan ι X) ≅ ∏ fun _ : ι => X :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
     (wideCospan.limitCone ι X).2)
 
--- porting note: added to ease the definition of `iso`
+-- Porting note: added to ease the definition of `iso`
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :
     (wideCospan.limitIsoPi ι X).inv ≫ WidePullback.π _ j = Pi.π _ j :=

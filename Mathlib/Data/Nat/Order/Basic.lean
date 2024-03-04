@@ -89,7 +89,7 @@ theorem _root_.NeZero.one_le [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZ
 -- Porting note: already in Std
 #align nat.mul_eq_zero Nat.mul_eq_zero
 
---Porting note: removing `simp` attribute
+-- Porting note: removing `simp` attribute
 protected theorem zero_eq_mul : 0 = m * n ↔ m = 0 ∨ n = 0 := by rw [eq_comm, Nat.mul_eq_zero]
 #align nat.zero_eq_mul Nat.zero_eq_mul
 
@@ -504,7 +504,7 @@ section Find
 
 variable {p q : ℕ → Prop} [DecidablePred p] [DecidablePred q]
 
---Porting note: removing `simp` attribute as `simp` can prove it
+-- Porting note: removing `simp` attribute as `simp` can prove it
 theorem find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 := by
   rw [pos_iff_ne_zero, Ne, Nat.find_eq_zero]
 #align nat.find_pos Nat.find_pos

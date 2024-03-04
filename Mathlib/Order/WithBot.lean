@@ -754,7 +754,7 @@ theorem untop'_coe {α} (d x : α) : untop' d x = x :=
   rfl
 #align with_top.untop'_coe WithTop.untop'_coe
 
-@[simp, norm_cast] -- porting note: added `simp`
+@[simp, norm_cast] -- Porting note: added `simp`
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 #align with_top.coe_eq_coe WithTop.coe_eq_coe

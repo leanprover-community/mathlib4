@@ -162,7 +162,7 @@ instance [Reflective i] (X : Functor.EssImageSubcategory i) :
   IsIso (NatTrans.app (ofRightAdjoint i).unit X.obj) :=
 Functor.essImage.unit_isIso X.property
 
--- porting note: the following auxiliary definition and the next two lemmas were
+-- Porting note: the following auxiliary definition and the next two lemmas were
 -- introduced in order to ease the port
 /-- The counit isomorphism of the equivalence `D ≌ i.EssImageSubcategory` given
 by `equivEssImageOfReflective` when the functor `i` is reflective. -/
@@ -211,7 +211,7 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory
           equivEssImageOfReflective_map_counitIso_app_hom,
           IsIso.comp_inv_eq, assoc, ← h, IsIso.inv_hom_id_assoc, Functor.comp_map])
   functor_unitIso_comp := fun X => by
-    -- porting note: this proof was automatically handled by the automation in mathlib
+    -- Porting note: this proof was automatically handled by the automation in mathlib
     apply (Functor.essImageInclusion i).map_injective
     erw [Functor.map_comp, equivEssImageOfReflective_map_counitIso_app_hom]
     aesop_cat

@@ -181,7 +181,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
--- @[simp] -- porting note: this loops in lean 4
+-- @[simp] -- Porting note: this loops in lean 4
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 #align fun_like.coe_eq_coe_fn DFunLike.coe_eq_coe_fn
 
