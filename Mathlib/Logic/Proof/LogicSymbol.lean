@@ -248,7 +248,8 @@ instance Prop_HasLogicSymbols : LogicSymbol Prop where
 
 @[simp] lemma Prop_or_eq (p q : Prop) : (p ⋎ q) = (p ∨ q) := rfl
 
-@[simp] lemma Prop_iff_eq (p q : Prop) : (p ⟷ q) = (p ↔ q) := by simp[LogicSymbol.iff, iff_iff_implies_and_implies]
+@[simp] lemma Prop_iff_eq (p q : Prop) : (p ⟷ q) = (p ↔ q) := by
+  simp[LogicSymbol.iff, iff_iff_implies_and_implies]
 
 instance : DeMorgan Prop where
   verum := by simp
