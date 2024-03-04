@@ -5,6 +5,8 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
+import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
@@ -589,16 +591,54 @@ def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ Type v) (T : Over A) :
         (Iso.refl _)).toIso)
     (by aesop_cat)
 
-def CostructuredArrow.yoneda' (A : Cᵒᵖ ⥤ Type v) :
+/-- This isomorphism says that hom-sets in the category `Over A` for a presheaf `A` where the domain
+    is of the form `(CostructuredArrow.toOver yoneda A).obj X` can instead be interpreted as
+    hom-sets in the category `(CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` where the domain is of the
+    form `yoneda.obj X` after adjusting the codomain accordingly. This is desirable because in the
+    latter case the Yoneda lemma can be applied. -/
+def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
   (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ≅
-    (@yoneda (CostructuredArrow yoneda A)).op ⋙ coyoneda ⋙
+    yoneda.op ⋙ coyoneda ⋙
       (whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).functor :=
   NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y =>
     (equivOfFullyFaithful (overEquivPresheafCostructuredArrow A).functor).toIso ≪≫
       (Iso.homCongr
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
         (Iso.refl _)).toIso)) (by aesop_cat)
-      -- (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙
-      --   (whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).inverse := sorry
+
+open CategoryTheory.Limits
+
+variable {J : Type v} [SmallCategory J] {A : Cᵒᵖ ⥤ Type v} (F : J ⥤ Over A)
+
+-- We introduce some local notation to reduce visual noise in the following proof
+local notation "E" => Equivalence.functor (overEquivPresheafCostructuredArrow A)
+local notation "E.obj" =>
+  Prefunctor.obj (Functor.toPrefunctor (Equivalence.functor (overEquivPresheafCostructuredArrow A)))
+
+/-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`, where `Y` is the
+    "Yoneda embedding" `CostructuredArrow.toOver yoneda A`. This is a relative version of
+    `yonedaYonedaColimit`. -/
+noncomputable def CostructuredArrow.toOverCompYonedaColimit :
+    (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj (colimit F) ≅
+    (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) := calc
+  (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj (colimit F)
+    ≅ yoneda.op ⋙ yoneda.obj (E.obj (colimit F)) :=
+        CostructuredArrow.toOverCompYoneda A _
+  _ ≅ yoneda.op ⋙ yoneda.obj (colimit (F ⋙ E)) :=
+        isoWhiskerLeft yoneda.op (yoneda.mapIso (preservesColimitIso _ F))
+  _ ≅ yoneda.op ⋙ colimit ((F ⋙ E) ⋙ yoneda) :=
+        yonedaYonedaColimit _
+  _ ≅ yoneda.op ⋙ ((F ⋙ E) ⋙ yoneda).flip ⋙ colim :=
+        isoWhiskerLeft _ (colimitIsoFlipCompColim _)
+  _ ≅ (yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj E) ⋙
+          (whiskeringLeft _ _ _).obj F ⋙ colim :=
+        Iso.refl _
+  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙
+          (whiskeringLeft _ _ _).obj F ⋙ colim :=
+        isoWhiskerRight (CostructuredArrow.toOverCompCoyoneda _).symm _
+  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ (F ⋙ yoneda).flip ⋙ colim :=
+        Iso.refl _
+  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) :=
+      isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
 
 end CategoryTheory

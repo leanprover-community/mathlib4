@@ -191,65 +191,6 @@ theorem step₃ : Nonempty <| limit <|
   let t' := whiskerLeft (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op) (yoneda.map t.hom)
   exact limMap t'
 
-@[simps! obj]
-noncomputable def myFunctor : I ⥤ (Over (colimit.cocone F).pt)ᵒᵖ ⥤ Type (max u v) :=
-  (colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ yoneda
-
-
-section PreInterchange
-
-variable {C : Type v} [SmallCategory C] {D : Type u} [Category.{v} D] (F : C ⥤ Dᵒᵖ ⥤ Type v)
-
-noncomputable def preInterchange :
-    yoneda.op ⋙ yoneda.obj (colimit F) ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := calc
-  yoneda.op ⋙ yoneda.obj (colimit F)
-    ≅ colimit F ⋙ uliftFunctor.{u} := yonedaOpCompYonedaObj (colimit F)
-  _ ≅ F.flip ⋙ colim ⋙ uliftFunctor.{u} := isoWhiskerRight (colimitIsoFlipCompColim _) _
-  _ ≅ F.flip ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙ colim :=
-        isoWhiskerLeft _ (preservesColimitNatIso _)
-  _ ≅ (evaluation _ _ ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u}) ⋙
-          (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        Iso.refl _
-  _ ≅ (yoneda.op ⋙ coyoneda) ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        isoWhiskerRight curriedYonedaLemma.symm _
-  _ ≅ yoneda.op ⋙ (F ⋙ yoneda).flip ⋙ colim := Iso.refl _
-  _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
-
-end PreInterchange
-
-section BetterInterchange
-
-variable {C : Type v} [SmallCategory C] {D : Type u} [Category.{v} D] {A : Dᵒᵖ ⥤ Type v}
-  (F : C ⥤ Over A)
-
-abbrev E : Over A ⥤ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v :=
-  (overEquivPresheafCostructuredArrow A).functor
-
-noncomputable def betterInterchange :
-    (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj (colimit F) ≅
-    (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) := calc
-  (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj (colimit F)
-    ≅ yoneda.op ⋙ yoneda.obj (E.obj (colimit F)) :=
-        CostructuredArrow.toOverCompYoneda A _
-  _ ≅ yoneda.op ⋙ yoneda.obj (colimit (F ⋙ E)) :=
-        isoWhiskerLeft yoneda.op (yoneda.mapIso (preservesColimitIso _ F))
-  _ ≅ yoneda.op ⋙ colimit ((F ⋙ E) ⋙ yoneda) :=
-        preInterchange _
-  _ ≅ yoneda.op ⋙ ((F ⋙ E) ⋙ yoneda).flip ⋙ colim :=
-        isoWhiskerLeft _ (colimitIsoFlipCompColim _)
-  _ ≅ (yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj E) ⋙
-          (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        Iso.refl _
-  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙
-          (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        isoWhiskerRight (CostructuredArrow.yoneda' _).symm _
-  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ (F ⋙ yoneda).flip ⋙ colim :=
-        Iso.refl _
-  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) :=
-      isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
-
-end BetterInterchange
-
 section Interchange
 
 variable {K : Type v} [SmallCategory K] (H : K ⥤ Over (colimit.cocone F).pt)
@@ -266,7 +207,7 @@ noncomputable def composedInterchange :
   G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙
     yoneda.obj (colimit H) ≅
     colimit (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op)) :=
-  (isoWhiskerLeft G.op (betterInterchange H)) ≪≫ fullInterchange₂ F G H
+  (isoWhiskerLeft G.op (CostructuredArrow.toOverCompYonedaColimit H)) ≪≫ fullInterchange₂ F G H
 
 theorem full_interchange [IsFiltered K] (h : Nonempty <| limit <|
     G.op ⋙ (CostructuredArrow.toOver yoneda (colimit.cocone F).pt).op ⋙ yoneda.obj (colimit H)) :
