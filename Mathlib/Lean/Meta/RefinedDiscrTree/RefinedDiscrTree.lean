@@ -6,7 +6,7 @@ Authors: Jovan Gerbscheid
 import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
 import Std.Data.List.Basic
 import Lean.Meta
-import Mathlib.Data.Pi.Algebra
+import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 We define discrimination trees for the purpose of unifying local expressions with library results.
