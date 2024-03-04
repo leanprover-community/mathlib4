@@ -67,7 +67,7 @@ local notation "N" => Discrete ∘ NormalMonoidalObject
 
 local infixr:10 " ⟶ᵐ " => Hom
 
--- porting note: this was automatic in mathlib 3
+-- Porting note: this was automatic in mathlib 3
 instance (x y : N C) : Subsingleton (x ⟶ y) := Discrete.instSubsingletonDiscreteHom _ _
 
 /-- Auxiliary definition for `inclusion`. -/
@@ -106,7 +106,7 @@ section
 
 open Hom
 
--- porting note: triggers a PANIC "invalid LCNF substitution of free variable
+-- Porting note: triggers a PANIC "invalid LCNF substitution of free variable
 -- with expression CategoryTheory.FreeMonoidalCategory.NormalMonoidalObject.{u}"
 -- prevented with an initial call to dsimp...why?
 /-- Auxiliary definition for `normalize`. Here we prove that objects that are related by
@@ -238,7 +238,7 @@ end
     of our proof of the coherence theorem. -/
 def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C)
-    (by -- porting note: the proof has been mostly rewritten
+    (by -- Porting note: the proof has been mostly rewritten
       rintro X Y f
       induction' f using Quotient.recOn with f; swap; rfl
       induction' f with _ X₁ X₂ X₃ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ X₁ X₂ Y₁ Y₂ f g h₁ h₂

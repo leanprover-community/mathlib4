@@ -114,7 +114,7 @@ theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {�
   isCompl_range_some_none X
 #align alexandroff.is_compl_range_coe_infty OnePoint.isCompl_range_coe_infty
 
--- porting note: moved @[simp] to a new lemma
+-- Porting note: moved @[simp] to a new lemma
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
   range_some_union_none X
 #align alexandroff.range_coe_union_infty OnePoint.range_coe_union_infty

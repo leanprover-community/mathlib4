@@ -88,7 +88,7 @@ export SMulHomClass (map_smul)
 
 attribute [simp] map_smul
 
--- porting note: removed has_coe_to_fun instance, coercions handled differently now
+-- Porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
 instance : FunLike (X →[M'] Y) X Y where
@@ -350,7 +350,7 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 
 variable {M C}
 
--- porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
+-- Porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
 instance : Zero (A →+[M] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = m • (0 : B); rw [smul_zero]}⟩
 
@@ -479,7 +479,7 @@ Coercion is already handled by all the HomClass constructions I believe -/
 --   ⟨toDistribMulActionHom⟩
 -- #align mul_semiring_action_hom.has_coe' MulSemiringActionHom.coe'
 
--- porting note: removed has_coe_to_fun instance, coercions handled differently now
+-- Porting note: removed has_coe_to_fun instance, coercions handled differently now
 
 #noalign mul_semiring_action_hom.has_coe
 #noalign mul_semiring_action_hom.has_coe'

@@ -120,7 +120,7 @@ theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
   change ((↑) : ℕ → ℤ) _ = _
   rw [sup_eq_max, inf_eq_min, Int.ofNat_sub]
   · rw [add_comm, Int.ofNat_add, add_sub_assoc]
-    -- porting note: `norm_cast` puts a `Int.subSubNat` in the goal
+    -- Porting note: `norm_cast` puts a `Int.subSubNat` in the goal
     -- norm_cast
     change _ = ↑(Int.natAbs (b - a) + 1)
     push_cast

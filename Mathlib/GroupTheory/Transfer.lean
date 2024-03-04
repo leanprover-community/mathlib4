@@ -100,7 +100,7 @@ the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : leftTransversals (H : Set G) := Inhabited.default
   { toFun := fun g => diff ϕ T (g • T)
-    map_one' := by simp only; rw [one_smul, diff_self] -- porting note: added `simp only`
+    map_one' := by simp only; rw [one_smul, diff_self] -- Porting note: added `simp only`
     map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 #align monoid_hom.transfer MonoidHom.transfer
 #align add_monoid_hom.transfer AddMonoidHom.transfer
@@ -168,9 +168,9 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     letI := H.fintypeQuotientOfFiniteIndex
     change ∀ (k g₀) (hk : g₀⁻¹ * g ^ k * g₀ ∈ H), ↑(⟨g₀⁻¹ * g ^ k * g₀, hk⟩ : H) = g ^ k at key
     rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_to_list]
-    refine' (List.prod_map_hom _ _ _).trans _ -- porting note: this used to be in the `rw`
+    refine' (List.prod_map_hom _ _ _).trans _ -- Porting note: this used to be in the `rw`
     refine' congrArg ϕ (Subtype.coe_injective _)
-    simp only -- porting note: added `simp only`
+    simp only -- Porting note: added `simp only`
     rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow,
       index_eq_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_to_list]
@@ -234,7 +234,7 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
       ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
   @transfer_eq_pow G _ P P (@Subgroup.IsCommutative.commGroup G _ P
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩) _ _ g
-      (transferSylow_eq_pow_aux P hP g hg) -- porting note: apply used to do this automatically
+      (transferSylow_eq_pow_aux P hP g hg) -- Porting note: apply used to do this automatically
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =

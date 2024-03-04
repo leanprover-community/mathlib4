@@ -261,7 +261,7 @@ theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (
   ⟨p, @FiniteField.card K _ _ p hc⟩
 #align finite_field.card' FiniteField.card'
 
---Porting note: this was a `simp` lemma with a 5 lines proof.
+-- Porting note: this was a `simp` lemma with a 5 lines proof.
 theorem cast_card_eq_zero : (q : K) = 0 := by
   simp
 #align finite_field.cast_card_eq_zero FiniteField.cast_card_eq_zero
@@ -519,7 +519,7 @@ theorem frobenius_zmod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom
   rw [frobenius_def, ZMod.pow_card, RingHom.id_apply]
 #align zmod.frobenius_zmod ZMod.frobenius_zmod
 
---Porting note: this was a `simp` lemma, but now the LHS simplify to `φ p`.
+-- Porting note: this was a `simp` lemma, but now the LHS simplify to `φ p`.
 theorem card_units (p : ℕ) [Fact p.Prime] : Fintype.card (ZMod p)ˣ = p - 1 := by
   rw [Fintype.card_units, card]
 #align zmod.card_units ZMod.card_units
