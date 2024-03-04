@@ -1038,8 +1038,6 @@ import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Category.Pairwise
-import Mathlib.Logic.Proof.LogicSymbol
-import Mathlib.Logic.Proof.VecNotation
 import Mathlib.CategoryTheory.Category.PartialFun
 import Mathlib.CategoryTheory.Category.Pointed
 import Mathlib.CategoryTheory.Category.Preorder
@@ -2682,6 +2680,8 @@ import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Logic.Pairwise
+import Mathlib.Logic.Proof.LogicSymbol
+import Mathlib.Logic.Proof.VecNotation
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
