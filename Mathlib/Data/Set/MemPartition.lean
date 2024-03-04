@@ -123,7 +123,7 @@ lemma memPartitionSet_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
     refine ⟨memPartitionSet f n a, ?_⟩
     split_ifs <;> simp [ih]
 
-lemma mem_memPartitionSet(f : ℕ → Set α) (n : ℕ) (a : α) : a ∈ memPartitionSet f n a := by
+lemma mem_memPartitionSet (f : ℕ → Set α) (n : ℕ) (a : α) : a ∈ memPartitionSet f n a := by
   induction n with
   | zero => simp [memPartitionSet]
   | succ n ih =>
