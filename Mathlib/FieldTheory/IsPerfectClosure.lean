@@ -120,8 +120,7 @@ theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : 
 theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
     (h : Function.Injective (frobenius R p)) : pNilradical R p = ⊥ := bot_unique fun x ↦ by
   rw [mem_pNilradical, Ideal.mem_bot]
-  intro ⟨n, hx⟩
-  exact h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
+  exact fun ⟨n, _⟩ ↦ h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
 
 theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
     [PerfectRing R p] : pNilradical R p = ⊥ :=
@@ -188,7 +187,7 @@ In this case the kernel of `i` is equal to the `p`-nilradical of `K`
 
 Our definition makes it synonymous to `IsPRadical` if `PerfectRing L p` is present. A caveat is
 that you need to write `[PerfectRing L p] [IsPerfectClosure i p]`. This is similar to
-`PerfectRing` which has `ExpChar` as a prerequisite.-/
+`PerfectRing` which has `ExpChar` as a prerequisite. -/
 @[nolint unusedArguments]
 abbrev IsPerfectClosure [PerfectRing L p] := IsPRadical i p
 
@@ -253,24 +252,36 @@ variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
   (i : K →+* L) (j : K →+* M) (k : K →+* N) (f : L →+* M) (g : L →+* N)
   (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p] [ExpChar N p]
 
+namespace IsPRadical
+
 /-- If `i : K →+* L` is `p`-radical, then for any ring `M` of exponential charactistic `p` whose
-`p`-nilradical is zero, the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
-This generalizes `IsPurelyInseparable.injective_comp_algebraMap`. -/
-theorem IsPRadical.injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M p = ⊥) :
+`p`-nilradical is zero, the map `(L →+* M) → (K →+* M)` induced by `i` is injective. -/
+theorem injective_comp_of_pNilradical_eq_bot [IsPRadical i p] (h : pNilradical M p = ⊥) :
     Function.Injective fun f : L →+* M ↦ f.comp i := fun f g heq ↦ by
   ext x
   obtain ⟨n, y, hx⟩ := IsPRadical.pow_mem i p x
   apply_fun _ using pow_expChar_pow_inj_of_pNilradical_eq_bot M p h n
-  rw [← map_pow, ← map_pow, ← hx]
-  exact congr($(heq) y)
+  simpa only [← map_pow, ← hx] using congr($(heq) y)
+
+variable (M)
 
 /-- If `i : K →+* L` is `p`-radical, then for any reduced ring `M` of exponential charactistic `p`,
 the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
-A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`. -/
-theorem IsPRadical.injective_comp [IsPRadical i p] [IsReduced M] :
+A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`
+and a generalization of `IsPurelyInseparable.injective_comp_algebraMap`. -/
+theorem injective_comp [IsPRadical i p] [IsReduced M] :
     Function.Injective fun f : L →+* M ↦ f.comp i :=
   injective_comp_of_pNilradical_eq_bot i p <| bot_unique <|
     pNilradical_le_nilradical.trans (nilradical_eq_zero M).le
+
+/-- If `i : K →+* L` is `p`-radical, then for any perfect ring `M` of exponential charactistic `p`,
+the map `(L →+* M) → (K →+* M)` induced by `i` is injective.
+A special case of `IsPRadical.injective_comp_of_pNilradical_eq_bot`. -/
+theorem injective_comp_of_perfect [IsPRadical i p] [PerfectRing M p] :
+    Function.Injective fun f : L →+* M ↦ f.comp i :=
+  injective_comp_of_pNilradical_eq_bot i p (PerfectRing.pNilradical_eq_bot M p)
+
+end IsPRadical
 
 section PerfectRing.lift
 
@@ -387,19 +398,12 @@ section comp
 variable [PerfectRing N p] [IsPRadical j p]
 
 @[simp]
-theorem PerfectRing.lift_comp_lift_apply (x : L) :
-    lift j k p (lift i j p x) = lift i k p x := by
-  obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
-  rw [lift_apply i j p _ _ _ h, lift_apply i k p _ _ _ h]
-  refine (injective_frobenius N p).iterate n ?_
-  rw [← RingHom.map_iterate_frobenius, ← coe_iterateFrobenius, ← iterateFrobeniusEquiv_apply,
-    RingEquiv.apply_symm_apply, ← coe_iterateFrobenius, ← iterateFrobeniusEquiv_apply,
-    RingEquiv.apply_symm_apply, lift_comp_apply]
+theorem PerfectRing.lift_comp_lift : (lift j k p).comp (lift i j p) = lift i k p :=
+  IsPRadical.injective_comp_of_perfect _ i p (by ext; simp)
 
 @[simp]
-theorem PerfectRing.lift_comp_lift :
-    (lift j k p).comp (lift i j p) = lift i k p :=
-  RingHom.ext (lift_comp_lift_apply i j k p)
+theorem PerfectRing.lift_comp_lift_apply (x : L) : lift j k p (lift i j p x) = lift i k p x :=
+  congr($(lift_comp_lift i j k p) x)
 
 theorem PerfectRing.lift_comp_lift_apply_eq_self [PerfectRing L p] (x : L) :
     lift j i p (lift i j p x) = x := by
