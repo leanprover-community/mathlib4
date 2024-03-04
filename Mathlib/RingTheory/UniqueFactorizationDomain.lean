@@ -461,10 +461,11 @@ theorem UniqueFactorizationMonoid.of_exists_unique_irreducible_factors [CancelCo
 
 namespace UniqueFactorizationMonoid
 
-variable [CancelCommMonoidWithZero α] [DecidableEq α]
+variable [CancelCommMonoidWithZero α]
 
 variable [UniqueFactorizationMonoid α]
 
+open Classical in
 /-- Noncomputably determines the multiset of prime factors. -/
 noncomputable def factors (a : α) : Multiset α :=
   if h : a = 0 then 0 else Classical.choose (UniqueFactorizationMonoid.exists_prime_factors a h)
@@ -531,6 +532,7 @@ theorem exists_mem_factors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) : ∃ p, p �
   exact ⟨p, hp⟩
 #align unique_factorization_monoid.exists_mem_factors UniqueFactorizationMonoid.exists_mem_factors
 
+open Classical in
 theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     Multiset.Rel Associated (factors (x * y)) (factors x + factors y) := by
   refine'
@@ -569,7 +571,7 @@ theorem factors_pos (x : α) (hx : x ≠ 0) : 0 < factors x ↔ ¬IsUnit x := by
 #align unique_factorization_monoid.factors_pos UniqueFactorizationMonoid.factors_pos
 
 open BigOperators Multiset in
-theorem factors_pow_count_prod {x : α} (hx : x ≠ 0) :
+theorem factors_pow_count_prod [DecidableEq α] {x : α} (hx : x ≠ 0) :
     (∏ p in (factors x).toFinset, p ^ (factors x).count p) ~ᵤ x :=
   calc
   _ = prod (∑ a in toFinset (factors x), count a (factors x) • {a}) := by
@@ -581,7 +583,7 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-variable [CancelCommMonoidWithZero α] [DecidableEq α] [NormalizationMonoid α]
+variable [CancelCommMonoidWithZero α] [NormalizationMonoid α]
 
 variable [UniqueFactorizationMonoid α]
 
@@ -1487,7 +1489,7 @@ theorem prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=
 
 @[nontriviality]
 theorem factors_subsingleton [Subsingleton α] {a : Associates α} : a.factors = Option.none := by
-  convert @factors_0 _ _ _ _ _
+  convert @factors_0 _ _ _ _
 #align associates.factors_subsingleton Associates.factors_subsingleton
 
 theorem factors_eq_none_iff_zero {a : Associates α} : a.factors = Option.none ↔ a = 0 := by
