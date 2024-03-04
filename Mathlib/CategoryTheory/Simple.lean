@@ -63,8 +63,7 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
       haveI : Mono (f ≫ i.hom) := mono_comp _ _
       constructor
       · intro h w
-        have j : IsIso (f ≫ i.hom)
-        infer_instance
+        have j : IsIso (f ≫ i.hom) := by infer_instance
         rw [Simple.mono_isIso_iff_nonzero] at j
         subst w
         simp at j

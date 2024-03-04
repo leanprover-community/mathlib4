@@ -97,16 +97,14 @@ theorem toFin_le_toFin_of_le {n} {v₀ v₁ : BitVec n} (h : v₀ ≤ v₁) : v�
     exact h
 #align bitvec.to_fin_le_to_fin_of_le Std.BitVec.toFin_le_toFin_of_le
 
-theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin i ≤ ofFin j := by
-  exact h
+theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin i ≤ ofFin j := h
 #align bitvec.of_fin_le_of_fin_of_le Std.BitVec.ofFin_le_ofFin_of_le
 
 theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
-  Fin.eq_of_veq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
+  Fin.eq_of_val_eq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
 #align bitvec.to_fin_of_fin Std.BitVec.toFin_ofFin
 
-theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
-  rfl
+theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
 /-!
@@ -170,13 +168,8 @@ lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := 
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
 @[simp] lemma toFin_pow (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := rfl
 
-@[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
+lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
   apply toFin_inj.mpr; simp only [ofFin_natCast]
-
--- See Note [no_index around OfNat.ofNat]
-lemma toFin_ofNat (n : ℕ) :
-    toFin (no_index (OfNat.ofNat n : BitVec w)) = OfNat.ofNat n := by
-  simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod, Fin.ofNat']
 
 end
 

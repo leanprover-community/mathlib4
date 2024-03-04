@@ -170,7 +170,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
             lt_irrefl x (lt_of_lt_of_le hl (le_trans (iInf_le _ a) h))
       choose f hf using this
       refine le_trans ?_ (le_iSup _ f)
-      refine le_iInf fun a => le_of_lt (hf a)
+      exact le_iInf fun a => le_of_lt (hf a)
     else
       refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by
@@ -373,7 +373,7 @@ section CompleteDistribLattice
 
 variable [CompleteDistribLattice α] {a b : α} {s t : Set α}
 
--- Porting note: this is mysteriously slow. Minimised in
+-- Porting note (#11083): this is mysteriously slow. Minimised in
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Performance.20issue.20with.20.60CompleteBooleanAlgebra.60
 -- but not yet resolved.
 instance OrderDual.completeDistribLattice (α) [CompleteDistribLattice α] :

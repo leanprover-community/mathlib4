@@ -27,7 +27,7 @@ open Pointwise
 
 variable {α : Type*}
 
--- Porting note : Swapped the place of `CompleteLattice` and `ConditionallyCompleteLattice`
+-- Porting note: Swapped the place of `CompleteLattice` and `ConditionallyCompleteLattice`
 -- due to simpNF problem between `sSup_xx` `csSup_xx`.
 
 section CompleteLattice

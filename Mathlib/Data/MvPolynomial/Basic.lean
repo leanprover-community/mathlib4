@@ -101,7 +101,7 @@ section Instances
 
 instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq R] :
     DecidableEq (MvPolynomial σ R) :=
-  Finsupp.decidableEq
+  Finsupp.instDecidableEq
 #align mv_polynomial.decidable_eq_mv_polynomial MvPolynomial.decidableEqMvPolynomial
 
 instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
@@ -206,11 +206,11 @@ theorem C_apply : (C a : MvPolynomial σ R) = monomial 0 a :=
   rfl
 #align mv_polynomial.C_apply MvPolynomial.C_apply
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_0 : C 0 = (0 : MvPolynomial σ R) := map_zero _
 #align mv_polynomial.C_0 MvPolynomial.C_0
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
   rfl
 #align mv_polynomial.C_1 MvPolynomial.C_1
@@ -221,17 +221,17 @@ theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
   simp [C_apply, single_mul_single]
 #align mv_polynomial.C_mul_monomial MvPolynomial.C_mul_monomial
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_add : (C (a + a') : MvPolynomial σ R) = C a + C a' :=
   Finsupp.single_add _ _ _
 #align mv_polynomial.C_add MvPolynomial.C_add
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
   C_mul_monomial.symm
 #align mv_polynomial.C_mul MvPolynomial.C_mul
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 #align mv_polynomial.C_pow MvPolynomial.C_pow
@@ -345,7 +345,7 @@ theorem C_mul_X_eq_monomial {s : σ} {a : R} : C a * X s = monomial (Finsupp.sin
   rw [← C_mul_X_pow_eq_monomial, pow_one]
 #align mv_polynomial.C_mul_X_eq_monomial MvPolynomial.C_mul_X_eq_monomial
 
--- porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 theorem monomial_zero {s : σ →₀ ℕ} : monomial s (0 : R) = 0 :=
   Finsupp.single_zero _
 #align mv_polynomial.monomial_zero MvPolynomial.monomial_zero
@@ -395,6 +395,10 @@ theorem monomial_eq_monomial_iff {α : Type*} (a₁ a₂ : α →₀ ℕ) (b₁ 
 theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolynomial σ R) := by
   simp only [X_pow_eq_monomial, ← monomial_finsupp_sum_index, Finsupp.sum_single]
 #align mv_polynomial.monomial_eq MvPolynomial.monomial_eq
+
+@[simp]
+lemma prod_X_pow_eq_monomial : ∏ x in s.support, X x ^ s x = monomial s (1 : R) := by
+  simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
 
 theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (C a))
     (h_X : ∀ p n, M p → M (p * X n)) : ∀ s a, M (monomial s a) := by
@@ -819,6 +823,13 @@ theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0
 #align mv_polynomial.ne_zero_iff MvPolynomial.ne_zero_iff
 
 @[simp]
+theorem X_ne_zero [Nontrivial R] (s : σ) :
+    X (R := R) s ≠ 0 := by
+  rw [ne_zero_iff]
+  use Finsupp.single s 1
+  simp only [coeff_X, ne_eq, one_ne_zero, not_false_eq_true]
+
+@[simp]
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
   Finsupp.support_eq_empty
 #align mv_polynomial.support_eq_empty MvPolynomial.support_eq_empty
@@ -840,7 +851,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
       use ψ
       apply MvPolynomial.ext
       intro i
-      simp only [coeff_C_mul, coeff_sum, coeff_monomial, Finset.sum_ite_eq']
+      simp only [ψ, c', coeff_C_mul, coeff_sum, coeff_monomial, Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]
       · rw [not_mem_support_iff] at hi
@@ -848,8 +859,8 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
 #align mv_polynomial.C_dvd_iff_dvd_coeff MvPolynomial.C_dvd_iff_dvd_coeff
 
 @[simp] lemma isRegular_X : IsRegular (X n : MvPolynomial σ R) := by
-  suffices : IsLeftRegular (X n : MvPolynomial σ R)
-  · exact ⟨this, this.right_of_commute <| Commute.all _⟩
+  suffices IsLeftRegular (X n : MvPolynomial σ R) from
+    ⟨this, this.right_of_commute <| Commute.all _⟩
   intro P Q (hPQ : (X n) * P = (X n) * Q)
   ext i
   rw [← coeff_X_mul i n P, hPQ, coeff_X_mul i n Q]
@@ -1677,26 +1688,26 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     (hs : ∀ i ∈ p.support, f (p.coeff i) ∈ s) {v : σ → S} (hv : ∀ i, v i ∈ s) :
     MvPolynomial.eval₂ f v p ∈ s := by
   classical
-    replace hs : ∀ i, f (p.coeff i) ∈ s
-    · intro i
-      by_cases hi : i ∈ p.support
-      · exact hs i hi
-      · rw [MvPolynomial.not_mem_support_iff.1 hi, f.map_zero]
-        exact zero_mem s
-    induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
-    · simpa using hs 0
-    rw [eval₂_add, eval₂_monomial]
-    refine' add_mem (mul_mem _ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => _)
-    · have := hs a -- Porting note: was `simpa only [...]`
-      rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
-        if_pos rfl] at this
-    have := hs i
-    rw [coeff_add, coeff_monomial] at this
-    split_ifs at this with h
-    · subst h
-      rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
-      exact zero_mem _
-    · rwa [zero_add] at this
+  replace hs : ∀ i, f (p.coeff i) ∈ s := by
+    intro i
+    by_cases hi : i ∈ p.support
+    · exact hs i hi
+    · rw [MvPolynomial.not_mem_support_iff.1 hi, f.map_zero]
+      exact zero_mem s
+  induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
+  · simpa using hs 0
+  rw [eval₂_add, eval₂_monomial]
+  refine' add_mem (mul_mem _ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => _)
+  · have := hs a -- Porting note: was `simpa only [...]`
+    rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
+      if_pos rfl] at this
+  have := hs i
+  rw [coeff_add, coeff_monomial] at this
+  split_ifs at this with h
+  · subst h
+    rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
+    exact zero_mem _
+  · rwa [zero_add] at this
 #align mv_polynomial.eval₂_mem MvPolynomial.eval₂_mem
 
 theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p.coeff i ∈ s) {v : σ → S}
