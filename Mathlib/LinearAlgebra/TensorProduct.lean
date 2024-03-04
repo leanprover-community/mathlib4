@@ -90,6 +90,11 @@ namespace TensorProduct
 
 section Module
 
+-- porting note: This is added as a local instance for `SMul.aux`.
+-- For some reason type-class inference in Lean 3 unfolded this definition.
+def addMonoid : AddMonoid (M ⊗[R] N) :=
+  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
+
 protected instance add : Add (M ⊗[R] N) :=
   (addConGen (TensorProduct.Eqv R M N)).hasAdd
 
@@ -251,16 +256,12 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
 
--- porting note: This is added as a local instance for `SMul.aux`.
--- For some reason type-class inference in Lean 3 unfolded this definition.
-private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
-
-attribute [local instance] addMonoidWithWrongNSMul in
+attribute [local instance] addMonoid
 /-- Auxiliary function to defining scalar multiplication on tensor product. -/
 def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
   FreeAddMonoid.lift fun p : M × N => (r • p.1) ⊗ₜ p.2
 #align tensor_product.smul.aux TensorProduct.SMul.aux
+attribute [-instance] addMonoid
 
 theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
     SMul.aux r (.of (m, n)) = (r • m) ⊗ₜ[R] n :=
