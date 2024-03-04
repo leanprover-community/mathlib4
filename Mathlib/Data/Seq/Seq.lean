@@ -241,7 +241,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
     apply Subtype.eq; dsimp [tail]
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
--- porting note: needed universe annotation to avoid universe issues
+-- Porting note: needed universe annotation to avoid universe issues
 theorem head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
   unfold destruct head; cases get? s 0 <;> rfl
 #align stream.seq.head_eq_destruct Stream'.Seq.head_eq_destruct
@@ -295,7 +295,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  -- porting note: had to reshuffle `intro`
+  -- Porting note: had to reshuffle `intro`
   revert e; apply s.recOn _ fun b s' => _
   · intro e; injection e
   · intro b s' e
@@ -339,7 +339,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, get]
-  -- porting note: next two lines were `change`...`with`...
+  -- Porting note: next two lines were `change`...`with`...
   have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
   rw [h]
   dsimp [Corec.f]
@@ -746,12 +746,12 @@ theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_nil rfl
 #align stream.seq.join_nil Stream'.Seq.join_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 #align stream.seq.join_cons_nil Stream'.Seq.join_cons_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
   destruct_eq_cons <| by simp [join]

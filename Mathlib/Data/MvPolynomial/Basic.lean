@@ -89,7 +89,7 @@ def MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
 
 namespace MvPolynomial
 
--- porting note: because of `MvPolynomial.C` and `MvPolynomial.X` this linter throws
+-- Porting note: because of `MvPolynomial.C` and `MvPolynomial.X` this linter throws
 -- tons of warnings in this file, and it's easier to just disable them globally in the file
 set_option linter.uppercaseLean3 false
 
@@ -216,7 +216,7 @@ theorem C_1 : C 1 = (1 : MvPolynomial σ R) :=
 #align mv_polynomial.C_1 MvPolynomial.C_1
 
 theorem C_mul_monomial : C a * monomial s a' = monomial s (a * a') := by
-  -- porting note: this `show` feels like defeq abuse, but I can't find the appropriate lemmas
+  -- Porting note: this `show` feels like defeq abuse, but I can't find the appropriate lemmas
   show AddMonoidAlgebra.single _ _ * AddMonoidAlgebra.single _ _ = AddMonoidAlgebra.single _ _
   simp [C_apply, single_mul_single]
 #align mv_polynomial.C_mul_monomial MvPolynomial.C_mul_monomial
@@ -435,7 +435,7 @@ theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
       ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
         a ∉ f.support → b ≠ 0 → M f → M ((show (σ →₀ ℕ) →₀ R from monomial a b) + f)) :
     M p :=
-    -- porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
+    -- Porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
   Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
 #align mv_polynomial.induction_on''' MvPolynomial.induction_on'''
 
@@ -446,7 +446,7 @@ theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) 
         a ∉ f.support → b ≠ 0 → M f → M (monomial a b) →
           M ((show (σ →₀ ℕ) →₀ R from monomial a b) + f))
     (h_X : ∀ (p : MvPolynomial σ R) (n : σ), M p → M (p * MvPolynomial.X n)) : M p :=
-    -- porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
+    -- Porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
   induction_on''' p h_C fun a b f ha hb hf =>
     h_add_weak a b f ha hb hf <| induction_on_monomial h_C h_X a b
 #align mv_polynomial.induction_on'' MvPolynomial.induction_on''
@@ -461,12 +461,12 @@ theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h
 theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : ∀ r, f (C r) = g (C r)) (hX : ∀ i, f (X i) = g (X i)) : f = g := by
   refine AddMonoidAlgebra.ringHom_ext' ?_ ?_
-  -- porting note: this has high priority, but Lean still chooses `RingHom.ext`, why?
+  -- Porting note: this has high priority, but Lean still chooses `RingHom.ext`, why?
   -- probably because of the type synonym
   · ext x
     exact hC _
   · apply Finsupp.mulHom_ext'; intros x
-    -- porting note: `Finsupp.mulHom_ext'` needs to have increased priority
+    -- Porting note: `Finsupp.mulHom_ext'` needs to have increased priority
     apply MonoidHom.ext_mnat
     exact hX _
 #align mv_polynomial.ring_hom_ext MvPolynomial.ringHom_ext
@@ -540,7 +540,7 @@ theorem support_monomial [h : Decidable (a = 0)] :
     (monomial s a).support = if a = 0 then ∅ else {s} := by
   rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
-  -- porting note: the proof in Lean 3 wasn't fundamentally better and needed `by convert rfl`
+  -- Porting note: the proof in Lean 3 wasn't fundamentally better and needed `by convert rfl`
   -- the issue is the different decidability instances in the `ite` expressions
 #align mv_polynomial.support_monomial MvPolynomial.support_monomial
 
@@ -584,7 +584,7 @@ section Coeff
 /-- The coefficient of the monomial `m` in the multi-variable polynomial `p`. -/
 def coeff (m : σ →₀ ℕ) (p : MvPolynomial σ R) : R :=
   @DFunLike.coe ((σ →₀ ℕ) →₀ R) _ _ _ p m
-  -- porting note: I changed this from `@CoeFun.coe _ _ (MonoidAlgebra.coeFun _ _) p m` because
+  -- Porting note: I changed this from `@CoeFun.coe _ _ (MonoidAlgebra.coeFun _ _) p m` because
   -- I think it should work better syntactically. They are defeq.
 #align mv_polynomial.coeff MvPolynomial.coeff
 
@@ -1267,7 +1267,7 @@ theorem eval₂_eq_eval_map (g : σ → S₁) (p : MvPolynomial σ R) : p.eval�
   unfold map eval; simp only [coe_eval₂Hom]
 
   have h := eval₂_comp_left (eval₂Hom (RingHom.id S₁) g) (C.comp f) X p
-  -- porting note: the Lean 3 version of `h` was full of metavariables which
+  -- Porting note: the Lean 3 version of `h` was full of metavariables which
   -- were later unified during `rw [h]`. Also needed to add `-eval₂_id`.
   dsimp [-eval₂_id] at h
   rw [h]
@@ -1429,7 +1429,7 @@ def mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ �
       have h₁ : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
       have h₂ : algebraMap R (MvPolynomial σ S₂) r = C (algebraMap R S₂ r) := rfl
       simp_rw [OneHom.toFun_eq_coe]
-      -- porting note: we're missing some `simp` lemmas like `MonoidHom.coe_toOneHom`
+      -- Porting note: we're missing some `simp` lemmas like `MonoidHom.coe_toOneHom`
       change @DFunLike.coe (_ →+* _) _ _ _ _ _ = _
       rw [h₁, h₂, map, eval₂Hom_C, RingHom.comp_apply, AlgHom.coe_toRingHom, AlgHom.commutes] }
 #align mv_polynomial.map_alg_hom MvPolynomial.mapAlgHom

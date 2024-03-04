@@ -40,7 +40,7 @@ Rearranging gives the result.
 -/
 
 
--- porting note: `A` already upper case
+-- Porting note: `A` already upper case
 set_option linter.uppercaseLean3 false
 
 open scoped Classical
@@ -140,7 +140,7 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
   · rw [Finset.mem_image]; refine' ⟨⟨c, p⟩, _⟩; aesop
-  -- porting note: this used to be `finish`
+  -- Porting note: this used to be `finish`
   · simp only [Finset.mem_filter, Finset.mem_image, Prod.exists] at h
     rcases h with ⟨_, ⟨_, ⟨_, ⟨h, _⟩⟩⟩⟩
     cases h; aesop
@@ -230,7 +230,7 @@ end
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff]
-  -- porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
+  -- Porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
   · convert Nat.cast_le (α := ℚ)
     · aesop
     · norm_cast

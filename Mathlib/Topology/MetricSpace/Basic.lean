@@ -287,7 +287,7 @@ instance : MetricSpace Empty where
   dist_self _ := rfl
   dist_comm _ _ := rfl
   edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- porting note: should not be needed
+  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
   eq_of_dist_eq_zero _ := Subsingleton.elim _ _
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
@@ -298,7 +298,7 @@ instance : MetricSpace PUnit.{u + 1} where
   dist_self _ := rfl
   dist_comm _ _ := rfl
   edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- porting note: should not be needed
+  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
   eq_of_dist_eq_zero _ := Subsingleton.elim _ _
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
@@ -348,7 +348,7 @@ section SecondCountable
 
 open TopologicalSpace
 
--- porting note: todo: use `Countable` instead of `Encodable`
+-- Porting note: todo: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
 theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]

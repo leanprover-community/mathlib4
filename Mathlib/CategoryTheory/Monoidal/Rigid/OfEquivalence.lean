@@ -55,7 +55,7 @@ def hasLeftDualOfEquivalence [IsEquivalence F.toFunctor] (X : C) [HasLeftDual (F
     HasLeftDual X where
   leftDual := F.toFunctor.inv.obj (ᘁ(F.obj X))
   exact := by
-    -- porting note: in Lean3, `apply exactPairingOfFullyFaithful F _ _` automatically
+    -- Porting note: in Lean3, `apply exactPairingOfFullyFaithful F _ _` automatically
     -- created the goals for `ExactPairing` type class
     refine @exactPairingOfFullyFaithful _ _ _ _ _ _ F _ _ _ _ ?_
     refine @exactPairingCongrLeft _ _ _ _ _ _ ?_ (F.toFunctor.asEquivalence.counitIso.app _)

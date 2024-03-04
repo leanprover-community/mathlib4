@@ -89,7 +89,7 @@ theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈
   (mem_graph_iff.1 h).1
 #align finsupp.apply_eq_of_mem_graph Finsupp.apply_eq_of_mem_graph
 
-@[simp 1100] -- porting note: change priority to appease `simpNF`
+@[simp 1100] -- Porting note: change priority to appease `simpNF`
 theorem not_mem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
 #align finsupp.not_mem_graph_snd_zero Finsupp.not_mem_graph_snd_zero
@@ -211,7 +211,7 @@ def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N
     where
   toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
   map_zero' := mapRange_zero
-  map_add' a b := by dsimp only; exact mapRange_add f.map_add _ _; -- porting note: `dsimp` needed
+  map_add' a b := by dsimp only; exact mapRange_add f.map_add _ _; -- Porting note: `dsimp` needed
 #align finsupp.map_range.add_monoid_hom Finsupp.mapRange.addMonoidHom
 
 @[simp]
@@ -881,7 +881,7 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    simp only -- porting note: necessary to beta reduce to activate `split_ifs`
+    simp only -- Porting note: necessary to beta reduce to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
         tauto
@@ -985,7 +985,7 @@ theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ �
   rw [frange, @Finset.mem_image _ _ (Classical.decEq _) _ f.support]
   exact ⟨fun ⟨x, hx1, hx2⟩ => ⟨hx2 ▸ mem_support_iff.1 hx1, x, hx2⟩, fun ⟨hy, x, hx⟩ =>
     ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
-  -- porting note: maybe there is a better way to fix this, but (1) it wasn't seeing past `frange`
+  -- Porting note: maybe there is a better way to fix this, but (1) it wasn't seeing past `frange`
   -- the definition, and (2) it needed the `Classical.decEq` instance again.
 #align finsupp.mem_frange Finsupp.mem_frange
 
@@ -1588,7 +1588,7 @@ theorem smul_single [Zero M] [SMulZeroClass R M] (c : R) (a : α) (b : M) :
   mapRange_single
 #align finsupp.smul_single Finsupp.smul_single
 
--- porting note: removed `simp` because `simpNF` can prove it.
+-- Porting note: removed `simp` because `simpNF` can prove it.
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
     c • Finsupp.single a b = Finsupp.single a (c * b) :=
   smul_single _ _ _
@@ -1664,7 +1664,7 @@ def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
       simp only
       show singleAddHom a (k • m) = k • singleAddHom a m
       change Finsupp.single a (k • m) = k • (Finsupp.single a m)
-      -- porting note: because `singleAddHom_apply` is missing
+      -- Porting note: because `singleAddHom_apply` is missing
       simp only [smul_single] }
 #align finsupp.distrib_mul_action_hom.single Finsupp.DistribMulActionHom.single
 
@@ -1843,7 +1843,7 @@ This is the `Finsupp` version of `Sigma.curry`.
 -/
 def split (i : ι) : αs i →₀ M :=
   l.comapDomain (Sigma.mk i) fun _ _ _ _ hx => heq_iff_eq.1 (Sigma.mk.inj_iff.mp hx).2
-  -- porting note: it seems like Lean 4 never generated the `Sigma.mk.inj` lemma?
+  -- Porting note: it seems like Lean 4 never generated the `Sigma.mk.inj` lemma?
 #align finsupp.split Finsupp.split
 
 theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by

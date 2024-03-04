@@ -55,7 +55,7 @@ def oreEqv : Setoid (R × S) where
       rcases oreCondition (s : R) s' with ⟨r₂, s₂, h₁⟩
       rcases oreCondition r₂ u with ⟨r₃, s₃, h₂⟩
       have : (s : R) * ((v : R) * r₃) = (s : R) * (s₂ * s₃) := by
-        -- porting note: the proof used `assoc_rw`
+        -- Porting note: the proof used `assoc_rw`
         rw [← mul_assoc _ (s₂ : R), h₁, mul_assoc, h₂, ← mul_assoc, ← hsu, mul_assoc]
       rcases ore_left_cancel (v * r₃) (s₂ * s₃) s this with ⟨w, hw⟩
       refine ⟨s₂ * s₃ * w, u * r₃ * w, ?_, ?_⟩ <;> simp only [Submonoid.coe_mul, ← hw]
@@ -129,7 +129,7 @@ those factors expand to equal elements of `R`. -/
 protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : r * t = r' * t) :
     r₁ * r * r₂ /ₒ s = r₁ * r' * r₂ /ₒ s := by
   rcases oreCondition r₂ t with ⟨r₂', t', hr₂⟩
-  -- porting note: todo: use `assoc_rw`?
+  -- Porting note: todo: use `assoc_rw`?
   calc
     r₁ * r * r₂ /ₒ s = r₁ * r * r₂ * t' /ₒ (s * t') := OreLocalization.expand (r₁ * r * r₂) s t' _
     _ = r₁ * r * (r₂ * t') /ₒ (s * t') := by simp [← mul_assoc]

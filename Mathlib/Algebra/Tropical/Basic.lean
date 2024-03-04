@@ -100,7 +100,7 @@ theorem untrop_trop (x : R) : untrop (trop x) = x :=
   rfl
 #align tropical.untrop_trop Tropical.untrop_trop
 
---Porting note: New attribute seems to fix things
+-- Porting note: New attribute seems to fix things
 attribute [irreducible] Tropical
 
 theorem leftInverse_trop : Function.LeftInverse (trop : R → Tropical R) untrop :=
@@ -341,7 +341,7 @@ theorem add_eq_right_iff {x y : Tropical R} : x + y = y ↔ y ≤ x := by
   rw [trop_add_def, trop_eq_iff_eq_untrop, ← untrop_le_iff, min_eq_right_iff]
 #align tropical.add_eq_right_iff Tropical.add_eq_right_iff
 
---Porting note: removing `simp`. `simp` can prove it
+-- Porting note: removing `simp`. `simp` can prove it
 theorem add_self (x : Tropical R) : x + x = x :=
   untrop_injective (min_eq_right le_rfl)
 #align tropical.add_self Tropical.add_self
@@ -574,7 +574,7 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 -- Requires `zero_eq_bot` to be true
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
---Porting note: removing @[simp], `simp` can prove it
+-- Porting note: removing @[simp], `simp` can prove it
 theorem mul_eq_zero_iff {R : Type*} [LinearOrderedAddCommMonoid R] {a b : Tropical (WithTop R)} :
     a * b = 0 ↔ a = 0 ∨ b = 0 := by simp [← untrop_inj_iff, WithTop.add_eq_top]
 #align tropical.mul_eq_zero_iff Tropical.mul_eq_zero_iff

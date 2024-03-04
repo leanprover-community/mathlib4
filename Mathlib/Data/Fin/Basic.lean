@@ -151,7 +151,7 @@ theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   ext_iff.not
 #align fin.ne_iff_vne Fin.ne_iff_vne
 
--- porting note: I'm not sure if this comment still applies.
+-- Porting note: I'm not sure if this comment still applies.
 -- built-in reduction doesn't always work
 @[simp, nolint simpNF]
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
@@ -297,7 +297,7 @@ instance {n : ℕ} : WellFoundedRelation (Fin n) :=
 def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
   ⟨i % n, mod_lt _ <| NeZero.pos n⟩
 #align fin.of_nat' Fin.ofNat''ₓ
--- porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
+-- Porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
 -- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
 
 instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
@@ -421,7 +421,7 @@ theorem le_rev_iff {i j : Fin n} : i ≤ rev j ↔ j ≤ rev i := by
 #align fin.last Fin.last
 #align fin.coe_last Fin.val_last
 
--- porting note: this is now syntactically equal to `val_last`
+-- Porting note: this is now syntactically equal to `val_last`
 #align fin.last_val Fin.val_last
 #align fin.le_last Fin.le_last
 
@@ -465,7 +465,7 @@ theorem coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i 
   refine' le_antisymm (forall_lt_iff_le.1 fun j hj => _) (forall_lt_iff_le.1 fun j hj => _)
   · have := e.symm.lt_iff_lt.2 (mk_lt_of_lt_val hj)
     rw [e.symm_apply_apply] at this
-    -- porting note: convert was abusing definitional equality
+    -- Porting note: convert was abusing definitional equality
     have : _ < i := this
     convert this
     simpa using h _ this (e.symm _).is_lt
@@ -518,7 +518,7 @@ theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 #align fin.coe_one' Fin.val_one'
 
---Porting note: Delete this lemma after porting
+-- Porting note: Delete this lemma after porting
 theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
   rfl
 #align fin.one_val Fin.val_one''
@@ -531,7 +531,7 @@ instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
   simp [← Nat.one_eq_succ_zero, Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
--- porting note: here and in the next lemma, had to use `← Nat.one_eq_succ_zero`.
+-- Porting note: here and in the next lemma, had to use `← Nat.one_eq_succ_zero`.
 #align fin.nontrivial_iff_two_le Fin.nontrivial_iff_two_le
 
 #align fin.subsingleton_iff_le_one Fin.subsingleton_iff_le_one
@@ -544,12 +544,12 @@ instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add_comm := by simp [ext_iff, add_def, add_comm]
 #align fin.add_comm_semigroup Fin.addCommSemigroup
 
---Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
+-- Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
   simp only [add_def, val_zero', add_zero, mod_eq_of_lt (is_lt k)]
 #align fin.add_zero Fin.add_zero
 
---Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
+-- Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
   simp [ext_iff, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
@@ -653,7 +653,7 @@ end Bit
 
 #align fin.val_two Fin.val_two
 
---- porting note: syntactically the same as the above
+--- Porting note: syntactically the same as the above
 #align fin.coe_two Fin.val_two
 
 section OfNatCoe
@@ -665,7 +665,7 @@ theorem ofNat''_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n)
 
 @[simp] lemma val_nat_cast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
--- porting note: is this the right name for things involving `Nat.cast`?
+-- Porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
 whose value is the original number.  -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
@@ -678,10 +678,10 @@ theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a 
   ext <| val_cast_of_lt a.isLt
 #align fin.coe_val_eq_self Fin.cast_val_eq_self
 
--- porting note: this is syntactically the same as `val_cast_of_lt`
+-- Porting note: this is syntactically the same as `val_cast_of_lt`
 #align fin.coe_coe_of_lt Fin.val_cast_of_lt
 
--- porting note: this is syntactically the same as `cast_val_of_lt`
+-- Porting note: this is syntactically the same as `cast_val_of_lt`
 #align fin.coe_coe_eq_self Fin.cast_val_eq_self
 
 @[simp] lemma nat_cast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp

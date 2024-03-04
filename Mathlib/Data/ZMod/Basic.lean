@@ -598,7 +598,7 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
   rw [← ZMod.cast_zero (n := m)]
   exact Injective.eq_iff' (cast_injective_of_le h) rfl
 
---Porting note: commented
+-- Porting note: commented
 -- attribute [local semireducible] Int.NonNeg
 
 @[simp]
@@ -1180,7 +1180,7 @@ theorem valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
   · simp [valMinAbs_def_pos, val_nat_cast, Nat.mod_eq_of_lt ha', ha.not_le]
 #align zmod.val_min_abs_nat_cast_of_half_lt ZMod.valMinAbs_natCast_of_half_lt
 
--- porting note: There was an extraneous `nat_` in the mathlib3 name
+-- Porting note: There was an extraneous `nat_` in the mathlib3 name
 @[simp]
 theorem valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by
   refine' ⟨fun ha => _, valMinAbs_natCast_of_le_half⟩
@@ -1298,7 +1298,7 @@ section lift
 variable (n) {A : Type*} [AddGroup A]
 
 /-- The map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`. -/
---@[simps] --Porting note: removed, simplified LHS of `lift_coe` to something worse.
+--@[simps] -- Porting note: removed, simplified LHS of `lift_coe` to something worse.
 def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
   (Equiv.subtypeEquivRight <| by
         intro f

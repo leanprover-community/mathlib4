@@ -1780,11 +1780,11 @@ theorem map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f)
     congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
 #align multiset.map_union Multiset.map_union
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp] theorem zero_union : 0 ∪ s = s := by
   simp [union_def]
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp] theorem union_zero : s ∪ 0 = s := by
   simp [union_def]
 
@@ -2366,11 +2366,11 @@ theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [Decidabl
       add_comm]
 #align multiset.countp_map Multiset.countP_map
 
--- porting note: `Lean.Internal.coeM` forces us to type-ascript `{a // a ∈ s}`
+-- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{a // a ∈ s}`
 lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} ↦ p a) = s.countP p :=
   Quotient.inductionOn s fun l => by
     simp only [quot_mk_to_coe, coe_countP]
-    -- porting note: was
+    -- Porting note: was
     -- rw [quot_mk_to_coe, coe_attach, coe_countP]
     -- exact List.countP_attach _ _
     rw [coe_attach]

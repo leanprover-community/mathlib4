@@ -75,7 +75,7 @@ abbrev CartesianClosed (C : Type u) [Category.{v} C] [HasFiniteProducts C] :=
   MonoidalClosed C
 #align category_theory.cartesian_closed CategoryTheory.CartesianClosed
 
--- porting note: added to ease the port of `CategoryTheory.Closed.Types`
+-- Porting note: added to ease the port of `CategoryTheory.Closed.Types`
 /-- Constructor for `CartesianClosed C`. -/
 def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
     (h : ∀ X, IsLeftAdjoint (@MonoidalCategory.tensorLeft _ _
@@ -109,7 +109,7 @@ abbrev coev : 𝟭 C ⟶ prod.functor.obj A ⋙ exp A :=
   ihom.coev A
 #align category_theory.exp.coev CategoryTheory.exp.coev
 
--- porting note: notation fails to elaborate with `quotPrecheck` on.
+-- Porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
 /-- Morphisms obtained using an exponentiable object. -/
 notation:20 A " ⟹ " B:19 => (exp A).obj B
@@ -130,7 +130,7 @@ def delabPrefunctorObjExp : Delab := do
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
--- porting note: notation fails to elaborate with `quotPrecheck` on.
+-- Porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
 /-- Morphisms from an exponentiable object. -/
 notation:30 B " ^^ " A:30 => (exp A).obj B
@@ -212,12 +212,12 @@ theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
   (Closed.isAdj.adj.homEquiv _ _).right_inv f
 #align category_theory.cartesian_closed.curry_uncurry CategoryTheory.CartesianClosed.curry_uncurry
 
--- porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
+-- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem curry_eq_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
 #align category_theory.cartesian_closed.curry_eq_iff CategoryTheory.CartesianClosed.curry_eq_iff
 
--- porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
+-- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem eq_curry_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
 #align category_theory.cartesian_closed.eq_curry_iff CategoryTheory.CartesianClosed.eq_curry_iff

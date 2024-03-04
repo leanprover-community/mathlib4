@@ -123,14 +123,14 @@ attribute [to_additive (attr := simp)] Subgroup.zpow_mem_zpowers
 attribute [to_additive (attr := simp)] Subgroup.npow_mem_zpowers
 #align add_subgroup.nsmul_mem_zmultiples AddSubgroup.nsmul_mem_zmultiples
 
---Porting note: increasing simp priority. Better lemma than `Subtype.forall`
+-- Porting note: increasing simp priority. Better lemma than `Subtype.forall`
 attribute [to_additive (attr := simp 1100)] Subgroup.forall_zpowers
 #align add_subgroup.forall_zmultiples AddSubgroup.forall_zmultiples
 
 attribute [to_additive] Subgroup.forall_mem_zpowers
 #align add_subgroup.forall_mem_zmultiples AddSubgroup.forall_mem_zmultiples
 
---Porting note: increasing simp priority. Better lemma than `Subtype.exists`
+-- Porting note: increasing simp priority. Better lemma than `Subtype.exists`
 attribute [to_additive (attr := simp 1100)] Subgroup.exists_zpowers
 #align add_subgroup.exists_zmultiples AddSubgroup.exists_zmultiples
 

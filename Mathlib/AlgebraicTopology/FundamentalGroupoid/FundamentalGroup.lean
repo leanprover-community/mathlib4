@@ -47,7 +47,7 @@ namespace FundamentalGroup
 
 attribute [local instance] Path.Homotopic.setoid
 
--- porting note: removed this attribute
+-- Porting note: removed this attribute
 --attribute [local reducible] FundamentalGroupoid
 
 /-- Get an isomorphism between the fundamental groups at two points given a path -/

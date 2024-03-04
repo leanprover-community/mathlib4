@@ -65,7 +65,7 @@ protected def hasSups : HasSups (Set α) :=
 #align set.has_sups Set.hasSups
 
 scoped[SetFamily] attribute [instance] Set.hasSups
--- porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
+-- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
 -- instance
 open SetFamily
 
@@ -233,7 +233,7 @@ protected def hasInfs : HasInfs (Set α) :=
 #align set.has_infs Set.hasInfs
 
 scoped[SetFamily] attribute [instance] Set.hasInfs
--- porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
+-- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
 -- instance
 open SetFamily
 

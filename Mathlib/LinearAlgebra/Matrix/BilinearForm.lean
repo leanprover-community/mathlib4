@@ -84,7 +84,7 @@ def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Ma
 
 @[simp]
 theorem BilinForm.toMatrixAux_apply (B : BilinForm R₂ M₂) (b : n → M₂) (i j : n) :
-    -- porting note: had to hint the base ring even though it should be clear from context...
+    -- Porting note: had to hint the base ring even though it should be clear from context...
     BilinForm.toMatrixAux (R₂ := R₂) b B i j = B (b i) (b j) :=
   LinearMap.toMatrix₂Aux_apply (toLin B) _ _ _ _
 #align bilin_form.to_matrix_aux_apply BilinForm.toMatrixAux_apply
@@ -92,7 +92,7 @@ theorem BilinForm.toMatrixAux_apply (B : BilinForm R₂ M₂) (b : n → M₂) (
 variable [Fintype n] [Fintype o]
 
 theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R₂)) :
-    -- porting note: had to hint the base ring even though it should be clear from context...
+    -- Porting note: had to hint the base ring even though it should be clear from context...
     Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₂ := R₂)
       (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
   rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux, coe_comp, Function.comp_apply,
@@ -118,7 +118,7 @@ def BilinForm.toMatrix' : BilinForm R₂ (n → R₂) ≃ₗ[R₂] Matrix n n R�
 
 @[simp]
 theorem BilinForm.toMatrixAux_stdBasis (B : BilinForm R₂ (n → R₂)) :
-    -- porting note: had to hint the base ring even though it should be clear from context...
+    -- Porting note: had to hint the base ring even though it should be clear from context...
     BilinForm.toMatrixAux (R₂ := R₂) (fun j => stdBasis R₂ (fun _ => R₂) j 1) B =
       BilinForm.toMatrix' B :=
   rfl

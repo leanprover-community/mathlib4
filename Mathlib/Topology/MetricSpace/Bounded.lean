@@ -316,7 +316,7 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
   isCompact_of_isClosed_isBounded isClosed_closure h.closure
 #align metric.bounded.is_compact_closure Bornology.IsBounded.isCompact_closure
 
--- porting note: todo: assume `[MetricSpace α]` instead of `[PseudoMetricSpace α] [T2Space α]`
+-- Porting note: todo: assume `[MetricSpace α]` instead of `[PseudoMetricSpace α] [T2Space α]`
 /-- The **Heine–Borel theorem**:
 In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
 theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :

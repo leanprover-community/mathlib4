@@ -63,7 +63,7 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
             (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
             ENNReal.toReal_nonneg)
         (fun n => _) hf) _
-  -- porting note: `refine` was able to find that on its own before
+  -- Porting note: `refine` was able to find that on its own before
   · intro n
     exact ⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩
   · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel', ENNReal.toReal_ofReal zero_le_one,

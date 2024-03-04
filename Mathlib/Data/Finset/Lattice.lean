@@ -607,7 +607,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
       fun h a g ha hg => _⟩
   -- TODO: This `have` must be named to prevent it being shadowed by the internal `this` in `simpa`
   have aux : ∀ j : { x // x ∈ s }, ↑j ≠ i := fun j : s => ne_of_mem_of_not_mem j.2 hi
-  -- porting note: `simpa` doesn't support placeholders in proof terms
+  -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
   simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
@@ -1766,7 +1766,7 @@ theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
   -- Porting note: old proof `convert @max_erase_ne_self αᵒᵈ _ _ _`
   convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
-  apply congr_arg -- porting note: forces unfolding to see `Finset.min` is `Finset.max`
+  apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
   congr!
   · ext; simp only [mem_map_equiv]; exact Iff.rfl
 #align finset.min_erase_ne_self Finset.min_erase_ne_self

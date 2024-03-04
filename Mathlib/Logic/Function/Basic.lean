@@ -52,7 +52,7 @@ theorem id_def : @id α = fun x ↦ x :=
   rfl
 #align function.id_def Function.id_def
 
--- porting note: `Function.onFun` is now reducible
+-- Porting note: `Function.onFun` is now reducible
 -- @[simp]
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl

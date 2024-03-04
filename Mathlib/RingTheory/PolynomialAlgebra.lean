@@ -49,7 +49,7 @@ namespace PolyEquivTensor
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
 as a bilinear function of two arguments.
 -/
--- porting note: was  `@[simps apply_apply]`
+-- Porting note: was  `@[simps apply_apply]`
 @[simps! apply_apply]
 def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
   LinearMap.toSpanSingleton A _ (aeval (Polynomial.X : A[X])).toLinearMap

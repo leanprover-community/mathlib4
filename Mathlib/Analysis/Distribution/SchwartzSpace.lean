@@ -87,7 +87,7 @@ namespace SchwartzMap
 
 open SchwartzSpace
 
--- porting note: removed
+-- Porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
 instance instFunLike : FunLike 𝓢(E, F) E F where

@@ -75,12 +75,12 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simp [hl, h0]
 #align equiv.perm.cycle_type_eq Equiv.Perm.cycleType_eq
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
   simp [cycleType_def, cycleFactorsFinset_eq_empty_iff]
 #align equiv.perm.cycle_type_eq_zero Equiv.Perm.cycleType_eq_zero
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem cycleType_one : (1 : Perm α).cycleType = 0 := cycleType_eq_zero.2 rfl
 #align equiv.perm.cycle_type_one Equiv.Perm.cycleType_one
 
@@ -126,7 +126,7 @@ theorem Disjoint.cycleType {σ τ : Perm α} (h : Disjoint σ τ) :
   exact Finset.disjoint_val.2 h.disjoint_cycleFactorsFinset
 #align equiv.perm.disjoint.cycle_type Equiv.Perm.Disjoint.cycleType
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
     (fun σ hσ => by simp only [hσ.cycleType, hσ.inv.cycleType, support_inv])
@@ -135,7 +135,7 @@ theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
         add_comm]
 #align equiv.perm.cycle_type_inv Equiv.Perm.cycleType_inv
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cycleType := by
   induction σ using cycle_induction_on with
   | base_one => simp
@@ -168,7 +168,7 @@ theorem sign_of_cycleType (f : Perm α) :
     simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
 #align equiv.perm.sign_of_cycle_type Equiv.Perm.sign_of_cycleType
 
-@[simp] -- porting note: new attr
+@[simp] -- Porting note: new attr
 theorem lcm_cycleType (σ : Perm α) : σ.cycleType.lcm = orderOf σ := by
   induction σ using cycle_induction_on with
   | base_one => simp

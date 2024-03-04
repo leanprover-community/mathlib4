@@ -112,7 +112,7 @@ theorem hom_ext_iff {P Q : Karoubi C} {f g : P ⟶ Q} : f = g ↔ f.f = g.f := b
   · apply Hom.ext
 #align category_theory.idempotents.karoubi.hom_ext CategoryTheory.Idempotents.Karoubi.hom_ext_iff
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {P Q : Karoubi C} (f g : P ⟶ Q) (h : f.f = g.f) : f = g := by
   simpa [hom_ext_iff] using h
@@ -131,7 +131,7 @@ instance coe : CoeTC C (Karoubi C) :=
   ⟨fun X => ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
 #align category_theory.idempotents.karoubi.coe CategoryTheory.Idempotents.Karoubi.coe
 
--- porting note: removed @[simp] as the linter complains
+-- Porting note: removed @[simp] as the linter complains
 theorem coe_X (X : C) : (X : Karoubi C).X = X := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.idempotents.karoubi.coe_X CategoryTheory.Idempotents.Karoubi.coe_X

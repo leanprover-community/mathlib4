@@ -50,7 +50,7 @@ def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
 
 /-- The complex exponential function, defined via its Taylor series -/
 --@[pp_nodot] Porting note: removed
---Porting note: removed `irreducible` attribute, so I can prove things
+-- Porting note: removed `irreducible` attribute, so I can prove things
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 #align complex.exp Complex.exp
@@ -162,7 +162,7 @@ variable (x y : ℂ)
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine' lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => _⟩
-  convert (config := .unfoldSameFun) ε0 -- porting note: ε0 : ε > 0 but goal is _ < ε
+  convert (config := .unfoldSameFun) ε0 -- Porting note: ε0 : ε > 0 but goal is _ < ε
   cases' j with j j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
@@ -195,7 +195,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   exact cauchy_product (isCauSeq_abs_exp x) (isCauSeq_exp y)
 #align complex.exp_add Complex.exp_add
 
---Porting note: New definition
+-- Porting note: New definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
   { toFun := fun z => exp (Multiplicative.toAdd z),
@@ -324,7 +324,7 @@ theorem cosh_sub : cosh (x - y) = cosh x * cosh y - sinh x * sinh y := by
 
 theorem sinh_conj : sinh (conj x) = conj (sinh x) := by
   rw [sinh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_sub, sinh, map_div₀]
-  --Porting note: not nice
+  -- Porting note: not nice
   simp [← one_add_one_eq_two]
 #align complex.sinh_conj Complex.sinh_conj
 
@@ -348,7 +348,7 @@ theorem sinh_ofReal_re (x : ℝ) : (sinh x).re = Real.sinh x :=
 
 theorem cosh_conj : cosh (conj x) = conj (cosh x) := by
   rw [cosh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_add, cosh, map_div₀]
-  --Porting note: not nice
+  -- Porting note: not nice
   simp [← one_add_one_eq_two]
 #align complex.cosh_conj Complex.cosh_conj
 
@@ -816,7 +816,7 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 #align real.exp_add Real.exp_add
 
---Porting note: New definition
+-- Porting note: New definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
   { toFun := fun x => exp (Multiplicative.toAdd x),
@@ -1394,7 +1394,7 @@ nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m in range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : Complex.abs x ≤ 1 := mod_cast hx
   convert exp_bound hxc hn using 2 <;>
-  --Porting note: was `norm_cast`
+  -- Porting note: was `norm_cast`
   simp only [← abs_ofReal, ← ofReal_sub, ← ofReal_exp, ← ofReal_sum, ← ofReal_pow,
     ← ofReal_div, ← ofReal_nat_cast]
 #align real.exp_bound Real.exp_bound
@@ -1413,7 +1413,7 @@ theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n
 
 theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| := by
   have : |x| ≤ 1 := mod_cast hx
-  --Porting note: was
+  -- Porting note: was
   --exact_mod_cast Complex.abs_exp_sub_one_le (x := x) this
   have := Complex.abs_exp_sub_one_le (x := x) (by simpa using this)
   rw [← ofReal_exp, ← ofReal_one, ← ofReal_sub, abs_ofReal, abs_ofReal] at this
@@ -1422,7 +1422,7 @@ theorem abs_exp_sub_one_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1| ≤ 2 * |x| 
 
 theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| ≤ x ^ 2 := by
   rw [← _root_.sq_abs]
-  --Porting note: was
+  -- Porting note: was
   -- exact_mod_cast Complex.abs_exp_sub_one_sub_id_le this
   have : Complex.abs x ≤ 1 := mod_cast hx
   have := Complex.abs_exp_sub_one_sub_id_le this

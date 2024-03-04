@@ -50,7 +50,7 @@ namespace SimplexCategory
 section
 
 
--- porting note: the definition of `SimplexCategory` is made irreducible below
+-- Porting note: the definition of `SimplexCategory` is made irreducible below
 /-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
@@ -153,7 +153,7 @@ instance smallCategory : SmallCategory.{0} SimplexCategory where
   comp f g := SimplexCategory.Hom.comp g f
 #align simplex_category.small_category SimplexCategory.smallCategory
 
--- porting note: added because `Hom.ext'` is not triggered automatically
+-- Porting note: added because `Hom.ext'` is not triggered automatically
 @[ext]
 theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
@@ -164,7 +164,7 @@ def const (x : SimplexCategory) (i : Fin (x.len + 1)) : ([0] : SimplexCategory) 
   Hom.mk <| ⟨fun _ => i, by tauto⟩
 #align simplex_category.const SimplexCategory.const
 
--- porting note: removed @[simp] as the linter complains
+-- Porting note: removed @[simp] as the linter complains
 theorem const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
     const x i ≫ f = const y (f.toOrderHom i) :=
   rfl

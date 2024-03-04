@@ -46,7 +46,7 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
     xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
 #align nat.xgcd_aux Nat.xgcdAux
 
--- porting note: these are not in mathlib3; these equation lemmas are to fix
+-- Porting note: these are not in mathlib3; these equation lemmas are to fix
 -- complaints by the Lean 4 `unusedHavesSuffices` linter obtained when `simp [xgcdAux]` is used.
 theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 

@@ -244,7 +244,7 @@ variable (R)
 
 /-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
--- porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
+-- Porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
 --@[simps? (config := .asFn)]
 def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
@@ -255,7 +255,7 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDFinsupp_add }
 #align finsupp_lequiv_dfinsupp finsuppLequivDFinsupp
 
--- porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
+-- Porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
@@ -268,7 +268,7 @@ theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommM
     ↑(LinearEquiv.symm (finsuppLequivDFinsupp (ι := ι) (M := M) R)) = DFinsupp.toFinsupp :=
   rfl
 
--- porting note: moved noncomputable declaration into section begin
+-- Porting note: moved noncomputable declaration into section begin
 noncomputable section Sigma
 
 /-! ### Stronger versions of `Finsupp.split` -/

@@ -292,12 +292,12 @@ set_option linter.uppercaseLean3 false in
 def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →ₗ[R] Q where
   toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
-    -- porting note: a single simp took care of the goal before reenableeta
+    -- Porting note: a single simp took care of the goal before reenableeta
     simp_rw [← (extensionOfMax i f).toLinearPMap.map_add]
     congr
     apply add_smul
   map_smul' z1 (z2 : {x // x ∈ ideal i f y}) := by
-    -- porting note: a single simp took care of the goal before reenableeta
+    -- Porting note: a single simp took care of the goal before reenableeta
     simp_rw [← (extensionOfMax i f).toLinearPMap.map_smul]
     congr 2
     apply mul_smul
@@ -343,7 +343,7 @@ set_option linter.uppercaseLean3 false in
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
     (hr : r • y ∈ (extensionOfMax i f).domain) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     (extensionOfMax i f).toLinearPMap ⟨r • y, hr⟩ := by
-    -- porting note: in mathlib3 `AddHom.coe_mk` was not needed
+    -- Porting note: in mathlib3 `AddHom.coe_mk` was not needed
   simp only [ExtensionOfMaxAdjoin.extendIdealTo_is_extension i f h _ _ hr,
     ExtensionOfMaxAdjoin.idealTo, LinearMap.coe_mk, Subtype.coe_mk, AddHom.coe_mk]
 set_option linter.uppercaseLean3 false in

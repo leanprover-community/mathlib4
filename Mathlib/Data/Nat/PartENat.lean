@@ -709,7 +709,7 @@ open Classical
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
-  --Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
+  -- Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
   · simp only [add_top, toWithTop_top', _root_.add_top]
   · simp only [add_top, toWithTop_top', toWithTop_natCast', _root_.add_top, forall_const]
   · simp only [top_add, toWithTop_top', toWithTop_natCast', _root_.top_add, forall_const]

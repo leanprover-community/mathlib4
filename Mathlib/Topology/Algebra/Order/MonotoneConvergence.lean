@@ -190,7 +190,7 @@ instance Prod.supConvergenceClass
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
     tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
   convert A.prod_mk_nhds B
-  -- porting note: previously required below to close
+  -- Porting note: previously required below to close
   -- ext1 ⟨⟨x, y⟩, h⟩
   -- rfl
 

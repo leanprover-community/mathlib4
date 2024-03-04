@@ -86,7 +86,7 @@ instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) :=
   ⟨fun D => D.toLinearMap⟩
 #align derivation.has_coe_to_linear_map Derivation.hasCoeToLinearMap
 
-#noalign derivation.to_linear_map_eq_coe -- porting note: not needed anymore
+#noalign derivation.to_linear_map_eq_coe -- Porting note: not needed anymore
 
 @[simp]
 theorem mk_coe (f : A →ₗ[R] M) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : Derivation R A M) : A → M) = f :=

@@ -80,7 +80,7 @@ theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[
 alias le_op_norm₂ :=
   le_opNorm₂ -- deprecated on 2024-02-02
 
--- porting note: new theorem
+-- Porting note: new theorem
 theorem le_of_opNorm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
     {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c) :
     ‖f x y‖ ≤ a * b * c :=
@@ -304,7 +304,7 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
 theorem norm_compSL_le :
-    -- porting note: added
+    -- Porting note: added
     letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
       hasOpNorm (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
     ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
@@ -365,7 +365,7 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
 #align continuous_linear_map.precompL ContinuousLinearMap.precompL
 
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
-    -- porting note: added
+    -- Porting note: added
     letI : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
     letI : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
     ‖precompR Eₗ L‖ ≤ ‖L‖ :=
@@ -376,7 +376,7 @@ theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
-    -- porting note: added
+    -- Porting note: added
     letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
       hasOpNorm (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ)
     ‖precompL Eₗ L‖ ≤ ‖L‖ := by

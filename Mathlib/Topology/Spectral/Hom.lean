@@ -183,7 +183,7 @@ theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f ∘ g)= (f : ContinuousMap β γ) ∘ (g: ContinuousMap α β) := by
    rfl
 
--- porting note: removed `simp` from this and added lemma above to address `simpNF` lint
+-- Porting note: removed `simp` from this and added lemma above to address `simpNF` lint
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g := by
   rfl

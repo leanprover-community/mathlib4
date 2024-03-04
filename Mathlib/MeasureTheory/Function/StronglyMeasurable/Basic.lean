@@ -166,7 +166,7 @@ theorem stronglyMeasurable_const' {α β} {m : MeasurableSpace α} [TopologicalS
   exact funext fun x => hf x default
 #align measure_theory.strongly_measurable_const' MeasureTheory.stronglyMeasurable_const'
 
--- porting note: changed binding type of `MeasurableSpace α`.
+-- Porting note: changed binding type of `MeasurableSpace α`.
 @[simp]
 theorem Subsingleton.stronglyMeasurable' {α β} [MeasurableSpace α] [TopologicalSpace β]
     [Subsingleton α] (f : α → β) : StronglyMeasurable f :=

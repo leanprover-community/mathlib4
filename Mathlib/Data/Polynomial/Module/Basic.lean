@@ -208,7 +208,7 @@ def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] :=
 
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
---porting note: stated instead of deriving
+-- Porting note: stated instead of deriving
 noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabited
 noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
 

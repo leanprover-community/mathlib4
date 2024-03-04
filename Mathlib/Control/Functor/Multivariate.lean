@@ -231,7 +231,7 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     cases i <;> rfl
   · intros
     simp (config := { unfoldPartialApp := true }) [MvFunctor.map_map, (· ⊚ ·)]
-    -- porting note: proof was
+    -- Porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
     suffices  (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))

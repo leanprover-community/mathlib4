@@ -590,7 +590,7 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
         ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
 #align vector_bundle_core.to_fiber_bundle_core VectorBundleCore.toFiberBundleCore
 
--- porting note: TODO: restore coercion
+-- Porting note: TODO: restore coercion
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
 -- #align vector_bundle_core.to_fiber_bundle_core_coe VectorBundleCore.toFiberBundleCoreCoe
@@ -604,7 +604,7 @@ theorem coordChange_linear_comp (i j k : ι) :
 #align vector_bundle_core.coord_change_linear_comp VectorBundleCore.coordChange_linear_comp
 
 /-- The index set of a vector bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- porting note: was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note: was `nolint has_nonempty_instance`
 def Index := ι
 #align vector_bundle_core.index VectorBundleCore.Index
 
@@ -615,7 +615,7 @@ def Base := B
 
 /-- The fiber of a vector bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- porting note: was `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note: was `nolint has_nonempty_instance`
 def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 #align vector_bundle_core.fiber VectorBundleCore.Fiber
@@ -624,7 +624,7 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
   Z.toFiberBundleCore.topologicalSpaceFiber x
 #align vector_bundle_core.topological_space_fiber VectorBundleCore.topologicalSpaceFiber
 
--- porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
+-- Porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
 instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
   inferInstanceAs (AddCommGroup F)
 #align vector_bundle_core.add_comm_group_fiber VectorBundleCore.addCommGroupFiber
@@ -676,7 +676,7 @@ def localTriv (i : ι) : Trivialization F (π F Z.Fiber) :=
   Z.toFiberBundleCore.localTriv i
 #align vector_bundle_core.local_triv VectorBundleCore.localTriv
 
--- porting note: moved from below to fix the next instance
+-- Porting note: moved from below to fix the next instance
 @[simp, mfld_simps]
 theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
@@ -853,7 +853,7 @@ The field `exists_coordChange` is stated as an existential statement (instead of
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
 This makes it inconvenient to explicitly define a `coordChange` function when constructing a
 `VectorPrebundle`. -/
--- porting note: was @[nolint has_nonempty_instance]
+-- Porting note: was @[nolint has_nonempty_instance]
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivialization_linear' : ∀ e, e ∈ pretrivializationAtlas → e.IsLinear R
@@ -977,7 +977,7 @@ theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology 
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.continuousOn_coordChange he he').congr fun b hb ↦ ?_
       ext v
-      -- porting note: help `rw` find instances
+      -- Porting note: help `rw` find instances
       haveI h₁ := a.linear_trivializationOfMemPretrivializationAtlas he
       haveI h₂ := a.linear_trivializationOfMemPretrivializationAtlas he'
       rw [trivializationOfMemPretrivializationAtlas] at h₁ h₂

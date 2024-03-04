@@ -464,7 +464,7 @@ theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + c
 
 variable (R E)
 
--- porting note: needs `noncomputable` due to `OrderHom.toFun`!?
+-- Porting note: needs `noncomputable` due to `OrderHom.toFun`!?
 /-- `convexHull` is an additive monoid morphism under pointwise addition. -/
 @[simps]
 noncomputable def convexHullAddMonoidHom : Set E →+ Set E where

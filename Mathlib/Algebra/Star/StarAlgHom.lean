@@ -168,7 +168,7 @@ theorem copy_eq (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f
   DFunLike.ext' h
 #align non_unital_star_alg_hom.copy_eq NonUnitalStarAlgHom.copy_eq
 
--- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
     ((⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
@@ -181,7 +181,7 @@ theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
     ((⟨f, h⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
   rfl
 
--- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₙₐ[R] B) (h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) = f := by
@@ -422,7 +422,7 @@ theorem copy_eq (f : A →⋆ₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h
   DFunLike.ext' h
 #align star_alg_hom.copy_eq StarAlgHom.copy_eq
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
 @[simp]
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
@@ -435,7 +435,7 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) :
     ((⟨f, h⟩ : A →⋆ₐ[R] B) : A → B) = f :=
   rfl
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
 @[simp]
 theorem mk_coe (f : A →⋆ₐ[R] B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) = f := by
@@ -897,14 +897,14 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align star_alg_equiv.symm_bijective StarAlgEquiv.symm_bijective
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
 @[simp]
 theorem mk_coe' (e : A ≃⋆ₐ[R] B) (f h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨f, e, h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : B ≃⋆ₐ[R] A) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 #align star_alg_equiv.mk_coe' StarAlgEquiv.mk_coe'ₓ
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
 @[simp]
 theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
     (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm =

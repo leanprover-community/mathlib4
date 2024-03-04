@@ -652,7 +652,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
   (gc_nhds a).u_sInf
 #align nhds_Inf nhds_sInf
 
--- porting note: todo: timeouts without `b₁ := t₁`
+-- Porting note: todo: timeouts without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)

@@ -864,11 +864,11 @@ theorem ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
   ciSup_unique (α := αᵒᵈ)
 #align infi_unique ciInf_unique
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
   @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
@@ -1655,7 +1655,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
         · rw [h] at h₁
           cases h₁
         · convert bot_le (a := a)
-          -- porting note: previous proof relied on convert unfolding
+          -- Porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg
           simp only [h, preimage_empty, WithBot.csSup_empty]

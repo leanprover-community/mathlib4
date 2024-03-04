@@ -212,7 +212,7 @@ theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0�
   nhds_bot_basis_Iic
 #align ennreal.nhds_zero_basis_Iic ENNReal.nhds_zero_basis_Iic
 
--- porting note: todo: add a TC for `≠ ∞`?
+-- Porting note: todo: add a TC for `≠ ∞`?
 @[instance]
 theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
   nhdsWithin_Ioi_self_neBot' ⟨∞, ENNReal.coe_lt_top⟩
@@ -273,7 +273,7 @@ theorem biInf_le_nhds : ∀ x : ℝ≥0∞, ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + 
     simpa only [← coe_one, top_sub_coe, top_add, Icc_self, principal_singleton] using pure_le_nhds _
   | (x : ℝ≥0) => (nhds_of_ne_top coe_ne_top).ge
 
--- porting note: new lemma
+-- Porting note: new lemma
 protected theorem tendsto_nhds_of_Icc {f : Filter α} {u : α → ℝ≥0∞} {a : ℝ≥0∞}
     (h : ∀ ε > 0, ∀ᶠ x in f, u x ∈ Icc (a - ε) (a + ε)) : Tendsto u f (𝓝 a) := by
   refine Tendsto.mono_right ?_ (biInf_le_nhds _)
@@ -539,7 +539,7 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
-@[simp] -- porting note: todo: generalize to `[InvolutiveInv _] [ContinuousInv _]`
+@[simp] -- Porting note: todo: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
   ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩

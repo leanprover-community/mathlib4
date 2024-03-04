@@ -207,7 +207,7 @@ theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm
       simp_rw [esymm, map_sum, map_prod, rename_X]
     _ = ∑ t in powersetCard n (univ.map e.toEmbedding), ∏ i in t, X i := by
       simp [Finset.powersetCard_map, -Finset.map_univ_equiv]
-      --Porting note: Why did `mapEmbedding_apply` not work?
+      -- Porting note: Why did `mapEmbedding_apply` not work?
       dsimp [mapEmbedding, OrderEmbedding.ofMapLEIff]
       simp
     _ = ∑ t in powersetCard n univ, ∏ i in t, X i := by rw [Finset.map_univ_equiv]

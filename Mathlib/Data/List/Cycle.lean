@@ -261,7 +261,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _ _)
 #align list.prev_mem List.prev_mem
 
---Porting note: new theorem
+-- Porting note: new theorem
 theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
     next l (l.get i) (get_mem _ _ _) = l.get ⟨(i + 1) % l.length,
       Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩
@@ -453,7 +453,7 @@ namespace Cycle
 
 variable {α : Type*}
 
---Porting note: new definition
+-- Porting note: new definition
 /-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
@@ -840,26 +840,26 @@ nonrec def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), �
     (by rw [heq_iff_eq] at hxy; subst x; simpa using isRotated_prev_eq h h₁ _)
 #align cycle.prev Cycle.prev
 
---Porting note: removed `simp` and added `prev_reverse_eq_next'` with `simp` attribute
+-- Porting note: removed `simp` and added `prev_reverse_eq_next'` with `simp` attribute
 nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.reverse.prev (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.next hs x hx :=
   Quotient.inductionOn' s prev_reverse_eq_next
 #align cycle.prev_reverse_eq_next Cycle.prev_reverse_eq_next
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
     (hx : x ∈ s.reverse) :
     s.reverse.prev hs x hx = s.next (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) :=
   prev_reverse_eq_next s (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx)
 
---Porting note: removed `simp` and added `next_reverse_eq_prev'` with `simp` attribute
+-- Porting note: removed `simp` and added `next_reverse_eq_prev'` with `simp` attribute
 theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) :
     s.reverse.next (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.prev hs x hx := by
   simp [← prev_reverse_eq_next]
 #align cycle.next_reverse_eq_prev Cycle.next_reverse_eq_prev
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 theorem next_reverse_eq_prev' (s : Cycle α) (hs : Nodup s.reverse) (x : α) (hx : x ∈ s.reverse) :
     s.reverse.next hs x hx = s.prev (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) := by

@@ -623,7 +623,7 @@ def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
 
 namespace PushoutCocone
 
--- porting note: it was originally @[simps (config := lemmasOnly)]
+-- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PushoutCocone f g → PullbackCone f.unop g.unop` -/
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
@@ -643,7 +643,7 @@ theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocon
     c.unop.snd = c.inr.unop := by aesop_cat
 #align category_theory.limits.pushout_cocone.unop_snd CategoryTheory.Limits.PushoutCocone.unop_snd
 
--- porting note: it was originally @[simps (config := lemmasOnly)]
+-- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
 @[simps!]
 def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : PullbackCone f.op g.op :=
@@ -665,7 +665,7 @@ end PushoutCocone
 
 namespace PullbackCone
 
--- porting note: it was originally @[simps (config := lemmasOnly)]
+-- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PullbackCone f g → PushoutCocone f.unop g.unop` -/
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :

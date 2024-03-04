@@ -55,7 +55,7 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
 instance : Category (Component (j : ConnectedComponents J)) :=
   FullSubcategory.category _
 
---Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
+-- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The inclusion functor from a connected component to the whole category. -/
 @[simps!]
 def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
@@ -118,7 +118,7 @@ abbrev inclusion (j : ConnectedComponents J) : Component j ⥤ Decomposed J :=
   Sigma.incl _
 #align category_theory.inclusion CategoryTheory.inclusion
 
---Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
+-- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The forward direction of the equivalence between the decomposed category and the original. -/
 @[simps!]
 def decomposedTo (J : Type u₁) [Category.{v₁} J] : Decomposed J ⥤ J :=
@@ -159,7 +159,7 @@ instance : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, 
 instance : IsEquivalence (decomposedTo J) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
--- porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
+-- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/
 @[simps! functor]
 def decomposedEquiv : Decomposed J ≌ J :=

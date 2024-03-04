@@ -106,7 +106,7 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
   rw [coequalizer_isOpen_iff]
   dsimp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_r, GlueData.diagram_right,
     parallelPair_obj_one]
-  rw [colimit_isOpen_iff.{_,u}]  -- porting note: changed `.{u}` to `.{_,u}`.  fun fact: the proof
+  rw [colimit_isOpen_iff.{_,u}]  -- Porting note: changed `.{u}` to `.{_,u}`.  fun fact: the proof
                                  -- breaks down if this `rw` is merged with the `rw` above.
   constructor
   · intro h j; exact h ⟨j⟩
@@ -222,7 +222,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
     rfl
     dsimp only at *
-    -- porting note: there were `subst e₁` and `subst e₂`, instead of the `rw`
+    -- Porting note: there were `subst e₁` and `subst e₂`, instead of the `rw`
     rw [← e₁, ← e₂] at *
     simp
 set_option linter.uppercaseLean3 false in
@@ -233,7 +233,7 @@ theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   rcases (D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
   · rfl
   · dsimp only at *
-    -- porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
+    -- Porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
     rw [← e₁, ← e₂]
     simp
 set_option linter.uppercaseLean3 false in
@@ -292,10 +292,10 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
     𝖣.ι j ⁻¹' (𝖣.ι i '' U) = (D.t i j ≫ D.f _ _) '' (D.f _ _ ⁻¹' U) := by
   convert D.preimage_image_eq_image i j U using 1
   rw [coe_comp, coe_comp]
-  -- porting note: `show` was not needed, since `rw [← Set.image_image]` worked.
+  -- Porting note: `show` was not needed, since `rw [← Set.image_image]` worked.
   show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
   rw [← Set.image_image]
-  -- porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
+  -- Porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
   refine congr_arg ?_ ?_
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
@@ -305,7 +305,7 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.preimage_image_eq_image' TopCat.GlueData.preimage_image_eq_image'
 
--- porting note: the goal was simply `IsOpen (𝖣.ι i '' U)`.
+-- Porting note: the goal was simply `IsOpen (𝖣.ι i '' U)`.
 -- I had to manually add the explicit type ascription.
 theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' (U : Set (D.U i))) := by
   rw [isOpen_iff]
@@ -347,7 +347,7 @@ structure MkCore where
   t_inter : ∀ ⦃i j⦄ (k) (x : V i j), ↑x ∈ V i k → (((↑) : (V j i) → (U j)) (t i j x)) ∈ V j k
   cocycle :
     ∀ (i j k) (x : V i j) (h : ↑x ∈ V i k),
-      -- porting note: the underscore in the next line was `↑(t i j x)`, but Lean type-mismatched
+      -- Porting note: the underscore in the next line was `↑(t i j x)`, but Lean type-mismatched
       (((↑) : (V k j) → (U k)) (t j k ⟨_, t_inter k x h⟩)) = ((↑) : (V k i) → (U k)) (t i k ⟨x, h⟩)
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core TopCat.GlueData.MkCore
@@ -446,7 +446,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
         continuity⟩
       V_id := fun i => by
         ext
-        -- porting note: no longer needed `cases U i`!
+        -- Porting note: no longer needed `cases U i`!
         simp
       t_id := fun i => by ext; rfl
       t_inter := fun i j k x hx => hx
@@ -476,7 +476,7 @@ theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue 
   intro x y e
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective y
-  -- porting note: now it is `erw`, it was `rw`
+  -- Porting note: now it is `erw`, it was `rw`
   -- see the porting note on `ι_fromOpenSubsetsGlue`
   erw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
   change x = y at e
@@ -504,7 +504,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     apply congr_arg
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
-    -- porting note: another `rw ↦ erw`
+    -- Porting note: another `rw ↦ erw`
     -- See above.
     erw [ι_fromOpenSubsetsGlue_apply]
     exact Set.mem_range_self _
@@ -522,7 +522,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
   constructor
   · rintro ⟨x, rfl⟩
     obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
-    -- porting note: another `rw ↦ erw`
+    -- Porting note: another `rw ↦ erw`
     -- See above
     erw [ι_fromOpenSubsetsGlue_apply]
     exact Set.subset_iUnion _ i hx'

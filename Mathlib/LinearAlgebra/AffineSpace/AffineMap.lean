@@ -226,7 +226,7 @@ section SMul
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
-  -- porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
+  -- Porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
   smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
   one_smul f := ext fun p => one_smul _ _
   mul_smul c₁ c₂ f := ext fun p => mul_smul _ _ _
@@ -482,7 +482,7 @@ theorem linear_bijective_iff (f : P1 →ᵃ[k] P2) :
 theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     f '' s -ᵥ f '' t = f.linear '' (s -ᵥ t) := by
   ext v
-  -- porting note: `simp` needs `Set.mem_vsub` to be an expression
+  -- Porting note: `simp` needs `Set.mem_vsub` to be an expression
   simp only [(Set.mem_vsub), Set.mem_image,
     exists_exists_and_eq_and, exists_and_left, ← f.linearMap_vsub]
   constructor
@@ -747,10 +747,10 @@ def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) w
   left_inv f := by
     ext
     rw [f.decomp]
-    simp [const_apply _ _]  -- porting note: `simp` needs `_`s to use this lemma
+    simp [const_apply _ _]  -- Porting note: `simp` needs `_`s to use this lemma
   right_inv := by
     rintro ⟨v, f⟩
-    ext <;> simp [const_apply _ _, const_linear _ _]  -- porting note: `simp` needs `_`s
+    ext <;> simp [const_apply _ _, const_linear _ _]  -- Porting note: `simp` needs `_`s
   map_add' := by simp
   map_smul' := by simp
 #align affine_map.to_const_prod_linear_map AffineMap.toConstProdLinearMap

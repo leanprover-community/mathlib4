@@ -137,7 +137,7 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
-@[ext] -- porting note: was nolint has_nonempty_instance
+@[ext] -- Porting note: was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
@@ -1188,7 +1188,7 @@ theorem extend_preimage_inter_eq :
   mfld_set_tac
 #align local_homeomorph.extend_preimage_inter_eq PartialHomeomorph.extend_preimage_inter_eq
 
--- porting note: an `aux` lemma that is no longer needed. Delete?
+-- Porting note: an `aux` lemma that is no longer needed. Delete?
 theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
       ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by

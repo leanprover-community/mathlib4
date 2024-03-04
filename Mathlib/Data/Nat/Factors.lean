@@ -244,7 +244,7 @@ theorem dvd_of_factors_subperm {a b : ℕ} (ha : a ≠ 0) (h : a.factors <+~ b.f
   rcases a with (_ | _ | a)
   · exact (ha rfl).elim
   · exact one_dvd _
-  --Porting note: previous proof
+  -- Porting note: previous proof
   --use (b.factors.diff a.succ.succ.factors).prod
   use (@List.diff _ instBEq b.factors a.succ.succ.factors).prod
   nth_rw 1 [← Nat.prod_factors ha]

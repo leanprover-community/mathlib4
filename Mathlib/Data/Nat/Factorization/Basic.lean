@@ -320,7 +320,7 @@ complementary projection. The term `n.factorization p` is the $p$-adic order its
 For example, `ord_proj[2] n` is the even part of `n` and `ord_compl[2] n` is the odd part. -/
 
 
--- porting note: Lean 4 thinks we need `HPow` without this
+-- Porting note: Lean 4 thinks we need `HPow` without this
 set_option quotPrecheck false in
 notation "ord_proj[" p "] " n:arg => p ^ Nat.factorization n p
 
@@ -500,7 +500,7 @@ theorem factorization_ord_compl (n p : ℕ) :
     (ord_compl[p] n).factorization = n.factorization.erase p := by
   if hn : n = 0 then simp [hn] else
   if pp : p.Prime then ?_ else
-    -- porting note: needed to solve side goal explicitly
+    -- Porting note: needed to solve side goal explicitly
     rw [Finsupp.erase_of_not_mem_support] <;> simp [pp]
   ext q
   rcases eq_or_ne q p with (rfl | hqp)

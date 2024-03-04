@@ -136,7 +136,7 @@ instance : Category (Bimod A B) where
   id := id'
   comp f g := comp f g
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Bimod A B} (f g : M ⟶ N) (h : f.hom = g.hom) : f = g :=
   Hom.ext _ _ h
@@ -250,7 +250,7 @@ set_option linter.uppercaseLean3 false in
 theorem one_act_left' : (R.one ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
   refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
   dsimp [X]
-  -- porting note: had to replace `rw` by `erw`
+  -- Porting note: had to replace `rw` by `erw`
   slice_lhs 1 2 => erw [whisker_exchange]
   slice_lhs 2 3 => rw [whiskerLeft_π_actLeft]
   slice_lhs 1 2 => rw [associator_inv_naturality_left]
@@ -317,7 +317,7 @@ set_option linter.uppercaseLean3 false in
 theorem actRight_one' : (_ ◁ T.one) ≫ actRight P Q = (ρ_ _).hom := by
   refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
   dsimp [X]
-  -- porting note: had to replace `rw` by `erw`
+  -- Porting note: had to replace `rw` by `erw`
   slice_lhs 1 2 =>erw [← whisker_exchange]
   slice_lhs 2 3 => rw [π_tensor_id_actRight]
   slice_lhs 1 2 => rw [associator_naturality_right]
@@ -331,7 +331,7 @@ theorem right_assoc' :
       (α_ _ T.X T.X).inv ≫ (actRight P Q ▷ T.X) ≫ actRight P Q := by
   refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
   dsimp [X]
-  -- porting note: had to replace some `rw` by `erw`
+  -- Porting note: had to replace some `rw` by `erw`
   slice_lhs 1 2 => rw [← whisker_exchange]
   slice_lhs 2 3 => rw [π_tensor_id_actRight]
   slice_lhs 1 2 => rw [associator_naturality_right]
@@ -362,7 +362,7 @@ theorem middle_assoc' :
     comp_whiskerRight]
   slice_lhs 3 4 => rw [π_tensor_id_actRight]
   slice_lhs 2 3 => rw [associator_naturality_left]
-  -- porting note: had to replace `rw` by `erw`
+  -- Porting note: had to replace `rw` by `erw`
   slice_rhs 1 2 => rw [associator_naturality_middle]
   slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, π_tensor_id_actRight,
     MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]

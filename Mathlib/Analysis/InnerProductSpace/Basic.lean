@@ -632,7 +632,7 @@ theorem inner_neg_right (x y : E) : ⟪x, -y⟫ = -⟪x, y⟫ := by
 theorem inner_neg_neg (x y : E) : ⟪-x, -y⟫ = ⟪x, y⟫ := by simp
 #align inner_neg_neg inner_neg_neg
 
--- porting note: removed `simp` because it can prove it using `inner_conj_symm`
+-- Porting note: removed `simp` because it can prove it using `inner_conj_symm`
 theorem inner_self_conj (x : E) : ⟪x, x⟫† = ⟪x, x⟫ := inner_conj_symm _ _
 #align inner_self_conj inner_self_conj
 

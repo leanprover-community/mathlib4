@@ -153,7 +153,7 @@ theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β
   rfl
 #align erased.map_def Erased.map_def
 
---Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
+-- Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
 protected instance LawfulMonad : LawfulMonad Erased :=
   { Erased.Monad with
     id_map := by intros; ext; simp

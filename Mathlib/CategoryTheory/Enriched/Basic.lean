@@ -99,7 +99,7 @@ section
 
 variable {V} {W : Type v} [Category.{w} W] [MonoidalCategory W]
 
--- porting note: removed `@[nolint hasNonemptyInstance]`
+-- Porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the `W`-enriched category structure
 obtained by applying the functor `F : LaxMonoidalFunctor V W` to each hom object.
@@ -172,7 +172,7 @@ section
 
 variable {W : Type (v + 1)} [Category.{v} W] [MonoidalCategory W] [EnrichedCategory W C]
 
--- porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note: removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -392,7 +392,7 @@ coming from the ambient braiding on `V`.)
 -/
 
 
--- porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note: removed `@[nolint has_nonempty_instance]`
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
 -/

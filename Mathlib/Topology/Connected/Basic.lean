@@ -99,7 +99,7 @@ theorem isPreconnected_of_forall {s : Set α} (x : α)
   have xs : x ∈ s := by
     rcases H y ys with ⟨t, ts, xt, -, -⟩
     exact ts xt
-  -- porting note: todo: use `wlog xu : x ∈ u := hs xs using u v y z, v u z y`
+  -- Porting note: todo: use `wlog xu : x ∈ u := hs xs using u v y z, v u z y`
   cases hs xs with
   | inl xu =>
     rcases H y ys with ⟨t, ts, xt, yt, ht⟩
@@ -437,7 +437,7 @@ theorem IsPreconnected.subset_right_of_subset_union (hu : IsOpen u) (hv : IsOpen
   hs.subset_left_of_subset_union hv hu huv.symm (union_comm u v ▸ hsuv) hsv
 #align is_preconnected.subset_right_of_subset_union IsPreconnected.subset_right_of_subset_union
 
--- porting note: moved up
+-- Porting note: moved up
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
 theorem IsPreconnected.subset_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t)
     (hne : (s ∩ t).Nonempty) : s ⊆ t :=
@@ -1071,7 +1071,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
     simpa [*, or_imp, forall_and] using h {u, v}
 #align is_connected_iff_sUnion_disjoint_open isConnected_iff_sUnion_disjoint_open
 
--- porting note: `IsPreconnected.subset_isClopen` moved up from here
+-- Porting note: `IsPreconnected.subset_isClopen` moved up from here
 
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
 theorem disjoint_or_subset_of_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t) :

@@ -815,7 +815,7 @@ theorem EqOnSource.eqOn {e e' : PartialEquiv α β} (h : e ≈ e') : e.source.Eq
   h.2
 #align local_equiv.eq_on_source.eq_on PartialEquiv.EqOnSource.eqOn
 
---Porting note: A lot of dot notation failures here. Maybe we should not use `≈`
+-- Porting note: A lot of dot notation failures here. Maybe we should not use `≈`
 
 /-- Two equivalent partial equivs have the same target. -/
 theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.target = e'.target := by

@@ -1298,7 +1298,7 @@ open DirectSum
 theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x := by
-  -- porting note: switch to the better `induction _ using`. Need the primed induction principle,
+  -- Porting note: switch to the better `induction _ using`. Need the primed induction principle,
   -- the unprimed one doesn't work with `induction` (as it isn't as syntactically general)
   induction hx using Submodule.iSup_induction' with
   | mem i x hx =>
@@ -1323,7 +1323,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
   induction' x using DirectSum.induction_on with j x x y hx hy
   · simp
   · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
-    -- porting note: was in the previous `simp_rw`, no longer works
+    -- Porting note: was in the previous `simp_rw`, no longer works
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [DFinsupp.singleAddHom_apply]
     obtain rfl | hij := Decidable.eq_or_ne i j

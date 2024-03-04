@@ -67,7 +67,7 @@ theorem log_stirlingSeq_formula (n : ℕ) :
   · simp
   · rw [stirlingSeq, log_div, log_mul, sqrt_eq_rpow, log_rpow, Real.log_pow, tsub_tsub]
       <;> positivity
--- porting note: generalized from `n.succ` to `n`
+-- Porting note: generalized from `n.succ` to `n`
 #align stirling.log_stirling_seq_formula Stirling.log_stirlingSeq_formulaₓ
 
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion

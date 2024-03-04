@@ -1014,7 +1014,7 @@ namespace Function
 
 variable {ι : Type*} {π : ι → Type*} [DecidableEq ι]
 
--- porting note: Dot notation on `Function.update` broke
+-- Porting note: Dot notation on `Function.update` broke
 theorem update_sup [∀ i, SemilatticeSup (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊔ b) = update f i a ⊔ update f i b :=
   funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]

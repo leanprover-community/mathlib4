@@ -227,7 +227,7 @@ theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
   not_lt.mp <| not_lt_argmin f h a
 #align function.argmin_le Function.argmin_le
 
--- sPorting note (#11119): @[simp] removed as it will never apply
+-- Porting note (#11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f h s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f h s ha hs

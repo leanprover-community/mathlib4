@@ -59,7 +59,7 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
 
 /-- Local trivialization for trivial bundle. -/
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
-  -- porting note: golfed
+  -- Porting note: golfed
   toPartialHomeomorph := (homeomorphProd B F).toPartialHomeomorph
   baseSet := univ
   open_baseSet := isOpen_univ

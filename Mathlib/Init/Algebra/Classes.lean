@@ -66,7 +66,7 @@ set_option autoImplicit true
 
 universe u v
 
--- porting note: removed `outParam`
+-- Porting note: removed `outParam`
 class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
   symm_op : ∀ a b, op a b = op b a
 #align is_symm_op IsSymmOp

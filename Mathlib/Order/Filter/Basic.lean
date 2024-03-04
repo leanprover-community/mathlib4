@@ -818,7 +818,7 @@ theorem eq_iInf_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
   eq_sInf_of_mem_iff_exists_mem <| h.trans exists_range_iff.symm
 #align filter.eq_infi_of_mem_iff_exists_mem Filter.eq_iInf_of_mem_iff_exists_mem
 
--- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
+-- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ i, p i ∧ s ∈ f i) : l = ⨅ (i) (_ : p i), f i := by
   rw [iInf_subtype']
@@ -840,7 +840,7 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
         rcases h a b with ⟨c, ha, hb⟩
         exact ⟨c, inter_mem (ha hx) (hb hy)⟩ }
   have : u = iInf f := eq_iInf_of_mem_iff_exists_mem mem_iUnion
-  -- porting note: it was just `congr_arg filter.sets this.symm`
+  -- Porting note: it was just `congr_arg filter.sets this.symm`
   (congr_arg Filter.sets this.symm).trans <| by simp only
 #align filter.infi_sets_eq Filter.iInf_sets_eq
 
@@ -2394,7 +2394,7 @@ theorem neBot_of_comap (h : (comap m g).NeBot) : g.NeBot := by
   exact comap_bot
 #align filter.ne_bot_of_comap Filter.neBot_of_comap
 
--- porting note: the proof was `by simp`. Lean 4 fails to use `le_top`
+-- Porting note: the proof was `by simp`. Lean 4 fails to use `le_top`
 theorem comap_inf_principal_range : comap m (g ⊓ 𝓟 (range m)) = comap m g := by
   simpa only [le_principal_iff, comap_inf, comap_principal, preimage_range, principal_univ,
     inf_eq_left] using le_top
@@ -3199,7 +3199,7 @@ theorem tendsto_iSup_iSup {f : α → β} {x : ι → Filter α} {y : ι → Fil
   simp only [Tendsto, le_principal_iff, mem_map', Filter.Eventually]
 #align filter.tendsto_principal Filter.tendsto_principal
 
--- porting note: was a `simp` lemma
+-- Porting note: was a `simp` lemma
 theorem tendsto_principal_principal {f : α → β} {s : Set α} {t : Set β} :
     Tendsto f (𝓟 s) (𝓟 t) ↔ ∀ a ∈ s, f a ∈ t := by
   simp only [tendsto_principal, eventually_principal]

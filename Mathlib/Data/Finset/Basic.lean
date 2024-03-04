@@ -200,7 +200,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
---Porting note: new definition
+-- Porting note: new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -481,7 +481,7 @@ to the dot notation. -/
 @[pp_dot] protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
 #align finset.nonempty Finset.Nonempty
 
---Porting note: Much longer than in Lean3
+-- Porting note: Much longer than in Lean3
 instance decidableNonempty {s : Finset α} : Decidable s.Nonempty :=
   Quotient.recOnSubsingleton (motive := fun s : Multiset α => Decidable (∃ a, a ∈ s)) s.1
     (fun l : List α =>
@@ -2728,7 +2728,7 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
   Multiset.decidableDforallMultiset
 #align finset.decidable_dforall_finset Finset.decidableDforallFinset
 
--- porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
+-- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
 -- needed. In lean4 it seems this is not the case.
 instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
   λ _ _ ↦ decidableDforallFinset

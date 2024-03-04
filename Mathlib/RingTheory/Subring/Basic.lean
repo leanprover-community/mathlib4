@@ -157,7 +157,7 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
--- porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
+-- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
 -- projection `s.toSubmonoid`
 #noalign subring.to_submonoid
 

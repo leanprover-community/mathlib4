@@ -243,7 +243,7 @@ def countableGenerate : Filter α :=
   --deriving CountableInterFilter
 #align filter.countable_generate Filter.countableGenerate
 
---Porting note: could not de derived
+-- Porting note: could not de derived
 instance : CountableInterFilter (countableGenerate g) := by
   delta countableGenerate; infer_instance
 

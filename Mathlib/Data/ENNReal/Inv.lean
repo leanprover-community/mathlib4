@@ -109,7 +109,7 @@ protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) 
   rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
 #align ennreal.mul_div_cancel' ENNReal.mul_div_cancel'
 
--- porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
+-- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
   simp only [div_eq_mul_inv, mul_right_comm, ← mul_assoc]
 #align ennreal.mul_comm_div ENNReal.mul_comm_div
@@ -265,7 +265,7 @@ theorem _root_.OrderIso.invENNReal_symm_apply (a : ℝ≥0∞ᵒᵈ) :
 @[simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
 #align ennreal.div_top ENNReal.div_top
 
--- porting note: reordered 4 lemmas
+-- Porting note: reordered 4 lemmas
 
 theorem top_div : ∞ / a = if a = ∞ then 0 else ∞ := by simp [div_eq_mul_inv, top_mul']
 #align ennreal.top_div ENNReal.top_div

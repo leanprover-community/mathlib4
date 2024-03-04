@@ -202,7 +202,7 @@ def image {α β : Type*} (e : α ≃ β) (s : Set α) :
 
 namespace Set
 
---Porting note: Removed attribute @[simps apply symm_apply]
+-- Porting note: Removed attribute @[simps apply symm_apply]
 /-- `univ α` is equivalent to `α`. -/
 protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
@@ -702,7 +702,7 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
--- porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
+-- Porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
 -- former now unfolds syntactically to a less general case of the latter.
 theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α → Prop}
     (e : β ≃ Subtype p)

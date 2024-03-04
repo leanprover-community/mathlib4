@@ -264,7 +264,7 @@ instance : Category (HomologicalComplex V c) where
 
 end
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (h : ∀ i, f.f i = g.f i) : f = g := by
@@ -375,7 +375,7 @@ lemma XIsoOfEq_hom_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n
 lemma XIsoOfEq_inv_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
     φ.f n' ≫ (L.XIsoOfEq h).inv = (K.XIsoOfEq h).inv ≫ φ.f n := by subst h; simp
 
--- porting note: removed @[simp] as the linter complained
+-- Porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i j'` are both allowed, then we must have `j = j'`,
 and so the differentials only differ by an `eqToHom`.
 -/
@@ -385,7 +385,7 @@ theorem d_comp_eqToHom {i j j' : ι} (rij : c.Rel i j) (rij' : c.Rel i j') :
   simp only [eqToHom_refl, comp_id]
 #align homological_complex.d_comp_eq_to_hom HomologicalComplex.d_comp_eqToHom
 
--- porting note: removed @[simp] as the linter complained
+-- Porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i' j` are both allowed, then we must have `i = i'`,
 and so the differentials only differ by an `eqToHom`.
 -/

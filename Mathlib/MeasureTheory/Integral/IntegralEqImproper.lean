@@ -195,21 +195,21 @@ section FiniteIntervals
 variable [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
   {a b : ι → α} {A B : α} (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B))
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem aecover_Ioi_of_Ioi : AECover (μ.restrict (Ioi A)) l fun i ↦ Ioi (a i) where
   ae_eventually_mem := (ae_restrict_mem measurableSet_Ioi).mono fun _x hx ↦ ha.eventually <|
     eventually_lt_nhds hx
   measurableSet _ := measurableSet_Ioi
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem aecover_Iio_of_Iio : AECover (μ.restrict (Iio B)) l fun i ↦ Iio (b i) :=
   aecover_Ioi_of_Ioi (α := αᵒᵈ) hb
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem aecover_Ioi_of_Ici : AECover (μ.restrict (Ioi A)) l fun i ↦ Ici (a i) :=
   (aecover_Ioi_of_Ioi ha).superset (fun _ ↦ Ioi_subset_Ici_self) fun _ ↦ measurableSet_Ici
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem aecover_Iio_of_Iic : AECover (μ.restrict (Iio B)) l fun i ↦ Iic (b i) :=
   aecover_Ioi_of_Ici (α := αᵒᵈ) hb
 
@@ -358,7 +358,7 @@ theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AE
     fun _ _ ↦ (hφ.2 _)
 #align measure_theory.ae_cover.bUnion_Iic_ae_cover MeasureTheory.AECover.biUnion_Iic_aecover
 
--- porting note: generalized from `[SemilatticeSup ι] [Nonempty ι]` to `[Preorder ι]`
+-- Porting note: generalized from `[SemilatticeSup ι] [Nonempty ι]` to `[Preorder ι]`
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
     (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where
   ae_eventually_mem := hφ.ae_eventually_mem.mono fun x h ↦ by

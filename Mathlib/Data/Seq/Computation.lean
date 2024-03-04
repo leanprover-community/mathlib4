@@ -244,7 +244,7 @@ def rmap (f : β → γ) : Sum α β → Sum α γ
 
 attribute [simp] lmap rmap
 
--- porting note: this was far less painful in mathlib3. There seem to be two issues;
+-- Porting note: this was far less painful in mathlib3. There seem to be two issues;
 -- firstly, in mathlib3 we have `corec.F._match_1` and it's the obvious map α ⊕ β → option α.
 -- In mathlib4 we have `Corec.f.match_1` and it's something completely different.
 -- Secondly, the proof that `Stream'.corec' (Corec.f f) (Sum.inr b) 0` is this function
@@ -1238,7 +1238,8 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
   | Sum.inr ca, Sum.inr cb => C ca cb
 #align computation.lift_rel_aux Computation.LiftRelAux
 
---porting note: was attribute [simp] LiftRelAux but right now `simp` on defs is a Lean 4 catastrophe
+-- Porting note: was attribute [simp] LiftRelAux
+-- but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
 @[simp] lemma liftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
 @[simp] lemma liftRelAux_inl_inr {cb} :

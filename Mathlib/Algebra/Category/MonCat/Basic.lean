@@ -153,14 +153,14 @@ lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
 set_option linter.uppercaseLean3 false in
 #align Mon.of_hom_apply MonCat.ofHom_apply
 
----- porting note: added to ease the port of `RepresentationTheory.Action.Basic`
+---- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive]
 instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
 
 @[to_additive (attr := simp)]
 lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
 
----- porting note: added to ease the port of `RepresentationTheory.Action.Basic`
+---- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive (attr := simp)]
 lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
 
@@ -272,7 +272,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
 
--- porting note: this was added to make automation work (it already exists for MonCat)
+-- Porting note: this was added to make automation work (it already exists for MonCat)
 /-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
 @[to_additive]
 def ofHom {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) : of X ⟶ of Y := f
@@ -429,7 +429,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.forget_reflects_isos AddCommMonCat.forget_reflects_isos
 
--- porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
+-- Porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]

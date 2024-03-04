@@ -70,7 +70,7 @@ protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : 
   exact ⟨t, hs.trans ht⟩
 #align topological_space.noetherian_space.is_compact TopologicalSpace.NoetherianSpace.isCompact
 
--- porting note: fixed NS
+-- Porting note: fixed NS
 protected theorem _root_.Inducing.noetherianSpace [NoetherianSpace α] {i : β → α}
     (hi : Inducing i) : NoetherianSpace β :=
   (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)

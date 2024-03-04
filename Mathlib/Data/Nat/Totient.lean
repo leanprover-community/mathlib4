@@ -88,7 +88,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   · rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
       Nat.zero_eq, zero_add]
-    --Porting note: below line was `mono`
+    -- Porting note: below line was `mono`
     refine Finset.card_mono ?_
     refine' monotone_filter_left a.Coprime _
     simp only [Finset.le_eq_subset]

@@ -260,7 +260,7 @@ theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α �
   apply ordConnected_preimage (e : α ≃o β).symm
 #align set.ord_connected_image Set.ordConnected_image
 
--- porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
+-- Porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
 @[instance]
 theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     OrdConnected (range e) := by

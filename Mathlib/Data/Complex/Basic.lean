@@ -368,7 +368,7 @@ defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
--- porting note: moved from `Module/Data/Complex/Basic.lean`
+-- Porting note: moved from `Module/Data/Complex/Basic.lean`
 section SMul
 
 variable {R : Type*} [SMul R ℝ]
@@ -460,7 +460,7 @@ instance : Ring ℂ := by infer_instance
 instance : CommSemiring ℂ :=
   inferInstance
 
--- porting note: added due to changes in typeclass search order
+-- Porting note: added due to changes in typeclass search order
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
 instance : Semiring ℂ :=
@@ -502,7 +502,7 @@ theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
---Porting note: new theorem
+-- Porting note: new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :

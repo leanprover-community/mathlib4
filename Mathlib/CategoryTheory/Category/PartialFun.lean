@@ -46,13 +46,13 @@ namespace PartialFun
 instance : CoeSort PartialFun (Type*) :=
   ⟨id⟩
 
--- porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note: removed `@[nolint has_nonempty_instance]`
 /-- Turns a type into a `PartialFun`. -/
 def of : Type* → PartialFun :=
   id
 #align PartialFun.of PartialFun.of
 
--- porting note: removed this lemma which is useless because of the expansion of coercions
+-- Porting note: removed this lemma which is useless because of the expansion of coercions
 #noalign PartialFun.coe_of
 
 instance : Inhabited PartialFun :=
@@ -101,7 +101,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   map_id X :=
     PFun.ext fun a b => PFun.mem_toSubtype_iff.trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
   map_comp f g := by
-    -- porting note: the proof was changed because the original mathlib3 proof no longer works
+    -- Porting note: the proof was changed because the original mathlib3 proof no longer works
     apply PFun.ext _
     rintro ⟨a, ha⟩ ⟨c, hc⟩
     constructor
@@ -142,7 +142,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
         PFun.ext fun a b => by
           dsimp [PartialFun.Iso.mk, CategoryStruct.comp, pointedToPartialFun]
           rw [Part.bind_some]
-          -- porting note: the proof below has changed a lot because
+          -- Porting note: the proof below has changed a lot because
           -- `Part.mem_bind_iff` means that `b ∈ Part.bind f g` is equivalent
           -- to `∃ (a : α), a ∈ f ∧ b ∈ g a`, while in mathlib3 it was equivalent
           -- to `∃ (a : α) (H : a ∈ f), b ∈ g a`
@@ -180,7 +180,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
             rintro ⟨a, ha⟩
             change Option.elim' _ _ _ = f.toFun a
             dsimp
-            -- porting note: `rw [Part.elim_toOption]` does not work because there are
+            -- Porting note: `rw [Part.elim_toOption]` does not work because there are
             -- conflicting `Decidable` instances
             rw [Option.elim'_eq_elim, @Part.elim_toOption _ _ _ (Classical.propDecidable _)]
             split_ifs with h
