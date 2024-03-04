@@ -37,11 +37,8 @@ linearly independent family of vectors (indexed by a linearly ordered type), the
 * `exteriorPower.instFree`: If `M` is a free module, then so is its `n`th exterior power.
 -/
 
-variable {R M N : Type*} {n : ℕ}
-  [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-variable {K E F : Type*}
-  [Field K] [AddCommGroup E] [Module K E] [AddCommGroup F] [Module K F]
+variable {R K M E : Type*} {n : ℕ}
+  [CommRing R] [Field K] [AddCommGroup M] [Module R M] [AddCommGroup E] [Module K E]
 
 open BigOperators
 
@@ -74,31 +71,26 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
     intro u hu
     have ⟨f, hf⟩ := Set.mem_pow.mp hu
     let g (i : Fin n) : M := ExteriorAlgebra.ιInv (f i).1
-    have hfg : ∀ (i : Fin n), (f i).1 = ExteriorAlgebra.ι R (g i) := by
-      intro i
-      have ⟨_, _, hv⟩ := (Set.mem_image _ _ _).mp (f i).2
+    have hfg (i : Fin n) : (f i).1 = ExteriorAlgebra.ι R (g i) := by
+      obtain ⟨x, -, hx⟩ := (Set.mem_image _ _ _).mp (f i).2
       simp only
-      rw [← hv, ExteriorAlgebra.ι_inj, ExteriorAlgebra.ι_leftInverse]
-    have heq : u = ExteriorAlgebra.ιMulti R n g := by
+      rw [← hx, ExteriorAlgebra.ι_leftInverse]
+    obtain rfl : u = ExteriorAlgebra.ιMulti R n g := by
       rw [ExteriorAlgebra.ιMulti_apply, ← hf]
-      exact congrArg _ <| congrArg _ <| funext fun i ↦ hfg i
-    rw [heq]
-    have hg : ∀ (i : Fin n), ∃ (j : I), g i = v j := by
-      intro i
-      let ⟨x, hx⟩ := (Set.mem_image _ _ _).mp (f i).2
-      let ⟨j, hj⟩ := Set.mem_range.mp hx.1
-      rw [hfg i, ExteriorAlgebra.ι_inj] at hx
-      exact ⟨j, by rw [hj, hx.2]⟩
+      exact congrArg (List.prod ∘ List.ofFn) (funext hfg)
+    have hg (i : Fin n) : ∃ j : I, g i = v j := by
+      have ⟨x, h, hx⟩ := (Set.mem_image _ _ _).mp (f i).2
+      obtain ⟨j, rfl⟩ := Set.mem_range.mp h
+      exact ⟨j, ExteriorAlgebra.ι_leftInverse.injective <| hfg i ▸ hx.symm⟩
     choose α hα using hg
     by_cases hinj : Function.Injective α
     · let h (i : Fin n) : image α univ :=
         ⟨α i, mem_image_univ_iff_mem_range.mpr <| Set.mem_range_self _⟩
-      have hbij : Function.Bijective h := by
-        refine ⟨fun i j hij ↦ ?_, fun ⟨i, hi⟩ ↦ ?_⟩
-        · rw [← hinj.eq_iff, ← Subtype.mk.injEq]
-          exact hij
-        · have ⟨a, _, ha⟩ := Finset.mem_image.mp hi
-          exact ⟨a, (Subtype.mk.injEq _ _ _ _).mpr ha⟩
+      have hbij : Function.Bijective h :=
+        ⟨fun i j hij ↦ hinj (Subtype.mk_eq_mk.mp hij),
+          fun ⟨i, hi⟩ ↦
+            have ⟨a, _, ha⟩ := Finset.mem_image.mp hi
+            ⟨a, (Subtype.mk.injEq _ _ _ _).mpr ha⟩⟩
       have hcard : (image α univ).card = n :=
         (card_image_of_injective univ hinj).trans (card_fin n)
       let g' (i : Fin n) : M := v ↑(orderIsoOfFin _ hcard i)
@@ -309,8 +301,8 @@ lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
 
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
 instance instFree [hfree : Module.Free R M] : Module.Free R (⋀[R]^n M) :=
-  let ⟨I, b⟩ := hfree.exists_basis
-  letI := WellFounded.wellOrderExtension (emptyWf (α := I)).wf
+  have ⟨I, b⟩ := hfree.exists_basis
+  letI : LinearOrder I := WellFounded.wellOrderExtension emptyWf.wf
   Module.Free.of_basis (Basis.exteriorPower R n b)
 
 variable [StrongRankCondition R]
@@ -320,7 +312,7 @@ the `n`th exterior power of `M` is of finrank `Nat.choose r n`. -/
 lemma finrank_eq [hfree : Module.Free R M] [Module.Finite R M] :
     FiniteDimensional.finrank R (⋀[R]^n M) =
     Nat.choose (FiniteDimensional.finrank R M) n := by
-  letI := WellFounded.wellOrderExtension (emptyWf (α := hfree.ChooseBasisIndex)).wf
+  letI : LinearOrder hfree.ChooseBasisIndex := WellFounded.wellOrderExtension emptyWf.wf
   let B := Basis.exteriorPower R n hfree.chooseBasis
   rw [FiniteDimensional.finrank_eq_card_basis hfree.chooseBasis,
     FiniteDimensional.finrank_eq_card_basis B, Fintype.card_finset_len]
