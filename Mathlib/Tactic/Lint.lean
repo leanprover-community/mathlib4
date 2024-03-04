@@ -79,7 +79,8 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
   if getLinterDupNamespace (← getOptions) then
     match (getIds stx) with
       | #[id] =>
-        let declName ← resolveGlobalConstNoOverload id[0]
+        let ns := (← Elab.Command.getScope).currNamespace
+        let declName := ns ++ id[0].getId
         unless (← declName.isBlackListed) do
           let nm := declName.components
           let some (dup, _) := nm.zip nm.tail! |>.find? fun (x, y) => x == y
