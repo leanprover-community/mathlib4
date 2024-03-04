@@ -566,6 +566,18 @@ theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.degree_of_mul_X_eq MvPolynomial.degreeOf_mul_X_eq
 
+theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
+    (C c * p).degreeOf i ≤ p.degreeOf i := by
+  unfold degreeOf
+  convert Multiset.count_le_of_le i <| degrees_mul (C c) p
+  simp [degrees_C]
+
+theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
+    (p * C c).degreeOf i ≤ p.degreeOf i := by
+  unfold degreeOf
+  convert Multiset.count_le_of_le i <| degrees_mul p (C c)
+  simp [degrees_C]
+
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)
     (i : σ) : degreeOf (f i) (rename f p) = degreeOf i p := by
   classical
@@ -714,7 +726,7 @@ theorem totalDegree_list_prod :
 theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
     s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum := by
   refine' Quotient.inductionOn s fun l => _
-  rw [Multiset.quot_mk_to_coe, Multiset.coe_prod, Multiset.coe_map, Multiset.coe_sum]
+  rw [Multiset.quot_mk_to_coe, Multiset.prod_coe, Multiset.map_coe, Multiset.sum_coe]
   exact totalDegree_list_prod l
 #align mv_polynomial.total_degree_multiset_prod MvPolynomial.totalDegree_multiset_prod
 

@@ -352,7 +352,7 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] {i x} (H : of R ι G f i x = 0
   else
     have hij : i ≤ j := hj _ <| by simp [DirectSum.apply_eq_component, hx0]
     ⟨j, hij, by
-      -- porting note: this had been
+      -- Porting note: this had been
       -- simpa [totalize_of_le hij] using hxj
       simp only [DirectSum.toModule_lof] at hxj
       rwa [totalize_of_le hij] at hxj⟩
@@ -595,7 +595,7 @@ nonrec def of (i) : G i →+* DirectLimit G f :=
 
 variable {G f}
 
--- porting note: the @[simp] attribute would trigger a `simpNF` linter error:
+-- Porting note: the @[simp] attribute would trigger a `simpNF` linter error:
 -- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
 theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x :=
   Ideal.Quotient.eq.2 <| subset_span <| Or.inl ⟨i, j, hij, x, rfl⟩
@@ -621,7 +621,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
               symm
               apply FreeCommRing.of_cons⟩)
         (fun s ⟨i, x, ih⟩ => ⟨i, -x, by
-          -- porting note: Lean 3 was `of _ _ _`; Lean 4 is not as good at unification
+          -- Porting note: Lean 3 was `of _ _ _`; Lean 4 is not as good at unification
           -- here as Lean 3 is, for some reason.
           rw [(of G f i).map_neg, ih]
           rfl⟩)
@@ -680,11 +680,11 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} [DecidablePred (�
   refine' Subring.InClosure.recOn hxs _ _ _ _
   · rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
       (restriction _).map_one, (FreeCommRing.lift _).map_one]
-  · -- porting note: Lean 3 had `(FreeCommRing.lift _).map_neg` but I needed to replace it with
+  · -- Porting note: Lean 3 had `(FreeCommRing.lift _).map_neg` but I needed to replace it with
   -- `RingHom.map_neg` to get the rewrite to compile
     rw [(restriction _).map_neg, (restriction _).map_one, RingHom.map_neg,
       (FreeCommRing.lift _).map_one, (f' j k hjk).map_neg, (f' j k hjk).map_one,
-      -- porting note: similarly here I give strictly less information
+      -- Porting note: similarly here I give strictly less information
       (restriction _).map_neg, (restriction _).map_one, RingHom.map_neg,
       (FreeCommRing.lift _).map_one]
   · rintro _ ⟨p, hps, rfl⟩ n ih
@@ -692,7 +692,7 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} [DecidablePred (�
       (restriction _).map_mul, (FreeCommRing.lift _).map_mul, restriction_of, dif_pos hps, lift_of,
       restriction_of, dif_pos (hst hps), lift_of]
     dsimp only
-    -- porting note: Lean 3 could get away with far fewer hints for inputs in the line below
+    -- Porting note: Lean 3 could get away with far fewer hints for inputs in the line below
     have := DirectedSystem.map_map (fun i j h => f' i j h) (hj p hps) hjk
     rw [this]
   · rintro x y ihx ihy
@@ -729,7 +729,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, fun [_] => _⟩
       · rintro k (rfl | h)
         rfl
-        -- porting note: the Lean3 proof contained `rw [restriction_of]`, but this
+        -- Porting note: the Lean3 proof contained `rw [restriction_of]`, but this
         -- lemma does not seem to work here
       · rw [RingHom.map_sub, RingHom.map_sub]
         erw [lift_of, dif_pos rfl, RingHom.map_one, lift_of, RingHom.map_one, sub_self]
@@ -760,11 +760,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         rw [(f' i i _).map_mul]
         exact sub_self _
         all_goals tauto
-        -- porting note: was
+        -- Porting note: was
         --exacts [sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
   · refine' Nonempty.elim (by infer_instance) fun ind : ι => _
     refine' ⟨ind, ∅, fun _ => False.elim, isSupported_zero, fun [_] => _⟩
-    -- porting note: `RingHom.map_zero` was `(restriction _).map_zero`
+    -- Porting note: `RingHom.map_zero` was `(restriction _).map_zero`
     rw [RingHom.map_zero, (FreeCommRing.lift _).map_zero]
   · intro x y ⟨i, s, hi, hxs, ihs⟩ ⟨j, t, hj, hyt, iht⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
@@ -776,7 +776,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       ⟨k, s ∪ t, this,
         isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
           (isSupported_upwards hyt <| Set.subset_union_right s t), fun [_] => _⟩
-    · -- porting note: was `(restriction _).map_add`
+    · -- Porting note: was `(restriction _).map_add`
       classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
         of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
         of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
@@ -793,7 +793,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       ⟨k, ↑s ∪ t, this,
         isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
           (isSupported_upwards hyt <| Set.subset_union_right (↑s) t), fun [_] => _⟩
-    -- porting note: RingHom.map_mul was `(restriction _).map_mul`
+    -- Porting note: RingHom.map_mul was `(restriction _).map_mul`
     classical rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
       of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
       (f' j k hjk).map_zero, mul_zero]
@@ -861,7 +861,7 @@ def lift : DirectLimit G f →+* P :=
 
 variable {G f}
 
--- porting note: the @[simp] attribute would trigger a `simpNF` linter error:
+-- Porting note: the @[simp] attribute would trigger a `simpNF` linter error:
 -- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
 theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   FreeCommRing.lift_of _ _

@@ -150,10 +150,10 @@ and is preserved under addition and muliplication, then it holds for all of `Ext
 -/
 @[elab_as_elim]
 theorem induction {C : ExteriorAlgebra R M → Prop}
-    (h_grade0 : ∀ r, C (algebraMap R (ExteriorAlgebra R M) r)) (h_grade1 : ∀ x, C (ι R x))
-    (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
+    (algebraMap : ∀ r, C (algebraMap R (ExteriorAlgebra R M) r)) (ι : ∀ x, C (ι R x))
+    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
     (a : ExteriorAlgebra R M) : C a :=
-  CliffordAlgebra.induction h_grade0 h_grade1 h_mul h_add a
+  CliffordAlgebra.induction algebraMap ι mul add a
 #align exterior_algebra.induction ExteriorAlgebra.induction
 
 /-- The left-inverse of `algebraMap`. -/
@@ -295,7 +295,7 @@ variable (R)
 
 This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
 `TensorAlgebra.tprod`. -/
-def ιMulti (n : ℕ) : M [Λ^Fin n]→ₗ[R] ExteriorAlgebra R M :=
+def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
     map_eq_zero_of_eq' := fun f x y hfxy hxy => by

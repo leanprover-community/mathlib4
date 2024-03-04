@@ -608,7 +608,7 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
   refine' (le_sSup _).trans le_sup_right
   rw [← disjoint_iff] at con
   have a_dis_Sup_s : Disjoint a (sSup s) := con.mono_right le_sup_right
-  -- porting note: The two following `fun x hx => _` are no-op
+  -- Porting note: The two following `fun x hx => _` are no-op
   rw [← s_max (s ∪ {a}) ⟨fun x hx => _, _, fun x hx => _⟩ (Set.subset_union_left _ _)]
   · exact Set.mem_union_right _ (Set.mem_singleton _)
   · intro x hx

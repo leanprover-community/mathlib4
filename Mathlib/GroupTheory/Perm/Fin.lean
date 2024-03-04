@@ -85,7 +85,7 @@ Define the permutations `Fin.cycleRange i`, the cycle `(0 1 2 ... i)`.
 
 open Equiv.Perm
 
---Porting note: renamed from finRotate_succ because there is already a theorem with that name
+-- Porting note: renamed from finRotate_succ because there is already a theorem with that name
 theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
     finRotate n.succ = decomposeFin.symm (1, finRotate n) := by
   ext i
@@ -307,7 +307,7 @@ theorem cycleType_cycleRange {n : ℕ} {i : Fin (n + 1)} (h0 : i ≠ 0) :
 #align fin.cycle_type_cycle_range Fin.cycleType_cycleRange
 
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
-  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.eq_iff_veq]
+  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
 #align fin.is_three_cycle_cycle_range_two Fin.isThreeCycle_cycleRange_two
 
 end Fin

@@ -249,7 +249,7 @@ the submonoid. -/
 theorem multiset_prod_mem {M} [CommMonoid M] {s : Set M} (hs : IsSubmonoid s) (m : Multiset M) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s := by
   refine' Quotient.inductionOn m fun l hl => _
-  rw [Multiset.quot_mk_to_coe, Multiset.coe_prod]
+  rw [Multiset.quot_mk_to_coe, Multiset.prod_coe]
   exact list_prod_mem hs hl
 #align is_submonoid.multiset_prod_mem IsSubmonoid.multiset_prod_mem
 #align is_add_submonoid.multiset_sum_mem IsAddSubmonoid.multiset_sum_mem

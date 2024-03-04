@@ -380,7 +380,7 @@ theorem hasStrictFDerivAt_pi' :
   exact isLittleO_pi
 #align has_strict_fderiv_at_pi' hasStrictFDerivAt_pi'
 
-@[simp 1100] -- porting note: increased priority to make lint happy
+@[simp 1100] -- Porting note: increased priority to make lint happy
 theorem hasStrictFDerivAt_pi :
     HasStrictFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x ↔
       ∀ i, HasStrictFDerivAt (φ i) (φ' i) x :=

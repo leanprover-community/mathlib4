@@ -167,10 +167,10 @@ set_option linter.uppercaseLean3 false in
 
 variable {C}
 
--- porting note: removed @[simp] as it is not in normal form
+-- Porting note: removed @[simp] as it is not in normal form
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
--- porting note: in mathlib, `apply ChainComplex.of_d` was enough
+-- Porting note: in mathlib, `apply ChainComplex.of_d` was enough
   ChainComplex.of_d _ _ (d_squared X) n
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex_obj_d AlgebraicTopology.normalizedMooreComplex_objD
