@@ -74,7 +74,7 @@ algebraic geometry which are not globally defined by a cubic equation valid over
 elliptic curve, weierstrass equation, j invariant
 -/
 
--- porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
+-- Porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
@@ -116,28 +116,28 @@ section Quantity
 
 /-! ### Standard quantities -/
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₂` coefficient of a Weierstrass curve. -/
 @[pp_dot]
 def b₂ : R :=
   W.a₁ ^ 2 + 4 * W.a₂
 #align weierstrass_curve.b₂ WeierstrassCurve.b₂
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₄` coefficient of a Weierstrass curve. -/
 @[pp_dot]
 def b₄ : R :=
   2 * W.a₄ + W.a₁ * W.a₃
 #align weierstrass_curve.b₄ WeierstrassCurve.b₄
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₆` coefficient of a Weierstrass curve. -/
 @[pp_dot]
 def b₆ : R :=
   W.a₃ ^ 2 + 4 * W.a₆
 #align weierstrass_curve.b₆ WeierstrassCurve.b₆
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₈` coefficient of a Weierstrass curve. -/
 @[pp_dot]
 def b₈ : R :=
@@ -149,21 +149,21 @@ lemma b_relation : 4 * W.b₈ = W.b₂ * W.b₆ - W.b₄ ^ 2 := by
   ring1
 #align weierstrass_curve.b_relation WeierstrassCurve.b_relation
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₄` coefficient of a Weierstrass curve. -/
 @[pp_dot]
 def c₄ : R :=
   W.b₂ ^ 2 - 24 * W.b₄
 #align weierstrass_curve.c₄ WeierstrassCurve.c₄
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₆` coefficient of a Weierstrass curve. -/
 @[pp_dot]
 def c₆ : R :=
   -W.b₂ ^ 3 + 36 * W.b₂ * W.b₄ - 216 * W.b₆
 #align weierstrass_curve.c₆ WeierstrassCurve.c₆
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The discriminant `Δ` of a Weierstrass curve. If `R` is a field, then this polynomial vanishes
 if and only if the cubic curve cut out by this equation is singular. Sometimes only defined up to
 sign in the literature; we choose the sign used by the LMFDB. For more discussion, see
@@ -599,7 +599,7 @@ add_decl_doc coe_Δ'
 
 variable {R : Type u} [CommRing R] (E : EllipticCurve R)
 
--- porting note: removed `@[simp]` to avoid a `simpNF` linter error
+-- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
 @[pp_dot]
 def j : R :=
@@ -617,7 +617,7 @@ section VariableChange
 
 variable (C : WeierstrassCurve.VariableChange R)
 
--- porting note: was just `@[simps]`
+-- Porting note: was just `@[simps]`
 /-- The elliptic curve over `R` induced by an admissible linear change of variables
 $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$.
 When `R` is a field, any two Weierstrass equations isomorphic to `E` are related by this. -/
@@ -666,7 +666,7 @@ section BaseChange
 
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
--- porting note: was just `@[simps]`
+-- Porting note: was just `@[simps]`
 /-- The elliptic curve mapped over a ring homomorphism `φ : R →+* A`. -/
 @[pp_dot, simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
 def map : EllipticCurve A :=

@@ -73,7 +73,7 @@ def inl [Zero A] (r : R) : Unitization R A :=
   (r, 0)
 #align unitization.inl Unitization.inl
 
--- porting note: we need a def to which we can attach `@[coe]`
+-- Porting note: we need a def to which we can attach `@[coe]`
 /-- The canonical inclusion `A → Unitization R A`. -/
 @[coe]
 def inr [Zero R] (a : A) : Unitization R A :=

@@ -187,7 +187,7 @@ instance (priority := 100) sigmaCompactSpace_of_locally_compact_second_countable
   rwa [sUnion_image]
 #align sigma_compact_space_of_locally_compact_second_countable sigmaCompactSpace_of_locally_compact_second_countable
 
--- porting note: doesn't work on the same line
+-- Porting note: doesn't work on the same line
 variable (X)
 variable [SigmaCompactSpace X]
 
@@ -248,7 +248,7 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     · refine' (finite_le_nat _).isCompact_biUnion fun k _ => _
       exact (isCompact_compactCovering _ _).image continuous_sigmaMk
     · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion]
-      rw [hf.forall] -- porting note: `simp only` failed to use `hf.forall`
+      rw [hf.forall] -- Porting note: `simp only` failed to use `hf.forall`
       intro k y
       rcases exists_mem_compactCovering y with ⟨n, hn⟩
       refine' ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ _⟩
@@ -261,7 +261,7 @@ protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEm
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 #align closed_embedding.sigma_compact_space ClosedEmbedding.sigmaCompactSpace
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   (closedEmbedding_subtype_val hs).sigmaCompactSpace
 

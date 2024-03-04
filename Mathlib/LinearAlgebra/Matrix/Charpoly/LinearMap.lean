@@ -201,7 +201,7 @@ theorem Matrix.isRepresentation.toEnd_exists_mem_ideal (f : Module.End R M) (I :
   let A : Matrix ι ι R := fun i j => bM' (b j) i
   have : A.Represents b f := by
     rw [Matrix.represents_iff']
-    dsimp
+    dsimp [A]
     intro j
     specialize hbM' (b j)
     rwa [Ideal.finsuppTotal_apply_eq_of_fintype] at hbM'

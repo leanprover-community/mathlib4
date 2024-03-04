@@ -25,7 +25,7 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
 
--- porting note: these imports are no longer needed
+-- Porting note: these imports are no longer needed
 --import Mathlib.Tactic.ApplyFun
 --import Mathlib.Tactic.Squeeze
 

@@ -177,11 +177,11 @@ variable {F α β} [i : DFunLike F α β]
 instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
   coe := @DFunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
 
-#eval Lean.Elab.Command.liftTermElabM do
+run_cmd Lean.Elab.Command.liftTermElabM do
   Std.Tactic.Coe.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
--- @[simp] -- porting note: this loops in lean 4
+-- @[simp] -- Porting note: this loops in lean 4
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 #align fun_like.coe_eq_coe_fn DFunLike.coe_eq_coe_fn
 

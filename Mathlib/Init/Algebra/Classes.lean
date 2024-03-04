@@ -20,7 +20,7 @@ provided by mathlib, as they are not discoverable by `simp` unlike the current l
 being little to index on. The Wiki page linked above describes an algebraic normalizer, but it was
 never implemented in Lean 3.
 
-## Porting notes:
+## Porting note:
 This file is ancient, and it would be good to replace it with a clean version
 that provides what mathlib4 actually needs.
 
@@ -66,7 +66,7 @@ set_option autoImplicit true
 
 universe u v
 
--- porting note: removed `outParam`
+-- Porting note: removed `outParam`
 class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
   symm_op : ∀ a b, op a b = op b a
 #align is_symm_op IsSymmOp
