@@ -104,7 +104,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `PiTensorProduct.dualDistribEquiv`: A linear equivalence between `⨂[R] i, Dual R (M i)`
   and `Dual R (⨂[R] i, M i)` when all `M i` are finite free modules. If
   `f : (i : ι) → Dual R (M i)`, then this equivalence sends `⨂ₜ[R] i, f i` to the composition of
-  `PiTensorProduct.map f` with the natural isomorphism `⨂[R] i, R ≃ R` given by multipliccation.
+  `PiTensorProduct.map f` with the natural isomorphism `⨂[R] i, R ≃ R` given by multiplication.
 -/
 
 noncomputable section
