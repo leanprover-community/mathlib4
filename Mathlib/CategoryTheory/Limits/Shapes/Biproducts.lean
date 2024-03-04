@@ -166,12 +166,10 @@ instance functorialityFull [Functor.PreservesZeroMorphisms G] [Full G] [Faithful
       wι := fun j => G.map_injective (by simpa using t.wι j)
       wπ := fun j => G.map_injective (by simpa using t.wπ j) }
 
-instance functorialityFaithful [Functor.PreservesZeroMorphisms G] [Faithful G] :
+instance functoriality_faithful [Functor.PreservesZeroMorphisms G] [Faithful G] :
     Faithful (functoriality F G) where
-  map_injective {c} {c'} f g e := by
-    apply BiconeMorphism.ext f g
-    let f := BiconeMorphism.mk.inj e
-    apply G.map_injective f
+  map_injective {_X} {_Y} f g h :=
+    BiconeMorphism.ext f g <| G.map_injective <| congr_arg BiconeMorphism.hom h
 
 end Bicones
 
@@ -1264,11 +1262,9 @@ instance functorialityFull [Full F] [Faithful F] : Full (functoriality P Q F) wh
       wfst := F.map_injective (by simpa using t.wfst)
       wsnd := F.map_injective (by simpa using t.wsnd) }
 
-instance functorialityFaithful [Faithful F] : Faithful (functoriality P Q F) where
-  map_injective {c} {c'} f g e := by
-    apply BinaryBiconeMorphism.ext f g
-    let f := BinaryBiconeMorphism.mk.inj e
-    apply F.map_injective f
+instance functoriality_faithful [Faithful F] : Faithful (functoriality P Q F) where
+  map_injective {_X} {_Y} f g h :=
+    BiconeMorphism.ext f g <| G.map_injective <| congr_arg BiconeMorphism.hom h
 
 end BinaryBicones
 
