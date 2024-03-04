@@ -1238,7 +1238,8 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
   | Sum.inr ca, Sum.inr cb => C ca cb
 #align computation.lift_rel_aux Computation.LiftRelAux
 
--- Porting note: was attribute [simp] LiftRelAux but right now `simp` on defs is a Lean 4 catastrophe
+-- Porting note: was attribute [simp] LiftRelAux
+-- but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
 @[simp] lemma liftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
 @[simp] lemma liftRelAux_inl_inr {cb} :
