@@ -135,37 +135,7 @@ theorem pow_mod (a b n : ℕ) : a ^ b % n = (a % n) ^ b % n := by
   rfl; simp [pow_succ, Nat.mul_mod, ih]
 #align nat.pow_mod Nat.pow_mod
 
-theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w) + m % b := by
-  by_cases b_h : b = 0
-  · simp [b_h, pow_succ]
-  have b_pos := Nat.pos_of_ne_zero b_h
-  induction m using Nat.strong_induction_on with
-    | h p IH =>
-      cases' lt_or_ge p (b ^ succ w) with h₁ h₁
-      · -- base case: p < b^succ w
-        have h₂ : p / b < b ^ w := by
-          rw [div_lt_iff_lt_mul b_pos]
-          simpa [Nat.pow_succ] using h₁
-        rw [mod_eq_of_lt h₁, mod_eq_of_lt h₂]
-        simp [div_add_mod]
-      · -- step: p ≥ b^succ w
-        -- Generate condition for induction hypothesis
-        have h₂ : p - b ^ succ w < p :=
-          tsub_lt_self ((pow_pos b_pos _).trans_le h₁) (pow_pos b_pos _)
-        -- Apply induction
-        rw [mod_eq_sub_mod h₁, IH _ h₂]
-        -- Normalize goal and h1
-        simp only [pow_succ']
-        simp only [GE.ge, pow_succ'] at h₁
-        -- Pull subtraction outside mod and div
-        rw [sub_mul_mod h₁, sub_mul_div _ _ _ h₁]
-        -- Cancel subtraction inside mod b^w
-        have p_b_ge : b ^ w ≤ p / b := by
-          rw [le_div_iff_mul_le b_pos, mul_comm]
-          exact h₁
-        rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
 #align nat.mod_pow_succ Nat.mod_pow_succ
-
 #align nat.pow_dvd_pow_iff_pow_le_pow Nat.pow_dvd_pow_iff_pow_le_pow
 #align nat.pow_dvd_pow_iff_le_right Nat.pow_dvd_pow_iff_le_right
 #align nat.pow_dvd_pow_iff_le_right' Nat.pow_dvd_pow_iff_le_right'

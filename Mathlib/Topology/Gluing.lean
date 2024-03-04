@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
+import Mathlib.Tactic.Generalize
 
 #align_import topology.gluing from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -211,7 +212,13 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     rintro _ _ ⟨x⟩
     rw [← show (sigmaIsoSigma.{u, u} _).inv _ = x from
         ConcreteCategory.congr_hom (sigmaIsoSigma.{u, u} _).hom_inv_id x]
-    generalize (sigmaIsoSigma.{u, u} D.V).hom x = x'
+  -- Adaption note: v4.7.0-rc1
+  -- The behaviour of `generalize` was changed in https://github.com/leanprover/lean4/pull/3575
+  -- to use transparancy `instances` (rather than `default`)
+  -- `generalize'` is a temporary backwards compatibility shim.
+  -- Hopefully we will be able to refactor this proof to use `generalize` again, and then drop
+  -- `generalize'`.
+    generalize' h : (sigmaIsoSigma.{u, u} D.V).hom x = x'
     obtain ⟨⟨i, j⟩, y⟩ := x'
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
     simp only [Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
