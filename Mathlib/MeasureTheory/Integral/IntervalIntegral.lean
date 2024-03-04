@@ -1045,9 +1045,7 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
   all_goals apply measurableSet_Iic
 #align interval_integral.integral_indicator intervalIntegral.integral_indicator
 
-end DominatedConvergence
-
-
+end OrderClosedTopology
 
 section
 
