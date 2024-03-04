@@ -433,6 +433,12 @@ lemma summable_exp_nat_mul_iff {a : ℝ} :
 lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by
   simpa only [mul_neg_one] using summable_exp_nat_mul_iff.mpr neg_one_lt_zero
 
+lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
+    Summable fun n : ℕ ↦ n ^ k * exp (-r * n) := by
+  simp_rw [mul_comm (-r), exp_nat_mul]
+  apply summable_pow_mul_geometric_of_norm_lt_one
+  rwa [norm_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero]
+
 end Real
 
 namespace Complex
