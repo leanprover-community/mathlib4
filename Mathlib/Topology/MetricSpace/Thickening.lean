@@ -692,4 +692,26 @@ theorem frontier_cthickening_disjoint (A : Set α) :
 
 end Cthickening
 
+theorem thickening_ball [PseudoMetricSpace α] (x : α) (ε δ : ℝ) :
+    thickening ε (ball x δ) ⊆ ball x (ε + δ) := by
+  rw [← thickening_singleton, ← thickening_singleton]
+  apply thickening_thickening_subset
+
 end Metric
+
+open Metric in
+theorem IsCompact.exists_thickening_image_subset [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    {f : α → β} {K : Set α} {U : Set β} (hK : IsCompact K) (ho : IsOpen U)
+    {s : Set α} (hs : s ∈ 𝓝ˢ K) (hf : ContinuousOn f s) (hKU : MapsTo f K U) :
+    ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U := by
+  obtain ⟨r, hr₀, hr⟩ := (hK.image_of_continuousOn (hf.mono (subset_of_mem_nhdsSet hs))
+    ).exists_thickening_subset_open ho hKU.image_subset
+  refine ⟨r / 2, half_pos hr₀, f ⁻¹' thickening (r / 2) (f '' K),
+    hf.tendsto_nhdsSet hs (mapsTo_image _ _) (thickening_mem_nhdsSet _ (half_pos hr₀)), ?_⟩
+  calc
+    thickening (r / 2) (f '' (f ⁻¹' thickening (r / 2) (f '' K))) ⊆
+        thickening (r / 2) (thickening (r / 2) (f '' K)) :=
+      thickening_subset_of_subset _ (image_preimage_subset _ _)
+    _ ⊆ thickening (r / 2 + r / 2) (f '' K) := (thickening_thickening_subset _ _ _)
+    _ = thickening r (f '' K) := by rw [add_halves]
+    _ ⊆ U := hr
