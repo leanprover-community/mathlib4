@@ -28,7 +28,6 @@ constructive.
   (https://ncatlab.org/nlab/show/partial+function)
 -/
 
-
 open CategoryTheory Option
 
 universe u
@@ -94,7 +93,7 @@ instance : Faithful typeToPartialFun where
 
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
 This is the computable part of the equivalence `PartialFunEquivPointed`. -/
-@[simps map]
+@[simps obj map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := { x : X // x ≠ X.point }
   map f := PFun.toSubtype _ f.toFun ∘ Subtype.val
@@ -114,7 +113,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
 be computable because `= Option.none` is decidable while the domain of a general `part` isn't. -/
-@[simps map]
+@[simps obj map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   classical
   exact
@@ -157,35 +156,18 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
             · intro h
               split_ifs at h with ha
               rw [some_inj] at h
-              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩)
-    (NatIso.ofComponents (fun X => Pointed.Iso.mk
-      { toFun := Option.elim' X.point Subtype.val
-        invFun := fun a => by
-          classical
-          exact if h : a = X.point then none else some ⟨_, h⟩
-        left_inv := fun a => Option.recOn a (dif_pos rfl) fun a => by
-          dsimp
-          rw [dif_neg a.2]
-          rfl
-        right_inv := fun a => by
-          dsimp
-          split_ifs with h
-          · rw [h]
-            rfl
-          · rfl} rfl)
-      fun {X Y} f =>
-      Pointed.Hom.ext _ _ <|
-        funext fun a =>
-          Option.recOn a f.map_point.symm (by
-            rintro ⟨a, ha⟩
-            change Option.elim' _ _ _ = f.toFun a
-            dsimp
-            -- Porting note: `rw [Part.elim_toOption]` does not work because there are
-            -- conflicting `Decidable` instances
-            rw [Option.elim'_eq_elim, @Part.elim_toOption _ _ _ (Classical.propDecidable _)]
-            split_ifs with h
-            · rfl
-            · exact Eq.symm (of_not_not h)))
+              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩) $
+    NatIso.ofComponents
+      (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
+      fun {X Y} f ↦ Pointed.Hom.ext _ _ <| funext fun a ↦ by
+        obtain _ | ⟨a, ha⟩ := a
+        exact f.map_point.symm
+        classical
+        simp [Option.casesOn'_eq_elim, -Option.elim,
+          @Part.elim_toOption _ _ _ (Classical.propDecidable _), ha]
+        split_ifs with h
+        · simpa [eq_comm] using h
+        · simp
 #align PartialFun_equiv_Pointed partialFunEquivPointed
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just

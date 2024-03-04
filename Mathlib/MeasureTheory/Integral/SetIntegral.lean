@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.ContinuousFunction.Compact
 
@@ -858,33 +857,6 @@ theorem integrable_of_summable_norm_restrict {f : C(α, E)} {s : β → Compacts
 #align measure_theory.integrable_of_summable_norm_restrict MeasureTheory.integrable_of_summable_norm_restrict
 
 end IntegrableUnion
-
-section TendstoMono
-
-variable {μ : Measure α} [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set α}
-  {f : α → E}
-
-theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
-    (hfi : IntegrableOn f (s 0) μ) :
-    Tendsto (fun i => ∫ a in s i, f a ∂μ) atTop (𝓝 (∫ a in ⋂ n, s n, f a ∂μ)) := by
-  let bound : α → ℝ := indicator (s 0) fun a => ‖f a‖
-  have h_int_eq : (fun i => ∫ a in s i, f a ∂μ) = fun i => ∫ a, (s i).indicator f a ∂μ :=
-    funext fun i => (integral_indicator (hsm i)).symm
-  rw [h_int_eq]
-  rw [← integral_indicator (MeasurableSet.iInter hsm)]
-  refine' tendsto_integral_of_dominated_convergence bound _ _ _ _
-  · intro n
-    rw [aestronglyMeasurable_indicator_iff (hsm n)]
-    exact (IntegrableOn.mono_set hfi (h_anti (zero_le n))).1
-  · rw [integrable_indicator_iff (hsm 0)]
-    exact hfi.norm
-  · simp_rw [norm_indicator_eq_indicator_norm]
-    refine' fun n => eventually_of_forall fun x => _
-    exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
-  · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
-#align antitone.tendsto_set_integral Antitone.tendsto_set_integral
-
-end TendstoMono
 
 /-! ### Continuity of the set integral
 
