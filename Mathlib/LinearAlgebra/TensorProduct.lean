@@ -142,6 +142,38 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
+/-- An unbundled version of `TensorProduct.liftAddHom`, for better performance. -/
+def liftFun (f : M → N → P)
+    (hf_zero_left : ∀ n, f 0 n = 0) (hf_zero_right : ∀ m, f m 0 = 0)
+    (hf_add_left : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
+    (hf_add_right : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
+    M ⊗[R] N →+ P :=
+  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
+    AddCon.addConGen_le fun x y hxy =>
+      match x, y, hxy with
+      | _, _, .of_zero_left n =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, hf_zero_left]
+      | _, _, .of_zero_right m =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, hf_zero_right]
+      | _, _, .of_add_left m₁ m₂ n =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, hf_add_left]
+      | _, _, .of_add_right m n₁ n₂ =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, hf_add_right]
+      | _, _, .of_smul s m n =>
+        (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
+      | _, _, .add_comm x y =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+
+@[simp]
+theorem liftFun_tmul (f : M → N → P)
+    (hf_zero_left : ∀ n, f 0 n = 0) (hf_zero_right : ∀ m, f m 0 = 0)
+    (hf_add_left : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
+    (hf_add_right : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) (m : M) (n : N) :
+    liftFun f hf_zero_left hf_zero_right hf_add_left hf_add_right hf (m ⊗ₜ n) = f m n :=
+  rfl
+
 /-- Lift an `R`-balanced map to the tensor product.
 
 A map `f : M →+ N →+ P` additive in both components is `R`-balanced, or middle linear with respect
@@ -149,28 +181,13 @@ to `R`, if scalar multiplication in either argument is equivalent, `f (r • m) 
 
 Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
 so it doesn't matter. -/
--- TODO: use this to implement `lift` and `SMul.aux`. For now we do not do this as it causes
--- performance issues elsewhere.
 def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
     M ⊗[R] N →+ P :=
-  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
-    AddCon.addConGen_le fun x y hxy =>
-      match x, y, hxy with
-      | _, _, .of_zero_left n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
-          AddMonoidHom.zero_apply]
-      | _, _, .of_zero_right m =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero]
-      | _, _, .of_add_left m₁ m₂ n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add,
-          AddMonoidHom.add_apply]
-      | _, _, .of_add_right m n₁ n₂ =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add]
-      | _, _, .of_smul s m n =>
-        (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
-      | _, _, .add_comm x y =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+  liftFun (f · ·)
+    (fun _ => by simp_rw [map_zero, AddMonoidHom.zero_apply]) (fun _ => map_zero _)
+    (fun _ _ _ => by simp_rw [map_add, AddMonoidHom.add_apply]) (fun _ _ _ => map_add _ _ _)
+    hf
 
 @[simp]
 theorem liftAddHom_tmul (f : M →+ N →+ P)
@@ -251,24 +268,19 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
 
--- porting note: This is added as a local instance for `SMul.aux`.
--- For some reason type-class inference in Lean 3 unfolded this definition.
-private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
-attribute [local instance] addMonoidWithWrongNSMul in
-/-- Auxiliary function to defining scalar multiplication on tensor product. -/
-def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
-  FreeAddMonoid.lift fun p : M × N => (r • p.1) ⊗ₜ p.2
-#align tensor_product.smul.aux TensorProduct.SMul.aux
-
-theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
-    SMul.aux r (.of (m, n)) = (r • m) ⊗ₜ[R] n :=
-  rfl
-#align tensor_product.smul.aux_of TensorProduct.SMul.aux_of
 
 variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
 
+/-- This has the wrong value for the `nsmul` field, but we need it in order to create the right
+value! -/
+private def addCommMonoidWithBadSMul : AddCommMonoid (M ⊗[R] N) where
+  __ := (addConGen (TensorProduct.Eqv R M N)).addMonoid
+  __ := addCommSemigroup M N
+  toZero := (TensorProduct.addZeroClass _ _).toZero
+  toAddSemigroup := addSemigroup _ _
+
+attribute [local instance] addCommMonoidWithBadSMul in
 /-- Given two modules over a commutative semiring `R`, if one of the factors carries a
 (distributive) action of a second type of scalars `R'`, which commutes with the action of `R`, then
 the tensor product (over `R`) carries an action of `R'`.
@@ -281,23 +293,10 @@ action. Two natural ways in which this situation arises are:
 Note that in the special case that `R = R'`, since `R` is commutative, we just get the usual scalar
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
-instance leftHasSMul : SMul R' (M ⊗[R] N) :=
-  ⟨fun r =>
-    (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
-      AddCon.addConGen_le fun x y hxy =>
-        match x, y, hxy with
-        | _, _, .of_zero_left n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, SMul.aux_of, smul_zero, zero_tmul]
-        | _, _, .of_zero_right m =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, SMul.aux_of, tmul_zero]
-        | _, _, .of_add_left m₁ m₂ n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, SMul.aux_of, smul_add, add_tmul]
-        | _, _, .of_add_right m n₁ n₂ =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, SMul.aux_of, tmul_add]
-        | _, _, .of_smul s m n =>
-          (AddCon.ker_rel _).2 <| by rw [SMul.aux_of, SMul.aux_of, ← smul_comm, smul_tmul]
-        | _, _, .add_comm x y =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]⟩
+instance leftHasSMul : SMul R' (M ⊗[R] N) where
+  smul r := liftFun (fun m n => (r • m) ⊗ₜ n)
+    (by simp) (by simp) (by simp [add_tmul]) (by simp [tmul_add])
+    (fun r' m n => by dsimp; rw [←smul_comm, smul_tmul])
 #align tensor_product.left_has_smul TensorProduct.leftHasSMul
 
 instance : SMul R (M ⊗[R] N) :=
@@ -519,8 +518,10 @@ variable (f : M →ₗ[R] N →ₗ[R] P)
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def liftAux : M ⊗[R] N →+ P :=
-  liftAddHom (LinearMap.toAddMonoidHom'.comp <| f.toAddMonoidHom)
-    fun r m n => by dsimp; rw [LinearMap.map_smul₂, map_smul]
+  -- too slow: `liftAddHom (LinearMap.toAddMonoidHom'.comp <| f.toAddMonoidHom)`
+  liftFun (f · ·)
+    (by simp) (by simp) (by simp) (by simp)
+  fun r m n => by dsimp; rw [LinearMap.map_smul₂, map_smul]
 #align tensor_product.lift_aux TensorProduct.liftAux
 
 theorem liftAux_tmul (m n) : liftAux f (m ⊗ₜ n) = f m n :=

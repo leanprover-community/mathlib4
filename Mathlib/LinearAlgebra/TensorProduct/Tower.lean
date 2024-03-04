@@ -120,7 +120,8 @@ Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N
 property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
 the given bilinear map `M →[A] N →[R] P`. -/
 nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
-  { lift (f.restrictScalars R) with
+  { -- avoid `lift` and `restrictScalars` for performance
+    liftFun (f · ·) (by simp) (by simp) (by simp) (by simp) (by simp) with
     map_smul' := fun c =>
       show
         ∀ x : M ⊗[R] N,
