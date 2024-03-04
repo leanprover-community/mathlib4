@@ -7,21 +7,24 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
-## The dominated convergence theorem
+# The dominated convergence theorem
 
 This file collects various results related to the Lebesgue dominated convergence theorem
 for the Bochner integral.
 
 ## Main results
-- `tendsto_integral_of_dominated_convergence`: the Lebesgue dominated convergence theorem
-- `hasSum_integral_of_dominated_convergence`: the Lebesgue dominated convergence theorem for series
-- `integral_tsum`, `integral_tsum_of_summable_integral_norm`: the integral and `tsum`s commute,
-  if the norms of the functions form a summable series
+- `MeasureTheory.tendsto_integral_of_dominated_convergence`:
+  the Lebesgue dominated convergence theorem for the Bochner integral
+- `MeasureTheory.hasSum_integral_of_dominated_convergence`:
+  the Lebesgue dominated convergence theorem for series
+- `MeasureTheory.integral_tsum`, `MeasureTheory.integral_tsum_of_summable_integral_norm`:
+  the integral and `tsum`s commute, if the norms of the functions form a summable series
 - `intervalIntegral.hasSum_integral_of_dominated_convergence`: the Lebesgue dominated convergence
   theorem for parametric interval integrals
-- `continuous_of_dominated_interval`: continuity of the interval integral w.r.t. a parameter
-- `continuous_primitive` and friends: primitives of interval integrable measurable functions
-  are continuous
+- `intervalIntegral.continuous_of_dominated_interval`: continuity of the interval integral
+  w.r.t. a parameter
+- `intervalIntegral.continuous_primitive` and friends: primitives of interval integrable
+  measurable functions are continuous
 
 -/
 
