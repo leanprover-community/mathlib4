@@ -398,7 +398,7 @@ instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) 
 instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
   { inferInstanceAs (OrderedSemiring (α × β)), inferInstanceAs (CommSemiring (α × β)) with }
 
--- porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
+-- Porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
 instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
   { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedAddCommGroup (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩

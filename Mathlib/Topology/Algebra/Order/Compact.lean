@@ -55,12 +55,12 @@ export CompactIccSpace (isCompact_Icc)
 
 variable {α : Type*}
 
--- porting note: new lemma; TODO: make it the definition
+-- Porting note: new lemma; TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]
     (h : ∀ {a b : α}, a ≤ b → IsCompact (Icc a b)) : CompactIccSpace α where
   isCompact_Icc {a b} := by_cases h fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
 
--- porting note: new lemma; TODO: drop one `'`
+-- Porting note: new lemma; TODO: drop one `'`
 lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
     (h : ∀ {a b : α}, a < b → IsCompact (Icc a b)) : CompactIccSpace α :=
   .mk' fun hab => hab.eq_or_lt.elim (by rintro rfl; simp) h
@@ -90,7 +90,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   have ha : a ∈ s := by simp [s, hpt, hab]
   rcases hab.eq_or_lt with (rfl | _hlt)
   · exact ha.2
-  -- porting note: the `obtain` below was instead
+  -- Porting note: the `obtain` below was instead
   -- `set c := Sup s`
   -- `have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ sbd`
   obtain ⟨c, hsc⟩ : ∃ c, IsLUB s c := ⟨sSup s, isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩⟩
@@ -256,7 +256,7 @@ theorem cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
     [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
   cocompact_le_atTop.antisymm atTop_le_cocompact
 
--- porting note: new lemma; defeq to the old one but allows us to use dot notation
+-- Porting note: new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
 theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMinOn f s x := by
@@ -270,7 +270,7 @@ theorem IsCompact.exists_forall_le [ClosedIicTopology α] {s : Set β} (hs : IsC
   hs.exists_isMinOn ne_s hf
 #align is_compact.exists_forall_le IsCompact.exists_forall_le
 
--- porting note: new lemma; defeq to the old one but allows us to use dot notation
+-- Porting note: new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
 theorem IsCompact.exists_isMaxOn [ClosedIciTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMaxOn f s x :=
@@ -531,7 +531,7 @@ theorem IsCompact.exists_isLocalMinOn_mem_subset [ClosedIicTopology α] {f : β 
   ⟨x, hxs, h.localize⟩
 #align is_compact.exists_local_min_on_mem_subset IsCompact.exists_isLocalMinOn_mem_subset
 
--- porting note: rfc: assume `t ∈ 𝓝ˢ s` (a.k.a. `s ⊆ interior t`) instead of `s ⊆ t` and
+-- Porting note: rfc: assume `t ∈ 𝓝ˢ s` (a.k.a. `s ⊆ interior t`) instead of `s ⊆ t` and
 -- `IsOpen s`?
 theorem IsCompact.exists_isLocalMin_mem_open [ClosedIicTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hst : s ⊆ t) (hf : ContinuousOn f t) (hz : z ∈ t)

@@ -61,7 +61,7 @@ def subchain : Set (List α) :=
   { l | l.Chain' (· < ·) ∧ ∀ i ∈ l, i ∈ s }
 #align set.subchain Set.subchain
 
-@[simp] -- porting note: new `simp`
+@[simp] -- Porting note: new `simp`
 theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ fun.⟩
 #align set.nil_mem_subchain Set.nil_mem_subchain
 
@@ -73,7 +73,7 @@ theorem cons_mem_subchain_iff :
     and_assoc]
 #align set.cons_mem_subchain_iff Set.cons_mem_subchain_iff
 
-@[simp] -- porting note: new lemma + `simp`
+@[simp] -- Porting note: new lemma + `simp`
 theorem singleton_mem_subchain_iff : [a] ∈ s.subchain ↔ a ∈ s := by simp [cons_mem_subchain_iff]
 
 instance : Nonempty s.subchain :=

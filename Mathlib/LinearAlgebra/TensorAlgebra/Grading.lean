@@ -52,7 +52,7 @@ instance gradedAlgebra :
     fun i x => by
     cases' x with x hx
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-    -- porting note: use new `induction using` support that failed in Lean 3
+    -- Porting note: use new `induction using` support that failed in Lean 3
     induction hx using Submodule.pow_induction_on_left' with
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl

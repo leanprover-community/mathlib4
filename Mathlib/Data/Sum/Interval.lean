@@ -336,7 +336,7 @@ local elab "simp_lex" : tactic => do
         mem_Iic, mem_Iio, Equiv.coe_toEmbedding, toLex_inj, exists_false, and_false, false_and,
         map_empty, not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex,
         mem_map, Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply,
-        -- porting note: added
+        -- Porting note: added
         inl.injEq, inr.injEq]
   )
 
