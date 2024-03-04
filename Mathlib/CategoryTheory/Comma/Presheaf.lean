@@ -633,8 +633,7 @@ noncomputable def CostructuredArrow.toOverCompYonedaColimit :
   _ ≅ (yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj E) ⋙
           (whiskeringLeft _ _ _).obj F ⋙ colim :=
         Iso.refl _
-  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙
-          (whiskeringLeft _ _ _).obj F ⋙ colim :=
+  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
         isoWhiskerRight (CostructuredArrow.toOverCompCoyoneda _).symm _
   _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ (F ⋙ yoneda).flip ⋙ colim :=
         Iso.refl _
