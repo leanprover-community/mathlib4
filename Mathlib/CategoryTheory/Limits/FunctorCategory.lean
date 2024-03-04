@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Types
 
 #align_import category_theory.limits.functor_category from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
@@ -447,126 +448,122 @@ def colimitIsoSwapCompColim [HasColimitsOfShape J C] (G : J ⥤ K ⥤ C) :
 
 end
 
--- variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+section
 
---def typefunc (C : Type u) [Category.{v} C] : Type (max v (u + 1)) := C ⥤ (Type u)
-
---instance blah : Quiver (typefunc C) := sorry
-
-namespace FunctorProd
-
-/-- `prod X Y` is the explicit binary product of simplicial sets `X` and `Y`. -/
-def prod (F G : C ⥤ (Type u)) : C ⥤ (Type u) where
-  obj n := F.obj n × G.obj n
+/-- `functorProd F G` is the explicit binary product of type-valued functors `F` and `G`. -/
+def functorProd (F G : C ⥤ Type w) : C ⥤ Type w where
+  obj a := F.obj a × G.obj a
   map f a := (F.map f a.1, G.map f a.2)
 
-  /-- The first projection of `prod X Y`, onto X. -/
+  /-- The first projection of `functorProd F G`, onto `F`. -/
 @[simps]
-def prod.fst {X Y : C ⥤ (Type u)} : (prod X Y) ⟶ X where
+def functorProd.fst {F G : C ⥤ Type w} : (functorProd F G) ⟶ F where
   app _ a := a.1
 
-/-- The second projection of `prod X Y`, onto Y. -/
+/-- The second projection of `functorProd F G`, onto `G`. -/
 @[simps]
-def prod.snd {X Y : C ⥤ (Type u)} : (prod X Y) ⟶ Y where
+def functorProd.snd {F G : C ⥤ Type w} : (functorProd F G) ⟶ G where
   app _ a := a.2
 
-/-- The binary fan whose point is `prod X Y`. -/
+/-- Given natural transformations `F ⟶ F₁` and `F ⟶ F₂`, construct
+a natural transformation `F ⟶ functorProd F₁ F₂`. -/
+def natTransProd {F F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
+    F ⟶ functorProd F₁ F₂ where
+  app x y := ⟨τ₁.app x y, τ₂.app x y⟩
+  naturality x y f := by
+    ext a
+    simp only [types_comp_apply, FunctorToTypes.naturality]
+    aesop
+
+/-- The binary fan whose point is `functorProd F G`. -/
 @[simps!]
-def binaryProductCone (X Y : C ⥤ (Type u)) : BinaryFan X Y :=
-  BinaryFan.mk (prod.fst) (prod.snd)
+def binaryProductCone (F G : C ⥤ Type w) : BinaryFan F G :=
+  BinaryFan.mk (functorProd.fst) (functorProd.snd)
 
-/-- The morphism from the point of any binary fan to `prod X Y`. -/
+/-- `functorProd F G` is a limit cone. -/
 @[simps]
-def binaryProductLift {X Y : C ⥤ (Type u)} (s : BinaryFan X Y) : s.pt ⟶ prod X Y where
-  app n x := ((s.fst).app n x, (s.snd).app n x)
-  naturality _ _ _ := by
-    ext
-    simp [FunctorToTypes.naturality, prod]
-
-/-- `prod X Y` is a limit cone. -/
-@[simps]
-def binaryProductLimit (X Y : C ⥤ (Type u)) : IsLimit (binaryProductCone X Y) where
-  lift (s : BinaryFan X Y) := binaryProductLift s
+def binaryProductLimit (F G : C ⥤ Type w) : IsLimit (binaryProductCone F G) where
+  lift (s : BinaryFan F G) := natTransProd s.fst s.snd
   fac _ := fun ⟨j⟩ ↦ WalkingPair.casesOn j rfl rfl
   uniq _ _ ht := by
-    simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩, binaryProductLift]
+    simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩]
     congr
 
-/-- `prod X Y` is a binary product for `X` and `Y`. -/
-def binaryProductLimitCone (X Y : C ⥤ (Type u)) : Limits.LimitCone (pair X Y) :=
-  ⟨_, binaryProductLimit X Y⟩
+/-- `functorProd F G` is a binary product for `F` and `G`. -/
+def binaryProductLimitCone (F G : C ⥤ Type w) : Limits.LimitCone (pair F G) :=
+  ⟨_, binaryProductLimit F G⟩
 
-/-- The categorical binary product of simplicial sets is `prod X Y`. -/
-noncomputable def binaryProductIso (X Y : C ⥤ (Type u)) : X ⨯ Y ≅ prod X Y :=
-  limit.isoLimitCone (binaryProductLimitCone X Y)
-
-@[simp]
-lemma binaryProductIso_hom_comp_fst (X Y : C ⥤ (Type u)) :
-    (binaryProductIso X Y).hom ≫ prod.fst = Limits.prod.fst := by aesop
+/-- The categorical binary product of type-valued functors is `functorProd F G`. -/
+noncomputable def binaryProductIso (F G : C ⥤ Type w) : F ⨯ G ≅ functorProd F G :=
+  limit.isoLimitCone (binaryProductLimitCone F G)
 
 @[simp]
-lemma binaryProductIso_hom_comp_snd (X Y : C ⥤ (Type u)) :
-    (binaryProductIso X Y).hom ≫ prod.snd = Limits.prod.snd := by aesop
+lemma binaryProductIso_hom_comp_fst (F G : C ⥤ Type w) :
+    (binaryProductIso F G).hom ≫ functorProd.fst = Limits.prod.fst := by aesop
 
 @[simp]
-lemma binaryProductIso_inv_comp_fst (X Y : C ⥤ (Type u)) :
-    (binaryProductIso X Y).inv ≫ Limits.prod.fst = prod.fst := by
+lemma binaryProductIso_hom_comp_snd (F G : C ⥤ Type w) :
+    (binaryProductIso F G).hom ≫ functorProd.snd = Limits.prod.snd := by aesop
+
+@[simp]
+lemma binaryProductIso_inv_comp_fst (F G : C ⥤ Type w) :
+    (binaryProductIso F G).inv ≫ Limits.prod.fst = functorProd.fst := by
   simp [binaryProductIso, binaryProductLimitCone]
 
 @[simp]
-lemma binaryProductIso_inv_comp_fst_apply (X Y : C ⥤ (Type u)) (n : C)
-    (z : (prod X Y).obj n) :
-    (Limits.prod.fst (X := X)).app n ((binaryProductIso X Y).inv.app n z) = z.1 :=
-  congr_fun (congr_app (binaryProductIso_inv_comp_fst X Y) n) z
+lemma binaryProductIso_inv_comp_fst_apply (F G : C ⥤ Type w) (a : C)
+    (z : (functorProd F G).obj a) :
+    (Limits.prod.fst (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.1 :=
+  congr_fun (congr_app (binaryProductIso_inv_comp_fst F G) a) z
 
 @[simp]
-lemma binaryProductIso_inv_comp_snd (X Y : C ⥤ (Type u)) :
-    (binaryProductIso X Y).inv ≫ Limits.prod.snd = prod.snd := by
+lemma binaryProductIso_inv_comp_snd (F G : C ⥤ Type w) :
+    (binaryProductIso F G).inv ≫ Limits.prod.snd = functorProd.snd := by
     simp [binaryProductIso, binaryProductLimitCone]
 
 @[simp]
-lemma binaryProductIso_inv_comp_snd_apply (X Y : C ⥤ (Type u)) (n : C)
-    (z : (prod X Y).obj n) :
-    (Limits.prod.snd (X := X)).app n ((binaryProductIso X Y).inv.app n z) = z.2 :=
-  congr_fun (congr_app (binaryProductIso_inv_comp_snd X Y) n) z
+lemma binaryProductIso_inv_comp_snd_apply (F G : C ⥤ Type w) (a : C)
+    (z : (functorProd F G).obj a) :
+    (Limits.prod.snd (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.2 :=
+  congr_fun (congr_app (binaryProductIso_inv_comp_snd F G) a) z
 
-/-- Constructing an n-simplex in `X ⨯ Y` from an n-simplex in `X` and an n-simplex in `Y`. -/
+/-- Constructs an element of `(F ⨯ G).obj a` from an element of `F.obj a` and
+an element of `G.obj a`. -/
 noncomputable
-def prodMk {X Y : C ⥤ (Type u)} {n : C} (x : X.obj n) (y : Y.obj n) :
-    (X ⨯ Y).obj n := ((binaryProductIso X Y).inv).app n ⟨x, y⟩
+def functorProdMk {F G : C ⥤ Type w} {a : C} (x : F.obj a) (y : G.obj a) :
+    (F ⨯ G).obj a := ((binaryProductIso F G).inv).app a ⟨x, y⟩
 
 @[simp]
-lemma prodMk_fst {X Y : C ⥤ (Type u)} {n : C} (x : X.obj n) (y : Y.obj n) :
-    (Limits.prod.fst (X := X) (Y := Y)).app n (prodMk x y) = x := by
-  simp only [prodMk, binaryProductIso_inv_comp_fst_apply]
+lemma functorProdMk_fst {F G : C ⥤ Type w} {a : C} (x : F.obj a) (y : G.obj a) :
+    (Limits.prod.fst (X := F) (Y := G)).app a (functorProdMk x y) = x := by
+  simp only [functorProdMk, binaryProductIso_inv_comp_fst_apply]
 
 @[simp]
-lemma prodMk_snd {X Y : C ⥤ (Type u)} {n : C} (x : X.obj n) (y : Y.obj n) :
-    (Limits.prod.snd (X := X) (Y := Y)).app n (prodMk x y) = y := by
-  simp only [prodMk, binaryProductIso_inv_comp_snd_apply]
+lemma functorProdMk_snd {F G : C ⥤ Type w} {a : C} (x : F.obj a) (y : G.obj a) :
+    (Limits.prod.snd (X := F) (Y := G)).app a (functorProdMk x y) = y := by
+  simp only [functorProdMk, binaryProductIso_inv_comp_snd_apply]
 
 @[ext]
-lemma prod_ext {X Y : C ⥤ (Type u)} {n : C} (z w : (prod X Y).obj n)
+lemma functorProd_ext {F G : C ⥤ Type w} {a : C} (z w : (functorProd F G).obj a)
     (h1 : z.1 = w.1) (h2 : z.2 = w.2) : z = w := Prod.ext h1 h2
 
-/-- The n-simplices of `X ⨯ Y` are in bijection with the
-product of the n-simplices of `X` and the n-simplices of `Y`. -/
+/-- `(F ⨯ G).obj a` is in bijection with the product of `F.obj a` and `G.obj a`. -/
 @[simps]
 noncomputable
-def binaryProductEquiv (X Y : C ⥤ (Type u)) (n : C) :
-    (X ⨯ Y).obj n ≃ (X.obj n) × (Y.obj n) where
-  toFun z := ⟨(((binaryProductIso X Y).hom).app n z).1, (((binaryProductIso X Y).hom).app n z).2⟩
-  invFun z := prodMk z.1 z.2
-  left_inv _ := by simp [prodMk]
-  right_inv _ := by simp [prodMk]
+def binaryProductEquiv (F G : C ⥤ Type w) (a : C) :
+    (F ⨯ G).obj a ≃ (F.obj a) × (G.obj a) where
+  toFun z := ⟨(((binaryProductIso F G).hom).app a z).1, (((binaryProductIso F G).hom).app a z).2⟩
+  invFun z := functorProdMk z.1 z.2
+  left_inv _ := by simp [functorProdMk]
+  right_inv _ := by simp [functorProdMk]
 
 -- move this
 @[ext]
-lemma Limits.prod_ext (X Y : C ⥤ (Type u)) (n : C) (z w : (X ⨯ Y).obj n)
-    (h1 : (Limits.prod.fst (X := X)).app n z = (Limits.prod.fst (X := X)).app n w)
-    (h2 : (Limits.prod.snd (X := X)).app n z = (Limits.prod.snd (X := X)).app n w) :
+lemma Limits.prod_ext (F G : C ⥤ Type w) (n : C)(z w : (F ⨯ G).obj n)
+    (h1 : (Limits.prod.fst (X := F)).app n z = (Limits.prod.fst (X := F)).app n w)
+    (h2 : (Limits.prod.snd (X := F)).app n z = (Limits.prod.snd (X := F)).app n w) :
     z = w := by
-  apply Equiv.injective (binaryProductEquiv X Y n)
+  apply Equiv.injective (binaryProductEquiv F G n)
   aesop
 
-end FunctorProd
+end
