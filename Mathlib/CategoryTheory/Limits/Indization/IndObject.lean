@@ -195,23 +195,6 @@ theorem step₃ : Nonempty <| limit <|
 noncomputable def myFunctor : I ⥤ (Over (colimit.cocone F).pt)ᵒᵖ ⥤ Type (max u v) :=
   (colimit.cocone F).toCostructuredArrow ⋙ CostructuredArrow.toOver _ _ ⋙ yoneda
 
-def curriedYonedaLemmaPt {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type v) :
-    yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u} :=
-  NatIso.ofComponents (fun X => yonedaSections _ _) (by
-    intros X Y f
-    ext g
-    rw [← ULift.down_inj]
-    simpa using congrFun (g.naturality f) (𝟙 _))
-
-noncomputable def fullCurriedYonedaLemma (C : Type u) [Category.{v} C] :
-    yoneda.op ⋙ coyoneda ≅ evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} :=
-  NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => yonedaSections _ _) (by aesop_cat)) (by
-    intros X Y f
-    dsimp
-    ext g x
-    dsimp
-    rw [← ULift.down_inj]
-    simpa using congrFun (x.naturality f) (𝟙 _))
 
 section PreInterchange
 
@@ -220,29 +203,19 @@ variable {C : Type v} [SmallCategory C] {D : Type u} [Category.{v} D] (F : C ⥤
 noncomputable def preInterchange :
     yoneda.op ⋙ yoneda.obj (colimit F) ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := calc
   yoneda.op ⋙ yoneda.obj (colimit F)
-    ≅ colimit F ⋙ uliftFunctor.{u} := curriedYonedaLemmaPt (colimit F)
+    ≅ colimit F ⋙ uliftFunctor.{u} := yonedaOpCompYonedaObj (colimit F)
   _ ≅ F.flip ⋙ colim ⋙ uliftFunctor.{u} := isoWhiskerRight (colimitIsoFlipCompColim _) _
   _ ≅ F.flip ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙ colim :=
         isoWhiskerLeft _ (preservesColimitNatIso _)
-  _ ≅ (evaluation _ _ ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u}) ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
+  _ ≅ (evaluation _ _ ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u}) ⋙
+          (whiskeringLeft _ _ _).obj F ⋙ colim :=
         Iso.refl _
   _ ≅ (yoneda.op ⋙ coyoneda) ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        isoWhiskerRight (fullCurriedYonedaLemma _).symm _
+        isoWhiskerRight curriedYonedaLemma.symm _
   _ ≅ yoneda.op ⋙ (F ⋙ yoneda).flip ⋙ colim := Iso.refl _
   _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
 
 end PreInterchange
-
-section FlipStuff
-
-variable {C D E F G : Type*} [Category C] [Category D] [Category E] [Category F] [Category G]
-  (A : C ⥤ D ⥤ E) (B : (D ⥤ E) ⥤ F ⥤ G)
-
-def flip_comp : (A ⋙ B).flip ≅ B.flip ⋙ (whiskeringLeft _ _ _).obj A := Iso.refl _
-
-def flip_yoneda : (@yoneda C).flip ≅ coyoneda := Iso.refl _
-
-end FlipStuff
 
 section BetterInterchange
 
@@ -256,37 +229,22 @@ noncomputable def betterInterchange :
     (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj (colimit F) ≅
     (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) := calc
   (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj (colimit F)
-
     ≅ yoneda.op ⋙ yoneda.obj (E.obj (colimit F)) :=
         CostructuredArrow.toOverCompYoneda A _
-
   _ ≅ yoneda.op ⋙ yoneda.obj (colimit (F ⋙ E)) :=
         isoWhiskerLeft yoneda.op (yoneda.mapIso (preservesColimitIso _ F))
-
   _ ≅ yoneda.op ⋙ colimit ((F ⋙ E) ⋙ yoneda) :=
         preInterchange _
-
   _ ≅ yoneda.op ⋙ ((F ⋙ E) ⋙ yoneda).flip ⋙ colim :=
         isoWhiskerLeft _ (colimitIsoFlipCompColim _)
-
-  -- _ ≅ yoneda.op ⋙ yoneda.flip ⋙ (whiskeringLeft _ _ _).obj (F ⋙ E) ⋙ colim :=
-  --       isoWhiskerLeft _ (isoWhiskerRight (flip_comp _ _) _)
-
-  -- _ ≅ yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (F ⋙ E) ⋙ colim :=
-  --       isoWhiskerLeft _ (isoWhiskerRight flip_yoneda _)
-
-  -- _ ≅ yoneda.op ⋙ coyoneda ⋙ ((whiskeringLeft _ _ _).obj E ⋙ (whiskeringLeft _ _ _).obj F) ⋙ colim :=
-  --       Iso.refl _
-
-  _ ≅ (yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj E) ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
+  _ ≅ (yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj E) ⋙
+          (whiskeringLeft _ _ _).obj F ⋙ colim :=
         Iso.refl _
-
-  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
+  _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ coyoneda ⋙
+          (whiskeringLeft _ _ _).obj F ⋙ colim :=
         isoWhiskerRight (CostructuredArrow.yoneda' _).symm _
-
   _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ (F ⋙ yoneda).flip ⋙ colim :=
         Iso.refl _
-
   _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) :=
       isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
 
