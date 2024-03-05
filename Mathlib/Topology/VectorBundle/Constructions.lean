@@ -5,6 +5,7 @@ Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doo
 -/
 import Mathlib.Topology.FiberBundle.Constructions
 import Mathlib.Topology.VectorBundle.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 
 #align_import topology.vector_bundle.constructions from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
@@ -147,7 +148,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
 
 variable {𝕜 F₁ E₁ F₂ E₂}
 
-@[simp] -- porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
+@[simp] -- Porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
 theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
     {e₂ : Trivialization F₂ (π F₂ E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
     (hx : x ∈ (e₁.prod e₂).baseSet) :

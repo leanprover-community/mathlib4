@@ -447,6 +447,9 @@ theorem eq_of_div_eq_one (h : a / b = 1) : a = b :=
 #align eq_of_div_eq_one eq_of_div_eq_one
 #align eq_of_sub_eq_zero eq_of_sub_eq_zero
 
+lemma eq_of_inv_mul_eq_one (h : a⁻¹ * b = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+lemma eq_of_mul_inv_eq_one (h : a * b⁻¹ = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+
 @[to_additive]
 theorem div_ne_one_of_ne : a ≠ b → a / b ≠ 1 :=
   mt eq_of_div_eq_one

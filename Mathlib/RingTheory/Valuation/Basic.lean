@@ -71,7 +71,7 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---porting note: removed @[nolint has_nonempty_instance]
+--porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -133,7 +133,7 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
 
-@[simp] --Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
+@[simp] -- Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
 theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
     (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
 
@@ -488,7 +488,7 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
   · rw [isEquiv_iff_val_eq_one]
     intro h x
     by_cases hx : x = 0
-    · -- porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
+    · -- Porting note: this proof was `simp only [(zero_iff _).2 hx, zero_ne_one]`
       rw [(zero_iff _).2 hx, (zero_iff _).2 hx]
       simp only [zero_ne_one]
     constructor
@@ -594,7 +594,7 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 #align add_valuation AddValuation

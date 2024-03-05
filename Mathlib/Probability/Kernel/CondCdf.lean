@@ -89,14 +89,14 @@ theorem IicSnd_univ (r : ℝ) : ρ.IicSnd r univ = ρ (univ ×ˢ Iic r) :=
 #align measure_theory.measure.Iic_snd_univ MeasureTheory.Measure.IicSnd_univ
 
 theorem IicSnd_mono {r r' : ℝ} (h_le : r ≤ r') : ρ.IicSnd r ≤ ρ.IicSnd r' := by
-  intro s hs
+  refine Measure.le_iff.2 fun s hs ↦ ?_
   simp_rw [IicSnd_apply ρ _ hs]
   refine' measure_mono (prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr _⟩))
   exact mod_cast h_le
 #align measure_theory.measure.Iic_snd_mono MeasureTheory.Measure.IicSnd_mono
 
 theorem IicSnd_le_fst (r : ℝ) : ρ.IicSnd r ≤ ρ.fst := by
-  intro s hs
+  refine Measure.le_iff.2 fun s hs ↦ ?_
   simp_rw [fst_apply hs, IicSnd_apply ρ r hs]
   exact measure_mono (prod_subset_preimage_fst _ _)
 #align measure_theory.measure.Iic_snd_le_fst MeasureTheory.Measure.IicSnd_le_fst
@@ -219,8 +219,7 @@ theorem monotone_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     ae_le_of_forall_set_lintegral_le_of_sigmaFinite measurable_preCDF measurable_preCDF
       fun s hs _ => _
   rw [set_lintegral_preCDF_fst ρ r hs, set_lintegral_preCDF_fst ρ r' hs]
-  refine' Measure.IicSnd_mono ρ _ s hs
-  exact mod_cast hrr'
+  exact Measure.IicSnd_mono ρ (mod_cast hrr') s
 #align probability_theory.monotone_pre_cdf ProbabilityTheory.monotone_preCDF
 
 theorem set_lintegral_iInf_gt_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (t : ℚ) {s : Set α}
@@ -251,7 +250,7 @@ theorem preCDF_le_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
       fun s hs _ => _
   rw [set_lintegral_preCDF_fst ρ r hs]
   simp only [Pi.one_apply, lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
-  exact Measure.IicSnd_le_fst ρ r s hs
+  exact Measure.IicSnd_le_fst ρ r s
 #align probability_theory.pre_cdf_le_one ProbabilityTheory.preCDF_le_one
 
 theorem tendsto_lintegral_preCDF_atTop (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
@@ -293,7 +292,7 @@ theorem tendsto_preCDF_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
     if h : ∃ l, Tendsto (fun r => preCDF ρ r a) atTop (𝓝 l) then h.choose else 0
   have h_tendsto_ℚ : ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCDF ρ r a) atTop (𝓝 (F a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [dif_pos ha]
+    simp_rw [F, dif_pos ha]
     exact ha.choose_spec
   have h_tendsto_ℕ : ∀ᵐ a ∂ρ.fst, Tendsto (fun n : ℕ => preCDF ρ n a) atTop (𝓝 (F a)) := by
     filter_upwards [h_tendsto_ℚ] with a ha using ha.comp tendsto_nat_cast_atTop_atTop
@@ -357,7 +356,7 @@ theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
     if h : ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) then h.choose else 0
   have h_tendsto : ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 (F a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [dif_pos ha]
+    simp_rw [F, dif_pos ha]
     exact ha.choose_spec
   suffices h_lintegral_eq : ∫⁻ a, F a ∂ρ.fst = 0 by
     have hF_ae_meas : AEMeasurable F ρ.fst := by

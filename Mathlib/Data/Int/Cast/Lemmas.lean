@@ -407,7 +407,7 @@ def zmultiplesHom : α ≃ (ℤ →+ α) where
 
 /-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-@[to_additive existing zmultiplesHom]
+@[to_additive existing]
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
   ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 #align zpowers_hom zpowersHom
@@ -418,11 +418,11 @@ lemma zmultiplesHom_apply (x : α) (n : ℤ) : zmultiplesHom α x n = n • x :=
 lemma zmultiplesHom_symm_apply (f : ℤ →+ α) : (zmultiplesHom α).symm f = f 1 := rfl
 #align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
 
-@[to_additive existing (attr := simp) zmultiplesHom_apply]
-lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) :zpowersHom α x n = x ^ toAdd n := rfl
+@[to_additive existing (attr := simp)]
+lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ toAdd n := rfl
 #align zpowers_hom_apply zpowersHom_apply
 
-@[to_additive existing (attr := simp) zmultiplesHom_symm_apply]
+@[to_additive existing (attr := simp)]
 lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
     (zpowersHom α).symm f = f (ofAdd 1) := rfl
 #align zpowers_hom_symm_apply zpowersHom_symm_apply

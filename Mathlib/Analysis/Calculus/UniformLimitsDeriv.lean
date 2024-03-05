@@ -130,7 +130,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     obtain ⟨a, b, c, d, e⟩ := eventually_prod_iff.1 ((hf' ε hε).and this)
     obtain ⟨R, hR, hR'⟩ := Metric.nhds_basis_ball.eventually_iff.mp d
     let r := min 1 R
-    have hr : 0 < r := by simp [hR]
+    have hr : 0 < r := by simp [r, hR]
     have hr' : ∀ ⦃y : E⦄, y ∈ Metric.ball x r → c y := fun y hy =>
       hR' (lt_of_lt_of_le (Metric.mem_ball.mp hy) (min_le_right _ _))
     have hxy : ∀ y : E, y ∈ Metric.ball x r → ‖y - x‖ < 1 := by
@@ -437,7 +437,7 @@ theorem hasFDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' 
   have hf : ∀ n : ι, ∀ x : E, x ∈ Set.univ → HasFDerivAt (f n) (f' n x) x := by simp [hf]
   have hfg : ∀ x : E, x ∈ Set.univ → Tendsto (fun n => f n x) l (𝓝 (g x)) := by simp [hfg]
   have hf' : TendstoUniformlyOn f' g' l Set.univ := by rwa [tendstoUniformlyOn_univ]
-  refine' hasFDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg x (Set.mem_univ x)
+  exact hasFDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg x (Set.mem_univ x)
 #align has_fderiv_at_of_tendsto_uniformly hasFDerivAt_of_tendstoUniformly
 
 end LimitsOfDerivatives
@@ -518,8 +518,8 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     simp only [dist_eq_norm] at hn ⊢
     refine' ContinuousLinearMap.opNorm_le_bound _ hq.le _
     intro z
-    simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.smulRight_apply,
-      ContinuousLinearMap.one_apply]
+    simp only [F', G', ContinuousLinearMap.coe_sub', Pi.sub_apply,
+      ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
     rw [← smul_sub, norm_smul, mul_comm]
     gcongr
   exact hasFDerivAt_of_tendstoUniformlyOnFilter hf' hf hfg

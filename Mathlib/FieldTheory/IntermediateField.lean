@@ -634,7 +634,7 @@ def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateF
   E.map (val F)
 #align intermediate_field.lift IntermediateField.lift
 
---Porting note: change from `HasLiftT` to `CoeOut`
+-- Porting note: change from `HasLiftT` to `CoeOut`
 instance hasLift {F : IntermediateField K L} :
     CoeOut (IntermediateField K F) (IntermediateField K L) :=
   ⟨lift⟩

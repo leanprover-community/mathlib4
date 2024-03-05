@@ -45,7 +45,7 @@ namespace NNReal
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- porting note: was @[pp_nodot]
+-- Porting note: was @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
@@ -155,7 +155,7 @@ begin
   { intros }
 end -/
 
--- porting note: todo: was @[pp_nodot]
+-- Porting note: todo: was @[pp_nodot]
 /-- The square root of a real number. This returns 0 for negative inputs. -/
 noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
@@ -471,6 +471,13 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
   · norm_cast
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
+
+/-- Bernoulli's inequality for exponent `1 / 2`, stated using `sqrt`. -/
+theorem sqrt_one_add_le (h : -1 ≤ x) : sqrt (1 + x) ≤ 1 + x / 2 := by
+  refine sqrt_le_iff.mpr ⟨by linarith, ?_⟩
+  calc 1 + x
+    _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
+    _ = _ := by ring
 
 /-- Although the instance `IsROrC.toStarOrderedRing` exists, it is locked behind the
 `ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
