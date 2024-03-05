@@ -32,15 +32,21 @@ formula which is an important input in functional equations of (un-completed) Di
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex hiding abs_of_nonneg
 
-/-- Deligne's archimedean Gamma factor for a real infinite place, see
-"Valeurs de fonctions L et periodes d'integrales" § 5.3. -/
+namespace Complex
+
+/-- Deligne's archimedean Gamma factor for a real infinite place.
+
+See "Valeurs de fonctions L et periodes d'integrales" § 5.3. Note that this is not the same as
+`Real.Gamma`; in particular it is a function `ℂ → ℂ`. -/
 noncomputable def Gammaℝ (s : ℂ) := π ^ (-s / 2) * Gamma (s / 2)
 
-/-- Deligne's archimedean Gamma factor for a complex infinite place, see
-"Valeurs de fonctions L et periodes d'integrales" § 5.3. (Some authors omit the factor of 2). -/
-noncomputable def Gammaℂ (s : ℂ) := 2 * (2 * π) ^ (-s) * Gamma s
-
 lemma Gammaℝ_def (s : ℂ) : Gammaℝ s = π ^ (-s / 2) * Gamma (s / 2) := rfl
+
+/-- Deligne's archimedean Gamma factor for a complex infinite place.
+
+See "Valeurs de fonctions L et periodes d'integrales" § 5.3. (Some authors omit the factor of 2).
+Note that this is not the same as `Complex.Gamma`. -/
+noncomputable def Gammaℂ (s : ℂ) := 2 * (2 * π) ^ (-s) * Gamma s
 
 lemma Gammaℂ_def (s : ℂ) : Gammaℂ s = 2 * (2 * π) ^ (-s) * Gamma s := rfl
 
@@ -194,3 +200,5 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
   ring
 
 end reflection
+
+end Complex
