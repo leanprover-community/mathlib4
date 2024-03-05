@@ -399,7 +399,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
         simpa only [← X.map_comp, ← Category.assoc, Category.comp_id, ← op_comp] using w _ _ _ }
 #align category_theory.simplicial_object.augment CategoryTheory.SimplicialObject.augment
 
--- porting note: removed @[simp] as the linter complains
+-- Porting note: removed @[simp] as the linter complains
 theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀) (w) :
     (X.augment X₀ f w).hom.app (op [0]) = f := by
   dsimp
@@ -763,7 +763,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
         simpa [← X.map_comp] using w _ _ _ }
 #align category_theory.cosimplicial_object.augment CategoryTheory.CosimplicialObject.augment
 
--- porting note: removed @[simp] as the linter complains
+-- Porting note: removed @[simp] as the linter complains
 theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0]) (w) :
     (X.augment X₀ f w).hom.app [0] = f := by
   dsimp

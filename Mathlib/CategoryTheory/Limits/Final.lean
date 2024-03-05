@@ -126,32 +126,30 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
 
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
-  {
-    out := fun c =>
+  { out := fun c =>
       let u : StructuredArrow c R := StructuredArrow.mk (adj.unit.app c)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
           (Relation.ReflTransGen.single
             (show Zag f u from
-              Or.inr ⟨StructuredArrow.homMk ((adj.homEquiv c f.right).symm f.hom) (by simp)⟩))
+              Or.inr ⟨StructuredArrow.homMk ((adj.homEquiv c f.right).symm f.hom) (by simp [u])⟩))
           (Relation.ReflTransGen.single
             (show Zag u g from
-              Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp)⟩)) }
+              Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp [u])⟩)) }
 #align category_theory.functor.final_of_adjunction CategoryTheory.Functor.final_of_adjunction
 
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
 theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Initial L :=
-  {
-    out := fun d =>
+  { out := fun d =>
       let u : CostructuredArrow L d := CostructuredArrow.mk (adj.counit.app d)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
           (Relation.ReflTransGen.single
             (show Zag f u from
-              Or.inl ⟨CostructuredArrow.homMk (adj.homEquiv f.left d f.hom) (by simp)⟩))
+              Or.inl ⟨CostructuredArrow.homMk (adj.homEquiv f.left d f.hom) (by simp [u])⟩))
           (Relation.ReflTransGen.single
             (show Zag u g from
-              Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp)⟩)) }
+              Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp [u])⟩)) }
 #align category_theory.functor.initial_of_adjunction CategoryTheory.Functor.initial_of_adjunction
 
 instance (priority := 100) final_of_isRightAdjoint (F : C ⥤ D) [h : IsRightAdjoint F] : Final F :=
@@ -370,7 +368,7 @@ theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShap
 
 section
 
--- porting note: this instance does not seem to be found automatically
+-- Porting note: this instance does not seem to be found automatically
 --attribute [local instance] hasColimit_of_comp
 
 /-- When `F` is cofinal, and `F ⋙ G` has a colimit, then `G` has a colimit also and
@@ -669,7 +667,7 @@ theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D 
 
 section
 
--- porting note: this instance does not seem to be found automatically
+-- Porting note: this instance does not seem to be found automatically
 -- attribute [local instance] hasLimit_of_comp
 
 /-- When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also and

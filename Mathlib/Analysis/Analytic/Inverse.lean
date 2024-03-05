@@ -530,7 +530,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
   let S n := ∑ k in Ico 1 n, a ^ k * ‖p.rightInv i k‖
   have IRec : ∀ n, 1 ≤ n → S n ≤ (I + 1) * a := by
     apply Nat.le_induction
-    · simp only
+    · simp only [S]
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
       exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
     · intro n one_le_n hn
@@ -570,7 +570,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
       _ ≤ ∑ k in Ico 1 (n + 1), a ^ k * ‖p.rightInv i k‖ :=
         (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i k‖ := fun k _ => by positivity
         single_le_sum this (by simp [one_le_n]))
-      _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
+      _ ≤ (I + 1) * a := IRec (n + 1) (by set_option tactic.skipAssignedInstances false in norm_num)
 #align formal_multilinear_series.radius_right_inv_pos_of_radius_pos FormalMultilinearSeries.radius_rightInv_pos_of_radius_pos
 
 end FormalMultilinearSeries

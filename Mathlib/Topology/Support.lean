@@ -385,7 +385,7 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- porting note: todo: reformulate for any locally finite family of sets
+-- Porting note: todo: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
@@ -411,7 +411,8 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
         rw [inter_assoc] at hz
         exact mem_of_mem_inter_left hz
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
-      simp only [Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter, and_imp] at hz
+      simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
+        and_imp] at hz
       suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
         refine' hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => _
         specialize hz i ⟨z, ⟨hi, hzn⟩⟩

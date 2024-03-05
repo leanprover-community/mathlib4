@@ -167,7 +167,7 @@ open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`. -/
 lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
   | (n : ℕ) => by
-    simp_rw [zpow_ofNat]
+    simp_rw [zpow_coe_nat]
     exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
   | -[n+1] => by
     simp_rw [zpow_negSucc, ← inv_pow]

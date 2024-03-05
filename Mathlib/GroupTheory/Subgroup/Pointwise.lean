@@ -33,7 +33,7 @@ open Pointwise
 
 variable {α G A S : Type*}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
   Set.ext fun _ => inv_mem_iff
 #align inv_coe_set inv_coe_set
@@ -48,6 +48,14 @@ lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (
 lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
     MulOpposite.op a • (s : Set G) = s := by
   ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mul_coe [SetLike S G] [DivInvMonoid G] [SubgroupClass S G] (H : S) :
+    H * H = (H : Set G) := by aesop (add simp mem_mul)
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_div_coe [SetLike S G] [DivisionMonoid G] [SubgroupClass S G] (H : S) :
+    H / H = (H : Set G) := by simp [div_eq_mul_inv]
 
 variable [Group G] [AddGroup A] {s : Set G}
 
@@ -266,13 +274,13 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
     simp only [mul_assoc, inv_mul_cancel_left]
 #align subgroup.sup_normal Subgroup.sup_normal
 
--- porting note: new lemma
+-- Porting note: new lemma
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
   simp [preimage_preimage, mul_assoc]
 
--- porting note: deprecate?
+-- Porting note: deprecate?
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
