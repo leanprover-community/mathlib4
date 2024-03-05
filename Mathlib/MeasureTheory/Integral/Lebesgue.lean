@@ -1641,6 +1641,42 @@ theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal {α : Type
   exact ENNReal.mul_lt_top ENNReal.coe_lt_top.ne μ_fin.measure_univ_lt_top.ne
 #align is_finite_measure.lintegral_lt_top_of_bounded_to_ennreal IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
 
+lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpace α}
+    {f : ℕ → α → ℝ≥0∞} {F : α → ℝ≥0∞} {μ : Measure α}
+    (hf_meas : ∀ n, AEMeasurable (f n) μ) (hF_meas : AEMeasurable F μ)
+    (hf_tendsto : Tendsto (fun i ↦ ∫⁻ a, f i a ∂μ) atTop (𝓝 (∫⁻ a, F a ∂μ)))
+    (hf_mono : ∀ᵐ a ∂μ, Monotone (fun i ↦ f i a))
+    (h_bound : ∀ᵐ a ∂μ, ∀ i, f i a ≤ F a) (h_int_finite : ∫⁻ a, F a ∂μ ≠ ∞) :
+    ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F a)) := by
+  have h_bound_finite : ∀ᵐ a ∂μ, F a ≠ ∞ := by
+    filter_upwards [ae_lt_top' hF_meas h_int_finite] with a ha using ha.ne
+  have h_exists : ∀ᵐ a ∂μ, ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := by
+    filter_upwards [h_bound, h_bound_finite, hf_mono] with a h_le h_fin h_mono
+    have h_tendsto : Tendsto (fun i ↦ f i a) atTop atTop ∨
+        ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := tendsto_of_monotone h_mono
+    cases' h_tendsto with h_absurd h_tendsto
+    · rw [tendsto_atTop_atTop_iff_of_monotone h_mono] at h_absurd
+      obtain ⟨i, hi⟩ := h_absurd (F a + 1)
+      refine absurd (hi.trans (h_le _)) (not_le.mpr ?_)
+      exact ENNReal.lt_add_right h_fin one_ne_zero
+    · exact h_tendsto
+  classical
+  let F' : α → ℝ≥0∞ := fun a ↦ if h : ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l)
+    then h.choose else ∞
+  have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
+    filter_upwards [h_exists] with a ha
+    simp_rw [dif_pos ha]
+    exact ha.choose_spec
+  suffices F' =ᵐ[μ] F by
+    filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto
+  have hF'_le : F' ≤ᵐ[μ] F := by
+    filter_upwards [h_bound, hF'_tendsto] with a h_le h_tendsto
+    exact le_of_tendsto' h_tendsto (fun m ↦ h_le _)
+  suffices ∫⁻ a, F' a ∂μ = ∫⁻ a, F a ∂μ by
+    exact ae_eq_of_ae_le_of_lintegral_le hF'_le (this ▸ h_int_finite) hF_meas this.symm.le
+  refine tendsto_nhds_unique ?_ hf_tendsto
+  exact lintegral_tendsto_of_tendsto_of_monotone hf_meas hf_mono hF'_tendsto
+
 end Lintegral
 
 open MeasureTheory.SimpleFunc

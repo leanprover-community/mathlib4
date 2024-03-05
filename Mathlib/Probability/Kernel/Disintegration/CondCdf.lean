@@ -45,7 +45,7 @@ namespace MeasureTheory.Measure
 
 variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
 
-/-- Measure on `α` such that for a measurable set `s`, `ρ.Iic_snd r s = ρ (s ×ˢ Iic r)`. -/
+/-- Measure on `α` such that for a measurable set `s`, `ρ.IicSnd r s = ρ (s ×ˢ Iic r)`. -/
 noncomputable def IicSnd (r : ℝ) : Measure α :=
   (ρ.restrict (univ ×ˢ Iic r)).fst
 #align measure_theory.measure.Iic_snd MeasureTheory.Measure.IicSnd

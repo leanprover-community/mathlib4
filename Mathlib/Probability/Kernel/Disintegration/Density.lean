@@ -661,61 +661,12 @@ lemma tendsto_density_atTop_ae_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKern
     [IsFiniteKernel ν] (a : α) (s : ℕ → Set β) (hs : Antitone s) (hs_iInter : ⋂ i, s i = ∅)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     ∀ᵐ t ∂(ν a), Tendsto (fun m ↦ density κ ν a t (s m)) atTop (𝓝 0) := by
-  have h_anti : ∀ t, Antitone (fun m ↦ density κ ν a t (s m)) :=
-    fun t n m hnm ↦ density_mono_set hκν a t (hs hnm)
-  have h_le_one : ∀ m t, density κ ν a t (s m) ≤ 1 := fun m t ↦ density_le_one hκν a t (s m)
-  -- for all `t`, `fun m ↦ density κ a (s m) t` has a limit
-  have h_exists : ∀ t, ∃ l, Tendsto (fun m ↦ density κ ν a t (s m)) atTop (𝓝 l) := by
-    intro t
-    have h_tendsto : Tendsto (fun m ↦ density κ ν a t (s m)) atTop atBot ∨
-        ∃ l, Tendsto (fun m ↦ density κ ν a t (s m)) atTop (𝓝 l) :=
-      tendsto_of_antitone (h_anti t)
-    cases' h_tendsto with h_absurd h_tendsto
-    · rw [tendsto_atTop_atBot_iff_of_antitone (h_anti t)] at h_absurd
-      obtain ⟨r, hr⟩ := h_absurd (-1)
-      have h_nonneg := density_nonneg hκν a t (s r)
-      linarith
-    · exact h_tendsto
-  -- let `F` be the pointwise limit of `fun m ↦ density κ a (s m) t` for all `t`
-  let F : γ → ℝ := fun t ↦ (h_exists t).choose
-  have hF_tendsto : ∀ t, Tendsto (fun m ↦ density κ ν a t (s m)) atTop (𝓝 (F t)) :=
-    fun t ↦ (h_exists t).choose_spec
-  have hF_nonneg : ∀ t, 0 ≤ F t :=
-    fun t ↦ ge_of_tendsto' (hF_tendsto t) (fun m ↦ density_nonneg hκν a t (s m))
-  have hF_le_one : ∀ t, F t ≤ 1 := fun t ↦ le_of_tendsto' (hF_tendsto t) (fun m ↦ h_le_one m t)
-  have hF_int : Integrable F (ν a) := by
-    rw [← memℒp_one_iff_integrable]
-    refine ⟨?_, ?_⟩
-    · refine aestronglyMeasurable_of_tendsto_ae atTop (fun n ↦ ?_) (ae_of_all _ hF_tendsto)
-      exact (measurable_density_right κ ν (hs_meas _) a).aestronglyMeasurable
-    · rw [snorm_one_eq_lintegral_nnnorm]
-      calc ∫⁻ x, ‖F x‖₊ ∂(ν a) ≤ ∫⁻ _, 1 ∂(ν a) := by
-            refine lintegral_mono (fun x ↦ ?_)
-            rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs, ENNReal.ofReal_le_one,
-              abs_of_nonneg (hF_nonneg _)]
-            exact hF_le_one _
-      _ < ⊤ := by
-            simp only [MeasureTheory.lintegral_const, one_mul]
-            exact measure_lt_top _ _
-   -- it suffices to show that the limit `F` is 0 a.e.
-  suffices F=ᵐ[ν a] 0 by
-    filter_upwards [this] with t ht_eq
-    simp only [Pi.zero_apply] at ht_eq
-    rw [← ht_eq]
-    exact hF_tendsto t
-  -- since `F` is nonnegative, proving that its integral is 0 is sufficient to get that
-  -- `F` is 0 a.e.
-  rw [← integral_eq_zero_iff_of_nonneg hF_nonneg hF_int]
-  have h_integral : Tendsto (fun m : ℕ ↦ ∫ t, density κ ν a t (s m) ∂(ν a)) atTop
-      (𝓝 (∫ t, F t ∂(ν a))) := by
-    refine integral_tendsto_of_tendsto_of_antitone ?_ hF_int ?_ ?_
-    · exact fun n ↦ integrable_density hκν _ (hs_meas n)
-    · exact ae_of_all _ h_anti
-    · exact ae_of_all _ hF_tendsto
-  have h_integral' : Tendsto (fun m : ℕ ↦ ∫ t, density κ ν a t (s m) ∂(ν a)) atTop
-      (𝓝 0) := by
+  refine tendsto_of_integral_tendsto_of_antitone ?_ (integrable_const _) ?_ ?_ ?_
+  · exact fun n ↦ integrable_density hκν _ (hs_meas n)
+  · rw [integral_zero]
     exact tendsto_integral_density_of_antitone hκν a s hs hs_iInter hs_meas
-  exact tendsto_nhds_unique h_integral h_integral'
+  · exact ae_of_all _ (fun c n m hnm ↦ density_mono_set hκν a c (hs hnm))
+  · exact ae_of_all _ (fun t m ↦ density_nonneg hκν a t (s m))
 
 section UnivFst
 
@@ -824,62 +775,14 @@ lemma tendsto_density_atTop_ae_of_monotone [IsFiniteKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     ∀ᵐ t ∂(fst κ a), Tendsto (fun m ↦ density κ (fst κ) a t (s m)) atTop (𝓝 1) := by
-  let ν := fst κ
-  have h_mono : ∀ t, Monotone (fun m ↦ density κ (fst κ) a t (s m)) :=
-    fun t n m hnm ↦ density_mono_set le_rfl a t (hs hnm)
-  have h_le_one : ∀ m t, density κ ν a t (s m) ≤ 1 :=
-    fun m t ↦ density_le_one le_rfl a t (s m)
-  -- for all `t`, `fun m ↦ density κ a (s m) t` has a limit
-  have h_exists : ∀ t, ∃ l, Tendsto (fun m ↦ density κ ν a t (s m)) atTop (𝓝 l) := by
-    intro t
-    have h_tendsto : Tendsto (fun m ↦ density κ ν a t (s m)) atTop atTop ∨
-        ∃ l, Tendsto (fun m ↦ density κ ν a t (s m)) atTop (𝓝 l) :=
-      tendsto_of_monotone (h_mono t)
-    cases' h_tendsto with h_absurd h_tendsto
-    · rw [tendsto_atTop_atTop_iff_of_monotone (h_mono t)] at h_absurd
-      obtain ⟨r, hr⟩ := h_absurd 2
-      exact absurd (hr.trans (h_le_one r t)) one_lt_two.not_le
-    · exact h_tendsto
-  -- let `F` be the pointwise limit of `fun m ↦ density κ a (s m) t` for all `t`
-  let F : γ → ℝ := fun t ↦ (h_exists t).choose
-  have hF_tendsto : ∀ t, Tendsto (fun m ↦ density κ ν a t (s m)) atTop (𝓝 (F t)) :=
-    fun t ↦ (h_exists t).choose_spec
-  have hF_nonneg : ∀ t, 0 ≤ F t :=
-    fun t ↦ ge_of_tendsto' (hF_tendsto t) (fun m ↦ density_nonneg le_rfl a t (s m))
-  have hF_le_one : ∀ t, F t ≤ 1 := fun t ↦ le_of_tendsto' (hF_tendsto t) (fun m ↦ h_le_one m t)
-  have hF_int : Integrable F (ν a) := by
-    rw [← memℒp_one_iff_integrable]
-    constructor
-    · refine aestronglyMeasurable_of_tendsto_ae atTop (fun n ↦ ?_) (ae_of_all _ hF_tendsto)
-      exact (measurable_density_right κ ν (hs_meas _) a).aestronglyMeasurable
-    · rw [snorm_one_eq_lintegral_nnnorm]
-      calc ∫⁻ x, ‖F x‖₊ ∂(ν a) ≤ ∫⁻ _, 1 ∂(ν a) := by
-            refine lintegral_mono (fun x ↦ ?_)
-            rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs, ENNReal.ofReal_le_one,
-              abs_of_nonneg (hF_nonneg _)]
-            exact hF_le_one _
-      _ < ⊤ := by simp only [MeasureTheory.lintegral_const, measure_univ, one_mul, measure_lt_top]
-   -- it suffices to show that the limit `F` is 1 a.e.
-  suffices F =ᵐ[ν a] (fun _ ↦ 1) by
-    filter_upwards [this] with t ht_eq
-    rw [← ht_eq]
-    exact hF_tendsto t
-  -- since `F` is at most 1, proving that its integral is the same as the integral of 1 will tell
-  -- us that `F` is 1 a.e.
-  rw [← integral_eq_iff_of_ae_le hF_int (integrable_const _) (ae_of_all _ hF_le_one)]
-  have h_integral : Tendsto (fun m : ℕ ↦ ∫ t, density κ ν a t (s m) ∂(ν a)) atTop
-      (𝓝 (∫ t, F t ∂(ν a))) := by
-    refine integral_tendsto_of_tendsto_of_monotone ?_ hF_int ?_ ?_
-    · exact fun n ↦ integrable_density le_rfl _ (hs_meas n)
-    · exact ae_of_all _ h_mono
-    · exact ae_of_all _ hF_tendsto
-  have h_integral' : Tendsto (fun m : ℕ ↦ ∫ t, density κ ν a t (s m) ∂(ν a)) atTop
-      (𝓝 (∫ _, 1 ∂(ν a))) := by
-    rw [MeasureTheory.integral_const]
-    simp only [smul_eq_mul, mul_one]
+  refine tendsto_of_integral_tendsto_of_monotone ?_ (integrable_const _) ?_ ?_ ?_
+  · exact fun n ↦ integrable_density le_rfl _ (hs_meas n)
+  · rw [MeasureTheory.integral_const, smul_eq_mul, mul_one]
+    convert tendsto_integral_density_of_monotone (κ := κ) le_rfl a s hs hs_iUnion hs_meas
     rw [fst_apply' _ _ MeasurableSet.univ]
-    exact tendsto_integral_density_of_monotone le_rfl a s hs hs_iUnion hs_meas
-  exact tendsto_nhds_unique h_integral h_integral'
+    rfl
+  · exact ae_of_all _ (fun c n m hnm ↦ density_mono_set le_rfl a c (hs hnm))
+  · exact ae_of_all _ (fun t m ↦ density_le_one le_rfl a t (s m))
 
 end UnivFst
 

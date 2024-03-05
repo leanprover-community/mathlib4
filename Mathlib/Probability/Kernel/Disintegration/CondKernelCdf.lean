@@ -191,9 +191,7 @@ lemma iInf_rat_gt_densityIic_eq (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel �
       = kernel.densityIic κ ν a t q := by
   rw [ae_all_iff]
   refine fun q ↦ ae_eq_of_forall_set_integral_eq_of_sigmaFinite (μ := ν a) ?_ ?_ ?_
-  · intro s _ _
-    refine Integrable.integrableOn ?_
-    exact integrable_iInf_rat_gt_densityIic hκν _ _
+  · exact fun s _ _ ↦ (integrable_iInf_rat_gt_densityIic hκν _ _).integrableOn
   · exact fun s _ _ ↦ (integrable_densityIic hκν a q).integrableOn
   · intro s hs _
     rw [set_integral_densityIic hκν _ _ hs, set_integral_iInf_rat_gt_densityIic hκν _ _ hs]
