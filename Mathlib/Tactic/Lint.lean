@@ -3,7 +3,6 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Lean.Server.Completion
 import Std.Data.Array.Basic
 import Std.Lean.Command
 import Std.Tactic.Lint
@@ -79,7 +78,6 @@ def getIds : Syntax → Array Syntax
     ((args.attach.map fun ⟨a, _⟩ => getIds a).foldl (· ++ ·) #[stx]).filter (·.getKind == ``declId)
   | _ => default
 
-open private isBlackListed from Lean.Server.Completion in
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx => do
   if getLinterDupNamespace (← getOptions) then
@@ -87,12 +85,11 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
       | #[id] =>
         let ns := (← getScope).currNamespace
         let declName := ns ++ id[0].getId
-        unless (← liftCoreM <| MetaM.run <| isBlackListed declName).1 do
-          let nm := declName.components
-          let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
-            | return
-          logWarningAt id m!"The namespace '{dup}' is duplicated in the declaration '{declName}'\n\
-            [linter.dupNamespace]"
+        let nm := declName.components
+        let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) => x == y
+          | return
+        logWarningAt id m!"The namespace '{dup}' is duplicated in the declaration '{declName}'\n\
+          [linter.dupNamespace]"
       | _ => return
 
 initialize addLinter dupNamespace
