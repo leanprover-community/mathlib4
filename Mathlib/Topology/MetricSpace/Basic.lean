@@ -133,7 +133,7 @@ theorem subsingleton_sphere (x : γ) {r : ℝ} (hr : r ≤ 0) : (sphere x r).Sub
 -- see Note [lower instance priority]
 instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
   t0 _ _ h := eq_of_dist_eq_zero <| Metric.inseparable_iff.1 h
-#align metric_space.to_separated MetricSpace.to_separated
+#align metric_space.to_separated MetricSpace.instT0Space
 
 /-- A map between metric spaces is a uniform embedding if and only if the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
