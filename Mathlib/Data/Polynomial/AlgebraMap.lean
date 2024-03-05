@@ -75,6 +75,10 @@ theorem C_eq_algebraMap (r : R) : C r = algebraMap R R[X] r :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
+@[simp]
+theorem algebraMap_eq_C : algebraMap R R[X] = C :=
+  rfl
+
 /-- `Polynomial.C` as an `AlgHom`. -/
 @[simps! apply]
 def CAlgHom : A →ₐ[R] A[X] where
@@ -99,8 +103,7 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
     commutes' := fun r => by
-      dsimp
-      exact toFinsupp_algebraMap _ }
+      dsimp }
 #align polynomial.to_finsupp_iso_alg Polynomial.toFinsuppIsoAlg
 
 variable {R}
