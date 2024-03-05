@@ -134,6 +134,28 @@ theorem Separable.map {p : R[X]} (h : p.Separable) {f : R →+* S} : (p.map f).S
       Polynomial.map_one]⟩
 #align polynomial.separable.map Polynomial.Separable.map
 
+theorem _root_.Associated.separable {f g : R[X]}
+    (ha : Associated f g) (h : f.Separable) : g.Separable := by
+  obtain ⟨⟨u, v, h1, h2⟩, ha⟩ := ha
+  obtain ⟨a, b, h⟩ := h
+  refine ⟨a * v + b * derivative v, b * v, ?_⟩
+  replace h := congr($h * $(h1))
+  have h3 := congr(derivative $(h1))
+  simp only [← ha, derivative_mul, derivative_one] at h3 ⊢
+  calc
+    _ = (a * f + b * derivative f) * (u * v)
+      + (b * f) * (derivative u * v + u * derivative v) := by ring1
+    _ = 1 := by rw [h, h3]; ring1
+
+theorem _root_.Associated.separable_iff {f g : R[X]}
+    (ha : Associated f g) : f.Separable ↔ g.Separable := ⟨ha.separable, ha.symm.separable⟩
+
+theorem Separable.mul_unit {f g : R[X]} (hf : f.Separable) (hg : IsUnit g) : (f * g).Separable :=
+  (associated_mul_unit_right f g hg).separable hf
+
+theorem Separable.unit_mul {f g : R[X]} (hf : IsUnit f) (hg : g.Separable) : (f * g).Separable :=
+  (associated_unit_mul_right g f hf).separable hg
+
 theorem Separable.eval₂_derivative_ne_zero [Nontrivial S] (f : R →+* S) {p : R[X]}
     (h : p.Separable) {x : S} (hx : p.eval₂ f x = 0) :
     (derivative p).eval₂ f x ≠ 0 := by

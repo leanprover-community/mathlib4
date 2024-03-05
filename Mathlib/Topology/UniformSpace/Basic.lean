@@ -274,7 +274,7 @@ def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
     B.hasBasis).2 comp
 #align uniform_space.core.mk_of_basis UniformSpace.Core.mkOfBasis
 
--- porting note: TODO: use `mkOfNhds`?
+-- Porting note: TODO: use `mkOfNhds`?
 /-- A uniform space generates a topological space -/
 def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α) :
     TopologicalSpace α where
@@ -339,7 +339,7 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
   TopologicalSpace.ext <| funext fun s => propext (UniformSpace.isOpen_uniformity s).symm
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
--- porting note: todo: use this as the main definition?
+-- Porting note: todo: use this as the main definition?
 /-- An alternative constructor for `UniformSpace` that takes the proof of `nhds_eq_comap_uniformity`
 as an argument. -/
 @[reducible]
@@ -388,7 +388,7 @@ theorem UniformSpace.replaceTopology_eq {α : Type*} [i : TopologicalSpace α] (
   u.ofCoreEq_toCore _ _
 #align uniform_space.replace_topology_eq UniformSpace.replaceTopology_eq
 
--- porting note: rfc: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
+-- Porting note: rfc: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
 /-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
 distance in a (usual or extended) metric space or an absolute value on a ring. -/
 def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedAddCommMonoid β]
@@ -420,7 +420,7 @@ section UniformSpace
 
 variable [UniformSpace α]
 
-@[inherit_doc] -- porting note: todo: should we drop the `uniformity` def?
+@[inherit_doc] -- Porting note: todo: should we drop the `uniformity` def?
 scoped[Uniformity] notation "𝓤" => uniformity
 
 theorem isOpen_uniformity {s : Set α} :
@@ -565,7 +565,7 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem comp3_mem_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
   let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
   let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
@@ -598,7 +598,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
   rcases comp_symm_mem_uniformity_sets w_in with ⟨t, t_in, t_symm, t_sub⟩
   use t, t_in, t_symm
   have : t ⊆ t ○ t := subset_comp_self_of_mem_uniformity t_in
-  -- porting note: Needed the following `have`s to make `mono` work
+  -- Porting note: Needed the following `have`s to make `mono` work
   have ht := Subset.refl t
   have hw := Subset.refl w
   calc
@@ -1396,20 +1396,20 @@ instance ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
 
 section UniformContinuousInfi
 
--- porting note: renamed for dot notation; add an `iff` lemma?
+-- Porting note: renamed for dot notation; add an `iff` lemma?
 theorem UniformContinuous.inf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ u₃ : UniformSpace β}
     (h₁ : UniformContinuous[u₁, u₂] f) (h₂ : UniformContinuous[u₁, u₃] f) :
     UniformContinuous[u₁, u₂ ⊓ u₃] f :=
   tendsto_inf.mpr ⟨h₁, h₂⟩
 #align uniform_continuous_inf_rng UniformContinuous.inf_rng
 
--- porting note: renamed for dot notation
+-- Porting note: renamed for dot notation
 theorem UniformContinuous.inf_dom_left {f : α → β} {u₁ u₂ : UniformSpace α} {u₃ : UniformSpace β}
     (hf : UniformContinuous[u₁, u₃] f) : UniformContinuous[u₁ ⊓ u₂, u₃] f :=
   tendsto_inf_left hf
 #align uniform_continuous_inf_dom_left UniformContinuous.inf_dom_left
 
--- porting note: renamed for dot notation
+-- Porting note: renamed for dot notation
 theorem UniformContinuous.inf_dom_right {f : α → β} {u₁ u₂ : UniformSpace α} {u₃ : UniformSpace β}
     (hf : UniformContinuous[u₂, u₃] f) : UniformContinuous[u₁ ⊓ u₂, u₃] f :=
   tendsto_inf_right hf
@@ -1502,7 +1502,7 @@ theorem uniformity_setCoe {s : Set α} [UniformSpace α] :
   rfl
 #align uniformity_set_coe uniformity_setCoe
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
     map (Prod.map (↑) (↑)) (𝓤 s) = 𝓤 α ⊓ 𝓟 (s ×ˢ s) := by
   rw [uniformity_setCoe, map_comap, range_prod_map, Subtype.range_val]

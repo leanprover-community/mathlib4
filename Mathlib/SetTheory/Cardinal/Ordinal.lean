@@ -524,7 +524,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
       _
   · have : { q | s q p } ⊆ insert (g p) { x | x < g p } ×ˢ insert (g p) { x | x < g p } := by
       intro q h
-      simp only [Preimage, ge_iff_le, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
+      simp only [s, f, Preimage, ge_iff_le, Embedding.coeFn_mk, Prod.lex_def, typein_lt_typein,
         typein_inj, mem_setOf_eq] at h
       exact max_le_iff.1 (le_iff_lt_or_eq.2 <| h.imp_right And.left)
     suffices H : (insert (g p) { x | r x (g p) } : Set α) ≃ Sum { x | r x (g p) } PUnit from
@@ -573,12 +573,12 @@ theorem mul_aleph0_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a * ℵ₀ = a :=
   (mul_eq_max ha le_rfl).trans (max_eq_left ha)
 #align cardinal.mul_aleph_0_eq Cardinal.mul_aleph0_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
   aleph0_mul_eq (aleph0_le_mk α)
 #align cardinal.aleph_0_mul_mk_eq Cardinal.aleph0_mul_mk_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 #align cardinal.mk_mul_aleph_0_eq Cardinal.mk_mul_aleph0_eq
@@ -816,7 +816,7 @@ theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
   add_one_of_aleph0_le ha
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
   add_one_eq (aleph0_le_mk α)
 #align cardinal.mk_add_one_eq Cardinal.mk_add_one_eq
@@ -1357,7 +1357,7 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans
       ((sumCongr (Equiv.ofInjective f f.2) g).trans (Set.sumCompl (range f)))
-  refine' ⟨h, _⟩; rintro ⟨x, hx⟩; simp [Set.sumCompl_symm_apply_of_mem, hx]
+  refine' ⟨h, _⟩; rintro ⟨x, hx⟩; simp [h, Set.sumCompl_symm_apply_of_mem, hx]
 #align cardinal.extend_function Cardinal.extend_function
 
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
@@ -1382,7 +1382,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 #align cardinal.extend_function_of_lt Cardinal.extend_function_of_lt
 
 
---Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
+-- Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
 -- section Bit
 
 -- /-!

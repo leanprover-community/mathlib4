@@ -121,7 +121,7 @@ equalities. -/
 protected def copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : StarSubalgebra R A where
   toSubalgebra := Subalgebra.copy S.toSubalgebra s hs
   star_mem' := @fun a ha => hs ▸ (S.star_mem' (by simpa [hs] using ha) : star a ∈ (S : Set A))
-  -- porting note: the old proof kept crashing Lean
+  -- Porting note: the old proof kept crashing Lean
 #align star_subalgebra.copy StarSubalgebra.copy
 
 @[simp]
@@ -276,7 +276,7 @@ theorem comap_id (S : StarSubalgebra R A) : S.comap (StarAlgHom.id R A) = S :=
 theorem comap_comap (S : StarSubalgebra R C) (g : B →⋆ₐ[R] C) (f : A →⋆ₐ[R] B) :
     (S.comap g).comap f = S.comap (g.comp f) :=
   SetLike.coe_injective <| by exact Set.preimage_preimage
-  -- porting note: the `by exact` trick still works sometimes
+  -- Porting note: the `by exact` trick still works sometimes
 #align star_subalgebra.comap_comap StarSubalgebra.comap_comap
 
 @[simp]
@@ -294,7 +294,7 @@ end Map
 
 section Centralizer
 
-variable (R) -- porting note: redundant binder annotation update
+variable (R) -- Porting note: redundant binder annotation update
 
 /-- The centralizer, or commutant, of the star-closure of a set as a star subalgebra. -/
 def centralizer (s : Set A) : StarSubalgebra R A where
@@ -360,7 +360,7 @@ theorem mem_star_iff (S : Subalgebra R A) (x : A) : x ∈ star S ↔ star x ∈ 
   Iff.rfl
 #align subalgebra.mem_star_iff Subalgebra.mem_star_iff
 
--- porting note: removed `@[simp]` tag because `simp` can prove this
+-- Porting note: removed `@[simp]` tag because `simp` can prove this
 theorem star_mem_star_iff (S : Subalgebra R A) (x : A) : star x ∈ star S ↔ x ∈ S := by
   simp only [mem_star_iff, star_star]
 #align subalgebra.star_mem_star_iff Subalgebra.star_mem_star_iff
@@ -445,7 +445,7 @@ theorem adjoin_toSubalgebra (s : Set A) :
   rfl
 #align star_subalgebra.adjoin_to_subalgebra StarSubalgebra.adjoin_toSubalgebra
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   (Set.subset_union_left s (star s)).trans Algebra.subset_adjoin
 #align star_subalgebra.subset_adjoin StarSubalgebra.subset_adjoin
@@ -533,6 +533,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
 #align star_subalgebra.adjoin_induction₂ StarSubalgebra.adjoin_induction₂
 
 /-- The difference with `StarSubalgebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin R s h⟩) (Halg : ∀ r, p (algebraMap R _ r))
     (Hadd : ∀ x y, p x → p y → p (x + y)) (Hmul : ∀ x y, p x → p y → p (x * y))
@@ -610,7 +611,7 @@ instance adjoinCommRingOfIsStarNormal (R : Type u) {A : Type v} [CommRing R] [St
 /-! ### Complete lattice structure -/
 
 
-variable {R} -- porting note: redundant binder annotation update
+variable {R} -- Porting note: redundant binder annotation update
 
 instance completeLattice : CompleteLattice (StarSubalgebra R A) where
   __ := GaloisInsertion.liftCompleteLattice StarSubalgebra.gi
@@ -632,7 +633,7 @@ theorem mem_top {x : A} : x ∈ (⊤ : StarSubalgebra R A) :=
 
 @[simp]
 theorem top_toSubalgebra : (⊤ : StarSubalgebra R A).toSubalgebra = ⊤ := by ext; simp
--- porting note: Lean can no longer prove this by `rfl`, it times out
+-- Porting note: Lean can no longer prove this by `rfl`, it times out
 #align star_subalgebra.top_to_subalgebra StarSubalgebra.top_toSubalgebra
 
 @[simp]
@@ -671,7 +672,7 @@ theorem mem_inf {S T : StarSubalgebra R A} {x : A} : x ∈ S ⊓ T ↔ x ∈ S �
 theorem inf_toSubalgebra (S T : StarSubalgebra R A) :
     (S ⊓ T).toSubalgebra = S.toSubalgebra ⊓ T.toSubalgebra := by
   ext; simp
--- porting note: Lean can no longer prove this by `rfl`, it times out
+-- Porting note: Lean can no longer prove this by `rfl`, it times out
 #align star_subalgebra.inf_to_subalgebra StarSubalgebra.inf_toSubalgebra
 
 @[simp, norm_cast]
@@ -737,7 +738,7 @@ variable [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] (f g : 
 def equalizer : StarSubalgebra R A :=
   { toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
     star_mem' := @fun a (ha : f a = g a) => by simpa only [← map_star] using congrArg star ha }
--- porting note: much like `StarSubalgebra.copy` the old proof was broken and hard to fix
+-- Porting note: much like `StarSubalgebra.copy` the old proof was broken and hard to fix
 #align star_alg_hom.equalizer StarAlgHom.equalizer
 
 @[simp]

@@ -60,7 +60,7 @@ theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
 set_option linter.uppercaseLean3 false in
 #align CommMon_.comp_hom CommMon_.comp_hom
 
--- porting note: added because `Mon_.Hom.ext` is not triggered automatically
+-- Porting note: added because `Mon_.Hom.ext` is not triggered automatically
 -- for morphisms in `CommMon_ C`
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
@@ -171,8 +171,6 @@ def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommM
   map α := ((mapCommMonFunctor (Discrete PUnit.{u+1}) C).map α).app _
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPUnit.laxBraidedToCommMon
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
 @[simps]

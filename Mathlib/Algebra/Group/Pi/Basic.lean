@@ -465,13 +465,13 @@ protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
   (f' i, g' i)
 #align pi.prod Pi.prod
 
--- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
+-- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   rfl
 #align pi.prod_fst_snd Pi.prod_fst_snd
 
--- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
+-- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
   rfl

@@ -101,7 +101,7 @@ theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Me
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   -- We start by applying the layer cake formula
   have h_meas : Measurable fun ω : E => (1 + ‖ω‖) ^ (-r) :=
-    -- porting note: was `by measurability`
+    -- Porting note: was `by measurability`
     (measurable_norm.const_add _).pow_const _
   have h_pos : ∀ x : E, 0 ≤ (1 + ‖x‖) ^ (-r) := fun x ↦ by positivity
   rw [lintegral_eq_lintegral_meas_le μ (eventually_of_forall h_pos) h_meas.aemeasurable]
@@ -131,7 +131,7 @@ theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Me
       (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr).ne measure_ball_lt_top.ne
   · -- The integral from 1 to ∞ is zero:
     have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
-      simp only [closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
+      simp only [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
     -- The integral over the constant zero function is finite:
     rw [set_lintegral_congr_fun measurableSet_Ioi (ae_of_all volume <| h_int''), lintegral_const 0,
       zero_mul]
