@@ -16,7 +16,7 @@ these approaches. It also defines homomorphisms that preserve these connectives.
 ## Main Definitions
 * `LogicSymbol` is defined so that `LogicSymbol F` is a type that has logical connectives $\top,
   \bot, \land, \lor, \to, \lnot$.
-* `LogicSymbol.Hom` is defined so that `f : F →ˡᶜ G` is a homomorphism from `F` to `G` that
+* `LogicSymbol.LogicSymbolHom` is defined so that `f : F →ˡᶜ G` is a homomorphism from `F` to `G` that
 preserves logical connectives.
 -/
 
@@ -49,36 +49,36 @@ end Polarity
 
 section logicNotation
 
-/-- `Tilde` class describes proof systems using tilda (for negation) -/
+/-- `Tilde` class describes a type using tilda (for negation) -/
 @[notation_class] class Tilde (α : Type*) where
   /-- tilde symbol -/
   tilde : α → α
 
-/-- `Arrow` class describes proof systems using arrow (for implication) -/
+/-- `Arrow` class describes a type using arrow (for implication) -/
 @[notation_class] class Arrow (α : Type*) where
   /-- arrow symbol -/
   arrow : α → α → α
 
-/-- `Wedge` class describes proof systems using wedge (for conjunction) -/
+/-- `Wedge` class describes a type using wedge (for conjunction) -/
 @[notation_class] class Wedge (α : Type*) where
   /-- wedge symbol -/
   wedge : α → α → α
 
-/-- `Vee` class describes proof systems using vee (for disjunction) -/
+/-- `Vee` class describes a type using vee (for disjunction) -/
 @[notation_class] class Vee (α : Type*) where
   /-- vee symbol -/
   vee : α → α → α
 
-/-- `LogicSymbol` class describes a proof system's logical symbols -/
+/-- `LogicSymbol` class describes a type's logical symbols -/
 class LogicSymbol (α : Type*)
   extends Top α, Bot α, Tilde α, Arrow α, Wedge α, Vee α
 
-/-- `UnivQuantifier` class describes proof systems using universal quantifers -/
+/-- `UnivQuantifier` class describes types indexed by `ℕ` using universal quantifers -/
 @[notation_class] class UnivQuantifier (α : ℕ → Type*) where
   /-- universal quantifier symbol -/
   univ : ∀ {n}, α (n + 1) → α n
 
-/-- `ExQuantifier` class describes proof systems using existential quantifers -/
+/-- `ExQuantifier` class describes types indexed by `ℕ` using existential quantifers -/
 @[notation_class] class ExQuantifier (α : ℕ → Type*) where
   /-- existential quantifier symbol -/
   ex : ∀ {n}, α (n + 1) → α n
@@ -153,14 +153,6 @@ end ExQuantifier
 /-- Infix notation for `turnstile` -/
 infix:45 " ⊢ " => HasTurnstile.turnstile
 
-/-- `HasVdash` describes proof systems with vdash (implication) -/
-@[notation_class] class HasVdash (α : Sort _) (β : outParam (Sort _)) where
-  /-- vdash symbol -/
-  vdash : α → β
-
-/-- Prefix notation for `vdash` -/
-prefix:45 "⊩ " => HasVdash.vdash
-
 end logicNotation
 
 /-- `DeMorgan` class describes proof systems implementing De Morgan's laws -/
@@ -183,7 +175,7 @@ attribute [simp] NegDefinition.neg
 namespace LogicSymbol
 
 section
-variable {α : Sort _} [LogicSymbol α]
+variable {α : Type*} [LogicSymbol α]
 
 /-- `iff` specifies if and only if notation -/
 @[match_pattern] def iff (a b : α) := (a ⭢ b) ⋏ (b ⭢ a)
@@ -193,20 +185,17 @@ infix:61 " ⭤ " => LogicSymbol.iff
 
 end
 
-@[reducible]
-instance propLogicSymbol : LogicSymbol Prop where
-  top := True
-  bot := False
-  tilde := Not
-  arrow := (· → ·)
-  wedge := And
-  vee := Or
+instance heyting {α : Type*} [HeytingAlgebra α] : LogicSymbol α where
+  tilde := (·ᶜ)
+  arrow := (· ⇨ ·)
+  wedge := (· ⊓ ·)
+  vee := (· ⊔ ·)
 
 @[simp] lemma Prop_top_eq : ⊤ = True := rfl
 
 @[simp] lemma Prop_bot_eq : ⊥ = False := rfl
 
-@[simp] lemma Prop_neg_eq (p : Prop) : ~ p = ¬p := rfl
+@[simp] lemma Prop_neg_eq (p : Prop) : ~p = ¬p := rfl
 
 @[simp] lemma Prop_arrow_eq (p q : Prop) : (p ⭢ q) = (p → q) := rfl
 
@@ -225,47 +214,51 @@ instance : DeMorgan Prop where
   or := fun _ _ ↦ by simp[not_or]
   neg := fun _ ↦ by simp
 
-/-- `HomClass` specifies the homomorphism preserving connectives -/
-class HomClass (F : Type*) (α β : outParam Type*) [LogicSymbol α] [LogicSymbol β] [FunLike F α β]
-    where
-  map_top : ∀ (f : F), f ⊤ = ⊤
-  map_bot : ∀ (f : F), f ⊥ = ⊥
-  map_neg : ∀ (f : F) (p : α), f (~ p) = ~f p
-  map_imply : ∀ (f : F) (p q : α), f (p ⭢ q) = f p ⭢ f q
-  map_and : ∀ (f : F) (p q : α), f (p ⋏ q) = f p ⋏ f q
-  map_or  : ∀ (f : F) (p q : α), f (p ⋎ q) = f p ⋎ f q
-
-attribute [simp] HomClass.map_top HomClass.map_bot HomClass.map_neg HomClass.map_imply
-  HomClass.map_and HomClass.map_or
-
-namespace HomClass
-
-variable (F : Type*) (α β : Type*) [LogicSymbol α] [LogicSymbol β] [FunLike F α β] [HomClass F α β]
-variable (f : F) (a b : α)
-
-instance : CoeFun F (fun _ ↦ α → β) := ⟨DFunLike.coe⟩
-
-@[simp] lemma map_iff : f (a ⭤ b) = f a ⭤ f b := by simp[LogicSymbol.iff]
-
-end HomClass
+end LogicSymbol
 
 variable (α β γ : Type*) [LogicSymbol α] [LogicSymbol β] [LogicSymbol γ]
 
 /-- α →ˡᶜ β is the type of functions α → β that preserve the logical connectives -/
-structure Hom where
+structure LogicSymbolHom where
   /-- Function for homomorphism -/
   toFun : α → β
+  /-- The proposition that a homomorphism preserves the top element.-/
   map_top' : toFun ⊤ = ⊤
+  /-- The proposition that a homomorphism preserves the botom element.-/
   map_bot' : toFun ⊥ = ⊥
-  map_neg' : ∀ p, toFun (~ p) = ~toFun p
+  /-- The proposition that a homomorphism preserves negation.-/
+  map_neg' : ∀ p, toFun (~p) = ~toFun p
+  /-- The proposition that a homomorphism preserves implication.-/
   map_imply' : ∀ p q, toFun (p ⭢ q) = toFun p ⭢ toFun q
+  /-- The proposition that a homomorphism preserves conjunction.-/
   map_and' : ∀ p q, toFun (p ⋏ q) = toFun p ⋏ toFun q
+  /-- The proposition that a homomorphism preserves disjunction.-/
   map_or'  : ∀ p q, toFun (p ⋎ q) = toFun p ⋎ toFun q
 
-/-- Infix notation for `Hom` -/
-infix:25 " →ˡᶜ " => Hom
+/-- Infix notation for `LogicSymbolHom` -/
+infix:25 " →ˡᶜ " => LogicSymbolHom
 
-namespace Hom
+/-- `LogicSymbolHomClass F α β` states that `F` is a type of homomorphisms over logical connectives.
+
+You should extend this class when you extend `LogicSymbol.LogicSymbolHom`. -/
+class LogicSymbolHomClass (F : Type*) (α β : outParam Type*)
+    [LogicSymbol α] [LogicSymbol β] [FunLike F α β] where
+  map_top : ∀ (f : F), f ⊤ = ⊤
+  map_bot : ∀ (f : F), f ⊥ = ⊥
+  map_neg : ∀ (f : F) (p : α), f (~p) = ~f p
+  map_imply : ∀ (f : F) (p q : α), f (p ⭢ q) = f p ⭢ f q
+  map_and : ∀ (f : F) (p q : α), f (p ⋏ q) = f p ⋏ f q
+  map_or  : ∀ (f : F) (p q : α), f (p ⋎ q) = f p ⋎ f q
+
+attribute [simp]
+  LogicSymbolHomClass.map_top
+  LogicSymbolHomClass.map_bot
+  LogicSymbolHomClass.map_neg
+  LogicSymbolHomClass.map_imply
+  LogicSymbolHomClass.map_and
+  LogicSymbolHomClass.map_or
+
+namespace LogicSymbolHom
 
 variable {α β γ}
 
@@ -277,7 +270,7 @@ instance : CoeFun (α →ˡᶜ β) (fun _ ↦ α → β) := DFunLike.hasCoeToFun
 
 @[ext] lemma ext (f g : α →ˡᶜ β) (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
-instance : HomClass (α →ˡᶜ β) α β where
+instance : LogicSymbolHomClass (α →ˡᶜ β) α β where
   map_top := map_top'
   map_bot := map_bot'
   map_neg := map_neg'
@@ -295,7 +288,7 @@ protected def id : α →ˡᶜ α where
   map_and' := by simp
   map_or' := by simp
 
-@[simp] lemma app_id (a : α) : LogicSymbol.Hom.id a = a := rfl
+@[simp] lemma app_id (a : α) : LogicSymbolHom.id a = a := rfl
 
 /-- `comp` defines the composition of homomorphisms preserving connectives -/
 def comp (g : β →ˡᶜ γ) (f : α →ˡᶜ β) : α →ˡᶜ γ where
@@ -310,40 +303,36 @@ def comp (g : β →ˡᶜ γ) (f : α →ˡᶜ β) : α →ˡᶜ γ where
 @[simp] lemma app_comp (g : β →ˡᶜ γ) (f : α →ˡᶜ β) (a : α) :
      g.comp f a = g (f a) := rfl
 
-end Hom
+end LogicSymbolHom
+
+namespace LogicSymbolHomClass
+
+variable (F : Type*) (α β : Type*)
+  [LogicSymbol α] [LogicSymbol β] [FunLike F α β] [LogicSymbolHomClass F α β]
+variable (f : F) (a b : α)
+
+instance : CoeFun F (fun _ ↦ α → β) := ⟨DFunLike.coe⟩
+
+@[simp] lemma map_iff : f (a ⭤ b) = f a ⭤ f b := by simp[LogicSymbol.iff]
+
+end LogicSymbolHomClass
 
 section quantifier
-variable {α : ℕ → Type u} [∀ i, LogicSymbol (α i)] [UnivQuantifier α] [ExQuantifier α]
+variable {α : ℕ → Type u} [(n : ℕ) → LogicSymbol (α n)] [UnivQuantifier α] [ExQuantifier α]
 
 /-- `ball` defines a bounded universal quantifier -/
-def ball {n : ℕ} (p : α (n + 1)) (q : α (n + 1)) : α n := ∀' (p ⭢ q)
+def UnivQuantifier.ball {n : ℕ} (p : α (n + 1)) (q : α (n + 1)) : α n := ∀' (p ⭢ q)
 
 /-- `bex` defines a bounded existential quantifier -/
-def bex {n : ℕ} (p : α (n + 1)) (q : α (n + 1)) : α n := ∃' (p ⋏ q)
+def ExQuantifier.bex {n : ℕ} (p : α (n + 1)) (q : α (n + 1)) : α n := ∃' (p ⋏ q)
 
 /-- Notation for `ball` -/
-notation:64 "∀[" p "] " q => ball p q
+notation:64 "∀[" p "] " q => UnivQuantifier.ball p q
 
 /-- Notation for `bex` -/
-notation:64 "∃[" p "] " q => bex p q
+notation:64 "∃[" p "] " q => ExQuantifier.bex p q
 
 end quantifier
-
-/-- `AndOrClosed` class describes proof systems with closure under and and or -/
-class AndOrClosed {F} [LogicSymbol F] (C : F → Prop) where
-  verum  : C ⊤
-  falsum : C ⊥
-  and {f g : F} : C f → C g → C (f ⋏ g)
-  or  {f g : F} : C f → C g → C (f ⋎ g)
-
-/-- `Closed` class describes proof systems also with closure under negation and implication -/
-class Closed {F} [LogicSymbol F] (C : F → Prop) extends AndOrClosed C where
-  not {f : F} : C f → C (~f)
-  imply {f g : F} : C f → C g → C (f ⭢ g)
-
-attribute [simp] AndOrClosed.verum AndOrClosed.falsum
-
-end LogicSymbol
 
 end ProofTheory
 
@@ -365,18 +354,18 @@ def conj : {n : ℕ} → (Fin n → α) → α
 
 @[simp] lemma conj_cons {n} {a : α} {v : Fin n → α} : conj (a :> v) = a ⋏ conj v := rfl
 
-@[simp] lemma conj_hom_prop {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop]
+@[simp] lemma conj_hom_prop {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop]
   (f : F) {n} (v : Fin n → α) : f (conj v) = ∀ i, f (v i) := by
   induction' n with n ih <;> simp[conj]
   · simp[ih]; constructor
     · intro ⟨hz, hs⟩ i; cases i using Fin.cases; { exact hz }; { exact hs _ }
     · intro h; exact ⟨h 0, fun i ↦ h _⟩
 
-lemma hom_conj {F : Type*} [FunLike F α β] [LogicSymbol.HomClass F α β]
+lemma hom_conj {F : Type*} [FunLike F α β] [LogicSymbolHomClass F α β]
     (f : F) {n} (v : Fin n → α) : f (conj v) = conj (f ∘ v) := by
   induction' n with n ih <;> simp[*, conj]
 
-lemma hom_conj' {F : Type*} [FunLike F α β]  [LogicSymbol.HomClass F α β]
+lemma hom_conj' {F : Type*} [FunLike F α β]  [LogicSymbolHomClass F α β]
     (f : F) {n} (v : Fin n → α) : f (conj v) = conj fun i ↦ f (v i) :=
   hom_conj f v
 
@@ -399,7 +388,7 @@ def conj : List α → α
 
 @[simp] lemma conj_cons {a : α} {as : List α} : conj (a :: as) = a ⋏ as.conj := rfl
 
-lemma map_conj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop]
+lemma map_conj {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop]
     (f : F) (l : List α) : f l.conj ↔ ∀ a ∈ l, f a := by
   induction l <;> simp[*]
 
@@ -412,7 +401,7 @@ def disj : List α → α
 
 @[simp] lemma disj_cons {a : α} {as : List α} : disj (a :: as) = a ⋎ as.disj := rfl
 
-lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop]
+lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop]
     (f : F) (l : List α) : f l.disj ↔ ∃ a ∈ l, f a := by
   induction l <;> simp[*]
 
@@ -426,17 +415,17 @@ section
 
 variable {α : Type*} [LogicSymbol α]
 
-/-- `Finset.conj` defines conjunction over a set -/
+/-- `Finset.conj` defines conjunction over a finite set -/
 noncomputable def conj (s : Finset α) : α := s.toList.conj
 
-lemma map_conj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop] (f : F)
+lemma map_conj {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop] (f : F)
     (s : Finset α) : f s.conj ↔ ∀ a ∈ s, f a := by
   simpa using List.map_conj f s.toList
 
 /-- `Finset.disj` defines disjunction over a set -/
 noncomputable def disj (s : Finset α) : α := s.toList.disj
 
-lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbol.HomClass F α Prop] (f : F)
+lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop] (f : F)
     (s : Finset α) : f s.disj ↔ ∃ a ∈ s, f a := by
   simpa using List.map_disj f s.toList
 
