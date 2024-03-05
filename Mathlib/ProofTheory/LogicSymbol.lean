@@ -183,34 +183,38 @@ infix:61 " ⭤ " => LogicSymbol.iff
 
 end
 
-instance heyting {α : Type*} [HeytingAlgebra α] : LogicSymbol α where
+section heyting
+
+variable (α : Type*) [HeytingAlgebra α]
+
+instance heyting : LogicSymbol α where
   tilde := (·ᶜ)
   arrow := (· ⇨ ·)
   wedge := (· ⊓ ·)
   vee := (· ⊔ ·)
 
-@[simp] lemma Prop_top_eq : ⊤ = True := rfl
+variable {α}
 
-@[simp] lemma Prop_bot_eq : ⊥ = False := rfl
+@[simp] lemma prop_neg_eq_not (p : Prop) : ~p = ¬p := rfl
 
-@[simp] lemma Prop_neg_eq (p : Prop) : ~p = ¬p := rfl
+@[simp] lemma prop_arrow_eq_imp (p q : Prop) : (p ⭢ q) = (p → q) := rfl
 
-@[simp] lemma Prop_arrow_eq (p q : Prop) : (p ⭢ q) = (p → q) := rfl
+@[simp] lemma prop_wedge_eq_and (p q : Prop) : (p ⋏ q) = (p ∧ q) := rfl
 
-@[simp] lemma Prop_and_eq (p q : Prop) : (p ⋏ q) = (p ∧ q) := rfl
+@[simp] lemma prop_vee_eq_or (p q : Prop) : (p ⋎ q) = (p ∨ q) := rfl
 
-@[simp] lemma Prop_or_eq (p q : Prop) : (p ⋎ q) = (p ∨ q) := rfl
-
-@[simp] lemma Prop_iff_eq (p q : Prop) : (p ⭤ q) = (p ↔ q) := by
+@[simp] lemma prop_iff_eq_iff (p q : Prop) : (p ⭤ q) = (p ↔ q) := by
   simp[LogicSymbol.iff, iff_iff_implies_and_implies]
 
 instance : DeMorgan Prop where
-  verum := by simp
-  falsum := by simp
+  verum := by simp [Prop.top_eq_true, Prop.bot_eq_false]
+  falsum := by simp [Prop.top_eq_true, Prop.bot_eq_false]
   imply := fun _ _ ↦ by simp[imp_iff_not_or]
   and := fun _ _ ↦ by simp[-not_and, not_and_or]
   or := fun _ _ ↦ by simp[not_or]
   neg := fun _ ↦ by simp
+
+end heyting
 
 end LogicSymbol
 
@@ -360,7 +364,7 @@ def conj : {n : ℕ} → (Fin n → α) → α
 
 @[simp] lemma conj_hom_prop {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop]
   (f : F) {n} (v : Fin n → α) : f (conj v) = ∀ i, f (v i) := by
-  induction' n with n ih <;> simp[conj]
+  induction' n with n ih <;> simp[Prop.top_eq_true, conj]
   · simp[ih]; constructor
     · intro ⟨hz, hs⟩ i; cases i using Fin.cases; { exact hz }; { exact hs _ }
     · intro h; exact ⟨h 0, fun i ↦ h _⟩
@@ -390,7 +394,7 @@ def conj : List α → α
 
 lemma map_conj {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop]
     (f : F) (l : List α) : f l.conj ↔ ∀ a ∈ l, f a := by
-  induction l <;> simp[*]
+  induction l <;> simp[*, Prop.top_eq_true]
 
 /-- `List.disj` defines disjunction over a list -/
 def disj : List α → α
@@ -403,7 +407,7 @@ def disj : List α → α
 
 lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop]
     (f : F) (l : List α) : f l.disj ↔ ∃ a ∈ l, f a := by
-  induction l <;> simp[*]
+  induction l <;> simp[*, Prop.top_eq_true, Prop.bot_eq_false]
 
 end List
 
