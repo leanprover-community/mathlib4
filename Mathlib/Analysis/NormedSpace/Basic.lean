@@ -109,7 +109,8 @@ instance NormedSpace.discreteTopology_zmultiples
 open NormedField
 
 instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
-  { ULift.seminormedAddCommGroup (E := E), ULift.module' with
+  { __ := ULift.seminormedAddCommGroup (E := E),
+    __ := ULift.module'
     norm_smul_le := fun s x => (norm_smul_le s x.down : _) }
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/

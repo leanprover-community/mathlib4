@@ -291,9 +291,7 @@ theorem isRadical_iff_span_singleton [CommSemiring R] :
 
 theorem isRadical_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsRadical y ↔ ∀ x, y ∣ x ^ k → y ∣ x :=
-  ⟨fun h x => h k x, fun h =>
-    k.cauchy_induction_mul (fun n h x hd => h x <| (pow_succ' x n).symm ▸ hd.mul_right x) 0 hk
-      (fun x hd => pow_one x ▸ hd) fun n _ hn x hd => h x <| hn _ <| (pow_mul x k n).subst hd⟩
+  ⟨(· k), k.pow_imp_self_of_one_lt hk _ fun _ _ h ↦ .inl (dvd_mul_of_dvd_left h _)⟩
 #align is_radical_iff_pow_one_lt isRadical_iff_pow_one_lt
 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :

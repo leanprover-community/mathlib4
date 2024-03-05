@@ -912,7 +912,7 @@ theorem ContDiffOn.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ�
   isBoundedBilinearMap_apply.contDiff.comp_contDiff_on₂ hf hg
 #align cont_diff_on.clm_apply ContDiffOn.clm_apply
 
--- porting note: In Lean 3 we had to give implicit arguments in proofs like the following,
+-- Porting note: In Lean 3 we had to give implicit arguments in proofs like the following,
 -- to speed up elaboration. In Lean 4 this isn't necessary anymore.
 theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} {n : ℕ∞} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x).smulRight (g x) :=
@@ -1365,7 +1365,7 @@ theorem ContDiffOn.neg {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s) :
 
 variable {i : ℕ}
 
--- porting note: TODO: define `Neg` instance on `ContinuousLinearEquiv`,
+-- Porting note: TODO: define `Neg` instance on `ContinuousLinearEquiv`,
 -- prove it from `ContinuousLinearEquiv.iteratedFDerivWithin_comp_left`
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
@@ -1745,7 +1745,7 @@ end Prod_map
 section AlgebraInverse
 
 variable (𝕜) {R : Type*} [NormedRing R]
--- porting note: this couldn't be on the same line as the binder type update of `𝕜`
+-- Porting note: this couldn't be on the same line as the binder type update of `𝕜`
 variable [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
@@ -2136,7 +2136,7 @@ over `𝕜`.
 
 
 variable (𝕜) {𝕜' : Type*} [NontriviallyNormedField 𝕜']
--- porting note: this couldn't be on the same line as the binder type update of `𝕜`
+-- Porting note: this couldn't be on the same line as the binder type update of `𝕜`
 variable [NormedAlgebra 𝕜 𝕜']
 
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
@@ -2149,7 +2149,7 @@ theorem HasFTaylorSeriesUpToOn.restrictScalars (h : HasFTaylorSeriesUpToOn n f p
     HasFTaylorSeriesUpToOn n f (fun x => (p' x).restrictScalars 𝕜) s where
   zero_eq x hx := h.zero_eq x hx
   fderivWithin m hm x hx := by
-    simpa only using -- porting note: added `by simpa only using`
+    simpa only using -- Porting note: added `by simpa only using`
       (ContinuousMultilinearMap.restrictScalarsLinear 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x <|
         (h.fderivWithin m hm x hx).restrictScalars 𝕜
   cont m hm := ContinuousMultilinearMap.continuous_restrictScalars.comp_continuousOn (h.cont m hm)
