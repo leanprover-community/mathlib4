@@ -85,10 +85,6 @@ maps is available with the predicate `IsLinearMap`, but it should be avoided mos
 structure LinearMap {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type*)
     (M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
     AddHom M M₂, MulActionHom σ M M₂
--- -/ where
---   /-- A linear map preserves scalar multiplication.
---   We prefer the spelling `_root_.map_smul` instead. -/
---   map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
 #align linear_map LinearMap
 
 /-- The `MulActionHom` underlying a `LinearMap`. -/
@@ -142,7 +138,7 @@ abbrev LinearMapClass (F : Type*) (R : outParam (Type*)) (M M₂ : Type*)
   SemilinearMapClass F (RingHom.id R) M M₂
 #align linear_map_class LinearMapClass
 
--- @[simp]
+@[simp]
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam (Type*)} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :

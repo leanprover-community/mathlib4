@@ -853,8 +853,7 @@ noncomputable instance Real.isROrC : IsROrC ℝ where
     simp only [add_zero, mul_zero, Algebra.id.map_eq_id, RingHom.id_apply, AddMonoidHom.id_apply]
   ofReal_re_ax f := rfl
   ofReal_im_ax r := rfl
-  mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply,
-    AddMonoidHom.id_apply]
+  mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
   mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
   conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
   conj_im_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]

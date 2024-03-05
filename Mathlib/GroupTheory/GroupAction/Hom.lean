@@ -3,10 +3,6 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
 
-! This file was ported from Lean 3 source module algebra.hom.group_action
-! leanprover-community/mathlib commit e7bab9a85e92cf46c02cb4725a7be2f04691e3a7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.GroupRingAction.Basic

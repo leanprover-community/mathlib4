@@ -18,16 +18,16 @@ as it happens for linear maps.
 
 If `φ`, `ψ`… are monoid homs and `M`, `N`… are monoids, we define two classes:
 * `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
-* `MonoidHom.CompTriple.isId φ`, which expresses that `φ = id`
+* `MonoidHom.CompTriple.IsId φ`, which expresses that `φ = id`
 
 Some basic lemmas are proved:
 * `MonoidHom.CompTriple.comp` asserts `MonoidHom.CompTriple φ ψ (ψ.comp φ)`
 * `MonoidHom.CompTriple.id_comp` asserts `MonoidHom.CompTriple φ ψ ψ`
-  in the presence of `MonoidHom.isId φ`
+  in the presence of `MonoidHom.IsId φ`
 * its variant `MonoidHom.CompTriple.comp_id`
 
 It also introduces instances:
-* `MonoidHom.CompTriple.isId (MonoidHom.id M)`
+* `MonoidHom.CompTriple.IsId (MonoidHom.id M)`
 * `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
 
 TODO :
@@ -57,42 +57,43 @@ variable {M' : Type*} [Monoid M']
 variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
 
 /-- Class of Id maps -/
-class isId (σ : M →* M) : Prop where
+class IsId (σ : M →* M) : Prop where
   eq_id : σ = MonoidHom.id M
 
-instance {M : Type*} [Monoid M] : isId (MonoidHom.id M) where
+instance {M : Type*} [Monoid M] : IsId (MonoidHom.id M) where
   eq_id := rfl
 
-instance {σ : M →* M} [isId σ] : CompTriple.isId σ := {
-  eq_id := by simp only [isId.eq_id, MonoidHom.coe_mk, OneHom.coe_mk] }
+instance {σ : M →* M} [IsId σ] : CompTriple.IsId σ where
+  eq_id := by simp only [IsId.eq_id, MonoidHom.coe_mk, OneHom.coe_mk]
 
 instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ χ] :
-    _root_.CompTriple φ ψ χ := {
-  comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq] }
+    _root_.CompTriple φ ψ χ where
+  comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
 
 lemma comp {φ : M →* N} {ψ : N →* P} :
-    CompTriple φ ψ (ψ.comp φ) := {comp_eq := rfl}
+    CompTriple φ ψ (ψ.comp φ) where
+  comp_eq := rfl
 
 lemma comp_id {N P : Type*} [Monoid N] [Monoid P]
-    {φ : N →* N} [isId φ] {ψ : N →* P} :
-    CompTriple φ ψ ψ := {
-  comp_eq := by simp only [isId.eq_id, MonoidHom.comp_id] }
+    {φ : N →* N} [IsId φ] {ψ : N →* P} :
+    CompTriple φ ψ ψ where
+  comp_eq := by simp only [IsId.eq_id, MonoidHom.comp_id]
 
 lemma id_comp {M N : Type*} [Monoid M] [Monoid N]
-    {φ : M →* N} {ψ : N →* N} [isId ψ] :
-    CompTriple φ ψ φ := {
-  comp_eq := by simp only [isId.eq_id, MonoidHom.id_comp] }
+    {φ : M →* N} {ψ : N →* N} [IsId ψ] :
+    CompTriple φ ψ φ where
+  comp_eq := by simp only [IsId.eq_id, MonoidHom.id_comp]
 
 lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
-    {χ : M →* M} [isId χ] :
-    CompTriple φ ψ χ := {
+    {χ : M →* M} [IsId χ] :
+    CompTriple φ ψ χ where
   comp_eq := by
-    simp only [isId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id]
-    rfl }
+    simp only [IsId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id]
+    rfl
 
 lemma comp_apply
     {φ : M →* N} {ψ : N →* P} {χ : M →* P} (h : CompTriple φ ψ χ) (x : M) :
-  ψ (φ x) = χ x := by
+    ψ (φ x) = χ x := by
   rw [← h.comp_eq, MonoidHom.comp_apply]
 
 @[simp]
@@ -102,9 +103,8 @@ theorem comp_assoc {Q : Type*} [Monoid Q]
     {φ₃ : P →* Q} {φ₂₃ : N →* Q} (κ' : CompTriple φ₂ φ₃ φ₂₃)
     {φ₁₂₃ : M →* Q} :
     CompTriple φ₁ φ₂₃ φ₁₂₃ ↔ CompTriple φ₁₂ φ₃ φ₁₂₃ := by
-  constructor
-  all_goals {
-    rintro ⟨h⟩
-    exact ⟨ by simp only [← κ.comp_eq, ← h, ← κ'.comp_eq]; rfl ⟩ }
+  constructor <;>
+  · rintro ⟨h⟩
+    exact ⟨by simp only [← κ.comp_eq, ← h, ← κ'.comp_eq, MonoidHom.comp_assoc]⟩
 
 end MonoidHom.CompTriple

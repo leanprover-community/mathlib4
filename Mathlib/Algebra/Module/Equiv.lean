@@ -283,7 +283,6 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     e.toEquiv.symm with
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
--- was map_smulₛₗ
     map_smul' := fun r x => by simp only [LinearMap.map_smulₛₗ] }
 #align linear_equiv.symm LinearEquiv.symm
 

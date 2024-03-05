@@ -773,9 +773,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
       induction x using Unitization.ind
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
-  left_inv := fun φ => by -- ext; simp,
-    ext
-    simp
+  left_inv := fun φ => by ext; simp,
   right_inv := fun φ => Unitization.algHom_ext'' <| by
     simp }
 
