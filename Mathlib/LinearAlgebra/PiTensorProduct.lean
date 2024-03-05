@@ -354,7 +354,7 @@ the tensor product.-/
 theorem span_tprod_eq_top :
     Submodule.span R (Set.range (tprod R)) = (⊤ : Submodule R (⨂[R] i, s i)) :=
   Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on (fun _ _ ↦ Submodule.smul_mem _ _
-  (Submodule.subset_span (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply])))
+  (Submodule.subset_span (by simp only [Set.mem_range, exists_apply_eq_apply])))
   (fun _ _ hx hy ↦ Submodule.add_mem _ hx hy)
 
 end Module
@@ -484,9 +484,9 @@ def map : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
 theorem map_range_eq_span_tprod :
     LinearMap.range (map f) =
       Submodule.span R { t | ∃ (m : (i : ι) → s i), tprod R (fun i ↦ f i (m i)) = t } := by
-  simp only [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span]
-  congr; ext t
-  simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_eq_and, map_tprod]
+  rw [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span, ← Set.range_comp]
+  apply congrArg; ext x
+  simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_setOf_eq]
 
 /-- Given submodules `p i ⊆ s i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, s i`. -/
 @[simp]
