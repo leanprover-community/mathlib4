@@ -49,21 +49,25 @@ variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι
 
 open scoped Matrix
 
+-- move to Mathlib.LinearAlgebra.Matrix.ToLin
 @[simps! repr_apply repr_symm_apply]
 noncomputable
 def Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   (Matrix.stdBasis R ι ι).map (LinearMap.toMatrix b b).symm
 
+-- move to Mathlib.LinearAlgebra.Matrix.ToLin
 lemma Basis.end_apply (b : Basis ι R M) (ij : ι × ι) :
     (b.end ij) = (Matrix.toLin b b) (Matrix.stdBasis R ι ι ij) := by
   erw [end_repr_symm_apply, Finsupp.total_single, one_smul]
 
+-- move to Mathlib.LinearAlgebra.Matrix.ToLin
 lemma Basis.end_apply_apply (b : Basis ι R M) (ij : ι × ι) (k : ι) :
     (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 := by
   rcases ij with ⟨i, j⟩
   rw [end_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
   dsimp only [Matrix.stdBasisMatrix]
   simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+
 
 open Algebra.TensorProduct LinearMap in
 lemma Basis.baseChange_end (A : Type*) [CommRing A] [Algebra R A] (b : Basis ι R M) (ij : ι × ι) :
@@ -73,6 +77,8 @@ lemma Basis.baseChange_end (A : Type*) [CommRing A] [Algebra R A] (b : Basis ι 
   conv_lhs => simp only [basis_apply, baseChange_tmul]
   simp_rw [end_apply_apply, basis_apply]
   split <;> simp only [TensorProduct.tmul_zero]
+
+#find_home! Basis.baseChange_end
 
 end Basis
 
@@ -362,7 +368,7 @@ lemma lieCharpoly_basisIndep (bₘ' : Basis ιM R M) :
   let f : Polynomial (MvPolynomial ι R) → Polynomial (MvPolynomial ι R) :=
     Polynomial.map (MvPolynomial.aeval X).toRingHom
   have hf : Function.Injective f := by
-    simp only [aeval_X_left, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, Polynomial.map_id]
+    simp only [f, aeval_X_left, AlgHom.toRingHom_eq_coe, AlgHom.id_toRingHom, Polynomial.map_id]
     exact Polynomial.map_injective (RingHom.id _) Function.injective_id
   apply hf
   dsimp only
@@ -370,7 +376,7 @@ lemma lieCharpoly_basisIndep (bₘ' : Basis ιM R M) :
     Module.Finite.of_basis (basis (MvPolynomial ι R) bₘ)
   let _h2 : Module.Free (MvPolynomial ι R) (TensorProduct R (MvPolynomial ι R) M) :=
     Module.Free.of_basis (basis (MvPolynomial ι R) bₘ)
-  rw [lieCharpoly_map_eq_toMatrix_charpoly''', lieCharpoly_map_eq_toMatrix_charpoly''']
+  simp only [f, lieCharpoly_map_eq_toMatrix_charpoly''', lieCharpoly_map_eq_toMatrix_charpoly''']
 
 open LinearMap in
 lemma lieCharpoly_eval_eq_toMatrix_charpoly_coeff (x : L) (i : ℕ) :
