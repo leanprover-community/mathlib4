@@ -1721,9 +1721,8 @@ theorem closure_image_closure (h : Continuous f) :
     (closure_mono <| image_subset _ subset_closure)
 
 theorem closure_subset_preimage_closure_image (h : Continuous f) :
-    closure s ⊆ f ⁻¹' closure (f '' s) := by
-  rw [← Set.image_subset_iff]
-  exact image_closure_subset_closure_image h
+    closure s ⊆ f ⁻¹' closure (f '' s) :=
+  (mapsTo_image _ _).closure h
 #align closure_subset_preimage_closure_image closure_subset_preimage_closure_image
 
 theorem map_mem_closure {t : Set Y} (hf : Continuous f)
@@ -1736,6 +1735,15 @@ theorem Set.MapsTo.closure_left {t : Set Y} (h : MapsTo f s t)
     (hc : Continuous f) (ht : IsClosed t) : MapsTo f (closure s) t :=
   ht.closure_eq ▸ h.closure hc
 #align set.maps_to.closure_left Set.MapsTo.closure_left
+
+theorem Filter.Tendsto.lift'_closure (hf : Continuous f) {l l'} (h : Tendsto f l l') :
+    Tendsto f (l.lift' closure) (l'.lift' closure) :=
+  tendsto_lift'.2 fun s hs ↦ by
+    filter_upwards [mem_lift' (h hs)] using (mapsTo_preimage _ _).closure hf
+
+theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
+    Tendsto f ((𝓝 x).lift' closure) ((𝓝 (f x)).lift' closure) :=
+  (hf.tendsto x).lift'_closure hf
 
 /-!
 ### Function with dense range
