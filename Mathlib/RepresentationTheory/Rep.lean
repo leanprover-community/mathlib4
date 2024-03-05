@@ -64,7 +64,7 @@ instance (V : Rep k G) : Module k V := by
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
--- porting note: was `V.ρ`
+-- Porting note: was `V.ρ`
   Action.ρ V
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ Rep.ρ
@@ -684,8 +684,9 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
   LinearEquiv.toModuleIso'
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
+        set_option tactic.skipAssignedInstances false in
         dsimp [counitIsoAddEquiv]
-/- Porting note: rest of broken proof was `simp`. -/
+        /- Porting note: rest of broken proof was `simp`. -/
         rw [AddEquiv.trans_apply]
         rw [AddEquiv.trans_apply]
         erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
