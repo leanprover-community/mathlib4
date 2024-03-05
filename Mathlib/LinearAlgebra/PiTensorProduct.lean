@@ -551,6 +551,7 @@ variable (R s t)
 /-- The tensor of a family of linear maps from `sᵢ` to `tᵢ`, as a multilinear map of
 the family.
 -/
+@[simps]
 noncomputable def mapMultilinear :
     MultilinearMap R (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
   toFun := map
