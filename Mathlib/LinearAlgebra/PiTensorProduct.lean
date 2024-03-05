@@ -488,7 +488,9 @@ theorem map_range_eq_span_tprod :
   apply congrArg; ext x
   simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_setOf_eq]
 
-/-- Given submodules `p i ⊆ s i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, s i`. -/
+/-- Given submodules `p i ⊆ s i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, s i`.
+This is `TensorProduct.mapIncl` for an arbitrary family of modules.
+-/
 @[simp]
 def mapIncl (p : (i : ι) → Submodule R (s i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, s i :=
   map (fun (i : ι) ↦ (p i).subtype)
