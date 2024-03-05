@@ -655,7 +655,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   convert integrable_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 3 with v
   simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
     EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
-    IsROrC.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
+    ROrCLike.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
     Finset.sum_neg_distrib, mul_assoc, add_left_inj, neg_inj]
   norm_cast
   rw [sq_sqrt]
