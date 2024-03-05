@@ -1,7 +1,5 @@
 import Mathlib.Tactic.Lint
-import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.ToAdditive
-import Std.Tactic.GuardMsgs
 
 set_option linter.dupNamespace true in
 /-- warning:
