@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.Linear
+import Mathlib.CategoryTheory.Quotient.Linear
 import Mathlib.CategoryTheory.Quotient.Preadditive
 
 #align_import algebra.homology.homotopy_category from "leanprover-community/mathlib"@"13ff898b0eee75d3cc75d1c06a491720eaaf911d"
@@ -27,11 +28,8 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits HomologicalComplex
 
-variable {ι : Type*}
-
-variable (V : Type u) [Category.{v} V] [Preadditive V]
-
-variable (c : ComplexShape ι)
+variable {R : Type*} [Semiring R]
+  {ι : Type*} (V : Type u) [Category.{v} V] [Preadditive V] (c : ComplexShape ι)
 
 /-- The congruence on `HomologicalComplex V c` given by the existence of a homotopy.
 -/
@@ -74,6 +72,17 @@ instance : Full (quotient V c) := Quotient.fullFunctor _
 instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
 
 instance : (quotient V c).Additive where
+
+instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
+  (inferInstance : Preadditive (HomotopyCategory V c))
+
+instance : Functor.Additive (Quotient.functor (homotopic V c)) where
+
+instance [Linear R V] : Linear R (HomotopyCategory V c) :=
+  Quotient.linear R (homotopic V c) (fun _ _ _ _ _ h => ⟨h.some.smul _⟩)
+
+instance [Linear R V] : Functor.Linear R (HomotopyCategory.quotient V c) :=
+  Quotient.linear_functor _ _ _
 
 open ZeroObject
 

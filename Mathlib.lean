@@ -262,6 +262,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.ImageToKernel
+import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
 import Mathlib.Algebra.Homology.ModuleCat
@@ -778,6 +779,7 @@ import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
+import Mathlib.Analysis.Fourier.Inversion
 import Mathlib.Analysis.Fourier.PoissonSummation
 import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
 import Mathlib.Analysis.Hofer
@@ -1114,6 +1116,7 @@ import Mathlib.CategoryTheory.GradedObject
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
 import Mathlib.CategoryTheory.GradedObject.Single
 import Mathlib.CategoryTheory.GradedObject.Trifunctor
+import Mathlib.CategoryTheory.GradedObject.Unitor
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
