@@ -811,7 +811,7 @@ end Nonneg
 
 section IntegrableUnion
 
-variable {μ : Measure X} [NormedAddCommGroup E] {ι : Type*} [Countable ι]
+variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
     (hs : ∀ i : ι, MeasurableSet (s i)) (hi : ∀ i : ι, IntegrableOn f (s i) μ)
