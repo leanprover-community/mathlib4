@@ -221,7 +221,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
       exact M.flip.continuous₂.comp_aestronglyMeasurable (hg.1.fst.prod_mk A)
     · apply eventually_of_forall
       rintro ⟨ξ, x⟩
-      simp only [ofAdd_neg, map_inv, coe_inv_unitSphere, SMulHomClass.map_smul,
+      simp only [ofAdd_neg, map_inv, coe_inv_unitSphere, _root_.map_smul,
         ContinuousLinearMap.flip_apply, Function.uncurry_apply_pair, norm_smul, norm_inv,
         norm_eq_of_mem_sphere, inv_one, one_mul, norm_mul, norm_norm]
       exact (M.le_opNorm₂ (f x) (g ξ)).trans (le_of_eq (by ring))
