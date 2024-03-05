@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.Order.JordanHolder
 import Mathlib.Order.CompactlyGenerated.Intervals
-import Mathlib.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.FiniteDimensional
 
 #align_import ring_theory.simple_module from "leanprover-community/mathlib"@"cce7f68a7eaadadf74c82bbac20721cdc03a1cc1"
 
@@ -175,6 +175,12 @@ theorem isSimpleModule_self_iff_isUnit :
     have hy : y ≠ 0 := left_ne_zero_of_mul (hyx.symm ▸ one_ne_zero)
     obtain ⟨z, hzy : z * y = 1⟩ := h y hy 1
     exact ⟨⟨x, y, left_inv_eq_right_inv hzy hyx ▸ hzy, hyx⟩, rfl⟩
+
+theorem isSimpleModule_iff_finrank_eq_one {R} [DivisionRing R] [Module R M] :
+    IsSimpleModule R M ↔ FiniteDimensional.finrank R M = 1 :=
+  ⟨fun h ↦ have := h.nontrivial; have ⟨v, hv⟩ := exists_ne (0 : M)
+    (finrank_eq_one_iff_of_nonzero' v hv).mpr (IsSimpleModule.toSpanSingleton_surjective R hv),
+  is_simple_module_of_finrank_eq_one⟩
 
 theorem IsSemisimpleModule.of_sSup_simples_eq_top
     (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M :=
@@ -374,11 +380,8 @@ theorem surjective_of_ne_zero [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f �
 
 /-- **Schur's Lemma** for linear maps between (possibly distinct) simple modules -/
 theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M →ₗ[R] N) :
-    Function.Bijective f ∨ f = 0 := by
-  by_cases h : f = 0
-  · right
-    exact h
-  exact Or.intro_left _ ⟨injective_of_ne_zero h, surjective_of_ne_zero h⟩
+    Function.Bijective f ∨ f = 0 :=
+  or_iff_not_imp_right.mpr fun h ↦ ⟨injective_of_ne_zero h, surjective_of_ne_zero h⟩
 #align linear_map.bijective_or_eq_zero LinearMap.bijective_or_eq_zero
 
 theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
@@ -394,33 +397,14 @@ theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
 noncomputable instance _root_.Module.End.divisionRing
-    [DecidableEq (Module.End R M)] [IsSimpleModule R M] : DivisionRing (Module.End R M) :=
-  {
-    (Module.End.ring :
-      Ring
-        (Module.End R
-          M)) with
-    inv := fun f =>
-      if h : f = 0 then 0
-      else
-        LinearMap.inverse f (Equiv.ofBijective _ (bijective_of_ne_zero h)).invFun
-          (Equiv.ofBijective _ (bijective_of_ne_zero h)).left_inv
-          (Equiv.ofBijective _ (bijective_of_ne_zero h)).right_inv
-    exists_pair_ne :=
-      ⟨0, 1, by
-        haveI := IsSimpleModule.nontrivial R M
-        have h := exists_pair_ne M
-        contrapose! h
-        intro x y
-        simp_rw [ext_iff, one_apply, zero_apply] at h
-        rw [← h x, h y]⟩
-    mul_inv_cancel := by
-      intro a a0
-      change a * dite _ _ _ = 1
-      ext x
-      rw [dif_neg a0, mul_eq_comp, one_apply, comp_apply]
-      exact (Equiv.ofBijective _ (bijective_of_ne_zero a0)).right_inv x
-    inv_zero := dif_pos rfl }
+    [DecidableEq (Module.End R M)] [IsSimpleModule R M] : DivisionRing (Module.End R M) where
+  __ := Module.End.ring
+  inv f := if h : f = 0 then 0 else (LinearEquiv.ofBijective _ <| bijective_of_ne_zero h).symm
+  exists_pair_ne := ⟨0, 1, have := IsSimpleModule.nontrivial R M; zero_ne_one⟩
+  mul_inv_cancel a a0 := by
+    simp_rw [dif_neg a0]; ext
+    exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
+  inv_zero := dif_pos rfl
 #align module.End.division_ring Module.End.divisionRing
 
 end LinearMap
