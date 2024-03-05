@@ -19,6 +19,8 @@ The partition `memPartition f (n + 1)` is finer than `memPartition f n`.
 ## Main definitions
 
 * `memPartition f n`: the membership partition of the first `n` sets in `f`.
+* `memPartitionSet`: `memPartitionSet f n x` is the set in the partition `memPartition f n` to
+  which `x` belongs.
 
 ## Main statements
 
