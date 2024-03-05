@@ -72,7 +72,7 @@ theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
   dsimp [liftAlternating]
   rw [foldl_ι, LinearMap.mk₂_apply, AlternatingMap.curryLeft_apply_apply]
   congr
-  -- porting note: In Lean 3, `congr` could use the `[Subsingleton (Fin 0 → M)]` instance to finish
+  -- Porting note: In Lean 3, `congr` could use the `[Subsingleton (Fin 0 → M)]` instance to finish
   -- the proof. Here, the instance can be synthesized but `congr` does not use it so the following
   -- line is provided.
   rw [Matrix.zero_empty]
@@ -105,9 +105,9 @@ theorem liftAlternating_algebraMap (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (r : R)
 theorem liftAlternating_apply_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R] N)
     (v : Fin n → M) : liftAlternating (R := R) (M := M) (N := N) f (ιMulti R n v) = f n v := by
   rw [ιMulti_apply]
-  -- porting note: `v` is generalized automatically so it was removed from the next line
+  -- Porting note: `v` is generalized automatically so it was removed from the next line
   induction' n with n ih generalizing f
-  · -- porting note: Lean does not automatically synthesize the instance
+  · -- Porting note: Lean does not automatically synthesize the instance
     -- `[Subsingleton (Fin 0 → M)]` which is needed for `Subsingleton.elim 0 v` on line 114.
     letI : Subsingleton (Fin 0 → M) := by infer_instance
     rw [List.ofFn_zero, List.prod_nil, liftAlternating_one, Subsingleton.elim 0 v]

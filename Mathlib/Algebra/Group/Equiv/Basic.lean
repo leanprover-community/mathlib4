@@ -249,7 +249,7 @@ theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
--- porting note: todo: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
+-- Porting note: todo: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
 -- not `f.toEquiv.toFun`; use higher priority as a workaround
 @[to_additive (attr := simp 1100)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
@@ -312,7 +312,7 @@ def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
 #align mul_equiv.symm MulEquiv.symm
 #align add_equiv.symm AddEquiv.symm
 
-@[to_additive] -- porting note: no longer a `simp`, see below
+@[to_additive] -- Porting note: no longer a `simp`, see below
 theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
 #align mul_equiv.inv_fun_eq_symm MulEquiv.invFun_eq_symm
 -- Porting note: to_additive translated the name incorrectly in mathlib 3.
@@ -343,7 +343,7 @@ theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm :=
 #align mul_equiv.to_equiv_symm MulEquiv.toEquiv_symm
 #align add_equiv.to_equiv_symm AddEquiv.toEquiv_symm
 
--- porting note: doesn't align with Mathlib 3 because `MulEquiv.mk` has a new signature
+-- Porting note: doesn't align with Mathlib 3 because `MulEquiv.mk` has a new signature
 @[to_additive (attr := simp)]
 theorem coe_mk (f : M ≃ N) (hf : ∀ x y, f (x * y) = f x * f y) : (mk f hf : M → N) = f := rfl
 #align mul_equiv.coe_mk MulEquiv.coe_mkₓ
@@ -624,7 +624,7 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
 #align mul_equiv.of_bijective_apply MulEquiv.ofBijective_apply
 #align add_equiv.of_bijective_apply AddEquiv.ofBijective_apply
 
--- porting note: todo: simplify `symm_apply` to `surjInv`?
+-- Porting note: todo: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n
@@ -678,7 +678,7 @@ for multiplicative maps from a monoid to a commutative monoid.
 @[to_additive (attr := simps apply)
   "An additive analogue of `Equiv.arrowCongr`,
   for additive maps from an additive monoid to a commutative additive monoid."]
--- porting note: @[simps apply] removed because it was making a lemma which
+-- Porting note: @[simps apply] removed because it was making a lemma which
 -- wasn't in simp normal form.
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
     (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) where
@@ -771,7 +771,7 @@ protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) 
 
 end MulEquiv
 
--- porting note: we want to add
+-- Porting note: we want to add
 -- `@[simps (config := .asFn)]`
 -- here, but it generates simp lemmas which aren't in simp normal form
 -- (they have `toFun` in)
@@ -794,7 +794,7 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
 #align mul_hom.to_mul_equiv MulHom.toMulEquiv
 #align add_hom.to_add_equiv AddHom.toAddEquiv
 
--- porting note: the next two lemmas were added manually because `@[simps]` is generating
+-- Porting note: the next two lemmas were added manually because `@[simps]` is generating
 -- lemmas with `toFun` in
 @[to_additive (attr := simp)]
 theorem MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)

@@ -546,7 +546,7 @@ theorem setOf_false : { _a : α | False } = ∅ :=
 
 @[simp]
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
-  fun.
+  nofun
 #align set.empty_subset Set.empty_subset
 
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
@@ -1169,7 +1169,7 @@ theorem insert_comm (a b : α) (s : Set α) : insert a (insert b s) = insert b (
   ext fun _ => or_left_comm
 #align set.insert_comm Set.insert_comm
 
---Porting note: removing `simp` attribute because `simp` can prove it
+-- Porting note: removing `simp` attribute because `simp` can prove it
 theorem insert_idem (a : α) (s : Set α) : insert a (insert a s) = insert a s :=
   insert_eq_of_mem <| mem_insert _ _
 #align set.insert_idem Set.insert_idem
@@ -2889,7 +2889,7 @@ instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ {
   assumption
 #align set.decidable_set_of Set.decidableSetOf
 
--- porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
+-- Porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
 instance decidableMemSingleton {a b : α} [DecidableEq α] :
     Decidable (a ∈ ({b} : Set α)) := decidableSetOf _ (· = b)
 

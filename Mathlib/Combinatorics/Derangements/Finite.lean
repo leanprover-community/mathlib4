@@ -36,7 +36,7 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
--- porting note: used to use the tactic delta_instance
+-- Porting note: used to use the tactic delta_instance
 instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
@@ -98,7 +98,7 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction' n using Nat.strong_induction_on with n hyp
   rcases n with _ | _ | n
-  -- porting note: the two `convert_to` weren't necessary before.
+  -- Porting note: the two `convert_to` weren't necessary before.
   · convert_to card ↑{ f : Perm (Fin 0) | ∀ (x : Fin 0), f x ≠ x } = _ using 2; rfl
   · convert_to card ↑{ f : Perm (Fin 1) | ∀ (x : Fin 1), f x ≠ x } = _ using 2; rfl
   -- knock out cases 0 and 1

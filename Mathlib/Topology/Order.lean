@@ -652,7 +652,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
   (gc_nhds a).u_sInf
 #align nhds_Inf nhds_sInf
 
--- porting note: todo: timeouts without `b₁ := t₁`
+-- Porting note: todo: timeouts without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)
@@ -985,6 +985,7 @@ theorem isOpen_iSup_iff {s : Set α} : IsOpen[⨆ i, t i] s ↔ ∀ i, IsOpen[t 
     simp [setOf_isOpen_iSup]
 #align is_open_supr_iff isOpen_iSup_iff
 
+set_option tactic.skipAssignedInstances false in
 theorem isClosed_iSup_iff {s : Set α} : IsClosed[⨆ i, t i] s ↔ ∀ i, IsClosed[t i] s := by
   simp [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
 #align is_closed_supr_iff isClosed_iSup_iff

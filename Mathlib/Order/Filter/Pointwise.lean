@@ -168,8 +168,7 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 variable [One β]
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute
--- because `simpNF` says it can prove it.
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
   rw [Filter.map_one', map_one, pure_one]
 #align filter.map_one Filter.map_one
@@ -783,7 +782,7 @@ protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pur
 /-- `Filter α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionMonoid "`Filter α` is a subtraction monoid under pointwise operations if
  `α` is."]
--- porting note: `to_additive` guessed `divisionAddMonoid`
+-- Porting note: `to_additive` guessed `divisionAddMonoid`
 protected def divisionMonoid : DivisionMonoid (Filter α) :=
   { Filter.monoid, Filter.instInvolutiveInv, Filter.instDiv, Filter.instZPow (α := α) with
     mul_inv_rev := fun s t => map_map₂_antidistrib mul_inv_rev
@@ -874,7 +873,7 @@ variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α �
 
 /-! Note that `Filter α` is not a group because `f / f ≠ 1` in general -/
 
--- porting note: increase priority to appease `simpNF` so left-hand side doesn't simplify
+-- Porting note: increase priority to appease `simpNF` so left-hand side doesn't simplify
 @[to_additive (attr := simp 1100)]
 protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g := by
   refine' ⟨fun h hfg => _, _⟩
