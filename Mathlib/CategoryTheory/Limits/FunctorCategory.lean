@@ -612,7 +612,7 @@ def binaryCoproductColimit (F G : C ⥤ Type w) : IsColimit (binaryCoproductCoco
   fac _ := fun ⟨j⟩ ↦ WalkingPair.casesOn j rfl rfl
   uniq _ _ h := by
     ext _ x
-    cases x with | _ => simp [← h ⟨WalkingPair.right⟩, ← h ⟨WalkingPair.left⟩] ; congr
+    cases x with | _ => simp [← h ⟨WalkingPair.right⟩, ← h ⟨WalkingPair.left⟩]; congr
 
 /-- `functorSum F G` is a binary coproduct for `F` and `G`. -/
 def binaryCoproductColimitCocone (F G : C ⥤ Type w) : Limits.ColimitCocone (pair F G) :=
