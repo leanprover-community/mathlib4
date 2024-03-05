@@ -46,6 +46,7 @@ In this file, we classify the connected subsets of ℝ.
   - `inductive ConnectedRealClassification` : Unifies the various kinds of connected sets of reals.
 -/
 
+/-! ### Classifying Connected Bounded sets of Reals -/
 
 open Set
 
@@ -426,6 +427,7 @@ theorem encard_frontier_BoundedInterval :
 
 end I_section
 
+/-! ### Finishing the classification: Unbounded Intervals -/
 
 section Xconn_section
 variable
