@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
+import Std.Data.Array.Init.Lemmas
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Lemma
 
@@ -70,7 +71,7 @@ def renameTheorem : TSyntax `command → TSyntax `Lean.Parser.Command.declId × 
     return (id, ← `($dm:declModifiers lemma $newName:declId $d:declSig $v:declVal))
   | a => (default, a)
 
-open Std.Tactic.TryThis in
+open Meta.Tactic.TryThis in
 /--
 Writing
 ```lean
