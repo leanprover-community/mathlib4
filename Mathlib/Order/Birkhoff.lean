@@ -108,22 +108,45 @@ def OrderEmbedding.supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} wh
 variable {α}
 
 lemma OrderEmbedding.supIrredLowerSet_apply {a : α} {s : LowerSet α} (ha : LowerSet.Iic a = s) :
-    ((OrderEmbedding.supIrredLowerSet α) a) = s := by
+    OrderEmbedding.supIrredLowerSet α a = s := by
   unfold OrderEmbedding.supIrredLowerSet
   simp_all only [supIrred_iff_of_finite, RelEmbedding.coe_mk, Embedding.coeFn_mk]
 
 -- Birkhoff's Embedding is actually surjective
 lemma supIrredLowerSet_surjective : Function.Surjective (OrderEmbedding.supIrredLowerSet α) := by
   intro ⟨_, hs⟩
-  obtain ⟨a, ha⟩ := supIrred_iff_of_finite.mp hs
-  use a
-  exact Subtype.ext <| OrderEmbedding.supIrredLowerSet_apply ha
+  obtain ⟨a, rfl⟩ := supIrred_iff_of_finite.mp hs
+  exact ⟨a, rfl⟩
+
+variable (α)
 
 /-- **Birkhoff's Representation Theorem**. Any nonempty finite distributive lattice is isomorphic
 to its lattice of sup-irreducible lower sets. This is one version of Birkhoff's representation
 theorem. -/
 noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
   RelIso.ofSurjective _ supIrredLowerSet_surjective
+
+noncomputable def OrderEmbedding.inv (s : {x : LowerSet α // SupIrred x}) : α :=
+  (supIrred_iff_of_finite.mp s.2).choose
+
+variable {α}
+
+lemma OrderEmbedding.inv_eq_OrderIso.symm :
+    (OrderEmbedding.inv α) = (OrderIso.supIrredLowerSet α).symm := by
+  ext s
+  erw [Equiv.eq_symm_apply (OrderIso.supIrredLowerSet α).toEquiv, ← Subtype.coe_inj]
+  exact (OrderEmbedding.supIrredLowerSet_apply) (supIrred_iff_of_finite.mp s.2).choose_spec
+
+@[simp]
+lemma OrderEmbedding.inv_Iic_apply (a : α) : OrderEmbedding.inv α
+    (⟨LowerSet.Iic a, supIrred_Iic a⟩ : {s : LowerSet α // SupIrred s}) = a := by
+  rw [OrderEmbedding.inv_eq_OrderIso.symm, (OrderIso.symm_apply_eq (OrderIso.supIrredLowerSet α))]
+  rfl
+
+@[simp]
+lemma OrderIso.inv_Iic_apply (a : α) : (OrderIso.supIrredLowerSet α).symm
+    (⟨LowerSet.Iic a, supIrred_Iic a⟩ : {s : LowerSet α // SupIrred s}) = a :=
+  (OrderIso.symm_apply_eq (OrderIso.supIrredLowerSet α)).mpr rfl
 
 end PartialOrder
 section DistribLattice
