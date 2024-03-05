@@ -643,7 +643,7 @@ theorem ofDigits_nil (b : ℕ) : ofDigits b [] = 0 := rfl
 theorem ofDigits_mod_eq_head! (b : ℕ) (l : List ℕ) : (Nat.ofDigits b l) % b = l.head! %b := by
   induction l <;> simp [Nat.ofDigits, Int.ModEq]
 
-theorem digits_head {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b := by
+theorem digits_head! {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b := by
   by_cases hb : 1 < b
   · rcases n with _ | n
     · simp
