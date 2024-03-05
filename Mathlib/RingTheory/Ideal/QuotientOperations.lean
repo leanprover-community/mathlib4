@@ -6,6 +6,7 @@ Authors: Kenny Lau, Patrick Massot
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Algebra.Ring.Fin
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 #align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 
@@ -14,8 +15,12 @@ import Mathlib.Algebra.Ring.Fin
 
 ## Main results:
 
- - `quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
- - `quotientKerEquivRangeS` : the **first isomorphism theorem**
+ - `RingHom.quotientKerEquivRange` : the **first isomorphism theorem** for commutative rings.
+ - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
+  for a morphism from a commutative ring to a semiring.
+ - `AlgHom.quotientKerEquivRange` : the **first isomorphism theorem**
+  for a morphism of algebras (over a commutative semiring)
+ - `RingHom.quotientKerEquivRangeS` : the **first isomorphism theorem**
   for a morphism from a commutative ring to a semiring.
  - `Ideal.quotientInfRingEquivPiQuotient`: the **Chinese Remainder Theorem**, version for coprime
    ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
@@ -114,7 +119,7 @@ variable {R : Type u} {S : Type v} {F : Type w} [CommRing R] [Semiring S]
 theorem map_quotient_self (I : Ideal R) : map (Quotient.mk I) I = ⊥ :=
   eq_bot_iff.2 <|
     Ideal.map_le_iff_le_comap.2 fun _ hx =>
-    -- porting note: Lean can't infer `Module (R ⧸ I) (R ⧸ I)` on its own
+    -- Porting note: Lean can't infer `Module (R ⧸ I) (R ⧸ I)` on its own
       (@Submodule.mem_bot (R ⧸ I) _ _ _ Semiring.toModule _).2 <|
           Ideal.Quotient.eq_zero_iff_mem.2 hx
 #align ideal.map_quotient_self Ideal.map_quotient_self
@@ -247,7 +252,7 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopr
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption
     · exact coprime.symm
-  (Ideal.quotEquivOfEq (by simp [iInf, inf_comm])).trans <|
+  (Ideal.quotEquivOfEq (by simp [f, iInf, inf_comm])).trans <|
             (Ideal.quotientInfRingEquivPiQuotient f hf).trans <| RingEquiv.piFinTwo fun i => R ⧸ f i
 #align ideal.quotient_inf_equiv_quotient_prod Ideal.quotientInfEquivQuotientProd
 
@@ -643,6 +648,14 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
 lemma comap_map_mk {I J : Ideal R} (h : I ≤ J) :
     Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J :=
   by ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
+
+/-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
+noncomputable def quotientKerEquivRange
+  {A B : Type*} [CommRing A] [Algebra R A] [Semiring B] [Algebra R B]
+  (f : A →ₐ[R] B) :
+  (A ⧸ RingHom.ker f) ≃ₐ[R] f.range :=
+  (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
+    Ideal.quotientKerAlgEquivOfSurjective f.rangeRestrict_surjective
 
 end QuotientAlgebra
 

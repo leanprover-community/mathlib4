@@ -374,9 +374,9 @@ theorem zeroLocus_singleton_mul (f g : R) :
 #align prime_spectrum.zero_locus_singleton_mul PrimeSpectrum.zeroLocus_singleton_mul
 
 @[simp]
-theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : 0 < n) :
+theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
     zeroLocus ((I ^ n : Ideal R) : Set R) = zeroLocus I :=
-  zeroLocus_radical (I ^ n) ▸ (I.radical_pow n hn).symm ▸ zeroLocus_radical I
+  zeroLocus_radical (I ^ n) ▸ (I.radical_pow hn).symm ▸ zeroLocus_radical I
 #align prime_spectrum.zero_locus_pow PrimeSpectrum.zeroLocus_pow
 
 @[simp]
@@ -1032,7 +1032,7 @@ variable {R}
 
 theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
     (f : R →+* S) : IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
-  -- Porting note : inline `this` does **not** work
+  -- Porting note: inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
   rfl

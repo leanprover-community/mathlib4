@@ -3,10 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Pi.Algebra
 
 #align_import algebra.hom.ring from "leanprover-community/mathlib"@"cf9386b56953fb40904843af98b7a80757bbe7f9"
 
@@ -751,7 +751,7 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   rfl
 #align add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by

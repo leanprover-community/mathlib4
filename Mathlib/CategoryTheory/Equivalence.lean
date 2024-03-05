@@ -149,13 +149,13 @@ theorem Equivalence_mk'_counitInv (functor inverse unit_iso counit_iso f) :
   rfl
 #align category_theory.equivalence.equivalence_mk'_counit_inv CategoryTheory.Equivalence.Equivalence_mk'_counitInv
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem functor_unit_comp (e : C ≌ D) (X : C) :
     e.functor.map (e.unit.app X) ≫ e.counit.app (e.functor.obj X) = 𝟙 (e.functor.obj X) :=
   e.functor_unitIso_comp X
 #align category_theory.equivalence.functor_unit_comp CategoryTheory.Equivalence.functor_unit_comp
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem counitInv_functor_comp (e : C ≌ D) (X : C) :
     e.counitInv.app (e.functor.obj X) ≫ e.functor.map (e.unitInv.app X) = 𝟙 (e.functor.obj X) := by
   erw [Iso.inv_eq_inv (e.functor.mapIso (e.unitIso.app X) ≪≫ e.counitIso.app (e.functor.obj X))
@@ -178,7 +178,7 @@ theorem counit_app_functor (e : C ≌ D) (X : C) :
 
 /-- The other triangle equality. The proof follows the following proof in Globular:
   http://globular.science/1905.001 -/
-@[simp]
+@[reassoc (attr := simp)]
 theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     e.unit.app (e.inverse.obj Y) ≫ e.inverse.map (e.counit.app Y) = 𝟙 (e.inverse.obj Y) := by
   rw [← id_comp (e.inverse.map _), ← map_id e.inverse, ← counitInv_functor_comp, map_comp]
@@ -203,7 +203,7 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
   erw [id_comp, (e.unitIso.app _).hom_inv_id]; rfl
 #align category_theory.equivalence.unit_inverse_comp CategoryTheory.Equivalence.unit_inverse_comp
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inverse_counitInv_comp (e : C ≌ D) (Y : D) :
     e.inverse.map (e.counitInv.app Y) ≫ e.unitInv.app (e.inverse.obj Y) = 𝟙 (e.inverse.obj Y) := by
   erw [Iso.inv_eq_inv (e.unitIso.app (e.inverse.obj Y) ≪≫ e.inverse.mapIso (e.counitIso.app Y))
@@ -224,13 +224,13 @@ theorem unitInv_app_inverse (e : C ≌ D) (Y : D) :
   rfl
 #align category_theory.equivalence.unit_inv_app_inverse CategoryTheory.Equivalence.unitInv_app_inverse
 
-@[simp]
+@[reassoc, simp]
 theorem fun_inv_map (e : C ≌ D) (X Y : D) (f : X ⟶ Y) :
     e.functor.map (e.inverse.map f) = e.counit.app X ≫ f ≫ e.counitInv.app Y :=
   (NatIso.naturality_2 e.counitIso f).symm
 #align category_theory.equivalence.fun_inv_map CategoryTheory.Equivalence.fun_inv_map
 
-@[simp]
+@[reassoc, simp]
 theorem inv_fun_map (e : C ≌ D) (X Y : C) (f : X ⟶ Y) :
     e.inverse.map (e.functor.map f) = e.unitInv.app X ≫ f ≫ e.unit.app Y :=
   (NatIso.naturality_1 e.unitIso f).symm
@@ -255,6 +255,7 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
     _ ≅ F ⋙ G := leftUnitor (F ⋙ G)
 #align category_theory.equivalence.adjointify_η CategoryTheory.Equivalence.adjointifyη
 
+@[reassoc]
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
   dsimp [adjointifyη,Trans.trans]

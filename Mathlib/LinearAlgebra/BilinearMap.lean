@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.LinearAlgebra.Basic
+import Mathlib.Algebra.Module.Submodule.Ker
 
 #align_import linear_algebra.bilinear_map from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
@@ -399,9 +399,15 @@ variable {R M}
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
+variable (R M) in
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`.
+
+This should eventually replace `_root_.BilinForm`. -/
+protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
+
 /-- The restriction of a bilinear form to a submodule. -/
-abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : M →ₗ[R] M →ₗ[R] R) :
-    p →ₗ[R] p →ₗ[R] R :=
+abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : LinearMap.BilinForm R M) :
+    LinearMap.BilinForm R p :=
   f.compl₁₂ p.subtype p.subtype
 
 end CommSemiring

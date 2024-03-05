@@ -93,10 +93,10 @@ namespace Orientation
 notation `ω`). When evaluated on two vectors, it gives the oriented area of the parallelogram they
 span. -/
 irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
-  let z : E [Λ^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
+  let z : E [⋀^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
     AlternatingMap.constLinearEquivOfIsEmpty.symm
-  let y : E [Λ^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
-    LinearMap.llcomp ℝ E (E [Λ^Fin 0]→ₗ[ℝ] ℝ) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
+  let y : E [⋀^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
+    LinearMap.llcomp ℝ E (E [⋀^Fin 0]→ₗ[ℝ] ℝ) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
   exact y ∘ₗ AlternatingMap.curryLeftLinearMap (R' := ℝ) o.volumeForm
 #align orientation.area_form Orientation.areaForm
 
@@ -227,7 +227,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : Finset.card {x} = 1 := Finset.card_singleton x
           have : finrank ℝ K + finrank ℝ Kᗮ = finrank ℝ E := K.finrank_add_finrank_orthogonal
           have : finrank ℝ E = 2 := Fact.out
-          linarith
+          omega
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
@@ -283,7 +283,7 @@ theorem rightAngleRotation_symm :
   exact LinearIsometryEquiv.toLinearIsometry_injective rfl
 #align orientation.right_angle_rotation_symm Orientation.rightAngleRotation_symm
 
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem inner_rightAngleRotation_self (x : E) : ⟪J x, x⟫ = 0 := by simp
 #align orientation.inner_right_angle_rotation_self Orientation.inner_rightAngleRotation_self
 
@@ -308,7 +308,7 @@ theorem areaForm_rightAngleRotation_right (x y : E) : ω x (J y) = ⟪x, y⟫ :=
   rw [← o.inner_rightAngleRotation_left, o.inner_comp_rightAngleRotation]
 #align orientation.area_form_right_angle_rotation_right Orientation.areaForm_rightAngleRotation_right
 
--- @[simp] -- Porting note: simp already proves this
+-- @[simp] -- Porting note (#10618): simp already proves this
 theorem areaForm_comp_rightAngleRotation (x y : E) : ω (J x) (J y) = ω x y := by simp
 #align orientation.area_form_comp_right_angle_rotation Orientation.areaForm_comp_rightAngleRotation
 

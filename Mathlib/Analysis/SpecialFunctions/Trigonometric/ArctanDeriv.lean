@@ -89,6 +89,9 @@ theorem hasDerivAt_arctan (x : ℝ) : HasDerivAt arctan (1 / (1 + x ^ 2)) x :=
   (hasStrictDerivAt_arctan x).hasDerivAt
 #align real.has_deriv_at_arctan Real.hasDerivAt_arctan
 
+theorem hasDerivAt_arctan' (x : ℝ) : HasDerivAt arctan (1 + x ^ 2)⁻¹ x :=
+  one_div (1 + x ^ 2) ▸ hasDerivAt_arctan x
+
 theorem differentiableAt_arctan (x : ℝ) : DifferentiableAt ℝ arctan x :=
   (hasDerivAt_arctan x).differentiableAt
 #align real.differentiable_at_arctan Real.differentiableAt_arctan

@@ -3,10 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
@@ -88,7 +87,7 @@ namespace SchwartzMap
 
 open SchwartzSpace
 
--- porting note: removed
+-- Porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
 instance instFunLike : FunLike 𝓢(E, F) E F where
@@ -622,12 +621,12 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := by simp only [le_refl, Finset.le_sup'_iff, true_or_iff, le_max_iff]
+  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or_iff, le_max_iff]
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
   refine' le_trans (f N x) (mul_le_mul _ _ (by positivity) hC')
-  · simp only [Finset.le_sup'_iff, le_max_iff]
+  · simp only [C', Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
   refine' pow_le_pow_right (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
@@ -842,7 +841,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         refine' le_add_of_nonneg_right _
         specialize hg_upper' 0
         rw [norm_zero] at hg_upper'
-        refine' nonneg_of_mul_nonneg_left hg_upper' (by positivity)
+        exact nonneg_of_mul_nonneg_left hg_upper' (by positivity)
       let k' := kg * (k + l * n)
       use Finset.Iic (k', n), (1 + Cg) ^ (k + l * n) * ((C + 1) ^ n * n ! * 2 ^ k'), by positivity
       intro f x
@@ -945,6 +944,10 @@ def pderivCLM (m : E) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
 theorem pderivCLM_apply (m : E) (f : 𝓢(E, F)) (x : E) : pderivCLM 𝕜 m f x = fderiv ℝ f x m :=
   rfl
 #align schwartz_map.pderiv_clm_apply SchwartzMap.pderivCLM_apply
+
+theorem pderivCLM_eq_lineDeriv (m : E) (f : 𝓢(E, F)) (x : E) :
+    pderivCLM 𝕜 m f x = lineDeriv ℝ f x m := by
+  simp only [pderivCLM_apply, f.differentiableAt.lineDeriv_eq_fderiv]
 
 /-- The iterated partial derivative (or directional derivative) as a continuous linear map on
 Schwartz space. -/

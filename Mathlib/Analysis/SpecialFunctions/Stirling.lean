@@ -53,8 +53,7 @@ noncomputable def stirlingSeq (n : ℕ) : ℝ :=
 
 @[simp]
 theorem stirlingSeq_zero : stirlingSeq 0 = 0 := by
-  rw [stirlingSeq, cast_zero, mul_zero, Real.sqrt_zero, zero_mul,
-    div_zero]
+  rw [stirlingSeq, cast_zero, mul_zero, Real.sqrt_zero, zero_mul, div_zero]
 #align stirling.stirling_seq_zero Stirling.stirlingSeq_zero
 
 @[simp]
@@ -68,7 +67,7 @@ theorem log_stirlingSeq_formula (n : ℕ) :
   · simp
   · rw [stirlingSeq, log_div, log_mul, sqrt_eq_rpow, log_rpow, Real.log_pow, tsub_tsub]
       <;> positivity
--- porting note: generalized from `n.succ` to `n`
+-- Porting note: generalized from `n.succ` to `n`
 #align stirling.log_stirling_seq_formula Stirling.log_stirlingSeq_formulaₓ
 
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
@@ -138,7 +137,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   rw [div_le_div_right h₃]
   ring_nf
   norm_cast
-  linarith
+  omega
 #align stirling.log_stirling_seq_sub_log_stirling_seq_succ Stirling.log_stirlingSeq_sub_log_stirlingSeq_succ
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2`  -/

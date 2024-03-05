@@ -33,7 +33,6 @@ abbrev ProjectiveSpecialLinearGroup : Type _ :=
 scoped[MatrixGroups] notation "PSL(" n ", " R ")" => Matrix.ProjectiveSpecialLinearGroup (Fin n) R
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
-    {α : Type*}
 
 namespace SpecialLinearGroup
 
@@ -50,24 +49,16 @@ instance : SMul PSL(2, ℝ) ℍ where
     rw [SpecialLinearGroup.coset_center_iff] at hAB
 ```
 -/
-theorem coset_center_iff [Inhabited n]
-    {A B : SpecialLinearGroup n R} : A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
+theorem coset_center_iff {A B : SpecialLinearGroup n R} :
+    A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
     ∃ (c : R), (c ^ Fintype.card n = 1 ∧ B.val = c • A.val) := by
   constructor
   · intro hAB
-    obtain ⟨hc, hAB⟩ := mem_center_iff.mp hAB default
-    use (A⁻¹ * B).val default default
-    replace hAB := congrArg (HMul.hMul A.val) hAB
-    rw [coe_mul, ← mul_assoc, mul_smul, mul_one, ← coe_mul,
-        @mul_inv_self, coe_one, one_mul] at hAB
-    exact ⟨hc, hAB⟩
+    obtain ⟨c, hAB⟩ := mem_center_iff.mp hAB
+    exact ⟨c, hAB.1, by
+      rw [@smul_eq_mul_diagonal, ← @scalar_apply, hAB.2, ← @coe_mul, @mul_inv_cancel_left]⟩
   · intro ⟨c, hc, hAB⟩
-    replace hAB := congrArg (HMul.hMul A⁻¹.val) hAB
-    rw [@mul_smul, ← coe_mul, ← coe_mul, @mul_left_inv] at hAB
-    refine mem_center_iff.mpr (fun i => ?_)
-    have : (A⁻¹ * B) i i = c := by rw [hAB, @smul_apply]; simp
-    rw [this]
-    exact ⟨hc, hAB⟩
+    exact mem_center_iff.mpr  ⟨c, hc, by simp [hAB, adjugate_mul, smul_one_eq_diagonal]⟩
 
 section SL2
 
@@ -86,8 +77,6 @@ instance : SMul PSL(2, ℝ) ℍ where
 theorem coset_center_iff_2
     {A B : SpecialLinearGroup n R} : A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
     (B = A ∨ B = -A) := by
-  have h : Nonempty n := by rw [← Fintype.card_pos_iff]; positivity
-  haveI : Inhabited n := Classical.inhabited_of_nonempty h
   rw [coset_center_iff]
   aesop
 

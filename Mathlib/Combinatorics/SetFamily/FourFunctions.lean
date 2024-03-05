@@ -273,10 +273,10 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set s' : Finset L := s.preimage (↑) <| Subtype.coe_injective.injOn _
   set t' : Finset L := t.preimage (↑) <| Subtype.coe_injective.injOn _
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
-    simp [map_eq_image, image_preimage, filter_eq_self]
+    simp [s', map_eq_image, image_preimage, filter_eq_self]
     exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left _ _ ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
-    simp [map_eq_image, image_preimage, filter_eq_self]
+    simp [t', map_eq_image, image_preimage, filter_eq_self]
     exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right _ _ ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
@@ -351,8 +351,8 @@ variable [DecidableEq α] [GeneralizedBooleanAlgebra α]
 lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
     s.card * t.card ≤ (s \\ t).card * (t \\ s).card := by
   have : ∀ s t : Finset α, (s \\ t).map ⟨_, liftLatticeHom_injective⟩ =
-    s.map ⟨_, liftLatticeHom_injective⟩ \\ t.map ⟨_, liftLatticeHom_injective⟩
-  · rintro s t
+      s.map ⟨_, liftLatticeHom_injective⟩ \\ t.map ⟨_, liftLatticeHom_injective⟩ := by
+    rintro s t
     simp_rw [map_eq_image]
     exact image_image₂_distrib fun a b ↦ rfl
   simpa [← card_compls (_ ⊻ _), ← map_sup, ← map_inf, ← this] using

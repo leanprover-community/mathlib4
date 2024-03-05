@@ -19,7 +19,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
--- porting notes: removed from module documentation because it moved to `data.finsupp.multiset`
+-- Porting note: removed from module documentation because it moved to `data.finsupp.multiset`
 -- TODO: move to `Data.Finsupp.Multiset` when that is ported
 -- * `Finsupp.orderIsoMultiset`: The order isomorphism between `ℕ`-valued finitely supported
 --   functions and multisets.
@@ -138,7 +138,7 @@ end Zero
 
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.addCommMonoid, Finsupp.partialorder with
+  { Finsupp.instAddCommMonoid, Finsupp.partialorder with
     add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :

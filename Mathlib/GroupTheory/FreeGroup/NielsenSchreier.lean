@@ -291,7 +291,7 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
 /-- Given a connected free groupoid, its generating quiver is rooted-connected. -/
 instance generators_connected (G) [Groupoid.{u, u} G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
     RootedConnected (symgen r) :=
-  ⟨fun b => path_nonempty_of_hom (CategoryTheory.nonempty_hom_of_connected_groupoid r b)⟩
+  ⟨fun b => path_nonempty_of_hom (CategoryTheory.nonempty_hom_of_preconnected_groupoid r b)⟩
 #align is_free_groupoid.generators_connected IsFreeGroupoid.generators_connected
 
 /-- A vertex group in a free connected groupoid is free. With some work one could drop the

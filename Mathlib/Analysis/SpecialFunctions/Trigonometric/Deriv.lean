@@ -723,7 +723,7 @@ theorem abs_sinh (x : ℝ) : |sinh x| = sinh |x| := by
 #align real.abs_sinh Real.abs_sinh
 
 theorem cosh_strictMonoOn : StrictMonoOn cosh (Ici 0) :=
-  (convex_Ici _).strictMonoOn_of_deriv_pos continuous_cosh.continuousOn fun x hx => by
+  strictMonoOn_of_deriv_pos (convex_Ici _) continuous_cosh.continuousOn fun x hx => by
     rw [interior_Ici, mem_Ioi] at hx; rwa [deriv_cosh, sinh_pos_iff]
 #align real.cosh_strict_mono_on Real.cosh_strictMonoOn
 
@@ -750,7 +750,7 @@ theorem one_lt_cosh : 1 < cosh x ↔ x ≠ 0 :=
 theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   -- Porting note: `by simp; abel` was just `by simp` in mathlib3.
   refine' strictMono_of_odd_strictMonoOn_nonneg (fun x => by simp; abel) _
-  refine' (convex_Ici _).strictMonoOn_of_deriv_pos _ fun x hx => _
+  refine' strictMonoOn_of_deriv_pos (convex_Ici _) _ fun x hx => _
   · exact (continuous_sinh.sub continuous_id).continuousOn
   · rw [interior_Ici, mem_Ioi] at hx
     rw [deriv_sub, deriv_sinh, deriv_id'', sub_pos, one_lt_cosh]
