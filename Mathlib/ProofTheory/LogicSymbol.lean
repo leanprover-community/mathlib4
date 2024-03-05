@@ -16,7 +16,7 @@ these approaches. It also defines homomorphisms that preserve these connectives.
 ## Main Definitions
 * `LogicSymbol` is defined so that `LogicSymbol F` is a type that has logical connectives $\top,
   \bot, \land, \lor, \to, \lnot$.
-* `LogicSymbol.LogicSymbolHom` is defined so that `f : F →ˡᶜ G` is a homomorphism from `F` to `G` that
+* `LogicSymbolHom` is defined so that `f : F →ˡᶜ G` is a homomorphism from `F` to `G` that
 preserves logical connectives.
 -/
 
