@@ -1046,7 +1046,7 @@ theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x 
 /-- An emetric space is separated -/
 instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
   t0 _ _ h := eq_of_edist_eq_zero <| inseparable_iff.1 h
-#align to_separated EMetricSpace.toT0Space
+#align to_separated EMetricSpace.instT0Space
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
