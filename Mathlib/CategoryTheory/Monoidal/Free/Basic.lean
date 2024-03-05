@@ -35,81 +35,6 @@ variable {C : Type u}
 
 section
 
-/-
-
-/-- Auxiliary structure to carry only the data fields of (and provide notation for)
-`MonoidalCategory`. -/
-class MonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
-  /-- curried tensor product of objects -/
-  tensorObj : C → C → C
-  /-- left whiskering for morphisms -/
-  whiskerLeft (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) : tensorObj X Y₁ ⟶ tensorObj X Y₂
-  /-- right whiskering for morphisms -/
-  whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : tensorObj X₁ Y ⟶ tensorObj X₂ Y
-  /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
-  -- By default, it is defined in terms of whiskerings.
-  tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) :=
-    whiskerRight f X₂ ≫ whiskerLeft Y₁ g
-  /-- The tensor unity in the monoidal structure `𝟙_ C` -/
-  tensorUnit : C
-  /-- The associator isomorphism `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
-  associator : ∀ X Y Z : C, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z)
-  /-- The left unitor: `𝟙_ C ⊗ X ≃ X` -/
-  leftUnitor : ∀ X : C, tensorObj tensorUnit X ≅ X
-  /-- The right unitor: `X ⊗ 𝟙_ C ≃ X` -/
-  rightUnitor : ∀ X : C, tensorObj X tensorUnit ≅ X
-
-class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
-  tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) :
-    f ⊗ g = (f ▷ X₂) ≫ (Y₁ ◁ g) := by
-      aesop_cat
-  /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
-  tensor_id : ∀ X₁ X₂ : C, 𝟙 X₁ ⊗ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by aesop_cat
-  /--
-  Composition of tensor products is tensor product of compositions:
-  `(f₁ ⊗ g₁) ∘ (f₂ ⊗ g₂) = (f₁ ∘ f₂) ⊗ (g₁ ⊗ g₂)`
-  -/
-  tensor_comp :
-    ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
-      (f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂) := by
-    aesop_cat
-  whiskerLeft_id : ∀ (X Y : C), X ◁ 𝟙 Y = 𝟙 (X ⊗ Y) := by
-    aesop_cat
-  id_whiskerRight : ∀ (X Y : C), 𝟙 X ▷ Y = 𝟙 (X ⊗ Y) := by
-    aesop_cat
-  /-- Naturality of the associator isomorphism: `(f₁ ⊗ f₂) ⊗ f₃ ≃ f₁ ⊗ (f₂ ⊗ f₃)` -/
-  associator_naturality :
-    ∀ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃),
-      ((f₁ ⊗ f₂) ⊗ f₃) ≫ (α_ Y₁ Y₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ⊗ (f₂ ⊗ f₃)) := by
-    aesop_cat
-  /--
-  Naturality of the left unitor, commutativity of `𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y ⟶ Y` and `𝟙_ C ⊗ X ⟶ X ⟶ Y`
-  -/
-  leftUnitor_naturality :
-    ∀ {X Y : C} (f : X ⟶ Y), 𝟙_ _ ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
-    aesop_cat
-  /--
-  Naturality of the right unitor: commutativity of `X ⊗ 𝟙_ C ⟶ Y ⊗ 𝟙_ C ⟶ Y` and `X ⊗ 𝟙_ C ⟶ X ⟶ Y`
-  -/
-  rightUnitor_naturality :
-    ∀ {X Y : C} (f : X ⟶ Y), f ▷ 𝟙_ _ ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
-    aesop_cat
-  /--
-  The pentagon identity relating the isomorphism between `X ⊗ (Y ⊗ (Z ⊗ W))` and `((X ⊗ Y) ⊗ Z) ⊗ W`
-  -/
-  pentagon :
-    ∀ W X Y Z : C,
-      (α_ W X Y).hom ▷ Z ≫ (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom =
-        (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
-    aesop_cat
-  /--
-  The identity relating the isomorphisms between `X ⊗ (𝟙_ C ⊗ Y)`, `(X ⊗ 𝟙_ C) ⊗ Y` and `X ⊗ Y`
-  -/
-  triangle :
-    ∀ X Y : C, (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
-    aesop_cat
--/
-
 variable (C)
 
 /--
@@ -161,19 +86,12 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | trans {X Y} {f g h : X ⟶ᵐ Y} : HomEquiv f g → HomEquiv g h → HomEquiv f h
   | comp {X Y Z} {f f' : X ⟶ᵐ Y} {g g' : Y ⟶ᵐ Z} :
       HomEquiv f f' → HomEquiv g g' → HomEquiv (f.comp g) (f'.comp g')
-
-  -- | comp_left {X Y Z} (f f' : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) : HomEquiv f f' → HomEquiv (f.comp g) (f'.comp g)
-  -- | comp_right {X Y Z} (f : X ⟶ᵐ Y) (g g' : Y ⟶ᵐ Z) : HomEquiv g g' → HomEquiv (f.comp g) (f.comp g')
   | whiskerLeft (X) {Y Z} (f f' : Y ⟶ᵐ Z) :
       HomEquiv f f' → HomEquiv (f.whiskerLeft X) (f'.whiskerLeft X)
   | whiskerRight {Y Z} (f f' : Y ⟶ᵐ Z) (X) :
       HomEquiv f f' → HomEquiv (f.whiskerRight X) (f'.whiskerRight X)
   | tensor {W X Y Z} {f f' : W ⟶ᵐ X} {g g' : Y ⟶ᵐ Z} :
       HomEquiv f f' → HomEquiv g g' → HomEquiv (f.tensor g) (f'.tensor g')
-  -- | tensor_left {X₁ Y₁ X₂ Y₂} (f f' : X₁ ⟶ᵐ Y₁) (g : X₂ ⟶ᵐ Y₂) :
-  --     HomEquiv f f' → HomEquiv (f.tensor g) (f'.tensor g)
-  -- | tensor_right {X₁ Y₁ X₂ Y₂} (f : X₁ ⟶ᵐ Y₁) (g g' : X₂ ⟶ᵐ Y₂) :
-  --     HomEquiv g g' → HomEquiv (f.tensor g) (f.tensor g')
   | tensorHom_def {X₁ Y₁ X₂ Y₂} (f : X₁ ⟶ᵐ Y₁) (g : X₂ ⟶ᵐ Y₂) :
       HomEquiv (f.tensor g) ((f.whiskerRight X₂).comp (g.whiskerLeft Y₁))
   | comp_id {X Y} (f : X ⟶ᵐ Y) : HomEquiv (f.comp (Hom.id _)) f
@@ -227,9 +145,13 @@ open FreeMonoidalCategory.HomEquiv
 
 instance categoryFreeMonoidalCategory : Category.{u} (F C) where
   Hom X Y := Quotient (FreeMonoidalCategory.setoidHom X Y)
-  -- (HomEquiv : (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop)
-  id X := ⟦Hom.id X⟧
-  comp := Quotient.map₂ Hom.comp (fun _ _ hf _ _ hg ↦ HomEquiv.comp hf hg)
+  id X := ⟦FreeMonoidalCategory.Hom.id _⟧
+  comp := @fun X Y Z f g =>
+    Quotient.map₂ Hom.comp
+      (by
+        intro f f' hf g g' hg
+        exact comp hf hg)
+      f g
   id_comp := by
     rintro X Y ⟨f⟩
     exact Quotient.sound (id_comp f)
