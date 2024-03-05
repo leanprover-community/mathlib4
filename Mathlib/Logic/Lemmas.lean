@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SplitIfs
 
@@ -76,4 +77,6 @@ lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
 
 open Function
 
-lemma not_injective : Injective Not := fun _ _ ↦ by simpa using not_iff_not.mp
+lemma not_involutive : Involutive Not := fun _ ↦ propext not_not
+
+lemma not_injective : Injective Not := Involutive.injective not_involutive
