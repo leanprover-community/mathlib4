@@ -65,7 +65,7 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
   -- operations to the `Quotient.lift` level and then end up comparing huge
   -- terms.  We should probably make most of the quotient operations
   -- irreducible so that they don't expose `Quotient.lift` accidentally.
-  refine PowerBasis.finiteDimensional ?_
+  refine PowerBasis.finite ?_
   refine AdjoinRoot.powerBasis ?_
   exact I.smithCoeffs_ne_zero b hI i
 

@@ -396,4 +396,11 @@ theorem Nat.cauchy_induction_two_mul (seed : ℕ) (hs : P seed.succ)
   Nat.cauchy_induction_mul h 2 seed one_lt_two hs hm n
 #align nat.cauchy_induction_two_mul Nat.cauchy_induction_two_mul
 
+theorem Nat.pow_imp_self_of_one_lt {M} [Monoid M] (k : ℕ) (hk : 1 < k)
+    (P : M → Prop) (hmul : ∀ x y, P x → P (x * y) ∨ P (y * x))
+    (hpow : ∀ x, P (x ^ k) → P x) : ∀ n x, P (x ^ n) → P x :=
+  k.cauchy_induction_mul (fun n ih x hx ↦ ih x <| (hmul _ x hx).elim
+    (fun h ↦ by rwa [_root_.pow_succ']) fun h ↦ by rwa [_root_.pow_succ]) 0 hk
+    (fun x hx ↦ pow_one x ▸ hx) fun n _ hn x hx ↦ hpow x <| hn _ <| (pow_mul x k n).subst hx
+
 end Induction

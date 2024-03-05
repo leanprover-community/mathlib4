@@ -78,9 +78,9 @@ theorem coe_basis (pb : PowerBasis R S) : ⇑pb.basis = fun i : Fin pb.dim => pb
 #align power_basis.coe_basis PowerBasis.coe_basis
 
 /-- Cannot be an instance because `PowerBasis` cannot be a class. -/
-theorem finiteDimensional [Algebra K S] (pb : PowerBasis K S) : FiniteDimensional K S :=
-  FiniteDimensional.of_fintype_basis pb.basis
-#align power_basis.finite_dimensional PowerBasis.finiteDimensional
+theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
+#align power_basis.finite_dimensional PowerBasis.finite
+@[deprecated] alias finiteDimensional := PowerBasis.finite
 
 theorem finrank [StrongRankCondition R] (pb : PowerBasis R S) :
     FiniteDimensional.finrank R S = pb.dim := by

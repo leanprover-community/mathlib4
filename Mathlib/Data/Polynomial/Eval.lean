@@ -837,6 +837,17 @@ theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.ma
 theorem map_id : p.map (RingHom.id _) = p := by simp [Polynomial.ext_iff, coeff_map]
 #align polynomial.map_id Polynomial.map_id
 
+/-- The polynomial ring over a finite product of rings is isomorphic to
+the product of polynomial rings over individual rings. -/
+def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
+    (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
+  .ofBijective (Pi.ringHom fun i ↦ mapRingHom (Pi.evalRingHom R i))
+    ⟨fun p q h ↦ by ext n i; simpa using congr_arg (fun p ↦ coeff (p i) n) h,
+      fun p ↦ ⟨.ofFinsupp (.ofSupportFinite (fun n i ↦ coeff (p i) n) <|
+        (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
+          simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
+          contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
+
 theorem eval₂_eq_eval_map {x : S} : p.eval₂ f x = (p.map f).eval x := by
   -- Porting note: `apply` → `induction`
   induction p using Polynomial.induction_on' with

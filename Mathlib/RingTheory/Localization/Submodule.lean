@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.Noetherian
 
 #align_import ring_theory.localization.submodule from "leanprover-community/mathlib"@"1ebb20602a8caef435ce47f6373e1aa40851a177"
 

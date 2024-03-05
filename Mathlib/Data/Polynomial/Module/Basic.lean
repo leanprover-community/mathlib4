@@ -88,6 +88,24 @@ instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a w
 instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
+/-- Construct an `R[X]`-linear map out of `AEval R M a` from a `R`-linear map out of `M`. -/
+def _root_.LinearMap.ofAEval {N} [AddCommMonoid N] [Module R N] [Module R[X] N]
+    [IsScalarTower R R[X] N] (f : M →ₗ[R] N) (hf : ∀ m : M, f (a • m) = (X : R[X]) • f m) :
+    AEval R M a →ₗ[R[X]] N where
+  __ := f ∘ₗ (of R M a).symm
+  map_smul' p := p.induction_on (fun k m ↦ by simp [C_eq_algebraMap])
+    (fun p q hp hq m ↦ by simp_all [add_smul]) fun n k h m ↦ by
+      simp_rw [RingHom.id_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+        LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] at h ⊢
+      simp_rw [pow_succ', ← mul_assoc, mul_smul _ X, ← hf, ← of_symm_X_smul, ← h]
+
+lemma annihilator_eq_ker_aeval [FaithfulSMul A M] :
+    annihilator R[X] (AEval R M a) = RingHom.ker (aeval a) := by
+  ext p
+  simp_rw [mem_annihilator, RingHom.mem_ker]
+  change (∀ m : M, aeval a p • m = 0) ↔ _
+  exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by simp [h]⟩
+
 @[simp]
 lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
     (⊤ : Submodule R[X] <| AEval R M a).annihilator = RingHom.ker (aeval a) := by

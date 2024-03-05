@@ -731,6 +731,9 @@ protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :
         exact le_rfl } -- v4.7.0-rc1 issues
 #align is_simple_order.complete_boolean_algebra IsSimpleOrder.completeBooleanAlgebra
 
+instance : ComplementedLattice α :=
+  letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
+
 end IsSimpleOrder
 
 namespace IsSimpleOrder

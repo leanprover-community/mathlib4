@@ -84,13 +84,23 @@ section Module
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
-variable [SMul R M] [MulAction A M] [IsScalarTower R A M]
+variable [MulAction A M]
 
 variable {R} {M}
 
-theorem algebraMap_smul (r : R) (x : M) : algebraMap R A r • x = r • x := by
+theorem algebraMap_smul [SMul R M] [IsScalarTower R A M] (r : R) (x : M) :
+    algebraMap R A r • x = r • x := by
   rw [Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
 #align is_scalar_tower.algebra_map_smul IsScalarTower.algebraMap_smul
+
+variable {A} in
+theorem of_algebraMap_smul [SMul R M] (h : ∀ (r : R) (x : M), algebraMap R A r • x = r • x) :
+    IsScalarTower R A M where
+  smul_assoc r a x := by rw [Algebra.smul_def, mul_smul, h]
+
+variable (R M) in
+theorem of_compHom : letI := MulAction.compHom M (algebraMap R A : R →* A); IsScalarTower R A M :=
+  letI := MulAction.compHom M (algebraMap R A : R →* A); of_algebraMap_smul fun _ _ ↦ rfl
 
 end Module
 
