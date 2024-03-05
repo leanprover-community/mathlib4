@@ -97,8 +97,9 @@ lemma CommSq_of_CommSq_of_vertical_isos (f : W ⟶ X) (i : Y ⟶ Z) (g : W ≅ Y
     (hcomm : CommSq f g.hom h.hom i) : CommSq i g.inv h.inv f := by
   cases' hcomm with w
   constructor
-  rw [← @Iso.eq_comp_inv] at w
-  aesop_cat
+  rw [←@Iso.eq_comp_inv] at w
+  rw [Iso.eq_inv_comp, ←Category.assoc]
+  exact w.symm
 
 end CommSq
 
