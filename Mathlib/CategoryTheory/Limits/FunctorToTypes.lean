@@ -25,7 +25,7 @@ variable (F : J ⥤ K ⥤ TypeMax.{u₁, w})
 
 theorem jointly_surjective (k : K) {t : Cocone F} (h : IsColimit t) (x : t.pt.obj k) :
     ∃ j y, x = (t.ι.app j).app k y := by
-  let hev := PreservesColimit.preserves (F := (evaluation _ _).obj k) h
+  let hev := isColimitOfPreserves ((evaluation _ _).obj k) h
   obtain ⟨j, y, rfl⟩ := Types.jointly_surjective _ hev x
   exact ⟨j, y, by simp⟩
 
