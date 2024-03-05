@@ -59,18 +59,15 @@ theorem ConeProgram.weakDuality (LP : ConeProgram R M N)
   exact hp
 
 -- From here on, we will probably need `[LinearOrderedField R] [AddCommGroup M] [AddCommGroup N]`
-
 set_option linter.unusedVariables false
 
 /-- Theorem 1.4.1.a, TODO we probably need more assumptions (finite-dimensional `M` and `N` ?) -/
-@[nolint unusedArguments]
 proof_wanted ConeProgram.strongDuality (LP : ConeProgram R M N)
     (hC : LP.primal.Nonempty) (hD : LP.dual.Nonempty) :
     ∃ c ∈ LP.primal, ∃ d ∈ LP.dual, LP.objective c = d LP.upper
 
 /-- Theorem 1.4.1.b (TODO maybe add item (iii), which is easy,
     and item (iv), which holds when `N` is `ℝ^n` and `LP.cone` is the positive ortant) -/
-@[nolint unusedArguments]
 proof_wanted ConeProgram.min_max (LP : ConeProgram R M N)
     {c : M} (hc : c ∈ LP.primal) {d : N →ₗ[R] R} (hd : d ∈ LP.dual) (hs : LP.cone.FG) :
     -- TODO maybe `hs` is not needed
@@ -78,13 +75,11 @@ proof_wanted ConeProgram.min_max (LP : ConeProgram R M N)
       LP.objective c = d LP.upper
 
 /-- Theorem 1.4.1.c(1) -/
-@[nolint unusedArguments]
 proof_wanted ConeProgram.empty_dual (LP : ConeProgram R M N)
     (hC : LP.primal.Nonempty) (hD : LP.dual = ∅) :
     ∀ r : R, ∃ d ∈ LP.dual, d LP.upper < r
 
 /-- Theorem 1.4.1.c(2) -/
-@[nolint unusedArguments]
 proof_wanted ConeProgram.empty_primal (LP : ConeProgram R M N)
     (hC : LP.primal = ∅) (hD : LP.dual.Nonempty) :
     ∀ r : R, ∃ c ∈ LP.primal, r < LP.objective c
