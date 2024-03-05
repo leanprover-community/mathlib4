@@ -168,7 +168,7 @@ lemma lfpApprox_has_many_fixedPoints (a b : Ordinal.{u}) (h : a < b)
   intro i h_i
   obtain rfl | h_ia := eq_or_ne i a
   · exact lfpApprox_has_one_fixedPoint f i b h h_fab
-  · apply ordinals_after_fixed_are_fixed f a
+  · apply lfpApprox_ordinals_after_fixed_are_fixed f a
     · exact lfpApprox_has_one_fixedPoint f a b h h_fab
     · exact Ne.lt_of_le' h_ia h_i
 
