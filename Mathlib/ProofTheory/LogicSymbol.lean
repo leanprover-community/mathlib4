@@ -60,36 +60,9 @@ attribute [match_pattern]
 
 namespace ProofTheory
 
-/-- `Polarity` is a data type for managing quantifier alternation -/
-inductive Polarity := | sigma | pi
-
-namespace Polarity
-
-/-- Notation for `sigma` -/
-notation "Σ" => sigma
-/-- Notation for `pi` -/
-notation "Π" => pi
-
-/-- `alt` specifies how quantifiers alternate -/
-def alt : Polarity → Polarity
-  | Σ => Π
-  | Π => Σ
-
-@[simp] lemma alt_sigma : Σ.alt = Π := rfl
-
-@[simp] lemma alt_pi : Π.alt = Σ := rfl
-
-@[simp] lemma alt_alt (b : Polarity) : b.alt.alt = b := by rcases b <;> simp
-
-end Polarity
-
-section logicNotation
-
 /-- `LogicalConnective` class describes a type's logical connectives -/
 class LogicalConnective (α : Type*)
   extends Top α, Bot α, Tilde α, Arrow α, Wedge α, Vee α
-
-end logicNotation
 
 /-- `DeMorgan` class describes proof systems implementing De Morgan's laws -/
 class DeMorgan (F : Type*) [LogicalConnective F] : Prop where
@@ -269,7 +242,7 @@ section quantifier
 /-- `UnivQuantifier` class describes types indexed by `ℕ` using universal quantifers -/
 @[notation_class] class UnivQuantifier (α : ℕ → Type*) where
   /-- universal quantifier symbol -/
-  univ : ∀ {n}, α (n + 1) → α n
+  all : ∀ {n}, α (n + 1) → α n
 
 /-- `ExQuantifier` class describes types indexed by `ℕ` using existential quantifers -/
 @[notation_class] class ExQuantifier (α : ℕ → Type*) where
@@ -277,13 +250,13 @@ section quantifier
   ex : ∀ {n}, α (n + 1) → α n
 
 /-- Infix notation for `univ` -/
-prefix:64 "∀' " => UnivQuantifier.univ
+prefix:64 "∀' " => UnivQuantifier.all
 
 /-- Infix notation for `ex` -/
 prefix:64 "∃' " => ExQuantifier.ex
 
 attribute [match_pattern]
-  UnivQuantifier.univ
+  UnivQuantifier.all
   ExQuantifier.ex
 
 section UnivQuantifier
@@ -337,6 +310,29 @@ notation:64 "∀[" p "] " q => UnivQuantifier.ball p q
 notation:64 "∃[" p "] " q => ExQuantifier.bex p q
 
 end quantifier
+
+/-- `Polarity` is a data type for managing quantifier alternation -/
+inductive Polarity := | sigma | pi
+
+namespace Polarity
+
+/-- Notation for `sigma` -/
+scoped[ProofTheory] notation "Σ" => Polarity.sigma
+/-- Notation for `pi` -/
+scoped[ProofTheory] notation "Π" => Polarity.pi
+
+/-- `alt` specifies how quantifiers alternate -/
+def alt : Polarity → Polarity
+  | Σ => Π
+  | Π => Σ
+
+@[simp] lemma alt_sigma : Σ.alt = Π := rfl
+
+@[simp] lemma alt_pi : Π.alt = Σ := rfl
+
+@[simp] lemma alt_alt (b : Polarity) : b.alt.alt = b := by rcases b <;> simp
+
+end Polarity
 
 /-- `Turnstile` describes proof systems with turnstile (proves) -/
 @[notation_class] class Turnstile (α : Type*) (β : Type*) where
