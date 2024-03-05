@@ -189,7 +189,7 @@ end Module
 
 section CanonicallyOrderedAddCommMonoid
 
--- porting note: Split into 2 lines to satisfy the unusedVariables linter.
+-- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
 variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
 
@@ -247,7 +247,7 @@ theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} : single i a ≤ f
 
 end LE
 
--- porting note: Split into 2 lines to satisfy the unusedVariables linter.
+-- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
 variable [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 

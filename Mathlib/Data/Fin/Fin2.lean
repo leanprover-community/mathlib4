@@ -54,7 +54,7 @@ protected def cases' {n} {C : Fin2 (succ n) → Sort u} (H1 : C fz) (H2 : ∀ n,
 #align fin2.cases' Fin2.cases'
 
 /-- Ex falso. The dependent eliminator for the empty `Fin2 0` type. -/
-def elim0 {C : Fin2 0 → Sort u} : ∀ i : Fin2 0, C i := fun.
+def elim0 {C : Fin2 0 → Sort u} : ∀ i : Fin2 0, C i := nofun
 #align fin2.elim0 Fin2.elim0
 
 /-- Converts a `Fin2` into a natural. -/

@@ -78,8 +78,7 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     -- Note(kmill): was `fun k hk => ...` but `mem_Ico.mp hk` was elaborating with some
     -- delayed assignment metavariables that weren't resolved in time. `intro` fixes this.
     intro k hk
-    exact hf ((@Nat.one_le_two_pow n).trans_lt <|
-      (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
+    exact hf (Nat.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
       (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
   simp [pow_succ, two_mul]
@@ -206,7 +205,7 @@ theorem Real.summable_one_div_nat_rpow {p : ℝ} :
 
 /-- Test for convergence of the `p`-series: the real-valued series `∑' n : ℕ, (n ^ p)⁻¹` converges
 if and only if `1 < p`. -/
--- porting note: temporarily remove `@[simp]` because of a problem with `simp`
+-- Porting note: temporarily remove `@[simp]` because of a problem with `simp`
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/looping.20in.20.60simp.60.20set/near/361134234
 theorem Real.summable_nat_pow_inv {p : ℕ} :
     Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
@@ -292,6 +291,7 @@ open Finset
 
 variable {α : Type*} [LinearOrderedField α]
 
+set_option tactic.skipAssignedInstances false in
 theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
     (∑ i in Ioc k n, ((i : α) ^ 2)⁻¹) ≤ (k : α)⁻¹ - (n : α)⁻¹ := by
   refine' Nat.le_induction _ _ n h

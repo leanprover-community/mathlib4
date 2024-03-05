@@ -743,7 +743,7 @@ lemma bddAbove_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
   refine ⟨x, Set.forall_range_iff.2 fun i ↦ ?_⟩
   rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
-  simpa using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
+  simpa [x] using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
 
 /-- A small set of pre-games is bounded above. -/
 lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
@@ -761,7 +761,7 @@ lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (
     fun x ↦ moveRight _ x.2⟩
   refine ⟨x, Set.forall_range_iff.2 fun i ↦ ?_⟩
   rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
-  simpa using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
+  simpa [x] using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
 
 /-- A small set of pre-games is bounded below. -/
 lemma bddBelow_of_small (s : Set PGame.{u}) [Small.{u} s] : BddBelow s := by

@@ -128,14 +128,12 @@ theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
 
 
 /-- A nonzero ideal has an element of minimal norm. -/
--- porting note: port of Int.exists_least_of_bdd requires DecidablePred, so we use classical
 theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),
       b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c =
       (0 : S) := by
-  classical
   obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
-      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a) _
+      (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a)
     (by
       use 0
       rintro _ ⟨b, _, _, rfl⟩

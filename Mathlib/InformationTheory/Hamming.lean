@@ -332,12 +332,12 @@ theorem ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
   rfl
 #align hamming.of_hamming_to_hamming Hamming.ofHamming_toHamming
 
---@[simp] --Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
+--@[simp] -- Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
 theorem toHamming_inj {x y : ∀ i, β i} : toHamming x = toHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.to_hamming_inj Hamming.toHamming_inj
 
---@[simp] --Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
+--@[simp] -- Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
 theorem ofHamming_inj {x y : Hamming β} : ofHamming x = ofHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.of_hamming_inj Hamming.ofHamming_inj
@@ -450,7 +450,7 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
   rfl
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist
 
--- porting note: new
+-- Porting note: new
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
@@ -463,7 +463,7 @@ theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = ha
   rfl
 #align hamming.norm_eq_hamming_norm Hamming.norm_eq_hammingNorm
 
--- porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
+-- Porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
