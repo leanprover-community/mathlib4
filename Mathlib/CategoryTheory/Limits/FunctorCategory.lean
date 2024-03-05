@@ -448,7 +448,7 @@ def colimitIsoSwapCompColim [HasColimitsOfShape J C] (G : J ⥤ K ⥤ C) :
 
 end
 
-section
+section prod
 
 /-- `functorProd F G` is the explicit binary product of type-valued functors `F` and `G`. -/
 def functorProd (F G : C ⥤ Type w) : C ⥤ Type w where
@@ -470,7 +470,7 @@ a natural transformation `F ⟶ functorProd F₁ F₂`. -/
 def natTransProd {F F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     F ⟶ functorProd F₁ F₂ where
   app x y := ⟨τ₁.app x y, τ₂.app x y⟩
-  naturality x y f := by
+  naturality _ _ _ := by
     ext a
     simp only [types_comp_apply, FunctorToTypes.naturality]
     aesop
@@ -485,8 +485,8 @@ def binaryProductCone (F G : C ⥤ Type w) : BinaryFan F G :=
 def binaryProductLimit (F G : C ⥤ Type w) : IsLimit (binaryProductCone F G) where
   lift (s : BinaryFan F G) := natTransProd s.fst s.snd
   fac _ := fun ⟨j⟩ ↦ WalkingPair.casesOn j rfl rfl
-  uniq _ _ ht := by
-    simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩]
+  uniq _ _ h := by
+    simp only [← h ⟨WalkingPair.right⟩, ← h ⟨WalkingPair.left⟩]
     congr
 
 /-- `functorProd F G` is a binary product for `F` and `G`. -/
@@ -566,4 +566,102 @@ lemma Limits.prod_ext (F G : C ⥤ Type w) (n : C)(z w : (F ⨯ G).obj n)
   apply Equiv.injective (binaryProductEquiv F G n)
   aesop
 
-end
+end prod
+
+section coprod
+
+/-- `functorSum F G` is the explicit binary coproduct of type-valued functors `F` and `G`. -/
+def functorSum (F G : C ⥤ Type w) : C ⥤ Type w where
+  obj a := F.obj a ⊕ G.obj a
+  map f x := by
+    cases x with
+    | inl x => exact .inl (F.map f x)
+    | inr x => exact .inr (G.map f x)
+
+/-- The left inclusion of `F` into `functorSum F G`. -/
+@[simps]
+def functorSum.inl {F G : C ⥤ Type w} : F ⟶ (functorSum F G) where
+  app _ x := .inl x
+
+  /-- The right inclusion of `G` into `functorSum F G`. -/
+@[simps]
+def functorSum.inr {F G : C ⥤ Type w} : G ⟶ (functorSum F G) where
+  app _ x := .inr x
+
+/-- Given natural transformations `F₁ ⟶ F` and `F₂ ⟶ F`, construct
+a natural transformation `functorSum F₁ F₂ ⟶ F`. -/
+def natTransSum {F F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
+    functorSum F₁ F₂ ⟶ F where
+  app a x := by
+     cases x with
+     | inl x => exact τ₁.app a x
+     | inr x => exact τ₂.app a x
+  naturality _ _ _:= by
+    ext x
+    cases x with | _ => simp only [functorSum, types_comp_apply, FunctorToTypes.naturality]
+
+/-- The binary cofan whose point is `functorSum F G`. -/
+@[simps!]
+def binaryCoproductCocone (F G : C ⥤ Type w) : BinaryCofan F G :=
+  BinaryCofan.mk (functorSum.inl) (functorSum.inr)
+
+/-- `functorSum F G` is a colimit cocone. -/
+@[simps]
+def binaryCoproductColimit (F G : C ⥤ Type w) : IsColimit (binaryCoproductCocone F G) where
+  desc (s : BinaryCofan F G) := natTransSum s.inl s.inr
+  fac _ := fun ⟨j⟩ ↦ WalkingPair.casesOn j rfl rfl
+  uniq _ _ h := by
+    ext _ x
+    cases x with | _ => simp [← h ⟨WalkingPair.right⟩, ← h ⟨WalkingPair.left⟩] ; congr
+
+/-- `functorSum F G` is a binary coproduct for `F` and `G`. -/
+def binaryCoproductColimitCocone (F G : C ⥤ Type w) : Limits.ColimitCocone (pair F G) :=
+  ⟨_, binaryCoproductColimit F G⟩
+
+/-- The categorical binary coproduct of type-valued functors is `functorSum F G`. -/
+noncomputable def binaryCoproductIso (F G : C ⥤ Type w) : F ⨿ G ≅ functorSum F G :=
+  colimit.isoColimitCocone (binaryCoproductColimitCocone F G)
+
+@[simp]
+lemma binaryCoproductIso_inl_comp_hom (F G : C ⥤ Type w) :
+    Limits.coprod.inl ≫ (binaryCoproductIso F G).hom = functorSum.inl := by
+  simp [binaryCoproductIso]
+  aesop
+
+@[simp]
+lemma binaryCoproductIso_inl_comp_hom_apply (F G : C ⥤ Type w) (a : C) (x : F.obj a) :
+    (binaryCoproductIso F G).hom.app a ((Limits.coprod.inl (X := F)).app a x) = .inl x :=
+  congr_fun (congr_app (binaryCoproductIso_inl_comp_hom F G) a) x
+
+@[simp]
+lemma binaryCoproductIso_inr_comp_hom (F G : C ⥤ Type w) :
+    Limits.coprod.inr ≫ (binaryCoproductIso F G).hom = functorSum.inr := by
+  simp [binaryCoproductIso]
+  aesop
+
+@[simp]
+lemma binaryCoproductIso_inr_comp_hom_apply (F G : C ⥤ Type w) (a : C) (x : G.obj a) :
+    (binaryCoproductIso F G).hom.app a ((Limits.coprod.inr (X := F)).app a x) = .inr x :=
+  congr_fun (congr_app (binaryCoproductIso_inr_comp_hom F G) a) x
+
+@[simp]
+lemma binaryCoproductIso_inv_comp_inl (F G : C ⥤ Type w) :
+    functorSum.inl ≫ (binaryCoproductIso F G).inv = (Limits.coprod.inl (X := F)) := by
+  aesop
+
+@[simp]
+lemma binaryCoproductIso_inv_comp_inr (F G : C ⥤ Type w) :
+    functorSum.inr ≫ (binaryCoproductIso F G).inv = (Limits.coprod.inr (X := F)) := by
+  aesop
+
+/-- `(F ⨿ G).obj a` is in bijection with disjoint union of `F.obj a` and `G.obj a`. -/
+@[simps]
+noncomputable
+def binaryCoproductEquiv (F G : C ⥤ Type w) (a : C) :
+    (F ⨿ G).obj a ≃ (F.obj a) ⊕ (G.obj a) where
+  toFun z := ((binaryCoproductIso F G).hom.app a z)
+  invFun z := ((binaryCoproductIso F G).inv.app a z)
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+end coprod
