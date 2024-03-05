@@ -76,6 +76,10 @@ section
 def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit c.toOver :=
   isColimitOfReflects (forget c.pt) <| IsColimit.equivIsoColimit (Cocone.mapConeToOver c).symm hc
 
+def colimit.isColimitToOver (F : J ⥤ C) [HasColimit F] : IsColimit (colimit.toOver F) :=
+  isColimitOfReflects (forget _) <|
+    IsColimit.equivIsoColimit (Cocone.mapConeToOver (colimit.cocone F)).symm (colimit.isColimit F)
+
 end
 
 theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=

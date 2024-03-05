@@ -193,6 +193,14 @@ def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ Costructured
   obj j := CostructuredArrow.mk (c.ι.app j)
   map f := CostructuredArrow.homMk f
 
+/-- If `F` has a colimit, then the colimit inclusions can be interpreted as costructured arrows
+    `F.obj - ⟶ colimit F`. -/
+@[simps]
+noncomputable def colimit.toCostructuredArrow (F : J ⥤ C) [HasColimit F] :
+    J ⥤ CostructuredArrow F (colimit F) where
+  obj j := CostructuredArrow.mk (colimit.ι F j)
+  map f := CostructuredArrow.homMk f
+
 /-- `Cocone.toCostructuredArrow` can be expressed in terms of `Functor.toCostructuredArrow`. -/
 def Cocone.toCostructuredArrowIsoToCostructuredArrow {F : J ⥤ C} (c : Cocone F) :
     c.toCostructuredArrow ≅ (𝟭 J).toCostructuredArrow F c.pt c.ι.app (by simp) :=
@@ -237,6 +245,14 @@ def Cocone.toOver {F : J ⥤ C} (c : Cocone F) :
     Cocone (c.toCostructuredArrow ⋙ CostructuredArrow.toOver _ _) where
   pt := Over.mk (𝟙 c.pt)
   ι := { app := fun j => Over.homMk (c.ι.app j) (by simp) }
+
+/-- The colimit cocone for `F : J ⥤ C` lifts to a cocone in `Over (colimit F)` with cone point
+    `𝟙 (colimit F)`. This is automatically also a colimit cocone. -/
+@[simps]
+noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
+    Cocone (colimit.toCostructuredArrow F ⋙ CostructuredArrow.toOver _ _) where
+  pt := Over.mk (𝟙 (colimit F))
+  ι := { app := fun j => Over.homMk (colimit.ι F j) (by simp) }
 
 @[simps!]
 def Cocone.mapConeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
