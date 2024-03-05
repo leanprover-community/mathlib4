@@ -41,7 +41,7 @@ are partially unbundled.
 ## References
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
 
-## Tagsc
+## Tags
 
 lie bracket, jacobi identity, lie ring, lie algebra, lie module
 -/
@@ -508,7 +508,7 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
 /-- A Lie module may be pulled back along a morphism of Lie algebras. -/
 theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
-  { LieRingModule.compLieHom M f with
+  { __ := LieRingModule.compLieHom M f
     smul_lie := fun t x m => by
       simp only [LieRingModule.compLieHom_apply, smul_lie, LieHom.map_smul]
     lie_smul := fun t x m => by

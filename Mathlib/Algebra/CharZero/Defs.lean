@@ -3,7 +3,6 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Cases
 import Mathlib.Algebra.NeZero
@@ -86,7 +85,7 @@ theorem cast_ne_zero {n : ℕ} : (n : R) ≠ 0 ↔ n ≠ 0 :=
 #align nat.cast_ne_zero Nat.cast_ne_zero
 
 theorem cast_add_one_ne_zero (n : ℕ) : (n + 1 : R) ≠ 0 := by
-  -- porting note: old proof was `exact_mod_cast n.succ_ne_zero`
+  -- Porting note: old proof was `exact_mod_cast n.succ_ne_zero`
   norm_cast
   exact n.succ_ne_zero
 #align nat.cast_add_one_ne_zero Nat.cast_add_one_ne_zero
@@ -100,21 +99,23 @@ theorem cast_ne_one {n : ℕ} : (n : R) ≠ 1 ↔ n ≠ 1 :=
   cast_eq_one.not
 #align nat.cast_ne_one Nat.cast_ne_one
 
+instance (priority := 100) AtLeastTwo.toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
+  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
+
 end Nat
 
 namespace OfNat
 
 variable [AddMonoidWithOne R] [CharZero R]
 
-@[simp] lemma ofNat_ne_zero (n : ℕ) [h : n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 0 :=
-  Nat.cast_ne_zero.2 <| ne_of_gt <| lt_trans Nat.one_pos h.prop
+@[simp] lemma ofNat_ne_zero (n : ℕ) [n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 0 :=
+  Nat.cast_ne_zero.2 (NeZero.ne n)
 
 @[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (no_index (ofNat n) : R) :=
   (ofNat_ne_zero n).symm
 
-@[simp] lemma ofNat_ne_one (n : ℕ) [h : n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 1 := by
-  rw [← Nat.cast_eq_ofNat, ← @Nat.cast_one R, Ne.def, Nat.cast_inj]
-  exact ne_of_gt h.prop
+@[simp] lemma ofNat_ne_one (n : ℕ) [n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 1 :=
+  Nat.cast_ne_one.2 (Nat.AtLeastTwo.ne_one)
 
 @[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ no_index (ofNat n) :=
   (ofNat_ne_one n).symm

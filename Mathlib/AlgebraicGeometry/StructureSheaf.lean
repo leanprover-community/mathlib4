@@ -78,11 +78,11 @@ def Localizations (P : PrimeSpectrum.Top R) : Type u :=
   Localization.AtPrime P.asIdeal
 #align algebraic_geometry.structure_sheaf.localizations AlgebraicGeometry.StructureSheaf.Localizations
 
--- Porting note : can't derive `CommRingCat`
+-- Porting note: can't derive `CommRingCat`
 instance commRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
   inferInstanceAs <| CommRing <| Localization.AtPrime P.asIdeal
 
--- Porting note : can't derive `LocalRing`
+-- Porting note: can't derive `LocalRing`
 instance localRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
   inferInstanceAs <| LocalRing <| Localization.AtPrime P.asIdeal
 
@@ -355,7 +355,8 @@ theorem res_const' (f g : R) (V hv) :
 
 theorem const_zero (f : R) (U hu) : const R 0 f U hu = 0 :=
   Subtype.eq <| funext fun x => IsLocalization.mk'_eq_iff_eq_mul.2 <| by
-    erw [RingHom.map_zero, Subring.coe_zero, Pi.zero_apply, zero_mul]
+    rw [RingHom.map_zero]
+    exact (mul_eq_zero_of_left rfl ((algebraMap R (Localizations R x)) _)).symm
 #align algebraic_geometry.structure_sheaf.const_zero AlgebraicGeometry.StructureSheaf.const_zero
 
 theorem const_self (f : R) (U hu) : const R f f U hu = 1 :=
@@ -557,14 +558,14 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
 
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
-    -- Porting note : now `algebraMap _ _` needs to be explicitly typed
+    -- Porting note: now `algebraMap _ _` needs to be explicitly typed
     toStalk R x ≫ stalkToFiberRingHom R x = algebraMap R (Localization.AtPrime x.asIdeal) := by
   erw [toStalk, Category.assoc, germ_comp_stalkToFiberRingHom]; rfl
 #align algebraic_geometry.structure_sheaf.to_stalk_comp_stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.toStalk_comp_stalkToFiberRingHom
 
 @[simp]
 theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (f : R) :
-    -- Porting note : now `algebraMap _ _` needs to be explicitly typed
+    -- Porting note: now `algebraMap _ _` needs to be explicitly typed
     stalkToFiberRingHom R x (toStalk R x f) = algebraMap R (Localization.AtPrime x.asIdeal) f :=
   RingHom.ext_iff.1 (toStalk_comp_stalkToFiberRingHom R x) _
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom_to_stalk AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom_toStalk
@@ -673,7 +674,7 @@ theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := 
   rw [PrimeSpectrum.mem_zeroLocus, Set.not_subset]
   have := congr_fun (congr_arg Subtype.val h_eq) ⟨p, hfp⟩
   dsimp at this
-  -- Porting note : need to tell Lean what `S` is and need to change to `erw`
+  -- Porting note: need to tell Lean what `S` is and need to change to `erw`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [IsLocalization.eq (S := Localization.AtPrime p.asIdeal)] at this
   cases' this with r hr
@@ -704,12 +705,12 @@ theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
   replace hn := Ideal.mul_mem_left (Ideal.span {g}) h hn
   rw [← pow_succ, Ideal.mem_span_singleton'] at hn
   cases' hn with c hc
-  have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by linarith)
+  have basic_opens_eq := PrimeSpectrum.basicOpen_pow h (n + 1) (by omega)
   have i_basic_open := eqToHom basic_opens_eq ≫ homOfLE hDhV
   -- We claim that `(f * c) / h ^ (n+1)` is our desired representation
   use f * c, h ^ (n + 1), i_basic_open ≫ iVU, (basic_opens_eq.symm.le : _) hxDh
   rw [op_comp, Functor.map_comp] --, comp_apply, ← s_eq, res_const]
-  -- Porting note : `comp_apply` can't be rewritten, so use a change
+  -- Porting note: `comp_apply` can't be rewritten, so use a change
   change const R _ _ _ _ = (structureSheaf R).1.map i_basic_open.op
     ((structureSheaf R).1.map iVU.op s)
   rw [← s_eq, res_const]
@@ -783,7 +784,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   -- Since there are only finitely many indices involved, we can pick the supremum.
   let N := (t ×ˢ t).sup n
   have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
-    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by linarith)
+    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by omega)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
   refine'
     ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
@@ -799,11 +800,11 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
     -- To accommodate for the difference `k`, we multiply both sides of the equation `n_spec (i, j)`
     -- by `(h i * h j) ^ k`
     convert congr_arg (fun z => z * (h i * h j) ^ k) (n_spec (i, j)) using 1 <;>
-      · simp only [mul_pow]; ring
+      · simp only [n, mul_pow]; ring
   -- Lastly, we need to show that the new fractions still represent our original `s`
   intro i _
   rw [op_comp, Functor.map_comp]
-  -- Porting note : `comp_apply` can't be rewritten, so use a change
+  -- Porting note: `comp_apply` can't be rewritten, so use a change
   change (structureSheaf R).1.map (eqToHom (basic_opens_eq _)).op
     ((structureSheaf R).1.map (iDh i).op s) = _
   rw [← hs, res_const]
@@ -820,7 +821,7 @@ open scoped Classical
 
 open scoped BigOperators
 
--- Porting note : in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
+-- Porting note: in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
 -- though `hx` is not used in `...` part, it is still required to maintain the structure of
 -- the original proof in mathlib3.
 set_option linter.unusedVariables false in
@@ -846,20 +847,20 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     normalize_finite_fraction_representation R (PrimeSpectrum.basicOpen f)
       s t a' h' iDh' ht_cover' s_eq'
   clear s_eq' iDh' hxDh' ht_cover' a' h'
-  -- Porting note : simp with `[← SetLike.coe_subset_coe, Opens.coe_iSup]` does not result in
+  -- Porting note: simp with `[← SetLike.coe_subset_coe, Opens.coe_iSup]` does not result in
   -- desired form
   rw [← SetLike.coe_subset_coe, Opens.coe_iSup] at ht_cover
   replace ht_cover : (PrimeSpectrum.basicOpen f : Set <| PrimeSpectrum R) ⊆
-    ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _)
-  · convert ht_cover using 2
+      ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _) := by
+    convert ht_cover using 2
     exact funext fun j => by rw [Opens.coe_iSup]
   -- Next we show that some power of `f` is a linear combination of the `h i`
   obtain ⟨n, hn⟩ : f ∈ (Ideal.span (h '' ↑t)).radical := by
     rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.zeroLocus_span]
-    -- Porting note : simp with `PrimeSpectrum.basicOpen_eq_zeroLocus_compl` does not work
+    -- Porting note: simp with `PrimeSpectrum.basicOpen_eq_zeroLocus_compl` does not work
     replace ht_cover : (PrimeSpectrum.zeroLocus {f})ᶜ ⊆
-      ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ
-    · convert ht_cover
+        ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ := by
+      convert ht_cover
       · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
       · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [Set.compl_subset_comm] at ht_cover
@@ -894,7 +895,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     have := ht_cover hx
     rw [← Finset.set_biUnion_coe, Set.mem_iUnion₂] at this
     rcases this with ⟨i, i_mem, x_mem⟩
-    refine ⟨⟨i, i_mem⟩, x_mem⟩
+    exact ⟨⟨i, i_mem⟩, x_mem⟩
   rintro ⟨i, hi⟩
   dsimp
   change (structureSheaf R).1.map _ _ = (structureSheaf R).1.map _ _
@@ -903,7 +904,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   swap
   · intro y hy
     change y ∈ PrimeSpectrum.basicOpen (f ^ (n + 1))
-    rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by linarith)]
+    rw [PrimeSpectrum.basicOpen_pow f (n + 1) (by omega)]
     exact (leOfHom (iDh i) : _) hy
   -- The rest of the proof is just computation
   apply const_ext
@@ -1007,7 +1008,7 @@ instance isIso_to_global : IsIso (toOpen R ⊤) := by
 #align algebraic_geometry.structure_sheaf.is_iso_to_global AlgebraicGeometry.StructureSheaf.isIso_to_global
 
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
--- Porting note : was @[simps (config := { rhsMd := Tactic.Transparency.semireducible })]
+-- Porting note: was @[simps (config := { rhsMd := Tactic.Transparency.semireducible })]
 @[simps!]
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   asIso (toOpen R ⊤)
@@ -1047,7 +1048,7 @@ theorem stalkSpecializes_stalk_to_fiber {R : Type*} [CommRing R] {x y : PrimeSpe
     (h : x ⤳ y) :
     (structureSheaf R).presheaf.stalkSpecializes h ≫ StructureSheaf.stalkToFiberRingHom R x =
       StructureSheaf.stalkToFiberRingHom R y ≫
-      -- Porting note : `PrimeSpectrum.localizationMapOfSpecializes h` by itself is interpreted as a
+      -- Porting note: `PrimeSpectrum.localizationMapOfSpecializes h` by itself is interpreted as a
       -- ring homomorphism, so it is changed in a way to force it being interpreted as categorical
       -- arrow.
       (show CommRingCat.of (Localization.AtPrime y.asIdeal) ⟶
