@@ -165,6 +165,22 @@ end IsSymmetric
 
 variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
 
+/- Multiplicativity on partitions -/
+def muProduct {n : ℕ} (f : ℕ → MvPolynomial σ R) (μ : n.Partition) : MvPolynomial σ R :=
+  Multiset.prod (μ.parts.map f)
+
+lemma muProduct_def {n : ℕ} (f : ℕ → MvPolynomial σ R) (μ : n.Partition) :
+  muProduct σ R f μ = Multiset.prod (μ.parts.map f) := rfl
+
+@[simp]
+theorem muProduct_zero (f : ℕ → MvPolynomial σ R) : muProduct σ R f (Nat.Partition.indiscrete 0) = 1 := by
+  simp only [muProduct, Nat.Partition.partition_zero_parts, Multiset.map_zero, Multiset.prod_zero]
+
+@[simp]
+theorem muProduct_onePart (n : ℕ) (f : ℕ → MvPolynomial σ R) (npos : n > 0): muProduct σ R f (Nat.Partition.indiscrete n) = f n := by
+  rw [muProduct, Nat.Partition.indiscrete_parts, Multiset.map_singleton, Multiset.prod_singleton]
+  linarith
+
 section ElementarySymmetric
 
 open Finset
@@ -176,8 +192,8 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
 
 lemma esymm_def (n : ℕ) : esymm σ R n = ∑ t in powersetCard n univ, ∏ i in t, X i := rfl
 
-def esymm_mu {n : ℕ} (μ : Nat.Partition n) : MvPolynomial σ R :=
-  Multiset.prod (μ.parts.map (esymm σ R))
+def esymmMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
+  muProduct σ R (esymm σ R) μ
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
@@ -211,6 +227,16 @@ theorem esymm_zero : esymm σ R 0 = 1 := by
 @[simp]
 theorem esymm_one : esymm σ R 1 = ∑ i, X i := by
   simp only [esymm, powersetCard_one, sum_map, Function.Embedding.coeFn_mk, prod_singleton]
+
+@[simp]
+theorem esymmMu_zero : esymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by
+  simp only [esymmMu, esymm_zero, muProduct_zero]
+
+@[simp]
+theorem esymmMu_onePart (n : ℕ) : esymmMu σ R (Nat.Partition.indiscrete n) = esymm σ R n := by
+  cases n
+  · simp only [esymmMu, esymm_zero, muProduct_zero]
+  · simp only [esymmMu, gt_iff_lt, Nat.zero_lt_succ, muProduct_onePart]
 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
   simp_rw [esymm, map_sum, map_prod, map_X]
@@ -307,8 +333,11 @@ def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 
 lemma hsymm_def (n : ℕ) : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
 
-def hsymm_mu {n : ℕ} (μ : Nat.Partition n) : MvPolynomial σ R :=
-  Multiset.prod (μ.parts.map (hsymm σ R))
+def hsymmMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
+  muProduct σ R (hsymm σ R) μ
+
+lemma hsymmMu_def {n : ℕ} (μ : n.Partition) : hsymmMu σ R μ =
+  Multiset.prod (μ.parts.map (hsymm σ R)) := rfl
 
 @[simp]
 theorem hsymm_zero : hsymm σ R 0 = 1 := by
@@ -322,6 +351,16 @@ theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
   apply Fintype.sum_equiv oneEquiv
   intro i
   simp only [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton]
+
+@[simp]
+theorem hsymmMu_zero : hsymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by
+  simp only [hsymmMu, hsymm_zero, muProduct_zero]
+
+@[simp]
+theorem hsymmMu_onePart (n : ℕ) : hsymmMu σ R (Nat.Partition.indiscrete n) = hsymm σ R n := by
+  cases n
+  · simp only [hsymmMu, hsymm_zero, muProduct_zero]
+  · simp only [hsymmMu, gt_iff_lt, Nat.zero_lt_succ, muProduct_onePart]
 
 theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
   simp_rw [hsymm, map_sum, ← Multiset.prod_hom']
@@ -346,8 +385,11 @@ def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
 lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
 
-def psum_mu {n : ℕ} (μ : Nat.Partition n) : MvPolynomial σ R :=
-  Multiset.prod (μ.parts.map (psum σ R))
+def psumMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
+  muProduct σ R (psum σ R) μ
+
+lemma psumMu_def {n : ℕ} (μ : n.Partition) : psumMu σ R μ =
+  Multiset.prod (μ.parts.map (psum σ R)) := rfl
 
 @[simp]
 theorem psum_zero : psum σ R 0 = Fintype.card σ := by
@@ -357,6 +399,14 @@ theorem psum_zero : psum σ R 0 = Fintype.card σ := by
 @[simp]
 theorem psum_one : psum σ R 1 = ∑ i, X i := by
   simp only [psum, _root_.pow_one]
+
+@[simp]
+theorem psumMu_zero : psumMu σ R (Nat.Partition.indiscrete 0) = 1 := by
+  simp only [psumMu, muProduct_zero]
+
+@[simp]
+theorem psumMu_onePart (n : ℕ) (npos : n > 0) : psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by
+  simp only [psumMu, npos, muProduct_onePart]
 
 @[simp]
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
