@@ -1115,6 +1115,7 @@ import Mathlib.CategoryTheory.GradedObject
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
 import Mathlib.CategoryTheory.GradedObject.Single
 import Mathlib.CategoryTheory.GradedObject.Trifunctor
+import Mathlib.CategoryTheory.GradedObject.Unitor
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
