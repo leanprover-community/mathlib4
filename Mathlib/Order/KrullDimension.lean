@@ -119,8 +119,7 @@ lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalOrder α] :
 lemma eq_len_of_finiteDimensionalType [FiniteDimensionalOrder α] :
     krullDim α = (LTSeries.longestOf α).length := krullDimOfRel.eq_len_of_finiteDimensional _
 
-lemma eq_zero_of_unique [Unique α] : krullDim α = 0 := by
-    -- eq_len_of_finiteDimensionalType.trans <| LTSeries.longestOf_len_unique _ _ |>.symm
+lemma eq_zero_of_unique [Unique α] : krullDim α = 0 :=  by
   rw [eq_len_of_finiteDimensionalType (α := α), Nat.cast_eq_zero]
   refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
   by_contra r
@@ -142,7 +141,7 @@ lemma height_mono {a b : α} (h : a ≤ b) : height α a ≤ height α b :=
 lemma le_of_strictComono_and_surj
     (f : α → β) (hf : ∀ ⦃a b⦄, f a < f b → a < b) (hf' : Function.Surjective f) :
     krullDim β ≤ krullDim α :=
-iSup_le fun p ↦ le_sSup ⟨p.comap _ hf hf', rfl⟩
+  iSup_le fun p ↦ le_sSup ⟨p.comap _ hf hf', rfl⟩
 
 lemma eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β := krullDimOfRel.eq_of_relIso
   ⟨f, fun {_ _} ↦ f.lt_iff_lt⟩
