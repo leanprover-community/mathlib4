@@ -65,7 +65,7 @@ namespace exteriorPower
 /-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
-def ιMulti : M [Λ^Fin n]→ₗ[R] (⋀[R]^n M) :=
+def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=
   (ExteriorAlgebra.ιMulti R n).codRestrict (⋀[R]^n M) fun _ =>
     ExteriorAlgebra.ιMulti_range R n <| Set.mem_range_self _
 
@@ -111,16 +111,16 @@ variable {R}
 
 /-- The linear map from `n`-fold alternating maps from `M` to `N` to linear maps from
 `⋀[R]^n M` to `N`-/
-def liftAlternating : (M [Λ^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N :=
+def liftAlternating : (M [⋀^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N :=
   (ExteriorAlgebra.liftAlternating ∘ₗ LinearMap.single n).domRestrict₂ (⋀[R]^n M)
 
 variable (R)
 
-@[simp] lemma liftAlternating_comp_ιMulti (f : M [Λ^Fin n]→ₗ[R] N) :
+@[simp] lemma liftAlternating_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :
     (liftAlternating n f).compAlternatingMap (ιMulti R n) = f :=
   (ExteriorAlgebra.liftAlternating_comp_ιMulti _).trans <| Pi.single_eq_same _ _
 
-@[simp] lemma liftAlternating_apply_ιMulti (f : M [Λ^Fin n]→ₗ[R] N) (a : Fin n → M) :
+@[simp] lemma liftAlternating_apply_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) (a : Fin n → M) :
     liftAlternating n f (ιMulti R n a) = f a :=
   DFunLike.congr_fun (liftAlternating_comp_ιMulti _ _ _) a
 
@@ -135,7 +135,7 @@ linear map from `⋀[R]^n M` to `N` and `g` is a linear map from `N` to `N'`, th
 the alternating map `g.compAlternatingMap f` from `M` to `N'` corresponds to the linear
 map `g.comp (liftAlternating n f)` on `⋀[R]^n M`. -/
 @[simp]
-lemma liftAlternating_comp (g : N →ₗ[R] N') (f : M [Λ^Fin n]→ₗ[R] N) :
+lemma liftAlternating_comp (g : N →ₗ[R] N') (f : M [⋀^Fin n]→ₗ[R] N) :
     liftAlternating n (g.compAlternatingMap f) = g.comp (liftAlternating n f) := by
   ext u
   simp only [liftAlternating_comp_ιMulti, LinearMap.compAlternatingMap_apply, LinearMap.coe_comp,
@@ -144,7 +144,7 @@ lemma liftAlternating_comp (g : N →ₗ[R] N') (f : M [Λ^Fin n]→ₗ[R] N) :
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
 `⋀[R]^n M` to `N`. -/
 @[simps!]
-def liftAlternatingEquiv : (M [Λ^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N :=
+def liftAlternatingEquiv : (M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N :=
   LinearEquiv.ofLinear (liftAlternating n)
   {toFun := fun F ↦ F.compAlternatingMap (ιMulti R n)
    map_add' := by intro F G; ext x
@@ -159,7 +159,7 @@ def liftAlternatingEquiv : (M [Λ^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ
   (by ext _; simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         liftAlternating_comp_ιMulti, LinearMap.id_coe, id_eq])
 
-lemma liftAlternatingEquiv_apply (f : M [Λ^Fin n]→ₗ[R] N) (x : ⋀[R]^n M) :
+lemma liftAlternatingEquiv_apply (f : M [⋀^Fin n]→ₗ[R] N) (x : ⋀[R]^n M) :
     exteriorPower.liftAlternatingEquiv R n f x = exteriorPower.liftAlternating n f x := rfl
 
 @[simp]
@@ -322,7 +322,7 @@ on `M`, by composing the linear form on `⋀[R]^n M` indeuced by `f` (defined in
 `exteriorPower.linearFormOfFamily`) with the canonical `n`-fold alternating map from `M` to its
 `n`th exterior power. -/
 noncomputable def alternatingFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
-    M [Λ^Fin n]→ₗ[R] R :=
+    M [⋀^Fin n]→ₗ[R] R :=
   (linearFormOfFamily R n f).compAlternatingMap (ιMulti R n)
 
 @[simp]
