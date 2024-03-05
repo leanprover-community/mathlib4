@@ -21,10 +21,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 open scoped FourierTransform
 
 private theorem rexp_neg_deriv_aux :
-    ∀ x ∈ univ, HasDerivWithinAt (rexp ∘ Neg.neg) (-rexp (-x)) univ x := by
-  intro x _
-  rw [← neg_one_mul, mul_comm]
-  exact ((Real.hasDerivAt_exp (-x)).comp x (hasDerivAt_neg x)).hasDerivWithinAt
+    ∀ x ∈ univ, HasDerivWithinAt (rexp ∘ Neg.neg) (-rexp (-x)) univ x :=
+  fun x _ ↦ mul_neg_one (rexp (-x)) ▸
+    ((Real.hasDerivAt_exp (-x)).comp x (hasDerivAt_neg x)).hasDerivWithinAt
 
 private theorem rexp_neg_image_aux : rexp ∘ Neg.neg '' univ = Ioi 0 := by
   rw [Set.image_comp, Set.image_univ_of_surjective neg_surjective, Set.image_univ, Real.range_exp]
@@ -43,7 +42,7 @@ private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
   ring_nf
 
 theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
-    mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
+    mellin f s = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) :=
   calc
     _ = ∫ (u : ℝ), Complex.exp (-s * u) • f (Real.exp (-u)) := by
       rw [mellin, ← rexp_neg_image_aux, integral_image_eq_integral_abs_deriv_smul
@@ -68,20 +67,18 @@ theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
 
 theorem mellin_inv_eq_fourierIntegral_inv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
     mellin_inv σ f x =
-    (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
-  have hx0 : (x : ℂ) ≠ 0 := (ofReal_ne_zero.mpr (ne_of_gt hx))
-  calc
-    _ = (x : ℂ) ^ (-σ : ℂ) •
-        (∫ (y : ℝ), Complex.exp (2 * π * (y * (-Real.log x)) * I) • f (σ + 2 * π * y * I)) := by
-      rw [mellin_inv, one_div, ← abs_of_pos (show 0 < (2 * π)⁻¹ by norm_num; exact pi_pos)]
-      simp_rw [neg_add, cpow_add _ _ hx0, mul_smul, integral_smul]
-      rw [smul_comm, ← Measure.integral_comp_mul_left]
-      congr
-      ext
-      rw [cpow_def_of_ne_zero hx0, ← Complex.ofReal_log hx.le]
-      push_cast
-      ring_nf
-    _ = _ := by simp [fourierIntegralInv_eq']
+    (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := calc
+  _ = (x : ℂ) ^ (-σ : ℂ) •
+      (∫ (y : ℝ), Complex.exp (2 * π * (y * (-Real.log x)) * I) • f (σ + 2 * π * y * I)) := by
+    rw [mellin_inv, one_div, ← abs_of_pos (show 0 < (2 * π)⁻¹ by norm_num; exact pi_pos)]
+    have hx0 : (x : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt hx)
+    simp_rw [neg_add, cpow_add _ _ hx0, mul_smul, integral_smul]
+    rw [smul_comm, ← Measure.integral_comp_mul_left]
+    congr! 3
+    rw [cpow_def_of_ne_zero hx0, ← Complex.ofReal_log hx.le]
+    push_cast
+    ring_nf
+  _ = _ := by simp [fourierIntegralInv_eq']
 
 variable [CompleteSpace E]
 
@@ -97,10 +94,10 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
       simpa [rexp_cexp_aux] using hf
     norm_cast at hf
   replace hFf : Integrable (𝓕 g) := by
-    change Integrable (fun (y : ℝ) ↦ mellin f (σ + y * I)) volume at hFf
-    have hp : 2 * π ≠ 0 := by norm_num; exact pi_ne_zero
+    have h2π : 2 * π ≠ 0 := by norm_num; exact pi_ne_zero
     haveI : HasDistribNeg ℝ := inferInstance
-    simpa [mellin_eq_fourierIntegral, mul_div_cancel _ hp, neg_mul] using hFf.comp_mul_right' hp
+    simpa [VerticalIntegrable, mellin_eq_fourierIntegral, mul_div_cancel _ h2π] using
+      hFf.comp_mul_right' h2π
   replace hfx : ContinuousAt g (-Real.log x) := by
     refine ContinuousAt.smul (by fun_prop) (ContinuousAt.comp ?_ (by fun_prop))
     simpa [Real.exp_log hx] using hfx
@@ -109,8 +106,6 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
       simp [g, mellin_inv, mellin_eq_fourierIntegral]
     _ = (x : ℂ) ^ (-σ : ℂ) • g (-Real.log x) := by
       rw [mellin_inv_eq_fourierIntegral_inv _ _ hx, ← hf.fourier_inversion hFf hfx]
-      congr
-      ext
       simp [mul_div_cancel_left _ (show 2 * π ≠ 0 by norm_num; exact pi_ne_zero)]
     _ = _ := by
       suffices (x : ℂ) ^ (-σ : ℂ) • rexp (σ * Real.log x) • f (rexp (Real.log x)) = f x by simpa [g]
