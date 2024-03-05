@@ -516,6 +516,49 @@ nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Int
   continuous_primitive (fun _ _ => h_int.intervalIntegrable) a
 #align measure_theory.integrable.continuous_primitive MeasureTheory.Integrable.continuous_primitive
 
+variable [IsLocallyFiniteMeasure μ] [LocallyCompactSpace X]
+
+theorem continuous_parametric_primitive_of_continuous {F : X → ℝ → E}
+    {a₀ : ℝ} (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) :
+    Continuous fun p : X × ℝ ↦ ∫ t in a₀..p.2, F p.1 t ∂μ := by
+  rw [continuous_iff_continuousAt]
+  rintro ⟨x₀, b₀⟩
+  rcases exists_compact_mem_nhds x₀ with ⟨U, U_cpct, U_nhds⟩
+  cases' exists_lt (min a₀ b₀) with a a_lt
+  cases' exists_gt (max a₀ b₀) with b lt_b
+  rw [lt_min_iff] at a_lt
+  rw [max_lt_iff] at lt_b
+  have a₀_in : a₀ ∈ Ioo a b := ⟨a_lt.1, lt_b.1⟩
+  have b₀_in : b₀ ∈ Ioo a b := ⟨a_lt.2, lt_b.2⟩
+  obtain ⟨M, hM⟩ :=
+    (U_cpct.prod (isCompact_Icc (a := a) (b := b))).bddAbove_image hF.norm.continuousOn
+  refine intervalIntegral.continuousAt_parametric_primitive_of_dominated
+    (fun _ ↦ M) a b ?_ ?_ ?_ ?_ a₀_in b₀_in (measure_singleton b₀)
+  · exact fun x ↦ (hF.comp (Continuous.Prod.mk x)).aestronglyMeasurable
+  · refine Eventually.mono U_nhds fun x (x_in : x ∈ U) ↦ ?_
+    simp_rw [ae_restrict_iff' measurableSet_uIoc]
+    refine eventually_of_forall fun t t_in ↦ ?_
+    refine hM (mem_image_of_mem _ <| mk_mem_prod x_in ?_)
+    rw [uIoc_of_le (a_lt.1.trans lt_b.1).le] at t_in
+    exact mem_Icc_of_Ioc t_in
+  · apply intervalIntegrable_const
+  · apply ae_of_all
+    intro a
+    apply (hF.comp₂ continuous_id continuous_const).continuousAt
+
+theorem continuous_parametric_intervalIntegral_of_continuous {a₀ : ℝ}
+    {F : X → ℝ → E} (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) {s : X → ℝ} (hs : Continuous s) :
+    Continuous fun x ↦ ∫ t in a₀..s x, F x t ∂μ :=
+  -- TODO: can `fun_prop` show this?
+  show Continuous ((fun p : X × ℝ ↦ ∫ t in a₀..p.2, F p.1 t ∂μ) ∘ fun x ↦ (x, s x)) from
+    (continuous_parametric_primitive_of_continuous hF).comp₂ continuous_id hs
+
+theorem continuous_parametric_intervalIntegral_of_continuous'
+    {F : X → ℝ → E} (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) (a₀ b₀ : ℝ) :
+    Continuous fun x ↦ ∫ t in a₀..b₀, F x t ∂μ :=
+  -- TODO: can `fun_prop` show this?
+  continuous_parametric_intervalIntegral_of_continuous hF continuous_const
+
 end ContinuousPrimitive
 
 end intervalIntegral
