@@ -292,6 +292,21 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
       (hasDerivWithinAt_neg _ _).congr_of_mem (fun _ h ↦ abs_of_nonpos h) Set.right_mem_Iic
   linarith
 
+open ContinuousLinearMap in
+lemma deriv_comp_neg (f : 𝕜 → F) (a : 𝕜) : deriv (fun x ↦ f (-x)) a = -deriv f (-a) := by
+  by_cases h : DifferentiableAt 𝕜 f (-a)
+  · simp_rw [← fderiv_deriv]
+    change (fderiv 𝕜 (f ∘ fun x ↦ -x) a) 1 = _
+    rw [fderiv.comp _ h differentiable_neg.differentiableAt, show @Neg.neg 𝕜 _ = (- ·) from rfl,
+      coe_comp', Function.comp_apply, fderiv_neg, fderiv_id', neg_apply, coe_id', id_eq, map_neg]
+  · have H : ¬ DifferentiableAt 𝕜 (fun x ↦ f (-x)) a := by
+      contrapose! h
+      rw [← neg_neg a] at h
+      convert h.comp (-a) differentiable_neg.differentiableAt
+      ext
+      simp only [Function.comp_apply, neg_neg]
+    rw [deriv_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt H, neg_zero]
+
 end Neg2
 
 section Sub
