@@ -4,13 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Std.Lean.Parser
-import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.HaveI
 import Qq
 
 /-!

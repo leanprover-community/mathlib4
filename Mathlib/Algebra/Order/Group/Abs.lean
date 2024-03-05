@@ -254,7 +254,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 @[to_additive] lemma mabs_eq_mabs : |a|ₘ = |b|ₘ ↔ a = b ∨ a = b⁻¹ := by
   refine' ⟨fun h ↦ ?_, by rintro (h | h) <;> simp [h, abs_neg]⟩
   obtain rfl | rfl := eq_or_eq_inv_of_mabs_eq h <;>
-    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inj, or_comm] using mabs_choice b
+    simpa only [inv_eq_iff_eq_inv (a := |b|ₘ), inv_inv, inv_inj, or_comm] using mabs_choice b
 #align abs_eq_abs abs_eq_abs
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}

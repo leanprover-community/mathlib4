@@ -126,7 +126,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     rw [disjoint_compl_right_iff_subset]
     refine' (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
       ((cthickening_mono hj' _).trans fun a ha => _)
-    simp only [mem_iUnion, exists_prop]
+    simp only [Z, mem_iUnion, exists_prop]
     exact ⟨f j, ⟨hf₁ j, hj.le.trans (hf₂ j)⟩, ha⟩
   have h₄ : ∀ᶠ j in atTop, μ (B j) ≤ C * μ (b j) :=
     (hr.eventually (IsUnifLocDoublingMeasure.eventually_measure_le_scaling_constant_mul'
@@ -211,12 +211,12 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     refine' tendsto_nhdsWithin_iff.mpr
       ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, eventually_of_forall fun i => _⟩
     by_cases hi : 0 < r i
-    · simp [hi]
-    · simp only [hi, one_div, mem_Ioi, if_false, inv_pos]; positivity
+    · simp [r', hi]
+    · simp only [r', hi, one_div, mem_Ioi, if_false, inv_pos]; positivity
   have h₀ : ∀ i, p i ∧ 0 < r i → cthickening (r i) (s i) = cthickening (r' i) (s i) := by
     rintro i ⟨-, hi⟩; congr! 1; change r i = ite (0 < r i) (r i) _; simp [hi]
   have h₁ : ∀ i, p i ∧ 0 < r i → cthickening (M * r i) (s i) = cthickening (M * r' i) (s i) := by
-    rintro i ⟨-, hi⟩; simp only [hi, mul_ite, if_true]
+    rintro i ⟨-, hi⟩; simp only [r', hi, mul_ite, if_true]
   have h₂ : ∀ i, p i ∧ r i ≤ 0 → cthickening (M * r i) (s i) = cthickening (r i) (s i) := by
     rintro i ⟨-, hi⟩
     have hi' : M * r i ≤ 0 := mul_nonpos_of_nonneg_of_nonpos hM.le hi
@@ -278,13 +278,13 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
       blimsup (fun i => thickening (r i) (s i)) atTop q := by
     refine' blimsup_congr' (eventually_of_forall fun i h => _)
     replace hi : 0 < r i := by contrapose! h; apply thickening_of_nonpos h
-    simp only [hi, iff_self_and, imp_true_iff]
+    simp only [q, hi, iff_self_and, imp_true_iff]
   have h₂ : blimsup (fun i => thickening (M * r i) (s i)) atTop p =
       blimsup (fun i => thickening (M * r i) (s i)) atTop q := by
     refine blimsup_congr' (eventually_of_forall fun i h ↦ ?_)
     replace h : 0 < r i := by
       rw [← mul_pos_iff_of_pos_left hM]; contrapose! h; apply thickening_of_nonpos h
-    simp only [h, iff_self_and, imp_true_iff]
+    simp only [q, h, iff_self_and, imp_true_iff]
   rw [h₁, h₂]
   exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (eventually_of_forall fun i hi => hi.2)
 #align blimsup_thickening_mul_ae_eq blimsup_thickening_mul_ae_eq
