@@ -134,7 +134,7 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   have B_det : ∀ p, (B p).det = p.1 := by
     intro p
     conv_rhs => rw [← one_mul p.1, ← cos_sq_add_sin_sq p.2]
-    simp only [neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
+    simp only [B, neg_mul, LinearMap.det_toContinuousLinearMap, LinearMap.det_toLin,
       Matrix.det_fin_two_of, sub_neg_eq_add]
     ring
   symm
