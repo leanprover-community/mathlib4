@@ -97,7 +97,7 @@ theorem length_sublists' : ∀ l : List α, length (sublists' l) = 2 ^ length l
   | [] => rfl
   | a :: l => by
     simp_arith only [sublists'_cons, length_append, length_sublists' l,
-      length_map, length, Nat.pow_succ', mul_succ, mul_zero, zero_add]
+      length_map, length, Nat.pow_succ', mul_succ, mul_zero, zero_add, npow_eq_pow, pow_eq]
 #align list.length_sublists' List.length_sublists'
 
 @[simp]

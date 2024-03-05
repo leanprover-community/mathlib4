@@ -466,6 +466,7 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   · rw [← nnnorm_eq_zero] at h
     rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel h]
 
+set_option tactic.skipAssignedInstances false in
 private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
   simp [unitOf]
   split_ifs with h
@@ -491,12 +492,12 @@ lemma linfty_opNNNorm_eq_opNNNorm (A : Matrix m n α) :
   classical
   let x : n → α := fun j => unitOf (A i j)
   have hxn : ‖x‖₊ = 1 := by
-    simp_rw [Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
+    simp_rw [x, Pi.nnnorm_def, norm_unitOf, Finset.sup_const Finset.univ_nonempty]
   specialize hN x
   rw [hxn, mul_one, Pi.nnnorm_def, Finset.sup_le_iff] at hN
   replace hN := hN i (Finset.mem_univ _)
   dsimp [mulVec, dotProduct] at hN
-  simp_rw [mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq,
+  simp_rw [x, mul_unitOf, ← map_sum, nnnorm_algebraMap, ← NNReal.coe_sum, NNReal.nnnorm_eq,
     nnnorm_one, mul_one] at hN
   exact hN
 
