@@ -125,7 +125,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
-        field_simp [hy0]
+        field_simp [ycc₂, hy0]
         ring
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
@@ -173,7 +173,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         by ring,
       add_left_inj] at hcr₃
     have ht₃ : t₃ = ycc₂ / y := by
-      field_simp [← hcr₃, hy0]
+      field_simp [ycc₂, ← hcr₃, hy0]
       ring
     subst ht₃
     change cc₃ = cc₂ at hcc₃''
@@ -181,7 +181,6 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     rw [hcr₃val]
     congr 2
     field_simp [hy0]
-    ring
 #align euclidean_geometry.exists_unique_dist_eq_of_insert EuclideanGeometry.existsUnique_dist_eq_of_insert
 
 /-- Given a finite nonempty affinely independent family of points,

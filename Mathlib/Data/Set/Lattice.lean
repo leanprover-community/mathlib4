@@ -273,7 +273,7 @@ theorem subset_iInter_iff {s : Set α} {t : ι → Set α} : (s ⊆ ⋂ i, t i) 
 #align set.subset_Inter_iff Set.subset_iInter_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
---Porting note: removing `simp`. `simp` can prove it
+-- Porting note: removing `simp`. `simp` can prove it
 theorem subset_iInter₂_iff {s : Set α} {t : ∀ i, κ i → Set α} :
     (s ⊆ ⋂ (i) (j), t i j) ↔ ∀ i j, s ⊆ t i j := by simp_rw [subset_iInter_iff]
 #align set.subset_Inter₂_iff Set.subset_iInter₂_iff
@@ -685,7 +685,7 @@ theorem nonempty_iUnion : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := by
   simp [nonempty_iff_ne_empty]
 #align set.nonempty_Union Set.nonempty_iUnion
 
---Porting note: removing `simp`. `simp` can prove it
+-- Porting note: removing `simp`. `simp` can prove it
 theorem nonempty_biUnion {t : Set α} {s : α → Set β} :
     (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp
 #align set.nonempty_bUnion Set.nonempty_biUnion
@@ -841,7 +841,7 @@ theorem mem_biInter {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, 
 /-- A specialization of `subset_iUnion₂`. -/
 theorem subset_biUnion_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : x ∈ s) :
     u x ⊆ ⋃ x ∈ s, u x :=
---Porting note: Why is this not just `subset_iUnion₂ x xs`?
+-- Porting note: Why is this not just `subset_iUnion₂ x xs`?
   @subset_iUnion₂ β α (· ∈ s) (fun i _ => u i) x xs
 #align set.subset_bUnion_of_mem Set.subset_biUnion_of_mem
 
@@ -1226,7 +1226,7 @@ theorem nonempty_iInter {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x, �
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 -- classical
---Porting note: removing `simp`. `simp` can prove it
+-- Porting note: removing `simp`. `simp` can prove it
 theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
     (⋂ (i) (j), s i j).Nonempty ↔ ∃ a, ∀ i j, a ∈ s i j := by
   simp
@@ -1664,7 +1664,7 @@ section Image
 theorem image_iUnion {f : α → β} {s : ι → Set α} : (f '' ⋃ i, s i) = ⋃ i, f '' s i := by
   ext1 x
   simp only [mem_image, mem_iUnion, ← exists_and_right, ← exists_and_left]
-  --Porting note: `exists_swap` causes a `simp` loop in Lean4 so we use `rw` instead.
+  -- Porting note: `exists_swap` causes a `simp` loop in Lean4 so we use `rw` instead.
   rw [exists_swap]
 #align set.image_Union Set.image_iUnion
 
@@ -2077,14 +2077,14 @@ theorem disjoint_iUnion_right {ι : Sort*} {s : ι → Set α} :
 #align set.disjoint_Union_right Set.disjoint_iUnion_right
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
---Porting note: removing `simp`. `simp` can prove it
+-- Porting note: removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_left {s : ∀ i, κ i → Set α} {t : Set α} :
     Disjoint (⋃ (i) (j), s i j) t ↔ ∀ i j, Disjoint (s i j) t :=
   iSup₂_disjoint_iff
 #align set.disjoint_Union₂_left Set.disjoint_iUnion₂_left
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
---Porting note: removing `simp`. `simp` can prove it
+-- Porting note: removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_right {s : Set α} {t : ∀ i, κ i → Set α} :
     Disjoint s (⋃ (i) (j), t i j) ↔ ∀ i j, Disjoint s (t i j) :=
   disjoint_iSup₂_iff

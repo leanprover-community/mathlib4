@@ -45,7 +45,7 @@ namespace NNReal
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- porting note: was @[pp_nodot]
+-- Porting note: was @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
@@ -155,7 +155,7 @@ begin
   { intros }
 end -/
 
--- porting note: todo: was @[pp_nodot]
+-- Porting note: todo: was @[pp_nodot]
 /-- The square root of a real number. This returns 0 for negative inputs. -/
 noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)

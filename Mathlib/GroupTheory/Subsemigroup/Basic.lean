@@ -279,7 +279,7 @@ instance : CompleteLattice (Subsemigroup M) :=
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right }
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingleton M := by
   constructor; intro x y
   have : ∀ a : M, a ∈ (⊥ : Subsemigroup M) := by simp [Subsingleton.elim (⊥ : Subsemigroup M) ⊤]

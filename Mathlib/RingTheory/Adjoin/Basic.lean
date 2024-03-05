@@ -132,7 +132,7 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (Hs : ∀ (x) (h : x ∈ s),
 theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
   refine'
     eq_top_iff.2 fun x =>
-      -- porting note: Lean could no longer infer the motive
+      -- Porting note: Lean could no longer infer the motive
       adjoin_induction' (p := fun y => y ∈ adjoin R (((↑) : adjoin R s → A) ⁻¹' s))
       (fun a ha => _) (fun r => _) (fun _ _ => _) (fun _ _ => _) x
   · exact subset_adjoin ha
@@ -215,7 +215,7 @@ theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin
 theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
   le_antisymm (adjoin_le <| Set.image_subset _ subset_adjoin) <|
     Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
-      -- porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
+      -- Porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
       simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
         Subalgebra.coe_comap]
       exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩
@@ -317,7 +317,7 @@ theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adj
   · exact adjoin_mono subset_adjoin
   · change adjoin R s ≤ (adjoin S s).restrictScalars R
     refine' adjoin_le _
-    -- porting note: unclear why this was broken
+    -- Porting note: unclear why this was broken
     have : (Subalgebra.restrictScalars R (adjoin S s) : Set A) = adjoin S s := rfl
     rw [this]
     exact subset_adjoin
@@ -405,7 +405,7 @@ theorem mem_adjoin_iff {s : Set A} {x : A} :
       (fun _ _ => Subring.add_mem _) fun _ _ => Subring.mul_mem _,
     suffices Subring.closure (Set.range (algebraMap R A) ∪ s) ≤ (adjoin R s).toSubring
       from (show (_ : Set A) ⊆ _ from this) (a := x)
-    -- porting note: Lean doesn't seem to recognize the defeq between the order on subobjects and
+    -- Porting note: Lean doesn't seem to recognize the defeq between the order on subobjects and
     -- subsets of their coercions to sets as easily as in Lean 3
     Subring.closure_le.2 Subsemiring.subset_closure⟩
 #align algebra.mem_adjoin_iff Algebra.mem_adjoin_iff

@@ -109,7 +109,7 @@ class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
 #align char_p CharP
 #align char_p_iff charP_iff
 
--- porting note: the field of the structure had implicit arguments where they were
+-- Porting note: the field of the structure had implicit arguments where they were
 -- explicit in Lean 3
 theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (x : ℕ) :
     (x : R) = 0 ↔ p ∣ x :=
@@ -327,7 +327,7 @@ theorem CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1
     rw [← sub_eq_zero, sub_neg_eq_add] at h
     norm_num at h
     exact this h
-    -- porting note: this could probably be golfed
+    -- Porting note: this could probably be golfed
   intro h
   rw [show (2 : R) = (2 : ℕ) by norm_cast] at h
   have := (CharP.cast_eq_zero_iff R p 2).mp h
@@ -455,7 +455,7 @@ end Semiring
 section Ring
 
 variable [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
--- porting note: removed redundant binder annotation update `(R)`
+-- Porting note: removed redundant binder annotation update `(R)`
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
@@ -539,7 +539,7 @@ end
 section
 
 variable [NonAssocRing R] [Fintype R] (n : ℕ)
--- porting note: removed redundant binder annotation update `(R)`
+-- Porting note: removed redundant binder annotation update `(R)`
 
 theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 → i = 0) :
     CharP R n :=
@@ -621,7 +621,7 @@ end
 namespace NeZero
 
 variable [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
--- porting note: removed redundant binder annotation update `(R)`
+-- Porting note: removed redundant binder annotation update `(R)`
 
 theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩
