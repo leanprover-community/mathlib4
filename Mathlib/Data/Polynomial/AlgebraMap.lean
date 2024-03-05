@@ -76,7 +76,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.C_eq_algebra_map Polynomial.C_eq_algebraMap
 
 @[simp]
-theorem algebraMap_eq_C : algebraMap R R[X] = C :=
+theorem algebraMap_eq : algebraMap R R[X] = C :=
   rfl
 
 /-- `Polynomial.C` as an `AlgHom`. -/
