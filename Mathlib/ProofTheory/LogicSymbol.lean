@@ -20,49 +20,49 @@ these approaches. It also defines homomorphisms that preserve these connectives.
 preserves logical connectives.
 -/
 
-/-- `Tilde` class describes a type using tilda (for negation) -/
-@[notation_class] class Tilde (α : Type*) where
-  /-- tilde symbol -/
-  tilde : α → α
+/-- Syntax typeclass for negation of formula -/
+@[notation_class] class FNot (α : Type*) where
+  /-- Negation of formula -/
+  fnot : α → α
 
-/-- `Arrow` class describes a type using arrow (for implication) -/
-@[notation_class] class Arrow (α : Type*) where
-  /-- arrow symbol -/
-  arrow : α → α → α
+/-- Syntax typeclass for implication of formula -/
+@[notation_class] class FImp (α : Type*) where
+  /-- Implication of formula -/
+  fimp : α → α → α
 
-/-- `Wedge` class describes a type using wedge (for conjunction) -/
-@[notation_class] class Wedge (α : Type*) where
-  /-- wedge symbol -/
-  wedge : α → α → α
+/-- Syntax typeclass for conjunction of formula -/
+@[notation_class] class FConj (α : Type*) where
+  /-- Conjunction of formula -/
+  fconj : α → α → α
 
-/-- `Vee` class describes a type using vee (for disjunction) -/
-@[notation_class] class Vee (α : Type*) where
-  /-- vee symbol -/
-  vee : α → α → α
+/-- Syntax typeclass for disjunction of formula -/
+@[notation_class] class FDisj (α : Type*) where
+  /-- Disjunction of formula -/
+  fdisj : α → α → α
 
-/-- Prefix notation for `tilde` -/
-prefix:75 "~" => Tilde.tilde
+/-- Prefix notation for `fnot` -/
+prefix:75 "~" => FNot.fnot
 
-/-- Infix notation for `arrow` -/
-infixr:60 " ⭢ " => Arrow.arrow
+/-- Infix notation for `fimp` -/
+infixr:60 " ⭢ " => FImp.fimp
 
-/-- Infix notation for `wedge` -/
-infixr:69 " ⋏ " => Wedge.wedge
+/-- Infix notation for `fconj` -/
+infixr:69 " ⋏ " => FConj.fconj
 
-/-- Infix notation for `vee` -/
-infixr:68 " ⋎ " => Vee.vee
+/-- Infix notation for `fdisj` -/
+infixr:68 " ⋎ " => FDisj.fdisj
 
 attribute [match_pattern]
-  Tilde.tilde
-  Arrow.arrow
-  Wedge.wedge
-  Vee.vee
+  FNot.fnot
+  FImp.fimp
+  FConj.fconj
+  FDisj.fdisj
 
 namespace ProofTheory
 
 /-- `LogicalConnective` class describes a type's logical connectives -/
 class LogicalConnective (α : Type*)
-  extends Top α, Bot α, Tilde α, Arrow α, Wedge α, Vee α
+  extends Top α, Bot α, FNot α, FImp α, FConj α, FDisj α
 
 /-- `DeMorgan` class describes proof systems implementing De Morgan's laws -/
 class DeMorgan (F : Type*) [LogicalConnective F] : Prop where
@@ -99,10 +99,10 @@ section Heyting
 variable (α : Type*) [HeytingAlgebra α]
 
 instance heyting : LogicalConnective α where
-  tilde := (·ᶜ)
-  arrow := (· ⇨ ·)
-  wedge := (· ⊓ ·)
-  vee := (· ⊔ ·)
+  fnot := (·ᶜ)
+  fimp := (· ⇨ ·)
+  fconj := (· ⊓ ·)
+  fdisj := (· ⊔ ·)
 
 variable {α}
 
