@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.Data.Sign
+import Mathlib.Tactic.SlimCheck
 
 /-!
 # A basis for the Clifford algebra
@@ -12,6 +13,34 @@ import Mathlib.Data.Sign
 This file constructs `CliffordAlgebra.Model ι B`, which is a model for
 `CliffordAlgebra (_ : ι →₀ R)` that also works as a basis.
 -/
+
+#eval List.orderedInsert (· ∣ ·) 2 [1, 3, 4, 6, 2]
+
+/-- For a reflexive relation, insert then erasing is the identity. -/
+theorem List.erase_orderedInsert {α} (r : α → α → Prop)
+    [DecidableRel r] [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
+    (xs.orderedInsert r x).erase x = xs := by
+  rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
+    takeWhile_append_dropWhile]
+  intro h
+  replace h := mem_takeWhile_imp h
+  simp [refl x] at h
+
+/-- For an irreflexive relation, insert then erasing is the identity. -/
+theorem List.erase_orderedInsert_of_nmem {α} (r : α → α → Prop)
+    [DecidableRel r] [DecidableEq α] [IsIrrefl α r] (x : α) (xs : List α) (hx : x ∉ xs) :
+    (xs.orderedInsert r x).erase x = xs := by
+  rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
+    takeWhile_append_dropWhile]
+  exact mt ((takeWhile_prefix _).sublist.subset ·) hx
+
+open List in
+theorem List.sublist_orderedInsert {α} (r : α → α → Prop)
+    [DecidableRel r] [DecidableEq α] [IsIrrefl α r] (x : α) (xs : List α) :
+    xs <+ xs.orderedInsert r x := by
+  rw [orderedInsert_eq_take_drop]
+  refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
+  rw [takeWhile_append_dropWhile]
 
 noncomputable section
 namespace CliffordAlgebra
@@ -93,7 +122,16 @@ lemma ofFinsupp_symm_one :
 lemma single_nil_eq_smul_one (r : R) : Model.single B .nil r = r • 1 :=
   (Model.ofFinsupp (B := B)).symm.injective <| by simp
 
-
+open List in
+example {ι} [LinearOrder ι] (i j : ι) (xs ys zs : List ι)
+    (he1 : ys.erase j <+ zs)  -- zs may have `j` inserted in a sorted way
+    (ae2: zs.erase i <+ xs)
+    (hgt: j < i)
+    (hjx : Sorted (· < ·) (j :: xs))
+    (hy : Sorted (· < ·) ys)
+    (hz : Sorted (· < ·) zs) :
+    ys.erase i <+ j :: xs := by
+sorry
 
 open List in
 /-- Multiply a single vector `i` by a basis element `l`.
@@ -134,6 +172,10 @@ def Index.singleMul (i : ι) (l : Model.Index ι) :
                     have pf' := pfoo hi'
                     dsimp at *
                     rw [List.erase_comm] at pfooi
+                    replace aux := aux
+                    replace hgt := hgt
+                    replace h := h
+                    have := i'.prop
                     sorry⟩))))
 where
   ofLt (i : ι) (l : Model.Index ι) (h : ∀ j ∈ l.1, i < j) :
