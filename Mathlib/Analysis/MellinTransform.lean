@@ -99,7 +99,7 @@ theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a �
     add_sub_assoc, sub_add_cancel]
 #align mellin_convergent.comp_rpow MellinConvergent.comp_rpow
 
-/-- A function is `VerticalIntegrable` at `σ` if it can be integrated over `re = σ`. -/
+/-- A function `f` is `VerticalIntegrable` at `σ` if `y ↦ f(σ + yi)` is integrable. -/
 def Complex.VerticalIntegrable (f : ℂ → E) (σ : ℝ) (μ : Measure ℝ := by volume_tac) : Prop :=
   Integrable (fun (y : ℝ) ↦ f (σ + y * I)) μ
 
@@ -109,8 +109,8 @@ def mellin (f : ℝ → E) (s : ℂ) : E :=
   ∫ t : ℝ in Ioi 0, (t : ℂ) ^ (s - 1) • f t
 #align mellin mellin
 
-/-- The Mellin inverse transform of a function `f`, defined as `1 / (2 * π)` times
-the integral of `x ^ -(σ + y * I) • f (σ + y * I)` over `y` in `ℝ`. -/
+/-- The Mellin inverse transform of a function `f`, defined as `1 / (2π)` times
+the integral of `y ↦ x ^ -(σ + yi) • f (σ + yi)`. -/
 def mellin_inv (σ : ℝ) (f : ℂ → E) (x : ℝ) : E :=
   (1 / (2 * π)) • ∫ y : ℝ, (x : ℂ) ^ (-(σ + y * I)) • f (σ + y * I)
 
