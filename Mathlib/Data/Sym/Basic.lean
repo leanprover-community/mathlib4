@@ -43,7 +43,7 @@ def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 #align sym Sym
 
---Porting note: new definition
+-- Porting note: new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
@@ -79,18 +79,18 @@ theorem coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = 
   coe_injective.eq_iff
 #align sym.coe_inj Sym.coe_inj
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[ext] theorem ext {s₁ s₂ : Sym α n} (h : (s₁ : Multiset α) = ↑s₂) : s₁ = s₂ :=
   coe_injective h
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
   rfl
 
 /-- Construct an element of the `n`th symmetric power from a multiset of cardinality `n`.
 -/
-@[match_pattern] --Porting note: removed `@[simps]`, generated bad lemma
+@[match_pattern] -- Porting note: removed `@[simps]`, generated bad lemma
 abbrev mk (m : Multiset α) (h : Multiset.card m = n) : Sym α n :=
   ⟨m, h⟩
 #align sym.mk Sym.mk
@@ -662,7 +662,7 @@ def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
 theorem decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
   rfl
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
   rfl

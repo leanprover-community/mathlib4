@@ -62,7 +62,7 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
   __ := Pi.commMonoid
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
   mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
---Porting note: Old proof was
+-- Porting note: Old proof was
   -- refine_struct
   --     { Pi.partialOrder, Pi.monoid with
   --       mul := (· * ·)
@@ -162,7 +162,7 @@ variable [One γ] [LE γ] {f : α → β} {g : α → γ} {e : β → γ}
 
 end extend
 end Function
---Porting note: Tactic code not ported yet
+-- Porting note: Tactic code not ported yet
 -- namespace Tactic
 
 -- open Function

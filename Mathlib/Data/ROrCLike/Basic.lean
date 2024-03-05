@@ -380,7 +380,7 @@ theorem conj_bit1 (z : K) : conj (bit1 z) = bit1 (conj z) :=
   map_bit1 _ _
 #align is_R_or_C.conj_bit1 ROrCLike.conj_bit1
 
-@[rorCLike_simps] -- porting note: was a `simp` but `simp` can prove it
+@[rorCLike_simps] -- Porting note: was a `simp` but `simp` can prove it
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
 set_option linter.uppercaseLean3 false in
 #align is_R_or_C.conj_neg_I ROrCLike.conj_neg_I
@@ -660,7 +660,7 @@ theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 #align is_R_or_C.of_real_nat_cast ROrCLike.ofReal_natCast
 
-@[simp, rorCLike_simps] -- porting note: removed `norm_cast`
+@[simp, rorCLike_simps] -- Porting note: removed `norm_cast`
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 #align is_R_or_C.nat_cast_re ROrCLike.natCast_re
 
@@ -697,7 +697,7 @@ theorem ofReal_intCast (n : ℤ) : ((n : ℝ) : K) = n :=
   map_intCast _ n
 #align is_R_or_C.of_real_int_cast ROrCLike.ofReal_intCast
 
-@[simp, rorCLike_simps] -- porting note: removed `norm_cast`
+@[simp, rorCLike_simps] -- Porting note: removed `norm_cast`
 theorem intCast_re (n : ℤ) : re (n : K) = n := by rw [← ofReal_intCast, ofReal_re]
 #align is_R_or_C.int_cast_re ROrCLike.intCast_re
 
@@ -710,7 +710,7 @@ theorem ofReal_ratCast (n : ℚ) : ((n : ℝ) : K) = n :=
   map_ratCast _ n
 #align is_R_or_C.of_real_rat_cast ROrCLike.ofReal_ratCast
 
-@[simp, rorCLike_simps] -- porting note: removed `norm_cast`
+@[simp, rorCLike_simps] -- Porting note: removed `norm_cast`
 theorem ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofReal_re]
 #align is_R_or_C.rat_cast_re ROrCLike.ratCast_re
 
@@ -743,7 +743,7 @@ theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq
 
 attribute [rorCLike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
 
--- porting note: removed @[simp, rorCLike_simps], b/c generalized to `norm_ofNat`
+-- Porting note: removed @[simp, rorCLike_simps], b/c generalized to `norm_ofNat`
 theorem norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
 #align is_R_or_C.norm_two ROrCLike.norm_two
 
