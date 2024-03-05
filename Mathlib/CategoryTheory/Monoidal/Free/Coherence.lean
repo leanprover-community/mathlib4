@@ -95,7 +95,6 @@ theorem inclusion_map {X Y : N C} (f : X ⟶ Y) :
   apply inclusion.map_id
 
 /-- Auxiliary definition for `normalize`. -/
-@[simp]
 def normalizeObj : F C → NormalMonoidalObject C → NormalMonoidalObject C
   | unit, n => n
   | of X, n => NormalMonoidalObject.tensor n X
@@ -113,6 +112,9 @@ theorem normalizeObj_tensor (X Y : F C) (n : NormalMonoidalObject C) :
   rfl
 #align category_theory.free_monoidal_category.normalize_obj_tensor CategoryTheory.FreeMonoidalCategory.normalizeObj_tensor
 
+/-- Auxiliary definition for `normalize`. -/
+def normalizeObj' (X : F C) : N C ⥤ N C := Discrete.functor fun n ↦ ⟨normalizeObj X n⟩
+
 section
 
 open Hom
@@ -120,10 +122,7 @@ open Hom
 /-- Auxiliary definition for `normalize`. Here we prove that objects that are related by
     associators and unitors map to the same normal form. -/
 @[simp]
-def normalizeMapAux :
-    ∀ {X Y : F C}, (X ⟶ᵐ Y) →
-      ((Discrete.functor (fun n ↦ ⟨normalizeObj X n⟩) : N C ⥤ N C) ⟶
-        Discrete.functor fun n ↦ ⟨normalizeObj Y n⟩)
+def normalizeMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (normalizeObj' X ⟶ normalizeObj' Y)
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom X Y Z => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, α_inv _ _ _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
@@ -133,13 +132,12 @@ def normalizeMapAux :
   | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) =>
-    Discrete.natTrans (fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
-      (Discrete.functor fun n ↦ ⟨normalizeObj W n⟩ : N C ⥤ N C).map ((normalizeMapAux f).app ⟨X⟩))
+    Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
+      (normalizeObj' W).map ((normalizeMapAux f).app ⟨X⟩)
   | _, _, (@Hom.whiskerLeft _ T _ W f) =>
-    Discrete.natTrans (fun ⟨X⟩ => (normalizeMapAux f).app ⟨normalizeObj T X⟩)
+    Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux f).app ⟨normalizeObj T X⟩
   | _, _, (@Hom.whiskerRight _ T _ f W) =>
-    Discrete.natTrans <| fun X =>
-      (Discrete.functor fun n ↦ ⟨normalizeObj W n⟩ : N C ⥤ N C).map <| (normalizeMapAux f).app X
+    Discrete.natTrans <| fun X => (normalizeObj' W).map <| (normalizeMapAux f).app X
 #align category_theory.free_monoidal_category.normalize_map_aux CategoryTheory.FreeMonoidalCategory.normalizeMapAux
 
 end
@@ -153,7 +151,7 @@ variable (C)
     `𝟙_ C`. -/
 @[simp]
 def normalize : F C ⥤ N C ⥤ N C where
-  obj X := Discrete.functor (fun n ↦ ⟨normalizeObj X n⟩)
+  obj X := normalizeObj' X
   map {X Y} := Quotient.lift normalizeMapAux (by aesop_cat)
 #align category_theory.free_monoidal_category.normalize CategoryTheory.FreeMonoidalCategory.normalize
 
