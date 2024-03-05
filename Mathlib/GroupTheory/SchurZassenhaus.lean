@@ -86,7 +86,7 @@ theorem smul_diff' (h : H) :
   rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine' Finset.prod_congr rfl fun q _ => _
   simp only [Subtype.ext_iff, Submonoid.coe_mul,
-    coe_toSubmonoid, mul_assoc, mul_right_inj]
+    coe_toSubmonoid, mul_assoc, mul_right_inj, MonoidHom.id_apply]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop]
   simp only [MulOpposite.unop_op, mul_left_inj,
     ← Subtype.ext_iff, Equiv.apply_eq_iff_eq, inv_smul_eq_iff]
