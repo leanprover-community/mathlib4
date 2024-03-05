@@ -452,13 +452,9 @@ theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
 #align subfield.coe_top Subfield.coe_top
 
 /-- The ring equiv between the top element of `Subfield K` and `K`. -/
-@[simps!]
 def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
 #align subfield.top_equiv Subfield.topEquiv
-
--- This triggers a timeout since #8386.
-attribute [nolint simpNF] topEquiv_apply
 
 /-! # comap -/
 

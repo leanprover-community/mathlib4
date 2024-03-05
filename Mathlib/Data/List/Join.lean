@@ -57,7 +57,7 @@ theorem join_filter_not_isEmpty  :
 @[simp]
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
     join (L.filter fun l => l ≠ []) = L.join := by
-  simp only [Ne.def, join_filter_not_isEmpty, ← isEmpty_iff_eq_nil, decide_not, Bool.decide_coe]
+  simp [join_filter_not_isEmpty, ← isEmpty_iff_eq_nil]
 #align list.join_filter_ne_nil List.join_filter_ne_nil
 
 theorem join_join (l : List (List (List α))) : l.join.join = (l.map join).join := by

@@ -448,7 +448,7 @@ theorem det_eq_sum_mul_adjugate_row (A : Matrix n n α) (i : n) :
   obtain ⟨e⟩ := Fintype.truncEquivFinOfCardEq hn'
   let A' := reindex e e A
   suffices det A' = ∑ j : Fin n'.succ, A' (e i) j * adjugate A' j (e i) by
-    simp_rw [det_reindex_self, adjugate_reindex, reindex_apply, submatrix_apply, ← e.sum_comp,
+    simp_rw [A', det_reindex_self, adjugate_reindex, reindex_apply, submatrix_apply, ← e.sum_comp,
       Equiv.symm_apply_apply] at this
     exact this
   rw [det_succ_row A' (e i)]
