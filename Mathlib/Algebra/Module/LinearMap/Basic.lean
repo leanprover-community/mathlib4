@@ -138,7 +138,8 @@ abbrev LinearMapClass (F : Type*) (R : outParam (Type*)) (M M₂ : Type*)
   SemilinearMapClass F (RingHom.id R) M M₂
 #align linear_map_class LinearMapClass
 
-@[simp]
+-- can be proved by simp, but shorter and more natural
+@[simp, nolint simpNF]
 protected lemma LinearMapClass.map_smul {R M M₂ : outParam (Type*)} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :

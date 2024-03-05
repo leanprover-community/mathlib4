@@ -54,7 +54,8 @@ theorem iterate_zero : f^[0] = id :=
   rfl
 #align function.iterate_zero Function.iterate_zero
 
-@[simp]
+-- can be proved by simp but this is shorter and more natural
+@[simp, nolint simpNF]
 theorem iterate_one : f^[1] = f :=
   funext fun _ ↦ rfl
 #align function.iterate_one Function.iterate_one
