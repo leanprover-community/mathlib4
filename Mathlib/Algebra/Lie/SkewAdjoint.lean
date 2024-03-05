@@ -38,7 +38,6 @@ universe u v w w₁
 section SkewAdjointEndomorphisms
 
 open LinearMap (BilinForm)
-open LinearMap
 
 variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
 
