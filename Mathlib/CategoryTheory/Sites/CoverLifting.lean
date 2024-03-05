@@ -70,7 +70,7 @@ variable {L : GrothendieckTopology E}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
 if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`.
 -/
--- porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note: removed `@[nolint has_nonempty_instance]`
 class Functor.IsCocontinuous : Prop where
   cover_lift : ∀ {U : C} {S : Sieve (G.obj U)} (_ : S ∈ K (G.obj U)), S.functorPullback G ∈ J U
 #align category_theory.cover_lifting CategoryTheory.Functor.IsCocontinuous
@@ -189,7 +189,7 @@ theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
   rw [eq] at hV'
   convert getSection_isAmalgamation ℱ hS hx Y (fV' ≫ f.right.unop) _ using 1
   · aesop_cat
-  -- porting note: the below proof was mildly rewritten because `simp` changed behaviour
+  -- Porting note: the below proof was mildly rewritten because `simp` changed behaviour
   -- slightly (a rewrite which seemed to work in Lean 3, didn't work in Lean 4 because of
   -- motive is not type correct issues)
   · rw [pulledbackFamily_apply, pulledbackFamily_apply]
@@ -202,7 +202,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The limit cone in order to glue the sections obtained via `get_section`. -/
 def gluedLimitCone : Limits.Cone (Ran.diagram G.op ℱ.val (op U)) :=
-  { pt := X -- porting note: autoporter got this wrong
+  { pt := X -- Porting note: autoporter got this wrong
     π := { app := fun Y => getSection ℱ hS hx Y } }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.glued_limit_cone CategoryTheory.RanIsSheafOfIsCocontinuous.gluedLimitCone
@@ -255,7 +255,7 @@ set_option linter.uppercaseLean3 false in
 /-- Verify that the `glued_section` is an amalgamation of `x`. -/
 theorem gluedSection_isAmalgamation : x.IsAmalgamation (gluedSection ℱ hS hx) := by
   intro V fV hV
-  -- porting note: next line was `ext W`
+  -- Porting note: next line was `ext W`
   -- Now `ext` can't see that `ran` is defined as a limit.
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   refine limit.hom_ext (λ (W : StructuredArrow (op V) G.op) => ?_)
@@ -272,7 +272,7 @@ set_option linter.uppercaseLean3 false in
 /-- Verify that the amalgamation is indeed unique. -/
 theorem gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection ℱ hS hx := by
   unfold gluedSection limit.lift
-  -- porting note: next line was `ext W`
+  -- Porting note: next line was `ext W`
   -- Now `ext` can't see that `ran` is defined as a limit.
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   refine limit.hom_ext (λ (W : StructuredArrow (op U) G.op) => ?_)
@@ -356,11 +356,11 @@ noncomputable def Functor.sheafAdjunctionCocontinuous [G.IsCocontinuous J K]
       naturality := fun _ _ f =>
         Sheaf.Hom.ext _ _ <| (Ran.adjunction A G.op).counit.naturality f.val }
   homEquiv_unit := by
-    -- porting note: next line was `ext1`
+    -- Porting note: next line was `ext1`
     refine Sheaf.Hom.ext _ _ ?_
     apply (Ran.adjunction A G.op).homEquiv_unit
   homEquiv_counit := by
-    -- porting note: next line was `ext1`
+    -- Porting note: next line was `ext1`
     refine Sheaf.Hom.ext _ _ ?_
     apply (Ran.adjunction A G.op).homEquiv_counit
 #align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Functor.sheafAdjunctionCocontinuous

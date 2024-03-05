@@ -62,7 +62,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
   · rintro h x hx hx'
     specialize h x
     rw [formPerm_apply_mem_eq_self_iff _ hl _ hx, formPerm_apply_mem_eq_self_iff _ hl' _ hx'] at h
-    rcases h with (hl | hl') <;> linarith
+    omega
   · intro h x
     by_cases hx : x ∈ l
     by_cases hx' : x ∈ l'
@@ -73,9 +73,9 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 set_option linter.deprecated false in
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   cases' l with x l
-  · norm_num at hn
+  · set_option tactic.skipAssignedInstances false in norm_num at hn
   induction' l with y l generalizing x
-  · norm_num at hn
+  · set_option tactic.skipAssignedInstances false in norm_num at hn
   · use x
     constructor
     · rwa [formPerm_apply_mem_ne_self_iff _ hl _ (mem_cons_self _ _)]

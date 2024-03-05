@@ -239,7 +239,7 @@ def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL Matrix.SpecialLinearGroup.toGL
 
--- Porting note: broken dot notation
+-- Porting note (#11036): broken dot notation
 theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
   rfl
 set_option linter.uppercaseLean3 false in

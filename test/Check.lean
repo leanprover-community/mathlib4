@@ -1,6 +1,4 @@
 import Mathlib.Tactic.Check
-import Std.Tactic.GuardMsgs
-
 /- Override metavariable delaborator for natural metavariables to print `?m` instead
 of including a unique number, for `#guard_msgs`. -/
 open Lean PrettyPrinter Delaborator in @[delab mvar] def delabMVar : Delab := do
