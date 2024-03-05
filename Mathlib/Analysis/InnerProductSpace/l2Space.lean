@@ -128,7 +128,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
           congr
           funext i
           rw [norm_sq_eq_inner (𝕜 := 𝕜)]
-          -- porting note: `simp` couldn't do this anymore
+          -- Porting note: `simp` couldn't do this anymore
         _ = re (∑' i, ⟪f i, f i⟫) := (IsROrC.reCLM.map_tsum ?_).symm
       · norm_num
       · exact summable_inner f f
@@ -248,7 +248,7 @@ protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι,
 protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
     LinearMap.range hV.linearIsometry.toLinearMap =
       (⨆ i, LinearMap.range (V i).toLinearMap).topologicalClosure := by
-    -- porting note: dot notation broken
+    -- Porting note: dot notation broken
   refine' le_antisymm _ _
   · rintro x ⟨f, rfl⟩
     refine' mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall _)

@@ -435,7 +435,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     ⟨(algebraMap R K r : adicCompletion K v), by
       -- porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      --Porting note: rest of proof was `simpa only
+      -- Porting note: rest of proof was `simpa only
       --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
       --   v.valuation_le_one _
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -459,7 +459,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rw [mul_comm]
   smul_def' r x := by
     ext
-    --Porting note: added `dsimp`
+    -- Porting note: added `dsimp`
     dsimp
     --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v

@@ -44,7 +44,7 @@ def modSwap (i j : α) : Setoid (Perm α) :=
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
     fun {σ τ υ} hστ hτυ => by
     cases' hστ with hστ hστ <;> cases' hτυ with hτυ hτυ <;> try rw [hστ, hτυ, swap_mul_self_mul] <;>
-    simp [hστ, hτυ] -- porting note: should close goals, but doesn't
+    simp [hστ, hτυ] -- Porting note: should close goals, but doesn't
     · simp [hστ, hτυ]
     · simp [hστ, hτυ]
     · simp [hστ, hτυ]⟩
@@ -360,7 +360,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
-  -- porting note: switched from term mode to tactic mode
+  -- Porting note: switched from term mode to tactic mode
   induction' t, s using Quotient.inductionOn₂ with t s ht hs
   show signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
