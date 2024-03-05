@@ -32,7 +32,7 @@ The analogous results for groups with zero can be found in `Algebra.GroupWithZer
 We adopt the convention that `0^0 = 1`.
 -/
 
-open Int
+open scoped Int
 
 universe u v w x y z u₁ u₂
 
@@ -344,12 +344,13 @@ protected theorem Commute.mul_zpow (h : Commute a b) : ∀ i : ℤ, (a * b) ^ i 
     rw [zpow_coe_nat, zpow_coe_nat, ← pow_mul, ← zpow_coe_nat]
     rfl
   | (m : ℕ), -[n+1] => by
-    rw [zpow_coe_nat, zpow_negSucc, ← pow_mul, ofNat_mul_negSucc, zpow_neg, inv_inj, ← zpow_coe_nat]
+    rw [zpow_coe_nat, zpow_negSucc, ← pow_mul, Int.ofNat_mul_negSucc, zpow_neg, inv_inj,
+      ← zpow_coe_nat]
   | -[m+1], (n : ℕ) => by
-    rw [zpow_coe_nat, zpow_negSucc, ← inv_pow, ← pow_mul, negSucc_mul_ofNat, zpow_neg, inv_pow,
+    rw [zpow_coe_nat, zpow_negSucc, ← inv_pow, ← pow_mul, Int.negSucc_mul_ofNat, zpow_neg, inv_pow,
       inv_inj, ← zpow_coe_nat]
   | -[m+1], -[n+1] => by
-    rw [zpow_negSucc, zpow_negSucc, negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
+    rw [zpow_negSucc, zpow_negSucc, Int.negSucc_mul_negSucc, inv_pow, inv_inv, ← pow_mul, ←
       zpow_coe_nat]
     rfl
 #align zpow_mul zpow_mul
@@ -425,7 +426,7 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
   | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_coe_nat, pow_succ']
-  | -[0+1] => by simp [negSucc_eq', Int.add_left_neg]
+  | -[0+1] => by simp [Int.negSucc_eq', Int.add_left_neg]
   | -[n + 1+1] => by
     rw [zpow_negSucc, pow_succ, mul_inv_rev, inv_mul_cancel_right]
     rw [Int.negSucc_eq, Int.neg_add, Int.neg_add_cancel_right]

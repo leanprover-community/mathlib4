@@ -1877,7 +1877,7 @@ theorem tr_respects {enc₀} :
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH
     | branch p q₁ q₂ IH₁ IH₂ =>
-      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
+      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, Tape.mk'_head]
       cases p R.head v <;> [apply IH₂; apply IH₁]
     | goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']

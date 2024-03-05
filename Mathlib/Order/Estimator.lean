@@ -75,7 +75,7 @@ abbrev Estimator.trivial (a : α) : Type* := { b : α // b = a }
 instance : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
 
 instance : WellFoundedGT Unit where
-  wf := ⟨fun .unit => ⟨.unit, fun.⟩⟩
+  wf := ⟨fun .unit => ⟨.unit, nofun⟩⟩
 
 instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
   let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _

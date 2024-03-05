@@ -620,7 +620,7 @@ instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra 
   hnot := compl
   le_himp_iff a b c := by rw [himp_eq, isCompl_compl.le_sup_right_iff_inf_left_le]
   himp_bot _ := _root_.himp_eq.trans bot_sup_eq
-  top_sdiff a := by rw [sdiff_eq, top_inf_eq]; rfl
+  top_sdiff _ := by rw [sdiff_eq, top_inf_eq]; rfl
 #align boolean_algebra.to_biheyting_algebra BooleanAlgebra.toBiheytingAlgebra
 
 @[simp]

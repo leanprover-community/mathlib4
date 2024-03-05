@@ -774,7 +774,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
     rw [hgn, one_mul]
     refine' mul_le_of_le_one_left (norm_nonneg _) (Real.exp_le_one_iff.2 _)
     exact mul_nonpos_of_nonpos_of_nonneg ε₀.le (le_of_lt hz)
-  · simp_rw [← ofReal_mul, ← ofReal_exp, coe_smul]
+  · simp_rw [g, ← ofReal_mul, ← ofReal_exp, coe_smul]
     have h₀ : Tendsto (fun x : ℝ => expR (ε * x)) atTop (𝓝 0) :=
       Real.tendsto_exp_atBot.comp (tendsto_const_nhds.neg_mul_atTop ε₀ tendsto_id)
     exact h₀.zero_smul_isBoundedUnder_le hre

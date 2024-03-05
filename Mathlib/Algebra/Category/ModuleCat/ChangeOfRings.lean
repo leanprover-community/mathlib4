@@ -481,6 +481,7 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd
+        set_option tactic.skipAssignedInstances false in
         dsimp
         rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
         dsimp
@@ -795,7 +796,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
         rw [Function.comp_apply, ExtendRestrictScalarsAdj.counit_app]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [ExtendRestrictScalarsAdj.Counit.map_apply]
-        dsimp
+        set_option tactic.skipAssignedInstances false in dsimp
         rw [TensorProduct.lift.tmul]
         rfl
       · rw [map_add,map_add]

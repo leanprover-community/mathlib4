@@ -89,7 +89,6 @@ def EvenHom.compr₂ (g : EvenHom Q A) (f : A →ₐ[R] B) : EvenHom Q B where
 variable (Q)
 
 /-- The embedding of pairs of vectors into the even subalgebra, as a bilinear map. -/
-@[simps! bilin_apply_apply_coe]
 nonrec def even.ι : EvenHom Q (even Q) where
   bilin :=
     LinearMap.mk₂ R (fun m₁ m₂ => ⟨ι Q m₁ * ι Q m₂, ι_mul_ι_mem_evenOdd_zero Q _ _⟩)

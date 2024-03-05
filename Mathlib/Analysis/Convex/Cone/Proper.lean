@@ -281,7 +281,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
       simp_rw [ProperCone.mem_dual, adjoint_inner_right]
       intro x hxK
       apply hxy (f x)
-      simp_rw [coe_map]
+      simp_rw [C, coe_map]
       apply subset_closure
       simp_rw [PointedCone.toConvexCone_map, ConvexCone.coe_map, coe_coe, mem_image,
         SetLike.mem_coe]

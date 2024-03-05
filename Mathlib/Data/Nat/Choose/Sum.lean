@@ -114,7 +114,7 @@ theorem sum_range_choose_halfway (m : Nat) : (∑ i in range (m + 1), choose (2 
           · omega }
       _ = ∑ i in range (2 * m + 2), choose (2 * m + 1) i := sum_range_add_sum_Ico _ (by omega)
       _ = 2 ^ (2 * m + 1) := sum_range_choose (2 * m + 1)
-      _ = 2 * 4 ^ m := by rw [pow_succ, pow_mul, mul_comm]; rfl
+      _ = 2 * 4 ^ m := by rw [Nat.pow_succ, pow_mul, mul_comm]; rfl
 #align nat.sum_range_choose_halfway Nat.sum_range_choose_halfway
 
 theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by

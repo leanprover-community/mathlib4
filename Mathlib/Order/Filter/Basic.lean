@@ -1395,7 +1395,8 @@ theorem frequently_imp_distrib_left {f : Filter α} [NeBot f] {p : Prop} {q : α
 #align filter.frequently_imp_distrib_left Filter.frequently_imp_distrib_left
 
 theorem frequently_imp_distrib_right {f : Filter α} [NeBot f] {p : α → Prop} {q : Prop} :
-    (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by simp [frequently_imp_distrib]
+    (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by
+  set_option tactic.skipAssignedInstances false in simp [frequently_imp_distrib]
 #align filter.frequently_imp_distrib_right Filter.frequently_imp_distrib_right
 
 theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :

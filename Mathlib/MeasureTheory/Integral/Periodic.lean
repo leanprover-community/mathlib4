@@ -196,7 +196,6 @@ namespace UnitAddCircle
 
 attribute [local instance] Real.fact_zero_lt_one
 
-@[simp]
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 #align unit_add_circle.measure_univ UnitAddCircle.measure_univ
 

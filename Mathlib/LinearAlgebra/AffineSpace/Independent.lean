@@ -294,7 +294,7 @@ theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι 
       intro i2
       have h : ∃ i : ι2, f i = f i2 := ⟨i2, rfl⟩
       have hs : h.choose = i2 := f.injective h.choose_spec
-      simp_rw [dif_pos h, hs]
+      simp_rw [w', dif_pos h, hs]
     have hw's : ∑ i in fs', w' i = 0 := by
       rw [← hw, Finset.sum_map]
       simp [hw']
@@ -666,7 +666,7 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
       have hwmi : wm i = -1 := by simp [wm, his.2]
       let w' : { y // y ≠ i } → k := fun x => wm x
       have hw' : ∑ x in s', w' x = 1 := by
-        simp_rw [Finset.sum_subtype_eq_sum_filter]
+        simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [← s.sum_filter_add_sum_filter_not (· ≠ i)] at hwm
         simp_rw [Classical.not_not] at hwm
         -- Porting note: this `erw` used to be part of the `simp_rw`
@@ -680,12 +680,12 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
     · rw [not_and_or, Classical.not_not] at his
       let w' : { y // y ≠ i } → k := fun x => w x
       have hw' : ∑ x in s', w' x = 0 := by
-        simp_rw [Finset.sum_subtype_eq_sum_filter]
+        simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [Finset.sum_filter_of_ne, hw]
         rintro x hxs hwx rfl
         exact hwx (his.neg_resolve_left hxs)
       have hs' : s'.weightedVSub p' w' = (0 : V) := by
-        simp_rw [Finset.weightedVSub_subtype_eq_filter]
+        simp_rw [w', s', p', Finset.weightedVSub_subtype_eq_filter]
         rw [Finset.weightedVSub_filter_of_ne, hs]
         rintro x hxs hwx rfl
         exact hwx (his.neg_resolve_left hxs)

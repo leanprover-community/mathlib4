@@ -985,6 +985,7 @@ theorem isOpen_iSup_iff {s : Set α} : IsOpen[⨆ i, t i] s ↔ ∀ i, IsOpen[t 
     simp [setOf_isOpen_iSup]
 #align is_open_supr_iff isOpen_iSup_iff
 
+set_option tactic.skipAssignedInstances false in
 theorem isClosed_iSup_iff {s : Set α} : IsClosed[⨆ i, t i] s ↔ ∀ i, IsClosed[t i] s := by
   simp [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
 #align is_closed_supr_iff isClosed_iSup_iff

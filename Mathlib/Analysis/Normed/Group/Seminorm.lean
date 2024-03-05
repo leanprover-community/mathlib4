@@ -693,7 +693,7 @@ instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
         · simp_rw [if_pos hx, hx, zero_add]
           exact le_max_of_le_right (le_refl _)
         · simp_rw [if_neg hx]
-          split_ifs <;> norm_num
+          split_ifs <;> simp
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
 @[simp]

@@ -436,8 +436,8 @@ theorem lintegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel
   let g := Function.curry f
   change ∫⁻ bc, f bc ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, g b c ∂η (a, b) ∂κ a
   rw [← lintegral_compProd']
-  · simp_rw [Function.curry_apply]
-  · simp_rw [Function.uncurry_curry]; exact hf
+  · simp_rw [g, Function.curry_apply]
+  · simp_rw [g, Function.uncurry_curry]; exact hf
 #align probability_theory.kernel.lintegral_comp_prod ProbabilityTheory.kernel.lintegral_compProd
 
 /-- Lebesgue integral against the composition-product of two kernels. -/

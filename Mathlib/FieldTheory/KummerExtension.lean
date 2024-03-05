@@ -352,6 +352,7 @@ lemma autAdjoinRootXPowSubCEquiv_root (η) :
     autAdjoinRootXPowSubCEquiv hζ hn H η (root _) = ((η : Kˣ) : K) • root _ :=
   autAdjoinRootXPowSubC_root hn a η
 
+set_option tactic.skipAssignedInstances false in
 lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
     ((autAdjoinRootXPowSubCEquiv hζ hn H).symm σ : Kˣ) • (root _ : K[n√a]) = σ (root _) := by
   have := Fact.mk H

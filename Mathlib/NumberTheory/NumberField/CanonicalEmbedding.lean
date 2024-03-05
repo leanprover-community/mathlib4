@@ -1059,7 +1059,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
         exact h_le₀.2
     · refine lt_of_lt_of_le (if_neg h_eq ▸ h_le w h_eq) ?_
       rw [NNReal.coe_one, Real.le_sqrt' zero_lt_one, one_pow]
-      norm_num
+      set_option tactic.skipAssignedInstances false in norm_num
 
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     (h : (minkowskiBound K I) ≤ volume (convexBodySum K B)) :

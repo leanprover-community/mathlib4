@@ -226,7 +226,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
   have h_zero : ∀ a b n, ⌈(f a b).toReal⌉₊ ≤ n → fs n a b = 0 := by
     intro a b n hn
     suffices min (f a b) (n + 1) = f a b ∧ min (f a b) n = f a b by
-      simp_rw [this.1, this.2, tsub_self (f a b)]
+      simp_rw [fs, this.1, this.2, tsub_self (f a b)]
     exact ⟨min_eq_left ((h_le a b n hn).trans (le_add_of_nonneg_right zero_le_one)),
       min_eq_left (h_le a b n hn)⟩
   have hf_eq_tsum : f = ∑' n, fs n := by
@@ -245,7 +245,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
       induction' n with n hn
       · simp
       rw [Finset.sum_range_succ, hn]
-      simp
+      simp [fs]
     simp_rw [h_finset_sum]
     refine' (Filter.Tendsto.liminf_eq _).symm
     refine' Filter.Tendsto.congr' _ tendsto_const_nhds

@@ -126,13 +126,13 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   simp only at ihn
   subst n
   set L := zipWith d (x::l) (l ++ [y])
-  have hL_len : length L = length l + 1 := by simp
+  have hL_len : length L = length l + 1 := by simp [L]
   rcases eq_or_ne (d x y) 0 with hd₀ | hd₀
   · simp only [hd₀, zero_le]
   rsuffices ⟨z, z', hxz, hzz', hz'y⟩ : ∃ z z' : X, d x z ≤ L.sum ∧ d z z' ≤ L.sum ∧ d z' y ≤ L.sum
   · exact (hd x z z' y).trans (mul_le_mul_left' (max_le hxz (max_le hzz' hz'y)) _)
   set s : Set ℕ := { m : ℕ | 2 * (take m L).sum ≤ L.sum }
-  have hs₀ : 0 ∈ s := by simp
+  have hs₀ : 0 ∈ s := by simp [s]
   have hsne : s.Nonempty := ⟨0, hs₀⟩
   obtain ⟨M, hMl, hMs⟩ : ∃ M ≤ length l, IsGreatest s M := by
     have hs_ub : length l ∈ upperBounds s := by
@@ -161,7 +161,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       refine' (ihn _ hMl _ _ _ hMl').trans _
       convert hMs.1.out
       rw [zipWith_distrib_take, take, take_succ, get?_append hMl, get?_eq_get hMl, ← Option.coe_def,
-        Option.to_list_some, take_append_of_le_length hMl.le]
+        Option.toList_some, take_append_of_le_length hMl.le]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, get_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
     · simp only [get_append_right' le_rfl, sub_self, get_singleton, dist_self, zero_le]
@@ -210,20 +210,20 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   have hd₀ : ∀ {x y}, d x y = 0 ↔ x ≈ y := by
     intro x y
     refine' Iff.trans _ hB.mem_separationRel.symm
-    simp only [true_imp_iff]
+    simp only [d, true_imp_iff]
     split_ifs with h
     · rw [← not_forall] at h
       simp [h, pow_eq_zero_iff']
     · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff_iff] using h
   have hd_symm : ∀ x y, d x y = d y x := by
     intro x y
-    simp only [@SymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
+    simp only [d, @SymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
   have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
   letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 (Setoid.refl _)) hd_symm
   have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPreNNDist_le _ _ _
   have hle_d : ∀ {x y : X} {n : ℕ}, (1 / 2) ^ n ≤ d x y ↔ (x, y) ∉ U n := by
     intro x y n
-    dsimp only []
+    dsimp only [d]
     split_ifs with h
     · rw [(pow_right_strictAnti hr.1 hr.2).le_iff_le, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩

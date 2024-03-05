@@ -346,11 +346,10 @@ protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_single (hV : IsHil
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
 `lp G 2`, a finitely-supported vector in `lp G 2` is the image of the associated finite sum of
 elements of `E`. -/
-@[simp]
 protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
     (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
-  simp [IsHilbertSum.linearIsometryEquiv, OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single]
+  simp only [map_dfinsupp_sum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
 #align is_hilbert_sum.linear_isometry_equiv_symm_apply_dfinsupp_sum_single IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
 
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
@@ -359,7 +358,8 @@ elements of `E`. -/
 @[simp]
 protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
     (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
-    (hV.linearIsometryEquiv (W₀.sum fun i => V i) : ∀ i, G i) = W₀ := by
+    ((W₀.sum (γ := lp G 2) fun a b ↦ hV.linearIsometryEquiv (V a b)) : ∀ i, G i) = W₀ := by
+  rw [← map_dfinsupp_sum]
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i

@@ -165,7 +165,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   let J' : Finset (Set α) := Finset.biUnion (Finset.univ : Finset J) fun u ↦ Ju u (h_ss u.prop)
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
-    simp only [Subtype.coe_mk, univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
+    simp only [J' ,Subtype.coe_mk, univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
       mem_iUnion, Finset.exists_coe, bex_imp]
     intro v hv huvt
     exact hJu_subset v (h_ss hv) huvt
@@ -187,7 +187,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
         congr
     · exact fun u _ ↦ hJu_disj _ _
   · rw [coe_insert, sUnion_insert, Set.union_comm, ← Set.diff_diff, h_eq]
-    simp_rw [sUnion_eq_biUnion, Set.iUnion_diff]
+    simp_rw [J', sUnion_eq_biUnion, Set.iUnion_diff]
     simp only [Subtype.coe_mk, mem_coe, Finset.mem_biUnion, Finset.mem_univ, exists_true_left,
       Finset.exists_coe, iUnion_exists, true_and]
     rw [iUnion_comm]

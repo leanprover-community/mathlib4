@@ -369,7 +369,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
   have h4 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0),
       ∀ z : ℂ, z ∈ Metric.ball s v → ‖F' z t‖ ≤ bound t := by
     refine' (ae_restrict_mem measurableSet_Ioi).mono fun t ht z hz => _
-    simp_rw [norm_smul, norm_mul, Complex.norm_eq_abs (log _), Complex.abs_ofReal,
+    simp_rw [F', bound, norm_smul, norm_mul, Complex.norm_eq_abs (log _), Complex.abs_ofReal,
       mul_assoc]
     gcongr
     rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht]
@@ -387,7 +387,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       have hz' := (re_le_abs _).trans hz.le
       rwa [sub_re, sub_le_iff_le_add, ← sub_le_iff_le_add'] at hz'
   have h5 : IntegrableOn bound (Ioi 0) := by
-    simp_rw [add_mul, mul_assoc]
+    simp_rw [bound, add_mul, mul_assoc]
     suffices ∀ {j : ℝ}, b < j → j < a →
         IntegrableOn (fun t : ℝ => t ^ (j - 1) * (|log t| * ‖f t‖)) (Ioi 0) volume by
       refine' Integrable.add (this _ _) (this _ _)

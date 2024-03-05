@@ -52,6 +52,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCatMax.{v, u}) : IsLimit (piFan �
     intro S m h
     apply ContinuousMap.ext; intro x
     funext i
+    set_option tactic.skipAssignedInstances false in
     dsimp
     rw [ContinuousMap.coe_mk, ← h ⟨i⟩]
     rfl

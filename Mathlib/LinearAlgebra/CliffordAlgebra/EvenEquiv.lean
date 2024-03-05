@@ -136,7 +136,6 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 #align clifford_algebra.to_even CliffordAlgebra.toEven
 
-@[simp]
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
   -- Porting note (#10691): was `rw`
@@ -233,13 +232,9 @@ theorem ofEven_comp_toEven : (ofEven Q).comp (toEven Q) = AlgHom.id R _ :=
 /-- Any clifford algebra is isomorphic to the even subalgebra of a clifford algebra with an extra
 dimension (that is, with vector space `M × R`), with a quadratic form evaluating to `-1` on that new
 basis vector. -/
-@[simps!]
 def equivEven : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra.even (Q' Q) :=
   AlgEquiv.ofAlgHom (toEven Q) (ofEven Q) (toEven_comp_ofEven Q) (ofEven_comp_toEven Q)
 #align clifford_algebra.equiv_even CliffordAlgebra.equivEven
-
--- Note: times out on linting CI
-attribute [nolint simpNF] equivEven_symm_apply
 
 /-- The representation of the clifford conjugate (i.e. the reverse of the involute) in the even
 subalgebra is just the reverse of the representation. -/

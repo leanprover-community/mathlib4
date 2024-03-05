@@ -57,7 +57,7 @@ noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
 
 instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
-  exact ⟨none, some default, fun .⟩
+  exact ⟨none, some default, nofun⟩
 
 /-- Pushforward a `Nontrivial` instance along an injective function. -/
 protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}

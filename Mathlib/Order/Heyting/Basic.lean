@@ -220,7 +220,7 @@ def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α →
     himp := (compl · ⊔ ·),
     compl,
     le_himp_iff,
-    himp_bot := fun a => sup_bot_eq }
+    himp_bot := fun _ => sup_bot_eq }
 #align heyting_algebra.of_compl HeytingAlgebra.ofCompl
 
 -- See note [reducible non-instances]
@@ -244,7 +244,7 @@ def CoheytingAlgebra.ofHNot [DistribLattice α] [BoundedOrder α] (hnot : α →
     sdiff := fun a b => a ⊓ hnot b,
     hnot,
     sdiff_le_iff,
-    top_sdiff := fun a => top_inf_eq }
+    top_sdiff := fun _ => top_inf_eq }
 #align coheyting_algebra.of_hnot CoheytingAlgebra.ofHNot
 
 section GeneralizedHeytingAlgebra
@@ -1196,7 +1196,9 @@ protected def Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] [To
     [HImp α] [GeneralizedHeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : GeneralizedHeytingAlgebra α :=
-  { hf.lattice f map_sup map_inf, ‹Top α›, ‹HImp α› with
+  { __ := hf.lattice f map_sup map_inf
+    __ := ‹Top α›
+    __ := ‹HImp α›
     le_top := fun a => by
       change f _ ≤ _
       rw [map_top]
@@ -1214,7 +1216,9 @@ protected def Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     GeneralizedCoheytingAlgebra α :=
-  { hf.lattice f map_sup map_inf, ‹Bot α›, ‹SDiff α› with
+  { __ := hf.lattice f map_sup map_inf
+    __ := ‹Bot α›
+    __ := ‹SDiff α›
     bot_le := fun a => by
       change f _ ≤ _
       rw [map_bot]
@@ -1232,7 +1236,9 @@ protected def Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot 
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : HeytingAlgebra α :=
-  { hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp, ‹Bot α›, ‹HasCompl α› with
+  { __ := hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp
+    __ := ‹Bot α›
+    __ := ‹HasCompl α›
     bot_le := fun a => by
       change f _ ≤ _
       rw [map_bot]
@@ -1248,7 +1254,9 @@ protected def Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] [Bo
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : CoheytingAlgebra α :=
-  { hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff, ‹Top α›, ‹HNot α› with
+  { __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
+    __ := ‹Top α›
+    __ := ‹HNot α›
     le_top := fun a => by
       change f _ ≤ _
       rw [map_top]

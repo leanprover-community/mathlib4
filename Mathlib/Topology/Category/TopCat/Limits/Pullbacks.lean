@@ -34,14 +34,16 @@ variable {X Y Z : TopCat.{u}}
 
 /-- The first projection from the pullback. -/
 abbrev pullbackFst (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ X :=
-  ⟨Prod.fst ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
+  ⟨Prod.fst ∘ Subtype.val, by
+    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
 #align Top.pullback_fst TopCat.pullbackFst
 
 @[simp] lemma pullbackFst_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackFst f g x = x.1.1 := rfl
 
 /-- The second projection from the pullback. -/
 abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1 = g p.2 } ⟶ Y :=
-  ⟨Prod.snd ∘ Subtype.val, by apply Continuous.comp <;> continuity⟩
+  ⟨Prod.snd ∘ Subtype.val, by
+    apply Continuous.comp <;> set_option tactic.skipAssignedInstances false in continuity⟩
 #align Top.pullback_snd TopCat.pullbackSnd
 
 @[simp] lemma pullbackSnd_apply (f : X ⟶ Z) (g : Y ⟶ Z) (x) : pullbackSnd f g x = x.1.2 := rfl

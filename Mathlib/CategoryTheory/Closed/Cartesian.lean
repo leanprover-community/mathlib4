@@ -140,7 +140,7 @@ theorem ev_coev : Limits.prod.map (𝟙 A) ((coev A).app B) ≫ (ev A).app (A �
   ihom.ev_coev A B
 #align category_theory.exp.ev_coev CategoryTheory.exp.ev_coev
 
-@[simp, reassoc]
+@[reassoc]
 theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (A ⟹ B) :=
   ihom.coev_ev A B
 #align category_theory.exp.coev_ev CategoryTheory.exp.coev_ev

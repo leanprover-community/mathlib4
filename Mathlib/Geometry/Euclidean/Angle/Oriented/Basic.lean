@@ -913,7 +913,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
     refine' ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle _ _
     all_goals
-      simp_rw [Set.mem_image] at hz
+      simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
       simp only [Prod.fst, Prod.snd]
       intro hz
@@ -921,7 +921,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     · simpa [hz] using (h' r').1
   have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by
     intro z hz
-    simp_rw [Set.mem_image] at hz
+    simp_rw [s, Set.mem_image] at hz
     obtain ⟨r', -, rfl⟩ := hz
     exact h' r'
   have hx : (x, y) ∈ s := by

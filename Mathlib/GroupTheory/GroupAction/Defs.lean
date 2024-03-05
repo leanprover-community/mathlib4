@@ -377,7 +377,8 @@ are still metavariables.
        are still metavariables."]
 theorem comp.isScalarTower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N → M) : by
     haveI := comp α g; haveI := comp β g; exact IsScalarTower N α β :=
-  { comp α g, comp β g with
+  { __ := comp α g
+    __ := comp β g
     smul_assoc := fun n => smul_assoc (g n) }
 #align has_smul.comp.is_scalar_tower SMul.comp.isScalarTower
 #align has_vadd.comp.vadd_assoc_class VAdd.comp.isScalarTower
@@ -391,7 +392,7 @@ are still metavariables.
 theorem comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
     haveI := comp α g
     SMulCommClass N β α :=
-  { comp α g with
+  { __ := comp α g
     smul_comm := fun n => smul_comm (g n) }
 #align has_smul.comp.smul_comm_class SMul.comp.smulCommClass
 #align has_vadd.comp.vadd_comm_class VAdd.comp.vaddCommClass
@@ -405,7 +406,7 @@ are still metavariables.
 theorem comp.smulCommClass' [SMul β α] [SMulCommClass β M α] (g : N → M) :
     haveI := comp α g
     SMulCommClass β N α :=
-  { comp α g with
+  { __ := comp α g
     smul_comm := fun _ n => smul_comm _ (g n) }
 #align has_smul.comp.smul_comm_class' SMul.comp.smulCommClass'
 #align has_vadd.comp.vadd_comm_class' VAdd.comp.vaddCommClass'

@@ -23,7 +23,7 @@ open Function
 /-- Given `δ : α → Type*`, `Pi.empty δ` is the trivial dependent function out of the empty
 multiset. -/
 def Pi.empty (δ : α → Sort*) : ∀ a ∈ (0 : Multiset α), δ a :=
-  fun.
+  nofun
 #align multiset.pi.empty Multiset.Pi.empty
 
 universe u v

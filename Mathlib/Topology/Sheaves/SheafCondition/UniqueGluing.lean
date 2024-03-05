@@ -221,7 +221,7 @@ theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
   let sf : ∀ i : ι, F.1.obj (op (U i)) := fun i => F.1.map (Opens.leSupr U i).op s
   have sf_compatible : IsCompatible _ U sf := by
     intro i j
-    simp_rw [← comp_apply, ← F.1.map_comp]
+    simp_rw [sf, ← comp_apply, ← F.1.map_comp]
     rfl
   obtain ⟨gl, -, gl_uniq⟩ := F.existsUnique_gluing U sf sf_compatible
   trans gl

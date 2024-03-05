@@ -763,7 +763,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     rcases p.trichotomy with (rfl | rfl | h)
     · exfalso
       have := ENNReal.toReal_mono ENNReal.zero_ne_top hp.elim
-      norm_num at this
+      set_option tactic.skipAssignedInstances false in norm_num at this
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 

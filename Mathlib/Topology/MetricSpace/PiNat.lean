@@ -608,14 +608,14 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
     `f y` are again in the same `n`-cylinder, as desired. -/
   set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
-  have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [xs]
+  have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
   refine' ⟨f, fs, _, _⟩
   -- check that the range of `f` is `s`.
   · apply Subset.antisymm
     · rintro x ⟨y, rfl⟩
       by_cases hy : y ∈ s
       · rwa [fs y hy]
-      simpa [if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
+      simpa [f, if_neg hy] using (inter_cylinder_longestPrefix_nonempty hs hne y).choose_spec.1
     · intro x hx
       rw [← fs x hx]
       exact mem_range_self _
@@ -640,7 +640,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∉ s`
       have A : (s ∩ cylinder y (longestPrefix y s)).Nonempty :=
         inter_cylinder_longestPrefix_nonempty hs hne y
-      have fy : f y = A.some := by simp_rw [if_neg ys]
+      have fy : f y = A.some := by simp_rw [f, if_neg ys]
       have I : cylinder A.some (firstDiff x y) = cylinder y (firstDiff x y) := by
         rw [← mem_cylinder_iff_eq, firstDiff_comm]
         apply cylinder_anti y _ A.some_mem.2
@@ -652,7 +652,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∈ s` (similar to the above)
       · have A : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne x
-        have fx : f x = A.some := by simp_rw [if_neg xs]
+        have fx : f x = A.some := by simp_rw [f, if_neg xs]
         have I : cylinder A.some (firstDiff x y) = cylinder x (firstDiff x y) := by
           rw [← mem_cylinder_iff_eq]
           apply cylinder_anti x _ A.some_mem.2
@@ -662,10 +662,10 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
       -- case where `y ∉ s`
       · have Ax : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne x
-        have fx : f x = Ax.some := by simp_rw [if_neg xs]
+        have fx : f x = Ax.some := by simp_rw [f, if_neg xs]
         have Ay : (s ∩ cylinder y (longestPrefix y s)).Nonempty :=
           inter_cylinder_longestPrefix_nonempty hs hne y
-        have fy : f y = Ay.some := by simp_rw [if_neg ys]
+        have fy : f y = Ay.some := by simp_rw [f, if_neg ys]
         -- case where the common prefix to `x` and `s`, or `y` and `s`, is shorter than the
         -- common part to `x` and `y` -- then `f x = f y`.
         by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y

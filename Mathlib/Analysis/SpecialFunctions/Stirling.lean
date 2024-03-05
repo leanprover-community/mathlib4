@@ -120,6 +120,10 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
 #align stirling.log_stirling_seq_diff_le_geo_sum Stirling.log_stirlingSeq_diff_le_geo_sum
 
+-- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
+-- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
+-- other paths becomes slow.)
+set_option maxHeartbeats 400000 in
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
 -/
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
