@@ -311,7 +311,7 @@ set_option tactic.skipAssignedInstances false in
     naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
     of our proof of the coherence theorem. -/
 def normalizeIso : tensorFunc C ≅ normalize' C :=
-    NatIso.ofComponents (normalizeIsoAux C) <| by
+  NatIso.ofComponents (normalizeIsoAux C) <| by
     intro X Y f
     ext ⟨n⟩
     convert normalize_naturality n f using 1
