@@ -145,13 +145,8 @@ open FreeMonoidalCategory.HomEquiv
 
 instance categoryFreeMonoidalCategory : Category.{u} (F C) where
   Hom X Y := Quotient (FreeMonoidalCategory.setoidHom X Y)
-  id X := ⟦FreeMonoidalCategory.Hom.id _⟧
-  comp := @fun X Y Z f g =>
-    Quotient.map₂ Hom.comp
-      (by
-        intro f f' hf g g' hg
-        exact comp hf hg)
-      f g
+  id X := ⟦Hom.id X⟧
+  comp := Quotient.map₂ Hom.comp (fun _ _ hf _ _ hg ↦ HomEquiv.comp hf hg)
   id_comp := by
     rintro X Y ⟨f⟩
     exact Quotient.sound (id_comp f)
