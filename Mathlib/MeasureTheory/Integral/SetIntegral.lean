@@ -1372,10 +1372,9 @@ end BilinearMap
 
 section ParametricIntegral
 
-variable [NormedAddCommGroup E]
-
-variable {X Y F G 𝕜 : Type*} [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace Y]
-  [OpensMeasurableSpace Y] {μ : Measure Y} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
+variable {X Y F G 𝕜 : Type*} [TopologicalSpace X]
+  [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
+  [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open Metric ContinuousLinearMap
