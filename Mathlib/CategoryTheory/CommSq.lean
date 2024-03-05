@@ -94,12 +94,8 @@ lemma CommSq_comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y
 /-- If the vertical morphisms of a commutative square are isomorphism, then we
   also get a commutative square by replacing them with there inverses -/
 lemma CommSq_of_CommSq_of_vertical_isos (f : W ⟶ X) (i : Y ⟶ Z) (g : W ≅ Y) (h : X ≅ Z)
-    (hcomm : CommSq f g.hom h.hom i) : CommSq i g.inv h.inv f := by
-  cases' hcomm with w
-  constructor
-  rw [←@Iso.eq_comp_inv] at w
-  rw [Iso.eq_inv_comp, ←Category.assoc]
-  exact w.symm
+    (hcomm : CommSq f g.hom h.hom i) : CommSq i g.inv h.inv f :=
+  ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp]; exact hcomm.w.symm⟩
 
 end CommSq
 
