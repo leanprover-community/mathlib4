@@ -516,6 +516,21 @@ theorem whiskerLeft_iff {X Y : C} (f g : X ⟶ Y) : 𝟙_ C ◁ f = 𝟙_ C ◁ 
 
 theorem whiskerRight_iff {X Y : C} (f g : X ⟶ Y) : f ▷ 𝟙_ C = g ▷ 𝟙_ C ↔ f = g := by simp
 
+@[reassoc, simp]
+theorem whiskerLeft_tensorHom {X₁ Y₁ X₂ Y₂ : C} (Z : C) (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+    (Z ◁ f) ⊗ g = (α_ _ _ _).hom ≫ Z ◁ (f ⊗ g) ≫ (α_ _ _ _).inv := by
+  simp [tensorHom_def]
+
+@[reassoc, simp]
+theorem tensorHom_whiskerRight {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) (Z : C) :
+    (f ⊗ g) ▷ Z = (α_ _ _ _).hom ≫ (f ⊗ g ▷ Z) ≫ (α_ _ _ _).inv := by
+  simp [tensorHom_def]
+
+@[reassoc, simp]
+theorem tensorHom_whiskerLeft {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (Z : C) (g : X₂ ⟶ Y₂) :
+    f ⊗ (Z ◁ g) = (α_ _ _ _).inv ≫ ((f ▷ Z) ⊗ g) ≫ (α_ _ _ _).hom := by
+  simp [tensorHom_def]
+
 /-! The lemmas in the next section are true by coherence,
 but we prove them directly as they are used in proving the coherence theorem. -/
 
