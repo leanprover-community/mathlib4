@@ -351,7 +351,8 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
 
 /-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
 the tensor product.-/
-theorem span_tprod_eq_top : Submodule.span R { t | ∃ (m : (i : ι) → s i), tprod R m = t } = ⊤ :=
+theorem span_tprod_eq_top :
+    Submodule.span R (Set.range (tprod R)) = (⊤ : Submodule R (⨂[R] i, s i)) :=
   Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on (fun _ _ ↦ Submodule.smul_mem _ _
   (Submodule.subset_span (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply])))
   (fun _ _ hx hy ↦ Submodule.add_mem _ hx hy)
