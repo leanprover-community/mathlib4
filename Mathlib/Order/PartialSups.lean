@@ -61,7 +61,7 @@ theorem partialSups_succ (f : ℕ → α) (n : ℕ) :
 #align partial_sups_succ partialSups_succ
 
 lemma partialSups_iff_forall {f : ℕ → α} (p : α → Prop)
-    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) : ∀  {n : ℕ}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k)
+    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) : ∀ {n : ℕ}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k)
   | 0 => by simp
   | (n + 1) => by simp [hp, partialSups_iff_forall, ← Nat.lt_succ_iff, ← Nat.forall_lt_succ]
 
