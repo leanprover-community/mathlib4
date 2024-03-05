@@ -290,12 +290,12 @@ def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolyn
 @[simp]
 lemma optionEquivLeft_X_some (x : S₁) : optionEquivLeft R S₁ (X (some x)) = Polynomial.C (X x) := by
   unfold optionEquivLeft AlgEquiv.ofAlgHom
-  simp? [AlgEquiv.coe_mk, aeval_X, Option.elim]
+  simp only [Option.elim, AlgEquiv.coe_mk, aeval_X]
 
 @[simp]
 lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X := by
   unfold optionEquivLeft AlgEquiv.ofAlgHom
-  simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
+  simp only [Option.elim, AlgEquiv.coe_mk, aeval_X]
 
 @[simp]
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
