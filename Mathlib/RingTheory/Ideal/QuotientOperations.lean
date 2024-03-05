@@ -91,6 +91,12 @@ theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.R
   rfl
 #align ring_hom.quotient_ker_equiv_of_right_inverse.symm.apply RingHom.quotientKerEquivOfRightInverse.Symm.apply
 
+variable (R) in
+/-- The quotient of a ring by he zero ideal is isomorphic to the ring itself. -/
+def _root_.RingEquiv.quotientBot : R ⧸ (⊥ : Ideal R) ≃+* R :=
+  (Ideal.quotEquivOfEq (RingHom.ker_coe_equiv <| .refl _).symm).trans <|
+    quotientKerEquivOfRightInverse (f := .id R) (g := _root_.id) fun _ ↦ rfl
+
 /-- The **first isomorphism theorem** for commutative rings, surjective case. -/
 noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ (ker f) ≃+* S :=
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
