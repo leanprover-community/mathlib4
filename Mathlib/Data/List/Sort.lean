@@ -310,9 +310,15 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
         rw [orderedInsert, if_pos (hxs.1 _ (.head zs))]
     · rw [mem_cons] at hx
       replace hx := hx.resolve_left hxy
-      rw [erase_cons_tail _ hxy.symm, orderedInsert, ih _ hx hxs.2, if_neg]
+      rw [erase_cons_tail _ (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
       refine mt (fun hrxy => ?_) hxy
       exact antisymm hrxy (hxs.1 _ hx)
+
+theorem sublist_orderedInsert [DecidableEq α] (x : α) (xs : List α) :
+    xs <+ xs.orderedInsert r x := by
+  rw [orderedInsert_eq_take_drop]
+  refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
+  rw [takeWhile_append_dropWhile]
 
 section TotalAndTransitive
 
