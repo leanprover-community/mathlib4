@@ -117,9 +117,6 @@ section
 
 open Hom
 
--- Porting note: triggers a PANIC "invalid LCNF substitution of free variable
--- with expression CategoryTheory.FreeMonoidalCategory.NormalMonoidalObject.{u}"
--- prevented with an initial call to dsimp...why?
 /-- Auxiliary definition for `normalize`. Here we prove that objects that are related by
     associators and unitors map to the same normal form. -/
 @[simp]
