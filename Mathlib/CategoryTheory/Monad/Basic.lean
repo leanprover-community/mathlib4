@@ -71,7 +71,7 @@ instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
   ⟨fun G => G.toFunctor⟩
 #align category_theory.coe_comonad CategoryTheory.coeComonad
 
--- porting note: these lemmas are syntactic tautologies
+-- Porting note: these lemmas are syntactic tautologies
 --@[simp]
 --theorem monad_toFunctor_eq_coe : T.toFunctor = T :=
 --  rfl

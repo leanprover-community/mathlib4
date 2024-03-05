@@ -124,7 +124,7 @@ theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp
   rwa [← eq_of_perm_of_sorted h (hs₂.sublist h') hs₁]
 #align list.sublist_of_subperm_of_sorted List.sublist_of_subperm_of_sorted
 
-@[simp 1100] --Porting note: higher priority for linter
+@[simp 1100] -- Porting note: higher priority for linter
 theorem sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
 #align list.sorted_singleton List.sorted_singleton
@@ -384,7 +384,7 @@ def mergeSort : List α → List α
   termination_by l => length l
 #align list.merge_sort List.mergeSort
 
-@[nolint unusedHavesSuffices] --Porting note: false positive
+@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem mergeSort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
     mergeSort r (a :: b :: l) = merge r (mergeSort r l₁) (mergeSort r l₂) := by
   simp only [mergeSort, h]
