@@ -77,8 +77,6 @@ instance : SMul PSL(2, ℝ) ℍ where
 theorem coset_center_iff_2
     {A B : SpecialLinearGroup n R} : A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
     (B = A ∨ B = -A) := by
-  have h : Nonempty n := by rw [← Fintype.card_pos_iff]; positivity
-  haveI : Inhabited n := Classical.inhabited_of_nonempty h
   rw [coset_center_iff]
   aesop
 
