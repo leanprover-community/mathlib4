@@ -78,6 +78,12 @@ theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔
   funext_iff.not.trans not_forall
 #align function.ne_iff Function.ne_iff
 
+lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
+    f x = g y ↔ f = g := by
+  refine ⟨fun h ↦ funext fun z ↦ ?_, fun h ↦ ?_⟩
+  · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
+  · rw [h, Subsingleton.elim x y]
+
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 #align function.bijective.injective Function.Bijective.injective
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
