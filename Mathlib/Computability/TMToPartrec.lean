@@ -1251,7 +1251,6 @@ theorem K'.elim_aux (a b c d) : K'.elim a b c d K'.aux = c := rfl
 
 theorem K'.elim_stack (a b c d) : K'.elim a b c d K'.stack = d := rfl
 
-attribute [eqns K'.elim_main K'.elim_rev K'.elim_aux K'.elim_stack] K'.elim
 attribute [simp] K'.elim
 
 @[simp]
