@@ -137,7 +137,7 @@ theorem tendsto_normSq_coprime_pair :
   rw [this]
   have hf : LinearMap.ker f = ⊥ := by
     let g : ℂ →ₗ[ℝ] Fin 2 → ℝ :=
-      LinearMap.pi ![imLm, imLm.comp ((z : ℂ) • ((conjAE : ℂ →ₐ[ℝ] ℂ): ℂ →ₗ[ℝ] ℂ))]
+      LinearMap.pi ![imLm, imLm.comp ((z : ℂ) • ((conjAe : ℂ →ₐ[ℝ] ℂ): ℂ →ₗ[ℝ] ℂ))]
     suffices ((z : ℂ).im⁻¹ • g).comp f = LinearMap.id by exact LinearMap.ker_eq_bot_of_inverse this
     apply LinearMap.ext
     intro c
