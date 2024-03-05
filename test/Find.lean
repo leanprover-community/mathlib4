@@ -1,6 +1,4 @@
 import Mathlib.Tactic.Find
-import Std.Tactic.GuardMsgs
-
 theorem add_comm_zero {n} : 0 + n = n + 0 := Nat.add_comm _ _
 
 -- These results are too volatile to test with `#guard_msgs`,

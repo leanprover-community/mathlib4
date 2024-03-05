@@ -68,7 +68,7 @@ theorem not_prime_of_int_mul' {m n : ℤ} {c : ℕ} (hm : 1 < m) (hn : 1 < n) (h
 
 /-- Every natural number of the form `n^4 + 4*m^4` is not prime. -/
 theorem polynomial_not_prime {m : ℕ} (h1 : 1 < m) (n : ℕ) : ¬Nat.Prime (n ^ 4 + 4 * m ^ 4) := by
-  have h2 : 1 < (m : ℤ) := ofNat_lt.mpr h1
+  have h2 : 1 < (m : ℤ) := Int.ofNat_lt.mpr h1
   refine' not_prime_of_int_mul' (left_factor_large (n : ℤ) h2) (right_factor_large (n : ℤ) h2) _
   apply factorization
 #align imo1969_q1.polynomial_not_prime Imo1969Q1.polynomial_not_prime

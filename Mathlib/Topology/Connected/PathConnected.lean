@@ -70,7 +70,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι
 /-! ### Paths -/
 
 /-- Continuous path connecting two points `x` and `y` in a topological space -/
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 structure Path (x y : X) extends C(I, X) where
   /-- The start point of a `Path`. -/
   source' : toFun 0 = x
@@ -84,12 +84,12 @@ instance Path.funLike : FunLike (Path x y) I X where
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 
--- porting note: added this instance so that we can use `FunLike.coe` for `CoeFun`
+-- Porting note (#10754): added this instance so that we can use `FunLike.coe` for `CoeFun`
 -- this also fixed very strange `simp` timeout issues
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   map_continuous := fun γ => show Continuous γ.toContinuousMap by continuity
 
--- porting note: not necessary in light of the instance above
+-- Porting note: not necessary in light of the instance above
 /-
 instance : CoeFun (Path x y) fun _ => I → X :=
   ⟨fun p => p.toFun⟩
@@ -108,7 +108,7 @@ theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
 #align path.coe_mk Path.coe_mk_mk
--- porting note: the name `Path.coe_mk` better refers to a new lemma below
+-- Porting note: the name `Path.coe_mk` better refers to a new lemma below
 
 variable (γ : Path x y)
 
@@ -140,7 +140,7 @@ theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 #align path.coe_to_continuous_map Path.coe_toContinuousMap
 
--- porting note: this is needed because of the `Path.continuousMapClass` instance
+-- Porting note: this is needed because of the `Path.continuousMapClass` instance
 @[simp]
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
@@ -315,6 +315,7 @@ theorem ofLine_mem {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h�
 
 attribute [local simp] Iic_def
 
+set_option tactic.skipAssignedInstances false in
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
@@ -677,13 +678,13 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
   split_ifs with h₁ h₂ <;> congr
 #align path.truncate_self Path.truncate_self
 
-@[simp 1001] -- porting note: increase `simp` priority so left-hand side doesn't simplify
+@[simp 1001] -- Porting note: increase `simp` priority so left-hand side doesn't simplify
 theorem truncate_zero_zero {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
   convert γ.truncate_self 0
 #align path.truncate_zero_zero Path.truncate_zero_zero
 
-@[simp 1001] -- porting note: increase `simp` priority so left-hand side doesn't simplify
+@[simp 1001] -- Porting note: increase `simp` priority so left-hand side doesn't simplify
 theorem truncate_one_one {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
   convert γ.truncate_self 1
@@ -717,7 +718,7 @@ theorem coe_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀
     (hf₁ : f 1 = 1) : ⇑(γ.reparam f hfcont hf₀ hf₁) = γ ∘ f :=
   rfl
 #align path.coe_to_fun Path.coe_reparam
--- porting note: this seems like it was poorly named (was: `coe_to_fun`)
+-- Porting note: this seems like it was poorly named (was: `coe_to_fun`)
 
 @[simp]
 theorem reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ := by
@@ -1056,7 +1057,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
   obtain ⟨γ, hγ⟩ : ∃ γ : Path (p' 0) (p' n), (∀ i ≤ n, p' i ∈ range γ) ∧ range γ ⊆ s := by
     have hp' : ∀ i ≤ n, p' i ∈ s := by
       intro i hi
-      simp [Nat.lt_succ_of_le hi, hp]
+      simp [p', Nat.lt_succ_of_le hi, hp]
     clear_value p'
     clear hp p
     induction' n with n hn
@@ -1091,7 +1092,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
         exact hγ₁
   have hpp' : ∀ k < n + 1, p k = p' k := by
     intro k hk
-    simp only [hk, dif_pos]
+    simp only [p', hk, dif_pos]
     congr
     ext
     rw [Fin.val_cast_of_lt hk]

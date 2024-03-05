@@ -39,7 +39,7 @@ namespace Pointed
 instance : CoeSort Pointed (Type*) :=
   ⟨X⟩
 
--- porting note: protected attribute does not work
+-- Porting note: protected attribute does not work
 --attribute [protected] Pointed.X
 
 /-- Turns a point into a pointed type. -/
@@ -99,6 +99,11 @@ instance largeCategory : LargeCategory Pointed
   comp := @Hom.comp
 set_option linter.uppercaseLean3 false in
 #align Pointed.large_category Pointed.largeCategory
+
+@[simp] lemma Hom.id_toFun' (X : Pointed.{u}) : (𝟙 X : X ⟶ X).toFun = _root_.id := rfl
+
+@[simp] lemma Hom.comp_toFun' {X Y Z : Pointed.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).toFun = g.toFun ∘ f.toFun := rfl
 
 instance concreteCategory : ConcreteCategory Pointed where
   forget :=

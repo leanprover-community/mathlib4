@@ -46,7 +46,7 @@ open Nat.ModEq Int
 instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
-      Fin.eq_of_veq <|
+      Fin.eq_of_val_eq <|
         calc
           a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
           _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
@@ -56,7 +56,7 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
 
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
-  Fin.eq_of_veq <|
+  Fin.eq_of_val_eq <|
     calc
       a * ((b + c) % n) ≡ a * (b + c) [MOD n] := (Nat.mod_modEq _ _).mul_left _
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
@@ -75,7 +75,7 @@ instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
     one_mul := Fin.one_mul'
     mul_one := Fin.mul_one',
-    -- porting note: new, see
+    -- Porting note: new, see
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
     zero_mul := Fin.zero_mul'
     mul_zero := Fin.mul_zero' }
@@ -157,7 +157,7 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   nsmul_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).nsmul_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
-  -- porting note: `match` didn't work here
+  -- Porting note: `match` didn't work here
   add_left_neg := Nat.casesOn n (@add_left_neg Int _) fun n => @add_left_neg (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
   mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
@@ -176,11 +176,11 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   right_distrib :=
     Nat.casesOn n (@right_distrib Int _ _ _) fun n => @right_distrib (Fin n.succ) _ _ _
   mul_comm := Nat.casesOn n (@mul_comm Int _) fun n => @mul_comm (Fin n.succ) _
-  -- porting note: new, see
+  -- Porting note: new, see
   -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
   zero_mul := Nat.casesOn n (@zero_mul Int _) fun n => @zero_mul (Fin n.succ) _
   mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
-  -- porting note: all npow fields are new, but probably should be backported
+  -- Porting note: all npow fields are new, but probably should be backported
   npow := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow
   npow_zero := Nat.casesOn n

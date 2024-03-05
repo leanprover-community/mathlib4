@@ -23,7 +23,7 @@ open Function
 /-- Given `δ : α → Type*`, `Pi.empty δ` is the trivial dependent function out of the empty
 multiset. -/
 def Pi.empty (δ : α → Sort*) : ∀ a ∈ (0 : Multiset α), δ a :=
-  fun.
+  nofun
 #align multiset.pi.empty Multiset.Pi.empty
 
 universe u v
@@ -58,7 +58,7 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 #align multiset.pi.cons_swap Multiset.Pi.cons_swap
 
-@[simp, nolint simpNF] --Porting note: false positive, this lemma can prove itself
+@[simp, nolint simpNF] -- Porting note: false positive, this lemma can prove itself
 theorem pi.cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
     (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
   ext a' h'
