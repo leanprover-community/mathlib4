@@ -3,15 +3,8 @@ Copyright (c) 2024 Dennis Sweeney. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dennis Sweeney
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Set.Intervals.OrdConnected
-import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.Card
-import Mathlib.Topology.Instances.Real
-import Mathlib.Topology.Connected.Basic
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-!
 # Connected Subsets of ℝ
