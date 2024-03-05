@@ -41,6 +41,14 @@ def Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 #align ideal Ideal
 
+/-- A ring is a principal ideal ring if all (left) ideals are principal. -/
+@[mk_iff]
+class IsPrincipalIdealRing (R : Type u) [Semiring R] : Prop where
+  principal : ∀ S : Ideal R, S.IsPrincipal
+#align is_principal_ideal_ring IsPrincipalIdealRing
+
+attribute [instance] IsPrincipalIdealRing.principal
+
 section Semiring
 
 namespace Ideal

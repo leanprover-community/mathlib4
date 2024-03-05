@@ -1,6 +1,4 @@
 import Mathlib.Tactic.SplitIfs
-import Std.Tactic.GuardMsgs
-
 example (x : Nat) (p : Prop) [Decidable p] : x = if p then x else x := by
   split_ifs with h1
   · rfl

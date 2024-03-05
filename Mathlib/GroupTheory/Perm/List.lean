@@ -94,7 +94,7 @@ theorem formPerm_apply_mem_of_mem (x : α) (l : List α) (h : x ∈ l) : formPer
       split_ifs
       · simp [IH _ _ hx]
       · simp
-      · simpa [*] using IH _ _ hx
+      · simp [*]
     · replace h : x = y := Or.resolve_right (mem_cons.1 h) hx
       simp [formPerm_apply_of_not_mem _ _ hx, ← h]
 #align list.form_perm_apply_mem_of_mem List.formPerm_apply_mem_of_mem

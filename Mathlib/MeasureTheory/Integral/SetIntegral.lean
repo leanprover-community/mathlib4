@@ -56,7 +56,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
 
-open scoped Classical Topology Interval BigOperators Filter ENNReal NNReal MeasureTheory
+open scoped Classical Topology BigOperators ENNReal NNReal
 
 variable {X Y E F : Type*} [MeasurableSpace X]
 
@@ -64,9 +64,8 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] {f g : X → E} {s t : Set X} {μ ν : Measure X} {l l' : Filter X}
-
-variable [NormedSpace ℝ E]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {f g : X → E} {s t : Set X} {μ ν : Measure X} {l l' : Filter X}
 
 theorem set_integral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ :=
@@ -866,8 +865,8 @@ We prove that for any set `s`, the function
 
 section ContinuousSetIntegral
 
-variable [NormedAddCommGroup E] {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
+variable [NormedAddCommGroup E]
+  {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memℒp f).restrict s).toLp f`. This map is additive. -/
@@ -910,8 +909,7 @@ theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
 set_option linter.uppercaseLean3 false in
 #align measure_theory.norm_Lp_to_Lp_restrict_le MeasureTheory.norm_Lp_toLp_restrict_le
 
-variable (X F 𝕜)
-
+variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in
 `Lp F p (μ.restrict s)`. -/
 def LpToLpRestrictCLM (μ : Measure X) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (s : Set X) :
@@ -923,17 +921,12 @@ def LpToLpRestrictCLM (μ : Measure X) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (s
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp_to_Lp_restrict_clm MeasureTheory.LpToLpRestrictCLM
 
-variable {X F 𝕜}
-
-variable (𝕜)
-
+variable (𝕜) in
 theorem LpToLpRestrictCLM_coeFn [Fact (1 ≤ p)] (s : Set X) (f : Lp F p μ) :
     LpToLpRestrictCLM X F 𝕜 μ p s f =ᵐ[μ.restrict s] f :=
   Memℒp.coeFn_toLp ((Lp.memℒp f).restrict s)
 set_option linter.uppercaseLean3 false in
 #align measure_theory.Lp_to_Lp_restrict_clm_coe_fn MeasureTheory.LpToLpRestrictCLM_coeFn
-
-variable {𝕜}
 
 @[continuity]
 theorem continuous_set_integral [NormedSpace ℝ E] (s : Set X) :
@@ -952,9 +945,12 @@ end ContinuousSetIntegral
 
 end MeasureTheory
 
+/-! Fundamental theorem of calculus for set integrals -/
+section FTC
+
 open MeasureTheory Asymptotics Metric
 
-variable {ι : Type*} [NormedAddCommGroup E]
+variable {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
@@ -966,7 +962,7 @@ Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the ac
 Often there is a good formula for `(μ (s i)).toReal`, so the formalization can take an optional
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
-theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae [NormedSpace ℝ E] [CompleteSpace E]
+theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     {μ : Measure X} {l : Filter X} [l.IsMeasurablyGenerated] {f : X → E} {b : E}
     (h : Tendsto f (l ⊓ μ.ae) (𝓝 b)) (hfm : StronglyMeasurableAtFilter f l μ)
     (hμ : μ.FiniteAtFilter l) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li l.smallSets)
@@ -999,7 +995,7 @@ Often there is a good formula for `(μ (s i)).toReal`, so the formalization can 
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X]
-    [OpensMeasurableSpace X] [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure X}
+    [OpensMeasurableSpace X] {μ : Measure X}
     [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hx : ContinuousWithinAt f t x)
     (ht : MeasurableSet t) (hfm : StronglyMeasurableAtFilter f (𝓝[t] x) μ) {s : ι → Set X}
     {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets) (m : ι → ℝ := fun i => (μ (s i)).toReal)
@@ -1020,7 +1016,7 @@ Often there is a good formula for `(μ (s i)).toReal`, so the formalization can 
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
-    [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure X} [IsLocallyFiniteMeasure μ] {x : X}
+    {μ : Measure X} [IsLocallyFiniteMeasure μ] {x : X}
     {f : X → E} (hx : ContinuousAt f x) (hfm : StronglyMeasurableAtFilter f (𝓝 x) μ) {s : ι → Set X}
     {li : Filter ι} (hs : Tendsto s li (𝓝 x).smallSets) (m : ι → ℝ := fun i => (μ (s i)).toReal)
     (hsμ : (fun i => (μ (s i)).toReal) =ᶠ[li] m := by rfl) :
@@ -1037,7 +1033,7 @@ Often there is a good formula for `(μ (s i)).toReal`, so the formalization can 
 argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ[li] m`. Without these
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
-    [NormedSpace ℝ E] [CompleteSpace E] [SecondCountableTopologyEither X E] {μ : Measure X}
+    [SecondCountableTopologyEither X E] {μ : Measure X}
     [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hft : ContinuousOn f t) (hx : x ∈ t)
     (ht : MeasurableSet t) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li (𝓝[t] x).smallSets)
     (m : ι → ℝ := fun i => (μ (s i)).toReal)
@@ -1046,6 +1042,8 @@ theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [Open
   (hft x hx).integral_sub_linear_isLittleO_ae ht
     ⟨t, self_mem_nhdsWithin, hft.aestronglyMeasurable ht⟩ hs m hsμ
 #align continuous_on.integral_sub_linear_is_o_ae ContinuousOn.integral_sub_linear_isLittleO_ae
+
+end FTC
 
 section
 
@@ -1058,11 +1056,10 @@ the composition, as we are dealing with classes of functions, but it has already
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
 
-
 open scoped ComplexConjugate
 
-variable {μ : Measure X} {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] {p : ENNReal}
+variable {μ : Measure X} {𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ENNReal}
 
 namespace ContinuousLinearMap
 
@@ -1375,11 +1372,13 @@ end BilinearMap
 
 section ParametricIntegral
 
+variable [NormedAddCommGroup E]
+
 variable {X Y F G 𝕜 : Type*} [TopologicalSpace X] [TopologicalSpace Y] [MeasurableSpace Y]
   [OpensMeasurableSpace Y] {μ : Measure Y} [NontriviallyNormedField 𝕜] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open Metric Function ContinuousLinearMap
+open Metric ContinuousLinearMap
 
 /-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
