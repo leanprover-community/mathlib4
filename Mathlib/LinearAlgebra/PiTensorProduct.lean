@@ -520,6 +520,7 @@ theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i)  :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
+/-- Upgrading `PiTensorProduct.map` to a `MonoidHom` when `s = t`.-/
 def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
   toFun := map
   map_one' := map_one
