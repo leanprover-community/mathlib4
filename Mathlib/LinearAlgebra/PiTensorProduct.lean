@@ -493,7 +493,7 @@ theorem map_range_eq_span_tprod :
 def mapIncl (p : (i : ι) → Submodule R (s i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, s i :=
   map (fun (i : ι) ↦ (p i).subtype)
 
-theorem map_comp : map (fun (i : ι) ↦ (g i).comp (f i)) = (map g).comp (map f) := by
+theorem map_comp : map (fun (i : ι) ↦ g i ∘ₗ f i) = (map g) ∘ₗ (map f) := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.coe_comp, Function.comp_apply]
 
@@ -506,7 +506,7 @@ theorem lift_comp_map (h : MultilinearMap R t E) :
 attribute [local ext high] ext
 
 @[simp]
-theorem map_id : map (fun (i : ι) ↦ (LinearMap.id : s i →ₗ[R] s i))  = .id := by
+theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i))  = .id := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.id_coe, id_eq]
 
@@ -515,7 +515,7 @@ theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
   map_id
 
 theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i)  :
-    map (fun (i : ι) ↦ (f₁ i) * (f₂ i)) = map f₁ * map f₂ :=
+    map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
 @[simp]
