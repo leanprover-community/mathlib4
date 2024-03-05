@@ -16,7 +16,7 @@ in `Real.fourier_inversion`.
 We use the following proof. A naïve computation gives
 `𝓕⁻ (𝓕 f) v
 = ∫_w exp (2 I π ⟪w, v⟫) 𝓕 f (w) dw
-= ∫_w exp (2 I π ⟪w, v⟫) ∫ x, exp (-2 I π ⟪w, x⟫) f x dx) dw
+= ∫_w exp (2 I π ⟪w, v⟫) ∫_x, exp (-2 I π ⟪w, x⟫) f x dx) dw
 = ∫_x (∫_ w, exp (2 I π ⟪w, v - x⟫ dw) f x dx `
 
 However, the Fubini step does not make sense for lack of integrability, and the middle integral
@@ -28,7 +28,7 @@ One can perform Fubini on the right hand side for fixed `c`, writing the integra
 `∫_x (∫_w exp (-c⁻¹‖w‖^2 + 2 I π ⟪w, v - x⟫ dw)) f x dx`.
 The middle factor is the Fourier transform of a more and more flat function
 (converging to the constant `1`), hence it becomes more and more concentrated, around the
-point `v`. (Morally, it converges to the Dirac at `v - x`). Moreover, it has integral one.
+point `v`. (Morally, it converges to the Dirac at `v`). Moreover, it has integral one.
 Therefore, multiplying by `f` and integrating, one gets a term converging to `f v` as `c → ∞`.
 Since it also converges to `𝓕⁻ (𝓕 f) v`, this proves the result.
 
@@ -80,7 +80,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
     convert tendsto_integral_cexp_sq_smul this using 4 with c w
     · rw [Real.fourierChar_apply, smul_smul, ← Complex.exp_add, real_inner_comm]
       congr 3
-      simp
+      simp only [ofReal_mul, ofReal_ofNat]
       ring
     · simp [fourierIntegralInv_eq]
   have B : Tendsto (fun (c : ℝ) ↦ (∫ w : V,
@@ -122,7 +122,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
         zero_lt_one |>.comp A |>.const_mul (π ^ (-finrank ℝ V / 2 : ℝ))
       rw [mul_zero] at B
       convert B using 2 with x
-      simp only [neg_mul, one_mul, Function.comp_apply, ← mul_assoc, ← rpow_nat_cast]
+      simp only [neg_mul, one_mul, Function.comp_apply, ← mul_assoc, ← rpow_nat_cast, φ]
       congr 1
       rw [mul_rpow (by positivity) (by positivity), ← rpow_mul pi_nonneg,
         ← rpow_mul (norm_nonneg _), ← mul_assoc, ← rpow_add pi_pos, mul_comm]
