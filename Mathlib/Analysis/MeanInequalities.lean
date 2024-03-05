@@ -401,7 +401,7 @@ lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι 
     have hp₁ : 1 - p⁻¹ ≠ 0 := by simp [sub_eq_zero, hp.ne']
     simp [mul_rpow, div_inv_eq_mul, one_mul, one_div, hp₀, hp₁]
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_hasSum`. -/
@@ -437,7 +437,7 @@ theorem inner_le_Lp_mul_Lq_tsum' {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsC
   (inner_le_Lp_mul_Lq_tsum hpq hf hg).2
 #align nnreal.inner_le_Lp_mul_Lq_tsum' NNReal.inner_le_Lp_mul_Lq_tsum'
 
-/-- Hölder inequality: the scalar product of two functions is bounded by the product of their
+/-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `NNReal`-valued
 functions. For an alternative version, convenient if the infinite sums are not already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_tsum`.  -/
@@ -495,7 +495,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
       mul_le_mul_left' (NNReal.rpow_le_one hg (le_of_lt hpq.symm.one_div_pos)) _
 #align nnreal.is_greatest_Lp NNReal.isGreatest_Lp
 
-/-- Minkowski inequality: the `L_p` seminorm of the sum of two vectors is less than or equal
+/-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `NNReal`-valued functions. -/
 theorem Lp_add_le (f g : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
     (∑ i in s, (f i + g i) ^ p) ^ (1 / p) ≤
@@ -512,7 +512,7 @@ theorem Lp_add_le (f g : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
     add_le_add ((isGreatest_Lp s f hpq).2 ⟨φ, hφ, rfl⟩) ((isGreatest_Lp s g hpq).2 ⟨φ, hφ, rfl⟩)
 #align nnreal.Lp_add_le NNReal.Lp_add_le
 
-/-- Minkowski inequality: the `L_p` seminorm of the infinite sum of two vectors is less than or
+/-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
 infinite sums are already expressed as `p`-th powers, see `Lp_add_le_hasSum_of_nonneg`. -/
@@ -552,7 +552,7 @@ theorem Lp_add_le_tsum' {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Su
   (Lp_add_le_tsum hp hf hg).2
 #align nnreal.Lp_add_le_tsum' NNReal.Lp_add_le_tsum'
 
-/-- Minkowski inequality: the `L_p` seminorm of the infinite sum of two vectors is less than or
+/-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
 infinite sums are not already expressed as `p`-th powers, see `Lp_add_le_tsum_of_nonneg`.  -/
@@ -600,7 +600,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
 #align real.rpow_sum_le_const_mul_sum_rpow Real.rpow_sum_le_const_mul_sum_rpow
 
 -- for some reason `exact_mod_cast` can't replace this argument
-/-- Minkowski inequality: the `L_p` seminorm of the sum of two vectors is less than or equal
+/-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `Real`-valued functions. -/
 theorem Lp_add_le (hp : 1 ≤ p) :
     (∑ i in s, |f i + g i| ^ p) ^ (1 / p) ≤
@@ -789,22 +789,22 @@ theorem inner_le_Lp_mul_Lq (hpq : p.IsConjExponent q) :
 #align ennreal.inner_le_Lp_mul_Lq ENNReal.inner_le_Lp_mul_Lq
 
 /-- **Weighted Hölder inequality**. -/
-lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) (p : ℝ) (hp : 1 ≤ p) (w f : ι → ℝ≥0∞) :
+lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ≥0∞) :
     ∑ i in s, w i * f i ≤ (∑ i in s, w i) ^ (1 - p⁻¹) * (∑ i in s, w i * f i ^ p) ^ p⁻¹ := by
   obtain rfl | hp := hp.eq_or_lt
   · simp
   have hp₀ : 0 < p := by positivity
   have hp₁ : p⁻¹ < 1 := inv_lt_one hp
   by_cases H : (∑ i in s, w i) ^ (1 - p⁻¹) = 0 ∨ (∑ i in s, w i * f i ^ p) ^ p⁻¹ = 0
-  · replace H : (∀ i ∈ s, w i = 0) ∨ ∀ i ∈ s, w i = 0 ∨ f i = 0
-    · simpa [hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_zero_iff_of_nonneg] using H
+  · replace H : (∀ i ∈ s, w i = 0) ∨ ∀ i ∈ s, w i = 0 ∨ f i = 0 := by
+      simpa [hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_zero_iff_of_nonneg] using H
     have (i) (hi : i ∈ s) : w i * f i = 0 := by cases' H with H H <;> simp [H i hi]
     simp [sum_eq_zero this]
   push_neg at H
   by_cases H' : (∑ i in s, w i) ^ (1 - p⁻¹) = ⊤ ∨ (∑ i in s, w i * f i ^ p) ^ p⁻¹ = ⊤
   · cases' H' with H' H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
-  replace H' : (∀ i ∈ s, w i ≠ ⊤) ∧ ∀ i ∈ s, w i * f i ^ p ≠ ⊤
-  · simpa [rpow_eq_top_iff,hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_top_iff, not_or] using H'
+  replace H' : (∀ i ∈ s, w i ≠ ⊤) ∧ ∀ i ∈ s, w i * f i ^ p ≠ ⊤ := by
+    simpa [rpow_eq_top_iff,hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_top_iff, not_or] using H'
   have := coe_le_coe.2 $ NNReal.inner_le_weight_mul_Lp s hp.le (fun i ↦ ENNReal.toNNReal (w i))
     fun i ↦ ENNReal.toNNReal (f i)
   rw [coe_mul] at this
@@ -837,7 +837,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     ENNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 #align ennreal.rpow_sum_le_const_mul_sum_rpow ENNReal.rpow_sum_le_const_mul_sum_rpow
 
-/-- Minkowski inequality: the `L_p` seminorm of the sum of two vectors is less than or equal
+/-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
 to the sum of the `L_p`-seminorms of the summands. A version for `ℝ≥0∞` valued nonnegative
 functions. -/
 theorem Lp_add_le (hp : 1 ≤ p) :
