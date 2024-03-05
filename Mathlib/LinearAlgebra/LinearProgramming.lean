@@ -17,8 +17,6 @@ TODO
 
 -/
 
-section LP_general
-
 /-- Typically `M` is `ℝ^m` and `N` is `ℝ^n` -/
 structure ConeProgram (R M N : Type*) [OrderedSemiring R]
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] where
@@ -31,6 +29,7 @@ structure ConeProgram (R M N : Type*) [OrderedSemiring R]
   /-- Cone defines nonnegative elements -/
   cone : PointedCone R N
 
+/-- Linear program is a conic program where nonnegativity is defined by the positive orthant. -/
 abbrev LinearProgram {R M N : Type*} [OrderedSemiring R]
     [AddCommMonoid M] [Module R M] [OrderedAddCommGroup N] [Module R N] [OrderedSMul R N]
     (l : M →ₗ[R] N) (u : N) (o : M →ₗ[R] R) :=
@@ -47,69 +46,43 @@ def ConeProgram.primal (LP : ConeProgram R M N) :=
 def ConeProgram.dual (LP : ConeProgram R M N) :=
   { g : N →ₗ[R] R | LP.objective = g ∘ LP.linmap ∧ ∀ a ∈ LP.cone, 0 ≤ g a }
 
--- From here on, we will probably need `[LinearOrderedField R] [AddCommGroup M] [AddCommGroup N]`
-
 theorem ConeProgram.weakDuality (LP : ConeProgram R M N)
     {c : M} (hc : c ∈ LP.primal) {d : N →ₗ[R] R} (hd : d ∈ LP.dual) :
     LP.objective c ≤ d LP.upper := by
   unfold ConeProgram.primal at hc
   unfold ConeProgram.dual at hd
-  rw [Set.mem_setOf_eq] at hc hd
+  rw [Set.mem_setOf_eq] at hc hd -- These three lines should probably get replaced by two lemmas.
   obtain ⟨p, hp, hcp⟩ := hc
   obtain ⟨hobj, hd'⟩ := hd
   rw [← hcp, map_add, hobj, Function.comp_apply, le_add_iff_nonneg_right]
   apply hd'
   exact hp
 
+-- From here on, we will probably need `[LinearOrderedField R] [AddCommGroup M] [AddCommGroup N]`
+
 /-- Theorem 1.4.1.a, TODO we probably need more assumptions (finite-dimensional `M` and `N` ?) -/
-theorem ConeProgram.strongDuality (LP : ConeProgram R M N)
+@[nolint unusedArguments]
+proof_wanted ConeProgram.strongDuality (LP : ConeProgram R M N)
     (hC : LP.primal.Nonempty) (hD : LP.dual.Nonempty) :
-    ∃ c ∈ LP.primal, ∃ d ∈ LP.dual, LP.objective c = d LP.upper :=
-  sorry
+    ∃ c ∈ LP.primal, ∃ d ∈ LP.dual, LP.objective c = d LP.upper
 
 /-- Theorem 1.4.1.b (TODO maybe add item (iii), which is easy,
     and item (iv), which holds when `N` is `ℝ^n` and `LP.cone` is the positive ortant) -/
-theorem ConeProgram.min_max (LP : ConeProgram R M N)
+@[nolint unusedArguments]
+proof_wanted ConeProgram.min_max (LP : ConeProgram R M N)
     {c : M} (hc : c ∈ LP.primal) {d : N →ₗ[R] R} (hd : d ∈ LP.dual) (hs : LP.cone.FG) :
     -- TODO maybe `hs` is not needed
     (∀ x ∈ LP.primal, LP.objective x ≤ LP.objective c) ∧ (∀ g ∈ LP.dual, d LP.upper ≤ g LP.upper) ↔
-      LP.objective c = d LP.upper :=
-  sorry
+      LP.objective c = d LP.upper
 
 /-- Theorem 1.4.1.c(1) -/
-theorem ConeProgram.empty_dual (LP : ConeProgram R M N)
+@[nolint unusedArguments]
+proof_wanted ConeProgram.empty_dual (LP : ConeProgram R M N)
     (hC : LP.primal.Nonempty) (hD : LP.dual = ∅) :
-    ∀ r : R, ∃ d ∈ LP.dual, d LP.upper < r :=
-  sorry
+    ∀ r : R, ∃ d ∈ LP.dual, d LP.upper < r
 
 /-- Theorem 1.4.1.c(2) -/
-theorem ConeProgram.empty_primal (LP : ConeProgram R M N)
+@[nolint unusedArguments]
+proof_wanted ConeProgram.empty_primal (LP : ConeProgram R M N)
     (hC : LP.primal = ∅) (hD : LP.dual.Nonempty) :
-    ∀ r : R, ∃ c ∈ LP.primal, r < LP.objective c :=
-  sorry
-
-end LP_general
-
-/-
--- If we assume `R = ℝ` and `Module.Finite M` and `Module.Finite N`, we can use something like...
-
-open Set
-
-open Pointwise
-
-variable {𝕜 E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E] [Module ℝ E]
-  [ContinuousSMul ℝ E] {cone t : Set E} {x y : E} [LocallyConvexSpace ℝ E]
-
-lemma geometric_hahn_banach_point_closed' (ht₁ : Convex ℝ t) (disj : x ∉ t) :
-    ∃ (f : E →L[ℝ] ℝ) (u : ℝ), f x ≤ u ∧ ∀ b ∈ t, u ≤ f b := by
-  obtain ⟨f, hf⟩ :=
-    geometric_hahn_banach_open_point ht₁.interior isOpen_interior
-      (fun h => disj (interior_subset h))
-  use (-f)
-  use -(f x)
-  constructor
-  · rfl
-  intro b hb
-  rw [ContinuousLinearMap.neg_apply, neg_le_neg_iff]
-  sorry
--/
+    ∀ r : R, ∃ c ∈ LP.primal, r < LP.objective c
