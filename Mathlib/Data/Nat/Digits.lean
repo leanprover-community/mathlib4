@@ -196,6 +196,9 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
 #align nat.of_digits_eq_sum_map_with_index Nat.ofDigits_eq_sum_mapIdx
 
 @[simp]
+theorem ofDigits_nil {b : ℕ} : ofDigits b [] = 0 := rfl
+
+@[simp]
 theorem ofDigits_singleton {b n : ℕ} : ofDigits b [n] = n := by simp [ofDigits]
 #align nat.of_digits_singleton Nat.ofDigits_singleton
 
@@ -637,9 +640,6 @@ theorem ofDigits_mod (b k : ℕ) (L : List ℕ) : ofDigits b L % k = ofDigits (b
   ofDigits_modEq b k L
 #align nat.of_digits_mod Nat.ofDigits_mod
 
-@[simp]
-theorem ofDigits_nil (b : ℕ) : ofDigits b [] = 0 := rfl
-
 theorem ofDigits_mod_eq_head! (b : ℕ) (l : List ℕ) : (Nat.ofDigits b l) % b = l.head! %b := by
   induction l <;> simp [Nat.ofDigits, Int.ModEq]
 
@@ -648,7 +648,7 @@ theorem digits_head! {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b 
   · rcases n with _ | n
     · simp
     · nth_rw 2 [← Nat.ofDigits_digits b n.succ]
-      rw [Nat.ofDigits_mod_eq_head _ _]
+      rw [Nat.ofDigits_mod_eq_head! _ _]
       exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
           Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
   · rcases n with _ | _ <;> simp_all [show b = 0 by omega]
