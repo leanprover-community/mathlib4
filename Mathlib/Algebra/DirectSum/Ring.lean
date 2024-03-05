@@ -69,7 +69,7 @@ If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `�
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
-## tags
+## Tags
 
 graded ring, filtered ring, direct sum, add_submonoid
 -/
@@ -234,7 +234,7 @@ private nonrec theorem one_mul (x : ⨁ i, A i) : 1 * x = x := by
   exact of_eq_of_gradedMonoid_eq (one_mul <| GradedMonoid.mk i xi)
 #noalign direct_sum.one_mul
 
--- Porting note: `suffices` is very slow here.
+-- Porting note (#11083): `suffices` is very slow here.
 private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   suffices (mulHom A).flip One.one = AddMonoidHom.id (⨁ i, A i) from DFunLike.congr_fun this x
   apply addHom_ext; intro i xi

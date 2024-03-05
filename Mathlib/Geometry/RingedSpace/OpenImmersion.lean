@@ -919,7 +919,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
-      -- Porting note: just `convert` is very slow, so helps it a bit
+      -- Porting note (#11083): just `convert` is very slow, so helps it a bit
       convert this using 2 <;> congr
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]

@@ -85,7 +85,7 @@ theorem monotone_gen : Monotone (gen : Set (α × α) → _) :=
 set_option linter.uppercaseLean3 false in
 #align Cauchy.monotone_gen CauchyFilter.monotone_gen
 
--- porting note: this was a calc proof, but I could not make it work
+-- Porting note: this was a calc proof, but I could not make it work
 private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen := by
   let f := fun s : Set (α × α) =>
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
@@ -226,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
--- porting note: I commented this
+-- Porting note: I commented this
 -- set_option eqn_compiler.zeta true
 
 instance : CompleteSpace (CauchyFilter α) :=
@@ -571,7 +571,7 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
     Completion.extension f ∘ Completion.map g = Completion.extension (f ∘ g) :=
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
     intro a
-    -- porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
+    -- Porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
     -- but should be?
     rw [extension_coe (hf.comp hg), Function.comp_apply, map_coe hg, extension_coe hf,
       Function.comp_apply]

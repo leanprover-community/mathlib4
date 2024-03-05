@@ -199,7 +199,7 @@ theorem fib_le_of_continuantsAux_b :
       · simp [fib_add_two, continuantsAux] -- case n = 0
       · simp [fib_add_two, continuantsAux] -- case n = 1
       · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by linarith
+        have : ¬n + 2 ≤ 1 := by omega
         have not_terminated_at_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
         obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
           Option.ne_none_iff_exists'.mp not_terminated_at_n
@@ -526,7 +526,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     have : (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ :=
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
     have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
-    -- porting note: was `mono`
+    -- Porting note: was `mono`
     refine' mul_le_mul_of_nonneg_right _ _ <;> assumption
 #align generalized_continued_fraction.abs_sub_convergents_le GeneralizedContinuedFraction.abs_sub_convergents_le
 

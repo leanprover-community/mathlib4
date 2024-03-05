@@ -81,9 +81,9 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 -/
 
 instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
-  .ofBasis
-    (fun _ => nhds_basis_uniformity' uniformity_hasBasis_closed)
-    fun _ _ h => h.2.preimage <| continuous_const.prod_mk continuous_id
+  .of_hasBasis
+    (fun _ ↦ nhds_basis_uniformity' uniformity_hasBasis_closed)
+    fun a _V hV ↦ isClosed_ball a hV.2
 #align uniform_space.to_regular_space UniformSpace.to_regularSpace
 
 #align separation_rel Inseparable

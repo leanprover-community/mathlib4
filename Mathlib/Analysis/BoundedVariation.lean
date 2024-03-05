@@ -54,7 +54,7 @@ open scoped BigOperators NNReal ENNReal Topology UniformConvergence
 
 open Set MeasureTheory Filter
 
--- porting note: sectioned variables because a `wlog` was broken due to extra variables in context
+-- Porting note: sectioned variables because a `wlog` was broken due to extra variables in context
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
@@ -436,7 +436,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
         simp [hi.le, this]
       · refine Finset.sum_congr rfl fun i hi => ?_
         simp only [Finset.mem_range] at hi
-        have B : ¬n + 1 + i ≤ n := by linarith
+        have B : ¬n + 1 + i ≤ n := by omega
         have A : ¬n + 1 + i + 1 ≤ n := fun h => B ((n + 1 + i).le_succ.trans h)
         have C : n + 1 + i - n = i + 1 := by
           rw [tsub_eq_iff_eq_add_of_le]
