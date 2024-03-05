@@ -55,19 +55,11 @@ theorem coset_center_iff [Inhabited n]
     ∃ (c : R), (c ^ Fintype.card n = 1 ∧ B.val = c • A.val) := by
   constructor
   · intro hAB
-    obtain ⟨hc, hAB⟩ := mem_center_iff.mp hAB default
-    use (A⁻¹ * B).val default default
-    replace hAB := congrArg (HMul.hMul A.val) hAB
-    rw [coe_mul, ← mul_assoc, mul_smul, mul_one, ← coe_mul,
-        @mul_inv_self, coe_one, one_mul] at hAB
-    exact ⟨hc, hAB⟩
+    obtain ⟨c, hAB⟩ := mem_center_iff.mp hAB
+    exact ⟨c, hAB.1, by
+      rw [@smul_eq_mul_diagonal, ← @scalar_apply, hAB.2, ← @coe_mul, @mul_inv_cancel_left]⟩
   · intro ⟨c, hc, hAB⟩
-    replace hAB := congrArg (HMul.hMul A⁻¹.val) hAB
-    rw [@mul_smul, ← coe_mul, ← coe_mul, @mul_left_inv] at hAB
-    refine mem_center_iff.mpr (fun i => ?_)
-    have : (A⁻¹ * B) i i = c := by rw [hAB, @smul_apply]; simp
-    rw [this]
-    exact ⟨hc, hAB⟩
+    exact mem_center_iff.mpr  ⟨c, hc, by simp [hAB, adjugate_mul, smul_one_eq_diagonal]⟩
 
 section SL2
 
