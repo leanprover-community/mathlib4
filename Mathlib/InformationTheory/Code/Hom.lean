@@ -28,7 +28,9 @@ variable [FunLike T₃ α α₂] [GIsometryClass T₃ gdist gdist₂]
 
 @[ext]
 structure CodeHom [_Code γ gdist s] [_Code γ gdist₂ s₂] extends GIsometry gdist gdist₂ where
-  map_code : toGIsometry '' s ⊆ s₂
+  map_code : ∀ x ∈ s, toFun x ∈ s₂
+
+
 
 instance CodeHom.instFunLike : FunLike (CodeHom gdist s gdist₂ s₂) α α₂ where
   coe := fun φ => φ.toGIsometry
@@ -40,12 +42,41 @@ instance CodeHom.instFunLike : FunLike (CodeHom gdist s gdist₂ s₂) α α₂ 
 instance CodeHom.instGIsometryClass : GIsometryClass (CodeHom gdist s gdist₂ s₂) gdist gdist₂ where
   map_dist := fun φ => φ.map_dist
 
+section
+variable {gdist₂ s₂} {T₃ α₃ :Type*} {gdist₃:T₃} {s₃:Set α₃}
+variable--? [_Code γ gdist₃ s₃] =>
+  [FunLike T₃ α₃ (α₃ → γ)] [GPseudoMetricClass T₃ α₃ γ] [IsDelone gdist₃ s₃]
+
+def CodeHom.id [_Code γ gdist s] : CodeHom gdist s gdist s where
+  toFun x := x
+  map_dist _ _:= rfl
+  map_code := by simp only [imp_self, implies_true];
+
+variable {gdist s}
+
+
+def CodeHom.comp
+    (φ: CodeHom gdist s gdist₂ s₂) (φ₂: CodeHom gdist₂ s₂ gdist₃ s₃): CodeHom gdist s gdist₃ s₃ where
+  toFun := φ₂ ∘ φ
+  map_dist _ _:= by rw [φ.map_dist,φ₂.map_dist]; rfl
+  map_code x hx := φ₂.map_code (φ x) $ φ.map_code x hx
+
+end
+
 class CodeHomClass [_Code γ gdist s] [_Code γ gdist₂ s₂]
     [GIsometryClass T₃ gdist gdist₂] :Prop where
-  map_code : ∀ (φ:T₃), φ '' s ⊆ s₂
+  map_code : ∀ (φ:T₃), ∀ x ∈ s, φ x ∈ s₂
+variable {gdist s gdist₂ s₂}
 
 instance CodeHom.instCodeHomClass : CodeHomClass (CodeHom gdist s gdist₂ s₂) gdist s gdist₂ s₂ where
   map_code := fun φ => φ.map_code
+
+def CodeHomClass.toCodeHom [CodeHomClass T₃ gdist s gdist₂ s₂] (φ:T₃) : CodeHom gdist s gdist₂ s₂ where
+  toFun := φ
+  map_dist := GIsometryClass.map_dist φ
+  map_code := CodeHomClass.map_code γ gdist gdist₂ φ
+
+
 end code
 
 section linear_code
@@ -71,23 +102,48 @@ variable--? [CodeHomClass T₃ gdist_m s gdist_m₂ s₂] =>
   [FunLike T₃ M M₂]
   [GIsometryClass T₃ gdist_m gdist_m₂] [CodeHomClass T₃ gdist_m s gdist_m₂ s₂]
 
+section
+variable {K}
+def LinearMap.ofLinearCodeHom (f: M → M₂) (map_add : ∀ x y, f (x + y) = f x + f y)
+  (map_smul'' : ∀ (k:K), ∀ (m:M), f (k • m) = k • f m): M →ₗ[K] M₂ := {
+    toFun := f
+    map_add' := map_add
+    map_smul' := by apply map_smul''
+  }
+end
+
+structure LinearCodeHom [_LinearCode γ K gdist_k gdist_m s] [_LinearCode γ K gdist_k gdist_m₂ s₂]
+  extends CodeHom gdist_m s gdist_m₂ s₂ where
+  map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
+  map_smul' : ∀ (k:K), ∀ (m:M), toFun (k • m) = k • toFun m
+  toLinearMap : M →ₗ[K] M₂ := LinearMap.ofLinearCodeHom toFun map_add' map_smul'
+  linearMap_coe_is_codeHom_coe : (⇑toLinearMap) = toCodeHom
+
+
 @[ext]
-structure LinearCodeHom [_LinearCode γ K gdist_k gdist_m s]
-  [_LinearCode γ K gdist_k gdist_m₂ s₂]
-  extends CodeHom gdist_m s gdist_m₂ s₂, M →ₗ[K] M₂
+lemma LinearCodeHom.ext
+    (φ:LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂)
+    (φ₂:LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂)
+    (h:φ.toCodeHom = φ₂.toCodeHom) : φ = φ₂ := by
+  cases φ ; cases φ₂
+  simp_all only [mk.injEq, true_and]
+  simp_all only [forall_const]
+  ext
+  simp_all only
+
 
 instance LinearCodeHom.instFunLike :
     FunLike (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) M M₂ where
   coe := fun φ => φ.toFun
   coe_injective' := fun φ₁ φ₂ h => by
     ext z
-    simp at h
+    simp only at h
     rw [h]
 
 instance LinearCodeHom.instSemiLinearMapClass :
     LinearMapClass (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) K M M₂ where
-  map_add := fun φ => φ.toLinearMap.map_add
-  map_smulₛₗ := fun φ => φ.toLinearMap.map_smulₛₗ
+  map_add := fun φ => by apply φ.map_add'
+  map_smulₛₗ := fun φ => by apply φ.map_smul'
 
 instance LinearCodeHom.instGIsometryClass :
     GIsometryClass (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) gdist_m gdist_m₂ where
@@ -96,6 +152,39 @@ instance LinearCodeHom.instGIsometryClass :
 instance LinearCodeHom.instCodeHomClass :
     CodeHomClass (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) gdist_m s gdist_m₂ s₂ where
   map_code := fun φ => φ.toCodeHom.map_code
+
+
+section
+variable {T₃ M₃:Type} {gdist_m₃:T₃} [AddCommMonoid M₃] [Module K M₃] {s₃ : Submodule K M₃}
+variable--? [_LinearCode γ K gdist_k gdist_m₃ s₃] =>
+  [FunLike T₃ M₃ (M₃ → γ)] [GPseudoMetricClass T₃ M₃ γ] [AddGNorm M₃ γ gdist_m₃]
+  [IsDelone gdist_m₃ ↑s₃] [StrictModuleGNorm K M₃ gdist_k gdist_m₃]
+
+def LinearCodeHom.id
+  [_LinearCode γ K gdist_k gdist_m s] : LinearCodeHom K gdist_k gdist_m s gdist_m s := {
+    CodeHom.id gdist_m s, LinearMap.id with
+  linearMap_coe_is_codeHom_coe := by rfl
+  }
+
+def LinearCodeHom.comp
+    (φ : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂)
+    (φ₂: LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃) :
+    LinearCodeHom K gdist_k gdist_m s gdist_m₃ s₃ := {
+      φ.toCodeHom.comp φ₂.toCodeHom with
+    map_add' := by
+      simp only [CodeHom.comp, Function.comp_apply]
+      rw [← φ₂.linearMap_coe_is_codeHom_coe,← φ.linearMap_coe_is_codeHom_coe]
+      simp
+    map_smul' := by
+      simp only [CodeHom.comp, Function.comp_apply]
+      rw [← φ₂.linearMap_coe_is_codeHom_coe,← φ.linearMap_coe_is_codeHom_coe]
+      simp
+    linearMap_coe_is_codeHom_coe := by rfl
+    }
+-- TODO: prove simple lemmas about these things
+end
+
+
 
 -- @[abbrev_class]
 /-- this class doesn't really do anything

@@ -10,7 +10,7 @@ variable [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₁ α₁ γ] 
 @[ext]
 structure GIsometry (gdist₁:T₁) (gdist₂:T₂) :=
   toFun : α₁ → α₂
-  map_dist : gdist₁ = (gdist₂ on toFun)
+  map_dist :∀ x y, gdist₁ x y = (gdist₂ (toFun x) (toFun y))
 
 instance GIsometry.instFunLike (gdist₁:T₁) (gdist₂:T₂) :FunLike (GIsometry gdist₁ gdist₂) α₁ α₂ where
   coe := toFun
@@ -20,7 +20,7 @@ instance GIsometry.instFunLike (gdist₁:T₁) (gdist₂:T₂) :FunLike (GIsomet
     rw [heq]
 
 class GIsometryClass (T₃:Type*) [FunLike T₃ α₁ α₂] (gdist₁: T₁) (gdist₂: T₂) where
-  map_dist : ∀ φ:T₃, ⇑gdist₁ = (⇑gdist₂ on φ)
+  map_dist : ∀ φ:T₃,∀ x y, ⇑gdist₁ x y = ⇑gdist₂ (φ x) (φ y)
 
 instance GIsometry.instGIsometryClass
     (gdist₁:T₁) (gdist₂:T₂): GIsometryClass (GIsometry gdist₁ gdist₂) gdist₁ gdist₂ where

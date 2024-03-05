@@ -21,9 +21,9 @@ variable--? [_Code γ gdist₂ s₂] =>
 
 @[ext]
 structure CodeEquiv extends CodeHom gdist s gdist₂ s₂, α ≃ α₂ where
-  invMap_code : invFun '' s₂ ⊆ s
+  invMap_code : ∀ y ∈ s₂, invFun y ∈ s
 
-instance CodeEquiv.instEquivLike : EquivLike (CodeEquiv gdist s gdist₂ s₂) α α₂ where
+instance CodeEquiv.instEquivLike : EquivLike (CodeEquiv gdist s gdist₂ s₂) α α₂ := {
   coe := fun φ => φ.toFun
   inv := fun φ => φ.invFun
   left_inv := fun φ => φ.left_inv
@@ -34,9 +34,40 @@ instance CodeEquiv.instEquivLike : EquivLike (CodeEquiv gdist s gdist₂ s₂) �
     ext x
     . rw [h1]
     . rw [h2]
+}
 
 instance CodeEquiv.instGIsometryClass : GIsometryClass (CodeEquiv gdist s gdist₂ s₂) gdist gdist₂ where
   map_dist := fun φ => φ.map_dist
+
+
+
+section
+variable {gdist₂ s₂} {T₃ α₃:Type*} {gdist₃:T₃} {s₃:Set α₃}
+variable--? [_Code γ gdist₃ s₃] =>
+  [FunLike T₃ α₃ (α₃ → γ)] [GPseudoMetricClass T₃ α₃ γ] [IsDelone gdist₃ s₃]
+
+def CodeEquiv.refl : CodeEquiv gdist s gdist s :=
+  {Equiv.refl _, CodeHom.id gdist s with
+  invMap_code :=  fun _ hy ↦ hy}
+
+variable {gdist s}
+
+def CodeEquiv.symm (φ:CodeEquiv gdist s gdist₂ s₂) : CodeEquiv gdist₂ s₂ gdist s := {
+  φ.toEquiv.symm with
+  map_dist := fun x y => by
+    rw [φ.map_dist]
+    nth_rw 1 [← φ.right_inv x,← φ.right_inv y]
+    simp only [Equiv.toFun_as_coe, Equiv.coe_fn_symm_mk]
+  map_code := φ.invMap_code
+  invMap_code := φ.map_code}
+
+def CodeEquiv.trans
+    (φ:CodeEquiv gdist s gdist₂ s₂) (φ₂:CodeEquiv gdist₂ s₂ gdist₃ s₃) :
+    CodeEquiv gdist s gdist₃ s₃ := {
+  φ.toEquiv.trans φ₂.toEquiv, φ.comp φ₂.toCodeHom with
+  invMap_code := ((φ₂.symm).comp (φ.symm).toCodeHom).map_code
+  }
+end
 
 variable [FunLike T₃ α α₂]
   [GIsometryClass T₃ gdist gdist₂] [EquivLike T₃ α α₂]
@@ -45,7 +76,7 @@ class CodeEquivClass
     [_Code γ gdist s]
     [_Code γ gdist₂ s₂] [GIsometryClass T₃ gdist gdist₂] [EquivLike T₃ α α₂]
     extends CodeHomClass T₃ gdist s gdist₂ s₂ :Prop where
-  invMap_code : ∀ (φ:T₃), Equiv.invFun φ '' s₂ ⊆ s
+  invMap_code : ∀ (φ:T₃), ∀ y∈ s₂, Equiv.invFun φ y ∈ s
 
 instance CodeEquiv.instCodeEquivClass:
     CodeEquivClass (CodeEquiv gdist s gdist₂ s₂) gdist s gdist₂ s₂ where
@@ -108,6 +139,32 @@ instance LinearCodeEquiv.instCodeEquivClass :
 instance LinearCodeEquiv.inst_LinearCodeHomClass:
   _LinearCodeHomClass (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂)
     K gdist_k gdist_m s gdist_m₂ s₂ where
+
+
+section
+variable {Tₘ₃ M₃:Type*} {gdist_m₃:Tₘ₃} [AddCommMonoid M₃] [Module K M₃] {s₃:Submodule K M₃}
+variable--? [_LinearCode γ K gdist_k gdist_m₃ s₃] =>
+  [FunLike Tₘ₃ M₃ (M₃ → γ)] [GPseudoMetricClass Tₘ₃ M₃ γ] [AddGNorm M₃ γ gdist_m₃]
+  [IsDelone gdist_m₃ ↑s₃] [StrictModuleGNorm K M₃ gdist_k gdist_m₃]
+
+def LinearCodeEquiv.refl
+    [_LinearCode γ K gdist_k gdist_m s] : LinearCodeEquiv K gdist_k gdist_m s gdist_m s := {
+  LinearEquiv.refl K M, CodeEquiv.refl gdist_m s with
+  -- for some reason, reversing the order breaks this
+}
+variable {gdist_m s gdist_m₂ s₂}
+def LinearCodeEquiv.symm
+    (φ:LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂):
+    LinearCodeEquiv K gdist_k gdist_m₂ s₂ gdist_m s := {
+  φ.toLinearEquiv.symm,φ.toCodeEquiv.symm with}
+
+def LinearCodeEquiv.trans
+    (φ:LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂)
+    (φ₂:LinearCodeEquiv K gdist_k gdist_m₂ s₂ gdist_m₃ s₃):
+    LinearCodeEquiv K gdist_k gdist_m s gdist_m₃ s₃ := {
+  φ.toLinearEquiv.trans φ₂.toLinearEquiv, φ.toCodeEquiv.trans φ₂.toCodeEquiv with}
+
+end
 
 -- @[abbrev_class].
 class _LinearCodeEquivClass
