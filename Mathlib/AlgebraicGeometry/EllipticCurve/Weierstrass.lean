@@ -74,7 +74,7 @@ algebraic geometry which are not globally defined by a cubic equation valid over
 elliptic curve, weierstrass equation, j invariant
 -/
 
--- porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
+-- Porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
@@ -617,7 +617,7 @@ section VariableChange
 
 variable (C : WeierstrassCurve.VariableChange R)
 
--- porting note: was just `@[simps]`
+-- Porting note: was just `@[simps]`
 /-- The elliptic curve over `R` induced by an admissible linear change of variables
 $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$.
 When `R` is a field, any two Weierstrass equations isomorphic to `E` are related by this. -/
@@ -666,7 +666,7 @@ section BaseChange
 
 variable {A : Type v} [CommRing A] (φ : R →+* A)
 
--- porting note: was just `@[simps]`
+-- Porting note: was just `@[simps]`
 /-- The elliptic curve mapped over a ring homomorphism `φ : R →+* A`. -/
 @[pp_dot, simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
 def map : EllipticCurve A :=

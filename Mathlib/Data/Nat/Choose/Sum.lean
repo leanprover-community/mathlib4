@@ -106,20 +106,20 @@ theorem sum_range_choose_halfway (m : Nat) : (∑ i in range (m + 1), choose (2 
             ∑ i in Ico (m + 1) (2 * m + 2), choose (2 * m + 1) i := by
         { rw [range_eq_Ico, sum_Ico_reflect]
           · congr
-            have A : m + 1 ≤ 2 * m + 1 := by linarith
+            have A : m + 1 ≤ 2 * m + 1 := by omega
             rw [add_comm, add_tsub_assoc_of_le A, ← add_comm]
             congr
             rw [tsub_eq_iff_eq_add_of_le A]
             ring
-          · linarith }
-      _ = ∑ i in range (2 * m + 2), choose (2 * m + 1) i := sum_range_add_sum_Ico _ (by linarith)
+          · omega }
+      _ = ∑ i in range (2 * m + 2), choose (2 * m + 1) i := sum_range_add_sum_Ico _ (by omega)
       _ = 2 ^ (2 * m + 1) := sum_range_choose (2 * m + 1)
-      _ = 2 * 4 ^ m := by rw [pow_succ, pow_mul, mul_comm]; rfl
+      _ = 2 * 4 ^ m := by rw [Nat.pow_succ, pow_mul, mul_comm]; rfl
 #align nat.sum_range_choose_halfway Nat.sum_range_choose_halfway
 
 theorem choose_middle_le_pow (n : ℕ) : choose (2 * n + 1) n ≤ 4 ^ n := by
   have t : choose (2 * n + 1) n ≤ ∑ i in range (n + 1), choose (2 * n + 1) i :=
-    single_le_sum (fun x _ ↦ by linarith) (self_mem_range_succ n)
+    single_le_sum (fun x _ ↦ by omega) (self_mem_range_succ n)
   simpa [sum_range_choose_halfway n] using t
 #align nat.choose_middle_le_pow Nat.choose_middle_le_pow
 
@@ -136,9 +136,9 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
 theorem sum_Icc_choose (n k : ℕ) : ∑ m in Icc k n, m.choose k = (n + 1).choose (k + 1) := by
   cases' le_or_gt k n with h h
   · induction' n, h using le_induction with n _ ih; · simp
-    rw [← Ico_insert_right (by linarith), sum_insert (by simp),
+    rw [← Ico_insert_right (by omega), sum_insert (by simp),
       show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
-  · rw [choose_eq_zero_of_lt (by linarith), Icc_eq_empty_of_lt h, sum_empty]
+  · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
 
 end Nat
 
@@ -189,7 +189,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
 
 variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
 
--- porting note: new lemma
+-- Porting note: new lemma
 @[to_additive sum_choose_succ_nsmul]
 theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ i in range (n + 2), f i (n + 1 - i) ^ (n + 1).choose i) =
@@ -202,7 +202,7 @@ theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) 
   rw [prod_range_succ']
   simpa [Nat.choose_succ_succ, pow_add, prod_mul_distrib, A, mul_assoc] using mul_comm _ _
 
--- porting note: new lemma
+-- Porting note: new lemma
 @[to_additive sum_antidiagonal_choose_succ_nsmul]
 theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
     (∏ ij in antidiagonal (n + 1), f ij.1 ij.2 ^ (n + 1).choose ij.1) =
@@ -216,7 +216,7 @@ theorem prod_antidiagonal_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ �
   · refine prod_congr rfl fun i hi ↦ ?_
     rw [Nat.choose_symm (this _ hi)]
 
--- porting note: moved from `Mathlib.Analysis.Calculus.ContDiff`
+-- Porting note: moved from `Mathlib.Analysis.Calculus.ContDiff`
 /-- The sum of `(n+1).choose i * f i (n+1-i)` can be split into two sums at rank `n`,
 respectively of `n.choose i * f i (n+1-i)` and `n.choose i * f (i+1) (n-i)`. -/
 theorem sum_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
