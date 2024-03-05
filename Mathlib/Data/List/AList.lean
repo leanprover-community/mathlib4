@@ -317,6 +317,12 @@ theorem lookup_insert_ne {a a'} {b' : β a'} {s : AList β} (h : a ≠ a') :
   dlookup_kinsert_ne h
 #align alist.lookup_insert_ne AList.lookup_insert_ne
 
+@[simp] theorem lookup_insert_eq_none {l : AList β} {k k' : α} {v : β k} :
+    (l.insert k v).lookup k' = none ↔ (k' ≠ k) ∧ l.lookup k' = none := by
+  by_cases h : k' = k
+  · subst h; simp
+  · simp_all [lookup_insert_ne h]
+
 @[simp]
 theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlookup a := by
   rw [List.toAList, lookup, dlookup_dedupKeys]

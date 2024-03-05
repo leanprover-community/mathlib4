@@ -240,12 +240,12 @@ theorem trop_top [Top R] : trop (⊤ : R) = 0 :=
 
 @[simp]
 theorem trop_coe_ne_zero (x : R) : trop (x : WithTop R) ≠ 0 :=
-  fun.
+  nofun
 #align tropical.trop_coe_ne_zero Tropical.trop_coe_ne_zero
 
 @[simp]
 theorem zero_ne_trop_coe (x : R) : (0 : Tropical (WithTop R)) ≠ trop x :=
-  fun.
+  nofun
 #align tropical.zero_ne_trop_coe Tropical.zero_ne_trop_coe
 
 @[simp]
