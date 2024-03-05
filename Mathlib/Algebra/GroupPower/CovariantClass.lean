@@ -354,7 +354,7 @@ variable [DivInvMonoid G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)
 @[to_additive zsmul_nonneg]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by
   lift n to ℕ using hn
-  rw [zpow_ofNat]
+  rw [zpow_coe_nat]
   apply one_le_pow_of_one_le' H
 #align one_le_zpow one_le_zpow
 #align zsmul_nonneg zsmul_nonneg

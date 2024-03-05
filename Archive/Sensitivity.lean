@@ -239,7 +239,7 @@ theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
       first
       | rw [ε, show q 0 = true from rfl, Bool.cond_true] at h
       | rw [ε, show q 0 = false from rfl, Bool.cond_false] at h
-      rwa [show p = π q by ext; simp [Fin.succ_ne_zero, π]]
+      rwa [show p = π q by ext; simp [q, Fin.succ_ne_zero, π]]
 #align sensitivity.epsilon_total Sensitivity.epsilon_total
 
 open Module
@@ -436,8 +436,8 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [Finsupp.mem_support_iff] at p_in
     rw [Set.mem_toFinset]
     exact (dualBases_e_ε _).mem_of_mem_span y_mem_H p p_in
-  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y|
-  exact Finite.exists_max _
+  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y| :=
+    Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)
