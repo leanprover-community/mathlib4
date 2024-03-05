@@ -400,10 +400,12 @@ theorem mem_colon' {r} : r ∈ N.colon P ↔ P ≤ comap (r • (LinearMap.id : 
   mem_colon
 #align submodule.mem_colon' Submodule.mem_colon'
 
+@[simp]
 theorem colon_top {I : Ideal R} : I.colon ⊤ = I := by
   simp_rw [SetLike.ext_iff, mem_colon, smul_eq_mul]
   exact fun x ↦ ⟨fun h ↦ mul_one x ▸ h 1 trivial, fun h _ _ ↦ I.mul_mem_right _ h⟩
 
+@[simp]
 theorem colon_bot : colon ⊥ N = N.annihilator := by
   simp_rw [SetLike.ext_iff, mem_colon, mem_annihilator, mem_bot, forall_const]
 
