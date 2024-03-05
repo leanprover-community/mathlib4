@@ -73,3 +73,7 @@ lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
   ⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
     by rintro (h | h) <;> exact ⟨_, h⟩⟩
 #align Prop.exists Prop.exists
+
+open Function
+
+lemma injective_not : Injective Not := fun _ _ ↦ by simpa using not_iff_not.mp
