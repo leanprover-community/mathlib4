@@ -368,7 +368,7 @@ theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShap
 
 section
 
--- porting note: this instance does not seem to be found automatically
+-- Porting note: this instance does not seem to be found automatically
 --attribute [local instance] hasColimit_of_comp
 
 /-- When `F` is cofinal, and `F ⋙ G` has a colimit, then `G` has a colimit also and
@@ -667,7 +667,7 @@ theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D 
 
 section
 
--- porting note: this instance does not seem to be found automatically
+-- Porting note: this instance does not seem to be found automatically
 -- attribute [local instance] hasLimit_of_comp
 
 /-- When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also and

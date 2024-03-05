@@ -66,7 +66,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       -- ψ₁ is the continuous ring hom `ℝ →+* ℂ` constructed from `j : closure (K) ≃+* ℝ`
       -- and `extψ : closure (K) →+* ℂ`
       let ψ₁ := RingHom.comp extψ (RingHom.comp j.symm.toRingHom ofReal.rangeRestrict)
-      -- porting note: was `by continuity!` and was used inline
+      -- Porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
         simpa only [RingHom.coe_comp] using hψ.comp ((continuous_algebraMap ℝ ℂ).subtype_mk _)
       ext1 x
@@ -87,7 +87,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         RingHom.comp extψ
           (RingHom.comp (RingEquiv.subfieldCongr h).symm.toRingHom
             (@Subfield.topEquiv ℂ _).symm.toRingHom)
-      -- porting note: was `by continuity!` and was used inline
+      -- Porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
         simpa only [RingHom.coe_comp] using hψ.comp (continuous_id.subtype_mk _)
       cases' ringHom_eq_id_or_conj_of_continuous hψ₁ with h h

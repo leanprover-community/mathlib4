@@ -34,7 +34,7 @@ variable {E : Type w₂} [Category.{max v u} E]
 
 variable (F : D ⥤ E)
 
--- porting note: Removed this and made whatever necessary noncomputable
+-- Porting note: Removed this and made whatever necessary noncomputable
 -- noncomputable section
 
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]

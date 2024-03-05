@@ -58,7 +58,7 @@ protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
 
 variable {α}
 
--- porting note: not sure what is the correct name for this
+-- Porting note: not sure what is the correct name for this
 protected theorem order_dual : LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
   id
 #align left_ord_continuous.order_dual LeftOrdContinuous.order_dual

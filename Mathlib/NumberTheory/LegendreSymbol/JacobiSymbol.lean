@@ -89,7 +89,7 @@ def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inherit_doc]
 scoped[NumberTheorySymbols] notation "J(" a " | " b ")" => jacobiSym a b
 
--- porting note: Without the following line, Lean expected `|` on several lines, e.g. line 102.
+-- Porting note: Without the following line, Lean expected `|` on several lines, e.g. line 102.
 open NumberTheorySymbols
 
 /-!
@@ -148,7 +148,7 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
 theorem one_left (b : ℕ) : J(1 | b) = 1 :=
   List.prod_eq_one fun z hz => by
     let ⟨p, hp, he⟩ := List.mem_pmap.1 hz
-    -- porting note: The line 150 was added because Lean does not synthesize the instance
+    -- Porting note: The line 150 was added because Lean does not synthesize the instance
     -- `[Fact (Nat.Prime p)]` automatically (it is needed for `legendreSym.at_one`)
     letI : Fact p.Prime := ⟨prime_of_mem_factors hp⟩
     rw [← he, legendreSym.at_one]
@@ -167,7 +167,7 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
   List.prod_eq_zero_iff.trans
     (by
       rw [List.mem_pmap, Int.gcd_eq_natAbs, Ne, Prime.not_coprime_iff_dvd]
-      -- porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
+      -- Porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
       -- been deprecated so we replace them with `and_assoc` and `and_comm`
       simp_rw [legendreSym.eq_zero_iff _ _, int_cast_zmod_eq_zero_iff_dvd,
         mem_factors (NeZero.ne b), ← Int.coe_nat_dvd_left, Int.coe_nat_dvd, exists_prop, and_assoc,
@@ -231,7 +231,7 @@ theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
   congr_arg List.prod <|
     List.pmap_congr _
       (by
-        -- porting note: Lean does not synthesize the instance [Fact (Nat.Prime p)] automatically
+        -- Porting note: Lean does not synthesize the instance [Fact (Nat.Prime p)] automatically
         -- (it is needed for `legendreSym.mod` on line 227). Thus, we name the hypothesis
         -- `Nat.Prime p` explicitly on line 224 and prove `Fact (Nat.Prime p)` on line 225.
         rintro p hp _ h₂
@@ -338,7 +338,7 @@ theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
 
 /-- If `b` is odd, then `J(-1 | b)` is given by `χ₄ b`. -/
 theorem at_neg_one {b : ℕ} (hb : Odd b) : J(-1 | b) = χ₄ b :=
-  -- porting note: In mathlib3, it was written `χ₄` and Lean could guess that it had to use
+  -- Porting note: In mathlib3, it was written `χ₄` and Lean could guess that it had to use
   -- `χ₄.to_monoid_hom`. This is not the case with Lean 4.
   value_at (-1) χ₄.toMonoidHom (fun p pp => @legendreSym.at_neg_one p ⟨pp⟩) hb
 #align jacobi_sym.at_neg_one jacobiSym.at_neg_one
@@ -443,7 +443,7 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     { toFun := fun x => qrSign x a * J(x | a)
       map_one' := by convert ← mul_one (M := ℤ) _; symm; all_goals apply one_left
       map_mul' := fun x y => by
-        -- porting note: `simp_rw` on line 423 replaces `rw` to allow the rewrite rules to be
+        -- Porting note: `simp_rw` on line 423 replaces `rw` to allow the rewrite rules to be
         -- applied under the binder `fun ↦ ...`
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
@@ -512,7 +512,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
   · rw [mod_left ↑(b % _), mod_left b, Int.coe_nat_mod, Int.emod_emod_of_dvd b]
     simp only [ha₂, Nat.cast_mul, ← mul_assoc]
     apply dvd_mul_left
-  -- porting note: In mathlib3, it was written `cases' e`. In Lean 4, this resulted in the choice
+  -- Porting note: In mathlib3, it was written `cases' e`. In Lean 4, this resulted in the choice
   -- of a name other than e (for the case distinction of line 482) so we indicate the name
   -- to use explicitly.
   cases' e with e; · rfl
