@@ -133,6 +133,11 @@ protected theorem is_glb_sInf (S : Set ℝ) (h₁ : S.Nonempty) (h₂ : BddBelow
   exact Real.isLUB_sSup _ h₁.neg h₂.neg
 #align real.is_glb_Inf Real.is_glb_sInf
 
+theorem exists_isGLB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddBelow S) :
+    ∃ x, IsGLB S x := by
+  use sInf S
+  exact Real.is_glb_sInf S hne hbdd
+
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ :=
   { Real.linearOrder, Real.lattice with
     sSup := SupSet.sSup
