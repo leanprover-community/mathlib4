@@ -552,7 +552,7 @@ variable (R s t)
 the family.
 -/
 noncomputable def mapMultilinear :
-    MultilinearMap R (fun (i : ι) ↦ (s i →ₗ[R] t i)) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
+    MultilinearMap R (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
   toFun := map
   map_smul' _ _ _ _ := map_smul _ _ _ _
   map_add' _ _ _ _ := map_add _ _ _ _
