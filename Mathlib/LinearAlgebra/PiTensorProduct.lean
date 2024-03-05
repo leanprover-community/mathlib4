@@ -520,11 +520,14 @@ theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i)  :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
+def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
+  toFun := map
+  map_one' := map_one
+  map_mul' := map_mul
+
 @[simp]
-protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) : map f ^ n = map (f ^ n) := by
-  induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero]; rw [← map_one]; rfl
-  · simp only [pow_succ', ih]; rw [← map_mul]; rfl
+protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
+    mapMonoidHom (f ^ n) = mapMonoidHom f ^ n := MonoidHom.map_pow _ _ _
 
 open Function in
 theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : s i →ₗ[R] t i) :
