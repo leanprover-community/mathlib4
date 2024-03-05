@@ -28,9 +28,9 @@ def FixedPointFree [One G] := ∀ g, φ g = g → g = 1
 
 /-- The commutator map `g ↦ g / φ g`. If `φ g = h * g * h⁻¹`, then `g / φ g` is exactly the
   commutator `[g, h] = g * h * g⁻¹ * h⁻¹`. -/
-def CommutatorMap [Div G] (g : G) := g / φ g
+def commutatorMap [Div G] (g : G) := g / φ g
 
-@[simp] theorem commutatorMap_apply [Div G] (g : G) : CommutatorMap φ g = g / φ g := rfl
+@[simp] theorem commutatorMap_apply [Div G] (g : G) : commutatorMap φ g = g / φ g := rfl
 
 end Definitions
 
@@ -39,13 +39,13 @@ namespace FixedPointFree
 -- todo: refactor Mathlib/Algebra/GroupPower/IterateHom to generalize φ to MonoidHomClass
 variable [Group G] {φ : G →* G} (hφ : FixedPointFree φ)
 
-theorem injective_commutatorMap : Function.Injective (CommutatorMap φ) := by
+theorem injective_commutatorMap : Function.Injective (commutatorMap φ) := by
   refine' fun x y h ↦ inv_mul_eq_one.mp <| hφ _ _
   rwa [map_mul, map_inv, eq_inv_mul_iff_mul_eq, ← mul_assoc, ← eq_div_iff_mul_eq', ← division_def]
 
 variable [Finite G]
 
-theorem surjective_commutatorMap : Function.Surjective (CommutatorMap φ) :=
+theorem surjective_commutatorMap : Function.Surjective (commutatorMap φ) :=
   Finite.surjective_of_injective hφ.injective_commutatorMap
 
 theorem prod_pow_eq_one {n : ℕ} (hn : φ^[n] = _root_.id) (g : G) :
@@ -66,13 +66,13 @@ variable (h2 : Function.Involutive φ)
 theorem eq_inv_of_involutive : ⇑φ = (·⁻¹) :=
   eq_inv_of_sq_eq_one hφ  (funext h2)
 
-theorem commutative_of_involutive (g h : G) : g * h = h * g := by
+theorem comm_of_involutive (g h : G) : g * h = h * g := by
   have key := map_mul φ g h
   rwa [hφ.eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
 
 /-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
-def CommGroupOfInvolutive : CommGroup G :=
-  CommGroup.mk (hφ.commutative_of_involutive h2)
+def commGroupOfInvolutive : CommGroup G :=
+  CommGroup.mk (hφ.comm_of_involutive h2)
 
 theorem orderOf_ne_two_of_involutive (g : G) : orderOf g ≠ 2 := by
   intro hg
