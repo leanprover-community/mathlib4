@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.BilinearMap
 
 #align_import linear_algebra.sesquilinear_form from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
@@ -242,7 +242,10 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 
 end IsSymm
 
-theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.flip := by
+@[simp]
+theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
+
+theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
     rw [← h, flip_apply, RingHom.id_apply]
@@ -257,7 +260,11 @@ end Symmetric
 
 section Alternating
 
-variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+section CommSemiring
+
+section AddCommMonoid
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
   [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 /-- The proposition that a sesquilinear map is alternating -/
@@ -265,13 +272,22 @@ def IsAlt (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M) : Prop :=
   ∀ x, B x x = 0
 #align linear_map.is_alt LinearMap.IsAlt
 
-namespace IsAlt
-
 variable (H : B.IsAlt)
 
-theorem self_eq_zero (x : M₁) : B x x = 0 :=
+theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
+
+end AddCommMonoid
+
+section AddCommGroup
+
+namespace IsAlt
+
+variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+  [Module R₁ M₁] {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {I : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
+
+variable (H : B.IsAlt)
 
 theorem neg (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
@@ -292,6 +308,15 @@ theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
 
 end IsAlt
 
+end AddCommGroup
+
+end CommSemiring
+
+section Semiring
+
+variable [CommRing R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [AddCommMonoid M₁]
+  [Module R₁ M₁] {I : R₁ →+* R}
+
 theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛₗ[I] M₁ →ₛₗ[I] R} :
     B.IsAlt ↔ B = -B.flip := by
   constructor <;> intro h
@@ -303,6 +328,8 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
   simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 #align linear_map.is_alt_iff_eq_neg_flip LinearMap.isAlt_iff_eq_neg_flip
+
+end Semiring
 
 end Alternating
 
@@ -365,8 +392,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
-  suffices hμzero : μ x = 0
-  · rw [hμzero, zero_smul, Submodule.mem_bot]
+  suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]
   rw [isOrtho_def, map_smulₛₗ] at h
   exact Or.elim (smul_eq_zero.mp h)
       (fun y ↦ by simpa using y)
@@ -780,8 +806,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
-  suffices : B (v i) (v j) = 0
-  · rw [this, smul_zero]
+  suffices B (v i) (v j) = 0 by rw [this, smul_zero]
   obtain rfl | hij := eq_or_ne i j
   · exact ho
   · exact h hij

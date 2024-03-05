@@ -3,9 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Pow
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Tactic.Set
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
@@ -281,7 +281,7 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
   · rw [Nat.div_eq_of_lt]
     · simp
     · exact pow_lt_pow_right one_lt_two hm
-  · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
+  · rw [Nat.pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
     simp [pow_succ, and_one_is_mod, mul_mod_left]
@@ -362,7 +362,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' m using Nat.binaryRec with b' m hm
   · simp
   induction' k using Nat.binaryRec with b'' k hk
-  -- Porting note: was `simp [hn]`
+  -- porting note (#10745): was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 

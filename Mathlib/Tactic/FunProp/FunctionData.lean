@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
+import Qq
 
+import Std.Lean.Expr
 import Mathlib.Tactic.FunProp.Mor
 
 /-!
@@ -17,33 +19,6 @@ namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
-
-
-/-- funProp-normal form of a function is of the form `fun x => f x₁ ... xₙ`.
-
-Throws and error if function can't be turned into funProp-normal form.
-
-Examples:
-In funProp-normal form
-```
-fun x => f x
-fun x => y + x
-```
-
-Not in funProp-normal form
-```
-fun x y => f x y
-HAdd.hAdd y
-```-/
-def funPropNormalizeFun (f : Expr) : MetaM Expr := do
-  let f := f.consumeMData.eta
-  lambdaTelescope f fun xs _ => do
-
-    if xs.size = 0 then
-      let X := (← inferType f).bindingDomain!
-      return (.lam `x X (f.app (.bvar 0)) default)
-    else
-      return f
 
 
 /-- Structure storing parts of a function in funProp-normal form. -/
@@ -67,12 +42,13 @@ def FunctionData.toExpr (f : FunctionData) : MetaM Expr := do
     let body := Mor.mkAppN f.fn f.args
     mkLambdaFVars #[f.mainVar] body
 
+/-- Is `f` an indentity function? -/
+def FunctionData.isIdentityFun (f : FunctionData) : Bool :=
+  (f.args.size = 0 && f.fn == f.mainVar)
+
 /-- Is `f` a constant function? -/
 def FunctionData.isConstantFun (f : FunctionData) : Bool :=
-  if f.mainArgs.size = 0 && !f.fn.containsFVar f.mainVar.fvarId! then
-    true
-  else
-    false
+  ((f.mainArgs.size = 0) && !(f.fn.containsFVar f.mainVar.fvarId!))
 
 /-- Domain type of `f`. -/
 def FunctionData.domainType (f : FunctionData) : MetaM Expr :=
@@ -93,9 +69,8 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
   | _ => return none
 
 
-/-- Get `FunctionData` for `f`. Throws if `f` can be put into funProp-normal form. -/
+/-- Get `FunctionData` for `f`. Throws if `f` can't be put into funProp-normal form. -/
 def getFunctionData (f : Expr) : MetaM FunctionData := do
-  let f ← funPropNormalizeFun f
   lambdaTelescope f fun xs b => do
 
     let xId := xs[0]!.fvarId!
@@ -115,24 +90,115 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         mainArgs := mainArgs
       }
 
-/-- If `f` is in the form `fun x => @DFunLike.coe F α β self f x₁ ... xₙ` return the number of
-arguments of `DFunLike.coe` i.e. `n + 5`. -/
-def FunctionData.getCoeAppNumArgs? (f : FunctionData) : Option Nat :=
+/-- Result of `getFunctionData?`. It returns function data if the function is in the form
+`fun x => f y₁ ... yₙ`. Two other cases are `fun x => let y := ...` or `fun x y => ...` -/
+inductive MaybeFunctionData where
+  /-- Can't generate function data as function body has let binder. -/
+  | letE (f : Expr)
+  /-- Can't generate function data as function body has lambda binder. -/
+  | lam (f : Expr)
+  /-- Function data has been successfully generated. -/
+  | data (fData : FunctionData)
 
-  if f.fn.isConstOf ``DFunLike.coe then
-    return f.args.size
-  else Id.run do
+/-- Turn `MaybeFunctionData` to the function. -/
+def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
+  match fData with
+  | .letE f | .lam f => pure f
+  | .data d => d.toExpr
 
-    for i' in [0:f.args.size] do
-      let i := (f.args.size - i') - 1
-      if f.args[i]!.coe.isSome then
-        return .some (i' + 6)
+/-- Get `FunctionData` for `f`. -/
+def getFunctionData? (f : Expr)
+    (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
+    MetaM MaybeFunctionData := do
 
-    return none
+  let unfold := fun e : Expr =>
+    if let .some n := e.getAppFn'.constName? then
+      pure (unfoldPred n)
+    else
+      pure false
+
+  let .forallE xName xType _ _ ← inferType f | throwError "fun_prop bug: function expected"
+  withLocalDeclD xName xType fun x => do
+    let fx' ← Mor.whnfPred (f.beta #[x]).eta unfold cfg
+    let f' ← mkLambdaFVars #[x] fx'
+    match fx' with
+    | .letE .. => return .letE f'
+    | .lam  .. => return .lam f'
+    | _ => return .data (← getFunctionData f')
+
+/-- If head function is a let-fvar unfold it and return resulting function.
+Return `none` otherwise. -/
+def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) := do
+  let .fvar id := fData.fn | return none
+  let .some val ← id.getValue? | return none
+  let f ← withLCtx fData.lctx fData.insts do
+    mkLambdaFVars #[fData.mainVar] (Mor.mkAppN val fData.args)
+  return f
+
+/-- Type of morphism application. -/
+inductive MorApplication where
+  /-- Of the form `⇑f` i.e. missing argument. -/
+  | underApplied
+  /-- Of the form `⇑f x` i.e. morphism and one argument is provided. -/
+  | exact
+  /-- Of the form `⇑f x y ...` i.e. additional applied arguments `y ...`. -/
+  | overApplied
+  /-- Not a morphism application. -/
+  | none
+  deriving Inhabited, BEq
+
+/-- Is function body of `f` a morphism application? What kind? -/
+def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := do
+  if let .some name := f.fn.constName? then
+    if ← Mor.isCoeFunName name then
+      let info ← getConstInfo name
+      let arity := info.type.forallArity
+      match compare arity f.args.size with
+      | .eq => return .exact
+      | .lt => return .overApplied
+      | .gt => return .underApplied
+  match f.args.size with
+  | 0 => return .none
+  | _ =>
+    let n := f.args.size
+    if f.args[n-1]!.coe.isSome then
+      return .exact
+    else if f.args.any (fun a => a.coe.isSome) then
+      return .overApplied
+    else
+      return .none
+
+
+/-- Decomposes `fun x => f y₁ ... yₙ` into `(fun g => g yₙ) ∘ (fun x y => f y₁ ... yₙ₋₁ y)`
+
+Returns none if:
+  - `n=0`
+  - `yₙ` contains `x`
+  - `n=1` and `(fun x y => f y)` is identity function i.e. `x=f` -/
+def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
+  unless fData.args.size > 0 do return none
+  withLCtx fData.lctx fData.insts do
+    let n := fData.args.size
+    let x := fData.mainVar
+    let yₙ := fData.args[n-1]!
+
+    if yₙ.expr.containsFVar x.fvarId! then
+      return none
+
+    if fData.args.size = 1 &&
+       fData.mainVar == fData.fn then
+      return none
+
+    let gBody' := Mor.mkAppN fData.fn fData.args[:n-1]
+    let gBody' := if let .some coe := yₙ.coe then coe.app gBody' else gBody'
+    let g' ← mkLambdaFVars #[x] gBody'
+    let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) (yₙ.expr)) default
+    return (f',g')
+
 
 /-- Decompose function `f = (← fData.toExpr)` into composition of two functions.
 
-Returns none if the decomposition would produce identity function. -/
+Returns none if the decomposition would produce composition with identity function. -/
 def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
 
     let mut lctx := fData.lctx
@@ -145,10 +211,8 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     let fn := fData.fn
     let mut args := fData.args
 
-    -- todo: support case when `fn` contains `x`
-    --       but can we have non trivial decomposition when `fn` contains `x`?
     if fn.containsFVar xId then
-      return none
+      return ← fData.peeloffArgDecomposition
 
     let mut yVals : Array Expr := #[]
     let mut yVars : Array Expr := #[]
@@ -159,6 +223,8 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
       let yVal' := yVal.expr
       let yId ← withLCtx lctx insts mkFreshFVarId
       let yType ← withLCtx lctx insts (inferType yVal')
+      if yType.containsFVar fData.mainVar.fvarId! then
+        return none
       lctx := lctx.mkLocalDecl yId (xName.appendAfter (toString argId)) yType
       let yVar := Expr.fvar yId
       yVars := yVars.push yVar
@@ -178,3 +244,39 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
       return none
 
     return (f, g)
+
+
+/-- Decompose function `fun x => f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
+
+The result is:
+```
+(fun (yᵢ',yⱼ',...) => f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x => (yᵢ, yⱼ, ...))
+```
+
+This is not possible if `yₗ` for `l ∉ #[i,j,...]` still contains `x`.
+In such case `none` is returned.
+-/
+def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat) :
+    MetaM (Option (Expr × Expr)) := do
+
+  unless isOrderedSubsetOf fData.mainArgs args do return none
+  unless ¬(fData.fn.containsFVar fData.mainVar.fvarId!) do return none
+
+  withLCtx fData.lctx fData.insts do
+
+  let gxs := args.map (fun i => fData.args[i]!.expr)
+
+  try
+    let gx ← mkProdElem gxs -- this can crash if we have dependent types
+    let g ← withLCtx fData.lctx fData.insts <| mkLambdaFVars #[fData.mainVar] gx
+
+    withLocalDeclD `y (← inferType gx) fun y => do
+
+      let ys ← mkProdSplitElem y gxs.size
+      let args' := (args.zip ys).foldl (init:=fData.args)
+          (fun args' (i,y) => args'.set! i { expr := y, coe := args'[i]!.coe })
+
+      let f ← mkLambdaFVars #[y] (Mor.mkAppN fData.fn args')
+      return (f,g)
+  catch _ =>
+    return none

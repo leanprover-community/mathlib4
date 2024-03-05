@@ -190,7 +190,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
 
 theorem IsStoppingTime.measurableSet_lt (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | τ ω < i} := by
-  obtain ⟨i', hi'_lub⟩ : ∃ i', IsLUB (Set.Iio i) i'; exact exists_lub_Iio i
+  obtain ⟨i', hi'_lub⟩ : ∃ i', IsLUB (Set.Iio i) i' := exists_lub_Iio i
   cases' lub_Iio_eq_self_or_Iio_eq_Iic i hi'_lub with hi'_eq_i h_Iio_eq_Iic
   · rw [← hi'_eq_i] at hi'_lub ⊢
     exact hτ.measurableSet_lt_of_isLUB i' hi'_lub
@@ -287,8 +287,7 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → ℕ} (hτ : IsStopping
     convert @MeasurableSet.empty _ (f.1 j)
     ext ω
     simp only [Set.mem_empty_iff_false, iff_false_iff, Set.mem_setOf]
-    intro hx
-    linarith
+    omega
 #align measure_theory.is_stopping_time.add_const_nat MeasureTheory.IsStoppingTime.add_const_nat
 
 -- generalize to certain countable type?
@@ -300,7 +299,7 @@ theorem add {f : Filtration ℕ m} {τ π : Ω → ℕ} (hτ : IsStoppingTime f 
       MeasurableSet.iUnion fun hk => (hπ.measurableSet_eq_le hk).inter (hτ.add_const_nat i)
   ext ω
   simp only [Pi.add_apply, Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_prop]
-  refine' ⟨fun h => ⟨π ω, by linarith, rfl, h⟩, _⟩
+  refine' ⟨fun h => ⟨π ω, by omega, rfl, h⟩, _⟩
   rintro ⟨j, hj, rfl, h⟩
   assumption
 #align measure_theory.is_stopping_time.add MeasureTheory.IsStoppingTime.add
@@ -364,7 +363,7 @@ theorem measurableSpace_le' [IsCountablyGenerated (atTop : Filter ι)] [(atTop :
   · exact MeasurableSet.iUnion fun i => f.le (seq i) _ (hs (seq i))
   · ext ω; constructor <;> rw [Set.mem_iUnion]
     · intro hx
-      suffices : ∃ i, τ ω ≤ seq i; exact ⟨this.choose, hx, this.choose_spec⟩
+      suffices ∃ i, τ ω ≤ seq i from ⟨this.choose, hx, this.choose_spec⟩
       rw [tendsto_atTop] at h_seq_tendsto
       exact (h_seq_tendsto (τ ω)).exists
     · rintro ⟨_, hx, _⟩
@@ -819,21 +818,21 @@ theorem progMeasurable_min_stopping_time [MetrizableSpace ι] (hτ : IsStoppingT
       simp only [Set.mem_preimage, Set.mem_Iic, iff_and_self, le_min_iff, Set.mem_setOf_eq]
       exact fun _ => ω.prop
     rw [h_set_eq]
-    suffices h_meas : @Measurable _ _ (m_set s) (f i) fun x : s => (x : Set.Iic i × Ω).snd
-    exact h_meas (f.mono (min_le_left _ _) _ (hτ.measurableSet_le (min i j)))
+    suffices h_meas : @Measurable _ _ (m_set s) (f i) fun x : s ↦ (x : Set.Iic i × Ω).snd from
+      h_meas (f.mono (min_le_left _ _) _ (hτ.measurableSet_le (min i j)))
     exact measurable_snd.comp (@measurable_subtype_coe _ m_prod _)
   · letI sc := sᶜ
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>
-        ↑(x : Set.Iic i × Ω).fst
-    · simp (config := { unfoldPartialApp := true }) only [Set.restrict, h_min_eq_left]
+        ↑(x : Set.Iic i × Ω).fst by
+      simp (config := { unfoldPartialApp := true }) only [Set.restrict, h_min_eq_left]
       exact h_meas_fst _
     ext1 ω
     rw [min_eq_left]
     have hx_fst_le : ↑(ω : Set.Iic i × Ω).fst ≤ i := (ω : Set.Iic i × Ω).fst.prop
     refine' hx_fst_le.trans (le_of_lt _)
     convert ω.prop
-    simp only [not_le, Set.mem_compl_iff, Set.mem_setOf_eq]
+    simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_setOf_eq]
 #align measure_theory.prog_measurable_min_stopping_time MeasureTheory.progMeasurable_min_stopping_time
 
 theorem ProgMeasurable.stoppedProcess [MetrizableSpace ι] (h : ProgMeasurable f u)

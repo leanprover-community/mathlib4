@@ -41,27 +41,6 @@ section OfAssociative
 
 variable {A : Type v} [Ring A]
 
-namespace Ring
-
-/-- The bracket operation for rings is the ring commutator, which captures the extent to which a
-ring is commutative. It is identically zero exactly when the ring is commutative. -/
-instance (priority := 100) instBracket : Bracket A A :=
-  ⟨fun x y => x * y - y * x⟩
-
-theorem lie_def (x y : A) : ⁅x, y⁆ = x * y - y * x :=
-  rfl
-#align ring.lie_def Ring.lie_def
-
-end Ring
-
-theorem commute_iff_lie_eq {x y : A} : Commute x y ↔ ⁅x, y⁆ = 0 :=
-  sub_eq_zero.symm
-#align commute_iff_lie_eq commute_iff_lie_eq
-
-theorem Commute.lie_eq {x y : A} (h : Commute x y) : ⁅x, y⁆ = 0 :=
-  sub_eq_zero_of_eq h
-#align commute.lie_eq Commute.lie_eq
-
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
@@ -142,13 +121,15 @@ theorem LieModule.ofAssociativeModule : LieModule R A M where
   lie_smul := smul_algebra_smul_comm
 #align lie_module.of_associative_module LieModule.ofAssociativeModule
 
-instance Module.End.lieRingModule : LieRingModule (Module.End R M) M :=
+instance Module.End.instLieRingModule : LieRingModule (Module.End R M) M :=
   LieRingModule.ofAssociativeModule
-#align module.End.lie_ring_module Module.End.lieRingModule
+#align module.End.lie_ring_module Module.End.instLieRingModule
 
-instance Module.End.lieModule : LieModule R (Module.End R M) M :=
+instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
   LieModule.ofAssociativeModule
-#align module.End.lie_module Module.End.lieModule
+#align module.End.lie_module Module.End.instLieModule
+
+@[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
 end AssociativeRepresentation
 

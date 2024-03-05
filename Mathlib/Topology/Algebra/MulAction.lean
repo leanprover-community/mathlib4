@@ -103,20 +103,20 @@ theorem ContinuousWithinAt.smul (hf : ContinuousWithinAt f s b) (hg : Continuous
 #align continuous_within_at.smul ContinuousWithinAt.smul
 #align continuous_within_at.vadd ContinuousWithinAt.vadd
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousAt.smul (hf : ContinuousAt f b) (hg : ContinuousAt g b) :
     ContinuousAt (fun x => f x • g x) b :=
   Filter.Tendsto.smul hf hg
 #align continuous_at.smul ContinuousAt.smul
 #align continuous_at.vadd ContinuousAt.vadd
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.smul (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x • g x) s := fun x hx => (hf x hx).smul (hg x hx)
 #align continuous_on.smul ContinuousOn.smul
 #align continuous_on.vadd ContinuousOn.vadd
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x • g x :=
   continuous_smul.comp (hf.prod_mk hg)
 #align continuous.smul Continuous.smul
@@ -239,10 +239,10 @@ variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 @[to_additive]
 theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
     (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (sInf ts) :=
-  -- porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
+  -- Porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
   -- unification instead.
   @ContinuousSMul.mk M X _ _ (_) <| by
-      -- porting note: needs `( :)`
+      -- Porting note: needs `( :)`
       rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
       exact
         continuous_sInf_rng.2 fun t ht =>

@@ -45,7 +45,7 @@ theorem IsUnit.squarefree [CommMonoid R] {x : R} (h : IsUnit x) : Squarefree x :
   isUnit_of_mul_isUnit_left (isUnit_of_dvd_unit hdvd h)
 #align is_unit.squarefree IsUnit.squarefree
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
   isUnit_one.squarefree
 #align squarefree_one squarefree_one
@@ -130,23 +130,8 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero R] [WfDvdMonoid R]
 
-theorem finite_prime_left {a b : R} (ha : Prime a) (hb : b ≠ 0) : multiplicity.Finite a b := by
-  classical
-    revert hb
-    refine'
-      WfDvdMonoid.induction_on_irreducible b (fun c => c.irrefl.elim) (fun u hu _ => _)
-        fun b p hb hp ih _ => _
-    · rw [multiplicity.finite_iff_dom, multiplicity.isUnit_right ha.not_unit hu]
-      exact PartENat.dom_natCast 0
-    · refine'
-        multiplicity.finite_mul ha
-          (multiplicity.finite_iff_dom.mpr
-            (PartENat.dom_of_le_natCast (show multiplicity a p ≤ ↑1 from _)))
-          (ih hb)
-      norm_cast
-      exact
-        ((multiplicity.squarefree_iff_multiplicity_le_one p).mp hp.squarefree a).resolve_right
-          ha.not_unit
+theorem finite_prime_left {a b : R} (ha : Prime a) (hb : b ≠ 0) : multiplicity.Finite a b :=
+  finite_of_not_isUnit ha.not_unit hb
 #align multiplicity.finite_prime_left multiplicity.finite_prime_left
 
 end CancelCommMonoidWithZero
