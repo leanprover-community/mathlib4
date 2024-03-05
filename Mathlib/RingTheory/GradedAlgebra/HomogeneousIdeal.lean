@@ -7,6 +7,8 @@ import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Localization.AtMinimalPrime
 
 #align_import ring_theory.graded_algebra.homogeneous_ideal from "leanprover-community/mathlib"@"4e861f25ba5ceef42ba0712d8ffeb32f38ad6441"
 
@@ -101,6 +103,36 @@ theorem HomogeneousIdeal.mem_iff {I : HomogeneousIdeal 𝒜} {x : A} : x ∈ I.t
 #align homogeneous_ideal.mem_iff HomogeneousIdeal.mem_iff
 
 end HomogeneousDef
+
+section MinimalHomogeneous
+
+variable [CommSemiring A]
+
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+
+variable [DecidableEq ι] [AddMonoid ι] [GradedRing 𝒜]
+
+theorem Ideal.homogeneous_from_minimal {I : Ideal A} (h : I ∈ minimalPrimes A): I.IsHomogeneous 𝒜 := by
+  intro i x hx
+  have iPrime := h.1.1
+  have mapXMem: (algebraMap A (Localization I.primeCompl)) x ∈ LocalRing.maximalIdeal (Localization I.primeCompl) := (IsLocalization.AtPrime.to_map_mem_maximal_iff _ I x).mpr hx
+  have xNotUnit : x ∈ nonunits _ := coe_subset_nonunits (Ideal.IsPrime.ne_top h.1.1) hx
+  rw[← Localization.AtMinimalPrime.nilpotent_iff_mem_maximal] at mapXMem
+  obtain ⟨n, eq⟩ := mapXMem
+  rw[← RingHom.map_pow, IsLocalization.map_eq_zero_iff (M := I.primeCompl)] at eq
+  simp only [Subtype.exists, exists_prop] at eq
+  obtain ⟨a, hA, eq⟩ := eq
+  classical
+  simp only [primeCompl, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_compl_iff, mem_coe] at hA
+  rw [← DirectSum.sum_support_decompose 𝒜 a] at hA
+  obtain ⟨l, lIn, hl⟩: ∃i ∈ DFinsupp.support ((decompose 𝒜) a), ↑(((decompose 𝒜) a) i) ∉ I := by
+    by_contra h
+    simp only [ne_eq, not_exists, not_and, not_not] at h
+    exact hA $ Ideal.sum_mem I h
+
+
+end MinimalHomogeneous
+
 
 section HomogeneousCore
 
