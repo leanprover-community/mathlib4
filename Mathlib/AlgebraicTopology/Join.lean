@@ -10,6 +10,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Products.Associator
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
@@ -38,6 +39,213 @@ open SimplexCategory.WithInitial
 
 namespace SSet
 namespace FromWithInitial
+
+
+def pairFun : (SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    (joinClassifying.Elements ⥤ Type u) where
+  obj S := toWithInitialWithInitial.rightOp ⋙
+    (prodOpEquiv (WithInitial SimplexCategory)).functor ⋙ S.1.prod S.2 ⋙
+    {obj := (MonoidalCategory.tensor (Type u)).obj, map := fun f s => (f.1 s.1, f.2 s.2)}
+  map η := whiskerRight
+    (whiskerLeft
+      (toWithInitialWithInitial.rightOp ⋙ (prodOpEquiv (WithInitial SimplexCategory)).functor)
+      (NatTrans.prod η.1 η.2))
+    {obj := (MonoidalCategory.tensor (Type u)).obj, map := fun f s => (f.1 s.1, f.2 s.2)}
+
+def tripleFun1' :  (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    ( joinClassifying.Elements × (WithInitial SimplexCategory)ᵒᵖ ⥤ Type u × Type u ) where
+  obj S := (pairFun.obj (S.1, S.2.1)).prod S.2.2
+  map η := (NatTrans.prod (pairFun.map (η.1, η.2.1)) η.2.2)
+
+def tripleFun1_o : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    (assocClassifier1.Elements ⥤ Type u) :=
+  tripleFun1' ⋙ ((whiskeringLeft _ _ _).obj assoc1ToWithInitialWithInitial)
+  ⋙ ((whiskeringRight _ _ _).obj
+  {obj := (MonoidalCategory.tensor (Type u)).obj, map := fun f s => (f.1 s.1, f.2 s.2)})
+
+def tripleFunSnd' :  (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    ( (WithInitial SimplexCategory)ᵒᵖ × joinClassifying.Elements  ⥤ Type u × Type u ) where
+  obj S := S.1.prod (pairFun.obj S.2)
+  map η := (NatTrans.prod η.1 (pairFun.map  η.2))
+
+def tensorType : Type u × Type u ⥤ Type u :=
+    {obj := (MonoidalCategory.tensor (Type u)).obj, map := fun f s => (f.1 s.1, f.2 s.2)}
+
+def tripleFunSndO : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    (assocClassifierSnd.Elements ⥤ Type u) :=
+  tripleFunSnd' ⋙ ((whiskeringLeft _ _ _).obj assocSndToWithInitialWithInitial)
+  ⋙ ((whiskeringRight _ _ _).obj tensorType)
+
+def tripleFunSndX' :  (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    ((WithInitial SimplexCategory)ᵒᵖ × (WithInitial SimplexCategory)ᵒᵖ
+    × (WithInitial SimplexCategory)ᵒᵖ   ⥤ Type u × Type u × Type u) where
+  obj S := S.1.prod  (S.2.1.prod S.2.2)
+  map η := (NatTrans.prod η.1 (NatTrans.prod η.2.1 η.2.2))
+
+def tripleFunSnd : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    (assocClassifierSnd.Elements ⥤ Type u) :=
+  tripleFunSndX'  ⋙ ((whiskeringRight _ _ _).obj ((𝟭 (Type u)).prod tensorType ⋙ tensorType))
+   ⋙ ((whiskeringLeft _ _ _).obj assocSndTo3WithInitial)
+
+def tripleFun1 : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    (assocClassifier1.Elements ⥤ Type u) :=
+  tripleFunSndX'  ⋙ ((whiskeringRight _ _ _).obj
+  ((prod.associativity _ _ _).inverse ⋙ (tensorType.prod (𝟭 (Type u)) ⋙ tensorType)))
+   ⋙ ((whiskeringLeft _ _ _).obj assocFstTo3WithInitial)
+
+
+inductive joinType' (S T : SSet.FromWithInitial) (X : (WithInitial SimplexCategory)ᵒᵖ)  where
+  | comp : (i : joinClassifying.obj X) → (pairFun.obj (S, T)).obj (joinLiftObj i) → joinType' S T X
+
+lemma joinType'.ext {S T : SSet.FromWithInitial} (X : (WithInitial SimplexCategory)ᵒᵖ)
+    (s t : joinType' S T X) (h1 : s.1 = t.1)
+    (h2 : ((pairFun.obj (S, T)).map (joinLiftObjEqIso h1).hom) s.2 = t.2 ) :
+      s = t := by
+  match s, t with
+  | ⟨s1, s2⟩, ⟨t1, t2⟩ =>
+    congr
+    simp at h1
+    subst h1
+    rw [joinLiftObjEqIso_refl] at h2
+    simp at h2
+    simp only [heq_eq_eq]
+    exact h2
+
+
+@[simp]
+def joinTypeMap' (S T : SSet.FromWithInitial)
+    {X Y : (WithInitial SimplexCategory)ᵒᵖ } (f : X ⟶ Y)
+    (s : joinType' S T X) : joinType' S T Y :=
+    ⟨(joinClassifying.map f) s.1, ((pairFun.obj (S, T)).map (coCartesianLift f s.1)) s.2⟩
+
+@[simp]
+def join'' (S T : SSet.FromWithInitial) : SSet.FromWithInitial :=
+    joinClassifying.liftFunc (pairFun.obj (S, T))
+
+@[simp]
+def assoc1 (S1 S2 S3 : SSet.FromWithInitial) : SSet.FromWithInitial :=
+    assocClassifier1.liftFunc (tripleFun1.obj (S1, (S2,S3)))
+
+@[simp]
+def assocSnd (S1 S2 S3 : SSet.FromWithInitial) : SSet.FromWithInitial :=
+    assocClassifierSnd.liftFunc (tripleFunSnd.obj (S1, (S2,S3)))
+
+def join''Func : SSet.FromWithInitial × SSet.FromWithInitial ⥤ SSet.FromWithInitial :=
+  pairFun ⋙ joinClassifying.liftFuncFunc
+
+def assoc1Func : SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial
+    ⥤ SSet.FromWithInitial :=
+  tripleFun1 ⋙ assocClassifier1.liftFuncFunc
+
+def assocSndFunc : SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial
+    ⥤ SSet.FromWithInitial :=
+  tripleFunSnd ⋙ assocClassifierSnd.liftFuncFunc
+
+def iso1 : assocSndFunc ≅ tripleFunSnd ⋙  ⋙ assocClassifierfst.liftFuncFunc
+
+@[simps!]
+def join''_assoc1 (S1 S2 S3 : SSet.FromWithInitial) (X : (WithInitial SimplexCategory)ᵒᵖ) :
+    (joinClassifying.liftFunc
+     (pairFun.obj (joinClassifying.liftFunc (pairFun.obj (S1, S2)), S3))).obj X ≃
+     (assocClassifier1.liftFunc (tripleFun1.obj (S1, (S2,S3)))).obj X where
+  toFun := fun s => ⟨⟨s.1 , s.2.1.1⟩, ⟨s.2.1.2, s.2.2⟩⟩
+  invFun := fun s => ⟨s.1.1, ⟨⟨s.1.2, s.2.1⟩, s.2.2 ⟩⟩
+  left_inv s := by
+    aesop
+  right_inv s := by
+    aesop
+
+@[simps!]
+def join''_assocSnd (S1 S2 S3 : SSet.FromWithInitial) (X : (WithInitial SimplexCategory)ᵒᵖ) :
+    (joinClassifying.liftFunc
+     (pairFun.obj (S1, joinClassifying.liftFunc (pairFun.obj (S2, S3))))).obj X ≃
+     (assocClassifierSnd.liftFunc (tripleFunSnd.obj (S1, (S2,S3)))).obj X where
+  toFun := fun s => ⟨⟨s.1 , s.2.2.1⟩, ⟨s.2.1, s.2.2.2⟩⟩
+  invFun := fun s => ⟨s.1.1, ⟨s.2.1, ⟨s.1.2, s.2.2⟩ ⟩⟩
+  left_inv s := by
+    aesop
+  right_inv s := by
+    aesop
+
+
+def join''_isoFst (S1 S2 S3 : SSet.FromWithInitial)  :
+    (joinClassifying.liftFunc
+     (pairFun.obj (joinClassifying.liftFunc (pairFun.obj (S1, S2)), S3))) ≅
+     (assocClassifier1.liftFunc (tripleFun1.obj (S1, (S2,S3)))) :=
+  NatIso.ofComponents (fun X => Equiv.toIso (join''_assoc1 S1 S2 S3 X)) (by
+   intro X Y f
+   simp_all only [Equiv.toIso_hom]
+   rfl)
+
+@[simps!]
+def join''_isoSnd (S1 S2 S3 : SSet.FromWithInitial) :
+    (joinClassifying.liftFunc
+     (pairFun.obj (S1, joinClassifying.liftFunc (pairFun.obj (S2, S3))))) ≅
+     (assocClassifierSnd.liftFunc (tripleFunSnd.obj (S1, (S2,S3)))) :=
+  NatIso.ofComponents (fun X => Equiv.toIso (join''_assocSnd S1 S2 S3 X)) (by
+   intro X Y f
+   simp_all only [Equiv.toIso_hom]
+   rfl)
+
+def assoc1Iso : assoc1Func ≅ (prod.associativity _ _ _).inverse ⋙
+    (join''Func.prod (𝟭 (SSet.FromWithInitial))) ⋙ join''Func :=
+  NatIso.ofComponents (fun S => (join''_isoFst S.1 S.2.1 S.2.2).symm) (by aesop_cat)
+
+def assoc2Iso : assocSndFunc ≅
+    ((𝟭 (SSet.FromWithInitial)).prod join''Func ) ⋙ join''Func :=
+  NatIso.ofComponents (fun S => (join''_isoSnd S.1 S.2.1 S.2.2).symm) (by aesop_cat)
+
+@[simp]
+def join' (S T : SSet.FromWithInitial) : SSet.FromWithInitial where
+  obj X := joinType' S T X
+  map f := joinTypeMap' S T f
+  map_id Z := by
+    ext a
+    apply joinType'.ext
+    swap
+    simp only [joinClassifying_obj, joinTypeMap', types_id_apply, joinClassifying.map_id]
+    simp only [types_id_apply, joinTypeMap', joinClassifying_map, coCartesianLift_id,
+      joinClassifying_obj, id_eq, eq_mpr_eq_cast]
+    rw [← types_comp_apply ((pairFun.obj _).map _) ((pairFun.obj _).map _)]
+    rw [← (pairFun.obj _).map_comp, ← Iso.trans_hom, joinLiftObjEqIso_symm]
+    rw [Iso.refl_hom, (pairFun.obj _).map_id]
+    rfl
+  map_comp {X Y Z} f g := by
+    ext a
+    apply joinType'.ext
+    swap
+    simp only [joinClassifying_obj, joinTypeMap', types_comp_apply, joinClassifying.map_comp]
+    simp only [types_comp_apply, joinTypeMap']
+    repeat rw [← types_comp_apply ((pairFun.obj _).map _) ((pairFun.obj _).map _),
+     ← (pairFun.obj _).map_comp]
+    apply congrFun
+    apply congrArg
+    exact coCartesianLift_comp _ _ _
+
+/-- The join of two morphisms in `SSet.FromWithInitial`. -/
+def joinMap' {S T : SSet.FromWithInitial × SSet.FromWithInitial} (η : S ⟶ T):
+   join' S.1 S.2 ⟶ join' T.1 T.2 where
+  app X := fun (s : joinType' S.1 S.2 X) =>
+      joinType'.comp s.1 (((pairFun.map η).app ⟨X, s.1⟩) s.2)
+  naturality {X Y} f := by
+    ext a
+    apply joinType'.ext
+    swap
+    congr
+    simp only [join', joinClassifying_obj, types_comp_apply, joinTypeMap', joinClassifying_map]
+    rw [← types_comp_apply ((pairFun.obj (S.1, S.2)).map _) ((pairFun.map η).app _) ]
+    rw [(pairFun.map η).naturality]
+    rw [joinLiftObjEqIso_refl]
+    simp only [types_comp_apply, join', joinClassifying_obj, joinTypeMap', joinClassifying_map,
+      Iso.refl_hom, FunctorToTypes.map_id_apply]
+    rfl
+
+/-- The functor from `SSet.FromWithInitial × SSet.FromWithInitial` to `SSet.FromWithInitial`
+taking pairs of objects and morphisms to their join. -/
+def joinFunc' : (SSet.FromWithInitial × SSet.FromWithInitial) ⥤ SSet.FromWithInitial where
+  obj S := join' S.1 S.2
+  map η := joinMap' η
+
 
 /-- The functor `(WithInitial SimplexCategory × WithInitial SimplexCategory)ᵒᵖ ⥤ Type u`
 induced by two objects `S` and `T` in `SSet.FromWithInitial` taking `(op X,op Z)`
@@ -257,17 +465,18 @@ lemma assocTypeNat (S T L : SSet.FromWithInitial) {X Y : WithInitial SimplexCate
   | joinType.comp i (s1, s2) =>
   match s1 with
   | joinType.comp p s3 =>
-  refine joinType_ext _ _ ?_ ?_
-  simp [join, joinTypeMap, pair]
-  exact Split.sourceValue_map₁
-  sorry
-  simp [pair]
+  refine joinType_ext _ _ (Split.sourceValue_map₁ f i p) ?_
+  simp only [pair, prod_Hom, MonoidalCategory.tensor_obj, Opposite.unop_op, prodOpEquiv_functor_obj,
+    Functor.prod_obj, joinType_fst, Functor.comp_obj, Functor.comp_map, prodOpEquiv_functor_map,
+    Quiver.Hom.unop_op, Functor.prod_map]
   apply Prod.ext
   swap
   simp [join, joinTypeMap]
   refine joinType_ext _ _ ?_ ?_
- -- simp [join, pair, joinTypeMap, Split.indexEqToIso, Split.sourceValue_of_iso_inv]
-  -- rw [Fin.eq_iff_veq]
+  simp only [pair, prod_Hom, MonoidalCategory.tensor_obj, Functor.comp_map, prodOpEquiv_functor_obj,
+    Opposite.unop_op, prodOpEquiv_functor_map, Quiver.Hom.unop_op, Functor.prod_obj,
+    Functor.prod_map, joinTypeMap, joinType_fst, Split.indexEqToIso._eq_1,
+    Split.sourceValue_of_iso_inv]
   -- simp
   sorry
   simp [pair]
