@@ -319,8 +319,7 @@ lemma optionEquivRight_X_none : optionEquivRight R S₁ (X none) = C Polynomial.
 @[simp]
 lemma optionEquivRight_C (r : R) : optionEquivRight R S₁ (C r) = C (Polynomial.C r) := by
   unfold optionEquivRight AlgEquiv.ofAlgHom
-  simp only [Option.elim, AlgEquiv.coe_mk, aeval_C]
-  rfl
+  simp only [Option.elim, AlgEquiv.coe_mk, aeval_C, C_eq_algebraMap, algebraMap_apply]
 
 variable (n : ℕ)
 
