@@ -80,6 +80,7 @@ import Mathlib.Tactic.FunTrans.Types
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Tactic.Generalize
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardGoalNums
@@ -94,7 +95,6 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
@@ -157,7 +157,6 @@ import Mathlib.Tactic.Recover
 import Mathlib.Tactic.ReduceModChar
 import Mathlib.Tactic.ReduceModChar.Ext
 import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
@@ -169,7 +168,6 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.PNat
 import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS

@@ -262,6 +262,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.ImageToKernel
+import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
 import Mathlib.Algebra.Homology.ModuleCat
@@ -936,6 +937,7 @@ import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
+import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.SpecialFunctions.Integrals
@@ -1832,6 +1834,7 @@ import Mathlib.Data.MvPolynomial.Cardinal
 import Mathlib.Data.MvPolynomial.Comap
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Counit
+import Mathlib.Data.MvPolynomial.Degrees
 import Mathlib.Data.MvPolynomial.Derivation
 import Mathlib.Data.MvPolynomial.Division
 import Mathlib.Data.MvPolynomial.Equiv
@@ -2784,6 +2787,7 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.CircleTransform
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.Gamma
@@ -2912,6 +2916,7 @@ import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
+import Mathlib.NumberTheory.FLT.Three
 import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.FunctionField
@@ -3539,6 +3544,7 @@ import Mathlib.Tactic.FunTrans.Types
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Tactic.Generalize
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardGoalNums
@@ -3553,7 +3559,6 @@ import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
@@ -3616,7 +3621,6 @@ import Mathlib.Tactic.Recover
 import Mathlib.Tactic.ReduceModChar
 import Mathlib.Tactic.ReduceModChar.Ext
 import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
@@ -3628,7 +3632,6 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.PNat
 import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS

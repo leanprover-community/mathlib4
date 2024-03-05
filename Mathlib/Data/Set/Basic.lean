@@ -546,7 +546,7 @@ theorem setOf_false : { _a : α | False } = ∅ :=
 
 @[simp]
 theorem empty_subset (s : Set α) : ∅ ⊆ s :=
-  fun.
+  nofun
 #align set.empty_subset Set.empty_subset
 
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
