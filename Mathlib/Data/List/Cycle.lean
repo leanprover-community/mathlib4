@@ -194,7 +194,8 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
     rw [length, Nat.succ_inj']
-    refine' Fin.veq_of_eq (@hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩ ⟨tl.length, by simp⟩ _)
+    refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
+      ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
     rw [← get?_eq_get, dropLast_eq_take, get?_take, get?, get?_eq_get, Option.some_inj] at hk'
     rw [hk']
@@ -260,7 +261,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _ _)
 #align list.prev_mem List.prev_mem
 
---Porting note: new theorem
+-- Porting note: new theorem
 theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
     next l (l.get i) (get_mem _ _ _) = l.get ⟨(i + 1) % l.length,
       Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩
@@ -275,7 +276,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       intro H
       suffices (i + 1 : ℕ) = 0 by simpa
       rw [nodup_iff_injective_get] at hn
-      refine' Fin.veq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ _)
+      refine' Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ _)
       simpa using H
     have hi' : i ≤ l.length := Nat.le_of_lt_succ (Nat.succ_lt_succ_iff.1 hi)
     rcases hi'.eq_or_lt with (hi' | hi')
@@ -452,7 +453,7 @@ namespace Cycle
 
 variable {α : Type*}
 
---Porting note: new definition
+-- Porting note: new definition
 /-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
@@ -839,26 +840,26 @@ nonrec def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), �
     (by rw [heq_iff_eq] at hxy; subst x; simpa using isRotated_prev_eq h h₁ _)
 #align cycle.prev Cycle.prev
 
---Porting note: removed `simp` and added `prev_reverse_eq_next'` with `simp` attribute
+-- Porting note: removed `simp` and added `prev_reverse_eq_next'` with `simp` attribute
 nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.reverse.prev (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.next hs x hx :=
   Quotient.inductionOn' s prev_reverse_eq_next
 #align cycle.prev_reverse_eq_next Cycle.prev_reverse_eq_next
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
     (hx : x ∈ s.reverse) :
     s.reverse.prev hs x hx = s.next (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) :=
   prev_reverse_eq_next s (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx)
 
---Porting note: removed `simp` and added `next_reverse_eq_prev'` with `simp` attribute
+-- Porting note: removed `simp` and added `next_reverse_eq_prev'` with `simp` attribute
 theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) :
     s.reverse.next (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.prev hs x hx := by
   simp [← prev_reverse_eq_next]
 #align cycle.next_reverse_eq_prev Cycle.next_reverse_eq_prev
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 theorem next_reverse_eq_prev' (s : Cycle α) (hs : Nodup s.reverse) (x : α) (hx : x ∈ s.reverse) :
     s.reverse.next hs x hx = s.prev (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) := by

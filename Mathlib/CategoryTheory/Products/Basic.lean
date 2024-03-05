@@ -393,7 +393,7 @@ def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   counitIso := Iso.refl _
   functor_unitIso_comp := fun ⟨X, Y⟩ => by
     dsimp
-    ext <;> simpa using Category.id_comp _
+    ext <;> apply Category.id_comp
 
 end Opposite
 

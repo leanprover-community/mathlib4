@@ -368,7 +368,7 @@ defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
--- porting note: moved from `Module/Data/Complex/Basic.lean`
+-- Porting note: moved from `Module/Data/Complex/Basic.lean`
 section SMul
 
 variable {R : Type*} [SMul R ℝ]
@@ -416,7 +416,7 @@ instance addCommGroup : AddCommGroup ℂ :=
     add_left_neg := by intros; ext <;> simp }
 
 
-instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
+instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
     natCast := fun n => ⟨n, 0⟩
     natCast_zero := by
@@ -436,7 +436,7 @@ instance Complex.addGroupWithOne : AddGroupWithOne ℂ :=
 
 -- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
-  { Complex.addGroupWithOne with
+  { addGroupWithOne with
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp [add_comm]
@@ -460,7 +460,7 @@ instance : Ring ℂ := by infer_instance
 instance : CommSemiring ℂ :=
   inferInstance
 
--- porting note: added due to changes in typeclass search order
+-- Porting note: added due to changes in typeclass search order
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
 instance : Semiring ℂ :=
@@ -502,7 +502,7 @@ theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit
 set_option linter.uppercaseLean3 false in
 #align complex.I_pow_bit1 Complex.I_pow_bit1
 
---Porting note: new theorem
+-- Porting note: new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -568,7 +568,7 @@ theorem conj_bit1 (z : ℂ) : conj (bit1 z) = bit1 (conj z) :=
 #align complex.conj_bit1 Complex.conj_bit1
 end
 -- @[simp]
-/- Porting note: `simp` attribute removed as the result could be proved
+/- Porting note (#11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
@@ -652,14 +652,14 @@ theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
 #align complex.norm_sq_eq_conj_mul_self Complex.normSq_eq_conj_mul_self
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zero]` -/
 theorem normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 #align complex.norm_sq_zero Complex.normSq_zero
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
@@ -903,14 +903,14 @@ set_option linter.uppercaseLean3 false in
 #align complex.inv_I Complex.inv_I
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_inv₀]` -/
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 #align complex.norm_sq_inv Complex.normSq_inv
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_div₀]` -/
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w

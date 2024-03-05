@@ -123,7 +123,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 #align measure_theory.add_haar_measure_eq_volume_pi MeasureTheory.addHaarMeasure_eq_volume_pi
 
--- porting note: TODO: remove this instance?
+-- Porting note: TODO: remove this instance?
 instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
@@ -583,7 +583,7 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
   have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
-    -- porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
+    -- Porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
     refine congr_arg _ <| funext fun i ↦ ?_
     exact (b.constr_basis ℕ v i).symm
   rw [A, addHaar_image_linearMap, b.addHaar_self, mul_one, ← LinearMap.det_toMatrix b,
@@ -595,12 +595,12 @@ variable [FiniteDimensional ℝ G] {n : ℕ} [_i : Fact (finrank ℝ G = n)]
 /-- The Lebesgue measure associated to an alternating map. It gives measure `|ω v|` to the
 parallelepiped spanned by the vectors `v₁, ..., vₙ`. Note that it is not always a Haar measure,
 as it can be zero, but it is always locally finite and translation invariant. -/
-noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) :
+noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) :
     Measure G :=
   ‖ω (finBasisOfFinrankEq ℝ G _i.out)‖₊ • (finBasisOfFinrankEq ℝ G _i.out).addHaar
 #align alternating_map.measure AlternatingMap.measure
 
-theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ)
+theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ)
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
@@ -608,10 +608,10 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [Λ^Fin n]→ₗ[�
     Real.ennnorm_eq_ofReal_abs]
 #align alternating_map.measure_parallelepiped AlternatingMap.measure_parallelepiped
 
-instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
+instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
-instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
+instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
 end

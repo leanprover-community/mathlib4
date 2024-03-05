@@ -81,7 +81,7 @@ instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   braiding_naturality_right := braiding_naturality_right
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
-  -- porting note: this proof was automatic in Lean3
+  -- Porting note: this proof was automatic in Lean3
   -- now `aesop` is applying `ModuleCat.ext` in favour of `TensorProduct.ext`.
   symmetry _ _ := by
     apply TensorProduct.ext'

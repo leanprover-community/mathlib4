@@ -398,9 +398,9 @@ set_option linter.uppercaseLean3 false in
 
 namespace GaussianFourier
 
-/-! ## Fourier transform of the Gaussian integral
+/-!
+## Fourier integral of Gaussian functions
 -/
-
 
 open intervalIntegral
 
@@ -633,16 +633,21 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDim
 
 open scoped BigOperators
 
-theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
-    Integrable (fun (v : ι → ℝ) ↦ cexp (- b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)) := by
-  simp_rw [Finset.mul_sum, ← Finset.sum_add_distrib, Complex.exp_sum]
-  apply Integrable.fintype_prod (f := fun i (v : ℝ) ↦ cexp (-b * v^2 + c i * v)) (fun i ↦ ?_)
-  dsimp
-  convert integrable_cexp_quadratic hb (c i) 0 using 3 with x
+theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
+    (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :
+    Integrable (fun (v : ι → ℝ) ↦ cexp (- ∑ i, b i * (v i : ℂ) ^ 2 + ∑ i, c i * v i)) := by
+  simp_rw [← Finset.sum_neg_distrib, ← Finset.sum_add_distrib, Complex.exp_sum, ← neg_mul]
+  apply Integrable.fintype_prod (f := fun i (v : ℝ) ↦ cexp (-b i * v^2 + c i * v)) (fun i ↦ ?_)
+  convert integrable_cexp_quadratic (hb i) (c i) 0 using 3 with x
   simp only [add_zero]
 
+theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
+    Integrable (fun (v : ι → ℝ) ↦ cexp (- b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)) := by
+  simp_rw [neg_mul, Finset.mul_sum]
+  exact integrable_cexp_neg_sum_mul_add (fun _ ↦ hb) c
+
 theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
-    (ι : Type*) [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
+    {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
     Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖^2 + c * ⟪w, v⟫)) := by
   have := EuclideanSpace.volume_preserving_measurableEquiv ι
   rw [← MeasurePreserving.integrable_comp_emb this.symm (MeasurableEquiv.measurableEmbedding _)]
@@ -664,23 +669,27 @@ theorem integrable_cexp_neg_mul_sq_norm_add (hb : 0 < b.re) (c : ℂ) (w : V) :
   let e := (stdOrthonormalBasis ℝ V).repr.symm
   rw [← e.measurePreserving.integrable_comp_emb e.toHomeomorph.measurableEmbedding]
   convert integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
-    (Fin (FiniteDimensional.finrank ℝ V)) hb c (e.symm w) with v
+    hb c (e.symm w) with v
   simp only [neg_mul, Function.comp_apply, LinearIsometryEquiv.norm_map,
     LinearIsometryEquiv.symm_symm, conj_trivial, ofReal_sum,
     ofReal_mul, LinearIsometryEquiv.inner_map_eq_flip]
 
-theorem integral_cexp_neg_mul_sum_add (ι : Type*) [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
+theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
+    (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :
+    ∫ v : ι → ℝ, cexp (- ∑ i, b i * (v i : ℂ) ^ 2 + ∑ i, c i * v i)
+      = ∏ i, (π / b i) ^ (1 / 2 : ℂ) * cexp (c i ^ 2 / (4 * b i)) := by
+  simp_rw [← Finset.sum_neg_distrib, ← Finset.sum_add_distrib, Complex.exp_sum, ← neg_mul]
+  rw [integral_fintype_prod_eq_prod (f := fun i (v : ℝ) ↦ cexp (-b i * v ^ 2 + c i * v))]
+  congr with i
+  have : (-b i).re < 0 := by simpa using hb i
+  convert integral_cexp_quadratic this (c i) 0 using 1 <;> simp [div_neg]
+
+theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
     ∫ v : ι → ℝ, cexp (- b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)
-      = (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp ((∑ i, (c i) ^ 2) / (4 * b)) := by
-  simp_rw [Finset.mul_sum, ← Finset.sum_add_distrib, Complex.exp_sum]
-  rw [integral_fintype_prod_eq_prod (f := fun i (v : ℝ) ↦ cexp (-b * v ^ 2 + c i * v))]
-  have I i : ∫ (x : ℝ), cexp (-b * x ^ 2 + c i * x)
-      = (π / b) ^ (1 / 2 : ℂ) * cexp ((c i)^2 / (4 * b)) := by
-    have : (-b).re < 0 := by simpa using hb
-    convert integral_cexp_quadratic this (c i) 0 using 3 <;> simp [div_neg]
-  simp_rw [I]
-  simp only [one_div, Finset.prod_mul_distrib, Finset.prod_const, ← Complex.exp_sum, Fintype.card,
-    ← cpow_nat_mul, Finset.sum_div]
+      = (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp ((∑ i, c i ^ 2) / (4 * b)) := by
+  simp_rw [neg_mul, Finset.mul_sum, integral_cexp_neg_sum_mul_add (fun _ ↦ hb) c]
+  simp only [one_div, Finset.prod_mul_distrib, Finset.prod_const, ← cpow_nat_mul, ← Complex.exp_sum,
+    Fintype.card, Finset.sum_div]
   rfl
 
 theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
@@ -690,7 +699,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   have := (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
   rw [← this.integral_comp (MeasurableEquiv.measurableEmbedding _)]
   simp only [neg_mul, Function.comp_def]
-  convert integral_cexp_neg_mul_sum_add ι hb (fun i ↦ c * w i) using 5 with _x y
+  convert integral_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 5 with _x y
   · simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
       EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, neg_mul,
       neg_inj, mul_eq_mul_left_iff]

@@ -41,7 +41,7 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 namespace ADEInequality
 
 open Multiset
--- porting note: ADE is a special name, exceptionally in upper case in Lean3
+-- Porting note: ADE is a special name, exceptionally in upper case in Lean3
 set_option linter.uppercaseLean3 false
 
 /-- `A' q r := {1,q,r}` is a `Multiset ℕ+`
@@ -250,8 +250,7 @@ theorem admissible_of_one_lt_sumInv_aux :
     ∀ {pqr : List ℕ+} (_ : pqr.Sorted (· ≤ ·)) (_ : pqr.length = 3) (_ : 1 < sumInv pqr),
       Admissible pqr
   | [p, q, r], hs, _, H => by
-    obtain ⟨⟨hpq, -⟩, hqr⟩ : (p ≤ q ∧ p ≤ r) ∧ q ≤ r
-    simpa using hs
+    obtain ⟨⟨hpq, -⟩, hqr⟩ : (p ≤ q ∧ p ≤ r) ∧ q ≤ r := by simpa using hs
     exact admissible_of_one_lt_sumInv_aux' hpq hqr H
 #align ADE_inequality.admissible_of_one_lt_sum_inv_aux ADEInequality.admissible_of_one_lt_sumInv_aux
 
