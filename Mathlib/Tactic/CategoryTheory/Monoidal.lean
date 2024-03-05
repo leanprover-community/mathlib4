@@ -159,10 +159,16 @@ inductive WhiskerRightExpr : Type
   | whisker (η : WhiskerRightExpr) (f : Atom₁) : WhiskerRightExpr
   deriving Inhabited
 
+/-- Expressions of the form `η₁ ⊗ ... ⊗ ηₙ`. -/
+inductive TensorHomExpr : Type
+  | of (η : WhiskerRightExpr) : TensorHomExpr
+  | cons (head : WhiskerRightExpr) (tail : TensorHomExpr) : TensorHomExpr
+  deriving Inhabited
+
 /-- Expressions of the form `f₁ ◁ ... ◁ fₙ ◁ η`. -/
 inductive WhiskerLeftExpr : Type
   /-- Construct the expression for a right-whiskered 2-morphism. -/
-  | of (η : WhiskerRightExpr) : WhiskerLeftExpr
+  | of (η : TensorHomExpr) : WhiskerLeftExpr
   /-- Construct the expression for `f ◁ η`. -/
   | whisker (f : Atom₁) (η : WhiskerLeftExpr) : WhiskerLeftExpr
   deriving Inhabited
@@ -179,6 +185,8 @@ inductive Structural : Type
   | whiskerLeft (f : Mor₁) (η : Structural) : Structural
   /-- Expressions for the right whiskering `η ▷ f`. -/
   | whiskerRight (η : Structural) (f : Mor₁) : Structural
+    /-- Expressions for the tensor `α ⊗ β`. -/
+  | tensorHom (α β : Structural) : Structural
   deriving Inhabited
 
 /-- Normalized expressions for 2-morphisms. -/
@@ -218,14 +226,24 @@ def WhiskerRightExpr.tar : WhiskerRightExpr → MetaM Mor₁
   | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tar η).comp (Mor₁.of f)
 
 /-- The domain of a 2-morphism. -/
+def TensorHomExpr.src : TensorHomExpr → MetaM Mor₁
+  | TensorHomExpr.of η => η.src
+  | TensorHomExpr.cons η ηs => return (← η.src).comp (← ηs.src)
+
+/-- The codomain of a 2-morphism. -/
+def TensorHomExpr.tar : TensorHomExpr → MetaM Mor₁
+  | TensorHomExpr.of η => η.tar
+  | TensorHomExpr.cons η ηs => return (← η.tar).comp (← ηs.tar)
+
+/-- The domain of a 2-morphism. -/
 def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => WhiskerRightExpr.src η
-  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.src η)
+  | WhiskerLeftExpr.of η => η.src
+  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← η.src)
 
 /-- The codomain of a 2-morphism. -/
 def WhiskerLeftExpr.tar : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => WhiskerRightExpr.tar η
-  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tar η)
+  | WhiskerLeftExpr.of η => η.tar
+  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← η.tar)
 
 /-- The domain of a 2-morphism. -/
 def StructuralAtom.src : StructuralAtom → Mor₁
@@ -249,19 +267,21 @@ def StructuralAtom.tar : StructuralAtom → Mor₁
 
 /-- The domain of a 2-morphism. -/
 def Structural.src : Structural → Mor₁
-  | .atom η => η.src
+  | .atom α => α.src
   | .id f => f
   | .comp α _ => α.src
-  | .whiskerLeft f η => f.comp η.src
-  | .whiskerRight η f => η.src.comp f
+  | .whiskerLeft f α => f.comp α.src
+  | .whiskerRight α f => α.src.comp f
+  | .tensorHom α β => α.src.comp β.src
 
 /-- The codomain of a 2-morphism. -/
 def Structural.tar : Structural → Mor₁
-  | .atom η => η.tar
+  | .atom α => α.tar
   | .id f => f
   | .comp _ β => β.tar
-  | .whiskerLeft f η => f.comp η.tar
-  | .whiskerRight η f => η.tar.comp f
+  | .whiskerLeft f α => f.comp α.tar
+  | .whiskerRight α f => α.tar.comp f
+  | .tensorHom α β => α.tar.comp β.tar
 
 /-- The domain of a 2-morphism. -/
 def NormalExpr.src : NormalExpr → Mor₁
@@ -297,29 +317,29 @@ def NormalExpr.rightUnitor (f : Mor₁) : NormalExpr :=
 def NormalExpr.rightUnitorInv (f : Mor₁) : NormalExpr :=
   .nil <| .atom <| .rightUnitorInv f
 
-/-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
-  | WhiskerRightExpr.of η => η
-  | WhiskerRightExpr.whisker η _ => η.atom
+-- /-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
+-- def WhiskerRightExpr.atom : WhiskerRightExpr → Atom
+--   | WhiskerRightExpr.of η => η
+--   | WhiskerRightExpr.whisker η _ => η.atom
 
-/-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
-  | WhiskerLeftExpr.of η => η.atom
-  | WhiskerLeftExpr.whisker _ η => η.atom
+-- /-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
+-- def WhiskerLeftExpr.atom : WhiskerLeftExpr → Atom
+--   | WhiskerLeftExpr.of η => η.atom
+--   | WhiskerLeftExpr.whisker _ η => η.atom
 
-/-- Construct a `Structural` expression from a Lean expression for a structural 2-morphism. -/
-partial def structural? (e : Expr) : MetaM Structural := do
-  match (← whnfR e).getAppFnArgs with
-  | (``CategoryStruct.comp, #[_, _, _, α, β]) =>
-    return .comp (← structural? α) (← structural? β)
-  | (``CategoryStruct.id, #[_, f]) => return .id (← toMor₁ f)
-  | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) =>
-    return .whiskerLeft (← toMor₁ f) (← structural? η)
-  | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
-    return .whiskerRight (← structural? η) (← toMor₁ f)
-  | _ => match ← structuralAtom? e with
-    | some η => return .atom η
-    | none => throwError "{e} is not a structural 2-morphism"
+-- /-- Construct a `Structural` expression from a Lean expression for a structural 2-morphism. -/
+-- partial def structural? (e : Expr) : MetaM Structural := do
+--   match (← whnfR e).getAppFnArgs with
+--   | (``CategoryStruct.comp, #[_, _, _, α, β]) =>
+--     return .comp (← structural? α) (← structural? β)
+--   | (``CategoryStruct.id, #[_, f]) => return .id (← toMor₁ f)
+--   | (``MonoidalCategoryStruct.whiskerLeft, #[f, η]) =>
+--     return .whiskerLeft (← toMor₁ f) (← structural? η)
+--   | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
+--     return .whiskerRight (← structural? η) (← toMor₁ f)
+--   | _ => match ← structuralAtom? e with
+--     | some η => return .atom η
+--     | none => throwError "{e} is not a structural 2-morphism"
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
@@ -327,11 +347,11 @@ def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
 def NormalExpr.ofExpr (η : Expr) : MetaM NormalExpr :=
-  NormalExpr.of <| .of <| .of ⟨η⟩
+  NormalExpr.of <| .of <| .of <| .of ⟨η⟩
 
 /-- If `e` is an expression of the form `η ⊗≫ θ := η ≫ α ≫ θ` in the monoidal category `C`,
 return the expression for `α` .-/
-def structuralOfMonoidalComp (C e : Expr) : MetaM Structural := do
+def structuralOfMonoidalComp (C e : Expr) : MetaM StructuralAtom := do
   let v ← mkFreshLevelMVar
   let u ← mkFreshLevelMVar
   _ ← isDefEq (.sort (.succ v)) (← inferType (← inferType e))
@@ -347,7 +367,9 @@ def structuralOfMonoidalComp (C e : Expr) : MetaM Structural := do
   let αg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, X, Y, Z, α₀, g]
   let fαg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, W, X, Z, f, αg]
   _ ← isDefEq e fαg
-  structural? α₀
+  match ← structuralAtom? α₀ with
+  | some α => return α
+  | none => throwError "not a structural 2-morphism"
 
 section
 
@@ -491,18 +513,25 @@ def StructuralAtom.e : StructuralAtom → MonoidalM Expr
 
 /-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → MonoidalM Expr
-  | .atom η => η.e
+  | .atom α => α.e
   | .id f => do mkAppM ``CategoryStruct.id #[← f.e]
   | .comp α β => do match α, β with
     | _, _ => mkAppM ``CategoryStruct.comp #[← α.e, ← β.e]
-  | .whiskerLeft f η => do mkAppM ``MonoidalCategoryStruct.whiskerLeft #[← f.e, ← η.e]
-  | .whiskerRight η f => do mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, ← f.e]
+  | .whiskerLeft f α => do mkAppM ``MonoidalCategoryStruct.whiskerLeft #[← f.e, ← α.e]
+  | .whiskerRight α f => do mkAppM ``MonoidalCategoryStruct.whiskerRight #[← α.e, ← f.e]
+  | .tensorHom α β => do mkAppM ``MonoidalCategoryStruct.tensorHom #[← α.e, ← β.e]
 
 /-- Extract a Lean expression from a `WhiskerRightExpr` expression. -/
 def WhiskerRightExpr.e : WhiskerRightExpr → MonoidalM Expr
   | WhiskerRightExpr.of η => return η.e
   | WhiskerRightExpr.whisker η f => do
     mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, f.e]
+
+/-- Extract a Lean expression from a `TensorHomExpr` expression. -/
+def TensorHomExpr.e : TensorHomExpr → MonoidalM Expr
+  | TensorHomExpr.of η => η.e
+  | TensorHomExpr.cons η ηs => do
+    mkAppM ``MonoidalCategoryStruct.tensorHom #[← η.e, ← ηs.e]
 
 /-- Extract a Lean expression from a `WhiskerLeftExpr` expression. -/
 def WhiskerLeftExpr.e : WhiskerLeftExpr → MonoidalM Expr
@@ -565,6 +594,16 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MonoidalM Result
     let ⟨η'', pf_η''⟩ ← evalComp (NormalExpr.leftUnitor f) η'
     try return ⟨η'', ← mkAppM ``evalWhiskerLeft_id #[pf_η', pf_η'']⟩
     catch _ => return ⟨η'', mkConst ``True⟩
+
+/-- Evaluate the expression `η ▷ f` into a normalized form. -/
+partial def tensorHomWhiskerRight : TensorHomExpr → Atom₁ → MonoidalM Result
+  | .of η, f => NormalExpr.of <| .of <| .of <| .whisker η f
+  | .cons η ηs, f => do
+    let ηs' ← tensorHomWhiskerRight ηs f
+    let η₁ ← evalTensorHomExpr (← NormalExpr.of <| .of <| .of η) ηs'
+    let η₂ ← evalComp η₁ (.associatorInv (← η.tar) (← ηs.tar) (.of f))
+    let η₃ ← evalComp (.associator (← η.src) (← ηs.src) (.of f)) η₂
+    return η₃
 
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
@@ -637,7 +676,7 @@ partial def eval (e : Expr) : MonoidalM Result := do
     | (``monoidalComp, #[C, _, _, _, _, _, _, η, θ]) =>
       let ⟨η_e, pf_η⟩ ← eval η
       let α₀ ← structuralOfMonoidalComp C e
-      let α := NormalExpr.nil α₀
+      let α := NormalExpr.nil <| .atom α₀
       let ⟨θ_e, pf_θ⟩ ← eval θ
       let ⟨αθ, pf_θα⟩ ← evalComp α θ_e
       let ⟨ηαθ, pf_ηαθ⟩ ← evalComp η_e αθ
@@ -759,40 +798,50 @@ partial def liftStructuralAtom? (e : Expr) : MetaM (Option Expr) := do
       return some <| ← mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategory.rightUnitor #[← lift₁ f]]
     | _ => return none
   | _ => match (← whnfR e).getAppFnArgs with
-
     | _ => return none
+
+open MonoidalCoherence in
+def monoidalCompHomSimps : MetaM Simp.Context := do
+  Simp.Context.ofNames (simpOnly := true) [
+    ``refl_hom, ``whiskerLeft_hom, ``whiskerRight_hom,
+    ``tensor_right_hom, ``tensor_right'_hom, ``left_hom, ``left'_hom,
+    ``right_hom, ``right'_hom, ``assoc_hom, ``assoc'_hom]
 
 partial def free₂ (e : Expr) : MetaM Expr := do
   let error : MetaM Expr := throwError "{e} is not a structural 2-morphism  ddd"
   if let some e ← liftStructuralAtom? e then
     return e
   else
-  match (← whnfR e).getAppFnArgs with
-  | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
-    mkAppM ``CategoryStruct.comp #[← free₂ η, ← free₂ θ]
-  | (``MonoidalCategory.whiskerLeft, #[_, _, _, f, _, _, η]) =>
-    mkAppM ``MonoidalCategory.whiskerLeft #[← lift₁ f, ← free₂ η]
-  | (``MonoidalCategory.whiskerRight, #[_, _, _, _, _, η, h]) =>
-    mkAppM ``MonoidalCategory.whiskerRight #[← free₂ η, ← lift₁ h]
-  | (``CategoryStruct.id, #[_, _, f]) =>
-    mkAppM ``CategoryStruct.id #[← lift₁ f]
-  | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
-    -- IO.println (← ppExpr e)
-    let (e', _) ← dsimp e { simpTheorems := #[(← getSimpTheorems)] }
-    -- IO.println (← ppExpr e')
-    free₂ e'
-  | (``monoidalComp, #[C, _, _, _, _, _, inst, η, θ]) =>
-      let η_e ← free₂ η
-      -- let α₀ ← structuralOfMonoidalComp C e
-      -- let α := NormalExpr.nil α₀
-      let θ_e ← free₂ θ
-      let ηαθ ← mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, none, none, inst]
-      return ηαθ
-      -- let ⟨αθ, pf_θα⟩ ← evalComp α θ_e
-      -- let ⟨ηαθ, pf_ηαθ⟩ ← evalComp η_e αθ
-      -- try return ⟨ηαθ, ← mkAppM ``eval_monoidalComp #[pf_η, pf_θ, pf_θα, pf_ηαθ]⟩
-      -- catch _ => return ⟨ηαθ, mkConst ``True⟩
-  | _ => error
+    match (← whnfR e).getAppFnArgs with
+    | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
+      mkAppM ``CategoryStruct.comp #[← free₂ η, ← free₂ θ]
+    | (``MonoidalCategory.whiskerLeft, #[_, _, _, f, _, _, η]) =>
+      mkAppM ``MonoidalCategory.whiskerLeft #[← lift₁ f, ← free₂ η]
+    | (``MonoidalCategory.whiskerRight, #[_, _, _, _, _, η, h]) =>
+      mkAppM ``MonoidalCategory.whiskerRight #[← free₂ η, ← lift₁ h]
+    | (``CategoryStruct.id, #[_, _, f]) =>
+      mkAppM ``CategoryStruct.id #[← lift₁ f]
+    | (``MonoidalCategoryStruct.tensorHom, #[_, _, _, _, _, _, _, η, θ]) =>
+      mkAppM ``MonoidalCategoryStruct.tensorHom #[← free₂ η, ← free₂ θ]
+    | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
+      -- IO.println (← ppExpr e)
+      let (e', _) ← dsimp e (← monoidalCompHomSimps)
+      -- IO.println (← ppExpr e')
+      free₂ e'
+    | (``monoidalComp, #[C, _, _, _, _, _, inst, η, θ]) =>
+        -- let η_e ← free₂ η
+        -- let α₀ ← structuralOfMonoidalComp C e
+        -- let α := NormalExpr.nil α₀
+        -- let θ_e ← free₂ θ
+        let α ← mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, inst]
+        let αθ ← mkAppM ``CategoryStruct.comp #[α, θ]
+        let ηαθ ← mkAppM ``CategoryStruct.comp #[η, αθ]
+        free₂ ηαθ
+        -- let ⟨αθ, pf_θα⟩ ← evalComp α θ_e
+        -- let ⟨ηαθ, pf_ηαθ⟩ ← evalComp η_e αθ
+        -- try return ⟨ηαθ, ← mkAppM ``eval_monoidalComp #[pf_η, pf_θ, pf_θα, pf_ηαθ]⟩
+        -- catch _ => return ⟨ηαθ, mkConst ``True⟩
+    | _ => error
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
@@ -812,20 +861,22 @@ def pure_coherence (g : MVarId) : MetaM Unit := g.withContext do
   let [g₂] ← g₁.applyConst ``congrArg | throwError "apply congrArg failed"
   let [] ← g₂.applyConst ``Subsingleton.elim | throwError "apply Subsingleton.elim failed"
 
-/-- Normalize the both sides of an equality. -/
-elab "monoidal_nf" : tactic => withMainContext do
-  -- let t ← getMainTarget
-  let g ← getMainGoal
-  let mvarIds ← g.apply (← mkEqOfHom₂ g)
-  -- replaceMainGoal mvarIds
-  -- let mvarIds' ← mkApply mvarIds[0]!
-  let mvarIds' ← [mvarIds].mapM fun mvarId => do
-    repeat' (fun i ↦ mkApply i) mvarId
-  let mvarIds'' ← mvarIds'.join.mapM fun mvarId => do
+def monoidal (g : MVarId) : MetaM (List MVarId) := g.withContext do
+  let mvarId ← g.apply (← mkEqOfHom₂ g)
+  let mvarIds' ← repeat' (fun i ↦ mkApply i) mvarId
+  let mvarIds'' ← mvarIds'.mapM fun mvarId => do
     pure_coherence mvarId
     return mvarId
-  -- return x
-  replaceMainGoal mvarIds''
+  return mvarIds''
+
+/-- Normalize the both sides of an equality. -/
+elab "monoidal_nf" : tactic => withMainContext do
+  replaceMainGoal (← monoidal (← getMainGoal))
+
+elab "pure_coherence" : tactic => withMainContext do
+  let g ← getMainGoal
+  pure_coherence g
+  replaceMainGoal [g]
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 variable {X Y Z W U V W : C} (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -840,7 +891,7 @@ example (X₁ X₂ : C) (f : X₁ ⟶ X₁) (g : X₂ ⟶ X₂) :
   (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
     (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv) ≫
       (𝟙 (𝟙_ C) ⊗ (λ_ _).hom ≫ (ρ_ X₁).inv ⊗ 𝟙 X₂) ≫
-        (𝟙 (𝟙_ C) ⊗ (α_ X₁ (𝟙_ C) X₂).hom) ≫
+        (𝟙 (𝟙_ C) ⊗ (α_ X₁ (𝟙_ C) X₂).hom) ⊗≫
           (α_ (𝟙_ C) X₁ (𝟙_ C ⊗ X₂)).inv ≫
             ((λ_ X₁).hom ≫ (ρ_ X₁).inv ⊗ 𝟙 (𝟙_ C ⊗ X₂)) ⊗≫
               f ▷ X₂ ⊗≫
@@ -857,9 +908,30 @@ example (X₁ X₂ : C) (f : X₁ ⟶ X₁) (g : X₂ ⟶ X₂) :
   simp only [id_tensorHom, tensorHom_id]
   monoidal_nf
 
+set_option trace.profiler true in
+example (X₁ X₂ : C) :
+  (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
+    (𝟙 (𝟙_ C) ⊗ (α_ (𝟙_ C) X₁ X₂).inv) ≫
+      (𝟙 (𝟙_ C) ⊗ (λ_ _).hom ≫ (ρ_ X₁).inv ⊗ 𝟙 X₂) ≫
+        (𝟙 (𝟙_ C) ⊗ (α_ X₁ (𝟙_ C) X₂).hom) ⊗≫
+          (α_ (𝟙_ C) X₁ (𝟙_ C ⊗ X₂)).inv ≫
+            ((λ_ X₁).hom ≫ (ρ_ X₁).inv ⊗ 𝟙 (𝟙_ C ⊗ X₂)) ⊗≫
+              (α_ X₁ (𝟙_ C) (𝟙_ C ⊗ X₂)).hom ≫
+                (𝟙 X₁ ⊗ 𝟙 (𝟙_ C) ⊗ (λ_ X₂).hom ≫ (ρ_ X₂).inv) ≫
+                  (𝟙 X₁ ⊗ (α_ (𝟙_ C) X₂ (𝟙_ C)).inv) ⊗≫
+                    (𝟙 X₁ ⊗ (λ_ X₂).hom ≫ (ρ_ X₂).inv ⊗ 𝟙 (𝟙_ C)) ≫
+                      (𝟙 X₁ ⊗ (α_ X₂ (𝟙_ C) (𝟙_ C)).hom) ≫
+                        (α_ X₁ X₂ (𝟙_ C ⊗ 𝟙_ C)).inv =
+  (((λ_ (𝟙_ C)).hom ⊗ 𝟙 (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).hom ≫ (ρ_ (X₁ ⊗ X₂)).inv) ⊗≫
+    (𝟙 (X₁ ⊗ X₂) ⊗ (λ_ (𝟙_ C)).inv) := by
+  pure_coherence
+
 
 example (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
     f ⊗≫ g = f ≫ 𝟙 _ ≫ (α_ _ _ _).inv ≫ g := by
+  dsimp only [monoidalComp]
+  dsimp only [MonoidalCoherence.assoc'_hom, MonoidalCoherence.whiskerRight_hom,
+    MonoidalCoherence.refl_hom]
   monoidal_nf
 
 example (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
