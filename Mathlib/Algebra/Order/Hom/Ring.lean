@@ -155,7 +155,7 @@ instance : FunLike (α →+*o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
-    -- porting note: needed to add the following line
+    -- Porting note: needed to add the following line
     exact DFunLike.coe_injective' h
 
 instance : OrderHomClass (α →+*o β) α β where
@@ -536,7 +536,7 @@ instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField �
     ext x
     by_contra! h' : f x ≠ g x
     wlog h : f x < g x generalizing α β with h₂
-    -- porting note: had to add the `generalizing` as there are random variables
+    -- Porting note: had to add the `generalizing` as there are random variables
     -- `F γ δ` flying around in context.
     · exact h₂ g f x (Ne.symm h') (h'.lt_or_lt.resolve_left h)
     obtain ⟨q, hf, hg⟩ := exists_rat_btwn h

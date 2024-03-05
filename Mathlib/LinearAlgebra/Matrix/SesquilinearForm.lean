@@ -57,7 +57,7 @@ variable (σ₁ : R₁ →+* R) (σ₂ : R₂ →+* R)
 
 This is an auxiliary definition for the equivalence `Matrix.toLinearMap₂'`. -/
 def Matrix.toLinearMap₂'Aux (f : Matrix n m R) : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] R :=
-  -- porting note: we don't seem to have `∑ i j` as valid notation yet
+  -- Porting note: we don't seem to have `∑ i j` as valid notation yet
   mk₂'ₛₗ σ₁ σ₂ (fun (v : n → R₁) (w : m → R₂) => ∑ i, ∑ j, σ₁ (v i) * f i j * σ₂ (w j))
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_mul, sum_add_distrib])
     (fun _ _ _ => by simp only [Pi.smul_apply, smul_eq_mul, RingHom.map_mul, mul_assoc, mul_sum])
@@ -193,13 +193,13 @@ theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m R) :
 #align matrix.to_linear_mapₛₗ₂'_aux_eq Matrix.toLinearMapₛₗ₂'_aux_eq
 
 theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m R) (x : n → R₁) (y : m → R₂) :
-    -- porting note: we don't seem to have `∑ i j` as valid notation yet
+    -- Porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) * M i j * σ₂ (y j) :=
   rfl
 #align matrix.to_linear_mapₛₗ₂'_apply Matrix.toLinearMapₛₗ₂'_apply
 
 theorem Matrix.toLinearMap₂'_apply (M : Matrix n m R) (x : n → R) (y : m → R) :
-    -- porting note: we don't seem to have `∑ i j` as valid notation yet
+    -- Porting note: we don't seem to have `∑ i j` as valid notation yet
     Matrix.toLinearMap₂' M x y = ∑ i, ∑ j, x i * M i j * y j :=
   rfl
 #align matrix.to_linear_map₂'_apply Matrix.toLinearMap₂'_apply
@@ -602,7 +602,7 @@ theorem Matrix.isAdjointPair_equiv (P : Matrix n n R) (h : IsUnit P) :
     dsimp only [Matrix.IsAdjointPair]
     simp only [Matrix.transpose_mul]
     simp only [← mul_assoc, P.transpose_nonsing_inv]
-    -- porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
+    -- Porting note: the previous proof used `conv` and was causing timeouts, so we use `convert`
     convert this using 2
     · rw [mul_assoc, mul_assoc, ← mul_assoc J]
       rfl
