@@ -59,7 +59,7 @@ protected def scheme (X : LocallyRingedSpace)
     skip
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.openEmbedding _ -- Porting note: was `infer_instance`
+    · exact Opens.openEmbedding _ -- Porting note (#11187): was `infer_instance`
 #align algebraic_geometry.LocallyRingedSpace.IsOpenImmersion.Scheme AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.scheme
 
 end LocallyRingedSpace.IsOpenImmersion
