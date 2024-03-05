@@ -78,7 +78,7 @@ def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
   | _x, y => v y
 #align dmatrix.row DMatrix.row
 
--- port note: Old proof is Pi.inhabited.
+-- Porting note: Old proof is Pi.inhabited.
 instance [inst : ∀ i j, Inhabited (α i j)] : Inhabited (DMatrix m n α) :=
   ⟨fun i j => (inst i j).default⟩
 
@@ -115,7 +115,7 @@ instance [∀ i j, AddCommGroup (α i j)] : AddCommGroup (DMatrix m n α) :=
 instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
   Pi.unique
 
--- Port note: old proof is Pi.Subsingleton
+-- Porting note: old proof is Pi.Subsingleton
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
   by constructor; simp only [DMatrix, eq_iff_true_of_subsingleton, implies_true]
 

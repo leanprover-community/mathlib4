@@ -99,7 +99,7 @@ theorem cardinal_eq_of_mem_nhds
     {s : Set E} {x : E} (hs : s ∈ 𝓝 x) : #s = #E := by
   let g := Homeomorph.addLeft x
   let t := g ⁻¹' s
-  have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa using hs)
+  have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa [g] using hs)
   have A : #t = #E := cardinal_eq_of_mem_nhds_zero 𝕜 this
   have B : #t = #s := Cardinal.mk_subtype_of_equiv s g.toEquiv
   rwa [B] at A

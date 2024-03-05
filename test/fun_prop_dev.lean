@@ -119,7 +119,9 @@ instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
-attribute [fun_prop_coe] ConHom.toFun
+#eval Lean.Elab.Command.liftTermElabM do
+  Std.Tactic.Coe.registerCoercion ``ConHom.toFun
+    (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
@@ -237,7 +239,6 @@ example (f : α → Nat → Nat → β) (hf : Con f) (i j) : Con (fun x => f x (
 
 example (f : α → β → γ → δ) (hf : ∀ y, Con fun (x,z) => f x y z) : Con f := by fun_prop
 example (f : α → β → γ → δ) (hf : ∀ y, Con fun (x,z) => f x y z) : Con f := by fun_prop
-
 
 example (f : α → β ->> γ) (hf : Con f) (y) : Con (fun x => f x y) := by fun_prop
 example (f : α → β ->> γ) (hf : Con f) : Con (fun x y => f x y) := by fun_prop
@@ -386,7 +387,7 @@ theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x =>
 
 
 -- These used to get into infinite loop
-/--
+/-
 warning: `fun_prop` was unable to prove `?m`
 
 Try running with discharger `fun_prop (disch:=aesop)` or with a different discharger tactic like `assumption`, `linarith`, `omega`.
@@ -396,10 +397,10 @@ Potential issues to fix:
 
 For more detailed information use `set_option trace.Meta.Tactic.fun_prop true`
 -/
-#guard_msgs in
-#check_failure ((by fun_prop) : ?m)
+-- #guard_msgs in
+-- #check_failure ((by fun_prop) : ?m)
 
-/--
+/-
 warning: `fun_prop` was unable to prove `?m.67491 → ?m.67492`
 
 Try running with discharger `fun_prop (disch:=aesop)` or with a different discharger tactic like `assumption`, `linarith`, `omega`.
@@ -409,5 +410,5 @@ Potential issues to fix:
 
 For more detailed information use `set_option trace.Meta.Tactic.fun_prop true`
 -/
-#guard_msgs in
-#check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))
+-- #guard_msgs in
+-- #check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
+import Std.Tactic.CoeExt
 import Mathlib.Data.FunLike.Basic
-
 import Mathlib.Tactic.FunProp.ToStd
 import Mathlib.Tactic.FunProp.MorExt
 
@@ -15,7 +15,7 @@ import Mathlib.Tactic.FunProp.MorExt
 
 Function application in normal lean expression looks like `.app f x` but when we work with bundled
 morphism `f` it looks like `.app (.app coe f) x` where `f`. In mathlib `coe` is usually
-`DFunLike.coe` but it can be any coercion that is registered with the `fun_prop_coe` attribute.
+`DFunLike.coe` but it can be any coercion that is registered with the `coe` attribute.
 
 The main difference when working with expression involving morphisms is that the notion the head of
 expression changes. For example in:
@@ -33,21 +33,15 @@ namespace Meta.FunProp
 namespace Mor
 
 /-- Is `name` a coerction from some function space to functiosn? -/
-def isMorCoeName (name : Name) : CoreM Bool := do
-  return morCoeDeclsExt.getState (← getEnv) |>.contains name
+def isCoeFunName (name : Name) : CoreM Bool := do
+  let .some info ← Std.Tactic.Coe.getCoeFnInfo? name | return false
+  return info.type == .coeFun
 
 /-- Is `e` a coerction from some function space to functiosn? -/
-def isMorCoe (e : Expr) : MetaM Bool := do
+def isCoeFun (e : Expr) : MetaM Bool := do
   let .some (name,_) := e.getAppFn.const? | return false
-  unless ← isMorCoeName name do return false
-  -- check it has arity 2
-  -- note: checking `(← inferType e).forallArity` can give different result are the return type
-  --       can be a function space
-  let info ← getConstInfo name
-  if info.type.forallArity - 2 = e.getAppNumArgs then
-    return true
-  else
-    return false
+  let .some info ← Std.Tactic.Coe.getCoeFnInfo? name | return false
+  return e.getAppNumArgs' + 1 == info.numArgs
 
 /-- Morphism application -/
 structure App where
@@ -62,7 +56,7 @@ structure App where
 def isMorApp? (e : Expr) : MetaM (Option App) := do
 
   let .app (.app coe f) x := e | return none
-  if ← isMorCoe coe then
+  if ← isCoeFun coe then
     return .some { coe := coe, fn := f, arg := x }
   else
     return none
@@ -125,7 +119,7 @@ where
   go : Expr → Array Arg →  MetaM α
     | .mdata _ b, as => go b as
     | .app (.app c f) x, as => do
-      if ← isMorCoe c then
+      if ← isCoeFun c then
         go f (as.push { coe := c, expr := x})
       else
         go (.app c f) (as.push { expr := x})
@@ -142,7 +136,7 @@ def getAppFn (e : Expr) : MetaM Expr :=
   match e with
   | .mdata _ b => getAppFn b
   | .app (.app c f) _ => do
-    if ← isMorCoe c then
+    if ← isCoeFun c then
       getAppFn f
     else
       getAppFn (.app c f)

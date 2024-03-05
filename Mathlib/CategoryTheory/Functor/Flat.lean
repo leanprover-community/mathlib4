@@ -150,7 +150,7 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
       apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (StructuredArrow X F)
       intro J sJ fJ
       constructor
-      -- porting note: instance was inferred automatically in Lean 3
+      -- Porting note: instance was inferred automatically in Lean 3
       infer_instance
     cofiltered_of_hasFiniteLimits⟩
 #align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
@@ -204,7 +204,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    convert e₁.symm.trans e₂ <;> simp
+    convert e₁.symm.trans e₂ <;> simp [c₁, c₂]
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
@@ -267,7 +267,7 @@ noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D)
     unfold preservesFiniteLimitsOfFlat
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
-    -- porting note: this next line wasn't needed in lean 3
+    -- Porting note: this next line wasn't needed in lean 3
     apply Subsingleton.elim
 
 #align category_theory.preserves_finite_limits_iff_flat CategoryTheory.preservesFiniteLimitsIffFlat
@@ -289,7 +289,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
   NatIso.ofComponents (fun G => colim.mapIso (Iso.refl _))
     (by
       intro G H i
-      -- porting note: was `ext` in lean 3
+      -- Porting note: was `ext` in lean 3
       -- Now `ext` can't see that `lan` is a colimit.
       -- Uncertain whether it makes sense to add another `@[ext]` lemma.
       -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -297,7 +297,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       intro j
       simp only [Functor.comp_map, Functor.mapIso_refl, evaluation_obj_map, whiskeringLeft_obj_map,
         lan_map_app, colimit.ι_desc_assoc, Category.comp_id, Category.assoc]
-      -- porting note: this deals with the fact that the type of `lan_map_app` has changed
+      -- Porting note: this deals with the fact that the type of `lan_map_app` has changed
       -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
       erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
         colimit.ι (Lan.diagram F H (F.obj j.left))
@@ -368,20 +368,20 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
     intros; apply preservesLimitOfLanPreservesLimit
   left_inv x := by
-    -- porting note: `cases x` and an `unfold` not necessary in lean 4.
+    -- Porting note: `cases x` and an `unfold` not necessary in lean 4.
     -- Remark : in mathlib3 we had `unfold preservesFiniteLimitsOfFlat`
     -- but there was no `preservesFiniteLimitsOfFlat` in the goal! Experimentation
     -- indicates that it was doing the same as `dsimp only`
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
-    -- porting note: next line wasn't necessary in lean 3
+    -- Porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
   right_inv x := by
-    -- cases x; -- porting note: not necessary in lean 4
+    -- cases x; -- Porting note: not necessary in lean 4
     dsimp only [lanPreservesFiniteLimitsOfPreservesFiniteLimits,
       lanPreservesFiniteLimitsOfFlat,
       preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
-    -- porting note: next line wasn't necessary in lean 3
+    -- Porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_finite_limits_iff_Lan_preserves_finite_limits CategoryTheory.preservesFiniteLimitsIffLanPreservesFiniteLimits

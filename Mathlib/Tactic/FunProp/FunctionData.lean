@@ -152,7 +152,7 @@ inductive MorApplication where
 /-- Is function body of `f` a morphism application? What kind? -/
 def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := do
   if let .some name := f.fn.constName? then
-    if ← Mor.isMorCoeName name then
+    if ← Mor.isCoeFunName name then
       let info ← getConstInfo name
       let arity := info.type.forallArity
       match compare arity f.args.size with

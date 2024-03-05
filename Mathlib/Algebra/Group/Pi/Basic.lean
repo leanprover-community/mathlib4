@@ -388,7 +388,7 @@ theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
 #align pi.mul_single_one Pi.mulSingle_one
 #align pi.single_zero Pi.single_zero
 
--- Porting notes:
+-- Porting note:
 -- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
 -- 2) Why do I have to specify the type of `(1 : I → β)`?
 -- 3) Removed `{β : Sort*}` as `[One β]` converts it to a type anyways.
@@ -400,7 +400,7 @@ theorem mulSingle_apply [One β] (i : I) (x : β) (i' : I) :
 #align pi.mul_single_apply Pi.mulSingle_apply
 #align pi.single_apply Pi.single_apply
 
--- Porting notes : Same as above.
+-- Porting note: Same as above.
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
 @[to_additive "On non-dependent functions, `Pi.single` is symmetric in the two indices."]
 theorem mulSingle_comm [One β] (i : I) (x : β) (i' : I) :
@@ -465,13 +465,13 @@ protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
   (f' i, g' i)
 #align pi.prod Pi.prod
 
--- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
+-- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   rfl
 #align pi.prod_fst_snd Pi.prod_fst_snd
 
--- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
+-- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
   rfl
