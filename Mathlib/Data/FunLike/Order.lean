@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Order.Basic
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Preorder and partial order on bundled homs
@@ -28,5 +29,7 @@ instance instPreorder [∀ a, Preorder (β a)] : Preorder F := .lift coe
 theorem lt_def [∀ a, Preorder (β a)] {f g : F} : f < g ↔ f ≤ g ∧ ∃ a, f a < g a := Pi.lt_def
 
 instance instPartialOrder [∀ a, PartialOrder (β a)] : PartialOrder F := .lift coe coe_injective
+
+@[gcongr] theorem apply_mono [∀ a, Preorder (β a)] {f g : F} (h : f ≤ g) (x : α) : f x ≤ g x := h x
 
 end DFunLike
