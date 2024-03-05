@@ -40,8 +40,6 @@ def mkExtendedFieldNotationUnexpander (f : Name) : CommandElabM Unit := do
         -- Having a zero-argument pattern prevents unnecessary parenthesization in output
         | `($$_ $$(x).$(mkIdent toA))
         | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
-        | `($$_ $$(x).$(mkIdent toA) $$args*)
-        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
         | _ => throw ())
   else
     elabCommand <| ← `(command|
@@ -49,7 +47,6 @@ def mkExtendedFieldNotationUnexpander (f : Name) : CommandElabM Unit := do
       aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
         -- Having this zero-argument pattern prevents unnecessary parenthesization in output
         | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
-        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
         | _ => throw ())
 
 /--
