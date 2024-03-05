@@ -1066,9 +1066,8 @@ namespace SubEquivalence
 
 variable {L} {M} {N}
 
-theorem inhabited_self : Inhabited (M ≃ₚ[L] M) := ⟨⊤, ⊤, Equiv.refl L (⊤ : L.Substructure M)⟩
-
-noncomputable instance instInhabited_self : Inhabited (M ≃ₚ[L] M) := inhabited_self
+noncomputable instance instInhabited_self : Inhabited (M ≃ₚ[L] M) :=
+  ⟨⊤, ⊤, Equiv.refl L (⊤ : L.Substructure M)⟩
 
 /-- Maps to the symmetric equivalence. -/
 def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
