@@ -68,7 +68,7 @@ namespace krullDimOfRel
 
 variable {α β : Type _} (r : Rel α α) (s : Rel β β)
 
-lemma nonneg_of_Nonempty [Nonempty α] : 0 ≤ krullDimOfRel r :=
+lemma nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDimOfRel r :=
   le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
 
 lemma eq_bot_of_isEmpty [IsEmpty α] : krullDimOfRel r = ⊥ := WithBot.ciSup_empty _
@@ -108,8 +108,8 @@ variable {α β : Type _}
 
 variable [Preorder α] [Preorder β]
 
-lemma nonneg_of_Nonempty [Nonempty α] : 0 ≤ krullDim α :=
-  krullDimOfRel.nonneg_of_Nonempty _
+lemma nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
+  krullDimOfRel.nonneg_of_nonempty _
 
 lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := krullDimOfRel.eq_bot_of_isEmpty _
 
