@@ -73,7 +73,7 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
     let g (i : Fin n) : M := ExteriorAlgebra.ιInv (f i).1
     have hfg (i : Fin n) : (f i).1 = ExteriorAlgebra.ι R (g i) := by
       obtain ⟨x, -, hx⟩ := (Set.mem_image _ _ _).mp (f i).2
-      simp only
+      simp only [g]
       rw [← hx, ExteriorAlgebra.ι_leftInverse]
     obtain rfl : u = ExteriorAlgebra.ιMulti R n g := by
       rw [ExteriorAlgebra.ιMulti_apply, ← hf]
