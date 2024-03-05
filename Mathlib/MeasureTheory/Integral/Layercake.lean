@@ -597,14 +597,13 @@ theorem Integrable.integral_eq_integral_meas_lt
 
 theorem Integrable.integral_eq_integral_meas_le
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
-    (∫ ω, f ω ∂μ) = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
+    ∫ ω, f ω ∂μ = ∫ t in Set.Ioi 0, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [Integrable.integral_eq_integral_meas_lt f_intble f_nn]
   apply integral_congr_ae
   filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f] with t ht
   exact congrArg ENNReal.toReal ht.symm
 
-lemma integral_eq_integral_Ioc_meas_le {α : Type*} [MeasurableSpace α] {f : α → ℝ}
-    (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
+lemma integral_eq_integral_Ioc_meas_le {f : α → ℝ} (f_nn : 0 ≤ᵐ[μ] f)
     {M : ℝ} (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) (f_intble : Integrable f μ) :
     (∫ ω, f ω ∂μ) = ∫ t in Ioc 0 M, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]

@@ -253,7 +253,7 @@ variable {Ω}
 lemma BoundedContinuousFunction.integral_eq_integral_meas_le_of_hasFiniteIntegral
     {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α]
     (f : α →ᵇ ℝ) (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f) (hf : HasFiniteIntegral f μ) :
-    (∫ ω, f ω ∂μ) = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
+    ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [integral_eq_integral_Ioc_meas_le μ f_nn (M := ‖f‖) ?_ ?_]
   · exact eventually_of_forall (fun x ↦ BoundedContinuousFunction.apply_le_norm f x)
   · refine ⟨f.continuous.measurable.aestronglyMeasurable, hf⟩
