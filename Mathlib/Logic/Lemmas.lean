@@ -76,4 +76,4 @@ lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
 
 open Function
 
-lemma injective_not : Injective Not := fun _ _ ↦ by simpa using not_iff_not.mp
+lemma not_injective : Injective Not := fun _ _ ↦ by simpa using not_iff_not.mp
