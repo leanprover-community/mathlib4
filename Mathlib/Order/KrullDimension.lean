@@ -27,6 +27,7 @@ sum of `-∞` and the Krull dimension of any other varieties.
 -/
 
 section definitions
+
 variable (α : Type*) [Preorder α]
 variable {β : Type*} (r : Rel β β)
 
