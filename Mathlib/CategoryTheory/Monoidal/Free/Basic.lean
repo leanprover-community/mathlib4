@@ -257,6 +257,10 @@ theorem unit_eq_unit : FreeMonoidalCategory.unit = 𝟙_ (F C) :=
   rfl
 #align category_theory.free_monoidal_category.unit_eq_unit CategoryTheory.FreeMonoidalCategory.unit_eq_unit
 
+/-- The abbreviation for `⟦f⟧`. -/
+/- This is useful since the notation `⟦f⟧` often behaves like an element of the quotient set,
+but not like a morphism. This is why we need weird `@CategoryStruct.comp (F C) ...` in the
+statement in `mk_comp` above. -/
 abbrev homMk {X Y : F C} (f : X ⟶ᵐ Y) : X ⟶ Y := ⟦f⟧
 
 theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C} (t : X ⟶ Y)
