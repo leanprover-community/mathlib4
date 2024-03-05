@@ -279,6 +279,7 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
+  "Mathlib.RingTheory.SimpleModule": ["Mathlib.RingTheory.Finiteness"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.Subsemiring.Order":
   ["Mathlib.GroupTheory.Submonoid.Order"],
