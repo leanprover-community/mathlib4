@@ -180,7 +180,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
-  suffices (f : E →ₗ[F] K) = g by rwa [FunLike.ext'_iff] at this ⊢
+  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
   -- ACL : why is this coercion broken ?
   -- suffices f.toLinearMap = g.toLinearMap by rwa [DFunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
