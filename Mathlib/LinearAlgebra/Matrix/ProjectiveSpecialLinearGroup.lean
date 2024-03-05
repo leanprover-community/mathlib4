@@ -33,7 +33,6 @@ abbrev ProjectiveSpecialLinearGroup : Type _ :=
 scoped[MatrixGroups] notation "PSL(" n ", " R ")" => Matrix.ProjectiveSpecialLinearGroup (Fin n) R
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
-    {α : Type*}
 
 namespace SpecialLinearGroup
 
@@ -50,8 +49,8 @@ instance : SMul PSL(2, ℝ) ℍ where
     rw [SpecialLinearGroup.coset_center_iff] at hAB
 ```
 -/
-theorem coset_center_iff [Inhabited n]
-    {A B : SpecialLinearGroup n R} : A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
+theorem coset_center_iff {A B : SpecialLinearGroup n R} :
+    A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
     ∃ (c : R), (c ^ Fintype.card n = 1 ∧ B.val = c • A.val) := by
   constructor
   · intro hAB
