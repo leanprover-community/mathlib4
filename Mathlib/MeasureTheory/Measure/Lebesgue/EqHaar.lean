@@ -40,6 +40,9 @@ We also show that a Lebesgue density point `x` of a set `s` (with respect to clo
 density one for the rescaled copies `{x} + r • t` of a given set `t` with positive measure, in
 `tendsto_addHaar_inter_smul_one_of_density_one`. In particular, `s` intersects `{x} + r • t` for
 small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
+
+Statements on integrals of functions with respect to an additive Haar measure can be found in
+`MeasureTheory.Measure.Haar.NormedSpace`.
 -/
 
 assert_not_exists MeasureTheory.integral
@@ -120,7 +123,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 #align measure_theory.add_haar_measure_eq_volume_pi MeasureTheory.addHaarMeasure_eq_volume_pi
 
--- porting note: TODO: remove this instance?
+-- Porting note: TODO: remove this instance?
 instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
@@ -241,7 +244,7 @@ theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : Linear
   -- matrices in `map_linearMap_addHaar_pi_eq_smul_addHaar`.
   let ι := Fin (finrank ℝ E)
   haveI : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
-  have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp
+  have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [ι]
   have e : E ≃ₗ[ℝ] ι → ℝ := LinearEquiv.ofFinrankEq E (ι → ℝ) this
   -- next line is to avoid `g` getting reduced by `simp`.
   obtain ⟨g, hg⟩ : ∃ g, g = (e : E →ₗ[ℝ] ι → ℝ).comp (f.comp (e.symm : (ι → ℝ) →ₗ[ℝ] E)) := ⟨_, rfl⟩
@@ -335,6 +338,16 @@ theorem addHaar_image_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
   μ.addHaar_image_linearMap (f : E →ₗ[ℝ] E) s
 #align measure_theory.measure.add_haar_image_continuous_linear_equiv MeasureTheory.Measure.addHaar_image_continuousLinearEquiv
 
+theorem LinearMap.quasiMeasurePreserving (f : E →ₗ[ℝ] E) (hf : LinearMap.det f ≠ 0) :
+    QuasiMeasurePreserving f μ μ := by
+  refine ⟨f.continuous_of_finiteDimensional.measurable, ?_⟩
+  rw [map_linearMap_addHaar_eq_smul_addHaar μ hf]
+  exact smul_absolutelyContinuous
+
+theorem ContinuousLinearMap.quasiMeasurePreserving (f : E →L[ℝ] E) (hf : f.det ≠ 0) :
+    QuasiMeasurePreserving f μ μ :=
+  LinearMap.quasiMeasurePreserving μ (f : E →ₗ[ℝ] E) hf
+
 /-!
 ### Basic properties of Haar measures on real vector spaces
 -/
@@ -345,11 +358,17 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
-    simp only [mul_one, LinearMap.det_smul, Ne.def, MonoidHom.map_one]
+    simp only [f, mul_one, LinearMap.det_smul, Ne.def, MonoidHom.map_one]
     intro h
     exact hr (pow_eq_zero h)
-  simp only [map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
+  simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
 #align measure_theory.measure.map_add_haar_smul MeasureTheory.Measure.map_addHaar_smul
+
+theorem quasiMeasurePreserving_smul {r : ℝ} (hr : r ≠ 0) :
+    QuasiMeasurePreserving (r • ·) μ μ := by
+  refine ⟨measurable_const_smul r, ?_⟩
+  rw [map_addHaar_smul μ hr]
+  exact smul_absolutelyContinuous
 
 @[simp]
 theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
@@ -564,7 +583,7 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
   have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
-    -- porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
+    -- Porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
     refine congr_arg _ <| funext fun i ↦ ?_
     exact (b.constr_basis ℕ v i).symm
   rw [A, addHaar_image_linearMap, b.addHaar_self, mul_one, ← LinearMap.det_toMatrix b,
@@ -576,12 +595,12 @@ variable [FiniteDimensional ℝ G] {n : ℕ} [_i : Fact (finrank ℝ G = n)]
 /-- The Lebesgue measure associated to an alternating map. It gives measure `|ω v|` to the
 parallelepiped spanned by the vectors `v₁, ..., vₙ`. Note that it is not always a Haar measure,
 as it can be zero, but it is always locally finite and translation invariant. -/
-noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) :
+noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) :
     Measure G :=
   ‖ω (finBasisOfFinrankEq ℝ G _i.out)‖₊ • (finBasisOfFinrankEq ℝ G _i.out).addHaar
 #align alternating_map.measure AlternatingMap.measure
 
-theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ)
+theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ)
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
@@ -589,10 +608,10 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [Λ^Fin n]→ₗ[�
     Real.ennnorm_eq_ofReal_abs]
 #align alternating_map.measure_parallelepiped AlternatingMap.measure_parallelepiped
 
-instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
+instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
-instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
+instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
 end
@@ -681,7 +700,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux2 (s : Set E) (x : E)
   set u' := R⁻¹ • u with hu'
   have A : Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t')) / μ ({x} + r • u')) (𝓝[>] 0) (𝓝 0) := by
     apply tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 μ s x h t' u'
-    · simp only [h'u, (pow_pos Rpos _).ne', abs_nonpos_iff, addHaar_smul, not_false_iff,
+    · simp only [u', h'u, (pow_pos Rpos _).ne', abs_nonpos_iff, addHaar_smul, not_false_iff,
         ENNReal.ofReal_eq_zero, inv_eq_zero, inv_pow, Ne.def, or_self_iff, mul_eq_zero]
     · refine (smul_set_mono t_bound).trans_eq ?_
       rw [smul_closedBall _ _ Rpos.le, smul_zero, Real.norm_of_nonneg (inv_nonneg.2 Rpos.le),

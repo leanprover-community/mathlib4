@@ -157,7 +157,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
   have hb : LinearIndependent ℝ b := by
     refine' linearIndependent_of_ne_zero_of_inner_eq_zero _ _
     · intro i
-      fin_cases i <;> simp [hc.symm, hp.symm]
+      fin_cases i <;> simp [b, hc.symm, hp.symm]
     · intro i j hij
       fin_cases i <;> fin_cases j <;> try exact False.elim (hij rfl)
       · exact ho
@@ -176,7 +176,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     have hr : Set.range b = {c₂ -ᵥ c₁, p₂ -ᵥ p₁} := by
       have hu : (Finset.univ : Finset (Fin 2)) = {0, 1} := by decide
       rw [← Fintype.coe_image_univ, hu]
-      simp
+      simp [b]
     rw [← hbs, hr, Submodule.mem_span_insert] at hv
     rcases hv with ⟨t₁, v', hv', hv⟩
     rw [Submodule.mem_span_singleton] at hv'

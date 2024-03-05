@@ -307,7 +307,7 @@ theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
 
 #align int.sub_mod Int.sub_emod
 
--- porting note: this should be a doc comment, but the lemma isn't here any more!
+-- Porting note: this should be a doc comment, but the lemma isn't here any more!
 /- See also `Int.divModEquiv` for a similar statement as an `Equiv`. -/
 #align int.div_mod_unique Int.ediv_emod_unique
 
@@ -537,7 +537,7 @@ variable {G : Type*} [Group G]
 
 @[to_additive (attr := simp) abs_zsmul_eq_zero]
 lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
-  rw [← Int.coe_natAbs, zpow_ofNat, pow_natAbs_eq_one]
+  rw [← Int.coe_natAbs, zpow_coe_nat, pow_natAbs_eq_one]
 
 end Group
 

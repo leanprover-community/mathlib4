@@ -3,8 +3,9 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.LocallyConvex.Barrelled
+import Mathlib.Topology.Baire.CompleteMetrizable
 
 #align_import analysis.normed_space.banach_steinhaus from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

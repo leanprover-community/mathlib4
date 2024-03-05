@@ -238,17 +238,23 @@ theorem piecewise_apply {s : Set α} (hs : MeasurableSet s) (f g : α →ₛ β)
 @[simp]
 theorem piecewise_compl {s : Set α} (hs : MeasurableSet sᶜ) (f g : α →ₛ β) :
     piecewise sᶜ hs f g = piecewise s hs.of_compl g f :=
-  coe_injective <| by simp [hs]; convert Set.piecewise_compl s f g
+  coe_injective <| by
+    set_option tactic.skipAssignedInstances false in
+    simp [hs]; convert Set.piecewise_compl s f g
 #align measure_theory.simple_func.piecewise_compl MeasureTheory.SimpleFunc.piecewise_compl
 
 @[simp]
 theorem piecewise_univ (f g : α →ₛ β) : piecewise univ MeasurableSet.univ f g = f :=
-  coe_injective <| by simp; convert Set.piecewise_univ f g
+  coe_injective <| by
+    set_option tactic.skipAssignedInstances false in
+    simp; convert Set.piecewise_univ f g
 #align measure_theory.simple_func.piecewise_univ MeasureTheory.SimpleFunc.piecewise_univ
 
 @[simp]
 theorem piecewise_empty (f g : α →ₛ β) : piecewise ∅ MeasurableSet.empty f g = g :=
-  coe_injective <| by simp; convert Set.piecewise_empty f g
+  coe_injective <| by
+    set_option tactic.skipAssignedInstances false in
+    simp; convert Set.piecewise_empty f g
 #align measure_theory.simple_func.piecewise_empty MeasureTheory.SimpleFunc.piecewise_empty
 
 @[simp]
@@ -1287,7 +1293,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
     let g := SimpleFunc.piecewise (f ⁻¹' {x}) mx 0 f
     have Pg : P g := by
       apply ih
-      simp only [SimpleFunc.coe_piecewise, range_piecewise]
+      simp only [g, SimpleFunc.coe_piecewise, range_piecewise]
       rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
         insert_diff_self_of_not_mem, diff_eq_empty.mpr, Set.empty_union]
       · rw [Set.image_subset_iff]
@@ -1297,12 +1303,12 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
     convert h_add _ Pg (h_ind x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
-      · simpa [piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
-      · simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
+      · simpa [g, piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
+      · simp [g, piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
     rw [disjoint_iff_inf_le]
     rintro y
     by_cases hy : y ∈ f ⁻¹' {x}
-    · simp [piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
+    · simp [g, piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
     · simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
 #align measure_theory.simple_func.induction MeasureTheory.SimpleFunc.induction
 

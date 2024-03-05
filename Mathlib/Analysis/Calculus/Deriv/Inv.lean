@@ -240,4 +240,3 @@ theorem deriv_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d
 #align deriv_div deriv_div
 
 end Division
-

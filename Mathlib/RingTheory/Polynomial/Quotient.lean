@@ -32,7 +32,7 @@ noncomputable def quotientSpanXSubCAlgEquivAux1 (x : R) :
     (R[X] ⧸ Ideal.span {X - C x}) ≃ₐ[R] (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) :=
   @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ (ker_evalRingHom x).symm
 
--- porting note: need to split this definition into two sub-definitions to prevent time out
+-- Porting note: need to split this definition into two sub-definitions to prevent time out
 /-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
 isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
 noncomputable def quotientSpanXSubCAlgEquiv (x : R) :

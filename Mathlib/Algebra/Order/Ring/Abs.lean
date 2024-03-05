@@ -37,7 +37,7 @@ variable [LinearOrderedRing α] {n : ℕ} {a b c : α}
 @[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_pos zero_lt_one
 #align abs_one abs_one
 
-@[simp] lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
+lemma abs_two : |(2 : α)| = 2 := abs_of_pos zero_lt_two
 #align abs_two abs_two
 
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
@@ -158,11 +158,8 @@ lemma sq_eq_sq_iff_abs_eq_abs (a b : α) : a ^ 2 = b ^ 2 ↔ |a| = |b| := by
   simpa only [one_pow, abs_one] using @sq_lt_sq _ _ 1 a
 #align one_lt_sq_iff_one_lt_abs one_lt_sq_iff_one_lt_abs
 
-lemma exists_abs_lt {α : Type*} [LinearOrderedRing α] (a : α) : ∃ b > 0, |a| < b := by
-  refine ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, ?_⟩
-  cases' le_or_lt 0 a with ht ht
-  · simp only [abs_of_nonneg ht, lt_add_iff_pos_right, zero_lt_one]
-  · simp only [abs_of_neg ht, lt_add_iff_pos_right, zero_lt_one]
+lemma exists_abs_lt {α : Type*} [LinearOrderedRing α] (a : α) : ∃ b > 0, |a| < b :=
+  ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, lt_add_one |a|⟩
 
 end LinearOrderedRing
 
