@@ -532,8 +532,10 @@ Measures and integral calculus:
     Dirichlet theorem: ''
     Fejer theorem: ''
     Parseval theorem: 'tsum_sq_fourierCoeff'
-    Fourier transforms on $\mathrm{L}^1(\R^d)$ and $\mathrm{L}^2(\R^d)$: ''
+    Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourierIntegral'
+    Fourier transform on $\mathrm{L}^2(\R^d)$: ''
     Plancherel’s theorem: ''
+    Fourier inversion formula: 'Continuous.fourier_inversion'
 
 # 11.
 Probability Theory:

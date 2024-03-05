@@ -400,6 +400,10 @@ theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 #align complex.continuous_of_real Complex.continuous_ofReal
 
+lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
+    (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
+  (continuous_ofReal.tendsto _).comp hf
+
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
 theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = Complex.ofReal := by
   convert congr_arg AlgHom.toRingHom <| Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h)
