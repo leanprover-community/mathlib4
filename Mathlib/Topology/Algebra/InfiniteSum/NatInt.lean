@@ -392,7 +392,7 @@ theorem HasSum.natCast_add_neg_natCast {f : ℤ → α} (hf : HasSum f a) :
         suffices x ≠ 0 by simp only [this, if_false]
         rintro rfl
         simp only [mem_sdiff, mem_union, mem_image, Nat.cast_eq_zero, exists_eq_right, neg_eq_zero,
-          or_self, mem_inter, and_self, and_not_self] at hx
+          or_self, mem_inter, and_self, and_not_self, u1, u2] at hx
       · intro x hx
         simp only [u1, u2, mem_inter, mem_image, exists_prop] at hx
         have : x = 0 := by
@@ -404,7 +404,7 @@ theorem HasSum.natCast_add_neg_natCast {f : ℤ → α} (hf : HasSum f a) :
         simp only [this, eq_self_iff_true, if_true]
     _ = (∑ x in u1, f x) + ∑ x in u2, f x := sum_union_inter
     _ = (∑ b in v', f b) + ∑ b in v', f (-b) := by
-      simp only [Nat.cast_inj, imp_self, implies_true, forall_const, sum_image, neg_inj]
+      simp only [u1, u2, Nat.cast_inj, imp_self, implies_true, forall_const, sum_image, neg_inj]
     _ = ∑ b in v', (f b + f (-b)) := sum_add_distrib.symm
 #align has_sum.sum_nat_of_sum_int HasSum.natCast_add_neg_natCast
 
