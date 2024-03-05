@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree.RefinedDiscrTree
-import ProofWidgets
-
+import Mathlib.Tactic.Widget.SelectPanelUtils
 namespace Mathlib.Tactic.LibraryRewrite
 
 open Lean Meta Server
@@ -125,10 +124,10 @@ end
 
 /-- The `Expr` at a `SubExpr.GoalsLocation`. -/
 def _root_.Lean.SubExpr.GoalsLocation.rootExpr : SubExpr.GoalsLocation → MetaM Expr
-  | ⟨mvarId, .hyp fvarId⟩        => mvarId.withContext fvarId.getType
-  | ⟨mvarId, .hypType fvarId _⟩  => mvarId.withContext fvarId.getType
-  | ⟨mvarId, .hypValue fvarId _⟩ => mvarId.withContext do return (← fvarId.getDecl).value
-  | ⟨mvarId, .target _⟩          => mvarId.getType
+  | ⟨_, .hyp fvarId⟩        => fvarId.getType
+  | ⟨_, .hypType fvarId _⟩  => fvarId.getType
+  | ⟨_, .hypValue fvarId _⟩ => do return (← fvarId.getDecl).value
+  | ⟨mvarId, .target _⟩     => mvarId.getType
 
 /-- The `SubExpr.Pos` of a `SubExpr.GoalsLocation`. -/
 def _root_.Lean.SubExpr.GoalsLocation.pos : SubExpr.GoalsLocation → SubExpr.Pos
@@ -289,12 +288,6 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
   let allResults := localResults ++ libraryResults
   return allResults
 
-/-- `Props` for interactive tactics.
-Keeps track of the range in the text document of the piece of syntax to replace. -/
-structure LibraryRewriteProps extends PanelWidgetProps where
-  replaceRange : Lsp.Range
-deriving RpcEncodable
-
 def checkLemmata (ass : Array (Array RewriteLemma × Nat))
     (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
     MetaM (Array (CodeWithInfos × Array RewriteApplication)) := do
@@ -326,40 +319,50 @@ def dedupLemmata (lemmata : Array RewriteApplication) (subExprString : String) :
       | some name => name == lem.name
       | none      => true
 
+def getLibraryRewrites (loc : SubExpr.GoalsLocation) :
+    ExceptT String MetaM (Array (CodeWithInfos × Array RewriteApplication)) := do
+  let e ← loc.rootExpr
+  let pos := loc.pos
+  let loc := loc.loc
+  let subExpr ← Core.viewSubexpr pos e
+  if subExpr.hasLooseBVars then
+    throwThe _ "rw doesn't work on expressions with bound variables."
+  let rwLemmas ← getCandidates subExpr
+  if rwLemmas.isEmpty then
+    throwThe _ "No rewrite lemmata found."
+  let positions ← kabstractPositions subExpr e
+  let occurrence := if positions.size == 1 then none else
+    positions.findIdx? (· == pos) |>.map (· + 1)
+  let results ← checkLemmata rwLemmas loc subExpr occurrence
+  if results.isEmpty then
+    throwThe _ "No applicable rewrite lemmata found."
+  let subExprString := (← ppExprTagged subExpr).stripTags
+  return results.map fun (pat, lemmata) => (pat, dedupLemmata lemmata subExprString)
+
 @[server_rpc_method]
-def LibraryRewrite.rpc (props : LibraryRewriteProps) : RequestM (RequestTask Html) :=
+def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
-  let some loc := props.selectedLocations.back?
-    | return <p> rw??: Please shift-click an expression. </p>
+  let some loc := props.selectedLocations.back? |
+    return .text "rw??: Please shift-click an expression."
   if loc.loc matches .hypValue .. then
-    return <p> rw doesn't work on the value of a let-bound free variable. </p>
-  let some goal := props.goals.find? (·.mvarId == loc.mvarId)
-    | return <p> Couln't find the goal. </p>
+    return .text "rw doesn't work on the value of a let-bound free variable."
+  let some goal := props.goals[0]? |
+    return .text "There is no goal to solve!"
+  if loc.mvarId != goal.mvarId then
+    return .text "The selected expression should be in the main goal."
   goal.ctx.val.runMetaM {} do -- similar to `SelectInsertConv`
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
-    profileitM Exception "libraryRewrite" (← getOptions) do
-      let e ← loc.rootExpr
-      let subExpr ← Core.viewSubexpr loc.pos e
-      if subExpr.hasLooseBVars then
-        return <p> rw doesn't work on expressions with bound variables. </p>
-      let rwLemmas ← getCandidates subExpr
-      if rwLemmas.isEmpty then
-        return <p> No rewrite lemmata found. </p>
-      let positions ← kabstractPositions subExpr e
-      let occurrence := if positions.size == 1 then none else
-        positions.findIdx? (· == loc.pos) |>.map (· + 1)
-      let results ← checkLemmata rwLemmas loc.loc subExpr occurrence
-      if results.isEmpty then
-        return <p> No applicable rewrite lemmata found. </p>
-      let subExprString := (← ppExprTagged subExpr).stripTags
-      let results := results.map fun (pat, lemmata) => (pat, dedupLemmata lemmata subExprString)
-      return renderResults results props.replaceRange doc
+      profileitM Exception "libraryRewrite" (← getOptions) do
+        (fun
+          | .ok results => renderResults results props.replaceRange doc
+          | .error msg  => .text msg)
+        <$> getLibraryRewrites loc
 
 @[widget_module]
-def LibraryRewrite : Component LibraryRewriteProps :=
+def LibraryRewrite : Component SelectInsertParams :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 /--
