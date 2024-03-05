@@ -3,10 +3,8 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
-import Lean
-import ProofWidgets
 import Mathlib.Lean.Meta.RefinedDiscrTree.RefinedDiscrTree
-import Aesop.Util.Basic
+import ProofWidgets
 
 namespace Mathlib.Tactic.LibraryRewrite
 
@@ -140,7 +138,7 @@ def _root_.Lean.SubExpr.GoalsLocation.pos : SubExpr.GoalsLocation → SubExpr.Po
   | ⟨_, .target pos⟩     => pos
 
 /-- find the positions of the pattern that `kabstract` would find -/
-def findPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
+def kabstractPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
   let e ← instantiateMVars e
   let pHeadIdx := p.toHeadIndex
   let pNumArgs := p.headNumArgs
@@ -300,8 +298,7 @@ structure LibraryRewriteProps extends PanelWidgetProps where
   factor : Nat
 deriving RpcEncodable
 
-@[specialize]
-def filterLemmata (ass : Array (Array RewriteLemma × Nat))
+def checkLemmata (ass : Array (Array RewriteLemma × Nat))
     (maxTotal max : Nat) (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
     MetaM (Array (CodeWithInfos × Array RewriteApplication) × Bool) :=
   let maxTotal := maxTotal * 1000
@@ -337,6 +334,21 @@ def filterLemmata (ass : Array (Array RewriteLemma × Nat))
       return (bss, false)
   return (bss, isEverything)
 
+def dedupLemmata (lemmata : Array RewriteApplication) (subExprString : String) :
+    Array RewriteApplication :=
+  let replacements : HashMap String Name := lemmata.foldl (init := .empty) fun map lem =>
+    if lem.extraGoals.isEmpty && !map.contains lem.replacement.stripTags then
+      map.insert lem.replacement.stripTags lem.name
+    else
+      map
+  lemmata.filter fun lem =>
+    if lem.replacement.stripTags == subExprString then
+      false
+    else
+      match replacements.find? lem.replacement.stripTags with
+      | none      => true
+      | some name => lem.name == name
+
 @[server_rpc_method]
 def LibraryRewrite.rpc (props : LibraryRewriteProps) : RequestM (RequestTask Html) :=
   RequestM.asTask do
@@ -359,13 +371,15 @@ def LibraryRewrite.rpc (props : LibraryRewriteProps) : RequestM (RequestTask Htm
       let rwLemmas ← getCandidates subExpr
       if rwLemmas.isEmpty then
         return <p> No rewrite lemmata found. </p>
-      let positions ← findPositions subExpr e
+      let positions ← kabstractPositions subExpr e
       let occurrence := if positions.size == 1 then none else
         positions.findIdx? (· == loc.pos) |>.map (· + 1)
-      let (results, isEverything) ← filterLemmata rwLemmas loc.loc subExpr occurrence
+      let (results, isEverything) ← checkLemmata rwLemmas loc.loc subExpr occurrence
         (max := props.factor * 800) (maxTotal := props.factor * 8000)
       if results.isEmpty then
         return <p> No applicable rewrite lemmata found. </p>
+      let subExprString := (← ppExprTagged subExpr).stripTags
+      let results := results.map fun (pat, lemmata) => (pat, dedupLemmata lemmata subExprString)
       return renderResults results isEverything props.replaceRange doc
 
 @[widget_module]

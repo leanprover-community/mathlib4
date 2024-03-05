@@ -3,9 +3,8 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
-import Std.Data.List.Basic
 import Lean.Meta
+import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
 import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
