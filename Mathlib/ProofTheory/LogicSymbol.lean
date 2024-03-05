@@ -156,7 +156,7 @@ infix:45 " ⊢ " => HasTurnstile.turnstile
 end logicNotation
 
 /-- `DeMorgan` class describes proof systems implementing De Morgan's laws -/
-class DeMorgan (F : Type*) [LogicSymbol F] where
+class DeMorgan (F : Type*) [LogicSymbol F] : Prop where
   verum           : ~(⊤ : F) = ⊥
   falsum          : ~(⊥ : F) = ⊤
   imply (p q : F) : (p ⭢ q) = ~p ⋎ q
@@ -167,7 +167,7 @@ class DeMorgan (F : Type*) [LogicSymbol F] where
 attribute [simp] DeMorgan.verum DeMorgan.falsum DeMorgan.and DeMorgan.or DeMorgan.neg
 
 /-- `NegDefinition` class describes proof systems implementing negation -/
-class NegDefinition (F : Type*) [LogicSymbol F] where
+class NegDefinition (F : Type*) [LogicSymbol F] : Prop where
   neg {p : F} : ~p = p ⭢ ⊥
 
 attribute [simp] NegDefinition.neg
@@ -218,7 +218,7 @@ end LogicSymbol
 
 variable (α β γ : Type*) [LogicSymbol α] [LogicSymbol β] [LogicSymbol γ]
 
-/-- α →ˡᶜ β is the type of functions α → β that preserve the logical connectives -/
+/-- α →ˡᶜ β is the type of functions α → β that preserve the logical connectives.-/
 structure LogicSymbolHom where
   /-- Function for homomorphism -/
   toFun : α → β
@@ -240,15 +240,21 @@ infix:25 " →ˡᶜ " => LogicSymbolHom
 
 /-- `LogicSymbolHomClass F α β` states that `F` is a type of homomorphisms over logical connectives.
 
-You should extend this class when you extend `LogicSymbol.LogicSymbolHom`. -/
+You should extend this class when you extend `LogicSymbolHom`. -/
 class LogicSymbolHomClass (F : Type*) (α β : outParam Type*)
-    [LogicSymbol α] [LogicSymbol β] [FunLike F α β] where
-  map_top : ∀ (f : F), f ⊤ = ⊤
-  map_bot : ∀ (f : F), f ⊥ = ⊥
-  map_neg : ∀ (f : F) (p : α), f (~p) = ~f p
-  map_imply : ∀ (f : F) (p q : α), f (p ⭢ q) = f p ⭢ f q
-  map_and : ∀ (f : F) (p q : α), f (p ⋏ q) = f p ⋏ f q
-  map_or  : ∀ (f : F) (p q : α), f (p ⋎ q) = f p ⋎ f q
+    [LogicSymbol α] [LogicSymbol β] [FunLike F α β] : Prop where
+  /-- The proposition that a homomorphism preserves the top element.-/
+  map_top (f : F) : f ⊤ = ⊤
+  /-- The proposition that a homomorphism preserves the botom element.-/
+  map_bot (f : F) : f ⊥ = ⊥
+  /-- The proposition that a homomorphism preserves negation.-/
+  map_neg (f : F) : ∀ (p : α), f (~p) = ~f p
+  /-- The proposition that a homomorphism preserves implication.-/
+  map_imply (f : F) : ∀ (p q : α), f (p ⭢ q) = f p ⭢ f q
+  /-- The proposition that a homomorphism preserves conjunction.-/
+  map_and (f : F) : ∀ (p q : α), f (p ⋏ q) = f p ⋏ f q
+  /-- The proposition that a homomorphism preserves disjunction.-/
+  map_or  (f : F) : ∀ (p q : α), f (p ⋎ q) = f p ⋎ f q
 
 attribute [simp]
   LogicSymbolHomClass.map_top
