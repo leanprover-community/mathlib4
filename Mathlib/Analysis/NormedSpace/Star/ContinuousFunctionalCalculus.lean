@@ -70,7 +70,7 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elementalStarAlgebra R a) with
     mul_comm := mul_comm }
 
--- porting note: these hack instances no longer seem to be necessary
+-- Porting note: these hack instances no longer seem to be necessary
 #noalign elemental_star_algebra.complex.normed_algebra
 
 variable [CompleteSpace A] (a : A) [IsStarNormal a] (S : StarSubalgebra ℂ A)
@@ -92,9 +92,7 @@ theorem spectrum_star_mul_self_of_isStarNormal :
     rintro - ⟨φ, rfl⟩
     rw [gelfandTransform_apply_apply ℂ _ (star a' * a') φ, map_mul φ, map_star φ]
     rw [Complex.eq_coe_norm_of_nonneg (star_mul_self_nonneg _), ← map_star, ← map_mul]
-    exact
-      ⟨Complex.zero_le_real.2 (norm_nonneg _),
-        Complex.real_le_real.2 (AlgHom.norm_apply_le_self φ (star a' * a'))⟩
+    exact ⟨by positivity, Complex.real_le_real.2 (AlgHom.norm_apply_le_self φ (star a' * a'))⟩
 #align spectrum_star_mul_self_of_is_star_normal spectrum_star_mul_self_of_isStarNormal
 
 variable {a}
@@ -135,7 +133,7 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
   set u : Units (elementalStarAlgebra ℂ a) :=
     Units.map (algebraMap ℂ (elementalStarAlgebra ℂ a)).toMonoidHom (Units.mk0 _ h₁)
   refine' ⟨u.ofNearby _ _, rfl⟩
-  simp only [Units.coe_map, Units.val_inv_eq_inv_val, RingHom.toMonoidHom_eq_coe, Units.val_mk0,
+  simp only [u, Units.coe_map, Units.val_inv_eq_inv_val, RingHom.toMonoidHom_eq_coe, Units.val_mk0,
     Units.coe_map_inv, MonoidHom.coe_coe, norm_algebraMap', norm_inv, Complex.norm_eq_abs,
     Complex.abs_ofReal, abs_norm, inv_inv]
     --RingHom.coe_monoidHom,

@@ -183,7 +183,7 @@ def glueMetricApprox (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
   dist_triangle := glueDist_triangle Φ Ψ ε H
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   eq_of_dist_eq_zero := eq_of_glueDist_eq_zero Φ Ψ ε ε0 _ _
-  toUniformSpace := Sum.uniformSpace
+  toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ <| Sum.mem_uniformity_iff_glueDist ε0
 #align metric.glue_metric_approx Metric.glueMetricApprox
 
@@ -265,12 +265,15 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
   dist_triangle
     | .inl p, .inl q, .inl r => dist_triangle p q r
     | .inl p, .inr q, _ => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist p q]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | _, .inl q, .inr r => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist q r]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, _, .inl r => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist r p]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, .inr q, .inr r => dist_triangle p q r
@@ -281,7 +284,7 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist q p).symm.trans h)
     · rw [eq_of_dist_eq_zero h]
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
-  toUniformSpace := Sum.uniformSpace
+  toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ Sum.mem_uniformity
 #align metric.metric_space_sum Metric.metricSpaceSum
 
@@ -456,13 +459,13 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   set s : ι → Set (Σi, E i) := fun i => Sigma.fst ⁻¹' {i}
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
-    simp only [← range_sigmaMk]
+    simp only [s, ← range_sigmaMk]
     exact (isometry_mk i).uniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine' completeSpace_of_isComplete_univ _
   convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
-  simp only [← preimage_iUnion, iUnion_of_singleton, preimage_univ]
+  simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 #align metric.sigma.complete_space Metric.Sigma.completeSpace
 
 end Sigma
