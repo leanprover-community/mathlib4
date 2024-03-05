@@ -22,8 +22,6 @@ preserves logical connectives.
 
 namespace ProofTheory
 
-universe u
-
 /-- `Polarity` is a data type for managing quantifier alternation -/
 inductive Polarity := | sigma | pi
 
@@ -313,7 +311,7 @@ end LogicSymbolHom
 
 namespace LogicSymbolHomClass
 
-variable (F : Type*) (α β : Type*)
+variable {F : Type*} {α β : Type*}
   [LogicSymbol α] [LogicSymbol β] [FunLike F α β] [LogicSymbolHomClass F α β]
 variable (f : F) (a b : α)
 
@@ -324,7 +322,8 @@ instance : CoeFun F (fun _ ↦ α → β) := ⟨DFunLike.coe⟩
 end LogicSymbolHomClass
 
 section quantifier
-variable {α : ℕ → Type u} [(n : ℕ) → LogicSymbol (α n)] [UnivQuantifier α] [ExQuantifier α]
+
+variable {α : ℕ → Type*} [(n : ℕ) → LogicSymbol (α n)] [UnivQuantifier α] [ExQuantifier α]
 
 /-- `ball` defines a bounded universal quantifier -/
 def UnivQuantifier.ball {n : ℕ} (p : α (n + 1)) (q : α (n + 1)) : α n := ∀' (p ⭢ q)
@@ -346,9 +345,8 @@ open ProofTheory
 
 namespace Matrix
 
-section And
-
 variable {α β : Type*}
+
 variable [LogicSymbol α] [LogicSymbol β]
 
 /-- `Matrix.conj` defines conjunction over a vector -/
@@ -358,7 +356,7 @@ def conj : {n : ℕ} → (Fin n → α) → α
 
 @[simp] lemma conj_nil (v : Fin 0 → α) : conj v = ⊤ := rfl
 
-@[simp] lemma conj_cons {n} {a : α} {v : Fin n → α} : conj (a :> v) = a ⋏ conj v := rfl
+@[simp] lemma conj_cons {n} (a : α) (v : Fin n → α) : conj (a :> v) = a ⋏ conj v := rfl
 
 @[simp] lemma conj_hom_prop {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop]
   (f : F) {n} (v : Fin n → α) : f (conj v) = ∀ i, f (v i) := by
@@ -375,13 +373,9 @@ lemma hom_conj' {F : Type*} [FunLike F α β]  [LogicSymbolHomClass F α β]
     (f : F) {n} (v : Fin n → α) : f (conj v) = conj fun i ↦ f (v i) :=
   hom_conj f v
 
-end And
-
 end Matrix
 
 namespace List
-
-section
 
 variable {α : Type*} [LogicSymbol α]
 
@@ -411,13 +405,9 @@ lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop]
     (f : F) (l : List α) : f l.disj ↔ ∃ a ∈ l, f a := by
   induction l <;> simp[*]
 
-end
-
 end List
 
 namespace Finset
-
-section
 
 variable {α : Type*} [LogicSymbol α]
 
@@ -434,7 +424,5 @@ noncomputable def disj (s : Finset α) : α := s.toList.disj
 lemma map_disj {F : Type*} [FunLike F α Prop] [LogicSymbolHomClass F α Prop] (f : F)
     (s : Finset α) : f s.disj ↔ ∃ a ∈ s, f a := by
   simpa using List.map_disj f s.toList
-
-end
 
 end Finset
