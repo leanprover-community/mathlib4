@@ -116,7 +116,6 @@ instance (priority := 100) {F : Type*} [FunLike F A B]
     SemilinearMapClass F φ A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
 
--- TODO (ACL) : Why is this needed? Adjust priority?
 instance (priority := 100) {F : Type*} [FunLike F A B] [Module R B] [NonUnitalAlgHomClass F R A B] :
     LinearMapClass F R A B :=
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
