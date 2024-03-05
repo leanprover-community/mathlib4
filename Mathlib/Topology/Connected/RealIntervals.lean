@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Dennis Sweeney. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Dennis Sweeney.
+Authors: Dennis Sweeney
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Archimedean
@@ -338,15 +338,15 @@ lemma closure_BoundedInterval :
     closure (BoundedInterval_as_set I) = Icc I.left_endpoint I.right_endpoint := by
   apply Subset.antisymm
   · calc closure (BoundedInterval_as_set I)
-      ⊆ closure (Icc I.left_endpoint I.right_endpoint)
-        := closure_mono (BoundedInterval_subset_Icc I)
-    _ = Icc I.left_endpoint I.right_endpoint
-        := IsClosed.closure_eq isClosed_Icc
+      ⊆ closure (Icc I.left_endpoint I.right_endpoint) :=
+        closure_mono (BoundedInterval_subset_Icc I)
+    _ = Icc I.left_endpoint I.right_endpoint :=
+      IsClosed.closure_eq isClosed_Icc
   · calc Icc I.left_endpoint I.right_endpoint
-      = closure (Ioo I.left_endpoint I.right_endpoint)
-        := (closure_Ioo (ne_of_lt I.left_lt_right)).symm
-    _ ⊆ closure (BoundedInterval_as_set I)
-        := closure_mono (BoundedInterval_contains_Ioo I)
+      = closure (Ioo I.left_endpoint I.right_endpoint) :=
+        (closure_Ioo (ne_of_lt I.left_lt_right)).symm
+    _ ⊆ closure (BoundedInterval_as_set I) :=
+      closure_mono (BoundedInterval_contains_Ioo I)
 
 lemma isBoundedBelow_BoundedInterval : BddBelow (BoundedInterval_as_set I) :=
   BddBelow.mono (BoundedInterval_subset_Icc I) bddBelow_Icc
