@@ -11,7 +11,8 @@ import Mathlib.MeasureTheory.Integral.PeakFunction
 
 In a finite-dimensional real inner product space, we show the Fourier inversion formula, i.e.,
 `𝓕⁻ (𝓕 f) v = f v` if `f` and `𝓕 f` are integrable, and `f` is continuous at `v`. This is proved
-in `Real.fourier_inversion`.
+in `MeasureTheory.Integrable.fourier_inversion`. See also `Continuous.fourier_inversion`
+giving `𝓕⁻ (𝓕 f) = f` under an additional continuity assumption for `f`.
 
 We use the following proof. A naïve computation gives
 `𝓕⁻ (𝓕 f) v
@@ -38,7 +39,7 @@ rely on the explicit computation of the Fourier transform of Gaussians.
 
 open Filter MeasureTheory Complex FiniteDimensional Metric Real Bornology
 
-open scoped Topology FourierTransform RealInnerProductSpace
+open scoped Topology FourierTransform RealInnerProductSpace Complex
 
 variable {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
   [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
@@ -47,11 +48,11 @@ variable {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 namespace Real
 
 lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
-    Tendsto (fun (c : ℝ) ↦ (∫ v : V, Complex.exp (- c⁻¹ * ‖v‖^2) • f v))
+    Tendsto (fun (c : ℝ) ↦ (∫ v : V, cexp (- c⁻¹ * ‖v‖^2) • f v))
       atTop (𝓝 (∫ v : V, f v)) := by
   apply tendsto_integral_filter_of_dominated_convergence _ _ _ hf.norm
   · apply eventually_of_forall (fun v ↦ ?_)
-    nth_rewrite 2 [show f v = Complex.exp (- (0 : ℝ) * ‖v‖^2) • f v by simp]
+    nth_rewrite 2 [show f v = cexp (- (0 : ℝ) * ‖v‖^2) • f v by simp]
     apply (Tendsto.cexp _).smul_const
     exact tendsto_inv_atTop_zero.ofReal.neg.mul_const _
   · apply eventually_of_forall (fun c ↦ ?_)
@@ -71,7 +72,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
     Tendsto (fun (c : ℝ) ↦
       ∫ w : V, ((π * c) ^ (finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * c * ‖v - w‖ ^ 2)) • f w)
     atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
-  have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖^2 + 2 * π * Complex.I * ⟪v, w⟫)
+  have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)
        • (𝓕 f) w)) atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     have : Integrable (fun w ↦ 𝐞[⟪w, v⟫] • (𝓕 f) w) := by
       have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
@@ -84,14 +85,14 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
       ring
     · simp [fourierIntegralInv_eq]
   have B : Tendsto (fun (c : ℝ) ↦ (∫ w : V,
-        𝓕 (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * Complex.I * ⟪v, w⟫)) w • f w)) atTop
+        𝓕 (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)) w • f w)) atTop
       (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     apply A.congr'
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
-    have I : Integrable (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * Complex.I * ⟪v, w⟫)) :=
+    have J : Integrable (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)) :=
       GaussianFourier.integrable_cexp_neg_mul_sq_norm_add (by simpa) _ _
     simpa using (VectorFourier.integral_fourierIntegral_smul_eq_flip (L := innerₗ V)
-      Real.continuous_fourierChar continuous_inner I hf).symm
+      Real.continuous_fourierChar continuous_inner J hf).symm
   apply B.congr'
   filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
   congr with w
@@ -148,12 +149,24 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
       ← rpow_nat_cast, ← rpow_mul hc.le, mul_assoc]
     norm_num
 
+end Real
+
+variable [CompleteSpace E]
+
 /-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is integrable, and its Fourier transform `𝓕 f` is also integrable, then `𝓕⁻ (𝓕 f) = f` at
 continuity points of `f`. -/
-theorem fourier_inversion (hf : Integrable f) (h'f : Integrable (𝓕 f)) {v : V}
+theorem MeasureTheory.Integrable.fourier_inversion
+    (hf : Integrable f) (h'f : Integrable (𝓕 f)) {v : V}
     (hv : ContinuousAt f v) : 𝓕⁻ (𝓕 f) v = f v :=
-  tendsto_nhds_unique (tendsto_integral_gaussian_smul hf h'f v)
-    (tendsto_integral_gaussian_smul' hf hv)
+  tendsto_nhds_unique (Real.tendsto_integral_gaussian_smul hf h'f v)
+    (Real.tendsto_integral_gaussian_smul' hf hv)
 
-end Real
+/-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
+space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
+then `𝓕⁻ (𝓕 f) = f`. -/
+theorem Continuous.fourier_inversion (h : Continuous f)
+    (hf : Integrable f) (h'f : Integrable (𝓕 f)) :
+    𝓕⁻ (𝓕 f) = f := by
+  ext v
+  exact hf.fourier_inversion h'f h.continuousAt

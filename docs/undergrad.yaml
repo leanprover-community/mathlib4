@@ -535,7 +535,7 @@ Measures and integral calculus:
     Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourierIntegral'
     Fourier transform on $\mathrm{L}^2(\R^d)$: ''
     Plancherel’s theorem: ''
-    Fourier inversion formula: 'Real.fourier_inversion'
+    Fourier inversion formula: 'Continuous.fourier_inversion'
 
 # 11.
 Probability Theory:
