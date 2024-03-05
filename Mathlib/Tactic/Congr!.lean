@@ -311,7 +311,6 @@ Applies the congruence generated congruence lemmas according to `config`.
 def Lean.MVarId.congrSimp? (config : Congr!.Config) (mvarId : MVarId) :
     MetaM (Option (List MVarId)) :=
   mvarId.withContext do
-    unless config.useCongrSimp do return none
     mvarId.checkNotAssigned `congrSimp?
     let some (_, lhs, rhs) := (← withReducible mvarId.getType').eq? | return none
     let (fst, snd) := if config.preferLHS then (lhs, rhs) else (rhs, lhs)
@@ -462,19 +461,21 @@ def Lean.MVarId.congrPasses! :
     List (String × (Congr!.Config → MVarId → MetaM (Option (List MVarId)))) :=
   [("user congr", userCongr?),
    ("hcongr lemma", smartHCongr?),
-   ("congr simp lemma", congrSimp?),
+   ("congr simp lemma", when (·.useCongrSimp) congrSimp?),
    ("Subsingleton.helim", fun _ => subsingletonHelim?),
-   ("BEq instances", fun config => when config (·.beqEq) beqInst?),
+   ("BEq instances", when (·.beqEq) fun _ => beqInst?),
    ("obvious funext", fun _ => obviousFunext?),
    ("obvious hfunext", fun _ => obviousHfunext?),
    ("congr_implies", fun _ => congrImplies?'),
    ("congr_pi", fun _ => congrPi?)]
 where
-  when (config : Congr!.Config) (b : Congr!.Config → Bool)
-      (f : MVarId → MetaM (Option (List MVarId))) :
-      MVarId → MetaM (Option (List MVarId)) := fun mvar => do
+  /--
+  Conditionally runs a congruence strategy depending on the predicate `b` applied to the config.
+  -/
+  when (b : Congr!.Config → Bool) (f : Congr!.Config → MVarId → MetaM (Option (List MVarId)))
+      (config : Congr!.Config) (mvar : MVarId) : MetaM (Option (List MVarId)) := do
     unless b config do return none
-    f mvar
+    f config mvar
 
 structure CongrState where
   /-- Accumulated goals that `congr!` could not handle. -/
