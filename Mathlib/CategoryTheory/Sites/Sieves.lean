@@ -78,7 +78,7 @@ theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f �
   ⟨_, _, _, h₁, h₂, rfl⟩
 #align category_theory.presieve.bind_comp CategoryTheory.Presieve.bind_comp
 
--- porting note: it seems the definition of `Presieve` must be unfolded in order to define
+-- Porting note: it seems the definition of `Presieve` must be unfolded in order to define
 --   this inductive type, it was thus renamed `singleton'`
 -- Note we can't make this into `HasSingleton` because of the out-param.
 /-- The singleton presieve.  -/
@@ -212,7 +212,7 @@ def functorPushforward (S : Presieve X) : Presieve (F.obj X) := fun Y f =>
   ∃ (Z : C) (g : Z ⟶ X) (h : Y ⟶ F.obj Z), S g ∧ f = h ≫ F.map g
 #align category_theory.presieve.functor_pushforward CategoryTheory.Presieve.functorPushforward
 
---porting note: removed @[nolint hasNonemptyInstance]
+-- Porting note: removed @[nolint hasNonemptyInstance]
 /-- An auxiliary definition in order to fix the choice of the preimages between various definitions.
 -/
 structure FunctorPushforwardStructure (S : Presieve X) {Y} (f : Y ⟶ F.obj X) where

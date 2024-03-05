@@ -3,13 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Algebra.Module.MinimalAxioms
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -358,7 +357,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         dist (F x) (F y) ≤ dist (f 0 x) (f 0 y) + (dist (f 0 x) (F x) + dist (f 0 y) (F y)) :=
           dist_triangle4_left _ _ _ _
         _ ≤ C + (b 0 + b 0) := add_le_add (hC _ _) (add_le_add (fF_bdd _ _) (fF_bdd _ _))
-                               -- porting note: was --by mono*
+                               -- Porting note: was --by mono*
     · -- Check that `F` is close to `f N` in distance terms
       refine' tendsto_iff_dist_tendsto_zero.2 (squeeze_zero (fun _ => dist_nonneg) _ b_lim)
       exact fun N => (dist_le (b0 _)).2 fun x => fF_bdd x N
@@ -1287,6 +1286,12 @@ instance : NatCast (α →ᵇ R) :=
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 #align bounded_continuous_function.coe_nat_cast BoundedContinuousFunction.coe_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp, norm_cast]
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index OfNat.ofNat n : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+  rfl
 
 instance : IntCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩

@@ -37,7 +37,7 @@ Motivated by the theory of Banach Lattices, this section introduces normed latti
 -/
 
 
--- porting note: this now exists as a global notation
+-- Porting note: this now exists as a global notation
 -- local notation "|" a "|" => abs a
 
 section SolidNorm

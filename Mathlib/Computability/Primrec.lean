@@ -33,7 +33,7 @@ open Denumerable Encodable Function
 
 namespace Nat
 
--- porting note: elim is no longer required because lean 4 is better
+-- Porting note: elim is no longer required because lean 4 is better
 -- at inferring motive types (I think this is the reason)
 -- and worst case, we can always explicitly write (motive := fun _ => C)
 -- without having to then add all the other underscores
@@ -50,7 +50,7 @@ namespace Nat
 
 #align nat.elim_succ Nat.rec_add_one
 
--- porting note: cases is no longer required because lean 4 is better
+-- Porting note: cases is no longer required because lean 4 is better
 -- at inferring motive types (I think this is the reason)
 
 -- /-- Cases on whether the input is 0 or a successor. -/
@@ -144,7 +144,7 @@ theorem mul : Nat.Primrec (unpaired (· * ·)) :=
 
 theorem pow : Nat.Primrec (unpaired (· ^ ·)) :=
   (prec (const 1) (mul.comp (pair (right.comp right) left))).of_eq fun p => by
-    simp; induction p.unpair.2 <;> simp [*, pow_succ]
+    simp; induction p.unpair.2 <;> simp [*, Nat.pow_succ]
 #align nat.primrec.pow Nat.Primrec.pow
 
 end Primrec
@@ -154,7 +154,7 @@ end Nat
 /-- A `Primcodable` type is an `Encodable` type for which
   the encode/decode functions are primitive recursive. -/
 class Primcodable (α : Type*) extends Encodable α where
-  -- porting note: was `prim [] `.
+  -- Porting note: was `prim [] `.
   -- This means that `prim` does not take the type explicitly in Lean 4
   prim : Nat.Primrec fun n => Encodable.encode (decode n)
 #align primcodable Primcodable
@@ -169,7 +169,7 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
 
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
-  { Encodable.ofEquiv α e with
+  { __ := Encodable.ofEquiv α e
     prim := (@Primcodable.prim α _).of_eq fun n => by
       rw [decode_ofEquiv]
       cases (@decode α _ n) <;>
@@ -410,6 +410,8 @@ namespace Primrec₂
 variable {α : Type*} {β : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
+
+theorem mk {f : α → β → σ} (hf : Primrec fun p : α × β => f p.1 p.2) : Primrec₂ f := hf
 
 theorem of_eq {f g : α → β → σ} (hg : Primrec₂ f) (H : ∀ a b, f a b = g a b) : Primrec₂ g :=
   (by funext a b; apply H : f = g) ▸ hg
@@ -737,7 +739,7 @@ theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePr
   (Primrec.or.comp hp hq).of_eq fun n => by simp
 #align primrec.or PrimrecPred.or
 
--- porting note: It is unclear whether we want to boolean versions
+-- Porting note: It is unclear whether we want to boolean versions
 -- of these lemmas, just the prop versions, or both
 -- The boolean versions are often actually easier to use
 -- but did not exist in Lean 3
@@ -787,7 +789,7 @@ theorem dom_fintype [Fintype α] (f : α → σ) : Primrec f :=
     rw [List.get?_map, List.indexOf_get? (m a), Option.map_some']
 #align primrec.dom_fintype Primrec.dom_fintype
 
--- porting note: These are new lemmas
+-- Porting note: These are new lemmas
 -- I added it because it actually simplified the proofs
 -- and because I couldn't understand the original proof
 /-- A function is `PrimrecBounded` if its size is bounded by a primitive recursive function -/
@@ -837,28 +839,28 @@ theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
 
 theorem nat_bodd : Primrec Nat.bodd :=
   (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n => by
-    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]; rfl
+    cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]
 #align primrec.nat_bodd Primrec.nat_bodd
 
 theorem nat_div2 : Primrec Nat.div2 :=
   (nat_div.comp .id (const 2)).of_eq fun n => n.div2_val.symm
 #align primrec.nat_div2 Primrec.nat_div2
 
--- porting note: this is no longer used
+-- Porting note: this is no longer used
 -- theorem nat_boddDiv2 : Primrec Nat.boddDiv2 := pair nat_bodd nat_div2
 #noalign primrec.nat_bodd_div2
 
--- porting note: bit0 is deprecated
+-- Porting note: bit0 is deprecated
 theorem nat_double : Primrec (fun n : ℕ => 2 * n) :=
   nat_mul.comp (const _) Primrec.id
 #align primrec.nat_bit0 Primrec.nat_double
 
--- porting note: bit1 is deprecated
+-- Porting note: bit1 is deprecated
 theorem nat_double_succ : Primrec (fun n : ℕ => 2 * n + 1) :=
   nat_double |> Primrec.succ.comp
 #align primrec.nat_bit1 Primrec.nat_double_succ
 
--- porting note: this is no longer used
+-- Porting note: this is no longer used
 -- theorem nat_div_mod : Primrec₂ fun n k : ℕ => (n / k, n % k) := pair nat_div nat_mod
 #noalign primrec.nat_div_mod
 
@@ -907,7 +909,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     refine hF.of_eq fun a => ?_
     rw [this, List.take_all_of_le (length_le_encode _)]
   introv
-  dsimp only
+  dsimp only [F]
   generalize f a = l
   generalize g a = x
   induction' n with n IH generalizing l x
@@ -1057,7 +1059,7 @@ theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β 
       to₂ <| pair ((list_cons.comp fst (fst.comp snd)).comp snd) hh
   (snd.comp this).of_eq fun a => by
     suffices F a = (f a, List.recOn (f a) (g a) fun b l IH => h a (b, l, IH)) by rw [this]
-    dsimp
+    dsimp [F]
     induction' f a with b l IH <;> simp [*]
 #align primrec.list_rec Primrec.list_rec
 
@@ -1079,7 +1081,7 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
     dsimp; symm
     induction' l with a l IH generalizing n; · rfl
     cases' n with n
-    · dsimp
+    · dsimp [F]
       clear IH
       induction' l with _ l IH <;> simp [*]
     · apply IH
@@ -1187,7 +1189,7 @@ instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 #align primcodable.fin_arrow Primcodable.finArrow
 
--- porting note: Equiv.arrayEquivFin is not ported yet
+-- Porting note: Equiv.arrayEquivFin is not ported yet
 -- instance array {n} : Primcodable (Array' n α) :=
 --   ofEquiv _ (Equiv.arrayEquivFin _ _)
 -- #align primcodable.array Primcodable.array

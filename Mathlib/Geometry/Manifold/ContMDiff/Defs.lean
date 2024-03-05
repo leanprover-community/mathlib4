@@ -560,12 +560,12 @@ theorem contMDiffOn_iff :
     refine' ⟨fun x hx => (h x hx).1, fun x y z hz => _⟩
     simp only [mfld_simps] at hz
     let w := (extChartAt I x).symm z
-    have : w ∈ s := by simp only [hz, mfld_simps]
+    have : w ∈ s := by simp only [w, hz, mfld_simps]
     specialize h w this
-    have w1 : w ∈ (chartAt H x).source := by simp only [hz, mfld_simps]
-    have w2 : f w ∈ (chartAt H' y).source := by simp only [hz, mfld_simps]
+    have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
+    have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
     convert ((contMDiffWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
-    · simp only [hz, mfld_simps]
+    · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine' (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_iff.mpr _
@@ -810,7 +810,7 @@ theorem contMDiffOn_iff_source_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
     e.extend_symm_preimage_inter_range_eventuallyEq I hs (hs hx)]
 #align cont_mdiff_on_iff_source_of_mem_maximal_atlas contMDiffOn_iff_source_of_mem_maximalAtlas
 
--- porting note: didn't compile; fixed by golfing the proof and moving parts to lemmas
+-- Porting note: didn't compile; fixed by golfing the proof and moving parts to lemmas
 /-- A function is `C^n` within a set at a point, for `n : ℕ`, if and only if it is `C^n` on
 a neighborhood of this point. -/
 theorem contMDiffWithinAt_iff_contMDiffOn_nhds {n : ℕ} :

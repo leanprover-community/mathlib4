@@ -717,12 +717,11 @@ protected noncomputable def completeLattice : CompleteLattice α :=
 
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
-  { IsSimpleOrder.completeLattice,
-    IsSimpleOrder.booleanAlgebra with
+  { __ := IsSimpleOrder.completeLattice
+    __ := IsSimpleOrder.booleanAlgebra
     iInf_sup_le_sup_sInf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp only [bot_sup_eq, ← sInf_eq_iInf]
-        exact le_rfl
+      · simp [bot_sup_eq, ← sInf_eq_iInf]
       · simp only [top_le_iff, top_sup_eq, iInf_top, le_sInf_iff, le_refl]
     inf_sSup_le_iSup_inf := fun x s => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
@@ -731,13 +730,17 @@ protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :
         exact le_rfl }
 #align is_simple_order.complete_boolean_algebra IsSimpleOrder.completeBooleanAlgebra
 
+instance : ComplementedLattice α :=
+  letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
+
 end IsSimpleOrder
 
 namespace IsSimpleOrder
 
 variable [CompleteLattice α] [IsSimpleOrder α]
 
---set_option default_priority 100 --Porting note: not supported, done for each instance individually
+--set_option default_priority 100
+-- Porting note: not supported, done for each instance individually
 
 instance (priority := 100) : IsAtomistic α :=
   ⟨fun b =>

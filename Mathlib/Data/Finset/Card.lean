@@ -57,6 +57,7 @@ theorem card_empty : card (∅ : Finset α) = 0 :=
   rfl
 #align finset.card_empty Finset.card_empty
 
+@[gcongr]
 theorem card_le_card : s ⊆ t → s.card ≤ t.card :=
   Multiset.card_le_card ∘ val_le_iff.mpr
 #align finset.card_le_of_subset Finset.card_le_card
@@ -752,7 +753,7 @@ def strongInduction {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p t) →
   termination_by s => Finset.card s
 #align finset.strong_induction Finset.strongInduction
 
-@[nolint unusedHavesSuffices] --Porting note: false positive
+@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem strongInduction_eq {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p t) → p s)
     (s : Finset α) : strongInduction H s = H s fun t _ => strongInduction H t := by
   rw [strongInduction]
@@ -764,7 +765,7 @@ def strongInductionOn {p : Finset α → Sort*} (s : Finset α) :
     (∀ s, (∀ t ⊂ s, p t) → p s) → p s := fun H => strongInduction H s
 #align finset.strong_induction_on Finset.strongInductionOn
 
-@[nolint unusedHavesSuffices] --Porting note: false positive
+@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem strongInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
     (H : ∀ s, (∀ t ⊂ s, p t) → p s) :
     s.strongInductionOn H = H s fun t _ => t.strongInductionOn H := by
@@ -814,7 +815,7 @@ def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
   termination_by s => n - s.card
 #align finset.strong_downward_induction Finset.strongDownwardInduction
 
-@[nolint unusedHavesSuffices] --Porting note: false positive
+@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem strongDownwardInduction_eq {p : Finset α → Sort*}
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁)
     (s : Finset α) :
@@ -830,7 +831,7 @@ def strongDownwardInductionOn {p : Finset α → Sort*} (s : Finset α)
   strongDownwardInduction H s
 #align finset.strong_downward_induction_on Finset.strongDownwardInductionOn
 
-@[nolint unusedHavesSuffices] --Porting note: false positive
+@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁) :
     s.strongDownwardInductionOn H = H s fun {t} ht _ => t.strongDownwardInductionOn H ht := by

@@ -83,7 +83,7 @@ theorem monotone_gen : Monotone (gen : Set (α × α) → _) :=
 set_option linter.uppercaseLean3 false in
 #align Cauchy.monotone_gen CauchyFilter.monotone_gen
 
--- porting note: this was a calc proof, but I could not make it work
+-- Porting note: this was a calc proof, but I could not make it work
 private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen := by
   let f := fun s : Set (α × α) =>
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
@@ -97,7 +97,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         (monotone_setOf fun p => @Filter.monotone_mem _ (p.2.val ×ˢ p.1.val)))
       (by
         have h := fun p : CauchyFilter α × CauchyFilter α => @Filter.prod_comm _ _ p.2.val p.1.val
-        simp [Function.comp, h, mem_map']
+        simp [f, Function.comp, h, mem_map']
         exact le_rfl)
   exact h₁.trans_le h₂
 
@@ -220,7 +220,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
--- porting note: I commented this
+-- Porting note: I commented this
 -- set_option eqn_compiler.zeta true
 
 instance : CompleteSpace (CauchyFilter α) :=
@@ -281,9 +281,10 @@ end Extend
 
 end
 
-theorem cauchyFilter_eq {α : Type*} [Inhabited α] [UniformSpace α] [CompleteSpace α]
-    [SeparatedSpace α] {f g : CauchyFilter α} :
-    lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
+theorem cauchyFilter_eq {α : Type*} [UniformSpace α] [CompleteSpace α] [SeparatedSpace α]
+    {f g : CauchyFilter α} :
+    haveI := f.2.1.nonempty; lim f.1 = lim g.1 ↔ (f, g) ∈ separationRel (CauchyFilter α) := by
+  haveI := f.2.1.nonempty
   constructor
   · intro e s hs
     rcases CauchyFilter.mem_uniformity'.1 hs with ⟨t, tu, ts⟩
@@ -317,7 +318,7 @@ section
 
 attribute [local instance] UniformSpace.separationSetoid
 
--- porting note: added types in Function.Injective
+-- Porting note: added types in Function.Injective
 theorem separated_pureCauchy_injective {α : Type*} [UniformSpace α] [s : SeparatedSpace α] :
     @Function.Injective α (Quotient (UniformSpace.separationSetoid (CauchyFilter α)))
       fun a : α => ⟦pureCauchy a⟧
@@ -611,7 +612,7 @@ theorem extension_map [CompleteSpace γ] [SeparatedSpace γ] {f : β → γ} {g 
     Completion.extension f ∘ Completion.map g = Completion.extension (f ∘ g) :=
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
     intro a
-    -- porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
+    -- Porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
     -- but should be?
     rw [extension_coe (hf.comp hg), Function.comp_apply, map_coe hg, extension_coe hf,
       Function.comp_apply]
@@ -638,7 +639,7 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
   · intro a
     refine' induction_on a (isClosed_eq (continuous_map.comp continuous_extension) continuous_id) _
     rintro ⟨a⟩
-    -- porting note: had to insert rewrites to switch between Quot.mk, Quotient.mk, Quotient.mk'
+    -- Porting note: had to insert rewrites to switch between Quot.mk, Quotient.mk, Quotient.mk'
     rw [← Quotient.mk,extension_coe (SeparationQuotient.uniformContinuous_lift _),
       SeparationQuotient.lift_mk (uniformContinuous_coe α), map_coe]
     · rfl
@@ -647,7 +648,7 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     refine' Completion.induction_on a
         (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a => _
     rw [map_coe]
-    -- porting note: add SeparationQuotient.lift_mk' for Quotient.mk' ?
+    -- Porting note: add SeparationQuotient.lift_mk' for Quotient.mk' ?
     · rw [extension_coe (SeparationQuotient.uniformContinuous_lift _), Quotient.mk',
         SeparationQuotient.lift_mk (uniformContinuous_coe α) _]
     · exact uniformContinuous_quotient_mk

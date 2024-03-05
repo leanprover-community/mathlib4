@@ -37,7 +37,7 @@ variable [ConcreteCategory.{max v u} D]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
 def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :=
   { x : ∀ I : S.Arrow, P.obj (op I.Y) //
@@ -659,7 +659,7 @@ theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.hom.mono_iff_presheaf_mono CategoryTheory.Sheaf.Hom.mono_iff_presheaf_mono
 
--- porting note: added to ease the port of CategoryTheory.Sites.LeftExact
+-- Porting note: added to ease the port of CategoryTheory.Sites.LeftExact
 -- in mathlib, this was `by refl`, but here it would timeout
 @[simps! hom_app inv_app]
 noncomputable

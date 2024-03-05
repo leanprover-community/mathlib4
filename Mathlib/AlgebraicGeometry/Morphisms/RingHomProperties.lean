@@ -79,25 +79,8 @@ theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Sche
   rw [← hP.is_localization_away_iff]
 #align ring_hom.respects_iso.basic_open_iff_localization RingHom.RespectsIso.basicOpen_iff_localization
 
-local notation3 "Γ(" X:10 ")" => (Prefunctor.obj (Functor.toPrefunctor Scheme.Γ) (Opposite.op X))
-
-theorem RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine (hP : RingHom.RespectsIso @P)
-    {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
-    P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔
-    P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
-  have : IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Y.basicOpen r) := by
-    rw [Scheme.preimage_basicOpen]
-    show IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r)
-      ↑Γ(X ∣_ᵤ X.basicOpen (Scheme.Γ.map f.op r))
-    infer_instance
-  rw [hP.is_localization_away_iff ↑Γ(Y ∣_ᵤ Scheme.basicOpen Y r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Scheme.basicOpen Y r)
-    (Scheme.Γ.map f.op) r, iff_iff_eq]
-  congr 1
-  apply IsLocalization.ringHom_ext (R := ↑Γ(Y)) (Submonoid.powers r) _
-  rw [IsLocalization.Away.map, IsLocalization.map_comp, RingHom.algebraMap_toAlgebra,
-    RingHom.algebraMap_toAlgebra]
-  show Scheme.Γ.map _ ≫ Scheme.Γ.map _ = Scheme.Γ.map _ ≫ Scheme.Γ.map _
-  simp_rw [← Functor.map_comp, ← op_comp, morphismRestrict_ι]
+@[deprecated] alias RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine :=
+  RespectsIso.basicOpen_iff_localization
 
 theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P) {X Y : Scheme}
     [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) (U : Opens X.carrier)
@@ -109,7 +92,7 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
   refine (hP.cancel_right_isIso _
     (Scheme.Γ.mapIso (Scheme.restrictRestrictComm _ _ _).op).inv).symm.trans ?_
   haveI : IsAffine _ := hU
-  rw [← hP.ofRestrict_morphismRestrict_iff_of_isAffine, iff_iff_eq]
+  rw [← hP.basicOpen_iff_localization, iff_iff_eq]
   congr 1
   simp only [Functor.mapIso_inv, Iso.op_inv, ← Functor.map_comp, ← op_comp, morphismRestrict_comp]
   rw [← Category.assoc]
@@ -542,15 +525,15 @@ theorem affineLocally_of_comp
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
     apply Scheme.Pullback.openCoverOfRight
     exact (pullback g (Z.affineCover.map i)).affineCover
-  have h𝒰 : ∀ i j, IsAffine ((𝒰 i).obj j) := by dsimp; infer_instance
+  have h𝒰 : ∀ i j, IsAffine ((𝒰 i).obj j) := by dsimp [𝒰]; infer_instance
   let 𝒰' := (Z.affineCover.pullbackCover g).bind fun i => Scheme.affineCover _
-  have h𝒰' : ∀ i, IsAffine (𝒰'.obj i) := by dsimp; infer_instance
+  have h𝒰' : ∀ i, IsAffine (𝒰'.obj i) := by dsimp [𝒰']; infer_instance
   rw [hP.affine_openCover_iff f 𝒰' fun i => Scheme.affineCover _]
   rw [hP.affine_openCover_iff (f ≫ g) Z.affineCover 𝒰] at h
   rintro ⟨i, j⟩ k
   dsimp at i j k
   specialize h i ⟨j, k⟩
-  dsimp only [Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
+  dsimp only [𝒰, 𝒰', Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
     Scheme.Pullback.openCoverOfRight_obj, Scheme.OpenCover.pushforwardIso_map,
     Scheme.Pullback.openCoverOfRight_map, Scheme.OpenCover.bind_obj,
     Scheme.OpenCover.pullbackCover_obj, Scheme.OpenCover.pullbackCover_map] at h ⊢
@@ -583,10 +566,10 @@ theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderCom
   apply (@affine_openCover_iff _ hP _ _ (f ≫ g) S.affineCover _ ?_ ?_).mpr
   rotate_left
   · exact 𝒰
-  · intro i j; dsimp at *; infer_instance
+  · intro i j; dsimp [𝒰] at *; infer_instance
   · rintro i ⟨j, k⟩
     dsimp at i j k
-    dsimp only [Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
+    dsimp only [𝒰, Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
       Scheme.Pullback.openCoverOfRight_obj, Scheme.OpenCover.pushforwardIso_map,
       Scheme.Pullback.openCoverOfRight_map, Scheme.OpenCover.bind_obj]
     rw [Category.assoc, Category.assoc, pullbackRightPullbackFstIso_hom_snd,

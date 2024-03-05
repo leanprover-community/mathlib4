@@ -466,14 +466,14 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let v := (x : ℚ) / z
   let w := (y : ℚ) / z
   have hq : v ^ 2 + w ^ 2 = 1 := by
-    field_simp [sq]
+    field_simp [v, w, sq]
     norm_cast
   have hvz : v ≠ 0 := by
-    field_simp
+    field_simp [v]
     exact h0
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
-    -- porting note: `contrapose` unfolds local names, refold them
+    -- Porting note: `contrapose` unfolds local names, refold them
     replace hw1 : w = -1 := hw1; show v = 0
     rw [hw1, neg_sq, one_pow, add_left_eq_self] at hq
     exact pow_eq_zero hq
@@ -604,7 +604,7 @@ theorem coprime_classification :
         (x = m ^ 2 - n ^ 2 ∧ y = 2 * m * n ∨ x = 2 * m * n ∧ y = m ^ 2 - n ^ 2) ∧
           (z = m ^ 2 + n ^ 2 ∨ z = -(m ^ 2 + n ^ 2)) ∧
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) := by
-  clear h -- porting note: don't want this variable, but can't use `include` / `omit`
+  clear h -- Porting note: don't want this variable, but can't use `include` / `omit`
   constructor
   · intro h
     obtain ⟨m, n, H⟩ := h.left.isPrimitiveClassified_of_coprime h.right

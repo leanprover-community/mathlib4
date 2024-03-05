@@ -533,7 +533,7 @@ theorem rootMultiplicity_X_sub_C_self [Nontrivial R] {x : R} :
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C_self Polynomial.rootMultiplicity_X_sub_C_self
 
--- porting note: swapped instance argument order
+-- Porting note: swapped instance argument order
 theorem rootMultiplicity_X_sub_C [Nontrivial R] [DecidableEq R] {x y : R} :
     rootMultiplicity x (X - C y) = if x = y then 1 else 0 := by
   split_ifs with hxy
@@ -849,7 +849,7 @@ theorem roots_list_prod (L : List R[X]) :
 
 theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.roots = m.bind roots := by
   rcases m with ⟨L⟩
-  simpa only [Multiset.coe_prod, quot_mk_to_coe''] using roots_list_prod L
+  simpa only [Multiset.prod_coe, quot_mk_to_coe''] using roots_list_prod L
 #align polynomial.roots_multiset_prod Polynomial.roots_multiset_prod
 
 theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
@@ -975,7 +975,7 @@ def nthRootsFinset (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
   Multiset.toFinset (nthRoots n (1 : R))
 #align polynomial.nth_roots_finset Polynomial.nthRootsFinset
 
--- porting note: new
+-- Porting note: new
 lemma nthRootsFinset_def (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] [DecidableEq R] :
     nthRootsFinset n R = Multiset.toFinset (nthRoots n (1 : R)) := by
   unfold nthRootsFinset
