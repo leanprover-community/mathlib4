@@ -560,9 +560,6 @@ noncomputable def mapMultilinear :
 
 variable {R s t}
 
-@[simp]
-theorem mapMultilinear_apply : mapMultilinear R s t f = map f := rfl
-
 /--
 Let `sᵢ` and `tᵢ` be families of `R`-modules.
 Then there is an `R`-linear map between `⨂ᵢ Hom(sᵢ, tᵢ)` and `Hom(⨂ᵢ sᵢ, ⨂ tᵢ)` defined by
@@ -583,8 +580,8 @@ lemma piTensorHomMap_tprod_eq_map (f : Π i, s i →ₗ[R] t i) :
     piTensorHomMap (tprod R f) = map f := by
   ext; simp
 
-/-- If `s i` and `s' i` are linearly equivalent for every `i` in `ι`, then `⨂[R] i, s i` and
-`⨂[R] i, s' i` are linearly equivalent.
+/-- If `s i` and `t i` are linearly equivalent for every `i` in `ι`, then `⨂[R] i, s i` and
+`⨂[R] i, t i` are linearly equivalent.
 -/
 noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
     (⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, t i := by
