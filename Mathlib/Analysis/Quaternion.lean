@@ -96,7 +96,7 @@ noncomputable instance : NormedDivisionRing ℍ where
     simp only [norm_eq_sqrt_real_inner, inner_self, normSq.map_mul]
     exact Real.sqrt_mul normSq_nonneg _
 
--- porting note: added `noncomputable`
+-- Porting note: added `noncomputable`
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra

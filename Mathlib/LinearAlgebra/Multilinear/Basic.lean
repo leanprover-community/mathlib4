@@ -1040,6 +1040,19 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     · exact Function.apply_update c f i (a • f₀) j
     · exact Function.apply_update c f i f₀ j
 
+/--
+Let `M₁ᵢ` and `M₁ᵢ'` be two families of `R`-modules and `M₂` an `R`-module.
+Let us denote `Π i, M₁ᵢ` and `Π i, M₁ᵢ'` by `M` and `M'` respectively.
+If `g` is a multilinear map `M' → M₂`, then `g` can be reinterpreted as a multilinear
+map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` via `(fᵢ) ↦ v ↦ g(fᵢ vᵢ)`.
+-/
+@[simps!] def piLinearMap :
+    MultilinearMap R M₁' M₂ →ₗ[R]
+    MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) where
+  toFun g := (LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
+  map_add' := by aesop
+  map_smul' := by aesop
+
 end
 
 /-- If one multiplies by `c i` the coordinates in a finset `s`, then the image under a multilinear
@@ -1234,7 +1247,7 @@ instance : AddCommGroup (MultilinearMap R M₁ M₂) :=
       { toFun := fun m => n • f m
         map_add' := fun m i x y => by simp [smul_add]
         map_smul' := fun l i x d => by simp [← smul_comm x n (_ : M₂)] }
-    -- porting note: changed from `AddCommGroup` to `SubNegMonoid`
+    -- Porting note: changed from `AddCommGroup` to `SubNegMonoid`
     zsmul_zero' := fun a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_zero' _
     zsmul_succ' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_succ' _ _
     zsmul_neg' := fun z a => MultilinearMap.ext fun v => SubNegMonoid.zsmul_neg' _ _ }
@@ -1382,7 +1395,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
     MultilinearMap R M M₂ where
   toFun m := f (m 0) (tail m)
   map_add' := @fun dec m i x y => by
-    -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i = 0
     · subst i
@@ -1393,7 +1406,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
       intro x y
       rw [tail_update_succ, MultilinearMap.map_add, tail_update_succ, tail_update_succ]
   map_smul' := @fun dec m i c x => by
-    -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i = 0
     · subst i
@@ -1418,11 +1431,11 @@ def MultilinearMap.curryLeft (f : MultilinearMap R M M₂) :
   toFun x :=
     { toFun := fun m => f (cons x m)
       map_add' := @fun dec m i y y' => by
-        -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+        -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
         rw [Subsingleton.elim dec (by clear dec; infer_instance)]
         simp
       map_smul' := @fun dec m i y c => by
-        -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+        -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
         rw [Subsingleton.elim dec (by clear dec; infer_instance)]
         simp }
   map_add' x y := by
@@ -1490,7 +1503,7 @@ def MultilinearMap.uncurryRight
     MultilinearMap R M M₂ where
   toFun m := f (init m) (m (last n))
   map_add' {dec} m i x y := by
-    -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i.val < n
     · have : last n ≠ i := Ne.symm (ne_of_lt h)
@@ -1505,7 +1518,7 @@ def MultilinearMap.uncurryRight
       intro x y
       simp_rw [init_update_last, update_same, LinearMap.map_add]
   map_smul' {dec} m i c x := by
-    -- porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
+    -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i.val < n
     · have : last n ≠ i := Ne.symm (ne_of_lt h)

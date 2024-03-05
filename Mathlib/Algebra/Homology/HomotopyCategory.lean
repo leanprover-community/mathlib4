@@ -86,7 +86,7 @@ instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
 
 variable {V c}
 
--- porting note: removed @[simp] attribute because it hinders the automatic application of the
+-- Porting note: removed @[simp] attribute because it hinders the automatic application of the
 -- more useful `quotient_map_out`
 theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as = C :=
   rfl
@@ -97,7 +97,7 @@ theorem quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient 
   Quot.out_eq _
 #align homotopy_category.quotient_map_out HomotopyCategory.quotient_map_out
 
--- porting note: added to ease the port
+-- Porting note: added to ease the port
 theorem quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
     Quot.mk _ f = (quotient V c).map f := rfl
 
@@ -240,7 +240,7 @@ namespace CategoryTheory
 
 variable {V} {W : Type*} [Category W] [Preadditive W]
 
--- porting note: given a simpler definition of this functor
+-- Porting note: given a simpler definition of this functor
 /-- An additive functor induces a functor between homotopy categories. -/
 @[simps! obj]
 def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :

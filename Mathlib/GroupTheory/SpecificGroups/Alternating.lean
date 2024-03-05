@@ -40,6 +40,9 @@ alternating group permutation
 
 -/
 
+-- An example on how to determine the order of an element of a finite group.
+example : orderOf (-1 : ℤˣ) = 2 :=
+  orderOf_eq_prime (Int.units_sq _) (by decide)
 
 open Equiv Equiv.Perm Subgroup Fintype
 
@@ -243,7 +246,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
-        --Porting note: added `: _`
+        -- Porting note: added `: _`
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
 #align alternating_group.normal_closure_fin_rotate_five alternatingGroup.normalClosure_finRotate_five
 
