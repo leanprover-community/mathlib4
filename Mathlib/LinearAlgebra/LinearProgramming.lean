@@ -60,6 +60,8 @@ theorem ConeProgram.weakDuality (LP : ConeProgram R M N)
 
 -- From here on, we will probably need `[LinearOrderedField R] [AddCommGroup M] [AddCommGroup N]`
 
+set_option linter.unusedVariables false
+
 /-- Theorem 1.4.1.a, TODO we probably need more assumptions (finite-dimensional `M` and `N` ?) -/
 @[nolint unusedArguments]
 proof_wanted ConeProgram.strongDuality (LP : ConeProgram R M N)
