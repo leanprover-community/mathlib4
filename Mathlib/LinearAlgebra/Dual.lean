@@ -1793,7 +1793,7 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
 
 variable [Module R M] [Module R N]
 
-/-- An inverse to `dual_tensor_dual_map` given bases.
+/-- An inverse to `TensorProduct.dualDistrib` given bases.
 -/
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=

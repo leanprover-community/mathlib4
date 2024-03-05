@@ -343,7 +343,7 @@ section SMulRight
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
 variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
 
-/-- When `f` is an `R`-linear map taking values in `S`, then `fun ↦ b, f b • x` is an `R`-linear
+/-- When `f` is an `R`-linear map taking values in `S`, then `fun b ↦ f b • x` is an `R`-linear
 map. -/
 def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
   toFun b := f b • x
