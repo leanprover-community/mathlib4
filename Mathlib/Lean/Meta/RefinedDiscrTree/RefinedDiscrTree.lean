@@ -1110,7 +1110,7 @@ This is for when you don't want to instantiate metavariables in `e`.
 If `allowRootStar := false`, then we don't allow `e` or the matched key in `d`
 to be a star pattern. -/
 def getMatchWithScore (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
-    (config : WhnfCoreConfig) (allowRootStar : Bool := false) : MetaM (Array (Array α × Nat)) := do
+    (config : WhnfCoreConfig := {}) (allowRootStar := false) : MetaM (Array (Array α × Nat)) := do
   let e ← mkDTExpr e config
   let result := GetUnify.getMatchWithScoreAux d e unify config allowRootStar
   return result.qsort (·.2 > ·.2)
@@ -1118,7 +1118,7 @@ def getMatchWithScore (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
 /-- Similar to `getMatchWithScore`, but also returns matches with prefixes of `e`.
 We store the score, followed by the number of ignored arguments. -/
 partial def getMatchWithScoreWithExtra (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
-    (config : WhnfCoreConfig) (allowRootStar : Bool := false) :
+    (config : WhnfCoreConfig := {}) (allowRootStar := false) :
     MetaM (Array (Array α × Nat × Nat)) := do
   let result ← go e 0
   return result.qsort (·.2.1 > ·.2.1)

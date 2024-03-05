@@ -208,6 +208,7 @@ where
 structure RewriteApplication extends RewriteLemma where
   tactic : String
   replacement : CodeWithInfos
+  replacementS : String := replacement.stripTags
   extraGoals : Array CodeWithInfos
 
 def rewriteCall (rwLemma : RewriteLemma)
@@ -218,11 +219,6 @@ def rewriteCall (rwLemma : RewriteLemma)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
   unless ← withReducible (isDefEq lhs subExpr) do return none
-
-  let lhs ← instantiateMVars lhs
-  let rhs ← instantiateMVars rhs
-  -- for example we don't want to apply commutativity to `a+a`.
-  if lhs == rhs then return none
 
   let mut extraGoals := #[]
   let mut allAssigned := true
@@ -241,7 +237,7 @@ def rewriteCall (rwLemma : RewriteLemma)
         let extraGoal ← instantiateMVars (← mvarId.getType)
         extraGoals := extraGoals.push (← ppExprTagged extraGoal)
 
-  let replacement ← ppExprTagged rhs
+  let replacement ← ppExprTagged (← instantiateMVars rhs)
   let lemmaApplication ← instantiateMVars (mkAppN thm mvars)
 
   let location ← (do match loc with
@@ -266,26 +262,30 @@ def renderResults (results : Array (CodeWithInfos × Array RewriteApplication))
 where
   renderBlock (title : CodeWithInfos) (results : Array RewriteApplication) : Html :=
     let core :=
-      .element "ul" #[] <|--#[("style", json% {"marginLeft" : "4px"})] <|
+      .element "ul" #[] <|
       results.map fun rw =>
-        let replacement := .text rw.replacement.stripTags --< InteractiveCode fmt={rw.replacement}/>
         let button := Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic none)
-              #[replacement] -- #[.text s! "{rw.name}"]
-        let extraGoals := rw.extraGoals.concatMap
-          (#[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={·}/>]);
-        <li> {.element "p" #[] (#[button] ++ extraGoals)} </li>;
+              #[.text rw.replacementS]
+        let extraGoals := rw.extraGoals.concatMap fun extraGoal => #[
+          <br/>,
+          <strong className="goal-vdash">⊢ </strong>,
+          <InteractiveCode fmt={extraGoal}/>];
+        <li>
+          {.element "p" #[] (#[button] ++ extraGoals)}
+        </li>;
     <details «open»={true}>
-      <summary className="mv2 pointer"> {.text "Pattern "} <InteractiveCode fmt={title}/> </summary>
-      -- < hr/>
+      <summary className="mv2 pointer">
+        {.text "Pattern "} <InteractiveCode fmt={title}/>
+      </summary>
       {core}
     </details>
 
 /-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
   let (localLemmas, libraryLemmas) ← getRewriteLemmas
-  let localResults ← localLemmas.getMatchWithScore e (unify := true) (config := {})
-  let libraryResults ← libraryLemmas.getMatchWithScore e (unify := true) (config := {})
+  let localResults ← localLemmas.getMatchWithScore e (unify := true)
+  let libraryResults ← libraryLemmas.getMatchWithScore e (unify := true)
   let allResults := localResults ++ libraryResults
   return allResults
 
@@ -310,20 +310,21 @@ def checkLemmata (ass : Array (Array RewriteLemma × Nat))
       bss := bss.push (pattern, bs)
   return bss
 
+/-- Remove duplicate lemmata and lemmata that do not change the expression. -/
 def dedupLemmata (lemmata : Array RewriteApplication) (subExprString : String) :
     Array RewriteApplication :=
   let replacements : HashMap String Name := lemmata.foldl (init := .empty) fun map lem =>
-    if lem.extraGoals.isEmpty && !map.contains lem.replacement.stripTags then
-      map.insert lem.replacement.stripTags lem.name
+    if lem.extraGoals.isEmpty && !map.contains lem.replacementS then
+      map.insert lem.replacementS lem.name
     else
       map
   lemmata.filter fun lem =>
-    if lem.replacement.stripTags == subExprString then
+    if lem.replacementS == subExprString then
       false
     else
-      match replacements.find? lem.replacement.stripTags with
+      match replacements.find? lem.replacementS with
+      | some name => name == lem.name
       | none      => true
-      | some name => lem.name == name
 
 @[server_rpc_method]
 def LibraryRewrite.rpc (props : LibraryRewriteProps) : RequestM (RequestTask Html) :=
