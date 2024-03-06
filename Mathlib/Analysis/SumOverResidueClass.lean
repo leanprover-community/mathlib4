@@ -46,9 +46,9 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
       zero_mul, zero_add, le_add_iff_nonneg_left, zero_le, and_self, indicator_of_mem, g]
 
 /-- If `f : ℕ → ℝ` is decreasing and has a negative term, then `f` restricted to a residue
-class is not summable.-/
-lemma not_summable_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f : ℕ → ℝ} (hf : Antitone f)
-    {n : ℕ} (hn : f n < 0) (k : ZMod m) :
+class is not summable. -/
+lemma not_summable_indicator_mod_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f : ℕ → ℝ}
+    (hf : Antitone f) {n : ℕ} (hn : f n < 0) (k : ZMod m) :
     ¬ Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) := by
   rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable, ← summable_norm_iff]
   intro hs
@@ -79,7 +79,7 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
     exact ((ZMod.val_lt k).trans_le <| m.le_add_left (ZMod.val l)).le
   · push_neg at hf₀
     obtain ⟨n, hn⟩ := hf₀
-    exact (not_summable_of_antitone_of_neg hf hn k hs).elim
+    exact (not_summable_indicator_mod_of_antitone_of_neg hf hn k hs).elim
 
 /-- A decreasing sequence of real numbers is summable on a residue class
 if and only if it is summable. -/
