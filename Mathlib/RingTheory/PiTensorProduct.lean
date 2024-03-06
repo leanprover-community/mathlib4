@@ -214,7 +214,7 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
       (hx.imp fun _ _ => Commute.tprod) :=
   Finset.noncommProd_map s x _ (tprodMonoidHom R)
 
-@[ext]
+@[ext high]
 theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [Algebra R S]
     ⦃f g : (⨂[R] i, A i) →ₐ[R] S⦄ (h : ∀ i, f.comp (singleAlgHom i) = g.comp (singleAlgHom i)) :
     f = g :=
@@ -251,6 +251,10 @@ instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
   __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
   mul_comm := PiTensorProduct.mul_comm
 
+open scoped BigOperators in
+@[simp] lemma tprod_prod {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) :
+    tprod R (∏ k in s, x k) = ∏ k in s, tprod R (x k) :=
+  map_prod (tprodMonoidHom R) x s
 
 section
 
@@ -264,25 +268,20 @@ variable (R ι)
 value `R` to `R`, given by multiplication of the entries.
 -/
 noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
+  letI toFun := lift (MultilinearMap.mkPiAlgebra R ι R)
   AlgEquiv.ofAlgHom
     (AlgHom.ofLinearMap
-      (lift (MultilinearMap.mkPiAlgebra R ι R))
+      toFun
       ((lift.tprod _).trans <| Finset.prod_const_one)
       (by
         rw [LinearMap.map_mul_iff]
-        ext
-        dsimp
-        simp_rw [tprod_mul_tprod, lift.tprod]
-        simp only [MultilinearMap.mkPiAlgebra_apply, Pi.mul_apply, Finset.prod_mul_distrib]))
+        ext x y
+        show toFun (tprod R x * tprod R y) = toFun (tprod R x) * toFun (tprod R y)
+        simp_rw [tprod_mul_tprod, toFun, lift.tprod, MultilinearMap.mkPiAlgebra_apply,
+          Pi.mul_apply, Finset.prod_mul_distrib]))
     (Algebra.ofId _ _)
     (by ext)
-    (AlgHom.toLinearMap_injective <| by
-      ext
-      show algebraMap R (⨂[R] _ : ι, R) _ = _
-      dsimp
-      rw [lift.tprod]
-      simp only [MultilinearMap.mkPiAlgebra_apply, map_prod]
-      sorry)
+    (by classical ext)
 
 variable {R ι}
 
