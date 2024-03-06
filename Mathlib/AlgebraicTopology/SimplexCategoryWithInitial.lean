@@ -1584,11 +1584,48 @@ def assocFstTo3WithInitial : assocClassifier1.Elements ⥤
   assoc1ToWithInitialWithInitial ⋙ (joinClassifyEquivOpOp.functor.prod
    (𝟭 ((WithInitial SimplexCategory)ᵒᵖ))) ⋙ (prod.associativity _ _ _).functor
 
+
+@[simps!]
+def inclFst₁ {Y : assocClassifier1.Elements}
+    (a : Fin (len (assocFstTo3WithInitial.obj Y).1.unop)) : Fin (len Y.1.unop) :=
+  @incl₁ (Opposite.op (assoc1ToJoin.obj Y))
+  (@incl₁ (Opposite.op (assoc1ToWithInitialWithInitial.obj Y).1) a)
+
+@[simps!]
+def inclFst₂ {Y : assocClassifier1.Elements}
+    (a : Fin (len (assocFstTo3WithInitial.obj Y).2.1.unop)) : Fin (len Y.1.unop) :=
+  @incl₁ (Opposite.op ⟨Y.fst, Y.snd.1⟩)
+  (@incl₂ (Opposite.op (assoc1ToWithInitialWithInitial.obj Y).1) a)
+
+@[simps!]
+def inclFst₃ {Y : assocClassifier1.Elements}
+    (a : Fin (len (assocFstTo3WithInitial.obj Y).2.2.unop)) : Fin (len Y.1.unop) :=
+  @incl₂ (Opposite.op ⟨Y.fst,  Y.snd.1⟩) a
+
+@[simps!]
+def inclSnd₁ {Y : assocClassifierSnd.Elements}
+    (a : Fin (len (assocSndTo3WithInitial.obj Y).1.unop)) : Fin (len Y.1.unop) :=
+  @incl₁ (Opposite.op (assocSndToJoin.obj Y)) a
+
+@[simps!]
+def inclSnd₂ {Y : assocClassifierSnd.Elements}
+    (a : Fin (len (assocSndTo3WithInitial.obj Y).2.1.unop)) : Fin (len Y.1.unop) :=
+  @incl₂ (Opposite.op ⟨Y.fst, Y.snd.1⟩)
+  (@incl₁ (Opposite.op (assocSndToWithInitialWithInitial.toPrefunctor.obj Y).2) a)
+
+@[simps!]
+def inclSnd₃ {Y : assocClassifierSnd.Elements}
+    (a : Fin (len (assocSndTo3WithInitial.obj Y).2.2.unop)) : Fin (len Y.1.unop) :=
+  @incl₂ (Opposite.op ⟨Y.fst, Y.snd.1⟩)
+  (@incl₂ (Opposite.op (assocSndToWithInitialWithInitial.toPrefunctor.obj Y).2) a)
+
+
+
 @[simp]
 lemma assocFstTo3WithInitial_fst_apply {X Y : assocClassifier1.Elements} (f : X ⟶ Y)
     (a : Fin (len (assocFstTo3WithInitial.obj Y).1.unop)) :
     (toOrderHom (assocFstTo3WithInitial.map f).1.1 a).val =
-    ((toOrderHom f.1.1) ⟨a.val , by sorry⟩).val := by
+    ((toOrderHom f.1.1) (inclFst₁ a)).val := by
   change (toOrderHom (homMk _) a).val = _
   rw [toOrderHom_homMk]
   erw [mapOrderHom₁_apply_val]
@@ -1596,20 +1633,22 @@ lemma assocFstTo3WithInitial_fst_apply {X Y : assocClassifier1.Elements} (f : X 
   erw [Quiver.Hom.op_unop]
   erw [toOrderHom_homMk, mapOrderHom₁_apply_val]
 
+
 @[simp]
 lemma assocSndTo3WithInitial_fst_apply {X Y : assocClassifierSnd.Elements} (f : X ⟶ Y)
     (a : Fin (len (assocSndTo3WithInitial.obj Y).1.unop)) :
     (toOrderHom (assocSndTo3WithInitial.map f).1.1 a).val =
-    ((toOrderHom f.1.1) ⟨a.val , by sorry⟩).val := by
+    ((toOrderHom f.1.1) (inclSnd₁ a)).val := by
   change (toOrderHom (homMk _) a).val = _
   rw [toOrderHom_homMk]
   erw [mapOrderHom₁_apply_val]
+
 
 @[simp]
 lemma assocFstTo3WithInitial_snd_apply {X Y : assocClassifier1.Elements} (f : X ⟶ Y)
     (a : Fin (len (assocFstTo3WithInitial.obj Y).2.1.unop)) :
     (toOrderHom (assocFstTo3WithInitial.map f).2.1.1 a).val =
-    ((toOrderHom f.1.1) ⟨a.val + Y.2.2.val , by sorry⟩).val - X.2.2.val := by
+    ((toOrderHom f.1.1) (inclFst₂ a)).val - X.2.2.val := by
   change (toOrderHom (homMk _) a).val = _
   rw [toOrderHom_homMk]
   erw [mapOrderHom₂_apply_val]
@@ -1618,11 +1657,12 @@ lemma assocFstTo3WithInitial_snd_apply {X Y : assocClassifier1.Elements} (f : X 
   erw [toOrderHom_homMk, mapOrderHom₁_apply_val]
   simp [assoc1ToWithInitialWithInitial]
 
+
 @[simp]
 lemma assocSndTo3WithInitial_snd_apply {X Y : assocClassifierSnd.Elements} (f : X ⟶ Y)
     (a : Fin (len (assocSndTo3WithInitial.obj Y).2.1.unop)) :
     (toOrderHom (assocSndTo3WithInitial.map f).2.1.1 a).val =
-    ((toOrderHom f.1.1) ⟨a.val + Y.2.1.val , by sorry⟩).val - X.2.1.val := by
+    ((toOrderHom f.1.1) (inclSnd₂ a)).val - X.2.1.val := by
   change (toOrderHom (homMk _) a).val = _
   rw [toOrderHom_homMk]
   erw [mapOrderHom₁_apply_val]
@@ -1632,11 +1672,13 @@ lemma assocSndTo3WithInitial_snd_apply {X Y : assocClassifierSnd.Elements} (f : 
   simp [assoc1ToWithInitialWithInitial]
   rfl
 
+
 @[simp]
 lemma assocFstTo3WithInitial_thd_apply {X Y : assocClassifier1.Elements} (f : X ⟶ Y)
     (a : Fin (len (assocFstTo3WithInitial.obj Y).2.2.unop)) :
     (toOrderHom (assocFstTo3WithInitial.map f).2.2.1 a).val =
-    ((toOrderHom f.1.1) ⟨a.val + Y.2.1.val , by sorry⟩).val - X.2.1.val := by
+    ((toOrderHom f.1.1) (inclFst₃ a)).val
+     - X.2.1.val := by
   change (toOrderHom (homMk _) a).val = _
   rw [toOrderHom_homMk]
   erw [mapOrderHom₂_apply_val]
@@ -1644,11 +1686,13 @@ lemma assocFstTo3WithInitial_thd_apply {X Y : assocClassifier1.Elements} (f : X 
   erw [Quiver.Hom.op_unop]
   rfl
 
+
+
 @[simp]
 lemma assocSndTo3WithInitial_thd_apply {X Y : assocClassifierSnd.Elements} (f : X ⟶ Y)
     (a : Fin (len (assocSndTo3WithInitial.obj Y).2.2.unop)) :
     (toOrderHom (assocSndTo3WithInitial.map f).2.2.1 a).val =
-    ((toOrderHom f.1.1) ⟨a.val + Y.2.2.val + Y.2.1.val , by sorry⟩).val - X.2.1.val- X.2.2.val := by
+    ((toOrderHom f.1.1) (inclSnd₃ a)).val - X.2.1.val- X.2.2.val := by
   change (toOrderHom (homMk _) a).val = _
   rw [toOrderHom_homMk]
   erw [mapOrderHom₂_apply_val]
@@ -1665,7 +1709,10 @@ def assocIsoWithInitialComponents  (X : assocClassifier1.Elements) :
   Iso.prod (Iso.op (
   lenIso (rfl))) (Iso.prod (Iso.op (lenIso ( by simp ))) (Iso.op (lenIso (by
    simp
-   sorry
+   have h1 := Nat.lt_succ.mp X.2.1.prop
+   have h2 := Nat.lt_succ.mp X.2.2.prop
+   simp at h2
+   omega
   ))))
 
 lemma nat_assocIsoWithInitial_fst {X Y : assocClassifier1.Elements} (f : X ⟶ Y) :
@@ -1729,7 +1776,19 @@ lemma nat_assocIsoWithInitial_thd {X Y : assocClassifier1.Elements} (f : X ⟶ Y
   erw [toOrderHom_of_lenIso_hom, toOrderHom_of_lenIso_hom]
   erw [assocFstTo3WithInitial_thd_apply, assocSndTo3WithInitial_thd_apply]
   simp
-  sorry
+  have h2 := Nat.lt_succ.mp X.2.2.prop
+  simp at h2
+  rw [tsub_tsub, add_tsub_cancel_of_le h2]
+  apply congrFun
+  repeat apply congrArg
+  rw [Fin.eq_iff_veq]
+  simp [incl₂]
+  change a.val + Y.2.1.val = a.val + (Y.2.1.val - Y.2.2.val) + Y.2.2.val
+  rw [add_assoc, tsub_add_cancel_iff_le.mpr]
+  have hy := Nat.lt_succ.mp Y.2.2.prop
+  simp at hy
+  exact hy
+
 
 def assocIsoWithInitial : assocFstTo3WithInitial ≅ ((CategoryOfElements.mapIso assocIso).functor ⋙
     assocSndTo3WithInitial) := NatIso.ofComponents assocIsoWithInitialComponents (by
@@ -2476,42 +2535,6 @@ lemma assocTypeMap_comm  {X Y: WithInitial SimplexCategory} (f : X ⟶ Y) :
       refine (tsub_lt_iff_left ?_).mp hs2k
       rw [hv]
       exact Nat.not_lt.mp hs1j
-
-lemma mapOrderHom₂_map_lt_p1 {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶ Y)
-    (s : assocClassifier1.obj X)
-    (j : Fin (len Y.unop))
-    (hj : j.val < (joinClassifying.map f (((assocIsoComponents X).hom s).1)).val +
-    (joinClassifying.map (joinClassifyEquivOpOp.functor.map
-    (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2).val):
-    Fin.castSucc ((toOrderHom f.unop) j) < s.1 := by
-  let x := (joinClassifying.map f (((assocIsoComponents X).hom s).1))
-  let y := (joinClassifying.map (joinClassifyEquivOpOp.functor.map
-    (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2)
-  by_cases hjlt : j.val < x.val
-  · let hs1 := (sourceValue_cond f.unop ((assocIsoComponents X).hom s).1 j).mp hjlt
-    refine lt_of_lt_of_le (Fin.lt_def.mp hs1) ?_
-    rw [Fin.le_def]
-    have hsprop := (Nat.lt_succ_iff.mp (s.2.prop))
-    simp_all
-  · have hyC := sourceValue_cond (joinClassifyEquivOpOp.functor.map
-      (coCartesianLift f ((assocIsoComponents X).hom s).1)).2.unop ((assocIsoComponents X).hom s).2
-    sorry
-
-lemma mapOrderHom₂_map_lt {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶ Y)
-    (s : assocClassifier1.obj X)  :
-    (joinClassifying.map f (((assocIsoComponents X).hom s).1)).val +
-    (joinClassifying.map (joinClassifyEquivOpOp.functor.map
-    (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2).val
-    < Nat.succ (len Y.unop) := by
-  let x := (joinClassifying.map f (((assocIsoComponents X).hom s).1))
-  let y := (joinClassifying.map (joinClassifyEquivOpOp.functor.map
-    (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2)
-  have hx : x.val ≤  _ := Nat.lt_succ.mp x.prop
-  have hy : y.val ≤  _ := Nat.lt_succ.mp y.prop
-  simp at hy
-  change y.val ≤ len Y.unop - x.val at hy
-  rw [Nat.lt_succ, add_comm]
-  exact  Nat.add_le_of_le_sub hx hy
 
 
 
