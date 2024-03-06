@@ -96,7 +96,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
   refine' tendsto_integral_filter_of_dominated_convergence
       (fun a => ∑' n, bound n a) _ _ bound_integrable h_lim
   · exact eventually_of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
-  · refine' eventually_of_forall fun s => _
+  · filter_upwards with s
     filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
       with a hFa ha0 has
     calc
@@ -352,7 +352,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
         exact (h_int' hx).1.aestronglyMeasurable
       · exact le_max_of_le_right hx.2
       exacts [measurableSet_Iic, measurableSet_Iic]
-    · refine' eventually_of_forall fun x => eventually_of_forall fun t => _
+    · filter_upwards with x; filter_upwards with t
       dsimp [indicator]
       split_ifs <;> simp
     · have : ∀ᵐ t ∂μ, t < b₀ ∨ b₀ < t := by
