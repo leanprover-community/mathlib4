@@ -599,13 +599,13 @@ theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v
     List.Chain G.DartAdj d p.darts := by
   induction p generalizing d with
   | nil => exact List.Chain.nil
-  -- porting note: needed to defer `h` and `rfl` to help elaboration
+  -- Porting note: needed to defer `h` and `rfl` to help elaboration
   | cons h' p ih => exact List.Chain.cons (by exact h) (ih (by rfl))
 #align simple_graph.walk.chain_dart_adj_darts SimpleGraph.Walk.chain_dartAdj_darts
 
 theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
   | nil => trivial
-  -- porting note: needed to defer `rfl` to help elaboration
+  -- Porting note: needed to defer `rfl` to help elaboration
   | cons h p => chain_dartAdj_darts (by rfl) p
 #align simple_graph.walk.chain'_dart_adj_darts SimpleGraph.Walk.chain'_dartAdj_darts
 
@@ -1190,7 +1190,7 @@ theorem length_transfer (hp) : (p.transfer H hp).length = p.length := by
   induction p <;> simp [*]
 #align simple_graph.walk.length_transfer SimpleGraph.Walk.length_transfer
 
--- porting note: this failed the simpNF linter since it was originally of the form
+-- Porting note: this failed the simpNF linter since it was originally of the form
 -- `(p.transfer H hp).transfer K hp' = p.transfer K hp''` with `hp'` a function of `hp` and `hp'`.
 -- This was a mistake and it's corrected here.
 @[simp]

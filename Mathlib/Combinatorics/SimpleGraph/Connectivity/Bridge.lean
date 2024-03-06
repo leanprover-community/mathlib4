@@ -81,7 +81,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V]
   exact List.disjoint_of_nodup_append hc hbq hpq'
 #align simple_graph.reachable_delete_edges_iff_exists_cycle.aux SimpleGraph.reachable_deleteEdges_iff_exists_cycle.aux
 
--- porting note: the unused variable checker helped eliminate a good amount of this proof (!)
+-- Porting note: the unused variable checker helped eliminate a good amount of this proof (!)
 theorem adj_and_reachable_delete_edges_iff_exists_cycle :
     G.Adj v w ∧ (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔
       ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ s(v, w) ∈ p.edges := by

@@ -26,7 +26,7 @@ structure IsCircuit (p : G.Walk u u) extends IsTrail p : Prop where
 #align simple_graph.walk.is_circuit SimpleGraph.Walk.IsCircuit
 #align simple_graph.walk.is_circuit_def SimpleGraph.Walk.isCircuit_def
 
--- porting note: used to use `extends to_trail : is_trail p` in structure
+-- Porting note: used to use `extends to_trail : is_trail p` in structure
 protected lemma IsCircuit.isTrail {p : G.Walk u u} (h : IsCircuit p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_circuit.to_trail SimpleGraph.Walk.IsCircuit.isTrail
 
@@ -36,7 +36,7 @@ structure IsCycle (p : G.Walk u u) extends IsCircuit p : Prop where
   support_nodup : p.support.tail.Nodup
 #align simple_graph.walk.is_cycle SimpleGraph.Walk.IsCycle
 
--- porting note: used to use `extends to_circuit : is_circuit p` in structure
+-- Porting note: used to use `extends to_circuit : is_circuit p` in structure
 protected lemma IsCycle.isCircuit {p : G.Walk u u} (h : p.IsCycle) : IsCircuit p := h.toIsCircuit
 #align simple_graph.walk.is_cycle.to_circuit SimpleGraph.Walk.IsCycle.isCircuit
 

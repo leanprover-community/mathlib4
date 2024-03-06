@@ -43,7 +43,7 @@ structure IsPath (p : G.Walk u v) extends IsTrail p : Prop where
   support_nodup : p.support.Nodup
 #align simple_graph.walk.is_path SimpleGraph.Walk.IsPath
 
--- porting note: used to use `extends to_trail : is_trail p` in structure
+-- Porting note: used to use `extends to_trail : is_trail p` in structure
 protected lemma IsPath.isTrail {p : G.Walk u v} (h : IsPath p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_path.to_trail SimpleGraph.Walk.IsPath.isTrail
 
@@ -265,7 +265,7 @@ protected theorem IsPath.takeUntil {p : G.Walk v w} (hc : p.IsPath)
   IsPath.of_append_left (by rwa [← take_spec _ h] at hc)
 #align simple_graph.walk.is_path.take_until SimpleGraph.Walk.IsPath.takeUntil
 
--- porting note: p was previously accidentally an explicit argument
+-- Porting note: p was previously accidentally an explicit argument
 protected theorem IsPath.dropUntil {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
   IsPath.of_append_right (by rwa [← take_spec _ h] at hc)
