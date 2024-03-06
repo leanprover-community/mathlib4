@@ -3,9 +3,6 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Topology.Instances.ENNReal
-import Mathlib.Topology.Instances.NNReal
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 /-!
