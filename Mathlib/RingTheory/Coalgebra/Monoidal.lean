@@ -201,7 +201,7 @@ variable {R M N P Q : Type u} [CommRing R]
 
 attribute [local instance] CoalgCat.instMonoidalCategoryAux
 
-lemma TensorProduct.comul_eq :
+lemma tensorObj_comul_eq :
     Coalgebra.comul (R := R) (A := (tensorObj (CoalgCat.of R M) (CoalgCat.of R N) : CoalgCat R))
       = Coalgebra.comul (R := R) (A := M ⊗[R] N) := by
   simp only [Monoidal.transportStruct_tensorObj, Equivalence.trans_functor, Equivalence.op_functor,
@@ -216,7 +216,7 @@ lemma TensorProduct.comul_eq :
     tensorProductCoalgebraStruct_comul]
   rfl
 
-lemma TensorProduct.comul_eq' :
+lemma tensorObj_comul_eq' :
     Coalgebra.comul (R := R) (A := (tensorObj (CoalgCat.of R M)
       (tensorObj (CoalgCat.of R N) (CoalgCat.of R P)) : CoalgCat R))
       = Coalgebra.comul (R := R) (A := M ⊗[R] N ⊗[R] P) := by
@@ -232,7 +232,7 @@ lemma TensorProduct.comul_eq' :
     tensorProductCoalgebraStruct_comul]
   rfl
 
-lemma TensorProduct.comul_eq'' :
+lemma tensorObj_comul_eq'' :
     Coalgebra.comul (R := R) (A := (tensorObj (tensorObj (CoalgCat.of R M)
       (CoalgCat.of R N)) (CoalgCat.of R P) : CoalgCat R))
       = Coalgebra.comul (R := R) (A := (M ⊗[R] N) ⊗[R] P) := by
@@ -248,18 +248,18 @@ lemma TensorProduct.comul_eq'' :
     tensorProductCoalgebraStruct_comul]
   rfl
 
-lemma TensorProduct.counit_eq :
+lemma tensorObj_counit_eq :
     Coalgebra.counit (R := R) (A := (tensorObj (CoalgCat.of R M) (CoalgCat.of R N) : CoalgCat R))
       = Coalgebra.counit (R := R) (A := M ⊗[R] N) := by
   rfl
 
-lemma TensorProduct.counit_eq' :
+lemma tensorObj_counit_eq' :
     Coalgebra.counit (R := R) (A := (tensorObj (CoalgCat.of R M)
       (tensorObj (CoalgCat.of R N) (CoalgCat.of R P)) : CoalgCat R))
       = Coalgebra.counit (R := R) (A := M ⊗[R] (N ⊗[R] P)) := by
   ext; rfl
 
-lemma TensorProduct.counit_eq'' :
+lemma tensorObj_counit_eq'' :
     Coalgebra.counit (R := R) (A := (tensorObj (tensorObj (CoalgCat.of R M)
       (CoalgCat.of R N)) (CoalgCat.of R P) : CoalgCat R))
       = Coalgebra.counit (R := R) (A := (M ⊗[R] N) ⊗[R] P) := by
@@ -283,10 +283,10 @@ open scoped MonoidalCategory in
   let I := CoalgCat.instMonoidalCategoryAux (R := R)
   { _root_.TensorProduct.map f.toLinearMap g.toLinearMap with
     counit_comp := by
-      simp_rw [← tensorHom_toLinearMap, ← TensorProduct.counit_eq]
+      simp_rw [← tensorHom_toLinearMap, ← tensorObj_counit_eq]
       apply (CoalgCat.ofHom f ⊗ CoalgCat.ofHom g).counit_comp
     map_comp_comul := by
-      simp_rw [← tensorHom_toLinearMap, ← TensorProduct.comul_eq]
+      simp_rw [← tensorHom_toLinearMap, ← tensorObj_comul_eq]
       apply (CoalgCat.ofHom f ⊗ CoalgCat.ofHom g).map_comp_comul }
 
 variable (M)
@@ -307,11 +307,11 @@ open scoped MonoidalCategory in
   { _root_.TensorProduct.assoc R M N P with
     counit_comp := by
       dsimp only
-      rw [← associator_hom_toLinearMap, ← TensorProduct.counit_eq', ← TensorProduct.counit_eq'']
+      rw [← associator_hom_toLinearMap, ← tensorObj_counit_eq', ← tensorObj_counit_eq'']
       apply CoalgHom.counit_comp (α_ (CoalgCat.of R M) (CoalgCat.of R N) (CoalgCat.of R P)).hom
     map_comp_comul := by
       dsimp only
-      simp_rw [← associator_hom_toLinearMap, ← TensorProduct.comul_eq', ← TensorProduct.comul_eq'']
+      simp_rw [← associator_hom_toLinearMap, ← tensorObj_comul_eq', ← tensorObj_comul_eq'']
       exact CoalgHom.map_comp_comul (α_ (CoalgCat.of R M) (CoalgCat.of R N) (CoalgCat.of R P)).hom }
 
 open scoped MonoidalCategory in
@@ -319,10 +319,10 @@ open scoped MonoidalCategory in
   let I := CoalgCat.instMonoidalCategoryAux (R := R)
   { _root_.TensorProduct.lid R M with
     counit_comp := by
-      simp only [← leftUnitor_hom_toLinearMap, ← TensorProduct.counit_eq]
+      simp only [← leftUnitor_hom_toLinearMap, ← tensorObj_counit_eq]
       apply CoalgHom.counit_comp (λ_ (CoalgCat.of R M)).hom
     map_comp_comul := by
-      simp_rw [← leftUnitor_hom_toLinearMap, ← TensorProduct.comul_eq]
+      simp_rw [← leftUnitor_hom_toLinearMap, ← tensorObj_comul_eq]
       apply CoalgHom.map_comp_comul (λ_ (CoalgCat.of R M)).hom }
 
 open scoped MonoidalCategory in
@@ -330,10 +330,43 @@ open scoped MonoidalCategory in
   let I := CoalgCat.instMonoidalCategoryAux (R := R)
   { _root_.TensorProduct.rid R M with
     counit_comp := by
-      simp only [← rightUnitor_hom_toLinearMap, ← TensorProduct.counit_eq]
+      simp only [← rightUnitor_hom_toLinearMap, ← tensorObj_counit_eq]
       apply CoalgHom.counit_comp (ρ_ (CoalgCat.of R M)).hom
     map_comp_comul := by
-      simp_rw [← rightUnitor_hom_toLinearMap, ← TensorProduct.comul_eq]
+      simp_rw [← rightUnitor_hom_toLinearMap, ← tensorObj_comul_eq]
       apply CoalgHom.map_comp_comul (ρ_ (CoalgCat.of R M)).hom }
 
 end Coalgebra
+
+namespace CoalgCat
+variable (R : Type u) [CommRing R]
+open CategoryTheory Coalgebra
+open scoped TensorProduct MonoidalCategory
+
+@[simps] noncomputable instance : MonoidalCategoryStruct.{u} (CoalgCat R) where
+  tensorObj := fun X Y => CoalgCat.of R (X ⊗[R] Y)
+  whiskerLeft := fun X _ _ f => CoalgCat.ofHom (lTensor X f)
+  whiskerRight := fun f X => CoalgCat.ofHom (rTensor X f)
+  tensorHom := fun f g => CoalgCat.ofHom (Coalgebra.TensorProduct.map f g)
+  tensorUnit := CoalgCat.of R R
+  associator := fun X Y Z => (Coalgebra.TensorProduct.assoc R X Y Z).toCoalgIso
+  leftUnitor := fun X => (Coalgebra.TensorProduct.lid R X).toCoalgIso
+  rightUnitor := fun X => (Coalgebra.TensorProduct.rid R X).toCoalgIso
+
+set_option profiler true
+
+@[simps] noncomputable def inducingFunctorData :
+    Monoidal.InducingFunctorData (forget₂ (CoalgCat R) (ModuleCat R)) where
+  μIso := fun X Y => Iso.refl _
+  whiskerLeft_eq := fun X Y Z f => by ext; rfl
+  whiskerRight_eq := fun X f => by ext; rfl
+  tensorHom_eq := fun f g => by ext; rfl
+  εIso := Iso.refl _
+  associator_eq := fun X Y Z => TensorProduct.ext <| TensorProduct.ext <| by ext; rfl
+  leftUnitor_eq := fun X => TensorProduct.ext <| by ext; rfl
+  rightUnitor_eq := fun X => TensorProduct.ext <| by ext; rfl
+
+noncomputable instance : MonoidalCategory (CoalgCat R) :=
+  Monoidal.induced (forget₂ _ (ModuleCat R)) (inducingFunctorData R)
+
+end CoalgCat

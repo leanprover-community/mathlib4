@@ -474,8 +474,13 @@ noncomputable def mulBialgHom {A : Type*} [CommSemiring A] [Bialgebra R A]
         AddHom.coe_mk, Bialgebra.counitAlgHom_apply, counit_T, map_one, Bialgebra.comul_one]
       rfl }
 
-noncomputable instance {A : Type*} [CommSemiring A] [Bialgebra R A] :
-    CommMonoid (R[T;T⁻¹] →b[R] A) where
+abbrev _root_.Bialgebra.char
+    (R : Type*) [CommSemiring R] (A : Type*) [Semiring A] [Bialgebra R A] :=
+  R[T;T⁻¹] →b[R] A
+
+noncomputable instance _root_.Bialgebra.instCommMonoidChar
+    {A : Type*} [CommSemiring A] [Bialgebra R A] :
+    CommMonoid (Bialgebra.char R A) where
   mul := mulBialgHom R
   mul_assoc := fun a b c => by
     simp only [(· * ·)]
@@ -515,7 +520,7 @@ noncomputable instance {A : Type*} [CommSemiring A] [Bialgebra R A] :
 
 -- why does simp keep crashing lean? maybe my api bad
 noncomputable def bialgEnd_addEquiv [Nontrivial R] [NoZeroDivisors R] :
-    Additive (R[T;T⁻¹] →b[R] R[T;T⁻¹]) ≃+ ℤ :=
+    Additive (Bialgebra.char R R[T;T⁻¹]) ≃+ ℤ :=
 AddEquiv.symm { (bialgEnd_equiv R).symm.trans Additive.ofMul with
     map_add' := fun x y => by
       dsimp

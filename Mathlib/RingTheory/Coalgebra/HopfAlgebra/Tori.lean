@@ -5,14 +5,14 @@ import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Gm
 import Mathlib.RingTheory.Coalgebra.HopfAlgebra.Monoidal
+import Mathlib.RingTheory.Coalgebra.Bialgebra.ChangeOfRings
 universe v u
 set_option autoImplicit false
 section Split
 open scoped AddMonoidAlgebra LaurentPolynomial
 section
-variable (R : Type u) [CommSemiring R] (A : Type v) [Semiring A] [HopfAlgebra R A]
 
-abbrev char := R[T;T⁻¹] →b[R] A
+variable (R : Type u) [CommSemiring R] (A : Type v) [Semiring A] [HopfAlgebra R A]
 
 abbrev rankNSplitTorus (n : ℕ) :=
   AddMonoidAlgebra R (Fin n → ℤ)
@@ -70,10 +70,10 @@ class IsRankNAlgebraicTorus (n : ℕ) extends
 
 class IsAlgebraicTorus extends IsSplitOver k (AlgebraicClosure k) X
 
-def IsRankNAlgebraicTorus.ofIsSepClosure (K : Type u) [Field K] [Algebra k K] [IsAlgClosure k K] (n : ℕ)
+def IsRankNAlgebraicTorus.ofIsAlgClosure (K : Type u) [Field K] [Algebra k K] [IsAlgClosure k K] (n : ℕ)
     [IsRankNSplitOver k K X n] : IsRankNAlgebraicTorus k X n := sorry
 
-def IsAlgebraicTorus.ofIsSepClosure (K : Type u) [Field K] [Algebra k K] [IsAlgClosure k K] (n : ℕ)
+def IsAlgebraicTorus.ofIsAlgClosure (K : Type u) [Field K] [Algebra k K] [IsAlgClosure k K] (n : ℕ)
     [IsSplitOver k K X] : IsAlgebraicTorus k X := sorry
 
 instance (K : Type u) [Field K] [Algebra k K] [IsAlgClosure k K] (n : ℕ)
@@ -155,69 +155,10 @@ open Finsupp
     LinearEquiv.finsuppUnique_apply, single_eq_same, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
 end
 
-
-
 end lol
 section Action
 variable (F : Type u) [Field F] (A : Type u) [CommRing A] [HopfAlgebra F A]
 
 open Field
-#check AlgebraicClosure
-#check Field.absoluteGaloisGroup
 local notation "G_F" => absoluteGaloisGroup F
 local notation "Fbar" => AlgebraicClosure F
-#check finsuppTensorFinsupp
-section ffs
-
-@[simps! toCoalgHom] noncomputable def finsuppTensorRightCoalgEquiv
-    (R : Type u) [CommRing R] (M N : Type u)
-    [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    [Coalgebra R M] [Coalgebra R N] (σ : Type u) :
-    M ⊗[R] (σ →₀ N) ≃c[R] σ →₀ (M ⊗[R] N) :=
-  { finsuppTensorRight R M N σ with
-    counit_comp := by
-      ext x i y
-      simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.coe_comp,
-        Function.comp_apply, Finsupp.lsingle_apply, TensorProduct.curry_apply,
-        LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, finsuppTensorRight_tmul_single,
-        Finsupp.counit_single, Coalgebra.tensorProductCoalgebraStruct_counit,
-        TensorProduct.map_tmul, LinearMap.mul'_apply]
-    map_comp_comul := by
-      ext x i y
-      simp only [Coalgebra.tensorProductCoalgebraStruct_comul,
-        TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.coe_comp, Function.comp_apply,
-        Finsupp.lsingle_apply, TensorProduct.curry_apply, LinearMap.coe_restrictScalars,
-        LinearEquiv.coe_coe, TensorProduct.map_tmul, Finsupp.comul_single,
-        finsuppTensorRight_tmul_single]
-      simp only [← LinearEquiv.coe_toLinearMap,
-        ← TensorProduct.mk_apply]
-      rw [← LinearMap.comp_apply]
-      rw [← LinearMap.comp_apply]
-      rw [← LinearMap.comp_apply]
-      conv_rhs =>
-        rw [← LinearMap.comp_apply]
-        rw [← LinearMap.comp_apply]
-      sorry -- ffs
-       }
-
-@[simps! toBialgHom] noncomputable def finsuppTensorRightBialgEquiv
-    (R : Type u) [CommRing R] (A B : Type u)
-    [Ring A] [Ring B] [Bialgebra R A] [Bialgebra R B]
-    (G : Type u) [Monoid G] :
-    A ⊗[R] (MonoidAlgebra B G) ≃b[R] MonoidAlgebra (A ⊗[R] B) G :=
-    { finsuppTensorRightCoalgEquiv R A B G with
-      map_one' := sorry
-      map_mul' := sorry
-      map_zero' := sorry
-      commutes' := sorry }
-
-end ffs
-
-/-
-We need
-g ⊗ 1 : K ⊗ F[t, t⁻¹] ⟶ K ⊗ A
-and we need it to be a K-bialg morphism
-
--/
-
-end Action
