@@ -892,9 +892,9 @@ section CompleteQuotient
 
 universe u
 
-open scoped Classical
 open TopologicalSpace
 
+open Classical in
 /-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
 is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
