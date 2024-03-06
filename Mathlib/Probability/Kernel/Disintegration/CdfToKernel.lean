@@ -59,6 +59,11 @@ section stieltjesOfMeasurableRat
 variable {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
   {f : α × β → ℚ → ℝ} {κ : kernel α (β × ℝ)} {ν : kernel α β}
 
+/-- a function `f : α × β → ℚ → ℝ` is called a rational conditional kernel CDF of `κ` with respect
+to `ν` if is measurable, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ`
+and for all measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
+Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Sieltjes function for
+`(ν a)`-almost all `b : β`. -/
 structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : kernel α (β × ℝ)) (ν : kernel α β) : Prop :=
   (measurable : Measurable f)
   (isRatStieltjesPoint_ae (a : α) : ∀ᵐ b ∂(ν a), IsRatStieltjesPoint f (a, b))
@@ -215,6 +220,9 @@ section isRatCondKernelCDFAux
 variable {β : Type*} {mβ : MeasurableSpace β} {f : α × β → ℚ → ℝ}
   {κ : kernel α (β × ℝ)} {ν : kernel α β}
 
+/-- This property implies `IsRatCondKernelCDF`. The measurability, integrability and integral
+conditions are the same, but the limit properties of `IsRatCondKernelCDF` are replaced by
+limits of integrals. -/
 structure isRatCondKernelCDFAux (f : α × β → ℚ → ℝ) (κ : kernel α (β × ℝ)) (ν : kernel α β) :
     Prop :=
   (measurable : Measurable f)
@@ -256,8 +264,7 @@ lemma isRatCondKernelCDFAux.tendsto_zero_of_antitone (hf : isRatCondKernelCDFAux
   · exact fun n ↦ hf.integrable a (s n)
   · rw [integral_zero]
     exact hf.tendsto_integral_of_antitone a s hs hs_tendsto
-  · filter_upwards [hf.mono a] with t ht
-    exact fun n m hnm ↦ ht (hs hnm)
+  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hs hnm)
   · filter_upwards [hf.nonneg a] with c hc using fun i ↦ hc (s i)
 
 lemma isRatCondKernelCDFAux.tendsto_one_of_monotone (hf : isRatCondKernelCDFAux f κ ν)
@@ -267,8 +274,7 @@ lemma isRatCondKernelCDFAux.tendsto_one_of_monotone (hf : isRatCondKernelCDFAux 
   · exact fun n ↦ hf.integrable a (s n)
   · rw [MeasureTheory.integral_const, smul_eq_mul, mul_one]
     exact hf.tendsto_integral_of_monotone a s hs hs_tendsto
-  · filter_upwards [hf.mono a] with t ht
-    exact fun n m hnm ↦ ht (hs hnm)
+  · filter_upwards [hf.mono a] with t ht using fun n m hnm ↦ ht (hs hnm)
   · filter_upwards [hf.le_one a] with c hc using fun i ↦ hc (s i)
 
 lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
@@ -280,8 +286,7 @@ lemma isRatCondKernelCDFAux.tendsto_atTop_one (hf : isRatCondKernelCDFAux f κ �
     exact ht
   let s : ℕ → ℚ := fun n ↦ n
   have hs : Monotone s := fun i j hij ↦ by simp [s, hij]
-  have hs_tendsto : Tendsto s atTop atTop := by
-    exact tendsto_nat_cast_atTop_atTop
+  have hs_tendsto : Tendsto s atTop atTop := tendsto_nat_cast_atTop_atTop
   filter_upwards [hf.tendsto_one_of_monotone a s hs hs_tendsto] with x hx using hx
 
 lemma isRatCondKernelCDFAux.tendsto_atBot_zero (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
@@ -317,10 +322,9 @@ lemma isRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : isRatCondKernelCDFAux f
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
   rw [← memℒp_one_iff_integrable]
-  refine ⟨Measurable.aestronglyMeasurable ?_, ?_⟩
-  · exact measurable_iInf fun i ↦ hf.measurable_right a _
+  refine ⟨(measurable_iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, ?_⟩
   refine (?_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
-  refine (snorm_le_of_ae_bound (C := 1) ?_).trans ?_
+  refine (snorm_le_of_ae_bound (C := 1) ?_).trans (by simp)
   · filter_upwards [hf.bddBelow_range a, hf.nonneg a, hf.le_one a]
       with t hbdd_below h_nonneg h_le_one
     rw [Real.norm_eq_abs, abs_of_nonneg]
@@ -329,7 +333,6 @@ lemma isRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : isRatCondKernelCDFAux f
       · exact ⟨q + 1, by simp⟩
       · exact h_le_one _
     · exact le_ciInf fun r ↦ h_nonneg _
-  · simp
 
 lemma isRatCondKernelCDFAux.set_integral_iInf_rat_gt (hf : isRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) (q : ℚ) {A : Set β} (hA : MeasurableSet A) :
@@ -342,8 +345,7 @@ lemma isRatCondKernelCDFAux.set_integral_iInf_rat_gt (hf : isRatCondKernelCDFAux
       refine set_integral_mono_ae ?_ ?_ ?_
       · exact (hf.integrable_iInf_rat_gt _ _).integrableOn
       · exact (hf.integrable _ _).integrableOn
-      · filter_upwards [hf.bddBelow_range a] with t ht
-        exact ciInf_le (ht _) r
+      · filter_upwards [hf.bddBelow_range a] with t ht using ciInf_le (ht _) r
     calc ∫ t in A, ⨅ r : Ioi q, f (a, t) r ∂(ν a)
       ≤ ⨅ r : Ioi q, (κ a (A ×ˢ Iic (r : ℝ))).toReal := le_ciInf h
     _ = (κ a (A ×ˢ Iic (q : ℝ))).toReal := by
@@ -353,18 +355,15 @@ lemma isRatCondKernelCDFAux.set_integral_iInf_rat_gt (hf : isRatCondKernelCDFAux
     refine set_integral_mono_ae ?_ ?_ ?_
     · exact (hf.integrable _ _).integrableOn
     · exact (hf.integrable_iInf_rat_gt _ _).integrableOn
-    · filter_upwards [hf.mono a] with c h_mono
-      exact le_ciInf (fun r ↦ h_mono (le_of_lt r.prop))
+    · filter_upwards [hf.mono a] with c h_mono using le_ciInf (fun r ↦ h_mono (le_of_lt r.prop))
 
 lemma isRatCondKernelCDFAux.iInf_rat_gt_eq (hf : isRatCondKernelCDFAux f κ ν) [IsFiniteKernel κ]
     [IsFiniteKernel ν] (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, ⨅ r : Ioi q, f (a, t) r = f (a, t) q := by
   rw [ae_all_iff]
   refine fun q ↦ ae_eq_of_forall_set_integral_eq_of_sigmaFinite (μ := ν a) ?_ ?_ ?_
-  · intro s _ _
-    refine Integrable.integrableOn ?_
-    exact hf.integrable_iInf_rat_gt _ _
-  · exact fun s _ _ ↦ (hf.integrable a _).integrableOn
+  · exact fun _ _ _ ↦ (hf.integrable_iInf_rat_gt _ _).integrableOn
+  · exact fun _ _ _ ↦ (hf.integrable a _).integrableOn
   · intro s hs _
     rw [hf.set_integral _ hs, hf.set_integral_iInf_rat_gt _ _ hs]
 
@@ -391,6 +390,10 @@ section IsCondKernelCDF
 variable {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
   {f : α × β → StieltjesFunction} {κ : kernel α (β × ℝ)} {ν : kernel α β}
 
+/-- A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with
+respect to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
+if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
+measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`. -/
 structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : kernel α (β × ℝ)) (ν : kernel α β) :
     Prop :=
   (measurable (x : ℝ) : Measurable fun p ↦ f p x)
@@ -406,7 +409,7 @@ lemma IsCondKernelCDF.nonneg (hf : IsCondKernelCDF f κ ν) (p : α × β) (x : 
 lemma IsCondKernelCDF.le_one (hf : IsCondKernelCDF f κ ν) (p : α × β) (x : ℝ) : f p x ≤ 1 :=
   Monotone.ge_of_tendsto (f p).mono (hf.tendsto_atTop_one p) x
 
-lemma IsCondKernelCDF.integral [IsFiniteKernel κ]
+lemma IsCondKernelCDF.integral
     {f : α × β → StieltjesFunction} (hf : IsCondKernelCDF f κ ν) (a : α) (x : ℝ) :
     ∫ b, f (a, b) x ∂(ν a) = (κ a (univ ×ˢ Iic x)).toReal := by
   rw [← hf.set_integral _ MeasurableSet.univ, Measure.restrict_univ]
@@ -440,6 +443,8 @@ section ToKernel
 variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction}
   {κ : kernel α (β × ℝ)} {ν : kernel α β} {hf : IsCondKernelCDF f κ ν}
 
+/-- A measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at +∞ gives a measurable
+function `α → Measure ℝ` by taking `StieltjesFunction.measure` at each point. -/
 lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
     (hf : ∀ q, Measurable fun a ↦ f a q)
     (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
@@ -469,6 +474,8 @@ lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
     simp_rw [measure_iUnion hf_disj hf_meas]
     exact Measurable.ennreal_tsum hf_cd_meas
 
+/-- A function `f : α × β → StieltjesFunction` with the property `IsCondKernelCDF f κ ν` gives a
+Markov kernel from `α × β` to `ℝ`, by taking for each `p : α × β` the measure defined by `f p`. -/
 noncomputable
 def IsCondKernelCDF.toKernel (f : α × β → StieltjesFunction) (hf : IsCondKernelCDF f κ ν) :
     kernel (α × β) ℝ where

@@ -8,7 +8,7 @@ import Mathlib.Probability.Kernel.Disintegration.Basic
 /-!
 # Lebesgue and Bochner integrals of conditional kernels
 
-Integrals of `ProbabilityTheory.kernel.condKernel` and `MeasureTheory.Measure.condKerenl`.
+Integrals of `ProbabilityTheory.kernel.condKernel` and `MeasureTheory.Measure.condKernel`.
 
 ## Main statements
 
