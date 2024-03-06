@@ -17,11 +17,12 @@ variable {α : Type*} [Field α] [TopologicalSpace α] [TopologicalDivisionRing 
 
 /-- The (topological-space) closure of a subfield of a topological field is
 itself a subfield. -/
+@[pp_dot]
 def topologicalClosure (K : Subfield α) : Subfield α where
-  __ := K.toSubring.topologicalClosure
-  carrier := _root_.closure (K : Set α)
+  toSubring := K.toSubring.topologicalClosure
   inv_mem' x hx := by
-    dsimp only at hx ⊢
+    simp only [Subsemiring.coe_carrier_toSubmonoid, Subring.coe_toSubsemiring, SetLike.mem_coe,
+      Subring.topologicalClosure, Subfield.coe_toSubring] at hx ⊢
     obtain rfl | h := eq_or_ne x 0
     · rwa [inv_zero]
     · rw [← inv_coe_set (H := K), ← Set.image_inv]
