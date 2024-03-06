@@ -133,6 +133,11 @@ def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
   aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
 #align mv_polynomial.kill_compl MvPolynomial.killCompl
 
+@[simp]
+theorem killCompl_C (r : R) : killCompl hf (C r) = C r := by
+  -- rw [algHom_C (killCompl _) r] -- Why doesn't this work?
+  simp only [killCompl, aeval_C, algebraMap_eq]
+
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
