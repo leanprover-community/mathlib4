@@ -13,8 +13,6 @@ We consider infinite sums over functions `f` on `ℕ`, restricted to a residue c
 The main result is `summable_indicator_mod_iff`, which states that when `f : ℕ → ℝ` is
 decreasing and takes nonnegative values, then the sum over `f` restricted to any residue class
 mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
-
-(Note that we want to use `Summable.of_nonneg_of_le`, which insists on `ℝ` as the target.)
 -/
 
 
