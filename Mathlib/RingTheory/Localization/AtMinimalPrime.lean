@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Uni Marx. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Joe Cool.
+Authors: Uni Marx.
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Nilpotent
