@@ -267,7 +267,6 @@ lemma exists_birkhoff_representation.{u} (α : Type u) [Finite α] [DistribLatti
       Injective f := by
   classical
   cases nonempty_fintype α
-  exact ⟨{a : α // SupIrred a}, _, by infer_instance, LatticeHom.birkhoffFinset _,
-    LatticeHom.birkhoffFinset_injective _⟩
+  exact ⟨{a : α // SupIrred a}, _, inferInstance, _, LatticeHom.birkhoffFinset_injective _⟩
 
 end DistribLattice
