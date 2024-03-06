@@ -124,7 +124,7 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
       SetLike.mk_smul_mk]
 #align lie_algebra.root_space_weight_space_product_aux LieAlgebra.rootSpaceWeightSpaceProductAux
 
--- Porting note: this def is _really_ slow
+-- Porting note (#11083): this def is _really_ slow
 -- See https://github.com/leanprover-community/mathlib4/issues/5028
 /-- Given a nilpotent Lie subalgebra `H ⊆ L` together with `χ₁ χ₂ : H → R`, there is a natural
 `R`-bilinear product of root vectors and weight vectors, compatible with the actions of `H`. -/
@@ -262,5 +262,37 @@ theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoet
     rootSpace H 0 = H.toLieSubmodule := by
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, ← coe_zeroRootSubalgebra,
     zeroRootSubalgebra_eq_of_is_cartan R L H, LieSubalgebra.coe_toLieSubmodule]
+
+variable {R L H}
+variable [H.IsCartanSubalgebra] [IsNoetherian R L] (α : H → R)
+
+/-- Given a root `α`, the Lie bracket restricted to the product of the root space of `α` and `-α`
+takes value in the Cartan subalgebra.
+
+When `L` is semisimple, the image of this map is one-dimensional and is spanned by the corresponding
+coroot. -/
+def rootSpaceProductNegSelf : rootSpace H α ⊗[R] rootSpace H (-α) →ₗ⁅R,H⁆ H :=
+  ((rootSpace H 0).incl.comp <| rootSpaceProduct R L H α (-α) 0 (add_neg_self α)).codRestrict
+    H.toLieSubmodule (by
+  rw [← rootSpace_zero_eq]
+  exact fun p ↦ (rootSpaceProduct R L H α (-α) 0 (add_neg_self α) p).property)
+
+@[simp]
+lemma coe_rootSpaceProductNegSelf_apply (x : rootSpace H α) (y : rootSpace H (-α)) :
+    (rootSpaceProductNegSelf α (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ :=
+  rfl
+
+lemma mem_range_rootSpaceProductNegSelf {x : H} :
+    x ∈ (rootSpaceProductNegSelf α).range ↔
+    (x : L) ∈ Submodule.span R {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} := by
+  have : x ∈ (rootSpaceProductNegSelf α).range ↔
+      (x : L) ∈ (rootSpaceProductNegSelf α).range.map H.toLieSubmodule.incl := by
+    simpa using exists_congr fun _ ↦ H.toLieSubmodule.injective_incl.eq_iff.symm
+  simp_rw [this, ← LieModuleHom.map_top, ← LieSubmodule.mem_coeSubmodule,
+    LieSubmodule.coeSubmodule_map, LieSubmodule.top_coeSubmodule, ← TensorProduct.span_tmul_eq_top,
+    LinearMap.map_span, Set.image, Set.mem_setOf_eq, exists_exists_exists_and_eq]
+  change (x : L) ∈ Submodule.span R
+    {x | ∃ (a : rootSpace H α) (b : rootSpace H (-α)), ⁅(a : L), (b : L)⁆ = x} ↔ _
+  simp
 
 end LieAlgebra

@@ -123,7 +123,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
-    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr ⟩
+    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 #align pfun.equiv_subtype PFun.equivSubtype
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :

@@ -37,7 +37,7 @@ Motivated by the theory of Banach Lattices, this section introduces normed latti
 -/
 
 
--- porting note: this now exists as a global notation
+-- Porting note: this now exists as a global notation
 -- local notation "|" a "|" => abs a
 
 section SolidNorm
@@ -63,7 +63,7 @@ theorem LatticeOrderedAddCommGroup.isSolid_ball (r : ℝ) :
 
 instance : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
 
-instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le] ⟩
+instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
 
 end SolidNorm
 

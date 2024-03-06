@@ -185,7 +185,7 @@ theorem norm_rpow_of_nonneg {x y : ℝ} (hx_nonneg : 0 ≤ x) : ‖x ^ y‖ = �
   exact abs_rpow_of_nonneg hx_nonneg
 #align real.norm_rpow_of_nonneg Real.norm_rpow_of_nonneg
 
-variable {x y z : ℝ}
+variable {w x y z : ℝ}
 
 theorem rpow_add (hx : 0 < x) (y z : ℝ) : x ^ (y + z) = x ^ y * x ^ z := by
   simp only [rpow_def_of_pos hx, mul_add, exp_add]
@@ -198,6 +198,10 @@ theorem rpow_add' (hx : 0 ≤ x) (h : y + z ≠ 0) : x ^ (y + z) = x ^ y * x ^ z
     exact this.imp zero_rpow zero_rpow
   · exact rpow_add pos _ _
 #align real.rpow_add' Real.rpow_add'
+
+/-- Variant of `Real.rpow_add'` that avoids having to prove `y + z = w` twice. -/
+lemma rpow_of_add_eq (hx : 0 ≤ x) (hw : w ≠ 0) (h : y + z = w) : x ^ w = x ^ y * x ^ z := by
+  rw [← h, rpow_add' hx]; rwa [h]
 
 theorem rpow_add_of_nonneg (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤ z) :
     x ^ (y + z) = x ^ y * x ^ z := by
@@ -330,6 +334,17 @@ theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : r
   rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, _root_.abs_of_nonneg]
 #align complex.abs_cpow_eq_rpow_re_of_nonneg Complex.abs_cpow_eq_rpow_re_of_nonneg
 
+lemma norm_natCast_cpow_of_re_ne_zero (n : ℕ) {s : ℂ} (hs : s.re ≠ 0) :
+    ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ (s.re) := by
+  rw [norm_eq_abs, ← ofReal_nat_cast, abs_cpow_eq_rpow_re_of_nonneg n.cast_nonneg hs]
+
+lemma norm_natCast_cpow_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) :
+    ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ (s.re) := by
+  rw [norm_eq_abs, ← ofReal_nat_cast, abs_cpow_eq_rpow_re_of_pos (Nat.cast_pos.mpr hn) _]
+
+lemma norm_natCast_cpow_pos_of_pos {n : ℕ} (hn : 0 < n) (s : ℂ) : 0 < ‖(n : ℂ) ^ s‖ :=
+  (norm_natCast_cpow_of_pos hn _).symm ▸ Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
+
 end Complex
 
 /-! ### Positivity extension -/
@@ -339,29 +354,29 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
-@[positivity (_ : ℝ) ^ (0 : ℝ), Pow.pow (_ : ℝ) (0 : ℝ), Real.rpow (_ : ℝ) (0 : ℝ)]
-def evalRpowZero : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
-  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (_ : Q(ℝ)) ← withReducible (whnf e)
-    | throwError "not Real.rpow"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
-  pure (.positive (q(Real.rpow_zero_pos $a) : Expr))
+@[positivity (_ : ℝ) ^ (0 : ℝ)]
+def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) =>
+    assertInstancesCommute
+    pure (.positive q(Real.rpow_zero_pos $a))
+  | _, _, _ => throwError "not Real.rpow"
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
 the base is nonnegative and positive when the base is positive. -/
-@[positivity (_ : ℝ) ^ (_ : ℝ), Pow.pow (_ : ℝ) (_ : ℝ), Real.rpow (_ : ℝ) (_ : ℝ)]
-def evalRpow : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} zα pα e := do
-  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (b : Q(ℝ)) ← withReducible (whnf e)
-    | throwError "not Real.rpow"
-  guard <| ← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
-  let ra ← core zα pα a
-  match ra with
-  | .positive pa =>
-      have pa' : Q(0 < $a) := pa
-      pure (.positive (q(Real.rpow_pos_of_pos $pa' $b) : Expr))
-  | .nonnegative pa =>
-      have pa' : Q(0 ≤ $a) := pa
-      pure (.nonnegative (q(Real.rpow_nonneg $pa' $b) : Expr))
-  | _ => pure .none
+@[positivity (_ : ℝ) ^ (_ : ℝ)]
+def evalRpow : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa =>
+        pure (.positive q(Real.rpow_pos_of_pos $pa $b))
+    | .nonnegative pa =>
+        pure (.nonnegative q(Real.rpow_nonneg $pa $b))
+    | _ => pure .none
+  | _, _, _ => throwError "not Real.rpow"
 
 end Mathlib.Meta.Positivity
 
@@ -438,7 +453,7 @@ theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
 #align real.rpow_two Real.rpow_two
 
 theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
-  suffices H : x ^ ((-1 : ℤ) : ℝ) = x⁻¹; · rwa [Int.cast_neg, Int.cast_one] at H
+  suffices H : x ^ ((-1 : ℤ) : ℝ) = x⁻¹ by rwa [Int.cast_neg, Int.cast_one] at H
   simp only [rpow_int_cast, zpow_one, zpow_neg]
 #align real.rpow_neg_one Real.rpow_neg_one
 
@@ -780,6 +795,19 @@ theorem abs_log_mul_self_rpow_lt (x t : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) (ht : 0
   rwa [log_rpow h1, mul_assoc, abs_mul, abs_of_pos ht, mul_comm] at this
 #align real.abs_log_mul_self_rpow_lt Real.abs_log_mul_self_rpow_lt
 
+/-- `log x` is bounded above by a multiple of every power of `x` with positive exponent. -/
+lemma log_le_rpow_div {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : log x ≤ x ^ ε / ε := by
+  rcases hx.eq_or_lt with rfl | h
+  · rw [log_zero, zero_rpow hε.ne', zero_div]
+  rw [le_div_iff' hε]
+  exact (log_rpow h ε).symm.trans_le <| (log_le_sub_one_of_pos <| rpow_pos_of_pos h ε).trans
+    (sub_one_lt _).le
+
+/-- The (real) logarithm of a natural number `n` is bounded by a multiple of every power of `n`
+with positive exponent. -/
+lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n ^ ε / ε :=
+  log_le_rpow_div n.cast_nonneg hε
+
 lemma strictMono_rpow_of_base_gt_one {b : ℝ} (hb : 1 < b) :
     StrictMono (rpow b) := by
   show StrictMono (fun (x:ℝ) => b ^ x)
@@ -806,6 +834,44 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
   case inr => intro _ _ _; simp
 
 end Real
+
+namespace Complex
+
+lemma norm_prime_cpow_le_one_half (p : Nat.Primes) {s : ℂ} (hs : 1 < s.re) :
+    ‖(p : ℂ) ^ (-s)‖ ≤ 1 / 2 := by
+  rw [norm_natCast_cpow_of_re_ne_zero p <| by rw [neg_re]; linarith only [hs]]
+  refine (Real.rpow_le_rpow_of_nonpos zero_lt_two (Nat.cast_le.mpr p.prop.two_le) <|
+    by rw [neg_re]; linarith only [hs]).trans ?_
+  rw [one_div, ← Real.rpow_neg_one]
+  exact Real.rpow_le_rpow_of_exponent_le one_le_two <| (neg_lt_neg hs).le
+
+lemma one_sub_prime_cpow_ne_zero {p : ℕ} (hp : p.Prime) {s : ℂ} (hs : 1 < s.re) :
+    1 - (p : ℂ) ^ (-s) ≠ 0 := by
+  refine sub_ne_zero_of_ne fun H ↦ ?_
+  have := norm_prime_cpow_le_one_half ⟨p, hp⟩ hs
+  simp only at this
+  rw [← H, norm_one] at this
+  norm_num at this
+
+lemma norm_natCast_cpow_le_norm_natCast_cpow_of_pos {n : ℕ} (hn : 0 < n) {w z : ℂ}
+    (h : w.re ≤ z.re) :
+    ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ := by
+  simp_rw [norm_natCast_cpow_of_pos hn]
+  exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) h
+
+lemma norm_natCast_cpow_le_norm_natCast_cpow_iff {n : ℕ} (hn : 1 < n) {w z : ℂ} :
+    ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ ↔ w.re ≤ z.re := by
+  simp_rw [norm_natCast_cpow_of_pos (Nat.zero_lt_of_lt hn),
+    Real.rpow_le_rpow_left_iff (Nat.one_lt_cast.mpr hn)]
+
+lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log n‖ ≤ n ^ ε / ε := by
+  rcases n.eq_zero_or_pos with rfl | h
+  · rw [Nat.cast_zero, Nat.cast_zero, log_zero, norm_zero, Real.zero_rpow hε.ne', zero_div]
+  rw [norm_eq_abs, ← natCast_log, abs_ofReal,
+    _root_.abs_of_nonneg <| Real.log_nonneg <| by exact_mod_cast Nat.one_le_of_lt h.lt]
+  exact Real.log_natCast_le_rpow_div n hε
+
+end Complex
 
 /-!
 ## Square roots of reals
@@ -931,14 +997,14 @@ theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
 
 theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
-    (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
-    IsRat (a^b) num den := by
+    (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
+    IsRat (a ^ b) num den := by
   rwa [pb.out, rpow_nat_cast]
 
 theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a^(Int.negOfNat nb)) num den) :
-    IsRat (a^b) num den := by
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
+    IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_int_cast]
 
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.-/

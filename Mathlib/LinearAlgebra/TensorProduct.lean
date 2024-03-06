@@ -3,8 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.GroupTheory.Congruence
+import Mathlib.LinearAlgebra.Basic
 import Mathlib.Tactic.SuppressCompilation
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
@@ -81,9 +82,9 @@ def TensorProduct : Type _ :=
 variable {R}
 
 set_option quotPrecheck false in
-scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
+@[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
-scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
+@[inherit_doc] scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
 
 namespace TensorProduct
 
@@ -123,11 +124,13 @@ def tmul (m : M) (n : N) : M ⊗[R] N :=
 
 variable {R}
 
+/-- The canonical function `M → N → M ⊗ N`. -/
 infixl:100 " ⊗ₜ " => tmul _
 
+/-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
--- porting note: make the arguments of induction_on explicit
+-- Porting note: make the arguments of induction_on explicit
 @[elab_as_elim]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
@@ -248,7 +251,7 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
 
--- porting note: This is added as a local instance for `SMul.aux`.
+-- Porting note: This is added as a local instance for `SMul.aux`.
 -- For some reason type-class inference in Lean 3 unfolded this definition.
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
@@ -942,6 +945,19 @@ def homTensorHomMap : (M →ₗ[R] P) ⊗[R] (N →ₗ[R] Q) →ₗ[R] M ⊗[R] 
 
 variable {R M N P Q}
 
+/--
+This is a binary version of `TensorProduct.map`: Given a bilinear map `f : M ⟶ P ⟶ Q` and a
+bilinear map `g : N ⟶ S ⟶ T`, if we think `f` and `g` as linear maps with two inputs, then
+`map₂ f g` is a bilinear map taking two inputs `M ⊗ N → P ⊗ S → Q ⊗ S` defined by
+`map₂ f g (m ⊗ n) (p ⊗ s) = f m p ⊗ g n s`.
+
+Mathematically, `TensorProduct.map₂` is defined as the composition
+`M ⊗ N -map→ Hom(P, Q) ⊗ Hom(S, T) -homTensorHomMap→ Hom(P ⊗ S, Q ⊗ T)`.
+-/
+def map₂ (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) :
+    M ⊗[R] N →ₗ[R] P ⊗[R] S →ₗ[R] Q ⊗[R] T :=
+  homTensorHomMap R _ _ _ _ ∘ₗ map f g
+
 @[simp]
 theorem mapBilinear_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : mapBilinear R M N P Q f g = map f g :=
   rfl
@@ -964,6 +980,10 @@ theorem homTensorHomMap_apply (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     homTensorHomMap R M N P Q (f ⊗ₜ g) = map f g :=
   rfl
 #align tensor_product.hom_tensor_hom_map_apply TensorProduct.homTensorHomMap_apply
+
+@[simp]
+theorem map₂_apply_tmul (f : M →ₗ[R] P →ₗ[R] Q) (g : N →ₗ[R] S →ₗ[R] T) (m : M) (n : N) :
+    map₂ f g (m ⊗ₜ n) = map (f m) (g n) := rfl
 
 @[simp]
 theorem map_zero_left (g : N →ₗ[R] Q) : map (0 : M →ₗ[R] P) g = 0 :=
@@ -1045,7 +1065,7 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
   rfl
 #align tensor_product.tensor_tensor_tensor_comm_tmul TensorProduct.tensorTensorTensorComm_tmul
 
--- porting note: the proof here was `rfl` but that caused a timeout.
+-- Porting note: the proof here was `rfl` but that caused a timeout.
 @[simp]
 theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
@@ -1248,6 +1268,9 @@ theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTens
 
 variable {N}
 
+theorem lid_comp_rTensor (f : N →ₗ[R] R) :
+    (TensorProduct.lid R M).comp (rTensor M f) = lift ((lsmul R M).comp f) := ext' fun _ _ ↦ rfl
+
 @[simp]
 theorem lTensor_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g.lTensor P).comp (f.rTensor N) = map f g := by
@@ -1334,8 +1357,8 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
     (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [add_left_neg, zero_tmul])
     fun x y hx hy => by
-    suffices : -x + x + (-y + y) = 0
-    · rw [← this]
+    suffices -x + x + (-y + y) = 0 by
+      rw [← this]
       unfold Neg.neg neg
       simp only
       rw [map_add]

@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupPower.IterateHom
@@ -588,7 +587,7 @@ theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j
 
 theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
     swap y z * swap x y * swap y z = swap z x := by
-  nth_rewrite 2 [← swap_inv]
+  nth_rewrite 3 [← swap_inv]
   rw [← swap_apply_apply, swap_apply_left, swap_apply_of_ne_of_ne hxy hxz, swap_comm]
 #align equiv.swap_mul_swap_mul_swap Equiv.swap_mul_swap_mul_swap
 

@@ -82,12 +82,14 @@ variable {m n k l : ℕ}
 
 /-! ### Equalities and inequalities involving zero and one -/
 
+theorem _root_.NeZero.one_le [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)
+
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
 -- Porting note: already in Std
 #align nat.mul_eq_zero Nat.mul_eq_zero
 
---Porting note: removing `simp` attribute
+-- Porting note: removing `simp` attribute
 protected theorem zero_eq_mul : 0 = m * n ↔ m = 0 ∨ n = 0 := by rw [eq_comm, Nat.mul_eq_zero]
 #align nat.zero_eq_mul Nat.zero_eq_mul
 
@@ -142,7 +144,7 @@ theorem two_le_iff : ∀ n, 2 ≤ n ↔ n ≠ 0 ∧ n ≠ 1
 
 @[simp]
 theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
-  lt_succ_iff.trans nonpos_iff_eq_zero
+  Nat.lt_succ_iff.trans nonpos_iff_eq_zero
 #align nat.lt_one_iff Nat.lt_one_iff
 
 /-! ### `add` -/
@@ -325,8 +327,8 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
     have _ : a + (b + 1) < (a + 1) + (b + 1) := by simp
     apply diag_induction P ha hb hd a (b + 1)
     apply lt_of_le_of_lt (Nat.le_succ _) h
-  termination_by _ a b c => a + b
-  decreasing_by { assumption }
+  termination_by a b c => a + b
+  decreasing_by all_goals assumption
 #align nat.diag_induction Nat.diag_induction
 
 /-- A subset of `ℕ` containing `k : ℕ` and closed under `Nat.succ` contains every `n ≥ k`. -/
@@ -361,14 +363,6 @@ protected theorem div_le_self' (m n : ℕ) : m / n ≤ m :=
         _ ≤ n * m := Nat.mul_le_mul_right _ n0
 #align nat.div_le_self' Nat.div_le_self'
 
-protected theorem div_lt_of_lt_mul (h : m < n * k) : m / n < k :=
-  lt_of_mul_lt_mul_left
-    (calc
-      n * (m / n) ≤ m % n + n * (m / n) := Nat.le_add_left _ _
-      _ = m := mod_add_div _ _
-      _ < n * k := h
-      )
-    (Nat.zero_le n)
 #align nat.div_lt_of_lt_mul Nat.div_lt_of_lt_mul
 
 theorem eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
@@ -433,18 +427,7 @@ protected theorem div_div_self (h : n ∣ m) (hm : m ≠ 0) : m / (m / n) = n :=
   rw [mul_div_right _ (Nat.pos_of_ne_zero hm.1), mul_div_left _ (Nat.pos_of_ne_zero hm.2)]
 #align nat.div_div_self Nat.div_div_self
 
---Porting note: later `simp [mod_zero]` can be changed to `simp` once `mod_zero` is given
---a `simp` attribute.
-theorem mod_mul_right_div_self (m n k : ℕ) : m % (n * k) / n = m / n % k := by
-  rcases Nat.eq_zero_or_pos n with (rfl | hn); simp [mod_zero]
-  rcases Nat.eq_zero_or_pos k with (rfl | hk); simp [mod_zero]
-  conv_rhs => rw [← mod_add_div m (n * k)]
-  rw [mul_assoc, add_mul_div_left _ _ hn, add_mul_mod_self_left,
-    mod_eq_of_lt (Nat.div_lt_of_lt_mul (mod_lt _ (mul_pos hn hk)))]
 #align nat.mod_mul_right_div_self Nat.mod_mul_right_div_self
-
-theorem mod_mul_left_div_self (m n k : ℕ) : m % (k * n) / n = m / n % k := by
-  rw [mul_comm k, mod_mul_right_div_self]
 #align nat.mod_mul_left_div_self Nat.mod_mul_left_div_self
 
 theorem not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
@@ -521,7 +504,7 @@ section Find
 
 variable {p q : ℕ → Prop} [DecidablePred p] [DecidablePred q]
 
---Porting note: removing `simp` attribute as `simp` can prove it
+-- Porting note: removing `simp` attribute as `simp` can prove it
 theorem find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 := by
   rw [pos_iff_ne_zero, Ne, Nat.find_eq_zero]
 #align nat.find_pos Nat.find_pos
@@ -567,9 +550,10 @@ theorem findGreatest_eq_iff :
       · rintro ⟨hle, hP, hm⟩
         refine ⟨hle.trans k.le_succ, hP, fun n hlt hle => ?_⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
-        exacts [hk, hm hlt <| lt_succ_iff.1 hlt']
+        exacts [hk, hm hlt <| Nat.lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
-        refine ⟨lt_succ_iff.1 (hle.lt_of_ne ?_), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
+        refine ⟨Nat.lt_succ_iff.1 (hle.lt_of_ne ?_), hP,
+          fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl
         exact hk (hP k.succ_ne_zero)
 #align nat.find_greatest_eq_iff Nat.findGreatest_eq_iff
@@ -743,7 +727,7 @@ instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
 instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
-    ball_congr fun _ _ => imp_congr lt_succ_iff Iff.rfl
+    ball_congr fun _ _ => imp_congr Nat.lt_succ_iff Iff.rfl
 #align nat.decidable_lo_hi_le Nat.decidableLoHiLe
 
 end Nat

@@ -57,6 +57,10 @@ theorem charpoly_monic : f.charpoly.Monic :=
   Matrix.charpoly_monic _
 #align linear_map.charpoly_monic LinearMap.charpoly_monic
 
+open FiniteDimensional in
+lemma charpoly_natDegree [StrongRankCondition R] : natDegree (charpoly f) = finrank R M := by
+  rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
+
 end Coeff
 
 section CayleyHamilton

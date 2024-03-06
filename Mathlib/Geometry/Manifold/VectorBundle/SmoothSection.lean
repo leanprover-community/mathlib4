@@ -53,7 +53,7 @@ def SmoothSection :=
   ContMDiffSection I F ⊤ V
 #align smooth_section SmoothSection
 
-scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
+@[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
 namespace ContMDiffSection
 

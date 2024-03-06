@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.preadditive.hom_orthogonal from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
@@ -112,7 +113,7 @@ section
 variable [Preadditive C] [HasFiniteBiproducts C]
 
 /-- `HomOrthogonal.matrixDecomposition` as an additive equivalence. -/
-@[simps]
+@[simps!]
 noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Type} [Fintype α]
     [Fintype β] {f : α → ι} {g : β → ι} :
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃+
@@ -135,7 +136,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f
   · cases h
     simp
   · simp at h
-    -- porting note: used to be `convert comp_zero`, but that does not work anymore
+    -- Porting note: used to be `convert comp_zero`, but that does not work anymore
     have : biproduct.ι (fun a ↦ s (f a)) a ≫ biproduct.π (fun b ↦ s (f b)) b = 0 := by
       simpa using biproduct.ι_π_ne _ (Ne.symm h)
     rw [this, comp_zero]
@@ -158,7 +159,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintyp
   · intro b nm
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at nm
     simp only [Category.assoc]
-    -- porting note: this used to be 4 times `convert comp_zero`
+    -- Porting note: this used to be 4 times `convert comp_zero`
     have : biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫ biproduct.π (fun b ↦ s (h b)) c = 0 := by
       apply o.eq_zero nm
     simp only [this, comp_zero]

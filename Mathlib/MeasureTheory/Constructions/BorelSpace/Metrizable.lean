@@ -70,8 +70,8 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
   apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by
-    suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
-    exact measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
+    suffices Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s) from
+      measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
     rw [tendsto_pi_nhds] at lim ⊢
     intro x
     exact ((continuous_infNndist_pt s).tendsto (g x)).comp (lim x)
@@ -103,7 +103,7 @@ theorem aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι →
       measurable_of_tendsto_metrizable' atTop (aeSeq.measurable h'f p)
         (tendsto_pi_nhds.mpr fun x => _),
       _⟩
-  · simp_rw [aeSeq]
+  · simp_rw [aeSeqLim, aeSeq]
     split_ifs with hx
     · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
       exact @aeSeq.fun_prop_of_mem_aeSeqSet _ α β _ _ _ _ _ h'f x hx
@@ -158,7 +158,7 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
     fun _ => (⟨f default x⟩ : Nonempty β).some
   have hf_lim : ∀ x, Tendsto (fun n => aeSeq hf p n x) L (𝓝 (f_lim x)) := by
     intro x
-    simp only [aeSeq]
+    simp only [aeSeq, f_lim]
     split_ifs with h
     · refine' (hp_mem x h).choose_spec.congr fun n => _
       exact (aeSeq.mk_eq_fun_of_mem_aeSeqSet hf h n).symm

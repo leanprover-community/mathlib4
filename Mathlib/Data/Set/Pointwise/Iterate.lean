@@ -33,14 +33,12 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ
   suffices ∀ {g' : G} (_ : g' ^ n ^ j = 1), g' • s ⊆ s by
     refine' le_antisymm (this hg) _
     conv_lhs => rw [← smul_inv_smul g s]
-    replace hg : g⁻¹ ^ n ^ j = 1
-    · rw [inv_zpow, hg, inv_one]
+    replace hg : g⁻¹ ^ n ^ j = 1 := by rw [inv_zpow, hg, inv_one]
     simpa only [le_eq_subset, set_smul_subset_set_smul_iff] using this hg
   rw [(IsFixedPt.preimage_iterate hs j : (zpowGroupHom n)^[j] ⁻¹' s = s).symm]
   rintro g' hg' - ⟨y, hy, rfl⟩
   change (zpowGroupHom n)^[j] (g' * y) ∈ s
-  replace hg' : (zpowGroupHom n)^[j] g' = 1
-  · simpa [zpowGroupHom]
+  replace hg' : (zpowGroupHom n)^[j] g' = 1 := by simpa [zpowGroupHom]
   rwa [iterate_map_mul, hg', one_mul]
 #align smul_eq_self_of_preimage_zpow_eq_self smul_eq_self_of_preimage_zpow_eq_self
 #align vadd_eq_self_of_preimage_zsmul_eq_self vadd_eq_self_of_preimage_zsmul_eq_self

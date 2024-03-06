@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
@@ -12,9 +13,7 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
-import Mathlib.Data.Pi.Algebra
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Nontriviality
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Tauto
 
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
@@ -249,6 +248,20 @@ theorem pow_nonneg (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
     rw [pow_succ]
     exact mul_nonneg H (pow_nonneg H _)
 #align pow_nonneg pow_nonneg
+
+lemma pow_le_pow_of_le_one (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : ∀ {m n : ℕ}, m ≤ n → a ^ n ≤ a ^ m
+  | _, _, Nat.le.refl => le_rfl
+  | _, _, Nat.le.step h => by
+    rw [pow_succ]
+    exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans $ pow_le_pow_of_le_one ha₀ ha₁ h
+#align pow_le_pow_of_le_one pow_le_pow_of_le_one
+
+lemma pow_le_of_le_one (h₀ : 0 ≤ a) (h₁ : a ≤ 1) {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ a :=
+  (pow_one a).subst (pow_le_pow_of_le_one h₀ h₁ (Nat.pos_of_ne_zero hn))
+#align pow_le_of_le_one pow_le_of_le_one
+
+lemma sq_le (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a := pow_le_of_le_one h₀ h₁ two_ne_zero
+#align sq_le sq_le
 
 -- Porting note: it's unfortunate we need to write `(@one_le_two α)` here.
 theorem add_le_mul_two_add (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (2 + b) :=
@@ -572,6 +585,7 @@ protected theorem Decidable.mul_lt_mul'' [@DecidableRel α (· ≤ ·)] (h1 : a 
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
 #align decidable.mul_lt_mul'' Decidable.mul_lt_mul''
 
+@[gcongr]
 theorem mul_lt_mul'' : a < c → b < d → 0 ≤ a → 0 ≤ b → a * b < c * d := by classical
   exact Decidable.mul_lt_mul''
 #align mul_lt_mul'' mul_lt_mul''
@@ -799,11 +813,9 @@ def StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : OrderedRin
 #align strict_ordered_ring.to_ordered_ring' StrictOrderedRing.toOrderedRing'
 
 -- see Note [lower instance priority]
-instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α :=
-  { ‹StrictOrderedRing α› with
-    mul_nonneg := fun a b =>
-      letI := @StrictOrderedRing.toOrderedRing' α _ (Classical.decRel _)
-      mul_nonneg }
+instance (priority := 100) StrictOrderedRing.toOrderedRing : OrderedRing α where
+  __ := ‹StrictOrderedRing α›
+  mul_nonneg := fun _ _ => mul_nonneg
 #align strict_ordered_ring.to_ordered_ring StrictOrderedRing.toOrderedRing
 
 end StrictOrderedRing
@@ -1048,6 +1060,13 @@ theorem mul_self_inj {a b : α} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a * a = b * b �
   (@strictMonoOn_mul_self α _).eq_iff_eq h1 h2
 #align mul_self_inj mul_self_inj
 
+lemma sign_cases_of_C_mul_pow_nonneg  (h : ∀ n, 0 ≤ a * b ^ n) : a = 0 ∨ 0 < a ∧ 0 ≤ b := by
+  have : 0 ≤ a := by simpa only [pow_zero, mul_one] using h 0
+  refine this.eq_or_gt.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
+  simpa only [pow_one] using h 1
+set_option linter.uppercaseLean3 false in
+#align sign_cases_of_C_mul_pow_nonneg sign_cases_of_C_mul_pow_nonneg
+
 variable [ExistsAddOfLE α]
 
 -- See note [lower instance priority]
@@ -1206,16 +1225,6 @@ lemma mul_self_add_mul_self_eq_zero : a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := b
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
 #align eq_zero_of_mul_self_add_mul_self_eq_zero eq_zero_of_mul_self_add_mul_self_eq_zero
-
-lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
-  calc
-    (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
-        simp_rw [pow_succ, pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
-    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
-    _ = _ := by simp_rw [pow_succ, pow_zero, mul_one, two_mul]
-  cases le_total a b
-  · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
-  · exact mul_add_mul_le_mul_add_mul' ‹_› ‹_›
 
 end LinearOrderedSemiring
 

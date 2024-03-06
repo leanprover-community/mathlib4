@@ -25,6 +25,7 @@ open CategoryTheory
 
 /-- The category of bounded distributive lattices with bounded lattice morphisms. -/
 structure BddDistLat where
+  /-- The underlying distrib lattice of a bounded distributive lattice. -/
   toDistLat : DistLat
   [isBoundedOrder : BoundedOrder toDistLat]
 #align BddDistLat BddDistLat

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
@@ -67,7 +68,7 @@ def pprodEquivProd : PProd α β ≃ α × β where
 
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
--- porting note: in Lean 3 this had `@[congr]`
+-- Porting note: in Lean 3 this had `@[congr]`
 @[simps apply]
 def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
@@ -105,7 +106,7 @@ def pprodEquivProdPLift : PProd α β ≃ PLift α × PLift β :=
 
 /-- Product of two equivalences. If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then `α₁ × β₁ ≃ α₂ × β₂`. This is
 `Prod.map` as an equivalence. -/
--- porting note: in Lean 3 there was also a @[congr] tag
+-- Porting note: in Lean 3 there was also a @[congr] tag
 @[simps (config := .asFn) apply]
 def prodCongr (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ :=
   ⟨Prod.map e₁ e₂, Prod.map e₁.symm e₂.symm, fun ⟨a, b⟩ => by simp, fun ⟨a, b⟩ => by simp⟩
@@ -363,7 +364,7 @@ theorem sumCongr_apply (ea : Equiv.Perm α) (eb : Equiv.Perm β) (x : Sum α β)
   Equiv.sumCongr_apply ea eb x
 #align equiv.perm.sum_congr_apply Equiv.Perm.sumCongr_apply
 
--- porting note: it seems the general theorem about `Equiv` is now applied, so there's no need
+-- Porting note: it seems the general theorem about `Equiv` is now applied, so there's no need
 -- to have this version also have `@[simp]`. Similarly for below.
 theorem sumCongr_trans (e : Equiv.Perm α) (f : Equiv.Perm β) (g : Equiv.Perm α)
     (h : Equiv.Perm β) : (sumCongr e f).trans (sumCongr g h) = sumCongr (e.trans g) (f.trans h) :=
@@ -546,6 +547,19 @@ def sigmaFiberEquiv {α β : Type*} (f : α → β) : (Σ y : β, { x // f x = y
 #align equiv.sigma_fiber_equiv_apply Equiv.sigmaFiberEquiv_apply
 #align equiv.sigma_fiber_equiv_symm_apply_fst Equiv.sigmaFiberEquiv_symm_apply_fst
 #align equiv.sigma_fiber_equiv_symm_apply_snd_coe Equiv.sigmaFiberEquiv_symm_apply_snd_coe
+
+/-- Inhabited types are equivalent to `Option β` for some `β` by identifying `default` with `none`.
+-/
+def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
+    Σ β : Type u, α ≃ Option β where
+  fst := {a // a ≠ default}
+  snd.toFun a := if h : a = default then none else some ⟨a, h⟩
+  snd.invFun := Option.elim' default (↑)
+  snd.left_inv a := by dsimp only; split_ifs <;> simp [*]
+  snd.right_inv
+    | none => by simp
+    | some ⟨a, ha⟩ => dif_neg ha
+#align equiv.sigma_equiv_option_of_inhabited Equiv.sigmaEquivOptionOfInhabited
 
 end
 
@@ -1962,10 +1976,10 @@ theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x =
 theorem semiconj₂_conj : Semiconj₂ e f (e.arrowCongr e.conj f) := fun x y => by simp [arrowCongr]
 #align equiv.semiconj₂_conj Equiv.semiconj₂_conj
 
-instance [IsAssociative α₁ f] : IsAssociative β₁ (e.arrowCongr (e.arrowCongr e) f) :=
+instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isAssociative_right e.surjective
 
-instance [IsIdempotent α₁ f] : IsIdempotent β₁ (e.arrowCongr (e.arrowCongr e) f) :=
+instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
 
 instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
@@ -2043,7 +2057,7 @@ theorem update_apply_equiv_apply [DecidableEq α'] [DecidableEq α] (f : α → 
   congr_fun (update_comp_equiv f g a v) a'
 #align function.update_apply_equiv_apply Function.update_apply_equiv_apply
 
--- porting note: EmbeddingLike.apply_eq_iff_eq broken here too
+-- Porting note: EmbeddingLike.apply_eq_iff_eq broken here too
 theorem piCongrLeft'_update [DecidableEq α] [DecidableEq β] (P : α → Sort*) (e : α ≃ β)
     (f : ∀ a, P a) (b : β) (x : P (e.symm b)) :
     e.piCongrLeft' P (update f (e.symm b) x) = update (e.piCongrLeft' P f) b x := by

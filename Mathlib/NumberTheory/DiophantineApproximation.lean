@@ -106,7 +106,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
         -- Porting note: was
         -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, mul_zero, fract_zero,
         --   zero_mul, Set.left_mem_Ico, zero_lt_one]
-        simp only [cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
+        simp only [f, cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
       refine' Ne.lt_of_le (fun h => n_pos.ne _) (mem_Icc.mp hm).1
       exact mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
     refine' ⟨⌊ξ * m⌋ + 1, m, hm₀, (mem_Icc.mp hm).2, _⟩
@@ -234,8 +234,8 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     (h : |ξ - q| < 1 / (q.den : ℚ) ^ 2) :
     q.den ≤ ξ.den ∧ ⌈ξ * q.den⌉ - 1 ≤ q.num ∧ q.num ≤ ⌊ξ * q.den⌋ + 1 := by
   have hq₀ : (0 : ℚ) < q.den := Nat.cast_pos.mpr q.pos
-  replace h : |ξ * q.den - q.num| < 1 / q.den
-  · rw [← mul_lt_mul_right hq₀] at h
+  replace h : |ξ * q.den - q.num| < 1 / q.den := by
+    rw [← mul_lt_mul_right hq₀] at h
     conv_lhs at h => rw [← abs_of_pos hq₀, ← abs_mul, sub_mul, mul_den_eq_num]
     rwa [sq, div_mul, mul_div_cancel_left _ hq₀.ne'] at h
   constructor
@@ -266,7 +266,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
   set s := {q : ℚ | |ξ - q| < 1 / (q.den : ℚ) ^ 2}
   have hinj : Function.Injective f := by
     intro a b hab
-    simp only [Prod.mk.inj_iff] at hab
+    simp only [f, Prod.mk.inj_iff] at hab
     rw [← Rat.num_div_den a, ← Rat.num_div_den b, hab.1, hab.2]
   have H : f '' s ⊆ ⋃ (y : ℕ) (_ : y ∈ Ioc 0 ξ.den), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} := by
     intro xy hxy
@@ -410,7 +410,7 @@ def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
 private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
-  ⟨cast_pos.mpr hv, by norm_cast; linarith⟩
+  ⟨cast_pos.mpr hv, by norm_cast; omega⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
 variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
@@ -430,7 +430,7 @@ private theorem aux₁ : 0 < fract ξ := by
     norm_cast
     rw [← zero_add (1 : ℤ), add_one_le_iff, abs_pos, sub_ne_zero]
     rintro rfl
-    cases isUnit_iff.mp (isCoprime_self.mp (IsCoprime.mul_left_iff.mp hcop).2) <;> linarith
+    cases isUnit_iff.mp (isCoprime_self.mp (IsCoprime.mul_left_iff.mp hcop).2) <;> omega
   norm_cast at H
   linarith only [hv, H]
 
@@ -454,7 +454,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
         ((mul_le_mul_right <| hv₀').mpr <|
           (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_right hv₀).mpr (floor_le ξ)))
   have hu₁ : u - ⌊ξ⌋ * v ≤ v := by
-    refine' le_of_mul_le_mul_right (le_of_lt_add_one _) hv₁
+    refine' _root_.le_of_mul_le_mul_right (le_of_lt_add_one _) hv₁
     replace h := h.2
     rw [← sub_lt_iff_lt_add, ← mul_assoc, ← sub_mul, ← add_lt_add_iff_right (v * (2 * v - 1) : ℝ),
       add_comm (1 : ℝ)] at h
@@ -503,7 +503,7 @@ private theorem aux₃ :
   calc
     |(fract ξ)⁻¹ - v / u'| = |(fract ξ - u' / v) * (v / u' / fract ξ)| :=
       help₁ hξ₀.ne' Hv.ne' Hu.ne'
-    _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁, abs_sub_comm]
+    _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁]
     _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := ((mul_lt_mul_right H₁).mpr h')
     _ = (u' * (2 * v - 1) * fract ξ)⁻¹ := (help₂ hξ₀.ne' Hv.ne' Hv'.ne' Hu.ne')
     _ ≤ ((u' : ℝ) * (2 * u' - 1))⁻¹ := by
