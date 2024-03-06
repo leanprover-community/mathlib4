@@ -278,6 +278,14 @@
   ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.CategoryTheory.Reassoc":
   ["Mathlib.CategoryTheory.Functor.Basic"],
+  "Mathlib.Tactic.Bound":
+  ["Mathlib.Analysis.Analytic.Basic",
+   "Mathlib.Tactic.Bound.Attribute",
+   "Mathlib.Tactic.Bound.Init"],
+  "Mathlib.Tactic.Bound.Attribute":
+  ["Mathlib.Init.ZeroOne",
+  "Mathlib.Tactic.Bound.Init"],
+  "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
