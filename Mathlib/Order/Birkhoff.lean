@@ -156,7 +156,7 @@ description of the inverse can be provided. We need to introduce a new type `β`
 the variable `OrderBot α` would ambiguously refer to the order on either the ` PartialOrder α` or
 on the `SemilatticeSup α`.-/
 lemma OrderEmbedding.inv_SemilatticeSup (β : Type*) [Fintype β] [SemilatticeSup β] [OrderBot β] :
-  OrderEmbedding.inv β = fun s ↦ (s.1 : Set β).toFinset.sup id := by
+    OrderEmbedding.inv β = fun s ↦ (s.1 : Set β).toFinset.sup id := by
   let _ : LocallyFiniteOrder β := Fintype.toLocallyFiniteOrder
   ext ⟨-, hx⟩
   obtain ⟨a, rfl⟩ := LowerSet.supIrred_iff_of_finite.1 hx
