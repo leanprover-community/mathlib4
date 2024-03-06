@@ -67,8 +67,8 @@ lemma not_summable_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f : ℕ → ℝ
 /-- If a decreasing sequence of real numbers is summable on one residue class
 modulo `m`, then it is also summable on every other residue class mod `m`. -/
 lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f : ℕ → ℝ}
-    (hf : Antitone f) --(hf₀ : ∀ n, 0 ≤ f n)
-    {k : ZMod m} (l : ZMod m) (hs : Summable ({n : ℕ | (n : ZMod m) = k}.indicator f)) :
+    (hf : Antitone f) {k : ZMod m} (l : ZMod m)
+    (hs : Summable ({n : ℕ | (n : ZMod m) = k}.indicator f)) :
     Summable ({n : ℕ | (n : ZMod m) = l}.indicator f) := by
   by_cases hf₀ : ∀ n, 0 ≤ f n
   · rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable] at hs
