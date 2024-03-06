@@ -47,9 +47,9 @@ namespace exteriorPower
 /-! Finiteness of the exterior power. -/
 
 /-- The `n`th exterior power of a finite module is a finite module. -/
-instance instFinite [Module.Finite R M] : Module.Finite R (⋀[R]^n M) :=
-  Module.Finite.mk ((Submodule.fg_top _).mpr (Submodule.FG.pow (by
-  rw [LinearMap.range_eq_map]; exact Submodule.FG.map _  (Module.finite_def.mp inferInstance)) _ ))
+instance instFinite [Module.Finite R M] : Module.Finite R (⋀[R]^n M) := by
+  rw [Module.Finite.iff_fg, ExteriorAlgebra.exteriorPower, LinearMap.range_eq_map]
+  exact (‹Module.Finite R M›.out.map _).pow n
 
 variable (R n)
 
@@ -136,31 +136,27 @@ lemma span_top_of_span_top' {I : Type*} [LinearOrder I]
   exact hw
 
 /-- If `v` is a family of vectors of `M` indexed by a linearly ordered type, then the span of the
-range of `exteriorPower.ιMult_family R n v`, i.e. of the family of `n`-fold exterior products
+range of `exteriorPower.ιMulti_family R n v`, i.e., of the family of `n`-fold exterior products
 of elements of `v`, is the image of the map of exterior powers induced by the inclusion of
 the span of `v` into `M`. -/
 lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
     LinearMap.range (map n (Submodule.subtype (Submodule.span R (Set.range v)))) =
     Submodule.span R (Set.range (ιMulti_family R n v)) := by
-  conv_lhs => rw [LinearMap.range_eq_map]
-  rw [← span_top_of_span_top' (I := I) (R := R)
-        (v := fun i ↦ ⟨v i, Submodule.subset_span <| Set.mem_range_self _⟩),
-    Submodule.map_span, ← Set.range_comp]
-  · congr; apply congrArg
-    rw [map_ιMulti_family]
-    congr
-  · apply SetLike.coe_injective'
-    apply Set.image_injective.mpr (Submodule.injective_subtype (Submodule.span R (Set.range v)))
-    rw [← Submodule.map_coe, ← Submodule.span_image, ← Submodule.map_coe, ← LinearMap.range_eq_map,
-      Submodule.range_subtype]
-    rw [← Set.range_comp]
-    congr
+  have ⟨f, hf⟩ : ∃ f : I → Submodule.span R (Set.range v), Submodule.subtype _ ∘ f = v :=
+    ⟨fun i ↦ ⟨v i, Submodule.subset_span (Set.mem_range_self i)⟩, rfl⟩
+  have htop : Submodule.span R (Set.range f) = ⊤ := by
+    apply SetLike.coe_injective
+    apply Set.image_injective.mpr (Submodule.span R (Set.range v)).injective_subtype
+    rw [← Submodule.map_coe, ← Submodule.span_image, ← Set.range_comp, hf,
+      ← Submodule.map_coe, ← LinearMap.range_eq_map, Submodule.range_subtype]
+  rw [LinearMap.range_eq_map (M := ⋀[R]^n _), ← span_top_of_span_top' _ _ htop,
+    Submodule.map_span, ← Set.range_comp, map_ιMulti_family, hf]
 
 /-! We construct a basis of `⋀[R]^n M` from a basis of `M`. -/
 
 /-- If `b` is a basis of `M` indexed by a linearly ordered type `I` and `s` is a finset of
 `I` of cardinality `n`, then we get a linear form on the `n`th exterior power of `M` by
-applying the `exteriorPower.linearFormOfFamily` construction to the fanily of linear forms
+applying the `exteriorPower.linearFormOfFamily` construction to the family of linear forms
 given by the coordinates of `b` indexed by elements of `s` (ordered using the given order on
 `I`). -/
 noncomputable def linearFormOfBasis {I : Type*} [LinearOrder I] (b : Basis I R M)
@@ -173,9 +169,9 @@ lemma linearFormOfBasis_apply_ιMulti {I : Type*} [LinearOrder I] (b : Basis I R
     linearFormOfBasis R n b hs (ιMulti R n v) = ∑ σ : Equiv.Perm (Fin n), Equiv.Perm.sign σ •
     ∏ i, b.coord (Finset.orderIsoOfFin s hs i) (v (σ i)) := by
   unfold linearFormOfBasis
-  simp only [Finset.coe_orderIsoOfFin_apply, linearFormOfFamily_apply, toTensorPower_apply_ιMulti,
-    map_sum, LinearMap.map_smul_of_tower, TensorPower.linearFormOfFamily_apply_tprod,
-    Basis.coord_apply]
+  rw [linearFormOfFamily_apply, toTensorPower_apply_ιMulti, map_sum]
+  refine Finset.sum_congr rfl fun σ _ => ?_
+  rw [LinearMap.map_smul_of_tower, TensorPower.linearFormOfFamily_apply_tprod]
 
 /-- Let `b` be a basis of `M` indexed by a linearly ordered type `I` and `s` be a finset of `I`
 of cardinality `n`. If we apply the linear form on `⋀[R]^n M` defined by `b` and `s`
@@ -183,41 +179,35 @@ to the exterior product of the `b i` for `i ∈ s`, then we get `1`. -/
 lemma linearFormOfBasis_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s : Finset I} (hs : Finset.card s = n) :
     linearFormOfBasis R n b hs (ιMulti_family R n b ⟨s, hs⟩) = 1 := by
-  unfold ιMulti_family
-  simp only [Finset.coe_orderIsoOfFin_apply, linearFormOfBasis_apply_ιMulti]
-  have hzero : ∀ (σ : Equiv.Perm (Fin n)), σ ∈ Finset.univ → ¬σ ∈ ({Equiv.refl (Fin n)} :
-    Finset (Equiv.Perm (Fin n))) → TensorPower.linearFormOfFamily R n
-    (fun i ↦ b.coord (Finset.orderIsoOfFin s hs i)) (Equiv.Perm.sign σ • ⨂ₜ[R] (i : Fin n),
-    b ((Finset.orderIsoOfFin s hs) (σ i))) = 0 := by
-    intro σ _ hσ
-    simp only [Finset.mem_singleton] at hσ
-    erw [LinearMap.map_smul]
-    apply smul_eq_zero_of_right
-    simp only [Finset.coe_orderIsoOfFin_apply, TensorPower.linearFormOfFamily_apply_tprod]
-    have h : ∃ (i : Fin n), ¬ σ i = i := by
-      by_contra habs
-      push_neg at habs
-      apply hσ
-      ext i
-      simp only [Equiv.refl_apply]
-      rw [habs i]
-    obtain ⟨i, hi⟩ := h
-    apply Finset.prod_eq_zero (a := i) (Finset.mem_univ _)
-    rw [Basis.coord_apply, Basis.repr_self_apply]
-    simp only [Finset.coe_orderIsoOfFin_apply, OrderEmbedding.eq_iff_eq, ite_eq_right_iff]
-    simp only [hi, IsEmpty.forall_iff]
-  have heq := Finset.sum_subset (s₁ := {Equiv.refl (Fin n)}) (Finset.subset_univ _) hzero
-  simp only [Finset.coe_orderIsoOfFin_apply, LinearMap.map_smul_of_tower,
-    TensorPower.linearFormOfFamily_apply_tprod, Basis.coord_apply, Basis.repr_self, ne_eq,
-    RelEmbedding.inj, Finset.sum_singleton, Equiv.Perm.sign_refl, Equiv.refl_apply,
-    Finsupp.single_eq_same, Finset.prod_const_one, one_smul] at heq ⊢
-  rw [← heq]
+  trans ∑ σ : Fin n ≃ Fin n,
+    TensorPower.linearFormOfFamily R n (fun i ↦ b.coord (Finset.orderIsoOfFin s hs i))
+      (Equiv.Perm.sign σ • ⨂ₜ[R] i : Fin n, b (Finset.orderIsoOfFin s hs (σ i)))
+  . rw [ιMulti_family, linearFormOfBasis_apply_ιMulti]
+    congr
+    ext σ
+    rw [LinearMap.map_smul_of_tower, TensorPower.linearFormOfFamily_apply_tprod]
+  . have hzero : ∀ σ ∈ Finset.univ, σ ≠ Equiv.refl (Fin n) →
+        (TensorPower.linearFormOfFamily R n fun i ↦ b.coord (Finset.orderIsoOfFin s hs i))
+          (Equiv.Perm.sign σ • ⨂ₜ[R] i, b (Finset.orderIsoOfFin s hs (σ i))) = 0 := by
+      rintro σ - hσ
+      rw [ne_eq, Equiv.ext_iff.not, not_forall] at hσ
+      obtain ⟨i, hi⟩ := hσ
+      rw [LinearMap.map_smul_of_tower, smul_eq_zero_iff_eq,
+        TensorPower.linearFormOfFamily_apply_tprod]
+      apply Finset.prod_eq_zero (Finset.mem_univ _) (a := i)
+      rw [Finset.coe_orderIsoOfFin_apply, Basis.coord_apply, Basis.repr_self_apply,
+        Finset.coe_orderIsoOfFin_apply, ite_eq_right_iff, OrderEmbedding.eq_iff_eq]
+      exact fun a ↦ absurd a hi
+    rw [Finset.sum_eq_single_of_mem (Equiv.refl (Fin n)) (Finset.mem_univ _) hzero,
+     Equiv.Perm.sign_refl, one_smul, TensorPower.linearFormOfFamily_apply_tprod]
+    apply Finset.prod_eq_one
+    rintro i -
+    rw [Basis.coord_apply, Basis.repr_self, Equiv.refl_apply, Finsupp.single_eq_same]
 
 lemma linearFormOfBasis_apply_nondiag_aux {I : Type*} [LinearOrder I] {s t : Finset I}
     (hs : Finset.card s = n) (ht : Finset.card t = n) (hst : s ≠ t) (σ : Equiv.Perm (Fin n)) :
     ∃ (i : Fin n), (Finset.orderIsoOfFin s hs i).1 ≠ (Finset.orderIsoOfFin t ht (σ i)).1 := by
   by_contra! habs
-  push_neg at habs
   apply hst
   apply Finset.eq_of_subset_of_card_le
   · intro a has
@@ -236,17 +226,14 @@ the linear form on `⋀[R]^n M` defined by `b` and `s` to the exterior product o
 lemma linearFormOfBasis_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s t : Finset I} (hs : Finset.card s = n) (ht : Finset.card t = n) (hst : s ≠ t) :
     linearFormOfBasis R n b hs (ιMulti_family R n b ⟨t, ht⟩) = 0 := by
-  unfold ιMulti_family
-  simp only [Finset.coe_orderIsoOfFin_apply, linearFormOfBasis_apply_ιMulti]
+  simp only [ιMulti_family]
+  rw [linearFormOfBasis_apply_ιMulti]
   apply Finset.sum_eq_zero
   intro σ _
-  erw [zsmul_eq_smul_cast R]
-  apply smul_eq_zero_of_right
   have ⟨i, hi⟩ := linearFormOfBasis_apply_nondiag_aux n hs ht hst σ
-  apply Finset.prod_eq_zero (a := i) (Finset.mem_univ _)
-  rw [Basis.coord_apply, Basis.repr_self_apply]
-  simp only [Finset.coe_orderIsoOfFin_apply, ne_eq] at hi
-  simp only [Finset.coe_orderIsoOfFin_apply, Ne.symm hi, ite_false]
+  apply smul_eq_zero_of_right
+  apply Finset.prod_eq_zero (Finset.mem_univ i)
+  rw [Basis.coord_apply, Basis.repr_self_apply, if_neg (ne_comm.mp hi)]
 
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), then the family
 `exteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly
@@ -287,15 +274,12 @@ lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
   apply LinearMap.ext_on (span_top_of_span_top' R n (Basis.span_eq b))
   intro x hx
   have ⟨⟨t, ht⟩, htx⟩ := Set.mem_range.mp hx
-  rw [← htx]
-  conv_lhs => rw [← basis_apply]
+  rw [← htx, Basis.coord_apply]
   by_cases heq : s = t
-  · have heq' : (⟨s, hs⟩ : {s : Finset I // Finset.card s = n}) = ⟨t, ht⟩ := by
-      simp only [Subtype.mk.injEq]; exact heq
-    simp only [← heq', linearFormOfBasis_apply_diag, Basis.coord_apply, Basis.repr_self,
-      Finsupp.single_eq_same]
-  · simp only [linearFormOfBasis_apply_nondiag R n b hs ht heq, Basis.coord_apply,
-      Basis.repr_self_apply, Subtype.mk.injEq, Ne.symm heq, ite_false]
+  · rw [Subtype.mk_eq_mk.mpr heq.symm, linearFormOfBasis_apply_diag, ← basis_apply,
+      Basis.repr_self, Finsupp.single_eq_same]
+  · rw [linearFormOfBasis_apply_nondiag R n b hs ht heq, ← basis_apply,
+      Basis.repr_self, Finsupp.single_eq_of_ne (by rwa [ne_comm, ne_eq, Subtype.mk_eq_mk])]
 
 /-! ### Freeness and dimension of `⋀[R]^n M. -/
 
