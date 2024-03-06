@@ -1,15 +1,14 @@
 /-
-Copyright (c) 2024 . All rights reserved.
+Copyright (c) 2024 Luigi Massacci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors:
+Authors: Luigi Massacci
 -/
 
-import Mathlib.Tactic
-import Mathlib.Topology.Compactification.OnePoint
-import Mathlib.Data.Real.Archimedean
 import Mathlib.Algebra.Order.Pointwise
-import Mathlib.Topology.Separation
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Katetov Maps
@@ -24,7 +23,7 @@ the Kuratowski embedding.
 
 ## References
 
-* [J. Melleray, *Some geometric and dynamical properties of the Urysohn space*][melleray_urysohn_2008]
+* [melleray_urysohn_2008]
 -/
 
 variable {α : Type _} [MetricSpace α]
@@ -164,10 +163,10 @@ noncomputable instance: MetricSpace E(α) where
           apply le_csSup (by apply BddAbove.add <;> apply bounded_dist_set)
           refine Set.mem_add.mpr ⟨|f x - g x|, (by simp), (by simp)⟩
         · have x₀ := Classical.choice ‹Nonempty α›
-          use |f x₀ - g x₀| ; simp
+          use |f x₀ - g x₀|; simp
         · apply bounded_dist_set
         · have x₀ := Classical.choice ‹Nonempty α›
-          use |g x₀ - h x₀| ; simp
+          use |g x₀ - h x₀|; simp
         · apply bounded_dist_set
       · apply add_nonneg <;>
         { apply Real.sSup_nonneg; rintro val ⟨x, rfl⟩; apply abs_nonneg}
@@ -190,7 +189,7 @@ theorem dist_coe_le_dist (f g : E(α)) (x : α) : dist (f x) (g x) ≤ dist f g 
   by refine le_csSup bounded_dist_set (by simp [dist])
 
 theorem dist_le {C :ℝ} (C0 : (0 : ℝ) ≤ C) (f g : E(α)):
-  dist f g ≤ C ↔ ∀ x : α, dist (f x) (g x) ≤ C := by
+    dist f g ≤ C ↔ ∀ x : α, dist (f x) (g x) ≤ C := by
   refine ⟨fun h x => le_trans (dist_coe_le_dist _ _ x) h, fun H ↦ ?_⟩
   simp [dist]; apply Real.sSup_le (by simp [*] at *; assumption) (C0)
 
@@ -252,7 +251,7 @@ theorem exists_isometric_embedding (α : Type*) [MetricSpace α] : ∃ f : α �
             refine fun z ↦ abs_dist_sub_le x y z
         · refine (Real.le_sSup_iff bounded_dist_set ?_).mpr  ?_
           · have x₀ := Classical.choice ‹Nonempty α›
-            use |dist x x₀ - dist y x₀| ; simp
+            use |dist x x₀ - dist y x₀|; simp
           · simp only [KatetovMap.coe_mk, Set.mem_setOf_eq, exists_exists_eq_and]
             refine fun ε εpos ↦ ⟨x, ?_⟩
             rw [dist_self, zero_sub, abs_neg, dist_comm, abs_of_nonneg (dist_nonneg)]
@@ -268,5 +267,5 @@ noncomputable def katetovKuratowskiEmbedding (α : Type*) [MetricSpace α] : α 
   choose f h using exists_isometric_embedding α; refine ⟨f, h.injective⟩
 
 protected theorem katetovKuratowskiEmbedding.isometry (α : Type*) [MetricSpace α] :
-  Isometry (katetovKuratowskiEmbedding α) :=
+    Isometry (katetovKuratowskiEmbedding α) :=
     Classical.choose_spec <| exists_isometric_embedding α
