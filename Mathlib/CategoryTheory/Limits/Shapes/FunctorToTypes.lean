@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Types
 
 /-!
-# Binary (co)products of type-valued functors.
+# Binary (co)products of type-valued functors
 
 Defines an explicit construction of binary products and coproducts of type-valued functors.
 
@@ -226,8 +226,7 @@ lemma binaryCoproductIso_inl_comp_inv (F G : C ⥤ Type w) :
 
 @[simp]
 lemma binaryCoproductIso_inl_comp_inv_apply (F G : C ⥤ Type w) (a : C) (x : F.obj a) :
-    (binaryCoproductIso F G).inv.app a (coprod.inl.app a x) =
-    (Limits.coprod.inl (X := F)).app a x := by
+    (binaryCoproductIso F G).inv.app a (Sum.inl x) = (Limits.coprod.inl (X := F)).app a x := by
   aesop
 
 @[simp]
@@ -237,8 +236,7 @@ lemma binaryCoproductIso_inr_comp_inv (F G : C ⥤ Type w) :
 
 @[simp]
 lemma binaryCoproductIso_inr_comp_inv_apply (F G : C ⥤ Type w) (a : C) (x : G.obj a) :
-    (binaryCoproductIso F G).inv.app a (coprod.inr.app a x) =
-    (Limits.coprod.inr (X := F)).app a x := by
+    (binaryCoproductIso F G).inv.app a (Sum.inr x) = (Limits.coprod.inr (X := F)).app a x := by
   aesop
 
 /-- `(F ⨿ G).obj a` is in bijection with disjoint union of `F.obj a` and `G.obj a`. -/
