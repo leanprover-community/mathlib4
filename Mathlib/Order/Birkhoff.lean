@@ -117,7 +117,6 @@ lemma OrderEmbedding.supIrredLowerSet_apply {a : α} {s : LowerSet α} (ha : Low
   unfold OrderEmbedding.supIrredLowerSet
   simp_all only [RelEmbedding.coe_mk, Embedding.coeFn_mk]
 
-/-- Surjectivity of the Birkhoff Embedding -/
 lemma supIrredLowerSet_surjective : Function.Surjective (OrderEmbedding.supIrredLowerSet α) := by
   intro ⟨_, hs⟩
   obtain ⟨a, rfl⟩ := supIrred_iff_of_finite.mp hs
