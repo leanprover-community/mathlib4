@@ -1369,7 +1369,7 @@ theorem summable_sigma_of_nonneg {β : α → Type*} {f : (Σ x, β x) → ℝ} 
   exact mod_cast NNReal.summable_sigma
 #align summable_sigma_of_nonneg summable_sigma_of_nonneg
 
-lemma summable_partition {κ : Type*} {f : ι → ℝ} (hf : 0 ≤ f) {s : κ → Set ι}
+lemma summable_partition {κ ι: Type*} {f : ι → ℝ} (hf : 0 ≤ f) {s : κ → Set ι}
     (hs : ∀ i, ∃! j, i ∈ s j) : Summable f ↔
       (∀ j, Summable fun i : s j ↦ f i) ∧ Summable fun j ↦ ∑' i : s j, f i := by
   rw [← (Equiv.sigmaEquiv s hs).summable_iff, summable_sigma_of_nonneg]
