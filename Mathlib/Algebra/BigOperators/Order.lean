@@ -885,35 +885,26 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
+    -- TODO: We must name the following, else `assertInstancesCommute` loops.
+    let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+    let _instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
+    let _instαposmul ← synthInstanceQ q(PosMulStrictMono $α)
+    let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
+    let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
+    assertInstancesCommute
     -- Try to show that the sum is positive
     try
       let .positive pbody := rbody | failure -- Fail if the body is not provably positive
-      -- TODO: We must name the following, else `assertInstancesCommute` loops.
-      let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-      let _instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
-      let _instαposmul ← synthInstanceQ q(PosMulStrictMono $α)
-      let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
-      assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
       pure $ .positive q(prod_pos fun i _ ↦ $pr i)
     -- Try to show that the sum is nonnegative
     catch _ => try
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      -- TODO: We must name the following, else `assertInstancesCommute` loops.
-      let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-      let _instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
-      let _instαposmul ← synthInstanceQ q(PosMulMono $α)
-      assertInstancesCommute
       pure $ .nonnegative q(prod_nonneg fun i _ ↦ $pr i)
     catch _ =>
       let pbody ← rbody.toNonzero
       let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody
-      -- TODO: We must name the following, else `assertInstancesCommute` loops.
-      let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-      let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
-      let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
-      assertInstancesCommute
       pure $ .nonzero q(prod_ne_zero fun i _ ↦ $pr i)
   | _ => throwError "not Finset.prod"
 
