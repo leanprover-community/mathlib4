@@ -22,7 +22,7 @@ set_option autoImplicit true
 
 universe v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

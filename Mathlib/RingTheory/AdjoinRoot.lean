@@ -49,7 +49,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open BigOperators Polynomial
 

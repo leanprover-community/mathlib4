@@ -22,7 +22,8 @@ variable {R R' A T B ι : Type*}
 
 namespace AddMonoidAlgebra
 
-open Classical BigOperators
+open scoped Classical
+open BigOperators
 
 /-!
 
