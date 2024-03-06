@@ -1,6 +1,4 @@
 import Mathlib.Algebra.Group.Defs
-import Std.Tactic.NormCast
-import Mathlib.Tactic.RunCmd
 import Mathlib.Lean.Exception
 import Mathlib.Util.Time
 import Qq.MetaM

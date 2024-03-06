@@ -23,7 +23,7 @@ In fact, in `AddCommGroupCat` there is a much nicer model of colimits as quotien
 of finitely supported functions, and we really should implement this as well (or instead).
 -/
 
--- porting note: `AddCommGroup` in all the names
+-- Porting note: `AddCommGroup` in all the names
 set_option linter.uppercaseLean3 false
 
 universe w u v

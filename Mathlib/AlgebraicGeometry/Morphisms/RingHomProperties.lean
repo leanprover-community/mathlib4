@@ -79,25 +79,8 @@ theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Sche
   rw [← hP.is_localization_away_iff]
 #align ring_hom.respects_iso.basic_open_iff_localization RingHom.RespectsIso.basicOpen_iff_localization
 
-local notation3 "Γ(" X:10 ")" => (Prefunctor.obj (Functor.toPrefunctor Scheme.Γ) (Opposite.op X))
-
-theorem RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine (hP : RingHom.RespectsIso @P)
-    {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
-    P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔
-    P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
-  have : IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Y.basicOpen r) := by
-    rw [Scheme.preimage_basicOpen]
-    show IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r)
-      ↑Γ(X ∣_ᵤ X.basicOpen (Scheme.Γ.map f.op r))
-    infer_instance
-  rw [hP.is_localization_away_iff ↑Γ(Y ∣_ᵤ Scheme.basicOpen Y r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Scheme.basicOpen Y r)
-    (Scheme.Γ.map f.op) r, iff_iff_eq]
-  congr 1
-  apply IsLocalization.ringHom_ext (R := ↑Γ(Y)) (Submonoid.powers r) _
-  rw [IsLocalization.Away.map, IsLocalization.map_comp, RingHom.algebraMap_toAlgebra,
-    RingHom.algebraMap_toAlgebra]
-  show Scheme.Γ.map _ ≫ Scheme.Γ.map _ = Scheme.Γ.map _ ≫ Scheme.Γ.map _
-  simp_rw [← Functor.map_comp, ← op_comp, morphismRestrict_ι]
+@[deprecated] alias RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine :=
+  RespectsIso.basicOpen_iff_localization
 
 theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P) {X Y : Scheme}
     [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) (U : Opens X.carrier)
@@ -109,7 +92,7 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
   refine (hP.cancel_right_isIso _
     (Scheme.Γ.mapIso (Scheme.restrictRestrictComm _ _ _).op).inv).symm.trans ?_
   haveI : IsAffine _ := hU
-  rw [← hP.ofRestrict_morphismRestrict_iff_of_isAffine, iff_iff_eq]
+  rw [← hP.basicOpen_iff_localization, iff_iff_eq]
   congr 1
   simp only [Functor.mapIso_inv, Iso.op_inv, ← Functor.map_comp, ← op_comp, morphismRestrict_comp]
   rw [← Category.assoc]
