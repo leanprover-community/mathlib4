@@ -286,8 +286,8 @@ theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List �
   replace h := mem_takeWhile_imp h
   simp [refl x] at h
 
-/-- For an irreflexive relation, inserting then erasing is the identity. -/
-theorem erase_orderedInsert_of_nmem [DecidableEq α] [IsIrrefl α r]
+/-- Inserting then erasing an element that is absent is the identity. -/
+theorem erase_orderedInsert_of_nmem [DecidableEq α]
     (x : α) (xs : List α) (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
   rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
@@ -314,8 +314,7 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
       refine mt (fun hrxy => ?_) hxy
       exact antisymm hrxy (hxs.1 _ hx)
 
-theorem sublist_orderedInsert [DecidableEq α] (x : α) (xs : List α) :
-    xs <+ xs.orderedInsert r x := by
+theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
   rw [orderedInsert_eq_take_drop]
   refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
   rw [takeWhile_append_dropWhile]
