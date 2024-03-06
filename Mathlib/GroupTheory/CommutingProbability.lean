@@ -146,7 +146,7 @@ namespace DihedralGroup
 lemma commProb_odd {n : ℕ} (hn : Odd n) :
     commProb (DihedralGroup n) = (n + 3) / (4 * n) := by
   rw [commProb_def', DihedralGroup.card_conjClasses_odd hn, nat_card]
-  qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]; rfl]
+  qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]]
   rw [div_div, ← mul_assoc]
   congr
 

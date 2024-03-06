@@ -372,7 +372,7 @@ where `choose` is the generalized binomial coefficient.
 
 -/
 
---Porting note: `termination_by` required here where it wasn't before
+-- Porting note: `termination_by` required here where it wasn't before
 /--
 `multichoose n k` is the number of multisets of cardinality `k` from a type of cardinality `n`. -/
 def multichoose : ℕ → ℕ → ℕ
