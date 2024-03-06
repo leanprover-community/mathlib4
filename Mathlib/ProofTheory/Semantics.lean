@@ -30,6 +30,7 @@ variable {F : Type*} [LogicalConnective F]
 
 /-- Class `Semantics` defines how a structure realizes a formula -/
 class Semantics (F : Type*) [LogicalConnective F] (α : outParam (Type*)) where
+  /-- Structure realizes a formula -/
   realize : α → F →ˡᶜ Prop
 
 /-- Class `Vocabulary` defines the vocabulary of formulas, built from logical connectives -/
@@ -167,6 +168,7 @@ variable (T U T₁ T₂ T₃ : Set F)
 
 end Equivalent
 
+/-- Class `Mod` is a model for a theory -/
 class Mod (a : α) (T : Set F) : Prop where
   realizeTheory : a ⊧* T
 
