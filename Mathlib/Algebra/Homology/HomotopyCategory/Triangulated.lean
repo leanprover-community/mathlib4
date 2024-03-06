@@ -200,8 +200,8 @@ noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ
     refine Triangulated.Octahedron.mk ((HomotopyCategory.quotient _ _).map α.hom₃)
       ((HomotopyCategory.quotient _ _).map β.hom₃) ?_ ?_ ?_ ?_ ?_
     · exact ((quotient _ _).mapTriangle.map α).comm₂
-    · exact ((quotient _ _).mapTriangle.map α).comm₃.symm.trans (by simp)
-    · exact (((quotient _ _).mapTriangle.map β).comm₂.trans (by simp))
+    · exact ((quotient _ _).mapTriangle.map α).comm₃.symm.trans (by simp [α])
+    · exact ((quotient _ _).mapTriangle.map β).comm₂.trans (by simp [β])
     · exact ((quotient _ _).mapTriangle.map β).comm₃
     · refine' isomorphic_distinguished _ (mappingConeCompTriangleh_distinguished u₁₂ u₂₃) _ _
       exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
