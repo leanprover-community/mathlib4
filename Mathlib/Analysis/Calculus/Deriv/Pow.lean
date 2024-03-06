@@ -23,7 +23,8 @@ derivative, power
 
 universe u v w
 
-open Classical Topology BigOperators Filter ENNReal
+open scoped Classical
+open Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -119,4 +120,3 @@ theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
     deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
   (hc.hasDerivAt.pow n).deriv
 #align deriv_pow'' deriv_pow''
-
