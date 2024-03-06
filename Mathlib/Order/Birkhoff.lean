@@ -126,6 +126,7 @@ theorem. -/
 noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
   RelIso.ofSurjective _ supIrredLowerSet_surjective
 
+/-- An explicit inverse of `OrderEmbedding.supIrredLowerSet`, useful to build a bit of API -/
 noncomputable def OrderEmbedding.inv (s : {x : LowerSet α // SupIrred x}) : α :=
   (supIrred_iff_of_finite.mp s.2).choose
 
