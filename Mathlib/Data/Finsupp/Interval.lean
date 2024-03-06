@@ -64,7 +64,7 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] {f g : ι →₀ α
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support :=
-    -- Porting note: Not needed (due to open Classical), in mathlib3 too
+    -- Porting note: Not needed (due to open scoped Classical), in mathlib3 too
     -- haveI := Classical.decEq ι
     f.support ∪ g.support
   mem_support_toFun i := by
@@ -90,7 +90,7 @@ section PartialOrder
 variable [PartialOrder α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
-  -- Porting note: Not needed (due to open Classical), in mathlib3 too
+  -- Porting note: Not needed (due to open scoped Classical), in mathlib3 too
   -- haveI := Classical.decEq ι
   -- haveI := Classical.decEq α
   LocallyFiniteOrder.ofIcc (ι →₀ α) (fun f g => (f.support ∪ g.support).finsupp <| f.rangeIcc g)

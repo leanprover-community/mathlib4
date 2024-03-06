@@ -33,7 +33,7 @@ instances or other `Fintype` instances, then we need to "lower" the instance
 to be a `Finite` instance by removing the `Decidable` instances and switching
 the `Fintype` instances to `Finite` instances. These are precisely the ones
 that cannot be inferred using `Finite.of_fintype`. (However, when using
-`open Classical` or the `classical` tactic the instances relying only
+`open scoped Classical` or the `classical` tactic the instances relying only
 on `Decidable` instances will give `Finite` instances.) In the future we might
 consider writing automation to create these "lowered" instances.
 
