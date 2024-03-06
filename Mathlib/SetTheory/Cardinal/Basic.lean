@@ -705,7 +705,7 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 instance : CommMonoidWithZero Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
--- porting note: new
+-- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
@@ -794,6 +794,19 @@ instance : ConditionallyCompleteLinearOrderBot Cardinal :=
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 #align cardinal.Inf_empty Cardinal.sInf_empty
+
+lemma sInf_eq_zero_iff {s : Set Cardinal} : sInf s = 0 ↔ s = ∅ ∨ ∃ a ∈ s, a = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases s.eq_empty_or_nonempty with rfl | hne
+    · exact Or.inl rfl
+    · exact Or.inr ⟨sInf s, csInf_mem hne, h⟩
+  · rcases h with rfl | ⟨a, ha, rfl⟩
+    · exact Cardinal.sInf_empty
+    · exact eq_bot_iff.2 (csInf_le' ha)
+
+lemma iInf_eq_zero_iff {ι : Sort*} {f : ι → Cardinal} :
+    (⨅ i, f i) = 0 ↔ IsEmpty ι ∨ ∃ i, f i = 0 := by
+  simp [iInf, sInf_eq_zero_iff]
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 instance : SuccOrder Cardinal :=
@@ -1431,7 +1444,7 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 #align cardinal.card_le_of_finset Cardinal.card_le_of_finset
 
--- porting note: was `simp`. LHS is not normal form.
+-- Porting note: was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
@@ -2091,7 +2104,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
     Finset.card_image_of_injOn (injOn_of_injective Subtype.coe_injective _)
   rw [← this]
   apply H
-  simp only [Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+  simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=

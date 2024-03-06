@@ -166,7 +166,7 @@ theorem stronglyMeasurable_const' {α β} {m : MeasurableSpace α} [TopologicalS
   exact funext fun x => hf x default
 #align measure_theory.strongly_measurable_const' MeasureTheory.stronglyMeasurable_const'
 
--- porting note: changed binding type of `MeasurableSpace α`.
+-- Porting note: changed binding type of `MeasurableSpace α`.
 @[simp]
 theorem Subsingleton.stronglyMeasurable' {α β} [MeasurableSpace α] [TopologicalSpace β]
     [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
@@ -321,7 +321,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
         rw [← Set.mem_iUnion, iUnion_spanningSets (μ.restrict t)]
         trivial
       refine' ⟨n, fun m hnm => _⟩
-      simp_rw [SimpleFunc.restrict_apply _ ((hS_meas m).inter ht),
+      simp_rw [fs, SimpleFunc.restrict_apply _ ((hS_meas m).inter ht),
         Set.indicator_of_mem (hn m hnm)]
     rw [tendsto_atTop'] at h ⊢
     intro s hs
@@ -1048,7 +1048,7 @@ theorem exists_set_sigmaFinite [Zero β] [TopologicalSpace β] [T2Space β]
   · have h_fs_zero : ∀ n, ∀ x ∈ tᶜ, fs n x = 0 := by
       intro n x hxt
       rw [Set.mem_compl_iff, Set.mem_iUnion, not_exists] at hxt
-      simpa using hxt n
+      simpa [T] using hxt n
     refine' fun x hxt => tendsto_nhds_unique (h_approx x) _
     rw [funext fun n => h_fs_zero n x hxt]
     exact tendsto_const_nhds
@@ -2099,7 +2099,7 @@ theorem measurable_uncurry_of_continuous_of_measurable {α β ι : Type*} [Topol
       (fun p : ↥(t_sf n).range × α => u p.fst p.snd) ∘ fun p : ι × α =>
         (⟨t_sf n p.fst, SimpleFunc.mem_range_self _ _⟩, p.snd) :=
     rfl
-  simp_rw [this]
+  simp_rw [U, this]
   refine' h_meas.comp (Measurable.prod_mk _ measurable_snd)
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 #align measure_theory.measurable_uncurry_of_continuous_of_measurable MeasureTheory.measurable_uncurry_of_continuous_of_measurable
@@ -2139,7 +2139,7 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
       (fun p : ↥(t_sf n).range × α => u p.fst p.snd) ∘ fun p : ι × α =>
         (⟨t_sf n p.fst, SimpleFunc.mem_range_self _ _⟩, p.snd) :=
     rfl
-  simp_rw [this]
+  simp_rw [U, this]
   refine' h_str_meas.comp_measurable (Measurable.prod_mk _ measurable_snd)
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 #align measure_theory.strongly_measurable_uncurry_of_continuous_of_strongly_measurable MeasureTheory.stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable
