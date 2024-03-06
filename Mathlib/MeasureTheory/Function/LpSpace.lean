@@ -740,13 +740,12 @@ lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
   constructor
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ s →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖f x‖₊ : ℝ≥0∞) ^ p.toReal := by
-      refine ae_of_all _ (fun a ha ↦ ?_)
-      simp [ha]
+      filter_upwards with a ha using by simp [ha]
     rw [set_lintegral_congr_fun hs h]
     exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hf.2
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖g x‖₊ : ℝ≥0∞) ^ p.toReal := by
-      refine ae_of_all _ (fun a ha ↦ ?_)
+      filter_upwards with a ha
       have ha' : a ∉ s := ha
       simp [ha']
     rw [set_lintegral_congr_fun hs.compl h]
