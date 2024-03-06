@@ -66,13 +66,13 @@ variable (h2 : Function.Involutive φ)
 theorem eq_inv_of_involutive : ⇑φ = (·⁻¹) :=
   eq_inv_of_sq_eq_one hφ  (funext h2)
 
-theorem comm_of_involutive (g h : G) : g * h = h * g := by
+theorem commute_of_involutive (g h : G) : Commute g h := by
   have key := map_mul φ g h
   rwa [hφ.eq_inv_of_involutive h2, inv_eq_iff_eq_inv, mul_inv_rev, inv_inv, inv_inv] at key
 
 /-- If a finite group admits a fixed-point-free involution, then it is commutative. -/
 def commGroupOfInvolutive : CommGroup G :=
-  CommGroup.mk (hφ.comm_of_involutive h2)
+  CommGroup.mk (hφ.commute_of_involutive h2)
 
 theorem orderOf_ne_two_of_involutive (g : G) : orderOf g ≠ 2 := by
   intro hg
