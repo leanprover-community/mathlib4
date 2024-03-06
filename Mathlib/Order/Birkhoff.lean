@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Filipo A. E. Nuccio, Sam van Gool
 -/
+import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
+import Mathlib.Order.LocallyFinite
 import Mathlib.Order.UpperLower.Basic
 
 /-!
@@ -129,11 +131,9 @@ to the partial order of sup-irreducible elements in its lattice of lower sets. -
 noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
   RelIso.ofSurjective _ supIrredLowerSet_surjective
 
-/-- An explicit inverse of `OrderEmbedding.supIrredLowerSet`, useful to build a bit of API -/
+/-- The inverse of `OrderEmbedding.supIrredLowerSet`, useful to build a bit of API -/
 noncomputable def OrderEmbedding.inv (s : {x : LowerSet α // SupIrred x}) : α :=
   (OrderIso.supIrredLowerSet α).symm s
-
-variable {α}
 
 lemma OrderEmbedding.inv_eq_OrderIso.symm :
     (OrderEmbedding.inv α) = (OrderIso.supIrredLowerSet α).symm := by rfl
@@ -148,6 +148,22 @@ lemma OrderEmbedding.inv_Iic_apply (a : α) : OrderEmbedding.inv α
 lemma OrderIso.inv_Iic_apply (a : α) : (OrderIso.supIrredLowerSet α).symm
     (⟨LowerSet.Iic a, supIrred_Iic a⟩ : {s : LowerSet α // SupIrred s}) = a :=
   (OrderIso.symm_apply_eq (OrderIso.supIrredLowerSet α)).mpr rfl
+
+open Finset
+
+/- When the finite `PartialOrder` is simultaneuously a `SemilatticeSup` and an `OrderBot`, another
+description of the inverse can be provided. We need to introduce a new type `β` because otherwise
+the variable `OrderBot α` would ambiguously refer to the order on either the ` PartialOrder α` or
+on the `SemilatticeSup α`.-/
+lemma OrderEmbedding.inv_SemilatticeSup (β : Type*) [Fintype β] [SemilatticeSup β] [OrderBot β] :
+  OrderEmbedding.inv β = fun s ↦ (s.1 : Set β).toFinset.sup id := by
+  let _ : LocallyFiniteOrder β := Fintype.toLocallyFiniteOrder
+  ext ⟨-, hx⟩
+  obtain ⟨a, rfl⟩ := LowerSet.supIrred_iff_of_finite.1 hx
+  have := Set.toFinset_Iic a
+  apply_fun (fun s => sup s id) at this
+  convert this.symm
+  simp only [Finset.sup_Iic, inv_Iic_apply]
 
 end PartialOrder
 
