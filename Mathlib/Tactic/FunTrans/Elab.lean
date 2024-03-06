@@ -83,15 +83,3 @@ def funTransConv : Tactic := fun stx => do
     funTransConfig.modify fun _ => {}
 
   | _ => throwUnsupportedSyntax
-
-
-
-
-example : Nat.add 1 2 = 2 := by fun_trans []; sorry
-example : Nat.add 1 2 = 2 := by fun_trans only [Nat.add_eq]; sorry
-example : Nat.add 1 2 = 2 := by fun_trans (config:={failIfUnchanged:=false}) only [Nat.add_eq]; sorry
-
-
-example : Nat.add 1 2 = 2 := by (conv => fun_trans only [Nat.add_eq]); sorry
-example : Nat.add 1 2 = 2 := by (conv => fun_trans (config:={failIfUnchanged:=false}) [Nat.add_eq]); sorry
-

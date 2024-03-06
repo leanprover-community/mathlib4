@@ -52,7 +52,7 @@ def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array Binde
           continue
 
       if (← isProp type) then
-        if ← FunProp.isFunProp type then
+        if ← FunProp.isFunPropGoal type then
           if let .some r ← runFunProp type then
             x.mvarId!.assign r
             continue
@@ -147,9 +147,9 @@ def applyConstRule (funTransDecl : FunTransDecl) (e X y : Expr) : SimpM (Option 
       return none
 
   for thm in thms do
-    let .const id_X id_y := thm.thmArgs | continue
+    let .const := thm.thmArgs | continue
 
-    if let .some r ← tryTheoremWithHint e (.decl thm.thmName) #[(id_X,X), (id_y,y)] then
+    if let .some r ← tryTheoremWithHint e (.decl thm.thmName) #[] then
       return r
 
   return none
