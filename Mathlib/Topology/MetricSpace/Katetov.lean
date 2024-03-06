@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luigi Massacci
 -/
 
-import Mathlib.Algebra.Order.Pointwise
-import Mathlib.Topology.Instances.Real
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
