@@ -1372,10 +1372,10 @@ end BilinearMap
 
 section ParametricIntegral
 
-variable {G 𝕜 : Type*} [TopologicalSpace X]
+variable {G : Type*} [TopologicalSpace X]
   [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
-  [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 open Metric ContinuousLinearMap
 
@@ -1403,7 +1403,7 @@ theorem continuous_parametric_integral_of_continuous
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
 integral depends continuously on `x`. -/
 lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
-    [NormedSpace 𝕜 E] (L : F →L[𝕜] G →L[𝕜] E)
+    [NormedSpace ℝ E] (L : F →L[ℝ] G →L[ℝ] E)
     {f : X → Y → G} {s : Set X} {k : Set Y} {g : Y → F}
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
