@@ -67,7 +67,7 @@ theorem log_stirlingSeq_formula (n : ℕ) :
   · simp
   · rw [stirlingSeq, log_div, log_mul, sqrt_eq_rpow, log_rpow, Real.log_pow, tsub_tsub]
       <;> positivity
--- porting note: generalized from `n.succ` to `n`
+-- Porting note: generalized from `n.succ` to `n`
 #align stirling.log_stirling_seq_formula Stirling.log_stirlingSeq_formulaₓ
 
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
@@ -120,6 +120,10 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
 #align stirling.log_stirling_seq_diff_le_geo_sum Stirling.log_stirlingSeq_diff_le_geo_sum
 
+-- Adaptation note: after v4.7.0-rc1, there is a performance problem in `field_simp`.
+-- (Part of the code was ignoring the `maxDischargeDepth` setting: now that we have to increase it,
+-- other paths becomes slow.)
+set_option maxHeartbeats 400000 in
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
 -/
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :

@@ -90,11 +90,11 @@ instance LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶
 
 instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
     (f : Y ⟶ Z) [LiftHom f] : LiftHom (X ◁ f) where
-  lift := 𝟙 (LiftObj.lift X) ⊗ LiftHom.lift f
+  lift := LiftObj.lift X ◁ LiftHom.lift f
 
 instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
     {Z : C} [LiftObj Z] : LiftHom (f ▷ Z) where
-  lift := LiftHom.lift f ⊗ 𝟙 (LiftObj.lift Z)
+  lift := LiftHom.lift f ▷ LiftObj.lift Z
 
 instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
@@ -119,22 +119,22 @@ instance refl (X : C) [LiftObj X] : MonoidalCoherence X X := ⟨𝟙 _⟩
 @[simps]
 instance whiskerLeft (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence Y Z] :
     MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
-  ⟨𝟙 X ⊗ MonoidalCoherence.hom⟩
+  ⟨X ◁ MonoidalCoherence.hom⟩
 
 @[simps]
 instance whiskerRight (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ Z) (Y ⊗ Z) :=
-  ⟨MonoidalCoherence.hom ⊗ 𝟙 Z⟩
+  ⟨MonoidalCoherence.hom ▷ Z⟩
 
 @[simps]
 instance tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
     MonoidalCoherence X (X ⊗ Y) :=
-  ⟨(ρ_ X).inv ≫ (𝟙 X ⊗  MonoidalCoherence.hom)⟩
+  ⟨(ρ_ X).inv ≫ X ◁  MonoidalCoherence.hom⟩
 
 @[simps]
 instance tensor_right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence Y (𝟙_ C)] :
     MonoidalCoherence (X ⊗ Y) X :=
-  ⟨(𝟙 X ⊗ MonoidalCoherence.hom) ≫ (ρ_ X).hom⟩
+  ⟨X ◁ MonoidalCoherence.hom ≫ (ρ_ X).hom⟩
 
 @[simps]
 instance left (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
@@ -412,9 +412,5 @@ elab_rules : tactic
       Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
       monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
-    monoidal_simps (config := {failIfUnchanged := false});
-    -- Workaround until we define the whiskerings as the primitives in free monoidal categories.
-    simp (config := {failIfUnchanged := false}) only
-      [← MonoidalCategory.id_tensorHom, ← MonoidalCategory.tensorHom_id]
-    ))
+    monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop

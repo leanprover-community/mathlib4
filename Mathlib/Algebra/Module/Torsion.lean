@@ -232,6 +232,9 @@ def IsTorsion :=
   ∀ ⦃x : M⦄, ∃ a : R⁰, a • x = 0
 #align module.is_torsion Module.IsTorsion
 
+theorem isTorsionBySet_annihilator : IsTorsionBySet R M (Module.annihilator R M) :=
+  fun _ r ↦ Module.mem_annihilator.mp r.2 _
+
 end Module
 
 end Defs
@@ -541,6 +544,11 @@ instance IsTorsionBySet.isScalarTower
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
 #align module.is_torsion_by_set.is_scalar_tower Module.IsTorsionBySet.isScalarTower
+
+/-- Any module is also a modle over the quotient of the ring by the annihilator.
+Not an instance because it causes synthesis failures / timeouts. -/
+def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
+  (isTorsionBySet_annihilator R M).module
 
 instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
   IsTorsionBySet.module (R := R) (I := I) fun x r => by

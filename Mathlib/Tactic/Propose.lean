@@ -3,12 +3,13 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean.Meta.Tactic.TryThis
+import Lean.Meta.Tactic.SolveByElim
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
 import Std.Util.Cache
 import Mathlib.Tactic.Core
-import Std.Tactic.SolveByElim
 
 /-!
 # Propose
@@ -36,7 +37,7 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic TryThis
+open Lean Meta Std.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
 
@@ -51,14 +52,14 @@ initialize proposeLemmas : DeclCache (DiscrTree Name) ←
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
       for m in mvars do
-        let path ← DiscrTree.mkPath (← inferType m) discrTreeConfig
-        lemmas := lemmas.insertIfSpecific path name
+        lemmas ← lemmas.insertIfSpecific (← inferType m) name discrTreeConfig
       pure lemmas
 
+open Lean.Meta.SolveByElim in
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (required : Array Expr)
     (depth) := do
-  let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
+  let cfg : SolveByElimConfig := { maxDepth := depth, exfalso := true, symm := true }
   let cfg := if !required.isEmpty then
     cfg.testSolutions (fun _ => do
     let r ← instantiateMVars (.mvar orig)
