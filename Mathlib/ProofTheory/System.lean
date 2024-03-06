@@ -77,24 +77,30 @@ lemma inconsistent_of_provable {T : Set F} (b : T ⊢! ⊥) : ¬Consistent T := 
 
 lemma consistent_iff_unprovable {T : Set F} : Consistent T ↔ T ⊬ ⊥ := by rfl
 
+/-- A proof system is complete -/
 protected def Complete (T : Set F) : Prop := ∀ f, (T ⊢! f) ∨ (T ⊢! ~f)
 
+/-- A formula independent of a theory -/
 def Independent (T : Set F) (f : F) : Prop := T ⊬ f ∧ T ⊬ ~f
 
 lemma incomplete_iff_exists_independent {T : Set F} :
     ¬System.Complete T ↔ ∃ f, Independent T f := by simp[System.Complete, not_or, Independent]
 
+/-- A theory is a set of formulas -/
 def theory (T : Set F) : Set F := {p | T ⊢! p}
 
 @[simp] lemma subset_theory {T : Set F} : T ⊆ theory T := fun _ h ↦ ⟨System.axm h⟩
 
 noncomputable def provableTheory_theory {T : Set F} : T ⊢* theory T := λ b ↦ b.toProof
 
+/-- A `Subtheory` proves a subset of formulas -/
 class Subtheory (T U : Set F) where
   sub : {f : F} → T ⊢ f → U ⊢ f
 
+/-- Infix notation for `Subtheory` -/
 infix:50 " ≾ " => Subtheory
 
+/-- Definition of equivalent theories -/
 class Equivalent (T U : Set F) where
   ofLeft : {f : F} → T ⊢ f → U ⊢ f
   ofRight : {f : F} → U ⊢ f → T ⊢ f
@@ -105,13 +111,16 @@ variable (T U T₁ T₂ T₃ : Set F)
 
 @[refl] instance : T ≾ T := ⟨id⟩
 
+/-- `Subtheory` is transitive -/
 @[trans] protected def trans [T₁ ≾ T₂] [T₂ ≾ T₃] : T₁ ≾ T₃ :=
   ⟨fun {f} b => sub (sub b : T₂ ⊢ f)⟩
 
 variable {T U}
 
+/-- `ofSubset` holds for a `Subtheory` that is a weakening -/
 def ofSubset (h : T ⊆ U) : T ≾ U := ⟨fun b => weakening b h⟩
 
+/-- A `bewTheory` is a subset of axioms xxx -/
 def bewTheory [T ≾ U] : U ⊢* T := λ hp ↦ sub (axm hp)
 
 end Subtheory
@@ -124,6 +133,7 @@ variable (T U T₁ T₂ T₃ : Set F)
 
 @[symm] instance [Equivalent T U] : Equivalent U T := ⟨ofRight, ofLeft⟩
 
+/-- `Equivalent` is transitive for theories -/
 @[trans] protected def trans [Equivalent T₁ T₂] [Equivalent T₂ T₃] : Equivalent T₁ T₃ :=
   ⟨fun {f} b => ofLeft (ofLeft b : T₂ ⊢ f), fun {f} b => ofRight (ofRight b : T₂ ⊢ f)⟩
 
@@ -131,6 +141,7 @@ end Equivalent
 
 end System
 
+/-- A `System.hom` is a homomorphism preserving logical connectives-/
 def System.hom [System F] {G : Type u} [LogicSymbol G] (F : G →L F) : System G where
   Bew := fun T g => F '' T ⊢ F g
   axm := fun h => System.axm (Set.mem_image_of_mem F h)
@@ -139,12 +150,15 @@ def System.hom [System F] {G : Type u} [LogicSymbol G] (F : G →L F) : System G
 variable (F)
 variable [LogicalConnective F] [𝓑 : System F] {α: Type*} [𝓢 : Semantics F α]
 
+/-- `Sound` class definition -/
 class Sound where
   sound : ∀ {T : Set F} {p : F}, T ⊢ p → T ⊨ p
 
+/-- `SoundOn` class definition for a group of formulas -/
 class SoundOn (M : Type w) (a : α) (H : Set F) where
   sound : ∀ {T : Set F} {p : F}, p ∈ H → T ⊢ p → a ⊧ p
 
+/-- `Complete` class is sound and proves any true formula -/
 class Complete extends Sound F where
   complete : ∀ {T : Set F} {p : F}, T ⊨ p → T ⊢ p
 
