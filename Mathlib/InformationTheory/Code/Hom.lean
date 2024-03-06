@@ -56,10 +56,39 @@ variable {gdist s}
 
 
 def CodeHom.comp
-    (φ: CodeHom gdist s gdist₂ s₂) (φ₂: CodeHom gdist₂ s₂ gdist₃ s₃): CodeHom gdist s gdist₃ s₃ where
+    (φ₂: CodeHom gdist₂ s₂ gdist₃ s₃) (φ: CodeHom gdist s gdist₂ s₂) : CodeHom gdist s gdist₃ s₃ where
   toFun := φ₂ ∘ φ
   map_dist _ _:= by rw [φ.map_dist,φ₂.map_dist]; rfl
   map_code x hx := φ₂.map_code (φ x) $ φ.map_code x hx
+
+@[simp]
+theorem CodeHom.coe_comp (g : CodeHom gdist₂ s₂ gdist₃ s₃) (f : CodeHom gdist s gdist₂ s₂) :
+    ↑(g.comp f) = g ∘ f := rfl
+
+theorem CodeHom.comp_apply
+    (g : CodeHom gdist₂ s₂ gdist₃ s₃) (f : CodeHom gdist s gdist₂ s₂) (x : α):
+  g.comp f x = g (f x) := rfl
+
+variable {α₄ T₄:Type} {gdist₄:T₄} {s₄:Set α₄}
+variable--? [_Code γ gdist₄ s₄] =>
+  [FunLike T₄ α₄ (α₄ → γ)] [GPseudoMetricClass T₄ α₄ γ] [IsDelone gdist₄ s₄]
+
+
+theorem CodeHom.comp_assoc (h: CodeHom gdist₃ s₃ gdist₄ s₄)
+    (g : CodeHom gdist₂ s₂ gdist₃ s₃) (f : CodeHom gdist s gdist₂ s₂):
+    (h.comp g).comp f = h.comp (g.comp f) := rfl
+
+theorem CodeHom.cancel_right {g₁ g₂ : CodeHom gdist₂ s₂ gdist₃ s₃} {f : CodeHom gdist s gdist₂ s₂}
+    (hf : Function.Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ := by
+  constructor
+  . intro h
+    apply CodeHom.ext
+    ext y
+    apply (@Function.Surjective.forall α α₂ f hf (fun y => g₁ y = g₂ y)).2
+    intro x
+    rw [← CodeHom.comp_apply,h,CodeHom.comp_apply]
+  . exact fun h => h ▸ rfl
+
 
 end
 
@@ -117,7 +146,7 @@ structure LinearCodeHom [_LinearCode γ K gdist_k gdist_m s] [_LinearCode γ K g
   map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y
   map_smul' : ∀ (k:K), ∀ (m:M), toFun (k • m) = k • toFun m
   toLinearMap : M →ₗ[K] M₂ := LinearMap.ofLinearCodeHom toFun map_add' map_smul'
-  linearMap_coe_is_codeHom_coe : (⇑toLinearMap) = toCodeHom
+  linearMap_coe_is_codeHom_coe : (⇑toLinearMap) = toCodeHom := by rfl
 
 
 @[ext]
@@ -163,23 +192,25 @@ variable--? [_LinearCode γ K gdist_k gdist_m₃ s₃] =>
 def LinearCodeHom.id
   [_LinearCode γ K gdist_k gdist_m s] : LinearCodeHom K gdist_k gdist_m s gdist_m s := {
     CodeHom.id gdist_m s, LinearMap.id with
-  linearMap_coe_is_codeHom_coe := by rfl
   }
 
 def LinearCodeHom.comp
-    (φ : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂)
-    (φ₂: LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃) :
+    (φ: LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃)
+    (φ₂ : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) :
     LinearCodeHom K gdist_k gdist_m s gdist_m₃ s₃ := {
       φ.toCodeHom.comp φ₂.toCodeHom with
     map_add' := by
-      simp only [CodeHom.comp, Function.comp_apply]
-      rw [← φ₂.linearMap_coe_is_codeHom_coe,← φ.linearMap_coe_is_codeHom_coe]
-      simp
+      simp only
+      rw [CodeHom.comp]
+      simp only [Function.comp_apply]
+      rw [← φ.linearMap_coe_is_codeHom_coe, ← φ₂.linearMap_coe_is_codeHom_coe]
+      exact (φ.toLinearMap.comp φ₂.toLinearMap).map_add'
     map_smul' := by
-      simp only [CodeHom.comp, Function.comp_apply]
-      rw [← φ₂.linearMap_coe_is_codeHom_coe,← φ.linearMap_coe_is_codeHom_coe]
-      simp
-    linearMap_coe_is_codeHom_coe := by rfl
+      simp only
+      rw [CodeHom.comp]
+      simp only [Function.comp_apply]
+      rw [← φ.linearMap_coe_is_codeHom_coe, ← φ₂.linearMap_coe_is_codeHom_coe]
+      exact (φ.toLinearMap.comp φ₂.toLinearMap).map_smul'
     }
 -- TODO: prove simple lemmas about these things
 end
