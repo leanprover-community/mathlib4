@@ -131,15 +131,12 @@ noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrr
 
 /-- An explicit inverse of `OrderEmbedding.supIrredLowerSet`, useful to build a bit of API -/
 noncomputable def OrderEmbedding.inv (s : {x : LowerSet α // SupIrred x}) : α :=
-  (supIrred_iff_of_finite.mp s.2).choose
+  (OrderIso.supIrredLowerSet α).symm s
 
 variable {α}
 
 lemma OrderEmbedding.inv_eq_OrderIso.symm :
-    (OrderEmbedding.inv α) = (OrderIso.supIrredLowerSet α).symm := by
-  ext s
-  erw [Equiv.eq_symm_apply (OrderIso.supIrredLowerSet α).toEquiv, ← Subtype.coe_inj]
-  exact (OrderEmbedding.supIrredLowerSet_apply) (supIrred_iff_of_finite.mp s.2).choose_spec
+    (OrderEmbedding.inv α) = (OrderIso.supIrredLowerSet α).symm := by rfl
 
 @[simp]
 lemma OrderEmbedding.inv_Iic_apply (a : α) : OrderEmbedding.inv α
