@@ -534,9 +534,7 @@ open Function in
 theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : s i →ₗ[R] t i) :
     (fun (j : ι) ↦ (update f i u j) (x j)) = update (fun (j : ι) ↦ (f j) (x j)) i (u (x i)) := by
   ext j
-  by_cases h : j = i
-  · rw [h]; simp only [update_same]
-  · simp only [ne_eq, h, not_false_eq_true, update_noteq]
+  exact apply_update (fun i F => F (x i)) f i u j
 
 open Function in
 theorem map_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
