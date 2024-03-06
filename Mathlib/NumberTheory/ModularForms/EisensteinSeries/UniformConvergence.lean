@@ -17,7 +17,6 @@ We show that `eisSummand` converges locally uniformly on `ℍ` to the Eisenstein
 and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
 -/
 
-
 noncomputable section
 
 open Complex Filter UpperHalfPlane Set Finset
@@ -58,11 +57,11 @@ lemma r1_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
     · apply pow_two_nonneg
   · apply_rules [add_pos_of_nonneg_of_pos, pow_two_nonneg, (pow_pos z.im_pos 2)]
 
-lemma auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
+lemma auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ ^ 2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs]
   have H1 : (z : ℂ).im ≤
     Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε) + (δ * z : ℂ).im * (δ * z : ℂ).im) := by
-    have h1 : (δ * z : ℂ).im * (δ * z : ℂ).im = δ^2 * (z : ℂ).im * (z : ℂ).im := by
+    have h1 : (δ * z : ℂ).im * (δ * z : ℂ).im = δ ^ 2 * (z : ℂ).im * (z : ℂ).im := by
       simp only [mul_im, ofReal_re, coe_im, ofReal_im, coe_re, zero_mul, add_zero]
       ring
     rw [Real.le_sqrt', h1 ]
@@ -75,7 +74,7 @@ lemma auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ Com
     add_zero, normSq_apply, add_re, mul_re, sub_zero, add_im] at *
   exact H1
 
-lemma auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
+lemma auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε ^ 2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs, min_le_iff]
   have H1 : Real.sqrt (r1 z) ≤ Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε) +
       δ * (z : ℂ).im * (δ * (z : ℂ).im)) := by
@@ -113,7 +112,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     rw [H1, div_pow, Int.cast_natAbs (x 0), Int.cast_abs]
     have : (x 0 : ℝ) ≠ 0 := by
       simpa using (ne_zero_if_max hx H1)
-    have h1 : (x 0 : ℝ)^2/(_root_.abs (x 0 : ℝ))^2 = 1 := by
+    have h1 : (x 0 : ℝ) ^ 2/(_root_.abs (x 0 : ℝ)) ^ 2 = 1 := by
       simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
         this, div_self]
     exact h1.symm.le
@@ -162,7 +161,7 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
     simp only [box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
     rw [hx.1, hx.2] at *
     by_cases hk0 : k = 0
-    . rw [hk0] at *
+    · rw [hk0] at *
       simp only [neg_zero, Real.rpow_zero, mul_one, le_refl]
     · simp only [Int.cast_zero, zero_mul, add_zero, map_zero]
       have h1 : (0 : ℝ) ^ (-k) = 0 := by
@@ -213,35 +212,16 @@ lemma r_lower_bound_on_slice {A B : ℝ} (h : 0 < B) (z : upperHalfPlaneSlice A 
     convert hz.2
     have := abs_eq_self.mpr (UpperHalfPlane.im_pos z.1).le
     convert this.symm
-  . rw [Real.sqrt_le_sqrt_iff]
+  · rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
     simp only [r1', div_pow, one_div]
-    rw [inv_le_inv, add_le_add_iff_right]
-    apply div_le_div (sq_nonneg _)
-    · simpa [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
-    · positivity
+    rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
+    apply div_le_div (sq_nonneg _) _ (by positivity)
     · simpa [even_two.pow_abs] using pow_le_pow_left h.le hz.2 2
-    · positivity
-    · positivity
-    · apply (r1_pos z).le
+    · simpa [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
 
 end bounding_functions
 
 section summability
-variable {ι κ α : Type*} [AddCommMonoid α] [TopologicalSpace α]
-
-/-- Equivalence between the sigma of a family of finsets of `β` and `β`. -/
-noncomputable def sigmaEquiv {ι κ : Type*} (s : κ → Set ι) (hs : ∀ i, ∃! j, i ∈ s j) :
-    (Σ j, s j) ≃ ι where
-  toFun x := x.2
-  invFun x := ⟨(hs x).choose, x, (hs x).choose_spec.1⟩
-  left_inv x := by ext; exacts [((hs x.2).choose_spec.2 x.1 x.2.2).symm, rfl]
-  right_inv x := by rfl
-
-lemma summable_partition {f : ι → ℝ} (hf : 0 ≤ f) {s : κ → Set ι} (hs : ∀ i, ∃! j, i ∈ s j) :
-    Summable f ↔ (∀ j, Summable fun i : s j ↦ f i) ∧ Summable fun j ↦ ∑' i : s j, f i := by
-  rw [← (sigmaEquiv s hs).summable_iff, summable_sigma_of_nonneg]
-  simp only [sigmaEquiv, Equiv.coe_fn_mk, Function.comp_apply]
-  exact fun _ ↦ hf _
 
 lemma summable_r_pow {k : ℤ} (z : ℍ) (h : 3 ≤ k) :
     Summable fun n : ℕ => 8 / (r z) ^ k * ((n : ℝ) ^ (k - 1))⁻¹ := by
@@ -317,7 +297,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   repeat {simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, pow_nonneg,
     inv_nonneg, pow_nonneg (r_pos _).le]}
   rw [inv_le_inv]
-  . apply pow_le_pow_left (r_pos _).le
+  · apply pow_le_pow_left (r_pos _).le
     rw [abs_of_pos (r_pos _)]
     · exact r_lower_bound_on_slice hB ⟨x, HABK hx⟩
   · apply pow_pos (abs_pos.mpr (ne_of_gt (r_pos x)))
