@@ -174,7 +174,7 @@ lemma muProduct_def {n : ℕ} (f : ℕ → MvPolynomial σ R) (μ : n.Partition)
 
 @[simp]
 theorem muProduct_zero (f : ℕ → MvPolynomial σ R) :
-muProduct σ R f (Nat.Partition.indiscrete 0) = 1 := by
+    muProduct σ R f (Nat.Partition.indiscrete 0) = 1 := by
   simp only [muProduct, Nat.Partition.partition_zero_parts, Multiset.map_zero, Multiset.prod_zero]
 
 @[simp]
