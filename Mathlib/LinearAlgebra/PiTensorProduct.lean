@@ -736,15 +736,15 @@ variable [∀ i, AddCommMonoid (t i)] [∀ i, Module R (t i)]
 
 /-- Re-indexing the components of the tensor product by an equivalence `e` is compatible
 with `PiTensorProduct.map`.-/
-theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
+theorem map_comp_reindex_eq (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
     map (fun i ↦ f (e.symm i)) ∘ₗ reindex R s e = reindex R t e ∘ₗ map f := by
   ext m
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
     LinearMap.comp_apply, reindex_tprod, map_tprod]
 
-theorem map_reindex_apply (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
+theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
     map (fun i ↦ f (e.symm i)) (reindex R s e x) = reindex R t e (map f x) :=
-  DFunLike.congr_fun (map_reindex _ _) _
+  DFunLike.congr_fun (map_comp_reindex_eq _ _) _
 
 variable (ι)
 
