@@ -1372,7 +1372,7 @@ end BilinearMap
 
 section ParametricIntegral
 
-variable {X Y F G 𝕜 : Type*} [TopologicalSpace X]
+variable {G 𝕜 : Type*} [TopologicalSpace X]
   [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
   [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -1384,18 +1384,18 @@ open Metric ContinuousLinearMap
 theorem continuous_parametric_integral_of_continuous
     [FirstCountableTopology X] [LocallyCompactSpace X]
     [OpensMeasurableSpace Y] [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]
-    {F : X → Y → E} (hF : Continuous fun p : X × Y ↦ F p.1 p.2) {s : Set Y} (hs : IsCompact s) :
-    Continuous (∫ y in s, F · y ∂μ) := by
+    {f : X → Y → E} (hf : Continuous f.uncurry) {s : Set Y} (hs : IsCompact s) :
+    Continuous (∫ y in s, f · y ∂μ) := by
   rw [continuous_iff_continuousAt]
   intro x₀
   rcases exists_compact_mem_nhds x₀ with ⟨U, U_cpct, U_nhds⟩
-  rcases (U_cpct.prod hs).bddAbove_image hF.norm.continuousOn with ⟨M, hM⟩
+  rcases (U_cpct.prod hs).bddAbove_image hf.norm.continuousOn with ⟨M, hM⟩
   apply continuousAt_of_dominated
-  · filter_upwards with x using (hF.comp (Continuous.Prod.mk x)).aestronglyMeasurable
+  · filter_upwards with x using (hf.comp (Continuous.Prod.mk x)).aestronglyMeasurable
   · refine Eventually.mono U_nhds fun x x_in ↦ ?_
     rw [ae_restrict_iff]
     · filter_upwards with t t_in using hM (mem_image_of_mem _ <| mk_mem_prod x_in t_in)
-    · exact (isClosed_le (hF.comp <| Continuous.Prod.mk x).norm continuous_const).measurableSet
+    · exact (isClosed_le (hf.comp <| Continuous.Prod.mk x).norm continuous_const).measurableSet
   · exact integrableOn_const.mpr (Or.inr hs.measure_lt_top)
   · filter_upwards with y using Continuous.continuousAt (by fun_prop)
 
