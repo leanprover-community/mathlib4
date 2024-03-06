@@ -1398,9 +1398,7 @@ theorem continuous_parametric_integral_of_continuous
     · exact (isClosed_le (hF.comp <| Continuous.Prod.mk x).norm continuous_const).measurableSet
   · exact integrableOn_const.mpr (Or.inr hs.measure_lt_top)
   · apply ae_of_all
-    intro y
-    -- TODO: can fun_prop show this?
-    exact (hF.comp₂ continuous_id continuous_const).continuousAt
+    exact fun y ↦ Continuous.continuousAt (by fun_prop)
 
 /-- Consider a parameterized integral `x ↦ ∫ y, L (g y) (f x y)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
