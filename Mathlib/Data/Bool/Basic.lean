@@ -326,6 +326,6 @@ theorem and_xor_distrib_left : ∀ (x y z : Bool), (x && xor y z) = xor (x && y)
 theorem and_xor_distrib_right : ∀ (x y z : Bool), (xor x y && z) = xor (x && z) (y && z) := by
   decide
 #align bool.band_bxor_distrib_left Bool.and_xor_distrib_left
-#align bool.band_bxor_distrib_right Bool.and_xor_distrib_right  
+#align bool.band_bxor_distrib_right Bool.and_xor_distrib_right
 
 end Bool
