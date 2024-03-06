@@ -63,6 +63,12 @@ lemma Functor.ObjEqIso_symm (F : C ⥤ Type) {c : C} {i j : F.obj c} (h : i = j)
   rw [F.ObjEqIso_refl]
   simp
 
+lemma Functor.ObjEqIso_trans (F : C ⥤ Type) {c : C} {i j k : F.obj c} (h1 : i = j) (h2 : j = k) :
+    F.ObjEqIso h1 ≪≫ F.ObjEqIso h2  = F.ObjEqIso (h1.trans h2) := by
+  subst h1 h2
+  rw [ObjEqIso_refl]
+  simp
+
 @[simps!]
 def Functor.coCartesianLift (F : C ⥤ Type) {c1 c2 : C} (f : c1 ⟶ c2) (i : F.obj c1) :
     F.objLift i ⟶ F.objLift ((F.map f) i) := ⟨f, by rfl⟩
@@ -138,6 +144,7 @@ def Functor.liftNatTrans (F : C ⥤ Type) {G H : F.Elements ⥤ Type} (η : G �
     simp
     rfl
 
+@[simps!]
 def Functor.liftFuncFunc (F : C ⥤ Type) : (F.Elements ⥤ Type) ⥤ (C ⥤ Type) where
   obj := F.liftFunc
   map := F.liftNatTrans
@@ -150,6 +157,12 @@ def CategoryOfElements.mapIso {F1 F2 : C ⥤ Type} (η : F1 ≅ F2) :
   unitIso := NatIso.ofComponents (fun X => F1.ObjEqIso (by simp))
   counitIso := NatIso.ofComponents (fun X => F2.ObjEqIso (by simp))
 
+
+lemma CategoryOfElements.mapIso_of_ObjEquiv {F1 F2 : C ⥤ Type} (η : F1 ≅ F2) {c : C}
+    {i j : F1.obj c} (h : i = j) :
+    (mapIso η).functor.map (F1.ObjEqIso h).hom =
+    (F2.ObjEqIso (by rw [h]  : η.hom.app c i = η.hom.app c j )).hom := rfl
+
 def CategoryOfElements.mapIsoToTypes  {F1 F2 : C ⥤ Type} (η : F1 ≅ F2) :
     (F2.Elements ⥤ Type) ≌ (F1.Elements ⥤ Type) :=
   CategoryTheory.Equivalence.mk
@@ -159,6 +172,75 @@ def CategoryOfElements.mapIsoToTypes  {F1 F2 : C ⥤ Type} (η : F1 ≅ F2) :
     ((CategoryTheory.whiskeringLeft _ _ _).mapIso (mapIso η).unitIso.symm)
 
 
+--  I want a natural isomorphism between F2.liftFuncFunc and
+-- (mapIsoToTypes η).functor ⋙ F1.liftFuncFunc
+-- The first thing we will estblish is, for each G in F2.Elements ⥤  Type, an
+-- isomorphism between F2.liftFunc G and (F1.liftFunc) ((mapIsoToTypes η).functor.obj G)
+@[simps!]
+def CategoryOfElements.isoTypes {F1 F2 : C ⥤ Type} (η : F1 ≅ F2) (G : F2.Elements ⥤ Type)
+    (X : C) :
+    (F2.liftFunc G).obj X ≅ (F1.liftFunc ((mapIso η).functor ⋙ G)).obj X where
+  hom := fun s => ⟨η.inv.app X s.1, G.map (F2.ObjEqIso (by simp)).hom s.2 ⟩
+  inv := fun s => ⟨η.hom.app X s.1, G.map (F2.ObjEqIso (by simp)).hom s.2 ⟩
+  hom_inv_id := by
+    funext s
+    refine F2.liftType_ext _ _ ?_ ?_
+    simp
+    simp
+    repeat rw [← types_comp_apply (G.map _) (G.map _), ← G.map_comp]
+    rw [← Iso.trans_hom, ← Iso.trans_hom, F2.ObjEqIso_trans, F2.ObjEqIso_trans,
+     F2.ObjEqIso_refl]
+    simp
+  inv_hom_id := by
+    funext s
+    refine F1.liftType_ext _ _ ?_ ?_
+    simp
+    simp
+    rw [mapIso_of_ObjEquiv]
+    repeat rw [← types_comp_apply (G.map _) (G.map _), ← G.map_comp]
+    rw [← Iso.trans_hom, ← Iso.trans_hom, F2.ObjEqIso_trans, F2.ObjEqIso_trans,
+     F2.ObjEqIso_refl]
+    simp
+
+@[simps!]
+def CategoryOfElements.isoTypesF {F1 F2 : C ⥤ Type} (η : F1 ≅ F2) (G : F2.Elements ⥤ Type) :
+    (F2.liftFunc G) ≅ (F1.liftFunc ((mapIso η).functor ⋙ G)) :=
+  NatIso.ofComponents (isoTypes η G) (by
+   intro X Y f
+   funext s
+   rw [types_comp_apply, types_comp_apply]
+   refine F1.liftType_ext _ _ ?_ ?_
+   simp [Functor.liftFunc]
+   rw [← types_comp_apply (F2.map _) (η.inv.app _)]
+   erw [η.inv.naturality]
+   rfl
+   simp [Functor.liftFunc]
+   repeat rw [← types_comp_apply (G.map _) (G.map _), ← G.map_comp]
+   apply congrFun
+   apply congrArg
+   ext
+   simp only [Functor.objLift_fst, mapIso_functor_obj_fst, Functor.objLift_snd,
+     mapIso_functor_obj_snd, isoTypes_hom, comp_val, Functor.coCartesianLift_coe,
+     Functor.ObjEqIso_hom_coe, mapIso_functor_map_coe, Category.comp_id, Category.id_comp]
+  )
+
+def CategoryOfElements.liftIsoFunc {F1 F2 : C ⥤ Type} (η : F1 ≅ F2) :
+    F2.liftFuncFunc ≅ (mapIsoToTypes η).functor ⋙ F1.liftFuncFunc :=
+  NatIso.ofComponents (isoTypesF η) (by
+    intro G1 G2 ηG
+    apply NatTrans.ext
+    funext c
+    funext s
+    refine F1.liftType_ext _ _ (by rfl) ?_
+    simp
+    change G2.map ((mapIso η).functor.map (F1.ObjEqIso _).hom) _ = _
+    rw [mapIso_of_ObjEquiv η]
+    repeat rw [← types_comp_apply (G2.map _) (G2.map _), ← G2.map_comp]
+    rw [← Iso.trans_hom, F2.ObjEqIso_trans]
+    change  (ηG.app _ ≫ _) _ = _
+    erw [← ηG.naturality]
+    rfl
+  )
 
 end CategoryTheory
 end lifts
@@ -1322,31 +1404,72 @@ lemma mapOrderHom₁_map {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶
 
 
 
+lemma mapOrderHom₂_map {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶ Y)
+    (s : assocClassifier1.obj X) : (joinClassifying.map f s.1).val -
+    (joinClassifying.map f (((assocIsoComponents X).hom s).1)).val
+    = (joinClassifying.map (joinClassifyEquivOpOp.functor.map
+    (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2).val
+    := by
+  let x := (joinClassifying.map f (((assocIsoComponents X).hom s).1))
+  let y := (joinClassifying.map f s.1)
+  have hx := Nat.lt_succ_iff.mp x.prop
+  symm
+  erw [sourceValue_val_iff]
+  apply And.intro
+  · simp
+    rw [Nat.lt_succ_iff]
+    exact (Nat.sub_le_sub_iff_right hx).mpr (Nat.lt_succ_iff.mp y.prop)
+  · intro j
+    rw [Fin.lt_def]
+    simp only [assocClassifier1_obj, assocClassifierSnd_obj,
+      joinClassifying_map, joinClassifyEquivOp_functor_obj, Opposite.unop_op, objClass_fst,
+      joinLiftObj_fst, joinLiftObj_snd, joinClassifyEquivOp_functor_map, Quiver.Hom.unop_op,
+      Fin.coe_castSucc]
+    rw [toOrderHom_homMk, mapOrderHom₂_apply_val]
+    change _ ↔ (toOrderHom f.unop (incl₂ j)).val - s.2.val < s.1.val - s.2.val
+    by_cases hr : s.2.val < s.1.val
+    · apply Iff.intro
+      · intro hj
+        have hs := Fin.lt_def.mp ((sourceValue_cond f.unop s.1 (incl₂ j)).mp
+          (Nat.add_lt_of_lt_sub hj))
+        omega
+      · intro hj
+        have hk : ↑((toOrderHom f.unop) (incl₂ j)) < s.1.val := by
+          exact lt_of_tsub_lt_tsub_right hj
+        have hs := Fin.lt_def.mp (((sourceValue_cond f.unop s.1 (incl₂ j)).mpr) hk)
+        simp
+        simp at hs
+        exact Nat.lt_sub_of_add_lt hs
+    · have hs1 := Nat.lt_succ.mp s.2.prop
+      simp at hs1
+      have hr2 : s.2.val = s.1.val := by
+        omega
+      have hr3 : ((assocIsoComponents X).hom s).1  = s.1 := by
+        rw [Fin.eq_iff_veq]
+        exact hr2
+      rw [← hr2]
+      simp only [incl₂, joinClassifying_obj, Equivalence.symm_functor, opOpEquivalence_inverse,
+        assocClassifier1_obj, assocClassifierSnd_obj, joinClassifying_map, opOp_obj,
+        Opposite.unop_op, joinLiftObj_snd, joinClassifyEquivOp_functor_obj, objClass_fst,
+        joinLiftObj_fst, ge_iff_le, le_refl, tsub_eq_zero_of_le, not_lt_zero', iff_false, not_lt,
+        tsub_le_iff_right]
+      erw [← hr3]
+      exact Nat.le_add_left ↑(sourceValue f.unop ((assocIsoComponents X).hom s).1) ↑j
+
+
 
 @[simps!]
 def assocIso : assocClassifier1 ≅ assocClassifierSnd :=
   NatIso.ofComponents assocIsoComponents (by
     intro X Y f
     funext s
-    have h2 := Nat.lt_succ.mp s.2.prop
-    simp at h2
     rw [types_comp_apply, types_comp_apply]
     apply assocTypeSnd_ext_val
     rw [Fin.eq_iff_veq]
     exact mapOrderHom₁_map f s
     simp [assocType1Map,assocType1Part, assocTypeSndMap, assocTypeSndPart]
     erw [mapOrderHom₁_map f s]
-    change (joinClassifying.map f s.1).val -
-    (joinClassifying.map f (((assocIsoComponents X).hom s).1)).val
-    = (joinClassifying.map (joinClassifyEquivOpOp.functor.map
-    (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2).val
-
-
-
-
-
-
-
+    exact mapOrderHom₂_map f s
   )
 
 lemma assocEqIffJoinEq {X Y : (WithInitial SimplexCategory)ᵒᵖ} {f : X ⟶ Y}
@@ -1617,8 +1740,7 @@ def assocIsoWithInitial : assocFstTo3WithInitial ≅ ((CategoryOfElements.mapIso
   · simp only [prod_Hom]
     ext
     · exact nat_assocIsoWithInitial_snd f
-    · exact nat_assocIsoWithInitial_thd f
-    )
+    · exact nat_assocIsoWithInitial_thd f)
 
 
 
@@ -2355,22 +2477,6 @@ lemma assocTypeMap_comm  {X Y: WithInitial SimplexCategory} (f : X ⟶ Y) :
       rw [hv]
       exact Nat.not_lt.mp hs1j
 
-lemma mapOrderHom₂_map_lt {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶ Y)
-    (s : assocClassifier1.obj X)  :
-    (joinClassifying.map f (((assocIsoComponents X).hom s).1)).val +
-    (joinClassifying.map (joinClassifyEquivOpOp.functor.map
-    (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2).val
-    < Nat.succ (len Y.unop) := by
-  let x := (joinClassifying.map f (((assocIsoComponents X).hom s).1))
-  let y := (joinClassifying.map (joinClassifyEquivOpOp.functor.map
-    (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2)
-  have hx : x.val ≤  _ := Nat.lt_succ.mp x.prop
-  have hy : y.val ≤  _ := Nat.lt_succ.mp y.prop
-  simp at hy
-  change y.val ≤ len Y.unop - x.val at hy
-  rw [Nat.lt_succ, add_comm]
-  exact  Nat.add_le_of_le_sub hx hy
-
 lemma mapOrderHom₂_map_lt_p1 {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶ Y)
     (s : assocClassifier1.obj X)
     (j : Fin (len Y.unop))
@@ -2387,26 +2493,30 @@ lemma mapOrderHom₂_map_lt_p1 {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f :
     rw [Fin.le_def]
     have hsprop := (Nat.lt_succ_iff.mp (s.2.prop))
     simp_all
-  · sorry
+  · have hyC := sourceValue_cond (joinClassifyEquivOpOp.functor.map
+      (coCartesianLift f ((assocIsoComponents X).hom s).1)).2.unop ((assocIsoComponents X).hom s).2
+    sorry
 
-
-lemma mapOrderHom₂_map {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶ Y)
-    (s : assocClassifier1.obj X) : (joinClassifying.map f s.1).val -
-    (joinClassifying.map f (((assocIsoComponents X).hom s).1)).val
-    = (joinClassifying.map (joinClassifyEquivOpOp.functor.map
+lemma mapOrderHom₂_map_lt {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶ Y)
+    (s : assocClassifier1.obj X)  :
+    (joinClassifying.map f (((assocIsoComponents X).hom s).1)).val +
+    (joinClassifying.map (joinClassifyEquivOpOp.functor.map
     (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2).val
-    := by
+    < Nat.succ (len Y.unop) := by
   let x := (joinClassifying.map f (((assocIsoComponents X).hom s).1))
   let y := (joinClassifying.map (joinClassifyEquivOpOp.functor.map
     (coCartesianLift f ((assocIsoComponents X).hom s).1)).2 ((assocIsoComponents X).hom s).2)
-  refine tsub_eq_of_eq_add_rev ?_
-  change _ = x.val + y.val
-  erw [sourceValue_val_iff]
-  apply And.intro (mapOrderHom₂_map_lt f s)
-  intro j
-  apply Iff.intro
-  · intro hj
-  · sorry
+  have hx : x.val ≤  _ := Nat.lt_succ.mp x.prop
+  have hy : y.val ≤  _ := Nat.lt_succ.mp y.prop
+  simp at hy
+  change y.val ≤ len Y.unop - x.val at hy
+  rw [Nat.lt_succ, add_comm]
+  exact  Nat.add_le_of_le_sub hx hy
+
+
+
+
+
 
 
 

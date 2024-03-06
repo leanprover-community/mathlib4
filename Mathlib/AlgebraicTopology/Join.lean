@@ -71,6 +71,17 @@ def tripleFunSnd' :  (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromW
 def tensorType : Type u × Type u ⥤ Type u :=
     {obj := (MonoidalCategory.tensor (Type u)).obj, map := fun f s => (f.1 s.1, f.2 s.2)}
 
+def tensorTypeAssocComp (S : Type u × Type u × Type u ) :
+   ((prod.associativity _ _ _).inverse ⋙ (tensorType.prod (𝟭 (Type u)) ⋙ tensorType)).obj S
+    ≅ ((𝟭 (Type u)).prod tensorType ⋙ tensorType).obj S where
+  hom := fun s => ⟨s.1.1, ⟨s.1.2, s.2⟩⟩
+  inv := fun s => ⟨⟨s.1, s.2.1⟩, s.2.2⟩
+
+def tensorTypeAssoc  :
+   ((prod.associativity _ _ _).inverse ⋙ (tensorType.prod (𝟭 (Type u)) ⋙ tensorType))
+    ≅ ((𝟭 (Type u)).prod tensorType ⋙ tensorType) :=
+  NatIso.ofComponents (tensorTypeAssocComp)
+
 def tripleFunSndO : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
     (assocClassifierSnd.Elements ⥤ Type u) :=
   tripleFunSnd' ⋙ ((whiskeringLeft _ _ _).obj assocSndToWithInitialWithInitial)
@@ -82,10 +93,25 @@ def tripleFunSndX' :  (SSet.FromWithInitial × SSet.FromWithInitial × SSet.From
   obj S := S.1.prod  (S.2.1.prod S.2.2)
   map η := (NatTrans.prod η.1 (NatTrans.prod η.2.1 η.2.2))
 
+def tripleFunSndT : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    ((WithInitial SimplexCategory)ᵒᵖ × (WithInitial SimplexCategory)ᵒᵖ
+    × (WithInitial SimplexCategory)ᵒᵖ  ⥤ Type u) :=
+  tripleFunSndX'  ⋙ ((whiskeringRight _ _ _).obj ((𝟭 (Type u)).prod tensorType ⋙ tensorType))
+
+def tripleFunFstT : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
+    ((WithInitial SimplexCategory)ᵒᵖ × (WithInitial SimplexCategory)ᵒᵖ
+    × (WithInitial SimplexCategory)ᵒᵖ  ⥤ Type u) :=
+  tripleFunSndX'  ⋙ ((whiskeringRight _ _ _).obj
+  ((prod.associativity _ _ _).inverse ⋙ (tensorType.prod (𝟭 (Type u)) ⋙ tensorType)))
+
+
+def tripleFunTIso : tripleFunSndT ≅ tripleFunFstT :=
+  ((whiskeringLeft _ _ _).obj tripleFunSndX').mapIso  (
+  (whiskeringRight _ _ _).mapIso tensorTypeAssoc.symm)
+
 def tripleFunSnd : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
     (assocClassifierSnd.Elements ⥤ Type u) :=
-  tripleFunSndX'  ⋙ ((whiskeringRight _ _ _).obj ((𝟭 (Type u)).prod tensorType ⋙ tensorType))
-   ⋙ ((whiskeringLeft _ _ _).obj assocSndTo3WithInitial)
+  tripleFunSndT ⋙ ((whiskeringLeft _ _ _).obj assocSndTo3WithInitial)
 
 def tripleFun1 : (SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWithInitial) ⥤
     (assocClassifier1.Elements ⥤ Type u) :=
@@ -141,7 +167,13 @@ def assocSndFunc : SSet.FromWithInitial × SSet.FromWithInitial × SSet.FromWith
     ⥤ SSet.FromWithInitial :=
   tripleFunSnd ⋙ assocClassifierSnd.liftFuncFunc
 
-def iso1 : assocSndFunc ≅ tripleFunSnd ⋙  ⋙ assocClassifierfst.liftFuncFunc
+def assocIsoFunc : assocSndFunc ≅ assoc1Func :=
+  ((whiskeringLeft _ _ _).obj tripleFunSnd).mapIso (CategoryOfElements.liftIsoFunc assocIso)
+  ≪≫
+  ((whiskeringRight _ _ _).obj assocClassifier1.liftFuncFunc).mapIso
+  (NatIso.hcomp tripleFunTIso ((whiskeringLeft _ _ _).mapIso assocIsoWithInitial.symm))
+
+
 
 @[simps!]
 def join''_assoc1 (S1 S2 S3 : SSet.FromWithInitial) (X : (WithInitial SimplexCategory)ᵒᵖ) :
@@ -194,6 +226,11 @@ def assoc1Iso : assoc1Func ≅ (prod.associativity _ _ _).inverse ⋙
 def assoc2Iso : assocSndFunc ≅
     ((𝟭 (SSet.FromWithInitial)).prod join''Func ) ⋙ join''Func :=
   NatIso.ofComponents (fun S => (join''_isoSnd S.1 S.2.1 S.2.2).symm) (by aesop_cat)
+
+def associativity :  (prod.associativity _ _ _).inverse ⋙
+    (join''Func.prod (𝟭 (SSet.FromWithInitial))) ⋙ join''Func ≅
+    ((𝟭 (SSet.FromWithInitial)).prod join''Func ) ⋙ join''Func :=
+  assoc1Iso.symm ≪≫ assocIsoFunc.symm ≪≫ assoc2Iso
 
 @[simp]
 def join' (S T : SSet.FromWithInitial) : SSet.FromWithInitial where
