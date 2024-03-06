@@ -866,8 +866,8 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       rw [← algebraMap_eq] at hd
       have : algebraMap R _ r ∣ a' * b' := by
         convert killCompl Subtype.coe_injective |>.toRingHom.map_dvd hd
-        · simp only [algebraMap_eq, AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
-          rw [MvPolynomial.algHom_C (killCompl _) r] -- Why doesn't this fire?
+        · -- simp only [algebraMap_eq, AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
+          -- Simp lemma MvPolynomial.algHom_C looks like it should clear, why doesn't this fire?
           simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.commutes]
         · simp
       rw [← rename_C ((↑) : s → σ)]
