@@ -1705,8 +1705,8 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
   have hF'_le : F' ≤ᵐ[μ] F := by
     filter_upwards [h_bound, hF'_tendsto] with a h_le h_tendsto
     exact le_of_tendsto' h_tendsto (fun m ↦ h_le _)
-  suffices ∫⁻ a, F' a ∂μ = ∫⁻ a, F a ∂μ by
-    exact ae_eq_of_ae_le_of_lintegral_le hF'_le (this ▸ h_int_finite) hF_meas this.symm.le
+  suffices ∫⁻ a, F' a ∂μ = ∫⁻ a, F a ∂μ from
+    ae_eq_of_ae_le_of_lintegral_le hF'_le (this ▸ h_int_finite) hF_meas this.symm.le
   refine tendsto_nhds_unique ?_ hf_tendsto
   exact lintegral_tendsto_of_tendsto_of_monotone hf_meas hf_mono hF'_tendsto
 
