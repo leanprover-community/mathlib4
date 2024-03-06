@@ -1391,14 +1391,13 @@ theorem continuous_parametric_integral_of_continuous
   rcases exists_compact_mem_nhds x₀ with ⟨U, U_cpct, U_nhds⟩
   rcases (U_cpct.prod hs).bddAbove_image hF.norm.continuousOn with ⟨M, hM⟩
   apply continuousAt_of_dominated
-  · exact eventually_of_forall fun x ↦ (hF.comp (Continuous.Prod.mk x)).aestronglyMeasurable
+  · filter_upwards with x using (hF.comp (Continuous.Prod.mk x)).aestronglyMeasurable
   · refine Eventually.mono U_nhds fun x x_in ↦ ?_
     rw [ae_restrict_iff]
-    · exact eventually_of_forall fun t t_in ↦ hM (mem_image_of_mem _ <| mk_mem_prod x_in t_in)
+    · filter_upwards with t t_in using hM (mem_image_of_mem _ <| mk_mem_prod x_in t_in)
     · exact (isClosed_le (hF.comp <| Continuous.Prod.mk x).norm continuous_const).measurableSet
   · exact integrableOn_const.mpr (Or.inr hs.measure_lt_top)
-  · apply ae_of_all
-    exact fun y ↦ Continuous.continuousAt (by fun_prop)
+  · filter_upwards with y using Continuous.continuousAt (by fun_prop)
 
 /-- Consider a parameterized integral `x ↦ ∫ y, L (g y) (f x y)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
