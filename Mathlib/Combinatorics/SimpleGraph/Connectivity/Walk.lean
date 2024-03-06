@@ -779,12 +779,12 @@ inductive Nil : {v w : V} → G.Walk v w → Prop
 
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬(cons h p).Nil := fun.
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬(cons h p).Nil := nofun
 
 instance (p : G.Walk v w) : Decidable p.Nil :=
   match p with
   | nil => isTrue .nil
-  | cons _ _ => isFalse fun.
+  | cons _ _ => isFalse nofun
 
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
