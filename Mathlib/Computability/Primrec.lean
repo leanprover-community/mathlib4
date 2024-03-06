@@ -684,7 +684,7 @@ theorem cond {c : α → Bool} {f : α → σ} {g : α → σ} (hc : Primrec c) 
 
 theorem ite {c : α → Prop} [DecidablePred c] {f : α → σ} {g : α → σ} (hc : PrimrecPred c)
     (hf : Primrec f) (hg : Primrec g) : Primrec fun a => if c a then f a else g a := by
-  simpa using cond hc hf hg
+  simpa [Bool.cond_decide] using cond hc hf hg
 #align primrec.ite Primrec.ite
 
 theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=

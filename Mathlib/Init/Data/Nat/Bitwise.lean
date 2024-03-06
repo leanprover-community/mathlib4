@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Init.WFTactics
-import Mathlib.Data.Bool.Basic
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Says
