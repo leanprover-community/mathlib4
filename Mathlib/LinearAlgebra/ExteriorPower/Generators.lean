@@ -182,11 +182,11 @@ lemma linearFormOfBasis_apply_diag {I : Type*} [LinearOrder I] (b : Basis I R M)
   trans ∑ σ : Fin n ≃ Fin n,
     TensorPower.linearFormOfFamily R n (fun i ↦ b.coord (Finset.orderIsoOfFin s hs i))
       (Equiv.Perm.sign σ • ⨂ₜ[R] i : Fin n, b (Finset.orderIsoOfFin s hs (σ i)))
-  . rw [ιMulti_family, linearFormOfBasis_apply_ιMulti]
+  · rw [ιMulti_family, linearFormOfBasis_apply_ιMulti]
     congr
     ext σ
     rw [LinearMap.map_smul_of_tower, TensorPower.linearFormOfFamily_apply_tprod]
-  . have hzero : ∀ σ ∈ Finset.univ, σ ≠ Equiv.refl (Fin n) →
+  · have hzero : ∀ σ ∈ Finset.univ, σ ≠ Equiv.refl (Fin n) →
         (TensorPower.linearFormOfFamily R n fun i ↦ b.coord (Finset.orderIsoOfFin s hs i))
           (Equiv.Perm.sign σ • ⨂ₜ[R] i, b (Finset.orderIsoOfFin s hs (σ i))) = 0 := by
       rintro σ - hσ
