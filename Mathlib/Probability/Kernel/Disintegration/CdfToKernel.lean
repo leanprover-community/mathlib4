@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
-import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 /-!
 # Building a Markov kernel from a conditional cumulative distribution function
@@ -333,6 +332,23 @@ lemma isRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : isRatCondKernelCDFAux f
       · exact ⟨q + 1, by simp⟩
       · exact h_le_one _
     · exact le_ciInf fun r ↦ h_nonneg _
+
+lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
+    {s : Set α} (hs : MeasurableSet s) (t : ℚ) :
+    ⨅ r : { r' : ℚ // t < r' }, ρ (s ×ˢ Iic (r : ℝ)) = ρ (s ×ˢ Iic (t : ℝ)) := by
+  rw [← measure_iInter_eq_iInf]
+  · rw [← prod_iInter]
+    congr with x : 1
+    simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
+    refine ⟨fun h ↦ ?_, fun h a hta ↦ h.trans ?_⟩
+    · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
+      exact mod_cast htq
+    · exact mod_cast hta.le
+  · exact fun _ => hs.prod measurableSet_Iic
+  · refine Monotone.directed_ge fun r r' hrr' ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, ?_⟩)
+    refine Iic_subset_Iic.mpr ?_
+    exact mod_cast hrr'
+  · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
 lemma isRatCondKernelCDFAux.set_integral_iInf_rat_gt (hf : isRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) (q : ℚ) {A : Set β} (hA : MeasurableSet A) :

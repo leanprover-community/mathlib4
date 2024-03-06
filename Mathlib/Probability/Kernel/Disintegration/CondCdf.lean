@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
-import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 
@@ -40,6 +39,25 @@ The construction of the conditional cdf in this file follows the proof of Theore
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology
+
+section AuxLemmasToBeMoved
+
+variable {α β ι : Type*}
+
+theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+  ext1 x
+  simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
+  obtain ⟨r, hr⟩ := exists_rat_gt x
+  exact ⟨r, hr.le⟩
+#align real.Union_Iic_rat Real.iUnion_Iic_rat
+
+theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
+  ext1 x
+  simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
+  exact exists_rat_lt x
+#align real.Inter_Iic_rat Real.iInter_Iic_rat
+
+end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
 
