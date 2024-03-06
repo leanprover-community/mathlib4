@@ -461,6 +461,8 @@ instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
   complete_distinguished_triangle_morphism :=
     Pretriangulated.complete_distinguished_triangle_morphism
 
+variable {C}
+
 lemma mappingCone_triangleh_distinguished {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
     CochainComplex.mappingCone.triangleh f ∈ distTriang (HomotopyCategory _ _) :=
   ⟨_, _, f, ⟨Iso.refl _⟩⟩
