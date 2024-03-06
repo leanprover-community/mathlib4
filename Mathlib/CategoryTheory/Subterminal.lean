@@ -164,7 +164,7 @@ def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoO
           rw [← cancel_mono X.arrow]
           apply Subsingleton.elim⟩
       map := fun f => f.1 }
-  -- porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
+  -- Porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
   -- in the definition of the natural isomorphisms makes the situation slightly better
   unitIso := NatIso.ofComponents fun X => Iso.refl _
   counitIso := NatIso.ofComponents fun X => MonoOver.isoMk (Iso.refl _)

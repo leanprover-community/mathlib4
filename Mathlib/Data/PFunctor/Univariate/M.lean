@@ -23,7 +23,7 @@ open List
 
 variable (F : PFunctor.{u})
 
--- porting note: the ♯ tactic is never used
+-- Porting note: the ♯ tactic is never used
 -- local prefix:0 "♯" => cast (by first |simp [*]|cc|solve_by_elim)
 
 namespace PFunctor
@@ -105,7 +105,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
     simp only [truncate, Function.comp, true_and_iff, eq_self_iff_true, heq_iff_eq]
-    -- porting note: used to be `ext y`
+    -- Porting note: used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
       by simp [this]; try (exact HEq.rfl;)

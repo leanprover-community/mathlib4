@@ -66,7 +66,7 @@ variable {L : GrothendieckTopology A}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
--- porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note: removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
   cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
 #align category_theory.cover_preserving CategoryTheory.CoverPreserving
@@ -90,7 +90,7 @@ compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each comm
 This is actually stronger than merely preserving compatible families because of the definition of
 `functorPushforward` used.
 -/
--- porting note: this doesn't work yet @[nolint has_nonempty_instance]
+-- Porting note: this doesn't work yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
   compatible :
     ∀ (ℱ : SheafOfTypes.{w} K) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}
@@ -151,7 +151,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
   simp only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
-  apply congr_arg -- porting note: was `congr 1` which for some reason doesn't do anything here
+  apply congr_arg -- Porting note: was `congr 1` which for some reason doesn't do anything here
   -- despite goal being of the form f a = f b, with f=`ℱ.val.map (Quiver.Hom.op c'.pt.hom)`
   /-
     Since everything now falls in the image of `u`,
