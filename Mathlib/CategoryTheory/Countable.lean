@@ -5,7 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Data.Countable.Small
 import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
+import Mathlib.Data.Fintype.Card
 /-!
 # Countable categories
 
