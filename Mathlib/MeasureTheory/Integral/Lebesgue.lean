@@ -1198,6 +1198,41 @@ theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
     assumption
 #align measure_theory.tendsto_lintegral_filter_of_dominated_convergence MeasureTheory.tendsto_lintegral_filter_of_dominated_convergence
 
+theorem lintegral_iInf' {f : ℕ → α → ℝ≥0∞}
+    (h_meas : ∀ n, AEMeasurable (f n) μ) (h_anti : ∀ᵐ a ∂μ, Antitone (fun i ↦ f i a))
+    (h_fin : ∫⁻ a, f 0 a ∂μ ≠ ∞) :
+    ∫⁻ a, ⨅ n, f n a ∂μ = ⨅ n, ∫⁻ a, f n a ∂μ := by
+  simp_rw [← iInf_apply]
+  let p : α → (ℕ → ℝ≥0∞) → Prop := fun _ f' => Antitone f'
+  have hp : ∀ᵐ x ∂μ, p x fun i => f i x := h_anti
+  have h_ae_seq_mono : Antitone (aeSeq h_meas p) := by
+    intro n m hnm x
+    by_cases hx : x ∈ aeSeqSet h_meas p
+    · exact aeSeq.prop_of_mem_aeSeqSet h_meas hx hnm
+    · simp only [aeSeq, hx, if_false]
+      exact le_rfl
+  rw [lintegral_congr_ae (aeSeq.iInf h_meas hp).symm]
+  simp_rw [iInf_apply]
+  rw [lintegral_iInf (aeSeq.measurable h_meas p) h_ae_seq_mono]
+  · congr
+    exact funext fun n ↦ lintegral_congr_ae (aeSeq.aeSeq_n_eq_fun_n_ae h_meas hp n)
+  · rwa [lintegral_congr_ae (aeSeq.aeSeq_n_eq_fun_n_ae h_meas hp 0)]
+
+theorem lintegral_tendsto_of_tendsto_of_antitone {f : ℕ → α → ℝ≥0∞} {F : α → ℝ≥0∞}
+    (hf : ∀ n, AEMeasurable (f n) μ) (h_anti : ∀ᵐ x ∂μ, Antitone fun n ↦ f n x)
+    (h0 : ∫⁻ a, f 0 a ∂μ ≠ ∞)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫⁻ x, f n x ∂μ) atTop (𝓝 (∫⁻ x, F x ∂μ)) := by
+  have : Antitone fun n ↦ ∫⁻ x, f n x ∂μ := fun i j hij ↦
+    lintegral_mono_ae (h_anti.mono fun x hx ↦ hx hij)
+  suffices key : ∫⁻ x, F x ∂μ = ⨅ n, ∫⁻ x, f n x ∂μ by
+    rw [key]
+    exact tendsto_atTop_iInf this
+  rw [← lintegral_iInf' hf h_anti h0]
+  refine lintegral_congr_ae ?_
+  filter_upwards [h_anti, h_tendsto] with _ hx_anti hx_tendsto
+    using tendsto_nhds_unique hx_tendsto (tendsto_atTop_iInf hx_anti)
+
 section
 
 open Encodable
@@ -1648,18 +1683,13 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
     (hf_mono : ∀ᵐ a ∂μ, Monotone (fun i ↦ f i a))
     (h_bound : ∀ᵐ a ∂μ, ∀ i, f i a ≤ F a) (h_int_finite : ∫⁻ a, F a ∂μ ≠ ∞) :
     ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F a)) := by
-  have h_bound_finite : ∀ᵐ a ∂μ, F a ≠ ∞ := by
-    filter_upwards [ae_lt_top' hF_meas h_int_finite] with a ha using ha.ne
   have h_exists : ∀ᵐ a ∂μ, ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := by
-    filter_upwards [h_bound, h_bound_finite, hf_mono] with a h_le h_fin h_mono
-    have h_tendsto : Tendsto (fun i ↦ f i a) atTop atTop ∨
-        ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := tendsto_of_monotone h_mono
-    cases' h_tendsto with h_absurd h_tendsto
-    · rw [tendsto_atTop_atTop_iff_of_monotone h_mono] at h_absurd
-      obtain ⟨i, hi⟩ := h_absurd (F a + 1)
-      refine absurd (hi.trans (h_le _)) (not_le.mpr ?_)
-      exact ENNReal.lt_add_right h_fin one_ne_zero
-    · exact h_tendsto
+    filter_upwards [hf_mono] with a h_mono
+    rcases tendsto_of_monotone h_mono with h | h
+    · refine ⟨∞, h.mono_right ?_⟩
+      rw [OrderTop.atTop_eq]
+      exact pure_le_nhds _
+    · exact h
   classical
   let F' : α → ℝ≥0∞ := fun a ↦ if h : ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l)
     then h.choose else ∞
@@ -1676,6 +1706,85 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
     exact ae_eq_of_ae_le_of_lintegral_le hF'_le (this ▸ h_int_finite) hF_meas this.symm.le
   refine tendsto_nhds_unique ?_ hf_tendsto
   exact lintegral_tendsto_of_tendsto_of_monotone hf_meas hf_mono hF'_tendsto
+
+/-- A limit (over a general filter) of measurable `ℝ≥0∞` valued functions is measurable. -/
+theorem measurable_of_tendsto_ennreal' {ι} {f : ι → α → ℝ≥0∞} {g : α → ℝ≥0∞} (u : Filter ι)
+    [NeBot u] [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
+    Measurable g := by
+  rcases u.exists_seq_tendsto with ⟨x, hx⟩
+  rw [tendsto_pi_nhds] at lim
+  have : (fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop) = g := by
+    ext1 y
+    exact ((lim y).comp hx).liminf_eq
+  rw [← this]
+  show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
+  exact measurable_liminf fun n => hf (x n)
+
+/-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
+theorem measurable_of_tendsto_ennreal {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
+    (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
+  measurable_of_tendsto_ennreal' atTop hf lim
+
+lemma aemeasurable_of_tendsto_ennreal' {f : ι → α → ℝ≥0∞} {g : α → ℝ≥0∞} {μ : Measure α}
+    (u : Filter ι) [NeBot u] [IsCountablyGenerated u]
+    (hf : ∀ i, AEMeasurable (f i) μ) (hlim : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) u (𝓝 (g a))) :
+    AEMeasurable g μ := by
+  rcases u.exists_seq_tendsto with ⟨v, hv⟩
+  have h'f : ∀ n, AEMeasurable (f (v n)) μ := fun n ↦ hf (v n)
+  set p : α → (ℕ → ℝ≥0∞) → Prop := fun x f' ↦ Tendsto f' atTop (𝓝 (g x))
+  have hp : ∀ᵐ x ∂μ, p x fun n ↦ f (v n) x := by
+    filter_upwards [hlim] with x hx using hx.comp hv
+  set aeSeqLim := fun x ↦ ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some
+  refine ⟨aeSeqLim, measurable_of_tendsto_ennreal' atTop (aeSeq.measurable h'f p)
+    (tendsto_pi_nhds.mpr fun x ↦ ?_), ?_⟩
+  · unfold_let aeSeqLim
+    simp_rw [aeSeq]
+    split_ifs with hx
+    · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
+      exact aeSeq.fun_prop_of_mem_aeSeqSet h'f hx
+    · exact tendsto_const_nhds
+  · exact (ite_ae_eq_of_measure_compl_zero g (fun x ↦ (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some)
+      (aeSeqSet h'f p) (aeSeq.measure_compl_aeSeqSet_eq_zero h'f hp)).symm
+
+lemma aemeasurable_of_tendsto_ennreal {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} {μ : Measure α}
+    (hf : ∀ i, AEMeasurable (f i) μ) (hlim : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (g a))) :
+    AEMeasurable g μ :=
+  aemeasurable_of_tendsto_ennreal' atTop hf hlim
+
+lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpace α}
+    {f : ℕ → α → ℝ≥0∞} {F : α → ℝ≥0∞} {μ : Measure α}
+    (hf_meas : ∀ n, AEMeasurable (f n) μ)
+    (hf_tendsto : Tendsto (fun i ↦ ∫⁻ a, f i a ∂μ) atTop (𝓝 (∫⁻ a, F a ∂μ)))
+    (hf_mono : ∀ᵐ a ∂μ, Antitone (fun i ↦ f i a))
+    (h_bound : ∀ᵐ a ∂μ, ∀ i, F a ≤ f i a) (h0 : ∫⁻ a, f 0 a ∂μ ≠ ∞) :
+    ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F a)) := by
+  have h_int_finite : ∫⁻ a, F a ∂μ ≠ ∞ := by
+    refine ((lintegral_mono_ae ?_).trans_lt h0.lt_top).ne
+    filter_upwards [h_bound] with a ha using ha 0
+  have h_exists : ∀ᵐ a ∂μ, ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := by
+    filter_upwards [hf_mono] with a h_mono
+    rcases tendsto_of_antitone h_mono with h | h
+    · refine ⟨0, h.mono_right ?_⟩
+      rw [OrderBot.atBot_eq]
+      exact pure_le_nhds _
+    · exact h
+  classical
+  let F' : α → ℝ≥0∞ := fun a ↦ if h : ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l)
+    then h.choose else ∞
+  have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
+    filter_upwards [h_exists] with a ha
+    simp_rw [dif_pos ha]
+    exact ha.choose_spec
+  suffices F' =ᵐ[μ] F by
+    filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto
+  have hF'_le : F ≤ᵐ[μ] F' := by
+    filter_upwards [h_bound, hF'_tendsto] with a h_le h_tendsto
+    exact ge_of_tendsto' h_tendsto (fun m ↦ h_le _)
+  suffices ∫⁻ a, F' a ∂μ = ∫⁻ a, F a ∂μ by
+    refine (ae_eq_of_ae_le_of_lintegral_le hF'_le h_int_finite ?_ this.le).symm
+    exact aemeasurable_of_tendsto_ennreal hf_meas hF'_tendsto
+  refine tendsto_nhds_unique ?_ hf_tendsto
+  exact lintegral_tendsto_of_tendsto_of_antitone hf_meas hf_mono h0 hF'_tendsto
 
 end Lintegral
 
