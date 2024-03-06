@@ -94,7 +94,8 @@ def addFunTransDecl (declName : Name) : MetaM Unit := do
 def getFunTrans? (e : Expr) : MetaM (Option (FunTransDecl × Expr)) := do
   let ext := funTransDeclsExt.getState (← getEnv)
 
-  let decls ← ext.decls.getMatchWithExtra e {}
+  let decls ← ext.decls.getMatchWithExtra e
+    {zeta:=false,zetaDelta:=false,proj:=.no,iota:=false,beta:=false}
 
   if decls.size = 0 then
     return none
