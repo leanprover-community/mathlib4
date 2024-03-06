@@ -130,7 +130,7 @@ def applyIdRule (funTransDecl : FunTransDecl) (e X : Expr) : SimpM (Option Simp.
   trace[Meta.Tactic.fun_trans.step] "id case"
 
   let .some thms ← getLambdaTheorems funTransDecl.funTransName .id e.getAppNumArgs
-    | trace[Meta.Tactic.fun_trans] "missing identity rule to prove `{← ppExpr e}`"
+    | trace[Meta.Tactic.fun_trans] "missing identity rule to transform `{← ppExpr e}`"
       return none
 
   for thm in thms do
@@ -143,7 +143,7 @@ def applyIdRule (funTransDecl : FunTransDecl) (e X : Expr) : SimpM (Option Simp.
 
 def applyConstRule (funTransDecl : FunTransDecl) (e X y : Expr) : SimpM (Option Simp.Result) := do
   let .some thms ← getLambdaTheorems funTransDecl.funTransName .const e.getAppNumArgs
-    | trace[Meta.Tactic.fun_trans] "missing const rule to prove `{← ppExpr e}`"
+    | trace[Meta.Tactic.fun_trans] "missing const rule to transform `{← ppExpr e}`"
       return none
 
   for thm in thms do
@@ -158,7 +158,7 @@ def applyConstRule (funTransDecl : FunTransDecl) (e X y : Expr) : SimpM (Option 
 
 def applyCompRule (funTransDecl : FunTransDecl) (e f g : Expr) : SimpM (Option Simp.Result) := do
   let .some thms ← getLambdaTheorems funTransDecl.funTransName .comp e.getAppNumArgs
-    | trace[Meta.Tactic.fun_trans] "missing comp rule to prove `{← ppExpr e}`"
+    | trace[Meta.Tactic.fun_trans] "missing comp rule to transform `{← ppExpr e}`"
       return none
 
   for thm in thms do
@@ -171,7 +171,7 @@ def applyCompRule (funTransDecl : FunTransDecl) (e f g : Expr) : SimpM (Option S
 
 def applyLetRule (funTransDecl : FunTransDecl) (e f g : Expr) : SimpM (Option Simp.Result) := do
   let .some thms ← getLambdaTheorems funTransDecl.funTransName .letE e.getAppNumArgs
-    | trace[Meta.Tactic.fun_trans] "missing let rule to prove `{← ppExpr e}`"
+    | trace[Meta.Tactic.fun_trans] "missing let rule to transform `{← ppExpr e}`"
       return none
 
   for thm in thms do
@@ -200,7 +200,7 @@ def applyApplyRule (funTransDecl : FunTransDecl) (e x XY : Expr) : SimpM (Option
 
   let .some thms := ext.theorems.find? (funTransDecl.funTransName, .projDep)
     | trace[Meta.Tactic.fun_trans]
-        "missing projection rule to prove `{← ppExpr e}`"
+        "missing projection rule to transform `{← ppExpr e}`"
       return none
   for thm in thms do
     let .projDep id_x id_Y := thm.thmArgs | return none
@@ -212,7 +212,7 @@ def applyApplyRule (funTransDecl : FunTransDecl) (e x XY : Expr) : SimpM (Option
 
 def applyApplyDepRule (funTransDecl : FunTransDecl) (e x Y : Expr) : SimpM (Option Simp.Result) := do
   let .some thms ← getLambdaTheorems funTransDecl.funTransName .projDep e.getAppNumArgs
-    | trace[Meta.Tactic.fun_trans] "missing projDep rule to prove `{← ppExpr e}`"
+    | trace[Meta.Tactic.fun_trans] "missing projDep rule to transform `{← ppExpr e}`"
       return none
 
   for thm in thms do
@@ -225,7 +225,7 @@ def applyApplyDepRule (funTransDecl : FunTransDecl) (e x Y : Expr) : SimpM (Opti
 
 def applyPiRule (funTransDecl : FunTransDecl) (e f : Expr) : SimpM (Option Simp.Result) := do
   let .some thms ← getLambdaTheorems funTransDecl.funTransName .pi e.getAppNumArgs
-    | trace[Meta.Tactic.fun_trans] "missing pi rule to prove `{← ppExpr e}`"
+    | trace[Meta.Tactic.fun_trans] "missing pi rule to transform `{← ppExpr e}`"
       return none
 
   for thm in thms do
