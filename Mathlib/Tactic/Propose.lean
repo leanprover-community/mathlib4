@@ -3,14 +3,13 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean.Meta.Tactic.TryThis
+import Lean.Meta.Tactic.SolveByElim
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
-import Mathlib.Lean.Meta.DiscrTree
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.TryThis
 
 /-!
 # Propose
@@ -38,25 +37,29 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
 
-initialize proposeLemmas : DeclCache (DiscrTree Name true) ←
-  DeclCache.mk "have?: init cache" {} fun name constInfo lemmas => do
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
+
+initialize proposeLemmas : DeclCache (DiscrTree Name) ←
+  DeclCache.mk "have?: init cache" failure {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
     if ← name.isBlackListed then return lemmas
     withNewMCtxDepth do withReducible do
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
       for m in mvars do
-        lemmas := lemmas.insertIfSpecific (← DiscrTree.mkPath (← inferType m)) name
+        lemmas ← lemmas.insertIfSpecific (← inferType m) name discrTreeConfig
       pure lemmas
 
+open Lean.Meta.SolveByElim in
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (required : Array Expr)
     (depth) := do
-  let cfg : SolveByElim.Config := { maxDepth := depth, exfalso := true, symm := true }
+  let cfg : SolveByElimConfig := { maxDepth := depth, exfalso := true, symm := true }
   let cfg := if !required.isEmpty then
     cfg.testSolutions (fun _ => do
     let r ← instantiateMVars (.mvar orig)
@@ -73,11 +76,11 @@ We look up candidate lemmas from a discrimination tree using the first such expr
 
 Returns an array of pairs, containing the names of found lemmas and the resulting application.
 -/
-def propose (lemmas : DiscrTree Name s) (type : Expr) (required : Array Expr)
+def propose (lemmas : DiscrTree Name) (type : Expr) (required : Array Expr)
     (solveByElimDepth := 15) : MetaM (Array (Name × Expr)) := do
   guard !required.isEmpty
   let ty ← whnfR (← instantiateMVars (← inferType required[0]!))
-  let candidates ← lemmas.getMatch ty
+  let candidates ← lemmas.getMatch ty discrTreeConfig
   candidates.filterMapM fun lem : Name =>
     try
       trace[Tactic.propose] "considering {lem}"
@@ -109,11 +112,11 @@ only the types of the lemmas in the `using` clause.
 
 Suggestions are printed as `have := f a b c`.
 -/
-syntax (name := propose') "have?" "!"? (" : " term)? " using " (colGt term),+ : tactic
+syntax (name := propose') "have?" "!"? (ident)? (" : " term)? " using " (colGt term),+ : tactic
 
 open Elab.Tactic Elab Tactic in
 elab_rules : tactic
-  | `(tactic| have?%$tk $[!%$lucky]? $[ : $type:term]? using $[$terms:term],*) => do
+  | `(tactic| have?%$tk $[!%$lucky]? $[$h:ident]? $[ : $type:term]? using $[$terms:term],*) => do
     let stx ← getRef
     let goal ← getMainGoal
     goal.withContext do
@@ -126,7 +129,7 @@ elab_rules : tactic
         throwError "propose could not find any lemmas using the given hypotheses"
       -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
       for p in proposals.toList.take 10 do
-        addHaveSuggestion tk (← inferType p.2) p.2 stx
+        addHaveSuggestion tk (h.map (·.getId)) (← inferType p.2) p.2 stx
       if lucky.isSome then
         let mut g := goal
         for p in proposals.toList.take 10 do

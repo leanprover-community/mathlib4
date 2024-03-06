@@ -81,14 +81,12 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 -/
 
 instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
-  RegularSpace.ofBasis
-    (fun a => by
-      rw [nhds_eq_comap_uniformity]
-      exact uniformity_hasBasis_closed.comap _)
-    fun a V hV => by exact hV.2.preimage <| continuous_const.prod_mk continuous_id
+  .of_hasBasis
+    (fun _ ↦ nhds_basis_uniformity' uniformity_hasBasis_closed)
+    fun a _V hV ↦ isClosed_ball a hV.2
 #align uniform_space.to_regular_space UniformSpace.to_regularSpace
 
--- porting note: todo: use `Inseparable`
+-- Porting note: todo: use `Inseparable`
 /-- The separation relation is the intersection of all entourages.
   Two points which are related by the separation relation are "indistinguishable"
   according to the uniform structure. -/
@@ -137,7 +135,7 @@ theorem separated_def {α : Type u} [UniformSpace α] :
 #align separated_def separated_def
 
 theorem separated_def' {α : Type u} [UniformSpace α] :
-    SeparatedSpace α ↔ ∀ x y, x ≠ y → ∃ r ∈ 𝓤 α, (x, y) ∉ r :=
+    SeparatedSpace α ↔ Pairwise fun x y => ∃ r ∈ 𝓤 α, (x, y) ∉ r :=
   separated_def.trans <| forall₂_congr fun x y => by rw [← not_imp_not]; simp [not_forall]
 #align separated_def' separated_def'
 
@@ -176,7 +174,7 @@ theorem separationRel_comap {f : α → β}
     𝓢 α = Prod.map f f ⁻¹' 𝓢 β := by
   subst h
   dsimp [separationRel]
-  simp_rw [uniformity_comap, ((𝓤 β).comap_hasBasis $ Prod.map f f).ker, ker_def, preimage_iInter]
+  simp_rw [uniformity_comap, ((𝓤 β).comap_hasBasis <| Prod.map f f).ker, ker_def, preimage_iInter]
 #align separation_rel_comap separationRel_comap
 
 protected theorem Filter.HasBasis.separationRel {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
@@ -268,7 +266,7 @@ instance separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
     have : y' ⤳ y := separationRel_iff_specializes.1 (Quotient.exact hy)
     exact @hUs (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩
   isOpen_uniformity s := isOpen_coinduced.trans <| by
-    simp only [_root_.isOpen_uniformity, forall_quotient_iff, mem_map', mem_setOf_eq]
+    simp only [_root_.isOpen_uniformity, Quotient.forall, mem_map', mem_setOf_eq]
     refine forall₂_congr fun x _ => ⟨fun h => ?_, fun h => mem_of_superset h ?_⟩
     · rcases comp_mem_uniformity_sets h with ⟨t, ht, hts⟩
       refine mem_of_superset ht fun (y, z) hyz hyx => @hts (x, z) ⟨y, ?_, hyz⟩ rfl

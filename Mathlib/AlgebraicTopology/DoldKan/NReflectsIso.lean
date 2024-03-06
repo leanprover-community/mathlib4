@@ -63,7 +63,7 @@ instance : ReflectsIsomorphisms (N₁ : SimplicialObject C ⥤ Karoubi (ChainCom
               b := fun i => inv (f.app (op [n])) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
         PInfty_f_naturality_assoc, IsIso.hom_inv_id_assoc, assoc, IsIso.inv_hom_id_assoc,
-        SimplicialObject.σ_naturality, h₁, h₂, h₃]⟩
+        SimplicialObject.σ_naturality, h₁, h₂, h₃, and_self]⟩
 
 theorem compatibility_N₂_N₁_karoubi :
     N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor =
@@ -108,7 +108,7 @@ instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi
     let F₄ := Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse
       (ComplexShape.down ℕ)
     let F := F₁ ⋙ F₂ ⋙ F₃ ⋙ F₄
-    -- porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
+    -- Porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
     -- could this be fixed by setting better instance priorities?
     haveI : ReflectsIsomorphisms F₁ := reflectsIsomorphisms_of_full_and_faithful _
     haveI : ReflectsIsomorphisms F₂ := by infer_instance
@@ -116,7 +116,7 @@ instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi
     haveI : ReflectsIsomorphisms ((KaroubiKaroubi.equivalence C).inverse) :=
       reflectsIsomorphisms_of_full_and_faithful _
     have : IsIso (F.map f) := by
-      simp only
+      simp only [F]
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]
       apply Functor.map_isIso
     exact isIso_of_reflects_iso f F⟩

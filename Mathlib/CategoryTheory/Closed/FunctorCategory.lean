@@ -41,7 +41,7 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
       dsimp
       simp only [ihom.coev_naturality, closedIhom_obj_map, Monoidal.tensorObj_map]
       dsimp
-      rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp]
+      rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp, tensorHom_def]
       simp }
 #align category_theory.functor.closed_unit CategoryTheory.Functor.closedUnit
 
@@ -55,7 +55,7 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
       intro X Y f
       dsimp
       simp only [closedIhom_obj_map, pre_comm_ihom_map]
-      rw [← tensor_id_comp_id_tensor, id_tensor_comp]
+      rw [tensorHom_def]
       simp }
 #align category_theory.functor.closed_counit CategoryTheory.Functor.closedCounit
 
@@ -77,6 +77,10 @@ with the pointwise monoidal structure, is monoidal closed. -/
 instance monoidalClosed : MonoidalClosed (D ⥤ C) where
   closed := by infer_instance
 #align category_theory.functor.monoidal_closed CategoryTheory.Functor.monoidalClosed
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] Functor.monoidalClosed_closed_isAdj_adj_homEquiv_apply_app
+  Functor.monoidalClosed_closed_isAdj_adj_homEquiv_symm_apply_app
 
 theorem ihom_map (F : D ⥤ C) {G H : D ⥤ C} (f : G ⟶ H) : (ihom F).map f = (closedIhom F).map f :=
   rfl

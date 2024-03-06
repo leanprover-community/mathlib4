@@ -56,8 +56,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
-    by_contra rid
-    push_neg at rid
+    by_contra! rid
     obtain ⟨rid₁, rid₂⟩ := rid
     classical
       /-
@@ -94,7 +93,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           ((decompose 𝒜 x).support ×ˢ (decompose 𝒜 y).support).filter (fun z : ι × ι =>
             z.1 + z.2 = max₁ + max₂) with ha
         have mem_antidiag : (max₁, max₂) ∈ antidiag := by
-          simp only [add_sum_erase, mem_filter, mem_product]
+          simp only [antidiag, add_sum_erase, mem_filter, mem_product]
           exact ⟨⟨mem_of_mem_filter _ mem_max₁, mem_of_mem_filter _ mem_max₂⟩, trivial⟩
         have eq_add_sum :=
           calc
@@ -107,7 +106,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         rw [eq_sub_of_add_eq eq_add_sum.symm]
         refine' Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => _)
         rcases z with ⟨i, j⟩
-        simp only [mem_erase, Prod.mk.inj_iff, Ne.def, mem_filter, mem_product] at H
+        simp only [antidiag, mem_erase, Prod.mk.inj_iff, Ne.def, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)

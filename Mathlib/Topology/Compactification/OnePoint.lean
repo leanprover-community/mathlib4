@@ -94,12 +94,12 @@ theorem coe_eq_coe {x y : X} : (x : OnePoint X) = y ↔ x = y :=
 
 @[simp]
 theorem coe_ne_infty (x : X) : (x : OnePoint X) ≠ ∞ :=
-  fun.
+  nofun
 #align alexandroff.coe_ne_infty OnePoint.coe_ne_infty
 
 @[simp]
 theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
-  fun.
+  nofun
 #align alexandroff.infty_ne_coe OnePoint.infty_ne_coe
 
 /-- Recursor for `OnePoint` using the preferred forms `∞` and `↑x`. -/
@@ -114,7 +114,7 @@ theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {�
   isCompl_range_some_none X
 #align alexandroff.is_compl_range_coe_infty OnePoint.isCompl_range_coe_infty
 
--- porting note: moved @[simp] to a new lemma
+-- Porting note: moved @[simp] to a new lemma
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
   range_some_union_none X
 #align alexandroff.range_coe_union_infty OnePoint.range_coe_union_infty
@@ -196,7 +196,7 @@ instance : TopologicalSpace (OnePoint X) where
     suffices IsOpen ((↑) ⁻¹' ⋃₀ S : Set X) by
       refine' ⟨_, this⟩
       rintro ⟨s, hsS : s ∈ S, hs : ∞ ∈ s⟩
-      refine' isCompact_of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
+      refine' IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
       exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
@@ -464,7 +464,7 @@ instance [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := by
     rw [nhds_infty_eq, disjoint_sup_right, nhds_coe_eq, coclosedCompact_eq_cocompact,
       disjoint_map coe_injective, ← principal_singleton, disjoint_principal_right, compl_infty]
     exact ⟨disjoint_nhds_cocompact z, range_mem_map⟩
-  suffices : T2Space (OnePoint X); infer_instance
+  suffices T2Space (OnePoint X) by infer_instance
   refine t2Space_iff_disjoint_nhds.2 fun x y hxy => ?_
   induction x using OnePoint.rec <;> induction y using OnePoint.rec
   · exact (hxy rfl).elim

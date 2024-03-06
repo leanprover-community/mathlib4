@@ -22,7 +22,7 @@ universe v u
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable (α : Sort u)
 
--- porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
+-- Porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
 -- the same in Lean4, one could write problematic definitions like:
 -- example (X : C) : Cᵒᵖ := X
 -- example {X Y : C} (f : X ⟶ Y): op Y ⟶ op X := f
@@ -109,6 +109,10 @@ theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
 
 instance [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
+
+instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
+
+instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
 
 /-- A recursor for `Opposite`.
 The `@[eliminator]` attribute makes it the default induction principle for `Opposite`

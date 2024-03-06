@@ -9,7 +9,7 @@ import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
 
-#align_import algebra.order.monoid.lemmas from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
+#align_import algebra.order.monoid.lemmas from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Ordered monoids
@@ -46,7 +46,7 @@ variable [LE α]
 
 /- The prime on this lemma is present only on the multiplicative version.  The unprimed version
 is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive add_le_add_left]
+@[to_additive (attr := gcongr) add_le_add_left]
 theorem mul_le_mul_left' [CovariantClass α α (· * ·) (· ≤ ·)] {b c : α} (bc : b ≤ c) (a : α) :
     a * b ≤ a * c :=
   CovariantClass.elim _ bc
@@ -63,7 +63,7 @@ theorem le_of_mul_le_mul_left' [ContravariantClass α α (· * ·) (· ≤ ·)] 
 
 /- The prime on this lemma is present only on the multiplicative version.  The unprimed version
 is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive add_le_add_right]
+@[to_additive (attr := gcongr) add_le_add_right]
 theorem mul_le_mul_right' [i : CovariantClass α α (swap (· * ·)) (· ≤ ·)] {b c : α} (bc : b ≤ c)
     (a : α) :
     b * a ≤ c * a :=
@@ -117,7 +117,7 @@ theorem mul_lt_mul_iff_right [CovariantClass α α (swap (· * ·)) (· < ·)]
 #align mul_lt_mul_iff_right mul_lt_mul_iff_right
 #align add_lt_add_iff_right add_lt_add_iff_right
 
-@[to_additive add_lt_add_left]
+@[to_additive (attr := gcongr) add_lt_add_left]
 theorem mul_lt_mul_left' [CovariantClass α α (· * ·) (· < ·)] {b c : α} (bc : b < c) (a : α) :
     a * b < a * c :=
   CovariantClass.elim _ bc
@@ -132,7 +132,7 @@ theorem lt_of_mul_lt_mul_left' [ContravariantClass α α (· * ·) (· < ·)] {a
 #align lt_of_mul_lt_mul_left' lt_of_mul_lt_mul_left'
 #align lt_of_add_lt_add_left lt_of_add_lt_add_left
 
-@[to_additive add_lt_add_right]
+@[to_additive (attr := gcongr) add_lt_add_right]
 theorem mul_lt_mul_right' [i : CovariantClass α α (swap (· * ·)) (· < ·)] {b c : α} (bc : b < c)
     (a : α) :
     b * a < c * a :=
@@ -154,7 +154,7 @@ section Preorder
 
 variable [Preorder α]
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem mul_lt_mul_of_lt_of_lt [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· < ·)]
     {a b c d : α} (h₁ : a < b) (h₂ : c < d) : a * c < b * d :=
@@ -202,7 +202,7 @@ theorem Right.mul_lt_mul [CovariantClass α α (· * ·) (· ≤ ·)]
 #align right.mul_lt_mul Right.mul_lt_mul
 #align right.add_lt_add Right.add_lt_add
 
-@[to_additive add_le_add]
+@[to_additive (attr := gcongr) add_le_add]
 theorem mul_le_mul' [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d :=
@@ -354,6 +354,27 @@ variable [LinearOrder α] {a b c d : α}
   Left.min_le_max_of_mul_le_mul h
 #align min_le_max_of_add_le_add min_le_max_of_add_le_add
 #align min_le_max_of_mul_le_mul min_le_max_of_mul_le_mul
+
+end LinearOrder
+
+section LinearOrder
+variable [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)]
+  [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
+
+@[to_additive max_add_add_le_max_add_max]
+theorem max_mul_mul_le_max_mul_max' : max (a * b) (c * d) ≤ max a c * max b d :=
+  max_le (mul_le_mul' (le_max_left _ _) <| le_max_left _ _) <|
+    mul_le_mul' (le_max_right _ _) <| le_max_right _ _
+#align max_mul_mul_le_max_mul_max' max_mul_mul_le_max_mul_max'
+#align max_add_add_le_max_add_max max_add_add_le_max_add_max
+
+--TODO: Also missing `min_mul_min_le_min_mul_mul`
+@[to_additive min_add_min_le_min_add_add]
+theorem min_mul_min_le_min_mul_mul' : min a c * min b d ≤ min (a * b) (c * d) :=
+  le_min (mul_le_mul' (min_le_left _ _) <| min_le_left _ _) <|
+    mul_le_mul' (min_le_right _ _) <| min_le_right _ _
+#align min_mul_min_le_min_mul_mul' min_mul_min_le_min_mul_mul'
+#align min_add_min_le_min_add_add min_add_min_le_min_add_add
 
 end LinearOrder
 end Mul
@@ -1167,7 +1188,7 @@ theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
       have : b = 1 := le_antisymm this hb
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
-    -- porting note: original proof of the second implication,
+    -- Porting note: original proof of the second implication,
     -- `fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]`,
     -- had its `to_additive`-ization fail due to some bug
 #align mul_eq_one_iff' mul_eq_one_iff'
@@ -1595,7 +1616,7 @@ namespace MulLECancellable
 
 @[to_additive]
 protected theorem Injective [Mul α] [PartialOrder α] {a : α} (ha : MulLECancellable a) :
-    Injective ((· * ·) a) :=
+    Injective (a * ·) :=
   fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
 #align mul_le_cancellable.injective MulLECancellable.Injective
 #align add_le_cancellable.injective AddLECancellable.Injective

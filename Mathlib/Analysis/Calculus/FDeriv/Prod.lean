@@ -21,7 +21,8 @@ cartesian products of functions, and functions into Pi-types.
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
-open Topology Classical NNReal Filter Asymptotics ENNReal
+open scoped Classical
+open Topology NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 
@@ -67,7 +68,7 @@ protected theorem HasStrictFDerivAt.prod (hf₁ : HasStrictFDerivAt f₁ f₁' x
 theorem HasFDerivAtFilter.prod (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :
     HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x L :=
-  hf₁.prod_left hf₂
+  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 #align has_fderiv_at_filter.prod HasFDerivAtFilter.prod
 
 nonrec theorem HasFDerivWithinAt.prod (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
@@ -380,7 +381,7 @@ theorem hasStrictFDerivAt_pi' :
   exact isLittleO_pi
 #align has_strict_fderiv_at_pi' hasStrictFDerivAt_pi'
 
-@[simp 1100] -- porting note: increased priority to make lint happy
+@[simp 1100] -- Porting note: increased priority to make lint happy
 theorem hasStrictFDerivAt_pi :
     HasStrictFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x ↔
       ∀ i, HasStrictFDerivAt (φ i) (φ' i) x :=
@@ -391,7 +392,7 @@ theorem hasStrictFDerivAt_pi :
 theorem hasFDerivAtFilter_pi' :
     HasFDerivAtFilter Φ Φ' x L ↔
       ∀ i, HasFDerivAtFilter (fun x => Φ x i) ((proj i).comp Φ') x L := by
-  simp only [HasFDerivAtFilter, ContinuousLinearMap.coe_pi]
+  simp only [hasFDerivAtFilter_iff_isLittleO, ContinuousLinearMap.coe_pi]
   exact isLittleO_pi
 #align has_fderiv_at_filter_pi' hasFDerivAtFilter_pi'
 

@@ -66,18 +66,18 @@ variable (C : Type u₁) [Category.{v₁} C] [Preadditive C]
 -/
 structure Mat_ where
   ι : Type
-  [F : Fintype ι]
+  [fintype : Fintype ι]
   X : ι → C
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_ CategoryTheory.Mat_
 
-attribute [instance] Mat_.F
+attribute [instance] Mat_.fintype
 
 namespace Mat_
 
 variable {C}
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j
@@ -107,15 +107,15 @@ instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
   comp f g := f.comp g
-  id_comp f := by simp [dite_comp]
-  comp_id f := by simp [comp_dite]
+  id_comp f := by simp (config := { unfoldPartialApp := true }) [dite_comp]
+  comp_id f := by simp (config := { unfoldPartialApp := true }) [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros
     simp_rw [Hom.comp, sum_comp, comp_sum, Category.assoc]
     rw [Finset.sum_comm]
 
--- porting note: added because `DMatrix.ext` is not triggered automatically
+-- Porting note: added because `DMatrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
@@ -162,7 +162,7 @@ instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
 
 end
 
--- porting note: to ease the construction of the preadditive structure, the `AddCommGroup`
+-- Porting note: to ease the construction of the preadditive structure, the `AddCommGroup`
 -- was introduced separately and the lemma `add_apply` was moved upwards
 instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
   change AddCommGroup (DMatrix M.ι N.ι _)
@@ -243,16 +243,16 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               simp at hj
             simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
               Sigma.mk.inj_iff, not_and, id_def]
-            by_cases i' = i
+            by_cases h : i' = i
             · subst h
               rw [dif_pos rfl]
               simp only [heq_eq_eq, true_and]
-              by_cases j' = j
+              by_cases h : j' = j
               · subst h
                 simp
               · rw [dif_neg h, dif_neg (Ne.symm h)]
             · rw [dif_neg h, dif_neg]
-              tauto ) }
+              tauto) }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.has_finite_biproducts CategoryTheory.Mat_.hasFiniteBiproducts
 
@@ -366,12 +366,12 @@ set_option linter.uppercaseLean3 false in
 
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
--- porting note: added because it was not found automatically
+-- Porting note: added because it was not found automatically
 instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
 
--- porting note: removed the @[simps] attribute as the automatically generated lemmas
+-- Porting note: removed the @[simps] attribute as the automatically generated lemmas
 -- are not very useful; two more useful lemmas have been added just after this
 -- definition in order to ease the proof of `additiveObjIsoBiproduct_naturality`
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
@@ -484,7 +484,7 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift_unique CategoryTheory.Mat_.liftUnique
 
--- porting note: removed @[ext] as the statement is not an equality
+-- Porting note (#11182): removed @[ext] as the statement is not an equality
 -- TODO is there some uniqueness statement for the natural isomorphism in `liftUnique`?
 /-- Two additive functors `Mat_ C ⥤ D` are naturally isomorphic if
 their precompositions with `embedding C` are naturally isomorphic as functors `C ⥤ D`. -/
@@ -569,7 +569,7 @@ section
 
 variable {R : Type u} [Semiring R]
 
--- porting note: added because `Matrix.ext` is not triggered automatically
+-- Porting note: added because `Matrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
@@ -659,14 +659,14 @@ def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj
 
--- porting note: added as this was not found automatically
+-- Porting note: added as this was not found automatically
 instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
   change AddCommGroup (Matrix X Y R)
   infer_instance
 
 variable {R}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[simp]
 theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl

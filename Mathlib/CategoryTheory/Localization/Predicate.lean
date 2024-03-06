@@ -249,7 +249,7 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
 def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
-  (D ⥤ E) ⥤ C ⥤ E :=
+    (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 #align category_theory.localization.whiskering_left_functor' CategoryTheory.Localization.whiskeringLeftFunctor'
 
@@ -284,7 +284,7 @@ theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
   rw [← cancel_epi (F₁.map (L.objObjPreimageIso Y).hom), τ.naturality, τ'.naturality, h]
 #align category_theory.localization.nat_trans_ext CategoryTheory.Localization.natTrans_ext
 
--- porting note: the field `iso` was renamed `Lifting.iso'` and it was redefined as
+-- Porting note: the field `iso` was renamed `Lifting.iso'` and it was redefined as
 -- `Lifting.iso` with explicit parameters
 /-- When `L : C ⥤ D` is a localization functor for `W : MorphismProperty C` and
 `F : C ⥤ E` is a functor, we shall say that `F' : D ⥤ E` lifts `F` if the obvious diagram
@@ -313,7 +313,7 @@ instance liftingLift (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLo
   ⟨(inducedFunctor _).mapIso ((functorEquivalence L W E).counitIso.app ⟨F, hF⟩)⟩
 #align category_theory.localization.lifting_lift CategoryTheory.Localization.liftingLift
 
--- porting note: removed the unnecessary @[simps] attribute
+-- Porting note: removed the unnecessary @[simps] attribute
 /-- The canonical isomorphism `L ⋙ lift F hF L ≅ F` for any functor `F : C ⥤ E`
 which inverts `W`, when `L : C ⥤ D` is a localization functor for `W`. -/
 def fac (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] :
@@ -434,6 +434,12 @@ theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D �
       nonempty_isEquivalence := Nonempty.intro (IsEquivalence.ofIso e' inferInstance) }
 #align category_theory.functor.is_localization.of_equivalence_target CategoryTheory.Functor.IsLocalization.of_equivalence_target
 
+lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
+    (hW : W ⊆ MorphismProperty.isomorphisms C) [IsEquivalence L] :
+    L.IsLocalization W := by
+  haveI : (𝟭 C).IsLocalization W := for_id W hW
+  exact of_equivalence_target (𝟭 C) W L L.asEquivalence L.leftUnitor
+
 end IsLocalization
 
 end Functor
@@ -476,5 +482,42 @@ def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
   liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
 
 end Localization
+
+section
+
+variable {X Y : C} (f g : X ⟶ Y)
+
+/-- The property that two morphisms become equal in the localized category. -/
+def AreEqualizedByLocalization : Prop := W.Q.map f = W.Q.map g
+
+lemma areEqualizedByLocalization_iff [L.IsLocalization W]:
+    AreEqualizedByLocalization W f g ↔ L.map f = L.map g := by
+  dsimp [AreEqualizedByLocalization]
+  constructor
+  · intro h
+    let e := Localization.compUniqFunctor W.Q L W
+    rw [← NatIso.naturality_1 e f, ← NatIso.naturality_1 e g]
+    dsimp
+    rw [h]
+  · intro h
+    let e := Localization.compUniqFunctor L W.Q W
+    rw [← NatIso.naturality_1 e f, ← NatIso.naturality_1 e g]
+    dsimp
+    rw [h]
+
+namespace AreEqualizedByLocalization
+
+lemma mk (L : C ⥤ D) [L.IsLocalization W] (h : L.map f = L.map g) :
+    AreEqualizedByLocalization W f g :=
+  (areEqualizedByLocalization_iff L W f g).2 h
+
+variable {W f g} (h : AreEqualizedByLocalization W f g)
+
+lemma map_eq (L : C ⥤ D) [L.IsLocalization W] : L.map f = L.map g :=
+  (areEqualizedByLocalization_iff L W f g).1 h
+
+end AreEqualizedByLocalization
+
+end
 
 end CategoryTheory

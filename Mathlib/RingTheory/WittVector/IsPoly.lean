@@ -73,7 +73,7 @@ Any lemma doing "ring equation rewriting" with polynomial functions should be ta
 ```lean
 @[ghost_simps]
 lemma bind₁_frobenius_poly_wittPolynomial (n : ℕ) :
-  bind₁ (frobenius_poly p) (wittPolynomial p ℤ n) = (wittPolynomial p ℤ (n+1))
+    bind₁ (frobenius_poly p) (wittPolynomial p ℤ n) = (wittPolynomial p ℤ (n+1))
 ```
 
 Proofs of identities between polynomial functions will often follow the pattern
@@ -197,7 +197,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
 #align witt_vector.is_poly.ext WittVector.IsPoly.ext
 
 /-- The composition of polynomial functions is polynomial. -/
--- Porting note: made this an instance
+-- Porting note (#10754): made this an instance
 instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
     IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
@@ -229,7 +229,7 @@ class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → �
 variable {p}
 
 /-- The composition of polynomial functions is polynomial. -/
--- Porting note: made this an instance
+-- Porting note (#10754): made this an instance
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
     IsPoly₂ p fun R _Rcr x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
@@ -240,13 +240,14 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), _⟩⟩
   intros
   funext n
-  simp only [peval, aeval_bind₁, Function.comp, hh, hf, hg, uncurry]
+  simp (config := { unfoldPartialApp := true }) only [peval, aeval_bind₁, Function.comp, hh, hf, hg,
+    uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
   fin_cases i <;>
     simp only [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp, Matrix.cons_val_zero,
       Matrix.head_cons, Matrix.cons_val_one]
-    -- porting note: added the rest of the proof.
+    -- Porting note: added the rest of the proof.
     <;>
     open Matrix in
     simp only [algebraMap_int_eq, coe_eval₂Hom, Fin.mk_zero, Fin.mk_one, cons_val', empty_val',
@@ -255,7 +256,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
 #align witt_vector.is_poly₂.comp WittVector.IsPoly₂.comp
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
--- Porting note: made this an instance
+-- Porting note (#10754): made this an instance
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
     IsPoly₂ p fun R _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
@@ -265,13 +266,13 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   simp only [peval, aeval_bind₁, Function.comp, hg, hf]
 #align witt_vector.is_poly.comp₂ WittVector.IsPoly.comp₂
 
-/-- The diagonal `λ x, f x x` of a polynomial function `f` is polynomial. -/
--- Porting note: made this an instance
+/-- The diagonal `fun x ↦f x x` of a polynomial function `f` is polynomial. -/
+-- Porting note (#10754): made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine' ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), _⟩⟩
   intros; funext n
-  simp only [hf, peval, uncurry, aeval_bind₁]
+  simp (config := { unfoldPartialApp := true }) only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩;
   fin_cases i <;>
@@ -319,26 +320,26 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 @[simp]
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
-  ext  -- porting note: `ext` was not in the mathport output.
+  ext  -- Porting note: `ext` was not in the mathport output.
   rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0
-    simp only [onePoly, if_neg hi0, zero_pow (pow_pos hp.1.pos _), mul_zero,
+    simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
   · rw [Finset.mem_range]
-    -- porting note: was `decide`
-    simp only [add_pos_iff, or_true, not_true, pow_zero, map_one, ge_iff_le, nonpos_iff_eq_zero,
-      tsub_zero, one_mul, gt_iff_lt, IsEmpty.forall_iff]
+    -- Porting note: was `decide`
+    intro h
+    simp only [add_pos_iff, zero_lt_one, or_true, not_true_eq_false] at h
 #align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · -- porting note: was `simp only [...]` but with slightly different `[...]`.
+      · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
         simp only [Nat.zero_eq, lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
-      · -- porting note: was `simp only [...]` but with slightly different `[...]`.
+      · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
         simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩
@@ -372,7 +373,7 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
   ext n
   simp only [map_coeff, hf, map_aeval]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-  ext  -- porting note: this `ext` was not present in the mathport output
+  ext  -- Porting note: this `ext` was not present in the mathport output
   simp only [map_coeff]
 #align witt_vector.is_poly.map WittVector.IsPoly.map
 
@@ -434,11 +435,11 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   -- so that applications do not have to worry about the universe issue
   obtain ⟨φ, hf⟩ := hf
   ext n
-  simp only [map_coeff, hf, map_aeval, peval, uncurry]
+  simp (config := { unfoldPartialApp := true }) only [map_coeff, hf, map_aeval, peval, uncurry]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   try ext ⟨i, k⟩; fin_cases i
   all_goals simp only [map_coeff, Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
-  -- porting note: added the rest of the proof
+  -- Porting note: added the rest of the proof
   all_goals
     simp only [Fin.mk_zero, Fin.mk_one, Matrix.cons_val', Matrix.empty_val', Matrix.cons_val_one,
       Matrix.cons_val_fin_one, Matrix.cons_val_zero, map_coeff, Matrix.head_fin_const]

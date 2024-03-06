@@ -35,7 +35,7 @@ Together, these two results prove the Galois correspondence.
 -/
 
 
-open scoped Polynomial
+open scoped Polynomial IntermediateField
 
 open FiniteDimensional AlgEquiv
 
@@ -114,8 +114,8 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   have H : IsIntegral F α := IsGalois.integral F α
   have h_sep : (minpoly F α).Separable := IsGalois.separable F α
   have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
-  replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α)
-  · simpa using
+  replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α) := by
+    simpa using
       Polynomial.splits_comp_of_splits (algebraMap F E) iso.symm.toAlgHom.toRingHom h_splits
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
@@ -186,7 +186,7 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] : IntermediateField F E :=
   { FixedPoints.subfield M E with
     carrier := MulAction.fixedPoints M E
-    algebraMap_mem' := fun a g => by rw [Algebra.algebraMap_eq_smul_one, smul_comm, smul_one] }
+    algebraMap_mem' := fun a g => smul_algebraMap g a }
 #align fixed_points.intermediate_field FixedPoints.intermediateField
 
 namespace IntermediateField
@@ -363,8 +363,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
     [Fintype (K →ₐ[F] E)]
     [Fintype (K⟮x⟯.restrictScalars F →ₐ[F] E)] :
     Fintype.card (K⟮x⟯.restrictScalars F →ₐ[F] E) = Fintype.card (K →ₐ[F] E) * finrank K K⟮x⟯ := by
-  have h : IsIntegral K x :=
-    isIntegral_of_isScalarTower (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x)
+  have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
   have h1 : p ≠ 0 := fun hp => by
     rw [hp, Polynomial.aroots_zero] at hx
     exact Multiset.not_mem_zero x hx
@@ -419,10 +418,11 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     apply @Fintype.card_congr _ _ _ (_) _
     rw [IntermediateField.adjoin_zero]
   intro K x hx hK
-  simp only at *
+  simp only [P] at *
   -- Porting note: need to specify two implicit arguments of `finrank_mul_finrank`
-  rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK,
-    @finrank_mul_finrank _ _ _ _ _ _ _ K⟮x⟯.module _ K⟮x⟯.isScalarTower _]
+  letI := K⟮x⟯.module
+  letI := K⟮x⟯.isScalarTower (R := F)
+  rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, finrank_mul_finrank]
   symm
   refine' LinearEquiv.finrank_eq _
   rfl

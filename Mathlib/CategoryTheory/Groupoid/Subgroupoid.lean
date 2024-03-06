@@ -232,7 +232,7 @@ instance : InfSet (Subgroupoid C) :=
         rw [mem_iInter₂] at hp hq ⊢;
         exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem mem_sInf_arrows {s : Set (Subgroupoid C)} {c d : C} {p : c ⟶ d} :
     p ∈ (sInf s).arrows c d ↔ ∀ S ∈ s, p ∈ S.arrows c d :=
   mem_iInter₂
@@ -273,7 +273,7 @@ theorem inclusion_inj_on_objects {S T : Subgroupoid C} (h : S ≤ T) :
 
 theorem inclusion_faithful {S T : Subgroupoid C} (h : S ≤ T) (s t : S.objs) :
     Function.Injective fun f : s ⟶ t => (inclusion h).map f := fun ⟨f, hf⟩ ⟨g, hg⟩ => by
-  -- porting note: was `...; simpa only [Subtype.mk_eq_mk] using id`
+  -- Porting note: was `...; simpa only [Subtype.mk_eq_mk] using id`
   dsimp only [inclusion]; rw [Subtype.mk_eq_mk, Subtype.mk_eq_mk]; exact id
 #align category_theory.subgroupoid.inclusion_faithful CategoryTheory.Subgroupoid.inclusion_faithful
 
@@ -688,7 +688,7 @@ theorem full_empty : full ∅ = (⊥ : Subgroupoid C) := by
 @[simp]
 theorem full_univ : full Set.univ = (⊤ : Subgroupoid C) := by
   ext
-  simp only [mem_full_iff, mem_univ, mem_top]
+  simp only [mem_full_iff, mem_univ, and_self, mem_top]
 #align category_theory.subgroupoid.full_univ CategoryTheory.Subgroupoid.full_univ
 
 theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
@@ -698,7 +698,7 @@ theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
   exact fun ⟨hc, hd⟩ => ⟨h hc, h hd⟩
 #align category_theory.subgroupoid.full_mono CategoryTheory.Subgroupoid.full_mono
 
--- porting note: using `.1` instead of `↑`
+-- Porting note: using `.1` instead of `↑`
 theorem full_arrow_eq_iff {c d : (full D).objs} {f g : c ⟶ d} :
     f = g ↔ (f.1 : c.val ⟶ d.val) = g.1 :=
   Subtype.ext_iff

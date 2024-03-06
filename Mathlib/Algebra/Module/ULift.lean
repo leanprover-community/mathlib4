@@ -80,24 +80,24 @@ instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M)
   smul_zero c := by { ext; simp [smul_zero] }
 #align ulift.smul_zero_class' ULift.smulZeroClass'
 
-instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
+instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
   smul_add _ := smul_add _
-#align ulift.distrib_smul ULift.distribSmul
+#align ulift.distrib_smul ULift.distribSMul
 
-instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
+instance distribSMul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
   smul_add c f g := by
     ext
     simp [smul_add]
-#align ulift.distrib_smul' ULift.distribSmul'
+#align ulift.distrib_smul' ULift.distribSMul'
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction (ULift R) M :=
-  { ULift.mulAction, ULift.distribSmul with }
+  { ULift.mulAction, ULift.distribSMul with }
 #align ulift.distrib_mul_action ULift.distribMulAction
 
 instance distribMulAction' [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (ULift M) :=
-  { ULift.mulAction', ULift.distribSmul' with }
+  { ULift.mulAction', ULift.distribSMul' with }
 #align ulift.distrib_mul_action' ULift.distribMulAction'
 
 instance mulDistribMulAction [Monoid R] [Monoid M] [MulDistribMulAction R M] :

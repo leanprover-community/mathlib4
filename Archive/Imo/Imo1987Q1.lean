@@ -25,7 +25,9 @@ holds true for `n = 0` as well, so we first prove it, then deduce the original v
 `n ≥ 1`. -/
 
 
-variable (α : Type _) [Fintype α] [DecidableEq α]
+set_option autoImplicit true
+
+variable (α : Type*) [Fintype α] [DecidableEq α]
 
 open scoped BigOperators Nat
 
@@ -54,7 +56,7 @@ theorem card_fixed_points :
     Finset.filter_eq', Finset.card_univ]
 #align imo1987_q1.card_fixed_points Imo1987Q1.card_fixed_points
 
-/-- Given `α : Type _` and `k : ℕ`, `fiber α k` is the set of permutations of `α` with exactly `k`
+/-- Given `α : Type*` and `k : ℕ`, `fiber α k` is the set of permutations of `α` with exactly `k`
 fixed points. -/
 def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
@@ -91,7 +93,7 @@ def fixedPointsEquiv' :
   right_inv := fun ⟨⟨x, σ⟩, h⟩ => rfl
 #align imo1987_q1.fixed_points_equiv' Imo1987Q1.fixedPointsEquiv'
 
-/-- Main statement for any `(α : Type _) [Fintype α]`. -/
+/-- Main statement for any `(α : Type*) [Fintype α]`. -/
 theorem main_fintype : ∑ k in range (card α + 1), k * p α k = card α * (card α - 1)! := by
   have A : ∀ (k) (σ : fiber α k), card (fixedPoints (↑σ : Perm α)) = k := fun k σ => σ.2
   simpa [A, ← Fin.sum_univ_eq_sum_range, -card_ofFinset, Finset.card_univ, card_fixed_points,

@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Set.Basic
 
 #align_import data.set.equitable from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -63,6 +64,15 @@ theorem equitableOn_iff_exists_eq_eq_add_one {s : Set α} {f : α → ℕ} :
     s.EquitableOn f ↔ ∃ b, ∀ a ∈ s, f a = b ∨ f a = b + 1 := by
   simp_rw [equitableOn_iff_exists_le_le_add_one, Nat.le_and_le_add_one_iff]
 #align set.equitable_on_iff_exists_eq_eq_add_one Set.equitableOn_iff_exists_eq_eq_add_one
+
+section LinearOrder
+variable [LinearOrder β] [Add β] [One β] {s : Set α} {f : α → β}
+
+@[simp]
+lemma not_equitableOn : ¬s.EquitableOn f ↔ ∃ a ∈ s, ∃ b ∈ s, f b + 1 < f a := by
+  simp [EquitableOn]; aesop
+
+end LinearOrder
 
 section OrderedSemiring
 

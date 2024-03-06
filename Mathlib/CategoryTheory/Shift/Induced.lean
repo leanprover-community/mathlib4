@@ -118,7 +118,7 @@ noncomputable def induced : HasShift D A :=
       add_zero_hom_app := fun n => by
         have := hF.2
         suffices (Induced.add F s i hF n 0).hom =
-            eqToHom (by rw [add_zero]; rfl) ≫ whiskerLeft (s n) (Induced.zero F s i hF).inv  by
+            eqToHom (by rw [add_zero]; rfl) ≫ whiskerLeft (s n) (Induced.zero F s i hF).inv by
           intro X
           simpa using NatTrans.congr_app this X
         apply ((whiskeringLeft C D D).obj F).map_injective
@@ -156,7 +156,7 @@ noncomputable def induced : HasShift D A :=
         slice_lhs 6 7 =>
           erw [← Functor.map_comp, ← Functor.map_comp, Iso.inv_hom_id_app,
             (s m₂).map_id, (s m₃).map_id]
-        erw [Category.comp_id, ←NatTrans.naturality_assoc, reassoc_of% eq,
+        erw [Category.comp_id, ← NatTrans.naturality_assoc, reassoc_of% eq,
           dcongr_arg (fun a => (i a).hom.app X) (add_assoc m₁ m₂ m₃).symm]
         simp only [Functor.comp_obj, eqToHom_map, eqToHom_app, NatTrans.naturality_assoc,
           Induced.add_hom_app_obj, Functor.comp_map, Category.assoc, Iso.inv_hom_id_app_assoc,
@@ -235,7 +235,7 @@ def Functor.CommShift.ofInduced :
         simp only [isoAdd_hom_app, Iso.symm_hom, shiftFunctorAdd_inv_app_obj_of_induced,
           shiftFunctor_of_induced]
         erw [← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
-          Category.id_comp, Iso.inv_hom_id_app_assoc, ←F.map_comp_assoc, Iso.hom_inv_id_app,
+          Category.id_comp, Iso.inv_hom_id_app_assoc, ← F.map_comp_assoc, Iso.hom_inv_id_app,
           F.map_id, Category.id_comp] }
 
 lemma Functor.commShiftIso_eq_ofInduced (a : A) :

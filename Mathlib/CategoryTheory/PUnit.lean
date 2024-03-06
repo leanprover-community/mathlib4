@@ -31,7 +31,7 @@ namespace Functor
 def star : C ⥤ Discrete PUnit.{w + 1} :=
   (Functor.const _).obj ⟨⟨⟩⟩
 #align category_theory.functor.star CategoryTheory.Functor.star
--- Porting note: simp can simplify this
+-- Porting note (#10618): simp can simplify this
 attribute [nolint simpNF] star_map_down_down
 variable {C}
 
@@ -89,7 +89,7 @@ theorem equiv_punit_iff_unique :
     simp only [Functor.comp_map]
     congr 3
     apply ULift.ext
-    simp
+    simp [eq_iff_true_of_subsingleton]
   · rintro ⟨⟨p⟩, h⟩
     haveI := fun x y => (h x y).some
     refine'

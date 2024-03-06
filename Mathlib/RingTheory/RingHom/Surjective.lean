@@ -60,7 +60,7 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   fapply
     Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem _ l.support (fun x : s => f x) fun x : s =>
       f (l x)
-  · dsimp only; simp_rw [← _root_.map_mul, ← map_sum, ← f.map_one]; exact f.congr_arg hl
+  · simp_rw [← _root_.map_mul, ← map_sum, ← f.map_one]; exact f.congr_arg hl
   · exact fun _ => Set.mem_range_self _
   · exact fun _ => Set.mem_range_self _
   · intro r

@@ -203,7 +203,7 @@ theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
   simp only [exp_pow_eq_rescale_exp, rescale]
   ext
   simp only [one_div, coeff_mk, cast_pow, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    coeff_exp, factorial, LinearMap.map_sum]
+    coeff_exp, factorial, map_sum]
 #align power_series.exp_pow_sum PowerSeries.exp_pow_sum
 
 end PowerSeries

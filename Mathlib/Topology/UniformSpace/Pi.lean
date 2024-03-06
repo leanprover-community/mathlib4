@@ -42,9 +42,14 @@ theorem Pi.uniformity :
 
 variable {α}
 
+instance [Countable ι] [∀ i, IsCountablyGenerated (𝓤 (α i))] :
+    IsCountablyGenerated (𝓤 (∀ i, α i)) := by
+  rw [Pi.uniformity]
+  infer_instance
+
 theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
-  -- porting note: required `Function.comp` to close
+  -- Porting note: required `Function.comp` to close
   simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp]
 #align uniform_continuous_pi uniformContinuous_pi
 
@@ -88,7 +93,8 @@ lemma Pi.uniformContinuous_restrict (S : Set ι) :
 lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
     UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
     ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
-  simp [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
+  simp (config := { unfoldPartialApp := true })
+    [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
 
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by
@@ -115,7 +121,7 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
 instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α i) :=
   separated_def.2 fun x y H => by
     ext i
-    -- porting note: should be `eq_ofSeparated_ofUniformContinuous`?
+    -- Porting note: should be `eq_ofSeparated_ofUniformContinuous`?
     apply eq_of_separated_of_uniformContinuous (Pi.uniformContinuous_proj α i)
     apply H
 #align Pi.separated Pi.separated

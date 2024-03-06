@@ -233,8 +233,7 @@ def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
       erw [Iso.hom_inv_id_app, CategoryTheory.Functor.map_id]
       simp only [id_comp, CategoryTheory.Iso.inv_hom_id_app,
         CategoryTheory.IsIso.hom_inv_id_assoc]
-      erw [comp_id]
-      rfl }
+      erw [comp_id] }
 #align category_theory.monoidal_counit CategoryTheory.monoidalCounit
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalCounit F) :=

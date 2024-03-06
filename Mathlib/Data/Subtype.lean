@@ -73,7 +73,7 @@ theorem ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
   Eq.rec (motive := λ (pp: (α → Prop)) _ => ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
-         (λ _ => heq_iff_eq.trans ext_iff) (funext $ λ x => propext (h x)) a2
+         (λ _ => heq_iff_eq.trans ext_iff) (funext <| λ x => propext (h x)) a2
 #align subtype.heq_iff_coe_eq Subtype.heq_iff_coe_eq
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
@@ -158,7 +158,7 @@ theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Pr
 #align subtype.restrict_apply Subtype.restrict_apply
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
-  restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
+    restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
 #align subtype.restrict_def Subtype.restrict_def
 
 theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Injective f) :

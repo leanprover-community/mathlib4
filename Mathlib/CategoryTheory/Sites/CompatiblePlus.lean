@@ -46,7 +46,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
         (isLimitOfPreserves F (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _))
     (by
       intro A B f
-      -- porting note: this used to work with `ext`
+      -- Porting note: this used to work with `ext`
       -- See https://github.com/leanprover-community/mathlib4/issues/5229
       apply Multiequalizer.hom_ext
       dsimp
@@ -60,7 +60,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
 
 @[reassoc (attr := simp)]
 theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
-  (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
+    (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
   F.map (Multiequalizer.ι _ _) := by
   delta diagramCompIso
   dsimp
@@ -117,7 +117,7 @@ theorem ι_plusCompIso_hom (X) (W) :
     F.map (colimit.ι _ W) ≫ (J.plusCompIso F P).hom.app X =
       (J.diagramCompIso F P X.unop).hom.app W ≫ colimit.ι _ W := by
   delta diagramCompIso plusCompIso
-  simp only [IsColimit.descCoconeMorphism_Hom, IsColimit.uniqueUpToIso_hom,
+  simp only [IsColimit.descCoconeMorphism_hom, IsColimit.uniqueUpToIso_hom,
     Cocones.forget_map, Iso.trans_hom, NatIso.ofComponents_hom_app, Functor.mapIso_hom, ←
     Category.assoc]
   erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P (unop X)))).fac]
@@ -145,7 +145,7 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
     NatTrans.naturality_assoc, GrothendieckTopology.diagramNatTrans_app]
   simp only [← Category.assoc]
   congr 1
-  -- porting note: this used to work with `ext`
+  -- Porting note: this used to work with `ext`
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   intro a
@@ -182,7 +182,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
   simp only [← Category.assoc]
   congr 1
-  -- porting note: this used to work with `ext`
+  -- Porting note: this used to work with `ext`
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   intro a
@@ -208,7 +208,7 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [ι_plusCompIso_hom, Functor.map_comp, Category.assoc]
   simp only [← Category.assoc]
   congr 1
-  -- porting note: this used to work with `ext`
+  -- Porting note: this used to work with `ext`
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   delta Cover.toMultiequalizer

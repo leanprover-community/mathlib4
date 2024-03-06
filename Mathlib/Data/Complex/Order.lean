@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Complex.Module
+import Mathlib.Data.Complex.Abs
 
 /-!
 # The partial order on the complex numbers
@@ -60,6 +60,11 @@ theorem lt_def {z w : ℂ} : z < w ↔ z.re < w.re ∧ z.im = w.im :=
   Iff.rfl
 #align complex.lt_def Complex.lt_def
 
+theorem nonneg_iff {z : ℂ} : 0 ≤ z ↔ 0 ≤ z.re ∧ 0 = z.im :=
+  le_def
+
+theorem pos_iff {z : ℂ} : 0 < z ↔ 0 < z.re ∧ 0 = z.im :=
+  lt_def
 
 @[simp, norm_cast]
 theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal']
@@ -68,7 +73,6 @@ theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by sim
 @[simp, norm_cast]
 theorem real_lt_real {x y : ℝ} : (x : ℂ) < (y : ℂ) ↔ x < y := by simp [lt_def, ofReal']
 #align complex.real_lt_real Complex.real_lt_real
-
 
 @[simp, norm_cast]
 theorem zero_le_real {x : ℝ} : (0 : ℂ) ≤ (x : ℂ) ↔ 0 ≤ x :=
@@ -96,10 +100,64 @@ theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
   not_lt_iff
 #align complex.not_lt_zero_iff Complex.not_lt_zero_iff
 
-theorem eq_re_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
-  ext
+theorem eq_re_of_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
+  apply Complex.ext
   rfl
   simp only [← (Complex.le_def.1 hz).2, Complex.zero_im, Complex.ofReal_im]
-#align complex.eq_re_of_real_le Complex.eq_re_ofReal_le
+#align complex.eq_re_of_real_le Complex.eq_re_of_ofReal_le
+
+@[simp]
+lemma re_eq_abs {z : ℂ} : z.re = abs z ↔ 0 ≤ z :=
+  have : 0 ≤ abs z := apply_nonneg abs z
+  ⟨fun h ↦ ⟨h.symm ▸ this, (abs_re_eq_abs.1 <| h.symm ▸ _root_.abs_of_nonneg this).symm⟩,
+    fun ⟨h₁, h₂⟩ ↦ by rw [← abs_re_eq_abs.2 h₂.symm, _root_.abs_of_nonneg h₁]⟩
+
+@[simp]
+lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := by
+  rw [← neg_re, ← abs.map_neg, re_eq_abs]
+  exact neg_nonneg.and <| eq_comm.trans neg_eq_zero
+
+@[simp]
+lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_abs]
+
+lemma monotone_ofReal : Monotone ofReal' := by
+  intro x y hxy
+  simp only [ofReal_eq_coe, real_le_real, hxy]
 
 end Complex
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Complex
+open scoped ComplexOrder
+
+private alias ⟨_, ofReal_pos⟩ := zero_lt_real
+private alias ⟨_, ofReal_nonneg⟩ := zero_le_real
+private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
+
+/-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
+input is. -/
+@[positivity Complex.ofReal' _, Complex.ofReal _]
+def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
+  -- TODO: Can we avoid duplicating the code?
+  match u, α, e with
+  | 0, ~q(ℂ), ~q(Complex.ofReal' $a) =>
+    assumeInstancesCommute
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa => return .positive q(ofReal_pos $pa)
+    | .nonnegative pa => return .nonnegative q(ofReal_nonneg $pa)
+    | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
+    | _ => return .none
+  | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
+    assumeInstancesCommute
+    match ← core q(inferInstance) q(inferInstance) a with
+    | .positive pa => return .positive q(ofReal_pos $pa)
+    | .nonnegative pa => return .nonnegative q(ofReal_nonneg $pa)
+    | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
+    | _ => return .none
+  | _, _ => throwError "not Complex.ofReal'"
+
+example (x : ℝ) (hx : 0 < x) : 0 < (x : ℂ) := by positivity
+example (x : ℝ) (hx : 0 ≤ x) : 0 ≤ (x : ℂ) := by positivity
+example (x : ℝ) (hx : x ≠ 0) : (x : ℂ) ≠ 0 := by positivity
+
+end Mathlib.Meta.Positivity

@@ -58,12 +58,12 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.sigma.P MvQPF.Sigma.P
 
 /-- abstraction function for dependent sums -/
-protected def abs ⦃α⦄ : (Sigma.P F).Obj α → Sigma F α
+protected def abs ⦃α⦄ : Sigma.P F α → Sigma F α
   | ⟨a, f⟩ => ⟨a.1, MvQPF.abs ⟨a.2, f⟩⟩
 #align mvqpf.sigma.abs MvQPF.Sigma.abs
 
 /-- representation function for dependent sums -/
-protected def repr ⦃α⦄ : Sigma F α → (Sigma.P F).Obj α
+protected def repr ⦃α⦄ : Sigma F α → Sigma.P F α
   | ⟨a, f⟩ =>
     let x := MvQPF.repr f
     ⟨⟨a, x.1⟩, x.2⟩
@@ -92,12 +92,12 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.pi.P MvQPF.Pi.P
 
 /-- abstraction function for dependent products -/
-protected def abs ⦃α⦄ : (Pi.P F).Obj α → Pi F α
+protected def abs ⦃α⦄ : Pi.P F α → Pi F α
   | ⟨a, f⟩ => fun x => MvQPF.abs ⟨a x, fun i y => f i ⟨_, y⟩⟩
 #align mvqpf.pi.abs MvQPF.Pi.abs
 
 /-- representation function for dependent products -/
-protected def repr ⦃α⦄ : Pi F α → (Pi.P F).Obj α
+protected def repr ⦃α⦄ : Pi F α → Pi.P F α
   | f => ⟨fun a => (MvQPF.repr (f a)).1, fun _i a => (MvQPF.repr (f _)).2 _ a.2⟩
 #align mvqpf.pi.repr MvQPF.Pi.repr
 

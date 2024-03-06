@@ -56,19 +56,22 @@ instance : Mul N₃ where
   | _, 0 => 0
   | _, _ => more
 
-instance : CommSemiring N₃ where
-  add_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
-  zero_add  := by rintro ⟨⟩ <;> rfl
-  add_zero  := by rintro ⟨⟩ <;> rfl
-  add_comm  := by rintro ⟨⟩ ⟨⟩ <;> rfl
-  left_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
-  right_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+instance : CommMonoid N₃ where
   mul_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
-  mul_comm := by rintro ⟨⟩ ⟨⟩ <;> rfl
-  zero_mul := by rintro ⟨⟩ <;> rfl
-  mul_zero := by rintro ⟨⟩ <;> rfl
   one_mul := by rintro ⟨⟩ <;> rfl
   mul_one := by rintro ⟨⟩ <;> rfl
+  mul_comm := by rintro ⟨⟩ ⟨⟩ <;> rfl
+
+instance : CommSemiring N₃ :=
+  { (inferInstance : CommMonoid N₃) with
+    add_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+    zero_add  := by rintro ⟨⟩ <;> rfl
+    add_zero  := by rintro ⟨⟩ <;> rfl
+    add_comm  := by rintro ⟨⟩ ⟨⟩ <;> rfl
+    left_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+    right_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+    zero_mul := by rintro ⟨⟩ <;> rfl
+    mul_zero := by rintro ⟨⟩ <;> rfl }
 
 theorem X_add_two_mul_X_add_two : (X + C 2 : N₃[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
   simp only [mul_add, add_mul, X_mul, add_assoc]

@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.Init.Align
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 #align_import category_theory.abelian.pseudoelements from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -442,7 +442,7 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
       ⟨a'',
         ⟨show ⟦(a'' ≫ f : Over Q)⟧ = ⟦↑(0 : Q ⟶ Q)⟧ by
             dsimp at comm
-            simp [sub_eq_zero.2 comm],
+            simp [a'', sub_eq_zero.2 comm],
           fun Z g hh => by
           obtain ⟨X, p', q', ep', _, comm'⟩ := Quotient.exact hh
           have : a'.hom ≫ g = 0 := by
@@ -451,7 +451,7 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
           apply Quotient.sound
           -- Can we prevent quotient.sound from giving us this weird `coe_b` thingy?
           change app g (a'' : Over P) ≈ app g a
-          exact ⟨R, 𝟙 R, p, inferInstance, ep, by simp [sub_eq_add_neg, this]⟩⟩⟩
+          exact ⟨R, 𝟙 R, p, inferInstance, ep, by simp [a'', sub_eq_add_neg, this]⟩⟩⟩
 #align category_theory.abelian.pseudoelement.sub_of_eq_image CategoryTheory.Abelian.Pseudoelement.sub_of_eq_image
 
 variable [Limits.HasPullbacks C]
@@ -484,12 +484,14 @@ theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCa
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
     refine' ⟨q a'', _⟩
-    rw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H, ModuleCat.comp_def, LinearMap.comp_apply,
-      ha'', ha']
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H,
+      ModuleCat.comp_def, LinearMap.comp_apply, ha'', ha']
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective q).1 hq a'
     refine' ⟨p a'', _⟩
-    rw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
       ha'', ha']
 set_option linter.uppercaseLean3 false in
 #align category_theory.abelian.pseudoelement.Module.eq_range_of_pseudoequal CategoryTheory.Abelian.Pseudoelement.ModuleCat.eq_range_of_pseudoequal

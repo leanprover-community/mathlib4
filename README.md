@@ -1,8 +1,7 @@
 # mathlib4
 
-![](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
 ![GitHub CI](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
-[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/37904)
+[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://mathlib-bors-ca18eefec4cb.herokuapp.com/repositories/16)
 [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://leanprover.zulipchat.com)
 
 This is a complete port of [mathlib](https://github.com/leanprover-community/mathlib) to [Lean 4](https://leanprover.github.io/).
@@ -15,6 +14,11 @@ as well as tactics that use the former and allow to develop the latter.
 ## Installation
 
 You can find detailed instructions to install Lean, mathlib, and supporting tools on [our website](https://leanprover-community.github.io/get_started.html).
+
+## Using `mathlib4` as a dependency
+
+Please refer to
+[https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency](https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency)
 
 ## Experimenting
 
@@ -29,7 +33,7 @@ documentation](https://leanprover.github.io/documentation/), the documentation
 of mathlib consists of:
 
 - [The mathlib4 docs](https://leanprover-community.github.io/mathlib4_docs/index.html): documentation [generated
-  automatically](https://github.com/leanprover-community/doc-gen4) from the source `.lean` files.
+  automatically](https://github.com/leanprover/doc-gen4) from the source `.lean` files.
 - A description of [currently covered theories](https://leanprover-community.github.io/theories.html),
   as well as an [overview](https://leanprover-community.github.io/mathlib-overview.html) for mathematicians.
 - Some [extra Lean documentation](https://leanprover-community.github.io/learn.html) not specific to mathlib (see "Miscellaneous topics")
@@ -105,16 +109,12 @@ If you are a mathlib contributor and want to update dependencies, use `lake upda
 This will update the `lake-manifest.json` file correctly.
 You will need to make a PR after committing the changes to this file.
 
-## Using `mathlib4` as a dependency
-
-Please refer to
-[https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency](https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency)
-
 ## Maintainers:
 
 For a list containing more detailed information, see https://leanprover-community.github.io/teams/maintainers.html
 
 * Anne Baanen (@Vierkantor): algebra, number theory, tactics
+* Matthew Robert Ballard (@mattrobball): algebra, algebraic geometry, category theory, performance
 * Reid Barton (@rwbarton): category theory, topology
 * Riccardo Brasca (@riccardobrasca): algebra, number theory, algebraic geometry, category theory
 * Mario Carneiro (@digama0): lean formalization, tactics, type theory, proof engineering
@@ -134,7 +134,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Heather Macbeth (@hrmacbeth): geometry, analysis
 * Patrick Massot (@patrickmassot): documentation, topology, geometry
 * Bhavik Mehta (@b-mehta): category theory, combinatorics
-* Kyle Miller (@kmill): combinatorics, documentation
+* Kyle Miller (@kmill): combinatorics, tactics, metaprogramming
 * Scott Morrison (@semorrison): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry

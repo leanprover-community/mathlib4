@@ -3,8 +3,8 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Hom.Equiv.Basic
-import Mathlib.Algebra.Hom.Aut
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Aut
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Ring
 
@@ -160,15 +160,15 @@ identity holds.
 -/
 lemma act_act_self_eq (x y : S) : (x ◃ y) ◃ x = x ◃ y := by
   have h : (x ◃ y) ◃ x = (x ◃ y) ◃ (x ◃ 1) := by rw [act_one]
-  rw [h, ←Shelf.self_distrib, act_one]
+  rw [h, ← Shelf.self_distrib, act_one]
 #align unital_shelf.act_act_self_eq UnitalShelf.act_act_self_eq
 
-lemma act_idem (x : S) : (x ◃ x) = x := by rw [←act_one x, ←Shelf.self_distrib, act_one, act_one]
+lemma act_idem (x : S) : (x ◃ x) = x := by rw [← act_one x, ← Shelf.self_distrib, act_one]
 #align unital_shelf.act_idem UnitalShelf.act_idem
 
 lemma act_self_act_eq (x y : S) : x ◃ (x ◃ y) = x ◃ y := by
   have h : x ◃ (x ◃ y) = (x ◃ 1) ◃ (x ◃ y) := by rw [act_one]
-  rw [h, ←Shelf.self_distrib, one_act]
+  rw [h, ← Shelf.self_distrib, one_act]
 #align unital_shelf.act_self_act_eq UnitalShelf.act_self_act_eq
 
 /--
@@ -184,7 +184,7 @@ namespace Rack
 
 variable {R : Type*} [Rack R]
 
---porting note: No longer a need for `Rack.self_distrib`
+-- Porting note: No longer a need for `Rack.self_distrib`
 export Shelf (self_distrib)
 
 -- porting note, changed name to `act'` to not conflict with `Shelf.act`
@@ -358,7 +358,7 @@ namespace ShelfHom
 
 variable {S₁ : Type*} {S₂ : Type*} {S₃ : Type*} [Shelf S₁] [Shelf S₂] [Shelf S₃]
 
-instance : FunLike (S₁ →◃ S₂) S₁ fun _ => S₂ where
+instance : FunLike (S₁ →◃ S₂) S₁ S₂ where
   coe := toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
@@ -425,7 +425,7 @@ instance oppositeQuandle : Quandle Qᵐᵒᵖ where
 /-- The conjugation quandle of a group.  Each element of the group acts by
 the corresponding inner automorphism.
 -/
---porting note: no need for `nolint` and added `reducible`
+-- Porting note: no need for `nolint` and added `reducible`
 @[reducible]
 def Conj (G : Type*) := G
 #align quandle.conj Quandle.Conj
@@ -464,7 +464,7 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
   map_act' := by simp
 #align quandle.conj.map Quandle.Conj.map
 
--- porting note: I don't think HasLift exists
+-- Porting note: I don't think HasLift exists
 -- instance {G : Type*} {H : Type*} [Group G] [Group H] : HasLift (G →* H) (Conj G →◃ Conj H)
 --     where lift := Conj.map
 
@@ -472,7 +472,7 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
 
 Used for Fox n-colorings of knots.
 -/
--- porting note: Removed nolint
+-- Porting note: Removed nolint
 def Dihedral (n : ℕ) :=
   ZMod n
 #align quandle.dihedral Quandle.Dihedral

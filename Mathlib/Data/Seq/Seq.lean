@@ -3,10 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Data.LazyList
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Stream.Init
+import Std.Data.LazyList
 import Mathlib.Data.Seq.Computation
 
 #align_import data.seq.seq from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
@@ -28,7 +25,7 @@ coinductive seq (α : Type u) : Type u
 | nil : seq α
 | cons : α → seq α → seq α
 -/
-/-- A stream `s : Option α` is a sequence if `s.nth n = none` implies `s.nth (n + 1) = none`.
+/-- A stream `s : Option α` is a sequence if `s.get n = none` implies `s.get (n + 1) = none`.
 -/
 def IsSeq {α : Type u} (s : Stream' (Option α)) : Prop :=
   ∀ {n : ℕ}, s n = none → s (n + 1) = none
@@ -166,7 +163,7 @@ theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? 
   exacts [id, fun h2 => al (IH h2)]
 #align stream.seq.le_stable Stream'.Seq.le_stable
 
-/-- If a sequence terminated at position `n`, it also terminated at `m ≥ n `. -/
+/-- If a sequence terminated at position `n`, it also terminated at `m ≥ n`. -/
 theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.TerminatedAt m → s.TerminatedAt n :=
   le_stable
 #align stream.seq.terminated_stable Stream'.Seq.terminated_stable
@@ -244,7 +241,7 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
     apply Subtype.eq; dsimp [tail]
 #align stream.seq.destruct_cons Stream'.Seq.destruct_cons
 
--- porting note: needed universe annotation to avoid universe issues
+-- Porting note: needed universe annotation to avoid universe issues
 theorem head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
   unfold destruct head; cases get? s 0 <;> rfl
 #align stream.seq.head_eq_destruct Stream'.Seq.head_eq_destruct
@@ -289,7 +286,7 @@ def recOn {C : Seq α → Sort v} (s : Seq α) (h1 : C nil) (h2 : ∀ x s, C (co
 
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
-  cases' M with k e; unfold Stream'.nth at e
+  cases' M with k e; unfold Stream'.get at e
   induction' k with k IH generalizing s
   · have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
@@ -298,7 +295,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  -- porting note: had to reshuffle `intro`
+  -- Porting note: had to reshuffle `intro`
   revert e; apply s.recOn _ fun b s' => _
   · intro e; injection e
   · intro b s' e
@@ -341,8 +338,8 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 @[simp]
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
-  dsimp [corec, destruct, nth]
-  -- porting note: next two lines were `change`...`with`...
+  dsimp [corec, destruct, get]
+  -- Porting note: next two lines were `change`...`with`...
   have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
   rw [h]
   dsimp [Corec.f]
@@ -447,9 +444,9 @@ theorem ofList_nil : ofList [] = (nil : Seq α) :=
 #align stream.seq.of_list_nil Stream'.Seq.ofList_nil
 
 @[simp]
-theorem ofList_nth (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
+theorem ofList_get (l : List α) (n : ℕ) : (ofList l).get? n = l.get? n :=
   rfl
-#align stream.seq.of_list_nth Stream'.Seq.ofList_nth
+#align stream.seq.of_list_nth Stream'.Seq.ofList_get
 
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
@@ -520,7 +517,7 @@ def append (s₁ s₂ : Seq α) : Seq α :=
 def map (f : α → β) : Seq α → Seq β
   | ⟨s, al⟩ =>
     ⟨s.map (Option.map f), fun {n} => by
-      dsimp [Stream'.map, Stream'.nth]
+      dsimp [Stream'.map, Stream'.get]
       induction' e : s n with e <;> intro
       · rw [al e]
         assumption
@@ -729,7 +726,7 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
         · intro _ t
           refine' ⟨nil, t, _, _⟩ <;> simp
       · intro _ s
-        refine' ⟨s, t, rfl, rfl⟩
+        exact ⟨s, t, rfl, rfl⟩
 #align stream.seq.map_append Stream'.Seq.map_append
 
 @[simp]
@@ -749,12 +746,12 @@ theorem join_nil : join nil = (nil : Seq α) :=
   destruct_eq_nil rfl
 #align stream.seq.join_nil Stream'.Seq.join_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
   destruct_eq_cons <| by simp [join]
 #align stream.seq.join_cons_nil Stream'.Seq.join_cons_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (cons (a, cons b s) S) = cons a (join (cons (b, s) S)) :=
   destruct_eq_cons <| by simp [join]
@@ -779,7 +776,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
       · simp [join_cons_cons, join_cons_nil]
       · intro x s
         simp [join_cons_cons, join_cons_nil]
-        refine' Or.inr ⟨x, s, S, rfl, rfl⟩
+        exact Or.inr ⟨x, s, S, rfl, rfl⟩
 #align stream.seq.join_cons Stream'.Seq.join_cons
 
 @[simp]
@@ -976,7 +973,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
-  simp [ret, bind, map]
+  simp only [bind, map, ret._eq_1, map_nil]
   cases' f a with a s
   apply recOn s <;> intros <;> simp
 #align stream.seq1.ret_bind Stream'.Seq1.ret_bind
@@ -997,7 +994,7 @@ theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.m
             cases' x with a s; simp [map]
             exact ⟨_, _, rfl, rfl⟩
         · intro _ s
-          refine' ⟨s, S, rfl, rfl⟩
+          exact ⟨s, S, rfl, rfl⟩
   · refine' ⟨nil, S, _, _⟩ <;> simp
 #align stream.seq1.map_join' Stream'.Seq1.map_join'
 
@@ -1034,7 +1031,7 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
-  -- Porting note: Was `simp [bind, map]`.
+  -- porting note (#10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
   simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]
