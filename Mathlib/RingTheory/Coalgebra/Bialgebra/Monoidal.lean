@@ -16,8 +16,8 @@ set_option profiler true
 
 lemma TensorProduct.counit_eq_toLinearMap :
     Coalgebra.counit (R := R) (A := A ⊗[R] B)
-      = ((Algebra.TensorProduct.lmul' R).comp (Algebra.TensorProduct.map (Bialgebra.counitAlgHom R A)
-      (Bialgebra.counitAlgHom R B))).toLinearMap := by
+      = ((Algebra.TensorProduct.lmul' R).comp (Algebra.TensorProduct.map
+      (Bialgebra.counitAlgHom R A) (Bialgebra.counitAlgHom R B))).toLinearMap := by
   simp only [Coalgebra.tensorProductCoalgebraStruct_counit, AlgHom.comp_toLinearMap,
     Algebra.TensorProduct.map_toLinearMap, Algebra.TensorProduct.lmul'_toLinearMap]
   rfl
@@ -55,27 +55,22 @@ noncomputable abbrev rTensor (f : B →b[R] C) : B ⊗[R] A →b[R] C ⊗[R] A :
 
 variable (R B C)
 
-@[simps! toLinearMap] noncomputable def TensorProduct.assoc :
+@[simps! toCoalgEquiv] noncomputable def TensorProduct.assoc :
     (A ⊗[R] B) ⊗[R] C ≃b[R] A ⊗[R] (B ⊗[R] C) :=
-  { Coalgebra.TensorProduct.assoc R A B C, Algebra.TensorProduct.assoc R A B C with
-      map_one' := map_one (Algebra.TensorProduct.assoc R A B C)
-      map_zero' := map_zero (Algebra.TensorProduct.assoc R A B C)
-      map_comp_comul := sorry -- (Coalgebra.TensorProduct.assoc R A B C).toCoalgHom.map_comp_comul
-    --- ^ughhhh something wrong with my homs and equivs? or my assoc??
-  }
+  { Coalgebra.TensorProduct.assoc R A B C, Algebra.TensorProduct.assoc R A B C with }
 
-@[simps! toLinearMap] noncomputable def TensorProduct.lid : R ⊗[R] A ≃b[R] A :=
-  { Coalgebra.TensorProduct.lid R A, Algebra.TensorProduct.lid R A with
-    map_one' := map_one (Algebra.TensorProduct.lid R A)
-    map_zero' := map_zero (Algebra.TensorProduct.lid R A)
-     }
+@[simps! toCoalgEquiv] noncomputable def TensorProduct.lid : R ⊗[R] A ≃b[R] A :=
+  { Coalgebra.TensorProduct.lid R A, Algebra.TensorProduct.lid R A with }
 
--- this works if I use an alg equiv that takes in 1 base ring . ?
-@[simps! toLinearMap] noncomputable def TensorProduct.rid : A ⊗[R] R ≃b[R] A :=
-  { Coalgebra.TensorProduct.rid R A, Algebra.TensorProduct.rid R R A with
-    map_one' := map_one (Algebra.TensorProduct.rid R R A)
-    map_mul' := sorry -- are you kidding meeeeeeeee
-    map_zero' := map_zero (Algebra.TensorProduct.rid R R A) }
+@[simps! toCoalgEquiv] noncomputable def TensorProduct.rid : A ⊗[R] R ≃b[R] A := by
+  refine
+  { Coalgebra.TensorProduct.rid R A with
+    map_mul' := fun x y => ?_
+    commutes' := fun r => ?_ }
+  <;> simp only [Coalgebra.TensorProduct.rid_toCoalgHom, AddHom.toFun_eq_coe,
+    LinearMap.coe_toAddHom, LinearEquiv.coe_coe, ← TensorProduct.AlgebraTensorModule.rid_eq_rid,
+    ← Algebra.TensorProduct.rid_toLinearEquiv, AlgEquiv.toLinearEquiv_apply, AlgEquiv.map_mul,
+    AlgEquiv.commutes]
 
 namespace MonoidalCategory
 open TensorProduct CategoryTheory MonoidalCategory Bialgebra

@@ -87,6 +87,16 @@ lemma tensorTensorTensorComm_toLinearMap :
     (tensorTensorTensorComm R A B C D).toLinearMap
       = (_root_.TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap := rfl
 
+variable (R A)
+
+lemma rid_toLinearMap :
+    (Algebra.TensorProduct.rid R R A).toLinearMap
+      = (_root_.TensorProduct.rid R A).toLinearMap := by
+  ext
+  simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+    LinearMap.coe_restrictScalars, AlgEquiv.toLinearMap_apply, rid_tmul, one_smul,
+    LinearEquiv.coe_coe, _root_.TensorProduct.rid_tmul]
+
 end Algebra.TensorProduct
 namespace TensorProduct.AlgebraTensorModule
 

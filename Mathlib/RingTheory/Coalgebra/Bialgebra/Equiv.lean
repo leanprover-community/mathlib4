@@ -15,9 +15,9 @@ open Coalgebra
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
 structure BialgEquiv (R : Type u) [CommSemiring R] (A : Type v) (B : Type w)
   [Semiring A] [Semiring B]
-  [Bialgebra R A] [Bialgebra R B] extends A →ₗ[R] B, A →b[R] B, A ≃c[R] B where
+  [Bialgebra R A] [Bialgebra R B] extends A ≃c[R] B, A ≃ₐ[R] B where
 
-attribute [coe] BialgEquiv.toBialgHom
+attribute [coe] BialgEquiv.toCoalgEquiv -- idk
 
 /-- The notation `M ≃c [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
 a plain linear map `M →ₗ M₂`. -/
@@ -54,7 +54,10 @@ section
 
 variable [Semiring M] [Semiring M₁] [Semiring M₂]
 
-variable   [Bialgebra R M] [Bialgebra R M₂]
+variable [Bialgebra R M] [Bialgebra R M₂]
+
+@[simps! toLinearMap] def toBialgHom (e : M ≃b[R] M₂) : M →b[R] M₂ :=
+{ e.toCoalgEquiv.toCoalgHom, e.toAlgEquiv.toAlgHom with }
 
 instance : Coe (M ≃b[R] M₂) (M →b[R] M₂) :=
   ⟨toBialgHom⟩
@@ -73,15 +76,15 @@ theorem toEquiv_inj {e₁ e₂ : M ≃b[R] M₂} : e₁.toEquiv = e₂.toEquiv �
 theorem toBialgHom_injective : Function.Injective (toBialgHom : (M ≃b[R] M₂) → M →b[R] M₂) :=
   fun _ _ H => toEquiv_injective <| Equiv.ext <| BialgHom.congr_fun H
 
-@[simp, norm_cast]
+@[simp]
 theorem toBialgHom_inj {e₁ e₂ : M ≃b[R] M₂} : (↑e₁ : M →b[R] M₂) = e₂ ↔ e₁ = e₂ :=
   toBialgHom_injective.eq_iff
 
 instance : EquivLike (M ≃b[R] M₂) M M₂ where
-  inv := BialgEquiv.invFun
+  inv := fun f => f.invFun
   coe_injective' _ _ h _ := toBialgHom_injective (DFunLike.coe_injective h)
-  left_inv := BialgEquiv.left_inv
-  right_inv := BialgEquiv.right_inv
+  left_inv := fun f => f.left_inv
+  right_inv := fun f => f.right_inv
 
 instance : FunLike (M ≃b[R] M₂) M M₂ where
   coe := DFunLike.coe
@@ -89,15 +92,14 @@ instance : FunLike (M ≃b[R] M₂) M M₂ where
 
 instance : BialgEquivClass (M ≃b[R] M₂) R M M₂ where
   map_mul := (·.map_mul')
-  map_one := (·.map_one')
-  map_zero := (·.map_zero')
+  map_one := fun f => f.toAlgEquiv.map_one
+  map_zero := fun f => f.toAlgEquiv.map_zero
   commutes := (·.commutes')
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
-  counit_comp := sorry
-  map_comp_comul := sorry
+  counit_comp := fun f => f.toCoalgEquiv.counit_comp
+  map_comp_comul := fun f => f.toCoalgEquiv.map_comp_comul
 
-#check BialgHom
 /-
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
@@ -173,11 +175,7 @@ theorem refl_apply  [Bialgebra R M] (x : M) : refl R M x = x :=
 /-- Linear equivalences are symmetric. -/
 @[symm]
 def symm (e : M ≃b[R] M₂) : M₂ ≃b[R] M :=
-  { e.toCoalgEquiv.symm with
-    map_one' := sorry
-    map_mul' := sorry
-    map_zero' := sorry
-    commutes' := sorry }
+  { e.toCoalgEquiv.symm, e.toAlgEquiv.symm with }
 
 def Simps.apply {R : Type*} [CommSemiring R]
     {M : Type*} {M₂ : Type*} [Semiring M] [Semiring M₂]
@@ -220,6 +218,6 @@ set_option linter.unusedVariables false in
 @[trans, nolint unusedArguments]
 def trans
     (e₁₂ : M₁ ≃b[R] M₂) (e₂₃ : M₂ ≃b[R] M₃) : M₁ ≃b[R] M₃ :=
-  { e₂₃.toBialgHom.comp e₁₂.toBialgHom, e₁₂.toCoalgEquiv.trans e₂₃.toCoalgEquiv with }
+  { e₁₂.toCoalgEquiv.trans e₂₃.toCoalgEquiv, e₁₂.toAlgEquiv.trans e₂₃.toAlgEquiv with }
 
 variable {e₁₂} {e₂₃}
