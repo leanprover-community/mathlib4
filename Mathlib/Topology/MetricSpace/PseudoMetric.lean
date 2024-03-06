@@ -2089,10 +2089,9 @@ end SecondCountable
 end Metric
 
 theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
-    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i :=
-  let ⟨_n, en, hn⟩ := lebesgue_number_lemma hs hc₁ hc₂
-  let ⟨δ, δ0, hδ⟩ := mem_uniformity_dist.1 en
-  ⟨δ, δ0, fun x hx => let ⟨i, hi⟩ := hn x hx; ⟨i, fun _y hy => hi (hδ (mem_ball'.mp hy))⟩⟩
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, dist_comm]
+    using uniformity_basis_dist.lebesgue_number_lemma hs hc₁ hc₂
 #align lebesgue_number_lemma_of_metric lebesgue_number_lemma_of_metric
 
 theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)

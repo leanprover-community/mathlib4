@@ -315,6 +315,7 @@ theorem ofLine_mem {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h�
 
 attribute [local simp] Iic_def
 
+set_option tactic.skipAssignedInstances false in
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]

@@ -570,7 +570,7 @@ theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) 
   intro i j hij
   let l : ι →₀ R := Finsupp.single i (1 : R) - Finsupp.single j 1
   have h_total : Finsupp.total ι M R v l = 0 := by
-    simp_rw [LinearMap.map_sub, Finsupp.total_apply]
+    simp_rw [l, LinearMap.map_sub, Finsupp.total_apply]
     simp [hij]
   have h_single_eq : Finsupp.single i (1 : R) = Finsupp.single j 1 := by
     rw [linearIndependent_iff] at hv
@@ -710,7 +710,7 @@ theorem LinearIndependent.eq_of_smul_apply_eq_smul_apply {M : Type*} [AddCommGro
     (h : c • v i = d • v j) : i = j := by
   let l : ι →₀ R := Finsupp.single i c - Finsupp.single j d
   have h_total : Finsupp.total ι M R v l = 0 := by
-    simp_rw [LinearMap.map_sub, Finsupp.total_apply]
+    simp_rw [l, LinearMap.map_sub, Finsupp.total_apply]
     simp [h]
   have h_single_eq : Finsupp.single i c = Finsupp.single j d := by
     rw [linearIndependent_iff] at li
