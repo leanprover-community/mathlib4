@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.Linarith
 
@@ -164,7 +163,7 @@ theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {
 #align finset.prod_range_sub_prod_range Finset.prod_range_div_prod_range
 #align finset.sum_range_sub_sum_range Finset.sum_range_sub_sum_range
 
-/-- The two ways of summing over `(i,j)` in the range `a<=i<=j<b` are equal. -/
+/-- The two ways of summing over `(i, j)` in the range `a ≤ i ≤ j < b` are equal. -/
 theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
     (∑ i in Finset.Ico a b, ∑ j in Finset.Ico i b, f i j) =
       ∑ j in Finset.Ico a b, ∑ i in Finset.Ico a (j + 1), f i j := by
@@ -174,8 +173,20 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
   rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
   refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
-  linarith
+  omega
 #align finset.sum_Ico_Ico_comm Finset.sum_Ico_Ico_comm
+
+/-- The two ways of summing over `(i, j)` in the range `a ≤ i < j < b` are equal. -/
+theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → ℕ → M) :
+    (∑ i in Finset.Ico a b, ∑ j in Finset.Ico (i + 1) b, f i j) =
+      ∑ j in Finset.Ico a b, ∑ i in Finset.Ico a j, f i j := by
+  rw [Finset.sum_sigma', Finset.sum_sigma']
+  refine' sum_nbij' (fun x ↦ ⟨x.2, x.1⟩) (fun x ↦ ⟨x.2, x.1⟩) _ _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) <;>
+  simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
+  rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
+  refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
+  omega
 
 @[to_additive]
 theorem prod_Ico_eq_prod_range (f : ℕ → M) (m n : ℕ) :
@@ -258,6 +269,19 @@ theorem sum_range_id (n : ℕ) : ∑ i in range n, i = n * (n - 1) / 2 := by
 
 end GaussSum
 
+@[to_additive]
+lemma prod_range_diag_flip (n : ℕ) (f : ℕ → ℕ → M) :
+    (∏ m in range n, ∏ k in range (m + 1), f k (m - k)) =
+      ∏ m in range n, ∏ k in range (n - m), f m k := by
+  rw [prod_sigma', prod_sigma']
+  refine prod_nbij' (fun a ↦ ⟨a.2, a.1 - a.2⟩) (fun a ↦ ⟨a.1 + a.2, a.1⟩) ?_ ?_ ?_ ?_ ?_ <;>
+    simp (config := { contextual := true }) only [mem_sigma, mem_range, lt_tsub_iff_left,
+      Nat.lt_succ_iff, le_add_iff_nonneg_right, Nat.zero_le, and_true, and_imp, imp_self,
+      implies_true, Sigma.forall, forall_const, add_tsub_cancel_of_le, Sigma.mk.inj_iff,
+      add_tsub_cancel_left, heq_eq_eq]
+  · exact fun a b han hba ↦ lt_of_le_of_lt hba han
+#align sum_range_diag_flip Finset.sum_range_diag_flip
+
 end Generic
 
 section Nat
@@ -298,68 +322,4 @@ theorem prod_Ico_succ_div_top (hmn : m ≤ n) :
 end Group
 
 end Nat
-
-section Module
-
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (g : ℕ → M) {m n : ℕ}
-
-open Finset
-
--- The partial sum of `g`, starting from zero
-local notation "G " n:80 => ∑ i in range n, g i
-
-/-- **Summation by parts**, also known as **Abel's lemma** or an **Abel transformation** -/
-theorem sum_Ico_by_parts (hmn : m < n) :
-    ∑ i in Ico m n, f i • g i =
-      f (n - 1) • G n - f m • G m - ∑ i in Ico m (n - 1), (f (i + 1) - f i) • G (i + 1) := by
-  have h₁ : (∑ i in Ico (m + 1) n, f i • G i) = ∑ i in Ico m (n - 1), f (i + 1) • G (i + 1) := by
-    rw [← Nat.sub_add_cancel (Nat.one_le_of_lt hmn), ← sum_Ico_add']
-    simp only [ge_iff_le, tsub_le_iff_right, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
-      tsub_eq_zero_iff_le, add_tsub_cancel_right]
-  have h₂ :
-    (∑ i in Ico (m + 1) n, f i • G (i + 1)) =
-      (∑ i in Ico m (n - 1), f i • G (i + 1)) + f (n - 1) • G n - f m • G (m + 1) := by
-    rw [← sum_Ico_sub_bot _ hmn, ← sum_Ico_succ_sub_top _ (Nat.le_sub_one_of_lt hmn),
-      Nat.sub_add_cancel (pos_of_gt hmn), sub_add_cancel]
-  rw [sum_eq_sum_Ico_succ_bot hmn]
-  -- porting note: the following used to be done with `conv`
-  have h₃: (Finset.sum (Ico (m + 1) n) fun i => f i • g i) =
-             (Finset.sum (Ico (m + 1) n) fun i =>
-                f i • ((Finset.sum (Finset.range (i + 1)) g) -
-                        (Finset.sum (Finset.range i) g))) := by
-    congr; funext; rw [← sum_range_succ_sub_sum g]
-  rw [h₃]
-  simp_rw [smul_sub, sum_sub_distrib, h₂, h₁]
-  -- porting note: the following used to be done with `conv`
-  have h₄ : ((((Finset.sum (Ico m (n - 1)) fun i => f i • Finset.sum (range (i + 1)) fun i => g i) +
-      f (n - 1) • Finset.sum (range n) fun i => g i) -
-      f m • Finset.sum (range (m + 1)) fun i => g i) -
-      Finset.sum (Ico m (n - 1)) fun i => f (i + 1) • Finset.sum (range (i + 1)) fun i => g i) =
-      f (n - 1) • (range n).sum g - f m • (range (m + 1)).sum g +
-      Finset.sum (Ico m (n - 1)) (fun i => f i • (range (i + 1)).sum g -
-      f (i + 1) • (range (i + 1)).sum g) := by
-    rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
-  rw [h₄]
-  have : ∀ i, f i • G (i + 1) - f (i + 1) • G (i + 1) = -((f (i + 1) - f i) • G (i + 1)) := by
-    intro i
-    rw [sub_smul]
-    abel
-  simp_rw [this, sum_neg_distrib, sum_range_succ, smul_add]
-  abel
-#align finset.sum_Ico_by_parts Finset.sum_Ico_by_parts
-
-variable (n)
-
-/-- **Summation by parts** for ranges -/
-theorem sum_range_by_parts :
-    ∑ i in range n, f i • g i =
-      f (n - 1) • G n - ∑ i in range (n - 1), (f (i + 1) - f i) • G (i + 1) := by
-  by_cases hn : n = 0
-  · simp [hn]
-  · rw [range_eq_Ico, sum_Ico_by_parts f g (Nat.pos_of_ne_zero hn), sum_range_zero, smul_zero,
-      sub_zero, range_eq_Ico]
-#align finset.sum_range_by_parts Finset.sum_range_by_parts
-
-end Module
-
 end Finset

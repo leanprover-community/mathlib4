@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Sara Rousta
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Data.Set.Lattice
 
 #align_import order.upper_lower.basic from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
 
@@ -258,6 +259,14 @@ alias ⟨IsUpperSet.Ici_subset, _⟩ := isUpperSet_iff_Ici_subset
 alias ⟨IsLowerSet.Iic_subset, _⟩ := isLowerSet_iff_Iic_subset
 #align is_lower_set.Iic_subset IsLowerSet.Iic_subset
 
+theorem IsUpperSet.Ioi_subset (h : IsUpperSet s) ⦃a⦄ (ha : a ∈ s) : Ioi a ⊆ s :=
+  Ioi_subset_Ici_self.trans <| h.Ici_subset ha
+#align is_upper_set.Ioi_subset IsUpperSet.Ioi_subset
+
+theorem IsLowerSet.Iio_subset (h : IsLowerSet s) ⦃a⦄ (ha : a ∈ s) : Iio a ⊆ s :=
+  h.toDual.Ioi_subset ha
+#align is_lower_set.Iio_subset IsLowerSet.Iio_subset
+
 theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
   ⟨fun _ ha _ _ => Icc_subset_Ici_self.trans <| h.Ici_subset ha⟩
 #align is_upper_set.ord_connected IsUpperSet.ordConnected
@@ -285,6 +294,24 @@ theorem IsLowerSet.image (hs : IsLowerSet s) (f : α ≃o β) : IsLowerSet (f ''
   rw [Set.image_equiv_eq_preimage_symm]
   exact hs.preimage f.symm.monotone
 #align is_lower_set.image IsLowerSet.image
+
+theorem OrderEmbedding.image_Ici (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :
+    e '' Ici a = Ici (e a) := by
+  rw [← e.preimage_Ici, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| he.Ici_subset (mem_range_self _)]
+
+theorem OrderEmbedding.image_Iic (e : α ↪o β) (he : IsLowerSet (range e)) (a : α) :
+    e '' Iic a = Iic (e a) :=
+  e.dual.image_Ici he a
+
+theorem OrderEmbedding.image_Ioi (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :
+    e '' Ioi a = Ioi (e a) := by
+  rw [← e.preimage_Ioi, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| he.Ioi_subset (mem_range_self _)]
+
+theorem OrderEmbedding.image_Iio (e : α ↪o β) (he : IsLowerSet (range e)) (a : α) :
+    e '' Iio a = Iio (e a) :=
+  e.dual.image_Ioi he a
 
 @[simp]
 theorem Set.monotone_mem : Monotone (· ∈ s) ↔ IsUpperSet s :=
@@ -409,12 +436,6 @@ theorem isUpperSet_iff_Ioi_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Io
 theorem isLowerSet_iff_Iio_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Iio a ⊆ s := by
   simp [isLowerSet_iff_forall_lt, subset_def, @forall_swap (_ ∈ s)]
 #align is_lower_set_iff_Iio_subset isLowerSet_iff_Iio_subset
-
-alias ⟨IsUpperSet.Ioi_subset, _⟩ := isUpperSet_iff_Ioi_subset
-#align is_upper_set.Ioi_subset IsUpperSet.Ioi_subset
-
-alias ⟨IsLowerSet.Iio_subset, _⟩ := isLowerSet_iff_Iio_subset
-#align is_lower_set.Iio_subset IsLowerSet.Iio_subset
 
 end PartialOrder
 
@@ -606,12 +627,12 @@ theorem coe_iSup (f : ι → UpperSet α) : (↑(⨆ i, f i) : Set α) = ⋂ i, 
 theorem coe_iInf (f : ι → UpperSet α) : (↑(⨅ i, f i) : Set α) = ⋃ i, f i := by simp [iInf]
 #align upper_set.coe_infi UpperSet.coe_iInf
 
-@[norm_cast] -- porting note: no longer a `simp`
+@[norm_cast] -- Porting note: no longer a `simp`
 theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) : (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j :=
   by simp_rw [coe_iSup]
 #align upper_set.coe_supr₂ UpperSet.coe_iSup₂
 
-@[norm_cast] -- porting note: no longer a `simp`
+@[norm_cast] -- Porting note: no longer a `simp`
 theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) : (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j :=
   by simp_rw [coe_iInf]
 #align upper_set.coe_infi₂ UpperSet.coe_iInf₂
@@ -658,12 +679,12 @@ theorem mem_iInf_iff {f : ι → UpperSet α} : (a ∈ ⨅ i, f i) ↔ ∃ i, a 
   exact mem_iUnion
 #align upper_set.mem_infi_iff UpperSet.mem_iInf_iff
 
--- porting note: no longer a @[simp]
+-- Porting note: no longer a @[simp]
 theorem mem_iSup₂_iff {f : ∀ i, κ i → UpperSet α} : (a ∈ ⨆ (i) (j), f i j) ↔ ∀ i j, a ∈ f i j := by
   simp_rw [mem_iSup_iff]
 #align upper_set.mem_supr₂_iff UpperSet.mem_iSup₂_iff
 
--- porting note: no longer a @[simp]
+-- Porting note: no longer a @[simp]
 theorem mem_iInf₂_iff {f : ∀ i, κ i → UpperSet α} : (a ∈ ⨅ (i) (j), f i j) ↔ ∃ i j, a ∈ f i j := by
   simp_rw [mem_iInf_iff]
 #align upper_set.mem_infi₂_iff UpperSet.mem_iInf₂_iff
@@ -760,12 +781,12 @@ theorem coe_iInf (f : ι → LowerSet α) : (↑(⨅ i, f i) : Set α) = ⋂ i, 
   simp_rw [iInf, coe_sInf, mem_range, iInter_exists, iInter_iInter_eq']
 #align lower_set.coe_infi LowerSet.coe_iInf
 
-@[norm_cast] -- porting note: no longer a `simp`
+@[norm_cast] -- Porting note: no longer a `simp`
 theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) : (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j :=
   by simp_rw [coe_iSup]
 #align lower_set.coe_supr₂ LowerSet.coe_iSup₂
 
-@[norm_cast] -- porting note: no longer a `simp`
+@[norm_cast] -- Porting note: no longer a `simp`
 theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) : (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j :=
   by simp_rw [coe_iInf]
 #align lower_set.coe_infi₂ LowerSet.coe_iInf₂
@@ -812,12 +833,12 @@ theorem mem_iInf_iff {f : ι → LowerSet α} : (a ∈ ⨅ i, f i) ↔ ∀ i, a 
   exact mem_iInter
 #align lower_set.mem_infi_iff LowerSet.mem_iInf_iff
 
--- porting note: no longer a @[simp]
+-- Porting note: no longer a @[simp]
 theorem mem_iSup₂_iff {f : ∀ i, κ i → LowerSet α} : (a ∈ ⨆ (i) (j), f i j) ↔ ∃ i j, a ∈ f i j := by
   simp_rw [mem_iSup_iff]
 #align lower_set.mem_supr₂_iff LowerSet.mem_iSup₂_iff
 
--- porting note: no longer a @[simp]
+-- Porting note: no longer a @[simp]
 theorem mem_iInf₂_iff {f : ∀ i, κ i → LowerSet α} : (a ∈ ⨅ (i) (j), f i j) ↔ ∀ i j, a ∈ f i j := by
   simp_rw [mem_iInf_iff]
 #align lower_set.mem_infi₂_iff LowerSet.mem_iInf₂_iff
@@ -905,12 +926,12 @@ protected theorem compl_iInf (f : ι → UpperSet α) : (⨅ i, f i).compl = ⨅
   LowerSet.ext <| by simp only [coe_compl, coe_iInf, compl_iUnion, LowerSet.coe_iInf]
 #align upper_set.compl_infi UpperSet.compl_iInf
 
--- porting note: no longer a @[simp]
+-- Porting note: no longer a @[simp]
 theorem compl_iSup₂ (f : ∀ i, κ i → UpperSet α) :
     (⨆ (i) (j), f i j).compl = ⨆ (i) (j), (f i j).compl := by simp_rw [UpperSet.compl_iSup]
 #align upper_set.compl_supr₂ UpperSet.compl_iSup₂
 
--- porting note: no longer a @[simp]
+-- Porting note: no longer a @[simp]
 theorem compl_iInf₂ (f : ∀ i, κ i → UpperSet α) :
     (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp_rw [UpperSet.compl_iInf]
 #align upper_set.compl_infi₂ UpperSet.compl_iInf₂
@@ -1242,7 +1263,7 @@ theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⨆ i, Ici (f i) :=
   SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
 #align upper_set.Ici_supr UpperSet.Ici_iSup
 
--- porting note: no longer a @[simp]
+-- Porting note: no longer a @[simp]
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⨆ (i) (j), Ici (f i j) := by
   simp_rw [Ici_iSup]
 #align upper_set.Ici_supr₂ UpperSet.Ici_iSup₂
@@ -1351,7 +1372,7 @@ theorem Iic_iInf (f : ι → α) : Iic (⨅ i, f i) = ⨅ i, Iic (f i) :=
   SetLike.ext fun c => by simp only [mem_Iic_iff, mem_iInf_iff, le_iInf_iff]
 #align lower_set.Iic_infi LowerSet.Iic_iInf
 
--- porting note: no longer a @[simp]
+-- Porting note: no longer a @[simp]
 theorem Iic_iInf₂ (f : ∀ i, κ i → α) : Iic (⨅ (i) (j), f i j) = ⨅ (i) (j), Iic (f i j) := by
   simp_rw [Iic_iInf]
 #align lower_set.Iic_infi₂ LowerSet.Iic_iInf₂
@@ -1374,7 +1395,7 @@ def lowerClosure (s : Set α) : LowerSet α :=
   ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hle.trans hx.2⟩⟩
 #align lower_closure lowerClosure
 
--- porting note: todo: move `GaloisInsertion`s up, use them to prove lemmas
+-- Porting note: todo: move `GaloisInsertion`s up, use them to prove lemmas
 
 @[simp]
 theorem mem_upperClosure : x ∈ upperClosure s ↔ ∃ a ∈ s, a ≤ x :=

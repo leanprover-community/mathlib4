@@ -39,8 +39,8 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
   have hg_bij : Function.Bijective g :=
     Function.bijective_iff_has_inverse.mpr
       ⟨fun x => a⁻¹ * x,
-        ⟨fun x => by simp [← mul_assoc, ENNReal.inv_mul_cancel ha_zero ha_top], fun x => by
-          simp [← mul_assoc, ENNReal.mul_inv_cancel ha_zero ha_top]⟩⟩
+        ⟨fun x => by simp [g, ← mul_assoc, ENNReal.inv_mul_cancel ha_zero ha_top], fun x => by
+          simp [g, ← mul_assoc, ENNReal.mul_inv_cancel ha_zero ha_top]⟩⟩
   have hg_mono : StrictMono g :=
     Monotone.strictMono_of_injective (fun _ _ _ => by rwa [mul_le_mul_left ha_zero ha_top]) hg_bij.1
   let g_iso := StrictMono.orderIsoOfSurjective g hg_mono hg_bij.2

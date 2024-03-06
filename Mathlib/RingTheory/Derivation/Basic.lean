@@ -62,16 +62,13 @@ variable [Module A M] [Module B M] [Module R M]
 
 variable (D : Derivation R A M) {D1 D2 : Derivation R A M} (r : R) (a b : A)
 
-instance : AddMonoidHomClass (Derivation R A M) A M where
+instance : FunLike (Derivation R A M) A M where
   coe D := D.toFun
   coe_injective' D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
+
+instance : AddMonoidHomClass (Derivation R A M) A M where
   map_add D := D.toLinearMap.map_add'
   map_zero D := D.toLinearMap.map_zero
-
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (Derivation R A M) fun _ => A → M :=
-  ⟨DFunLike.coe⟩
 
 -- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
 theorem toFun_eq_coe : D.toFun = ⇑D :=
@@ -89,7 +86,7 @@ instance hasCoeToLinearMap : Coe (Derivation R A M) (A →ₗ[R] M) :=
   ⟨fun D => D.toLinearMap⟩
 #align derivation.has_coe_to_linear_map Derivation.hasCoeToLinearMap
 
-#noalign derivation.to_linear_map_eq_coe -- porting note: not needed anymore
+#noalign derivation.to_linear_map_eq_coe -- Porting note: not needed anymore
 
 @[simp]
 theorem mk_coe (f : A →ₗ[R] M) (h₁ h₂) : ((⟨f, h₁, h₂⟩ : Derivation R A M) : A → M) = f :=

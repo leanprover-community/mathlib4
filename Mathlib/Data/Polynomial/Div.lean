@@ -112,7 +112,7 @@ noncomputable def divModByMonicAux : ∀ (_p : R[X]) {q : R[X]}, Monic q → R[X
       let dm := divModByMonicAux (p - q * z) hq
       ⟨z + dm.1, dm.2⟩
     else ⟨0, p⟩
-  termination_by divModByMonicAux p q hq => p
+  termination_by p q hq => p
 #align polynomial.div_mod_by_monic_aux Polynomial.divModByMonicAux
 
 /-- `divByMonic` gives the quotient of `p` by a monic polynomial `q`. -/
@@ -160,7 +160,7 @@ theorem degree_modByMonic_lt [Nontrivial R] :
           dsimp
           rw [dif_pos hq, if_neg h, Classical.not_not.1 hp]
           exact lt_of_le_of_ne bot_le (Ne.symm (mt degree_eq_bot.1 hq.ne_zero)))
-  termination_by degree_modByMonic_lt p q hq => p
+  termination_by p q hq => p
 #align polynomial.degree_mod_by_monic_lt Polynomial.degree_modByMonic_lt
 
 theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q ≠ 1) :
@@ -256,7 +256,7 @@ theorem modByMonic_eq_sub_mul_div :
       unfold modByMonic divByMonic divModByMonicAux
       dsimp
       rw [dif_pos hq, if_neg h, dif_pos hq, if_neg h, mul_zero, sub_zero]
-  termination_by modByMonic_eq_sub_mul_div p q hq => p
+  termination_by p q hq => p
 #align polynomial.mod_by_monic_eq_sub_mul_div Polynomial.modByMonic_eq_sub_mul_div
 
 theorem modByMonic_add_div (p : R[X]) {q : R[X]} (hq : Monic q) : p %ₘ q + q * (p /ₘ q) = p :=

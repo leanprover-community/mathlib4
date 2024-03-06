@@ -64,7 +64,7 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note: added an `ext` lemma.
+-- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
@@ -82,6 +82,7 @@ set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
 -- mathport name: standard_simplex
+@[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
 instance : Inhabited SSet :=
@@ -359,7 +360,7 @@ instance Truncated.hasColimits : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
--- Porting note: added an `ext` lemma.
+-- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma Truncated.hom_ext {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
@@ -383,7 +384,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Augmented
 
--- porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
+-- Porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
 -- `CategoryTheory.Limits.Types` to ease the automation in this definition
 /-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/

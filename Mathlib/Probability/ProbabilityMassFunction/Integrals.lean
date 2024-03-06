@@ -42,7 +42,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
 
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
-  rw [integral_fintype _ (integrable_of_fintype _ f)]
+  rw [integral_fintype _ (.of_finite _ f)]
   congr with x; congr
   exact PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
 

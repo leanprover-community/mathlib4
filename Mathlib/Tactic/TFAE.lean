@@ -128,7 +128,8 @@ partial def proveChain (i : ℕ) (is : List ℕ) (P : Q(Prop)) (l : Q(List Prop)
   match l with
   | ~q([]) => return q(Chain.nil)
   | ~q($P' :: $l') =>
-    let i' :: is' := is | unreachable!
+    -- `id` is a workaround for https://github.com/leanprover-community/quote4/issues/30
+    let i' :: is' := id is | unreachable!
     have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain i' is' q($P') q($l')
     let p ← proveImpl hyps atoms i i' P P'
     return q(Chain.cons $p $cl')
@@ -139,7 +140,8 @@ partial def proveGetLastDImpl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l :
   match l with
   | ~q([]) => proveImpl hyps atoms i' i P' P
   | ~q($P'' :: $l') =>
-    let i'' :: is' := is | unreachable!
+    -- `id` is a workaround for https://github.com/leanprover-community/quote4/issues/30
+    let i'' :: is' := id is | unreachable!
     proveGetLastDImpl i i'' is' P P'' l'
 
 /-- Attempt to prove a statement of the form `TFAE [P₁, P₂, ...]`. -/
@@ -148,7 +150,8 @@ def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
   | ~q([]) => return q(tfae_nil)
   | ~q([$P]) => return q(tfae_singleton $P)
   | ~q($P :: $P' :: $l') =>
-    let i :: i' :: is' := is | unreachable!
+    -- `id` is a workaround for https://github.com/leanprover-community/quote4/issues/30
+    let i :: i' :: is' := id is | unreachable!
     let c ← proveChain hyps atoms i (i'::is') P q($P' :: $l')
     let il ← proveGetLastDImpl hyps atoms i i' is' P P' l'
     return q(tfae_of_cycle $c $il)

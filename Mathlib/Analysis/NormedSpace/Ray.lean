@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.LinearAlgebra.Ray
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.normed_space.ray from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 

@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.Multiset.Basic
 
@@ -62,15 +61,15 @@ theorem prod_eq_foldl (s : Multiset α) :
 #align multiset.sum_eq_foldl Multiset.sum_eq_foldl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod (l : List α) : prod ↑l = l.prod :=
+theorem prod_coe (l : List α) : prod ↑l = l.prod :=
   prod_eq_foldl _
-#align multiset.coe_prod Multiset.coe_prod
-#align multiset.coe_sum Multiset.coe_sum
+#align multiset.coe_prod Multiset.prod_coe
+#align multiset.coe_sum Multiset.sum_coe
 
 @[to_additive (attr := simp)]
 theorem prod_toList (s : Multiset α) : s.toList.prod = s.prod := by
   conv_rhs => rw [← coe_toList s]
-  rw [coe_prod]
+  rw [prod_coe]
 #align multiset.prod_to_list Multiset.prod_toList
 #align multiset.sum_to_list Multiset.sum_toList
 
@@ -88,14 +87,14 @@ theorem prod_cons (a : α) (s) : prod (a ::ₘ s) = a * prod s :=
 
 @[to_additive (attr := simp)]
 theorem prod_erase [DecidableEq α] (h : a ∈ s) : a * (s.erase a).prod = s.prod := by
-  rw [← s.coe_toList, coe_erase, coe_prod, coe_prod, List.prod_erase (mem_toList.2 h)]
+  rw [← s.coe_toList, coe_erase, prod_coe, prod_coe, List.prod_erase (mem_toList.2 h)]
 #align multiset.prod_erase Multiset.prod_erase
 #align multiset.sum_erase Multiset.sum_erase
 
 @[to_additive (attr := simp)]
 theorem prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
     f a * ((m.erase a).map f).prod = (m.map f).prod := by
-  rw [← m.coe_toList, coe_erase, coe_map, coe_map, coe_prod, coe_prod,
+  rw [← m.coe_toList, coe_erase, map_coe, map_coe, prod_coe, prod_coe,
     List.prod_map_erase f (mem_toList.2 h)]
 #align multiset.prod_map_erase Multiset.prod_map_erase
 #align multiset.sum_map_erase Multiset.sum_map_erase
@@ -155,14 +154,16 @@ theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).
 #align multiset.nsmul_count Multiset.nsmul_count
 
 @[to_additive]
-theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [MonoidHomClass F α β] (f : F) :
+theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F) :
     (s.map f).prod = f s.prod :=
-  Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, coe_map, coe_prod]
+  Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, map_coe, prod_coe]
 #align multiset.prod_hom Multiset.prod_hom
 #align multiset.sum_hom Multiset.sum_hom
 
 @[to_additive]
-theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [MonoidHomClass F α β] (f : F)
+theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F)
     (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
@@ -174,7 +175,7 @@ theorem prod_hom₂ [CommMonoid β] [CommMonoid γ] (s : Multiset ι) (f : α �
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (hf' : f 1 1 = 1) (f₁ : ι → α)
     (f₂ : ι → β) : (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod :=
   Quotient.inductionOn s fun l => by
-    simp only [l.prod_hom₂ f hf hf', quot_mk_to_coe, coe_map, coe_prod]
+    simp only [l.prod_hom₂ f hf hf', quot_mk_to_coe, map_coe, prod_coe]
 #align multiset.prod_hom₂ Multiset.prod_hom₂
 #align multiset.sum_hom₂ Multiset.sum_hom₂
 
@@ -183,7 +184,7 @@ theorem prod_hom_rel [CommMonoid β] (s : Multiset ι) {r : α → β → Prop} 
     (h₁ : r 1 1) (h₂ : ∀ ⦃a b c⦄, r b c → r (f a * b) (g a * c)) :
     r (s.map f).prod (s.map g).prod :=
   Quotient.inductionOn s fun l => by
-    simp only [l.prod_hom_rel h₁ h₂, quot_mk_to_coe, coe_map, coe_prod]
+    simp only [l.prod_hom_rel h₁ h₂, quot_mk_to_coe, map_coe, prod_coe]
 #align multiset.prod_hom_rel Multiset.prod_hom_rel
 #align multiset.sum_hom_rel Multiset.sum_hom_rel
 
@@ -289,7 +290,7 @@ variable [NoZeroDivisors α] [Nontrivial α] {s : Multiset α}
 @[simp]
 theorem prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
   Quotient.inductionOn s fun l => by
-    rw [quot_mk_to_coe, coe_prod]
+    rw [quot_mk_to_coe, prod_coe]
     exact List.prod_eq_zero_iff
 #align multiset.prod_eq_zero_iff Multiset.prod_eq_zero_iff
 
@@ -387,7 +388,7 @@ theorem prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) :
 theorem all_one_of_le_one_le_of_prod_eq_one :
     (∀ x ∈ s, (1 : α) ≤ x) → s.prod = 1 → ∀ x ∈ s, x = (1 : α) :=
   Quotient.inductionOn s (by
-    simp only [quot_mk_to_coe, coe_prod, mem_coe]
+    simp only [quot_mk_to_coe, prod_coe, mem_coe]
     exact fun l => List.all_one_of_le_one_le_of_prod_eq_one)
 #align multiset.all_one_of_le_one_le_of_prod_eq_one Multiset.all_one_of_le_one_le_of_prod_eq_one
 #align multiset.all_zero_of_le_zero_le_of_sum_eq_zero Multiset.all_zero_of_le_zero_le_of_sum_eq_zero
@@ -437,7 +438,7 @@ variable [OrderedCancelCommMonoid α] {s : Multiset ι} {f g : ι → α}
 theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
     (s.map f).prod < (s.map g).prod := by
   obtain ⟨l⟩ := s
-  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_prod]
+  simp only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
   exact List.prod_lt_prod' f g hle hlt
 
 @[to_additive sum_lt_sum_of_nonempty]
@@ -538,11 +539,6 @@ theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α
   Multiset.induction_on s (by simp) (by simp)
 #align multiset.sum_map_singleton Multiset.sum_map_singleton
 
-theorem abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
-    abs s.sum ≤ (s.map abs).sum :=
-  le_sum_of_subadditive _ abs_zero abs_add s
-#align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
-
 theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by
   induction s using Multiset.induction <;> simp [Nat.add_mod, *]
 #align multiset.sum_nat_mod Multiset.sum_nat_mod
@@ -562,7 +558,8 @@ theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)
 end Multiset
 
 @[to_additive]
-theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [MonoidHomClass F α β] (f : F)
+theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F)
     (s : Multiset α) : f s.prod = (s.map f).prod :=
   (s.prod_hom f).symm
 #align map_multiset_prod map_multiset_prod

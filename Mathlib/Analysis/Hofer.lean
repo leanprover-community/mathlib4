@@ -38,9 +38,9 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     rw [div_mul_eq_mul_div, le_div_iff, mul_assoc, mul_le_mul_left ε_pos, mul_comm]
     positivity
   -- Now let's specialize to `ε/2^k`
-  replace H :
-    ∀ k : ℕ, ∀ x', d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' → ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y
-  · intro k x'
+  replace H : ∀ k : ℕ, ∀ x', d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' →
+      ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y := by
+    intro k x'
     push_neg at H
     have := H (ε / 2 ^ k) (by positivity) x' (by simp [ε_pos.le, one_le_two])
     simpa [reformulation] using this
@@ -62,7 +62,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   have key : ∀ n, d (u n) (u (n + 1)) ≤ ε / 2 ^ n ∧ 2 * ϕ (u n) < ϕ (u (n + 1)) := by
     intro n
     induction' n using Nat.case_strong_induction_on with n IH
-    · simpa [ε_pos.le] using hu 0
+    · simpa [u, ε_pos.le] using hu 0
     have A : d (u (n + 1)) x ≤ 2 * ε := by
       rw [dist_comm]
       let r := range (n + 1) -- range (n+1) = {0, ..., n}
@@ -86,8 +86,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     refine' cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => _
     simpa only [one_div, inv_pow] using key₁ n
   -- So u converges to some y
-  obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y)
-  exact CompleteSpace.complete cauchy_u
+  obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y) := CompleteSpace.complete cauchy_u
   -- And ϕ ∘ u goes to +∞
   have lim_top : Tendsto (ϕ ∘ u) atTop atTop := by
     let v n := (ϕ ∘ u) (n + 1)

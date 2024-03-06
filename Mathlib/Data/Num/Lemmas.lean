@@ -59,7 +59,7 @@ theorem cast_to_nat [AddMonoidWithOne α] : ∀ n : PosNum, ((n : ℕ) : α) = n
   | bit1 p => (Nat.cast_bit1 _).trans <| congr_arg _root_.bit1 p.cast_to_nat
 #align pos_num.cast_to_nat PosNum.cast_to_nat
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem to_nat_to_int (n : PosNum) : ((n : ℕ) : ℤ) = n :=
   cast_to_nat _
 #align pos_num.to_nat_to_int PosNum.to_nat_to_int
@@ -157,6 +157,7 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
     add_le_add h h
   | 1, bit1 b => Nat.succ_lt_succ <| to_nat_pos <| bit0 b
   | bit0 a, bit0 b => by
+    dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
     · exact add_lt_add this this
     · rw [this]
@@ -176,6 +177,7 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
       apply Nat.lt_succ_self
     · exact Nat.le_succ_of_le (add_lt_add this this)
   | bit1 a, bit1 b => by
+    dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
     · exact Nat.succ_lt_succ (add_lt_add this this)
     · rw [this]
@@ -452,12 +454,12 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 #align num.linear_ordered_semiring Num.linearOrderedSemiring
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem add_of_nat (m n) : ((m + n : ℕ) : Num) = m + n :=
   add_ofNat' _ _
 #align num.add_of_nat Num.add_of_nat
 
-@[norm_cast]  -- @[simp] -- Porting note: simp can prove this
+@[norm_cast]  -- @[simp] -- Porting note (#10618): simp can prove this
 theorem to_nat_to_int (n : Num) : ((n : ℕ) : ℤ) = n :=
   cast_to_nat _
 #align num.to_nat_to_int Num.to_nat_to_int
@@ -477,7 +479,7 @@ theorem of_nat_cast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n 
   rw [← cast_to_nat, to_of_nat]
 #align num.of_nat_cast Num.of_nat_cast
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
   ⟨fun h => Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
 #align num.of_nat_inj Num.of_nat_inj
@@ -977,11 +979,11 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     induction' n with n IH generalizing m <;> cases' m with m m
         <;> dsimp only [PosNum.testBit, Nat.zero_eq]
     · rfl
-    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_zero]
-    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_zero]
-    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true, Nat.testBit_succ, Nat.zero_testBit]
-    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_succ, IH]
-    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_succ, IH]
+    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true, Nat.testBit_bit_succ, Nat.zero_testBit]
+    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
+    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
 
 end Num
@@ -1239,10 +1241,10 @@ theorem ofInt'_toZNum : ∀ n : ℕ, toZNum n = ZNum.ofInt' n
 
 theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
   | 0, 0 => ⟨fun _ => rfl, fun _ => rfl⟩
-  | pos m, 0 => ⟨fun., fun.⟩
+  | pos m, 0 => ⟨nofun, nofun⟩
   | m, ZNum.pos p =>
     Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> try cases h <;> rfl
-  | m, ZNum.neg p => ⟨fun., fun h => by cases m <;> cases h⟩
+  | m, ZNum.neg p => ⟨nofun, fun h => by cases m <;> cases h⟩
 #align num.mem_of_znum' Num.mem_ofZNum'
 
 theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat' n
@@ -1489,10 +1491,10 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
 theorem cast_sub [Ring α] (m n) : ((m - n : ZNum) : α) = m - n := by simp [sub_eq_neg_add]
 #align znum.cast_sub ZNum.cast_sub
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n
   | (n + 1 : ℕ) => rfl
-  | 0 => by rw [Int.cast_neg, Int.cast_zero]
+  | 0 => by rw [Int.cast_neg]
   | -[n+1] => (zneg_zneg _).symm
 #align znum.neg_of_int ZNum.neg_of_int
 

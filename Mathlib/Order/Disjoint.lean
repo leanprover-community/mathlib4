@@ -298,7 +298,7 @@ end PartialOrderTop
 
 section PartialBoundedOrder
 
-variable [PartialOrder α] [BoundedOrder α] {a : α}
+variable [PartialOrder α] [BoundedOrder α] {a b : α}
 
 @[simp]
 theorem codisjoint_bot : Codisjoint a ⊥ ↔ a = ⊤ :=
@@ -309,6 +309,12 @@ theorem codisjoint_bot : Codisjoint a ⊥ ↔ a = ⊤ :=
 theorem bot_codisjoint : Codisjoint ⊥ a ↔ a = ⊤ :=
   ⟨fun h ↦ top_unique <| h bot_le le_rfl, fun h _ _ ha ↦ h.symm.trans_le ha⟩
 #align bot_codisjoint bot_codisjoint
+
+lemma Codisjoint.ne_bot_of_ne_top (h : Codisjoint a b) (ha : a ≠ ⊤) : b ≠ ⊥ := by
+  rintro rfl; exact ha <| by simpa using h
+
+lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ := by
+  rintro rfl; exact hb <| by simpa using h
 
 end PartialBoundedOrder
 
@@ -602,7 +608,7 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
       fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
     all_goals exact bot_le
   · rintro ⟨ha, hb⟩ z hza hzb
-    refine' ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
+    exact ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩
 #align prod.disjoint_iff Prod.disjoint_iff
 
 protected theorem codisjoint_iff [OrderTop α] [OrderTop β] {x y : α × β} :
@@ -699,6 +705,12 @@ class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
 
 export ComplementedLattice (exists_isCompl)
 
+instance Subsingleton.instComplementedLattice
+    [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
+  refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
+  rw [Subsingleton.elim ⊥ ⊤]
+  exact codisjoint_top_right
+
 namespace ComplementedLattice
 
 variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]
@@ -732,12 +744,12 @@ theorem coe_injective : Injective ((↑) : Complementeds α → α) := Subtype.c
 theorem coe_inj : (a : α) = b ↔ a = b := Subtype.coe_inj
 #align complementeds.coe_inj Complementeds.coe_inj
 
--- porting note: removing `simp` because `Subtype.coe_le_coe` already proves it
+-- Porting note: removing `simp` because `Subtype.coe_le_coe` already proves it
 @[norm_cast]
 theorem coe_le_coe : (a : α) ≤ b ↔ a ≤ b := by simp
 #align complementeds.coe_le_coe Complementeds.coe_le_coe
 
--- porting note: removing `simp` because `Subtype.coe_lt_coe` already proves it
+-- Porting note: removing `simp` because `Subtype.coe_lt_coe` already proves it
 @[norm_cast]
 theorem coe_lt_coe : (a : α) < b ↔ a < b := Iff.rfl
 #align complementeds.coe_lt_coe Complementeds.coe_lt_coe
@@ -753,11 +765,11 @@ theorem coe_bot : ((⊥ : Complementeds α) : α) = ⊥ := rfl
 theorem coe_top : ((⊤ : Complementeds α) : α) = ⊤ := rfl
 #align complementeds.coe_top Complementeds.coe_top
 
--- porting note: removing `simp` because `Subtype.mk_bot` already proves it
+-- Porting note: removing `simp` because `Subtype.mk_bot` already proves it
 theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := rfl
 #align complementeds.mk_bot Complementeds.mk_bot
 
--- porting note: removing `simp` because `Subtype.mk_top` already proves it
+-- Porting note: removing `simp` because `Subtype.mk_top` already proves it
 theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := rfl
 #align complementeds.mk_top Complementeds.mk_top
 

@@ -154,14 +154,9 @@ def UniformOnFun (α β : Type*) (_ : Set (Set α)) :=
   α → β
 #align uniform_on_fun UniformOnFun
 
-scoped[UniformConvergence] notation:25 α " →ᵤ " β:0 => UniformFun α β
+@[inherit_doc] scoped[UniformConvergence] notation:25 α " →ᵤ " β:0 => UniformFun α β
 
-scoped[UniformConvergence] notation:25 α " →ᵤ[" 𝔖 "] " β:0 => UniformOnFun α β 𝔖
-
--- Porting note: these are not used anymore
--- scoped[UniformConvergence] notation3 "λᵘ "(...)", "r:(scoped p => UniformFun.ofFun p) => r
-
--- scoped[UniformConvergence] notation3 "λᵘ["𝔖"] "(...)", "r:(scoped p => UniformFun.ofFun p) => r
+@[inherit_doc] scoped[UniformConvergence] notation:25 α " →ᵤ[" 𝔖 "] " β:0 => UniformOnFun α β 𝔖
 
 open UniformConvergence
 
@@ -398,7 +393,7 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
 #align uniform_fun.postcomp_uniform_inducing UniformFun.postcomp_uniformInducing
 
--- porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
+-- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
@@ -417,7 +412,7 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
   -- This is a direct consequence of `UniformFun.comap_eq`
     refine uniformContinuous_iff.mpr ?_
     exact (UniformFun.mono (uniformContinuous_iff.mp hf)).trans_eq UniformFun.comap_eq
-    -- porting note: the original calc proof below gives a deterministic timeout
+    -- Porting note: the original calc proof below gives a deterministic timeout
     --calc
     --  𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
     --    UniformFun.mono (uniformContinuous_iff.mp hf)
@@ -846,6 +841,14 @@ protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β}
     UniformFun.tendsto_iff_tendstoUniformly]
   rfl
 #align uniform_on_fun.tendsto_iff_tendsto_uniformly_on UniformOnFun.tendsto_iff_tendstoUniformlyOn
+
+protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (α →ᵤ[𝔖] β)} :
+    Continuous f ↔ ∀ s ∈ 𝔖,
+      Continuous (UniformFun.ofFun ∘ s.restrict ∘ UniformOnFun.toFun 𝔖 ∘ f) := by
+  simp only [continuous_iff_continuousAt, ContinuousAt,
+    UniformOnFun.tendsto_iff_tendstoUniformlyOn, UniformFun.tendsto_iff_tendstoUniformly,
+    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X]
+  rfl
 
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] β × γ` and `(α →ᵤ[𝔖] β) × (α →ᵤ[𝔖] γ)`. -/

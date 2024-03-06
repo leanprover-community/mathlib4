@@ -374,7 +374,7 @@ variable [Fintype m] [DecidableEq m] {K R : Type*} [Field K]
 
 theorem vecMul_surjective_iff_exists_left_inverse [Semiring R] {A : Matrix m n R} :
     Function.Surjective A.vecMul ↔ ∃ B : Matrix n m R, B * A = 1 := by
-  refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B.vecMul y, by simp [hBA]⟩⟩
+  refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨y ᵥ* B, by simp [hBA]⟩⟩
   choose rows hrows using (h <| Pi.single · 1)
   refine ⟨Matrix.of rows, Matrix.ext fun i j => ?_⟩
   rw [mul_apply_eq_vecMul, one_eq_pi_single, ← hrows]
@@ -382,7 +382,7 @@ theorem vecMul_surjective_iff_exists_left_inverse [Semiring R] {A : Matrix m n R
 
 theorem mulVec_surjective_iff_exists_right_inverse [Semiring R] {A : Matrix m n R} :
     Function.Surjective A.mulVec ↔ ∃ B : Matrix n m R, A * B = 1 := by
-  refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B.mulVec y, by simp [hBA]⟩⟩
+  refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B *ᵥ y, by simp [hBA]⟩⟩
   choose cols hcols using (h <| Pi.single · 1)
   refine ⟨(Matrix.of cols)ᵀ, Matrix.ext fun i j ↦ ?_⟩
   rw [one_eq_pi_single, Pi.single_comm, ← hcols j]
@@ -667,7 +667,7 @@ theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.r
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
-    A.det • A⁻¹.mulVec b = cramer A b := by
+    A.det • A⁻¹ *ᵥ b = cramer A b := by
   rw [cramer_eq_adjugate_mulVec, A.nonsing_inv_apply h, ← smul_mulVec_assoc, smul_smul,
     h.mul_val_inv, one_smul]
 #align matrix.det_smul_inv_mul_vec_eq_cramer Matrix.det_smul_inv_mulVec_eq_cramer
@@ -675,7 +675,7 @@ theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : Is
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
-    A.det • A⁻¹.vecMul b = cramer Aᵀ b := by
+    A.det • b ᵥ* A⁻¹ = cramer Aᵀ b := by
   rw [← A⁻¹.transpose_transpose, vecMul_transpose, transpose_nonsing_inv, ← det_transpose,
     Aᵀ.det_smul_inv_mulVec_eq_cramer _ (isUnit_det_transpose A h)]
 #align matrix.det_smul_inv_vec_mul_eq_cramer_transpose Matrix.det_smul_inv_vecMul_eq_cramer_transpose

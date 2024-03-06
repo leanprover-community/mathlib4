@@ -220,7 +220,7 @@ theorem isUnit_map_iff (f : R →+* S) [IsLocalRingHom f] (a) : IsUnit (f a) ↔
   ⟨IsLocalRingHom.map_nonunit a, f.isUnit_map⟩
 #align is_unit_map_iff isUnit_map_iff
 
--- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
+-- Porting note: as this can be proved by other `simp` lemmas, this is marked as high priority.
 @[simp (high)]
 theorem map_mem_nonunits_iff (f : R →+* S) [IsLocalRingHom f] (a) :
     f a ∈ nonunits S ↔ a ∈ nonunits R :=
@@ -350,7 +350,7 @@ def ResidueField :=
   R ⧸ maximalIdeal R
 #align local_ring.residue_field LocalRing.ResidueField
 
--- Porting note : failed at `deriving` instances automatically
+-- Porting note: failed at `deriving` instances automatically
 instance ResidueFieldCommRing : CommRing (ResidueField R) :=
   show CommRing (R ⧸ maximalIdeal R) from inferInstance
 

@@ -64,16 +64,7 @@ theorem coe_nonneg {n : ℕ} : 0 ≤ (n : WithBot ℕ) := by
 #align nat.with_bot.coe_nonneg Nat.WithBot.coe_nonneg
 
 @[simp]
-theorem lt_zero_iff (n : WithBot ℕ) : n < 0 ↔ n = ⊥ := by
- refine' Option.casesOn n _ _
- exact of_eq_true (eq_true_of_decide (Eq.refl true))
- intro n
- refine' ⟨fun h => _, fun h => _⟩
- exfalso
- · rw [WithBot.some_eq_coe] at h
-   exact not_le_of_lt h WithBot.coe_nonneg
- · rw [h]
-   exact of_eq_true (eq_true_of_decide (Eq.refl true))
+theorem lt_zero_iff {n : WithBot ℕ} : n < 0 ↔ n = ⊥ := WithBot.lt_coe_bot
 #align nat.with_bot.lt_zero_iff Nat.WithBot.lt_zero_iff
 
 theorem one_le_iff_zero_lt {x : WithBot ℕ} : 1 ≤ x ↔ 0 < x := by
