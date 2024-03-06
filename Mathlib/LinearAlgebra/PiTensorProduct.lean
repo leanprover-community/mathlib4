@@ -746,6 +746,18 @@ theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R]
     map (fun i ↦ f (e.symm i)) (reindex R s e x) = reindex R t e (map f x) :=
   DFunLike.congr_fun (map_comp_reindex_eq _ _) _
 
+theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
+    map f ∘ₗ (reindex R s e).symm = (reindex R t e).symm ∘ₗ map (fun i => f (e.symm i)) := by
+  ext m
+  apply LinearEquiv.injective (reindex R t e)
+  simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    comp_apply, ← map_reindex, LinearEquiv.apply_symm_apply, map_tprod]
+
+@[simp]
+theorem map_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s (e.symm i)) :
+    map f ((reindex R s e).symm x) = (reindex R t e).symm (map (fun i ↦ f (e.symm i)) x) :=
+  DFunLike.congr_fun (map_comp_reindex_symm _ _) _
+
 variable (ι)
 
 attribute [local simp] eq_iff_true_of_subsingleton in
