@@ -24,7 +24,7 @@ Basic results about nontrivial types are in `Mathlib.Logic.Nontrivial.Basic`.
 
 variable {α : Type*} {β : Type*}
 
-open Classical
+open scoped Classical
 
 /-- Predicate typeclass for expressing that a type is not reduced to a single element. In rings,
 this is equivalent to `0 ≠ 1`. In vector spaces, this is equivalent to positive dimension. -/

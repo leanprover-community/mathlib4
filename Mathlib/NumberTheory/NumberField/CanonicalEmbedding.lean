@@ -618,7 +618,7 @@ section convexBodyLT'
 
 open  Metric ENNReal NNReal
 
-open Classical
+open scoped Classical
 
 variable (f : InfinitePlace K → ℝ≥0) (w₀ : {w : InfinitePlace K // IsComplex w})
 

@@ -27,7 +27,7 @@ which as a star algebra is a topological star algebra.
 
 open Classical Set TopologicalSpace
 
-open Classical
+open scoped Classical
 
 namespace StarSubalgebra
 

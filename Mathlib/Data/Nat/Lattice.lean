@@ -22,7 +22,7 @@ open Set
 
 namespace Nat
 
-open Classical
+open scoped Classical
 
 noncomputable instance : InfSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩

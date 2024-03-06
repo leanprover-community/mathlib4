@@ -1332,7 +1332,7 @@ set_option linter.uppercaseLean3 false in
 
 section Classical
 
-open Classical
+open scoped Classical
 
 /-- Given an indexed family of sets `s j` over `j : Subtype p` and a function `f`, then
 `liminf_reparam j` is equal to `j` if `f` is bounded below on `s j`, and otherwise to some

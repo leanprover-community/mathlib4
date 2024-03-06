@@ -54,7 +54,7 @@ open CategoryTheory
 
 open CategoryTheory.Functor
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 
@@ -916,7 +916,7 @@ end
 
 section
 
-open Classical
+open scoped Classical
 
 -- Per leanprover-community/mathlib#15067, we only allow indexing in `Type 0` here.
 variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
