@@ -135,7 +135,8 @@ uniform convergence
 
 noncomputable section
 
-open Topology Classical Uniformity Filter
+open scoped Classical
+open Topology Uniformity Filter
 
 open Set Filter
 

@@ -13,7 +13,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 -/
 
 
-open Filter Germ Topology Classical
+open scoped Classical
+open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
 def Hyperreal : Type :=

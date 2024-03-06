@@ -23,7 +23,8 @@ the uniform distance.
 
 noncomputable section
 
-open Topology Bornology Classical NNReal uniformity UniformConvergence
+open scoped Classical
+open Topology Bornology NNReal uniformity UniformConvergence
 
 open Set Filter Metric Function
 

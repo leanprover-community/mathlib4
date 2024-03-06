@@ -249,7 +249,8 @@ end commMap
 
 noncomputable section stdBasis
 
-open Classical Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
+open scoped Classical
+open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
   ComplexConjugate
 
 variable [NumberField K]
@@ -618,7 +619,7 @@ section convexBodyLT'
 
 open  Metric ENNReal NNReal
 
-open Classical
+open scoped Classical
 
 variable (f : InfinitePlace K → ℝ≥0) (w₀ : {w : InfinitePlace K // IsComplex w})
 
@@ -928,7 +929,8 @@ end convexBodySum
 
 section minkowski
 
-open MeasureTheory MeasureTheory.Measure Classical FiniteDimensional Zspan Real Submodule
+open scoped Classical
+open MeasureTheory MeasureTheory.Measure FiniteDimensional Zspan Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 

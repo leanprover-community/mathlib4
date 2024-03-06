@@ -379,7 +379,7 @@ is a field because `R` is a domain.
 -/
 
 
-open Classical
+open scoped Classical
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 
@@ -577,7 +577,7 @@ variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 
 variable [Algebra R₁ K] [IsFractionRing R₁ K]
 
-open Classical
+open scoped Classical
 
 variable (R₁)
 

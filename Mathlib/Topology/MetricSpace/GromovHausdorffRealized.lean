@@ -34,11 +34,13 @@ space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCou
 
 noncomputable section
 
-open Classical Topology NNReal
+open scoped Classical
+open Topology NNReal
 
 universe u v w
 
-open Classical Set Function TopologicalSpace Filter Metric Quotient
+open scoped Classical
+open Set Function TopologicalSpace Filter Metric Quotient
 
 open BoundedContinuousFunction
 
@@ -100,7 +102,7 @@ section Constructions
 variable {X : Type u} {Y : Type v} [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y] {f : ProdSpaceFun X Y} {x y z t : X ⊕ Y}
 
-attribute [local instance 10] inhabited_of_nonempty'
+attribute [local instance 10] Classical.inhabited_of_nonempty'
 
 private theorem maxVar_bound : dist x y ≤ maxVar X Y :=
   calc

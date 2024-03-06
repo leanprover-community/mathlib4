@@ -36,7 +36,8 @@ product, sum, disjoint union, subspace, quotient space
 
 noncomputable section
 
-open Topology TopologicalSpace Set Filter Function Classical
+open scoped Classical
+open Topology TopologicalSpace Set Filter Function
 
 universe u v
 

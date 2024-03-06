@@ -867,7 +867,7 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-open Classical
+open scoped Classical
 
 open Multiset Associates
 

@@ -30,7 +30,7 @@ set_option autoImplicit true
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open BigOperators
 

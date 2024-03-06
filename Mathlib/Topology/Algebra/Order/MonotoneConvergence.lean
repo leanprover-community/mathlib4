@@ -30,7 +30,8 @@ monotone convergence
 
 open Filter Set Function
 
-open Filter Topology Classical
+open scoped Classical
+open Filter Topology
 
 variable {α β : Type*}
 

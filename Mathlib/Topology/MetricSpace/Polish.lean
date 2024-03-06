@@ -48,7 +48,8 @@ with additional properties:
 
 noncomputable section
 
-open Classical Topology Filter TopologicalSpace Set Metric Function
+open scoped Classical
+open Topology Filter TopologicalSpace Set Metric Function
 
 variable {α : Type*} {β : Type*}
 

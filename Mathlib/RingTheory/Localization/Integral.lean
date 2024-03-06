@@ -41,7 +41,7 @@ open Polynomial
 
 variable [IsLocalization M S]
 
-open Classical
+open scoped Classical
 
 /-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
 `integerNormalization p` -/

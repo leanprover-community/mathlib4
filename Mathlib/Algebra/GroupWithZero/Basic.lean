@@ -36,7 +36,7 @@ and require `0⁻¹ = 0`.
 -/
 
 
-open Classical
+open scoped Classical
 
 open Function
 

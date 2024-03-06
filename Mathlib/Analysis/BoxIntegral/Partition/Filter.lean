@@ -168,7 +168,8 @@ integral, rectangular box, partition, filter
 
 open Set Function Filter Metric Finset Bool
 
-open Classical Topology Filter NNReal
+open scoped Classical
+open Topology Filter NNReal
 
 noncomputable section
 

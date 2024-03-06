@@ -15,7 +15,8 @@ import Mathlib.Algebra.Bounds
 
 -/
 
-open Pointwise CauSeq Classical
+open scoped Classical
+open Pointwise CauSeq
 
 namespace Real
 

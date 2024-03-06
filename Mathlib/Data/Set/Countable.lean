@@ -26,7 +26,8 @@ sets, countable set
 
 noncomputable section
 
-open Function Set Encodable Classical
+open scoped Classical
+open Function Set Encodable
 
 universe u v w x
 

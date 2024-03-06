@@ -21,7 +21,7 @@ universe u w v v'
 
 section
 
-open Classical
+open scoped Classical
 
 instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'

@@ -70,7 +70,8 @@ end Int
 
 namespace Polynomial
 
-open Polynomial Classical
+open scoped Classical
+open Polynomial
 
 noncomputable section
 

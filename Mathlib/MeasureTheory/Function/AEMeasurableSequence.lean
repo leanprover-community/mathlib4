@@ -25,7 +25,7 @@ and a measurable set `aeSeqSet hf p`, such that
 
 open MeasureTheory
 
-open Classical
+open scoped Classical
 
 variable {ι : Sort*} {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}
   {μ : Measure α} {p : α → (ι → β) → Prop}

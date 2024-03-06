@@ -23,9 +23,11 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
-open Classical Set Function Filter Finset Metric Asymptotics
+open scoped Classical
+open Set Function Filter Finset Metric Asymptotics
 
-open Classical Topology Nat BigOperators uniformity NNReal ENNReal
+open scoped Classical
+open Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 

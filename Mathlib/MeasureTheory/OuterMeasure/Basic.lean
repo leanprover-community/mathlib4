@@ -56,7 +56,8 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-open Classical BigOperators NNReal Topology ENNReal MeasureTheory
+open scoped Classical
+open BigOperators NNReal Topology ENNReal MeasureTheory
 
 namespace MeasureTheory
 

@@ -23,7 +23,8 @@ derivative, power
 
 universe u v w
 
-open Classical Topology BigOperators Filter
+open scoped Classical
+open Topology BigOperators Filter
 
 open Filter Asymptotics Set
 
