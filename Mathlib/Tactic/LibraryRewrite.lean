@@ -294,6 +294,7 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
 def checkLemmata (ass : Array (Array RewriteLemma × Nat))
     (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
     MetaM (Array (CodeWithInfos × Array RewriteApplication)) := do
+  let subExprString := (← ppExprTagged subExpr).stripTags
   let mut bss := #[]
   for (as, _n) in ass do
     let mut bs := #[]
@@ -301,26 +302,27 @@ def checkLemmata (ass : Array (Array RewriteLemma × Nat))
       if let some b ← rewriteCall a loc subExpr occ then
         bs := bs.push b
 
-    if h : bs.size ≥ 1 then do
+    bs := dedupLemmata bs subExprString
+    if h : bs.size > 0 then do
       let pattern ← bs[0].pattern
       bss := bss.push (pattern, bs)
   return bss
-
-/-- Remove duplicate lemmata and lemmata that do not change the expression. -/
-def dedupLemmata (lemmata : Array RewriteApplication) (subExprString : String) :
-    Array RewriteApplication :=
-  let replacements : HashMap String Name := lemmata.foldl (init := .empty) fun map lem =>
-    if lem.extraGoals.isEmpty && !map.contains lem.replacementS then
-      map.insert lem.replacementS lem.name
-    else
-      map
-  lemmata.filter fun lem =>
-    if lem.replacementS == subExprString then
-      false
-    else
-      match replacements.find? lem.replacementS with
-      | some name => name == lem.name
-      | none      => true
+where
+  /-- Remove duplicate lemmata and lemmata that do not change the expression. -/
+  dedupLemmata (lemmata : Array RewriteApplication) (subExprString : String) :
+      Array RewriteApplication :=
+    let replacements : HashMap String Name := lemmata.foldl (init := .empty) fun map lem =>
+      if lem.extraGoals.isEmpty && !map.contains lem.replacementS then
+        map.insert lem.replacementS lem.name
+      else
+        map
+    lemmata.filter fun lem =>
+      if lem.replacementS == subExprString then
+        false
+      else
+        match replacements.find? lem.replacementS with
+        | some name => name == lem.name
+        | none      => true
 
 def getLibraryRewrites (loc : SubExpr.GoalsLocation) :
     ExceptT String MetaM (Array (CodeWithInfos × Array RewriteApplication)) := do
@@ -339,8 +341,7 @@ def getLibraryRewrites (loc : SubExpr.GoalsLocation) :
   let results ← checkLemmata rwLemmas loc subExpr occurrence
   if results.isEmpty then
     throwThe _ "No applicable rewrite lemmata found."
-  let subExprString := (← ppExprTagged subExpr).stripTags
-  return results.map fun (pat, lemmata) => (pat, dedupLemmata lemmata subExprString)
+  return results
 
 @[server_rpc_method_cancellable]
 def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
