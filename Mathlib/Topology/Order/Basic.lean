@@ -1544,8 +1544,8 @@ theorem interior_Icc [NoMinOrder α] [NoMaxOrder α] {a b : α} : interior (Icc 
 
 @[simp]
 theorem Icc_mem_nhds_iff [NoMinOrder α] [NoMaxOrder α] {a b x : α} :
-    Icc a b ∈ 𝓝 x ↔ Ioo a b ∈ 𝓝 x := by
-  rw [← interior_Icc, interior_mem_nhds]
+    Icc a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
+  rw [← interior_Icc, mem_interior_iff_mem_nhds]
 
 @[simp]
 theorem interior_Ico [NoMinOrder α] {a b : α} : interior (Ico a b) = Ioo a b := by
@@ -1553,8 +1553,8 @@ theorem interior_Ico [NoMinOrder α] {a b : α} : interior (Ico a b) = Ioo a b :
 #align interior_Ico interior_Ico
 
 @[simp]
-theorem Ico_mem_nhds_iff [NoMinOrder α] {a b x : α} : Ico a b ∈ 𝓝 x ↔ Ioo a b ∈ 𝓝 x := by
-  rw [← interior_Ico, interior_mem_nhds]
+theorem Ico_mem_nhds_iff [NoMinOrder α] {a b x : α} : Ico a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
+  rw [← interior_Ico, mem_interior_iff_mem_nhds]
 
 @[simp]
 theorem interior_Ioc [NoMaxOrder α] {a b : α} : interior (Ioc a b) = Ioo a b := by
@@ -1562,8 +1562,8 @@ theorem interior_Ioc [NoMaxOrder α] {a b : α} : interior (Ioc a b) = Ioo a b :
 #align interior_Ioc interior_Ioc
 
 @[simp]
-theorem Ioc_mem_nhds_iff [NoMaxOrder α] {a b x : α} : Ioc a b ∈ 𝓝 x ↔ Ioo a b ∈ 𝓝 x := by
-  rw [← interior_Ioc, interior_mem_nhds]
+theorem Ioc_mem_nhds_iff [NoMaxOrder α] {a b x : α} : Ioc a b ∈ 𝓝 x ↔ x ∈ Ioo a b := by
+  rw [← interior_Ioc, mem_interior_iff_mem_nhds]
 
 theorem closure_interior_Icc {a b : α} (h : a ≠ b) : closure (interior (Icc a b)) = Icc a b :=
   (closure_minimal interior_subset isClosed_Icc).antisymm <|
