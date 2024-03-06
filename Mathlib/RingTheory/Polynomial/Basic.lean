@@ -865,7 +865,11 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
       have : algebraMap R _ r ∣ a' * b' := by
-        convert killCompl Subtype.coe_injective |>.toRingHom.map_dvd hd <;> simp
+        convert killCompl Subtype.coe_injective |>.toRingHom.map_dvd hd
+        · simp only [algebraMap_eq, AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
+          rw [MvPolynomial.algHom_C (killCompl _) r] -- Why doesn't this fire?
+          simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.commutes]
+        · simp
       rw [← rename_C ((↑) : s → σ)]
       let f := (rename (R := R) ((↑) : s → σ)).toRingHom
       exact (((prime_C_iff_of_fintype s).2 hr).2.2 a' b' this).imp f.map_dvd f.map_dvd⟩⟩
