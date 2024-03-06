@@ -1459,6 +1459,7 @@ variable [Algebra R S₁] [CommSemiring S₂]
 
 variable (f : σ → S₁)
 
+@[simp]
 theorem algebraMap_apply (r : R) : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
 #align mv_polynomial.algebra_map_apply MvPolynomial.algebraMap_apply
 

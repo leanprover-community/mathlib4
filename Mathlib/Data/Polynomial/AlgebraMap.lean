@@ -50,6 +50,7 @@ instance algebraOfAlgebra : Algebra R A[X]
   toRingHom := C.comp (algebraMap R A)
 #align polynomial.algebra_of_algebra Polynomial.algebraOfAlgebra
 
+@[simp]
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
   rfl
 #align polynomial.algebra_map_apply Polynomial.algebraMap_apply
