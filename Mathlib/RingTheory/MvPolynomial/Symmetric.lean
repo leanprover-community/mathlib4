@@ -173,11 +173,13 @@ lemma muProduct_def {n : ℕ} (f : ℕ → MvPolynomial σ R) (μ : n.Partition)
     muProduct σ R f μ = Multiset.prod (μ.parts.map f) := rfl
 
 @[simp]
-theorem muProduct_zero (f : ℕ → MvPolynomial σ R) : muProduct σ R f (Nat.Partition.indiscrete 0) = 1 := by
+theorem muProduct_zero (f : ℕ → MvPolynomial σ R) :
+muProduct σ R f (Nat.Partition.indiscrete 0) = 1 := by
   simp only [muProduct, Nat.Partition.partition_zero_parts, Multiset.map_zero, Multiset.prod_zero]
 
 @[simp]
-theorem muProduct_onePart (n : ℕ) (f : ℕ → MvPolynomial σ R) (npos : n > 0): muProduct σ R f (Nat.Partition.indiscrete n) = f n := by
+theorem muProduct_onePart (n : ℕ) (f : ℕ → MvPolynomial σ R) (npos : n > 0) :
+muProduct σ R f (Nat.Partition.indiscrete n) = f n := by
   rw [muProduct, Nat.Partition.indiscrete_parts, Multiset.map_singleton, Multiset.prod_singleton]
   linarith
 
@@ -405,7 +407,8 @@ theorem psumMu_zero : psumMu σ R (Nat.Partition.indiscrete 0) = 1 := by
   simp only [psumMu, muProduct_zero]
 
 @[simp]
-theorem psumMu_onePart (n : ℕ) (npos : n > 0) : psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by
+theorem psumMu_onePart (n : ℕ) (npos : n > 0) :
+psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by
   simp only [psumMu, npos, muProduct_onePart]
 
 @[simp]
