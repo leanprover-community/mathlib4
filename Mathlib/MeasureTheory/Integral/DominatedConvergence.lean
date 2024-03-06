@@ -361,13 +361,15 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
       rintro x₀ (hx₀ | hx₀) -
       · have : ∀ᶠ x in 𝓝[Icc b₁ b₂] b₀, {t : ℝ | t ≤ x}.indicator f x₀ = f x₀ := by
           apply mem_nhdsWithin_of_mem_nhds
-          filter_upwards [Ioi_mem_nhds hx₀] with x hx
+          apply Eventually.mono (Ioi_mem_nhds hx₀)
+          intro x hx
           simp [hx.le]
         apply continuousWithinAt_const.congr_of_eventuallyEq this
         simp [hx₀.le]
       · have : ∀ᶠ x in 𝓝[Icc b₁ b₂] b₀, {t : ℝ | t ≤ x}.indicator f x₀ = 0 := by
           apply mem_nhdsWithin_of_mem_nhds
-          filter_upwards [Iio_mem_nhds hx₀] with x hx
+          apply Eventually.mono (Iio_mem_nhds hx₀)
+          intro x hx
           simp [hx]
         apply continuousWithinAt_const.congr_of_eventuallyEq this
         simp [hx₀]
