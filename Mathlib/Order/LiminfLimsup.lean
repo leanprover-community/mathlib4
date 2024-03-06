@@ -1344,11 +1344,11 @@ noncomputable def liminf_reparam
     (f : ι → α) (s : ι' → Set ι) (p : ι' → Prop) [Countable (Subtype p)] [Nonempty (Subtype p)]
     (j : Subtype p) : Subtype p :=
   let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
-  let g : ℕ → Subtype p := choose (exists_surjective_nat _)
+  let g : ℕ → Subtype p := (exists_surjective_nat _).choose
   have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
     by_cases H : ∃ j, j ∈ m
     · rcases H with ⟨j, hj⟩
-      rcases choose_spec (exists_surjective_nat (Subtype p)) j with ⟨n, rfl⟩
+      rcases (exists_surjective_nat (Subtype p)).choose_spec j with ⟨n, rfl⟩
       exact ⟨n, Or.inl hj⟩
     · push_neg at H
       exact ⟨0, Or.inr H⟩
@@ -1385,8 +1385,8 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     by_cases Hj : j ∈ m
     · simpa only [liminf_reparam, if_pos Hj] using Hj
     · simp only [liminf_reparam, if_neg Hj]
-      have Z : ∃ n, choose (exists_surjective_nat (Subtype p)) n ∈ m ∨ ∀ j, j ∉ m := by
-        rcases choose_spec (exists_surjective_nat (Subtype p)) j0 with ⟨n, rfl⟩
+      have Z : ∃ n, (exists_surjective_nat (Subtype p)).choose n ∈ m ∨ ∀ j, j ∉ m := by
+        rcases (exists_surjective_nat (Subtype p)).choose_spec j0 with ⟨n, rfl⟩
         exact ⟨n, Or.inl hj0⟩
       rcases Nat.find_spec Z with hZ|hZ
       · exact hZ
