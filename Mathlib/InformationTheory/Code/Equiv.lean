@@ -19,8 +19,7 @@ variable--? [_Code γ gdist₂ s₂] =>
   [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₂ α₂ γ]
   [IsDelone gdist₂ s₂]
 
-@[ext]
-structure CodeEquiv extends CodeHom gdist s gdist₂ s₂, α ≃ α₂ where
+structure CodeEquiv [_Code γ gdist s] [_Code γ gdist₂ s₂] extends α ≃ α₂, CodeHom gdist s gdist₂ s₂ where
   invMap_code : ∀ y ∈ s₂, invFun y ∈ s
 
 instance CodeEquiv.instEquivLike : EquivLike (CodeEquiv gdist s gdist₂ s₂) α α₂ := {
@@ -28,13 +27,19 @@ instance CodeEquiv.instEquivLike : EquivLike (CodeEquiv gdist s gdist₂ s₂) �
   inv := fun φ => φ.invFun
   left_inv := fun φ => φ.left_inv
   right_inv := fun φ => φ.right_inv
-  coe_injective' := fun φ₁ φ₂ => by
-    simp only
-    intro h1 h2
-    ext x
-    . rw [h1]
-    . rw [h2]
+  coe_injective' := fun φ₁ φ₂ h=> by
+    cases φ₁; cases φ₂; --aesop?
+    intro
+    simp_all only [Equiv.toFun_as_coe, DFunLike.coe_fn_eq, Equiv.invFun_as_coe]
 }
+
+@[ext]
+lemma CodeEquiv.ext
+    (φ:CodeEquiv gdist s gdist₂ s₂)
+    (φ₂:CodeEquiv gdist s gdist₂ s₂)
+    (h:∀ x, φ x = φ₂ x) : φ = φ₂ := by
+  apply DFunLike.ext _ _ h
+
 
 instance CodeEquiv.instGIsometryClass : GIsometryClass (CodeEquiv gdist s gdist₂ s₂) gdist gdist₂ where
   map_dist := fun φ => φ.map_dist
@@ -52,29 +57,30 @@ def CodeEquiv.refl : CodeEquiv gdist s gdist s :=
 
 variable {gdist s}
 
+@[symm]
 def CodeEquiv.symm (φ:CodeEquiv gdist s gdist₂ s₂) : CodeEquiv gdist₂ s₂ gdist s := {
   φ.toEquiv.symm with
   map_dist := fun x y => by
     rw [φ.map_dist]
     nth_rw 1 [← φ.right_inv x,← φ.right_inv y]
-    simp only [Equiv.toFun_as_coe, Equiv.coe_fn_symm_mk]
+    simp only [Equiv.invFun_as_coe, Equiv.toFun_as_coe, Equiv.apply_symm_apply]
   map_code := φ.invMap_code
   invMap_code := φ.map_code}
 
+@[trans]
 def CodeEquiv.trans
     (φ:CodeEquiv gdist s gdist₂ s₂) (φ₂:CodeEquiv gdist₂ s₂ gdist₃ s₃) :
     CodeEquiv gdist s gdist₃ s₃ := {
-  φ.toEquiv.trans φ₂.toEquiv, φ.comp φ₂.toCodeHom with
-  invMap_code := ((φ₂.symm).comp (φ.symm).toCodeHom).map_code
-  }
+  φ₂.toCodeHom.comp φ.toCodeHom,φ.toEquiv.trans φ₂.toEquiv with
+  invMap_code := by simp only; apply ((φ.symm).toCodeHom.comp (φ₂.symm).toCodeHom).map_code}
 end
 
-variable [FunLike T₃ α α₂]
-  [GIsometryClass T₃ gdist gdist₂] [EquivLike T₃ α α₂]
+variable [EquivLike T₃ α α₂]
+  [GIsometryClass T₃ gdist gdist₂]
 
 class CodeEquivClass
     [_Code γ gdist s]
-    [_Code γ gdist₂ s₂] [GIsometryClass T₃ gdist gdist₂] [EquivLike T₃ α α₂]
+    [_Code γ gdist₂ s₂] [EquivLike T₃ α α₂] [GIsometryClass T₃ gdist gdist₂]
     extends CodeHomClass T₃ gdist s gdist₂ s₂ :Prop where
   invMap_code : ∀ (φ:T₃), ∀ y∈ s₂, Equiv.invFun φ y ∈ s
 
@@ -108,7 +114,11 @@ variable--? [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂] =>
 @[ext]
 structure LinearCodeEquiv [_LinearCode γ K gdist_k gdist_m s]
   [_LinearCode γ K gdist_k gdist_m₂ s₂]
-  extends CodeEquiv gdist_m s gdist_m₂ s₂, M ≃ₗ[K] M₂
+  extends CodeEquiv gdist_m s gdist_m₂ s₂, LinearEquiv (RingHom.id K) M M₂
+
+instance LinearCodeEquiv.toLinearCodeHom (φ : LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂) :LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂ := {
+  φ with
+}
 
 instance LinearCodeEquiv.instEquivLike:
     EquivLike (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂) M M₂ where
@@ -116,11 +126,10 @@ instance LinearCodeEquiv.instEquivLike:
   inv := fun φ => φ.invFun
   left_inv := fun φ => φ.left_inv
   right_inv := fun φ => φ.right_inv
-  coe_injective' := fun φ φ₂ => by
-    intro h1 h2
-    simp_all only
-    ext x
-    rw [h1]; rw [h2]
+  coe_injective' := fun φ φ₂ h1 h2=> by
+    unhygienic cases φ;unhygienic cases φ₂; congr; simp_all
+    cases toCodeEquiv; cases toCodeEquiv_1; congr
+
 
 instance LinearCodeEquiv.instGIsometryClass :
     GIsometryClass (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂) gdist_m gdist_m₂ where
@@ -162,8 +171,7 @@ def LinearCodeEquiv.trans
     (φ:LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂)
     (φ₂:LinearCodeEquiv K gdist_k gdist_m₂ s₂ gdist_m₃ s₃):
     LinearCodeEquiv K gdist_k gdist_m s gdist_m₃ s₃ := {
-  φ.toLinearEquiv.trans φ₂.toLinearEquiv, φ.toCodeEquiv.trans φ₂.toCodeEquiv with}
-
+  φ.toLinearEquiv.trans φ₂.toLinearEquiv,φ.toCodeEquiv.trans φ₂.toCodeEquiv with}
 end
 
 -- @[abbrev_class].
