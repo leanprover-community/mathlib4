@@ -107,7 +107,7 @@ lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDen
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
   ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
-    gcongr; exact card_le_card $ monotone_filter_right _ h
+    gcongr; exact monotone_filter_right _ h
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
 lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ A := by
@@ -196,7 +196,7 @@ lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 :=
   have hn : 0 < n := Nat.succ_pos _
   use n, hn
   rw [div_lt_iff (Nat.cast_pos.2 hn), ← div_lt_iff' hε, Nat.cast_add_one]
-  exact (Nat.lt_floor_add_one _).trans_le' <| by gcongr; exact card_le_card <| by simp [subset_iff]
+  exact (Nat.lt_floor_add_one _).trans_le' <| by gcongr; simp [subset_iff]
 
 /-- The Schnirelmann density of any finite set is `0`. -/
 lemma schnirelmannDensity_finite {A : Set ℕ} [DecidablePred (· ∈ A)] (hA : A.Finite) :

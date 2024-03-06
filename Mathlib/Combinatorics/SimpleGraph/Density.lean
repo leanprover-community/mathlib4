@@ -187,7 +187,7 @@ theorem mul_edgeDensity_le_edgeDensity (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
   have hst : (s₂.card : ℚ) * t₂.card ≠ 0 := by simp [hs₂.ne_empty, ht₂.ne_empty]
   rw [edgeDensity, edgeDensity, div_mul_div_comm, mul_comm, div_mul_div_cancel _ hst]
   gcongr
-  exact card_le_card (interedges_mono hs ht)
+  exact interedges_mono hs ht
 #align rel.mul_edge_density_le_edge_density Rel.mul_edgeDensity_le_edgeDensity
 
 theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hs₂ : s₂.Nonempty)
