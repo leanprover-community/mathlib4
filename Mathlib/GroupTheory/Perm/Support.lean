@@ -3,11 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fintype.Basic
+
+import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 
 #align_import group_theory.perm.support from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+
 /-!
 # support of a permutation
 
@@ -20,6 +21,11 @@ In the following, `f g : Equiv.Perm α`.
   Equivalently, `f` and `g` are `Disjoint` iff their `support` are disjoint.
 * `Equiv.Perm.IsSwap`: `f = swap x y` for `x ≠ y`.
 * `Equiv.Perm.support`: the elements `x : α` that are not fixed by `f`.
+
+Assume `α` is a Fintype:
+* `Equiv.Perm.fixed_point_card_lt_of_ne_one f` says that `f` has
+  strictly less than `Fintype.card α - 1` fixed points, unless `f = 1`.
+  (Equivalently, `f.support` has at least 2 elements.)
 
 -/
 
@@ -114,7 +120,7 @@ theorem Disjoint.mul_right (H1 : Disjoint f g) (H2 : Disjoint f h) : Disjoint f 
   exact H1.symm.mul_left H2.symm
 #align equiv.perm.disjoint.mul_right Equiv.Perm.Disjoint.mul_right
 
--- porting note: todo: make it `@[simp]`
+-- Porting note: todo: make it `@[simp]`
 theorem disjoint_conj (h : Perm α) : Disjoint (h * f * h⁻¹) (h * g * h⁻¹) ↔ Disjoint f g :=
   (h⁻¹).forall_congr fun {_} ↦ by simp only [mul_apply, eq_inv_iff_eq]
 
@@ -665,3 +671,43 @@ theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) 
 #align equiv.perm.support_subtype_perm Equiv.Perm.support_subtype_perm
 
 end Equiv.Perm
+
+section FixedPoints
+
+namespace Equiv.Perm
+/-!
+### Fixed points
+-/
+
+variable {α : Type*}
+
+theorem fixed_point_card_lt_of_ne_one [DecidableEq α] [Fintype α] {σ : Perm α} (h : σ ≠ 1) :
+    (filter (fun x => σ x = x) univ).card < Fintype.card α - 1 := by
+  rw [lt_tsub_iff_left, ← lt_tsub_iff_right, ← Finset.card_compl, Finset.compl_filter]
+  exact one_lt_card_support_of_ne_one h
+#align equiv.perm.fixed_point_card_lt_of_ne_one Equiv.Perm.fixed_point_card_lt_of_ne_one
+
+end Equiv.Perm
+
+end FixedPoints
+
+section Conjugation
+
+namespace Equiv.Perm
+
+variable {α : Type*} [Fintype α] [DecidableEq α] {σ τ : Perm α}
+
+@[simp]
+theorem support_conj : (σ * τ * σ⁻¹).support = τ.support.map σ.toEmbedding := by
+  ext
+  simp only [mem_map_equiv, Perm.coe_mul, Function.comp_apply, Ne.def, Perm.mem_support,
+    Equiv.eq_symm_apply]
+  rfl
+#align equiv.perm.support_conj Equiv.Perm.support_conj
+
+theorem card_support_conj : (σ * τ * σ⁻¹).support.card = τ.support.card := by simp
+#align equiv.perm.card_support_conj Equiv.Perm.card_support_conj
+
+end Equiv.Perm
+
+end Conjugation

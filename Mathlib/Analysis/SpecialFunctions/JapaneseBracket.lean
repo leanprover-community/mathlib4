@@ -101,7 +101,7 @@ theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Me
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   -- We start by applying the layer cake formula
   have h_meas : Measurable fun ω : E => (1 + ‖ω‖) ^ (-r) :=
-    -- porting note: was `by measurability`
+    -- Porting note: was `by measurability`
     (measurable_norm.const_add _).pow_const _
   have h_pos : ∀ x : E, 0 ≤ (1 + ‖x‖) ^ (-r) := fun x ↦ by positivity
   rw [lintegral_eq_lintegral_meas_le μ (eventually_of_forall h_pos) h_meas.aemeasurable]

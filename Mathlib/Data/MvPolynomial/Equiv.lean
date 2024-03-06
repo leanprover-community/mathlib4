@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.MvPolynomial.Degrees
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.BigOperators.Fin
@@ -192,16 +192,19 @@ def iterToSum : MvPolynomial S₁ (MvPolynomial S₂ R) →+* MvPolynomial (Sum 
   eval₂Hom (eval₂Hom C (X ∘ Sum.inr)) (X ∘ Sum.inl)
 #align mv_polynomial.iter_to_sum MvPolynomial.iterToSum
 
+@[simp]
 theorem iterToSum_C_C (a : R) : iterToSum R S₁ S₂ (C (C a)) = C a :=
   Eq.trans (eval₂_C _ _ (C a)) (eval₂_C _ _ _)
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.iter_to_sum_C_C MvPolynomial.iterToSum_C_C
 
+@[simp]
 theorem iterToSum_X (b : S₁) : iterToSum R S₁ S₂ (X b) = X (Sum.inl b) :=
   eval₂_X _ _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.iter_to_sum_X MvPolynomial.iterToSum_X
 
+@[simp]
 theorem iterToSum_C_X (c : S₂) : iterToSum R S₁ S₂ (C (X c)) = X (Sum.inr c) :=
   Eq.trans (eval₂_C _ _ (X c)) (eval₂_X _ _ _)
 set_option linter.uppercaseLean3 false in
@@ -262,6 +265,7 @@ def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPol
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
 -/
+@[simps!]
 def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   { sumRingEquiv R S₁ S₂ with
     commutes' := by

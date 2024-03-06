@@ -232,6 +232,9 @@ def IsTorsion :=
   ∀ ⦃x : M⦄, ∃ a : R⁰, a • x = 0
 #align module.is_torsion Module.IsTorsion
 
+theorem isTorsionBySet_annihilator : IsTorsionBySet R M (Module.annihilator R M) :=
+  fun _ r ↦ Module.mem_annihilator.mp r.2 _
+
 end Module
 
 end Defs
@@ -542,6 +545,11 @@ instance IsTorsionBySet.isScalarTower
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
 #align module.is_torsion_by_set.is_scalar_tower Module.IsTorsionBySet.isScalarTower
 
+/-- Any module is also a modle over the quotient of the ring by the annihilator.
+Not an instance because it causes synthesis failures / timeouts. -/
+def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
+  (isTorsionBySet_annihilator R M).module
+
 instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
   IsTorsionBySet.module (R := R) (I := I) fun x r => by
     induction x using Quotient.inductionOn
@@ -737,13 +745,6 @@ lemma torsion_int {G} [AddCommGroup G] :
   ext x
   refine ((isOfFinAddOrder_iff_zsmul_eq_zero (x := x)).trans ?_).symm
   simp [mem_nonZeroDivisors_iff_ne_zero]
-
-lemma AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors {G : Type*} [AddCommGroup G] :
-    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
-  rw [Submodule.noZeroSMulDivisors_iff_torsion_eq_bot,
-    AddMonoid.isTorsionFree_iff_torsion_eq_bot,
-    ← Submodule.toAddSubgroup_injective.eq_iff,
-    Submodule.torsion_int, Submodule.bot_toAddSubgroup]
 
 end Torsion
 

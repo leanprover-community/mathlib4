@@ -74,7 +74,7 @@ theorem NormedAddGroupHom.completion_coe_to_fun (f : NormedAddGroupHom G H) :
     (f.completion : Completion G → Completion H) = Completion.map f := rfl
 #align normed_add_group_hom.completion_coe_to_fun NormedAddGroupHom.completion_coe_to_fun
 
--- porting note: `@[simp]` moved to the next lemma
+-- Porting note: `@[simp]` moved to the next lemma
 theorem NormedAddGroupHom.completion_coe (f : NormedAddGroupHom G H) (g : G) :
     f.completion g = f g :=
   Completion.map_coe f.uniformContinuous _
@@ -134,7 +134,7 @@ theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completi
 #align normed_add_group_hom.zero_completion NormedAddGroupHom.zero_completion
 
 /-- The map from a normed group to its completion, as a normed group hom. -/
-@[simps] -- porting note: added `@[simps]`
+@[simps] -- Porting note: added `@[simps]`
 def NormedAddCommGroup.toCompl : NormedAddGroupHom G (Completion G) where
   toFun := (↑)
   map_add' := Completion.toCompl.map_add

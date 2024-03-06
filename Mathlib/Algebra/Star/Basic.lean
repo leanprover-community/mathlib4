@@ -338,7 +338,7 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
---Porting note: new theorem
+-- Porting note: new theorem
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
     star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
@@ -390,7 +390,7 @@ scoped[ComplexConjugate] notation "conj" => starRingEnd _
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 #align star_ring_end_apply starRingEnd_apply
 
-/- Porting note: removed `simp` attribute due to report by linter:
+/- Porting note (#11119): removed `simp` attribute due to report by linter:
 
 simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
