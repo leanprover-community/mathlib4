@@ -31,7 +31,7 @@ section bounding_functions
 /-- Auxiliary function used for bounding Eisenstein series-/
 def r1 (z : ℍ) : ℝ := ((z.im ^ 2) / (z.re ^ 2 + z.im ^ 2))
 
-lemma r1' (z : ℍ) : r1 z = 1/((z.re / z.im) ^ 2 + 1) := by
+lemma r1' (z : ℍ) : r1 z = 1 / ((z.re / z.im) ^ 2 + 1) := by
   field_simp [r1, im_pos z]
 
 theorem r1_pos (z : ℍ) : 0 < r1 z := by
@@ -42,10 +42,10 @@ theorem r1_pos (z : ℍ) : 0 < r1 z := by
 /-- This function is used to give an upper bound on Eisenstein series-/
 def r (z : ℍ) : ℝ := min (z.im) (Real.sqrt (r1 z))
 
-theorem r_pos (z : ℍ) : 0 < r z := by
+lemma r_pos (z : ℍ) : 0 < r z := by
   simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]
 
-theorem r1_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
+lemma r1_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
     (z.im ^ 2) / (z.re ^ 2 + z.im ^ 2) ≤ (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 := by
   have H1 : (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 =
         δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2 := by ring
@@ -58,7 +58,7 @@ theorem r1_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
     · apply pow_two_nonneg
   · apply_rules [add_pos_of_nonneg_of_pos, pow_two_nonneg, (pow_pos z.im_pos 2)]
 
-theorem auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
+lemma auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs]
   have H1 : (z : ℂ).im ≤
     Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε) + (δ * z : ℂ).im * (δ * z : ℂ).im) := by
@@ -75,7 +75,7 @@ theorem auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ C
     add_zero, normSq_apply, add_re, mul_re, sub_zero, add_im] at *
   exact H1
 
-theorem auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
+lemma auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs, min_le_iff]
   have H1 : Real.sqrt (r1 z) ≤ Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε) +
       δ * (z : ℂ).im * (δ * (z : ℂ).im)) := by
@@ -130,31 +130,27 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
     ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs) ^ k ≤
       (Complex.abs ((x 0 : ℂ) * (z : ℂ) + (x 1 : ℂ))) ^ k := by
   by_cases hk0 : k ≠ 0
-  let n := max (x 0).natAbs (x 1).natAbs
-  have hn0 : n ≠ 0 := by
-    rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
-    exact hx
-  have h11 : ((x 0) * ↑z + (x 1)) =
-      (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
-      field_simp
-      rw [← mul_div, div_self]
-      simp only [mul_one]
-      norm_cast at *
-  simp only [Nat.cast_max, h11, ofReal_int_cast, map_mul, abs_ofReal, ge_iff_le]
-  rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
-  cases' (div_max_sq_ge_one x hx) with H1 H2
-  · apply mul_le_mul
-    simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
-    norm_cast
-    apply Real.rpow_nonneg
-    simp only [le_max_iff, Nat.cast_nonneg, or_self]
-    apply Real.rpow_nonneg (Complex.abs.nonneg _) k
-  · apply mul_le_mul
-    simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
-    norm_cast
-    apply Real.rpow_nonneg
-    simp only [le_max_iff, Nat.cast_nonneg, or_self]
-    apply Real.rpow_nonneg (Complex.abs.nonneg _) k
+  · let n := max (x 0).natAbs (x 1).natAbs
+    have hn0 : n ≠ 0 := by
+      rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
+      exact hx
+    have h11 : ((x 0) * ↑z + (x 1)) =
+        (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
+        field_simp
+        rw [← mul_div, div_self]
+        · simp only [mul_one]
+        · norm_cast at *
+    simp only [Nat.cast_max, h11, ofReal_int_cast, map_mul, abs_ofReal, ge_iff_le]
+    rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
+    cases' (div_max_sq_ge_one x hx) with H1 H2
+    · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
+      · simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
+      · apply Real.rpow_nonneg
+        simp only [le_max_iff, Nat.cast_nonneg, or_self]
+    · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
+      · simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
+      · apply Real.rpow_nonneg
+        simp only [le_max_iff, Nat.cast_nonneg, or_self]
   · simp only [ne_eq, not_not] at hk0
     simp only [hk0, Real.rpow_zero, Nat.cast_max, mul_one, le_refl]
 
