@@ -105,18 +105,17 @@ def StructuralAtom.e : StructuralAtom → M Expr
     mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .rightUnitorInv f => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
+  | .monoidalCoherence _ _ e => do
+    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, none, none, e]
 
 /-- Extract a Lean expression from a `Structural` expression. -/
 partial def Structural.e : Structural → M Expr
   | .atom η => η.e
   | .id f => do mkAppM ``CategoryStruct.id #[← f.e]
-  | .comp α β => do match α, β with
-    | _, _ => mkAppM ``CategoryStruct.comp #[← α.e, ← β.e]
+  | .comp α β => do mkAppM ``CategoryStruct.comp #[← α.e, ← β.e]
   | .whiskerLeft f η => do mkAppM ``MonoidalCategoryStruct.whiskerLeft #[← f.e, ← η.e]
   | .whiskerRight η f => do mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, ← f.e]
   | .tensorHom η θ => do mkAppM ``MonoidalCategoryStruct.tensorHom #[← η.e, ← θ.e]
-  | .monoidalCoherence _ _ e => do
-    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, none, none, e]
 
 /-- Extract a Lean expression from a `WhiskerRightExpr` expression. -/
 def WhiskerRightExpr.e : WhiskerRightExpr → M Expr
