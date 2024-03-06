@@ -281,9 +281,9 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂κ x) := by
     rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable (f x) (κ x)
-    · have : ∀ n, Integrable (s' n x) (κ x) := by
-        intro n; apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
-        apply eventually_of_forall; intro y
+    · have (n) : Integrable (s' n x) (κ x) := by
+        apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
+        filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
       simp only [f',  hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]

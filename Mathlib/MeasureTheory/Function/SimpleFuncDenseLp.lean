@@ -173,10 +173,7 @@ theorem tendsto_approxOn_range_Lp_snorm [BorelSpace E] {f : β → E} (hp_ne_top
     Tendsto (fun n => snorm (⇑(approxOn f fmeas (range f ∪ {0}) 0 (by simp) n) - f) p μ)
       atTop (𝓝 0) := by
   refine' tendsto_approxOn_Lp_snorm fmeas _ hp_ne_top _ _
-  · apply eventually_of_forall
-    intro x
-    apply subset_closure
-    simp
+  · filter_upwards with x using subset_closure (by simp)
   · simpa using hf
 #align measure_theory.simple_func.tendsto_approx_on_range_Lp_snorm MeasureTheory.SimpleFunc.tendsto_approxOn_range_Lp_snorm
 
@@ -251,10 +248,7 @@ theorem tendsto_approxOn_range_L1_nnnorm [OpensMeasurableSpace E] {f : β → E}
     Tendsto (fun n => ∫⁻ x, ‖approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖₊ ∂μ) atTop
       (𝓝 0) := by
   apply tendsto_approxOn_L1_nnnorm fmeas
-  · apply eventually_of_forall
-    intro x
-    apply subset_closure
-    simp
+  · filter_upwards with x using subset_closure (by simp)
   · simpa using hf.2
 #align measure_theory.simple_func.tendsto_approx_on_range_L1_nnnorm MeasureTheory.SimpleFunc.tendsto_approxOn_range_L1_nnnorm
 

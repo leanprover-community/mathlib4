@@ -841,9 +841,7 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
       v.eventually_filterAt_measurableSet x] with a ha h'a
     congr 1
     apply set_lintegral_congr_fun h'a
-    apply eventually_of_forall fun y => ?_
-    intro hy
-    simp only [ha hy, indicator_of_mem]
+    filter_upwards with y hy using (by simp only [ha hy, indicator_of_mem])
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
   obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, (‖f x - c‖₊ : ℝ≥0∞) < ε / 2 := by
     simp_rw [← edist_eq_coe_nnnorm_sub]

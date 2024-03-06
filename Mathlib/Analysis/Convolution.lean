@@ -1240,8 +1240,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   let bound : G → ℝ := indicator U fun t => ‖(L.precompR (P × G))‖ * ‖f t‖ * C
   have I4 : ∀ᵐ a : G ∂μ, ∀ x : P × G, dist x q₀ < δ →
       ‖L.precompR (P × G) (f a) (g' (x.fst, x.snd - a))‖ ≤ bound a := by
-    apply eventually_of_forall
-    intro a x hx
+    filter_upwards with a x hx
     rw [Prod.dist_eq, dist_eq_norm, dist_eq_norm] at hx
     have : (-tsupport fun a => g' (x.1, a)) + ball q₀.2 δ ⊆ U := by
       apply Subset.trans _ hδ
@@ -1264,8 +1263,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   have I6 : ∀ᵐ a : G ∂μ, ∀ x : P × G, dist x q₀ < δ →
       HasFDerivAt (fun x : P × G => L (f a) (g x.1 (x.2 - a)))
         ((L (f a)).comp (g' (x.fst, x.snd - a))) x := by
-    apply eventually_of_forall
-    intro a x hx
+    filter_upwards with a x hx
     apply (L _).hasFDerivAt.comp x
     have N : s ×ˢ univ ∈ 𝓝 (x.1, x.2 - a) := by
       apply A'
