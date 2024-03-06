@@ -5,7 +5,8 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.MeasureCompProd
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
-import Mathlib.Probability.Kernel.Disintegration.CondKernelCdf
+import Mathlib.Probability.Kernel.Disintegration.Density
+import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
 
 /-!
 # Disintegration of kernels and measures
@@ -210,6 +211,58 @@ lemma compProd_fst_condKernelBorelSnd (κ : kernel α (β × Ω)) [IsFiniteKerne
 end BorelSnd
 
 section CountablyGenerated
+
+open ProbabilityTheory.kernel
+
+lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    isRatCondKernelCDFAux (fun (p : α × γ) q ↦ kernel.density κ (kernel.fst κ) p.1 p.2 (Set.Iic q))
+      κ (kernel.fst κ) where
+  measurable := measurable_pi_iff.mpr fun _ ↦ measurable_density κ (kernel.fst κ) measurableSet_Iic
+  mono' a q r hqr :=
+    ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (by exact_mod_cast hqr))
+  nonneg' a q := ae_of_all _ fun c ↦ density_nonneg le_rfl _ _ _
+  le_one' a q := ae_of_all _ fun c ↦ density_le_one le_rfl _ _ _
+  tendsto_integral_of_antitone a s hs_anti hs_tendsto := by
+    let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
+    refine tendsto_integral_density_of_antitone le_rfl a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
+    · refine fun i j hij ↦ Iic_subset_Iic.mpr ?_
+      exact mod_cast hs_anti hij
+    · ext x
+      simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false, not_forall, not_le, s']
+      rw [tendsto_atTop_atBot] at hs_tendsto
+      have ⟨q, hq⟩ := exists_rat_lt x
+      obtain ⟨i, hi⟩ := hs_tendsto q
+      refine ⟨i, lt_of_le_of_lt ?_ hq⟩
+      exact mod_cast hi i le_rfl
+  tendsto_integral_of_monotone a s hs_mono hs_tendsto := by
+    rw [kernel.fst_apply' _ _ MeasurableSet.univ]
+    let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
+    refine tendsto_integral_density_of_monotone (le_rfl : kernel.fst κ ≤ kernel.fst κ)
+      a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
+    · exact fun i j hij ↦ Iic_subset_Iic.mpr (by exact mod_cast hs_mono hij)
+    · ext x
+      simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
+      rw [tendsto_atTop_atTop] at hs_tendsto
+      have ⟨q, hq⟩ := exists_rat_gt x
+      obtain ⟨i, hi⟩ := hs_tendsto q
+      refine ⟨i, hq.le.trans ?_⟩
+      exact mod_cast hi i le_rfl
+  integrable a q := integrable_density le_rfl a measurableSet_Iic
+  set_integral a A hA q := set_integral_density le_rfl a measurableSet_Iic hA
+
+lemma isRatCondKernelCDF_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsRatCondKernelCDF (fun (p : α × γ) q ↦ kernel.density κ (kernel.fst κ) p.1 p.2 (Set.Iic q)) κ
+      (kernel.fst κ) :=
+  (isRatCondKernelCDFAux_density_Iic κ).isRatCondKernelCDF
+
+noncomputable
+def condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] : α × γ → StieltjesFunction :=
+  stieltjesOfMeasurableRat (fun (p : α × γ) q ↦ kernel.density κ (kernel.fst κ) p.1 p.2 (Set.Iic q))
+    (isRatCondKernelCDF_density_Iic κ).measurable
+
+lemma isCondKernelCDF_condKernelCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsCondKernelCDF (condKernelCDF κ) κ (kernel.fst κ) :=
+  isCondKernelCDF_stieltjesOfMeasurableRat (isRatCondKernelCDF_density_Iic κ)
 
 noncomputable
 def condKernelBorel (κ : kernel α (γ × Ω)) [IsFiniteKernel κ] : kernel (α × γ) Ω :=
