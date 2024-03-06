@@ -298,7 +298,6 @@ lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X :=
   simp only [MvPolynomial.optionEquivLeft_apply, @MvPolynomial.aeval_X]
 
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
-  unfold optionEquivLeft AlgEquiv.ofAlgHom
   simp [Polynomial.algebraMap_apply]
 
 end
