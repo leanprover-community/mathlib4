@@ -174,7 +174,7 @@ end Semantics
 def Cumulative (T : ℕ → Set F) : Prop := ∀ s, T s ⊆ T (s + 1)
 
 namespace Cumulative
-
+/-
 lemma subset_of_le {T : ℕ → Set F} (H : Cumulative T)
     {s₁ s₂ : ℕ} (h : s₁ ≤ s₂) : T s₁ ⊆ T s₂ := by
   suffices : ∀ s d, T s ⊆ T (s + d)
@@ -199,7 +199,7 @@ lemma finset_mem {T : ℕ → Set F}
       simp; exact Set.insert_subset
         (subset_of_le H (Nat.le_max_right s s') hs')
         (subset_trans hs (subset_of_le H $ Nat.le_max_left s s'))⟩
-
+-/
 end Cumulative
 
 variable (F)
@@ -227,7 +227,7 @@ lemma conseq_compact [DecidableEq F] {f : F} {T : Set F}:
   · intro ⟨u, ss, hu⟩
     exact ⟨insert (~f) u,
       by simpa using Set.insert_subset_insert ss, by simpa using hu⟩
-
+/-
 lemma compact_cumulative {T : ℕ → Set F} (hT : Cumulative T) :
     Semantics.SatisfiableTheory (⋃ s, T s) ↔ ∀ s, Semantics.SatisfiableTheory (T s) :=
   ⟨by intro H s
@@ -237,7 +237,7 @@ lemma compact_cumulative {T : ℕ → Set F} (hT : Cumulative T) :
       intro u hu
       rcases hT.finset_mem hu with ⟨s, hs⟩
       exact (H s).of_subset hs ⟩
-
+-/
 end Compact
 
 end ProofTheory
