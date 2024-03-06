@@ -8,20 +8,18 @@ import Mathlib.Order.Irreducible
 import Mathlib.Order.UpperLower.Basic
 
 /-!
-# Birkhoff's representation theorem
+# Birkhoff representation
 
-This file proves the Birkhoff representation theorem: Any finite partial order can be
-represented as a sublattice of some powerset algebra. If it is a distributive lattice, this can
-be refined.
-
-Precisely, any nonempty partial order is isomorphic to the order of its irreducible lower sets.
-Conversely, any nonempty finite distributive lattice is isomorphic to the lattice of lower sets of
-its irreducible elements.
+This file proves two facts which together are commonly referred to as "Birkhoff representation":
+1. Any nonempty finite partial order is isomorphic to the partial order of sup-irreducible elements
+in its lattice of lower sets.
+2. Any nonempty finite distributive lattice is isomorphic to the lattice of lower sets of its
+partial order of sup-irreducible elements.
 
 ## Main declarations
 
 For a nonempty partial order `α`:
-* `OrderEmbeddng.supIrredLowerSet`: `α` is isomorphic to the order of its irreducible lower sets.
+* `OrderEmbedding.supIrredLowerSet`: `α` is isomorphic to the order of its irreducible lower sets.
 If, moreover, `a` is a finite distributive lattice:
 * `OrderIso.lowerSetSupIrred`: `α` is isomorphic to the lattice of lower sets of its irreducible
   elements.
@@ -35,12 +33,18 @@ If, moreover, `a` is a finite distributive lattice:
 
 ## See also
 
-This correspondence between finite distributive lattices and finite boolean algebras is made
-functorial in... TODO: Actually do it.
+These results form the object part of finite Stone duality: the functorial contravariant
+equivalence between the category of finite distributive lattices and the category of finite
+partial orders. TODO: extend to morphisms.
 
 ## Tags
 
 birkhoff, representation, stone duality, lattice embedding
+
+## References
+
+* [G. Birkhoff, Rings of sets][birkhoff1937]
+
 -/
 
 open Finset Function OrderDual
@@ -97,8 +101,8 @@ open scoped Classical
 
 variable (α)
 
-/-- **Birkhoff's Embedding Theorem**. Any nonempty finite distributive lattice can be embedded
-into its lattice of sup-irreducible lower sets. -/
+/-- The **Birkoff Embedding** of a finite partial order as sup-irreducible elements in its
+lattice of lower sets.-/
 def OrderEmbedding.supIrredLowerSet : α ↪o {s : LowerSet α // SupIrred s} where
   toFun a := ⟨LowerSet.Iic a, by simp only [supIrred_Iic]⟩
   inj' _ := by simp_all only [Subtype.mk.injEq, LowerSet.Iic_inj, implies_true]
@@ -110,9 +114,9 @@ variable {α}
 lemma OrderEmbedding.supIrredLowerSet_apply {a : α} {s : LowerSet α} (ha : LowerSet.Iic a = s) :
     OrderEmbedding.supIrredLowerSet α a = s := by
   unfold OrderEmbedding.supIrredLowerSet
-  simp_all only [supIrred_iff_of_finite, RelEmbedding.coe_mk, Embedding.coeFn_mk]
+  simp_all only [RelEmbedding.coe_mk, Embedding.coeFn_mk]
 
--- Birkhoff's Embedding is actually surjective
+/-- Surjectivity of the Birkhoff Embedding -/
 lemma supIrredLowerSet_surjective : Function.Surjective (OrderEmbedding.supIrredLowerSet α) := by
   intro ⟨_, hs⟩
   obtain ⟨a, rfl⟩ := supIrred_iff_of_finite.mp hs
@@ -120,9 +124,8 @@ lemma supIrredLowerSet_surjective : Function.Surjective (OrderEmbedding.supIrred
 
 variable (α)
 
-/-- **Birkhoff's Representation Theorem**. Any nonempty finite distributive lattice is isomorphic
-to its lattice of sup-irreducible lower sets. This is one version of Birkhoff's representation
-theorem. -/
+/-- **Birkhoff Representation for partial orders.** Any partial order is isomorphic
+to the partial order of sup-irreducible elements in its lattice of lower sets. -/
 noncomputable def OrderIso.supIrredLowerSet : α ≃o {s : LowerSet α // SupIrred s} :=
   RelIso.ofSurjective _ supIrredLowerSet_surjective
 
@@ -159,9 +162,8 @@ variable [Fintype α] [@DecidablePred α SupIrred]
 
 open scoped Classical
 
-/-- **Birkhoff's Representation Theorem**. Any nonempty finite distributive lattice is isomorphic to
-the lattice of lower sets of its sup-irreducible elements. Second version of Birkhoff's
-representation theorem -/
+/-- **Birkhoff Representation for finite distributive lattices.** Any nonempty finite distributive
+lattice is isomorphic to the lattice of lower sets of its sup-irreducible elements. -/
 noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a : α // SupIrred a} :=
   Equiv.toOrderIso
     { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun b c hcb hba ↦ hba.trans' hcb⟩
