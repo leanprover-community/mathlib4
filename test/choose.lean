@@ -1,5 +1,4 @@
 import Std.Util.ExtendedBinder
-import Std.Tactic.GuardExpr
 import Mathlib.Tactic.Choose
 
 /-!

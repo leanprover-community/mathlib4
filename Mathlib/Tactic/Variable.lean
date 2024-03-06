@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
 
 /-!
 # The `variable?` command
@@ -292,7 +292,7 @@ where
     let varComm ← `(command| variable? $binders* => $binders'*)
     trace[«variable?»] "derived{indentD varComm}"
     if suggest then
-      liftTermElabM <| Std.Tactic.TryThis.addSuggestion stx (origSpan? := stx) varComm
+      liftTermElabM <| Lean.Meta.Tactic.TryThis.addSuggestion stx (origSpan? := stx) varComm
 
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
