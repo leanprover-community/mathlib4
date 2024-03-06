@@ -92,6 +92,7 @@ variable [PartialOrder α] {s : LowerSet α}
     exact supIrred_Iic _
 
 end LowerSet
+
 section PartialOrder
 variable [PartialOrder α] [Fintype α]
 
