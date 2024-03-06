@@ -11,7 +11,7 @@ import Mathlib.Analysis.NormedSpace.FiniteDimension
 We consider infinite sums over functions `f` on `ℕ`, restricted to a residue class mod `m`.
 
 The main result is `summable_indicator_mod_iff`, which states that when `f : ℕ → ℝ` is
-decreasing and takes nonnegative values, then the sum over `f` restricted to any residue class
+decreasing, then the sum over `f` restricted to any residue class
 mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 -/
 
