@@ -531,9 +531,9 @@ theorem continuous_parametric_primitive_of_continuous {F : X → ℝ → E}
   have a₀_in : a₀ ∈ Ioo a b := ⟨a_lt.1, lt_b.1⟩
   have b₀_in : b₀ ∈ Ioo a b := ⟨a_lt.2, lt_b.2⟩
   obtain ⟨M, hM⟩ :=
-    (U_cpct.prod (isCompact_Icc (a := a) (b := b))).bddAbove_image hF.norm.continuousOn
+    (U_cpct.prod isCompact_Icc).bddAbove_image hF.norm.continuousOn
   refine intervalIntegral.continuousAt_parametric_primitive_of_dominated
-    (fun _ ↦ M) a b ?_ ?_ ?_ ?_ a₀_in b₀_in (measure_singleton b₀)
+    (fun _ ↦ M) a b ?_ ?_ intervalIntegrable_const ?_ a₀_in b₀_in (measure_singleton b₀)
   · exact fun x ↦ (hF.comp (Continuous.Prod.mk x)).aestronglyMeasurable
   · refine Eventually.mono U_nhds fun x (x_in : x ∈ U) ↦ ?_
     simp_rw [ae_restrict_iff' measurableSet_uIoc]
@@ -541,10 +541,8 @@ theorem continuous_parametric_primitive_of_continuous {F : X → ℝ → E}
     refine hM (mem_image_of_mem _ <| mk_mem_prod x_in ?_)
     rw [uIoc_of_le (a_lt.1.trans lt_b.1).le] at t_in
     exact mem_Icc_of_Ioc t_in
-  · apply intervalIntegrable_const
   · apply ae_of_all
-    intro a
-    apply (hF.comp₂ continuous_id continuous_const).continuousAt
+    exact fun a ↦ Continuous.continuousAt (by fun_prop)
 
 theorem continuous_parametric_intervalIntegral_of_continuous {a₀ : ℝ}
     {F : X → ℝ → E} (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) {s : X → ℝ} (hs : Continuous s) :
