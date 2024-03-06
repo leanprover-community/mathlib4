@@ -43,24 +43,27 @@ lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [Topologi
     simp only [Function.comp_apply, mem_setOf_eq, Nat.cast_add, Nat.cast_mul, CharP.cast_eq_zero,
       zero_mul, zero_add, le_add_iff_nonneg_left, zero_le, and_self, indicator_of_mem, g]
 
+/-- If `f : ℕ → ℝ` is decreasing and has a negative term, then `f` is not summable. -/
+lemma not_summable_of_antitone_of_neg {f : ℕ → ℝ} (hf : Antitone f) {n : ℕ} (hn : f n < 0) :
+    ¬ Summable f := by
+  intro hs
+  have := hs.tendsto_atTop_zero
+  simp only [Metric.tendsto_atTop, dist_zero_right, Real.norm_eq_abs] at this
+  obtain ⟨N, hN⟩ := this (|f n|) (abs_pos_of_neg hn)
+  specialize hN (max n N) (n.le_max_right N)
+  contrapose! hN; clear hN
+  have H : f (max n N) ≤ f n := hf (n.le_max_left N)
+  rwa [abs_of_neg hn, abs_of_neg (H.trans_lt hn), neg_le_neg_iff]
+
 /-- If `f : ℕ → ℝ` is decreasing and has a negative term, then `f` restricted to a residue
 class is not summable. -/
 lemma not_summable_indicator_mod_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f : ℕ → ℝ}
     (hf : Antitone f) {n : ℕ} (hn : f n < 0) (k : ZMod m) :
     ¬ Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) := by
-  rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable, ← summable_norm_iff]
-  intro hs
-  have := hs.tendsto_atTop_zero
-  simp only [Real.norm_eq_abs, Metric.tendsto_atTop, dist_zero_right, abs_abs] at this
-  obtain ⟨N, hN⟩ := this (|f n|) (abs_pos_of_neg hn)
-  specialize hN (max n N) (Nat.le_max_right n N)
-  contrapose! hN; clear hN
-  have H : f (m * max n N + k.val) ≤ f n :=
-    hf <|
-    calc
-      n ≤ m * n + k.val := (Nat.le_mul_of_pos_left n Fin.size_pos').trans <| Nat.le_add_right ..
-      _ ≤ m * max n N + k.val := by gcongr; exact Nat.le_max_left n N
-  rwa [abs_of_neg hn, abs_of_neg (lt_of_le_of_lt H hn), neg_le_neg_iff]
+  rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable]
+  exact not_summable_of_antitone_of_neg
+    (hf.comp_monotone <| (Covariant.monotone_of_const m).add_const k.val) <|
+    (hf <| (Nat.le_mul_of_pos_left n Fin.size_pos').trans <| Nat.le_add_right ..).trans_lt hn
 
 /-- If a decreasing sequence of real numbers is summable on one residue class
 modulo `m`, then it is also summable on every other residue class mod `m`. -/
@@ -68,13 +71,13 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
     (hf : Antitone f) {k : ZMod m} (l : ZMod m)
     (hs : Summable ({n : ℕ | (n : ZMod m) = k}.indicator f)) :
     Summable ({n : ℕ | (n : ZMod m) = l}.indicator f) := by
-  by_cases hf₀ : ∀ n, 0 ≤ f n
+  by_cases hf₀ : ∀ n, 0 ≤ f n -- the interesting case
   · rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable] at hs
     have hl : (l.val + m : ZMod m) = l := by
       simp only [ZMod.nat_cast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
     rw [← hl, ← Nat.cast_add, summable_indicator_mod_iff_summable]
-    refine Summable.of_nonneg_of_le (fun n ↦ hf₀ _) (fun n ↦ hf <| Nat.add_le_add Nat.le.refl ?_) hs
-    exact ((ZMod.val_lt k).trans_le <| m.le_add_left (ZMod.val l)).le
+    exact hs.of_nonneg_of_le (fun _ ↦ hf₀ _)
+      fun _ ↦ hf <| Nat.add_le_add Nat.le.refl (k.val_lt.trans_le <| m.le_add_left l.val).le
   · push_neg at hf₀
     obtain ⟨n, hn⟩ := hf₀
     exact (not_summable_indicator_mod_of_antitone_of_neg hf hn k hs).elim
@@ -84,8 +87,7 @@ if and only if it is summable. -/
 lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : Antitone f) (k : ZMod m) :
     Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) ↔ Summable f := by
   refine ⟨fun H ↦ ?_, fun H ↦ Summable.indicator H _⟩
-  have key (a : ZMod m) : Summable ({n : ℕ | (n :ZMod m) = a}.indicator f) :=
-    summable_indicator_mod_iff_summable_indicator_mod hf a H
   rw [Finset.sum_indicator_mod m f]
-  convert summable_sum (s := Finset.univ) fun a _ ↦ key a
+  convert summable_sum (s := Finset.univ)
+    fun a _ ↦ summable_indicator_mod_iff_summable_indicator_mod hf a H
   simp only [Finset.sum_apply]
