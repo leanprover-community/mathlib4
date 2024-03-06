@@ -54,7 +54,7 @@ assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Set Filter TopologicalSpace MeasureTheory Function
+open Set Filter TopologicalSpace MeasureTheory Function ROrCLike
 
 open scoped Classical Topology BigOperators ENNReal NNReal
 
@@ -1171,7 +1171,7 @@ theorem integral_conj {f : X → 𝕜} : ∫ x, conj (f x) ∂μ = conj (∫ x, 
 #align integral_conj integral_conj
 
 theorem integral_coe_re_add_coe_im {f : X → 𝕜} (hf : Integrable f μ) :
-    ∫ x, (ROrCLike.re (f x) : 𝕜) ∂μ + (∫ x, (ROrCLike.im (f x) : 𝕜) ∂μ) * ROrCLike.I = ∫ x, f x ∂μ := by
+    ∫ x, (re (f x) : 𝕜) ∂μ + (∫ x, (im (f x) : 𝕜) ∂μ) * ROrCLike.I = ∫ x, f x ∂μ := by
   rw [mul_comm, ← smul_eq_mul, ← integral_smul, ← integral_add]
   · congr
     ext1 x
