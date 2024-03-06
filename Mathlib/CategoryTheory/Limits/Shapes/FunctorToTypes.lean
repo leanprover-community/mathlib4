@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.Types
 
 /-!
 # Binary (co)products of type-valued functors.
@@ -122,14 +123,6 @@ lemma prodMk_snd {F G : C ⥤ Type w} {a : C} (x : F.obj a) (y : G.obj a) :
 lemma prod_ext {F G : C ⥤ Type w} {a : C} (z w : (prod F G).obj a)
     (h1 : z.1 = w.1) (h2 : z.2 = w.2) : z = w := Prod.ext h1 h2
 
-@[ext]
-lemma prod_ext' (F G : C ⥤ Type w) (n : C) (z w : (F ⨯ G).obj n)
-    (h1 : (Limits.prod.fst (X := F)).app n z = (Limits.prod.fst (X := F)).app n w)
-    (h2 : (Limits.prod.snd (X := F)).app n z = (Limits.prod.snd (X := F)).app n w) :
-    z = w := by
-  apply Equiv.injective (binaryProductEquiv F G n)
-  aesop
-
 /-- `(F ⨯ G).obj a` is in bijection with the product of `F.obj a` and `G.obj a`. -/
 @[simps]
 noncomputable
@@ -139,6 +132,14 @@ def binaryProductEquiv (F G : C ⥤ Type w) (a : C) :
   invFun z := prodMk z.1 z.2
   left_inv _ := by simp [prodMk]
   right_inv _ := by simp [prodMk]
+
+@[ext]
+lemma prod_ext' (F G : C ⥤ Type w) (n : C) (z w : (F ⨯ G).obj n)
+    (h1 : (Limits.prod.fst (X := F)).app n z = (Limits.prod.fst (X := F)).app n w)
+    (h2 : (Limits.prod.snd (X := F)).app n z = (Limits.prod.snd (X := F)).app n w) :
+    z = w := by
+  apply Equiv.injective (binaryProductEquiv F G n)
+  aesop
 
 end prod
 
