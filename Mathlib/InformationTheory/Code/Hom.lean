@@ -26,18 +26,23 @@ variable--? [_Code γ gdist₂ s₂] =>
 
 variable [FunLike T₃ α α₂] [GIsometryClass T₃ gdist gdist₂]
 
-@[ext]
 structure CodeHom [_Code γ gdist s] [_Code γ gdist₂ s₂] extends GIsometry gdist gdist₂ where
   map_code : ∀ x ∈ s, toFun x ∈ s₂
-
-
 
 instance CodeHom.instFunLike : FunLike (CodeHom gdist s gdist₂ s₂) α α₂ where
   coe := fun φ => φ.toGIsometry
   coe_injective' := fun φ₁ φ₂ h => by
-    ext y
-    simp at h
-    rw [h]
+    cases φ₁; cases φ₂; congr; simp_all
+
+section
+variable {gdist s gdist₂ s₂}
+@[ext]
+lemma CodeHom.ext (φ:CodeHom gdist s gdist₂ s₂) (φ₂:CodeHom gdist s gdist₂ s₂)
+    (h:∀ x, φ x = φ₂ x): φ = φ₂ := by
+  apply DFunLike.coe_injective'
+  ext x
+  exact h x
+end
 
 instance CodeHom.instGIsometryClass : GIsometryClass (CodeHom gdist s gdist₂ s₂) gdist gdist₂ where
   map_dist := fun φ => φ.map_dist
@@ -83,7 +88,7 @@ theorem CodeHom.cancel_right {g₁ g₂ : CodeHom gdist₂ s₂ gdist₃ s₃} {
   constructor
   . intro h
     apply CodeHom.ext
-    ext y
+    intro y
     apply (@Function.Surjective.forall α α₂ f hf (fun y => g₁ y = g₂ y)).2
     intro x
     rw [← CodeHom.comp_apply,h,CodeHom.comp_apply]
@@ -149,25 +154,25 @@ structure LinearCodeHom [_LinearCode γ K gdist_k gdist_m s] [_LinearCode γ K g
   linearMap_coe_is_codeHom_coe : (⇑toLinearMap) = toCodeHom := by rfl
 
 
+
+instance LinearCodeHom.instFunLike :
+    FunLike (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) M M₂ where
+  coe := fun φ => ⇑φ.toCodeHom
+  coe_injective' := fun φ₁ φ₂ h => by
+    cases φ₁; cases φ₂; congr;
+    simp at h; aesop_subst h
+    simp_all only [forall_const]
+    ext
+    simp_all only
+
 @[ext]
 lemma LinearCodeHom.ext
     (φ:LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂)
     (φ₂:LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂)
-    (h:φ.toCodeHom = φ₂.toCodeHom) : φ = φ₂ := by
-  cases φ ; cases φ₂
-  simp_all only [mk.injEq, true_and]
-  simp_all only [forall_const]
-  ext
-  simp_all only
-
-
-instance LinearCodeHom.instFunLike :
-    FunLike (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) M M₂ where
-  coe := fun φ => φ.toFun
-  coe_injective' := fun φ₁ φ₂ h => by
-    ext z
-    simp only at h
-    rw [h]
+    (h:∀ x,φ x = φ₂ x) : φ = φ₂ := by
+    apply DFunLike.coe_injective'
+    ext x
+    exact h x
 
 instance LinearCodeHom.instSemiLinearMapClass :
     LinearMapClass (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) K M M₂ where
