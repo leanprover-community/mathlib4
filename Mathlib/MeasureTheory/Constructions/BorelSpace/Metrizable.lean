@@ -15,7 +15,8 @@ import Mathlib.Topology.IndicatorConstPointwise
 
 open Filter MeasureTheory TopologicalSpace
 
-open Classical Topology NNReal ENNReal MeasureTheory
+open scoped Classical
+open Topology NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
 

@@ -41,7 +41,7 @@ with `+` and `≤`.
 clear what `0 * ⊤` should be. `mul` is hence left undefined. Similarly `⊤ - ⊤` is ambiguous
 so there is no `-` defined on `PartENat`.
 
-Before the `open Classical` line, various proofs are made with decidability assumptions.
+Before the `open scoped Classical` line, various proofs are made with decidability assumptions.
 This can cause issues -- see for example the non-simp lemma `toWithTopZero` proved by `rfl`,
 followed by `@[simp] lemma toWithTopZero'` whose proof uses `convert`.
 
@@ -704,7 +704,7 @@ theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWit
 
 section WithTopEquiv
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by

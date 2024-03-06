@@ -264,7 +264,7 @@ end functorial
 
 section Totalize
 
-open Classical
+open scoped Classical
 
 variable (G f)
 
@@ -289,7 +289,7 @@ end Totalize
 
 variable [DirectedSystem G fun i j h => f i j h]
 
-open Classical
+open scoped Classical
 
 theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
     (hx : ∀ k ∈ x.support, k ≤ i) :
@@ -633,7 +633,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
 
 section
 
-open Classical
+open scoped Classical
 
 open Polynomial
 
@@ -667,7 +667,7 @@ theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit 
 
 section OfZeroExact
 
-open Classical
+open scoped Classical
 
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 
@@ -1003,7 +1003,7 @@ theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
 
 section
 
-open Classical
+open scoped Classical
 
 /-- Noncomputable multiplicative inverse in a direct limit of fields. -/
 noncomputable def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=

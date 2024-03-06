@@ -34,7 +34,8 @@ topological space, group, topological group
 -/
 
 
-open Classical Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
+open scoped Classical
+open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x
 

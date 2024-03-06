@@ -83,7 +83,8 @@ set_option autoImplicit true
 
 open Set Filter
 
-open Filter Classical
+open scoped Classical
+open Filter
 
 section sort
 
