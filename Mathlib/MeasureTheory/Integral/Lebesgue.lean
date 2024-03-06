@@ -1051,6 +1051,25 @@ theorem lintegral_iInf {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurab
   lintegral_iInf_ae h_meas (fun n => ae_of_all _ <| h_anti n.le_succ) h_fin
 #align measure_theory.lintegral_infi MeasureTheory.lintegral_iInf
 
+theorem lintegral_iInf' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ)
+    (h_anti : ∀ᵐ a ∂μ, Antitone (fun i ↦ f i a)) (h_fin : ∫⁻ a, f 0 a ∂μ ≠ ∞) :
+    ∫⁻ a, ⨅ n, f n a ∂μ = ⨅ n, ∫⁻ a, f n a ∂μ := by
+  simp_rw [← iInf_apply]
+  let p : α → (ℕ → ℝ≥0∞) → Prop := fun _ f' => Antitone f'
+  have hp : ∀ᵐ x ∂μ, p x fun i => f i x := h_anti
+  have h_ae_seq_mono : Antitone (aeSeq h_meas p) := by
+    intro n m hnm x
+    by_cases hx : x ∈ aeSeqSet h_meas p
+    · exact aeSeq.prop_of_mem_aeSeqSet h_meas hx hnm
+    · simp only [aeSeq, hx, if_false]
+      exact le_rfl
+  rw [lintegral_congr_ae (aeSeq.iInf h_meas hp).symm]
+  simp_rw [iInf_apply]
+  rw [lintegral_iInf (aeSeq.measurable h_meas p) h_ae_seq_mono]
+  · congr
+    exact funext fun n ↦ lintegral_congr_ae (aeSeq.aeSeq_n_eq_fun_n_ae h_meas hp n)
+  · rwa [lintegral_congr_ae (aeSeq.aeSeq_n_eq_fun_n_ae h_meas hp 0)]
+
 /-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
 theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Countable β]
     {f : β → α → ℝ≥0∞} {μ : Measure α} (hμ : μ ≠ 0) (hf : ∀ b, Measurable (f b))
@@ -1196,6 +1215,21 @@ theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
     rw [tendsto_add_atTop_iff_nat]
     assumption
 #align measure_theory.tendsto_lintegral_filter_of_dominated_convergence MeasureTheory.tendsto_lintegral_filter_of_dominated_convergence
+
+theorem lintegral_tendsto_of_tendsto_of_antitone {f : ℕ → α → ℝ≥0∞} {F : α → ℝ≥0∞}
+    (hf : ∀ n, AEMeasurable (f n) μ) (h_anti : ∀ᵐ x ∂μ, Antitone fun n ↦ f n x)
+    (h0 : ∫⁻ a, f 0 a ∂μ ≠ ∞)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫⁻ x, f n x ∂μ) atTop (𝓝 (∫⁻ x, F x ∂μ)) := by
+  have : Antitone fun n ↦ ∫⁻ x, f n x ∂μ := fun i j hij ↦
+    lintegral_mono_ae (h_anti.mono fun x hx ↦ hx hij)
+  suffices key : ∫⁻ x, F x ∂μ = ⨅ n, ∫⁻ x, f n x ∂μ by
+    rw [key]
+    exact tendsto_atTop_iInf this
+  rw [← lintegral_iInf' hf h_anti h0]
+  refine lintegral_congr_ae ?_
+  filter_upwards [h_anti, h_tendsto] with _ hx_anti hx_tendsto
+    using tendsto_nhds_unique hx_tendsto (tendsto_atTop_iInf hx_anti)
 
 section
 
@@ -1675,6 +1709,41 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
     exact ae_eq_of_ae_le_of_lintegral_le hF'_le (this ▸ h_int_finite) hF_meas this.symm.le
   refine tendsto_nhds_unique ?_ hf_tendsto
   exact lintegral_tendsto_of_tendsto_of_monotone hf_meas hf_mono hF'_tendsto
+
+lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpace α}
+    {f : ℕ → α → ℝ≥0∞} {F : α → ℝ≥0∞} {μ : Measure α}
+    (hf_meas : ∀ n, AEMeasurable (f n) μ)
+    (hf_tendsto : Tendsto (fun i ↦ ∫⁻ a, f i a ∂μ) atTop (𝓝 (∫⁻ a, F a ∂μ)))
+    (hf_mono : ∀ᵐ a ∂μ, Antitone (fun i ↦ f i a))
+    (h_bound : ∀ᵐ a ∂μ, ∀ i, F a ≤ f i a) (h0 : ∫⁻ a, f 0 a ∂μ ≠ ∞) :
+    ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F a)) := by
+  have h_int_finite : ∫⁻ a, F a ∂μ ≠ ∞ := by
+    refine ((lintegral_mono_ae ?_).trans_lt h0.lt_top).ne
+    filter_upwards [h_bound] with a ha using ha 0
+  have h_exists : ∀ᵐ a ∂μ, ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := by
+    filter_upwards [hf_mono] with a h_mono
+    rcases tendsto_of_antitone h_mono with h | h
+    · refine ⟨0, h.mono_right ?_⟩
+      rw [OrderBot.atBot_eq]
+      exact pure_le_nhds _
+    · exact h
+  classical
+  let F' : α → ℝ≥0∞ := fun a ↦ if h : ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l)
+    then h.choose else ∞
+  have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
+    filter_upwards [h_exists] with a ha
+    simp_rw [F', dif_pos ha]
+    exact ha.choose_spec
+  suffices F' =ᵐ[μ] F by
+    filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto
+  have hF'_le : F ≤ᵐ[μ] F' := by
+    filter_upwards [h_bound, hF'_tendsto] with a h_le h_tendsto
+    exact ge_of_tendsto' h_tendsto (fun m ↦ h_le _)
+  suffices ∫⁻ a, F' a ∂μ = ∫⁻ a, F a ∂μ by
+    refine (ae_eq_of_ae_le_of_lintegral_le hF'_le h_int_finite ?_ this.le).symm
+    exact ENNReal.aemeasurable_of_tendsto hf_meas hF'_tendsto
+  refine tendsto_nhds_unique ?_ hf_tendsto
+  exact lintegral_tendsto_of_tendsto_of_antitone hf_meas hf_mono h0 hF'_tendsto
 
 end Lintegral
 
