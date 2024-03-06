@@ -1385,7 +1385,7 @@ theorem continuous_parametric_integral_of_continuous
     [FirstCountableTopology X] [LocallyCompactSpace X]
     [OpensMeasurableSpace Y] [SecondCountableTopologyEither Y E] [IsLocallyFiniteMeasure μ]
     {F : X → Y → E} (hF : Continuous fun p : X × Y ↦ F p.1 p.2) {s : Set Y} (hs : IsCompact s) :
-    Continuous fun x ↦ ∫ a in s, F x a ∂μ := by
+    Continuous (∫ y in s, F · y ∂μ) := by
   rw [continuous_iff_continuousAt]
   intro x₀
   rcases exists_compact_mem_nhds x₀ with ⟨U, U_cpct, U_nhds⟩
@@ -1398,19 +1398,19 @@ theorem continuous_parametric_integral_of_continuous
     · exact (isClosed_le (hF.comp <| Continuous.Prod.mk x).norm continuous_const).measurableSet
   · exact integrableOn_const.mpr (Or.inr hs.measure_lt_top)
   · apply ae_of_all
-    intro a
+    intro y
     -- TODO: can fun_prop show this?
     exact (hF.comp₂ continuous_id continuous_const).continuousAt
 
-/-- Consider a parameterized integral `a ↦ ∫ x, L (g x) (f a x)` where `L` is bilinear,
+/-- Consider a parameterized integral `x ↦ ∫ y, L (g y) (f x y)` where `L` is bilinear,
 `g` is locally integrable and `f` is continuous and uniformly compactly supported. Then the
-integral depends continuously on `a`. -/
+integral depends continuously on `x`. -/
 lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     [NormedSpace 𝕜 E] (L : F →L[𝕜] G →L[𝕜] E)
     {f : X → Y → G} {s : Set X} {k : Set Y} {g : Y → F}
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
-    ContinuousOn (fun a ↦ ∫ x, L (g x) (f a x) ∂μ) s := by
+    ContinuousOn (fun x ↦ ∫ y, L (g y) (f x y) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
     refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
     simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
@@ -1471,13 +1471,13 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
           positivity
   _ < ε := hδ
 
-/-- Consider a parameterized integral `a ↦ ∫ x, f a x` where `f` is continuous and uniformly
-compactly supported. Then the integral depends continuously on `a`. -/
+/-- Consider a parameterized integral `x ↦ ∫ y, f x y` where `f` is continuous and uniformly
+compactly supported. Then the integral depends continuously on `x`. -/
 lemma continuousOn_integral_of_compact_support
     {f : X → Y → E} {s : Set X} {k : Set Y} [IsFiniteMeasureOnCompacts μ]
     (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ univ))
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
-    ContinuousOn (fun a ↦ ∫ x, f a x ∂μ) s := by
+    ContinuousOn (fun x ↦ ∫ y, f x y ∂μ) s := by
   simpa using continuousOn_integral_bilinear_of_locally_integrable_of_compact_support (lsmul ℝ ℝ)
     hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
 
