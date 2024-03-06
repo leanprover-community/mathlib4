@@ -60,7 +60,7 @@ lemma isRatCondKernelCDFAux_densityIic (κ : kernel α (γ × ℝ)) [IsFiniteKer
       exact mod_cast hs_anti hij
     have hs'_iInter : ⋂ i, s' i = ∅ := by
       ext x
-      simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false, not_forall, not_le, neg_lt]
+      simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false, not_forall, not_le, s']
       rw [tendsto_atTop_atBot] at hs_tendsto
       have ⟨q, hq⟩ := exists_rat_lt x
       obtain ⟨i, hi⟩ := hs_tendsto q
