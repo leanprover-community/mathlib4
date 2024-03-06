@@ -483,7 +483,7 @@ def map : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
 
 theorem map_range_eq_span_tprod :
     LinearMap.range (map f) =
-      Submodule.span R { t | ∃ (m : (i : ι) → s i), tprod R (fun i ↦ f i (m i)) = t } := by
+      Submodule.span R { t | ∃ (m : Π i, s i), tprod R (fun i ↦ f i (m i)) = t } := by
   rw [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span, ← Set.range_comp]
   apply congrArg; ext x
   simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_setOf_eq]
@@ -492,7 +492,7 @@ theorem map_range_eq_span_tprod :
 This is `TensorProduct.mapIncl` for an arbitrary family of modules.
 -/
 @[simp]
-def mapIncl (p : (i : ι) → Submodule R (s i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, s i :=
+def mapIncl (p : Π i, Submodule R (s i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, s i :=
   map (fun (i : ι) ↦ (p i).subtype)
 
 theorem map_comp : map (fun (i : ι) ↦ g i ∘ₗ f i) = (map g) ∘ₗ (map f) := by
@@ -773,7 +773,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
 #align pi_tensor_product.is_empty_equiv PiTensorProduct.isEmptyEquiv
 
 @[simp]
-theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : (i : ι) → s i) :
+theorem isEmptyEquiv_apply_tprod [IsEmpty ι] (f : Π i, s i) :
     isEmptyEquiv ι (tprod R f) = 1 :=
   lift.tprod _
 #align pi_tensor_product.is_empty_equiv_apply_tprod PiTensorProduct.isEmptyEquiv_apply_tprod
