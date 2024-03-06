@@ -516,10 +516,10 @@ nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Int
   continuous_primitive (fun _ _ => h_int.intervalIntegrable) a
 #align measure_theory.integrable.continuous_primitive MeasureTheory.Integrable.continuous_primitive
 
-variable [IsLocallyFiniteMeasure μ] [LocallyCompactSpace X]
+variable [IsLocallyFiniteMeasure μ] [LocallyCompactSpace X] {F : X → ℝ → E}
 
 @[fun_prop]
-theorem continuous_parametric_primitive_of_continuous {F : X → ℝ → E}
+theorem continuous_parametric_primitive_of_continuous
     {a₀ : ℝ} (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) :
     Continuous fun p : X × ℝ ↦ ∫ t in a₀..p.2, F p.1 t ∂μ := by
   rw [continuous_iff_continuousAt]
@@ -547,14 +547,14 @@ theorem continuous_parametric_primitive_of_continuous {F : X → ℝ → E}
 
 @[fun_prop]
 theorem continuous_parametric_intervalIntegral_of_continuous {a₀ : ℝ}
-    {F : X → ℝ → E} (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) {s : X → ℝ} (hs : Continuous s) :
+    (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) {s : X → ℝ} (hs : Continuous s) :
     Continuous fun x ↦ ∫ t in a₀..s x, F x t ∂μ :=
   -- TODO: can `fun_prop` show this?
   show Continuous ((fun p : X × ℝ ↦ ∫ t in a₀..p.2, F p.1 t ∂μ) ∘ fun x ↦ (x, s x)) from
     (continuous_parametric_primitive_of_continuous hF).comp₂ continuous_id hs
 
 theorem continuous_parametric_intervalIntegral_of_continuous'
-    {F : X → ℝ → E} (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) (a₀ b₀ : ℝ) :
+    (hF : Continuous fun p : X × ℝ ↦ F p.1 p.2) (a₀ b₀ : ℝ) :
     Continuous fun x ↦ ∫ t in a₀..b₀, F x t ∂μ := by fun_prop
 
 end ContinuousPrimitive
