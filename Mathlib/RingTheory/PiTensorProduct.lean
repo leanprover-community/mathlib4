@@ -292,6 +292,10 @@ theorem constantBaseRingEquiv_tprod (x : ι → R) :
     MultilinearMap.mkPiAlgebra_apply]
   simp [AlgEquiv.ofAlgHom]
 
+@[simp]
+theorem constantBaseRingEquiv_symm (r : R) :
+    (constantBaseRingEquiv ι R).symm r = algebraMap _ _ r := rfl
+
 end
 
 end CommSemiring
