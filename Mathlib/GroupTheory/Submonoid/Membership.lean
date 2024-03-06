@@ -58,7 +58,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
 #align submonoid_class.coe_multiset_prod SubmonoidClass.coe_multiset_prod
 #align add_submonoid_class.coe_multiset_sum AddSubmonoidClass.coe_multiset_sum
 
-@[to_additive (attr := norm_cast)] --Porting note: removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)] -- Porting note: removed `simp`, `simp` can prove it
 theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i in s, f i) = (∏ i in s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
@@ -107,13 +107,13 @@ namespace Submonoid
 
 variable (s : Submonoid M)
 
-@[to_additive (attr := norm_cast)] --Porting note: removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)] -- Porting note: removed `simp`, `simp` can prove it
 theorem coe_list_prod (l : List s) : (l.prod : M) = (l.map (↑)).prod :=
   s.subtype.map_list_prod l
 #align submonoid.coe_list_prod Submonoid.coe_list_prod
 #align add_submonoid.coe_list_sum AddSubmonoid.coe_list_sum
 
-@[to_additive (attr := norm_cast)] --Porting note: removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)] -- Porting note: removed `simp`, `simp` can prove it
 theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) :
     (m.prod : M) = (m.map (↑)).prod :=
   S.subtype.map_multiset_prod m
@@ -371,7 +371,7 @@ theorem card_le_one_iff_eq_bot : card S ≤ 1 ↔ S = ⊥ :=
 
 @[to_additive]
 lemma eq_bot_iff_card : S = ⊥ ↔ card S = 1 :=
-  ⟨by rintro rfl;  exact card_bot, eq_bot_of_card_eq⟩
+  ⟨by rintro rfl; exact card_bot, eq_bot_of_card_eq⟩
 
 end Submonoid
 
@@ -408,7 +408,7 @@ theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
 theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
     (hx : x ∈ closure s) : ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
   obtain ⟨l, h1, h2⟩ := exists_list_of_mem_closure hx
-  exact ⟨l, h1, (Multiset.coe_prod l).trans h2⟩
+  exact ⟨l, h1, (Multiset.prod_coe l).trans h2⟩
 #align submonoid.exists_multiset_of_mem_closure Submonoid.exists_multiset_of_mem_closure
 #align add_submonoid.exists_multiset_of_mem_closure AddSubmonoid.exists_multiset_of_mem_closure
 

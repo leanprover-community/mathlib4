@@ -25,9 +25,10 @@ which as a star algebra is a topological star algebra.
 -/
 
 
-open Classical Set TopologicalSpace
+open scoped Classical
+open Set TopologicalSpace
 
-open Classical
+open scoped Classical
 
 namespace StarSubalgebra
 
@@ -257,7 +258,7 @@ theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
   have : StarAlgHomClass F R (↥(topologicalClosure (adjoin R {a}))) B :=
     inferInstanceAs (StarAlgHomClass F R (elementalStarAlgebra R a) B)
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x => ?_
-  apply adjoin_induction' x ?_ ?_ ?_ ?_ ?_
+  refine adjoin_induction' x ?_ ?_ ?_ ?_ ?_
   exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
     fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]

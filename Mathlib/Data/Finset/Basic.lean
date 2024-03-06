@@ -200,7 +200,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
---Porting note: new definition
+-- Porting note: new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -481,7 +481,7 @@ to the dot notation. -/
 @[pp_dot] protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
 #align finset.nonempty Finset.Nonempty
 
---Porting note: Much longer than in Lean3
+-- Porting note: Much longer than in Lean3
 instance decidableNonempty {s : Finset α} : Decidable s.Nonempty :=
   Quotient.recOnSubsingleton (motive := fun s : Multiset α => Decidable (∃ a, a ∈ s)) s.1
     (fun l : List α =>
@@ -2728,7 +2728,7 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
   Multiset.decidableDforallMultiset
 #align finset.decidable_dforall_finset Finset.decidableDforallFinset
 
--- porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
+-- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
 -- needed. In lean4 it seems this is not the case.
 instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
   λ _ _ ↦ decidableDforallFinset
@@ -3034,7 +3034,7 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
 
 section Classical
 
-open Classical
+open scoped Classical
 
 -- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
 -- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
@@ -4041,6 +4041,7 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   let options : Aesop.Options' :=
     { terminal := true, -- Fail if the new goal is not closed.
       generateScript := false,
+      useDefaultSimpSet := false, -- Avoiding the whole simp set to speed up the tactic.
       warnOnNonterminal := false } -- Don't show a warning on failure, simply return `none`.
   let rules ← Aesop.mkLocalRuleSet rulesets options
   let (remainingGoals, _) ←
