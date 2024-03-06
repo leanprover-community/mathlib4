@@ -26,8 +26,7 @@ is represented by a Galois object.
 
 ## References
 
-* H. W. Lenstra. Galois theory for schemes
-  <https://websites.math.leidenuniv.nl/algebra/GSchemes.pdf>
+* [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
 
 -/
 
