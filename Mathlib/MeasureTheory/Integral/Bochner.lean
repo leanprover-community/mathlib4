@@ -1328,6 +1328,9 @@ lemma integral_tendsto_of_tendsto_of_antitone {μ : Measure α} {f : ℕ → α 
   · filter_upwards [h_mono] with x hx n m hnm using neg_le_neg_iff.mpr <| hx hnm
   · filter_upwards [h_tendsto] with x hx using hx.neg
 
+/-- If a monotone sequence of functions has an upper bound and the sequence of integrals of these
+functions tends to the integral of the upper bound, then the sequence of functions converges
+almost everywhere to the upper bound. -/
 lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
     (hf_int : ∀ n, Integrable (f n) μ) (hF_int : Integrable F μ)
     (hf_tendsto : Tendsto (fun i ↦ ∫ a, f i a ∂μ) atTop (𝓝 (∫ a, F a ∂μ)))
@@ -1384,6 +1387,9 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   refine Filter.Tendsto.add ?_ tendsto_const_nhds
   exact (ENNReal.continuousAt_toReal ENNReal.ofReal_ne_top).tendsto.comp ha
 
+/-- If an antitone sequence of functions has a lower bound and the sequence of integrals of these
+functions tends to the integral of the lower bound, then the sequence of functions converges
+almost everywhere to the lower bound. -/
 lemma tendsto_of_integral_tendsto_of_antitone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
     (hf_int : ∀ n, Integrable (f n) μ) (hF_int : Integrable F μ)
     (hf_tendsto : Tendsto (fun i ↦ ∫ a, f i a ∂μ) atTop (𝓝 (∫ a, F a ∂μ)))
