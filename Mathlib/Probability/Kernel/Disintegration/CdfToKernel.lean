@@ -51,12 +51,12 @@ open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α β : Type*} [MeasurableSpace α]
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  {κ : kernel α (β × ℝ)} {ν : kernel α β}
 
 section stieltjesOfMeasurableRat
 
-variable {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
-  {f : α × β → ℚ → ℝ} {κ : kernel α (β × ℝ)} {ν : kernel α β}
+variable {f : α × β → ℚ → ℝ}
 
 /-- a function `f : α × β → ℚ → ℝ` is called a rational conditional kernel CDF of `κ` with respect
 to `ν` if is measurable, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ`
@@ -216,8 +216,7 @@ end stieltjesOfMeasurableRat
 
 section isRatCondKernelCDFAux
 
-variable {β : Type*} {mβ : MeasurableSpace β} {f : α × β → ℚ → ℝ}
-  {κ : kernel α (β × ℝ)} {ν : kernel α β}
+variable {f : α × β → ℚ → ℝ}
 
 /-- This property implies `IsRatCondKernelCDF`. The measurability, integrability and integral
 conditions are the same, but the limit properties of `IsRatCondKernelCDF` are replaced by
@@ -400,11 +399,9 @@ lemma isRatCondKernelCDFAux.isRatCondKernelCDF (hf : isRatCondKernelCDFAux f κ 
 
 end isRatCondKernelCDFAux
 
-
 section IsCondKernelCDF
 
-variable {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
-  {f : α × β → StieltjesFunction} {κ : kernel α (β × ℝ)} {ν : kernel α β}
+variable {f : α × β → StieltjesFunction}
 
 /-- A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with
 respect to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
@@ -513,9 +510,7 @@ end ToKernel
 
 section
 
-variable {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
-  {f : α × β → StieltjesFunction} {κ : kernel α (β × ℝ)} {ν : kernel α β}
-  {hf : IsCondKernelCDF f κ ν}
+variable {f : α × β → StieltjesFunction} {hf : IsCondKernelCDF f κ ν}
 
 lemma set_lintegral_toKernel_Iic [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     (a : α) (x : ℝ) {s : Set β} (hs : MeasurableSet s) :
@@ -663,8 +658,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     _ = ∑' i, κ a (f' i) := by simp_rw [hf_eq]
     _ = κ a (iUnion f') := (measure_iUnion hf_disj hf_meas).symm
 
-lemma compProd_toKernel [IsFiniteKernel κ] [IsSFiniteKernel ν]
-    (hf : IsCondKernelCDF f κ ν) :
+lemma compProd_toKernel [IsFiniteKernel κ] [IsSFiniteKernel ν] (hf : IsCondKernelCDF f κ ν) :
     ν ⊗ₖ hf.toKernel f = κ := by
   ext a s hs
   rw [kernel.compProd_apply _ _ _ hs, lintegral_toKernel_mem hf a hs]
