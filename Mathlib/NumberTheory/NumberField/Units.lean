@@ -461,7 +461,8 @@ section statements
 
 variable [NumberField K]
 
-open dirichletUnitTheorem FiniteDimensional Classical
+open scoped Classical
+open dirichletUnitTheorem FiniteDimensional
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1

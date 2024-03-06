@@ -81,7 +81,8 @@ Cantor's theorem, König's theorem, Konig's theorem
 -/
 
 
-open Function Set Order BigOperators Classical
+open scoped Classical
+open Function Set Order BigOperators
 
 noncomputable section
 

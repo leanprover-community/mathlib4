@@ -929,7 +929,8 @@ end convexBodySum
 
 section minkowski
 
-open MeasureTheory MeasureTheory.Measure Classical FiniteDimensional Zspan Real Submodule
+open scoped Classical
+open MeasureTheory MeasureTheory.Measure FiniteDimensional Zspan Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 

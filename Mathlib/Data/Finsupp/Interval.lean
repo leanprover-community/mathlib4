@@ -29,7 +29,8 @@ noncomputable section
 
 open Finset Finsupp Function
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open BigOperators Pointwise
 
 variable {ι α : Type*}
 

@@ -16,7 +16,8 @@ import Mathlib.Topology.UniformSpace.Basic
 
 universe u v
 
-open Filter TopologicalSpace Set Classical UniformSpace Function
+open scoped Classical
+open Filter TopologicalSpace Set UniformSpace Function
 
 open scoped Classical
 open Uniformity Topology Filter
