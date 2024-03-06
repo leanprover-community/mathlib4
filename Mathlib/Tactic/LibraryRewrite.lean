@@ -253,19 +253,25 @@ def rewriteCall (rwLemma : RewriteLemma)
   let tactic := s! "rw{cfg} [{symm}{← printRewriteLemma lemmaApplication !allAssigned}]{location}"
   return some { rwLemma with tactic, extraGoals, replacement }
 
+/-- The library results are displayed to the user in sections, each section corresponding to
+a particular pattern and to whether the lemma is defined in the file that the user is in. -/
+structure Section where
+  pattern : CodeWithInfos
+  isLocal : Bool
+  results : Array RewriteApplication
 
-def renderResults (results : Array (CodeWithInfos × Array RewriteApplication))
+def renderResults (results : Array Section)
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) : Html :=
-  let htmls := results.map (fun (t, arr) => renderBlock t arr);
+  let htmls := results.map renderSection;
   <details «open»={true}>
     <summary className="mv2 pointer"> Rewrite suggestions: </summary>
     {.element "div" #[("style", json% {"marginLeft" : "4px"})] htmls}
   </details>
 where
-  renderBlock (title : CodeWithInfos) (results : Array RewriteApplication) : Html :=
+  renderSection (sec : Section) : Html :=
     let core :=
       .element "ul" #[] <|
-      results.map fun rw =>
+      sec.results.map fun rw =>
         let button := Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic none)
               #[.text rw.replacementS]
@@ -278,25 +284,27 @@ where
         </li>;
     <details «open»={true}>
       <summary className="mv2 pointer">
-        {.text "Pattern "} <InteractiveCode fmt={title}/>
+        {.text "Pattern "}
+        <InteractiveCode fmt={sec.pattern}/>
+        {.text (if sec.isLocal then " (local results)" else "")}
       </summary>
       {core}
     </details>
 
 /-- Return all potenital rewrite lemmata -/
-def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
+def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
   let (localLemmas, libraryLemmas) ← getRewriteLemmas
   let localResults ← localLemmas.getMatchWithScore e (unify := true)
   let libraryResults ← libraryLemmas.getMatchWithScore e (unify := true)
-  let allResults := localResults ++ libraryResults
+  let allResults := localResults.map (·.1, true) ++ libraryResults.map (·.1, false)
   return allResults
 
-def checkLemmata (ass : Array (Array RewriteLemma × Nat))
+def checkLemmata (ass : Array (Array RewriteLemma × Bool))
     (loc : SubExpr.GoalLocation) (subExpr : Expr) (occ : Option Nat) :
-    MetaM (Array (CodeWithInfos × Array RewriteApplication)) := do
+    MetaM (Array Section) := do
   let subExprString := (← ppExprTagged subExpr).stripTags
   let mut bss := #[]
-  for (as, _n) in ass do
+  for (as, isLocal) in ass do
     let mut bs := #[]
     for a in as do
       if let some b ← rewriteCall a loc subExpr occ then
@@ -305,7 +313,7 @@ def checkLemmata (ass : Array (Array RewriteLemma × Nat))
     bs := dedupLemmata bs subExprString
     if h : bs.size > 0 then do
       let pattern ← bs[0].pattern
-      bss := bss.push (pattern, bs)
+      bss := bss.push { pattern, isLocal, results := bs }
   return bss
 where
   /-- Remove duplicate lemmata and lemmata that do not change the expression. -/
@@ -324,8 +332,7 @@ where
         | some name => name == lem.name
         | none      => true
 
-def getLibraryRewrites (loc : SubExpr.GoalsLocation) :
-    ExceptT String MetaM (Array (CodeWithInfos × Array RewriteApplication)) := do
+def getLibraryRewrites (loc : SubExpr.GoalsLocation) : ExceptT String MetaM (Array Section) := do
   let e ← loc.rootExpr
   let pos := loc.pos
   let loc := loc.loc
