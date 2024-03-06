@@ -339,7 +339,7 @@ def getLibraryRewrites (loc : SubExpr.GoalsLocation) :
   let subExprString := (← ppExprTagged subExpr).stripTags
   return results.map fun (pat, lemmata) => (pat, dedupLemmata lemmata subExprString)
 
-@[server_rpc_method]
+@[server_rpc_method_cancellable]
 def LibraryRewrite.rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
@@ -370,12 +370,7 @@ After writing `rw??`, shift-click an expression in the tactic state.
 This creates a list of rewrite suggestions for the selected expression.
 Clicking on a suggestion will paste the `rw` tactic into the editor.
 -/
-syntax (name := rw??) "rw??" : tactic
-
-@[tactic Mathlib.Tactic.LibraryRewrite.rw??]
-def elabRw?? : Elab.Tactic.Tactic := fun stx => match stx with
-  | `(tactic| rw??) => do
-    let some range := (← getFileMap).rangeOfStx? stx | return
-    Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
-      (pure $ json% { replaceRange : $(range) }) stx
-  | _ => Elab.throwUnsupportedSyntax
+elab stx:"rw??" : tactic => do
+  let some range := (← getFileMap).rangeOfStx? stx | return
+  Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
+    (pure $ json% { replaceRange : $(range) }) stx
