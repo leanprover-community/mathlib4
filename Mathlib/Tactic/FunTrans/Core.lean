@@ -51,17 +51,16 @@ def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array Binde
         if (← synthesizeInstance x type) then
           continue
 
-      trace[Meta.Tactic.fun_trans] "synthesizing arg {type}"
-
       if (← isProp type) then
-        if let .some r ← runFunProp type then
-          x.mvarId!.assign r
-          continue
-
-        let disch := (← funTransConfig.get).funPropConfig.disch
-        if let .some r ← disch type then
-          x.mvarId!.assign r
-          continue
+        if ← FunProp.isFunProp type then
+          if let .some r ← runFunProp type then
+            x.mvarId!.assign r
+            continue
+        else
+          let disch := (← funTransConfig.get).funPropConfig.disch
+          if let .some r ← disch type then
+            x.mvarId!.assign r
+            continue
 
       trace[Meta.Tactic.fun_trans.discharge] "{← ppOrigin' thmId}, failed to discharge hypotheses{indentExpr type}"
       return false
