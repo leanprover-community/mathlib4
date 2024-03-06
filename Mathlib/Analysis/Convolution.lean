@@ -229,7 +229,7 @@ theorem BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
   set s' := (fun t => -t + x₀) ⁻¹' s
   have : ∀ᵐ t : G ∂μ.restrict s,
       ‖L (f t) (g (x₀ - t))‖ ≤ s.indicator (fun t => ‖L‖ * ‖f t‖ * ⨆ i : s', ‖g i‖) t := by
-    refine' eventually_of_forall _
+    filter_upwards
     refine' le_indicator (fun t ht => _) fun t ht => _
     · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
       refine' (le_ciSup_set hbg <| mem_preimage.mpr _)
@@ -683,7 +683,7 @@ theorem BddAbove.continuous_convolution_right_of_integrable
     Continuous (f ⋆[L, μ] g) := by
   refine' continuous_iff_continuousAt.mpr fun x₀ => _
   have : ∀ᶠ x in 𝓝 x₀, ∀ᵐ t : G ∂μ, ‖L (f t) (g (x - t))‖ ≤ ‖L‖ * ‖f t‖ * ⨆ i, ‖g i‖ := by
-    refine' eventually_of_forall fun x => eventually_of_forall fun t => _
+    filter_upwards with x; filter_upwards with t
     apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl, le_ciSup hbg (x - t)]
   refine' continuousAt_of_dominated _ this _ _
   · exact eventually_of_forall fun x =>
@@ -1073,8 +1073,8 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
   -- `refine' hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀) _ _ _`
   -- but it failed; surprisingly, `apply` works
   apply hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀)
-  · refine' eventually_of_forall fun t x hx =>
-      (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv le_rfl)
+  · filter_upwards with t x hx
+    exact (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv le_rfl)
         (ball_subset_closedBall hx)
   · rw [integrable_indicator_iff hK'.measurableSet]
     exact ((hf.integrableOn_isCompact hK').norm.const_mul _).mul_const _

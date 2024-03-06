@@ -1123,7 +1123,7 @@ lemma limsup_piecewise {s : Set β} [DecidablePred (· ∈ s)] {v} :
     limsup (s.piecewise u v) f = blimsup u f (· ∈ s) ⊔ blimsup v f (· ∉ s) := by
   rw [← blimsup_sup_not (p := (· ∈ s))]
   refine congr_arg₂ _ (blimsup_congr ?_) (blimsup_congr ?_) <;>
-    refine eventually_of_forall fun _ h ↦ ?_ <;> simp [h]
+    filter_upwards with _ h using by simp [h]
 
 lemma liminf_piecewise {s : Set β} [DecidablePred (· ∈ s)] {v} :
     liminf (s.piecewise u v) f = bliminf u f (· ∈ s) ⊓ bliminf v f (· ∉ s) :=

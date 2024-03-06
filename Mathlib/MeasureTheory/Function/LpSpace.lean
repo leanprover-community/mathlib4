@@ -1150,7 +1150,7 @@ theorem add_compLp (L L' : E →L[𝕜] F) (f : Lp E p μ) :
   refine' EventuallyEq.trans _ (Lp.coeFn_add _ _).symm
   refine'
     EventuallyEq.trans _ (EventuallyEq.add (L.coeFn_compLp' f).symm (L'.coeFn_compLp' f).symm)
-  refine' eventually_of_forall fun x => _
+  filter_upwards with x
   rw [coe_add', Pi.add_def]
 #align continuous_linear_map.add_comp_Lp ContinuousLinearMap.add_compLp
 

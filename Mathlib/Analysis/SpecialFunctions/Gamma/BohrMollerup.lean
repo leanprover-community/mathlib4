@@ -300,7 +300,7 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
   -- Porting note: `show` no longer reorders goals
   pick_goal 3
   show ∀ᶠ n : ℕ in atTop, f x - f 1 - x * (log (n + 1) - log n) ≤ logGammaSeq x n
-  · refine' eventually_of_forall fun n => _
+  · filter_upwards with n
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
     convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
     ring

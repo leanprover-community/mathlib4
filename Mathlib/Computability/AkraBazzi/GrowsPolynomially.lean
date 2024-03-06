@@ -298,7 +298,7 @@ lemma growsPolynomially_id : GrowsPolynomially (fun x => x) := by
   intro b hb
   refine ⟨b, hb.1, ?_⟩
   refine ⟨1, by norm_num, ?_⟩
-  refine eventually_of_forall fun x u hu => ?_
+  filter_upwards with x u hu
   simp only [one_mul, ge_iff_le, gt_iff_lt, not_le, Set.mem_Icc]
   exact ⟨hu.1, hu.2⟩
 
