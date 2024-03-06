@@ -54,7 +54,8 @@ abbrev Unprovable (T : Set F) (f : F) : Prop := IsEmpty (T ⊢ f)
 
 infix:45 " ⊬ " => System.Unprovable
 
-lemma unprovable_iff_not_provable {T : Set F} {f : F} : T ⊬ f ↔ ¬T ⊢! f := by simp[System.Unprovable]
+lemma unprovable_iff_not_provable {T : Set F} {f : F} : T ⊬ f ↔ ¬T ⊢! f := by
+  simp[System.Unprovable]
 
 def BewTheoryEmpty (T : Set F) : T ⊢* ∅ := fun h => by contradiction
 
@@ -66,9 +67,11 @@ def Consistent (T : Set F) : Prop := IsEmpty (T ⊢ ⊥)
 
 def weakening {T U : Set F} {f : F} (b : T ⊢ f) (ss : T ⊆ U) : U ⊢ f := weakening' ss b
 
-lemma Consistent.of_subset {T U : Set F} (h : Consistent U) (ss : T ⊆ U) : Consistent T := ⟨fun b => h.false (weakening b ss)⟩
+lemma Consistent.of_subset {T U : Set F} (h : Consistent U) (ss : T ⊆ U) : Consistent T :=
+  ⟨fun b => h.false (weakening b ss)⟩
 
-lemma inconsistent_of_proof {T : Set F} (b : T ⊢ ⊥) : ¬Consistent T := by simp[Consistent]; exact ⟨b⟩
+lemma inconsistent_of_proof {T : Set F} (b : T ⊢ ⊥) : ¬Consistent T := by
+  simp[Consistent]; exact ⟨b⟩
 
 lemma inconsistent_of_provable {T : Set F} (b : T ⊢! ⊥) : ¬Consistent T := by simp[Consistent]
 
@@ -155,14 +158,14 @@ variable {a : α}
 lemma sound! {T : Set F} {f : F} : T ⊢! f → T ⊨ f := by rintro ⟨b⟩; exact sound b
 
 lemma not_provable_of_countermodel {T : Set F} {p : F}
-  (hT : a ⊧* T) (hp : ¬a ⊧ p) : IsEmpty (T ⊢ p) :=
+    (hT : a ⊧* T) (hp : ¬a ⊧ p) : IsEmpty (T ⊢ p) :=
   ⟨fun b => by have : a ⊧ p := Sound.sound b hT; contradiction⟩
 
-lemma consistent_of_model {T : Set F}
-  (hT : a ⊧* T) : System.Consistent T :=
+lemma consistent_of_model {T : Set F} (hT : a ⊧* T) : System.Consistent T :=
   not_provable_of_countermodel (p := ⊥) hT (by simp)
 
-lemma consistent_of_satisfiable {T : Set F} : Semantics.SatisfiableTheory T → System.Consistent T := by
+lemma consistent_of_satisfiable {T : Set F} :
+    Semantics.SatisfiableTheory T → System.Consistent T := by
   rintro ⟨_, h⟩; exact consistent_of_model h
 
 lemma models_of_proof {T : Set F} {f} (h : a ⊧* T) (b : T ⊢ f) : a ⊧ f :=
@@ -183,7 +186,8 @@ noncomputable def of! [Sound F] (H : ∀ {T : Set F} {p : F}, T ⊨ p → T ⊢!
 
 variable [Complete F]
 
-lemma satisfiableTheory_iff_consistent {T : Set F} : Semantics.SatisfiableTheory T ↔ System.Consistent T :=
+lemma satisfiableTheory_iff_consistent {T : Set F} :
+    Semantics.SatisfiableTheory T ↔ System.Consistent T :=
   ⟨Sound.consistent_of_satisfiable,
    by contrapose; intro h
       have : T ⊨ ⊥ := by intro a hM; have : Semantics.SatisfiableTheory T := ⟨a, hM⟩; contradiction
