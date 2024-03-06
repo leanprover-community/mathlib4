@@ -43,7 +43,7 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 -/
 
 
-open Classical
+open scoped Classical
 
 noncomputable instance WithTop.instSupSet {α : Type*} [Preorder α] [SupSet α] :
     SupSet (WithTop α) :=
@@ -269,7 +269,7 @@ instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrde
 
 section
 
-open Classical
+open scoped Classical
 
 /-- A well founded linear order is conditionally complete, with a bottom element. -/
 @[reducible]
@@ -864,11 +864,11 @@ theorem ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
   ciSup_unique (α := αᵒᵈ)
 #align infi_unique ciInf_unique
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
   @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
   @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
@@ -1271,7 +1271,7 @@ end ConditionallyCompleteLinearOrderBot
 
 namespace WithTop
 
-open Classical
+open scoped Classical
 
 variable [ConditionallyCompleteLinearOrderBot α]
 
@@ -1619,7 +1619,7 @@ This result can be used to show that the extended reals `[-∞, ∞]` are a comp
 -/
 
 
-open Classical
+open scoped Classical
 
 /-- Adding a top element to a conditionally complete lattice
 gives a conditionally complete lattice -/
@@ -1655,7 +1655,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
         · rw [h] at h₁
           cases h₁
         · convert bot_le (a := a)
-          -- porting note: previous proof relied on convert unfolding
+          -- Porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg
           simp only [h, preimage_empty, WithBot.csSup_empty]

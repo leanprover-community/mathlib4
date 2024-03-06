@@ -205,4 +205,4 @@ instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] : TopologicalG
 instance Metric.sphere.commGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) :=
   { Metric.sphere.group,
     Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl) with }
-  -- porting note: Lean couldn't see past the type synonym into the subtype.
+  -- Porting note: Lean couldn't see past the type synonym into the subtype.

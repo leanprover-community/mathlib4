@@ -56,9 +56,9 @@ class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] exte
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance 100] AddTorsor.nonempty -- porting note: removers `nolint instance_priority`
+attribute [instance 100] AddTorsor.nonempty -- Porting note: removers `nolint instance_priority`
 
---Porting note: removed
+-- Porting note: removed
 --attribute [nolint dangerous_instance] AddTorsor.toVSub
 
 /-- An `AddGroup G` is a torsor for itself. -/
@@ -191,7 +191,7 @@ namespace Set
 
 open Pointwise
 
--- Porting note: simp can prove this
+-- porting note (#10618): simp can prove this
 --@[simp]
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]

@@ -68,10 +68,10 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       simp,
     zpow_succ' := fun n f => by
       ext x
-      simp [zpow_ofNat, pow_succ],
+      simp [zpow_coe_nat, pow_succ],
     zpow_neg' := fun n f => by
       ext x
-      simp [Nat.succ_eq_add_one, zpow_ofNat, -Int.natCast_add] }
+      simp [Nat.succ_eq_add_one, zpow_coe_nat, -Int.natCast_add] }
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
@@ -93,13 +93,27 @@ theorem AddMonoid.End.natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) :
   rfl
 #align add_monoid.End.nat_cast_apply AddMonoid.End.natCast_apply
 
+@[simp]
+theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
+  rfl
+
+-- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.coe_one`
+theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
+  rfl
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem AddMonoid.End.ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m :=
+  rfl
+
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
   AddMonoidHom.addCommGroup
 
 instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
-    intCast_ofNat := ofNat_zsmul _,
+    intCast_ofNat := coe_nat_zsmul _,
     intCast_negSucc := negSucc_zsmul _ }
 
 /-- See also `AddMonoid.End.intCast_def`. -/

@@ -1444,6 +1444,14 @@ theorem preimage_val_eq_preimage_val_iff (s t u : Set α) :
   preimage_coe_eq_preimage_coe_iff
 #align subtype.preimage_val_eq_preimage_val_iff Subtype.preimage_val_eq_preimage_val_iff
 
+lemma preimage_val_subset_preimage_val_iff (s t u : Set α) :
+    (Subtype.val ⁻¹' t : Set s) ⊆ Subtype.val ⁻¹' u ↔ s ∩ t ⊆ s ∩ u := by
+  constructor
+  · rw [← image_preimage_coe, ← image_preimage_coe]
+    exact image_subset _
+  · intro h x a
+    exact (h ⟨x.2, a⟩).2
+
 theorem exists_set_subtype {t : Set α} (p : Set α → Prop) :
     (∃ s : Set t, p (((↑) : t → α) '' s)) ↔ ∃ s : Set α, s ⊆ t ∧ p s := by
   rw [← exists_subset_range_and_iff, range_coe]

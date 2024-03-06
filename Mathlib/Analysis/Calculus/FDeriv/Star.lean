@@ -22,7 +22,7 @@ star operation; which as should be expected rules out `𝕜 = ℂ`.
 -/
 
 
-open Classical
+open scoped Classical
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜] [TrivialStar 𝕜]
 

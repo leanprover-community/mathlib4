@@ -96,9 +96,9 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- The strategy is to show that the exceptional locus in nonempty
   -- by running a descent argument that starts with the given point p = (x,y).
   -- Our assumptions ensure that we can then prove the claim.
-  suffices exc : exceptional.Nonempty
-  · -- Suppose that there exists an element in the exceptional locus.
-    simp only [Set.Nonempty, Prod.exists, Set.mem_setOf_eq] at exc
+  suffices exc : exceptional.Nonempty by
+    -- Suppose that there exists an element in the exceptional locus.
+    simp only [Set.Nonempty, Prod.exists, Set.mem_setOf_eq, exceptional] at exc
     -- Let (a,b) be such an element, and consider all the possible cases.
     rcases exc with ⟨a, b, hH, hb⟩
     rcases hb with (_ | rfl | rfl | hB | hB)
@@ -144,7 +144,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- This means that m_y = m,
   -- and the conditions H(m_x, m_y) and m_x < m_y are satisfied.
   simp only at mx_lt_my hHm m_eq
-  simp only [hHm, Set.mem_setOf_eq, true_and] at h_base
+  simp only [exceptional, hHm, Set.mem_setOf_eq, true_and] at h_base
   push_neg at h_base
   -- Finally, it also means that (m_x, m_y) does not lie in the base locus,
   -- that m_x ≠ 0, m_x ≠ m_y, B(m_x) ≠ m_y, and B(m_x) ≠ m_x + m_y.
@@ -182,9 +182,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     rw [H_symm, H_quad]
     simpa using h_root
   · -- For the second condition, we note that it suffices to check that c ≠ m_x.
-    suffices hc : c ≠ mx
-    · refine' lt_of_le_of_ne _ hc
-      exact mod_cast c_lt
+    suffices hc : c ≠ mx from lt_of_le_of_ne (mod_cast c_lt) hc
     -- However, recall that B(m_x) ≠ m_x + m_y.
     -- If c = m_x, we can prove B(m_x) = m_x + m_y.
     contrapose! hm_B₂

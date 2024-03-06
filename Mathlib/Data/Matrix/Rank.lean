@@ -103,9 +103,9 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
 lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B * A).rank = B.rank := by
-  suffices : Function.Surjective A.mulVecLin
-  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
-    (LinearMap.range_eq_top.mpr this), ← rank]
+  suffices Function.Surjective A.mulVecLin by
+    rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
+      (LinearMap.range_eq_top.mpr this), ← rank]
   intro v
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
@@ -158,7 +158,7 @@ theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type*} [AddComm
   have aux₂ := Basis.equiv_apply (Pi.basisFun R n) i v₂
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply, LinearMap.coe_stdBasis] at aux₁ aux₂
-  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
+  simp only [e₁, e₁, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
     LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 #align matrix.rank_eq_finrank_range_to_lin Matrix.rank_eq_finrank_range_toLin
 
