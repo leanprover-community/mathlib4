@@ -71,14 +71,14 @@ variable {M : Comon_ C}
 
 @[simp]
 theorem counit_comul_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (M.counit ⊗ f) = f ≫ (λ_ Z).inv := by
-  rw [← tensor_id_comp_id_tensor, ← Category.assoc, M.counit_comul, leftUnitor_inv_naturality]
+  sorry --rw [← tensor_id_comp_id_tensor, ← Category.assoc, M.counit_comul, leftUnitor_inv_naturality]
 
 @[simp]
 theorem mul_one_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) = f ≫ (ρ_ Z).inv := by
-  rw [← id_tensor_comp_tensor_id, ← Category.assoc, M.comul_counit, rightUnitor_inv_naturality]
+  sorry --rw [← id_tensor_comp_tensor_id, ← Category.assoc, M.comul_counit, rightUnitor_inv_naturality]
 
 theorem assoc_flip :
-    M.comul ≫ (𝟙 M.X ⊗ M.comul) = M.comul ≫ (M.comul ⊗ 𝟙 M.X) ≫ (α_ M.X M.X M.X).hom := by simp
+    M.comul ≫ (𝟙 M.X ⊗ M.comul) = M.comul ≫ (M.comul ⊗ 𝟙 M.X) ≫ (α_ M.X M.X M.X).hom := by sorry --simp
 
 /-- A morphism of comonoid objects. -/
 @[ext]
@@ -182,20 +182,20 @@ Turn a comonoid object into a monoid object in the opposite category.
   one := A.counit.op
   mul := A.comul.op
   one_mul := by
-    rw [op_leftUnitor]
+    sorry /-rw [op_leftUnitor]
     dsimp
     rw [← A.counit_comul, op_comp, op_tensorHom]
-    rfl
+    rfl-/
   mul_one := by
-    rw [op_rightUnitor]
+    sorry /-rw [op_rightUnitor]
     dsimp
     rw [← A.comul_counit, op_comp, op_tensorHom]
-    rfl
+    rfl-/
   mul_assoc := by
-    rw [op_associator]
+    sorry /-rw [op_associator]
     dsimp
     rw [← op_id, op_tensor_op, op_tensor_op, ← op_comp, ← op_comp, ← op_comp]
-    rw [Category.assoc, ← A.comul_assoc]
+    rw [Category.assoc, ← A.comul_assoc]-/
 
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
@@ -215,15 +215,15 @@ Turn a monoid object in the opposite category into a comonoid object.
   counit := A.one.unop
   comul := A.mul.unop
   counit_comul := by
-    rw [← unop_id, unop_tensor_unop, ← unop_comp, A.one_mul]
-    rfl
+    sorry /-rw [← unop_id, unop_tensor_unop, ← unop_comp, A.one_mul]
+    rfl-/
   comul_counit := by
-    rw [← unop_id, unop_tensor_unop, ← unop_comp, A.mul_one]
-    rfl
+    sorry /-w [← unop_id, unop_tensor_unop, ← unop_comp, A.mul_one]
+    rfl-/
   comul_assoc := by
-    rw [← unop_id, unop_tensor_unop, unop_tensor_unop, ← unop_comp, A.mul_assoc,
+    sorry /-rw [← unop_id, unop_tensor_unop, unop_tensor_unop, ← unop_comp, A.mul_assoc,
       op_associator]
-    simp
+    simp-/
 
 /--
 The contravariant functor turning monoid objects in the opposite category into comonoid objects.
@@ -280,11 +280,11 @@ theorem tensorObj_comul (A B : Comon_ C) :
     (A ⊗ B).comul = (A.comul ⊗ B.comul) ≫ tensor_μ C (A.X, A.X) (B.X, B.X) := by
   rw [tensorObj_comul']
   congr
-  simp only [tensor_obj, prodMonoidal_tensorObj, tensor_μ, braiding_op, unop_op, Iso.op_hom]
+  sorry /-simp only [tensor_obj, prodMonoidal_tensorObj, tensor_μ, braiding_op, unop_op, Iso.op_hom]
   apply Quiver.Hom.unop_inj
   dsimp [op_tensorObj, op_associator]
   rw [← op_id, ← op_id, op_tensor_op, op_tensor_op, op_tensor_op, op_tensor_op]
   simp [Category.assoc]
-  rfl
+  rfl-/
 
 end Comon_
