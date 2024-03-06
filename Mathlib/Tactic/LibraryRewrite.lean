@@ -37,6 +37,9 @@ instance : LT RewriteLemma := ⟨fun a b => RewriteLemma.lt a b⟩
 instance (a b : RewriteLemma) : Decidable (a < b) :=
   inferInstanceAs (Decidable (RewriteLemma.lt a b))
 
+def isBadModule (name : Name) : Bool :=
+  (`Mathlib.Tactic).isPrefixOf name
+
 /-- Similar to `Name.isBlackListed`. -/
 def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
   (match cinfo with
@@ -50,7 +53,6 @@ def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
     | .str _ "noConfusionType" => true
     | _ => false)
   || name.isInternalDetail
-  || (`Mathlib).isPrefixOf name
   || isAuxRecursor env name
   || isNoConfusion env name
   || isMatcherCore env name
@@ -81,24 +83,25 @@ def RewriteCache := DeclCache (RefinedDiscrTree RewriteLemma × RefinedDiscrTree
 
 def RewriteCache.mk
   (init : Option (RefinedDiscrTree RewriteLemma) := none) :
-    IO RewriteCache :=
-  DeclCache.mk "rw??: init cache" pre ({}, {}) addDecl addLibraryDecl post
+    IO RewriteCache := do
+  let cache ← Cache.mk <| (({}, ·)) <$> do
+    match init with
+    | some tree => return tree
+    | none =>
+      profileitM Exception "rw??: init cache" (← getOptions) do
+        let env ← getEnv
+        let mut tree := {}
+        for moduleName in env.header.moduleNames, data in env.header.moduleData do
+          if isBadModule moduleName then
+            continue
+          for name in data.constNames, cinfo in data.constants do
+            tree ← updateDiscrTree name cinfo tree
+        return tree.mapArrays (·.qsort (· < ·))
+  return { cache, addDecl }
 where
-  pre := do
-    let .some libraryTree := init | failure
-    return ({}, libraryTree)
-
   addDecl (name : Name) (cinfo : ConstantInfo)
-    | (currentTree, libraryTree) => do
+  | (currentTree, libraryTree) => do
     return (← updateDiscrTree name cinfo currentTree, libraryTree)
-
-  addLibraryDecl (name : Name) (cinfo : ConstantInfo)
-    | (currentTree, libraryTree) => do
-    return (currentTree, ← updateDiscrTree name cinfo libraryTree)
-
-  post
-    | (currentTree, libraryTree) => do
-    return (currentTree, libraryTree.mapArrays (·.qsort (· < ·)))
 
 def cachePath : IO System.FilePath := do
   try
