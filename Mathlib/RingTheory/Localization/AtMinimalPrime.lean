@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Uni Marx. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Uni Marx.
+Authors: Uni Marx
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Nilpotent
@@ -52,7 +52,7 @@ theorem AtMinimalPrime.nilpotent_iff_mem_maximal {x : _} :
     IsNilpotent x ↔ x ∈ LocalRing.maximalIdeal (Localization I.primeCompl) := by
   rw [nilpotent_iff_mem_prime]
   constructor
-  · exact fun h => h (LocalRing.maximalIdeal (Localization I.primeCompl)) (Ideal.IsMaximal.isPrime' _)
+  · exact fun h => h (LocalRing.maximalIdeal _) (Ideal.IsMaximal.isPrime' _)
   · intro h J hJ
     rw [prime_unique hMin J]
     exact h
