@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
-
+import Mathlib.Data.List.MinMax
 #align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
@@ -156,6 +156,24 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
   rw [length_take] at hix
   exact h.rel_nthLe_of_lt _ _ (Nat.lt_add_right _ (lt_min_iff.mp hix).left)
 #align list.sorted.rel_of_mem_take_of_mem_drop List.Sorted.rel_of_mem_take_of_mem_drop
+
+
+section MinMax
+variable [LinearOrder α]
+theorem Sorted.minimum {l : List α} (h : List.Sorted (· ≤ ·) l) (hl : l ≠ []) :
+    minimum l = List.head l hl := by
+  induction l with
+    | nil => simpa only [minimum_nil, WithTop.top_ne_coe] using hl rfl
+    | cons a as tail_ih =>
+      rw[sorted_cons] at h
+      rw[head_cons, minimum_cons a as]
+      specialize tail_ih h.2
+      by_cases eq: as = []
+      · simp only [eq, minimum_nil, ge_iff_le, le_top, min_eq_left]
+      · rw[tail_ih eq, min_eq_left_iff, WithTop.coe_le_coe]
+        exact h.1 _ (head_mem _)
+
+end MinMax
 
 end Sorted
 
