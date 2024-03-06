@@ -9,12 +9,18 @@ import Mathlib.Data.Finset.Image
 /-!
 # Basic definitions and properties of semantics-related notions
 
-This file defines the semantics of formulas based on Tarski's truth definitions.
-Also provides a characterization of compactness.
+This file defines the semantics of formulas based on Tarski's truth definitions. It also provides
+a characterization of compactness.
 
 ## Main Definitions
 * `Semantics`: The realization of a formula.
 * `Compact`: The semantic compactness of logic.
+
+This file defines similar concepts to `ModelTheory.Semantics`, but for Tait-style formulas.
+
+## References
+
+* <https://plato.stanford.edu/entries/tarski-truth/>
 
 -/
 
@@ -22,10 +28,13 @@ namespace ProofTheory
 
 variable {F : Type*} [LogicalConnective F]
 
+/-- Class `Semantics` defines how a structure realizes a formula -/
 class Semantics (F : Type*) [LogicalConnective F] (α : outParam (Type*)) where
   realize : α → F →ˡᶜ Prop
 
+/-- Class `Vocabulary` defines the vocabulary of formulas, built from logical connectives -/
 class Vocabulary (F : Type*) [LogicalConnective F] (V : outParam (Type*)) where
+  /-- `voc` is a map from logical connectives -/
   voc    : F → Set V
   verum  : voc ⊤ = ∅
   falsum : voc ⊥ = ∅
@@ -37,23 +46,32 @@ class Vocabulary (F : Type*) [LogicalConnective F] (V : outParam (Type*)) where
 namespace Semantics
 variable {α : Type*} [𝓢 : Semantics F α]
 
+/-- `realizeTheory` specifices that a structure realizes a theory if it realizes each formula -/
 def realizeTheory (a : α) (T : Set F) : Prop := ∀ ⦃f⦄, f ∈ T → realize a f
 
+/-- Postfix notation for `realize` -/
 postfix:max " ⊧ " => realize
 
+/-- Infix notation for `realizeTheory` -/
 infix:60 " ⊧* " => realizeTheory
 
+/-- `consequence` holds if xxx -/
 def consequence (T : Set F) (f : F) : Prop := ∀ ⦃a : α⦄, a ⊧* T → a ⊧ f
 
 -- note that ⊨ (\vDash) is *NOT* ⊧ (\models)
+/-- Infix notation for `consquence` -/
 infix:55 " ⊨ " => consequence
 
+/-- Validity for a formula -/
 def Valid (f : F) : Prop := ∀ ⦃a : α⦄, a ⊧ f
 
+/-- Validity for a theory -/
 def ValidTheory (T : Set F) : Prop := ∀ ⦃a : α⦄, a ⊧* T
 
+/-- Satisfiability for a formula -/
 def Satisfiable (f : F) : Prop := ∃ a : α, a ⊧ f
 
+/-- Satisfiability for a theory -/
 def SatisfiableTheory (T : Set F) : Prop := ∃ a : α, a ⊧* T
 
 lemma valid_neg_iff (f : F) : Valid (~f) ↔ ¬Satisfiable f := by simp[Valid, Satisfiable]
@@ -111,10 +129,13 @@ lemma consequence_iff {T : Set F} {f : F} : T ⊨ f ↔ ¬SatisfiableTheory (ins
   · intro h a hf hT; have : a ⊧ f := h hT; contradiction
   · intro h a; contrapose; exact h a
 
+/-- A `theory` is a set of formulas realizing a structure -/
 def theory (a : α) : Set F := {p | a ⊧ p}
 
+/-- A `Subtheory` is a subset of realized formulas  -/
 def Subtheory (T U : Set F) : Prop := ∀ {f}, T ⊨ f → U ⊨ f
 
+/-- Definition for the equivalence of theories -/
 def Equivalent (T U : Set F) : Prop := {f : F} → T ⊨ f ↔ U ⊨ f
 
 namespace Subtheory
@@ -126,7 +147,7 @@ variable (T U T₁ T₂ T₃ : Set F)
 @[trans] protected lemma trans (h₁ : Subtheory T₁ T₂) (h₂ : Subtheory T₂ T₃) : Subtheory T₁ T₃ :=
   fun {f} b => h₂ (h₁ b : T₂ ⊨ f)
 
-def ofSubset (h : T ⊆ U) : Subtheory T U := fun b => weakening b h
+lemma ofSubset (h : T ⊆ U) : Subtheory T U := fun b => weakening b h
 
 end Subtheory
 
@@ -157,10 +178,10 @@ lemma models {f : F} (hf : f ∈ T) : a ⊧ f := realizeTheory hf
 
 lemma iff : Mod a T ↔ a ⊧* T := ⟨by rintro ⟨h⟩; exact h, fun h ↦ ⟨h⟩⟩
 
-def of_ss {T₁ T₂ : Set F} [Mod a T₁] (ss : T₂ ⊆ T₁) : Mod a T₂ :=
+lemma of_ss {T₁ T₂ : Set F} [Mod a T₁] (ss : T₂ ⊆ T₁) : Mod a T₂ :=
   ⟨realizeTheory_of_subset realizeTheory ss⟩
 
-def of_subtheory {T₁ T₂ : Set F} [Mod a T₁] (h : Subtheory T₂ T₁) : Mod a T₂ :=
+lemma of_subtheory {T₁ T₂ : Set F} [Mod a T₁] (h : Subtheory T₂ T₁) : Mod a T₂ :=
   ⟨realizeTheory_of_subtheory realizeTheory h⟩
 
 end Mod
@@ -171,6 +192,7 @@ lemma consequence_iff' {T : Set F} {σ : F} :
 
 end Semantics
 
+/-- Definition of a cumulative sequence of theories -/
 def Cumulative (T : ℕ → Set F) : Prop := ∀ s, T s ⊆ T (s + 1)
 
 namespace Cumulative
@@ -205,6 +227,7 @@ end Cumulative
 variable (F)
 variable {α : Type*} [Semantics F α]
 
+/-- A theory is satisfiable iff it is finitely satisfiable -/
 class Compact : Prop where
   compact {T : Set F} :
     Semantics.SatisfiableTheory T ↔ (∀ u : Finset F, ↑u ⊆ T → Semantics.SatisfiableTheory
