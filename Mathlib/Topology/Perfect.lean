@@ -51,10 +51,7 @@ accumulation point, perfect set, cantor-bendixson.
 -/
 
 
-open Topology Filter
-
-open Filter Set
-open TopologicalSpace (IsTopologicalBasis)
+open Topology Filter Set TopologicalSpace
 
 section Basic
 
@@ -90,16 +87,21 @@ theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, �
   simp only [Preperfect, accPt_iff_nhds]
 #align preperfect_iff_nhds preperfect_iff_nhds
 
+section PerfectSpace
+
+variable (α)
+
 /--
 A topological space `X` is said to be perfect if its universe is a perfect set.
 Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
-class PerfectSpace (X : Type*) [TopologicalSpace X]: Prop :=
-  univ_perfect' : Perfect (Set.univ : Set X)
+class PerfectSpace: Prop :=
+  univ_perfect' : Perfect (Set.univ : Set α)
 
-variable [PerfectSpace α] in
-variable (α) in
-theorem PerfectSpace.univ_perfect : Perfect (Set.univ : Set α) := PerfectSpace.univ_perfect'
+theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
+    PerfectSpace.univ_perfect'
+
+end PerfectSpace
 
 section Preperfect
 
@@ -237,8 +239,7 @@ section PerfectSpace
 
 variable {X : Type*} [TopologicalSpace X]
 
-variable [PerfectSpace X] in
-instance PerfectSpace.not_isolated (x : X): Filter.NeBot (𝓝[≠] x) := by
+instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) := by
   have := (PerfectSpace.univ_perfect X).acc _ (Set.mem_univ x)
   rwa [AccPt, Filter.principal_univ, inf_top_eq] at this
 
