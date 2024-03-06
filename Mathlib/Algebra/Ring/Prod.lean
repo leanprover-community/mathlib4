@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
 import Mathlib.Algebra.Order.Ring.Defs
@@ -202,6 +203,9 @@ def snd : R × S →+* S :=
   { MonoidHom.snd R S, AddMonoidHom.snd R S with toFun := Prod.snd }
 #align ring_hom.snd RingHom.snd
 
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (fst R S) := ⟨(⟨⟨·, 0⟩, rfl⟩)⟩
+instance (R S) [Semiring R] [Semiring S] : RingHomSurjective (snd R S) := ⟨(⟨⟨0, ·⟩, rfl⟩)⟩
+
 variable {R S}
 
 @[simp]
@@ -398,7 +402,7 @@ instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) 
 instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
   { inferInstanceAs (OrderedSemiring (α × β)), inferInstanceAs (CommSemiring (α × β)) with }
 
--- porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
+-- Porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
 instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
   { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedAddCommGroup (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩
