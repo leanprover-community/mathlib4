@@ -382,6 +382,10 @@ example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by p
 set_option linter.unusedVariables false in
 example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∏ n in Finset.range 10, f n := by positivity
 
+-- Make sure that `positivity` isn't too greedy by trying to prove that a product is positive
+-- because its body is even if multiplication isn't strictly monotone
+example [OrderedCommSemiring α] {a : α} (ha : 0 < a) : 0 ≤ ∏ _i in {(0 : α)}, a := by positivity
+
 /- ## Other extensions -/
 
 example [Zero β] [PartialOrder β] [FunLike F α β] [NonnegHomClass F α β]
