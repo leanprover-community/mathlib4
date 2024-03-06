@@ -1424,7 +1424,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     intro p hp
     obtain ⟨C, hC⟩ : ∃ C, ∀ y, ‖f p y‖ ≤ C := by
       have : ContinuousOn (f p) k := by
-        have : ContinuousOn (fun y ↦ (p, y)) k := (Continuous.Prod.mk p).continuousOn
+        have : ContinuousOn (fun y ↦ (p, y)) k := by fun_prop
         exact hf.comp this (by simp [MapsTo, hp])
       rcases IsCompact.exists_bound_of_continuousOn hk this with ⟨C, hC⟩
       refine ⟨max C 0, fun y ↦ ?_⟩
