@@ -135,7 +135,6 @@ def killCompl : MvPolynomial τ R →ₐ[R] MvPolynomial σ R :=
 
 @[simp]
 theorem killCompl_C (r : R) : killCompl hf (C r) = C r := by
-  -- rw [algHom_C (killCompl _) r] -- Why doesn't this work?
   simp only [killCompl, aeval_C, algebraMap_eq]
 
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
