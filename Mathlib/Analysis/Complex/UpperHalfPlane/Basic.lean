@@ -146,6 +146,9 @@ lemma I_im : I.im = 1 := rfl
 @[simp]
 lemma I_re : I.re = 0 := rfl
 
+@[simp]
+lemma coe_I : I = Complex.I := rfl
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity

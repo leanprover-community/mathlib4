@@ -131,12 +131,14 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
       (Complex.abs ((x 0 : ℂ) * (z : ℂ) + (x 1 : ℂ))) ^ k := by
   by_cases hk0 : k ≠ 0
   let n := max (x 0).natAbs (x 1).natAbs
+  have hn0 : n ≠ 0 := by
+    rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
+    exact hx
   have h11 : ((x 0) * ↑z + (x 1)) =
       (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
       field_simp
       rw [← mul_div, div_self]
-      simp
-      rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
+      simp only [mul_one]
       norm_cast at *
   simp only [Nat.cast_max, h11, ofReal_int_cast, map_mul, abs_ofReal, ge_iff_le]
   rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
@@ -145,14 +147,12 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
     simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
     norm_cast
     apply Real.rpow_nonneg
-    rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
     simp only [le_max_iff, Nat.cast_nonneg, or_self]
     apply Real.rpow_nonneg (Complex.abs.nonneg _) k
   · apply mul_le_mul
     simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
     norm_cast
     apply Real.rpow_nonneg
-    rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
     simp only [le_max_iff, Nat.cast_nonneg, or_self]
     apply Real.rpow_nonneg (Complex.abs.nonneg _) k
   · simp only [ne_eq, not_not] at hk0
@@ -164,18 +164,16 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
   by_cases hn : n = 0
   · rw [hn] at hx
     simp only [box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
+    rw [hx.1, hx.2] at *
     by_cases hk0 : k = 0
-    rw [hk0] at *
-    simp only [neg_zero, Real.rpow_zero, mul_one, le_refl]
-    rw [hx.1, hx.2]
-    simp only [Int.cast_zero, zero_mul, add_zero, map_zero]
-    have h1 : (0 : ℝ) ^ (-k) = 0 := by
-      rw [Real.rpow_eq_zero_iff_of_nonneg (by rfl)]
-      simp only [ne_eq, neg_eq_zero, hk0, not_false_eq_true, and_self]
-    simp only [h1, hn, CharP.cast_eq_zero, mul_zero, le_refl]
-  · have hx2 : x ≠ 0 := by
-      rw [mem_box_ne_zero_iff_ne_zero n x hx]
-      exact hn
+    . rw [hk0] at *
+      simp only [neg_zero, Real.rpow_zero, mul_one, le_refl]
+    · simp only [Int.cast_zero, zero_mul, add_zero, map_zero]
+      have h1 : (0 : ℝ) ^ (-k) = 0 := by
+        rw [Real.rpow_eq_zero_iff_of_nonneg (by rfl)]
+        simp only [ne_eq, neg_eq_zero, hk0, not_false_eq_true, and_self]
+      simp only [h1, hn, CharP.cast_eq_zero, mul_zero, le_refl]
+  · have hx2 := (mem_box_ne_zero_iff_ne_zero n x hx).mpr hn
     simp only [Int.mem_box] at hx
     rw [Real.rpow_neg (by apply apply_nonneg), Real.rpow_neg ((r_pos z).le),
       Real.rpow_neg (Nat.cast_nonneg n), ← mul_inv, inv_le_inv]
@@ -219,16 +217,16 @@ lemma r_lower_bound_on_slice {A B : ℝ} (h : 0 < B) (z : upperHalfPlaneSlice A 
     convert hz.2
     have := abs_eq_self.mpr (UpperHalfPlane.im_pos z.1).le
     convert this.symm
-  rw [Real.sqrt_le_sqrt_iff]
-  simp only [r1', div_pow, one_div]
-  rw [inv_le_inv, add_le_add_iff_right]
-  apply div_le_div (sq_nonneg _)
-  · simpa [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
-  · positivity
-  · simpa [even_two.pow_abs] using pow_le_pow_left h.le hz.2 2
-  · positivity
-  · positivity
-  · apply (r1_pos z).le
+  . rw [Real.sqrt_le_sqrt_iff]
+    simp only [r1', div_pow, one_div]
+    rw [inv_le_inv, add_le_add_iff_right]
+    apply div_le_div (sq_nonneg _)
+    · simpa [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
+    · positivity
+    · simpa [even_two.pow_abs] using pow_le_pow_left h.le hz.2 2
+    · positivity
+    · positivity
+    · apply (r1_pos z).le
 
 end bounding_functions
 
@@ -283,9 +281,9 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
     refine ⟨fun n ↦ ?_, Summable.congr (summable_over_box z h) fun n ↦ Finset.sum_congr rfl
       fun x hx ↦ ?_⟩
     · simpa using (box n).summable (f ∘ (piFinTwoEquiv _).symm)
-    simp only [Int.mem_box] at hx
-    rw [← hx, one_div]
-    norm_cast
+    · simp only [Int.mem_box] at hx
+      rw [← hx, one_div]
+      norm_cast
   · intro y
     apply mul_nonneg
     · simp only [one_div, inv_nonneg]
@@ -301,8 +299,8 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
         (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop := by
   have hk0 : 0 ≤ k := by linarith
   lift k to ℕ using hk0
-  rw [← tendstoLocallyUniformlyOn_univ,tendstoLocallyUniformlyOn_iff_forall_isCompact,
-    eisensteinSeries_SIF]
+  rw [← tendstoLocallyUniformlyOn_univ,tendstoLocallyUniformlyOn_iff_forall_isCompact
+    (by simp only [Set.top_eq_univ, isOpen_univ]), eisensteinSeries_SIF]
   simp only [Set.top_eq_univ, Set.subset_univ, eisensteinSeries, forall_true_left]
   intro K hK
   obtain ⟨A, B, hB, HABK⟩:= subset_slice_of_isCompact hK
@@ -317,19 +315,17 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   simp only [Nat.cast_max, Int.coe_natAbs, iff_true, zpow_coe_nat, one_div, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
-  apply le_trans (this ?_)
+  apply le_trans (this (by simp only [Int.mem_box]))
   rw [mul_comm]
   apply mul_le_mul _ (by rfl)
   repeat {simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, pow_nonneg,
     inv_nonneg, pow_nonneg (r_pos _).le]}
   rw [inv_le_inv]
-  apply pow_le_pow_left (r_pos _).le
-  rw [abs_of_pos (r_pos _)]
-  · exact r_lower_bound_on_slice hB ⟨x, HABK hx⟩
+  . apply pow_le_pow_left (r_pos _).le
+    rw [abs_of_pos (r_pos _)]
+    · exact r_lower_bound_on_slice hB ⟨x, HABK hx⟩
   · apply pow_pos (abs_pos.mpr (ne_of_gt (r_pos x)))
   · apply pow_pos (r_pos _)
-  · simp only [Int.mem_box]
-  · simp only [Set.top_eq_univ, isOpen_univ]
 
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
