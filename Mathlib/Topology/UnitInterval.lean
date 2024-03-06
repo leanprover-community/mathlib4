@@ -7,6 +7,7 @@ import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.Intervals.Instances
+import Mathlib.Tactic.DeprecateMe
 
 #align_import topology.unit_interval from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -123,8 +124,10 @@ theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 #align unit_interval.symm_symm unitInterval.symm_symm
 
+deprecate_to involutive_symm 2024-02-27
 theorem symm_involutive : Function.Involutive (symm : I → I) := symm_symm
 
+deprecate_to bijective_symm 2024-02-27
 theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.bijective
 
 @[simp]
@@ -147,12 +150,6 @@ def symmHomeomorph : I ≃ₜ I where
   right_inv := symm_symm
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
-
--- 2024-02-27
-@[deprecated] alias involutive_symm := symm_involutive
-
--- 2024-02-27
-@[deprecated] alias bijective_symm := symm_bijective
 
 theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ← le_sub_iff_add_le, sub_half]

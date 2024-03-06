@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
+import Mathlib.Tactic.DeprecateMe
 
 #align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
@@ -1008,23 +1009,20 @@ protected theorem IsCompact.closure {K : Set X} (hK : IsCompact K) : IsCompact (
   rcases hK.elim_finite_subcover U hUo (subset_closure.trans hKU) with ⟨t, ht⟩
   exact ⟨t, hK.closure_subset_of_isOpen (isOpen_biUnion fun _ _ ↦ hUo _) ht⟩
 
+deprecate_to isCompact_closure_of_subset_compact 2024-01-28
 theorem IsCompact.closure_of_subset {s K : Set X} (hK : IsCompact K) (h : s ⊆ K) :
     IsCompact (closure s) :=
   hK.closure.of_isClosed_subset isClosed_closure (closure_mono h)
 #align is_compact_closure_of_subset_compact IsCompact.closure_of_subset
 
-@[deprecated] -- Since 28 Jan 2024
-alias isCompact_closure_of_subset_compact := IsCompact.closure_of_subset
-
+deprecate_to exists_compact_superset_iff 2024-01-28
 @[simp]
 theorem exists_isCompact_superset_iff {s : Set X} :
     (∃ K, IsCompact K ∧ s ⊆ K) ↔ IsCompact (closure s) :=
   ⟨fun ⟨_K, hK, hsK⟩ => hK.closure_of_subset hsK, fun h => ⟨closure s, h, subset_closure⟩⟩
 #align exists_compact_superset_iff exists_isCompact_superset_iff
 
-@[deprecated] -- Since 28 Jan 2024
-alias exists_compact_superset_iff := exists_isCompact_superset_iff
-
+deprecate_to separatedNhds_of_isCompact_isCompact_isClosed 2024-01-28
 /-- If `K` and `L` are disjoint compact sets in an R₁ topological space
 and `L` is also closed, then `K` and `L` have disjoint neighborhoods.  -/
 theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsCompact K)
@@ -1033,9 +1031,6 @@ theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsComp
     disjoint_nhds_nhds_iff_not_inseparable]
   intro x hx y hy h
   exact absurd ((h.mem_closed_iff h'L).2 hy) <| disjoint_left.1 hd hx
-
-@[deprecated] -- Since 28 Jan 2024
-alias separatedNhds_of_isCompact_isCompact_isClosed := SeparatedNhds.of_isCompact_isCompact_isClosed
 
 /-- If a compact set is covered by two open sets, then we can cover it by two compact subsets. -/
 theorem IsCompact.binary_compact_cover {K U V : Set X}
@@ -1178,6 +1173,7 @@ instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace : Locall
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, h, _⟩ ↦ h
 #align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
+deprecate_to exists_open_superset_and_isCompact_closure 2024-01-28
 /-- In a weakly locally compact R₁ space,
 every compact set has an open neighborhood with compact closure. -/
 theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact K) :
@@ -1186,9 +1182,7 @@ theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact
   exact ⟨interior K', isOpen_interior, hKK', hK'.closure_of_subset interior_subset⟩
 #align exists_open_superset_and_is_compact_closure exists_isOpen_superset_and_isCompact_closure
 
-@[deprecated] -- Since 28 Jan 2024
-alias exists_open_superset_and_isCompact_closure := exists_isOpen_superset_and_isCompact_closure
-
+deprecate_to exists_open_with_compact_closure 2024-01-28
 /-- In a weakly locally compact R₁ space,
 every point has an open neighborhood with compact closure. -/
 theorem exists_isOpen_mem_isCompact_closure (x : X) :
@@ -1196,9 +1190,6 @@ theorem exists_isOpen_mem_isCompact_closure (x : X) :
   simpa only [singleton_subset_iff]
     using exists_isOpen_superset_and_isCompact_closure isCompact_singleton
 #align exists_open_with_compact_closure exists_isOpen_mem_isCompact_closure
-
-@[deprecated] -- Since 28 Jan 2024
-alias exists_open_with_compact_closure := exists_isOpen_mem_isCompact_closure
 
 end R1Space
 
@@ -1633,32 +1624,26 @@ theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y �
   ⟨h.embedding hf hg, h.closed_range hf hg⟩
 #align function.left_inverse.closed_embedding Function.LeftInverse.closedEmbedding
 
+deprecate_to separatedNhds_of_isCompact_isCompact 2024-01-28
 theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsCompact s)
     (ht : IsCompact t) (hst : Disjoint s t) : SeparatedNhds s t := by
   simp only [SeparatedNhds, prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
   exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
 #align is_compact_is_compact_separated SeparatedNhds.of_isCompact_isCompact
 
-@[deprecated] -- Since 28 Jan 2024
-alias separatedNhds_of_isCompact_isCompact := SeparatedNhds.of_isCompact_isCompact
-
 section SeparatedFinset
 
+deprecate_to separatedNhds_of_finset_finset 2024-01-28
 theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoint s t) :
     SeparatedNhds (s : Set X) t :=
   .of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
 #align finset_disjoint_finset_opens_of_t2 SeparatedNhds.of_finset_finset
 
-@[deprecated] -- Since 28 Jan 2024
-alias separatedNhds_of_finset_finset := SeparatedNhds.of_finset_finset
-
+deprecate_to point_disjoint_finset_opens_of_t2 2024-01-28
 theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
     SeparatedNhds ({x} : Set X) s :=
   mod_cast .of_finset_finset {x} s (Finset.disjoint_singleton_left.mpr h)
 #align point_disjoint_finset_opens_of_t2 SeparatedNhds.of_singleton_finset
-
-@[deprecated] -- Since 28 Jan 2024
-alias point_disjoint_finset_opens_of_t2 := SeparatedNhds.of_singleton_finset
 
 end SeparatedFinset
 
@@ -1813,29 +1798,23 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_finish
 #align regular_space_tfae regularSpace_TFAE
 
+deprecate_to RegularSpace.ofLift'_closure 2024-02-28
 theorem RegularSpace.of_lift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 5) h
 #align regular_space.of_lift'_closure RegularSpace.of_lift'_closure
 
-@[deprecated] -- 2024-02-28
-alias RegularSpace.ofLift'_closure := RegularSpace.of_lift'_closure
-
+deprecate_to RegularSpace.ofBasis 2024-02-28
 theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set X}
     (h₁ : ∀ a, (𝓝 a).HasBasis (p a) (s a)) (h₂ : ∀ a i, p a i → IsClosed (s a i)) :
     RegularSpace X :=
   .of_lift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
 #align regular_space.of_basis RegularSpace.of_hasBasis
 
-@[deprecated] -- 2024-02-28
-alias RegularSpace.ofBasis := RegularSpace.of_hasBasis
-
+deprecate_to RegularSpace.ofExistsMemNhdsIsClosedSubset 2024-02-28
 theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
     (h : ∀ (x : X), ∀ s ∈ 𝓝 x, ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 3) h
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.of_exists_mem_nhds_isClosed_subset
-
-@[deprecated] -- 2024-02-28
-alias RegularSpace.ofExistsMemNhdsIsClosedSubset := RegularSpace.of_exists_mem_nhds_isClosed_subset
 
 /-- A weakly locally compact R₁ space is regular. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
@@ -1942,15 +1921,13 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     RegularSpace (∀ i, X i) :=
   regularSpace_iInf fun _ => regularSpace_induced _
 
+deprecate_to separatedNhds_of_isCompact_isClosed 2024-01-28
 /-- In a regular space, if a compact set and a closed set are disjoint, then they have disjoint
 neighborhoods. -/
 lemma SeparatedNhds.of_isCompact_isClosed [RegularSpace X] {s t : Set X}
     (hs : IsCompact s) (ht : IsClosed t) (hst : Disjoint s t) : SeparatedNhds s t := by
   simpa only [separatedNhds_iff_disjoint, hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
     ht.closure_eq, disjoint_left] using hst
-
-@[deprecated] -- Since 28 Jan 2024
-alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
 
 end RegularSpace
 
