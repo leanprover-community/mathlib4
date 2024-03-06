@@ -32,7 +32,7 @@ def Fork.isLimitOfIsos {X S : C} {f₁ f₂ : X ⟶ S}
   refine (IsLimit.equivOfNatIsoOfIso i c c' (Cones.ext e ?_)) hc
   rintro ⟨j⟩
   · exact comm₃.symm
-  · simp only [Cones.postcompose_obj_pt, Functor.const_obj_obj, parallelPair_obj_one,
+  · simp only [i, Cones.postcompose_obj_pt, Functor.const_obj_obj, parallelPair_obj_one,
       Cones.postcompose_obj_π, NatTrans.comp_app, Fork.app_one_eq_ι_comp_left, parallelPair_obj_zero,
       parallelPair.ext_hom_app, Category.assoc]
     rw [← comm₁, ← Category.assoc, ← comm₃, Category.assoc]
@@ -41,27 +41,45 @@ theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ D} (i : P ≅ P')
     (hP : EqualizerCondition P) : EqualizerCondition P' := fun {X B} π _ c hc =>
   ⟨Fork.isLimitOfIsos _ (hP π c hc).some _ (i.app _) (i.app _) (i.app _)⟩
 
-def isLimit_equiv_of_eq {X Y : C} {f g : X ⟶ Y} {P : C} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
-  (w' : ι' ≫ f = ι' ≫ g) (h : ι = ι') :
-  IsLimit (Fork.ofι ι w) ≃ IsLimit (Fork.ofι ι' w') := sorry
-  -- (by rwa [h] at w : ι' ≫ f = ι' ≫ g)
+def ForkIso {X Y : C} {f g : X ⟶ Y} {P : C}
+    {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g) (w' : ι' ≫ f = ι' ≫ g) (h : ι = ι') :
+    Fork.ofι ι w ≅ Fork.ofι ι' w' := by
+  refine Cones.ext (Iso.refl _) ?_
+  rintro ⟨j⟩
+  all_goals simp [h]
+
+def isLimit_equiv_of_eq {X Y : C} {f g : X ⟶ Y} {P : C} {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g)
+    (w' : ι' ≫ f = ι' ≫ g) (h : ι = ι') :
+    IsLimit (Fork.ofι ι w) ≃ IsLimit (Fork.ofι ι' w') :=
+  IsLimit.equivIsoLimit (ForkIso w w' h)
 
 /-- Precomposing with a pullback-preserving functor preserves the equalizer condition. -/
 theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ Type*)
     (F : D ⥤ C) [∀ {X B} (π : X ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) F]
     [F.PreservesEffectiveEpis] (hP : EqualizerCondition P) : EqualizerCondition (F.op ⋙ P) := by
-  -- rw [equalizerCondition_iff]
   intro X B π _ c hc
-  have hFc := isLimitOfPreserves F hc
   have := hP (F.map π) -- (F.mapCone c)
   have hh : (F.op ⋙ P).map π.op = P.map (F.map π).op := by simp
-  refine ⟨(isLimit_equiv_of_eq _ _ ?_ _ hh.symm) ?_⟩
+  refine ⟨(isLimit_equiv_of_eq ?_ _ hh.symm) ?_⟩
   · simp only [Functor.comp_obj, Functor.op_obj, Opposite.unop_op, Functor.comp_map,
       Functor.op_map, Quiver.Hom.unop_op]
     simp only [← Functor.map_comp, ← op_comp, c.condition]
   · refine (this (PullbackCone.mk (F.map c.fst) (F.map c.snd) ?_) ?_).some
     · simp only [← Functor.map_comp, c.condition]
-    · sorry
+    · apply (isLimitMapConePullbackConeEquiv F c.condition).toFun
+      refine isLimitOfPreserves F ?_
+      /- TODO: move `i` to `CategoryTheory/Limits/Shapes/Pullbacks` -/
+      let i : c ≅ PullbackCone.mk c.fst c.snd c.condition := by
+        refine Cones.ext (Iso.refl _) ?_
+        intro j
+        cases j with
+        | none => simp
+        | some val =>
+          cases val with
+          | left => simp
+          | right => simp
+      exact hc.ofIsoLimit i
+
 
 open Opposite Presieve
 
