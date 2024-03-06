@@ -153,6 +153,7 @@ lemma OrderIso.inv_Iic_apply (a : α) : (OrderIso.supIrredLowerSet α).symm
   (OrderIso.symm_apply_eq (OrderIso.supIrredLowerSet α)).mpr rfl
 
 end PartialOrder
+
 section DistribLattice
 variable [DistribLattice α]
 
