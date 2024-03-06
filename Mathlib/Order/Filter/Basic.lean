@@ -81,7 +81,8 @@ set_option autoImplicit true
 
 
 open Function Set Order
-open Classical hiding by_cases not_not
+open scoped Classical
+open hiding by_cases not_not
 
 universe u v w x y
 

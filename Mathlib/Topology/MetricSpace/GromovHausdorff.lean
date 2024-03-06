@@ -52,7 +52,8 @@ local notation "ℓ_infty_ℝ" => lp (fun n : ℕ => ℝ) ∞
 
 universe u v w
 
-open Classical Set Function TopologicalSpace Filter Metric Quotient Bornology
+open scoped Classical
+open Set Function TopologicalSpace Filter Metric Quotient Bornology
 
 open BoundedContinuousFunction Nat Int kuratowskiEmbedding
 

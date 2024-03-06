@@ -25,7 +25,8 @@ which as a star algebra is a topological star algebra.
 -/
 
 
-open Classical Set TopologicalSpace
+open scoped Classical
+open Set TopologicalSpace
 
 open scoped Classical
 

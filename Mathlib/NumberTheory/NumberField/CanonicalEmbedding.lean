@@ -249,7 +249,8 @@ end commMap
 
 noncomputable section stdBasis
 
-open Classical Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
+open scoped Classical
+open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
   ComplexConjugate
 
 variable [NumberField K]

@@ -29,7 +29,8 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
 
-open Classical Set
+open scoped Classical
+open Set
 
 variable {α β : Type*}
 

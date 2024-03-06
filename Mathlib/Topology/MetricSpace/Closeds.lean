@@ -27,11 +27,13 @@ always finite in this context.
 
 noncomputable section
 
-open Classical Topology ENNReal
+open scoped Classical
+open Topology ENNReal
 
 universe u
 
-open Classical Set Function TopologicalSpace Filter
+open scoped Classical
+open Set Function TopologicalSpace Filter
 
 namespace EMetric
 

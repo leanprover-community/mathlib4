@@ -25,7 +25,8 @@ which as an algebra is a topological algebra.
 -/
 
 
-open Classical Set TopologicalSpace Algebra
+open scoped Classical
+open Set TopologicalSpace Algebra
 
 open scoped Classical
 

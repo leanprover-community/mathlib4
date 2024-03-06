@@ -20,7 +20,8 @@ We also prove basic properties of these functions.
 
 noncomputable section
 
-open Classical Real NNReal ENNReal BigOperators ComplexConjugate
+open scoped Classical
+open Real NNReal ENNReal BigOperators ComplexConjugate
 
 open Finset Function Set
 
