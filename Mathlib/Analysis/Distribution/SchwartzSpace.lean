@@ -1060,15 +1060,14 @@ def integral (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
     (by
       let l := finrank ℝ D + 1
       let m := (l, 0)
-      use Finset.Iic (l, 0)
-      use 2^l * ∫ x : D, (1 + ‖x‖)^(- (l : ℝ)) ∂μ
-      have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖)^(- (l : ℝ)) ∂μ := by
+      use Finset.Iic (l, 0), 2 ^ l * ∫ x : D, (1 + ‖x‖) ^ (- (l : ℝ)) ∂μ
+      have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖) ^ (- (l : ℝ)) ∂μ := by
         apply integral_nonneg
         intro
         positivity
       refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
-      have h : ∀ x, ‖f x‖ ≤ (1 + ‖x‖)^(-(l : ℝ)) *
-          (2^l * ((Finset.Iic m).sup (fun m => SchwartzMap.seminorm ℝ m.1 m.2) f)) := by
+      have h : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(l : ℝ)) *
+          (2^l * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm ℝ m'.1 m'.2) f)) := by
         intro x
         rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff' (by positivity), rpow_nat_cast]
         simpa using one_add_le_sup_seminorm_apply (m := m) (k := l) (n := 0) le_rfl le_rfl f x
@@ -1076,7 +1075,7 @@ def integral (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
       · rw [integral_mul_right, ← mul_assoc]
         gcongr ?_ * ?_
         · rw [mul_comm]
-        · apply rfl.le
+        · rfl
       apply (integrable_one_add_norm (by simp)).mul_const)
 
 @[simp]
