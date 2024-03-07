@@ -269,13 +269,13 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
 
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
-    (V' ◁ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ▷ V') =
+    V' ◁ FGModuleCatCoevaluation K V ≫ (α_ V' V V').inv ≫ FGModuleCatEvaluation K V ▷ V' =
       (ρ_ V').hom ≫ (λ_ V').inv := by
   apply contractLeft_assoc_coevaluation K V
 
 private theorem evaluation_coevaluation :
-    (FGModuleCatCoevaluation K V ▷ V) ≫
-        (α_ V (FGModuleCatDual K V) V).hom ≫ (V ◁ FGModuleCatEvaluation K V) =
+    FGModuleCatCoevaluation K V ▷ V ≫
+        (α_ V (FGModuleCatDual K V) V).hom ≫ V ◁ FGModuleCatEvaluation K V =
       (λ_ V).hom ≫ (ρ_ V).inv := by
   apply contractLeft_assoc_coevaluation' K V
 
