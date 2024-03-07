@@ -632,8 +632,8 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     rw [f_eq ⟨p, hpc⟩ x x' rfl, f_eq ⟨p, hpc⟩ y y' rfl, f_eq ⟨p, hpc⟩ (x + y) (x' + y') rfl,
       map_add]
   · intro c x
-    -- Porting note: `simp [..]` to `simp only [..]`, or timeouts.
-    simp only [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul, RingHom.id_apply]
+    simp only [RingHom.id_apply]
+    rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul]
   · intro p hpc
     refine' ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
@@ -1010,7 +1010,7 @@ noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     rw [Prod.smul_mk] at hav'
     exact (existsUnique_from_graph @hg hsmul).unique hav hav'
 
-open Classical in
+open scoped Classical in
 /-- Define a `LinearPMap` from its graph.
 
 In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map

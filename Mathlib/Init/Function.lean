@@ -19,7 +19,7 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
--- porting note: fix the universe of `ζ`, it used to be `u₁`
+-- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 #align function.comp Function.comp
@@ -79,7 +79,7 @@ def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x
 #align function.app Function.app
 
--- porting note: removed, it was never used
+-- Porting note: removed, it was never used
 -- notation f " -[" op "]- " g => combine f op g
 
 @[simp, mfld_simps]

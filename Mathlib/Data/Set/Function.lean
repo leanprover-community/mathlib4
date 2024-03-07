@@ -711,7 +711,7 @@ theorem exists_injOn_iff_injective [Nonempty β] :
 
 theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (preimage f) B :=
   fun s hs t ht hst => (preimage_eq_preimage' (@hB s hs) (@hB t ht)).1 hst
--- porting note: is there a semi-implicit variable problem with `⊆`?
+-- Porting note: is there a semi-implicit variable problem with `⊆`?
 #align set.inj_on_preimage Set.injOn_preimage
 
 theorem InjOn.mem_of_mem_image {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (h : x ∈ s) (h₁ : f x ∈ f '' s₁) :
@@ -858,7 +858,7 @@ theorem SurjOn.inter (h₁ : SurjOn f s₁ t) (h₂ : SurjOn f s₂ t) (h : InjO
   inter_self t ▸ h₁.inter_inter h₂ h
 #align set.surj_on.inter Set.SurjOn.inter
 
---porting note: Why does `simp` not call `refl` by itself?
+-- Porting note: Why does `simp` not call `refl` by itself?
 lemma surjOn_id (s : Set α) : SurjOn id s s := by simp [SurjOn, subset_rfl]
 #align set.surj_on_id Set.surjOn_id
 
@@ -1599,7 +1599,7 @@ theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : �
   pi_if _ _ _
 #align set.pi_piecewise Set.pi_piecewise
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
   simp [compl_eq_univ_diff]
