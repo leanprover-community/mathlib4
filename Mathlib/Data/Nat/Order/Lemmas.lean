@@ -138,7 +138,8 @@ theorem succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 el
       have h₂ : 0 < b + 1 ∧ b + 1 ≤ a + 1 := ⟨succ_pos _, (add_le_add_iff_right _).2 hb_le_a⟩
       have dvd_iff : b + 1 ∣ a - b + 1 ↔ b + 1 ∣ a + 1 + 1 := by
         rw [Nat.dvd_add_iff_left (dvd_refl (b + 1)), ← add_tsub_add_eq_tsub_right a 1 b,
-          add_comm (_ - _), add_assoc, tsub_add_cancel_of_le (succ_le_succ hb_le_a), add_comm 1]
+          add_comm (_ - _), add_assoc, tsub_add_cancel_of_le (add_le_add_right hb_le_a 1),
+          add_comm 1]
       have wf : a - b < a + 1 := lt_succ_of_le tsub_le_self
       rw [if_pos h₁, if_pos h₂, @add_tsub_add_eq_tsub_right, ← tsub_add_eq_add_tsub hb_le_a,
         have := wf

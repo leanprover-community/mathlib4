@@ -39,7 +39,7 @@ def log (b : ℕ) : ℕ → ℕ
 @[simp]
 theorem log_eq_zero_iff {b n : ℕ} : log b n = 0 ↔ n < b ∨ b ≤ 1 := by
   rw [log, dite_eq_right_iff]
-  simp only [Nat.succ_ne_zero, imp_false, not_and_or, not_le, not_lt]
+  simp only [add_eq_zero_iff, one_ne_zero, and_false, imp_false, not_and_or, not_le, not_lt]
 #align nat.log_eq_zero_iff Nat.log_eq_zero_iff
 
 theorem log_of_lt {b n : ℕ} (hb : n < b) : log b n = 0 :=

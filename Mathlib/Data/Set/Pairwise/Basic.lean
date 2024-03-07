@@ -139,8 +139,8 @@ theorem pairwise_union :
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
   exact
-    ⟨fun H => ⟨H.1.1, H.2.2, H.2.1, fun x hx y hy hne => H.1.2 y hy x hx hne.symm⟩, fun H =>
-      ⟨⟨H.1, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm⟩, H.2.2.1, H.2.1⟩⟩
+    ⟨fun H => ⟨H.1.1, H.2.2, H.1.2, fun x hx y hy hne => H.2.1 y hy x hx hne.symm⟩,
+     fun H => ⟨⟨H.1, H.2.2.1⟩, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm, H.2.1⟩⟩
 #align set.pairwise_union Set.pairwise_union
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
