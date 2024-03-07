@@ -19,7 +19,8 @@ bounded bilinear maps.
 
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
-open Topology Classical NNReal Asymptotics ENNReal
+open scoped Classical
+open Topology NNReal Asymptotics ENNReal
 
 noncomputable section
 
@@ -55,7 +56,7 @@ variable {b : E × F → G} {u : Set (E × F)}
 
 open NormedField
 
--- porting note: todo: rewrite/golf using analytic functions?
+-- Porting note: todo: rewrite/golf using analytic functions?
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
   simp only [HasStrictFDerivAt]

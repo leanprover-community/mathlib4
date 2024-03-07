@@ -456,6 +456,38 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
           rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
 #align zmod.ring_equiv_congr ZMod.ringEquivCongr
 
+@[simp] lemma ringEquivCongr_refl (a : ℕ) : ringEquivCongr (rfl : a = a) = .refl _ := by
+  cases a <;> rfl
+
+lemma ringEquivCongr_refl_apply {a : ℕ} (x : ZMod a) : ringEquivCongr rfl x = x := by
+  rw [ringEquivCongr_refl]
+  rfl
+
+lemma ringEquivCongr_symm {a b : ℕ} (hab : a = b) :
+    (ringEquivCongr hab).symm = ringEquivCongr hab.symm := by
+  subst hab
+  cases a <;> rfl
+
+lemma ringEquivCongr_trans {a b c : ℕ} (hab : a = b) (hbc : b = c) :
+    (ringEquivCongr hab).trans (ringEquivCongr hbc) = ringEquivCongr (hab.trans hbc) := by
+  subst hab hbc
+  cases a <;> rfl
+
+lemma ringEquivCongr_ringEquivCongr_apply {a b c : ℕ} (hab : a = b) (hbc : b = c) (x : ZMod a) :
+    ringEquivCongr hbc (ringEquivCongr hab x) = ringEquivCongr (hab.trans hbc) x := by
+  rw [← ringEquivCongr_trans hab hbc]
+  rfl
+
+lemma ringEquivCongr_val {a b : ℕ} (h : a = b) (x : ZMod a) :
+    ZMod.val ((ZMod.ringEquivCongr h) x) = ZMod.val x := by
+  subst h
+  cases a <;> rfl
+
+lemma int_coe_ringEquivCongr {a b : ℕ} (h : a = b) (z : ℤ) :
+    ZMod.ringEquivCongr h z = z := by
+  subst h
+  cases a <;> rfl
+
 end CharEq
 
 end UniversalProperty
@@ -588,7 +620,7 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
   rw [← ZMod.cast_zero (n := m)]
   exact Injective.eq_iff' (cast_injective_of_le h) rfl
 
---Porting note: commented
+-- Porting note: commented
 -- attribute [local semireducible] Int.NonNeg
 
 @[simp]
@@ -1170,7 +1202,7 @@ theorem valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
   · simp [valMinAbs_def_pos, val_nat_cast, Nat.mod_eq_of_lt ha', ha.not_le]
 #align zmod.val_min_abs_nat_cast_of_half_lt ZMod.valMinAbs_natCast_of_half_lt
 
--- porting note: There was an extraneous `nat_` in the mathlib3 name
+-- Porting note: There was an extraneous `nat_` in the mathlib3 name
 @[simp]
 theorem valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by
   refine' ⟨fun ha => _, valMinAbs_natCast_of_le_half⟩
@@ -1288,7 +1320,7 @@ section lift
 variable (n) {A : Type*} [AddGroup A]
 
 /-- The map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`. -/
---@[simps] --Porting note: removed, simplified LHS of `lift_coe` to something worse.
+--@[simps] -- Porting note: removed, simplified LHS of `lift_coe` to something worse.
 def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
   (Equiv.subtypeEquivRight <| by
         intro f

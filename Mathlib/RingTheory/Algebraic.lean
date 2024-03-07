@@ -21,7 +21,8 @@ a tower of algebraic field extensions is algebraic.
 
 universe u v w
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 section
 
@@ -453,7 +454,7 @@ theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
     rw [this]
     exact A.smul_mem (aeval x _).2 _
   have : aeval (x : L) p = 0 := by rw [Subalgebra.aeval_coe, aeval_eq, Subalgebra.coe_zero]
-  -- porting note: this was a long sequence of `rw`.
+  -- Porting note: this was a long sequence of `rw`.
   rw [inv_eq_of_root_of_coeff_zero_ne_zero this coeff_zero_ne, div_eq_inv_mul, Algebra.smul_def]
   simp only [aeval_coe, Submonoid.coe_mul, Subsemiring.coe_toSubmonoid, coe_toSubsemiring,
     coe_algebraMap]
@@ -524,7 +525,7 @@ theorem polynomial_smul_apply' [CommSemiring R'] [Semiring S'] [Algebra R' S'] [
 
 variable [CommSemiring R'] [CommSemiring S'] [CommSemiring T'] [Algebra R' S'] [Algebra S' T']
 
--- porting note: the proofs in this definition used `funext` in term-mode, but I was not able
+-- Porting note: the proofs in this definition used `funext` in term-mode, but I was not able
 -- to get them to work anymore.
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
 noncomputable def Polynomial.algebraPi : Algebra R'[X] (S' → T') :=
