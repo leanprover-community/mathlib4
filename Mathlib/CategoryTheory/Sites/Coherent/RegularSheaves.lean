@@ -22,15 +22,13 @@ This file characterises sheaves for the regular topology.
   presheaf is a sheaf for the regular topology.
 -/
 
-universe w
-
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
 
-open Opposite Presieve
+open Opposite Presieve Functor
 
 /-- A presieve is *regular* if it consists of a single effective epimorphism. -/
 class Presieve.regular {X : C} (R : Presieve X) : Prop where
@@ -40,21 +38,74 @@ class Presieve.regular {X : C} (R : Presieve X) : Prop where
 
 namespace regularTopology
 
+lemma equalizerCondition_w (P : Cᵒᵖ ⥤ D) {X B : C} {π : X ⟶ B} (c : PullbackCone π π) :
+    P.map π.op ≫ P.map c.fst.op = P.map π.op ≫ P.map c.snd.op := by
+  simp only [← Functor.map_comp, ← op_comp, c.condition]
+
 /--
-The map to the explicit equalizer used in the sheaf condition.
+A contravariant functor on `C` satisfies `EqualizerCondition` if it takes kernel pairs of effective
+epimorphisms to equalizer diagrams.
 -/
+def EqualizerCondition (P : Cᵒᵖ ⥤ D) : Prop :=
+  ∀ ⦃X B : C⦄ (π : X ⟶ B) [EffectiveEpi π] (c : PullbackCone π π) (_ : IsLimit c),
+    Nonempty (IsLimit (Fork.ofι (P.map π.op) (equalizerCondition_w P c)))
+
+/-- The equalizer condition is preserved by natural isomorphism. -/
+theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ D} (i : P ≅ P')
+    (hP : EqualizerCondition P) : EqualizerCondition P' := fun X B π _ c hc ↦
+  ⟨Fork.isLimitOfIsos _ (hP π c hc).some _ (i.app _) (i.app _) (i.app _)⟩
+
+/-- Precomposing with a pullback-preserving functor preserves the equalizer condition. -/
+theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F : E ⥤ C)
+    [∀ {X B} (π : X ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) F]
+    [F.PreservesEffectiveEpis] (hP : EqualizerCondition P) : EqualizerCondition (F.op ⋙ P) := by
+  intro X B π _ c hc
+  have h : P.map (F.map π).op = (F.op ⋙ P).map π.op := by simp
+  refine ⟨(IsLimit.equivIsoLimit (ForkOfι.ext ?_ _ h)) ?_⟩
+  · simp only [Functor.comp_map, op_map, Quiver.Hom.unop_op, ← map_comp, ← op_comp, c.condition]
+  · refine (hP (F.map π) (PullbackCone.mk (F.map c.fst) (F.map c.snd) ?_) ?_).some
+    · simp only [← map_comp, c.condition]
+    · exact (isLimitMapConePullbackConeEquiv F c.condition)
+        (isLimitOfPreserves F (hc.ofIsoLimit (PullbackCone.ext (Iso.refl _) (by simp) (by simp))))
+
+/-- The canonical map to the explicit equalizer. -/
 def MapToEqualizer (P : Cᵒᵖ ⥤ Type*) {W X B : C} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
     P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } := fun t ↦
   ⟨P.map f.op t, by simp only [Set.mem_setOf_eq, ← FunctorToTypes.map_comp_apply, ← op_comp, w]⟩
 
-/--
-The sheaf condition with respect to regular presieves, given the existence of the relavant pullback.
--/
-def EqualizerCondition (P : Cᵒᵖ ⥤ Type*) : Prop :=
+/-- The explicit equalizer condition. -/
+def EqualizerConditionExpl (P : Cᵒᵖ ⥤ Type*) : Prop :=
   ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], Function.Bijective
     (MapToEqualizer P π (pullback.fst (f := π) (g := π)) (pullback.snd (f := π) (g := π))
     pullback.condition)
+
+/-- The explicit equalizer condition is equivalent to the formal one. -/
+theorem equalizerCondition_iff_expl (P : Cᵒᵖ ⥤ Type*) :
+    EqualizerCondition P ↔ EqualizerConditionExpl P := by
+  refine ⟨fun h X B π _ _ ↦ ?_, fun h X B π _ c hc ↦ ?_⟩
+  · specialize h π _ (pullbackIsPullback π π)
+    rw [Types.type_equalizer_iff_unique] at h
+    rw [Function.bijective_iff_existsUnique]
+    intro ⟨b, hb⟩
+    obtain ⟨a, ha₁, ha₂⟩ := h b hb
+    refine ⟨a, ?_, ?_⟩
+    · simpa [MapToEqualizer] using ha₁
+    · simpa [MapToEqualizer] using ha₂
+  · have : HasPullback π π := ⟨c, hc⟩
+    specialize h X B π
+    rw [Types.type_equalizer_iff_unique]
+    rw [Function.bijective_iff_existsUnique] at h
+    intro b hb
+    have h₁ : ((pullbackIsPullback π π).conePointUniqueUpToIso hc).hom ≫ c.fst =
+      pullback.fst (f := π) (g := π) := by simp
+    have hb' : P.map (pullback.fst (f := π) (g := π)).op b = P.map pullback.snd.op b := by
+      rw [← h₁, op_comp, FunctorToTypes.map_comp_apply, hb]
+      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+    obtain ⟨a, ha₁, ha₂⟩ := h ⟨b, hb'⟩
+    refine ⟨a, ?_, ?_⟩
+    · simpa [MapToEqualizer] using ha₁
+    · simpa [MapToEqualizer] using ha₂
 
 lemma equalizerCondition_iff_isIso_lift_w (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
     [HasPullback π π] : P.map π.op ≫ P.map (pullback.fst (f := π) (g := π)).op =
@@ -69,9 +120,11 @@ lemma mapToEqualizer_eq_comp (P : Cᵒᵖ ⥤ Type*) {X B : C} (π : X ⟶ B)
   apply equalizer.hom_ext
   aesop
 
+/-- An alternative phrasing of the explicit equalizer condition, using more categorical language. -/
 theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCondition P ↔
     ∀ (X B : C) (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π], IsIso
     (equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π)) := by
+  rw [equalizerCondition_iff_expl]
   refine ⟨fun h X B π _ _ ↦ ?_, fun h X B π _ _ ↦ ?_⟩
   · specialize h X B π
     rw [← isIso_iff_bijective, mapToEqualizer_eq_comp] at h
@@ -81,116 +134,9 @@ theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCon
   · rw [mapToEqualizer_eq_comp, ← isIso_iff_bijective]
     infer_instance
 
-/--
-An auxiliary isomorphism of two pullbacks used in the proof of
-`equalizerCondition_precomp_of_preservesPullback`
--/
-@[simps]
-noncomputable
-def mapToEqualizer_pullback_comp_aux {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*) (F : D ⥤ C)
-    {X B : D} (π : X ⟶ B) [HasPullback π π] [PreservesLimit (cospan π π) F] :
-    haveI := hasPullback_of_preservesPullback F π π
-    (equalizer (P.map (pullback.fst (f := (F.map π)) (g := (F.map π))).op)
-      (P.map (pullback.snd).op)) ≅
-      equalizer ((F.op ⋙ P).map (pullback.fst (f := π) (g := π)).op)
-        ((F.op ⋙ P).map pullback.snd.op) where
-  hom := equalizer.lift (equalizer.ι _ _) (by
-    simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
-      Quiver.Hom.unop_op]
-    have := hasPullback_of_preservesPullback F π π
-    have h := equalizer.condition (P.map (pullback.fst (f := (F.map π)) (g := (F.map π))).op)
-      (P.map (pullback.snd).op)
-    simp only [← PreservesPullback.iso_hom_fst, ← PreservesPullback.iso_hom_snd, op_comp,
-      Functor.map_comp, ← Category.assoc, h])
-  inv := equalizer.lift (equalizer.ι _ _) (by
-    simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
-      Quiver.Hom.unop_op]
-    have := hasPullback_of_preservesPullback F π π
-    simp only [← PreservesPullback.iso_inv_fst, ← PreservesPullback.iso_inv_snd,
-      op_comp, Functor.map_comp]
-    rw [← Category.assoc, equalizer.condition]
-    rfl)
-  hom_inv_id := by
-    apply equalizer.hom_ext
-    simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
-      Quiver.Hom.unop_op, Category.assoc, limit.lift_π, op_comp, id_eq, eq_mpr_eq_cast, cast_eq,
-      Fork.ofι_pt, Fork.ofι_π_app, Category.id_comp]
-    exact equalizer.lift_ι _ _
-  inv_hom_id := by
-    apply equalizer.hom_ext
-    simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
-      Quiver.Hom.unop_op, Category.assoc, Category.id_comp]
-    erw [equalizer.lift_ι, equalizer.lift_ι]
-
-/-- An auxiliary lemma to prove `equalizerCondition_precomp_of_preservesPullback`. -/
-lemma mapToEqualizer_pullback_comp {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*) (F : D ⥤ C)
-    {X B : D} (π : X ⟶ B) [HasPullback π π] [PreservesLimit (cospan π π) F] :
-    haveI := hasPullback_of_preservesPullback F π π
-    (equalizer.lift ((F.op ⋙ P).map π.op)
-      (equalizerCondition_iff_isIso_lift_w (F.op ⋙ P) π)) =
-    (equalizer.lift (P.map (F.map π).op)
-      (equalizerCondition_iff_isIso_lift_w P (F.map π))) ≫
-        (mapToEqualizer_pullback_comp_aux P F π).hom := by
-  simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
-    Quiver.Hom.unop_op, mapToEqualizer_pullback_comp_aux]
-  apply equalizer.hom_ext
-  simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
-    Quiver.Hom.unop_op, Category.assoc]
-  erw [equalizer.lift_ι, equalizer.lift_ι, equalizer.lift_ι]
-
-/-- Precomposing with a pullback-preserving functor preserves the equalizer condition. -/
-theorem equalizerCondition_precomp_of_preservesPullback {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*)
-    (F : D ⥤ C) [∀ {X B} (π : X ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) F]
-    [F.PreservesEffectiveEpis] (hP : EqualizerCondition P) : EqualizerCondition (F.op ⋙ P) := by
-  rw [equalizerCondition_iff_isIso_lift] at hP ⊢
-  intro X B π _ _
-  have := hasPullback_of_preservesPullback F π π
-  have := hP (F.obj X) (F.obj B) (F.map π)
-  rw [mapToEqualizer_pullback_comp (F := F)]
-  exact IsIso.comp_isIso
-
-lemma equalizerCondition_of_natIso_aux
-    {P P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') {X B : C} (π : X ⟶ B)
-    [HasPullback π π] :
-    (equalizer.ι (P.map (pullback.fst (f := π) (g := π)).op) (P.map pullback.snd.op) ≫
-      i.hom.app (op X)) ≫ P'.map pullback.fst.op =
-      (equalizer.ι (P.map pullback.fst.op) (P.map pullback.snd.op) ≫ i.hom.app (op X)) ≫
-      P'.map (pullback.snd  (f := π) (g := π)).op := by
-  rw [Category.assoc, Category.assoc, ← i.hom.naturality (pullback.fst (f := π) (g := π)).op,
-    ← i.hom.naturality (pullback.snd (f := π) (g := π)).op, ← Category.assoc, equalizer.condition,
-    Category.assoc, NatTrans.naturality]
-
-/--
-An auxiliary isomorphism of two equalizers used in the proof of `equalizerCondition_of_natIso`
--/
-noncomputable
-def equalizerCondition_of_natIso_aux₂ {P P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') {X B : C}
-    (π : X ⟶ B) [HasPullback π π] :
-    equalizer (P.map (pullback.fst (f := π) (g := π)).op) (P.map pullback.snd.op) ≅
-    equalizer (P'.map (pullback.fst (f := π) (g := π)).op) (P'.map pullback.snd.op) where
-  hom := equalizer.lift (equalizer.ι _ _ ≫ i.hom.app (op X)) (equalizerCondition_of_natIso_aux i π)
-  inv := equalizer.lift (equalizer.ι _ _ ≫ i.inv.app (op X))
-    (equalizerCondition_of_natIso_aux i.symm π)
-  hom_inv_id := by apply equalizer.hom_ext; simp
-  inv_hom_id := by apply equalizer.hom_ext; simp
-
-/-- The equalizer condition is preserved by natural isomorphism. -/
-theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P')
-    (hP : EqualizerCondition P) : EqualizerCondition P' := by
-  rw [equalizerCondition_iff_isIso_lift] at hP ⊢
-  intro X B π _ _
-  have h : equalizer.lift (P'.map π.op) (equalizerCondition_iff_isIso_lift_w P' π) =
-      i.inv.app (op B) ≫
-      equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π) ≫
-      (equalizerCondition_of_natIso_aux₂ i π).hom := by
-    apply equalizer.hom_ext
-    simp [equalizerCondition_of_natIso_aux₂]
-  rw [h]
-  infer_instance
-
 /-- `P` satisfies the equalizer condition iff its precomposition by an equivalence does. -/
-theorem equalizerCondition_iff_of_equivalence {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*)
-    (e : C ≌ D) : EqualizerCondition P ↔ EqualizerCondition (e.op.inverse ⋙ P) :=
+theorem equalizerCondition_iff_of_equivalence (P : Cᵒᵖ ⥤ D)
+    (e : C ≌ E) : EqualizerCondition P ↔ EqualizerCondition (e.op.inverse ⋙ P) :=
   ⟨fun h ↦ equalizerCondition_precomp_of_preservesPullback P e.inverse h, fun h ↦
     equalizerCondition_of_natIso (e.op.funInvIdAssoc P)
       (equalizerCondition_precomp_of_preservesPullback (e.op.inverse ⋙ P) e.functor h)⟩
@@ -203,16 +149,17 @@ lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasP
   intro y h
   have : (Presieve.singleton π).hasPullbacks := by rw [← ofArrows_pUnit]; infer_instance
   have : HasPullback π π := hasPullbacks.has_pullbacks Presieve.singleton.mk Presieve.singleton.mk
-  specialize hF X B π
-  rw [Function.bijective_iff_existsUnique] at hF
-  obtain ⟨t, ht, ht'⟩ := hF ⟨y (), h () ()⟩
-  refine ⟨t, fun _ ↦ ?_, fun x h ↦ ht' x ?_⟩
-  · simpa [MapToEqualizer] using ht
-  · simpa [MapToEqualizer] using h ()
+  let c : PullbackCone π π := (IsPullback.of_hasPullback π π).cone
+  have hc : IsLimit c := IsPullback.isLimit _
+  specialize hF π c hc
+  rw [Types.type_equalizer_iff_unique] at hF
+  obtain ⟨t, ht⟩ := hF (y ()) (h () ())
+  exact ⟨t, fun _ ↦ ht.1, fun _ h ↦ ht.2 _ (h _)⟩
 
 lemma equalizerCondition_of_regular {F : Cᵒᵖ ⥤ Type*}
     (hSF : ∀ {B : C} (S : Presieve B) [S.regular] [S.hasPullbacks], S.IsSheafFor F) :
     EqualizerCondition F := by
+  rw [equalizerCondition_iff_expl]
   intro X B π _ _
   have : (ofArrows (fun _ ↦ X) (fun _ ↦ π)).regular := ⟨X, π, rfl, inferInstance⟩
   have : (ofArrows (fun () ↦ X) (fun _ ↦ π)).hasPullbacks := ⟨
@@ -235,7 +182,8 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
   · simp only [← h (), ← FunctorToTypes.map_comp_apply, ← op_comp, Projective.factorThru_comp,
       op_id, FunctorToTypes.map_id_apply]
 
-lemma EqualizerCondition.isSheaf_iff (F : Cᵒᵖ ⥤ Type*)
+/-- A presheaf is a sheaf for the regular topology iff it satisfies `EqualizerCondition` -/
+theorem EqualizerCondition.isSheaf_iff (F : Cᵒᵖ ⥤ Type*)
     [∀ ⦃X Y : C⦄ (π : X ⟶ Y) [EffectiveEpi π], HasPullback π π] [Preregular C] :
     Presieve.IsSheaf (regularTopology C) F ↔ EqualizerCondition F := by
   rw [regularTopology, Presieve.isSheaf_coverage]
@@ -243,13 +191,14 @@ lemma EqualizerCondition.isSheaf_iff (F : Cᵒᵖ ⥤ Type*)
   rintro h X S ⟨Y, f, rfl, hf⟩
   exact @isSheafFor _ _ _ _ ⟨Y, f, rfl, hf⟩ ⟨fun g _ h ↦ by cases g; cases h; infer_instance⟩ _ h
 
-lemma isSheaf_of_projective (F : Cᵒᵖ ⥤ Type*) [Preregular C] [∀ (X : C), Projective X] :
+/-- Every presheaf is a sheaf for the regular topology if every object of `C` is projective. -/
+theorem isSheaf_of_projective (F : Cᵒᵖ ⥤ Type*) [Preregular C] [∀ (X : C), Projective X] :
     IsSheaf (regularTopology C) F :=
   (isSheaf_coverage _ _).mpr fun S ⟨_, h⟩ ↦ have : S.regular := ⟨_, h⟩
     isSheafFor_regular_of_projective _ _
 
 /-- Every Yoneda-presheaf is a sheaf for the regular topology. -/
-theorem isSheaf_yoneda_obj [Preregular C] (W : C)  :
+lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
     Presieve.IsSheaf (regularTopology C) (yoneda.obj W) := by
   rw [regularTopology, isSheaf_coverage]
   intro X S ⟨_, hS⟩
