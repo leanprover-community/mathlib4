@@ -514,7 +514,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
         positivity
       rw [abs_of_pos this]
     rwa [this]
-  suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_le_left zero_le_one this.left this.right
+  suffices 0 < denom ∧ denom ≤ denom' from div_le_div_of_nonneg_left zero_le_one this.1 this.2
   constructor
   · have : 0 < pred_conts.b + gp.b * conts.b :=
       nextConts_b_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _

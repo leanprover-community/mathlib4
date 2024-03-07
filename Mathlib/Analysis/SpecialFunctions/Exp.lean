@@ -235,9 +235,7 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
   calc
     x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_left hx₀.le (Nat.le_ceil _) _
     _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
-    _ ≤ exp (x + 1) / (exp 1 * C) :=
-      (div_le_div_of_le (mul_pos (exp_pos _) hC₀).le
-        (exp_le_exp.2 <| (Nat.ceil_lt_add_one hx₀.le).le))
+    _ ≤ exp (x + 1) / (exp 1 * C) := by gcongr; exact (Nat.ceil_lt_add_one hx₀.le).le
     _ = exp x / C := by rw [add_comm, exp_add, mul_div_mul_left _ _ (exp_pos _).ne']
 #align real.tendsto_exp_div_pow_at_top Real.tendsto_exp_div_pow_atTop
 
