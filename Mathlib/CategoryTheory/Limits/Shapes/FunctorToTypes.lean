@@ -12,7 +12,6 @@ import Mathlib.CategoryTheory.Limits.Types
 Defines an explicit construction of binary products and coproducts of type-valued functors.
 
 Also defines isomorphisms to the categorical product and coproduct, respectively.
-
 -/
 
 
@@ -238,6 +237,16 @@ lemma binaryCoproductIso_inr_comp_inv (F G : C ⥤ Type w) :
 lemma binaryCoproductIso_inr_comp_inv_apply (F G : C ⥤ Type w) (a : C) (x : G.obj a) :
     (binaryCoproductIso F G).inv.app a (Sum.inr x) = (Limits.coprod.inr (X := F)).app a x := by
   aesop
+
+/-- Construct an element of `(F ⨿ G).obj a` from an element of `F.obj a` -/
+noncomputable
+def coprodInl {F G : C ⥤ Type w} {a : C} (x : F.obj a) : (F ⨿ G).obj a :=
+  (binaryCoproductIso F G).inv.app a (.inl x)
+
+/-- Construct an element of `(F ⨿ G).obj a` from an element of `G.obj a` -/
+noncomputable
+def coprodInr {F G : C ⥤ Type w} {a : C} (x : G.obj a) : (F ⨿ G).obj a :=
+  (binaryCoproductIso F G).inv.app a (.inr x)
 
 /-- `(F ⨿ G).obj a` is in bijection with disjoint union of `F.obj a` and `G.obj a`. -/
 @[simps]
