@@ -174,16 +174,16 @@ variable (G : Type*) [Group G] [IsFreeGroup G]
 def Generators : Type _ := (IsFreeGroup.nonempty_basis (G := G)).choose
 
 /-- Any free group is isomorphic to "the" free group. -/
-irreducible_def MulEquiv : FreeGroup (Generators G) ≃* G :=
+irreducible_def mulEquiv : FreeGroup (Generators G) ≃* G :=
   (IsFreeGroup.nonempty_basis (G := G)).choose_spec.some.repr.symm
 
 /-- A free group basis of a free group `G`, over the set `Generators G`. -/
-def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (MulEquiv G).symm
+def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (mulEquiv G).symm
 
 /-- Any free group is isomorphic to "the" free group. -/
 @[simps!]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
-  (MulEquiv G).symm
+  (mulEquiv G).symm
 #align is_free_group.to_free_group IsFreeGroup.toFreeGroup
 #align is_free_group.to_free_group_apply IsFreeGroup.toFreeGroup_apply
 #align is_free_group.to_free_group_symm_apply IsFreeGroup.toFreeGroup_symm_apply
@@ -192,7 +192,7 @@ variable {G}
 
 /-- The canonical injection of G's generators into G -/
 def of : Generators G → G :=
-  (MulEquiv G).toFun ∘ FreeGroup.of
+  (mulEquiv G).toFun ∘ FreeGroup.of
 #align is_free_group.of IsFreeGroup.of
 
 variable {H : Type*} [Group H]

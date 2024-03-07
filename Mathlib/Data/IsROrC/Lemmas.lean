@@ -26,7 +26,7 @@ end Polynomial
 
 namespace FiniteDimensional
 
-open Classical
+open scoped Classical
 
 open IsROrC
 
@@ -70,7 +70,7 @@ namespace IsROrC
 @[simp, isROrC_simps]
 theorem reCLM_norm : ‖(reCLM : K →L[ℝ] ℝ)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
-  convert ContinuousLinearMap.ratio_le_op_norm (reCLM : K →L[ℝ] ℝ) (1 : K)
+  convert ContinuousLinearMap.ratio_le_opNorm (reCLM : K →L[ℝ] ℝ) (1 : K)
   simp
 #align is_R_or_C.re_clm_norm IsROrC.reCLM_norm
 
@@ -87,3 +87,14 @@ theorem ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
 #align is_R_or_C.of_real_clm_norm IsROrC.ofRealCLM_norm
 
 end IsROrC
+
+namespace Polynomial
+
+open ComplexConjugate in
+lemma aeval_conj (p : ℝ[X]) (z : K) : aeval (conj z) p = conj (aeval z p) :=
+  aeval_algHom_apply (IsROrC.conjAe (K := K)) z p
+
+lemma aeval_ofReal (p : ℝ[X]) (x : ℝ) : aeval (IsROrC.ofReal x : K) p = eval x p :=
+  aeval_algHom_apply IsROrC.ofRealAm x p
+
+end Polynomial

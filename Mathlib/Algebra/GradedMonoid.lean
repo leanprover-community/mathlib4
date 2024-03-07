@@ -86,7 +86,7 @@ This file also defines:
 * `SetLike.homogeneousSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
-## tags
+## Tags
 
 graded monoid
 -/

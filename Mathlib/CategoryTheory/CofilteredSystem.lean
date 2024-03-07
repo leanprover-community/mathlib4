@@ -6,6 +6,7 @@ Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.cofiltered_system from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -95,7 +96,7 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   use fun j => (u ⟨j⟩).down
   intro j j' f
   have h := @hu (⟨j⟩ : J') (⟨j'⟩ : J') (ULift.up f)
-  simp only [AsSmall.down, Functor.comp_map, uliftFunctor_map, Functor.op_map] at h
+  simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map, Functor.op_map] at h
   simp_rw [← h]
 #align nonempty_sections_of_finite_cofiltered_system nonempty_sections_of_finite_cofiltered_system
 
@@ -158,7 +159,7 @@ theorem IsMittagLeffler.subset_image_eventualRange (h : F.IsMittagLeffler) (f : 
   obtain ⟨k, g, hg⟩ := F.isMittagLeffler_iff_eventualRange.1 h j
   rw [hg]; intro x hx
   obtain ⟨x, rfl⟩ := F.mem_eventualRange_iff.1 hx (g ≫ f)
-  refine' ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply] ⟩
+  exact ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply]⟩
 #align category_theory.functor.is_mittag_leffler.subset_image_eventual_range CategoryTheory.Functor.IsMittagLeffler.subset_image_eventualRange
 
 theorem eventualRange_eq_range_precomp (f : i ⟶ j) (g : j ⟶ k)
@@ -339,7 +340,7 @@ theorem eval_section_injective_of_eventually_injective {j}
   dsimp at h
   rw [← s₀.prop (mi ≫ f), ← s₁.prop (mi ≫ f)] at h
   rw [← s₀.prop mk, ← s₁.prop mk]
-  refine' congr_arg _ (Finj m (mi ≫ f) h)
+  exact congr_arg _ (Finj m (mi ≫ f) h)
 #align category_theory.functor.eval_section_injective_of_eventually_injective CategoryTheory.Functor.eval_section_injective_of_eventually_injective
 
 section FiniteCofilteredSystem

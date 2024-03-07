@@ -126,7 +126,7 @@ theorem toMatrix_smul {R₁ S : Type*} [CommRing R₁] [Ring S] [Algebra R₁ S]
   rfl
 
 theorem toMatrix_map_vecMul {S : Type*} [Ring S] [Algebra R S] [Fintype ι] (b : Basis ι R S)
-    (v : ι' → S) : ((b.toMatrix v).map <| algebraMap R S).vecMul b = v := by
+    (v : ι' → S) : b ᵥ* ((b.toMatrix v).map <| algebraMap R S) = v := by
   ext i
   simp_rw [vecMul, dotProduct, Matrix.map_apply, ← Algebra.commutes, ← Algebra.smul_def,
     sum_toMatrix_smul_self]
@@ -164,6 +164,16 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
     simp only [e.toMatrix_apply, ← e.equivFun_apply, ← e.equivFun_symm_apply,
       LinearEquiv.apply_symm_apply]
 #align basis.to_matrix_equiv Basis.toMatrixEquiv
+
+variable (R₂) in
+theorem restrictScalars_toMatrix [Fintype ι] [DecidableEq ι] {S : Type*} [CommRing S] [Nontrivial S]
+    [Algebra R₂ S] [Module S M₂] [IsScalarTower R₂ S M₂] [NoZeroSMulDivisors R₂ S]
+    (b : Basis ι S M₂) (v : ι → span R₂ (Set.range b)) :
+    (algebraMap R₂ S).mapMatrix ((b.restrictScalars R₂).toMatrix v) =
+      b.toMatrix (fun i ↦ (v i : M₂)) := by
+  ext
+  rw [RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply,
+    Basis.restrictScalars_repr_apply, Basis.toMatrix_apply]
 
 end Basis
 

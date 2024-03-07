@@ -100,11 +100,11 @@ theorem adjointAux_adjointAux (A : E →L[𝕜] F) : adjointAux (adjointAux A) =
 @[simp]
 theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := by
   refine' le_antisymm _ _
-  · refine' ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg _) fun x => _
+  · refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => _
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
   · nth_rw 1 [← adjointAux_adjointAux A]
-    refine' ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg _) fun x => _
+    refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => _
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
 #align continuous_linear_map.adjoint_aux_norm ContinuousLinearMap.adjointAux_norm
@@ -226,14 +226,14 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
     ‖ContinuousLinearMap.adjoint A ∘L A‖ = ‖A‖ * ‖A‖ := by
   refine' le_antisymm _ _
   · calc
-      ‖A† ∘L A‖ ≤ ‖A†‖ * ‖A‖ := op_norm_comp_le _ _
+      ‖A† ∘L A‖ ≤ ‖A†‖ * ‖A‖ := opNorm_comp_le _ _
       _ = ‖A‖ * ‖A‖ := by rw [LinearIsometryEquiv.norm_map]
   · rw [← sq, ← Real.sqrt_le_sqrt_iff (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)]
-    refine' op_norm_le_bound _ (Real.sqrt_nonneg _) fun x => _
+    refine' opNorm_le_bound _ (Real.sqrt_nonneg _) fun x => _
     have :=
       calc
         re ⟪(A† ∘L A) x, x⟫ ≤ ‖(A† ∘L A) x‖ * ‖x‖ := re_inner_le_norm _ _
-        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_op_norm _ _) (norm_nonneg _)
+        _ ≤ ‖A† ∘L A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
     calc
       ‖A x‖ = Real.sqrt (re ⟪(A† ∘L A) x, x⟫) := by rw [apply_norm_eq_sqrt_inner_adjoint_left]
       _ ≤ Real.sqrt (‖A† ∘L A‖ * ‖x‖ * ‖x‖) := (Real.sqrt_le_sqrt this)
@@ -311,7 +311,7 @@ theorem conj_orthogonalProjection {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (U
       (U.subtypeL ∘L orthogonalProjection U ∘L T ∘L U.subtypeL ∘L orthogonalProjection U) := by
   rw [← ContinuousLinearMap.comp_assoc]
   nth_rw 1 [← (orthogonalProjection_isSelfAdjoint U).adjoint_eq]
-  refine' hT.adjoint_conj _
+  exact hT.adjoint_conj _
 #align is_self_adjoint.conj_orthogonal_projection IsSelfAdjoint.conj_orthogonalProjection
 
 end IsSelfAdjoint
@@ -443,7 +443,7 @@ theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →
     A = LinearMap.adjoint B ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
   ext x
-  refine' ext_inner_right_basis b fun i => by simp only [h i, adjoint_inner_left]
+  exact ext_inner_right_basis b fun i => by simp only [h i, adjoint_inner_left]
 #align linear_map.eq_adjoint_iff_basis_right LinearMap.eq_adjoint_iff_basis_right
 
 /-- `E →ₗ[𝕜] E` is a star algebra with the adjoint as the star operation. -/

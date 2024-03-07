@@ -36,7 +36,7 @@ and require `0⁻¹ = 0`.
 -/
 
 
-open Classical
+open scoped Classical
 
 open Function
 
@@ -327,7 +327,7 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
 
       refine' inv_eq_of_mul _
       simp [mul_assoc, ha, hb],
-    inv_eq_of_mul := fun a b => inv_eq_of_mul }
+    inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 #align group_with_zero.to_division_monoid GroupWithZero.toDivisionMonoid
 
 -- see Note [lower instance priority]

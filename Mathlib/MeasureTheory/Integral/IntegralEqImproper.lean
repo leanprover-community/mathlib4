@@ -124,6 +124,26 @@ theorem mono {ν : Measure α} {φ : ι → Set α} (hφ : AECover μ l φ) (hle
 
 end AECover
 
+section MetricSpace
+
+variable [PseudoMetricSpace α] [OpensMeasurableSpace α]
+
+theorem aecover_ball {x : α} {r : ι → ℝ} (hr : Tendsto r l atTop) :
+    AECover μ l (fun i ↦ Metric.ball x (r i)) where
+  measurableSet _ := Metric.isOpen_ball.measurableSet
+  ae_eventually_mem := by
+    apply eventually_of_forall (fun y ↦ ?_)
+    filter_upwards [hr (Ioi_mem_atTop (dist x y))] with a ha using by simpa [dist_comm] using ha
+
+theorem aecover_closedBall {x : α} {r : ι → ℝ} (hr : Tendsto r l atTop) :
+    AECover μ l (fun i ↦ Metric.closedBall x (r i)) where
+  measurableSet _ := Metric.isClosed_ball.measurableSet
+  ae_eventually_mem := by
+    apply eventually_of_forall (fun y ↦ ?_)
+    filter_upwards [hr (Ici_mem_atTop (dist x y))] with a ha using by simpa [dist_comm] using ha
+
+end MetricSpace
+
 section Preorderα
 
 variable [Preorder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
@@ -175,21 +195,21 @@ section FiniteIntervals
 variable [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
   {a b : ι → α} {A B : α} (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B))
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem aecover_Ioi_of_Ioi : AECover (μ.restrict (Ioi A)) l fun i ↦ Ioi (a i) where
   ae_eventually_mem := (ae_restrict_mem measurableSet_Ioi).mono fun _x hx ↦ ha.eventually <|
     eventually_lt_nhds hx
   measurableSet _ := measurableSet_Ioi
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem aecover_Iio_of_Iio : AECover (μ.restrict (Iio B)) l fun i ↦ Iio (b i) :=
   aecover_Ioi_of_Ioi (α := αᵒᵈ) hb
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem aecover_Ioi_of_Ici : AECover (μ.restrict (Ioi A)) l fun i ↦ Ici (a i) :=
   (aecover_Ioi_of_Ioi ha).superset (fun _ ↦ Ioi_subset_Ici_self) fun _ ↦ measurableSet_Ici
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem aecover_Iio_of_Iic : AECover (μ.restrict (Iio B)) l fun i ↦ Iic (b i) :=
   aecover_Ioi_of_Ici (α := αᵒᵈ) hb
 
@@ -338,7 +358,7 @@ theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AE
     fun _ _ ↦ (hφ.2 _)
 #align measure_theory.ae_cover.bUnion_Iic_ae_cover MeasureTheory.AECover.biUnion_Iic_aecover
 
--- porting note: generalized from `[SemilatticeSup ι] [Nonempty ι]` to `[Preorder ι]`
+-- Porting note: generalized from `[SemilatticeSup ι] [Nonempty ι]` to `[Preorder ι]`
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
     (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where
   ae_eventually_mem := hφ.ae_eventually_mem.mono fun x h ↦ by
@@ -707,7 +727,7 @@ theorem _root_.HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f)
   rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
   refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
-  exact h2f.filter_mono atTop_le_cocompact |>.tendsto
+  exact h2f.filter_mono _root_.atTop_le_cocompact |>.tendsto
 
 /-- When a function has a limit at infinity, and its derivative is nonnegative, then the derivative
 is automatically integrable on `(a, +∞)`. Version assuming differentiability
@@ -857,9 +877,25 @@ theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
   rw [integral_Iic_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, sub_zero]
   refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
-  exact h2f.filter_mono atBot_le_cocompact |>.tendsto
+  exact h2f.filter_mono _root_.atBot_le_cocompact |>.tendsto
 
 end IicFTC
+
+section UnivFTC
+
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n : E} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [CompleteSpace E]
+
+theorem integral_of_hasDerivAt_of_tendsto
+    (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f')
+    (hbot : Tendsto f atBot (𝓝 m)) (htop : Tendsto f atTop (𝓝 n)) : ∫ x, f' x = n - m := by
+  rw [← integral_univ, ← Set.Iic_union_Ioi (a := 0),
+    integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi hf'.integrableOn hf'.integrableOn,
+    integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn hbot,
+    integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn htop]
+  abel
+
+end UnivFTC
 
 section IoiChangeVariables
 
@@ -942,10 +978,10 @@ theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
 #align measure_theory.integral_comp_rpow_Ioi_of_pos MeasureTheory.integral_comp_rpow_Ioi_of_pos
 
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
-    (∫ x in Ioi a, g (b * x)) = |b⁻¹| • ∫ x in Ioi (b * a), g x := by
+    (∫ x in Ioi a, g (b * x)) = b⁻¹ • ∫ x in Ioi (b * a), g x := by
   have : ∀ c : ℝ, MeasurableSet (Ioi c) := fun c => measurableSet_Ioi
   rw [← integral_indicator (this a), ← integral_indicator (this (b * a)),
-    ← Measure.integral_comp_mul_left]
+    ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr
   ext1 x
   rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left _ hb.ne']
@@ -953,7 +989,7 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
 #align measure_theory.integral_comp_mul_left_Ioi MeasureTheory.integral_comp_mul_left_Ioi
 
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
-    (∫ x in Ioi a, g (x * b)) = |b⁻¹| • ∫ x in Ioi (a * b), g x := by
+    (∫ x in Ioi a, g (x * b)) = b⁻¹ • ∫ x in Ioi (a * b), g x := by
   simpa only [mul_comm] using integral_comp_mul_left_Ioi g a hb
 #align measure_theory.integral_comp_mul_right_Ioi MeasureTheory.integral_comp_mul_right_Ioi
 

@@ -420,8 +420,6 @@ namespace RestrictionCoextensionAdj
 
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
--- Porting note: too much time
-set_option maxHeartbeats 500000 in
 /-- Given `R`-module X and `S`-module Y, any `g : (restrictScalars f).obj Y ⟶ X`
 corresponds to `Y ⟶ (coextendScalars f).obj X` by sending `y ↦ (s ↦ g (s • y))`
 -/
@@ -446,8 +444,8 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
       rw [smul_add, map_add]
   map_smul' := fun (s : S) (y : Y) => LinearMap.ext fun t : S => by
       -- Porting note: used to be simp [mul_smul]
-      rw [RingHom.id_apply, LinearMap.coe_mk, ModuleCat.CoextendScalars.smul_apply',
-        LinearMap.coe_mk]
+      simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply]
+      rw [ModuleCat.CoextendScalars.smul_apply', LinearMap.coe_mk]
       dsimp
       rw [mul_smul]
 #align category_theory.Module.restriction_coextension_adj.hom_equiv.from_restriction ModuleCat.RestrictionCoextensionAdj.HomEquiv.fromRestriction
@@ -483,6 +481,7 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd
+        set_option tactic.skipAssignedInstances false in
         dsimp
         rw [LinearMap.add_apply, LinearMap.coe_mk, LinearMap.coe_mk, LinearMap.coe_mk]
         dsimp
@@ -502,7 +501,7 @@ protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScala
   app Y := app' f Y
   naturality Y Y' g :=
     LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by
-      -- Porting note: previously simp [CoextendScalars.map_apply]
+      -- Porting note (#10745): previously simp [CoextendScalars.map_apply]
       simp only [ModuleCat.coe_comp, Functor.id_map, Functor.id_obj, Functor.comp_obj,
         Functor.comp_map]
       rw [coe_comp, coe_comp, Function.comp, Function.comp]
@@ -547,12 +546,12 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
     { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u₁,u₂,v} f
       invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u₁,u₂,v} f
       left_inv := fun g => LinearMap.ext fun x : X => by
-        -- Porting note: once just simp
+        -- Porting note (#10745): once just simp
         rw [RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
           LinearMap.coe_toAddHom, RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
           one_smul]
       right_inv := fun g => LinearMap.ext fun x => LinearMap.ext fun s : S => by
-        -- Porting note: once just simp
+        -- Porting note (#10745): once just simp
         rw [RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
           RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
           LinearMap.coe_toAddHom, LinearMap.map_smulₛₗ, RingHom.id_apply,
@@ -561,7 +560,7 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
   counit := RestrictionCoextensionAdj.counit'.{u₁,u₂,v} f
   homEquiv_unit := LinearMap.ext fun y => rfl
   homEquiv_counit := fun {X Y g} => LinearMap.ext <| by
-    -- Porting note: previously simp [RestrictionCoextensionAdj.counit']
+    -- Porting note (#10745): previously simp [RestrictionCoextensionAdj.counit']
     intro x; dsimp
     rw [coe_comp, Function.comp]
     change _ = (((restrictScalars f).map g) x).toFun (1 : S)
@@ -797,7 +796,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
         rw [Function.comp_apply, ExtendRestrictScalarsAdj.counit_app]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [ExtendRestrictScalarsAdj.Counit.map_apply]
-        dsimp
+        set_option tactic.skipAssignedInstances false in dsimp
         rw [TensorProduct.lift.tmul]
         rfl
       · rw [map_add,map_add]

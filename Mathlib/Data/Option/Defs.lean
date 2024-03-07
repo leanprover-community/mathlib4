@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Algebra.Classes
+import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 
 #align_import data.option.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
@@ -56,7 +57,7 @@ theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
 @[simp]
 theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
--- porting note: this lemma was introduced because it is necessary
+-- Porting note: this lemma was introduced because it is necessary
 -- in `CategoryTheory.Category.PartialFun`
 lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
     Option.elim' b f a = Option.elim a b f := by

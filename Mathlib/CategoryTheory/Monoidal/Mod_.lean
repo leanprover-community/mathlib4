@@ -73,7 +73,7 @@ instance : Category (Mod_ A) where
   id := id
   comp f g := comp f g
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
@@ -114,7 +114,6 @@ set_option linter.uppercaseLean3 false in
 
 open CategoryTheory.MonoidalCategory
 
-set_option maxHeartbeats 400000 in
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/
