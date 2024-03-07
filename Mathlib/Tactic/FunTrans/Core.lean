@@ -41,6 +41,7 @@ private def ppOrigin' (origin : FunProp.Origin) : MetaM String := do
 
 
 def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array BinderInfo) : SimpM Bool := do
+  let mut postponed : Array Expr := #[]
   for x in xs, bi in bis do
     let type ← inferType x
     if (← instantiateMVars x).isMVar then
@@ -62,7 +63,18 @@ def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array Binde
             x.mvarId!.assign r
             continue
 
-      trace[Meta.Tactic.fun_trans.discharge] "{← ppOrigin' thmId}, failed to discharge hypotheses{indentExpr type}"
+      if ¬(← isProp type) then
+        postponed := postponed.push x
+        continue
+      else
+        trace[Meta.Tactic.fun_trans]
+          "{← ppOrigin' thmId}, failed to discharge hypotheses{indentExpr type}"
+        return false
+
+  for x in postponed do
+    if (← instantiateMVars x).isMVar then
+      trace[Meta.Tactic.fun_trans]
+        "{← ppOrigin' thmId}, failed to infer `({← ppExpr x} : {← ppExpr (← inferType x)})`"
       return false
 
   return true
