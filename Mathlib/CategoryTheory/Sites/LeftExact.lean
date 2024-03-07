@@ -21,7 +21,7 @@ open CategoryTheory Limits Opposite
 
 universe w' w v u
 
--- porting note: was `C : Type max v u` which made most instances non automatically applicable
+-- Porting note: was `C : Type max v u` which made most instances non automatically applicable
 -- it seems to me it is better to declare `C : Type u`: it works better, and it is more general
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
@@ -259,7 +259,7 @@ instance preservesLimitsOfShape_presheafToSheaf :
   apply isLimitOfReflects (sheafToPresheaf J D)
   have : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=
     reflectsLimitsOfShapeOfReflectsIsomorphisms
-  -- porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
+  -- Porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
   have : PreservesLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K))
       (plusPlusSheaf J D ⋙ sheafToPresheaf J D) :=
     preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)

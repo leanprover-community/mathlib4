@@ -65,7 +65,7 @@ open CategoryTheory.Functor
 
 open CategoryTheory.Preadditive
 
-open Classical
+open scoped Classical
 
 open BigOperators
 

@@ -56,7 +56,7 @@ set_option linter.uppercaseLean3 false in
 
 deriving instance LargeCategory for SemiRingCat
 
---Porting note: deriving fails for ConcreteCategory, adding instance manually.
+-- Porting note: deriving fails for ConcreteCategory, adding instance manually.
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 

@@ -60,7 +60,7 @@ attribute [nolint simpNF] unit.sizeOf_spec tensor.injEq tensor.sizeOf_spec
 /-- Formal compositions and tensor products of identities, unitors and associators. The morphisms
     of the free monoidal category are obtained as a quotient of these formal morphisms by the
     relations defining a monoidal category. -/
--- porting note: unsupported linter
+-- Porting note: unsupported linter
 -- @[nolint has_nonempty_instance]
 inductive Hom : F C → F C → Type u
   | id (X) : Hom X X
@@ -71,8 +71,7 @@ inductive Hom : F C → F C → Type u
   | ρ_hom (X : F C) : Hom (X.tensor unit) X
   | ρ_inv (X : F C) : Hom X (X.tensor unit)
   | comp {X Y Z} (f : Hom X Y) (g : Hom Y Z) : Hom X Z
-  | whiskerLeft (X : F C) {Y Z : F C} (f : Hom Y Z) :
-      Hom (X.tensor Y) (X.tensor Z)
+  | whiskerLeft (X : F C) {Y Z : F C} (f : Hom Y Z) : Hom (X.tensor Y) (X.tensor Z)
   | whiskerRight {X Y : F C} (f : Hom X Y) (Z : F C) : Hom (X.tensor Z) (Y.tensor Z)
 #align category_theory.free_monoidal_category.hom CategoryTheory.FreeMonoidalCategory.Hom
 
@@ -150,13 +149,8 @@ open FreeMonoidalCategory.HomEquiv
 
 instance categoryFreeMonoidalCategory : Category.{u} (F C) where
   Hom X Y := Quotient (FreeMonoidalCategory.setoidHom X Y)
-  id X := ⟦FreeMonoidalCategory.Hom.id _⟧
-  comp := @fun X Y Z f g =>
-    Quotient.map₂ Hom.comp
-      (by
-        intro f f' hf g g' hg
-        exact comp hf hg)
-      f g
+  id X := ⟦Hom.id X⟧
+  comp := Quotient.map₂ Hom.comp (fun _ _ hf _ _ hg ↦ HomEquiv.comp hf hg)
   id_comp := by
     rintro X Y ⟨f⟩
     exact Quotient.sound (id_comp f)
@@ -264,6 +258,16 @@ theorem mk_whiskerRight {X₁ X₂ : F C} (f : X₁ ⟶ᵐ X₂) (Y : F C) :
   rfl
 
 @[simp]
+theorem mk_whiskerLeft (X : F C) {Y₁ Y₂ : F C} (f : Y₁ ⟶ᵐ Y₂) :
+    ⟦f.whiskerLeft X⟧ = MonoidalCategory.whiskerLeft (C := F C) (X := X) (f := ⟦f⟧) :=
+  rfl
+
+@[simp]
+theorem mk_whiskerRight {X₁ X₂ : F C} (f : X₁ ⟶ᵐ X₂) (Y : F C) :
+    ⟦f.whiskerRight Y⟧ = MonoidalCategory.whiskerRight (C := F C) (f := ⟦f⟧) (Y := Y) :=
+  rfl
+
+@[simp]
 theorem mk_id {X : F C} : ⟦Hom.id X⟧ = 𝟙 X :=
   rfl
 #align category_theory.free_monoidal_category.mk_id CategoryTheory.FreeMonoidalCategory.mk_id
@@ -307,6 +311,38 @@ theorem tensor_eq_tensor {X Y : F C} : X.tensor Y = X ⊗ Y :=
 theorem unit_eq_unit : FreeMonoidalCategory.unit = 𝟙_ (F C) :=
   rfl
 #align category_theory.free_monoidal_category.unit_eq_unit CategoryTheory.FreeMonoidalCategory.unit_eq_unit
+
+/-- The abbreviation for `⟦f⟧`. -/
+/- This is useful since the notation `⟦f⟧` often behaves like an element of the quotient set,
+but not like a morphism. This is why we need weird `@CategoryStruct.comp (F C) ...` in the
+statement in `mk_comp` above. -/
+abbrev homMk {X Y : F C} (f : X ⟶ᵐ Y) : X ⟶ Y := ⟦f⟧
+
+theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C} (t : X ⟶ Y)
+    (id : (X : F C) → motive (𝟙 X))
+    (α_hom : (X Y Z : F C) → motive (α_ X Y Z).hom)
+    (α_inv : (X Y Z : F C) → motive (α_ X Y Z).inv)
+    (l_hom : (X : F C) → motive (λ_ X).hom)
+    (l_inv : (X : F C) → motive (λ_ X).inv)
+    (ρ_hom : (X : F C) → motive (ρ_ X).hom)
+    (ρ_inv : (X : F C) → motive (ρ_ X).inv)
+    (comp : {X Y Z : F C} → (f : X ⟶ Y) → (g : Y ⟶ Z) → motive f → motive g → motive (f ≫ g))
+    (whiskerLeft : (X : F C) → {Y Z : F C} → (f : Y ⟶ Z) → motive f → motive (X ◁ f))
+    (whiskerRight : {X Y : F C} → (f : X ⟶ Y) → (Z : F C) → motive f → motive (f ▷ Z)) :
+    motive t := by
+  apply Quotient.inductionOn
+  intro f
+  induction f with
+  | id X => exact id X
+  | α_hom X Y Z => exact α_hom X Y Z
+  | α_inv X Y Z => exact α_inv X Y Z
+  | l_hom X => exact l_hom X
+  | l_inv X => exact l_inv X
+  | ρ_hom X => exact ρ_hom X
+  | ρ_inv X => exact ρ_inv X
+  | comp f g hf hg => exact comp _ _ (hf ⟦f⟧) (hg ⟦g⟧)
+  | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
+  | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
 
 section Functor
 
