@@ -2,15 +2,12 @@
 Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
-Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
 import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Root data and root systems
 
-This file contains basic results for root systems and root data.
 This file contains basic results for root systems and root data.
 
 ## Main definitions / results:
@@ -313,7 +310,6 @@ namespace RootSystem
 
 open RootPairing
 
-variable [Finite ι]
 variable [Finite ι]
 variable (P : RootSystem ι R M N)
 
