@@ -46,7 +46,7 @@ namespace expNegInvGlue
 theorem zero_of_nonpos {x : ℝ} (hx : x ≤ 0) : expNegInvGlue x = 0 := by simp [expNegInvGlue, hx]
 #align exp_neg_inv_glue.zero_of_nonpos expNegInvGlue.zero_of_nonpos
 
-@[simp] -- Porting note: new lemma
+@[simp] -- Porting note (#10756): new lemma
 protected theorem zero : expNegInvGlue 0 = 0 := zero_of_nonpos le_rfl
 
 /-- The function `expNegInvGlue` is positive on `(0, +∞)`. -/
@@ -61,7 +61,7 @@ theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
   | inr h => exact le_of_lt (pos_of_pos h)
 #align exp_neg_inv_glue.nonneg expNegInvGlue.nonneg
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp] theorem zero_iff_nonpos {x : ℝ} : expNegInvGlue x = 0 ↔ x ≤ 0 :=
   ⟨fun h ↦ not_lt.mp fun h' ↦ (pos_of_pos h').ne' h, zero_of_nonpos⟩
 

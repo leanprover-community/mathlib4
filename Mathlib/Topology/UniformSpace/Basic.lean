@@ -569,7 +569,7 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem comp3_mem_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
   let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
   let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
@@ -1457,7 +1457,7 @@ theorem uniformity_setCoe {s : Set α} [UniformSpace α] :
   rfl
 #align uniformity_set_coe uniformity_setCoe
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
     map (Prod.map (↑) (↑)) (𝓤 s) = 𝓤 α ⊓ 𝓟 (s ×ˢ s) := by
   rw [uniformity_setCoe, map_comap, range_prod_map, Subtype.range_val]
