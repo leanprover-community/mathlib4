@@ -371,7 +371,7 @@ theorem card_le_one_iff_eq_bot : card S ≤ 1 ↔ S = ⊥ :=
 
 @[to_additive]
 lemma eq_bot_iff_card : S = ⊥ ↔ card S = 1 :=
-  ⟨by rintro rfl;  exact card_bot, eq_bot_of_card_eq⟩
+  ⟨by rintro rfl; exact card_bot, eq_bot_of_card_eq⟩
 
 end Submonoid
 

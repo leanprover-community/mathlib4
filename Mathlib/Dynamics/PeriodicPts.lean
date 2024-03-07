@@ -265,7 +265,7 @@ theorem Semiconj.mapsTo_periodicPts {g : α → β} (h : Semiconj g fa fb) :
     MapsTo g (periodicPts fa) (periodicPts fb) := fun _ ⟨n, hn, hx⟩ => ⟨n, hn, hx.map h⟩
 #align function.semiconj.maps_to_periodic_pts Function.Semiconj.mapsTo_periodicPts
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

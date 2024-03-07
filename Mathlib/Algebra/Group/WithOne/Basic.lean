@@ -82,7 +82,7 @@ theorem lift_coe (x : α) : lift f x = f x :=
 #align with_one.lift_coe WithOne.lift_coe
 #align with_zero.lift_coe WithZero.lift_coe
 
--- Porting note: removed `simp` attribute to appease `simpNF` linter.
+-- Porting note (#11119): removed `simp` attribute to appease `simpNF` linter.
 @[to_additive]
 theorem lift_one : lift f 1 = 1 :=
   rfl

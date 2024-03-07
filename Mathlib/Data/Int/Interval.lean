@@ -147,22 +147,22 @@ theorem card_Ioo_of_lt (h : a < b) : ((Ioo a b).card : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 #align int.card_Ioo_of_lt Int.card_Ioo_of_lt
 
--- Porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
   rw [← card_Icc, Fintype.card_ofFinset]
 #align int.card_fintype_Icc Int.card_fintype_Icc
 
--- Porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
   rw [← card_Ico, Fintype.card_ofFinset]
 #align int.card_fintype_Ico Int.card_fintype_Ico
 
--- Porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 #align int.card_fintype_Ioc Int.card_fintype_Ioc
 
--- Porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 #align int.card_fintype_Ioo Int.card_fintype_Ioo
