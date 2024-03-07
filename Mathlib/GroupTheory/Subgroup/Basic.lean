@@ -164,7 +164,7 @@ theorem div_mem_comm_iff {a b : G} : a / b ∈ H ↔ b / a ∈ H :=
 #align div_mem_comm_iff div_mem_comm_iff
 #align sub_mem_comm_iff sub_mem_comm_iff
 
-@[to_additive /-(attr := simp)-/] -- porting note: `simp` cannot simplify LHS
+@[to_additive /-(attr := simp)-/] -- Porting note: `simp` cannot simplify LHS
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
     (∃ x : G, x ∈ H ∧ P x⁻¹) ↔ ∃ x ∈ H, P x := by
   constructor <;>
@@ -532,7 +532,7 @@ protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
   carrier := s
   one_mem' := hs.symm ▸ K.one_mem'
   mul_mem' := hs.symm ▸ K.mul_mem'
-  inv_mem' hx := by simpa [hs] using hx -- porting note: `▸` didn't work here
+  inv_mem' hx := by simpa [hs] using hx -- Porting note: `▸` didn't work here
 #align subgroup.copy Subgroup.copy
 #align add_subgroup.copy AddSubgroup.copy
 
@@ -734,11 +734,10 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align subgroup.coe_zpow Subgroup.coe_zpow
 #align add_subgroup.coe_zsmul AddSubgroup.coe_zsmul
 
-@[to_additive (attr := simp)]
-theorem mk_eq_one_iff {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
-  show (⟨g, h⟩ : H) = (⟨1, H.one_mem⟩ : H) ↔ g = 1 by simp
-#align subgroup.mk_eq_one_iff Subgroup.mk_eq_one_iff
-#align add_subgroup.mk_eq_zero_iff AddSubgroup.mk_eq_zero_iff
+@[to_additive] -- This can be proved by `Submonoid.mk_eq_one`
+theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := by simp
+#align subgroup.mk_eq_one_iff Subgroup.mk_eq_one
+#align add_subgroup.mk_eq_zero_iff AddSubgroup.mk_eq_zero
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
@@ -938,7 +937,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 @[to_additive]
 lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
   rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
-  simp only [ne_eq, Subtype.exists, mk_eq_one_iff, exists_prop]
+  simp only [ne_eq, Subtype.exists, mk_eq_one, exists_prop]
 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive "The inf of two `AddSubgroup`s is their intersection."]
@@ -2226,7 +2225,7 @@ theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
 #align subgroup.center_le_normalizer Subgroup.center_le_normalizer
 #align add_subgroup.center_le_normalizer AddSubgroup.center_le_normalizer
 
-open Classical
+open scoped Classical
 
 @[to_additive]
 theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=

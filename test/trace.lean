@@ -1,6 +1,4 @@
 import Mathlib.Tactic.Trace
-import Std.Tactic.GuardMsgs
-
 /--
 info: 7
 -/

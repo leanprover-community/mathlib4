@@ -229,7 +229,7 @@ end Equiv
 
 -- Porting note: we don't put `@[simp]` on the additive version;
 -- mysteriously simp can already prove that one (although not the multiplicative one)!
--- porting note: `@[simps apply]` removed because right now it's generating lemmas which
+-- Porting note: `@[simps apply]` removed because right now it's generating lemmas which
 -- aren't in simp normal form (they contain a `toFun`)
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
@@ -247,4 +247,4 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm
--- porting note: no `add_equiv.neg_symm` in `mathlib3`
+-- Porting note: no `add_equiv.neg_symm` in `mathlib3`

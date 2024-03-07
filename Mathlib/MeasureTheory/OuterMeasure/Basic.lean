@@ -56,7 +56,8 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-open Classical BigOperators NNReal Topology ENNReal MeasureTheory
+open scoped Classical
+open BigOperators NNReal Topology ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -365,10 +366,10 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_antisymm a b hab hba := ext fun s => le_antisymm (hab s) (hba s)
 #align measure_theory.outer_measure.outer_measure.partial_order MeasureTheory.OuterMeasure.instPartialOrder
 
-instance OuterMeasure.orderBot : OrderBot (OuterMeasure α) :=
+instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
     bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, coe_bot, zero_le] }
-#align measure_theory.outer_measure.outer_measure.order_bot MeasureTheory.OuterMeasure.OuterMeasure.orderBot
+#align measure_theory.outer_measure.outer_measure.order_bot MeasureTheory.OuterMeasure.orderBot
 
 theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
   ⟨fun h => bot_unique fun s => (m.mono' <| subset_univ s).trans_eq h, fun h => h.symm ▸ rfl⟩
@@ -640,7 +641,7 @@ end Basic
 
 section OfFunction
 
---porting note: "set_option eqn_compiler.zeta true" removed
+-- Porting note: "set_option eqn_compiler.zeta true" removed
 
 variable {α : Type*} (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 
@@ -1600,7 +1601,7 @@ theorem le_trim : m ≤ m.trim := by
   apply extend_empty <;> simp
 #align measure_theory.outer_measure.le_trim MeasureTheory.OuterMeasure.le_trim
 
-@[simp] --porting note: added `simp`
+@[simp] -- Porting note: added `simp`
 theorem trim_eq {s : Set α} (hs : MeasurableSet s) : m.trim s = m s :=
   inducedOuterMeasure_eq' MeasurableSet.iUnion (fun f _hf => m.iUnion_nat f)
     (fun _ _ _ _ h => m.mono h) hs
