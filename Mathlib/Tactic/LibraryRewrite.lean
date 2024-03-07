@@ -9,7 +9,7 @@ namespace Mathlib.Tactic.LibraryRewrite
 
 open Lean Meta Server
 
-/-- The structure that is stored in the `RefinedDiscrTree`. -/
+/-- The structure that we store in the `RefinedDiscrTree`. -/
 structure RewriteLemma where
   name : Name
   symm : Bool
@@ -79,12 +79,10 @@ section
 open Std.Tactic
 
 @[reducible]
-def RewriteCache := DeclCache (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma)
+def RewriteCache := Cache (RefinedDiscrTree RewriteLemma)
 
-def RewriteCache.mk
-  (init : Option (RefinedDiscrTree RewriteLemma) := none) :
-    IO RewriteCache := do
-  let cache ← Cache.mk <| (({}, ·)) <$> do
+def RewriteCache.mk (init : Option (RefinedDiscrTree RewriteLemma) := none) : IO RewriteCache :=
+  Cache.mk do
     match init with
     | some tree => return tree
     | none =>
@@ -94,14 +92,9 @@ def RewriteCache.mk
         for moduleName in env.header.moduleNames, data in env.header.moduleData do
           if isBadModule moduleName then
             continue
-          for name in data.constNames, cinfo in data.constants do
-            tree ← updateDiscrTree name cinfo tree
+          for cinfo in data.constants do
+            tree ← updateDiscrTree cinfo.name cinfo tree
         return tree.mapArrays (·.qsort (· < ·))
-  return { cache, addDecl }
-where
-  addDecl (name : Name) (cinfo : ConstantInfo)
-  | (currentTree, libraryTree) => do
-    return (← updateDiscrTree name cinfo currentTree, libraryTree)
 
 def cachePath : IO System.FilePath := do
   try
@@ -118,9 +111,11 @@ initialize cachedData : RewriteCache ← unsafe do
   else
     RewriteCache.mk
 
-def getRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma) := do
-  let (currentTree, libraryTree) ← cachedData.get
-  return (currentTree.mapArrays (·.qsort (· < ·)), libraryTree)
+def getCachedRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) :=
+  cachedData.get
+
+def getLocalRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma) := do
+  (← getEnv).constants.map₂.foldlM (init := {}) (fun tree n c => updateDiscrTree n c tree)
 
 end
 
@@ -293,10 +288,9 @@ where
 
 /-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Bool)) := do
-  let (localLemmas, libraryLemmas) ← getRewriteLemmas
-  let localResults ← localLemmas.getMatchWithScore e (unify := true)
-  let libraryResults ← libraryLemmas.getMatchWithScore e (unify := true)
-  let allResults := localResults.map (·.1, true) ++ libraryResults.map (·.1, false)
+  let localResults  ← (← getLocalRewriteLemmas ).getMatchWithScore e (unify := true)
+  let cachedResults ← (← getCachedRewriteLemmas).getMatchWithScore e (unify := true)
+  let allResults := localResults.map (·.1, true) ++ cachedResults.map (·.1, false)
   return allResults
 
 def checkLemmata (ass : Array (Array RewriteLemma × Bool))
