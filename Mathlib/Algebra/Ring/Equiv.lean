@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
@@ -838,6 +839,11 @@ variable [Semiring R] [Semiring S]
 protected theorem map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n :=
   map_pow f a
 #align ring_equiv.map_pow RingEquiv.map_pow
+
+protected theorem isUnit_iff (f : R ≃+* S) {a} : IsUnit a ↔ IsUnit (f a) := by
+  refine ⟨fun a_1 => IsUnit.map f a_1, ?_⟩
+  convert IsUnit.map f.symm
+  simp only [RingEquiv.symm_apply_apply]
 
 end GroupPower
 
