@@ -5,7 +5,6 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
