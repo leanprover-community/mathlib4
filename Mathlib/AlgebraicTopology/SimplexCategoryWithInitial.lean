@@ -7,6 +7,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
+import Mathlib.Order.Category.LinOrd
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Functor.ReflectsIso
@@ -244,6 +245,7 @@ def CategoryOfElements.liftIsoFunc {F1 F2 : C ⥤ Type} (η : F1 ≅ F2) :
 end CategoryTheory
 end lifts
 
+
 namespace SimplexCategory
 namespace WithInitial
 open WithInitial
@@ -285,6 +287,7 @@ lemma len_mk (i : ℕ) : len (mk i) = i := by
   match i with
   | Nat.zero => rfl
   | Nat.succ x => rfl
+
 
 /-- Given a morphism `f : X ⟶ Y` in `WithInitial SimplexCategory`, the corresponding ordered
 homomorphism from `Fin (len X)` to  `Fin (len Y)`.  -/
@@ -500,7 +503,7 @@ def join :
        exact Join.func.map_comp f' g'
 
 lemma len_of_join (X : WithInitial SimplexCategory × WithInitial SimplexCategory) :
-    len (join.obj X) = (len X.1) + (len X.2) := by
+    len (join.obj X) = len X.1 + len X.2 := by
   match X with
   | (star, star) => rfl
   | (star, of x) =>
@@ -706,7 +709,8 @@ lemma joinClassifyMap_of_id {X : WithInitial SimplexCategory} (i : Fin (Nat.succ
   rw [joinClassifyMap_of_iso_hom]
 
 lemma joinClassifyMap_of_comp {X Y Z: WithInitial SimplexCategory} (f : X ⟶ Y) (g : Y ⟶ Z)
-    (i : Fin (Nat.succ (len Z))) : joinClassifyMap f (joinClassifyMap g i) = joinClassifyMap (f ≫ g) i := by
+    (i : Fin (Nat.succ (len Z))) :
+    joinClassifyMap f (joinClassifyMap g i) = joinClassifyMap (f ≫ g) i := by
   rw [joinClassifyMap_iff]
   intro j
   apply Iff.intro
@@ -1294,7 +1298,8 @@ def assocIsoComponents (X : (WithInitial SimplexCategory)ᵒᵖ) :
 -- ↑(sourceValue f.unop { val := ↑s.2, isLt := _ })
 lemma mapOrderHom₁_map {X Y : (WithInitial SimplexCategory)ᵒᵖ}  (f : X ⟶ Y)
     (s : assocClassifier1.obj X) :
-    (joinClassifying.map (joinClassifyEquivOpOp.functor.map (joinClassifying.coCartesianLift f s.1)).1 s.2).val
+    (joinClassifying.map
+    (joinClassifyEquivOpOp.functor.map (joinClassifying.coCartesianLift f s.1)).1 s.2).val
     = (joinClassifying.map f (((assocIsoComponents X).hom s).1)).val := by
   simp
   have h2 := Nat.lt_succ.mp s.2.prop
@@ -1453,8 +1458,6 @@ def assoc1Join : (joinClassifying.Elements) × (WithInitial SimplexCategory)ᵒ�
   (CategoryOfElements.π joinClassifying).prod (𝟭 (WithInitial SimplexCategory)ᵒᵖ)
   ⋙ joinClassifyEquivOpOp.inverse
 
-
-
 @[simps!]
 def assocSndToWithInitialWithInitial : assocClassifierSnd.Elements ⥤
     (WithInitial SimplexCategory)ᵒᵖ × (joinClassifying.Elements)  where
@@ -1490,16 +1493,16 @@ def assocFstTo3WithInitial : assocClassifier1.Elements ⥤
 
 
 @[simps!]
-def inclFst₁ {Y : assocClassifier1.Elements}
-    (a : Fin (len (assocFstTo3WithInitial.obj Y).1.unop)) : Fin (len Y.1.unop) :=
-  @incl₁ (Opposite.op (assoc1ToJoin.obj Y))
-  (@incl₁ (Opposite.op (assoc1ToWithInitialWithInitial.obj Y).1) a)
+def inclFst₁ {Y : assocClassifier1.Elements} :
+    Fin (len (assocFstTo3WithInitial.obj Y).1.unop) →o Fin (len Y.1.unop) :=
+  (@incl₁ (Opposite.op (assoc1ToJoin.obj Y))).comp
+  (@incl₁ (Opposite.op (assoc1ToWithInitialWithInitial.obj Y).1))
 
 @[simps!]
-def inclFst₂ {Y : assocClassifier1.Elements}
-    (a : Fin (len (assocFstTo3WithInitial.obj Y).2.1.unop)) : Fin (len Y.1.unop) :=
-  @incl₁ (Opposite.op ⟨Y.fst, Y.snd.1⟩)
-  (@incl₂ (Opposite.op (assoc1ToWithInitialWithInitial.obj Y).1) a)
+def inclFst₂ {Y : assocClassifier1.Elements} :
+    Fin (len (assocFstTo3WithInitial.obj Y).2.1.unop) →o Fin (len Y.1.unop) :=
+  (@incl₁ (Opposite.op ⟨Y.fst, Y.snd.1⟩)).comp
+  (@incl₂ (Opposite.op (assoc1ToWithInitialWithInitial.obj Y).1))
 
 @[simps!]
 def inclFst₃ {Y : assocClassifier1.Elements}
