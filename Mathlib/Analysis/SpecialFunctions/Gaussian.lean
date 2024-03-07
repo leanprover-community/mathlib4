@@ -212,7 +212,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     atTop (𝓝 (-(2 * b)⁻¹ * 0)) := by
     refine' Tendsto.const_mul _ (tendsto_zero_iff_norm_tendsto_zero.mpr _)
     simp_rw [norm_cexp_neg_mul_sq b]
-    exact tendsto_exp_atBot.comp (Tendsto.neg_const_mul_atTop (neg_lt_zero.2 hb)
+    exact tendsto_exp_atBot.comp (Tendsto.const_mul_atTop_of_neg (neg_lt_zero.2 hb)
         (tendsto_pow_atTop two_ne_zero))
   convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
     (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
@@ -807,7 +807,7 @@ theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s 
       (mem_atTop_sets.mpr ⟨0, fun b hb => ⟨b, abs_of_nonneg hb⟩⟩)]
   exact
     (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg ha s).tendsto_zero_of_tendsto
-      (tendsto_exp_atBot.comp <| tendsto_id.neg_const_mul_atTop (neg_lt_zero.mpr one_half_pos))
+      (tendsto_exp_atBot.comp <| tendsto_id.const_mul_atTop_of_neg (neg_lt_zero.mpr one_half_pos))
 #align tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact
 
 theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
