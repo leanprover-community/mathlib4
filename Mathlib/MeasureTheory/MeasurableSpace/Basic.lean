@@ -190,6 +190,7 @@ end Functors
   eq_top_iff.2 <| λ s _ ↦ by by_cases b ∈ s <;> simp [*, map_def] <;> rw [Set.preimage_id'] <;> simp
 #align measurable_space.map_const MeasurableSpace.map_const
 
+set_option tactic.skipAssignedInstances false in
 @[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α => b) m = ⊥ :=
   eq_bot_iff.2 <| by rintro _ ⟨s, -, rfl⟩; by_cases b ∈ s <;> simp [*]; exact measurableSet_empty _
 #align measurable_space.comap_const MeasurableSpace.comap_const
@@ -1877,7 +1878,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
   of_measurable_inverse_on_range hf₁ hf₂ (hg.comp measurable_subtype_coe) H
 #align measurable_embedding.of_measurable_inverse MeasurableEmbedding.of_measurable_inverse
 
-open Classical
+open scoped Classical
 
 /-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`.-/
@@ -1996,7 +1997,7 @@ instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [Measurabl
 
 variable (α)
 
-open Classical
+open scoped Classical
 
 /-- If a measurable space is countably generated and separates points, it admits a measurable
 injection into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/

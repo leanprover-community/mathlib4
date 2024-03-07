@@ -955,10 +955,9 @@ theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff fun hr => False.elim <| by simp [hr] at h).1 h
 #align nnreal.mul_lt_of_lt_div NNReal.mul_lt_of_lt_div
 
--- Porting note: drop an unneeded assumption, assume `≠ 0`
 theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
     a / b ≤ a / c :=
-  div_le_div_of_le_left (zero_le _) c0.bot_lt cb
+  div_le_div_of_nonneg_left (zero_le _) c0.bot_lt cb
 #align nnreal.div_le_div_left_of_le NNReal.div_le_div_left_of_leₓ
 
 nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 : 0 < c) :
@@ -1155,7 +1154,7 @@ end Set
 namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
--- Porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩
   map_zero' := by ext; simp

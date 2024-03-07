@@ -23,9 +23,11 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
-open Classical Set Function Filter Finset Metric Asymptotics
+open scoped Classical
+open Set Function Filter Finset Metric Asymptotics
 
-open Classical Topology Nat BigOperators uniformity NNReal ENNReal
+open scoped Classical
+open Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -663,7 +665,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
 
 theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i in range n, (-1 : ℝ) ^ i‖ ≤ 1 := by
   rw [neg_one_geom_sum]
-  split_ifs <;> norm_num
+  split_ifs <;> set_option tactic.skipAssignedInstances false in norm_num
 #align norm_sum_neg_one_pow_le norm_sum_neg_one_pow_le
 
 /-- The **alternating series test** for monotone sequences.
@@ -717,7 +719,7 @@ theorem Monotone.tendsto_le_alternating_series
       ← sub_eq_add_neg, sub_le_iff_le_add]
     gcongr
     exact hfm (by omega)
-  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by omega) tendsto_id)) _
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
 
 /-- Partial sums of an alternating monotone series with an odd number of terms provide
 lower bounds on the limit. -/
@@ -732,7 +734,7 @@ theorem Monotone.alternating_series_le_tendsto
       ← sub_eq_add_neg, sub_add_eq_add_sub, le_sub_iff_add_le]
     gcongr
     exact hfm (by omega)
-  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by omega) tendsto_id)) _
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
 
 /-- Partial sums of an alternating antitone series with an even number of terms provide
 lower bounds on the limit. -/
@@ -746,7 +748,7 @@ theorem Antitone.alternating_series_le_tendsto
       ← sub_eq_add_neg, le_sub_iff_add_le]
     gcongr
     exact hfa (by omega)
-  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by omega) tendsto_id)) _
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
 
 /-- Partial sums of an alternating antitone series with an odd number of terms provide
 upper bounds on the limit. -/
@@ -760,7 +762,7 @@ theorem Antitone.tendsto_le_alternating_series
       ← sub_eq_add_neg, sub_add_eq_add_sub, sub_le_iff_le_add]
     gcongr
     exact hfa (by omega)
-  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by omega) tendsto_id)) _
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
 
 end
 

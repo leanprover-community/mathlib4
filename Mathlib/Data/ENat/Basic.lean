@@ -157,22 +157,22 @@ theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a
 -- Porting note: new theorem copied from `WithTop`
 @[simp]
 theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
-  fun.
+  nofun
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a : ℕ∞)) :=
-  fun.
+  nofun
 
 -- Porting note: new theorem copied from `WithTop`
 @[simp]
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
-  fun.
+  nofun
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℕ∞)) ≠ ⊤ :=
-  fun.
+  nofun
 
 -- Porting note: new theorem copied from `WithTop`
 @[simp]
