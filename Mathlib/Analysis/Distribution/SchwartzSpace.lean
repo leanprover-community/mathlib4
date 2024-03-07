@@ -10,6 +10,7 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
 
@@ -37,6 +38,7 @@ decay faster than any power of `‖x‖`.
 `𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F)`
 * `SchwartzMap.derivCLM`: The one-dimensional derivative as a continuous linear map
 `𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F)`
+* `SchwartzMap.integralCLM`: Integration as a continuous linear map `𝓢(ℝ, F) →L[ℝ] F`
 
 ## Main statements
 
@@ -62,7 +64,7 @@ noncomputable section
 
 open scoped BigOperators Nat
 
-variable {𝕜 𝕜' D E F G : Type*}
+variable {𝕜 𝕜' D E F G V : Type*}
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -78,14 +80,13 @@ structure SchwartzMap where
   decay' : ∀ k n : ℕ, ∃ C : ℝ, ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n toFun x‖ ≤ C
 #align schwartz_map SchwartzMap
 
--- mathport name: «expr𝓢( , )»
-scoped[SchwartzSpace] notation "𝓢(" E ", " F ")" => SchwartzMap E F
+/-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
+  any power of `‖x‖`. -/
+scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 
 variable {E F}
 
 namespace SchwartzMap
-
-open SchwartzSpace
 
 -- Porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
@@ -716,11 +717,26 @@ def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
         (schwartz_withSeminorms 𝕜' F G) _ fun n => _
     rcases hbound n with ⟨s, C, hC, h⟩
     refine' ⟨s, ⟨C, hC⟩, fun f => _⟩
-    simp only [Seminorm.comp_apply, Seminorm.smul_apply, NNReal.smul_def, Algebra.id.smul_eq_mul,
-      Subtype.coe_mk]
     exact (mkLM A hadd hsmul hsmooth hbound f).seminorm_le_bound 𝕜' n.1 n.2 (by positivity) (h f)
   toLinearMap := mkLM A hadd hsmul hsmooth hbound
 #align schwartz_map.mk_clm SchwartzMap.mkCLM
+
+/-- Define a continuous semilinear map from Schwartz space to a normed space. -/
+def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
+    (hadd : ∀ (f g : 𝓢(D, E)), A (f + g) = A f + A g)
+    (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)), A (a • f) = σ a • A f)
+    (hbound : ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)),
+      ‖A f‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
+    𝓢(D, E) →SL[σ] G where
+  toLinearMap :=
+    { toFun := (A ·)
+      map_add' := hadd
+      map_smul' := hsmul }
+  cont := by
+    change Continuous (LinearMap.mk _ _)
+    apply Seminorm.cont_withSeminorms_normedSpace G (schwartz_withSeminorms 𝕜 D E)
+    rcases hbound with ⟨s, C, hC, h⟩
+    exact ⟨s, ⟨C, hC⟩, h⟩
 
 end CLM
 
@@ -981,7 +997,6 @@ theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E,
   have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
   have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
     simp only [Fin.tail_def, Fin.succ_last]
-  -- Porting note: changed to `calc` proof
   calc
     _ = pderivCLM 𝕜 (m 0) (iteratedPDeriv 𝕜 _ f) := iteratedPDeriv_succ_left _ _ _
     _ = pderivCLM 𝕜 (m 0) ((iteratedPDeriv 𝕜 _) ((pderivCLM 𝕜 _) f)) := by
@@ -1003,6 +1018,73 @@ theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E
 
 end Derivatives
 
+section Integration
+
+/-! ### Integration -/
+
+
+open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D] [NormedAddCommGroup V] [NormedSpace ℂ V]
+variable [MeasurableSpace D] [BorelSpace D] [FiniteDimensional ℝ D]
+
+lemma integrable_pow_mul (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarMeasure μ] :
+    Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
+  let l := finrank ℝ D + 1 + k
+  obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
+    use 2 ^ l * (Finset.Iic (l, 0)).sup (fun m ↦ SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity
+    simpa using f.one_add_le_sup_seminorm_apply (m := (l, 0)) (k := l) (n := 0) le_rfl le_rfl
+  have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-((finrank ℝ D + 1 : ℕ) : ℝ))) μ := by
+    apply (integrable_one_add_norm ?_).const_mul
+    exact Nat.cast_lt.mpr Nat.le.refl
+  apply this.mono ((aestronglyMeasurable_id.norm.pow _).mul f.continuous.aestronglyMeasurable.norm)
+    (eventually_of_forall (fun x ↦ ?_))
+  conv_rhs => rw [norm_of_nonneg (by positivity), rpow_neg (by positivity), ← div_eq_mul_inv]
+  rw [le_div_iff' (by positivity)]
+  simp only [id_eq, Pi.mul_apply, Pi.pow_apply, norm_mul, norm_pow, norm_norm, rpow_nat_cast]
+  calc
+    (1 + ‖x‖) ^ (finrank ℝ D + 1) * (‖x‖ ^ k * ‖f x‖)
+      ≤ (1 + ‖x‖) ^ (finrank ℝ D + 1) * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
+    _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
+    _ ≤ C := hC x
+
+lemma integrable (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
+    Integrable f μ :=
+  (f.integrable_pow_mul (μ := μ) 0).mono f.continuous.aestronglyMeasurable
+    (eventually_of_forall (fun _ ↦ by simp))
+
+/-- The integral as a continuous linear map from Schwartz space to the codomain. -/
+def integralCLM (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
+  mkCLMtoNormedSpace (∫ x, · x ∂μ)
+    (fun f g ↦ integral_add f.integrable g.integrable)
+    (integral_smul · ·)
+    (by
+      let l := finrank ℝ D + 1
+      let m := (l, 0)
+      use Finset.Iic (l, 0), 2 ^ l * ∫ x : D, (1 + ‖x‖) ^ (- (l : ℝ)) ∂μ
+      have hpos : 0 ≤ ∫ x : D, (1 + ‖x‖) ^ (- (l : ℝ)) ∂μ := by
+        apply integral_nonneg
+        intro
+        positivity
+      refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
+      have h : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(l : ℝ)) *
+          (2^l * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm ℝ m'.1 m'.2) f)) := by
+        intro x
+        rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff' (by positivity), rpow_nat_cast]
+        simpa using one_add_le_sup_seminorm_apply (m := m) (k := l) (n := 0) le_rfl le_rfl f x
+      apply (integral_mono (by simpa using f.integrable_pow_mul (μ := μ) 0) _ h).trans
+      · rw [integral_mul_right, ← mul_assoc]
+        gcongr ?_ * ?_
+        · rw [mul_comm]
+        · rfl
+      apply (integrable_one_add_norm (by simp)).mul_const)
+
+@[simp]
+lemma integralCLM_apply {μ : Measure D} [IsAddHaarMeasure μ] (f : 𝓢(D, V)) :
+    integralCLM μ f = ∫ x, f x ∂μ := rfl
+
+end Integration
+
 section BoundedContinuousFunction
 
 /-! ### Inclusion into the space of bounded continuous functions -/
@@ -1010,10 +1092,10 @@ section BoundedContinuousFunction
 
 open scoped BoundedContinuousFunction
 
-instance instBoundedContinuousMapClass : BoundedContinuousMapClass 𝓢(E, F) E F :=
-  { instContinuousMapClass with
-    map_bounded := fun f ↦ ⟨2 * (SchwartzMap.seminorm ℝ 0 0) f,
-      (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ f))⟩ }
+instance instBoundedContinuousMapClass : BoundedContinuousMapClass 𝓢(E, F) E F where
+  __ := instContinuousMapClass
+  map_bounded := fun f ↦ ⟨2 * (SchwartzMap.seminorm ℝ 0 0) f,
+    (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ f))⟩
 
 /-- Schwartz functions as bounded continuous functions -/
 def toBoundedContinuousFunction (f : 𝓢(E, F)) : E →ᵇ F :=
@@ -1036,40 +1118,21 @@ variable (𝕜 E F)
 
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
-/-- The inclusion map from Schwartz functions to bounded continuous functions as a linear map. -/
-def toBoundedContinuousFunctionLM : 𝓢(E, F) →ₗ[𝕜] E →ᵇ F where
-  toFun f := f.toBoundedContinuousFunction
-  map_add' f g := by ext; exact add_apply
-  map_smul' a f := by ext; exact smul_apply
-#align schwartz_map.to_bounded_continuous_function_lm SchwartzMap.toBoundedContinuousFunctionLM
-
-@[simp]
-theorem toBoundedContinuousFunctionLM_apply (f : 𝓢(E, F)) (x : E) :
-    toBoundedContinuousFunctionLM 𝕜 E F f x = f x :=
-  rfl
-#align schwartz_map.to_bounded_continuous_function_lm_apply SchwartzMap.toBoundedContinuousFunctionLM_apply
-
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
 def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
-  { toBoundedContinuousFunctionLM 𝕜 E F with
-    cont := by
-      change Continuous (toBoundedContinuousFunctionLM 𝕜 E F)
-      refine'
-        Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 E F)
-          (norm_withSeminorms 𝕜 (E →ᵇ F)) _ fun _ => ⟨{0}, 1, fun f => _⟩
-      -- Porting note: Lean failed to find this instance
-      have : MulAction NNReal (Seminorm 𝕜 𝓢(E, F)) := Seminorm.instDistribMulAction.toMulAction
-      simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
-        schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
-        BoundedContinuousFunction.norm_le (apply_nonneg _ _)]
-      exact norm_le_seminorm 𝕜 _ }
+  mkCLMtoNormedSpace toBoundedContinuousFunction (by intro f g; ext; exact add_apply)
+    (by intro a f; ext; exact smul_apply)
+    (⟨{0}, 1, zero_le_one, by
+      simpa [BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
+#align schwartz_map.to_bounded_continuous_function_lm SchwartzMap.toBoundedContinuousFunctionCLM
 #align schwartz_map.to_bounded_continuous_function_clm SchwartzMap.toBoundedContinuousFunctionCLM
 
 @[simp]
 theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
     toBoundedContinuousFunctionCLM 𝕜 E F f x = f x :=
   rfl
+#align schwartz_map.to_bounded_continuous_function_lm_apply SchwartzMap.toBoundedContinuousFunctionCLM_apply
 #align schwartz_map.to_bounded_continuous_function_clm_apply SchwartzMap.toBoundedContinuousFunctionCLM_apply
 
 variable {E}
@@ -1092,24 +1155,24 @@ open scoped ZeroAtInfty
 
 variable [ProperSpace E]
 
-instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(E, F) E F :=
-  { instContinuousMapClass with
-    zero_at_infty := by
-      intro f
-      apply zero_at_infty_of_norm_le
-      intro ε hε
-      use (SchwartzMap.seminorm ℝ 1 0) f / ε
-      intro x hx
-      rw [div_lt_iff hε] at hx
-      have hxpos : 0 < ‖x‖ := by
-        rw [norm_pos_iff']
-        intro hxzero
-        simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
-        exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
-      have := norm_pow_mul_le_seminorm ℝ f 1 x
-      rw [pow_one, ← le_div_iff' hxpos] at this
-      apply lt_of_le_of_lt this
-      rwa [div_lt_iff' hxpos] }
+instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(E, F) E F where
+  __ := instContinuousMapClass
+  zero_at_infty := by
+    intro f
+    apply zero_at_infty_of_norm_le
+    intro ε hε
+    use (SchwartzMap.seminorm ℝ 1 0) f / ε
+    intro x hx
+    rw [div_lt_iff hε] at hx
+    have hxpos : 0 < ‖x‖ := by
+      rw [norm_pos_iff']
+      intro hxzero
+      simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
+      exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
+    have := norm_pow_mul_le_seminorm ℝ f 1 x
+    rw [pow_one, ← le_div_iff' hxpos] at this
+    apply lt_of_le_of_lt this
+    rwa [div_lt_iff' hxpos]
 
 /-- Schwartz functions as continuous functions vanishing at infinity. -/
 def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
@@ -1120,37 +1183,19 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   rfl
 
 @[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
-    f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction := by
-  ext; rfl
+    f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction :=
+  rfl
 
 variable (𝕜 E F)
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
-linear map. -/
-def toZeroAtInftyLM : 𝓢(E, F) →ₗ[𝕜] C₀(E, F) where
-  toFun f := f.toZeroAtInfty
-  map_add' f g := by ext; exact add_apply
-  map_smul' a f := by ext; exact smul_apply
-
-@[simp] theorem toZeroAtInftyLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyLM 𝕜 E F f x = f x :=
-  rfl
-
-/-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
 def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
-  { toZeroAtInftyLM 𝕜 E F with
-    cont := by
-      change Continuous (toZeroAtInftyLM 𝕜 E F)
-      refine'
-        Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 E F)
-          (norm_withSeminorms 𝕜 (C₀(E, F))) _ fun _ => ⟨{0}, 1, fun f => _⟩
-      haveI : MulAction NNReal (Seminorm 𝕜 𝓢(E, F)) := Seminorm.instDistribMulAction.toMulAction
-      simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
-        schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
-        ← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
-        BoundedContinuousFunction.norm_le (apply_nonneg _ _)]
-      exact norm_le_seminorm 𝕜 _ }
+  mkCLMtoNormedSpace toZeroAtInfty (by intro f g; ext; exact add_apply)
+    (by intro a f; ext; exact smul_apply)
+    (⟨{0}, 1, zero_le_one, by simpa [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
+      BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
 
 @[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyCLM 𝕜 E F f x = f x :=
   rfl
