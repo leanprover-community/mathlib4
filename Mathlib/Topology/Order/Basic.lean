@@ -1778,14 +1778,16 @@ theorem tendsto_comp_coe_Ioo_atBot (h : a < b) :
   rw [← map_coe_Ioo_atBot h, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Ioo_at_bot tendsto_comp_coe_Ioo_atBot
 
--- Porting note (#11215): TODO: `simpNF` claims that `simp` can't use this lemma to simplify LHS but it can
+-- Porting note (#11215): TODO: `simpNF` claims that `simp` can't use
+-- this lemma to simplify LHS but it can
 @[simp, nolint simpNF]
 theorem tendsto_comp_coe_Ioi_atBot :
     Tendsto (fun x : Ioi a => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioi_atBot, tendsto_map'_iff]; rfl
 #align tendsto_comp_coe_Ioi_at_bot tendsto_comp_coe_Ioi_atBot
 
--- Porting note (#11215): TODO: `simpNF` claims that `simp` can't use this lemma to simplify LHS but it can
+-- Porting note (#11215): TODO: `simpNF` claims that `simp` can't use
+-- this lemma to simplify LHS but it can
 @[simp, nolint simpNF]
 theorem tendsto_comp_coe_Iio_atTop :
     Tendsto (fun x : Iio a => f x) atTop l ↔ Tendsto f (𝓝[<] a) l := by
