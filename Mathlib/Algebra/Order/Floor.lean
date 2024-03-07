@@ -542,7 +542,7 @@ theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
   refine' (floor_eq_iff _).2 _
   · exact div_nonneg ha n.cast_nonneg
   constructor
-  · exact cast_div_le.trans (div_le_div_of_le n.cast_nonneg (floor_le ha))
+  · exact cast_div_le.trans (div_le_div_of_nonneg_right (floor_le ha) n.cast_nonneg)
   rw [div_lt_iff, add_mul, one_mul, ← cast_mul, ← cast_add, ← floor_lt ha]
   · exact lt_div_mul_add hn
   · exact cast_pos.2 hn
@@ -1161,7 +1161,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
   let q := ⌈↑m₀ / (n : k)⌉
   let m₁ := q * ↑n - (↑m₀ : ℤ)
   have hm₁ : 0 ≤ m₁ := by
-    simpa [← @cast_le k, ← div_le_iff hn] using FloorRing.gc_ceil_coe.le_u_l _
+    simpa [m₁, ← @cast_le k, ← div_le_iff hn] using FloorRing.gc_ceil_coe.le_u_l _
   calc
     fract ((Int.cast (-(m₀ : ℤ)) : k) / (n : k))
       -- Porting note: the `rw [cast_neg, cast_ofNat]` was `push_cast`
@@ -1172,7 +1172,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
 
   · rw [← fract_int_add q, ← mul_div_cancel (q : k) (ne_of_gt hn), ← add_div, ← sub_eq_add_neg]
     -- Porting note: the `simp` was `push_cast`
-    simp
+    simp [m₁]
   · congr 2
     change (q * ↑n - (↑m₀ : ℤ)) % ↑n = _
     rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]

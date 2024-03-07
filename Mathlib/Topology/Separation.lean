@@ -653,7 +653,7 @@ theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 #align closure_singleton closure_singleton
 
--- porting note: todo: the proof was `hs.induction_on (by simp) fun x => by simp`
+-- Porting note: todo: the proof was `hs.induction_on (by simp) fun x => by simp`
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp
@@ -1079,10 +1079,13 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 #align is_compact.finite_compact_cover IsCompact.finite_compact_cover
 
-theorem Inducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R1Space Y where
-  specializes_or_disjoint_nhds _ _ := by
-    simpa only [← hf.specializes_iff, hf.nhds_eq_comap, or_iff_not_imp_left,
-      ← disjoint_nhds_nhds_iff_not_specializes] using Filter.disjoint_comap
+theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
+    (hspec : ∀ x y, f x ⤳ f y → x ⤳ y) : R1Space Y where
+  specializes_or_disjoint_nhds x y := (specializes_or_disjoint_nhds (f x) (f y)).imp (hspec x y) <|
+    ((hc.tendsto _).disjoint · (hc.tendsto _))
+
+theorem Inducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R1Space Y :=
+  .of_continuous_specializes_imp hf.continuous fun _ _ ↦ hf.specializes_iff.1
 
 protected theorem R1Space.induced (f : Y → X) : @R1Space Y (.induced f ‹_›) :=
   @Inducing.r1Space _ _ _ _ (.induced f _) f (inducing_induced f)
@@ -1302,7 +1305,7 @@ theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
   t2_iff_isClosed_diagonal.mp ‹_›
 #align is_closed_diagonal isClosed_diagonal
 
--- porting note: 2 lemmas moved below
+-- Porting note: 2 lemmas moved below
 
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : a = b :=
@@ -1395,6 +1398,14 @@ theorem exists_open_nhds_disjoint_closure [T25Space X] {x y : X} (h : x ≠ y) :
     ((nhds_basis_opens x).lift'_closure.disjoint_iff (nhds_basis_opens y).lift'_closure).1
       (disjoint_lift'_closure_nhds.2 h)
 #align exists_open_nhds_disjoint_closure exists_open_nhds_disjoint_closure
+
+theorem T25Space.of_injective_continuous [TopologicalSpace Y] [T25Space Y] {f : X → Y}
+    (hinj : Injective f) (hcont : Continuous f) : T25Space X where
+  t2_5 x y hne := (tendsto_lift'_closure_nhds hcont x).disjoint (t2_5 <| hinj.ne hne)
+    (tendsto_lift'_closure_nhds hcont y)
+
+instance [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
+  .of_injective_continuous Subtype.val_injective continuous_subtype_val
 
 section limUnder
 
@@ -1802,24 +1813,33 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_finish
 #align regular_space_tfae regularSpace_TFAE
 
-theorem RegularSpace.ofLift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
+theorem RegularSpace.of_lift'_closure (h : ∀ x : X, (𝓝 x).lift' closure = 𝓝 x) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 5) h
-#align regular_space.of_lift'_closure RegularSpace.ofLift'_closure
+#align regular_space.of_lift'_closure RegularSpace.of_lift'_closure
 
-theorem RegularSpace.ofBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set X}
+@[deprecated] -- 2024-02-28
+alias RegularSpace.ofLift'_closure := RegularSpace.of_lift'_closure
+
+theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set X}
     (h₁ : ∀ a, (𝓝 a).HasBasis (p a) (s a)) (h₂ : ∀ a i, p a i → IsClosed (s a i)) :
     RegularSpace X :=
-  RegularSpace.ofLift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
-#align regular_space.of_basis RegularSpace.ofBasis
+  .of_lift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
+#align regular_space.of_basis RegularSpace.of_hasBasis
 
-theorem RegularSpace.ofExistsMemNhdsIsClosedSubset
+@[deprecated] -- 2024-02-28
+alias RegularSpace.ofBasis := RegularSpace.of_hasBasis
+
+theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
     (h : ∀ (x : X), ∀ s ∈ 𝓝 x, ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s) : RegularSpace X :=
   Iff.mpr ((regularSpace_TFAE X).out 0 3) h
-#align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.ofExistsMemNhdsIsClosedSubset
+#align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.of_exists_mem_nhds_isClosed_subset
+
+@[deprecated] -- 2024-02-28
+alias RegularSpace.ofExistsMemNhdsIsClosedSubset := RegularSpace.of_exists_mem_nhds_isClosed_subset
 
 /-- A weakly locally compact R₁ space is regular. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
-  .ofBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, _, h⟩ ↦ h
+  .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, _, h⟩ ↦ h
 
 variable [RegularSpace X] {x : X} {s : Set X}
 
@@ -1878,7 +1898,7 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_closure_subset {B : Set (Set 
 
 protected theorem Inducing.regularSpace [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) :
     RegularSpace Y :=
-  RegularSpace.ofBasis
+  .of_hasBasis
     (fun b => by rw [hf.nhds_eq_comap b]; exact (closed_nhds_basis _).comap _)
     fun b s hs => by exact hs.2.preimage hf.continuous
 #align inducing.regular_space Inducing.regularSpace
@@ -1892,13 +1912,12 @@ theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @
     @RegularSpace X (sInf T) := by
   let _ := sInf T
   have : ∀ a, (𝓝 a).HasBasis
-      (fun If : ΣI : Set T, I → Set X =>
+      (fun If : Σ I : Set T, I → Set X =>
         If.1.Finite ∧ ∀ i : If.1, If.2 i ∈ @nhds X i a ∧ @IsClosed X i (If.2 i))
-      fun If => ⋂ i : If.1, If.snd i := by
-    intro a
+      fun If => ⋂ i : If.1, If.snd i := fun a ↦ by
     rw [nhds_sInf, ← iInf_subtype'']
     exact hasBasis_iInf fun t : T => @closed_nhds_basis X t (h t t.2) a
-  refine' RegularSpace.ofBasis this fun a If hIf => isClosed_iInter fun i => _
+  refine .of_hasBasis this fun a If hIf => isClosed_iInter fun i => ?_
   exact (hIf.2 i).2.mono (sInf_le (i : T).2)
 #align regular_space_Inf regularSpace_sInf
 

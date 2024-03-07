@@ -98,7 +98,7 @@ theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
   (mk_injective A B).eq_iff
 #align category_theory.arrow.mk_inj CategoryTheory.Arrow.mk_inj
 
-/- Porting note : was marked as dangerous instance so changed from `Coe` to `CoeOut` -/
+/- Porting note: was marked as dangerous instance so changed from `Coe` to `CoeOut` -/
 instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
@@ -121,7 +121,7 @@ def homMk' {X Y : T} {f : X ⟶ Y} {P Q : T} {g : P ⟶ Q} {u : X ⟶ P} {v : Y 
   w := w
 #align category_theory.arrow.hom_mk' CategoryTheory.Arrow.homMk'
 
-/- Porting note : was warned simp could prove reassoc'd version. Found simp could not.
+/- Porting note: was warned simp could prove reassoc'd version. Found simp could not.
 Added nolint. -/
 @[reassoc (attr := simp, nolint simpNF)]
 theorem w {f g : Arrow T} (sq : f ⟶ g) : sq.left ≫ g.hom = f.hom ≫ sq.right :=

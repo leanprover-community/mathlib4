@@ -535,7 +535,7 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
-@[aesop safe 20 apply (rule_sets [SetLike])]
+@[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 
@@ -567,6 +567,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     H0_left H0_right Hadd_left Hadd_right Hsmul_left Hsmul_right
 
 /-- The difference with `NonUnitalAlgebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (Hs : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
     (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
@@ -999,10 +1000,9 @@ variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsSc
   [SMulCommClass R A A]
 
 -- no instance diamond, as the `npow` field isn't present in the non-unital case.
-example :
-    center.instNonUnitalCommSemiring.toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) :=
-  rfl
+example : center.instNonUnitalCommSemiring.toNonUnitalSemiring =
+    NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) := by
+  with_reducible_and_instances rfl
 
 @[simp]
 theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [Module R A] [IsScalarTower R A A]

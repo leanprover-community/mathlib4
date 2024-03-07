@@ -148,6 +148,7 @@ theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f �
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
 #align finset.sup_mono_fun Finset.sup_mono_fun
 
+@[gcongr]
 theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
   Finset.sup_le (fun _ hb => le_sup (h hb))
 #align finset.sup_mono Finset.sup_mono
@@ -418,6 +419,7 @@ theorem inf_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.inf f �
   Finset.le_inf fun b hb => le_trans (inf_le hb) (h b hb)
 #align finset.inf_mono_fun Finset.inf_mono_fun
 
+@[gcongr]
 theorem inf_mono (h : s₁ ⊆ s₂) : s₂.inf f ≤ s₁.inf f :=
   Finset.le_inf (fun _ hb => inf_le (h hb))
 #align finset.inf_mono Finset.inf_mono
@@ -605,7 +607,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
       fun h a g ha hg => _⟩
   -- TODO: This `have` must be named to prevent it being shadowed by the internal `this` in `simpa`
   have aux : ∀ j : { x // x ∈ s }, ↑j ≠ i := fun j : s => ne_of_mem_of_not_mem j.2 hi
-  -- porting note: `simpa` doesn't support placeholders in proof terms
+  -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
   simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
@@ -964,6 +966,14 @@ theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonem
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
 
+/-- A version of `Finset.sup'_mono` acceptable for `@[gcongr]`.
+Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
+this version takes it as an argument. -/
+@[gcongr]
+lemma _root_.GCongr.finset_sup'_le {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
+    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₁.sup' h₁ f ≤ s₂.sup' h₂ f :=
+  sup'_mono f h h₁
+
 end Sup'
 
 section Inf'
@@ -1134,6 +1144,14 @@ lemma inf'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
 theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
   Finset.le_inf' h₁ _ (fun _ hb => inf'_le _ (h hb))
+
+/-- A version of `Finset.inf'_mono` acceptable for `@[gcongr]`.
+Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
+this version takes it as an argument. -/
+@[gcongr]
+lemma _root_.GCongr.finset_inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
+    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₂.inf' h₂ f ≤ s₁.inf' h₁ f :=
+  inf'_mono f h h₁
 
 end Inf'
 
@@ -1400,6 +1418,7 @@ theorem not_mem_of_max_lt {s : Finset α} {a b : α} (h₁ : b < a) (h₂ : s.ma
   Finset.not_mem_of_max_lt_coe <| h₂.trans_lt <| WithBot.coe_lt_coe.mpr h₁
 #align finset.not_mem_of_max_lt Finset.not_mem_of_max_lt
 
+@[gcongr]
 theorem max_mono {s t : Finset α} (st : s ⊆ t) : s.max ≤ t.max :=
   sup_mono st
 #align finset.max_mono Finset.max_mono
@@ -1474,6 +1493,7 @@ theorem not_mem_of_lt_min {s : Finset α} {a b : α} (h₁ : a < b) (h₂ : s.mi
   Finset.not_mem_of_coe_lt_min <| (WithTop.coe_lt_coe.mpr h₁).trans_eq h₂.symm
 #align finset.not_mem_of_lt_min Finset.not_mem_of_lt_min
 
+@[gcongr]
 theorem min_mono {s t : Finset α} (st : s ⊆ t) : t.min ≤ s.min :=
   inf_mono st
 #align finset.min_mono Finset.min_mono
@@ -1746,7 +1766,7 @@ theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
   -- Porting note: old proof `convert @max_erase_ne_self αᵒᵈ _ _ _`
   convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
-  apply congr_arg -- porting note: forces unfolding to see `Finset.min` is `Finset.max`
+  apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
   congr!
   · ext; simp only [mem_map_equiv]; exact Iff.rfl
 #align finset.min_erase_ne_self Finset.min_erase_ne_self
