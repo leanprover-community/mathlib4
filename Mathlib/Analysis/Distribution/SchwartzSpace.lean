@@ -38,6 +38,7 @@ decay faster than any power of `‖x‖`.
 `𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F)`
 * `SchwartzMap.derivCLM`: The one-dimensional derivative as a continuous linear map
 `𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F)`
+* `SchwartzMap.integralCLM`: Integration as a continuous linear map `𝓢(ℝ, F) →L[ℝ] F`
 
 ## Main statements
 
@@ -728,7 +729,7 @@ def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
       ‖A f‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
     𝓢(D, E) →SL[σ] G where
   toLinearMap :=
-    { toFun := fun f ↦ A f
+    { toFun := (A ·)
       map_add' := hadd
       map_smul' := hsmul }
   cont := by
@@ -1053,10 +1054,10 @@ lemma integrable (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
     (eventually_of_forall (fun _ ↦ by simp))
 
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
-def integral (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
-  mkCLMtoNormedSpace (fun f ↦ ∫ x, f x ∂μ)
+def integralCLM (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
+  mkCLMtoNormedSpace (∫ x, · x ∂μ)
     (fun f g ↦ integral_add f.integrable g.integrable)
-    (fun a f ↦ integral_smul a f)
+    (integral_smul · ·)
     (by
       let l := finrank ℝ D + 1
       let m := (l, 0)
@@ -1079,8 +1080,8 @@ def integral (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
       apply (integrable_one_add_norm (by simp)).mul_const)
 
 @[simp]
-lemma integral_apply {μ : Measure D} [IsAddHaarMeasure μ] (f : 𝓢(D, V)) :
-    integral μ f = ∫ x, f x ∂μ := rfl
+lemma integralCLM_apply {μ : Measure D} [IsAddHaarMeasure μ] (f : 𝓢(D, V)) :
+    integralCLM μ f = ∫ x, f x ∂μ := rfl
 
 end Integration
 
