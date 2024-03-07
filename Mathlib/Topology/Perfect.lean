@@ -98,10 +98,10 @@ Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
 @[mk_iff perfectSpace_def]
 class PerfectSpace: Prop :=
-  univ_perfect' : Perfect (Set.univ : Set α)
+  univ_preperfect : Preperfect (Set.univ : Set α)
 
 theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
-  PerfectSpace.univ_perfect'
+  ⟨isClosed_univ, PerfectSpace.univ_preperfect⟩
 
 end PerfectSpace
 
@@ -242,7 +242,7 @@ section PerfectSpace
 variable {X : Type*} [TopologicalSpace X]
 
 theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) := by
-  simp [perfectSpace_def, perfect_def, Preperfect, AccPt]
+  simp [perfectSpace_def, Preperfect, AccPt]
 
 instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) :=
   perfectSpace_iff_forall_not_isolated.mp ‹_› x
