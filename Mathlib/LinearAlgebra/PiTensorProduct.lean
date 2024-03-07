@@ -353,9 +353,10 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
 the tensor product.-/
 theorem span_tprod_eq_top :
     Submodule.span R (Set.range (tprod R)) = (⊤ : Submodule R (⨂[R] i, s i)) :=
-  Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on (fun _ _ ↦ Submodule.smul_mem _ _
-  (Submodule.subset_span (by simp only [Set.mem_range, exists_apply_eq_apply])))
-  (fun _ _ hx hy ↦ Submodule.add_mem _ hx hy)
+  Submodule.eq_top_iff'.mpr fun t ↦ t.induction_on
+    (fun _ _ ↦ Submodule.smul_mem _ _
+      (Submodule.subset_span (by simp only [Set.mem_range, exists_apply_eq_apply])))
+    (fun _ _ hx hy ↦ Submodule.add_mem _ hx hy)
 
 end Module
 
@@ -493,9 +494,9 @@ This is `TensorProduct.mapIncl` for an arbitrary family of modules.
 -/
 @[simp]
 def mapIncl (p : Π i, Submodule R (s i)) : (⨂[R] i, p i) →ₗ[R] ⨂[R] i, s i :=
-  map (fun (i : ι) ↦ (p i).subtype)
+  map fun (i : ι) ↦ (p i).subtype
 
-theorem map_comp : map (fun (i : ι) ↦ g i ∘ₗ f i) = (map g) ∘ₗ (map f) := by
+theorem map_comp : map (fun (i : ι) ↦ g i ∘ₗ f i) = map g ∘ₗ map f := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.coe_comp, Function.comp_apply]
 
@@ -508,7 +509,7 @@ theorem lift_comp_map (h : MultilinearMap R t E) :
 attribute [local ext high] ext
 
 @[simp]
-theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i))  = .id := by
+theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i)) = .id := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.id_coe, id_eq]
 
@@ -516,7 +517,7 @@ theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i))  = .id := by
 theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
   map_id
 
-theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i)  :
+theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
