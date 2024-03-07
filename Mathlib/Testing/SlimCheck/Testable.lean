@@ -509,7 +509,7 @@ open Lean
 quantifiers and add `NamedBinder` annotations next to them. -/
 partial def addDecorations (e : Expr) : MetaM Expr :=
   Meta.transform e fun expr => do
-    if not (← Meta.inferType e).isProp then
+    if not (← Meta.inferType expr).isProp then
       return .continue
     else if let Expr.forallE name type body data := expr then
       let newType ← addDecorations type
