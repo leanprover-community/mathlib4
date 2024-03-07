@@ -458,8 +458,9 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
     simp (config := { contextual := true }) [count_replicate, h, h.symm, this, count_eq_zero]
-  simp_rw [Ne.def, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
-    not_mem_nil, or_false, or_comm]
+  trans ∀ c, c ∈ l → c = b ∨ c = a
+  · simp [subset_def, or_comm]
+  · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 #align list.perm_replicate_append_replicate List.perm_replicate_append_replicate
 
 #align list.subperm.cons_right List.Subperm.cons_right
@@ -885,7 +886,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       rw [nthLe_insertNth_add_succ]
       convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
       · simp [Nat.add_succ, Nat.succ_add]
-      · simp [add_left_comm, add_comm]
+      · simp [add_left_comm, add_comm, succ_eq_add_one]
       · simpa [Nat.succ_add] using hn
 #align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
 
