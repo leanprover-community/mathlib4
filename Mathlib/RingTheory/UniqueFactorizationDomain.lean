@@ -577,6 +577,20 @@ theorem factors_pow_count_prod {x : α} (hx : x ≠ 0) :
   _ = prod (factors x) := by rw [toFinset_sum_count_nsmul_eq (factors x)]
   _ ~ᵤ x := factors_prod hx
 
+open Ideal in
+  /-- If an integral domain R is a UFD, then every nonzero prime ideal contains a prime element. -/
+theorem exists_prime_of_uniqueFactorizationMonoid {R : Type*} [CommSemiring R] [IsDomain R]
+    [DecidableEq R] [UniqueFactorizationMonoid R] {I : Ideal R}
+    (hI : I ≠ ⊥) (hI₂ : I.IsPrime) : ∃ x ∈ I, Prime x := by
+  rcases Submodule.exists_mem_ne_zero_of_ne_bot hI with ⟨a, ha₁, ha₂⟩
+  rcases factors_prod ha₂ with ⟨u, ha₃⟩
+  rw [← ha₃] at ha₁
+  rcases (IsPrime.mem_or_mem hI₂) ha₁ with (ha₄ | ha₅)
+  · rcases (hI₂.multiset_prod_mem_iff (factors a)).1 ha₄ with ⟨p, ha₅, ha₆⟩
+    exact ⟨p, ha₆, prime_of_factor p ha₅⟩
+  · exfalso
+    exact (isPrime_iff.1 hI₂).1 (eq_top_of_isUnit_mem _ ha₅ u.isUnit)
+
 end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
