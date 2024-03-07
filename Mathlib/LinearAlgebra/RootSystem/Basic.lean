@@ -85,7 +85,7 @@ lemma reflection_apply_self :
   Module.reflection_apply_self (P.coroot_root_two i)
 
 @[simp]
-lemma reflection_same (x : M) : P.reflection i (P.reflection i x) = x :=
+lemma reflection_self (x : M) : P.reflection i (P.reflection i x) = x :=
   Module.involutive_reflection (P.coroot_root_two i) x
 
 lemma reflection_invOn_self : InvOn (P.reflection i) (P.reflection i) (range P.root)
@@ -110,7 +110,7 @@ lemma coreflection_eq_flip_reflection (f : N) : P.coreflection i f = P.flip.refl
 
 @[simp]
 lemma coreflection_self (x : N) : P.coreflection i (P.coreflection i x) = x :=
-  reflection_same P.flip i x
+  reflection_self P.flip i x
 
 lemma coreflection_invOn_self : InvOn (P.coreflection i) (P.coreflection i) (range P.coroot)
     (range P.coroot) := reflection_invOn_self P.flip i
@@ -140,14 +140,14 @@ lemma scalar_mul_eq_two (x : M) (c : R) (i : ι) (h : P.root i = c • x) :
 lemma reflection_eq_imp_scalar (j : ι) (h: P.reflection i = P.reflection j) :
     2 • P.root i = (P.toLin (P.root i) (P.coroot j)) • P.root j := by
   have hij: P.root i = -P.root i + P.toLin (P.root i) (P.coroot j) • P.root j := by
-    nth_rw 1 [← reflection_same P i (P.root i), reflection_apply_self, h, reflection_apply]
+    nth_rw 1 [← reflection_self P i (P.root i), reflection_apply_self, h, reflection_apply]
     rw [LinearMap.map_neg₂, neg_smul, sub_neg_eq_add]
   rw [two_nsmul, eq_neg_add_iff_add_eq.mp hij]
 
 lemma coreflection_eq_imp_scalar (j : ι) (h: P.coreflection i = P.coreflection j) :
     2 • P.coroot i = (P.toLin (P.root j) (P.coroot i)) • P.coroot j := by
   have hij: P.coroot i = -P.coroot i + P.toLin (P.root j) (P.coroot i) • P.coroot j := by
-    nth_rw 1 [← coreflection_same P i (P.coroot i), coreflection_apply_self, h, coreflection_apply]
+    nth_rw 1 [← coreflection_self P i (P.coroot i), coreflection_apply_self, h, coreflection_apply]
     rw [LinearMap.map_neg, neg_smul, sub_neg_eq_add]
   rw [two_nsmul, eq_neg_add_iff_add_eq.mp hij]
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.TensorProduct
 
 /-!
 # Perfect pairings of modules
@@ -58,6 +59,26 @@ protected def flip : PerfectPairing R N M where
 @[simp] lemma flip_flip : p.flip.flip = p := rfl
 
 -- TODO `M` and `N` are both reflexive
+
+variable {S : Type*} [CommRing S] [Algebra R S] (P : PerfectPairing R M N)
+
+open TensorProduct
+/-!
+/-- The base chage of a perfect pairing`. -/
+noncomputable def baseChange (P : PerfectPairing R M N) : PerfectPairing S (S ⊗[R] M) (S ⊗[R] N) where
+  toLin := TensorProduct.curry <| LinearMap.baseChange S (TensorProduct.lift (P.toLin))
+    sorry -- SM → SN → S from SM ⊗_S SN → S, identify with base change of M ⊗_R N → R.
+    -- compose with isomorphism (S ⊗_R M) ⊗_S (S ⊗_R N) → S ⊗_R (M ⊗_R N) on right and
+    -- S ⊗_R R → S on left
+  bijectiveLeft := sorry
+  bijectiveRight := sorry
+
+  TensorProduct.curry <|
+    TensorProduct.AlgebraTensorModule.map
+        (LinearMap.mul' A A) (LieModule.toModuleHom R L M : L ⊗[R] M →ₗ[R] M) ∘ₗ
+      (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A A L A M).toLinearMap
+
+-/
 
 end PerfectPairing
 

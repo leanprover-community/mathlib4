@@ -51,16 +51,16 @@ noncomputable section
 namespace RootPairing
 
 /-- An element in the coroot space is preregular if any interval in `R` has finite preimage. -/
-def isPreregular (x : N) : Prop := ∀ (n : R), 0 ≤ n →
+def IsPreregular (x : N) : Prop := ∀ (n : R), 0 ≤ n →
   Finite { i | 0 ≤ (P.toLin (P.root i) x) ∧ (P.toLin (P.root i) x) ≤ n}
 
 /-- A root pairing is thin if there is a preregular element.  Borcherds-Kac-Moody Lie
 algebras more or less admit a `ℤ`-grading with finite dimensional pieces, so their root systems are
 always thin. -/
-def isThin : Prop := ∃ (x : N), isPreregular P x
+def IsThin : Prop := ∃ (x : N), IsPreregular P x
 
 /-- A regular element is a preregular element that takes no roots to zero. -/
-def isRegularElement (x : N) : Prop := (isPreregular P x) ∧ ∀(i : ι), P.toLin (P.root i) x ≠ 0
+def IsRegularElement (x : N) : Prop := (IsPreregular P x) ∧ ∀(i : ι), P.toLin (P.root i) x ≠ 0
 
 /-- View a root as an element of the span of roots. -/
 def root' : ι → (Submodule.span R (Set.range P.root)) :=
@@ -79,7 +79,7 @@ structure Base extends Basis α R (Submodule.span R (Set.range P.root)) where
 
 /-- An root is indecomposable if it is positive, and cannot be written as a sum of two positive
 roots. -/
-def isIndecomposableFor (x : N) (i : ι) : Prop :=
+def IsIndecomposableFor (x : N) (i : ι) : Prop :=
   P.toLin (P.root i) x > 0 ∧ ¬ ∃(a b : ι),
   P.toLin (P.root a) x > 0 ∧ P.toLin (P.root b) x > 0 ∧ P.root i = P.root a + P.root b
 

@@ -140,43 +140,58 @@ the fundamental reflections.-/
 def WeylGroup : Subgroup (M ≃ₗ[R] M) :=
   Subgroup.closure ({reflection P i | i : ι })
 
-
 section pairs
 
 variable (i j : ι)
 
 /-- This is the pairing between roots and coroots. -/
-def n : R := P.toLin (P.root i) (P.coroot j)
+def pairing : R := P.toLin (P.root i) (P.coroot j)
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ` where `θ` describes the dihedral angle between hyperplanes. -/
-def CoxeterWeight : R := n P i j * n P j i
+def coxeterWeight : R := pairing P i j * pairing P j i
 
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
-def isOrthogonal : Prop := n P i j = 0 ∧ n P j i = 0
+def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 
 /-- A pair of roots is nonsymmetrizable if exactly one is fixed by the other's reflection.  This is
 an obstruction to the existence of a Weyl-invariant form. -/
-def isNonSymmetrizable : Prop := CoxeterWeight P i j = 0 ∧ ¬ isOrthogonal P i j
+def IsNonSymmetrizable : Prop := coxeterWeight P i j = 0 ∧ ¬ IsOrthogonal P i j
 
 /-- Two roots are parallel if their Coxeter weight is exactly 4.  A linearly independent pair of
 parallel roots generates an infinite dihedral group of reflections on their span, and their span
 has an invariant singular line. -/
-def isParallel : Prop := CoxeterWeight P i j = 4
+def isParallel : Prop := coxeterWeight P i j = 4
 
 variable [LinearOrderedCommRing R]
 
 /-- An imaginary pair is one whose Coxeter weight is negative.  Any symmetrization yields an
 invariant form where one of the roots has negative norm and the other has positive norm. -/
-def isImaginary : Prop := CoxeterWeight P i j < 0
+def IsImaginary : Prop := coxeterWeight P i j < 0
 
 /-- A pair of roots is definite if reflection induces a definite invariant form on the span, unique
 up to scalars.  This happens precisely when the Coxeter weight is strictly between `0` and `4`. -/
-def isDefinite : Prop := 0 < CoxeterWeight P i j ∧ CoxeterWeight P i j < 4
+def IsDefinite : Prop := 0 < coxeterWeight P i j ∧ coxeterWeight P i j < 4
 
 /-- A pair of roots is ultraparallel if its Coxeter weight is strictly greater than 4.
 Symmetrization induces a nondegenerate indefinite form on the span, and reflections generate an
 infinite dihedral group. -/
-def isUltraParallel : Prop := 4 < CoxeterWeight P i j
+def IsUltraParallel : Prop := 4 < coxeterWeight P i j
 
 end pairs
+
+section BaseChange
+
+variable {S : Type*} [CommRing S] [Algebra R S] (P : RootPairing ι R M N)
+/-!
+/-- The base change of a root pairing. -/
+def baseChange : RootPairing ι S (S ⊗[R] M) (S ⊗[R] N) :=
+  { P.toPerfectPairing.baseChange with
+    root := P.root
+    coroot := P.coroot
+    root_coroot_two := P.root_coroot_two
+    mapsTo_preReflection_root := P.mapsTo_preReflection_root
+    mapsTo_preReflection_coroot := P.mapsTo_preReflection_coroot }
+-/
+
+end BaseChange
