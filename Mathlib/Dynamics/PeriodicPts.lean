@@ -236,7 +236,7 @@ theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ peri
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by
   rcases hx with ⟨r, hr, hr'⟩
   suffices n ≤ (n / r + 1) * r by
-    -- porting note: convert used to unfold IsPeriodicPt
+    -- Porting note: convert used to unfold IsPeriodicPt
     change _ = _
     convert (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
       rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
@@ -265,7 +265,7 @@ theorem Semiconj.mapsTo_periodicPts {g : α → β} (h : Semiconj g fa fb) :
     MapsTo g (periodicPts fa) (periodicPts fb) := fun _ ⟨n, hn, hx⟩ => ⟨n, hn, hx.map h⟩
 #align function.semiconj.maps_to_periodic_pts Function.Semiconj.mapsTo_periodicPts
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

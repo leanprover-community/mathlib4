@@ -445,7 +445,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
     simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 #align fin_rotate_succ_apply finRotate_succ_apply
 
--- porting note: was a @[simp]
+-- Porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
   rw [finRotate_succ_apply, zero_add]
 #align fin_rotate_apply_zero finRotate_apply_zero

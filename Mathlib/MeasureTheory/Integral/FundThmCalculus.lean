@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.NormedSpace.Dual
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.VitaliCaratheodory
 
 #align_import measure_theory.integral.fund_thm_calculus from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
@@ -145,7 +145,8 @@ set_option autoImplicit true
 
 noncomputable section
 
-open MeasureTheory Set Classical Filter Function
+open scoped Classical
+open MeasureTheory Set Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 
@@ -1113,7 +1114,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
           simp only [integral_Icc_eq_integral_Ioc', Real.volume_singleton]
 #align interval_integral.sub_le_integral_of_has_deriv_right_of_le_Ico intervalIntegral.sub_le_integral_of_hasDeriv_right_of_le_Ico
 
--- porting note: Lean was adding `lb`/`lb'` to the arguments of this theorem, so I enclosed FTC-1
+-- Porting note: Lean was adding `lb`/`lb'` to the arguments of this theorem, so I enclosed FTC-1
 -- into a `section`
 /-- Hard part of FTC-2 for integrable derivatives, real-valued functions: one has
 `g b - g a ≤ ∫ y in a..b, g' y` when `g'` is integrable.

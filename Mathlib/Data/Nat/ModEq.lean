@@ -138,7 +138,7 @@ protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] 
   induction m with
   | zero => rfl
   | succ d hd =>
-    rw[pow_succ, pow_succ]
+    rw [Nat.pow_succ, Nat.pow_succ]
     exact hd.mul h
 #align nat.modeq.pow Nat.ModEq.pow
 
@@ -412,14 +412,7 @@ theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n])
     _ = 0 := by rw [zero_mul]
 #align nat.coprime_of_mul_modeq_one Nat.coprime_of_mul_modEq_one
 
-@[simp 1100]
-theorem mod_mul_right_mod (a b c : ℕ) : a % (b * c) % b = a % b :=
-  (mod_modEq _ _).of_mul_right _
 #align nat.mod_mul_right_mod Nat.mod_mul_right_mod
-
-@[simp 1100]
-theorem mod_mul_left_mod (a b c : ℕ) : a % (b * c) % c = a % c :=
-  (mod_modEq _ _).of_mul_left _
 #align nat.mod_mul_left_mod Nat.mod_mul_left_mod
 
 theorem div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=

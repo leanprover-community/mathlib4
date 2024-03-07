@@ -111,7 +111,7 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   by_cases P <;> by_cases Q <;> simp [*]
 #align Prop.is_compl_iff Prop.isCompl_iff
 
--- porting note: Lean 3 would unfold these for us, but we need to do it manually now
+-- Porting note: Lean 3 would unfold these for us, but we need to do it manually now
 section decidable_instances
 variable {α : Type u}
 

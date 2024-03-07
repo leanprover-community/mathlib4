@@ -81,7 +81,8 @@ Cantor's theorem, König's theorem, Konig's theorem
 -/
 
 
-open Function Set Order BigOperators Classical
+open scoped Classical
+open Function Set Order BigOperators
 
 noncomputable section
 
@@ -705,7 +706,7 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
 instance : CommMonoidWithZero Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
--- porting note: new
+-- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
@@ -766,13 +767,13 @@ end OrderProperties
 
 protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
   ⟨fun a =>
-    byContradiction fun h => by
+    by_contradiction fun h => by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
       let f : ι → Cardinal := Subtype.val
       haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
       obtain ⟨⟨c : Cardinal, hc : ¬Acc (· < ·) c⟩, ⟨h_1 : ∀ j, (f ⟨c, hc⟩).out ↪ (f j).out⟩⟩ :=
         Embedding.min_injective fun i => (f i).out
-      refine hc (Acc.intro _ fun j h' => byContradiction fun hj => h'.2 ?_)
+      refine hc (Acc.intro _ fun j h' => by_contradiction fun hj => h'.2 ?_)
       have : #_ ≤ #_ := ⟨h_1 ⟨j, hj⟩⟩
       simpa only [mk_out] using this⟩
 #align cardinal.lt_wf Cardinal.lt_wf
@@ -794,6 +795,19 @@ instance : ConditionallyCompleteLinearOrderBot Cardinal :=
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 #align cardinal.Inf_empty Cardinal.sInf_empty
+
+lemma sInf_eq_zero_iff {s : Set Cardinal} : sInf s = 0 ↔ s = ∅ ∨ ∃ a ∈ s, a = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases s.eq_empty_or_nonempty with rfl | hne
+    · exact Or.inl rfl
+    · exact Or.inr ⟨sInf s, csInf_mem hne, h⟩
+  · rcases h with rfl | ⟨a, ha, rfl⟩
+    · exact Cardinal.sInf_empty
+    · exact eq_bot_iff.2 (csInf_le' ha)
+
+lemma iInf_eq_zero_iff {ι : Sort*} {f : ι → Cardinal} :
+    (⨅ i, f i) = 0 ↔ IsEmpty ι ∨ ∃ i, f i = 0 := by
+  simp [iInf, sInf_eq_zero_iff]
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 instance : SuccOrder Cardinal :=
@@ -1431,7 +1445,7 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
   @mk_coe_finset _ s ▸ mk_set_le _
 #align cardinal.card_le_of_finset Cardinal.card_le_of_finset
 
--- porting note: was `simp`. LHS is not normal form.
+-- Porting note: was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
