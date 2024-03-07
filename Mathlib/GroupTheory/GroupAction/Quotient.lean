@@ -3,12 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Commutator
-import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.GroupTheory.GroupAction.Hom
 
 #align_import group_theory.group_action.quotient from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
@@ -434,3 +432,34 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
 #align card_comm_eq_card_conj_classes_mul_card card_comm_eq_card_conjClasses_mul_card
 
 end conjClasses
+
+section QuotientGroupAction
+
+variable [Group β] (H : Subgroup β) (α : Type u) [MulAction β α]
+
+/-- A typeclass for when a `MulAction β α` descends to the quotient `β ⧸ H`. -/
+class QuotientGroupAction : Prop where
+  /-- This ensures that the action descends to an action of the quotient `β ⧸ H`. -/
+  eq_one : ∀ b : H, ∀ a : α, b • a = a
+
+namespace QuotientGroupAction
+
+open Function Subgroup QuotientGroup
+
+variable [QuotientGroupAction H α] [nH : H.Normal]
+
+instance smul : SMul (β ⧸ H) α where
+  smul b := Quotient.liftOn' b (· • ·) fun A B hAB => by
+    rw [@QuotientGroup.leftRel_apply] at hAB
+    ext1 a
+    refine let_body_congr a ?_
+    intro x
+    suffices h : A⁻¹ • A • x = A⁻¹ • B • x by rw [@smul_eq_iff_eq_inv_smul, ← h, @inv_smul_smul]
+    rw [@inv_smul_smul, @smul_smul]
+    exact QuotientGroupAction.eq_one ⟨(A⁻¹ * B), hAB⟩ x |>.symm
+
+instance mulAction : MulAction (β ⧸ H) α :=
+  Function.Surjective.mulActionLeft (QuotientGroup.mk' <| H)
+    (QuotientGroup.mk'_surjective <| H) fun _ _ => rfl
+
+end QuotientGroupAction
