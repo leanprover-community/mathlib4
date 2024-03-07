@@ -243,7 +243,7 @@ end FoldrIdx
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
   simp (config := { unfoldPartialApp := true }) [indexesValues, foldrIdx_eq_foldr_enum, uncurry,
-    filter_eq_foldr]
+    filter_eq_foldr, cond_eq_if]
 #align list.indexes_values_eq_filter_enum List.indexesValues_eq_filter_enum
 
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :

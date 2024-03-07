@@ -256,7 +256,6 @@ example : ¬UniqueProds ℕ := by
   rintro ⟨h⟩
   refine' not_not.mpr (h (Finset.singleton_nonempty 0) (Finset.insert_nonempty 0 {1})) _
   simp [UniqueMul, not_or]
-  exact ⟨⟨0, 1, by simp⟩, ⟨0, 0, by simp⟩⟩
 
 /-- Some Types that do not have `UniqueSums`. -/
 example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
