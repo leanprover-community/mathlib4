@@ -718,8 +718,8 @@ def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
   rintro ⟨j⟩
   · exact comm₃.symm
   · simp only [i, Cones.postcompose_obj_pt, Functor.const_obj_obj, parallelPair_obj_one,
-      Cones.postcompose_obj_π, NatTrans.comp_app, Fork.app_one_eq_ι_comp_left, parallelPair_obj_zero,
-      parallelPair.ext_hom_app, Category.assoc]
+      Cones.postcompose_obj_π, NatTrans.comp_app, Fork.app_one_eq_ι_comp_left,
+      parallelPair_obj_zero, parallelPair.ext_hom_app, Category.assoc]
     rw [← comm₁, ← Category.assoc, ← comm₃, Category.assoc]
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
