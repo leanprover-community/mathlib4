@@ -141,8 +141,8 @@ variable {T U}
 /-- `ofSubset` holds for a `Subtheory` that is a weakening -/
 def ofSubset (h : T ⊆ U) : T ≾ U := ⟨fun b => weakening b h⟩
 
-/-- A `bewTheory` is a subset of axioms -/
-def bewTheory [T ≾ U] : U ⊢* T := λ hp ↦ sub (axm hp)
+/-- A `prfTheory` is a subset of axioms -/
+def prfTheory [T ≾ U] : U ⊢* T := λ hp ↦ sub (axm hp)
 
 end Subtheory
 
@@ -211,7 +211,7 @@ lemma modelsTheory_of_proofTheory {s} {T U : Set F} (h : s ⊧* T) (b : T ⊢* U
   fun _ hf => models_of_proof h (b hf)
 
 lemma modelsTheory_of_subtheory {s} {T U : Set F} [U ≾ T] (h : s ⊧* T) : s ⊧* U :=
-  modelsTheory_of_proofTheory h Proof.Subtheory.bewTheory
+  modelsTheory_of_proofTheory h Proof.Subtheory.prfTheory
 
 end Sound
 
