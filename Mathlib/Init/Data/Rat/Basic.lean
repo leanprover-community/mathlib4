@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
-import Std.Data.Rat.Basic
+import Std.Data.Rat.Lemmas
 import Mathlib.Mathport.Rename
 
 /-!
@@ -13,5 +13,5 @@ import Mathlib.Mathport.Rename
 
 #align rat.ext Rat.ext
 #align rat Rat
-#align rat.ext_iff Rat.ext_iff
+#noalign rat.ext_iff
 #align rat.floor Rat.floor

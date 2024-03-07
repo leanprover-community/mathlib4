@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.SimpleGraph.Density
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.SetTheory.Ordinal.Basic
 
@@ -119,7 +120,7 @@ theorem not_isUniform_iff :
   simp only [not_forall, not_lt, exists_prop, exists_and_left, Rat.cast_abs, Rat.cast_sub]
 #align simple_graph.not_is_uniform_iff SimpleGraph.not_isUniform_iff
 
-open Classical
+open scoped Classical
 
 variable (G)
 
@@ -322,7 +323,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     rintro U V hU hV -
     exact_mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
       (hP.card_part_le_average_add_one hV)
-  · rw [smul_eq_mul, offDiag_card, Nat.mul_sub_right_distrib, ← sq, ← mul_pow, mul_add_one]
+  · rw [smul_eq_mul, offDiag_card, Nat.mul_sub_right_distrib, ← sq, ← mul_pow, mul_add_one (α := ℕ)]
     exact Nat.sub_le _ _
 
 lemma IsEquipartition.card_interedges_sparsePairs_le (hP : P.IsEquipartition) (hε : 0 ≤ ε) :
@@ -333,9 +334,8 @@ lemma IsEquipartition.card_interedges_sparsePairs_le (hP : P.IsEquipartition) (h
     _ = _ := by ring
 
 private lemma aux {i j : ℕ} (hj : 0 < j) : j * (j - 1) * (i / j + 1) ^ 2 < (i + j) ^ 2 := by
-  have : j * (j - 1) < j^2
-  · rw [sq]
-    exact Nat.mul_lt_mul_of_pos_left (Nat.sub_lt hj zero_lt_one) hj
+  have : j * (j - 1) < j ^ 2 := by
+    rw [sq]; exact Nat.mul_lt_mul_of_pos_left (Nat.sub_lt hj zero_lt_one) hj
   apply (Nat.mul_lt_mul_of_pos_right this $ pow_pos Nat.succ_pos' _).trans_le
   rw [← mul_pow]
   exact Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le i j) _) _
@@ -352,8 +352,8 @@ lemma IsEquipartition.card_biUnion_offDiag_le' (hP : P.IsEquipartition) :
         mul_le_mul (mod_cast Nat.mul_div_le _ _) ?_ (by positivity) (by positivity)
     _ = _ := by rw [← div_add_same (mod_cast h.card_pos.ne'), mul_div_assoc]
   · simpa using Nat.cast_div_le
-  suffices : (U.card - 1) * U.card ≤ A.card / P.parts.card * (A.card / P.parts.card + 1)
-  · rwa [Nat.mul_sub_right_distrib, one_mul, ← offDiag_card] at this
+  suffices (U.card - 1) * U.card ≤ A.card / P.parts.card * (A.card / P.parts.card + 1) by
+    rwa [Nat.mul_sub_right_distrib, one_mul, ← offDiag_card] at this
   have := hP.card_part_le_average_add_one hU
   refine Nat.mul_le_mul ((Nat.sub_le_sub_right this 1).trans ?_) this
   simp only [Nat.add_succ_sub_one, add_zero, card_univ, le_rfl]
@@ -364,12 +364,11 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
   · simp [Subsingleton.elim P ⊥]
   apply hP.card_biUnion_offDiag_le'.trans
   rw [div_le_iff (Nat.cast_pos.2 (P.parts_nonempty hA.ne_empty).card_pos)]
-  have : (A.card : 𝕜) + P.parts.card ≤ 2 * A.card
-  · rw [two_mul]
-    exact add_le_add_left (Nat.cast_le.2 P.card_parts_le_card) _
+  have : (A.card : 𝕜) + P.parts.card ≤ 2 * A.card := by
+    rw [two_mul]; exact add_le_add_left (Nat.cast_le.2 P.card_parts_le_card) _
   refine (mul_le_mul_of_nonneg_left this $ by positivity).trans ?_
-  suffices : 1 ≤ ε/4 * P.parts.card
-  · rw [mul_left_comm, ← sq]
+  suffices 1 ≤ ε/4 * P.parts.card by
+    rw [mul_left_comm, ← sq]
     convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two $ sq_nonneg (A.card : 𝕜))
       using 1 <;> ring
   rwa [← div_le_iff', one_div_div]

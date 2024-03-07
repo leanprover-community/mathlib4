@@ -35,7 +35,7 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
     have lit : Q(ℕ) := mkRawNatLit n
     have k : Q(ℕ) := mkRawNatLit k
     haveI : $lit =Q $k + 2 := ⟨⟩
-    by exact q(OfNat.ofNat $lit)
+    q(OfNat.ofNat $lit)
 
 end Qq
 

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Scott Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -58,11 +59,11 @@ def of (f : X ⟶ X) : End X := f
 def asHom (f : End X) : X ⟶ X := f
 #align category_theory.End.as_hom CategoryTheory.End.asHom
 
-@[simp] -- porting note: todo: use `of`/`asHom`?
+@[simp] -- Porting note: todo: use `of`/`asHom`?
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 #align category_theory.End.one_def CategoryTheory.End.one_def
 
-@[simp] -- porting note: todo: use `of`/`asHom`?
+@[simp] -- Porting note: todo: use `of`/`asHom`?
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 #align category_theory.End.mul_def CategoryTheory.End.mul_def
 
@@ -130,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Aut
 
--- porting note: added because `Iso.ext` is not triggered automatically
+-- Porting note: added because `Iso.ext` is not triggered automatically
 @[ext]
 lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Iso.ext h
@@ -167,6 +168,10 @@ def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
   map_mul' f g := by cases f; cases g; rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.units_End_equiv_Aut CategoryTheory.Aut.unitsEndEquivAut
+
+/-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/
+@[simps!]
+def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEndEquivAut X).symm
 
 /-- Isomorphisms induce isomorphisms of the automorphism group -/
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where

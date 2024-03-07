@@ -87,15 +87,14 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
   rw [← or_and_left, and_or_left] at hx
   simp only [false_or, and_not_self, mul_comm ((_ : ℝ) - _)] at hx
   obtain ⟨-, hxY, hsu⟩ := hx
-  have hY : (t.card : ℝ) * ε ≤ (filter (G.Adj x) t).card
-  { exact (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hxY }
-  have hZ : (u.card : ℝ) * ε ≤ (filter (G.Adj x) u).card
-  { exact (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hsu }
+  have hY : (t.card : ℝ) * ε ≤ (filter (G.Adj x) t).card :=
+    (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hxY
+  have hZ : (u.card : ℝ) * ε ≤ (filter (G.Adj x) u).card :=
+    (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hsu
   rw [card_image_of_injective _ (Prod.mk.inj_left _)]
   have := utu (filter_subset (G.Adj x) _) (filter_subset (G.Adj x) _) hY hZ
-  have : ε ≤ G.edgeDensity (filter (G.Adj x) t) (filter (G.Adj x) u)
-  · rw [abs_sub_lt_iff] at this
-    linarith
+  have : ε ≤ G.edgeDensity (filter (G.Adj x) t) (filter (G.Adj x) u) := by
+    rw [abs_sub_lt_iff] at this; linarith
   rw [edgeDensity_def] at this
   push_cast at this
   have hε := utu.pos.le
@@ -117,17 +116,17 @@ lemma triangle_counting'
   have h₁ : ((badVertices G ε s t).card : ℝ) ≤ s.card * ε := G.card_badVertices_le dst hst
   have h₂ : ((badVertices G ε s u).card : ℝ) ≤ s.card * ε := G.card_badVertices_le dsu usu
   let X' := s \ (badVertices G ε s t ∪ badVertices G ε s u)
-  have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c
-  · apply triangle_split_helper
+  have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
+    apply triangle_split_helper
   refine le_trans ?_ (Nat.cast_le.2 $ card_le_card this)
   rw [card_biUnion, Nat.cast_sum]
   · apply le_trans _ (card_nsmul_le_sum X' _ _ $ G.good_vertices_triangle_card dst dsu dtu utu)
     rw [nsmul_eq_mul]
     have := hst.pos.le
-    suffices hX' : (1 - 2 * ε) * s.card ≤ X'.card
-    · exact Eq.trans_le (by ring) (mul_le_mul_of_nonneg_right hX' $ by positivity)
-    have i : badVertices G ε s t ∪ badVertices G ε s u ⊆ s
-    · apply union_subset (filter_subset _ _) (filter_subset _ _)
+    suffices hX' : (1 - 2 * ε) * s.card ≤ X'.card by
+      exact Eq.trans_le (by ring) (mul_le_mul_of_nonneg_right hX' $ by positivity)
+    have i : badVertices G ε s t ∪ badVertices G ε s u ⊆ s :=
+      union_subset (filter_subset _ _) (filter_subset _ _)
     rw [sub_mul, one_mul, card_sdiff i, Nat.cast_sub (card_le_card i), sub_le_sub_iff_left,
       mul_assoc, mul_comm ε, two_mul]
     refine (Nat.cast_le.2 $ card_union_le _ _).trans ?_

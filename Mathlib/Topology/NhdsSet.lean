@@ -32,13 +32,6 @@ open Set Filter Topology
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
   {s t s₁ s₂ t₁ t₂ : Set X} {x : X}
 
-/-- The filter of neighborhoods of a set in a topological space. -/
-def nhdsSet (s : Set X) : Filter X :=
-  sSup (nhds '' s)
-#align nhds_set nhdsSet
-
-@[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
-
 theorem nhdsSet_diagonal (X) [TopologicalSpace (X × X)] :
     𝓝ˢ (diagonal X) = ⨆ (x : X), 𝓝 (x, x) := by
   rw [nhdsSet, ← range_diag, ← range_comp]
@@ -53,7 +46,7 @@ lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ x ∈ s, 𝓝 x ≤ f := by simp [nhds
 
 theorem bUnion_mem_nhdsSet {t : X → Set X} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
   mem_nhdsSet_iff_forall.2 fun x hx => mem_of_superset (h x hx) <|
-    subset_iUnion₂ (s := fun x _ => t x) x hx -- porting note: fails to find `s`
+    subset_iUnion₂ (s := fun x _ => t x) x hx -- Porting note: fails to find `s`
 #align bUnion_mem_nhds_set bUnion_mem_nhdsSet
 
 theorem subset_interior_iff_mem_nhdsSet : s ⊆ interior t ↔ t ∈ 𝓝ˢ s := by
