@@ -132,7 +132,8 @@ instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (UL
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
     MulActionWithZero (ULift R) M :=
   { ULift.smulWithZero with
-    -- Porting note (#11215): TODO there seems to be a mismatch in whether the carrier is explicit here
+    -- Porting note (#11215): TODO there seems to be a mismatch in whether
+    -- the carrier is explicit here
     one_smul := one_smul _
     mul_smul := mul_smul }
 #align ulift.mul_action_with_zero ULift.mulActionWithZero
