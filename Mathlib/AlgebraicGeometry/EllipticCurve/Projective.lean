@@ -286,13 +286,15 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
     (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
   rw [fin3_def P, hPz] at hP ⊢
   rw [fin3_def Q, hQz] at hQ ⊢
-  simp only [nonsingular_iff, equation_iff, Matrix.cons_val_one, Matrix.head_cons,
-    Matrix.cons_val_two, Matrix.tail_cons, mul_zero, Matrix.cons_val_zero, add_zero, ne_eq,
-    OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_eq_mul, pow_eq_zero_iff, sub_self,
-    not_true_eq_false, false_or] at hP hQ
-  simp only [pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow,
-    or_true, not_true_eq_false, mul_zero, zero_mul, add_zero, pow_eq_zero_iff, false_or, true_and,
-    pow_eq_zero hQ.left.symm] at *
+  simp? [nonsingular_iff, equation_iff] at hP hQ says
+    simp only [nonsingular_iff, equation_iff, Matrix.cons_val_one, Matrix.head_cons,
+      Matrix.cons_val_two, Matrix.tail_cons, mul_zero, Matrix.cons_val_zero, add_zero, ne_eq,
+      OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_eq_mul, pow_eq_zero_iff, sub_self,
+      not_true_eq_false, false_or] at hP hQ
+  simp? [pow_eq_zero hP.left.symm, pow_eq_zero hQ.left.symm] at * says
+    simp only [pow_eq_zero hP.left.symm, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow,
+      or_true, not_true_eq_false, mul_zero, zero_mul, add_zero, pow_eq_zero_iff, false_or, true_and,
+      pow_eq_zero hQ.left.symm] at *
   exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp [div_mul_cancel _ hQ]⟩
 
 lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z = 0) :
