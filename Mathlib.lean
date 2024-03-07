@@ -260,6 +260,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.Linear
@@ -905,6 +906,7 @@ import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
+import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.NormedSpace.Star.Exponential
 import Mathlib.Analysis.NormedSpace.Star.GelfandDuality
 import Mathlib.Analysis.NormedSpace.Star.Matrix
@@ -1090,7 +1092,8 @@ import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Filtered.Small
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.AsType
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Functor.Basic
@@ -1168,6 +1171,7 @@ import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.Indization.IndObject
 import Mathlib.CategoryTheory.Limits.IsLimit
@@ -1260,7 +1264,8 @@ import Mathlib.CategoryTheory.Monad.Monadicity
 import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Monad.Types
 import Mathlib.CategoryTheory.Monoidal.Bimod
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
@@ -3482,6 +3487,7 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Change

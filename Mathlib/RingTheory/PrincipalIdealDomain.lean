@@ -330,7 +330,7 @@ variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section
 
-open Classical
+open scoped Classical
 
 /-- `factors a` is a multiset of irreducible elements whose product is `a`, up to units -/
 noncomputable def factors (a : R) : Multiset R :=

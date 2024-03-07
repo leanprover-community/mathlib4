@@ -549,7 +549,7 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open Classical
+open scoped Classical
 
 instance : IsTotal ℝ (· ≤ ·) :=
   ⟨by

@@ -528,7 +528,7 @@ theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
 
 section Classical
 
-open Classical
+open scoped Classical
 
 /-- We define the supremum of an arbitrary subset of `Seminorm 𝕜 E` as follows:
 * if `s` is `BddAbove` *as a set of functions `E → ℝ`* (that is, if `s` is pointwise bounded
