@@ -17,7 +17,7 @@ The main declaration in this file is:
 
 This will allow us to take an instance of the
 `ContinuousFunctionalCalculus ℂ IsStarNormal` and produce both of the instances
-`ContinuousFunctionalCalculus ℝ (IsSelfAdjoint` and `ContinuousFunctionalCalculus ℝ≥0 (0 ≤ ·)`
+`ContinuousFunctionalCalculus ℝ IsSelfAdjoint` and `ContinuousFunctionalCalculus ℝ≥0 (0 ≤ ·)`
 simply by proving:
 
 1. `IsSelfAdjoint x ↔ IsStarNormal x ∧ SpectrumRestricts Complex.re x`,
