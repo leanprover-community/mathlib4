@@ -36,8 +36,6 @@ noncomputable section
 
 variable {Γ R : Type*}
 
-section Multiplication
-
 variable [OrderedCancelAddCommMonoid Γ]
 
 namespace HahnSeries
@@ -137,16 +135,22 @@ theorem smul_coeff [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ R V) (a : �
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd :=
   rfl
 
-variable {W : Type*} [Zero R] [AddCommMonoid W]
+variable {V : Type*} [Zero R] [AddCommMonoid V]
 
-instance instSMulZeroClass [SMulZeroClass R W] :
-    SMulZeroClass (HahnSeries Γ R) (HahnModule Γ R W) where
+instance instRSMulZeroClass [SMulZeroClass R V] : SMulZeroClass R (HahnModule Γ R V) :=
+  inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
+
+@[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
+  (of R).symm (r • x) = r • (of R).symm x := rfl
+
+instance instSMulZeroClass [SMulZeroClass R V] :
+    SMulZeroClass (HahnSeries Γ R) (HahnModule Γ R V) where
   smul_zero x := by
     ext
     simp [smul_coeff]
 
-theorem smul_coeff_right [SMulZeroClass R W] {x : HahnSeries Γ R}
-    {y : HahnModule Γ R W} {a : Γ} {s : Set Γ} (hs : s.IsPWO) (hys : ((of R).symm y).support ⊆ s) :
+theorem smul_coeff_right [SMulZeroClass R V] {x : HahnSeries Γ R}
+    {y : HahnModule Γ R V} {a : Γ} {s : Set Γ} (hs : s.IsPWO) (hys : ((of R).symm y).support ⊆ s) :
     ((of R).symm <| x • y).coeff a =
       ∑ ij in addAntidiagonal x.isPWO_support hs a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd := by
@@ -156,8 +160,8 @@ theorem smul_coeff_right [SMulZeroClass R W] {x : HahnSeries Γ R}
   simp only [not_and, mem_sdiff, mem_addAntidiagonal, HahnSeries.mem_support, not_imp_not] at hb
   rw [hb.2 hb.1.1 hb.1.2.2, smul_zero]
 
-theorem smul_coeff_left [SMulWithZero R W] {x : HahnSeries Γ R}
-    {y : HahnModule Γ R W} {a : Γ} {s : Set Γ}
+theorem smul_coeff_left [SMulWithZero R V] {x : HahnSeries Γ R}
+    {y : HahnModule Γ R V} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hxs : x.support ⊆ s) :
     ((of R).symm <| x • y).coeff a =
       ∑ ij in addAntidiagonal hs ((of R).symm y).isPWO_support a,
@@ -780,5 +784,3 @@ end Domain
 end Algebra
 
 end HahnSeries
-
-end Multiplication

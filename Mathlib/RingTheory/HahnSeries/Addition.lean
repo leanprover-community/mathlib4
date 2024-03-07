@@ -181,9 +181,9 @@ instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
 
 end Addition
 
-section DistribMulAction
+section SMulZeroClass
 
-variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
+variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
 
 instance : SMul R (HahnSeries Γ V) :=
   ⟨fun r x =>
@@ -194,6 +194,28 @@ instance : SMul R (HahnSeries Γ V) :=
 theorem smul_coeff {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = r • x.coeff a :=
   rfl
 #align hahn_series.smul_coeff HahnSeries.smul_coeff
+
+instance : SMulZeroClass R (HahnSeries Γ V) :=
+  { inferInstanceAs (SMul R (HahnSeries Γ V)) with
+    smul_zero := by
+      intro
+      ext
+      simp only [smul_coeff, zero_coeff, smul_zero]}
+
+theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+    ¬ (r • x).order < x.order := by
+  have hx : x ≠ 0 := right_ne_zero_of_smul h
+  simp_all only [order, dite_false]
+  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
+
+theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
+    x.order ≤ (r • x).order := le_of_not_lt (order_smul_not_lt r x h)
+
+end SMulZeroClass
+
+section DistribMulAction
+
+variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
 instance : DistribMulAction R (HahnSeries Γ V) where
   smul := (· • ·)
@@ -209,15 +231,6 @@ instance : DistribMulAction R (HahnSeries Γ V) where
   mul_smul _ _ _ := by
     ext
     simp [mul_smul]
-
-theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
-    ¬ (r • x).order < x.order := by
-  have hx : x ≠ 0 := right_ne_zero_of_smul h
-  simp_all only [order, dite_false]
-  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
-
-theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
-    x.order ≤ (r • x).order := le_of_not_lt (order_smul_not_lt r x h)
 
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 

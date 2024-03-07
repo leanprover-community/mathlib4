@@ -262,6 +262,35 @@ theorem smeval_comp : (p.comp q).smeval x  = p.smeval (q.smeval x) := by
 
 end NatPowAssoc
 
+section Neg
+
+--variable (R : Type*) [CommRing R] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
+--variable {S : Type v} [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
+
+theorem _root_.Int.cast_neg_nat (G : Type*) [AddGroupWithOne G] (m : ℕ) : -(m : G) = (-m : ℤ) := by
+  rw [neg_eq_iff_add_eq_zero, Int.cast_neg, Int.cast_ofNat, add_right_neg]
+
+theorem smeval_at_neg_nat (S : Type*) [NonAssocRing S]  [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
+    (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
+    rw [smeval_eq_sum, smeval_eq_sum]
+    simp only [smul_pow, sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
+    refine Finset.sum_congr rfl ?_
+    intro k _
+    rw [Int.cast_neg_nat, nsmul_eq_mul, ← Int.cast_ofNat, ← Int.cast_npow, ← Int.cast_mul,
+      ← nsmul_eq_mul]
+
+theorem smeval_neg (R : Type*) {S : Type*} [NonAssocRing S] [Pow S ℕ] [Ring R]
+    [Module R S] (x : S) (p : R[X]) : (-p).smeval x = - p.smeval x := by
+  have h : (p + -p).smeval x = 0 := by rw [add_neg_self, smeval_zero]
+  rw [smeval_add, add_eq_zero_iff_neg_eq] at h
+  exact id h.symm
+
+theorem smeval_sub (R : Type*) {S : Type*} [NonAssocRing S] [Pow S ℕ] [CommRing R]
+    [Module R S] (p q : R[X]) (x : S) : (p - q).smeval x = p.smeval x - q.smeval x := by
+  rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
+
+end Neg
+
 section Algebra
 
 theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]

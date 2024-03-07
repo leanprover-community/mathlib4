@@ -92,17 +92,29 @@ theorem addVal_le_of_coeff_ne_zero {x : HahnSeries Γ R} {g : Γ} (h : x.coeff g
 #align hahn_series.add_val_le_of_coeff_ne_zero HahnSeries.addVal_le_of_coeff_ne_zero
 
 end Valuation
+
+theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] (x : HahnSeries Γ R)
+    (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
+  induction' n with n ih <;> intro g hn
+  · simp_all only [Nat.zero_eq, pow_zero, mem_support, one_coeff, ne_eq, ite_eq_right_iff,
+    not_forall, exists_prop, SetLike.mem_coe]
+    exact AddSubmonoid.zero_mem (AddSubmonoid.closure (support x))
+  · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
+    exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure hi) (ih hj))
+
+theorem isPWO_iUnion_support_smul_pow [LinearOrderedCancelAddCommMonoid Γ] [Semiring R]
+    (x : HahnSeries Γ R) (hx : 0 ≤ x.order) (f : ℕ → R) :
+    (⋃ n : ℕ, ((f n) • x ^ n).support).IsPWO :=
+  (x.isPWO_support'.addSubmonoid_closure
+    fun _ hg => le_trans hx (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
+    (Set.iUnion_subset fun n => Set.Subset.trans
+    (Function.support_const_smul_subset (f n) (x ^ n).coeff) (support_pow_subset_closure x n))
+
 theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
     {x : HahnSeries Γ R} (hx : 0 < addVal Γ R x) : (⋃ n : ℕ, (x ^ n).support).IsPWO := by
   apply (x.isWF_support.isPWO.addSubmonoid_closure _).mono _
   · exact fun g hg => WithTop.coe_le_coe.1 (le_trans (le_of_lt hx) (addVal_le_of_coeff_ne_zero hg))
-  refine' Set.iUnion_subset fun n => _
-  induction' n with n ih <;> intro g hn
-  · simp only [Nat.zero_eq, pow_zero, support_one, Set.mem_singleton_iff] at hn
-    rw [hn, SetLike.mem_coe]
-    exact AddSubmonoid.zero_mem _
-  · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
-    exact SetLike.mem_coe.2 (AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure hi) (ih hj))
+  · exact Set.iUnion_subset fun n => support_pow_subset_closure x n
 #align hahn_series.is_pwo_Union_support_powers HahnSeries.isPWO_iUnion_support_powers
 
 section
@@ -462,7 +474,40 @@ end EmbDomain
 
 section powers
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [IsDomain R]
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+
+/-!
+/-- Scalar multiples of powers of an element of positive order form a summable family. -/
+def smul_pow (x : HahnSeries Γ R) (f : ℕ → R) (hx : 0 < x.order) : SummableFamily Γ R ℕ where
+  toFun n := (f n) • (x ^ n)
+  isPWO_iUnion_support' := by
+    exact isPWO_iUnion_support_smul_pow x (le_of_lt hx) f
+  finite_co_support' g := by
+    have hpwo := isPWO_iUnion_support_smul_pow x (le_of_lt hx) f
+    by_cases hg : g ∈ ⋃ n : ℕ, { g | ((f n) • x ^ n).coeff g ≠ 0 }
+    swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
+    apply hpwo.isWF.induction hg
+    intro y ys hy
+    refine'
+      ((((addAntidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion fun ij hij =>
+                    hy ij.snd _ _).image
+                Nat.succ).union
+            (Set.finite_singleton 0)).subset
+        _
+    · exact (mem_addAntidiagonal.1 (mem_coe.1 hij)).2.1
+    · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
+      exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le hx <| order_le_of_coeff_ne_zero <|
+        Function.mem_support.mp hi
+    · rintro (_ | n) hn
+      · exact Set.mem_union_right _ (Set.mem_singleton 0)
+      · refine Set.mem_union_left _ ((Injective.mem_set_image Nat.succ_injective).mpr ?_)
+
+        sorry
+-/
+
+-- def BinomialPowers (x : HahnSeries Γ R)
+
+variable [IsDomain R]
 
 /-- The powers of an element of positive valuation form a summable family. -/
 def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R ℕ where
@@ -529,6 +574,19 @@ end SummableFamily
 section Inversion
 
 variable [LinearOrderedAddCommGroup Γ]
+
+section CommRing
+
+variable [CommRing R]
+
+/-!
+theorem unit_aux' (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1)
+    (hx : single x.order (x.coeff x.order) ≠ x) :
+    0 < (1 - C r * single (-x.order) 1 * x).order := by
+  sorry
+-/
+
+end CommRing
 
 section IsDomain
 
