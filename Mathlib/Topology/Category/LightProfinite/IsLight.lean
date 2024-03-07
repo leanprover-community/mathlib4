@@ -26,7 +26,7 @@ that the underlying profinite space of a `LightProfinite` is light.
 * Prove the Stone duality theorem that `Profinite` is equivalent to the opposite category of
   boolean algebras. Then the property of being light says precisely that the corresponding
   boolean algebra is countable. Maybe constructions of limits and colimits in `LightProfinite`
-  becomes easier when transporting over this equivalence.
+  become easier when transporting over this equivalence.
 
 -/
 
@@ -215,15 +215,16 @@ instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOf
       FintypeCat.toProfinite)).pt ↦ f.val n at h
     erw [ContinuousMap.coe_mk, Subtype.ext_iff] at h
     exact h
-  · suffices : ∃ x, ∀ n, lightProfiniteConeOfHom_π_app f (op n) x = a.val (op n)
-    · obtain ⟨x, h⟩ := this
+  · suffices ∃ x, ∀ n, lightProfiniteConeOfHom_π_app f (op n) x = a.val (op n) by
+      obtain ⟨x, h⟩ := this
       use x
       apply Subtype.ext
       apply funext
       intro n
       exact h (unop n)
-    have : Set.Nonempty (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
-    · refine IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+    have : Set.Nonempty
+        (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)}) := by
+      refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
         (fun n ↦ (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
           (directed_of_isDirected_le ?_)
         (fun _ ↦ (Set.singleton_nonempty _).preimage fun ⟨a, ⟨b, hb⟩⟩ ↦ ⟨b, Subtype.ext hb⟩)
