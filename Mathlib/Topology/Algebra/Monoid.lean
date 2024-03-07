@@ -22,9 +22,11 @@ the definitions.
 
 universe u v
 
-open Classical Set Filter TopologicalSpace
+open scoped Classical
+open Set Filter TopologicalSpace
 
-open Classical Topology BigOperators Pointwise
+open scoped Classical
+open Topology BigOperators Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
