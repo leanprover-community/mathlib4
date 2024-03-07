@@ -98,6 +98,10 @@ lemma LSeriesSummable.of_smul {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) (hf :
     LSeriesSummable f s := by
   simpa only [ne_eq, hc, not_false_eq_true, inv_smul_smul₀] using hf.smul (c⁻¹)
 
+lemma LSeriesSummable.smul_iff {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) :
+    LSeriesSummable (c • f) s ↔ LSeriesSummable f s :=
+  ⟨fun H ↦ H.of_smul hc, fun H ↦ H.smul c⟩
+
 @[simp]
 lemma LSeries.smul (f : ℕ → ℂ) (c s : ℂ) : LSeries (c • f) s = c * LSeries f s := by
   simp only [LSeries, term_smul_apply, tsum_mul_left]
