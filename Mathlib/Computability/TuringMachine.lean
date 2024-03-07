@@ -1304,7 +1304,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₁ → Prop
   | halt => True
 #align turing.TM1.supports_stmt Turing.TM1.SupportsStmt
 
-open Classical
+open scoped Classical
 
 /-- The subterm closure of a statement. -/
 noncomputable def stmts₁ : Stmt₁ → Finset Stmt₁
@@ -1528,7 +1528,7 @@ noncomputable def trStmts (S : Finset Λ) : Finset Λ'₁₀ :=
   (TM1.stmts M S) ×ˢ Finset.univ
 #align turing.TM1to0.tr_stmts Turing.TM1to0.trStmts
 
-open Classical
+open scoped Classical
 
 attribute [local simp] TM1.stmts₁_self
 
@@ -1877,7 +1877,7 @@ theorem tr_respects {enc₀} :
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH
     | branch p q₁ q₂ IH₁ IH₂ =>
-      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux]
+      simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, Tape.mk'_head]
       cases p R.head v <;> [apply IH₂; apply IH₁]
     | goto l =>
       simp only [trNormal, stepAux_read dec enc0 encdec, stepAux, trCfg, trTape_mk']
@@ -1888,7 +1888,7 @@ theorem tr_respects {enc₀} :
       apply ReflTransGen.refl
 #align turing.TM1to1.tr_respects Turing.TM1to1.tr_respects
 
-open Classical
+open scoped Classical
 
 variable [Fintype Γ]
 
@@ -2172,7 +2172,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₂ → Prop
   | halt => True
 #align turing.TM2.supports_stmt Turing.TM2.SupportsStmt
 
-open Classical
+open scoped Classical
 
 /-- The set of subtree statements in a statement. -/
 noncomputable def stmts₁ : Stmt₂ → Finset Stmt₂
@@ -2529,7 +2529,7 @@ theorem trNormal_run {k : K} (s : StAct₂ k) (q : Stmt₂) :
   cases s <;> rfl
 #align turing.TM2to1.tr_normal_run Turing.TM2to1.trNormal_run
 
-open Classical
+open scoped Classical
 
 /-- The set of machine states accessible from an initial TM2 statement. -/
 noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁

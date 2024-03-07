@@ -32,7 +32,7 @@ hyperoperation
 /-- Implementation of the hyperoperation sequence
 where `hyperoperation n m k` is the `n`th hyperoperation between `m` and `k`.
 -/
--- porting note: termination_by was not required before port
+-- Porting note: termination_by was not required before port
 def hyperoperation : ℕ → ℕ → ℕ → ℕ
   | 0, _, k => k + 1
   | 1, m, 0 => m
@@ -74,7 +74,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
   · rw [hyperoperation]
     exact (Nat.mul_zero m).symm
   · rw [hyperoperation_recursion, hyperoperation_one, bih]
-    -- porting note: was `ring`
+    -- Porting note: was `ring`
     dsimp only
     nth_rewrite 1 [← mul_one m]
     rw [← mul_add, add_comm, Nat.succ_eq_add_one]

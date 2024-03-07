@@ -264,7 +264,7 @@ instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction �
 instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
--- porting note: TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
+-- Porting note: TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
@@ -351,7 +351,7 @@ theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 #align real.to_nnreal_prod_of_nonneg Real.toNNReal_prod_of_nonneg
 
--- porting note: todo: `simp`? `norm_cast`?
+-- Porting note: todo: `simp`? `norm_cast`?
 theorem coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rfl
 #align nnreal.nsmul_coe NNReal.coe_nsmul
 
@@ -462,7 +462,7 @@ instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
--- porting note: todo: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
+-- Porting note: todo: restore once `simps` supports `ℝ≥0` @[simps!? apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
   toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
   map_rel_iff' := Iff.rfl
@@ -516,7 +516,7 @@ theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥
     exact bddAbove_coe.1 H
 #align nnreal.coe_Sup NNReal.coe_sSup
 
-@[simp, norm_cast] -- porting note: add `simp`
+@[simp, norm_cast] -- Porting note: add `simp`
 theorem coe_iSup {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = ⨆ i, ↑(s i) := by
   rw [iSup, iSup, coe_sSup, ← Set.range_comp]; rfl
 #align nnreal.coe_supr NNReal.coe_iSup
@@ -551,7 +551,7 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 
 example : Archimedean ℝ≥0 := by infer_instance
 
--- porting note: TODO: remove?
+-- Porting note: TODO: remove?
 instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_add NNReal.covariant_add
 
@@ -561,7 +561,7 @@ instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < 
 instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_mul NNReal.covariant_mul
 
--- porting note: TODO: delete?
+-- Porting note: TODO: delete?
 nonrec theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=
   le_of_forall_pos_le_add h
 #align nnreal.le_of_forall_pos_le_add NNReal.le_of_forall_pos_le_add
@@ -670,9 +670,9 @@ lemma toNNReal_eq_nat_cast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n �
   mod_cast toNNReal_eq_iff_eq_coe <| Nat.cast_ne_zero.2 hn
 
 @[simp]
-lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
+lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
-  toNNReal_eq_nat_cast h.ne_zero
+  toNNReal_eq_nat_cast (NeZero.ne n)
 
 @[simp]
 theorem toNNReal_le_toNNReal_iff {r p : ℝ} (hp : 0 ≤ p) :
@@ -751,14 +751,14 @@ lemma nat_cast_le_toNNReal {n : ℕ} {r : ℝ} (hn : n ≠ 0) : ↑n ≤ r.toNNR
 lemma toNNReal_lt_nat_cast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal < n ↔ r < n := by simp [hn]
 
 @[simp]
-lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
+lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal < no_index (OfNat.ofNat n) ↔ r < OfNat.ofNat n :=
-  toNNReal_lt_nat_cast h.ne_zero
+  toNNReal_lt_nat_cast (NeZero.ne n)
 
 @[simp]
-lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [h : n.AtLeastTwo] :
+lemma ofNat_le_toNNReal {n : ℕ} {r : ℝ} [n.AtLeastTwo] :
     no_index (OfNat.ofNat n) ≤ r.toNNReal ↔ OfNat.ofNat n ≤ r :=
-  nat_cast_le_toNNReal h.ne_zero
+  nat_cast_le_toNNReal (NeZero.ne n)
 
 @[simp]
 theorem toNNReal_add {r p : ℝ} (hr : 0 ≤ r) (hp : 0 ≤ p) :
@@ -955,7 +955,7 @@ theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff fun hr => False.elim <| by simp [hr] at h).1 h
 #align nnreal.mul_lt_of_lt_div NNReal.mul_lt_of_lt_div
 
--- porting note: drop an unneeded assumption, assume `≠ 0`
+-- Porting note: drop an unneeded assumption, assume `≠ 0`
 theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
     a / b ≤ a / c :=
   div_le_div_of_le_left (zero_le _) c0.bot_lt cb
@@ -1079,19 +1079,19 @@ theorem iSup_div (f : ι → ℝ≥0) (a : ℝ≥0) : (⨆ i, f i) / a = ⨆ i, 
   simp only [div_eq_mul_inv, iSup_mul]
 #align nnreal.supr_div NNReal.iSup_div
 
--- porting note: generalized to allow empty `ι`
+-- Porting note: generalized to allow empty `ι`
 theorem mul_iSup_le {a : ℝ≥0} {g : ℝ≥0} {h : ι → ℝ≥0} (H : ∀ j, g * h j ≤ a) : g * iSup h ≤ a := by
   rw [mul_iSup]
   exact ciSup_le' H
 #align nnreal.mul_supr_le NNReal.mul_iSup_le
 
--- porting note: generalized to allow empty `ι`
+-- Porting note: generalized to allow empty `ι`
 theorem iSup_mul_le {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i, g i * h ≤ a) : iSup g * h ≤ a := by
   rw [iSup_mul]
   exact ciSup_le' H
 #align nnreal.supr_mul_le NNReal.iSup_mul_le
 
--- porting note: generalized to allow empty `ι`
+-- Porting note: generalized to allow empty `ι`
 theorem iSup_mul_iSup_le {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, g i * h j ≤ a) :
     iSup g * iSup h ≤ a :=
   iSup_mul_le fun _ => mul_iSup_le <| H _
@@ -1133,7 +1133,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
       ball_image_iff.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 #align set.ord_connected.image_coe_nnreal_real Set.OrdConnected.image_coe_nnreal_real
 
--- porting note: todo: does it generalize to a `GaloisInsertion`?
+-- Porting note: todo: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
   refine' ⟨ball_image_iff.2 fun x hx => ball_image_iff.2 fun y hy z hz => _⟩
   rcases le_total y 0 with hy₀ | hy₀
@@ -1155,7 +1155,7 @@ end Set
 namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
--- porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩
   map_zero' := by ext; simp

@@ -257,7 +257,7 @@ lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
 
 variable (α)
 
-open Classical
+open scoped Classical
 
 /-- If a measurable space is countably generated and separates points, it admits a measurable
 injection into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
