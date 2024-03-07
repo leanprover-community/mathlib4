@@ -1268,7 +1268,7 @@ namespace Prod
 instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
--- Porting note: new instance
+-- Porting note (#10754): new instance
 instance instDecidableLE (α : Type u) (β : Type v) [LE α] [LE β] (x y : α × β)
     [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) := And.decidable
 
@@ -1454,12 +1454,12 @@ theorem min_eq : min a b = unit :=
   rfl
 #align punit.min_eq PUnit.min_eq
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 protected theorem le : a ≤ b :=
   trivial
 #align punit.le PUnit.le
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem not_lt : ¬a < b :=
   not_false
 #align punit.not_lt PUnit.not_lt

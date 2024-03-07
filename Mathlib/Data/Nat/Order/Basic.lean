@@ -82,12 +82,14 @@ variable {m n k l : ℕ}
 
 /-! ### Equalities and inequalities involving zero and one -/
 
+theorem _root_.NeZero.one_le [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)
+
 #align nat.mul_ne_zero Nat.mul_ne_zero
 
 -- Porting note: already in Std
 #align nat.mul_eq_zero Nat.mul_eq_zero
 
---Porting note: removing `simp` attribute
+-- Porting note: removing `simp` attribute
 protected theorem zero_eq_mul : 0 = m * n ↔ m = 0 ∨ n = 0 := by rw [eq_comm, Nat.mul_eq_zero]
 #align nat.zero_eq_mul Nat.zero_eq_mul
 
@@ -361,14 +363,6 @@ protected theorem div_le_self' (m n : ℕ) : m / n ≤ m :=
         _ ≤ n * m := Nat.mul_le_mul_right _ n0
 #align nat.div_le_self' Nat.div_le_self'
 
-protected theorem div_lt_of_lt_mul (h : m < n * k) : m / n < k :=
-  lt_of_mul_lt_mul_left
-    (calc
-      n * (m / n) ≤ m % n + n * (m / n) := Nat.le_add_left _ _
-      _ = m := mod_add_div _ _
-      _ < n * k := h
-      )
-    (Nat.zero_le n)
 #align nat.div_lt_of_lt_mul Nat.div_lt_of_lt_mul
 
 theorem eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
@@ -433,18 +427,7 @@ protected theorem div_div_self (h : n ∣ m) (hm : m ≠ 0) : m / (m / n) = n :=
   rw [mul_div_right _ (Nat.pos_of_ne_zero hm.1), mul_div_left _ (Nat.pos_of_ne_zero hm.2)]
 #align nat.div_div_self Nat.div_div_self
 
---Porting note: later `simp [mod_zero]` can be changed to `simp` once `mod_zero` is given
---a `simp` attribute.
-theorem mod_mul_right_div_self (m n k : ℕ) : m % (n * k) / n = m / n % k := by
-  rcases Nat.eq_zero_or_pos n with (rfl | hn); simp [mod_zero]
-  rcases Nat.eq_zero_or_pos k with (rfl | hk); simp [mod_zero]
-  conv_rhs => rw [← mod_add_div m (n * k)]
-  rw [mul_assoc, add_mul_div_left _ _ hn, add_mul_mod_self_left,
-    mod_eq_of_lt (Nat.div_lt_of_lt_mul (mod_lt _ (mul_pos hn hk)))]
 #align nat.mod_mul_right_div_self Nat.mod_mul_right_div_self
-
-theorem mod_mul_left_div_self (m n k : ℕ) : m % (k * n) / n = m / n % k := by
-  rw [mul_comm k, mod_mul_right_div_self]
 #align nat.mod_mul_left_div_self Nat.mod_mul_left_div_self
 
 theorem not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
@@ -521,7 +504,7 @@ section Find
 
 variable {p q : ℕ → Prop} [DecidablePred p] [DecidablePred q]
 
---Porting note: removing `simp` attribute as `simp` can prove it
+-- Porting note: removing `simp` attribute as `simp` can prove it
 theorem find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 := by
   rw [pos_iff_ne_zero, Ne, Nat.find_eq_zero]
 #align nat.find_pos Nat.find_pos

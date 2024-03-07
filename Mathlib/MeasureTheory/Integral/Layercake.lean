@@ -331,7 +331,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         refine lt_of_le_of_lt (measure_union_le _ _) ?_
         rw [I, zero_add]
         apply lt_of_le_of_lt _ J
-        exact restrict_le_self _ (measurableSet_lt measurable_const f_mble)
+        exact restrict_le_self _
       spanning := by
         apply eq_univ_iff_forall.2 (fun a ↦ ?_)
         rcases le_or_lt (f a) M with ha|ha
@@ -453,7 +453,7 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
   have key :=
     lintegral_comp_eq_lintegral_meas_le_mul μ f_nn f_mble cst_intble
       (eventually_of_forall fun _ => zero_le_one)
-  simp_rw [ENNReal.ofReal_one, mul_one] at key
+  simp_rw [cst, ENNReal.ofReal_one, mul_one] at key
   rw [← key]
   congr with ω
   simp only [intervalIntegral.integral_const, sub_zero, Algebra.id.smul_eq_mul, mul_one]

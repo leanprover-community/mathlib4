@@ -22,13 +22,15 @@ the definitions.
 
 universe u v
 
-open Classical Set Filter TopologicalSpace
+open scoped Classical
+open Set Filter TopologicalSpace
 
-open Classical Topology BigOperators Pointwise
+open scoped Classical
+open Topology BigOperators Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
   @continuous_const _ _ _ _ 1
 #align continuous_one continuous_one
@@ -329,7 +331,7 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
 #align is_closed_set_of_map_mul isClosed_setOf_map_mul
 #align is_closed_set_of_map_add isClosed_setOf_map_add
 
--- porting note: split variables command over two lines, can't change explicitness at the same time
+-- Porting note: split variables command over two lines, can't change explicitness at the same time
 -- as declaring new variables.
 variable {M₁ M₂}
 variable [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
@@ -585,7 +587,7 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 -- To properly fix this, we should make sure that `continuity` applies its
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
 -- is quite an invasive change.
-@[to_additive (attr := aesop safe -100 (rule_sets [Continuous]), fun_prop)]
+@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow
