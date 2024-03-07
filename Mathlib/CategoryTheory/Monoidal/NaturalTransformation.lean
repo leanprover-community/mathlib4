@@ -199,15 +199,17 @@ def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
       simp only [Adjunction.homEquiv_unit, Adjunction.homEquiv_naturality_right,
         id_comp, assoc]
       simp only [← Functor.map_comp, assoc]
-      erw [e.counit_app_functor, e.counit_app_functor]
-      simp only [comp_obj, asEquivalence_functor, asEquivalence_inverse, id_obj,
-        LaxMonoidalFunctor.μ_natural_left, LaxMonoidalFunctor.μ_natural_right_assoc,
-        IsIso.inv_hom_id_assoc, map_comp, IsEquivalence.inv_fun_map, assoc,
-        Iso.hom_inv_id_app_assoc, tensorHom_def']
-      slice_rhs 3 4 => erw [Iso.hom_inv_id_app]
-      simp only [id_obj, id_comp, assoc, whisker_exchange_assoc]
-      simp only [← MonoidalCategory.whiskerLeft_comp_assoc, ← comp_whiskerRight_assoc]
-      simp [- MonoidalCategory.whiskerLeft_comp, - comp_whiskerRight] }
+      erw [e.counit_app_functor, e.counit_app_functor,
+        F.toLaxMonoidalFunctor.μ_natural, IsIso.inv_hom_id_assoc]
+      simp only [CategoryTheory.IsEquivalence.inv_fun_map]
+      slice_rhs 2 3 => erw [Iso.hom_inv_id_app]
+      dsimp
+      simp only [CategoryTheory.Category.id_comp]
+      slice_rhs 1 2 =>
+        rw [← tensor_comp, Iso.hom_inv_id_app, Iso.hom_inv_id_app]
+        dsimp
+        rw [tensor_id]
+      simp }
 #align category_theory.monoidal_unit CategoryTheory.monoidalUnit
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalUnit F) :=
