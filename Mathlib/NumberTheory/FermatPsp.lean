@@ -126,7 +126,8 @@ theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : 
 -/
 theorem fermatPsp_base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatPsp n 1 := by
   refine' ⟨show n ∣ 1 ^ (n - 1) - 1 from _, h₂, h₁⟩
-  exact show 0 = 1 ^ (n - 1) - 1 by norm_num ▸ dvd_zero n
+  exact show 0 = 1 ^ (n - 1) - 1 by
+    set_option tactic.skipAssignedInstances false in norm_num ▸ dvd_zero n
 #align fermat_psp.base_one Nat.fermatPsp_base_one
 
 -- Lemmas that are needed to prove statements in this file, but aren't directly related to Fermat
@@ -144,7 +145,7 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
   apply Nat.succ_le_succ
   calc
     2 * a + 1 ≤ a ^ 2 * a := by nlinarith
-    _ = a ^ 3 := by rw [pow_succ a 2]
+    _ = a ^ 3 := by rw [Nat.pow_succ a 2]
     _ ≤ a ^ b := pow_le_pow_right (Nat.le_of_succ_le ha) hb
 
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
@@ -313,7 +314,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
     rwa [Nat.mul_div_cancel _ h₂] at h₁
   rw [Nat.mul_sub_left_distrib, mul_one, pow_mul]
   conv_rhs => rw [← Nat.sub_add_cancel (show 1 ≤ p by omega)]
-  rw [pow_succ (b ^ 2)]
+  rw [Nat.pow_succ (b ^ 2)]
   suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2 by
     apply gt_of_ge_of_gt
     · exact tsub_le_tsub_left (one_le_of_lt p_gt_two) ((b ^ 2) ^ (p - 1) * b ^ 2)

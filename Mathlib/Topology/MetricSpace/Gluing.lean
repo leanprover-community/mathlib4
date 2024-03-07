@@ -265,12 +265,15 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
   dist_triangle
     | .inl p, .inl q, .inl r => dist_triangle p q r
     | .inl p, .inr q, _ => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist p q]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | _, .inl q, .inr r => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist q r]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, _, .inl r => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist r p]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, .inr q, .inr r => dist_triangle p q r
@@ -308,7 +311,7 @@ namespace Sigma
 of two spaces. I.e., work with sigma types instead of sum types. -/
 variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
-open Classical
+open scoped Classical
 
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
 with each factor.
