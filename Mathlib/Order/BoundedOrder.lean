@@ -403,12 +403,12 @@ section SemilatticeSupTop
 variable [SemilatticeSup α] [OrderTop α] {a : α}
 
 -- Porting note: Not simp because simp can prove it
-theorem top_sup_eq : ⊤ ⊔ a = ⊤ :=
+theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ :=
   sup_of_le_left le_top
 #align top_sup_eq top_sup_eq
 
 -- Porting note: Not simp because simp can prove it
-theorem sup_top_eq : a ⊔ ⊤ = ⊤ :=
+theorem sup_top_eq (a : α) : a ⊔ ⊤ = ⊤ :=
   sup_of_le_right le_top
 #align sup_top_eq sup_top_eq
 
@@ -419,12 +419,12 @@ section SemilatticeSupBot
 variable [SemilatticeSup α] [OrderBot α] {a b : α}
 
 -- Porting note: Not simp because simp can prove it
-theorem bot_sup_eq : ⊥ ⊔ a = a :=
+theorem bot_sup_eq (a : α) : ⊥ ⊔ a = a :=
   sup_of_le_right bot_le
 #align bot_sup_eq bot_sup_eq
 
 -- Porting note: Not simp because simp can prove it
-theorem sup_bot_eq : a ⊔ ⊥ = a :=
+theorem sup_bot_eq (a : α) : a ⊔ ⊥ = a :=
   sup_of_le_left bot_le
 #align sup_bot_eq sup_bot_eq
 
@@ -439,13 +439,11 @@ section SemilatticeInfTop
 variable [SemilatticeInf α] [OrderTop α] {a b : α}
 
 -- Porting note: Not simp because simp can prove it
-theorem top_inf_eq : ⊤ ⊓ a = a :=
-  inf_of_le_right le_top
+lemma top_inf_eq (a : α) : ⊤ ⊓ a = a := inf_of_le_right le_top
 #align top_inf_eq top_inf_eq
 
 -- Porting note: Not simp because simp can prove it
-theorem inf_top_eq : a ⊓ ⊤ = a :=
-  inf_of_le_left le_top
+lemma inf_top_eq (a : α) : a ⊓ ⊤ = a := inf_of_le_left le_top
 #align inf_top_eq inf_top_eq
 
 @[simp]
@@ -460,13 +458,11 @@ section SemilatticeInfBot
 variable [SemilatticeInf α] [OrderBot α] {a : α}
 
 -- Porting note: Not simp because simp can prove it
-theorem bot_inf_eq : ⊥ ⊓ a = ⊥ :=
-  inf_of_le_left bot_le
+lemma bot_inf_eq (a : α) : ⊥ ⊓ a = ⊥ := inf_of_le_left bot_le
 #align bot_inf_eq bot_inf_eq
 
 -- Porting note: Not simp because simp can prove it
-theorem inf_bot_eq : a ⊓ ⊥ = ⊥ :=
-  inf_of_le_right bot_le
+lemma inf_bot_eq (a : α) : a ⊓ ⊥ = ⊥ := inf_of_le_right bot_le
 #align inf_bot_eq inf_bot_eq
 
 end SemilatticeInfBot
@@ -622,11 +618,11 @@ theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 #align pi.top_def Pi.top_def
 
-instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
-  { inferInstanceAs (Top (∀ i, α' i)) with le_top := fun _ _ => le_top }
+instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) where
+  le_top _ := fun _ => le_top
 
-instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
-  { inferInstanceAs (Bot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
+instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) where
+  bot_le _ := fun _ => bot_le
 
 instance boundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
   __ := inferInstanceAs (OrderTop (∀ i, α' i))
@@ -691,8 +687,10 @@ def OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
 /-- Pullback a `BoundedOrder`. -/
 @[reducible]
 def BoundedOrder.lift [LE α] [Top α] [Bot α] [LE β] [BoundedOrder β] (f : α → β)
-    (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : BoundedOrder α :=
-  { OrderTop.lift f map_le map_top, OrderBot.lift f map_le map_bot with }
+    (map_le : ∀ a b, f a ≤ f b → a ≤ b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
+    BoundedOrder α where
+  __ := OrderTop.lift f map_le map_top
+  __ := OrderBot.lift f map_le map_bot
 #align bounded_order.lift BoundedOrder.lift
 
 end lift
@@ -724,8 +722,9 @@ protected def orderTop [LE α] [OrderTop α] (htop : p ⊤) : OrderTop { x : α 
 /-- A subtype remains a bounded order if the property holds at `⊥` and `⊤`. -/
 @[reducible]
 protected def boundedOrder [LE α] [BoundedOrder α] (hbot : p ⊥) (htop : p ⊤) :
-    BoundedOrder (Subtype p) :=
-  { Subtype.orderTop htop, Subtype.orderBot hbot with }
+    BoundedOrder (Subtype p) where
+  __ := Subtype.orderTop htop
+  __ := Subtype.orderBot hbot
 #align subtype.bounded_order Subtype.boundedOrder
 
 variable [PartialOrder α]
@@ -830,36 +829,28 @@ section LinearOrder
 variable [LinearOrder α]
 
 -- `simp` can prove these, so they shouldn't be simp-lemmas.
-theorem min_bot_left [OrderBot α] (a : α) : min ⊥ a = ⊥ :=
-  bot_inf_eq
+theorem min_bot_left [OrderBot α] (a : α) : min ⊥ a = ⊥ := bot_inf_eq _
 #align min_bot_left min_bot_left
 
-theorem max_top_left [OrderTop α] (a : α) : max ⊤ a = ⊤ :=
-  top_sup_eq
+theorem max_top_left [OrderTop α] (a : α) : max ⊤ a = ⊤ := top_sup_eq _
 #align max_top_left max_top_left
 
-theorem min_top_left [OrderTop α] (a : α) : min ⊤ a = a :=
-  top_inf_eq
+theorem min_top_left [OrderTop α] (a : α) : min ⊤ a = a := top_inf_eq _
 #align min_top_left min_top_left
 
-theorem max_bot_left [OrderBot α] (a : α) : max ⊥ a = a :=
-  bot_sup_eq
+theorem max_bot_left [OrderBot α] (a : α) : max ⊥ a = a := bot_sup_eq _
 #align max_bot_left max_bot_left
 
-theorem min_top_right [OrderTop α] (a : α) : min a ⊤ = a :=
-  inf_top_eq
+theorem min_top_right [OrderTop α] (a : α) : min a ⊤ = a := inf_top_eq _
 #align min_top_right min_top_right
 
-theorem max_bot_right [OrderBot α] (a : α) : max a ⊥ = a :=
-  sup_bot_eq
+theorem max_bot_right [OrderBot α] (a : α) : max a ⊥ = a := sup_bot_eq _
 #align max_bot_right max_bot_right
 
-theorem min_bot_right [OrderBot α] (a : α) : min a ⊥ = ⊥ :=
-  inf_bot_eq
+theorem min_bot_right [OrderBot α] (a : α) : min a ⊥ = ⊥ := inf_bot_eq _
 #align min_bot_right min_bot_right
 
-theorem max_top_right [OrderTop α] (a : α) : max a ⊤ = ⊤ :=
-  sup_top_eq
+theorem max_top_right [OrderTop α] (a : α) : max a ⊤ = ⊤ := sup_top_eq _
 #align max_top_right max_top_right
 
 @[simp]

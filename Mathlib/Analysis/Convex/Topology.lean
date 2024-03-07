@@ -72,6 +72,17 @@ theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
 instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
   isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
 
+/-- The standard one-dimensional simplex in `ℝ² = Fin 2 → ℝ`
+is homeomorphic to the unit interval. -/
+@[simps! (config := .asFn)]
+def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
+  toEquiv := stdSimplexEquivIcc ℝ
+  continuous_toFun := .subtype_mk ((continuous_apply 0).comp continuous_subtype_val) _
+  continuous_invFun := by
+    apply Continuous.subtype_mk
+    exact (continuous_pi <| Fin.forall_fin_two.2
+      ⟨continuous_subtype_val, continuous_const.sub continuous_subtype_val⟩)
+
 end stdSimplex
 
 /-! ### Topological vector space -/

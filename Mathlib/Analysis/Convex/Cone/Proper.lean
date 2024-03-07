@@ -86,7 +86,7 @@ theorem mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : PointedCone 𝕜 E)
 instance instZero (K : ProperCone 𝕜 E) : Zero K := PointedCone.instZero (K.toSubmodule)
 
 protected theorem nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
-  ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] } ⟩
+  ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] }⟩
 #align proper_cone.nonempty ProperCone.nonempty
 
 protected theorem isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=
@@ -281,7 +281,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
       simp_rw [ProperCone.mem_dual, adjoint_inner_right]
       intro x hxK
       apply hxy (f x)
-      simp_rw [coe_map]
+      simp_rw [C, coe_map]
       apply subset_closure
       simp_rw [PointedCone.toConvexCone_map, ConvexCone.coe_map, coe_coe, mem_image,
         SetLike.mem_coe]

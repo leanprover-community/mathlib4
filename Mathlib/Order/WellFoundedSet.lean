@@ -412,7 +412,7 @@ theorem PartiallyWellOrderedOn.wellFoundedOn [IsPreorder α r] (h : s.PartiallyW
       le_refl := refl_of r
       le_trans := fun _ _ _ => trans_of r }
   change s.WellFoundedOn (· < ·)
-  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- porting note: was `change _ at h`
+  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- Porting note: was `change _ at h`
   rw [wellFoundedOn_iff_no_descending_seq]
   intro f hf
   obtain ⟨m, n, hlt, hle⟩ := h f hf
@@ -642,7 +642,7 @@ namespace Set
 
 section Preorder
 
-variable [Preorder α] {s : Set α} {a : α}
+variable [Preorder α] {s t : Set α} {a : α}
 
 /-- `Set.IsWF.min` returns a minimal element of a nonempty well-founded set. -/
 noncomputable nonrec def IsWF.min (hs : IsWF s) (hn : s.Nonempty) : α :=
@@ -656,6 +656,10 @@ theorem IsWF.min_mem (hs : IsWF s) (hn : s.Nonempty) : hs.min hn ∈ s :=
 nonrec theorem IsWF.not_lt_min (hs : IsWF s) (hn : s.Nonempty) (ha : a ∈ s) : ¬a < hs.min hn :=
   hs.not_lt_min univ (nonempty_iff_univ_nonempty.1 hn.to_subtype) (mem_univ (⟨a, ha⟩ : s))
 #align set.is_wf.not_lt_min Set.IsWF.not_lt_min
+
+theorem IsWF.min_of_subset_not_lt_min {hs : s.IsWF} {hsn : s.Nonempty} {ht : t.IsWF}
+    {htn : t.Nonempty} (hst : s ⊆ t) : ¬hs.min hsn < ht.min htn :=
+  ht.not_lt_min htn (hst (min_mem hs hsn))
 
 @[simp]
 theorem isWF_min_singleton (a) {hs : IsWF ({a} : Set α)} {hn : ({a} : Set α).Nonempty} :
@@ -781,8 +785,8 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
   rintro ⟨f, hf1, hf2⟩
   have hnil : ∀ n, f n ≠ List.nil := fun n con =>
     hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
-  have : ∀ n, (f n).headI ∈ s
-  · exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
+  have : ∀ n, (f n).headI ∈ s :=
+    fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
   obtain ⟨g, hg⟩ := h.exists_monotone_subseq (fun n => (f n).headI) this
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))

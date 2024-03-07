@@ -3,7 +3,8 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Set.Function
 import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import group_theory.group_action.pi from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
@@ -270,10 +271,9 @@ theorem Function.extend_smul {R α β γ : Type*} [SMul R γ] (r : R) (f : α �
   funext fun x => by
   -- Porting note: Lean4 is unable to automatically call `Classical.propDecidable`
   haveI : Decidable (∃ a : α, f a = x) := Classical.propDecidable _
-  rw [extend_def, Pi.smul_apply, Pi.smul_apply, extend_def]
+  simp only [extend_def, Pi.smul_apply]
   split_ifs <;>
   rfl
-  -- convert (apply_dite (fun c : γ => r • c) _ _ _).symm
 #align function.extend_smul Function.extend_smul
 #align function.extend_vadd Function.extend_vadd
 

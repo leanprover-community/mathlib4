@@ -45,7 +45,7 @@ wish to enforce infiniteness. -/
 class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
-  --Porting note: was `decode [] : ℕ → Option α`. This means that `decode` does not take the type
+  -- Porting note: was `decode [] : ℕ → Option α`. This means that `decode` does not take the type
   --explicitly in Lean4
   /-- Decoding from ℕ to Option α-/
   decode : ℕ → Option α
@@ -261,7 +261,7 @@ section Sum
 
 variable [Encodable α] [Encodable β]
 
---Porting note: removing bit0 and bit1
+-- Porting note: removing bit0 and bit1
 /-- Explicit encoding function for the sum of two encodable types. -/
 def encodeSum : Sum α β → ℕ
   | Sum.inl a => 2 * encode a
@@ -280,13 +280,13 @@ instance _root_.Sum.encodable : Encodable (Sum α β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 #align sum.encodable Sum.encodable
 
---Porting note: removing bit0 and bit1 from statement
+-- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inl (a : α) : @encode (Sum α β) _ (Sum.inl a) = 2 * (encode a) :=
   rfl
 #align encodable.encode_inl Encodable.encode_inlₓ
 
---Porting note: removing bit0 and bit1 from statement
+-- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inr (b : β) : @encode (Sum α β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
   rfl
@@ -403,14 +403,10 @@ open Subtype Decidable
 
 variable {P : α → Prop} [encA : Encodable α] [decP : DecidablePred P]
 
---include encA
-
 /-- Explicit encoding function for a decidable subtype of an encodable type -/
 def encodeSubtype : { a : α // P a } → ℕ
   | ⟨v,_⟩ => encode v
 #align encodable.encode_subtype Encodable.encodeSubtype
-
---include decP
 
 /-- Explicit decoding function for a decidable subtype of an encodable type -/
 def decodeSubtype (v : ℕ) : Option { a : α // P a } :=
@@ -655,7 +651,11 @@ theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f
   exact (Classical.choose_spec (hf _ a)).2
 #align directed.rel_sequence Directed.rel_sequence
 
-variable [Preorder β] {f : α → β} (hf : Directed (· ≤ ·) f)
+variable [Preorder β] {f : α → β}
+
+section
+
+variable (hf : Directed (· ≤ ·) f)
 
 theorem sequence_mono : Monotone (f ∘ hf.sequence f) :=
   monotone_nat_of_le_succ <| hf.sequence_mono_nat
@@ -664,6 +664,22 @@ theorem sequence_mono : Monotone (f ∘ hf.sequence f) :=
 theorem le_sequence (a : α) : f a ≤ f (hf.sequence f (encode a + 1)) :=
   hf.rel_sequence a
 #align directed.le_sequence Directed.le_sequence
+
+end
+
+section
+
+variable (hf : Directed (· ≥ ·) f)
+
+theorem sequence_anti : Antitone (f ∘ hf.sequence f) :=
+  antitone_nat_of_succ_le <| hf.sequence_mono_nat
+#align directed.sequence_anti Directed.sequence_anti
+
+theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f a :=
+  hf.rel_sequence a
+#align directed.sequence_le Directed.sequence_le
+
+end
 
 end Directed
 

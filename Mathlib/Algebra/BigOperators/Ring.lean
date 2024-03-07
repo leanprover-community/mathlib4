@@ -73,12 +73,13 @@ section CommSemiring
 variable [CommSemiring α]
 
 section DecidableEq
-variable [DecidableEq ι] [∀ i, DecidableEq (κ i)]
+variable [DecidableEq ι]
 
 /-- The product over a sum can be written as a sum over the product of sets, `Finset.Pi`.
   `Finset.prod_univ_sum` is an alternative statement when the product is over `univ`. -/
 lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     ∏ a in s, ∑ b in t a, f a b = ∑ p in s.pi t, ∏ x in s.attach, f x.1 (p x.1 x.2) := by
+  classical
   induction' s using Finset.induction with a s ha ih
   · rw [pi_empty, sum_singleton]
     rfl
@@ -121,7 +122,7 @@ lemma sum_prod_piFinset {κ : Type*} [Fintype ι] (s : Finset κ) (g : ι → κ
 
 lemma sum_pow' (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ a in s, f a) ^ n = ∑ p in piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
-  classical convert @prod_univ_sum (Fin n) _ _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
+  classical convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
 `f` over a subset `t` times the product of `g` over the complement of `t`  -/

@@ -44,28 +44,6 @@ lattice ordered group.
 positive part, negative part
 -/
 
-/-- The positive part of an element admitting a decomposition into positive and negative parts.
--/
-class PosPart (α : Type*) where
-  /-- The positive part function. -/
-  pos : α → α
-
-#align has_pos_part PosPart
-
-/-- The negative part of an element admitting a decomposition into positive and negative parts.
--/
-class NegPart (α : Type*) where
-  /-- The negative part function. -/
-  neg : α → α
-
-#align has_neg_part NegPart
-
-@[inherit_doc]
-postfix:max "⁺" => PosPart.pos
-
-@[inherit_doc]
-postfix:max "⁻" => NegPart.neg
-
 open Function
 
 universe u v
@@ -79,6 +57,8 @@ section Group
 variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)]
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α}
 
+#noalign has_pos_part
+#noalign has_neg_part
 #noalign lattice_ordered_comm_group.has_one_lattice_has_pos_part
 #noalign lattice_ordered_comm_group.has_zero_lattice_has_pos_part
 #noalign lattice_ordered_comm_group.has_one_lattice_has_neg_part
@@ -112,7 +92,7 @@ def leOnePart (a : α) : α := a⁻¹ ⊔ 1
 @[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _
 
-@[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem
+@[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
 #align lattice_ordered_comm_group.pos_one oneLePart_one
 #align lattice_ordered_comm_group.pos_zero posPart_zero
 
@@ -206,7 +186,7 @@ lemma oneLePart_mul_leOnePart
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a : α) :
     a⁺ᵐ * a⁻ᵐ = |a|ₘ := by
   rw [oneLePart, sup_mul, one_mul, leOnePart, mul_sup, mul_one, mul_inv_self, sup_assoc,
-    ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
+    ← sup_assoc a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 #align lattice_ordered_comm_group.pos_mul_neg oneLePart_mul_leOnePart
 #align lattice_ordered_comm_group.pos_add_neg posPart_add_negPart

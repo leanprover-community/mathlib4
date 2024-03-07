@@ -61,7 +61,7 @@ theorem partialSups_succ (f : ℕ → α) (n : ℕ) :
 #align partial_sups_succ partialSups_succ
 
 lemma partialSups_iff_forall {f : ℕ → α} (p : α → Prop)
-    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) : ∀  {n : ℕ}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k)
+    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) : ∀ {n : ℕ}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k)
   | 0 => by simp
   | (n + 1) => by simp [hp, partialSups_iff_forall, ← Nat.lt_succ_iff, ← Nat.forall_lt_succ]
 
@@ -180,7 +180,7 @@ theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ 
   simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f n
 #align partial_sups_eq_bsupr partialSups_eq_biSup
 
--- Porting note: simp can prove this @[simp]
+-- Porting note (#10618): simp can prove this @[simp]
 theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 #align supr_partial_sups_eq iSup_partialSups_eq

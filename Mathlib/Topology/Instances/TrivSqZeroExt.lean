@@ -26,7 +26,7 @@ one value.
 
 -/
 
-
+open scoped Topology
 variable {α S R M : Type*}
 
 -- mathport name: exprtsze
@@ -44,16 +44,16 @@ instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
 instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
 
-theorem nhds_def (x : tsze R M) : nhds x = (nhds x.fst).prod (nhds x.snd) := by
+theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
   cases x
   exact nhds_prod_eq
 #align triv_sq_zero_ext.nhds_def TrivSqZeroExt.nhds_def
 
-theorem nhds_inl [Zero M] (x : R) : nhds (inl x : tsze R M) = (nhds x).prod (nhds 0) :=
+theorem nhds_inl [Zero M] (x : R) : 𝓝 (inl x : tsze R M) = (𝓝 x).prod (𝓝 0) :=
   nhds_def _
 #align triv_sq_zero_ext.nhds_inl TrivSqZeroExt.nhds_inl
 
-theorem nhds_inr [Zero R] (m : M) : nhds (inr m : tsze R M) = (nhds 0).prod (nhds m) :=
+theorem nhds_inr [Zero R] (m : M) : 𝓝 (inr m : tsze R M) = (𝓝 0).prod (𝓝 m) :=
   nhds_def _
 #align triv_sq_zero_ext.nhds_inr TrivSqZeroExt.nhds_inr
 
@@ -85,29 +85,29 @@ variable (R M)
 
 /-- `TrivSqZeroExt.fst` as a continuous linear map. -/
 @[simps]
-def fstClm [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] R :=
+def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] R :=
   { ContinuousLinearMap.fst R R M with toFun := fst }
-#align triv_sq_zero_ext.fst_clm TrivSqZeroExt.fstClm
+#align triv_sq_zero_ext.fst_clm TrivSqZeroExt.fstCLM
 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/
 @[simps]
-def sndClm [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M :=
+def sndCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M :=
   { ContinuousLinearMap.snd R R M with
     toFun := snd
     cont := continuous_snd }
-#align triv_sq_zero_ext.snd_clm TrivSqZeroExt.sndClm
+#align triv_sq_zero_ext.snd_clm TrivSqZeroExt.sndCLM
 
 /-- `TrivSqZeroExt.inl` as a continuous linear map. -/
 @[simps]
-def inlClm [CommSemiring R] [AddCommMonoid M] [Module R M] : R →L[R] tsze R M :=
+def inlCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : R →L[R] tsze R M :=
   { ContinuousLinearMap.inl R R M with toFun := inl }
-#align triv_sq_zero_ext.inl_clm TrivSqZeroExt.inlClm
+#align triv_sq_zero_ext.inl_clm TrivSqZeroExt.inlCLM
 
 /-- `TrivSqZeroExt.inr` as a continuous linear map. -/
 @[simps]
-def inrClm [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M :=
+def inrCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M :=
   { ContinuousLinearMap.inr R R M with toFun := inr }
-#align triv_sq_zero_ext.inr_clm TrivSqZeroExt.inrClm
+#align triv_sq_zero_ext.inr_clm TrivSqZeroExt.inrCLM
 
 variable {R M}
 

@@ -109,10 +109,12 @@ variable (p) [hp : Fact p.Prime]
 
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W_" => wittPolynomial p
 
 -- Notation with ring of coefficients implicit
 set_option quotPrecheck false in
+@[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
 /-- `wittStructureRat Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℚ`
@@ -249,7 +251,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk
   rw [Finset.mem_range, Nat.lt_succ_iff] at hk
-  -- Porting note: was much slower
+  -- Porting note (#11083): was much slower
   -- simp only [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← mul_sub, ←
   --   Nat.cast_pow]
   rw [← sub_eq_zero, ← RingHom.map_sub, ← C_dvd_iff_zmod, C_eq_coe_nat, ← Nat.cast_pow,

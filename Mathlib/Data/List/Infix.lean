@@ -233,7 +233,7 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
     @decidable_of_decidable_of_iff _ _
       (@instDecidableOr _ _ _ (l₁.decidableSuffix l₂))
       suffix_cons_iff.symm
-termination_by decidableSuffix l₁ l₂ => (l₁, l₂)
+termination_by l₁ l₂ => (l₁, l₂)
 #align list.decidable_suffix List.decidableSuffix
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
@@ -243,7 +243,7 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
     @decidable_of_decidable_of_iff _ _
       (@instDecidableOr _ _ (l₁.decidablePrefix (b :: l₂)) (l₁.decidableInfix l₂))
       infix_cons_iff.symm
-termination_by decidableInfix l₁ l₂ => (l₁, l₂)
+termination_by l₁ l₂ => (l₁, l₂)
 #align list.decidable_infix List.decidableInfix
 
 theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :

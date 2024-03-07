@@ -119,7 +119,8 @@ circle homeomorphism, rotation number
 -/
 
 
-open Filter Set Int Topology Classical
+open scoped Classical
+open Filter Set Int Topology
 open Function hiding Commute
 
 /-!
@@ -133,9 +134,11 @@ structure CircleDeg1Lift extends ℝ →o ℝ : Type where
 
 namespace CircleDeg1Lift
 
-instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
+instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
   coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
+
+instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
   map_rel f _ _ h := f.monotone' h
 
 @[simp] theorem coe_mk (f h) : ⇑(mk f h) = f := rfl
@@ -774,7 +777,7 @@ theorem tendsto_translation_number₀' :
   refine'
     tendsto_iff_dist_tendsto_zero.2 <|
       squeeze_zero (fun _ => dist_nonneg) (fun n => _)
-        ((tendsto_const_div_atTop_nhds_0_nat 1).comp (tendsto_add_atTop_nat 1))
+        ((tendsto_const_div_atTop_nhds_zero_nat 1).comp (tendsto_add_atTop_nat 1))
   dsimp
   have : (0 : ℝ) < n + 1 := n.cast_add_one_pos
   rw [Real.dist_eq, div_sub' _ _ _ (ne_of_gt this), abs_div, ← Real.dist_eq, abs_of_pos this,
@@ -801,8 +804,8 @@ theorem tendsto_translation_number' (x : ℝ) :
 #align circle_deg1_lift.tendsto_translation_number' CircleDeg1Lift.tendsto_translation_number'
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
-  le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n =>
-    div_le_div_of_le n.cast_nonneg (pow_mono h n 0)
+  le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n => by
+    gcongr; exact pow_mono h _ _
 #align circle_deg1_lift.translation_number_mono CircleDeg1Lift.translationNumber_mono
 
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=

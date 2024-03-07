@@ -120,7 +120,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     measurableSet_closedBall, (by linarith : -(T / 2) + T = T / 2), h₂]
   by_cases hε : ε < T / 2
   · simp [hε, min_eq_right (by linarith : 2 * ε ≤ T)]
-  · simp [hε, min_eq_left (by linarith : T ≤ 2 * ε)]
+  · simp [I, hε, min_eq_left (by linarith : T ≤ 2 * ε)]
 #align add_circle.volume_closed_ball AddCircle.volume_closedBall
 
 instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
@@ -205,7 +205,6 @@ namespace UnitAddCircle
 
 attribute [local instance] Real.fact_zero_lt_one
 
-@[simp]
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 #align unit_add_circle.measure_univ UnitAddCircle.measure_univ
 

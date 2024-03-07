@@ -163,7 +163,7 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
         MC _ _ (coeff_mul_X_zero _) hcp0
           (if hpX0 : divX p = 0 then show M (divX p * X) by rw [hpX0, zero_mul]; exact M0
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
-termination_by _ => p.degree
+termination_by p.degree
 #align polynomial.rec_on_horner Polynomial.recOnHorner
 
 /-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`
