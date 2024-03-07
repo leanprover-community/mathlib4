@@ -532,8 +532,8 @@ protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
     map (f ^ n) = map f ^ n := MonoidHom.map_pow mapMonoidHom _ _
 
 open Function in
-theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : s i →ₗ[R] t i) :
-    (fun (j : ι) ↦ (update f i u j) (x j)) = update (fun (j : ι) ↦ (f j) (x j)) i (u (x i)) := by
+private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : s i →ₗ[R] t i) :
+    (fun j ↦ update f i u j (x j)) = update (fun j ↦ (f j) (x j)) i (u (x i)) := by
   ext j
   exact apply_update (fun i F => F (x i)) f i u j
 
