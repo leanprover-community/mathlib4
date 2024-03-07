@@ -1091,14 +1091,14 @@ theorem integral_Ioi_deriv_mul_eq_sub
   rw [← Ici_diff_left] at h_zero
   let f := Function.update (u * v) a a'
   have hderiv : ∀ x ∈ Ioi a, HasDerivAt f (u' x * v x + u x * v' x) x := by
-    intro x hx
+    intro x (hx : a < x)
     apply ((hu x hx).mul (hv x hx)).congr_of_eventuallyEq
-    filter_upwards [Ioi_mem_nhds hx] with x (hx : a < x)
-    exact Function.update_noteq (ne_of_gt hx) a' (u * v)
+    filter_upwards [eventually_ne_nhds hx.ne.symm] with y hy
+    exact Function.update_noteq hy a' (u * v)
   have htendsto : Tendsto f atTop (𝓝 b') := by
     apply h_infty.congr'
-    filter_upwards [Ioi_mem_atTop a] with x (hx : a < x)
-    exact (Function.update_noteq (ne_of_gt hx) a' (u * v)).symm
+    filter_upwards [eventually_ne_atTop a] with x hx
+    exact (Function.update_noteq hx a' (u * v)).symm
   simpa using integral_Ioi_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
