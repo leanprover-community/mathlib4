@@ -200,7 +200,7 @@ instance instDistribSMul [MonoidWithZero R] [DistribSMul R V] : DistribSMul (Hah
   smul_add := smul_add
 
 theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
-    {z : HahnModule Γ R V} (h : ∀(r s : R) (u : V), (r + s) • u = r • u + s • u) :
+    {z : HahnModule Γ R V} (h : ∀ (r s : R) (u : V), (r + s) • u = r • u + s • u) :
     (x + y) • z = x • z + y • z := by
   ext a
   have hwf := x.isPWO_support.union y.isPWO_support
@@ -331,8 +331,7 @@ instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
       simp only [← smul_eq_mul]
       refine HahnModule.add_smul ?_
       simp only [smul_eq_mul]
-      exact add_mul
-  }
+      exact add_mul }
 
 theorem single_mul_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} {a : Γ}
     {b : Γ} : (single b r * x).coeff (a + b) = r * x.coeff a := by
@@ -496,7 +495,7 @@ instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
   zero_smul := fun _ => zero_smul'
   }
 
-instance HahnModule.instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R]
+instance instNoZeroSMulDivisors {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R]
     [SMulWithZero R V] [NoZeroSMulDivisors R V] : NoZeroSMulDivisors (HahnSeries Γ R)
     (HahnModule Γ R V) where
   eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
@@ -512,12 +511,11 @@ end HahnModule
 
 namespace HahnSeries
 
--- Is this proof too abusive?
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
     eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
       haveI : NoZeroSMulDivisors (HahnSeries Γ R) (HahnSeries Γ R) :=
-        HahnModule.HahnModule.instNoZeroSMulDivisors
+        HahnModule.instNoZeroSMulDivisors
       exact eq_zero_or_eq_zero_of_smul_eq_zero xy
 
 instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :

@@ -200,7 +200,7 @@ instance : SMulZeroClass R (HahnSeries Γ V) :=
     smul_zero := by
       intro
       ext
-      simp only [smul_coeff, zero_coeff, smul_zero]}
+      simp only [smul_coeff, zero_coeff, smul_zero] }
 
 theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     ¬ (r • x).order < x.order := by
