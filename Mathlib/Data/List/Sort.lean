@@ -287,7 +287,6 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSor
     exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
 #align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
-
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
