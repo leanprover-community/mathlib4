@@ -5,10 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Logic
-import Std.Tactic.RCases
 import Mathlib.Tactic.Constructor
 import Std.Tactic.PermuteGoals
-import Std.Tactic.SolveByElim
 import Std.Test.Internal.DummyLabelAttr
 
 set_option autoImplicit true

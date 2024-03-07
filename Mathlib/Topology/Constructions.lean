@@ -36,7 +36,8 @@ product, sum, disjoint union, subspace, quotient space
 
 noncomputable section
 
-open Topology TopologicalSpace Set Filter Function Classical
+open scoped Classical
+open Topology TopologicalSpace Set Filter Function
 
 universe u v
 
@@ -318,7 +319,7 @@ section Prod
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
--- porting note: todo: Lean 4 fails to deduce implicit args
+-- Porting note: todo: Lean 4 fails to deduce implicit args
 @[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
   (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
@@ -525,14 +526,14 @@ theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : Is
   (hs.preimage continuous_fst).inter (ht.preimage continuous_snd)
 #align is_open.prod IsOpen.prod
 
--- porting note: todo: Lean fails to find `t₁` and `t₂` by unification
+-- Porting note: todo: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
   dsimp only [SProd.sprod]
   rw [Filter.prod, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
 #align nhds_prod_eq nhds_prod_eq
 
--- porting note: moved from `topology.continuous_on`
+-- Porting note: moved from `topology.continuous_on`
 theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
     𝓝[s ×ˢ t] (x, y) = 𝓝[s] x ×ˢ 𝓝[t] y := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
@@ -548,7 +549,7 @@ theorem mem_nhdsWithin_prod_iff {x : X} {y : Y} {s : Set (X × Y)} {tx : Set X} 
     s ∈ 𝓝[tx ×ˢ ty] (x, y) ↔ ∃ u ∈ 𝓝[tx] x, ∃ v ∈ 𝓝[ty] y, u ×ˢ v ⊆ s := by
   rw [nhdsWithin_prod_eq, mem_prod_iff]
 
--- porting note: moved up
+-- Porting note: moved up
 theorem Filter.HasBasis.prod_nhds {ιX ιY : Type*} {px : ιX → Prop} {py : ιY → Prop}
     {sx : ιX → Set X} {sy : ιY → Set Y} {x : X} {y : Y} (hx : (𝓝 x).HasBasis px sx)
     (hy : (𝓝 y).HasBasis py sy) :
@@ -557,7 +558,7 @@ theorem Filter.HasBasis.prod_nhds {ιX ιY : Type*} {px : ιX → Prop} {py : ι
   exact hx.prod hy
 #align filter.has_basis.prod_nhds Filter.HasBasis.prod_nhds
 
--- porting note: moved up
+-- Porting note: moved up
 theorem Filter.HasBasis.prod_nhds' {ιX ιY : Type*} {pX : ιX → Prop} {pY : ιY → Prop}
     {sx : ιX → Set X} {sy : ιY → Set Y} {p : X × Y} (hx : (𝓝 p.1).HasBasis pX sx)
     (hy : (𝓝 p.2).HasBasis pY sy) :
@@ -680,7 +681,7 @@ theorem prod_eq_generateFrom :
         GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
 #align prod_eq_generate_from prod_eq_generateFrom
 
--- porting note: todo: align with `mem_nhds_prod_iff'`
+-- Porting note: todo: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
     IsOpen s ↔ ∀ a b, (a, b) ∈ s →
       ∃ u v, IsOpen u ∧ IsOpen v ∧ a ∈ u ∧ b ∈ v ∧ u ×ˢ v ⊆ s :=
@@ -866,6 +867,15 @@ theorem embedding_prod_mk (x : X) : Embedding (Prod.mk x : Y → X × Y) :=
 
 end Prod
 
+section Bool
+
+lemma continuous_bool_rng [TopologicalSpace X] {f : X → Bool} (b : Bool) :
+    Continuous f ↔ IsClopen (f ⁻¹' {b}) := by
+  rw [continuous_discrete_rng, Bool.forall_bool' b, IsClopen, ← isOpen_compl_iff, ← preimage_compl,
+    Bool.compl_singleton, and_comm]
+
+end Bool
+
 section Sum
 
 open Sum
@@ -899,12 +909,12 @@ theorem continuous_isRight : Continuous (isRight : X ⊕ Y → Bool) :=
   continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
 
 @[continuity]
--- porting note: the proof was `continuous_sup_rng_left continuous_coinduced_rng`
+-- Porting note: the proof was `continuous_sup_rng_left continuous_coinduced_rng`
 theorem continuous_inl : Continuous (@inl X Y) := ⟨fun _ => And.left⟩
 #align continuous_inl continuous_inl
 
 @[continuity]
--- porting note: the proof was `continuous_sup_rng_right continuous_coinduced_rng`
+-- Porting note: the proof was `continuous_sup_rng_right continuous_coinduced_rng`
 theorem continuous_inr : Continuous (@inr X Y) := ⟨fun _ => And.right⟩
 #align continuous_inr continuous_inr
 
@@ -912,7 +922,7 @@ theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) 
   Iff.rfl
 #align is_open_sum_iff isOpen_sum_iff
 
--- porting note: new theorem
+-- Porting note: new theorem
 theorem isClosed_sum_iff {s : Set (X ⊕ Y)} :
     IsClosed s ↔ IsClosed (inl ⁻¹' s) ∧ IsClosed (inr ⁻¹' s) := by
   simp only [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
@@ -1093,7 +1103,7 @@ theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((
   rfl
 #align subtype.dense_iff Subtype.dense_iff
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [inducing_subtype_val.map_nhds_eq, Subtype.range_val]
 
@@ -1335,7 +1345,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
 #align continuous_update continuous_update
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
--- porting note: todo: restore @[continuity]
+-- Porting note: todo: restore @[continuity]
 @[to_additive "`Pi.single i x` is continuous in `x`."]
 theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
@@ -1490,7 +1500,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a
     by_cases a ∈ i <;> simp [*]
 #align pi_generate_from_eq_finite pi_generateFrom_eq_finite
 
--- porting note: new lemma
+-- Porting note: new lemma
 theorem induced_to_pi {X : Type*} (f : X → ∀ i, π i) :
     induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
   erw [induced_iInf]
@@ -1528,7 +1538,7 @@ theorem continuous_sigmaMk {i : ι} : Continuous (@Sigma.mk ι σ i) :=
   continuous_iSup_rng continuous_coinduced_rng
 #align continuous_sigma_mk continuous_sigmaMk
 
--- porting note: the proof was `by simp only [isOpen_iSup_iff, isOpen_coinduced]`
+-- Porting note: the proof was `by simp only [isOpen_iSup_iff, isOpen_coinduced]`
 theorem isOpen_sigma_iff {s : Set (Sigma σ)} : IsOpen s ↔ ∀ i, IsOpen (Sigma.mk i ⁻¹' s) := by
   delta instTopologicalSpaceSigma
   rw [isOpen_iSup_iff]
@@ -1716,12 +1726,12 @@ variable [TopologicalSpace X] {s : Set X} {t : Set s}
 theorem IsOpen.trans (ht : IsOpen t) (hs : IsOpen s) : IsOpen (t : Set X) := by
   rcases isOpen_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact hs'.inter hs
+  exact hs.inter hs'
 
 theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X) := by
   rcases isClosed_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  convert hs'.inter hs
+  exact hs.inter hs'
 
 end Monad
 
