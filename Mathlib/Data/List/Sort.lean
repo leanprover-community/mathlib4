@@ -241,6 +241,17 @@ theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
   orderedInsert_eq_take_drop r a _
 #align list.insertion_sort_cons_eq_take_drop List.insertionSort_cons_eq_take_drop
 
+@[simp]
+theorem mem_orderedInsert {a b : α} {l : List α} :
+    a ∈ orderedInsert r b l ↔ a = b ∨ a ∈ l :=
+  match l with
+  | [] => by simp [orderedInsert]
+  | x :: xs => by
+    rw [orderedInsert]
+    split_ifs
+    · simp [orderedInsert]
+    · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
+
 section Correctness
 
 open Perm
@@ -276,6 +287,48 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSor
     exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
 #align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
+/-- For a reflexive relation, insert then erasing is the identity. -/
+theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
+    (xs.orderedInsert r x).erase x = xs := by
+  rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
+    takeWhile_append_dropWhile]
+  intro h
+  replace h := mem_takeWhile_imp h
+  simp [refl x] at h
+
+/-- Inserting then erasing an element that is absent is the identity. -/
+theorem erase_orderedInsert_of_not_mem [DecidableEq α]
+    {x : α} {xs : List α} (hx : x ∉ xs) :
+    (xs.orderedInsert r x).erase x = xs := by
+  rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
+    takeWhile_append_dropWhile]
+  exact mt ((takeWhile_prefix _).sublist.subset ·) hx
+
+/-- For an antisymmetric relation, erasing then inserting is the identity. -/
+theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : List α) (hx : x ∈ xs)
+    (hxs : Sorted r xs) :
+    (xs.erase x).orderedInsert r x = xs := by
+  induction xs generalizing x with
+  | nil => cases hx
+  | cons y ys ih =>
+    rw [sorted_cons] at hxs
+    obtain rfl | hxy := Decidable.eq_or_ne x y
+    · rw [erase_cons_head]
+      cases ys with
+      | nil => rfl
+      | cons z zs =>
+        rw [orderedInsert, if_pos (hxs.1 _ (.head zs))]
+    · rw [mem_cons] at hx
+      replace hx := hx.resolve_left hxy
+      rw [erase_cons_tail _ (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
+      refine mt (fun hrxy => ?_) hxy
+      exact antisymm hrxy (hxs.1 _ hx)
+
+theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
+  rw [orderedInsert_eq_take_drop]
+  refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
+  rw [takeWhile_append_dropWhile]
+
 section TotalAndTransitive
 
 variable [IsTotal α r] [IsTrans α r]
@@ -291,7 +344,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
-      cases' show b' = a ∨ b' ∈ l by simpa using (perm_orderedInsert _ _ _).subset bm with be bm
+      cases' (mem_orderedInsert r).mp bm with be bm
       · subst b'
         exact (total_of r _ _).resolve_left h'
       · exact rel_of_sorted_cons h _ bm
