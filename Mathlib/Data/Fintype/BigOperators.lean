@@ -136,6 +136,11 @@ namespace Fintype
   card_piFinset _
 #align fintype.card_pi Fintype.card_pi
 
+variable (α) in
+@[simp] nonrec lemma card_sigma [Fintype ι] [∀ i, Fintype (α i)] :
+    card (Sigma α) = ∑ i, card (α i) := card_sigma _ _
+#align fintype.card_sigma Fintype.card_sigma
+
 /-- The number of dependent maps `f : Π j, s j` for which the `i` component is `a` is the product
 over all `j ≠ i` of `(s j).card`.
 
