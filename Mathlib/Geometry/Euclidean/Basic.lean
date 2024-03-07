@@ -51,7 +51,7 @@ noncomputable section
 
 open BigOperators
 
-open Classical
+open scoped Classical
 
 open RealInnerProductSpace
 

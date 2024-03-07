@@ -23,9 +23,11 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
-open Classical Set Function Filter Finset Metric Asymptotics
+open scoped Classical
+open Set Function Filter Finset Metric Asymptotics
 
-open Classical Topology Nat BigOperators uniformity NNReal ENNReal
+open scoped Classical
+open Topology Nat BigOperators uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -179,7 +181,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     have : 0 ≤ a := nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
     refine' ⟨a, A ⟨this, ha⟩, IsBigO.of_bound 1 _⟩
     simpa only [Real.norm_eq_abs, one_mul, abs_pow, abs_of_nonneg this]
-  -- porting note: used to work without explicitly having 6 → 7
+  -- Porting note: used to work without explicitly having 6 → 7
   tfae_have 6 → 7
   · exact fun h ↦ tfae_8_to_7 <| tfae_2_to_8 <| tfae_3_to_2 <| tfae_5_to_3 <| tfae_6_to_5 h
   tfae_finish
@@ -628,10 +630,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 
-/-- **Dirichlet's Test** for monotone sequences. -/
+/-- **Dirichlet's test** for monotone sequences. -/
 theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) (hgb : ∀ n, ‖∑ i in range n, z i‖ ≤ b) :
-    CauchySeq fun n ↦ ∑ i in range (n + 1), f i • z i := by
+    CauchySeq fun n ↦ ∑ i in range n, f i • z i := by
+  rw [← cauchySeq_shift 1]
   simp_rw [Finset.sum_range_by_parts _ _ (Nat.succ _), sub_eq_add_neg, Nat.succ_sub_succ_eq_sub,
     tsub_zero]
   apply (NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded hf0
@@ -650,7 +653,7 @@ theorem Monotone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Monotone
 /-- **Dirichlet's test** for antitone sequences. -/
 theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone f)
     (hf0 : Tendsto f atTop (𝓝 0)) (hzb : ∀ n, ‖∑ i in range n, z i‖ ≤ b) :
-    CauchySeq fun n ↦ ∑ i in range (n + 1), f i • z i := by
+    CauchySeq fun n ↦ ∑ i in range n, f i • z i := by
   have hfa' : Monotone fun n ↦ -f n := fun _ _ hab ↦ neg_le_neg <| hfa hab
   have hf0' : Tendsto (fun n ↦ -f n) atTop (𝓝 0) := by
     convert hf0.neg
@@ -668,7 +671,7 @@ theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i in range n, (-1 : ℝ) ^ i�
 /-- The **alternating series test** for monotone sequences.
 See also `Monotone.tendsto_alternating_series_of_tendsto_zero`. -/
 theorem Monotone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Monotone f)
-    (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i := by
+    (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n ↦ ∑ i in range n, (-1) ^ i * f i := by
   simp_rw [mul_comm]
   exact hfa.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0 norm_sum_neg_one_pow_le
 #align monotone.cauchy_seq_alternating_series_of_tendsto_zero Monotone.cauchySeq_alternating_series_of_tendsto_zero
@@ -676,14 +679,14 @@ theorem Monotone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Monotone f)
 /-- The **alternating series test** for monotone sequences. -/
 theorem Monotone.tendsto_alternating_series_of_tendsto_zero (hfa : Monotone f)
     (hf0 : Tendsto f atTop (𝓝 0)) :
-    ∃ l, Tendsto (fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i) atTop (𝓝 l) :=
+    ∃ l, Tendsto (fun n ↦ ∑ i in range n, (-1) ^ i * f i) atTop (𝓝 l) :=
   cauchySeq_tendsto_of_complete <| hfa.cauchySeq_alternating_series_of_tendsto_zero hf0
 #align monotone.tendsto_alternating_series_of_tendsto_zero Monotone.tendsto_alternating_series_of_tendsto_zero
 
 /-- The **alternating series test** for antitone sequences.
 See also `Antitone.tendsto_alternating_series_of_tendsto_zero`. -/
 theorem Antitone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Antitone f)
-    (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i := by
+    (hf0 : Tendsto f atTop (𝓝 0)) : CauchySeq fun n ↦ ∑ i in range n, (-1) ^ i * f i := by
   simp_rw [mul_comm]
   exact hfa.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0 norm_sum_neg_one_pow_le
 #align antitone.cauchy_seq_alternating_series_of_tendsto_zero Antitone.cauchySeq_alternating_series_of_tendsto_zero
@@ -691,7 +694,7 @@ theorem Antitone.cauchySeq_alternating_series_of_tendsto_zero (hfa : Antitone f)
 /-- The **alternating series test** for antitone sequences. -/
 theorem Antitone.tendsto_alternating_series_of_tendsto_zero (hfa : Antitone f)
     (hf0 : Tendsto f atTop (𝓝 0)) :
-    ∃ l, Tendsto (fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i) atTop (𝓝 l) :=
+    ∃ l, Tendsto (fun n ↦ ∑ i in range n, (-1) ^ i * f i) atTop (𝓝 l) :=
   cauchySeq_tendsto_of_complete <| hfa.cauchySeq_alternating_series_of_tendsto_zero hf0
 #align antitone.tendsto_alternating_series_of_tendsto_zero Antitone.tendsto_alternating_series_of_tendsto_zero
 

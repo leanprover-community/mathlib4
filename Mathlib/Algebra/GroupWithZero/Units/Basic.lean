@@ -71,14 +71,14 @@ theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 #align is_unit_zero_iff isUnit_zero_iff
 
--- porting note: removed `simp` tag because `simpNF` says it's redundant
+-- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 #align not_is_unit_zero not_isUnit_zero
 
 namespace Ring
 
-open Classical
+open scoped Classical
 
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
 invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
@@ -200,12 +200,12 @@ theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
   Units.ext rfl
 #align units.mk0_coe Units.mk0_val
 
--- porting note: removed `simp` tag because `simpNF` says it's redundant
+-- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
   mul_inv_cancel u.ne_zero
 #align units.mul_inv' Units.mul_inv'
 
--- porting note: removed `simp` tag because `simpNF` says it's redundant
+-- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
   inv_mul_cancel u.ne_zero
 #align units.inv_mul' Units.inv_mul'
@@ -226,7 +226,7 @@ figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
     (∃ (g : G₀) (hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
   Iff.trans (by simp_rw [val_mk0]) exists0.symm
-  -- porting note: had to add the `rfl`
+  -- Porting note: had to add the `rfl`
 #align units.exists0' Units.exists0'
 
 @[simp]
@@ -258,7 +258,7 @@ theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
 alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
 #align ne.is_unit Ne.isUnit
 
--- porting note: can't add this attribute?
+-- Porting note: can't add this attribute?
 -- https://github.com/leanprover-community/mathlib4/issues/740
 -- attribute [protected] Ne.is_unit
 
@@ -328,7 +328,7 @@ end CommGroupWithZero
 
 section NoncomputableDefs
 
-open Classical
+open scoped Classical
 
 variable {M : Type*} [Nontrivial M]
 

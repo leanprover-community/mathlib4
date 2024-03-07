@@ -72,7 +72,7 @@ example (p : Prop) : p → ¬ (p → ¬ p) := by tauto
 example (p : Prop) (em : p ∨ ¬ p) : ¬ (p ↔ ¬ p) := by tauto
 
 -- reported at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20tactic.20bug/near/370505747
-open Classical in
+open scoped Classical in
 example (hp : p) (hq : q) : (if p ∧ q then 1 else 0) = 1 := by
   -- split_ifs creates a hypothesis with a type that's a metavariable
   split_ifs

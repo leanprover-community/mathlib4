@@ -238,7 +238,7 @@ theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
   field_simp [smulAux', num, denom]
-  -- porting note: the local notation still didn't work here
+  -- Porting note: the local notation still didn't work here
   rw [Matrix.det_fin_two ((g : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ)]
   ring
 #align upper_half_plane.smul_aux'_im UpperHalfPlane.smulAux'_im

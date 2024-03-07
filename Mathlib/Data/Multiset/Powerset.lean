@@ -23,7 +23,7 @@ variable {α : Type*}
 
 /-! ### powerset -/
 
---Porting note: TODO: Write a more efficient version
+-- Porting note: TODO: Write a more efficient version
 /-- A helper function for the powerset of a multiset. Given a list `l`, returns a list
 of sublists of `l` as multisets. -/
 def powersetAux (l : List α) : List (Multiset α) :=
@@ -112,7 +112,7 @@ theorem mem_powerset {s t : Multiset α} : s ∈ powerset t ↔ s ≤ t :=
 
 theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset s :=
   Quotient.inductionOn s fun l => by
-    simp only [powerset_coe, quot_mk_to_coe, coe_le, coe_map]
+    simp only [powerset_coe, quot_mk_to_coe, coe_le, map_coe]
     show l.map (((↑) : List α → Multiset α) ∘ List.ret) <+~ (sublists l).map (↑)
     rw [← List.map_map]
     exact ((map_ret_sublist_sublists _).map _).subperm
@@ -138,7 +138,7 @@ theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux
   exact Quot.sound (revzip_sublists' _ _ _ h)
 #align multiset.revzip_powerset_aux' Multiset.revzip_powersetAux'
 
---Porting note: I don't understand why `{α : Type u}` is necessary here
+-- Porting note: I don't understand why `{α : Type u}` is necessary here
 theorem revzip_powersetAux_lemma {α : Type u} [DecidableEq α] (l : List α) {l' : List (Multiset α)}
     (H : ∀ ⦃x : _ × _⦄, x ∈ revzip l' → x.1 + x.2 = ↑l) :
     revzip l' = l'.map fun x => (x, (l : Multiset α) - x) := by

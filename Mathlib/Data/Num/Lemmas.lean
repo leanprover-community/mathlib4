@@ -157,6 +157,7 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
     add_le_add h h
   | 1, bit1 b => Nat.succ_lt_succ <| to_nat_pos <| bit0 b
   | bit0 a, bit0 b => by
+    dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
     · exact add_lt_add this this
     · rw [this]
@@ -176,6 +177,7 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
       apply Nat.lt_succ_self
     · exact Nat.le_succ_of_le (add_lt_add this this)
   | bit1 a, bit1 b => by
+    dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
     · exact Nat.succ_lt_succ (add_lt_add this this)
     · rw [this]
