@@ -266,10 +266,10 @@ end Lattice
 section LinearOrder
 variable [LinearOrder α] [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] {a : α}
 
-@[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = ite (1 ≤ a) a 1 := by
+@[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]; rfl
 
-@[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = ite (a ≤ 1) a⁻¹ 1 := by
+@[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
   simp_rw [← one_le_inv']; rw [← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]; rfl
 
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
