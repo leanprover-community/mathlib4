@@ -526,6 +526,7 @@ import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.Algebra.Vertex.Affine
 import Mathlib.Algebra.Vertex.Basic
 import Mathlib.Algebra.Vertex.Defs
+import Mathlib.Algebra.Vertex.HetVertexOperator
 import Mathlib.Algebra.Vertex.VertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine

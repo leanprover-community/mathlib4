@@ -124,8 +124,8 @@ def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
   series.-/
 @[simps]
-def CompHahnSeries {Γ' : Type*} [OrderedCancelAddCommMonoid Γ'] {U : Type*} [AddCommGroup U] [Module R U]
-    (A : HetVertexOperator Γ R V W) (B : HetVertexOperator Γ' R U V) (u : U) :
+def CompHahnSeries {Γ' : Type*} [OrderedCancelAddCommMonoid Γ'] {U : Type*} [AddCommGroup U]
+    [Module R U] (A : HetVertexOperator Γ R V W) (B : HetVertexOperator Γ' R U V) (u : U) :
     HahnSeries Γ' (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
   isPWO_support' := by
@@ -176,8 +176,9 @@ def ResLeft (A : HetVertexOperator (ℤ ×ₗ Γ) R V W) :  HetVertexOperator Γ
     (fun v => Set.PartiallyWellOrderedOn.fiberProdLex (A v).isPWO_support' _)
 
 theorem coeff_ResLeft (A : HetVertexOperator (ℤ ×ₗ Γ) R V W) (g : Γ) :
-  coeff (ResLeft A) g = coeff A (toLex (-1, g)) := rfl
+    coeff (ResLeft A) g = coeff A (toLex (-1, g)) := rfl
 
+/-- The left residue as a linear map. -/
 @[simps]
 def ResLeft.linearMap : HetVertexOperator (ℤ ×ₗ Γ) R V W →ₗ[R] HetVertexOperator Γ R V W where
   toFun := ResLeft
@@ -196,8 +197,9 @@ def ResRight (A : HetVertexOperator (Γ ×ₗ ℤ) R V W) : HetVertexOperator Γ
   HetVertexOperator.of_coeff (fun g => coeff A (g, -1)) (fun v => coeff_left_lex_supp.isPWO A v)
 
 theorem coeff_ResRight (A : HetVertexOperator (Γ ×ₗ ℤ) R V W) (g : Γ) :
-  coeff (ResRight A) g = coeff A (toLex (g, -1)) := rfl
+    coeff (ResRight A) g = coeff A (toLex (g, -1)) := rfl
 
+/-- The right residue as a linear map. -/
 @[simps]
 def ResRight.linearMap : HetVertexOperator (Γ ×ₗ ℤ) R V W →ₗ[R] HetVertexOperator Γ R V W where
   toFun := ResRight
@@ -206,3 +208,4 @@ def ResRight.linearMap : HetVertexOperator (Γ ×ₗ ℤ) R V W →ₗ[R] HetVer
 
 
 end VertexAlg
+#lint
