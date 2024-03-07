@@ -206,21 +206,6 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
 @[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
   rw [← inv_div, oneLePart_div_leOnePart]
 
-@[to_additive] lemma leOnePart_mul_oneLePart (a : α) : a⁻ᵐ * a⁺ᵐ = |a|ₘ := by
-  rw [oneLePart, mul_sup, mul_one, leOnePart, sup_mul, one_mul, inv_mul_self, sup_assoc,
-    ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
-  exact sup_eq_left.2 <| one_le_mabs a
-
--- Bourbaki A.VI.12 Prop 9 a)
-@[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
-  rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart, mul_sup, mul_one, mul_right_inv, sup_comm,
-    oneLePart]
-#align lattice_ordered_comm_group.pos_div_neg oneLePart_div_leOnePart
-#align lattice_ordered_comm_group.pos_sub_neg posPart_sub_negPart
-
-@[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
-  rw [← inv_div, oneLePart_div_leOnePart]
-
 #noalign lattice_ordered_comm_group.m_pos_abs
 #noalign lattice_ordered_comm_group.pos_abs
 #noalign lattice_ordered_comm_group.m_neg_abs
