@@ -65,7 +65,8 @@ variable {S : Type*} [CommRing S] [Algebra R S] (P : PerfectPairing R M N)
 open TensorProduct
 /-!
 /-- The base chage of a perfect pairing`. -/
-noncomputable def baseChange (P : PerfectPairing R M N) : PerfectPairing S (S ⊗[R] M) (S ⊗[R] N) where
+noncomputable def baseChange (P : PerfectPairing R M N) : PerfectPairing S (S ⊗[R] M) (S ⊗[R] N)
+    where
   toLin := TensorProduct.curry <| LinearMap.baseChange S (TensorProduct.lift (P.toLin))
     sorry -- SM → SN → S from SM ⊗_S SN → S, identify with base change of M ⊗_R N → R.
     -- compose with isomorphism (S ⊗_R M) ⊗_S (S ⊗_R N) → S ⊗_R (M ⊗_R N) on right and
