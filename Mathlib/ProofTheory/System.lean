@@ -26,8 +26,11 @@ variable {F : Type*} [LogicalConnective F]
 
 /-- Deduction Proof -/
 class Proof (F : Type*) where
+  /-- Proof of formula by a theory (a set of formulas) -/
   Prf : Set F → F → Type u
+  /-- A formula is in a theory if proved by it -/
   axm : ∀ {f T}, f ∈ T → Prf T f
+  /-- A theory is a weakening of another theory if it proves a subset of its formulas -/
   weakening' : ∀ {T U f}, T ⊆ U → Prf T f → Prf U f
 
 namespace Proof
@@ -36,35 +39,49 @@ variable [𝓑 : Proof F]
 
 instance : Turnstile F (Type u) := ⟨𝓑.Prf⟩
 
+/-- `Provable` abbreviates that theory `T` proves formula `f` -/
 abbrev Provable (T : Set F) (f : F) : Prop := Nonempty (T ⊢ f)
 
+/-- Infix notation for `Proof.Provable` -/
 infix:45 " ⊢! " => Proof.Provable
 
+/-- `toProof` noncomputably yields a proof of any formula that is provable -/
 noncomputable def Provable.toProof {T : Set F} {f : F} (h : T ⊢! f) : T ⊢ f := Classical.choice h
 
+/-- `Unprovable` abbreviates that theory `T` does not prove formula `f` -/
 abbrev Unprovable (T : Set F) (f : F) : Prop := IsEmpty (T ⊢ f)
 
+/-- Infix notation for `Proof.Unprovable` -/
 infix:45 " ⊬ " => Proof.Unprovable
 
+/-- Theory `T` proves the set of formulas in `U` -/
 def PrfTheory (T U : Set F) : Type _ := {f : F} → f ∈ U → T ⊢ f
 
+/-- Infix notation for `Proof.PrfTheory` -/
 infix:45 " ⊢* " => Proof.PrfTheory
 
+/-- Set of formulas `U` has a `ProvableTheory` `T` -/
 def ProvableTheory (T U : Set F) : Prop := Nonempty (T ⊢* U)
 
+/-- Infix notation for `Proof.ProvableTheory` -/
 infix:45 " ⊢*! " => Proof.ProvableTheory
 
 lemma unprovable_iff_not_provable {T : Set F} {f : F} : T ⊬ f ↔ ¬T ⊢! f := by
   simp[Proof.Unprovable]
 
+/-- A set of formulas `T` has no `ProvableTheory` if every formula is provable -/
 def PrfTheoryEmpty (T : Set F) : T ⊢* ∅ := fun h => by contradiction
 
+/-- Theory `U` is a subset of theory `T` -/
 def PrfTheory.ofSubset {T U : Set F} (h : U ⊆ T) : T ⊢* U := fun hf => axm (h hf)
 
+/-- A theory is `ProvableTheory` for itself -/
 def PrfTheory.refl (T : Set F) : T ⊢* T := axm
 
+/-- A theory is `Consistent` if it has not proof of contradiction -/
 def Consistent (T : Set F) : Prop := IsEmpty (T ⊢ ⊥)
 
+/-- Theory `T` is a `weakening` of theory `U` -/
 def weakening {T U : Set F} {f : F} (b : T ⊢ f) (ss : T ⊆ U) : U ⊢ f := weakening' ss b
 
 lemma Consistent.of_subset {T U : Set F} (h : Consistent U) (ss : T ⊆ U) : Consistent T :=
@@ -80,21 +97,23 @@ lemma consistent_iff_unprovable {T : Set F} : Consistent T ↔ T ⊬ ⊥ := by r
 /-- A proof system is complete -/
 protected def Complete (T : Set F) : Prop := ∀ f, (T ⊢! f) ∨ (T ⊢! ~f)
 
-/-- A formula independent of a theory -/
+/-- A formula is `Independent` of a theory if it does not prove the formula or its negation -/
 def Independent (T : Set F) (f : F) : Prop := T ⊬ f ∧ T ⊬ ~f
 
 lemma incomplete_iff_exists_independent {T : Set F} :
     ¬Proof.Complete T ↔ ∃ f, Independent T f := by simp[Proof.Complete, not_or, Independent]
 
-/-- A theory is a set of formulas -/
+/-- A `theory` is a set of formulas which are `Provable` -/
 def theory (T : Set F) : Set F := {p | T ⊢! p}
 
 @[simp] lemma subset_theory {T : Set F} : T ⊆ theory T := fun _ h ↦ ⟨Proof.axm h⟩
 
+/-- A proof in `T` is noncomputably obtained for any formula in `T` -/
 noncomputable def provableTheory_theory {T : Set F} : T ⊢* theory T := λ b ↦ b.toProof
 
 /-- A `Subtheory` proves a subset of formulas -/
 class Subtheory (T U : Set F) where
+  /-- If `T` proves `f`, `U` proves `f` -/
   sub : {f : F} → T ⊢ f → U ⊢ f
 
 /-- Infix notation for `Subtheory` -/
@@ -102,7 +121,9 @@ infix:50 " ≾ " => Subtheory
 
 /-- Definition of equivalent theories -/
 class Equivalent (T U : Set F) where
+  /-- If `T` proves `f`, `U` proves `f` -/
   ofLeft : {f : F} → T ⊢ f → U ⊢ f
+  /-- If `U` proves `f`, `T` proves `f` -/
   ofRight : {f : F} → U ⊢ f → T ⊢ f
 
 namespace Subtheory
@@ -120,7 +141,7 @@ variable {T U}
 /-- `ofSubset` holds for a `Subtheory` that is a weakening -/
 def ofSubset (h : T ⊆ U) : T ≾ U := ⟨fun b => weakening b h⟩
 
-/-- A `bewTheory` is a subset of axioms xxx -/
+/-- A `bewTheory` is a subset of axioms -/
 def bewTheory [T ≾ U] : U ⊢* T := λ hp ↦ sub (axm hp)
 
 end Subtheory
@@ -160,6 +181,7 @@ class SoundOn (M : Type*) (a : α) (H : Set F) where
 
 /-- `Complete` class is sound and proves any true formula -/
 class Complete extends Sound F where
+  /-- `T` proves any true formula -/
   complete : ∀ {T : Set F} {p : F}, T ⊨ p → T ⊢ p
 
 variable {F}
@@ -195,6 +217,7 @@ end Sound
 
 namespace Complete
 
+/-- `of!` yields a proof of any formula in a `Complete` theory `T`-/
 noncomputable def of! [Sound F] (H : ∀ {T : Set F} {p : F}, T ⊨ p → T ⊢! p) : Complete F where
   complete := fun h ↦ (H h).toProof
 
@@ -222,7 +245,8 @@ namespace Proof
 
 variable [ProofTheory.Complete F]
 
-def ofSemanticsSubtheory {T₁ T₂ : Set F} (h : Semantics.Subtheory T₁ T₂) : Proof.Subtheory T₁ T₂ :=
+/-- A semantic `Subtheory` is a proof `Subtheory` -/
+def ofSemanticsSubtheory {T U : Set F} (h : Semantics.Subtheory T U) : Proof.Subtheory T U :=
   ⟨fun hf => Complete.complete (h (Sound.sound hf))⟩
 
 end Proof
