@@ -90,7 +90,7 @@ def leOnePart (a : α) : α := a⁻¹ ⊔ 1
 @[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right (inv_le_inv_iff.2 hab) _
 
-@[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem
+@[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
 #align lattice_ordered_comm_group.pos_one oneLePart_one
 #align lattice_ordered_comm_group.pos_zero posPart_zero
 
@@ -186,10 +186,25 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
 -- Bourbaki A.VI.12 Prop 9 d)
 @[to_additive] lemma oneLePart_mul_leOnePart (a : α) : a⁺ᵐ * a⁻ᵐ = |a|ₘ := by
   rw [oneLePart, sup_mul, one_mul, leOnePart, mul_sup, mul_one, mul_inv_self, sup_assoc,
-    ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
+    ← sup_assoc a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 #align lattice_ordered_comm_group.pos_mul_neg oneLePart_mul_leOnePart
 #align lattice_ordered_comm_group.pos_add_neg posPart_add_negPart
+
+@[to_additive] lemma leOnePart_mul_oneLePart (a : α) : a⁻ᵐ * a⁺ᵐ = |a|ₘ := by
+  rw [oneLePart, mul_sup, mul_one, leOnePart, sup_mul, one_mul, inv_mul_self, sup_assoc,
+    ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
+  exact sup_eq_left.2 <| one_le_mabs a
+
+-- Bourbaki A.VI.12 Prop 9 a)
+@[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
+  rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart, mul_sup, mul_one, mul_right_inv, sup_comm,
+    oneLePart]
+#align lattice_ordered_comm_group.pos_div_neg oneLePart_div_leOnePart
+#align lattice_ordered_comm_group.pos_sub_neg posPart_sub_negPart
+
+@[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
+  rw [← inv_div, oneLePart_div_leOnePart]
 
 @[to_additive] lemma leOnePart_mul_oneLePart (a : α) : a⁻ᵐ * a⁺ᵐ = |a|ₘ := by
   rw [oneLePart, mul_sup, mul_one, leOnePart, sup_mul, one_mul, inv_mul_self, sup_assoc,
@@ -266,10 +281,10 @@ end Lattice
 section LinearOrder
 variable [LinearOrder α] [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] {a : α}
 
-@[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = ite (1 ≤ a) a 1 := by
+@[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]; rfl
 
-@[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = ite (a ≤ 1) a⁻¹ 1 := by
+@[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
   simp_rw [← one_le_inv']; rw [← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]; rfl
 
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=

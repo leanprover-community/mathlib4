@@ -346,7 +346,7 @@ end
 
 section DecidableEq
 
-open Classical
+open scoped Classical
 
 theorem mem_span_mul_finite_of_mem_span_mul {R A} [Semiring R] [AddCommMonoid A] [Mul A]
     [Module R A] {S : Set A} {S' : Set A} {x : A} (hx : x ∈ span R (S * S')) :

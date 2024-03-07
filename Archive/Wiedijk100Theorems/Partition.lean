@@ -203,8 +203,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         simp only [Multiset.mem_toFinset, not_not, mem_filter] }
   refine' Finset.card_congr φ _ _ _
   · intro a  ha
-    unfold_let
-    simp only [not_forall, not_exists, not_and, exists_prop, mem_filter]
+    simp only [φ, not_forall, not_exists, not_and, exists_prop, mem_filter]
     rw [mem_piAntidiagonal']
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
     simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,

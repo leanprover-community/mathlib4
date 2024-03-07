@@ -280,9 +280,10 @@
   ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.CategoryTheory.Reassoc":
   ["Mathlib.CategoryTheory.Functor.Basic"],
+  "Mathlib.Tactic.CategoryTheory.Coherence":
+  ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
-  "Mathlib.RingTheory.SimpleModule": ["Mathlib.RingTheory.Finiteness"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.RingTheory.Subsemiring.Order":
   ["Mathlib.GroupTheory.Submonoid.Order"],
@@ -320,8 +321,6 @@
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
-  "Mathlib.Analysis.Complex.UpperHalfPlane.Basic":
-  ["Mathlib.Data.Fintype.Parity"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Basic"],
@@ -330,7 +329,6 @@
   "Mathlib.Algebra.Module.Submodule.Order":
   ["Mathlib.GroupTheory.Subgroup.Order", "Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
-  "Mathlib.Algebra.Module.LinearMap": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
