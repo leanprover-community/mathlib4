@@ -5,8 +5,7 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Group.Hom.Defs
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -15,6 +14,9 @@ import Mathlib.Algebra.NeZero
 
 -/
 
+-- `NeZero` cannot be additivised, hence its theory should be developed outside of the
+-- `Algebra.Group` folder.
+assert_not_exists NeZero
 
 variable {α β M N P : Type*}
 
@@ -23,23 +25,6 @@ variable {G : Type*} {H : Type*}
 
 -- groups
 variable {F : Type*}
-
-namespace NeZero
-
-theorem of_map {R M} [Zero R] [Zero M] [FunLike F R M] [ZeroHomClass F R M]
-    (f : F) {r : R} [neZero : NeZero (f r)] : NeZero r :=
-  ⟨fun h => ne (f r) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
-#align ne_zero.of_map NeZero.of_map
-
-theorem of_injective {R M} [Zero R] {r : R} [NeZero r] [Zero M] [FunLike F R M]
-    [ZeroHomClass F R M] {f : F}
-    (hf : Function.Injective f) : NeZero (f r) :=
-  ⟨by
-    rw [← ZeroHomClass.map_zero f]
-    exact hf.ne NeZero.out⟩
-#align ne_zero.of_injective NeZero.of_injective
-
-end NeZero
 
 section DivisionCommMonoid
 
@@ -261,11 +246,3 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
   ext; simp only [Function.comp_apply, div_apply, map_div, coe_comp]
 
 end InvDiv
-
-/-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
-with zero morphism sending `x` to `f x * g x`. -/
-instance [MulZeroOneClass M] [CommMonoidWithZero N] : Mul (M →*₀ N) :=
-  ⟨fun f g => { (f * g : M →* N) with
-    toFun := fun a => f a * g a,
-    map_zero' := by dsimp only []; rw [map_zero, zero_mul] }⟩
-    -- Porting note: why do we need `dsimp` here?
