@@ -10,6 +10,7 @@ import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
