@@ -445,6 +445,9 @@ def fvarAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.Functi
     if let .some r ← tryTheorems funTransDecl e fData thms then
       return r
 
+    if let .some r ← applyMorTheorems funTransDecl e fData then
+      return r
+
     if let .some r ← applyFVarTheorems e then
       return r
 
