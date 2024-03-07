@@ -591,13 +591,12 @@ lemma piTensorHomMap_tprod_eq_map (f : Π i, s i →ₗ[R] t i) :
 This is the n-ary version of `TensorProduct.congr`
 -/
 noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
-    (⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, t i := by
-  refine LinearEquiv.ofLinear (map (fun i ↦ f i)) (map (fun i ↦ (f i).symm)) ?_ ?_
-  all_goals (rw [← map_comp, ← map_id]; congr; ext i)
-  · simp only [LinearEquiv.comp_coe, LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap,
-    LinearMap.id_coe, id_eq]
-  · simp only [LinearEquiv.comp_coe, LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap,
-    LinearMap.id_coe, id_eq]
+    (⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, t i :=
+  .ofLinear
+    (map (fun i ↦ f i))
+    (map (fun i ↦ (f i).symm))
+    (by ext; simp)
+    (by ext; simp)
 
 @[simp]
 theorem congr_tprod (f : Π i, s i ≃ₗ[R] t i) (m : Π i, s i) :
