@@ -213,6 +213,8 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
       (hx.imp fun _ _ => Commute.tprod) :=
   Finset.noncommProd_map s x _ (tprodMonoidHom R)
 
+/-- To show two algebra morphisms from finite tensor products are equal, it suffices to show that
+they agree on elements of the form $1 ⊗ ⋯ ⊗ a ⊗ 1 ⊗ ⋯$. -/
 @[ext high]
 theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [Algebra R S]
     ⦃f g : (⨂[R] i, A i) →ₐ[R] S⦄ (h : ∀ i, f.comp (singleAlgHom i) = g.comp (singleAlgHom i)) :
@@ -263,7 +265,8 @@ variable [Fintype ι]
 
 variable (R ι)
 
-/-- The algebra equivalence from the tensor product of the constant family with
+/--
+The algebra equivalence from the tensor product of the constant family with
 value `R` to `R`, given by multiplication of the entries.
 -/
 noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
@@ -271,7 +274,7 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
     (AlgHom.ofLinearMap
       toFun
-      ((lift.tprod _).trans <| Finset.prod_const_one)
+      ((lift.tprod _).trans Finset.prod_const_one)
       (by
         rw [LinearMap.map_mul_iff]
         ext x y
@@ -287,9 +290,7 @@ variable {R ι}
 @[simp]
 theorem constantBaseRingEquiv_tprod (x : ι → R) :
     constantBaseRingEquiv ι R (tprod R x) = ∏ i, x i := by
-  simp only [constantBaseRingEquiv, LinearEquiv.ofLinear_apply, lift.tprod,
-    MultilinearMap.mkPiAlgebra_apply]
-  simp [AlgEquiv.ofAlgHom]
+  simp [constantBaseRingEquiv]
 
 @[simp]
 theorem constantBaseRingEquiv_symm (r : R) :
