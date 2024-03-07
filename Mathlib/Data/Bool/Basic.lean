@@ -29,11 +29,6 @@ theorem decide_False {h} : @decide False h = false :=
   _root_.decide_eq_false id
 #align bool.to_bool_false Bool.decide_False
 
-@[simp]
-theorem decide_coe (b : Bool) {h} : @decide b h = b := by
-  cases b
-  · exact _root_.decide_eq_false <| λ j => by cases j
-  · exact _root_.decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
@@ -53,14 +48,7 @@ theorem decide_not (p : Prop) [Decidable p] : (decide ¬p) = !(decide p) := by
   by_cases p <;> simp [*]
 #align bool.to_bool_not Bool.decide_not
 
-@[simp]
-theorem decide_and (p q : Prop) [Decidable p] [Decidable q] : decide (p ∧ q) = (p && q) := by
-  by_cases p <;> by_cases q <;> simp [*]
 #align bool.to_bool_and Bool.decide_and
-
-@[simp]
-theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = (p || q) := by
-  by_cases p <;> by_cases q <;> simp [*]
 #align bool.to_bool_or Bool.decide_or
 
 #align bool.to_bool_eq decide_eq_decide
@@ -86,9 +74,6 @@ theorem beq_eq_decide_eq {α} [BEq α] [LawfulBEq α] [DecidableEq α]
 theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
   eq_iff_eq_true_iff.2 (by simp [@eq_comm α])
 
-@[simp]
-theorem default_bool : default = false :=
-  rfl
 #align bool.default_bool Bool.default_bool
 
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
@@ -121,24 +106,13 @@ instance decidableExistsBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Deci
   decidable_of_decidable_of_iff exists_bool.symm
 #align bool.decidable_exists_bool Bool.decidableExistsBool
 
-theorem cond_eq_ite {α} (b : Bool) (t e : α) : cond b t e = if b then t else e := by
-  cases b <;> simp
 #align bool.cond_eq_ite Bool.cond_eq_ite
-
-@[simp]
-theorem cond_decide {α} (p : Prop) [Decidable p] (t e : α) :
-    cond (decide p) t e = if p then t else e := by
-  by_cases p <;> simp [*]
 #align bool.cond_to_bool Bool.cond_decide
-
-@[simp]
-theorem cond_not {α} (b : Bool) (t e : α) : cond (!b) t e = cond b e t := by cases b <;> rfl
 #align bool.cond_bnot Bool.cond_not
 
 theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 #align bool.bnot_ne_id Bool.not_ne_id
 
-theorem coe_iff_coe : ∀ {a b : Bool}, (a ↔ b) ↔ a = b := by decide
 #align bool.coe_bool_iff Bool.coe_iff_coe
 
 theorem eq_true_of_ne_false : ∀ {a : Bool}, a ≠ false → a = true := by decide
@@ -183,16 +157,7 @@ lemma eq_not_iff : ∀ {a b : Bool}, a = !b ↔ a ≠ b := by decide
 lemma not_eq_iff : ∀ {a b : Bool}, !a = b ↔ a ≠ b := by decide
 #align bool.bnot_eq_iff Bool.not_eq_iff
 
--- Porting note: this is a case where our naming scheme is less than ideal.
--- The two `not`s in this name are different.
--- For now we're going with consistency at the expense of ambiguity.
-@[simp]
-theorem not_eq_not : ∀ {a b : Bool}, ¬a = !b ↔ a = b := by decide
 #align bool.not_eq_bnot Bool.not_eq_not
-
--- Porting note: and here again.
-@[simp]
-theorem not_not_eq : ∀ {a b : Bool}, ¬(!a) = b ↔ a = b := by decide
 #align bool.bnot_not_eq Bool.not_not_eq
 
 theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
@@ -243,8 +208,6 @@ attribute [simp] xor_assoc
 
 #align bool.bxor_ff_left Bool.false_xor
 #align bool.bxor_ff_right Bool.xor_false
-#align bool.band_bxor_distrib_left Bool.and_xor_distrib_left
-#align bool.band_bxor_distrib_right Bool.and_xor_distrib_right
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 #align bool.bxor_iff_ne Bool.xor_iff_ne
@@ -357,5 +320,12 @@ protected def xor3 (x y c : Bool) :=
 protected def carry (x y c : Bool) :=
   x && y || x && c || y && c
 #align bitvec.carry Bool.carry
+
+theorem and_xor_distrib_left : ∀ (x y z : Bool), (x && xor y z) = xor (x && y) (x && z) := by
+  decide
+theorem and_xor_distrib_right : ∀ (x y z : Bool), (xor x y && z) = xor (x && z) (y && z) := by
+  decide
+#align bool.band_bxor_distrib_left Bool.and_xor_distrib_left
+#align bool.band_bxor_distrib_right Bool.and_xor_distrib_right
 
 end Bool
