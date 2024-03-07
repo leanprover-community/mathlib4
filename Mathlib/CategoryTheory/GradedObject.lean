@@ -121,12 +121,12 @@ section
 
 variable (C)
 
--- porting note: added to ease the port
+-- Porting note: added to ease the port
 /-- Pull back an `I`-graded object in `C` to a `J`-graded object along a function `J → I`. -/
 abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
   Pi.comap (fun _ => C) h
 
--- porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
+-- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
 theorem eqToHom_proj {x x' : GradedObject I C} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
@@ -480,6 +480,14 @@ noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
 lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
 
 lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+
+variable {X Y} in
+@[reassoc (attr := simp)]
+lemma ιMapObjOrZero_mapMap :
+    X.ιMapObjOrZero p i j ≫ mapMap φ p j = φ i ≫ Y.ιMapObjOrZero p i j := by
+  by_cases h : p i = j
+  · simp only [ιMapObjOrZero_eq _ _ _ _ h, ι_mapMap]
+  · simp only [ιMapObjOrZero_eq_zero _ _ _ _ h, zero_comp, comp_zero]
 
 end GradedObject
 

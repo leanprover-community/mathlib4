@@ -50,7 +50,7 @@ namespace SimplexCategory
 section
 
 
--- porting note: the definition of `SimplexCategory` is made irreducible below
+-- Porting note: the definition of `SimplexCategory` is made irreducible below
 /-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
@@ -89,7 +89,7 @@ protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -153,7 +153,7 @@ instance smallCategory : SmallCategory.{0} SimplexCategory where
   comp f g := SimplexCategory.Hom.comp g f
 #align simplex_category.small_category SimplexCategory.smallCategory
 
--- porting note: added because `Hom.ext'` is not triggered automatically
+-- Porting note: added because `Hom.ext'` is not triggered automatically
 @[ext]
 theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
@@ -164,7 +164,7 @@ def const (x : SimplexCategory) (i : Fin (x.len + 1)) : ([0] : SimplexCategory) 
   Hom.mk <| ⟨fun _ => i, by tauto⟩
 #align simplex_category.const SimplexCategory.const
 
--- porting note: removed @[simp] as the linter complains
+-- Porting note: removed @[simp] as the linter complains
 theorem const_comp (x y : SimplexCategory) (i : Fin (x.len + 1)) (f : x ⟶ y) :
     const x i ≫ f = const y (f.toOrderHom i) :=
   rfl
@@ -218,7 +218,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   rcases k with ⟨k, _⟩
-  split_ifs <;> · simp at * <;> linarith
+  split_ifs <;> · simp at * <;> omega
 #align simplex_category.δ_comp_δ SimplexCategory.δ_comp_δ
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
@@ -286,7 +286,7 @@ theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
     Fin.coe_castLT, dite_eq_ite]
   split_ifs
   any_goals simp
-  all_goals linarith
+  all_goals omega
 #align simplex_category.δ_comp_σ_self SimplexCategory.δ_comp_σ_self
 
 @[reassoc]
@@ -303,7 +303,7 @@ theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ([n] :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
-  split_ifs <;> simp <;> simp at * <;> linarith
+  split_ifs <;> simp <;> simp at * <;> omega
 #align simplex_category.δ_comp_σ_succ SimplexCategory.δ_comp_σ_succ
 
 @[reassoc]

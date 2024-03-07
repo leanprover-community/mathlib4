@@ -68,7 +68,7 @@ def t (i j : 𝒰.J) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
 @[simp, reassoc]
 theorem t_fst_fst (i j : 𝒰.J) : t 𝒰 f g i j ≫ pullback.fst ≫ pullback.fst = pullback.snd := by
   delta t
-  -- Porting note : copied from previous definition, otherwise `simp` wouldn't work
+  -- Porting note: copied from previous definition, otherwise `simp` wouldn't work
   haveI : HasPullback (pullback.snd ≫ 𝒰.map i ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
@@ -82,7 +82,7 @@ theorem t_fst_fst (i j : 𝒰.J) : t 𝒰 f g i j ≫ pullback.fst ≫ pullback.
 theorem t_fst_snd (i j : 𝒰.J) :
     t 𝒰 f g i j ≫ pullback.fst ≫ pullback.snd = pullback.fst ≫ pullback.snd := by
   delta t
-  -- Porting note : copied from previous definition, otherwise `simp` wouldn't work
+  -- Porting note: copied from previous definition, otherwise `simp` wouldn't work
   haveI : HasPullback (pullback.snd ≫ 𝒰.map i ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
@@ -95,7 +95,7 @@ theorem t_fst_snd (i j : 𝒰.J) :
 @[simp, reassoc]
 theorem t_snd (i j : 𝒰.J) : t 𝒰 f g i j ≫ pullback.snd = pullback.fst ≫ pullback.fst := by
   delta t
-  -- Porting note : copied from previous definition, otherwise `simp` wouldn't work
+  -- Porting note: copied from previous definition, otherwise `simp` wouldn't work
   haveI : HasPullback (pullback.snd ≫ 𝒰.map i ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
@@ -272,7 +272,7 @@ def p1 : (gluing 𝒰 f g).glued ⟶ X := by
   exact fun i => pullback.fst ≫ 𝒰.map i
   rintro ⟨i, j⟩
   change pullback.fst ≫ _ ≫ 𝒰.map i = (_ ≫ _) ≫ _ ≫ 𝒰.map j
-  -- Porting note : change `rw` to `erw`
+  -- Porting note: change `rw` to `erw`
   erw [pullback.condition]
   rw [← Category.assoc]
   congr 1
@@ -322,7 +322,7 @@ theorem gluedLiftPullbackMap_fst (i j : 𝒰.J) :
         (pullbackSymmetry _ _).hom ≫
           pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition := by
   delta gluedLiftPullbackMap
-  -- Porting note : the original set of simp lemma is not sufficient, but as this is terminal
+  -- Porting note: the original set of simp lemma is not sufficient, but as this is terminal
   -- I just let `simp` do its work
   simp
 #align algebraic_geometry.Scheme.pullback.glued_lift_pullback_map_fst AlgebraicGeometry.Scheme.Pullback.gluedLiftPullbackMap_fst
@@ -331,7 +331,7 @@ theorem gluedLiftPullbackMap_fst (i j : 𝒰.J) :
 theorem gluedLiftPullbackMap_snd (i j : 𝒰.J) :
     gluedLiftPullbackMap 𝒰 f g s i j ≫ pullback.snd = pullback.snd ≫ pullback.snd := by
   delta gluedLiftPullbackMap
-  -- Porting note : the original set of simp lemma is not sufficient, but as this is terminal
+  -- Porting note: the original set of simp lemma is not sufficient, but as this is terminal
   -- I just let `simp` do its work
   simp
 #align algebraic_geometry.Scheme.pullback.glued_lift_pullback_map_snd AlgebraicGeometry.Scheme.Pullback.gluedLiftPullbackMap_snd
@@ -378,7 +378,7 @@ theorem gluedLift_p1 : gluedLift 𝒰 f g s ≫ p1 𝒰 f g = s.fst := by
   simp_rw [← Category.assoc]
   rw [(𝒰.pullbackCover s.fst).ι_glueMorphisms]
   simp_rw [Category.assoc]
-  -- Porting note : `Category.comp_id` is no longer necessary, don't know where `𝟙 _` has gone
+  -- Porting note: `Category.comp_id` is no longer necessary, don't know where `𝟙 _` has gone
   erw [Multicoequalizer.π_desc, pullback.lift_fst_assoc, pullback.condition]
   rw [pullbackSymmetry_hom_comp_snd_assoc]
   rfl
@@ -416,7 +416,7 @@ theorem pullbackFstιToV_fst (i j : 𝒰.J) :
   delta pullbackFstιToV
   simp only [Iso.trans_hom, pullback.congrHom_hom, Category.assoc, pullback.lift_fst,
     Category.comp_id]
-  -- Porting note : `pullbackRightPullbackFstIso_hom_fst` is not used in `simp` even though
+  -- Porting note: `pullbackRightPullbackFstIso_hom_fst` is not used in `simp` even though
   -- instructed, forcing `pullbackSymmetry_hom_comp_fst` to be manually `rw`ed as well.
   erw [pullbackRightPullbackFstIso_hom_fst]
   rw [pullbackSymmetry_hom_comp_fst]
@@ -428,7 +428,7 @@ theorem pullbackFstιToV_snd (i j : 𝒰.J) :
   delta pullbackFstιToV
   simp only [Iso.trans_hom, pullback.congrHom_hom, Category.assoc, pullback.lift_snd,
     Category.comp_id]
-  -- Porting note : `pullbackRightPullbackFstIso_hom_snd` is not used in `simp` even though
+  -- Porting note: `pullbackRightPullbackFstIso_hom_snd` is not used in `simp` even though
   -- instructed, forcing `pullbackSymmetry_hom_comp_snd_assoc` to be manually `rw`ed as well.
   erw [pullbackRightPullbackFstIso_hom_snd]
   rw [pullbackSymmetry_hom_comp_snd_assoc]
@@ -453,7 +453,7 @@ theorem lift_comp_ι (i : 𝒰.J) :
     congr 1
     rw [gluing_f, gluing_t]
     apply pullback.hom_ext <;> simp_rw [Category.assoc]
-    -- Porting note : in the following two bullet points, `rfl` was not necessary
+    -- Porting note: in the following two bullet points, `rfl` was not necessary
     · rw [t_fst_fst, pullback.lift_fst, pullbackFstιToV_snd]; rfl
     · rw [t_fst_snd, pullback.lift_snd, pullbackFstιToV_fst_assoc, pullback.condition_assoc]
       erw [Multicoequalizer.π_desc]
@@ -461,7 +461,7 @@ theorem lift_comp_ι (i : 𝒰.J) :
   · rw [pullback.condition, ← Category.assoc]
     congr 1
     apply pullback.hom_ext
-    -- Porting note : in the following two bullet points, `rfl` was not necessary
+    -- Porting note: in the following two bullet points, `rfl` was not necessary
     · simp only [pullbackFstιToV_fst]; rfl
     · simp only [pullbackFstιToV_fst]; rfl
 #align algebraic_geometry.Scheme.pullback.lift_comp_ι AlgebraicGeometry.Scheme.Pullback.lift_comp_ι
@@ -668,10 +668,10 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
       (f := (pullbackSymmetry _ _).hom ≫
         (limit.isoLimitCone ⟨_, this⟩).inv ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
   · simp only [Category.comp_id, Category.id_comp, ← pullback.condition]
-    -- Porting note : `simpa` failed, but this is indeed `rfl`
+    -- Porting note: `simpa` failed, but this is indeed `rfl`
     rfl
   · simp only [Category.comp_id, Category.id_comp]
-  -- Porting note : this `IsIso` instance was `inferInstance`
+  -- Porting note: this `IsIso` instance was `inferInstance`
   · apply IsIso.comp_isIso
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 
@@ -689,7 +689,7 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
           pullback.condition.symm)
       ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
   intro i
-  -- Porting note : deviated from original proof a bit so that it won't timeout.
+  -- Porting note: deviated from original proof a bit so that it won't timeout.
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
   apply pullback.hom_ext <;> dsimp <;>
   · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
@@ -711,7 +711,7 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
     [IsOpenImmersion i₁] [IsOpenImmersion i₂] [Mono i₃] :
     IsOpenImmersion (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂) := by
   rw [pullback_map_eq_pullbackFstFstIso_inv]
-  -- Porting note : was automatic
+  -- Porting note: was automatic
   exact PresheafedSpace.IsOpenImmersion.comp _ (hg := PresheafedSpace.IsOpenImmersion.comp _ _)
 
 end AlgebraicGeometry

@@ -143,7 +143,7 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
 
 section DeleteFar
 
--- porting note: added `Fintype (Sym2 V)` argument.
+-- Porting note: added `Fintype (Sym2 V)` argument.
 variable {𝕜 : Type*} [OrderedRing 𝕜] [Fintype V] [Fintype (Sym2 V)]
   [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
 
