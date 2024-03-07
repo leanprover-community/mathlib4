@@ -215,12 +215,11 @@ def HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → �
 /-- Construct a Heyting algebra from the lattice structure and complement operator alone. -/
 @[reducible]
 def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
-    (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α :=
-  { ‹DistribLattice α›, ‹BoundedOrder α› with
-    himp := (compl · ⊔ ·),
-    compl,
-    le_himp_iff,
-    himp_bot := fun _ => sup_bot_eq }
+    (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α where
+  himp := (compl · ⊔ ·)
+  compl := compl
+  le_himp_iff := le_himp_iff
+  himp_bot _ := sup_bot_eq _
 #align heyting_algebra.of_compl HeytingAlgebra.ofCompl
 
 -- See note [reducible non-instances]
@@ -239,12 +238,11 @@ def CoheytingAlgebra.ofSDiff [DistribLattice α] [BoundedOrder α] (sdiff : α �
 /-- Construct a co-Heyting algebra from the difference and Heyting negation alone. -/
 @[reducible]
 def CoheytingAlgebra.ofHNot [DistribLattice α] [BoundedOrder α] (hnot : α → α)
-    (sdiff_le_iff : ∀ a b c, a ⊓ hnot b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α :=
-  { ‹DistribLattice α›, ‹BoundedOrder α› with
-    sdiff := fun a b => a ⊓ hnot b,
-    hnot,
-    sdiff_le_iff,
-    top_sdiff := fun _ => top_inf_eq }
+    (sdiff_le_iff : ∀ a b c, a ⊓ hnot b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α where
+  sdiff a b := a ⊓ hnot b
+  hnot := hnot
+  sdiff_le_iff := sdiff_le_iff
+  top_sdiff _ := top_inf_eq _
 #align coheyting_algebra.of_hnot CoheytingAlgebra.ofHNot
 
 section GeneralizedHeytingAlgebra
@@ -419,7 +417,7 @@ theorem himp_inf_himp_cancel (hba : b ≤ a) (hcb : c ≤ b) : (a ⇨ b) ⊓ (b 
 -- See note [lower instance priority]
 instance (priority := 100) GeneralizedHeytingAlgebra.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
-    simp_rw [@inf_comm _ _ a, ← le_himp_iff, sup_le_iff, le_himp_iff, ← sup_le_iff]; rfl
+    simp_rw [inf_comm a, ← le_himp_iff, sup_le_iff, le_himp_iff, ← sup_le_iff]; rfl
 #align generalized_heyting_algebra.to_distrib_lattice GeneralizedHeytingAlgebra.toDistribLattice
 
 instance : GeneralizedCoheytingAlgebra αᵒᵈ :=

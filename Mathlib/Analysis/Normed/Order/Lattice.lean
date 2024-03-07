@@ -100,7 +100,7 @@ theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ 
   rw [← neg_inf]
   rw [abs]
   nth_rw 1 [← neg_neg b]
-  rwa [← neg_inf, neg_le_neg_iff, @inf_comm _ _ _ b, @inf_comm _ _ _ a]
+  rwa [← neg_inf, neg_le_neg_iff, inf_comm _ b, inf_comm _ a]
 #align dual_solid dual_solid
 
 -- see Note [lower instance priority]
@@ -125,7 +125,7 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
     _ ≤ |a - c| + |b - d| := by
       apply add_le_add
       · exact abs_inf_sub_inf_le_abs _ _ _
-      · rw [@inf_comm _ _ c, @inf_comm _ _ c]
+      · rw [inf_comm c, inf_comm c]
         exact abs_inf_sub_inf_le_abs _ _ _
 #align norm_inf_sub_inf_le_add_norm norm_inf_sub_inf_le_add_norm
 
@@ -139,7 +139,7 @@ theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ �
     _ ≤ |a - c| + |b - d| := by
       apply add_le_add
       · exact abs_sup_sub_sup_le_abs _ _ _
-      · rw [@sup_comm _ _ c, @sup_comm _ _ c]
+      · rw [sup_comm c, sup_comm c]
         exact abs_sup_sub_sup_le_abs _ _ _
 #align norm_sup_sub_sup_le_add_norm norm_sup_sub_sup_le_add_norm
 

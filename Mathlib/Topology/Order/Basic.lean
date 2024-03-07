@@ -1095,7 +1095,7 @@ variable {l : Filter β} {f g : β → α}
 
 theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
   simp only [nhds_eq_order, abs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
-  refine (congr_arg₂ _ ?_ ?_).trans inf_comm
+  refine (congr_arg₂ _ ?_ ?_).trans (inf_comm ..)
   · refine (Equiv.subLeft a).iInf_congr fun x => ?_; simp [Ioi]
   · refine (Equiv.subRight a).iInf_congr fun x => ?_; simp [Iio]
 #align nhds_eq_infi_abs_sub nhds_eq_iInf_abs_sub
