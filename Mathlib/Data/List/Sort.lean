@@ -241,6 +241,17 @@ theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
   orderedInsert_eq_take_drop r a _
 #align list.insertion_sort_cons_eq_take_drop List.insertionSort_cons_eq_take_drop
 
+@[simp]
+theorem mem_orderedInsert {a b : α} {l : List α} :
+    a ∈ orderedInsert r b l ↔ a = b ∨ a ∈ l :=
+  match l with
+  | [] => by simp [orderedInsert]
+  | x :: xs => by
+    rw [orderedInsert]
+    split_ifs
+    · simp [orderedInsert]
+    · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
+
 section Correctness
 
 open Perm
@@ -334,7 +345,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
-      cases' show b' = a ∨ b' ∈ l by simpa using (perm_orderedInsert _ _ _).subset bm with be bm
+      cases' (mem_orderedInsert r).mp bm with be bm
       · subst b'
         exact (total_of r _ _).resolve_left h'
       · exact rel_of_sorted_cons h _ bm
