@@ -904,7 +904,7 @@ theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * 
 end Hyperreal
 
 /-
-Porting note: todo: restore `positivity` plugin
+Porting note (#11215): TODO: restore `positivity` plugin
 
 namespace Tactic
 

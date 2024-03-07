@@ -237,7 +237,7 @@ theorem IsCompact.disjoint_nhdsSet_right {l : Filter X} (hs : IsCompact s) :
   simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
 #align is_compact.disjoint_nhds_set_right IsCompact.disjoint_nhdsSet_right
 
--- Porting note: todo: reformulate using `Disjoint`
+-- Porting note (#11215): TODO: reformulate using `Disjoint`
 /-- For every directed family of closed sets whose intersection avoids a compact set,
 there exists a single element of the family which itself avoids this compact set. -/
 theorem IsCompact.elim_directed_family_closed {ι : Type v} [hι : Nonempty ι] (hs : IsCompact s)
@@ -254,7 +254,7 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [hι : Nonempty ι] 
       mem_inter_iff, not_and, iff_self_iff, mem_iInter, mem_compl_iff] using ht⟩
 #align is_compact.elim_directed_family_closed IsCompact.elim_directed_family_closed
 
--- Porting note: todo: reformulate using `Disjoint`
+-- Porting note (#11215): TODO: reformulate using `Disjoint`
 /-- For every family of closed sets whose intersection avoids a compact set,
 there exists a finite subfamily whose intersection avoids this compact set. -/
 theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
@@ -360,7 +360,7 @@ theorem isCompact_of_finite_subcover
   simpa only [compl_compl]
 #align is_compact_of_finite_subcover isCompact_of_finite_subcover
 
--- Porting note: todo: reformulate using `Disjoint`
+-- Porting note (#11215): TODO: reformulate using `Disjoint`
 /-- A set `s` is compact if for every family of closed sets whose intersection avoids `s`,
 there exists a finite subfamily whose intersection avoids `s`. -/
 theorem isCompact_of_finite_subfamily_closed
@@ -503,7 +503,7 @@ protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a 
   isCompact_singleton.union hs
 #align is_compact.insert IsCompact.insert
 
--- Porting note: todo: reformulate using `𝓝ˢ`
+-- Porting note (#11215): TODO: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
 not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/

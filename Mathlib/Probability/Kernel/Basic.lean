@@ -133,7 +133,7 @@ class IsFiniteKernel (κ : kernel α β) : Prop where
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
 for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.kernel.measure_le_bound κ a s`).
 
-Porting note: TODO: does it make sense to make `ProbabilityTheory.IsFiniteKernel.bound` the least
+Porting note (#11215): TODO: does it make sense to make `ProbabilityTheory.IsFiniteKernel.bound` the least
 possible bound? Should it be an `NNReal` number? -/
 noncomputable def IsFiniteKernel.bound (κ : kernel α β) [h : IsFiniteKernel κ] : ℝ≥0∞ :=
   h.exists_univ_le.choose
