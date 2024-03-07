@@ -1,6 +1,5 @@
 import Mathlib.Topology.GMetric.Basic
 
-namespace GIsometry
 open GMetric
 
 variable {α₁ α₂ γ :Type*} [CompleteLinearOrder γ] [AddCommMonoid γ]
