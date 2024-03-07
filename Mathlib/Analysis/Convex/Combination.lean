@@ -28,7 +28,8 @@ lemmas unconditional on the sum of the weights being `1`.
 
 open Set Function
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open BigOperators Pointwise
 
 universe u u'
 

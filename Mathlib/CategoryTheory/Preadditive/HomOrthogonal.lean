@@ -38,7 +38,8 @@ This is preliminary to defining semisimple categories.
 -/
 
 
-open Classical Matrix CategoryTheory.Limits
+open scoped Classical
+open Matrix CategoryTheory.Limits
 
 universe v u
 

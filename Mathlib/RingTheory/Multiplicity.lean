@@ -333,7 +333,7 @@ theorem unit_right {a : α} (ha : ¬IsUnit a) (u : αˣ) : multiplicity a u = 0 
   isUnit_right ha u.isUnit
 #align multiplicity.unit_right multiplicity.unit_right
 
-open Classical
+open scoped Classical
 
 theorem multiplicity_le_multiplicity_of_dvd_left {a b c : α} (hdvd : a ∣ b) :
     multiplicity b c ≤ multiplicity a c :=
@@ -577,7 +577,7 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
   rw [← PartENat.natCast_inj, PartENat.natCast_get, eq_coe_iff]; exact ⟨hdiv, hsucc⟩
 #align multiplicity.mul' multiplicity.mul'
 
-open Classical
+open scoped Classical
 
 protected theorem mul {p a b : α} (hp : Prime p) :
     multiplicity p (a * b) = multiplicity p a + multiplicity p b :=
