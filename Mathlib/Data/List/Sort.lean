@@ -297,7 +297,7 @@ theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List �
   simp [refl x] at h
 
 /-- Inserting then erasing an element that is absent is the identity. -/
-theorem erase_orderedInsert_of_nmem [DecidableEq α]
+theorem erase_orderedInsert_of_not_mem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
   rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
