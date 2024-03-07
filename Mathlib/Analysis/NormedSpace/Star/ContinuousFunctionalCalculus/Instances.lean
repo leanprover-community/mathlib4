@@ -37,22 +37,25 @@ instance IsStarNormal.cfc_map {R A : Type*} {p : A → Prop} [CommSemiring R] [S
     · rw [← cfc_star, ← cfc_mul .., ← cfc_mul ..]
       congr! 2
       exact mul_comm _ _
-    · simp [cfc_apply_of_not' a h]
+    · simp [cfc_apply_of_not_continuousOn a h]
 
 variable {A : Type*} [NormedRing A] [StarRing A] [CstarRing A] [CompleteSpace A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 
 instance IsStarNormal.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) where
-  toStarAlgHom {a} ha := (elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a
-  hom_closedEmbedding {a} ha := Isometry.closedEmbedding <|
-    isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
-  hom_id {a} ha := congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
-  hom_map_spectrum {a} ha f := by
-    simp only [StarAlgHom.comp_apply, StarAlgHom.coe_coe, StarSubalgebra.coe_subtype]
-    rw [← StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a),
-      AlgEquiv.spectrum_eq (continuousFunctionalCalculus a), ContinuousMap.spectrum_eq_range]
-  predicate_hom {a} ha f := ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
+  exists_cfc_of_predicate a ha := by
+    refine ⟨(elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a,
+      ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
+    case hom_closedEmbedding => exact Isometry.closedEmbedding <|
+      isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+    case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
+    case hom_map_spectrum =>
+      intro f
+      simp only [StarAlgHom.comp_apply, StarAlgHom.coe_coe, StarSubalgebra.coe_subtype]
+      rw [← StarSubalgebra.spectrum_eq (elementalStarAlgebra.isClosed ℂ a),
+        AlgEquiv.spectrum_eq (continuousFunctionalCalculus a), ContinuousMap.spectrum_eq_range]
+    case predicate_hom => exact fun f ↦ ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
 
 lemma IsSelfAdjoint.spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
     SpectrumRestricts a Complex.reCLM where
@@ -131,8 +134,7 @@ lemma SpectrumRestricts.nnreal_add {a b : A} (ha₁ : IsSelfAdjoint a)
     map_add, add_sub_add_comm]
   refine nnnorm_add_le _ _ |>.trans ?_
   gcongr
-  all_goals rw [← SpectrumRestricts.nnreal_iff_nnnorm]
-  all_goals first | rfl | assumption
+  all_goals rw [← SpectrumRestricts.nnreal_iff_nnnorm] <;> first | rfl | assumption
 
 
 lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
@@ -176,7 +178,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   let a_neg : A := cfc a (fun x ↦ (- ContinuousMap.id ℝ ⊔ 0) x)
   set c := b * a_neg
   have h_eq_a_neg : - (star c * c) = a_neg ^ 3 := by
-    simp (config := { zeta := false }) only [c, a_neg, star_mul]
+    simp only [c, a_neg, star_mul]
     rw [← mul_assoc, mul_assoc _ _ b, ← cfc_star, ← cfc_id' ℝ (star b * b), a_def, ← neg_mul]
     rw [← cfc_mul (star b * b) _ _ (by simp; fun_prop), neg_mul]
     simp only [ContinuousMap.coe_neg, ContinuousMap.coe_id, Pi.sup_apply, Pi.neg_apply,
@@ -191,7 +193,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
       simp [sup_eq_right.mpr hx.le]
   have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by
     simp only [SpectrumRestricts.nnreal_iff, h_eq_a_neg]
-    rw [← cfc_pow _ _ _]
+    rw [← cfc_pow _ _ _ (.star_mul_self b)]
     simp only [cfc_map_spectrum (R := ℝ) (star b * b) (fun x => (-ContinuousMap.id ℝ ⊔ 0) x ^ 3)]
     rintro - ⟨x, -, rfl⟩
     simp
@@ -213,17 +215,15 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
       Set.mem_insert_iff] at hx
     obtain (rfl | hx) := hx
     exacts [le_rfl, h_c_spec₁ x hx]
-  have bar := h_c_spec₂.eq_zero_of_neg (.star_mul_self c) h_c_spec₀
-  rw [bar, neg_zero] at h_eq_a_neg
-  simp (config := {zeta := false}) only [a_neg] at h_eq_a_neg
-  rw [← cfc_pow .., ← cfc_zero a (R := ℝ)] at h_eq_a_neg
-  have baz := eqOn_of_cfc_eq (star b * b) h_eq_a_neg
+  rw [h_c_spec₂.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero] at h_eq_a_neg
+  simp only [a_neg] at h_eq_a_neg
+  rw [← cfc_pow _ _ _ (by aesop (add simp a)), ← cfc_zero a (R := ℝ)] at h_eq_a_neg
   intro x hx
-  specialize baz hx
   by_contra! hx'
   rw [← neg_pos] at hx'
-  simp [sup_eq_left.mpr hx'.le] at baz
-  exact (pow_pos hx' 3).ne baz
+  apply (pow_pos hx' 3).ne
+  have h_eqOn := eqOn_of_cfc_eq_cfc (star b * b) h_eq_a_neg
+  simpa [sup_eq_left.mpr hx'.le] using h_eqOn hx
 
 end SpectrumRestricts
 
@@ -241,9 +241,7 @@ lemma nonneg_iff_isSelfAdjoint_and_spectrumRestricts {a : A} :
     induction ha using AddSubmonoid.closure_induction' with
     | Hs x hx =>
       obtain ⟨b, rfl⟩ := hx
-      simp only
-      refine ⟨IsSelfAdjoint.star_mul_self b, ?_⟩
-      exact spectrum_star_mul_self_nonneg
+      exact ⟨IsSelfAdjoint.star_mul_self b, spectrum_star_mul_self_nonneg⟩
     | H1 =>
       nontriviality A
       simp
