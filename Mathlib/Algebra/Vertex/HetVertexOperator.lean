@@ -208,4 +208,3 @@ def ResRight.linearMap : HetVertexOperator (Γ ×ₗ ℤ) R V W →ₗ[R] HetVer
 
 
 end VertexAlg
-#lint
