@@ -578,7 +578,8 @@ theorem factors_pow_count_prod {x : α} (hx : x ≠ 0) :
   _ ~ᵤ x := factors_prod hx
 
 open Ideal in
-  /-- If an integral domain R is a UFD, then every nonzero prime ideal contains a prime element. -/
+  /-- If an integral domain is a `UniqueFactorizationMonoid`, then every nonzero prime ideal
+  contains a prime element. -/
 theorem IsPrime.exists_mem_Prime_of_neq_bot {R : Type*} [CommSemiring R] [IsDomain R]
     [DecidableEq R] [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
     ∃ x ∈ I, Prime x := by
