@@ -40,18 +40,17 @@ In Mathlib, the quasispectrum is the domain of the continuous functions associat
   `Quasiregular R`, i.e., there is some `u : (Quasiregular R)ˣ` such that `u.val` is identified with
   `x` (via the natural equivalence between `R` and `Quasiregular R`).
 + `quasispectrum R a`: in an algebra over the semifield `R`, this is the set
-  `{ r : R | r = 0 ∨ ¬ IsQuasiregular (-(r⁻¹ • a)) }`, which should be thought of as a version of
-  the `spectrum` which is applicable in non-unital algebras.
+  `{r : R | (hr : IsUnit r) → ¬ IsQuasiregular (-(hr.unit⁻¹ • a))}`, which should be thought of
+  as a version of the `spectrum` which is applicable in non-unital algebras.
 
 ## Main theorems
 
 + `isQuasiregular_iff_isUnit`: in a unital ring, `x` is quasiregular if and only if `1 + x` is
   a unit.
-+ `quasispectrum_eq_spectrum_union`: in a unital `R`-algebra `A`, the quasispectrum of `a : A`
-  is just the `spectrum` with zero added.
++ `quasispectrum_eq_spectrum_union_zero`: in a unital algebra `A` over a semifield `R`, the
+  quasispectrum of `a : A` is the `spectrum` with zero added.
 + `Unitization.isQuasiregular_inr_iff`: `a : A` is quasiregular if and only if it is quasiregular
   in `Unitization R A` (via the coercion `Unitization.inr`).
-
 -/
 
 /-- A type synonym for non-unital rings where an alternative monoid structure is introduced.
@@ -185,7 +184,7 @@ lemma isQuasiregular_iff {x : R} :
     IsQuasiregular x ↔ ∃ y, y + x + x * y = 0 ∧ x + y + y * x = 0 := by
   constructor
   · rintro ⟨u, rfl⟩
-    exact ⟨equiv.symm u⁻¹.val, ⟨congr(equiv.symm $(u.mul_inv)), congr(equiv.symm $(u.inv_mul))⟩⟩
+    exact ⟨equiv.symm u⁻¹.val, by simp⟩
   · rintro ⟨y, hy₁, hy₂⟩
     refine ⟨⟨equiv x, equiv y, ?_, ?_⟩, rfl⟩
     all_goals
@@ -201,7 +200,7 @@ lemma IsQuasiregular.map {F R S : Type*} [NonUnitalSemiring R] [NonUnitalSemirin
   obtain ⟨y, hy₁, hy₂⟩ := hx
   exact ⟨f y, by simpa using And.intro congr(f $(hy₁)) congr(f $(hy₂))⟩
 
-lemma IsQuasiregular.isUnit_one_add_self {R : Type*} [Semiring R] {x : R} (hx : IsQuasiregular x) :
+lemma IsQuasiregular.isUnit_one_add {R : Type*} [Semiring R] {x : R} (hx : IsQuasiregular x) :
     IsUnit (1 + x) := by
   obtain ⟨y, hy₁, hy₂⟩ := isQuasiregular_iff.mp hx
   refine ⟨⟨1 + x, 1 + y, ?_, ?_⟩, rfl⟩
@@ -210,7 +209,7 @@ lemma IsQuasiregular.isUnit_one_add_self {R : Type*} [Semiring R] {x : R} (hx : 
 
 lemma isQuasiregular_iff_isUnit {R : Type*} [Ring R] {x : R} :
     IsQuasiregular x ↔ IsUnit (1 + x) := by
-  refine ⟨IsQuasiregular.isUnit_one_add_self, fun hx ↦ ?_⟩
+  refine ⟨IsQuasiregular.isUnit_one_add, fun hx ↦ ?_⟩
   rw [isQuasiregular_iff]
   use hx.unit⁻¹ - 1
   constructor
@@ -232,9 +231,6 @@ lemma isQuasiregular_iff_isUnit' (R : Type*) {A : Type*} [CommSemiring R] [NonUn
 
 variable (R : Type*) {A : Type*} [CommSemiring R] [NonUnitalRing A]
   [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-
---/-- If `A` is a non-unital `R`-algebra, the `R`-quasispectrum of `a : A` consists of ....-/
---def quasispectrum' (a : A) : Set R := { r : R | r = 0 ∨ ¬ IsQuasiregular (-(↑r⁻¹ • a)) }
 
 /-- If `A` is a non-unital `R`-algebra, the `R`-quasispectrum of `a : A` consists of ....-/
 def quasispectrum (a : A) : Set R :=
