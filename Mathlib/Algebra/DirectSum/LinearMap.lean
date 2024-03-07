@@ -41,6 +41,9 @@ lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} 
 
 variable [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
 
+/-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
+
+See also `LinearMap.trace_restrict_eq_sum_trace_restrict`. -/
 lemma trace_eq_sum_trace_restrict [Fintype ι]
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     trace R M f = ∑ i, trace R (N i) (f.restrict (hf i)) := by
@@ -85,5 +88,31 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
     restrict_commute h_comm.symm _ _
   rw [restrict_comp, trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm
     (f.isNilpotent_restrict_iSup_sub_algebraMap μ), hg, mul_zero]
+
+lemma mapsTo_biSup_of_mapsTo (s : Set ι) {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i)) :
+    MapsTo f ↑(⨆ i ∈ s, N i) ↑(⨆ i ∈ s, N i) := by
+  replace hf : ∀ i, (N i).map f ≤ N i := fun i ↦ Submodule.map_le_iff_le_comap.mpr (hf i)
+  suffices (⨆ i ∈ s, N i).map f ≤ ⨆ i ∈ s, N i from Submodule.map_le_iff_le_comap.mp this
+  simpa only [Submodule.map_iSup] using iSup₂_mono <| fun i _ ↦ hf i
+
+/-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
+
+Note that it is important the statement gives the user definitional control over `p` since the
+_type_ of the term `trace R p (f.restrict hp')` depends on `p`. -/
+lemma trace_eq_sum_trace_restrict_of_eq_biSup
+    (s : Finset ι) (h : CompleteLattice.Independent <| fun i : s ↦ N i)
+    {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i))
+    (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i)
+    (hp' : MapsTo f p p := hp ▸ mapsTo_biSup_of_mapsTo (s : Set ι) hf) :
+    trace R p (f.restrict hp') = ∑ i in s, trace R (N i) (f.restrict (hf i)) := by
+  let N' : s → Submodule R p := fun i ↦ (N i).comap p.subtype
+  replace h : IsInternal N' := hp ▸ isInternal_biSup_submodule_of_independent (s : Set ι) h
+  have hf' : ∀ i, MapsTo (restrict f hp') (N' i) (N' i) := fun i x hx' ↦ by simpa using hf i hx'
+  let e : (i : s) → N' i ≃ₗ[R] N i := fun ⟨i, hi⟩ ↦ (N i).comapSubtypeEquivOfLe (hp ▸ le_biSup N hi)
+  have _i1 : ∀ i, Module.Finite R (N' i) := fun i ↦ Module.Finite.equiv (e i).symm
+  have _i2 : ∀ i, Module.Free R (N' i) := fun i ↦ Module.Free.of_equiv (e i).symm
+  rw [trace_eq_sum_trace_restrict h hf', ← s.sum_coe_sort]
+  have : ∀ i : s, f.restrict (hf i) = (e i).conj ((f.restrict hp').restrict (hf' i)) := fun _ ↦ rfl
+  exact Finset.sum_congr rfl <| by simp [this]
 
 end LinearMap

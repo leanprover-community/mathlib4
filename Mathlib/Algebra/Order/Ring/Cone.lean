@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Cone
 import Mathlib.Algebra.Order.Ring.Defs
 
 #align_import algebra.order.ring.cone from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
@@ -64,7 +65,7 @@ def StrictOrderedRing.mkOfPositiveCone (C : PositiveCone α) : StrictOrderedRing
       simp,
     mul_pos := fun x y xp yp => by
       change C.pos (x * y - 0)
-      -- porting note: used to be convert, but it relied on unfolding definitions
+      -- Porting note: used to be convert, but it relied on unfolding definitions
       rw [sub_zero]
       exact C.mul_pos x y (by rwa [← sub_zero x]) (by rwa [← sub_zero y]) }
 #align strict_ordered_ring.mk_of_positive_cone StrictOrderedRing.mkOfPositiveCone
