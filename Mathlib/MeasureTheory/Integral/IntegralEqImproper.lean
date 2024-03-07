@@ -1082,6 +1082,8 @@ theorem integral_mul_deriv_eq_deriv_mul
   rw [eq_sub_iff_add_eq, ← integral_add huv' hu'v]
   simpa only [add_comm] using integral_deriv_mul_eq_sub hu hv (hu'v.add huv') h_bot h_top
 
+-- TODO: also apply `Tendsto _ (𝓝[>] a) (𝓝 a')` generalization to
+-- `integral_Ioi_of_hasDerivAt_of_tendsto` and `integral_Iic_of_hasDerivAt_of_tendsto`
 /-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
 theorem integral_Ioi_deriv_mul_eq_sub
     (hu : ∀ x ∈ Ioi a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Ioi a, HasDerivAt v (v' x) x)
