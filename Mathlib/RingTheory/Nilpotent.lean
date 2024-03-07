@@ -163,7 +163,7 @@ noncomputable def nilpotencyClass : ℕ := sInf {k | x ^ k = 0}
 @[simp] lemma nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
     nilpotencyClass x = 0 := by
   let s : Set ℕ := {k | x ^ k = 0}
-  suffices s = univ by change sInf _ = 0; simp [this]
+  suffices s = univ by change sInf _ = 0; simp [s] at this; simp [this]
   exact eq_univ_iff_forall.mpr fun k ↦ Subsingleton.elim _ _
 
 lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :
@@ -187,7 +187,7 @@ lemma nilpotencyClass_eq_succ_iff {k : ℕ} :
     nilpotencyClass x = k + 1 ↔ x ^ (k + 1) = 0 ∧ x ^ k ≠ 0 := by
   let s : Set ℕ := {k | x ^ k = 0}
   have : ∀ k₁ k₂ : ℕ, k₁ ≤ k₂ → k₁ ∈ s → k₂ ∈ s := fun k₁ k₂ h_le hk₁ ↦ pow_eq_zero_of_le h_le hk₁
-  simp [nilpotencyClass, Nat.sInf_upward_closed_eq_succ_iff this]
+  simp [s, nilpotencyClass, Nat.sInf_upward_closed_eq_succ_iff this]
 
 @[simp] lemma nilpotencyClass_zero [Nontrivial R] :
     nilpotencyClass (0 : R) = 1 :=
@@ -291,9 +291,7 @@ theorem isRadical_iff_span_singleton [CommSemiring R] :
 
 theorem isRadical_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :
     IsRadical y ↔ ∀ x, y ∣ x ^ k → y ∣ x :=
-  ⟨fun h x => h k x, fun h =>
-    k.cauchy_induction_mul (fun n h x hd => h x <| (pow_succ' x n).symm ▸ hd.mul_right x) 0 hk
-      (fun x hd => pow_one x ▸ hd) fun n _ hn x hd => h x <| hn _ <| (pow_mul x k n).subst hd⟩
+  ⟨(· k), k.pow_imp_self_of_one_lt hk _ fun _ _ h ↦ .inl (dvd_mul_of_dvd_left h _)⟩
 #align is_radical_iff_pow_one_lt isRadical_iff_pow_one_lt
 
 theorem isReduced_iff_pow_one_lt [MonoidWithZero R] (k : ℕ) (hk : 1 < k) :

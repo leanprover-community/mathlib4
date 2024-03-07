@@ -3,13 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Algebra.Module.MinimalAxioms
+import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -24,7 +23,8 @@ the uniform distance.
 
 noncomputable section
 
-open Topology Bornology Classical NNReal uniformity UniformConvergence
+open scoped Classical
+open Topology Bornology NNReal uniformity UniformConvergence
 
 open Set Filter Metric Function
 
@@ -358,7 +358,7 @@ instance [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         dist (F x) (F y) ≤ dist (f 0 x) (f 0 y) + (dist (f 0 x) (F x) + dist (f 0 y) (F y)) :=
           dist_triangle4_left _ _ _ _
         _ ≤ C + (b 0 + b 0) := add_le_add (hC _ _) (add_le_add (fF_bdd _ _) (fF_bdd _ _))
-                               -- porting note: was --by mono*
+                               -- Porting note: was --by mono*
     · -- Check that `F` is close to `f N` in distance terms
       refine' tendsto_iff_dist_tendsto_zero.2 (squeeze_zero (fun _ => dist_nonneg) _ b_lim)
       exact fun N => (dist_le (b0 _)).2 fun x => fF_bdd x N
@@ -1311,13 +1311,13 @@ instance ring : Ring (α →ᵇ R) :=
     coe_intCast
 
 instance : SeminormedRing (α →ᵇ R) :=
-  { show Ring (α →ᵇ R) from inferInstance,  -- porting note: this was not present in the original
+  { show Ring (α →ᵇ R) from inferInstance,  -- Porting note: this was not present in the original
     BoundedContinuousFunction.nonUnitalSeminormedRing with }
 
 end Seminormed
 
 instance [NormedRing R] : NormedRing (α →ᵇ R) :=
-  { show Ring (α →ᵇ R) from inferInstance,  -- porting note: this was not present in the original
+  { show Ring (α →ᵇ R) from inferInstance,  -- Porting note: this was not present in the original
     BoundedContinuousFunction.nonUnitalNormedRing with }
 
 end NormedRing
@@ -1378,7 +1378,7 @@ def C : 𝕜 →+* α →ᵇ γ where
 set_option linter.uppercaseLean3 false in
 #align bounded_continuous_function.C BoundedContinuousFunction.C
 
--- porting note: named this instance, to use it in `instance : NormedAlgebra 𝕜 (α →ᵇ γ)`
+-- Porting note: named this instance, to use it in `instance : NormedAlgebra 𝕜 (α →ᵇ γ)`
 instance algebra : Algebra 𝕜 (α →ᵇ γ) :=
   { BoundedContinuousFunction.module,
     BoundedContinuousFunction.ring (α := α) (R := γ) with
@@ -1393,7 +1393,7 @@ theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k 
   rfl
 #align bounded_continuous_function.algebra_map_apply BoundedContinuousFunction.algebraMap_apply
 
--- porting note: `show Algebra` was not present in the original
+-- Porting note: `show Algebra` was not present in the original
 instance : NormedAlgebra 𝕜 (α →ᵇ γ) :=
   { show Algebra 𝕜 (α →ᵇ γ) from inferInstance,
     BoundedContinuousFunction.normedSpace with }

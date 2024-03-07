@@ -24,7 +24,8 @@ derivative
 
 universe u v w
 
-open Classical Topology BigOperators Filter
+open scoped Classical
+open Topology BigOperators Filter
 
 open Filter Asymptotics Set
 
@@ -115,4 +116,3 @@ theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x => φ x i) x) :
 #align deriv_pi deriv_pi
 
 end Pi
-

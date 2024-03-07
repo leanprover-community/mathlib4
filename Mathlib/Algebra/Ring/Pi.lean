@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import algebra.ring.pi from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
@@ -169,6 +170,10 @@ def Pi.evalRingHom (f : I → Type v) [∀ i, NonAssocSemiring (f i)] (i : I) : 
   { Pi.evalMonoidHom f i, Pi.evalAddMonoidHom f i with }
 #align pi.eval_ring_hom Pi.evalRingHom
 #align pi.eval_ring_hom_apply Pi.evalRingHom_apply
+
+instance (f : I → Type*) [∀ i, Semiring (f i)] (i) :
+    RingHomSurjective (Pi.evalRingHom f i) where
+  is_surjective x := ⟨by classical exact (if h : · = i then h ▸ x else 0), by simp⟩
 
 /-- `Function.const` as a `RingHom`. -/
 @[simps]

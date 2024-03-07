@@ -248,7 +248,7 @@ theorem restrict_inj {x₁ x₂ : FamilyOfElements P (generate R)} (t₁ : x₁.
     (t₂ : x₂.Compatible) : x₁.restrict (le_generate R) = x₂.restrict (le_generate R) → x₁ = x₂ :=
   fun h => by
   rw [← extend_restrict t₁, ← extend_restrict t₂]
-  -- porting note: congr fails to make progress
+  -- Porting note: congr fails to make progress
   apply congr_arg
   exact h
 #align category_theory.presieve.restrict_inj CategoryTheory.Presieve.restrict_inj
@@ -659,7 +659,7 @@ theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') : IsSheafFor P R
   use i.hom.app _ t
   fconstructor
   · convert FamilyOfElements.IsAmalgamation.compPresheafMap i.hom ht1
-    simp
+    simp [x']
   · intro y hy
     rw [show y = (i.inv.app (op X) ≫ i.hom.app (op X)) y by simp]
     simp [ht2 (i.inv.app _ y) (FamilyOfElements.IsAmalgamation.compPresheafMap i.inv hy)]
