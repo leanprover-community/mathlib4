@@ -222,19 +222,16 @@ variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
 
 /-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
 then the restriction of scalars is a `R'`-`S'` bilinear map.-/
+@[simps!]
 def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
   LinearMap.mk₂' R' S'
     (fun x y ↦ B x y)
-    (fun _ _ _ ↦ B.map_add₂ _ _ _)
-    (fun r' m n ↦ by
+    B.map_add₂
+    (fun r' m _ ↦ by
       dsimp only
       rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
-    (fun x ↦ map_add (B x))
+    (fun _ ↦ map_add _)
     (fun _ x ↦ (B x).map_smul_of_tower _)
-
-@[simp]
-theorem restrictScalars₁₂_apply (B : M →ₗ[R] N →ₗ[S] Pₗ) (x : M) (y : N) :
-    B.restrictScalars₁₂ R' S' x y = B x y := rfl
 
 theorem restrictScalars₁₂_injective : Function.Injective
     (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
