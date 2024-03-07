@@ -954,6 +954,10 @@ theorem subset_inter_iff {s t r : Set α} : r ⊆ s ∩ t ↔ r ⊆ s ∧ r ⊆ 
 @[simp] lemma inter_eq_right : s ∩ t = t ↔ t ⊆ s := inf_eq_right
 #align set.inter_eq_right_iff_subset Set.inter_eq_right
 
+@[simp] lemma left_eq_inter : s = s ∩ t ↔ s ⊆ t := left_eq_inf
+
+@[simp] lemma right_eq_inter : t = s ∩ t ↔ t ⊆ s := right_eq_inf
+
 theorem inter_eq_self_of_subset_left {s t : Set α} : s ⊆ t → s ∩ t = s :=
   inter_eq_left.mpr
 #align set.inter_eq_self_of_subset_left Set.inter_eq_self_of_subset_left
