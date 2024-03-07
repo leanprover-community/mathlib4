@@ -73,7 +73,7 @@ theorem IsLindelof.induction_on (hs : IsLindelof s) {p : Set X → Prop}
     (hcountable_union : ∀ (S : Set (Set X)), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
     (hnhds : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, p t) : p s := by
   let f : Filter X := ofCountableUnion p hcountable_union (fun t ht _ hsub ↦ hmono hsub ht)
-  have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa using hnhds)
+  have : sᶜ ∈ f := hs.compl_mem_sets_of_nhdsWithin (by simpa [f] using hnhds)
   rwa [← compl_compl s]
 
 /-- The intersection of a Lindelöf set and a closed set is a Lindelöf set. -/
@@ -206,9 +206,9 @@ theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelo
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
     ∃ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i) = ∅ := by
   let U := tᶜ
-  have hUo : ∀ i, IsOpen (U i) := by simp only [Pi.compl_apply, isOpen_compl_iff]; exact htc
+  have hUo : ∀ i, IsOpen (U i) := by simp only [U, Pi.compl_apply, isOpen_compl_iff]; exact htc
   have hsU : s ⊆ ⋃ i, U i := by
-    simp only [Pi.compl_apply]
+    simp only [U, Pi.compl_apply]
     rw [← compl_iInter]
     apply disjoint_compl_left_iff_subset.mp
     simp only [compl_iInter, compl_iUnion, compl_compl]
@@ -217,7 +217,7 @@ theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelo
   rcases hs.elim_countable_subcover U hUo hsU with ⟨u, ⟨hucount, husub⟩⟩
   use u, hucount
   rw [← disjoint_compl_left_iff_subset] at husub
-  simp only [Pi.compl_apply, compl_iUnion, compl_compl] at husub
+  simp only [U, Pi.compl_apply, compl_iUnion, compl_compl] at husub
   exact disjoint_iff_inter_eq_empty.mp (Disjoint.symm husub)
 
 /--To show that a Lindelöf set intersects the intersection of a family of closed sets,
@@ -720,7 +720,7 @@ instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMet
       intro z
       have : IsOpen (U z) := Metric.isOpen_ball
       refine IsOpen.mem_nhds this ?hx
-      simp_all only [gt_iff_lt, Metric.mem_ball, dist_self, zero_lt_two, mul_pos_iff_of_pos_left]
+      simp_all only [U, gt_iff_lt, Metric.mem_ball, dist_self, zero_lt_two, mul_pos_iff_of_pos_left]
     have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
     refine ⟨t, hct, ?_⟩
     intro z
