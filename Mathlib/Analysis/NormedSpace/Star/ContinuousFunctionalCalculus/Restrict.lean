@@ -57,9 +57,10 @@ variable [CommSemiring S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [
 variable [TopologicalSpace A] [Ring A] [StarRing A] [Algebra S A] [ContinuousFunctionalCalculus S q]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 
-/-- Given a `ContinuousFunctionalCalculus S q`. If we form the predicate `p` for characterized by
-`q a` and the spectrum of `a` restricts to the scalar subring `R` via `f : C(S, R)`, then we can
-get a restricted functional calculus `ContinuousFunctionalCalculus R p`. -/
+/-- Given a `ContinuousFunctionalCalculus S q`. If we form the predicate `p` for `a : A`
+characterized by: `q a` and the spectrum of `a` restricts to the scalar subring `R` via
+`f : C(S, R)`, then we can get a restricted functional calculus
+`ContinuousFunctionalCalculus R p`. -/
 protected theorem cfc [CompleteSpace R] (f : C(S, R)) (h_isom : Isometry (algebraMap R S))
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) (h_cpct : ∀ a, q a → CompactSpace (spectrum S a)) :
     ContinuousFunctionalCalculus R p where
