@@ -26,9 +26,9 @@ We loosly follow the proof from [Echenique2005].
   the greatest fixed point of a bundled monotone function.
 
 ## Main theorems
-* `OrdinalApprox.lfp_is_lfpApprox`: The approximation of
+* `OrdinalApprox.lfpApprox_is_lfp`: The approximation of
   the least fixed point eventually reaches the least fixed point
-* `OrdinalApprox.gfp_is_gfpApprox`: The approximation of
+* `OrdinalApprox.gfpApprox_is_gfp`: The approximation of
   the greatest fixed point eventually reaches the greatest fixed point
 
 ## References
@@ -61,7 +61,7 @@ theorem not_injective_limitation : ¬ Injective (limitation g) := by
       #{ i : Ordinal // i < (ord <| succ #α) } = lift.{u+1, u} (succ #α) := by
     simpa only [card_typein, Set.coe_setOf, card_ord] using mk_initialSeg (ord <| succ #α)
   rw[mk_initialSeg_subtype, Cardinal.lift_lift, Cardinal.lift_le] at h₁
-  have h₂ := not_le_of_lt (Cardinal.succ_lt #α)
+  have h₂ := not_le_of_lt (Order.lt_succ #α)
   exact h₂ h₁
 
 end Cardinal

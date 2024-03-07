@@ -830,14 +830,6 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
     _ ≤ #β := (f.optionElim b hb).cardinal_le
 #align cardinal.add_one_le_succ Cardinal.add_one_le_succ
 
-theorem not_isMax (ℵ : Cardinal) : ¬ IsMax ℵ := by
-  intro h
-  unfold IsMax at h
-  specialize h (cantor ℵ).le
-  exact not_lt_of_le h (cantor ℵ)
-
-theorem succ_lt (ℵ : Cardinal) : ℵ < succ ℵ := Order.lt_succ_of_not_isMax (not_isMax ℵ)
-
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
 
