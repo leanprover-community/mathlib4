@@ -49,27 +49,25 @@ def Mor₁.toList : Mor₁ → List Atom₁
 
 /-- Returns `𝟙_ C` if the expression `e` is of the form `𝟙_ C`. -/
 def isTensorUnit? (e : Expr) : MetaM (Option Expr) := do
-  let v ← mkFreshLevelMVar
-  let u ← mkFreshLevelMVar
   let C ← mkFreshExprMVar none
   let instC ← mkFreshExprMVar none
   let instMC ← mkFreshExprMVar none
-  let unit := mkAppN (.const ``MonoidalCategoryStruct.tensorUnit [v, u]) #[C, instC, instMC]
-  if ← isDefEq e unit then
+  let unit := mkAppN (← mkConstWithFreshMVarLevels
+    ``MonoidalCategoryStruct.tensorUnit) #[C, instC, instMC]
+  if ← withDefault <| isDefEq e unit then
     return ← instantiateMVars unit
   else
     return none
 
 /-- Returns `(f, g)` if the expression `e` is of the form `f ⊗ g`. -/
 def isTensorObj? (e : Expr) : MetaM (Option (Expr × Expr)) := do
-  let v ← mkFreshLevelMVar
-  let u ← mkFreshLevelMVar
   let C ← mkFreshExprMVar none
   let f ← mkFreshExprMVar C
   let g ← mkFreshExprMVar C
   let instC ← mkFreshExprMVar none
   let instMC ← mkFreshExprMVar none
-  let fg := mkAppN (.const ``MonoidalCategoryStruct.tensorObj [v, u]) #[C, instC, instMC, f, g]
+  let fg := mkAppN (← mkConstWithFreshMVarLevels
+    ``MonoidalCategoryStruct.tensorObj) #[C, instC, instMC, f, g]
   if ← withDefault <| isDefEq e fg then
     return (← instantiateMVars f, ← instantiateMVars g)
   else
@@ -171,13 +169,13 @@ inductive NormalExpr : Type
 
 /-- The domain of a morphism. -/
 def src (η : Expr) : MetaM Mor₁ := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR <| ← inferType η).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, f, _]) => toMor₁ f
   | _ => throwError "{η} is not a morphism"
 
 /-- The codomain of a morphism. -/
 def tar (η : Expr) : MetaM Mor₁ := do
-  match (← inferType η).getAppFnArgs with
+  match (← whnfR <| ← inferType η).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, _, g]) => toMor₁ g
   | _ => throwError "{η} is not a morphism"
 
@@ -314,10 +312,6 @@ def NormalExpr.ofExpr (η : Expr) : MetaM NormalExpr :=
 /-- If `e` is an expression of the form `η ⊗≫ θ := η ≫ α ≫ θ` in the monoidal category `C`,
 return the expression for `α` .-/
 def structuralOfMonoidalComp (C e : Expr) : MetaM Structural := do
-  let v ← mkFreshLevelMVar
-  let u ← mkFreshLevelMVar
-  _ ← isDefEq (.sort (.succ v)) (← inferType (← inferType e))
-  _ ← isDefEq (.sort (.succ u)) (← inferType C)
   let W ← mkFreshExprMVar none
   let X ← mkFreshExprMVar none
   let Y ← mkFreshExprMVar none
@@ -326,8 +320,9 @@ def structuralOfMonoidalComp (C e : Expr) : MetaM Structural := do
   let g ← mkFreshExprMVar none
   let α₀ ← mkFreshExprMVar none
   let instC ← mkFreshExprMVar none
-  let αg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, X, Y, Z, α₀, g]
-  let fαg := mkAppN (.const ``CategoryStruct.comp [v, u]) #[C, instC, W, X, Z, f, αg]
+  let αg := mkAppN (← mkConstWithFreshMVarLevels ``CategoryStruct.comp) #[C, instC, X, Y, Z, α₀, g]
+  let fαg := mkAppN (← mkConstWithFreshMVarLevels
+    ``CategoryStruct.comp) #[C, instC, W, X, Z, f, αg]
   _ ← isDefEq e fαg
   structural? α₀
 
@@ -401,7 +396,7 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MetaM NormalExpr := do
   if let .some e' ← structuralAtom? e then return .nil <| .atom e' else
-    match e.getAppFnArgs with
+    match (← whnfR e).getAppFnArgs with
     | (``CategoryStruct.id, #[_, _, f]) =>
       return .nil (.id (← toMor₁ f))
     | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) =>
@@ -449,7 +444,7 @@ structure Context where
 
 /-- Populate a `context` object for evaluating `e`. -/
 def mkContext (e : Expr) : MetaM (Context) := do
-  match (← inferType e).getAppFnArgs with
+  match (← whnfR <| ← inferType e).getAppFnArgs with
   | (``Quiver.Hom, #[C, _, _, _]) =>
     return { C := C }
   | _ => throwError "not a morphism"
