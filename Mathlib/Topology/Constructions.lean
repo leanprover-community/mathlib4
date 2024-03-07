@@ -507,18 +507,21 @@ lemma isClosedMap_swap : IsClosedMap (Prod.swap : X × Y → Y × X) := fun s hs
   rw [image_swap_eq_preimage_swap]
   exact hs.preimage continuous_swap
 
-theorem continuous_uncurry_left {f : X → Y → Z} (x : X) (h : Continuous (uncurry f)) :
+theorem Continuous.uncurry_left {f : X → Y → Z} (x : X) (h : Continuous (uncurry f)) :
     Continuous (f x) :=
   h.comp (Continuous.Prod.mk _)
-#align continuous_uncurry_left continuous_uncurry_left
+#align continuous_uncurry_left Continuous.uncurry_left
 
-theorem continuous_uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (uncurry f)) :
+theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (uncurry f)) :
     Continuous fun a => f a y :=
   h.comp (Continuous.Prod.mk_left _)
-#align continuous_uncurry_right continuous_uncurry_right
+#align continuous_uncurry_right Continuous.uncurry_right
+
+@[deprecated] alias continuous_uncurry_left := Continuous.uncurry_left
+@[deprecated] alias continuous_uncurry_right := Continuous.uncurry_right
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
-  continuous_uncurry_left x h
+  Continuous.uncurry_left x h
 #align continuous_curry continuous_curry
 
 theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ×ˢ t) :=
@@ -647,14 +650,16 @@ theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z
   exact hf.comp₂ hg hh
 
 /-- Continuous functions on products are continuous in their first argument -/
-theorem Continuous.along_fst {f : X × Y → Z} (hf : Continuous f) {y : Y} :
+theorem Continuous.curry_left {f : X × Y → Z} (hf : Continuous f) {y : Y} :
     Continuous fun x ↦ f (x, y) :=
   hf.comp (continuous_id.prod_mk continuous_const)
+alias Continuous.along_fst := Continuous.curry_left
 
 /-- Continuous functions on products are continuous in their second argument -/
-theorem Continuous.along_snd {f : X × Y → Z} (hf : Continuous f) {x : X} :
+theorem Continuous.curry_right {f : X × Y → Z} (hf : Continuous f) {x : X} :
     Continuous fun y ↦ f (x, y) :=
   hf.comp (continuous_const.prod_mk continuous_id)
+alias Continuous.along_snd := Continuous.curry_right
 
 -- todo: reformulate using `Set.image2`
 -- todo: prove a version of `generateFrom_union` with `image2 (∩) s t` in the LHS and use it here
