@@ -28,7 +28,8 @@ variable {α : Type u} {β : Type v} {γ : Type*}
 
 open Set Filter Function
 
-open Classical Filter
+open scoped Classical
+open Filter
 
 /-- `Filter α` is an atomic type: for every filter there exists an ultrafilter that is less than or
 equal to this filter. -/

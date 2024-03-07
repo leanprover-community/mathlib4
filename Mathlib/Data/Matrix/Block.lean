@@ -202,7 +202,7 @@ def toSquareBlockProp (M : Matrix m m α) (p : m → Prop) : Matrix { a // p a }
 #align matrix.to_square_block_prop Matrix.toSquareBlockProp
 
 theorem toSquareBlockProp_def (M : Matrix m m α) (p : m → Prop) :
-    -- porting note: added missing `of`
+    -- Porting note: added missing `of`
     toSquareBlockProp M p = of (fun i j : { a // p a } => M ↑i ↑j) :=
   rfl
 #align matrix.to_square_block_prop_def Matrix.toSquareBlockProp_def
@@ -215,7 +215,7 @@ def toSquareBlock (M : Matrix m m α) (b : m → β) (k : β) :
 #align matrix.to_square_block Matrix.toSquareBlock
 
 theorem toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
-    -- porting note: added missing `of`
+    -- Porting note: added missing `of`
     toSquareBlock M b k = of (fun i j : { a // b a = k } => M ↑i ↑j) :=
   rfl
 #align matrix.to_square_block_def Matrix.toSquareBlock_def
@@ -775,7 +775,7 @@ theorem blockDiagonal'_mul [NonUnitalNonAssocSemiring α] [∀ i, Fintype (n' i)
   ext ⟨k, i⟩ ⟨k', j⟩
   simp only [blockDiagonal'_apply, mul_apply, ← Finset.univ_sigma_univ, Finset.sum_sigma]
   rw [Fintype.sum_eq_single k]
-  · simp only [if_pos, dif_pos] -- porting note: added
+  · simp only [if_pos, dif_pos] -- Porting note: added
     split_ifs <;> simp
   · intro j' hj'
     exact Finset.sum_eq_zero fun _ _ => by rw [dif_neg hj'.symm, zero_mul]

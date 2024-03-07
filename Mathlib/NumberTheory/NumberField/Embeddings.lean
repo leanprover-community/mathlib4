@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Polynomial
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm
 import Mathlib.Topology.Instances.Complex
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import number_theory.number_field.embeddings from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
@@ -113,7 +114,7 @@ theorem finite_of_norm_le (B : ℝ) : {x : K | IsIntegral ℤ x ∧ ∀ φ : K �
     exact minpoly.natDegree_le x
   rw [mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
   refine (Eq.trans_le ?_ <| coeff_bdd_of_norm_le hx.2 i).trans (Nat.le_ceil _)
-  rw [h_map_ℚ_minpoly, coeff_map, eq_intCast, Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
+  rw [h_map_ℚ_minpoly, coeff_map, eq_intCast, Int.norm_cast_rat, Int.norm_eq_abs]
 #align number_field.embeddings.finite_of_norm_le NumberField.Embeddings.finite_of_norm_le
 
 /-- An algebraic integer whose conjugates are all of norm one is a root of unity. -/
@@ -413,6 +414,9 @@ theorem isReal_or_isComplex (w : InfinitePlace K) : IsReal w ∨ IsComplex w := 
   rw [← not_isReal_iff_isComplex]; exact em _
 #align number_field.infinite_place.is_real_or_is_complex NumberField.InfinitePlace.isReal_or_isComplex
 
+theorem ne_of_isReal_isComplex {w w' : InfinitePlace K} (h : IsReal w) (h' : IsComplex w') :
+    w ≠ w' := fun h_eq ↦ not_isReal_iff_isComplex.mpr h' (h_eq ▸ h)
+
 /-- The real embedding associated to a real infinite place. -/
 noncomputable def embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) : K →+* ℝ :=
   ComplexEmbedding.IsReal.embedding (isReal_iff.mp hw)
@@ -519,6 +523,52 @@ theorem prod_eq_abs_norm (x : K) :
   · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]
 #align number_field.infinite_place.prod_eq_abs_norm NumberField.InfinitePlace.prod_eq_abs_norm
 
+theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
+    (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
+  suffices (1:ℝ) ≤ |(Algebra.norm ℚ) (a:K)| by
+    contrapose! this
+    rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
+    refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
+    · exact pow_pos (pos_iff.mpr ((Subalgebra.coe_eq_zero _).not.mpr ha)) _
+    · refine pow_lt_one (apply_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> norm_num)
+      by_cases hz : z = w
+      · rwa [hz]
+      · exact h hz
+  rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_coe_int, Int.cast_le]
+  exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr ha)
+
+open scoped IntermediateField in
+theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
+    {w : InfinitePlace K} (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1)
+    (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) : ℚ⟮(x:K)⟯ = ⊤ := by
+  rw [Field.primitive_element_iff_algHom_eq_of_eval ℚ ℂ ?_ _ w.embedding.toRatAlgHom]
+  · intro ψ hψ
+    have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
+    have main : w = InfinitePlace.mk ψ.toRingHom := by
+      erw [← norm_embedding_eq, hψ] at h
+      contrapose! h
+      exact h₂ h.symm
+    rw [(mk_embedding w).symm, mk_eq_iff] at main
+    by_cases hw : IsReal w
+    · rw [conjugate_embedding_eq_of_isReal hw, or_self] at main
+      exact congr_arg RingHom.toRatAlgHom main
+    · refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ ?_)
+      have : (embedding w x).im = 0 := by
+        erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' x]
+        exact hψ.symm
+      contrapose! h
+      rw [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
+        zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal]
+      exact h₃.resolve_left hw
+  · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
+
+theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
+    (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1) (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) :
+    Algebra.adjoin ℚ {(x:K)} = ⊤ := by
+  rw [← IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite ℚ _)]
+  exact congr_arg IntermediateField.toSubalgebra <|
+    NumberField.is_primitive_element_of_infinitePlace_lt h₁ h₂ h₃
+
 open Fintype FiniteDimensional
 
 variable (K)
@@ -558,6 +608,14 @@ theorem card_add_two_mul_card_eq_rank :
   exact Fintype.card_subtype_le _
 
 variable {K}
+
+theorem nrComplexPlaces_eq_zero_of_finrank_eq_one (h : finrank ℚ K = 1) :
+    NrComplexPlaces K = 0 := by linarith [card_add_two_mul_card_eq_rank K]
+
+theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
+    NrRealPlaces K = 1 := by
+  have := card_add_two_mul_card_eq_rank K
+  rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
 
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
@@ -990,3 +1048,31 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   exact InfinitePlace.isUnramifiedIn K
 
 end InfinitePlace
+
+namespace IsPrimitiveRoot
+
+variable {K : Type*} [Field K] [NumberField K] {ζ : K} {k : ℕ}
+
+theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k) :
+    NumberField.InfinitePlace.NrRealPlaces K = 0 := by
+  refine (@Fintype.card_eq_zero_iff _ (_)).2 ⟨fun ⟨w, hwreal⟩ ↦ ?_⟩
+  rw [NumberField.InfinitePlace.isReal_iff] at hwreal
+  let f := w.embedding
+  have hζ' : IsPrimitiveRoot (f ζ) k := hζ.map_of_injective f.injective
+  have him : (f ζ).im = 0 := by
+    · rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
+      congr
+  have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
+    · rw [← Complex.abs_re_eq_abs] at him
+      have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
+      rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
+  cases hre with
+  | inl hone =>
+    exact hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
+  | inr hnegone =>
+    replace hζ' := hζ'.eq_orderOf
+    simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
+      orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
+    linarith
+
+end IsPrimitiveRoot

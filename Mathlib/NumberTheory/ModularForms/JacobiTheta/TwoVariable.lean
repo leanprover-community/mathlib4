@@ -47,15 +47,15 @@ lemma jacobiTheta₂_term_bound {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
 
 lemma summable_jacobiTheta₂_term_bound (S : ℝ) {T : ℝ} (hT : 0 < T) :
     Summable (fun n : ℤ ↦ Real.exp (-π * (T * n ^ 2 - 2 * S * |n|))) := by
-  suffices : Summable (fun n : ℕ ↦ Real.exp (-π * (T * n ^ 2 - 2 * S * n)))
-  · apply summable_int_of_summable_nat <;>
+  suffices Summable (fun n : ℕ ↦ Real.exp (-π * (T * n ^ 2 - 2 * S * n))) by
+    apply summable_int_of_summable_nat <;>
     simpa only [Int.cast_neg, neg_sq, abs_neg, Int.cast_ofNat, Nat.abs_cast]
   apply summable_of_isBigO_nat summable_exp_neg_nat
   refine Real.isBigO_exp_comp_exp_comp.mpr (Tendsto.isBoundedUnder_le_atBot ?_)
   rw [← tendsto_neg_atTop_iff]
   simp only [neg_mul, Pi.sub_apply, sub_neg_eq_add, neg_add_rev, neg_neg]
-  suffices : Tendsto (fun n ↦ n * (π * T * n - (2 * π * S + 1)) : ℕ → ℝ) atTop atTop
-  · convert this using 2 with n; ring
+  suffices Tendsto (fun n ↦ n * (π * T * n - (2 * π * S + 1)) : ℕ → ℝ) atTop atTop by
+    convert this using 2 with n; ring
   refine tendsto_nat_cast_atTop_atTop.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_)
   exact tendsto_nat_cast_atTop_atTop.const_mul_atTop (mul_pos pi_pos hT)
 
@@ -111,9 +111,9 @@ equation for Dirichlet L-series. -/
 theorem jacobiTheta₂_functional_equation (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     jacobiTheta₂ z τ =
       1 / (-I * τ) ^ (1 / 2 : ℂ) * cexp (-π * I * z ^ 2 / τ) * jacobiTheta₂ (z / τ) (-1 / τ) := by
-  have h0 : τ ≠ 0; contrapose! hτ; rw [hτ, zero_im]
-  have h2 : 0 < (-I * τ).re
-  · simpa only [neg_mul, neg_re, mul_re, I_re, zero_mul, I_im, one_mul, zero_sub, neg_neg] using hτ
+  have h0 : τ ≠ 0 := by contrapose! hτ; rw [hτ, zero_im]
+  have h2 : 0 < (-I * τ).re := by
+    simpa only [neg_mul, neg_re, mul_re, I_re, zero_mul, I_im, one_mul, zero_sub, neg_neg] using hτ
   calc
     _ = ∑' n : ℤ, cexp (-π * (-I * τ) * ↑n ^ 2 + 2 * π * (I * z) * ↑n) :=
       tsum_congr (fun n ↦ by ring_nf)

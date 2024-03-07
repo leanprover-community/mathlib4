@@ -95,10 +95,10 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n in range m, abv
       _ < max N M + 1 := Nat.lt_succ_self _
       _ < K := hNMK
   have hsumlesum :
-    (∑ i in range (max N M + 1),
+      (∑ i in range (max N M + 1),
         abv (f i) * abv ((∑ k in range (K - i), g k) - ∑ k in range K, g k)) ≤
-      ∑ i in range (max N M + 1), abv (f i) * (ε / (2 * P))
-  · gcongr with m hmJ
+      ∑ i in range (max N M + 1), abv (f i) * (ε / (2 * P)) := by
+    gcongr with m hmJ
     refine le_of_lt $ hN (K - m) (le_tsub_of_add_le_left $ hK.trans' ?_) K hKN.le
     rw [two_mul]
     gcongr

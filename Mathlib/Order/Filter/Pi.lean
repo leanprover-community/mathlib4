@@ -24,7 +24,8 @@ In this file we define two filters on `Π i, α i` and prove some basic properti
 
 open Set Function
 
-open Classical Filter
+open scoped Classical
+open Filter
 
 namespace Filter
 
