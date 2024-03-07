@@ -445,7 +445,8 @@ class QuotientGroupAction : Prop where
   eq_id : ∀ b : H, ∀ a : α, b • a = a
 
 /-- A typeclass for when a `AddAction β α` descends to the quotient `β ⧸ H`. -/
-class _root_.AddAction.QuotientAddGroupAction {β : Type v} [AddGroup β] (H : AddSubgroup β) (α : Type u) [AddAction β α] : Prop where
+class _root_.AddAction.QuotientAddGroupAction {β : Type v} [AddGroup β]
+    (H : AddSubgroup β) (α : Type u) [AddAction β α] : Prop where
   /-- This ensures that the action descends to an action of the quotient `β ⧸ H`. -/
   eq_id : ∀ b : H, ∀ a : α, b +ᵥ a = a
 
