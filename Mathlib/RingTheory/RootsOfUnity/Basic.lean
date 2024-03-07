@@ -95,6 +95,9 @@ theorem mem_rootsOfUnity' (k : ℕ+) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (�
   rw [mem_rootsOfUnity]; norm_cast
 #align mem_roots_of_unity' mem_rootsOfUnity'
 
+@[simp]
+theorem rootsOfUnity_one (M : Type*) [CommMonoid M] : rootsOfUnity 1 M = ⊥ := by ext; simp
+
 theorem rootsOfUnity.coe_injective {n : ℕ+} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
   Units.ext.comp fun _ _ => Subtype.eq
@@ -131,12 +134,12 @@ theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
   rw [Subgroup.coe_pow, Units.val_pow_eq_pow_val]
 #align roots_of_unity.coe_pow rootsOfUnity.coe_pow
 
-section CommSemiring
+section CommMonoid
 
-variable [CommSemiring R] [CommSemiring S] [FunLike F R S]
+variable [CommMonoid R] [CommMonoid S] [FunLike F R S]
 
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
-def restrictRootsOfUnity [RingHomClass F R S] (σ : F) (n : ℕ+) :
+def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ+) :
     rootsOfUnity n R →* rootsOfUnity n S :=
   let h : ∀ ξ : rootsOfUnity n R, (σ (ξ : Rˣ)) ^ (n : ℕ) = 1 := fun ξ => by
     rw [← map_pow, ← Units.val_pow_eq_pow_val, show (ξ : Rˣ) ^ (n : ℕ) = 1 from ξ.2, Units.val_one,
@@ -149,34 +152,34 @@ def restrictRootsOfUnity [RingHomClass F R S] (σ : F) (n : ℕ+) :
 #align restrict_roots_of_unity restrictRootsOfUnity
 
 @[simp]
-theorem restrictRootsOfUnity_coe_apply [RingHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
+theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
     (restrictRootsOfUnity σ k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
 #align restrict_roots_of_unity_coe_apply restrictRootsOfUnity_coe_apply
 
-/-- Restrict a ring isomorphism to the nth roots of unity. -/
-nonrec def RingEquiv.restrictRootsOfUnity (σ : R ≃+* S) (n : ℕ+) :
+/-- Restrict a monoid isomorphism to the nth roots of unity. -/
+nonrec def MulEquiv.restrictRootsOfUnity (σ : R ≃* S) (n : ℕ+) :
     rootsOfUnity n R ≃* rootsOfUnity n S where
-  toFun := restrictRootsOfUnity σ.toRingHom n
-  invFun := restrictRootsOfUnity σ.symm.toRingHom n
+  toFun := restrictRootsOfUnity σ n
+  invFun := restrictRootsOfUnity σ.symm n
   left_inv ξ := by ext; exact σ.symm_apply_apply (ξ : Rˣ)
   right_inv ξ := by ext; exact σ.apply_symm_apply (ξ : Sˣ)
   map_mul' := (restrictRootsOfUnity _ n).map_mul
-#align ring_equiv.restrict_roots_of_unity RingEquiv.restrictRootsOfUnity
+#align ring_equiv.restrict_roots_of_unity MulEquiv.restrictRootsOfUnity
 
 @[simp]
-theorem RingEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃+* S) (ζ : rootsOfUnity k R) :
+theorem MulEquiv.restrictRootsOfUnity_coe_apply (σ : R ≃* S) (ζ : rootsOfUnity k R) :
     (σ.restrictRootsOfUnity k ζ : Sˣ) = σ (ζ : Rˣ) :=
   rfl
-#align ring_equiv.restrict_roots_of_unity_coe_apply RingEquiv.restrictRootsOfUnity_coe_apply
+#align ring_equiv.restrict_roots_of_unity_coe_apply MulEquiv.restrictRootsOfUnity_coe_apply
 
 @[simp]
-theorem RingEquiv.restrictRootsOfUnity_symm (σ : R ≃+* S) :
+theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
-#align ring_equiv.restrict_roots_of_unity_symm RingEquiv.restrictRootsOfUnity_symm
+#align ring_equiv.restrict_roots_of_unity_symm MulEquiv.restrictRootsOfUnity_symm
 
-end CommSemiring
+end CommMonoid
 
 section IsDomain
 
@@ -254,7 +257,7 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [RingHomClass F R R] (σ : 
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
   rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg
       (m.emod_nonneg (Int.coe_nat_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
-    zpow_ofNat, rootsOfUnity.coe_pow]
+    zpow_coe_nat, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
 #align map_root_of_unity_eq_pow_self map_rootsOfUnity_eq_pow_self
 
@@ -424,9 +427,9 @@ theorem pow_of_coprime (i : ℕ) (hi : i.Coprime k) : IsPrimitiveRoot (ζ ^ i) k
       dvd_of_pow_eq_one := _ }
   intro l hl
   apply h.dvd_of_pow_eq_one
-  rw [← pow_one ζ, ← zpow_ofNat ζ, ← hi.gcd_eq_one, Nat.gcd_eq_gcd_ab, zpow_add, mul_pow,
-    ← zpow_ofNat, ← zpow_mul, mul_right_comm]
-  simp only [zpow_mul, hl, h.pow_eq_one, one_zpow, one_pow, one_mul, zpow_ofNat]
+  rw [← pow_one ζ, ← zpow_coe_nat ζ, ← hi.gcd_eq_one, Nat.gcd_eq_gcd_ab, zpow_add, mul_pow,
+    ← zpow_coe_nat, ← zpow_mul, mul_right_comm]
+  simp only [zpow_mul, hl, h.pow_eq_one, one_zpow, one_pow, one_mul, zpow_coe_nat]
 #align is_primitive_root.pow_of_coprime IsPrimitiveRoot.pow_of_coprime
 
 theorem pow_of_prime (h : IsPrimitiveRoot ζ k) {p : ℕ} (hprime : Nat.Prime p) (hdiv : ¬p ∣ k) :
@@ -576,17 +579,17 @@ section DivisionCommMonoid
 variable {ζ : G}
 
 theorem zpow_eq_one (h : IsPrimitiveRoot ζ k) : ζ ^ (k : ℤ) = 1 := by
-  rw [zpow_ofNat]; exact h.pow_eq_one
+  rw [zpow_coe_nat]; exact h.pow_eq_one
 #align is_primitive_root.zpow_eq_one IsPrimitiveRoot.zpow_eq_one
 
 theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 ↔ (k : ℤ) ∣ l := by
   by_cases h0 : 0 ≤ l
-  · lift l to ℕ using h0; rw [zpow_ofNat]; norm_cast; exact h.pow_eq_one_iff_dvd l
+  · lift l to ℕ using h0; rw [zpow_coe_nat]; norm_cast; exact h.pow_eq_one_iff_dvd l
   · have : 0 ≤ -l := by simp only [not_le, neg_nonneg] at h0 ⊢; exact le_of_lt h0
     lift -l to ℕ using this with l' hl'
     rw [← dvd_neg, ← hl']
     norm_cast
-    rw [← h.pow_eq_one_iff_dvd, ← inv_inj, ← zpow_neg, ← hl', zpow_ofNat, inv_one]
+    rw [← h.pow_eq_one_iff_dvd, ← inv_inj, ← zpow_neg, ← hl', zpow_coe_nat, inv_one]
 #align is_primitive_root.zpow_eq_one_iff_dvd IsPrimitiveRoot.zpow_eq_one_iff_dvd
 
 theorem inv (h : IsPrimitiveRoot ζ k) : IsPrimitiveRoot ζ⁻¹ k :=
@@ -606,11 +609,11 @@ theorem zpow_of_gcd_eq_one (h : IsPrimitiveRoot ζ k) (i : ℤ) (hi : i.gcd k = 
     IsPrimitiveRoot (ζ ^ i) k := by
   by_cases h0 : 0 ≤ i
   · lift i to ℕ using h0
-    rw [zpow_ofNat]
+    rw [zpow_coe_nat]
     exact h.pow_of_coprime i hi
   have : 0 ≤ -i := by simp only [not_le, neg_nonneg] at h0 ⊢; exact le_of_lt h0
   lift -i to ℕ using this with i' hi'
-  rw [← inv_iff, ← zpow_neg, ← hi', zpow_ofNat]
+  rw [← inv_iff, ← zpow_neg, ← hi', zpow_coe_nat]
   apply h.pow_of_coprime
   rw [Int.gcd, ← Int.natAbs_neg, ← hi'] at hi
   exact hi
@@ -715,7 +718,7 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         simp only [AddMonoidHom.mem_ker, CharP.int_cast_eq_zero_iff (ZMod k) k, AddMonoidHom.coe_mk,
           Int.coe_castAddHom] at hi ⊢
         obtain ⟨i, rfl⟩ := hi
-        simp [zpow_mul, h.pow_eq_one, one_zpow, zpow_ofNat]⟩)
+        simp [zpow_mul, h.pow_eq_one, one_zpow, zpow_coe_nat]⟩)
     (by
       constructor
       · rw [injective_iff_map_eq_zero]
@@ -741,7 +744,7 @@ theorem zmodEquivZPowers_apply_coe_int (i : ℤ) :
 theorem zmodEquivZPowers_apply_coe_nat (i : ℕ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
   have : (i : ZMod k) = (i : ℤ) := by norm_cast
-  simp only [this, zmodEquivZPowers_apply_coe_int, zpow_ofNat]
+  simp only [this, zmodEquivZPowers_apply_coe_int, zpow_coe_nat]
 #align is_primitive_root.zmod_equiv_zpowers_apply_coe_nat IsPrimitiveRoot.zmodEquivZPowers_apply_coe_nat
 
 @[simp]
@@ -820,7 +823,7 @@ theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot
   lift i to ℕ using hi0 with i₀ hi₀
   refine' ⟨i₀, _, _⟩
   · zify; rw [hi₀]; exact Int.emod_lt_of_pos _ hk0
-  · rw [← zpow_ofNat, hi₀, ← Int.emod_add_ediv n k, zpow_add, zpow_mul, h.zpow_eq_one, one_zpow,
+  · rw [← zpow_coe_nat, hi₀, ← Int.emod_add_ediv n k, zpow_add, zpow_mul, h.zpow_eq_one, one_zpow,
       mul_one]
 #align is_primitive_root.eq_pow_of_mem_roots_of_unity IsPrimitiveRoot.eq_pow_of_mem_rootsOfUnity
 
@@ -1022,7 +1025,7 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         dsimp only
         generalize_proofs h1
         have h := h1.choose_spec
-        dsimp only [AlgEquiv.one_apply, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+        dsimp only [μ', AlgEquiv.one_apply, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
           RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv] at *
         replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using h)
@@ -1035,7 +1038,7 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         have hxy := hxy'.choose_spec
         have hx := hx'.choose_spec
         have hy := hy'.choose_spec
-        dsimp only [AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+        dsimp only [μ', AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
           RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.mul_apply] at *
         replace hxy : x (((μ' : Sˣ) : S) ^ hy'.choose) = ((μ' : Sˣ) : S) ^ hxy'.choose := hy ▸ hxy
         rw [x.map_pow] at hxy

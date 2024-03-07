@@ -27,11 +27,13 @@ always finite in this context.
 
 noncomputable section
 
-open Classical Topology ENNReal
+open scoped Classical
+open Topology ENNReal
 
 universe u
 
-open Classical Set Function TopologicalSpace Filter
+open scoped Classical
+open Set Function TopologicalSpace Filter
 
 namespace EMetric
 
@@ -98,8 +100,8 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     completeness, by a standard completeness criterion.
     We use the shorthand `B n = 2^{-n}` in ennreal. -/
   let B : ℕ → ℝ≥0∞ := fun n => 2⁻¹ ^ n
-  have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [ENNReal.pow_pos]
-  have B_ne_top : ∀ n, B n ≠ ⊤ := by simp [ENNReal.pow_ne_top]
+  have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [B, ENNReal.pow_pos]
+  have B_ne_top : ∀ n, B n ≠ ⊤ := by simp [B, ENNReal.pow_ne_top]
   /- Consider a sequence of closed sets `s n` with `edist (s n) (s (n+1)) < B n`.
     We will show that it converges. The limit set is `t0 = ⋂n, closure (⋃m≥n, s m)`.
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
@@ -131,9 +133,9 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           rw [← pow_add]
           apply hs <;> simp
         exact ⟨⟨z', z'_mem⟩, le_of_lt hz'⟩
-      use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => choose (this l z)
+      use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => (this l z).choose
       simp only [Nat.add_zero, Nat.zero_eq, Nat.rec_zero, Nat.rec_add_one, true_and]
-      exact fun k => choose_spec (this k _)
+      exact fun k => (this k _).choose_spec
     -- it follows from the previous bound that `z` is a Cauchy sequence
     have : CauchySeq fun k => (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz
     -- therefore, it converges
@@ -226,7 +228,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     · apply @Finite.of_finite_image _ _ F _
       · apply fs.finite_subsets.subset fun b => _
         exact fun s => (s : Set α)
-        simp only [and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
+        simp only [F, and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
         intro _ x hx hx'
         rwa [hx'] at hx
       · exact SetLike.coe_injective.injOn F
@@ -339,8 +341,8 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
         intro x
         rcases mem_closure_iff.1 (s_dense x) (δ / 2) δpos' with ⟨y, ys, hy⟩
         exact ⟨y, ⟨ys, hy⟩⟩
-      let F x := choose (Exy x)
-      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => choose_spec (Exy x)
+      let F x := (Exy x).choose
+      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
       rcases totallyBounded_iff.1 this (δ / 2) δpos' with ⟨a, af, ta⟩
@@ -363,7 +365,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       have tc : ∀ x ∈ t, ∃ y ∈ c, edist x y ≤ δ := by
         intro x hx
         rcases tb x hx with ⟨y, yv, Dxy⟩
-        have : y ∈ c := by simp [-mem_image]; exact ⟨yv, ⟨x, hx, Dxy⟩⟩
+        have : y ∈ c := by simp [c, -mem_image]; exact ⟨yv, ⟨x, hx, Dxy⟩⟩
         exact ⟨y, this, le_of_lt Dxy⟩
       -- points in `c` are well approximated by points in `t`
       have ct : ∀ y ∈ c, ∃ x ∈ t, edist y x ≤ δ := by

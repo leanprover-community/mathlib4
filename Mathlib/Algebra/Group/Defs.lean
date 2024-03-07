@@ -290,16 +290,16 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 
 end Semigroup
 
-/-- A commutative addition is a type with an addition which commutes-/
+/-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
 class AddCommMagma (G : Type u) extends Add G where
-  /-- Addition is commutative in an additive commutative semigroup. -/
+  /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
-/-- A commutative multiplication is a type with a multiplication which commutes-/
+/-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 @[ext]
 class CommMagma (G : Type u) extends Mul G where
-  /-- Multiplication is commutative in a commutative semigroup. -/
+  /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
 attribute [to_additive] CommMagma
@@ -954,29 +954,31 @@ variable [DivInvMonoid G] {a b : G}
 #align zpow_zero zpow_zero
 #align zero_zsmul zero_zsmul
 
-@[to_additive (attr := norm_cast) ofNat_zsmul]
-theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
+theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
-    _ = a * a ^ n := congrArg (a * ·) (zpow_ofNat a n)
+    _ = a * a ^ n := congrArg (a * ·) (zpow_coe_nat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
-#align zpow_coe_nat zpow_ofNat
-#align zpow_of_nat zpow_ofNat
-#align of_nat_zsmul ofNat_zsmul
-
-@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
-lemma zpow_coe_nat (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n := zpow_ofNat ..
+#align zpow_coe_nat zpow_coe_nat
+#align zpow_of_nat zpow_coe_nat
 #align coe_nat_zsmul coe_nat_zsmul
+#align of_nat_zsmul coe_nat_zsmul
+
+-- See note [no_index around OfNat.ofNat]
+@[to_additive ofNat_zsmul]
+lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
+  zpow_coe_nat ..
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
-  rw [← zpow_ofNat]
+  rw [← zpow_coe_nat]
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
     Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← ofNat_zsmul]
+  rw [← coe_nat_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 

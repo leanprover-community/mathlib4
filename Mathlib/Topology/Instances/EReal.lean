@@ -30,7 +30,8 @@ Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 
 noncomputable section
 
-open Classical Set Filter Metric TopologicalSpace Topology
+open scoped Classical
+open Set Filter Metric TopologicalSpace Topology
 open scoped ENNReal NNReal BigOperators Filter
 
 variable {α : Type*} [TopologicalSpace α]

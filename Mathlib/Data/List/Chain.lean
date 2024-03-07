@@ -376,7 +376,7 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 #align list.chain'.append_overlap List.Chain'.append_overlap
 
--- porting note: new
+-- Porting note: new
 lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
@@ -437,7 +437,7 @@ reflexive transitive closure of `r`. The converse of `exists_chain_of_relationRe
 -/
 theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
     (hl₂ : getLast (a :: l) (cons_ne_nil _ _) = b) : Relation.ReflTransGen r a b :=
---Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
+-- Porting note: `p` behaves like an implicit argument to `Chain.induction_head` but it is explicit.
   Chain.induction_head l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 #align list.relation_refl_trans_gen_of_exists_chain List.relationReflTransGen_of_exists_chain

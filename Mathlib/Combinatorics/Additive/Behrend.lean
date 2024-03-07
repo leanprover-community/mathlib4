@@ -120,7 +120,7 @@ def map (d : ℕ) : (Fin n → ℕ) →+ ℕ where
   map_add' a b := by simp_rw [Pi.add_apply, add_mul, sum_add_distrib]
 #align behrend.map Behrend.map
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 #align behrend.map_zero Behrend.map_zero
 
@@ -264,7 +264,7 @@ theorem exists_large_sphere (n d : ℕ) :
   apply one_le_mul_of_one_le_of_one_le
   · rwa [one_le_cast]
   rw [_root_.le_sub_iff_add_le]
-  norm_num
+  set_option tactic.skipAssignedInstances false in norm_num
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere
 
@@ -414,8 +414,8 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
     Nat.pow_le_pow_left (Nat.sub_le _ _) _
   apply this.trans
   suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N from mod_cast this
-  suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹
-  · rw [← rpow_nat_cast]
+  suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹ by
+    rw [← rpow_nat_cast]
     apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
     rw [← rpow_mul (cast_nonneg _), inv_mul_cancel, rpow_one]
     rw [cast_ne_zero]
@@ -431,7 +431,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
   · apply le_trans _ (div_le_div_of_le_left _ _ (ceil_lt_mul _).le)
     rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
-    · norm_num; exact le_sqrt_log hN
+    · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
     · norm_num1
     · apply log_nonneg
       rw [one_le_cast]
