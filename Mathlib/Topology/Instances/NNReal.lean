@@ -86,6 +86,11 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 #align continuous_real_to_nnreal continuous_real_toNNReal
 
+/-- `Real.toNNReal` bundled as a continuous map for convenience. -/
+@[simps (config := .asFn)]
+noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
+  .mk Real.toNNReal continuous_real_toNNReal
+
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 #align nnreal.continuous_coe NNReal.continuous_coe
@@ -180,7 +185,7 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 #align nnreal.summable_coe_of_nonneg NNReal.summable_mk
 
-open Classical
+open scoped Classical
 
 @[norm_cast]
 theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) :=

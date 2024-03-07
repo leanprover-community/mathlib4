@@ -99,7 +99,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
           exact
             (s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
               (s.ι.naturality Limits.WalkingSpan.Hom.fst).symm }
-    -- Porting note : Lean has forget why `A ⊗[R] B` makes sense
+    -- Porting note: Lean has forget why `A ⊗[R] B` makes sense
     letI : Algebra R A := f.toAlgebra
     letI : Algebra R B := g.toAlgebra
     letI : Algebra R (pushoutCocone f g).pt := show Algebra R (A ⊗[R] B) by infer_instance
@@ -108,13 +108,13 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
     simp only [pushoutCocone_inl, pushoutCocone_inr]
     constructor
     · ext x
-      -- Porting note : Lean can't see through `forget` functor
+      -- Porting note: Lean can't see through `forget` functor
       letI : Semiring ((forget CommRingCat).obj A) := A.str.toSemiring
       letI : Algebra R ((forget CommRingCat).obj A) := show Algebra R A by infer_instance
       exact Algebra.TensorProduct.productMap_left_apply _ _ x
     constructor
     · ext x
-      -- Porting note : Lean can't see through `forget` functor
+      -- Porting note: Lean can't see through `forget` functor
       letI : Semiring ((forget CommRingCat).obj B) := B.str.toSemiring
       letI : Algebra R ((forget CommRingCat).obj B) := show Algebra R B by infer_instance
       exact Algebra.TensorProduct.productMap_right_apply _ _ x
@@ -132,9 +132,8 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
       rw [this]
     apply Algebra.TensorProduct.ext'
     intro a b
-    simp only [PushoutCocone.ι_app_left, pushoutCocone_pt, coe_of, RingHom.toMonoidHom_eq_coe,
-      AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_coe, ← eq1, AlgHom.toRingHom_eq_coe,
-      PushoutCocone.ι_app_right, ← eq2, Algebra.TensorProduct.productMap_apply_tmul]
+    simp only [f', g', ← eq1, pushoutCocone_pt, ← eq2, AlgHom.toRingHom_eq_coe,
+      Algebra.TensorProduct.productMap_apply_tmul, AlgHom.coe_mk]
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
@@ -266,7 +265,7 @@ set_option linter.uppercaseLean3 false in
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  -- Porting note : Lean can't see through `(parallelPair f g).obj zero`
+  -- Porting note: Lean can't see through `(parallelPair f g).obj zero`
   haveI : SubsemiringClass (Subring A) ((parallelPair f g).obj WalkingParallelPair.zero) :=
     show SubsemiringClass (Subring A) A by infer_instance
   use s.ι.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)

@@ -181,8 +181,8 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.mk.injEq]
     rw [← factors_count_eq, ← prod_replicate, ← prod_append]
     nth_rw 3 [← prod_factors hm₀]
-    have : m.factors.filter (· = p) = m.factors.filter (¬ · < p)
-    · refine (filter_congr' fun q hq ↦ ?_).symm
+    have : m.factors.filter (· = p) = m.factors.filter (¬ · < p) := by
+      refine (filter_congr' fun q hq ↦ ?_).symm
       have H : ¬ p < q := fun hf ↦ Nat.lt_le_asymm hf <| Nat.lt_succ_iff.mp (hm q hq)
       simp only [not_lt, le_iff_eq_or_lt, H, or_false, eq_comm, true_eq_decide_iff]
     refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
@@ -215,12 +215,12 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
   rw [smoothNumbersUpTo, roughNumbersUpTo,
     ← Finset.card_union_of_disjoint <| Finset.disjoint_filter.mpr fun n _ hn₂ h ↦ h.2 hn₂,
     Finset.filter_union_right]
-  suffices : Finset.card (Finset.filter (fun x ↦ x ≠ 0) (Finset.range (succ N))) = N
-  · convert this with n
+  suffices Finset.card (Finset.filter (fun x ↦ x ≠ 0) (Finset.range (succ N))) = N by
+    convert this with n
     have hn : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
     tauto
-  · rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
-    simp
+  rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
+  simp
 
 /-- A `k`-smooth number can be written as a square times a product of distinct primes `< k`. -/
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :

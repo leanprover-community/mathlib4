@@ -85,7 +85,7 @@ theorem IsTheta.trans {f : α → E} {g : α → F'} {k : α → G} (h₁ : f =�
   ⟨h₁.1.trans h₂.1, h₂.2.trans h₁.2⟩
 #align asymptotics.is_Theta.trans Asymptotics.IsTheta.trans
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsTheta l) (IsTheta l) :=
   ⟨IsTheta.trans⟩
 
@@ -95,7 +95,7 @@ theorem IsBigO.trans_isTheta {f : α → E} {g : α → F'} {k : α → G} (h₁
   h₁.trans h₂.1
 #align asymptotics.is_O.trans_is_Theta Asymptotics.IsBigO.trans_isTheta
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsBigO l) (IsTheta l) (IsBigO l) :=
   ⟨IsBigO.trans_isTheta⟩
 
@@ -105,7 +105,7 @@ theorem IsTheta.trans_isBigO {f : α → E} {g : α → F'} {k : α → G} (h₁
   h₁.1.trans h₂
 #align asymptotics.is_Theta.trans_is_O Asymptotics.IsTheta.trans_isBigO
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsBigO l) (IsBigO l) :=
   ⟨IsTheta.trans_isBigO⟩
 
@@ -115,7 +115,7 @@ theorem IsLittleO.trans_isTheta {f : α → E} {g : α → F} {k : α → G'} (h
   h₁.trans_isBigO h₂.1
 #align asymptotics.is_o.trans_is_Theta Asymptotics.IsLittleO.trans_isTheta
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G') (IsLittleO l) (IsTheta l) (IsLittleO l) :=
   ⟨IsLittleO.trans_isTheta⟩
 
@@ -125,7 +125,7 @@ theorem IsTheta.trans_isLittleO {f : α → E} {g : α → F'} {k : α → G} (h
   h₁.1.trans_isLittleO h₂
 #align asymptotics.is_Theta.trans_is_o Asymptotics.IsTheta.trans_isLittleO
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsLittleO l) (IsLittleO l) :=
   ⟨IsTheta.trans_isLittleO⟩
 
@@ -135,7 +135,7 @@ theorem IsTheta.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f 
   ⟨h.1.trans_eventuallyEq hg, hg.symm.trans_isBigO h.2⟩
 #align asymptotics.is_Theta.trans_eventually_eq Asymptotics.IsTheta.trans_eventuallyEq
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → F) (γ := α → F) (IsTheta l) (EventuallyEq l) (IsTheta l) :=
   ⟨IsTheta.trans_eventuallyEq⟩
 
@@ -145,7 +145,7 @@ theorem _root_.Filter.EventuallyEq.trans_isTheta {f₁ f₂ : α → E} {g : α 
   ⟨hf.trans_isBigO h.1, h.2.trans_eventuallyEq hf.symm⟩
 #align filter.eventually_eq.trans_is_Theta Filter.EventuallyEq.trans_isTheta
 
--- Porting note: added
+-- Porting note (#10754): added instance
 instance : Trans (α := α → E) (β := α → E) (γ := α → F) (EventuallyEq l) (IsTheta l) (IsTheta l) :=
   ⟨EventuallyEq.trans_isTheta⟩
 

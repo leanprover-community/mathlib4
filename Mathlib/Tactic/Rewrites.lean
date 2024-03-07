@@ -3,9 +3,10 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean.Elab.Tactic.Location
 import Std.Data.MLList.Heartbeats
 import Std.Tactic.Relation.Rfl
-import Std.Tactic.SolveByElim
+import Lean.Meta.Tactic.SolveByElim
 import Std.Util.Pickle
 import Std.Util.Cache
 import Mathlib.Init.Core
@@ -13,6 +14,7 @@ import Mathlib.Control.Basic
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
+import Lean.Meta.Tactic.TryThis
 import Lean.Elab.Tactic.Location
 
 /-!
@@ -44,7 +46,7 @@ end Lean.Meta
 
 namespace Mathlib.Tactic.Rewrites
 
-open Lean Meta Std.Tactic TryThis
+open Lean Meta Std.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.rewrites
 initialize registerTraceClass `Tactic.rewrites.lemmas
@@ -183,13 +185,14 @@ def RewriteResult.ppResult (r : RewriteResult) : MetaM String :=
   else
     return (← ppExpr r.result.eNew).pretty
 
+open Lean.Elab.Tactic.SolveByElim Lean.Meta.SolveByElim in
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (goals : List MVarId) (depth : Nat := 6) : MetaM PUnit := do
   -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
-  let cfg : SolveByElim.Config :=
+  let cfg : SolveByElimConfig :=
     { maxDepth := depth, exfalso := false, symm := true }
-  let [] ← SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
+  let [] ← processSyntax cfg false false [] [] #[] goals
     | failure
 
 /-- Should we try discharging side conditions? If so, using `assumption`, or `solve_by_elim`? -/

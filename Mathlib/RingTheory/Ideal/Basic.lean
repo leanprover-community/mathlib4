@@ -41,6 +41,14 @@ def Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 #align ideal Ideal
 
+/-- A ring is a principal ideal ring if all (left) ideals are principal. -/
+@[mk_iff]
+class IsPrincipalIdealRing (R : Type u) [Semiring R] : Prop where
+  principal : ∀ S : Ideal R, S.IsPrincipal
+#align is_principal_ideal_ring IsPrincipalIdealRing
+
+attribute [instance] IsPrincipalIdealRing.principal
+
 section Semiring
 
 namespace Ideal
@@ -399,7 +407,7 @@ section Lattice
 
 variable {R : Type u} [Semiring R]
 
--- porting note: is this the right approach? or is there a better way to prove? (next 4 decls)
+-- Porting note: is this the right approach? or is there a better way to prove? (next 4 decls)
 theorem mem_sup_left {S T : Ideal R} : ∀ {x : R}, x ∈ S → x ∈ S ⊔ T :=
   @le_sup_left _ _ S T
 #align ideal.mem_sup_left Ideal.mem_sup_left
@@ -421,17 +429,17 @@ theorem mem_sInf {s : Set (Ideal R)} {x : R} : x ∈ sInf s ↔ ∀ ⦃I⦄, I �
   ⟨fun hx I his => hx I ⟨I, iInf_pos his⟩, fun H _I ⟨_J, hij⟩ => hij ▸ fun _S ⟨hj, hS⟩ => hS ▸ H hj⟩
 #align ideal.mem_Inf Ideal.mem_sInf
 
-@[simp 1001] -- porting note: increased priority to appease `simpNF`
+@[simp 1001] -- Porting note: increased priority to appease `simpNF`
 theorem mem_inf {I J : Ideal R} {x : R} : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J :=
   Iff.rfl
 #align ideal.mem_inf Ideal.mem_inf
 
-@[simp 1001] -- porting note: increased priority to appease `simpNF`
+@[simp 1001] -- Porting note: increased priority to appease `simpNF`
 theorem mem_iInf {ι : Sort*} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
   Submodule.mem_iInf _
 #align ideal.mem_infi Ideal.mem_iInf
 
-@[simp 1001] -- porting note: increased priority to appease `simpNF`
+@[simp 1001] -- Porting note: increased priority to appease `simpNF`
 theorem mem_bot {x : R} : x ∈ (⊥ : Ideal R) ↔ x = 0 :=
   Submodule.mem_bot _
 #align ideal.mem_bot Ideal.mem_bot
