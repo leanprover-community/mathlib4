@@ -56,7 +56,8 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open Classical Topology ENNReal MeasureTheory
+open scoped Classical
+open Topology ENNReal MeasureTheory
 
 open Set Function Real ENNReal
 
