@@ -649,20 +649,29 @@ theorem intervalIntegral_tendsto_integral (hfi : Integrable f μ) (ha : Tendsto 
   exact (intervalIntegral.integral_of_le (hai.trans hbi)).symm
 #align measure_theory.interval_integral_tendsto_integral MeasureTheory.intervalIntegral_tendsto_integral
 
-theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (Iic b) μ)
-    (ha : Tendsto a l atBot) :
-    Tendsto (fun i => ∫ x in a i..b, f x ∂μ) l (𝓝 <| ∫ x in Iic b, f x ∂μ) := by
+theorem intervalIntegral_tendsto_integral_Iic' {c : ℝ} (hfi : IntegrableOn f (Iic c) μ)
+    (ha : Tendsto a l atBot) (ha : Tendsto b l (𝓝 c)) :
+    Tendsto (fun i => ∫ x in a i..b i, f x ∂μ) l (𝓝 <| ∫ x in Iic c, f x ∂μ) := by
+  stop
+  sorry
   let φ i := Ioi (a i)
   have hφ : AECover (μ.restrict <| Iic b) l φ := aecover_Ioi ha
   refine' (hφ.integral_tendsto_of_countably_generated hfi).congr' _
   filter_upwards [ha.eventually (eventually_le_atBot <| b)] with i hai
   rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
   rfl
+
+theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (Iic b) μ)
+    (ha : Tendsto a l atBot) :
+    Tendsto (fun i => ∫ x in a i..b, f x ∂μ) l (𝓝 <| ∫ x in Iic b, f x ∂μ) :=
+  intervalIntegral_tendsto_integral_Iic' hfi ha tendsto_const_nhds
 #align measure_theory.interval_integral_tendsto_integral_Iic MeasureTheory.intervalIntegral_tendsto_integral_Iic
 
-theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
-    (hb : Tendsto b l atTop) :
-    Tendsto (fun i => ∫ x in a..b i, f x ∂μ) l (𝓝 <| ∫ x in Ioi a, f x ∂μ) := by
+theorem intervalIntegral_tendsto_integral_Ioi' {c : ℝ} (hfi : IntegrableOn f (Ioi c) μ)
+    (ha : Tendsto a l (𝓝 c)) (ha : Tendsto b l atTop) :
+    Tendsto (fun i => ∫ x in a i..b i, f x ∂μ) l (𝓝 <| ∫ x in Ioi c, f x ∂μ) := by
+  stop
+  sorry
   let φ i := Iic (b i)
   have hφ : AECover (μ.restrict <| Ioi a) l φ := aecover_Iic hb
   refine' (hφ.integral_tendsto_of_countably_generated hfi).congr' _
@@ -670,6 +679,11 @@ theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (I
   rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i),
     inter_comm]
   rfl
+
+theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
+    (hb : Tendsto b l atTop) :
+    Tendsto (fun i => ∫ x in a..b i, f x ∂μ) l (𝓝 <| ∫ x in Ioi a, f x ∂μ) :=
+  intervalIntegral_tendsto_integral_Ioi' hfi tendsto_const_nhds hb
 #align measure_theory.interval_integral_tendsto_integral_Ioi MeasureTheory.intervalIntegral_tendsto_integral_Ioi
 
 end IntegralOfIntervalIntegral
@@ -835,15 +849,15 @@ end IoiFTC
 
 section IicFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [CompleteSpace E]
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
-When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
-integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
-on `(-∞, a)` and continuity at `a⁻`. -/
-theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic a) a)
+
+theorem integral_Iic_of_hasDerivAt_of_tendsto_of_tendsto
     (hderiv : ∀ x ∈ Iio a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
-    (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
+    (hf_bot : Tendsto f atBot (𝓝 m)) (hf_top : Tendsto f (𝓝[<] a) (𝓝 n)) :
+    ∫ x in Iic a, f' x = n - m := by
+  stop
+  sorry
   have hcont : ContinuousOn f (Iic a) := by
     intro x hx
     rcases hx.out.eq_or_lt with rfl|hx
@@ -857,6 +871,17 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
     (hcont.mono Icc_subset_Iic_self) fun y hy => hderiv y hy.2
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
   exact f'int.mono (fun y hy => hy.2) le_rfl
+
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
+integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+on `(-∞, a)` and continuity at `a⁻`. -/
+theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic a) a)
+    (hderiv : ∀ x ∈ Iio a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
+    (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
+  apply integral_Iic_of_hasDerivAt_of_tendsto_of_tendsto hderiv f'int hf
+  apply tendsto_nhds_of_tendsto_nhdsWithin
+  exact (continuousWithinAt_Iio_iff_Iic.mpr hcont).tendsto_nhdsWithin (Set.mapsTo_image _ _)
 
 /-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
