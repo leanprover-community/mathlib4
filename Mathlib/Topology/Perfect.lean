@@ -78,6 +78,7 @@ def Preperfect (C : Set α) : Prop :=
 /-- A set `C` is called perfect if it is closed and all of its
 points are accumulation points of itself.
 Note that we do not require `C` to be nonempty.-/
+@[mk_iff perfect_def]
 structure Perfect (C : Set α) : Prop where
   closed : IsClosed C
   acc : Preperfect C
@@ -95,11 +96,12 @@ variable (α)
 A topological space `X` is said to be perfect if its universe is a perfect set.
 Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
+@[mk_iff perfectSpace_def]
 class PerfectSpace: Prop :=
   univ_perfect' : Perfect (Set.univ : Set α)
 
 theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
-    PerfectSpace.univ_perfect'
+  PerfectSpace.univ_perfect'
 
 end PerfectSpace
 
@@ -239,13 +241,10 @@ section PerfectSpace
 
 variable {X : Type*} [TopologicalSpace X]
 
-instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) := by
-  have := (PerfectSpace.univ_perfect X).acc _ (Set.mem_univ x)
-  rwa [AccPt, Filter.principal_univ, inf_top_eq] at this
+theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) := by
+  simp [perfectSpace_def, perfect_def, Preperfect, AccPt]
 
-theorem perfectSpace_iff_forall_not_isolated : PerfectSpace X ↔ ∀ x : X, Filter.NeBot (𝓝[≠] x) :=
-  ⟨fun perfect x => perfect.not_isolated x, fun h_forall => ⟨⟨isClosed_univ, fun x _ => by
-    rw [AccPt, Filter.principal_univ, inf_top_eq]
-    exact h_forall x⟩⟩⟩
+instance PerfectSpace.not_isolated [PerfectSpace X] (x : X) : Filter.NeBot (𝓝[≠] x) :=
+  perfectSpace_iff_forall_not_isolated.mp ‹_› x
 
 end PerfectSpace
