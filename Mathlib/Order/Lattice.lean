@@ -218,17 +218,17 @@ theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 #align sup_le_sup_right sup_le_sup_right
 
-lemma sup_idem (a : α) : a ⊔ a = a := by simp
+theorem sup_idem (a : α) : a ⊔ a = a := by simp
 #align sup_idem sup_idem
 
 instance : Std.IdempotentOp (α := α) (· ⊔ ·) := ⟨sup_idem⟩
 
-lemma sup_comm (a b : α) : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
+theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by apply le_antisymm <;> simp
 #align sup_comm sup_comm
 
 instance : Std.Commutative (α := α) (· ⊔ ·) := ⟨sup_comm⟩
 
-lemma sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
+theorem sup_assoc (a b c : α) : a ⊔ b ⊔ c = a ⊔ (b ⊔ c) :=
   eq_of_forall_ge_iff fun x => by simp only [sup_le_iff]; rw [and_assoc]
 #align sup_assoc sup_assoc
 
@@ -238,10 +238,10 @@ theorem sup_left_right_swap (a b c : α) : a ⊔ b ⊔ c = c ⊔ b ⊔ a := by
   rw [sup_comm, sup_comm a, sup_assoc]
 #align sup_left_right_swap sup_left_right_swap
 
-lemma sup_left_idem (a b : α) : a ⊔ (a ⊔ b) = a ⊔ b := by simp
+theorem sup_left_idem (a b : α) : a ⊔ (a ⊔ b) = a ⊔ b := by simp
 #align sup_left_idem sup_left_idem
 
-lemma sup_right_idem (a b : α) : a ⊔ b ⊔ b = a ⊔ b := by simp
+theorem sup_right_idem (a b : α) : a ⊔ b ⊔ b = a ⊔ b := by simp
 #align sup_right_idem sup_right_idem
 
 theorem sup_left_comm (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (a ⊔ c) := by
@@ -457,17 +457,17 @@ theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c 
   inf_le_inf le_rfl h
 #align inf_le_inf_left inf_le_inf_left
 
-lemma inf_idem (a : α) : a ⊓ a = a := by simp
+theorem inf_idem (a : α) : a ⊓ a = a := by simp
 #align inf_idem inf_idem
 
 instance : Std.IdempotentOp (α := α) (· ⊓ ·) := ⟨inf_idem⟩
 
-lemma inf_comm (a b : α) : a ⊓ b = b ⊓ a := @sup_comm αᵒᵈ _ _ _
+theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := @sup_comm αᵒᵈ _ _ _
 #align inf_comm inf_comm
 
 instance : Std.Commutative (α := α) (· ⊓ ·) := ⟨inf_comm⟩
 
-lemma inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := @sup_assoc αᵒᵈ _ _ _ _
+theorem inf_assoc (a b c : α) : a ⊓ b ⊓ c = a ⊓ (b ⊓ c) := @sup_assoc αᵒᵈ _ _ _ _
 #align inf_assoc inf_assoc
 
 instance : Std.Associative (α := α) (· ⊓ ·) := ⟨inf_assoc⟩
@@ -476,10 +476,10 @@ theorem inf_left_right_swap (a b c : α) : a ⊓ b ⊓ c = c ⊓ b ⊓ a :=
   @sup_left_right_swap αᵒᵈ _ _ _ _
 #align inf_left_right_swap inf_left_right_swap
 
-lemma inf_left_idem (a b : α) : a ⊓ (a ⊓ b) = a ⊓ b := by simp
+theorem inf_left_idem (a b : α) : a ⊓ (a ⊓ b) = a ⊓ b := by simp
 #align inf_left_idem inf_left_idem
 
-lemma inf_right_idem (a b : α) : a ⊓ b ⊓ b = a ⊓ b := by simp
+theorem inf_right_idem (a b : α) : a ⊓ b ⊓ b = a ⊓ b := by simp
 #align inf_right_idem inf_right_idem
 
 theorem inf_left_comm (a b c : α) : a ⊓ (b ⊓ c) = b ⊓ (a ⊓ c) :=
@@ -719,15 +719,15 @@ theorem le_sup_inf : ∀ {x y z : α}, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z
   fun {x y z} => DistribLattice.le_sup_inf x y z
 #align le_sup_inf le_sup_inf
 
-lemma sup_inf_left (a b c : α) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
+theorem sup_inf_left (a b c : α) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
   le_antisymm sup_inf_le le_sup_inf
 #align sup_inf_left sup_inf_left
 
-lemma sup_inf_right (a b c : α) : a ⊓ b ⊔ c = (a ⊔ c) ⊓ (b ⊔ c) := by
+theorem sup_inf_right (a b c : α) : a ⊓ b ⊔ c = (a ⊔ c) ⊓ (b ⊔ c) := by
   simp only [sup_inf_left, sup_comm _ c, eq_self_iff_true]
 #align sup_inf_right sup_inf_right
 
-lemma inf_sup_left (a b c : α) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c :=
+theorem inf_sup_left (a b c : α) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c :=
   calc
     a ⊓ (b ⊔ c) = a ⊓ (a ⊔ c) ⊓ (b ⊔ c) := by rw [inf_sup_self]
     _ = a ⊓ (a ⊓ b ⊔ c) := by simp only [inf_assoc, sup_inf_right, eq_self_iff_true]
@@ -740,7 +740,7 @@ instance OrderDual.distribLattice (α : Type*) [DistribLattice α] : DistribLatt
   __ := inferInstanceAs (Lattice αᵒᵈ)
   le_sup_inf _ _ _ := (inf_sup_left _ _ _).le
 
-lemma inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by
+theorem inf_sup_right (a b c : α) : (a ⊔ b) ⊓ c = a ⊓ c ⊔ b ⊓ c := by
   simp only [inf_sup_left, inf_comm _ c, eq_self_iff_true]
 #align inf_sup_right inf_sup_right
 
@@ -754,7 +754,7 @@ theorem le_of_inf_le_sup_le (h₁ : x ⊓ z ≤ y ⊓ z) (h₂ : x ⊔ z ≤ y �
     _ ≤ _ := sup_le (le_refl y) inf_le_left
 #align le_of_inf_le_sup_le le_of_inf_le_sup_le
 
-lemma eq_of_inf_eq_sup_eq {a b c : α} (h₁ : b ⊓ a = c ⊓ a) (h₂ : b ⊔ a = c ⊔ a) : b = c :=
+theorem eq_of_inf_eq_sup_eq {a b c : α} (h₁ : b ⊓ a = c ⊓ a) (h₂ : b ⊔ a = c ⊔ a) : b = c :=
   le_antisymm (le_of_inf_le_sup_le (le_of_eq h₁) (le_of_eq h₂))
     (le_of_inf_le_sup_le (le_of_eq h₁.symm) (le_of_eq h₂.symm))
 #align eq_of_inf_eq_sup_eq eq_of_inf_eq_sup_eq

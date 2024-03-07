@@ -192,13 +192,14 @@ theorem iUnion_image_sup_right : ⋃ b ∈ t, (· ⊔ b) '' s = s ⊻ t :=
   iUnion_image_right _
 #align set.Union_image_sup_right Set.iUnion_image_sup_right
 
-@[simp] lemma image_sup_prod (s t : Set α) : Set.image2 (· ⊔ ·) s t = s ⊻ t := rfl
+@[simp]
+theorem image_sup_prod (s t : Set α) : Set.image2 (· ⊔ ·) s t = s ⊻ t := rfl
 #align set.image_sup_prod Set.image_sup_prod
 
-lemma sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) := image2_assoc sup_assoc
+theorem sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) := image2_assoc sup_assoc
 #align set.sups_assoc Set.sups_assoc
 
-lemma sups_comm : s ⊻ t = t ⊻ s := image2_comm sup_comm
+theorem sups_comm : s ⊻ t = t ⊻ s := image2_comm sup_comm
 #align set.sups_comm Set.sups_comm
 
 theorem sups_left_comm : s ⊻ (t ⊻ u) = t ⊻ (s ⊻ u) :=
@@ -361,10 +362,10 @@ theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t 
   exact image_uncurry_prod _ _ _
 #align set.image_inf_prod Set.image_inf_prod
 
-lemma infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) := image2_assoc inf_assoc
+theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) := image2_assoc inf_assoc
 #align set.infs_assoc Set.infs_assoc
 
-lemma infs_comm : s ⊼ t = t ⊼ s := image2_comm inf_comm
+theorem infs_comm : s ⊼ t = t ⊼ s := image2_comm inf_comm
 #align set.infs_comm Set.infs_comm
 
 theorem infs_left_comm : s ⊼ (t ⊼ u) = t ⊼ (s ⊼ u) :=

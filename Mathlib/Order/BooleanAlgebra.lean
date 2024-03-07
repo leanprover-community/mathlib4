@@ -583,7 +583,8 @@ theorem sup_compl_eq_top : x ⊔ xᶜ = ⊤ :=
   top_unique <| BooleanAlgebra.top_le_sup_compl x
 #align sup_compl_eq_top sup_compl_eq_top
 
-@[simp] lemma compl_sup_eq_top : xᶜ ⊔ x = ⊤ := by rw [sup_comm, sup_compl_eq_top]
+@[simp]
+theorem compl_sup_eq_top : xᶜ ⊔ x = ⊤ := by rw [sup_comm, sup_compl_eq_top]
 #align compl_sup_eq_top compl_sup_eq_top
 
 theorem isCompl_compl : IsCompl x xᶜ :=

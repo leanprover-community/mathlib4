@@ -209,10 +209,10 @@ theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ 
   image_uncurry_product _ _ _
 #align finset.image_sup_product Finset.image_sup_product
 
-lemma sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) := image₂_assoc sup_assoc
+theorem sups_assoc : s ⊻ t ⊻ u = s ⊻ (t ⊻ u) := image₂_assoc sup_assoc
 #align finset.sups_assoc Finset.sups_assoc
 
-lemma sups_comm : s ⊻ t = t ⊻ s := image₂_comm sup_comm
+theorem sups_comm : s ⊻ t = t ⊻ s := image₂_comm sup_comm
 #align finset.sups_comm Finset.sups_comm
 
 theorem sups_left_comm : s ⊻ (t ⊻ u) = t ⊻ (s ⊻ u) :=
@@ -392,10 +392,10 @@ theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ 
   image_uncurry_product _ _ _
 #align finset.image_inf_product Finset.image_inf_product
 
-lemma infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) := image₂_assoc inf_assoc
+theorem infs_assoc : s ⊼ t ⊼ u = s ⊼ (t ⊼ u) := image₂_assoc inf_assoc
 #align finset.infs_assoc Finset.infs_assoc
 
-lemma infs_comm : s ⊼ t = t ⊼ s := image₂_comm inf_comm
+theorem infs_comm : s ⊼ t = t ⊼ s := image₂_comm inf_comm
 #align finset.infs_comm Finset.infs_comm
 
 theorem infs_left_comm : s ⊼ (t ⊼ u) = t ⊼ (s ⊼ u) :=

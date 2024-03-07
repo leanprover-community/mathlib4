@@ -152,7 +152,9 @@ instance instSemiring : Semiring (Language α) where
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
 
-@[simp] lemma add_self (l : Language α) : l + l = l := sup_idem _
+@[simp]
+theorem add_self (l : Language α) : l + l = l :=
+  sup_idem _
 #align language.add_self Language.add_self
 
 /-- Maps the alphabet of a language. -/
