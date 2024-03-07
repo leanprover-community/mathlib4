@@ -295,7 +295,7 @@ partial def structural? (e : Expr) : MetaM Structural := do
     return .whiskerLeft (← toMor₁ f) (← structural? η)
   | (``MonoidalCategoryStruct.whiskerRight, #[η, f]) =>
     return .whiskerRight (← structural? η) (← toMor₁ f)
-  | (``MonoidalCoherence.hom, #[_, _, f, g, _, _, inst]) =>
+  | (``MonoidalCoherence.hom, #[_, _, f, g, inst]) =>
     return .monoidalCoherence (← toMor₁ f) (← toMor₁ g) inst
   | _ => match ← structuralAtom? e with
     | some η => return .atom η
@@ -408,7 +408,7 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
       evalWhiskerLeftExpr (← toMor₁ f) (← eval η)
     | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
       evalWhiskerRightExpr (← eval η) (← toMor₁ h)
-    | (``monoidalComp, #[C, _, _, _, _, _, _, _, _, η, θ]) =>
+    | (``monoidalComp, #[C, _, _, _, _, _, _, η, θ]) =>
       let η_e ← eval η
       let α₀' ← structuralOfMonoidalComp C e
       let α := NormalExpr.nil α₀'
@@ -489,7 +489,7 @@ partial def Structural.e : Structural → MonoidalM Expr
   | .whiskerLeft f η => do mkAppM ``MonoidalCategoryStruct.whiskerLeft #[← f.e, ← η.e]
   | .whiskerRight η f => do mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, ← f.e]
   | .monoidalCoherence _ _ e => do
-    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, none, none, e]
+    mkAppOptM ``MonoidalCoherence.hom #[none, none, none, none, e]
 
 /-- Extract a Lean expression from a `WhiskerRightExpr` expression. -/
 def WhiskerRightExpr.e : WhiskerRightExpr → MonoidalM Expr
