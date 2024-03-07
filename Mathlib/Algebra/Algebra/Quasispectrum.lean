@@ -272,11 +272,6 @@ lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R]
   ext x
   simpa using isUnit_iff_ne_zero |>.symm |> not_iff_not.mpr
 
--- MOVE ME to `Algebra.Algebra.Unitization`
-instance Unitization.instCanLift :
-    CanLift (Unitization R A) A Unitization.inr (fun x ↦ x.fst = 0) where
-  prf x hx := ⟨x.snd, Unitization.ext (by simp [hx]) rfl⟩
-
 lemma Unitization.isQuasiregular_inr_iff (a : A) :
     IsQuasiregular (a : Unitization R A) ↔ IsQuasiregular a := by
   refine ⟨fun ha ↦ ?_, IsQuasiregular.map (inrNonUnitalAlgHom R A)⟩
