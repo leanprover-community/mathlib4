@@ -580,5 +580,14 @@ lemma solidClosure_min (hst : s ⊆ t) (ht : IsSolid t) : solidClosure s ⊆ t :
 
 end LatticeOrderedAddCommGroup
 
+namespace Pi
+variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Lattice (α i)]
+
+@[simp] lemma abs_apply (f : ∀ i, α i) (i : ι) : |f| i = |f i| := rfl
+
+lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
+
+end Pi
+
 @[deprecated] alias neg_le_abs_self := neg_le_abs
 @[deprecated] alias neg_abs_le_self := neg_abs_le
