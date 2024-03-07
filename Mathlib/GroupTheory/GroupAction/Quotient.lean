@@ -435,12 +435,21 @@ end conjClasses
 
 section QuotientGroupAction
 
+namespace MulAction
+
 variable [Group β] (H : Subgroup β) (α : Type u) [MulAction β α]
 
 /-- A typeclass for when a `MulAction β α` descends to the quotient `β ⧸ H`. -/
 class QuotientGroupAction : Prop where
   /-- This ensures that the action descends to an action of the quotient `β ⧸ H`. -/
-  eq_one : ∀ b : H, ∀ a : α, b • a = a
+  eq_id : ∀ b : H, ∀ a : α, b • a = a
+
+/-- A typeclass for when a `AddAction β α` descends to the quotient `β ⧸ H`. -/
+class _root_.AddAction.QuotientAddGroupAction {β : Type v} [AddGroup β] (H : AddSubgroup β) (α : Type u) [AddAction β α] : Prop where
+  /-- This ensures that the action descends to an action of the quotient `β ⧸ H`. -/
+  eq_id : ∀ b : H, ∀ a : α, b +ᵥ a = a
+
+attribute [to_additive] MulAction.QuotientGroupAction
 
 namespace QuotientGroupAction
 
@@ -448,6 +457,7 @@ open Function Subgroup QuotientGroup
 
 variable [QuotientGroupAction H α] [nH : H.Normal]
 
+@[to_additive]
 instance smul : SMul (β ⧸ H) α where
   smul b := Quotient.liftOn' b (· • ·) fun A B hAB => by
     rw [@QuotientGroup.leftRel_apply] at hAB
@@ -456,8 +466,9 @@ instance smul : SMul (β ⧸ H) α where
     intro x
     suffices h : A⁻¹ • A • x = A⁻¹ • B • x by rw [@smul_eq_iff_eq_inv_smul, ← h, @inv_smul_smul]
     rw [@inv_smul_smul, @smul_smul]
-    exact QuotientGroupAction.eq_one ⟨(A⁻¹ * B), hAB⟩ x |>.symm
+    exact QuotientGroupAction.eq_id ⟨(A⁻¹ * B), hAB⟩ x |>.symm
 
+@[to_additive]
 instance mulAction : MulAction (β ⧸ H) α :=
   Function.Surjective.mulActionLeft (QuotientGroup.mk' <| H)
     (QuotientGroup.mk'_surjective <| H) fun _ _ => rfl
