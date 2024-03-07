@@ -167,6 +167,15 @@ theorem eqv_classes_disjoint {c : Set (Set α)} (H : ∀ a, ∃! (b : _) (_ : b 
     (H x).elim₂ fun _b _hc _hx _hb => h <| eq_of_mem_eqv_class H h₁ hx1 h₂ hx2
 #align setoid.eqv_classes_disjoint Setoid.eqv_classes_disjoint
 
+theorem eqv_classes_sUnion_eq_univ {c : Set (Set α)} (H : ∀ a, ∃! (b : _) (_ : b ∈ c), a ∈ b) :
+    ⋃₀ c = Set.univ :=
+  Set.eq_univ_of_forall fun x =>
+    Set.mem_sUnion.2 <|
+      let ⟨t, ht⟩ := H x
+      ⟨t, by
+        simp only [exists_unique_iff_exists] at ht
+        tauto⟩
+
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2:
 -- warning: expanding binder collection (b «expr ∈ » c) -/
 /-- A set of disjoint sets covering α partition α (classical). -/
@@ -248,12 +257,7 @@ theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
 #align setoid.is_partition.pairwise_disjoint Setoid.IsPartition.pairwiseDisjoint
 
 theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃₀ c = Set.univ :=
-  Set.eq_univ_of_forall fun x =>
-    Set.mem_sUnion.2 <|
-      let ⟨t, ht⟩ := hc.2 x
-      ⟨t, by
-        simp only [exists_unique_iff_exists] at ht
-        tauto⟩
+  eqv_classes_sUnion_eq_univ hc.2
 #align setoid.is_partition.sUnion_eq_univ Setoid.IsPartition.sUnion_eq_univ
 
 /-- All elements of a partition of α are the equivalence class of some y ∈ α. -/

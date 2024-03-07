@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Wong
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Data.Contract
 
 /-!
 # Minor maps
@@ -97,3 +98,37 @@ def MinorMap.ofLE {V : Type*} {G₁ G₂ : SimpleGraph V} (h : G₁ ≤ G₂) : 
 
 /-- A graph is a minor of itself. -/
 def MinorMap.id {V : Type*} (G : SimpleGraph V) : MinorMap G G := MinorMap.ofLE le_rfl
+
+namespace SimpleGraph
+
+variable {V : Type*} (G : SimpleGraph V)
+
+def contract (S : Set (Set V)) : SimpleGraph (Contract S) where
+  Adj x y := x ≠ y ∧ Relation.Map G.Adj (Contract.mk S) (Contract.mk S) x y
+  symm x y := by
+    rintro ⟨hxy, h⟩
+    constructor
+    · exact hxy.symm
+    rw [Relation.map_apply] at h ⊢
+    tauto
+
+def MinorMap.ofContract (G : SimpleGraph V) (S : Set (Set V)) (hd : Set.PairwiseDisjoint S id)
+    (hc : ∀ s ∈ S, (G.induce s).Connected) :
+    MinorMap (G.contract S) G where
+  toFun x := Contract.mk S ⁻¹' {x}
+  connected x := by
+    dsimp
+    obtain ⟨x, rfl⟩ := x.exists_rep
+    by_cases h : ∃ s ∈ S, x ∈ s
+    · obtain ⟨s, hs, hxs⟩ := h
+      rw [Contract.fiber_of_mem hd hs hxs]
+      exact hc s hs
+    · rw [Contract.fiber_of_not_mem (fun s hs hxs => h ⟨s, hs, hxs⟩)]
+      exact induce_singleton_eq_top .. ▸ top_connected
+  disjoint _ _ h := Disjoint.preimage (Contract.mk S) (Set.disjoint_singleton.mpr h)
+  neighbor _ _ hG := by
+    replace hG := hG.right
+    rw [Relation.map_apply] at hG
+    tauto
+
+end SimpleGraph
