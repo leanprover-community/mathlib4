@@ -136,7 +136,7 @@ def toConsRight {p : F} {Γ Δ : List F}
     (b : ⊢¹ p :: (Γ.map (~·) ++ Δ)) :
     Γ ⊢² p :: Δ :=
   wk b (by
-    simp
+    simp?
     exact List.subset_append_of_subset_right _ (List.subset_cons _ _))
 
 instance : Gentzen F where
