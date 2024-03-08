@@ -49,14 +49,13 @@ lemma box_succ_disjUnion (n : ℕ) :
 @[simp] lemma zero_mem_box : (0 : α) ∈ box n ↔ n = 0 := by cases n <;> simp [box_succ_eq_sdiff]
 
 lemma mem_box_eq_zero_iff_eq_zero (x : α) (hx : x ∈ box n) : x = 0 ↔ n = 0 := by
-  rw [← zero_mem_box (α := α) (n := n)]
+  rw [← zero_mem_box (α := α)]
   constructor
   · intro h
     rw [h] at hx
     exact hx
   · intro h
-    rw [(zero_mem_box (α := α) (n := n)).mp h] at hx
-    simp only [box_zero, mem_singleton] at hx
+    simp only [(zero_mem_box (α := α) (n := n)).mp h, box_zero, mem_singleton] at hx
     exact hx
 
 end Finset
