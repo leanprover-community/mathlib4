@@ -588,7 +588,7 @@ theorem IsPrime.exists_mem_Prime_of_neq_bot {R : Type*} [CommSemiring R] [IsDoma
   obtain ⟨u, ha₃⟩ := factors_prod ha₂
   rw [← ha₃] at ha₁
   rcases (IsPrime.mem_or_mem hI₂) ha₁ with (ha₄ | ha₅)
-  · obtain ⟨p, ha₅, ha₆⟩ := (hI₂.multiset_prod_mem_iff (factors a)).1 ha₄  
+  · obtain ⟨p, ha₅, ha₆⟩ := (hI₂.multiset_prod_mem_iff (factors a)).1 ha₄
     exact ⟨p, ha₆, prime_of_factor p ha₅⟩
   · exfalso
     exact (isPrime_iff.1 hI₂).1 (eq_top_of_isUnit_mem _ ha₅ u.isUnit)
