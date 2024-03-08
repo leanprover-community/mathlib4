@@ -18,7 +18,7 @@ the quasiregular elements of `R` as `(Quasiregular R)ˣ`, but also as a predicat
 Quasiregularity is closely tied to invertibility. Indeed, `(Quasiregular A)ˣ` is isomorphic to the
 subgroup of `Unitization R A` whose scalar part is `1`, whenever `A` is a non-unital `R`-algebra,
 and moreover this isomorphism is implemented by the map `(x : A) ↦ (1 + x : Unitization R A)`. It
-is because of this isomorphism, and the assoicated ties with multiplicative invertibility, that we
+is because of this isomorphism, and the associated ties with multiplicative invertibility, that we
 choose a `Monoid` (as opposed to an `AddMonoid`) structure on `Quasiregular`.  In addition,
 in unital rings, we even have `IsQuasiregular x ↔ IsUnit (1 + x)`.
 
@@ -56,7 +56,7 @@ In Mathlib, the quasispectrum is the domain of the continuous functions associat
 /-- A type synonym for non-unital rings where an alternative monoid structure is introduced.
 If `R` is a non-unital semiring, then `Quasiregular R` is equipped with the monoid structure
 with binary operation `fun x y ↦ y + x + x * y` and identity `0`. Elements of `R` which are
-invertible in this moonoid satisfy the predicate `IsQuasiregular`. -/
+invertible in this monoid satisfy the predicate `IsQuasiregular`. -/
 structure Quasiregular (R : Type*) where
   /-- The value wrapped into a term of `Quasiregular`. -/
   val : R
