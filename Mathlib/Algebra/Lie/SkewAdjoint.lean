@@ -70,7 +70,16 @@ def skewAdjointLieSubalgebraEquiv :
   ext f
   simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
     LinearEquiv.coe_coe]
-  exact (BilinForm.isPairSelfAdjoint_equiv (-B) B e f).symm
+  -- original goal:
+  /- ↑(LinearEquiv.symm (LieEquiv.toLinearEquiv (LinearEquiv.lieConj e))) f ∈
+    (skewAdjointLieSubalgebra (comp B ↑e ↑e)).toSubmodule ↔
+  f ∈ skewAdjointLieSubalgebra B -/
+  -- goal after change:
+  /- f ∈ Submodule.map (↑(LinearEquiv.lieConj e).toLieHom)
+          (skewAdjointLieSubalgebra (comp B ↑e ↑e)).toSubmodule ↔
+     f ∈ skewAdjointLieSubalgebra B -/
+  convert (BilinForm.isPairSelfAdjoint_equiv (-B) B e f).symm
+  --simp [IsPairSelfAdjoint, IsAdjointPair]
 #align skew_adjoint_lie_subalgebra_equiv skewAdjointLieSubalgebraEquiv
 
 @[simp]

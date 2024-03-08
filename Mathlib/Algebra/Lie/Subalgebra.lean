@@ -393,9 +393,12 @@ theorem mem_map (x : L₂) : x ∈ K.map f ↔ ∃ y : L, y ∈ K ∧ f y = x :=
   Submodule.mem_map
 #align lie_subalgebra.mem_map LieSubalgebra.mem_map
 
--- TODO Rename and state for homs instead of equivs.
-theorem mem_map_submodule (e : L ≃ₗ⁅R⁆ L₂) (x : L₂) :
-    x ∈ K.map (e : L →ₗ⁅R⁆ L₂) ↔ x ∈ (K : Submodule R L).map (e : L →ₗ[R] L₂) :=
+theorem coe_map_submodule (e : L →ₗ⁅R⁆ L₂) :
+    (K.map e : Submodule R L₂) = (K : Submodule R L).map (e : L →ₗ[R] L₂) :=
+  SetLike.ext <| fun _ ↦ Iff.rfl
+
+theorem mem_map_submodule (e : L →ₗ⁅R⁆ L₂) (x : L₂) :
+    x ∈ K.map e ↔ x ∈ (K : Submodule R L).map (e : L →ₗ[R] L₂) :=
   Iff.rfl
 #align lie_subalgebra.mem_map_submodule LieSubalgebra.mem_map_submodule
 
