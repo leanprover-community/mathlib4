@@ -57,7 +57,7 @@ theorem rel_comp {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = Rel.co
     (f ≫ g) x z ↔ ∃ y, f x y ∧ g y z := by rfl
 
 /-- The essentially surjective faithful embedding
-    from the category of sets into the category of sets and relations. -/
+    from the category of sets and functions into the category of sets and relations. -/
 def typeRelFunctor : Type u ⥤ RelCat.{u} where
   obj X := X
   map f := f.graph
@@ -72,6 +72,7 @@ instance typeRelFunctor_essSurj : EssSurj typeRelFunctor :=
     typeRelFunctor.essSurj_of_surj Function.surjective_id
 
 open Classical
+/-- A relation is an isomorphism in `rel` iff it is the image of a isomorphism in `types`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     IsIso (C := RelCat) r ↔ ∃ f : (Iso (C := Type) X Y), typeRelFunctor.map f.hom = r := by
   constructor
@@ -107,7 +108,7 @@ section Opposite
 open Opposite
 
 def rel_relOp : Functor RelCat RelCatᵒᵖ where
-  obj X := Opposite.op X
+  obj X := op X
   map {X Y} r := op (fun y x => r x y)
   map_id X := by
     congr
@@ -121,25 +122,42 @@ def rel_relOp : Functor RelCat RelCatᵒᵖ where
     apply exists_congr
     exact fun a => And.comm
 
-instance rel_relOp_full : Full rel_relOp where
-  preimage f := Function.swap f.unop
-  witness _ := rfl
-
-instance rel_relOp_faithful : Faithful rel_relOp where
-  map_injective {X Y f g} h := by
+def relOp_rel : Functor RelCatᵒᵖ RelCat where
+  obj X := unop X
+  map {X Y} r x y := unop r y x
+  map_id X := by
+    congr
+    dsimp
     ext x y
-    exact iff_of_eq (congr_fun₂ (op_injective h) y x)
+    exact Eq.comm
+  map_comp {X Y Z} f g := by
+    unfold Category.opposite
+    congr
+    ext x y
+    apply exists_congr
+    exact fun a => And.comm
 
-instance rel_relOp_essSurh : EssSurj rel_relOp :=
-  rel_relOp.essSurj_of_surj _
+@[simp] theorem rel_relOp_comp_relOp_rel_eq : Functor.comp rel_relOp relOp_rel = Functor.id _ := by
+  rfl
 
-def rel_relOp_equivalence : Equivalence (RelCat ᵒᵖ) RelCat :=
+@[simp] theorem relOp_rel_comp_rel_relOp_eq : Functor.comp relOp_rel rel_relOp = Functor.id _ := by
+  rfl
 
+instance rel_relOp_isEquivalence : IsEquivalence rel_relOp where
+  inverse := relOp_rel
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+instance relOp_rel_isEquivalence : IsEquivalence relOp_rel where
+  inverse := rel_relOp
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+/-- `rel` is self-dual: The map that swaps the argument order of a
+    relation induces an equivalence between `rel` and its opposite. -/
+def rel_relOp_equivalence : Equivalence RelCat RelCatᵒᵖ :=
+  Equivalence.mk rel_relOp relOp_rel (Iso.refl _) (Iso.refl _)
 
 end Opposite
-
-
---def rel_relOp_equivalence : relᵒᵖ ≌ rel :=
-
 
 end CategoryTheory
