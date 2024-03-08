@@ -210,6 +210,23 @@ noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
   · exact PreservesPullback.iso (F ⋙ FintypeCat.incl) f g
   · exact Types.pullbackIsoPullback (F.map f) (F.map g)
 
+/-- The fiber of the pullback is the fiber product of the fibers. -/
+@[simp]
+noncomputable def fiberBinaryProductEquiv (X Y : C) :
+    F.obj (X ⨯ Y) ≃ F.obj X × F.obj Y := by
+  apply Iso.toEquiv
+  apply Iso.trans
+  · exact PreservesLimitPair.iso (F ⋙ FintypeCat.incl) X Y
+  · exact Types.binaryProductIso (F.obj X) (F.obj Y)
+
+@[simp]
+lemma fiberBinaryProductEquiv_symm_fst_apply {X Y : C} (x : F.obj X) (y : F.obj Y) :
+    F.map prod.fst ((fiberBinaryProductEquiv F X Y).symm (x, y)) = x := sorry
+
+@[simp]
+lemma fiberBinaryProductEquiv_symm_snd_apply {X Y : C} (x : F.obj X) (y : F.obj Y) :
+    F.map prod.snd ((fiberBinaryProductEquiv F X Y).symm (x, y)) = y := sorry
+
 /-- The evaluation map is injective for connected objects. -/
 lemma evaluationInjective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A) :
     Function.Injective (fun (f : A ⟶ X) ↦ F.map f a) := by
@@ -226,6 +243,28 @@ lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj
   apply Function.Injective.comp
   · exact evaluationInjective_of_isConnected F A A a
   · exact @Aut.ext _ _ A
+
+/-- A morphism from an object `X` with non-empty fiber to a connected object `A` is an
+epimorphism. -/
+lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
+    (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
+  obtain ⟨x⟩ := h
+  apply evaluationInjective_of_isConnected F A Z (F.map f x)
+  convert_to F.map (f ≫ u) x = F.map (f ≫ v) x
+  rw [F.map_comp]; rfl
+  rw [F.map_comp]; rfl
+  rw [huv]
+
+/-- An epimorphism induces a surjective map on fibers. -/
+lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
+  surjective_of_epi (FintypeCat.incl.map (F.map f))
+
+/- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
+lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
+    [IsConnected A] (f : X ⟶ A) :
+    Function.Surjective (F.map f) := by
+  have : Epi f := epi_of_nonempty_of_isConnected F f
+  exact surjective_on_fiber_of_epi F f
 
 section CardFiber
 
