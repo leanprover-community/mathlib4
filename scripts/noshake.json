@@ -105,6 +105,7 @@
   "Mathlib.Tactic.Polyrith",
   "Mathlib.Tactic.Positivity",
   "Mathlib.Tactic.Positivity.Basic",
+  "Mathlib.Tactic.Positivity.Finset",
   "Mathlib.Tactic.ProjectionNotation",
   "Mathlib.Tactic.PushNeg",
   "Mathlib.Tactic.Qify",

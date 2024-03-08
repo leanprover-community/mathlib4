@@ -586,7 +586,7 @@ theorem card_le_card_sdiff_add_card : s.card ≤ (s \ t).card + t.card :=
   Nat.sub_le_iff_le_add.1 <| le_card_sdiff _ _
 #align finset.card_le_card_sdiff_add_card Finset.card_le_card_sdiff_add_card
 
-theorem card_sdiff_add_card : (s \ t).card + t.card = (s ∪ t).card := by
+theorem card_sdiff_add_card (s t : Finset α) : (s \ t).card + t.card = (s ∪ t).card := by
   rw [← card_union_of_disjoint sdiff_disjoint, sdiff_union_self_eq_union]
 #align finset.card_sdiff_add_card Finset.card_sdiff_add_card
 
