@@ -1104,7 +1104,7 @@ protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
 
 protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=
-  .sInf <| forall_range_iff.2 ht
+  .sInf <| forall_mem_range.2 ht
 
 protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (h₁ : @R1Space X t₁) (h₂ : @R1Space X t₂) : @R1Space X (t₁ ⊓ t₂) := by
@@ -1923,7 +1923,7 @@ theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @
 
 theorem regularSpace_iInf {ι X} {t : ι → TopologicalSpace X} (h : ∀ i, @RegularSpace X (t i)) :
     @RegularSpace X (iInf t) :=
-  regularSpace_sInf <| forall_range_iff.mpr h
+  regularSpace_sInf <| forall_mem_range.mpr h
 #align regular_space_infi regularSpace_iInf
 
 theorem RegularSpace.inf {X} {t₁ t₂ : TopologicalSpace X} (h₁ : @RegularSpace X t₁)
@@ -2105,7 +2105,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
       exact ⟨u, hu, hxu, disjoint_left.2 hut⟩
     choose! U hu hxu hd using this
     set V : s → countableBasis X := MapsTo.restrict _ _ _ hu
-    refine' ⟨range V, _, forall_range_iff.2 <| Subtype.forall.2 hd, fun n => _⟩
+    refine' ⟨range V, _, forall_mem_range.2 <| Subtype.forall.2 hd, fun n => _⟩
     · rw [biUnion_range]
       exact fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, hxu x hx⟩
     · simp only [← iSup_eq_iUnion, iSup_and']

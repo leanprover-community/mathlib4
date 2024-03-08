@@ -1497,7 +1497,7 @@ def PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β)
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
-    simp only [← isBounded_def, isBounded_iff, ball_image_iff, mem_setOf]
+    simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_setOf]
 #align pseudo_metric_space.induced PseudoMetricSpace.induced
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
@@ -1625,7 +1625,7 @@ instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
       simp only [sup_eq_max, dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
         Prod.edist_eq]
   i.replaceBornology fun s => by
-    simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, ball_image_iff, ←
+    simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]
     rfl
 #align prod.pseudo_metric_space_max Prod.pseudoMetricSpaceMax
@@ -1890,11 +1890,11 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
       simp only [edist_pi_def, edist_nndist, ← ENNReal.coe_finset_sup, ENNReal.coe_toReal])
   refine i.replaceBornology fun s => ?_
   simp only [← isBounded_def, isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
-    ball_image_iff, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
+    forall_mem_image, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
   refine' eventually_congr ((eventually_ge_atTop 0).mono fun C hC => _)
   lift C to ℝ≥0 using hC
-  refine' ⟨fun H x hx y hy => NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ => H b x hx y hy,
-    fun H b x hx y hy => NNReal.coe_le_coe.2 _⟩
+  refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
+    fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
   simpa only using Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
 #align pseudo_metric_space_pi pseudoMetricSpacePi
 

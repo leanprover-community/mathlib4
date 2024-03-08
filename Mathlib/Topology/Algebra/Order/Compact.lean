@@ -261,7 +261,7 @@ theorem cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
 theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMinOn f s x := by
   rcases (hs.image_of_continuousOn hf).exists_isLeast (ne_s.image f) with ⟨_, ⟨x, hxs, rfl⟩, hx⟩
-  exact ⟨x, hxs, ball_image_iff.1 hx⟩
+  exact ⟨x, hxs, forall_mem_image.1 hx⟩
 
 /-- If a continuous function lies strictly above `a` on a compact set,
   it has a lower bound strictly above `a`. -/
@@ -369,7 +369,7 @@ theorem Continuous.exists_forall_le_of_hasCompactMulSupport [ClosedIicTopology �
     [One α] {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) :
     ∃ x : β, ∀ y : β, f x ≤ f y := by
   obtain ⟨_, ⟨x, rfl⟩, hx⟩ := (h.isCompact_range hf).exists_isLeast (range_nonempty _)
-  rw [mem_lowerBounds, forall_range_iff] at hx
+  rw [mem_lowerBounds, forall_mem_range] at hx
   exact ⟨x, hx⟩
 #align continuous.exists_forall_le_of_has_compact_mul_support Continuous.exists_forall_le_of_hasCompactMulSupport
 #align continuous.exists_forall_le_of_has_compact_support Continuous.exists_forall_le_of_hasCompactSupport

@@ -114,7 +114,7 @@ theorem measurePreserving_homeomorphUnitSphereProd :
     ((borel_eq_generateFrom_Iio _).symm.trans BorelSpace.measurable_eq.symm)
     isPiSystem_measurableSet isPiSystem_Iio
     μ.toSphere.toFiniteSpanningSetsIn (finiteSpanningSetsIn_volumeIoiPow_range_Iio _)
-    fun s hs ↦ forall_range_iff.2 fun r ↦ ?_
+    fun s hs ↦ forall_mem_range.2 fun r ↦ ?_
   have : Ioo (0 : ℝ) r = r.1 • Ioo (0 : ℝ) 1 := by
     rw [LinearOrderedField.smul_Ioo r.2.out, smul_zero, smul_eq_mul, mul_one]
   have hpos : 0 < dim E := FiniteDimensional.finrank_pos
