@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-open CategoryTheory CategoryTheory.Limits
 
 /-!
 # Limits in the category of relations
@@ -24,6 +23,8 @@ We show that the category of relations has zero objects and zero morphisms.
 universe v u w
 
 namespace CategoryTheory.Limits
+
+open CategoryTheory CategoryTheory.Limits
 
 namespace RelCat
 
