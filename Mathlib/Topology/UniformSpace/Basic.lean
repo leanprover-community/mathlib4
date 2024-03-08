@@ -274,7 +274,7 @@ def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
     B.hasBasis).2 comp
 #align uniform_space.core.mk_of_basis UniformSpace.Core.mkOfBasis
 
--- Porting note: TODO: use `mkOfNhds`?
+-- Porting note (#11215): TODO: use `mkOfNhds`?
 /-- A uniform space generates a topological space -/
 def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α) :
     TopologicalSpace α where
@@ -339,7 +339,7 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
   TopologicalSpace.ext <| funext fun s => propext (UniformSpace.isOpen_uniformity s).symm
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
--- Porting note: todo: use this as the main definition?
+-- Porting note (#11215): TODO: use this as the main definition?
 /-- An alternative constructor for `UniformSpace` that takes the proof of `nhds_eq_comap_uniformity`
 as an argument. -/
 @[reducible]
@@ -420,7 +420,7 @@ section UniformSpace
 
 variable [UniformSpace α]
 
-@[inherit_doc] -- Porting note: todo: should we drop the `uniformity` def?
+@[inherit_doc] -- Porting note (#11215): TODO: should we drop the `uniformity` def?
 scoped[Uniformity] notation "𝓤" => uniformity
 
 theorem isOpen_uniformity {s : Set α} :
