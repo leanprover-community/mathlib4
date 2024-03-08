@@ -63,8 +63,8 @@ def ofSuppBddBelow (f : ℤ → R) (hf : BddBelow (Function.support f)) : Lauren
 theorem BddBelow_zero : BddBelow (Function.support (0 : ℤ → R)) := by
   simp_all only [Function.support_zero', bddBelow_empty]
 
-theorem zero_ofSuppBddBelow : ofSuppBddBelow 0 BddBelow_zero = (0 : LaurentSeries R) := by
-  exact rfl
+@[simp]
+theorem zero_ofSuppBddBelow : ofSuppBddBelow 0 BddBelow_zero = (0 : LaurentSeries R) := rfl
 
 theorem order_ofForallLtEqZero (f : ℤ → R) (hf : f ≠ 0) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
