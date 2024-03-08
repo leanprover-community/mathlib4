@@ -554,10 +554,7 @@ lemma comp_eq_const_iff {α β γ: Type*} (b : β) (f : α → β) (g : β → �
 
 lemma comp_eq_zero_iff {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
     (hg : Injective g) (hg0 : g 0 = 0) : g ∘ f = 0 ↔ f = 0 := by
-  have := (comp_eq_const_iff 0 f g hg)
-  rw [hg0] at this
-  simp only [const_zero] at this
-  exact this
+  simpa [hg0, const_zero] using comp_eq_const_iff 0 f g hg
 
 lemma comp_inj_ne_zero {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
     (hg : Injective g) (hg0 : g 0 = 0) : (g ∘ f) ≠ 0 ↔ f ≠ 0 :=
