@@ -94,6 +94,9 @@ macro "by!"  : term =>
   aided_by from_by apply? do)
 
 -- Added to make sure that the discriminant tree is loaded.
+/--
+info: Try this: exact Nat.le_three_of_sqrt_eq_one rfl
+-/
 example : 2 ≤ 3 := by apply?
 
 /--
