@@ -602,7 +602,7 @@ variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
 instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
   refine'
-    { PUnit.booleanAlgebra with
+    { PUnit.instBooleanAlgebra with
       sSup := fun _ => unit
       sInf := fun _ => unit
       .. } <;>
@@ -611,7 +611,7 @@ instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit :
 instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
 
 instance instCompleteLinearOrder : CompleteLinearOrder PUnit :=
-  { PUnit.instCompleteBooleanAlgebra, PUnit.linearOrder with }
+  { PUnit.instCompleteBooleanAlgebra, PUnit.instLinearOrder with }
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=
