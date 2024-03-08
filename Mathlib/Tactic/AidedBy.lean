@@ -221,7 +221,7 @@ Run a tactic in `Meta` and cache the resulting proof state
 if the tactic is successful and finishing.
 -/
 def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
-  (goal: MVarId) (target : Expr)  : MetaM Unit :=
+    (goal: MVarId) (target : Expr)  : MetaM Unit :=
   goal.withContext do
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
