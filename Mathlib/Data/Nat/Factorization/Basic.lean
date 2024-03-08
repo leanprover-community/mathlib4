@@ -651,6 +651,42 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   exact (min_add_max _ _).symm
 #align nat.factorization_lcm Nat.factorization_lcm
 
+/-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorization_lcm_left = ∏ pᵢ ^ kᵢ`, where
+`kᵢ = pᵢ` if `mᵢ ≤ nᵢ` and `0` otherwise. -/
+def factorization_lcm_left (a b : ℕ) := (Nat.lcm a b).factorization.prod fun p n ↦
+  if b.factorization p ≤ a.factorization p then p ^ n else 1
+
+/-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorization_lcm_right = ∏ pᵢ ^ kᵢ`, where
+`kᵢ = pᵢ` if `nᵢ ≤ mᵢ` and `0` otherwise. -/
+def factorization_lcm_right (a b : ℕ) := (Nat.lcm a b).factorization.prod fun p n ↦
+  if b.factorization p ≤ a.factorization p then 1 else p ^ n
+
+lemma factorization_lcm_left_mul_factorization_lcm_right (ha : a ≠ 0) (hb : b ≠ 0) :
+    (factorization_lcm_left a b) * (factorization_lcm_right a b) = lcm a b := by
+  rw [← factorization_prod_pow_eq_self (lcm_ne_zero ha hb), factorization_lcm_left,
+    factorization_lcm_right, ← prod_mul]
+  congr; ext p n; split_ifs <;> simp
+
+lemma factorization_lcm_left_dvd (ha : a ≠ 0) (hb : b ≠ 0) : factorization_lcm_left a b ∣ a := by
+  nth_rewrite 2 [← factorization_prod_pow_eq_self ha]
+  rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
+  · apply prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
+    · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le le_rfl le
+    · apply one_dvd
+  · intro p hp; rw [mem_support_iff] at hp ⊢
+    rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inl <| Nat.pos_of_ne_zero hp).ne'
+  · intros; rw [pow_zero]
+
+lemma factorization_lcm_right_dvd (ha : a ≠ 0) (hb : b ≠ 0) : factorization_lcm_right a b ∣ b := by
+  nth_rewrite 2 [← factorization_prod_pow_eq_self hb]
+  rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
+  · apply Finset.prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
+    · apply one_dvd
+    · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le (not_le.1 le).le le_rfl
+  · intro p hp; rw [mem_support_iff] at hp ⊢
+    rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inr <| Nat.pos_of_ne_zero hp).ne'
+  · intros; rw [pow_zero]
+
 @[to_additive sum_primeFactors_gcd_add_sum_primeFactors_mul]
 theorem prod_primeFactors_gcd_mul_prod_primeFactors_mul {β : Type*} [CommMonoid β] (m n : ℕ)
     (f : ℕ → β) :
