@@ -58,7 +58,8 @@ variable [Intuitionistic F] {T : Set F}
 
 scoped infixl:90 " ⨀ " => modus_ponens
 
-@[simp] lemma imp_id (p : F) : T ⊢! p ⭢ p := (imply₂ T p (p ⭢ p) p) ⨀ (imply₁ T p (p ⭢ p)) ⨀ (imply₁ T p p)
+@[simp] lemma imp_id (p : F) : T ⊢! p ⭢ p := (imply₂ T p (p ⭢ p) p) ⨀ (imply₁ T p (p ⭢ p)) ⨀
+  (imply₁ T p p)
 
 @[simp] lemma hyp_right {p : F} (h : T ⊢! p) (q) : T ⊢! q ⭢ p := imply₁ T p q ⨀ h
 

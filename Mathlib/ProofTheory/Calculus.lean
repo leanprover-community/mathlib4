@@ -110,23 +110,25 @@ def ofConsLeft {p : F} {Γ Δ : List F} (b : p :: Γ ⊢² Δ) :
 def ofConsRight {p : F} {Γ Δ : List F} (b : Γ ⊢² p :: Δ) :
     ⊢¹ p :: (Γ.map (~·) ++ Δ) :=
   wk b (by
-    simp?
+    simp
     exact ⟨List.subset_cons_of_subset _ (List.subset_append_left _ _),
       List.subset_cons_of_subset _ (List.subset_append_right _ _)⟩)
 
 def ofConsRight₂ {p q : F} {Γ Δ : List F} (b : Γ ⊢² p :: q :: Δ) :
     ⊢¹ p :: q :: (Γ.map (~·) ++ Δ) :=
   wk b (by
-    simp?
-    exact ⟨List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $ List.subset_append_left _ _,
-      List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $ List.subset_append_right _ _⟩)
+    simp
+    exact ⟨List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
+    List.subset_append_left _ _, List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
+    List.subset_append_right _ _⟩)
 
 def ofConsLeftRight {p q : F} {Γ Δ : List F} (b : p :: Γ ⊢² q :: Δ) :
     ⊢¹ ~p :: q :: (Γ.map (~·) ++ Δ) :=
   wk b (by
-    simp?
-    exact ⟨List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $ List.subset_append_left _ _,
-      List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $ List.subset_append_right _ _⟩)
+    simp
+    exact ⟨List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
+      List.subset_append_left _ _, List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
+      List.subset_append_right _ _⟩)
 
 def toConsLeft {p : F} {Γ Δ : List F}
     (b : ⊢¹ ~p :: (Γ.map (~·) ++ Δ)) :
@@ -136,7 +138,7 @@ def toConsRight {p : F} {Γ Δ : List F}
     (b : ⊢¹ p :: (Γ.map (~·) ++ Δ)) :
     Γ ⊢² p :: Δ :=
   wk b (by
-    simp?
+    simp
     exact List.subset_append_of_subset_right _ (List.subset_cons _ _))
 
 instance : Gentzen F where
@@ -155,7 +157,7 @@ instance : Gentzen F where
   implyRight := fun b =>
     toConsRight (OneSided.cast (or $ ofConsLeftRight b) (by simp[DeMorgan.imply]))
   wk := fun b hΓ hΔ => wk b (by
-    simp?
+    simp
     exact ⟨List.subset_append_of_subset_left _ $ List.map_subset _ hΓ,
       List.subset_append_of_subset_right _ $ hΔ⟩)
   em := fun {p} _ _ hΓ hΔ => em (p := p)
@@ -220,7 +222,8 @@ def toDisjconseq {Γ Δ} (d : Γ ⊢² Δ) (ss : ∀ p ∈ Γ, p ∈ T) : T ⊢'
   antecedent_ss := ss
   derivation := d
 
-def Cut.cut' {Γ₁ Γ₂ Δ₁ Δ₂ : List F} {p : F} (d₁ : Γ₁ ⊢² p :: Δ₁) (d₂ : p :: Γ₂ ⊢² Δ₂) : Γ₁ ++ Γ₂ ⊢² Δ₁ ++ Δ₂ :=
+def Cut.cut' {Γ₁ Γ₂ Δ₁ Δ₂ : List F} {p : F} (d₁ : Γ₁ ⊢² p :: Δ₁) (d₂ : p :: Γ₂ ⊢² Δ₂) :
+    Γ₁ ++ Γ₂ ⊢² Δ₁ ++ Δ₂ :=
   let d₁ : Γ₁ ++ Γ₂ ⊢² p :: (Δ₁ ++ Δ₂) := wk d₁ (by simp) (List.cons_subset_cons _ $ by simp)
   let d₂ : p :: (Γ₁ ++ Γ₂) ⊢² Δ₁ ++ Δ₂ := wk d₂ (List.cons_subset_cons _ $ by simp) (by simp)
   Cut.cut d₁ d₂
@@ -393,7 +396,8 @@ lemma inconsistent_of_provable_and_refutable' {p}
     Proof.Consistent (Proof.theory T) ↔ Proof.Consistent T :=
   ⟨fun h ↦ h.of_subset (by intro _; simp[Proof.theory]; exact fun h ↦ ⟨Proof.axm h⟩),
    fun consis ↦ ⟨fun b ↦ by
-      have : ¬ Proof.Consistent T := Proof.inconsistent_of_proof (proofCut Proof.provableTheory_theory b)
+      have : ¬ Proof.Consistent T := Proof.inconsistent_of_proof
+        (proofCut Proof.provableTheory_theory b)
       contradiction ⟩⟩
 -/
 end Gentzen
