@@ -5,6 +5,7 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
+import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 /-!
 
@@ -102,6 +103,23 @@ lemma lift_unique {T X Y : C} (f g : T ⟶ X ⊗ Y)
     (h_snd : f ≫ snd _ _ = g ≫ snd _ _) :
     f = g :=
   (product X Y).isLimit.hom_ext fun ⟨j⟩ => j.recOn h_fst h_snd
+
+/--
+Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
+-/
+noncomputable
+def ofFiniteProducts
+    (C : Type u) [Category.{v} C] [Limits.HasFiniteProducts C] :
+    ChosenFiniteProducts C where
+  product X Y := Limits.getLimitCone (Limits.pair X Y)
+  terminal := Limits.getLimitCone (Functor.empty C)
+
+instance : Limits.HasFiniteProducts C :=
+  letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
+    .mk <| ChosenFiniteProducts.product _ _
+  letI : Limits.HasBinaryProducts C := Limits.hasBinaryProducts_of_hasLimit_pair _
+  letI : Limits.HasTerminal C := Limits.hasTerminal_of_unique (𝟙_ _)
+  hasFiniteProducts_of_has_binary_and_terminal
 
 end ChosenFiniteProducts
 
