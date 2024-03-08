@@ -568,7 +568,7 @@ variable {R s t}
 /--
 Let `sᵢ` and `tᵢ` be families of `R`-modules.
 Then there is an `R`-linear map between `⨂ᵢ Hom(sᵢ, tᵢ)` and `Hom(⨂ᵢ sᵢ, ⨂ tᵢ)` defined by
-`⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦⨂ᵢ fᵢ aᵢ`.
+`⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ fᵢ aᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
 
@@ -780,7 +780,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
       aesop
     · simp only
       intro x y hx hy
-      rw [LinearMap.map_add, add_smul, hx, hy]
+      rw [map_add, add_smul, hx, hy]
   right_inv t := by simp
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
