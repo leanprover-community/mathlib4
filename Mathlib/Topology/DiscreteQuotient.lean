@@ -77,7 +77,7 @@ namespace DiscreteQuotient
 
 variable (S : DiscreteQuotient X)
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
 
@@ -169,7 +169,7 @@ instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 -- Porting note (#11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
 instance : Subsingleton (⊤ : DiscreteQuotient X) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound trivial
