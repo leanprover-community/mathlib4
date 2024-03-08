@@ -3201,8 +3201,6 @@ import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.Variance
 import Mathlib.ProofTheory.LogicSymbol
 import Mathlib.ProofTheory.Semantics
-import Mathlib.ProofTheory.Calculus
-import Mathlib.ProofTheory.HilbertStyle
 import Mathlib.ProofTheory.HilbertStyle2
 import Mathlib.ProofTheory.Lindenbaum
 import Mathlib.ProofTheory.System
