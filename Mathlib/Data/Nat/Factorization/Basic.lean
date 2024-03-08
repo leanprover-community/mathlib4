@@ -652,12 +652,12 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.factorization_lcm Nat.factorization_lcm
 
 /-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorization_lcm_left = ∏ pᵢ ^ kᵢ`, where
-`kᵢ = pᵢ` if `mᵢ ≤ nᵢ` and `0` otherwise. -/
+`kᵢ = nᵢ` if `mᵢ ≤ nᵢ` and `0` otherwise. -/
 def factorization_lcm_left (a b : ℕ) := (Nat.lcm a b).factorization.prod fun p n ↦
   if b.factorization p ≤ a.factorization p then p ^ n else 1
 
 /-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorization_lcm_right = ∏ pᵢ ^ kᵢ`, where
-`kᵢ = pᵢ` if `nᵢ ≤ mᵢ` and `0` otherwise. -/
+`kᵢ = mᵢ` if `nᵢ ≤ mᵢ` and `0` otherwise. -/
 def factorization_lcm_right (a b : ℕ) := (Nat.lcm a b).factorization.prod fun p n ↦
   if b.factorization p ≤ a.factorization p then 1 else p ^ n
 
