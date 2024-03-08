@@ -718,7 +718,11 @@ lemma factorization_lcm_left_dvd : factorization_lcm_left a b ∣ a := by
     rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inl <| Nat.pos_of_ne_zero hp).ne'
   · intros; rw [pow_zero]
 
-lemma factorization_lcm_right_dvd (ha : a ≠ 0) (hb : b ≠ 0) : factorization_lcm_right a b ∣ b := by
+lemma factorization_lcm_right_dvd : factorization_lcm_right a b ∣ b := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp [factorization_lcm_right]
+  rcases eq_or_ne b 0 with rfl | hb
+  · simp only [dvd_zero]
   nth_rewrite 2 [← factorization_prod_pow_eq_self hb]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
   · apply Finset.prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
