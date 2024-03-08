@@ -298,7 +298,7 @@ lemma _root_.Nat.coprime_factorization_lcm_left_factorization_lcm_right (a b : N
   contrapose! h'; rwa [← h']
 
 lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : orderOf x ≠ 0)
-  (hy : orderOf y ≠ 0) :
+    (hy : orderOf y ≠ 0) :
     orderOf (x ^ (orderOf x / (factorization_lcm_left (orderOf x) (orderOf y))) *
     y ^ (orderOf y / factorization_lcm_right (orderOf x) (orderOf y))) =
     Nat.lcm (orderOf x) (orderOf y) := by
