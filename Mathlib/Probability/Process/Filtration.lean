@@ -148,7 +148,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, Set.nonempty_image_iff, if_false, le_refl]
+        swap; · simp only [h_nonempty, Set.image_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine' fun f hf_mem => le_trans _ (f.mono hij)
@@ -282,7 +282,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
       stronglyMeasurable_one.indicator (hsm i) := by
-  simp [natural, filtrationOfSet, measurableSpace_iSup_eq]
+  simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
   refine' le_antisymm (generateFrom_le _) (generateFrom_le _)
   · rintro _ ⟨j, hij, rfl⟩

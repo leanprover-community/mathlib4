@@ -51,10 +51,10 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 -- modules over some diagram in the category of rings,
 -- e.g. when defining presheaves over a presheaf of rings.
 -- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
-class RingHomId {R : Type _} [Semiring R] (σ : R →+* R) : Prop where
+class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 
-instance {R : Type _} [Semiring R] : RingHomId (RingHom.id R) where
+instance {R : Type*} [Semiring R] : RingHomId (RingHom.id R) where
   eq_id := rfl
 
 /-- Class that expresses the fact that three ring homomorphisms form a composition triple. This is
@@ -87,9 +87,9 @@ class RingHomInvPair (σ : R₁ →+* R₂) (σ' : outParam (R₂ →+* R₁)) :
   comp_eq₂ : σ.comp σ' = RingHom.id R₂
 #align ring_hom_inv_pair RingHomInvPair
 
--- attribute [simp] RingHomInvPair.comp_eq Porting note: `simp` can prove it
+-- attribute [simp] RingHomInvPair.comp_eq Porting note (#10618): `simp` can prove it
 
--- attribute [simp] RingHomInvPair.comp_eq₂ Porting note: `simp` can prove it
+-- attribute [simp] RingHomInvPair.comp_eq₂ Porting note (#10618): `simp` can prove it
 
 variable {σ : R₁ →+* R₂} {σ' : R₂ →+* R₁}
 
@@ -97,13 +97,13 @@ namespace RingHomInvPair
 
 variable [RingHomInvPair σ σ']
 
--- @[simp] Porting note: `simp` can prove it
+-- @[simp] Porting note (#10618): `simp` can prove it
 theorem comp_apply_eq {x : R₁} : σ' (σ x) = x := by
   rw [← RingHom.comp_apply, comp_eq]
   simp
 #align ring_hom_inv_pair.comp_apply_eq RingHomInvPair.comp_apply_eq
 
--- @[simp] Porting note: `simp` can prove it
+-- @[simp] Porting note (#10618): `simp` can prove it
 theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   rw [← RingHom.comp_apply, comp_eq₂]
   simp
@@ -197,5 +197,7 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
       have := σ₂₃.surjective.comp σ₁₂.surjective
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
 #align ring_hom_surjective.comp RingHomSurjective.comp
+
+instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
 
 end RingHomSurjective

@@ -67,7 +67,7 @@ following theorem as a simp theorem.
 theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s => f s) st = f st :=
   rfl
 ```
-If we decleare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
+If we declare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
 reduction. This breaks the structure of `StateT`.
 So, we declare a constructor-like definition `StateT.mk` and a simp theorem for it.
 -/
@@ -155,7 +155,7 @@ following theorem as a simp theorem.
 theorem run_fun (f : σ → m α) (r : σ) : ReaderT.run (fun r' => f r') r = f r :=
   rfl
 ```
-If we decleare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
+If we declare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
 reduction. This breaks the structure of `ReaderT`.
 So, we declare a constructor-like definition `ReaderT.mk` and a simp theorem for it.
 -/
@@ -189,7 +189,7 @@ namespace OptionT
 
 variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 
-theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
+@[ext] theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
   h
 #align option_t.ext OptionTₓ.ext
 
@@ -248,3 +248,20 @@ instance (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (Option
       rw [bind_congr]
       intro a; cases a <;> simp)
     (pure_bind := by intros; apply OptionT.ext; simp)
+
+/-! ### Lawfulness of `IO`
+
+At some point core intends to make `IO` opaque, which would break these proofs
+As discussed in https://github.com/leanprover/std4/pull/416,
+it should be possible for core to expose the lawfulness of `IO` as part of the opaque interface,
+which would remove the need for these proofs anyway.
+
+These are not in Std because Std does not want to deal with the churn from such a core refactor.
+-/
+
+instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
+instance : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
+instance : LawfulMonad IO := inferInstance
+
+instance : LawfulMonad (EST ε σ) := inferInstanceAs <| LawfulMonad (EStateM _ _)
+instance : LawfulMonad (ST ε) := inferInstance

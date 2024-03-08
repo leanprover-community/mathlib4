@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
-import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Tactic.Inhabit
 
 #align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
@@ -110,24 +109,6 @@ def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
 instance : Unique True :=
   uniqueProp trivial
 
-theorem Fin.eq_zero : ∀ n : Fin 1, n = 0
-  | ⟨_, hn⟩ => Fin.eq_of_veq (Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ hn))
-#align fin.eq_zero Fin.eq_zero
-
-instance {n : ℕ} : Inhabited (Fin n.succ) :=
-  ⟨0⟩
-
-instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
-  ⟨⟨0, by rw [Nat.add_comm]; exact Nat.zero_lt_succ _⟩⟩
-
-@[simp]
-theorem Fin.default_eq_zero (n : ℕ) : (default : Fin n.succ) = 0 :=
-  rfl
-#align fin.default_eq_zero Fin.default_eq_zero
-
-instance Fin.unique : Unique (Fin 1) where
-  uniq := Fin.eq_zero
-
 namespace Unique
 
 open Function
@@ -204,10 +185,12 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
-  ext x
-  rw [Subsingleton.elim x default]
-  rfl
+theorem eq_const_of_subsingleton [Subsingleton α] (f : α → β) (a : α) :
+    f = Function.const α (f a) :=
+  funext fun x ↦ Subsingleton.elim x a ▸ rfl
+
+theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) :=
+  eq_const_of_subsingleton ..
 #align eq_const_of_unique eq_const_of_unique
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
@@ -250,8 +233,26 @@ def Surjective.uniqueOfSurjectiveConst (α : Type*) {β : Type*} (b : β)
 
 end Function
 
+section Pi
+
+variable {ι : Sort*} {α : ι → Sort*}
+/-- Given one value over a unique, we get a dependent function. -/
+def uniqueElim [Unique ι] (x : α (default : ι)) (i : ι) : α i := by
+  rw [Unique.eq_default i]
+  exact x
+
+@[simp]
+theorem uniqueElim_default {_ : Unique ι} (x : α (default : ι)) : uniqueElim x (default : ι) = x :=
+  rfl
+
+@[simp]
+theorem uniqueElim_const {_ : Unique ι} (x : β) (i : ι) : uniqueElim (α := fun _ ↦ β) x i = x :=
+  rfl
+
+end Pi
+
 -- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
-attribute [simp] eq_iff_true_of_subsingleton in
+attribute [local simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
   refine' ⟨default, _, _⟩ <;> intro x <;> simp

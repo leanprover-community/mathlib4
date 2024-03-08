@@ -11,8 +11,8 @@ import Mathlib.RingTheory.Localization.Integral
 /-!
 # Integrally closed rings
 
-An integrally closed domain `R` contains all the elements of `Frac(R)` that are
-integral over `R`. A special case of integrally closed domains are the Dedekind domains.
+An integrally closed ring `R` contains all the elements of `Frac(R)` that are
+integral over `R`. A special case of integrally closed rings are the Dedekind domains.
 
 ## Main definitions
 
@@ -34,7 +34,7 @@ open Polynomial
 This definition uses `FractionRing R` to denote `Frac(R)`. See `isIntegrallyClosed_iff`
 if you want to choose another field of fractions for `R`.
 -/
-class IsIntegrallyClosed (R : Type*) [CommRing R] [IsDomain R] : Prop where
+class IsIntegrallyClosed (R : Type*) [CommRing R] : Prop where
   /-- All integral elements of `Frac(R)` are also elements of `R`. -/
   algebraMap_eq_of_integral :
     ∀ {x : FractionRing R}, IsIntegral R x → ∃ y, algebraMap R (FractionRing R) y = x
@@ -42,9 +42,9 @@ class IsIntegrallyClosed (R : Type*) [CommRing R] [IsDomain R] : Prop where
 
 section Iff
 
-variable {R : Type*} [CommRing R] [IsDomain R]
+variable {R : Type*} [CommRing R]
 
-variable (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 /-- `R` is integrally closed iff all integral elements of its fraction field `K`
 are also elements of `R`. -/
@@ -79,9 +79,9 @@ end Iff
 
 namespace IsIntegrallyClosed
 
-variable {R : Type*} [CommRing R] [id : IsDomain R] [iic : IsIntegrallyClosed R]
+variable {R S : Type*} [CommRing R] [CommRing S] [id : IsDomain R] [iic : IsIntegrallyClosed R]
 
-variable {K : Type*} [Field K] [Algebra R K] [ifr : IsFractionRing R K]
+variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
 
 instance : IsIntegralClosure R R K :=
   (isIntegrallyClosed_iff_isIntegralClosure K).mp iic
@@ -92,16 +92,26 @@ theorem isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y 
 
 theorem exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R K y = x :=
-  isIntegral_iff.mp <| isIntegral_of_pow hn hx
+  isIntegral_iff.mp <| hx.of_pow hn
 #align is_integrally_closed.exists_algebra_map_eq_of_is_integral_pow IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow
 
-theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [Field K] [Algebra R K]
+theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   exists_algebraMap_eq_of_isIntegral_pow hn <| isIntegral_iff.mpr ⟨⟨x ^ n, hx⟩, rfl⟩
 #align is_integrally_closed.exists_algebra_map_eq_of_pow_mem_subalgebra IsIntegrallyClosed.exists_algebraMap_eq_of_pow_mem_subalgebra
 
-variable (K)
+variable (R S K)
+
+lemma _root_.IsIntegralClosure.of_isIntegrallyClosed
+    [Algebra S R] [Algebra S K] [IsScalarTower S R K] (hRS : Algebra.IsIntegral S R) :
+    IsIntegralClosure R S K := by
+  refine ⟨IsLocalization.injective _ le_rfl, fun {x} ↦
+    ⟨fun hx ↦ IsIntegralClosure.isIntegral_iff.mp (IsIntegral.tower_top (A := R) hx), ?_⟩⟩
+  rintro ⟨y, rfl⟩
+  exact IsIntegral.map (IsScalarTower.toAlgHom S R K) (hRS y)
+
+variable {R}
 
 theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyClosed R := by
   refine' eq_bot_iff.trans _
@@ -131,12 +141,12 @@ variable {R : Type*} [CommRing R]
 
 variable (K : Type*) [Field K] [Algebra R K]
 
-variable [IsDomain R] [IsFractionRing R K]
+variable [IsFractionRing R K]
 
 variable {L : Type*} [Field L] [Algebra K L] [Algebra R L] [IsScalarTower R K L]
 
 -- Can't be an instance because you need to supply `K`.
-theorem isIntegrallyClosedOfFiniteExtension [FiniteDimensional K L] :
+theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L] :
     IsIntegrallyClosed (integralClosure R L) :=
   letI : IsFractionRing (integralClosure R L) L := isFractionRing_of_finite_extension K L
   (integralClosure_eq_bot_iff L).mp integralClosure_idem

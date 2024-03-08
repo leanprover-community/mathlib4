@@ -3,6 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Heather Macbeth
 -/
+import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Data.Matrix.Basic
 
@@ -21,6 +22,10 @@ namespace Matrix
 
 instance : UniformSpace (Matrix m n 𝕜) :=
   (by infer_instance : UniformSpace (m → n → 𝕜))
+
+instance instUniformAddGroup [AddGroup 𝕜] [UniformAddGroup 𝕜] :
+    UniformAddGroup (Matrix m n 𝕜) :=
+  inferInstanceAs <| UniformAddGroup (m → n → 𝕜)
 
 theorem uniformity :
     𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) := by

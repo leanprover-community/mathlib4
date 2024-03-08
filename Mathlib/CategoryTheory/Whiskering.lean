@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Functor.FullyFaithful
 /-!
 # Whiskering
 
-Given a functor `F  : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
+Given a functor `F : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
 we can construct a new natural transformation `F ⋙ G ⟶ F ⋙ H`,
 called `whiskerLeft F α`. This is the same as the horizontal composition of `𝟙 F` with `α`.
 
@@ -136,13 +136,13 @@ theorem whiskerRight_id' {G : C ⥤ D} (F : D ⥤ E) : whiskerRight (𝟙 G) F =
   ((whiskeringRight C D E).obj F).map_id _
 #align category_theory.whisker_right_id' CategoryTheory.whiskerRight_id'
 
-@[simp]
+@[simp, reassoc]
 theorem whiskerLeft_comp (F : C ⥤ D) {G H K : D ⥤ E} (α : G ⟶ H) (β : H ⟶ K) :
     whiskerLeft F (α ≫ β) = whiskerLeft F α ≫ whiskerLeft F β :=
   rfl
 #align category_theory.whisker_left_comp CategoryTheory.whiskerLeft_comp
 
-@[simp]
+@[simp, reassoc]
 theorem whiskerRight_comp {G H K : C ⥤ D} (α : G ⟶ H) (β : H ⟶ K) (F : D ⥤ E) :
     whiskerRight (α ≫ β) F = whiskerRight α F ≫ whiskerRight β F :=
   ((whiskeringRight C D E).obj F).map_comp α β

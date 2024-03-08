@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Logic.Equiv.Option
 
@@ -27,7 +29,8 @@ theorem Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
   ext (_ | i)
   · simp [swap_apply_of_ne_of_ne]
   · by_cases hx : i = x
-    simp [hx, swap_apply_of_ne_of_ne]
+    simp only [hx, optionCongr_apply, Option.map_some', swap_apply_left, Option.mem_def,
+             Option.some.injEq]
     by_cases hy : i = y <;> simp [hx, hy, swap_apply_of_ne_of_ne]
 #align equiv.option_congr_swap Equiv.optionCongr_swap
 

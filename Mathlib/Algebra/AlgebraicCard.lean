@@ -43,13 +43,13 @@ variable (R : Type u) (A : Type v) [CommRing R] [CommRing A] [IsDomain A] [Algeb
   [NoZeroSMulDivisors R A]
 
 theorem cardinal_mk_lift_le_mul :
-    Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ Cardinal.lift.{v} #(R[X]) * ℵ₀ := by
+    Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ Cardinal.lift.{v} #R[X] * ℵ₀ := by
   rw [← mk_uLift, ← mk_uLift]
   choose g hg₁ hg₂ using fun x : { x : A | IsAlgebraic R x } => x.coe_prop
   refine' lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le g fun f => _
   rw [lift_le_aleph0, le_aleph0_iff_set_countable]
-  suffices : MapsTo (↑) (g ⁻¹' {f}) (f.rootSet A)
-  exact this.countable_of_injOn (Subtype.coe_injective.injOn _) (f.rootSet_finite A).countable
+  suffices MapsTo (↑) (g ⁻¹' {f}) (f.rootSet A) from
+    this.countable_of_injOn (Subtype.coe_injective.injOn _) (f.rootSet_finite A).countable
   rintro x (rfl : g x = f)
   exact mem_rootSet.2 ⟨hg₁ x, hg₂ x⟩
 #align algebraic.cardinal_mk_lift_le_mul Algebraic.cardinal_mk_lift_le_mul
@@ -72,7 +72,7 @@ variable [Countable R]
 
 @[simp]
 protected theorem countable : Set.Countable { x : A | IsAlgebraic R x } := by
-  rw [← le_aleph0_iff_set_countable, ← lift_le]
+  rw [← le_aleph0_iff_set_countable, ← lift_le_aleph0]
   apply (cardinal_mk_lift_le_max R A).trans
   simp
 #align algebraic.countable Algebraic.countable
@@ -90,8 +90,8 @@ section NonLift
 variable (R A : Type u) [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
   [NoZeroSMulDivisors R A]
 
-theorem cardinal_mk_le_mul : #{ x : A // IsAlgebraic R x } ≤ #(R[X]) * ℵ₀ := by
-  rw [← lift_id #_, ← lift_id #(R[X])]
+theorem cardinal_mk_le_mul : #{ x : A // IsAlgebraic R x } ≤ #R[X] * ℵ₀ := by
+  rw [← lift_id #_, ← lift_id #R[X]]
   exact cardinal_mk_lift_le_mul R A
 #align algebraic.cardinal_mk_le_mul Algebraic.cardinal_mk_le_mul
 

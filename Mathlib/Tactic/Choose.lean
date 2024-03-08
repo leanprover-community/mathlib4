@@ -26,7 +26,7 @@ such that `val'` does not have any free variables from elements of `ctx` whose t
 propositions. This is done by applying `Function.sometimes` to abstract over all the propositional
 arguments. -/
 def mk_sometimes (u : Level) (α nonemp p : Expr) :
-  List Expr → Expr × Expr → MetaM (Expr × Expr)
+    List Expr → Expr × Expr → MetaM (Expr × Expr)
 | [], (val, spec) => pure (val, spec)
 | (e :: ctx), (val, spec) => do
   let (val, spec) ← mk_sometimes u α nonemp p ctx (val, spec)
@@ -77,7 +77,7 @@ If `nondep` is true and `α` is inhabited, then it will remove the dependency of
 all propositional assumptions in `xs`. For example if `ys` are propositions then
 `(h : ∀xs ys, ∃a:α, p a) ⊢ g` becomes `(d : ∀xs, a) (s : ∀xs ys, p (d xs)) ⊢ g`. -/
 def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
-  MetaM (ElimStatus × Expr × MVarId) := do
+    MetaM (ElimStatus × Expr × MVarId) := do
   let (g, h) ← match h with
   | some e => pure (g, e)
   | none   => do
@@ -130,8 +130,8 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         return (neFail, fvar, g)
       | .const ``And _, #[p, q] => do
         let data ← mkFreshNameFrom data `h
-        let e1 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.left  []) p q (mkAppN h ctx)
-        let e2 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.right []) p q (mkAppN h ctx)
+        let e1 ← mkLambdaFVars ctx <| mkApp3 (.const ``And.left  []) p q (mkAppN h ctx)
+        let e2 ← mkLambdaFVars ctx <| mkApp3 (.const ``And.right []) p q (mkAppN h ctx)
         let t1 ← inferType e1
         let t2 ← inferType e2
         let (fvar, g) ← (← (← g.assert .anonymous t2 e2).assert data t1 e1).intro1P

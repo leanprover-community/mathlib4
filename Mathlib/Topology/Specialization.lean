@@ -3,8 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Separation
+import Mathlib.Order.Category.Preord
+import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Separation
+import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
 # Specialization order
@@ -12,6 +15,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 This file defines a type synonym for a topological space considered with its specialisation order.
 -/
 
+open CategoryTheory Topology
 
 /-- Type synonym for a topological space considered with its specialisation order. -/
 def Specialization (α : Type*) := α
@@ -47,6 +51,12 @@ instance instPartialOrder [T0Space α] : PartialOrder (Specialization α) := spe
 @[simp] lemma ofEquiv_specializes_ofEquiv {a b : Specialization α} :
   ofEquiv a ⤳ ofEquiv b ↔ b ≤ a := Iff.rfl
 
+@[simp] lemma isOpen_toEquiv_preimage [AlexandrovDiscrete α] {s : Set (Specialization α)} :
+  IsOpen (toEquiv ⁻¹' s) ↔ IsUpperSet s := isOpen_iff_forall_specializes.trans forall_swap
+
+@[simp] lemma isUpperSet_ofEquiv_preimage [AlexandrovDiscrete α] {s : Set α} :
+  IsUpperSet (ofEquiv ⁻¹' s) ↔ IsOpen s := isOpen_toEquiv_preimage.symm
+
 /-- A continuous map between topological spaces induces a monotone map between their specialization
 orders. -/
 def map (f : C(α, β)) : Specialization α →o Specialization β where
@@ -57,3 +67,23 @@ def map (f : C(α, β)) : Specialization α →o Specialization β where
 @[simp] lemma map_comp (g : C(β, γ)) (f : C(α, β)) : map (g.comp f) = (map g).comp (map f) := rfl
 
 end Specialization
+
+open Set Specialization WithUpperSet
+
+/-- A preorder is isomorphic to the specialisation order of its upper set topology. -/
+def orderIsoSpecializationWithUpperSetTopology (α : Type*) [Preorder α] :
+    α ≃o Specialization (WithUpperSet α) where
+  toEquiv := toUpperSet.trans toEquiv
+  map_rel_iff' := by simp
+
+/-- An Alexandrov-discrete space is isomorphic to the upper set topology of its specialisation
+order. -/
+def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
+    α ≃ₜ WithUpperSet (Specialization α) :=
+(toEquiv.trans toUpperSet).toHomeomorph λ s ↦ by simp [Set.preimage_comp]
+
+/-- Sends a topological space to its specialisation order. -/
+@[simps]
+def topToPreord : TopCat ⥤ Preord where
+  obj X := Preord.of <| Specialization X
+  map := Specialization.map

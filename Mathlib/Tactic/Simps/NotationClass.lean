@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 
-import Std.Lean.NameMapAttribute
-import Mathlib.Lean.Expr.Basic
 import Lean.Elab.Exception
-import Qq.MetaM
+import Std.Lean.NameMapAttribute
+import Std.Lean.Expr
 import Std.Tactic.Lint
 
 /-!
@@ -27,7 +26,7 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
     We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
   * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
-    `SetLike` and `FunLike` coercions.
+    `SetLike` and `DFunLike` coercions.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).
   * The second argument is the name of a declaration that has type
@@ -36,7 +35,7 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
     arguments of classes that use the projection. -/
 syntax (name := notation_class) "notation_class" "*"? (ppSpace ident)? (ppSpace ident)? : attr
 
-open Lean Meta Elab Term Qq
+open Lean Meta Elab Term
 
 namespace Simps
 
@@ -54,8 +53,8 @@ def defaultfindArgs : findArgType := λ _ className args => do
   else if args.size == 1 then
     return mkArray arity args[0]!
   else
-    throwError "initialize_simps_projections cannot automatically find arguments for class {
-      className}"
+    throwError "initialize_simps_projections cannot automatically find arguments for class \
+      {className}"
 
 /-- Find arguments by duplicating the first argument. Used for `pow`. -/
 def copyFirst : findArgType := λ _ _ args => return (args.push <| args[0]?.getD default).map some
@@ -79,7 +78,7 @@ def findZeroArgs : findArgType := λ _ _ args =>
 def findOneArgs : findArgType := λ _ _ args =>
   return #[some <| args[0]?.getD default, some <| mkRawNatLit 1]
 
-/-- Find arguments of a coercion class (`FunLike` or `SetLike`) -/
+/-- Find arguments of a coercion class (`DFunLike` or `SetLike`) -/
 def findCoercionArgs : findArgType := λ str className args => do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.forallArity
@@ -93,7 +92,7 @@ structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
   /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `FunLike` and `SetLike`). If this is set to true, we add the current
+    (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
     class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/
@@ -119,7 +118,7 @@ initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
         match (← getEnv).find? findArgs with
         | none => throwError "no such declaration {findArgs}"
         | some declInfo =>
-          unless ← MetaM.run' <| isDefEq declInfo.type q(findArgType) do
+          unless ← MetaM.run' <| isDefEq declInfo.type (mkConst ``findArgType) do
             throwError "declaration {findArgs} has wrong type"
         ext.add projName ⟨src, coercion.isNone, findArgs⟩
       | _ => throwUnsupportedSyntax }

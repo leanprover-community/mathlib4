@@ -131,7 +131,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {G : Type*} [Nor
 theorem ContDiff.euclidean_dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (h : ∀ x, f x ≠ g x) :
     ContDiff ℝ n fun x => Euclidean.dist (f x) (g x) := by
   simp only [Euclidean.dist]
-  apply @ContDiff.dist ℝ
-  exacts [(@toEuclidean G _ _ _ _ _ _ _).contDiff.comp hf,
-    (@toEuclidean G _ _ _ _ _ _ _).contDiff.comp hg, fun x => toEuclidean.injective.ne (h x)]
+  apply ContDiff.dist ℝ
+  exacts [(toEuclidean (E := G)).contDiff.comp hf,
+    (toEuclidean (E := G)).contDiff.comp hg, fun x => toEuclidean.injective.ne (h x)]
 #align cont_diff.euclidean_dist ContDiff.euclidean_dist

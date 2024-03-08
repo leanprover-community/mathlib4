@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.Zsqrtd.Basic
-import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Real.Archimedean
 
 #align_import number_theory.zsqrtd.gaussian_int from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 

@@ -138,7 +138,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
     refine' ⟨fd, _⟩
     have := rfind_spec (get_mem fd)
-    simp at this ⊢
+    simp? at this ⊢ says simp only [coe_some, mem_some_iff, ofOption_dom] at this ⊢
     cases' Option.isSome_iff_exists.1 this.symm with a e
     rw [e]; trivial⟩
 #align nat.rfind_opt_dom Nat.rfindOpt_dom
@@ -224,7 +224,8 @@ theorem ppred : Partrec fun n => ppred n :=
         eq_none_iff.2 fun a ⟨⟨m, h, _⟩, _⟩ => by
           simp [show 0 ≠ m.succ by intro h; injection h] at h
     · refine' eq_some_iff.2 _
-      simp
+      simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_True, mem_some_iff,
+        false_eq_decide_iff, true_and]
       intro m h
       simp [ne_of_gt h]
 #align nat.partrec.ppred Nat.Partrec.ppred
@@ -541,6 +542,8 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
+theorem mk {f : α → β → σ} (hf : Computable fun p : α × β => f p.1 p.2) : Computable₂ f := hf
+
 nonrec theorem comp {f : β → γ → σ} {g : α → β} {h : α → γ} (hf : Computable₂ f)
     (hg : Computable g) (hh : Computable h) : Computable fun a => f (g a) (h a) :=
   hf.comp (hg.pair hh)
@@ -567,7 +570,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
     fun n => by
     cases' e : decode (α := α) n with a <;> simp [e, Nat.rfind_zero_none, map_id']
     congr; funext n
-    simp [Part.map_map, (· ∘ ·)]
+    simp only [map_map, Function.comp]
     refine map_id' (fun b => ?_) _
     cases b <;> rfl
 #align partrec.rfind Partrec.rfind
@@ -606,7 +609,7 @@ theorem vector_mOfFn :
       (∀ i, Partrec (f i)) → Partrec fun a : α => Vector.mOfFn fun i => f i a
   | 0, _, _ => const _
   | n + 1, f, hf => by
-    simp [Vector.mOfFn]
+    simp only [Vector.mOfFn, Nat.add_eq, Nat.add_zero, pure_eq_some, bind_eq_bind]
     exact
       (hf 0).bind
         (Partrec.bind ((vector_mOfFn fun i => hf i.succ).comp fst)
@@ -743,7 +746,7 @@ theorem list_ofFn :
       (∀ i, Computable (f i)) → Computable fun a => List.ofFn fun i => f i a
   | 0, _, _ => const []
   | n + 1, f, hf => by
-    simp [List.ofFn_succ]
+    simp only [List.ofFn_succ]
     exact list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
 #align computable.list_of_fn Computable.list_ofFn
 
@@ -816,31 +819,30 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
       b ∈ PFun.fix f a := by
   intro F; refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
-    have : ∀ (m a') (_ : Sum.inr a' ∈ F a m) (_ : b ∈ PFun.fix f a'), b ∈ PFun.fix f a := by
+    have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
-      induction' m with m IH generalizing a' <;> simp at am
+      induction' m with m IH generalizing a' <;> simp [F] at am
       · rwa [← am]
       rcases am with ⟨a₂, am₂, fa₂⟩
       exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
-    cases n <;> simp at h₂
+    cases n <;> simp [F] at h₂
     rcases h₂ with (h₂ | ⟨a', am', fa'⟩)
     · cases' h₁ (Nat.lt_succ_self _) with a' h
       injection mem_unique h h₂
     · exact this _ _ am' (PFun.mem_fix_iff.2 (Or.inl fa'))
-  · suffices
-      ∀ (a') (_ : b ∈ PFun.fix f a') (k) (_ : Sum.inr a' ∈ F a k),
-        ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, ∀ (_ : k ≤ m), ∃ a₂, Sum.inr a₂ ∈ F a m by
-      rcases this _ h 0 (by simp) with ⟨n, hn₁, hn₂⟩
+  · suffices ∀ a', b ∈ PFun.fix f a' → ∀ k, Sum.inr a' ∈ F a k →
+        ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, k ≤ m → ∃ a₂, Sum.inr a₂ ∈ F a m by
+      rcases this _ h 0 (by simp [F]) with ⟨n, hn₁, hn₂⟩
       exact ⟨_, ⟨⟨_, hn₁⟩, fun {m} mn => hn₂ m mn (Nat.zero_le _)⟩, hn₁⟩
     intro a₁ h₁
     apply @PFun.fixInduction _ _ _ _ _ _ h₁
     intro a₂ h₂ IH k hk
     rcases PFun.mem_fix_iff.1 h₂ with (h₂ | ⟨a₃, am₃, _⟩)
     · refine' ⟨k.succ, _, fun m mk km => ⟨a₂, _⟩⟩
-      · simp
+      · simp [F]
         exact Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
-    · rcases IH _ am₃ k.succ (by simp; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
+    · rcases IH _ am₃ k.succ (by simp [F]; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
       · refine' ⟨n, hn₁, fun m mn km => _⟩
         cases' km.lt_or_eq_dec with km km
         · exact hn₂ _ mn km
@@ -857,7 +859,7 @@ theorem fix {f : α →. Sum σ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
   have hp : Partrec₂ p :=
     hF.map ((sum_casesOn Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
   exact (hp.rfind.bind (hF.bind (sum_casesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
-    ext fun b => by simp; apply fix_aux f
+    ext fun b => by simp [p]; apply fix_aux f
 #align partrec.fix Partrec.fix
 
 end Partrec

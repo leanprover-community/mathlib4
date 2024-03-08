@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import cyclotomic_105 from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -109,7 +110,7 @@ theorem cyclotomic_105 :
 #align counterexample.cyclotomic_105 Counterexample.cyclotomic_105
 
 theorem coeff_cyclotomic_105 : coeff (cyclotomic 105 ℤ) 7 = -2 := by
-  simp [cyclotomic_105, coeff_X_pow, coeff_one, coeff_X_of_ne_one, coeff_bit0_mul, two_mul]
+  simp [cyclotomic_105, coeff_one, coeff_X_of_ne_one]
 #align counterexample.coeff_cyclotomic_105 Counterexample.coeff_cyclotomic_105
 
 theorem not_forall_coeff_cyclotomic_neg_one_zero_one :

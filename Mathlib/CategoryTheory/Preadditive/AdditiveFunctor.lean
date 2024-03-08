@@ -48,15 +48,15 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
-  [Functor.Additive F]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  [Preadditive C] [Preadditive D] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
 
 @[simp]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 #align category_theory.functor.map_add CategoryTheory.Functor.map_add
 
--- porting note: it was originally @[simps (config := { fullyApplied := false })]
+-- Porting note: it was originally @[simps (config := .asFn)]
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
@@ -67,8 +67,8 @@ theorem coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
   rfl
 #align category_theory.functor.coe_map_add_hom CategoryTheory.Functor.coe_mapAddHom
 
-instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMorphisms F
-    where map_zero _ _ := F.mapAddHom.map_zero
+instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMorphisms F where
+  map_zero _ _ := F.mapAddHom.map_zero
 #align category_theory.functor.preserves_zero_morphisms_of_additive CategoryTheory.Functor.preservesZeroMorphisms_of_additive
 
 instance : Additive (𝟭 C) where
@@ -98,10 +98,40 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
 open BigOperators
 
 @[simp]
-theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
+nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
     F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
-  (F.mapAddHom : (X ⟶ Y) →+ _).map_sum f s
+  map_sum F.mapAddHom f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
+
+variable {F}
+
+lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
+  constructor
+  intro X Y f g
+  simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
+    NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
+
+variable (F)
+
+lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
+    [(F ⋙ G).Additive] : G.Additive where
+  map_add {X Y f g} := by
+    obtain ⟨f', hf'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ f ≫
+      (F.objObjPreimageIso Y).inv)
+    obtain ⟨g', hg'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ g ≫
+      (F.objObjPreimageIso Y).inv)
+    simp only [← cancel_mono (G.map (F.objObjPreimageIso Y).inv),
+      ← cancel_epi (G.map (F.objObjPreimageIso X).hom),
+      Preadditive.add_comp, Preadditive.comp_add, ← Functor.map_comp]
+    erw [← hf', ← hg', ← (F ⋙ G).map_add]
+    dsimp
+    rw [F.map_add]
+
+lemma additive_of_comp_faithful
+    (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
+    F.Additive where
+  map_add {_ _ f₁ f₂} := G.map_injective (by
+    rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map])
 
 end
 
@@ -168,7 +198,7 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
   FullSubcategory fun F : C ⥤ D => F.Additive

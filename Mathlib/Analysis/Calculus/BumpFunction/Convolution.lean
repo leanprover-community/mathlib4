@@ -8,6 +8,7 @@ import Mathlib.Analysis.Calculus.BumpFunction.Normed
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Covering.Differentiation
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import analysis.convolution from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
@@ -28,7 +29,7 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
   If `(φ i).rOut` tends to zero along a filter `l`,
   then `((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀` tends to `g x₀` along the same filter.
 - `ContDiffBump.convolution_tendsto_right`: generalization of the above lemma.
-- `ContDiffBump.ae_convolution_tendsto_right_of_locally_integrable`: let `g` be a locally
+- `ContDiffBump.ae_convolution_tendsto_right_of_locallyIntegrable`: let `g` be a locally
   integrable function. Then the convolution of `g` with a family of bump functions with
   support tending to `0` converges almost everywhere to `g`.
 
@@ -104,12 +105,10 @@ theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- If a function `g` is locally integrable, then the convolution `φ i * g` converges almost
 everywhere to `g` if `φ i` is a sequence of bump functions with support tending to `0`, provided
 that the ratio between the inner and outer radii of `φ i` remains bounded. -/
-theorem ae_convolution_tendsto_right_of_locally_integrable
+theorem ae_convolution_tendsto_right_of_locallyIntegrable
     {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι} {K : ℝ}
     (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0))
     (h'φ : ∀ᶠ i in l, (φ i).rOut ≤ K * (φ i).rIn) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,

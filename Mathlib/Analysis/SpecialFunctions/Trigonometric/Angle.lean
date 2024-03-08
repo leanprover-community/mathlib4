@@ -32,15 +32,15 @@ def Angle : Type :=
 
 namespace Angle
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
--- Porting note: added due to missing instances due to no deriving
+-- Porting note (#10754): added due to missing instances due to no deriving
 -- also, without this, a plain `QuotientAddGroup.mk`
 -- causes coerced terms to be of type `ℝ ⧸ AddSubgroup.zmultiples (2 * π)`
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
@@ -50,7 +50,8 @@ protected def coe (r : ℝ) : Angle := QuotientAddGroup.mk r
 instance : Coe ℝ Angle := ⟨Angle.coe⟩
 
 instance : CircularOrder Real.Angle :=
-  @AddCircle.instCircularOrderAddCircle _ _ _ _ _ ⟨by norm_num [pi_pos]⟩ _
+  QuotientAddGroup.circularOrder (hp' := ⟨by norm_num [pi_pos]⟩)
+
 
 @[continuity]
 theorem continuous_coe : Continuous ((↑) : ℝ → Angle) :=
@@ -183,7 +184,7 @@ theorem two_zsmul_eq_iff {ψ θ : Angle} : (2 : ℤ) • ψ = (2 : ℤ) • θ �
   -- Porting note: no `Int.natAbs_bit0` anymore
   have : Int.natAbs 2 = 2 := rfl
   rw [zsmul_eq_iff two_ne_zero, this, Fin.exists_fin_two, Fin.val_zero,
-    Fin.val_one, zero_smul, coe_zero, add_zero, one_smul, Int.cast_two,
+    Fin.val_one, zero_smul, add_zero, one_smul, Int.cast_two,
     mul_div_cancel_left (_ : ℝ) two_ne_zero]
 #align real.angle.two_zsmul_eq_iff Real.Angle.two_zsmul_eq_iff
 
@@ -223,12 +224,12 @@ theorem neg_ne_self_iff {θ : Angle} : -θ ≠ θ ↔ θ ≠ 0 ∧ θ ≠ π := 
 #align real.angle.neg_ne_self_iff Real.Angle.neg_ne_self_iff
 
 theorem two_nsmul_eq_pi_iff {θ : Angle} : (2 : ℕ) • θ = π ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
-  have h : (π : Angle) = (2 : ℕ) • (π / 2 : ℝ) := by rw [two_nsmul, add_halves]
+  have h : (π : Angle) = ((2 : ℕ) • (π / 2 : ℝ) :) := by rw [two_nsmul, add_halves]
   nth_rw 1 [h]
   rw [coe_nsmul, two_nsmul_eq_iff]
   -- Porting note: `congr` didn't simplify the goal of iff of `Or`s
   convert Iff.rfl
-  rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, ←neg_sub, sub_neg_eq_add, add_assoc,
+  rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, ← neg_sub, sub_neg_eq_add, add_assoc,
     add_halves, ← two_mul, coe_neg, coe_two_pi, neg_zero]
 #align real.angle.two_nsmul_eq_pi_iff Real.Angle.two_nsmul_eq_pi_iff
 
@@ -659,14 +660,14 @@ theorem abs_toReal_eq_pi_div_two_iff {θ : Angle} :
 theorem nsmul_toReal_eq_mul {n : ℕ} (h : n ≠ 0) {θ : Angle} :
     (n • θ).toReal = n * θ.toReal ↔ θ.toReal ∈ Set.Ioc (-π / n) (π / n) := by
   nth_rw 1 [← coe_toReal θ]
-  have h' : 0 < (n : ℝ) := by exact_mod_cast Nat.pos_of_ne_zero h
+  have h' : 0 < (n : ℝ) := mod_cast Nat.pos_of_ne_zero h
   rw [← coe_nsmul, nsmul_eq_mul, toReal_coe_eq_self_iff, Set.mem_Ioc, div_lt_iff' h',
     le_div_iff' h']
 #align real.angle.nsmul_to_real_eq_mul Real.Angle.nsmul_toReal_eq_mul
 
 theorem two_nsmul_toReal_eq_two_mul {θ : Angle} :
-    ((2 : ℕ) • θ).toReal = 2 * θ.toReal ↔ θ.toReal ∈ Set.Ioc (-π / 2) (π / 2) := by
-  exact_mod_cast nsmul_toReal_eq_mul two_ne_zero
+    ((2 : ℕ) • θ).toReal = 2 * θ.toReal ↔ θ.toReal ∈ Set.Ioc (-π / 2) (π / 2) :=
+  mod_cast nsmul_toReal_eq_mul two_ne_zero
 #align real.angle.two_nsmul_to_real_eq_two_mul Real.Angle.two_nsmul_toReal_eq_two_mul
 
 theorem two_zsmul_toReal_eq_two_mul {θ : Angle} :
@@ -688,7 +689,8 @@ theorem toReal_coe_eq_self_sub_two_pi_iff {θ : ℝ} :
 
 theorem toReal_coe_eq_self_add_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ + 2 * π ↔ θ ∈ Set.Ioc (-3 * π) (-π) := by
-  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;> norm_num
+  convert @toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff θ (-1) using 2 <;>
+    set_option tactic.skipAssignedInstances false in norm_num
 #align real.angle.to_real_coe_eq_self_add_two_pi_iff Real.Angle.toReal_coe_eq_self_add_two_pi_iff
 
 theorem two_nsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :

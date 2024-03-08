@@ -25,7 +25,8 @@ as possible.
 
 open MeasureTheory Set TopologicalSpace
 
-open Classical ENNReal NNReal
+open scoped Classical
+open ENNReal NNReal
 
 /-- If a function `f : α → β` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p < q`, then `f` is almost-everywhere
@@ -84,7 +85,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       convert this
       ext y
       simp only [not_exists, exists_prop, mem_setOf_eq, mem_compl_iff, not_not_mem]
-    filter_upwards [this]with x hx
+    filter_upwards [this] with x hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i
       by_cases H : x ∈ u' i

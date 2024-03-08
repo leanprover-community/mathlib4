@@ -67,14 +67,13 @@ class RepresentablyFlat (F : C ⥤ D) : Prop where
 
 attribute [instance] RepresentablyFlat.cofiltered
 
-attribute [local instance] IsCofiltered.Nonempty
+attribute [local instance] IsCofiltered.nonempty
 
 instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
   constructor
   intro X
   haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
-  suffices : IsCofilteredOrEmpty (StructuredArrow X (𝟭 C))
-  · constructor
+  suffices IsCofilteredOrEmpty (StructuredArrow X (𝟭 C)) by constructor
   constructor
   · intro Y Z
     use StructuredArrow.mk (𝟙 _)
@@ -95,8 +94,7 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
     have f₁ : StructuredArrow X G := Nonempty.some inferInstance
     have f₂ : StructuredArrow f₁.right F := Nonempty.some inferInstance
     exact ⟨StructuredArrow.mk (f₁.hom ≫ G.map f₂.hom)⟩
-  suffices : IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G))
-  · constructor
+  suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
   constructor
   · intro Y Z
     let W :=
@@ -142,7 +140,7 @@ attribute [local instance] hasFiniteLimits_of_hasFiniteLimits_of_size
 theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
   { cone_objs := fun A B => ⟨Limits.prod A B, Limits.prod.fst, Limits.prod.snd, trivial⟩
     cone_maps := fun _ _ f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
-    Nonempty := ⟨⊤_ C⟩ }
+    nonempty := ⟨⊤_ C⟩ }
 #align category_theory.cofiltered_of_has_finite_limits CategoryTheory.cofiltered_of_hasFiniteLimits
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
@@ -152,7 +150,7 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
       apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (StructuredArrow X F)
       intro J sJ fJ
       constructor
-      -- porting note: instance was inferred automatically in Lean 3
+      -- Porting note: instance was inferred automatically in Lean 3
       infer_instance
     cofiltered_of_hasFiniteLimits⟩
 #align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
@@ -184,36 +182,14 @@ theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
 #align category_theory.preserves_finite_limits_of_flat.fac CategoryTheory.PreservesFiniteLimitsOfFlat.fac
 
-attribute [local simp] eqToHom_map
-
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
   let α₁ : (F.mapCone c).toStructuredArrow ⋙ map f₁ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₁])
-      naturality := fun j₁ j₂ φ => by
-        ext
-        -- porting note: Lean 3 proof was `simp` but `Comma.eqToHom_right`
-        -- isn't firing for some reason
-        -- Asked here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20not.20using.20a.20simp.20lemma/near/353943416
-        -- I'm now doing `simp, rw [Comma.eqToHom_right, Comma.eqToHom_right], simp` but
-        -- I squeezed the first `simp`.
-        simp only [Functor.mapCone_pt, Functor.comp_obj, Cone.toStructuredArrow_obj,
-          Functor.mapCone_π_app, map_mk, mk_right, Functor.comp_map, Cone.toStructuredArrow_map,
-          comp_right, map_map_right, homMk_right]
-        rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
-        simp }
+    { app := fun X => eqToHom (by simp [← h₁]) }
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₂])
-      naturality := fun _ _ _ => by
-        ext
-        -- porting note: see comments above. `simp` should close this goal (and did in Lean 3)
-        simp only [Functor.mapCone_pt, Functor.comp_obj, Cone.toStructuredArrow_obj,
-          Functor.mapCone_π_app, map_mk, mk_right, Functor.comp_map, Cone.toStructuredArrow_map,
-          comp_right, map_map_right, homMk_right]
-        rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
-        simp }
+    { app := fun X => eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
     (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) : _)).obj (c.toStructuredArrowCone F f₁)
   let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
@@ -228,23 +204,14 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    -- porting note: Lean 3 proof now finished with `simpa using e₁.symm.trans e₂`
-    -- This doesn't work for two reasons in Lean 4: firstly it seems that Lean 4 `simp`
-    -- expands `let` definitions by default, so we have to switch this off with `zeta = false`;
-    -- secondly, `simp` is not rewriting `Comma.eqToHom_right` for some reason (just like)
-    -- 30 lines above here
-    have e₃ := e₁.symm.trans e₂
-    simp (config := {zeta := false}) at e₃ -- should turn `e₃` into the goal
-    rw [Comma.eqToHom_right, Comma.eqToHom_right] at e₃ -- this is a `simp` lemma
-    simpa (config := {zeta := false}) using e₃
+    convert e₁.symm.trans e₂ <;> simp [c₁, c₂]
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1
     ext x
     apply this
   -- And thus they are equal as `c` is the limit.
-  have : g₁.right = g₂.right
-  calc
+  have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
@@ -300,7 +267,7 @@ noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D)
     unfold preservesFiniteLimitsOfFlat
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
-    -- porting note: this next line wasn't needed in lean 3
+    -- Porting note: this next line wasn't needed in lean 3
     apply Subsingleton.elim
 
 #align category_theory.preserves_finite_limits_iff_flat CategoryTheory.preservesFiniteLimitsIffFlat
@@ -322,7 +289,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
   NatIso.ofComponents (fun G => colim.mapIso (Iso.refl _))
     (by
       intro G H i
-      -- porting note: was `ext` in lean 3
+      -- Porting note: was `ext` in lean 3
       -- Now `ext` can't see that `lan` is a colimit.
       -- Uncertain whether it makes sense to add another `@[ext]` lemma.
       -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -330,7 +297,7 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       intro j
       simp only [Functor.comp_map, Functor.mapIso_refl, evaluation_obj_map, whiskeringLeft_obj_map,
         lan_map_app, colimit.ι_desc_assoc, Category.comp_id, Category.assoc]
-      -- porting note: this deals with the fact that the type of `lan_map_app` has changed
+      -- Porting note: this deals with the fact that the type of `lan_map_app` has changed
       -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
       erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
         colimit.ι (Lan.diagram F H (F.obj j.left))
@@ -401,20 +368,20 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
     intros; apply preservesLimitOfLanPreservesLimit
   left_inv x := by
-    -- porting note: `cases x` and an `unfold` not necessary in lean 4.
+    -- Porting note: `cases x` and an `unfold` not necessary in lean 4.
     -- Remark : in mathlib3 we had `unfold preservesFiniteLimitsOfFlat`
     -- but there was no `preservesFiniteLimitsOfFlat` in the goal! Experimentation
     -- indicates that it was doing the same as `dsimp only`
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
-    -- porting note: next line wasn't necessary in lean 3
+    -- Porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
   right_inv x := by
-    -- cases x; -- porting note: not necessary in lean 4
+    -- cases x; -- Porting note: not necessary in lean 4
     dsimp only [lanPreservesFiniteLimitsOfPreservesFiniteLimits,
       lanPreservesFiniteLimitsOfFlat,
       preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
-    -- porting note: next line wasn't necessary in lean 3
+    -- Porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_finite_limits_iff_Lan_preserves_finite_limits CategoryTheory.preservesFiniteLimitsIffLanPreservesFiniteLimits

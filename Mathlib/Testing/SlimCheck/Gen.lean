@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Control.Random
-import Mathlib.Control.ULiftable
-import Mathlib.Data.List.Perm
-import Mathlib.Data.Subtype
-import Mathlib.Data.Nat.Basic
 
 #align_import testing.slim_check.gen from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -45,17 +41,17 @@ abbrev Gen (α : Type u) := ReaderT (ULift Nat) Rand α
 namespace Gen
 
 /-- Lift `Random.random` to the `Gen` monad. -/
-def chooseAny (α : Type u) [Random α] : Gen α :=
+def chooseAny (α : Type u) [Random Id α] : Gen α :=
   λ _ => rand α
 
 /-- Lift `BoundedRandom.randomR` to the `Gen` monad. -/
-def choose (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) :
+def choose (α : Type u) [Preorder α] [BoundedRandom Id α] (lo hi : α) (h : lo ≤ hi) :
     Gen {a // lo ≤ a ∧ a ≤ hi} :=
   λ _ => randBound α lo hi h
 
 lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ hi) :
     lo ≤ Nat.pred a ∧ Nat.pred a < hi :=
-  And.intro (Nat.le_pred_of_lt (Nat.lt_of_succ_le h.left)) <|
+  And.intro (Nat.le_sub_one_of_lt (Nat.lt_of_succ_le h.left)) <|
     show a.pred.succ ≤ hi by
        rw [Nat.succ_pred_eq_of_pos]
        exact h.right
@@ -78,7 +74,7 @@ variable {α : Type u}
 /-- Create an `Array` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def arrayOf (x : Gen α) : Gen (Array α) := do
-  let ⟨sz⟩ ← (ULiftable.up <| do choose Nat 0 (←getSize) (Nat.zero_le _) : Gen (ULift ℕ))
+  let (⟨sz⟩ : ULift ℕ) ← ULiftable.up do choose Nat 0 (← getSize) (Nat.zero_le _)
   let mut res := #[]
   for _ in [0:sz] do
     res := res.push (← x)
@@ -97,7 +93,7 @@ def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
   let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.length pos
-  pure $ xs.get ⟨x, h2⟩
+  pure <| xs.get ⟨x, h2⟩
 
 open List in
 /-- Generate a random permutation of a given list. -/
@@ -110,15 +106,15 @@ def permutationOf : (xs : List α) → Gen { ys // xs ~ ys }
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
 def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β) := do
-  let ⟨a⟩ ← (ULiftable.up x : Gen (ULift.{max u v} α))
-  let ⟨b⟩ ← (ULiftable.up y : Gen (ULift.{max u v} β))
+  let ⟨a⟩ ← ULiftable.up.{max u v} x
+  let ⟨b⟩ ← ULiftable.up.{max u v} y
   pure (a, b)
 
 end Gen
 
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
 def Gen.run (x : Gen α) (size : Nat) : BaseIO α :=
-  IO.runRand $ ReaderT.run x ⟨size⟩
-
+  letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
+  IO.runRand (ReaderT.run x ⟨size⟩:)
 
 end SlimCheck

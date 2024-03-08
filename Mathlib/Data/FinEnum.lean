@@ -238,7 +238,7 @@ theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : L
     constructor
     · apply xs_ih
     · ext x h
-      simp [Pi.cons]
+      simp only [Pi.cons]
       split_ifs
       · subst x
         rfl

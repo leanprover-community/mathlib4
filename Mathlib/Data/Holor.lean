@@ -196,7 +196,8 @@ theorem mul_assoc0 [Semigroup α] (x : Holor α ds₁) (y : Holor α ds₂) (z :
   funext fun t : HolorIndex (ds₁ ++ ds₂ ++ ds₃) => by
     rw [assocLeft]
     unfold mul
-    rw [mul_assoc, ←HolorIndex.take_take, ←HolorIndex.drop_take, ←HolorIndex.drop_drop, cast_type]
+    rw [mul_assoc, ← HolorIndex.take_take, ← HolorIndex.drop_take, ← HolorIndex.drop_drop,
+      cast_type]
     rfl
     rw [append_assoc]
 #align holor.mul_assoc0 Holor.mul_assoc0
@@ -225,7 +226,8 @@ nonrec theorem mul_zero {α : Type} [Ring α] (x : Holor α ds₁) : x ⊗ (0 : 
 
 theorem mul_scalar_mul [Monoid α] (x : Holor α []) (y : Holor α ds) :
     x ⊗ y = x ⟨[], Forall₂.nil⟩ • y := by
-      simp [mul, SMul.smul, HolorIndex.take, HolorIndex.drop, HSMul.hSMul]
+  simp (config := { unfoldPartialApp := true }) [mul, SMul.smul, HolorIndex.take, HolorIndex.drop,
+    HSMul.hSMul]
 #align holor.mul_scalar_mul Holor.mul_scalar_mul
 
 -- holor slices
@@ -327,7 +329,7 @@ theorem cprankMax_nil [Monoid α] [AddMonoid α] (x : Holor α nil) : CPRankMax 
 #align holor.cprank_max_nil Holor.cprankMax_nil
 
 theorem cprankMax_1 [Monoid α] [AddMonoid α] {x : Holor α ds} (h : CPRankMax1 x) :
-  CPRankMax 1 x := by
+    CPRankMax 1 x := by
   have h' := CPRankMax.succ 0 x 0 h CPRankMax.zero
   rwa [zero_add, add_zero] at h'
 #align holor.cprank_max_1 Holor.cprankMax_1
@@ -363,7 +365,7 @@ theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor
   letI := Classical.decEq β
   Finset.induction_on s (by simp [CPRankMax.zero])
     (by
-      intro x s(h_x_notin_s : x ∉ s)ih h_cprank
+      intro x s (h_x_notin_s : x ∉ s) ih h_cprank
       simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]

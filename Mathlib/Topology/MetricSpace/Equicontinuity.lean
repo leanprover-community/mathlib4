@@ -3,7 +3,7 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
 import Mathlib.Topology.UniformSpace.Equicontinuity
 
 #align_import topology.metric_space.equicontinuity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -92,7 +92,7 @@ theorem equicontinuousAt_of_continuity_modulus {ι : Type*} [TopologicalSpace β
     (H : ∀ᶠ x in 𝓝 x₀, ∀ i, dist (F i x₀) (F i x) ≤ b x) : EquicontinuousAt F x₀ := by
   rw [Metric.equicontinuousAt_iff_right]
   intro ε ε0
-  -- porting note: Lean 3 didn't need `Filter.mem_map.mp` here
+  -- Porting note: Lean 3 didn't need `Filter.mem_map.mp` here
   filter_upwards [Filter.mem_map.mp <| b_lim (Iio_mem_nhds ε0), H] using
     fun x hx₁ hx₂ i => (hx₂ i).trans_lt hx₁
 #align metric.equicontinuous_at_of_continuity_modulus Metric.equicontinuousAt_of_continuity_modulus

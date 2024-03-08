@@ -121,7 +121,7 @@ end HasLimits
 open HasLimits
 
 
--- porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
+-- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-modules has all limits. -/
 lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (ModuleCatMax.{v, w, u} R) where
@@ -225,7 +225,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
+def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
     where
   desc s :=
     DirectLimit.lift R ι G f s.ι.app fun i j h x => by

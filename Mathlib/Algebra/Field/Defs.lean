@@ -5,7 +5,7 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
 import Mathlib.Algebra.Ring.Defs
-import Std.Data.Rat
+import Std.Data.Rat.Basic
 import Mathlib.Data.Rat.Init
 
 #align_import algebra.field.defs from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
@@ -159,7 +159,7 @@ end DivisionRing
 
 section OfScientific
 
-instance DivisionRing.toOfScientific [DivisionRing K] : OfScientific K where
+instance RatCast.toOfScientific [RatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
 
 end OfScientific
