@@ -160,7 +160,7 @@ variable (b : Fin n₁ → Semiterm L ξ₂ n₂) (e : ξ₁ → Semiterm L ξ�
 @[simp] lemma bind_bvar (n : Fin n₁) : bind b e (#n : Semiterm L ξ₁ n₁) = b n := rfl
 
 lemma eq_bind (ω : Rew L ξ₁ n₁ ξ₂ n₂) : ω = bind (ω ∘ bvar) (ω ∘ fvar) := by
-  ext t; induction t ; simp[Rew.func'']; funext; simp[*]
+  ext t; induction t; simp[Rew.func'']; funext; simp[*]
 
 @[simp] lemma bind_eq_id_of_zero (f : Fin 0 → Semiterm L ξ₂ 0) : bind f fvar = Rew.id := by
   { ext x <;> simp; exact Fin.elim0 x }
@@ -234,8 +234,8 @@ variable {o : Type v₂} [IsEmpty o]
 
 @[simp] lemma emb_eq_id : (emb : Rew L o n o n) = Rew.id := by ext x <;> simp; exact isEmptyElim x
 
-lemma eq_empty [h : IsEmpty ξ₁] (ω : Rew L ξ₁ 0 ξ₂ n) :
-  ω = empty := by ext x; { exact x.elim0 }; { exact h.elim' x }
+lemma eq_empty [h : IsEmpty ξ₁] (ω : Rew L ξ₁ 0 ξ₂ n) : ω = empty := by
+  ext x; { exact x.elim0 }; { exact h.elim' x }
 
 end emb
 
@@ -460,7 +460,7 @@ lemma shift_func {k} (f : L.Func k) (v : Fin k → SyntacticSemiterm L n) :
 
 lemma shift_Injective : Function.Injective (@shift L n) :=
   Function.LeftInverse.injective (g := map id Nat.pred)
-    (by intros p; simp[←comp_app]; apply eq_id_of_eq <;> simp[comp_app])
+    (by intros p; simp[← comp_app]; apply eq_id_of_eq <;> simp[comp_app])
 
 end shift
 
@@ -503,13 +503,13 @@ end fix
   ext x <;> simp[comp_app]; { exact Fin.elim0 x }
 
 lemma bShift_comp_substs (v : Fin n₁ → Semiterm L ξ₂ n₂) :
-  bShift.comp (substs v) = substs (bShift ∘ v) := by ext x <;> simp[comp_app]
+    bShift.comp (substs v) = substs (bShift ∘ v) := by ext x <;> simp[comp_app]
 
 lemma shift_comp_substs (v : Fin n₁ → SyntacticSemiterm L n₂) :
-  shift.comp (substs v) = (substs (shift ∘ v)).comp shift := by ext x <;> simp[comp_app]
+   shift.comp (substs v) = (substs (shift ∘ v)).comp shift := by ext x <;> simp[comp_app]
 
 lemma shift_comp_substs1 (t : SyntacticSemiterm L n₂) :
-  shift.comp (substs ![t]) = (substs ![shift t]).comp shift := by ext x <;> simp[comp_app]
+    shift.comp (substs ![t]) = (substs ![shift t]).comp shift := by ext x <;> simp[comp_app]
 
 @[simp] lemma rewrite_comp_emb {o : Type v₁} [e : IsEmpty o] (f : ξ₂ → Semiterm L ξ₃ n) :
   (rewrite f).comp emb = (emb : Rew L o n ξ₃ n) := by ext x <;> simp[comp_app];
@@ -540,16 +540,16 @@ lemma free_comp_substs_eq_substs_comp_shift {n'} (w : Fin n' → SyntacticSemite
     ext x <;> simp [comp_app]
 
 @[simp] lemma fix_free_app (t : SyntacticSemiterm L (n + 1)) : fix (free t) = t := by
-  simp[←comp_app]
+  simp[← comp_app]
 
 @[simp] lemma free_fix_app (t : SyntacticSemiterm L n) : free (fix t) = t := by
-  simp[←comp_app]
+  simp[← comp_app]
 
 @[simp] lemma free_bShift_app (t : SyntacticSemiterm L 0) : free (bShift t) = shift t := by
-  simp[←comp_app]
+  simp[← comp_app]
 
 @[simp] lemma substs_bShift_app (v : Fin 1 → Semiterm L ξ 0) : substs v (bShift t) = t := by
-  simp[←comp_app]
+  simp[← comp_app]
 
 lemma rewrite_comp_fix_eq_substs (t) :
     ((rewrite (t :>ₙ (&·))).comp free : SyntacticRew L 1 0) = substs ![t] := by
@@ -609,8 +609,8 @@ variable
   case fvar x => { exact IsEmpty.elim' e x }
 
 lemma rew_eq_of_funEqOn (ω₁ ω₂ : Rew L ξ₁ n₁ ξ₂ n₂) (t : Semiterm L ξ₁ n₁)
-  (hb : ∀ x, ω₁ #x = ω₂ #x)
-  (he : Function.funEqOn t.fvar? (ω₁ ∘ Semiterm.fvar) (ω₂ ∘ Semiterm.fvar)) :
+    (hb : ∀ x, ω₁ #x = ω₂ #x)
+    (he : Function.funEqOn t.fvar? (ω₁ ∘ Semiterm.fvar) (ω₂ ∘ Semiterm.fvar)) :
     ω₁ t = ω₂ t := by
   induction t <;> try simp[Rew.func, hb]
   case fvar => simpa[fvar?, Function.funEqOn] using he
@@ -678,10 +678,10 @@ variable (ω : Rew L ξ₁ n₁ ξ₂ n₂)
 
 lemma loMap_neg (p : Semiformula L ξ₁ n₁) :
     ω.loMap (~p) = ~ω.loMap p :=
-  by induction p using Semiformula.rec' generalizing n₂ <;> simp[*, loMap, ←Semiformula.neg_eq]
+  by induction p using Semiformula.rec' generalizing n₂ <;> simp[*, loMap, ← Semiformula.neg_eq]
 
 lemma ext_loMap' {ω₁ ω₂ : Rew L ξ₁ n₁ ξ₂ n₂} (h : ω₁ = ω₂) (p : Semiformula L ξ₁ n₁) :
-  ω₁.loMap p = ω₂.loMap p:= by simp[h]
+    ω₁.loMap p = ω₂.loMap p:= by simp[h]
 
 lemma neg' (p : Semiformula L ξ₁ n₁) : ω.loMap (~p) = ~ω.loMap p := loMap_neg ω p
 
@@ -832,22 +832,22 @@ lemma mapl_inj : ∀ {n₁ n₂ ξ₁ ξ₂} {b : Fin n₁ → Fin n₂} {e : ξ
       (fun _ => (Fin.succ_ne_zero _).symm)) hf h
 
 lemma emb.hom_injective {o} [e : IsEmpty o] : Function.Injective
-  (emb.hom : Semiformula L o n → Semiformula L ξ n) :=
+    (emb.hom : Semiformula L o n → Semiformula L ξ n) :=
   by simp[emb]; exact mapl_inj Function.injective_id (fun x => IsEmpty.elim e x)
 
 lemma shift.hom_injective : Function.Injective
-  (shift.hom : SyntacticSemiformula L n → SyntacticSemiformula L n) :=
+    (shift.hom : SyntacticSemiformula L n → SyntacticSemiformula L n) :=
   by simp[shift]; exact mapl_inj Function.injective_id Nat.succ_injective
 
 @[simp] lemma hom_fix_free (p : SyntacticSemiformula L (n + 1)) :
-    fix.hom (free.hom p) = p := by simp[←hom_comp_app]
+    fix.hom (free.hom p) = p := by simp[← hom_comp_app]
 
 @[simp] lemma hom_free_fix (p : SyntacticSemiformula L n) :
-    free.hom (fix.hom p) = p := by simp[←hom_comp_app]
+    free.hom (fix.hom p) = p := by simp[← hom_comp_app]
 
 @[simp] lemma hom_substs_mbar_zero_comp_shift_eq_free (p : SyntacticSemiformula L 1) :
     (substs ![&0]).hom (Rew.shift.hom p) = free.hom p := by
-  simp[←hom_comp_app, substs_mbar_zero_comp_shift_eq_free]
+  simp[← hom_comp_app, substs_mbar_zero_comp_shift_eq_free]
 
 @[simp] protected lemma emb_univClosure {o} [e : IsEmpty o] {σ : Semiformula L o n} :
     (emb.hom (univClosure σ) : Semiformula L ξ 0) = univClosure (emb.hom σ) := by
@@ -947,8 +947,7 @@ def shiftEmb : SyntacticSemiformula L n ↪ SyntacticSemiformula L n where
   toFun := Rew.shift.hom
   inj' := Rew.shift.hom_injective
 
-lemma shiftEmb_eq_shift (p : SyntacticSemiformula L n) :
-  shiftEmb p = Rew.shift.hom p := rfl
+lemma shiftEmb_eq_shift (p : SyntacticSemiformula L n) : shiftEmb p = Rew.shift.hom p := rfl
 
 @[elab_as_elim]
 def formulaRec {C : SyntacticFormula L → Sort _}
@@ -960,7 +959,7 @@ def formulaRec {C : SyntacticFormula L → Sort _}
   (hor     : ∀ (p q : SyntacticFormula L), C p → C q → C (p ⋎ q))
   (hall    : ∀ (p : SyntacticSemiformula L 1), C (Rew.free.hom p) → C (∀' p))
   (hex     : ∀ (p : SyntacticSemiformula L 1), C (Rew.free.hom p) → C (∃' p)) :
-    ∀ (p : SyntacticFormula L), C p
+  ∀ (p : SyntacticFormula L), C p
   | ⊤        => hverum
   | ⊥        => hfalsum
   | rel r v  => hrel r v
@@ -975,7 +974,7 @@ def formulaRec {C : SyntacticFormula L → Sort _}
 
 @[simp] lemma fvarList_emb {o : Type w} [IsEmpty o] (p : Semiformula L o n) :
     fvarList (Rew.emb.hom p : Semiformula L ξ n) = [] := by
-  induction p using rec' <;> simp[*, Rew.rel, Rew.nrel, fvarList, ←neg_eq]
+  induction p using rec' <;> simp[*, Rew.rel, Rew.nrel, fvarList, ← neg_eq]
 
 lemma rew_eq_of_funEqOn {ω₁ ω₂ : Rew L ξ₁ n₁ ξ₂ n₂} {p}
     (hb : ∀ x, ω₁ #x = ω₂ #x) (hf : Function.funEqOn (fvar? p) (ω₁ ∘ Semiterm.fvar)
@@ -1004,7 +1003,7 @@ lemma rew_eq_of_funEqOn {ω₁ ω₂ : Rew L ξ₁ n₁ ξ₂ n₂} {p}
     (fun x hx => by simp; exact congr_arg _ (hf x hx))
 
 lemma rew_eq_of_funEqOn₀ {ω₁ ω₂ : Rew L ξ₁ 0 ξ₂ n₂} {p} (hf : Function.funEqOn (fvar? p)
-  (ω₁ ∘ Semiterm.fvar) (ω₂ ∘ Semiterm.fvar)) : ω₁.hom p = ω₂.hom p :=
+    (ω₁ ∘ Semiterm.fvar) (ω₂ ∘ Semiterm.fvar)) : ω₁.hom p = ω₂.hom p :=
   rew_eq_of_funEqOn (fun x => Fin.elim0 x) hf
 
 @[simp] lemma ex_ne_subst (p : Semiformula L ξ 1) (t) : [→ t].hom p ≠ ∃' p :=
@@ -1034,7 +1033,7 @@ lemma lMap_substs (w : Fin k → Semiterm L₁ ξ n) (p : Semiformula L₁ ξ k)
     lMap_bind _ _ _
 
 lemma lMap_shift (p : SyntacticSemiformula L₁ n) : lMap Φ (Rew.shift.hom p) = Rew.shift.hom
-  (lMap Φ p) := lMap_bind _ _ _
+    (lMap Φ p) := lMap_bind _ _ _
 
 lemma lMap_free (p : SyntacticSemiformula L₁ (n + 1)) : lMap Φ (Rew.free.hom p) = Rew.free.hom
     (lMap Φ p) := by
@@ -1057,7 +1056,7 @@ prefix:64 "∀ᶠ* " => Formula.fvUnivClosure
 
 @[simp] lemma Formula.fv_univ_closure_sentence [h : IsEmpty ξ] [DecidableEq ξ] (σ : Formula L ξ) :
   Formula.fvUnivClosure σ = ∀' Rew.empty.hom σ := by
-  simp [fvUnivClosure, ←Rew.hom_comp_app, Rew.eq_empty]
+  simp [fvUnivClosure, ← Rew.hom_comp_app, Rew.eq_empty]
   have : σ.fvarList.length = 0 := by simp
   rw [this]; rfl
 

@@ -77,10 +77,12 @@ def bv (t : Semiterm L α n) : Finset (Fin n) := Finset.eraseNone <| t.varFinset
 
 @[simp] lemma bv_fvar : (%.x : Semiterm L α n).bv = ∅ := rfl
 
-lemma bv_func {k} (f : L.Functions k) (v : Fin k → Semiterm L α n) : (func f v).bv = .biUnion .univ fun i ↦ (v i).bv := by
+lemma bv_func {k} (f : L.Functions k) (v : Fin k → Semiterm L α n) :
+    (func f v).bv = .biUnion .univ fun i ↦ (v i).bv := by
   simp [bv, Finset.biUnion_image]; ext; simp
 
-@[simp] lemma bv_constant (f : L.Functions 0) (v : Fin 0 → Semiterm L α n) : (func f v).bv = ∅ := rfl
+@[simp] lemma bv_constant (f : L.Functions 0) (v : Fin 0 → Semiterm L α n) : (func f v).bv = ∅ :=
+  rfl
 
 def Positive (t : Semiterm L α (n + 1)) : Prop := ∀ x ∈ t.bv, 0 < x
 
@@ -101,10 +103,12 @@ def fv (t : Semiterm L α n) : Finset α := Finset.eraseNone <| t.varFinset.imag
 
 @[simp] lemma fv_fvar : (%.x : Semiterm L α n).fv = {x} := rfl
 
-lemma fv_func {k} (f : L.Functions k) (v : Fin k → Semiterm L α n) : (func f v).fv = .biUnion .univ fun i ↦ fv (v i) := by
+lemma fv_func {k} (f : L.Functions k) (v : Fin k → Semiterm L α n) :
+    (func f v).fv = .biUnion .univ fun i ↦ fv (v i) := by
   simp [fv, Finset.biUnion_image]; ext; simp
 
-@[simp] lemma fv_constant (f : L.Functions 0) (v : Fin 0 → Semiterm L α n) : (func f v).fv = ∅ := rfl
+@[simp] lemma fv_constant (f : L.Functions 0) (v : Fin 0 → Semiterm L α n) : (func f v).fv = ∅ :=
+  rfl
 
 end
 

@@ -19,7 +19,8 @@ variable {n : ℕ} {α β: Type u}
 
 @[simp] lemma cons_app_two {n : ℕ} (a : α) (s : Fin n.succ.succ → α) : (a :> s) 2 = s 1 := rfl
 
-@[simp] lemma cons_app_three {n : ℕ} (a : α) (s : Fin n.succ.succ.succ → α) : (a :> s) 3 = s 2 := rfl
+@[simp] lemma cons_app_three {n : ℕ} (a : α) (s : Fin n.succ.succ.succ → α) : (a :> s) 3 = s 2 :=
+  rfl
 
 section delab
 open Lean PrettyPrinter Delaborator SubExpr
@@ -55,9 +56,11 @@ lemma eq_vecCons (C : Type u)  (s : Fin (n + 1) → C) : s = s 0 :> s ∘ Fin.su
 
 lemma vecCons_assoc (a b : α) (s : Fin n → α) :
     a :> (s <: b) = (a :> s) <: b := by
-  funext x; cases' x using Fin.cases with x <;> simp; cases x using Fin.lastCases <;> simp[Fin.succ_castSucc]
+  funext x; cases' x using Fin.cases with x <;> simp; cases x using Fin.lastCases <;>
+  simp[Fin.succ_castSucc]
 
-def decVec {α : Type _} : {n : ℕ} → (v w : Fin n → α) → (∀ i, Decidable (v i = w i)) → Decidable (v = w)
+def decVec {α : Type _} : {n : ℕ} → (v w : Fin n → α) → (∀ i, Decidable (v i = w i)) →
+    Decidable (v = w)
   | 0,     _, _, _ => by simp[Matrix.empty_eq]; exact isTrue trivial
   | n + 1, v, w, d => by
       rw[eq_vecCons v, eq_vecCons w, vecCons_ext]
@@ -67,7 +70,8 @@ def decVec {α : Type _} : {n : ℕ} → (v w : Fin n → α) → (∀ i, Decida
 lemma comp_vecCons (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (a :> s) x) = f a :> f ∘ s :=
 funext (fun i => cases (by simp) (by simp) i)
 
-lemma comp_vecCons' (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (a :> s) x) = f a :> fun i => f (s i) :=
+lemma comp_vecCons' (f : α → β) (a : α) (s : Fin n → α) :
+    (fun x => f $ (a :> s) x) = f a :> fun i => f (s i) :=
   comp_vecCons f a s
 
 lemma comp_vecCons'' (f : α → β) (a : α) (s : Fin n → α) : f ∘ (a :> s) = f a :> f ∘ s :=
@@ -77,9 +81,11 @@ lemma comp_vecCons'' (f : α → β) (a : α) (s : Fin n → α) : f ∘ (a :> s
 
 @[simp] lemma comp₁ (a : α) (f : α → β) : f ∘ ![a] = ![f a] := by simp[comp_vecCons'']
 
-@[simp] lemma comp₂ (a₁ a₂ : α) (f : α → β) : f ∘ ![a₁, a₂] = ![f a₁, f a₂] := by simp[comp_vecCons'']
+@[simp] lemma comp₂ (a₁ a₂ : α) (f : α → β) : f ∘ ![a₁, a₂] = ![f a₁, f a₂] := by
+  simp[comp_vecCons'']
 
-@[simp] lemma comp₃ (a₁ a₂ a₃ : α) (f : α → β) : f ∘ ![a₁, a₂, a₃] = ![f a₁, f a₂, f a₃] := by simp[comp_vecCons'']
+@[simp] lemma comp₃ (a₁ a₂ a₃ : α) (f : α → β) : f ∘ ![a₁, a₂, a₃] = ![f a₁, f a₂, f a₃] := by
+  simp[comp_vecCons'']
 
 lemma vecConsLast_vecEmpty {s : Fin 0 → α} (a : α) : s <: a = ![a] :=
   funext (fun x => by
@@ -97,7 +103,8 @@ lemma constant_eq_vec₂ {a : α} : (fun _ => a) = ![a, a] := by
 lemma fun_eq_vec₂ {v : Fin 2 → α} : v = ![v 0, v 1] := by
   funext x; cases x using Fin.cases <;> simp[Fin.eq_zero]
 
-lemma injective_vecCons {f : Fin n → α} (h : Function.Injective f) {a} (ha : ∀ i, a ≠ f i) : Function.Injective (a :> f) := by
+lemma injective_vecCons {f : Fin n → α} (h : Function.Injective f) {a} (ha : ∀ i, a ≠ f i) :
+    Function.Injective (a :> f) := by
   have : ∀ i, f i ≠ a := fun i => (ha i).symm
   intro i j; cases i using Fin.cases <;> cases j using Fin.cases <;> simp[*]
   intro hf; exact h hf
@@ -117,7 +124,8 @@ def toList : {n : ℕ} → (Fin n → α) → List α
 @[simp] lemma toList_length (v : Fin n → α) : (toList v).length = n :=
   by induction n <;> simp[*]
 
-@[simp] lemma toList_nth (v : Fin n → α) (i) (hi) : (toList v).nthLe i hi = v ⟨i, by simpa using hi⟩ := by
+@[simp] lemma toList_nth (v : Fin n → α) (i) (hi) :
+    (toList v).nthLe i hi = v ⟨i, by simpa using hi⟩ := by
   induction n generalizing i <;> simp[*, List.nthLe_cons]
   case zero => contradiction
   case succ => rcases i <;> simp

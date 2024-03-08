@@ -3,19 +3,18 @@ Copyright (c) 2024 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
-import Logic.FirstOrder.Basic.Syntax.Term
+import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Term
 
 /-!
 # Formulas of first-order logic
 
 This file defines the formulas of first-order logic.
 
-`p : Semiformula L ξ n` is a (semi-)formula of language `L` with bounded variables of `Fin n` and free variables of `ξ`.
-The quantification is represented by de Bruijn index.
-
+`p : Semiformula L ξ n` is a (semi-)formula of language `L` with bounded variables of `Fin n` and
+free variables of `ξ`. The quantification is represented by de Bruijn index.
 -/
 
-namespace LO
+namespace ProofTheory
 
 namespace FirstOrder
 
@@ -87,9 +86,11 @@ def toStr : ∀ {n}, Semiformula L ξ n → String
   | _, ⊤                         => "\\top"
   | _, ⊥                         => "\\bot"
   | _, rel (arity := 0) r _      => "{" ++ toString r ++ "}"
-  | _, rel (arity := _ + 1) r v  => "{" ++ toString r ++ "} \\left(" ++ String.vecToStr (fun i => toString (v i)) ++ "\\right)"
+  | _, rel (arity := _ + 1) r v  => "{" ++ toString r ++ "} \\left(" ++ String.vecToStr
+    (fun i => toString (v i)) ++ "\\right)"
   | _, nrel (arity := 0) r _     => "\\lnot {" ++ toString r ++ "}"
-  | _, nrel (arity := _ + 1) r v => "\\lnot {" ++ toString r ++ "} \\left(" ++ String.vecToStr (fun i => toString (v i)) ++ "\\right)"
+  | _, nrel (arity := _ + 1) r v => "\\lnot {" ++ toString r ++ "} \\left(" ++ String.vecToStr
+    (fun i => toString (v i)) ++ "\\right)"
   | _, p ⋏ q                     => "\\left(" ++ toStr p ++ " \\land " ++ toStr q ++ "\\right)"
   | _, p ⋎ q                     => "\\left(" ++ toStr p ++ " \\lor "  ++ toStr q ++ "\\right)"
   | n, all p                     => "(\\forall x_{" ++ toString n ++ "}) " ++ toStr p
@@ -166,34 +167,48 @@ abbrev rel! (L : Language.{u}) (k) (r : L.Rel k) (v : Fin k → Semiterm L ξ n)
 abbrev nrel! (L : Language.{u}) (k) (r : L.Rel k) (v : Fin k → Semiterm L ξ n) := nrel r v
 
 def complexity : {n : ℕ} → Semiformula L ξ n → ℕ
-| _, ⊤        => 0
-| _, ⊥        => 0
-| _, rel _ _  => 0
-| _, nrel _ _ => 0
-| _, p ⋏ q    => max p.complexity q.complexity + 1
-| _, p ⋎ q    => max p.complexity q.complexity + 1
-| _, ∀' p     => p.complexity + 1
-| _, ∃' p     => p.complexity + 1
+  | _, ⊤        => 0
+  | _, ⊥        => 0
+  | _, rel _ _  => 0
+  | _, nrel _ _ => 0
+  | _, p ⋏ q    => max p.complexity q.complexity + 1
+  | _, p ⋎ q    => max p.complexity q.complexity + 1
+  | _, ∀' p     => p.complexity + 1
+  | _, ∃' p     => p.complexity + 1
 
 @[simp] lemma complexity_top : complexity (⊤ : Semiformula L ξ n) = 0 := rfl
 
 @[simp] lemma complexity_bot : complexity (⊥ : Semiformula L ξ n) = 0 := rfl
 
-@[simp] lemma complexity_rel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) : complexity (rel r v) = 0 := rfl
+@[simp] lemma complexity_rel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) :
+  complexity (rel r v) = 0 := rfl
 
-@[simp] lemma complexity_nrel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) : complexity (nrel r v) = 0 := rfl
+@[simp] lemma complexity_nrel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) :
+  complexity (nrel r v) = 0 := rfl
 
-@[simp] lemma complexity_and (p q : Semiformula L ξ n) : complexity (p ⋏ q) = max p.complexity q.complexity + 1 := rfl
-@[simp] lemma complexity_and' (p q : Semiformula L ξ n) : complexity (and p q) = max p.complexity q.complexity + 1 := rfl
+@[simp] lemma complexity_and (p q : Semiformula L ξ n) :
+  complexity (p ⋏ q) = max p.complexity q.complexity + 1 := rfl
 
-@[simp] lemma complexity_or (p q : Semiformula L ξ n) : complexity (p ⋎ q) = max p.complexity q.complexity + 1 := rfl
-@[simp] lemma complexity_or' (p q : Semiformula L ξ n) : complexity (or p q) = max p.complexity q.complexity + 1 := rfl
+@[simp] lemma complexity_and' (p q : Semiformula L ξ n) :
+  complexity (and p q) = max p.complexity q.complexity + 1 := rfl
 
-@[simp] lemma complexity_all (p : Semiformula L ξ (n + 1)) : complexity (∀' p) = p.complexity + 1 := rfl
-@[simp] lemma complexity_all' (p : Semiformula L ξ (n + 1)) : complexity (all p) = p.complexity + 1 := rfl
+@[simp] lemma complexity_or (p q : Semiformula L ξ n) :
+  complexity (p ⋎ q) = max p.complexity q.complexity + 1 := rfl
 
-@[simp] lemma complexity_ex (p : Semiformula L ξ (n + 1)) : complexity (∃' p) = p.complexity + 1 := rfl
-@[simp] lemma complexity_ex' (p : Semiformula L ξ (n + 1)) : complexity (ex p) = p.complexity + 1 := rfl
+@[simp] lemma complexity_or' (p q : Semiformula L ξ n) :
+  complexity (or p q) = max p.complexity q.complexity + 1 := rfl
+
+@[simp] lemma complexity_all (p : Semiformula L ξ (n + 1)) :
+  complexity (∀' p) = p.complexity + 1 := rfl
+
+@[simp] lemma complexity_all' (p : Semiformula L ξ (n + 1)) :
+  complexity (all p) = p.complexity + 1 := rfl
+
+@[simp] lemma complexity_ex (p : Semiformula L ξ (n + 1)) :
+  complexity (∃' p) = p.complexity + 1 := rfl
+
+@[simp] lemma complexity_ex' (p : Semiformula L ξ (n + 1)) :
+  complexity (ex p) = p.complexity + 1 := rfl
 
 @[elab_as_elim]
 def cases' {C : ∀ n, Semiformula L ξ n → Sort w}
@@ -230,8 +245,10 @@ def rec' {C : ∀ n, Semiformula L ξ n → Sort w}
   | _, falsum   => hfalsum
   | _, rel r v  => hrel r v
   | _, nrel r v => hnrel r v
-  | _, and p q  => hand p q (rec' hverum hfalsum hrel hnrel hand hor hall hex p) (rec' hverum hfalsum hrel hnrel hand hor hall hex q)
-  | _, or p q   => hor p q (rec' hverum hfalsum hrel hnrel hand hor hall hex p) (rec' hverum hfalsum hrel hnrel hand hor hall hex q)
+  | _, and p q  => hand p q (rec' hverum hfalsum hrel hnrel hand hor hall hex p)
+    (rec' hverum hfalsum hrel hnrel hand hor hall hex q)
+  | _, or p q   => hor p q (rec' hverum hfalsum hrel hnrel hand hor hall hex p)
+    (rec' hverum hfalsum hrel hnrel hand hor hall hex q)
   | _, all p    => hall p (rec' hverum hfalsum hrel hnrel hand hor hall hex p)
   | _, ex p     => hex p (rec' hverum hfalsum hrel hnrel hand hor hall hex p)
 
@@ -308,9 +325,11 @@ section fv
 
 variable [DecidableEq ξ]
 
-lemma fv_rel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) : (rel r v).fv = .biUnion .univ fun i ↦ (v i).fv := rfl
+lemma fv_rel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) :
+  (rel r v).fv = .biUnion .univ fun i ↦ (v i).fv := rfl
 
-lemma fv_nrel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) : (nrel r v).fv = .biUnion .univ fun i ↦ (v i).fv := rfl
+lemma fv_nrel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) :
+  (nrel r v).fv = .biUnion .univ fun i ↦ (v i).fv := rfl
 
 @[simp] lemma fv_verum : (⊤ : Semiformula L ξ n).fv = ∅ := rfl
 
@@ -420,10 +439,11 @@ abbrev fvar? (p : Semiformula L ξ n) (x : ξ) : Prop := x ∈ p.fvarList
 @[simp] lemma fvarList_ex (p : Semiformula L ξ (n + 1)) : fvarList (∃' p) = fvarList p := rfl
 
 @[simp] lemma fvarList_neg (p : Semiformula L ξ n) : fvarList (~p) = fvarList p := by
-  induction p using rec' <;> simp[*, fvarList, ←neg_eq]
+  induction p using rec' <;> simp[*, fvarList, ← neg_eq]
 
-@[simp] lemma fvarList_sentence {o : Type w} [IsEmpty o] (p : Semiformula L o n) : fvarList p = [] := by
-  induction p using rec' <;> simp[*, fvarList, ←neg_eq]
+@[simp] lemma fvarList_sentence {o : Type w} [IsEmpty o] (p : Semiformula L o n) :
+    fvarList p = [] := by
+  induction p using rec' <;> simp[*, fvarList, ← neg_eq]
 
 def upper (p : SyntacticSemiformula L n) : ℕ := Finset.sup p.fvarList.toFinset id + 1
 
@@ -444,7 +464,8 @@ lemma ne_of_ne_complexity {p q : Semiformula L ξ n} (h : p.complexity ≠ q.com
 
 @[simp] lemma ne_or_right (p q : Semiformula L ξ n) : q ≠ p ⋎ q := ne_of_ne_complexity (by simp)
 
-variable {L : Language.{u}} {L₁ : Language.{u₁}} {L₂ : Language.{u₂}} {L₃ : Language.{u₃}} {ξ : Type v} {Φ : L₁ →ᵥ L₂}
+variable {L : Language.{u}} {L₁ : Language.{u₁}} {L₂ : Language.{u₂}} {L₃ : Language.{u₃}}
+  {ξ : Type v} {Φ : L₁ →ᵥ L₂}
 
 def lMapAux (Φ : L₁ →ᵥ L₂) : ∀ {n}, Semiformula L₁ ξ n → Semiformula L₂ ξ n
   | _, ⊤        => ⊤
@@ -458,7 +479,7 @@ def lMapAux (Φ : L₁ →ᵥ L₂) : ∀ {n}, Semiformula L₁ ξ n → Semifor
 
 lemma lMapAux_neg {n} (p : Semiformula L₁ ξ n) :
     (~p).lMapAux Φ = ~p.lMapAux Φ :=
-  by induction p using Semiformula.rec' <;> simp[*, lMapAux, ←Semiformula.neg_eq]
+  by induction p using Semiformula.rec' <;> simp[*, lMapAux, ← Semiformula.neg_eq]
 
 def lMap (Φ : L₁ →ᵥ L₂) {n} : Semiformula L₁ ξ n →L Semiformula L₂ ξ n where
   toTr := lMapAux Φ
@@ -467,7 +488,7 @@ def lMap (Φ : L₁ →ᵥ L₂) {n} : Semiformula L₁ ξ n →L Semiformula L�
   map_and' := by simp[lMapAux]
   map_or'  := by simp[lMapAux]
   map_neg' := by simp[lMapAux_neg]
-  map_imply' := by simp[Semiformula.imp_eq, lMapAux_neg, ←Semiformula.neg_eq, lMapAux]
+  map_imply' := by simp[Semiformula.imp_eq, lMapAux_neg, ← Semiformula.neg_eq, lMapAux]
 
 lemma lMap_rel {k} (r : L₁.Rel k) (v : Fin k → Semiterm L₁ ξ n) :
     lMap Φ (rel r v) = rel (Φ.rel r) (fun i => (v i).lMap Φ) := rfl
@@ -476,7 +497,8 @@ lemma lMap_rel {k} (r : L₁.Rel k) (v : Fin k → Semiterm L₁ ξ n) :
     lMap Φ (rel r v) = rel (Φ.rel r) ![] := by simp[lMap_rel, Matrix.empty_eq]
 
 @[simp] lemma lMap_rel₁ (r : L₁.Rel 1) (t : Semiterm L₁ ξ n) :
-    lMap Φ (rel r ![t]) = rel (Φ.rel r) ![t.lMap Φ] := by simp[lMap_rel, Matrix.constant_eq_singleton]
+    lMap Φ (rel r ![t]) = rel (Φ.rel r) ![t.lMap Φ] := by
+  simp[lMap_rel, Matrix.constant_eq_singleton]
 
 @[simp] lemma lMap_rel₂ (r : L₁.Rel 2) (t₁ t₂ : Semiterm L₁ ξ n) :
     lMap Φ (rel r ![t₁, t₂]) = rel (Φ.rel r) ![t₁.lMap Φ, t₂.lMap Φ] := by
@@ -489,7 +511,8 @@ lemma lMap_nrel {k} (r : L₁.Rel k) (v : Fin k → Semiterm L₁ ξ n) :
     lMap Φ (nrel r v) = nrel (Φ.rel r) ![] := by simp[lMap_nrel, Matrix.empty_eq]
 
 @[simp] lemma lMap_nrel₁ (r : L₁.Rel 1) (t : Semiterm L₁ ξ n) :
-    lMap Φ (nrel r ![t]) = nrel (Φ.rel r) ![t.lMap Φ] := by simp[lMap_nrel, Matrix.constant_eq_singleton]
+    lMap Φ (nrel r ![t]) = nrel (Φ.rel r) ![t.lMap Φ] := by
+  simp[lMap_nrel, Matrix.constant_eq_singleton]
 
 @[simp] lemma lMap_nrel₂ (r : L₁.Rel 2) (t₁ t₂ : Semiterm L₁ ξ n) :
     lMap Φ (nrel r ![t₁, t₂]) = nrel (Φ.rel r) ![t₁.lMap Φ, t₂.lMap Φ] := by
@@ -548,4 +571,4 @@ end Theory
 
 end FirstOrder
 
-end LO
+end ProofTheory
