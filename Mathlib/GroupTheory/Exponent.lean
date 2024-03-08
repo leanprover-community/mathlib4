@@ -297,6 +297,7 @@ lemma _root_.Nat.coprime_factorization_lcm_left_factorization_lcm_right (a b : N
   refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
   contrapose! h'; rwa [← h']
 
+variable {G} in
 open Nat in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, there is an element
 of order `lcm n m`. The result actually gives an explicit (computable) element, written as the
