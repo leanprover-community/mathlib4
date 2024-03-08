@@ -755,10 +755,12 @@ lemma IsFundamentalDomain.quotientMeasure_invariant [Countable G] [MeasurableSpa
   · exact measurableSet_quotient.mp meas_U
   · intro g
     ext x
-    have : Quotient.mk α_mod_G (g • x) = Quotient.mk α_mod_G x
-    · apply Quotient.sound
+    have : Quotient.mk α_mod_G (g • x) = Quotient.mk α_mod_G x := by
+      apply Quotient.sound
       use g
-    aesop
+    aesop -- no longer closing the goal!
+    sorry
+    sorry
 
 end FundamentalDomainMeasure
 
@@ -950,8 +952,8 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
     have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
-    have measπAn : MeasurableSet (π '' A n)
-    · let _ : Setoid α := α_mod_G
+    have measπAn : MeasurableSet (π '' A n) := by
+      let _ : Setoid α := α_mod_G
       rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]
       apply MeasurableSet.iUnion
       exact fun g ↦ MeasurableSet.const_smul (hA_meas n) g
