@@ -376,8 +376,8 @@ lemma iff_right'! {Γ : Set F} {p q : F} (dpq : Γ ⊢! (p ⭤ q)) (dp : Γ ⊢!
 
 lemma iff_def! {Γ : Set F} {p q : F} : (Γ ⊢! (p ⭤ q)) ↔ (Γ ⊢! (p ⭢ q)) ∧ (Γ ⊢! (q ⭢ p)) := by
   constructor;
-  . intro h; exact ⟨iff_mp'! h, iff_mpr'! h⟩
-  . intro h; exact iff_intro! h.1 h.2
+  · intro h; exact ⟨iff_mp'! h, iff_mpr'! h⟩
+  · intro h; exact iff_intro! h.1 h.2
 
 lemma neg_iff'! {Γ : Set F} {p q : F} (d : Γ ⊢! (p ⭤ q)) : Γ ⊢! (~p ⭤ ~q) := ⟨neg_iff' d.some⟩
 
