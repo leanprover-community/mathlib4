@@ -663,8 +663,9 @@ def factorization_lcm_right (a b : ℕ) := (Nat.lcm a b).factorization.prod fun 
 
 variable (a b)
 
-lemma factorization_lcm_left_ne_zero :
-    factorization_lcm_left a b ≠ 0 := by
+lemma factorization_lcm_left_pos :
+    0 < factorization_lcm_left a b := by
+  apply Nat.pos_of_ne_zero
   rw [factorization_lcm_left, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
@@ -672,8 +673,9 @@ lemma factorization_lcm_left_ne_zero :
     simpa [H.1] using H.2
   · simp only [h, reduceIte, one_ne_zero] at H
 
-lemma factorization_lcm_right_ne_zero :
-    factorization_lcm_right a b ≠ 0 := by
+lemma factorization_lcm_right_pos :
+    0 < factorization_lcm_right a b := by
+  apply Nat.pos_of_ne_zero
   rw [factorization_lcm_right, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
