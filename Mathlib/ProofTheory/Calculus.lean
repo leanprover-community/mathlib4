@@ -155,7 +155,7 @@ instance : Gentzen F where
   implyRight := fun b =>
     toConsRight (OneSided.cast (or $ ofConsLeftRight b) (by simp[DeMorgan.imply]))
   wk := fun b hΓ hΔ => wk b (by
-    simp
+    simp?
     exact ⟨List.subset_append_of_subset_left _ $ List.map_subset _ hΓ,
       List.subset_append_of_subset_right _ $ hΔ⟩)
   em := fun {p} _ _ hΓ hΔ => em (p := p)
