@@ -286,22 +286,16 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
 #align nat.prime.exists_order_of_eq_pow_factorization_exponent Nat.Prime.exists_orderOf_eq_pow_factorization_exponent
 #align nat.prime.exists_order_of_eq_pow_padic_val_nat_add_exponent Nat.Prime.exists_addOrderOf_eq_pow_padic_val_nat_add_exponent
 
-open Nat in
-lemma _root_.Nat.coprime_factorization_lcm_left_factorization_lcm_right (a b : Nat) :
-    (factorization_lcm_left a b).Coprime (factorization_lcm_right a b) := by
-  rw [factorization_lcm_left, factorization_lcm_right]
-  refine coprime_prod_left_iff.mpr fun p hp ↦ coprime_prod_right_iff.mpr fun q hq ↦ ?_
-  dsimp only; split_ifs with h h'
-  any_goals apply coprime_one_left
-  · apply coprime_one_right
-  refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
-  contrapose! h'; rwa [← h']
-
 variable {G} in
 open Nat in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, there is an element
 of order `lcm n m`. The result actually gives an explicit (computable) element, written as the
-product of a power of `x` and a power of `y`. -/
+product of a power of `x` and a power of `y`. See also the result below if you don't need the
+explicit formula. -/
+@[to_additive "If two commuting elements `x` and `y` of an additive monoid have order `n` and `m`,
+there is an element of order `lcm n m`. The result actually gives an explicit (computable) element,
+written as the sum of a multiple of `x` and a multiple of `y`. See also the result below if you
+don't need the explicit formula."]
 lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : orderOf x ≠ 0)
     (hy : orderOf y ≠ 0) :
     orderOf (x ^ (orderOf x / (factorization_lcm_left (orderOf x) (orderOf y))) *
@@ -338,6 +332,18 @@ lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : or
     · exact _root_.Nat.coprime_factorization_lcm_left_factorization_lcm_right _ _
     · exact Nat.pos_of_ne_zero (fun h ↦ hy <| by simpa [h] using hky)
     · exact Nat.pos_of_ne_zero (fun h ↦ hx <| by simpa [h] using hkx)
+
+/-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, there is an element
+of order `lcm n m`. -/
+@[to_additive "If two commuting elements `x` and `y` of an additive monoid have order `n` and `m`,
+there is an element of order `lcm n m`."]
+theorem _root_.Commute.exists_orderOf_eq_lcm {x y : G} (h : Commute x y) :
+    ∃ (z : G), orderOf z = Nat.lcm (orderOf x) (orderOf y) := by
+  by_cases hx : orderOf x = 0 <;> by_cases hy : orderOf y = 0
+  · use x; simp [hx]
+  · use x; simp [hx]
+  · use y; simp [hy]
+  · exact ⟨_, h.orderOf_mul_pow_eq_lcm hx hy⟩
 
 /-- A nontrivial monoid has prime exponent `p` if and only if every non-identity element has
 order `p`. -/
