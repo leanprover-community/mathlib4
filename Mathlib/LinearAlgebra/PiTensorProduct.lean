@@ -753,7 +753,6 @@ theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
     comp_apply, ← map_reindex, LinearEquiv.apply_symm_apply, map_tprod]
 
-@[simp]
 theorem map_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s (e.symm i)) :
     map f ((reindex R s e).symm x) = (reindex R t e).symm (map (fun i ↦ f (e.symm i)) x) :=
   DFunLike.congr_fun (map_comp_reindex_symm _ _) _
