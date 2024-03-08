@@ -441,8 +441,8 @@ lemma inconsistent_insert_falsum : Inconsistent Bew (insert ⊥ Γ) := ⟨hd.axm
 lemma inconsistent_insert {Γ p} (h : Inconsistent Bew (insert p Γ)) : (∃ Δ, (Δ ⊆ Γ) ∧ ((insert p Δ) ⊢! ⊥)) := by
   existsi Γ;
   constructor;
-  . rfl;
-  . exact h;
+  · rfl;
+  · exact h;
 
 /-- This lemma require classical logic. -/
 lemma inconsistent_iff_insert_neg {Γ p} : Inconsistent Bew (insert (~p) Γ) ↔ (Γ ⊢! p) := by
