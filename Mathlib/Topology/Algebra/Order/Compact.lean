@@ -258,7 +258,7 @@ theorem cocompact_eq_atTop [LinearOrder α] [NoMaxOrder α] [OrderBot α]
     [ClosedIciTopology α] [CompactIccSpace α] : cocompact α = atTop :=
   cocompact_le_atTop.antisymm atTop_le_cocompact
 
--- Porting note: new lemma; defeq to the old one but allows us to use dot notation
+-- Porting note (#10756): new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
 theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMinOn f s x := by
@@ -283,7 +283,7 @@ theorem IsCompact.exists_forall_le [ClosedIicTopology α] {s : Set β} (hs : IsC
   hs.exists_isMinOn ne_s hf
 #align is_compact.exists_forall_le IsCompact.exists_forall_le
 
--- Porting note: new lemma; defeq to the old one but allows us to use dot notation
+-- Porting note (#10756): new lemma; defeq to the old one but allows us to use dot notation
 /-- The **extreme value theorem**: a continuous function realizes its maximum on a compact set. -/
 theorem IsCompact.exists_isMaxOn [ClosedIciTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMaxOn f s x :=

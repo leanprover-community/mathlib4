@@ -186,7 +186,7 @@ theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
 
 @[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp, norm_cast]
 theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
@@ -198,7 +198,7 @@ theorem coe_top : ((⊤ : Opens α) : Set α) = Set.univ :=
 
 @[simp] theorem mk_univ : (⟨univ, isOpen_univ⟩ : Opens α) = ⊤ := rfl
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp, norm_cast]
 theorem coe_eq_univ {U : Opens α} : (U : Set α) = univ ↔ U = ⊤ :=
   SetLike.coe_injective.eq_iff' rfl

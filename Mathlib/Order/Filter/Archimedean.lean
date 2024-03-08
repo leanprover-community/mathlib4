@@ -112,7 +112,7 @@ theorem Filter.Eventually.rat_cast_atBot [LinearOrderedField R] [Archimedean R] 
     (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℚ) in atBot, p n := by
   rw [← Rat.comap_cast_atBot (R := R)]; exact h.comap _
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem atTop_hasAntitoneBasis_of_archimedean [OrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n :=
   hasAntitoneBasis_atTop.comp_mono Nat.mono_cast tendsto_nat_cast_atTop_atTop

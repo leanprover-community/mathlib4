@@ -349,7 +349,7 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 #align real.tendsto_exp_comp_nhds_zero Real.tendsto_exp_comp_nhds_zero
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem openEmbedding_exp : OpenEmbedding exp :=
   isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
 
