@@ -1030,6 +1030,10 @@ theorem HasCountableBasis.isCountablyGenerated {f : Filter α} {p : ι → Prop}
   ⟨⟨{ t | ∃ i, p i ∧ s i = t }, h.countable.image s, h.toHasBasis.eq_generate⟩⟩
 #align filter.has_countable_basis.is_countably_generated Filter.HasCountableBasis.isCountablyGenerated
 
+theorem HasBasis.isCountablyGenerated [Countable ι] {f : Filter α} {p : ι → Prop} {s : ι → Set α}
+    (h : f.HasBasis p s) : f.IsCountablyGenerated :=
+  HasCountableBasis.isCountablyGenerated ⟨h, to_countable _⟩
+
 theorem antitone_seq_of_seq (s : ℕ → Set α) :
     ∃ t : ℕ → Set α, Antitone t ∧ ⨅ i, 𝓟 (s i) = ⨅ i, 𝓟 (t i) := by
   use fun n => ⋂ m ≤ n, s m; constructor
@@ -1079,10 +1083,6 @@ theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirected ι (· ≤ ·)] {
   hs.1.to_hasBasis (fun j _ => (exists_ge_ge i j).imp fun _k hk => ⟨hk.1, hs.2 hk.2⟩) fun j _ =>
     ⟨j, trivial, Subset.rfl⟩
 #align filter.has_antitone_basis.has_basis_ge Filter.HasAntitoneBasis.hasBasis_ge
-
-theorem HasAntitoneBasis.isCountablyGenerated [Preorder ι] [Countable ι] {l : Filter α}
-    {s : ι → Set α} (hs : l.HasAntitoneBasis s) : IsCountablyGenerated l :=
-  HasCountableBasis.isCountablyGenerated ⟨hs.1, to_countable _⟩
 
 /-- If `f` is countably generated and `f.HasBasis p s`, then `f` admits a decreasing basis
 enumerated by natural numbers such that all sets have the form `s i`. More precisely, there is a

@@ -674,15 +674,17 @@ protected theorem hasBasis_uniformity_of_covering_of_basis {ι ι' : Type*} [Non
 such that each `s ∈ 𝔖` is included in some `t n`
 and `V n` is an antitone basis of entourages of `β`,
 then `UniformOnFun.gen 𝔖 (t n) (V n)` is an antitone basis of entourages of `α →ᵤ[𝔖] β`. -/
-protected theorem hasAntitoneBasis_uniformity {t : ℕ → Set α} {V : ℕ → Set (β × β)}
+protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {t : ι → Set α} {V : ι → Set (β × β)}
     (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n)
     (hb : HasAntitoneBasis (𝓤 β) V) :
     (𝓤 (α →ᵤ[𝔖] β)).HasAntitoneBasis fun n ↦ UniformOnFun.gen 𝔖 (t n) (V n) := by
+  have := hb.nonempty
   refine ⟨(UniformOnFun.hasBasis_uniformity_of_covering_of_basis 𝔖
     ht hmono.directed_le hex hb.1).to_hasBasis ?_ fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
   · rintro ⟨k, l⟩ -
-    use max k l, trivial
-    exact UniformOnFun.gen_mono (hmono <| le_max_left _ _) (hb.2 <| le_max_right _ _)
+    rcases directed_of (· ≤ ·) k l with ⟨n, hkn, hln⟩
+    exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.2 <| hln)⟩
   · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.2 h)
 
 protected theorem isCountablyGenerated_uniformity [IsCountablyGenerated (𝓤 β)] {t : ℕ → Set α}

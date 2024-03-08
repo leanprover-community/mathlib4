@@ -230,13 +230,13 @@ theorem _root_.CompactExhaustion.hasBasis_compactConvergenceUniformity {ι : Typ
     HasBasis (𝓤 C(α, β)) (fun i : ℕ × ι ↦ p i.2) fun i ↦
       {fg | ∀ x ∈ K i.1, (fg.1 x, fg.2 x) ∈ V i.2} :=
   (UniformOnFun.hasBasis_uniformity_of_covering_of_basis {K | IsCompact K} K.isCompact
-    (Monotone.directed_le K.subset) (fun _ ↦ K.exists_isCompact_subset) hb).comap _
+    (Monotone.directed_le K.subset) (fun _ ↦ K.exists_superset_of_isCompact) hb).comap _
 
 theorem _root_.CompactExhaustion.hasAntitoneBasis_compactConvergenceUniformity
     {V : ℕ → Set (β × β)} (K : CompactExhaustion α) (hb : (𝓤 β).HasAntitoneBasis V) :
     HasAntitoneBasis (𝓤 C(α, β)) fun n ↦ {fg | ∀ x ∈ K n, (fg.1 x, fg.2 x) ∈ V n} :=
   (UniformOnFun.hasAntitoneBasis_uniformity {K | IsCompact K} K.isCompact
-    K.subset (fun _ ↦ K.exists_isCompact_subset) hb).comap _
+    K.subset (fun _ ↦ K.exists_superset_of_isCompact) hb).comap _
 
 /-- If `α` is a weakly locally compact σ-compact space
 (e.g., a proper pseudometric space or a compact spaces)
