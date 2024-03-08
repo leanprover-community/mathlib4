@@ -38,6 +38,7 @@ namespace Unsorted
 
 /-- Class for `BoundedVariable` -/
 class BoundedVariable (T : ℕ → Type*) where
+  /-- Bounded variable -/
   bvar {n} : Fin n → T n
 
 /-- Prefix notation `BoundedVariable.bvar` -/
@@ -49,6 +50,7 @@ variable (T : ℕ → Type*) [BoundedVariable T] (R : outParam (ℕ → ℕ → 
 
 /-- Class `RewritingT` rewriting via `R` -/
 class RewritingT where
+  /-- Evaluating a rewrite -/
   evalT {n₁ n₂} : R n₁ n₂ → T n₁ → T n₂
   evalT_injective' {n₁ n₂} : Function.Injective (evalT : R n₁ n₂ → T n₁ → T n₂)
   evalT_id {n} : ∀ t : T n, evalT 1 t = t
@@ -62,10 +64,12 @@ infix:70 " ⋙ " => RewritingT.evalT
 
 /-- Class `RewritingT.Substs` for rewriting substrings -/
 class RewritingT.Substs [RewritingT T R] where
+  /-- Rewriting substring -/
   substs {k n} (v : Fin k → T n) : R k n
   evalT_substs {k n} (v : Fin k → T n) (x : Fin k) : substs v ⋙ #x = v x
   comp_substs {k n₁ n₂} (ω : R n₁ n₂) (v : Fin k → T n₁) : ω • (substs v) =
     substs (fun i => ω ⋙ (v i))
+  /-- Shift by one -/
   bShift {n} : R n (n + 1)
   evalT_bShift {n} (x : Fin n) : bShift ⋙ (#x : T n) = #x.succ
 
@@ -81,7 +85,9 @@ variable (R : outParam (ℕ → ℕ → Type*)) [VMonoid R]
 
 /-- Class `Rewriting` for rewriting -/
 class Rewriting where
+  /-- Evaluate a rewrite -/
   eval {n₁ n₂} : R n₁ n₂ → F n₁ →ˡᶜ F n₂
+  /-- Rewrite with increments -/
   q {n₁ n₂} : R n₁ n₂ → R (n₁ + 1) (n₂ + 1)
   q_id {n} : q (1 : R n n) = 1
   q_comp {n₁ n₂ n₃} (ω₂ : R n₂ n₃) (ω₁ : R n₁ n₂) : q (ω₂ • ω₁) = (q ω₂) • (q ω₁)
@@ -101,7 +107,9 @@ class Rewriting.Substs [RewritingT T R] [RewritingT.Substs T R] extends Rewritin
 /-- Class `SyntacticRewriting` for rewriting syntactically -/
 class SyntacticRewriting [RewritingT T R] [RewritingT.Substs T R]
     extends Rewriting F R where
+  /-- Map `n` to `n` -/
   shift {n} : R n n
+  /-- Rewrite with increment -/
   free {n} : R (n + 1) n
   q_shift {n} : q (shift : R n n) = shift
   q_free {n} : q (free : R (n + 1) n) = free
