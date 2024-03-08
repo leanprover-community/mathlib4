@@ -671,7 +671,7 @@ lemma factorization_lcm_left_ne_zero :
   · simp only [h, reduceIte, one_ne_zero] at H
 
 lemma factorization_lcm_right_ne_zero :
-  factorization_lcm_right a b ≠ 0 := by
+    factorization_lcm_right a b ≠ 0 := by
   rw [factorization_lcm_right, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
