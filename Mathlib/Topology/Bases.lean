@@ -311,8 +311,9 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 `TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
 deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
-Porting note: TODO: the previous paragraph describes the state of the art in Lean 3. We can have
-instance cycles in Lean 4 but we might want to postpone adding them till after the port. -/
+Porting note (#11215): TODO: the previous paragraph describes the state of the art in Lean 3.
+We can have instance cycles in Lean 4 but we might want to
+postpone adding them till after the port. -/
 @[mk_iff] class SeparableSpace : Prop where
   /-- There exists a countable dense set. -/
   exists_countable_dense : ∃ s : Set α, s.Countable ∧ Dense s

@@ -348,7 +348,7 @@ section SecondCountable
 
 open TopologicalSpace
 
--- Porting note: todo: use `Countable` instead of `Encodable`
+-- Porting note (#11215): TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
 theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]

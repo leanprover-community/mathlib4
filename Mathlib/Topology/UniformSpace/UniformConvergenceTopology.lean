@@ -525,6 +525,15 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
 #align uniform_fun.uniform_equiv_Pi_comm UniformFun.uniformEquivPiComm
 
 -- Like in the previous lemma, the diagram actually commutes by definition
+
+/-- The set of continuous functions is closed in the uniform convergence topology.
+This is a simple wrapper over `TendstoUniformly.continuous`. -/
+theorem isClosed_setOf_continuous [TopologicalSpace α] :
+    IsClosed {f : α →ᵤ β | Continuous (toFun f)} := by
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
+  rw [← tendsto_id', UniformFun.tendsto_iff_tendstoUniformly] at huf
+  exact huf.continuous (le_principal_iff.mp hu)
+
 end UniformFun
 
 namespace UniformOnFun
@@ -904,4 +913,19 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
 #align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm
 
 -- Like in the previous lemma, the diagram actually commutes by definition
+
+/-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
+
+Then the set of continuous functions is closed
+in the topology of uniform convergence on the sets of `𝔖`. -/
+theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
+    (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
+    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
+  rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
+  have hcont : ∀ s ∈ 𝔖, ContinuousOn f s := fun s hs ↦
+    (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
+  refine continuous_le_dom h ?_
+  simpa only [continuous_iSup_dom, continuous_coinduced_dom] using fun s hs ↦ (hcont s hs).restrict
+
 end UniformOnFun

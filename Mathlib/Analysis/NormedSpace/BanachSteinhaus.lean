@@ -35,7 +35,7 @@ theorem banach_steinhaus {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ�
     (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
   rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 5 2]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
-  simpa [bddAbove_def, forall_range_iff] using h x
+  simpa [bddAbove_def, forall_mem_range] using h x
 #align banach_steinhaus banach_steinhaus
 
 open ENNReal
