@@ -13,17 +13,17 @@ warning: declaration uses 'sorry'
 example : 2 ≤ 3 := by#
   sorry
 
-/--
-info: Try this: simp_all only [le_refl]
----
-warning: declaration uses 'sorry'
----
-warning: this tactic is never executed [linter.unreachableTactic]
--/
-#guard_msgs in
-example : 2 ≤ 2 := by
-  aided_by aesop? do
-  sorry
+-- /--
+-- info: Try this: simp_all only [le_refl]
+-- ---
+-- warning: declaration uses 'sorry'
+-- ---
+-- warning: this tactic is never executed [linter.unreachableTactic]
+-- -/
+-- #guard_msgs in
+-- example : 2 ≤ 2 := by
+--   aided_by aesop? do
+--   sorry
 
 
 -- Solving as soon as `aesop?` can complete the proof
@@ -112,8 +112,8 @@ example : prop := by
   rw [prop]
   exact Nat.AtLeastTwo.prop
 
-example : 1 = 1 := by!
-  sorry
+-- example : 1 = 1 := by!
+--   sorry
 
 /--
 info: Try this: by
