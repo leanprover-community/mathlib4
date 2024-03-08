@@ -583,7 +583,8 @@ open Ideal in
 theorem IsPrime.exists_mem_Prime_of_neq_bot {R : Type*} [CommSemiring R] [IsDomain R]
     [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
     ∃ x ∈ I, Prime x := by
-  rcases Submodule.exists_mem_ne_zero_of_ne_bot hI with ⟨a, ha₁, ha₂⟩
+  classical
+  obtain ⟨a, ha₁, ha₂⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hI
   rcases factors_prod ha₂ with ⟨u, ha₃⟩
   rw [← ha₃] at ha₁
   rcases (IsPrime.mem_or_mem hI₂) ha₁ with (ha₄ | ha₅)
