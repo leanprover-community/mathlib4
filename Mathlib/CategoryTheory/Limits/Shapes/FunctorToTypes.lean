@@ -57,11 +57,11 @@ def prod.lift {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F�
 
 @[simp]
 lemma prod.lift_fst {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
-    prod.lift τ₁ τ₂ ≫ prod.fst = τ₁ := by aesop
+    prod.lift τ₁ τ₂ ≫ prod.fst = τ₁ := rfl
 
 @[simp]
 lemma prod.lift_snd {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
-    prod.lift τ₁ τ₂ ≫ prod.snd = τ₂ := by aesop
+    prod.lift τ₁ τ₂ ≫ prod.snd = τ₂ := rfl
 
 variable (F G)
 
@@ -89,11 +89,11 @@ noncomputable def binaryProductIso : F ⨯ G ≅ prod F G :=
 
 @[simp]
 lemma binaryProductIso_hom_comp_fst :
-    (binaryProductIso F G).hom ≫ prod.fst = Limits.prod.fst := by aesop
+    (binaryProductIso F G).hom ≫ prod.fst = Limits.prod.fst := rfl
 
 @[simp]
 lemma binaryProductIso_hom_comp_snd :
-    (binaryProductIso F G).hom ≫ prod.snd = Limits.prod.snd := by aesop
+    (binaryProductIso F G).hom ≫ prod.snd = Limits.prod.snd := rfl
 
 @[simp]
 lemma binaryProductIso_inv_comp_fst :
@@ -195,11 +195,11 @@ def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ �
 
 @[simp]
 lemma coprod.desc_inl {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
-    coprod.inl ≫ coprod.desc τ₁ τ₂ = τ₁ := by aesop
+    coprod.inl ≫ coprod.desc τ₁ τ₂ = τ₁ := rfl
 
 @[simp]
 lemma coprod.desc_inr {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
-    coprod.inr ≫ coprod.desc τ₁ τ₂ = τ₂ := by aesop
+    coprod.inr ≫ coprod.desc τ₁ τ₂ = τ₂ := rfl
 
 variable (F G)
 
@@ -249,23 +249,19 @@ lemma binaryCoproductIso_inr_comp_hom_apply (a : C) (x : G.obj a) :
 
 @[simp]
 lemma binaryCoproductIso_inl_comp_inv :
-    coprod.inl ≫ (binaryCoproductIso F G).inv = (Limits.coprod.inl (X := F)) := by
-  aesop
+    coprod.inl ≫ (binaryCoproductIso F G).inv = (Limits.coprod.inl (X := F)) := rfl
 
 @[simp]
 lemma binaryCoproductIso_inl_comp_inv_apply (a : C) (x : F.obj a) :
-    (binaryCoproductIso F G).inv.app a (.inl x) = (Limits.coprod.inl (X := F)).app a x := by
-  aesop
+    (binaryCoproductIso F G).inv.app a (.inl x) = (Limits.coprod.inl (X := F)).app a x := rfl
 
 @[simp]
 lemma binaryCoproductIso_inr_comp_inv :
-    coprod.inr ≫ (binaryCoproductIso F G).inv = (Limits.coprod.inr (X := F)) := by
-  aesop
+    coprod.inr ≫ (binaryCoproductIso F G).inv = (Limits.coprod.inr (X := F)) := rfl
 
 @[simp]
 lemma binaryCoproductIso_inr_comp_inv_apply (a : C) (x : G.obj a) :
-    (binaryCoproductIso F G).inv.app a (.inr x) = (Limits.coprod.inr (X := F)).app a x := by
-  aesop
+    (binaryCoproductIso F G).inv.app a (.inr x) = (Limits.coprod.inr (X := F)).app a x := rfl
 
 variable {F G}
 
