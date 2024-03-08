@@ -26,7 +26,7 @@ instance {α : Type*} (M : α → α → Type*) [VMonoidStruct M] (a₁ a₂ a�
 class VMonoid {α : Type*} (M : α → α → Type*) extends VMonoidStruct M where
   id_left {a b : α} (m : M a b) : (1 : M b b) • m = m
   id_right {a b : α} (m : M a b) : m • (1 : M a a) = m
-  comp_assoc {a b c : α} (m₃ : M a₃ a₄) (m₂ : M a₂ a₃) (m₁ : M a₁ a₂) :
+  comp_assoc {a₁ a₂ a₃ a₄: α} (m₃ : M a₃ a₄) (m₂ : M a₂ a₃) (m₁ : M a₁ a₂) :
     m₃ • (m₂ • m₁) = (m₃ • m₂) • m₁
 
 namespace ProofTheory
