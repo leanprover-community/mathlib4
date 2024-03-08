@@ -55,9 +55,9 @@ private def Bool_add_le_add_left (a b : Bool) :
 
 -- For simpler implementation, we treat `false` as "satisfied" and `true` as "wrong" here.
 private instance crispCodomainZero : Zero Bool where zero := false
+
 private instance crispCodomainAdd : Add Bool where add a b := a || b
 
--- For simpler implementation, we treat `false` as "satisfied" and `true` as "wrong" here.
 private instance crispCodomain : LinearOrderedAddCommMonoid Bool where
   __ := Bool.linearOrder
   add_assoc := Bool.or_assoc
