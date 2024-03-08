@@ -286,17 +286,6 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
 #align nat.prime.exists_order_of_eq_pow_factorization_exponent Nat.Prime.exists_orderOf_eq_pow_factorization_exponent
 #align nat.prime.exists_order_of_eq_pow_padic_val_nat_add_exponent Nat.Prime.exists_addOrderOf_eq_pow_padic_val_nat_add_exponent
 
-open Nat in
-lemma _root_.Nat.coprime_factorization_lcm_left_factorization_lcm_right (a b : Nat) :
-    (factorization_lcm_left a b).Coprime (factorization_lcm_right a b) := by
-  rw [factorization_lcm_left, factorization_lcm_right]
-  refine coprime_prod_left_iff.mpr fun p hp ↦ coprime_prod_right_iff.mpr fun q hq ↦ ?_
-  dsimp only; split_ifs with h h'
-  any_goals apply coprime_one_left
-  · apply coprime_one_right
-  refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
-  contrapose! h'; rwa [← h']
-
 variable {G} in
 open Nat in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, there is an element

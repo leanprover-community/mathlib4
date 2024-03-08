@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Algebra.GroupPower.Order
@@ -682,6 +683,17 @@ lemma factorization_lcm_right_pos :
   · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq] at H
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
+
+open Nat in
+lemma coprime_factorization_lcm_left_factorization_lcm_right :
+    (factorization_lcm_left a b).Coprime (factorization_lcm_right a b) := by
+  rw [factorization_lcm_left, factorization_lcm_right]
+  refine coprime_prod_left_iff.mpr fun p hp ↦ coprime_prod_right_iff.mpr fun q hq ↦ ?_
+  dsimp only; split_ifs with h h'
+  any_goals apply coprime_one_left
+  · apply coprime_one_right
+  refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
+  contrapose! h'; rwa [← h']
 
 variable {a b}
 
