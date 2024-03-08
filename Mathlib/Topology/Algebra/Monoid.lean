@@ -22,13 +22,15 @@ the definitions.
 
 universe u v
 
-open Classical Set Filter TopologicalSpace
+open scoped Classical
+open Set Filter TopologicalSpace
 
-open Classical Topology BigOperators Pointwise
+open scoped Classical
+open Topology BigOperators Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
   @continuous_const _ _ _ _ 1
 #align continuous_one continuous_one
@@ -329,7 +331,7 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
 #align is_closed_set_of_map_mul isClosed_setOf_map_mul
 #align is_closed_set_of_map_add isClosed_setOf_map_add
 
--- porting note: split variables command over two lines, can't change explicitness at the same time
+-- Porting note: split variables command over two lines, can't change explicitness at the same time
 -- as declaring new variables.
 variable {M₁ M₂}
 variable [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
@@ -466,7 +468,7 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
 #align submonoid.topological_closure Submonoid.topologicalClosure
 #align add_submonoid.topological_closure AddSubmonoid.topologicalClosure
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
     (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
@@ -585,7 +587,7 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 -- To properly fix this, we should make sure that `continuity` applies its
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
 -- is quite an invasive change.
-@[to_additive (attr := aesop safe -100 (rule_sets [Continuous]), fun_prop)]
+@[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow
@@ -786,8 +788,7 @@ theorem continuousOn_finset_prod {f : ι → X → M} (s : Finset ι) {t : Set X
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
     {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i in s, f i =ᶠ[l] ∏ i in s, g i := by
-  replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x
-  · rwa [eventually_all_finset]
+  replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x := by rwa [eventually_all_finset]
   filter_upwards [hs] with x hx
   simp only [Finset.prod_apply, Finset.prod_congr rfl hx]
 #align eventually_eq_prod eventuallyEq_prod
@@ -860,7 +861,7 @@ theorem continuousMul_sInf {ts : Set (TopologicalSpace M)}
 theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
     (h' : ∀ i, @ContinuousMul M (ts i) _) : @ContinuousMul M (⨅ i, ts i) _ := by
   rw [← sInf_range]
-  exact continuousMul_sInf (Set.forall_range_iff.mpr h')
+  exact continuousMul_sInf (Set.forall_mem_range.mpr h')
 #align has_continuous_mul_infi continuousMul_iInf
 #align has_continuous_add_infi continuousAdd_iInf
 

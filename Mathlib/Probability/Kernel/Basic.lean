@@ -70,6 +70,16 @@ instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
+instance kernel.instCovariantAddLE {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    CovariantClass (kernel α β) (kernel α β) (· + ·) (· ≤ ·) :=
+  ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
+
+noncomputable
+instance kernel.instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    OrderBot (kernel α β) where
+  bot := 0
+  bot_le κ a := by simp only [ZeroMemClass.coe_zero, Pi.zero_apply, Measure.zero_le]
+
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace kernel
@@ -123,8 +133,9 @@ class IsFiniteKernel (κ : kernel α β) : Prop where
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
 for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.kernel.measure_le_bound κ a s`).
 
-Porting note: TODO: does it make sense to make `ProbabilityTheory.IsFiniteKernel.bound` the least
-possible bound? Should it be an `NNReal` number? -/
+Porting note (#11215): TODO: does it make sense to
+-- make `ProbabilityTheory.IsFiniteKernel.bound` the least possible bound?
+-- Should it be an `NNReal` number? -/
 noncomputable def IsFiniteKernel.bound (κ : kernel α β) [h : IsFiniteKernel κ] : ℝ≥0∞ :=
   h.exists_univ_le.choose
 #align probability_theory.is_finite_kernel.bound ProbabilityTheory.IsFiniteKernel.bound
@@ -597,6 +608,10 @@ theorem comapRight_apply' (κ : kernel α β) (hf : MeasurableEmbedding f) (a : 
   rw [comapRight_apply,
     Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
 #align probability_theory.kernel.comap_right_apply' ProbabilityTheory.kernel.comapRight_apply'
+
+@[simp]
+lemma comapRight_id (κ : kernel α β) : comapRight κ MeasurableEmbedding.id = κ := by
+  ext _ _ hs; rw [comapRight_apply' _ _ _ hs]; simp
 
 theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by

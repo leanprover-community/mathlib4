@@ -34,7 +34,7 @@ variable {E : Type w₂} [Category.{max v u} E]
 
 variable (F : D ⥤ E)
 
--- porting note: Removed this and made whatever necessary noncomputable
+-- Porting note: Removed this and made whatever necessary noncomputable
 -- noncomputable section
 
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
@@ -72,7 +72,7 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     (whiskeringLeft _ _ _).obj P ⋙ J.sheafification E := by
   refine' J.plusFunctorWhiskerLeftIso _ ≪≫ _ ≪≫ Functor.associator _ _ _
   refine' isoWhiskerRight _ _
-  refine' J.plusFunctorWhiskerLeftIso _
+  exact J.plusFunctorWhiskerLeftIso _
 #align category_theory.grothendieck_topology.sheafification_whisker_left_iso CategoryTheory.GrothendieckTopology.sheafificationWhiskerLeftIso
 
 @[simp]
