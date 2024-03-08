@@ -126,11 +126,11 @@ theorem isLowerSet_sUnion {S : Set (Set α)} (hf : ∀ s ∈ S, IsLowerSet s) : 
 #align is_lower_set_sUnion isLowerSet_sUnion
 
 theorem isUpperSet_iUnion {f : ι → Set α} (hf : ∀ i, IsUpperSet (f i)) : IsUpperSet (⋃ i, f i) :=
-  isUpperSet_sUnion <| forall_range_iff.2 hf
+  isUpperSet_sUnion <| forall_mem_range.2 hf
 #align is_upper_set_Union isUpperSet_iUnion
 
 theorem isLowerSet_iUnion {f : ι → Set α} (hf : ∀ i, IsLowerSet (f i)) : IsLowerSet (⋃ i, f i) :=
-  isLowerSet_sUnion <| forall_range_iff.2 hf
+  isLowerSet_sUnion <| forall_mem_range.2 hf
 #align is_lower_set_Union isLowerSet_iUnion
 
 theorem isUpperSet_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsUpperSet (f i j)) :
@@ -152,11 +152,11 @@ theorem isLowerSet_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsLowerSet s) : 
 #align is_lower_set_sInter isLowerSet_sInter
 
 theorem isUpperSet_iInter {f : ι → Set α} (hf : ∀ i, IsUpperSet (f i)) : IsUpperSet (⋂ i, f i) :=
-  isUpperSet_sInter <| forall_range_iff.2 hf
+  isUpperSet_sInter <| forall_mem_range.2 hf
 #align is_upper_set_Inter isUpperSet_iInter
 
 theorem isLowerSet_iInter {f : ι → Set α} (hf : ∀ i, IsLowerSet (f i)) : IsLowerSet (⋂ i, f i) :=
-  isLowerSet_sInter <| forall_range_iff.2 hf
+  isLowerSet_sInter <| forall_mem_range.2 hf
 #align is_lower_set_Inter isLowerSet_iInter
 
 theorem isUpperSet_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsUpperSet (f i j)) :
@@ -1395,7 +1395,7 @@ def lowerClosure (s : Set α) : LowerSet α :=
   ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hle.trans hx.2⟩⟩
 #align lower_closure lowerClosure
 
--- Porting note: todo: move `GaloisInsertion`s up, use them to prove lemmas
+-- Porting note (#11215): TODO: move `GaloisInsertion`s up, use them to prove lemmas
 
 @[simp]
 theorem mem_upperClosure : x ∈ upperClosure s ↔ ∃ a ∈ s, a ≤ x :=

@@ -23,7 +23,8 @@ the uniform distance.
 
 noncomputable section
 
-open Topology Bornology Classical NNReal uniformity UniformConvergence
+open scoped Classical
+open Topology Bornology NNReal uniformity UniformConvergence
 
 open Set Filter Metric Function
 
@@ -247,7 +248,7 @@ theorem dist_zero_of_empty [IsEmpty α] : dist f g = 0 := by
 theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
   cases isEmpty_or_nonempty α; · rw [iSup_of_empty', Real.sSup_empty, dist_zero_of_empty]
   refine' (dist_le_iff_of_nonempty.mpr <| le_ciSup _).antisymm (ciSup_le dist_coe_le_dist)
-  exact dist_set_exists.imp fun C hC => forall_range_iff.2 hC.2
+  exact dist_set_exists.imp fun C hC => forall_mem_range.2 hC.2
 #align bounded_continuous_function.dist_eq_supr BoundedContinuousFunction.dist_eq_iSup
 
 theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=

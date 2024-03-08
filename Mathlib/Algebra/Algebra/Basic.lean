@@ -896,7 +896,7 @@ variable (R)
 #align linear_map.coe_restrict_scalars_eq_coe LinearMap.coe_restrictScalars
 #align linear_map.coe_coe_is_scalar_tower LinearMap.coe_restrictScalars
 
--- Porting note: todo: generalize to `CompatibleSMul`
+-- Porting note (#11215): TODO: generalize to `CompatibleSMul`
 /-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
 a commutative semiring `R` and `M` a module over `R`. -/
 def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]

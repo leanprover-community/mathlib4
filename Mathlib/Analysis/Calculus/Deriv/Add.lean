@@ -24,7 +24,8 @@ derivative
 
 universe u v w
 
-open Classical Topology BigOperators Filter ENNReal
+open scoped Classical
+open Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -291,6 +292,13 @@ theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → �
     (uniqueDiffOn_Iic _ _ Set.right_mem_Iic).eq_deriv _ h.hasDerivAt.hasDerivWithinAt <|
       (hasDerivWithinAt_neg _ _).congr_of_mem (fun _ h ↦ abs_of_nonpos h) Set.right_mem_Iic
   linarith
+
+lemma differentiableAt_comp_neg_iff {a : 𝕜} :
+    DifferentiableAt 𝕜 f (-a) ↔ DifferentiableAt 𝕜 (fun x ↦ f (-x)) a := by
+  refine ⟨fun H ↦ H.comp a differentiable_neg.differentiableAt, fun H ↦ ?_⟩
+  convert ((neg_neg a).symm ▸ H).comp (-a) differentiable_neg.differentiableAt
+  ext
+  simp only [Function.comp_apply, neg_neg]
 
 end Neg2
 

@@ -213,7 +213,7 @@ def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) 
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 #align invertible_div invertibleDiv
 
--- Porting note: removed `simp` attribute as `simp` can prove it
+-- Porting note (#11119): removed `simp` attribute as `simp` can prove it
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])
