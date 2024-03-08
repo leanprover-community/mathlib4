@@ -304,11 +304,11 @@ lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : or
   have h₁ := factorization_lcm_left_pos (orderOf x) (orderOf y)
   have h₂ := factorization_lcm_right_pos (orderOf x) (orderOf y)
   have hx' : orderOf x / factorization_lcm_left (orderOf x) (orderOf y) ≠ 0 :=
-    fun h ↦ hx <| eq_zero_of_dvd_of_div_eq_zero (factorization_lcm_left_dvd hx hy) h
+    fun h ↦ hx <| eq_zero_of_dvd_of_div_eq_zero (factorization_lcm_left_dvd _ _) h
   have hy' : orderOf y / factorization_lcm_right (orderOf x) (orderOf y) ≠ 0 :=
-    fun h ↦ hy <| eq_zero_of_dvd_of_div_eq_zero (factorization_lcm_right_dvd hx hy) h
-  obtain ⟨kx, hkx⟩ := factorization_lcm_left_dvd hx hy
-  obtain ⟨ky, hky⟩ := factorization_lcm_right_dvd hx hy
+    fun h ↦ hy <| eq_zero_of_dvd_of_div_eq_zero (factorization_lcm_right_dvd _ _) h
+  obtain ⟨kx, hkx⟩ := factorization_lcm_left_dvd (orderOf x) (orderOf y)
+  obtain ⟨ky, hky⟩ := factorization_lcm_right_dvd (orderOf x) (orderOf y)
   rw [(h.pow_pow _ _).orderOf_mul_eq_mul_orderOf_of_coprime, orderOf_pow' _ hx',
     orderOf_pow' _ hy']
   · nth_rewrite 3 [hkx]; nth_rewrite 5 [hky]
