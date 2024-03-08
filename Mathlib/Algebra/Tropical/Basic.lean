@@ -291,9 +291,11 @@ instance instLinearOrderTropical : LinearOrder (Tropical R) :=
     le_total := fun a b => le_total (untrop a) (untrop b)
     decidableLE := Tropical.decidableLE
     max := fun a b => trop (max (untrop a) (untrop b))
-    max_def := fun a b => untrop_injective (by simp [max_def]; split_ifs <;> simp)
+    max_def := fun a b => untrop_injective (by
+      simp only [max_def, untrop_le_iff, untrop_trop]; split_ifs <;> simp)
     min := (· + ·)
-    min_def := fun a b => untrop_injective (by simp [min_def]; split_ifs <;> simp) }
+    min_def := fun a b => untrop_injective (by
+      simp only [untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp) }
 
 @[simp]
 theorem untrop_sup (x y : Tropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=

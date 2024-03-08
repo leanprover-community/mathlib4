@@ -245,7 +245,9 @@ theorem divInt_zero_one : 0 /. 1 = 0 :=
 theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp [mkRat, normalize]
+    simp only [inline, mkRat, one_ne_zero, ↓reduceDite, normalize, Int.natAbs_one, Nat.gcd_self,
+      maybeNormalize_eq, Nat.cast_one, ne_eq, not_false_eq_true, Int.div_self, zero_lt_one,
+      Nat.div_self, mk_den_one]
     rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
@@ -253,7 +255,9 @@ theorem divInt_one_one : 1 /. 1 = 1 :=
 theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp [mkRat, normalize]
+    simp only [inline, mkRat, one_ne_zero, ↓reduceDite, normalize, Int.reduceNeg, Int.natAbs_neg,
+      Int.natAbs_one, Nat.gcd_self, maybeNormalize_eq, Nat.cast_one, Int.div_one, zero_lt_one,
+      Nat.div_self, mk_den_one, intCast_neg]
     rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
@@ -557,7 +561,7 @@ theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   simp only [mkRat, zero_mk]
   by_cases h : d = 0
   · simp [h]
-  · simp [h, HDiv.hDiv, Rat.div, Div.div]
+  · simp only [h, ↓reduceDite, HDiv.hDiv, Div.div, Rat.div]
     unfold Rat.inv
     have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
     have h₂ : ¬ (d : ℤ) < 0 := of_decide_eq_false rfl
