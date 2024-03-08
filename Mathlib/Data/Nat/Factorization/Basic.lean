@@ -684,7 +684,6 @@ lemma factorization_lcm_right_pos :
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
 
-open Nat in
 lemma coprime_factorization_lcm_left_factorization_lcm_right :
     (factorization_lcm_left a b).Coprime (factorization_lcm_right a b) := by
   rw [factorization_lcm_left, factorization_lcm_right]
@@ -703,7 +702,13 @@ lemma factorization_lcm_left_mul_factorization_lcm_right (ha : a ≠ 0) (hb : b 
     factorization_lcm_right, ← prod_mul]
   congr; ext p n; split_ifs <;> simp
 
-lemma factorization_lcm_left_dvd (ha : a ≠ 0) (hb : b ≠ 0) : factorization_lcm_left a b ∣ a := by
+variable (a b)
+
+lemma factorization_lcm_left_dvd : factorization_lcm_left a b ∣ a := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp only [dvd_zero]
+  rcases eq_or_ne b 0 with rfl | hb
+  · simp [factorization_lcm_left]
   nth_rewrite 2 [← factorization_prod_pow_eq_self ha]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
   · apply prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
@@ -713,7 +718,11 @@ lemma factorization_lcm_left_dvd (ha : a ≠ 0) (hb : b ≠ 0) : factorization_l
     rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inl <| Nat.pos_of_ne_zero hp).ne'
   · intros; rw [pow_zero]
 
-lemma factorization_lcm_right_dvd (ha : a ≠ 0) (hb : b ≠ 0) : factorization_lcm_right a b ∣ b := by
+lemma factorization_lcm_right_dvd : factorization_lcm_right a b ∣ b := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp [factorization_lcm_right]
+  rcases eq_or_ne b 0 with rfl | hb
+  · simp only [dvd_zero]
   nth_rewrite 2 [← factorization_prod_pow_eq_self hb]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
   · apply Finset.prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
