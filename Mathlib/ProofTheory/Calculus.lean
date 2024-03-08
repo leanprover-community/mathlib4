@@ -110,7 +110,7 @@ def ofConsLeft {p : F} {Γ Δ : List F} (b : p :: Γ ⊢² Δ) :
 def ofConsRight {p : F} {Γ Δ : List F} (b : Γ ⊢² p :: Δ) :
     ⊢¹ p :: (Γ.map (~·) ++ Δ) :=
   wk b (by
-    simp
+    simp?
     exact ⟨List.subset_cons_of_subset _ (List.subset_append_left _ _),
       List.subset_cons_of_subset _ (List.subset_append_right _ _)⟩)
 
