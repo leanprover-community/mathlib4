@@ -548,6 +548,21 @@ theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) 
   ⟨injective_pi_map fun i => (hF i).injective, surjective_pi_map fun i => (hF i).surjective⟩
 #align function.bijective_pi_map Function.bijective_pi_map
 
+lemma comp_eq_const_iff {α β γ: Type*} (b : β) (f : α → β) (g : β → γ)
+    (hg : Function.Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
+  hg.comp_left.eq_iff' rfl
+
+lemma comp_eq_zero_iff {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
+    (hg : Function.Injective g) (hg0 : g 0 = 0) : g ∘ f = 0 ↔ f = 0 := by
+  have := (comp_eq_const_iff 0 f g hg)
+  rw [hg0] at this
+  simp only [Function.const_zero] at this
+  exact this
+
+lemma comp_inj_ne_zero {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
+    (hg : Function.Injective g) (hg0 : g 0 = 0) : (g ∘ f) ≠ 0 ↔ f ≠ 0 :=
+  (Iff.ne (comp_eq_zero_iff f g hg hg0))
+
 end Function
 
 /-- If the one function is surjective, the codomain is trivial. -/

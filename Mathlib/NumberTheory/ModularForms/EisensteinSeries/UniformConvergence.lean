@@ -145,12 +145,10 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
     cases' (div_max_sq_ge_one x hx) with H1 H2
     · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
       · simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
-      · apply Real.rpow_nonneg
-        simp only [le_max_iff, Nat.cast_nonneg, or_self]
+      · positivity
     · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
       · simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
-      · apply Real.rpow_nonneg
-        simp only [le_max_iff, Nat.cast_nonneg, or_self]
+      · positivity
   · simp only [ne_eq, not_not] at hk0
     simp only [hk0, Real.rpow_zero, Nat.cast_max, mul_one, le_refl]
 
@@ -158,12 +156,10 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
     (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)))) ^ (-k) ≤
       (((r z) ^ (-k) * n ^ (-k))) := by
   by_cases hn : n = 0
-  · rw [hn] at hx
-    simp only [box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
+  · simp only [hn, box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
     rw [hx.1, hx.2] at *
     by_cases hk0 : k = 0
-    · rw [hk0] at *
-      simp only [neg_zero, Real.rpow_zero, mul_one, le_refl]
+    · simp only [hk0, neg_zero, Real.rpow_zero, mul_one, le_refl]
     · simp only [Int.cast_zero, zero_mul, add_zero, map_zero]
       have h1 : (0 : ℝ) ^ (-k) = 0 := by
         rw [Real.rpow_eq_zero_iff_of_nonneg (by rfl)]
@@ -180,13 +176,9 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
     · simp only [Nat.cast_max]
     · apply Real.rpow_pos_of_pos
       apply Complex.abs.pos (linear_ne_zero ![x 0, x 1] z ?_)
-      simp only [ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty, and_true,
-        not_and] at *
-      intro hg h1
-      have : x = ![x 0, x 1] := by
-        exact List.ofFn_inj.mp rfl
-      rw [this, hg, h1] at hx2
-      simp only [Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at *
+      have := (Function.comp_inj_ne_zero x _ Int.cast_injective Int.cast_zero (γ := ℝ)).mpr hx2
+      rw [← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun _ ↦ ℝ)))] at this
+      simpa using this
     · apply mul_pos (Real.rpow_pos_of_pos (r_pos z) _)
       apply Real.rpow_pos_of_pos
       norm_cast
