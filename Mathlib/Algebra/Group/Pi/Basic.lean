@@ -558,7 +558,7 @@ lemma comp_eq_zero_iff {α β γ : Type*} [OfNat β 0] [ OfNat γ 0] (f : α →
 
 lemma comp_inj_ne_zero {α β γ : Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) {g : β → γ}
     (hg : Injective g) (hg0 : g 0 = 0) : (g ∘ f) ≠ 0 ↔ f ≠ 0 :=
-  (comp_eq_zero_iff f g hg hg0).ne
+  (comp_eq_zero_iff f hg hg0).ne
 
 end Function
 
