@@ -1442,8 +1442,12 @@ section LinearOrder
 variable [LinearOrder α]
 
 section SuccOrder
+variable [SuccOrder α]
 
-variable [SuccOrder α] [IsSuccArchimedean α] {a b : α}
+lemma succ_max (a b : α) : succ (max a b) = max (succ a) (succ b) := succ_mono.map_max
+lemma succ_min (a b : α) : succ (min a b) = min (succ a) (succ b) := succ_mono.map_min
+
+variable [IsSuccArchimedean α] {a b : α}
 
 theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b = a :=
   (le_total a b).imp exists_succ_iterate_of_le exists_succ_iterate_of_le
@@ -1456,8 +1460,12 @@ theorem Succ.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) (a
 end SuccOrder
 
 section PredOrder
+variable [PredOrder α]
 
-variable [PredOrder α] [IsPredArchimedean α] {a b : α}
+lemma pred_max (a b : α) : pred (max a b) = max (pred a) (pred b) := pred_mono.map_max
+lemma pred_min (a b : α) : pred (min a b) = min (pred a) (pred b) := pred_mono.map_min
+
+variable [IsPredArchimedean α] {a b : α}
 
 theorem exists_pred_iterate_or : (∃ n, pred^[n] b = a) ∨ ∃ n, pred^[n] a = b :=
   (le_total a b).imp exists_pred_iterate_of_le exists_pred_iterate_of_le
