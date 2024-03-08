@@ -54,7 +54,7 @@ open CategoryTheory
 
 open CategoryTheory.Functor
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 
@@ -498,7 +498,7 @@ theorem biproduct.bicone_ι (f : J → C) [HasBiproduct f] (b : J) :
 #align category_theory.limits.biproduct.bicone_ι CategoryTheory.Limits.biproduct.bicone_ι
 
 /-- Note that as this lemma has an `if` in the statement, we include a `DecidableEq` argument.
-This means you may not be able to `simp` using this lemma unless you `open Classical`. -/
+This means you may not be able to `simp` using this lemma unless you `open scoped Classical`. -/
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
@@ -916,7 +916,7 @@ end
 
 section
 
-open Classical
+open scoped Classical
 
 -- Per leanprover-community/mathlib#15067, we only allow indexing in `Type 0` here.
 variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)

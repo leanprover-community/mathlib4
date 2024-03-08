@@ -65,7 +65,7 @@ example : True := by
   fail_if_success { split_ifs }
   trivial
 
-open Classical in
+open scoped Classical in
 example (P Q : Prop) (w : if P then (if Q then true else true) else true = true) : true := by
   split_ifs at w
   -- check that we've fully split w into three subgoals

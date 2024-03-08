@@ -551,6 +551,13 @@ theorem UniformCauchySeqOn.cauchy_map [hp : NeBot p] (hf : UniformCauchySeqOn F 
   filter_upwards [hf u hu] with p hp using hp x hx
 #align uniform_cauchy_seq_on.cauchy_map UniformCauchySeqOn.cauchy_map
 
+/-- If a sequence of functions is uniformly Cauchy on a set, then the values at each point form
+a Cauchy sequence.  See `UniformCauchSeqOn.cauchy_map` for the non-`atTop` case. -/
+theorem UniformCauchySeqOn.cauchySeq [Nonempty ι] [SemilatticeSup ι]
+    (hf : UniformCauchySeqOn F atTop s) (hx : x ∈ s) :
+    CauchySeq fun i ↦ F i x :=
+  hf.cauchy_map (hp := atTop_neBot) hx
+
 section SeqTendsto
 
 theorem tendstoUniformlyOn_of_seq_tendstoUniformlyOn {l : Filter ι} [l.IsCountablyGenerated]

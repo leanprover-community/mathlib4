@@ -25,7 +25,7 @@ open CategoryTheory
 namespace CommRingCat
 set_option linter.uppercaseLean3 false -- `CommRing`
 
-open Classical
+open scoped Classical
 
 /-- The free functor `Type u ⥤ CommRingCat` sending a type `X` to the multivariable (commutative)
 polynomials with variables `x : X`.
