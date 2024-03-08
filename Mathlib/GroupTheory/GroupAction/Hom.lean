@@ -235,7 +235,7 @@ class DistribMulActionHomClass (F : Type*) (M A B : outParam <| Type*)
 
 namespace DistribMulActionHom
 
-/- porting note: TODO decide whether the next two instances should be removed
+/- Porting note (#11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- instance coe : Coe (A →+[M] B) (A →+ B) :=
 --   ⟨toAddMonoidHom⟩
@@ -467,7 +467,7 @@ class MulSemiringActionHomClass (F : Type*) (M R S : outParam <| Type*)
 
 namespace MulSemiringActionHom
 
-/- porting note: TODO decide whether the next two instances should be removed
+/- Porting note (#11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- @[coe]
 -- instance coe : Coe (R →+*[M] S) (R →+* S) :=

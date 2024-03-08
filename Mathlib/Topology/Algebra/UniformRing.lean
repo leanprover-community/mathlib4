@@ -35,9 +35,10 @@ TODO: Generalise the results here from the concrete `Completion` to any `Abstrac
 -/
 
 
-open Classical Set Filter TopologicalSpace AddCommGroup
+open scoped Classical
+open Set Filter TopologicalSpace AddCommGroup
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

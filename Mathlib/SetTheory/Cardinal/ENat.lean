@@ -224,7 +224,7 @@ noncomputable def gciENat : GaloisCoinsertion (↑) toENat :=
   enat_gc.toGaloisCoinsertion fun n ↦ (toENat_ofENat n).le
 
 lemma toENat_strictMonoOn : StrictMonoOn toENat (Iic ℵ₀) := by
-  simp only [← range_ofENat, StrictMonoOn, forall_range_iff, toENat_ofENat, ofENat_lt_ofENat]
+  simp only [← range_ofENat, StrictMonoOn, forall_mem_range, toENat_ofENat, ofENat_lt_ofENat]
   exact fun _ _ ↦ id
 
 lemma toENat_injOn : InjOn toENat (Iic ℵ₀) := toENat_strictMonoOn.injOn

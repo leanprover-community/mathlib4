@@ -40,7 +40,8 @@ variable {α ι : Type*}
 
 open Set Metric MeasureTheory TopologicalSpace Filter
 
-open NNReal Classical ENNReal Topology
+open scoped Classical
+open NNReal ENNReal Topology
 
 namespace Vitali
 
