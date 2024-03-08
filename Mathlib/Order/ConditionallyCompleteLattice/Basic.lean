@@ -319,7 +319,7 @@ instance (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompl
     csSup_of_not_bddAbove := ConditionallyCompleteLinearOrder.csInf_of_not_bddBelow (α := α)
     csInf_of_not_bddBelow := ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove (α := α) }
 
-namespace OrderDual
+end OrderDual
 
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this
