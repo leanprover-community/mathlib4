@@ -1,11 +1,15 @@
+/-
+Copyright (c) 2024 Shogo Saito. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
+-/
 import Mathlib.ModelTheory.Basic
 import Mathlib.Computability.Primrec
-import Logic.Vorspiel.Vorspiel
 
 /-!
-# Language of first-order logic
+# Language of first-order logic for ordered rings
 
-This file defines the language of first-order logic.
+This file defines the language of first-order logic for ordered rings.
 
 - `FirstOrder.Language.oRing`, `ℒₒᵣ` is the language of ordered ring.
 -/
@@ -71,14 +75,19 @@ private lemma Func_encodeDecode_primrec : Primrec₂ (fun k e =>
   else if k = 2 ∧ e = 0 then some 0
   else if k = 2 ∧ e = 1 then some 1
   else none) :=
-  to₂ <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
-      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
-      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
-      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
+  to₂ <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
+      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
+      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
+      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
       <| const _
 
 instance (k) : Primcodable (oRing.Functions k) where
-  prim := nat_iff.mp <| (Primrec.encode.comp (Func_encodeDecode_primrec.comp (Primrec.const k) Primrec.id)).of_eq (fun e => by
+  prim := nat_iff.mp <| (Primrec.encode.comp (Func_encodeDecode_primrec.comp (Primrec.const k)
+      Primrec.id)).of_eq (fun e => by
     simp[Encodable.decode]
     rcases k with (_ | k)
     · rcases e with (_ | e) <;> simp
@@ -125,12 +134,15 @@ private lemma Rel_encodeDecode_primrec : Primrec₂ (fun k e =>
   if k = 2 ∧ e = 0 then some 0
   else if k = 2 ∧ e = 1 then some 1
   else none) :=
-  to₂ <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
-      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
+  to₂ <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
+      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
       <| const _
 
 instance (k) : Primcodable (oRing.Relations k) where
-  prim := nat_iff.mp <| (Primrec.encode.comp (Rel_encodeDecode_primrec.comp (Primrec.const k) Primrec.id)).of_eq (fun e => by
+  prim := nat_iff.mp <| (Primrec.encode.comp (Rel_encodeDecode_primrec.comp (Primrec.const k)
+      Primrec.id)).of_eq (fun e => by
     simp[Encodable.decode]
     rcases k with (_ | k) <;> simp
     rcases k with (_ | k) <;> simp
