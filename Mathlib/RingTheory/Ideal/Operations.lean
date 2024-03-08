@@ -1411,7 +1411,7 @@ def comap (I : Ideal S) : Ideal R where
 #align ideal.comap Ideal.comap
 
 -- Porting note: new theorem
--- @[simp] -- Porting note: TODO enable simp after the port
+-- @[simp] -- Porting note (#11215): TODO enable simp after the port
 theorem coe_comap (I : Ideal S) : (comap f I : Set R) = f ⁻¹' I := rfl
 
 variable {f}

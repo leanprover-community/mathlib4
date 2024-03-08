@@ -177,7 +177,9 @@ lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
     (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
     inv (NatTrans.app (ofRightAdjoint i).unit X.obj) := by
-    simp [equivEssImageOfReflective_counitIso_app, asIso]
+    simp only [Functor.comp_obj, Functor.essImageInclusion_obj, Functor.toEssImage_obj_obj,
+      equivEssImageOfReflective_counitIso_app, asIso, Iso.symm_mk, Functor.essImageInclusion_map,
+      Functor.id_obj]
     rfl
 
 lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
