@@ -91,7 +91,7 @@ theorem one_sub_inv_pow_eq {k : Type _} [Field k] (d : ℕ) :
     exact one_sub_inv
   · ring_nf; rw [hd, one_sub_inv, ext_iff]; exact λ n ↦ by
       rw [coeff_mul]; simp only [coeff_mk, one_mul]; rw [Nat.succ_add, Nat.choose_succ_succ,
-      ←Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum (Finset.antidiagonal n) fun x
+      ← Finset.sum_antidiagonal_choose_add]; exact (Nat.cast_sum (Finset.antidiagonal n) fun x
       ↦ Nat.choose (d + x.2) d).symm
 
 theorem one_sub_inv_pow_eq_invOneSubPow {k : Type _} [Field k] (d : ℕ) :
@@ -100,7 +100,7 @@ theorem one_sub_inv_pow_eq_invOneSubPow {k : Type _} [Field k] (d : ℕ) :
 
 theorem one_sub_pow_inv_eq {k : Type _} [Field k] (d : ℕ) :
     ((1 - X) ^ (d + 1))⁻¹ = (mk fun (n : ℕ) => Nat.choose (d + n) d : PowerSeries k) := by
-  rw [←one_sub_inv_pow_eq, pow_inv_eq_inv_pow]
+  rw [← one_sub_inv_pow_eq, pow_inv_eq_inv_pow]
 
 theorem one_sub_pow_inv_eq_invOneSubPow {k : Type _} [Field k] (d : ℕ) :
     ((1 - X) ^ (d + 1))⁻¹ = (invOneSubPow d : PowerSeries k) := by
@@ -108,7 +108,7 @@ theorem one_sub_pow_inv_eq_invOneSubPow {k : Type _} [Field k] (d : ℕ) :
 
 theorem invOneSubPow_mul_one_sub_pow {k : Type _} [Field k] (d : ℕ) :
     (invOneSubPow d : PowerSeries k) * ((1 - X) ^ (d + 1)) = 1 := by
-  rw [←one_sub_pow_inv_eq_invOneSubPow]; simp only [map_pow, map_sub, map_one, constantCoeff_X,
+  rw [← one_sub_pow_inv_eq_invOneSubPow]; simp only [map_pow, map_sub, map_one, constantCoeff_X,
   sub_zero, one_pow, ne_eq, one_ne_zero, not_false_eq_true, PowerSeries.inv_mul_cancel]
 
 end Ring
