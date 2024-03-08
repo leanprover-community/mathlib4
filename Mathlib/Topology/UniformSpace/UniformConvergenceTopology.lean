@@ -534,9 +534,9 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
 This is a simple wrapper over `TendstoUniformly.continuous`. -/
 theorem isClosed_setOf_continuous [TopologicalSpace α] :
     IsClosed {f : α →ᵤ β | Continuous (toFun f)} := by
-  refine isClosed_iff_ultrafilter.2 fun f u huf hu ↦ ?_
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
   rw [← tendsto_id', UniformFun.tendsto_iff_tendstoUniformly] at huf
-  exact huf.continuous hu
+  exact huf.continuous (le_principal_iff.mp hu)
 
 end UniformFun
 
@@ -925,10 +925,10 @@ in the topology of uniform convergence on the sets of `𝔖`. -/
 theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
     (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
-  refine isClosed_iff_ultrafilter.2 fun f u huf hu ↦ ?_
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
   have hcont : ∀ s ∈ 𝔖, ContinuousOn f s := fun s hs ↦
-    (huf s hs).continuousOn <| mem_of_superset hu fun _ ↦ Continuous.continuousOn
+    (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
   refine continuous_le_dom h ?_
   simpa only [continuous_iSup_dom, continuous_coinduced_dom] using fun s hs ↦ (hcont s hs).restrict
 
