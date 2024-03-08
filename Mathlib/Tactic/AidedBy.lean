@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Scott Morrison, Kimball Leisinger, Leo de Moura
 -/
 import Lean
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
 import Aesop
 /-!
 # AidedBy tactic combinator: asynchronous tactic execution
@@ -310,60 +310,24 @@ macro "..." tacs:tacticSeq : tactic =>
 Implementation of `aided_by` tactic.
 -/
 @[tactic autoTacs] def autoStartImpl : Tactic := fun stx =>
-withMainContext do
-match stx with
-| `(tactic| aided_by from_by $auto? do $tacticCode) =>
-    autoStartImplAux stx auto? tacticCode true
-| `(tactic| aided_by $auto? do $tacticCode) =>
-    autoStartImplAux stx auto? tacticCode false
-| `(tactic| aided_by from_by $auto? do) => do
-    autoStartImplAux' stx auto? true
-| `(tactic| aided_by $auto? do) => do
-    autoStartImplAux' stx auto? false
-| _ => throwUnsupportedSyntax
-where
-  /-- Search before the first tactic-/
-  initialSearch (stx: Syntax)
-    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit :=
     withMainContext do
-    if (← getUnsolvedGoals).isEmpty then
-        return ()
-    let ioSeek : IO Unit := runAndCacheIO
-      autoCode  (← getMainGoal) (← getMainTarget)
-              (← readThe Meta.Context) (← getThe Meta.State )
-              (← readThe Core.Context) (← getThe Core.State)
-    let _ ← ioSeek.asTask
-    try
-      let delay  := aided_by.delay.get (← getOptions)
-      dbgSleep delay.toUInt32 fun _ => do
-        let pf ← fetchProof
-        let script := pf.script
-        if fromBy then
-          TryThis.addSuggestion stx (← `(by $script))
-        else
-          TryThis.addSuggestion stx script
-    catch _ =>
-      pure ()
-  /-- Auxiliary function for case with tactics -/
-  autoStartImplAux (stx: Syntax)
-  (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)
-  (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit :=
-  withMainContext do
-    initialSearch stx autoCode fromBy
-    let allTacs := getTactics tacticCode
-    let mut cumTacs :  Array (TSyntax `tactic) := #[]
-    for tacticCode in allTacs do
-      evalTactic tacticCode
-      if ← isSorry tacticCode then
-        return ()
-      cumTacs := cumTacs.push tacticCode
+    match stx with
+    | `(tactic| aided_by from_by $auto? do $tacticCode) =>
+        autoStartImplAux stx auto? tacticCode true
+    | `(tactic| aided_by $auto? do $tacticCode) =>
+        autoStartImplAux stx auto? tacticCode false
+    | `(tactic| aided_by from_by $auto? do) => do
+        autoStartImplAux' stx auto? true
+    | `(tactic| aided_by $auto? do) => do
+        autoStartImplAux' stx auto? false
+    | _ => throwUnsupportedSyntax
+    where
+    /-- Search before the first tactic-/
+    initialSearch (stx: Syntax)
+      (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit :=
+      withMainContext do
       if (← getUnsolvedGoals).isEmpty then
-        unless tacticCode.raw.reprint.get!.trim.endsWith "sorry" do
-          if fromBy then
-            TryThis.addSuggestion stx (← `(by $[$cumTacs]*))
-          else
-            TryThis.addSuggestion stx (← `(tacticSeq|$[$cumTacs]*))
-        return ()
+          return ()
       let ioSeek : IO Unit := runAndCacheIO
         autoCode  (← getMainGoal) (← getMainTarget)
                 (← readThe Meta.Context) (← getThe Meta.State )
@@ -373,18 +337,54 @@ where
         let delay  := aided_by.delay.get (← getOptions)
         dbgSleep delay.toUInt32 fun _ => do
           let pf ← fetchProof
-          let allTacs ←  appendTactics cumTacs pf.script
+          let script := pf.script
           if fromBy then
-            TryThis.addSuggestion stx (← `(by $allTacs))
+            TryThis.addSuggestion stx (← `(by $script))
           else
-            TryThis.addSuggestion stx allTacs
-          return ()
+            TryThis.addSuggestion stx script
       catch _ =>
         pure ()
-  /-- Auxiliary function for case without tactics -/
-  autoStartImplAux' (stx: Syntax)
-    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit :=
+    /-- Auxiliary function for case with tactics -/
+    autoStartImplAux (stx: Syntax)
+    (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)
+    (tacticCode : TSyntax ``tacticSeq)(fromBy: Bool) : TacticM Unit :=
     withMainContext do
-    initialSearch stx autoCode fromBy
-    if (← getUnsolvedGoals).isEmpty then
-        return ()
+      initialSearch stx autoCode fromBy
+      let allTacs := getTactics tacticCode
+      let mut cumTacs :  Array (TSyntax `tactic) := #[]
+      for tacticCode in allTacs do
+        evalTactic tacticCode
+        if ← isSorry tacticCode then
+          return ()
+        cumTacs := cumTacs.push tacticCode
+        if (← getUnsolvedGoals).isEmpty then
+          unless tacticCode.raw.reprint.get!.trim.endsWith "sorry" do
+            if fromBy then
+              TryThis.addSuggestion stx (← `(by $[$cumTacs]*))
+            else
+              TryThis.addSuggestion stx (← `(tacticSeq|$[$cumTacs]*))
+          return ()
+        let ioSeek : IO Unit := runAndCacheIO
+          autoCode  (← getMainGoal) (← getMainTarget)
+                  (← readThe Meta.Context) (← getThe Meta.State )
+                  (← readThe Core.Context) (← getThe Core.State)
+        let _ ← ioSeek.asTask
+        try
+          let delay  := aided_by.delay.get (← getOptions)
+          dbgSleep delay.toUInt32 fun _ => do
+            let pf ← fetchProof
+            let allTacs ←  appendTactics cumTacs pf.script
+            if fromBy then
+              TryThis.addSuggestion stx (← `(by $allTacs))
+            else
+              TryThis.addSuggestion stx allTacs
+            return ()
+        catch _ =>
+          pure ()
+    /-- Auxiliary function for case without tactics -/
+    autoStartImplAux' (stx: Syntax)
+      (autoCode : TSyntax `Lean.Parser.Tactic.tacticSeq)(fromBy: Bool) : TacticM Unit :=
+      withMainContext do
+      initialSearch stx autoCode fromBy
+      if (← getUnsolvedGoals).isEmpty then
+          return ()
