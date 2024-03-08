@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.RingTheory.Adjoin.Field
 
@@ -151,16 +150,16 @@ end IsSplittingField
 
 end Polynomial
 
-namespace IntermediateField
-
 open Polynomial
 
-variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
+variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]} {F : IntermediateField K L}
 
-theorem splits_of_splits {F : IntermediateField K L} (h : p.Splits (algebraMap K L))
+theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
   simp_rw [← F.fieldRange_val, rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
   exact splits_of_comp _ F.val.toRingHom h hF
 #align intermediate_field.splits_of_splits IntermediateField.splits_of_splits
 
-end IntermediateField
+theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
+    {F : IntermediateField K L} (h : Splits (algebraMap K F) (minpoly K x)) : x ∈ F := by
+  rw [← F.fieldRange_val]; exact int.mem_range_algebraMap_of_minpoly_splits h

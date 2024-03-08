@@ -321,6 +321,12 @@ instance strongEpi_map_of_isEquivalence [IsEquivalence F] (f : A ⟶ B) [_h : St
   F.asEquivalence.toAdjunction.strongEpi_map_of_strongEpi f
 #align category_theory.adjunction.strong_epi_map_of_is_equivalence CategoryTheory.Adjunction.strongEpi_map_of_isEquivalence
 
+instance (adj : F ⊣ F') {X : C} {Y : D} (f : F.obj X ⟶ Y) [hf : Mono f] [F.ReflectsMonomorphisms] :
+    Mono (adj.homEquiv _ _ f) :=
+  F.mono_of_mono_map <| by
+    rw [← (homEquiv adj X Y).symm_apply_apply f] at hf
+    exact mono_of_mono_fac adj.homEquiv_counit.symm
+
 end CategoryTheory.Adjunction
 
 namespace CategoryTheory.Functor

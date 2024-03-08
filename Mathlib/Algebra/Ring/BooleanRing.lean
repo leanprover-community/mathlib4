@@ -40,6 +40,7 @@ purposes and because it is easier than dealing with
 boolean ring, boolean algebra
 -/
 
+open scoped symmDiff
 
 variable {α β γ : Type*}
 
@@ -53,7 +54,7 @@ section BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
-instance : IsIdempotent α (· * ·) :=
+instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
 @[simp]
@@ -155,12 +156,12 @@ theorem ofBoolAlg_toBoolAlg (a : α) : ofBoolAlg (toBoolAlg a) = a :=
   rfl
 #align of_boolalg_to_boolalg ofBoolAlg_toBoolAlg
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
   Iff.rfl
 #align to_boolalg_inj toBoolAlg_inj
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
 #align of_boolalg_inj ofBoolAlg_inj
@@ -182,7 +183,7 @@ def inf : Inf α :=
   ⟨(· * ·)⟩
 #align boolean_ring.has_inf BooleanRing.inf
 
--- Porting note: TODO: add priority 100. lower instance priority
+-- Porting note (#11215): TODO: add priority 100. lower instance priority
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
@@ -262,7 +263,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       rw [← add_assoc, add_self] }
 #align boolean_ring.to_boolean_algebra BooleanRing.toBooleanAlgebra
 
--- Porting note: TODO: add priority 100. lower instance priority
+-- Porting note (#11215): TODO: add priority 100. lower instance priority
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
@@ -411,12 +412,12 @@ theorem ofBoolRing_toBoolRing (a : α) : ofBoolRing (toBoolRing a) = a :=
   rfl
 #align of_boolring_to_boolring ofBoolRing_toBoolRing
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
   Iff.rfl
 #align to_boolring_inj toBoolRing_inj
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 #align of_boolring_inj ofBoolRing_inj
@@ -441,14 +442,14 @@ def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α]
   zero := ⊥
   zero_add := bot_symmDiff
   add_zero := symmDiff_bot
-  zero_mul _ := bot_inf_eq
-  mul_zero _ := inf_bot_eq
+  zero_mul := bot_inf_eq
+  mul_zero := inf_bot_eq
   neg := id
   add_left_neg := symmDiff_self
   add_comm := symmDiff_comm
   mul := (· ⊓ ·)
-  mul_assoc _ _ _ := inf_assoc
-  mul_comm _ _ := inf_comm
+  mul_assoc := inf_assoc
+  mul_comm := inf_comm
   left_distrib := inf_symmDiff_distrib_left
   right_distrib := inf_symmDiff_distrib_right
   nsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; nsmulRec
@@ -470,12 +471,12 @@ variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 * `1` unfolds to `⊤`
 -/
 @[reducible]
-def BooleanAlgebra.toBooleanRing : BooleanRing α :=
-  { GeneralizedBooleanAlgebra.toNonUnitalCommRing with
-    one := ⊤
-    one_mul := fun _ => top_inf_eq
-    mul_one := fun _ => inf_top_eq
-    mul_self := fun b => inf_idem }
+def BooleanAlgebra.toBooleanRing : BooleanRing α where
+  __ := GeneralizedBooleanAlgebra.toNonUnitalCommRing
+  one := ⊤
+  one_mul := top_inf_eq
+  mul_one := inf_top_eq
+  mul_self := inf_idem
 #align boolean_algebra.to_boolean_ring BooleanAlgebra.toBooleanRing
 
 scoped[BooleanRingOfBooleanAlgebra]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.PartrecCode
+import Mathlib.Data.Set.Basic
 
 #align_import computability.halting from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
@@ -36,25 +37,28 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
           (Code.evaln_prim.to_comp.comp <| (snd.pair (const cf)).pair fst)
           (Code.evaln_prim.to_comp.comp <| (snd.pair (const cg)).pair fst))
   refine' ⟨_, this, fun n => _⟩
-  suffices; refine' ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, _⟩⟩
-  · intro h
-    rw [Nat.rfindOpt_dom]
-    simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
-    obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
-    · refine' ⟨k, x, _⟩
-      simp only [e, Option.some_orElse, Option.mem_def]
-    · refine' ⟨k, _⟩
-      cases' cf.evaln k n with y
-      · exact ⟨x, by simp only [e, Option.mem_def, Option.none_orElse]⟩
-      · exact ⟨y, by simp only [Option.some_orElse, Option.mem_def]⟩
-  intro x h
-  obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
-  revert e
-  simp only [Option.mem_def]
-  cases' e' : cf.evaln k n with y <;> simp <;> intro e
-  · exact Or.inr (Code.evaln_sound e)
-  · subst y
-    exact Or.inl (Code.evaln_sound e')
+  have : ∀ x ∈ rfindOpt fun k ↦ HOrElse.hOrElse (Code.evaln k cf n) fun _x ↦ Code.evaln k cg n,
+      x ∈ Code.eval cf n ∨ x ∈ Code.eval cg n := by
+    intro x h
+    obtain ⟨k, e⟩ := Nat.rfindOpt_spec h
+    revert e
+    simp only [Option.mem_def]
+    cases' e' : cf.evaln k n with y <;> simp <;> intro e
+    · exact Or.inr (Code.evaln_sound e)
+    · subst y
+      exact Or.inl (Code.evaln_sound e')
+  refine ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
+  intro h
+  rw [Nat.rfindOpt_dom]
+  simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
+  obtain ⟨x, k, e⟩ | ⟨x, k, e⟩ := h
+  · refine' ⟨k, x, _⟩
+    simp only [e, Option.some_orElse, Option.mem_def]
+  · refine' ⟨k, _⟩
+    cases' cf.evaln k n with y
+    · exact ⟨x, by simp only [e, Option.mem_def, Option.none_orElse]⟩
+    · exact ⟨y, by simp only [Option.some_orElse, Option.mem_def]⟩
+
 #align nat.partrec.merge' Nat.Partrec.merge'
 
 end Nat.Partrec
@@ -79,23 +83,25 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
   refine'
     ⟨k', ((nat_iff.2 hk).comp Computable.encode).bind (Computable.decode.ofOption.comp snd).to₂,
       fun a => _⟩
-  suffices; refine' ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, _⟩⟩
-  · intro h
-    rw [bind_dom]
-    have hk : (k (encode a)).Dom :=
-      (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using h)
-    exists hk
-    simp only [exists_prop, mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
-    obtain ⟨a', _, y, _, e⟩ | ⟨a', _, y, _, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
-      simp only [e.symm, encodek, coe_some, some_dom]
-  intro x h'; simp only [exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
-  obtain ⟨n, hn, hx⟩ := h'
-  have := (H _).1 _ hn
-  simp [mem_decode₂, encode_injective.eq_iff] at this
-  obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := this <;> simp only [encodek, Option.some_inj] at hx <;>
-    rw [hx] at ha
-  · exact Or.inl ha
-  exact Or.inr ha
+  have : ∀ x ∈ k' a, x ∈ f a ∨ x ∈ g a := by
+    intro x h'
+    simp only [k', exists_prop, mem_coe, mem_bind_iff, Option.mem_def] at h'
+    obtain ⟨n, hn, hx⟩ := h'
+    have := (H _).1 _ hn
+    simp [mem_decode₂, encode_injective.eq_iff] at this
+    obtain ⟨a', ha, rfl⟩ | ⟨a', ha, rfl⟩ := this <;> simp only [encodek, Option.some_inj] at hx <;>
+      rw [hx] at ha
+    · exact Or.inl ha
+    · exact Or.inr ha
+  refine ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
+  intro h
+  rw [bind_dom]
+  have hk : (k (encode a)).Dom :=
+    (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using h)
+  exists hk
+  simp only [exists_prop, mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
+  obtain ⟨a', _, y, _, e⟩ | ⟨a', _, y, _, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
+    simp only [e.symm, encodek, coe_some, some_dom]
 #align partrec.merge' Partrec.merge'
 
 theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
@@ -194,6 +200,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   cases a; cases f n <;> simp
 #align computable_pred.to_re ComputablePred.to_re
 
+/-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
   cases' h with _ h; skip
@@ -201,7 +208,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  simp at e
+  simp? at e says simp only [Bool.cond_decide] at e
   by_cases H : eval c ∈ C
   · simp only [H, if_true] at e
     change (fun b => g b) ∈ C
@@ -229,10 +236,12 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
             exact ⟨by infer_instance, Computable.const _⟩ }⟩
 #align computable_pred.rice₂ ComputablePred.rice₂
 
+/-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 #align computable_pred.halting_problem_re ComputablePred.halting_problem_re
 
+/-- The **Halting problem** is not computable -/
 theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 #align computable_pred.halting_problem ComputablePred.halting_problem
@@ -249,12 +258,13 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
         Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
         (by
           intro a x hx y hy
-          simp at hx hy
+          simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
+            and_true, exists_const] at hx hy
           cases hy.1 hx.1)
       · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
         rw [hk]
         simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
-          Bool.true_eq_decide_iff, and_self, exists_const, Bool.false_eq_decide_iff]
+          true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
         apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 
@@ -293,10 +303,10 @@ open Nat (Partrec')
 open Nat.Partrec'
 
 theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
-  induction pf
-  case prim n f hf => exact hf.to_prim.to_comp
-  case comp m n f g _ _ hf hg => exact (Partrec.vector_mOfFn fun i => hg i).bind (hf.comp snd)
-  case rfind n f _ hf =>
+  induction pf with
+  | prim hf => exact hf.to_prim.to_comp
+  | comp _ _ _ hf hg => exact (Partrec.vector_mOfFn hg).bind (hf.comp snd)
+  | rfind _ hf =>
     have := hf.comp (vector_cons.comp snd fst)
     have :=
       ((Primrec.eq.comp _root_.Primrec.id (_root_.Primrec.const 0)).to_comp.comp
@@ -395,7 +405,7 @@ theorem of_part : ∀ {n f}, _root_.Partrec f → @Partrec' n f :=
         (Part.ofOption (decode (α := Vector ℕ n) n₁)).bind (fun a => Part.map encode (f a))
       exact
         (comp₁ g (this g hf) (prim Nat.Primrec'.encode)).of_eq fun i => by
-          dsimp only; simp [encodek, Part.map_id']
+          dsimp only [g]; simp [encodek, Part.map_id']
     fun f hf => by
     obtain ⟨c, rfl⟩ := exists_code.1 hf
     simpa [eval_eq_rfindOpt] using

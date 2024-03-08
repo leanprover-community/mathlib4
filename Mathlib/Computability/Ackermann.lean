@@ -6,6 +6,8 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Computability.Primrec
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Data.Nat.Pow
 
 #align_import computability.ackermann from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 
@@ -63,7 +65,7 @@ def ack : ℕ → ℕ → ℕ
   | 0, n => n + 1
   | m + 1, 0 => ack m 1
   | m + 1, n + 1 => ack m (ack (m + 1) n)
-  termination_by ack m n => (m, n)
+  termination_by m n => (m, n)
 #align ack ack
 
 @[simp]
@@ -101,7 +103,8 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
-    simp [pow_le_pow (show 1 ≤ 2 by norm_num)]
+    set_option simprocs false in
+    simp [pow_le_pow_right (show 1 ≤ 2 by norm_num)]
 #align ack_three ack_three
 
 theorem ack_pos : ∀ m n, 0 < ack m n
@@ -142,7 +145,7 @@ theorem ack_strictMono_right : ∀ m, StrictMono (ack m)
     rw [ack_succ_succ, ack_succ_succ]
     apply ack_strictMono_right _ (ack_strictMono_right _ _)
     rwa [add_lt_add_iff_right] at h
-  termination_by ack_strictMono_right m x y h => (m, x)
+  termination_by m x y h => (m, x)
 #align ack_strict_mono_right ack_strictMono_right
 
 theorem ack_mono_right (m : ℕ) : Monotone (ack m) :=
@@ -177,13 +180,13 @@ theorem add_lt_ack : ∀ m n, m + n < ack m n
   | m + 1, 0 => by simpa using add_lt_ack m 1
   | m + 1, n + 1 =>
     calc
-      m + 1 + n + 1 ≤ m + (m + n + 2) := by linarith
+      m + 1 + n + 1 ≤ m + (m + n + 2) := by omega
       _ < ack m (m + n + 2) := add_lt_ack _ _
       _ ≤ ack m (ack (m + 1) n) :=
         ack_mono_right m <| le_of_eq_of_le (by rw [succ_eq_add_one]; ring_nf)
         <| succ_le_of_lt <| add_lt_ack (m + 1) n
       _ = ack (m + 1) (n + 1) := (ack_succ_succ m n).symm
-  termination_by add_lt_ack m n => (m, n)
+  termination_by m n => (m, n)
 #align add_lt_ack add_lt_ack
 
 theorem add_add_one_le_ack (m n : ℕ) : m + n + 1 ≤ ack m n :=
@@ -205,7 +208,7 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
   | 0, m + 1, n + 1 => fun h => by
     rw [ack_zero, ack_succ_succ]
     apply lt_of_le_of_lt (le_trans _ <| add_le_add_left (add_add_one_le_ack _ _) m) (add_lt_ack _ _)
-    linarith
+    omega
   | m₁ + 1, m₂ + 1, 0 => fun h => by
     simpa using ack_strict_mono_left' 1 ((add_lt_add_iff_right 1).1 h)
   | m₁ + 1, m₂ + 1, n + 1 => fun h => by
@@ -213,7 +216,7 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
     exact
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
         (ack_strictMono_right _ <| ack_strict_mono_left' n h)
-  termination_by ack_strict_mono_left' x y => (x, y)
+  termination_by _ m n => (m, n)
 
 theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
   ack_strict_mono_left' n
@@ -255,7 +258,7 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
   · simp
   · rw [ack_succ_succ, succ_eq_add_one]
     apply ack_mono_right m (le_trans _ <| add_add_one_le_ack _ n)
-    linarith
+    omega
 #align ack_succ_right_le_ack_succ_left ack_succ_right_le_ack_succ_left
 
 -- All the inequalities from this point onwards are specific to the main proof.
@@ -282,7 +285,7 @@ theorem ack_add_one_sq_lt_ack_add_three : ∀ m n, (ack m n + 1) ^ 2 ≤ ack (m 
   | m + 1, n + 1 => by
     rw [ack_succ_succ, ack_succ_succ]
     apply (ack_add_one_sq_lt_ack_add_three _ _).trans (ack_mono_right _ <| ack_mono_left _ _)
-    linarith
+    omega
 #align ack_add_one_sq_lt_ack_add_three ack_add_one_sq_lt_ack_add_three
 
 theorem ack_ack_lt_ack_max_add_two (m n k : ℕ) : ack m (ack n k) < ack (max m n + 2) k :=
@@ -297,9 +300,9 @@ theorem ack_ack_lt_ack_max_add_two (m n k : ℕ) : ack m (ack n k) < ack (max m 
 theorem ack_add_one_sq_lt_ack_add_four (m n : ℕ) : ack m ((n + 1) ^ 2) < ack (m + 4) n :=
   calc
     ack m ((n + 1) ^ 2) < ack m ((ack m n + 1) ^ 2) :=
-      ack_strictMono_right m <| pow_lt_pow_of_lt_left (succ_lt_succ <| lt_ack_right m n) zero_lt_two
+      ack_strictMono_right m <| Nat.pow_lt_pow_left (succ_lt_succ <| lt_ack_right m n) two_ne_zero
     _ ≤ ack m (ack (m + 3) n) := ack_mono_right m <| ack_add_one_sq_lt_ack_add_three m n
-    _ ≤ ack (m + 2) (ack (m + 3) n) := ack_mono_left _ <| by linarith
+    _ ≤ ack (m + 2) (ack (m + 3) n) := ack_mono_left _ <| by omega
     _ = ack (m + 3) (n + 1) := (ack_succ_succ _ n).symm
     _ ≤ ack (m + 4) n := ack_succ_right_le_ack_succ_left _ n
 #align ack_add_one_sq_lt_ack_add_four ack_add_one_sq_lt_ack_add_four
@@ -321,18 +324,18 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     apply add_lt_ack
   -- Left projection:
   · refine' ⟨0, fun n => _⟩
-    rw [ack_zero, lt_succ_iff]
+    rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_left_le n
   -- Right projection:
   · refine' ⟨0, fun n => _⟩
-    rw [ack_zero, lt_succ_iff]
+    rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
   all_goals cases' IHf with a ha; cases' IHg with b hb
   -- Pairing:
   · refine'
       ⟨max a b + 3, fun n =>
         (pair_lt_max_add_one_sq _ _).trans_le <|
-          (pow_le_pow_of_le_left (add_le_add_right _ _) 2).trans <|
+          (Nat.pow_le_pow_left (add_le_add_right _ _) 2).trans <|
             ack_add_one_sq_lt_ack_add_three _ _⟩
     rw [max_ack_left]
     exact max_le_max (ha n).le (hb n).le
@@ -350,7 +353,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
       induction' n with n IH
       -- The base case is easy.
       · apply (ha m).trans (ack_strictMono_left m <| (le_max_left a b).trans_lt _)
-        linarith
+        omega
       · -- We get rid of the first `pair`.
         simp only [ge_iff_le]
         apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)

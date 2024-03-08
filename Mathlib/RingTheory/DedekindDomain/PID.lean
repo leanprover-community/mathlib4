@@ -125,7 +125,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     left_lt_sup.1
       ((hf.mem_toFinset.1 hM).ne_top.lt_top.trans_eq (Ideal.sup_iInf_eq_top <| coprime M hM).symm)
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
-    intro M hM; by_contra' h
+    intro M hM; by_contra! h
     obtain ⟨x, hx, hxM⟩ :=
       SetLike.exists_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).ne_top.lt_top).trans_eq
@@ -149,7 +149,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     refine' IsLocalization.coeSubmodule_mono _ hJM ⟨c, _, hc⟩
     have := Submodule.mul_mem_mul (ha M hM) (Submodule.mem_span_singleton_self v)
     rwa [← hc] at this
-  simp_rw [Finset.mul_sum, mul_smul_comm] at hmem
+  simp_rw [v, Finset.mul_sum, mul_smul_comm] at hmem
   rw [← s.add_sum_erase _ hM, Submodule.add_mem_iff_left] at hmem
   · refine' hm M hM _
     obtain ⟨c, hc : algebraMap R A c = a M * b M⟩ := this _ (ha M hM) _ (hb M hM)
@@ -157,8 +157,8 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     rw [Algebra.smul_def, ← _root_.map_mul] at hmem
     obtain ⟨d, hdM, he⟩ := hmem
     rw [IsLocalization.injective _ hS he] at hdM
-    exact
-      Submodule.mem_map_of_mem
+    -- Note: #8386 had to specify the value of `f`
+    exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
         (((hf.mem_toFinset.1 hM).isPrime.mem_or_mem hdM).resolve_left <| hum M hM)
   · refine' Submodule.sum_mem _ fun M' hM' => _
     rw [Finset.mem_erase] at hM'
@@ -166,7 +166,9 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     rw [← hc, Algebra.smul_def, ← _root_.map_mul]
     specialize hu M' hM'.2
     simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu
-    exact Submodule.mem_map_of_mem (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
+    -- Note: #8386 had to specify the value of `f`
+    exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
+      (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
 #align fractional_ideal.is_principal.of_finite_maximals_of_inv FractionalIdeal.isPrincipal.of_finite_maximals_of_inv
 
 /-- An invertible ideal in a commutative ring with finitely many maximal ideals is principal.
@@ -239,8 +241,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [DecidableEq (
     IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, ← Ideal.map_map,
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
     hpu (LocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
-  · have hRS : Algebra.IsIntegral R S :=
-      isIntegral_of_noetherian (isNoetherian_of_isNoetherianRing_of_finite R S)
+  · have hRS : Algebra.IsIntegral R S := isIntegral_of_noetherian inferInstance
     exact mt (Ideal.eq_bot_of_comap_eq_bot (isIntegral_localization hRS)) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
   · exact (LocalRing.maximalIdeal.isMaximal _).isPrime

@@ -58,13 +58,13 @@ instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
 
 variable (σ a a')
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
   RingHom.map_sub _ _ _
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.C_sub MvPolynomial.C_sub
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   RingHom.map_neg _ _
 set_option linter.uppercaseLean3 false in
@@ -189,7 +189,7 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
   classical
   rw [degreeOf_lt_iff h]
   intro m hm
-  by_contra' hc
+  by_contra! hc
   have h := support_sub σ f g hm
   simp only [mem_support_iff, Ne.def, coeff_sub, sub_eq_zero] at hm
   cases' Finset.mem_union.1 h with cf cg
@@ -213,6 +213,10 @@ theorem totalDegree_sub (a b : MvPolynomial σ R) :
     _ ≤ max a.totalDegree (-b).totalDegree := (totalDegree_add a (-b))
     _ = max a.totalDegree b.totalDegree := by rw [totalDegree_neg]
 #align mv_polynomial.total_degree_sub MvPolynomial.totalDegree_sub
+
+theorem totalDegree_sub_C_le (p : MvPolynomial σ R) (r : R) :
+    totalDegree (p - C r) ≤ totalDegree p :=
+  (totalDegree_sub _ _).trans_eq <| by rw [totalDegree_C, Nat.max_zero]
 
 end TotalDegree
 

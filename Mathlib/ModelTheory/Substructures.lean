@@ -107,7 +107,7 @@ namespace Substructure
 attribute [coe] Substructure.carrier
 
 instance instSetLike : SetLike (L.Substructure M) M :=
-  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr ⟩
+  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 #align first_order.language.substructure.set_like FirstOrder.Language.Substructure.instSetLike
 
 /-- See Note [custom simps projection] -/
@@ -221,7 +221,7 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_sInf
 
 theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
-  by simp only [iInf, mem_sInf, Set.forall_range_iff]
+  by simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_iInf
 
 @[simp, norm_cast]
@@ -684,6 +684,21 @@ theorem coe_topEquiv :
     ⇑(topEquiv : (⊤ : L.Substructure M) ≃[L] M) = ((↑) : (⊤ : L.Substructure M) → M) :=
   rfl
 #align first_order.language.substructure.coe_top_equiv FirstOrder.Language.Substructure.coe_topEquiv
+
+@[simp]
+theorem realize_boundedFormula_top {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n}
+    {v : α → (⊤ : L.Substructure M)} {xs : Fin n → (⊤ : L.Substructure M)} :
+    φ.Realize v xs ↔ φ.Realize (((↑) : _ → M) ∘ v) ((↑) ∘ xs) := by
+  rw [← Substructure.topEquiv.realize_boundedFormula φ]
+  simp
+#align first_order.language.substructure.realize_bounded_formula_top FirstOrder.Language.Substructure.realize_boundedFormula_top
+
+@[simp]
+theorem realize_formula_top {α : Type*} {φ : L.Formula α} {v : α → (⊤ : L.Substructure M)} :
+    φ.Realize v ↔ φ.Realize (((↑) : (⊤ : L.Substructure M) → M) ∘ v) := by
+  rw [← Substructure.topEquiv.realize_formula φ]
+  simp
+#align first_order.language.substructure.realize_formula_top FirstOrder.Language.Substructure.realize_formula_top
 
 /-- A dependent version of `Substructure.closure_induction`. -/
 @[elab_as_elim]

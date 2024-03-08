@@ -193,7 +193,6 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
   rfl
 #align lie_subalgebra.mk_coe LieSubalgebra.mk_coe
 
-@[simp]
 theorem coe_to_submodule_mk (p : Submodule R L) (h) :
     (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := by
   cases p
@@ -527,6 +526,7 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     inf_le_right := fun _ _ _ ↦ And.right }
 
 instance : Add (LieSubalgebra R L) where add := Sup.sup
+
 instance : Zero (LieSubalgebra R L) where zero := ⊥
 
 instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
@@ -763,7 +763,7 @@ variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlge
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/
 noncomputable def ofInjective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) : L₁ ≃ₗ⁅R⁆ f.range :=
   { LinearEquiv.ofInjective (f : L₁ →ₗ[R] L₂) <| by rwa [LieHom.coe_toLinearMap] with
-    map_lie' := @fun x y ↦ SetCoe.ext $ f.map_lie x y }
+    map_lie' := @fun x y ↦ SetCoe.ext <| f.map_lie x y }
 #align lie_equiv.of_injective LieEquiv.ofInjective
 
 @[simp]

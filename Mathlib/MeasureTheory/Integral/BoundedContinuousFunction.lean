@@ -3,7 +3,6 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.MeasureTheory.Integral.Bochner
 
 /-!
@@ -86,10 +85,8 @@ variable [MeasurableSpace E] [BorelSpace E]
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ         := ?_
+    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ         := by gcongr; apply nnnorm_coe_le_nnnorm
     _ = ‖f‖₊ * (μ Set.univ)   := by rw [lintegral_const]
-  · apply lintegral_mono -- NOTE: Would be great to have `gcongr` working for these.
-    exact fun x ↦ ENNReal.coe_le_coe.mpr (nnnorm_coe_le_nnnorm f x)
 
 lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by

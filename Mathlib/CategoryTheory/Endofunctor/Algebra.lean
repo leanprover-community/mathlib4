@@ -230,7 +230,8 @@ def strInv : A.1 ⟶ F.obj A.1 :=
 
 #align category_theory.endofunctor.algebra.initial.str_inv CategoryTheory.Endofunctor.Algebra.Initial.strInv
 
-theorem left_inv' : ⟨strInv h ≫ A.str, by rw [←Category.assoc, F.map_comp, strInv, ←Hom.h]⟩ = 𝟙 A :=
+theorem left_inv' :
+    ⟨strInv h ≫ A.str, by rw [← Category.assoc, F.map_comp, strInv, ← Hom.h]⟩ = 𝟙 A :=
   Limits.IsInitial.hom_ext h _ (𝟙 A)
 #align category_theory.endofunctor.algebra.initial.left_inv' CategoryTheory.Endofunctor.Algebra.Initial.left_inv'
 
@@ -355,7 +356,7 @@ def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.hom = h.hom ≫ V₁
   inv :=
     { f := h.inv
       h := by
-        rw [h.eq_inv_comp, ←Category.assoc, ← w, Category.assoc, ← F.map_comp]
+        rw [h.eq_inv_comp, ← Category.assoc, ← w, Category.assoc, ← F.map_comp]
         simp only [Iso.hom_inv_id, Functor.map_id, Category.comp_id] }
 #align category_theory.endofunctor.coalgebra.iso_mk CategoryTheory.Endofunctor.Coalgebra.isoMk
 

@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Topology.Instances.ENNReal
 
 #align_import analysis.normed.field.infinite_sum from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -22,7 +23,8 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
 
-open BigOperators Classical
+open scoped Classical
+open BigOperators
 
 open Finset
 
@@ -30,7 +32,7 @@ open Finset
 
 theorem Summable.mul_of_nonneg {f : ι → ℝ} {g : ι' → ℝ} (hf : Summable f) (hg : Summable g)
     (hf' : 0 ≤ f) (hg' : 0 ≤ g) : Summable fun x : ι × ι' => f x.1 * g x.2 :=
-  (summable_prod_of_nonneg <| fun _ ↦ mul_nonneg (hf' _) (hg' _)).2 ⟨fun x ↦ hg.mul_left (f x),
+  (summable_prod_of_nonneg fun _ ↦ mul_nonneg (hf' _) (hg' _)).2 ⟨fun x ↦ hg.mul_left (f x),
     by simpa only [hg.tsum_mul_left _] using hf.mul_right (∑' x, g x)⟩
 #align summable.mul_of_nonneg Summable.mul_of_nonneg
 

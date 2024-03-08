@@ -5,11 +5,9 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Elab.Quotation
-import Std.Tactic.Ext
-import Std.Tactic.RCases
 import Std.Tactic.Where
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Logic.Equiv.LocalEquiv
+import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Order.Filter.Basic
 import Mathlib.RingTheory.WittVector.Basic
@@ -27,7 +25,6 @@ import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
@@ -53,7 +50,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
@@ -61,29 +57,26 @@ import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Recover
-import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.RSuffices
-import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.SolveByElim
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SwapVar
@@ -94,7 +87,6 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
-import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Mathport.Notation
 
@@ -211,11 +203,6 @@ syntax termList := " [" term,* "]"
   (" with" (ppSpace colGt binderIdent)+)? : tactic
 
 /- E -/ syntax (name := applyNormed) "apply_normed " term : tactic
-
-/- E -/ syntax (name := noncommRing) "noncomm_ring" : tactic
-
-
-/- S -/ syntax (name := omega) "omega" (&" manual")? (&" nat" <|> &" int")? : tactic
 
 /- B -/ syntax (name := acMono) "ac_mono" ("*" <|> ("^" num))?
   (config)? ((" : " term) <|> (" := " term))? : tactic

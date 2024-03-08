@@ -151,7 +151,7 @@ theorem ofNat_one : ofNat 1 = 1 :=
 theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by cases n <;> simp
 #align onote.repr_of_nat ONote.repr_ofNat
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
 #align onote.repr_one ONote.repr_one
 
@@ -329,7 +329,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
   | o₁@(oadd e₁ n₁ a₁), o₂@(oadd e₂ n₂ a₂), h₁, h₂ => by -- TODO: golf
     rw [cmp]
     have IHe := @cmp_compares _ _ h₁.fst h₂.fst
-    simp [Ordering.Compares] at IHe; revert IHe
+    simp only [Ordering.Compares, gt_iff_lt] at IHe; revert IHe
     cases cmp e₁ e₂
     case lt => intro IHe; exact oadd_lt_oadd_1 h₁ IHe
     case gt => intro IHe; exact oadd_lt_oadd_1 h₂ IHe
@@ -375,7 +375,7 @@ theorem NF.of_dvd_omega_opow {b e n a} (h : NF (ONote.oadd e n a))
     b ≤ repr e ∧ ω ^ b ∣ repr a := by
   have := mt repr_inj.1 (fun h => by injection h : ONote.oadd e n a ≠ 0)
   have L := le_of_not_lt fun l => not_le_of_lt (h.below_of_lt l).repr_lt (le_of_dvd this d)
-  simp at d
+  simp only [repr] at d
   exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mul_right _).1 d⟩
 #align onote.NF.of_dvd_omega_opow ONote.NF.of_dvd_omega_opow
 
@@ -493,15 +493,16 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     cases' h : add a o with e' n' a' <;>
       simp only [Add.add, add, addAux, h'.symm, h, add_assoc, repr] at nf h₁ ⊢
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
-    cases he: cmp e e' <;> simp [he] at ee ⊢
+    cases he: cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
+        Ordering.compares_eq, repr, gt_iff_lt, PNat.add_coe, Nat.cast_add] at ee ⊢
     · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
       · have := (h₁.below_of_lt ee).repr_lt
         unfold repr at this
-        cases he': e' <;> simp [he'] at this ⊢ <;>
+        cases he': e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>
         exact lt_of_le_of_lt (le_add_right _ _) this
       · simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e') omega_pos).2
           (nat_cast_le.2 n'.pos)
-    · rw [ee, ← add_assoc, ← mul_add, ← Nat.cast_add]
+    · rw [ee, ← add_assoc, ← mul_add]
 #align onote.repr_add ONote.repr_add
 
 theorem sub_nfBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow (o₁ - o₂) b
@@ -515,7 +516,7 @@ theorem sub_nfBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow 
     · apply NFBelow.zero
     · simp only [h, Ordering.compares_eq] at this
       subst e₂
-      cases mn : (n₁ : ℕ) - n₂ <;> simp [sub]
+      cases (n₁ : ℕ) - n₂ <;> simp [sub]
       · by_cases en : n₁ = n₂ <;> simp [en]
         · exact h'.mono (le_of_lt h₁.lt)
         · exact NFBelow.zero
@@ -821,7 +822,7 @@ instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a
   cases' k with k k
   · exact NF.oadd_zero _ _
   · haveI := nf_opowAux e a0 a k
-    simp only [Nat.succ_ne_zero m]; infer_instance
+    simp only [Nat.succ_ne_zero m, IsEmpty.forall_iff, mulNat_eq_mul]; infer_instance
 #align onote.NF_opow_aux ONote.nf_opowAux
 
 instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
@@ -873,7 +874,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   apply (opow_le_opow_left b <| this.le).trans
   rw [← opow_mul, ← opow_mul]
   apply opow_le_opow_right omega_pos
-  cases' le_or_lt ω (repr e) with h h
+  rcases le_or_lt ω (repr e) with h | h
   · apply (mul_le_mul_left' (le_succ b) _).trans
     rw [← add_one_eq_succ, add_mul_succ _ (one_add_of_omega_le h), add_one_eq_succ, succ_le_iff,
       Ordinal.mul_lt_mul_iff_left (Ordinal.pos_iff_ne_zero.2 e0)]
@@ -896,7 +897,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   haveI No : NF (oadd a0 n a') :=
     N0.oadd n (Na'.below_of_lt' <| lt_of_le_of_lt (le_add_right _ _) h)
   induction' k with k IH
-  · cases m <;> simp [opowAux]
+  · cases m <;> simp [R', opowAux]
   -- rename R => R'
   let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
   let ω0 := ω ^ repr a0
@@ -905,15 +906,15 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     = (α' + m) ^ (succ ↑k : Ordinal) at IH
   have RR : R' = ω0 ^ (k : Ordinal) * (α' * m) + R := by
     by_cases h : m = 0
-    · simp only [h, ONote.ofNat, Nat.cast_zero, zero_add, ONote.repr, mul_zero, ONote.opowAux,
-        add_zero]
-    · simp only [ONote.repr_scale, ONote.repr, ONote.mulNat_eq_mul, ONote.opowAux, ONote.repr_ofNat,
-        ONote.repr_mul, ONote.repr_add, Ordinal.opow_mul, ONote.zero_add]
+    · simp only [R, R', h, ONote.ofNat, Nat.cast_zero, zero_add, ONote.repr, mul_zero,
+        ONote.opowAux, add_zero]
+    · simp only [R', ONote.repr_scale, ONote.repr, ONote.mulNat_eq_mul, ONote.opowAux,
+        ONote.repr_ofNat, ONote.repr_mul, ONote.repr_add, Ordinal.opow_mul, ONote.zero_add]
   have α0 : 0 < α' := by simpa [lt_def, repr] using oadd_pos a0 n a'
   have ω00 : 0 < ω0 ^ (k : Ordinal) := opow_pos _ (opow_pos _ omega_pos)
   have Rl : R < ω ^ (repr a0 * succ ↑k) := by
     by_cases k0 : k = 0
-    · simp [k0]
+    · simp [R, k0]
       refine' lt_of_lt_of_le _ (opow_le_opow_right omega_pos (one_le_iff_ne_zero.2 e0))
       cases' m with m <;> simp [opowAux, omega_pos]
       rw [← add_one_eq_succ, ← Nat.cast_succ]
@@ -954,7 +955,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       rw [opow_mul]
       simpa [-opow_succ]
   · cases m
-    · have : R = 0 := by cases k <;> simp [opowAux]
+    · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
     · rw [nat_cast_succ, add_mul_succ]
       apply add_absorp Rl
@@ -983,10 +984,10 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       rw [opow_add, opow_mul, opow_omega, add_one_eq_succ]
       congr
       conv_lhs =>
-        simp only [(· ^ ·)]
+        dsimp [(· ^ ·)]
         simp [Pow.pow, opow, Ordinal.succ_ne_zero]
-      · simpa using nat_cast_lt.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
-      · rw [←Nat.cast_succ, lt_omega]
+      · simpa [Nat.one_le_iff_ne_zero]
+      · rw [← Nat.cast_succ, lt_omega]
         exact ⟨_, rfl⟩
   · haveI := N₁.fst
     haveI := N₁.snd
@@ -997,10 +998,11 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
     cases' e₂ : split' o₂ with b' k
     cases' nf_repr_split' e₂ with _ r₂
     simp only [opow_def, opow, e₁, r₁, split_eq_scale_split' e₂, opowAux2, repr]
-    cases' k with k <;> skip
-    · simp [opow, r₂, opow_mul, repr_opow_aux₁ a00 al aa,
-        add_assoc, split_eq_scale_split' e₂]
-    · simp [opow, opowAux2, r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr]
+    cases' k with k
+    · simp [r₂, opow_mul, repr_opow_aux₁ a00 al aa, add_assoc]
+    · simp? [r₂, opow_add, opow_mul, mul_assoc, add_assoc, -repr]
+        says simp only [mulNat_eq_mul, repr_add, repr_scale, repr_mul, repr_ofNat, opow_add,
+        opow_mul, mul_assoc, add_assoc, r₂, Nat.cast_succ, add_one_eq_succ, opow_succ]
       simp only [repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero, opow_one]
       rw [repr_opow_aux₁ a00 al aa, scale_opowAux]
       simp only [repr_mul, repr_scale, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one,
@@ -1161,7 +1163,7 @@ def fastGrowing : ONote → ℕ → ℕ
     | Sum.inr f, h => fun i =>
       have : f i < o := (h.2.1 i).2.1
       fastGrowing (f i) i
-  termination_by fastGrowing o => o
+  termination_by o => o
 #align onote.fast_growing ONote.fastGrowing
 
 -- Porting note: the bug of the linter, should be fixed.
@@ -1203,7 +1205,7 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
-  suffices : ∀ a b, Nat.succ^[a] b = b + a; exact this _ _
+  suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
   intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_succ, -Function.iterate_succ]
 #align onote.fast_growing_one ONote.fastGrowing_one
 
@@ -1212,7 +1214,7 @@ section
 @[simp]
 theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
   rw [@fastGrowing_succ 2 1 rfl]; funext i; rw [fastGrowing_one]
-  suffices : ∀ a b, (fun n : ℕ => 2 * n)^[a] b = (2 ^ a) * b; exact this _ _
+  suffices ∀ a b, (fun n : ℕ => 2 * n)^[a] b = (2 ^ a) * b from this _ _
   intro a b; induction a <;>
     simp [*, Function.iterate_succ', pow_succ, mul_assoc, -Function.iterate_succ]
 #align onote.fast_growing_two ONote.fastGrowing_two

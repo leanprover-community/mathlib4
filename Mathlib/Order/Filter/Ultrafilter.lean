@@ -28,7 +28,8 @@ variable {α : Type u} {β : Type v} {γ : Type*}
 
 open Set Filter Function
 
-open Classical Filter
+open scoped Classical
+open Filter
 
 /-- `Filter α` is an atomic type: for every filter there exists an ultrafilter that is less than or
 equal to this filter. -/
@@ -150,7 +151,7 @@ def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultra
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨hf.1⟩
-  le_of_le g hg := (isAtom_iff.1 hf).2 g hg.ne
+  le_of_le g hg := (isAtom_iff_le_of_ge.1 hf).2 g hg.ne
 #align ultrafilter.of_atom Ultrafilter.ofAtom
 
 theorem nonempty_of_mem (hs : s ∈ f) : s.Nonempty :=
@@ -203,7 +204,7 @@ theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ 
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
-  simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), bex_image_iff]
+  simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), exists_mem_image]
 #align ultrafilter.finite_bUnion_mem_iff Ultrafilter.finite_biUnion_mem_iff
 
 /-- Pushforward for ultrafilters. -/
