@@ -97,6 +97,7 @@ macro "by!"  : term =>
 /--
 info: Try this: exact Nat.le_three_of_sqrt_eq_one rfl
 -/
+#guard_msgs in
 example : 2 ≤ 3 := by apply?
 
 /--
