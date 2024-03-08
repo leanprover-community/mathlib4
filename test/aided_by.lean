@@ -106,6 +106,7 @@ info: Try this: by exact Nat.AtLeastTwo.prop
 warning: declaration uses 'sorry'
 -/
 #guard_msgs in
+set_option aided_by.delay 4000 in
 example : 2 ≤ 4 := by!
   sorry
 
