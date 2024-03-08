@@ -447,7 +447,7 @@ nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c �
 
 end IsUnit
 
--- Porting note: todo: use `Set.Nonempty`
+-- Porting note (#11215): TODO: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.

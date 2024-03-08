@@ -240,7 +240,7 @@ theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measura
   measurable_id.mono le_rfl hm
 #align probability_theory.measurable_id'' measurable_id''
 
--- Porting note: todo: add TC `DiscreteMeasurable` + instances
+-- Porting note (#11215): TODO: add TC `DiscreteMeasurable` + instances
 
 @[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
