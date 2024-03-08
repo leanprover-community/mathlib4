@@ -291,6 +291,9 @@ open Nat in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, there is an element
 of order `lcm n m`. The result actually gives an explicit (computable) element, written as the
 product of a power of `x` and a power of `y`. -/
+@[to_additive "If two commuting elements `x` and `y` of an additive monoid have order `n` and `m`,
+there is an element of order `lcm n m`. The result actually gives an explicit (computable) element,
+written as the sum of a multiple of `x` and a multiple of `y`."]
 lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : orderOf x ≠ 0)
     (hy : orderOf y ≠ 0) :
     orderOf (x ^ (orderOf x / (factorization_lcm_left (orderOf x) (orderOf y))) *
