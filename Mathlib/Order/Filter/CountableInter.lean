@@ -48,7 +48,7 @@ theorem countable_sInter_mem {S : Set (Set α)} (hSc : S.Countable) : ⋂₀ S �
 #align countable_sInter_mem countable_sInter_mem
 
 theorem countable_iInter_mem [Countable ι] {s : ι → Set α} : (⋂ i, s i) ∈ l ↔ ∀ i, s i ∈ l :=
-  sInter_range s ▸ (countable_sInter_mem (countable_range _)).trans forall_range_iff
+  sInter_range s ▸ (countable_sInter_mem (countable_range _)).trans forall_mem_range
 #align countable_Inter_mem countable_iInter_mem
 
 theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : ∀ i ∈ S, Set α} :
@@ -163,7 +163,7 @@ def Filter.ofCountableUnion (p : Set α → Prop)
     (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
   refine .ofCountableInter {s | p sᶜ} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
   · rw [mem_setOf_eq, compl_sInter]
-    exact hUnion _ (hSc.image _) (ball_image_iff.2 hSp)
+    exact hUnion _ (hSc.image _) (forall_mem_image.2 hSp)
   · exact hmono _ ht _ (compl_subset_compl.2 hsub)
 
 instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :

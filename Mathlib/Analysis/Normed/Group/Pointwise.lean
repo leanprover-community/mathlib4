@@ -44,7 +44,7 @@ theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ I
 
 @[to_additive]
 theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
-  simp_rw [isBounded_iff_forall_norm_le', ← image_inv, ball_image_iff, norm_inv']
+  simp_rw [isBounded_iff_forall_norm_le', ← image_inv, forall_mem_image, norm_inv']
   exact id
 #align metric.bounded.inv Bornology.IsBounded.inv
 #align metric.bounded.neg Bornology.IsBounded.neg

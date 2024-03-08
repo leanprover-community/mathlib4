@@ -75,7 +75,7 @@ theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, 
     LocallyFinite v ∧ ∀ a, v a ⊆ u a := by
   -- Apply definition to `range u`, then turn existence quantifiers into functions using `choose`
   have := ParacompactSpace.locallyFinite_refinement (range u) (fun r ↦ (r : Set X))
-    (SetCoe.forall.2 <| forall_range_iff.2 uo) (by rwa [← sUnion_range, Subtype.range_coe])
+    (SetCoe.forall.2 <| forall_mem_range.2 uo) (by rwa [← sUnion_range, Subtype.range_coe])
   simp only [SetCoe.exists, exists_range_iff', iUnion_eq_univ_iff, exists_prop] at this
   choose α t hto hXt htf ind hind using this
   choose t_inv ht_inv using hXt

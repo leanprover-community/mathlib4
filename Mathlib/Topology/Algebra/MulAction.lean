@@ -254,7 +254,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
 @[to_additive]
 theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
     (h : ∀ i, @ContinuousSMul M X _ _ (ts' i)) : @ContinuousSMul M X _ _ (⨅ i, ts' i) :=
-  continuousSMul_sInf <| Set.forall_range_iff.mpr h
+  continuousSMul_sInf <| Set.forall_mem_range.mpr h
 #align has_continuous_smul_infi continuousSMul_iInf
 #align has_continuous_vadd_infi continuousVAdd_iInf
 

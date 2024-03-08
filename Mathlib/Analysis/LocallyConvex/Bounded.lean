@@ -396,7 +396,7 @@ theorem isVonNBounded_iff' (s : Set E) :
 
 theorem image_isVonNBounded_iff (f : E' → E) (s : Set E') :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∃ r : ℝ, ∀ x ∈ s, ‖f x‖ ≤ r := by
-  simp_rw [isVonNBounded_iff', Set.ball_image_iff]
+  simp_rw [isVonNBounded_iff', Set.forall_mem_image]
 #align normed_space.image_is_vonN_bounded_iff NormedSpace.image_isVonNBounded_iff
 
 /-- In a normed space, the von Neumann bornology (`Bornology.vonNBornology`) is equal to the

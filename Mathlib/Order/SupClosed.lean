@@ -52,7 +52,7 @@ lemma supClosed_sInter (hS : ∀ s ∈ S, SupClosed s) : SupClosed (⋂₀ S) :=
 λ _a ha _b hb _s hs ↦ hS _ hs (ha _ hs) (hb _ hs)
 
 lemma supClosed_iInter (hf : ∀ i, SupClosed (f i)) : SupClosed (⋂ i, f i) :=
-supClosed_sInter <| forall_range_iff.2 hf
+supClosed_sInter <| forall_mem_range.2 hf
 
 lemma SupClosed.directedOn (hs : SupClosed s) : DirectedOn (· ≤ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, le_sup_left, le_sup_right⟩
@@ -118,7 +118,7 @@ lemma infClosed_sInter (hS : ∀ s ∈ S, InfClosed s) : InfClosed (⋂₀ S) :=
 λ _a ha _b hb _s hs ↦ hS _ hs (ha _ hs) (hb _ hs)
 
 lemma infClosed_iInter (hf : ∀ i, InfClosed (f i)) : InfClosed (⋂ i, f i) :=
-infClosed_sInter <| forall_range_iff.2 hf
+infClosed_sInter <| forall_mem_range.2 hf
 
 lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
 λ _a ha _b hb ↦ ⟨_, hs ha hb, inf_le_left, inf_le_right⟩

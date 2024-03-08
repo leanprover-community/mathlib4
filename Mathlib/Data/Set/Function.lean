@@ -245,7 +245,7 @@ theorem EqOn.comp_left (h : s.EqOn f₁ f₂) : s.EqOn (g ∘ f₁) (g ∘ f₂)
 @[simp]
 theorem eqOn_range {ι : Sort*} {f : ι → α} {g₁ g₂ : α → β} :
     EqOn g₁ g₂ (range f) ↔ g₁ ∘ f = g₂ ∘ f :=
-  forall_range_iff.trans <| funext_iff.symm
+  forall_mem_range.trans <| funext_iff.symm
 #align set.eq_on_range Set.eqOn_range
 
 alias ⟨EqOn.comp_eq, _⟩ := eqOn_range
@@ -541,7 +541,7 @@ theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f
 
 @[simp]
 lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
-  forall_range_iff
+  forall_mem_range
 
 @[deprecated mapsTo_range_iff]
 theorem maps_range_to (f : α → β) (g : γ → α) (s : Set β) :
@@ -672,7 +672,7 @@ theorem InjOn.comp (hg : InjOn g t) (hf : InjOn f s) (h : MapsTo f s t) : InjOn 
 #align set.inj_on.comp Set.InjOn.comp
 
 lemma InjOn.image_of_comp (h : InjOn (g ∘ f) s) : InjOn g (f '' s) :=
-  ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy heq ↦ congr_arg f <| h hx hy heq
+  forall_mem_image.2 fun _x hx ↦ forall_mem_image.2 fun _y hy heq ↦ congr_arg f <| h hx hy heq
 
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
     ∀ n, InjOn f^[n] s
@@ -780,12 +780,12 @@ lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
   · rintro ⟨f, hf⟩
     rw [hf]
     exact InjOn.image_of_comp <| injOn_id _
-  · have : ∀ x ∈ Prod.fst '' s, ∃ y, (x, y) ∈ s := ball_image_iff.2 fun (x, y) h ↦ ⟨y, h⟩
+  · have : ∀ x ∈ Prod.fst '' s, ∃ y, (x, y) ∈ s := forall_mem_image.2 fun (x, y) h ↦ ⟨y, h⟩
     choose! f hf using this
-    rw [ball_image_iff] at hf
+    rw [forall_mem_image] at hf
     use f
     rw [graphOn, image_image, EqOn.image_eq_self]
-    exact fun x hx ↦ h (hf x hx) hx rfl
+    exact fun x hx ↦ h (hf hx) hx rfl
 
 lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
     (∃ f t, s = graphOn f t) ↔ InjOn Prod.fst s :=
@@ -1682,7 +1682,7 @@ theorem RightInverse.rightInvOn {g : β → α} (h : RightInverse f g) (s : Set 
 
 theorem LeftInverse.rightInvOn_range {g : β → α} (h : LeftInverse f g) :
     RightInvOn f g (range g) :=
-  forall_range_iff.2 fun i => congr_arg g (h i)
+  forall_mem_range.2 fun i => congr_arg g (h i)
 #align function.left_inverse.right_inv_on_range Function.LeftInverse.rightInvOn_range
 
 namespace Semiconj
