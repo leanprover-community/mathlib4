@@ -60,13 +60,13 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [IsROrC 𝕜] {E 
     refine .of_retract ⟨Subtype.val, by continuity⟩ ⟨_, this.codRestrict fun x ↦ ?_⟩ ?_
     · by_cases hx : x ∈ Metric.closedBall 0 1
       · simpa [piecewise_eq_of_mem (hi := hx)] using hx
-      · simp only [piecewise_eq_of_not_mem (hi := hx), IsROrC.real_smul_eq_coe_smul (K := 𝕜)]
+      · simp only [g, piecewise_eq_of_not_mem (hi := hx), IsROrC.real_smul_eq_coe_smul (K := 𝕜)]
         by_cases hx' : x = 0 <;> simp [hx']
     · ext x
       simp [piecewise_eq_of_mem (hi := x.property)]
   refine continuous_piecewise (fun x hx ↦ ?_) continuousOn_id ?_
   · replace hx : ‖x‖ = 1 := by simpa [frontier_closedBall (0 : E) one_ne_zero] using hx
-    simp [hx]
+    simp [g, hx]
   · refine continuousOn_id.norm.inv₀ ?_ |>.smul continuousOn_id
     simp only [closure_compl, interior_closedBall (0 : E) one_ne_zero, mem_compl_iff,
       Metric.mem_ball, dist_zero_right, not_lt, id_eq, ne_eq, norm_eq_zero]

@@ -45,7 +45,8 @@ namespace CantorScheme
 
 open List Function Filter Set PiNat
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 variable {β α : Type*} (A : List β → Set α)
 

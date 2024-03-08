@@ -39,7 +39,8 @@ group naturally induces a uniform structure.
 
 noncomputable section
 
-open Classical Uniformity Topology Filter Pointwise
+open scoped Classical
+open Uniformity Topology Filter Pointwise
 
 section UniformGroup
 
@@ -134,7 +135,7 @@ theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => 
 theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℤ, UniformContinuous fun x => f x ^ n
   | (n : ℕ) => by
-    simp_rw [zpow_ofNat]
+    simp_rw [zpow_coe_nat]
     exact hf.pow_const _
   | Int.negSucc n => by
     simp_rw [zpow_negSucc]
@@ -221,7 +222,7 @@ theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @Unifo
 theorem uniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
     (h' : ∀ i, @UniformGroup β (us' i) _) : @UniformGroup β (⨅ i, us' i) _ := by
   rw [← sInf_range]
-  exact uniformGroup_sInf (Set.forall_range_iff.mpr h')
+  exact uniformGroup_sInf (Set.forall_mem_range.mpr h')
 #align uniform_group_infi uniformGroup_iInf
 #align uniform_add_group_infi uniformAddGroup_iInf
 
@@ -891,8 +892,9 @@ section CompleteQuotient
 
 universe u
 
-open TopologicalSpace Classical
+open TopologicalSpace
 
+open Classical in
 /-- The quotient `G ⧸ N` of a complete first countable topological group `G` by a normal subgroup
 is itself complete. [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 

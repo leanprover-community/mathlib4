@@ -39,7 +39,7 @@ variable (A : Type u₁) [Category.{v₁} A]
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
--- porting note: there was an explicit call to
+-- Porting note: there was an explicit call to
 -- CategoryTheory.Sheaf.CategoryTheory.SheafToPresheaf.CategoryTheory.createsLimits.{u₁, v₁, v₁}
 -- but it is not necessary (it was not either in mathlib)
 instance [HasLimits A] : CreatesLimits (sheafToPresheaf J A) := inferInstance

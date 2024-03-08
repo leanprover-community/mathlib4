@@ -32,7 +32,7 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 ## References
 
-* [C. Kassel, *Quantum Groups* (§II.4)][kasselTensorProducts1995]
+* [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
 
@@ -54,11 +54,12 @@ open TensorProduct
 
 section Semiring
 
-variable {R A B M N : Type*} [CommSemiring R]
+variable {R A B M N P : Type*} [CommSemiring R]
 
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable [Module R M] [Module R N] [Module R P]
 
 variable (r : R) (f g : M →ₗ[R] N)
 
@@ -85,7 +86,7 @@ theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTens
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
-  -- porting note: added `-baseChange_tmul`
+  -- Porting note: added `-baseChange_tmul`
   simp [baseChange_eq_ltensor, -baseChange_tmul]
 #align linear_map.base_change_add LinearMap.baseChange_add
 
@@ -101,19 +102,42 @@ theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
   simp [baseChange_tmul]
 #align linear_map.base_change_smul LinearMap.baseChange_smul
 
-lemma baseChange_comp {P : Type*} [AddCommMonoid P] [Module R P] (g : N →ₗ[R] P) :
+@[simp]
+lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by
+  ext; simp
+
+lemma baseChange_comp (g : N →ₗ[R] P) :
     (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
+  ext; simp
+
+variable (R M) in
+@[simp]
+lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
+
+lemma baseChange_mul (f g : Module.End R M) :
+    (f * g).baseChange A = f.baseChange A * g.baseChange A := by
   ext; simp
 
 variable (R A M N)
 
-/-- `baseChange` as a linear map. -/
+/-- `baseChange` as a linear map.
+
+When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
 @[simps]
 def baseChangeHom : (M →ₗ[R] N) →ₗ[R] A ⊗[R] M →ₗ[A] A ⊗[R] N where
   toFun := baseChange A
   map_add' := baseChange_add
   map_smul' := baseChange_smul
 #align linear_map.base_change_hom LinearMap.baseChangeHom
+
+/-- `baseChange` as an `AlgHom`. -/
+@[simps!]
+def _root_.Module.End.baseChangeHom : Module.End R M →ₐ[R] Module.End A (A ⊗[R] M) :=
+  .ofLinearMap (LinearMap.baseChangeHom _ _ _ _) (baseChange_one _ _) baseChange_mul
+
+lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
+    (f ^ n).baseChange A = f.baseChange A ^ n :=
+  map_pow (Module.End.baseChangeHom _ _ _) f n
 
 end Semiring
 
@@ -130,7 +154,7 @@ variable (f g : M →ₗ[R] N)
 @[simp]
 theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A := by
   ext
-  -- porting note: `tmul_sub` wasn't needed in mathlib3
+  -- Porting note: `tmul_sub` wasn't needed in mathlib3
   simp [baseChange_eq_ltensor, tmul_sub]
 
 #align linear_map.base_change_sub LinearMap.baseChange_sub
@@ -138,7 +162,7 @@ theorem baseChange_sub : (f - g).baseChange A = f.baseChange A - g.baseChange A 
 @[simp]
 theorem baseChange_neg : (-f).baseChange A = -f.baseChange A := by
   ext
-  -- porting note: `tmul_neg` wasn't needed in mathlib3
+  -- Porting note: `tmul_neg` wasn't needed in mathlib3
   simp [baseChange_eq_ltensor, tmul_neg]
 #align linear_map.base_change_neg LinearMap.baseChange_neg
 
@@ -189,40 +213,15 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
-/-- (Implementation detail)
-The multiplication map on `A ⊗[R] B`,
-for a fixed pure tensor in the first argument,
-as an `R`-linear map.
--/
-def mulAux (a₁ : A) (b₁ : B) : A ⊗[R] B →ₗ[R] A ⊗[R] B :=
-  TensorProduct.map (LinearMap.mulLeft R a₁) (LinearMap.mulLeft R b₁)
-#align algebra.tensor_product.mul_aux Algebra.TensorProduct.mulAux
-
-@[simp]
-theorem mulAux_apply (a₁ a₂ : A) (b₁ b₂ : B) :
-    (mulAux a₁ b₁) (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
-  rfl
-#align algebra.tensor_product.mul_aux_apply Algebra.TensorProduct.mulAux_apply
+#noalign algebra.tensor_product.mul_aux
+#noalign algebra.tensor_product.mul_aux_apply
 
 /-- (Implementation detail)
 The multiplication map on `A ⊗[R] B`,
 as an `R`-bilinear map.
 -/
 def mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B :=
-  TensorProduct.lift <|
-    LinearMap.mk₂ R mulAux
-      (fun x₁ x₂ y =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.add_apply, add_mul, add_tmul])
-      (fun c x y =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.smul_apply, smul_tmul', smul_mul_assoc])
-      (fun x y₁ y₂ =>
-        TensorProduct.ext' fun x' y' => by
-          simp only [mulAux_apply, LinearMap.add_apply, add_mul, tmul_add])
-      fun c x y =>
-      TensorProduct.ext' fun x' y' => by
-        simp only [mulAux_apply, LinearMap.smul_apply, smul_tmul, smul_tmul', smul_mul_assoc]
+  TensorProduct.map₂ (LinearMap.mul R A) (LinearMap.mul R B)
 #align algebra.tensor_product.mul Algebra.TensorProduct.mul
 
 @[simp]
@@ -546,7 +545,9 @@ theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
   rw [intCast_def, ← zsmul_one, smul_tmul, zsmul_one]
 
 -- verify there are no diamonds
-example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := rfl
+example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
+  with_reducible_and_instances rfl
+-- fails at `with_reducible_and_instances rfl` #10906
 example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
@@ -839,7 +840,7 @@ theorem assoc_aux_2 : (TensorProduct.assoc R A B C) ((1 ⊗ₜ[R] 1) ⊗ₜ[R] 1
 
 variable (R A B C)
 
--- porting note: much nicer than Lean 3 proof
+-- Porting note: much nicer than Lean 3 proof
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
 protected def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
   algEquivOfLinearEquivTripleTensorProduct
@@ -1058,7 +1059,8 @@ section Basis
 
 universe uM uι
 variable {M : Type uM} {ι : Type uι}
-variable [CommRing R] [Ring A] [Algebra R A] [AddCommMonoid M] [Module R M] (b : Basis ι R M)
+variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [AddCommMonoid M] [Module R M] (b : Basis ι R M)
 
 variable (A)
 
@@ -1096,12 +1098,12 @@ variable {A}
 @[simp]
 theorem basis_repr_tmul (a : A) (m : M) :
     (basis A b).repr (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
-  basisAux_tmul b a m -- porting note: Lean 3 had _ _ _
+  basisAux_tmul b a m -- Porting note: Lean 3 had _ _ _
 #align algebra.tensor_product.basis_repr_tmul Algebra.TensorProduct.basis_repr_tmul
 
 theorem basis_repr_symm_apply (a : A) (i : ι) :
     (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
-  rw [basis, LinearEquiv.coe_symm_mk] -- porting note: `coe_symm_mk` isn't firing in `simp`
+  rw [basis, LinearEquiv.coe_symm_mk] -- Porting note: `coe_symm_mk` isn't firing in `simp`
   simp [Equiv.uniqueProd_symm_apply, basisAux]
 
 @[simp]
@@ -1125,8 +1127,8 @@ open Algebra.TensorProduct
 
 variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
   [Fintype ι] [Fintype ι₂] [DecidableEq ι] [DecidableEq ι₂]
-  [CommRing R] [CommRing A] [Algebra R A]
-  [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
+  [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
 @[simp]
 lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :
@@ -1225,7 +1227,7 @@ protected def module : Module (A ⊗[R] B) M where
   smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
   add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
   one_smul m := by
-    -- porting note: was one `simp only` not two in lean 3
+    -- Porting note: was one `simp only` not two in lean 3
     simp only [(· • ·), Algebra.TensorProduct.one_def]
     simp only [moduleAux_apply, one_smul]
   mul_smul x y m := by
@@ -1243,7 +1245,7 @@ protected def module : Module (A ⊗[R] B) M where
       simp only [moduleAux_apply, mul_smul]
       rw [smul_comm a₁ b₂]
     · intro z w hz hw a b
-      --porting note: was one `simp only` but random stuff doesn't work
+      -- Porting note: was one `simp only` but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
       simp only [moduleAux_apply]
       rw [mul_add]  -- simp only doesn't work
@@ -1255,7 +1257,7 @@ protected def module : Module (A ⊗[R] B) M where
       simp only [(· • ·), LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
     · intro u v _ _ z w hz hw
       simp only [(· • ·)] at hz hw
-      -- porting note: no idea why this is such a struggle
+      -- Porting note: no idea why this is such a struggle
       simp only [(· • ·)]
       rw [add_mul, LinearMap.map_add, LinearMap.add_apply, hz, hw]
       simp only [LinearMap.map_add, LinearMap.add_apply]

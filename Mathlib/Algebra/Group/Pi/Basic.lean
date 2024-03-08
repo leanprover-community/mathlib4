@@ -465,13 +465,13 @@ protected def prod (f' : ∀ i, f i) (g' : ∀ i, g i) (i : I) : f i × g i :=
   (f' i, g' i)
 #align pi.prod Pi.prod
 
--- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
+-- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   rfl
 #align pi.prod_fst_snd Pi.prod_fst_snd
 
--- Porting note : simp now unfolds the lhs, so we are not marking these as simp.
+-- Porting note: simp now unfolds the lhs, so we are not marking these as simp.
 -- @[simp]
 theorem prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = Prod.swap :=
   rfl
@@ -549,18 +549,18 @@ theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) 
 #align function.bijective_pi_map Function.bijective_pi_map
 
 lemma comp_eq_const_iff {α β γ: Type*} (b : β) (f : α → β) (g : β → γ)
-    (hg : Function.Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
+    (hg : Injective g) : g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
   hg.comp_left.eq_iff' rfl
 
 lemma comp_eq_zero_iff {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
-    (hg : Function.Injective g) (hg0 : g 0 = 0) : g ∘ f = 0 ↔ f = 0 := by
+    (hg : Injective g) (hg0 : g 0 = 0) : g ∘ f = 0 ↔ f = 0 := by
   have := (comp_eq_const_iff 0 f g hg)
   rw [hg0] at this
-  simp only [Function.const_zero] at this
+  simp only [const_zero] at this
   exact this
 
 lemma comp_inj_ne_zero {α β γ: Type*} [OfNat β 0] [ OfNat γ 0] (f : α → β) (g : β → γ)
-    (hg : Function.Injective g) (hg0 : g 0 = 0) : (g ∘ f) ≠ 0 ↔ f ≠ 0 :=
+    (hg : Injective g) (hg0 : g 0 = 0) : (g ∘ f) ≠ 0 ↔ f ≠ 0 :=
   (Iff.ne (comp_eq_zero_iff f g hg hg0))
 
 end Function
