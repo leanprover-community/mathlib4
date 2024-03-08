@@ -447,7 +447,7 @@ lemma inconsistent_insert {Γ p} (h : Inconsistent Bew (insert p Γ)) : (∃ Δ,
 /-- This lemma require classical logic. -/
 lemma inconsistent_iff_insert_neg {Γ p} : Inconsistent Bew (insert (~p) Γ) ↔ (Γ ⊢! p) := by
   constructor;
-  . intro h;
+  · intro h;
     have : Γ ⊢ ~~p := by simpa using (dtr h.some);
     exact ⟨(dne' this)⟩
   . intro h;
