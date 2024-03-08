@@ -450,7 +450,7 @@ lemma inconsistent_iff_insert_neg {Γ p} : Inconsistent Bew (insert (~p) Γ) ↔
   · intro h;
     have : Γ ⊢ ~~p := by simpa using (dtr h.some);
     exact ⟨(dne' this)⟩
-  . intro h;
+  · intro h;
     have : Γ ⊢ ((p ⭢ ⊥) ⭢ ⊥) := by simpa using dni' h.some
     exact ⟨by simpa using (dtl this)⟩;
 
