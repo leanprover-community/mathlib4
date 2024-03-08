@@ -60,7 +60,8 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
   Quotient.eq
 #align multiset.coe_eq_coe Multiset.coe_eq_coe
 
--- Porting note: new, TODO move to better place
+-- Porting note: new instance;
+-- Porting note (#11215): TODO: move to better place
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
@@ -1876,12 +1877,10 @@ theorem union_le_iff : s ∪ t ≤ u ↔ s ≤ u ∧ t ≤ u :=
   sup_le_iff
 #align multiset.union_le_iff Multiset.union_le_iff
 
-theorem union_comm (s t : Multiset α) : s ∪ t = t ∪ s :=
-  sup_comm
+theorem union_comm (s t : Multiset α) : s ∪ t = t ∪ s := sup_comm _ _
 #align multiset.union_comm Multiset.union_comm
 
-theorem inter_comm (s t : Multiset α) : s ∩ t = t ∩ s :=
-  inf_comm
+theorem inter_comm (s t : Multiset α) : s ∩ t = t ∩ s := inf_comm _ _
 #align multiset.inter_comm Multiset.inter_comm
 
 theorem eq_union_right (h : s ≤ t) : s ∪ t = t := by rw [union_comm, eq_union_left h]

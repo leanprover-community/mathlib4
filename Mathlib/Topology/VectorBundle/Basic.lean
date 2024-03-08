@@ -56,7 +56,8 @@ Vector bundle
 
 noncomputable section
 
-open Bundle Set Classical
+open scoped Classical
+open Bundle Set
 open scoped Topology
 
 variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
@@ -590,7 +591,7 @@ def toFiberBundleCore : FiberBundleCore ι B F :=
         ((Z.continuousOn_coordChange i j).prod_map continuousOn_id) }
 #align vector_bundle_core.to_fiber_bundle_core VectorBundleCore.toFiberBundleCore
 
--- Porting note: TODO: restore coercion
+-- Porting note (#11215): TODO: restore coercion
 -- instance toFiberBundleCoreCoe : Coe (VectorBundleCore R B F ι) (FiberBundleCore ι B F) :=
 --   ⟨toFiberBundleCore⟩
 -- #align vector_bundle_core.to_fiber_bundle_core_coe VectorBundleCore.toFiberBundleCoreCoe
