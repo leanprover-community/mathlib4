@@ -274,7 +274,7 @@ def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
     B.hasBasis).2 comp
 #align uniform_space.core.mk_of_basis UniformSpace.Core.mkOfBasis
 
--- Porting note: TODO: use `mkOfNhds`?
+-- Porting note (#11215): TODO: use `mkOfNhds`?
 /-- A uniform space generates a topological space -/
 def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α) :
     TopologicalSpace α where
@@ -339,7 +339,7 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
   TopologicalSpace.ext <| funext fun s => propext (UniformSpace.isOpen_uniformity s).symm
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
--- Porting note: todo: use this as the main definition?
+-- Porting note (#11215): TODO: use this as the main definition?
 /-- An alternative constructor for `UniformSpace` that takes the proof of `nhds_eq_comap_uniformity`
 as an argument. -/
 @[reducible]
@@ -420,7 +420,7 @@ section UniformSpace
 
 variable [UniformSpace α]
 
-@[inherit_doc] -- Porting note: todo: should we drop the `uniformity` def?
+@[inherit_doc] -- Porting note (#11215): TODO: should we drop the `uniformity` def?
 scoped[Uniformity] notation "𝓤" => uniformity
 
 theorem isOpen_uniformity {s : Set α} :
@@ -569,7 +569,7 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem comp3_mem_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
   let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
   let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
@@ -1457,7 +1457,7 @@ theorem uniformity_setCoe {s : Set α} [UniformSpace α] :
   rfl
 #align uniformity_set_coe uniformity_setCoe
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
     map (Prod.map (↑) (↑)) (𝓤 s) = 𝓤 α ⊓ 𝓟 (s ×ˢ s) := by
   rw [uniformity_setCoe, map_comap, range_prod_map, Subtype.range_val]

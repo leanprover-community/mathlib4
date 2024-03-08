@@ -129,7 +129,7 @@ those factors expand to equal elements of `R`. -/
 protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : r * t = r' * t) :
     r₁ * r * r₂ /ₒ s = r₁ * r' * r₂ /ₒ s := by
   rcases oreCondition r₂ t with ⟨r₂', t', hr₂⟩
-  -- Porting note: todo: use `assoc_rw`?
+  -- Porting note (#11215): TODO: use `assoc_rw`?
   calc
     r₁ * r * r₂ /ₒ s = r₁ * r * r₂ * t' /ₒ (s * t') := OreLocalization.expand (r₁ * r * r₂) s t' _
     _ = r₁ * r * (r₂ * t') /ₒ (s * t') := by simp [← mul_assoc]
