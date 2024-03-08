@@ -305,8 +305,8 @@ product of a power of `x` and a power of `y`. -/
 lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : orderOf x ≠ 0)
     (hy : orderOf y ≠ 0) :
     orderOf (x ^ (orderOf x / (factorization_lcm_left (orderOf x) (orderOf y))) *
-    y ^ (orderOf y / factorization_lcm_right (orderOf x) (orderOf y))) =
-    Nat.lcm (orderOf x) (orderOf y) := by
+      y ^ (orderOf y / factorization_lcm_right (orderOf x) (orderOf y))) =
+      Nat.lcm (orderOf x) (orderOf y) := by
   have h₁ : 0 < factorization_lcm_left (orderOf x) (orderOf y) :=
     Nat.pos_of_ne_zero <| factorization_lcm_left_ne_zero _ _
   have h₂ : 0 < factorization_lcm_right (orderOf x) (orderOf y) :=
