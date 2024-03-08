@@ -280,12 +280,20 @@ lemma Unitization.isQuasiregular_inr_iff (a : A) :
   lift y to A using by simpa using congr(fstHom R A $(hy₁))
   refine ⟨y, ?_, ?_⟩ <;> exact inr_injective (R := R) <| by simpa
 
--- we need this for `R := ℝ≥0`, `S := ℝ`.
+lemma Unitization.zero_mem_spectrum_inr (R S : Type*) {A : Type*} [CommSemiring R]
+    [CommRing S] [Nontrivial S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
+    [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
+    0 ∈ spectrum R (a : Unitization S A) := by
+  rw [spectrum.zero_mem_iff]
+  rintro ⟨u, hu⟩
+  simpa [-Units.mul_inv, hu] using congr($(u.mul_inv).fst)
+
 lemma Unitization.quasispectrum_eq_spectrum_union (R S : Type*) {A : Type*} [Semifield R]
     [Field S] [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
-    quasispectrum R a = spectrum R (a : Unitization S A) ∪ {0} := by
+    quasispectrum R a = spectrum R (a : Unitization S A) := by
   ext r
-  rw [← _root_.quasispectrum_eq_spectrum_union_zero]
+  have := Set.singleton_subset_iff.mpr (Unitization.zero_mem_spectrum_inr R S a)
+  rw [← Set.union_eq_self_of_subset_right this, ← _root_.quasispectrum_eq_spectrum_union_zero]
   apply forall_congr' fun x ↦ ?_
   rw [not_iff_not, Units.smul_def, Units.smul_def, ← inr_smul, ← inr_neg, isQuasiregular_inr_iff]
