@@ -678,7 +678,7 @@ theorem floorRing_ceil_eq : @FloorRing.ceil = @Int.ceil :=
 /-! #### Floor -/
 
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 theorem gc_coe_floor : GaloisConnection (Int.cast : ℤ → α) floor :=
   FloorRing.gc_coe_floor
 #align int.gc_coe_floor Int.gc_coe_floor
@@ -1183,7 +1183,7 @@ end LinearOrderedField
 /-! #### Ceil -/
 
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 theorem gc_ceil_coe : GaloisConnection ceil (Int.cast : ℤ → α) :=
   FloorRing.gc_ceil_coe
 #align int.gc_ceil_coe Int.gc_ceil_coe
@@ -1376,56 +1376,56 @@ theorem ceil_sub_self_eq (ha : fract a ≠ 0) : (⌈a⌉ : α) - a = 1 - fract a
 /-! #### Intervals -/
 
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 @[simp]
 theorem preimage_Ioo {a b : α} : (Int.cast : ℤ → α) ⁻¹' Set.Ioo a b = Set.Ioo ⌊a⌋ ⌈b⌉ := by
   ext
   simp [floor_lt, lt_ceil]
 #align int.preimage_Ioo Int.preimage_Ioo
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 @[simp]
 theorem preimage_Ico {a b : α} : (Int.cast : ℤ → α) ⁻¹' Set.Ico a b = Set.Ico ⌈a⌉ ⌈b⌉ := by
   ext
   simp [ceil_le, lt_ceil]
 #align int.preimage_Ico Int.preimage_Ico
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 @[simp]
 theorem preimage_Ioc {a b : α} : (Int.cast : ℤ → α) ⁻¹' Set.Ioc a b = Set.Ioc ⌊a⌋ ⌊b⌋ := by
   ext
   simp [floor_lt, le_floor]
 #align int.preimage_Ioc Int.preimage_Ioc
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 @[simp]
 theorem preimage_Icc {a b : α} : (Int.cast : ℤ → α) ⁻¹' Set.Icc a b = Set.Icc ⌈a⌉ ⌊b⌋ := by
   ext
   simp [ceil_le, le_floor]
 #align int.preimage_Icc Int.preimage_Icc
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 @[simp]
 theorem preimage_Ioi : (Int.cast : ℤ → α) ⁻¹' Set.Ioi a = Set.Ioi ⌊a⌋ := by
   ext
   simp [floor_lt]
 #align int.preimage_Ioi Int.preimage_Ioi
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 @[simp]
 theorem preimage_Ici : (Int.cast : ℤ → α) ⁻¹' Set.Ici a = Set.Ici ⌈a⌉ := by
   ext
   simp [ceil_le]
 #align int.preimage_Ici Int.preimage_Ici
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 @[simp]
 theorem preimage_Iio : (Int.cast : ℤ → α) ⁻¹' Set.Iio a = Set.Iio ⌈a⌉ := by
   ext
   simp [lt_ceil]
 #align int.preimage_Iio Int.preimage_Iio
 
--- Porting note: changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
+-- Porting note (#11249): changed `(coe : ℤ → α)` to `(Int.cast : ℤ → α)`
 @[simp]
 theorem preimage_Iic : (Int.cast : ℤ → α) ⁻¹' Set.Iic a = Set.Iic ⌊a⌋ := by
   ext
