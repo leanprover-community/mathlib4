@@ -539,14 +539,14 @@ private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : 
   exact apply_update (fun i F => F (x i)) f i u j
 
 open Function in
-theorem map_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
+protected theorem map_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
     map (update f i (u + v)) = map (update f i u) + map (update f i v) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.add_apply,
     MultilinearMap.map_add]
 
 open Function in
-theorem map_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
+protected theorem map_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
@@ -561,8 +561,8 @@ the family.
 noncomputable def mapMultilinear :
     MultilinearMap R (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
   toFun := map
-  map_smul' _ _ _ _ := map_smul _ _ _ _
-  map_add' _ _ _ _ := map_add _ _ _ _
+  map_smul' _ _ _ _ := PiTensorProduct.map_smul _ _ _ _
+  map_add' _ _ _ _ := PiTensorProduct.map_add _ _ _ _
 
 variable {R s t}
 
