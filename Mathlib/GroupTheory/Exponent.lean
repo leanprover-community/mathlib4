@@ -298,6 +298,9 @@ lemma _root_.Nat.coprime_factorization_lcm_left_factorization_lcm_right (a b : N
   contrapose! h'; rwa [← h']
 
 open Nat in
+/-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, there is an element
+of order `lcm n m`. The result actually gives an explicit (computable) element, written as the
+product of a power of `x` and a power of `y`. -/
 lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : orderOf x ≠ 0)
     (hy : orderOf y ≠ 0) :
     orderOf (x ^ (orderOf x / (factorization_lcm_left (orderOf x) (orderOf y))) *
