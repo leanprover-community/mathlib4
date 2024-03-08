@@ -139,6 +139,11 @@ theorem map (hφ : IsSymmetric φ) (f : R →+* S) : IsSymmetric (map f φ) := f
   rw [← map_rename, hφ]
 #align mv_polynomial.is_symmetric.map MvPolynomial.IsSymmetric.map
 
+theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).IsSymmetric := fun _ => by
+  apply rename_injective _ e.symm.injective
+  simp_rw [rename_rename, ← Equiv.coe_trans, Equiv.self_trans_symm, Equiv.coe_refl, rename_id]
+  rw [hφ]
+
 end CommSemiring
 
 section CommRing
@@ -156,6 +161,15 @@ theorem sub (hφ : IsSymmetric φ) (hψ : IsSymmetric ψ) : IsSymmetric (φ - ψ
 end CommRing
 
 end IsSymmetric
+
+/-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
+def rename_symmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
+    symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
+  AlgEquiv.ofAlgHom
+    (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x => x.2.rename e)
+    (((rename e.symm).comp <| Subalgebra.val _).codRestrict _ <| fun x => x.2.rename e.symm)
+    (AlgHom.ext <| fun p => Subtype.ext <| by simp)
+    (AlgHom.ext <| fun p => Subtype.ext <| by simp)
 
 section ElementarySymmetric
 
