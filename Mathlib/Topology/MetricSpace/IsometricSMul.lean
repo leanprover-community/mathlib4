@@ -603,7 +603,7 @@ instance Multiplicative.isometricVAdd'' [Add M] [PseudoEMetricSpace M]
 
 @[to_additive]
 instance QuotientGroupAction.isometricSMul {M : Type u} [Group M] [MulAction M X]
-    [IsometricSMul M X] (N : Subgroup M) [N.Normal] [MulAction.QuotientGroupAction N X] :
+    [IsometricSMul M X] (N : Subgroup M) [MulAction.QuotientGroupAction N X] :
     IsometricSMul (M ⧸ N) X :=
   ⟨fun g => Quotient.inductionOn' g fun A => by refine Eq.subst ?_ <| isometry_smul X A; aesop⟩
 
