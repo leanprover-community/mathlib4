@@ -861,7 +861,7 @@ theorem continuousMul_sInf {ts : Set (TopologicalSpace M)}
 theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
     (h' : ∀ i, @ContinuousMul M (ts i) _) : @ContinuousMul M (⨅ i, ts i) _ := by
   rw [← sInf_range]
-  exact continuousMul_sInf (Set.forall_range_iff.mpr h')
+  exact continuousMul_sInf (Set.forall_mem_range.mpr h')
 #align has_continuous_mul_infi continuousMul_iInf
 #align has_continuous_add_infi continuousAdd_iInf
 

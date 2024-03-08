@@ -675,9 +675,9 @@ theorem prod_eq_generateFrom :
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
   le_antisymm (le_generateFrom fun g ⟨s, t, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
-      (ball_image_of_ball fun t ht =>
+      (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
-      (ball_image_of_ball fun t ht =>
+      (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
 #align prod_eq_generate_from prod_eq_generateFrom
 

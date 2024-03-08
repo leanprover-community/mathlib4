@@ -391,7 +391,7 @@ theorem continuousInv_sInf {ts : Set (TopologicalSpace G)}
 theorem continuousInv_iInf {ts' : ι' → TopologicalSpace G}
     (h' : ∀ i, @ContinuousInv G (ts' i) _) : @ContinuousInv G (⨅ i, ts' i) _ := by
   rw [← sInf_range]
-  exact continuousInv_sInf (Set.forall_range_iff.mpr h')
+  exact continuousInv_sInf (Set.forall_mem_range.mpr h')
 #align has_continuous_inv_infi continuousInv_iInf
 #align has_continuous_neg_infi continuousNeg_iInf
 
@@ -2013,7 +2013,7 @@ theorem topologicalGroup_sInf {ts : Set (TopologicalSpace G)}
 theorem topologicalGroup_iInf {ts' : ι → TopologicalSpace G}
     (h' : ∀ i, @TopologicalGroup G (ts' i) _) : @TopologicalGroup G (⨅ i, ts' i) _ := by
   rw [← sInf_range]
-  exact topologicalGroup_sInf (Set.forall_range_iff.mpr h')
+  exact topologicalGroup_sInf (Set.forall_mem_range.mpr h')
 #align topological_group_infi topologicalGroup_iInf
 #align topological_add_group_infi topologicalAddGroup_iInf
 
@@ -2171,7 +2171,7 @@ local notation "cont" => @Continuous _ _
 @[to_additive "Infimum of a collection of additive group topologies"]
 instance : InfSet (GroupTopology α) where
   sInf S :=
-    ⟨sInf (toTopologicalSpace '' S), topologicalGroup_sInf <| ball_image_iff.2 fun t _ => t.2⟩
+    ⟨sInf (toTopologicalSpace '' S), topologicalGroup_sInf <| forall_mem_image.2 fun t _ => t.2⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_sInf (s : Set (GroupTopology α)) :

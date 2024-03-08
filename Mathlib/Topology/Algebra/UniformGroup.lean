@@ -222,7 +222,7 @@ theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @Unifo
 theorem uniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
     (h' : ∀ i, @UniformGroup β (us' i) _) : @UniformGroup β (⨅ i, us' i) _ := by
   rw [← sInf_range]
-  exact uniformGroup_sInf (Set.forall_range_iff.mpr h')
+  exact uniformGroup_sInf (Set.forall_mem_range.mpr h')
 #align uniform_group_infi uniformGroup_iInf
 #align uniform_add_group_infi uniformAddGroup_iInf
 
