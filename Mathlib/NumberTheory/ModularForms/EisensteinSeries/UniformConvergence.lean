@@ -101,8 +101,8 @@ lemma ne_zero_if_max' {x : Fin 2 → ℤ} (hx : x ≠ 0)
   apply ne_zero_if_max (x := ![x 1, x 0]) ?_ (by simpa using h)
   simp only [ne_eq, Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true, not_and]
   intro h1 h0
-  rw [fun_ne_zero_cases, h1, h0] at hx
-  simp only [ne_eq, not_true_eq_false, or_self] at *
+  rw [Function.ne_iff, Fin.exists_fin_two, h1, h0] at hx
+  simp only [Pi.zero_apply, ne_eq, not_true_eq_false, or_self] at *
 
 lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 ∨
@@ -131,8 +131,9 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
   by_cases hk0 : k ≠ 0
   · let n := max (x 0).natAbs (x 1).natAbs
     have hn0 : n ≠ 0 := by
-      rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
-      exact hx
+      rw [← Iff.ne ((mem_box_eq_zero_iff_eq_zero (α := ℤ × ℤ)) (x 0, x 1) (by simp)),
+        ← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun x ↦ ℤ)))] at *
+      simpa using hx
     have h11 : ((x 0) * ↑z + (x 1)) =
         (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
         field_simp
@@ -168,7 +169,9 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
         rw [Real.rpow_eq_zero_iff_of_nonneg (by rfl)]
         simp only [ne_eq, neg_eq_zero, hk0, not_false_eq_true, and_self]
       simp only [h1, hn, CharP.cast_eq_zero, mul_zero, le_refl]
-  · have hx2 := (mem_box_ne_zero_iff_ne_zero n x hx).mpr hn
+  · have hx2 : x ≠ 0 := by
+      rw [← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun _ ↦ ℤ)))]
+      simpa using (Iff.ne ((mem_box_eq_zero_iff_eq_zero (α := ℤ × ℤ)) (x 0, x 1) hx)).mpr hn
     simp only [Int.mem_box] at hx
     rw [Real.rpow_neg (by apply apply_nonneg), Real.rpow_neg ((r_pos z).le),
       Real.rpow_neg (Nat.cast_nonneg n), ← mul_inv, inv_le_inv]

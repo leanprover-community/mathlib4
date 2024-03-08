@@ -48,6 +48,17 @@ lemma box_succ_disjUnion (n : ℕ) :
 
 @[simp] lemma zero_mem_box : (0 : α) ∈ box n ↔ n = 0 := by cases n <;> simp [box_succ_eq_sdiff]
 
+lemma mem_box_eq_zero_iff_eq_zero (x : α) (hx : x ∈ box n) : x = 0 ↔ n = 0 := by
+  rw [← zero_mem_box (α := α) (n := n)]
+  constructor
+  · intro h
+    rw [h] at hx
+    exact hx
+  · intro h
+    rw [(zero_mem_box (α := α) (n := n)).mp h] at hx
+    simp only [box_zero, mem_singleton] at hx
+    exact hx
+
 end Finset
 
 open Finset
@@ -90,17 +101,3 @@ lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by
   use max x.1.natAbs x.2.natAbs; simp only [mem_box, and_self_iff, forall_eq']
 
 end Int
-
-lemma Finset.fun_ne_zero_cases {G : Type*} [OfNat G 0] (x : Fin 2 → G) :
-    x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
-  rw [Function.ne_iff]; exact Fin.exists_fin_two
-
-lemma Finset.mem_box_ne_zero_iff_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : (x 0, x 1) ∈ box n) :
-    x ≠ 0 ↔ n ≠ 0 := by
-  constructor
-  intro h h0
-  simp only [h0, Nat.cast_zero, box_zero, mem_singleton, Prod.ext_iff] at hx
-  rw [fun_ne_zero_cases, hx.1, hx.2] at h
-  · simp at h
-  rintro hn rfl
-  simp only [Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self, eq_comm, hn] at hx

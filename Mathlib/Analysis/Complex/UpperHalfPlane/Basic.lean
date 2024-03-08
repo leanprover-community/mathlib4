@@ -146,7 +146,7 @@ lemma I_im : I.im = 1 := rfl
 @[simp]
 lemma I_re : I.re = 0 := rfl
 
-@[simp]
+@[simp, norm_cast]
 lemma coe_I : I = Complex.I := rfl
 
 end UpperHalfPlane
