@@ -638,6 +638,10 @@ lemma comp_vecConsLast (f : α → β) (a : α) (s : Fin n → α) :
 @[simp] lemma vecTail_comp (f : α → β) (v : Fin (n + 1) → α) : vecTail (f ∘ v) = f ∘ (vecTail v) :=
   by simp[vecTail, Function.comp.assoc]
 
+@[simp] lemma vecCons_zero  (a : α) (s : Fin n → α) :
+    (a :> s) 0 = a := by simp
+
+
 end
 
 end Matrix
