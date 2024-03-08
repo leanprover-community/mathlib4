@@ -65,6 +65,7 @@ theorem equalizerCondition_yonedaPresheaf
     [∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) G]
     (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], QuotientMap (G.map π)) :
       EqualizerCondition (yonedaPresheaf G X) := by
+  rw [equalizerCondition_iff_expl]
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
   · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, MapToEqualizer,
