@@ -74,7 +74,7 @@ theorem exists_zpowers {x : G} {p : zpowers x → Prop} : (∃ g, p g) ↔ ∃ m
 #align subgroup.exists_zpowers Subgroup.exists_zpowers
 
 theorem forall_mem_zpowers {x : G} {p : G → Prop} : (∀ g ∈ zpowers x, p g) ↔ ∀ m : ℤ, p (x ^ m) :=
-  Set.forall_range_iff
+  Set.forall_mem_range
 #align subgroup.forall_mem_zpowers Subgroup.forall_mem_zpowers
 
 theorem exists_mem_zpowers {x : G} {p : G → Prop} : (∃ g ∈ zpowers x, p g) ↔ ∃ m : ℤ, p (x ^ m) :=
@@ -123,14 +123,14 @@ attribute [to_additive (attr := simp)] Subgroup.zpow_mem_zpowers
 attribute [to_additive (attr := simp)] Subgroup.npow_mem_zpowers
 #align add_subgroup.nsmul_mem_zmultiples AddSubgroup.nsmul_mem_zmultiples
 
---Porting note: increasing simp priority. Better lemma than `Subtype.forall`
+-- Porting note: increasing simp priority. Better lemma than `Subtype.forall`
 attribute [to_additive (attr := simp 1100)] Subgroup.forall_zpowers
 #align add_subgroup.forall_zmultiples AddSubgroup.forall_zmultiples
 
 attribute [to_additive] Subgroup.forall_mem_zpowers
 #align add_subgroup.forall_mem_zmultiples AddSubgroup.forall_mem_zmultiples
 
---Porting note: increasing simp priority. Better lemma than `Subtype.exists`
+-- Porting note: increasing simp priority. Better lemma than `Subtype.exists`
 attribute [to_additive (attr := simp 1100)] Subgroup.exists_zpowers
 #align add_subgroup.exists_zmultiples AddSubgroup.exists_zmultiples
 

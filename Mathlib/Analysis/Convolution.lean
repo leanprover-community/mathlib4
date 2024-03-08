@@ -119,7 +119,7 @@ variable [AddGroup G] [TopologicalSpace G]
 theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i, ‖g i‖ ≤ C) {x t : G}
     {s u : Set G} (hx : x ∈ s) (hu : -tsupport g + s ⊆ u) :
     ‖L (f t) (g (x - t))‖ ≤ u.indicator (fun t => ‖L‖ * ‖f t‖ * C) t := by
-  -- porting note: had to add `f := _`
+  -- Porting note: had to add `f := _`
   refine' le_indicator (f := fun t ↦ ‖L (f t) (g (x - t))‖) (fun t _ => _) (fun t ht => _) t
   · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
   · have : x - t ∉ support g := by
@@ -158,7 +158,7 @@ theorem HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupp
 end NoMeasurability
 
 section Measurability
--- porting note: throughout this file we use `MeasureTheory.Measure` instead of `Measure`.
+-- Porting note: throughout this file we use `MeasureTheory.Measure` instead of `Measure`.
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Measure.20is.20overloaded
 variable [MeasurableSpace G] {μ ν : MeasureTheory.Measure G}
 
@@ -223,7 +223,7 @@ theorem BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
     (h2s : (support fun t => L (f t) (g (x₀ - t))) ⊆ s) (hf : IntegrableOn f s μ)
     (hmg : AEStronglyMeasurable g <| map (fun t => x₀ - t) (μ.restrict s)) :
     ConvolutionExistsAt f g x₀ L μ := by
-  -- porting note: can't `rw [ConvolutionExistsAt]`
+  -- Porting note: can't `rw [ConvolutionExistsAt]`
   unfold ConvolutionExistsAt
   rw [← integrableOn_iff_integrable_of_support_subset h2s]
   set s' := (fun t => -t + x₀) ⁻¹' s
@@ -399,7 +399,7 @@ variable {L} [MeasurableAdd G] [IsNegInvariant μ]
 theorem convolutionExistsAt_flip :
     ConvolutionExistsAt g f x L.flip μ ↔ ConvolutionExistsAt f g x L μ := by
   simp_rw [ConvolutionExistsAt,
-    -- porting note: added `(μ := μ)`
+    -- Porting note: added `(μ := μ)`
     ← integrable_comp_sub_left (μ := μ) (fun t => L (f t) (g (x - t))) x,
     sub_sub_cancel, flip_apply]
 #align convolution_exists_at_flip convolutionExistsAt_flip
@@ -1069,7 +1069,7 @@ theorem HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompactSupport
         ((hasFDerivAt_id x).sub (hasFDerivAt_const t x))
   let K' := -tsupport (fderiv 𝕜 g) + closedBall x₀ 1
   have hK' : IsCompact K' := (hcg.fderiv 𝕜).neg.add (isCompact_closedBall x₀ 1)
-  -- porting note: was
+  -- Porting note: was
   -- `refine' hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀) _ _ _`
   -- but it failed; surprisingly, `apply` works
   apply hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀)
@@ -1474,7 +1474,7 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
     (ν : MeasureTheory.Measure ℝ := by volume_tac) [NoAtoms ν] :
     posConvolution f g L ν = convolution (indicator (Ioi 0) f) (indicator (Ioi 0) g) L ν := by
   ext1 x
-  -- porting note: was `rw [convolution, posConvolution, indicator]`, now `rw` can't do it
+  -- Porting note: was `rw [convolution, posConvolution, indicator]`, now `rw` can't do it
   -- the `rw` unfolded only one `indicator`; now we unfold it everywhere, so we need to adjust
   -- `rw`s below
   unfold convolution posConvolution indicator; simp only

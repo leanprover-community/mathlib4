@@ -117,7 +117,7 @@ theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
   rw [RingHom.map_det, show RingHom.mapMatrix (algebraMap ℤ ℚ) (b.toMatrix ((↑) ∘ bI.num)) =
       b₀.toMatrix ((algebraMap R K (den I : R)) • ((↑) ∘ bI)) by
     ext : 2
-    simp_rw [RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply,
+    simp_rw [bI.num, RingHom.mapMatrix_apply, Matrix.map_apply, Basis.toMatrix_apply,
       ← Basis.localizationLocalization_repr_algebraMap ℚ ℤ⁰ K, Function.comp_apply,
       Basis.map_apply, LinearEquiv.restrictScalars_apply, equivNum_apply, Submonoid.smul_def,
       Algebra.smul_def]

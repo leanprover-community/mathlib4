@@ -447,7 +447,7 @@ nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c �
 
 end IsUnit
 
--- porting note: todo: use `Set.Nonempty`
+-- Porting note: todo: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
@@ -550,7 +550,7 @@ section MulAction
 variable {G₀ : Type*} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
   [ContinuousConstSMul G₀ α]
 
--- porting note: generalize to a group action + `IsUnit`
+-- Porting note: generalize to a group action + `IsUnit`
 /-- Scalar multiplication preserves neighborhoods. -/
 theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) := by

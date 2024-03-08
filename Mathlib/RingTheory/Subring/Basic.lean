@@ -157,7 +157,7 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
--- porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
+-- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
 -- projection `s.toSubmonoid`
 #noalign subring.to_submonoid
 
@@ -683,7 +683,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R)
 #align subring.coe_infi Subring.coe_iInf
 
 theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align subring.mem_infi Subring.mem_iInf
 
 @[simp]

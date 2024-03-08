@@ -3,7 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -139,7 +139,7 @@ section AllowEmpty
 variable {C}
 variable [IsFilteredOrEmpty C]
 
--- porting note: the following definitions were removed because the names are invalid,
+-- Porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsFilteredOrEmpty` have been added instead
 --
 -- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
@@ -189,7 +189,7 @@ noncomputable def coeqHom {j j' : C} (f f' : j ⟶ j') : j' ⟶ coeq f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose
 #align category_theory.is_filtered.coeq_hom CategoryTheory.IsFiltered.coeqHom
 
--- porting note: the simp tag has been removed as the linter complained
+-- Porting note: the simp tag has been removed as the linter complained
 /-- `coeq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `f ≫ coeqHom f f' = f' ≫ coeqHom f f'`.
 -/
@@ -598,7 +598,7 @@ section AllowEmpty
 variable {C}
 variable [IsCofilteredOrEmpty C]
 
--- porting note: the following definitions were removed because the names are invalid,
+-- Porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsCofilteredOrEmpty` have been added instead
 --
 --theorem cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
@@ -648,7 +648,7 @@ noncomputable def eqHom {j j' : C} (f f' : j ⟶ j') : eq f f' ⟶ j :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose
 #align category_theory.is_cofiltered.eq_hom CategoryTheory.IsCofiltered.eqHom
 
--- porting note: the simp tag has been removed as the linter complained
+-- Porting note: the simp tag has been removed as the linter complained
 /-- `eq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 -/
