@@ -48,6 +48,16 @@ lemma box_succ_disjUnion (n : ℕ) :
 
 @[simp] lemma zero_mem_box : (0 : α) ∈ box n ↔ n = 0 := by cases n <;> simp [box_succ_eq_sdiff]
 
+lemma mem_box_eq_zero_iff_eq_zero (x : α) (hx : x ∈ box n) : x = 0 ↔ n = 0 := by
+  rw [← zero_mem_box (α := α)]
+  constructor
+  · intro h
+    rw [h] at hx
+    exact hx
+  · intro h
+    simp only [(zero_mem_box (α := α) (n := n)).mp h, box_zero, mem_singleton] at hx
+    exact hx
+
 end Finset
 
 open Finset
@@ -83,13 +93,21 @@ lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
 
 @[simp] lemma mem_box : ∀ {n}, x ∈ box n ↔ max x.1.natAbs x.2.natAbs = n
   | 0 => by simp [Prod.ext_iff]
-  | n + 1 => by simp [box_succ_eq_sdiff, Prod.le_def]; omega
+  | n + 1 => by
+    simp [box_succ_eq_sdiff, Prod.le_def]
+    -- Adaptation note: v4.7.0-rc1. `omega` no longer identifies atoms up to defeq.
+    -- (This had become a performance bottleneck.)
+    -- We need a tactic for normalising instances, to avoid the `have`/`simp` dance below:
+    have : @Nat.cast ℤ instNatCastInt n = @Nat.cast ℤ AddMonoidWithOne.toNatCast n := rfl
+    simp only [this]
+    omega
 
 -- TODO: Can this be generalised to locally finite archimedean ordered rings?
 lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by
   use max x.1.natAbs x.2.natAbs; simp only [mem_box, and_self_iff, forall_eq']
 
 end Int
+<<<<<<< HEAD
 
 lemma Finset.fun_ne_zero_cases {G : Type*} [OfNat G 0] (x : Fin 2 → G) :
     x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
@@ -104,3 +122,5 @@ lemma Finset.mem_box_ne_zero_iff_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : (x 
   · simp at h
   rintro hn rfl
   simp only [Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self, eq_comm, hn] at hx
+=======
+>>>>>>> origin/eisensteinSeries_Uniform_convergence

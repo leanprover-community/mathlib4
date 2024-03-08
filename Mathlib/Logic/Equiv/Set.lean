@@ -122,7 +122,7 @@ theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ 
   e.surjective.preimage_subset_preimage_iff
 #align equiv.preimage_subset Equiv.preimage_subset
 
--- Porting note: Removed `simp` attribute. `simp` can prove it.
+-- Porting note (#11119): removed `simp` attribute. `simp` can prove it.
 theorem image_subset {α β} (e : α ≃ β) (s t : Set α) : e '' s ⊆ e '' t ↔ s ⊆ t :=
   image_subset_image_iff e.injective
 #align equiv.image_subset Equiv.image_subset
@@ -175,6 +175,14 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   right_inv := fun ⟨x, y, h⟩ => rfl
 #align equiv.set_prod_equiv_sigma Equiv.setProdEquivSigma
 
+/-- Equivalence between the sigma of a family of finsets of `β` and `β`. -/
+noncomputable def sigmaEquiv {ι κ : Type*} (s : κ → Set ι) (hs : ∀ i, ∃! j, i ∈ s j) :
+    (Σ j, s j) ≃ ι where
+  toFun x := x.2
+  invFun x := ⟨(hs x).choose, x, (hs x).choose_spec.1⟩
+  left_inv x := by ext; exacts [((hs x.2).choose_spec.2 x.1 x.2.2).symm, rfl]
+  right_inv x := by rfl
+
 /-- The subtypes corresponding to equal sets are equivalent. -/
 @[simps! apply]
 def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
@@ -202,7 +210,7 @@ def image {α β : Type*} (e : α ≃ β) (s : Set α) :
 
 namespace Set
 
---Porting note: Removed attribute @[simps apply symm_apply]
+-- Porting note: Removed attribute @[simps apply symm_apply]
 /-- `univ α` is equivalent to `α`. -/
 protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
@@ -702,7 +710,7 @@ noncomputable def Set.BijOn.equiv {α : Type*} {β : Type*} {s : Set α} {t : Se
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
--- porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
+-- Porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
 -- former now unfolds syntactically to a less general case of the latter.
 theorem dite_comp_equiv_update {α : Type*} {β : Sort*} {γ : Sort*} {p : α → Prop}
     (e : β ≃ Subtype p)

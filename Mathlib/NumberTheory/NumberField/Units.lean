@@ -178,7 +178,8 @@ spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the mai
 see the section `span_top` below for more details.
 -/
 
-open Classical Finset
+open scoped Classical
+open Finset
 
 variable [NumberField K]
 
@@ -439,7 +440,7 @@ theorem unitLattice_span_eq_top :
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
   refine det_ne_zero_of_sum_col_lt_diag (fun w => ?_)
-  simp_rw [Real.norm_eq_abs, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
+  simp_rw [Real.norm_eq_abs, B, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
   rw [← sub_pos, sum_congr rfl (fun x hx => abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
     sum_erase_eq_sub (mem_univ _), ← add_comm_sub]
   refine add_pos_of_nonneg_of_pos ?_ ?_
@@ -460,7 +461,8 @@ section statements
 
 variable [NumberField K]
 
-open dirichletUnitTheorem FiniteDimensional Classical
+open scoped Classical
+open dirichletUnitTheorem FiniteDimensional
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
@@ -581,11 +583,11 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : F
     exact ((basisModTorsion K).sum_repr (Additive.ofMul ↑x)).symm
   refine ⟨⟨ζ, h_tors⟩, ?_, ?_⟩
   · refine ⟨((basisModTorsion K).repr (Additive.ofMul ↑x) : Fin (rank K) → ℤ), ?_, ?_⟩
-    · simp only [_root_.inv_mul_cancel_right]
+    · simp only [ζ, _root_.inv_mul_cancel_right]
     · exact fun _ hf => fun_eq_repr K h_tors hf
   · rintro η ⟨_, hf, _⟩
     simp_rw [fun_eq_repr K η.prop hf] at hf
-    ext1; dsimp only
+    ext1; dsimp only [ζ]
     nth_rewrite 1 [hf]
     rw [_root_.mul_inv_cancel_right]
 

@@ -129,7 +129,7 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
       rw [idem, h, ← mul_smul]
       norm_num
     have sa : star P = P := by
-      dsimp
+      dsimp [P]
       simp only [star_add, star_sub, star_mul, star_ofNat, star_one, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa, mul_comm B₀, mul_comm B₁]
     simpa only [← idem', sa]
@@ -192,7 +192,7 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
   let P := √2⁻¹ • (A₁ + A₀) - B₀
   let Q := √2⁻¹ • (A₁ - A₀) + B₁
   have w : √2 ^ 3 • (1 : R) - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁ = √2⁻¹ • (P ^ 2 + Q ^ 2) := by
-    dsimp
+    dsimp [P, Q]
     -- distribute out all the powers and products appearing on the RHS
     simp only [sq, sub_mul, mul_sub, add_mul, mul_add, smul_add, smul_sub]
     -- pull all coefficients out to the front, and combine `√2`s where possible
@@ -213,9 +213,11 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
     exact mul_left_cancel₀ (by norm_num) tsirelson_inequality_aux
   have pos : 0 ≤ √2⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by
-      simp only [star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa, T.B₁_sa]
+      simp only [P, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa,
+        T.B₁_sa]
     have Q_sa : star Q = Q := by
-      simp only [star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa, T.B₁_sa]
+      simp only [Q, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa,
+        T.B₁_sa]
     have P2_nonneg : 0 ≤ P ^ 2 := by simpa only [P_sa, sq] using star_mul_self_nonneg P
     have Q2_nonneg : 0 ≤ Q ^ 2 := by simpa only [Q_sa, sq] using star_mul_self_nonneg Q
     exact smul_nonneg (by positivity) (add_nonneg P2_nonneg Q2_nonneg)

@@ -204,7 +204,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 #align ideal.quotient.exists_inv Ideal.Quotient.exists_inv
 
-open Classical
+open scoped Classical
 
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.

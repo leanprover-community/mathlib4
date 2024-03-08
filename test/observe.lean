@@ -1,4 +1,3 @@
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Nat.Prime
 

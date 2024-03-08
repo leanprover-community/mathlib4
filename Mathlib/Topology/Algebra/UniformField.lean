@@ -36,7 +36,8 @@ type class and the main results are the instances `UniformSpace.Completion.Field
 
 noncomputable section
 
-open Classical uniformity Topology
+open scoped Classical
+open uniformity Topology
 
 open Set UniformSpace UniformSpace.Completion Filter
 
@@ -147,7 +148,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
     rintro _ ⟨z, z_ne, rfl⟩
     rw [mem_singleton_iff]
     rw [mem_compl_singleton_iff] at z_ne
-    dsimp
+    dsimp [f]
     rw [hatInv_extends z_ne, ← coe_mul]
     rw [mul_inv_cancel z_ne, coe_one]
   replace fxclo := closure_mono this fxclo

@@ -338,7 +338,7 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
   · let m := midpoint ℝ b c
     have : dist b c ≠ 0 := (dist_pos.mpr hbc).ne'
     have hm := dist_sq_mul_dist_add_dist_sq_mul_dist a b c m (angle_midpoint_eq_pi b c hbc)
-    simp only [dist_left_midpoint, dist_right_midpoint, Real.norm_two] at hm
+    simp only [m, dist_left_midpoint, dist_right_midpoint, Real.norm_two] at hm
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
         ((2:ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by field_simp; ring
