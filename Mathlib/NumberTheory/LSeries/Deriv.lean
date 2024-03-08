@@ -17,7 +17,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 * We show that the `LSeries` of `f` is differentiable at `s` when `re s` is greater than
   the abscissa of absolute convergence of `f` (`LSeries.hasDerivAt`) and that its derivative
-  there isthe negative of the `LSeries` of the point-wise product `log * f` (`LSeries.deriv`).
+  there is the negative of the `LSeries` of the point-wise product `log * f` (`LSeries.deriv`).
 
 * We prove similar results for iterated derivatives (`LSeries.iteratedDeriv`).
 
