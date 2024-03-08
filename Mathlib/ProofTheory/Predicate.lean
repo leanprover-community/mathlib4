@@ -5,6 +5,13 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
 import Mathlib.ProofTheory.System
 
+/-!
+# Predicate calculus
+
+This file defines the predicate calculus.
+
+-/
+
 class VMonoidStruct {α : Type*} (M : α → α → Type*) where
   id {a} : M a a
   comp {a₁ a₂ a₃} : M a₂ a₃ → M a₁ a₂ → M a₁ a₃

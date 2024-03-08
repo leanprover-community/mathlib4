@@ -135,7 +135,8 @@ def imply₁' {Γ p q} : Bew Γ p → Bew Γ (q ⭢ p) := modus_ponens' (imply�
 
 abbrev imply₂ := hM.imply₂
 
-def imply₂' {Γ p q r} (d₁ : Bew Γ (p ⭢ q ⭢ r)) (d₂ : Bew Γ (p ⭢ q)) (d₃ : Bew Γ p) : Bew Γ r := (((imply₂ _ _ _ _) ⨀ d₁) ⨀ d₂) ⨀ d₃
+def imply₂' {Γ p q r} (d₁ : Bew Γ (p ⭢ q ⭢ r)) (d₂ : Bew Γ (p ⭢ q)) (d₃ : Bew Γ p) : Bew Γ r :=
+  (((imply₂ _ _ _ _) ⨀ d₁) ⨀ d₂) ⨀ d₃
 
 abbrev conj₁ := hM.conj₁
 
@@ -215,7 +216,7 @@ def contra₀' {Γ p q} : (Bew Γ (p ⭢ q)) → (Bew Γ (~q ⭢ ~p)) := by
 def neg_iff' {Γ p q} (d : Bew Γ (p ⭤ q)) : Bew Γ (~p ⭤ ~q) := by
   simp only [LogicalConnective.iff];
   apply conj₃';
-  . apply contra₀';
+  · apply contra₀';
     apply iff_mpr' d;
   · apply contra₀';
     apply iff_mp' d
@@ -316,7 +317,7 @@ lemma axm! {Γ : Set F} {f : F} (h : f ∈ Γ) : Γ ⊢! f := ⟨axm h⟩
 lemma weakening! {Γ Δ : Set F} {p : F} (h : Γ ⊆ Δ) (d : Γ ⊢! p) : Δ ⊢! p := ⟨weakening' h d.some⟩
 
 lemma modus_ponens! {Γ₁ Γ₂ : Set F} {p q : F} (d₁ : Γ₁ ⊢! (p ⭢ q)) (d₂ : Γ₂ ⊢! p) :
-  Deducible Bew (Γ₁ ∪ Γ₂) q := ⟨d₁.some ⨀ d₂.some⟩
+    Deducible Bew (Γ₁ ∪ Γ₂) q := ⟨d₁.some ⨀ d₂.some⟩
 
 lemma modus_ponens'! {Γ : Set F} {p q : F} (d₁ : Γ ⊢! (p ⭢ q)) (d₂ : Γ ⊢! p) : Γ ⊢! q := by
   simpa using modus_ponens! d₁ d₂
@@ -330,7 +331,7 @@ lemma imply₁'! {Γ : Set F} {p q : F} (d : Γ ⊢! p) : Γ ⊢! (q ⭢ p) := �
 lemma imply₂! (Γ : Set F) (p q r : F) : Γ ⊢! ((p ⭢ q ⭢ r) ⭢ (p ⭢ q) ⭢ p ⭢ r) := ⟨imply₂ Γ p q r⟩
 
 lemma imply₂'! {Γ : Set F} {p q r : F} (d₁ : Γ ⊢! (p ⭢ q ⭢ r)) (d₂ : Γ ⊢! (p ⭢ q))
-  (d₃ : Γ ⊢! p) : Γ ⊢! r := ⟨imply₂' d₁.some d₂.some d₃.some⟩
+    (d₃ : Γ ⊢! p) : Γ ⊢! r := ⟨imply₂' d₁.some d₂.some d₃.some⟩
 
 lemma conj₁! (Γ : Set F) (p q : F) : Γ ⊢! (p ⋏ q ⭢ p) := ⟨conj₁ Γ p q⟩
 
@@ -358,7 +359,7 @@ lemma disj₂'! {Γ : Set F} {p q : F} (d : Γ ⊢! q) : Γ ⊢! (p ⋎ q) := �
 lemma disj₃! (Γ : Set F) (p q r : F) : Γ ⊢! ((p ⭢ r) ⭢ (q ⭢ r) ⭢ (p ⋎ q) ⭢ r) := ⟨disj₃ Γ p q r⟩
 
 lemma disj₃'! {Γ : Set F} {p q r : F} (d₁ : Γ ⊢! (p ⭢ r)) (d₂ : Γ ⊢! (q ⭢ r))
-  (d₃ : Γ ⊢! (p ⋎ q)) : Γ ⊢! r := ⟨disj₃' d₁.some d₂.some d₃.some⟩
+    (d₃ : Γ ⊢! (p ⋎ q)) : Γ ⊢! r := ⟨disj₃' d₁.some d₂.some d₃.some⟩
 
 lemma disj_symm'! {Γ : Set F} {p q : F} (d : Γ ⊢! (p ⋎ q)) : Γ ⊢! (q ⋎ p) := ⟨disj_symm' d.some⟩
 

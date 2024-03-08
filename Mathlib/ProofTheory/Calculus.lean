@@ -110,14 +110,16 @@ def ofConsLeft {p : F} {Γ Δ : List F} (b : p :: Γ ⊢² Δ) :
 def ofConsRight {p : F} {Γ Δ : List F} (b : Γ ⊢² p :: Δ) :
     ⊢¹ p :: (Γ.map (~·) ++ Δ) :=
   wk b (by
-    simp
+    simp only [List.append_subset, List.cons_subset, List.mem_cons, List.mem_append, List.mem_map,
+      true_or, true_and]
     exact ⟨List.subset_cons_of_subset _ (List.subset_append_left _ _),
       List.subset_cons_of_subset _ (List.subset_append_right _ _)⟩)
 
 def ofConsRight₂ {p q : F} {Γ Δ : List F} (b : Γ ⊢² p :: q :: Δ) :
     ⊢¹ p :: q :: (Γ.map (~·) ++ Δ) :=
   wk b (by
-    simp
+    simp only [List.append_subset, List.cons_subset, List.mem_cons, List.mem_append, List.mem_map,
+      true_or, or_true, true_and]
     exact ⟨List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
     List.subset_append_left _ _, List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
     List.subset_append_right _ _⟩)
@@ -125,7 +127,8 @@ def ofConsRight₂ {p q : F} {Γ Δ : List F} (b : Γ ⊢² p :: q :: Δ) :
 def ofConsLeftRight {p q : F} {Γ Δ : List F} (b : p :: Γ ⊢² q :: Δ) :
     ⊢¹ ~p :: q :: (Γ.map (~·) ++ Δ) :=
   wk b (by
-    simp
+    simp only [List.map_cons, List.cons_append, List.cons_subset, List.mem_cons, List.mem_append,
+      List.mem_map, true_or, List.append_subset, or_true, true_and]
     exact ⟨List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
       List.subset_append_left _ _, List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
       List.subset_append_right _ _⟩)
@@ -138,7 +141,8 @@ def toConsRight {p : F} {Γ Δ : List F}
     (b : ⊢¹ p :: (Γ.map (~·) ++ Δ)) :
     Γ ⊢² p :: Δ :=
   wk b (by
-    simp
+    simp only [List.cons_subset, List.mem_append, List.mem_map, List.mem_cons, true_or, or_true,
+      List.append_subset, List.subset_append_left, true_and]
     exact List.subset_append_of_subset_right _ (List.subset_cons _ _))
 
 instance : Gentzen F where
@@ -157,7 +161,7 @@ instance : Gentzen F where
   implyRight := fun b =>
     toConsRight (OneSided.cast (or $ ofConsLeftRight b) (by simp[DeMorgan.imply]))
   wk := fun b hΓ hΔ => wk b (by
-    simp
+    simp only [List.append_subset]
     exact ⟨List.subset_append_of_subset_left _ $ List.map_subset _ hΓ,
       List.subset_append_of_subset_right _ $ hΔ⟩)
   em := fun {p} _ _ hΓ hΔ => em (p := p)
@@ -240,7 +244,7 @@ def wk (b : T ⊢' Γ) (Γ' : List F) (ss : Γ ⊆ Γ') : T ⊢' Γ' where
 def cut (p : F) (b : T ⊢' p :: Γ) (b' : T ⊢' ~p :: Γ) : T ⊢' Γ where
   antecedent := b.antecedent ++ b'.antecedent
   antecedent_ss := by
-    simp
+    simp only [List.mem_append]
     rintro p (hp | hp)
     · exact b.antecedent_ss _ hp
     · exact b'.antecedent_ss _ hp
@@ -252,7 +256,7 @@ def cut (p : F) (b : T ⊢' p :: Γ) (b' : T ⊢' ~p :: Γ) : T ⊢' Γ where
 def cut' (p : F) (b : T ⊢' p :: Γ) (b' : T ⊢' ~p :: Δ) : T ⊢' Γ ++ Δ where
   antecedent := b.antecedent ++ b'.antecedent
   antecedent_ss := by
-    simp
+    simp only [List.mem_append]
     rintro p (hp | hp)
     · exact b.antecedent_ss _ hp
     · exact b'.antecedent_ss _ hp
@@ -268,7 +272,7 @@ def verum (Γ : List F) : T ⊢' ⊤ :: Γ := ⟨[], by simp, Gentzen.verum _ _�
 def and (p q : F) (bp : T ⊢' p :: Δ) (bq : T ⊢' q :: Δ) : T ⊢' p ⋏ q :: Δ where
   antecedent := bp.antecedent ++ bq.antecedent
   antecedent_ss := by
-    simp
+    simp only [List.mem_append]
     rintro p (hp | hp)
     · exact bp.antecedent_ss _ hp
     · exact bq.antecedent_ss _ hp

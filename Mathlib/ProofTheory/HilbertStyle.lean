@@ -41,16 +41,22 @@ instance [Proof.Complete F] : Intuitionistic F where
       have : a ⊧ p → a ⊧ q := by simpa using Sound.models_of_proof hM b₁
       exact this (Sound.models_of_proof hM b₂))
   verum  := fun T => Complete.consequence_iff_provable.mp (fun _ _ => by simp)
-  imply₁ := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ => by simp; exact fun a _ => a)
-  imply₂ := fun T p q r => Complete.consequence_iff_provable.mp (fun _ _ => by simp; exact fun a b c => a c (b c))
-  conj₁  := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ => by simp; exact fun a _ => a)
+  imply₁ := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ =>
+    by simp; exact fun a _ => a)
+  imply₂ := fun T p q r => Complete.consequence_iff_provable.mp (fun _ _ =>
+    by simp; exact fun a b c => a c (b c))
+  conj₁  := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ =>
+    by simp; exact fun a _ => a)
   conj₂  := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ => by simp)
-  conj₃  := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ => by simp; exact fun a b => ⟨a, b⟩)
+  conj₃  := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ =>
+    by simp; exact fun a b => ⟨a, b⟩)
   disj₁  := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ => by simpa using Or.inl)
   disj₂  := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ => by simpa using Or.inr)
   disj₃  := fun T p q r => Complete.consequence_iff_provable.mp (fun _ _ => by simpa using Or.rec)
-  neg₁   := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ => by simp; exact fun a b c => (b c) (a c))
-  neg₂   := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ => by simp; exact fun a b => (b a).elim)
+  neg₁   := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ =>
+    by simp; exact fun a b c => (b c) (a c))
+  neg₂   := fun T p q => Complete.consequence_iff_provable.mp (fun _ _ =>
+    by simp; exact fun a b => (b a).elim)
 -/
 namespace Intuitionistic
 
