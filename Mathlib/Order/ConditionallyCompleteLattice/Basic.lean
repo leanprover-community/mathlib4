@@ -978,7 +978,7 @@ end ConditionallyCompleteLattice
 
 instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
     [∀ i, ConditionallyCompleteLattice (α i)] : ConditionallyCompleteLattice (∀ i, α i) :=
-  { Pi.lattice, Pi.supSet, Pi.infSet with
+  { Pi.instLattice, Pi.supSet, Pi.infSet with
     le_csSup := fun s f ⟨g, hg⟩ hf i =>
       le_csSup ⟨g i, Set.forall_mem_range.2 fun ⟨f', hf'⟩ => hg hf' i⟩ ⟨⟨f, hf⟩, rfl⟩
     csSup_le := fun s f hs hf i =>
