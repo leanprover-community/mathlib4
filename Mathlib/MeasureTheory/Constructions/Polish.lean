@@ -946,11 +946,8 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }
-  have :
-    ∀ x,
-      (map (fun i => f i x) l ×ˢ map (fun i => f i x) l).HasAntitoneBasis fun n =>
-        ((fun i => f i x) '' u n) ×ˢ ((fun i => f i x) '' u n) :=
-    fun x => hu.map.prod hu.map
+  have : ∀ x, (map (f · x) l ×ˢ map (f · x) l).HasAntitoneBasis fun n =>
+      ((f · x) '' u n) ×ˢ ((f · x) '' u n) := fun x => (hu.map _).prod (hu.map _)
   simp_rw [and_iff_right (hl.map _),
     Filter.HasBasis.le_basis_iff (this _).toHasBasis Metric.uniformity_basis_dist_inv_nat_succ,
     Set.setOf_forall]
