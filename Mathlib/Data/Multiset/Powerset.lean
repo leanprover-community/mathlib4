@@ -23,7 +23,7 @@ variable {α : Type*}
 
 /-! ### powerset -/
 
--- Porting note: TODO: Write a more efficient version
+-- Porting note (#11215): TODO: Write a more efficient version
 /-- A helper function for the powerset of a multiset. Given a list `l`, returns a list
 of sublists of `l` as multisets. -/
 def powersetAux (l : List α) : List (Multiset α) :=

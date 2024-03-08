@@ -160,7 +160,7 @@ theorem forget₂_map (X Y : ModuleCat R) (f : X ⟶ Y) :
   rfl
 #align Module.forget₂_map ModuleCat.forget₂_map
 
--- Porting note: TODO: `ofHom` and `asHom` are duplicates!
+-- Porting note (#11215): TODO: `ofHom` and `asHom` are duplicates!
 
 /-- Typecheck a `LinearMap` as a morphism in `Module R`. -/
 def ofHom {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]

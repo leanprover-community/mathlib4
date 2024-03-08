@@ -233,7 +233,7 @@ theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 #align mul_equiv.coe_to_equiv MulEquiv.coe_toEquiv
 #align add_equiv.coe_to_equiv AddEquiv.coe_toEquiv
 
--- Porting note: todo: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
+-- Porting note (#11215): TODO: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
 -- not `f.toEquiv.toFun`; use higher priority as a workaround
 @[to_additive (attr := simp 1100)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
@@ -608,7 +608,7 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
 #align mul_equiv.of_bijective_apply MulEquiv.ofBijective_apply
 #align add_equiv.of_bijective_apply AddEquiv.ofBijective_apply
 
--- Porting note: todo: simplify `symm_apply` to `surjInv`?
+-- Porting note (#11215): TODO: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n

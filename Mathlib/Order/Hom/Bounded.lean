@@ -584,7 +584,7 @@ end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 

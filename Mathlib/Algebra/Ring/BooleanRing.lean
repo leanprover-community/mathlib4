@@ -183,7 +183,7 @@ def inf : Inf α :=
   ⟨(· * ·)⟩
 #align boolean_ring.has_inf BooleanRing.inf
 
--- Porting note: TODO: add priority 100. lower instance priority
+-- Porting note (#11215): TODO: add priority 100. lower instance priority
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
@@ -263,7 +263,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       rw [← add_assoc, add_self] }
 #align boolean_ring.to_boolean_algebra BooleanRing.toBooleanAlgebra
 
--- Porting note: TODO: add priority 100. lower instance priority
+-- Porting note (#11215): TODO: add priority 100. lower instance priority
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
 
 end BooleanRing

@@ -61,7 +61,7 @@ theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
 
 #noalign rat.mk_pnat
 
--- Porting note: TODO Should this be namespaced?
+-- Porting note (#11215): TODO Should this be namespaced?
 #align rat.mk_nat mkRat
 
 #noalign rat.mk_pnat_eq
@@ -202,7 +202,7 @@ theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := inv_divInt ..
 
 variable (a b c : ℚ)
 
--- Porting note: TODO this is a workaround.
+-- Porting note (#11215): TODO this is a workaround.
 attribute [-simp] divInt_ofNat
 
 protected theorem add_zero : a + 0 = a :=

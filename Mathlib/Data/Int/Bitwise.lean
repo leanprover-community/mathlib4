@@ -210,7 +210,7 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
     cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
 #align int.test_bit_succ Int.testBit_bit_succ
 
--- Porting note: TODO
+-- Porting note (#11215): TODO
 -- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry

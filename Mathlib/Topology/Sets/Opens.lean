@@ -104,7 +104,7 @@ protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).
 protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x, x ∈ U :=
   Iff.rfl
 
-@[ext] -- Porting note: todo: replace with `∀ x, x ∈ U ↔ x ∈ V`
+@[ext] -- Porting note (#11215): TODO: replace with `∀ x, x ∈ U ↔ x ∈ V`
 theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
   SetLike.coe_injective h
 #align topological_space.opens.ext TopologicalSpace.Opens.ext
@@ -482,7 +482,7 @@ end OpenNhdsOf
 
 end TopologicalSpace
 
--- Porting note: TODO: once we port `auto_cases`, port this
+-- Porting note (#11215): TODO: once we port `auto_cases`, port this
 -- namespace Tactic
 
 -- namespace AutoCases

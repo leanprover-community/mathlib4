@@ -303,7 +303,7 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 
--- Porting note: TODO: add `IsometryEquivClass`
+-- Porting note (#11215): TODO: add `IsometryEquivClass`
 
 theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl

@@ -795,7 +795,7 @@ theorem complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → 
 
 variable (α)
 
--- Porting note: todo: move to `Topology.UniformSpace.Basic`
+-- Porting note (#11215): TODO: move to `Topology.UniformSpace.Basic`
 instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
   ⟨fun a => by rw [nhds_eq_comap_uniformity]; infer_instance⟩
 #align uniform_space.first_countable_topology UniformSpace.firstCountableTopology

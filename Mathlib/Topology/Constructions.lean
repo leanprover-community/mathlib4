@@ -319,7 +319,7 @@ section Prod
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
--- Porting note: todo: Lean 4 fails to deduce implicit args
+-- Porting note (#11215): TODO: Lean 4 fails to deduce implicit args
 @[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
   (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
@@ -526,7 +526,7 @@ theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : Is
   (hs.preimage continuous_fst).inter (ht.preimage continuous_snd)
 #align is_open.prod IsOpen.prod
 
--- Porting note: todo: Lean fails to find `t₁` and `t₂` by unification
+-- Porting note (#11215): TODO: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
   dsimp only [SProd.sprod]
   rw [Filter.prod, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
@@ -681,7 +681,7 @@ theorem prod_eq_generateFrom :
         GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
 #align prod_eq_generate_from prod_eq_generateFrom
 
--- Porting note: todo: align with `mem_nhds_prod_iff'`
+-- Porting note (#11215): TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
     IsOpen s ↔ ∀ a b, (a, b) ∈ s →
       ∃ u v, IsOpen u ∧ IsOpen v ∧ a ∈ u ∧ b ∈ v ∧ u ×ˢ v ⊆ s :=
@@ -1345,7 +1345,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
 #align continuous_update continuous_update
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
--- Porting note: todo: restore @[continuity]
+-- Porting note (#11215): TODO: restore @[continuity]
 @[to_additive "`Pi.single i x` is continuous in `x`."]
 theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
