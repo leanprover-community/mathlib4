@@ -14,11 +14,21 @@ by the output of `simp? [...]`, so that the final code contains `simp only [...]
 
 Currently, the linter is conservative in catching non-terminal `simp`s.
 It only uses syntax information.
-In its current form, the (almost) only false positives are situations of the form
+In its current form, the linter can be fooled in at least two ways:
 ```lean
-  ...
-  tactic producing two goals <;> [simp; simp]
+import Mathlib.Tactic.Basic
+
+-- a false positive: `simp` is flagged, but it should not be
+example (x : Bool) : x = x := by
+  cases x <;> [simp; simp]  -- the first `simp` is considered "non-terminal"
+
+-- a false negative: `simp` should be flagged, but is not
+example (n : Nat) (h : False) : n = n - 1 := by
+  cases n <;> simp  -- an actual non-terminal `simp` that is not flagged
+  exact h.elim
 ```
+
+TODO: fix the linter so that the cases above are classified correctly!
 -/
 
 open Lean
