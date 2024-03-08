@@ -702,7 +702,13 @@ lemma factorization_lcm_left_mul_factorization_lcm_right (ha : a ≠ 0) (hb : b 
     factorization_lcm_right, ← prod_mul]
   congr; ext p n; split_ifs <;> simp
 
-lemma factorization_lcm_left_dvd (ha : a ≠ 0) (hb : b ≠ 0) : factorization_lcm_left a b ∣ a := by
+variable (a b)
+
+lemma factorization_lcm_left_dvd : factorization_lcm_left a b ∣ a := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp only [dvd_zero]
+  rcases eq_or_ne b 0 with rfl | hb
+  · simp [factorization_lcm_left]
   nth_rewrite 2 [← factorization_prod_pow_eq_self ha]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
   · apply prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
