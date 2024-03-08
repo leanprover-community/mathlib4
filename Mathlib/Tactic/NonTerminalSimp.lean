@@ -27,7 +27,7 @@ namespace Mathlib.Linter
 
 /-- The non-terminal `simp` linter makes sure that `simp` is not used as a finishing tactic. -/
 register_option linter.nonTerminalSimp : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the 'non-terminal `simp`' linter"
 }
 
