@@ -684,7 +684,6 @@ lemma factorization_lcm_right_pos :
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
 
-open Nat in
 lemma coprime_factorization_lcm_left_factorization_lcm_right :
     (factorization_lcm_left a b).Coprime (factorization_lcm_right a b) := by
   rw [factorization_lcm_left, factorization_lcm_right]
