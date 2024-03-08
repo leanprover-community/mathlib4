@@ -3207,6 +3207,7 @@ import Mathlib.ProofTheory.HilbertStyle2
 import Mathlib.ProofTheory.Lindenbaum
 import Mathlib.ProofTheory.System
 import Mathlib.ProofTheory.System
+import Mathlib.ProofTheory.Predicate
 import Mathlib.RepresentationTheory.Action.Basic
 import Mathlib.RepresentationTheory.Action.Concrete
 import Mathlib.RepresentationTheory.Action.Limits
