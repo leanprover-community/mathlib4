@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Opposites
 import Mathlib.Data.Rel
 
 #align_import category_theory.category.Rel from "leanprover-community/mathlib"@"afad8e438d03f9d89da2914aa06cb4964ba87a18"
@@ -66,17 +68,78 @@ def typeRelFunctor : Type u ⥤ RelCat.{u} where
 instance typeRelFunctor_faithful : Faithful typeRelFunctor where
   map_injective h := Function.graph_inj _ _ h
 
-/- theorem hom_inv {X Y : RelCat} (f : X ≅ Y) : f.inv = Rel.inv f.hom := by
-  have eq := f.inv_hom_id_assoc (Rel.inv f.hom)
-  suffices eq2 : f.hom ≫ Rel.inv f.hom = 𝟙 X by
-    rw[eq2] at eq
-    aesop_cat
-  ext x y
-  simp only [rel_comp_apply₂, rel_id_apply₂]
-  constructor
-  · rintro ⟨z, h1, h2⟩ -/
+instance typeRelFunctor_essSurj : EssSurj typeRelFunctor :=
+    typeRelFunctor.essSurj_of_surj Function.surjective_id
 
-  
+open Classical
+theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
+    IsIso (C := RelCat) r ↔ ∃ f : (Iso (C := Type) X Y), typeRelFunctor.map f.hom = r := by
+  constructor
+  · intro h
+    have h1 := congr_fun₂ h.hom_inv_id
+    have h2 := congr_fun₂ h.inv_hom_id
+    simp only [rel_comp_apply₂, rel_id_apply₂, eq_iff_iff] at h1 h2
+    obtain ⟨f, hf⟩ := axiomOfChoice (fun a => (h1 a a).mpr rfl)
+    obtain ⟨g, hg⟩ := axiomOfChoice (fun a => (h2 a a).mpr rfl)
+    suffices hif : IsIso (C := Type) f by
+      use asIso f
+      ext x y
+      simp only [asIso_hom, typeRelFunctor_map]
+      constructor
+      · rintro rfl
+        exact (hf x).1
+      · intro hr
+        specialize h2 (f x) y
+        rw[← h2]
+        use x, (hf x).2, hr
+    use g
+    constructor
+    · ext x
+      apply (h1 _ _).mp
+      use f x, (hg _).2, (hf _).2
+    · ext y
+      apply (h2 _ _).mp
+      use g y, (hf (g y)).2, (hg y).2
+  · rintro ⟨f, rfl⟩
+    apply typeRelFunctor.map_isIso
+
+section Opposite
+open Opposite
+
+def rel_relOp : Functor RelCat RelCatᵒᵖ where
+  obj X := Opposite.op X
+  map {X Y} r := op (fun y x => r x y)
+  map_id X := by
+    congr
+    simp only [unop_op, rel_id]
+    ext x y
+    exact Eq.comm
+  map_comp {X Y Z} f g := by
+    unfold Category.opposite
+    congr
+    ext x y
+    apply exists_congr
+    exact fun a => And.comm
+
+instance rel_relOp_full : Full rel_relOp where
+  preimage f := Function.swap f.unop
+  witness _ := rfl
+
+instance rel_relOp_faithful : Faithful rel_relOp where
+  map_injective {X Y f g} h := by
+    ext x y
+    exact iff_of_eq (congr_fun₂ (op_injective h) y x)
+
+instance rel_relOp_essSurh : EssSurj rel_relOp :=
+  rel_relOp.essSurj_of_surj _
+
+def rel_relOp_equivalence : Equivalence (RelCat ᵒᵖ) RelCat :=
+
+
+end Opposite
+
+
+--def rel_relOp_equivalence : relᵒᵖ ≌ rel :=
 
 
 end CategoryTheory
