@@ -13,6 +13,12 @@ If you want to use `simp [...]` followed by other tactics, then replace `simp [.
 by the output of `simp? [...]`, so that the final code contains `simp only [...]`.
 
 Currently, the linter is conservative in catching non-terminal `simp`s.
+It only uses syntax information.
+In its current form, the (almost) only false positives are situations of the form
+```lean
+  ...
+  tactic producing two goals <;> [simp; simp]
+```
 -/
 
 open Lean
@@ -35,6 +41,9 @@ def onlyOrNotSimp : Syntax → Bool
   | _ => true
 
 variable {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m] in
+/-- `nonTerminalSimp stx` loops inside `stx` looking for nodes corresponding to `simp` calls
+that are not `simp only` calls.  Among those, it checks whether there are further tactics
+after the `simp`, and, if there are, then it emits a warning. -/
 partial
 def nonTerminalSimp : Syntax → m Unit
   | .node _ _ args => do
