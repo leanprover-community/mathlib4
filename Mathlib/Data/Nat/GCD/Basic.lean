@@ -344,9 +344,4 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
   rw [← mul_assoc, ← h, add_mul, add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 #align nat.coprime.mul_add_mul_ne_mul Nat.Coprime.mul_add_mul_ne_mul
 
-lemma div_gcd_mul_div_gcd_eq_mul {a b x y : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hx : x ∣ a) (hy : y ∣ b) :
-    a / a.gcd (a / x) * (b / b.gcd (b / y)) = x * y := by
-  rw [Nat.gcd_eq_right (Nat.div_dvd_of_dvd hx), Nat.gcd_eq_right (Nat.div_dvd_of_dvd hy),
-    Nat.div_div_self hx ha, Nat.div_div_self hy hb]
-
 end Nat
