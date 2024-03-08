@@ -225,7 +225,7 @@ def runAndCacheM (tacticCode : TSyntax ``tacticSeq)
   goal.withContext do
     let lctx ← getLCtx
     let key : GoalKey := { goal := target, lctx := lctx.decls.toList }
-    if ←isSpawned key then
+    if ← isSpawned key then
       return ()
     markSpawned key
     let core₀ ← getThe Core.State
