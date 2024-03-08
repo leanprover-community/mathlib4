@@ -316,7 +316,7 @@ unsuppress_compilation in
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
---Porting note: new theorem
+-- Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
     ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
 
@@ -568,7 +568,7 @@ variable {R s t}
 /--
 Let `sᵢ` and `tᵢ` be families of `R`-modules.
 Then there is an `R`-linear map between `⨂ᵢ Hom(sᵢ, tᵢ)` and `Hom(⨂ᵢ sᵢ, ⨂ tᵢ)` defined by
-`⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦⨂ᵢ fᵢ aᵢ`.
+`⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ fᵢ aᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
 
@@ -780,7 +780,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
       aesop
     · simp only
       intro x y hx hy
-      rw [LinearMap.map_add, add_smul, hx, hy]
+      rw [map_add, add_smul, hx, hy]
   right_inv t := by simp
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
@@ -895,43 +895,6 @@ theorem tmulEquiv_symm_apply (a : Sum ι ι₂ → M) :
 end Tmul
 
 end Multilinear
-
-section
-
-open BigOperators Function
-
-variable [Fintype ι]
-
-variable (R ι)
-
-/-- The linear equivalence from the tensor product of the constant family with
-value `R` to `R`, given by multiplication of the entries.
--/
-noncomputable def constantBaseRingEquiv : (⨂[R] (_ : ι), R) ≃ₗ[R] R := by
-  refine LinearEquiv.ofLinear (lift (MultilinearMap.mkPiAlgebra R ι R)) ?_ ?_ ?_
-  · exact
-     {toFun := (fun r ↦ r • tprod R (fun _ ↦ 1))
-      map_add' := (IsLinearMap.isLinearMap_smul' _).map_add
-      map_smul' := (IsLinearMap.isLinearMap_smul' _).map_smul
-     }
-  · ext; simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, comp_apply, one_smul,
-    lift.tprod, MultilinearMap.mkPiAlgebra_apply, Finset.prod_const_one, LinearMap.id_coe, id_eq]
-  · ext x
-    simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearMap.coe_mk,
-      AddHom.coe_mk, comp_apply, lift.tprod, MultilinearMap.mkPiAlgebra_apply, LinearMap.id_coe,
-      id_eq]
-    have heq : x = fun i ↦ (x i) • 1 := by ext; simp only [smul_eq_mul, mul_one]
-    conv_rhs => rw [heq, MultilinearMap.map_smul_univ]
-
-variable {R ι}
-
-@[simp]
-theorem constantBaseRingEquiv_tprod (x : ι → R) :
-    constantBaseRingEquiv ι R (tprod R x) = ∏ i, x i := by
-  simp only [constantBaseRingEquiv, LinearEquiv.ofLinear_apply, lift.tprod,
-    MultilinearMap.mkPiAlgebra_apply]
-
-end
 
 end PiTensorProduct
 
