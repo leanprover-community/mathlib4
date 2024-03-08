@@ -77,7 +77,8 @@ variable [Semigroup α] [HasDistribNeg α] {a b c : α}
 @[simp]
 theorem dvd_neg : a ∣ -b ↔ a ∣ b :=
   -- Porting note: `simpa` doesn't close the goal with `rfl` anymore
-  (Equiv.neg _).exists_congr_left.trans <| by simp; rfl
+  (Equiv.neg _).exists_congr_left.trans <| by simp only [Equiv.neg_symm, Equiv.neg_apply, mul_neg,
+                                                neg_inj]; rfl
 #align dvd_neg dvd_neg
 
 /-- The negation of an element `a` of a semigroup with a distributive negation divides another
@@ -85,7 +86,8 @@ element `b` iff `a` divides `b`. -/
 @[simp]
 theorem neg_dvd : -a ∣ b ↔ a ∣ b :=
   -- Porting note: `simpa` doesn't close the goal with `rfl` anymore
-  (Equiv.neg _).exists_congr_left.trans <| by simp; rfl
+  (Equiv.neg _).exists_congr_left.trans <| by simp only [Equiv.neg_symm, Equiv.neg_apply, mul_neg,
+                                                neg_mul, neg_neg]; rfl
 #align neg_dvd neg_dvd
 
 alias ⟨Dvd.dvd.of_neg_left, Dvd.dvd.neg_left⟩ := neg_dvd

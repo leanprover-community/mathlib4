@@ -380,11 +380,11 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
-  ext; simp [Sym.map]; rfl
+  ext; simp only [map, val_eq_coe, Multiset.map_id', coe_inj]; rfl
 #align sym.map_id' Sym.map_id'
 
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
-  ext; simp [Sym.map]; rfl
+  ext; simp only [map, val_eq_coe, id_eq, Multiset.map_id', coe_inj]; rfl
 #align sym.map_id Sym.map_id
 
 @[simp]
@@ -687,8 +687,7 @@ theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.su
       exact Option.some_ne_none _ ha
     · refine' congr_arg Sum.inr _
       refine' map_injective (Option.some_injective _) _ _
-      refine' Eq.trans _ (Eq.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe _)
-      simp; simp
+      refine' Eq.trans _ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe _) <;> simp
 #align sym_option_succ_equiv.encode_decode SymOptionSuccEquiv.encode_decode
 
 end SymOptionSuccEquiv

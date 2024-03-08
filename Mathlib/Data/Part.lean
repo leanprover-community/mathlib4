@@ -716,7 +716,7 @@ theorem one_mem_one [One α] : (1 : α) ∈ (1 : Part α) :=
 
 @[to_additive]
 theorem mul_mem_mul [Mul α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
-    ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp [← ha.2, ← hb.2]; rfl⟩
+    ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp only [← ha.2, ← hb.2]; rfl⟩
 #align part.mul_mem_mul Part.mul_mem_mul
 #align part.add_mem_add Part.add_mem_add
 
