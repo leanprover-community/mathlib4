@@ -561,10 +561,10 @@ instance : Add (LieSubmodule R L M) where add := Sup.sup
 instance : Zero (LieSubmodule R L M) where zero := ⊥
 
 instance : AddCommMonoid (LieSubmodule R L M) where
-  add_assoc _ _ _ := sup_assoc
-  zero_add _ := bot_sup_eq
-  add_zero _ := sup_bot_eq
-  add_comm _ _ := sup_comm
+  add_assoc := sup_assoc
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
   nsmul := nsmulRec
 
 @[simp]

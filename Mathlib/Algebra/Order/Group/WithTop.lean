@@ -26,11 +26,11 @@ instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (Wi
   __ := WithTop.linearOrderedAddCommMonoidWithTop
   __ := Option.nontrivial
   neg_top := Option.map_none
+  zsmul := zsmulRec
   add_neg_cancel := by
     rintro (a | a) ha
     · exact (ha rfl).elim
-    · exact WithTop.coe_add.symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
-  zsmul := zsmulRec
+    · exact (WithTop.coe_add ..).symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
 #align with_top.linear_ordered_add_comm_group_with_top WithTop.linearOrderedAddCommGroupWithTop
 
 @[simp, norm_cast]

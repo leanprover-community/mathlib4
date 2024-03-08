@@ -240,7 +240,7 @@ instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
     zero_add := fun _ => ext fun _ => zero_add _
     add_zero := fun _ => ext fun _ => add_zero _
     nsmul := nsmulRec }
-#align nat.arithmetic_function.add_monoid Nat.ArithmeticFunction.instAddMonoid
+#align nat.arithmetic_function.add_monoid ArithmeticFunction.instAddMonoid
 
 end AddMonoid
 

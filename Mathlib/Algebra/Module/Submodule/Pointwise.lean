@@ -171,10 +171,10 @@ instance pointwiseAdd : Add (Submodule R M) where
   add := (· ⊔ ·)
 
 instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M) where
-  add_assoc _ _ _ := sup_assoc
-  zero_add _ := bot_sup_eq
-  add_zero _ := sup_bot_eq
-  add_comm _ _ := sup_comm
+  add_assoc := sup_assoc
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
   nsmul := nsmulRec
 #align submodule.pointwise_add_comm_monoid Submodule.pointwiseAddCommMonoid
 

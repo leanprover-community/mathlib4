@@ -113,7 +113,6 @@ instance : Zero (ColimitType.{w} F) where
 
 instance : Neg (ColimitType.{w} F) where
   neg := Quotient.map neg Relation.neg_1
-<<<<<<< HEAD
 
 instance : Add (ColimitType.{w} F) where
   add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>

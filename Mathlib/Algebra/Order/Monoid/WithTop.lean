@@ -329,11 +329,6 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
     zero_add := Option.map₂_left_identity zero_add
     add_zero := Option.map₂_right_identity add_zero }
 
-<<<<<<< HEAD
-instance addMonoid [AddMonoid α] : AddMonoid (WithTop α) :=
-  { WithTop.addSemigroup, WithTop.addZeroClass with
-    nsmul := nsmulRec }
-=======
 section AddMonoid
 variable [AddMonoid α]
 
@@ -361,7 +356,6 @@ def addHom : α →+ WithTop α where
 #align with_top.coe_coe_add_hom WithTop.coe_addHom
 
 end AddMonoid
->>>>>>> master
 
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
