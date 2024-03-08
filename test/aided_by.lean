@@ -5,7 +5,7 @@ set_option aided_by.delay 400
 
 -- Solving in the background
 /--
-info: Try this: by simp_all only
+info: Try this: by simp_all only [Nat.reduceLE]
 ---
 warning: declaration uses 'sorry'
 -/
@@ -14,7 +14,7 @@ example : 2 ≤ 3 := by#
   sorry
 
 /--
-info: Try this: simp_all only
+info: Try this: simp_all only [le_refl]
 ---
 warning: declaration uses 'sorry'
 ---
@@ -41,7 +41,7 @@ example : sillyN ≤ 3 := by#
 /--
 info: Try this: by
   rw [silly]
-  simp_all only
+  simp_all only [Nat.reduceLE]
 ---
 warning: declaration uses 'sorry'
 -/
@@ -58,7 +58,7 @@ example : sillyN ≤ 4 := by#
 info: Try this: by
   skip
   sleep 100
-  simp_all only
+  simp_all only [Nat.reduceLE]
 ---
 warning: declaration uses 'sorry'
 -/
@@ -71,11 +71,11 @@ example : 2 ≤ 3 := by#
 
 -- Messages tried after each steps
 /--
-info: Try this: by simp_all only
+info: Try this: by simp_all only [le_refl]
 ---
 info: Try this: by
   skip
-  simp_all only
+  simp_all only [le_refl]
 ---
 warning: declaration uses 'sorry'
 -/
@@ -118,7 +118,7 @@ example : 1 = 1 := by!
 /--
 info: Try this: by
   rw [silly]
-  simp_all only
+  simp_all only [Nat.reduceLE]
 ---
 warning: declaration uses 'sorry'
 -/
