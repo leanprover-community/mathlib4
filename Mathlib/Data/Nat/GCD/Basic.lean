@@ -344,4 +344,22 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
   rw [← mul_assoc, ← h, add_mul, add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 #align nat.coprime.mul_add_mul_ne_mul Nat.Coprime.mul_add_mul_ne_mul
 
+lemma div_gcd_mul_div_gcd_eq_mul {a b x y : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) (hx : x ∣ a) (hy : y ∣ b) :
+    a / a.gcd (a / x) * (b / b.gcd (b / y)) = x * y := by
+  rcases eq_or_ne x 0 with rfl | hx'
+  · simp [zero_dvd_iff.1 hx]
+  rcases eq_or_ne y 0 with rfl | hy'
+  · simp [zero_dvd_iff.1 hy]
+  have h₁ : 0 < x := Nat.pos_of_ne_zero hx'
+  have h₂ : 0 < y := Nat.pos_of_ne_zero hy'
+  obtain ⟨ka, hka⟩ := hx
+  obtain ⟨kb, hkb⟩ := hy
+  have hka' : ka ∣ a := ⟨x, mul_comm ka _ ▸ hka⟩
+  have hkb' : kb ∣ b := ⟨y, mul_comm kb _ ▸ hkb⟩
+  have hka₀ : 0 < ka := Nat.pos_of_ne_zero fun H ↦ ha <| Nat.zero_dvd.mp <| H ▸ hka'
+  have hkb₀ : 0 < kb := Nat.pos_of_ne_zero fun H ↦ hb <| Nat.zero_dvd.mp <| H ▸ hkb'
+  rw [Nat.div_eq_of_eq_mul_right h₁ hka, Nat.div_eq_of_eq_mul_right h₂ hkb,
+    gcd_eq_right_iff_dvd.mp hka', gcd_eq_right_iff_dvd.mp hkb',
+    Nat.div_eq_of_eq_mul_left hka₀ hka, Nat.div_eq_of_eq_mul_left hkb₀ hkb]
+
 end Nat
