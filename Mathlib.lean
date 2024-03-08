@@ -3202,6 +3202,7 @@ import Mathlib.Probability.Variance
 import Mathlib.ProofTheory.LogicSymbol
 import Mathlib.ProofTheory.Semantics
 import Mathlib.ProofTheory.System
+import Mathlib.ProofTheory.System
 import Mathlib.RepresentationTheory.Action.Basic
 import Mathlib.RepresentationTheory.Action.Concrete
 import Mathlib.RepresentationTheory.Action.Limits
