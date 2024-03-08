@@ -456,12 +456,12 @@ namespace QuotientGroupAction
 
 open Function Subgroup QuotientGroup
 
-variable [QuotientGroupAction H α] [nH : H.Normal]
+variable [QuotientGroupAction H α]
 
 @[to_additive]
 instance smul : SMul (β ⧸ H) α where
   smul b := Quotient.liftOn' b (· • ·) fun A B hAB => by
-    rw [@QuotientGroup.leftRel_apply] at hAB
+    rw [@leftRel_apply] at hAB
     ext1 a
     refine let_body_congr a ?_
     intro x
@@ -470,7 +470,7 @@ instance smul : SMul (β ⧸ H) α where
     exact QuotientGroupAction.eq_id ⟨(A⁻¹ * B), hAB⟩ x |>.symm
 
 @[to_additive]
-instance mulAction : MulAction (β ⧸ H) α :=
+instance mulAction [H.Normal] : MulAction (β ⧸ H) α :=
   Function.Surjective.mulActionLeft (QuotientGroup.mk' <| H)
     (QuotientGroup.mk'_surjective <| H) fun _ _ => rfl
 
