@@ -13,6 +13,84 @@ This file constructs `CliffordAlgebra.Model ι B`, which is a model for
 `CliffordAlgebra (_ : ι →₀ R)` that also works as a basis.
 -/
 
+namespace List
+
+variable {α : Type*} {r : α → α → Prop} [DecidableRel r]
+
+theorem orderedInsert_eq_cons_of_forall_rel {l : List α} {x : α}
+    (h : ∀ y ∈ l, r x y) :
+    l.orderedInsert r x = x :: l :=
+  match l with
+  | [] => rfl
+  | _ :: _ => if_pos <| h _ <| mem_cons_self _ _
+
+theorem Sublist.orderedInsert_of_sorted [IsTrans α r]
+    {l₁ l₂ : List α} (hl : l₁ <+ l₂) (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (x : α) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x :=
+  match l₁, l₂ with
+  | [], [] => .refl _
+  | [], _ :: l₂ => by
+    simp_rw [orderedInsert]
+    split_ifs
+    · exact .cons₂ _ (nil_sublist _)
+    · exact .cons _ (by simp)
+  | x₁ :: l₁, x₂ :: l₂ => by
+    simp_rw [orderedInsert]
+    cases hl with
+    | cons₂ a ha =>
+      split_ifs
+      · exact (ha.cons₂ _).cons₂ _
+      · rw [sorted_cons] at h₁ h₂
+        exact (ha.orderedInsert_of_sorted h₁.2 h₂.2 _).cons₂ _
+    | cons a ha =>
+      rw [sorted_cons] at h₂
+      have hx₂x₁:= h₂.1 _ <| ha.subset (mem_cons_self _ _)
+      have haih := ha.orderedInsert_of_sorted h₁ h₂.2 x
+      rw [orderedInsert] at haih
+      split_ifs at * with hxx₁ hxx₂ hxx₂
+      · exact (ha.cons _).cons₂ _
+      · exact haih.cons _
+      · exfalso
+        exact (hxx₁ <| _root_.trans hxx₂ hx₂x₁).elim
+      · exact haih.cons _
+
+theorem orderedInsert_sublist_orderedInsert_iff_of_sorted [IsTrans α r] [IsRefl α r]
+    {l₁ l₂ : List α} (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (x : α) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x ↔ l₁ <+ l₂ :=
+  ⟨fun h => by classical simpa [erase_orderedInsert] using h.erase x,
+    fun h => h.orderedInsert_of_sorted h₁ h₂ _⟩
+
+theorem orderedInsert_sublist_orderedInsert_iff_of_sorted_of_not_mem [IsTrans α r] [IsAntisymm α r]
+    {l₁ l₂ : List α} (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) {x : α} (hx₁ : x ∉ l₁) (hx₂ : x ∉ l₂) :
+    l₁.orderedInsert r x <+ l₂.orderedInsert r x ↔ l₁ <+ l₂ := by
+  refine ⟨fun h => ?_, fun h => h.orderedInsert_of_sorted h₁ h₂ _⟩
+  classical
+  have := h.erase x
+  rwa [erase_orderedInsert_of_not_mem hx₁, erase_orderedInsert_of_not_mem hx₂] at this
+
+theorem erase_sublist_iff_sublist_orderedInsert_of_sorted_of_not_mem
+    [DecidableEq α] [IsTrans α r] [IsAntisymm α r]
+    (l₁ l₂ : List α) (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (x : α) (hx₂ : x ∉ l₂) :
+    l₁.erase x <+ l₂ ↔ l₁ <+ l₂.orderedInsert r x := by
+  by_cases hx₁ : x ∈ l₁; swap
+  · rw [List.erase_of_not_mem hx₁]
+    constructor
+    · intro h
+      exact h.trans <| sublist_orderedInsert x l₂
+    · intro h
+      have := h.erase x
+      rwa [List.erase_of_not_mem hx₁, erase_orderedInsert_of_not_mem hx₂] at this
+  constructor
+  · intro h
+    have := h.orderedInsert_of_sorted ?ot h₂ x
+    rwa [orderedInsert_erase _ _ hx₁ h₁] at this
+    exact h₁.sublist (erase_sublist x l₁)
+  · intro h
+    have := h.erase x
+    rwa [erase_orderedInsert_of_not_mem hx₂] at this
+
+end List
+
 noncomputable section
 namespace CliffordAlgebra
 
