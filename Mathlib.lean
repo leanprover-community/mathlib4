@@ -3212,7 +3212,6 @@ import Mathlib.ProofTheory.Predicate
 import Mathlib.ProofTheory.Semantics
 import Mathlib.ProofTheory.Semantics
 import Mathlib.ProofTheory.System
-import Mathlib.RepresentationTheory.Action.Limits
 import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
