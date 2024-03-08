@@ -122,7 +122,7 @@ lemma mem_unitary_of_spectrum_subset_circle {u : A}
     [IsStarNormal u] (hu : spectrum ℂ u ⊆ circle) : u ∈ unitary A :=
   unitary_iff_isStarNormal_and_spectrum_subset_circle.mpr ⟨‹_›, hu⟩
 
-lemma spectrum_subset_circle_of_mem_unitary {u : A} [IsStarNormal u] (hu : u ∈ unitary A) :
+lemma spectrum_subset_circle_of_mem_unitary {u : A} (hu : u ∈ unitary A) :
     spectrum ℂ u ⊆ circle :=
   unitary_iff_isStarNormal_and_spectrum_subset_circle.mp hu |>.right
 
