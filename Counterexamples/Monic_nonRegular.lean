@@ -73,7 +73,6 @@ instance : CommSemiring N₃ :=
     right_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
     zero_mul := by rintro ⟨⟩ <;> rfl
     mul_zero := by rintro ⟨⟩ <;> rfl }
->>>>>>> master
 
 theorem X_add_two_mul_X_add_two : (X + C 2 : N₃[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
   simp only [mul_add, add_mul, X_mul, add_assoc]
