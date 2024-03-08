@@ -923,7 +923,7 @@ def unit' (h : IsUnit a) : αˣ := ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_can
 #align is_unit.coe_unit' IsUnit.val_unit'
 #align is_add_unit.coe_add_unit' IsAddUnit.val_addUnit'
 
--- Porting note: TODO: `simps val_inv` fails
+-- Porting note (#11215): TODO: `simps val_inv` fails
 @[to_additive] lemma val_inv_unit' (h : IsUnit a) : ↑(h.unit'⁻¹) = a⁻¹ := rfl
 #align is_unit.coe_inv_unit' IsUnit.val_inv_unit'
 #align is_add_unit.coe_neg_add_unit' IsAddUnit.val_neg_addUnit'

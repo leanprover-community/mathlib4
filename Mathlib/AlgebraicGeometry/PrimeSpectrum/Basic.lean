@@ -47,7 +47,7 @@ and Chris Hughes (on an earlier repository).
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 universe u v
 
@@ -374,9 +374,9 @@ theorem zeroLocus_singleton_mul (f g : R) :
 #align prime_spectrum.zero_locus_singleton_mul PrimeSpectrum.zeroLocus_singleton_mul
 
 @[simp]
-theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : 0 < n) :
+theorem zeroLocus_pow (I : Ideal R) {n : ℕ} (hn : n ≠ 0) :
     zeroLocus ((I ^ n : Ideal R) : Set R) = zeroLocus I :=
-  zeroLocus_radical (I ^ n) ▸ (I.radical_pow n hn).symm ▸ zeroLocus_radical I
+  zeroLocus_radical (I ^ n) ▸ (I.radical_pow hn).symm ▸ zeroLocus_radical I
 #align prime_spectrum.zero_locus_pow PrimeSpectrum.zeroLocus_pow
 
 @[simp]
@@ -682,6 +682,7 @@ open Function RingHom
 
 theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) where
   induced := by
+    set_option tactic.skipAssignedInstances false in
     simp_rw [TopologicalSpace.ext_iff, ← isClosed_compl_iff,
       ← @isClosed_compl_iff (PrimeSpectrum S)
         ((TopologicalSpace.induced (comap f) zariskiTopology)), isClosed_induced_iff,

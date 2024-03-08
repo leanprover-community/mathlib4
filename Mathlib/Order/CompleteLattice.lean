@@ -73,7 +73,6 @@ section
 
 variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 
--- --@[ematch] Porting note: attribute removed
 theorem le_sSup : a ∈ s → a ≤ sSup s :=
   CompleteSemilatticeSup.le_sSup s a
 #align le_Sup le_sSup
@@ -144,7 +143,6 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
--- --@[ematch] Porting note: attribute removed
 theorem sInf_le : a ∈ s → sInf s ≤ a :=
   CompleteSemilatticeInf.sInf_le s a
 #align Inf_le sInf_le
@@ -455,11 +453,11 @@ theorem sInf_insert {a : α} {s : Set α} : sInf (insert a s) = a ⊓ sInf s :=
 #align Inf_insert sInf_insert
 
 theorem sSup_le_sSup_of_subset_insert_bot (h : s ⊆ insert ⊥ t) : sSup s ≤ sSup t :=
-  le_trans (sSup_le_sSup h) (le_of_eq (_root_.trans sSup_insert bot_sup_eq))
+  (sSup_le_sSup h).trans_eq (sSup_insert.trans (bot_sup_eq _))
 #align Sup_le_Sup_of_subset_insert_bot sSup_le_sSup_of_subset_insert_bot
 
 theorem sInf_le_sInf_of_subset_insert_top (h : s ⊆ insert ⊤ t) : sInf t ≤ sInf s :=
-  le_trans (le_of_eq (_root_.trans top_inf_eq.symm sInf_insert.symm)) (sInf_le_sInf h)
+  (sInf_le_sInf h).trans_eq' (sInf_insert.trans (top_inf_eq _)).symm
 #align Inf_le_Inf_of_subset_insert_top sInf_le_sInf_of_subset_insert_top
 
 @[simp]
@@ -707,8 +705,6 @@ section
 
 variable [CompleteLattice α] {f g s t : ι → α} {a b : α}
 
--- TODO: this declaration gives error when starting smt state
-----@[ematch] Porting note: attribute removed
 theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
   le_sSup ⟨i, rfl⟩
 #align le_supr le_iSup
@@ -717,21 +713,14 @@ theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 #align infi_le iInf_le
 
--- --@[ematch] Porting note: attribute removed
 theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f :=
   le_sSup ⟨i, rfl⟩
 #align le_supr' le_iSup'
 
-----@[ematch] Porting note: attribute removed
 theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 #align infi_le' iInf_le'
 
-/- TODO: this version would be more powerful, but, alas, the pattern matcher
-   doesn't accept it.
---@[ematch] lemma le_iSup' (f : ι → α) (i : ι) : (: f i :) ≤ (: iSup f :) :=
-le_sSup ⟨i, rfl⟩
--/
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _
 #align is_lub_supr isLUB_iSup
@@ -864,12 +853,12 @@ theorem biInf_mono {p q : ι → Prop} (hpq : ∀ i, p i → q i) :
 
 @[simp]
 theorem iSup_le_iff : iSup f ≤ a ↔ ∀ i, f i ≤ a :=
-  (isLUB_le_iff isLUB_iSup).trans forall_range_iff
+  (isLUB_le_iff isLUB_iSup).trans forall_mem_range
 #align supr_le_iff iSup_le_iff
 
 @[simp]
 theorem le_iInf_iff : a ≤ iInf f ↔ ∀ i, a ≤ f i :=
-  (le_isGLB_iff isGLB_iInf).trans forall_range_iff
+  (le_isGLB_iff isGLB_iInf).trans forall_mem_range
 #align le_infi_iff le_iInf_iff
 
 theorem iSup₂_le_iff {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j ≤ a ↔ ∀ i j, f i j ≤ a := by
@@ -1023,12 +1012,12 @@ theorem iInf_top : (⨅ _ : ι, ⊤ : α) = ⊤ :=
 
 @[simp]
 theorem iSup_eq_bot : iSup s = ⊥ ↔ ∀ i, s i = ⊥ :=
-  sSup_eq_bot.trans forall_range_iff
+  sSup_eq_bot.trans forall_mem_range
 #align supr_eq_bot iSup_eq_bot
 
 @[simp]
 theorem iInf_eq_top : iInf s = ⊤ ↔ ∀ i, s i = ⊤ :=
-  sInf_eq_top.trans forall_range_iff
+  sInf_eq_top.trans forall_mem_range
 #align infi_eq_top iInf_eq_top
 
 theorem iSup₂_eq_bot {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j = ⊥ ↔ ∀ i j, f i j = ⊥ := by
@@ -1065,7 +1054,7 @@ See `ciSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in conditionall
 lattices. -/
 theorem iSup_eq_of_forall_le_of_forall_lt_exists_gt {f : ι → α} (h₁ : ∀ i, f i ≤ b)
     (h₂ : ∀ w, w < b → ∃ i, w < f i) : ⨆ i : ι, f i = b :=
-  sSup_eq_of_forall_le_of_forall_lt_exists_gt (forall_range_iff.mpr h₁) fun w hw =>
+  sSup_eq_of_forall_le_of_forall_lt_exists_gt (forall_mem_range.mpr h₁) fun w hw =>
     exists_range_iff.mpr <| h₂ w hw
 #align supr_eq_of_forall_le_of_forall_lt_exists_gt iSup_eq_of_forall_le_of_forall_lt_exists_gt
 
@@ -1153,8 +1142,6 @@ theorem iSup_iSup_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨆ x, ⨆ 
 theorem iInf_iInf_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨅ x, ⨅ h : b = x, f x h = f b rfl :=
   @iSup_iSup_eq_right αᵒᵈ _ _ _ _
 #align infi_infi_eq_right iInf_iInf_eq_right
-
--- attribute [ematch] le_refl Porting note: removed attribute
 
 theorem iSup_subtype {p : ι → Prop} {f : Subtype p → α} : iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ :=
   le_antisymm (iSup_le fun ⟨i, h⟩ => @le_iSup₂ _ _ p _ (fun i h => f ⟨i, h⟩) i h)
@@ -1900,12 +1887,12 @@ instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLat
   __ := Prod.infSet α β
   le_sSup _ _ hab := ⟨le_sSup <| mem_image_of_mem _ hab, le_sSup <| mem_image_of_mem _ hab⟩
   sSup_le _ _ h :=
-    ⟨sSup_le <| ball_image_of_ball fun p hp => (h p hp).1,
-      sSup_le <| ball_image_of_ball fun p hp => (h p hp).2⟩
+    ⟨sSup_le <| forall_mem_image.2 fun p hp => (h p hp).1,
+      sSup_le <| forall_mem_image.2 fun p hp => (h p hp).2⟩
   sInf_le _ _ hab := ⟨sInf_le <| mem_image_of_mem _ hab, sInf_le <| mem_image_of_mem _ hab⟩
   le_sInf _ _ h :=
-    ⟨le_sInf <| ball_image_of_ball fun p hp => (h p hp).1,
-      le_sInf <| ball_image_of_ball fun p hp => (h p hp).2⟩
+    ⟨le_sInf <| forall_mem_image.2 fun p hp => (h p hp).1,
+      le_sInf <| forall_mem_image.2 fun p hp => (h p hp).2⟩
 
 end Prod
 

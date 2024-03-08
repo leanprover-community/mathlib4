@@ -105,7 +105,7 @@ theorem isOpen_fold {t : TopologicalSpace X} : t.IsOpen s = IsOpen[t] s :=
 variable [TopologicalSpace X]
 
 theorem isOpen_iUnion {f : ι → Set X} (h : ∀ i, IsOpen (f i)) : IsOpen (⋃ i, f i) :=
-  isOpen_sUnion (forall_range_iff.2 h)
+  isOpen_sUnion (forall_mem_range.2 h)
 #align is_open_Union isOpen_iUnion
 
 theorem isOpen_biUnion {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
@@ -137,12 +137,12 @@ theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
 theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite)
     (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
-  sInter_image f s ▸ (hs.image _).isOpen_sInter (ball_image_iff.2 h)
+  sInter_image f s ▸ (hs.image _).isOpen_sInter (forall_mem_image.2 h)
 #align is_open_bInter Set.Finite.isOpen_biInter
 
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
-  (finite_range _).isOpen_sInter  (forall_range_iff.2 h)
+  (finite_range _).isOpen_sInter  (forall_mem_range.2 h)
 #align is_open_Inter isOpen_iInter_of_finite
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
@@ -150,7 +150,7 @@ theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ 
   s.finite_toSet.isOpen_biInter h
 #align is_open_bInter_finset isOpen_biInter_finset
 
-@[simp] -- porting note: added `simp`
+@[simp] -- Porting note: added `simp`
 theorem isOpen_const {p : Prop} : IsOpen { _x : X | p } := by by_cases p <;> simp [*]
 #align is_open_const isOpen_const
 
@@ -169,7 +169,7 @@ theorem TopologicalSpace.ext_iff_isClosed {t₁ t₂ : TopologicalSpace X} :
 
 alias ⟨_, TopologicalSpace.ext_isClosed⟩ := TopologicalSpace.ext_iff_isClosed
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (p := ¬p)⟩
 
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
@@ -187,7 +187,7 @@ theorem isClosed_sInter {s : Set (Set X)} : (∀ t ∈ s, IsClosed t) → IsClos
 #align is_closed_sInter isClosed_sInter
 
 theorem isClosed_iInter {f : ι → Set X} (h : ∀ i, IsClosed (f i)) : IsClosed (⋂ i, f i) :=
-  isClosed_sInter <| forall_range_iff.2 h
+  isClosed_sInter <| forall_mem_range.2 h
 #align is_closed_Inter isClosed_iInter
 
 theorem isClosed_biInter {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsClosed (f i)) :
@@ -247,7 +247,7 @@ theorem IsClosed.not : IsClosed { a | p a } → IsOpen { a | ¬p a } :=
 ### Interior of a set
 -/
 
--- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t ⊆ s, _`
+-- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t ⊆ s, _`
 theorem mem_interior : x ∈ interior s ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
   simp only [interior, mem_sUnion, mem_setOf_eq, and_assoc, and_left_comm]
 #align mem_interior mem_interiorₓ
@@ -820,7 +820,7 @@ theorem nhds_le_of_le {f} (h : x ∈ s) (o : IsOpen s) (sf : 𝓟 s ≤ f) : �
   rw [nhds_def]; exact iInf₂_le_of_le s ⟨h, o⟩ sf
 #align nhds_le_of_le nhds_le_of_le
 
--- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t ⊆ s, _`
+-- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t ⊆ s, _`
 theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t :=
   (nhds_basis_opens x).mem_iff.trans <| exists_congr fun _ =>
     ⟨fun h => ⟨h.2, h.1.2, h.1.1⟩, fun h => ⟨⟨h.2.2, h.2.1⟩, h.1⟩⟩
@@ -1256,7 +1256,7 @@ theorem dense_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : Se
 
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
--- porting note: was a `@[simp]` lemma but `simp` can prove it
+-- Porting note: was a `@[simp]` lemma but `simp` can prove it
 theorem closure_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : closure {x}ᶜ = (univ : Set X) :=
   (dense_compl_singleton x).closure_eq
 #align closure_compl_singleton closure_compl_singleton
@@ -1713,7 +1713,7 @@ theorem image_closure_subset_closure_image (h : Continuous f) :
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem closure_image_closure (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm
@@ -1721,9 +1721,8 @@ theorem closure_image_closure (h : Continuous f) :
     (closure_mono <| image_subset _ subset_closure)
 
 theorem closure_subset_preimage_closure_image (h : Continuous f) :
-    closure s ⊆ f ⁻¹' closure (f '' s) := by
-  rw [← Set.image_subset_iff]
-  exact image_closure_subset_closure_image h
+    closure s ⊆ f ⁻¹' closure (f '' s) :=
+  (mapsTo_image _ _).closure h
 #align closure_subset_preimage_closure_image closure_subset_preimage_closure_image
 
 theorem map_mem_closure {t : Set Y} (hf : Continuous f)
@@ -1736,6 +1735,15 @@ theorem Set.MapsTo.closure_left {t : Set Y} (h : MapsTo f s t)
     (hc : Continuous f) (ht : IsClosed t) : MapsTo f (closure s) t :=
   ht.closure_eq ▸ h.closure hc
 #align set.maps_to.closure_left Set.MapsTo.closure_left
+
+theorem Filter.Tendsto.lift'_closure (hf : Continuous f) {l l'} (h : Tendsto f l l') :
+    Tendsto f (l.lift' closure) (l'.lift' closure) :=
+  tendsto_lift'.2 fun s hs ↦ by
+    filter_upwards [mem_lift' (h hs)] using (mapsTo_preimage _ _).closure hf
+
+theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
+    Tendsto f ((𝓝 x).lift' closure) ((𝓝 (f x)).lift' closure) :=
+  (hf.tendsto x).lift'_closure hf
 
 /-!
 ### Function with dense range

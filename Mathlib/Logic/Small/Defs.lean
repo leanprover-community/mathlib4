@@ -68,7 +68,7 @@ protected noncomputable def Shrink.rec [Small.{w} α] {F : Shrink α → Sort v}
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
 
---Porting note: Priority changed to 101
+-- Porting note: Priority changed to 101
 instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 #align small_self small_self
@@ -103,7 +103,7 @@ theorem small_type : Small.{max (u + 1) v} (Type u) :=
 
 section
 
-open Classical
+open scoped Classical
 
 theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩

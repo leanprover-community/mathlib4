@@ -385,7 +385,7 @@ instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι =>
       index := default
       mem_index := Set.mem_univ }⟩
 
--- porting note: `simpNF` complains about `mem_index`
+-- Porting note: `simpNF` complains about `mem_index`
 attribute [simp] some_mem --mem_index
 
 theorem exists_mem (x : α) : ∃ i, x ∈ s i :=

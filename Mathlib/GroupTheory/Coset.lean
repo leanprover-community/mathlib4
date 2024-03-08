@@ -281,7 +281,7 @@ theorem rightCoset_eq_iff {x y : α} : op x • (s : Set α) = op y • s ↔ y 
 
 end CosetSubgroup
 
--- porting note: see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
+-- Porting note: see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
 run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
 
 namespace QuotientGroup
@@ -393,12 +393,12 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
-      -- porting note: replace with `by group`
+      -- Porting note: replace with `by group`
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
-      -- porting note: replace with `by group`
+      -- Porting note: replace with `by group`
   left_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
@@ -681,7 +681,7 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
 #align subgroup.quotient_subgroup_of_embedding_of_le Subgroup.quotientSubgroupOfEmbeddingOfLE
 #align add_subgroup.quotient_add_subgroup_of_embedding_of_le AddSubgroup.quotientAddSubgroupOfEmbeddingOfLE
 
--- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
+-- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : s) :
     quotientSubgroupOfEmbeddingOfLE H h (QuotientGroup.mk g) =
@@ -700,7 +700,7 @@ def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
 #align subgroup.quotient_subgroup_of_map_of_le Subgroup.quotientSubgroupOfMapOfLE
 #align add_subgroup.quotient_add_subgroup_of_map_of_le AddSubgroup.quotientAddSubgroupOfMapOfLE
 
--- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
+-- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : H) :
     quotientSubgroupOfMapOfLE H h (QuotientGroup.mk g) =
@@ -739,7 +739,7 @@ def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : S
 #align subgroup.quotient_infi_subgroup_of_embedding Subgroup.quotientiInfSubgroupOfEmbedding
 #align add_subgroup.quotient_infi_add_subgroup_of_embedding AddSubgroup.quotientiInfAddSubgroupOfEmbedding
 
--- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
+-- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α)
     (g : H) (i : ι) :

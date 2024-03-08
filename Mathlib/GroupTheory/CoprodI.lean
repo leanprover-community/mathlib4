@@ -97,7 +97,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) �
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
 #align free_product Monoid.CoprodI
 
---Porting note: could not de derived
+-- Porting note: could not de derived
 instance : Monoid (Monoid.CoprodI M) :=
   by delta Monoid.CoprodI; infer_instance
 
@@ -135,7 +135,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 variable {N : Type*} [Monoid N]
 
 /-- See note [partially-applied ext lemmas]. -/
---Porting note: higher `ext` priority
+-- Porting note: higher `ext` priority
 @[ext 1100]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|

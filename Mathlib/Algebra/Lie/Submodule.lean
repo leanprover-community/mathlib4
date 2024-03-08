@@ -558,11 +558,11 @@ theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R 
 
 instance : AddCommMonoid (LieSubmodule R L M) where
   add := (· ⊔ ·)
-  add_assoc _ _ _ := sup_assoc
+  add_assoc := sup_assoc
   zero := ⊥
-  zero_add _ := bot_sup_eq
-  add_zero _ := sup_bot_eq
-  add_comm _ _ := sup_comm
+  zero_add := bot_sup_eq
+  add_zero := sup_bot_eq
+  add_comm := sup_comm
 
 @[simp]
 theorem add_eq_sup : N + N' = N ⊔ N' :=

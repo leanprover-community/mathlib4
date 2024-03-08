@@ -44,7 +44,8 @@ assert_not_exists Real
 
 open Set LinearMap
 
-open Classical Pointwise
+open scoped Classical
+open Pointwise
 
 variable {𝕜 E F G : Type*}
 
@@ -258,7 +259,7 @@ theorem coe_comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : (S.comap f : 
   rfl
 #align convex_cone.coe_comap ConvexCone.coe_comap
 
-@[simp] -- porting note: was not a `dsimp` lemma
+@[simp] -- Porting note: was not a `dsimp` lemma
 theorem comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
   rfl
 #align convex_cone.comap_id ConvexCone.comap_id

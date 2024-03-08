@@ -598,14 +598,14 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
     `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
-  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by linarith⟩), and_iff_right_iff_imp]
+  rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
   exact (fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd)
 
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
   rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
-  rw [← add_one_le_iff, pow_succ] at h2
+  rw [← add_one_le_iff, Nat.pow_succ] at h2
   refine' not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 _) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
@@ -628,7 +628,7 @@ theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
   simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Nat.mem_divisors]
-  exact ⟨(pow_dvd_pow p <| by linarith).trans pow_padicValNat_dvd, hn⟩
+  exact ⟨(pow_dvd_pow p <| by omega).trans pow_padicValNat_dvd, hn⟩
 #align range_pow_padic_val_nat_subset_divisors range_pow_padicValNat_subset_divisors
 
 theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
