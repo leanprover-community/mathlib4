@@ -581,7 +581,7 @@ open Ideal in
   /-- If an integral domain is a `UniqueFactorizationMonoid`, then every nonzero prime ideal
   contains a prime element. -/
 theorem IsPrime.exists_mem_Prime_of_neq_bot {R : Type*} [CommSemiring R] [IsDomain R]
-    [DecidableEq R] [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
+    [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
     ∃ x ∈ I, Prime x := by
   rcases Submodule.exists_mem_ne_zero_of_ne_bot hI with ⟨a, ha₁, ha₂⟩
   rcases factors_prod ha₂ with ⟨u, ha₃⟩
