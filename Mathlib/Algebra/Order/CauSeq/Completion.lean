@@ -263,7 +263,8 @@ protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
-  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h]; rfl]
+  congr_arg mk <| by split_ifs with h <;>
+    [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
 /- porting note: This takes a long time to compile.

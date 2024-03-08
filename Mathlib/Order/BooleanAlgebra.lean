@@ -704,7 +704,7 @@ theorem compl_inf : (x ⊓ y)ᶜ = xᶜ ⊔ yᶜ :=
 
 @[simp]
 theorem compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
-  ⟨fun h => by have h := compl_le_compl h; simp at h; assumption, compl_le_compl⟩
+  ⟨fun h => by have h := compl_le_compl h; simpa using h, compl_le_compl⟩
 #align compl_le_compl_iff_le compl_le_compl_iff_le
 
 @[simp] lemma compl_lt_compl_iff_lt : yᶜ < xᶜ ↔ x < y :=
