@@ -8,11 +8,14 @@ import Mathlib.ProofTheory.System
 /-!
 # Sequent calculus and variants
 
-This file defines the Tait-style calculus and Gentzen-style calculus.
+This file defines the Gentzen's sequent calculus, as well as Tait's calculus.
 
 ## Main Definitions
-* `Tait`    Tait-style calclus
-* `Gentzen` Gentzen-style calculus
+* `Gentzen` Gentzen's sequent calculus
+* `Tait`    Tait's calculus
+
+## References
+- [Buss, *An Introduction to Proof Theory*][buss]
 
 -/
 
@@ -50,37 +53,57 @@ infix: 45 " ⊢²! " => TwoSided.Derivable
 
 /-- Class `Tait` for a Tait-style calculus -/
 class Tait (F : Type u) [LogicalConnective F] extends OneSided F where
+  /-- Derive formula from `⊤` -/
   verum (Δ : List F)         : ⊢¹ ⊤ :: Δ
+  /-- `and` introduction rule -/
   and {p q : F} {Δ : List F} : ⊢¹ p :: Δ → ⊢¹ q :: Δ → ⊢¹ p ⋏ q :: Δ
+  /-- `or` introduction rule -/
   or {p q : F} {Δ : List F}  : ⊢¹ p :: q :: Δ → ⊢¹ p ⋎ q :: Δ
+  /-- Weakening rule -/
   wk {Δ Δ' : List F}         : ⊢¹ Δ → Δ ⊆ Δ' → ⊢¹ Δ'
+  /-- Excluded middle -/
   em {p} {Δ : List F}        : p ∈ Δ → ~p ∈ Δ → ⊢¹ Δ
 
 /-- Class `Tait.Cut` for the cut rule of a Tait-style calculus -/
 class Tait.Cut (F : Type u) [LogicalConnective F] [Tait F] where
+  /-- `cut` definition -/
   cut {Δ : List F} {p} : ⊢¹ p :: Δ → ⊢¹ ~p :: Δ → ⊢¹ Δ
 
 /-- Class `Gentzen` for a Gentzen-style calculus -/
 class Gentzen (F : Type u) [LogicalConnective F] extends TwoSided F where
+  /-- `⊤` introduction rule -/
   verum (Γ Δ : List F)                : Γ ⊢² ⊤ :: Δ
+  /-- Derive formula from `⊥` -/
   falsum (Γ Δ : List F)               : ⊥ :: Γ ⊢² Δ
+  /-- Derive from contradiction on left -/
   negLeft {p : F} {Γ Δ : List F}      : Γ ⊢² p :: Δ → ~p :: Γ ⊢² Δ
+  /-- Derive from contradiction on right -/
   negRight {p : F} {Γ Δ : List F}     : p :: Γ ⊢² Δ → Γ ⊢² ~p :: Δ
+  /-- Introduce and from the left -/
   andLeft {p q : F} {Γ Δ : List F}    : p :: q :: Γ ⊢² Δ → p ⋏ q :: Γ ⊢² Δ
+  /-- Introduce and from the right -/
   andRight {p q : F} {Γ Δ : List F}   : Γ ⊢² p :: Δ → Γ ⊢² q :: Δ → Γ ⊢² p ⋏ q :: Δ
+  /-- Introduce or from the left -/
   orLeft {p q : F} {Γ Δ : List F}     : p :: Γ ⊢² Δ → q :: Γ ⊢² Δ → p ⋎ q :: Γ ⊢² Δ
+  /-- Introduce or from the right -/
   orRight {p q : F} {Γ Δ : List F}    : Γ ⊢² p :: q :: Δ → Γ ⊢² p ⋎ q :: Δ
+  /-- Introduce implication from the left -/
   implyLeft {p q : F} {Γ Δ : List F}  : Γ ⊢² p :: Δ → q :: Γ ⊢² Δ → (p ⭢ q) :: Γ ⊢² Δ
+  /-- Introduce implication from the right -/
   implyRight {p q : F} {Γ Δ : List F} : p :: Γ ⊢² q :: Δ → Γ ⊢² (p ⭢ q) :: Δ
+  /-- Weaken -/
   wk {Γ Γ' Δ Δ' : List F}             : Γ ⊢² Δ → Γ ⊆ Γ' → Δ ⊆ Δ' → Γ' ⊢² Δ'
+  /-- Excluded middle -/
   em {p} {Γ Δ : List F}               : p ∈ Γ → p ∈ Δ → Γ ⊢² Δ
 
 /-- Class `Gentzen.Cut` for the cut rule of a Gentzen-style calculus -/
 class Gentzen.Cut (F : Type u) [LogicalConnective F] [Gentzen F] where
+  /-- Cut rule -/
   cut {Γ Δ : List F} {p} : Γ ⊢² p :: Δ → p :: Γ ⊢² Δ → Γ ⊢² Δ
 
 /-- Class `LawfulTwoSided` for a lawful two-side proof -/
 class LawfulTwoSided (F : Type u) [LogicalConnective F] [TwoSided F] [Proof F] where
+  /-- To proof -/
   toProof₁ {Γ} {T : Set F} {p : F} : Γ ⊢² [p] → (∀ q ∈ Γ, T ⊢ q) → T ⊢ p
 
 variable {F : Type*} [LogicalConnective F]
@@ -103,10 +126,11 @@ variable {Γ Δ : List F}
 instance : TwoSided F where
   Derivation := fun Γ Δ => ⊢¹ Γ.map (~·) ++ Δ
 
-/-- -/
+/-- Cons formula from the left -/
 def ofConsLeft {p : F} {Γ Δ : List F} (b : p :: Γ ⊢² Δ) :
     ⊢¹ ~p :: (Γ.map (~·) ++ Δ) := wk b (by simp)
 
+/-- Cons formula from the right -/
 def ofConsRight {p : F} {Γ Δ : List F} (b : Γ ⊢² p :: Δ) :
     ⊢¹ p :: (Γ.map (~·) ++ Δ) :=
   wk b (by
@@ -115,6 +139,7 @@ def ofConsRight {p : F} {Γ Δ : List F} (b : Γ ⊢² p :: Δ) :
     exact ⟨List.subset_cons_of_subset _ (List.subset_append_left _ _),
       List.subset_cons_of_subset _ (List.subset_append_right _ _)⟩)
 
+/-- Cons formula from the right (second version) -/
 def ofConsRight₂ {p q : F} {Γ Δ : List F} (b : Γ ⊢² p :: q :: Δ) :
     ⊢¹ p :: q :: (Γ.map (~·) ++ Δ) :=
   wk b (by
@@ -124,6 +149,7 @@ def ofConsRight₂ {p q : F} {Γ Δ : List F} (b : Γ ⊢² p :: q :: Δ) :
     List.subset_append_left _ _, List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
     List.subset_append_right _ _⟩)
 
+/-- Cons formula from the left and right -/
 def ofConsLeftRight {p q : F} {Γ Δ : List F} (b : p :: Γ ⊢² q :: Δ) :
     ⊢¹ ~p :: q :: (Γ.map (~·) ++ Δ) :=
   wk b (by
@@ -133,10 +159,11 @@ def ofConsLeftRight {p q : F} {Γ Δ : List F} (b : p :: Γ ⊢² q :: Δ) :
       List.subset_append_left _ _, List.subset_cons_of_subset _ $ List.subset_cons_of_subset _ $
       List.subset_append_right _ _⟩)
 
-def toConsLeft {p : F} {Γ Δ : List F}
-    (b : ⊢¹ ~p :: (Γ.map (~·) ++ Δ)) :
-    p :: Γ ⊢² Δ := wk b (by simp)
+/-- Cons to the left -/
+def toConsLeft {p : F} {Γ Δ : List F} (b : ⊢¹ ~p :: (Γ.map (~·) ++ Δ)) : p :: Γ ⊢² Δ :=
+  wk b (by simp)
 
+/-- Cons to the right -/
 def toConsRight {p : F} {Γ Δ : List F}
     (b : ⊢¹ p :: (Γ.map (~·) ++ Δ)) :
     Γ ⊢² p :: Δ :=
@@ -172,8 +199,10 @@ variable [Tait.Cut F]
 
 instance : Gentzen.Cut F := ⟨fun d d' => Cut.cut (ofConsRight d) (ofConsLeft d')⟩
 
+/-- Equivalence for sequents -/
 def equiv : Γ ⊢² Δ ≃ ⊢¹ Γ.map (~·) ++ Δ := Equiv.refl _
 
+/-- Tautology for sequents -/
 def tauto (b : ⊢¹ Δ) : Γ ⊢² Δ := wk b (by simp)
 
 end Tait
@@ -182,50 +211,63 @@ namespace Gentzen
 
 variable [Gentzen F] [Gentzen.Cut F] {Γ Δ E : List F}
 
+/-- Weaken on the left -/
 def wkLeft {Γ Γ' Δ : List F} (d : Γ ⊢² Δ) (ss : Γ ⊆ Γ') : Γ' ⊢² Δ := wk d ss (by simp)
 
+/-- Weaken on the right -/
 def wkRight {Γ Δ Δ' : List F} (d : Γ ⊢² Δ) (ss : Δ ⊆ Δ') : Γ ⊢² Δ' := wk d (by simp) ss
 
+/-- Deriving `⊤` (second version) -/
 def verum' (h : ⊤ ∈ Δ) : Γ ⊢² Δ := wkRight (verum Γ Δ) (by simp[h])
 
+/-- Employ negation from the left -/
 def ofNegLeft {p} (b : ~p :: Γ ⊢² Δ) : Γ ⊢² p :: Δ :=
   let d : p :: Γ ⊢² p :: Δ :=
     Gentzen.wk (show [p] ⊢² [p] from em (List.mem_singleton.mpr rfl) (List.mem_singleton.mpr rfl))
       (by simp) (by simp)
   Cut.cut (negRight d) (wkRight b (by simp))
 
+/-- Employ negation from the right -/
 def ofNegRight {p} (b : Γ ⊢² ~p :: Δ) : p :: Γ ⊢² Δ :=
   let d : p :: Γ ⊢² p :: Δ :=
     Gentzen.wk (show [p] ⊢² [p] from em (List.mem_singleton.mpr rfl) (List.mem_singleton.mpr rfl))
       (by simp) (by simp)
   Cut.cut (wkLeft b (by simp)) (negLeft d)
 
+/-- Disjunction derive from antecedent -/
 structure Disjconseq (T : Set F) (Γ : List F) where
+  /-- Antecedent for derivation -/
   antecedent : List F
+  /-- Each antecedent formula is in `T` -/
   antecedent_ss : ∀ p ∈ antecedent, p ∈ T
+  /-- Antecedent implies derivation -/
   derivation : antecedent ⊢² Γ
 
+/-- Infix notation for `Disjconseq` -/
 infix: 45 " ⊢' " => Disjconseq
 
 variable {T : Set F}
 
-def DisjconseqEquivDerivation :
-    T ⊢' Γ ≃ (Δ : {Δ : List F // ∀ π ∈ Δ, π ∈ T}) × Δ ⊢² Γ where
+/-- Equivalence with derivation -/
+def DisjconseqEquivDerivation : T ⊢' Γ ≃ (Δ : {Δ : List F // ∀ π ∈ Δ, π ∈ T}) × Δ ⊢² Γ where
   toFun := fun b => ⟨⟨b.antecedent, b.antecedent_ss⟩, b.derivation⟩
   invFun := fun p => ⟨p.1, p.1.prop, p.2⟩
   left_inv := fun b => by simp
   right_inv := fun b => by simp
 
+/-- Strengthening still yields derivation -/
 def Disjconseq.weakening {T U : Set F} {Γ : List F} (b : T ⊢' Γ) (h : T ⊆ U) : U ⊢' Γ where
   antecedent := b.antecedent
   antecedent_ss := fun p hp => h (b.antecedent_ss p hp)
   derivation := b.derivation
 
+/-- To derivation -/
 def toDisjconseq {Γ Δ} (d : Γ ⊢² Δ) (ss : ∀ p ∈ Γ, p ∈ T) : T ⊢' Δ where
   antecedent := Γ
   antecedent_ss := ss
   derivation := d
 
+/-- Define cut (alternative) -/
 def Cut.cut' {Γ₁ Γ₂ Δ₁ Δ₂ : List F} {p : F} (d₁ : Γ₁ ⊢² p :: Δ₁) (d₂ : p :: Γ₂ ⊢² Δ₂) :
     Γ₁ ++ Γ₂ ⊢² Δ₁ ++ Δ₂ :=
   let d₁ : Γ₁ ++ Γ₂ ⊢² p :: (Δ₁ ++ Δ₂) := wk d₁ (by simp) (List.cons_subset_cons _ $ by simp)
@@ -234,13 +276,16 @@ def Cut.cut' {Γ₁ Γ₂ Δ₁ Δ₂ : List F} {p : F} (d₁ : Γ₁ ⊢² p ::
 
 namespace Disjconseq
 
+/-- Tautology for sequents -/
 def tauto {Δ} (d : [] ⊢² Δ) : T ⊢' Δ := toDisjconseq d (by simp)
 
+/-- Weakening for sequents -/
 def wk (b : T ⊢' Γ) (Γ' : List F) (ss : Γ ⊆ Γ') : T ⊢' Γ' where
   antecedent := b.antecedent
   antecedent_ss := b.antecedent_ss
   derivation := wkRight b.derivation ss
 
+/-- Cut for sequents -/
 def cut (p : F) (b : T ⊢' p :: Γ) (b' : T ⊢' ~p :: Γ) : T ⊢' Γ where
   antecedent := b.antecedent ++ b'.antecedent
   antecedent_ss := by
@@ -253,6 +298,7 @@ def cut (p : F) (b : T ⊢' p :: Γ) (b' : T ⊢' ~p :: Γ) : T ⊢' Γ where
     let d' : b.antecedent ++ b'.antecedent ⊢² ~p :: Γ := wkLeft b'.derivation (by simp)
     Cut.cut d' (negLeft d)
 
+/-- Cut for sequents (alternative) -/
 def cut' (p : F) (b : T ⊢' p :: Γ) (b' : T ⊢' ~p :: Δ) : T ⊢' Γ ++ Δ where
   antecedent := b.antecedent ++ b'.antecedent
   antecedent_ss := by
@@ -265,10 +311,12 @@ def cut' (p : F) (b : T ⊢' p :: Γ) (b' : T ⊢' ~p :: Δ) : T ⊢' Γ ++ Δ w
     let d' : b.antecedent ++ b'.antecedent ⊢² ~p :: Δ := wkLeft b'.derivation (by simp)
     exact Gentzen.wk (Cut.cut' d' (negLeft d)) (by simp) (by simp)
 
+/-- Verum for sequents -/
 def verum (Γ : List F) : T ⊢' ⊤ :: Γ := ⟨[], by simp, Gentzen.verum _ _⟩
 
 -- def verum' (h : ⊤ ∈ Γ) : T ⊢' Γ := wk (verum Γ) (by simp[h])
 
+/-- `and` introduction -/
 def and (p q : F) (bp : T ⊢' p :: Δ) (bq : T ⊢' q :: Δ) : T ⊢' p ⋏ q :: Δ where
   antecedent := bp.antecedent ++ bq.antecedent
   antecedent_ss := by
@@ -280,11 +328,13 @@ def and (p q : F) (bp : T ⊢' p :: Δ) (bq : T ⊢' q :: Δ) : T ⊢' p ⋏ q :
       (Gentzen.wkLeft bp.derivation (List.subset_append_left _ _))
       (Gentzen.wkLeft bq.derivation (List.subset_append_right _ _))
 
+/-- `or` introduction -/
 def or (p q : F)  (b : T ⊢' p :: q :: Δ) : T ⊢' p ⋎ q :: Δ where
   antecedent := b.antecedent
   antecedent_ss := b.antecedent_ss
   derivation := Gentzen.orRight b.derivation
 
+/-- `deduction` derivation -/
 def deduction [DecidableEq F] {p} (b : insert p T ⊢' Δ) : T ⊢' ~p :: Δ where
   antecedent := b.antecedent.filter (· ≠ p)
   antecedent_ss := by
@@ -295,6 +345,7 @@ def deduction [DecidableEq F] {p} (b : insert p T ⊢' Δ) : T ⊢' ~p :: Δ whe
     intro q hq
     by_cases e : q = p <;> simp[List.mem_filter, hq, e])
 
+/-- `deduction` derivation with negation -/
 def deductionNeg [DecidableEq F] {p} (b : insert (~p) T ⊢' Δ) : T ⊢' p :: Δ where
   antecedent := b.antecedent.filter (· ≠ ~p)
   antecedent_ss := by
@@ -319,7 +370,7 @@ instance : Proof F where
 
 variable {F}
 
-
+/-- To proof -/
 def toProof : {Γ Δ : List F} → Γ ⊢² Δ → (∀ q ∈ Γ, T ⊢ q) → T ⊢' Δ
   | [],     _, d, _ => toDisjconseq d (by simp)
   | q :: Γ, Δ, d, h =>
@@ -329,8 +380,11 @@ def toProof : {Γ Δ : List F} → Γ ⊢² Δ → (∀ q ∈ Γ, T ⊢ q) → T
 
 instance : LawfulTwoSided F := ⟨toProof⟩
 
+/-- Proof cut -/
 def proofCut {T U : Set F} {p} (dU : T ⊢* U) (dp : U ⊢ p) : T ⊢ p :=
   toProof dp.derivation (fun q hq => dU $ dp.antecedent_ss q hq)
+
+/-- Proof by equivalence with derivation -/
 def proofEquivDerivation {p : F} :
     T ⊢ p ≃ (Δ : {Δ : List F // ∀ π ∈ Δ, π ∈ T}) × Δ ⊢² [p] :=
   DisjconseqEquivDerivation
@@ -410,6 +464,7 @@ namespace LawfulTwoSided
 
 variable [Proof F] [TwoSided F] [LawfulTwoSided F]
 
+/-- Nil proof -/
 def toProofOfNil {p : F} (b : [] ⊢² [p]) (T : Set F) : T ⊢ p :=
   toProof₁ b (by intro q h; exact False.elim ((List.mem_nil_iff q).mp h))
 

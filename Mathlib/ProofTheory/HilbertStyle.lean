@@ -18,6 +18,7 @@ universe u
 
 variable {F : Type u} [LogicalConnective F] [𝓑 : Proof F]
 
+/-- Class for intuitionistic reasoning -/
 class Intuitionistic (F : Type u) [LogicalConnective F] [Proof F] where
   modus_ponens {T : Set F} {p q : F}   : T ⊢! p ⭢ q → T ⊢! p → T ⊢! q
   verum       (T : Set F)             : T ⊢! ⊤
@@ -62,6 +63,7 @@ namespace Intuitionistic
 
 variable [Intuitionistic F] {T : Set F}
 
+/-- Infix notation for `modus_ponens` -/
 scoped infixl:90 " ⨀ " => modus_ponens
 
 @[simp] lemma imp_id (p : F) : T ⊢! p ⭢ p := (imply₂ T p (p ⭢ p) p) ⨀ (imply₁ T p (p ⭢ p)) ⨀

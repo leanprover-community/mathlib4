@@ -12,8 +12,11 @@ This file defines the predicate calculus.
 
 -/
 
+/-- Identity and composition -/
 class VMonoidStruct {α : Type*} (M : α → α → Type*) where
+  /-- Identity -/
   id {a} : M a a
+  /-- Composition -/
   comp {a₁ a₂ a₃} : M a₂ a₃ → M a₁ a₂ → M a₁ a₃
 
 instance {α : Type*} (M : α → α → Type*) [VMonoidStruct M] (a : α) : One (M a a) :=
@@ -22,7 +25,7 @@ instance {α : Type*} (M : α → α → Type*) [VMonoidStruct M] (a : α) : One
 instance {α : Type*} (M : α → α → Type*) [VMonoidStruct M] (a₁ a₂ a₃ : α) :
   HSMul (M a₂ a₃) (M a₁ a₂) (M a₁ a₃) := ⟨VMonoidStruct.comp⟩
 
-/- a.k.a. category -/
+/-- VMonoid category -/
 class VMonoid {α : Type*} (M : α → α → Type*) extends VMonoidStruct M where
   id_left {a b : α} (m : M a b) : (1 : M b b) • m = m
   id_right {a b : α} (m : M a b) : m • (1 : M a a) = m
@@ -33,15 +36,18 @@ namespace ProofTheory
 
 namespace Unsorted
 
+/-- Class for `BoundedVariable` -/
 class BoundedVariable (T : ℕ → Type*) where
   bvar {n} : Fin n → T n
 
+/-- Prefix notation `BoundedVariable.bvar` -/
 scoped prefix:max "#" => BoundedVariable.bvar
 
 section Term
 
 variable (T : ℕ → Type*) [BoundedVariable T] (R : outParam (ℕ → ℕ → Type*)) [VMonoid R]
 
+/-- Class `RewritingT` rewriting via `R` -/
 class RewritingT where
   evalT {n₁ n₂} : R n₁ n₂ → T n₁ → T n₂
   evalT_injective' {n₁ n₂} : Function.Injective (evalT : R n₁ n₂ → T n₁ → T n₂)
@@ -51,8 +57,10 @@ class RewritingT where
 
 open RewritingT
 
+/-- Infix for `RewritingT.evalT` -/
 infix:70 " ⋙ " => RewritingT.evalT
 
+/-- Class `RewritingT.Substs` for rewriting substrings -/
 class RewritingT.Substs [RewritingT T R] where
   substs {k n} (v : Fin k → T n) : R k n
   evalT_substs {k n} (v : Fin k → T n) (x : Fin k) : substs v ⋙ #x = v x
@@ -71,6 +79,7 @@ variable (F : ℕ → Type*) [(n : ℕ) → LogicalConnective (F n)] [UnivQuanti
 variable (T : outParam (ℕ → Type*)) [BoundedVariable T]
 variable (R : outParam (ℕ → ℕ → Type*)) [VMonoid R]
 
+/-- Class `Rewriting` for rewriting -/
 class Rewriting where
   eval {n₁ n₂} : R n₁ n₂ → F n₁ →ˡᶜ F n₂
   q {n₁ n₂} : R n₁ n₂ → R (n₁ + 1) (n₂ + 1)
@@ -84,10 +93,12 @@ class Rewriting where
 
 open Rewriting
 
+/-- Class `Rewriting` for rewriting subsets -/
 class Rewriting.Substs [RewritingT T R] [RewritingT.Substs T R] extends Rewriting F R where
   q_substs {k n} (v : Fin k → T n) :
     q (substs v) = substs (#0 :> fun i => RewritingT.evalT (bShift T) (v i))
 
+/-- Class `SyntacticRewriting` for rewriting syntactically -/
 class SyntacticRewriting [RewritingT T R] [RewritingT.Substs T R]
     extends Rewriting F R where
   shift {n} : R n n
@@ -102,12 +113,17 @@ end Formula
 variable {T : ℕ → Type*} [BoundedVariable T] {R : ℕ → ℕ → Type*}
 variable [VMonoid R] [RewritingT T R] [RewritingT.Substs T R]
 
+/-- Operator -/
 def op {k n} (t : T k) (v : Fin k → T n) : T n := evalT (substs v) t
 
+/-- Operation structure -/
 structure Operator (α : ℕ → Type*) (k : ℕ) where
+  /-- Apply operator -/
    t : α k
 
+/-- Class `Operator.Zero` for the zero operator -/
 class Operator.Zero (T : ℕ → Type*) where
+  /-- Zero operator -/
   zero : T 0
 
 end Unsorted

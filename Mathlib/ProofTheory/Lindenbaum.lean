@@ -15,6 +15,7 @@ variable {F : Type*} [LogicalConnective F] {α : Type*} [Semantics F α]
 
 namespace Semantics
 
+/-- Equivalence definition -/
 def Equiv (p q : F) : Prop := Valid (p ⭤ q)
 
 namespace Equiv
