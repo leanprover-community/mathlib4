@@ -206,7 +206,7 @@ def getMsgTacticD (default : TSyntax ``tacticSeq)  :
       pure ()
     | some msg => do
       let parsedMessage :=
-        parseAsTacticSeq (←getEnv) msg.toString.trimLeft
+        parseAsTacticSeq (← getEnv) msg.toString.trimLeft
       match parsedMessage with
       | Except.ok tac' =>
         resetMessageLog
