@@ -3210,7 +3210,6 @@ import Mathlib.ProofTheory.Predicate
 import Mathlib.ProofTheory.System
 import Mathlib.ProofTheory.Predicate
 import Mathlib.RepresentationTheory.Action.Basic
-import Mathlib.RepresentationTheory.Action.Concrete
 import Mathlib.RepresentationTheory.Action.Limits
 import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
