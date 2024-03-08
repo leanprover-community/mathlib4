@@ -307,10 +307,8 @@ lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : or
     orderOf (x ^ (orderOf x / (factorization_lcm_left (orderOf x) (orderOf y))) *
       y ^ (orderOf y / factorization_lcm_right (orderOf x) (orderOf y))) =
       Nat.lcm (orderOf x) (orderOf y) := by
-  have h₁ : 0 < factorization_lcm_left (orderOf x) (orderOf y) :=
-    Nat.pos_of_ne_zero <| factorization_lcm_left_ne_zero _ _
-  have h₂ : 0 < factorization_lcm_right (orderOf x) (orderOf y) :=
-    Nat.pos_of_ne_zero <| factorization_lcm_right_ne_zero _ _
+  have h₁ := factorization_lcm_left_pos (orderOf x) (orderOf y)
+  have h₂ := factorization_lcm_right_pos (orderOf x) (orderOf y)
   have hx' : orderOf x / factorization_lcm_left (orderOf x) (orderOf y) ≠ 0 :=
     fun h ↦ hx <| eq_zero_of_dvd_of_div_eq_zero (factorization_lcm_left_dvd hx hy) h
   have hy' : orderOf y / factorization_lcm_right (orderOf x) (orderOf y) ≠ 0 :=
