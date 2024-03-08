@@ -39,10 +39,8 @@ instance IsStarNormal.cfc_map {R A : Type*} {p : A → Prop} [CommSemiring R] [S
       exact mul_comm _ _
     · simp [cfc_apply_of_not_continuousOn a h]
 
-variable {A : Type*} [NormedRing A] [StarRing A] [CstarRing A] [CompleteSpace A]
-variable [NormedAlgebra ℂ A] [StarModule ℂ A]
-
-instance IsStarNormal.instContinuousFunctionalCalculus :
+instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [NormedRing A] [StarRing A]
+    [CstarRing A] [CompleteSpace A] [NormedAlgebra ℂ A] [StarModule ℂ A] :
     ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop) where
   exists_cfc_of_predicate a ha := by
     refine ⟨(elementalStarAlgebra ℂ a).subtype.comp <| continuousFunctionalCalculus a,
@@ -57,55 +55,76 @@ instance IsStarNormal.instContinuousFunctionalCalculus :
         AlgEquiv.spectrum_eq (continuousFunctionalCalculus a), ContinuousMap.spectrum_eq_range]
     case predicate_hom => exact fun f ↦ ⟨by rw [← map_star]; exact Commute.all (star f) f |>.map _⟩
 
-lemma IsSelfAdjoint.spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
-    SpectrumRestricts a Complex.reCLM where
-  rightInvOn _x hx := ha.mem_spectrum_eq_re hx |>.symm
-  left_inv := Complex.ofReal_re
+variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
+  [StarModule ℂ A] [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
+
+attribute [aesop safe apply] IsSelfAdjoint.isStarNormal
 
 /-- An element in a C⋆-algebra is selfadjoint if and only if it is normal and its spectrum is
 contained in `ℝ`. -/
 lemma isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts {a : A} :
     IsSelfAdjoint a ↔ IsStarNormal a ∧ SpectrumRestricts a Complex.reCLM := by
-  refine ⟨fun ha ↦ ⟨ha.isStarNormal, ha.spectrumRestricts⟩, ?_⟩
-  rintro ⟨ha₁, ha₂⟩
-  rw [isSelfAdjoint_iff]
-  nth_rw 2 [← cfc_id ℂ a]
-  rw [← cfc_star_id a (R := ℂ)]
-  refine cfc_congr a fun x hx ↦ ?_
-  obtain ⟨x, -, rfl⟩ := ha₂.algebraMap_image.symm ▸ hx
-  exact Complex.conj_ofReal _
+  refine ⟨fun ha ↦ ⟨ha.isStarNormal, ⟨fun x hx ↦ ?_, Complex.ofReal_re⟩⟩, ?_⟩
+  · have := eqOn_of_cfc_eq_cfc a <| (cfc_star a (id : ℂ → ℂ)).symm ▸ (cfc_id ℂ a).symm ▸ ha.star_eq
+    exact Complex.conj_eq_iff_re.mp (by simpa using this hx)
+  · rintro ⟨ha₁, ha₂⟩
+    rw [isSelfAdjoint_iff]
+    nth_rw 2 [← cfc_id ℂ a]
+    rw [← cfc_star_id a (R := ℂ)]
+    refine cfc_congr a fun x hx ↦ ?_
+    obtain ⟨x, -, rfl⟩ := ha₂.algebraMap_image.symm ▸ hx
+    exact Complex.conj_ofReal _
 
-instance IsSelfAdjoint.instContinuousFunctionalCalculus :
+lemma IsSelfAdjoint.spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
+    SpectrumRestricts a Complex.reCLM :=
+  isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts.mp ha |>.right
+
+/-- A normal element whose `ℂ`-spectrum is contained in `ℝ` is selfadjoint. -/
+lemma SpectrumRestricts.isSelfAdjoint (a : A) (ha : SpectrumRestricts a Complex.reCLM)
+    [IsStarNormal a] : IsSelfAdjoint a :=
+  isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts.mpr ⟨‹_›, ha⟩
+
+theorem IsSelfAdjoint.continuousFunctionalCalculus_of_compactSpace_spectrum
+    [h : ∀ x : A, CompactSpace (spectrum ℂ x)] :
     ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop) :=
   SpectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
     Complex.isometry_ofReal (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts)
-    (fun _ _ ↦ inferInstance)
+    (fun _ _ ↦ h _)
 
-lemma mem_unitary_of_spectrum_subset_circle {u : A} [IsStarNormal u]
-    (hu : spectrum ℂ u ⊆ circle) : u ∈ unitary A := by
-  rw [unitary.mem_iff, ← cfc_id ℂ u, ← cfc_star, ← cfc_mul .., ← cfc_mul ..]
-  simp only [id_eq]
-  nontriviality A
-  constructor
-  all_goals
-    apply eq_one_of_spectrum_eq_one (R := ℂ) _ ?_
-    rw [Set.eq_singleton_iff_nonempty_unique_mem]
-    refine ⟨spectrum.nonempty _, ?_⟩
-    rw [cfc_map_spectrum _ _]
-    rintro - ⟨x, hx, rfl⟩
-    simp only [ContinuousMap.mul_apply, ContinuousMap.star_apply, ContinuousMap.id_apply,
-      IsROrC.star_def, mul_comm x]
-    apply hu at hx
-    rwa [SetLike.mem_coe, mem_circle_iff_normSq, ← Complex.ofReal_injective.eq_iff,
-      Complex.normSq_eq_conj_mul_self] at hx
+instance IsSelfAdjoint.instContinuousFunctionalCalculus {A : Type*} [NormedRing A] [StarRing A]
+    [CstarRing A] [CompleteSpace A] [NormedAlgebra ℂ A] [StarModule ℂ A] :
+    ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop) :=
+  IsSelfAdjoint.continuousFunctionalCalculus_of_compactSpace_spectrum
 
 lemma unitary_iff_isStarNormal_and_spectrum_subset_circle {u : A} :
     u ∈ unitary A ↔ IsStarNormal u ∧ spectrum ℂ u ⊆ circle := by
   refine ⟨fun hu ↦ ?_, ?_⟩
-  · have := isStarNormal_of_mem_unitary hu
-    exact ⟨this, spectrum.subset_circle_of_unitary hu⟩
+  · have h_normal := isStarNormal_of_mem_unitary hu
+    refine ⟨h_normal, ?_⟩
+    have h := unitary.star_mul_self_of_mem hu
+    rw [← cfc_id ℂ u, ← cfc_star u id, ← cfc_mul .., ← cfc_one ℂ u] at h
+    have := eqOn_of_cfc_eq_cfc u h
+    peel this with x hx _
+    rw [SetLike.mem_coe, mem_circle_iff_normSq]
+    simpa using congr($(this).re)
   · rintro ⟨_, hu⟩
-    exact mem_unitary_of_spectrum_subset_circle hu
+    rw [unitary.mem_iff, ← cfc_id ℂ u, ← cfc_star, ← cfc_mul .., ← cfc_mul .., ← cfc_one ℂ u]
+    simp only [id_eq]
+    constructor
+    all_goals
+      apply cfc_congr _ (fun x hx ↦ ?_)
+      simp only [IsROrC.star_def, mul_comm x]
+      apply hu at hx
+      rwa [SetLike.mem_coe, mem_circle_iff_normSq, ← Complex.ofReal_injective.eq_iff,
+        Complex.normSq_eq_conj_mul_self] at hx
+
+lemma mem_unitary_of_spectrum_subset_circle {u : A}
+    [IsStarNormal u] (hu : spectrum ℂ u ⊆ circle) : u ∈ unitary A :=
+  unitary_iff_isStarNormal_and_spectrum_subset_circle.mpr ⟨‹_›, hu⟩
+
+lemma spectrum_subset_circle_of_mem_unitary {u : A} [IsStarNormal u] (hu : u ∈ unitary A) :
+    spectrum ℂ u ⊆ circle :=
+  unitary_iff_isStarNormal_and_spectrum_subset_circle.mp hu |>.right
 
 end Normal
 
@@ -151,12 +170,11 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
     a = 0 := by
   nontriviality A
   rw [SpectrumRestricts.nnreal_iff] at ha₁ ha₂
-  apply eq_zero_of_spectrum_eq_zero (R := ℝ) a
-  refine Set.eq_singleton_iff_nonempty_unique_mem.mpr ⟨?_, ?_⟩
-  · exact ha.spectrumRestricts.image.symm ▸ (spectrum.nonempty a).image _
-  · simp only [← spectrum.neg_eq, Set.mem_neg] at ha₂
-    peel ha₁ with x hx _
-    linarith [ha₂ (-x) ((neg_neg x).symm ▸ hx)]
+  apply eq_zero_of_spectrum_subset_zero (R := ℝ) a
+  rw [Set.subset_singleton_iff]
+  simp only [← spectrum.neg_eq, Set.mem_neg] at ha₂
+  peel ha₁ with x hx _
+  linarith [ha₂ (-x) ((neg_neg x).symm ▸ hx)]
 
 lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ} (hr : 0 ≤ r) :
