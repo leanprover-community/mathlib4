@@ -56,7 +56,6 @@ theorem homotopyPToId_eventually_constant {q n : ℕ} (hqn : n < q) :
     Homotopy.ofEq_hom, Pi.zero_apply, Homotopy.add_hom, Homotopy.compLeft_hom, add_zero,
     Homotopy.nullHomotopy'_hom, ComplexShape.down_Rel, hσ'_eq_zero hqn (c_mk (n + 1) n rfl),
     dite_eq_ite, ite_self, comp_zero, zero_add, homotopyPToId]
-  rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.homotopy_P_to_id_eventually_constant AlgebraicTopology.DoldKan.homotopyPToId_eventually_constant
 

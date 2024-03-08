@@ -261,8 +261,7 @@ theorem start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
 
 theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
-  have : succ 0 = 1 := rfl
-  rw [this, one_mul, one_mul, zero_mul, zero_mul, zero_add, add_zero]
+  rw [one_mul, one_mul, zero_mul, zero_mul, zero_add, add_zero]
   rw [← Nat.pred_eq_sub_one, ← Nat.pred_eq_sub_one]
   rw [Nat.succ_pred_eq_of_pos a.pos, Nat.succ_pred_eq_of_pos b.pos]
 #align pnat.xgcd_type.start_v PNat.XgcdType.start_v

@@ -36,5 +36,7 @@ lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n :=
     Finset.nonempty_range_iff.mpr Hn
 
 lemma harmonic_eq_sum_Icc {n : ℕ} :  harmonic n = ∑ i in Finset.Icc 1 n, (↑i)⁻¹ := by
-  rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1),
-    Nat.Ico_succ_right]
+  rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1)]
+  -- It might be better to restate `Nat.Ico_succ_right` in terms of `+ 1`,
+  -- as we try to move away from `Nat.succ`.
+  simp only [Nat.add_one, Nat.Ico_succ_right]
