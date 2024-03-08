@@ -1,4 +1,6 @@
-import Mathlib
+import Mathlib.Analysis.NormedSpace.Spectrum
+import Mathlib.Topology.ContinuousFunction.FunctionalCalculus
+import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 
 section UniqueUnital
 
