@@ -59,10 +59,6 @@ theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => c
 theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ => by simp
 #align opposite.unop_injective Opposite.unop_injective
 
-theorem op_surjective : Function.Surjective (op : α → αᵒᵖ) := fun x => ⟨unop x, rfl⟩
-
-theorem unop_surjective : Function.Surjective (unop : αᵒᵖ → α) := fun x => ⟨op x, rfl⟩
-
 @[simp]
 theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
   rfl
@@ -92,6 +88,10 @@ def equivToOpposite : α ≃ αᵒᵖ where
   left_inv := unop_op
   right_inv := op_unop
 #align opposite.equiv_to_opposite Opposite.equivToOpposite
+
+theorem op_surjective : Function.Surjective (op : α → αᵒᵖ) := equivToOpposite.surjective
+
+theorem unop_surjective : Function.Surjective (unop : αᵒᵖ → α) := fun x => ⟨op x, rfl⟩
 
 @[simp]
 theorem equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=
