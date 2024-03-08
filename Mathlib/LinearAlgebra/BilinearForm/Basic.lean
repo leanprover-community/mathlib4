@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.LinearAlgebra.BilinearMap
 
 #align_import linear_algebra.bilinear_form from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -48,8 +49,11 @@ Bilinear form,
 
 open BigOperators
 
+open LinearMap (BilinForm)
+
 universe u v w
 
+/-
 /-- `BilinForm R M` is the type of `R`-bilinear functions `M → M → R`. -/
 structure BilinForm (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] where
   bilin : M → M → R
@@ -58,12 +62,13 @@ structure BilinForm (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Modu
   bilin_add_right : ∀ x y z : M, bilin x (y + z) = bilin x y + bilin x z
   bilin_smul_right : ∀ (a : R) (x y : M), bilin x (a • y) = a * bilin x y
 #align bilin_form BilinForm
+-/
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
-variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
+variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
@@ -75,38 +80,43 @@ variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂
 
 namespace BilinForm
 
-instance : CoeFun (BilinForm R M) fun _ => M → M → R :=
-  ⟨bilin⟩
-
+instance : CoeFun (BilinForm R M) fun _ => M → M → R := ⟨fun B₃ x y => B₃ x y⟩
+/-
 initialize_simps_projections BilinForm (bilin → apply)
+
 
 -- Porting note: removed for simpVarHead @[simp]
 theorem coeFn_mk (f : M → M → R) (h₁ h₂ h₃ h₄) : (BilinForm.mk f h₁ h₂ h₃ h₄ : M → M → R) = f :=
   rfl
 #align bilin_form.coe_fn_mk BilinForm.coeFn_mk
-
+-/
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr BilinForm.coeFn_congr
 
 @[simp]
-theorem add_left (x y z : M) : B (x + y) z = B x z + B y z :=
-  bilin_add_left B x y z
+theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := by
+  simp only [AddHom.toFun_eq_coe, map_add, LinearMap.coe_toAddHom, LinearMap.add_apply]
+  --bilin_add_left B x y z
 #align bilin_form.add_left BilinForm.add_left
 
 @[simp]
-theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y :=
-  bilin_smul_left B a x y
+theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := by
+  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul, LinearMap.smul_apply,
+    smul_eq_mul]
+  --bilin_smul_left B a x y
 #align bilin_form.smul_left BilinForm.smul_left
 
 @[simp]
-theorem add_right (x y z : M) : B x (y + z) = B x y + B x z :=
-  bilin_add_right B x y z
+theorem add_right (x y z : M) : B x (y + z) = B x y + B x z := by
+  simp only [map_add]
+  --bilin_add_right B x y z
 #align bilin_form.add_right BilinForm.add_right
 
 @[simp]
-theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y :=
-  bilin_smul_right B a x y
+theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := by
+  simp only [map_smul, smul_eq_mul]
+  --bilin_smul_right B a x y
 #align bilin_form.smul_right BilinForm.smul_right
 
 @[simp]
@@ -151,9 +161,9 @@ variable {D : BilinForm R M} {D₁ : BilinForm R₁ M₁}
 
 -- TODO: instantiate `FunLike`
 theorem coe_injective : Function.Injective ((↑) : BilinForm R M → M → M → R) := fun B D h => by
-  cases B
-  cases D
-  congr
+  ext x y
+  apply congrFun₂ h
+
 #align bilin_form.coe_injective BilinForm.coe_injective
 
 @[ext]
@@ -171,13 +181,7 @@ theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y :=
   ⟨congr_fun, ext⟩
 #align bilin_form.ext_iff BilinForm.ext_iff
 
-instance : Zero (BilinForm R M) where
-  zero :=
-    { bilin := fun _ _ => 0
-      bilin_add_left := fun _ _ _ => (add_zero 0).symm
-      bilin_smul_left := fun a _ _ => (mul_zero a).symm
-      bilin_add_right := fun _ _ _ => (zero_add 0).symm
-      bilin_smul_right := fun a _ _ => (mul_zero a).symm }
+instance : Zero (BilinForm R M) := LinearMap.instZeroLinearMap
 
 @[simp]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
@@ -191,13 +195,7 @@ theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
 
 variable (B D B₁ D₁)
 
-instance : Add (BilinForm R M) where
-  add B D :=
-    { bilin := fun x y => B x y + D x y
-      bilin_add_left := fun x y z => by simp only [add_left, add_left, add_add_add_comm]
-      bilin_smul_left := fun a x y => by simp only [smul_left, smul_left, mul_add]
-      bilin_add_right := fun x y z => by simp only [add_right, add_right, add_add_add_comm]
-      bilin_smul_right := fun a x y => by simp only [smul_right, smul_right, mul_add] }
+instance : Add (BilinForm R M) := LinearMap.instAddLinearMap
 
 @[simp]
 theorem coe_add : ⇑(B + D) = B + D :=
@@ -213,51 +211,40 @@ theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
 multiplication.
 
 When `R` itself is commutative, this provides an `R`-action via `Algebra.id`. -/
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] : SMul α (BilinForm R M) where
-  smul c B :=
-    { bilin := fun x y => c • B x y
-      bilin_add_left := fun x y z => by simp only [add_left, smul_add]
-      bilin_smul_left := fun a x y => by simp only [smul_left, mul_smul_comm]
-      bilin_add_right := fun x y z => by simp only [add_right, smul_add]
-      bilin_smul_right := fun a x y => by simp only [smul_right, mul_smul_comm] }
+instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCommClass R α R]  :
+    SMul α (BilinForm R M) := LinearMap.instSMulLinearMap
 
 @[simp]
-theorem coe_smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
-    (B : BilinForm R M) : ⇑(a • B) = a • ⇑B :=
+theorem coe_smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCommClass R α R]
+    (a : α) (B : BilinForm R M) : ⇑(a • B) = a • ⇑B :=
   rfl
 #align bilin_form.coe_smul BilinForm.coe_smul
 
 @[simp]
-theorem smul_apply {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
-    (B : BilinForm R M) (x y : M) : (a • B) x y = a • B x y :=
+theorem smul_apply {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCommClass R α R]
+    (a : α) (B : BilinForm R M) (x y : M) : (a • B) x y = a • B x y :=
   rfl
 #align bilin_form.smul_apply BilinForm.smul_apply
 
 instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
-    [SMulCommClass α R R] [SMulCommClass β R R] [SMulCommClass α β R] :
-    SMulCommClass α β (BilinForm R M) :=
+    [SMulCommClass α R R] [SMulCommClass R α R] [SMulCommClass β R R] [SMulCommClass R β R]
+    [SMulCommClass α β R] : SMulCommClass α β (BilinForm R M) :=
   ⟨fun a b B => ext fun x y => smul_comm a b (B x y)⟩
 
 instance {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
-    [SMulCommClass α R R] [SMulCommClass β R R] [IsScalarTower α β R] :
-    IsScalarTower α β (BilinForm R M) :=
+    [SMulCommClass α R R] [SMulCommClass R α R] [SMulCommClass β R R] [SMulCommClass R β R]
+    [IsScalarTower α β R] : IsScalarTower α β (BilinForm R M) :=
   ⟨fun a b B => ext fun x y => smul_assoc a b (B x y)⟩
 
 instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
-    [SMulCommClass α R R] [IsCentralScalar α R] :
+    [SMulCommClass α R R] [SMulCommClass R α R] [IsCentralScalar α R] :
     IsCentralScalar α (BilinForm R M) :=
   ⟨fun a B => ext fun x y => op_smul_eq_smul a (B x y)⟩
 
 instance : AddCommMonoid (BilinForm R M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
-instance : Neg (BilinForm R₁ M₁) where
-  neg B :=
-    { bilin := fun x y => -B x y
-      bilin_add_left := fun x y z => by simp only [add_left, neg_add]
-      bilin_smul_left := fun a x y => by simp only [smul_left, mul_neg]
-      bilin_add_right := fun x y z => by simp only [add_right, neg_add]
-      bilin_smul_right := fun a x y => by simp only [smul_right, mul_neg] }
+instance : Neg (BilinForm R₁ M₁) := LinearMap.instNegLinearMapToAddCommMonoid
 
 @[simp]
 theorem coe_neg : ⇑(-B₁) = -B₁ :=
@@ -269,13 +256,7 @@ theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
   rfl
 #align bilin_form.neg_apply BilinForm.neg_apply
 
-instance : Sub (BilinForm R₁ M₁) where
-  sub B D :=
-    { bilin := fun x y => B x y - D x y
-      bilin_add_left := fun x y z => by simp only [add_left, add_left, add_sub_add_comm]
-      bilin_smul_left := fun a x y => by simp only [smul_left, smul_left, mul_sub]
-      bilin_add_right := fun x y z => by simp only [add_right, add_right, add_sub_add_comm]
-      bilin_smul_right := fun a x y => by simp only [smul_right, smul_right, mul_sub] }
+instance : Sub (BilinForm R₁ M₁) := LinearMap.instSubLinearMapToAddCommMonoid
 
 @[simp]
 theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
@@ -301,11 +282,12 @@ def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
   map_add' := coe_add
 #align bilin_form.coe_fn_add_monoid_hom BilinForm.coeFnAddMonoidHom
 
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] :
+instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCommClass R α R] :
     DistribMulAction α (BilinForm R M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance {α} [Semiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) :=
+instance {α} [Semiring α] [Module α R] [SMulCommClass α R R] [SMulCommClass R α R] :
+    Module α (BilinForm R M) :=
   Function.Injective.module _ coeFnAddMonoidHom coe_injective coe_smul
 
 section flip
@@ -315,25 +297,20 @@ variable (R₂)
 /-- Auxiliary construction for the flip of a bilinear form, obtained by exchanging the left and
 right arguments. This version is a `LinearMap`; it is later upgraded to a `LinearEquiv`
 in `flipHom`. -/
-def flipHomAux [Algebra R₂ R] : BilinForm R M →ₗ[R₂] BilinForm R M where
-  toFun A :=
-    { bilin := fun i j => A j i
-      bilin_add_left := fun x y z => A.bilin_add_right z x y
-      bilin_smul_left := fun a x y => A.bilin_smul_right a y x
-      bilin_add_right := fun x y z => A.bilin_add_left y z x
-      bilin_smul_right := fun a x y => A.bilin_smul_left a y x }
+def flipHomAux [Algebra R₂ R] : (BilinForm R M) →ₗ[R₂] (BilinForm R M) where
+  toFun A := A.flip
   map_add' A₁ A₂ := by
     ext
-    simp
+    simp only [LinearMap.flip_apply, LinearMap.add_apply]
   map_smul' c A := by
     ext
-    simp
+    simp only [LinearMap.flip_apply, LinearMap.smul_apply, RingHom.id_apply]
 #align bilin_form.flip_hom_aux BilinForm.flipHomAux
 
 variable {R₂}
 
 theorem flip_flip_aux [Algebra R₂ R] (A : BilinForm R M) :
-    (flipHomAux R₂) (flipHomAux R₂ A) = A := by
+    (flipHomAux R₂).toFun ((flipHomAux R₂).toFun A) = A := by
   ext A
   simp [flipHomAux]
 #align bilin_form.flip_flip_aux BilinForm.flip_flip_aux
@@ -345,7 +322,7 @@ less structured version of the equiv which applies to general (noncommutative) r
 distinguished commutative subring `R₂`; over a commutative ring use `flip`. -/
 def flipHom [Algebra R₂ R] : BilinForm R M ≃ₗ[R₂] BilinForm R M :=
   { flipHomAux R₂ with
-    invFun := flipHomAux R₂
+    invFun := (flipHomAux R₂).toFun
     left_inv := flip_flip_aux
     right_inv := flip_flip_aux }
 #align bilin_form.flip_hom BilinForm.flipHom
@@ -378,13 +355,9 @@ abbrev flip : BilinForm R₂ M₂ ≃ₗ[R₂] BilinForm R₂ M₂ :=
 end flip
 
 /-- The restriction of a bilinear form on a submodule. -/
-@[simps apply]
-def restrict (B : BilinForm R M) (W : Submodule R M) : BilinForm R W where
-  bilin a b := B a b
-  bilin_add_left _ _ _ := add_left _ _ _
-  bilin_smul_left _ _ _ := smul_left _ _ _
-  bilin_add_right _ _ _ := add_right _ _ _
-  bilin_smul_right _ _ _ := smul_right _ _ _
+@[simps! apply]
+def restrict (B : BilinForm R M) (W : Submodule R M) : BilinForm R W :=
+  LinearMap.domRestrict₁₂ B W W
 #align bilin_form.restrict BilinForm.restrict
 
 end BilinForm
