@@ -44,7 +44,7 @@ def r (z : ℍ) : ℝ := min (z.im) (Real.sqrt (r1 z))
 lemma r_pos (z : ℍ) : 0 < r z := by
   simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]
 
-lemma r1_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
+lemma r1_aux_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
     (z.im ^ 2) / (z.re ^ 2 + z.im ^ 2) ≤ (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 := by
   have H1 : (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 =
         δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2 := by ring
@@ -64,7 +64,7 @@ lemma auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ ^ 2) : r z ≤ C
     have h1 : (δ * z : ℂ).im * (δ * z : ℂ).im = δ ^ 2 * (z : ℂ).im * (z : ℂ).im := by
       simp only [mul_im, ofReal_re, coe_im, ofReal_im, coe_re, zero_mul, add_zero]
       ring
-    rw [Real.le_sqrt', h1 ]
+    rw [Real.le_sqrt', h1]
     nlinarith
     exact z.2
   simp only [UpperHalfPlane.coe_im, UpperHalfPlane.coe_re, AbsoluteValue.coe_mk, MulHom.coe_mk,
@@ -79,7 +79,7 @@ lemma auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε ^ 2) : r z ≤ C
   have H1 : Real.sqrt (r1 z) ≤ Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε) +
       δ * (z : ℂ).im * (δ * (z : ℂ).im)) := by
     rw [r1, Real.sqrt_le_sqrt_iff, ← pow_two, ← pow_two]
-    apply r1_bound z δ hε
+    apply r1_aux_bound z δ hε
     nlinarith
   right
   simp only [ne_eq, coe_re, coe_im, normSq_apply, AbsoluteValue.coe_mk, MulHom.coe_mk, add_re,
@@ -184,9 +184,8 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
       norm_cast
       exact Nat.pos_of_ne_zero hn
 
-theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ)
-    (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
-      (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
+theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hx : (x 0, x 1) ∈ box n) :
+    (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤ (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
   have := eis_is_bounded_on_box_rpow (Nat.cast_nonneg k) z n x hx
   norm_cast at *
   simp_rw [zpow_neg, ← mul_inv] at this
@@ -205,8 +204,7 @@ lemma r_lower_bound_on_slice {A B : ℝ} (h : 0 < B) (z : upperHalfPlaneSlice A 
   apply min_le_min
   · dsimp only
     convert hz.2
-    have := abs_eq_self.mpr (UpperHalfPlane.im_pos z.1).le
-    convert this.symm
+    apply (abs_eq_self.mpr (UpperHalfPlane.im_pos z.1).le).symm
   · rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
     simp only [r1', div_pow, one_div]
     rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
