@@ -178,10 +178,11 @@ preserved would be burdensome or impossible.
 class UniqueContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] : Prop where
-  eq_of_continuous_of_map_id (a : A) (φ ψ : C(spectrum R a, R) →⋆ₐ[R] A)
-    (hφ : Continuous φ) (hψ : Continuous ψ)
-    (h : φ (.restrict (spectrum R a) <| .id R) = ψ (.restrict (spectrum R a) <| .id R)) :
+  eq_of_continuous_of_map_id (s : Set R) [CompactSpace s]
+    (φ ψ : C(s, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
+    (h : φ (.restrict s <| .id R) = ψ (.restrict s <| .id R)) :
     φ = ψ
+  compactSpace_spectrum (a : A) : CompactSpace (spectrum R a)
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricSpace R]
 variable [TopologicalSemiring R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
@@ -191,7 +192,8 @@ lemma StarAlgHom.ext_continuousMap [UniqueContinuousFunctionalCalculus R A]
     (a : A) (φ ψ : C(spectrum R a, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (.restrict (spectrum R a) <| .id R) = ψ (.restrict (spectrum R a) <| .id R)) :
     φ = ψ :=
-  UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id a φ ψ hφ hψ h
+  have := UniqueContinuousFunctionalCalculus.compactSpace_spectrum (R := R) a
+  UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id (spectrum R a) φ ψ hφ hψ h
 
 section cfcHom
 

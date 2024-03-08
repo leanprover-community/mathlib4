@@ -1,30 +1,11 @@
 import Mathlib
 
-section NewUniqueCFC
-
-class UniqueContinuousFunctionalCalculus' (R A : Type*) [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
-    [TopologicalSpace A] [Algebra R A] : Prop where
-  eq_of_continuous_of_map_id (s : Set R) [CompactSpace s]
-    (φ ψ : C(s, R) →⋆ₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
-    (h : φ (.restrict s <| .id R) = ψ (.restrict s <| .id R)) :
-    φ = ψ
-  compactSpace_spectrum (a : A) : CompactSpace (spectrum R a)
-
-end NewUniqueCFC
-
 section UniqueUnital
 
 section IsROrC
 
 variable {𝕜 A : Type*} [IsROrC 𝕜] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 instance : UniqueContinuousFunctionalCalculus 𝕜 A where
-  eq_of_continuous_of_map_id a φ ψ hφ hψ h :=
-    ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
-      convert h using 1
-      all_goals exact congr_arg _ (by ext; simp)
-
-instance : UniqueContinuousFunctionalCalculus' 𝕜 A where
   eq_of_continuous_of_map_id s hs φ ψ hφ hψ h :=
     ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
       convert h using 1
@@ -44,6 +25,7 @@ lemma max_neg_zero {α : Type*} [AddCommGroup α] [LinearOrder α] [CovariantCla
   have := congr(-$(max_zero_sub_eq_self a))
   rwa [neg_sub, sub_eq_iff_eq_add', ← sub_eq_add_neg] at this
 
+/-- This map sends `f : C(X, ℝ)` to `f ⊔ 0`, bundled as a continuous map `C(X, ℝ≥0)`. -/
 @[pp_dot]
 noncomputable def ContinuousMap.toNNReal (f : C(X, ℝ)) : C(X, ℝ≥0) :=
   .realToNNReal |>.comp f
@@ -80,7 +62,7 @@ lemma ContinuousMap.toNNReal_neg_algebraMap (r : ℝ≥0) :
   ext; simp
 
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
-the unique extension of `φ` to `C(X, ℝ)` to a star `ℝ`-algebra homomorphism. -/
+the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
 @[simps]
 noncomputable def StarAlgHom.realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A) :
     C(X, ℝ) →⋆ₐ[ℝ] A where
@@ -142,7 +124,7 @@ lemma StarAlgHom.injective_realContinuousMapOfNNReal :
 
 attribute [pp_dot] ContinuousMap.comp
 
-instance : UniqueContinuousFunctionalCalculus' ℝ≥0 A where
+instance : UniqueContinuousFunctionalCalculus ℝ≥0 A where
   compactSpace_spectrum := inferInstance
   eq_of_continuous_of_map_id s hs φ ψ hφ hψ h := by
     let s' : Set ℝ := (↑) '' s
@@ -166,7 +148,7 @@ instance : UniqueContinuousFunctionalCalculus' ℝ≥0 A where
     obtain ⟨hφ', hφ_id⟩ := this φ hφ
     obtain ⟨hψ', hψ_id⟩ := this ψ hψ
     have hs' : CompactSpace s' := e.compactSpace
-    have h' := UniqueContinuousFunctionalCalculus'.eq_of_continuous_of_map_id s' _ _ hφ' hψ'
+    have h' := UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id s' _ _ hφ' hψ'
       (hφ_id ▸ hψ_id ▸ h)
     have h'' := congr($(h').comp <| ContinuousMap.compStarAlgHom' ℝ ℝ (e.symm : C(s', s)))
     have : (ContinuousMap.compStarAlgHom' ℝ ℝ (e : C(s, s'))).comp
