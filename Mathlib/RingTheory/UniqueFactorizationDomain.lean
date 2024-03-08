@@ -585,7 +585,7 @@ theorem IsPrime.exists_mem_Prime_of_neq_bot {R : Type*} [CommSemiring R] [IsDoma
     ∃ x ∈ I, Prime x := by
   classical
   obtain ⟨a, ha₁, ha₂⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hI
-  rcases factors_prod ha₂ with ⟨u, ha₃⟩
+  obtain ⟨u, ha₃⟩ := factors_prod ha₂
   rw [← ha₃] at ha₁
   rcases (IsPrime.mem_or_mem hI₂) ha₁ with (ha₄ | ha₅)
   · rcases (hI₂.multiset_prod_mem_iff (factors a)).1 ha₄ with ⟨p, ha₅, ha₆⟩
