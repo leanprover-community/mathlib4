@@ -661,6 +661,8 @@ def factorization_lcm_left (a b : ℕ) := (Nat.lcm a b).factorization.prod fun p
 def factorization_lcm_right (a b : ℕ) := (Nat.lcm a b).factorization.prod fun p n ↦
   if b.factorization p ≤ a.factorization p then 1 else p ^ n
 
+variable (a b)
+
 lemma factorization_lcm_left_ne_zero :
     factorization_lcm_left a b ≠ 0 := by
   rw [factorization_lcm_left, Finsupp.prod_ne_zero_iff]
@@ -678,6 +680,8 @@ lemma factorization_lcm_right_ne_zero :
   · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq] at H
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
+
+variable {a b}
 
 lemma factorization_lcm_left_mul_factorization_lcm_right (ha : a ≠ 0) (hb : b ≠ 0) :
     (factorization_lcm_left a b) * (factorization_lcm_right a b) = lcm a b := by
