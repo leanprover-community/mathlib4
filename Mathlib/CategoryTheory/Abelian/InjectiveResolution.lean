@@ -327,9 +327,9 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
   cases n
   all_goals
-    dsimp [ofCocomplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
-      CochainComplex.mk', CochainComplex.mk]
-    simp only [CochainComplex.of_d]
+    dsimp only [ofCocomplex, CochainComplex.mk', CochainComplex.mk, CochainComplex.of, Nat.zero_eq,
+      HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', eqToHom_refl, dite_eq_ite]
+    simp only [Nat.reduceAdd, zero_add, ↓reduceIte, comp_id]
     apply exact_f_d
 
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
