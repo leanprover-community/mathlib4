@@ -3205,7 +3205,6 @@ import Mathlib.ProofTheory.HilbertStyle2
 import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Language
 import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Language
 import Mathlib.ProofTheory.Lindenbaum
-import Mathlib.ProofTheory.LogicSymbol
 import Mathlib.ProofTheory.Predicate
 import Mathlib.ProofTheory.Semantics
 import Mathlib.ProofTheory.System
