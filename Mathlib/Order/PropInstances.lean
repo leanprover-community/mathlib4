@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Disjoint
-import Mathlib.Order.WithBot
 
 #align_import order.prop_instances from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -112,7 +111,7 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   by_cases P <;> by_cases Q <;> simp [*]
 #align Prop.is_compl_iff Prop.isCompl_iff
 
--- porting note: Lean 3 would unfold these for us, but we need to do it manually now
+-- Porting note: Lean 3 would unfold these for us, but we need to do it manually now
 section decidable_instances
 variable {α : Type u}
 

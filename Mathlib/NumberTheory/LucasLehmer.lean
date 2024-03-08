@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
 -/
 import Mathlib.Data.Nat.Parity
-import Mathlib.Data.PNat.Interval
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.lucas_lehmer from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
@@ -95,7 +95,7 @@ def sMod (p : ℕ) : ℕ → ℤ
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
 theorem mersenne_int_pos {p : ℕ} (hp : p ≠ 0) : (0 : ℤ) < 2 ^ p - 1 :=
-  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp
+  sub_pos.2 <| mod_cast Nat.one_lt_two_pow hp
 
 theorem mersenne_int_ne_zero (p : ℕ) (hp : p ≠ 0) : (2 ^ p - 1 : ℤ) ≠ 0 :=
   (mersenne_int_pos hp).ne'
@@ -152,7 +152,7 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
     simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
-      simp only [ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two, pow_pos, cast_pred,
+      simp only [ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, ofNat_pos, pow_pos, cast_pred,
         cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
     · exact sMod_nonneg _ (by positivity) _
@@ -415,7 +415,7 @@ theorem two_lt_q (p' : ℕ) : 2 < q (p' + 2) := by
   refine (minFac_prime (one_lt_mersenne ?_).ne').two_le.lt_of_ne' ?_
   · exact le_add_left _ _
   · rw [Ne.def, minFac_eq_two_iff, mersenne, Nat.pow_succ']
-    exact Nat.two_not_dvd_two_mul_sub_one (Nat.one_le_two_pow _)
+    exact Nat.two_not_dvd_two_mul_sub_one Nat.one_le_two_pow
 #align lucas_lehmer.two_lt_q LucasLehmer.two_lt_q
 
 theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
@@ -425,7 +425,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
   simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
-    simp only [add_tsub_cancel_right, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, zero_lt_two,
+    simp only [add_tsub_cancel_right, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, ofNat_pos,
       pow_pos, cast_pred, cast_pow, cast_ofNat] at h
   cases' h with k h
   use k
@@ -557,7 +557,7 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
   have h1 := calc
     4 = 2 ^ 2 := by norm_num
     _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
-  have h2 : 1 ≤ 2 ^ p := by linarith
+  have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
     rw [sMod', sMod, Int.ofNat_emod]

@@ -74,7 +74,8 @@ set_option autoImplicit true
 
 noncomputable section
 
-open Classical ENNReal Topology
+open scoped Classical
+open ENNReal Topology
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
@@ -939,7 +940,7 @@ section Abs
 
 theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β] [AddGroup β]
     [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
-  simp_rw [abs_eq_sup_neg]
+  simp_rw [abs]
   filter_upwards [AEEqFun.coeFn_sup f (-f), AEEqFun.coeFn_neg f] with x hx_sup hx_neg
   rw [hx_sup, hx_neg, Pi.neg_apply]
 #align measure_theory.ae_eq_fun.coe_fn_abs MeasureTheory.AEEqFun.coeFn_abs

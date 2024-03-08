@@ -50,7 +50,7 @@ theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
       rintro rfl
       simp_all only [Finsupp.single_eq_zero, eq_comm, Nat.factorization_zero, hk.ne']
     rw [Nat.eq_pow_of_factorization_eq_single hn0 hn]
-    exact ⟨Nat.prime_of_mem_primeFactors $
+    exact ⟨Nat.prime_of_mem_primeFactors <|
       Finsupp.mem_support_iff.2 (by simp [hn, hk.ne'] : n.factorization p ≠ 0), hk, rfl⟩
 #align is_prime_pow_iff_factorization_eq_single isPrimePow_iff_factorization_eq_single
 
@@ -135,7 +135,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
   have : a.factorization p = 0 ∨ b.factorization p = 0 := by
     rw [← Finsupp.not_mem_support_iff, ← Finsupp.not_mem_support_iff, ← not_and_or, ←
       Finset.mem_inter]
-    intro t -- porting note: used to be `exact` below, but the definition of `∈` has changed.
+    intro t -- Porting note: used to be `exact` below, but the definition of `∈` has changed.
     simpa using hab.disjoint_primeFactors.le_bot t
   cases' this with h h <;> simp [h, imp_or]
 #align nat.coprime.is_prime_pow_dvd_mul Nat.Coprime.isPrimePow_dvd_mul

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import data.multiset.bind from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -41,7 +42,7 @@ theorem coe_join :
   | [] => rfl
   | l :: L => by
       -- Porting note: was `congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)`
-      simp only [join, List.map, coe_sum, List.sum_cons, List.join, ← coe_add, ← coe_join L]
+      simp only [join, List.map, sum_coe, List.sum_cons, List.join, ← coe_add, ← coe_join L]
 #align multiset.coe_join Multiset.coe_join
 
 @[simp]
@@ -218,7 +219,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
     exact ⟨x, hx, rfl⟩
 #align multiset.le_bind Multiset.le_bind
 
--- Porting note: @[simp] removed because not in normal form
+-- Porting note (#11119): @[simp] removed because not in normal form
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _

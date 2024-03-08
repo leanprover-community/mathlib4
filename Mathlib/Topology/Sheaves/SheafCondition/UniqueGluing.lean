@@ -50,7 +50,7 @@ namespace Presheaf
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable {X : TopCat.{x}} (F : Presheaf C X) {ι : Type x} (U : ι → Opens X)
 
@@ -152,7 +152,7 @@ end TypeValued
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forget C)]
 
@@ -179,7 +179,7 @@ open CategoryTheory
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (ConcreteCategory.forget (C := C))]
 
@@ -221,7 +221,7 @@ theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
   let sf : ∀ i : ι, F.1.obj (op (U i)) := fun i => F.1.map (Opens.leSupr U i).op s
   have sf_compatible : IsCompatible _ U sf := by
     intro i j
-    simp_rw [← comp_apply, ← F.1.map_comp]
+    simp_rw [sf, ← comp_apply, ← F.1.map_comp]
     rfl
   obtain ⟨gl, -, gl_uniq⟩ := F.existsUnique_gluing U sf sf_compatible
   trans gl
@@ -283,16 +283,22 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
   constructor
   · rintro rfl
     rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    simp only [← comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
+    -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
+    repeat rw [← comp_apply]
+    simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
     refine' F.eq_of_locally_eq₂
       (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) _ _ _ _ _
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
     · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      simp only [← comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
+      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
+      repeat rw [← comp_apply]
+      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
     · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      simp only [← comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
+      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
+      repeat rw [← comp_apply]
+      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
 
 end Sheaf
 

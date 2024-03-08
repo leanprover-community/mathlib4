@@ -6,6 +6,7 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Function.Finite
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Set.Basic
 
 #align_import algebra.big_operators.finprod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -88,7 +89,7 @@ section
 
 /- Note: we use classical logic only for these definitions, to ensure that we do not write lemmas
 with `Classical.dec` in their statement. -/
-open Classical
+open scoped Classical
 
 /-- Sum of `f x` as `x` ranges over the elements of the support of `f`, if it's finite. Zero
 otherwise. -/

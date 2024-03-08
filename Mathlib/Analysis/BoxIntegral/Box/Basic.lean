@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Basic
 
 #align_import analysis.box_integral.box.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 /-!
@@ -55,7 +56,8 @@ open Set Function Metric Filter
 
 noncomputable section
 
-open NNReal Classical Topology
+open scoped Classical
+open NNReal Topology
 
 namespace BoxIntegral
 

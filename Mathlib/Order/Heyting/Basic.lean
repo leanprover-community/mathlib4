@@ -33,13 +33,6 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 * `CoheytingAlgebra`: Co-Heyting algebra.
 * `BiheytingAlgebra`: bi-Heyting algebra.
 
-## Notation
-
-* `⇨`: Heyting implication
-* `\`: Difference
-* `￢`: Heyting negation
-* `ᶜ`: (Pseudo-)complement
-
 ## References
 
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
@@ -56,37 +49,6 @@ universe u
 variable {ι α β : Type*}
 
 /-! ### Notation -/
-
-
-/-- Syntax typeclass for Heyting implication `⇨`. -/
-@[notation_class]
-class HImp (α : Type*) where
-  /-- Heyting implication `⇨` -/
-  himp : α → α → α
-#align has_himp HImp
-
-/-- Syntax typeclass for Heyting negation `￢`.
-
-The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
-while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
-underestimates while `HNot` overestimates. In boolean algebras, they are equal.
-See `hnot_eq_compl`.
--/
-@[notation_class]
-class HNot (α : Type*) where
-  /-- Heyting negation `￢` -/
-  hnot : α → α
-#align has_hnot HNot
-
-export HImp (himp)
-export SDiff (sdiff)
-export HNot (hnot)
-
-/-- Heyting implication -/
-infixr:60 " ⇨ " => himp
-
-/-- Heyting negation -/
-prefix:72 "￢" => hnot
 
 section
 variable (α β)
@@ -253,12 +215,11 @@ def HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α → �
 /-- Construct a Heyting algebra from the lattice structure and complement operator alone. -/
 @[reducible]
 def HeytingAlgebra.ofCompl [DistribLattice α] [BoundedOrder α] (compl : α → α)
-    (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α :=
-  { ‹DistribLattice α›, ‹BoundedOrder α› with
-    himp := (compl · ⊔ ·),
-    compl,
-    le_himp_iff,
-    himp_bot := fun a => sup_bot_eq }
+    (le_himp_iff : ∀ a b c, a ≤ compl b ⊔ c ↔ a ⊓ b ≤ c) : HeytingAlgebra α where
+  himp := (compl · ⊔ ·)
+  compl := compl
+  le_himp_iff := le_himp_iff
+  himp_bot _ := sup_bot_eq _
 #align heyting_algebra.of_compl HeytingAlgebra.ofCompl
 
 -- See note [reducible non-instances]
@@ -277,12 +238,11 @@ def CoheytingAlgebra.ofSDiff [DistribLattice α] [BoundedOrder α] (sdiff : α �
 /-- Construct a co-Heyting algebra from the difference and Heyting negation alone. -/
 @[reducible]
 def CoheytingAlgebra.ofHNot [DistribLattice α] [BoundedOrder α] (hnot : α → α)
-    (sdiff_le_iff : ∀ a b c, a ⊓ hnot b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α :=
-  { ‹DistribLattice α›, ‹BoundedOrder α› with
-    sdiff := fun a b => a ⊓ hnot b,
-    hnot,
-    sdiff_le_iff,
-    top_sdiff := fun a => top_inf_eq }
+    (sdiff_le_iff : ∀ a b c, a ⊓ hnot b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α where
+  sdiff a b := a ⊓ hnot b
+  hnot := hnot
+  sdiff_le_iff := sdiff_le_iff
+  top_sdiff _ := top_inf_eq _
 #align coheyting_algebra.of_hnot CoheytingAlgebra.ofHNot
 
 section GeneralizedHeytingAlgebra
@@ -457,7 +417,7 @@ theorem himp_inf_himp_cancel (hba : b ≤ a) (hcb : c ≤ b) : (a ⇨ b) ⊓ (b 
 -- See note [lower instance priority]
 instance (priority := 100) GeneralizedHeytingAlgebra.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
-    simp_rw [@inf_comm _ _ a, ← le_himp_iff, sup_le_iff, le_himp_iff, ← sup_le_iff]; rfl
+    simp_rw [inf_comm a, ← le_himp_iff, sup_le_iff, le_himp_iff, ← sup_le_iff]; rfl
 #align generalized_heyting_algebra.to_distrib_lattice GeneralizedHeytingAlgebra.toDistribLattice
 
 instance : GeneralizedCoheytingAlgebra αᵒᵈ :=
@@ -648,14 +608,17 @@ theorem sup_sdiff_right_self : (a ⊔ b) \ b = a \ b := by rw [sup_sdiff, sdiff_
 theorem sup_sdiff_left_self : (a ⊔ b) \ a = b \ a := by rw [sup_comm, sup_sdiff_right_self]
 #align sup_sdiff_left_self sup_sdiff_left_self
 
+@[gcongr]
 theorem sdiff_le_sdiff_right (h : a ≤ b) : a \ c ≤ b \ c :=
   sdiff_le_iff.2 <| h.trans <| le_sup_sdiff
 #align sdiff_le_sdiff_right sdiff_le_sdiff_right
 
+@[gcongr]
 theorem sdiff_le_sdiff_left (h : a ≤ b) : c \ b ≤ c \ a :=
   sdiff_le_iff.2 <| le_sup_sdiff.trans <| sup_le_sup_right h _
 #align sdiff_le_sdiff_left sdiff_le_sdiff_left
 
+@[gcongr]
 theorem sdiff_le_sdiff (hab : a ≤ b) (hcd : c ≤ d) : a \ d ≤ b \ c :=
   (sdiff_le_sdiff_right hab).trans <| sdiff_le_sdiff_left hcd
 #align sdiff_le_sdiff sdiff_le_sdiff
@@ -1231,7 +1194,9 @@ protected def Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] [To
     [HImp α] [GeneralizedHeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : GeneralizedHeytingAlgebra α :=
-  { hf.lattice f map_sup map_inf, ‹Top α›, ‹HImp α› with
+  { __ := hf.lattice f map_sup map_inf
+    __ := ‹Top α›
+    __ := ‹HImp α›
     le_top := fun a => by
       change f _ ≤ _
       rw [map_top]
@@ -1249,7 +1214,9 @@ protected def Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     GeneralizedCoheytingAlgebra α :=
-  { hf.lattice f map_sup map_inf, ‹Bot α›, ‹SDiff α› with
+  { __ := hf.lattice f map_sup map_inf
+    __ := ‹Bot α›
+    __ := ‹SDiff α›
     bot_le := fun a => by
       change f _ ≤ _
       rw [map_bot]
@@ -1267,7 +1234,9 @@ protected def Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot 
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : HeytingAlgebra α :=
-  { hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp, ‹Bot α›, ‹HasCompl α› with
+  { __ := hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp
+    __ := ‹Bot α›
+    __ := ‹HasCompl α›
     bot_le := fun a => by
       change f _ ≤ _
       rw [map_bot]
@@ -1283,7 +1252,9 @@ protected def Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] [Bo
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : CoheytingAlgebra α :=
-  { hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff, ‹Top α›, ‹HNot α› with
+  { __ := hf.generalizedCoheytingAlgebra f map_sup map_inf map_bot map_sdiff
+    __ := ‹Top α›
+    __ := ‹HNot α›
     le_top := fun a => by
       change f _ ≤ _
       rw [map_top]

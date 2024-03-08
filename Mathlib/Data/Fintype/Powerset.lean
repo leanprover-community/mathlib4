@@ -40,7 +40,7 @@ lemma filter_subset_univ [DecidableEq α] (s : Finset α) :
   rw [← Finset.powerset_univ, powerset_inj]
 #align finset.powerset_eq_univ Finset.powerset_eq_univ
 
-@[simp] lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ card s = k :=
+lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ card s = k :=
   mem_powersetCard.trans <| and_iff_right <| subset_univ _
 #align finset.mem_powerset_len_univ_iff Finset.mem_powersetCard_univ
 

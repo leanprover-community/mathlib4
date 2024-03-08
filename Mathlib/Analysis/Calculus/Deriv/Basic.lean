@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Basic
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 
 #align_import analysis.calculus.deriv.basic from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -534,6 +535,10 @@ theorem derivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : derivWithin f s x = deriv f
 theorem derivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x :=
   derivWithin_of_mem_nhds (hs.mem_nhds hx)
 #align deriv_within_of_open derivWithin_of_isOpen
+
+lemma deriv_eqOn {f' : 𝕜 → F} (hs : IsOpen s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    s.EqOn (deriv f) f' := fun x hx ↦ by
+  rw [← derivWithin_of_isOpen hs hx, (hf' _ hx).derivWithin <| hs.uniqueDiffWithinAt hx]
 
 theorem deriv_mem_iff {f : 𝕜 → F} {s : Set F} {x : 𝕜} :
     deriv f x ∈ s ↔

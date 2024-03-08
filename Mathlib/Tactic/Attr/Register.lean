@@ -3,8 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Lean.Meta.Tactic.Simp
-import Std.Tactic.LabelAttr
+import Lean.Meta.Tactic.Simp.SimpTheorems
+import Lean.Meta.Tactic.Simp.RegisterCommand
+import Lean.LabelAttribute
 
 /-!
 # Attributes used in `Mathlib`

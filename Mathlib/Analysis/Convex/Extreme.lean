@@ -45,7 +45,8 @@ More not-yet-PRed stuff is available on the mathlib3 branch `sperner_again`.
 
 open Function Set
 
-open Affine Classical
+open scoped Classical
+open Affine
 
 variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
@@ -234,7 +235,7 @@ end OrderedSemiring
 
 section OrderedRing
 variable {L : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-  [LinearEquivClass L 𝕜 E F]
+  [EquivLike L E F] [LinearEquivClass L 𝕜 E F]
 
 lemma image_extremePoints (f : L) (s : Set E) :
     f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := by

@@ -72,8 +72,8 @@ abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
     (h_left_inv : (DirectSum.coeAddMonoidHom ℳ).comp decompose = .id _)
     (h_right_inv : decompose.comp (DirectSum.coeAddMonoidHom ℳ) = .id _) : Decomposition ℳ where
   decompose' := decompose
-  left_inv := FunLike.congr_fun h_left_inv
-  right_inv := FunLike.congr_fun h_right_inv
+  left_inv := DFunLike.congr_fun h_left_inv
+  right_inv := DFunLike.congr_fun h_right_inv
 
 /-- Noncomputably conjure a decomposition instance from a `DirectSum.IsInternal` proof. -/
 noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
@@ -142,6 +142,10 @@ theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j
     (decompose ℳ x j : M) = 0 := by
   rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ _ hij, ZeroMemClass.coe_zero]
 #align direct_sum.decompose_of_mem_ne DirectSum.decompose_of_mem_ne
+
+theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
+    i = j := by
+  contrapose! hx; rw [← decompose_of_mem_same ℳ hxj, decompose_of_mem_ne ℳ hxi hx]
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 an additive monoid to a direct sum of components. -/
@@ -255,8 +259,8 @@ abbrev Decomposition.ofLinearMap (decompose : M →ₗ[R] ⨁ i, ℳ i)
     (h_left_inv : DirectSum.coeLinearMap ℳ ∘ₗ decompose = .id)
     (h_right_inv : decompose ∘ₗ DirectSum.coeLinearMap ℳ = .id) : Decomposition ℳ where
   decompose' := decompose
-  left_inv := FunLike.congr_fun h_left_inv
-  right_inv := FunLike.congr_fun h_right_inv
+  left_inv := DFunLike.congr_fun h_left_inv
+  right_inv := DFunLike.congr_fun h_right_inv
 
 variable [Decomposition ℳ]
 
@@ -290,7 +294,7 @@ theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[
   LinearMap.ext <| (decomposeLinearEquiv ℳ).symm.surjective.forall.mpr <|
     suffices f ∘ₗ (decomposeLinearEquiv ℳ).symm
            = (g ∘ₗ (decomposeLinearEquiv ℳ).symm : (⨁ i, ℳ i) →ₗ[R] N) from
-      FunLike.congr_fun this
+      DFunLike.congr_fun this
     linearMap_ext _ fun i => by
       simp_rw [LinearMap.comp_assoc, decomposeLinearEquiv_symm_comp_lof ℳ i, h]
 

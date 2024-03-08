@@ -227,7 +227,7 @@ class FiniteRk (M : Matroid α) : Prop where
   exists_finite_base : ∃ B, M.Base B ∧ B.Finite
 
 instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
-  ⟨ M.exists_base.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩) ⟩
+  ⟨M.exists_base.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩)⟩
 
 /-- An `InfiniteRk` matroid is one whose bases are infinite. -/
 class InfiniteRk (M : Matroid α) : Prop where
@@ -270,7 +270,7 @@ theorem encard_diff_le_aux (exch : ExchangeProperty Base) (hB₁ : Base B₁) (h
 
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
   exact add_le_add_right hencard 1
-termination_by _ => (B₂ \ B₁).encard
+termination_by (B₂ \ B₁).encard
 
 /-- For any two sets `B₁`, `B₂` in a family with the exchange property, the differences `B₁ \ B₂`
 and `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
@@ -293,55 +293,55 @@ section aesop
   It uses a `[Matroid]` ruleset, and is allowed to fail. -/
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (options := { terminal := true })
-  (rule_sets [$(Lean.mkIdent `Matroid):ident]))
+  aesop $c* (config := { terminal := true })
+  (rule_sets := [$(Lean.mkIdent `Matroid):ident]))
 
 /- We add a number of trivial lemmas (deliberately specialized to statements in terms of the
   ground set of a matroid) to the ruleset `Matroid` for `aesop`. -/
 
-@[aesop unsafe 5% (rule_sets [Matroid])]
+@[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem inter_right_subset_ground (hX : X ⊆ M.E) :
     X ∩ Y ⊆ M.E := (inter_subset_left _ _).trans hX
 
-@[aesop unsafe 5% (rule_sets [Matroid])]
+@[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem inter_left_subset_ground (hX : X ⊆ M.E) :
     Y ∩ X ⊆ M.E := (inter_subset_right _ _).trans hX
 
-@[aesop unsafe 5% (rule_sets [Matroid])]
+@[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem diff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
   (diff_subset _ _).trans hX
 
-@[aesop unsafe 10% (rule_sets [Matroid])]
+@[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem ground_diff_subset_ground : M.E \ X ⊆ M.E :=
   diff_subset_ground rfl.subset
 
-@[aesop unsafe 10% (rule_sets [Matroid])]
+@[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem singleton_subset_ground (he : e ∈ M.E) : {e} ⊆ M.E :=
   singleton_subset_iff.mpr he
 
-@[aesop unsafe 5% (rule_sets [Matroid])]
+@[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem subset_ground_of_subset (hXY : X ⊆ Y) (hY : Y ⊆ M.E) : X ⊆ M.E :=
   hXY.trans hY
 
-@[aesop unsafe 5% (rule_sets [Matroid])]
+@[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem mem_ground_of_mem_of_subset (hX : X ⊆ M.E) (heX : e ∈ X) : e ∈ M.E :=
   hX heX
 
-@[aesop safe (rule_sets [Matroid])]
+@[aesop safe (rule_sets := [Matroid])]
 private theorem insert_subset_ground {e : α} {X : Set α} {M : Matroid α}
     (he : e ∈ M.E) (hX : X ⊆ M.E) : insert e X ⊆ M.E :=
     insert_subset he hX
 
-@[aesop safe (rule_sets [Matroid])]
+@[aesop safe (rule_sets := [Matroid])]
 private theorem ground_subset_ground {M : Matroid α} : M.E ⊆ M.E :=
   rfl.subset
 
-attribute [aesop safe (rule_sets [Matroid])] empty_subset union_subset iUnion_subset
+attribute [aesop safe (rule_sets := [Matroid])] empty_subset union_subset iUnion_subset
 
 end aesop
 section Base
 
-@[aesop unsafe 10% (rule_sets [Matroid])]
+@[aesop unsafe 10% (rule_sets := [Matroid])]
 theorem Base.subset_ground (hB : M.Base B) : B ⊆ M.E :=
   M.subset_ground B hB
 
@@ -441,7 +441,7 @@ theorem base_compl_iff_mem_maximals_disjoint_base (hB : B ⊆ M.E := by aesop_ma
     M.Base (M.E \ B) ↔ B ∈ maximals (· ⊆ ·) {I | I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B} := by
   simp_rw [mem_maximals_setOf_iff, and_iff_right hB, and_imp, forall_exists_index]
   refine' ⟨fun h ↦ ⟨⟨_, h, disjoint_sdiff_right⟩,
-    fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm _⟩, fun ⟨⟨ B', hB', hBB'⟩,h⟩ ↦ _⟩
+    fun I hI B' ⟨hB', hIB'⟩ hBI ↦ hBI.antisymm _⟩, fun ⟨⟨B', hB', hBB'⟩,h⟩ ↦ _⟩
   · rw [hB'.eq_of_subset_base h, ← subset_compl_iff_disjoint_right, diff_eq, compl_inter,
       compl_compl] at hIB'
     · exact fun e he ↦  (hIB' he).elim (fun h' ↦ (h' (hI he)).elim) id
@@ -468,12 +468,12 @@ theorem dep_iff : M.Dep D ↔ ¬M.Indep D ∧ D ⊆ M.E := Iff.rfl
 
 theorem setOf_dep_eq (M : Matroid α) : {D | M.Dep D} = {I | M.Indep I}ᶜ ∩ Iic M.E := rfl
 
-@[aesop unsafe 30% (rule_sets [Matroid])]
+@[aesop unsafe 30% (rule_sets := [Matroid])]
 theorem Indep.subset_ground (hI : M.Indep I) : I ⊆ M.E := by
   obtain ⟨B, hB, hIB⟩ := hI
   exact hIB.trans hB.subset_ground
 
-@[aesop unsafe 20% (rule_sets [Matroid])]
+@[aesop unsafe 20% (rule_sets := [Matroid])]
 theorem Dep.subset_ground (hD : M.Dep D) : D ⊆ M.E :=
   hD.2
 
@@ -705,7 +705,7 @@ theorem setOf_basis_eq (M : Matroid α) (hX : X ⊆ M.E := by aesop_mat) :
     {I | M.Basis I X} = maximals (· ⊆ ·) ({I | M.Indep I} ∩ Iic X) := by
   ext I; simp [Matroid.Basis, maximals, iff_true_intro hX]
 
-@[aesop unsafe 15% (rule_sets [Matroid])]
+@[aesop unsafe 15% (rule_sets := [Matroid])]
 theorem Basis.subset_ground (hI : M.Basis I X) : X ⊆ M.E :=
   hI.2
 
@@ -713,7 +713,7 @@ theorem Basis.basis_inter_ground (hI : M.Basis I X) : M.Basis I (X ∩ M.E) := b
   convert hI
   rw [inter_eq_self_of_subset_left hI.subset_ground]
 
-@[aesop unsafe 15% (rule_sets [Matroid])]
+@[aesop unsafe 15% (rule_sets := [Matroid])]
 theorem Basis.left_subset_ground (hI : M.Basis I X) : I ⊆ M.E :=
   hI.indep.subset_ground
 

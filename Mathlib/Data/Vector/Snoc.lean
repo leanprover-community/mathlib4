@@ -49,8 +49,7 @@ theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
   cases xs
   simp only [reverse, snoc, cons, toList_mk]
   congr
-  simp [toList, (·++·), Vector.append, Append.append]
-  rfl
+  simp [toList, Vector.append, Append.append]
 
 theorem replicate_succ_to_snoc (val : α) :
     replicate (n+1) val = (replicate n val).snoc val := by
