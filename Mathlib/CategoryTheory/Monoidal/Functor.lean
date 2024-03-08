@@ -90,7 +90,7 @@ structure LaxMonoidalFunctor extends C ⥤ D where
     by aesop_cat
 #align category_theory.lax_monoidal_functor CategoryTheory.LaxMonoidalFunctor
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 -- See also `initialize_simps_projections MonoidalFunctor` below.
 -- This may require waiting on https://github.com/leanprover-community/mathlib4/pull/2936

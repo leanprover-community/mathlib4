@@ -86,7 +86,7 @@ instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
     fun a _V hV ↦ isClosed_ball a hV.2
 #align uniform_space.to_regular_space UniformSpace.to_regularSpace
 
--- Porting note: todo: use `Inseparable`
+-- Porting note (#11215): TODO: use `Inseparable`
 /-- The separation relation is the intersection of all entourages.
   Two points which are related by the separation relation are "indistinguishable"
   according to the uniform structure. -/

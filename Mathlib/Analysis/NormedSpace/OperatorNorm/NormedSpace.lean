@@ -403,9 +403,9 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   · refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
     rw [ContinuousLinearMap.opNorm_le_iff hC]
   tfae_have 7 ↔ 8
-  · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
+  · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_mem_range]
   tfae_have 6 ↔ 8
-  · simp_rw [bddAbove_def, Set.forall_range_iff]
+  · simp_rw [bddAbove_def, Set.forall_mem_range]
   tfae_have 8 ↔ 9
   · rw [ENNReal.iSup_coe_lt_top, ← NNReal.bddAbove_coe, ← Set.range_comp]
     rfl

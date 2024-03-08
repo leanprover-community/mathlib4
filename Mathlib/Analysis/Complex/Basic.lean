@@ -238,6 +238,8 @@ theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
 instance : CompleteSpace ℂ :=
   (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
 
+instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
+
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=

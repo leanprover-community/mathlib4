@@ -139,7 +139,7 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
         simp only [this, ← compl_Iio]
         exact .biUnion htc <| fun _ _ ↦ (H _).compl
     · apply H
-  · rw [forall_range_iff]
+  · rw [forall_mem_range]
     intro a
     exact GenerateMeasurable.basic _ isOpen_Iio
 #align borel_eq_generate_from_Iio borel_eq_generateFrom_Iio
@@ -707,7 +707,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
   refine' le_antisymm _ (generateFrom_Ico_mem_le_borel _ _)
   letI : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
-  refine' generateFrom_le (forall_range_iff.2 fun a => _)
+  refine' generateFrom_le (forall_mem_range.2 fun a => _)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
   by_cases ha : ∀ b < a, (Ioo b a).Nonempty
   · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
