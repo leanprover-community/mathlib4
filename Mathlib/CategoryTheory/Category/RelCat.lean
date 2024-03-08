@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Scott Morrison, Uni Marx
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.EssentialImage
@@ -46,9 +46,7 @@ theorem rel_hom {X Y : RelCat} : (X ⟶ Y) = Rel X Y := rfl
 
 theorem rel_id (X : RelCat) : 𝟙 X = (· = ·) := rfl
 
-theorem rel_comp {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = Rel.comp f g := by
-  ext _ _
-  rfl
+theorem rel_comp {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ g = Rel.comp f g := rfl
 
 @[simp] theorem rel_id_apply₂ (X : RelCat) (x y : X) : (𝟙 X) x y ↔ x = y := by
   rw[rel_id]
@@ -107,7 +105,8 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
 section Opposite
 open Opposite
 
-def rel_relOp : Functor RelCat RelCatᵒᵖ where
+/-- The argument-swap isomorphism from `rel` to its opposite. -/
+def rel_relOp : RelCat ⥤ RelCatᵒᵖ where
   obj X := op X
   map {X Y} r := op (fun y x => r x y)
   map_id X := by
@@ -122,7 +121,8 @@ def rel_relOp : Functor RelCat RelCatᵒᵖ where
     apply exists_congr
     exact fun a => And.comm
 
-def relOp_rel : Functor RelCatᵒᵖ RelCat where
+/-- The other direction of `rel_relOp`. -/
+def relOp_rel : RelCatᵒᵖ ⥤ RelCat where
   obj X := unop X
   map {X Y} r x y := unop r y x
   map_id X := by
