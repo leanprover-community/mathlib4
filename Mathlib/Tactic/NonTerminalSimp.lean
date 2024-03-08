@@ -46,8 +46,7 @@ namespace nonTerminalSimpLinter
 /-- `onlyOrNotSimp stx` if `stx` is syntax for `simp` *without* `only`, then returns `false` else
 returchecks whether `stx` is `simp only -/
 def onlyOrNotSimp : Syntax → Bool
-  | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] =>
-    only?[0].getAtomVal == "only"
+  | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal == "only"
   | _ => true
 
 variable {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m] in
@@ -63,7 +62,8 @@ def nonTerminalSimp : Syntax → m Unit
         for i in [n+1:args.size] do
           if "Lean.Parser.Tactic".isPrefixOf args[i]!.getKind.toString then
             logWarningAt args[n]!
-              "non-terminal simp: consider replacing it with the output of `simp?`"
+              "non-terminal simp: consider replacing it with the output of `simp?`\n\
+                [linter.nonTerminalSimp]"
     let _ ← args.mapM nonTerminalSimp
   | _ => default
 
