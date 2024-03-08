@@ -46,6 +46,10 @@ attribute [instance] Profinite.IsLight.countable_clopens
 instance (X Y : Profinite) [X.IsLight] [Y.IsLight] : (Profinite.of (X × Y)).IsLight where
   countable_clopens := Clopens.countable_prod
 
+def discreteQuotientEquivFinsetClopens (S : Profinite) : DiscreteQuotient S ≃
+    {t : Finset (Clopens S) // (∀ (i j : (Clopens S)), i ∈ t → j ∈ t → i ≠ j → i.1 ∩ j.1 = ∅) ∧
+    ∀ (x : S), ∃ i, i ∈ t ∧ x ∈ i.1} := sorry
+
 instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
   /- The idea is that the discrete quotients of `S` correspond to partitions of `S` into finitely
   many clopen subsets. If `S` is light, i.e. there are countably many clopens, then there are
