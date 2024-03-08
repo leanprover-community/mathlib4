@@ -26,9 +26,9 @@ with `k` being the weight and `ε` the global root number; hence the notation.) 
 
 A *strong FE-pair* is a weak FE-pair where the constant terms of `f` and `g` at `∞` are both 0.
 
-The main property of these pairs is the following: if `f`, `g` are a weak FE-pair, then the Mellin
-transforms `Λ` and `Λ'` of `f - f₀` and `g - g₀` respectively both have meromorphic continuation
-and satisfy a functional equation of the form
+The main property of these pairs is the following: if `f`, `g` are a weak FE-pair, with constant
+terms `f₀` and `g₀` at `∞`, then the Mellin transforms `Λ` and `Λ'` of `f - f₀` and `g - g₀`
+respectively both have meromorphic continuation and satisfy a functional equation of the form
 
 `Λ (k - s) = ε * Λ' s`.
 
@@ -169,14 +169,12 @@ namespace StrongFEPair
 
 variable (P : StrongFEPair E)
 
-/-- As `x → 0`, `F x` decays faster than any power of `x`. -/
-lemma hf_top' (r : ℝ) :
-    P.f =O[atTop] (· ^ (-r)) := by
+/-- As `x → ∞`, `F x` decays faster than any power of `x`. -/
+lemma hf_top' (r : ℝ) : P.f =O[atTop] (· ^ (-r)) := by
   simpa only [P.hf₀, sub_zero] using P.hf_top r
 
 /-- As `x → 0`, `F x` decays faster than any power of `x`. -/
-lemma hf_zero' (r : ℝ) :
-    P.f =O[𝓝[>] 0] (· ^ (-r)) := by
+lemma hf_zero' (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ (-r)) := by
   have := P.hg₀ ▸ P.hf_zero r
   simpa only [smul_zero, sub_zero]
 
@@ -201,21 +199,29 @@ lemma differentiable_Λ : Differentiable ℂ P.Λ := fun s ↦
   mellin_differentiableAt_of_isBigO_rpow P.hf_int (P.hf_top' _) ht (P.hf_zero' _) hu
 
 /-- Main theorem about strong FE pairs: if `(f, g)` are a strong FE pair, then the Mellin
-transforms of `f` and `g` are related by `s ↦ k - s`. -/
+transforms of `f` and `g` are related by `s ↦ k - s`.
+
+This is proved by making a substitution `t ↦ t⁻¹` in the Mellin transform integral. -/
 lemma functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
+  -- unfold definition:
   change mellin P.f (P.k - s) = P.ε • mellin P.g s
+  -- substitute `t ↦ t⁻¹` in `mellin P.g s`
   have step1 := mellin_comp_rpow P.g (-s) (-1)
   simp_rw [abs_neg, abs_one, inv_one, one_smul, ofReal_neg, ofReal_one, div_neg, div_one, neg_neg,
     rpow_neg_one, ← one_div] at step1
+  -- introduce a power of `t` to match the hypothesis `P.h_feq`
   have step2 := mellin_cpow_smul (fun t ↦ P.g (1 / t)) (P.k - s) (-P.k)
   rw [← sub_eq_add_neg, sub_right_comm, sub_self, zero_sub] at step2
   simp_rw [step1] at step2
+  -- put in the constant `P.ε`
   have step3 := mellin_const_smul (fun t ↦ (t : ℂ) ^ (-P.k : ℂ) • P.g (1 / t)) (P.k - s) P.ε
   rw [step2] at step3
   rw [← step3]
+  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `set_integral_congr`
   refine set_integral_congr measurableSet_Ioi (fun t ht ↦ ?_)
   simp_rw [P.h_feq' t ht, ← mul_smul]
+  -- some simple `cpow` arithmetic to finish
   rw [cpow_neg, ofReal_cpow (le_of_lt ht)]
   have : (t : ℂ) ^ (P.k : ℂ) ≠ 0 := by
     simpa only [← ofReal_cpow (le_of_lt ht), ofReal_ne_zero] using (rpow_pos_of_pos ht _).ne'
@@ -234,17 +240,17 @@ variable (P : WeakFEPair E)
 /-- Piecewise modified version of `f` with optimal asymptotics. We deliberately choose intervals
 which don't quite join up, so the function is `0` at `x = 1`, in order to maintain symmetry;
 there is no `good` choice of value at `1`. -/
-def f_mod : ℝ → E :=
+def f_modif : ℝ → E :=
   (Ioi 1).indicator (fun x ↦ P.f x - P.f₀) +
   (Ioo 0 1).indicator (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀)
 
 /-- Piecewise modified version of `g` with optimal asymptotics. -/
-def g_mod : ℝ → E :=
+def g_modif : ℝ → E :=
   (Ioi 1).indicator (fun x ↦ P.g x - P.g₀) +
   (Ioo 0 1).indicator (fun x ↦ P.g x - (P.ε⁻¹ * ↑(x ^ (-P.k))) • P.f₀)
 
-lemma hf_mod_int :
-    LocallyIntegrableOn P.f_mod (Ioi 0) := by
+lemma hf_modif_int :
+    LocallyIntegrableOn P.f_modif (Ioi 0) := by
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
     refine ContinuousAt.continuousOn (fun x (hx : 0 < x) ↦ ?_)
@@ -262,32 +268,33 @@ lemma hf_mod_int :
       Measure.restrict_restrict measurableSet_Ioo, ← IntegrableOn]
     exact hs'.mono_set (Set.inter_subset_right _ _)
 
-lemma hf_mod_FE (x : ℝ) (hx : 0 < x) :
-    P.f_mod (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_mod x := by
+lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
+    P.f_modif (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_modif x := by
   rcases lt_trichotomy 1 x with hx' | rfl | hx'
   · have : 1 / x < 1 := by rwa [one_div_lt hx one_pos, div_one]
-    rw [f_mod, Pi.add_apply, indicator_of_not_mem (not_mem_Ioi.mpr this.le),
-      zero_add, indicator_of_mem (mem_Ioo.mpr ⟨div_pos one_pos hx, this⟩), g_mod, Pi.add_apply,
+    rw [f_modif, Pi.add_apply, indicator_of_not_mem (not_mem_Ioi.mpr this.le),
+      zero_add, indicator_of_mem (mem_Ioo.mpr ⟨div_pos one_pos hx, this⟩), g_modif, Pi.add_apply,
       indicator_of_mem (mem_Ioi.mpr hx'), indicator_of_not_mem
       (not_mem_Ioo_of_ge hx'.le), add_zero, P.h_feq _ hx, smul_sub]
     simp_rw [rpow_neg (one_div_pos.mpr hx).le, one_div, inv_rpow hx.le, inv_inv]
-  · rw [div_one, f_mod, Pi.add_apply, indicator_of_not_mem, indicator_of_not_mem,
-      g_mod, Pi.add_apply, indicator_of_not_mem, indicator_of_not_mem]
+  · rw [div_one, f_modif, Pi.add_apply, indicator_of_not_mem, indicator_of_not_mem,
+      g_modif, Pi.add_apply, indicator_of_not_mem, indicator_of_not_mem]
     simp only [add_zero, smul_zero]
     all_goals { simp }
   · have : 1 < 1 / x := by rwa [lt_one_div one_pos hx, div_one]
-    rw [f_mod, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr this),
-      indicator_of_not_mem (not_mem_Ioo_of_ge this.le), add_zero, g_mod, Pi.add_apply,
+    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr this),
+      indicator_of_not_mem (not_mem_Ioo_of_ge this.le), add_zero, g_modif, Pi.add_apply,
       indicator_of_not_mem (not_mem_Ioi.mpr hx'.le),
       indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩), zero_add, P.h_feq _ hx, smul_sub]
     simp_rw [rpow_neg hx.le, ← mul_smul]
     field_simp [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
-/-- A strong FE-pair derived from `(f, g)` by subtracting a suitable correction term. -/
-def modStrongFEPair : StrongFEPair E where
-  hf_int   := P.hf_mod_int
-  hg_int   := P.symm.hf_mod_int
-  h_feq    := P.hf_mod_FE
+/-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
+correction terms from `f` and `g`. -/
+def modifStrongFEPair : StrongFEPair E where
+  hf_int   := P.hf_modif_int
+  hg_int   := P.symm.hf_modif_int
+  h_feq    := P.hf_modif_FE
   hε       := P.hε
   hk       := P.hk
   hf₀      := rfl
@@ -295,21 +302,21 @@ def modStrongFEPair : StrongFEPair E where
   hf_top r := by
     refine (P.hf_top r).congr' ?_ (by rfl)
     filter_upwards [eventually_gt_atTop 1] with x hx
-    rw [f_mod, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
+    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
       indicator_of_not_mem (not_mem_Ioo_of_ge hx.le), add_zero, sub_zero]
   hg_top r := by
     refine (P.hg_top r).congr' ?_ (by rfl)
     filter_upwards [eventually_gt_atTop 1] with x hx
-    rw [f_mod, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
+    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
       indicator_of_not_mem (not_mem_Ioo_of_ge hx.le), add_zero, sub_zero]
     rfl
 
 /- Alternative form for the difference between `f - f₀` and its modified term. -/
-lemma f_mod_aux1 : EqOn (fun x ↦ P.f_mod x - P.f x + P.f₀)
+lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
     ((Ioo 0 1).indicator (fun x : ℝ ↦ P.f₀ - (P.ε * ↑(x ^ (-P.k))) • P.g₀)
     + ({1} : Set ℝ).indicator (fun _ ↦ P.f₀ - P.f 1)) (Ioi 0) := by
   intro x (hx : 0 < x)
-  simp_rw [f_mod, Pi.add_apply]
+  simp_rw [f_modif, Pi.add_apply]
   rcases lt_trichotomy x 1 with hx' | rfl | hx'
   · simp_rw [indicator_of_not_mem (not_mem_Ioi.mpr hx'.le), zero_add,
       indicator_of_mem (mem_Ioo.mpr ⟨hx, hx'⟩)]
@@ -326,15 +333,15 @@ lemma f_mod_aux1 : EqOn (fun x ↦ P.f_mod x - P.f x + P.f₀)
 
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
-lemma f_mod_aux2 {s : ℂ} (hs : P.k < re s) :
-    mellin (fun x ↦ P.f_mod x - P.f x + P.f₀) s = (1 / s) • P.f₀ + (P.ε  / (P.k - s)) • P.g₀ := by
+lemma f_modif_aux2 {s : ℂ} (hs : P.k < re s) :
+    mellin (fun x ↦ P.f_modif x - P.f x + P.f₀) s = (1 / s) • P.f₀ + (P.ε  / (P.k - s)) • P.g₀ := by
   have h_re1 : -1 < re (s - 1) := by simpa using P.hk.trans hs
   have h_re2 : -1 < re (s - P.k - 1) := by simpa using hs
   calc
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) •
       ((Ioo 0 1).indicator (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x
       + ({1} : Set ℝ).indicator (fun _ ↦ P.f₀ - P.f 1) x) :=
-    set_integral_congr measurableSet_Ioi (fun x hx ↦ by simp [f_mod_aux1 P hx])
+    set_integral_congr measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) • ((Ioo 0 1).indicator
       (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x) := by
     refine set_integral_congr_ae measurableSet_Ioi (eventually_of_mem (U := {1}ᶜ)
@@ -368,7 +375,7 @@ lemma f_mod_aux2 {s : ℂ} (hs : P.k < re s) :
 
 /-- An entire function which differs from the Mellin transform of `f - f₀`, where defined, by a
 correction term of the form `A / s + B / (k - s)`. -/
-def Λ₀ : ℂ → E := mellin P.f_mod
+def Λ₀ : ℂ → E := mellin P.f_modif
 
 /-- A meromorphic function which agrees with the Mellin transform of `f - f₀` where defined -/
 def Λ (s : ℂ) : E := P.Λ₀ s - (1 / s) • P.f₀ - (P.ε / (P.k - s)) • P.g₀
@@ -377,7 +384,7 @@ lemma Λ₀_eq (s : ℂ) : P.Λ₀ s = P.Λ s + (1 / s) • P.f₀ + (P.ε / (P.
   unfold Λ Λ₀
   abel
 
-lemma differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.modStrongFEPair.differentiable_Λ
+lemma differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.modifStrongFEPair.differentiable_Λ
 
 lemma differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P.k ∨ P.g₀ = 0) :
     DifferentiableAt ℂ P.Λ s := by
@@ -398,16 +405,16 @@ lemma hasMellin {s : ℂ} (hs : P.k < s.re) : HasMellin (P.f · - P.f₀) s (P.�
     mellinConvergent_of_isBigO_rpow (P.hf_int.sub (locallyIntegrableOn_const _)) (P.hf_top _) ht
       P.hf_zero' hs
   refine ⟨hc1, ?_⟩
-  have hc2 : HasMellin P.f_mod s (P.Λ₀ s) := P.modStrongFEPair.hasMellin s
-  have hc3 : mellin (fun x ↦ f_mod P x - f P x + P.f₀) s =
-    (1 / s) • P.f₀ + (P.ε / (↑P.k - s)) • P.g₀ := P.f_mod_aux2 hs
+  have hc2 : HasMellin P.f_modif s (P.Λ₀ s) := P.modifStrongFEPair.hasMellin s
+  have hc3 : mellin (fun x ↦ f_modif P x - f P x + P.f₀) s =
+    (1 / s) • P.f₀ + (P.ε / (↑P.k - s)) • P.g₀ := P.f_modif_aux2 hs
   have := (hasMellin_sub hc2.1 hc1).2
   simp_rw [← sub_add, hc3, eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', ← sub_sub] at this
   exact this
 
 /-- Functional equation formulated for `Λ₀`. -/
 lemma functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.Λ₀ s :=
-  P.modStrongFEPair.functional_equation s
+  P.modifStrongFEPair.functional_equation s
 
 /-- Functional equation formulated for `Λ`. -/
 lemma functional_equation (s : ℂ) :
