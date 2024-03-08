@@ -662,7 +662,7 @@ def factorization_lcm_right (a b : ℕ) := (Nat.lcm a b).factorization.prod fun 
   if b.factorization p ≤ a.factorization p then 1 else p ^ n
 
 lemma factorization_lcm_left_ne_zero :
-  factorization_lcm_left a b ≠ 0 := by
+    factorization_lcm_left a b ≠ 0 := by
   rw [factorization_lcm_left, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
