@@ -185,7 +185,7 @@ theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : ke
   exact h_meas.lintegral_kernel_prod_right
 #align probability_theory.kernel.measurable_comp_prod_fun ProbabilityTheory.kernel.measurable_compProdFun
 
-open Classical
+open scoped Classical
 
 /-- Composition-Product of kernels. For s-finite kernels, it satisfies
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
@@ -436,8 +436,8 @@ theorem lintegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel
   let g := Function.curry f
   change ∫⁻ bc, f bc ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, g b c ∂η (a, b) ∂κ a
   rw [← lintegral_compProd']
-  · simp_rw [Function.curry_apply]
-  · simp_rw [Function.uncurry_curry]; exact hf
+  · simp_rw [g, Function.curry_apply]
+  · simp_rw [g, Function.uncurry_curry]; exact hf
 #align probability_theory.kernel.lintegral_comp_prod ProbabilityTheory.kernel.lintegral_compProd
 
 /-- Lebesgue integral against the composition-product of two kernels. -/

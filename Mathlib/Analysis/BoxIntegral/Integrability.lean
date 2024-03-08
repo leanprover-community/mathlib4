@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Tactic.Generalize
 
 #align_import analysis.box_integral.integrability from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -140,7 +141,13 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     exact hJ.2 ▸ Nat.le_ceil _
   refine' (norm_sum_le_of_le _ this).trans _; clear this
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
-  generalize hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
+  -- Adaption note: v4.7.0-rc1
+  -- The behaviour of `generalize` was changed in https://github.com/leanprover/lean4/pull/3575
+  -- to use transparancy `instances` (rather than `default`)
+  -- `generalize'` is a temporary backwards compatibility shim.
+  -- Hopefully we will be able to refactor this proof to use `generalize` again, and then drop
+  -- `generalize'`.
+  generalize' hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
   have : m < δ n / n := by
     simp only [Measure.restrict_apply (hUo _).measurableSet] at hμU
     refine' hm ▸ (measure_mono _).trans_lt (hμU _)

@@ -120,7 +120,7 @@ instance : FunLike (α -o β) α β where
   coe_injective' := silentSorry
 
 #eval Lean.Elab.Command.liftTermElabM do
-  Std.Tactic.Coe.registerCoercion ``ConHom.toFun
+  Lean.Meta.registerCoercion ``ConHom.toFun
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 instance : HasUncurry (α ->> β) α β :=

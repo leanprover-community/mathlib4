@@ -111,12 +111,12 @@ theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 #align conj_act.of_conj_act_to_conj_act ConjAct.ofConjAct_toConjAct
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 #align conj_act.of_conj_act_one ConjAct.ofConjAct_one
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 #align conj_act.to_conj_act_one ConjAct.toConjAct_one
@@ -131,12 +131,12 @@ theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 #align conj_act.to_conj_act_inv ConjAct.toConjAct_inv
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 #align conj_act.of_conj_act_mul ConjAct.ofConjAct_mul
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 #align conj_act.to_conj_act_mul ConjAct.toConjAct_mul
@@ -213,12 +213,12 @@ section GroupWithZero
 
 variable [GroupWithZero G₀]
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
   rfl
 #align conj_act.of_conj_act_zero ConjAct.ofConjAct_zero
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
   rfl
 #align conj_act.to_conj_act_zero ConjAct.toConjAct_zero

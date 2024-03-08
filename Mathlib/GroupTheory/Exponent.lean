@@ -50,7 +50,7 @@ universe u
 
 variable {G : Type u}
 
-open Classical
+open scoped Classical
 
 namespace Monoid
 
@@ -286,6 +286,60 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
 #align nat.prime.exists_order_of_eq_pow_factorization_exponent Nat.Prime.exists_orderOf_eq_pow_factorization_exponent
 #align nat.prime.exists_order_of_eq_pow_padic_val_nat_add_exponent Nat.Prime.exists_addOrderOf_eq_pow_padic_val_nat_add_exponent
 
+open Nat in
+lemma _root_.Nat.coprime_factorization_lcm_left_factorization_lcm_right (a b : Nat) :
+    (factorization_lcm_left a b).Coprime (factorization_lcm_right a b) := by
+  rw [factorization_lcm_left, factorization_lcm_right]
+  refine coprime_prod_left_iff.mpr fun p hp ↦ coprime_prod_right_iff.mpr fun q hq ↦ ?_
+  dsimp only; split_ifs with h h'
+  any_goals apply coprime_one_left
+  · apply coprime_one_right
+  refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
+  contrapose! h'; rwa [← h']
+
+open Nat in
+/-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, there is an element
+of order `lcm n m`. The result actually gives an explicit (computable) element, written as the
+product of a power of `x` and a power of `y`. -/
+lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : orderOf x ≠ 0)
+    (hy : orderOf y ≠ 0) :
+    orderOf (x ^ (orderOf x / (factorization_lcm_left (orderOf x) (orderOf y))) *
+    y ^ (orderOf y / factorization_lcm_right (orderOf x) (orderOf y))) =
+    Nat.lcm (orderOf x) (orderOf y) := by
+  have h₁ : 0 < factorization_lcm_left (orderOf x) (orderOf y) :=
+    Nat.pos_of_ne_zero <| factorization_lcm_left_ne_zero _ _
+  have h₂ : 0 < factorization_lcm_right (orderOf x) (orderOf y) :=
+    Nat.pos_of_ne_zero <| factorization_lcm_right_ne_zero _ _
+  have hx' : orderOf x / factorization_lcm_left (orderOf x) (orderOf y) ≠ 0 :=
+    fun h ↦ hx <| eq_zero_of_dvd_of_div_eq_zero (factorization_lcm_left_dvd hx hy) h
+  have hy' : orderOf y / factorization_lcm_right (orderOf x) (orderOf y) ≠ 0 :=
+    fun h ↦ hy <| eq_zero_of_dvd_of_div_eq_zero (factorization_lcm_right_dvd hx hy) h
+  obtain ⟨kx, hkx⟩ := factorization_lcm_left_dvd hx hy
+  obtain ⟨ky, hky⟩ := factorization_lcm_right_dvd hx hy
+  rw [(h.pow_pow _ _).orderOf_mul_eq_mul_orderOf_of_coprime, orderOf_pow' _ hx',
+    orderOf_pow' _ hy']
+  · nth_rewrite 3 [hkx]; nth_rewrite 5 [hky]
+    rw [Nat.mul_div_cancel_left _ h₁, Nat.mul_div_cancel_left _ h₂]
+    nth_rewrite 2 [hkx, ← one_mul kx]
+    nth_rewrite 3 [hky]; nth_rewrite 2 [← one_mul ky]
+    rw [Nat.gcd_mul_right, Nat.gcd_mul_right]
+    simp only [Nat.gcd_one_right, one_mul]
+    nth_rewrite 1 [hkx]; nth_rewrite 2 [hky]
+    rw [Nat.mul_div_cancel, Nat.mul_div_cancel,
+      factorization_lcm_left_mul_factorization_lcm_right hx hy]
+    · exact Nat.pos_of_ne_zero (fun h ↦ hy <| by simpa [h] using hky)
+    · exact Nat.pos_of_ne_zero (fun h ↦ hx <| by simpa [h] using hkx)
+  · rw [orderOf_pow' _ hx', orderOf_pow' _ hy']
+    nth_rewrite 3 [hkx]; nth_rewrite 5 [hky]
+    rw [Nat.mul_div_cancel_left _ h₁, Nat.mul_div_cancel_left _ h₂]
+    nth_rewrite 2 [hkx, ← one_mul kx]; nth_rewrite 3 [hky]; nth_rewrite 2 [← one_mul ky];
+    rw [Nat.gcd_mul_right, Nat.gcd_mul_right]
+    simp only [Nat.gcd_one_right, one_mul]
+    rw [hkx, Nat.mul_div_cancel]; nth_rewrite 2 [hky]; rw [Nat.mul_div_cancel]
+    · exact _root_.Nat.coprime_factorization_lcm_left_factorization_lcm_right _ _
+    · exact Nat.pos_of_ne_zero (fun h ↦ hy <| by simpa [h] using hky)
+    · exact Nat.pos_of_ne_zero (fun h ↦ hx <| by simpa [h] using hkx)
+
 /-- A nontrivial monoid has prime exponent `p` if and only if every non-identity element has
 order `p`. -/
 @[to_additive]
@@ -429,7 +483,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   have hne : (Set.range (orderOf : G → ℕ)).Nonempty := ⟨1, 1, orderOf_one⟩
   have hfin : (Set.range (orderOf : G → ℕ)).Finite := by
     rwa [← exponent_ne_zero_iff_range_orderOf_finite hG.orderOf_pos]
-  obtain ⟨t, ht⟩ := hne.cSup_mem hfin
+  obtain ⟨t, ht⟩ := hne.csSup_mem hfin
   use t
   apply Nat.dvd_antisymm (order_dvd_exponent _)
   refine' Nat.dvd_of_factors_subperm he _
@@ -503,7 +557,7 @@ variable [CancelCommMonoid G]
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by
-  rw [← Finset.Nonempty.cSup_eq_max', Finset.coe_image, Finset.coe_univ, Set.image_univ, ← iSup]
+  rw [← Finset.Nonempty.csSup_eq_max', Finset.coe_image, Finset.coe_univ, Set.image_univ, ← iSup]
   exact exponent_eq_iSup_orderOf orderOf_pos
 #align monoid.exponent_eq_max'_order_of Monoid.exponent_eq_max'_orderOf
 #align add_monoid.exponent_eq_max'_order_of AddMonoid.exponent_eq_max'_addOrderOf

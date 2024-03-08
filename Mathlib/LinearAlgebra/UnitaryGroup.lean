@@ -145,10 +145,10 @@ theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
 
 end CoeLemmas
 
--- porting note: todo: redefine `toGL`/`embeddingGL` as in this example:
+-- Porting note: todo: redefine `toGL`/`embeddingGL` as in this example:
 example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   .toHomUnits ⟨⟨toLin', toLin'_one⟩, toLin'_mul⟩
--- porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
+-- Porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
 
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/

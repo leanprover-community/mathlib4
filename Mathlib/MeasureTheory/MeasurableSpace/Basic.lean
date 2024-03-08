@@ -190,6 +190,7 @@ end Functors
   eq_top_iff.2 <| λ s _ ↦ by by_cases b ∈ s <;> simp [*, map_def] <;> rw [Set.preimage_id'] <;> simp
 #align measurable_space.map_const MeasurableSpace.map_const
 
+set_option tactic.skipAssignedInstances false in
 @[simp] theorem comap_const {m} (b : β) : MeasurableSpace.comap (fun _a : α => b) m = ⊥ :=
   eq_bot_iff.2 <| by rintro _ ⟨s, -, rfl⟩; by_cases b ∈ s <;> simp [*]; exact measurableSet_empty _
 #align measurable_space.comap_const MeasurableSpace.comap_const
@@ -239,7 +240,7 @@ theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measura
   measurable_id.mono le_rfl hm
 #align probability_theory.measurable_id'' measurable_id''
 
--- porting note: todo: add TC `DiscreteMeasurable` + instances
+-- Porting note: todo: add TC `DiscreteMeasurable` + instances
 
 @[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
@@ -326,7 +327,7 @@ theorem measurableSet_preimage {t : Set β} (hf : Measurable f) (ht : Measurable
   hf ht
 #align measurable_set_preimage measurableSet_preimage
 
--- porting note: new
+-- Porting note: new
 protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf : Measurable f) :
     MeasurableSet (f ⁻¹' t) :=
   hf ht
@@ -1098,7 +1099,7 @@ theorem measurable_inr [MeasurableSpace α] [MeasurableSpace β] : Measurable (@
 
 variable {m : MeasurableSpace α} {mβ : MeasurableSpace β}
 
--- porting note: new
+-- Porting note: new
 theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
     MeasurableSet s ↔ MeasurableSet (Sum.inl ⁻¹' s) ∧ MeasurableSet (Sum.inr ⁻¹' s) :=
   Iff.rfl
@@ -1120,7 +1121,7 @@ theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f :
     (hf : Measurable f) (hg : Measurable g) : Measurable (Sum.map f g) :=
   (measurable_inl.comp hf).sumElim (measurable_inr.comp hg)
 
--- porting note: new
+-- Porting note: new
 @[simp] theorem measurableSet_inl_image {s : Set α} :
     MeasurableSet (Sum.inl '' s : Set (α ⊕ β)) ↔ MeasurableSet s := by
   simp [measurableSet_sum_iff, Sum.inl_injective.preimage_image]
@@ -1128,7 +1129,7 @@ theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f :
 alias ⟨_, MeasurableSet.inl_image⟩ := measurableSet_inl_image
 #align measurable_set.inl_image MeasurableSet.inl_image
 
--- porting note: new
+-- Porting note: new
 @[simp] theorem measurableSet_inr_image {s : Set β} :
     MeasurableSet (Sum.inr '' s : Set (α ⊕ β)) ↔ MeasurableSet s := by
   simp [measurableSet_sum_iff, Sum.inr_injective.preimage_image]
@@ -1877,7 +1878,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
   of_measurable_inverse_on_range hf₁ hf₂ (hg.comp measurable_subtype_coe) H
 #align measurable_embedding.of_measurable_inverse MeasurableEmbedding.of_measurable_inverse
 
-open Classical
+open scoped Classical
 
 /-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`.-/
@@ -1996,7 +1997,7 @@ instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [Measurabl
 
 variable (α)
 
-open Classical
+open scoped Classical
 
 /-- If a measurable space is countably generated and separates points, it admits a measurable
 injection into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
@@ -2183,7 +2184,7 @@ theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ 
 instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
--- porting note: new lemma
+-- Porting note: new lemma
 @[simp]
 protected theorem sup_eq_union (s t : {s : Set α // MeasurableSet s}) : s ⊔ t = s ∪ t := rfl
 
@@ -2199,7 +2200,7 @@ theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ 
 instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
--- porting note: new lemma
+-- Porting note: new lemma
 @[simp]
 protected theorem inf_eq_inter (s t : {s : Set α // MeasurableSet s}) : s ⊓ t = s ∩ t := rfl
 
