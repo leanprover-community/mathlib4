@@ -3200,11 +3200,15 @@ import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.Variance
 import Mathlib.ProofTheory.Calculus
+import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Formula
 import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Language
+import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Rew
+import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Term
 import Mathlib.ProofTheory.HilbertStyle
 import Mathlib.ProofTheory.HilbertStyle2
 import Mathlib.ProofTheory.Lindenbaum
 import Mathlib.ProofTheory.LogicSymbol
+import Mathlib.ProofTheory.Matrix
 import Mathlib.ProofTheory.Predicate
 import Mathlib.ProofTheory.Semantics
 import Mathlib.ProofTheory.System

@@ -506,7 +506,7 @@ lemma bShift_comp_substs (v : Fin n₁ → Semiterm L ξ₂ n₂) :
     bShift.comp (substs v) = substs (bShift ∘ v) := by ext x <;> simp[comp_app]
 
 lemma shift_comp_substs (v : Fin n₁ → SyntacticSemiterm L n₂) :
-   shift.comp (substs v) = (substs (shift ∘ v)).comp shift := by ext x <;> simp[comp_app]
+    shift.comp (substs v) = (substs (shift ∘ v)).comp shift := by ext x <;> simp[comp_app]
 
 lemma shift_comp_substs1 (t : SyntacticSemiterm L n₂) :
     shift.comp (substs ![t]) = (substs ![shift t]).comp shift := by ext x <;> simp[comp_app]
@@ -951,15 +951,15 @@ lemma shiftEmb_eq_shift (p : SyntacticSemiformula L n) : shiftEmb p = Rew.shift.
 
 @[elab_as_elim]
 def formulaRec {C : SyntacticFormula L → Sort _}
-  (hverum  : C ⊤)
-  (hfalsum : C ⊥)
-  (hrel    : ∀ {l : ℕ} (r : L.Rel l) (v : Fin l → SyntacticTerm L), C (rel r v))
-  (hnrel   : ∀ {l : ℕ} (r : L.Rel l) (v : Fin l → SyntacticTerm L), C (nrel r v))
-  (hand    : ∀ (p q : SyntacticFormula L), C p → C q → C (p ⋏ q))
-  (hor     : ∀ (p q : SyntacticFormula L), C p → C q → C (p ⋎ q))
-  (hall    : ∀ (p : SyntacticSemiformula L 1), C (Rew.free.hom p) → C (∀' p))
-  (hex     : ∀ (p : SyntacticSemiformula L 1), C (Rew.free.hom p) → C (∃' p)) :
-  ∀ (p : SyntacticFormula L), C p
+    (hverum  : C ⊤)
+    (hfalsum : C ⊥)
+    (hrel    : ∀ {l : ℕ} (r : L.Rel l) (v : Fin l → SyntacticTerm L), C (rel r v))
+    (hnrel   : ∀ {l : ℕ} (r : L.Rel l) (v : Fin l → SyntacticTerm L), C (nrel r v))
+    (hand    : ∀ (p q : SyntacticFormula L), C p → C q → C (p ⋏ q))
+    (hor     : ∀ (p q : SyntacticFormula L), C p → C q → C (p ⋎ q))
+    (hall    : ∀ (p : SyntacticSemiformula L 1), C (Rew.free.hom p) → C (∀' p))
+    (hex     : ∀ (p : SyntacticSemiformula L 1), C (Rew.free.hom p) → C (∃' p)) :
+    ∀ (p : SyntacticFormula L), C p
   | ⊤        => hverum
   | ⊥        => hfalsum
   | rel r v  => hrel r v

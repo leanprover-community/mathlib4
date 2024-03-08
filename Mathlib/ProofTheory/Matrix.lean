@@ -130,16 +130,15 @@ def toList : {n : ℕ} → (Fin n → α) → List α
   case zero => contradiction
   case succ => rcases i <;> simp
 
-@[simp] lemma mem_toList_iff {v : Fin n → α} {a} : a ∈ toList v ↔ ∃ i, v i = a :=
-  by induction n <;> simp[*]; constructor; { rintro (rfl | ⟨i, rfl⟩) <;> simp }; { rintro ⟨i, rfl⟩; cases i using Fin.cases <;> simp }
+@[simp] lemma mem_toList_iff {v : Fin n → α} {a} : a ∈ toList v ↔ ∃ i, v i = a := by
+  induction n <;> simp[*]; constructor; { rintro (rfl | ⟨i, rfl⟩) <;> simp }; { rintro ⟨i, rfl⟩; cases i using Fin.cases <;> simp }
 
 def toOptionVec : {n : ℕ} → (Fin n → Option α) → Option (Fin n → α)
   | 0,     _ => some vecEmpty
   | _ + 1, v => (toOptionVec (v ∘ Fin.succ)).bind (fun vs => (v 0).map (fun z => z :> vs))
 
-@[simp] lemma toOptionVec_some (v : Fin n → α) :
-    toOptionVec (fun i => some (v i)) = some v :=
-  by induction n <;> simp[*, Matrix.empty_eq, toOptionVec, Function.comp]; exact funext (Fin.cases (by simp) (by simp))
+@[simp] lemma toOptionVec_some (v : Fin n → α) : toOptionVec (fun i => some (v i)) = some v := by
+  induction n <;> simp[*, Matrix.empty_eq, toOptionVec, Function.comp]; exact funext (Fin.cases (by simp) (by simp))
 
 @[simp] lemma toOptionVec_zero (v : Fin 0 → Option α) : toOptionVec v = some ![] := rfl
 
@@ -173,7 +172,7 @@ def toOptionVec : {n : ℕ} → (Fin n → Option α) → Option (Fin n → α)
       { have : ∀ i, v i.succ = some (z i) := ih.mp hs
         have : v = some a :> (fun i => some (z i)) :=
           by funext i; cases i using Fin.cases <;> simp[hz, this]
-        simp[this, ←comp_vecCons', Iff.symm Function.funext_iff ] } }
+        simp[this, ← comp_vecCons', Iff.symm Function.funext_iff ] } }
 
 def vecToNat : {n : ℕ} → (Fin n → ℕ) → ℕ
   | 0,     _ => 0

@@ -212,14 +212,14 @@ def complexity : {n : ℕ} → Semiformula L ξ n → ℕ
 
 @[elab_as_elim]
 def cases' {C : ∀ n, Semiformula L ξ n → Sort w}
-  (hverum  : ∀ {n : ℕ}, C n ⊤)
-  (hfalsum : ∀ {n : ℕ}, C n ⊥)
-  (hrel    : ∀ {n k : ℕ} (r : L.Rel k) (v : Fin k → Semiterm L ξ n), C n (rel r v))
-  (hnrel   : ∀ {n k : ℕ} (r : L.Rel k) (v : Fin k → Semiterm L ξ n), C n (nrel r v))
-  (hand    : ∀ {n : ℕ} (p q : Semiformula L ξ n), C n (p ⋏ q))
-  (hor     : ∀ {n : ℕ} (p q : Semiformula L ξ n), C n (p ⋎ q))
-  (hall    : ∀ {n : ℕ} (p : Semiformula L ξ (n + 1)), C n (∀' p))
-  (hex     : ∀ {n : ℕ} (p : Semiformula L ξ (n + 1)), C n (∃' p)) :
+    (hverum  : ∀ {n : ℕ}, C n ⊤)
+    (hfalsum : ∀ {n : ℕ}, C n ⊥)
+    (hrel    : ∀ {n k : ℕ} (r : L.Rel k) (v : Fin k → Semiterm L ξ n), C n (rel r v))
+    (hnrel   : ∀ {n k : ℕ} (r : L.Rel k) (v : Fin k → Semiterm L ξ n), C n (nrel r v))
+    (hand    : ∀ {n : ℕ} (p q : Semiformula L ξ n), C n (p ⋏ q))
+    (hor     : ∀ {n : ℕ} (p q : Semiformula L ξ n), C n (p ⋎ q))
+    (hall    : ∀ {n : ℕ} (p : Semiformula L ξ (n + 1)), C n (∀' p))
+    (hex     : ∀ {n : ℕ} (p : Semiformula L ξ (n + 1)), C n (∃' p)) :
     ∀ {n : ℕ} (p : Semiformula L ξ n), C n p
   | _, verum    => hverum
   | _, falsum   => hfalsum
@@ -232,14 +232,14 @@ def cases' {C : ∀ n, Semiformula L ξ n → Sort w}
 
 @[elab_as_elim]
 def rec' {C : ∀ n, Semiformula L ξ n → Sort w}
-  (hverum  : ∀ {n : ℕ}, C n ⊤)
-  (hfalsum : ∀ {n : ℕ}, C n ⊥)
-  (hrel    : ∀ {n k : ℕ} (r : L.Rel k) (v : Fin k → Semiterm L ξ n), C n (rel r v))
-  (hnrel   : ∀ {n k : ℕ} (r : L.Rel k) (v : Fin k → Semiterm L ξ n), C n (nrel r v))
-  (hand    : ∀ {n : ℕ} (p q : Semiformula L ξ n), C n p → C n q → C n (p ⋏ q))
-  (hor     : ∀ {n : ℕ} (p q : Semiformula L ξ n), C n p → C n q → C n (p ⋎ q))
-  (hall    : ∀ {n : ℕ} (p : Semiformula L ξ (n + 1)), C (n + 1) p → C n (∀' p))
-  (hex     : ∀ {n : ℕ} (p : Semiformula L ξ (n + 1)), C (n + 1) p → C n (∃' p)) :
+    (hverum  : ∀ {n : ℕ}, C n ⊤)
+    (hfalsum : ∀ {n : ℕ}, C n ⊥)
+    (hrel    : ∀ {n k : ℕ} (r : L.Rel k) (v : Fin k → Semiterm L ξ n), C n (rel r v))
+    (hnrel   : ∀ {n k : ℕ} (r : L.Rel k) (v : Fin k → Semiterm L ξ n), C n (nrel r v))
+    (hand    : ∀ {n : ℕ} (p q : Semiformula L ξ n), C n p → C n q → C n (p ⋏ q))
+    (hor     : ∀ {n : ℕ} (p q : Semiformula L ξ n), C n p → C n q → C n (p ⋎ q))
+    (hall    : ∀ {n : ℕ} (p : Semiformula L ξ (n + 1)), C (n + 1) p → C n (∀' p))
+    (hex     : ∀ {n : ℕ} (p : Semiformula L ξ (n + 1)), C (n + 1) p → C n (∃' p)) :
     ∀ {n : ℕ} (p : Semiformula L ξ n), C n p
   | _, verum    => hverum
   | _, falsum   => hfalsum
@@ -326,10 +326,10 @@ section fv
 variable [DecidableEq ξ]
 
 lemma fv_rel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) :
-  (rel r v).fv = .biUnion .univ fun i ↦ (v i).fv := rfl
+    (rel r v).fv = .biUnion .univ fun i ↦ (v i).fv := rfl
 
 lemma fv_nrel {k} (r : L.Rel k) (v : Fin k → Semiterm L ξ n) :
-  (nrel r v).fv = .biUnion .univ fun i ↦ (v i).fv := rfl
+    (nrel r v).fv = .biUnion .univ fun i ↦ (v i).fv := rfl
 
 @[simp] lemma fv_verum : (⊤ : Semiformula L ξ n).fv = ∅ := rfl
 
@@ -508,7 +508,8 @@ lemma lMap_nrel {k} (r : L₁.Rel k) (v : Fin k → Semiterm L₁ ξ n) :
     lMap Φ (nrel r v) = nrel (Φ.rel r) (fun i => (v i).lMap Φ) := rfl
 
 @[simp] lemma lMap_nrel₀ (r : L₁.Rel 0) (v : Fin 0 → Semiterm L₁ ξ n) :
-    lMap Φ (nrel r v) = nrel (Φ.rel r) ![] := by simp[lMap_nrel, Matrix.empty_eq]
+    lMap Φ (nrel r v) = nrel (Φ.rel r) ![] := by
+  simp[lMap_nrel, Matrix.empty_eq]
 
 @[simp] lemma lMap_nrel₁ (r : L₁.Rel 1) (t : Semiterm L₁ ξ n) :
     lMap Φ (nrel r ![t]) = nrel (Φ.rel r) ![t.lMap Φ] := by
