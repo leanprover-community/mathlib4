@@ -201,30 +201,13 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   · simp
   rcases Nat.eq_zero_or_pos q with (rfl | hqpos)
   · simp
+  let z := x ^ (p / factorization_lcm_left p q) * y ^ (q / factorization_lcm_right p q)
   let k := PNat.lcm ⟨p, hppos⟩ ⟨q, hqpos⟩
-  obtain ⟨xu, rfl⟩ := hx.isUnit hppos
-  obtain ⟨yu, rfl⟩ := hy.isUnit hqpos
-  have hxmem : xu ∈ rootsOfUnity k L := rootsOfUnity_le_of_dvd (dvd_lcm_left _ _) <|
-    IsPrimitiveRoot.mem_rootsOfUnity (by exact IsPrimitiveRoot.coe_units_iff.1 hx)
-  have hymem : yu ∈ rootsOfUnity k L := rootsOfUnity_le_of_dvd (dvd_lcm_right _ _) <|
-    IsPrimitiveRoot.mem_rootsOfUnity (by exact IsPrimitiveRoot.coe_units_iff.1 hy)
-  have hxuord : orderOf (⟨xu, hxmem⟩ : rootsOfUnity k L) = p := by
-    rw [Subgroup.orderOf_mk, ← orderOf_units, hx.eq_orderOf]
-  have hyuord : orderOf (⟨yu, hymem⟩ : rootsOfUnity k L) = q := by
-    rw [Subgroup.orderOf_mk, ← orderOf_units, hy.eq_orderOf]
-  obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := rootsOfUnity k L)
-  have H : orderOf g = k := by
-    refine le_antisymm ?_ (le_of_dvd (orderOf_pos g) ?_)
-    · rw [hg, card_eq_fintype_card]
-      exact card_rootsOfUnity L k
-    · rw [lcm_coe, PNat.mk_coe, PNat.mk_coe, hg]
-      exact Nat.lcm_dvd (hxuord.symm ▸ orderOf_dvd_natCard _) (hyuord.symm ▸ orderOf_dvd_natCard _)
-  have hroot := IsPrimitiveRoot.orderOf g
-  rw [H, ← IsPrimitiveRoot.coe_submonoidClass_iff, ← IsPrimitiveRoot.coe_units_iff] at hroot
-  haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K hroot
-  convert Submodule.finrank_le (Subalgebra.toSubmodule (Algebra.adjoin K ({g.1.1} : Set L)))
+  have : IsPrimitiveRoot z k := hx.pow_mul_pow_lcm hy hppos.ne' hqpos.ne'
+  haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
+  convert Submodule.finrank_le (Subalgebra.toSubmodule (adjoin K {z}))
   replace hirr : Irreducible (cyclotomic k K) := hirr
-  simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K ({g.1.1} : Set L)) hirr).symm
+  simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K {z}) hirr).symm
 
 variable (n) in
 /-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
