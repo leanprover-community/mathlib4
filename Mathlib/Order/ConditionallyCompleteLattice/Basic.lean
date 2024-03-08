@@ -304,22 +304,22 @@ noncomputable def IsWellOrder.conditionallyCompleteLinearOrderBot (α : Type*)
 
 end
 
-section OrderDual
+namespace OrderDual
 
-instance instConditionallyCompleteLatticeOrderDual (α : Type*) [ConditionallyCompleteLattice α] :
+instance instConditionallyCompleteLattice (α : Type*) [ConditionallyCompleteLattice α] :
     ConditionallyCompleteLattice αᵒᵈ :=
-  { instInfOrderDual α, instSupOrderDual α, OrderDual.lattice α with
+  { OrderDual.instInf α, OrderDual.instSup α, OrderDual.instLattice α with
     le_csSup := ConditionallyCompleteLattice.csInf_le (α := α)
     csSup_le := ConditionallyCompleteLattice.le_csInf (α := α)
     le_csInf := ConditionallyCompleteLattice.csSup_le (α := α)
     csInf_le := ConditionallyCompleteLattice.le_csSup (α := α) }
 
 instance (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompleteLinearOrder αᵒᵈ :=
-  { instConditionallyCompleteLatticeOrderDual α, OrderDual.instLinearOrder α with
+  { OrderDual.instConditionallyCompleteLattice α, OrderDual.instLinearOrder α with
     csSup_of_not_bddAbove := ConditionallyCompleteLinearOrder.csInf_of_not_bddBelow (α := α)
     csInf_of_not_bddBelow := ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove (α := α) }
 
-end OrderDual
+namespace OrderDual
 
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this
