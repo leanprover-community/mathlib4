@@ -214,7 +214,7 @@ def neg_iff' {Γ p q} (d : Bew Γ (p ⭤ q)) : Bew Γ (~p ⭤ ~q) := by
   apply conj₃';
   . apply contra₀';
     apply iff_mpr' d;
-  . apply contra₀';
+  · apply contra₀';
     apply iff_mp' d
 
 def trans' {Γ p q r} (h₁ : Bew Γ (p ⭢ q)) (h₂ : Bew Γ (q ⭢ r)) : Bew Γ (p ⭢ r) := by
