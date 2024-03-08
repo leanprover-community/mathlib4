@@ -1176,7 +1176,7 @@ theorem IsPrime.multiset_prod_map_le {s : Multiset ι} (f : ι → Ideal R) {P :
 
 theorem IsPrime.multiset_prod_mem_iff {I : Ideal R} (hI : I.IsPrime) (s : Multiset R) :
     s.prod ∈ I ↔ ∃ p ∈ s, p ∈ I := by
-  simpa [← span_singleton_le_iff_mem] using (hI.multiset_prod_map_le (fun r ↦ span {r}))
+  simpa [span_singleton_le_iff_mem] using (hI.multiset_prod_map_le (span {·}))
 
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
