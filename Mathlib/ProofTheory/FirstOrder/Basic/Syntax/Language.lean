@@ -1,8 +1,11 @@
+/-
+Copyright (c) 2024 Shogo Saito. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
+-/
 import Mathlib.ProofTheory.System
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Computability.Primrec
---import Logic.Vorspiel.Computability
---import Logic.Vorspiel.Meta
 
 /-!
 # Language of first-order logic
@@ -124,10 +127,12 @@ instance (k) : ToString (oRing.Rel k) :=
   | Rel.lt    => "\\mathrm{LT}"⟩
 
 instance (k) : DecidableEq (oRing.Func k) := fun a b =>
-  by rcases a <;> rcases b <;> simp <;> try {exact instDecidableTrue} <;> try {exact instDecidableFalse}
+  by rcases a <;> rcases b <;> simp <;> try {exact instDecidableTrue} <;>
+  try{exact instDecidableFalse}
 
 instance (k) : DecidableEq (oRing.Rel k) := fun a b =>
-  by rcases a <;> rcases b <;> simp <;> try {exact instDecidableTrue} <;> try {exact instDecidableFalse}
+  by rcases a <;> rcases b <;> simp <;> try {exact instDecidableTrue} <;>
+  try {exact instDecidableFalse}
 
 instance (k) : Encodable (oRing.Func k) where
   encode := fun x =>
@@ -159,10 +164,14 @@ private lemma Func_encodeDecode_primrec : Primrec₂ (fun k e =>
   else if k = 2 ∧ e = 0 then some 0
   else if k = 2 ∧ e = 1 then some 1
   else none) :=
-  to₂ <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
-      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
-      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
-      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
+  to₂ <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
+      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
+      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
+      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
       <| const _
 
 instance (k) : Primcodable (oRing.Func k) where
@@ -211,12 +220,15 @@ private lemma Rel_encodeDecode_primrec : Primrec₂ (fun k e =>
   if k = 2 ∧ e = 0 then some 0
   else if k = 2 ∧ e = 1 then some 1
   else none) :=
-  to₂ <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
-      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _)) (Primrec.eq.comp snd (const _))) (const _)
+  to₂ <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
+      <| Primrec.ite (PrimrecPred.and (Primrec.eq.comp fst (const _))
+        (Primrec.eq.comp snd (const _))) (const _)
       <| const _
 
 instance (k) : Primcodable (oRing.Rel k) where
-  prim := nat_iff.mp <| (Primrec.encode.comp (Rel_encodeDecode_primrec.comp (Primrec.const k) Primrec.id)).of_eq (fun e => by
+  prim := nat_iff.mp <| (Primrec.encode.comp (Rel_encodeDecode_primrec.comp
+      (Primrec.const k) Primrec.id)).of_eq (fun e => by
     simp[Encodable.decode]
     rcases k with (_ | k) <;> simp
     rcases k with (_ | k) <;> simp
@@ -271,7 +283,8 @@ def relational (α : ℕ → Type u) : Language where
   Rel := α
 
 section relational
-variable {α : ℕ → Type u} [e : ∀ n, Encodable (α n)] [d : ∀ n, DecidableEq (α n)] [s : ∀ n, ToString (α n)]
+variable {α : ℕ → Type u} [e : ∀ n, Encodable (α n)] [d : ∀ n, DecidableEq (α n)]
+  [s : ∀ n, ToString (α n)]
 
 instance (k) : Encodable ((relational α).Func k) := IsEmpty.toEncodable (α := PEmpty)
 
