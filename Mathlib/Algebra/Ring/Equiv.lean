@@ -7,7 +7,6 @@ import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Util.AssertExists
