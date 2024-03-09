@@ -1247,7 +1247,7 @@ instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
-instance linearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
+instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
   @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
@@ -1432,7 +1432,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance linearOrder : LinearOrder PUnit where
+instance instLinearOrder : LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit

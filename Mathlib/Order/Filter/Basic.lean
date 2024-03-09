@@ -487,7 +487,7 @@ section CompleteLattice
   we want to have different definitional equalities for some lattice operations. So we define them
   upfront and change the lattice operations for the complete lattice instance. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) :=
-  { @OrderDual.completeLattice _ (giGenerate α).liftCompleteLattice with
+  { @OrderDual.instCompleteLattice _ (giGenerate α).liftCompleteLattice with
     le := (· ≤ ·)
     top := ⊤
     le_top := fun _ _s hs => (mem_top.1 hs).symm ▸ univ_mem

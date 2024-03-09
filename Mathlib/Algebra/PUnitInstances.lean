@@ -114,19 +114,19 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
 
 instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := by
   refine'
-    { PUnit.commRing, PUnit.completeBooleanAlgebra with
+    { PUnit.commRing, PUnit.instCompleteBooleanAlgebra with
       exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
     intros <;>
     trivial
 
 instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where
   __ := PUnit.canonicallyOrderedAddCommMonoid
-  __ := PUnit.linearOrder
+  __ := PUnit.instLinearOrder
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit :=
-  { PUnit.completeBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
+  { PUnit.instCompleteBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
     top_add' := fun _ => rfl }
 
 @[to_additive]
