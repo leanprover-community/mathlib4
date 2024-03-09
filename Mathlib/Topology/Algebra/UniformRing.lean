@@ -239,16 +239,19 @@ namespace UniformSpace
 variable {α : Type*}
 
 -- TODO: move (some of) these results to the file about topological rings
-theorem ring_sep_rel (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_r_def _).symm
-#align uniform_space.ring_sep_rel UniformSpace.ring_sep_rel
+#align uniform_space.ring_sep_rel UniformSpace.inseparableSetoid_ring
 
-@[deprecated UniformSpace.ring_sep_rel] -- 2024-02-16 Equality of types is evil
+@[deprecated] -- 2024-03-09
+alias ring_sep_rel := inseparableSetoid_ring
+
+@[deprecated UniformSpace.inseparableSetoid_ring] -- 2024-02-16 Equality of types is evil
 theorem ring_sep_quot (α : Type u) [r : CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     SeparationQuotient α = (α ⧸ (⊥ : Ideal α).closure) := by
-  rw [SeparationQuotient, @ring_sep_rel α r]
+  rw [SeparationQuotient, @inseparableSetoid_ring α r]
   rfl
 #align uniform_space.ring_sep_quot UniformSpace.ring_sep_quot
 
@@ -257,9 +260,11 @@ continuous, get an homeomorphism between the separated quotient of `α` and the 
 corresponding to the closure of zero. -/
 def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where
-  toEquiv := Quotient.congrRight fun x y => by rw [ring_sep_rel]
-  continuous_toFun := continuous_id.quotient_map' <| by rw [ring_sep_rel]; exact fun _ _ ↦ id
-  continuous_invFun := continuous_id.quotient_map' <| by rw [ring_sep_rel]; exact fun _ _ ↦ id
+  toEquiv := Quotient.congrRight fun x y => by rw [inseparableSetoid_ring]
+  continuous_toFun := continuous_id.quotient_map' <| by
+    rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
+  continuous_invFun := continuous_id.quotient_map' <| by
+    rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
 #align uniform_space.sep_quot_equiv_ring_quot UniformSpace.sepQuotHomeomorphRingQuot
 
 instance commRing [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
