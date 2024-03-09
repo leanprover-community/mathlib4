@@ -11,6 +11,14 @@ import Mathlib.Logic.Small.Set
 
 /-!
 # Ind-objects are closed under filtered colimits
+
+We show that if `F : I ⥤ Cᵒᵖ ⥤ Type v` is a functor such that `I` is small and filtered and
+`F.obj i` is an ind-object for all `i`, then `colimit F` is also an ind-object.
+
+Our proof is a slight variant of the proof given in Kashiwara-Schapira.
+
+## References
+* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Theorem 6.1.8
 -/
 
 universe v u
@@ -24,6 +32,14 @@ namespace IndizationClosedUnderFilteredColimitsAux
 variable {I : Type v} [SmallCategory I] [IsFiltered I] (F : I ⥤ Cᵒᵖ ⥤ Type v)
   (hF : ∀ i, IsIndObject (F.obj i))
 
+section Interchange
+
+/-!
+We start by stating the key interchange property `exists_nonempty_limit_obj_of_isColimit`. It
+consists of pulling out a colimit out of a hom functor and interchanging a filtered colimit with
+a finite limit.
+-/
+
 variable {J : Type v} [SmallCategory J] [FinCategory J]
 
 variable (G : J ⥤ CostructuredArrow yoneda (colimit F))
@@ -31,14 +47,6 @@ variable (G : J ⥤ CostructuredArrow yoneda (colimit F))
 -- We introduce notation for the functor `J ⥤ Over (colimit F)` induced by `G`.
 local notation "𝒢" =>
   Functor.op G ⋙ Functor.op (CostructuredArrow.toOver yoneda (colimit F))
-
-section Interchange
-
-/-!
-We start by stating the key interchange property `exists_nonempty_limit_obj_of_is_colimit`. It
-consists of pulling out a colimit out of a hom functor and interchanging a filtered colimit with
-a finite limit.
--/
 
 variable {K : Type v} [SmallCategory K] (H : K ⥤ Over (colimit F))
 
@@ -75,79 +83,55 @@ theorem exists_nonempty_limit_obj_of_isColimit [IsFiltered K] {c : Cocone H} (hc
 
 end Interchange
 
-theorem step₁ : Nonempty <| limit <| 𝒢 ⋙ yoneda.obj (Over.mk (𝟙 (colimit F))) :=
-  ⟨Types.Limit.mk _ (fun j => Over.mkIdTerminal.from _) (by simp)⟩
-
-noncomputable def myBetterFunctor : I ⥤ Jᵒᵖ ⥤ Type (max u v) :=
-  colimit.toCostructuredArrow F ⋙ CostructuredArrow.toOver _ _ ⋙ yoneda ⋙
-    (whiskeringLeft _ _ _).obj 𝒢
-
-theorem step₇ : ∃ i, Nonempty <| limit <| (myBetterFunctor F G).obj i :=
-  exists_nonempty_limit_obj_of_isColimit F G (colimit.toCostructuredArrow F ⋙ CostructuredArrow.toOver _ _)
-    (Over.colimit.isColimitToOver F) _ (Iso.refl _) (step₁ F G)
-
-noncomputable def i : I := (step₇ F G).choose
-
-theorem step₈ : Nonempty <| limit <| (myBetterFunctor F G).obj (i F G) :=
-  (step₇ F G).choose_spec
-
-abbrev K : Type v := (hF (i F G)).presentation.I
-
-noncomputable def Kc : Cocone ((hF (i F G)).presentation.F ⋙ yoneda) :=
-  (hF (i F G)).presentation.cocone
-
-noncomputable def Kcl : IsColimit (Kc F hF G) :=
-  (hF (i F G)).presentation.coconeIsColimit
-
-lemma Kcpt : (Kc F hF G).pt = F.obj (i F G) := rfl
-
-noncomputable def mappedCone := (Over.map (colimit.ι F (i F G))).mapCocone (Kc F hF G).toOver
-
-lemma mappedCone_pt : (mappedCone F hF G).pt = Over.mk (colimit.ι F (i F G)) :=
-  rfl
-
-noncomputable def isColimitTo : IsColimit (Kc F hF G).toOver :=
-  Over.isColimitToOver <| Kcl F hF G
-
-noncomputable def isColimitMappedCone : IsColimit (mappedCone F hF G) :=
-  isColimitOfPreserves (Over.map (colimit.ι F (i F G))) (isColimitTo F hF G)
-
-noncomputable def indexing : (hF (i F G)).presentation.I ⥤ Over (colimit F) :=
-  ((Kc F hF G).toCostructuredArrow ⋙
-        CostructuredArrow.toOver ((IsIndObject.presentation _).F ⋙ yoneda) (F.obj (i F G))) ⋙
-      Over.map (colimit.ι F (i F G))
-
-theorem step₁₁ : ∃ k, Nonempty <| limit <| 𝒢 ⋙ yoneda.obj ((indexing F hF G).obj k) :=
-  exists_nonempty_limit_obj_of_isColimit F G (indexing F hF G) (isColimitMappedCone F hF G) _ (Iso.refl _) (step₈ F G)
-
-noncomputable def k : K F hF G := (step₁₁ F hF G).choose
-
-theorem step₁₂ : Nonempty <| limit <| 𝒢 ⋙ yoneda.obj ((indexing F hF G).obj (k F hF G)) :=
-  (step₁₁ F hF G).choose_spec
-
-theorem bla : ((Over.map (colimit.ι F (i F G))).toPrefunctor.obj
-          ((CostructuredArrow.toOver ((IsIndObject.presentation _).F ⋙ yoneda) (F.obj (i F G))).toPrefunctor.obj
-            (CostructuredArrow.mk ((Kc F hF G).ι.app (k F hF G))))) =
-          (CostructuredArrow.toOver yoneda (colimit F)).toPrefunctor.obj
-    ((CostructuredArrow.pre (IsIndObject.presentation _).F yoneda (colimit F)).toPrefunctor.obj
-      ((CostructuredArrow.map (colimit.ι F (i F G))).toPrefunctor.obj
-        (CostructuredArrow.mk ((Kc F hF G).ι.app (k F hF G))))) := by
-  rfl
-
 theorem isFiltered : IsFiltered (CostructuredArrow yoneda (colimit F)) := by
+  -- It suffices to show that for any functor `G : J ⥤ CostructuredArrow yoneda (colimit F)` with
+  -- `J` finite there is some `X` such that the set
+  -- `lim Hom_{CostructuredArrow yoneda (colimit F)}(G·, X)` is nonempty.
   refine IsFiltered.iff_nonempty_limit.mpr (fun {J _ _} G => ?_)
-  have t := step₁₂ F hF G
-  dsimp [indexing] at t
-  rw [bla F hF G] at t
+
+  -- We begin by remarking that `lim Hom_{Over (colimit F)}(yG·, 𝟙 (colimit F))` is nonempty,
+  -- simply because `𝟙 (colimit F)` is the terminal object. Here `y` is the functor
+  -- `CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` induced by `yoneda`.
+  have h₁ : Nonempty (limit (G.op ⋙
+      (CostructuredArrow.toOver _ _).op ⋙ yoneda.obj (Over.mk (𝟙 (colimit F))))) :=
+    ⟨Types.Limit.mk _ (fun j => Over.mkIdTerminal.from _) (by simp)⟩
+
+  -- `𝟙 (colimit F)` is the colimit of the diagram in `Over (colimit F)` given by the arrows of
+  -- the form `Fi ⟶ colimit F`. Thus, pulling the colimit out of the hom functor and commuting
+  -- the finite limit with the filtered colimit, we obtain
+  -- `lim_j Hom_{Over (colimit F)}(yGj, 𝟙 (colimit F)) ≅`
+  --   `colim_i lim_j Hom_{Over (colimit F)}(yGj, colimit.ι F i)`, and so we find `i` such that
+  -- the limit is non-empty.
+  obtain ⟨i, hi⟩ := exists_nonempty_limit_obj_of_isColimit F G _
+    (Over.colimit.isColimitToOver F) _ (Iso.refl _) h₁
+
+  -- `F.obj i` is a small filtered colimit of representables, say of the functor `H : K ⥤ C`, so
+  -- `𝟙 (F.obj i)` is the colimit of the arrows of the form `yHk ⟶ Fi` in `Over Fi`.
+  -- Then `colimit.ι F i` is the colimit of the arrows of the form
+  -- `H.obj F ⟶ F.obj i ⟶ colimit F` in `Over (colimit F)`.
+  obtain ⟨⟨P⟩⟩ := hF i
+  let hc : IsColimit ((Over.map (colimit.ι F i)).mapCocone P.cocone.toOver) :=
+    isColimitOfPreserves (Over.map _) (Over.isColimitToOver P.coconeIsColimit)
+
+  -- Again, we pull the colimit out of the hom functor and commute limit and colimit to obtain
+  -- `lim_j Hom_{Over (colimit F)}(yGj, colimit.ι F i) ≅`
+  --   `colim_k lim_j Hom_{Over (colimit F)}(yGj, yHk)`, and so we find `k` such that the limit
+  -- is non-empty.
+  obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙
+      (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
+      yoneda.obj ((CostructuredArrow.toOver yoneda (colimit F)).obj <|
+        (CostructuredArrow.pre P.F yoneda (colimit F)).obj <|
+          (CostructuredArrow.map (colimit.ι F i)).obj <|
+            CostructuredArrow.mk _))) :=
+    exists_nonempty_limit_obj_of_isColimit F G _ hc _ (Iso.refl _) hi
+
+  -- Since the inclusion `y : CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` is fully
+  -- faithful, `lim_j Hom_{Over (colimit F)}(yGj, yHk) ≅`
+  --   `lim_j Hom_{CostructuredArrow yoneda (colimit F)}(Gj, Hk)` and so `Hk` is the object we're
+  -- looking for.
   let q := Yoneda.natIsoOfFullyFaithful.{v, max u v} (CostructuredArrow.toOver yoneda (colimit F))
-  obtain ⟨t'⟩ := Nonempty.map (limMap (isoWhiskerLeft G.op (q _)).hom) t
-  let v := preservesLimitIso uliftFunctor.{max u v, v} (G.op ⋙
-    yoneda.toPrefunctor.obj
-        ((CostructuredArrow.pre (IsIndObject.presentation _).F yoneda (colimit F)).toPrefunctor.obj
-          ((CostructuredArrow.map (colimit.ι F (i F G))).toPrefunctor.obj
-            (CostructuredArrow.mk ((Kc F hF G).ι.app (k F hF G))))))
-  let t₂ := v.inv t'
-  exact ⟨_, ⟨t₂.down⟩⟩
+  obtain ⟨t'⟩ := Nonempty.map (limMap (isoWhiskerLeft G.op (q _)).hom) hk
+  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{max u v, v} _).inv t').down⟩⟩
 
 end IndizationClosedUnderFilteredColimitsAux
 
@@ -157,8 +141,9 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
     IndizationClosedUnderFilteredColimitsAux.isFiltered F hF
   refine (isIndObject_iff _).mpr ⟨this, ?_⟩
 
-  -- It remains to show that (yoneda / colimit F) is finally small. Because we have already shown
-  -- it is filtered, it suffices to exhibit a small weakly terminal set.
+  -- It remains to show that `CostructuredArrow yoneda (colimit F)` is finally small. Because we
+  -- have already shown it is filtered, it suffices to exhibit a small weakly terminal set. For this
+  -- we use that all the `CostructuredArrow yoneda (F.obj i)` have small weakly terminal sets.
   have : ∀ i, ∃ (s : Set (CostructuredArrow yoneda (F.obj i))) (_ : Small.{v} s),
       ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) :=
     fun i => (hF i).finallySmall.exists_small_weakly_terminal_set
