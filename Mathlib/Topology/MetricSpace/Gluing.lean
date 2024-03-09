@@ -82,7 +82,7 @@ theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : �
     refine' le_antisymm _ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
-    exact ciInf_le ⟨0, forall_range_iff.2 A⟩ p
+    exact ciInf_le ⟨0, forall_mem_range.2 A⟩ p
   simp only [glueDist, this, zero_add]
 #align metric.glue_dist_glued_points Metric.glueDist_glued_points
 
@@ -116,7 +116,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
   refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
-  · exact forall_range_iff.2 fun _ => add_nonneg dist_nonneg dist_nonneg
+  · exact forall_mem_range.2 fun _ => add_nonneg dist_nonneg dist_nonneg
   · linarith [dist_triangle_left z (Ψ p) y]
 
 private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
@@ -265,12 +265,15 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
   dist_triangle
     | .inl p, .inl q, .inl r => dist_triangle p q r
     | .inl p, .inr q, _ => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist p q]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | _, .inl q, .inr r => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist q r]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, _, .inl r => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist r p]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, .inr q, .inr r => dist_triangle p q r
@@ -308,7 +311,7 @@ namespace Sigma
 of two spaces. I.e., work with sigma types instead of sum types. -/
 variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
-open Classical
+open scoped Classical
 
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
 with each factor.
@@ -456,13 +459,13 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   set s : ι → Set (Σi, E i) := fun i => Sigma.fst ⁻¹' {i}
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
-    simp only [← range_sigmaMk]
+    simp only [s, ← range_sigmaMk]
     exact (isometry_mk i).uniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
   refine' completeSpace_of_isComplete_univ _
   convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
-  simp only [← preimage_iUnion, iUnion_of_singleton, preimage_univ]
+  simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 #align metric.sigma.complete_space Metric.Sigma.completeSpace
 
 end Sigma
