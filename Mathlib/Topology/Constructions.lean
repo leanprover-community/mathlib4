@@ -517,6 +517,7 @@ theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (un
   h.comp (Continuous.Prod.mk_left _)
 #align continuous_uncurry_right Continuous.uncurry_right
 
+-- 2024-03-09
 @[deprecated] alias continuous_uncurry_left := Continuous.uncurry_left
 @[deprecated] alias continuous_uncurry_right := Continuous.uncurry_right
 
