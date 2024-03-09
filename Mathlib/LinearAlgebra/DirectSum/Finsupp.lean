@@ -132,7 +132,7 @@ def finsuppPiTensorProduct : (⨂[R] i, κ i →₀ M i) ≃ₗ[R] ((i : ι) →
   (finsuppLEquivDirectSum R (⨂[R] i, M i) ((i : ι) → κ i)).symm
 
 @[simp]
-theorem finsuppPiTensorProduct_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
+theorem finsuppPiTensorProduct_tprod_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
     finsuppPiTensorProduct R κ M (⨂ₜ[R] i, Finsupp.single (p i) (m i)) =
     Finsupp.single p (⨂ₜ[R] i, m i) := by
   classical
