@@ -519,18 +519,18 @@ lemma cfc_comp_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
     cfc a (f <| q.eval ·) = cfc (aeval a q) f := by
   rw [cfc_comp' a f q.eval, cfc_polynomial a]
 
-lemma eq_algebraMap_of_spectrum_singleton (r : R) (h_spec : spectrum R a = {r})
+lemma eq_algebraMap_of_spectrum_subset_singleton (r : R) (h_spec : spectrum R a ⊆ {r})
     (ha : p a := by cfc_tac) : a = algebraMap R A r := by
   simpa [cfc_id R a, cfc_const a r] using
-    cfc_congr a (f := id) (g := fun _ : R ↦ r) <| by rw [h_spec]; simp
+    cfc_congr a (f := id) (g := fun _ : R ↦ r) fun x hx ↦ by simpa using h_spec hx
 
-lemma eq_zero_of_spectrum_eq_zero (h_spec : spectrum R a = {0}) (ha : p a := by cfc_tac) :
+lemma eq_zero_of_spectrum_subset_zero (h_spec : spectrum R a ⊆ {0}) (ha : p a := by cfc_tac) :
     a = 0 := by
-  simpa using eq_algebraMap_of_spectrum_singleton a 0 h_spec
+  simpa using eq_algebraMap_of_spectrum_subset_singleton a 0 h_spec
 
-lemma eq_one_of_spectrum_eq_one (h_spec : spectrum R a = {1}) (ha : p a := by cfc_tac) :
+lemma eq_one_of_spectrum_subset_one (h_spec : spectrum R a ⊆ {1}) (ha : p a := by cfc_tac) :
     a = 1 := by
-  simpa using eq_algebraMap_of_spectrum_singleton a 1 h_spec
+  simpa using eq_algebraMap_of_spectrum_subset_singleton a 1 h_spec
 
 end CFC
 
