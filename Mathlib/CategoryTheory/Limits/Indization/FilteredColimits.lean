@@ -173,6 +173,6 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
     refine ⟨i, j i y', hjs _ _, rfl⟩
   · refine ?_ ≫ (CostructuredArrow.map (colimit.ι F i)).map x
     refine CostructuredArrow.homMk (𝟙 A.left) (yonedaEquiv.injective ?_)
-    simp [-EmbeddingLike.apply_eq_iff_eq, hy, yonedaEquiv_comp]
+    simp [-EmbeddingLike.apply_eq_iff_eq, hy, yonedaEquiv_comp, y']
 
 end CategoryTheory.Limits
