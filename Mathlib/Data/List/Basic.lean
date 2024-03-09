@@ -924,7 +924,8 @@ theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
     reverseRecOn [] nil append_singleton = nil := rfl
 
-@[simp]
+-- `unusedHavesSuffices` is getting confused by the unfolding of `reverseRecOn`
+@[simp, nolint unusedHavesSuffices]
 theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α) (nil : motive [])
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
     reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
