@@ -43,8 +43,10 @@ end delab
 @[simp] lemma zero_succ_eq_id {n} : (0 : Fin (n + 1)) :> succ = id :=
   funext $ Fin.cases (by simp) (by simp)
 
-lemma eq_vecCons (C : Type u)  (s : Fin (n + 1) → C) : s = s 0 :> s ∘ Fin.succ :=
+lemma eq_vecCons (s : Fin (n + 1) → C) : s = s 0 :> s ∘ Fin.succ :=
    funext $ Fin.cases (by simp) (by simp)
+--lemma eq_vecCons (C : Type u)  (s : Fin (n + 1) → C) : s = s 0 :> s ∘ Fin.succ :=
+--   funext $ Fin.cases (by simp) (by simp)
 
 @[simp] lemma vecCons_ext (a₁ a₂ : α) (s₁ s₂ : Fin n → α) :
     a₁ :> s₁ = a₂ :> s₂ ↔ a₁ = a₂ ∧ s₁ = s₂ :=
