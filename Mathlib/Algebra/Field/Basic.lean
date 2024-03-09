@@ -267,7 +267,7 @@ variable {R : Type*} [Nontrivial R]
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
 noncomputable def divisionRingOfIsUnitOrEqZero [hR : Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     DivisionRing R :=
-  { groupWithZeroOfIsUnitOrEqZero h, hR with }
+  { groupWithZeroOfIsUnitOrEqZero h, hR with qsmul := qsmulRec _}
 #align division_ring_of_is_unit_or_eq_zero divisionRingOfIsUnitOrEqZero
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0.
@@ -275,7 +275,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 noncomputable def fieldOfIsUnitOrEqZero [hR : CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     Field R :=
-  { groupWithZeroOfIsUnitOrEqZero h, hR with }
+  { divisionRingOfIsUnitOrEqZero h, hR with }
 #align field_of_is_unit_or_eq_zero fieldOfIsUnitOrEqZero
 
 end NoncomputableDefs
