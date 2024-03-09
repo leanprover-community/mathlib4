@@ -78,7 +78,6 @@ theorem derivative_zero : derivative (0 : R[X]) = 0 :=
   derivative.map_zero
 #align polynomial.derivative_zero Polynomial.derivative_zero
 
-@[simp]
 theorem iterate_derivative_zero {k : ℕ} : derivative^[k] (0 : R[X]) = 0 :=
   iterate_map_zero derivative k
 #align polynomial.iterate_derivative_zero Polynomial.iterate_derivative_zero
@@ -593,7 +592,6 @@ theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
   LinearMap.map_neg derivative f
 #align polynomial.derivative_neg Polynomial.derivative_neg
 
-@[simp]
 theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -derivative^[k] f :=
   iterate_map_neg derivative k f
 #align polynomial.iterate_derivative_neg Polynomial.iterate_derivative_neg
@@ -609,7 +607,6 @@ theorem derivative_X_sub_C (c : R) : derivative (X - C c) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_sub_C Polynomial.derivative_X_sub_C
 
-@[simp]
 theorem iterate_derivative_sub {k : ℕ} {f g : R[X]} :
     derivative^[k] (f - g) = derivative^[k] f - derivative^[k] g :=
   iterate_map_sub derivative k f g
