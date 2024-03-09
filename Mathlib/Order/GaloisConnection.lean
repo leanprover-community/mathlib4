@@ -878,11 +878,11 @@ variable [PartialOrder α]
 def liftSemilatticeInf [SemilatticeInf β] (gi : GaloisCoinsertion l u) : SemilatticeInf α :=
   { ‹PartialOrder α› with
     inf_le_left := fun a b => by
-      exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_left a b
+      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_left a b
     inf_le_right := fun a b => by
-      exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_right a b
+      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).inf_le_right a b
     le_inf := fun a b c => by
-      exact (@OrderDual.semilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).le_inf a b c
+      exact (@OrderDual.instSemilatticeInf αᵒᵈ gi.dual.liftSemilatticeSup).le_inf a b c
     inf := fun a b => u (l a ⊓ l b) }
 #align galois_coinsertion.lift_semilattice_inf GaloisCoinsertion.liftSemilatticeInf
 
@@ -896,11 +896,11 @@ def liftSemilatticeSup [SemilatticeSup β] (gi : GaloisCoinsertion l u) : Semila
         sup_le (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_left)
           (gi.gc.monotone_l <| gi.gc.le_u <| le_sup_right)
     le_sup_left := fun a b => by
-      exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_left a b
+      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_left a b
     le_sup_right := fun a b => by
-      exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_right a b
+      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).le_sup_right a b
     sup_le := fun a b c => by
-      exact (@OrderDual.semilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).sup_le a b c }
+      exact (@OrderDual.instSemilatticeSup αᵒᵈ gi.dual.liftSemilatticeInf).sup_le a b c }
 #align galois_coinsertion.lift_semilattice_sup GaloisCoinsertion.liftSemilatticeSup
 
 -- See note [reducible non instances]
@@ -914,7 +914,7 @@ def liftLattice [Lattice β] (gi : GaloisCoinsertion l u) : Lattice α :=
 /-- Lift the bot along a Galois coinsertion -/
 @[reducible]
 def liftOrderBot [Preorder β] [OrderBot β] (gi : GaloisCoinsertion l u) : OrderBot α :=
-  { @OrderDual.orderBot _ _ gi.dual.liftOrderTop with bot := gi.choice ⊥ <| bot_le }
+  { @OrderDual.instOrderBot _ _ gi.dual.liftOrderTop with bot := gi.choice ⊥ <| bot_le }
 #align galois_coinsertion.lift_order_bot GaloisCoinsertion.liftOrderBot
 
 -- See note [reducible non instances]
@@ -928,7 +928,7 @@ def liftBoundedOrder [Preorder β] [BoundedOrder β] (gi : GaloisCoinsertion l u
 /-- Lift all suprema and infima along a Galois coinsertion -/
 @[reducible]
 def liftCompleteLattice [CompleteLattice β] (gi : GaloisCoinsertion l u) : CompleteLattice α :=
-  { @OrderDual.completeLattice αᵒᵈ gi.dual.liftCompleteLattice with
+  { @OrderDual.instCompleteLattice αᵒᵈ gi.dual.liftCompleteLattice with
     sInf := fun s => u (sInf (l '' s))
     sSup := fun s => gi.choice (sSup (l '' s)) _ }
 #align galois_coinsertion.lift_complete_lattice GaloisCoinsertion.liftCompleteLattice

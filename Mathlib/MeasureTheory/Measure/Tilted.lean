@@ -34,11 +34,10 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {f : α → �
 /-- Exponentially tilted measure. When `x ↦ exp (f x)` is integrable, `μ.tilted f` is the
 probability measure with density with respect to `μ` proportional to `exp (f x)`. Otherwise it is 0.
 -/
+@[pp_dot]
 noncomputable
 def Measure.tilted (μ : Measure α) (f : α → ℝ) : Measure α :=
   μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ))
-
-attribute [pp_dot] Measure.tilted
 
 @[simp]
 lemma tilted_of_not_integrable (hf : ¬ Integrable (fun x ↦ exp (f x)) μ) : μ.tilted f = 0 := by
