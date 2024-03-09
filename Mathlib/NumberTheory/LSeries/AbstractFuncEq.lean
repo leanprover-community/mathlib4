@@ -14,8 +14,8 @@ zeta and L functions.
 
 ### FE-pairs
 
-We define a *weak FE-pair* to be a pair of functions `f, g` on the positive reals which are
-locally integrable, have the form "constant" + "rapidly decaying term" at `∞`, and satisfy a
+We define a *weak FE-pair* to be a pair of functions `f, g` on the reals which are locally
+integrable on `(0, ∞)`, have the form "constant" + "rapidly decaying term" at `∞`, and satisfy a
 functional equation of the form
 
 `f (1 / x) = ε * x ^ k * g x`
@@ -105,9 +105,8 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
   rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx) :), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
-  have h1 : (↑(x ^ P.k : ℝ) : ℂ) ≠ 0 := ofReal_ne_zero.mpr (rpow_pos_of_pos hx _).ne'
   rw [one_div, inv_rpow hx.le, ofReal_inv]
-  field_simp [P.hε]
+  field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
@@ -199,6 +198,10 @@ lemma hasMellin (s : ℂ) :
   let ⟨u, hu⟩ := exists_lt s.re
   ⟨mellinConvergent_of_isBigO_rpow P.hf_int (P.hf_top' t) ht (P.hf_zero' u) hu, rfl⟩
 
+lemma Λ_eq : P.Λ = mellin P.f := by rfl
+
+lemma symm_Λ_eq : P.symm.Λ = mellin P.g := by rfl
+
 /-- If `(f, g)` are a strong FE pair, then the Mellin transform of `f` is entire. -/
 lemma differentiable_Λ : Differentiable ℂ P.Λ := fun s ↦
   let ⟨_, ht⟩ := exists_gt s.re
@@ -212,7 +215,7 @@ This is proved by making a substitution `t ↦ t⁻¹` in the Mellin transform i
 lemma functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
   -- unfold definition:
-  change mellin P.f (P.k - s) = P.ε • mellin P.g s
+  rw [P.Λ_eq, P.symm_Λ_eq]
   -- substitute `t ↦ t⁻¹` in `mellin P.g s`
   have step1 := mellin_comp_rpow P.g (-s) (-1)
   simp_rw [abs_neg, abs_one, inv_one, one_smul, ofReal_neg, ofReal_one, div_neg, div_one, neg_neg,
