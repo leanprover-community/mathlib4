@@ -510,7 +510,8 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) :=
         simp only [iterate_map_one, iterate_map_zero,
             iterate_zero_apply, ← iterate_map_mul] at this ⊢
         rw [mul_inv_cancel this, iterate_map_one]
-    inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero]) }
+    inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
+    qsmul := qsmulRec _ }
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),

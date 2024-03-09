@@ -586,7 +586,8 @@ noncomputable instance : LinearOrderedField ℝ :=
     ratCast := (↑)
     ratCast_mk := fun n d hd h2 => by
       rw [← ofCauchy_ratCast, Rat.cast_mk', ofCauchy_mul, ofCauchy_inv, ofCauchy_natCast,
-        ofCauchy_intCast] }
+        ofCauchy_intCast]
+    qsmul := qsmulRec _ }
 
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance
