@@ -427,7 +427,7 @@ variable (f' : ∀ i j, i ≤ j → G' i ↪[L] G' j)
 
 variable (g : ∀ i, G i ≃[L] G' i)
 
-variable (H_commutating : ∀ i j hij x, g j (f i j hij x) = f' i j hij (g i x))
+variable (H_commuting : ∀ i j hij x, g j (f i j hij x) = f' i j hij (g i x))
 
 variable [DirectedSystem G' fun i j h => f' i j h]
 
