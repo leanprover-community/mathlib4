@@ -206,7 +206,7 @@ instance orderedAddCommGroup : OrderedAddCommGroup Game :=
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
     BddAbove (Set.range f) := by
   obtain ⟨x, hx⟩ := PGame.bddAbove_range_of_small (Quotient.out ∘ f)
-  refine ⟨⟦x⟧, Set.forall_range_iff.2 fun i ↦ ?_⟩
+  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
   simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
 
 /-- A small set of games is bounded above. -/
@@ -218,7 +218,7 @@ lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
     BddBelow (Set.range f) := by
   obtain ⟨x, hx⟩ := PGame.bddBelow_range_of_small (Quotient.out ∘ f)
-  refine ⟨⟦x⟧, Set.forall_range_iff.2 fun i ↦ ?_⟩
+  refine ⟨⟦x⟧, Set.forall_mem_range.2 fun i ↦ ?_⟩
   simpa [PGame.le_iff_game_le] using hx $ Set.mem_range_self i
 
 /-- A small set of games is bounded below. -/
