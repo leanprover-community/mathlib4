@@ -226,53 +226,53 @@ noncomputable def binaryCoproductIso : F ⨿ G ≅ coprod F G :=
   colimit.isoColimitCocone (binaryCoproductColimitCocone F G)
 
 @[simp]
-lemma binaryCoproductIso_inl_comp_hom :
+lemma inl_comp_binaryCoproductIso_hom :
     Limits.coprod.inl ≫ (binaryCoproductIso F G).hom = coprod.inl := by
   simp only [binaryCoproductIso]
   aesop
 
 @[simp]
-lemma binaryCoproductIso_inl_comp_hom_apply (a : C) (x : F.obj a) :
+lemma inl_comp_binaryCoproductIso_hom_apply (a : C) (x : F.obj a) :
     (binaryCoproductIso F G).hom.app a ((Limits.coprod.inl (X := F)).app a x) = .inl x :=
-  congr_fun (congr_app (binaryCoproductIso_inl_comp_hom F G) a) x
+  congr_fun (congr_app (inl_comp_binaryCoproductIso_hom F G) a) x
 
 @[simp]
-lemma binaryCoproductIso_inr_comp_hom :
+lemma inr_comp_binaryCoproductIso_hom :
     Limits.coprod.inr ≫ (binaryCoproductIso F G).hom = coprod.inr := by
   simp [binaryCoproductIso]
   aesop
 
 @[simp]
-lemma binaryCoproductIso_inr_comp_hom_apply (a : C) (x : G.obj a) :
+lemma inr_comp_binaryCoproductIso_hom_apply (a : C) (x : G.obj a) :
     (binaryCoproductIso F G).hom.app a ((Limits.coprod.inr (X := F)).app a x) = .inr x :=
-  congr_fun (congr_app (binaryCoproductIso_inr_comp_hom F G) a) x
+  congr_fun (congr_app (inr_comp_binaryCoproductIso_hom F G) a) x
 
 @[simp]
-lemma binaryCoproductIso_inl_comp_inv :
+lemma inl_comp_binaryCoproductIso_inv :
     coprod.inl ≫ (binaryCoproductIso F G).inv = (Limits.coprod.inl (X := F)) := rfl
 
 @[simp]
-lemma binaryCoproductIso_inl_comp_inv_apply (a : C) (x : F.obj a) :
+lemma inl_comp_binaryCoproductIso_inv_apply (a : C) (x : F.obj a) :
     (binaryCoproductIso F G).inv.app a (.inl x) = (Limits.coprod.inl (X := F)).app a x := rfl
 
 @[simp]
-lemma binaryCoproductIso_inr_comp_inv :
+lemma inr_comp_binaryCoproductIso_inv :
     coprod.inr ≫ (binaryCoproductIso F G).inv = (Limits.coprod.inr (X := F)) := rfl
 
 @[simp]
-lemma binaryCoproductIso_inr_comp_inv_apply (a : C) (x : G.obj a) :
+lemma inr_comp_binaryCoproductIso_inv_apply (a : C) (x : G.obj a) :
     (binaryCoproductIso F G).inv.app a (.inr x) = (Limits.coprod.inr (X := F)).app a x := rfl
 
 variable {F G}
 
 /-- Construct an element of `(F ⨿ G).obj a` from an element of `F.obj a` -/
 noncomputable
-def coprodInl {a : C} (x : F.obj a) : (F ⨿ G).obj a :=
+abbrev coprodInl {a : C} (x : F.obj a) : (F ⨿ G).obj a :=
   (binaryCoproductIso F G).inv.app a (.inl x)
 
 /-- Construct an element of `(F ⨿ G).obj a` from an element of `G.obj a` -/
 noncomputable
-def coprodInr {a : C} (x : G.obj a) : (F ⨿ G).obj a :=
+abbrev coprodInr {a : C} (x : G.obj a) : (F ⨿ G).obj a :=
   (binaryCoproductIso F G).inv.app a (.inr x)
 
 variable (F G)
