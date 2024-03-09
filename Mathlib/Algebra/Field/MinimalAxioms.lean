@@ -41,4 +41,5 @@ def Field.ofMinimalAxioms (K : Type u)
     add_left_neg mul_assoc mul_comm one_mul left_distrib
   { exists_pair_ne := exists_pair_ne
     mul_inv_cancel := mul_inv_cancel
-    inv_zero := inv_zero }
+    inv_zero := inv_zero
+    qsmul := qsmulRec _ }

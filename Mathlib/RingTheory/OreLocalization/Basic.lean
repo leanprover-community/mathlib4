@@ -932,7 +932,8 @@ instance divisionRing : DivisionRing R[R⁰⁻¹] :=
     OreLocalization.inv',
     OreLocalization.ring with
     mul_inv_cancel := OreLocalization.mul_inv_cancel
-    inv_zero := OreLocalization.inv_zero }
+    inv_zero := OreLocalization.inv_zero
+    qsmul := qsmulRec _ }
 
 end DivisionRing
 

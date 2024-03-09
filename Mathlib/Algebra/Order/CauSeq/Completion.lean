@@ -276,6 +276,7 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
   ratCast q := ofRat q
   ratCast_mk n d hd hnd := by rw [← ofRat_ratCast, Rat.cast_mk', ofRat_mul, ofRat_inv]; rfl
+  qsmul := qsmulRec _ -- TODO: fix instance diamond
 
 theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) := by
   simp only [div_eq_mul_inv, ofRat_inv, ofRat_mul]

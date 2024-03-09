@@ -771,7 +771,9 @@ instance : Field (center K) :=
     mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
     div := fun a b => ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
     div_eq_mul_inv := fun a b => Subtype.ext <| div_eq_mul_inv _ _
-    inv_zero := Subtype.ext inv_zero }
+    inv_zero := Subtype.ext inv_zero
+    -- TODO: use a nicer defeq
+    qsmul := qsmulRec _ }
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
