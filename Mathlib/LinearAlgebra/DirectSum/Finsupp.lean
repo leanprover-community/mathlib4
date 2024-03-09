@@ -164,7 +164,7 @@ theorem finsuppPiTensorProduct_apply (f : (i : ι) → (κ i →₀ M i)) (p : (
    Finset.sum_singleton, Finsupp.single_eq_same]
 
 @[simp]
-theorem finsuppPiTensorProduct_symm_single (p : (i : ι) → κ i) (m : (i : ι) → M i) :
+theorem finsuppPiTensorProduct_symm_single_tprod (p : (i : ι) → κ i) (m : (i : ι) → M i) :
     (finsuppPiTensorProduct R κ M).symm (Finsupp.single p (⨂ₜ[R] i, m i)) =
     ⨂ₜ[R] i, Finsupp.single (p i) (m i) :=
   (LinearEquiv.symm_apply_eq _).2 (finsuppPiTensorProduct_single _ _ _ _ _).symm
