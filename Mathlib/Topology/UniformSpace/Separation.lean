@@ -88,8 +88,7 @@ instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
 
 #align separation_rel Inseparable
 #noalign separated_equiv
-#noalign filter.has_basis.mem_separation_rel
-#noalign separation_rel_iff_specializes
+#align separation_rel_iff_specializes specializes_iff_inseparable
 #noalign separation_rel_iff_inseparable
 
 theorem Filter.HasBasis.specializes_iff_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
@@ -99,6 +98,7 @@ theorem Filter.HasBasis.specializes_iff_uniformity {ι : Sort*} {p : ι → Prop
 theorem Filter.HasBasis.inseparable_iff_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : (𝓤 α).HasBasis p s) {x y : α} : Inseparable x y ↔ ∀ i, p i → (x, y) ∈ s i :=
   specializes_iff_inseparable.symm.trans h.specializes_iff_uniformity
+#align filter.has_basis.mem_separation_rel Filter.HasBasis.inseparable_iff_uniformity
 
 protected theorem Inseparable.nhds_le_uniformity {x y : α} (h : Inseparable x y) :
     𝓝 (x, y) ≤ 𝓤 α := by
@@ -112,7 +112,6 @@ theorem inseparable_iff_clusterPt_uniformity {x y : α} :
   exact fun U ⟨hU, hUc⟩ ↦ hUc _ <| h.mono <| le_principal_iff.2 hU
 
 #align separated_space T0Space
-#noalign separated_space_iff
 
 theorem t0Space_iff_uniformity :
     T0Space α ↔ ∀ x y, (∀ r ∈ 𝓤 α, (x, y) ∈ r) → x = y := by
@@ -123,6 +122,12 @@ theorem t0Space_iff_uniformity' :
     T0Space α ↔ Pairwise fun x y ↦ ∃ r ∈ 𝓤 α, (x, y) ∉ r := by
   simp [t0Space_iff_not_inseparable, (𝓤 α).basis_sets.inseparable_iff_uniformity]
 #align separated_def' t0Space_iff_uniformity'
+
+theorem t0Space_iff_ker_uniformity : T0Space α ↔ (𝓤 α).ker = diagonal α := by
+  simp_rw [t0Space_iff_uniformity, subset_antisymm_iff, diagonal_subset_iff, subset_def,
+    Prod.forall, Filter.mem_ker, mem_diagonal_iff, iff_self_and]
+  exact fun _ x s hs ↦ refl_mem_uniformity hs
+#align separated_space_iff t0Space_iff_ker_uniformity
 
 theorem eq_of_uniformity {α : Type*} [UniformSpace α] [T0Space α] {x y : α}
     (h : ∀ {V}, V ∈ 𝓤 α → (x, y) ∈ V) : x = y :=
@@ -153,11 +158,11 @@ theorem Filter.Tendsto.inseparable_iff_uniformity {l : Filter β} [NeBot l] {f g
 
 #align id_rel_sub_separation_relation Inseparable.rfl
 #align separation_rel_comap Inducing.inseparable_iff
-#noalign filter.has_basis.separation_rel
+#align filter.has_basis.separation_rel Filter.HasBasis.ker
 #noalign separation_rel_eq_inter_closure
 #align is_closed_separation_rel isClosed_setOf_inseparable
-#noalign separated_iff_t2
-#noalign separated_t3
+#align separated_iff_t2 R1Space.t2Space_iff_t0Space
+#align separated_t3 RegularSpace.t3Space_iff_t0Space
 #align subtype.separated_space Subtype.t0Space
 
 theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α) {s : Set α}
@@ -250,13 +255,13 @@ theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk 
   comap_map_mk_uniformity
 #align uniform_space.comap_quotient_eq_uniformity SeparationQuotient.comap_mk_uniformity
 
-#noalign uniform_space.separated_separation
+#align uniform_space.separated_separation SeparationQuotient.instT0Space
 
 #align uniform_space.separated_of_uniform_continuous Inseparable.map
 #noalign uniform_space.eq_of_separated_of_uniform_continuous
 
 #align uniform_space.separation_quotient SeparationQuotient
-#noalign uniform_space.separation_quotient.mk_eq_mk
+#align uniform_space.separation_quotient.mk_eq_mk SeparationQuotient.mk_eq_mk
 
 /-- Factoring functions to a separated space through the separation quotient.
 
