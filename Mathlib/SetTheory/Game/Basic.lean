@@ -51,15 +51,16 @@ namespace Game
 
 -- Porting note: added this definition
 /-- Negation of games. -/
-def neg : Game → Game := Quot.lift (fun x => ⟦-x⟧) fun _ _ h => Quot.sound ((neg_equiv_neg_iff).2 h)
+instance : Neg Game where
+  neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
+
+instance : Zero Game where zero := ⟦0⟧
+instance : Add Game where
+  add := Quotient.map₂ HAdd.hAdd <| fun _ _ hx _ _ hy => PGame.add_congr hx hy
 
 instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   zero := ⟦0⟧
   one := ⟦1⟧
-  neg := neg
-  add :=
-    Quotient.lift₂ (fun x y : PGame => ⟦x + y⟧) fun x₁ y₁ x₂ y₂ hx hy =>
-      Quot.sound (PGame.add_congr hx hy)
   add_zero := by
     rintro ⟨x⟩
     exact Quot.sound (add_zero_equiv x)
@@ -69,12 +70,12 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
   add_assoc := by
     rintro ⟨x⟩ ⟨y⟩ ⟨z⟩
     exact Quot.sound add_assoc_equiv
-  add_left_neg := by
-    rintro ⟨x⟩
-    exact Quot.sound (add_left_neg_equiv x)
+  add_left_neg := Quotient.ind <| fun x => Quot.sound (add_left_neg_equiv x)
   add_comm := by
     rintro ⟨x⟩ ⟨y⟩
     exact Quot.sound add_comm_equiv
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 instance : Inhabited Game :=
   ⟨0⟩
@@ -119,7 +120,7 @@ theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x := by
   exact PGame.not_lf
 #align game.not_lf SetTheory.Game.not_lf
 
--- porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
+-- Porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
 instance : IsTrichotomous Game LF :=
   ⟨by
     rintro ⟨x⟩ ⟨y⟩
@@ -130,7 +131,7 @@ instance : IsTrichotomous Game LF :=
 /-! It can be useful to use these lemmas to turn `PGame` inequalities into `Game` inequalities, as
 the `AddCommGroup` structure on `Game` often simplifies many proofs. -/
 
--- porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
+-- Porting note: In a lot of places, I had to add explicitely that the quotient element was a Game.
 -- In Lean4, quotients don't have the setoid as an instance argument,
 -- but as an explicit argument, see https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
 theorem PGame.le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ ⟦y⟧ :=

@@ -186,13 +186,13 @@ theorem IsTopologicalBasis.open_eq_sUnion' {B : Set (Set α)} (hB : IsTopologica
       fun ⟨_b, ⟨_, bu⟩, ab⟩ => bu ab⟩
 #align topological_space.is_topological_basis.open_eq_sUnion' TopologicalSpace.IsTopologicalBasis.open_eq_sUnion'
 
--- porting note: use `∃ S, S ⊆ B ∧ _` instead of `∃ S (_ : S ⊆ B), _`
+-- Porting note: use `∃ S, S ⊆ B ∧ _` instead of `∃ S (_ : S ⊆ B), _`
 theorem IsTopologicalBasis.open_eq_sUnion {B : Set (Set α)} (hB : IsTopologicalBasis B) {u : Set α}
     (ou : IsOpen u) : ∃ S, S ⊆ B ∧ u = ⋃₀ S :=
   ⟨{ s ∈ B | s ⊆ u }, fun _ h => h.1, hB.open_eq_sUnion' ou⟩
 #align topological_space.is_topological_basis.open_eq_sUnion TopologicalSpace.IsTopologicalBasis.open_eq_sUnion
 
--- porting note: use `∃ S, S ⊆ B ∧ _` instead of `∃ S (_ : S ⊆ B), _`
+-- Porting note: use `∃ S, S ⊆ B ∧ _` instead of `∃ S (_ : S ⊆ B), _`
 theorem IsTopologicalBasis.open_iff_eq_sUnion {B : Set (Set α)} (hB : IsTopologicalBasis B)
     {u : Set α} : IsOpen u ↔ ∃ S, S ⊆ B ∧ u = ⋃₀ S :=
   ⟨hB.open_eq_sUnion, fun ⟨_S, hSB, hu⟩ => hu.symm ▸ isOpen_sUnion fun _s hs => hB.isOpen (hSB hs)⟩
@@ -311,8 +311,9 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 `TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
 deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
-Porting note: TODO: the previous paragraph describes the state of the art in Lean 3. We can have
-instance cycles in Lean 4 but we might want to postpone adding them till after the port. -/
+Porting note (#11215): TODO: the previous paragraph describes the state of the art in Lean 3.
+We can have instance cycles in Lean 4 but we might want to
+postpone adding them till after the port. -/
 @[mk_iff] class SeparableSpace : Prop where
   /-- There exists a countable dense set. -/
   exists_countable_dense : ∃ s : Set α, s.Countable ∧ Dense s
@@ -607,7 +608,7 @@ theorem isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [Discre
 
 -- Porting note: moved `DenseRange.separableSpace` up
 
--- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
+-- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
     [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
   let ⟨t, htc, htd⟩ := exists_countable_dense s
@@ -615,7 +616,7 @@ theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {
     hs.denseRange_val.dense_image continuous_subtype_val htd⟩
 #align dense.exists_countable_dense_subset Dense.exists_countable_dense_subsetₓ
 
--- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
+-- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 /-- Let `s` be a dense set in a topological space `α` with partial order structure. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
 dense subset `t ⊆ s` such that `t` contains bottom/top element of `α` when they exist and belong
@@ -866,7 +867,7 @@ theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (h
   exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
 #align topological_space.countable_cover_nhds TopologicalSpace.countable_cover_nhds
 
--- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
+-- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem countable_cover_nhdsWithin [SecondCountableTopology α] {f : α → Set α} {s : Set α}
     (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
   have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x => preimage_coe_mem_nhds_subtype.2 (hf x x.2)

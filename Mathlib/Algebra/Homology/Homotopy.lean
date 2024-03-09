@@ -3,6 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Tactic.Abel
 
@@ -17,7 +18,7 @@ We define chain homotopies, and prove that homotopic chain maps induce the same 
 
 universe v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 
@@ -132,7 +133,7 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
   · congr <;> simp
 #align prev_d_nat prevD_nat
 
--- porting note: removed @[has_nonempty_instance]
+-- Porting note: removed @[has_nonempty_instance]
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
 which are zero unless `c.Rel j i`, satisfying the homotopy condition.
 -/
@@ -205,6 +206,20 @@ def add {f₁ g₁ f₂ g₂ : C ⟶ D} (h₁ : Homotopy f₁ g₁) (h₂ : Homo
     simp only [HomologicalComplex.add_f_apply, h₁.comm, h₂.comm, AddMonoidHom.map_add]
     abel
 #align homotopy.add Homotopy.add
+
+/-- the scalar multiplication of an homotopy -/
+@[simps!]
+def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
+    Homotopy (a • f) (a • g) where
+  hom i j := a • h.hom i j
+  zero i j hij := by
+    dsimp
+    rw [h.zero i j hij, smul_zero]
+  comm i := by
+    dsimp
+    rw [h.comm]
+    dsimp [fromNext, toPrev]
+    simp only [smul_add, Linear.comp_smul, Linear.smul_comp]
 
 /-- homotopy is closed under composition (on the right) -/
 @[simps]

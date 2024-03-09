@@ -63,14 +63,14 @@ alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 #align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
-  simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
+  simp_rw [Directed, DirectedOn, Set.forall_mem_range, Set.exists_range_iff]
 #align directed_on_range directedOn_range
 
--- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
+-- Porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
 alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 #align directed.directed_on_range Directed.directedOn_range
 
--- porting note: `attribute [protected]` doesn't work
+-- Porting note: `attribute [protected]` doesn't work
 -- attribute [protected] Directed.directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :

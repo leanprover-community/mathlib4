@@ -118,7 +118,7 @@ variable [Mul M] [Mul N] [Mul P] (c : Con M)
 instance : Inhabited (Con M) :=
   ⟨conGen EmptyRelation⟩
 
---Porting note: upgraded to FunLike
+-- Porting note: upgraded to FunLike
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
 instance : FunLike (Con M) M (M → Prop) where
@@ -253,7 +253,7 @@ protected def Quotient :=
 #align con.quotient Con.Quotient
 #align add_con.quotient AddCon.Quotient
 
---Porting note: made implicit
+-- Porting note: made implicit
 variable {c}
 
 /-- The morphism into the quotient by a congruence relation -/
@@ -263,7 +263,7 @@ def toQuotient : M → c.Quotient :=
 
 variable (c)
 
--- porting note: was `priority 0`. why?
+-- Porting note: was `priority 0`. why?
 /-- Coercion from a type with a multiplication to its quotient by a congruence relation.
 
 See Note [use has_coe_t]. -/
@@ -284,7 +284,7 @@ theorem quot_mk_eq_coe {M : Type*} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (
 #align con.quot_mk_eq_coe Con.quot_mk_eq_coe
 #align add_con.quot_mk_eq_coe AddCon.quot_mk_eq_coe
 
--- porting note: TODO: restore `elab_as_elim`
+-- Porting note (#11215): TODO: restore `elab_as_elim`
 /-- The function on the quotient by a congruence relation `c` induced by a function that is
     constant on `c`'s equivalence classes. -/
 @[to_additive "The function on the quotient by a congruence relation `c`
@@ -295,7 +295,7 @@ protected def liftOn {β} {c : Con M} (q : c.Quotient) (f : M → β) (h : ∀ a
 #align con.lift_on Con.liftOn
 #align add_con.lift_on AddCon.liftOn
 
--- porting note: TODO: restore `elab_as_elim`
+-- Porting note (#11215): TODO: restore `elab_as_elim`
 /-- The binary function on the quotient by a congruence relation `c` induced by a binary function
     that is constant on `c`'s equivalence classes. -/
 @[to_additive "The binary function on the quotient by a congruence relation `c`
@@ -542,7 +542,7 @@ theorem conGen_of_con (c : Con M) : conGen c = c :=
 #align add_con.add_con_gen_of_con AddCon.addConGen_of_addCon
 #align add_con.add_con_gen_of_add_con AddCon.addConGen_of_addCon
 
---Porting note: removing simp, simp can prove it
+-- Porting note: removing simp, simp can prove it
 /-- The map sending a binary relation to the smallest congruence relation in which it is
     contained is idempotent. -/
 @[to_additive addConGen_idem "The map sending a binary relation to the smallest additive
@@ -691,7 +691,7 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient
     ⟨comap ((↑) : M → c.Quotient) (fun x y => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
   left_inv d :=
-    --Porting note: by exact needed for unknown reason
+    -- Porting note: by exact needed for unknown reason
     by exact
       Subtype.ext_iff_val.2 <|
         ext fun x y =>
@@ -700,7 +700,7 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient
             d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
             fun h => ⟨_, _, rfl, rfl, h⟩⟩
   right_inv d :=
-    --Porting note: by exact needed for unknown reason
+    -- Porting note: by exact needed for unknown reason
     by exact
       ext fun x y =>
         ⟨fun h =>
@@ -749,7 +749,7 @@ theorem coe_one : ((1 : M) : c.Quotient) = 1 :=
 
 variable (c)
 
---Porting note: made M implicit
+-- Porting note: made M implicit
 /-- The submonoid of `M × M` defined by a congruence relation on a monoid `M`. -/
 @[to_additive (attr := coe) "The `AddSubmonoid` of `M × M` defined by an additive congruence
 relation on an `AddMonoid` `M`."]
@@ -867,7 +867,7 @@ theorem coe_mk' : (c.mk' : M → c.Quotient) = ((↑) : M → c.Quotient) :=
 #align add_con.coe_mk' AddCon.coe_mk'
 
 @[to_additive (attr := simp)]
---Porting note: removed dot notation
+-- Porting note: removed dot notation
 theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
   MonoidHom.mrange_top_iff_surjective.2 mk'_surjective
 #align con.mrange_mk' Con.mrange_mk'

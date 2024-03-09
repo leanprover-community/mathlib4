@@ -50,7 +50,8 @@ noncomputable section
 
 open Function Cardinal Set Equiv Order
 
-open Classical Cardinal Ordinal
+open scoped Classical
+open Cardinal Ordinal
 
 universe u v w
 
@@ -573,12 +574,12 @@ theorem mul_aleph0_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a * ℵ₀ = a :=
   (mul_eq_max ha le_rfl).trans (max_eq_left ha)
 #align cardinal.mul_aleph_0_eq Cardinal.mul_aleph0_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem aleph0_mul_mk_eq {α : Type*} [Infinite α] : ℵ₀ * #α = #α :=
   aleph0_mul_eq (aleph0_le_mk α)
 #align cardinal.aleph_0_mul_mk_eq Cardinal.aleph0_mul_mk_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem mk_mul_aleph0_eq {α : Type*} [Infinite α] : #α * ℵ₀ = #α :=
   mul_aleph0_eq (aleph0_le_mk α)
 #align cardinal.mk_mul_aleph_0_eq Cardinal.mk_mul_aleph0_eq
@@ -816,7 +817,7 @@ theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
   add_one_of_aleph0_le ha
 #align cardinal.add_one_eq Cardinal.add_one_eq
 
---Porting note: removed `simp`, `simp` can prove it
+-- Porting note: removed `simp`, `simp` can prove it
 theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
   add_one_eq (aleph0_le_mk α)
 #align cardinal.mk_add_one_eq Cardinal.mk_add_one_eq
@@ -859,7 +860,7 @@ variable [Nonempty ι] [Nonempty ι'] (hf : BddAbove (range f))
 protected theorem ciSup_add (c : Cardinal.{v}) : (⨆ i, f i) + c = ⨆ i, f i + c := by
   have : ∀ i, f i + c ≤ (⨆ i, f i) + c := fun i ↦ add_le_add_right (le_ciSup hf i) c
   refine le_antisymm ?_ (ciSup_le' this)
-  have bdd : BddAbove (range (f · + c)) := ⟨_, forall_range_iff.mpr this⟩
+  have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
   · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
       f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
@@ -882,11 +883,11 @@ protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i *
   obtain rfl | h0 := eq_or_ne c 0; · simp
   by_cases hf : BddAbove (range f); swap
   · have hfc : ¬ BddAbove (range (f · * c)) := fun bdd ↦ hf
-      ⟨⨆ i, f i * c, forall_range_iff.mpr fun i ↦ (le_mul_right h0).trans (le_ciSup bdd i)⟩
+      ⟨⨆ i, f i * c, forall_mem_range.mpr fun i ↦ (le_mul_right h0).trans (le_ciSup bdd i)⟩
     simp [iSup, csSup_of_not_bddAbove, hf, hfc]
   have : ∀ i, f i * c ≤ (⨆ i, f i) * c := fun i ↦ mul_le_mul_right' (le_ciSup hf i) c
   refine le_antisymm ?_ (ciSup_le' this)
-  have bdd : BddAbove (range (f · * c)) := ⟨_, forall_range_iff.mpr this⟩
+  have bdd : BddAbove (range (f · * c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
   · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
       f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
@@ -1382,7 +1383,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 #align cardinal.extend_function_of_lt Cardinal.extend_function_of_lt
 
 
---Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
+-- Porting note: we no longer express literals as `bit0` and `bit1` in Lean 4, so we can't use this
 -- section Bit
 
 -- /-!

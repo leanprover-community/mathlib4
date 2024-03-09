@@ -75,7 +75,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   · rw [← ENNReal.toReal_sum, (G n).sum_range_measure_preimage_singleton, measure_univ,
       ENNReal.one_toReal]
     exact fun _ _ => measure_ne_top _ _
-  · simp only [SimpleFunc.mem_range, forall_range_iff]
+  · simp only [SimpleFunc.mem_range, forall_mem_range]
     intro x
     apply inter_subset_right (range g)
     exact SimpleFunc.approxOn_mem hgm.measurable h₀ _ _
