@@ -79,7 +79,8 @@ theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id
 
--- Porting note: removed `simp` attribute due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
+-- Porting note (#11119): removed `simp` attribute
+-- due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
   rfl

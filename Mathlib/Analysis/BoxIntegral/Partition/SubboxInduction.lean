@@ -33,7 +33,8 @@ namespace BoxIntegral
 
 open Set Metric
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 noncomputable section
 

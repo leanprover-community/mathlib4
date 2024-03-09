@@ -176,7 +176,7 @@ theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 
 #align finset.prod_le_univ_prod_of_one_le' Finset.prod_le_univ_prod_of_one_le'
 #align finset.sum_le_univ_sum_of_nonneg Finset.sum_le_univ_sum_of_nonneg
 
--- Porting Note: TODO -- The two next lemmas give the same lemma in additive version
+-- Porting note (#11215): TODO -- The two next lemmas give the same lemma in additive version
 @[to_additive sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i in s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
@@ -471,7 +471,7 @@ This is a variant (beta-reduced) version of the standard lemma `Finset.sum_lt_su
 convenient for the `gcongr` tactic. -/
 add_decl_doc GCongr.sum_lt_sum_of_nonempty
 
--- Porting note: TODO -- calc indentation
+-- Porting note (#11215): TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
     (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : ∏ j in s, f j < ∏ j in t, f j := by

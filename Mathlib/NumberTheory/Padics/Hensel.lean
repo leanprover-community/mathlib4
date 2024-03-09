@@ -36,7 +36,8 @@ p-adic, p adic, padic, p-adic integer
 
 noncomputable section
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 -- We begin with some general lemmas that are used below in the computation.
 theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] (F : Polynomial ℤ_[p]) (x y : ℤ_[p]) :
