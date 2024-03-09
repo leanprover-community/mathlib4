@@ -1366,9 +1366,8 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
     refine ENNReal.ofReal_le_ofReal ?_
     simp only [tsub_le_iff_right, sub_add_cancel, ha_bound i]
   -- use the corresponding lemma for `ℝ≥0∞`
-  have h := tendsto_of_lintegral_tendsto_of_monotone ?_ ?_ h_tendsto h_mono h_bound ?_
+  have h := tendsto_of_lintegral_tendsto_of_monotone ?_ h_tendsto h_mono h_bound ?_
   rotate_left
-  · exact fun n ↦ ((hf_int n).1.aemeasurable.sub (hf_int 0).1.aemeasurable).ennreal_ofReal
   · exact (hF_int.1.aemeasurable.sub (hf_int 0).1.aemeasurable).ennreal_ofReal
   · exact ((lintegral_ofReal_le_lintegral_nnnorm _).trans_lt (hF_int.sub (hf_int 0)).2).ne
   filter_upwards [h, hf_mono, hf_bound] with a ha ha_mono ha_bound

@@ -24,14 +24,14 @@ variable [One M]
 @[to_additive]
 lemma mulSupport_sup [SemilatticeSup M] (f g : α → M) :
     mulSupport (fun x ↦ f x ⊔ g x) ⊆ mulSupport f ∪ mulSupport g :=
-  mulSupport_binop_subset (· ⊔ ·) sup_idem f g
+  mulSupport_binop_subset (· ⊔ ·) (sup_idem _) f g
 #align function.mul_support_sup Function.mulSupport_sup
 #align function.support_sup Function.support_sup
 
 @[to_additive]
 lemma mulSupport_inf [SemilatticeInf M] (f g : α → M) :
     mulSupport (fun x ↦ f x ⊓ g x) ⊆ mulSupport f ∪ mulSupport g :=
-  mulSupport_binop_subset (· ⊓ ·) inf_idem f g
+  mulSupport_binop_subset (· ⊓ ·) (inf_idem _) f g
 #align function.mul_support_inf Function.mulSupport_inf
 #align function.support_inf Function.support_inf
 

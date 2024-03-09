@@ -22,7 +22,8 @@ We provide basic instances, as well as a custom tactic for discharging
 
 noncomputable section
 
-open Classical Topology Filter
+open scoped Classical
+open Topology Filter
 
 open Set Int Set.Icc
 

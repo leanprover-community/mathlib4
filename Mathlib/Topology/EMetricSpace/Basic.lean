@@ -291,7 +291,7 @@ theorem uniformContinuous_iff [PseudoEMetricSpace β] {f : α → β} :
   uniformity_basis_edist.uniformContinuous_iff uniformity_basis_edist
 #align emetric.uniform_continuous_iff EMetric.uniformContinuous_iff
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem uniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
     UniformInducing f ↔ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
@@ -778,7 +778,7 @@ theorem totallyBounded_iff' {s : Set α} :
 
 section Compact
 
--- Porting note: todo: generalize to a uniform space with metrizable uniformity
+-- Porting note (#11215): TODO: generalize to a uniform space with metrizable uniformity
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
@@ -835,7 +835,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
   rwa [inducing_subtype_val.dense_iff, Subtype.forall]
 #align topological_space.is_separable.separable_space TopologicalSpace.IsSeparable.separableSpace
 
--- Porting note: todo: generalize to metrizable spaces
+-- Porting note (#11215): TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
 countable set.  -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
@@ -893,7 +893,7 @@ theorem diam_le_iff {d : ℝ≥0∞} : diam s ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s
 
 theorem diam_image_le_iff {d : ℝ≥0∞} {f : β → α} {s : Set β} :
     diam (f '' s) ≤ d ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ d := by
-  simp only [diam_le_iff, ball_image_iff]
+  simp only [diam_le_iff, forall_mem_image]
 #align emetric.diam_image_le_iff EMetric.diam_image_le_iff
 
 theorem edist_le_of_diam_le {d} (hx : x ∈ s) (hy : y ∈ s) (hd : diam s ≤ d) : edist x y ≤ d :=
@@ -1059,7 +1059,8 @@ theorem EMetric.uniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
 #align emetric.uniform_embedding_iff' EMetric.uniformEmbedding_iff'
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
-@[reducible] -- Porting note: made `reducible`; todo: make it an instance?
+@[reducible] -- Porting note: made `reducible`;
+-- Porting note (#11215): TODO: make it an instance?
 def EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with

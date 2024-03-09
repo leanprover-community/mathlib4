@@ -196,7 +196,8 @@ theorem NoetherianSpace.exists_finite_set_isClosed_irreducible [NoetherianSpace 
       (∀ t ∈ S, IsClosed t) ∧ (∀ t ∈ S, IsIrreducible t) ∧ s = ⋃₀ S := by
   lift s to Closeds α using hs
   rcases NoetherianSpace.exists_finite_set_closeds_irreducible s with ⟨S, hSf, hS, rfl⟩
-  refine ⟨(↑) '' S, hSf.image _, Set.ball_image_iff.2 fun S _ => S.2, Set.ball_image_iff.2 hS, ?_⟩
+  refine ⟨(↑) '' S, hSf.image _, Set.forall_mem_image.2 fun S _ ↦ S.2, Set.forall_mem_image.2 hS,
+    ?_⟩
   lift S to Finset (Closeds α) using hSf
   simp [← Finset.sup_id_eq_sSup, Closeds.coe_finset_sup]
 

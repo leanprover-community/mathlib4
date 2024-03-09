@@ -109,7 +109,7 @@ protected theorem isDomain : IsDomain K :=
 #align is_fraction_ring.is_domain IsFractionRing.isDomain
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K := open Classical in
+protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2

@@ -50,7 +50,8 @@ integral
 
 noncomputable section
 
-open MeasureTheory Set Classical Filter Function
+open scoped Classical
+open MeasureTheory Set Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 
@@ -318,7 +319,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 #align interval_integrable.comp_mul_left IntervalIntegrable.comp_mul_left
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
       IntervalIntegrable f volume a b :=
@@ -669,7 +670,7 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 
 end Basic
 
--- Porting note: TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
+-- Porting note (#11215): TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
 nonrec theorem _root_.IsROrC.interval_integral_ofReal {𝕜 : Type*} [IsROrC 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, IsROrC.ofReal_sub]
