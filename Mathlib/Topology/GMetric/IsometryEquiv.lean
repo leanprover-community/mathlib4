@@ -145,7 +145,7 @@ theorem toEquiv_symm
 @[simp]
 theorem coe_mk
     (f : α₁ ≃ α₂) (hf : ∀ x y, gdist₁ x y = gdist₂ (f x) (f y)) :
-    (GIsometryEquiv.mk f hf : α₁ → α₂) = f := rfl
+    (mk f hf : α₁ → α₂) = f := rfl
 
 @[simp]
 theorem symm_symm (f : GIsometryEquiv gdist₁ gdist₂) : f.symm.symm = f := rfl
@@ -161,6 +161,9 @@ theorem symm_mk
     (mk f h).symm = ⟨f.symm, (mk f h).symm_map_dist⟩ := rfl
 
 @[simp]
+theorem refl_symm : (refl gdist₁).symm = refl gdist₁ := rfl
+
+@[simp]
 theorem coe_copy
     (f : GIsometryEquiv gdist₁ gdist₂) (f' : α₁ → α₂) (f_inv : α₂ → α₁) (hf : f' = ↑f)
     (hf_inv : f_inv = ⇑f.symm) : (f.copy f' f_inv hf hf_inv) = f' := rfl
@@ -170,9 +173,6 @@ theorem coe_copy_eq
     (hf_inv : f_inv = ⇑f.symm) : (f.copy f' f_inv hf hf_inv) = f := by
   apply DFunLike.ext'
   rw [coe_copy,hf]
-
-@[simp]
-theorem refl_symm : (refl gdist₁).symm = refl gdist₁ := rfl
 
 
 variable {α₃ T₃ :Type*} {gdist₃:T₃}
@@ -259,7 +259,7 @@ theorem symm_comp_eq
 @[simp]
 theorem symm_trans_self
     (f : GIsometryEquiv gdist₁ gdist₂):
-  f.symm.trans f = GIsometryEquiv.refl gdist₂ := DFunLike.ext _ _ f.apply_symm_apply
+  f.symm.trans f = refl gdist₂ := DFunLike.ext _ _ f.apply_symm_apply
 
 @[simp]
 theorem self_trans_symm
