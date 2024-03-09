@@ -62,7 +62,9 @@ def nonTerminalSimp : Syntax → m Unit
         for i in [n+1:args.size] do
           if "Lean.Parser.Tactic".isPrefixOf args[i]!.getKind.toString then
             logWarningAt args[n]!
-              "non-terminal simp: consider replacing it with the output of `simp?`\n\
+              "non-terminal simp: consider replacing it with\n\
+                * `suffices \"expr after simp\" by simpa`\n\
+                * the output of `simp?`\n\
                 [linter.nonTerminalSimp]"
     let _ ← args.mapM nonTerminalSimp
   | _ => default
