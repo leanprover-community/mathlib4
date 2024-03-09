@@ -406,10 +406,10 @@ lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u
   clear f
   let x : PGame.{u} := ⟨Σ i, (g <| (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
-  refine ⟨mk x (.mk (by simp) (fun _ ↦ (hg _).moveLeft _) (by simp)),
-    Set.forall_range_iff.2 fun i ↦ ?_⟩
+  refine ⟨mk x (.mk (by simp [x]) (fun _ ↦ (hg _).moveLeft _) (by simp [x])),
+    Set.forall_mem_range.2 fun i ↦ ?_⟩
   rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
-  simpa using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
+  simpa [x] using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
 
 /-- A small set of surreals is bounded above. -/
 lemma bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s := by
@@ -428,10 +428,10 @@ lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u
   clear f
   let x : PGame.{u} := ⟨PEmpty, Σ i, (g <| (equivShrink.{u} ι).symm i).RightMoves,
     PEmpty.elim, fun x ↦ moveRight _ x.2⟩
-  refine ⟨mk x (.mk (by simp) (by simp) (fun _ ↦ (hg _).moveRight _) ),
-    Set.forall_range_iff.2 fun i ↦ ?_⟩
+  refine ⟨mk x (.mk (by simp [x]) (by simp [x]) (fun _ ↦ (hg _).moveRight _) ),
+    Set.forall_mem_range.2 fun i ↦ ?_⟩
   rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
-  simpa using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
+  simpa [x] using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
 
 /-- A small set of surreals is bounded below. -/
 lemma bddBelow_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddBelow s := by
