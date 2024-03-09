@@ -288,3 +288,6 @@ def binaryCoproductEquiv (a : C) :
   right_inv _ := by simp only [inv_hom_id_app_apply]
 
 end coprod
+
+end CategoryTheory.FunctorToTypes
+
