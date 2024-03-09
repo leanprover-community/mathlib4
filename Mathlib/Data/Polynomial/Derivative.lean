@@ -597,7 +597,7 @@ theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
 
 @[simp]
 theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -derivative^[k] f :=
-  iterate_map_neg _ _
+  iterate_map_neg _ _ _
 #align polynomial.iterate_derivative_neg Polynomial.iterate_derivative_neg
 
 -- Porting note: removed `simp`: `simp` can prove it.
