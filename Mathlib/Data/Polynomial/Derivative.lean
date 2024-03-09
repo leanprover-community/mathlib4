@@ -79,10 +79,8 @@ theorem derivative_zero : derivative (0 : R[X]) = 0 :=
 #align polynomial.derivative_zero Polynomial.derivative_zero
 
 @[simp]
-theorem iterate_derivative_zero {k : ℕ} : derivative^[k] (0 : R[X]) = 0 := by
-  induction' k with k ih
-  · simp
-  · simp [ih]
+theorem iterate_derivative_zero {k : ℕ} : derivative^[k] (0 : R[X]) = 0 :=
+  iterate_map_zero derivative k
 #align polynomial.iterate_derivative_zero Polynomial.iterate_derivative_zero
 
 @[simp]
@@ -597,7 +595,7 @@ theorem derivative_neg (f : R[X]) : derivative (-f) = -derivative f :=
 
 @[simp]
 theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -derivative^[k] f :=
-  iterate_map_neg _ _ _
+  iterate_map_neg derivative k f
 #align polynomial.iterate_derivative_neg Polynomial.iterate_derivative_neg
 
 -- Porting note: removed `simp`: `simp` can prove it.
@@ -613,8 +611,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem iterate_derivative_sub {k : ℕ} {f g : R[X]} :
-    derivative^[k] (f - g) = derivative^[k] f - derivative^[k] g := by
-  induction' k with k ih generalizing f g <;> simp [*]
+    derivative^[k] (f - g) = derivative^[k] f - derivative^[k] g :=
+  iterate_map_sub derivative k f g
 #align polynomial.iterate_derivative_sub Polynomial.iterate_derivative_sub
 
 @[simp]
