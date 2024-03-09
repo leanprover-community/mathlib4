@@ -679,7 +679,8 @@ instance instAddCommMonoidOreLocalization : AddCommMonoid R[S⁻¹] :=
     add_assoc := OreLocalization.add_assoc
     zero := zero
     zero_add := OreLocalization.zero_add
-    add_zero := fun x => by rw [OreLocalization.add_comm, OreLocalization.zero_add] }
+    add_zero := fun x => by rw [OreLocalization.add_comm, OreLocalization.zero_add]
+    nsmul := nsmulRec }
 
 protected theorem zero_mul (x : R[S⁻¹]) : 0 * x = 0 := by
   induction' x using OreLocalization.ind with r s
@@ -847,7 +848,8 @@ protected theorem add_left_neg (x : R[S⁻¹]) : -x + x = 0 := by
 instance ring : Ring R[S⁻¹] :=
   { OreLocalization.instSemiringOreLocalization,
     OreLocalization.instNegOreLocalization with
-    add_left_neg := OreLocalization.add_left_neg }
+    add_left_neg := OreLocalization.add_left_neg
+    zsmul := zsmulRec }
 
 open nonZeroDivisors
 

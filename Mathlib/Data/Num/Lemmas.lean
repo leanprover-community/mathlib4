@@ -397,6 +397,7 @@ instance addMonoid : AddMonoid Num where
   zero_add := zero_add
   add_zero := add_zero
   add_assoc := by transfer
+  nsmul := nsmulRec
 #align num.add_monoid Num.addMonoid
 
 instance addMonoidWithOne : AddMonoidWithOne Num :=
@@ -1435,11 +1436,13 @@ instance addMonoid : AddMonoid ZNum where
   zero := 0
   zero_add := zero_add
   add_zero := add_zero
+  nsmul := nsmulRec
 
 instance addCommGroup : AddCommGroup ZNum :=
   { ZNum.addMonoid with
     add_comm := by transfer
     neg := Neg.neg
+    zsmul := zsmulRec
     add_left_neg := by transfer }
 #align znum.add_comm_group ZNum.addCommGroup
 

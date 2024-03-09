@@ -191,8 +191,8 @@ theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
 #align hahn_series.summable_family.zero_apply HahnSeries.SummableFamily.zero_apply
 
 instance : AddCommMonoid (SummableFamily Γ R α) where
-  add := (· + ·)
   zero := 0
+  nsmul := nsmulRec
   zero_add s := by
     ext
     apply zero_add
@@ -244,16 +244,19 @@ section AddCommGroup
 
 variable [PartialOrder Γ] [AddCommGroup R] {α : Type*} {s t : SummableFamily Γ R α} {a : α}
 
+instance : Neg (SummableFamily Γ R α) :=
+  ⟨fun s =>
+    { toFun := fun a => -s a
+      isPWO_iUnion_support' := by
+        simp_rw [support_neg]
+        exact s.isPWO_iUnion_support
+      finite_co_support' := fun g => by
+        simp only [neg_coeff', Pi.neg_apply, Ne.def, neg_eq_zero]
+        exact s.finite_co_support g }⟩
+
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
-    neg := fun s =>
-      { toFun := fun a => -s a
-        isPWO_iUnion_support' := by
-          simp_rw [support_neg]
-          exact s.isPWO_iUnion_support'
-        finite_co_support' := fun g => by
-          simp only [neg_coeff', Pi.neg_apply, Ne.def, neg_eq_zero]
-          exact s.finite_co_support g }
+    zsmul := zsmulRec
     add_left_neg := fun a => by
       ext
       apply add_left_neg }
