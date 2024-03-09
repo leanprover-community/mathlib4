@@ -949,22 +949,37 @@ theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α)
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
 prove statements about palindromes. The principle is given for a `Sort`-valued predicate, i.e., it
 can also be used to construct data. -/
-def bidirectionalRec {C : List α → Sort*} (H0 : C []) (H1 : ∀ a : α, C [a])
-    (Hn : ∀ (a : α) (l : List α) (b : α), C l → C (a :: (l ++ [b]))) : ∀ l, C l
-  | [] => H0
-  | [a] => H1 a
-  | a :: b :: l => by
+@[elab_as_elim]
+def bidirectionalRec {motive : List α → Sort*} (nil : motive []) (singleton : ∀ a : α, motive [a])
+    (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
+    ∀ l, motive l
+  | [] => nil
+  | [a] => singleton a
+  | a :: b :: l =>
     let l' := dropLast (b :: l)
     let b' := getLast (b :: l) (cons_ne_nil _ _)
-    rw [← dropLast_append_getLast (cons_ne_nil b l)]
-    have : C l' := bidirectionalRec H0 H1 Hn l'
-    exact Hn a l' b' this
+    cast (by rw [← dropLast_append_getLast (cons_ne_nil b l)]) <|
+      cons_append a l' b' (bidirectionalRec nil singleton cons_append l')
 termination_by l => l.length
 #align list.bidirectional_rec List.bidirectionalRecₓ -- universe order
 
+@[simp]
+theorem bidirectionalRec_nil {motive : List α → Sort*}
+    (nil : motive []) (singleton : ∀ a : α, motive [a])
+    (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) :
+    bidirectionalRec nil singleton cons_append [] = nil :=
+  rfl
+
+@[simp]
+theorem bidirectionalRec_singleton {motive : List α → Sort*}
+    (nil : motive []) (singleton : ∀ a : α, motive [a])
+    (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α):
+    bidirectionalRec nil singleton cons_append [a] = singleton a :=
+  rfl
+
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
 @[elab_as_elim]
-def bidirectionalRecOn {C : List α → Sort*} (l : List α) (H0 : C []) (H1 : ∀ a : α, C [a])
+abbrev bidirectionalRecOn {C : List α → Sort*} (l : List α) (H0 : C []) (H1 : ∀ a : α, C [a])
     (Hn : ∀ (a : α) (l : List α) (b : α), C l → C (a :: (l ++ [b]))) : C l :=
   bidirectionalRec H0 H1 Hn l
 #align list.bidirectional_rec_on List.bidirectionalRecOn
