@@ -36,72 +36,23 @@ open CategoryTheory Limits FintypeCat Opposite TopologicalSpace
 
 open scoped Classical
 
+namespace Profinite
+
 /-- A profinite space *is light* if it has countably many clopen subsets.  -/
-class Profinite.IsLight (S : Profinite) : Prop where
+class IsLight (S : Profinite) : Prop where
   /-- The set of clopens is countable -/
   countable_clopens : Countable (Clopens S)
 
 attribute [instance] Profinite.IsLight.countable_clopens
 
-instance (X Y : Profinite) [X.IsLight] [Y.IsLight] : (Profinite.of (X × Y)).IsLight where
+instance instIsLightProd (X Y : Profinite) [X.IsLight] [Y.IsLight] :
+    (Profinite.of (X × Y)).IsLight where
   countable_clopens := Clopens.countable_prod
 
-def discreteQuotientEquivFinsetClopens (S : Profinite) : DiscreteQuotient S ≃
-    {t : Finset (Clopens S) // (∀ (i j : (Clopens S)), i ∈ t → j ∈ t → i ≠ j → i.1 ∩ j.1 = ∅) ∧
-    ∀ (x : S), ∃ i, i ∈ t ∧ x ∈ i.1} := sorry
+instance instCountableDiscreteQuotientOfIsLight (S : Profinite) [S.IsLight] :
+    Countable (DiscreteQuotient S) := (DiscreteQuotient.finsetClopens_inj S).countable
 
-instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
-  /- The idea is that the discrete quotients of `S` correspond to partitions of `S` into finitely
-  many clopen subsets. If `S` is light, i.e. there are countably many clopens, then there are
-  countably many such partitions. -/
-  refine @Function.Surjective.countable ({t : Finset (Clopens S) //
-    (∀ (i j : (Clopens S)), i ∈ t → j ∈ t → i ≠ j → i.1 ∩ j.1 = ∅) ∧
-    ∀ (x : S), ∃ i, i ∈ t ∧ x ∈ i.1}) _ _ ?_ ?_
-  · intro t
-    refine ⟨⟨fun x y ↦ ∃ i, i ∈ t.val ∧ x ∈ i.1 ∧ y ∈ i.1, ⟨by simpa using t.prop.2,
-      fun ⟨i, h⟩ ↦ ⟨i, ⟨h.1, h.2.2, h.2.1⟩⟩, ?_⟩⟩, ?_⟩
-    · intro x y z ⟨ixy, hxy⟩ ⟨iyz, hyz⟩
-      refine ⟨ixy, hxy.1, hxy.2.1, ?_⟩
-      convert hyz.2.2
-      by_contra h
-      have hh := t.prop.1 ixy iyz hxy.1 hyz.1 h
-      apply Set.not_mem_empty y
-      rw [← hh]
-      exact ⟨hxy.2.2, hyz.2.1⟩
-    · intro x
-      simp only [setOf, Setoid.Rel]
-      obtain ⟨i, h⟩ := t.prop.2 x
-      convert i.2.2 with z
-      refine ⟨fun ⟨j, hh⟩ ↦ ?_, fun hh ↦ ?_⟩
-      · suffices i = j by rw [this]; exact hh.2.2
-        by_contra hhh
-        have hhhh := t.prop.1 i j h.1 hh.1 hhh
-        apply Set.not_mem_empty x
-        rw [← hhhh]
-        exact ⟨h.2, hh.2.1⟩
-      · exact ⟨i, h.1, h.2, hh⟩
-  · intro d
-    have : Fintype d := Fintype.ofFinite _
-    refine ⟨⟨(Set.range (fun x ↦ ⟨d.proj ⁻¹' {x}, d.isClopen_preimage _⟩)).toFinset, ?_, ?_⟩, ?_⟩
-    · intro i j hi hj hij
-      simp only [Set.toFinset_range, Finset.mem_image, Finset.mem_univ, true_and] at hi hj
-      obtain ⟨ai, hi⟩ := hi
-      obtain ⟨aj, hj⟩ := hj
-      rw [← hi, ← hj]
-      ext x
-      refine ⟨fun ⟨hhi, hhj⟩ ↦ ?_, fun h ↦ by simp at h⟩
-      simp only [Set.mem_preimage, Set.mem_singleton_iff] at hhi hhj
-      exfalso
-      apply hij
-      rw [← hi, ← hj, ← hhi, ← hhj]
-    · intro x
-      refine ⟨⟨d.proj ⁻¹' {d.proj x}, d.isClopen_preimage _⟩, ?_⟩
-      simp
-    · ext x y
-      simp only [DiscreteQuotient.proj, Set.toFinset_range, Finset.mem_image, Finset.mem_univ,
-        true_and, exists_exists_eq_and, Set.mem_preimage, Set.mem_singleton_iff, exists_eq_left',
-        Quotient.eq'']
-      exact ⟨d.iseqv.symm , d.iseqv.symm⟩
+end Profinite
 
 namespace LightProfinite
 
