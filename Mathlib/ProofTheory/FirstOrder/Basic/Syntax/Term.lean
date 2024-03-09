@@ -72,9 +72,9 @@ variable [DecidableEq α]
 
 def bv (t : Semiterm L α n) : Finset (Fin n) := Finset.eraseNone <| t.varFinset.image Sum.getRight?
 
-@[simp] lemma bv_bvar : (&.x : Semiterm L α n).bv = {x} := rfl
+@[simp] lemma bv_bvar (x : Fin n) : (&.x : Semiterm L α n).bv = {x} := rfl
 
-@[simp] lemma bv_fvar : (%.x : Semiterm L α n).bv = ∅ := rfl
+@[simp] lemma bv_fvar (x : α) : (%.x : Semiterm L α n).bv = ∅ := rfl
 
 lemma bv_func {k} (f : L.Functions k) (v : Fin k → Semiterm L α n) :
     (func f v).bv = .biUnion .univ fun i ↦ (v i).bv := by
@@ -87,9 +87,10 @@ def Positive (t : Semiterm L α (n + 1)) : Prop := ∀ x ∈ t.bv, 0 < x
 
 namespace Positive
 
-@[simp] protected lemma bvar : Positive (&.x : Semiterm L α (n + 1)) ↔ 0 < x := by simp[Positive]
+@[simp] protected lemma bvar (x : Fin n) : Positive (&.x : Semiterm L α (n + 1)) ↔
+  (0 : Fin (n+1)) < x := by simp[Positive]
 
-@[simp] protected lemma fvar : Positive (%.x : Semiterm L α (n + 1)) := by simp[Positive]
+@[simp] protected lemma fvar (x : α) : Positive (%.x : Semiterm L α (n + 1)) := by simp[Positive]
 
 @[simp] protected lemma func {k} (f : L.Functions k) (v : Fin k → Semiterm L α (n + 1)) :
     Positive (func f v) ↔ ∀ i, Positive (v i) := by simp[Positive, bv]; rw [forall_comm]
@@ -98,9 +99,9 @@ end Positive
 
 def fv (t : Semiterm L α n) : Finset α := Finset.eraseNone <| t.varFinset.image Sum.getLeft?
 
-@[simp] lemma fv_bvar : (&.x : Semiterm L α n).fv = ∅ := rfl
+@[simp] lemma fv_bvar (x : Fin n) : (&.x : Semiterm L α n).fv = ∅ := rfl
 
-@[simp] lemma fv_fvar : (%.x : Semiterm L α n).fv = {x} := rfl
+@[simp] lemma fv_fvar (x : α) : (%.x : Semiterm L α n).fv = {x} := rfl
 
 lemma fv_func {k} (f : L.Functions k) (v : Fin k → Semiterm L α n) :
     (func f v).fv = .biUnion .univ fun i ↦ fv (v i) := by
