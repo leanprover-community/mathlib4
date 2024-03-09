@@ -18,6 +18,8 @@ namespace ProofTheory
 
 namespace FirstOrder
 
+universe u u₁ u₂ u₃ v v₁ v₂ v₃
+
 inductive Semiformula (L : Language.{u}) (ξ : Type v) : ℕ → Type (max u v) where
   | verum  {n} : Semiformula L ξ n
   | falsum {n} : Semiformula L ξ n
