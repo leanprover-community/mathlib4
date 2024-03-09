@@ -394,6 +394,11 @@ lemma Λ₀_eq (s : ℂ) : P.Λ₀ s = P.Λ s + (1 / s) • P.f₀ + (P.ε / (P.
   unfold Λ Λ₀
   abel
 
+lemma symm_Λ₀_eq (s : ℂ) :
+  P.symm.Λ₀ s = P.symm.Λ s + (1 / s) • P.g₀ + (P.ε⁻¹ / (P.k - s)) • P.f₀ := by
+    rw [P.symm.Λ₀_eq]
+    rfl
+
 lemma differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.modifStrongFEPair.differentiable_Λ
 
 lemma differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠ P.k ∨ P.g₀ = 0) :
@@ -430,8 +435,7 @@ lemma functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.Λ�
 lemma functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
   have := P.functional_equation₀ s
-  rw [P.Λ₀_eq, P.symm.Λ₀_eq, sub_sub_cancel] at this
-  change _ = P.ε • (_ + _ • P.g₀ + (P.ε⁻¹ / (P.k - s)) • P.f₀) at this
+  rw [P.Λ₀_eq, P.symm_Λ₀_eq, sub_sub_cancel] at this
   rwa [smul_add, smul_add, ← mul_smul, mul_one_div, ← mul_smul, ← mul_div_assoc,
     mul_inv_cancel P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
 
