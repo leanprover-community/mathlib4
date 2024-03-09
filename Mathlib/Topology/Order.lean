@@ -563,7 +563,7 @@ theorem le_generateFrom {t : TopologicalSpace α} {g : Set (Set α)} (h : ∀ s 
 
 theorem induced_generateFrom_eq {α β} {b : Set (Set β)} {f : α → β} :
     (generateFrom b).induced f = generateFrom (preimage f '' b) :=
-  le_antisymm (le_generateFrom <| ball_image_iff.2 fun s hs => ⟨s, GenerateOpen.basic _ hs, rfl⟩)
+  le_antisymm (le_generateFrom <| forall_mem_image.2 fun s hs => ⟨s, GenerateOpen.basic _ hs, rfl⟩)
     (coinduced_le_iff_le_induced.1 <| le_generateFrom fun _s hs => .basic _ (mem_image_of_mem _ hs))
 #align induced_generate_from_eq induced_generateFrom_eq
 
@@ -652,7 +652,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
   (gc_nhds a).u_sInf
 #align nhds_Inf nhds_sInf
 
--- Porting note: todo: timeouts without `b₁ := t₁`
+-- Porting note (#11215): TODO: timeouts without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)

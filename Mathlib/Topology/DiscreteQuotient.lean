@@ -77,7 +77,7 @@ namespace DiscreteQuotient
 
 variable (S : DiscreteQuotient X)
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 lemma toSetoid_injective : Function.Injective (@toSetoid X _)
   | ⟨_, _⟩, ⟨_, _⟩, _ => by congr
 
@@ -166,10 +166,10 @@ instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 #align discrete_quotient.inhabited_quotient DiscreteQuotient.inhabitedQuotient
 
--- Porting note: TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
+-- Porting note (#11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
 instance : Subsingleton (⊤ : DiscreteQuotient X) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound trivial
@@ -325,7 +325,7 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 #align discrete_quotient.map_id DiscreteQuotient.map_id
 
--- Porting note: todo: figure out why `simpNF` says this is a bad `@[simp]` lemma
+-- Porting note (#11215): TODO: figure out why `simpNF` says this is a bad `@[simp]` lemma
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩
