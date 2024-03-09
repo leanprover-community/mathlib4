@@ -436,7 +436,7 @@ noncomputable def equiv_lift : DirectLimit G f ≃[L] DirectLimit G' f' := by
   let U i : G i ↪[L] DirectLimit G' f' := (of L _ G' f' i).comp (g i).toEmbedding
   let F : DirectLimit G f ↪[L] DirectLimit G' f' := lift L _ G f U <| by
     intro _ _ _ _
-    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, H_commutating, of_f]
+    simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, H_commuting, of_f]
   have surj_f : Function.Surjective F := by
     intro x
     rcases x with ⟨i, pre_x⟩
