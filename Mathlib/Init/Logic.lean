@@ -658,4 +658,4 @@ end Binary
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
 
-attribute [pp_dot] Iff.mp Iff.mpr False.elim Eq.symm Eq.trans
+attribute [pp_dot] False.elim Eq.symm Eq.trans
