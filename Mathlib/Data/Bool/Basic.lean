@@ -22,18 +22,18 @@ bool, boolean, Bool, De Morgan
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=
-  decide_eq_true True.intro
+  _root_.decide_eq_true True.intro
 #align bool.to_bool_true Bool.decide_True
 
 theorem decide_False {h} : @decide False h = false :=
-  decide_eq_false id
+  _root_.decide_eq_false id
 #align bool.to_bool_false Bool.decide_False
 
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  · exact decide_eq_false <| λ j => by cases j
-  · exact decide_eq_true <| rfl
+  · exact _root_.decide_eq_false <| λ j => by cases j
+  · exact _root_.decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
@@ -65,7 +65,7 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
 
 #align bool.to_bool_eq decide_eq_decide
 
-theorem not_false' : ¬false := fun.
+theorem not_false' : ¬false := nofun
 #align bool.not_ff Bool.not_false'
 
 -- Porting note: new theorem
@@ -94,17 +94,21 @@ theorem default_bool : default = false :=
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 #align bool.dichotomy Bool.dichotomy
 
+theorem forall_bool' {p : Bool → Prop} (b : Bool) : (∀ x, p x) ↔ p b ∧ p !b :=
+  ⟨fun h ↦ ⟨h _, h _⟩, fun ⟨h₁, h₂⟩ x ↦ by cases b <;> cases x <;> assumption⟩
+
 @[simp]
 theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
-  ⟨fun h ↦ by simp [h], fun ⟨h₁, h₂⟩ b ↦ by cases b <;> assumption⟩
+  forall_bool' false
 #align bool.forall_bool Bool.forall_bool
+
+theorem exists_bool' {p : Bool → Prop} (b : Bool) : (∃ x, p x) ↔ p b ∨ p !b :=
+  ⟨fun ⟨x, hx⟩ ↦ by cases x <;> cases b <;> first | exact .inl ‹_› | exact .inr ‹_›,
+    fun h ↦ by cases h <;> exact ⟨_, ‹_›⟩⟩
 
 @[simp]
 theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
-  ⟨fun ⟨b, h⟩ ↦ by cases b; exact Or.inl h; exact Or.inr h,
-  fun h ↦ match h with
-  | .inl h => ⟨_, h⟩
-  | .inr h => ⟨_, h⟩ ⟩
+  exists_bool' false
 #align bool.exists_bool Bool.exists_bool
 
 /-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
@@ -261,6 +265,8 @@ instance linearOrder : LinearOrder Bool where
   le_antisymm := by decide
   le_total := by decide
   decidableLE := inferInstance
+  decidableEq := inferInstance
+  decidableLT := inferInstance
   lt_iff_le_not_le := by decide
   max_def := by decide
   min_def := by decide
@@ -315,10 +321,10 @@ def ofNat (n : Nat) : Bool :=
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
   cases Nat.decEq n 0 with
-  | isTrue hn => rw [decide_eq_true hn]; exact Bool.false_le _
+  | isTrue hn => rw [_root_.decide_eq_true hn]; exact Bool.false_le _
   | isFalse hn =>
     cases Nat.decEq m 0 with
-    | isFalse hm => rw [decide_eq_false hm]; exact Bool.le_true _
+    | isFalse hm => rw [_root_.decide_eq_false hm]; exact Bool.le_true _
     | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 

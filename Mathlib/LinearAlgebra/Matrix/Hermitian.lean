@@ -139,7 +139,7 @@ theorem isHermitian_diagonal_of_self_adjoint [DecidableEq n] (v : n → α) (h :
 #align matrix.is_hermitian_diagonal_of_self_adjoint Matrix.isHermitian_diagonal_of_self_adjoint
 
 /-- A diagonal matrix is hermitian if each diagonal entry is self-adjoint -/
-lemma isHermitian_diagonal_iff [DecidableEq n]{d : n → α} :
+lemma isHermitian_diagonal_iff [DecidableEq n] {d : n → α} :
     IsHermitian (diagonal d) ↔ (∀ i : n, IsSelfAdjoint (d i)) := by
   simp [isSelfAdjoint_iff, IsHermitian, conjTranspose, diagonal_transpose, diagonal_map]
 

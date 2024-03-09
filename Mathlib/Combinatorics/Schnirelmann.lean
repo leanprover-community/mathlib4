@@ -103,7 +103,7 @@ lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDen
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
     schnirelmannDensity A ≤ schnirelmannDensity B :=
-  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩ fun _ => by
+  ciInf_mono ⟨0, fun _ ⟨_, hx⟩ ↦ hx ▸ by positivity⟩ fun _ ↦ by
     gcongr; exact monotone_filter_right _ h
 
 /-- The Schnirelmann density of `A` is `1` if and only if `A` contains all the positive naturals. -/
@@ -232,8 +232,8 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   rw [le_schnirelmannDensity_iff]
   intro n hn
   simp only [Set.mem_setOf_eq]
-  have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ (Ioc 0 n).filter (· % m = 1)
-  · simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
+  have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ (Ioc 0 n).filter (· % m = 1) := by
+    simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
     rintro _ y _ hy' rfl
     have hm : 2 ≤ m := hm.lt_of_le' hm'
     simp only [Nat.mul_add_mod', Nat.mod_eq_of_lt hm, add_pos_iff, or_true, and_true, true_and,

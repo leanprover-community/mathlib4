@@ -359,6 +359,10 @@ theorem coeIdeal_ne_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) ≠ 1 ↔ I
   not_iff_not.mpr coeIdeal_eq_one
 #align fractional_ideal.coe_ideal_ne_one FractionalIdeal.coeIdeal_ne_one
 
+theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 :=
+   ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors h,
+     fun h ↦ h ▸ num_zero_eq (IsFractionRing.injective R K)⟩
+
 end IsFractionRing
 
 section Quotient
@@ -375,7 +379,7 @@ is a field because `R` is a domain.
 -/
 
 
-open Classical
+open scoped Classical
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 
@@ -500,10 +504,8 @@ theorem div_one {I : FractionalIdeal R₁⁰ K} : I / 1 = I := by
 theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) :
     J = 1 / I := by
   have hI : I ≠ 0 := ne_zero_of_mul_eq_one I J h
-  suffices h' : I * (1 / I) = 1
-  · exact
-      congr_arg Units.inv <|
-        @Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl
+  suffices h' : I * (1 / I) = 1 from
+    congr_arg Units.inv <| @Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl
   apply le_antisymm
   · apply mul_le.mpr _
     intro x hx y hy
@@ -569,13 +571,13 @@ theorem eq_zero_or_one_of_isField (hF : IsField R₁) (I : FractionalIdeal R₁�
 
 end Field
 
-section PrincipalIdealRing
+section PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 
 variable [Algebra R₁ K] [IsFractionRing R₁ K]
 
-open Classical
+open scoped Classical
 
 variable (R₁)
 
@@ -646,6 +648,7 @@ theorem mem_spanSingleton_self (x : P) : x ∈ spanSingleton S x :=
   (mem_spanSingleton S).mpr ⟨1, one_smul _ _⟩
 #align fractional_ideal.mem_span_singleton_self FractionalIdeal.mem_spanSingleton_self
 
+variable (P) in
 /-- A version of `FractionalIdeal.den_mul_self_eq_num` in terms of fractional ideals. -/
 theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
     spanSingleton S (algebraMap R P I.den) * I = I.num := by
@@ -886,7 +889,14 @@ theorem eq_spanSingleton_mul {x : P} {I J : FractionalIdeal S P} :
   simp only [le_antisymm_iff, le_spanSingleton_mul_iff, spanSingleton_mul_le_iff]
 #align fractional_ideal.eq_span_singleton_mul FractionalIdeal.eq_spanSingleton_mul
 
-end PrincipalIdealRing
+theorem num_le (I : FractionalIdeal S P) :
+    (I.num : FractionalIdeal S P) ≤ I := by
+  rw [← I.den_mul_self_eq_num', spanSingleton_mul_le_iff]
+  intro _ h
+  rw [← Algebra.smul_def]
+  exact Submodule.smul_mem _ _ h
+
+end PrincipalIdeal
 
 variable {R₁ : Type*} [CommRing R₁]
 

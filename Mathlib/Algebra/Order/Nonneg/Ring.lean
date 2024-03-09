@@ -70,10 +70,10 @@ instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α /
   Set.Ici.distribLattice
 #align nonneg.distrib_lattice Nonneg.distribLattice
 
-instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
+instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
   show DenselyOrdered (Ici a) from Set.instDenselyOrdered
-#align nonneg.densely_ordered Nonneg.densely_ordered
+#align nonneg.densely_ordered Nonneg.instDenselyOrdered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 @[reducible]
@@ -220,7 +220,7 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
     Nonneg.orderedAddCommMonoid with
     natCast := fun n => ⟨n, Nat.cast_nonneg n⟩
     natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl }
+    natCast_succ := fun _ => by simp only [Nat.cast_add, Nat.cast_one]; rfl }
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]

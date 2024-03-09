@@ -94,8 +94,8 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
         simp [this, indicator_of_mem hxs f]
       · simp_rw [indicator_of_not_mem hxs f]
         apply tendsto_const_nhds.congr'
-        suffices H : ∀ᶠ n in atTop, g n x = 0
-        · filter_upwards [H] with n hn using by simp [hn]
+        suffices H : ∀ᶠ n in atTop, g n x = 0 by
+          filter_upwards [H] with n hn using by simp [hn]
         obtain ⟨ε, εpos, hε⟩ : ∃ ε, 0 < ε ∧ x ∉ thickening ε s := by
           rw [← hs.isClosed.closure_eq, closure_eq_iInter_thickening s] at hxs
           simpa using hxs

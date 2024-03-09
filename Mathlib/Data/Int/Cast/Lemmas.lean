@@ -279,7 +279,7 @@ lemma cast_int_mul_cast_int_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) 
 
 variable (a) (m n : ℤ)
 
-/- Porting note: `simp` attribute removed as linter reports:
+/- Porting note (#10618): `simp` attribute removed as linter reports:
 simp can prove this:
   by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
 -/
@@ -287,7 +287,7 @@ simp can prove this:
 lemma self_cast_int_mul : Commute a (n * a : α) := (Commute.refl a).cast_int_mul_right n
 #align commute.self_cast_int_mul Commute.self_cast_int_mul
 
-/- Porting note: `simp` attribute removed as linter reports:
+/- Porting note (#10618): `simp` attribute removed as linter reports:
 simp can prove this:
   by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
 -/
@@ -325,7 +325,8 @@ theorem eq_int_castAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A
 
 end AddMonoidHom
 
-theorem eq_intCast' [AddGroupWithOne α] [AddMonoidHomClass F ℤ α] (f : F) (h₁ : f 1 = 1) :
+theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
+    (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
 #align eq_int_cast' eq_intCast'
@@ -378,7 +379,7 @@ theorem ext_int {f g : ℤ →*₀ M} (h_neg_one : f (-1) = g (-1))
 end MonoidWithZeroHom
 
 /-- If two `MonoidWithZeroHom`s agree on `-1` and the _positive_ naturals then they are equal. -/
-theorem ext_int' [MonoidWithZero α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
+theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
     (h_neg_one : f (-1) = g (-1)) (h_pos : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   (DFunLike.ext _ _) fun n =>
     haveI :=
@@ -389,17 +390,97 @@ theorem ext_int' [MonoidWithZero α] [MonoidWithZeroHomClass F ℤ α] {f g : F}
     this
 #align ext_int' ext_int'
 
+section Group
+variable (α) [Group α] [AddGroup α]
+
+/-- Additive homomorphisms from `ℤ` are defined by the image of `1`. -/
+def zmultiplesHom : α ≃ (ℤ →+ α) where
+  toFun x :=
+  { toFun := fun n => n • x
+    map_zero' := zero_zsmul x
+    map_add' := fun _ _ => add_zsmul _ _ _ }
+  invFun f := f 1
+  left_inv := one_zsmul
+  right_inv f := AddMonoidHom.ext_int <| one_zsmul (f 1)
+#align zmultiples_hom zmultiplesHom
+#align powers_hom powersHom
+
+/-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
+of `Multiplicative.ofAdd 1`. -/
+@[to_additive existing]
+def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
+  ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
+#align zpowers_hom zpowersHom
+
+lemma zmultiplesHom_apply (x : α) (n : ℤ) : zmultiplesHom α x n = n • x := rfl
+#align zmultiples_hom_apply zmultiplesHom_apply
+
+lemma zmultiplesHom_symm_apply (f : ℤ →+ α) : (zmultiplesHom α).symm f = f 1 := rfl
+#align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
+
+@[to_additive existing (attr := simp)]
+lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ toAdd n := rfl
+#align zpowers_hom_apply zpowersHom_apply
+
+@[to_additive existing (attr := simp)]
+lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
+    (zpowersHom α).symm f = f (ofAdd 1) := rfl
+#align zpowers_hom_symm_apply zpowersHom_symm_apply
+
+lemma MonoidHom.apply_mint (f : Multiplicative ℤ →* α) (n : Multiplicative ℤ) :
+    f n = f (ofAdd 1) ^ (toAdd n) := by
+  rw [← zpowersHom_symm_apply, ← zpowersHom_apply, Equiv.apply_symm_apply]
+#align monoid_hom.apply_mint MonoidHom.apply_mint
+
+lemma AddMonoidHom.apply_int (f : ℤ →+ α) (n : ℤ) : f n = n • f 1 := by
+  rw [← zmultiplesHom_symm_apply, ← zmultiplesHom_apply, Equiv.apply_symm_apply]
+#align add_monoid_hom.apply_int AddMonoidHom.apply_int
+
+end Group
+
+section CommGroup
+variable (α) [CommGroup α] [AddCommGroup α]
+
+/-- If `α` is commutative, `zmultiplesHom` is an additive equivalence. -/
+def zmultiplesAddHom : α ≃+ (ℤ →+ α) :=
+  { zmultiplesHom α with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
+#align zmultiples_add_hom zmultiplesAddHom
+
+/-- If `α` is commutative, `zpowersHom` is a multiplicative equivalence. -/
+def zpowersMulHom : α ≃* (Multiplicative ℤ →* α) :=
+  { zpowersHom α with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_zpow] }
+#align zpowers_mul_hom zpowersMulHom
+
+variable {α}
+
+@[simp]
+lemma zpowersMulHom_apply (x : α) (n : Multiplicative ℤ) : zpowersMulHom α x n = x ^ toAdd n := rfl
+#align zpowers_mul_hom_apply zpowersMulHom_apply
+
+@[simp]
+lemma zpowersMulHom_symm_apply (f : Multiplicative ℤ →* α) :
+    (zpowersMulHom α).symm f = f (ofAdd 1) := rfl
+#align zpowers_mul_hom_symm_apply zpowersMulHom_symm_apply
+
+@[simp] lemma zmultiplesAddHom_apply (x : α) (n : ℤ) : zmultiplesAddHom α x n = n • x := rfl
+#align zmultiples_add_hom_apply zmultiplesAddHom_apply
+
+@[simp] lemma zmultiplesAddHom_symm_apply (f : ℤ →+ α) : (zmultiplesAddHom α).symm f = f 1 := rfl
+#align zmultiples_add_hom_symm_apply zmultiplesAddHom_symm_apply
+
+end CommGroup
+
 section NonAssocRing
 
 variable [NonAssocRing α] [NonAssocRing β]
 
 @[simp]
-theorem eq_intCast [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
+theorem eq_intCast [FunLike F ℤ α] [RingHomClass F ℤ α] (f : F) (n : ℤ) : f n = n :=
   eq_intCast' f (map_one _) n
 #align eq_int_cast eq_intCast
 
 @[simp]
-theorem map_intCast [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
+theorem map_intCast [FunLike F α β] [RingHomClass F α β] (f : F) (n : ℤ) : f n = n :=
   eq_intCast ((f : α →+* β).comp (Int.castRingHom α)) n
 #align map_int_cast map_intCast
 

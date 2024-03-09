@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import topology.algebra.with_zero_topology from "leanprover-community/mathlib"@"3e0c4d76b6ebe9dfafb67d16f7286d2731ed6064"
 
@@ -42,18 +42,19 @@ variable {α Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ�
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.
 A subset U is open if 0 ∉ U or if there is an invertible element γ₀ such that {γ | γ < γ₀} ⊆ U. -/
 scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
-  TopologicalSpace.mkOfNhds <| update pure 0 <| ⨅ (γ) (_ : γ ≠ 0), 𝓟 (Iio γ)
+  nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
 #align with_zero_topology.topological_space WithZeroTopology.topologicalSpace
 
-theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ (γ) (_ : γ ≠ 0), 𝓟 (Iio γ)) :=
-  funext <| nhds_mkOfNhds_single <| le_iInf₂ fun _ h₀ => le_principal_iff.2 <| zero_lt_iff.2 h₀
-#align with_zero_topology.nhds_eq_update WithZeroTopology.nhds_eq_update
+theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
+   rw [nhds_nhdsAdjoint, sup_of_le_right]
+   exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
+ #align with_zero_topology.nhds_eq_update WithZeroTopology.nhds_eq_update
 
 /-!
 ### Neighbourhoods of zero
 -/
 
-theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ (γ) (_ : γ ≠ 0), 𝓟 (Iio γ) := by
+theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
   rw [nhds_eq_update, update_same]
 #align with_zero_topology.nhds_zero WithZeroTopology.nhds_zero
 
@@ -86,8 +87,8 @@ theorem tendsto_zero : Tendsto f l (𝓝 (0 : Γ₀)) ↔ ∀ (γ₀) (_ : γ₀
 /-- The neighbourhood filter of a nonzero element consists of all sets containing that
 element. -/
 @[simp]
-theorem nhds_of_ne_zero {γ : Γ₀} (h₀ : γ ≠ 0) : 𝓝 γ = pure γ := by
-  rw [nhds_eq_update, update_noteq h₀]
+theorem nhds_of_ne_zero {γ : Γ₀} (h₀ : γ ≠ 0) : 𝓝 γ = pure γ :=
+  nhds_nhdsAdjoint_of_ne _ h₀
 #align with_zero_topology.nhds_of_ne_zero WithZeroTopology.nhds_of_ne_zero
 
 /-- The neighbourhood filter of an invertible element consists of all sets containing that

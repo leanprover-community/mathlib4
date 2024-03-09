@@ -468,7 +468,7 @@ theorem upcrossingsBefore_zero' : upcrossingsBefore a b f 0 = 0 := by
 theorem upperCrossingTime_lt_of_le_upcrossingsBefore (hN : 0 < N) (hab : a < b)
     (hn : n ≤ upcrossingsBefore a b f N ω) : upperCrossingTime a b f N n ω < N :=
   haveI : upperCrossingTime a b f N (upcrossingsBefore a b f N ω) ω < N :=
-    (upperCrossingTime_lt_nonempty hN).cSup_mem
+    (upperCrossingTime_lt_nonempty hN).csSup_mem
       ((OrderBot.bddBelow _).finite_of_bddAbove (upperCrossingTime_lt_bddAbove hab))
   lt_of_le_of_lt (upperCrossingTime_mono hn) this
 #align measure_theory.upper_crossing_time_lt_of_le_upcrossings_before MeasureTheory.upperCrossingTime_lt_of_le_upcrossingsBefore
@@ -812,7 +812,7 @@ theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted 
   haveI : ∀ᵐ ω ∂μ, ‖(upcrossingsBefore a b f N ω : ℝ)‖ ≤ N := by
     refine' eventually_of_forall fun ω => _
     rw [Real.norm_eq_abs, Nat.abs_cast, Nat.cast_le]
-    refine' upcrossingsBefore_le _ _ hab
+    exact upcrossingsBefore_le _ _ hab
   ⟨Measurable.aestronglyMeasurable (measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)),
     hasFiniteIntegral_of_bounded this⟩
 #align measure_theory.adapted.integrable_upcrossings_before MeasureTheory.Adapted.integrable_upcrossingsBefore

@@ -128,8 +128,7 @@ nonrec lemma StrongConvexOn.mono (hmn : m ≤ n) (hf : StrongConvexOn s n f) : S
   hf.mono fun r ↦ by gcongr
 
 nonrec lemma StrongConcaveOn.mono (hmn : m ≤ n) (hf : StrongConcaveOn s n f) :
-    StrongConcaveOn s m f :=
-  hf.mono fun r ↦ by gcongr
+    StrongConcaveOn s m f := hf.mono fun r ↦ by gcongr
 
 @[simp] lemma strongConvexOn_zero : StrongConvexOn s 0 f ↔ ConvexOn ℝ s f := by
   simp [StrongConvexOn, ← Pi.zero_def]

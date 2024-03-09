@@ -6,11 +6,8 @@ Authors: Louis Carlin, Mario Carneiro
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Ring.Lemmas
-import Mathlib.Init.Data.Int.Order
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import algebra.euclidean_domain.instances from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
 

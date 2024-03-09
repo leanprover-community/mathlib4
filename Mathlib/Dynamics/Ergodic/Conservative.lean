@@ -40,9 +40,11 @@ conservative dynamical system, Poincare recurrence theorem
 
 noncomputable section
 
-open Classical Set Filter MeasureTheory Finset Function TopologicalSpace
+open scoped Classical
+open Set Filter MeasureTheory Finset Function TopologicalSpace
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
@@ -56,8 +58,7 @@ returns back to `s` under some iteration of `f`. -/
 structure Conservative (f : α → α) (μ : Measure α) extends QuasiMeasurePreserving f μ μ : Prop where
   /-- If `f` is a conservative self-map and `s` is a measurable set of nonzero measure,
   then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
-  exists_mem_iterate_mem :
-    ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m, m ≠ 0 ∧ f^[m] x ∈ s
+  exists_mem_iterate_mem : ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s
 #align measure_theory.conservative MeasureTheory.Conservative
 
 /-- A self-map preserving a finite measure is conservative. -/

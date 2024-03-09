@@ -103,6 +103,10 @@ theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α]
   closure_mono <| support_smul_subset_left f g
 #align tsupport_smul_subset_left tsupport_smul_subset_left
 
+theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero α] [SMulZeroClass M α]
+    (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport g :=
+  closure_mono <| support_smul_subset_right f g
+
 @[to_additive]
 theorem mulTSupport_mul [TopologicalSpace X] [Monoid α] {f g : X → α} :
     (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
@@ -161,16 +165,16 @@ theorem hasCompactMulSupport_def : HasCompactMulSupport f ↔ IsCompact (closure
 #align has_compact_support_def hasCompactSupport_def
 
 @[to_additive]
-theorem exists_compact_iff_hasCompactMulSupport [T2Space α] :
+theorem exists_compact_iff_hasCompactMulSupport [R1Space α] :
     (∃ K : Set α, IsCompact K ∧ ∀ x, x ∉ K → f x = 1) ↔ HasCompactMulSupport f := by
   simp_rw [← nmem_mulSupport, ← mem_compl_iff, ← subset_def, compl_subset_compl,
-    hasCompactMulSupport_def, exists_compact_superset_iff]
+    hasCompactMulSupport_def, exists_isCompact_superset_iff]
 #align exists_compact_iff_has_compact_mul_support exists_compact_iff_hasCompactMulSupport
 #align exists_compact_iff_has_compact_support exists_compact_iff_hasCompactSupport
 
 namespace HasCompactMulSupport
 @[to_additive]
-theorem intro [T2Space α] {K : Set α} (hK : IsCompact K)
+theorem intro [R1Space α] {K : Set α} (hK : IsCompact K)
     (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f :=
   exists_compact_iff_hasCompactMulSupport.mp ⟨K, hK, hfK⟩
 #align has_compact_mul_support.intro HasCompactMulSupport.intro
@@ -185,9 +189,9 @@ theorem intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K)
   exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
 
 @[to_additive]
-theorem of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
+theorem of_mulSupport_subset_isCompact [R1Space α] {K : Set α}
     (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
-  isCompact_closure_of_subset_compact hK h
+  hK.closure_of_subset h
 
 @[to_additive]
 theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
@@ -268,6 +272,14 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
 
+@[to_additive]
+lemma isCompact_preimage [TopologicalSpace β]
+    (h'f : HasCompactMulSupport f) (hf : Continuous f) {k : Set β} (hk : IsClosed k)
+    (h'k : 1 ∉ k) : IsCompact (f ⁻¹' k) := by
+  apply IsCompact.of_isClosed_subset h'f (hk.preimage hf) (fun x hx ↦ ?_)
+  apply subset_mulTSupport
+  aesop
+
 variable [T2Space α'] (hf : HasCompactMulSupport f) {g : α → α'} (cont : Continuous g)
 
 @[to_additive]
@@ -344,7 +356,7 @@ theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupp
 
 theorem HasCompactSupport.smul_left' (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
-  refine' hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
+  exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
 #align has_compact_support.smul_left' HasCompactSupport.smul_left'
 
 end SMulWithZero
@@ -357,12 +369,12 @@ variable {f f' : α → β} {x : α}
 
 theorem HasCompactSupport.mul_right (hf : HasCompactSupport f) : HasCompactSupport (f * f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
-  refine' hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, zero_mul]
+  exact hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, zero_mul]
 #align has_compact_support.mul_right HasCompactSupport.mul_right
 
 theorem HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSupport (f * f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
-  refine' hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, mul_zero]
+  exact hf.mono fun x hx => by simp_rw [Pi.mul_apply, hx, Pi.zero_apply, mul_zero]
 #align has_compact_support.mul_left HasCompactSupport.mul_left
 
 end MulZeroClass
@@ -373,7 +385,7 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- porting note: todo: reformulate for any locally finite family of sets
+-- Porting note (#11215): TODO: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
@@ -399,7 +411,8 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
         rw [inter_assoc] at hz
         exact mem_of_mem_inter_left hz
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
-      simp only [Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter, and_imp] at hz
+      simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
+        and_imp] at hz
       suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
         refine' hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => _
         specialize hz i ⟨z, ⟨hi, hzn⟩⟩
@@ -415,5 +428,15 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
 theorem locallyFinite_mulSupport_iff [CommMonoid M] {f : ι → X → M} :
     (LocallyFinite fun i ↦ mulSupport <| f i) ↔ LocallyFinite fun i ↦ mulTSupport <| f i :=
   ⟨LocallyFinite.closure, fun H ↦ H.subset fun _ ↦ subset_closure⟩
+
+theorem LocallyFinite.smul_left [Zero R] [Zero M] [SMulWithZero R M]
+    {s : ι → X → R} (h : LocallyFinite fun i ↦ support <| s i) (f : ι → X → M) :
+    LocallyFinite fun i ↦ support <| s i • f i :=
+  h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, zero_smul]
+
+theorem LocallyFinite.smul_right [Zero M] [SMulZeroClass R M]
+    {f : ι → X → M} (h : LocallyFinite fun i ↦ support <| f i) (s : ι → X → R) :
+    LocallyFinite fun i ↦ support <| s i • f i :=
+  h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, smul_zero]
 
 end LocallyFinite

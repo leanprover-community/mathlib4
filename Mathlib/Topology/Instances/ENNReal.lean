@@ -139,6 +139,9 @@ theorem tendsto_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : Tendsto ENNReal.toRea
 lemma continuousOn_toReal : ContinuousOn ENNReal.toReal { a | a ≠ ∞ } :=
   NNReal.continuous_coe.comp_continuousOn continuousOn_toNNReal
 
+lemma continuousAt_toReal (hx : x ≠ ∞) : ContinuousAt ENNReal.toReal x :=
+  continuousOn_toReal.continuousAt (isOpen_ne_top.mem_nhds_iff.mpr hx)
+
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
   toEquiv := neTopEquivNNReal
@@ -209,7 +212,7 @@ theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0�
   nhds_bot_basis_Iic
 #align ennreal.nhds_zero_basis_Iic ENNReal.nhds_zero_basis_Iic
 
--- porting note: todo: add a TC for `≠ ∞`?
+-- Porting note (#11215): TODO: add a TC for `≠ ∞`?
 @[instance]
 theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
   nhdsWithin_Ioi_self_neBot' ⟨∞, ENNReal.coe_lt_top⟩
@@ -270,7 +273,7 @@ theorem biInf_le_nhds : ∀ x : ℝ≥0∞, ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + 
     simpa only [← coe_one, top_sub_coe, top_add, Icc_self, principal_singleton] using pure_le_nhds _
   | (x : ℝ≥0) => (nhds_of_ne_top coe_ne_top).ge
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 protected theorem tendsto_nhds_of_Icc {f : Filter α} {u : α → ℝ≥0∞} {a : ℝ≥0∞}
     (h : ∀ ε > 0, ∀ᶠ x in f, u x ∈ Icc (a - ε) (a + ε)) : Tendsto u f (𝓝 a) := by
   refine Tendsto.mono_right ?_ (biInf_le_nhds _)
@@ -446,7 +449,7 @@ theorem continuousOn_sub :
   rw [ContinuousOn]
   rintro ⟨x, y⟩ hp
   simp only [Ne.def, Set.mem_setOf_eq, Prod.mk.inj_iff] at hp
-  refine' tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
+  exact tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
 #align ennreal.continuous_on_sub ENNReal.continuousOn_sub
 
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
@@ -536,7 +539,7 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
-@[simp] -- porting note: todo: generalize to `[InvolutiveInv _] [ContinuousInv _]`
+@[simp] -- Porting note (#11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
   ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩
@@ -707,6 +710,20 @@ theorem exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠
     ⟨⟨y', z'⟩, hx, hy', hz'⟩
   exact ⟨y', z', hy', hz', hx⟩
 #align ennreal.exists_lt_add_of_lt_add ENNReal.exists_lt_add_of_lt_add
+
+theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
+    ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
+  by_cases hf : BddBelow (range f)
+  · exact
+      Monotone.map_ciInf_of_continuousAt ENNReal.continuous_ofReal.continuousAt
+        (fun i j hij => ENNReal.ofReal_le_ofReal hij) hf
+  · symm
+    rw [Real.iInf_of_not_bddBelow hf, ENNReal.ofReal_zero, ← ENNReal.bot_eq_zero, iInf_eq_bot]
+    obtain ⟨y, hy_mem, hy_neg⟩ := not_bddBelow_iff.mp hf 0
+    obtain ⟨i, rfl⟩ := mem_range.mpr hy_mem
+    refine' fun x hx => ⟨i, _⟩
+    rwa [ENNReal.ofReal_of_nonpos hy_neg.le]
+#align ennreal.of_real_cinfi ENNReal.ofReal_cinfi
 
 end TopologicalSpace
 
@@ -1469,7 +1486,7 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
 #align continuous_edist continuous_edist
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.edist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => edist (f b) (g b) :=
   continuous_edist.comp (hf.prod_mk hg : _)

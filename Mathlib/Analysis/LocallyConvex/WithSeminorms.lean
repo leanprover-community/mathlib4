@@ -150,7 +150,7 @@ theorem basisSets_smul_right (v : E) (U : Set E) (hU : U ∈ p.basisSets) :
   · simp_rw [(lt_div_iff h).symm]
     rw [← _root_.ball_zero_eq]
     exact Metric.ball_mem_nhds 0 (div_pos hr h)
-  simp_rw [le_antisymm (not_lt.mp h) (map_nonneg _ v), mul_zero, hr]
+  simp_rw [le_antisymm (not_lt.mp h) (apply_nonneg _ v), mul_zero, hr]
   exact IsOpen.mem_nhds isOpen_univ (mem_univ 0)
 #align seminorm_family.basis_sets_smul_right SeminormFamily.basisSets_smul_right
 
@@ -324,7 +324,7 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
 /-- The `x`-neighbourhoods of a space whose topology is induced by a family of seminorms
 are exactly the sets which contain seminorm balls around `x`.-/
 theorem WithSeminorms.mem_nhds_iff (hp : WithSeminorms p) (x : E) (U : Set E) :
-    U ∈ nhds x ↔ ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
+    U ∈ 𝓝 x ↔ ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
   rw [hp.hasBasis_ball.mem_iff, Prod.exists]
 #align with_seminorms.mem_nhds_iff WithSeminorms.mem_nhds_iff
 
@@ -539,7 +539,7 @@ theorem WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded (f : G →
     (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔
       ∀ I : Finset ι, ∃ r > 0, ∀ x ∈ s, I.sup p (f x) < r := by
-  simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.ball_image_iff]
+  simp_rw [hp.isVonNBounded_iff_finset_seminorm_bounded, Set.forall_mem_image]
 
 set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_finset_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_finset_seminorm_bounded
@@ -571,7 +571,7 @@ set_option linter.uppercaseLean3 false in
 theorem WithSeminorms.image_isVonNBounded_iff_seminorm_bounded (f : G → E) {s : Set G}
     (hp : WithSeminorms p) :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∀ i : ι, ∃ r > 0, ∀ x ∈ s, p i (f x) < r := by
-  simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.ball_image_iff]
+  simp_rw [hp.isVonNBounded_iff_seminorm_bounded, Set.forall_mem_image]
 
 set_option linter.uppercaseLean3 false in
 #align with_seminorms.image_is_vonN_bounded_iff_seminorm_bounded WithSeminorms.image_isVonNBounded_iff_seminorm_bounded
@@ -694,7 +694,7 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
       simpa using (hx k).le
     have bdd : BddAbove (range fun k ↦ (q i).comp (f k)) :=
       Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
-        (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
+        (fun x hx ↦ ⟨1, forall_mem_range.mpr hx⟩)
     rw [← Seminorm.coe_iSup_eq bdd]
     refine ⟨bdd, Seminorm.continuous' (r := 1) ?_⟩
     filter_upwards [this] with x hx

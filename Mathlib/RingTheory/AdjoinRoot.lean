@@ -49,7 +49,7 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open BigOperators Polynomial
 
@@ -233,7 +233,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
     rfl
 #align adjoin_root.aeval_eq AdjoinRoot.aeval_eq
 
--- porting note: the following proof was partly in term-mode, but I was not able to fix it.
+-- Porting note: the following proof was partly in term-mode, but I was not able to fix it.
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
   induction x using AdjoinRoot.induction_on with
@@ -396,14 +396,14 @@ noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
     ratCast := fun a => of f (a : K)
     ratCast_mk := fun a b h1 h2 => by
       letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
-      -- porting note: was
+      -- Porting note: was
       -- `rw [Rat.cast_mk' (K := ℚ), _root_.map_mul, _root_.map_intCast, map_inv₀, map_natCast]`
       convert_to ((Rat.mk' a b h1 h2 : K) : AdjoinRoot f) = ((↑a * (↑b)⁻¹ : K) : AdjoinRoot f)
       · simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
       · simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
     qsmul := (· • ·)
     qsmul_eq_mul' := fun a x =>
-      -- porting note: I gave the explicit motive and changed `rw` to `simp`.
+      -- Porting note: I gave the explicit motive and changed `rw` to `simp`.
       AdjoinRoot.induction_on (C := fun y => a • y = (of f) a * y) x fun p => by
         simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.rat_smul_eq_C_mul]
   }
@@ -457,7 +457,7 @@ theorem modByMonicHom_mk (hg : g.Monic) (f : R[X]) : modByMonicHom hg (mk g f) =
   rfl
 #align adjoin_root.mod_by_monic_hom_mk AdjoinRoot.modByMonicHom_mk
 
--- porting note: the following proof was partly in term-mode, but I was not able to fix it.
+-- Porting note: the following proof was partly in term-mode, but I was not able to fix it.
 theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicHom hg) := by
   intro f
   induction f using AdjoinRoot.induction_on
@@ -481,7 +481,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
       map_smul' := fun f₁ f₂ =>
         funext fun i => by
           simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
-      -- porting note: another proof that I converted to tactic mode
+      -- Porting note: another proof that I converted to tactic mode
       left_inv := by
         intro f
         induction f using AdjoinRoot.induction_on
@@ -582,7 +582,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
 
 /-- The power basis `1, root f, ..., root f ^ (d - 1)` for `AdjoinRoot f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
-@[simps!]  -- porting note: was `[simps]`
+@[simps!]  -- Porting note: was `[simps]`
 def powerBasis (hf : f ≠ 0) : PowerBasis K (AdjoinRoot f) where
   gen := root f
   dim := f.natDegree
@@ -661,7 +661,7 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
   { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
-    -- porting note: another term-mode proof converted to tactic-mode.
+    -- Porting note: another term-mode proof converted to tactic-mode.
     left_inv := fun x => by
       induction x using AdjoinRoot.induction_on
       rw [liftHom_mk, pb.lift_aeval, aeval_eq]
@@ -703,7 +703,7 @@ end Field
 
 end Equiv
 
--- porting note: consider splitting the file here.  In the current mathlib3, the only result
+-- Porting note: consider splitting the file here.  In the current mathlib3, the only result
 -- that depends any of these lemmas is
 -- `normalized_factors_map_equiv_normalized_factors_min_poly_mk` in `number_theory.kummer_dedekind`
 -- that uses
@@ -810,7 +810,7 @@ def quotAdjoinRootEquivQuotPolynomialQuot :
         (Polynomial.quotQuotEquivComm I f).symm))
 #align adjoin_root.quot_adjoin_root_equiv_quot_polynomial_quot AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot
 
--- porting note: mathlib3 proof was a long `rw` that timeouts.
+-- Porting note: mathlib3 proof was a long `rw` that timeouts.
 @[simp]
 theorem quotAdjoinRootEquivQuotPolynomialQuot_mk_of (p : R[X]) :
     quotAdjoinRootEquivQuotPolynomialQuot I f (Ideal.Quotient.mk (I.map (of f)) (mk f p)) =

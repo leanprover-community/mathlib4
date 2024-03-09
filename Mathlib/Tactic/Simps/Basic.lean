@@ -3,9 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-
+import Lean.Elab.Tactic.Simp
+import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
-import Std.Classes.Dvd
 import Std.Data.String.Basic
 import Std.Util.LibraryNote
 import Mathlib.Lean.Expr.Basic
@@ -82,13 +82,14 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
   else
     getSimpTheorems
+  let simprocs := #[if simpOnly then {} else ← Simp.getSimprocs]
   let congrTheorems ← getSimpCongrTheorems
   let ctx : Simp.Context := {
     config       := cfg
     simpTheorems := #[simpTheorems], congrTheorems
   }
   if !hasStar then
-    return { ctx, dischargeWrapper }
+    return { ctx, simprocs, dischargeWrapper }
   else
     let mut simpTheorems := ctx.simpTheorems
     let hs ← getPropHyps
@@ -96,7 +97,7 @@ def mkSimpContextResult (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind
       unless simpTheorems.isErased (.fvar h) do
         simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
     let ctx := { ctx with simpTheorems }
-    return { ctx, dischargeWrapper }
+    return { ctx, simprocs, dischargeWrapper }
 
 /-- Make `Simp.Context` giving data instead of Syntax. Doesn't support arguments.
 Intended to be very similar to `Lean.Elab.Tactic.mkSimpContext`

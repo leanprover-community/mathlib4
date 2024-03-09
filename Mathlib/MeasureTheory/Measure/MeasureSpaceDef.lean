@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.OuterMeasure
+import Mathlib.MeasureTheory.OuterMeasure.Basic
 import Mathlib.Order.Filter.CountableInter
 
 #align_import measure_theory.measure.measure_space_def from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -56,13 +56,15 @@ measure, almost everywhere, measure space
 
 noncomputable section
 
-open Classical Set
+open scoped Classical
+open Set
 
 open Filter hiding map
 
 open Function MeasurableSpace
 
-open Classical Topology BigOperators Filter ENNReal NNReal
+open scoped Classical
+open Topology BigOperators Filter ENNReal NNReal
 
 variable {α β γ δ : Type*} {ι : Sort*}
 
@@ -181,7 +183,7 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
     exact hs
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem measure_empty : μ ∅ = 0 :=
   μ.empty
 #align measure_theory.measure_empty MeasureTheory.measure_empty
@@ -271,7 +273,7 @@ theorem measure_iUnion_null [Countable ι] {s : ι → Set α} : (∀ i, μ (s i
   μ.toOuterMeasure.iUnion_null
 #align measure_theory.measure_Union_null MeasureTheory.measure_iUnion_null
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem measure_iUnion_null_iff [Countable ι] {s : ι → Set α} :
     μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
   μ.toOuterMeasure.iUnion_null_iff
@@ -325,6 +327,7 @@ theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪
   (measure_union_lt_top hs.lt_top ht.lt_top).ne
 #align measure_theory.measure_union_ne_top MeasureTheory.measure_union_ne_top
 
+open scoped symmDiff in
 theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
   ne_top_of_le_ne_top (measure_union_ne_top hs ht) <| measure_mono symmDiff_subset_union
 
@@ -492,6 +495,7 @@ theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 #align measure_theory.ae_eq_set MeasureTheory.ae_eq_set
 
+open scoped symmDiff in
 @[simp]
 theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s =ᵐ[μ] t := by
   simp [ae_eq_set, symmDiff_def]
@@ -703,7 +707,7 @@ def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := b
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 #align ae_measurable AEMeasurable
 
-@[aesop unsafe 30% apply (rule_sets [Measurable])]
+@[aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
 #align measurable.ae_measurable Measurable.aemeasurable

@@ -96,7 +96,7 @@ theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
   rw [← hy₁, ← hy₂]
 #align linear_pmap.is_closable.exists_unique LinearPMap.IsClosable.existsUnique
 
-open Classical
+open scoped Classical
 
 /-- If `f` is closable, then `f.closure` is the closure. Otherwise it is defined
 as `f.closure = f`. -/
@@ -216,8 +216,8 @@ theorem inverse_isClosable_iff (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClo
     intro ⟨x, hx⟩ hx'
     simp only [Submodule.mk_eq_zero]
     rw [toFun_eq_coe, eq_comm, image_iff] at hx'
-    have : (0, x) ∈ graph f'
-    · rw [← h, inverse_graph hf]
+    have : (0, x) ∈ graph f' := by
+      rw [← h, inverse_graph hf]
       rw [← hf'.graph_closure_eq_closure_graph, ← SetLike.mem_coe,
         Submodule.topologicalClosure_coe] at hx'
       apply image_closure_subset_closure_image continuous_swap

@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.Norm
-import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
@@ -33,7 +32,7 @@ as an additive `ℤ`-module.
 * `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
 places `w` of `K`.
 
-* `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K`
+* `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit of `𝓞 K`
 can be written uniquely as the product of a root of unity and powers of the units of the
 fundamental system `fundSystem`.
 
@@ -114,7 +113,7 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
 
 /-- Shortcut instance because Lean tends to time out before finding the general instance. -/
-instance : Nonempty (torsion K) := One.nonempty
+instance : Nonempty (torsion K) := One.instNonempty
 
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
@@ -179,7 +178,8 @@ spans the full space over `ℝ` (see `unitLattice_span_eq_top`); this is the mai
 see the section `span_top` below for more details.
 -/
 
-open Classical Finset
+open scoped Classical
+open Finset
 
 variable [NumberField K]
 
@@ -219,7 +219,7 @@ theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
 theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
-  · linarith [(map_nonneg _ _ : 0 ≤ w x)]
+  · linarith [(apply_nonneg _ _ : 0 ≤ w x)]
   · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
@@ -315,7 +315,9 @@ sequence defining the same ideal and their quotient is the desired unit `u_w₁`
 
 open NumberField.mixedEmbedding NNReal
 
-variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K < (convexBodyLTFactor K) * B)
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring
+variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
@@ -324,9 +326,9 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
-    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
+    obtain ⟨y, hy, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
       (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑): NNReal → ENNReal) h_gprod)
-    refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
+    refine ⟨⟨y, hy⟩, Subtype.ne_of_val_ne h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_coe_nat]
       calc
         _ = ∏ w : InfinitePlace K, w y ^ mult w := (prod_eq_abs_norm (y : K)).symm
@@ -395,10 +397,10 @@ image by the `logEmbedding` of these units is `ℝ`-linearly independent, see
 `unitLattice_span_eq_top`. -/
 theorem exists_unit (w₁ : InfinitePlace K) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
-  obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLTFactor K) * B := by
+  obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K 1 < (convexBodyLTFactor K) * B := by
     conv => congr; ext; rw [mul_comm]
-    exact ENNReal.exists_nat_mul_gt (ne_of_gt (convexBodyLTFactor_pos K))
-      (ne_of_lt (minkowskiBound_lt_top K))
+    exact ENNReal.exists_nat_mul_gt (ENNReal.coe_ne_zero.mpr (convexBodyLTFactor_ne_zero K))
+      (ne_of_lt (minkowskiBound_lt_top K 1))
   rsuffices ⟨n, m, hnm, h⟩ : ∃ n m, n < m ∧
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
@@ -438,7 +440,7 @@ theorem unitLattice_span_eq_top :
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
   refine det_ne_zero_of_sum_col_lt_diag (fun w => ?_)
-  simp_rw [Real.norm_eq_abs, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
+  simp_rw [Real.norm_eq_abs, B, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
   rw [← sub_pos, sum_congr rfl (fun x hx => abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
     sum_erase_eq_sub (mem_univ _), ← add_comm_sub]
   refine add_pos_of_nonneg_of_pos ?_ ?_
@@ -459,7 +461,8 @@ section statements
 
 variable [NumberField K]
 
-open dirichletUnitTheorem FiniteDimensional Classical
+open scoped Classical
+open dirichletUnitTheorem FiniteDimensional
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
@@ -580,11 +583,11 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : F
     exact ((basisModTorsion K).sum_repr (Additive.ofMul ↑x)).symm
   refine ⟨⟨ζ, h_tors⟩, ?_, ?_⟩
   · refine ⟨((basisModTorsion K).repr (Additive.ofMul ↑x) : Fin (rank K) → ℤ), ?_, ?_⟩
-    · simp only [_root_.inv_mul_cancel_right]
+    · simp only [ζ, _root_.inv_mul_cancel_right]
     · exact fun _ hf => fun_eq_repr K h_tors hf
   · rintro η ⟨_, hf, _⟩
     simp_rw [fun_eq_repr K η.prop hf] at hf
-    ext1; dsimp only
+    ext1; dsimp only [ζ]
     nth_rewrite 1 [hf]
     rw [_root_.mul_inv_cancel_right]
 
