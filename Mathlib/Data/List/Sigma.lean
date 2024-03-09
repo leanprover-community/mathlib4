@@ -405,8 +405,6 @@ theorem kerase_cons_ne {a} {s : Sigma β} {l : List (Sigma β)} (h : a ≠ s.1) 
     kerase a (s :: l) = s :: kerase a l := by simp [kerase, h]
 #align list.kerase_cons_ne List.kerase_cons_ne
 
--- false positive for `nonTerminalSimp`
-set_option linter.nonTerminalSimp false in
 @[simp]
 theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : kerase a l = l := by
   induction' l with _ _ ih <;> [rfl; (simp [not_or] at h; simp [h.1, ih h.2])]
@@ -704,8 +702,6 @@ theorem kunion_cons {s} {l₁ l₂ : List (Sigma β)} :
   rfl
 #align list.kunion_cons List.kunion_cons
 
--- false positive for `nonTerminalSimp`
-set_option linter.nonTerminalSimp false in
 @[simp]
 theorem mem_keys_kunion {a} {l₁ l₂ : List (Sigma β)} :
     a ∈ (kunion l₁ l₂).keys ↔ a ∈ l₁.keys ∨ a ∈ l₂.keys := by
