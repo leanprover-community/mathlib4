@@ -51,7 +51,7 @@ instance divisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   __ := Germ.groupWithZero
 
 instance divisionRing [DivisionRing β] : DivisionRing β* :=
-  { Germ.ring, Germ.divisionSemiring with }
+  { Germ.ring, Germ.divisionSemiring with qsmul := qsmulRec _ }
 
 instance semifield [Semifield β] : Semifield β* :=
   { Germ.commSemiring, Germ.divisionSemiring with }
