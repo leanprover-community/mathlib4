@@ -193,18 +193,18 @@ and is preserved under addition and muliplication, then it holds for all of `Ten
 -/
 @[elab_as_elim]
 theorem induction {C : TensorAlgebra R M → Prop}
-    (h_grade0 : ∀ r, C (algebraMap R (TensorAlgebra R M) r)) (h_grade1 : ∀ x, C (ι R x))
-    (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
+    (algebraMap : ∀ r, C (algebraMap R (TensorAlgebra R M) r)) (ι : ∀ x, C (ι R x))
+    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
     (a : TensorAlgebra R M) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (TensorAlgebra R M) :=
     { carrier := C
-      mul_mem' := @h_mul
-      add_mem' := @h_add
-      algebraMap_mem' := h_grade0 }
-  -- porting note: Added `h`. `h` is needed for `of`.
+      mul_mem' := @mul
+      add_mem' := @add
+      algebraMap_mem' := algebraMap }
+  -- Porting note: Added `h`. `h` is needed for `of`.
   let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
-  let of : M →ₗ[R] s := (ι R).codRestrict (Subalgebra.toSubmodule s) h_grade1
+  let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
@@ -275,7 +275,7 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
 #align tensor_algebra.ι_inv TensorAlgebra.ιInv
 
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x => by
-  -- porting note: needs the last two `simp` lemmas explicitly in order to use them
+  -- Porting note: needs the last two `simp` lemmas explicitly in order to use them
   simp [ιInv, (AlgHom.toLinearMap_apply), toTrivSqZeroExt_ι _]
 #align tensor_algebra.ι_left_inverse TensorAlgebra.ι_leftInverse
 

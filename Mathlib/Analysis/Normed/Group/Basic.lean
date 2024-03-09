@@ -192,7 +192,7 @@ def NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 →
   toMetricSpace :=
     { eq_of_dist_eq_zero := fun hxy =>
         div_eq_one.1 <| h _ <| by exact (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
-      -- porting note: the `rwa` no longer worked, but it was easy enough to provide the term.
+      -- Porting note: the `rwa` no longer worked, but it was easy enough to provide the term.
       -- however, notice that if you make `x` and `y` accessible, then the following does work:
       -- `have := ‹SeminormedGroup E›.dist_eq x y; rwa [← this]`, so I'm not sure why the `rwa`
       -- was broken.
@@ -330,7 +330,7 @@ def GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : Seminormed
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
   edist_dist x y := by exact ENNReal.coe_nnreal_eq _
-  -- porting note: how did `mathlib3` solve this automatically?
+  -- Porting note: how did `mathlib3` solve this automatically?
 #align group_seminorm.to_seminormed_group GroupSeminorm.toSeminormedGroup
 #align add_group_seminorm.to_seminormed_add_group AddGroupSeminorm.toSeminormedAddGroup
 
@@ -764,7 +764,7 @@ theorem Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, 
 #align metric.bounded.exists_pos_norm_le Bornology.IsBounded.exists_pos_norm_le
 
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
--- porting note: increase priority so the left-hand side doesn't reduce
+-- Porting note: increase priority so the left-hand side doesn't reduce
 theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
 #align mem_sphere_iff_norm' mem_sphere_iff_norm'
 #align mem_sphere_iff_norm mem_sphere_iff_norm
@@ -1461,7 +1461,7 @@ structure on the domain. -/
 def SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
   { PseudoMetricSpace.induced f toPseudoMetricSpace with
-    -- porting note: needed to add the instance explicitly, and `‹PseudoMetricSpace F›` failed
+    -- Porting note: needed to add the instance explicitly, and `‹PseudoMetricSpace F›` failed
     norm := fun x => ‖f x‖
     dist_eq := fun x y => by simp only [map_div, ← dist_eq_norm_div]; rfl }
 #align seminormed_group.induced SeminormedGroup.induced
@@ -1595,7 +1595,7 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
   · exact norm_mul_le' x y
 #align norm_multiset_prod_le norm_multiset_prod_le
 
--- porting note: had to add `ι` here because otherwise the universe order gets switched compared to
+-- Porting note: had to add `ι` here because otherwise the universe order gets switched compared to
 -- `norm_prod_le` below
 theorem norm_sum_le {ι E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i in s, f i‖ ≤ ∑ i in s, ‖f i‖ :=
@@ -1646,7 +1646,7 @@ theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r
 #align add_mem_closed_ball_iff_norm add_mem_closedBall_iff_norm
 
 @[to_additive (attr := simp 1001)]
--- porting note: increase priority so that the left-hand side doesn't simplify
+-- Porting note: increase priority so that the left-hand side doesn't simplify
 theorem preimage_mul_ball (a b : E) (r : ℝ) : (b * ·) ⁻¹' ball a r = ball (a / b) r := by
   ext c
   simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
@@ -1654,7 +1654,7 @@ theorem preimage_mul_ball (a b : E) (r : ℝ) : (b * ·) ⁻¹' ball a r = ball 
 #align preimage_add_ball preimage_add_ball
 
 @[to_additive (attr := simp 1001)]
--- porting note: increase priority so that the left-hand side doesn't simplify
+-- Porting note: increase priority so that the left-hand side doesn't simplify
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
     (b * ·) ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c
@@ -1719,7 +1719,7 @@ theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by
   ext
   simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, _root_.div_eq_inv_mul, ←
     eq_inv_mul_iff_mul_eq, mul_assoc]
-  -- porting note: `ENNReal.div_eq_inv_mul` should be `protected`?
+  -- Porting note: `ENNReal.div_eq_inv_mul` should be `protected`?
 #align smul_closed_ball'' smul_closedBall''
 #align vadd_closed_ball'' vadd_closedBall''
 
@@ -1761,8 +1761,7 @@ theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s :
       apply u_in
     · apply s.div_mem <;> apply u_in
   · intro l hl
-    obtain ⟨k, rfl⟩ : ∃ k, l = k + 1
-    exact Nat.exists_eq_succ_of_ne_zero hl.ne'
+    obtain ⟨k, rfl⟩ : ∃ k, l = k + 1 := Nat.exists_eq_succ_of_ne_zero hl.ne'
     apply hφ
 #align controlled_prod_of_mem_closure controlled_prod_of_mem_closure
 #align controlled_sum_of_mem_closure controlled_sum_of_mem_closure
@@ -1886,7 +1885,7 @@ theorem toNNReal_eq_nnnorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ :=
   rw [Real.toNNReal_of_nonneg hr]
   ext
   rw [coe_mk, coe_nnnorm r, Real.norm_eq_abs r, abs_of_nonneg hr]
-  -- porting note: this is due to the change from `Subtype.val` to `NNReal.toReal` for the coercion
+  -- Porting note: this is due to the change from `Subtype.val` to `NNReal.toReal` for the coercion
 #align real.to_nnreal_eq_nnnorm_of_nonneg Real.toNNReal_eq_nnnorm_of_nonneg
 
 theorem ofReal_le_ennnorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖₊ := by
@@ -1895,7 +1894,7 @@ theorem ofReal_le_ennnorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖₊ := by
   · rw [ENNReal.ofReal_eq_zero.2 hr]
     exact bot_le
 #align real.of_real_le_ennnorm Real.ofReal_le_ennnorm
--- porting note: should this be renamed to `Real.ofReal_le_nnnorm`?
+-- Porting note: should this be renamed to `Real.ofReal_le_nnnorm`?
 
 end Real
 
@@ -1912,7 +1911,7 @@ theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=
 
 theorem norm_eq_abs (n : ℤ) : ‖n‖ = |n| :=
   show ‖(n : ℝ)‖ = |n| by rw [Real.norm_eq_abs, cast_abs]
--- porting note: I'm not sure why this isn't `rfl` anymore, but I suspect it's about coercions
+-- Porting note: I'm not sure why this isn't `rfl` anymore, but I suspect it's about coercions
 #align int.norm_eq_abs Int.norm_eq_abs
 
 @[simp]
@@ -1940,7 +1939,7 @@ instance normedAddCommGroup : NormedAddCommGroup ℚ where
   dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
 
 @[norm_cast, simp 1001]
--- porting note: increase priority to prevent the left-hand side from simplifying
+-- Porting note: increase priority to prevent the left-hand side from simplifying
 theorem norm_cast_real (r : ℚ) : ‖(r : ℝ)‖ = ‖r‖ :=
   rfl
 #align rat.norm_cast_real Rat.norm_cast_real
@@ -2014,7 +2013,7 @@ theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
   rw [le_div_iff (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]
   rw [mul_comm, NNReal.coe_sub hK.le, _root_.sub_mul]
-  -- porting note: `ENNReal.sub_mul` should be `protected`?
+  -- Porting note: `ENNReal.sub_mul` should be `protected`?
   calc
     ↑Kf⁻¹ * dist x y - Kg * dist x y ≤ dist (f x) (f y) - dist (g x) (g y) :=
       sub_le_sub (hf.mul_le_dist x y) (hg.dist_le_mul x y)
@@ -2210,7 +2209,7 @@ theorem HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSuppo
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
   obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
   refine' ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) _)⟩
-  -- porting note: `ENNReal.add_lt_add` should be `protected`?
+  -- Porting note: `ENNReal.add_lt_add` should be `protected`?
   -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
   contrapose! hx
   exact lt_add_of_le_of_pos hx zero_lt_one

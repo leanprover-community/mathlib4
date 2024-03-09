@@ -123,7 +123,7 @@ def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
   initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial
 #align category_theory.mono_over.bot_coe_iso_zero CategoryTheory.MonoOver.botCoeIsoZero
 
--- porting note: removed @[simp] as the LHS simplifies
+-- Porting note: removed @[simp] as the LHS simplifies
 theorem bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
 #align category_theory.mono_over.bot_arrow_eq_zero CategoryTheory.MonoOver.bot_arrow_eq_zero

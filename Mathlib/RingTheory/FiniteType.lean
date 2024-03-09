@@ -85,7 +85,7 @@ protected theorem polynomial : FiniteType R R[X] :=
       exact Polynomial.adjoin_X⟩⟩
 #align algebra.finite_type.polynomial Algebra.FiniteType.polynomial
 
-open Classical
+open scoped Classical
 
 protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι
@@ -568,7 +568,7 @@ theorem support_gen_of_gen {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R 
   refine' le_antisymm le_top _
   rw [← hS, adjoin_le_iff]
   intro f hf
-  --Porting note: ⋃ notation did not work here. Was
+  -- Porting note: ⋃ notation did not work here. Was
   -- ⋃ (g : MonoidAlgebra R M) (H : g ∈ S), (of R M '' g.support)
   have hincl : (of R M '' f.support) ⊆
       Set.iUnion fun (g : MonoidAlgebra R M)

@@ -44,7 +44,7 @@ def QuotientDiff :=
 #align subgroup.quotient_diff Subgroup.QuotientDiff
 
 instance : Inhabited H.QuotientDiff := by
-  dsimp [QuotientDiff] -- porting note: Added `dsimp`
+  dsimp [QuotientDiff] -- Porting note: Added `dsimp`
   infer_instance
 
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :

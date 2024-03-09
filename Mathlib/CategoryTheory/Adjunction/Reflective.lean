@@ -162,7 +162,7 @@ instance [Reflective i] (X : Functor.EssImageSubcategory i) :
   IsIso (NatTrans.app (ofRightAdjoint i).unit X.obj) :=
 Functor.essImage.unit_isIso X.property
 
--- porting note: the following auxiliary definition and the next two lemmas were
+-- Porting note: the following auxiliary definition and the next two lemmas were
 -- introduced in order to ease the port
 /-- The counit isomorphism of the equivalence `D ≌ i.EssImageSubcategory` given
 by `equivEssImageOfReflective` when the functor `i` is reflective. -/
@@ -177,7 +177,9 @@ lemma equivEssImageOfReflective_map_counitIso_app_hom [Reflective i]
     (X : Functor.EssImageSubcategory i) :
   (Functor.essImageInclusion i).map (equivEssImageOfReflective_counitIso_app X).hom =
     inv (NatTrans.app (ofRightAdjoint i).unit X.obj) := by
-    simp [equivEssImageOfReflective_counitIso_app, asIso]
+    simp only [Functor.comp_obj, Functor.essImageInclusion_obj, Functor.toEssImage_obj_obj,
+      equivEssImageOfReflective_counitIso_app, asIso, Iso.symm_mk, Functor.essImageInclusion_map,
+      Functor.id_obj]
     rfl
 
 lemma equivEssImageOfReflective_map_counitIso_app_inv [Reflective i]
@@ -211,7 +213,7 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory
           equivEssImageOfReflective_map_counitIso_app_hom,
           IsIso.comp_inv_eq, assoc, ← h, IsIso.inv_hom_id_assoc, Functor.comp_map])
   functor_unitIso_comp := fun X => by
-    -- porting note: this proof was automatically handled by the automation in mathlib
+    -- Porting note: this proof was automatically handled by the automation in mathlib
     apply (Functor.essImageInclusion i).map_injective
     erw [Functor.map_comp, equivEssImageOfReflective_map_counitIso_app_hom]
     aesop_cat
