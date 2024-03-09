@@ -58,7 +58,7 @@ section
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
     [TopologicalSpace G] [TopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
-  measurable_const_smul g := Continuous.measurable (continuous_const_smul g)
+  measurable_const_smul g := (continuous_const_smul g).measurable
   measurable_smul_const x := (QuotientGroup.continuous_smul₁ x).measurable
 #align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
 #align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd

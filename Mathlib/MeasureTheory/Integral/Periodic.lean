@@ -79,9 +79,8 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
   measure_univ_lt_top := by simp
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
-instance hasFunDom : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
-  ExistsIsAddFundamentalDomain :=
-  ⟨Ioc 0 (0 + T), isAddFundamentalDomain_Ioc' Fact.out 0⟩
+instance : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
+  ExistsIsAddFundamentalDomain := ⟨Ioc 0 (0 + T), isAddFundamentalDomain_Ioc' Fact.out 0⟩
 
 instance : AddQuotientMeasureEqMeasurePreimage volume (volume : Measure (AddCircle T)) := by
   apply MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage
