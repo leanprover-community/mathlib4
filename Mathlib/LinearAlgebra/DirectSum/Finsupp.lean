@@ -154,7 +154,7 @@ theorem finsuppPiTensorProduct_apply (f : (i : ι) → (κ i →₀ M i)) (p : (
     finsuppPiTensorProduct R κ M (⨂ₜ[R] i, f i) p = ⨂ₜ[R] i, f i (p i) := by
   rw [congrArg (tprod R) (funext (fun i ↦ (Eq.symm (Finsupp.sum_single (f i)))))]
   erw [MultilinearMap.map_sum_finset (tprod R)]
-  simp only [map_sum, finsuppPiTensorProduct_single]
+  simp only [map_sum, finsuppPiTensorProduct_tprod_single]
   rw [Finset.sum_apply']
   rw [← Finset.sum_union_eq_right (s₁ := {p}) (fun _ _ h ↦ by
        simp only [Fintype.mem_piFinset, Finsupp.mem_support_iff, ne_eq, not_forall, not_not] at h
@@ -167,7 +167,7 @@ theorem finsuppPiTensorProduct_apply (f : (i : ι) → (κ i →₀ M i)) (p : (
 theorem finsuppPiTensorProduct_symm_single_tprod (p : (i : ι) → κ i) (m : (i : ι) → M i) :
     (finsuppPiTensorProduct R κ M).symm (Finsupp.single p (⨂ₜ[R] i, m i)) =
     ⨂ₜ[R] i, Finsupp.single (p i) (m i) :=
-  (LinearEquiv.symm_apply_eq _).2 (finsuppPiTensorProduct_single _ _ _ _ _).symm
+  (LinearEquiv.symm_apply_eq _).2 (finsuppPiTensorProduct_tprod_single _ _ _ _ _).symm
 
 variable [(x : R) → Decidable (x ≠ 0)]
 
