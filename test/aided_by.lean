@@ -13,17 +13,16 @@ warning: declaration uses 'sorry'
 example : 2 ≤ 3 := by#
   sorry
 
--- /--
--- info: Try this: simp_all only [le_refl]
--- ---
--- warning: declaration uses 'sorry'
--- ---
--- warning: this tactic is never executed [linter.unreachableTactic]
--- -/
--- #guard_msgs in
--- example : 2 ≤ 2 := by
---   aided_by aesop? do
---   sorry
+set_option linter.unreachableTactic false in
+/--
+info: Try this: simp_all only [le_refl]
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example : 2 ≤ 2 := by
+  aided_by aesop? do
+  sorry
 
 
 -- Solving as soon as `aesop?` can complete the proof
@@ -50,8 +49,6 @@ example : sillyN ≤ 4 := by#
   rw [silly]
   sorry
 
--- Ensuring reset of the cache
--- #eval clearCache
 
 -- Showing that the task runs in the background
 /--
@@ -93,12 +90,6 @@ macro "by!"  : term =>
   `(by
   aided_by from_by apply? do)
 
--- Added to make sure that the discriminant tree is loaded.
--- /--
--- info: Try this: exact Nat.le_three_of_sqrt_eq_one rfl
--- -/
--- #guard_msgs in
--- example : 2 ≤ 3 := by apply?
 
 /--
 info: Try this: by exact Nat.AtLeastTwo.prop
@@ -117,8 +108,6 @@ example : prop := by
   rw [prop]
   exact Nat.AtLeastTwo.prop
 
--- example : 1 = 1 := by!
---   sorry
 
 /--
 info: Try this: by
