@@ -35,12 +35,18 @@ class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_group OrderedAddCommGroup
 
+scope_existing_instance[OrderedInstances] OrderedAddCommGroup.toAddCommGroup
+
 /-- An ordered commutative group is a commutative group
 with a partial order in which multiplication is strictly monotone. -/
 class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
   /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
+
+scope_existing_instance[OrderedInstances] OrderedCommGroup.toCommGroup
+
+open OrderedInstances
 
 attribute [to_additive] OrderedCommGroup
 

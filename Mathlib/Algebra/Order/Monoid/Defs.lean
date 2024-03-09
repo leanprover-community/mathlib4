@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Order.BoundedOrder
+import Mathlib.Tactic.ScopeExistingInstance
 
 #align_import algebra.order.monoid.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -26,6 +27,8 @@ class OrderedAddCommMonoid (α : Type*) extends AddCommMonoid α, PartialOrder �
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c, c + a ≤ c + b
 #align ordered_add_comm_monoid OrderedAddCommMonoid
 
+scope_existing_instance[OrderedInstances] OrderedAddCommMonoid.toAddCommMonoid
+
 /-- An ordered commutative monoid is a commutative monoid with a partial order such that
 multiplication is monotone. -/
 @[to_additive]
@@ -33,15 +36,20 @@ class OrderedCommMonoid (α : Type*) extends CommMonoid α, PartialOrder α wher
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c, c * a ≤ c * b
 #align ordered_comm_monoid OrderedCommMonoid
 
+scope_existing_instance[OrderedInstances] OrderedCommMonoid.toCommMonoid
+
+
 section OrderedCommMonoid
 variable [OrderedCommMonoid α]
 
+open OrderedInstances in
 @[to_additive]
 instance OrderedCommMonoid.toCovariantClassLeft : CovariantClass α α (· * ·) (· ≤ ·) where
   elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
 #align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.toCovariantClassLeft
 #align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.toCovariantClassLeft
 
+open OrderedInstances in
 /- This instance can be proven with `by infer_instance`.  However, `WithBot ℕ` does not
 pick up a `CovariantClass M M (Function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
 @[to_additive]
@@ -72,6 +80,7 @@ class OrderedCancelCommMonoid (α : Type*) extends OrderedCommMonoid α where
 section OrderedCancelCommMonoid
 variable [OrderedCancelCommMonoid α]
 
+open OrderedInstances in
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeLeft :
@@ -83,6 +92,7 @@ instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeLeft :
 #noalign ordered_cancel_comm_monoid.lt_of_mul_lt_mul_left
 #noalign ordered_cancel_add_comm_monoid.lt_of_add_lt_add_left
 
+open OrderedInstances in
 @[to_additive]
 instance OrderedCancelCommMonoid.toContravariantClassLeft :
     ContravariantClass α α (· * ·) (· < ·) where
@@ -90,6 +100,7 @@ instance OrderedCancelCommMonoid.toContravariantClassLeft :
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.toContravariantClassLeft
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.toContravariantClassLeft
 
+open OrderedInstances in
 /- This instance can be proven with `by infer_instance`.  However, by analogy with the
 instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
 this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
@@ -101,6 +112,7 @@ instance OrderedCancelCommMonoid.toContravariantClassRight :
 #align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.toContravariantClassRight
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.toContravariantClassRight
 
+open OrderedInstances in
 -- See note [lower instance priority]
 @[to_additive OrderedCancelAddCommMonoid.toCancelAddCommMonoid]
 instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCommMonoid α :=
@@ -117,6 +129,7 @@ instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCo
 
 end OrderedCancelCommMonoid
 
+open OrderedInstances in
 set_option linter.deprecated false in
 @[deprecated] theorem bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a :=
   add_pos' h h
@@ -159,11 +172,13 @@ section LinearOrderedAddCommMonoidWithTop
 
 variable [LinearOrderedAddCommMonoidWithTop α] {a b : α}
 
+open OrderedInstances in
 @[simp]
 theorem top_add (a : α) : ⊤ + a = ⊤ :=
   LinearOrderedAddCommMonoidWithTop.top_add' a
 #align top_add top_add
 
+open OrderedInstances in
 @[simp]
 theorem add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
@@ -173,16 +188,20 @@ end LinearOrderedAddCommMonoidWithTop
 
 variable [LinearOrderedCommMonoid α] {a : α}
 
+open OrderedInstances in
 @[to_additive (attr := simp)]
 theorem one_le_mul_self_iff : 1 ≤ a * a ↔ 1 ≤ a :=
   ⟨(fun h ↦ by push_neg at h ⊢; exact mul_lt_one' h h).mtr, fun h ↦ one_le_mul h h⟩
 
+open OrderedInstances in
 @[to_additive (attr := simp)]
 theorem one_lt_mul_self_iff : 1 < a * a ↔ 1 < a :=
   ⟨(fun h ↦ by push_neg at h ⊢; exact mul_le_one' h h).mtr, fun h ↦ one_lt_mul'' h h⟩
 
+open OrderedInstances in
 @[to_additive (attr := simp)]
 theorem mul_self_le_one_iff : a * a ≤ 1 ↔ a ≤ 1 := by simp [← not_iff_not]
 
+open OrderedInstances in
 @[to_additive (attr := simp)]
 theorem mul_self_lt_one_iff : a * a < 1 ↔ a < 1 := by simp [← not_iff_not]

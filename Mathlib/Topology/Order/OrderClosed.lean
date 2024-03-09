@@ -734,6 +734,8 @@ instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
       t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
 #align order_closed_topology.to_t2_space OrderClosedTopology.to_t2Space
 
+scope_existing_instance[OrderedInstances] OrderClosedTopology.to_t2Space
+
 end PartialOrder
 
 section LinearOrder

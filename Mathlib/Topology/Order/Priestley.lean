@@ -72,11 +72,15 @@ theorem exists_isClopen_upper_or_lower_of_ne (h : x ≠ y) :
     exact ⟨U, hU, Or.inr hU', hx, hy⟩
 #align exists_clopen_upper_or_lower_of_ne exists_isClopen_upper_or_lower_of_ne
 
+namespace OrderedInstances
+
 -- See note [lower instance priority]
 instance (priority := 100) PriestleySpace.toT2Space : T2Space α :=
   ⟨fun _ _ h ↦
     let ⟨U, hU, _, hx, hy⟩ := exists_isClopen_upper_or_lower_of_ne h
     ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hx, hy, disjoint_compl_right⟩⟩
-#align priestley_space.to_t2_space PriestleySpace.toT2Space
+#align priestley_space.to_t2_space OrderedInstances.PriestleySpace.toT2Space
+
+end OrderedInstances
 
 end PartialOrder

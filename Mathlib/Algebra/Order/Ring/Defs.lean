@@ -138,6 +138,8 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
   protected mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
 #align ordered_semiring OrderedSemiring
 
+scope_existing_instance[OrderedInstances] OrderedSemiring.toSemiring
+
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
 class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
@@ -145,6 +147,8 @@ class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring
     -- parentheses ensure this generates an `optParam` rather than an `autoParam`
     (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
 #align ordered_comm_semiring OrderedCommSemiring
+
+scope_existing_instance[OrderedInstances] OrderedCommSemiring.toCommSemiring
 
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
@@ -155,10 +159,14 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   protected mul_nonneg : ∀ a b : α, 0 ≤ a → 0 ≤ b → 0 ≤ a * b
 #align ordered_ring OrderedRing
 
+scope_existing_instance[OrderedInstances] OrderedRing.toRing
+
 /-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
 and multiplication by a nonnegative number is monotone. -/
 class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
 #align ordered_comm_ring OrderedCommRing
+
+scope_existing_instance[OrderedInstances] OrderedCommRing.toCommRing
 
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
@@ -172,10 +180,14 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddC
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 #align strict_ordered_semiring StrictOrderedSemiring
 
+scope_existing_instance[OrderedInstances] StrictOrderedSemiring.toSemiring
+
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
 #align strict_ordered_comm_semiring StrictOrderedCommSemiring
+
+scope_existing_instance[OrderedInstances] StrictOrderedCommSemiring.toCommSemiring
 
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
@@ -186,10 +198,14 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 #align strict_ordered_ring StrictOrderedRing
 
+scope_existing_instance[OrderedInstances] StrictOrderedRing.toRing
+
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
 #align strict_ordered_comm_ring StrictOrderedCommRing
+
+scope_existing_instance[OrderedInstances] StrictOrderedCommRing.toCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass
@@ -215,6 +231,10 @@ class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder 
 monotone and multiplication by a positive number is strictly monotone. -/
 class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 #align linear_ordered_comm_ring LinearOrderedCommRing
+
+scope_existing_instance[OrderedInstances] LinearOrderedCommRing.toCommMonoid
+
+open OrderedInstances
 
 section OrderedSemiring
 
