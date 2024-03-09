@@ -978,6 +978,14 @@ theorem bidirectionalRec_singleton {motive : List α → Sort*}
     bidirectionalRec nil singleton cons_append [a] = singleton a :=
   rfl
 
+@[simp]
+proof_wanted bidirectionalRec_cons_append {motive : List α → Sort*}
+    (nil : motive []) (singleton : ∀ a : α, motive [a])
+    (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b])))
+    (a : α) (l : List α) (b : α) :
+    bidirectionalRec nil singleton cons_append (a :: (l ++ [b])) =
+      cons_append a l b (bidirectionalRec nil singleton cons_append l)
+
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
 @[elab_as_elim]
 abbrev bidirectionalRecOn {C : List α → Sort*} (l : List α) (H0 : C []) (H1 : ∀ a : α, C [a])
