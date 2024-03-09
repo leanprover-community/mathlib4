@@ -270,7 +270,7 @@ syntax (name := cfcContTac) "cfc_cont_tac" : tactic
 macro_rules
   | `(tactic| cfc_cont_tac) => `(tactic| try (first | fun_prop (disch := aesop) | assumption))
 
-open Classical in
+open scoped Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` applied to bare functions.
 When either `a` does not satisfy the predicate `p` (i.e., `a` is not `IsStarNormal`,
 `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when `f : R → R` is
@@ -519,18 +519,18 @@ lemma cfc_comp_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
     cfc a (f <| q.eval ·) = cfc (aeval a q) f := by
   rw [cfc_comp' a f q.eval, cfc_polynomial a]
 
-lemma eq_algebraMap_of_spectrum_singleton (r : R) (h_spec : spectrum R a = {r})
+lemma eq_algebraMap_of_spectrum_subset_singleton (r : R) (h_spec : spectrum R a ⊆ {r})
     (ha : p a := by cfc_tac) : a = algebraMap R A r := by
   simpa [cfc_id R a, cfc_const a r] using
-    cfc_congr a (f := id) (g := fun _ : R ↦ r) <| by rw [h_spec]; simp
+    cfc_congr a (f := id) (g := fun _ : R ↦ r) fun x hx ↦ by simpa using h_spec hx
 
-lemma eq_zero_of_spectrum_eq_zero (h_spec : spectrum R a = {0}) (ha : p a := by cfc_tac) :
+lemma eq_zero_of_spectrum_subset_zero (h_spec : spectrum R a ⊆ {0}) (ha : p a := by cfc_tac) :
     a = 0 := by
-  simpa using eq_algebraMap_of_spectrum_singleton a 0 h_spec
+  simpa using eq_algebraMap_of_spectrum_subset_singleton a 0 h_spec
 
-lemma eq_one_of_spectrum_eq_one (h_spec : spectrum R a = {1}) (ha : p a := by cfc_tac) :
+lemma eq_one_of_spectrum_subset_one (h_spec : spectrum R a ⊆ {1}) (ha : p a := by cfc_tac) :
     a = 1 := by
-  simpa using eq_algebraMap_of_spectrum_singleton a 1 h_spec
+  simpa using eq_algebraMap_of_spectrum_subset_singleton a 1 h_spec
 
 end CFC
 

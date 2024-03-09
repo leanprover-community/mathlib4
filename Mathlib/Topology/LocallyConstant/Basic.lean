@@ -96,11 +96,11 @@ protected theorem eventually_eq {f : X → Y} (hf : IsLocallyConstant f) (x : X)
   (iff_eventually_eq f).1 hf x
 #align is_locally_constant.eventually_eq IsLocallyConstant.eventually_eq
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem iff_isOpen_fiber_apply {f : X → Y} : IsLocallyConstant f ↔ ∀ x, IsOpen (f ⁻¹' {f x}) :=
   (IsLocallyConstant.tfae f).out 0 2
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem iff_isOpen_fiber {f : X → Y} : IsLocallyConstant f ↔ ∀ y, IsOpen (f ⁻¹' {y}) :=
   (IsLocallyConstant.tfae f).out 0 3
 
@@ -449,7 +449,7 @@ theorem flip_unflip {X α β : Type*} [Finite α] [TopologicalSpace X]
 
 section Comap
 
-open Classical
+open scoped Classical
 
 variable [TopologicalSpace Y]
 
@@ -543,7 +543,7 @@ section Indicator
 
 variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
 
-open Classical
+open scoped Classical
 
 /-- Given a clopen set `U` and a locally constant function `f`, `LocallyConstant.mulIndicator`
   returns the locally constant function that is `f` on `U` and `1` otherwise. -/

@@ -85,7 +85,7 @@ protected theorem polynomial : FiniteType R R[X] :=
       exact Polynomial.adjoin_X⟩⟩
 #align algebra.finite_type.polynomial Algebra.FiniteType.polynomial
 
-open Classical
+open scoped Classical
 
 protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι

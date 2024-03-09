@@ -290,7 +290,9 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
         simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, RingHom.iterate_map_neg, add_left_neg, mk_zero]
     add_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
-        Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm] }
+        Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm]
+    nsmul := nsmulRec
+    zsmul := zsmulRec }
 
 instance instCommRing : CommRing (PerfectClosure K p) :=
   { instAddCommGroup K p, AddMonoidWithOne.unary,

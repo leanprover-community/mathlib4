@@ -98,7 +98,7 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
-#noalign pseudo_metric_space.edist_dist_tac -- Porting note: todo: restore
+#noalign pseudo_metric_space.edist_dist_tac -- Porting note (#11215): TODO: restore
 
 /-- Pseudo metric and Metric spaces
 
@@ -115,7 +115,8 @@ class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
   edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
-  edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) -- Porting note: todo: add := by _
+  edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y)
+  -- Porting note (#11215): TODO: add := by _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
   toBornology : Bornology α := Bornology.ofDist dist dist_comm dist_triangle
@@ -1497,7 +1498,7 @@ def PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β)
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
-    simp only [← isBounded_def, isBounded_iff, ball_image_iff, mem_setOf]
+    simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_setOf]
 #align pseudo_metric_space.induced PseudoMetricSpace.induced
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
@@ -1625,7 +1626,7 @@ instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
       simp only [sup_eq_max, dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
         Prod.edist_eq]
   i.replaceBornology fun s => by
-    simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, ball_image_iff, ←
+    simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]
     rfl
 #align prod.pseudo_metric_space_max Prod.pseudoMetricSpaceMax
@@ -1890,11 +1891,11 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
       simp only [edist_pi_def, edist_nndist, ← ENNReal.coe_finset_sup, ENNReal.coe_toReal])
   refine i.replaceBornology fun s => ?_
   simp only [← isBounded_def, isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
-    ball_image_iff, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
+    forall_mem_image, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
   refine' eventually_congr ((eventually_ge_atTop 0).mono fun C hC => _)
   lift C to ℝ≥0 using hC
-  refine' ⟨fun H x hx y hy => NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ => H b x hx y hy,
-    fun H b x hx y hy => NNReal.coe_le_coe.2 _⟩
+  refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
+    fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
   simpa only using Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
 #align pseudo_metric_space_pi pseudoMetricSpacePi
 
