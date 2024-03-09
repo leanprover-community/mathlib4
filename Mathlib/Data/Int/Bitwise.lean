@@ -210,13 +210,13 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
     cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
 #align int.test_bit_succ Int.testBit_bit_succ
 
--- Porting note: TODO
+-- Porting note (#11215): TODO
 -- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
 -- #align int.bitwise_tac int.bitwise_tac
 
---Porting note: Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_or : bitwise or = lor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -234,7 +234,7 @@ theorem bitwise_or : bitwise or = lor := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_or Int.bitwise_or
 
---Porting note: Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -250,7 +250,7 @@ theorem bitwise_and : bitwise and = land := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_and Int.bitwise_and
 
---Porting note: Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}
@@ -269,7 +269,7 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
     cases x <;> cases y <;> rfl
 #align int.bitwise_diff Int.bitwise_diff
 
---Porting note: Was `bitwise_tac` in mathlib
+-- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_xor : bitwise xor = Int.xor := by
   funext m n
   cases' m with m m <;> cases' n with n n <;> try {rfl}

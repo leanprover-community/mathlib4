@@ -26,9 +26,6 @@ If `α : Cochain F G n`, we shall define `α.v p q hpq : F.X p ⟶ G.X q`.
 We follow the signs conventions appearing in the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
 
-TODO:
-* Behaviour with respect to shifting the cochain complexes `F` and `G`.
-
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 

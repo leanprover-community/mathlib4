@@ -106,11 +106,11 @@ theorem coe_to_fun_apply (ψ : AddChar R R') (a : R) : ψ a = ψ.toMonoidHom (of
   rfl
 #align add_char.coe_to_fun_apply AddChar.coe_to_fun_apply
 
--- porting note: added
+-- Porting note: added
 theorem mul_apply (ψ φ : AddChar R R') (a : R) : (ψ * φ) a = ψ a * φ a :=
   rfl
 
--- porting note: added
+-- Porting note: added
 @[simp]
 theorem one_apply (a : R) : (1 : AddChar R R') a = 1 := rfl
 

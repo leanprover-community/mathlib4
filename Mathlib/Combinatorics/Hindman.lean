@@ -82,14 +82,14 @@ attribute [local instance] Ultrafilter.semigroup Ultrafilter.addSemigroup
 @[to_additive]
 theorem Ultrafilter.continuous_mul_left {M} [Semigroup M] (V : Ultrafilter M) :
     Continuous (· * V) :=
-  ultrafilterBasis_is_basis.continuous_iff.2 <| Set.forall_range_iff.mpr fun s ↦
+  ultrafilterBasis_is_basis.continuous_iff.2 <| Set.forall_mem_range.mpr fun s ↦
     ultrafilter_isOpen_basic { m : M | ∀ᶠ m' in V, m * m' ∈ s }
 #align ultrafilter.continuous_mul_left Ultrafilter.continuous_mul_left
 #align ultrafilter.continuous_add_left Ultrafilter.continuous_add_left
 
 namespace Hindman
 
--- porting note: mathport wants these names to be `fS`, `fP`, etc, but this does violence to
+-- Porting note: mathport wants these names to be `fS`, `fP`, etc, but this does violence to
 -- mathematical naming conventions, as does `fs`, `fp`, so we just followed `mathlib` 3 here
 
 /-- `FS a` is the set of finite sums in `a`, i.e. `m ∈ FS a` if `m` is the sum of a nonempty
