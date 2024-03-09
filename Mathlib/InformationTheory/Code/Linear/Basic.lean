@@ -21,7 +21,8 @@ class _LinearCode [Nontrivial γ] [ContravariantClass γ γ (.+.) (.<.)]
   [StrictModuleGNorm K K gdist_k gdist_k]
   [StrictModuleGNorm K M gdist_k gdist_m] [_Code γ gdist_m s] : Prop where
 
-instance Code.inst_LinearCode [Nontrivial γ][ContravariantClass γ γ (.+.) (.<.)]
+namespace LinearCode
+instance inst_LinearCode [Nontrivial γ][ContravariantClass γ γ (.+.) (.<.)]
   [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ]
   [StrictModuleGNorm K K gdist_k gdist_k] [StrictModuleGNorm K M gdist_k gdist_m]
   [_Code γ gdist_m s] : _LinearCode γ K gdist_k gdist_m s where

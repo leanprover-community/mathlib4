@@ -42,11 +42,13 @@ instance LinearCodeEquiv.instEquivLike:
   coe_injective' := fun φ φ₂ h1 h2=> by
     unhygienic cases φ;unhygienic cases φ₂; congr; simp_all
     cases toCodeEquiv; cases toCodeEquiv_1; congr
+    sorry
+
 
 
 instance LinearCodeEquiv.instGIsometryClass :
     GIsometryClass (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂) gdist_m gdist_m₂ where
-  map_dist := fun φ => φ.map_dist
+  map_dist' := fun φ => φ.map_dist
 
 instance LinearCodeEquiv.instSemilinearEquivClass :
     SemilinearEquivClass (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂) (RingHom.id K) M M₂ where
@@ -55,8 +57,8 @@ instance LinearCodeEquiv.instSemilinearEquivClass :
 
 instance LinearCodeEquiv.instCodeEquivClass :
     CodeEquivClass (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂) gdist_m (↑s) gdist_m₂ ↑s₂ where
-  map_code := fun φ => φ.map_code
-  invMap_code := fun φ => φ.invMap_code
+  map_code' := fun φ => φ.map_code
+  invMap_code' := fun φ => φ.invMap_code
 
 instance LinearCodeEquiv.inst_LinearCodeHomClass:
   _LinearCodeHomClass (LinearCodeEquiv K gdist_k gdist_m s gdist_m₂ s₂)
