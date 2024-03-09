@@ -63,6 +63,15 @@ theorem isChain_range_flag (b : Basis (Fin n) R M) : IsChain (· ≤ ·) (range 
 theorem flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.flag :=
   Fin.strictMono_iff_lt_succ.2 fun _ ↦ by simp [flag_succ]
 
+theorem flag_span_succ {n : ℕ} (b : Basis (Fin n) R M) (k : Fin n) :
+    b.flag k ⊔ span R {b k} = b.flag k.succ := by
+  rw [flag, ← span_union, ← image_singleton, ← image_union, flag]
+  refine congr_arg (span R <| b '' ·) <| Set.ext fun j ↦ ?_
+  have : j = k ∨ j < k ↔ ↑j < k.succ := by
+    rw [← le_iff_eq_or_lt, Fin.coe_eq_castSucc, Fin.lt_iff_val_lt_val]
+    exact Nat.lt_succ_iff.symm
+  simp [this]
+
 end Semiring
 
 section CommRing
