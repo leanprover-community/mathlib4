@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.Data.Fin.FlagRange
 
 /-!
@@ -108,3 +109,18 @@ theorem isMaxChain_range_flag (b : Basis (Fin n) K V) : IsMaxChain (· ≤ ·) (
   b.toFlag.maxChain
 
 end DivisionRing
+
+-- move to Data.ZMod.Defs
+theorem Fin.coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin <| n + 1) < k ↔ j < k := by
+  simp only [Fin.coe_eq_castSucc]; rfl
+
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
+
+variable {n : ℕ} (b : Basis (Fin n) R M)
+theorem Basis.flag_le_ker_dual (k : Fin n) : b.flag k ≤ LinearMap.ker (b.dualBasis k) := by
+  erw [span_le]
+  rintro _ ⟨j, hj : j.castSucc < k, rfl⟩
+  have : j < k := by rw [← Fin.coe_eq_castSucc, Fin.coe_succ_lt_iff_lt] at hj; exact hj
+  simp only [coe_dualBasis, SetLike.mem_coe, LinearMap.mem_ker, coord_apply, repr_self]
+  rw [Finsupp.single_apply_eq_zero]
+  exact fun h ↦ False.elim (by omega)
