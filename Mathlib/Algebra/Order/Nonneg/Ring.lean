@@ -336,7 +336,7 @@ instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α]
 
 instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
     CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Subtype.linearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
+  { Subtype.instLinearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
 #align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddCommMonoid
 
 section LinearOrder
