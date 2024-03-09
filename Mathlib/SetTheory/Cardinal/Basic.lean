@@ -538,7 +538,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   natCast_zero := rfl
   natCast_succ := Cardinal.cast_succ
 
-/-! Porting note: Deprecated section. Remove. -/
+/-! Porting note (#11229): Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
 
@@ -618,7 +618,7 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 #align cardinal.lift_mul Cardinal.lift_mul
 
-/-! Porting note: Deprecated section. Remove. -/
+/-! Porting note (#11229): Deprecated section. Remove. -/
 section deprecated
 set_option linter.deprecated false
 
