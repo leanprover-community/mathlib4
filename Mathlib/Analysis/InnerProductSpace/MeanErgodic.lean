@@ -64,9 +64,9 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   along the orbits of `f x` and `x`, and most of the terms cancel. -/
   have : IsBounded (Set.range (_root_.id <| f^[·] x)) :=
     isBounded_iff_forall_norm_le.2 ⟨‖x‖, Set.forall_mem_range.2 fun n ↦ by
-      have H : f^[n] 0 = 0 := (f : E →+ E).iterate_map_zero n
+      have H : f^[n] 0 = 0 := iterate_map_zero (f : E →+ E) n
       simpa [H] using (hf.iterate n).dist_le_mul x 0⟩
-  have H : ∀ n x y, f^[n] (x - y) = f^[n] x - f^[n] y := (f : E →+ E).iterate_map_sub
+  have H : ∀ n x y, f^[n] (x - y) = f^[n] x - f^[n] y := iterate_map_sub (f : E →+ E)
   simpa [birkhoffAverage, birkhoffSum, Finset.sum_sub_distrib, smul_sub, H]
     using tendsto_birkhoffAverage_apply_sub_birkhoffAverage 𝕜 this
 
