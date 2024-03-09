@@ -80,7 +80,7 @@ theorem flag_le_ker_coord (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n}
   nontriviality R
   exact b.flag_le_ker_coord_iff.2 h
 
-theorem Basis.flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
+theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k ≤ LinearMap.ker (b.dualBasis k) := by
   erw [span_le]
   rintro _ ⟨j, hj : j.castSucc < k, rfl⟩
