@@ -395,9 +395,9 @@ lemma Λ₀_eq (s : ℂ) : P.Λ₀ s = P.Λ s + (1 / s) • P.f₀ + (P.ε / (P.
   abel
 
 lemma symm_Λ₀_eq (s : ℂ) :
-  P.symm.Λ₀ s = P.symm.Λ s + (1 / s) • P.g₀ + (P.ε⁻¹ / (P.k - s)) • P.f₀ := by
-    rw [P.symm.Λ₀_eq]
-    rfl
+    P.symm.Λ₀ s = P.symm.Λ s + (1 / s) • P.g₀ + (P.ε⁻¹ / (P.k - s)) • P.f₀ := by
+  rw [P.symm.Λ₀_eq]
+  rfl
 
 lemma differentiable_Λ₀ : Differentiable ℂ P.Λ₀ := P.modifStrongFEPair.differentiable_Λ
 
