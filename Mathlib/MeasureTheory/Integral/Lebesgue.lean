@@ -1736,8 +1736,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
     intro n x
     cases n with | zero | succ => simp [g']
   have I' : ∀ᵐ x ∂μ, ∀ n, g' n x ≤ f n x := by
-    filter_upwards [hf_mono] with x hx
-    intro n
+    filter_upwards [hf_mono] with x hx n
     induction n with
     | zero => simpa [g'] using gf 0 x
     | succ n ih => exact max_le (gf (n+1) x) (ih.trans (hx (Nat.le_succ n)))
@@ -1749,8 +1748,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone {α : Type*} {mα : MeasurableSpa
       exact lintegral_mono (I n)
   have : ∀ᵐ a ∂μ, Tendsto (fun i ↦ g' i a) atTop (𝓝 (F a)) := by
     apply tendsto_of_lintegral_tendsto_of_monotone_aux _ hF_meas _ _ _ h_int_finite
-    · intro n
-      exact (M n).aemeasurable
+    · exact fun n ↦ (M n).aemeasurable
     · simp_rw [Int_eq]
       exact hf_tendsto
     · exact eventually_of_forall (fun x ↦ monotone_nat_of_le_succ (fun n ↦ le_max_right _ _))
