@@ -355,7 +355,8 @@ private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
   show le _ _ ↔ _ by rw [le_def]
 
 @[simp]
-theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by simp [le_def', mk_eq]; rfl
+theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
+  simp only [le_def', mk_lt, mk_eq]; rfl
 #align real.mk_le Real.mk_le
 
 @[elab_as_elim]
