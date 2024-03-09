@@ -446,7 +446,7 @@ noncomputable def equiv_lift : DirectLimit G f ≃[L] DirectLimit G' f' := by
   exact ⟨Equiv.ofBijective F ⟨F.injective, surj_f⟩, F.map_fun', F.map_rel'⟩
 
 theorem equiv_lift_of {i : ι} (x : G i) :
-    equiv_lift L ι G f G' f' g H_commutating (of L ι G f i x) = of L ι G' f' i (g i x) := rfl
+    equiv_lift L ι G f G' f' g H_commuting (of L ι G f i x) = of L ι G' f' i (g i x) := rfl
 
 variable {L ι G f}
 
