@@ -7,9 +7,9 @@ import Mathlib.ModelTheory.Basic
 import Mathlib.Computability.Primrec
 
 /-!
-# Language of first-order logic for ordered rings
+# Language of first-order logic of arithmetic
 
-This file defines the language of first-order logic for ordered rings.
+This file defines the language of first-order logic of arithmetic.
 
 - `FirstOrder.Language.oRing`, `ℒₒᵣ` is the language of ordered ring.
 -/
