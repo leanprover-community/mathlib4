@@ -905,20 +905,45 @@ theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
 for `l ++ [a]` if it holds for `l`, then it holds for all lists. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 @[elab_as_elim]
-def reverseRecOn {C : List α → Sort*} (l : List α) (H0 : C [])
-    (H1 : ∀ (l : List α) (a : α), C l → C (l ++ [a])) : C l := by
-  rw [← reverse_reverse l]
-  match h:(reverse l) with
-  | [] => exact H0
+def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) : motive l :=
+  match h : reverse l with
+  | [] => cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
+      nil
   | head :: tail =>
     have : tail.length < l.length := by
       rw [← length_reverse l, h, length_cons]
       simp [Nat.lt_succ]
-    let ih := reverseRecOn (reverse tail) H0 H1
-    rw [reverse_cons]
-    exact H1 _ _ ih
+    cast (congr_arg motive <| by simpa using congr(reverse $h.symm)) <|
+      append_singleton _ head <| reverseRecOn (reverse tail) nil append_singleton
 termination_by l.length
 #align list.reverse_rec_on List.reverseRecOn
+
+@[simp]
+theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
+    reverseRecOn [] nil append_singleton = nil := rfl
+
+@[simp]
+theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α) (nil : motive [])
+    (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
+    reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
+      append_singleton _ _ (reverseRecOn (motive := motive) xs nil append_singleton) := by
+  suffices ∀ ys (h : reverse (reverse xs) = ys),
+      reverseRecOn (motive := motive) (xs ++ [x]) nil append_singleton =
+        cast (by simp [(reverse_reverse _).symm.trans h])
+          (append_singleton _ x (reverseRecOn (motive := motive) ys nil append_singleton)) by
+    exact this _ (reverse_reverse xs)
+  intros ys hy
+  conv_lhs => unfold reverseRecOn
+  split
+  next h => simp at h
+  next heq =>
+    revert heq
+    simp only [reverse_append, reverse_cons, reverse_nil, nil_append, singleton_append, cons.injEq]
+    rintro ⟨rfl, rfl⟩
+    subst ys
+    rfl
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
 singleton list, and `a :: (l ++ [b])` from `l`, then it holds for all lists. This can be used to
