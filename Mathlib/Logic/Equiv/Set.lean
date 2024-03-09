@@ -218,6 +218,8 @@ protected def pempty (α) : (∅ : Set α) ≃ PEmpty :=
   equivPEmpty _
 #align equiv.set.pempty Equiv.Set.pempty
 
+-- false positive for `nonTerminalSimp`
+set_option linter.nonTerminalSimp false in
 /-- If sets `s` and `t` are separated by a decidable predicate, then `s ∪ t` is equivalent to
 `s ⊕ t`. -/
 protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs : ∀ x ∈ s, p x)
