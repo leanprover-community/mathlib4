@@ -20,8 +20,14 @@ structure GIsometryEquiv [GPseudoMetricClass T₁ α₁ γ] [GPseudoMetricClass 
   (gdist₁:T₁) (gdist₂:T₂) extends α₁ ≃ α₂, GIsometry gdist₁ gdist₂
 
 -- not sure if this should be an abbreviation class or not.
-class _GIsometryEquivClass (T:Type*) [EquivLike T α₁ α₂] [GPseudoMetricClass T₁ α₁ γ]
-  [GPseudoMetricClass T₂ α₂ γ] (gdist₁:T₁) (gdist₂:T₂) [GIsometryClass T gdist₁ gdist₂] :Prop where
+class _GIsometryEquivClass (T:Type*)
+  {γ :outParam Type*} [LinearOrder γ] [AddCommMonoid γ] [CovariantClass γ γ (. + .) (.≤.)]
+  {α₁:outParam Type*} {α₂:outParam Type*}
+  [EquivLike T α₁ α₂] {T₁ T₂:outParam Type*}
+  [FunLike T₁ α₁ (α₁ → γ)] [GPseudoMetricClass T₁ α₁ γ]
+  [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₂ α₂ γ]
+  (gdist₁: outParam T₁) (gdist₂: outParam T₂)
+  [GIsometryClass T gdist₁ gdist₂] :Prop where
 
 instance inst_GIsometryEquivClass (T:Type*) [EquivLike T α₁ α₂] [GPseudoMetricClass T₁ α₁ γ]
   [GPseudoMetricClass T₂ α₂ γ] (gdist₁:T₁) (gdist₂:T₂) [GIsometryClass T gdist₁ gdist₂] :

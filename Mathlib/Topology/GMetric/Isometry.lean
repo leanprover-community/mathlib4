@@ -2,17 +2,25 @@ import Mathlib.Topology.GMetric.Basic
 
 open GMetric
 
-variable {α₁ α₂ γ :Type*} [CompleteLinearOrder γ] [AddCommMonoid γ]
+
+
+variable {α₁ α₂ γ :Type*} [LinearOrder γ] [AddCommMonoid γ]
 variable [CovariantClass γ γ (. + .) (. ≤ .)] {T₁ T₂:Type*} [FunLike T₁ α₁ (α₁ → γ)]
 variable [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₁ α₁ γ] [GPseudoMetricClass T₂ α₂ γ]
 
-structure GIsometry (gdist₁:T₁) (gdist₂:T₂) :=
+structure GIsometry
+  (gdist₁:T₁) [GPseudoMetricClass T₁ α₁ γ] (gdist₂:T₂) [GPseudoMetricClass T₂ α₂ γ] :=
   toFun : α₁ → α₂
   map_dist :∀ x y, gdist₁ x y = (gdist₂ (toFun x) (toFun y))
 
-class GIsometryClass (T₃:Type*) [FunLike T₃ α₁ α₂] (gdist₁: T₁) (gdist₂: T₂) where
-  map_dist' : ∀ φ:T₃,∀ x y, ⇑gdist₁ x y = ⇑gdist₂ (φ x) (φ y)
-
+class GIsometryClass
+    (T:Type*) {γ :outParam Type*}
+    [LinearOrder γ] [AddCommMonoid γ] [CovariantClass γ γ (. + .) (. ≤ .)]
+    {α₁:outParam Type*} {α₂:outParam Type*} [FunLike T α₁ α₂]
+    {T₁ T₂:outParam Type*} [FunLike T₁ α₁ (α₁ → γ)] [GPseudoMetricClass T₁ α₁ γ]
+    [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₂ α₂ γ]
+    (gdist₁: outParam T₁) (gdist₂: outParam T₂) where
+  map_dist' : ∀ φ:T,∀ x y, ⇑gdist₁ x y = ⇑gdist₂ (φ x) (φ y)
 
 namespace GIsometry
 
