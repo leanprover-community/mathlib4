@@ -84,15 +84,18 @@ lemma schnirelmannDensity_le_one : schnirelmannDensity A ≤ 1 :=
   schnirelmannDensity_le_of_le 1 one_ne_zero <|
     by rw [Nat.cast_one, div_one, Nat.cast_le_one]; exact card_filter_le _ _
 
-/-- If `k` is omitted from the set, its Schnirelmann density is upper bounded by `1 - k⁻¹`. -/
+/--
+If `k` is omitted from the set, its Schnirelmann density is upper bounded by `1 - k⁻¹`.
+-/
 lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
     schnirelmannDensity A ≤ 1 - (k⁻¹ : ℝ) := by
   rcases k.eq_zero_or_pos with rfl | hk'
   · simpa using schnirelmannDensity_le_one
   apply schnirelmannDensity_le_of_le k hk'.ne'
-  have : (Ioo 0 k).card = k - 1 := by simp
-  rw [← one_div, one_sub_div (Nat.cast_pos.2 hk').ne', ← Nat.cast_pred hk', ← this]
+  rw [← one_div, one_sub_div (Nat.cast_pos.2 hk').ne']
   gcongr
+  rw [← Nat.cast_pred hk', Nat.cast_le]
+  suffices (Ioc 0 k).filter (· ∈ A) ⊆ Ioo 0 k from (card_le_card this).trans_eq (by simp)
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
@@ -228,7 +231,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     intro x _ hxm h
     rcases eq_or_lt_of_le hxm with rfl | hxm'
     · simp at h
-    rwa [Set.mem_setOf_eq, Nat.mod_eq_of_lt hxm'] at h
+    rwa [Nat.mod_eq_of_lt hxm'] at h
   rw [le_schnirelmannDensity_iff]
   intro n hn
   simp only [Set.mem_setOf_eq]
