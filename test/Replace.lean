@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 import Mathlib.Tactic.Replace
-import Std.Tactic.GuardExpr
 
 set_option linter.unusedVariables false
 

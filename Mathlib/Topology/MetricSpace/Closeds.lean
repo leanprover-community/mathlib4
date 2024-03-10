@@ -27,11 +27,13 @@ always finite in this context.
 
 noncomputable section
 
-open Classical Topology ENNReal
+open scoped Classical
+open Topology ENNReal
 
 universe u
 
-open Classical Set Function TopologicalSpace Filter
+open scoped Classical
+open Set Function TopologicalSpace Filter
 
 namespace EMetric
 
@@ -131,9 +133,9 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           rw [← pow_add]
           apply hs <;> simp
         exact ⟨⟨z', z'_mem⟩, le_of_lt hz'⟩
-      use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => choose (this l z)
+      use fun k => Nat.recOn k ⟨x, hx⟩ fun l z => (this l z).choose
       simp only [Nat.add_zero, Nat.zero_eq, Nat.rec_zero, Nat.rec_add_one, true_and]
-      exact fun k => choose_spec (this k _)
+      exact fun k => (this k _).choose_spec
     -- it follows from the previous bound that `z` is a Cauchy sequence
     have : CauchySeq fun k => (z k : α) := cauchySeq_of_edist_le_geometric_two (B n) (B_ne_top n) hz
     -- therefore, it converges
@@ -339,8 +341,8 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
         intro x
         rcases mem_closure_iff.1 (s_dense x) (δ / 2) δpos' with ⟨y, ys, hy⟩
         exact ⟨y, ⟨ys, hy⟩⟩
-      let F x := choose (Exy x)
-      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => choose_spec (Exy x)
+      let F x := (Exy x).choose
+      have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
       rcases totallyBounded_iff.1 this (δ / 2) δpos' with ⟨a, af, ta⟩

@@ -1,5 +1,4 @@
 import Mathlib.Tactic.ExtractLets
-import Std.Tactic.GuardExpr
 
 example (h : let x := 1; x = x) : True := by
   extract_lets y at h

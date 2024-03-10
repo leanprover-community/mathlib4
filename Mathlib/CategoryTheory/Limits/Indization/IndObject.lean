@@ -3,7 +3,9 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Filtered.Small
 
 /-!
 # Ind-objects
@@ -12,12 +14,12 @@ For a presheaf `A : Cᵒᵖ ⥤ Type v` we define the type `IndObjectPresentatio
 of `A` as a small filtered colimit of representable presheaves and define the predicate
 `IsIndObject A` asserting that there is at least one such presentation.
 
-## Future work
-
 A presheaf is an ind-object if and only if the category `CostructuredArrow yoneda A` is filtered
 and finally small. In this way, `CostructuredArrow yoneda A` can be thought of the universal
 indexing category for the representation of `A` as a small filtered colimit of representable
 presheaves.
+
+## Future work
 
 There are various useful ways to understand natural transformations between ind-objects in terms
 of their presentations.
@@ -106,5 +108,47 @@ theorem IsIndObject.mk {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) : 
 /-- Representable presheaves are (trivially) ind-objects. -/
 theorem isIndObject_yoneda (X : C) : IsIndObject (yoneda.obj X) :=
   .mk <| IndObjectPresentation.yoneda X
+
+namespace IsIndObject
+
+variable {A : Cᵒᵖ ⥤ Type v}
+
+/-- Pick a presentation for an ind-object using choice. -/
+noncomputable def presentation : IsIndObject A → IndObjectPresentation A
+  | ⟨P⟩ => P.some
+
+theorem isFiltered (h : IsIndObject A) : IsFiltered (CostructuredArrow yoneda A) :=
+  IsFiltered.of_final h.presentation.toCostructuredArrow
+
+theorem finallySmall (h : IsIndObject A) : FinallySmall.{v} (CostructuredArrow yoneda A) :=
+  FinallySmall.mk' h.presentation.toCostructuredArrow
+
+end IsIndObject
+
+open IsFiltered.SmallFilteredIntermediate
+
+theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
+    [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
+    IsIndObject A := by
+  have h₁ : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
+      inclusion (fromFinalModel (CostructuredArrow yoneda A))).Final := Functor.final_of_natIso
+    (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
+  have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
+    Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
+  let c := (tautologicalCocone A).whisker (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
+  let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
+    (isColimitTautologicalCocone A)
+  have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
+    (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
+  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
+
+/-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
+    `CostructuredArrow yoneda A` is filtered and finally `v`-small.
+
+    Theorem 6.1.5 of [Kashiwara2006] -/
+theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
+    (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
+  ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
+   fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
 
 end CategoryTheory.Limits
