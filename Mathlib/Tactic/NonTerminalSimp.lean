@@ -50,40 +50,13 @@ def onlyOrNotSimp : Syntax → Bool
   | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal == "only"
   | _ => true
 
-variable {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m] in
+--variable {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m] in
 /-- `nonTerminalSimp stx` loops inside `stx` looking for nodes corresponding to `simp` calls
 that are not `simp only` calls.  Among those, it checks whether there are further tactics
 after the `simp`, and, if there are, then it emits a warning. -/
 partial
-def nonTerminalSimp : Syntax → m Unit
-  | .node _ _ args => do
-    match args.findIdx? (! onlyOrNotSimp ·) with
-      | none => default
-      | some n =>
-        for i in [n+1:args.size] do
-          if "Lean.Parser.Tactic".isPrefixOf args[i]!.getKind.toString then
-            logWarningAt args[n]!
-              "non-terminal simp: consider replacing it with\n\
-                * `suffices \"expr after simp\" by simpa`\n\
-                * the output of `simp?`\n\
-                [linter.nonTerminalSimp]"
-    let _ ← args.mapM nonTerminalSimp
-  | _ => default
-
-/-- Gets the value of the `linter.nonTerminalSimp` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
-
-@[inherit_doc linter.nonTerminalSimp]
-def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun stx => do
-  if getLinterHash (← getOptions) then
-    nonTerminalSimp stx
-
-initialize addLinter nonTerminalSimpLinter
-
-open Elab Command
-partial
-def warnIfTest : Syntax → CommandElabM Unit
-  | .node _ _ args => do
+def nonTerminalSimp : Syntax → Array Syntax
+  | .node _ _ args => Id.run do
     let relevant := args.map fun t =>
       let tk := t.getKind
       if (tk == `Std.Tactic.seq_focus || "Lean.Parser.Tactic".isPrefixOf tk.toString)
@@ -94,10 +67,27 @@ def warnIfTest : Syntax → CommandElabM Unit
     for i in [:ropt.size] do
       if i + 1 < ropt.size && ! onlyOrNotSimp ropt[i]! then
         simp_followed := simp_followed.push ropt[i]!
-        logWarningAt ropt[i]! "here"
     let (tSeq, new) := args.partition (·.getKind == `Std.Tactic.seq_focus)
-    let _ ← new.mapM warnIfTest
+    simp_followed := simp_followed ++ (new.map nonTerminalSimp).foldl (· ++ ·) #[]
     let tSeq3 := tSeq.map (·.getArg 3)
     for ts in tSeq3 do
-      for sts in ts.getArgs do warnIfTest sts
-  | _ => return default
+      for sts in ts.getArgs do
+        simp_followed := simp_followed ++ nonTerminalSimp sts
+    return simp_followed
+  | _ => default
+
+/-- Gets the value of the `linter.nonTerminalSimp` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
+
+@[inherit_doc linter.nonTerminalSimp]
+def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun stx => do
+  if getLinterHash (← getOptions) then
+    let stxs := nonTerminalSimp stx
+    for s in stxs do
+      logWarningAt s
+        "non-terminal simp: consider replacing it with\n\
+          * `suffices \"expr after simp\" by simpa`\n\
+          * the output of `simp?`\n\
+          [linter.nonTerminalSimp]"
+
+initialize addLinter nonTerminalSimpLinter
