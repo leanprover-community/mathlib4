@@ -44,12 +44,12 @@ theorem coe_powerset (s : Finset α) :
   simp
 #align finset.coe_powerset Finset.coe_powerset
 
---Porting note: remove @[simp], simp can prove it
+-- Porting note: remove @[simp], simp can prove it
 theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s :=
   mem_powerset.2 (empty_subset _)
 #align finset.empty_mem_powerset Finset.empty_mem_powerset
 
---Porting note: remove @[simp], simp can prove it
+-- Porting note: remove @[simp], simp can prove it
 theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
   mem_powerset.2 Subset.rfl
 #align finset.mem_powerset_self Finset.mem_powerset_self
@@ -343,7 +343,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       dsimp [RelEmbedding.coe_toEmbedding]
-      --Porting note: Why is `rw` required here and not `simp`?
+      -- Porting note: Why is `rw` required here and not `simp`?
       rw [mapEmbedding_apply]
       simp [has]
 #align finset.powerset_len_map Finset.powersetCard_map

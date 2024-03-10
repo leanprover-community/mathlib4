@@ -30,13 +30,14 @@ import Mathlib.Topology.Support
 The construction `uniformSpace_of_compact_t2` is not declared as an instance, as it would badly
 loop.
 
-## tags
+## Tags
 
 uniform space, uniform continuity, compact space
 -/
 
 
-open Classical Uniformity Topology Filter UniformSpace Set
+open scoped Classical
+open Uniformity Topology Filter UniformSpace Set
 
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
@@ -221,7 +222,7 @@ theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : �
 @[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
 theorem HasCompactMulSupport.is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
     (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
-  -- porting note: move to src/topology/support.lean once the port is over
+  -- Porting note: move to src/topology/support.lean once the port is over
   intro N hN
   rw [mem_map, mem_cocompact']
   refine' ⟨mulTSupport f, h.isCompact, _⟩

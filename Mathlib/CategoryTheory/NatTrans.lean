@@ -66,8 +66,6 @@ theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) :
 
 namespace NatTrans
 
-attribute [pp_dot] NatTrans.app
-
 /-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
 protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)
 #align category_theory.nat_trans.id CategoryTheory.NatTrans.id
