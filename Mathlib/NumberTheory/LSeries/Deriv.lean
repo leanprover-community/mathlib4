@@ -24,12 +24,12 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 ## Implementation notes
 
 We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log * f`, to avoid
-the problem that this expression does not type-check. Similarly, we make use of the abbreviation
-`LSeries.logPowMul n f` for `log^n * f`.
+the problem that this expression does not type-check.
 -/
 
 -- Should this go into its own file (because it needs `EReal`s, it doesn't fit well
 -- in some existing file), together with versions for the left, upper and lower half-planes?
+-- We can also make it private here.
 /-- An open right half-plane is open in the complex plane. -/
 lemma Complex.isOpen_rightHalfPlane (x : EReal) : IsOpen {z : ℂ | x < z.re} :=
   isOpen_lt continuous_const <| EReal.continuous_coe_iff.mpr continuous_re
@@ -37,15 +37,11 @@ lemma Complex.isOpen_rightHalfPlane (x : EReal) : IsOpen {z : ℂ | x < z.re} :=
 open Complex LSeries
 
 /-!
-### Multiplication by (powers of) log
+### The derivative of an L-series
 -/
 
 /-- The (point-wise) product of `log : ℕ → ℂ` with `f`. -/
 noncomputable abbrev LSeries.logMul (f : ℕ → ℂ) (n : ℕ) : ℂ := log n * f n
-
-/-!
-### The derivative of an L-series
--/
 
 /-- The derivative of the terms of an L-series. -/
 lemma LSeries.hasDerivAt_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
@@ -54,18 +50,8 @@ lemma LSeries.hasDerivAt_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
   · simp only [term_zero, neg_zero, hasDerivAt_const]
   simp_rw [term_of_ne_zero hn, ← neg_div, ← neg_mul, mul_comm, mul_div_assoc, div_eq_mul_inv,
     ← cpow_neg]
-  exact HasDerivAt.const_mul (f n) (by simpa only [mul_comm, ← mul_neg_one (Complex.log n),
-    ← mul_assoc] using (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn))
-
--- /-- The derivative of the terms of an L-series. -/
--- lemma LSeries.deriv_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
---     deriv (fun z ↦ term f z n) s = -(term (logMul f) s n) :=
---   (hasDerivAt_term f n s).deriv
-
--- /-- The derivative of the terms of an L-series. -/
--- lemma LSeries.deriv_term' (f : ℕ → ℂ) (n : ℕ) :
---     deriv (fun z ↦ term f z n) = fun s ↦ -(term (logMul f) s n) :=
---   funext <| deriv_term f n
+  exact HasDerivAt.const_mul (f n) (by simpa only [mul_comm, ← mul_neg_one (log n), ← mul_assoc]
+    using (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn))
 
 /- This lemma proves two things at once, since their proofs are intertwined; we give separate
 non-private lemmas below that extract the two statements. -/
@@ -79,18 +65,17 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
   -- we have a uniform summable bound on `‖term f z ·‖`.
   let S : Set ℂ := {z | y < z.re}
   have h₀ : Summable (fun n ↦ ‖term f x n‖) := summable_norm_iff.mpr hf
-  have h₁ (n) : DifferentiableOn ℂ (fun z ↦ term f z n) S :=
+  have h₁ (n) : DifferentiableOn ℂ (term f · n) S :=
     fun z _ ↦ (hasDerivAt_term f n _).differentiableAt.differentiableWithinAt
   have h₂ : IsOpen S := isOpen_lt continuous_const continuous_re
   have h₃ (n z) (hz : z ∈ S) : ‖term f z n‖ ≤ ‖term f x n‖ :=
     norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
-  have h₅ : S ∈ nhds s := IsOpen.mem_nhds h₂ hys
-  have H := (hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys).summable
-  simp_rw [(hasDerivAt_term f _ _).deriv, summable_neg_iff] at H
-  refine ⟨H, ?_⟩
-  simpa only [← (hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys).tsum_eq,
-    (hasDerivAt_term f _ _).deriv,  tsum_neg]
-    using ((differentiableOn_tsum_of_summable_norm h₀ h₁ h₂ h₃).differentiableAt h₅).hasDerivAt
+  have H := hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys
+  simp_rw [(hasDerivAt_term f _ _).deriv] at H
+  refine ⟨summable_neg_iff.mp H.summable, ?_⟩
+  have H' := differentiableOn_tsum_of_summable_norm h₀ h₁ h₂ h₃
+  simpa only [← H.tsum_eq, tsum_neg]
+    using (H'.differentiableAt <| IsOpen.mem_nhds h₂ hys).hasDerivAt
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then the L-series
 of `f` is differentiable with derivative the negative of the L-series of the point-wise
@@ -126,8 +111,8 @@ lemma abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
     abscissaOfAbsConv (logMul f) = abscissaOfAbsConv f := by
   apply le_antisymm <;> refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun s hs ↦ ?_
   · exact LSeriesSummable.logMul_of_lt_re <| by simp [hs]
-  · refine (LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
-      by simp [hs]).norm.of_norm_bounded_eventually_nat (‖term (logMul f) s ·‖) ?_
+  · refine (LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simp only [ofReal_re, hs])
+      |>.norm.of_norm_bounded_eventually_nat (‖term (logMul f) s ·‖) ?_
     filter_upwards [Filter.eventually_ge_atTop <| max 1 (Nat.ceil (Real.exp 1))] with n hn
     simp only [term_of_ne_zero (show n ≠ 0 by omega), logMul, norm_mul, mul_div_assoc,
       ← natCast_log, norm_real]
@@ -139,22 +124,13 @@ lemma abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
 ### Higher derivatives of L-series
 -/
 
--- /-- The higher derivatives of the terms of an L-series. -/
--- lemma LSeries.iteratedDeriv_term (f : ℕ → ℂ) (m n : ℕ) (s : ℂ) :
---     iteratedDeriv m (fun z ↦ term f z n) s =
---       (-1) ^ m * (term (logMul^[m] f) s n) := by
---   induction' m with m ih generalizing f s
---   · simp
---   · simp [iteratedDeriv_succ', deriv_term' f n, iteratedDeriv_neg, funext <| ih (logMul f),
---       pow_succ]
-
 /-- The abscissa of absolute convergence of the point-wise product of a power of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
 lemma absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
     abscissaOfAbsConv (logMul^[m] f) = abscissaOfAbsConv f := by
   induction' m with n ih
-  · simp
+  · simp only [Nat.zero_eq, Function.iterate_zero, id_eq]
   · simp only [ih, Function.iterate_succ', Function.comp_def, abscissaOfAbsConv_logMul]
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
@@ -163,7 +139,7 @@ protected
 lemma LSeries.iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
     iteratedDeriv m (LSeries f) s = (-1) ^ m * LSeries (logMul^[m] f) s := by
   induction' m with m ih generalizing s
-  · simp
+  · simp only [Nat.zero_eq, iteratedDeriv_zero, pow_zero, Function.iterate_zero, id_eq, one_mul]
   · have ih' : {s | abscissaOfAbsConv f < re s}.EqOn (iteratedDeriv m (LSeries f))
         ((-1) ^ m * LSeries (logMul^[m] f)) := fun _ hs ↦ ih hs
     have := derivWithin_congr ih' (ih h)
@@ -186,4 +162,4 @@ lemma LSeries.differentiableOn (f : ℕ → ℂ) :
 /-- The L-series of `f` is holomorphic on its open half-plane of absolute convergence. -/
 lemma LSeries.analyticOn (f : ℕ → ℂ) :
     AnalyticOn ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
-  (LSeries.differentiableOn f).analyticOn <| isOpen_rightHalfPlane (abscissaOfAbsConv f)
+  (LSeries.differentiableOn f).analyticOn <| isOpen_rightHalfPlane _
