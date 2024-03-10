@@ -1280,8 +1280,8 @@ theorem uniformContinuous_iff {α β} {uα : UniformSpace α} {uβ : UniformSpac
 #align uniform_continuous_iff uniformContinuous_iff
 
 theorem le_iff_uniformContinuous_id {u v : UniformSpace α} :
-    u ≤ v ↔ @UniformContinuous _ _ u v id :=
-  Iff.rfl
+    u ≤ v ↔ @UniformContinuous _ _ u v id := by
+  rw [uniformContinuous_iff, uniformSpace_comap_id, id]
 #align le_iff_uniform_continuous_id le_iff_uniformContinuous_id
 
 theorem uniformContinuous_comap {f : α → β} [u : UniformSpace β] :
