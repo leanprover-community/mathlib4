@@ -96,66 +96,63 @@ theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
 
-@[simp]
+--@[simp]
 theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := by
-  simp only [AddHom.toFun_eq_coe, map_add, LinearMap.coe_toAddHom, LinearMap.add_apply]
+  simp only [map_add, LinearMap.add_apply]
   --bilin_add_left B x y z
 #align bilin_form.add_left LinearMap.BilinForm.add_left
 
-@[simp]
+--@[simp]
 theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := by
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul, LinearMap.smul_apply,
-    smul_eq_mul]
+  simp only [map_smul, LinearMap.smul_apply, smul_eq_mul]
   --bilin_smul_left B a x y
 #align bilin_form.smul_left LinearMap.BilinForm.smul_left
 
-@[simp]
-theorem add_right (x y z : M) : B x (y + z) = B x y + B x z := by
-  simp only [map_add]
-  --bilin_add_right B x y z
+--@[simp]
+theorem add_right (x y z : M) : B x (y + z) = B x y + B x z := map_add _ _ _
 #align bilin_form.add_right LinearMap.BilinForm.add_right
 
-@[simp]
+--@[simp]
 theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := by
   simp only [map_smul, smul_eq_mul]
   --bilin_smul_right B a x y
 #align bilin_form.smul_right LinearMap.BilinForm.smul_right
 
-@[simp]
+--@[simp]
 theorem zero_left (x : M) : B 0 x = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), smul_left, zero_mul]
 #align bilin_form.zero_left LinearMap.BilinForm.zero_left
 
-@[simp]
+--@[simp]
 theorem zero_right (x : M) : B x 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), smul_right, zero_mul]
 #align bilin_form.zero_right LinearMap.BilinForm.zero_right
 
-@[simp]
+--@[simp]
 theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := by
   rw [← @neg_one_smul R₁ _ _, smul_left, neg_one_mul]
 #align bilin_form.neg_left LinearMap.BilinForm.neg_left
 
-@[simp]
+--@[simp]
 theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := by
   rw [← @neg_one_smul R₁ _ _, smul_right, neg_one_mul]
 #align bilin_form.neg_right LinearMap.BilinForm.neg_right
 
-@[simp]
+--@[simp]
 theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := by
   rw [sub_eq_add_neg, sub_eq_add_neg, add_left, neg_left]
 #align bilin_form.sub_left LinearMap.BilinForm.sub_left
 
-@[simp]
+--@[simp]
 theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := by
   rw [sub_eq_add_neg, sub_eq_add_neg, add_right, neg_right]
 #align bilin_form.sub_right LinearMap.BilinForm.sub_right
 
-@[simp]
+--@[simp]
 lemma smul_left_of_tower (r : S) (x y : M) : B (r • x) y = r • B x y := by
   rw [← IsScalarTower.algebraMap_smul R r, smul_left, Algebra.smul_def]
 
-@[simp]
+--@[simp]
 lemma smul_right_of_tower (r : S) (x y : M) : B x (r • y) = r • B x y := by
   rw [← IsScalarTower.algebraMap_smul R r, smul_right, Algebra.smul_def]
 
@@ -217,7 +214,7 @@ instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCo
     SMul α (BilinForm R M) := LinearMap.instSMulLinearMap
 
 @[simp]
-theorem coe_smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] [SMulCommClass R α R]
+theorem coe_smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R]
     (a : α) (B : BilinForm R M) : ⇑(a • B) = a • ⇑B :=
   rfl
 #align bilin_form.coe_smul LinearMap.BilinForm.coe_smul

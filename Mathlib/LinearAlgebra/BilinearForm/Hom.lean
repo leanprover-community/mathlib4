@@ -126,19 +126,19 @@ abbrev toLin' : BilinForm R M →ₗ[ℕ] M →ₗ[ℕ] M →ₗ[R] R :=
 
 variable (B)
 
-@[simp]
+--@[simp]
 theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
     B (∑ i in t, g i) w = ∑ i in t, B (g i) w :=
   (BilinForm.toLin'.toFun B).map_sum₂ t g w
 #align bilin_form.sum_left LinearMap.BilinForm.sum_left
 
-@[simp]
+--@[simp]
 theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
     B w (∑ i in t, g i) = ∑ i in t, B w (g i) :=
   map_sum (BilinForm.toLin'.toFun B w) _ _
 #align bilin_form.sum_right LinearMap.BilinForm.sum_right
 
-@[simp]
+--@[simp]
 theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
     (∑ i in t, B i) v w = ∑ i in t, B i v w := by
   show coeFnAddMonoidHom (∑ i in t, B i) v w = _
@@ -160,7 +160,8 @@ def toLinHomFlip : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R :=
 variable {R₂}
 
 @[simp]
-theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : ⇑((toLinHomFlip R₂).toFun A x) = fun y => A y x :=
+theorem toLin'Flip_apply (A : BilinForm R M) (x : M) :
+    ⇑((toLinHomFlip R₂).toFun A x) = fun y => A y x :=
   rfl
 #align bilin_form.to_lin'_flip_apply LinearMap.BilinForm.toLin'Flip_apply
 
