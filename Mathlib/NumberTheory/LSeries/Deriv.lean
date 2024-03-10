@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Data.Complex.ExponentialBounds
 import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
