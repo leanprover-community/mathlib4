@@ -187,8 +187,13 @@ def LinearMap.toBilinAux (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) : BilinF
 #align linear_map.to_bilin_aux LinearMap.toBilinAux
 
 /-- Bilinear forms are linearly equivalent to maps with two arguments that are linear in both. -/
-def BilinForm.toLin : BilinForm R₂ M₂ ≃ₗ[R₂] M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂ := LinearEquiv.refl _ _
-#align bilin_form.to_lin BilinForm.toLin
+def LinearMap.BilinForm.toLin : BilinForm R₂ M₂ ≃ₗ[R₂] M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂ :=
+  { BilinForm.toLinHom R₂ with
+    invFun := LinearMap.toBilinAux
+    left_inv := fun _ => rfl
+    right_inv := fun _ => rfl }
+--LinearEquiv.refl _ _
+#align bilin_form.to_lin LinearMap.BilinForm.toLin
 
 /-- A map with two arguments that is linear in both is linearly equivalent to bilinear form. -/
 def LinearMap.toBilin : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) ≃ₗ[R₂] BilinForm R₂ M₂ :=
@@ -208,10 +213,10 @@ theorem LinearMap.toBilin_symm :
 #align linear_map.to_bilin_symm LinearMap.toBilin_symm
 
 @[simp]
-theorem BilinForm.toLin_symm :
+theorem LinearMap.BilinForm.toLin_symm :
     (BilinForm.toLin.symm : _ ≃ₗ[R₂] BilinForm R₂ M₂) = LinearMap.toBilin :=
   LinearMap.toBilin.symm_symm
-#align bilin_form.to_lin_symm BilinForm.toLin_symm
+#align bilin_form.to_lin_symm LinearMap.BilinForm.toLin_symm
 
 @[simp]
 theorem LinearMap.toBilin_apply (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) (x y : M₂) :
@@ -220,9 +225,9 @@ theorem LinearMap.toBilin_apply (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) (
 
 
 @[simp]
-theorem BilinForm.toLin_apply (x : M₂) : (BilinForm.toLin B₂ x) = B₂ x :=
+theorem LinearMap.BilinForm.toLin_apply (x : M₂) : (BilinForm.toLin B₂ x) = B₂ x :=
   rfl
-#align bilin_form.to_lin_apply BilinForm.toLin_apply
+#align bilin_form.to_lin_apply LinearMap.BilinForm.toLin_apply
 
 
 end EquivLin
