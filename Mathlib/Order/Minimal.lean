@@ -174,7 +174,7 @@ theorem maximals_eq_minimals [IsSymm α r] : maximals r s = minimals r s := by
 
 variable {r r₁ r₂ s t a}
 
--- Porting note: todo: use `h.induction_on`
+-- Porting note (#11215): TODO: use `h.induction_on`
 theorem Set.Subsingleton.maximals_eq (h : s.Subsingleton) : maximals r s = s := by
   rcases h.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩)
   exacts [minimals_empty _, maximals_singleton _ _]

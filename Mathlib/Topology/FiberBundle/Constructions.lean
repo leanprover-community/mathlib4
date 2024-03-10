@@ -30,7 +30,8 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 open TopologicalSpace Filter Set Bundle
 
-open Topology Classical Bundle
+open scoped Classical
+open Topology Bundle
 
 /-! ### The trivial bundle -/
 

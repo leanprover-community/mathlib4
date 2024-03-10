@@ -13,7 +13,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 -/
 
 
-open Filter Germ Topology Classical
+open scoped Classical
+open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
 def Hyperreal : Type :=
@@ -149,7 +150,7 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
 def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 #align hyperreal.of_seq Hyperreal.ofSeq
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
@@ -525,7 +526,8 @@ theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infini
   cases le_total 0 x <;> simp [*, abs_of_nonneg, abs_of_nonpos, infinite_neg]
 #align hyperreal.infinite_iff_infinite_abs Hyperreal.infinite_abs_iffₓ
 
--- Porting note: swapped LHS with RHS; todo: make it a `simp` lemma
+-- Porting note: swapped LHS with RHS;
+-- Porting note (#11215): TODO: make it a `simp` lemma
 @[simp] theorem infinitePos_abs_iff_infinite {x : ℝ*} : InfinitePos |x| ↔ Infinite x :=
   infinitePos_abs_iff_infinite_abs.trans infinite_abs_iff
 #align hyperreal.infinite_iff_infinite_pos_abs Hyperreal.infinitePos_abs_iff_infiniteₓ
@@ -903,7 +905,7 @@ theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * 
 end Hyperreal
 
 /-
-Porting note: todo: restore `positivity` plugin
+Porting note (#11215): TODO: restore `positivity` plugin
 
 namespace Tactic
 

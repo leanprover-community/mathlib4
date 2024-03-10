@@ -106,7 +106,8 @@ end nonunits
 
 namespace NormedRing
 
-open Classical BigOperators
+open scoped Classical
+open BigOperators
 
 open Asymptotics Filter Metric Finset Ring
 
