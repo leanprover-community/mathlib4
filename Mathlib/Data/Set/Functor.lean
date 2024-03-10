@@ -6,6 +6,7 @@ Authors: Leonardo de Moura
 import Mathlib.Data.Set.Lattice
 import Mathlib.Init.Set
 import Mathlib.Control.Basic
+import Mathlib.Lean.Expr.ExtraRecognizers
 
 #align_import data.set.functor from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -114,6 +115,23 @@ We define this coercion here.  -/
 
 /-- Coercion using `(Subtype.val '' ·)` -/
 instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
+
+namespace Notation
+
+open Lean PrettyPrinter Delaborator SubExpr in
+/--
+If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambient type are
+represented with `↑`.
+-/
+@[scoped delab app.Set.image]
+def delab_set_image_subtype : Delab := whenPPOption getPPCoercions do
+  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
+  guard <| f.isAppOfArity ``Subtype.val 2
+  let some _ := α.coeTypeSet? | failure
+  let e ← withAppArg delab
+  `(↑$e)
+
+end Notation
 
 /-- The coercion from `Set.monad` as an instance is equal to the coercion defined above. -/
 theorem coe_eq_image_val (t : Set s) :

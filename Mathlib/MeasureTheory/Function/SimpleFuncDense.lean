@@ -36,7 +36,8 @@ by a sequence of simple functions.
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
-open Classical Topology ENNReal MeasureTheory BigOperators
+open scoped Classical
+open Topology ENNReal MeasureTheory BigOperators
 
 variable {α β ι E F 𝕜 : Type*}
 

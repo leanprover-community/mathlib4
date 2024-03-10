@@ -36,7 +36,8 @@ type class and the main results are the instances `UniformSpace.Completion.Field
 
 noncomputable section
 
-open Classical uniformity Topology
+open scoped Classical
+open uniformity Topology
 
 open Set UniformSpace UniformSpace.Completion Filter
 
@@ -159,7 +160,9 @@ instance instField : Field (hat K) :=
     (by infer_instance : CommRing (hat K)) with
     exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((uniformEmbedding_coe K).inj h)⟩
     mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
-    inv_zero := by simp only [Inv.inv, ite_true] }
+    inv_zero := by simp only [Inv.inv, ite_true]
+    -- TODO: use a better defeq
+    qsmul := qsmulRec _ }
 #align uniform_space.completion.field UniformSpace.Completion.instField
 
 instance : TopologicalDivisionRing (hat K) :=

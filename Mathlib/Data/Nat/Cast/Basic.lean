@@ -175,7 +175,7 @@ theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, 
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
---Porting note: new theorem
+-- Porting note: new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
@@ -235,7 +235,7 @@ def multiplesHom : α ≃ (ℕ →+ α) where
 
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-@[to_additive existing multiplesHom]
+@[to_additive existing]
 def powersHom : α ≃ (Multiplicative ℕ →* α) :=
   Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 
@@ -246,7 +246,7 @@ variable {α}
 lemma multiplesHom_apply (x : α) (n : ℕ) : multiplesHom α x n = n • x := rfl
 #align multiples_hom_apply multiplesHom_apply
 
-@[to_additive existing (attr := simp) multiplesHom_apply]
+@[to_additive existing (attr := simp)]
 lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
     powersHom α x n = x ^ Multiplicative.toAdd n := rfl
 #align powers_hom_apply powersHom_apply
@@ -254,7 +254,7 @@ lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
 lemma multiplesHom_symm_apply (f : ℕ →+ α) : (multiplesHom α).symm f = f 1 := rfl
 #align multiples_hom_symm_apply multiplesHom_symm_apply
 
-@[to_additive existing (attr := simp) multiplesHom_symm_apply]
+@[to_additive existing (attr := simp)]
 lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
     (powersHom α).symm f = f (Multiplicative.ofAdd 1) := rfl
 #align powers_hom_symm_apply powersHom_symm_apply
