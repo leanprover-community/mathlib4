@@ -143,7 +143,7 @@ theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedu
 #align multiset.nodup.le_dedup_iff_le Multiset.Nodup.le_dedup_iff_le
 
 theorem card_eq_sum_count {α : Type*} {s : Multiset α} [DecidableEq α] :
- sum (Multiset.map (fun x ↦ count x ↑s) (s.dedup)) = card s := by
+    sum (Multiset.map (fun x ↦ count x ↑s) (s.dedup)) = card s := by
   induction' s using Multiset.induction_on with a s ih
   · simp
   · simp_rw [count_cons, sum_map_add, card_cons]
