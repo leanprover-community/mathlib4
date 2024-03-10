@@ -58,15 +58,15 @@ lemma LSeries.hasDerivAt_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
   exact HasDerivAt.const_mul (f n) (by simpa only [mul_comm, ← mul_neg_one (Complex.log n),
     ← mul_assoc] using (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn))
 
-/-- The derivative of the terms of an L-series. -/
-lemma LSeries.deriv_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
-    deriv (fun z ↦ term f z n) s = -(term (logMul f) s n) :=
-  (hasDerivAt_term f n s).deriv
+-- /-- The derivative of the terms of an L-series. -/
+-- lemma LSeries.deriv_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
+--     deriv (fun z ↦ term f z n) s = -(term (logMul f) s n) :=
+--   (hasDerivAt_term f n s).deriv
 
-/-- The derivative of the terms of an L-series. -/
-lemma LSeries.deriv_term' (f : ℕ → ℂ) (n : ℕ) :
-    deriv (fun z ↦ term f z n) = fun s ↦ -(term (logMul f) s n) :=
-  funext <| deriv_term f n
+-- /-- The derivative of the terms of an L-series. -/
+-- lemma LSeries.deriv_term' (f : ℕ → ℂ) (n : ℕ) :
+--     deriv (fun z ↦ term f z n) = fun s ↦ -(term (logMul f) s n) :=
+--   funext <| deriv_term f n
 
 /- This lemma proves two things at once, since their proofs are intertwined; we give separate
 non-private lemmas below that extract the two statements. -/
@@ -87,9 +87,10 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
     norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
   have h₅ : S ∈ nhds s := IsOpen.mem_nhds h₂ hys
   have H := (hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys).summable
-  simp_rw [deriv_term, summable_neg_iff] at H
+  simp_rw [(hasDerivAt_term f _ _).deriv, summable_neg_iff] at H
   refine ⟨H, ?_⟩
-  simpa only [← (hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys).tsum_eq, deriv_term, tsum_neg]
+  simpa only [← (hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys).tsum_eq,
+    (hasDerivAt_term f _ _).deriv,  tsum_neg]
     using ((differentiableOn_tsum_of_summable_norm h₀ h₁ h₂ h₃).differentiableAt h₅).hasDerivAt
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then the L-series
@@ -119,30 +120,21 @@ lemma LSeriesSummable.logMul_of_lt_re {f : ℕ → ℂ} {s : ℂ} (h : abscissaO
     LSeriesSummable (logMul f) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).1
 
-/-- If the L-series of the point-wise product of `log` with `f` is summable at `s`, then
-so is the L-series of `f`. -/
-lemma LSeriesSummable.of_logMul {f : ℕ → ℂ} {s : ℂ} (h : LSeriesSummable (logMul f) s) :
-    LSeriesSummable f s := by
-  refine h.norm.of_norm_bounded_eventually_nat (fun n ↦ ‖term (logMul f) s n‖) ?_
-  simp only [norm_div, natCast_log, norm_mul, Filter.eventually_atTop]
-  -- We use that `1 ≤ log n` for `n ≥ 3`.
-  refine ⟨3, fun n hn ↦ ?_⟩
-  simp only [term_of_ne_zero (show n ≠ 0 by omega), logMul, norm_mul, mul_div_assoc]
-  refine le_mul_of_one_le_left (norm_nonneg _) ?_
-  rw [← natCast_log, norm_eq_abs, abs_ofReal, ← Real.log_exp 1,
-    _root_.abs_of_nonneg <| Real.log_nonneg <| by norm_cast; linarith]
-  exact Real.log_le_log (Real.exp_pos 1) <| (Real.exp_one_lt_d9.trans <| by norm_num).le.trans <|
-    (show (3 : ℝ) ≤ n by exact_mod_cast hn)
-
 /-- The abscissa of absolute convergence of the point-wise product of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
 lemma abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
-    abscissaOfAbsConv (logMul f) = abscissaOfAbsConv f :=
-  le_antisymm (abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable'
-      fun y hy ↦ LSeriesSummable.logMul_of_lt_re <| by simp only [ofReal_re, hy]) <|
-    abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun y hy ↦
-      (LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simp only [ofReal_re, hy]).of_logMul
+    abscissaOfAbsConv (logMul f) = abscissaOfAbsConv f := by
+  apply le_antisymm <;> refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun s hs ↦ ?_
+  · exact LSeriesSummable.logMul_of_lt_re <| by simp [hs]
+  · refine (LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
+      by simp [hs]).norm.of_norm_bounded_eventually_nat (‖term (logMul f) s ·‖) ?_
+    filter_upwards [Filter.eventually_ge_atTop <| max 1 (Nat.ceil (Real.exp 1))] with n hn
+    simp only [term_of_ne_zero (show n ≠ 0 by omega), logMul, norm_mul, mul_div_assoc,
+      ← natCast_log, norm_real]
+    refine le_mul_of_one_le_left (norm_nonneg _) (.trans ?_ <| Real.le_norm_self _)
+    rw [← Real.log_exp 1]
+    exact Real.log_le_log (Real.exp_pos 1) <| Nat.ceil_le.mp <| (le_max_right _ _).trans hn
 
 /-!
 ### Higher derivatives of L-series
