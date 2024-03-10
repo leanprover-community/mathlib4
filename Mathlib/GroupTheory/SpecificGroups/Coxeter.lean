@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Newell Jensen
+Authors: Newell Jensen, Mitchell Lee
 -/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.Data.ZMod.Defs
 
 /-!
 # Coxeter Systems
@@ -463,3 +464,186 @@ theorem isCoxeter_H₄ : IsCoxeter H₄ where
   off_diagonal := by decide
 
 end CoxeterMatrix
+
+namespace CoxeterGroup
+
+open List Matrix Function
+-- The simple reflection of CoxeterGroup M corresponding to the index i.
+def s (i : B) : CoxeterGroup M := PresentedGroup.of i
+
+def wordProd (α : List B) : CoxeterGroup M := prod (map (s M) α)
+variable {M : Matrix B B ℕ}
+
+@[simp] theorem wordProd_append (α β : List B) :
+    wordProd M (α ++ β) = (wordProd M α) * (wordProd M β) := by
+  sorry
+
+variable (cM : IsCoxeter M)
+
+theorem mk_eq_wordProd_map (L : List (B × Bool)) :
+    QuotientGroup.mk' _ (FreeGroup.mk L) = wordProd M (map Prod.fst L) := by
+  sorry
+
+theorem wordProd_surjective : Surjective (wordProd M) := by
+  sorry
+
+theorem wordProd_rev (α : List B) :
+    wordProd M (reverse α) = (wordProd M α)⁻¹ := by
+  sorry
+
+def length (w : CoxeterGroup M) : ℕ := sorry
+
+alias ℓ := length
+
+theorem length_one : ℓ (1 : CoxeterGroup M) = 0 := by
+  sorry
+
+theorem length_eq_zero_iff {w : CoxeterGroup M} : ℓ w = 0 ↔ w = 1 := by
+  sorry
+
+theorem length_simple (i : B) : ℓ (s M i) = 1 := by
+  sorry
+
+theorem length_eq_one_iff {w : CoxeterGroup M} : ℓ w = 1 ↔ ∃ i : B, w = s M i := by
+  sorry
+
+theorem length_inv (w : CoxeterGroup M) : ℓ (w⁻¹) = ℓ w := by
+  sorry
+
+theorem length_mul_le (w₁ w₂ : CoxeterGroup M) :
+    ℓ (w₁ * w₂) ≤ ℓ w₁ + ℓ w₂ := by
+  sorry
+
+theorem length_mul_ge (w₁ w₂ : CoxeterGroup M) :
+    ℓ (w₁ * w₂) ≥ max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) := by
+  sorry
+
+def lengthParity : CoxeterGroup M →* Multiplicative (ZMod 2) := sorry
+
+theorem parity_length_eq :
+    Multiplicative.toAdd ∘ (lengthParity (M := M)).toFun = ((↑) : ℕ → ZMod 2) ∘ ℓ := by
+  sorry
+
+theorem parity_length_eq' (w : CoxeterGroup M) :
+    Multiplicative.toAdd (lengthParity (M := M) w) = ((↑) : ℕ → ZMod 2) (ℓ w) := by
+  sorry
+
+theorem parity_length_mul (w₁ w₂ : CoxeterGroup M) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
+  sorry
+
+theorem length_mul_simple (w : CoxeterGroup M) (i : B) :
+    ℓ (w * s M i) = ℓ w + 1 ∨ ℓ (w * s M i) + 1 = ℓ w := by
+  sorry
+
+theorem length_simple_mul (w : CoxeterGroup M) (i : B) :
+    ℓ (s M i * w) = ℓ w + 1 ∨ ℓ (s M i * w) + 1 = ℓ w := by
+  sorry
+
+-- Reduced words
+
+def IsReduced (M : Matrix B B ℕ) (α : List B) : Prop := ℓ (wordProd M α) = List.length α
+
+-- Reflections, inversions, inversion sequences
+
+def IsReflection (t : CoxeterGroup M) : Prop := ∃ w : CoxeterGroup M, ∃ i : B, t = w * s M i * w⁻¹
+def IsLeftInversion (w t : CoxeterGroup M) : Prop := IsReflection t ∧ ℓ (t * w) < ℓ w
+def IsRightInversion (w t : CoxeterGroup M) : Prop := IsReflection t ∧ ℓ (w * t) < ℓ w
+
+def leftInvSeq (M : Matrix B B ℕ) (α : List B) : List (CoxeterGroup M) := sorry
+def rightInvSeq (M : Matrix B B ℕ) (α : List B) : List (CoxeterGroup M) := sorry
+
+theorem length_leftInvSeq (α : List B) : (leftInvSeq M α).length = α.length := by
+  sorry
+
+theorem length_rightInvSeq (α : List B) : (rightInvSeq M α).length = α.length := by
+  sorry
+
+theorem leftInvSeq_rev (α : List B) : leftInvSeq M (α.reverse) = (rightInvSeq M α).reverse := by
+  sorry
+
+theorem rightInvSeq_rev (α : List B) : rightInvSeq M (α.reverse) = (leftInvSeq M α).reverse := by
+  sorry
+
+theorem leftInvSeq_take (α : List B) (i : ℕ) :
+    leftInvSeq M (α.take i) = (leftInvSeq M α).take i := by
+  sorry
+
+theorem rightInvSeq_drop (α : List B) (i : ℕ) :
+    rightInvSeq M (α.drop i) = (rightInvSeq M α).drop i := by
+  sorry
+
+theorem leftInvSeq_i_mul (α : List B) (i : Fin (leftInvSeq M α).length) :
+    (leftInvSeq M α)[i] * wordProd M α = wordProd M (α.eraseIdx i) := by
+  sorry
+
+theorem rightInvSeq_i_mul (α : List B) (i : Fin (rightInvSeq M α).length) :
+    wordProd M α * (rightInvSeq M α)[i] = wordProd M (α.eraseIdx i) := by
+  sorry
+
+theorem prod_leftInvSeq (α : List B) : prod (leftInvSeq M α) = (wordProd M α)⁻¹ := by
+  sorry
+
+theorem prod_rightInvSeq (α : List B) : prod (rightInvSeq M α) = (wordProd M α)⁻¹ := by
+  sorry
+
+private lemma nodup_leftInvSeq_of_reduced (α : List B) (rα : IsReduced M α) :
+    List.Nodup (leftInvSeq M α) := by
+  sorry
+
+private lemma nodup_rightInvSeq_of_reduced (α : List B) (rα : IsReduced M α) :
+    List.Nodup (rightInvSeq M α) := by
+  sorry
+
+theorem left_exchange_property (α : List B) (t : CoxeterGroup M) (rα : IsReduced M α) :
+    List.TFAE [
+      IsLeftInversion (wordProd M α) t,
+      t ∈ leftInvSeq M α,
+      ∃ i < α.length, t * (wordProd M α) = wordProd M (α.eraseIdx i)
+    ] := by
+  sorry
+
+theorem right_exchange_property (α : List B) (t : CoxeterGroup M) (rα : IsReduced M α) :
+    List.TFAE [
+      IsRightInversion (wordProd M α) t,
+      t ∈ rightInvSeq M α,
+      ∃ i < α.length, (wordProd M α) * t = wordProd M (α.eraseIdx i)
+    ] := by
+  sorry
+
+theorem nodup_leftInvSeq_iff (α : List B) :
+    List.Nodup (leftInvSeq M α) ↔ IsReduced M α := by
+  sorry
+
+theorem nodup_rightInvSeq_iff (α : List B) :
+    List.Nodup (rightInvSeq M α) ↔ IsReduced M α := by
+  sorry
+
+theorem deletion_property (α : List B) (nrα : ¬IsReduced M α) :
+    ∃ i < α.length, ∃ j < i, wordProd M ((α.eraseIdx i).eraseIdx j) = wordProd M α := by
+  sorry
+
+/-
+TODO: Set of left inversions, set of right inversions of an element.
+Long element has all reflections as inversions. Long element is an involution.
+Properties of Coxeter number.
+Matsumoto's theorem.
+The weak order. Bruhat order.
+Simple reflections are distinct.
+Irreducibility. Irreducible components.
+Parabolic subgroups.
+The standard geometric representation.
+Small roots.
+Coxeter groups are automatic.
+Associated hyperplane arrangements and partition lattices and their characteristic polynomials.
+Poincare series.
+Combinatorial descriptions.
+Classification of irreducible finite Coxeter groups.
+Classification of irreducible affine Coxeter groups.
+Folding.
+Convex sets.
+Coxeter elements, c-sorting words.
+Powers of Coxeter elements in infinite groups are reduced.
+Classification of affine futuristic Coxeter groups.
+-/
+
+end CoxeterGroup
