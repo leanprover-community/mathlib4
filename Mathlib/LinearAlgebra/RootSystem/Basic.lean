@@ -38,7 +38,6 @@ noncomputable section
 
 variable {ι R M N : Type*}
   [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-variable (P : RootPairing ι R M N) (i : ι)
 
 namespace RootPairing
 
@@ -189,6 +188,36 @@ lemma IsOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
     root_coroot_eq_pairing, smul_eq_mul, mul_zero, sub_zero]
   exact sub_right_comm v ((P.toLin v) (P.coroot j) • P.root j)
       ((P.toLin v) (P.coroot i) • P.root i)
+/-!
+lemma coxeterWeight_one (h: coxeterWeight P i j = 1) :
+    orderOf (P.reflection i * P.reflection j) = 3 := by
+  sorry
+
+lemma coxeterWeight_two (h: coxeterWeight P i j = 2) :
+    orderOf (P.reflection i * P.reflection j) = 4 := by
+  sorry
+
+lemma coxeterWeight_three (h: coxeterWeight P i j = 3) :
+    orderOf (P.reflection i * P.reflection j) = 6 := by
+  sorry
+
+
+lemma Commute_IsOrthogonal (h : Commute (P.reflection i) (P.reflection j)) :
+    IsOrthogonal P i j := by
+  rw [IsOrthogonal, pairing, pairing]
+  have hx : ∀ (x : M), (P.reflection i) (P.reflection j x) =
+      (P.reflection j) (P.reflection i x) := by
+    intro x
+    rw [Commute, SemiconjBy] at h
+    rw [← @reflection_mul, h, reflection_mul]
+
+  -- try applying h to P.root i and P.root j
+  sorry
+-/
+
+-- parallel, non-syemmetrizable, definite, indefinite, ultraparallel
+
+--lemma parallel_linearIndependent
 
 end pairs
 

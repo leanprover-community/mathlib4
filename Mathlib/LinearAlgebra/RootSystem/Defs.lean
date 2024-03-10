@@ -5,7 +5,6 @@ Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
 import Mathlib.LinearAlgebra.PerfectPairing
 import Mathlib.LinearAlgebra.Reflection
-import Mathlib.LinearAlgebra.TensorProduct
 
 /-!
 # Root data and root systems
@@ -15,7 +14,7 @@ of both concepts, called a root pairing.  A typical example of a root pairing is
 quadratic form and taking a union of spheres of various radii.  When integrality conditions are
 imposed, the property that the set of roots is closed under reflection forces the radii to be small.
 
-## Main definitions / results:
+## Main definitions:
 
  * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
    `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`
@@ -28,6 +27,13 @@ imposed, the property that the set of roots is closed under reflection forces th
    between a root and coroot is always an integer.
  * `RootPairing.IsReduced`: A root pairing is said to be reduced if it never contains the double of
    a root.
+
+## Todo
+
+* Introduce the Weyl Group
+* Base change of root pairings.
+* Isomorphism of root pairings.
+* Crystallographic root systems are isomorphic to base changes of root systems over ℤ?
 
 ## Implementation details
 
@@ -54,12 +60,6 @@ chosen design enjoys: by introducing the indexing type `ι`, one does not have t
 providing the user with the additional definitional power to specify an indexing type `ι` is a
 benefit and the junk-value pattern is a cost.
 
-## ToDo
-
-Base change of root pairings. (How do I get tensor product to work?)
-Isomorphism of root pairings.
-Crystallographic root systems are isomorphic to base changes of root systems over ℤ?
-More about the Weyl group.
 -/
 
 open Set Function
@@ -142,35 +142,39 @@ def WeylGroup : Subgroup (M ≃ₗ[R] M) :=
 
 section pairs
 
-variable (i j : ι)
+variable (j : ι)
 
 /-- This is the pairing between roots and coroots. -/
 def pairing : R := P.toLin (P.root i) (P.coroot j)
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
-finite.  It is `4 cos² θ` where `θ` describes the dihedral angle between hyperplanes. -/
+finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
 def coxeterWeight : R := pairing P i j * pairing P j i
 
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 
-/-- A pair of roots is nonsymmetrizable if exactly one is fixed by the other's reflection.  This is
-an obstruction to the existence of a Weyl-invariant form. -/
+/-- A pair of roots is nonsymmetrizable if the existence of a Weyl-invariant form on their span is
+obstructed.  When `R` has no zero divisors, this happens when exactly one root is fixed by the
+other's reflection. -/
 def IsNonSymmetrizable : Prop := coxeterWeight P i j = 0 ∧ ¬ IsOrthogonal P i j
 
 /-- Two roots are parallel if their Coxeter weight is exactly 4.  A linearly independent pair of
 parallel roots generates an infinite dihedral group of reflections on their span, and their span
 has an invariant singular line. -/
-def isParallel : Prop := coxeterWeight P i j = 4
+def IsParallel : Prop := coxeterWeight P i j = 4
 
-variable [LinearOrderedCommRing R]
+variable [LT R]
 
 /-- An imaginary pair is one whose Coxeter weight is negative.  Any symmetrization yields an
-invariant form where one of the roots has negative norm and the other has positive norm. -/
+invariant form where one of the roots has negative norm and the other has positive norm. Root
+systems with imaginary pairs are not often considered, since the geometry of reflection is
+cumbersome. -/
 def IsImaginary : Prop := coxeterWeight P i j < 0
 
-/-- A pair of roots is definite if reflection induces a definite invariant form on the span, unique
-up to scalars.  This happens precisely when the Coxeter weight is strictly between `0` and `4`. -/
+/-- A pair of roots is definite if there is a unique (up to scalars) definite reflection-invariant
+form on their span. This happens precisely when the Coxeter weight is strictly between `0` and `4`.
+-/
 def IsDefinite : Prop := 0 < coxeterWeight P i j ∧ coxeterWeight P i j < 4
 
 /-- A pair of roots is ultraparallel if its Coxeter weight is strictly greater than 4.
