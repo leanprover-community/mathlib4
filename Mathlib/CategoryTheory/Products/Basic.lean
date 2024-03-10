@@ -73,7 +73,10 @@ theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
   · rintro ⟨⟨g₁, hfg₁, hgf₁⟩, ⟨g₂, hfg₂, hgf₂⟩⟩
     dsimp at hfg₁ hgf₁ hfg₂ hgf₂
     refine' ⟨⟨(g₁, g₂), _, _⟩⟩
-    repeat { simp; constructor; assumption; assumption }
+    all_goals
+      simp only [prod_Hom, prod_comp, prod_id, Prod.mk.injEq]
+      constructor <;>
+      assumption
 #align category_theory.is_iso_prod_iff CategoryTheory.isIso_prod_iff
 
 section

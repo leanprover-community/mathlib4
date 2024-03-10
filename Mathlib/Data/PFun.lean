@@ -286,7 +286,7 @@ theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
           injection h₂.symm.trans e with h; simp [h]
         next e =>
           injection h₂.symm.trans e
-    · simp [fix] at h₃
+    · simp only [fix, Part.mem_assert_iff] at h₃
       cases' h₃ with h₃ h₄
       refine' ⟨⟨_, fun y h' => _⟩, _⟩
       · injection Part.mem_unique h h' with e

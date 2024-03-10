@@ -157,7 +157,7 @@ theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
     (by
       intro h
       cases' m with m
-      · simp [zero_add] at h
+      · simp only [zero_eq, zero_add] at h
         exact Or.inr h
       exact Or.inl (succ_pos _))
     (by
