@@ -533,7 +533,7 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
 #align sym.mem_append_iff Sym.mem_append_iff
 
 /--
-Defines an equivalence between `α` and `Sym α 1`, where `α` is a type and `Sym α 1` is the type of symmetric lists of length 1.
+Defines an equivalence between `α` and `Sym α 1`.
 -/
 @[simps apply]
 def oneEquiv : α ≃ Sym α 1 where
