@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
+import Std.Data.Array.Basic
 
 /-!
 #  The non-terminal `simp` linter
@@ -78,3 +79,49 @@ def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun stx => do
     nonTerminalSimp stx
 
 initialize addLinter nonTerminalSimpLinter
+
+open Elab Command
+partial
+def warnIfTest : Syntax → CommandElabM Unit
+  | stx@(.node _ _ args) => do
+--    let tot := (args.map warnIfTest).foldl (· ++ ·)
+--    dbg_trace stx.getKind
+--    let relevant := args.filter fun t =>
+--      let tk := t.getKind
+--      (tk == `Std.Tactic.seq_focus || "Lean.Parser.Tactic".isPrefixOf tk.toString)
+    let relevant := args.map fun t =>
+      let tk := t.getKind
+      if (tk == `Std.Tactic.seq_focus || "Lean.Parser.Tactic".isPrefixOf tk.toString)
+      then some t
+      else none
+    let ropt := relevant.reduceOption
+    let mut simp_followed := #[]
+    for i in [:ropt.size] do
+      if i + 1 < ropt.size && ! onlyOrNotSimp ropt[i]! then
+        simp_followed := simp_followed.push ropt[i]!
+        logWarningAt ropt[i]! "here"
+    dbg_trace "simp_followed: {simp_followed}"
+    dbg_trace ropt.map (·.getKind)
+--    let trueFollowedByFalse? := ropt.map (! onlyOrNotSimp ·)
+--    dbg_trace "here: {trueFollowedByFalse?}: {trueFollowedByFalse trueFollowedByFalse?.toList}"
+--    let filtr := ropt.filter (·.getKind == `Std.Tactic.seq_focus)
+--    if filtr != #[] then
+--      dbg_trace "**  found one {args.size}\n\n {filtr}"
+--      return (← args.mapM warnIfTest).foldl (· ++ ·) default
+--    else
+--      return (← args.mapM warnIfTest).foldl (· ++ ·) default
+    let (tSeq, new) := args.partition (·.getKind == `Std.Tactic.seq_focus)
+    let _ ← new.mapM warnIfTest
+--    let _ ← tSeq.mapM warnIfTest
+    dbg_trace "tSeq: {tSeq}\nArg 3: {tSeq.map (·.getArg 3)}"
+    let tSeq3 := tSeq.map (·.getArg 3)
+    for ts in tSeq3 do
+      for sts in ts.getArgs do warnIfTest sts
+--      let tArgs := ts.getArgs
+--      for i in [:tArgs.size / 2 + 1] do
+--        logInfo (m!"inspect: '{tArgs[2 * i]!}'\n\n".compose (treeR tArgs[2 * i]! (sep := "|   ")))
+--
+--        dbg_trace "arg {i}: {tArgs[2 * i]!}"
+--        warnIfTest tArgs[2 * i]!
+--    return (← args.mapM warnIfTest).foldl (· ++ ·) default
+  | _ => return default
