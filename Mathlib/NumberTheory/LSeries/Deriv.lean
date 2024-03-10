@@ -51,14 +51,12 @@ noncomputable abbrev LSeries.logMul (f : ℕ → ℂ) (n : ℕ) : ℂ := log n *
 /-- The derivative of the terms of an L-series. -/
 lemma LSeries.hasDerivAt_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
     HasDerivAt (fun z ↦ term f z n) (-(term (logMul f) s n)) s := by
-  rcases n.eq_zero_or_pos with rfl | hn
+  rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero, neg_zero, hasDerivAt_const]
-  simp only [term_of_ne_zero hn.ne']
-  rw [← neg_div, ← neg_mul, mul_comm, mul_div_assoc]
-  simp_rw [div_eq_mul_inv, ← cpow_neg]
-  refine HasDerivAt.const_mul (f n) ?_
-  rw [mul_comm, ← mul_neg_one (Complex.log n), ← mul_assoc]
-  exact (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn.ne')
+  simp_rw [term_of_ne_zero hn, ← neg_div, ← neg_mul, mul_comm, mul_div_assoc, div_eq_mul_inv,
+    ← cpow_neg]
+  exact HasDerivAt.const_mul (f n) (by simpa only [mul_comm, ← mul_neg_one (Complex.log n),
+    ← mul_assoc] using (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn))
 
 /-- The derivative of the terms of an L-series. -/
 lemma LSeries.deriv_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
@@ -70,33 +68,29 @@ lemma LSeries.deriv_term' (f : ℕ → ℂ) (n : ℕ) :
     deriv (fun z ↦ term f z n) = fun s ↦ -(term (logMul f) s n) :=
   funext <| deriv_term f n
 
-private
-lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s : ℂ}
+/- This lemma proves two things at once, since their proofs are intertwined; we give separate
+non-private lemmas below that extract the two statements. -/
+private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s : ℂ}
     (h : abscissaOfAbsConv f < s.re) :
-    LSeriesSummable (logMul f) s ∧ HasDerivAt (LSeries f) (- LSeries (logMul f) s) s := by
+    LSeriesSummable (logMul f) s ∧ HasDerivAt (LSeries f) (-LSeries (logMul f) s) s := by
   -- The L-series of `f` is summable at some real `x < re s`.
-  obtain ⟨x, h', hf⟩ := LSeriesSummable_lt_re_of_abscissaOfAbsConv_lt_re h
-  -- We work in the right half-plane `re z > (x + re s)/2`, where we have a uniform
-  -- summable bound on `‖term f z ·‖`.
-  let S : Set ℂ := {z | (x + s.re) / 2 < z.re}
+  obtain ⟨x, hxs, hf⟩ := LSeriesSummable_lt_re_of_abscissaOfAbsConv_lt_re h
+  obtain ⟨y, hxy, hys⟩ := exists_between hxs
+  -- We work in the right half-plane `y < re z`, for some `y` such that `x < y < re s`, on which
+  -- we have a uniform summable bound on `‖term f z ·‖`.
+  let S : Set ℂ := {z | y < z.re}
   have h₀ : Summable (fun n ↦ ‖term f x n‖) := summable_norm_iff.mpr hf
-  have h₁ : IsOpen S := isOpen_lt continuous_const continuous_re
-  have h₂ : ∀ n, DifferentiableOn ℂ (fun z ↦ term f z n) S :=
-    fun n z _ ↦ (hasDerivAt_term f n _).differentiableAt.differentiableWithinAt
-  have h₃ : ∀ n, ∀ z ∈ S, ‖term f z n‖ ≤ ‖term f x n‖ := by
-    refine fun n z hz ↦ norm_term_le_of_re_le_re f ?_ n
-    simp only [S, Set.mem_setOf_eq] at hz
-    simp only [ofReal_re]
-    linarith only [h', hz]
-  have h₄ : s ∈ S := by
-    simp only [S, Set.mem_setOf_eq]
-    linarith only [h']
-  have h₅ : S ∈ nhds s := IsOpen.mem_nhds h₁ h₄
-  have H := (hasSum_deriv_of_summable_norm h₀ h₂ h₁ h₃ h₄).summable
+  have h₁ (n) : DifferentiableOn ℂ (fun z ↦ term f z n) S :=
+    fun z _ ↦ (hasDerivAt_term f n _).differentiableAt.differentiableWithinAt
+  have h₂ : IsOpen S := isOpen_lt continuous_const continuous_re
+  have h₃ (n z) (hz : z ∈ S) : ‖term f z n‖ ≤ ‖term f x n‖ :=
+    norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
+  have h₅ : S ∈ nhds s := IsOpen.mem_nhds h₂ hys
+  have H := (hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys).summable
   simp_rw [deriv_term, summable_neg_iff] at H
   refine ⟨H, ?_⟩
-  simpa only [← (hasSum_deriv_of_summable_norm h₀ h₂ h₁ h₃ h₄).tsum_eq, deriv_term, tsum_neg]
-    using ((differentiableOn_tsum_of_summable_norm h₀ h₂ h₁ h₃).differentiableAt h₅).hasDerivAt
+  simpa only [← (hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys).tsum_eq, deriv_term, tsum_neg]
+    using ((differentiableOn_tsum_of_summable_norm h₀ h₁ h₂ h₃).differentiableAt h₅).hasDerivAt
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then the L-series
 of `f` is differentiable with derivative the negative of the L-series of the point-wise
