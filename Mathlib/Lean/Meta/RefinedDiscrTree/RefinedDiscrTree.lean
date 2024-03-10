@@ -139,13 +139,13 @@ private nonrec def Key.hash : Key → UInt64
   | .star i     => mixHash 7883 $ hash i
   | .opaque     => 342
   | .const n a  => mixHash 5237 $ mixHash (hash n) (hash a)
-  | .fvar  n a  => mixHash 8765 $ mixHash (hash n) (hash a)
+  | .fvar f a   => mixHash 8765 $ mixHash (hash f) (hash a)
   | .bvar i a   => mixHash 4323 $ mixHash (hash i) (hash a)
   | .lit v      => mixHash 1879 $ hash v
   | .sort       => 2411
   | .lam        => 4742
   | .«forall»   => 9752
-  | .proj s i a => mixHash (hash a) $ mixHash (hash s) (hash i)
+  | .proj n i a => mixHash (hash a) $ mixHash (hash n) (hash i)
 
 instance : Hashable Key := ⟨Key.hash⟩
 
@@ -171,8 +171,8 @@ private def Key.lt : Key → Key → Bool
   | .fvar f₁ a₁,    .fvar f₂ a₂    => Name.quickLt f₁.name f₂.name || (f₁ == f₂ && a₁ < a₂)
   | .bvar i₁ a₁,    .bvar i₂ a₂    => i₁ < i₂ || (i₁ == i₂ && a₁ < a₂)
   | .lit v₁,        .lit v₂        => v₁ < v₂
-  | .proj s₁ i₁ a₁, .proj s₂ i₂ a₂ => Name.quickLt s₁ s₂ ||
-    (s₁ == s₂ && (i₁ < i₂ || (i₁ == i₂ && a₁ < a₂)))
+  | .proj n₁ i₁ a₁, .proj n₂ i₂ a₂ => Name.quickLt n₁ n₂ ||
+    (n₁ == n₂ && (i₁ < i₂ || (i₁ == i₂ && a₁ < a₂)))
   | k₁,             k₂             => k₁.ctorIdx < k₂.ctorIdx
 
 instance : LT Key := ⟨fun a b => Key.lt a b⟩
@@ -181,15 +181,15 @@ instance (a b : Key) : Decidable (a < b) := inferInstanceAs (Decidable (Key.lt a
 private def Key.format : Key → Format
   | .star i                 => "*" ++ Std.format i
   | .opaque                 => "◾"
-  | .const k a              => "⟨" ++ Std.format k ++ ", " ++ Std.format a ++ "⟩"
-  | .fvar k a               => "⟨" ++ Std.format k.name ++ ", " ++ Std.format a ++ "⟩"
+  | .const n a              => "⟨" ++ Std.format n ++ ", " ++ Std.format a ++ "⟩"
+  | .fvar f a               => "⟨" ++ Std.format f.name ++ ", " ++ Std.format a ++ "⟩"
   | .lit (Literal.natVal v) => Std.format v
   | .lit (Literal.strVal v) => repr v
   | .sort                   => "sort"
   | .bvar i a               => "⟨" ++ "#" ++ Std.format i ++ ", " ++ Std.format a ++ "⟩"
   | .lam                    => "λ"
   | .forall                 => "∀"
-  | .proj s i a             => "⟨" ++ Std.format s ++"."++ Std.format i ++", "++ Std.format a ++ "⟩"
+  | .proj n i a             => "⟨" ++ Std.format n ++"."++ Std.format i ++", "++ Std.format a ++ "⟩"
 
 instance : ToFormat Key := ⟨Key.format⟩
 
@@ -219,9 +219,9 @@ instance : Inhabited (Trie α) := ⟨.node #[]⟩
 def Trie.mkPath (keys : Array Key) (child : Trie α) :=
   if keys.isEmpty then child else Trie.path keys child
 
-/-- `Trie` constructor for a single value, taking the keys starting at index `i`. -/
-def Trie.singleton (keys : Array Key) (value : α) (i : Nat) : Trie α :=
-  mkPath keys[i:] (values #[value])
+/-- `Trie` constructor for a single value. -/
+def Trie.singleton (keys : Array Key) (value : α) : Trie α :=
+  mkPath keys (values #[value])
 
 /-- `Trie.node` constructor for combining two `Key`, `Trie α` pairs. -/
 def Trie.mkNode2 (k1 : Key) (t1 : Trie α) (k2 : Key) (t2 : Trie α) : Trie α :=
@@ -303,7 +303,7 @@ private partial def DTExpr.format : DTExpr → Format
   | .star _                 => "*"
   | .opaque                 => "◾"
   | .const n as             => Std.format n ++ formatArgs as
-  | .fvar n as              => Std.format n.name ++ formatArgs as
+  | .fvar f as              => Std.format f.name ++ formatArgs as
   | .bvar i as              => "#" ++ Std.format i  ++ formatArgs as
   | .lit (Literal.natVal v) => Std.format v
   | .lit (Literal.strVal v) => repr v
@@ -338,7 +338,7 @@ where
     match a, b with
     | .opaque           , .opaque            => pure true
     | .const n₁ as₁     , .const n₂ as₂      => pure (n₁ == n₂) <&&> goArray as₁ as₂
-    | .fvar n₁ as₁      , .fvar n₂ as₂       => pure (n₁ == n₂) <&&> goArray as₁ as₂
+    | .fvar f₁ as₁      , .fvar f₂ as₂       => pure (f₁ == f₂) <&&> goArray as₁ as₂
     | .bvar i₁ as₁      , .bvar i₂ as₂       => pure (i₁ == i₂) <&&> goArray as₁ as₂
     | .lit li₁          , .lit li₂           => pure (li₁ == li₂)
     | .sort             , .sort              => pure true
@@ -377,16 +377,16 @@ private def getStar (mvarId? : Option MVarId) : StateM Flatten.State Nat :=
     | none => (s.stars.size, { s with stars := s.stars.push ⟨.anonymous⟩ })
 
 private partial def DTExpr.flattenAux (todo : Array Key) : DTExpr → StateM Flatten.State (Array Key)
-  | .star i => return todo.push (.star (← getStar i))
-  | .opaque => return todo.push .opaque
-  | .const n as => as.foldlM flattenAux (todo.push (.const n as.size))
-  | .fvar  f as => as.foldlM flattenAux (todo.push (.fvar f as.size))
-  | .bvar  i as => as.foldlM flattenAux (todo.push (.bvar i as.size))
-  | .lit l => return todo.push (.lit l)
-  | .sort  => return todo.push .sort
-  | .lam b => flattenAux (todo.push .lam) b
-  | .«forall» d b => do flattenAux (← flattenAux (todo.push .forall) d) b
-  | .proj n i e as => do as.foldlM flattenAux (← flattenAux (todo.push (.proj n i as.size)) e)
+  | .star i        => return todo.push (.star (← getStar i))
+  | .opaque        => return todo.push .opaque
+  | .const n as    => as.foldlM flattenAux (todo.push (.const n as.size))
+  | .fvar f as     => as.foldlM flattenAux (todo.push (.fvar f as.size))
+  | .bvar i as     => as.foldlM flattenAux (todo.push (.bvar i as.size))
+  | .lit l         => return todo.push (.lit l)
+  | .sort          => return todo.push .sort
+  | .lam b         => flattenAux (todo.push .lam) b
+  | .«forall» d b  => do flattenAux (← flattenAux (todo.push .forall) d) b
+  | .proj n i a as => do as.foldlM flattenAux (← flattenAux (todo.push (.proj n i as.size)) a)
 
 /-- Given a `DTExpr`, return the linearized encoding in terms of `Key`,
 which is used for `RefinedDiscrTree` indexing. -/
@@ -472,8 +472,8 @@ def isStarWithArg (arg : Expr) : Expr → Bool
   | _ => false
 
 private partial def DTExpr.hasLooseBVarsAux (i : Nat) : DTExpr → Bool
-  | .const  _ as   => as.any (hasLooseBVarsAux i)
-  | .fvar   _ as   => as.any (hasLooseBVarsAux i)
+  | .const _ as    => as.any (hasLooseBVarsAux i)
+  | .fvar _ as     => as.any (hasLooseBVarsAux i)
   | .bvar j as     => j ≥ i || as.any (hasLooseBVarsAux i)
   | .proj _ _ a as => a.hasLooseBVarsAux i || as.any (hasLooseBVarsAux i)
   | .forall d b    => d.hasLooseBVarsAux i || b.hasLooseBVarsAux (i+1)
@@ -668,10 +668,10 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
         return .lit v
     withLams lambdas do
       return .const n (← argDTExprs)
-  | .proj s i a =>
+  | .proj n i a =>
     withLams lambdas do
-      let a ← argDTExpr a (isClass (← getEnv) s)
-      return .proj s i a (← argDTExprs)
+      let a ← argDTExpr a (isClass (← getEnv) n)
+      return .proj n i a (← argDTExprs)
   | .fvar fvarId =>
     /- we index `fun x => x` as `id` when not at the root -/
     if let fvarId' :: lambdas' := lambdas then
@@ -794,10 +794,10 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
           return .lit v
       withLams lambdas do
         return .const n (← argDTExprs)
-  | .proj s i a =>
+  | .proj n i a =>
     withLams lambdas do
-    let a ← argDTExpr a (isClass (← getEnv) s)
-    return .proj s i a (← argDTExprs)
+    let a ← argDTExpr a (isClass (← getEnv) n)
+    return .proj n i a (← argDTExprs)
   | .fvar fvarId =>
     /- we index `fun x => x` as `id` when not at the root -/
     if let fvarId' :: lambdas' := lambdas then
@@ -885,14 +885,15 @@ where
       vs.push v
 termination_by vs.size - i
 
-/-- Insert the value `v` at index `keys : Array Key` in a `Trie`. -/
-partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie α → Trie α
+/-- Insert the value `v` at index `keys[i:] : Array Key` in a `Trie`.
+For efficiency, we don't compute `keys[i:]`. -/
+partial def insertInTrie [BEq α] (keys : Array Key) (i : Nat) (v : α) : Trie α → Trie α
   | .node cs =>
       let k := keys[i]!
       let c := Id.run $ cs.binInsertM
-        (fun a b => a.1 < b.1)
-        (fun (k', s) => (k', insertInTrie keys v (i+1) s))
-        (fun _ => (k, Trie.singleton keys v (i+1)))
+        (·.1 < ·.1)
+        (fun (k', s) => (k', insertInTrie keys (i+1) v s))
+        (fun _ => (k, Trie.singleton keys[i+1:] v))
         (k, default)
       .node c
   | .values vs =>
@@ -904,8 +905,8 @@ partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie �
       if k1 != k2 then
         let shared := ks[:n]
         let rest := ks[n+1:]
-        return .mkPath shared (.mkNode2 k1 (.singleton keys v (i+n+1)) k2 (.mkPath rest c))
-    return .path ks (insertInTrie keys v (i + ks.size) c)
+        return .mkPath shared (.mkNode2 k1 (.singleton keys[i+n+1:] v) k2 (.mkPath rest c))
+    return .path ks (insertInTrie keys (i + ks.size) v c)
 
 /-- Insert the value `v` at index `keys : Array Key` in a `RefinedDiscrTree`.
 
@@ -916,10 +917,10 @@ def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Ke
   let k := keys[0]!
   match d.root.find? k with
   | none =>
-    let c := .singleton keys v 1
+    let c := .singleton keys[1:] v
     { root := d.root.insert k c }
   | some c =>
-    let c := insertInTrie keys v 1 c
+    let c := insertInTrie keys 1 v c
     { root := d.root.insert k c }
 
 /-- Insert the value `v` at index `e : DTExpr` in a `RefinedDiscrTree`.
@@ -967,7 +968,7 @@ namespace GetUnify
 
 /-- If `k` is a key in `children`, return the corresponding `Trie α`. Otherwise return `none`. -/
 def findKey (children : Array (Key × Trie α)) (k : Key) : Option (Trie α) :=
-  (·.2) <$> children.binSearch (k, default) (fun a b => a.1 < b.1)
+  (·.2) <$> children.binSearch (k, default) (·.1 < ·.1)
 
 private structure Context where
   unify : Bool
@@ -1066,16 +1067,16 @@ mutual
       args.foldlM (fun t e => matchExpr e t)
 
     match e with
-    | .opaque           => failure
-    | .const c args     => findKey (.const c args.size) (matchArgs args)
-    | .fvar fvarId args => findKey (.fvar fvarId args.size) (matchArgs args)
-    | .bvar i args      => findKey (.bvar i args.size) (matchArgs args)
-    | .lit v            => findKey (.lit v)
-    | .sort             => findKey .sort
-    | .lam b            => findKey .lam (matchExpr b) 0
-    | .forall d b       => findKey .forall (matchExpr d >=> matchExpr b)
-    | .proj n i a args  => findKey (.proj n i args.size) (matchExpr a >=> matchArgs args)
-    | _                 => unreachable!
+    | .opaque        => failure
+    | .const n as    => findKey (.const n as.size) (matchArgs as)
+    | .fvar f as     => findKey (.fvar f as.size) (matchArgs as)
+    | .bvar i as     => findKey (.bvar i as.size) (matchArgs as)
+    | .lit v         => findKey (.lit v)
+    | .sort          => findKey .sort
+    | .lam b         => findKey .lam (matchExpr b) 0
+    | .forall d b    => findKey .forall (matchExpr d >=> matchExpr b)
+    | .proj n i a as => findKey (.proj n i as.size) (matchExpr a >=> matchArgs as)
+    | _              => unreachable!
 
 end
 
