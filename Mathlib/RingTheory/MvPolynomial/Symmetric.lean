@@ -445,7 +445,7 @@ def msymm {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   ∑ s : {a : Sym σ n // Nat.Partition.ofSym a = μ},  (s.1.1.map X).prod
 
 lemma msymm_def {n : ℕ} (μ : n.Partition) : msymm σ R μ =
-∑ s : {a : Sym σ n // Nat.Partition.ofSym a = μ}, (s.1.1.map X).prod := rfl
+    ∑ s : {a : Sym σ n // Nat.Partition.ofSym a = μ}, (s.1.1.map X).prod := rfl
 
 @[simp]
 theorem msymm_zero : msymm σ R (Nat.Partition.indiscrete 0) = 1 := by
