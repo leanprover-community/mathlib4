@@ -81,7 +81,7 @@ set_option autoImplicit true
 
 
 open Function Set Order
-open Classical hiding by_cases not_not
+open scoped Classical
 
 universe u v w x y
 
@@ -218,7 +218,7 @@ theorem sInter_mem {s : Set (Set α)} (hfin : s.Finite) : ⋂₀ s ∈ f ↔ ∀
 
 @[simp]
 theorem iInter_mem {β : Sort v} {s : β → Set α} [Finite β] : (⋂ i, s i) ∈ f ↔ ∀ i, s i ∈ f :=
-  (sInter_mem (finite_range _)).trans forall_range_iff
+  (sInter_mem (finite_range _)).trans forall_mem_range
 #align filter.Inter_mem Filter.iInter_mem
 
 theorem exists_mem_subset_iff : (∃ t ∈ f, t ⊆ s) ↔ s ∈ f :=
@@ -487,7 +487,7 @@ section CompleteLattice
   we want to have different definitional equalities for some lattice operations. So we define them
   upfront and change the lattice operations for the complete lattice instance. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) :=
-  { @OrderDual.completeLattice _ (giGenerate α).liftCompleteLattice with
+  { @OrderDual.instCompleteLattice _ (giGenerate α).liftCompleteLattice with
     le := (· ≤ ·)
     top := ⊤
     le_top := fun _ _s hs => (mem_top.1 hs).symm ▸ univ_mem

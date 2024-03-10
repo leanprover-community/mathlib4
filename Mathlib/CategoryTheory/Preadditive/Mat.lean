@@ -484,7 +484,7 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift_unique CategoryTheory.Mat_.liftUnique
 
--- Porting note: removed @[ext] as the statement is not an equality
+-- Porting note (#11182): removed @[ext] as the statement is not an equality
 -- TODO is there some uniqueness statement for the natural isomorphism in `liftUnique`?
 /-- Two additive functors `Mat_ C ⥤ D` are naturally isomorphic if
 their precompositions with `embedding C` are naturally isomorphic as functors `C ⥤ D`. -/

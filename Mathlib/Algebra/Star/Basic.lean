@@ -390,7 +390,7 @@ scoped[ComplexConjugate] notation "conj" => starRingEnd _
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 #align star_ring_end_apply starRingEnd_apply
 
-/- Porting note: removed `simp` attribute due to report by linter:
+/- Porting note (#11119): removed `simp` attribute due to report by linter:
 
 simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]

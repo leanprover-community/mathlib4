@@ -21,7 +21,7 @@ complements.
 * `Booleanisation.liftLatticeHom`: Boolean algebra containing a given generalised Boolean algebra as
   a sublattice.
 
-## Future workl
+## Future work
 
 If mathlib ever acquires `GenBoolAlg`, the category of generalised Boolean algebras, then one could
 show that `Booleanisation` is the free functor from `GenBoolAlg` to `BoolAlg`.
@@ -233,7 +233,7 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
     | comp a, lift b, lift c => LE.comp <| by rw [sdiff_inf]
     | comp a, lift b, comp c => LE.comp <| by rw [sdiff_sdiff_right']
     | comp a, comp b, lift c => LE.comp <| by rw [sdiff_sdiff_right', sup_comm]
-    | comp a, comp b, comp c => LE.comp inf_sup_left.le
+    | comp a, comp b, comp c => LE.comp (inf_sup_left _ _ _).le
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in

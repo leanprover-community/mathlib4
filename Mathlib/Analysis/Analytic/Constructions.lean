@@ -19,7 +19,8 @@ We show that the following are analytic:
 
 noncomputable section
 
-open Topology Classical BigOperators NNReal Filter ENNReal
+open scoped Classical
+open Topology BigOperators NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
@@ -118,24 +119,28 @@ theorem AnalyticOn.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {s : S
   fun _ xt ↦ (ha _ (m _ xt)).comp₂ (fa _ xt) (ga _ xt)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
-theorem AnalyticAt.along_fst {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
+theorem AnalyticAt.curry_left {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
     AnalyticAt 𝕜 (fun x ↦ f (x, p.2)) p.1 :=
   AnalyticAt.comp₂ fa (analyticAt_id _ _) analyticAt_const
+alias AnalyticAt.along_fst := AnalyticAt.curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
-theorem AnalyticAt.along_snd {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
+theorem AnalyticAt.curry_right {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
     AnalyticAt 𝕜 (fun y ↦ f (p.1, y)) p.2 :=
   AnalyticAt.comp₂ fa analyticAt_const (analyticAt_id _ _)
+alias AnalyticAt.along_snd := AnalyticAt.curry_right
 
 /-- Analytic functions on products are analytic in the first coordinate -/
-theorem AnalyticOn.along_fst {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
+theorem AnalyticOn.curry_left {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
   fun x m ↦ (fa (x, y) m).along_fst
+alias AnalyticOn.along_fst := AnalyticOn.curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
-theorem AnalyticOn.along_snd {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
+theorem AnalyticOn.curry_right {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
   fun y m ↦ (fa (x, y) m).along_snd
+alias AnalyticOn.along_snd := AnalyticOn.curry_right
 
 /-!
 ### Arithmetic on analytic functions

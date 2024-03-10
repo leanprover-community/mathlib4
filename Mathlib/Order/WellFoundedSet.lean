@@ -552,7 +552,7 @@ protected theorem IsWF.isPWO (hs : s.IsWF) : s.IsPWO := by
   intro f hf
   lift f to ℕ → s using hf
   rcases hs.has_min (range f) (range_nonempty _) with ⟨_, ⟨m, rfl⟩, hm⟩
-  simp only [forall_range_iff, not_lt] at hm
+  simp only [forall_mem_range, not_lt] at hm
   exact ⟨m, m + 1, lt_add_one m, hm _⟩
 #align set.is_wf.is_pwo Set.IsWF.isPWO
 

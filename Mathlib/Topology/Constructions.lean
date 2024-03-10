@@ -36,7 +36,8 @@ product, sum, disjoint union, subspace, quotient space
 
 noncomputable section
 
-open Topology TopologicalSpace Set Filter Function Classical
+open scoped Classical
+open Topology TopologicalSpace Set Filter Function
 
 universe u v
 
@@ -318,7 +319,7 @@ section Prod
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
--- Porting note: todo: Lean 4 fails to deduce implicit args
+-- Porting note (#11215): TODO: Lean 4 fails to deduce implicit args
 @[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
   (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
@@ -507,25 +508,29 @@ lemma isClosedMap_swap : IsClosedMap (Prod.swap : X × Y → Y × X) := fun s hs
   rw [image_swap_eq_preimage_swap]
   exact hs.preimage continuous_swap
 
-theorem continuous_uncurry_left {f : X → Y → Z} (x : X) (h : Continuous (uncurry f)) :
+theorem Continuous.uncurry_left {f : X → Y → Z} (x : X) (h : Continuous (uncurry f)) :
     Continuous (f x) :=
   h.comp (Continuous.Prod.mk _)
-#align continuous_uncurry_left continuous_uncurry_left
+#align continuous_uncurry_left Continuous.uncurry_left
 
-theorem continuous_uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (uncurry f)) :
+theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (uncurry f)) :
     Continuous fun a => f a y :=
   h.comp (Continuous.Prod.mk_left _)
-#align continuous_uncurry_right continuous_uncurry_right
+#align continuous_uncurry_right Continuous.uncurry_right
+
+-- 2024-03-09
+@[deprecated] alias continuous_uncurry_left := Continuous.uncurry_left
+@[deprecated] alias continuous_uncurry_right := Continuous.uncurry_right
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
-  continuous_uncurry_left x h
+  Continuous.uncurry_left x h
 #align continuous_curry continuous_curry
 
 theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ×ˢ t) :=
   (hs.preimage continuous_fst).inter (ht.preimage continuous_snd)
 #align is_open.prod IsOpen.prod
 
--- Porting note: todo: Lean fails to find `t₁` and `t₂` by unification
+-- Porting note (#11215): TODO: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
   dsimp only [SProd.sprod]
   rw [Filter.prod, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
@@ -635,6 +640,29 @@ theorem ContinuousAt.prod_map' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf :
   hf.fst'.prod hg.snd'
 #align continuous_at.prod_map' ContinuousAt.prod_map'
 
+theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
+    (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
+    ContinuousAt (fun x ↦ f (g x, h x)) x :=
+  ContinuousAt.comp hf (hg.prod hh)
+
+theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X} {y : Y × Z}
+    (hf : ContinuousAt f y) (hg : ContinuousAt g x) (hh : ContinuousAt h x) (e : (g x, h x) = y) :
+    ContinuousAt (fun x ↦ f (g x, h x)) x := by
+  rw [← e] at hf
+  exact hf.comp₂ hg hh
+
+/-- Continuous functions on products are continuous in their first argument -/
+theorem Continuous.curry_left {f : X × Y → Z} (hf : Continuous f) {y : Y} :
+    Continuous fun x ↦ f (x, y) :=
+  hf.comp (continuous_id.prod_mk continuous_const)
+alias Continuous.along_fst := Continuous.curry_left
+
+/-- Continuous functions on products are continuous in their second argument -/
+theorem Continuous.curry_right {f : X × Y → Z} (hf : Continuous f) {x : X} :
+    Continuous fun y ↦ f (x, y) :=
+  hf.comp (continuous_const.prod_mk continuous_id)
+alias Continuous.along_snd := Continuous.curry_right
+
 -- todo: reformulate using `Set.image2`
 -- todo: prove a version of `generateFrom_union` with `image2 (∩) s t` in the LHS and use it here
 theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : Set (Set Y)}
@@ -674,13 +702,13 @@ theorem prod_eq_generateFrom :
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
   le_antisymm (le_generateFrom fun g ⟨s, t, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
-      (ball_image_of_ball fun t ht =>
+      (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
-      (ball_image_of_ball fun t ht =>
+      (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
 #align prod_eq_generate_from prod_eq_generateFrom
 
--- Porting note: todo: align with `mem_nhds_prod_iff'`
+-- Porting note (#11215): TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
     IsOpen s ↔ ∀ a b, (a, b) ∈ s →
       ∃ u v, IsOpen u ∧ IsOpen v ∧ a ∈ u ∧ b ∈ v ∧ u ×ˢ v ⊆ s :=
@@ -1102,7 +1130,7 @@ theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((
   rfl
 #align subtype.dense_iff Subtype.dense_iff
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [inducing_subtype_val.map_nhds_eq, Subtype.range_val]
 
@@ -1344,7 +1372,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
 #align continuous_update continuous_update
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
--- Porting note: todo: restore @[continuity]
+-- Porting note (#11215): TODO: restore @[continuity]
 @[to_additive "`Pi.single i x` is continuous in `x`."]
 theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
@@ -1499,7 +1527,7 @@ theorem pi_generateFrom_eq_finite {π : ι → Type*} {g : ∀ a, Set (Set (π a
     by_cases a ∈ i <;> simp [*]
 #align pi_generate_from_eq_finite pi_generateFrom_eq_finite
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem induced_to_pi {X : Type*} (f : X → ∀ i, π i) :
     induced f Pi.topologicalSpace = ⨅ i, induced (f · i) inferInstance := by
   erw [induced_iInf]
