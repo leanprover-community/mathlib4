@@ -21,7 +21,7 @@ open LSeries
 lemma LSeries.term_add (f g : ℕ → ℂ) (s : ℂ) : term (f + g) s = term f s + term g s := by
   ext ⟨- | n⟩
   · simp only [term_zero, Pi.add_apply, add_zero]
-  · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.add_apply, _root_.add_div]
+  · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.add_apply, add_div]
 
 lemma LSeries.term_add_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term (f + g) s n = term f s n + term g s n := by
@@ -100,7 +100,7 @@ lemma LSeriesSummable.of_smul {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) (hf :
 
 lemma LSeriesSummable.smul_iff {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) :
     LSeriesSummable (c • f) s ↔ LSeriesSummable f s :=
-  ⟨fun H ↦ H.of_smul hc, fun H ↦ H.smul c⟩
+  ⟨of_smul hc, smul c⟩
 
 @[simp]
 lemma LSeries.smul (f : ℕ → ℂ) (c s : ℂ) : LSeries (c • f) s = c * LSeries f s := by
