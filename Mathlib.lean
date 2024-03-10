@@ -2652,6 +2652,7 @@ import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 import Mathlib.LinearAlgebra.TensorPower
 import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
@@ -2660,7 +2661,6 @@ import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.LinearAlgebra.Vandermonde
