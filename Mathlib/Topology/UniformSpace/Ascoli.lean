@@ -9,12 +9,63 @@ import Mathlib.Topology.UniformSpace.Equiv
 /-!
 # Ascoli Theorem
 
-## Main definitions
+In this file, we prove the general **Arzela-Ascoli theorem**, and various related statements about
+the topology of equicontinuous subsetes of `X →ᵤ[𝔖] α`, where `X` is a topological space, `𝔖` is
+a family of compact subsets of `X`, and `α` is a uniform space.
+
 ## Main statements
-## Notation
+
+* If `X` is a compact space, then the uniform structures of uniform convergence and pointwise
+  convergence coincide on equicontinuous subsets. This is the key fact that makes equicontinuity
+  important in functional analysis. We state various versions of it:
+  - as an equality of `UniformSpace`s: `Equicontinuous.comap_uniformFun_eq`
+  - in terms of `UniformInducing`: `Equicontinuous.uniformInducing_uniformFun_iff_pi`
+  - in terms of `Inducing`: `Equicontinuous.inducing_uniformFun_iff_pi`
+  - in terms of convergence along a filter: `Equicontinuous.tendsto_uniformFun_iff_pi`
+* As a consequence, if `𝔖` is a family of compact subsets of `X`, then the uniform structures of
+  uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` coincide on equicontinuous
+  subsets. Again, we prove multiple variations:
+  - as an equality of `UniformSpace`s: `EquicontinuousOn.comap_uniformOnFun_eq`
+  - in terms of `UniformInducing`: `EquicontinuousOn.uniformInducing_uniformOnFun_iff_pi'`
+  - in terms of `Inducing`: `EquicontinuousOn.inducing_uniformOnFun_iff_pi'`
+  - in terms of convergence along a filter: `EquicontinuousOn.tendsto_uniformOnFun_iff_pi'`
+* The **Arzela-Ascoli theorem** follows from the previous fact and Tykhonov's theorem.
+  All of its variations can be found under the `ArzelaAscoli` namespace.
+
 ## Implementation details
+
+* The statements in this file may be a bit daunting because we prove everything for families and
+  embeddings instead of subspaces with the subspace topology. This is done because, in practice,
+  one would rarely work with `X →ᵤ[𝔖] α` directly, so we need to provide API for bringing back the
+  statements to various other types, such as `C(X, Y)` or `E →L[𝕜] F`. To counteract this, all
+  statements (as well as most proofs!) are documented quite thouroughly.
+
+* A lot of statements assume `∀ K ∈ 𝔖, EquicontinuousOn F K` instead of the more natural
+  `EquicontinuousOn F (⋃₀ 𝔖)`. This is in order to keep the most generality, as the first statement
+  is strictly weaker, but this may well be completely useless so we might want to change this in
+  the future.
+
+* In Bourbaki, the usual Arzela-Ascoli compactness theorem follows from a similar total boundedness
+  result. Here we go directly for the compactness result, which is the most useful in practice, but
+  this will be an easy addition/refactor if we ever need it.
+
+## TODO
+
+* Prove that, on an equicontinuous family, pointwise convergence and pointwise convergence on a
+  dense subset coincide, and deduce metrizability criterions for equicontinuous subsets.
+
+* Prove the total boundedness version of the theorem
+
+* Prove the converse statement: if a subset of `X →ᵤ[𝔖] α` is compact, then it is equicontinuous
+  on each `K ∈ 𝔖`.
+
 ## References
+
+* [N. Bourbaki, *General Topology, Chapter X*][bourbaki1966]
+
 ## Tags
+
+equicontinuity, uniform convergence, ascoli
 -/
 
 open Set Filter Uniformity Topology TopologicalSpace Function UniformConvergence
@@ -40,7 +91,6 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
   change comap _ _ ≤ comap _ _
   simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp]
   refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr ?_
-  -- TODO: what are the names used in Bourbaki for the sets?
   -- Core of the proof: we need to show that, for any entourage `U` in `α`,
   -- the set `𝐓(U) := {(i,j) : ι × ι | ∀ x : X, (F i x, F j x) ∈ U}` belongs to the filter
   -- `⨅ x, comap ((i,j) ↦ (F i x, F j x)) (𝓤 α)`.
@@ -371,13 +421,13 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing' [TopologicalSpace ι] {�
   -- Thus, we just have to check that the range of this map is compact.
   rw [← isCompact_univ_iff, this.isCompact_iff, image_univ]
   -- But then we are working in a product space, where compactness can easily be proven using
-  -- Tychonoff's theorem! More precisely, for each `x ∈ ⋃₀ 𝔖`, choose a compact set `Q x`
+  -- Tykhonov's theorem! More precisely, for each `x ∈ ⋃₀ 𝔖`, choose a compact set `Q x`
   -- containing all `F i x`s.
   rw [← forall_sUnion] at F_pointwiseCompact
   choose! Q Q_compact F_in_Q using F_pointwiseCompact
   -- Notice that, since the range of `F` is closed in `X →ᵤ[𝔖] α`, equicontinuity ensures that
   -- the range of `(⋃₀ 𝔖).restrict ∘ F` is still closed in the product topology.
-  -- But it's contained in the product of the `Q x`s, which is compact by Tychonoff, hence
+  -- But it's contained in the product of the `Q x`s, which is compact by Tykhonov, hence
   -- it is compact as well.
   refine IsCompact.of_isClosed_subset (isCompact_univ_pi fun x ↦ Q_compact x x.2)
     (EquicontinuousOn.isClosed_range_pi_of_uniformOnFun' 𝔖_compact F_eqcont F_cl)
