@@ -425,6 +425,10 @@ theorem dist_one_right (a : E) : dist a 1 = ‖a‖ := by rw [dist_eq_norm_div, 
 #align dist_one_right dist_one_right
 #align dist_zero_right dist_zero_right
 
+@[to_additive]
+theorem inseparable_one_iff_norm {a : E} : Inseparable a 1 ↔ ‖a‖ = 0 := by
+  rw [Metric.inseparable_iff, dist_one_right]
+
 @[to_additive (attr := simp)]
 theorem dist_one_left : dist (1 : E) = norm :=
   funext fun a => by rw [dist_comm, dist_one_right]
