@@ -44,24 +44,6 @@ open Complex LSeries
 /-- The (point-wise) product of `log : ℕ → ℂ` with `f`. -/
 noncomputable abbrev LSeries.logMul (f : ℕ → ℂ) (n : ℕ) : ℂ := log n * f n
 
-
-/-- The (point-wise) product of the `m`th power of `log` with `f`. -/
-noncomputable abbrev logPowMul (m : ℕ) (f : ℕ → ℂ) (n : ℕ) : ℂ :=
-  (log n) ^ m * f n
-
-lemma logPowMul_zero (f : ℕ → ℂ) : logPowMul 0 f = f := by
-  ext
-  simp only [logPowMul, pow_zero, one_mul]
-
-lemma logPowMul_succ (m : ℕ) (f : ℕ → ℂ) : logPowMul m.succ f = logMul (logPowMul m f) := by
-  ext
-  simp only [logPowMul, pow_succ, mul_assoc, logMul]
-
-lemma logPowMul_succ' (m : ℕ) (f : ℕ → ℂ) : logPowMul m.succ f = logPowMul m (logMul f) := by
-  ext m
-  simp only [logPowMul, pow_succ, logMul, ← mul_assoc]
-  rw [mul_comm (log m)]
-
 /-!
 ### The derivative of an L-series
 -/
@@ -175,41 +157,38 @@ lemma abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
 /-- The higher derivatives of the terms of an L-series. -/
 lemma LSeries.iteratedDeriv_term (f : ℕ → ℂ) (m n : ℕ) (s : ℂ) :
     iteratedDeriv m (fun z ↦ term f z n) s =
-      (-1) ^ m * (term (logPowMul m f) s n) := by
+      (-1) ^ m * (term (logMul^[m] f) s n) := by
   induction' m with m ih generalizing f s
-  · simp only [Nat.zero_eq, iteratedDeriv_zero, pow_zero, logPowMul_zero, one_mul]
-  · have ih' : iteratedDeriv m (fun s ↦ term (logMul f) s n) =
-        fun s ↦ (-1) ^ m * (term (logPowMul m (logMul f)) s n) :=
-      funext <| ih (logMul f)
-    rw [iteratedDeriv_succ', deriv_term' f n, iteratedDeriv_neg, ih', neg_mul_eq_neg_mul,
-      logPowMul_succ', pow_succ, neg_one_mul]
+  · simp
+  · simp [iteratedDeriv_succ', deriv_term' f n, iteratedDeriv_neg, funext <| ih (logMul f),
+      pow_succ]
 
 /-- The abscissa of absolute convergence of the point-wise product of a power of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
 lemma absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
-    abscissaOfAbsConv (logPowMul m f) = abscissaOfAbsConv f := by
+    abscissaOfAbsConv (logMul^[m] f) = abscissaOfAbsConv f := by
   induction' m with n ih
-  · simp only [Nat.zero_eq, logPowMul_zero]
-  · rwa [logPowMul_succ, abscissaOfAbsConv_logMul]
+  · simp
+  · simp only [ih, Function.iterate_succ', Function.comp_def, abscissaOfAbsConv_logMul]
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m * f`. -/
 protected
 lemma LSeries.iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
-    iteratedDeriv m (LSeries f) s = (-1) ^ m * LSeries (logPowMul m f) s := by
+    iteratedDeriv m (LSeries f) s = (-1) ^ m * LSeries (logMul^[m] f) s := by
   induction' m with m ih generalizing s
-  · simp only [Nat.zero_eq, iteratedDeriv_zero, pow_zero, logPowMul_zero, one_mul]
+  · simp
   · have ih' : {s | abscissaOfAbsConv f < s.re}.EqOn (iteratedDeriv m (LSeries f))
-        ((-1) ^ m * LSeries (logPowMul m f)) := by
+        ((-1) ^ m * LSeries (logMul^[m] f)) := by
       exact fun _ hs ↦ ih hs
     have := derivWithin_congr ih' (ih h)
     simp_rw [derivWithin_of_isOpen (isOpen_rightHalfPlane _) h] at this
     rw [iteratedDeriv_succ, this]
-    change deriv (fun z ↦ (-1) ^ m * LSeries (logPowMul m f) z) s = _
+    change deriv (fun z ↦ (-1) ^ m * LSeries (logMul^[m] f) z) s = _
     rw [deriv_const_mul_field', pow_succ', mul_assoc, neg_one_mul]
-    simp only [LSeries.deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h, logPowMul_succ]
-
+    simp only [LSeries.deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h, Function.iterate_succ',
+      Function.comp_def]
 
 /-!
 ### The L-series is holomorphic
