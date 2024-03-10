@@ -3,11 +3,12 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Combinatorics.Partition
+import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.Sym.Basic
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Combinatorics.Partition
 
 #align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -166,6 +167,11 @@ end IsSymmetric
 variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
 
 /- Multiplicativity on partitions -/
+
+/--
+  Given a sequence of `MvPolynomial` functions `f` and a partition `μ` of size `n`,
+  `muProduct` computes the product of applying each function in `f` to the parts of `μ`.
+-/
 def muProduct {n : ℕ} (f : ℕ → MvPolynomial σ R) (μ : n.Partition) : MvPolynomial σ R :=
   Multiset.prod (μ.parts.map f)
 
@@ -194,6 +200,9 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
 
 lemma esymm_def (n : ℕ) : esymm σ R n = ∑ t in powersetCard n univ, ∏ i in t, X i := rfl
 
+/--
+`esymmMu` is the product of the symmetric polynomials `esymm μᵢ`, where `μ = (μ₁, μ₂, ...)` is a partition.
+-/
 def esymmMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   muProduct σ R (esymm σ R) μ
 
@@ -230,7 +239,6 @@ theorem esymm_zero : esymm σ R 0 = 1 := by
 theorem esymm_one : esymm σ R 1 = ∑ i, X i := by
   simp only [esymm, powersetCard_one, sum_map, Function.Embedding.coeFn_mk, prod_singleton]
 
-@[simp]
 theorem esymmMu_zero : esymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by
   simp only [esymmMu, esymm_zero, muProduct_zero]
 
@@ -335,6 +343,9 @@ def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 
 lemma hsymm_def (n : ℕ) : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
 
+/--
+`hsymmMu` is the product of the symmetric polynomials `hsymm μᵢ`, where `μ = (μ₁, μ₂, ...)` is a partition.
+-/
 def hsymmMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   muProduct σ R (hsymm σ R) μ
 
@@ -354,7 +365,6 @@ theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
   intro i
   simp only [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton]
 
-@[simp]
 theorem hsymmMu_zero : hsymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by
   simp only [hsymmMu, hsymm_zero, muProduct_zero]
 
@@ -387,6 +397,9 @@ def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
 lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
 
+/--
+`psumMu` is the product of the symmetric polynomials `psum μᵢ`, where `μ = (μ₁, μ₂, ...)` is a partition.
+-/
 def psumMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   muProduct σ R (psum σ R) μ
 
@@ -395,8 +408,8 @@ lemma psumMu_def {n : ℕ} (μ : n.Partition) : psumMu σ R μ =
 
 @[simp]
 theorem psum_zero : psum σ R 0 = Fintype.card σ := by
-  simp only [psum, _root_.pow_zero, ← cast_card]
-  exact rfl
+  simp [psum, _root_.pow_zero, ← cast_card]
+  rfl
 
 @[simp]
 theorem psum_one : psum σ R 1 = ∑ i, X i := by
@@ -418,5 +431,60 @@ theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ
 theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ _ n
 
 end PowerSum
+
+section MonomialSymmetric
+-- open Multiset
+
+variable [DecidableEq σ] [DecidableEq τ]
+
+/-- The monomial symmetric `MvPolynomial σ R` with exponent set μ. -/
+def msymm {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
+  ∑ s : {a : Sym σ n // Nat.Partition.ofSym a = μ},  (s.1.1.map X).prod
+
+lemma msymm_def {n : ℕ} (μ : n.Partition) : msymm σ R μ = ∑ s : {a : Sym σ n // Nat.Partition.ofSym a = μ}, (s.1.1.map X).prod := rfl
+
+@[simp]
+theorem msymm_zero : msymm σ R (Nat.Partition.indiscrete 0) = 1 := by
+  rw [msymm, Fintype.sum_subsingleton]
+  swap
+  exact ⟨(Sym.nil : Sym σ 0), by rfl⟩
+  simp only [Sym.val_eq_coe, Sym.coe_nil, Multiset.map_zero, Multiset.prod_zero]
+
+@[simp]
+theorem msymm_one : msymm σ R (Nat.Partition.indiscrete 1) = ∑ i, X i := by
+  symm
+  let f : σ ≃ { a // Nat.Partition.ofSym a = Nat.Partition.indiscrete 1 } := {
+    toFun := fun a => ⟨Sym.oneEquiv a, by ext; simp⟩
+    invFun := fun a => Sym.oneEquiv.symm a.1
+    left_inv := by intro a; simp only [Sym.oneEquiv_apply]; rfl
+    right_inv := by intro a; simp only [Equiv.apply_symm_apply, Subtype.coe_eta]
+  }
+  apply Fintype.sum_equiv f
+  intro i
+  have : (X i : MvPolynomial σ R) = Multiset.prod (Multiset.map X {i}) := by simp only [Multiset.map_singleton, Multiset.prod_singleton]
+  rw [this]
+  rfl
+
+@[simp]
+theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) : rename e (msymm σ R μ) = msymm τ R μ := by
+  simp only [msymm._eq_1, Sym.val_eq_coe, map_sum]
+  let f : {a : Sym σ n // Nat.Partition.ofSym a = μ} ≃ {a : Sym τ n // Nat.Partition.ofSym a = μ} := {
+    toFun := fun a => ⟨Sym.equivCongr e a, by
+      simp only [Sym.equivCongr_apply, Nat.Partition.ofSymEquiv, a.2]⟩
+    invFun := fun a => ⟨Sym.equivCongr e.symm a, by
+      simp only [Sym.equivCongr_apply, Nat.Partition.ofSymEquiv, a.2]⟩
+    left_inv := by intro a; simp
+    right_inv := by intro a; simp
+  }
+  apply Fintype.sum_equiv f
+  intro a
+  rw [← Multiset.prod_hom, Multiset.map_map]
+  congr
+  simp only [Sym.equivCongr_apply, Equiv.coe_fn_mk, Sym.coe_map, Multiset.map_map,
+    Function.comp_apply, rename_X]
+
+theorem msymm_isSymmetric {n : ℕ} (μ : n.Partition) : IsSymmetric (msymm σ R μ) := rename_msymm _ _ μ
+
+end MonomialSymmetric
 
 end MvPolynomial

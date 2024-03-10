@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Combinatorics.Composition
+import Mathlib.Data.Multiset.Dedup
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.ApplyFun
 
@@ -101,6 +102,32 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n where
 @[simps!]
 def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 #align nat.partition.of_multiset Nat.Partition.ofMultiset
+
+/-- An element `s` of `Sym σ n` induces a partition given by its multiplicities.
+-/
+def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition where
+  parts := (s.1.dedup).map s.1.count
+  parts_pos := by simp [Multiset.count_pos]
+  parts_sum := by
+    simp only [Sym.val_eq_coe, card_eq_sum_count]
+    exact s.2
+
+lemma ofSymEquiv {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) : Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
+  simp only [Nat.Partition.ofSym, Nat.Partition.ext_iff]
+  have dedup_eq : (s.map e).1.dedup = s.1.dedup.map e := by
+    simp only [Sym.val_eq_coe, Sym.coe_map]
+    rw [← Multiset.dedup_map_dedup_eq]
+    apply Multiset.Nodup.dedup
+    rw [Multiset.nodup_map_iff_of_injective e.injective]
+    exact Multiset.nodup_dedup s.1
+  rw [dedup_eq]
+  have : (fun x ↦ Multiset.count x s.1) = fun x ↦ Multiset.count (e x) (s.map e).1 := by
+    funext x
+    rw [← Multiset.count_map_eq_count' e]
+    congr
+    exact e.injective
+  rw [this]
+  simp only [Sym.val_eq_coe, Sym.coe_map, Multiset.map_map, Function.comp_apply]
 
 /-- The partition of exactly one part. -/
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
