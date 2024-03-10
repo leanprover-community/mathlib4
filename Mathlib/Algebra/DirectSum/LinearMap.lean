@@ -84,9 +84,10 @@ lemma trace_eq_zero_of_mapsTo_ne [IsNoetherian R M]
   let s := hN.toFinset
   let κ := fun i ↦ Module.Free.ChooseBasisIndex R (N i)
   let b : (i : s) → Basis (κ i) R (N i) := fun i ↦ Module.Free.chooseBasis R (N i)
-  replace h : IsInternal fun i : s ↦ N i := by convert DirectSum.isInternal_ne_bot_iff.2 h <;> simp
+  replace h : IsInternal fun i : s ↦ N i := by
+    convert DirectSum.isInternal_ne_bot_iff.mpr h <;> simp [s]
   simp_rw [trace_eq_matrix_trace R (h.collectedBasis b), Matrix.trace,
-    diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp),
+    diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
     Pi.zero_apply, Finset.sum_const_zero]
 
 /-- If `f` and `g` are commuting endomorphisms of a finite, free `R`-module `M`, such that `f`
