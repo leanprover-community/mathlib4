@@ -237,7 +237,7 @@ theorem liftAux_id_apply (x : K) : liftAux (RingHom.id K) j p x = j x := by
     RingEquiv.symm_apply_apply]
 
 @[simp]
-theorem PerfectRing.liftAux_id : liftAux (RingHom.id K) j p = j := funext (liftAux_id_apply j p)
+theorem liftAux_id : liftAux (RingHom.id K) j p = j := funext (liftAux_id_apply j p)
 
 end PerfectRing
 
