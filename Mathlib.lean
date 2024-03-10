@@ -333,7 +333,6 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Bimodule
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Module.DedekindDomain
-import Mathlib.Algebra.Module.DirectLimitAndTensorProduct
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.Module.Hom
@@ -2652,7 +2651,8 @@ import Mathlib.LinearAlgebra.TensorAlgebra.Basis
 import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 import Mathlib.LinearAlgebra.TensorPower
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
@@ -3404,7 +3404,7 @@ import Mathlib.RingTheory.Subring.Units
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.RingTheory.Subsemiring.Order
 import Mathlib.RingTheory.Subsemiring.Pointwise
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Valuation.Basic
