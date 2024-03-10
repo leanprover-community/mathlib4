@@ -32,7 +32,7 @@ ambient vector space. Similarly for the definition of dependence.
 
 open scoped LinearAlgebra.Projectivization
 
-variable {ι K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : ι → ℙ K V}
+variable {ι K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {f : ι → ℙ K V}
 
 namespace Projectivization
 
