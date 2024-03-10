@@ -112,7 +112,8 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
     simp only [Sym.val_eq_coe, card_eq_sum_count]
     exact s.2
 
-lemma ofSymEquiv {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) : Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
+lemma ofSymEquiv {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ] (e : σ ≃ τ) (s : Sym σ n) :
+ Nat.Partition.ofSym (s.map e) = Nat.Partition.ofSym s := by
   simp only [Nat.Partition.ofSym, Nat.Partition.ext_iff]
   have dedup_eq : (s.map e).1.dedup = s.1.dedup.map e := by
     simp only [Sym.val_eq_coe, Sym.coe_map]

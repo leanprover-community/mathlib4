@@ -201,7 +201,8 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
 lemma esymm_def (n : ℕ) : esymm σ R n = ∑ t in powersetCard n univ, ∏ i in t, X i := rfl
 
 /--
-`esymmMu` is the product of the symmetric polynomials `esymm μᵢ`, where `μ = (μ₁, μ₂, ...)` is a partition.
+`esymmMu` is the product of the symmetric polynomials `esymm μᵢ`,
+where `μ = (μ₁, μ₂, ...)` is a partition.
 -/
 def esymmMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   muProduct σ R (esymm σ R) μ
@@ -344,7 +345,8 @@ def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 lemma hsymm_def (n : ℕ) : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
 
 /--
-`hsymmMu` is the product of the symmetric polynomials `hsymm μᵢ`, where `μ = (μ₁, μ₂, ...)` is a partition.
+`hsymmMu` is the product of the symmetric polynomials `hsymm μᵢ`,
+where `μ = (μ₁, μ₂, ...)` is a partition.
 -/
 def hsymmMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   muProduct σ R (hsymm σ R) μ
@@ -398,7 +400,8 @@ def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
 
 /--
-`psumMu` is the product of the symmetric polynomials `psum μᵢ`, where `μ = (μ₁, μ₂, ...)` is a partition.
+`psumMu` is the product of the symmetric polynomials `psum μᵢ`,
+where `μ = (μ₁, μ₂, ...)` is a partition.
 -/
 def psumMu {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   muProduct σ R (psum σ R) μ
@@ -441,7 +444,8 @@ variable [DecidableEq σ] [DecidableEq τ]
 def msymm {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
   ∑ s : {a : Sym σ n // Nat.Partition.ofSym a = μ},  (s.1.1.map X).prod
 
-lemma msymm_def {n : ℕ} (μ : n.Partition) : msymm σ R μ = ∑ s : {a : Sym σ n // Nat.Partition.ofSym a = μ}, (s.1.1.map X).prod := rfl
+lemma msymm_def {n : ℕ} (μ : n.Partition) : msymm σ R μ =
+∑ s : {a : Sym σ n // Nat.Partition.ofSym a = μ}, (s.1.1.map X).prod := rfl
 
 @[simp]
 theorem msymm_zero : msymm σ R (Nat.Partition.indiscrete 0) = 1 := by
@@ -461,14 +465,17 @@ theorem msymm_one : msymm σ R (Nat.Partition.indiscrete 1) = ∑ i, X i := by
   }
   apply Fintype.sum_equiv f
   intro i
-  have : (X i : MvPolynomial σ R) = Multiset.prod (Multiset.map X {i}) := by simp only [Multiset.map_singleton, Multiset.prod_singleton]
+  have : (X i : MvPolynomial σ R) = Multiset.prod (Multiset.map X {i}) := by
+    simp only [Multiset.map_singleton, Multiset.prod_singleton]
   rw [this]
   rfl
 
 @[simp]
-theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) : rename e (msymm σ R μ) = msymm τ R μ := by
+theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) :
+ rename e (msymm σ R μ) = msymm τ R μ := by
   simp only [msymm._eq_1, Sym.val_eq_coe, map_sum]
-  let f : {a : Sym σ n // Nat.Partition.ofSym a = μ} ≃ {a : Sym τ n // Nat.Partition.ofSym a = μ} := {
+  let f : {a : Sym σ n // Nat.Partition.ofSym a = μ} ≃ {a : Sym τ n // Nat.Partition.ofSym a = μ}
+   := {
     toFun := fun a => ⟨Sym.equivCongr e a, by
       simp only [Sym.equivCongr_apply, Nat.Partition.ofSymEquiv, a.2]⟩
     invFun := fun a => ⟨Sym.equivCongr e.symm a, by
@@ -483,7 +490,8 @@ theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) : rename e (ms
   simp only [Sym.equivCongr_apply, Equiv.coe_fn_mk, Sym.coe_map, Multiset.map_map,
     Function.comp_apply, rename_X]
 
-theorem msymm_isSymmetric {n : ℕ} (μ : n.Partition) : IsSymmetric (msymm σ R μ) := rename_msymm _ _ μ
+theorem msymm_isSymmetric {n : ℕ} (μ : n.Partition) : IsSymmetric (msymm σ R μ) :=
+ rename_msymm _ _ μ
 
 end MonomialSymmetric
 
