@@ -3,9 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Calculus.SmoothSeries
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Data.Complex.ExponentialBounds
 import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
@@ -159,30 +157,24 @@ lemma LSeries.hasDerivAt {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < 
     HasDerivAt (LSeries f) (- LSeries (logMul f) s) s := by
   -- The L-series of `f` is summable at some real `x < re s`.
   obtain ⟨x, h', hf⟩ := LSeriesSummable_lt_re_of_abscissaOfAbsConv_lt_re h
-  change HasDerivAt (fun z ↦ LSeries f z) ..
-  simp only [LSeries, ← tsum_neg]
-  -- We work in the right half-plane `re z > (x + re s)/2`.
+  -- We work in the right half-plane `re z > (x + re s)/2`, where we have a uniform
+  -- summable bound on `‖term f z ·‖`.
   let S : Set ℂ := {z | (x + s.re) / 2 < z.re}
-  have hop : IsOpen S := isOpen_lt continuous_const continuous_re
-  have hpr : IsPreconnected S := (convex_halfspace_re_gt _).isPreconnected
-  have hmem : s ∈ S := by
+  have h₀ : Summable (fun n ↦ ‖term f x n‖) := summable_norm_iff.mpr hf
+  have h₁ : IsOpen S := isOpen_lt continuous_const continuous_re
+  have h₂ : ∀ n, DifferentiableOn ℂ (fun z ↦ term f z n) S :=
+    fun n z _ ↦ (hasDerivAt_term f n _).differentiableAt.differentiableWithinAt
+  have h₃ : ∀ n, ∀ z ∈ S, ‖term f z n‖ ≤ ‖term f x n‖ := by
+    refine fun n z hz ↦ norm_term_le_of_re_le_re f ?_ n
+    simp only [S, Set.mem_setOf_eq] at hz
+    simp only [ofReal_re]
+    linarith only [h', hz]
+  have h₄ : s ∈ S := by
     simp only [S, Set.mem_setOf_eq]
     linarith only [h']
-  -- To get a uniform summable bound for the derivative series, we use that we
-  -- have summability of the L-series of `log * f` at `(x + s)/2`.
-  have hx : (x : ℂ).re < ((x + s) / 2).re := by
-    simp only [add_re, ofReal_re, div_ofNat_re, sub_re]
-    linarith only [h']
-  have hf' := hf.logMul_of_re_lt_re hx
-  rw [LSeriesSummable, ← summable_norm_iff] at hf'
-  -- Show that the terms have the correct derivative.
-  refine hasDerivAt_tsum_of_isPreconnected hf' hop hpr (fun n s _ ↦ hasDerivAt_term f n s)
-    (fun n z hz ↦ ?_) hmem (hf.of_re_le_re <| ofReal_re x ▸ h'.le) hmem
-  -- Show that the derivative series is uniformly bounded term-wise.
-  simp only [norm_neg, norm_div, norm_mul]
-  refine norm_term_le_of_re_le_re _ ?_ _
-  simp only [Set.mem_setOf_eq, div_ofNat_re, add_re, ofReal_re, S] at hz ⊢
-  exact hz.le
+  have h₅ : S ∈ nhds s := IsOpen.mem_nhds h₁ h₄
+  simpa only [← (hasSum_deriv_of_summable_norm h₀ h₂ h₁ h₃ h₄).tsum_eq, deriv_term, tsum_neg]
+    using ((differentiableOn_tsum_of_summable_norm h₀ h₂ h₁ h₃).differentiableAt h₅).hasDerivAt
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the derivative of this L-series at `s` is the negative of the L-series of `log * f`. -/
