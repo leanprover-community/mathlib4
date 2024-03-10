@@ -148,14 +148,14 @@ lemma abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
 ### Higher derivatives of L-series
 -/
 
-/-- The higher derivatives of the terms of an L-series. -/
-lemma LSeries.iteratedDeriv_term (f : ℕ → ℂ) (m n : ℕ) (s : ℂ) :
-    iteratedDeriv m (fun z ↦ term f z n) s =
-      (-1) ^ m * (term (logMul^[m] f) s n) := by
-  induction' m with m ih generalizing f s
-  · simp
-  · simp [iteratedDeriv_succ', deriv_term' f n, iteratedDeriv_neg, funext <| ih (logMul f),
-      pow_succ]
+-- /-- The higher derivatives of the terms of an L-series. -/
+-- lemma LSeries.iteratedDeriv_term (f : ℕ → ℂ) (m n : ℕ) (s : ℂ) :
+--     iteratedDeriv m (fun z ↦ term f z n) s =
+--       (-1) ^ m * (term (logMul^[m] f) s n) := by
+--   induction' m with m ih generalizing f s
+--   · simp
+--   · simp [iteratedDeriv_succ', deriv_term' f n, iteratedDeriv_neg, funext <| ih (logMul f),
+--       pow_succ]
 
 /-- The abscissa of absolute convergence of the point-wise product of a power of `log` and `f`
 is the same as that of `f`. -/
@@ -173,16 +173,14 @@ lemma LSeries.iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
     iteratedDeriv m (LSeries f) s = (-1) ^ m * LSeries (logMul^[m] f) s := by
   induction' m with m ih generalizing s
   · simp
-  · have ih' : {s | abscissaOfAbsConv f < s.re}.EqOn (iteratedDeriv m (LSeries f))
-        ((-1) ^ m * LSeries (logMul^[m] f)) := by
-      exact fun _ hs ↦ ih hs
+  · have ih' : {s | abscissaOfAbsConv f < re s}.EqOn (iteratedDeriv m (LSeries f))
+        ((-1) ^ m * LSeries (logMul^[m] f)) := fun _ hs ↦ ih hs
     have := derivWithin_congr ih' (ih h)
     simp_rw [derivWithin_of_isOpen (isOpen_rightHalfPlane _) h] at this
     rw [iteratedDeriv_succ, this]
-    change deriv (fun z ↦ (-1) ^ m * LSeries (logMul^[m] f) z) s = _
-    rw [deriv_const_mul_field', pow_succ', mul_assoc, neg_one_mul]
-    simp only [LSeries.deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h, Function.iterate_succ',
-      Function.comp_def]
+    simp only [Pi.mul_def, Pi.pow_apply, Pi.neg_apply, Pi.one_apply, deriv_const_mul_field',
+      pow_succ', mul_assoc, neg_one_mul, Function.iterate_succ', Function.comp_def,
+      LSeries.deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h]
 
 /-!
 ### The L-series is holomorphic
