@@ -363,6 +363,8 @@ lemma tsum_int_rec [T2Space α] {f g : ℕ → α} (hf : Summable f) (hg : Summa
 
 theorem HasSum.natCast_add_neg_natCast {f : ℤ → α} (hf : HasSum f a) :
     HasSum (fun n : ℕ ↦ f n + f (-n)) (a + f 0) := by
+  -- Note this is much easier to prove if you assume more about the target space, but we have to
+  -- work hard to prove it under the very minimal assumptions here.
   apply (hf.add (hasSum_ite_eq (0 : ℤ) (f 0))).hasSum_of_sum_eq fun u ↦ ?_
   refine' ⟨u.image Int.natAbs, fun v' hv' ↦ _⟩
   let u1 := v'.image fun x : ℕ ↦ (x : ℤ)
