@@ -88,9 +88,9 @@ variable (R₂)
 /-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
 the right.
 This is the most general version of the construction; it is `R₂`-linear for some distinguished
-commutative subsemiring `R₂` of the scalar ring.  Over a semiring with no particular distinguished
-such subsemiring, use `toLin'`, which is `ℕ`-linear.  Over a commutative semiring, use `toLin`,
-which is linear. -/
+commutative subsemiring `R₂` of the scalar CommRing.  Over a semiring with no particular
+distinguished such subsemiring, use `toLin'`, which is `ℕ`-linear.  Over a commutative semiring,
+use `toLin`, which is linear. -/
 def toLinHom : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R where
   toFun := toLinHomAux₂
   map_add' A₁ A₂ :=
@@ -150,7 +150,7 @@ variable {B} (R₂)
 /-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
 the left.
 This is the most general version of the construction; it is `R₂`-linear for some distinguished
-commutative subsemiring `R₂` of the scalar ring.  Over semiring with no particular distinguished
+commutative subsemiring `R₂` of the scalar CommRing.  Over semiring with no particular distinguished
 such subsemiring, use `toLin'Flip`, which is `ℕ`-linear.  Over a commutative semiring, use
 `toLinFlip`, which is linear. -/
 def toLinHomFlip : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R :=

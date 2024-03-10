@@ -55,7 +55,7 @@ universe u v w
 
 /-
 /-- `BilinForm R M` is the type of `R`-bilinear functions `M → M → R`. -/
-structure BilinForm (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] where
+structure BilinForm (R : Type*) (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] where
   bilin : M → M → R
   bilin_add_left : ∀ x y z : M, bilin (x + y) z = bilin x z + bilin y z
   bilin_smul_left : ∀ (a : R) (x y : M), bilin (a • x) y = a * bilin x y
