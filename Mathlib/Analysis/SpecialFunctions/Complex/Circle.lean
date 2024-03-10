@@ -200,47 +200,19 @@ lemma isLocalHomeomorph_expMapCircle : IsLocalHomeomorph expMapCircle := by
       rw [mem_circle_iff_normSq, Complex.normSq_apply, hx', hx.2, mul_zero, add_zero] at hx''
       exact zero_ne_one hx'' }
   intro t
-  let e2 : PartialHomeomorph ℝ ℝ :=
-  { toFun := fun s ↦ s - t
-    invFun := fun s ↦ s + t
-    source := Set.Ioo (t - Real.pi) (t + Real.pi)
-    target := Set.Ioo (-Real.pi) Real.pi
-    map_source' := by
-      intro x hx
-      rw [Set.mem_Ioo, sub_lt_iff_lt_add'] at hx ⊢
-      rwa [neg_lt_sub_iff_lt_add]
-    map_target' := by
-      intro x hx
-      rw [Set.mem_Ioo] at hx ⊢
-      rwa [← neg_add_eq_sub, add_lt_add_iff_right, add_comm, add_lt_add_iff_right]
-    left_inv' := fun x _ ↦ sub_add_cancel x t
-    right_inv' := fun x _ ↦ add_sub_cancel x t
-    open_source := isOpen_Ioo
-    open_target := isOpen_Ioo
-    continuousOn_toFun := Continuous.continuousOn $ by continuity
-    continuousOn_invFun := Continuous.continuousOn $ by continuity }
+  let e2 : PartialHomeomorph ℝ ℝ := ((Homeomorph.addRight t).toPartialHomeomorphOfImageEq
+    (Set.Ioo (-Real.pi) Real.pi) (isOpen_Ioo) (Set.Ioo (t - Real.pi) (t + Real.pi))
+      ((Set.image_add_const_Ioo t (-Real.pi) Real.pi).trans (by rw [neg_add_eq_sub, add_comm π t])
+    )).symm
   let e3 : PartialHomeomorph circle circle :=
-  { toFun := fun s ↦ s * expMapCircle t
-    invFun := fun s ↦ s / expMapCircle t
-    source := {expMapCircle Real.pi}ᶜ
-    target := {expMapCircle (Real.pi + t)}ᶜ
-    map_source' := by
-      intro x hx
-      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hx ⊢
-      rwa [← eq_div_iff_mul_eq', ← expMapCircle_sub, add_sub_cancel]
-    map_target' := by
-      intro x hx
-      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hx ⊢
-      rwa [div_eq_iff_eq_mul, ← expMapCircle_add]
-    left_inv' := fun x _ ↦ mul_div_cancel'' x (expMapCircle t)
-    right_inv' := fun x _ ↦ div_mul_cancel' x (expMapCircle t)
-    open_source := isOpen_compl_singleton
-    open_target := isOpen_compl_singleton
-    continuousOn_toFun := Continuous.continuousOn $ by continuity
-    continuousOn_invFun := Continuous.continuousOn $ by continuity }
+    (Homeomorph.mulRight (expMapCircle t)).toPartialHomeomorphOfImageEq
+      {expMapCircle Real.pi}ᶜ isOpen_compl_singleton {expMapCircle (Real.pi + t)}ᶜ
+      (by rw [Set.image_compl_eq (Homeomorph.mulRight (expMapCircle t)).bijective,
+            image_singleton, Homeomorph.coe_mulRight, expMapCircle_add])
   let e4 : PartialHomeomorph ℝ circle := e2.trans' (e1.trans' e3 rfl) rfl
   refine' ⟨e4, ⟨sub_lt_self t Real.pi_pos, lt_add_of_pos_right t Real.pi_pos⟩, _⟩
   ext x
   simp only [e4, e1, e3, e2]
   simp only [expMapCircle_apply, expMapCircle_add, PartialHomeomorph.trans'_apply,
     PartialHomeomorph.mk_coe, expMapCircle_sub, div_mul_cancel']
+  simp [Homeomorph.addRight]
