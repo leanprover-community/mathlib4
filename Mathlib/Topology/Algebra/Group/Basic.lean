@@ -1583,6 +1583,14 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
 variable {G}
 
 @[to_additive]
+theorem group_inseparable_iff {x y : G} : Inseparable x y ↔ x / y ∈ closure (1 : Set G) := by
+  rw [← singleton_one, ← specializes_iff_mem_closure, specializes_comm, specializes_iff_inseparable,
+    ← (Homeomorph.mulRight y⁻¹).embedding.inseparable_iff]
+  simp [div_eq_mul_inv]
+#align group_separation_rel group_inseparable_iff
+#align add_group_separation_rel addGroup_inseparable_iff
+
+@[to_additive]
 theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Set G) :=
   ⟨fun _ ↦ isClosed_singleton, fun h ↦
     have := TopologicalGroup.t1Space G h; inferInstance⟩
