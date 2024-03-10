@@ -718,35 +718,36 @@ theorem div_union : s / (t₁ ∪ t₂) = s / t₁ ∪ s / t₂ :=
 #align set.div_union Set.div_union
 #align set.sub_union Set.sub_union
 
-lemma union_div_trans {α : Type} (a b c : Set α) (ha : b ⊆ a) (hb : c ⊆ b): a \ b ∪ b \ c = a \ c := by
+lemma union_div_trans {α : Type} (a b c : Set α) (ha : b ⊆ a) (hb : c ⊆ b) :
+    a \ b ∪ b \ c = a \ c := by
   refine Set.ext_iff.mpr ?_
   intro x
   apply Iff.intro
-  . simp
+  · simp
     intro h
     cases h with
     | inl h =>
       apply And.intro
-      . exact Set.mem_of_mem_diff h
-      . apply Set.not_mem_subset hb
+      · exact Set.mem_of_mem_diff h
+      · apply Set.not_mem_subset hb
         exact Set.not_mem_of_mem_diff h
     | inr h =>
       apply And.intro
-      . unhygienic with_reducible aesop_destruct_products
+      · unhygienic with_reducible aesop_destruct_products
         apply ha
         simp_all only
-      . exact Set.not_mem_of_mem_diff h
-  . intro h1
-    simp
+      · exact Set.not_mem_of_mem_diff h
+  · intro h1
+    simp only [mem_union, mem_diff]
     by_cases h2:(x ∈ b)
-    . right
+    · right
       apply And.intro
-      . exact h2
-      . exact Set.not_mem_of_mem_diff h1
-    . left
+      · exact h2
+      · exact Set.not_mem_of_mem_diff h1
+    · left
       apply And.intro
-      . exact Set.mem_of_mem_diff h1
-      . exact h2
+      · exact Set.mem_of_mem_diff h1
+      · exact h2
 
 @[to_additive]
 theorem inter_div_subset : s₁ ∩ s₂ / t ⊆ s₁ / t ∩ (s₂ / t) :=
