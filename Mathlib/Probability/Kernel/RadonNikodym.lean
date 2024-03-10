@@ -433,16 +433,6 @@ lemma measurableSet_mutuallySingular (κ ν : kernel α γ) [IsFiniteKernel κ] 
     (measurableSet_singleton 0)
 
 -- ok
-lemma Measure.compProd_apply_prod {μ : Measure α} [SFinite μ] [IsSFiniteKernel κ]
-    {s : Set α} {t : Set γ} (hs : MeasurableSet s) (ht : MeasurableSet t) :
-    (μ ⊗ₘ κ) (s ×ˢ t) = ∫⁻ a in s, κ a t ∂μ := by
-  rw [Measure.compProd_apply (hs.prod ht), ← lintegral_indicator _ hs]
-  congr with a
-  classical
-  rw [indicator_apply]
-  split_ifs with ha <;> simp [ha]
-
--- ok
 lemma set_lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g (μ.withDensity f))
     {s : Set α} (hs : MeasurableSet s) :
@@ -529,54 +519,6 @@ lemma Measure.mutuallySingular_compProd_right (μ ν : Measure α) [SFinite μ] 
       withDensity_rnDeriv_eq_zero_iff_mutuallySingular]
     exact hκη a
   simp [h1, h2]
-
--- ok
-@[simp]
-lemma prodMkLeft_add (β : Type*) [MeasurableSpace β] (κ η : kernel α γ) :
-    prodMkLeft β (κ + η) = prodMkLeft β κ + prodMkLeft β η := by ext; simp
-
--- ok
-@[simp]
-lemma prodMkRight_add (β : Type*) [MeasurableSpace β] (κ η : kernel α γ) :
-    prodMkRight β (κ + η) = prodMkRight β κ + prodMkRight β η := by ext; simp
-
--- ok
-lemma compProd_add_left {β : Type*} {_ : MeasurableSpace β}
-    (μ κ : kernel α β) [IsSFiniteKernel μ] (η : kernel (α × β) γ)
-    [IsSFiniteKernel κ] [IsSFiniteKernel η] :
-    (μ + κ) ⊗ₖ η = μ ⊗ₖ η + κ ⊗ₖ η := by
-  ext a s hs
-  rw [compProd_apply _ _ _ hs]
-  simp only [coeFn_add, Pi.add_apply, lintegral_add_measure, Measure.add_toOuterMeasure,
-    OuterMeasure.coe_add]
-  rw [compProd_apply _ _ _ hs, compProd_apply _ _ _ hs]
-
--- ok
-lemma compProd_add_right {β : Type*} {_ : MeasurableSpace β}
-    (μ : kernel α β) [IsSFiniteKernel μ] (κ η : kernel (α × β) γ)
-    [IsSFiniteKernel κ] [IsSFiniteKernel η] :
-    μ ⊗ₖ (κ + η) = μ ⊗ₖ κ + μ ⊗ₖ η := by
-  ext a s hs
-  rw [compProd_apply _ _ _ hs]
-  simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add]
-  rw [lintegral_add_left, compProd_apply _ _ _ hs, compProd_apply _ _ _ hs]
-  exact measurable_kernel_prod_mk_left' hs a
-
--- ok
-lemma const_add (β : Type*) [MeasurableSpace β] (μ ν : Measure α) :
-    const β (μ + ν) = const β μ + const β ν := by ext; simp
-
--- ok
-nonrec lemma Measure.compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : kernel α γ)
-    [IsSFiniteKernel κ] :
-    (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
-  rw [Measure.compProd, const_add, compProd_add_left]; rfl
-
--- ok
-nonrec lemma Measure.compProd_add_right (μ : Measure α) [SFinite μ] (κ η : kernel α γ)
-    [IsSFiniteKernel κ] [IsSFiniteKernel η] :
-    μ ⊗ₘ (κ + η) = μ ⊗ₘ κ + μ ⊗ₘ η := by
-  rw [Measure.compProd, prodMkLeft_add, compProd_add_right]; rfl
 
 lemma Measure.fst_map_compProd (μ : Measure α) [SFinite μ] (κ : kernel α γ)
     [IsMarkovKernel κ] :
