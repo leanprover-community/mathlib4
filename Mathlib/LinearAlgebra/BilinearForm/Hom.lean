@@ -83,9 +83,9 @@ variable (R₂)
 /-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
 the right.
 This is the most general version of the construction; it is `R₂`-linear for some distinguished
-commutative subsemiring `R₂` of the scalar CommRing.  Over a semiring with no particular distinguished
-such subsemiring, use `toLin'`, which is `ℕ`-linear.  Over a commutative semiring, use `toLin`,
-which is linear. -/
+commutative subsemiring `R₂` of the scalar CommRing.  Over a semiring with no particular
+distinguished such subsemiring, use `toLin'`, which is `ℕ`-linear.  Over a commutative semiring,
+use `toLin`, which is linear. -/
 def toLinHom : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R where
   toFun := toLinHomAux₂
   map_add' A₁ A₂ :=
