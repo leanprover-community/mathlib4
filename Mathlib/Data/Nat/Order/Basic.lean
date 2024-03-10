@@ -457,7 +457,7 @@ theorem dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
 
 theorem add_mod_eq_ite :
     (m + n) % k = if k ≤ m % k + n % k then m % k + n % k - k else m % k + n % k := by
-  cases k; simp [mod_zero]
+  cases k; simp only [zero_eq, mod_zero, _root_.zero_le, ↓reduceIte, tsub_zero]
   rw [Nat.add_mod]
   split_ifs with h
   · rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]

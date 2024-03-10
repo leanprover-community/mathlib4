@@ -1115,7 +1115,7 @@ end Fintype
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
-  Fintype.ofSurjective Quotient.mk'' fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
+  Fintype.ofSurjective Quotient.mk'' Quotient.surjective_Quotient_mk''
 #align quotient.fintype Quotient.fintype
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
