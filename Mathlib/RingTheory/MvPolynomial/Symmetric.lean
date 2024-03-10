@@ -474,8 +474,8 @@ theorem msymm_one : msymm σ R (Nat.Partition.indiscrete 1) = ∑ i, X i := by
 theorem rename_msymm {n : ℕ} (μ : n.Partition) (e : σ ≃ τ) :
     rename e (msymm σ R μ) = msymm τ R μ := by
   simp only [msymm._eq_1, Sym.val_eq_coe, map_sum]
-  let f : {a : Sym σ n // Nat.Partition.ofSym a = μ} ≃ {a : Sym τ n // Nat.Partition.ofSym a = μ}
-   := {
+  let f : {a : Sym σ n // Nat.Partition.ofSym a = μ} ≃ {a : Sym τ n // Nat.Partition.ofSym a = μ} :=
+  {
     toFun := fun a => ⟨Sym.equivCongr e a, by
       simp only [Sym.equivCongr_apply, Nat.Partition.ofSymEquiv, a.2]⟩
     invFun := fun a => ⟨Sym.equivCongr e.symm a, by
