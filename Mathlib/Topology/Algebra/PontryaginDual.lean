@@ -26,144 +26,13 @@ isomorphic to its double dual.
 
 section ForMathlib
 
-lemma coveringmap : IsLocalHomeomorph expMapCircle := by
-  have fund : ∀ x : circle, Complex.arg x = Real.pi ↔ x = expMapCircle Real.pi := by
-    rintro ⟨x, hx⟩
-    rw [mem_circle_iff_normSq, Complex.normSq_apply] at hx
-    rw [Complex.arg_eq_pi_iff, Subtype.ext_iff, expMapCircle_apply, Complex.exp_pi_mul_I,
-        Complex.ext_iff, Complex.neg_re, Complex.neg_im, Complex.one_re, Complex.one_im, neg_zero]
-    rw [and_congr_left_iff]
-    simp only
-    intro hx'
-    rw [hx', mul_zero, add_zero, ← sq, sq_eq_one_iff] at hx
-    rcases hx with hx | hx <;> rw [hx] <;> norm_num
-  let e1 : PartialHomeomorph ℝ circle :=
-  { toFun := expMapCircle
-    invFun := Complex.arg ∘ Subtype.val
-    source := Set.Ioo (-Real.pi) Real.pi
-    target := {expMapCircle Real.pi}ᶜ
-    map_source' := by
-      intro x hx hx'
-      rw [Set.mem_singleton_iff] at hx'
-      replace hx' := congrArg (Complex.arg ∘ Subtype.val) hx'
-      simp only [Function.comp_apply] at hx'
-      rw [arg_expMapCircle hx.1 hx.2.le] at hx'
-      rw [arg_expMapCircle (neg_lt_self Real.pi_pos) le_rfl] at hx'
-      rw [hx'] at hx
-      exact lt_irrefl Real.pi hx.2
-    map_target' := by
-      intro x hx
-      have key := Complex.arg_mem_Ioc x
-      exact ⟨key.1, lt_of_le_of_ne key.2 (hx ∘ (fund x).mp)⟩
-    left_inv' := fun x hx ↦ arg_expMapCircle hx.1 hx.2.le
-    right_inv' := fun x _ ↦ expMapCircle_arg x
-    open_source := isOpen_Ioo
-    open_target := isOpen_compl_singleton
-    continuousOn_toFun := Continuous.continuousOn $ by continuity
-    continuousOn_invFun := by
-      refine' (ContinuousAt.continuousOn fun _ ↦ Complex.continuousAt_arg).comp
-        (Continuous.continuousOn $ by continuity) _
-      simp only
-      intro x hx
-      contrapose! hx
-      rw [Set.not_mem_compl_iff, Set.mem_singleton_iff, ← fund, Complex.arg_eq_pi_iff]
-      rw [Complex.slitPlane, Set.mem_setOf_eq, not_or, not_lt, not_ne_iff] at hx
-      refine' ⟨lt_of_le_of_ne hx.1 _, hx.2⟩
-      intro hx'
-      have hx'' := x.2
-      rw [mem_circle_iff_normSq, Complex.normSq_apply, hx', hx.2, mul_zero, add_zero] at hx''
-      exact zero_ne_one hx'' }
-  intro t
-  let e2 : PartialHomeomorph ℝ ℝ :=
-  { toFun := fun s ↦ s - t
-    invFun := fun s ↦ s + t
-    source := Set.Ioo (t - Real.pi) (t + Real.pi)
-    target := Set.Ioo (-Real.pi) Real.pi
-    map_source' := by
-      intro x hx
-      rw [Set.mem_Ioo, sub_lt_iff_lt_add'] at hx ⊢
-      rwa [neg_lt_sub_iff_lt_add]
-    map_target' := by
-      intro x hx
-      rw [Set.mem_Ioo] at hx ⊢
-      rwa [← neg_add_eq_sub, add_lt_add_iff_right, add_comm, add_lt_add_iff_right]
-    left_inv' := fun x _ ↦ sub_add_cancel x t
-    right_inv' := fun x _ ↦ add_sub_cancel x t
-    open_source := isOpen_Ioo
-    open_target := isOpen_Ioo
-    continuousOn_toFun := Continuous.continuousOn $ by continuity
-    continuousOn_invFun := Continuous.continuousOn $ by continuity }
-  let e3 : PartialHomeomorph circle circle :=
-  { toFun := fun s ↦ s * expMapCircle t
-    invFun := fun s ↦ s / expMapCircle t
-    source := {expMapCircle Real.pi}ᶜ
-    target := {expMapCircle (Real.pi + t)}ᶜ
-    map_source' := by
-      intro x hx
-      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hx ⊢
-      rwa [← eq_div_iff_mul_eq', ← expMapCircle_sub, add_sub_cancel]
-    map_target' := by
-      intro x hx
-      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hx ⊢
-      rwa [div_eq_iff_eq_mul, ← expMapCircle_add]
-    left_inv' := fun x _ ↦ mul_div_cancel'' x (expMapCircle t)
-    right_inv' := fun x _ ↦ div_mul_cancel' x (expMapCircle t)
-    open_source := isOpen_compl_singleton
-    open_target := isOpen_compl_singleton
-    continuousOn_toFun := Continuous.continuousOn $ by continuity
-    continuousOn_invFun := Continuous.continuousOn $ by continuity }
-  let e4 : PartialHomeomorph ℝ circle := e2.trans' (e1.trans' e3 rfl) rfl
-  refine' ⟨e4, ⟨sub_lt_self t Real.pi_pos, lt_add_of_pos_right t Real.pi_pos⟩, _⟩
-  ext x
-  simp only [e4, e1, e3, e2]
-  simp only [expMapCircle_apply, expMapCircle_add, PartialHomeomorph.trans'_apply,
-    PartialHomeomorph.mk_coe, expMapCircle_sub, div_mul_cancel']
-
-instance {X : Type*} [TopologicalSpace X] [Group X] [TopologicalGroup X] [LocallyCompactSpace X] :
-    LocallyCompactSpace (ContinuousMonoidHom X circle) := by
-  let Vn : ℕ → Set circle :=
-    fun n ↦ expMapCircle '' { x | |x| < Real.pi / 2 ^ (n + 1)}
-  have hVn : ∀ n x, x ∈ Vn n ↔ 2 ^ (n + 1) * |Complex.arg x| < Real.pi := by
-    intro n x
-    rw [← lt_div_iff' (pow_pos two_pos (n + 1))]
-    refine' ⟨_, fun hx ↦ ⟨Complex.arg x, hx, expMapCircle_arg x⟩⟩
-    rintro ⟨t, ht : |t| < _, rfl⟩
-    have ht' : |t| < Real.pi :=
-      ht.trans (div_lt_self Real.pi_pos (one_lt_pow one_lt_two (Nat.succ_ne_zero _)))
-    rw [abs_lt] at ht'
-    rwa [arg_expMapCircle ht'.1 ht'.2.le]
-  have key0 : Filter.HasBasis (nhds 1) (fun _ ↦ True) Vn := by
-    rw [← expMapCircle_zero, ← coveringmap.map_nhds_eq 0]
-    refine' Filter.HasBasis.map expMapCircle _
-    have key := nhds_basis_zero_abs_sub_lt ℝ
-    refine' key.to_hasBasis (fun x hx ↦ _) fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩
-    refine' ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ _⟩
-    rw [Set.mem_setOf_eq] at ht ⊢
-    refine' lt_of_lt_of_le ht _
-    rw [div_le_iff' (pow_pos two_pos _), ← div_le_iff hx]
-    refine' (Nat.le_ceil (Real.pi / x)).trans _
-    exact_mod_cast (Nat.le_succ _).trans (Nat.lt_two_pow _).le
-  refine' mythm' Vn _ key0
-  intro n x h1 h2
-  have hx : x.1 ≠ 0 := ne_zero_of_mem_circle x
-  rw [hVn] at h1 h2 ⊢
-  rwa [Submonoid.coe_mul, Complex.arg_mul hx hx, ← two_mul, abs_mul, abs_two, ← mul_assoc,
-    ← pow_succ'] at h2
-  clear h2
-  rw [← abs_two, pow_succ', mul_assoc, ← abs_mul, abs_two] at h1
-  rw [← two_mul]
-  apply Set.Ioo_subset_Ioc_self
-  rw [Set.mem_Ioo, ← abs_lt]
-  refine' lt_of_le_of_lt _ h1
-  exact le_mul_of_one_le_left (abs_nonneg _) (one_le_pow_of_one_le one_le_two n)
-
 end ForMathlib
 
 open Pointwise Function
 
-variable (A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
+variable (A B C D E G : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E] [Group G]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
-  [TopologicalSpace E] [TopologicalGroup E]
+  [TopologicalSpace E] [TopologicalSpace G] [TopologicalGroup E] [TopologicalGroup G]
 
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → circle`. -/
 def PontryaginDual :=
@@ -187,6 +56,43 @@ instance : TopologicalGroup (PontryaginDual A) :=
 -- Porting note: instance is now noncomputable
 noncomputable instance : Inhabited (PontryaginDual A) :=
   (inferInstance : Inhabited (ContinuousMonoidHom A circle))
+
+instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
+  let Vn : ℕ → Set circle :=
+    fun n ↦ expMapCircle '' { x | |x| < Real.pi / 2 ^ (n + 1)}
+  have hVn : ∀ n x, x ∈ Vn n ↔ 2 ^ (n + 1) * |Complex.arg x| < Real.pi := by
+    intro n x
+    rw [← lt_div_iff' (pow_pos two_pos (n + 1))]
+    refine' ⟨_, fun hx ↦ ⟨Complex.arg x, hx, expMapCircle_arg x⟩⟩
+    rintro ⟨t, ht : |t| < _, rfl⟩
+    have ht' : |t| < Real.pi :=
+      ht.trans (div_lt_self Real.pi_pos (one_lt_pow one_lt_two (Nat.succ_ne_zero _)))
+    rw [abs_lt] at ht'
+    rwa [arg_expMapCircle ht'.1 ht'.2.le]
+  have key0 : Filter.HasBasis (nhds 1) (fun _ ↦ True) Vn := by
+    rw [← expMapCircle_zero, ← isLocalHomeomorph_expMapCircle.map_nhds_eq 0]
+    refine' Filter.HasBasis.map expMapCircle _
+    have key := nhds_basis_zero_abs_sub_lt ℝ
+    refine' key.to_hasBasis (fun x hx ↦ _) fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩
+    refine' ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ _⟩
+    rw [Set.mem_setOf_eq] at ht ⊢
+    refine' lt_of_lt_of_le ht _
+    rw [div_le_iff' (pow_pos two_pos _), ← div_le_iff hx]
+    refine' (Nat.le_ceil (Real.pi / x)).trans _
+    exact_mod_cast (Nat.le_succ _).trans (Nat.lt_two_pow _).le
+  refine' ContinuousMonoidHom.locallyCompactSpace_of_hasBasis Vn _ key0
+  intro n x h1 h2
+  have hx : x.1 ≠ 0 := ne_zero_of_mem_circle x
+  rw [hVn] at h1 h2 ⊢
+  rwa [Submonoid.coe_mul, Complex.arg_mul hx hx, ← two_mul, abs_mul, abs_two, ← mul_assoc,
+    ← pow_succ'] at h2
+  clear h2
+  rw [← abs_two, pow_succ', mul_assoc, ← abs_mul, abs_two] at h1
+  rw [← two_mul]
+  apply Set.Ioo_subset_Ioc_self
+  rw [Set.mem_Ioo, ← abs_lt]
+  refine' lt_of_le_of_lt _ h1
+  exact le_mul_of_one_le_left (abs_nonneg _) (one_le_pow_of_one_le one_le_two n)
 
 variable {A B C D E}
 
