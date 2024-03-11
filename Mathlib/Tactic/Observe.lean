@@ -3,8 +3,9 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Tactic.LibrarySearch
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
+import Lean.Elab.Tactic.ElabTerm
+import Lean.Meta.Tactic.LibrarySearch
 
 /-!
 # The `observe` tactic.
@@ -14,7 +15,7 @@ import Std.Tactic.TryThis
 
 namespace Mathlib.Tactic.LibrarySearch
 
-open Lean Meta Elab Tactic Std.Tactic.TryThis
+open Lean Meta Elab Tactic Meta.Tactic.TryThis LibrarySearch
 
 /-- `observe hp : p` asserts the proposition `p`, and tries to prove it using `exact?`.
 If no proof is found, the tactic fails.
@@ -35,7 +36,9 @@ elab_rules : tactic |
   withMainContext do
     let (type, _) ← elabTermWithHoles t none (← getMainTag) true
     let .mvar goal ← mkFreshExprMVar type | failure
-    if let some _ ← librarySearch goal [] then
+    -- FIXME: this won't be needed (it's a default argument) after nightly-2024-02-26
+    let tactic := fun initial g => solveByElim [] (maxDepth := 6) (exfalso := initial) g
+    if let some _ ← librarySearch goal tactic then
       reportOutOfHeartbeats `library_search tk
       throwError "observe did not find a solution"
     else

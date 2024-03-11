@@ -23,7 +23,7 @@ In fact, in `AddCommGroupCat` there is a much nicer model of colimits as quotien
 of finitely supported functions, and we really should implement this as well (or instead).
 -/
 
--- porting note: `AddCommGroup` in all the names
+-- Porting note: `AddCommGroup` in all the names
 set_option linter.uppercaseLean3 false
 
 universe w u v
@@ -108,17 +108,25 @@ def ColimitType : Type max u v w :=
   Quotient (colimitSetoid.{w} F)
 #align AddCommGroup.colimits.colimit_type AddCommGroupCat.Colimits.ColimitType
 
-instance : AddCommGroup (ColimitType.{w} F) where
+instance : Zero (ColimitType.{w} F) where
   zero := Quotient.mk _ zero
+
+instance : Neg (ColimitType.{w} F) where
   neg := Quotient.map neg Relation.neg_1
-  add := Quotient.map₂ add fun x x' rx y y' ry =>
+
+instance : Add (ColimitType.{w} F) where
+  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
-  zero_add := Quotient.ind fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind fun _ => Quotient.sound <| Relation.add_left_neg _
-  add_comm := Quotient.ind₂ fun _ _ => Quotient.sound <| Relation.add_comm _ _
-  add_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
+
+instance : AddCommGroup (ColimitType.{w} F) where
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 instance ColimitTypeInhabited : Inhabited (ColimitType.{w} F) := ⟨0⟩
 
@@ -129,7 +137,7 @@ theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
 
 @[simp]
 theorem quot_neg (x) :
-    -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
+    -- Porting note: force Lean to treat `ColimitType F` no as `Quot _`
     (by exact Quot.mk Setoid.r (neg x) : ColimitType.{w} F) =
       -(by exact Quot.mk Setoid.r x) :=
   rfl
@@ -138,7 +146,7 @@ theorem quot_neg (x) :
 @[simp]
 theorem quot_add (x y) :
     (by exact Quot.mk Setoid.r (add x y) : ColimitType.{w} F) =
-      -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
+      -- Porting note: force Lean to treat `ColimitType F` no as `Quot _`
       (by exact Quot.mk Setoid.r x) + (by exact Quot.mk Setoid.r y) :=
   rfl
 #align AddCommGroup.colimits.quot_add AddCommGroupCat.Colimits.quot_add
@@ -220,7 +228,7 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
 def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
   toFun := descFun F s
   map_zero' := rfl
-  -- Porting note : in `mathlib3`, nothing needs to be done after `induction`
+  -- Porting note: in `mathlib3`, nothing needs to be done after `induction`
   map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp; rw [← quot_add F]; rfl
 #align AddCommGroup.colimits.desc_morphism AddCommGroupCat.Colimits.descMorphism
 

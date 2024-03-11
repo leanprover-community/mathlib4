@@ -185,7 +185,7 @@ theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : ke
   exact h_meas.lintegral_kernel_prod_right
 #align probability_theory.kernel.measurable_comp_prod_fun ProbabilityTheory.kernel.measurable_compProdFun
 
-open Classical
+open scoped Classical
 
 /-- Composition-Product of kernels. For s-finite kernels, it satisfies
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
@@ -436,8 +436,8 @@ theorem lintegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel
   let g := Function.curry f
   change ∫⁻ bc, f bc ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, g b c ∂η (a, b) ∂κ a
   rw [← lintegral_compProd']
-  · simp_rw [Function.curry_apply]
-  · simp_rw [Function.uncurry_curry]; exact hf
+  · simp_rw [g, Function.curry_apply]
+  · simp_rw [g, Function.uncurry_curry]; exact hf
 #align probability_theory.kernel.lintegral_comp_prod ProbabilityTheory.kernel.lintegral_compProd
 
 /-- Lebesgue integral against the composition-product of two kernels. -/
@@ -558,6 +558,19 @@ instance IsSFiniteKernel.compProd (κ : kernel α β) (η : kernel (α × β) γ
   exact kernel.isSFiniteKernel_sum fun n => kernel.isSFiniteKernel_sum inferInstance
 #align probability_theory.kernel.is_s_finite_kernel.comp_prod ProbabilityTheory.kernel.IsSFiniteKernel.compProd
 
+lemma compProd_add_left (μ κ : kernel α β) (η : kernel (α × β) γ)
+    [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    (μ + κ) ⊗ₖ η = μ ⊗ₖ η + κ ⊗ₖ η := by ext _ _ hs; simp [compProd_apply _ _ _ hs]
+
+lemma compProd_add_right (μ : kernel α β) (κ η : kernel (α × β) γ)
+    [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    μ ⊗ₖ (κ + η) = μ ⊗ₖ κ + μ ⊗ₖ η := by
+  ext a s hs
+  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure,
+    OuterMeasure.coe_add]
+  rw [lintegral_add_left]
+  exact measurable_kernel_prod_mk_left' hs a
+
 end CompositionProduct
 
 section MapComap
@@ -587,6 +600,12 @@ theorem map_apply' (κ : kernel α β) (hf : Measurable f) (a : α) {s : Set γ}
 @[simp]
 lemma map_zero (hf : Measurable f) : kernel.map (0 : kernel α β) f hf = 0 := by
   ext; rw [kernel.map_apply]; simp
+
+@[simp]
+lemma map_id (κ : kernel α β) : map κ id measurable_id = κ := by ext a; rw [map_apply]; simp
+
+@[simp]
+lemma map_id' (κ : kernel α β) : map κ (fun a ↦ a) measurable_id = κ := map_id κ
 
 nonrec theorem lintegral_map (κ : kernel α β) (hf : Measurable f) (a : α) {g' : γ → ℝ≥0∞}
     (hg : Measurable g') : ∫⁻ b, g' b ∂map κ f hf a = ∫⁻ a, g' (f a) ∂κ a := by
@@ -645,6 +664,12 @@ theorem comap_apply' (κ : kernel α β) (hg : Measurable g) (c : γ) (s : Set �
 @[simp]
 lemma comap_zero (hg : Measurable g) : kernel.comap (0 : kernel α β) g hg = 0 := by
   ext; rw [kernel.comap_apply]; simp
+
+@[simp]
+lemma comap_id (κ : kernel α β) : comap κ id measurable_id = κ := by ext a; rw [comap_apply]; simp
+
+@[simp]
+lemma comap_id' (κ : kernel α β) : comap κ (fun a ↦ a) measurable_id = κ := comap_id κ
 
 theorem lintegral_comap (κ : kernel α β) (hg : Measurable g) (c : γ) (g' : β → ℝ≥0∞) :
     ∫⁻ b, g' b ∂comap κ g hg c = ∫⁻ b, g' b ∂κ (g c) :=
@@ -724,6 +749,14 @@ lemma prodMkLeft_zero : kernel.prodMkLeft α (0 : kernel β γ) = 0 := by
 @[simp]
 lemma prodMkRight_zero : kernel.prodMkRight α (0 : kernel β γ) = 0 := by
   ext x s _; simp
+
+@[simp]
+lemma prodMkLeft_add (κ η : kernel α β) :
+    prodMkLeft γ (κ + η) = prodMkLeft γ κ + prodMkLeft γ η := by ext; simp
+
+@[simp]
+lemma prodMkRight_add (κ η : kernel α β) :
+    prodMkRight γ (κ + η) = prodMkRight γ κ + prodMkRight γ η := by ext; simp
 
 theorem lintegral_prodMkLeft (κ : kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd := rfl

@@ -205,7 +205,7 @@ section HasZeroMorphisms
 
 variable [HasZeroMorphisms V]
 
--- porting note: in order to ease automation, the `Zero` instance is introduced separately,
+-- porting note (#10688): in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `zero_hom` was moved just below
 instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
 
@@ -237,10 +237,16 @@ section Preadditive
 
 variable [Preadditive V]
 
+instance {X Y : Action V G} : Add (X ⟶ Y) where
+  add f g := ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
+
+instance {X Y : Action V G} : Neg (X ⟶ Y) where
+  neg f := ⟨-f.hom, by simp [f.comm]⟩
+
 instance : Preadditive (Action V G) where
   homGroup X Y :=
-    { add := fun f g => ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
-      neg := fun f => ⟨-f.hom, by simp [f.comm]⟩
+    { nsmul := nsmulRec
+      zsmul := zsmulRec
       zero_add := by intros; ext; exact zero_add _
       add_zero := by intros; ext; exact add_zero _
       add_assoc := by intros; ext; exact add_assoc _ _ _
