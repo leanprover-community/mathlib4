@@ -59,7 +59,7 @@ end
 /-- Gets the value of the `linter.pointless` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.pointless o
 
-/-- The main entry point to the unreachable tactic linter. -/
+/-- The main entry point to the pointless tactic linter. -/
 def pointlessLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterHash (← getOptions) && (← getInfoState).enabled do
     return
