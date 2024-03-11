@@ -5,6 +5,8 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Pairwise
+import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Says
 
 #align_import logic.equiv.set from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
@@ -261,6 +263,26 @@ theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈
     (a : t) : (Equiv.Set.union H).symm (Sum.inr a) = ⟨a, subset_union_right _ _ a.2⟩ :=
   rfl
 #align equiv.set.union_symm_apply_right Equiv.Set.union_symm_apply_right
+
+/-- If an indexed family of sets is pairwise disjoint, their union is equivalent to the sigma
+type of those sets. -/
+protected noncomputable def iUnion {α β : Type*} {f : α → Set β} (h : Pairwise (Disjoint on f)) :
+    ⋃ i, f i ≃ Σi, f i := by
+  calc ⋃ i, f i ≃ { x : (α × β) | x.2 ∈ f x.1 } :=
+      (Equiv.ofBijective (fun x ↦ ⟨(x : α × β).2, Set.mem_iUnion.2 ⟨(x : α × β).1, x.property⟩⟩)
+         ⟨fun x y hxy ↦ by
+            simp only [mem_setOf_eq, Subtype.mk.injEq] at hxy
+            ext
+            · by_contra hne
+              replace h := Set.disjoint_left.1 (h hne) x.property
+              rw [hxy] at h
+              exact h y.property
+            · exact hxy,
+          fun x ↦ by
+            rcases Set.mem_iUnion.1 x.property with ⟨i, hi⟩
+            exact ⟨⟨(i, ↑x), hi⟩, rfl⟩⟩).symm
+    _ ≃ Σi, { y : β | (i, y) ∈ { x : (α × β) | x.2 ∈ f x.1 } } := setProdEquivSigma _
+    _ ≃ Σi, f i := sigmaCongrRight fun i ↦ setCongr (by simp)
 
 /-- A singleton set is equivalent to a `PUnit` type. -/
 protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
