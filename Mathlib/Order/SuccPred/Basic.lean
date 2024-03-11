@@ -543,12 +543,12 @@ theorem succ_top : succ (⊤ : α) = ⊤ := by
   rw [succ_eq_iff_isMax, isMax_iff_eq_top]
 #align order.succ_top Order.succ_top
 
---Porting note: removing @[simp],`simp` can prove it
+-- Porting note: removing @[simp],`simp` can prove it
 theorem succ_le_iff_eq_top : succ a ≤ a ↔ a = ⊤ :=
   succ_le_iff_isMax.trans isMax_iff_eq_top
 #align order.succ_le_iff_eq_top Order.succ_le_iff_eq_top
 
---Porting note: removing @[simp],`simp` can prove it
+-- Porting note: removing @[simp],`simp` can prove it
 theorem lt_succ_iff_ne_top : a < succ a ↔ a ≠ ⊤ :=
   lt_succ_iff_not_isMax.trans not_isMax_iff_ne_top
 #align order.lt_succ_iff_ne_top Order.lt_succ_iff_ne_top
@@ -559,7 +559,7 @@ section OrderBot
 
 variable [OrderBot α]
 
---Porting note: removing @[simp],`simp` can prove it
+-- Porting note: removing @[simp],`simp` can prove it
 theorem lt_succ_bot_iff [NoMaxOrder α] : a < succ ⊥ ↔ a = ⊥ := by rw [lt_succ_iff, le_bot_iff]
 #align order.lt_succ_bot_iff Order.lt_succ_bot_iff
 
@@ -663,6 +663,14 @@ theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
 
 lemma pred_lt_pred_of_not_isMin (h : a < b) (ha : ¬ IsMin a) : pred a < pred b :=
   (pred_lt_iff_of_not_isMin ha).2 <| le_pred_of_lt h
+
+theorem pred_lt_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a < pred b ↔ a < b := by
+  rw [pred_lt_iff_of_not_isMin ha, le_pred_iff_of_not_isMin hb]
+
+theorem pred_le_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a ≤ pred b ↔ a ≤ b := by
+  rw [le_pred_iff_of_not_isMin hb, pred_lt_iff_of_not_isMin ha]
 
 @[simp, mono]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
@@ -795,6 +803,11 @@ theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
 alias ⟨_, _root_.IsMin.pred_eq⟩ := pred_eq_iff_isMin
 #align is_min.pred_eq IsMin.pred_eq
 
+theorem pred_eq_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a = pred b ↔ a = b := by
+  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, pred_le_pred_iff_of_not_isMin ha hb,
+    pred_lt_pred_iff_of_not_isMin ha hb]
+
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
   refine'
     ⟨fun h =>
@@ -893,12 +906,12 @@ theorem pred_bot : pred (⊥ : α) = ⊥ :=
   isMin_bot.pred_eq
 #align order.pred_bot Order.pred_bot
 
---Porting note: removing @[simp],`simp` can prove it
+-- Porting note: removing @[simp],`simp` can prove it
 theorem le_pred_iff_eq_bot : a ≤ pred a ↔ a = ⊥ :=
   @succ_le_iff_eq_top αᵒᵈ _ _ _ _
 #align order.le_pred_iff_eq_bot Order.le_pred_iff_eq_bot
 
---Porting note: removing @[simp],`simp` can prove it
+-- Porting note: removing @[simp],`simp` can prove it
 theorem pred_lt_iff_ne_bot : pred a < a ↔ a ≠ ⊥ :=
   @lt_succ_iff_ne_top αᵒᵈ _ _ _ _
 #align order.pred_lt_iff_ne_bot Order.pred_lt_iff_ne_bot
@@ -909,7 +922,7 @@ section OrderTop
 
 variable [OrderTop α]
 
---Porting note: removing @[simp],`simp` can prove it
+-- Porting note: removing @[simp],`simp` can prove it
 theorem pred_top_lt_iff [NoMinOrder α] : pred ⊤ < a ↔ a = ⊤ :=
   @lt_succ_bot_iff αᵒᵈ _ _ _ _ _
 #align order.pred_top_lt_iff Order.pred_top_lt_iff
@@ -971,12 +984,12 @@ theorem pred_succ_of_not_isMax (h : ¬IsMax a) : pred (succ a) = a :=
   CovBy.pred_eq (covBy_succ_of_not_isMax h)
 #align order.pred_succ_of_not_is_max Order.pred_succ_of_not_isMax
 
---Porting note: removing @[simp],`simp` can prove it
+-- Porting note: removing @[simp],`simp` can prove it
 theorem succ_pred [NoMinOrder α] (a : α) : succ (pred a) = a :=
   CovBy.succ_eq (pred_covBy _)
 #align order.succ_pred Order.succ_pred
 
---Porting note: removing @[simp],`simp` can prove it
+-- Porting note: removing @[simp],`simp` can prove it
 theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
   CovBy.pred_eq (covBy_succ _)
 #align order.pred_succ Order.pred_succ
@@ -1460,8 +1473,12 @@ section LinearOrder
 variable [LinearOrder α]
 
 section SuccOrder
+variable [SuccOrder α]
 
-variable [SuccOrder α] [IsSuccArchimedean α] {a b : α}
+lemma succ_max (a b : α) : succ (max a b) = max (succ a) (succ b) := succ_mono.map_max
+lemma succ_min (a b : α) : succ (min a b) = min (succ a) (succ b) := succ_mono.map_min
+
+variable [IsSuccArchimedean α] {a b : α}
 
 theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b = a :=
   (le_total a b).imp exists_succ_iterate_of_le exists_succ_iterate_of_le
@@ -1474,8 +1491,12 @@ theorem Succ.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) (a
 end SuccOrder
 
 section PredOrder
+variable [PredOrder α]
 
-variable [PredOrder α] [IsPredArchimedean α] {a b : α}
+lemma pred_max (a b : α) : pred (max a b) = max (pred a) (pred b) := pred_mono.map_max
+lemma pred_min (a b : α) : pred (min a b) = min (pred a) (pred b) := pred_mono.map_min
+
+variable [IsPredArchimedean α] {a b : α}
 
 theorem exists_pred_iterate_or : (∃ n, pred^[n] b = a) ∨ ∃ n, pred^[n] a = b :=
   (le_total a b).imp exists_pred_iterate_of_le exists_pred_iterate_of_le

@@ -3,7 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -51,6 +51,10 @@ categories.
 ## See also
 In `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit` we show that filtered colimits
 commute with finite limits.
+
+There is another characterization of filtered categories, namely that whenever `F : J ⥤ C` is a
+functor from a finite category, there is `X : C` such that `Nonempty (limit (F.op ⋙ yoneda.obj X))`.
+This is shown in `CategoryTheory.Limits.Filtered`.
 
 -/
 
@@ -135,7 +139,7 @@ section AllowEmpty
 variable {C}
 variable [IsFilteredOrEmpty C]
 
--- porting note: the following definitions were removed because the names are invalid,
+-- Porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsFilteredOrEmpty` have been added instead
 --
 -- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
@@ -185,7 +189,7 @@ noncomputable def coeqHom {j j' : C} (f f' : j ⟶ j') : j' ⟶ coeq f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose
 #align category_theory.is_filtered.coeq_hom CategoryTheory.IsFiltered.coeqHom
 
--- porting note: the simp tag has been removed as the linter complained
+-- Porting note: the simp tag has been removed as the linter complained
 /-- `coeq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `f ≫ coeqHom f f' = f' ≫ coeqHom f f'`.
 -/
@@ -321,14 +325,14 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
     Finset.univ.biUnion   fun X : J =>
       Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
+        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
-  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
+  refine' ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.comp_id]
   apply w
-  simp only [Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image, PSigma.mk.injEq,
+  simp only [O, H, Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image, PSigma.mk.injEq,
     true_and, exists_and_left]
   exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_filtered.cocone_nonempty CategoryTheory.IsFiltered.cocone_nonempty
@@ -594,7 +598,7 @@ section AllowEmpty
 variable {C}
 variable [IsCofilteredOrEmpty C]
 
--- porting note: the following definitions were removed because the names are invalid,
+-- Porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsCofilteredOrEmpty` have been added instead
 --
 --theorem cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
@@ -644,7 +648,7 @@ noncomputable def eqHom {j j' : C} (f f' : j ⟶ j') : eq f f' ⟶ j :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose
 #align category_theory.is_cofiltered.eq_hom CategoryTheory.IsCofiltered.eqHom
 
--- porting note: the simp tag has been removed as the linter complained
+-- Porting note: the simp tag has been removed as the linter complained
 /-- `eq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 -/
@@ -796,15 +800,15 @@ theorem cone_nonempty (F : J ⥤ C) : Nonempty (Cone F) := by
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
     Finset.univ.biUnion fun X : J =>
       Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp, by simp, F.map f⟩
+        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := inf_exists O H
-  refine' ⟨⟨Z, ⟨fun X => f (by simp), _⟩⟩⟩
+  refine' ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.id_comp]
   symm
   apply w
-  simp only [Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image,
+  simp only [O, H, Finset.mem_biUnion, Finset.mem_univ, Finset.mem_image,
     PSigma.mk.injEq, true_and, exists_and_left]
   exact ⟨j, rfl, j', g, by simp⟩
 #align category_theory.is_cofiltered.cone_nonempty CategoryTheory.IsCofiltered.cone_nonempty

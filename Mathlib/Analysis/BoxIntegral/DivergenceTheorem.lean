@@ -209,7 +209,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     have Hmaps : ∀ z ∈ Icc (J.lower i) (J.upper i),
         MapsTo (i.insertNth z) (Box.Icc (J.face i)) (closedBall x δ ∩ (Box.Icc I)) := fun z hz =>
       (J.mapsTo_insertNth_face_Icc hz).mono Subset.rfl hJδ'
-    simp only [dist_eq_norm]; dsimp
+    simp only [dist_eq_norm]; dsimp [F]
     rw [← integral_sub (Hi _ Hu) (Hi _ Hl)]
     refine' (norm_sub_le _ _).trans (add_le_add _ _)
     · simp_rw [BoxAdditiveMap.volume_apply, norm_smul, Real.norm_eq_abs, abs_prod]
