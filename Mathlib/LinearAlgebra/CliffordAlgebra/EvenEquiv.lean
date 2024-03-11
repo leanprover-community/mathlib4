@@ -130,8 +130,8 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
-    rw [Subalgebra.coe_mul]  -- porting note: was part of the `dsimp only` below
-    erw [LinearMap.codRestrict_apply] -- porting note: was part of the `dsimp only` below
+    rw [Subalgebra.coe_mul]  -- Porting note: was part of the `dsimp only` below
+    erw [LinearMap.codRestrict_apply] -- Porting note: was part of the `dsimp only` below
     dsimp only [LinearMap.comp_apply, LinearMap.mulLeft_apply, Subalgebra.coe_algebraMap]
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 #align clifford_algebra.to_even CliffordAlgebra.toEven
@@ -176,7 +176,7 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
 theorem ofEven_ι (x y : M × R) :
     ofEven Q ((even.ι (Q' Q)).bilin x y) =
       (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
-  -- porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
+  -- Porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
   unfold ofEven
   lift_lets
   intro f
@@ -244,7 +244,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
   induction x using CliffordAlgebra.induction with
   | algebraMap r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
   | ι m =>
-    -- porting note: added `letI`
+    -- Porting note: added `letI`
     letI : SubtractionMonoid (even (Q' Q)) := AddGroup.toSubtractionMonoid
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
@@ -265,7 +265,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
   even.lift Q <|
-    -- porting note: added `letI`s
+    -- Porting note: added `letI`s
     letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _;
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
     { bilin := -(even.ι Q' : _).bilin
@@ -279,7 +279,7 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
           QuadraticForm.neg_apply, smul_neg, neg_smul] }
 #align clifford_algebra.even_to_neg CliffordAlgebra.evenToNeg
 
--- porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
+-- Porting note: `simpNF` times out, but only in CI where all of `Mathlib` is imported
 @[simp, nolint simpNF]
 theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
     evenToNeg Q Q' h ((even.ι Q).bilin m₁ m₂) = -(even.ι Q').bilin m₁ m₂ :=

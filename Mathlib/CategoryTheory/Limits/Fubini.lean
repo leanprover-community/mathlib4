@@ -543,7 +543,7 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
   erw [NatTrans.id_app]
   -- Why can't `simp` do this?
   dsimp
-  -- porting note: the original proof only had `simp`.
+  -- Porting note: the original proof only had `simp`.
   -- However, now `CategoryTheory.Bifunctor.map_id` does not get used by `simp`
   rw [CategoryTheory.Bifunctor.map_id]
   simp
