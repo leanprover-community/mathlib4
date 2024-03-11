@@ -517,11 +517,6 @@ noncomputable def colimitCocone (F : J ⥤ TypeMax.{v, u}) : Cocone F where
       naturality := fun _ _ f => funext fun _ => (Quot.sound ⟨f, rfl⟩).symm }
 #align category_theory.limits.types.colimit_cocone CategoryTheory.Limits.Types.colimitCocone
 
-theorem Quot.desc_colimitCocone (F : J ⥤ TypeMax.{v, u}) :
-    Small.Quot.desc (colimitCocone F) = id := by
-  ext ⟨j, x⟩
-  rfl
-
 /-- (internal implementation) the fact that the proposed colimit cocone is the colimit -/
 def colimitCoconeIsColimit (F : J ⥤ TypeMax.{v, u}) : IsColimit (colimitCocone F) where
   desc s :=
@@ -544,8 +539,8 @@ noncomputable def colimitEquivQuot (F : J ⥤ TypeMax.{v, u}) : colimit F ≃ Qu
 
 @[simp]
 theorem colimitEquivQuot_symm_apply (F : J ⥤ TypeMax.{v, u}) (j : J) (x : F.obj j) :
-    (colimitEquivQuot F).symm (Quot.mk _ ⟨j, x⟩) = colimit.ι F j x := congrFun
-  (IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit F) (colimitCoconeIsColimit F) j) x
+    (colimitEquivQuot F).symm (Quot.mk _ ⟨j, x⟩) = colimit.ι F j x :=
+  rfl
 #align category_theory.limits.types.colimit_equiv_quot_symm_apply CategoryTheory.Limits.Types.colimitEquivQuot_symm_apply
 
 @[simp]
