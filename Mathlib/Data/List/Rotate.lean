@@ -362,7 +362,7 @@ theorem reverse_rotate (l : List α) (n : ℕ) :
   · simp
   · cases' l with hd tl
     · simp
-    · rw [rotate_cons_succ, Nat.succ_eq_add_one, ← rotate_rotate, hn]
+    · rw [rotate_cons_succ, ← rotate_rotate, hn]
       simp
 #align list.reverse_rotate List.reverse_rotate
 

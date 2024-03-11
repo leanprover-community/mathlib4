@@ -1189,7 +1189,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
       · decide
-      · rw [Nat.zero_eq, zero_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
+      · rw [zero_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
         decide
       · rcases mm with (_ | ⟨⟨⟩⟩); decide
       · rw [Nat.succ_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
