@@ -16,11 +16,11 @@ If you want to use `simp [...]` followed by other tactics, then replace `simp [.
 * the output of `simp? [...]`, so that the final code contains `simp only [...]`;
 * something else that does not involve `simp`!
 
-The linter equates "non-terminal" with "closes at least one goal".
+The linter equates "non-terminal" with "does not strictly decrease the number of goals".
 
 ##  Implementation detail
 
-The code in this linter has been modified very slightly from the code for the
+The code in this linter is just a very small modification of the code for the
 `unreachableTactic` linter.
 -/
 
