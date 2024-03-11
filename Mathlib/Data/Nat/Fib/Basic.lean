@@ -181,7 +181,7 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
-  · rw [Nat.succ_eq_add_one, two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
+  · rw [two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
     simp only [← add_assoc, add_tsub_cancel_right]
     ring
 #align nat.fib_two_mul Nat.fib_two_mul

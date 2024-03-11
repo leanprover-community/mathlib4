@@ -115,7 +115,7 @@ theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
 #align list.rotate_eq_rotate' List.rotate_eq_rotate'
 
 theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
-    (a :: l : List α).rotate n.succ = (l ++ [a]).rotate n := by
+    (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 #align list.rotate_cons_succ List.rotate_cons_succ
 

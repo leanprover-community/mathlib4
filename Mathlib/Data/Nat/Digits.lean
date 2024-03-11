@@ -270,7 +270,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   · cases' b with b
     · induction' n with n ih
       · rfl
-      · rw[show succ zero = 1 by rfl] at ih ⊢
+      · rw [show 0 + 1 = 1 by rfl] at ih ⊢
         simp only [Nat.succ_eq_add_one, ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n
@@ -476,7 +476,7 @@ theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
   · exact digits_zero _ ▸ Nat.le_refl (List.sum [])
   · induction' p with p
     · rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
-    · nth_rw 2 [← ofDigits_digits p.succ n.succ]
+    · nth_rw 2 [← ofDigits_digits p.succ (n + 1)]
       rw [← ofDigits_one <| digits p.succ n.succ]
       exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
 
@@ -529,7 +529,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
     ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
   induction' i with i hi
   · simp
-  · rw [Nat.succ_eq_add_one, Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi,
+  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi,
       ofDigits_div_eq_ofDigits_tail hpos
       (List.drop i digits) fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
       List.drop_drop, add_comm]

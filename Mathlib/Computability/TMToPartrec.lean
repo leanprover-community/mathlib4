@@ -618,7 +618,7 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   | case f g IHf IHg =>
     rw [stepNormal]
     simp only []
-    cases v.headI <;> simp only [] <;> [apply IHf; apply IHg]
+    cases v.headI <;> [apply IHf; apply IHg]
   | fix f IHf => apply IHf
   | _ => exact ⟨_, _, rfl⟩
 #align turing.to_partrec.step_normal.is_ret Turing.ToPartrec.stepNormal.is_ret

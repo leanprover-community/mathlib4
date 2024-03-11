@@ -923,8 +923,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
         · cases' l with c s
           · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn
             rw [hn.1, hn.2]
-          · rw [Nat.succ_eq_one_add, ← rotate_rotate, rotate_cons_succ, rotate_zero,
-              cons_append] at hn
+          · rw [Nat.add_comm, ← rotate_rotate, rotate_cons_succ, rotate_zero, cons_append] at hn
             rw [← hd c _ _ _ hn]
             simp [and_comm]
 #align cycle.chain Cycle.Chain
