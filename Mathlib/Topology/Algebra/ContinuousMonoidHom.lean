@@ -459,7 +459,8 @@ theorem locallyCompactSpace_of_equicontinuousAt {X Y : Type*}
     rwa [← hS] at h
   have hS2 : (interior S2).Nonempty := by
     let T : Set (ContinuousMonoidHom X Y) := {f | Set.MapsTo f U (interior W)}
-    have h1 : T ⊆ S2 := fun f hf ↦ Set.image_subset_iff.mp (Set.Subset.trans (Set.mapsTo'.mp hf) interior_subset)
+    have h1 : T ⊆ S2 :=
+      fun f hf ↦ Set.image_subset_iff.mp (Set.Subset.trans (Set.mapsTo'.mp hf) interior_subset)
     have h2 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo hUc isOpen_interior)
     have h3 : T.Nonempty := ⟨1, fun _ _ ↦ mem_interior_iff_mem_nhds.mpr hWo⟩
     exact h3.mono (interior_maximal h1 h2)
