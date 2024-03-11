@@ -145,28 +145,28 @@ theorem jacobiSymNat.even_odd₁ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : 
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb] <;> norm_num
+  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 #align norm_num.jacobi_sym_nat.even_odd₁ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₁
 
 theorem jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb] <;> norm_num
+  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 #align norm_num.jacobi_sym_nat.even_odd₇ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₇
 
 theorem jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb] <;> norm_num
+  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 #align norm_num.jacobi_sym_nat.even_odd₃ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₃
 
 theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb] <;> norm_num
+  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 #align norm_num.jacobi_sym_nat.even_odd₅ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₅
 
 /-- Use quadratic reciproity to reduce to smaller `b`. -/

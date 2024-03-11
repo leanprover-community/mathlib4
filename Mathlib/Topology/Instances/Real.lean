@@ -18,7 +18,8 @@ import Mathlib.Topology.Instances.Int
 
 noncomputable section
 
-open Classical Filter Int Metric Set TopologicalSpace Bornology
+open scoped Classical
+open Filter Int Metric Set TopologicalSpace Bornology
 open scoped Topology Uniformity Interval
 
 universe u v w
@@ -78,7 +79,7 @@ theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
 #align real.cocompact_eq Real.cocompact_eq
 
 @[deprecated] alias Real.atBot_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
-@[deprecated] alias Real.atTop_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
+@[deprecated] alias Real.atTop_le_cocompact := atTop_le_cocompact -- deprecated on 2024-02-07
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
@@ -135,7 +136,7 @@ theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
 protected theorem Real.continuous_mul : Continuous fun p : ℝ × ℝ => p.1 * p.2 := continuous_mul
 #align real.continuous_mul Real.continuous_mul
 
--- porting note: moved `TopologicalRing` instance up
+-- Porting note: moved `TopologicalRing` instance up
 
 instance : CompleteSpace ℝ := by
   apply complete_of_cauchySeq_tendsto

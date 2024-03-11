@@ -161,7 +161,7 @@ abbrev Matrix.toLinearMapRight' : Matrix m n R ≃ₗ[Rᵐᵒᵖ] (m → R) →�
 
 @[simp]
 theorem Matrix.toLinearMapRight'_apply (M : Matrix m n R) (v : m → R) :
-    -- porting note: needs type annotation for `⇑` to resolve
+    -- Porting note: needs type annotation for `⇑` to resolve
     (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M v = v ᵥ* M :=
   rfl
 #align matrix.to_linear_map_right'_apply Matrix.toLinearMapRight'_apply
@@ -169,7 +169,7 @@ theorem Matrix.toLinearMapRight'_apply (M : Matrix m n R) (v : m → R) :
 @[simp]
 theorem Matrix.toLinearMapRight'_mul [Fintype l] [DecidableEq l] (M : Matrix l m R)
     (N : Matrix m n R) :
-    -- porting note: needs type annotation for `⇑` to resolve
+    -- Porting note: needs type annotation for `⇑` to resolve
     (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) (M * N) =
       ((Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) N).comp
         ((Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M) :=
@@ -178,7 +178,7 @@ theorem Matrix.toLinearMapRight'_mul [Fintype l] [DecidableEq l] (M : Matrix l m
 
 theorem Matrix.toLinearMapRight'_mul_apply [Fintype l] [DecidableEq l] (M : Matrix l m R)
     (N : Matrix m n R) (x) :
-    -- porting note: needs type annotation for `⇑` to resolve
+    -- Porting note: needs type annotation for `⇑` to resolve
     (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) (M * N) x =
       (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) N
         ((Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M x) :=
@@ -187,7 +187,7 @@ theorem Matrix.toLinearMapRight'_mul_apply [Fintype l] [DecidableEq l] (M : Matr
 
 @[simp]
 theorem Matrix.toLinearMapRight'_one :
-    -- porting note: needs type annotation for `⇑` to resolve
+    -- Porting note: needs type annotation for `⇑` to resolve
     (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) (1 : Matrix m m R) = LinearMap.id := by
   ext
   simp [LinearMap.one_apply, stdBasis_apply]
@@ -198,18 +198,18 @@ and `m → A` corresponding to `M.vecMul` and `M'.vecMul`. -/
 @[simps]
 def Matrix.toLinearEquivRight'OfInv [Fintype n] [DecidableEq n] {M : Matrix m n R}
     {M' : Matrix n m R} (hMM' : M * M' = 1) (hM'M : M' * M = 1) : (n → R) ≃ₗ[R] m → R :=
-  { -- porting note: needs type annotation for `⇑` to resolve
+  { -- Porting note: needs type annotation for `⇑` to resolve
     (LinearMap.toMatrixRight' : _ ≃ₗ[Rᵐᵒᵖ] _).symm
       M' with
-    -- porting note: needs type annotation for `⇑` to resolve
+    -- Porting note: needs type annotation for `⇑` to resolve
     toFun := (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M'
-    -- porting note: needs type annotation for `⇑` to resolve
+    -- Porting note: needs type annotation for `⇑` to resolve
     invFun := (Matrix.toLinearMapRight' : _ ≃ₗ[Rᵐᵒᵖ] _) M
     left_inv := fun x => by
-      dsimp only -- porting note: needed due to non-flat structures
+      dsimp only -- Porting note: needed due to non-flat structures
       rw [← Matrix.toLinearMapRight'_mul_apply, hM'M, Matrix.toLinearMapRight'_one, id_apply]
     right_inv := fun x => by
-      dsimp only -- porting note: needed due to non-flat structures
+      dsimp only -- Porting note: needed due to non-flat structures
       rw [← Matrix.toLinearMapRight'_mul_apply, hMM', Matrix.toLinearMapRight'_one, id_apply] }
 #align matrix.to_linear_equiv_right'_of_inv Matrix.toLinearEquivRight'OfInv
 
@@ -383,7 +383,7 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
     LinearMap.toMatrix' f i j = f (fun j' => if j' = j then 1 else 0) i := by
   simp only [LinearMap.toMatrix', LinearEquiv.coe_mk, of_apply]
-  refine congr_fun ?_ _  -- porting note: `congr` didn't do this
+  refine congr_fun ?_ _  -- Porting note: `congr` didn't do this
   congr
   ext j'
   split_ifs with h
@@ -864,7 +864,7 @@ theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
 theorem Matrix.toLin_finTwoProd_apply (a b c d : R) (x : R × R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] x =
       (a * x.fst + b * x.snd, c * x.fst + d * x.snd) :=
-  -- porting note: added `(Prod.smul_mk)` which is already a simp lemma
+  -- Porting note: added `(Prod.smul_mk)` which is already a simp lemma
   by simp [Matrix.toLin_apply, Matrix.mulVec, Matrix.dotProduct, (Prod.smul_mk)]
 #align matrix.to_lin_fin_two_prod_apply Matrix.toLin_finTwoProd_apply
 
@@ -1021,7 +1021,7 @@ is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
   { LinearMap.toMatrix' with
     map_mul' := LinearMap.toMatrix'_comp
-    -- porting note: golfed away messy failing proof
+    -- Porting note: golfed away messy failing proof
     commutes' := LinearMap.toMatrix'_algebraMap }
 #align alg_equiv_matrix' algEquivMatrix'
 

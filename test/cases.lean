@@ -1,4 +1,3 @@
-import Std.Tactic.GuardMsgs
 import Mathlib.Tactic.Cases
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Nat.Notation

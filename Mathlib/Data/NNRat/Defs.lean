@@ -88,6 +88,9 @@ theorem coe_mk (q : ℚ) (hq) : ((⟨q, hq⟩ : ℚ≥0) : ℚ) = q :=
   rfl
 #align nnrat.coe_mk NNRat.coe_mk
 
+lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Subtype.forall
+lemma «exists» {p : ℚ≥0 → Prop} : (∃ q, p q) ↔ ∃ q hq, p ⟨q, hq⟩ := Subtype.exists
+
 /-- Reinterpret a rational number `q` as a non-negative rational number. Returns `0` if `q ≤ 0`. -/
 def _root_.Rat.toNNRat (q : ℚ) : ℚ≥0 :=
   ⟨max q 0, le_max_right _ _⟩

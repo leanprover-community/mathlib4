@@ -237,7 +237,7 @@ theorem map_add_self (x : M) : Q (x + x) = 4 * Q x := by
   norm_num
 #align quadratic_form.map_add_self QuadraticForm.map_add_self
 
--- porting note: removed @[simp] because it is superseded by `ZeroHomClass.map_zero`
+-- Porting note: removed @[simp] because it is superseded by `ZeroHomClass.map_zero`
 theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_mul]
 #align quadratic_form.map_zero QuadraticForm.map_zero
@@ -571,7 +571,7 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(B.restrictScalars₁₂ S).compr₂ f, fun x y => by
+    ⟨(B.restrictScalars₁₂ S S).compr₂ f, fun x y => by
       simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₁₂_apply_apply]⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
 
@@ -798,7 +798,7 @@ theorem compQuadraticForm_polar (f : R →ₗ[S] S) (Q : QuadraticForm R M) (x y
 
 theorem compQuadraticForm_polarBilin (f : R →ₗ[S] S) (Q : QuadraticForm R M) :
     (f.compQuadraticForm Q).polarBilin =
-    (Q.polarBilin.restrictScalars₁₂ S).compr₂ f :=
+    (Q.polarBilin.restrictScalars₁₂ S S).compr₂ f :=
   ext₂ <| compQuadraticForm_polar _ _
 
 end Ring
@@ -871,7 +871,7 @@ theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom S B₁.toQuadr
       invOf_mul_self, one_mul]
 #align quadratic_form.associated_left_inverse QuadraticForm.associated_left_inverse
 
--- porting note: moved from below to golf the next theorem
+-- Porting note: moved from below to golf the next theorem
 theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
   rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three,
     add_mul, add_mul, one_mul, add_sub_cancel, add_sub_cancel, invOf_mul_self_assoc]

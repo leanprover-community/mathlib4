@@ -33,7 +33,7 @@ section Abelian
 
 universe w v u
 
--- porting note: `C` was `Type (max v u)`, but making it more universe polymorphic
+-- Porting note: `C` was `Type (max v u)`, but making it more universe polymorphic
 --   solves some problems
 variable {C : Type u} [Category.{v} C]
 
@@ -41,7 +41,7 @@ variable {D : Type w} [Category.{max v u} D] [Abelian D]
 
 variable {J : GrothendieckTopology C}
 
--- porting note: this `Abelian` instance is no longer necessary,
+-- Porting note: this `Abelian` instance is no longer necessary,
 -- maybe because I have made `C` more universe polymorphic
 --
 -- This needs to be specified manually because of universe level.

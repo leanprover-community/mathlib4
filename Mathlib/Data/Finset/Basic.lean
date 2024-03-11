@@ -200,7 +200,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
---Porting note: new definition
+-- Porting note: new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -481,7 +481,7 @@ to the dot notation. -/
 @[pp_dot] protected def Nonempty (s : Finset α) : Prop := ∃ x : α, x ∈ s
 #align finset.nonempty Finset.Nonempty
 
---Porting note: Much longer than in Lean3
+-- Porting note: Much longer than in Lean3
 instance decidableNonempty {s : Finset α} : Decidable s.Nonempty :=
   Quotient.recOnSubsingleton (motive := fun s : Multiset α => Decidable (∃ a, a ∈ s)) s.1
     (fun l : List α =>
@@ -1457,24 +1457,21 @@ theorem union_subset_union_right (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂
   union_subset_union Subset.rfl h
 #align finset.union_subset_union_right Finset.union_subset_union_right
 
-theorem union_comm (s₁ s₂ : Finset α) : s₁ ∪ s₂ = s₂ ∪ s₁ :=
-  sup_comm
+theorem union_comm (s₁ s₂ : Finset α) : s₁ ∪ s₂ = s₂ ∪ s₁ := sup_comm _ _
 #align finset.union_comm Finset.union_comm
 
 instance : Std.Commutative (α := Finset α) (· ∪ ·) :=
   ⟨union_comm⟩
 
 @[simp]
-theorem union_assoc (s₁ s₂ s₃ : Finset α) : s₁ ∪ s₂ ∪ s₃ = s₁ ∪ (s₂ ∪ s₃) :=
-  sup_assoc
+theorem union_assoc (s₁ s₂ s₃ : Finset α) : s₁ ∪ s₂ ∪ s₃ = s₁ ∪ (s₂ ∪ s₃) := sup_assoc _ _ _
 #align finset.union_assoc Finset.union_assoc
 
 instance : Std.Associative (α := Finset α) (· ∪ ·) :=
   ⟨union_assoc⟩
 
 @[simp]
-theorem union_idempotent (s : Finset α) : s ∪ s = s :=
-  sup_idem
+theorem union_idempotent (s : Finset α) : s ∪ s = s := sup_idem _
 #align finset.union_idempotent Finset.union_idempotent
 
 instance : Std.IdempotentOp (α := Finset α) (· ∪ ·) :=
@@ -1788,39 +1785,35 @@ instance : DistribLattice (Finset α) :=
         or_imp, true_or_iff, imp_true_iff, true_and_iff, or_true_iff] }
 
 @[simp]
-theorem union_left_idem (s t : Finset α) : s ∪ (s ∪ t) = s ∪ t :=
-  sup_left_idem
+theorem union_left_idem (s t : Finset α) : s ∪ (s ∪ t) = s ∪ t := sup_left_idem _ _
 #align finset.union_left_idem Finset.union_left_idem
 
 -- Porting note: @[simp] can prove this
-theorem union_right_idem (s t : Finset α) : s ∪ t ∪ t = s ∪ t :=
-  sup_right_idem
+theorem union_right_idem (s t : Finset α) : s ∪ t ∪ t = s ∪ t := sup_right_idem _ _
 #align finset.union_right_idem Finset.union_right_idem
 
 @[simp]
-theorem inter_left_idem (s t : Finset α) : s ∩ (s ∩ t) = s ∩ t :=
-  inf_left_idem
+theorem inter_left_idem (s t : Finset α) : s ∩ (s ∩ t) = s ∩ t := inf_left_idem _ _
 #align finset.inter_left_idem Finset.inter_left_idem
 
 -- Porting note: @[simp] can prove this
-theorem inter_right_idem (s t : Finset α) : s ∩ t ∩ t = s ∩ t :=
-  inf_right_idem
+theorem inter_right_idem (s t : Finset α) : s ∩ t ∩ t = s ∩ t := inf_right_idem _ _
 #align finset.inter_right_idem Finset.inter_right_idem
 
 theorem inter_distrib_left (s t u : Finset α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
-  inf_sup_left
+  inf_sup_left _ _ _
 #align finset.inter_distrib_left Finset.inter_distrib_left
 
 theorem inter_distrib_right (s t u : Finset α) : (s ∪ t) ∩ u = s ∩ u ∪ t ∩ u :=
-  inf_sup_right
+  inf_sup_right _ _ _
 #align finset.inter_distrib_right Finset.inter_distrib_right
 
 theorem union_distrib_left (s t u : Finset α) : s ∪ t ∩ u = (s ∪ t) ∩ (s ∪ u) :=
-  sup_inf_left
+  sup_inf_left _ _ _
 #align finset.union_distrib_left Finset.union_distrib_left
 
 theorem union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
-  sup_inf_right
+  sup_inf_right _ _ _
 #align finset.union_distrib_right Finset.union_distrib_right
 
 theorem union_union_distrib_left (s t u : Finset α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
@@ -2728,7 +2721,7 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
   Multiset.decidableDforallMultiset
 #align finset.decidable_dforall_finset Finset.decidableDforallFinset
 
--- porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
+-- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
 -- needed. In lean4 it seems this is not the case.
 instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
   λ _ _ ↦ decidableDforallFinset
@@ -2866,6 +2859,7 @@ theorem filter_empty : filter p ∅ = ∅ :=
   subset_empty.1 <| filter_subset _ _
 #align finset.filter_empty Finset.filter_empty
 
+@[gcongr]
 theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.filter p := fun _a ha =>
   mem_filter.2 ⟨h (mem_filter.1 ha).1, (mem_filter.1 ha).2⟩
 #align finset.filter_subset_filter Finset.filter_subset_filter
@@ -2873,8 +2867,9 @@ theorem filter_subset_filter {s t : Finset α} (h : s ⊆ t) : s.filter p ⊆ t.
 theorem monotone_filter_left : Monotone (filter p) := fun _ _ => filter_subset_filter p
 #align finset.monotone_filter_left Finset.monotone_filter_left
 
+-- TODO: `@[gcongr]` doesn't accept this lemma because of the `DecidablePred` arguments
 theorem monotone_filter_right (s : Finset α) ⦃p q : α → Prop⦄ [DecidablePred p] [DecidablePred q]
-    (h : p ≤ q) : s.filter p ≤ s.filter q :=
+    (h : p ≤ q) : s.filter p ⊆ s.filter q :=
   Multiset.subset_of_le (Multiset.monotone_filter_right s.val h)
 #align finset.monotone_filter_right Finset.monotone_filter_right
 
@@ -2887,7 +2882,7 @@ theorem subset_coe_filter_of_subset_forall (s : Finset α) {t : Set α} (h₁ : 
     (h₂ : ∀ x ∈ t, p x) : t ⊆ s.filter p := fun x hx => (s.coe_filter p).symm ▸ ⟨h₁ hx, h₂ x hx⟩
 #align finset.subset_coe_filter_of_subset_forall Finset.subset_coe_filter_of_subset_forall
 
-theorem filter_singleton (a : α) : filter p (singleton a) = if p a then singleton a else ∅ := by
+theorem filter_singleton (a : α) : filter p {a} = if p a then {a} else ∅ := by
   classical
     ext x
     simp only [mem_singleton, forall_eq, mem_filter]
@@ -3032,7 +3027,7 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
 
 section Classical
 
-open Classical
+open scoped Classical
 
 -- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
 -- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
@@ -3170,6 +3165,8 @@ theorem range_subset {n m} : range n ⊆ range m ↔ n ≤ m :=
 
 theorem range_mono : Monotone range := fun _ _ => range_subset.2
 #align finset.range_mono Finset.range_mono
+
+@[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset
 
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ Finset.range b.succ ↔ a ≤ b :=
   Finset.mem_range.trans Nat.lt_succ_iff
@@ -4034,10 +4031,14 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   let mvar := goal.mvarId!
   -- We want this to be fast, so use only the basic and `Finset.Nonempty`-specific rules.
   let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `finsetNonempty]
-  -- Fail if the new goal is not closed.
-  let rules ← Aesop.mkLocalRuleSet rulesets { terminal := true, generateScript := false }
+  let options : Aesop.Options' :=
+    { terminal := true, -- Fail if the new goal is not closed.
+      generateScript := false,
+      useDefaultSimpSet := false, -- Avoiding the whole simp set to speed up the tactic.
+      warnOnNonterminal := false } -- Don't show a warning on failure, simply return `none`.
+  let rules ← Aesop.mkLocalRuleSet rulesets options
   let (remainingGoals, _) ←
-    try Aesop.search mvar (.some rules)
+    try Aesop.search (options := options.toOptions) mvar (.some rules)
     catch _ => return none
   -- Fail if there are open goals remaining, this serves as an extra check for the
   -- Aesop configuration option `terminal := true`.

@@ -19,7 +19,7 @@ called a *Henstock* partition. We do not include this assumption into the defini
 (pre)partition because McShane integral is defined as a limit along tagged partitions without this
 requirement.
 
-### Tags
+## Tags
 
 rectangular box, box partition
 -/
@@ -27,7 +27,8 @@ rectangular box, box partition
 
 noncomputable section
 
-open Classical ENNReal NNReal
+open scoped Classical
+open ENNReal NNReal
 
 open Set Function
 

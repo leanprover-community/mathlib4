@@ -5,7 +5,7 @@ Authors: Antoine Chambetr-Loir
 -/
 
 import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Right-exactness properties of tensor product
 
