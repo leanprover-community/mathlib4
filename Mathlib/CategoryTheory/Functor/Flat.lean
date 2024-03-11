@@ -146,7 +146,7 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
       constructor
       -- Porting note: instance was inferred automatically in Lean 3
       infer_instance
-    IsCofiltered.of_hasFiniteLimits C⟩
+    IsCofiltered.of_hasFiniteLimits _⟩
 #align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
 
 namespace PreservesFiniteLimitsOfFlat
