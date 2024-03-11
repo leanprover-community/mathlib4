@@ -236,7 +236,7 @@ theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
   · rw [key, mul_comm] at hr
     simpa [← hr] using _root_.dvd_lcm_left _ _
 
-/-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension, where `n` is odd, and `ζ`
+/-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of ℚ, where `n` is odd, and `ζ`
 is a primitive `n`-th root of unity, then there exist `r` such that `x = (-1)^r * ζ^r`. -/
 theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField K]
     [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
