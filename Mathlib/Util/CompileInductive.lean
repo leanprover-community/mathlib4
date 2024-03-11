@@ -228,7 +228,6 @@ elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
 
 end Mathlib.Util
 
-compile_inductive% Nat
 compile_inductive% List
 compile_inductive% PUnit
 compile_inductive% PEmpty

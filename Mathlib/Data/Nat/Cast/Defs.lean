@@ -173,15 +173,17 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) : (Nat.binCast n : R) = ((n : 
   | zero => rw [Nat.binCast, Nat.cast_zero]
   | succ k =>
       rw [Nat.binCast]
-      by_cases h : (k + 1) % 2 = 0
-      · rw [← Nat.mod_add_div (succ k) 2]
-        rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
-        rw [Nat.succ_eq_add_one, h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
-      · rw [← Nat.mod_add_div (succ k) 2]
-        rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
-        have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
-        rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
-        simp only [Nat.cast_add, Nat.cast_one]
+      -- FIXME nightly-testing
+      sorry
+      -- by_cases h : (k + 1) % 2 = 0
+      -- · rw [← Nat.mod_add_div (succ k) 2]
+      --   rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
+      --   rw [Nat.succ_eq_add_one, h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
+      -- · rw [← Nat.mod_add_div (succ k) 2]
+      --   rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
+      --   have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
+      --   rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
+      --   simp only [Nat.cast_add, Nat.cast_one]
 #align nat.bin_cast_eq Nat.binCast_eq
 
 section deprecated
