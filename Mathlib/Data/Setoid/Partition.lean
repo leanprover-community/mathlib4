@@ -328,15 +328,6 @@ def IsPartition.finpartition {c : Finset (Set α)} (hc : Setoid.IsPartition (c :
   not_bot_mem := hc.left
 #align setoid.is_partition.finpartition Setoid.IsPartition.finpartition
 
-/-- Given two equivalence relations with `r ≤ s`, a bijection between the sum of the quotients by
-`r` on each equivalence class by `s` and the quotient by `r`. -/
-def equivSigmaFibersOfLe {r s : Setoid α} (hle : r ≤ s) :
-    (Σ q : Quotient s, Quotient (r.comap (Subtype.val : Quotient.mk s ⁻¹' {q} → α))) ≃ 
-      Quotient r :=
-  .trans (.symm <| .sigmaCongrRight fun _ ↦ .subtypeQuotientEquivQuotientSubtype
-      (s₁ := r) (s₂ := r.comap Subtype.val) _ (fun _ ↦ Iff.rfl) fun _ _ ↦ Iff.rfl)
-    (.sigmaFiberEquiv fun a ↦ a.lift (Quotient.mk s) fun _ _ h ↦ Quotient.sound <| hle h)
-
 end Setoid
 
 /-- A finpartition gives rise to a setoid partition -/
