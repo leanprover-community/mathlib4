@@ -1216,64 +1216,14 @@ section Actions
 
 variable {α β : Type*}
 
-/-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [SMul A α] (S : Subalgebra R A) : SMul S α :=
-  inferInstanceAs (SMul S.toSubsemiring α)
-
 theorem smul_def [SMul A α] {S : Subalgebra R A} (g : S) (m : α) : g • m = (g : A) • m := rfl
 #align subalgebra.smul_def Subalgebra.smul_def
-
-instance smulCommClass_left [SMul A β] [SMul α β] [SMulCommClass A α β] (S : Subalgebra R A) :
-    SMulCommClass S α β :=
-  S.toSubsemiring.smulCommClass_left
-#align subalgebra.smul_comm_class_left Subalgebra.smulCommClass_left
-
-instance smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S : Subalgebra R A) :
-    SMulCommClass α S β :=
-  S.toSubsemiring.smulCommClass_right
-#align subalgebra.smul_comm_class_right Subalgebra.smulCommClass_right
-
-/-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
-    (S : Subalgebra R A) : IsScalarTower S α β :=
-  inferInstanceAs (IsScalarTower S.toSubsemiring α β)
-#align subalgebra.is_scalar_tower_left Subalgebra.isScalarTower_left
 
 instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
     [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
     IsScalarTower R S' T :=
   ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
 #align subalgebra.is_scalar_tower_mid Subalgebra.isScalarTower_mid
-
-instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
-  inferInstanceAs (FaithfulSMul S.toSubsemiring α)
-
-/-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [MulAction A α] (S : Subalgebra R A) : MulAction S α :=
-  inferInstanceAs (MulAction S.toSubsemiring α)
-
-/-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [AddMonoid α] [DistribMulAction A α] (S : Subalgebra R A) : DistribMulAction S α :=
-  inferInstanceAs (DistribMulAction S.toSubsemiring α)
-
-/-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [Zero α] [SMulWithZero A α] (S : Subalgebra R A) : SMulWithZero S α :=
-  inferInstanceAs (SMulWithZero S.toSubsemiring α)
-
-/-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWithZero S α :=
-  inferInstanceAs (MulActionWithZero S.toSubsemiring α)
-
-/-- The action by a subalgebra is the action by the underlying algebra. -/
-instance moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Module S α :=
-  inferInstanceAs (Module S.toSubsemiring α)
-#align subalgebra.module_left Subalgebra.moduleLeft
-
-/-- The action by a subalgebra is the action by the underlying algebra. -/
-instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
-    [Algebra A α] (S : Subalgebra R A) : Algebra S α :=
-  Algebra.ofSubsemiring S.toSubsemiring
-#align subalgebra.to_algebra Subalgebra.toAlgebra
 
 theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
     [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=

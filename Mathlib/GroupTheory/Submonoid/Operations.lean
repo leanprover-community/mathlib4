@@ -1444,7 +1444,7 @@ instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' 
   ⟨fun a => (smul_assoc (a : M') : _)⟩
 
 section SMul
-variable [SMul M' α] {S}
+variable [SMul M' α] {S : F}
 
 @[to_additive] lemma smul_def (g : S) (a : α) : g • a = (g : M') • a := rfl
 #align submonoid.smul_def Submonoid.smul_def
