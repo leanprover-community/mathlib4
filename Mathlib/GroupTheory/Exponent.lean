@@ -298,13 +298,13 @@ written as the sum of a multiple of `x` and a multiple of `y`. See also the resu
 don't need the explicit formula."]
 lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : orderOf x ≠ 0)
     (hy : orderOf y ≠ 0) :
-    orderOf (x ^ (orderOf x / (factorization_lcm_left (orderOf x) (orderOf y))) *
-      y ^ (orderOf y / factorization_lcm_right (orderOf x) (orderOf y))) =
+    orderOf (x ^ (orderOf x / (factorizationLCMLeft (orderOf x) (orderOf y))) *
+      y ^ (orderOf y / factorizationLCMRight (orderOf x) (orderOf y))) =
       Nat.lcm (orderOf x) (orderOf y) := by
   rw [(h.pow_pow _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
   all_goals iterate 2 rw [orderOf_pow_orderOf_div]; try rw [Coprime]
-  all_goals simp [factorization_lcm_left_mul_factorization_lcm_right, factorization_lcm_left_dvd,
-    factorization_lcm_right_dvd, coprime_factorization_lcm_left_factorization_lcm_right, hx, hy]
+  all_goals simp [factorizationLCMLeft_mul_factorizationLCMRight, factorizationLCMLeft_dvd,
+    factorizationLCMRight_dvd, coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
 
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, there is an element
 of order `lcm n m`. -/
