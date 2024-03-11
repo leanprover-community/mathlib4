@@ -25,13 +25,14 @@ variable [DecidableEq α]
 section MulZeroClass
 variable [MulZeroClass α] {a b : WithTop α}
 
-instance instMulZeroClass : MulZeroClass (WithTop α) where
-  zero := 0
+instance instMul : Mul (WithTop α) where
   mul a b := match a, b with
     | (a : α), (b : α) => ↑(a * b)
     | (a : α), ⊤ => if a = 0 then 0 else ⊤
     | ⊤, (b : α) => if b = 0 then 0 else ⊤
     | ⊤, ⊤ => ⊤
+
+instance instMulZeroClass : MulZeroClass (WithTop α) where
   mul_zero a := match a with
     | (a : α) => congr_arg some $ mul_zero _
     | ⊤ => if_pos rfl
