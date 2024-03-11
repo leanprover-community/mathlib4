@@ -28,7 +28,7 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 section Mul
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 @[mono, gcongr]
 theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := by
   rcases lt_iff_exists_nnreal_btwn.1 ac with ⟨a', aa', a'c⟩
@@ -49,7 +49,7 @@ theorem mul_left_mono : Monotone (a * ·) := fun _ _ => mul_le_mul' le_rfl
 theorem mul_right_mono : Monotone (· * a) := fun _ _ h => mul_le_mul' h le_rfl
 #align ennreal.mul_right_mono ENNReal.mul_right_mono
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0∞ => x ^ n
   | 0, h => absurd rfl h
   | 1, _ => by simpa only [pow_one] using strictMono_id
@@ -67,7 +67,7 @@ theorem max_mul : max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
 theorem mul_max : a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
 #align ennreal.mul_max ENNReal.mul_max
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
   lift a to ℝ≥0 using hinf
   rw [coe_ne_zero] at h0
@@ -85,32 +85,32 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
     b * a < c * a :=
   mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_eq_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
   (mul_left_strictMono h0 hinf).injective.eq_iff
 #align ennreal.mul_eq_mul_left ENNReal.mul_eq_mul_left
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_eq_mul_right : c ≠ 0 → c ≠ ∞ → (a * c = b * c ↔ a = b) :=
   mul_comm c a ▸ mul_comm c b ▸ mul_eq_mul_left
 #align ennreal.mul_eq_mul_right ENNReal.mul_eq_mul_right
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b ≤ a * c ↔ b ≤ c) :=
   (mul_left_strictMono h0 hinf).le_iff_le
 #align ennreal.mul_le_mul_left ENNReal.mul_le_mul_left
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ b) :=
   mul_comm c a ▸ mul_comm c b ▸ mul_le_mul_left
 #align ennreal.mul_le_mul_right ENNReal.mul_le_mul_right
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b < a * c ↔ b < c) :=
   (mul_left_strictMono h0 hinf).lt_iff_lt
 #align ennreal.mul_lt_mul_left ENNReal.mul_lt_mul_left
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :=
   mul_comm c a ▸ mul_comm c b ▸ mul_lt_mul_left
 #align ennreal.mul_lt_mul_right ENNReal.mul_lt_mul_right
@@ -218,8 +218,8 @@ theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_
 theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 #align ennreal.top_mul_top ENNReal.top_mul_top
 
--- Porting note: todo: assume `n ≠ 0` instead of `0 < n`
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: assume `n ≠ 0` instead of `0 < n`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 theorem top_pow {n : ℕ} (h : 0 < n) : ∞ ^ n = ∞ :=
   Nat.le_induction (pow_one _) (fun m _ hm => by rw [pow_succ, hm, top_mul_top]) _
     (Nat.succ_le_of_lt h)
@@ -266,7 +266,7 @@ theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
 #align ennreal.mul_pos ENNReal.mul_pos
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 @[simp] theorem pow_eq_top_iff {n : ℕ} : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := by
   rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
   · simp
@@ -299,7 +299,7 @@ theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f
 
 end OperationsAndInfty
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 @[gcongr] theorem add_lt_add (ac : a < c) (bd : b < d) : a + b < c + d := by
   lift a to ℝ≥0 using ac.ne_top
   lift b to ℝ≥0 using bd.ne_top
@@ -311,7 +311,7 @@ end OperationsAndInfty
 
 section Cancel
 
--- Porting note: todo: generalize to `WithTop`
+-- Porting note (#11215): TODO: generalize to `WithTop`
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
 theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ := by

@@ -19,7 +19,7 @@ set_option autoImplicit true
 
 
 /-- Propositions form a distributive lattice. -/
-instance Prop.distribLattice : DistribLattice Prop where
+instance Prop.instDistribLattice : DistribLattice Prop where
   sup := Or
   le_sup_left := @Or.inl
   le_sup_right := @Or.inr
@@ -29,15 +29,15 @@ instance Prop.distribLattice : DistribLattice Prop where
   inf_le_right := @And.right
   le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
   le_sup_inf := fun _ _ _ => or_and_left.2
-#align Prop.distrib_lattice Prop.distribLattice
+#align Prop.distrib_lattice Prop.instDistribLattice
 
 /-- Propositions form a bounded order. -/
-instance Prop.boundedOrder : BoundedOrder Prop where
+instance Prop.instBoundedOrder : BoundedOrder Prop where
   top := True
   le_top _ _ := True.intro
   bot := False
   bot_le := @False.elim
-#align Prop.bounded_order Prop.boundedOrder
+#align Prop.bounded_order Prop.instBoundedOrder
 
 theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
   rfl

@@ -726,7 +726,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           cases s with
           | none => exact bot_le
           | some s =>
-            dsimp -- Porting note: added
+            dsimp -- Porting note (#11227): added a `dsimp`
             split_ifs with h
             · exact WithBot.some_le_some.2
                 ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
