@@ -664,6 +664,14 @@ theorem le_pred_iff_of_not_isMin (ha : ¬IsMin a) : b ≤ pred a ↔ b < a :=
 lemma pred_lt_pred_of_not_isMin (h : a < b) (ha : ¬ IsMin a) : pred a < pred b :=
   (pred_lt_iff_of_not_isMin ha).2 <| le_pred_of_lt h
 
+theorem pred_lt_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a < pred b ↔ a < b := by
+  rw [pred_lt_iff_of_not_isMin ha, le_pred_iff_of_not_isMin hb]
+
+theorem pred_le_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a ≤ pred b ↔ a ≤ b := by
+  rw [le_pred_iff_of_not_isMin hb, pred_lt_iff_of_not_isMin ha]
+
 @[simp, mono]
 theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
   succ_le_succ h.dual
@@ -794,6 +802,11 @@ theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
 
 alias ⟨_, _root_.IsMin.pred_eq⟩ := pred_eq_iff_isMin
 #align is_min.pred_eq IsMin.pred_eq
+
+theorem pred_eq_pred_iff_of_not_isMin (ha : ¬IsMin a) (hb : ¬IsMin b) :
+    pred a = pred b ↔ a = b := by
+  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, pred_le_pred_iff_of_not_isMin ha hb,
+    pred_lt_pred_iff_of_not_isMin ha hb]
 
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
   refine'

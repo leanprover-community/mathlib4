@@ -239,9 +239,13 @@ def IsLimit (o : Ordinal) : Prop :=
   o ≠ 0 ∧ ∀ a < o, succ a < o
 #align ordinal.is_limit Ordinal.IsLimit
 
+theorem IsLimit.isSuccLimit {o} (h : IsLimit o) : IsSuccLimit o := isSuccLimit_iff_succ_lt.mpr h.2
+
 theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
   h.2 a
 #align ordinal.is_limit.succ_lt Ordinal.IsLimit.succ_lt
+
+theorem isSuccLimit_zero : IsSuccLimit (0 : Ordinal) := isSuccLimit_bot
 
 theorem not_zero_isLimit : ¬IsLimit 0
   | ⟨h, _⟩ => h rfl
@@ -307,36 +311,25 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
 @[elab_as_elim]
 def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o, C o → C (succ o))
     (H₃ : ∀ o, IsLimit o → (∀ o' < o, C o') → C o) : C o :=
-  lt_wf.fix
-    (fun o IH =>
-      if o0 : o = 0 then by rw [o0]; exact H₁
-      else
-        if h : ∃ a, o = succ a then by
-          rw [← succ_pred_iff_is_succ.2 h]; exact H₂ _ (IH _ <| pred_lt_iff_is_succ.2 h)
-        else H₃ _ ⟨o0, fun a => (succ_lt_of_not_succ h).2⟩ IH)
-    o
+  SuccOrder.limitRecOn o (fun o _ ↦ H₂ o) fun o hl ↦
+    if h : o = 0 then fun _ ↦ h ▸ H₁ else H₃ o ⟨h, fun _ ↦ hl.succ_lt⟩
 #align ordinal.limit_rec_on Ordinal.limitRecOn
 
 @[simp]
 theorem limitRecOn_zero {C} (H₁ H₂ H₃) : @limitRecOn C 0 H₁ H₂ H₃ = H₁ := by
-  rw [limitRecOn, lt_wf.fix_eq, dif_pos rfl]; rfl
+  rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ isSuccLimit_zero, dif_pos rfl]
 #align ordinal.limit_rec_on_zero Ordinal.limitRecOn_zero
 
 @[simp]
 theorem limitRecOn_succ {C} (o H₁ H₂ H₃) :
     @limitRecOn C (succ o) H₁ H₂ H₃ = H₂ o (@limitRecOn C o H₁ H₂ H₃) := by
-  have h : ∃ a, succ o = succ a := ⟨_, rfl⟩
-  rw [limitRecOn, lt_wf.fix_eq, dif_neg (succ_ne_zero o), dif_pos h]
-  generalize limitRecOn.proof_2 (succ o) h = h₂
-  generalize limitRecOn.proof_3 (succ o) h = h₃
-  revert h₂ h₃; generalize e : pred (succ o) = o'; intros
-  rw [pred_succ] at e; subst o'; rfl
+  rw [limitRecOn, SuccOrder.limitRecOn_succ _ _ (not_isMax _)]; rfl
 #align ordinal.limit_rec_on_succ Ordinal.limitRecOn_succ
 
 @[simp]
 theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
     @limitRecOn C o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn C x H₁ H₂ H₃ := by
-  rw [limitRecOn, lt_wf.fix_eq, dif_neg h.1, dif_neg (not_succ_of_isLimit h)]; rfl
+  rw [limitRecOn, SuccOrder.limitRecOn_limit _ _ h.isSuccLimit, dif_neg h.1]; rfl
 #align ordinal.limit_rec_on_limit Ordinal.limitRecOn_limit
 
 instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
@@ -1148,14 +1141,14 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
   bfamilyOfFamily'_typein _ f i
 #align ordinal.bfamily_of_family_typein Ordinal.bfamilyOfFamily_typein
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily' r ho f (enum r i (by rwa [ho])) = f i hi := by
   simp only [familyOfBFamily', typein_enum]
 #align ordinal.family_of_bfamily'_enum Ordinal.familyOfBFamily'_enum
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily o f
         (enum (· < ·) i
@@ -1450,7 +1443,7 @@ theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrde
   sup_eq_sup r _ ho _ f
 #align ordinal.sup_eq_bsup' Ordinal.sup_eq_bsup'
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+@[simp, nolint simpNF] -- Porting note: simp cannot prove this
 theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     sSup (brange o f) = bsup.{_, v} o f := by
   congr
@@ -2308,45 +2301,39 @@ theorem one_add_nat_cast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
   rfl
 #align ordinal.one_add_nat_cast Ordinal.one_add_nat_cast
 
--- See note [no_index around OfNat.ofNat]
-@[simp]
-theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
-    1 + (no_index (OfNat.ofNat m : Ordinal)) = Order.succ (OfNat.ofNat m : Ordinal) :=
-  one_add_nat_cast m
-
 @[simp, norm_cast]
 theorem nat_cast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
   | 0 => by simp
   | n + 1 => by rw [Nat.mul_succ, Nat.cast_add, nat_cast_mul m n, Nat.cast_succ, mul_add_one]
 #align ordinal.nat_cast_mul Ordinal.nat_cast_mul
 
-/-- Alias of `Nat.cast_le`, specialized to `Ordinal` --/
+@[simp, norm_cast]
 theorem nat_cast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := by
   rw [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_le_ord, Cardinal.natCast_le]
 #align ordinal.nat_cast_le Ordinal.nat_cast_le
 
-/-- Alias of `Nat.cast_inj`, specialized to `Ordinal` --/
+@[simp, norm_cast]
+theorem nat_cast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := by
+  simp only [lt_iff_le_not_le, nat_cast_le]
+#align ordinal.nat_cast_lt Ordinal.nat_cast_lt
+
+@[simp, norm_cast]
 theorem nat_cast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := by
   simp only [le_antisymm_iff, nat_cast_le]
 #align ordinal.nat_cast_inj Ordinal.nat_cast_inj
 
-instance charZero : CharZero Ordinal where
-  cast_injective _ _ := nat_cast_inj.mp
-
-/-- Alias of `Nat.cast_lt`, specialized to `Ordinal` --/
-theorem nat_cast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
-#align ordinal.nat_cast_lt Ordinal.nat_cast_lt
-
-/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
-theorem nat_cast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_zero
+@[simp, norm_cast]
+theorem nat_cast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 :=
+  @nat_cast_inj n 0
 #align ordinal.nat_cast_eq_zero Ordinal.nat_cast_eq_zero
 
-/-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
-theorem nat_cast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
+theorem nat_cast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 :=
+  not_congr nat_cast_eq_zero
 #align ordinal.nat_cast_ne_zero Ordinal.nat_cast_ne_zero
 
-/-- Alias of `Nat.cast_pos'`, specialized to `Ordinal` --/
-theorem nat_cast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
+@[simp, norm_cast]
+theorem nat_cast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n :=
+  @nat_cast_lt 0 n
 #align ordinal.nat_cast_pos Ordinal.nat_cast_pos
 
 @[simp, norm_cast]
@@ -2382,12 +2369,6 @@ theorem lift_nat_cast : ∀ n : ℕ, lift.{u, v} n = n
   | 0 => by simp
   | n + 1 => by simp [lift_nat_cast n]
 #align ordinal.lift_nat_cast Ordinal.lift_nat_cast
-
--- See note [no_index around OfNat.ofNat]
-@[simp]
-theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift.{u, v} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
-  lift_nat_cast n
 
 end Ordinal
 
