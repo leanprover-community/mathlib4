@@ -114,13 +114,7 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
     rwa [nhds_pi, le_pi]
 #align Pi.complete Pi.complete
 
-instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α i) :=
-  separated_def.2 fun x y H => by
-    ext i
-    -- Porting note: should be `eq_ofSeparated_ofUniformContinuous`?
-    apply eq_of_separated_of_uniformContinuous (Pi.uniformContinuous_proj α i)
-    apply H
-#align Pi.separated Pi.separated
+#align Pi.separated Pi.instT0Space
 
 /- An infimum of complete uniformities is complete,
 as long as the whole family is bounded by some common T2 topology. -/
