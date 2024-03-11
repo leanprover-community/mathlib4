@@ -311,7 +311,7 @@ of order `lcm n m`. -/
 @[to_additive "If two commuting elements `x` and `y` of an additive monoid have order `n` and `m`,
 there is an element of order `lcm n m`."]
 theorem _root_.Commute.exists_orderOf_eq_lcm {x y : G} (h : Commute x y) :
-    ∃ (z : G), orderOf z = Nat.lcm (orderOf x) (orderOf y) := by
+    ∃ z : G, orderOf z = Nat.lcm (orderOf x) (orderOf y) := by
   by_cases hx : orderOf x = 0 <;> by_cases hy : orderOf y = 0
   · use x; simp [hx]
   · use x; simp [hx]
