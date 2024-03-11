@@ -577,22 +577,6 @@ theorem factors_pow_count_prod {x : α} (hx : x ≠ 0) :
   _ = prod (factors x) := by rw [toFinset_sum_count_nsmul_eq (factors x)]
   _ ~ᵤ x := factors_prod hx
 
-open Ideal in
-  /-- If an integral domain is a `UniqueFactorizationMonoid`, then every nonzero prime ideal
-  contains a prime element. -/
-theorem IsPrime.exists_mem_Prime_of_neq_bot {R : Type*} [CommSemiring R] [IsDomain R]
-    [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
-    ∃ x ∈ I, Prime x := by
-  classical
-  obtain ⟨a, ha₁, ha₂⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hI
-  obtain ⟨u, ha₃⟩ := factors_prod ha₂
-  rw [← ha₃] at ha₁
-  rcases (IsPrime.mem_or_mem hI₂) ha₁ with (ha₄ | ha₅)
-  · obtain ⟨p, ha₅, ha₆⟩ := (hI₂.multiset_prod_mem_iff_exists_mem (factors a)).1 ha₄
-    exact ⟨p, ha₆, prime_of_factor p ha₅⟩
-  · exfalso
-    exact (isPrime_iff.1 hI₂).1 (eq_top_of_isUnit_mem _ ha₅ u.isUnit)
-
 end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
@@ -2090,3 +2074,17 @@ theorem associated_of_factorization_eq (a b : α) (ha : a ≠ 0) (hb : b ≠ 0)
 #align associated_of_factorization_eq associated_of_factorization_eq
 
 end Finsupp
+
+open UniqueFactorizationMonoid in
+/-- Every non-zero prime ideal in a unique factorization domain contains a prime element. -/
+theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R] [IsDomain R]
+    [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
+    ∃ x ∈ I, Prime x := by
+  classical
+  obtain ⟨a : R, ha₁ : a ∈ I, ha₂ : a ≠ 0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hI
+  replace ha₁ : (factors a).prod ∈ I := by
+    obtain ⟨u : Rˣ, hu : (factors a).prod * u = a⟩ := factors_prod ha₂
+    rwa [← hu, mul_unit_mem_iff_mem _ u.isUnit] at ha₁
+  obtain ⟨p : R, hp₁ : p ∈ factors a, hp₂ : p ∈ I⟩ :=
+    (hI₂.multiset_prod_mem_iff_exists_mem <| factors a).1 ha₁
+  exact ⟨p, hp₂, prime_of_factor p hp₁⟩
