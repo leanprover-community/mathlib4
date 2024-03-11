@@ -491,7 +491,7 @@ end instances
 
 /--
 The relation defining the quotient type which implements the colimit of a functor `F : J ⥤ Type u`.
-See `CategoryTheory.Limits.Types.Quot`.
+See `CategoryTheory.Limits.Types.Small.Quot`.
 -/
 def Quot.Rel (F : J ⥤ TypeMax.{v, u}) : (Σ j, F.obj j) → (Σ j, F.obj j) → Prop := fun p p' =>
   ∃ f : p.1 ⟶ p'.1, p'.2 = F.map f p.2
