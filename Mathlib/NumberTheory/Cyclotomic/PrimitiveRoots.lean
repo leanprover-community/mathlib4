@@ -256,7 +256,7 @@ theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField
   rw [neg_pow] at hs
   exact ⟨s, hs.symm⟩
 
-/-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension, where `n` is odd, and `ζ`
+/-- If `x` is a `k`-th root of unity in an `n`-th cyclotomic extension of ℚ, where `n` is odd, and `ζ`
 is a primitive `n`-th root of unity, then there exists `r < n` such that `x = ζ^r` or `x = -ζ^r`. -/
 theorem _root_.IsPrimitiveRoot.exists_pow_or_neg_mul_pow_of_pow_eq_one [NumberField K]
     [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
