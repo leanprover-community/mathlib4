@@ -652,49 +652,49 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   exact (min_add_max _ _).symm
 #align nat.factorization_lcm Nat.factorization_lcm
 
-/-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorization_lcm_left = ∏ pᵢ ^ kᵢ`, where
+/-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorizationLCMLeft = ∏ pᵢ ^ kᵢ`, where
 `kᵢ = nᵢ` if `mᵢ ≤ nᵢ` and `0` otherwise. -/
 def factorizationLCMLeft (a b : ℕ) : ℕ :=
   (Nat.lcm a b).factorization.prod fun p n ↦
     if b.factorization p ≤ a.factorization p then p ^ n else 1
 
-/-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorization_lcm_right = ∏ pᵢ ^ kᵢ`, where
+/-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorizationLCMRight = ∏ pᵢ ^ kᵢ`, where
 `kᵢ = mᵢ` if `nᵢ < mᵢ` and `0` otherwise.
 
-Note that `factorization_lcm_right a b` is *not* `factorization_lcm_left b a`: the difference is
-that in `factorization_lcm_left a b` there are the primes whose exponent in `a` is bigger or equal
-than the exponent in `b`, while in `factorization_lcm_right a b` there are the primes primes whose
-exponent in `b` is strictly bigger than in `a`. For example `factorization_lcm_left 2 2 = 2`, but
-`factorization_lcm_right 2 2 = 1`. -/
-def factorization_lcm_right (a b : ℕ) :=
+Note that `factorizationLCMRight a b` is *not* `factorizationLCMLeft b a`: the difference is
+that in `factorizationLCMLeft a b` there are the primes whose exponent in `a` is bigger or equal
+than the exponent in `b`, while in `factorizationLCMRight a b` there are the primes primes whose
+exponent in `b` is strictly bigger than in `a`. For example `factorizationLCMLeft 2 2 = 2`, but
+`factorizationLCMRight 2 2 = 1`. -/
+def factorizationLCMRight (a b : ℕ) :=
   (Nat.lcm a b).factorization.prod fun p n ↦
     if b.factorization p ≤ a.factorization p then 1 else p ^ n
 
 variable (a b)
 
-lemma factorization_lcm_left_pos :
-    0 < factorization_lcm_left a b := by
+lemma factorizationLCMLeft_pos :
+    0 < factorizationLCMLeft a b := by
   apply Nat.pos_of_ne_zero
-  rw [factorization_lcm_left, Finsupp.prod_ne_zero_iff]
+  rw [factorizationLCMLeft, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
   · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
   · simp only [h, reduceIte, one_ne_zero] at H
 
-lemma factorization_lcm_right_pos :
-    0 < factorization_lcm_right a b := by
+lemma factorizationLCMRight_pos :
+    0 < factorizationLCMRight a b := by
   apply Nat.pos_of_ne_zero
-  rw [factorization_lcm_right, Finsupp.prod_ne_zero_iff]
+  rw [factorizationLCMRight, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
   · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq] at H
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
 
-lemma coprime_factorization_lcm_left_factorization_lcm_right :
-    (factorization_lcm_left a b).Coprime (factorization_lcm_right a b) := by
-  rw [factorization_lcm_left, factorization_lcm_right]
+lemma coprime_factorizationLCMLeft_factorizationLCMRight :
+    (factorizationLCMLeft a b).Coprime (factorizationLCMRight a b) := by
+  rw [factorizationLCMLeft, factorizationLCMRight]
   refine coprime_prod_left_iff.mpr fun p hp ↦ coprime_prod_right_iff.mpr fun q hq ↦ ?_
   dsimp only; split_ifs with h h'
   any_goals apply coprime_one_left
@@ -704,19 +704,19 @@ lemma coprime_factorization_lcm_left_factorization_lcm_right :
 
 variable {a b}
 
-lemma factorization_lcm_left_mul_factorization_lcm_right (ha : a ≠ 0) (hb : b ≠ 0) :
-    (factorization_lcm_left a b) * (factorization_lcm_right a b) = lcm a b := by
-  rw [← factorization_prod_pow_eq_self (lcm_ne_zero ha hb), factorization_lcm_left,
-    factorization_lcm_right, ← prod_mul]
+lemma factorizationLCMLeft_mul_factorizationLCMRight (ha : a ≠ 0) (hb : b ≠ 0) :
+    (factorizationLCMLeft a b) * (factorizationLCMRight a b) = lcm a b := by
+  rw [← factorization_prod_pow_eq_self (lcm_ne_zero ha hb), factorizationLCMLeft,
+    factorizationLCMRight, ← prod_mul]
   congr; ext p n; split_ifs <;> simp
 
 variable (a b)
 
-lemma factorization_lcm_left_dvd : factorization_lcm_left a b ∣ a := by
+lemma factorizationLCMLeft_dvd : factorizationLCMLeft a b ∣ a := by
   rcases eq_or_ne a 0 with rfl | ha
   · simp only [dvd_zero]
   rcases eq_or_ne b 0 with rfl | hb
-  · simp [factorization_lcm_left]
+  · simp [factorizationLCMLeft]
   nth_rewrite 2 [← factorization_prod_pow_eq_self ha]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
   · apply prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
@@ -726,9 +726,9 @@ lemma factorization_lcm_left_dvd : factorization_lcm_left a b ∣ a := by
     rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inl <| Nat.pos_of_ne_zero hp).ne'
   · intros; rw [pow_zero]
 
-lemma factorization_lcm_right_dvd : factorization_lcm_right a b ∣ b := by
+lemma factorizationLCMRight_dvd : factorizationLCMRight a b ∣ b := by
   rcases eq_or_ne a 0 with rfl | ha
-  · simp [factorization_lcm_right]
+  · simp [factorizationLCMRight]
   rcases eq_or_ne b 0 with rfl | hb
   · simp only [dvd_zero]
   nth_rewrite 2 [← factorization_prod_pow_eq_self hb]
