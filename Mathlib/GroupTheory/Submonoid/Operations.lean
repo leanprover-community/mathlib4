@@ -1420,34 +1420,31 @@ variable {M' : Type*} {α β : Type*}
 
 section MulOneClass
 
-variable [MulOneClass M']
+variable [MulOneClass M'] {F : Type*} [SetLike F M'] [SubmonoidClass F M'] (S : F)
 
 @[to_additive]
-instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
-  SMul.comp _ S.subtype
+instance smul [SMul M' α] : SMul S α :=
+  SMul.comp _ (SubmonoidClass.subtype S)
 
 @[to_additive]
-instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
-    (S : Submonoid M') : SMulCommClass S α β :=
+instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β] : SMulCommClass S α β :=
   ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
 #align submonoid.smul_comm_class_left Submonoid.smulCommClass_left
 #align add_submonoid.vadd_comm_class_left AddSubmonoid.vaddCommClass_left
 
 @[to_additive]
-instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
-    (S : Submonoid M') : SMulCommClass α S β :=
+instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β] : SMulCommClass α S β :=
   ⟨fun a s => (smul_comm a (s : M') : _)⟩
 #align submonoid.smul_comm_class_right Submonoid.smulCommClass_right
 #align add_submonoid.vadd_comm_class_right AddSubmonoid.vaddCommClass_right
 
 /-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
-instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
-      (S : Submonoid M') :
+instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β] :
     IsScalarTower S α β :=
   ⟨fun a => (smul_assoc (a : M') : _)⟩
 
 section SMul
-variable [SMul M' α] {S : Submonoid M'}
+variable [SMul M' α] {S}
 
 @[to_additive] lemma smul_def (g : S) (a : α) : g • a = (g : M') • a := rfl
 #align submonoid.smul_def Submonoid.smul_def
@@ -1462,25 +1459,23 @@ instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
 end SMul
 end MulOneClass
 
-variable [Monoid M']
+variable [Monoid M'] {F : Type*} [SetLike F M'] [SubmonoidClass F M'] (S : F)
 
 /-- The action by a submonoid is the action by the underlying monoid. -/
 @[to_additive
       "The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. "]
-instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
-  MulAction.compHom _ S.subtype
+instance mulAction [MulAction M' α] : MulAction S α :=
+  MulAction.compHom _ (SubmonoidClass.subtype S)
 
 /-- The action by a submonoid is the action by the underlying monoid. -/
-instance distribMulAction [AddMonoid α] [DistribMulAction M' α] (S : Submonoid M') :
-    DistribMulAction S α :=
-  DistribMulAction.compHom _ S.subtype
+instance distribMulAction [AddMonoid α] [DistribMulAction M' α] : DistribMulAction S α :=
+  DistribMulAction.compHom _ (SubmonoidClass.subtype S)
 
 /-- The action by a submonoid is the action by the underlying monoid. -/
-instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] (S : Submonoid M') :
-    MulDistribMulAction S α :=
-  MulDistribMulAction.compHom _ S.subtype
+instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] : MulDistribMulAction S α :=
+  MulDistribMulAction.compHom _ (SubmonoidClass.subtype S)
 
-example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
+example : IsScalarTower S M' M' := by infer_instance
 
 
 end Submonoid
