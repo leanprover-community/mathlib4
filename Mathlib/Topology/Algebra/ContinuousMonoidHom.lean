@@ -419,7 +419,7 @@ theorem arzela_ascoli {X Y : Type*} [TopologicalSpace X] [UniformSpace Y]
     exact ⟨ϕ.1 x, ⟨x, hx, rfl⟩, hWV ⟨ψ.1 x', ⟨ϕ.1 x', hW₀.mk_mem_comm.mp (h' ϕ), h x' hx'⟩, h' ψ⟩⟩
 
 theorem _root_.MonoidHom.isClosed_range (X Y : Type*) [Group X] [Group Y]
-    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalGroup Y] [T0Space Y] :
+    [TopologicalSpace Y] [TopologicalGroup Y] [T0Space Y] :
     IsClosed (Set.range ((↑) : (X →* Y) → (X → Y))) := by
   suffices h : Set.range ((↑) : (X →* Y) → X → Y) = ⋂ (x) (y), {f | f (x * y) = f x * f y} from
     h ▸ isClosed_iInter fun _ ↦ isClosed_iInter fun _ ↦ isClosed_eq (by continuity) (by continuity)
