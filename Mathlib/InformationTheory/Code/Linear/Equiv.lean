@@ -41,7 +41,8 @@ instance LinearCodeEquiv.instEquivLike:
   right_inv := fun φ => φ.right_inv
   coe_injective' := fun φ φ₂ h1 h2=> by
     unhygienic cases φ;unhygienic cases φ₂; congr; simp_all
-    cases toCodeEquiv; cases toCodeEquiv_1; congr
+    cases toCodeEquiv; cases toCodeEquiv_1; congr;
+
     sorry
 
 

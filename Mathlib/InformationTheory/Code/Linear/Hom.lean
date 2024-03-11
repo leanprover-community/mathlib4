@@ -6,189 +6,176 @@ open Set
 variable (T:Type*)
 
 variable {γ : Type*} [Semiring γ] [CompleteLinearOrder γ] [Nontrivial γ]
-variable (K : Type*) [Field K] {Tₖ : Type*} (gdist_k:Tₖ)
-variable {M : Type*} {Tₘ : Type*} (gdist_m:Tₘ) [AddCommMonoid M] [Module K M]
-variable (s : Submodule K M)
-variable--? [_LinearCode γ K gdist_k gdist_m s] =>
+variable (K : Type*) [Field K] {Tₖ : Type*} (gdistₖ:Tₖ)
+variable {M : Type*} {Tₘ : Type*} (gdistₘ:Tₘ) [AddCommMonoid M] [Module K M]
+variable (sₘ : Submodule K M)
+variable--? [_LinearCode γ K gdistₖ gdistₘ sₘ] =>
   [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] [FunLike Tₖ K (K → γ)]
-  [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdist_k] [FunLike Tₘ M (M → γ)]
-  [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdist_m] [IsDelone gdist_m ↑s] [PosMulMono γ]
-  [MulPosMono γ] [ZeroLEOneClass γ] [StrictModuleGNorm K K gdist_k gdist_k]
-  [StrictModuleGNorm K M gdist_k gdist_m]
-variable {M₂ : Type*} {Tₘ₂ : Type*} (gdist_m₂:Tₘ₂) [AddCommMonoid M₂] [Module K M₂]
-variable (s₂ : Submodule K M₂)
-variable--? [_LinearCode γ K gdist_k gdist_m₂ s₂] =>
-  [FunLike Tₘ₂ M₂ (M₂ → γ)]
-  [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdist_m₂] [IsDelone gdist_m₂ ↑s₂]
-  [StrictModuleGNorm K M₂ gdist_k gdist_m₂]
-variable--? [CodeHomClass T₃ gdist_m s gdist_m₂ s₂] =>
-  [FunLike T M M₂]
-  [GIsometryClass T gdist_m gdist_m₂] [CodeHomClass T gdist_m s gdist_m₂ s₂]
+  [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdistₖ] [FunLike Tₘ M (M → γ)]
+  [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdistₘ] [IsDelone gdistₘ ↑sₘ] [PosMulMono γ]
+  [MulPosMono γ] [ZeroLEOneClass γ] [StrictModuleGNorm K K gdistₖ gdistₖ]
+  [StrictModuleGNorm K M gdistₖ gdistₘ]
+variable {M₂ : Type*} {Tₘ₂ : Type*} (gdistₘ₂:Tₘ₂) [AddCommMonoid M₂] [Module K M₂]
+variable (sₘ₂ : Submodule K M₂)
+variable--? [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂] =>
+  [FunLike Tₘ₂ M₂ (M₂ → γ)] [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂]
+  [IsDelone gdistₘ₂ ↑sₘ₂] [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂]
+variable--? [CodeHomClass T gdistₘ sₘ gdistₘ₂ sₘ₂] =>
+  [FunLike T M M₂] [CodeHomClass T gdistₘ sₘ gdistₘ₂ sₘ₂]
 
-structure LinearCodeHom [_LinearCode γ K gdist_k gdist_m s] [_LinearCode γ K gdist_k gdist_m₂ s₂]
-  extends CodeHom gdist_m s gdist_m₂ s₂,LinearMap (RingHom.id K) M M₂ where
+structure LinearCodeHom [_LinearCode γ K gdistₖ gdistₘ sₘ] [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]
+  extends CodeHom gdistₘ sₘ gdistₘ₂ sₘ₂,LinearMap (RingHom.id K) M M₂ where
 
-class _LinearCodeHomClass
-    [_LinearCode γ K gdist_k gdist_m s]
-    [_LinearCode γ K gdist_k gdist_m₂ s₂]
-    [CodeHomClass T gdist_m s gdist_m₂ s₂]
-    [LinearMapClass T K M M₂] : Prop
+class LinearCodeHomClass (T:Type*) {γ :outParam Type*} [Semiring γ] [CompleteLinearOrder γ]
+    [Nontrivial γ] [CovariantClass γ γ (.+.) (.≤.)] [PosMulMono γ] [MulPosMono γ]
+    [ZeroLEOneClass γ] (K : outParam Type*) [Field K] {Tₖ:outParam Type*} (gdistₖ:outParam Tₖ)
+    [FunLike Tₖ K (K → γ)] [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdistₖ]
+    [StrictModuleGNorm K K gdistₖ gdistₖ] {M: outParam Type*} {Tₘ:outParam Type*}
+    (gdistₘ: outParam Tₘ) [AddCommMonoid M] [Module K M] (sₘ: outParam (Submodule K M))
+    [FunLike Tₘ M (M → γ)] [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdistₘ] [IsDelone gdistₘ sₘ]
+    [StrictModuleGNorm K M gdistₖ gdistₘ] -- [_LinearCode γ K gdistₖ gdistₘ sₘ]
+    {M₂: outParam Type*} {Tₘ₂:outParam Type*} (gdistₘ₂: outParam Tₘ₂) [AddCommMonoid M₂]
+    [Module K M₂] (sₘ₂:outParam (Submodule K M₂)) [FunLike Tₘ₂ M₂ (M₂ → γ)]
+    [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂] [IsDelone gdistₘ₂ sₘ₂]
+    [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂] -- [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]
+    [FunLike T M M₂]
+    extends CodeHomClass T gdistₘ sₘ gdistₘ₂ sₘ₂, SemilinearMapClass T (RingHom.id K) M M₂ : Prop
     where
 
 namespace LinearCodeHom
 
 instance instFunLike :
-    FunLike (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) M M₂ where
+    FunLike (LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) M M₂ where
   coe := fun φ => ⇑φ.toCodeHom
   coe_injective' := fun φ₁ φ₂ h => by
     cases φ₁; cases φ₂; simp_all only [DFunLike.coe_fn_eq]
 section
 
-variable {K gdist_k gdist_m s gdist_m₂ s₂}
+variable {K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂}
 
 @[ext]
 lemma ext
-    ⦃φ:LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂⦄
-    ⦃φ₂:LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂⦄
+    ⦃φ φ₂:LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂⦄
     (h:∀ x,φ x = φ₂ x) : φ = φ₂ := DFunLike.ext _ _ h
 end
-instance instSemiLinearMapClass :
-    LinearMapClass (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) K M M₂ where
-  map_add := fun φ => by apply φ.map_add'
-  map_smulₛₗ := fun φ => by apply φ.map_smul'
 
-instance instGIsometryClass :
-    GIsometryClass (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) gdist_m gdist_m₂ where
-  map_dist' := fun φ => φ.toCodeHom.map_dist
-
-instance instCodeHomClass :
-    CodeHomClass (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) gdist_m s gdist_m₂ s₂ where
-  map_code' := fun φ => φ.toCodeHom.map_code
-
--- @[abbrev_class]
-/-- this class doesn't really do anything
-there is no extra info needed on top of the parameters,
-but it does help remind you what instances you need in order to have the property
-this represents.
-it also allows `variable? [LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂]` to
-expand into all the right variables
-don't extend, rather just take as a parameter. also don't make new instances.-/
-
--- LinearCodeHom.inst_LinearCodeHomClass is redundant with this
-instance inst_LinearCodeHomClass
-    [_LinearCode γ K gdist_k gdist_m s]
-    [_LinearCode γ K gdist_k gdist_m₂ s₂]
-    [CodeHomClass T gdist_m s gdist_m₂ s₂]
-    [LinearMapClass T K M M₂] : _LinearCodeHomClass T K gdist_k gdist_m s gdist_m₂ s₂ where
+instance instLinearCodeHomClass
+    [_LinearCode γ K gdistₖ gdistₘ sₘ] [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]:
+    LinearCodeHomClass
+      (LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂)
+      K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ where
+      map_dist' := fun f => f.map_dist
+      map_code' := fun f => f.map_code
+      map_add := fun f => f.toLinearMap.map_add
+      map_smulₛₗ := fun f => f.toLinearMap.map_smulₛₗ
 
 end LinearCodeHom
-variable {T K gdist_k gdist_m s gdist_m₂ s₂}
-variable--? [_LinearCodeHomClass T₃ K gdist_k gdist_m s gdist_m₂ s₂] =>
-  [LinearMapClass T K M M₂]
+variable {T K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂}
+variable [LinearCodeHomClass T K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂]
 
 @[coe]
-def _LinearCodeHomClass.toLinearCodeHom
-    [_LinearCodeHomClass T K gdist_k gdist_m s gdist_m₂ s₂] (φ:T):
-  LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂ := {
+def LinearCodeHomClass.toLinearCodeHom
+    [LinearCodeHomClass T K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂] (φ:T):
+  LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ := {
     CodeHomClass.toCodeHom φ,LinearMapClass.linearMap φ with
   }
 
 instance
-    [_LinearCodeHomClass T K gdist_k gdist_m s gdist_m₂ s₂] :
-    CoeTC T (LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) :=
-  ⟨_LinearCodeHomClass.toLinearCodeHom⟩
+    [LinearCodeHomClass T K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂] :
+    CoeTC T (LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) :=
+  ⟨LinearCodeHomClass.toLinearCodeHom⟩
 
 namespace LinearCodeHom
 @[simp]
 theorem coe_coe
-    [_LinearCodeHomClass T K gdist_k gdist_m s gdist_m₂ s₂] (f : T) :
-    ((f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) : M → M₂) = f := rfl
+    [LinearCodeHomClass T K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂] (f : T) :
+    ((f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) : M → M₂) = f := rfl
 
 @[simp]
 theorem coe_mk
-    [_LinearCode γ K gdist_k gdist_m s]
-    [_LinearCode γ K gdist_k gdist_m₂ s₂]
-    (f : CodeHom gdist_m s gdist_m₂ s₂)
+    [_LinearCode γ K gdistₖ gdistₘ sₘ]
+    [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]
+    (f : CodeHom gdistₘ sₘ gdistₘ₂ sₘ₂)
     (map_add : ∀ (x y : M), f (x + y) = f x + f y)
     (map_smul : ∀ (r : K) (x : M), f (r • x) = (RingHom.id K) r • f x):
-    ((@LinearCodeHom.mk γ _ _ _ K _ Tₖ gdist_k) f map_add map_smul : M → M₂) = f := rfl
+    ((@LinearCodeHom.mk γ _ _ _ K _ Tₖ gdistₖ) f map_add map_smul : M → M₂) = f := rfl
 
 protected def copy
-    (f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) (f' : M → M₂) (h : f' = f) :
-    LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂ := {
+    (f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) (f' : M → M₂) (h : f' = f) :
+    LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ := {
   f.toCodeHom.copy f' h, f.toLinearMap.copy f' h with}
 
 @[simp]
 theorem coe_copy
-    (f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) (f' : M → M₂) (h : f' = f) :
+    (f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) (f' : M → M₂) (h : f' = f) :
     (f.copy f' h) = f' := rfl
 
-theorem coe_copy_eq (f :LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) (f' : M → M₂)
+theorem coe_copy_eq (f :LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) (f' : M → M₂)
   (h : f' = f) : f.copy f' h = f := DFunLike.ext' h
 
-variable {T₃ M₃:Type*} {gdist_m₃:T₃} [AddCommMonoid M₃] [Module K M₃] {s₃ : Submodule K M₃}
-variable--? [_LinearCode γ K gdist_k gdist_m₃ s₃] =>
-  [FunLike T₃ M₃ (M₃ → γ)] [GPseudoMetricClass T₃ M₃ γ] [AddGNorm M₃ γ gdist_m₃]
-  [IsDelone gdist_m₃ ↑s₃] [StrictModuleGNorm K M₃ gdist_k gdist_m₃]
+variable {Tₘ₃ M₃:Type*} {gdistₘ₃:Tₘ₃} [AddCommMonoid M₃] [Module K M₃] {sₘ₃ : Submodule K M₃}
+variable--? [_LinearCode γ K gdistₖ gdistₘ₃ sₘ₃] =>
+  [FunLike Tₘ₃ M₃ (M₃ → γ)] [GPseudoMetricClass Tₘ₃ M₃ γ] [AddGNorm M₃ γ gdistₘ₃]
+  [IsDelone gdistₘ₃ ↑sₘ₃] [StrictModuleGNorm K M₃ gdistₖ gdistₘ₃]
 
 
 section
-variable (K gdist_k gdist_m s)
+variable (K gdistₖ gdistₘ sₘ)
 @[simps!] -- not sure if this should or shouldn't be simps
 def id
-  [_LinearCode γ K gdist_k gdist_m s] : LinearCodeHom K gdist_k gdist_m s gdist_m s := {
-    CodeHom.id gdist_m s, LinearMap.id with
+  [_LinearCode γ K gdistₖ gdistₘ sₘ] : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ sₘ := {
+    CodeHom.id gdistₘ sₘ, LinearMap.id with
   }
 end
 def comp
-    (φ: LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃)
-    (φ₂ : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) :
-    LinearCodeHom K gdist_k gdist_m s gdist_m₃ s₃ := {
+    (φ: LinearCodeHom K gdistₖ gdistₘ₂ sₘ₂ gdistₘ₃ sₘ₃)
+    (φ₂ : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) :
+    LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₃ sₘ₃ := {
       φ.toCodeHom.comp φ₂.toCodeHom, φ.toLinearMap.comp φ₂.toLinearMap with}
 
 
 @[simp]
-theorem coe_comp (g : LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃)
-    (f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) :
+theorem coe_comp (g : LinearCodeHom K gdistₖ gdistₘ₂ sₘ₂ gdistₘ₃ sₘ₃)
+    (f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) :
     ↑(g.comp f) = g ∘ f := rfl
 
-theorem comp_apply (g : LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃)
-    (f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) (x : M) :
+theorem comp_apply (g : LinearCodeHom K gdistₖ gdistₘ₂ sₘ₂ gdistₘ₃ sₘ₃)
+    (f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) (x : M) :
     g.comp f x = g (f x) := rfl
 
-variable {M₄:Type*} {T₄:Type*} {gdist_m₄:T₄} [AddCommMonoid M₄] [Module K M₄] {s₄:Submodule K M₄}
-variable--? [_LinearCode γ K gdist_k gdist_m₄ s₄] =>
-  [FunLike T₄ M₄ (M₄ → γ)] [GPseudoMetricClass T₄ M₄ γ] [AddGNorm M₄ γ gdist_m₄]
-  [IsDelone gdist_m₄ ↑s₄] [StrictModuleGNorm K M₄ gdist_k gdist_m₄]
+variable {M₄:Type*} {Tₘ₄:Type*} {gdistₘ₄:Tₘ₄} [AddCommMonoid M₄] [Module K M₄] {sₘ₄:Submodule K M₄}
+variable--? [_LinearCode γ K gdistₖ gdist_m₄ s₄] =>
+  [FunLike Tₘ₄ M₄ (M₄ → γ)] [GPseudoMetricClass Tₘ₄ M₄ γ] [AddGNorm M₄ γ gdistₘ₄]
+  [IsDelone gdistₘ₄ ↑sₘ₄] [StrictModuleGNorm K M₄ gdistₖ gdistₘ₄]
 
 theorem comp_assoc
-    (f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂)
-    (g : LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃)
-    (h : LinearCodeHom K gdist_k gdist_m₃ s₃ gdist_m₄ s₄) :
+    (f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂)
+    (g : LinearCodeHom K gdistₖ gdistₘ₂ sₘ₂ gdistₘ₃ sₘ₃)
+    (h : LinearCodeHom K gdistₖ gdistₘ₃ sₘ₃ gdistₘ₄ sₘ₄) :
     (h.comp g).comp f = h.comp (g.comp f) := rfl
 
 theorem cancel_right
-    {g₁ g₂ : LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃}
-    {f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂}
+    {g₁ g₂ : LinearCodeHom K gdistₖ gdistₘ₂ sₘ₂ gdistₘ₃ sₘ₃}
+    {f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂}
     (hf : Function.Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h => h ▸ rfl⟩
 
 
 theorem cancel_left
-    {g : LinearCodeHom K gdist_k gdist_m₂ s₂ gdist_m₃ s₃}
-    {f₁ f₂ : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂}
+    {g : LinearCodeHom K gdistₖ gdistₘ₂ sₘ₂ gdistₘ₃ sₘ₃}
+    {f₁ f₂ : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂}
     (hg : Function.Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun x => hg <| by rw [← comp_apply, h,
     comp_apply],fun h => h ▸ rfl⟩
 
 @[simp]
-theorem comp_id (f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) :
-  f.comp (id K gdist_k gdist_m s) = f :=
+theorem comp_id (f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) :
+  f.comp (id K gdistₖ gdistₘ sₘ) = f :=
   ext fun _ => rfl
 
 @[simp]
-theorem id_comp (f : LinearCodeHom K gdist_k gdist_m s gdist_m₂ s₂) :
-  (id K gdist_k gdist_m₂ s₂).comp f = f :=
+theorem id_comp (f : LinearCodeHom K gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) :
+  (id K gdistₖ gdistₘ₂ sₘ₂).comp f = f :=
   ext fun _ => rfl
 
 end LinearCodeHom

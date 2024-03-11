@@ -33,7 +33,7 @@ class CodeHomClass {γ :outParam Type*} [CompleteLinearOrder γ] [AddCommMonoid 
     [GPseudoMetricClass T₁ α₁ γ] [IsDelone gdist₁ s₁] [_Code γ gdist₁ s₁]
     [FunLike T₂ α₂ (α₂ → γ)] (gdist₂:outParam T₂) (s₂: outParam (Set α₂))
     [GPseudoMetricClass T₂ α₂ γ] [IsDelone gdist₂ s₂] [_Code γ gdist₂ s₂]
-    [FunLike T α₁ α₂] [GIsometryClass T gdist₁ gdist₂] :Prop where
+    [FunLike T α₁ α₂] extends GIsometryClass T gdist₁ gdist₂ :Prop where
   map_code' : ∀ (φ:T), ∀ x ∈ s₁, φ x ∈ s₂
 end
 
@@ -47,11 +47,9 @@ instance instFunLike : FunLike (CodeHom gdist₁ s₁ gdist₂ s₂) α₁ α₂
 lemma ext ⦃φ:CodeHom gdist₁ s₁ gdist₂ s₂⦄ ⦃φ₂:CodeHom gdist₁ s₁ gdist₂ s₂⦄
     (h:∀ x, φ x = φ₂ x): φ = φ₂ := DFunLike.ext _ _ h
 
-instance instGIsometryClass : GIsometryClass (CodeHom gdist₁ s₁ gdist₂ s₂) gdist₁ gdist₂ where
-  map_dist' := fun φ => φ.map_dist
-
 instance instCodeHomClass :
     CodeHomClass (CodeHom gdist₁ s₁ gdist₂ s₂) gdist₁ s₁ gdist₂ s₂ where
+  map_dist' := fun φ => φ.map_dist
   map_code' := fun φ => φ.map_code
 end CodeHom
 
