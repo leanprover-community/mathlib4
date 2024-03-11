@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.ZMod.IntUnitsPower
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.Algebra.DirectSum.Algebra
 

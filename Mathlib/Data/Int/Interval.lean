@@ -124,7 +124,7 @@ theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| c
 theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
   (card_map _).trans <|
     Int.ofNat.inj <| by
-      -- porting note: TODO: Restore `int.coe_nat_inj` and remove the `change`
+      -- Porting note (#11215): TODO: Restore `int.coe_nat_inj` and remove the `change`
       change ((↑) : ℕ → ℤ) _ = ((↑) : ℕ → ℤ) _
       rw [card_range, sup_eq_max, inf_eq_min,
         Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,
@@ -147,22 +147,22 @@ theorem card_Ioo_of_lt (h : a < b) : ((Ioo a b).card : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 #align int.card_Ioo_of_lt Int.card_Ioo_of_lt
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
   rw [← card_Icc, Fintype.card_ofFinset]
 #align int.card_fintype_Icc Int.card_fintype_Icc
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
   rw [← card_Ico, Fintype.card_ofFinset]
 #align int.card_fintype_Ico Int.card_fintype_Ico
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 #align int.card_fintype_Ioc Int.card_fintype_Ioc
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 #align int.card_fintype_Ioo Int.card_fintype_Ioo

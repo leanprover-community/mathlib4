@@ -94,7 +94,7 @@ theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
   let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
   suffices hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ by
     rw [isComplement'_def, IsComplement, ← Equiv.bijective_comp ϕ]
-    apply (congr_arg Function.Bijective hf).mp -- porting note: This was a `rw` in mathlib3
+    apply (congr_arg Function.Bijective hf).mp -- Porting note: This was a `rw` in mathlib3
     rwa [ψ.comp_bijective]
   exact funext fun x => mul_inv_rev _ _
 #align subgroup.is_complement'.symm Subgroup.IsComplement'.symm

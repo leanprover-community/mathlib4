@@ -34,11 +34,13 @@ space structure on `X ⊕ Y`. The corresponding metric quotient is `OptimalGHCou
 
 noncomputable section
 
-open Classical Topology NNReal
+open scoped Classical
+open Topology NNReal
 
 universe u v w
 
-open Classical Set Function TopologicalSpace Filter Metric Quotient
+open scoped Classical
+open Set Function TopologicalSpace Filter Metric Quotient
 
 open BoundedContinuousFunction
 
@@ -100,7 +102,7 @@ section Constructions
 variable {X : Type u} {Y : Type v} [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y] {f : ProdSpaceFun X Y} {x y z t : X ⊕ Y}
 
-attribute [local instance 10] inhabited_of_nonempty'
+attribute [local instance 10] Classical.inhabited_of_nonempty'
 
 private theorem maxVar_bound : dist x y ≤ maxVar X Y :=
   calc
@@ -293,13 +295,13 @@ technical lemmas. -/
 theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
     BddBelow (range fun y : Y => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1
-  ⟨cf + C, forall_range_iff.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
+  ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 #align Gromov_Hausdorff.HD_below_aux1 GromovHausdorff.HD_below_aux1
 
 private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
   rcases (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2 with ⟨Cf, hCf⟩
-  refine' ⟨Cf + C, forall_range_iff.2 fun x => _⟩
+  refine' ⟨Cf + C, forall_mem_range.2 fun x => _⟩
   calc
     ⨅ y, f (inl x, inr y) + C ≤ f (inl x, inr default) + C := ciInf_le (HD_below_aux1 C) default
     _ ≤ Cf + C := add_le_add ((fun x => hCf (mem_range_self x)) _) le_rfl
@@ -307,13 +309,13 @@ private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1
-  ⟨cf + C, forall_range_iff.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
+  ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 #align Gromov_Hausdorff.HD_below_aux2 GromovHausdorff.HD_below_aux2
 
 private theorem HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
   rcases (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2 with ⟨Cf, hCf⟩
-  refine' ⟨Cf + C, forall_range_iff.2 fun y => _⟩
+  refine' ⟨Cf + C, forall_mem_range.2 fun y => _⟩
   calc
     ⨅ x, f (inl x, inr y) + C ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
     _ ≤ Cf + C := add_le_add ((fun x => hCf (mem_range_self x)) _) le_rfl
@@ -355,7 +357,7 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
   -- iSup to iSup and iInf to iInf
   have Z : (⨆ x, ⨅ y, f (inl x, inr y)) ≤ ⨆ x, ⨅ y, g (inl x, inr y) + dist f g :=
     ciSup_mono (HD_bound_aux1 _ (dist f g)) fun x =>
-      ciInf_mono ⟨cf, forall_range_iff.2 fun i => Hcf _⟩ fun y => coe_le_coe_add_dist
+      ciInf_mono ⟨cf, forall_mem_range.2 fun i => Hcf _⟩ fun y => coe_le_coe_add_dist
   -- move the `dist f g` out of the infimum and the supremum, arguing that continuous monotone maps
   -- (here the addition of `dist f g`) preserve infimum and supremum
   have E1 : ∀ x, (⨅ y, g (inl x, inr y)) + dist f g = ⨅ y, g (inl x, inr y) + dist f g := by
@@ -364,7 +366,7 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     · intro x y hx
       simpa
     · show BddBelow (range fun y : Y => g (inl x, inr y))
-      exact ⟨cg, forall_range_iff.2 fun i => Hcg _⟩
+      exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g = ⨆ x, (⨅ y, g (inl x, inr y)) + dist f g := by
     refine' Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) _ _
     · intro x y hx
@@ -383,7 +385,7 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
   -- iSup to iSup and iInf to iInf
   have Z : (⨆ y, ⨅ x, f (inl x, inr y)) ≤ ⨆ y, ⨅ x, g (inl x, inr y) + dist f g :=
     ciSup_mono (HD_bound_aux2 _ (dist f g)) fun y =>
-      ciInf_mono ⟨cf, forall_range_iff.2 fun i => Hcf _⟩ fun y => coe_le_coe_add_dist
+      ciInf_mono ⟨cf, forall_mem_range.2 fun i => Hcf _⟩ fun y => coe_le_coe_add_dist
   -- move the `dist f g` out of the infimum and the supremum, arguing that continuous monotone maps
   -- (here the addition of `dist f g`) preserve infimum and supremum
   have E1 : ∀ y, (⨅ x, g (inl x, inr y)) + dist f g = ⨅ x, g (inl x, inr y) + dist f g := by
@@ -392,7 +394,7 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
     · intro x y hx
       simpa
     · show BddBelow (range fun x : X => g (inl x, inr y))
-      exact ⟨cg, forall_range_iff.2 fun i => Hcg _⟩
+      exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ y, ⨅ x, g (inl x, inr y)) + dist f g = ⨆ y, (⨅ x, g (inl x, inr y)) + dist f g := by
     refine' Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) _ _
     · intro x y hx
@@ -455,7 +457,7 @@ attribute [local instance] premetricOptimalGHDist
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 def OptimalGHCoupling : Type _ :=
-  @UniformSpace.SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace
+  @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
 #align Gromov_Hausdorff.optimal_GH_coupling GromovHausdorff.OptimalGHCoupling
 
 instance : MetricSpace (OptimalGHCoupling X Y) := by

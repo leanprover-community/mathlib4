@@ -28,7 +28,8 @@ lemmas unconditional on the sum of the weights being `1`.
 
 open Set Function
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open BigOperators Pointwise
 
 universe u u'
 
@@ -464,7 +465,7 @@ theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + c
 
 variable (R E)
 
--- porting note: needs `noncomputable` due to `OrderHom.toFun`!?
+-- Porting note: needs `noncomputable` due to `OrderHom.toFun`!?
 /-- `convexHull` is an additive monoid morphism under pointwise addition. -/
 @[simps]
 noncomputable def convexHullAddMonoidHom : Set E →+ Set E where

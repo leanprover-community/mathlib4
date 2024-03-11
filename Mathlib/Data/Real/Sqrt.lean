@@ -45,7 +45,7 @@ namespace NNReal
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- porting note: was @[pp_nodot]
+-- Porting note: was @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
@@ -155,7 +155,7 @@ begin
   { intros }
 end -/
 
--- porting note: todo: was @[pp_nodot]
+-- Porting note (#11215): TODO: was @[pp_nodot]
 /-- The square root of a real number. This returns 0 for negative inputs. -/
 noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
@@ -531,12 +531,35 @@ theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => sqrt (f x) :=
   continuous_sqrt.comp h
 #align continuous.sqrt Continuous.sqrt
 
-namespace Finset
+namespace NNReal
+variable {ι : Type*}
+open Finset
 
-/-- **Cauchy-Schwarz inequality** for finsets using square roots. -/
-lemma sum_mul_le_sqrt_mul_sqrt {α : Type*} (s : Finset α) (f g : α → ℝ) :
-    ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ 2).sqrt * (∑ i in s, g i ^ 2).sqrt :=
+/-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
+lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ≥0) :
+    ∑ i in s, f i * g i ≤ sqrt (∑ i in s, f i ^ 2) * sqrt (∑ i in s, g i ^ 2) :=
+  (le_sqrt_iff_sq_le.2 $ sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul _ _
+
+/-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
+lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (f g : ι → ℝ≥0) :
+    ∑ i in s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i in s, f i) * sqrt (∑ i in s, g i) := by
+  simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ sqrt (f x)) (fun x ↦ sqrt (g x))
+
+end NNReal
+
+namespace Real
+variable {ι : Type*} {f g : ι → ℝ}
+open Finset
+
+/-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
+lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ) :
+    ∑ i in s, f i * g i ≤ sqrt (∑ i in s, f i ^ 2) * sqrt (∑ i in s, g i ^ 2) :=
   (le_sqrt_of_sq_le <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul
     (sum_nonneg fun _ _ ↦ by positivity) _
 
-end Finset
+/-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
+lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i) :
+    ∑ i in s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i in s, f i) * sqrt (∑ i in s, g i) := by
+  simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ sqrt (f x)) (fun x ↦ sqrt (g x))
+
+end Real

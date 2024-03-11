@@ -130,7 +130,7 @@ infixl:100 " ⊗ₜ " => tmul _
 /-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
--- porting note: make the arguments of induction_on explicit
+-- Porting note: make the arguments of induction_on explicit
 @[elab_as_elim]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
@@ -251,7 +251,7 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
 
--- porting note: This is added as a local instance for `SMul.aux`.
+-- Porting note: This is added as a local instance for `SMul.aux`.
 -- For some reason type-class inference in Lean 3 unfolded this definition.
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
@@ -1065,7 +1065,7 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
   rfl
 #align tensor_product.tensor_tensor_tensor_comm_tmul TensorProduct.tensorTensorTensorComm_tmul
 
--- porting note: the proof here was `rfl` but that caused a timeout.
+-- Porting note: the proof here was `rfl` but that caused a timeout.
 @[simp]
 theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=

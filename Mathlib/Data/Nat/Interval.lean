@@ -120,7 +120,7 @@ theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
   change ((↑) : ℕ → ℤ) _ = _
   rw [sup_eq_max, inf_eq_min, Int.ofNat_sub]
   · rw [add_comm, Int.ofNat_add, add_sub_assoc]
-    -- porting note: `norm_cast` puts a `Int.subSubNat` in the goal
+    -- Porting note: `norm_cast` puts a `Int.subSubNat` in the goal
     -- norm_cast
     change _ = ↑(Int.natAbs (b - a) + 1)
     push_cast
@@ -395,5 +395,12 @@ theorem Nat.cauchy_induction_two_mul (seed : ℕ) (hs : P seed.succ)
     (hm : ∀ x, seed < x → P x → P (2 * x)) (n : ℕ) : P n :=
   Nat.cauchy_induction_mul h 2 seed one_lt_two hs hm n
 #align nat.cauchy_induction_two_mul Nat.cauchy_induction_two_mul
+
+theorem Nat.pow_imp_self_of_one_lt {M} [Monoid M] (k : ℕ) (hk : 1 < k)
+    (P : M → Prop) (hmul : ∀ x y, P x → P (x * y) ∨ P (y * x))
+    (hpow : ∀ x, P (x ^ k) → P x) : ∀ n x, P (x ^ n) → P x :=
+  k.cauchy_induction_mul (fun n ih x hx ↦ ih x <| (hmul _ x hx).elim
+    (fun h ↦ by rwa [_root_.pow_succ']) fun h ↦ by rwa [_root_.pow_succ]) 0 hk
+    (fun x hx ↦ pow_one x ▸ hx) fun n _ hn x hx ↦ hpow x <| hn _ <| (pow_mul x k n).subst hx
 
 end Induction

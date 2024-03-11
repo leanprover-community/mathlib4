@@ -262,7 +262,7 @@ def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
   { specializationPreorder X, PartialOrder.lift (OrderDual.toDual ∘ 𝓝) nhds_injective with }
 #align specialization_order specializationOrder
 
-instance : T0Space (SeparationQuotient X) :=
+instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
   ⟨fun x y => Quotient.inductionOn₂' x y fun _ _ h =>
     SeparationQuotient.mk_eq_mk.2 <| SeparationQuotient.inducing_mk.inseparable_iff.1 h⟩
 
@@ -653,7 +653,7 @@ theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 #align closure_singleton closure_singleton
 
--- porting note: todo: the proof was `hs.induction_on (by simp) fun x => by simp`
+-- Porting note (#11215): TODO: the proof was `hs.induction_on (by simp) fun x => by simp`
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp
@@ -1079,10 +1079,13 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 #align is_compact.finite_compact_cover IsCompact.finite_compact_cover
 
-theorem Inducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R1Space Y where
-  specializes_or_disjoint_nhds _ _ := by
-    simpa only [← hf.specializes_iff, hf.nhds_eq_comap, or_iff_not_imp_left,
-      ← disjoint_nhds_nhds_iff_not_specializes] using Filter.disjoint_comap
+theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
+    (hspec : ∀ x y, f x ⤳ f y → x ⤳ y) : R1Space Y where
+  specializes_or_disjoint_nhds x y := (specializes_or_disjoint_nhds (f x) (f y)).imp (hspec x y) <|
+    ((hc.tendsto _).disjoint · (hc.tendsto _))
+
+theorem Inducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : R1Space Y :=
+  .of_continuous_specializes_imp hf.continuous fun _ _ ↦ hf.specializes_iff.1
 
 protected theorem R1Space.induced (f : Y → X) : @R1Space Y (.induced f ‹_›) :=
   @Inducing.r1Space _ _ _ _ (.induced f _) f (inducing_induced f)
@@ -1101,7 +1104,7 @@ protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
 
 protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=
-  .sInf <| forall_range_iff.2 ht
+  .sInf <| forall_mem_range.2 ht
 
 protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (h₁ : @R1Space X t₁) (h₂ : @R1Space X t₂) : @R1Space X (t₁ ⊓ t₂) := by
@@ -1262,6 +1265,9 @@ instance (priority := 80) [R1Space X] [T0Space X] : T2Space X :=
   t2Space_iff_disjoint_nhds.2 fun _x _y hne ↦ disjoint_nhds_nhds_iff_not_inseparable.2 fun hxy ↦
     hne hxy.eq
 
+theorem R1Space.t2Space_iff_t0Space [R1Space X] : T2Space X ↔ T0Space X := by
+  constructor <;> intro <;> infer_instance
+
 /-- A space is T₂ iff the neighbourhoods of distinct points generate the bottom filter. -/
 theorem t2_iff_nhds : T2Space X ↔ ∀ {x y : X}, NeBot (𝓝 x ⊓ 𝓝 y) → x = y := by
   simp only [t2Space_iff_disjoint_nhds, disjoint_iff, neBot_iff, Ne.def, not_imp_comm, Pairwise]
@@ -1302,7 +1308,7 @@ theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
   t2_iff_isClosed_diagonal.mp ‹_›
 #align is_closed_diagonal isClosed_diagonal
 
--- porting note: 2 lemmas moved below
+-- Porting note: 2 lemmas moved below
 
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : a = b :=
@@ -1395,6 +1401,14 @@ theorem exists_open_nhds_disjoint_closure [T25Space X] {x y : X} (h : x ≠ y) :
     ((nhds_basis_opens x).lift'_closure.disjoint_iff (nhds_basis_opens y).lift'_closure).1
       (disjoint_lift'_closure_nhds.2 h)
 #align exists_open_nhds_disjoint_closure exists_open_nhds_disjoint_closure
+
+theorem T25Space.of_injective_continuous [TopologicalSpace Y] [T25Space Y] {f : X → Y}
+    (hinj : Injective f) (hcont : Continuous f) : T25Space X where
+  t2_5 x y hne := (tendsto_lift'_closure_nhds hcont x).disjoint (t2_5 <| hinj.ne hne)
+    (tendsto_lift'_closure_nhds hcont y)
+
+instance [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
+  .of_injective_continuous Subtype.val_injective continuous_subtype_val
 
 section limUnder
 
@@ -1594,8 +1608,7 @@ theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → 
 theorem eqOn_closure₂ [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf : Continuous (uncurry f))
     (hg : Continuous (uncurry g)) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
-  eqOn_closure₂' h (fun x => continuous_uncurry_left x hf) (fun x => continuous_uncurry_right x hf)
-    (fun y => continuous_uncurry_left y hg) fun y => continuous_uncurry_right y hg
+  eqOn_closure₂' h hf.uncurry_left hf.uncurry_right hg.uncurry_left hg.uncurry_right
 #align eq_on_closure₂ eqOn_closure₂
 
 /-- If `f x = g x` for all `x ∈ s` and `f`, `g` are continuous on `t`, `s ⊆ t ⊆ closure s`, then
@@ -1912,7 +1925,7 @@ theorem regularSpace_sInf {X} {T : Set (TopologicalSpace X)} (h : ∀ t ∈ T, @
 
 theorem regularSpace_iInf {ι X} {t : ι → TopologicalSpace X} (h : ∀ i, @RegularSpace X (t i)) :
     @RegularSpace X (iInf t) :=
-  regularSpace_sInf <| forall_range_iff.mpr h
+  regularSpace_sInf <| forall_mem_range.mpr h
 #align regular_space_infi regularSpace_iInf
 
 theorem RegularSpace.inf {X} {t₁ t₂ : TopologicalSpace X} (h₁ : @RegularSpace X t₁)
@@ -1985,6 +1998,9 @@ class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace 
 #align t3_space T3Space
 
 instance (priority := 90) [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
+
+theorem RegularSpace.t3Space_iff_t0Space [RegularSpace X] : T3Space X ↔ T0Space X := by
+  constructor <;> intro <;> infer_instance
 
 -- see Note [lower instance priority]
 instance (priority := 100) T3Space.t25Space [T3Space X] : T25Space X := by
@@ -2094,7 +2110,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
       exact ⟨u, hu, hxu, disjoint_left.2 hut⟩
     choose! U hu hxu hd using this
     set V : s → countableBasis X := MapsTo.restrict _ _ _ hu
-    refine' ⟨range V, _, forall_range_iff.2 <| Subtype.forall.2 hd, fun n => _⟩
+    refine' ⟨range V, _, forall_mem_range.2 <| Subtype.forall.2 hd, fun n => _⟩
     · rw [biUnion_range]
       exact fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, hxu x hx⟩
     · simp only [← iSup_eq_iUnion, iSup_and']

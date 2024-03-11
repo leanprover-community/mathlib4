@@ -66,7 +66,7 @@ open Complex Set MeasureTheory Function Filter TopologicalSpace
 
 open scoped Real BigOperators
 
--- porting note: notation copied from `./DivergenceTheorem`
+-- Porting note: notation copied from `./DivergenceTheorem`
 local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
 local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
 local macro:arg t:term:max noWs "⁰" : term => `(Fin 0 → $t)
@@ -107,7 +107,7 @@ def TorusIntegrable (f : ℂⁿ → E) (c : ℂⁿ) (R : ℝⁿ) : Prop :=
 
 namespace TorusIntegrable
 
--- porting note: todo: restore notation; `neg`, `add` etc fail if I use notation here
+-- Porting note (#11215): TODO: restore notation; `neg`, `add` etc fail if I use notation here
 variable {f g : (Fin n → ℂ) → E} {c : Fin n → ℂ} {R : Fin n → ℝ}
 
 /-- Constant functions are torus integrable -/
