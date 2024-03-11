@@ -8,93 +8,6 @@ namespace InnerProductSpace
 
 variable {ι₁ ι₂ 𝕜 E F A : Type*}
 
-noncomputable section prodBasis
-
-variable [IsROrC 𝕜] [Fintype ι₁] [Fintype ι₂]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-
-def _root_.OrthonormalBasis.prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F) :
-    OrthonormalBasis (ι₁ ⊕ ι₂) 𝕜 (WithLp 2 (E × F)) :=
-  ((v.toBasis.prod w.toBasis).map (WithLp.linearEquiv 2 𝕜 (E × F)).symm).toOrthonormalBasis
-  (by
-    constructor
-    · simp [Sum.forall, norm_eq_sqrt_inner (𝕜 := 𝕜), Real.sqrt_eq_one]
-      simp [← sqrt_eq_one, ← norm_eq_sqrt_inner (𝕜 := 𝕜), v.orthonormal.1, w.orthonormal.1]
-    · unfold Pairwise
-      simp [Sum.forall]
-      exact ⟨v.orthonormal.2, w.orthonormal.2⟩)
-
-@[simp] theorem _root_.OrthonormalBasis.prod_apply (v : OrthonormalBasis ι₁ 𝕜 E)
-    (w : OrthonormalBasis ι₂ 𝕜 F) :
-    ∀ i : ι₁ ⊕ ι₂, v.prod w i = Sum.elim ((LinearMap.inl 𝕜 E F) ∘ v) ((LinearMap.inr 𝕜 E F) ∘ w) i := by
-  rw [Sum.forall]
-  unfold OrthonormalBasis.prod
-  constructor
-  · intro
-    simp
-    rfl
-  · intro
-    simp
-    rfl
-
-end prodBasis
-
-noncomputable section prodMeasure
-
-variable [IsROrC 𝕜] [Fintype ι₁] [Fintype ι₂]
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [BorelSpace E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
-  [MeasurableSpace F] [BorelSpace F]
-
-theorem _root_.Basis.prod_parallelepiped (v : Basis ι₁ ℝ E) (w : Basis ι₂ ℝ F) :
-    (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
-  ext x
-  simp only [Basis.coe_parallelepiped, TopologicalSpace.PositiveCompacts.coe_prod, Set.mem_prod]
-  simp_rw [mem_parallelepiped_iff]
-  constructor
-  · intro h
-    rcases h with ⟨t, ht1, ht2⟩
-    constructor
-    · use t ∘ Sum.inl
-      constructor
-      · simp only [Set.mem_Icc] at ht1 ⊢
-        exact ⟨fun x ↦ ht1.1 (Sum.inl x), fun x ↦ ht1.2 (Sum.inl x)⟩
-      simp [ht2, Prod.fst_sum, Prod.snd_sum]
-    · use t ∘ Sum.inr
-      constructor
-      · simp only [Set.mem_Icc] at ht1 ⊢
-        exact ⟨fun x ↦ ht1.1 (Sum.inr x), fun x ↦ ht1.2 (Sum.inr x)⟩
-      simp [ht2, Prod.fst_sum, Prod.snd_sum]
-  intro h
-  rcases h with ⟨⟨t, ht1, ht2⟩, ⟨s, hs1, hs2⟩⟩
-  use Sum.elim t s
-  constructor
-  · simp only [Set.mem_Icc] at ht1 hs1 ⊢
-    constructor
-    · have : ∀ x : ι₁ ⊕ ι₂, 0 ≤ Sum.elim t s x := by
-        rw [Sum.forall]
-        simp only [Sum.elim_inr, Sum.elim_inl]
-        exact ⟨ht1.1, hs1.1⟩
-      exact this
-    · have : ∀ x : ι₁ ⊕ ι₂, Sum.elim t s x ≤ 1 := by
-        rw [Sum.forall]
-        simp only [Sum.elim_inr, Sum.elim_inl]
-        exact ⟨ht1.2, hs1.2⟩
-      exact this
-  ext
-  · simp [ht2, Prod.fst_sum]
-  · simp [hs2, Prod.snd_sum]
-
-@[deprecated]
-theorem _root_.Basis.prod_addHaar (v : Basis ι₁ ℝ E) (w : Basis ι₂ ℝ F) :
-    (v.prod w).addHaar = MeasureTheory.Measure.prod v.addHaar w.addHaar := by
-  rw [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped]
-  simp [Basis.addHaar_self]
-
-end prodMeasure
-
 noncomputable section
 
 variable [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -188,25 +101,6 @@ variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ
   [iME : MeasurableSpace E] [BorelSpace E]
 
 variable (f : E ≃ₗᵢ[ℝ] F)
-
-/-- Every linear isometry on a real finite dimensional Hilbert space is measure-preserving. -/
-theorem _root_.LinearIsometryEquiv.measurePreserving : MeasurePreserving f := by
-  refine ⟨f.toContinuousLinearEquiv.continuous.measurable, ?_⟩
-  rcases exists_orthonormalBasis ℝ E with ⟨w, b, _hw⟩
-  erw [← OrthonormalBasis.addHaar_eq_volume b, ← OrthonormalBasis.addHaar_eq_volume (b.map f),
-    Basis.map_addHaar _ f.toContinuousLinearEquiv]
-  congr
-
-def _root_.LinearIsometryEquiv.toMeasureEquiv : E ≃ᵐ F where
-  toEquiv := f
-  measurable_toFun := f.continuous.measurable
-  measurable_invFun := f.symm.continuous.measurable
-
-@[simp] theorem _root_.LinearIsometryEquiv.toMeasureEquiv_apply (x : E) :
-  f.toMeasureEquiv x = f x := rfl
-
-theorem _root_.LinearIsometryEquiv.toMeasureEquiv_symm_apply (x : F) :
-  f.symm.toMeasureEquiv x = f.symm x := rfl
 
 variable  [NormedAddCommGroup A] [NormedSpace ℝ A]
 
