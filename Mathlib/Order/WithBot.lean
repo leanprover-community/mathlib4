@@ -339,7 +339,7 @@ theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
   · simp
 
 end LT
--- [some_lt_some, lt_iff_le_not_le, some_le_some, not_lt_none, none_le, not_true_eq_false, and_false, true_and]
+
 instance preorder [Preorder α] : Preorder (WithBot α) where
   le := (· ≤ ·)
   lt := (· < ·)
