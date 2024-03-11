@@ -24,10 +24,6 @@ isomorphic to its double dual.
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* circle`.
 -/
 
-section ForMathlib
-
-end ForMathlib
-
 open Pointwise Function
 
 variable (A B C D E G : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E] [Group G]
@@ -60,39 +56,35 @@ noncomputable instance : Inhabited (PontryaginDual A) :=
 instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
   let Vn : ℕ → Set circle :=
     fun n ↦ expMapCircle '' { x | |x| < Real.pi / 2 ^ (n + 1)}
-  have hVn : ∀ n x, x ∈ Vn n ↔ 2 ^ (n + 1) * |Complex.arg x| < Real.pi := by
-    intro n x
-    rw [← lt_div_iff' (pow_pos two_pos (n + 1))]
-    refine' ⟨_, fun hx ↦ ⟨Complex.arg x, hx, expMapCircle_arg x⟩⟩
+  have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < Real.pi / 2 ^ (n + 1) := by
+    refine' fun n x ↦ ⟨_, fun hx ↦ ⟨Complex.arg x, hx, expMapCircle_arg x⟩⟩
     rintro ⟨t, ht : |t| < _, rfl⟩
     have ht' : |t| < Real.pi :=
       ht.trans (div_lt_self Real.pi_pos (one_lt_pow one_lt_two (Nat.succ_ne_zero _)))
     rw [abs_lt] at ht'
     rwa [arg_expMapCircle ht'.1 ht'.2.le]
-  have key0 : Filter.HasBasis (nhds 1) (fun _ ↦ True) Vn := by
-    rw [← expMapCircle_zero, ← isLocalHomeomorph_expMapCircle.map_nhds_eq 0]
-    refine' Filter.HasBasis.map expMapCircle _
-    have key := nhds_basis_zero_abs_sub_lt ℝ
-    refine' key.to_hasBasis (fun x hx ↦ _) fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩
-    refine' ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ _⟩
+  refine' ContinuousMonoidHom.locallyCompactSpace_of_hasBasis Vn _ _
+  · intro n x h1 h2
+    rw [hVn] at h1 h2 ⊢
+    rwa [Submonoid.coe_mul, Complex.arg_mul (ne_zero_of_mem_circle x) (ne_zero_of_mem_circle x),
+      ← two_mul, abs_mul, abs_two, ← lt_div_iff' two_pos, div_div, ← pow_succ'] at h2
+    clear h2
+    rw [lt_div_iff' (pow_pos two_pos _), ← abs_two, pow_succ', mul_assoc, ← abs_mul, abs_two] at h1
+    rw [← two_mul]
+    apply Set.Ioo_subset_Ioc_self
+    rw [Set.mem_Ioo, ← abs_lt]
+    refine' lt_of_le_of_lt _ h1
+    exact le_mul_of_one_le_left (abs_nonneg _) (one_le_pow_of_one_le one_le_two n)
+  · rw [← expMapCircle_zero, ← isLocalHomeomorph_expMapCircle.map_nhds_eq 0]
+    refine' Filter.HasBasis.map expMapCircle
+      ((nhds_basis_zero_abs_sub_lt ℝ).to_hasBasis
+        (fun x hx ↦ ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ _⟩)
+          fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩)
     rw [Set.mem_setOf_eq] at ht ⊢
     refine' lt_of_lt_of_le ht _
     rw [div_le_iff' (pow_pos two_pos _), ← div_le_iff hx]
     refine' (Nat.le_ceil (Real.pi / x)).trans _
     exact_mod_cast (Nat.le_succ _).trans (Nat.lt_two_pow _).le
-  refine' ContinuousMonoidHom.locallyCompactSpace_of_hasBasis Vn _ key0
-  intro n x h1 h2
-  have hx : x.1 ≠ 0 := ne_zero_of_mem_circle x
-  rw [hVn] at h1 h2 ⊢
-  rwa [Submonoid.coe_mul, Complex.arg_mul hx hx, ← two_mul, abs_mul, abs_two, ← mul_assoc,
-    ← pow_succ'] at h2
-  clear h2
-  rw [← abs_two, pow_succ', mul_assoc, ← abs_mul, abs_two] at h1
-  rw [← two_mul]
-  apply Set.Ioo_subset_Ioc_self
-  rw [Set.mem_Ioo, ← abs_lt]
-  refine' lt_of_le_of_lt _ h1
-  exact le_mul_of_one_le_left (abs_nonneg _) (one_le_pow_of_one_le one_le_two n)
 
 variable {A B C D E}
 
