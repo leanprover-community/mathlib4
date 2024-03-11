@@ -653,13 +653,15 @@ theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 #align nat.factorization_lcm Nat.factorization_lcm
 
 /-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorizationLCMLeft = ∏ pᵢ ^ kᵢ`, where
-`kᵢ = nᵢ` if `mᵢ ≤ nᵢ` and `0` otherwise. -/
+`kᵢ = nᵢ` if `mᵢ ≤ nᵢ` and `0` otherwise. Note that the product is over the divisors of `lcm a b`,
+so if one of `a` or `b` is `0` then the result is `1`. -/
 def factorizationLCMLeft (a b : ℕ) : ℕ :=
   (Nat.lcm a b).factorization.prod fun p n ↦
     if b.factorization p ≤ a.factorization p then p ^ n else 1
 
 /-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorizationLCMRight = ∏ pᵢ ^ kᵢ`, where
-`kᵢ = mᵢ` if `nᵢ < mᵢ` and `0` otherwise.
+`kᵢ = mᵢ` if `nᵢ < mᵢ` and `0` otherwise. Note that the product is over the divisors of `lcm a b`,
+so if one of `a` or `b` is `0` then the result is `1`.
 
 Note that `factorizationLCMRight a b` is *not* `factorizationLCMLeft b a`: the difference is
 that in `factorizationLCMLeft a b` there are the primes whose exponent in `a` is bigger or equal
@@ -671,6 +673,21 @@ def factorizationLCMRight (a b : ℕ) :=
     if b.factorization p ≤ a.factorization p then 1 else p ^ n
 
 variable (a b)
+
+@[simp]
+lemma factorizationLCMLeft_zero_left : factorizationLCMLeft 0 b = 1 := by
+  simp [factorizationLCMLeft]
+
+@[simp]
+lemma factorizationLCMLeft_zero_right : factorizationLCMLeft a 0 = 1 := by
+  simp [factorizationLCMLeft]
+
+@[simp]
+lemma factorizationLCRight_zero_left : factorizationLCMRight 0 b = 1 := by
+  simp [factorizationLCMRight]
+@[simp]
+lemma factorizationLCMRight_zero_right : factorizationLCMRight a 0 = 1 := by
+  simp [factorizationLCMRight]
 
 lemma factorizationLCMLeft_pos :
     0 < factorizationLCMLeft a b := by
