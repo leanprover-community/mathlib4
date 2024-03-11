@@ -191,8 +191,8 @@ instance instPolishSpaceUniv [TopologicalSpace α] [PolishSpace α] :
   isClosed_univ.polishSpace
 #align measure_theory.set.univ.polish_space PolishSpace.instPolishSpaceUniv
 
-protected theorem _root_.CompletePseudometrizable.iInf {ι : Sort*} [Countable ι]
-    {t : ι → TopologicalSpace α} (ht₀ : ∃ i₀, @T0Space α (t i₀) ∧ ∀ i, t i ≤ t i₀)
+protected theorem _root_.CompletePseudometrizable.iInf {ι : Type*} [Countable ι]
+    {t : ι → TopologicalSpace α} (ht₀ : ∃ t₀, @T2Space α t₀ ∧ ∀ i, t i ≤ t₀)
     (ht : ∀ i, ∃ u : UniformSpace α, CompleteSpace α ∧ 𝓤[u].IsCountablyGenerated ∧
       u.toTopologicalSpace = t i) :
     ∃ u : UniformSpace α, CompleteSpace α ∧
@@ -203,13 +203,13 @@ protected theorem _root_.CompletePseudometrizable.iInf {ι : Sort*} [Countable �
   rw [iInf_uniformity]
   infer_instance
 
-protected theorem iInf {ι : Sort*} [Countable ι] {t : ι → TopologicalSpace α}
+protected theorem iInf {ι : Type*} [Countable ι] {t : ι → TopologicalSpace α}
     (ht₀ : ∃ i₀, ∀ i, t i ≤ t i₀) (ht : ∀ i, @PolishSpace α (t i)) : @PolishSpace α (⨅ i, t i) := by
   rcases ht₀ with ⟨i₀, hi₀⟩
-  rcases CompletePseudometrizable.iInf ⟨i₀, by letI := t i₀; haveI := ht i₀; infer_instance, hi₀⟩
-    fun i ↦ by
+  rcases CompletePseudometrizable.iInf ⟨t i₀, letI := t i₀; haveI := ht i₀; inferInstance, hi₀⟩
+    fun i ↦
       letI := t i; haveI := ht i; letI := upgradePolishSpace α
-      exact ⟨inferInstance, inferInstance, inferInstance, rfl⟩
+      ⟨inferInstance, inferInstance, inferInstance, rfl⟩
     with ⟨u, hcomp, hcount, htop⟩
   rw [← htop]
   have : @SecondCountableTopology α u.toTopologicalSpace :=
@@ -220,9 +220,7 @@ protected theorem iInf {ι : Sort*} [Countable ι] {t : ι → TopologicalSpace 
 #noalign polish_space.aux_copy
 
 /-- Given a Polish space, and countably many finer Polish topologies, there exists another Polish
-topology which is finer than all of them.
-
-Porting note (#11215): TODO: the topology `t'` is `t ⊓ ⨅ i, m i`. -/
+topology which is finer than all of them. -/
 theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : TopologicalSpace α]
     [p : PolishSpace α] (m : ι → TopologicalSpace α) (hm : ∀ n, m n ≤ t)
     (h'm : ∀ n, @PolishSpace α (m n)) :

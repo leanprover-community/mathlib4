@@ -3,8 +3,7 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.UniformSpace.Separation
+import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 #align_import topology.uniform_space.pi from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
@@ -15,11 +14,8 @@ import Mathlib.Topology.UniformSpace.Separation
 
 noncomputable section
 
-open Uniformity Topology
-
-section
-
-open Filter UniformSpace Function
+open scoped Uniformity Topology
+open Filter UniformSpace Function Set
 
 universe u
 
@@ -126,21 +122,27 @@ instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α
     apply H
 #align Pi.separated Pi.separated
 
-end
-
-theorem CompleteSpace.iInf {ι : Sort*} {X : Type*} {u : ι → UniformSpace X}
+/- An infimum of complete uniformities is complete,
+as long as the whole family is bounded by some common T2 topology. -/
+protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
     (hu : ∀ i, @CompleteSpace X (u i))
-    (ht₀ : ∃ i₀, @T0Space X (u i₀).toTopologicalSpace ∧
-      ∀ i, (u i).toTopologicalSpace ≤ (u i₀).toTopologicalSpace) :
+    (ht : ∃ t, @T2Space X t ∧ ∀ i, (u i).toTopologicalSpace ≤ t) :
     @CompleteSpace X (⨅ i, u i) := by
-  refine @CompleteSpace.mk X ?_ fun {f} hf ↦ ?_
-  rcases ht₀ with ⟨i₀, hsep₀, hi₀⟩
-  have hf' : ∀ i, Cauchy (uniformSpace := u i) f := fun i ↦ hf.mono_uniformSpace (iInf_le _ _)
-  choose x hfx using fun i ↦ @CompleteSpace.complete _ (u i) (hu i) f (hf' i)
-  have hx : ∀ i, x i = x i₀ := fun i ↦ by
-    let _ := u i₀
-    have := hf.1
-    exact tendsto_nhds_unique ((hfx i).trans <| nhds_mono (hi₀ i)) (hfx i₀)
-  use x i₀
-  rw [UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
-  exact le_iInf fun i ↦ (hx i).symm ▸ hfx i
+  -- We can assume `X` is nonempty.
+  nontriviality X
+  rcases ht with ⟨t, ht, hut⟩
+  -- The diagonal map `(X, ⨅ i, u i) → ∀ i, (X, u i)` is a uniform embedding.
+  have : @UniformInducing X (ι → X) (⨅ i, u i) (Pi.uniformSpace (U := u)) (const ι) := by
+    simp_rw [uniformInducing_iff, iInf_uniformity, Pi.uniformity, Filter.comap_iInf,
+      Filter.comap_comap, (· ∘ ·), const, Prod.eta, comap_id']
+  -- Hence, it suffices to show that its range, the diagonal, is closed in `Π i, (X, u i)`.
+  simp_rw [@completeSpace_iff_isComplete_range _ _ (_) (_) _ this, range_const_eq_diagonal,
+    setOf_forall]
+  -- The separation of `t` ensures that this is the case in `Π i, (X, t)`, hence the result
+  -- since the topology associated to each `u i` is finer than `t`.
+  have : Pi.topologicalSpace (t₂ := fun i ↦ (u i).toTopologicalSpace) ≤
+         Pi.topologicalSpace (t₂ := fun _ ↦ t) :=
+    iInf_mono fun i ↦ induced_mono <| hut i
+  refine IsClosed.isComplete <| .mono ?_ this
+  exact isClosed_iInter fun i ↦ isClosed_iInter fun j ↦
+    isClosed_eq (continuous_apply _) (continuous_apply _)
