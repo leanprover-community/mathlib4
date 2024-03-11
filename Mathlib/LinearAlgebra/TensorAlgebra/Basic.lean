@@ -202,7 +202,7 @@ theorem induction {C : TensorAlgebra R M → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  -- porting note: Added `h`. `h` is needed for `of`.
+  -- Porting note: Added `h`. `h` is needed for `of`.
   let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
   -- the mapping through the subalgebra is the identity
@@ -275,7 +275,7 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
 #align tensor_algebra.ι_inv TensorAlgebra.ιInv
 
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x => by
-  -- porting note: needs the last two `simp` lemmas explicitly in order to use them
+  -- Porting note: needs the last two `simp` lemmas explicitly in order to use them
   simp [ιInv, (AlgHom.toLinearMap_apply), toTrivSqZeroExt_ι _]
 #align tensor_algebra.ι_left_inverse TensorAlgebra.ι_leftInverse
 

@@ -89,7 +89,7 @@ theorem factorial_le {m n} (h : m ≤ n) : m ! ≤ n ! :=
 theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * (m + 1) ^ n ≤ (m + n)!
   | m, 0 => by simp
   | m, n + 1 => by
-    rw [← add_assoc, factorial_succ, mul_comm (_ + 1), pow_succ, ← mul_assoc]
+    rw [← add_assoc, factorial_succ, mul_comm (_ + 1), Nat.pow_succ, ← mul_assoc]
     exact Nat.mul_le_mul factorial_mul_pow_le_factorial (succ_le_succ (le_add_right _ _))
 #align nat.factorial_mul_pow_le_factorial Nat.factorial_mul_pow_le_factorial
 
@@ -299,13 +299,13 @@ theorem ascFactorial_of_sub {n k : ℕ}:
 theorem pow_succ_le_ascFactorial (n : ℕ) : ∀ k : ℕ, n ^ k ≤ n.ascFactorial k
   | 0 => by rw [ascFactorial_zero, pow_zero]
   | k + 1 => by
-    rw [pow_succ, mul_comm, ascFactorial_succ, ← succ_ascFactorial]
+    rw [Nat.pow_succ, mul_comm, ascFactorial_succ, ← succ_ascFactorial]
     exact Nat.mul_le_mul (Nat.le_refl n)
       ((pow_le_pow_of_le_left (le_succ n) k).trans (pow_succ_le_ascFactorial n.succ k))
 #align nat.pow_succ_le_asc_factorial Nat.pow_succ_le_ascFactorial
 
 theorem pow_lt_ascFactorial' (n k : ℕ) : (n + 1) ^ (k + 2) < (n + 1).ascFactorial (k + 2) := by
-  rw [pow_succ, ascFactorial, mul_comm]
+  rw [Nat.pow_succ, ascFactorial, mul_comm]
   exact Nat.mul_lt_mul_of_lt_of_le' (lt_add_of_pos_right (n + 1) (succ_pos k))
     (pow_succ_le_ascFactorial n.succ _) (NeZero.pos ((n + 1) ^ (k + 1)))
 #align nat.pow_lt_asc_factorial' Nat.pow_lt_ascFactorial'
@@ -319,7 +319,7 @@ theorem pow_lt_ascFactorial (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1) ^ k <
 theorem ascFactorial_le_pow_add (n : ℕ) : ∀ k : ℕ, (n+1).ascFactorial k ≤ (n + k) ^ k
   | 0 => by rw [ascFactorial_zero, pow_zero]
   | k + 1 => by
-    rw [ascFactorial_succ, pow_succ, mul_comm, ← add_assoc, add_right_comm n 1 k]
+    rw [ascFactorial_succ, Nat.pow_succ, mul_comm, ← add_assoc, add_right_comm n 1 k]
     exact Nat.mul_le_mul_right _
       ((ascFactorial_le_pow_add _ k).trans (Nat.pow_le_pow_of_le_left (le_succ _) _))
 #align nat.asc_factorial_le_pow_add Nat.ascFactorial_le_pow_add
@@ -328,7 +328,7 @@ theorem ascFactorial_lt_pow_add (n : ℕ) : ∀ {k : ℕ}, 2 ≤ k → (n + 1).a
   | 0 => by rintro ⟨⟩
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
-    rw [pow_succ, mul_comm, ascFactorial_succ, succ_add_eq_add_succ n (k + 1)]
+    rw [Nat.pow_succ, mul_comm, ascFactorial_succ, succ_add_eq_add_succ n (k + 1)]
     exact Nat.mul_lt_mul_of_le_of_lt le_rfl ((ascFactorial_le_pow_add n _).trans_lt
       (pow_lt_pow_left (@lt_add_one ℕ _ _ _ _ _ _ _) (zero_le _) k.succ_ne_zero)) (succ_pos _)
 #align nat.asc_factorial_lt_pow_add Nat.ascFactorial_lt_pow_add
@@ -436,7 +436,7 @@ theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n !
 theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.descFactorial k
   | 0 => by rw [descFactorial_zero, pow_zero]
   | k + 1 => by
-    rw [descFactorial_succ, pow_succ, succ_sub_succ, mul_comm]
+    rw [descFactorial_succ, Nat.pow_succ, succ_sub_succ, mul_comm]
     apply Nat.mul_le_mul_left
     exact (le_trans (Nat.pow_le_pow_left (tsub_le_tsub_right (le_succ _) _) k)
       (pow_sub_le_descFactorial n k))
@@ -450,7 +450,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
       Nat.mul_lt_mul_of_pos_left (tsub_lt_self (lt_of_lt_of_le zero_lt_two h) zero_lt_one)
         (tsub_pos_of_lt h)
   | k + 1 => fun h => by
-    rw [descFactorial_succ, pow_succ, mul_comm]
+    rw [descFactorial_succ, Nat.pow_succ, mul_comm]
     apply Nat.mul_lt_mul_of_pos_left
     · refine' ((Nat.pow_le_pow_left (tsub_le_tsub_right (le_succ n) _) _).trans_lt _)
       rw [succ_sub_succ]
@@ -470,7 +470,7 @@ theorem pow_sub_lt_descFactorial {n : ℕ} :
 theorem descFactorial_le_pow (n : ℕ) : ∀ k : ℕ, n.descFactorial k ≤ n ^ k
   | 0 => by rw [descFactorial_zero, pow_zero]
   | k + 1 => by
-    rw [descFactorial_succ, pow_succ, mul_comm _ n]
+    rw [descFactorial_succ, Nat.pow_succ, mul_comm _ n]
     exact Nat.mul_le_mul (Nat.sub_le _ _) (descFactorial_le_pow _ k)
 #align nat.desc_factorial_le_pow Nat.descFactorial_le_pow
 

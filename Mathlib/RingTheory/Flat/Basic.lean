@@ -194,7 +194,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     h₃, LinearMap.map_eq_zero_iff] at f
   simp [f]
 
-open Classical in
+open scoped Classical in
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
   of_linearEquiv R _ _ (finsuppLEquivDirectSum R R ι)

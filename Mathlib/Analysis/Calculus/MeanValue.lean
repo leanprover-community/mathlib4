@@ -1414,7 +1414,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
     · exact fun t Ht => (hfg t <| hsub Ht).hasDerivAt (Icc_mem_nhds Ht.1 Ht.2)
   -- reinterpret on domain
   rcases hMVT with ⟨t, Ht, hMVT'⟩
-  rw [segment_eq_image_lineMap, bex_image_iff]
+  rw [segment_eq_image_lineMap, exists_mem_image]
   refine ⟨t, hsub Ht, ?_⟩
   simpa [g] using hMVT'.symm
 #align domain_mvt domain_mvt

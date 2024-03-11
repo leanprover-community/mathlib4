@@ -249,7 +249,8 @@ end commMap
 
 noncomputable section stdBasis
 
-open Classical Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
+open scoped Classical
+open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
   ComplexConjugate
 
 variable [NumberField K]
@@ -618,7 +619,7 @@ section convexBodyLT'
 
 open  Metric ENNReal NNReal
 
-open Classical
+open scoped Classical
 
 variable (f : InfinitePlace K → ℝ≥0) (w₀ : {w : InfinitePlace K // IsComplex w})
 
@@ -928,7 +929,8 @@ end convexBodySum
 
 section minkowski
 
-open MeasureTheory MeasureTheory.Measure Classical FiniteDimensional Zspan Real Submodule
+open scoped Classical
+open MeasureTheory MeasureTheory.Measure FiniteDimensional Zspan Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 
@@ -1059,7 +1061,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
         exact h_le₀.2
     · refine lt_of_lt_of_le (if_neg h_eq ▸ h_le w h_eq) ?_
       rw [NNReal.coe_one, Real.le_sqrt' zero_lt_one, one_pow]
-      norm_num
+      set_option tactic.skipAssignedInstances false in norm_num
 
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     (h : (minkowskiBound K I) ≤ volume (convexBodySum K B)) :
