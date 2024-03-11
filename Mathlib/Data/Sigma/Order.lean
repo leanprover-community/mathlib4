@@ -185,20 +185,24 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     decidableLE := Lex.decidable _ _ }
 #align sigma.lex.linear_order Sigma.Lex.linearOrder
 
+instance instBot [Bot ι] [Bot (α ⊥)] : Bot (Σₗ i, α i) where
+  bot := ⟨⊥, ⊥⟩
+
 /-- The lexicographical linear order on a sigma type. -/
 instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :
     OrderBot (Σₗ i, α i) where
-  bot := ⟨⊥, ⊥⟩
   bot_le := fun ⟨a, b⟩ => by
     obtain rfl | ha := eq_bot_or_bot_lt a
     · exact Lex.right _ _ bot_le
     · exact Lex.left _ _ ha
 #align sigma.lex.order_bot Sigma.Lex.orderBot
 
+instance instTop [Top ι] [Top (α ⊤)] : Top (Σₗ i, α i) where
+  top := ⟨⊤, ⊤⟩
+
 /-- The lexicographical linear order on a sigma type. -/
 instance orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [OrderTop (α ⊤)] :
     OrderTop (Σₗ i, α i) where
-  top := ⟨⊤, ⊤⟩
   le_top := fun ⟨a, b⟩ => by
     obtain rfl | ha := eq_top_or_lt_top a
     · exact Lex.right _ _ le_top

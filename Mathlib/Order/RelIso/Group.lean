@@ -17,10 +17,16 @@ variable {α : Type*} {r : α → α → Prop}
 
 namespace RelIso
 
-instance : Group (r ≃r r) where
+instance : One (r ≃r r) where
   one := RelIso.refl r
+
+instance : Mul (r ≃r r) where
   mul f₁ f₂ := f₂.trans f₁
-  inv := RelIso.symm
+
+instance : Inv (r ≃r r) where
+  inv f := f.symm
+
+instance : Group (r ≃r r) where
   mul_assoc f₁ f₂ f₃ := rfl
   one_mul f := ext fun _ => rfl
   mul_one f := ext fun _ => rfl

@@ -54,11 +54,19 @@ theorem bind_up (a : α) (f : α → PLift β) : (PLift.up a).bind f = f a :=
   rfl
 #align plift.bind_up PLift.bind_up
 
-instance : Monad PLift where
+instance : Functor PLift where
   map := @PLift.map
+
+instance : Pure PLift where
   pure := @PLift.pure
-  seq := @PLift.seq
+
+instance : Bind PLift where
   bind := @PLift.bind
+
+instance : Seq PLift where
+  seq := @PLift.seq
+
+instance : Monad PLift where
 
 instance : LawfulFunctor PLift where
   id_map := @fun _ ⟨_⟩ => rfl
@@ -124,11 +132,19 @@ theorem bind_up (a : α) (f : α → ULift β) : (ULift.up a).bind f = f a :=
   rfl
 #align ulift.bind_up ULift.bind_up
 
-instance : Monad ULift where
+instance : Functor ULift where
   map := @ULift.map
+
+instance : Pure ULift where
   pure := @ULift.pure
-  seq := @ULift.seq
+
+instance : Bind ULift where
   bind := @ULift.bind
+
+instance : Seq ULift where
+  seq := @ULift.seq
+
+instance : Monad ULift where
 
 instance : LawfulFunctor ULift where
   id_map := @fun _ ⟨_⟩ => rfl

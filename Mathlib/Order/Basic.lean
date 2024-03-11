@@ -830,11 +830,15 @@ instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ
   __ := inferInstanceAs (Preorder αᵒᵈ)
   le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
 
+instance instMax (α : Type*) [Min α] : Max αᵒᵈ where
+  max := fun a b ↦ (min a b : α)
+
+instance instMin (α : Type*) [Max α] : Min αᵒᵈ where
+  min := fun a b ↦ (max a b : α)
+
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   le_total := λ a b : α => le_total b a
-  max := fun a b ↦ (min a b : α)
-  min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidableLE := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
@@ -1432,11 +1436,19 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance instLinearOrder : LinearOrder PUnit where
-  le  := fun _ _ ↦ True
-  lt  := fun _ _ ↦ False
+instance instLE : LE PUnit where
+  le := fun _ _ ↦ True
+
+instance instLT : LT PUnit where
+  lt := fun _ _ ↦ False
+
+instance instMax : Max PUnit where
   max := fun _ _ ↦ unit
+
+instance instMin : Min PUnit where
   min := fun _ _ ↦ unit
+
+instance instLinearOrder : LinearOrder PUnit where
   decidableEq := inferInstance
   decidableLE := fun _ _ ↦ Decidable.isTrue trivial
   decidableLT := fun _ _ ↦ Decidable.isFalse id
@@ -1444,7 +1456,7 @@ instance instLinearOrder : LinearOrder PUnit where
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
   le_antisymm := by intros; rfl
-  lt_iff_le_not_le := by simp only [not_true, and_false, forall_const]
+  lt_iff_le_not_le := by simp only [LE.le, LT.lt, not_true, and_false, forall_const]
 
 theorem max_eq : max a b = unit :=
   rfl

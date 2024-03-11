@@ -38,10 +38,16 @@ theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List �
     (l.bind f).bind g = l.bind fun x => (f x).bind g := by induction l <;> simp [*]
 #align list.bind_assoc List.bind_assoc
 
-instance instMonad : Monad List.{u} where
+instance : Pure List.{u} where
   pure := @List.ret
+
+instance : Bind List.{u} where
   bind := @List.bind
+
+instance : Functor List.{u} where
   map := @List.map
+
+instance instMonad : Monad List.{u} where
 #align list.monad List.instMonad
 
 instance instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'

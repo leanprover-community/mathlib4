@@ -22,40 +22,40 @@ open Nat
 
 namespace Int
 
-instance instCommRingInt : CommRing ℤ where
-  zero_mul := Int.zero_mul
-  mul_zero := Int.mul_zero
-  mul_comm := Int.mul_comm
-  left_distrib := Int.mul_add
-  right_distrib := Int.add_mul
-  mul_one := Int.mul_one
-  one_mul := Int.one_mul
-  npow n x := x ^ n
-  npow_zero _ := rfl
-  npow_succ _ _ := by rw [Int.mul_comm]; rfl
-  mul_assoc := Int.mul_assoc
-  add_comm := Int.add_comm
-  add_assoc := Int.add_assoc
-  add_zero := Int.add_zero
+instance instAddMonoid : AddMonoid ℤ where
   zero_add := Int.zero_add
-  add_left_neg := Int.add_left_neg
+  add_zero := Int.add_zero
+  add_assoc := Int.add_assoc
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
   nsmul_succ n x :=
     show (n + 1 : ℤ) * x = x + n * x
     by rw [Int.add_mul, Int.add_comm, Int.one_mul]
+
+instance instSemiringInt : Semiring ℤ where
+  toNatCast := instNatCastInt
+  add_comm := Int.add_comm
+  left_distrib := Int.mul_add
+  right_distrib := Int.add_mul
+  zero_mul := Int.zero_mul
+  mul_zero := Int.mul_zero
+  mul_assoc := Int.mul_assoc
+  one_mul := Int.one_mul
+  mul_one := Int.mul_one
+  npow n x := x ^ n
+  npow_zero _ := rfl
+  npow_succ _ _ := by rw [Int.mul_comm]; rfl
+
+instance instRingInt : Ring ℤ where
+  add_left_neg := Int.add_left_neg
   zsmul := (·*·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
     simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
-  sub_eq_add_neg _ _ := Int.sub_eq_add_neg
-  natCast := (·)
-  natCast_zero := rfl
-  natCast_succ _ := rfl
-  intCast := (·)
-  intCast_ofNat _ := rfl
-  intCast_negSucc _ := rfl
+
+instance instCommRingInt : CommRing ℤ where
+  mul_comm := Int.mul_comm
 
 @[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
 
@@ -94,7 +94,7 @@ instance : AddCommSemigroup ℤ := by infer_instance
 instance : AddSemigroup ℤ     := by infer_instance
 instance : CommSemiring ℤ     := by infer_instance
 instance : Semiring ℤ         := by infer_instance
-instance instRingInt : Ring ℤ             := by infer_instance
+instance : Ring ℤ             := by infer_instance
 instance : Distrib ℤ          := by infer_instance
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by

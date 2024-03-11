@@ -108,12 +108,10 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 #align nat.lt_iff_le_not_le Nat.lt_iff_le_not_le
 
 instance linearOrder : LinearOrder ℕ where
-  le := Nat.le
   le_refl := @Nat.le_refl
   le_trans := @Nat.le_trans
   le_antisymm := @Nat.le_antisymm
   le_total := @Nat.le_total
-  lt := Nat.lt
   lt_iff_le_not_le := @Nat.lt_iff_le_not_le
   decidableLT := inferInstance
   decidableLE := inferInstance

@@ -505,7 +505,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
-  smul := (· • ·)
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 #align function.injective.mul_action Function.Injective.mulAction
@@ -518,7 +517,6 @@ See note [reducible non-instances]. -/
 protected def Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
     (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     MulAction M β where
-  smul := (· • ·)
   one_smul y := by
     rcases hf y with ⟨x, rfl⟩
     rw [← smul, one_smul]
@@ -538,7 +536,6 @@ def Function.Surjective.mulActionLeft {R S M : Type*} [Monoid R] [MulAction R M]
     [SMul S M] (f : R →* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     MulAction S M where
-  smul := (· • ·)
   one_smul b := by rw [← f.map_one, hsmul, one_smul]
   mul_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_mul, hsmul, mul_smul]
 #align function.surjective.mul_action_left Function.Surjective.mulActionLeft
@@ -555,7 +552,6 @@ This is promoted to a module by `Semiring.toModule`. -/
 @[to_additive]
 instance (priority := 910) Monoid.toMulAction :
     MulAction M M where
-  smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
 #align monoid.to_mul_action Monoid.toMulAction
@@ -775,7 +771,6 @@ See note [reducible non-instances]. -/
 protected def Function.Injective.smulZeroClass [Zero B] [SMul M B] (f : ZeroHom B A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) :
     SMulZeroClass M B where
-  smul := (· • ·)
   smul_zero c := hf <| by simp only [smul, map_zero, smul_zero]
 #align function.injective.smul_zero_class Function.Injective.smulZeroClass
 
@@ -798,7 +793,6 @@ def Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroClas
     [SMul S M] (f : R → S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     SMulZeroClass S M where
-  smul := (· • ·)
   smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
 #align function.surjective.smul_zero_class_left Function.Surjective.smulZeroClassLeft
 
@@ -1144,9 +1138,13 @@ protected def Function.End :=
   α → α
 #align function.End Function.End
 
-instance : Monoid (Function.End α) where
+instance : One (Function.End α) where
   one := id
+
+instance : Mul (Function.End α) where
   mul := (· ∘ ·)
+
+instance : Monoid (Function.End α) where
   mul_assoc f g h := rfl
   mul_one f := rfl
   one_mul f := rfl
@@ -1155,6 +1153,9 @@ instance : Inhabited (Function.End α) :=
   ⟨1⟩
 
 variable {α}
+
+instance Function.End.instSMul : SMul (Function.End α) α where
+  smul :=  (· <| ·)
 
 /-- The tautological action by `Function.End α` on `α`.
 
@@ -1172,7 +1173,6 @@ This is generalized to bundled endomorphisms by:
 -/
 instance Function.End.applyMulAction :
     MulAction (Function.End α) α where
-  smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 #align function.End.apply_mul_action Function.End.applyMulAction
@@ -1195,12 +1195,14 @@ instance Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α :=
   ⟨fun {_ _} => funext⟩
 #align function.End.apply_has_faithful_smul Function.End.apply_FaithfulSMul
 
+instance AddMonoid.End.instSMul [AddMonoid α] : SMul (AddMonoid.End α) α where
+  smul :=  (· <| ·)
+
 /-- The tautological action by `AddMonoid.End α` on `α`.
 
 This generalizes `Function.End.applyMulAction`. -/
 instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
     DistribMulAction (AddMonoid.End α) α where
-  smul := (· <| ·)
   smul_zero := AddMonoidHom.map_zero
   smul_add := AddMonoidHom.map_add
   one_smul _ := rfl

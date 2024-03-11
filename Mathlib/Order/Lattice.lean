@@ -79,6 +79,10 @@ class SemilatticeSup (α : Type u) extends Sup α, PartialOrder α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 #align semilattice_sup SemilatticeSup
 
+/-- A type with a binary `sup` operation has a natural `≤` -/
+def Sup.le {α : Type*} [Sup α] : LE α where
+  le a b := a ⊔ b = b
+
 /--
 A type with a commutative, associative and idempotent binary `sup` operation has the structure of a
 join-semilattice.
@@ -88,14 +92,13 @@ The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `su
 def SemilatticeSup.mk' {α : Type*} [Sup α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
     (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (sup_idem : ∀ a : α, a ⊔ a = a) :
     SemilatticeSup α where
-  sup := (· ⊔ ·)
-  le a b := a ⊔ b = b
+  toLE := Sup.le
   le_refl := sup_idem
-  le_trans a b c hab hbc := by dsimp; rw [← hbc, ← sup_assoc, hab]
+  le_trans a b c hab hbc := by dsimp [Sup.le]; rw [← hbc, ← sup_assoc, hab]
   le_antisymm a b hab hba := by rwa [← hba, sup_comm]
-  le_sup_left a b := by dsimp; rw [← sup_assoc, sup_idem]
-  le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
-  sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
+  le_sup_left a b := by dsimp [Sup.le]; rw [← sup_assoc, sup_idem]
+  le_sup_right a b := by dsimp [Sup.le]; rw [sup_comm, sup_assoc, sup_idem]
+  sup_le a b c hac hbc := by dsimp [Sup.le]; rwa [sup_assoc, hbc]
 #align semilattice_sup.mk' SemilatticeSup.mk'
 
 instance OrderDual.instSup (α : Type*) [Inf α] : Sup αᵒᵈ :=
@@ -1344,17 +1347,31 @@ end Prod
 
 namespace Subtype
 
+/-- A subtype has a `⊔` if `⊔` preserves the property.
+See note [reducible non-instances]. -/
+@[reducible]
+protected def sup [Sup α] {P : α → Prop} (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
+    Sup { x : α // P x } :=
+  ⟨fun x y => ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩⟩
+
 /-- A subtype forms a `⊔`-semilattice if `⊔` preserves the property.
 See note [reducible non-instances]. -/
 @[reducible]
 protected def semilatticeSup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
     SemilatticeSup { x : α // P x } where
-  sup x y := ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩
+  toSup := Subtype.sup Psup
   le_sup_left _ _ := le_sup_left
   le_sup_right _ _ := le_sup_right
   sup_le _ _ _ h1 h2 := sup_le h1 h2
 #align subtype.semilattice_sup Subtype.semilatticeSup
+
+/-- A subtype has a `⊓` if `⊓` preserves the property.
+See note [reducible non-instances]. -/
+@[reducible]
+protected def inf [Inf α] {P : α → Prop} (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
+    Inf { x : α // P x } :=
+  ⟨fun x y => ⟨x.1 ⊓ y.1, Pinf x.2 y.2⟩⟩
 
 /-- A subtype forms a `⊓`-semilattice if `⊓` preserves the property.
 See note [reducible non-instances]. -/
@@ -1362,7 +1379,7 @@ See note [reducible non-instances]. -/
 protected def semilatticeInf [SemilatticeInf α] {P : α → Prop}
     (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
     SemilatticeInf { x : α // P x } where
-  inf x y := ⟨x.1 ⊓ y.1, Pinf x.2 y.2⟩
+  toInf := Subtype.inf Pinf
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ h1 h2 := le_inf h1 h2
@@ -1419,7 +1436,7 @@ protected def Function.Injective.semilatticeSup [Sup α] [SemilatticeSup β] (f 
     (hf_inj : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
     SemilatticeSup α where
   __ := PartialOrder.lift f hf_inj
-  sup := Sup.sup
+  toSup := ‹Sup α›
   le_sup_left a b := by
     change f a ≤ f (a ⊔ b)
     rw [map_sup]
@@ -1442,7 +1459,7 @@ protected def Function.Injective.semilatticeInf [Inf α] [SemilatticeInf β] (f 
     (hf_inj : Function.Injective f) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
     SemilatticeInf α where
   __ := PartialOrder.lift f hf_inj
-  inf := Inf.inf
+  toInf := ‹Inf α›
   inf_le_left a b := by
     change f (a ⊓ b) ≤ f a
     rw [map_inf]

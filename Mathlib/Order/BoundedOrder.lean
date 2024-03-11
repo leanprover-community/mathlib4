@@ -704,18 +704,30 @@ namespace Subtype
 variable {p : α → Prop}
 
 -- See note [reducible non-instances]
+/-- A subtype has a `⊥` if the property holds at `⊥`. -/
+@[reducible]
+protected def bot [Bot α] (hbot : p ⊥) : Bot { x : α // p x } where
+  bot := ⟨⊥, hbot⟩
+
+-- See note [reducible non-instances]
 /-- A subtype remains a `⊥`-order if the property holds at `⊥`. -/
 @[reducible]
 protected def orderBot [LE α] [OrderBot α] (hbot : p ⊥) : OrderBot { x : α // p x } where
-  bot := ⟨⊥, hbot⟩
+  toBot := Subtype.bot hbot
   bot_le _ := bot_le
 #align subtype.order_bot Subtype.orderBot
+
+-- See note [reducible non-instances]
+/-- A subtype has a `⊤` if the property holds at `⊤`. -/
+@[reducible]
+protected def top [Top α] (htop : p ⊤) : Top { x : α // p x } where
+  top := ⟨⊤, htop⟩
 
 -- See note [reducible non-instances]
 /-- A subtype remains a `⊤`-order if the property holds at `⊤`. -/
 @[reducible]
 protected def orderTop [LE α] [OrderTop α] (htop : p ⊤) : OrderTop { x : α // p x } where
-  top := ⟨⊤, htop⟩
+  toTop := Subtype.top htop
   le_top _ := le_top
 #align subtype.order_top Subtype.orderTop
 
@@ -901,10 +913,14 @@ section Bool
 
 open Bool
 
-instance Bool.instBoundedOrder : BoundedOrder Bool where
+instance Bool.instTop : Top Bool where
   top := true
-  le_top := Bool.le_true
+
+instance Bool.instBot : Bot Bool where
   bot := false
+
+instance Bool.instBoundedOrder : BoundedOrder Bool where
+  le_top := Bool.le_true
   bot_le := Bool.false_le
 
 @[simp]

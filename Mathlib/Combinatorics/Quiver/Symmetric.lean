@@ -240,14 +240,11 @@ variable {V' : Type*} (σ : V → V')
 
 instance [HasReverse V] : HasReverse (Quiver.Push σ) where
   reverse' := fun
-              | PushQuiver.arrow f => PushQuiver.arrow (reverse f)
+    | PushQuiver.arrow f => PushQuiver.arrow (reverse f)
 
-instance [h : HasInvolutiveReverse V] :
-    HasInvolutiveReverse (Push σ) where
-  reverse' := fun
-  | PushQuiver.arrow f => PushQuiver.arrow (reverse f)
+instance [h : HasInvolutiveReverse V] : HasInvolutiveReverse (Push σ) where
   inv' := fun
-  | PushQuiver.arrow f => by dsimp [reverse]; congr; apply h.inv'
+    | PushQuiver.arrow f => by dsimp [reverse, HasReverse.reverse']; congr; apply h.inv'
 
 theorem of_reverse [HasInvolutiveReverse V] (X Y : V) (f : X ⟶ Y) :
     (reverse <| (Push.of σ).map f) = (Push.of σ).map (reverse f) :=

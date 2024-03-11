@@ -1097,9 +1097,13 @@ protected def End := M →* M
 
 namespace End
 
-instance : Monoid (Monoid.End M) where
+instance : Mul (Monoid.End M) where
   mul := MonoidHom.comp
+
+instance : One (Monoid.End M) where
   one := MonoidHom.id M
+
+instance : Monoid (Monoid.End M) where
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
@@ -1132,9 +1136,10 @@ protected def End := A →+ A
 
 namespace End
 
-instance monoid : Monoid (AddMonoid.End A) where
+instance instMul : Mul (AddMonoid.End A) where
   mul := AddMonoidHom.comp
-  one := AddMonoidHom.id A
+
+instance monoid : Monoid (AddMonoid.End A) where
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
   mul_one := AddMonoidHom.comp_id
   one_mul := AddMonoidHom.id_comp

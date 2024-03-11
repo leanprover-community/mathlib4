@@ -182,13 +182,25 @@ theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTricho
     <| irrefl b
 #align extensional_of_trichotomous_of_irrefl extensional_of_trichotomous_of_irrefl
 
+/-- Construct `le` from a relation.
+See note [reducible non-instances]. -/
+@[reducible]
+def leOfRel (r : α → α → Prop) : LE α where
+  le x y := x = y ∨ r x y
+
+/-- Construct `LT` from a relation.
+See note [reducible non-instances]. -/
+@[reducible]
+def ltOfRel (r : α → α → Prop) : LT α where
+  lt x y := r x y
+
 /-- Construct a partial order from an `isStrictOrder` relation.
 
 See note [reducible non-instances]. -/
 @[reducible]
 def partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
-  le x y := x = y ∨ r x y
-  lt := r
+  toLE := leOfRel r
+  toLT := ltOfRel r
   le_refl x := Or.inl rfl
   le_trans x y z h₁ h₂ :=
     match y, z, h₁, h₂ with

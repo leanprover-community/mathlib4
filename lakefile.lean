@@ -7,6 +7,7 @@ package mathlib where
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`pp.proofs.withType, false⟩,
     ⟨`autoImplicit, false⟩,
+    -- ⟨`trace.Elab.StructInst.coveredFields, true⟩,
     ⟨`relaxedAutoImplicit, false⟩
   ]
   -- These are additional settings which do not affect the lake hash,
