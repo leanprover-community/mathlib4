@@ -37,6 +37,19 @@ up to `n = 7` in order to formalize spectral sequences following Verdier)
 
 -/
 
+/-!
+New `simprocs` that run even in `dsimp` have caused breakages in this file.
+
+(e.g. `dsimp` can now simplify `2 + 3` to `5`)
+
+For now, we just turn off simprocs in this file.
+We'll soon provide finer grained options here, e.g. to turn off simprocs only in `dsimp`, etc.
+
+*However*, hopefully it is possible to refactor the material here so that no backwards compatibility
+`set_option`s are required at all
+-/
+set_option simprocs false
+
 namespace CategoryTheory
 
 open Category
