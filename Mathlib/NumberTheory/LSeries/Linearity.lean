@@ -38,10 +38,10 @@ lemma LSeriesSummable.add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f 
   simpa only [LSeriesSummable, ← term_add_apply] using Summable.add hf hg
 
 @[simp]
-lemma LSeries.add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
+lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f + g) s = LSeries f s + LSeries g s := by
   simpa only [LSeries, term_add, Pi.add_apply] using tsum_add hf hg
-#align nat.arithmetic_function.l_series_add LSeries.add
+#align nat.arithmetic_function.l_series_add LSeries_add
 
 /-!
 ### Negation
@@ -69,7 +69,7 @@ lemma LSeriesSummable.neg_iff {f : ℕ → ℂ} {s : ℂ} :
   ⟨fun H ↦ neg_neg f ▸ H.neg, .neg⟩
 
 @[simp]
-lemma LSeries.neg (f : ℕ → ℂ) (s : ℂ) : LSeries (-f) s = -LSeries f s := by
+lemma LSeries_neg (f : ℕ → ℂ) (s : ℂ) : LSeries (-f) s = -LSeries f s := by
   simp only [LSeries, term_neg_apply, tsum_neg]
 
 /-!
@@ -103,5 +103,5 @@ lemma LSeriesSummable.smul_iff {f : ℕ → ℂ} {c s : ℂ} (hc : c ≠ 0) :
   ⟨of_smul hc, smul c⟩
 
 @[simp]
-lemma LSeries.smul (f : ℕ → ℂ) (c s : ℂ) : LSeries (c • f) s = c * LSeries f s := by
+lemma LSeries_smul (f : ℕ → ℂ) (c s : ℂ) : LSeries (c • f) s = c * LSeries f s := by
   simp only [LSeries, term_smul_apply, tsum_mul_left]
