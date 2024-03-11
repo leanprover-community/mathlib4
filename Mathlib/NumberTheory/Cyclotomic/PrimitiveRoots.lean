@@ -201,7 +201,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   · simp
   rcases Nat.eq_zero_or_pos q with (rfl | hqpos)
   · simp
-  let z := x ^ (p / factorization_lcm_left p q) * y ^ (q / factorization_lcm_right p q)
+  let z := x ^ (p / factorizationLCMLeft p q) * y ^ (q / factorizationLCMRight p q)
   let k := PNat.lcm ⟨p, hppos⟩ ⟨q, hqpos⟩
   have : IsPrimitiveRoot z k := hx.pow_mul_pow_lcm hy hppos.ne' hqpos.ne'
   haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K this
