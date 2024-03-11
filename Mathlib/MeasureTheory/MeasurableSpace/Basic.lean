@@ -2067,15 +2067,14 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   · apply Measurable.subtype_mk
     rw [measurable_pi_iff]
     refine fun n ↦ measurable_to_bool ?_
-    simp only [preimage, mem_singleton_iff, Bool.decide_iff, setOf_mem_eq]
+    simp only [preimage, mem_singleton_iff, f, Bool.decide_iff, setOf_mem_eq]
     exact measurableSet_generateFrom $ mem_range_self _
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
   rw [← Equiv.image_eq_preimage _ _]
   refine' ⟨{y | y n}, by measurability, _⟩
   rw [← Equiv.preimage_eq_iff_eq_image]
-  simp
-
+  simp[f]
 
 /-- If a measurable space admits a countable sequence of measurable sets separating points,
 it admits a measurable injection into the Cantor space `ℕ → Bool`
