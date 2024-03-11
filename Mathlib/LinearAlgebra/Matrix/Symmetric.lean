@@ -80,6 +80,11 @@ theorem isSymm_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α).IsSy
   transpose_one
 #align matrix.is_symm_one Matrix.isSymm_one
 
+theorem IsSymm.pow [CommSemiring α] [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsSymm)
+    (k : ℕ) :
+    (A ^ k).IsSymm := by
+  rw [IsSymm, transpose_pow, h]
+
 @[simp]
 theorem IsSymm.map {A : Matrix n n α} (h : A.IsSymm) (f : α → β) : (A.map f).IsSymm :=
   transpose_map.symm.trans (h.symm ▸ rfl)

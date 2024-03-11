@@ -12,7 +12,7 @@ import Mathlib.RingTheory.EuclideanDomain
 /-!
 # Theory of univariate polynomials
 
-This file starts looking like the ring theory of $ R[X] $
+This file starts looking like the ring theory of $R[X]$
 
 -/
 
@@ -27,34 +27,125 @@ universe u v w y z
 
 variable {R : Type u} {S : Type v} {k : Type y} {A : Type z} {a b : R} {n : ℕ}
 
+section CommRing
+
+variable [CommRing R]
+
+theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
+    (p : R[X]) (t : R) (hnezero : derivative p ≠ 0) :
+    p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t :=
+  (le_rootMultiplicity_iff hnezero).2 <|
+    pow_sub_one_dvd_derivative_of_pow_dvd (p.pow_rootMultiplicity_dvd t)
+
+theorem derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors
+    {p : R[X]} {t : R} (hpt : Polynomial.IsRoot p t)
+    (hnzd : (p.rootMultiplicity t : R) ∈ nonZeroDivisors R) :
+    (derivative p).rootMultiplicity t = p.rootMultiplicity t - 1 := by
+  by_cases h : p = 0
+  · simp only [h, map_zero, rootMultiplicity_zero]
+  obtain ⟨g, hp, hndvd⟩ := p.exists_eq_pow_rootMultiplicity_mul_and_not_dvd h t
+  set m := p.rootMultiplicity t
+  have hm : m - 1 + 1 = m := Nat.sub_add_cancel <| (rootMultiplicity_pos h).2 hpt
+  have hndvd : ¬(X - C t) ^ m ∣ derivative p := by
+    rw [hp, derivative_mul, dvd_add_left (dvd_mul_right _ _),
+      derivative_X_sub_C_pow, ← hm, pow_succ', hm, mul_comm (C _), mul_assoc,
+      dvd_cancel_left_mem_nonZeroDivisors (monic_X_sub_C t |>.pow _ |>.mem_nonZeroDivisors)]
+    rw [dvd_iff_isRoot, IsRoot] at hndvd ⊢
+    rwa [eval_mul, eval_C, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd]
+  have hnezero : derivative p ≠ 0 := fun h ↦ hndvd (by rw [h]; exact dvd_zero _)
+  exact le_antisymm (by rwa [rootMultiplicity_le_iff hnezero, hm])
+    (rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero _ t hnezero)
+
+theorem isRoot_iterate_derivative_of_lt_rootMultiplicity {p : R[X]} {t : R} {n : ℕ}
+    (hn : n < p.rootMultiplicity t) : (derivative^[n] p).IsRoot t :=
+  dvd_iff_isRoot.mp <| (dvd_pow_self _ <| Nat.sub_ne_zero_of_lt hn).trans
+    (pow_sub_dvd_iterate_derivative_of_pow_dvd _ <| p.pow_rootMultiplicity_dvd t)
+
+open Finset in
+theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
+    (derivative^[p.rootMultiplicity t] p).eval t =
+      (p.rootMultiplicity t).factorial • (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t := by
+  set m := p.rootMultiplicity t with hm
+  conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
+  rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
+  · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
+      eval_nat_cast, nsmul_eq_mul]; rfl
+  · intro b hb hb0
+    rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
+      Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
+      zero_pow hb0, smul_zero, zero_mul, smul_zero]
+
+theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
+    {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
+    (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t)
+    (hnzd : (n.factorial : R) ∈ nonZeroDivisors R) :
+    n < p.rootMultiplicity t := by
+  by_contra! h'
+  replace hroot := hroot _ h'
+  simp only [IsRoot, eval_iterate_derivative_rootMultiplicity] at hroot
+  obtain ⟨q, hq⟩ := Nat.coe_nat_dvd (α := R) <| Nat.factorial_dvd_factorial h'
+  rw [hq, mul_mem_nonZeroDivisors] at hnzd
+  rw [nsmul_eq_mul, mul_left_mem_nonZeroDivisors_eq_zero_iff hnzd.1] at hroot
+  exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hroot
+
+theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
+    {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
+    (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t)
+    (hnzd : ∀ m ≤ n, m ≠ 0 → (m : R) ∈ nonZeroDivisors R) :
+    n < p.rootMultiplicity t := by
+  apply lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hroot
+  clear hroot
+  induction' n with n ih
+  · simp only [Nat.zero_eq, Nat.factorial_zero, Nat.cast_one]
+    exact Submonoid.one_mem _
+  · rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
+    exact ⟨hnzd _ le_rfl n.succ_ne_zero, ih fun m h ↦ hnzd m (h.trans n.le_succ)⟩
+
+theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors
+    {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
+    (hnzd : (n.factorial : R) ∈ nonZeroDivisors R) :
+    n < p.rootMultiplicity t ↔ ∀ m ≤ n, (derivative^[m] p).IsRoot t :=
+  ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| hm.trans_lt hn,
+    fun hr ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hr hnzd⟩
+
+theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
+    {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
+    (hnzd : ∀ m ≤ n, m ≠ 0 → (m : R) ∈ nonZeroDivisors R) :
+    n < p.rootMultiplicity t ↔ ∀ m ≤ n, (derivative^[m] p).IsRoot t :=
+  ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| Nat.lt_of_le_of_lt hm hn,
+    fun hr ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors' h hr hnzd⟩
+
+theorem one_lt_rootMultiplicity_iff_isRoot_iterate_derivative
+    {p : R[X]} {t : R} (h : p ≠ 0) :
+    1 < p.rootMultiplicity t ↔ ∀ m ≤ 1, (derivative^[m] p).IsRoot t :=
+  lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors h
+    (by rw [Nat.factorial_one, Nat.cast_one]; exact Submonoid.one_mem _)
+
+theorem one_lt_rootMultiplicity_iff_isRoot
+    {p : R[X]} {t : R} (h : p ≠ 0) :
+    1 < p.rootMultiplicity t ↔ p.IsRoot t ∧ (derivative p).IsRoot t := by
+  rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
+  refine ⟨fun h ↦ ⟨h 0 (by norm_num), h 1 (by norm_num)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
+  obtain (_|_|m) := m
+  exacts [h0, h1, by omega]
+
+end CommRing
+
 section IsDomain
 
 variable [CommRing R] [IsDomain R]
 
+theorem one_lt_rootMultiplicity_iff_isRoot_gcd
+    [GCDMonoid R[X]] {p : R[X]} {t : R} (h : p ≠ 0) :
+    1 < p.rootMultiplicity t ↔ (gcd p (derivative p)).IsRoot t := by
+  simp_rw [one_lt_rootMultiplicity_iff_isRoot h, ← dvd_iff_isRoot, dvd_gcd_iff]
+
 theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt : p.IsRoot t) :
     p.derivative.rootMultiplicity t = p.rootMultiplicity t - 1 := by
-  rcases eq_or_ne p 0 with (rfl | hp)
-  · simp
-  nth_rw 1 [← p.divByMonic_mul_pow_rootMultiplicity_eq t]
-  simp only [derivative_pow, derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero,
-    mul_one]
-  set n := p.rootMultiplicity t - 1
-  have hn : n + 1 = _ := tsub_add_cancel_of_le ((rootMultiplicity_pos hp).mpr hpt)
-  rw [← hn]
-  set q := p /ₘ (X - C t) ^ (n + 1) with _hq
-  convert_to rootMultiplicity t ((X - C t) ^ n * (derivative q * (X - C t) + q * C ↑(n + 1))) = n
-  · congr
-    rw [mul_add, mul_left_comm <| (X - C t) ^ n, ← pow_succ']
-    congr 1
-    rw [mul_left_comm <| (X - C t) ^ n, mul_comm <| (X - C t) ^ n]
-  have h : eval t (derivative q * (X - C t) + q * C (R := R) ↑(n + 1)) ≠ 0 := by
-    suffices eval t q * ↑(n + 1) ≠ 0 by simpa
-    refine' mul_ne_zero _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)
-    convert eval_divByMonic_pow_rootMultiplicity_ne_zero t hp
-  rw [rootMultiplicity_mul, rootMultiplicity_X_sub_C_pow, rootMultiplicity_eq_zero h, add_zero]
-  refine' mul_ne_zero (pow_ne_zero n <| X_sub_C_ne_zero t) _
-  contrapose! h
-  rw [h, eval_zero]
+  by_cases h : p = 0
+  · rw [h, map_zero, rootMultiplicity_zero]
+  exact derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors hpt <|
+    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 ((rootMultiplicity_pos h).2 hpt).ne'
 #align polynomial.derivative_root_multiplicity_of_root Polynomial.derivative_rootMultiplicity_of_root
 
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
@@ -64,6 +155,19 @@ theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p 
   · rw [rootMultiplicity_eq_zero h, zero_tsub]
     exact zero_le _
 #align polynomial.root_multiplicity_sub_one_le_derivative_root_multiplicity Polynomial.rootMultiplicity_sub_one_le_derivative_rootMultiplicity
+
+theorem lt_rootMultiplicity_of_isRoot_iterate_derivative
+    [CharZero R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
+    (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t) :
+    n < p.rootMultiplicity t :=
+  lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hroot <|
+    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 <| Nat.factorial_ne_zero n
+
+theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative
+    [CharZero R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0) :
+    n < p.rootMultiplicity t ↔ ∀ m ≤ n, (derivative^[m] p).IsRoot t :=
+  ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| Nat.lt_of_le_of_lt hm hn,
+    fun hr ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative h hr⟩
 
 section NormalizationMonoid
 
@@ -120,17 +224,6 @@ theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 <
     rw [eq_C_of_degree_le_zero h] at hp0 hp
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 #align polynomial.degree_pos_of_ne_zero_of_nonunit Polynomial.degree_pos_of_ne_zero_of_nonunit
-
-theorem monic_mul_leadingCoeff_inv (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by
-  rw [Monic, leadingCoeff_mul, leadingCoeff_C,
-    mul_inv_cancel (show leadingCoeff p ≠ 0 from mt leadingCoeff_eq_zero.1 h)]
-#align polynomial.monic_mul_leading_coeff_inv Polynomial.monic_mul_leadingCoeff_inv
-
-theorem degree_mul_leadingCoeff_inv (p : R[X]) (h : q ≠ 0) :
-    degree (p * C (leadingCoeff q)⁻¹) = degree p := by
-  have h₁ : (leadingCoeff q)⁻¹ ≠ 0 := inv_ne_zero (mt leadingCoeff_eq_zero.1 h)
-  rw [degree_mul, degree_C h₁, add_zero]
-#align polynomial.degree_mul_leading_coeff_inv Polynomial.degree_mul_leadingCoeff_inv
 
 @[simp]
 theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
@@ -402,8 +495,8 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
   ⟨-(p.coeff 0 / p.coeff 1), by
     have : p.coeff 1 ≠ 0 := by
       have h' := natDegree_eq_of_degree_eq_some h
-      change natDegree p = 1 at h'; rw [←h']
-      exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h; contradiction
+      change natDegree p = 1 at h'; rw [← h']
+      exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h
     conv in p => rw [eq_X_add_C_of_degree_le_one (show degree p ≤ 1 by rw [h])]
     simp [IsRoot, mul_div_cancel' _ this]⟩
 #align polynomial.exists_root_of_degree_eq_one Polynomial.exists_root_of_degree_eq_one
@@ -486,7 +579,7 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
-      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp only [degree_zero]; decide))
+      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp [degree_zero]))
   exact (normalize_associated _).prime this
 #align polynomial.prime_of_degree_eq_one Polynomial.prime_of_degree_eq_one
 
@@ -533,7 +626,7 @@ theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
   have key := divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative f a
   have ⟨u,hu⟩ := hf
-  rw [←key, hu, ←mul_add (X - C a) u _]
+  rw [← key, hu, ← mul_add (X - C a) u _]
   use (u + derivative ((X - C a) * u))
 
 /-- If `f` is a polynomial over a field, and `a : K` satisfies `f' a ≠ 0`,
@@ -551,6 +644,43 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
   rwa [← C_inj, C_0]
 #align polynomial.is_coprime_of_is_root_of_eval_derivative_ne_zero Polynomial.isCoprime_of_is_root_of_eval_derivative_ne_zero
 
+/-- To check a polynomial over a field is irreducible, it suffices to check only for
+divisors that have smaller degree.
+
+See also: `Polynomial.Monic.irreducible_iff_natDegree`.
+-/
+theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
+    Irreducible p ↔ ∀ q, q.degree ≤ ↑(natDegree p / 2) → q ∣ p → IsUnit q := by
+  rw [← irreducible_mul_leadingCoeff_inv,
+      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
+  simp [hp0, natDegree_mul_leadingCoeff_inv]
+  · contrapose! hpu
+    exact isUnit_of_mul_eq_one _ _ hpu
+
+/-- To check a polynomial `p` over a field is irreducible, it suffices to check there are no
+divisors of degree `0 < d ≤ degree p / 2`.
+
+See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
+-/
+theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
+    Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
+  have : p * C (leadingCoeff p)⁻¹ ≠ 1 := by
+    contrapose! hpu
+    exact isUnit_of_mul_eq_one _ _ hpu
+  rw [← irreducible_mul_leadingCoeff_inv,
+      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,
+      natDegree_mul_leadingCoeff_inv _ hp0]
+  simp only [IsUnit.dvd_mul_right
+    (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
+
 end Field
 
 end Polynomial
+
+/-- An irreducible polynomial over a field must have positive degree. -/
+theorem Irreducible.natDegree_pos {F : Type*} [Field F] {f : F[X]} (h : Irreducible f) :
+    0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
+  obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
+  by_cases hx : x = 0
+  · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
+  exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))

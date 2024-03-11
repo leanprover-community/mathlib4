@@ -109,6 +109,10 @@ theorem HasEigenvector.apply_eq_smul {f : End R M} {μ : R} {x : M} (hx : f.HasE
   mem_eigenspace_iff.mp hx.1
 #align module.End.has_eigenvector.apply_eq_smul Module.End.HasEigenvector.apply_eq_smul
 
+theorem HasEigenvector.pow_apply {f : End R M} {μ : R} {v : M} (hv : f.HasEigenvector μ v) (n : ℕ) :
+    (f ^ n) v = μ ^ n • v := by
+  induction n <;> simp [*, pow_succ f, hv.apply_eq_smul, smul_smul, pow_succ' μ]
+
 theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasEigenvalue μ) :
     ∃ v, f.HasEigenvector μ v :=
   Submodule.exists_mem_ne_zero_of_ne_bot hμ
@@ -334,10 +338,10 @@ lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
     (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
   have : IsNilpotent (f₂ - f₁) := by
     apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _ ⟨l, ?_⟩ ⟨k, ?_⟩
-    · ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
+    · ext; simp [f₁, f₂, smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
     all_goals ext ⟨x, _, _⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using ‹_›
-  have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [sub_smul]
-  rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective _ _),
+  have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂, sub_smul]
+  rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective R (End R p)),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
 
@@ -358,7 +362,7 @@ lemma injOn_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) := by
   classical
-  suffices ∀ μ (s : Finset R) (_ : μ ∉ s), Disjoint (⨆ k, f.generalizedEigenspace μ k)
+  suffices ∀ μ (s : Finset R), μ ∉ s → Disjoint (⨆ k, f.generalizedEigenspace μ k)
       (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) by
     simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace,
       Finset.supIndep_iff_disjoint_erase]
@@ -397,7 +401,7 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent f.eigenspace :=
-  f.independent_generalizedEigenspace.mono <| fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
+  f.independent_generalizedEigenspace.mono fun μ ↦ le_iSup (generalizedEigenspace f μ) 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
     independent. (Lemma 5.10 of [axler2015])
@@ -454,7 +458,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
               rw [generalizedEigenspace, OrderHom.coe_mk, ← LinearMap.ker_comp]; rfl
       _ = f.generalizedEigenspace μ (finrank K V + finrank K V) := by rw [← pow_add]; rfl
       _ = f.generalizedEigenspace μ (finrank K V) := by
-        rw [generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le]; linarith
+        rw [generalizedEigenspace_eq_generalizedEigenspace_finrank_of_le]; omega
   rw [disjoint_iff_inf_le, generalizedEigenrange, LinearMap.range_eq_map,
     Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h]
   apply Submodule.map_comap_le
@@ -494,6 +498,63 @@ theorem map_generalizedEigenrange_le {f : End K V} {μ : K} {n : ℕ} :
     _ ≤ f.generalizedEigenrange μ n := LinearMap.map_le_range
 
 #align module.End.map_generalized_eigenrange_le Module.End.map_generalizedEigenrange_le
+
+lemma iSup_generalizedEigenspace_le_smul (f : Module.End R M) (μ t : R) :
+    (⨆ k, f.generalizedEigenspace μ k) ≤ ⨆ k, (t • f).generalizedEigenspace (t * μ) k := by
+  intro m hm
+  simp only [Submodule.mem_iSup_of_chain, mem_generalizedEigenspace] at hm ⊢
+  refine Exists.imp (fun k hk ↦ ?_) hm
+  rw [mul_smul, ← smul_sub, smul_pow, LinearMap.smul_apply, hk, smul_zero]
+
+lemma iSup_generalizedEigenspace_inf_le_add
+    (f₁ f₂ : End R M) (μ₁ μ₂ : R) (h : Commute f₁ f₂) :
+    (⨆ k, f₁.generalizedEigenspace μ₁ k) ⊓ (⨆ k, f₂.generalizedEigenspace μ₂ k) ≤
+    ⨆ k, (f₁ + f₂).generalizedEigenspace (μ₁ + μ₂) k := by
+  intro m hm
+  simp only [iSup_le_iff, Submodule.mem_inf, Submodule.mem_iSup_of_chain,
+    mem_generalizedEigenspace] at hm ⊢
+  obtain ⟨⟨k₁, hk₁⟩, ⟨k₂, hk₂⟩⟩ := hm
+  use k₁ + k₂ - 1
+  have : f₁ + f₂ - (μ₁ + μ₂) • 1 = (f₁ - μ₁ • 1) + (f₂ - μ₂ • 1) := by
+    rw [add_smul]; exact add_sub_add_comm f₁ f₂ (μ₁ • 1) (μ₂ • 1)
+  replace h : Commute (f₁ - μ₁ • 1) (f₂ - μ₂ • 1) :=
+    (h.sub_right <| Algebra.commute_algebraMap_right μ₂ f₁).sub_left
+      (Algebra.commute_algebraMap_left μ₁ _)
+  rw [this, h.add_pow', LinearMap.coeFn_sum, Finset.sum_apply]
+  refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
+  suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
+    rw [LinearMap.smul_apply, this, smul_zero]
+  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi hj
+  · rw [(h.pow_pow i j).eq, LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hi hk₁,
+      LinearMap.map_zero]
+  · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hk₂, LinearMap.map_zero]
+
+lemma map_smul_of_iInf_generalizedEigenspace_ne_bot [NoZeroSMulDivisors R M]
+    {L F : Type*} [SMul R L] [FunLike F L (End R M)] [SMulHomClass F R L (End R M)] (f : F)
+    (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).generalizedEigenspace (μ x) k ≠ ⊥)
+    (t : R) (x : L) :
+    μ (t • x) = t • μ x := by
+  by_contra contra
+  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).generalizedEigenspace (μ x) k
+  have : ⨅ x, g x ≤ g x ⊓ g (t • x) := le_inf_iff.mpr ⟨iInf_le g x, iInf_le g (t • x)⟩
+  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
+  apply Disjoint.mono_left (iSup_generalizedEigenspace_le_smul (f x) (μ x) t)
+  simp only [g, map_smul]
+  exact disjoint_iSup_generalizedEigenspace (t • f x) (Ne.symm contra)
+
+lemma map_add_of_iInf_generalizedEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
+    {L F : Type*} [Add L] [FunLike F L (End R M)] [AddHomClass F L (End R M)] (f : F)
+    (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).generalizedEigenspace (μ x) k ≠ ⊥)
+    (h : ∀ x y, Commute (f x) (f y)) (x y : L) :
+    μ (x + y) = μ x + μ y := by
+  by_contra contra
+  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).generalizedEigenspace (μ x) k
+  have : ⨅ x, g x ≤ (g x ⊓ g y) ⊓ g (x + y) :=
+    le_inf_iff.mpr ⟨le_inf_iff.mpr ⟨iInf_le g x, iInf_le g y⟩, iInf_le g (x + y)⟩
+  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
+  apply Disjoint.mono_left (iSup_generalizedEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) (h x y))
+  simp only [g, map_add]
+  exact disjoint_iSup_generalizedEigenspace (f x + f y) (Ne.symm contra)
 
 end End
 

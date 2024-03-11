@@ -35,38 +35,6 @@ section Prod
 
 variable {α β γ δ : Type*} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
 
-/-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
-def prod (s : Set α) (t : Set β) : Set (α × β) :=
-  { p | p.1 ∈ s ∧ p.2 ∈ t }
-#align set.prod Set.prod
-
-@[default_instance]
-instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
-  sprod := Set.prod
-
-theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t :=
-  rfl
-#align set.prod_eq Set.prod_eq
-
-theorem mem_prod_eq {p : α × β} : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) :=
-  rfl
-#align set.mem_prod_eq Set.mem_prod_eq
-
-@[simp, mfld_simps]
-theorem mem_prod {p : α × β} : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
-  Iff.rfl
-#align set.mem_prod Set.mem_prod
-
--- Porting note: Removing `simp` as `simp` can prove it
-@[mfld_simps]
-theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
-  rfl
-#align set.prod_mk_mem_set_prod_eq Set.prod_mk_mem_set_prod_eq
-
-theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t :=
-  ⟨ha, hb⟩
-#align set.mk_mem_prod Set.mk_mem_prod
-
 theorem Subsingleton.prod (hs : s.Subsingleton) (ht : t.Subsingleton) :
     (s ×ˢ t).Subsingleton := fun _x hx _y hy ↦
   Prod.ext (hs hx.1 hy.1) (ht hx.2 hy.2)
@@ -132,6 +100,9 @@ theorem univ_prod {t : Set β} : (univ : Set α) ×ˢ t = Prod.snd ⁻¹' t := b
 
 theorem prod_univ {s : Set α} : s ×ˢ (univ : Set β) = Prod.fst ⁻¹' s := by simp [prod_eq]
 #align set.prod_univ Set.prod_univ
+
+@[simp] lemma prod_eq_univ [Nonempty α] [Nonempty β] : s ×ˢ t = univ ↔ s = univ ∧ t = univ := by
+  simp [eq_univ_iff_forall, forall_and]
 
 @[simp]
 theorem singleton_prod : ({a} : Set α) ×ˢ t = Prod.mk a '' t := by
@@ -210,7 +181,8 @@ theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  -- Porting note: was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
+  -- porting note (#10745):
+  -- was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
   simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · obtain ⟨hx, rfl|hy⟩ := h
@@ -408,7 +380,7 @@ theorem prod_diff_prod : s ×ˢ t \ s₁ ×ˢ t₁ = s ×ˢ (t \ t₁) ∪ (s \ 
 /-- A product set is included in a product set if and only factors are included, or a factor of the
 first set is empty. -/
 theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
-  cases' (s ×ˢ t).eq_empty_or_nonempty with h h
+  rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
   have st : s.Nonempty ∧ t.Nonempty := by rwa [prod_nonempty_iff] at h
   refine' ⟨fun H => Or.inl ⟨_, _⟩, _⟩
@@ -436,7 +408,7 @@ theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
 theorem prod_eq_prod_iff :
     s ×ˢ t = s₁ ×ˢ t₁ ↔ s = s₁ ∧ t = t₁ ∨ (s = ∅ ∨ t = ∅) ∧ (s₁ = ∅ ∨ t₁ = ∅) := by
   symm
-  cases' eq_empty_or_nonempty (s ×ˢ t) with h h
+  rcases eq_empty_or_nonempty (s ×ˢ t) with h | h
   · simp_rw [h, @eq_comm _ ∅, prod_eq_empty_iff, prod_eq_empty_iff.mp h, true_and_iff,
       or_iff_right_iff_imp]
     rintro ⟨rfl, rfl⟩
@@ -491,21 +463,8 @@ section Diagonal
 
 variable {α : Type*} {s t : Set α}
 
-/-- `diagonal α` is the set of `α × α` consisting of all pairs of the form `(a, a)`. -/
-def diagonal (α : Type*) : Set (α × α) :=
-  { p | p.1 = p.2 }
-#align set.diagonal Set.diagonal
-
-theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := by simp [diagonal]
-#align set.mem_diagonal Set.mem_diagonal
-
-@[simp]
-theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 :=
-  Iff.rfl
-#align set.mem_diagonal_iff Set.mem_diagonal_iff
-
 lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
-  Nonempty.elim ‹_› <| fun x => ⟨_, mem_diagonal x⟩
+  Nonempty.elim ‹_› fun x => ⟨_, mem_diagonal x⟩
 #align set.diagonal_nonempty Set.diagonal_nonempty
 
 instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
@@ -551,6 +510,11 @@ theorem diag_image (s : Set α) : (fun x => (x, x)) '' s = diagonal α ∩ s ×�
     rintro ⟨rfl : x = y, h2x⟩
     exact mem_image_of_mem _ h2x.1
 #align set.diag_image Set.diag_image
+
+theorem diagonal_eq_univ_iff : diagonal α = univ ↔ Subsingleton α := by
+  simp only [subsingleton_iff, eq_univ_iff_forall, Prod.forall, mem_diagonal_iff]
+
+theorem diagonal_eq_univ [Subsingleton α] : diagonal α = univ := diagonal_eq_univ_iff.2 ‹_›
 
 end Diagonal
 
@@ -640,16 +604,6 @@ namespace Set
 section OffDiag
 
 variable {α : Type*} {s t : Set α} {x : α × α} {a : α}
-
-/-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
-def offDiag (s : Set α) : Set (α × α) :=
-  { x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 }
-#align set.off_diag Set.offDiag
-
-@[simp]
-theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
-  Iff.rfl
-#align set.mem_off_diag Set.mem_offDiag
 
 theorem offDiag_mono : Monotone (offDiag : Set α → Set (α × α)) := fun _ _ h _ =>
   And.imp (@h _) <| And.imp_left <| @h _
@@ -741,22 +695,6 @@ end OffDiag
 section Pi
 
 variable {ι : Type*} {α β : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)} {i : ι}
-
-/-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
-is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
-whenever `a ∈ s`. -/
-def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :=
-  { f | ∀ i ∈ s, f i ∈ t i }
-#align set.pi Set.pi
-
-@[simp]
-theorem mem_pi {f : ∀ i, α i} : f ∈ s.pi t ↔ ∀ i ∈ s, f i ∈ t i :=
-  Iff.rfl
-#align set.mem_pi Set.mem_pi
-
--- Porting note: Removing `simp` as `simp` can prove it
-theorem mem_univ_pi {f : ∀ i, α i} : f ∈ pi univ t ↔ ∀ i, f i ∈ t i := by simp
-#align set.mem_univ_pi Set.mem_univ_pi
 
 @[simp]
 theorem empty_pi (s : ∀ i, Set (α i)) : pi ∅ s = univ := by
@@ -902,6 +840,25 @@ theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
   simp [pi, or_imp, forall_and, setOf_and]
 #align set.union_pi Set.union_pi
 
+theorem union_pi_inter
+    (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
+    (s₁ ∪ s₂).pi (fun i ↦ t₁ i ∩ t₂ i) = s₁.pi t₁ ∩ s₂.pi t₂ := by
+  ext x
+  simp only [mem_pi, mem_union, mem_inter_iff]
+  refine ⟨fun h ↦ ⟨fun i his₁ ↦ (h i (Or.inl his₁)).1, fun i his₂ ↦ (h i (Or.inr his₂)).2⟩,
+    fun h i hi ↦ ?_⟩
+  cases' hi with hi hi
+  · by_cases hi2 : i ∈ s₂
+    · exact ⟨h.1 i hi, h.2 i hi2⟩
+    · refine ⟨h.1 i hi, ?_⟩
+      rw [ht₂ i hi2]
+      exact mem_univ _
+  · by_cases hi1 : i ∈ s₁
+    · exact ⟨h.1 i hi1, h.2 i hi⟩
+    · refine ⟨?_, h.2 i hi⟩
+      rw [ht₁ i hi1]
+      exact mem_univ _
+
 @[simp]
 theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi sᶜ t = pi univ t := by
   rw [← union_pi, union_compl_self]
@@ -924,7 +881,7 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
         by rw [union_pi, singleton_pi', update_same, pi_update_of_not_mem]; simp
 #align set.pi_update_of_mem Set.pi_update_of_mem
 
-theorem univ_pi_update [DecidableEq ι] {β : ∀ _, Type*} (i : ι) (f : ∀ j, α j) (a : α i)
+theorem univ_pi_update [DecidableEq ι] {β : ι → Type*} (i : ι) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
     (pi univ fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ pi {i}ᶜ fun j => t j (f j) :=
   by rw [compl_eq_univ_diff, ← pi_update_of_mem (mem_univ _)]
@@ -997,7 +954,7 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
       exact hf j hj h
 #align set.update_preimage_pi Set.update_preimage_pi
 
-theorem update_preimage_univ_pi [DecidableEq ι] {f : ∀ i, α i} (hf : ∀ (j) (_ : j ≠ i), f j ∈ t j) :
+theorem update_preimage_univ_pi [DecidableEq ι] {f : ∀ i, α i} (hf : ∀ j ≠ i, f j ∈ t j) :
     update f i ⁻¹' pi univ t = t i :=
   update_preimage_pi (mem_univ i) fun j _ => hf j
 #align set.update_preimage_univ_pi Set.update_preimage_univ_pi

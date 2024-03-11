@@ -318,7 +318,8 @@ theorem foldr.ofFreeMonoid_comp_of (f : β → α → α) :
 theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
     foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
-  simp [(· ∘ ·), foldlM.ofFreeMonoid, foldlM.mk, flip]
+  simp only [foldlM.ofFreeMonoid, flip, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply,
+    FreeMonoid.toList_of, List.foldlM_cons, List.foldlM_nil, bind_pure, foldlM.mk, op_inj]
   rfl
 #align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 
@@ -382,9 +383,9 @@ theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
 @[simp]
 theorem toList_eq_self {xs : List α} : toList xs = xs := by
   simp only [toList_spec, foldMap, traverse]
-  induction xs
-  case nil => rfl
-  case cons _ _ ih => conv_rhs => rw [← ih]; rfl
+  induction xs with
+  | nil => rfl
+  | cons _ _ ih => conv_rhs => rw [← ih]; rfl
 #align traversable.to_list_eq_self Traversable.toList_eq_self
 
 theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by

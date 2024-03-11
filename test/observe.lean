@@ -1,4 +1,3 @@
-import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Nat.Prime
 
@@ -13,7 +12,7 @@ theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
     observe : n.factorial > 0
     linarith
   constructor
-  · by_contra'
+  · by_contra!
     observe : p ∣ n.factorial
     observe : p ∣ N
     observe : p ∣ 1

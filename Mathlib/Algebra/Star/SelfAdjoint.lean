@@ -3,9 +3,10 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Init.Data.Subtype.Basic
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Star.Pi
+import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import algebra.star.self_adjoint from "leanprover-community/mathlib"@"a6ece35404f60597c651689c1b46ead86de5ac1b"
 
@@ -40,6 +41,7 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
 
 -/
 
+open Function
 
 variable {R A : Type*}
 
@@ -99,15 +101,15 @@ lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
   · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
 
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
-theorem starHom_apply {F R S : Type*} [Star R] [Star S] [StarHomClass F R S] {x : R}
-    (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
+theorem starHom_apply {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
+    {x : R} (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 #align is_self_adjoint.star_hom_apply IsSelfAdjoint.starHom_apply
 
 /- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
 instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
-theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [StarHomClass F R S]
-    [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
+theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [FunLike F R S]
+    [StarHomClass F R S] [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
   (IsSelfAdjoint.all x).starHom_apply f
 
 section AddMonoid
@@ -116,8 +118,7 @@ variable [AddMonoid R] [StarAddMonoid R]
 
 variable (R)
 
-theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) :=
-  star_zero R
+@[simp] theorem _root_.isSelfAdjoint_zero : IsSelfAdjoint (0 : R) := star_zero R
 #align is_self_adjoint_zero isSelfAdjoint_zero
 
 variable {R}
@@ -186,7 +187,7 @@ variable [MulOneClass R] [StarMul R]
 
 variable (R)
 
-theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
+@[simp] theorem _root_.isSelfAdjoint_one : IsSelfAdjoint (1 : R) :=
   star_one R
 #align is_self_adjoint_one isSelfAdjoint_one
 
@@ -217,6 +218,12 @@ theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 #align is_self_adjoint_nat_cast isSelfAdjoint_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem _root_.isSelfAdjoint_ofNat (n : ℕ) [n.AtLeastTwo] :
+    IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
+  _root_.isSelfAdjoint_natCast n
+
 end Semiring
 
 section CommSemigroup
@@ -228,6 +235,15 @@ theorem mul {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjo
 #align is_self_adjoint.mul IsSelfAdjoint.mul
 
 end CommSemigroup
+
+section CommSemiring
+variable {α : Type*} [CommSemiring α] [StarRing α] {a : α}
+
+open scoped ComplexConjugate
+
+lemma conj_eq (ha : IsSelfAdjoint a) : conj a = a := ha.star_eq
+
+end CommSemiring
 
 section Ring
 
@@ -528,7 +544,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]
@@ -577,10 +593,19 @@ instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_one]⟩
 #align is_star_normal_one isStarNormal_one
 
-instance isStarNormal_star_self [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
+protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
     IsStarNormal (star x) :=
   ⟨show star (star x) * star x = star x * star (star x) by rw [star_star, star_comm_self']⟩
-#align is_star_normal_star_self isStarNormal_star_self
+#align is_star_normal_star_self IsStarNormal.star
+
+protected instance IsStarNormal.neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNormal x] :
+    IsStarNormal (-x) :=
+  ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
+
+protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
+    [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
+    IsStarNormal (f r) where
+  star_comm_self := by simpa [map_star] using congr(f $(hr.star_comm_self))
 
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]
@@ -593,3 +618,13 @@ instance (priority := 100) CommMonoid.isStarNormal [CommMonoid R] [StarMul R] {x
     IsStarNormal x :=
   ⟨mul_comm _ _⟩
 #align comm_monoid.is_star_normal CommMonoid.isStarNormal
+
+
+namespace Pi
+variable {ι : Type*} {α : ι → Type*} [∀ i, Star (α i)] {f : ∀ i, α i}
+
+protected lemma isSelfAdjoint : IsSelfAdjoint f ↔ ∀ i, IsSelfAdjoint (f i) := funext_iff
+
+alias ⟨_root_.IsSelfAdjoint.apply, _⟩ := Pi.isSelfAdjoint
+
+end Pi

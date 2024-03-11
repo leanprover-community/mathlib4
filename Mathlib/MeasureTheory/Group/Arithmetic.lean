@@ -44,12 +44,11 @@ measurable function, arithmetic operator
   in the conclusion of `MeasurableSMul`.)
 -/
 
+open MeasureTheory
+open scoped BigOperators Pointwise
 
 universe u v
-
-open BigOperators Pointwise MeasureTheory
-
-open MeasureTheory
+variable {α : Type*}
 
 /-!
 ### Binary operations: `(· + ·)`, `(· * ·)`, `(· - ·)`, `(· / ·)`
@@ -130,28 +129,28 @@ theorem AEMeasurable.mul_const [MeasurableMul M] (hf : AEMeasurable f μ) (c : M
 #align ae_measurable.mul_const AEMeasurable.mul_const
 #align ae_measurable.add_const AEMeasurable.add_const
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.mul' [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable g) :
     Measurable (f * g) :=
   measurable_mul.comp (hf.prod_mk hg)
 #align measurable.mul' Measurable.mul'
 #align measurable.add' Measurable.add'
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.mul [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => f a * g a :=
   measurable_mul.comp (hf.prod_mk hg)
 #align measurable.mul Measurable.mul
 #align measurable.add Measurable.add
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f * g) μ :=
   measurable_mul.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.mul' AEMeasurable.mul'
 #align ae_measurable.add' AEMeasurable.add'
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a * g a) μ :=
   measurable_mul.comp_aemeasurable (hf.prod_mk hg)
@@ -213,12 +212,12 @@ section Pow
 variable {β γ α : Type*} [MeasurableSpace β] [MeasurableSpace γ] [Pow β γ] [MeasurablePow β γ]
   {m : MeasurableSpace α} {μ : Measure α} {f : α → β} {g : α → γ}
 
-@[aesop safe 20 apply (rule_sets [Measurable])]
+@[aesop safe 20 apply (rule_sets := [Measurable])]
 theorem Measurable.pow (hf : Measurable f) (hg : Measurable g) : Measurable fun x => f x ^ g x :=
   measurable_pow.comp (hf.prod_mk hg)
 #align measurable.pow Measurable.pow
 
-@[aesop safe 20 apply (rule_sets [Measurable])]
+@[aesop safe 20 apply (rule_sets := [Measurable])]
 theorem AEMeasurable.pow (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => f x ^ g x) μ :=
   measurable_pow.comp_aemeasurable (hf.prod_mk hg)
@@ -323,28 +322,28 @@ theorem AEMeasurable.div_const [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G
 #align ae_measurable.div_const AEMeasurable.div_const
 #align ae_measurable.sub_const AEMeasurable.sub_const
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.div' [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable g) :
     Measurable (f / g) :=
   measurable_div.comp (hf.prod_mk hg)
 #align measurable.div' Measurable.div'
 #align measurable.sub' Measurable.sub'
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.div [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => f a / g a :=
   measurable_div.comp (hf.prod_mk hg)
 #align measurable.div Measurable.div
 #align measurable.sub Measurable.sub
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f / g) μ :=
   measurable_div.comp_aemeasurable (hf.prod_mk hg)
 #align ae_measurable.div' AEMeasurable.div'
 #align ae_measurable.sub' AEMeasurable.sub'
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a / g a) μ :=
   measurable_div.comp_aemeasurable (hf.prod_mk hg)
@@ -377,8 +376,8 @@ instance Pi.measurableDiv₂ {ι : Type*} {α : ι → Type*} [∀ i, Div (α i)
 theorem measurableSet_eq_fun {m : MeasurableSpace α} {E} [MeasurableSpace E] [AddGroup E]
     [MeasurableSingletonClass E] [MeasurableSub₂ E] {f g : α → E} (hf : Measurable f)
     (hg : Measurable g) : MeasurableSet { x | f x = g x } := by
-  suffices h_set_eq : { x : α | f x = g x } = { x | (f - g) x = (0 : E) }
-  · rw [h_set_eq]
+  suffices h_set_eq : { x : α | f x = g x } = { x | (f - g) x = (0 : E) } by
+    rw [h_set_eq]
     exact (hf.sub hg) measurableSet_eq
   ext
   simp_rw [Set.mem_setOf_eq, Pi.sub_apply, sub_eq_zero]
@@ -505,15 +504,15 @@ theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s�
 end Inv
 
 /-- `DivInvMonoid.Pow` is measurable. -/
-instance DivInvMonoid.measurableZpow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
+instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
   ⟨measurable_from_prod_countable fun n => by
       cases' n with n n
-      · simp_rw [Int.ofNat_eq_coe, zpow_ofNat]
+      · simp_rw [Int.ofNat_eq_coe, zpow_coe_nat]
         exact measurable_id.pow_const _
       · simp_rw [zpow_negSucc]
         exact (measurable_id.pow_const (n + 1)).inv⟩
-#align div_inv_monoid.has_measurable_zpow DivInvMonoid.measurableZpow
+#align div_inv_monoid.has_measurable_zpow DivInvMonoid.measurableZPow
 
 @[to_additive]
 instance (priority := 100) measurableDiv₂_of_mul_inv (G : Type*) [MeasurableSpace G]
@@ -524,12 +523,17 @@ instance (priority := 100) measurableDiv₂_of_mul_inv (G : Type*) [MeasurableSp
 #align has_measurable_div₂_of_mul_inv measurableDiv₂_of_mul_inv
 #align has_measurable_div₂_of_add_neg measurableDiv₂_of_add_neg
 
+-- See note [lower instance priority]
+instance (priority := 100) MeasurableDiv.toMeasurableInv [MeasurableSpace α] [Group α]
+    [MeasurableDiv α] : MeasurableInv α where
+  measurable_inv := by simpa using measurable_const_div (1 : α)
+
 /-- We say that the action of `M` on `α` has `MeasurableVAdd` if for each `c` the map `x ↦ c +ᵥ x`
 is a measurable function and for each `x` the map `c ↦ c +ᵥ x` is a measurable function. -/
 class MeasurableVAdd (M α : Type*) [VAdd M α] [MeasurableSpace M] [MeasurableSpace α] :
     Prop where
-  measurable_const_vadd : ∀ c : M, Measurable ((· +ᵥ ·) c : α → α)
-  measurable_vadd_const : ∀ x : α, Measurable fun c : M => c +ᵥ x
+  measurable_const_vadd : ∀ c : M, Measurable (c +ᵥ · : α → α)
+  measurable_vadd_const : ∀ x : α, Measurable (· +ᵥ x : M → α)
 #align has_measurable_vadd MeasurableVAdd
 #align has_measurable_vadd.measurable_const_vadd MeasurableVAdd.measurable_const_vadd
 #align has_measurable_vadd.measurable_vadd_const MeasurableVAdd.measurable_vadd_const
@@ -539,8 +543,8 @@ is a measurable function and for each `x` the map `c ↦ c • x` is a measurabl
 @[to_additive]
 class MeasurableSMul (M α : Type*) [SMul M α] [MeasurableSpace M] [MeasurableSpace α] :
     Prop where
-  measurable_const_smul : ∀ c : M, Measurable ((· • ·) c : α → α)
-  measurable_smul_const : ∀ x : α, Measurable fun c : M => c • x
+  measurable_const_smul : ∀ c : M, Measurable (c • · : α → α)
+  measurable_smul_const : ∀ x : α, Measurable (· • x : M → α)
 #align has_measurable_smul MeasurableSMul
 #align has_measurable_smul.measurable_const_smul MeasurableSMul.measurable_const_smul
 #align has_measurable_smul.measurable_smul_const MeasurableSMul.measurable_smul_const
@@ -604,14 +608,14 @@ section SMul
 variable {M β α : Type*} [MeasurableSpace M] [MeasurableSpace β] [_root_.SMul M β]
   {m : MeasurableSpace α} {f : α → M} {g : α → β}
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.smul [MeasurableSMul₂ M β] (hf : Measurable f) (hg : Measurable g) :
     Measurable fun x => f x • g x :=
   measurable_smul.comp (hf.prod_mk hg)
 #align measurable.smul Measurable.smul
 #align measurable.vadd Measurable.vadd
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets [Measurable]))]
+@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.smul [MeasurableSMul₂ M β] {μ : Measure α} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun x => f x • g x) μ :=
   MeasurableSMul₂.measurable_smul.comp_aemeasurable (hf.prod_mk hg)
@@ -693,7 +697,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
     refine' measurable_from_prod_countable fun n => _
     induction' n with n n ih
-    · simp only [Int.ofNat_eq_coe, ofNat_zsmul]
+    · simp only [Int.ofNat_eq_coe, coe_nat_zsmul]
       exact measurable_const_smul _
     · simp only [negSucc_zsmul]
       exact (measurable_const_smul _).neg⟩
@@ -825,7 +829,7 @@ nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace
     [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] [MeasurableSMul₂ M α] : MeasurableSMul₂ Mᵐᵒᵖ α :=
   ⟨show Measurable fun x : Mᵐᵒᵖ × α => op (unop x.1) • x.2 by
       simp_rw [op_smul_eq_smul]
-      refine' (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
+      exact (measurable_mul_unop.comp measurable_fst).smul measurable_snd⟩
 #align has_measurable_smul₂.op MeasurableSMul₂.op
 
 @[to_additive]
@@ -956,3 +960,29 @@ theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable
 #align finset.ae_measurable_sum Finset.aemeasurable_sum
 
 end CommMonoid
+
+variable [MeasurableSpace α] [Mul α] [Div α] [Inv α]
+
+@[to_additive] -- See note [lower instance priority]
+instance (priority := 100) DiscreteMeasurableSpace.toMeasurableMul [DiscreteMeasurableSpace α] :
+    MeasurableMul α where
+  measurable_const_mul _ := measurable_discrete _
+  measurable_mul_const _ := measurable_discrete _
+
+@[to_additive DiscreteMeasurableSpace.toMeasurableAdd₂] -- See note [lower instance priority]
+instance (priority := 100) DiscreteMeasurableSpace.toMeasurableMul₂
+    [DiscreteMeasurableSpace (α × α)] : MeasurableMul₂ α := ⟨measurable_discrete _⟩
+
+@[to_additive] -- See note [lower instance priority]
+instance (priority := 100) DiscreteMeasurableSpace.toMeasurableInv [DiscreteMeasurableSpace α] :
+    MeasurableInv α := ⟨measurable_discrete _⟩
+
+@[to_additive] -- See note [lower instance priority]
+instance (priority := 100) DiscreteMeasurableSpace.toMeasurableDiv [DiscreteMeasurableSpace α] :
+    MeasurableDiv α where
+  measurable_const_div _ := measurable_discrete _
+  measurable_div_const _ := measurable_discrete _
+
+@[to_additive DiscreteMeasurableSpace.toMeasurableSub₂] -- See note [lower instance priority]
+instance (priority := 100) DiscreteMeasurableSpace.toMeasurableDiv₂
+    [DiscreteMeasurableSpace (α × α)] : MeasurableDiv₂ α := ⟨measurable_discrete _⟩

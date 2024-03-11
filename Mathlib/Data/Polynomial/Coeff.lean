@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Algebra.Regular.Pow
 
 #align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
@@ -58,13 +58,21 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
   exact Finsupp.smul_apply _ _ _
 #align polynomial.coeff_smul Polynomial.coeff_smul
 
-theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
+theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp [mem_support_iff] at hi ⊢
+  simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
   contrapose! hi
   simp [hi]
 #align polynomial.support_smul Polynomial.support_smul
+
+open scoped Pointwise in
+theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.support.card := by
+  calc (p * q).support.card
+   _ = (p.toFinsupp * q.toFinsupp).support.card := by rw [← support_toFinsupp, toFinsupp_mul]
+   _ ≤ (p.toFinsupp.support + q.toFinsupp.support).card :=
+    Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+   _ ≤ p.support.card * q.support.card := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -106,7 +114,7 @@ theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
-  -- Porting note: Was `simp [Polynomial.sum, support, coeff]`.
+  -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 #align polynomial.coeff_sum Polynomial.coeff_sum
 
@@ -310,15 +318,14 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
-@[simp] theorem isRegular_X : IsRegular (X : R[X]) := by
-  suffices : IsLeftRegular (X : R[X])
-  · exact ⟨this, this.right_of_commute commute_X⟩
-  intro P Q (hPQ : X * P = X * Q)
+theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
+  suffices IsLeftRegular (X^n : R[X]) from
+    ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
+  intro P Q (hPQ : X^n * P = X^n * Q)
   ext i
-  rw [← coeff_X_mul P i, hPQ, coeff_X_mul Q i]
+  rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 
--- TODO Unify this with `Polynomial.Monic.isRegular`
-theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := isRegular_X.pow n
+@[simp] theorem isRegular_X : IsRegular (X : R[X]) := pow_one (X : R[X]) ▸ isRegular_X_pow 1
 
 theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     ((X + C r) ^ n).coeff k = r ^ (n - k) * (n.choose k : R) := by
@@ -352,7 +359,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       let ψ : R[X] := ∑ i in φ.support, monomial i (c' i)
       use ψ
       ext i
-      simp only [coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
+      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
         Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]
@@ -390,7 +397,7 @@ theorem nat_cast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coef
   simp only [coeff_nat_cast_ite, ite_true]
 #align polynomial.nat_cast_coeff_zero Polynomial.nat_cast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem nat_cast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
@@ -406,7 +413,7 @@ theorem int_cast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 
   cases i <;> simp
 #align polynomial.int_cast_coeff_zero Polynomial.int_cast_coeff_zero
 
-@[norm_cast] -- @[simp] -- Porting note: simp can prove this
+@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem int_cast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h

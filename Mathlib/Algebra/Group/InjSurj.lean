@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Tactic.Spread
 
 #align_import algebra.group.inj_surj from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -48,14 +49,24 @@ protected def semigroup [Semigroup M₂] (f : M₁ → M₂) (hf : Injective f)
 #align function.injective.semigroup Function.Injective.semigroup
 #align function.injective.add_semigroup Function.Injective.addSemigroup
 
+/-- A type endowed with `*` is a commutative magma, if it admits a surjective map that preserves
+`*` from a commutative magma. -/
+@[to_additive (attr := reducible) -- See note [reducible non-instances]
+"A type endowed with `+` is an additive commutative semigroup, if it admits
+a surjective map that preserves `+` from an additive commutative semigroup."]
+protected def commMagma [CommMagma M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₁ where
+  mul_comm x y := hf <| by rw [mul, mul, mul_comm]
+
 /-- A type endowed with `*` is a commutative semigroup, if it admits an injective map that
 preserves `*` to a commutative semigroup.  See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
 "A type endowed with `+` is an additive commutative semigroup,if it admits
 an injective map that preserves `+` to an additive commutative semigroup."]
 protected def commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
-    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₁ :=
-  { hf.semigroup f mul with mul_comm := fun x y => hf <| by erw [mul, mul, mul_comm] }
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₁ where
+  toSemigroup := hf.semigroup f mul
+  __ := hf.commMagma f mul
 #align function.injective.comm_semigroup Function.Injective.commSemigroup
 #align function.injective.add_comm_semigroup Function.Injective.addCommSemigroup
 
@@ -239,8 +250,8 @@ protected def divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Injecti
   { hf.monoid f one mul npow, ‹Inv M₁›, ‹Div M₁› with
     zpow := fun n x => x ^ n,
     zpow_zero' := fun x => hf <| by erw [zpow, zpow_zero, one],
-    zpow_succ' := fun n x => hf <| by erw [zpow, mul, zpow_ofNat, pow_succ, zpow, zpow_ofNat],
-    zpow_neg' := fun n x => hf <| by erw [zpow, zpow_negSucc, inv, zpow, zpow_ofNat],
+    zpow_succ' := fun n x => hf <| by erw [zpow, mul, zpow_coe_nat, pow_succ, zpow, zpow_coe_nat],
+    zpow_neg' := fun n x => hf <| by erw [zpow, zpow_negSucc, inv, zpow, zpow_coe_nat],
     div_eq_mul_inv := fun x y => hf <| by erw [div, mul, inv, div_eq_mul_inv] }
 #align function.injective.div_inv_monoid Function.Injective.divInvMonoid
 #align function.injective.sub_neg_monoid Function.Injective.subNegMonoid
@@ -320,7 +331,7 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
   { hf.addGroup f zero add neg sub nsmul zsmul,
     hf.addMonoidWithOne f zero one add nsmul nat_cast with
     intCast := Int.cast,
-    intCast_ofNat := fun n => hf (by rw [nat_cast, ←Int.cast, int_cast, Int.cast_ofNat]),
+    intCast_ofNat := fun n => hf (by rw [nat_cast, ← Int.cast, int_cast, Int.cast_ofNat]),
     intCast_negSucc := fun n => hf (by erw [int_cast, neg, nat_cast, Int.cast_negSucc] ) }
 #align function.injective.add_group_with_one Function.Injective.addGroupWithOne
 
@@ -378,10 +389,19 @@ protected def semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
 @[to_additive (attr := reducible)
 "A type endowed with `+` is an additive commutative semigroup, if it admits
 a surjective map that preserves `+` from an additive commutative semigroup."]
+protected def commMagma [CommMagma M₁] (f : M₁ → M₂) (hf : Surjective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₂ where
+  mul_comm := hf.forall₂.2 fun x y => by erw [← mul, ← mul, mul_comm]
+
+/-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
+`*` from a commutative semigroup. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `+` is an additive commutative semigroup, if it admits
+a surjective map that preserves `+` from an additive commutative semigroup."]
 protected def commSemigroup [CommSemigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
-    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₂ :=
-  { hf.semigroup f mul with
-    mul_comm := hf.forall₂.2 fun x y => by erw [← mul, ← mul, mul_comm] }
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₂ where
+  toSemigroup := hf.semigroup f mul
+  __ := hf.commMagma f mul
 #align function.surjective.comm_semigroup Function.Surjective.commSemigroup
 #align function.surjective.add_comm_semigroup Function.Surjective.addCommSemigroup
 
@@ -412,8 +432,10 @@ protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one 
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
   { hf.semigroup f mul, hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
-    npow_zero := hf.forall.2 fun x => by dsimp only; erw [←npow, pow_zero, ←one],
-    npow_succ := fun n => hf.forall.2 fun x => by dsimp only; erw [←npow, pow_succ, ←npow, ←mul] }
+    npow_zero := hf.forall.2 fun x => by dsimp only; erw [← npow, pow_zero, ← one],
+    npow_succ := fun n => hf.forall.2 fun x => by
+      dsimp only
+      erw [← npow, pow_succ, ← npow, ← mul] }
 #align function.surjective.monoid Function.Surjective.monoid
 #align function.surjective.add_monoid Function.Surjective.addMonoid
 
@@ -484,10 +506,10 @@ protected def divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surject
     zpow_zero' := hf.forall.2 fun x => by dsimp only; erw [← zpow, zpow_zero, ← one],
     zpow_succ' := fun n => hf.forall.2 fun x => by
       dsimp only
-      erw [← zpow, ← zpow, zpow_ofNat, zpow_ofNat, pow_succ, ← mul],
+      erw [← zpow, ← zpow, zpow_coe_nat, zpow_coe_nat, pow_succ, ← mul],
     zpow_neg' := fun n => hf.forall.2 fun x => by
       dsimp only
-      erw [← zpow, ← zpow, zpow_negSucc, zpow_ofNat, inv],
+      erw [← zpow, ← zpow, zpow_negSucc, zpow_coe_nat, inv],
     div_eq_mul_inv := hf.forall₂.2 fun x y => by erw [← inv, ← mul, ← div, div_eq_mul_inv] }
 #align function.surjective.div_inv_monoid Function.Surjective.divInvMonoid
 #align function.surjective.sub_neg_monoid Function.Surjective.subNegMonoid

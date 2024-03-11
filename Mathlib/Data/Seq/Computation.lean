@@ -42,7 +42,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 -- constructors
 /-- `pure a` is the computation that immediately terminates with result `a`. -/
--- porting notes: `return` is reserved, so changed to `pure`
+-- Porting note: `return` is reserved, so changed to `pure`
 def pure (a : α) : Computation α :=
   ⟨Stream'.const (some a), fun _ _ => id⟩
 #align computation.return Computation.pure
@@ -244,7 +244,7 @@ def rmap (f : β → γ) : Sum α β → Sum α γ
 
 attribute [simp] lmap rmap
 
--- porting note: this was far less painful in mathlib3. There seem to be two issues;
+-- Porting note: this was far less painful in mathlib3. There seem to be two issues;
 -- firstly, in mathlib3 we have `corec.F._match_1` and it's the obvious map α ⊕ β → option α.
 -- In mathlib4 we have `Corec.f.match_1` and it's something completely different.
 -- Secondly, the proof that `Stream'.corec' (Corec.f f) (Sum.inr b) 0` is this function
@@ -310,8 +310,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
         exact False.elim h
       · rw [destruct_pure, destruct_think] at h
         exact False.elim h
-      · simp at h
-        simp [*]
+      · simp_all
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 #align computation.eq_of_bisim Computation.eq_of_bisim
 
@@ -705,7 +704,7 @@ theorem destruct_map (f : α → β) (s) : destruct (map f s) = lmap f (rmap (ma
 @[simp]
 theorem map_id : ∀ s : Computation α, map id s = s
   | ⟨f, al⟩ => by
-    apply Subtype.eq; simp [map, Function.comp]
+    apply Subtype.eq; simp only [map, comp_apply, id_eq]
     have e : @Option.rec α (fun _ => Option α) none some = id := by ext ⟨⟩ <;> rfl
     have h : ((fun x: Option α => x) = id) := rfl
     simp [e, h, Stream'.map_id]
@@ -750,7 +749,7 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
   · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_ret Computation.bind_pure
 
--- porting notes: used to use `rw [bind_pure]`
+-- Porting note: used to use `rw [bind_pure]`
 @[simp]
 theorem bind_pure' (s : Computation α) : bind s pure = s := by
   apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure) ∧ c₂ = s
@@ -825,11 +824,11 @@ theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
   induction' k with n IH generalizing s <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
   · simp only [ret_bind, Nat.zero_eq] at h
-    refine' ⟨e, _, _, results_pure _, h, rfl⟩
+    exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
     contradiction
   · simp only [ret_bind] at h
-    refine' ⟨e, _, n + 1, results_pure _, h, rfl⟩
+    exact ⟨e, _, n + 1, results_pure _, h, rfl⟩
   · simp only [think_bind, results_think_iff] at h
     let ⟨a, m, n', h1, h2, e'⟩ := IH h
     rw [e']
@@ -1175,7 +1174,7 @@ theorem liftRel_pure_right (R : α → β → Prop) (ca : Computation α) (b : �
     LiftRel R ca (pure b) ↔ ∃ a, a ∈ ca ∧ R a b := by rw [LiftRel.swap, liftRel_pure_left]
 #align computation.lift_rel_return_right Computation.liftRel_pure_right
 
--- porting notes: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
+-- Porting note: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
 -- a general invariant on `LiftRel`
 @[simp, nolint simpNF]
 theorem liftRel_pure (R : α → β → Prop) (a : α) (b : β) :
@@ -1222,7 +1221,7 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
   intros a b h; exact ⟨f1 a, ⟨ret_mem _, @h2 a b h⟩⟩
 #align computation.lift_rel_map Computation.liftRel_map
 
--- porting notes: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
+-- Porting note: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
 theorem map_congr {s1 s2 : Computation α} {f : α → β}
     (h1 : s1 ~ s2) : map f s1 ~ map f s2 := by
   rw [← lift_eq_iff_equiv]
@@ -1238,7 +1237,8 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
   | Sum.inr ca, Sum.inr cb => C ca cb
 #align computation.lift_rel_aux Computation.LiftRelAux
 
---porting note: was attribute [simp] LiftRelAux but right now `simp` on defs is a Lean 4 catastrophe
+-- Porting note: was attribute [simp] LiftRelAux
+-- but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
 @[simp] lemma liftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
 @[simp] lemma liftRelAux_inl_inr {cb} :

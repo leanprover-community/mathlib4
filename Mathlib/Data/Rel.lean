@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.GaloisConnection
-import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Data.Set.Lattice
 
 #align_import data.rel from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
@@ -291,7 +291,7 @@ theorem image_inter_dom_eq (s : Set α) : r.image (s ∩ r.dom) = r.image s := b
 
 @[simp]
 theorem preimage_inter_codom_eq (s : Set β) : r.preimage (s ∩ r.codom) = r.preimage s := by
-  rw[←dom_inv, preimage, preimage, image_inter_dom_eq]
+  rw [← dom_inv, preimage, preimage, image_inter_dom_eq]
 
 theorem inter_dom_subset_preimage_image (s : Set α) : s ∩ r.dom ⊆ r.preimage (r.image s) := by
   intro x hx
@@ -338,7 +338,7 @@ theorem core_id (s : Set α) : core (@Eq α) s = s := by simp [core]
 #align rel.core_id Rel.core_id
 
 theorem core_comp (s : Rel β γ) (t : Set γ) : core (r • s) t = core r (core s t) := by
-  ext x; simp [core, comp]; constructor
+  ext x; simp only [core, comp, forall_exists_index, and_imp, Set.mem_setOf_eq]; constructor
   · exact fun h y rxy z => h z y rxy
   · exact fun h z y rzy => h y rzy z
 #align rel.core_comp Rel.core_comp
@@ -384,7 +384,7 @@ theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) �
     use f x
     simp only [forall_eq', and_self]
   · intro h
-    rcases Classical.axiomOfChoice (λ x ↦ (h x).exists) with ⟨f,hf⟩
+    choose f hf using fun x ↦ (h x).exists
     use f
     constructor
     · ext x _

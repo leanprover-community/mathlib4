@@ -41,8 +41,8 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   introv R hs H
   classical
   letI := f.toAlgebra
-  replace H : ∀ r : s, Algebra.FiniteType R (Localization.Away (r : S))
-  · intro r; simp_rw [RingHom.FiniteType] at H; convert H r; ext; simp_rw [Algebra.smul_def]; rfl
+  replace H : ∀ r : s, Algebra.FiniteType R (Localization.Away (r : S)) := by
+    intro r; simp_rw [RingHom.FiniteType] at H; convert H r; ext; simp_rw [Algebra.smul_def]; rfl
   replace H := fun r => (H r).1
   constructor
   -- Suppose `s : Finset S` spans `S`, and each `Sᵣ` is finitely generated as an `R`-algebra.

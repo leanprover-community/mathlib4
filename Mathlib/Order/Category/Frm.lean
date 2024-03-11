@@ -62,7 +62,7 @@ instance bundledHom : BundledHom Hom where
   toFun {α β} _ _ := ((↑) : FrameHom α β → α → β)
   id {α} _ := FrameHom.id α
   comp _ _ _ := FrameHom.comp
-  hom_ext _ _ := FunLike.coe_injective
+  hom_ext _ _ := DFunLike.coe_injective
 #align Frm.bundled_hom Frm.bundledHom
 
 -- Porting note: Originally `deriving instance LargeCategory, ConcreteCategory for Frm`

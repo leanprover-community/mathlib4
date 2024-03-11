@@ -5,6 +5,9 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.Data.Set.Basic
 
 #align_import topology.category.Top.limits.products from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -49,6 +52,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCatMax.{v, u}) : IsLimit (piFan �
     intro S m h
     apply ContinuousMap.ext; intro x
     funext i
+    set_option tactic.skipAssignedInstances false in
     dsimp
     rw [ContinuousMap.coe_mk, ← h ⟨i⟩]
     rfl
@@ -132,7 +136,7 @@ theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) 
 @[simp]
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i : _) x := by
-  rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ←comp_app, Iso.hom_inv_id,
+  rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ← comp_app, Iso.hom_inv_id,
     Category.comp_id]
 #align Top.sigma_iso_sigma_inv_apply TopCat.sigmaIsoSigma_inv_apply
 
@@ -181,7 +185,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by
     intro S m h
-    -- porting note: used to be `ext x`
+    -- Porting note: used to be `ext x`
     refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h

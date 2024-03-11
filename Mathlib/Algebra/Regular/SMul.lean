@@ -74,7 +74,7 @@ element, then `b` is `M`-regular. -/
 theorem of_smul (a : R) (ab : IsSMulRegular M (a • s)) : IsSMulRegular M s :=
   @Function.Injective.of_comp _ _ _ (fun m : M => a • m) _ fun c d cd => by
   dsimp only [Function.comp_def] at cd
-  rw [←smul_assoc, ←smul_assoc] at cd
+  rw [← smul_assoc, ← smul_assoc] at cd
   exact ab cd
 #align is_smul_regular.of_smul IsSMulRegular.of_smul
 
@@ -117,7 +117,7 @@ theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
     IsSMulRegular M (a * b) ∧ IsSMulRegular M (b * a) ↔ IsSMulRegular M a ∧ IsSMulRegular M b := by
   refine' ⟨_, _⟩
   · rintro ⟨ab, ba⟩
-    refine' ⟨ba.of_mul, ab.of_mul⟩
+    exact ⟨ba.of_mul, ab.of_mul⟩
   · rintro ⟨ha, hb⟩
     exact ⟨ha.mul hb, hb.mul ha⟩
 #align is_smul_regular.mul_and_mul_iff IsSMulRegular.mul_and_mul_iff

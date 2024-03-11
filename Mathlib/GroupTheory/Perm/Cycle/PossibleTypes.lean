@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 -/
 
-variable (α : Type _) [DecidableEq α] [Fintype α]
+variable (α : Type*) [DecidableEq α] [Fintype α]
 
 /-- There are permutations with cycleType `m` if and only if
   its sum is at most `Fintype.card α` and its members are at least 2. -/
@@ -32,8 +32,8 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       rw [← hg]
       exact Equiv.Perm.two_le_of_mem_cycleType
   · rintro ⟨hc, h2c⟩
-    have hc' : m.toList.sum ≤ Fintype.card α
-    · simp only [Multiset.sum_toList]
+    have hc' : m.toList.sum ≤ Fintype.card α := by
+      simp only [Multiset.sum_toList]
       exact hc
     obtain ⟨p, hp_length, hp_nodup, hp_disj⟩ := List.exists_pw_disjoint_with_card hc'
     use List.prod (List.map (fun l => List.formPerm l) p)

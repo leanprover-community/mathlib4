@@ -342,10 +342,9 @@ variable {xs : Vector α n} {ys : Vector β n}
 theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → σ × γ)
     (h : ∀ a b s, f default b s = f a b s) :
     mapAccumr₂ f xs ys s = mapAccumr (fun b s => f default b s) ys s := by
-  induction xs, ys using Vector.revInductionOn₂ generalizing s
-  case nil => rfl
-  case snoc xs ys x y ih =>
-    simp[h x y s, ih]
+  induction xs, ys using Vector.revInductionOn₂ generalizing s with
+  | nil => rfl
+  | snoc xs ys x y ih => simp [h x y s, ih]
 
 /--
   If `f` returns the same output and next state for every value of it's second argument, then
@@ -355,10 +354,9 @@ theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → 
 theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ → σ × γ)
     (h : ∀ a b s, f a default s = f a b s) :
     mapAccumr₂ f xs ys s = mapAccumr (fun a s => f a default s) xs s := by
-  induction xs, ys using Vector.revInductionOn₂ generalizing s
-  case nil => rfl
-  case snoc xs ys x y ih =>
-    simp[h x y s, ih]
+  induction xs, ys using Vector.revInductionOn₂ generalizing s with
+  | nil => rfl
+  | snoc xs ys x y ih => simp [h x y s, ih]
 
 end UnusedInput
 

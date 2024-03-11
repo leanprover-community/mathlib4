@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.Convex.Between
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 #align_import geometry.euclidean.angle.unoriented.affine from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -18,6 +20,9 @@ This file defines unoriented angles in Euclidean affine spaces.
 * `EuclideanGeometry.angle`, with notation `∠`, is the undirected angle determined by three
   points.
 
+## TODO
+
+Prove the triangle inequality for the angle.
 -/
 
 
@@ -29,8 +34,8 @@ namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P] {p p₀ p₁ p₂ : P}
 
 /-- The undirected angle at `p2` between the line segments to `p1` and
 `p3`. If either of those points equals `p2`, this is π/2. Use
@@ -40,7 +45,7 @@ nonrec def angle (p1 p2 p3 : P) : ℝ :=
   angle (p1 -ᵥ p2 : V) (p3 -ᵥ p2)
 #align euclidean_geometry.angle EuclideanGeometry.angle
 
-scoped notation "∠" => EuclideanGeometry.angle
+@[inherit_doc] scoped notation "∠" => EuclideanGeometry.angle
 
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
@@ -137,21 +142,25 @@ nonrec theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
   angle_le_pi _ _
 #align euclidean_geometry.angle_le_pi EuclideanGeometry.angle_le_pi
 
-/-- The angle ∠AAB at a point. -/
-theorem angle_eq_left (p1 p2 : P) : ∠ p1 p1 p2 = π / 2 := by
+/-- The angle ∠AAB at a point is always `π / 2`. -/
+@[simp] lemma angle_self_left (p₀ p : P) : ∠ p₀ p₀ p = π / 2 := by
   unfold angle
   rw [vsub_self]
   exact angle_zero_left _
-#align euclidean_geometry.angle_eq_left EuclideanGeometry.angle_eq_left
+#align euclidean_geometry.angle_eq_left EuclideanGeometry.angle_self_left
 
-/-- The angle ∠ABB at a point. -/
-theorem angle_eq_right (p1 p2 : P) : ∠ p1 p2 p2 = π / 2 := by rw [angle_comm, angle_eq_left]
-#align euclidean_geometry.angle_eq_right EuclideanGeometry.angle_eq_right
+/-- The angle ∠ABB at a point is always `π / 2`. -/
+@[simp] lemma angle_self_right (p₀ p : P) : ∠ p p₀ p₀ = π / 2 := by rw [angle_comm, angle_self_left]
+#align euclidean_geometry.angle_eq_right EuclideanGeometry.angle_self_right
 
-/-- The angle ∠ABA at a point. -/
-theorem angle_eq_of_ne {p1 p2 : P} (h : p1 ≠ p2) : ∠ p1 p2 p1 = 0 :=
-  angle_self fun he => h (vsub_eq_zero_iff_eq.1 he)
-#align euclidean_geometry.angle_eq_of_ne EuclideanGeometry.angle_eq_of_ne
+/-- The angle ∠ABA at a point is `0`, unless `A = B`. -/
+theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self $ vsub_ne_zero.2 h
+#align euclidean_geometry.angle_eq_of_ne EuclideanGeometry.angle_self_of_ne
+
+-- 2024-02-14
+@[deprecated] alias angle_eq_left := angle_self_left
+@[deprecated] alias angle_eq_right := angle_self_right
+@[deprecated] alias angle_eq_of_ne := angle_self_of_ne
 
 /-- If the angle ∠ABC at a point is π, the angle ∠BAC is 0. -/
 theorem angle_eq_zero_of_angle_eq_pi_left {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : ∠ p2 p1 p3 = 0 := by
@@ -193,7 +202,7 @@ nonrec theorem angle_add_angle_eq_pi_of_angle_eq_pi (p1 : P) {p2 p3 p4 : P} (h :
   exact angle_add_angle_eq_pi_of_angle_eq_pi _ h
 #align euclidean_geometry.angle_add_angle_eq_pi_of_angle_eq_pi EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
 
-/-- Vertical Angles Theorem: angles opposite each other, formed by two intersecting straight
+/-- **Vertical Angles Theorem**: angles opposite each other, formed by two intersecting straight
 lines, are equal. -/
 theorem angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi {p1 p2 p3 p4 p5 : P} (hapc : ∠ p1 p5 p3 = π)
     (hbpd : ∠ p2 p5 p4 = π) : ∠ p1 p5 p2 = ∠ p3 p5 p4 := by
@@ -205,7 +214,7 @@ theorem angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi {p1 p2 p3 p4 p5 : P} (hapc 
 theorem left_dist_ne_zero_of_angle_eq_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : dist p1 p2 ≠ 0 := by
   by_contra heq
   rw [dist_eq_zero] at heq
-  rw [heq, angle_eq_left] at h
+  rw [heq, angle_self_left] at h
   exact Real.pi_ne_zero (by linarith)
 #align euclidean_geometry.left_dist_ne_zero_of_angle_eq_pi EuclideanGeometry.left_dist_ne_zero_of_angle_eq_pi
 

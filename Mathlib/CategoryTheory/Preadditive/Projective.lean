@@ -83,7 +83,7 @@ def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : 
   (Projective.factors f e).choose
 #align category_theory.projective.factor_thru CategoryTheory.Projective.factorThru
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
     factorThru f e ≫ e = f :=
   (Projective.factors f e).choose_spec

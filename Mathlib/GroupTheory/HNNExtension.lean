@@ -123,7 +123,7 @@ theorem induction_on {motive : HNNExtension G A B φ → Prop}
     lift (HNNExtension.of.codRestrict S of)
       ⟨HNNExtension.t, t⟩ (by intro a; ext; simp [equiv_eq_conj, mul_assoc])
   have hf : S.subtype.comp f = MonoidHom.id _ :=
-    hom_ext (by ext; simp) (by simp)
+    hom_ext (by ext; simp [f]) (by simp [f])
   show motive (MonoidHom.id _ x)
   rw [← hf]
   exact (f x).2
@@ -181,13 +181,8 @@ structure TransversalPair : Type _ :=
   compl : ∀ u, IsComplement (toSubgroup A B u : Subgroup G) (set u)
 
 instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
-  have := fun u => exists_right_transversal (H := toSubgroup A B u) (1 : G)
-  simp only [Classical.skolem] at this
-  rcases this with ⟨t, ht⟩
-  apply Nonempty.intro
-  exact
-    { set := t
-      compl := fun i => (ht i).1 }
+  choose t ht using fun u ↦ (toSubgroup A B u).exists_right_transversal 1
+  exact ⟨⟨t, fun i ↦ (ht i).1⟩⟩
 
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
 There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
@@ -373,7 +368,7 @@ noncomputable def unitsSMul (u : ℤˣ) (w : NormalWord d) : NormalWord d :=
     cons g'.1 u ((g'.2 * w.head⁻¹ : G) • w)
       (by simp)
       (by
-        simp only [group_smul_toList, Option.mem_def, Option.map_eq_some', Prod.exists,
+        simp only [g', group_smul_toList, Option.mem_def, Option.map_eq_some', Prod.exists,
           exists_and_right, exists_eq_right, group_smul_head, inv_mul_cancel_right,
           forall_exists_index, unitsSMulGroup]
         simp only [Cancels, Option.map_eq_some', Prod.exists, exists_and_right, exists_eq_right,
@@ -478,7 +473,8 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     dsimp
     congr 1
     conv_lhs => erw [IsComplement.equiv_mul_left]
-    simp
+    simp? says
+      simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul, coe_toSubmonoid]
     conv_lhs => erw [IsComplement.equiv_mul_left]
 
 noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
@@ -608,12 +604,12 @@ theorem exists_normalWord_prod_eq
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
       ∀ u ∈ w.toList.head?.map Prod.fst,
       w'.head⁻¹ * w.head ∈ toSubgroup A B (-u) := by
-  suffices : ∀ w : ReducedWord G A B,
+  suffices ∀ w : ReducedWord G A B,
       w.head = 1 → ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
       ∀ u ∈ w.toList.head?.map Prod.fst,
-      w'.head ∈ toSubgroup A B (-u)
-  · by_cases hw1 : w.head = 1
+      w'.head ∈ toSubgroup A B (-u) by
+    by_cases hw1 : w.head = 1
     · simp only [hw1, inv_mem_iff, mul_one]
       exact this w hw1
     · rcases this ⟨1, w.toList, w.chain⟩ rfl with ⟨w', hw'⟩

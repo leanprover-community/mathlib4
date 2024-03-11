@@ -3,6 +3,7 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
 
@@ -63,7 +64,7 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
 
@@ -576,7 +577,7 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   toFun := Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
-  eq_zero' q := Quotient.inductionOn q <| fun r ↦ by
+  eq_zero' q := Quotient.inductionOn q fun r ↦ by
     rw [Padic.zero_def, Quotient.eq]
     exact PadicSeq.norm_zero_iff r
   add_le' q r := by
@@ -601,7 +602,7 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
   change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε
-  by_contra' h
+  by_contra! h
   cases' cauchy₂ f hε with N hN
   rcases h N with ⟨i, hi, hge⟩
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
@@ -655,7 +656,7 @@ variable {p : ℕ} [Fact p.Prime] (f : CauSeq _ (@padicNormE p _))
 
 theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicNormE (q - r : ℚ_[p]) < ε :=
   Quotient.inductionOn q fun q' ↦
-    have : ∃ N, ∀ (m) (_ : m ≥ N) (n) (_ : n ≥ N), padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
+    have : ∃ N, ∀ m ≥ N, ∀ n ≥ N, padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
     let ⟨N, hN⟩ := this
     ⟨q' N, by
       dsimp [padicNormE]
@@ -674,7 +675,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 #align padic.rat_dense' Padic.rat_dense'
 
-open Classical
+open scoped Classical
 
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (mod_cast succ_pos _)
@@ -710,7 +711,7 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
     exact mod_cast this
   · apply lt_of_le_of_lt
     · apply padicNormE.add_le
-    · rw [←add_thirds ε]
+    · rw [← add_thirds ε]
       apply _root_.add_lt_add
       · suffices padicNormE (limSeq f j - f j + (f j - f (max N N2)) : ℚ_[p]) < ε / 3 + ε / 3 by
           simpa only [sub_add_sub_cancel]
@@ -808,7 +809,7 @@ namespace padicNormE
 section NormedSpace
 
 variable {p : ℕ} [hp : Fact p.Prime]
--- Porting note : Linter thinks this is a duplicate simp lemma, so `priority` is assigned
+-- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
 @[simp (high)]
 protected theorem mul (q r : ℚ_[p]) : ‖q * r‖ = ‖q‖ * ‖r‖ := by simp [Norm.norm, map_mul]
 #align padic_norm_e.mul padicNormE.mul
@@ -847,16 +848,16 @@ theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   exact mod_cast hp.1.one_lt
 #align padic_norm_e.norm_p_lt_one padicNormE.norm_p_lt_one
 
--- Porting note : Linter thinks this is a duplicate simp lemma, so `priority` is assigned
+-- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
 @[simp (high)]
 theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
   rw [norm_zpow, norm_p, zpow_neg, inv_zpow]
 #align padic_norm_e.norm_p_zpow padicNormE.norm_p_zpow
 
--- Porting note : Linter thinks this is a duplicate simp lemma, so `priority` is assigned
+-- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
 @[simp (high)]
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
-  rw [← norm_p_zpow, zpow_ofNat]
+  rw [← norm_p_zpow, zpow_coe_nat]
 #align padic_norm_e.norm_p_pow padicNormE.norm_p_pow
 
 instance : NontriviallyNormedField ℚ_[p] :=
@@ -895,14 +896,14 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      norm_num [this]
+      set_option tactic.skipAssignedInstances false in norm_num [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [padicNormE.eq_padicNorm]
       norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
-        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_ofNat]
+        padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_coe_nat]
       apply inv_le_one
       · norm_cast
         apply one_le_pow
@@ -962,7 +963,7 @@ namespace Padic
 
 variable {p : ℕ} [hp : Fact p.Prime]
 
--- Porting note : remove `set_option eqn_compiler.zeta true`
+-- Porting note: remove `set_option eqn_compiler.zeta true`
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
   isComplete := fun f => by
@@ -992,7 +993,7 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
   -- Porting note: `Setoid.symm` cannot work out which `Setoid` to use, so instead swap the order
   -- now, I use a rewrite to swap it later
   obtain ⟨N, hN⟩ := (CauSeq.equiv_lim f) _ ha
-  rw [←sub_add_cancel f.lim (f N)]
+  rw [← sub_add_cancel f.lim (f N)]
   refine le_trans (padicNormE.nonarchimedean _ _) ?_
   rw [norm_sub_rev]
   exact max_le (le_of_lt (hN _ le_rfl)) (hf _)

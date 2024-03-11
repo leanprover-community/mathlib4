@@ -63,7 +63,7 @@ class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [S
 
 attribute [to_additive] SMulMemClass
 
-attribute [aesop safe 10 apply (rule_sets [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+attribute [aesop safe 10 apply (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
@@ -104,7 +104,7 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note: TODO lower priority not actually there
+-- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
@@ -112,7 +112,7 @@ protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) 
 #align set_like.coe_smul SetLike.val_smul
 #align set_like.coe_vadd SetLike.val_vadd
 
--- Porting note: TODO lower priority not actually there
+-- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
@@ -147,7 +147,7 @@ namespace SubMulAction
 variable [SMul R M]
 
 instance : SetLike (SubMulAction R M) M :=
-  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr ⟩
+  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
@@ -211,7 +211,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 #align sub_mul_action.coe_smul SubMulAction.val_smul
 
--- porting note: no longer needed because of defeq structure eta
+-- Porting note: no longer needed because of defeq structure eta
 #noalign sub_mul_action.coe_mk
 
 variable (p)

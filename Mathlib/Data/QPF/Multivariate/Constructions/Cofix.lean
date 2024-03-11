@@ -232,7 +232,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
     have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
-      dsimp [hr']
+      dsimp [r', hr']
       rw [Quot.sound cuv]
       apply h'
     let f : Quot r → Quot r' :=
@@ -252,7 +252,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
     have : f ∘ Quot.mk r ∘ Quot.mk Mcongr = Quot.mk r' := rfl
     rw [← this, appendFun_comp_id, q.P.comp_map, q.P.comp_map, abs_map, abs_map, abs_map, abs_map,
       h₀]
-  refine' ⟨r', this, rxy⟩
+  exact ⟨r', this, rxy⟩
 
 /-- Bisimulation principle using `map` and `Quot.mk` to match and relate children of two trees. -/
 theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
@@ -266,13 +266,13 @@ theorem Cofix.bisim_rel {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop
     left
     rfl
   · intro x y r'xy
-    cases r'xy
-    case inl h =>
+    cases r'xy with
+    | inl h =>
       rw [h]
-    case inr r'xy =>
+    | inr r'xy =>
       have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
       rw [← Quot.factor_mk_eq _ _ this]
-      dsimp
+      dsimp [r']
       rw [appendFun_comp_id]
       rw [@comp_map _ _ _ q _ _ _ (appendFun id (Quot.mk r)),
         @comp_map _ _ _ q _ _ _ (appendFun id (Quot.mk r))]
@@ -400,12 +400,12 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
   have hh :
     subtypeVal _ ⊚ toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b =
       ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diag := by
-    dsimp
+    dsimp [b]
     apply eq_of_drop_last_eq
     · dsimp
-      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, id_comp,
+      simp only [prod_map_id, dropFun_prod, dropFun_appendFun, dropFun_diag, TypeVec.id_comp,
         dropFun_toSubtype]
-      erw [toSubtype_of_subtype_assoc, id_comp]
+      erw [toSubtype_of_subtype_assoc, TypeVec.id_comp]
       clear liftR_map_last q mvf lawful F x R f g hh h b c
       ext (i x) : 2
       induction i with
@@ -413,7 +413,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
       | fs _ ih =>
         apply ih
     simp only [lastFun_from_append1_drop_last, lastFun_toSubtype, lastFun_appendFun,
-      lastFun_subtypeVal, comp.left_id, lastFun_comp, lastFun_prod]
+      lastFun_subtypeVal, Function.id_comp, lastFun_comp, lastFun_prod]
     ext1
     rfl
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh
@@ -442,7 +442,7 @@ theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := b
     congr
     rfl
     rw [Cofix.dest]
-  rw [MvFunctor.map_map, MvFunctor.map_map, ←appendFun_comp_id, ←appendFun_comp_id]
+  rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
   apply liftR_map_last
   intros
   rfl

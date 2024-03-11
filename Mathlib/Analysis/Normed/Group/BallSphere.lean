@@ -30,10 +30,8 @@ theorem coe_neg_sphere {r : ℝ} (v : sphere (0 : E) r) : ↑(-v) = (-v : E) :=
   rfl
 #align coe_neg_sphere coe_neg_sphere
 
--- porting note: todo: need to specify instance to avoid timeout
 instance : ContinuousNeg (sphere (0 : E) r) :=
-  @Inducing.continuousNeg (sphere (0 : E) r) E _ _ _ _ TopologicalAddGroup.toContinuousNeg
-    Subtype.val inducing_subtype_val fun _ => rfl
+  Inducing.continuousNeg inducing_subtype_val fun _ => rfl
 
 /-- We equip the ball, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/
@@ -44,10 +42,8 @@ instance {r : ℝ} : InvolutiveNeg (ball (0 : E) r) where
 @[simp] theorem coe_neg_ball {r : ℝ} (v : ball (0 : E) r) : ↑(-v) = (-v : E) := rfl
 #align coe_neg_ball coe_neg_ball
 
--- porting note: todo: need to specify instance to avoid timeout
 instance : ContinuousNeg (ball (0 : E) r) :=
-  @Inducing.continuousNeg (ball (0 : E) r) E _ _ _ _ TopologicalAddGroup.toContinuousNeg
-    Subtype.val inducing_subtype_val fun _ => rfl
+  Inducing.continuousNeg inducing_subtype_val fun _ => rfl
 
 /-- We equip the closed ball, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/
@@ -58,7 +54,5 @@ instance {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
 @[simp] theorem coe_neg_closedBall {r : ℝ} (v : closedBall (0 : E) r) : ↑(-v) = (-v : E) := rfl
 #align coe_neg_closed_ball coe_neg_closedBall
 
--- porting note: todo: need to specify instance to avoid timeout
 instance : ContinuousNeg (closedBall (0 : E) r) :=
-  @Inducing.continuousNeg (closedBall (0 : E) r) E _ _ _ _ TopologicalAddGroup.toContinuousNeg
-    Subtype.val inducing_subtype_val fun _ => rfl
+  Inducing.continuousNeg inducing_subtype_val fun _ => rfl

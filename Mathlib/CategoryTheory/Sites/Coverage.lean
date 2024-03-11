@@ -103,7 +103,7 @@ lemma isSheafFor_of_factorsThru
     (h : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, T f → ∃ (R : Presieve Y),
       R.IsSeparatedFor P ∧ R.FactorsThruAlong S f):
     T.IsSheafFor P := by
-  simp only [←Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
+  simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
   choose W i e h1 h2 using H
   refine ⟨?_, fun x hx => ?_⟩
   · intro x y₁ y₂ h₁ h₂
@@ -338,7 +338,7 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
       · apply H; assumption
       · intro Z g _
         obtain ⟨R, hR1, hR2⟩ := K.pullback g _ hT1
-        refine ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
+        exact ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
     | top => intros; simpa using Presieve.isSheafFor_top_sieve _
     | transitive X R S _ _ H1 H2 =>
       intro Y f
@@ -369,7 +369,7 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
         intro ZZ gg hgg
         simp only [← types_comp_apply]
         rw [← P.map_comp, ← P.map_comp, ← op_comp, ← op_comp, hz, hz]
-        · dsimp; congr 1; simp only [Category.assoc, h]
+        · dsimp [y]; congr 1; simp only [Category.assoc, h]
         · simpa [reassoc_of% h] using hgg
         · simpa using hgg
       obtain ⟨t, ht⟩ := H1' f q hq

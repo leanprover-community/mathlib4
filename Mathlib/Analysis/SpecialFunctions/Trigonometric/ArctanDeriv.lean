@@ -82,12 +82,15 @@ theorem differentiableAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : �
 theorem hasStrictDerivAt_arctan (x : ℝ) : HasStrictDerivAt arctan (1 / (1 + x ^ 2)) x := by
   have A : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
   simpa [cos_sq_arctan] using
-    tanLocalHomeomorph.hasStrictDerivAt_symm trivial (by simpa) (hasStrictDerivAt_tan A)
+    tanPartialHomeomorph.hasStrictDerivAt_symm trivial (by simpa) (hasStrictDerivAt_tan A)
 #align real.has_strict_deriv_at_arctan Real.hasStrictDerivAt_arctan
 
 theorem hasDerivAt_arctan (x : ℝ) : HasDerivAt arctan (1 / (1 + x ^ 2)) x :=
   (hasStrictDerivAt_arctan x).hasDerivAt
 #align real.has_deriv_at_arctan Real.hasDerivAt_arctan
+
+theorem hasDerivAt_arctan' (x : ℝ) : HasDerivAt arctan (1 + x ^ 2)⁻¹ x :=
+  one_div (1 + x ^ 2) ▸ hasDerivAt_arctan x
 
 theorem differentiableAt_arctan (x : ℝ) : DifferentiableAt ℝ arctan x :=
   (hasDerivAt_arctan x).differentiableAt
@@ -105,7 +108,7 @@ theorem deriv_arctan : deriv arctan = fun (x : ℝ) => 1 / (1 + x ^ 2) :=
 theorem contDiff_arctan {n : ℕ∞} : ContDiff ℝ n arctan :=
   contDiff_iff_contDiffAt.2 fun x =>
     have : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
-    tanLocalHomeomorph.contDiffAt_symm_deriv (by simpa) trivial (hasDerivAt_tan this)
+    tanPartialHomeomorph.contDiffAt_symm_deriv (by simpa) trivial (hasDerivAt_tan this)
       (contDiffAt_tan.2 this)
 #align real.cont_diff_arctan Real.contDiff_arctan
 

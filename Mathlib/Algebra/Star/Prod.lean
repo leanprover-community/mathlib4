@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Module.Prod
+import Mathlib.GroupTheory.GroupAction.Prod
 
 #align_import algebra.star.prod from "leanprover-community/mathlib"@"9abfa6f0727d5adc99067e325e15d1a9de17fd8e"
 
@@ -62,7 +62,7 @@ instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
 
 end Prod
 
---Porting note: removing @[simp], `simp` simplifies LHS
+-- Porting note: removing @[simp], `simp` simplifies LHS
 theorem Units.embed_product_star [Monoid R] [StarMul R] (u : Rˣ) :
     Units.embedProduct R (star u) = star (Units.embedProduct R u) :=
   rfl

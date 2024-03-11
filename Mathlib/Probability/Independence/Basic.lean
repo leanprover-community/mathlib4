@@ -156,7 +156,7 @@ lemma iIndepSets.meas_biInter (h : iIndepSets π μ) (s : Finset ι) {f : ι →
   (iIndepSets_iff _ _).1 h s hf
 
 lemma iIndepSets.meas_iInter [Fintype ι] (h : iIndepSets π μ) (hs : ∀ i, s i ∈ π i) :
-    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [←h.meas_biInter _ fun _i _ ↦ hs _]
+    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [← h.meas_biInter _ fun _i _ ↦ hs _]
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_sets.meas_Inter ProbabilityTheory.iIndepSets.meas_iInter
 
@@ -180,7 +180,7 @@ lemma iIndep.meas_biInter (hμ : iIndep m μ) (hs : ∀ i, i ∈ S → Measurabl
     μ (⋂ i ∈ S, s i) = ∏ i in S, μ (s i) := (iIndep_iff _ _).1 hμ _ hs
 
 lemma iIndep.meas_iInter [Fintype ι] (hμ : iIndep m μ) (hs : ∀ i, MeasurableSet[m i] (s i)) :
-    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [←hμ.meas_biInter fun _ _ ↦ hs _]
+    μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [← hμ.meas_biInter fun _ _ ↦ hs _]
 
 lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
@@ -635,14 +635,14 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
 #align probability_theory.indep_fun_iff_indep_set_preimage ProbabilityTheory.indepFun_iff_indepSet_preimage
 
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
-    [IsFiniteMeasure μ] (hf : Measurable f) (hg : Measurable g) :
+    [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     IndepFun f g μ ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
   rw [indepFun_iff_measure_inter_preimage_eq_mul]
   have h₀ {s : Set β} {t : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t) :
       μ (f ⁻¹' s) * μ (g ⁻¹' t) = μ.map f s * μ.map g t ∧
       μ (f ⁻¹' s ∩ g ⁻¹' t) = μ.map (fun ω ↦ (f ω, g ω)) (s ×ˢ t) :=
-    ⟨by rw [Measure.map_apply hf hs, Measure.map_apply hg ht],
-      (Measure.map_apply (hf.prod_mk hg) (hs.prod ht)).symm⟩
+    ⟨by rw [Measure.map_apply_of_aemeasurable hf hs, Measure.map_apply_of_aemeasurable hg ht],
+      (Measure.map_apply_of_aemeasurable (hf.prod_mk hg) (hs.prod ht)).symm⟩
   constructor
   · refine fun h ↦ (Measure.prod_eq fun s t hs ht ↦ ?_).symm
     rw [← (h₀ hs ht).1, ← (h₀ hs ht).2, h s t hs ht]
@@ -650,11 +650,12 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
 @[symm]
-nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β} (hfg : IndepFun f g μ) :
-    IndepFun g f μ := hfg.symm
+nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
+    (hfg : IndepFun f g μ) : IndepFun g f μ := hfg.symm
 #align probability_theory.indep_fun.symm ProbabilityTheory.IndepFun.symm
 
-theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β} (hfg : IndepFun f g μ)
+theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    {f' : Ω → β} {g' : Ω → β'} (hfg : IndepFun f g μ)
     (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFun f' g' μ := by
   refine kernel.IndepFun.ae_eq hfg ?_ ?_ <;>
     simp only [ae_dirac_eq, Filter.eventually_pure, kernel.const_apply]
@@ -668,42 +669,113 @@ theorem IndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
   kernel.IndepFun.comp hfg hφ hψ
 #align probability_theory.indep_fun.comp ProbabilityTheory.IndepFun.comp
 
+section iIndepFun
+variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
+
+@[nontriviality]
+lemma iIndepFun.of_subsingleton [IsProbabilityMeasure μ] [Subsingleton ι] : iIndepFun m f μ :=
+  kernel.iIndepFun.of_subsingleton
+
+lemma iIndepFun.isProbabilityMeasure (h : iIndepFun m f μ) : IsProbabilityMeasure μ :=
+  ⟨by simpa using h.meas_biInter (S := ∅) (s := fun _ ↦ univ)⟩
+
 /-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
-theorem iIndepFun.indepFun_finset [IsProbabilityMeasure μ] {ι : Type*} {β : ι → Type*}
-    {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Finset ι) (hST : Disjoint S T)
-    (hf_Indep : iIndepFun m f μ) (hf_meas : ∀ i, Measurable (f i)) :
-    IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) μ :=
+lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep : iIndepFun m f μ)
+    (hf_meas : ∀ i, Measurable (f i)) :
+    IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
+  have := hf_Indep.isProbabilityMeasure
   kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.indep_fun_finset ProbabilityTheory.iIndepFun.indepFun_finset
 
-theorem iIndepFun.indepFun_prod [IsProbabilityMeasure μ] {ι : Type*} {β : ι → Type*}
-    {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (hf_Indep : iIndepFun m f μ)
-    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
+lemma iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun m f μ) (hf_meas : ∀ i, Measurable (f i))
+    (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a => (f i a, f j a)) (f k) μ :=
-  kernel.iIndepFun.indepFun_prod hf_Indep hf_meas i j k hik hjk
+  have := hf_Indep.isProbabilityMeasure
+  kernel.iIndepFun.indepFun_prod_mk hf_Indep hf_meas i j k hik hjk
 set_option linter.uppercaseLean3 false in
-#align probability_theory.Indep_fun.indep_fun_prod ProbabilityTheory.iIndepFun.indepFun_prod
+#align probability_theory.Indep_fun.indep_fun_prod ProbabilityTheory.iIndepFun.indepFun_prod_mk
+
+open Finset in
+lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun m f μ) (hf : ∀ i, Measurable (f i))
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ := by
+  classical
+  let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
+    ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
+  have hg (i j : ι) : Measurable (g i j) := by measurability
+  exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
+
+end iIndepFun
+
+section Mul
+variable {β : Type*} {m : MeasurableSpace β} [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
-theorem iIndepFun.mul [IsProbabilityMeasure μ] {ι : Type*} {β : Type*} {m : MeasurableSpace β}
-    [Mul β] [MeasurableMul₂ β] {f : ι → Ω → β} (hf_Indep : iIndepFun (fun _ => m) f μ)
+lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun (fun _ ↦ m) f μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (f i * f j) (f k) μ :=
-  kernel.iIndepFun.mul hf_Indep hf_meas i j k hik hjk
+  have := hf_indep.isProbabilityMeasure
+  kernel.iIndepFun.indepFun_mul_left hf_indep hf_meas i j k hik hjk
 set_option linter.uppercaseLean3 false in
-#align probability_theory.Indep_fun.mul ProbabilityTheory.iIndepFun.mul
+#align probability_theory.Indep_fun.mul ProbabilityTheory.iIndepFun.indepFun_mul_left
 set_option linter.uppercaseLean3 false in
-#align probability_theory.Indep_fun.add ProbabilityTheory.iIndepFun.add
+#align probability_theory.Indep_fun.add ProbabilityTheory.iIndepFun.indepFun_add_left
 
 @[to_additive]
-theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsProbabilityMeasure μ] {ι : Type*} {β : Type*}
-    {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
-    (hf_Indep : iIndepFun (fun _ => m) f μ) (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι}
-    (hi : i ∉ s) :
+lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
+    IndepFun (f i) (f j * f k) μ :=
+  have := hf_indep.isProbabilityMeasure
+  kernel.iIndepFun.indepFun_mul_right hf_indep hf_meas i j k hij hik
+
+@[to_additive]
+lemma iIndepFun.indepFun_mul_mul (hf_indep : iIndepFun (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i))
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    IndepFun (f i * f j) (f k * f l) μ :=
+  have := hf_indep.isProbabilityMeasure
+  kernel.iIndepFun.indepFun_mul_mul hf_indep hf_meas i j k l hik hil hjk hjl
+
+end Mul
+
+section Div
+variable {β : Type*} {m : MeasurableSpace β} [Div β] [MeasurableDiv₂ β] {f : ι → Ω → β}
+
+@[to_additive]
+lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
+    IndepFun (f i / f j) (f k) μ :=
+  have := hf_indep.isProbabilityMeasure
+  kernel.iIndepFun.indepFun_div_left hf_indep hf_meas i j k hik hjk
+
+@[to_additive]
+lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
+    IndepFun (f i) (f j / f k) μ :=
+  have := hf_indep.isProbabilityMeasure
+  kernel.iIndepFun.indepFun_div_right hf_indep hf_meas i j k hij hik
+
+@[to_additive]
+lemma iIndepFun.indepFun_div_div (hf_indep : iIndepFun (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i))
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    IndepFun (f i / f j) (f k / f l) μ :=
+  have := hf_indep.isProbabilityMeasure
+  kernel.iIndepFun.indepFun_div_div hf_indep hf_meas i j k l hik hil hjk hjl
+
+end Div
+
+section CommMonoid
+variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
+
+@[to_additive]
+lemma iIndepFun.indepFun_finset_prod_of_not_mem (hf_Indep : iIndepFun (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j in s, f j) (f i) μ :=
+  have := hf_Indep.isProbabilityMeasure
   kernel.iIndepFun.indepFun_finset_prod_of_not_mem hf_Indep hf_meas hi
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.indep_fun_finset_prod_of_not_mem ProbabilityTheory.iIndepFun.indepFun_finset_prod_of_not_mem
@@ -711,15 +783,16 @@ set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.indep_fun_finset_sum_of_not_mem ProbabilityTheory.iIndepFun.indepFun_finset_sum_of_not_mem
 
 @[to_additive]
-theorem iIndepFun.indepFun_prod_range_succ [IsProbabilityMeasure μ] {β : Type*}
-    {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ℕ → Ω → β}
-    (hf_Indep : iIndepFun (fun _ => m) f μ) (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) :
-    IndepFun (∏ j in Finset.range n, f j) (f n) μ :=
+lemma iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β} (hf_Indep : iIndepFun (fun _ ↦ m) f μ)
+    (hf_meas : ∀ i, Measurable (f i)) (n : ℕ) : IndepFun (∏ j in Finset.range n, f j) (f n) μ :=
+  have := hf_Indep.isProbabilityMeasure
   kernel.iIndepFun.indepFun_prod_range_succ hf_Indep hf_meas n
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.indep_fun_prod_range_succ ProbabilityTheory.iIndepFun.indepFun_prod_range_succ
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_fun.indep_fun_sum_range_succ ProbabilityTheory.iIndepFun.indepFun_sum_range_succ
+
+end CommMonoid
 
 theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
     (hs : iIndepSet s μ) :

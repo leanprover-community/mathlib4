@@ -16,8 +16,8 @@ Let `k` be a commutative ring and `G` a group. This file defines the group cohom
 `A : Rep k G` to be the cohomology of the complex
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 with differential $d^n$ sending $f: G^n \to A$ to the function mapping $(g_0, \dots, g_n)$ to
-$$\rho(g_0)(f(g_1, \dots, g_n))
-+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
+$$\rho(g_0)(f(g_1, \dots, g_n))$$
+$$+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
 $$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
 
 We have a `k`-linear isomorphism $\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(k[G^{n + 1}], A)$, where
@@ -85,8 +85,7 @@ variable [Monoid G]
 /-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
 abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
-  HomologicalComplex.unop
-    ((((linearYoneda k (Rep k G)).obj A).rightOp.mapHomologicalComplex _).obj (resolution k G))
+  (groupCohomology.resolution k G).linearYonedaObj k A
 #align group_cohomology.linear_yoneda_obj_resolution groupCohomology.linearYonedaObjResolution
 
 theorem linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
@@ -131,12 +130,12 @@ and the homogeneous `linearYonedaObjResolution`. -/
         (linearYonedaObjResolution A).d n (n + 1) ≫
           (diagonalHomEquiv (n + 1) A).toModuleIso.hom := by
   ext f g
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.toModuleIso_inv, linearYonedaObjResolution_d_apply, LinearEquiv.toModuleIso_hom,
     diagonalHomEquiv_apply, Action.comp_hom, Resolution.d_eq k G n,
     Resolution.d_of (Fin.partialProd g), LinearMap.map_sum,
-    ←Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
+    ← Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
   simp only [@Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul, Fin.succAbove_zero,
     diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1)), Function.comp_apply,
     Fin.partialProd_succ, Fin.castSucc_zero, Fin.partialProd_zero, one_mul]
@@ -156,7 +155,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
   erw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
     resolution.d_eq]
   erw [resolution.d_of (Fin.partialProd g)]
-  simp only [map_sum, ←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
+  simp only [map_sum, ← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
@@ -184,7 +183,7 @@ which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d n A) fun n => by
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
     ext x y
     have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
     simp only [ModuleCat.coe_comp, Function.comp_apply] at this
@@ -221,6 +220,19 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
     Category.comp_id]
 #align group_cohomology.inhomogeneous_cochains_iso groupCohomology.inhomogeneousCochainsIso
 
+/-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
+`n`th differential in the complex of inhomogeneous cochains. -/
+abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
+
+/-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
+abbrev iCocycles (n : ℕ) : cocycles A n ⟶ ModuleCat.of k ((Fin n → G) → A) :=
+  (inhomogeneousCochains A).iCycles n
+
+/-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
+inhomogeneous cochains. -/
+abbrev toCocycles (i j : ℕ) : ModuleCat.of k ((Fin i → G) → A) ⟶ cocycles A j :=
+  (inhomogeneousCochains A).toCycles i j
+
 end groupCohomology
 
 open groupCohomology
@@ -231,12 +243,17 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 #align group_cohomology groupCohomology
 
+/-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
+`G`-representation `A`. -/
+abbrev groupCohomologyπ [Group G] (A : Rep k G) (n : ℕ) :
+    groupCohomology.cocycles A n ⟶ groupCohomology A n :=
+  (inhomogeneousCochains A).homologyπ n
+
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
-  ((inhomogeneousCochains A).homology'IsoHomology n).symm ≪≫
-    homologyObjIsoOfHomotopyEquiv (HomotopyEquiv.ofIso (inhomogeneousCochainsIso _)) _ ≪≫
-    HomologicalComplex.homology'Unop _ _ ≪≫ (extIso k G A n).symm
+  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
+    (extIso k G A n).symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology_iso_Ext groupCohomologyIsoExt

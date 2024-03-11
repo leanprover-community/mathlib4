@@ -3,8 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.FreeModule.Rank
+import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 #align_import linear_algebra.matrix.diagonal from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
 
@@ -28,7 +27,7 @@ universe u v w
 
 namespace Matrix
 
-section CommSemiring -- porting note: generalized from `CommRing`
+section CommSemiring -- Porting note: generalized from `CommRing`
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
 

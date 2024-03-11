@@ -5,7 +5,6 @@ Authors: Michael Geißer, Michael Stoll
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
@@ -107,7 +106,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
         -- Porting note: was
         -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, mul_zero, fract_zero,
         --   zero_mul, Set.left_mem_Ico, zero_lt_one]
-        simp only [cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
+        simp only [f, cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
       refine' Ne.lt_of_le (fun h => n_pos.ne _) (mem_Icc.mp hm).1
       exact mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
     refine' ⟨⌊ξ * m⌋ + 1, m, hm₀, (mem_Icc.mp hm).2, _⟩
@@ -122,11 +121,10 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
       mem_Ico.mpr
         ⟨floor_nonneg.mpr (mul_nonneg (fract_nonneg (ξ * x)) hn.le), Ne.lt_of_le (H x hx) (hfu' x)⟩
-    have : ∃ (x : ℤ) (_ : x ∈ D) (y : ℤ) (_ : y ∈ D), x < y ∧ f x = f y := by
+    obtain ⟨x, hx, y, hy, x_lt_y, hxy⟩ : ∃ x ∈ D, ∃ y ∈ D, x < y ∧ f x = f y := by
       obtain ⟨x, hx, y, hy, x_ne_y, hxy⟩ := exists_ne_map_eq_of_card_lt_of_maps_to hD hwd
       rcases lt_trichotomy x y with (h | h | h)
       exacts [⟨x, hx, y, hy, h, hxy⟩, False.elim (x_ne_y h), ⟨y, hy, x, hx, h, hxy.symm⟩]
-    obtain ⟨x, hx, y, hy, x_lt_y, hxy⟩ := this
     refine'
       ⟨⌊ξ * y⌋ - ⌊ξ * x⌋, y - x, sub_pos_of_lt x_lt_y,
         sub_le_iff_le_add.mpr <| le_add_of_le_of_nonneg (mem_Icc.mp hy).2 (mem_Icc.mp hx).1, _⟩
@@ -236,8 +234,8 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     (h : |ξ - q| < 1 / (q.den : ℚ) ^ 2) :
     q.den ≤ ξ.den ∧ ⌈ξ * q.den⌉ - 1 ≤ q.num ∧ q.num ≤ ⌊ξ * q.den⌋ + 1 := by
   have hq₀ : (0 : ℚ) < q.den := Nat.cast_pos.mpr q.pos
-  replace h : |ξ * q.den - q.num| < 1 / q.den
-  · rw [← mul_lt_mul_right hq₀] at h
+  replace h : |ξ * q.den - q.num| < 1 / q.den := by
+    rw [← mul_lt_mul_right hq₀] at h
     conv_lhs at h => rw [← abs_of_pos hq₀, ← abs_mul, sub_mul, mul_den_eq_num]
     rwa [sq, div_mul, mul_div_cancel_left _ hq₀.ne'] at h
   constructor
@@ -268,7 +266,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
   set s := {q : ℚ | |ξ - q| < 1 / (q.den : ℚ) ^ 2}
   have hinj : Function.Injective f := by
     intro a b hab
-    simp only [Prod.mk.inj_iff] at hab
+    simp only [f, Prod.mk.inj_iff] at hab
     rw [← Rat.num_div_den a, ← Rat.num_div_den b, hab.1, hab.2]
   have H : f '' s ⊆ ⋃ (y : ℕ) (_ : y ∈ Ioc 0 ξ.den), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} := by
     intro xy hxy
@@ -412,7 +410,7 @@ def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
 private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
-  ⟨cast_pos.mpr hv, by norm_cast; linarith⟩
+  ⟨cast_pos.mpr hv, by norm_cast; omega⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
 variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
@@ -432,7 +430,7 @@ private theorem aux₁ : 0 < fract ξ := by
     norm_cast
     rw [← zero_add (1 : ℤ), add_one_le_iff, abs_pos, sub_ne_zero]
     rintro rfl
-    cases isUnit_iff.mp (isCoprime_self.mp (IsCoprime.mul_left_iff.mp hcop).2) <;> linarith
+    cases isUnit_iff.mp (isCoprime_self.mp (IsCoprime.mul_left_iff.mp hcop).2) <;> omega
   norm_cast at H
   linarith only [hv, H]
 
@@ -446,9 +444,9 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     sub_lt_iff_lt_add, mul_assoc] at h
   have hu₀ : 0 ≤ u - ⌊ξ⌋ * v := by
     -- Porting note: this abused the definitional equality `-1 + 1 = 0`
-    -- refine' (zero_le_mul_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
-    refine' (zero_le_mul_right hv₁).mp ?_
-    rw [←sub_one_lt_iff, zero_sub]
+    -- refine' (mul_nonneg_iff_of_pos_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
+    refine' (mul_nonneg_iff_of_pos_right hv₁).mp ?_
+    rw [← sub_one_lt_iff, zero_sub]
     replace h := h.1
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
     exact mod_cast
@@ -456,7 +454,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
         ((mul_le_mul_right <| hv₀').mpr <|
           (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_right hv₀).mpr (floor_le ξ)))
   have hu₁ : u - ⌊ξ⌋ * v ≤ v := by
-    refine' le_of_mul_le_mul_right (le_of_lt_add_one _) hv₁
+    refine' _root_.le_of_mul_le_mul_right (le_of_lt_add_one _) hv₁
     replace h := h.2
     rw [← sub_lt_iff_lt_add, ← mul_assoc, ← sub_mul, ← add_lt_add_iff_right (v * (2 * v - 1) : ℝ),
       add_comm (1 : ℝ)] at h
@@ -505,7 +503,7 @@ private theorem aux₃ :
   calc
     |(fract ξ)⁻¹ - v / u'| = |(fract ξ - u' / v) * (v / u' / fract ξ)| :=
       help₁ hξ₀.ne' Hv.ne' Hu.ne'
-    _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁, abs_sub_comm]
+    _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁]
     _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := ((mul_lt_mul_right H₁).mpr h')
     _ = (u' * (2 * v - 1) * fract ξ)⁻¹ := (help₂ hξ₀.ne' Hv.ne' Hv'.ne' Hu.ne')
     _ ≤ ((u' : ℝ) * (2 * u' - 1))⁻¹ := by
@@ -545,7 +543,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     exact False.elim (lt_irrefl _ <| (abs_nonneg ξ).trans_lt h)
   · rw [Nat.cast_one, div_one]
     obtain ⟨_, h₁, h₂⟩ := h
-    cases' le_or_lt (u : ℝ) ξ with ht ht
+    rcases le_or_lt (u : ℝ) ξ with ht | ht
     · use 0
       rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
       convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
@@ -553,7 +551,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
       have hξ₁ : ⌊ξ⌋ = u - 1 := by
         rw [floor_eq_iff, cast_sub, cast_one, sub_add_cancel]
         exact ⟨(((sub_lt_sub_iff_left _).mpr one_half_lt_one).trans h₁).le, ht⟩
-      cases' eq_or_ne ξ ⌊ξ⌋ with Hξ Hξ
+      rcases eq_or_ne ξ ⌊ξ⌋ with Hξ | Hξ
       · rw [Hξ, hξ₁, cast_sub, cast_one, ← sub_eq_add_neg, sub_lt_sub_iff_left] at h₁
         exact False.elim (lt_irrefl _ <| h₁.trans one_half_lt_one)
       · have hξ₂ : ⌊(fract ξ)⁻¹⌋ = 1 := by

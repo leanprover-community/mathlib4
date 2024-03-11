@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.special_functions.log.basic from "leanprover-community/mathlib"@"f23a09ce6d3f367220dc3cecad6b7eb69eb01690"
 
@@ -21,9 +22,6 @@ We prove some basic properties of this function and show that it is continuous.
 
 logarithm, continuity
 -/
-
-set_option autoImplicit true
-
 
 open Set Filter Function
 
@@ -141,22 +139,18 @@ theorem log_inv (x : ℝ) : log x⁻¹ = -log x := by
   rw [← exp_eq_exp, exp_log_eq_abs (inv_ne_zero hx), exp_neg, exp_log_eq_abs hx, abs_inv]
 #align real.log_inv Real.log_inv
 
-theorem log_le_log (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y := by
+theorem log_le_log_iff (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y := by
   rw [← exp_le_exp, exp_log h, exp_log h₁]
-#align real.log_le_log Real.log_le_log
+#align real.log_le_log Real.log_le_log_iff
 
 @[gcongr]
-theorem log_lt_log (hx : 0 < x) : x < y → log x < log y := by
-  intro h
+lemma log_le_log (hx : 0 < x) (hxy : x ≤ y) : log x ≤ log y :=
+  (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
+
+@[gcongr]
+theorem log_lt_log (hx : 0 < x) (h : x < y) : log x < log y := by
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 #align real.log_lt_log Real.log_lt_log
-
-@[gcongr]
-theorem log_le_log' (hx : 0 < x) : x ≤ y → log x ≤ log y := by
-  intro hxy
-  cases hxy.eq_or_lt with
-  | inl h_eq => simp [h_eq]
-  | inr hlt => exact le_of_lt <| log_lt_log hx hlt
 
 theorem log_lt_log_iff (hx : 0 < x) (hy : 0 < y) : log x < log y ↔ x < y := by
   rw [← exp_lt_exp, exp_log hx, exp_log hy]
@@ -184,7 +178,7 @@ theorem log_pos (hx : 1 < x) : 0 < log x :=
 #align real.log_pos Real.log_pos
 
 theorem log_pos_of_lt_neg_one (hx : x < -1) : 0 < log x := by
-  rw [←neg_neg x, log_neg_eq_log]
+  rw [← neg_neg x, log_neg_eq_log]
   have : 1 < -x := by linarith
   exact log_pos this
 
@@ -198,7 +192,7 @@ theorem log_neg (h0 : 0 < x) (h1 : x < 1) : log x < 0 :=
 #align real.log_neg Real.log_neg
 
 theorem log_neg_of_lt_zero (h0 : x < 0) (h1 : -1 < x) : log x < 0 := by
-  rw [←neg_neg x, log_neg_eq_log]
+  rw [← neg_neg x, log_neg_eq_log]
   have h0' : 0 < -x := by linarith
   have h1' : -x < 1 := by linarith
   exact log_neg h0' h1'
@@ -224,14 +218,14 @@ theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
 #align real.log_nonpos Real.log_nonpos
 
 theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
-  by_cases hn : n = 0
-  case pos => simp [hn]
-  case neg =>
+  if hn : n = 0 then
+    simp [hn]
+  else
     have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
 theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
-  rw [←log_neg_eq_log, neg_neg]
+  rw [← log_neg_eq_log, neg_neg]
   exact log_nat_cast_nonneg _
 
 theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
@@ -243,8 +237,8 @@ theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
       cases hn with
       | inl hn => simp [hn.symm]
       | inr hn =>
-          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact mod_cast hn
-          rw [←log_neg_eq_log]
+          have : (1 : ℝ) ≤ -n := by rw [← neg_zero, ← lt_neg] at hn; exact mod_cast hn
+          rw [← log_neg_eq_log]
           exact log_nonneg this
 
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
@@ -262,10 +256,10 @@ theorem log_injOn_pos : Set.InjOn log (Set.Ioi 0) :=
 #align real.log_inj_on_pos Real.log_injOn_pos
 
 theorem log_lt_sub_one_of_pos (hx1 : 0 < x) (hx2 : x ≠ 1) : log x < x - 1 := by
-  have h : log x ≠ 0
-  · rwa [← log_one, log_injOn_pos.ne_iff hx1]
+  have h : log x ≠ 0 := by
+    rwa [← log_one, log_injOn_pos.ne_iff hx1]
     exact mem_Ioi.mpr zero_lt_one
-  linarith [add_one_lt_exp_of_nonzero h, exp_log hx1]
+  linarith [add_one_lt_exp h, exp_log hx1]
 #align real.log_lt_sub_one_of_pos Real.log_lt_sub_one_of_pos
 
 theorem eq_one_of_pos_of_log_eq_zero {x : ℝ} (h₁ : 0 < x) (h₂ : log x = 0) : x = 1 :=
@@ -305,7 +299,7 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
 @[simp]
 theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
   induction n
-  · rw [Int.ofNat_eq_coe, zpow_ofNat, log_pow, Int.cast_ofNat]
+  · rw [Int.ofNat_eq_coe, zpow_coe_nat, log_pow, Int.cast_ofNat]
   rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
 #align real.log_zpow Real.log_zpow
 
@@ -346,6 +340,9 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   refine' Tendsto.comp (g := log) _ tendsto_abs_nhdsWithin_zero
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
+
+lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
+  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
@@ -438,10 +435,12 @@ theorem Filter.Tendsto.log {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tends
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {a : α}
 
+@[fun_prop]
 theorem Continuous.log (hf : Continuous f) (h₀ : ∀ x, f x ≠ 0) : Continuous fun x => log (f x) :=
   continuousOn_log.comp_continuous hf h₀
 #align continuous.log Continuous.log
 
+@[fun_prop]
 nonrec theorem ContinuousAt.log (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
     ContinuousAt (fun x => log (f x)) a :=
   hf.log h₀
@@ -452,6 +451,7 @@ nonrec theorem ContinuousWithinAt.log (hf : ContinuousWithinAt f s a) (h₀ : f 
   hf.log h₀
 #align continuous_within_at.log ContinuousWithinAt.log
 
+@[fun_prop]
 theorem ContinuousOn.log (hf : ContinuousOn f s) (h₀ : ∀ x ∈ s, f x ≠ 0) :
     ContinuousOn (fun x => log (f x)) s := fun x hx => (hf x hx).log (h₀ x hx)
 #align continuous_on.log ContinuousOn.log
@@ -466,8 +466,8 @@ namespace Real
 
 theorem tendsto_log_comp_add_sub_log (y : ℝ) :
     Tendsto (fun x : ℝ => log (x + y) - log x) atTop (𝓝 0) := by
-  have : Tendsto (fun x ↦ 1 + y / x) atTop (𝓝 (1 + 0))
-  · exact tendsto_const_nhds.add (tendsto_const_nhds.div_atTop tendsto_id)
+  have : Tendsto (fun x ↦ 1 + y / x) atTop (𝓝 (1 + 0)) :=
+    tendsto_const_nhds.add (tendsto_const_nhds.div_atTop tendsto_id)
   rw [← comap_exp_nhds_exp, exp_zero, tendsto_comap_iff, ← add_zero (1 : ℝ)]
   refine' this.congr' _
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_gt_atTop (-y)] with x hx₀ hxy
@@ -485,111 +485,124 @@ end TendstoCompAddSub
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
-lemma log_nonneg_of_isNat (h : NormNum.IsNat e n) : 0 ≤ Real.log (e : ℝ) := by
+variable {e : ℝ} {d : ℕ}
+
+lemma log_nonneg_of_isNat {n : ℕ} (h : NormNum.IsNat e n) : 0 ≤ Real.log (e : ℝ) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Real.log_nat_cast_nonneg _
 
-lemma log_pos_of_isNat (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true) : 0 < Real.log (e : ℝ) := by
+lemma log_pos_of_isNat {n : ℕ} (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true) :
+    0 < Real.log (e : ℝ) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Real.log_pos
   simpa using w
 
-lemma log_nonneg_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) : 0 ≤ Real.log (e : ℝ) := by
+lemma log_nonneg_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) :
+    0 ≤ Real.log (e : ℝ) := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   exact Real.log_neg_nat_cast_nonneg _
 
-lemma log_pos_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n = true) :
+lemma log_pos_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n = true) :
     0 < Real.log (e : ℝ) := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   rw [Real.log_neg_eq_log]
   apply Real.log_pos
   simpa using w
 
+set_option autoImplicit true in
 lemma log_pos_of_isRat :
     (NormNum.IsRat e n d) → (decide ((1 : ℚ) < n / d)) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : 1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos this
 
+set_option autoImplicit true in
 lemma log_pos_of_isRat_neg :
     (NormNum.IsRat e n d) → (decide (n / d < (-1 : ℚ))) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : (n : ℝ) / d < -1 := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos_of_lt_neg_one this
 
+set_option autoImplicit true in
 lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have h₁' : 0 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : (n : ℝ) / d < 1 := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg h₁' h₂'
 
+set_option autoImplicit true in
 lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
     → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
-    rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
+    rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have h₁' : (n : ℝ) / d < 0 := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : -1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg_of_lt_zero h₁' h₂'
 
 /-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
-def evalLogNatCast : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℕ))) ← withReducible (whnf e) | throwError "not Real.log"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  pure (.nonnegative (q(Real.log_nat_cast_nonneg $a) : Lean.Expr))
+def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Real.log_nat_cast_nonneg $a))
+  | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
-def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℤ))) ← withReducible (whnf e) | throwError "not Real.log"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  pure (.nonnegative (q(Real.log_int_cast_nonneg $a) : Lean.Expr))
+def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Real.log_int_cast_nonneg $a))
+  | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/
 @[positivity Real.log _]
-def evalLogNatLit : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (f : Q(ℝ → ℝ)) (a : Q(ℝ)) ← withReducible (whnf e) | throwError "not Real.log"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  match ←NormNum.derive a with
-  | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
-    assumeInstancesCommute
-    have p : Q(NormNum.IsNat $a $lit) := p
-    if 1 < lit.natLit! then
-      let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.positive (q(log_pos_of_isNat $p $p') : Lean.Expr))
-    else
-      pure (.nonnegative (q(log_nonneg_of_isNat $p) : Lean.Expr))
-  | .isNegNat _ lit p =>
-    assumeInstancesCommute
-    have p : Q(NormNum.IsInt $a (Int.negOfNat $lit)) := p
-    if 1 < lit.natLit! then
-      let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.positive (q(log_pos_of_isNegNat $p $p') : Lean.Expr))
-    else
-      pure (.nonnegative (q(log_nonneg_of_isNegNat $p) : Lean.Expr))
-  | .isRat (i : Q(DivisionRing ℝ)) q n d p =>
-    assumeInstancesCommute
-    have p : Q(by clear! «$i»; exact NormNum.IsRat $a $n $d) := p
-    if 0 < q ∧ q < 1 then
-      let w₁ : Q(decide ((0 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
-      let w₂ : Q(decide ($n / $d < (1 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.nonzero (q(log_nz_of_isRat $p $w₁ $w₂) : Lean.Expr))
-    else if 1 < q then
-      let w : Q(decide ((1 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.positive (q(log_pos_of_isRat $p $w) : Lean.Expr))
-    else if -1 < q ∧ q < 0 then
-      let w₁ : Q(decide ($n / $d < (0 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
-      let w₂ : Q(decide ((-1 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.nonzero (q(log_nz_of_isRat_neg $p $w₁ $w₂) : Lean.Expr))
-    else if q < -1 then
-      let w : Q(decide ($n / $d < (-1 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
-      pure (.positive (q(log_pos_of_isRat_neg $p $w) : Lean.Expr))
-    else
-      failure
-  | _ => failure
+def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.log $a) =>
+    match ← NormNum.derive a with
+    | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
+      assumeInstancesCommute
+      have p : Q(NormNum.IsNat $a $lit) := p
+      if 1 < lit.natLit! then
+        let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.positive q(log_pos_of_isNat $p $p'))
+      else
+        pure (.nonnegative q(log_nonneg_of_isNat $p))
+    | .isNegNat _ lit p =>
+      assumeInstancesCommute
+      have p : Q(NormNum.IsInt $a (Int.negOfNat $lit)) := p
+      if 1 < lit.natLit! then
+        let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.positive q(log_pos_of_isNegNat $p $p'))
+      else
+        pure (.nonnegative q(log_nonneg_of_isNegNat $p))
+    | .isRat (i : Q(DivisionRing ℝ)) q n d p =>
+      assumeInstancesCommute
+      have p : Q(by clear! «$i»; exact NormNum.IsRat $a $n $d) := p
+      if 0 < q ∧ q < 1 then
+        let w₁ : Q(decide ((0 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
+        let w₂ : Q(decide ($n / $d < (1 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.nonzero q(log_nz_of_isRat $p $w₁ $w₂))
+      else if 1 < q then
+        let w : Q(decide ((1 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.positive q(log_pos_of_isRat $p $w))
+      else if -1 < q ∧ q < 0 then
+        let w₁ : Q(decide ($n / $d < (0 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
+        let w₂ : Q(decide ((-1 : ℚ) < $n / $d) = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.nonzero q(log_nz_of_isRat_neg $p $w₁ $w₂))
+      else if q < -1 then
+        let w : Q(decide ($n / $d < (-1 : ℚ)) = true) := (q(Eq.refl true) : Lean.Expr)
+        pure (.positive q(log_pos_of_isRat_neg $p $w))
+      else
+        failure
+    | _ => failure
+  | _, _, _ => throwError "not Real.log"
 
 end Mathlib.Meta.Positivity
