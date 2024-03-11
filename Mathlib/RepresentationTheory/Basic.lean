@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import representation_theory.basic from "leanprover-community/mathlib"@"c04bc6e93e23aa0182aba53661a2211e80b6feac"
 
