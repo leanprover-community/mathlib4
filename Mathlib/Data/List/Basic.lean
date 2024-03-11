@@ -1710,12 +1710,6 @@ theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = 
   (congr_arg List.join <| map_congr h : _)
 #align list.bind_congr List.bind_congr
 
-theorem bind_option_toList_of_eq_some {f : β → Option α} {g : β → α} {bs : List β}
-    (h : ∀ x ∈ bs, f x = some (g x)) : bs.bind (fun i => (f i).toList) = bs.map g := by
-  have : bs.bind (fun i => (f i).toList) = bs.bind (List.ret ∘ g) :=
-    List.bind_congr (by simp; intro m hm; simp[h _ hm]; rfl)
-  rw [this, List.bind_ret_eq_map]
-
 theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
     f a <:+: as.bind f :=
   List.infix_of_mem_join (List.mem_map_of_mem f h)
@@ -3297,6 +3291,25 @@ attribute [simp 1100] filterMap_cons_some
 theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : map f l₁ <+ map f l₂ :=
   filterMap_eq_map f ▸ s.filterMap _
 #align list.sublist.map List.Sublist.map
+
+theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
+    l.filterMap f = l.bind fun a ↦ (f a).toList := by
+  induction' l with a l ih <;> simp
+  rcases f a <;> simp [ih]
+
+theorem filterMap_congr {f g : α → Option β} {l : List α}
+    (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
+  induction' l with a l ih <;> simp
+  simp [ih (fun x hx ↦ h x (List.mem_cons_of_mem a hx))]
+  cases' hfa : f a with b
+  · have : g a = none := Eq.symm (by simpa [hfa] using h a (by simp))
+    simp [this]
+  · have : g a = some b := Eq.symm (by simpa [hfa] using h a (by simp))
+    simp [this]
+
+theorem filterMap_eq_map_of_eq_some {f : α → Option β} {g : α → β} {l : List α}
+    (h : ∀ x ∈ l, f x = some (g x)) : l.filterMap f = l.map g :=
+  Eq.trans (filterMap_congr $ by simpa) (congr_fun (List.filterMap_eq_map _) _)
 
 /-! ### reduceOption -/
 
