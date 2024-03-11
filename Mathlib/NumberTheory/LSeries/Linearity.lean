@@ -73,6 +73,34 @@ lemma LSeries_neg (f : ℕ → ℂ) (s : ℂ) : LSeries (-f) s = -LSeries f s :=
   simp only [LSeries, term_neg_apply, tsum_neg]
 
 /-!
+### Subtraction
+-/
+
+open LSeries
+
+lemma LSeries.term_sub (f g : ℕ → ℂ) (s : ℂ) : term (f - g) s = term f s - term g s := by
+  simp_rw [sub_eq_add_neg, term_add, term_neg]
+
+lemma LSeries.term_sub_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
+    term (f - g) s n = term f s n - term g s n := by
+  rw [term_sub, Pi.sub_apply]
+
+lemma LSeriesHasSum.sub {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
+    (hg : LSeriesHasSum g s b) :
+    LSeriesHasSum (f - g) s (a - b) := by
+  simpa only [LSeriesHasSum, term_sub] using HasSum.sub hf hg
+
+lemma LSeriesSummable.sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
+    (hg : LSeriesSummable g s) :
+    LSeriesSummable (f - g) s := by
+  simpa only [LSeriesSummable, ← term_sub_apply] using Summable.sub hf hg
+
+@[simp]
+lemma LSeries_sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
+    LSeries (f - g) s = LSeries f s - LSeries g s := by
+  simpa only [LSeries, term_sub, Pi.sub_apply] using tsum_sub hf hg
+
+/-!
 ### Scalar multiplication
 -/
 
