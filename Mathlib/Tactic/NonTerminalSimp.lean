@@ -56,7 +56,7 @@ partial def addNonSimpOnlys : InfoTree → M Unit
       let non_terminal_simp? := (! onlyOrNotSimp i.stx) &&
                                 (! i.goalsAfter.length < i.goalsBefore.length)
       match i.stx.getRange? true, non_terminal_simp? with
-        | some r, true => dbg_trace "{i.stx}"; modify (·.insert r i.stx)
+        | some r, true => modify (·.insert r i.stx)
         | _, _ => pure ()
     addNonSimpOnlysList c
   | .context _ t => addNonSimpOnlys t
