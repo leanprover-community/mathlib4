@@ -7,6 +7,11 @@ import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Data.ZMod.Defs
+import Mathlib.RepresentationTheory.Basic
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Complex.Exponential
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Coxeter Systems
@@ -550,6 +555,9 @@ def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 /-- `t` is a reflection of the Coxeter system `cs`; i.e., it is of the form
 $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
 def IsReflection (t : W) : Prop := ∃ w : W, ∃ i : B, t = w * s i * w⁻¹
+
+def reflections : Set W := {t : W | cs.IsReflection t}
+
 /-- `t` is a left inversion of `w`; i.e., `t` is a reflection and $\ell (t w) < \ell(w)$.-/
 def IsLeftInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (t * w) < ℓ w
 /-- `t` is a right inversion of `w`; i.e., `t` is a reflection and $\ell (w t) < \ell(w)$.-/
@@ -622,6 +630,80 @@ private lemma nodup_leftInvSeq_of_reduced (ω : List B) (rω : reduced ω) :
 private lemma nodup_rightInvSeq_of_reduced (ω : List B) (rω : reduced ω) :
     List.Nodup (ris ω) := by
   sorry
+
+-- Geometric representations and the standard geometric representation.
+
+/-- The reflection map corresponding to the (not necessarily positive definite)
+ bilinear form `bilin` and the element `v`.
+-/
+def reflection {V : Type*} [AddCommMonoid V] [Module ℝ V] (bilin : LinearMap.BilinForm ℝ V)
+    (v : V) : V →ₗ[ℝ] V := sorry
+
+theorem reflection_sqr_eq_id {V : Type*} [AddCommMonoid V] [Module ℝ V]
+    (bilin : LinearMap.BilinForm ℝ V) (v : V) :
+    (reflection bilin v) * (reflection bilin v) = LinearMap.id := by
+  sorry
+
+def standardBilinForm (cs : CoxeterSystem M W) : LinearMap.BilinForm ℝ (B →₀ ℝ) := sorry
+
+theorem standardBilinForm_symm : LinearMap.IsSymm cs.standardBilinForm := by
+  sorry
+
+-- TODO add docstrings here
+def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation ℝ W (B →₀ ℝ) := sorry
+
+def simpleRoot (i : B) : B →₀ ℝ := Finsupp.single i 1
+
+alias SGR := standardGeometricRepresentation
+
+local prefix:100 "α" => simpleRoot
+local notation:max "⟪"  a  ","  b  "⟫" => cs.standardBilinForm a b
+
+theorem SGR_simpleReflection (i : B) : cs.SGR (s i) = reflection (cs.standardBilinForm) (α i) := by
+  sorry
+
+theorem SGR_simpleReflection_simpleRoot (i : B) : cs.SGR (s i) (α i) = -α i := by
+  sorry
+
+theorem SGR_bilin_eq_bilin (w : W) (v v' : B →₀ ℝ) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
+  sorry
+
+def roots : Set (B →₀ ℝ) := {v : B →₀ ℝ | ∃ w : W, ∃ i : B, v = cs.SGR w (α i)}
+
+def posRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B, v i ≥ 0}
+def negRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B, v i ≤ 0}
+
+@[simp] theorem roots_invariant (w : W) (v : B →₀ ℝ) : cs.SGR w v ∈ cs.roots ↔ v ∈ cs.roots := by
+  sorry
+
+@[simp] theorem roots_eq_neg_roots : -cs.roots = cs.roots := by
+  sorry
+
+theorem negRoots_eq_neg_posRoots : cs.negRoots = -cs.posRoots := by
+  sorry
+
+theorem root_pos_or_neg : cs.roots = cs.posRoots ∪ cs.negRoots  := by
+  sorry
+
+theorem root_not_pos_and_neg : cs.posRoots ∩ cs.negRoots = ∅ := by
+  sorry
+
+def reflectionToRoot : cs.reflections ≃ cs.posRoots := sorry
+
+theorem reflection_by_root (γ : cs.posRoots) :
+    reflection cs.standardBilinForm γ = cs.SGR (cs.reflectionToRoot.invFun γ) := by
+  sorry
+
+theorem isRightInversion_iff (w : W) (t : cs.reflections) : cs.IsRightInversion w t ↔
+    cs.SGR w (cs.reflectionToRoot.toFun t) ∈ cs.negRoots := by
+  sorry
+
+theorem SGR_injective : Injective cs.SGR := by
+  sorry
+
+local prefix:100 "α" => cs.SGR.simpleRoot
+local notation:max "⟪"  a  ","  b  "⟫" => cs.SGR.bilin a b
+local prefix:100 "r" => reflection cs.SGR.bilin
 
 /-- The (strong) left exchange property:
 Let $w = s_{i_1} \cdots s_{i_\ell}$ be a reduced expression for an element $w \in W$
