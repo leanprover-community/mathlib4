@@ -339,13 +339,15 @@ theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
   · simp
 
 end LT
-
+-- [some_lt_some, lt_iff_le_not_le, some_le_some, not_lt_none, none_le, not_true_eq_false, and_false, true_and]
 instance preorder [Preorder α] : Preorder (WithBot α) where
   le := (· ≤ ·)
   lt := (· < ·)
   lt_iff_le_not_le := by
     intros a b
-    cases a <;> cases b <;> simp [lt_iff_le_not_le]; simp [LE.le, LT.lt]
+    cases a <;> cases b <;> simp only [some_lt_some, lt_iff_le_not_le, some_le_some, not_lt_none,
+                              none_le, not_true_eq_false, and_false, true_and]
+    simp [LE.le, LT.lt]
   le_refl o a ha := ⟨a, ha, le_rfl⟩
   le_trans o₁ o₂ o₃ h₁ h₂ a ha :=
     let ⟨b, hb, ab⟩ := h₁ a ha

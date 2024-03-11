@@ -95,7 +95,7 @@ theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
 
 theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
-  by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
+  by_cases h : a == b <;> simp only [h] <;> simpa [I.eq_iff] using h
 
 theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : f a = c ↔ a = b :=
   h ▸ I.eq_iff
