@@ -76,6 +76,15 @@ theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
 #align unique_subtype_iff_exists_unique unique_subtype_iff_exists_unique
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
+a `Default α` instance. This is a def because the typeclass search cannot
+arbitrarily invent the `a : α` term.
+
+See note [reducible non-instances]. -/
+@[reducible]
+def inhabitedOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Inhabited α where
+  default := a
+
+/-- Given an explicit `a : α` with `Subsingleton α`, we can construct
 a `Unique α` instance. This is a def because the typeclass search cannot
 arbitrarily invent the `a : α` term. Nevertheless, these instances are all
 equivalent by `Unique.Subsingleton.unique`.
@@ -83,12 +92,11 @@ equivalent by `Unique.Subsingleton.unique`.
 See note [reducible non-instances]. -/
 @[reducible]
 def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
-  default := a
+  toInhabited := inhabitedOfSubsingleton a
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton
 
 instance PUnit.unique : Unique PUnit.{u} where
-  default := PUnit.unit
   uniq x := subsingleton x _
 
 -- Porting note:
@@ -102,7 +110,7 @@ theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
 
 /-- Every provable proposition is unique, as all proofs are equal. -/
 def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
-  default := h
+  toInhabited := inhabitedOfSubsingleton h
   uniq _ := rfl
 #align unique_prop uniqueProp
 
@@ -180,9 +188,12 @@ theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α)
 instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) where
   uniq := fun _ ↦ funext fun _ ↦ Unique.eq_default _
 
+/-- There is a function on an empty domain. -/
+instance Pi.inhabitedOfIsEmpty [IsEmpty α] (β : α → Sort v) : Inhabited (∀ a, β a) where
+  default := isEmptyElim
+
 /-- There is a unique function on an empty domain. -/
 instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, β a) where
-  default := isEmptyElim
   uniq _ := funext isEmptyElim
 
 theorem eq_const_of_subsingleton [Subsingleton α] (f : α → β) (a : α) :
@@ -275,12 +286,16 @@ end Option
 section Subtype
 variable {α : Sort u}
 
-instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
+instance Unique.instInhabitedSubtypeEq (y : α) : Inhabited { x // x = y } where
   default := ⟨y, rfl⟩
+
+instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
   uniq := fun ⟨x, hx⟩ ↦ by congr
 
-instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
+instance Unique.instInhabitedSubtypeEq' (y : α) : Inhabited { x // y = x } where
   default := ⟨y, rfl⟩
+
+instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
 
 end Subtype

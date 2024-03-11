@@ -160,9 +160,13 @@ theorem Comp.seq_mk {α β : Type w} {f : Type u → Type v} {g : Type w → Typ
 
 -- Porting note: There is some awkwardness in the following definition now that we have `HMul`.
 
-instance {α} [One α] [Mul α] : Applicative (Const α) where
+instance {α} [One α] : Pure (Const α) where
   pure _ := (1 : α)
+
+instance {α} [Mul α] : Seq (Const α) where
   seq f x := (show α from f) * (show α from x Unit.unit)
+
+instance {α} [One α] [Mul α] : Applicative (Const α) where
 
 -- Porting note: `(· <*> ·)` needed to change to `Seq.seq` in the `simp`.
 -- Also, `simp` didn't close `refl` goals.
@@ -170,9 +174,13 @@ instance {α} [One α] [Mul α] : Applicative (Const α) where
 instance {α} [Monoid α] : LawfulApplicative (Const α) := by
   refine' { .. } <;> intros <;> simp [mul_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
 
-instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
+instance {α} [Zero α] : Pure (AddConst α) where
   pure _ := (0 : α)
+
+instance {α} [Add α] : Seq (AddConst α) where
   seq f x := (show α from f) + (show α from x Unit.unit)
+
+instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
 
 instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) := by
   refine' { .. } <;> intros <;> simp [add_assoc, (· <$> ·), Seq.seq, pure] <;> rfl

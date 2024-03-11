@@ -28,16 +28,12 @@ universe uM uN uP uQ
 
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
 
-/-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
-@[to_additive "`(M →+ N)` is an `AddCommMonoid` if `N` is commutative."]
-instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
-    CommMonoid (M →* N) where
-  mul := (· * ·)
+/-- `(M →* N)` is a `Monoid` if `N` is commutative. -/
+@[to_additive "`(M →* N)` is a `AddMonoid` if `N` is commutative."]
+instance MonoidHom.monoid [MulOneClass M] [CommMonoid N] : Monoid (M →* N) where
   mul_assoc := by intros; ext; apply mul_assoc
-  one := 1
   one_mul := by intros; ext; apply one_mul
   mul_one := by intros; ext; apply mul_one
-  mul_comm := by intros; ext; apply mul_comm
   npow n f :=
     { toFun := fun x => f x ^ n, map_one' := by simp, map_mul' := fun x y => by simp [mul_pow] }
   npow_zero f := by
@@ -47,34 +43,45 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
     ext x
     simp [pow_succ]
 
+/-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
+@[to_additive "`(M →+ N)` is an `AddCommMonoid` if `N` is commutative."]
+instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
+    CommMonoid (M →* N) where
+  mul_comm := by intros; ext; apply mul_comm
+
+/-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
+@[to_additive "If `G` is an additive group, then `M →+ G` is an additive commutative group too."]
+instance MonoidHom.group {M G} [MulOneClass M] [CommGroup G] : Group (M →* G) where
+    div_eq_mul_inv := by
+      intros
+      ext
+      apply div_eq_mul_inv
+    mul_left_inv := by intros; ext; apply mul_left_inv
+    zpow := fun n f =>
+      { toFun := fun x => f x ^ n,
+        map_one' := by simp,
+        map_mul' := fun x y => by simp [mul_zpow] }
+    zpow_zero' := fun f => by
+      ext x
+      simp
+    zpow_succ' := fun n f => by
+      ext x
+      simp [zpow_coe_nat, pow_succ]
+    zpow_neg' := fun n f => by
+      ext x
+      simp [Nat.succ_eq_add_one, zpow_coe_nat, -Int.natCast_add]
+
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too."]
 instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
-  { MonoidHom.commMonoid with
-    inv := Inv.inv,
-    div := Div.div,
-    div_eq_mul_inv := by
-      intros
-      ext
-      apply div_eq_mul_inv,
-    mul_left_inv := by intros; ext; apply mul_left_inv,
-    zpow := fun n f =>
-      { toFun := fun x => f x ^ n,
-        map_one' := by simp,
-        map_mul' := fun x y => by simp [mul_zpow] },
-    zpow_zero' := fun f => by
-      ext x
-      simp,
-    zpow_succ' := fun n f => by
-      ext x
-      simp [zpow_coe_nat, pow_succ],
-    zpow_neg' := fun n f => by
-      ext x
-      simp [Nat.succ_eq_add_one, zpow_coe_nat, -Int.natCast_add] }
+  { MonoidHom.group, MonoidHom.commMonoid with }
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
+
+instance AddMonoid.End.instNatCast [AddCommMonoid M] : NatCast (AddMonoid.End M) where
+    natCast := fun n => n • (1 : AddMonoid.End M)
 
 instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
   { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid with
@@ -82,7 +89,7 @@ instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End 
     mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
     left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _,
     right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl,
-    natCast := fun n => n • (1 : AddMonoid.End M),
+    toNatCast := AddMonoid.End.instNatCast,
     natCast_zero := AddMonoid.nsmul_zero _,
     natCast_succ := fun n => (AddMonoid.nsmul_succ n 1).trans (add_comm _ _) }
 
@@ -110,9 +117,12 @@ theorem AddMonoid.End.ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
   AddMonoidHom.addCommGroup
 
+instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) where
+    intCast := fun z => z • (1 : AddMonoid.End M)
+
 instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
-    intCast := fun z => z • (1 : AddMonoid.End M),
+    toIntCast := AddMonoid.End.instIntCast,
     intCast_ofNat := coe_nat_zsmul _,
     intCast_negSucc := negSucc_zsmul _ }
 

@@ -204,9 +204,13 @@ protected def bind {α β} : Sum e α → (α → Sum e β) → Sum e β
 #align sum.bind Sum.bind
 -- incorrectly marked as a bad translation by mathport, so we do not mark with `ₓ`.
 
-instance : Monad (Sum.{v, u} e) where
+instance : Pure (Sum.{v, u} e) where
   pure := @Sum.inr e
+
+instance : Bind (Sum.{v, u} e) where
   bind := @Sum.bind e
+
+instance : Monad (Sum.{v, u} e) where
 
 instance : LawfulFunctor (Sum.{v, u} e) := by
   refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl

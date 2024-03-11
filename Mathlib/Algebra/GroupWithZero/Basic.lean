@@ -115,7 +115,6 @@ theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
 Somewhat arbitrarily, we define the default element to be `0`.
 All other elements will be provably equal to it, but not necessarily definitionally equal. -/
 def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
-  default := 0
   uniq := eq_zero_of_zero_eq_one h
 #align unique_of_zero_eq_one uniqueOfZeroEqOne
 

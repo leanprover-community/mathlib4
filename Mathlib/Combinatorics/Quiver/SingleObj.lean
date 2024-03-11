@@ -35,9 +35,11 @@ def SingleObj (_ : Type*) : Type :=
   Unit
 #align quiver.single_obj Quiver.SingleObj
 
+instance : Inhabited (SingleObj α) where
+  default := ⟨⟩
+
 -- Porting note: `deriving` from above has been moved to below.
 instance : Unique (SingleObj α) where
-  default := ⟨⟩
   uniq := fun _ => rfl
 
 namespace SingleObj

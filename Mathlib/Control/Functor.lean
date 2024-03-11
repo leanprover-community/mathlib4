@@ -265,8 +265,10 @@ protected theorem run_seq {α β : Type v} (f : Comp F G (α → β)) (x : Comp 
   rfl
 #align functor.comp.run_seq Functor.Comp.run_seq
 
-instance instApplicativeComp : Applicative (Comp F G) :=
-  { map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
+instance instFunctorComp : Functor (Comp F G) :=
+  { map := @Comp.map F G _ _ }
+
+instance instApplicativeComp : Applicative (Comp F G) := {}
 
 end Comp
 
