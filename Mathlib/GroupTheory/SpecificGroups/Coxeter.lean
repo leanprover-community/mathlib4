@@ -465,185 +465,265 @@ theorem isCoxeter_H₄ : IsCoxeter H₄ where
 
 end CoxeterMatrix
 
-namespace CoxeterGroup
+namespace CoxeterSystem
 
 open List Matrix Function
--- The simple reflection of CoxeterGroup M corresponding to the index i.
-def s (i : B) : CoxeterGroup M := PresentedGroup.of i
-
-def wordProd (α : List B) : CoxeterGroup M := prod (map (s M) α)
 variable {M : Matrix B B ℕ}
+variable {W : Type*} [Group W]
+variable (cs : CoxeterSystem M W)
 
-@[simp] theorem wordProd_append (α β : List B) :
-    wordProd M (α ++ β) = (wordProd M α) * (wordProd M β) := by
+/-- The simple reflection of `W` corresponding to the index `i`. -/
+def simpleReflection (i : B) : W := cs.mulEquiv.invFun (PresentedGroup.of i)
+/-- The product of the simple reflections of `W` corresponding to the indices in `ω`.-/
+def wordProd (ω : List B) : W := prod (map cs.simpleReflection ω)
+
+local prefix:100 "s" => cs.simpleReflection
+local prefix:100 "π" => cs.wordProd
+
+@[simp] theorem wordProd_append (ω ω' : List B) :
+    π (ω ++ ω') = π ω * π ω' := by
   sorry
 
-variable (cM : IsCoxeter M)
-
-theorem mk_eq_wordProd_map (L : List (B × Bool)) :
-    QuotientGroup.mk' _ (FreeGroup.mk L) = wordProd M (map Prod.fst L) := by
+theorem wordProd_surjective : Surjective (cs.wordProd) := by
   sorry
 
-theorem wordProd_surjective : Surjective (wordProd M) := by
+theorem wordProd_rev (ω : List B) :
+    π (reverse ω) = (π ω)⁻¹ := by
   sorry
 
-theorem wordProd_rev (α : List B) :
-    wordProd M (reverse α) = (wordProd M α)⁻¹ := by
+/-- The length of `w`; i.e., the minimum number of simple reflections that
+must be multiplied to form `w`. -/
+def length (cs : CoxeterSystem M W) (w : W) : ℕ := sorry
+
+local prefix:100 "ℓ" => cs.length
+
+@[simp] theorem length_one : ℓ (1 : W) = 0 := by
   sorry
 
-def length (w : CoxeterGroup M) : ℕ := sorry
-
-alias ℓ := length
-
-theorem length_one : ℓ (1 : CoxeterGroup M) = 0 := by
+theorem length_eq_zero_iff {w : W} : ℓ w = 0 ↔ w = 1 := by
   sorry
 
-theorem length_eq_zero_iff {w : CoxeterGroup M} : ℓ w = 0 ↔ w = 1 := by
+@[simp] theorem length_simple (i : B) : ℓ (s i) = 1 := by
   sorry
 
-theorem length_simple (i : B) : ℓ (s M i) = 1 := by
+theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
   sorry
 
-theorem length_eq_one_iff {w : CoxeterGroup M} : ℓ w = 1 ↔ ∃ i : B, w = s M i := by
+@[simp] theorem length_inv (w : W) : ℓ (w⁻¹) = ℓ w := by
   sorry
 
-theorem length_inv (w : CoxeterGroup M) : ℓ (w⁻¹) = ℓ w := by
-  sorry
-
-theorem length_mul_le (w₁ w₂ : CoxeterGroup M) :
+theorem length_mul_le (w₁ w₂ : W) :
     ℓ (w₁ * w₂) ≤ ℓ w₁ + ℓ w₂ := by
   sorry
 
-theorem length_mul_ge (w₁ w₂ : CoxeterGroup M) :
+theorem length_mul_ge (w₁ w₂ : W) :
     ℓ (w₁ * w₂) ≥ max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) := by
   sorry
 
-def lengthParity : CoxeterGroup M →* Multiplicative (ZMod 2) := sorry
+private def lengthParity (cs : CoxeterSystem M W) : W →* Multiplicative (ZMod 2) := sorry
 
-theorem parity_length_eq :
-    Multiplicative.toAdd ∘ (lengthParity (M := M)).toFun = ((↑) : ℕ → ZMod 2) ∘ ℓ := by
+private theorem parity_length_eq :
+    Multiplicative.toAdd ∘ cs.lengthParity.toFun = ((↑) : ℕ → ZMod 2) ∘ cs.length := by
   sorry
 
-theorem parity_length_eq' (w : CoxeterGroup M) :
-    Multiplicative.toAdd (lengthParity (M := M) w) = ((↑) : ℕ → ZMod 2) (ℓ w) := by
+private theorem parity_length_eq' (w : W) :
+    Multiplicative.toAdd (cs.lengthParity w) = ((↑) : ℕ → ZMod 2) (ℓ w) := by
   sorry
 
-theorem parity_length_mul (w₁ w₂ : CoxeterGroup M) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
+theorem parity_length_mul (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
   sorry
 
-theorem length_mul_simple (w : CoxeterGroup M) (i : B) :
-    ℓ (w * s M i) = ℓ w + 1 ∨ ℓ (w * s M i) + 1 = ℓ w := by
+theorem length_mul_simple (w : W) (i : B) :
+    ℓ (w * s i) = ℓ w + 1 ∨ ℓ (w * s i) + 1 = ℓ w := by
   sorry
 
-theorem length_simple_mul (w : CoxeterGroup M) (i : B) :
-    ℓ (s M i * w) = ℓ w + 1 ∨ ℓ (s M i * w) + 1 = ℓ w := by
+theorem length_simple_mul (w : W) (i : B) :
+    ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s i * w) + 1 = ℓ w := by
   sorry
 
 -- Reduced words
 
-def IsReduced (M : Matrix B B ℕ) (α : List B) : Prop := ℓ (wordProd M α) = List.length α
+def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
 -- Reflections, inversions, inversion sequences
 
-def IsReflection (t : CoxeterGroup M) : Prop := ∃ w : CoxeterGroup M, ∃ i : B, t = w * s M i * w⁻¹
-def IsLeftInversion (w t : CoxeterGroup M) : Prop := IsReflection t ∧ ℓ (t * w) < ℓ w
-def IsRightInversion (w t : CoxeterGroup M) : Prop := IsReflection t ∧ ℓ (w * t) < ℓ w
+/-- `t` is a reflection of the Coxeter system `cs`; i.e., it is of the form
+$w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
+def IsReflection (t : W) : Prop := ∃ w : W, ∃ i : B, t = w * s i * w⁻¹
+/-- `t` is a left inversion of `w`; i.e., `t` is a reflection and $\ell (t w) < \ell(w)$.-/
+def IsLeftInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (t * w) < ℓ w
+/-- `t` is a right inversion of `w`; i.e., `t` is a reflection and $\ell (w t) < \ell(w)$.-/
+def IsRightInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (w * t) < ℓ w
 
-def leftInvSeq (M : Matrix B B ℕ) (α : List B) : List (CoxeterGroup M) := sorry
-def rightInvSeq (M : Matrix B B ℕ) (α : List B) : List (CoxeterGroup M) := sorry
+/-- The left inversion sequence of `ω`. The left inversion sequence of a word
+$s_{i_1} \cdots s_{i_\ell}$ is the sequence
+$$s_{i_1}, s_{i_1}s_{i_2}s_{i_1}, s_{i_1}s_{i_2}s_{i_3}s_{i_2}s_{i_1}, \ldots,
+    s_{i_1}\cdots s_{i_\ell}\cdots s_{i_1}.$$
+-/
+def leftInvSeq (cs : CoxeterSystem M W) (ω : List B) : List W := sorry
+/-- The right inversion sequence of `ω`. The right inversion sequence of a word
+$s_{i_1} \cdots s_{i_\ell}$ is the sequence
+$$s_{i_\ell}\cdots s_{i_1}\cdots s_{i_\ell}, \ldots,
+    s_{i_{\ell}}s_{i_{\ell - 1}}s_{i_{\ell - 2}}s_{i_{\ell - 1}}s_{i_\ell}, \ldots,
+    s_{i_{\ell}}s_{i_{\ell - 1}}s_{i_\ell}, s_{i_\ell}.$$
+-/
+def rightInvSeq (cs : CoxeterSystem M W) (ω : List B) : List W := sorry
 
-theorem length_leftInvSeq (α : List B) : (leftInvSeq M α).length = α.length := by
+local prefix:100 "reduced" => cs.IsReduced
+local prefix:100 "lis" => cs.leftInvSeq
+local prefix:100 "ris" => cs.rightInvSeq
+
+@[simp] theorem length_leftInvSeq (ω : List B) : (lis ω).length = ω.length := by
   sorry
 
-theorem length_rightInvSeq (α : List B) : (rightInvSeq M α).length = α.length := by
+@[simp] theorem length_rightInvSeq (ω : List B) : (ris ω).length = ω.length := by
   sorry
 
-theorem leftInvSeq_rev (α : List B) : leftInvSeq M (α.reverse) = (rightInvSeq M α).reverse := by
+theorem all_leftInvSeq_isReflection (ω : List B) : ∀ t ∈ lis ω, cs.IsReflection t := by
   sorry
 
-theorem rightInvSeq_rev (α : List B) : rightInvSeq M (α.reverse) = (leftInvSeq M α).reverse := by
+theorem all_rightInvSeq_isReflection (ω : List B) : ∀ t ∈ ris ω, cs.IsReflection t := by
   sorry
 
-theorem leftInvSeq_take (α : List B) (i : ℕ) :
-    leftInvSeq M (α.take i) = (leftInvSeq M α).take i := by
+@[simp] theorem leftInvSeq_rev (ω : List B) :
+    lis (ω.reverse) = (ris ω).reverse := by
   sorry
 
-theorem rightInvSeq_drop (α : List B) (i : ℕ) :
-    rightInvSeq M (α.drop i) = (rightInvSeq M α).drop i := by
+@[simp] theorem rightInvSeq_rev (ω : List B) :
+    ris (ω.reverse) = (lis ω).reverse := by
   sorry
 
-theorem leftInvSeq_i_mul (α : List B) (i : Fin (leftInvSeq M α).length) :
-    (leftInvSeq M α)[i] * wordProd M α = wordProd M (α.eraseIdx i) := by
+@[simp] theorem leftInvSeq_take (ω : List B) (j : ℕ) :
+    lis (ω.take j) = (lis ω).take j := by
   sorry
 
-theorem rightInvSeq_i_mul (α : List B) (i : Fin (rightInvSeq M α).length) :
-    wordProd M α * (rightInvSeq M α)[i] = wordProd M (α.eraseIdx i) := by
+@[simp] theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
+    ris (ω.drop j) = (ris ω).drop j := by
   sorry
 
-theorem prod_leftInvSeq (α : List B) : prod (leftInvSeq M α) = (wordProd M α)⁻¹ := by
+theorem leftInvSeq_i_mul (ω : List B) (j : Fin (lis ω).length) :
+    (lis ω)[j] * π ω = π (ω.eraseIdx j) := by
   sorry
 
-theorem prod_rightInvSeq (α : List B) : prod (rightInvSeq M α) = (wordProd M α)⁻¹ := by
+theorem rightInvSeq_i_mul (ω : List B) (j : Fin (ris ω).length) :
+    π ω * (ris ω)[j] = π (ω.eraseIdx j) := by
   sorry
 
-private lemma nodup_leftInvSeq_of_reduced (α : List B) (rα : IsReduced M α) :
-    List.Nodup (leftInvSeq M α) := by
+theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   sorry
 
-private lemma nodup_rightInvSeq_of_reduced (α : List B) (rα : IsReduced M α) :
-    List.Nodup (rightInvSeq M α) := by
+theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
   sorry
 
-theorem left_exchange_property (α : List B) (t : CoxeterGroup M) (rα : IsReduced M α) :
+private lemma nodup_leftInvSeq_of_reduced (ω : List B) (rω : reduced ω) :
+    List.Nodup (lis ω) := by
+  sorry
+
+private lemma nodup_rightInvSeq_of_reduced (ω : List B) (rω : reduced ω) :
+    List.Nodup (ris ω) := by
+  sorry
+
+/-- The (strong) left exchange property:
+Let $w = s_{i_1} \cdots s_{i_\ell}$ be a reduced expression for an element $w \in W$
+and let $t \in W$.
+The following are equivalent:
+
+\begin{enumerate}
+  \item $t$ is a left inversion of $w$.
+  \item $t$ appears in the left inversion sequence of the word $s_{i_1} \cdots s_{i_\ell}$.
+  \item There exists $j$ with $1 \leq j \leq \ell$ such that
+  $$tw = s_{i_1} \cdots \widehat{s_{i_j}} \cdots s_{i_\ell}$$
+  (i.e. the result of multiplying all of the simple reflections $s_{i_1}, \ldots, s_{i_\ell}$
+  except $s_{i_j}$).
+\end{enumerate}
+-/
+theorem left_exchange_property (ω : List B) (t : W) (rω : reduced ω) :
     List.TFAE [
-      IsLeftInversion (wordProd M α) t,
-      t ∈ leftInvSeq M α,
-      ∃ i < α.length, t * (wordProd M α) = wordProd M (α.eraseIdx i)
+      cs.IsLeftInversion (π ω) t,
+      t ∈ lis ω,
+      ∃ j < ω.length, t * (π ω) = π (ω.eraseIdx j)
     ] := by
   sorry
 
-theorem right_exchange_property (α : List B) (t : CoxeterGroup M) (rα : IsReduced M α) :
+/-- The (strong) right exchange property:
+Let $w = s_{i_1} \cdots s_{i_\ell}$ be a reduced expression for an element $w \in W$
+and let $t \in W$.
+The following are equivalent:
+
+\begin{enumerate}
+  \item $t$ is a right inversion of $w$.
+  \item $t$ appears in the right inversion sequence of the word $s_{i_1} \cdots s_{i_\ell}$.
+  \item There exists $j$ with $1 \leq j \leq \ell$ such that
+  $$wt = s_{i_1} \cdots \widehat{s_{i_j}} \cdots s_{i_\ell}$$
+  (i.e. the result of multiplying all of the simple reflections $s_{i_1}, \ldots, s_{i_\ell}$
+  except $s_{i_j}$).
+\end{enumerate}
+-/
+theorem right_exchange_property (ω : List B) (t : W) (rω : reduced ω) :
     List.TFAE [
-      IsRightInversion (wordProd M α) t,
-      t ∈ rightInvSeq M α,
-      ∃ i < α.length, (wordProd M α) * t = wordProd M (α.eraseIdx i)
+      cs.IsRightInversion (π ω) t,
+      t ∈ ris ω,
+      ∃ j < ω.length, (π ω) * t = π (ω.eraseIdx j)
     ] := by
   sorry
 
-theorem nodup_leftInvSeq_iff (α : List B) :
-    List.Nodup (leftInvSeq M α) ↔ IsReduced M α := by
+theorem nodup_leftInvSeq_iff (ω : List B) :
+    List.Nodup (lis ω) ↔ reduced ω := by
   sorry
 
-theorem nodup_rightInvSeq_iff (α : List B) :
-    List.Nodup (rightInvSeq M α) ↔ IsReduced M α := by
+theorem nodup_rightInvSeq_iff (ω : List B) :
+    List.Nodup (ris ω) ↔ reduced ω := by
   sorry
 
-theorem deletion_property (α : List B) (nrα : ¬IsReduced M α) :
-    ∃ i < α.length, ∃ j < i, wordProd M ((α.eraseIdx i).eraseIdx j) = wordProd M α := by
+/-- The deletion property:
+If $s_{i_1} \cdots s_{i_\ell}$ is not a reduced expression, then there are $i, j$ with
+$1 \leq j < j' \leq \ell$ such that
+$$s_{i_1} \cdots s_{i_\ell} =
+s_{i_1} \cdots \widehat{s_{i_j}} \cdots \widehat{s_{i_{j'}}} s_{i_\ell}.
+-/
+theorem deletion_property (ω : List B) (nrω : ¬ reduced ω) :
+    ∃ j' < ω.length, ∃ j < j', π ((ω.eraseIdx j').eraseIdx j) = π ω := by
   sorry
 
 /-
-TODO: Set of left inversions, set of right inversions of an element.
-Long element has all reflections as inversions. Long element is an involution.
-Properties of Coxeter number.
+TODO: Inversion set is finite. Size of inversion set = length.
 Matsumoto's theorem.
-The weak order. Bruhat order.
 Simple reflections are distinct.
+Order of s_i s_j is exactly M i j.
+
+Eₙ for n > 8.
+
 Irreducibility. Irreducible components.
 Parabolic subgroups.
-The standard geometric representation.
-Small roots.
-Coxeter groups are automatic.
-Associated hyperplane arrangements and partition lattices and their characteristic polynomials.
 Poincare series.
-Combinatorial descriptions.
+
+The standard geometric representation. It is faithful.
+Height of a root.
+Standard geometric representation is orthogonal if and only if W is finite.
 Classification of irreducible finite Coxeter groups.
 Classification of irreducible affine Coxeter groups.
+
+Small roots.
+Coxeter groups are automatic.
+
+Long element has all reflections as inversions. Long element is an involution.
+Properties of Coxeter number.
+
+The weak order. Ungar moves. Ungar's problem.
+
+Bruhat order.
+
+Combinatorially describe finite and affine Coxeter groups of types A, B, C, D.
+Interpret inversions, descents, length, convex sets, parabolic subgroups, Bruhat order.
+
+Schubert polynomials.
+
+Associated hyperplane arrangements and partition lattices and their characteristic polynomials.
 Folding.
 Convex sets.
 Coxeter elements, c-sorting words.
 Powers of Coxeter elements in infinite groups are reduced.
-Classification of affine futuristic Coxeter groups.
+Futuristic Coxeter groups.
 -/
 
-end CoxeterGroup
+end CoxeterSystem
