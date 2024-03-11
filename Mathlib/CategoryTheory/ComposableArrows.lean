@@ -173,7 +173,7 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
       obtain rfl := hj
       rw [F.map'_self i, G.map'_self i, id_comp, comp_id]
     · intro i j hj hj'
-      rw [Nat.succ_eq_add_one, ← add_assoc] at hj
+      rw [← add_assoc] at hj
       subst hj
       rw [F.map'_comp i (i + k) (i + k + 1), G.map'_comp i (i + k) (i + k + 1), assoc,
         w (i + k) (by valid), reassoc_of% (hk i (i + k) rfl (by valid))]
@@ -529,8 +529,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
     intro ⟨i, hi⟩
     cases' i with i
     · exact h₀
-    · rw [Nat.succ_eq_add_one] at hi
-      exact Functor.congr_obj h ⟨i, by valid⟩
+    · exact Functor.congr_obj h ⟨i, by valid⟩
   exact Functor.ext_of_iso (isoMkSucc (eqToIso h₀) (eqToIso h) (by
       rw [w]
       dsimp [app']
