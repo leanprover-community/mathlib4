@@ -17,6 +17,11 @@ If you want to use `simp [...]` followed by other tactics, then replace `simp [.
 * something else that does not involve `simp`!
 
 The linter equates "non-terminal" with "closes at least one goal".
+
+##  Implementation detail
+
+The code in this linter has been modified very slightly from the code for the
+`unreachableTactic` linter.
 -/
 
 open Lean Elab
