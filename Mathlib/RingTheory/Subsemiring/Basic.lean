@@ -1287,32 +1287,9 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring R']
 
-/-- The action by a subsemiring is the action by the underlying semiring. -/
-instance smul [SMul R' α] (S : Subsemiring R') : SMul S α :=
-  S.toSubmonoid.smul
-
 theorem smul_def [SMul R' α] {S : Subsemiring R'} (g : S) (m : α) : g • m = (g : R') • m :=
   rfl
 #align subsemiring.smul_def Subsemiring.smul_def
-
-instance smulCommClass_left [SMul R' β] [SMul α β] [SMulCommClass R' α β] (S : Subsemiring R') :
-    SMulCommClass S α β :=
-  S.toSubmonoid.smulCommClass_left
-#align subsemiring.smul_comm_class_left Subsemiring.smulCommClass_left
-
-instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] (S : Subsemiring R') :
-    SMulCommClass α S β :=
-  S.toSubmonoid.smulCommClass_right
-#align subsemiring.smul_comm_class_right Subsemiring.smulCommClass_right
-
-/-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β]
-    (S : Subsemiring R') :
-    IsScalarTower S α β :=
-  S.toSubmonoid.isScalarTower
-
-instance faithfulSMul [SMul R' α] [FaithfulSMul R' α] (S : Subsemiring R') : FaithfulSMul S α :=
-  S.toSubmonoid.faithfulSMul
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance [Zero α] [SMulWithZero R' α] (S : Subsemiring R') : SMulWithZero S α :=
@@ -1321,20 +1298,6 @@ instance [Zero α] [SMulWithZero R' α] (S : Subsemiring R') : SMulWithZero S α
 end NonAssocSemiring
 
 variable [Semiring R']
-
-/-- The action by a subsemiring is the action by the underlying semiring. -/
-instance mulAction [MulAction R' α] (S : Subsemiring R') : MulAction S α :=
-  S.toSubmonoid.mulAction
-
-/-- The action by a subsemiring is the action by the underlying semiring. -/
-instance distribMulAction [AddMonoid α] [DistribMulAction R' α] (S : Subsemiring R') :
-    DistribMulAction S α :=
-  S.toSubmonoid.distribMulAction
-
-/-- The action by a subsemiring is the action by the underlying semiring. -/
-instance mulDistribMulAction [Monoid α] [MulDistribMulAction R' α] (S : Subsemiring R') :
-    MulDistribMulAction S α :=
-  S.toSubmonoid.mulDistribMulAction
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
 instance mulActionWithZero [Zero α] [MulActionWithZero R' α] (S : Subsemiring R') :
@@ -1347,10 +1310,6 @@ instance module [AddCommMonoid α] [Module R' α] (S : Subsemiring R') : Module 
   -- Porting note: copying over the `smul` field causes a timeout
   -- { Module.compHom _ S.subtype with smul := (· • ·) }
   Module.compHom _ S.subtype
-
-/-- The action by a subsemiring is the action by the underlying semiring. -/
-instance [Semiring α] [MulSemiringAction R' α] (S : Subsemiring R') : MulSemiringAction S α :=
-  S.toSubmonoid.mulSemiringAction
 
 /-- The center of a semiring acts commutatively on that semiring. -/
 instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
