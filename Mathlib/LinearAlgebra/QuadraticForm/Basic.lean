@@ -798,7 +798,7 @@ theorem compQuadraticForm_polar (f : R →ₗ[S] S) (Q : QuadraticForm R M) (x y
 
 theorem compQuadraticForm_polarBilin (f : R →ₗ[S] S) (Q : QuadraticForm R M) :
     (f.compQuadraticForm Q).polarBilin =
-    (Q.polarBilin.restrictScalars₁₂ S).compr₂ f :=
+    (Q.polarBilin.restrictScalars₁₂ S S).compr₂ f :=
   ext₂ <| compQuadraticForm_polar _ _
 
 end Ring
