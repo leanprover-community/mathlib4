@@ -5,7 +5,10 @@ Authors: Alex J. Best, Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.RingTheory.Norm
 import Mathlib.Topology.Instances.Complex
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import number_theory.number_field.embeddings from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
@@ -411,6 +414,9 @@ theorem isReal_or_isComplex (w : InfinitePlace K) : IsReal w ∨ IsComplex w := 
   rw [← not_isReal_iff_isComplex]; exact em _
 #align number_field.infinite_place.is_real_or_is_complex NumberField.InfinitePlace.isReal_or_isComplex
 
+theorem ne_of_isReal_isComplex {w w' : InfinitePlace K} (h : IsReal w) (h' : IsComplex w') :
+    w ≠ w' := fun h_eq ↦ not_isReal_iff_isComplex.mpr h' (h_eq ▸ h)
+
 /-- The real embedding associated to a real infinite place. -/
 noncomputable def embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) : K →+* ℝ :=
   ComplexEmbedding.IsReal.embedding (isReal_iff.mp hw)
@@ -602,6 +608,14 @@ theorem card_add_two_mul_card_eq_rank :
   exact Fintype.card_subtype_le _
 
 variable {K}
+
+theorem nrComplexPlaces_eq_zero_of_finrank_eq_one (h : finrank ℚ K = 1) :
+    NrComplexPlaces K = 0 := by linarith [card_add_two_mul_card_eq_rank K]
+
+theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
+    NrRealPlaces K = 1 := by
+  have := card_add_two_mul_card_eq_rank K
+  rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
 
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
@@ -1034,3 +1048,31 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   exact InfinitePlace.isUnramifiedIn K
 
 end InfinitePlace
+
+namespace IsPrimitiveRoot
+
+variable {K : Type*} [Field K] [NumberField K] {ζ : K} {k : ℕ}
+
+theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k) :
+    NumberField.InfinitePlace.NrRealPlaces K = 0 := by
+  refine (@Fintype.card_eq_zero_iff _ (_)).2 ⟨fun ⟨w, hwreal⟩ ↦ ?_⟩
+  rw [NumberField.InfinitePlace.isReal_iff] at hwreal
+  let f := w.embedding
+  have hζ' : IsPrimitiveRoot (f ζ) k := hζ.map_of_injective f.injective
+  have him : (f ζ).im = 0 := by
+    · rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
+      congr
+  have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
+    · rw [← Complex.abs_re_eq_abs] at him
+      have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
+      rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
+  cases hre with
+  | inl hone =>
+    exact hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
+  | inr hnegone =>
+    replace hζ' := hζ'.eq_orderOf
+    simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
+      orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
+    linarith
+
+end IsPrimitiveRoot

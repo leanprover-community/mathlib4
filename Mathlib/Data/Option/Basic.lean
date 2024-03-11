@@ -370,6 +370,9 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
     casesOn' o (f none) (f ∘ (fun a ↦ ↑a)) = f o := by cases o <;> rfl
 #align option.cases_on'_none_coe Option.casesOn'_none_coe
 
+lemma casesOn'_eq_elim (b : β) (f : α → β) (a : Option α) :
+    Option.casesOn' a b f = Option.elim a b f := by cases a <;> rfl
+
 -- porting note: workaround for leanprover/lean4#2049
 compile_inductive% Option
 
@@ -400,7 +403,7 @@ theorem orElse_eq_none' (o o' : Option α) : o.orElse (fun _ ↦ o') = none ↔ 
 
 section
 
-open Classical
+open scoped Classical
 
 theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
   dif_neg (not_nonempty_iff_imp_false.mpr isEmptyElim)

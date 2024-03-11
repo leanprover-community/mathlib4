@@ -41,7 +41,7 @@ section AdjoinDef
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 
---Porting note: not adding `neg_mem'` causes an error.
+-- Porting note: not adding `neg_mem'` causes an error.
 /-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`. -/
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
@@ -740,7 +740,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
   let P : Set ι → Prop := fun s => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L)
   change P Set.univ
   apply Set.Finite.induction_on
-  all_goals dsimp only
+  all_goals dsimp only [P]
   · exact Set.finite_univ
   · rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
@@ -980,6 +980,12 @@ theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by rw [ran
 theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finrank_eq_one_iff]
 #align intermediate_field.finrank_bot IntermediateField.finrank_bot
 
+@[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
+  rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
+
+@[simp] theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
+  congr(Cardinal.toNat $(rank_bot'))
+
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
 
@@ -1070,7 +1076,7 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
   exact (aeval_algebraMap_apply E (AdjoinSimple.gen F α) _).symm
 #align intermediate_field.aeval_gen_minpoly IntermediateField.aeval_gen_minpoly
 
---Porting note: original proof used `Exists.cases_on`.
+-- Porting note: original proof used `Exists.cases_on`.
 /-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
@@ -1130,7 +1136,7 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
 #align intermediate_field.adjoin.power_basis IntermediateField.adjoin.powerBasis
 
 theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮x⟯ :=
-  PowerBasis.finiteDimensional (adjoin.powerBasis hx)
+  (adjoin.powerBasis hx).finite
 #align intermediate_field.adjoin.finite_dimensional IntermediateField.adjoin.finiteDimensional
 
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
@@ -1291,7 +1297,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     (this.trans natDegree_comp.symm).ge).irreducible hp₁
   have := Fact.mk hp₁
   let Kx := AdjoinRoot p
-  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finiteDimensional
+  letI := (AdjoinRoot.powerBasis hp₁.ne_zero).finite
   have key₁ : f = minpoly K (aeval (root p) g) := by
     refine minpoly.eq_of_irreducible_of_monic hf ?_ hfm
     rw [← aeval_comp]
@@ -1337,7 +1343,7 @@ theorem fg_def {S : IntermediateField F E} : S.FG ↔ ∃ t : Set E, Set.Finite 
 #align intermediate_field.fg_def IntermediateField.fg_def
 
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
-  -- porting note: was `⟨∅, adjoin_empty F E⟩`
+  -- Porting note: was `⟨∅, adjoin_empty F E⟩`
   ⟨∅, by simp only [Finset.coe_empty, adjoin_empty]⟩
 #align intermediate_field.fg_bot IntermediateField.fg_bot
 

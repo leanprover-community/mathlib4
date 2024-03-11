@@ -103,7 +103,7 @@ instance (priority := 10) Bitraversable.isLawfulTraversable [LawfulBitraversable
     LawfulTraversable (t α) := by
   constructor <;> intros <;>
     simp [traverse, comp_tsnd, functor_norm]
-  · simp [tsnd_eq_snd_id]; rfl
+  · simp only [tsnd_eq_snd_id, Id.pure_eq]; rfl
   · simp [tsnd, binaturality, Function.comp, functor_norm]
 #align bitraversable.is_lawful_traversable Bitraversable.isLawfulTraversable
 
@@ -151,7 +151,7 @@ instance : Bitraversable (bicompr F t) where bitraverse := @Bicompr.bitraverse t
 instance [LawfulTraversable F] [LawfulBitraversable t] : LawfulBitraversable (bicompr F t) := by
   constructor <;> intros <;>
     simp [bitraverse, Bicompr.bitraverse, bitraverse_id_id, functor_norm]
-  · simp [bitraverse_eq_bimap_id', traverse_eq_map_id']; rfl
+  · simp only [bitraverse_eq_bimap_id', traverse_eq_map_id', Function.comp_apply, Id.pure_eq]; rfl
   · dsimp only [bicompr]
     simp [naturality, binaturality']
 

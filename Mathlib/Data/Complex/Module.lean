@@ -185,14 +185,19 @@ instance (priority := 900) Algebra.complexToReal {A : Type*} [Semiring A] [Algeb
     Algebra ℝ A :=
   RestrictScalars.algebra ℝ ℂ A
 
--- try to make sure we're not introducing diamonds.
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
 example : Prod.algebra ℝ ℂ ℂ = (Prod.algebra ℂ ℂ ℂ).complexToReal := rfl
+
+-- try to make sure we're not introducing diamonds but we will need
+-- `reducible_and_instances` which currently fails #10906
 example {ι : Type*} [Fintype ι] :
     Pi.algebra (R := ℝ) ι (fun _ ↦ ℂ) = (Pi.algebra (R := ℂ) ι (fun _ ↦ ℂ)).complexToReal :=
   rfl
+
 example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
     (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
-  rfl
+  by with_reducible_and_instances rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :
@@ -345,7 +350,7 @@ def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
       rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
       congr 1
       -- equate "real" and "imaginary" parts
-      · let inst : SMulCommClass ℝ A A := by infer_instance  -- porting note: added
+      · let inst : SMulCommClass ℝ A A := by infer_instance  -- Porting note: added
         rw [smul_mul_smul, hf, smul_neg, ← Algebra.algebraMap_eq_smul_one, ← sub_eq_add_neg, ←
           RingHom.map_mul, ← RingHom.map_sub]
       · rw [Algebra.smul_def, Algebra.smul_def, Algebra.smul_def, ← Algebra.right_comm _ x₂, ←

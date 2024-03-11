@@ -230,7 +230,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   refine' .of_nonneg_of_le _ (fun i => _) (((hf.summable hp).add (hg.summable hp)).mul_left C)
   · intro; positivity
   · refine' (Real.rpow_le_rpow (norm_nonneg _) (norm_add_le _ _) hp.le).trans _
-    dsimp only
+    dsimp only [C]
     split_ifs with h
     · simpa using NNReal.coe_le_coe.2 (NNReal.rpow_add_le_add_rpow ‖f i‖₊ ‖g i‖₊ hp.le h.le)
     · let F : Fin 2 → ℝ≥0 := ![‖f i‖₊, ‖g i‖₊]
@@ -479,7 +479,7 @@ theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
   rw [lp.ext_iff, coeFn_zero]
 #align lp.eq_zero_iff_coe_fn_eq_zero lp.eq_zero_iff_coeFn_eq_zero
 
--- porting note: this was very slow, so I squeezed the `simp` calls
+-- porting note (#11083): this was very slow, so I squeezed the `simp` calls
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -504,7 +504,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
         · cases isEmpty_or_nonempty α
           · -- porting note (#10745): was `simp [lp.eq_zero' f]`
             rw [lp.eq_zero' f]
-            simp only [zero_add, norm_zero, le_refl] -- porting note: just `simp` was slow
+            simp only [zero_add, norm_zero, le_refl] -- porting note (#11083): just `simp` was slow
           refine' (lp.isLUB_norm (f + g)).2 _
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
@@ -763,7 +763,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     rcases p.trichotomy with (rfl | rfl | h)
     · exfalso
       have := ENNReal.toReal_mono ENNReal.zero_ne_top hp.elim
-      norm_num at this
+      set_option tactic.skipAssignedInstances false in norm_num at this
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
@@ -1060,12 +1060,12 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
   have hF : ∀ i ∉ s, F i = 0 := by
     intro i hi
     suffices ‖f i‖ ^ p.toReal - ‖f i - ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 by
-      simpa only [coeFn_sum, lp.single_apply, coeFn_sub, Pi.sub_apply, Finset.sum_apply,
+      simpa only [F, coeFn_sum, lp.single_apply, coeFn_sub, Pi.sub_apply, Finset.sum_apply,
         Finset.sum_dite_eq] using this
     simp only [if_neg hi, sub_zero, sub_self]
   have hF' : ∀ i ∈ s, F i = ‖f i‖ ^ p.toReal := by
     intro i hi
-    simp only [coeFn_sum, lp.single_apply, if_pos hi, sub_self, eq_self_iff_true, coeFn_sub,
+    simp only [F, coeFn_sum, lp.single_apply, if_pos hi, sub_self, eq_self_iff_true, coeFn_sub,
       Pi.sub_apply, Finset.sum_apply, Finset.sum_dite_eq, sub_eq_self]
     simp [Real.zero_rpow hp.ne']
   have : HasSum F (∑ i in s, F i) := hasSum_sum_of_ne_finset_zero hF

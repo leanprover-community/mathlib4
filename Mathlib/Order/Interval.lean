@@ -30,7 +30,7 @@ variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 We define intervals by the pair of endpoints `fst`, `snd`. To convert intervals to the set of
 elements between these endpoints, use the coercion `NonemptyInterval α → Set α`. -/
--- @[ext] -- porting note: generates the wrong lemma
+-- @[ext] -- Porting note: generates the wrong lemma
 -- in lean3 it generated `x.toProd = y.toProd → x = y`, now it generates
 -- `(x.toProd.fst = y.toProd.fst) → (x.toProd.snd = y.toProd.snd) → x = y`.
 -- this is because in `Std.Tactic.Ext.withExtHyps`, the for-loop goes over
@@ -50,12 +50,12 @@ theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α)
   fun s t h => by cases s; cases t; congr
 #align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
 
--- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
+-- Porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
 -- Would be nice to fix `@[ext]` to generate them automatically.
 theorem ext (s t : NonemptyInterval α) (h : s.toProd = t.toProd) : s = t := toProd_injective h
 #align nonempty_interval.ext NonemptyInterval.ext
 
--- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
+-- Porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
 -- Would be nice to fix `@[ext]` to generate them automatically.
 theorem ext_iff (s t : NonemptyInterval α) : s = t ↔ s.toProd = t.toProd :=
   toProd_injective.eq_iff.symm
@@ -326,7 +326,7 @@ section LE
 
 variable [LE α] {s t : Interval α}
 
--- porting note: previously found using `deriving`
+-- Porting note: previously found using `deriving`
 instance : Inhabited (Interval α) := WithBot.inhabited
 instance : LE (Interval α) := WithBot.le
 instance : OrderBot (Interval α) := WithBot.orderBot
@@ -726,7 +726,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           cases s with
           | none => exact bot_le
           | some s =>
-            dsimp -- Porting note: added
+            dsimp -- Porting note (#11227): added a `dsimp`
             split_ifs with h
             · exact WithBot.some_le_some.2
                 ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
