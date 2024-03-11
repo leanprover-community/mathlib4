@@ -19,7 +19,7 @@ class GIsometryClass
     {α₁:outParam Type*} {α₂:outParam Type*} [FunLike T α₁ α₂]
     {T₁ T₂:outParam Type*} [FunLike T₁ α₁ (α₁ → γ)] [GPseudoMetricClass T₁ α₁ γ]
     [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₂ α₂ γ]
-    (gdist₁: outParam T₁) (gdist₂: outParam T₂) where
+    (gdist₁: outParam T₁) (gdist₂: outParam T₂) : Prop where
   map_dist' : ∀ φ:T,∀ x y, ⇑gdist₁ x y = ⇑gdist₂ (φ x) (φ y)
 
 namespace GIsometry
