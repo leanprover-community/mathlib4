@@ -196,14 +196,14 @@ section AddCommGroup
 variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
 
 theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) (s : Set E) :
-    f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) := by
+    convexHull 𝕜 (f '' s) = f '' convexHull 𝕜 s := by
   apply Set.Subset.antisymm
+  · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
+      ((convex_convexHull 𝕜 s).affine_image f)
   · rw [Set.image_subset_iff]
     refine' convexHull_min _ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
     rw [← Set.image_subset_iff]
     exact subset_convexHull 𝕜 (f '' s)
-  · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
-      ((convex_convexHull 𝕜 s).affine_image f)
 #align affine_map.image_convex_hull AffineMap.image_convexHull
 
 theorem convexHull_subset_affineSpan (s : Set E) : convexHull 𝕜 s ⊆ (affineSpan 𝕜 s : Set E) :=
@@ -219,7 +219,7 @@ theorem affineSpan_convexHull (s : Set E) : affineSpan 𝕜 (convexHull 𝕜 s) 
 
 theorem convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s := by
   simp_rw [← image_neg]
-  exact (AffineMap.image_convexHull (-1) _).symm
+  exact AffineMap.image_convexHull (-1) _
 #align convex_hull_neg convexHull_neg
 
 end AddCommGroup
