@@ -435,22 +435,13 @@ theorem IsMaximal.mem_iff_models (h : T.IsMaximal) (φ : L.Sentence) : φ ∈ T 
   ⟨models_sentence_of_mem, h.mem_of_models⟩
 #align first_order.language.Theory.is_maximal.mem_iff_models FirstOrder.Language.Theory.IsMaximal.mem_iff_models
 
-/-- A sentence is independent of a theory that contains neither the sentence nor its negation. -/
+/-- A theory has an independent sentence -/
 def HasIndependent (T : L.Theory) : Prop := ¬∀ φ : L.Sentence, φ ∈ T ∨ φ.not ∈ T
 
 theorem satisfiable_notmaximal_implies_hasindependent (T : L.Theory) :
     T.IsSatisfiable → ¬T.IsMaximal → T.HasIndependent := by
   intro h₁ h₂ h₃
   exact h₂ ⟨h₁,h₃⟩
-
-theorem satisfiable_incomplete_implies_hasindependent (T : L.Theory) :
-    T.IsSatisfiable → ¬T.IsComplete → T.HasIndependent := by
-  intro h₁ h₂
-  apply satisfiable_notmaximal_implies_hasindependent
-  exact h₁
-  by_contra h₅
-  apply h₂
-  apply IsMaximal.isComplete h₅
 
 /-- Two (bounded) formulas are semantically equivalent over a theory `T` when they have the same
 interpretation in every model of `T`. (This is also known as logical equivalence, which also has a
