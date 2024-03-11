@@ -575,8 +575,7 @@ theorem monomial_one_one_eq_X : monomial 1 (1 : R) = X :=
 theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
   induction' n with n ih
   · simp [monomial_zero_one]
-  · rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, add_comm, one_mul,
-      Nat.succ_eq_add_one]
+  · rw [pow_succ, ← ih, ← monomial_one_one_eq_X, monomial_mul_monomial, add_comm, one_mul]
 #align polynomial.monomial_one_right_eq_X_pow Polynomial.monomial_one_right_eq_X_pow
 
 @[simp]

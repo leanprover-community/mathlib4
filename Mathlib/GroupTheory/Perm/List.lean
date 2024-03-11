@@ -280,7 +280,7 @@ theorem formPerm_rotate (l : List α) (h : Nodup l) (n : ℕ) :
     formPerm (l.rotate n) = formPerm l := by
   induction' n with n hn
   · simp
-  · rw [Nat.succ_eq_add_one, ← rotate_rotate, formPerm_rotate_one, hn]
+  · rw [← rotate_rotate, formPerm_rotate_one, hn]
     rwa [IsRotated.nodup_iff]
     exact IsRotated.forall l n
 #align list.form_perm_rotate List.formPerm_rotate
@@ -385,7 +385,7 @@ theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
     rcases (Nat.le_of_lt_succ hk).eq_or_lt with hk' | hk'
     · simp [← hk', Nat.succ_le_succ_iff, eq_comm]
     · simpa [Nat.mod_eq_of_lt (Nat.succ_lt_succ hk'), Nat.succ_lt_succ_iff] using
-        k.zero_le.trans_lt hk'
+        (k.zero_le.trans_lt hk').ne.symm
 #align list.form_perm_apply_mem_eq_self_iff List.formPerm_apply_mem_eq_self_iff
 
 theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :

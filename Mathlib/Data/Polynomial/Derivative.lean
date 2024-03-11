@@ -449,7 +449,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
     refine' sum_congr rfl fun k hk => _
     rw [mem_range] at hk
     congr
-    rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hk), Nat.succ_sub_succ]
+    omega
   · rw [Nat.choose_zero_right, tsub_zero]
 #align polynomial.iterate_derivative_mul Polynomial.iterate_derivative_mul
 
@@ -506,7 +506,7 @@ theorem iterate_derivative_X_pow_eq_nat_cast_mul (n k : ℕ) :
   induction' k with k ih
   · erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
   · rw [Function.iterate_succ_apply', ih, derivative_nat_cast_mul, derivative_X_pow, C_eq_nat_cast,
-      Nat.succ_eq_add_one, Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
+      Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
     simp [mul_comm, mul_assoc, mul_left_comm]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_pow_eq_nat_cast_mul Polynomial.iterate_derivative_X_pow_eq_nat_cast_mul
