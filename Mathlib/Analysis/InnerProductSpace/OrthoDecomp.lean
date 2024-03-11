@@ -1,6 +1,7 @@
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Integral.Bochner
 
 open IsROrC Real Filter
@@ -134,10 +135,4 @@ theorem _root_.WithLp.equiv_prod_measurePreserving : MeasurePreserving (WithLp.e
   congr
   apply Basis.eq_of_apply_eq
   rw [Sum.forall]
-  constructor
-  · intro
-    simp
-    rfl
-  · intro
-    simp
-    rfl
+  aesop

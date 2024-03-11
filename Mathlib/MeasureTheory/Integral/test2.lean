@@ -5,6 +5,7 @@ import Mathlib.Analysis.InnerProductSpace.OrthoDecomp
 import Mathlib.Analysis.Calculus.LineDeriv.Measurable
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.Analysis.Calculus.Deriv.Shift
+import Mathlib.Analysis.Normed.Group.CocompactMap
 
 noncomputable section
 
@@ -13,15 +14,11 @@ open MeasureTheory Set Classical Filter Function Topology
 variable {A E : Type*}
 variable [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
 
-#check Integrable.intervalIntegrable
-#check intervalIntegral_tendsto_integral
-#check intervalIntegral.integral_mul_deriv_eq_deriv_mul
-
-variable {α 𝕜 : Type*} [MeasurableSpace α] {μ : Measure α} [NormedRing 𝕜]
+variable {α 𝕜 𝕜' : Type*} [MeasurableSpace α] {μ : Measure α} [NormedRing 𝕜]
 
 theorem MeasureTheory.Integrable.mul_bdd' {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
-    Integrable (fun x => g x * f x) μ := by
+    Integrable (g * f) μ := by
   apply Integrable.mono' (hg.norm.smul c) (hg.1.mul hf)
   filter_upwards [hf_bound] with x hx
   simp only [Pi.mul_apply, Pi.smul_apply, smul_eq_mul]
@@ -98,10 +95,10 @@ theorem integral_mul_deriv_eq_deriv_mul' {u v : C₀(ℝ, A)} {u' v' : ℝ → A
     (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
     (hu' : Integrable u') (hv' : Integrable v') :
     ∫ x : ℝ, u x * v' x = - ∫ x : ℝ, u' x * v x := by
-  have hu_atTop : Tendsto u atTop (𝓝 0) := (map_mono Real.atTop_le_cocompact).trans u.zero_at_infty'
-  have hv_atTop : Tendsto v atTop (𝓝 0) := (map_mono Real.atTop_le_cocompact).trans v.zero_at_infty'
-  have hu_atBot : Tendsto u atBot (𝓝 0) := (map_mono Real.atBot_le_cocompact).trans u.zero_at_infty'
-  have hv_atBot : Tendsto v atBot (𝓝 0) := (map_mono Real.atBot_le_cocompact).trans v.zero_at_infty'
+  have hu_atTop : Tendsto u atTop (𝓝 0) := (map_mono atTop_le_cocompact).trans u.zero_at_infty'
+  have hv_atTop : Tendsto v atTop (𝓝 0) := (map_mono atTop_le_cocompact).trans v.zero_at_infty'
+  have hu_atBot : Tendsto u atBot (𝓝 0) := (map_mono atBot_le_cocompact).trans u.zero_at_infty'
+  have hv_atBot : Tendsto v atBot (𝓝 0) := (map_mono atBot_le_cocompact).trans v.zero_at_infty'
   have := integral_mul_deriv_eq_deriv_mul hu hv hu' hv' hu_atTop hu_atBot hv_atTop hv_atBot
   simp only [mul_zero, sub_self, zero_sub] at this
   exact this
@@ -126,15 +123,7 @@ def coordinates (v : E) : E ≃ᵐ (Submodule.span ℝ {v} × (Submodule.span �
 theorem coordinates_symm_apply (v : E) (a : Submodule.span ℝ {v}) (b : (Submodule.span ℝ {v})ᗮ) :
     (coordinates v).symm (a, b) = a + b := by
   unfold coordinates
-  simp only [MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk]
-  rw [Equiv.symm_apply_eq]
-  ext
-  · simp [InnerProductSpace.foo'_apply', InnerProductSpace.foo'_apply]
-    rw [Prod.fst_add]
-    simp
-  · simp [InnerProductSpace.foo'_apply', InnerProductSpace.foo'_apply]
-    rw [Prod.snd_add]
-    simp
+  simp [Equiv.symm_apply_eq, InnerProductSpace.foo'_apply', InnerProductSpace.foo'_apply]
 
 #check LinearEquiv.toSpanNonzeroSingleton
 
@@ -197,6 +186,28 @@ theorem coordinates'_measurePreserving (v : E) : MeasurePreserving (coordinates'
   convert this.symm
 -/
 
+section cocompact
+
+variable [NormedDivisionRing 𝕜'] [Module 𝕜' E]
+
+theorem baz_tendsto_cocompact [ProperSpace 𝕜'] [BoundedSMul 𝕜' E] {x : E} (hx : x ≠ 0) (c : E) :
+    Tendsto (· • x + c) (cocompact 𝕜') (cocompact E) := by
+  apply Filter.tendsto_cocompact_cocompact_of_norm
+  intro ε
+  use (‖c‖ + ε)/‖x‖
+  intro r hr
+  have hx' : 0 < ‖x‖ := norm_pos_iff.mpr hx
+  rw [div_lt_iff hx'] at hr
+  have : ε < ‖r‖ * ‖x‖ - ‖c‖ := by linarith
+  apply lt_of_lt_of_le this
+  rw [sub_le_iff_le_add, ← norm_smul]
+  apply norm_le_add_norm_add
+
+def baz [ProperSpace 𝕜'] [BoundedSMul 𝕜' E] (x c : E) (hx : x ≠ 0) : CocompactMap 𝕜' E where
+  toFun := (· • x + c)
+  cocompact_tendsto' := baz_tendsto_cocompact hx c
+
+end cocompact
 
 theorem foo1235 (v : E) (u u' : E → A) (hu : ∀ x, HasLineDerivAt ℝ u (u' x) x v) (y : E) (t : ℝ) :
     HasDerivAt (fun x ↦ u (x • v + y)) (u' (t • v + y)) t := by
@@ -248,31 +259,13 @@ theorem integration_by_parts (v : E) (hv : ‖v‖ = 1) (u1 u2 : C₀(E, A)) {u1
   specialize hs2' y (Set.mem_of_mem_inter_right hy)
   simp only [coordinates_symm_apply, ← (toSpanUnitSingleton v hv).integral_comp,
     ← (toSpanUnitSingleton v hv).integrable_comp, toSpanUnitSingleton_apply] at hs1' hs2' ⊢
-  let u1_ : ℝ → A := fun x ↦ u1 (x • v + y)
-  let u2_ : ℝ → A := fun x ↦ u2 (x • v + y)
+  let u1_ : C₀(ℝ, A) := u1.comp (baz v y sorry)
+  let u2_ : C₀(ℝ, A) := u2.comp (baz v y sorry)
   let u1'_ : ℝ → A := fun x ↦ u1' (x • v + y)
   let u2'_ : ℝ → A := fun x ↦ u2' (x • v + y)
   have hu1_deriv : ∀ x, HasDerivAt u1_ (u1'_ x) x := foo1235 v u1 u1' hu1 y
   have hu2_deriv : ∀ x, HasDerivAt u2_ (u2'_ x) x := foo1235 v u2 u2' hu2 y
-  have hu1_atTop : Tendsto u1_ atTop (𝓝 0) := by
-    have := u1.zero_at_infty'
-    sorry
-    --(map_mono Real.atTop_le_cocompact).trans u.zero_at_infty'
-  have hu2_atTop : Tendsto u2_ atTop (𝓝 0) := by
-    sorry
-    --(map_mono Real.atTop_le_cocompact).trans v.zero_at_infty'
-  have hu1_atBot : Tendsto u1_ atBot (𝓝 0) := by
-    sorry
-    --(map_mono Real.atBot_le_cocompact).trans u.zero_at_infty'
-  have hu2_atBot : Tendsto u2_ atBot (𝓝 0) := by
-    sorry
-    --(map_mono Real.atBot_le_cocompact).trans v.zero_at_infty'
-  change ∫ x, u1_ x * u2'_ x = - ∫ x, u1'_ x * u2_ x
-  -- Show that all of these are in C₀
-  have h := integral_mul_deriv_eq_deriv_mul hu1_deriv hu2_deriv hs1' hs2' hu1_atTop hu1_atBot
-    hu2_atTop hu2_atBot
-  simp only [mul_zero, sub_self, zero_sub] at h
-  exact h
+  exact integral_mul_deriv_eq_deriv_mul' hu1_deriv hu2_deriv hs1' hs2'
   /-· -- hint1
     let u1'_ := fun x ↦ u1' ((coordinates v).symm x)
     let u2_ := fun x ↦ u2 ((coordinates v).symm x)
