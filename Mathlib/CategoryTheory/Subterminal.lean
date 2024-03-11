@@ -9,7 +9,6 @@ import Mathlib.CategoryTheory.Subobject.MonoOver
 
 #align_import category_theory.subterminal from "leanprover-community/mathlib"@"bb103f356534a9a7d3596a672097e375290a4c3a"
 
-set_option profiler true
 
 /-!
 # Subterminal objects
