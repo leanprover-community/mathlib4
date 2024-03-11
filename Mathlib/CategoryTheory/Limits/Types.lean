@@ -510,7 +510,7 @@ def Quot (F : J ⥤ TypeMax.{v, u}) : TypeMax.{v, u} :=
 implemented as a quotient of a sigma type
 -/
 @[simps]
-noncomputable def colimitCocone (F : J ⥤ TypeMax.{v, u}) : Cocone F where
+def colimitCocone (F : J ⥤ TypeMax.{v, u}) : Cocone F where
   pt := Quot F
   ι :=
     { app := fun j x => Quot.mk _ ⟨j, x⟩
