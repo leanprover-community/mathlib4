@@ -24,8 +24,7 @@ namespace Localization
 namespace AtMinimalPrime
 
 open IsLocalization
-variable {R : Type*} [CommSemiring R] (M : Submonoid R)
-variable {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
+variable {R : Type*} [CommSemiring R] {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
 
 theorem prime_unique (J : Ideal (Localization I.primeCompl)) [hPrime : J.IsPrime] :
     J = LocalRing.maximalIdeal (Localization I.primeCompl) := by
