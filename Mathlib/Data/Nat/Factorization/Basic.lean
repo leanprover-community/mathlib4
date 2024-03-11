@@ -658,7 +658,7 @@ def factorization_lcm_left (a b : ℕ) := (Nat.lcm a b).factorization.prod fun p
   if b.factorization p ≤ a.factorization p then p ^ n else 1
 
 /-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorization_lcm_right = ∏ pᵢ ^ kᵢ`, where
-`kᵢ = mᵢ` if `nᵢ ≤ mᵢ` and `0` otherwise.
+`kᵢ = mᵢ` if `nᵢ < mᵢ` and `0` otherwise.
 
 Note that `factorization_lcm_right a b` is *not* `factorization_lcm_left a b`: the difference is
 that in `factorization_lcm_left a b` there are the primes whose exponent in `a` is bigger or equal
