@@ -83,7 +83,6 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 instance : AddCommMonoid ℤ    := by infer_instance
-instance : AddMonoid ℤ        := by infer_instance
 instance : Monoid ℤ           := by infer_instance
 instance : CommMonoid ℤ       := by infer_instance
 instance : CommSemigroup ℤ    := by infer_instance
@@ -93,8 +92,6 @@ instance : AddGroup ℤ         := by infer_instance
 instance : AddCommSemigroup ℤ := by infer_instance
 instance : AddSemigroup ℤ     := by infer_instance
 instance : CommSemiring ℤ     := by infer_instance
-instance : Semiring ℤ         := by infer_instance
-instance : Ring ℤ             := by infer_instance
 instance : Distrib ℤ          := by infer_instance
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
