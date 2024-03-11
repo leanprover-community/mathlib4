@@ -424,7 +424,8 @@ continuous. Topological additive groups are defined in the same way. Equivalentl
 that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continuous.
 -/
 
--- Porting note: TODO should this docstring be extended to match the multiplicative version?
+-- Porting note (#11215): TODO should this docstring be extended
+-- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
 continuous. -/
 class TopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends
@@ -1580,6 +1581,14 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
 #align topological_add_group.t2_space inferInstance
 
 variable {G}
+
+@[to_additive]
+theorem group_inseparable_iff {x y : G} : Inseparable x y ↔ x / y ∈ closure (1 : Set G) := by
+  rw [← singleton_one, ← specializes_iff_mem_closure, specializes_comm, specializes_iff_inseparable,
+    ← (Homeomorph.mulRight y⁻¹).embedding.inseparable_iff]
+  simp [div_eq_mul_inv]
+#align group_separation_rel group_inseparable_iff
+#align add_group_separation_rel addGroup_inseparable_iff
 
 @[to_additive]
 theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Set G) :=
