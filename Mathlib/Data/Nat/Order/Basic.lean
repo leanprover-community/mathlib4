@@ -29,13 +29,12 @@ namespace Nat
 /-! ### instances -/
 
 instance orderBot : OrderBot ℕ where
-  bot := 0
   bot_le := Nat.zero_le
 #align nat.order_bot Nat.orderBot
 
 instance linearOrderedCommSemiring : LinearOrderedCommSemiring ℕ :=
   { Nat.commSemiring, Nat.linearOrder with
-    lt := Nat.lt, add_le_add_left := @Nat.add_le_add_left,
+    add_le_add_left := @Nat.add_le_add_left,
     le_of_add_le_add_left := @Nat.le_of_add_le_add_left,
     zero_le_one := Nat.le_of_lt (Nat.zero_lt_succ 0),
     mul_lt_mul_of_pos_left := @Nat.mul_lt_mul_of_pos_left,

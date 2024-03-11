@@ -77,28 +77,31 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-instance instSup : Sup (Set α) where
-  sup := (· ∪ ·)
+-- instance instSup : Sup (Set α) where
+--   sup := (· ∪ ·)
+--
+-- instance instInf : Inf (Set α) where
+--   inf := (· ∩ ·)
+--
+-- instance instBot : Bot (Set α) where
+--   bot := ∅
+--
+-- instance instTop : Top (Set α) where
+--   top := univ
+--
+-- instance instSdiff : SDiff (Set α) where
+--   sdiff := (· \ ·)
 
-instance instInf : Inf (Set α) where
-  inf := (· ∩ ·)
-
-instance instBot : Bot (Set α) where
-  bot := ∅
-
-instance instTop : Top (Set α) where
-  top := univ
-
-instance instSdiff : SDiff (Set α) where
-  sdiff := (· \ ·)
-
-instance instBooleanAlgebraSet : BooleanAlgebra (Set α) where
-  __ := (inferInstance : BooleanAlgebra (α → Prop))
-  toSup := instSup
-  toInf := instInf
-  toBot := instBot
-  toTop := instTop
-  toSDiff := instSdiff
+instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
+  { (inferInstance : BooleanAlgebra (α → Prop)) with
+    sup := (· ∪ ·),
+    le := (· ≤ ·),
+    lt := fun s t => s ⊆ t ∧ ¬t ⊆ s,
+    inf := (· ∩ ·),
+    bot := ∅,
+    compl := (·ᶜ),
+    top := univ,
+    sdiff := (· \ ·) }
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
