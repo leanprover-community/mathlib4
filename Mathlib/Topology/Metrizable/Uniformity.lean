@@ -205,11 +205,10 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
           (eventually_uniformity_iterate_comp_subset (hB.mem m) 2) with
       ⟨φ, -, hφ_comp, hφB⟩
     exact ⟨V ∘ φ, fun n => hV_symm _, hφ_comp, hφB⟩
-  letI := UniformSpace.separationSetoid X
   set d : X → X → ℝ≥0 := fun x y => if h : ∃ n, (x, y) ∉ U n then (1 / 2) ^ Nat.find h else 0
-  have hd₀ : ∀ {x y}, d x y = 0 ↔ x ≈ y := by
+  have hd₀ : ∀ {x y}, d x y = 0 ↔ Inseparable x y := by
     intro x y
-    refine' Iff.trans _ hB.mem_separationRel.symm
+    refine' Iff.trans _ hB.inseparable_iff_uniformity.symm
     simp only [d, true_imp_iff]
     split_ifs with h
     · rw [← not_forall] at h
@@ -219,7 +218,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y
     simp only [d, @SymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
   have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
-  letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 (Setoid.refl _)) hd_symm
+  letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 rfl) hd_symm
   have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPreNNDist_le _ _ _
   have hle_d : ∀ {x y : X} {n : ℕ}, (1 / 2) ^ n ≤ d x y ↔ (x, y) ∉ U n := by
     intro x y n
