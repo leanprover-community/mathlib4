@@ -34,6 +34,28 @@ def onlyOrNotSimp : Syntax → Bool
 /-- The monad for collecting `simp`s that are not `simp only`. -/
 abbrev M := StateRefT (HashMap String.Range Syntax) IO
 
+/-- `Parser`s allowed to not change the tactic state. -/
+abbrev allowed := [
+  `cdotTk, `«]»,
+  `Lean.Parser.Tactic.«tactic_<;>_»,
+  `Lean.Parser.Tactic.induction,
+  `Lean.Parser.Tactic.exact,
+  `Lean.Parser.Tactic.cases,
+  `Lean.Parser.Tactic.tacticSeq1Indented,
+  `Lean.Parser.Tactic.tacticSeq,
+  `Lean.Parser.Tactic.tacticTry_,
+  `Mathlib.Tactic.casesM,
+  `Lean.Parser.Tactic.paren,
+  `«{»,
+  `«<;>»,
+  `«;»,
+  `Lean.Parser.Tactic.tacticRfl,
+  `Lean.Parser.Tactic.contradiction,
+  `Lean.Parser.Tactic.first,
+  -- revise decision
+  `Lean.Parser.Tactic.simp
+]
+
 mutual
 /-- Search for `simp`s that
 * are not `simp only` and
@@ -48,7 +70,12 @@ partial def pointless : InfoTree → M Unit
   | .node i c => do
     if let .ofTacticInfo i := i then
       if let some r := i.stx.getRange? true then
-        if i.goalsAfter == i.goalsBefore && ! i.stx.getAtomVal ∈ ["<;>", ";"] then
+        if i.goalsAfter == i.goalsBefore &&
+           ! i.stx[0].getKind == `simp_rw &&
+           ! i.stx.getKind ∈ allowed
+        then
+          dbg_trace i.stx.getKind
+          dbg_trace i.stx[0].getKind
           modify (·.insert r i.stx)
     pointlessList c
   | .context _ t => pointless t
