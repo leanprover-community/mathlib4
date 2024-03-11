@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.GroupRingAction.Subobjects
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Membership
