@@ -158,20 +158,20 @@ theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Con
         exact hx hy⟩
 #align convex.convex_remove_iff_not_mem_convex_hull_remove Convex.convex_remove_iff_not_mem_convexHull_remove
 
-theorem IsLinearMap.convexHull_image {f : E → F} (hf : IsLinearMap 𝕜 f) (s : Set E) :
-    convexHull 𝕜 (f '' s) = f '' convexHull 𝕜 s :=
+theorem IsLinearMap.image_convexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s : Set E) :
+    f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
   Set.Subset.antisymm
-    (convexHull_min (image_subset _ (subset_convexHull 𝕜 s)) <|
-      (convex_convexHull 𝕜 s).is_linear_image hf)
     (image_subset_iff.2 <|
       convexHull_min (image_subset_iff.1 <| subset_convexHull 𝕜 _)
         ((convex_convexHull 𝕜 _).is_linear_preimage hf))
-#align is_linear_map.convex_hull_image IsLinearMap.convexHull_image
+    (convexHull_min (image_subset _ (subset_convexHull 𝕜 s)) <|
+      (convex_convexHull 𝕜 s).is_linear_image hf)
+#align is_linear_map.convex_hull_image IsLinearMap.image_convexHull
 
-theorem LinearMap.convexHull_image (f : E →ₗ[𝕜] F) (s : Set E) :
-    convexHull 𝕜 (f '' s) = f '' convexHull 𝕜 s :=
-  f.isLinear.convexHull_image s
-#align linear_map.convex_hull_image LinearMap.convexHull_image
+theorem LinearMap.image_convexHull (f : E →ₗ[𝕜] F) (s : Set E) :
+    f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
+  f.isLinear.image_convexHull s
+#align linear_map.convex_hull_image LinearMap.image_convexHull
 
 end AddCommMonoid
 
@@ -182,7 +182,7 @@ section OrderedCommSemiring
 variable [OrderedCommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
 
 theorem convexHull_smul (a : 𝕜) (s : Set E) : convexHull 𝕜 (a • s) = a • convexHull 𝕜 s :=
-  (LinearMap.lsmul _ _ a).convexHull_image _
+  ((LinearMap.lsmul _ _ a).image_convexHull _).symm
 #align convex_hull_smul convexHull_smul
 
 end OrderedCommSemiring
