@@ -108,6 +108,34 @@ theorem expMapCircle_add_two_pi (x : ℝ) : expMapCircle (x + 2 * π) = expMapCi
   periodic_expMapCircle x
 #align exp_map_circle_add_two_pi expMapCircle_add_two_pi
 
+namespace circle
+
+private lemma fund : ∀ x : circle, Complex.arg x = Real.pi ↔ x = expMapCircle Real.pi :=
+  fun x ↦ ⟨fun hx ↦ hx ▸ (expMapCircle_arg x).symm,
+    fun hx ↦ hx ▸ arg_expMapCircle (neg_lt_self pi_pos) le_rfl⟩
+
+/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
+with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
+@[simps (config := .asFn)]
+noncomputable def argPartialHomeomorph : PartialHomeomorph circle ℝ where
+  toFun := arg ∘ (↑)
+  invFun := expMapCircle
+  source := {expMapCircle π}ᶜ
+  target := Set.Ioo (-π) π
+  map_source' := fun x hx ↦ let h := arg_mem_Ioc x; ⟨h.1, lt_of_le_of_ne h.2 (hx ∘ (fund x).mp)⟩
+  map_target' := fun x hx hx' ↦ hx.2.ne
+    (by rwa [mem_singleton_iff, ← fund, arg_expMapCircle hx.1 hx.2.le] at hx')
+  left_inv' := fun x _ ↦ expMapCircle_arg x
+  right_inv' := fun x hx ↦ arg_expMapCircle hx.1 hx.2.le
+  open_source := isOpen_compl_singleton
+  open_target := isOpen_Ioo
+  continuousOn_toFun := (ContinuousAt.continuousOn fun _ ↦ continuousAt_arg).comp
+    continuous_induced_dom.continuousOn
+      (fun x h ↦ mem_slitPlane_iff_arg.mpr ⟨mt (fund x).mp h, ne_zero_of_mem_circle x⟩)
+  continuousOn_invFun := Continuous.continuousOn (by continuity)
+
+end circle
+
 /-- `expMapCircle`, applied to a `Real.Angle`. -/
 noncomputable def Real.Angle.expMapCircle (θ : Real.Angle) : circle :=
   periodic_expMapCircle.lift θ
@@ -152,53 +180,9 @@ theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
 #align real.angle.arg_exp_map_circle Real.Angle.arg_expMapCircle
 
+-- todo: upgrade this to `IsCoveringMap expMapCircle`.
 lemma isLocalHomeomorph_expMapCircle : IsLocalHomeomorph expMapCircle := by
-  have fund : ∀ x : circle, Complex.arg x = Real.pi ↔ x = expMapCircle Real.pi := by
-    rintro ⟨x, hx⟩
-    rw [mem_circle_iff_normSq, Complex.normSq_apply] at hx
-    rw [Complex.arg_eq_pi_iff, Subtype.ext_iff, expMapCircle_apply, Complex.exp_pi_mul_I,
-        Complex.ext_iff, Complex.neg_re, Complex.neg_im, Complex.one_re, Complex.one_im, neg_zero]
-    rw [and_congr_left_iff]
-    simp only
-    intro hx'
-    rw [hx', mul_zero, add_zero, ← sq, sq_eq_one_iff] at hx
-    rcases hx with hx | hx <;> rw [hx] <;> norm_num
-  let e1 : PartialHomeomorph ℝ circle :=
-  { toFun := expMapCircle
-    invFun := Complex.arg ∘ Subtype.val
-    source := Set.Ioo (-Real.pi) Real.pi
-    target := {expMapCircle Real.pi}ᶜ
-    map_source' := by
-      intro x hx hx'
-      rw [Set.mem_singleton_iff] at hx'
-      replace hx' := congrArg (Complex.arg ∘ Subtype.val) hx'
-      simp only [Function.comp_apply] at hx'
-      rw [arg_expMapCircle hx.1 hx.2.le] at hx'
-      rw [arg_expMapCircle (neg_lt_self Real.pi_pos) le_rfl] at hx'
-      rw [hx'] at hx
-      exact lt_irrefl Real.pi hx.2
-    map_target' := by
-      intro x hx
-      have key := Complex.arg_mem_Ioc x
-      exact ⟨key.1, lt_of_le_of_ne key.2 (hx ∘ (fund x).mp)⟩
-    left_inv' := fun x hx ↦ arg_expMapCircle hx.1 hx.2.le
-    right_inv' := fun x _ ↦ expMapCircle_arg x
-    open_source := isOpen_Ioo
-    open_target := isOpen_compl_singleton
-    continuousOn_toFun := Continuous.continuousOn $ by continuity
-    continuousOn_invFun := by
-      refine' (ContinuousAt.continuousOn fun _ ↦ Complex.continuousAt_arg).comp
-        (Continuous.continuousOn $ by continuity) _
-      simp only
-      intro x hx
-      contrapose! hx
-      rw [Set.not_mem_compl_iff, Set.mem_singleton_iff, ← fund, Complex.arg_eq_pi_iff]
-      rw [Complex.slitPlane, Set.mem_setOf_eq, not_or, not_lt, not_ne_iff] at hx
-      refine' ⟨lt_of_le_of_ne hx.1 _, hx.2⟩
-      intro hx'
-      have hx'' := x.2
-      rw [mem_circle_iff_normSq, Complex.normSq_apply, hx', hx.2, mul_zero, add_zero] at hx''
-      exact zero_ne_one hx'' }
+  let e1 : PartialHomeomorph ℝ circle := circle.argPartialHomeomorph.symm
   intro t
   let e2 : PartialHomeomorph ℝ ℝ := ((Homeomorph.addRight t).toPartialHomeomorphOfImageEq
     (Set.Ioo (-Real.pi) Real.pi) (isOpen_Ioo) (Set.Ioo (t - Real.pi) (t + Real.pi))
