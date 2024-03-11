@@ -445,7 +445,7 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
 
 /-- Given two equivalence relations with `r ≤ s`, a bijection between the sum of the quotients by
 `r` on each equivalence class by `s` and the quotient by `r`. -/
-def equivSigmaFibersOfLe {r s : Setoid α} (hle : r ≤ s) :
+def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
     (Σ q : Quotient s, Quotient (r.comap (Subtype.val : Quotient.mk s ⁻¹' {q} → α))) ≃
       Quotient r :=
   .trans (.symm <| .sigmaCongrRight fun _ ↦ .subtypeQuotientEquivQuotientSubtype
