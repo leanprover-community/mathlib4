@@ -78,15 +78,9 @@ def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R₂] M →ₗ[R] R where
       simp only [Algebra.smul_def, LinearMap.coe_mk, LinearMap.smul_apply, smul_left]
 #align bilin_form.to_lin_hom_aux₂ BilinForm.toLinHomAux₂
 
-variable (R₂)
-
 /-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
-the right.
-This is the most general version of the construction; it is `R₂`-linear for some distinguished
-commutative subsemiring `R₂` of the scalar CommRing.  Over a semiring with no particular
-distinguished such subsemiring, use `toLin'`, which is `ℕ`-linear.  Over a commutative semiring,
-use `toLin`, which is linear. -/
-def toLinHom : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R where
+the right. -/
+def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R where
   toFun := toLinHomAux₂
   map_add' A₁ A₂ :=
     LinearMap.ext fun x => by
@@ -105,32 +99,23 @@ def toLinHom : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R where
       AddHom.coe_mk]
 #align bilin_form.to_lin_hom BilinForm.toLinHom
 
-variable {R₂}
-
 @[simp]
-theorem toLin'_apply (A : BilinForm R M) (x : M) : ⇑(toLinHom R₂ A x) = A x :=
+theorem toLin'_apply (A : BilinForm R M) (x : M) : ⇑(toLinHom A x) = A x :=
   rfl
 #align bilin_form.to_lin'_apply BilinForm.toLin'_apply
-
-/-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
-the right.
-Over a commutative semiring, use `toLin`, which is linear rather than `ℕ`-linear. -/
-abbrev toLin' : BilinForm R M →ₗ[ℕ] M →ₗ[ℕ] M →ₗ[R] R :=
-  toLinHom ℕ
-#align bilin_form.to_lin' BilinForm.toLin'
 
 variable (B)
 
 @[simp]
 theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
     B (∑ i in t, g i) w = ∑ i in t, B (g i) w :=
-  (BilinForm.toLin' B).map_sum₂ t g w
+  (BilinForm.toLinHom B).map_sum₂ t g w
 #align bilin_form.sum_left BilinForm.sum_left
 
 @[simp]
 theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
     B w (∑ i in t, g i) = ∑ i in t, B w (g i) :=
-  map_sum (BilinForm.toLin' B w) _ _
+  map_sum (BilinForm.toLinHom B w) _ _
 #align bilin_form.sum_right BilinForm.sum_right
 
 @[simp]
@@ -140,31 +125,18 @@ theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
   rw [map_sum, Finset.sum_apply, Finset.sum_apply]
   rfl
 
-variable {B} (R₂)
+variable {B}
 
 /-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
-the left.
-This is the most general version of the construction; it is `R₂`-linear for some distinguished
-commutative subsemiring `R₂` of the scalar CommRing.  Over semiring with no particular distinguished
-such subsemiring, use `toLin'Flip`, which is `ℕ`-linear.  Over a commutative semiring, use
-`toLinFlip`, which is linear. -/
-def toLinHomFlip : BilinForm R M →ₗ[R₂] M →ₗ[R₂] M →ₗ[R] R :=
-  (toLinHom R₂).comp (flipHom R₂).toLinearMap
+the left. -/
+def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
+  toLinHom.comp (flipHom R).toLinearMap
 #align bilin_form.to_lin_hom_flip BilinForm.toLinHomFlip
 
-variable {R₂}
-
 @[simp]
-theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : ⇑(toLinHomFlip R₂ A x) = fun y => A y x :=
+theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : ⇑(toLinHomFlip A x) = fun y => A y x :=
   rfl
 #align bilin_form.to_lin'_flip_apply BilinForm.toLin'Flip_apply
-
-/-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
-the left.
-Over a commutative semiring, use `toLinFlip`, which is linear rather than `ℕ`-linear. -/
-abbrev toLin'Flip : BilinForm R M →ₗ[ℕ] M →ₗ[ℕ] M →ₗ[R] R :=
-  toLinHomFlip ℕ
-#align bilin_form.to_lin'_flip BilinForm.toLin'Flip
 
 end ToLin'
 
@@ -188,7 +160,7 @@ def LinearMap.toBilinAux (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) : BilinF
 
 /-- Bilinear forms are linearly equivalent to maps with two arguments that are linear in both. -/
 def BilinForm.toLin : BilinForm R₂ M₂ ≃ₗ[R₂] M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂ :=
-  { BilinForm.toLinHom R₂ with
+  { BilinForm.toLinHom with
     invFun := LinearMap.toBilinAux
     left_inv := fun B => by
       ext
