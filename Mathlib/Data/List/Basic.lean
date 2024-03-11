@@ -1950,8 +1950,7 @@ theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
 
 theorem get?_take {l : List α} {n m : ℕ} (h : m < n) : (l.take n).get? m = l.get? m := by
   induction' n with n hn generalizing l m
-  · simp only [Nat.zero_eq] at h
-    exact absurd h (not_lt_of_le m.zero_le)
+  · exact absurd h (not_lt_of_le m.zero_le)
   · cases' l with hd tl
     · simp only [take_nil]
     · cases m
@@ -2770,19 +2769,19 @@ where
         cases xs with
         | nil => contradiction
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
             ← Array.toList_eq]
           exact ih _ _ <| lt_of_add_lt_add_right h
     · induction n generalizing xs acc with
       | zero =>
-        rw [zero_eq, not_lt, nonpos_iff_eq_zero] at h
+        rw [not_lt, nonpos_iff_eq_zero] at h
         rw [eq_nil_of_length_eq_zero h, splitAt.go]
       | succ _ ih =>
         cases xs with
         | nil => rw [splitAt.go]
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go]
           exact ih _ _ <| not_imp_not.mpr (Nat.add_lt_add_right · 1) h
 #align list.split_at_eq_take_drop List.splitAt_eq_take_drop
