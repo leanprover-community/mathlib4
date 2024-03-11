@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot
+Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Topology.UniformSpace.Basic
@@ -12,58 +12,89 @@ import Mathlib.Topology.Separation
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.
 
-This file studies uniform spaces whose underlying topological spaces are separated
-(also known as Hausdorff or T₂).
-This turns out to be equivalent to asking that the intersection of all entourages
-is the diagonal only. This condition actually implies the stronger separation property
-that the space is T₃, hence those conditions are equivalent for topologies coming from
-a uniform structure.
+Two points of a topological space are called `Inseparable`,
+if their neighborhoods filter are equal.
+Equivalently, `Inseparable x y` means that any open set that contains `x` must contain `y`
+and vice versa.
 
-More generally, the intersection `𝓢 X` of all entourages of `X`, which has type `Set (X × X)` is an
-equivalence relation on `X`. Points which are equivalent under the relation are basically
-undistinguishable from the point of view of the uniform structure. For instance any uniformly
-continuous function will send equivalent points to the same value.
+In a uniform space, points `x` and `y` are inseparable
+if and only if `(x, y)` belongs to all entourages,
+see `inseparable_iff_ker_uniformity`.
 
-The quotient `SeparationQuotient X` of `X` by `𝓢 X` has a natural uniform structure which is
-separated, and satisfies a universal property: every uniformly continuous function
-from `X` to a separated uniform space uniquely factors through `SeparationQuotient X`.
-As usual, this allows to turn `SeparationQuotient` into a functor (but we don't use the
-category theory library in this file).
+A uniform space is a regular topological space,
+hence separation axioms `T0Space`, `T1Space`, `T2Space`, and `T3Space`
+are equivalent for uniform spaces,
+and Lean typeclass search can automatically convert from one assumption to another.
+We say that a uniform space is *separated*, if it satisfies these axioms.
+If you need an `Iff` statement (e.g., to rewrite),
+then see `R1Space.t0Space_iff_t2Space` and `RegularSpace.t0Space_iff_t3Space`.
 
-These notions admit relative versions, one can ask that `s : Set X` is separated, this
-is equivalent to asking that the uniform structure induced on `s` is separated.
+In this file we prove several facts
+that relate `Inseparable` and `Specializes` to the uniformity filter.
+Most of them are simple corollaries of `Filter.HasBasis.inseparable_iff_uniformity`
+for different filter bases of `𝓤 α`.
+
+Then we study the Kolmogorov quotient `SeparationQuotient X` of a uniform space.
+For a general topological space,
+this quotient is defined as the quotient by `Inseparable` equivalence relation.
+It is the maximal T₀ quotient of a topological space.
+
+In case of a uniform space, we equip this quotient with a `UniformSpace` structure
+that agrees with the quotient topology.
+We also prove that the quotient map induces uniformity on the original space.
+
+Finally, we turn `SeparationQuotient` into a functor
+(not in terms of `CategoryTheory.Functor` to avoid extra imports)
+by defining `SeparationQuotient.lift'` and `SeparationQuotient.map` operations.
 
 ## Main definitions
 
-* `separationRel X : Set (X × X)`: the separation relation
-* `SeparatedSpace X`: a predicate class asserting that `X` is separated
-* `SeparationQuotient X`: the maximal separated quotient of `X`.
-* `SeparationQuotient.lift f`: factors a map `f : X → Y` through the separation quotient of `X`.
-* `SeparationQuotient.map f`: turns a map `f : X → Y` into a map between the separation quotients
-  of `X` and `Y`.
+* `SeparationQuotient.instUniformSpace`: uniform space structure on `SeparationQuotient α`,
+  where `α` is a uniform space;
+
+* `SeparationQuotient.lift'`: given a map `f : α → β`
+  from a uniform space to a separated uniform space,
+  lift it to a map `SeparationQuotient α → β`;
+  if the original map is not uniformly continuous, then returns a constant map.
+
+* `SeparationQuotient.map`: given a map `f : α → β` between uniform spaces,
+  returns a map `SeparationQuotient α → SeparationQuotient β`.
+  If the original map is not uniformly continuous, then returns a constant map.
+  Otherwise, `SeparationQuotient.map f (SeparationQuotient.mk x) = SeparationQuotient.mk (f x)`.
 
 ## Main results
 
-* `separated_iff_t2`: the equivalence between being separated and being Hausdorff for uniform
-  spaces.
-* `SeparationQuotient.uniformContinuous_lift`: factoring a uniformly continuous map through the
+* `SeparationQuotient.uniformity_eq`: the uniformity filter on `SeparationQuotient α`
+  is the push forward of the uniformity filter on `α`.
+* `SeparationQuotient.comap_mk_uniformity`: the quotient map `α → SeparationQuotient α`
+  induces uniform space structure on the original space.
+* `SeparationQuotient.uniformContinuous_lift'`: factoring a uniformly continuous map through the
   separation quotient gives a uniformly continuous map.
 * `SeparationQuotient.uniformContinuous_map`: maps induced between separation quotients are
   uniformly continuous.
 
-## Notations
-
-Localized in `uniformity`, we have the notation `𝓢 X` for the separation relation
-on a uniform space `X`,
-
 ## Implementation notes
 
-The separation setoid `separationSetoid` is not declared as a global instance.
-It is made a local instance while building the theory of `SeparationQuotient`.
-The factored map `SeparationQuotient.lift f` is defined without imposing any condition on
-`f`, but returns junk if `f` is not uniformly continuous (constant junk hence it is always
-uniformly continuous).
+This files used to contain definitions of `separationRel α` and `UniformSpace.SeparationQuotient α`.
+These definitions were equal (but not definitionally equal)
+to `{x : α × α | Inseparable x.1 x.2}` and `SeparationQuotient α`, respectively,
+and were added to the library before their geneeralizations to topological spaces.
 
+In #10644, we migrated from these definitions
+to more general `Inseparable` and `SeparationQuotient`.
+
+## TODO
+
+Definitions `SeparationQuotient.lift'` and `SeparationQuotient.map`
+rely on `UniformSpace` structures in the domain and in the codomain.
+We should generalize them to topological spaces.
+This generalization will drop `UniformContinuous` assumptions in some lemmas,
+and add these assumptions in other lemmas,
+so it was not done in #10644 to keep it reasonably sized.
+
+## Keywords
+
+uniform space, separated space, Hausdorff space, separation quotient
 -/
 
 open Filter Set Function Topology Uniformity UniformSpace
@@ -81,15 +112,14 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 -/
 
 instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
-  .ofBasis
-    (fun _ => nhds_basis_uniformity' uniformity_hasBasis_closed)
-    fun _ _ h => h.2.preimage <| continuous_const.prod_mk continuous_id
+  .of_hasBasis
+    (fun _ ↦ nhds_basis_uniformity' uniformity_hasBasis_closed)
+    fun a _V hV ↦ isClosed_ball a hV.2
 #align uniform_space.to_regular_space UniformSpace.to_regularSpace
 
 #align separation_rel Inseparable
 #noalign separated_equiv
-#noalign filter.has_basis.mem_separation_rel
-#noalign separation_rel_iff_specializes
+#align separation_rel_iff_specializes specializes_iff_inseparable
 #noalign separation_rel_iff_inseparable
 
 theorem Filter.HasBasis.specializes_iff_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
@@ -99,6 +129,10 @@ theorem Filter.HasBasis.specializes_iff_uniformity {ι : Sort*} {p : ι → Prop
 theorem Filter.HasBasis.inseparable_iff_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × α)}
     (h : (𝓤 α).HasBasis p s) {x y : α} : Inseparable x y ↔ ∀ i, p i → (x, y) ∈ s i :=
   specializes_iff_inseparable.symm.trans h.specializes_iff_uniformity
+#align filter.has_basis.mem_separation_rel Filter.HasBasis.inseparable_iff_uniformity
+
+theorem inseparable_iff_ker_uniformity {x y : α} : Inseparable x y ↔ (x, y) ∈ (𝓤 α).ker :=
+  (𝓤 α).basis_sets.inseparable_iff_uniformity
 
 protected theorem Inseparable.nhds_le_uniformity {x y : α} (h : Inseparable x y) :
     𝓝 (x, y) ≤ 𝓤 α := by
@@ -112,17 +146,22 @@ theorem inseparable_iff_clusterPt_uniformity {x y : α} :
   exact fun U ⟨hU, hUc⟩ ↦ hUc _ <| h.mono <| le_principal_iff.2 hU
 
 #align separated_space T0Space
-#noalign separated_space_iff
 
 theorem t0Space_iff_uniformity :
     T0Space α ↔ ∀ x y, (∀ r ∈ 𝓤 α, (x, y) ∈ r) → x = y := by
-  simp only [t0Space_iff_inseparable, (𝓤 α).basis_sets.inseparable_iff_uniformity, id]
+  simp only [t0Space_iff_inseparable, inseparable_iff_ker_uniformity, mem_ker, id]
 #align separated_def t0Space_iff_uniformity
 
 theorem t0Space_iff_uniformity' :
     T0Space α ↔ Pairwise fun x y ↦ ∃ r ∈ 𝓤 α, (x, y) ∉ r := by
-  simp [t0Space_iff_not_inseparable, (𝓤 α).basis_sets.inseparable_iff_uniformity]
+  simp [t0Space_iff_not_inseparable, inseparable_iff_ker_uniformity]
 #align separated_def' t0Space_iff_uniformity'
+
+theorem t0Space_iff_ker_uniformity : T0Space α ↔ (𝓤 α).ker = diagonal α := by
+  simp_rw [t0Space_iff_uniformity, subset_antisymm_iff, diagonal_subset_iff, subset_def,
+    Prod.forall, Filter.mem_ker, mem_diagonal_iff, iff_self_and]
+  exact fun _ x s hs ↦ refl_mem_uniformity hs
+#align separated_space_iff t0Space_iff_ker_uniformity
 
 theorem eq_of_uniformity {α : Type*} [UniformSpace α] [T0Space α] {x y : α}
     (h : ∀ {V}, V ∈ 𝓤 α → (x, y) ∈ V) : x = y :=
@@ -151,13 +190,13 @@ theorem Filter.Tendsto.inseparable_iff_uniformity {l : Filter β} [NeBot l] {f g
   rw [inseparable_iff_clusterPt_uniformity]
   exact (ClusterPt.of_le_nhds (ha.prod_mk_nhds hb)).mono h
 
-#noalign id_rel_sub_separation_relation
+#align id_rel_sub_separation_relation Inseparable.rfl
 #align separation_rel_comap Inducing.inseparable_iff
-#noalign filter.has_basis.separation_rel
+#align filter.has_basis.separation_rel Filter.HasBasis.ker
 #noalign separation_rel_eq_inter_closure
 #align is_closed_separation_rel isClosed_setOf_inseparable
-#noalign separated_iff_t2
-#noalign separated_t3
+#align separated_iff_t2 R1Space.t2Space_iff_t0Space
+#align separated_t3 RegularSpace.t3Space_iff_t0Space
 #align subtype.separated_space Subtype.t0Space
 
 theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α) {s : Set α}
@@ -248,13 +287,13 @@ theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk 
   comap_map_mk_uniformity
 #align uniform_space.comap_quotient_eq_uniformity SeparationQuotient.comap_mk_uniformity
 
-#noalign uniform_space.separated_separation
+#align uniform_space.separated_separation SeparationQuotient.instT0Space
 
 #align uniform_space.separated_of_uniform_continuous Inseparable.map
 #noalign uniform_space.eq_of_separated_of_uniform_continuous
 
 #align uniform_space.separation_quotient SeparationQuotient
-#noalign uniform_space.separation_quotient.mk_eq_mk
+#align uniform_space.separation_quotient.mk_eq_mk SeparationQuotient.mk_eq_mk
 
 /-- Factoring functions to a separated space through the separation quotient.
 

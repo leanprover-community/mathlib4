@@ -54,7 +54,7 @@ open scoped BigOperators NNReal ENNReal Topology UniformConvergence
 
 open Set MeasureTheory Filter
 
--- porting note: sectioned variables because a `wlog` was broken due to extra variables in context
+-- Porting note: sectioned variables because a `wlog` was broken due to extra variables in context
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
@@ -436,7 +436,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
         simp [hi.le, this]
       · refine Finset.sum_congr rfl fun i hi => ?_
         simp only [Finset.mem_range] at hi
-        have B : ¬n + 1 + i ≤ n := by linarith
+        have B : ¬n + 1 + i ≤ n := by omega
         have A : ¬n + 1 + i + 1 ≤ n := fun h => B ((n + 1 + i).le_succ.trans h)
         have C : n + 1 + i - n = i + 1 := by
           rw [tsub_eq_iff_eq_add_of_le]
@@ -474,10 +474,9 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
   obtain ⟨v, m, hv, vst, xv, huv⟩ : ∃ (v : ℕ → α) (m : ℕ),
     Monotone v ∧ (∀ i, v i ∈ s ∪ t) ∧ x ∈ v '' Iio m ∧
       (∑ i in Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
-        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j))
-  exact eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
-  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x
-  exact xv
+        ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
+    eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
+  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x := xv
   calc
     (∑ j in Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
         ∑ j in Finset.range m, edist (f (v (j + 1))) (f (v j)) :=

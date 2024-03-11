@@ -21,7 +21,8 @@ example of a proof needing to construct a sequence by induction in the middle of
 -/
 
 
-open Classical Topology BigOperators
+open scoped Classical
+open Topology BigOperators
 
 open Filter Finset
 
@@ -86,8 +87,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     refine' cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => _
     simpa only [one_div, inv_pow] using key₁ n
   -- So u converges to some y
-  obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y)
-  exact CompleteSpace.complete cauchy_u
+  obtain ⟨y, limy⟩ : ∃ y, Tendsto u atTop (𝓝 y) := CompleteSpace.complete cauchy_u
   -- And ϕ ∘ u goes to +∞
   have lim_top : Tendsto (ϕ ∘ u) atTop atTop := by
     let v n := (ϕ ∘ u) (n + 1)

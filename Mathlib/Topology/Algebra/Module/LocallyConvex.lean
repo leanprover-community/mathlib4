@@ -165,7 +165,7 @@ theorem locallyConvexSpace_iInf {ts' : ι → TopologicalSpace E}
     (h' : ∀ i, @LocallyConvexSpace 𝕜 E _ _ _ (ts' i)) :
     @LocallyConvexSpace 𝕜 E _ _ _ (⨅ i, ts' i) := by
   refine' locallyConvexSpace_sInf _
-  rwa [forall_range_iff]
+  rwa [forall_mem_range]
 #align locally_convex_space_infi locallyConvexSpace_iInf
 
 theorem locallyConvexSpace_inf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)

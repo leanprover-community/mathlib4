@@ -81,14 +81,14 @@ protected theorem IsGδ.univ : IsGδ (univ : Set X) :=
 
 theorem IsGδ.biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
     (hf : ∀ i ∈ I, IsOpen (f i)) : IsGδ (⋂ i ∈ I, f i) :=
-  ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
+  ⟨f '' I, by rwa [forall_mem_image], hI.image _, by rw [sInter_image]⟩
 #align is_Gδ_bInter_of_open IsGδ.biInter_of_isOpen
 
 @[deprecated] alias isGδ_biInter_of_isOpen := IsGδ.biInter_of_isOpen -- 2024-02-15
 
 theorem IsGδ.iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
-  ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
+  ⟨range f, by rwa [forall_mem_range], countable_range _, by rw [sInter_range]⟩
 #align is_Gδ_Inter_of_open IsGδ.iInter_of_isOpen
 
 @[deprecated] alias isGδ_iInter_of_isOpen := IsGδ.iInter_of_isOpen -- 2024-02-15
@@ -161,7 +161,7 @@ theorem IsGδ.sUnion {S : Set (Set X)} (hS : S.Finite) (h : ∀ s ∈ S, IsGδ s
 theorem IsGδ.biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i ∈ s, IsGδ (f i)) :
     IsGδ (⋃ i ∈ s, f i) := by
   rw [← sUnion_image]
-  exact .sUnion (hs.image _) (ball_image_iff.2 h)
+  exact .sUnion (hs.image _) (forall_mem_image.2 h)
 #align is_Gδ_bUnion IsGδ.biUnion
 
 @[deprecated] -- 2024-02-15
@@ -169,7 +169,7 @@ alias isGδ_biUnion := IsGδ.biUnion
 
 /-- The union of finitely many Gδ sets is a Gδ set, bounded indexed union version. -/
 theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
-  .sUnion (finite_range _) <| forall_range_iff.2 h
+  .sUnion (finite_range _) <| forall_mem_range.2 h
 
 theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
     (hs : IsClosed s) : IsGδ s := by
@@ -337,13 +337,13 @@ lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagr
 lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
     IsMeagre s ↔ ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
   rw [IsMeagre, mem_residual_iff, compl_bijective.surjective.image_surjective.exists]
-  simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← isClosed_isNowhereDense_iff_compl,
+  simp_rw [← and_assoc, ← forall_and, forall_mem_image, ← isClosed_isNowhereDense_iff_compl,
     sInter_image, ← compl_iUnion₂, compl_subset_compl, ← sUnion_eq_biUnion, and_assoc]
-  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS s hs).2, ?_, hsub⟩, ?_⟩
+  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS hs).2, ?_, hsub⟩, ?_⟩
   · rw [← compl_compl_image S]; exact hc.image _
   · intro ⟨S, hS, hc, hsub⟩
     use closure '' S
-    rw [ball_image_iff]
+    rw [forall_mem_image]
     exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
       (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
 

@@ -49,7 +49,8 @@ noncomputable section
 
 open Function Cardinal Set Order
 
-open Classical Cardinal Ordinal
+open scoped Classical
+open Cardinal Ordinal
 
 universe u v w
 
@@ -770,7 +771,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       let o := succ (sup.{u, u} g)
       rcases H o with ⟨b, h, l⟩
       refine' l (lt_succ_iff.2 _)
-      rw [← show g (f.symm ⟨b, h⟩) = b by simp]
+      rw [← show g (f.symm ⟨b, h⟩) = b by simp [g]]
       apply le_sup)
 #align ordinal.cof_univ Ordinal.cof_univ
 
@@ -1045,7 +1046,7 @@ theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α �
   let u' : β → range f := fun b => ⟨f (u b).choose, by simp⟩
   have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a := by
     rintro a p m
-    simp? at m says simp only [mem_preimage, mem_singleton_iff, Subtype.mk.injEq] at m
+    simp? [u']  at m says simp only [mem_preimage, mem_singleton_iff, Subtype.mk.injEq, u'] at m
     rw [← m]
     apply fun b => (u b).choose_spec
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h k

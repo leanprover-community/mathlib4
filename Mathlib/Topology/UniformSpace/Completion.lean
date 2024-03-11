@@ -49,7 +49,8 @@ open Filter Set
 
 universe u v w x
 
-open Uniformity Classical Topology Filter
+open scoped Classical
+open Uniformity Topology Filter
 
 /-- Space of Cauchy filters
 
@@ -85,7 +86,7 @@ theorem monotone_gen : Monotone (gen : Set (α × α) → _) :=
 set_option linter.uppercaseLean3 false in
 #align Cauchy.monotone_gen CauchyFilter.monotone_gen
 
--- porting note: this was a calc proof, but I could not make it work
+-- Porting note: this was a calc proof, but I could not make it work
 private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen := by
   let f := fun s : Set (α × α) =>
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
@@ -226,7 +227,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
--- porting note: I commented this
+-- Porting note: I commented this
 -- set_option eqn_compiler.zeta true
 
 instance : CompleteSpace (CauchyFilter α) :=
@@ -571,7 +572,7 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
     Completion.extension f ∘ Completion.map g = Completion.extension (f ∘ g) :=
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
     intro a
-    -- porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
+    -- Porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
     -- but should be?
     rw [extension_coe (hf.comp hg), Function.comp_apply, map_coe hg, extension_coe hf,
       Function.comp_apply]
@@ -599,7 +600,7 @@ def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     refine SeparationQuotient.surjective_mk.forall.2 fun a ↦ ?_
     rw [extension_coe (uniformContinuous_lift' _), lift'_mk (uniformContinuous_coe α),
       map_coe uniformContinuous_mk]
-  · refine Completion.induction_on a
+  · refine induction_on a
       (isClosed_eq (continuous_extension.comp continuous_map) continuous_id) fun a ↦ ?_
     rw [map_coe uniformContinuous_mk, extension_coe (uniformContinuous_lift' _),
       lift'_mk (uniformContinuous_coe _)]

@@ -50,7 +50,7 @@ universe u
 
 variable {G : Type u}
 
-open Classical
+open scoped Classical
 
 namespace Monoid
 
@@ -184,7 +184,7 @@ theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exp
 theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G, g ^ m ≠ 1 := by
   by_contra! h
   have hcon : exponent G ≤ m := exponent_min' m hpos h
-  linarith
+  omega
 #align monoid.exponent_min Monoid.exponent_min
 #align add_monoid.exponent_min AddMonoid.exponent_min
 
@@ -429,7 +429,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   have hne : (Set.range (orderOf : G → ℕ)).Nonempty := ⟨1, 1, orderOf_one⟩
   have hfin : (Set.range (orderOf : G → ℕ)).Finite := by
     rwa [← exponent_ne_zero_iff_range_orderOf_finite hG.orderOf_pos]
-  obtain ⟨t, ht⟩ := hne.cSup_mem hfin
+  obtain ⟨t, ht⟩ := hne.csSup_mem hfin
   use t
   apply Nat.dvd_antisymm (order_dvd_exponent _)
   refine' Nat.dvd_of_factors_subperm he _
@@ -503,7 +503,7 @@ variable [CancelCommMonoid G]
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by
-  rw [← Finset.Nonempty.cSup_eq_max', Finset.coe_image, Finset.coe_univ, Set.image_univ, ← iSup]
+  rw [← Finset.Nonempty.csSup_eq_max', Finset.coe_image, Finset.coe_univ, Set.image_univ, ← iSup]
   exact exponent_eq_iSup_orderOf orderOf_pos
 #align monoid.exponent_eq_max'_order_of Monoid.exponent_eq_max'_orderOf
 #align add_monoid.exponent_eq_max'_order_of AddMonoid.exponent_eq_max'_addOrderOf
