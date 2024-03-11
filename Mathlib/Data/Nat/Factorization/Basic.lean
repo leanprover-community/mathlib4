@@ -666,8 +666,9 @@ that in `factorization_lcm_left a b` there are the primes whose exponent in `a` 
 than the exponent in `b`, while in `factorization_lcm_right a b` there are the primes primes whose
 exponent in `b` is strictly bigger than in `a`. For example `factorization_lcm_left 2 2 = 2`, but
 `factorization_lcm_right 2 2 = 1`. -/
-def factorization_lcm_right (a b : ℕ) := (Nat.lcm a b).factorization.prod fun p n ↦
-  if b.factorization p ≤ a.factorization p then 1 else p ^ n
+def factorization_lcm_right (a b : ℕ) :=
+  (Nat.lcm a b).factorization.prod fun p n ↦
+    if b.factorization p ≤ a.factorization p then 1 else p ^ n
 
 variable (a b)
 
