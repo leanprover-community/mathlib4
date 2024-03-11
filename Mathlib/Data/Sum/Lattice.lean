@@ -21,14 +21,16 @@ variable {α β : Type*}
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β]
 
+instance : Sup (α ⊕ₗ β) where
+  sup x y := match x, y with
+  | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊔ a₂)
+  | inlₗ _, inrₗ b₂ => inr b₂
+  | inrₗ b₁, inlₗ _ => inr b₁
+  | inrₗ b₁, inrₗ b₂ => inr (b₁ ⊔ b₂)
+
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeSup : SemilatticeSup (α ⊕ₗ β) where
-  sup x y := match x, y with
-    | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊔ a₂)
-    | inlₗ a₁, inrₗ b₂ => inr b₂
-    | inrₗ b₁, inlₗ a₂ => inr b₁
-    | inrₗ b₁, inrₗ b₂ => inr (b₁ ⊔ b₂)
   le_sup_left x y := match x, y with
     | inlₗ a₁, inlₗ a₂ => inl_le_inl_iff.2 le_sup_left
     | inlₗ a₁, inrₗ b₂ => inl_le_inr _ _
@@ -54,14 +56,16 @@ end SemilatticeSup
 section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β]
 
+instance : Inf (α ⊕ₗ β) where
+  inf x y := match x, y with
+    | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊓ a₂)
+    | inlₗ a₁, inrₗ _ => inl a₁
+    | inrₗ _, inlₗ a₂ => inl a₂
+    | inrₗ b₁, inrₗ b₂ => inr (b₁ ⊓ b₂)
+
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeInf : SemilatticeInf (α ⊕ₗ β) where
-  inf x y := match x, y with
-    | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊓ a₂)
-    | inlₗ a₁, inrₗ b₂ => inl a₁
-    | inrₗ b₁, inlₗ a₂ => inl a₂
-    | inrₗ b₁, inrₗ b₂ => inr (b₁ ⊓ b₂)
   inf_le_left x y := match x, y with
     | inlₗ a₁, inlₗ a₂ => inl_le_inl_iff.2 inf_le_left
     | inlₗ a₁, inrₗ b₂ => le_rfl

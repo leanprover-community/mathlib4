@@ -1184,6 +1184,7 @@ section NoncomputableDefs
 variable {M : Type*}
 
 -- Unused linter bug at `hM`
+/-- Constructs an inv operation for a `Monoid` consisting only of units. -/
 noncomputable def invOfIsUnit [_hM : Monoid M] (h : ∀ a : M, IsUnit a) : Inv M where
   inv := fun a =>  ↑(h a).unit⁻¹
 

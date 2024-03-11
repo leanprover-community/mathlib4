@@ -214,6 +214,15 @@ section Action_by_Prod
 
 variable (M N α) [Monoid M] [Monoid N]
 
+/-- Construct an `SMul` by a product monoid from `SMul`s by the factors.
+see note [reducible non-instances] -/
+@[to_additive AddAction.smulProdOfVaddCommClass
+  "Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
+  This is not an instance to avoid diamonds for example when `α := M × N`."]
+abbrev MulAction.smulProdOfSmulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
+    SMul (M × N) α where
+  smul mn a := mn.1 • mn.2 • a
+
 /-- Construct a `MulAction` by a product monoid from `MulAction`s by the factors.
   This is not an instance to avoid diamonds for example when `α := M × N`. -/
 @[to_additive AddAction.prodOfVAddCommClass
@@ -221,7 +230,7 @@ variable (M N α) [Monoid M] [Monoid N]
   This is not an instance to avoid diamonds for example when `α := M × N`."]
 abbrev MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
     MulAction (M × N) α where
-  smul mn a := mn.1 • mn.2 • a
+  toSMul := MulAction.smulProdOfSmulCommClass M N α
   one_smul a := (one_smul M _).trans (one_smul N a)
   mul_smul x y a := by
     change (x.1 * y.1) • (x.2 * y.2) • a = x.1 • x.2 • y.1 • y.2 • a

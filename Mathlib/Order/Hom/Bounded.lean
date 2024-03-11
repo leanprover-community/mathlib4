@@ -321,8 +321,10 @@ section OrderTop
 
 variable [Preorder β] [OrderTop β]
 
-instance : OrderTop (TopHom α β) where
+instance instTop : Top (TopHom α β) where
   top := ⟨⊤, rfl⟩
+
+instance : OrderTop (TopHom α β) where
   le_top := fun _ => @le_top (α → β) _ _ _
 
 @[simp]
@@ -514,8 +516,10 @@ section OrderBot
 
 variable [Preorder β] [OrderBot β]
 
-instance : OrderBot (BotHom α β) where
+instance instBot : Bot (BotHom α β) where
   bot := ⟨⊥, rfl⟩
+
+instance : OrderBot (BotHom α β) where
   bot_le := fun _ => @bot_le (α → β) _ _ _
 
 @[simp]

@@ -75,13 +75,13 @@ theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
       exact he b hb⟩⟩⟩
 #align unique_subtype_iff_exists_unique unique_subtype_iff_exists_unique
 
-/-- Given an explicit `a : α` with `Subsingleton α`, we can construct
+/-- Given an explicit `a : α`, we can construct
 a `Default α` instance. This is a def because the typeclass search cannot
 arbitrarily invent the `a : α` term.
 
 See note [reducible non-instances]. -/
 @[reducible]
-def inhabitedOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Inhabited α where
+def inhabitedOfTerm {α : Sort*} (a : α) : Inhabited α where
   default := a
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
@@ -92,7 +92,7 @@ equivalent by `Unique.Subsingleton.unique`.
 See note [reducible non-instances]. -/
 @[reducible]
 def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
-  toInhabited := inhabitedOfSubsingleton a
+  toInhabited := inhabitedOfTerm a
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton
 
@@ -110,7 +110,7 @@ theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
 
 /-- Every provable proposition is unique, as all proofs are equal. -/
 def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
-  toInhabited := inhabitedOfSubsingleton h
+  toInhabited := inhabitedOfTerm h
   uniq _ := rfl
 #align unique_prop uniqueProp
 

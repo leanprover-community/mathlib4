@@ -846,8 +846,10 @@ instance : Sup (SupBotHom α β) :=
 instance : SemilatticeSup (SupBotHom α β) :=
   (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
-instance : OrderBot (SupBotHom α β) where
+instance instBot : Bot (SupBotHom α β) where
   bot := ⟨⊥, rfl⟩
+
+instance : OrderBot (SupBotHom α β) where
   bot_le _ _ := bot_le
 
 @[simp]
@@ -998,8 +1000,10 @@ instance : Inf (InfTopHom α β) :=
 instance : SemilatticeInf (InfTopHom α β) :=
   (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
-instance : OrderTop (InfTopHom α β) where
+instance instTop : Top (InfTopHom α β) where
   top := ⟨⊤, rfl⟩
+
+instance : OrderTop (InfTopHom α β) where
   le_top _ _ := le_top
 
 @[simp]

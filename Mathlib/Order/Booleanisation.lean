@@ -160,7 +160,6 @@ instance instSDiff : SDiff (Booleanisation α) where
 @[simp] lemma comp_sdiff_comp (a b : α) : comp a \ comp b = lift (b \ a) := rfl
 
 instance instPreorder : Preorder (Booleanisation α) where
-  lt := (· < ·)
   lt_iff_le_not_le x y := match x, y with
     | lift a, lift b => by simp [lt_iff_le_not_le]
     | lift a, comp b => by simp
