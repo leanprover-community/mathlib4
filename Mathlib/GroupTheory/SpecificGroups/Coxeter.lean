@@ -549,6 +549,11 @@ theorem length_simple_mul (w : W) (i : B) :
 -- Reduced words
 
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
+theorem isReduced_take (ω : List B) (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) := by
+  sorry
+
+theorem isReduced_drop (ω : List B) (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) := by
+  sorry
 
 -- Reflections, inversions, inversion sequences
 
@@ -557,6 +562,9 @@ $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
 def IsReflection (t : W) : Prop := ∃ w : W, ∃ i : B, t = w * s i * w⁻¹
 
 def reflections : Set W := {t : W | cs.IsReflection t}
+
+theorem isInvolution_of_isReflection (t : W) (rt : cs.IsReflection t) : t ^ 2 = 1 := by
+  sorry
 
 /-- `t` is a left inversion of `w`; i.e., `t` is a reflection and $\ell (t w) < \ell(w)$.-/
 def IsLeftInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (t * w) < ℓ w
@@ -633,33 +641,43 @@ private lemma nodup_rightInvSeq_of_reduced (ω : List B) (rω : reduced ω) :
 
 -- Geometric representations and the standard geometric representation.
 
-/-- The reflection map corresponding to the (not necessarily positive definite)
- bilinear form `bilin` and the element `v`.
--/
-def reflection {V : Type*} [AddCommMonoid V] [Module ℝ V] (bilin : LinearMap.BilinForm ℝ V)
-    (v : V) : V →ₗ[ℝ] V := sorry
-
-theorem reflection_sqr_eq_id {V : Type*} [AddCommMonoid V] [Module ℝ V]
-    (bilin : LinearMap.BilinForm ℝ V) (v : V) :
-    (reflection bilin v) * (reflection bilin v) = LinearMap.id := by
-  sorry
-
-def standardBilinForm (cs : CoxeterSystem M W) : LinearMap.BilinForm ℝ (B →₀ ℝ) := sorry
-
-theorem standardBilinForm_symm : LinearMap.IsSymm cs.standardBilinForm := by
-  sorry
-
--- TODO add docstrings here
-def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation ℝ W (B →₀ ℝ) := sorry
-
 def simpleRoot (i : B) : B →₀ ℝ := Finsupp.single i 1
+local prefix:100 "α" => simpleRoot
+
+/-- The standard bilinear form on B →₀ ℝ. Given by ⟪αᵢ, αⱼ⟫ = cos (π / Mᵢⱼ)
+for i j : B, where {αᵢ} is the standard basis of B →₀ ℝ and M is the Coxeter matrix.
+This is positive definite if and only if the associated Coxeter group is finite. -/
+def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ (B →₀ ℝ) := sorry
+
+local notation:max "⟪"  a  ","  b  "⟫" => standardBilinForm M a b
+
+theorem standardBilinForm_symm (M : Matrix B B ℕ) : LinearMap.IsSymm (standardBilinForm M) := by
+  sorry
+
+@[simp] theorem standardBilinForm_simpleRoots (i i' : B) :
+    ⟪α i, α i'⟫ = Real.cos (Real.pi / M i i') := by
+  sorry
+
+/-- The orthogonal reflection in the vector `v` under the standard bilinear form.
+-/
+def reflection (M : Matrix B B ℕ) (v : B →₀ ℝ) : (B →₀ ℝ) →ₗ[ℝ] (B →₀ ℝ) := sorry
+
+theorem reflection_sqr_eq_id (M : Matrix B B ℕ) (v : B →₀ ℝ) :
+    (reflection M v) * (reflection M v) = LinearMap.id := by
+  sorry
+
+theorem reflection_eq_iff (M : Matrix B B ℕ) (v v' : B →₀ ℝ) (hv : ⟪v, v⟫ ≠ 0):
+    reflection M v = reflection M v' ↔ ∃ μ : ℝ, v' = μ • v := by
+  sorry
+
+/-- The standard geometric representation on B →₀ ℝ. For i : B, the simple reflection sᵢ acts by
+sᵢ v = v - 2 ⟪αᵢ, v⟫ / ⟪αᵢ, αᵢ⟫ * αᵢ, where {αᵢ} is the standard basis of B →₀ ℝ.
+-/
+def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation ℝ W (B →₀ ℝ) := sorry
 
 alias SGR := standardGeometricRepresentation
 
-local prefix:100 "α" => simpleRoot
-local notation:max "⟪"  a  ","  b  "⟫" => cs.standardBilinForm a b
-
-theorem SGR_simpleReflection (i : B) : cs.SGR (s i) = reflection (cs.standardBilinForm) (α i) := by
+theorem SGR_simpleReflection (i : B) : cs.SGR (s i) = reflection M (α i) := by
   sorry
 
 theorem SGR_simpleReflection_simpleRoot (i : B) : cs.SGR (s i) (α i) = -α i := by
@@ -668,10 +686,18 @@ theorem SGR_simpleReflection_simpleRoot (i : B) : cs.SGR (s i) (α i) = -α i :=
 theorem SGR_bilin_eq_bilin (w : W) (v v' : B →₀ ℝ) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
   sorry
 
+/-- The roots of the standard geometric representation; i.e. the vectors that can be written
+in the form w αᵢ, where w : W and {αᵢ} is the standard basis of B →₀ ℝ. If W is infinite,
+then this is not a root system in the traditional sense because it is infinite and
+B →₀ ℝ is not an inner product space.
+-/
 def roots : Set (B →₀ ℝ) := {v : B →₀ ℝ | ∃ w : W, ∃ i : B, v = cs.SGR w (α i)}
 
+/-- The roots that can be written as a nonnegative linear combination of the standard basis {αᵢ}.-/
 def posRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B, v i ≥ 0}
+/-- The roots that can be written as a nonpositive linear combination of the standard basis {αᵢ}.-/
 def negRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B, v i ≤ 0}
+
 
 @[simp] theorem roots_invariant (w : W) (v : B →₀ ℝ) : cs.SGR w v ∈ cs.roots ↔ v ∈ cs.roots := by
   sorry
@@ -688,22 +714,23 @@ theorem root_pos_or_neg : cs.roots = cs.posRoots ∪ cs.negRoots  := by
 theorem root_not_pos_and_neg : cs.posRoots ∩ cs.negRoots = ∅ := by
   sorry
 
+theorem SGR_injective : Injective cs.SGR := by
+  sorry
+
 def reflectionToRoot : cs.reflections ≃ cs.posRoots := sorry
 
+theorem reflection_by_smul (w : W) (v : B →₀ ℝ) :
+    reflection M (cs.SGR w v) = (cs.SGR w) ∘ (reflection M v) ∘ (cs.SGR w⁻¹) := by
+  sorry
+
 theorem reflection_by_root (γ : cs.posRoots) :
-    reflection cs.standardBilinForm γ = cs.SGR (cs.reflectionToRoot.invFun γ) := by
+    reflection M γ = cs.SGR (cs.reflectionToRoot.invFun γ) := by
   sorry
 
 theorem isRightInversion_iff (w : W) (t : cs.reflections) : cs.IsRightInversion w t ↔
     cs.SGR w (cs.reflectionToRoot.toFun t) ∈ cs.negRoots := by
   sorry
 
-theorem SGR_injective : Injective cs.SGR := by
-  sorry
-
-local prefix:100 "α" => cs.SGR.simpleRoot
-local notation:max "⟪"  a  ","  b  "⟫" => cs.SGR.bilin a b
-local prefix:100 "r" => reflection cs.SGR.bilin
 
 /-- The (strong) left exchange property:
 Let $w = s_{i_1} \cdots s_{i_\ell}$ be a reduced expression for an element $w \in W$
