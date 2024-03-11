@@ -36,8 +36,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 -/
 
-suppress_compilation
-
 open scoped TensorProduct
 
 open TensorProduct
