@@ -661,7 +661,7 @@ def factorizationLCMLeft (a b : ℕ) : ℕ :=
 /-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorization_lcm_right = ∏ pᵢ ^ kᵢ`, where
 `kᵢ = mᵢ` if `nᵢ < mᵢ` and `0` otherwise.
 
-Note that `factorization_lcm_right a b` is *not* `factorization_lcm_left a b`: the difference is
+Note that `factorization_lcm_right a b` is *not* `factorization_lcm_left b a`: the difference is
 that in `factorization_lcm_left a b` there are the primes whose exponent in `a` is bigger or equal
 than the exponent in `b`, while in `factorization_lcm_right a b` there are the primes primes whose
 exponent in `b` is strictly bigger than in `a`. For example `factorization_lcm_left 2 2 = 2`, but
