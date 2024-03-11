@@ -219,8 +219,7 @@ see note [reducible non-instances] -/
 @[to_additive AddAction.smulProdOfVaddCommClass
   "Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
   This is not an instance to avoid diamonds for example when `α := M × N`."]
-abbrev MulAction.smulProdOfSmulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
-    SMul (M × N) α where
+abbrev MulAction.smulProdOfSmulCommClass [MulAction M α] [MulAction N α] : SMul (M × N) α where
   smul mn a := mn.1 • mn.2 • a
 
 /-- Construct a `MulAction` by a product monoid from `MulAction`s by the factors.

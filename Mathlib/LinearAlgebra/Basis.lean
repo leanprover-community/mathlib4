@@ -365,7 +365,6 @@ section MapCoeffs
 variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
   (h : ∀ (c) (x : M), f c • x = c • x)
 
-attribute [local instance] SMul.comp.isScalarTower
 
 /-- If `R` and `R'` are isomorphic rings that act identically on a module `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
@@ -375,6 +374,7 @@ See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap
 @[simps (config := { simpRhs := true })]
 def mapCoeffs : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
+  have : IsScalarTower R' R R := SMul.comp.isScalarTower f.symm
   haveI : IsScalarTower R' R M :=
     { smul_assoc := fun x y z => by
         -- Porting note: `dsimp [(· • ·)]` is unavailable because

@@ -566,7 +566,7 @@ lemma le_stabilizer_smul_right [SMul α β] [SMulCommClass G α β] (a : α) (b 
 lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)
     (h : Injective (· • b : α → β)) : stabilizer G (a • b) = stabilizer G a := by
   refine' (le_stabilizer_smul_left _ _).antisymm' fun a ha ↦ _
-  simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
+  simpa only [SetLike.mem_coe, mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
 
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_right [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :

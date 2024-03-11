@@ -442,7 +442,7 @@ instance orderBot [LE α] [OrderBot α] [LE β] :
 #align sum.lex.order_bot Sum.Lex.orderBot
 
 @[simp]
-theorem inl_bot [LE α] [OrderBot α] [LE β] : toLex (inl ⊥ : Sum α β) = ⊥ :=
+theorem inl_bot [LE α] [OrderBot α] : toLex (inl ⊥ : Sum α β) = ⊥ :=
   rfl
 #align sum.lex.inl_bot Sum.Lex.inl_bot
 
@@ -460,7 +460,7 @@ instance orderTop [LE α] [LE β] [OrderTop β] :
 #align sum.lex.order_top Sum.Lex.orderTop
 
 @[simp]
-theorem inr_top [LE α] [LE β] [OrderTop β] : toLex (inr ⊤ : Sum α β) = ⊤ :=
+theorem inr_top [LE β] [OrderTop β] : toLex (inr ⊤ : Sum α β) = ⊤ :=
   rfl
 #align sum.lex.inr_top Sum.Lex.inr_top
 

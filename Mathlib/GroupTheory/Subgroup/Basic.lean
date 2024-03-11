@@ -2242,7 +2242,7 @@ variable {N : Type*} [Group N]
 @[to_additive "The preimage of the normalizer is contained in the normalizer of the preimage."]
 theorem le_normalizer_comap (f : N →* G) :
     H.normalizer.comap f ≤ (H.comap f).normalizer := fun x => by
-  simp only [mem_normalizer_iff, mem_comap]
+  simp only [SetLike.mem_coe, mem_normalizer_iff, mem_comap]
   intro h n
   simp [h (f n)]
 #align subgroup.le_normalizer_comap Subgroup.le_normalizer_comap
@@ -2251,7 +2251,7 @@ theorem le_normalizer_comap (f : N →* G) :
 /-- The image of the normalizer is contained in the normalizer of the image. -/
 @[to_additive "The image of the normalizer is contained in the normalizer of the image."]
 theorem le_normalizer_map (f : G →* N) : H.normalizer.map f ≤ (H.map f).normalizer := fun _ => by
-  simp only [and_imp, exists_prop, mem_map, exists_imp, mem_normalizer_iff]
+  simp only [SetLike.mem_coe, and_imp, exists_prop, mem_map, exists_imp, mem_normalizer_iff]
   rintro x hx rfl n
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -3083,7 +3083,7 @@ theorem map_comap_eq (H : Subgroup N) : map f (comap f H) = f.range ⊓ H :=
 @[to_additive]
 theorem comap_map_eq (H : Subgroup G) : comap f (map f H) = H ⊔ f.ker := by
   refine' le_antisymm _ (sup_le (le_comap_map _ _) (ker_le_comap _ _))
-  intro x hx; simp only [exists_prop, mem_map, mem_comap] at hx
+  intro x hx; simp only [SetLike.mem_coe, exists_prop, mem_map, mem_comap] at hx
   rcases hx with ⟨y, hy, hy'⟩
   rw [← mul_inv_cancel_left y x]
   exact mul_mem_sup hy (by simp [mem_ker, hy'])
@@ -3273,7 +3273,7 @@ theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
   le_antisymm (le_normalizer_comap f)
     (by
       intro x hx
-      simp only [mem_comap, mem_normalizer_iff] at *
+      simp only [SetLike.mem_coe, mem_comap, mem_normalizer_iff] at *
       intro n
       rcases hf n with ⟨y, rfl⟩
       simp [hx y])
