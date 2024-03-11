@@ -3302,10 +3302,8 @@ theorem filterMap_congr {f g : α → Option β} {l : List α}
   induction' l with a l ih <;> simp
   simp [ih (fun x hx ↦ h x (List.mem_cons_of_mem a hx))]
   cases' hfa : f a with b
-  · have : g a = none := Eq.symm (by simpa [hfa] using h a (by simp))
-    simp [this]
-  · have : g a = some b := Eq.symm (by simpa [hfa] using h a (by simp))
-    simp [this]
+  · simp [show g a = none from Eq.symm (by simpa [hfa] using h a (by simp))]
+  · simp [show g a = some b from Eq.symm (by simpa [hfa] using h a (by simp))]
 
 theorem filterMap_eq_map_of_eq_some {f : α → Option β} {g : α → β} {l : List α}
     (h : ∀ x ∈ l, f x = some (g x)) : l.filterMap f = l.map g :=

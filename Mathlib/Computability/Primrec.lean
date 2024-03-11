@@ -1179,93 +1179,65 @@ theorem list_lookup [DecidableEq α] : Primrec₂ (List.lookup : α → List (α
   induction' ps with p ps ih <;> simp[List.lookup, *]
   cases ha : a == p.1 <;> simp[ha]
 
-section nat_omega_rec
-
-section
-
-variable [DecidableEq β]
-
-private def mapGraph (M : List (β × γ)) (bs : List β) : List γ :=
-  bs.bind (Option.toList <| M.lookup ·)
-
-private def bindList (l : β → List β) (b : β) : ℕ → List β := fun n ↦
-  n.rec [b] fun _ bs ↦ bs.bind l
-
-private def graph (m : β → ℕ) (l : β → List β) (g : β → List σ → Option σ) (b : β) :
-    ℕ → List (β × σ) := fun i =>
-  i.rec [] fun i ih ↦
-    (bindList l b (m b - i)).filterMap fun b' ↦ (g b' $ mapGraph ih (l b')).map (b', ·)
-
-private theorem mapGraph_primrec : Primrec₂ (mapGraph : List (β × γ) → List β → List γ) :=
-  to₂ <| list_bind snd
-    (option_toList.comp₂ $ list_lookup.comp₂ .right (fst.comp₂ .left))
-
-private theorem bindList_primrec {l : β → List β} (hl : Primrec l) : Primrec₂ (bindList l) :=
-  nat_rec' snd
-    (list_cons.comp fst (const []))
-    (to₂ $ list_bind (snd.comp snd) (hl.comp₂ .right))
-
-private theorem graph_primrec {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
-    (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g) : Primrec₂ (graph m l g) :=
-  to₂ <| nat_rec' snd (const []) <|
-    to₂ <| list_filterMap
-      ((bindList_primrec hl).comp
-        (fst.comp fst)
-        (nat_sub.comp (hm.comp $ fst.comp fst) (fst.comp snd))) <|
-          to₂ <| option_map
-            (hg.comp snd (mapGraph_primrec.comp (snd.comp $ snd.comp fst) (hl.comp snd)))
-            (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right)
-
-variable (f : β → σ) (m : β → ℕ) (l : β → List β) (g : β → List σ → Option σ)
-  (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b) (H : ∀ b, g b ((l b).map f) = some (f b))
-
-private theorem bindList_m_lt (b : β) (k) :
-    ∀ b' ∈ bindList l b k, m b' < m b + 1 - k := by
-  induction' k with k ih <;> simp [bindList]
-  intro a₂ a₁ ha₁ ha₂
-  have : k ≤ m b :=
-    Nat.lt_succ.mp (by simpa using Nat.add_lt_of_lt_sub $ Nat.zero_lt_of_lt (ih a₁ ha₁))
-  have : m a₁ ≤ m b - k := Nat.lt_succ.mp (by simpa [← Nat.succ_sub this] using ih a₁ ha₁)
-  exact lt_of_lt_of_le (Ord a₁ a₂ ha₂) this
-
-private theorem bindList_eq_nil (b : β) :
-    bindList l b (m b + 1) = [] :=
-  List.eq_nil_iff_forall_not_mem.mpr
-    (by intro b' ha'; by_contra; simpa using bindList_m_lt m l Ord b (m b + 1) b' ha')
-
-private theorem mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
-    mapGraph (bs.map $ fun x => (x, f x)) bs' = bs'.map f := by
-  induction' bs' with b bs' ih <;> simp [mapGraph]
-  · have : b ∈ bs ∧ bs' ⊆ bs := by simpa using has
-    rcases this with ⟨ha, has'⟩
-    simpa [List.lookup_graph f ha] using ih has'
-
-private theorem graph_eq_map_bindList (b : β) (i : ℕ) (hi : i ≤ m b + 1) :
-    graph m l g b i = (bindList l b (m b + 1 - i)).map fun x ↦ (x, f x) := by
-  have graph_succ : ∀ i, graph m l g b (i + 1) =
-    (bindList l b (m b - i)).filterMap fun b' =>
-      (g b' $ mapGraph (graph m l g b i) (l b')).map (b', ·) := fun _ => rfl
-  have bindList_succ : ∀ i, bindList l b (i + 1) = (bindList l b i).bind l := fun _ => rfl
-  induction' i with i ih
-  · symm; simpa [graph] using bindList_eq_nil m l Ord b
-  · simp [graph_succ, bindList_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.lt_succ.mp hi)]
-    rw [List.filterMap_eq_map_of_eq_some]
-    intro b' ha'; simp; rw [mapGraph_graph]
-    · exact H b'
-    · exact (List.infix_bind_of_mem ha' l).subset
-
-end
-
 theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g : β → List σ → Option σ}
     (hm : Primrec m) (hl : Primrec l) (hg : Primrec₂ g)
     (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b)
     (H : ∀ b, g b ((l b).map f) = some (f b)) : Primrec f := by
   haveI : DecidableEq β := Encodable.decidableEqOfEncodable β
-  have : Primrec (fun b => ((graph m l g b (m b + 1)).get? 0).map Prod.snd) :=
-    option_map (list_get?.comp ((graph_primrec hm hl hg).comp Primrec.id (succ.comp hm)) (const 0))
+  let mapGraph (M : List (β × σ)) (bs : List β) : List σ := bs.bind (Option.toList <| M.lookup ·)
+  let bindList (b : β) : ℕ → List β := fun n ↦ n.rec [b] fun _ bs ↦ bs.bind l
+  let graph (b : β) : ℕ → List (β × σ) := fun i ↦ i.rec [] fun i ih ↦
+    (bindList b (m b - i)).filterMap fun b' ↦ (g b' $ mapGraph ih (l b')).map (b', ·)
+  have mapGraph_primrec : Primrec₂ mapGraph :=
+    to₂ <| list_bind snd <| option_toList.comp₂ <| list_lookup.comp₂ .right (fst.comp₂ .left)
+  have bindList_primrec : Primrec₂ (bindList) :=
+    nat_rec' snd
+      (list_cons.comp fst (const []))
+      (to₂ <| list_bind (snd.comp snd) (hl.comp₂ .right))
+  have graph_primrec : Primrec₂ (graph) :=
+    to₂ <| nat_rec' snd (const []) <|
+      to₂ <| list_filterMap
+        (bindList_primrec.comp
+          (fst.comp fst)
+          (nat_sub.comp (hm.comp $ fst.comp fst) (fst.comp snd))) <|
+            to₂ <| option_map
+              (hg.comp snd (mapGraph_primrec.comp (snd.comp $ snd.comp fst) (hl.comp snd)))
+              (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right)
+  have : Primrec (fun b => ((graph b (m b + 1)).get? 0).map Prod.snd) :=
+    option_map (list_get?.comp (graph_primrec.comp Primrec.id (succ.comp hm)) (const 0))
       (snd.comp₂ Primrec₂.right)
-  exact option_some_iff.mp <| this.of_eq <| fun b => by
-    simp [graph_eq_map_bindList f m l g Ord H b (m b + 1) (Nat.le_refl _), bindList]
+  exact option_some_iff.mp <| this.of_eq <| fun b ↦ by
+    have graph_eq_map_bindList (i : ℕ) (hi : i ≤ m b + 1) :
+        graph b i = (bindList b (m b + 1 - i)).map fun x ↦ (x, f x) := by
+      have bindList_eq_nil : bindList b (m b + 1) = [] :=
+        have bindList_m_lt (k : ℕ) : ∀ b' ∈ bindList b k, m b' < m b + 1 - k := by
+          induction' k with k ih <;> simp [bindList]
+          intro a₂ a₁ ha₁ ha₂
+          have : k ≤ m b :=
+            Nat.lt_succ.mp (by simpa using Nat.add_lt_of_lt_sub $ Nat.zero_lt_of_lt (ih a₁ ha₁))
+          have : m a₁ ≤ m b - k := Nat.lt_succ.mp (by simpa [← Nat.succ_sub this] using ih a₁ ha₁)
+          exact lt_of_lt_of_le (Ord a₁ a₂ ha₂) this
+        List.eq_nil_iff_forall_not_mem.mpr
+          (by intro b' ha'; by_contra; simpa using bindList_m_lt (m b + 1) b' ha')
+      have mapGraph_graph {bs bs' : List β} (has : bs' ⊆ bs) :
+          mapGraph (bs.map $ fun x => (x, f x)) bs' = bs'.map f := by
+        induction' bs' with b bs' ih <;> simp [mapGraph]
+        · have : b ∈ bs ∧ bs' ⊆ bs := by simpa using has
+          rcases this with ⟨ha, has'⟩
+          simpa [List.lookup_graph f ha] using ih has'
+      have graph_succ : ∀ i, graph b (i + 1) =
+        (bindList b (m b - i)).filterMap fun b' =>
+          (g b' <| mapGraph (graph b i) (l b')).map (b', ·) := fun _ => rfl
+      have bindList_succ : ∀ i, bindList b (i + 1) = (bindList b i).bind l := fun _ => rfl
+      induction' i with i ih
+      · symm; simpa [graph] using bindList_eq_nil
+      · simp [Nat.succ_eq_add_one, graph_succ, bindList_succ, ih (Nat.le_of_lt hi),
+          Nat.succ_sub (Nat.lt_succ.mp hi)]
+        apply List.filterMap_eq_map_of_eq_some
+        intro b' ha'; simp; rw [mapGraph_graph]
+        · exact H b'
+        · exact (List.infix_bind_of_mem ha' l).subset
+    simp [graph_eq_map_bindList (m b + 1) (Nat.le_refl _), bindList]
 
 theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
     {l : α → β → List β} {g : α → β × List σ → Option σ}
@@ -1278,8 +1250,6 @@ theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}
       (list_map (hl.comp fst snd) (Primrec₂.pair.comp₂ (fst.comp₂ .left) .right))
       (hg.comp₂ (fst.comp₂ .left) (Primrec₂.pair.comp₂ (snd.comp₂ .left) .right))
       (by simpa using Ord) (by simpa[Function.comp] using H)
-
-end nat_omega_rec
 
 end Primrec
 
