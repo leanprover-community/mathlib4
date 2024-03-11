@@ -1225,6 +1225,12 @@ instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCom
   ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
 #align subalgebra.is_scalar_tower_mid Subalgebra.isScalarTower_mid
 
+/-- The action by a subalgebra is the action by the underlying algebra. -/
+instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
+    [Algebra A α] (S : Subalgebra R A) : Algebra S α :=
+  Algebra.ofSubsemiring S.toSubsemiring
+#align subalgebra.to_algebra Subalgebra.toAlgebra
+
 theorem algebraMap_eq {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
     [Algebra A α] (S : Subalgebra R A) : algebraMap S α = (algebraMap A α).comp S.val :=
   rfl
