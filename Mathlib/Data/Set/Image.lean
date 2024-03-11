@@ -250,7 +250,6 @@ theorem mem_image_elim_on {f : α → β} {s : Set α} {C : β → Prop} {y : β
 @[congr]
 theorem image_congr {f g : α → β} {s : Set α} (h : ∀ a ∈ s, f a = g a) : f '' s = g '' s := by
   ext x
-  rw [mem_image, mem_image]
   exact exists_congr fun a ↦ and_congr_right fun ha ↦ by rw [h a ha]
 #align set.image_congr Set.image_congr
 
@@ -667,8 +666,7 @@ theorem exists_range_iff {p : α → Prop} : (∃ a ∈ range f, p a) ↔ ∃ i,
 #align set.exists_range_iff Set.exists_range_iff
 
 @[deprecated] -- 2024-03-10
-theorem exists_range_iff' {p : α → Prop} : (∃ a, a ∈ range f ∧ p a) ↔ ∃ i, p (f i) :=
-  exists_range_iff
+alias exists_range_iff' := exists_range_iff
 #align set.exists_range_iff' Set.exists_range_iff'
 
 theorem exists_subtype_range_iff {p : range f → Prop} :
