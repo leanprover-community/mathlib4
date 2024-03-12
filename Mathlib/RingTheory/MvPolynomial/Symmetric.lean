@@ -144,6 +144,10 @@ theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).IsSymmetri
   simp_rw [rename_rename, ← Equiv.coe_trans, Equiv.self_trans_symm, Equiv.coe_refl, rename_id]
   rw [hφ]
 
+@[simp]
+theorem rename_iff {e : σ ≃ τ} : (MvPolynomial.rename e φ).IsSymmetric ↔ φ.IsSymmetric :=
+  ⟨fun h => by simpa using (rename (R := R) h e.symm), (rename · e)⟩
+
 end CommSemiring
 
 section CommRing
@@ -163,7 +167,8 @@ end CommRing
 end IsSymmetric
 
 /-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
-def rename_symmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
+@[simps!]
+def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
     symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
   AlgEquiv.ofAlgHom
     (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x => x.2.rename e)
