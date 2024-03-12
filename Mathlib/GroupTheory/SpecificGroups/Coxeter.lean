@@ -102,8 +102,14 @@ variable (M : Matrix B B ℕ)
 and off-diagonal entries distinct from one. -/
 structure Matrix.IsCoxeter : Prop where
   symmetric : M.IsSymm := by aesop
-  diagonal : ∀ b : B, M b b  = 1 := by aesop
-  off_diagonal : ∀ b₁ b₂ : B, b₁ ≠ b₂ → M b₁ b₂ ≠ 1 := by aesop
+  diagonal : ∀ i : B, M i i  = 1 := by aesop
+  off_diagonal : ∀ i i' : B, i ≠ i' → M i i' ≠ 1 := by aesop
+
+theorem Matrix.reindex_isCoxeter {B B' : Type*} [DecidableEq B] [DecidableEq B'] (M : Matrix B B ℕ)
+    (e : B ≃ B') (hM : M.IsCoxeter) : (Matrix.reindex e e M).IsCoxeter where
+  symmetric := by dsimp only [Matrix.IsSymm]; rw [Matrix.transpose_reindex, hM.symmetric]
+  diagonal := by intro b; dsimp [Matrix.reindex]; exact hM.diagonal (e.symm b)
+  off_diagonal := by intro i i' hii'; dsimp [Matrix.reindex]; apply hM.off_diagonal; aesop
 
 namespace CoxeterGroup
 
@@ -122,7 +128,7 @@ end Relations
 end CoxeterGroup
 
 /-- The group presentation corresponding to a Coxeter matrix. -/
-def Matrix.CoxeterGroup := PresentedGroup <| CoxeterGroup.Relations.toSet M
+def Matrix.CoxeterGroup := PresentedGroup (CoxeterGroup.Relations.toSet M)
 
 instance : Group (Matrix.CoxeterGroup M) :=
   QuotientGroup.Quotient.group _
@@ -144,23 +150,24 @@ a group `W` and the group presentation corresponding to a Coxeter matrix. Equiva
 can be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
 satisfy the relations of the Coxeter matrix `M`. -/
 structure CoxeterSystem (W : Type*) [Group W]  where
-  /-- `CoxeterSystem.ofMulEquiv` constructs a Coxeter system given an equivalence with the group
+  /-- `CoxeterSystem.ofMulEquiv` constructs a Coxeter system given a proof that `M` is a Coxeter
+  matrix and an equivalence with the group
   presentation corresponding to a Coxeter matrix `M`. -/
   ofMulEquiv ::
+    isCoxeter : M.IsCoxeter
     /-- `mulEquiv` is the isomorphism between the group `W` and the group presentation
     corresponding to a Coxeter matrix `M`. -/
     mulEquiv : W ≃* Matrix.CoxeterGroup M
 
 /-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
 class IsCoxeterGroup (W : Type u) [Group W] : Prop where
-  nonempty_system : ∃ (B : Type u), ∃ (M : Matrix B B ℕ),
-    M.IsCoxeter ∧ Nonempty (CoxeterSystem M W)
+  nonempty_system : ∃ (B : Type u), ∃ (M : Matrix B B ℕ), Nonempty (CoxeterSystem M W)
 
 namespace CoxeterSystem
 
 open Matrix
 
-variable {B B' W H : Type*} [Group W] [Group H]
+variable {B B' W H : Type*} [DecidableEq B] [DecidableEq B'] [Group W] [Group H]
 
 variable {M : Matrix B B ℕ}
 
@@ -169,7 +176,7 @@ a map `B → W` recording the images of the indices. -/
 instance funLike : FunLike (CoxeterSystem M W) B W where
   coe cs := fun b => cs.mulEquiv.symm (.of b)
   coe_injective' := by
-    rintro ⟨cs⟩ ⟨cs'⟩ hcs'
+    rintro ⟨_, cs⟩ ⟨_, cs'⟩ hcs'
     have H : (cs.symm : CoxeterGroup M →* W) = (cs'.symm : CoxeterGroup M →* W) := by
       unfold CoxeterGroup
       ext i; exact congr_fun hcs' i
@@ -188,12 +195,14 @@ theorem ext {cs₁ cs₂ : CoxeterSystem M W} (H : ∀ b, cs₁ b = cs₂ b) : c
   ext' <| by ext; apply H
 
 /-- The canonical Coxeter system of the Coxeter group over `X`. -/
-def ofCoxeterGroup (X : Type*) (D : Matrix X X ℕ) : CoxeterSystem D (CoxeterGroup D) where
+def ofCoxeterGroup (X : Type*) (D : Matrix X X ℕ) (hD : IsCoxeter D) :
+    CoxeterSystem D (CoxeterGroup D) where
+  isCoxeter := hD
   mulEquiv := .refl _
 
 @[simp]
-theorem ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
-    CoxeterSystem.ofCoxeterGroup X D x = CoxeterGroup.of D x :=
+theorem ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (hD : IsCoxeter D) (x : X) :
+    CoxeterSystem.ofCoxeterGroup X D hD x = CoxeterGroup.of D x :=
   rfl
 
 theorem map_relations_eq_reindex_relations (e : B ≃ B') :
@@ -235,7 +244,7 @@ theorem equivCoxeterGroup_symm_apply_of (b' : B') (M : Matrix B B ℕ) (e : B �
 @[simps]
 protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
     CoxeterSystem (reindex e e M) W :=
-  ofMulEquiv (cs.mulEquiv.trans (equivCoxeterGroup e))
+  ofMulEquiv (M.reindex_isCoxeter e cs.isCoxeter) (cs.mulEquiv.trans (equivCoxeterGroup e))
 
 @[simp]
 theorem reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b' : B') :
@@ -245,7 +254,7 @@ theorem reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b' : B') :
 /-- Pushing a Coxeter system through a group isomorphism. -/
 @[simps]
 protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H :=
-  ofMulEquiv (e.symm.trans cs.mulEquiv)
+  ofMulEquiv cs.isCoxeter (e.symm.trans cs.mulEquiv)
 
 @[simp]
 theorem map_apply (cs : CoxeterSystem M W) (e : W ≃* H) (b : B) : cs.map e b = e (cs b) :=
@@ -477,85 +486,331 @@ variable {M : Matrix B B ℕ}
 variable {W : Type*} [Group W]
 variable (cs : CoxeterSystem M W)
 
+/-! ### Simple reflections and lifting homomorphisms -/
+
 /-- The simple reflection of `W` corresponding to the index `i`. -/
-def simpleReflection (i : B) : W := cs.mulEquiv.invFun (PresentedGroup.of i)
+def simpleReflection (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
+
+local prefix:100 "s" => cs.simpleReflection
+
+private lemma coxeterGroup_simpleReflection_mul_self (i : B) :
+    (QuotientGroup.mk ((FreeGroup.of i) * (FreeGroup.of i)) : CoxeterGroup M) = 1 := by
+  have : (FreeGroup.of i) * (FreeGroup.of i) ∈ CoxeterGroup.Relations.toSet M := by
+    use (i, i)
+    dsimp [CoxeterGroup.Relations.ofMatrix]
+    rw [cs.isCoxeter.diagonal i, pow_one]
+  apply (QuotientGroup.eq_one_iff _).mpr
+  exact Subgroup.subset_normalClosure this
+
+@[simp] theorem simpleReflection_mul_self (i : B) : (s i) * (s i) = 1 := by
+  dsimp [simpleReflection]
+  rw [← _root_.map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul]
+  rw [cs.coxeterGroup_simpleReflection_mul_self i]
+  simp
+
+@[simp] theorem simpleReflection_sqr (i : B) : (s i) ^ 2 = 1 := by
+  rw [pow_two]
+  exact cs.simpleReflection_mul_self i
+
+@[simp] theorem simpleReflection_inv (i : B) : (s i)⁻¹ = s i :=
+  (eq_inv_of_mul_eq_one_right (cs.simpleReflection_mul_self i)).symm
+
+@[simp] theorem simpleReflection_mul_pow (i i' : B) : ((s i) * (s i')) ^ M i i' = 1 := by
+  dsimp [simpleReflection]
+  rw [← _root_.map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
+      ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow]
+  have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ CoxeterGroup.Relations.toSet M := by
+    use (i, i')
+    rfl
+  have : (QuotientGroup.mk ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : CoxeterGroup M) = 1 := by
+    apply (QuotientGroup.eq_one_iff _).mpr
+    exact Subgroup.subset_normalClosure this
+  rw [this]
+  simp
+
+/-- The values of the function `f : B → G` satisfy the same relations as the generators
+of `CoxeterGroup M`. -/
+def IsLiftable {G : Type*} [Monoid G] (M : Matrix B B ℕ) (f : B → G) : Prop :=
+    ∀ i i' : B, (f i * f i') ^ M i i' = 1
+
+private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) :
+    ∀ r ∈ CoxeterGroup.Relations.toSet M, (FreeGroup.lift f) r = 1 := by
+  rintro r ⟨⟨i, i'⟩, rfl⟩
+  dsimp [CoxeterGroup.Relations.ofMatrix]
+  rw [map_pow, _root_.map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
+  exact hf i i'
+
+private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
+  MonoidHom.comp (PresentedGroup.toGroup (relations_liftable hf)) cs.mulEquiv.toMonoidHom
+
+private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : B → Gˣ :=
+  fun i ↦ {
+    val := f i,
+    inv := f i,
+    val_inv := by
+      have := hf i i
+      rwa [cs.isCoxeter.diagonal, pow_one] at this,
+    inv_val := by
+      have := hf i i
+      rwa [cs.isCoxeter.diagonal, pow_one] at this
+  }
+/-- Extend the function `f : B → G` to a monoid homomorphism
+`f' : W → G` satisfying `f' (s i) = f i` for all `i`.
+-/
+def lift {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
+  MonoidHom.comp (Units.coeHom G) (cs.groupLift
+      (show ∀ i i' : B, ((cs.restrictUnit hf) i * (cs.restrictUnit hf) i') ^ M i i' = 1 by
+    intro i i'
+    apply Units.ext
+    simp
+    exact hf i i'))
+
+private theorem toMonoidHom_symm (a : PresentedGroup (CoxeterGroup.Relations.toSet M)):
+    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (CoxeterGroup.Relations.toSet M))
+    ((MulEquiv.symm cs.mulEquiv) a) = a := calc
+  _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
+  _ = _                                           := by simp
+
+theorem lift_apply_simpleReflection {G : Type*} [Monoid G] {f : B → G}
+    (hf : IsLiftable M f) (i : B) : cs.lift hf (s i) = f i := by
+  dsimp only [simpleReflection, lift, groupLift, MonoidHom.comp_apply]
+  rw [← MonoidHom.toFun_eq_coe]
+  rw [toMonoidHom_symm cs (PresentedGroup.of i)]
+  simp
+  rfl
+
+/-! ### Words and length -/
 /-- The product of the simple reflections of `W` corresponding to the indices in `ω`.-/
 def wordProd (ω : List B) : W := prod (map cs.simpleReflection ω)
 
-local prefix:100 "s" => cs.simpleReflection
 local prefix:100 "π" => cs.wordProd
 
+@[simp] theorem wordProd_nil :
+    π [] = 1 := by simp [wordProd]
+
+@[simp] theorem wordProd_cons (i : B) (ω : List B) :
+    π (i :: ω) = s i * π ω := by simp [wordProd]
+
+@[simp] theorem wordProd_concat (i : B) (ω : List B) :
+    π (ω.concat i) = π ω * s i := by simp [wordProd]
+
 @[simp] theorem wordProd_append (ω ω' : List B) :
-    π (ω ++ ω') = π ω * π ω' := by
-  sorry
+    π (ω ++ ω') = π ω * π ω' := by simp [wordProd]
+
+@[simp] theorem wordProd_rev (ω : List B) :
+    π (reverse ω) = (π ω)⁻¹ := by
+  induction' ω with x ω' ih
+  · simp
+  · simp; exact ih
+
+private lemma freeGroup_wordProd (ω : List (B × Bool)) :
+    prod (map ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst) ω)
+    = QuotientGroup.mk (FreeGroup.mk ω) := by
+  induction' ω with x ω' ih
+  · simp [← FreeGroup.one_eq_mk]
+  · rw [← List.singleton_append, ← FreeGroup.mul_mk, QuotientGroup.mk_mul, ← ih]
+    simp
+    rcases x with ⟨i, b⟩
+    rcases b
+    · have : [(i, false)] = FreeGroup.invRev [(i, true)] := by simp [FreeGroup.invRev]
+      rw [this, ← FreeGroup.inv_mk, ← FreeGroup.of, QuotientGroup.mk_inv]
+      simp
+      rw [PresentedGroup.of]
+      apply eq_inv_of_mul_eq_one_right
+      rw [← QuotientGroup.mk_mul]
+      exact cs.coxeterGroup_simpleReflection_mul_self i
+    · rfl
 
 theorem wordProd_surjective : Surjective (cs.wordProd) := by
-  sorry
+  intro u
+  let v : CoxeterGroup M := cs.mulEquiv.toFun u
+  rcases (QuotientGroup.mk'_surjective _) v with ⟨w, hw⟩
+  simp at hw -- hw: ↑w = v
+  let ω := List.map Prod.fst w.toWord
+  use ω
+  simp [ω, wordProd]
+  calc
+    prod (List.map (simpleReflection cs ∘ Prod.fst) (FreeGroup.toWord w))
+    _ = prod (List.map (
+          cs.mulEquiv.symm
+          ∘ (@PresentedGroup.of B (CoxeterGroup.Relations.toSet M))
+          ∘ Prod.fst)
+        (FreeGroup.toWord w))           := by congr
+    _ = prod (List.map (
+          cs.mulEquiv.symm
+          ∘ ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M))
+          ∘ Prod.fst))
+        (FreeGroup.toWord w))           := by congr
+    _ = prod (List.map cs.mulEquiv.symm
+        (List.map ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst)
+          (FreeGroup.toWord w)))        := by rw[List.map_map]
+    _ = cs.mulEquiv.symm (prod (List.map
+            ((@PresentedGroup.of B (CoxeterGroup.Relations.toSet M)) ∘ Prod.fst)
+        (FreeGroup.toWord w)))          := by rw[map_list_prod]
+    _ = cs.mulEquiv.symm (QuotientGroup.mk (FreeGroup.mk (FreeGroup.toWord w)))
+                                        := by rw[cs.freeGroup_wordProd]
+    _ = cs.mulEquiv.symm (QuotientGroup.mk w)
+                                        := by rw[FreeGroup.mk_toWord]
+    _ = u                               := by rw[hw]; dsimp [v]; simp
 
-theorem wordProd_rev (ω : List B) :
-    π (reverse ω) = (π ω)⁻¹ := by
-  sorry
+
+instance (w : W) : DecidablePred (fun n ↦ ∃ ω : List B, ω.length = n ∧ π ω = w)
+  := Classical.decPred _
+
+private theorem exists_word_with_prod (w : W) : ∃ n : ℕ, ∃ ω : List B, ω.length = n ∧ π ω = w := by
+  rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
+  use ω.length, ω
 
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
-def length (cs : CoxeterSystem M W) (w : W) : ℕ := sorry
+def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
 
 local prefix:100 "ℓ" => cs.length
 
-@[simp] theorem length_one : ℓ (1 : W) = 0 := by
-  sorry
+theorem exists_reduced_word (w : W) : ∃ ω : List B, ω.length = ℓ w ∧ w = π ω := by
+  have := Nat.find_spec (cs.exists_word_with_prod w)
+  tauto
+
+theorem wordProd_length_le (ω : List B) : ℓ (π ω) ≤ ω.length := by
+  apply Nat.find_min' (cs.exists_word_with_prod (π ω))
+  use ω
+
+@[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.wordProd_length_le [])
 
 theorem length_eq_zero_iff {w : W} : ℓ w = 0 ↔ w = 1 := by
-  sorry
-
-@[simp] theorem length_simple (i : B) : ℓ (s i) = 1 := by
-  sorry
-
-theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
-  sorry
+  constructor
+  · intro h
+    rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
+    have : ω = [] := eq_nil_of_length_eq_zero (hω.trans h)
+    rw [this]
+    simp
+  · rintro rfl
+    exact cs.length_one
 
 @[simp] theorem length_inv (w : W) : ℓ (w⁻¹) = ℓ w := by
-  sorry
+  apply Nat.le_antisymm
+  · rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
+    have := cs.wordProd_length_le (List.reverse ω)
+    simp at this
+    rwa [hω] at this
+  · rcases cs.exists_reduced_word w⁻¹ with ⟨ω, hω, h'ω⟩
+    have := cs.wordProd_length_le (List.reverse ω)
+    simp at this
+    rwa [← h'ω, hω, inv_inv] at this
 
 theorem length_mul_le (w₁ w₂ : W) :
     ℓ (w₁ * w₂) ≤ ℓ w₁ + ℓ w₂ := by
-  sorry
+  rcases cs.exists_reduced_word w₁ with ⟨ω₁, hω₁, rfl⟩
+  rcases cs.exists_reduced_word w₂ with ⟨ω₂, hω₂, rfl⟩
+  have := cs.wordProd_length_le (ω₁ ++ ω₂)
+  simp at this
+  rwa [hω₁, hω₂] at this
 
 theorem length_mul_ge (w₁ w₂ : W) :
     ℓ (w₁ * w₂) ≥ max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) := by
-  sorry
+  apply max_le_iff.mpr
+  constructor
+  · apply Nat.sub_le_of_le_add
+    have := cs.length_mul_le (w₁ * w₂) w₂⁻¹
+    simp at this
+    assumption
+  · apply Nat.sub_le_of_le_add
+    have := cs.length_mul_le (w₁ * w₂)⁻¹ w₁
+    simp only [length_inv] at this
+    simp at this
+    assumption
 
-private def lengthParity (cs : CoxeterSystem M W) : W →* Multiplicative (ZMod 2) := sorry
+private def lengthParity (cs : CoxeterSystem M W) : W →* Multiplicative (ZMod 2) := cs.lift (
+    show IsLiftable M (fun _ ↦ Multiplicative.ofAdd 1) by
+      intro i i'
+      dsimp
+      rw [← ofAdd_add, one_add_one_eq_two, (by decide : (2 : ZMod 2) = 0)]
+      simp
+  )
 
-private theorem parity_length_eq :
-    Multiplicative.toAdd ∘ cs.lengthParity.toFun = ((↑) : ℕ → ZMod 2) ∘ cs.length := by
-  sorry
+private theorem lengthParity_simpleReflection :
+    ⇑(CoxeterSystem.lengthParity cs) ∘ simpleReflection cs = fun _ ↦ Multiplicative.ofAdd 1 := by
+  ext x
+  simp
+  rw [lengthParity, lift_apply_simpleReflection]
 
 private theorem parity_length_eq' (w : W) :
     Multiplicative.toAdd (cs.lengthParity w) = ((↑) : ℕ → ZMod 2) (ℓ w) := by
-  sorry
+  rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
+  nth_rw 1 [wordProd]
+  rw [MonoidHom.map_list_prod, List.map_map, lengthParity_simpleReflection]
+  simp
+  tauto
 
-theorem parity_length_mul (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
-  sorry
+theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
+  rw [← ZMod.nat_cast_eq_nat_cast_iff']
+  rw [(by simp : (↑(length cs w₁ + length cs w₂) : ZMod 2) = ↑(length cs w₁) + ↑(length cs w₂))]
+  repeat rw [← parity_length_eq']
+  simp
+
+@[simp] theorem length_simple (i : B) : ℓ (s i) = 1 := by
+  apply Nat.le_antisymm
+  · show length cs (s i) ≤ 1
+    have := cs.wordProd_length_le [i]
+    simp at this
+    tauto
+  · show 1 ≤ length cs (s i)
+    by_contra! length_lt_1
+    have := congrArg Multiplicative.toAdd (congrFun cs.lengthParity_simpleReflection i)
+    simp [parity_length_eq'] at this
+    rw [Nat.lt_one_iff.mp length_lt_1] at this
+    contradiction
+
+theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
+  constructor
+  · intro h
+    rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
+    rcases List.length_eq_one.mp (hω.trans h) with ⟨i, rfl⟩
+    use i
+    simp
+  · rintro ⟨i, rfl⟩
+    exact cs.length_simple i
 
 theorem length_mul_simple (w : W) (i : B) :
     ℓ (w * s i) = ℓ w + 1 ∨ ℓ (w * s i) + 1 = ℓ w := by
-  sorry
+  have length_le := cs.length_mul_le w (s i)
+  simp at length_le
+  have length_ge := (max_le_iff.mp (cs.length_mul_ge w (s i))).left
+  simp at length_ge
+  have length_mod_two := cs.length_mul_mod_two w (s i)
+
+  have h : ℓ (w * s i) ≠ ℓ w := by
+    intro eq
+    rw [eq] at length_mod_two
+    simp at length_mod_two
+    rcases Nat.mod_two_eq_zero_or_one (ℓ w) with even | odd
+    · rw [even, Nat.succ_mod_two_eq_one_iff.mpr even] at length_mod_two
+      contradiction
+    · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
+      contradiction
+
+  rcases Nat.ne_iff_lt_or_gt.mp h with less | more
+  · right
+    linarith
+  · left
+    linarith
 
 theorem length_simple_mul (w : W) (i : B) :
     ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s i * w) + 1 = ℓ w := by
-  sorry
+  have := cs.length_mul_simple w⁻¹ i
+  rwa [(by simp : w⁻¹ * (s i) = ((s i) * w)⁻¹), length_inv, length_inv] at this
 
--- Reduced words
+/-! ### Reduced words -/
 
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
+
 theorem isReduced_take (ω : List B) (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) := by
   sorry
 
 theorem isReduced_drop (ω : List B) (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) := by
   sorry
 
--- Reflections, inversions, inversion sequences
+/-! ### Reflections, inversions, and inversion sequences -/
 
 /-- `t` is a reflection of the Coxeter system `cs`; i.e., it is of the form
 $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
@@ -585,7 +840,6 @@ $$s_{i_\ell}\cdots s_{i_1}\cdots s_{i_\ell}, \ldots,
 -/
 def rightInvSeq (cs : CoxeterSystem M W) (ω : List B) : List W := sorry
 
-local prefix:100 "reduced" => cs.IsReduced
 local prefix:100 "lis" => cs.leftInvSeq
 local prefix:100 "ris" => cs.rightInvSeq
 
@@ -631,21 +885,26 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
 theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
   sorry
 
-private lemma nodup_leftInvSeq_of_reduced (ω : List B) (rω : reduced ω) :
+private lemma nodup_leftInvSeq_of_reduced (ω : List B) (rω : cs.IsReduced ω) :
     List.Nodup (lis ω) := by
   sorry
 
-private lemma nodup_rightInvSeq_of_reduced (ω : List B) (rω : reduced ω) :
+private lemma nodup_rightInvSeq_of_reduced (ω : List B) (rω : cs.IsReduced ω) :
     List.Nodup (ris ω) := by
   sorry
 
--- Geometric representations and the standard geometric representation.
+/-! ### The standard geometric representation
+Given a Coxeter group `W` whose simple reflections are indexed by a set `B`, we define
+the standard geometric representation of `W`, which is a representation of `W` with underlying
+vector space `B →₀ ℝ`. We then use this to define the set of roots, which is a subset of
+`B →₀ ℝ`. The roots correspond two-to-one to the reflections of `W`.
+-/
 
 def simpleRoot (i : B) : B →₀ ℝ := Finsupp.single i 1
 local prefix:100 "α" => simpleRoot
 
-/-- The standard bilinear form on B →₀ ℝ. Given by ⟪αᵢ, αⱼ⟫ = cos (π / Mᵢⱼ)
-for i j : B, where {αᵢ} is the standard basis of B →₀ ℝ and M is the Coxeter matrix.
+/-- The standard bilinear form on `B →₀ ℝ`. Given by `⟪αᵢ, αⱼ⟫ = cos (π / Mᵢⱼ)`
+for `i j : B`, where {αᵢ} is the standard basis of `B →₀ ℝ` and `M` is the Coxeter matrix.
 This is positive definite if and only if the associated Coxeter group is finite. -/
 def standardBilinForm (M : Matrix B B ℕ) : LinearMap.BilinForm ℝ (B →₀ ℝ) := sorry
 
@@ -660,24 +919,24 @@ theorem standardBilinForm_symm (M : Matrix B B ℕ) : LinearMap.IsSymm (standard
 
 /-- The orthogonal reflection in the vector `v` under the standard bilinear form.
 -/
-def reflection (M : Matrix B B ℕ) (v : B →₀ ℝ) : (B →₀ ℝ) →ₗ[ℝ] (B →₀ ℝ) := sorry
+def orthoReflection (M : Matrix B B ℕ) (v : B →₀ ℝ) : (B →₀ ℝ) →ₗ[ℝ] (B →₀ ℝ) := sorry
 
 theorem reflection_sqr_eq_id (M : Matrix B B ℕ) (v : B →₀ ℝ) :
-    (reflection M v) * (reflection M v) = LinearMap.id := by
+    (orthoReflection M v) * (orthoReflection M v) = LinearMap.id := by
   sorry
 
 theorem reflection_eq_iff (M : Matrix B B ℕ) (v v' : B →₀ ℝ) (hv : ⟪v, v⟫ ≠ 0):
-    reflection M v = reflection M v' ↔ ∃ μ : ℝ, v' = μ • v := by
+    orthoReflection M v = orthoReflection M v' ↔ ∃ μ : ℝ, v' = μ • v := by
   sorry
 
-/-- The standard geometric representation on B →₀ ℝ. For i : B, the simple reflection sᵢ acts by
-sᵢ v = v - 2 ⟪αᵢ, v⟫ / ⟪αᵢ, αᵢ⟫ * αᵢ, where {αᵢ} is the standard basis of B →₀ ℝ.
+/-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
+acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ / ⟪αᵢ, αᵢ⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
 -/
 def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation ℝ W (B →₀ ℝ) := sorry
 
 alias SGR := standardGeometricRepresentation
 
-theorem SGR_simpleReflection (i : B) : cs.SGR (s i) = reflection M (α i) := by
+theorem SGR_simpleReflection (i : B) : cs.SGR (s i) = orthoReflection M (α i) := by
   sorry
 
 theorem SGR_simpleReflection_simpleRoot (i : B) : cs.SGR (s i) (α i) = -α i := by
@@ -686,10 +945,38 @@ theorem SGR_simpleReflection_simpleRoot (i : B) : cs.SGR (s i) (α i) = -α i :=
 theorem SGR_bilin_eq_bilin (w : W) (v v' : B →₀ ℝ) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
   sorry
 
+/-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`.-/
+def alternatingWord (i i' : B) (m : ℕ) : List B := sorry
+
+theorem length_alternatingWord (i i' : B) (m : ℕ) : List.length (alternatingWord i i' m) = m := by
+  sorry
+
+theorem prod_alternatingWord_eq (i i' : B) (m : ℕ) (hm : m ≤ 2 * (M i i')) :
+    π (alternatingWord i i' m) = π (alternatingWord i' i (2 * M i i' - m)) := by
+  sorry
+
+theorem alternatingWord_not_reduced (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
+    ¬ cs.IsReduced (alternatingWord i i' m) := by
+  sorry
+
+theorem SGR_alternatingWord_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) :
+    cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
+      then (Real.sin ((m + 1) * Real.pi / M i i') / Real.sin (Real.pi / M i i')) • (α i)
+        + (Real.sin (m * Real.pi / M i i') / Real.sin (Real.pi / M i i')) • (α i')
+      else (Real.sin (m * Real.pi / M i i') / Real.sin (Real.pi / M i i')) • (α i)
+        + (Real.sin ((m + 1) * Real.pi / M i i') / Real.sin (Real.pi / M i i')) • (α i') := by
+  sorry
+
+theorem SGR_alternatingWord_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
+    cs.SGR (π (alternatingWord i i' m)) (α i) = if Even m
+      then (m + 1) • (α i) + m • (α i')
+      else m • (α i) + (m + 1) • (α i') := by
+  sorry
+
 /-- The roots of the standard geometric representation; i.e. the vectors that can be written
-in the form w αᵢ, where w : W and {αᵢ} is the standard basis of B →₀ ℝ. If W is infinite,
-then this is not a root system in the traditional sense because it is infinite and
-B →₀ ℝ is not an inner product space.
+in the form w αᵢ, where `w : W` and {αᵢ} is the standard basis of `B →₀ ℝ`. If `W` is infinite,
+then this is not a root system in the sense of `Mathlib.LinearAlgebra.RootSystem` because it is
+infinite and because `B →₀ ℝ` is not an inner product space.
 -/
 def roots : Set (B →₀ ℝ) := {v : B →₀ ℝ | ∃ w : W, ∃ i : B, v = cs.SGR w (α i)}
 
@@ -708,7 +995,23 @@ def negRoots : Set (B →₀ ℝ) := cs.roots ∩ {v : B →₀ ℝ | ∀ i : B,
 theorem negRoots_eq_neg_posRoots : cs.negRoots = -cs.posRoots := by
   sorry
 
-theorem root_pos_or_neg : cs.roots = cs.posRoots ∪ cs.negRoots  := by
+theorem SGR_simpleRoot_mem_posRoot_of (w : W) (i : B) :
+    ℓ (w * s i) = ℓ w + 1 → cs.SGR w (α i) ∈ cs.posRoots := by
+  sorry
+
+theorem SGR_simpleRoot_mem_negRoot_of (w : W) (i : B) :
+    ℓ (w * s i) + 1 = ℓ w → cs.SGR w (α i) ∈ cs.negRoots := by
+  sorry
+
+theorem SGR_simpleRoot_mem_posRoot_iff (w : W) (i : B) :
+    ℓ (w * s i) = ℓ w + 1 ↔ cs.SGR w (α i) ∈ cs.posRoots := by
+  sorry
+
+theorem SGR_simpleRoot_mem_negRoot_iff (w : W) (i : B) :
+    ℓ (w * s i) + 1 = ℓ w ↔ cs.SGR w (α i) ∈ cs.negRoots := by
+  sorry
+
+theorem root_pos_or_neg : cs.roots = cs.posRoots ∪ cs.negRoots := by
   sorry
 
 theorem root_not_pos_and_neg : cs.posRoots ∩ cs.negRoots = ∅ := by
@@ -720,17 +1023,18 @@ theorem SGR_injective : Injective cs.SGR := by
 def reflectionToRoot : cs.reflections ≃ cs.posRoots := sorry
 
 theorem reflection_by_smul (w : W) (v : B →₀ ℝ) :
-    reflection M (cs.SGR w v) = (cs.SGR w) ∘ (reflection M v) ∘ (cs.SGR w⁻¹) := by
+    orthoReflection M (cs.SGR w v) = (cs.SGR w) ∘ (orthoReflection M v) ∘ (cs.SGR w⁻¹) := by
   sorry
 
 theorem reflection_by_root (γ : cs.posRoots) :
-    reflection M γ = cs.SGR (cs.reflectionToRoot.invFun γ) := by
+    orthoReflection M γ = cs.SGR (cs.reflectionToRoot.invFun γ) := by
   sorry
 
 theorem isRightInversion_iff (w : W) (t : cs.reflections) : cs.IsRightInversion w t ↔
     cs.SGR w (cs.reflectionToRoot.toFun t) ∈ cs.negRoots := by
   sorry
 
+/-! ### The (strong) exchange properties and deletion property -/
 
 /-- The (strong) left exchange property:
 Let $w = s_{i_1} \cdots s_{i_\ell}$ be a reduced expression for an element $w \in W$
@@ -746,7 +1050,7 @@ The following are equivalent:
   except $s_{i_j}$).
 \end{enumerate}
 -/
-theorem left_exchange_property (ω : List B) (t : W) (rω : reduced ω) :
+theorem left_exchange_property (ω : List B) (t : W) (rω : cs.IsReduced ω) :
     List.TFAE [
       cs.IsLeftInversion (π ω) t,
       t ∈ lis ω,
@@ -768,7 +1072,7 @@ The following are equivalent:
   except $s_{i_j}$).
 \end{enumerate}
 -/
-theorem right_exchange_property (ω : List B) (t : W) (rω : reduced ω) :
+theorem right_exchange_property (ω : List B) (t : W) (rω : cs.IsReduced ω) :
     List.TFAE [
       cs.IsRightInversion (π ω) t,
       t ∈ ris ω,
@@ -777,11 +1081,11 @@ theorem right_exchange_property (ω : List B) (t : W) (rω : reduced ω) :
   sorry
 
 theorem nodup_leftInvSeq_iff (ω : List B) :
-    List.Nodup (lis ω) ↔ reduced ω := by
+    List.Nodup (lis ω) ↔ cs.IsReduced ω := by
   sorry
 
 theorem nodup_rightInvSeq_iff (ω : List B) :
-    List.Nodup (ris ω) ↔ reduced ω := by
+    List.Nodup (ris ω) ↔ cs.IsReduced ω := by
   sorry
 
 /-- The deletion property:
@@ -790,7 +1094,7 @@ $1 \leq j < j' \leq \ell$ such that
 $$s_{i_1} \cdots s_{i_\ell} =
 s_{i_1} \cdots \widehat{s_{i_j}} \cdots \widehat{s_{i_{j'}}} s_{i_\ell}.
 -/
-theorem deletion_property (ω : List B) (nrω : ¬ reduced ω) :
+theorem deletion_property (ω : List B) (nrω : ¬ cs.IsReduced ω) :
     ∃ j' < ω.length, ∃ j < j', π ((ω.eraseIdx j').eraseIdx j) = π ω := by
   sorry
 
