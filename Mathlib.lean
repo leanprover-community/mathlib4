@@ -3842,6 +3842,7 @@ import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.Sigma
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.Topology.ContinuousFunction.T0Sierpinski
+import Mathlib.Topology.ContinuousFunction.UniqueCFC
 import Mathlib.Topology.ContinuousFunction.Units
 import Mathlib.Topology.ContinuousFunction.Weierstrass
 import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
