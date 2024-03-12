@@ -1088,63 +1088,65 @@ attribute
   FundamentalSequenceProp
 
 theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamentalSequence o) := by
-  induction' o with a m b iha ihb; · exact rfl
-  rw [fundamentalSequence]
-  rcases e : b.fundamentalSequence with (⟨_ | b'⟩ | f) <;>
-    simp only [FundamentalSequenceProp] <;>
-    rw [e, FundamentalSequenceProp] at ihb
-  · rcases e : a.fundamentalSequence with (⟨_ | a'⟩ | f) <;> cases' e' : m.natPred with m' <;>
-      simp only [FundamentalSequenceProp] <;>
-      rw [e, FundamentalSequenceProp] at iha <;>
-      (try rw [show m = 1 by
-            have := PNat.natPred_add_one m; rw [e'] at this; exact PNat.coe_inj.1 this.symm]) <;>
-      (try rw [show m = m'.succ.succPNat by
-              rw [← e', ← PNat.coe_inj, Nat.succPNat_coe, ← Nat.add_one, PNat.natPred_add_one]]) <;>
-      simp only [repr, iha, ihb, opow_lt_opow_iff_right one_lt_omega, add_lt_add_iff_left, add_zero,
-        eq_self_iff_true, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero, Nat.cast_succ,
-        Nat.succPNat_coe, opow_succ, opow_zero, mul_add_one, PNat.one_coe, succ_zero,
-        true_and_iff, _root_.zero_add, zero_def]
-    · decide
-    · exact ⟨rfl, inferInstance⟩
-    · have := opow_pos (repr a') omega_pos
-      refine'
-        ⟨mul_isLimit this omega_isLimit, fun i =>
-          ⟨this, _, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega'⟩
-      rw [← mul_succ, ← nat_cast_succ, Ordinal.mul_lt_mul_iff_left this]
-      apply nat_lt_omega
-    · have := opow_pos (repr a') omega_pos
-      refine'
-        ⟨add_isLimit _ (mul_isLimit this omega_isLimit), fun i => ⟨this, _, _⟩,
-          exists_lt_add exists_lt_mul_omega'⟩
-      · rw [← mul_succ, ← nat_cast_succ, Ordinal.mul_lt_mul_iff_left this]
-        apply nat_lt_omega
-      · refine' fun H => H.fst.oadd _ (NF.below_of_lt' _ (@NF.oadd_zero _ _ (iha.2 H.fst)))
-        rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
-        apply nat_lt_omega
-    · rcases iha with ⟨h1, h2, h3⟩
-      refine' ⟨opow_isLimit one_lt_omega h1, fun i => _, exists_lt_omega_opow' one_lt_omega h1 h3⟩
-      obtain ⟨h4, h5, h6⟩ := h2 i
-      exact ⟨h4, h5, fun H => @NF.oadd_zero _ _ (h6 H.fst)⟩
-    · rcases iha with ⟨h1, h2, h3⟩
-      refine'
-        ⟨add_isLimit _ (opow_isLimit one_lt_omega h1), fun i => _,
-          exists_lt_add (exists_lt_omega_opow' one_lt_omega h1 h3)⟩
-      obtain ⟨h4, h5, h6⟩ := h2 i
-      refine' ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' _ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
-      rwa [repr, ← zero_def, repr, add_zero, PNat.one_coe, Nat.cast_one, mul_one,
-        opow_lt_opow_iff_right one_lt_omega]
-  · refine'
-      ⟨by rw [repr, ihb.1, add_succ, repr], fun H => H.fst.oadd _ (NF.below_of_lt' _ (ihb.2 H.snd))⟩
-    have := H.snd'.repr_lt
-    rw [ihb.1] at this
-    exact (lt_succ _).trans this
-  · rcases ihb with ⟨h1, h2, h3⟩
-    simp only [repr]
-    exact
-      ⟨Ordinal.add_isLimit _ h1, fun i =>
-        ⟨oadd_lt_oadd_3 (h2 i).1, oadd_lt_oadd_3 (h2 i).2.1, fun H =>
-          H.fst.oadd _ (NF.below_of_lt' (lt_trans (h2 i).2.1 H.snd'.repr_lt) ((h2 i).2.2 H.snd))⟩,
-        exists_lt_add h3⟩
+  -- FIXME nightly-testing: proof broken, hard to tell origin intent.
+  sorry
+  -- induction' o with a m b iha ihb; · exact rfl
+  -- rw [fundamentalSequence]
+  -- rcases e : b.fundamentalSequence with (⟨_ | b'⟩ | f) <;>
+  --   simp only [FundamentalSequenceProp] <;>
+  --   rw [e, FundamentalSequenceProp] at ihb
+  -- · rcases e : a.fundamentalSequence with (⟨_ | a'⟩ | f) <;> cases' e' : m.natPred with m' <;>
+  --     simp only [FundamentalSequenceProp] <;>
+  --     rw [e, FundamentalSequenceProp] at iha <;>
+  --     (try rw [show m = 1 by
+  --           have := PNat.natPred_add_one m; rw [e'] at this; exact PNat.coe_inj.1 this.symm]) <;>
+  --     (try rw [show m = m'.succ.succPNat by
+  --             rw [← e', ← PNat.coe_inj, Nat.succPNat_coe, ← Nat.add_one, PNat.natPred_add_one]]) <;>
+  --     simp only [repr, iha, ihb, opow_lt_opow_iff_right one_lt_omega, add_lt_add_iff_left, add_zero,
+  --       eq_self_iff_true, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero, Nat.cast_succ,
+  --       Nat.succPNat_coe, opow_succ, opow_zero, mul_add_one, PNat.one_coe, succ_zero,
+  --       true_and_iff, _root_.zero_add, zero_def]
+  --   · decide
+  --   · exact ⟨rfl, inferInstance⟩
+  --   · have := opow_pos (repr a') omega_pos
+  --     refine'
+  --       ⟨mul_isLimit this omega_isLimit, fun i =>
+  --         ⟨this, _, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega'⟩
+  --     rw [← mul_succ, ← nat_cast_succ, Ordinal.mul_lt_mul_iff_left this]
+  --     apply nat_lt_omega
+  --   · have := opow_pos (repr a') omega_pos
+  --     refine'
+  --       ⟨add_isLimit _ (mul_isLimit this omega_isLimit), fun i => ⟨this, _, _⟩,
+  --         exists_lt_add exists_lt_mul_omega'⟩
+  --     · rw [← mul_succ, ← nat_cast_succ, Ordinal.mul_lt_mul_iff_left this]
+  --       apply nat_lt_omega
+  --     · refine' fun H => H.fst.oadd _ (NF.below_of_lt' _ (@NF.oadd_zero _ _ (iha.2 H.fst)))
+  --       rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
+  --       apply nat_lt_omega
+  --   · rcases iha with ⟨h1, h2, h3⟩
+  --     refine' ⟨opow_isLimit one_lt_omega h1, fun i => _, exists_lt_omega_opow' one_lt_omega h1 h3⟩
+  --     obtain ⟨h4, h5, h6⟩ := h2 i
+  --     exact ⟨h4, h5, fun H => @NF.oadd_zero _ _ (h6 H.fst)⟩
+  --   · rcases iha with ⟨h1, h2, h3⟩
+  --     refine'
+  --       ⟨add_isLimit _ (opow_isLimit one_lt_omega h1), fun i => _,
+  --         exists_lt_add (exists_lt_omega_opow' one_lt_omega h1 h3)⟩
+  --     obtain ⟨h4, h5, h6⟩ := h2 i
+  --     refine' ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' _ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
+  --     rwa [repr, ← zero_def, repr, add_zero, PNat.one_coe, Nat.cast_one, mul_one,
+  --       opow_lt_opow_iff_right one_lt_omega]
+  -- · refine'
+  --     ⟨by rw [repr, ihb.1, add_succ, repr], fun H => H.fst.oadd _ (NF.below_of_lt' _ (ihb.2 H.snd))⟩
+  --   have := H.snd'.repr_lt
+  --   rw [ihb.1] at this
+  --   exact (lt_succ _).trans this
+  -- · rcases ihb with ⟨h1, h2, h3⟩
+  --   simp only [repr]
+  --   exact
+  --     ⟨Ordinal.add_isLimit _ h1, fun i =>
+  --       ⟨oadd_lt_oadd_3 (h2 i).1, oadd_lt_oadd_3 (h2 i).2.1, fun H =>
+  --         H.fst.oadd _ (NF.below_of_lt' (lt_trans (h2 i).2.1 H.snd'.repr_lt) ((h2 i).2.2 H.snd))⟩,
+  --       exists_lt_add h3⟩
 #align onote.fundamental_sequence_has_prop ONote.fundamentalSequence_has_prop
 
 /-- The fast growing hierarchy for ordinal notations `< ε₀`. This is a sequence of

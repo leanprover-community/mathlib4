@@ -442,7 +442,7 @@ theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
 theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     ∑ i in Ico 1 n, a / b ^ i ≤ a / (b - 1) := by
   cases' n with n
-  · rw [zero_eq, Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
+  · rw [Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
   calc

@@ -110,6 +110,9 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
+-- Adaptation note: nightly-2024-03-11
+-- We turn off simprocs here.
+set_option simprocs false in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
   dsimp
@@ -145,6 +148,9 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
+-- Adaptation note: nightly-2024-03-11
+-- We turn off simprocs here.
+set_option simprocs false in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]

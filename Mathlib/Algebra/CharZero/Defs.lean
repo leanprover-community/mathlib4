@@ -87,7 +87,6 @@ theorem cast_ne_zero {n : ℕ} : (n : R) ≠ 0 ↔ n ≠ 0 :=
 theorem cast_add_one_ne_zero (n : ℕ) : (n + 1 : R) ≠ 0 := by
   -- Porting note: old proof was `exact_mod_cast n.succ_ne_zero`
   norm_cast
-  exact n.succ_ne_zero
 #align nat.cast_add_one_ne_zero Nat.cast_add_one_ne_zero
 
 @[simp, norm_cast]

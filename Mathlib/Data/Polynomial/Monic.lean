@@ -222,7 +222,7 @@ theorem nextCoeff_mul (hp : Monic p) (hq : Monic q) :
 
 theorem nextCoeff_pow (hp : p.Monic) (n : ℕ) : (p ^ n).nextCoeff = n • p.nextCoeff := by
   induction n with
-  | zero => rw [pow_zero, Nat.zero_eq, zero_smul, ← map_one (f := C), nextCoeff_C_eq_zero]
+  | zero => rw [pow_zero, zero_smul, ← map_one (f := C), nextCoeff_C_eq_zero]
   | succ n ih => rw [pow_succ, hp.nextCoeff_mul (hp.pow n), ih, succ_nsmul]
 
 theorem eq_one_of_map_eq_one {S : Type*} [Semiring S] [Nontrivial S] (f : R →+* S) (hp : p.Monic)

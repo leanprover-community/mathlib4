@@ -485,7 +485,7 @@ where
   These are both lookups into the context
   `(a0 .. a(n-1) : Prop) (v) (h1 : v 0 ↔ a0) ... (hn : v (n-1) ↔ a(n-1))`. -/
   reifyVar v :=
-    let n := v.natLit?.get!
+    let n := v.rawNatLit?.get!
     (mkBVar (2 * nvars - n), mkBVar (nvars - n - 1))
 open Lean
 
