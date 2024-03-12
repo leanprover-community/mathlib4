@@ -353,8 +353,6 @@ noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
   · exact asIso (colimitLimitToLimitColimitCone F)
 #align category_theory.limits.filtered_colim_preserves_finite_limits_of_types CategoryTheory.Limits.filteredColimPreservesFiniteLimitsOfTypes
 
-section LocallySmall
-
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 
 section

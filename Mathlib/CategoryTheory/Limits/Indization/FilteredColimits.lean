@@ -67,7 +67,7 @@ theorem exists_nonempty_limit_obj_of_colimit [IsFiltered K]
     ∃ k, Nonempty <| limit <| 𝒢 ⋙ yoneda.obj (H.obj k) := by
   obtain ⟨t⟩ := h
   let t₂ := limMap (compYonedaColimitIsoColimitCompYoneda F G H).hom t
-  let t₃ := (colimitLimitIsoMax (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢).flip).inv t₂
+  let t₃ := (colimitLimitIso (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢).flip).inv t₂
   obtain ⟨k, y, -⟩ := Types.jointly_surjective'.{v, max u v} t₃
   refine ⟨k, ⟨?_⟩⟩
   let z := (limitObjIsoLimitCompEvaluation (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢).flip k).hom y
