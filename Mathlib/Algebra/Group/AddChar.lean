@@ -44,7 +44,7 @@ section AddCharDef
 variable (A : Type u) [AddMonoid A]
 
 -- The target
-variable (M : Type v) [CommMonoid M]
+variable (M : Type v) [Monoid M]
 
 /-- Define `AddChar A M` as `(Multiplicative A) →* M`.
 The definition works for an additive monoid `A` and a monoid `M`,
@@ -70,6 +70,17 @@ instance : Inhabited (AddChar A M) :=
   inferInstanceAs (Inhabited (Multiplicative A →* M))
 
 end DerivedInstances
+
+section Constructor
+
+/-- Construct an `AddChar` from a function satisfying `f (a + b) = f a * f b` and `f 0 = 1`. -/
+def mk {A M : Type*} [AddMonoid A] [Monoid M] {f : A → M}
+    (map_add' : ∀ a b : A, f (a + b) = f a * f b) (map_zero' : f 0 = 1):
+    AddChar A M where
+  map_one' := map_zero'
+  map_mul' := map_add'
+
+end Constructor
 
 section CoeToFun
 
