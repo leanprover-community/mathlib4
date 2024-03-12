@@ -420,7 +420,7 @@ def merge' : List α → List α → List α
   | l, [] => l
   | a :: l, b :: l' => if a ≼ b then a :: merge' l (b :: l') else b :: merge' (a :: l) l'
   termination_by l₁ l₂ => length l₁ + length l₂
-#align list.merge List.merge
+#align list.merge List.merge'
 
 /-- Implementation of a merge sort algorithm to sort a list. -/
 def mergeSort : List α → List α
@@ -455,7 +455,7 @@ theorem perm_merge' : ∀ l l' : List α, merge' r l l' ~ l ++ l'
     · suffices b :: merge' r (a :: l) l' ~ a :: (l ++ b :: l') by simpa [merge', h]
       exact ((perm_merge' _ _).cons _).trans ((swap _ _ _).trans (perm_middle.symm.cons _))
   termination_by l₁ l₂ => length l₁ + length l₂
-#align list.perm_merge List.perm_merge
+#align list.perm_merge List.perm_merge'
 
 theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
   | [] => by simp [mergeSort]
@@ -486,7 +486,7 @@ theorem Sorted.merge' : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sor
   | a :: l, b :: l', h₁, h₂ => by
     by_cases h : a ≼ b
     · suffices ∀ b' ∈ List.merge' r l (b :: l'), r a b' by
-        simpa [List.merge', h, h₁.of_cons.merge h₂]
+        simpa [List.merge', h, h₁.of_cons.merge' h₂]
       intro b' bm
       rcases show b' = b ∨ b' ∈ l ∨ b' ∈ l' by
           simpa [or_left_comm] using (perm_merge' _ _ _).subset bm with
@@ -496,7 +496,7 @@ theorem Sorted.merge' : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sor
       · exact rel_of_sorted_cons h₁ _ bl
       · exact _root_.trans h (rel_of_sorted_cons h₂ _ bl')
     · suffices ∀ b' ∈ List.merge' r (a :: l) l', r b b' by
-        simpa [List.merge', h, h₁.merge h₂.of_cons]
+        simpa [List.merge', h, h₁.merge' h₂.of_cons]
       intro b' bm
       have ba : b ≼ a := (total_of r _ _).resolve_left h
       have : b' = a ∨ b' ∈ l ∨ b' ∈ l' := by simpa using (perm_merge' _ _ _).subset bm
