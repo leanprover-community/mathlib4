@@ -449,7 +449,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
     refine' sum_congr rfl fun k hk => _
     rw [mem_range] at hk
     congr
-    rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hk), Nat.succ_sub_succ]
+    omega
   · rw [Nat.choose_zero_right, tsub_zero]
 #align polynomial.iterate_derivative_mul Polynomial.iterate_derivative_mul
 
