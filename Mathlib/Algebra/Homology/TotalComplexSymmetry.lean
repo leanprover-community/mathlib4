@@ -118,17 +118,17 @@ lemma ιTotal_totalFlipIso_f_inv
         (by rw [ComplexShape.π_symm c₁ c₂ c i₁ i₂, h]) := by
   simp [totalFlipIso, totalFlipIsoX]
 
-section
-
 instance : K.flip.flip.HasTotal c := (inferInstance : K.HasTotal c)
+
+section
 
 variable [TotalComplexShapeSymmetry c₂ c₁ c] [TotalComplexShapeSymmetrySymmetry c₁ c₂ c]
 
 lemma flip_totalFlipIso : K.flip.totalFlipIso c = (K.totalFlipIso c).symm := by
   ext j i₁ i₂ h
-  dsimp
-  erw [K.ιTotal_totalFlipIso_f_inv]
-  rw [ιTotal_totalFlipIso_f_hom, ComplexShape.σ_symm c₁ c₂ c i₁ i₂]
+  rw [Iso.symm_hom, ιTotal_totalFlipIso_f_hom]
+  dsimp only [flip_flip]
+  rw [ιTotal_totalFlipIso_f_inv, ComplexShape.σ_symm]
 
 end
 
