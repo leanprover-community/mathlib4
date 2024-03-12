@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 
-import Mathlib.NumberTheory.Cyclotomic.PID
+import Mathlib.NumberTheory.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.NumberTheory.NumberField.Units
 
 /-!
