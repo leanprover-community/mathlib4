@@ -63,7 +63,7 @@ theorem foo : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := 
   apply hdvd
   exact ⟨_, h⟩
 
-theorem eq_pow_prime_of_unit_of_congruent (hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K)) :
+theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K)) :
     u = 1 ∨ u = -1 := by
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := unit_mem hζ u
