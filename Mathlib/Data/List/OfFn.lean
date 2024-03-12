@@ -60,7 +60,7 @@ theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i 
   if h : i < (ofFn f).length
   then by
     rw [get?_eq_get h, get_ofFn]
-    · simp at h; simp [ofFnNthVal, h]
+    · simp only [length_ofFn] at h; simp [ofFnNthVal, h]
   else by
     rw [ofFnNthVal, dif_neg] <;>
     simpa using h
@@ -203,7 +203,7 @@ theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.ra
 
 @[simp]
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
-    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_range_iff]
+    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_mem_range]
 #align list.forall_mem_of_fn_iff List.forall_mem_ofFn_iff
 
 @[simp]

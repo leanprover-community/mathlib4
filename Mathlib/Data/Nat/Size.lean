@@ -144,7 +144,7 @@ theorem size_pos {n : ℕ} : 0 < size n ↔ 0 < n := by rw [lt_size]; rfl
 #align nat.size_pos Nat.size_pos
 
 theorem size_eq_zero {n : ℕ} : size n = 0 ↔ n = 0 := by
-  have := @size_pos n; simp [pos_iff_ne_zero] at this; exact Decidable.not_iff_not.1 this
+  have h := @size_pos n; simp only [pos_iff_ne_zero, ne_eq] at h; exact Decidable.not_iff_not.1 h
 #align nat.size_eq_zero Nat.size_eq_zero
 
 theorem size_pow {n : ℕ} : size (2 ^ n) = n + 1 :=
