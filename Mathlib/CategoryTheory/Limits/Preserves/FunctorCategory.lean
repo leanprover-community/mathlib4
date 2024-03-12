@@ -86,8 +86,8 @@ instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
         exact PreservesLimit.preserves hc⟩⟩⟩
 #align category_theory.whiskering_left_preserves_limits CategoryTheory.whiskeringLeftPreservesLimits
 
-instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Type*}
-    [Category.{u} D] {E : Type*} [Category.{u} E] {J : Type u} [SmallCategory J]
+instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
