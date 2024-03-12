@@ -20,7 +20,7 @@ provided by mathlib, as they are not discoverable by `simp` unlike the current l
 being little to index on. The Wiki page linked above describes an algebraic normalizer, but it was
 never implemented in Lean 3.
 
-## Porting notes:
+## Porting note:
 This file is ancient, and it would be good to replace it with a clean version
 that provides what mathlib4 actually needs.
 
@@ -66,7 +66,7 @@ set_option autoImplicit true
 
 universe u v
 
--- porting note: removed `outParam`
+-- Porting note: removed `outParam`
 class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
   symm_op : ∀ a b, op a b = op b a
 #align is_symm_op IsSymmOp
@@ -188,6 +188,10 @@ class IsAsymm (α : Sort u) (r : α → α → Prop) : Prop where
 class IsAntisymm (α : Sort u) (r : α → α → Prop) : Prop where
   antisymm : ∀ a b, r a b → r b a → a = b
 #align is_antisymm IsAntisymm
+
+instance (priority := 100) IsAsymm.toIsAntisymm {α : Sort u} (r : α → α → Prop) [IsAsymm α r] :
+    IsAntisymm α r where
+  antisymm _ _ hx hy := (IsAsymm.asymm _ _ hx hy).elim
 
 /-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Sort u) (r : α → α → Prop) : Prop where

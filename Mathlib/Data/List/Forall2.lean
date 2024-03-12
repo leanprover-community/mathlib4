@@ -326,7 +326,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
   · induction' h with _ a b l1 l2 rab _ ih b l1 l2 _ ih
     · exact ⟨nil, Forall₂.nil, nil_sublist _⟩
     · obtain ⟨l, hl1, hl2⟩ := ih
-      refine' ⟨b :: l, Forall₂.cons rab hl1, hl2.cons_cons b⟩
+      exact ⟨b :: l, Forall₂.cons rab hl1, hl2.cons_cons b⟩
     · obtain ⟨l, hl1, hl2⟩ := ih
       exact ⟨l, hl1, hl2.trans (Sublist.cons _ (Sublist.refl _))⟩
   · obtain ⟨l, hl1, hl2⟩ := h

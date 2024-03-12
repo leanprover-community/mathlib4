@@ -248,7 +248,7 @@ theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
 
 variable {G}
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem adjMatrix_mulVec_const_apply [Semiring α] {a : α} {v : V} :
     (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
@@ -278,6 +278,26 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       cases hp
       simp at hxy
 #align simple_graph.adj_matrix_pow_apply_eq_card_walk SimpleGraph.adjMatrix_pow_apply_eq_card_walk
+
+/-- The sum of the identity, `G.adjMatrix ℕ` and `(G.adjMatrix ℕ).compl` is the all-ones matrix. -/
+theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] :
+    1 + G.adjMatrix ℕ + (G.adjMatrix ℕ).compl = Matrix.of fun _ _ ↦ 1 := by
+  ext i j
+  unfold Matrix.compl
+  rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
+  by_cases h : G.Adj i j
+  · rw [if_pos h, if_neg one_ne_zero, if_neg (G.ne_of_adj h), if_neg (G.ne_of_adj h), zero_add,
+     add_zero]
+  · rw [if_neg h]
+    by_cases heq : i = j
+    · repeat rw [if_pos heq, add_zero]
+    · rw [if_neg heq, if_neg heq, zero_add, zero_add, if_pos (refl 0)]
+
+theorem dotProduct_mulVec_adjMatrix [Ring α] (vec : V → α) :
+    vec ⬝ᵥ (G.adjMatrix α).mulVec vec =
+    ∑ i : V, ∑ j : V, if G.Adj i j then vec i * vec j else 0 := by
+  simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
+    mul_zero]
 
 end SimpleGraph
 

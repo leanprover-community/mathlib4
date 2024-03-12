@@ -52,6 +52,8 @@ instance : AddCommGroup (S₁ ⟶ S₂) where
   add_left_neg := fun a => by ext <;> apply add_left_neg
   add_comm := fun a b => by ext <;> apply add_comm
   sub_eq_add_neg := fun a b => by ext <;> apply sub_eq_add_neg
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 @[simp] lemma add_τ₁ (φ φ' : S₁ ⟶ S₂) : (φ + φ').τ₁ = φ.τ₁ + φ'.τ₁ := rfl
 @[simp] lemma add_τ₂ (φ φ' : S₁ ⟶ S₂) : (φ + φ').τ₂ = φ.τ₂ + φ'.τ₂ := rfl

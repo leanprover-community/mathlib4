@@ -49,7 +49,8 @@ integrable, function space, l1
 
 noncomputable section
 
-open Classical Topology BigOperators ENNReal MeasureTheory NNReal
+open scoped Classical
+open Topology BigOperators ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
@@ -434,7 +435,7 @@ end NormedSpace
 /-! ### The predicate `Integrable` -/
 
 
--- variables [measurable_space β] [measurable_space γ] [measurable_space δ]
+-- variable [MeasurableSpace β] [MeasurableSpace γ] [MeasurableSpace δ]
 /-- `Integrable f μ` means that `f` is measurable and that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `Integrable f` means `Integrable f volume`. -/
 def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
