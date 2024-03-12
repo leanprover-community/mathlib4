@@ -25,8 +25,8 @@ We provide various results concerning the minimal primes above an ideal
   preimage of some minimal prime over `I`.
 - `Ideal.minimalPrimes_eq_comap`: The minimal primes over `I` are precisely the preimages of
   minimal primes of `R ⧸ I`.
-- `Localization.AtPrime.prime_unique_of_minimal`: When localizing at a minimal prime ideal `I`, the resulting
-  ring only has a single prime ideal.
+- `Localization.AtPrime.prime_unique_of_minimal`: When localizing at a minimal prime ideal `I`,
+  the resulting ring only has a single prime ideal.
 
 -/
 
