@@ -60,8 +60,6 @@ abbrev M :=
 @[to_additive "The canonical projection into the colimit, as a quotient type."]
 noncomputable abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
   Quot.mk _
-  -- (Types.colimitEquivQuot (F ⋙ forget MonCat)).symm ∘ Quot.mk _
-  -- fun ⟨j, x⟩ => (Types.colimitCocone (F ⋙ forget MonCat)).ι.app j x
 #align Mon.filtered_colimits.M.mk MonCat.FilteredColimits.M.mk
 #align AddMon.filtered_colimits.M.mk AddMonCat.FilteredColimits.M.mk
 
