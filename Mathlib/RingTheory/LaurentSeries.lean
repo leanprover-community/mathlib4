@@ -3,7 +3,6 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Int.Interval
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.Localization.FractionRing
@@ -38,47 +37,6 @@ abbrev LaurentSeries (R : Type*) [Zero R] :=
 variable {R : Type*}
 
 namespace LaurentSeries
-
-section Zero
-
-variable [Zero R]
-
-theorem suppBddBelow_supp_PWO (f : ℤ → R) (hf : BddBelow (Function.support f)) :
-    (Function.support f).IsPWO := Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
-
-theorem forallLTEqZero_supp_BddBelow (f : ℤ → R) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    BddBelow (Function.support f) := by
-  unfold BddBelow Set.Nonempty lowerBounds
-  use n
-  intro m hm
-  rw [Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
-
-/-- Construct a Laurent series from any function whose support is bounded below. -/
-@[simps]
-def ofSuppBddBelow (f : ℤ → R) (hf : BddBelow (Function.support f)) : LaurentSeries R where
-  coeff := f
-  isPWO_support' := suppBddBelow_supp_PWO f hf
-
-theorem BddBelow_zero : BddBelow (Function.support (0 : ℤ → R)) := by
-  simp_all only [Function.support_zero', bddBelow_empty]
-
-@[simp]
-theorem zero_ofSuppBddBelow : ofSuppBddBelow 0 BddBelow_zero = (0 : LaurentSeries R) := rfl
-
-theorem order_ofForallLtEqZero (f : ℤ → R) (hf : f ≠ 0) (n : ℤ) (hn : ∀(m : ℤ), m < n → f m = 0) :
-    n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
-  unfold order
-  by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
-  cases h
-  exact (hf rfl).elim
-  simp_all only [dite_false]
-  rw [Set.IsWF.le_min_iff]
-  intro m hm
-  rw [HahnSeries.support, Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
-
-end Zero
 
 section Semiring
 
