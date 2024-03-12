@@ -90,8 +90,8 @@ theorem ext {μ : YoungDiagram} {T T' : SemistandardYoungTableau μ} (h : ∀ i 
     apply h
 #align ssyt.ext SemistandardYoungTableau.ext
 
-/-- Copy of an `SemistandardYoungTableau μ` with a new `entry` equal to the old one. Useful to fix definitional
-equalities. -/
+/-- Copy of an `SemistandardYoungTableau μ` with a new `entry` equal to the old one. Useful to fix
+definitional equalities. -/
 protected def copy {μ : YoungDiagram} (T : SemistandardYoungTableau μ) (entry' : ℕ → ℕ → ℕ)
     (h : entry' = T) : SemistandardYoungTableau μ where
   entry := entry'
