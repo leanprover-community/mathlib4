@@ -1,11 +1,40 @@
-import Mathlib
+/-
+Copyright (c) 2024 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca
+-/
 
-open NumberField Units IsCyclotomicExtension.Rat InfinitePlace
+import Mathlib.NumberTheory.Cyclotomic.PID
+import Mathlib.NumberTheory.NumberField.Units
+
+/-!
+# Third cyclotomic field.
+We gather various results about the third cyclotomic field.
+
+## Main results
+* `IsCyclotomicExtension.Rat.Three.Units.mem`: Given a unit `u : (𝓞 K)ˣ`, where `K` is a number
+field such that `IsCyclotomicExtension {3} ℚ K`, then `u ∈ ({1, -1, ζ, -ζ, ζ^2, -ζ^2}`, where `ζ`
+is any primitive `3`-rd root of unity in `K`.
+
+* `IsCyclotomicExtension.Rat.Three.Units.mem.eq_one_or_neg_one_of_unit_of_congruent`: Given a unit
+`u : (𝓞 K)ˣ`, where `K` is a number field such that `IsCyclotomicExtension {3} ℚ K`, if `u` is
+congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
+
+This is a special case of the so-called *Kummer's lemma*.
+
+-/
+
+open NumberField Units InfinitePlace
+
+namespace IsCyclotomicExtension.Rat.Three
 
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 
-theorem unit_mem : ↑u ∈
+/-- Given a unit `u : (𝓞 K)ˣ`, where `K` is a number field such that
+`IsCyclotomicExtension {3} ℚ K`, then `u ∈ ({1, -1, ζ, -ζ, ζ^2, -ζ^2}`, where `ζ` is any
+primitive `3`-rd root of unity in `K`. -/
+theorem Units.mem : ↑u ∈
     ({1, -1, hζ.toInteger, -hζ.toInteger, hζ.toInteger ^ 2, -hζ.toInteger ^ 2} : Set (𝓞 K)) := by
   have hrank : rank K = 0 := by
     dsimp [rank]
@@ -37,10 +66,10 @@ theorem unit_mem : ↑u ∈
     · apply Set.mem_insert_of_mem; apply Set.mem_insert_of_mem; simp [h]
     · apply Set.mem_insert_of_mem; apply Set.mem_insert_of_mem; simp [h]
 
-theorem foo : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
+theorem Units.not_exists_int_three_dvd_sub : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
   intro ⟨n, x, h⟩
   have h3pos : 0 < 3 := by decide
-  have hp : Fact (Nat.Prime (⟨3, h3pos⟩ : ℕ+)) := ⟨by norm_num⟩
+  have hp : Fact (Nat.Prime (⟨3, h3pos⟩ : ℕ+)) := ⟨show Nat.Prime 3 from by decide⟩
   let pB := hζ.integralPowerBasis'
   have hdim : pB.dim = 2 := by
     simp only [IsPrimitiveRoot.power_basis_int'_dim, PNat.val_ofNat, Nat.reduceSucc, pB]
@@ -63,34 +92,41 @@ theorem foo : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := 
   apply hdvd
   exact ⟨_, h⟩
 
+/-- Given a unit `u : (𝓞 K)ˣ`, where `K` is a number field such that
+`IsCyclotomicExtension {3} ℚ K`, if `u` is congruent to an integer modulo `3`, then `u = 1` or
+`u = -1`.
+
+This is a special case of the so-called *Kummer's lemma*. -/
 theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K)) :
     u = 1 ∨ u = -1 := by
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
-  have := unit_mem hζ u
+  have := Units.mem hζ u
   have h2 : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
   simp only [Set.mem_insert_iff, val_eq_one, Set.mem_singleton_iff] at this
   rcases this with (rfl | h | h | h | h | h)
   · left; rfl
   · right; ext; simp [h]
   · exfalso
-    apply foo hζ
+    apply Units.not_exists_int_three_dvd_sub hζ
     rw [← h]
     exact hcong
   · exfalso
-    apply foo hζ
+    apply Units.not_exists_int_three_dvd_sub hζ
     obtain ⟨n, x, hx⟩ := hcong
     rw [sub_eq_iff_eq_add] at hx
     refine ⟨-n, -x, ?_⟩
     rw [← neg_eq_iff_eq_neg.2 h, hx]
     simp
   · exfalso
-    apply foo <| hζ.pow_of_coprime 2 (by decide)
+    apply Units.not_exists_int_three_dvd_sub <| hζ.pow_of_coprime 2 (by decide)
     rw [h2, ← h]
     exact hcong
   · exfalso
-    apply foo <| hζ.pow_of_coprime 2 (by decide)
+    apply Units.not_exists_int_three_dvd_sub <| hζ.pow_of_coprime 2 (by decide)
     obtain ⟨n, x, hx⟩ := hcong
     refine ⟨-n, -x, ?_⟩
     rw [h2, mul_neg, ← hx, ← neg_eq_iff_eq_neg.2 h]
     simp only [Int.cast_neg, sub_neg_eq_add, neg_sub]
     ring
+
+end IsCyclotomicExtension.Rat.Three
