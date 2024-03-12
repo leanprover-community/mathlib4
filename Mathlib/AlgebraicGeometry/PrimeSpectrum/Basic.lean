@@ -967,7 +967,7 @@ section LocalizationAtMinimal
 
 variable {I : Ideal R} [hI : I.IsPrime]
 
-theorem primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) :
+def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) :
     Unique (PrimeSpectrum (Localization.AtPrime I)) where
   default :=
     ⟨LocalRing.maximalIdeal (Localization I.primeCompl),
