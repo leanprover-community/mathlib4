@@ -272,7 +272,9 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
   binders in the following `fun` or (2) revert `simp only` to `simp_rw`, `to_additive` fails
   because an `OfNat.ofNat 1` is not replaced with `0`. Notably, as of this nightly, what used to
   look like `OfNat.ofNat (nat_lit 1) x` in the proof term now looks like
-  `OfNat.ofNat (OfNat.ofNat (α := ℕ) (nat_lit 1)) x`, and this seems to trip up `to_additive`. -/
+  `OfNat.ofNat (OfNat.ofNat (α := ℕ) (nat_lit 1)) x`, and this seems to trip up `to_additive`.
+  Likely this is due to a bug in a dsimproc, which will be easier to diagnose on `nightly-2024-03-12`.
+  -/
   filter_upwards [hf, hf₂] using fun x (hx : f x = (1 : α → β) x) (hx₂ : f₂ x = (1 : α → γ) x) => by
     simp only [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
