@@ -64,15 +64,14 @@ theorem foo : ¬(∃ n : ℤ, (3 : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := 
   exact ⟨_, h⟩
 
 theorem eq_pow_prime_of_unit_of_congruent (hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K)) :
-    ∃ v, u = v ^ (3 : ℕ) := by
-  have h3 : Odd 3 := by decide
+    u = 1 ∨ u = -1 := by
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := unit_mem hζ u
   have h2 : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
   simp only [Set.mem_insert_iff, val_eq_one, Set.mem_singleton_iff] at this
   rcases this with (rfl | h | h | h | h | h)
-  · exact ⟨1, by simp⟩
-  · exact ⟨-1, by simp [← Units.eq_iff, h, h3]⟩
+  · left; rfl
+  · right; ext; simp [h]
   · exfalso
     apply foo hζ
     rw [← h]
