@@ -1073,16 +1073,15 @@ theorem abs_moebius_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : |μ l| 
 theorem moebius_sq {n : ℕ} :
     μ n ^ 2 = if Squarefree n then 1 else 0 := by
   split_ifs with h
-  · exact moebius_sq_of_squarefree h
-  · simp only [Nat.isUnit_iff, zero_lt_two, pow_eq_zero_iff, moebius_eq_zero_of_not_squarefree h,
-      zero_pow (show 2 ≠ 0 by norm_num)]
+  · exact moebius_sq_eq_one_of_squarefree h
+  · simp only [pow_eq_zero_iff, moebius_eq_zero_of_not_squarefree h,
+    zero_pow (show 2 ≠ 0 by norm_num)]
 
 theorem abs_moebius {n : ℕ} :
     |μ n| = if Squarefree n then 1 else 0 := by
   split_ifs with h
-  · exact abs_moebius_of_squarefree h
-  · simp only [Nat.isUnit_iff, zero_lt_two, pow_eq_zero_iff, moebius_eq_zero_of_not_squarefree h,
-      abs_zero]
+  · exact abs_moebius_eq_one_of_squarefree h
+  · simp only [moebius_eq_zero_of_not_squarefree h, abs_zero]
 
 theorem moebius_apply_prime {p : ℕ} (hp : p.Prime) : μ p = -1 := by
   rw [moebius_apply_of_squarefree hp.squarefree, cardFactors_apply_prime hp, pow_one]
