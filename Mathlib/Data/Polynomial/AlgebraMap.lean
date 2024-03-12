@@ -581,4 +581,18 @@ lemma aeval_apply_smul_mem_of_le_comap (f : Module.End R M) (hq : q ≤ q.comap 
 
 end StableSubmodule
 
+variable (R)
+
+/-- The monomials form a basis on `R[X]`. -/
+noncomputable def basisMonomials [Semiring R] : Basis ℕ R R[X] :=
+  Basis.ofRepr
+  { (toFinsuppIso R) with
+    map_smul' := fun _ _ ↦ rfl }
+#align polynomial.basis_monomials Polynomial.basisMonomials
+
+@[simp]
+theorem coe_basisMonomials [Semiring R] : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
+  funext fun _ => ofFinsupp_single _ _
+#align polynomial.coe_basis_monomials Polynomial.coe_basisMonomials
+
 end Polynomial

@@ -85,12 +85,16 @@ theorem iterate_derivative_zero {k : ℕ} : derivative^[k] (0 : R[X]) = 0 := by
   · simp [ih]
 #align polynomial.iterate_derivative_zero Polynomial.iterate_derivative_zero
 
-@[simp]
 theorem derivative_monomial (a : R) (n : ℕ) :
     derivative (monomial n a) = monomial (n - 1) (a * n) := by
   rw [derivative_apply, sum_monomial_index, C_mul_X_pow_eq_monomial]
   simp
 #align polynomial.derivative_monomial Polynomial.derivative_monomial
+
+@[simp]
+theorem derivative_monomial_succ (a : R) (n : ℕ) :
+    derivative (monomial (n + 1) a) = monomial n (a * (n + 1)) := by
+  rw [derivative_monomial, add_tsub_cancel_right, Nat.cast_add, Nat.cast_one]
 
 theorem derivative_C_mul_X (a : R) : derivative (C a * X) = C a := by
   simp [C_mul_X_eq_monomial, derivative_monomial, Nat.cast_one, mul_one]
@@ -108,11 +112,15 @@ theorem derivative_C_mul_X_sq (a : R) : derivative (C a * X ^ 2) = C (a * 2) * X
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_C_mul_X_sq Polynomial.derivative_C_mul_X_sq
 
-@[simp]
 theorem derivative_X_pow (n : ℕ) : derivative (X ^ n : R[X]) = C (n : R) * X ^ (n - 1) := by
   convert derivative_C_mul_X_pow (1 : R) n <;> simp
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_X_pow Polynomial.derivative_X_pow
+
+@[simp]
+theorem derivative_X_pow_succ (n : ℕ) :
+    derivative (X ^ (n + 1) : R[X]) = C (n + 1 : R) * X ^ n := by
+  simp [derivative_X_pow]
 
 -- Porting note: removed `simp`: `simp` can prove it.
 theorem derivative_X_sq : derivative (X ^ 2 : R[X]) = C 2 * X := by
