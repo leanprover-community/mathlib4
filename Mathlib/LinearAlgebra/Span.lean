@@ -1112,7 +1112,7 @@ theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) 
 each `v i`, then they are equal. -/
 theorem ext_on_range {ι : Type*} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
     (h : ∀ i, f (v i) = g (v i)) : f = g :=
-  ext_on hv (Set.forall_range_iff.2 h)
+  ext_on hv (Set.forall_mem_range.2 h)
 #align linear_map.ext_on_range LinearMap.ext_on_range
 
 end AddCommMonoid

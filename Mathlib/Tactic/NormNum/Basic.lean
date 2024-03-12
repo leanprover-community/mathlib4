@@ -425,7 +425,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
     IsRat (a / b) cn cd
-  | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
+  | _, _, _, _, h => by simpa [div_eq_mul_inv] using h
 
 /-- Helper function to synthesize a typed `DivisionRing α` expression. -/
 def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
