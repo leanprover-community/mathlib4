@@ -586,7 +586,6 @@ noncomputable abbrev NrComplexPlaces := card { w : InfinitePlace K // IsComplex 
 
 theorem card_eq_NrRealPlaces_add_NrComplexPlaces : Fintype.card (InfinitePlace K) =
     NrRealPlaces K + NrComplexPlaces K := by
-  classical
   dsimp [InfinitePlace, NrRealPlaces, NrComplexPlaces]
   convert Fintype.card_subtype_or_disjoint (IsReal (K := K)) (IsComplex (K := K))
     (disjoint_isReal_isComplex K) using 1
