@@ -183,7 +183,8 @@ theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂)
           whisker_assoc, leftUnitor_inv_whiskerRight, whiskerLeft_comp, assoc, Iso.inv_hom_id_assoc,
           compCounit, comp_whiskerLeft, Iso.hom_inv_id, pentagon_inv, pentagon_assoc,
           whiskerRight_id, whiskerLeft_inv_hom_assoc, pentagon_hom_hom_inv_hom_hom_assoc,
-          Iso.cancel_iso_inv_left]; coherence
+          Iso.cancel_iso_inv_left]
+      coherence
     _ = 𝟙 _ ⊗≫
           (leftZigzag adj₁.unit adj₁.counit) ▷ f₂ ⊗≫
             f₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ⊗≫ 𝟙 _ := by
@@ -197,7 +198,8 @@ theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂)
           comp_whiskerRight, leftUnitor_whiskerRight, comp_id, comp_whiskerLeft,
           whiskerLeft_inv_hom_assoc, pentagon_hom_hom_inv_hom_hom_assoc,
           leftUnitor_inv_whiskerRight, Iso.hom_inv_id_assoc, leftZigzag, whisker_assoc,
-          Iso.cancel_iso_inv_left]; coherence
+          Iso.cancel_iso_inv_left]
+      coherence
     _ = _ := by
       simp_rw [left_triangle]; simp [bicategoricalComp]
 
@@ -216,7 +218,8 @@ theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂
           comp_whiskerLeft, assoc, Iso.inv_hom_id_assoc, compCounit, comp_whiskerRight,
           whisker_assoc, leftUnitor_whiskerRight, whiskerRight_id, Iso.hom_inv_id,
           pentagon_inv_assoc, pentagon_assoc, pentagon_hom_inv_inv_inv_inv_assoc,
-          whiskerLeft_inv_hom_assoc, Iso.cancel_iso_hom_left]; coherence
+          whiskerLeft_inv_hom_assoc, Iso.cancel_iso_hom_left]
+      coherence
     _ = 𝟙 _ ⊗≫
           g₂ ◁ (rightZigzag adj₁.unit adj₁.counit) ⊗≫
             (rightZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ 𝟙 _ := by
@@ -229,7 +232,8 @@ theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂
           comp_whiskerLeft, assoc, whiskerLeft_comp, id_whiskerLeft, unitors_equal,
           Iso.inv_hom_id_assoc, comp_whiskerRight, leftUnitor_inv_whiskerRight, comp_id,
           pentagon_hom_inv_inv_inv_inv_assoc, whiskerLeft_inv_hom_assoc, rightZigzag, whisker_assoc,
-          Iso.cancel_iso_hom_left]; coherence
+          Iso.cancel_iso_hom_left]
+      coherence
     _ = _ := by
       simp_rw [right_triangle]; simp [bicategoricalComp]
 
