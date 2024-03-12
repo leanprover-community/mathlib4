@@ -77,6 +77,20 @@ span_eq : Algebra.adjoin (𝒜 0) toFinset = (⊤ : Subalgebra (𝒜 0) A)
 
 namespace generatingSetOverBaseRing
 
+/--
+The theorem we are proving is no vacuous, i.e. there is a generating set over base ring.
+-/
+@[simps]
+noncomputable def fromHomogeneousGeneratingSetOfIrrelevant
+    (s : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal) :
+    generatingSetOverBaseRing 𝒜 where
+  toFinset := s.toFinset
+  deg := s.deg
+  mem_deg := s.mem_deg
+  deg_pos := GradedRing.HomogeneousGeneratingSetOf.irrelevant.deg_pos s
+  ne_zero' := s.ne_zero
+  span_eq := GradedRing.HomogeneousGeneratingSetOf.irrelevant.adjoin_eq_top s
+
 variable (S : generatingSetOverBaseRing 𝒜)
 
 variable {𝒜} in
