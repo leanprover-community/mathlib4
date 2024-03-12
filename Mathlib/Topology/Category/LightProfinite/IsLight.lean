@@ -144,7 +144,7 @@ def lightProfiniteConeOfHom_π_app (n : ℕᵒᵖ) :
 
 /-- The cone on `lightProfiniteDiagramOfHom` -/
 def lightProfiniteConeOfHom :
-    Cone ((lightProfiniteDiagramOfHom f) ⋙ FintypeCat.toProfinite) where
+    Cone (lightProfiniteDiagramOfHom f ⋙ FintypeCat.toProfinite) where
   pt := X
   π := {
     app := fun n ↦ lightProfiniteConeOfHom_π_app f n
