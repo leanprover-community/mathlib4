@@ -124,6 +124,20 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with }
 
+variable {F}
+@[coe]
+def toSemiLinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f:F): M ≃ₛₗ[σ] M₂ where
+    toFun := EquivLike.coe f
+    map_add' := AddHomClass.map_add f
+    map_smul' := SemilinearMapClass.map_smulₛₗ f
+    invFun := EquivLike.inv f
+    left_inv := EquivLike.left_inv f
+    right_inv := EquivLike.right_inv f
+
+instance [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [EquivLike F M M₂]
+  [SemilinearEquivClass F σ M M₂] : CoeTC F (M ≃ₛₗ[σ]M₂) := ⟨toSemiLinearEquiv⟩
+
 end SemilinearEquivClass
 
 namespace LinearEquiv

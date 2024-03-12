@@ -2,7 +2,7 @@ import Mathlib.Topology.GMetric.WellSpaced
 import Mathlib.Topology.GMetric.Isometry
 import Mathlib.Topology.GMetric.GNorm
 import Mathlib.InformationTheory.Hamming
-import Mathlib.InformationTheory.Code.Equiv
+import Mathlib.InformationTheory.Code.Linear.Equiv
 import Mathlib.FieldTheory.Finite.GaloisField
 
 open Set
@@ -118,6 +118,6 @@ open Code
 
 variable (s : Submodule (GaloisField p n) (CodeWord n n' p)) [IsDelone hdist (SetLike.coe s)]
 
-#check (inferInstance : _LinearCode ℕ∞ (GaloisField p n) trivdist hdist s)
+-- #synth _LinearCode ℕ∞ (GaloisField p n) trivdist hdist s
 
 end linearHamming

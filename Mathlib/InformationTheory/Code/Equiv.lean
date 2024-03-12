@@ -47,9 +47,9 @@ class CodeEquivClass {γ :outParam Type*} [CompleteLinearOrder γ] [AddCommMonoi
 instance CodeEquivClass.toGIsometryEquivClass
     {T:Type*} {γ : outParam Type*} [CompleteLinearOrder γ] [AddCommMonoid γ]
     [CovariantClass γ γ (.+.) (.≤.)] {α₁ : outParam Type*} {T₁: outParam Type*}
-    (gdist₁ : outParam T₁) (s₁:outParam (Set α₁)) [FunLike T₁ α₁ (α₁ → γ)]
+    {gdist₁ : outParam T₁} {s₁:outParam (Set α₁)} [FunLike T₁ α₁ (α₁ → γ)]
     [GPseudoMetricClass T₁ α₁ γ] [IsDelone gdist₁ s₁] {α₂: outParam Type*} {T₂: outParam Type*}
-    (gdist₂ : outParam T₂) (s₂:outParam (Set α₂)) [FunLike T₂ α₂ (α₂ → γ)]
+    {gdist₂ : outParam T₂} {s₂:outParam (Set α₂)} [FunLike T₂ α₂ (α₂ → γ)]
     [GPseudoMetricClass T₂ α₂ γ] [IsDelone gdist₂ s₂] [CodeEquivClass T gdist₁ s₁ gdist₂ s₂]:
     GIsometryEquivClass T gdist₁ gdist₂ := {
       CodeEquivClass.toEquivLike with
@@ -63,15 +63,13 @@ namespace CodeEquiv
 
 instance instCodeEquivClass: CodeEquivClass (CodeEquiv gdist₁ s₁ gdist₂ s₂) gdist₁ s₁ gdist₂ s₂ := {
     ({
-      ({
-        coe := fun φ => φ.toFun
-        inv := fun φ => φ.invFun
-        left_inv := fun φ => φ.left_inv
-        right_inv := fun φ => φ.right_inv
-        coe_injective' := fun φ₁ φ₂ h₁ _ => by cases φ₁; cases φ₂; congr; simp_all
-      }:EquivLike (CodeEquiv gdist₁ s₁ gdist₂ s₂) α₁ α₂) with
-      map_dist' := fun φ => φ.map_dist
-    }:GIsometryEquivClass (CodeEquiv gdist₁ s₁ gdist₂ s₂) gdist₁ gdist₂) with
+      coe := fun φ => φ.toFun
+      inv := fun φ => φ.invFun
+      left_inv := fun φ => φ.left_inv
+      right_inv := fun φ => φ.right_inv
+      coe_injective' := fun φ₁ φ₂ h₁ _ => by cases φ₁; cases φ₂; congr; simp_all
+    }:EquivLike (CodeEquiv gdist₁ s₁ gdist₂ s₂) α₁ α₂) with
+    map_dist' := fun φ => φ.map_dist
     map_code' := fun φ => φ.map_code
     invMap_code' := fun φ => φ.invMap_code
   }
@@ -100,7 +98,7 @@ def CodeEquivClass.toCodeEquiv [CodeEquivClass T gdist₁ s₁ gdist₂ s₂] (f
     invMap_code := CodeEquivClass.invMap_code' f
   }
 
-instance [GIsometryClass T gdist₁ gdist₂] [CodeEquivClass T gdist₁ s₁ gdist₂ s₂]:
+instance [CodeEquivClass T gdist₁ s₁ gdist₂ s₂]:
   CoeTC T (CodeEquiv gdist₁ s₁ gdist₂ s₂) := ⟨CodeEquivClass.toCodeEquiv⟩
 
 
@@ -212,7 +210,8 @@ variable--? [_Code γ gdist₃ s₃] =>
   [IsDelone gdist₃ s₃]
 
 @[trans]
-def trans (h1 : CodeEquiv gdist₁ s₁ gdist₂ s₂) (h2 : CodeEquiv gdist₂ s₂ gdist₃ s₃) : CodeEquiv gdist₁ s₁ gdist₃ s₃ :=
+def trans (h1 : CodeEquiv gdist₁ s₁ gdist₂ s₂) (h2 : CodeEquiv gdist₂ s₂ gdist₃ s₃) :
+    CodeEquiv gdist₁ s₁ gdist₃ s₃ :=
   { h1.toGIsometryEquiv.trans h2.toGIsometryEquiv, h2.toCodeHom.comp h1.toCodeHom with
     invMap_code := fun x => h1.invMap_code x ∘ h2.invMap_code (h1 x)
   }
