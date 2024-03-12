@@ -130,10 +130,14 @@ instance : Inhabited (ColimitType F) := by
   dsimp [ColimitType]
   infer_instance
 
-instance monoidColimitType : Monoid (ColimitType F) where
-  one := Quotient.mk _ one
-  mul := Quotient.map₂ mul fun x x' rx y y' ry =>
+instance instOne : One (ColimitType F) where
+  one := Quot.mk _ one
+
+instance instMul : Mul (ColimitType F) where
+  mul := Quotient.map₂ mul fun _ x' rx y _ ry =>
     Setoid.trans (Relation.mul_1 _ _ y rx) (Relation.mul_2 x' _ _ ry)
+
+instance monoidColimitType : Monoid (ColimitType F) where
   one_mul := Quotient.ind fun _ => Quotient.sound <| Relation.one_mul _
   mul_one := Quotient.ind fun _ => Quotient.sound <| Relation.mul_one _
   mul_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>

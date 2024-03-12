@@ -46,12 +46,13 @@ A `LieRing` can be regarded as a `NonUnitalNonAssocSemiring` by turning its
 def CommutatorRing (L : Type v) : Type v := L
 #align commutator_ring CommutatorRing
 
+instance instMul : Mul (CommutatorRing L) := show Mul L from { mul := Bracket.bracket }
+
 /-- A `LieRing` can be regarded as a `NonUnitalNonAssocSemiring` by turning its
 `Bracket` (denoted `⁅, ⁆`) into a `Mul` (denoted `*`). -/
 instance : NonUnitalNonAssocSemiring (CommutatorRing L) :=
   show NonUnitalNonAssocSemiring L from
     { (inferInstance : AddCommMonoid L) with
-      mul := Bracket.bracket
       left_distrib := lie_add
       right_distrib := add_lie
       zero_mul := zero_lie

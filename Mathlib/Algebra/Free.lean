@@ -365,7 +365,7 @@ theorem quot_mk_assoc_left (x y z w : α) :
 #align magma.assoc_quotient.quot_mk_assoc_left Magma.AssocQuotient.quot_mk_assoc_left
 
 @[to_additive]
-instance : Semigroup (AssocQuotient α) where
+instance : Mul (AssocQuotient α) where
   mul x y := by
     refine' Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) _ _
     · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
@@ -375,6 +375,9 @@ instance : Semigroup (AssocQuotient α) where
       · simp only [quot_mk_assoc, quot_mk_assoc_left]
       · rw [quot_mk_assoc, quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc_left,
           quot_mk_assoc_left, ← quot_mk_assoc c d, ← quot_mk_assoc c d, quot_mk_assoc_left]
+
+@[to_additive]
+instance : Semigroup (AssocQuotient α) where
   mul_assoc x y z :=
     Quot.induction_on₃ x y z fun a b c ↦ quot_mk_assoc a b c
 
@@ -469,10 +472,13 @@ namespace FreeSemigroup
 variable {α : Type u}
 
 @[to_additive]
-instance : Semigroup (FreeSemigroup α) where
+instance : Mul (FreeSemigroup α) where
   mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
+
+@[to_additive]
+instance : Semigroup (FreeSemigroup α) where
   -- Porting note: replaced ext by FreeSemigroup.ext
-  mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext _ _ rfl <| List.append_assoc _ _ _
+  mul_assoc _ _ _ := FreeSemigroup.ext _ _ rfl <| List.append_assoc _ _ _
 
 @[to_additive (attr := simp)]
 theorem head_mul (x y : FreeSemigroup α) : (x * y).1 = x.1 := rfl

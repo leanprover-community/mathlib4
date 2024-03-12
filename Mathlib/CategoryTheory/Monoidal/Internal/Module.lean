@@ -38,6 +38,12 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
+instance instMul (A : Mon_ (ModuleCat.{u} R)) : Mul A.X where
+  mul := fun x y => A.mul (x ⊗ₜ y)
+
+instance instOne (A : Mon_ (ModuleCat.{u} R)) : One A.X where
+  one := A.one (1 : R)
+
 -- Porting note: in the following proof `have := ...; convert this` is to help Lean infer what the
 -- underlying rings are.
 -- Porting note: `simps(!)` doesn't work, I guess we will see what `simp` lemmas are needed and
@@ -45,8 +51,6 @@ namespace MonModuleEquivalenceAlgebra
 -- @[simps!]
 instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
   { (inferInstance : AddCommGroup A.X) with
-    one := A.one (1 : R)
-    mul := fun x y => A.mul (x ⊗ₜ y)
     one_mul := fun x => by
       have := LinearMap.congr_fun A.one_mul ((1 : R) ⊗ₜ x)
       convert this

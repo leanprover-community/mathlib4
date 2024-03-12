@@ -90,13 +90,11 @@ private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩
 private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
   rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
 
+instance instInv : Inv SignType := ⟨id⟩
+
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
 instance : CommGroupWithZero SignType where
-  zero := 0
-  one := 1
-  mul := (· * ·)
-  inv := id
   mul_zero a := by cases a <;> rfl
   zero_mul a := by cases a <;> rfl
   mul_one a := by cases a <;> rfl
@@ -114,7 +112,6 @@ private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c :
   cases a <;> cases b <;> cases c <;> tauto
 
 instance : LinearOrder SignType where
-  le := (· ≤ ·)
   le_refl a := by cases a <;> constructor
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm
@@ -123,9 +120,7 @@ instance : LinearOrder SignType where
   decidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
-  top := 1
   le_top := LE.of_pos
-  bot := -1
   bot_le := LE.of_neg
 
 instance : HasDistribNeg SignType :=

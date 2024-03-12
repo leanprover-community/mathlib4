@@ -392,36 +392,42 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp))
 
 instance addMonoid : AddMonoid Num where
-  add := (· + ·)
-  zero := 0
   zero_add := zero_add
   add_zero := add_zero
   add_assoc := by transfer
   nsmul := nsmulRec
 #align num.add_monoid Num.addMonoid
 
+instance instNatCast : NatCast Num where
+  natCast := Num.ofNat'
+
 instance addMonoidWithOne : AddMonoidWithOne Num :=
   { Num.addMonoid with
-    natCast := Num.ofNat'
-    one := 1
+    toNatCast := instNatCast
     natCast_zero := ofNat'_zero
     natCast_succ := fun _ => ofNat'_succ }
 #align num.add_monoid_with_one Num.addMonoidWithOne
 
-instance commSemiring : CommSemiring Num := by
-  refine'
-    { Num.addMonoid,
-      Num.addMonoidWithOne with
-      mul := (· * ·)
-      npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩, .. } <;>
-    try { intros; rfl } <;>
-    transfer <;>
-    simp [add_comm, mul_add, add_mul, mul_assoc, mul_comm, mul_left_comm]
+instance instMulOneClass : MulOneClass Num where
+  one_mul := by transfer
+  mul_one := by transfer
+
+instance semiring : Semiring Num :=
+  { Num.addMonoid, Num.addMonoidWithOne, instMulOneClass with
+    npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
+    add_comm := fun _ _ => by transfer; simp [add_comm],
+    left_distrib := fun _ _ _ => by transfer; simp [left_distrib],
+    right_distrib := fun _ _ _ => by transfer; simp [right_distrib],
+    zero_mul := fun _ => by transfer
+    mul_zero := fun _ => by transfer
+    mul_assoc := fun _ _ _ => by transfer; simp [mul_assoc] }
+
+instance commSemiring : CommSemiring Num :=
+  { Num.semiring with
+    mul_comm := by transfer; simp [mul_comm] }
 #align num.comm_semiring Num.commSemiring
 
 instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
-  le := (· ≤ ·)
-  lt := (· < ·)
   lt_iff_le_not_le a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_le]
   le_refl := by transfer
   le_trans a b c := by transfer_rw; apply le_trans
@@ -610,12 +616,10 @@ instance distrib : Distrib PosNum := by
 #align pos_num.distrib PosNum.distrib
 
 instance linearOrder : LinearOrder PosNum where
-  lt := (· < ·)
   lt_iff_le_not_le := by
     intro a b
     transfer_rw
     apply lt_iff_le_not_le
-  le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
     intro a b c
@@ -1404,12 +1408,10 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance linearOrder : LinearOrder ZNum where
-  lt := (· < ·)
   lt_iff_le_not_le := by
     intro a b
     transfer_rw
     apply lt_iff_le_not_le
-  le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
     intro a b c
@@ -1431,9 +1433,7 @@ instance linearOrder : LinearOrder ZNum where
 #align znum.linear_order ZNum.linearOrder
 
 instance addMonoid : AddMonoid ZNum where
-  add := (· + ·)
   add_assoc := by transfer
-  zero := 0
   zero_add := zero_add
   add_zero := add_zero
   nsmul := nsmulRec
@@ -1441,15 +1441,16 @@ instance addMonoid : AddMonoid ZNum where
 instance addCommGroup : AddCommGroup ZNum :=
   { ZNum.addMonoid with
     add_comm := by transfer
-    neg := Neg.neg
     zsmul := zsmulRec
     add_left_neg := by transfer }
 #align znum.add_comm_group ZNum.addCommGroup
 
+instance instNatCast : NatCast ZNum where
+  natCast n := ZNum.ofInt' n
+
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
-    one := 1
-    natCast := fun n => ZNum.ofInt' n
+    toNatCast := instNatCast
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
     natCast_succ := fun n =>
       show (Num.ofNat' (n + 1)).toZNum = (Num.ofNat' n).toZNum + 1 by
@@ -1468,7 +1469,6 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
 
 instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
   { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
-    mul := (· * ·)
     mul_assoc := by transfer
     zero_mul := by transfer
     mul_zero := by transfer

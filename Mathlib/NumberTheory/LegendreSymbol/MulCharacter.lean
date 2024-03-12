@@ -377,10 +377,7 @@ theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
 
 /-- The commutative group structure on `MulChar R R'`. -/
 noncomputable instance commGroup : CommGroup (MulChar R R') :=
-  { one := 1
-    mul := (· * ·)
-    inv := Inv.inv
-    mul_left_inv := inv_mul
+  { mul_left_inv := inv_mul
     mul_assoc := by
       intro χ₁ χ₂ χ₃
       ext a

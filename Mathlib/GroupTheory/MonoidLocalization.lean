@@ -263,8 +263,6 @@ protected irreducible_def npow : ℕ → Localization S → Localization S := (r
 
 @[to_additive]
 instance commMonoid : CommMonoid (Localization S) where
-  mul := (· * ·)
-  one := 1
   mul_assoc x y z := show (x.mul S y).mul S z = x.mul S (y.mul S z) by
     rw [Localization.mul]; apply (r S).commMonoid.mul_assoc
   mul_comm x y := show x.mul S y = y.mul S x by
@@ -2086,8 +2084,6 @@ theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ 
 -- declaring this separately to the instance below makes things faster
 @[to_additive]
 instance partialOrder : PartialOrder (Localization s) where
-  le := (· ≤ ·)
-  lt := (· < ·)
   le_refl a := Localization.induction_on a fun a => le_rfl
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by

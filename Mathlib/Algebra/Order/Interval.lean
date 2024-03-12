@@ -276,8 +276,6 @@ end NonemptyInterval
 
 @[to_additive]
 instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α) where
-  mul := (· * ·)
-  one := 1
   one_mul s :=
     (Option.map₂_coe_left _ _ _).trans <| by simp_rw [one_mul, ← id_def, Option.map_id, id]
   mul_one s :=
@@ -530,8 +528,6 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
 instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     SubtractionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.addCommMonoid with
-    neg := Neg.neg
-    sub := Sub.sub
     sub_eq_add_neg := fun s t => by
       refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
       exact sub_eq_add_neg _ _
@@ -548,8 +544,6 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.commMonoid with
-    inv := Inv.inv
-    div := (· / ·)
     div_eq_mul_inv := fun s t => by
       refine NonemptyInterval.ext _ _ (Prod.ext ?_ ?_) <;>
       exact div_eq_mul_inv _ _
@@ -582,8 +576,6 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
 instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with
-    neg := Neg.neg
-    sub := Sub.sub
     sub_eq_add_neg := by
       rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (sub_eq_add_neg _ _)
     neg_neg := by rintro (_ | s) <;> first |rfl|exact congr_arg some (neg_neg _)
@@ -599,8 +591,6 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
   { Interval.commMonoid with
-    inv := Inv.inv
-    div := (· / ·)
     div_eq_mul_inv := by
       rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (div_eq_mul_inv _ _)
     inv_inv := by rintro (_ | s) <;> first |rfl|exact congr_arg some (inv_inv _)

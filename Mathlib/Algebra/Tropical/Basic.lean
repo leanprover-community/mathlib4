@@ -263,7 +263,6 @@ instance : Add (Tropical R) :=
   ⟨fun x y => trop (min (untrop x) (untrop y))⟩
 
 instance instAddCommSemigroupTropical : AddCommSemigroup (Tropical R) where
-  add := (· + ·)
   add_assoc _ _ _ := untrop_injective (min_assoc _ _ _)
   add_comm _ _ := untrop_injective (min_comm _ _)
 
@@ -286,16 +285,20 @@ theorem trop_add_def (x y : Tropical R) : x + y = trop (min (untrop x) (untrop y
   rfl
 #align tropical.trop_add_def Tropical.trop_add_def
 
+instance instMax : Max (Tropical R) where
+  max := fun a b => trop (max (untrop a) (untrop b))
+
+instance instMin : Min (Tropical R) where
+  min := (· + ·)
+
 instance instLinearOrderTropical : LinearOrder (Tropical R) :=
   { instPartialOrderTropical with
     le_total := fun a b => le_total (untrop a) (untrop b)
     decidableLE := Tropical.decidableLE
-    max := fun a b => trop (max (untrop a) (untrop b))
     max_def := fun a b => untrop_injective (by
-      simp only [max_def, untrop_le_iff, untrop_trop]; split_ifs <;> simp)
-    min := (· + ·)
+      simp only [Max.max, max_def, untrop_le_iff, untrop_trop]; split_ifs <;> simp)
     min_def := fun a b => untrop_injective (by
-      simp only [untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp) }
+      simp only [Min.min, untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp) }
 
 @[simp]
 theorem untrop_sup (x y : Tropical R) : untrop (x ⊔ y) = untrop x ⊔ untrop y :=
@@ -411,12 +414,15 @@ theorem untrop_one [Zero R] : untrop (1 : Tropical R) = 0 :=
   rfl
 #align tropical.untrop_one Tropical.untrop_one
 
+instance instNatCastTropical [Zero R] [Top R] : NatCast (Tropical R) where
+  natCast := fun n => if n = 0 then 0 else 1
+
 instance instAddMonoidWithOneTropical [LinearOrder R] [OrderTop R] [Zero R] :
     AddMonoidWithOne (Tropical R) :=
   { instOneTropical, instAddCommMonoidTropical with
-    natCast := fun n => if n = 0 then 0 else 1
+    toNatCast := instNatCastTropical
     natCast_zero := rfl
-    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp [Nat.cast]) }
+    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp [NatCast.natCast, Nat.cast]) }
 
 instance [Zero R] : Nontrivial (Tropical (WithTop R)) :=
   ⟨⟨0, 1, trop_injective.ne WithTop.top_ne_coe⟩⟩
@@ -438,7 +444,6 @@ theorem untrop_div [Sub R] (x y : Tropical R) : untrop (x / y) = untrop x - untr
 #align tropical.untrop_div Tropical.untrop_div
 
 instance instSemigroupTropical [AddSemigroup R] : Semigroup (Tropical R) where
-  mul := (· * ·)
   mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
 
 instance instCommSemigroupTropical [AddCommSemigroup R] : CommSemigroup (Tropical R) :=
@@ -458,8 +463,6 @@ theorem trop_smul {α : Type*} [SMul α R] (x : R) (n : α) : trop (n • x) = t
 #align tropical.trop_smul Tropical.trop_smul
 
 instance instMulOneClassTropical [AddZeroClass R] : MulOneClass (Tropical R) where
-  one := 1
-  mul := (· * ·)
   one_mul _ := untrop_injective <| zero_add _
   mul_one _ := untrop_injective <| add_zero _
 
@@ -479,7 +482,6 @@ instance instCommMonoidTropical [AddCommMonoid R] : CommMonoid (Tropical R) :=
 
 instance instGroupTropical [AddGroup R] : Group (Tropical R) :=
   { instMonoidTropical with
-    inv := Inv.inv
     div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
     mul_left_inv := fun _ => untrop_injective <| add_left_neg _
     zpow := fun n x => trop <| n • untrop x
@@ -538,8 +540,6 @@ instance covariant_swap_mul_lt [Preorder R] [Add R]
 instance instDistribTropical [LinearOrder R] [Add R] [CovariantClass R R (· + ·) (· ≤ ·)]
     [CovariantClass R R (Function.swap (· + ·)) (· ≤ ·)] :
     Distrib (Tropical R) where
-  mul := (· * ·)
-  add := (· + ·)
   left_distrib _ _ _ := untrop_injective (min_add_add_left _ _ _).symm
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
 

@@ -224,12 +224,15 @@ theorem mk'_linear (f : P1 → P2) (f' : V1 →ₗ[k] V2) (p h) : (mk' f f' p h)
 section SMul
 
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
+
+instance instSMul : SMul R (P1 →ᵃ[k] V2) where
+  smul c f := ⟨c • f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
+
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
 instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
   -- Porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
-  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
-  one_smul f := ext fun p => one_smul _ _
-  mul_smul c₁ c₂ f := ext fun p => mul_smul _ _ _
+  one_smul _ := ext fun _ => one_smul _ _
+  mul_smul _ _ _  := ext fun _ => mul_smul _ _ _
 
 @[simp, norm_cast]
 theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
@@ -303,17 +306,21 @@ instance : AddCommGroup (P1 →ᵃ[k] V2) :=
   coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _)
     fun _ _ => coe_smul _ _
 
-/-- The space of affine maps from `P1` to `P2` is an affine space over the space of affine maps
-from `P1` to the vector space `V2` corresponding to `P2`. -/
-instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
+instance instVAdd : VAdd (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd f g :=
     ⟨fun p => f p +ᵥ g p, f.linear + g.linear,
       fun p v => by simp [vadd_vadd, add_right_comm]⟩
-  zero_vadd f := ext fun p => zero_vadd _ (f p)
-  add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
+
+instance instVSub : VSub (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vsub f g :=
     ⟨fun p => f p -ᵥ g p, f.linear - g.linear, fun p v => by
       simp [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub, sub_add_eq_add_sub]⟩
+
+/-- The space of affine maps from `P1` to `P2` is an affine space over the space of affine maps
+from `P1` to the vector space `V2` corresponding to `P2`. -/
+instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
+  zero_vadd f := ext fun p => zero_vadd _ (f p)
+  add_vadd f₁ f₂ f₃ := ext fun p => add_vadd (f₁ p) (f₂ p) (f₃ p)
   vsub_vadd' f g := ext fun p => vsub_vadd (f p) (g p)
   vadd_vsub' f g := ext fun p => vadd_vsub (f p) (g p)
 
@@ -428,9 +435,13 @@ theorem comp_assoc (f₃₄ : P3 →ᵃ[k] P4) (f₂₃ : P2 →ᵃ[k] P3) (f₁
   rfl
 #align affine_map.comp_assoc AffineMap.comp_assoc
 
-instance : Monoid (P1 →ᵃ[k] P1) where
-  one := id k P1
+instance instMul : Mul (P1 →ᵃ[k] P1) where
   mul := comp
+
+instance instOne : One (P1 →ᵃ[k] P1) where
+  one := id k P1
+
+instance : Monoid (P1 →ᵃ[k] P1) where
   one_mul := id_comp
   mul_one := comp_id
   mul_assoc := comp_assoc

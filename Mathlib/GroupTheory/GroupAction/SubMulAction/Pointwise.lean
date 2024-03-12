@@ -75,8 +75,6 @@ variable [Monoid R] [MulAction R M] [MulOneClass M] [IsScalarTower R M M] [SMulC
 
 -- Porting note: giving the instance the name `mulOneClass`
 instance mulOneClass : MulOneClass (SubMulAction R M) where
-  mul := (· * ·)
-  one := 1
   mul_one a := by
     ext x
     simp only [mem_mul, mem_one, mul_smul_comm, exists_exists_eq_and, mul_one]
@@ -99,9 +97,7 @@ section Semigroup
 variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 
 -- Porting note: giving the instance the name `semiGroup`
-instance semiGroup : Semigroup (SubMulAction R M)
-    where
-  mul := (· * ·)
+instance semiGroup : Semigroup (SubMulAction R M) where
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
 
 end Semigroup

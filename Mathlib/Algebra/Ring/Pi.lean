@@ -32,9 +32,7 @@ variable (x y : ∀ i, f i) (i : I)
 -- Porting note: All these instances used `refine_struct` and `pi_instance_derive_field`
 
 instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
-  { add := (· + ·)
-    mul := (· * ·)
-    left_distrib := by intros; ext; exact mul_add _ _ _
+  { left_distrib := by intros; ext; exact mul_add _ _ _
     right_distrib := by intros; ext; exact add_mul _ _ _}
 #align pi.distrib Pi.distrib
 

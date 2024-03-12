@@ -36,15 +36,21 @@ universe u v
 
 variable {C : Type u} [Groupoid C]
 
-/-- The vertex group at `c`. -/
-@[simps mul one inv]
-instance vertexGroup (c : C) : Group (c ⟶ c) where
+instance instMul (c : C) : Mul (c ⟶ c) where
   mul := fun x y : c ⟶ c => x ≫ y
-  mul_assoc := Category.assoc
+
+instance instOne (c : C) : One (c ⟶ c) where
   one := 𝟙 c
+
+instance instInv (c : C) : Inv (c ⟶ c) where
+  inv := Groupoid.inv
+
+/-- The vertex group at `c`. -/
+@[simps! mul one inv]
+instance vertexGroup (c : C) : Group (c ⟶ c) where
+  mul_assoc := Category.assoc
   one_mul := Category.id_comp
   mul_one := Category.comp_id
-  inv := Groupoid.inv
   mul_left_inv := inv_comp
 #align category_theory.groupoid.vertex_group CategoryTheory.Groupoid.vertexGroup
 
@@ -57,8 +63,7 @@ theorem vertexGroup.inv_eq_inv (c : C) (γ : c ⟶ c) : γ⁻¹ = CategoryTheory
 its endpoints.
 -/
 @[simps]
-def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d)
-    where
+def vertexGroupIsomOfMap {c d : C} (f : c ⟶ d) : (c ⟶ c) ≃* (d ⟶ d) where
   toFun γ := inv f ≫ γ ≫ f
   invFun δ := f ≫ δ ≫ inv f
   left_inv γ := by

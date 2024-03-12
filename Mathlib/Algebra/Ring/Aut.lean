@@ -41,16 +41,21 @@ section mul_add
 
 variable (R : Type*) [Mul R] [Add R]
 
+instance : Mul (RingAut R) where
+  mul := fun g h => RingEquiv.trans h g
+
+instance : One (RingAut R) where
+  one := RingEquiv.refl R
+
+instance : Inv (RingAut R) where
+  inv := RingEquiv.symm
+
 /-- The group operation on automorphisms of a ring is defined by
 `fun g h => RingEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
 instance : Group (RingAut R) :=
-  { mul := fun g h => RingEquiv.trans h g
-    one := RingEquiv.refl R
-    inv := RingEquiv.symm
-    div := _
-    npow := @npowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
+  { npow := @npowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
     zpow :=
       @zpowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
         ⟨RingEquiv.symm⟩
@@ -107,13 +112,12 @@ variable {G R : Type*} [Group G] [Semiring R]
 /-- The tautological action by the group of automorphism of a ring `R` on `R`.-/
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
-  smul := (· <| ·)
   smul_zero := RingEquiv.map_zero
   smul_add := RingEquiv.map_add
   smul_one := RingEquiv.map_one
   smul_mul := RingEquiv.map_mul
   one_smul _ := rfl
-  mul_smul _ _ _ := rfl
+  mul_smul _ _ _ := by rfl
 #align ring_aut.apply_mul_semiring_action RingAut.applyMulSemiringAction
 
 @[simp]

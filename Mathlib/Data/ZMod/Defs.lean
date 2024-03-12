@@ -126,17 +126,37 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   | succ n => convert Fintype.card_fin (n + 1) using 2
 #align zmod.card ZMod.card
 
+instance instAdd (n : ℕ) : Add (ZMod n) where
+  add := Nat.casesOn n (@Add.add Int _) fun n => @Add.add (Fin n.succ) _
+
+instance instZero (n : ℕ) : Zero (ZMod n) where
+  zero := Nat.casesOn n (0 : Int) fun n => (0 : Fin n.succ)
+
+instance instNeg (n : ℕ) : Neg (ZMod n) where
+  neg := Nat.casesOn n (@Neg.neg Int _) fun n => @Neg.neg (Fin n.succ) _
+
+instance instSub (n : ℕ) : Sub (ZMod n) where
+  sub := Nat.casesOn n (@Sub.sub Int _) fun n => @Sub.sub (Fin n.succ) _
+
+instance instMul (n : ℕ) : Mul (ZMod n) where
+  mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
+
+instance instOne (n : ℕ) : One (ZMod n) where
+  one := Nat.casesOn n (1 : Int) fun n => (1 : Fin n.succ)
+
+instance instNatCast (n : ℕ) : NatCast (ZMod n) where
+  natCast := Nat.casesOn n ((↑) : ℕ → ℤ) fun n => ((↑) : ℕ → Fin n.succ)
+
+instance instIntCast (n : ℕ) : IntCast (ZMod n) where
+  intCast := Nat.casesOn n ((↑) : ℤ → ℤ) fun n => ((↑) : ℤ → Fin n.succ)
+
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
 instance commRing (n : ℕ) : CommRing (ZMod n) where
-  add := Nat.casesOn n (@Add.add Int _) fun n => @Add.add (Fin n.succ) _
   add_assoc := Nat.casesOn n (@add_assoc Int _) fun n => @add_assoc (Fin n.succ) _
-  zero := Nat.casesOn n (0 : Int) fun n => (0 : Fin n.succ)
   zero_add := Nat.casesOn n (@zero_add Int _) fun n => @zero_add (Fin n.succ) _
   add_zero := Nat.casesOn n (@add_zero Int _) fun n => @add_zero (Fin n.succ) _
-  neg := Nat.casesOn n (@Neg.neg Int _) fun n => @Neg.neg (Fin n.succ) _
-  sub := Nat.casesOn n (@Sub.sub Int _) fun n => @Sub.sub (Fin n.succ) _
   sub_eq_add_neg := Nat.casesOn n (@sub_eq_add_neg Int _) fun n => @sub_eq_add_neg (Fin n.succ) _
   zsmul := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).zsmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul
@@ -160,15 +180,13 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   -- Porting note: `match` didn't work here
   add_left_neg := Nat.casesOn n (@add_left_neg Int _) fun n => @add_left_neg (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
-  mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
   mul_assoc := Nat.casesOn n (@mul_assoc Int _) fun n => @mul_assoc (Fin n.succ) _
-  one := Nat.casesOn n (1 : Int) fun n => (1 : Fin n.succ)
   one_mul := Nat.casesOn n (@one_mul Int _) fun n => @one_mul (Fin n.succ) _
   mul_one := Nat.casesOn n (@mul_one Int _) fun n => @mul_one (Fin n.succ) _
-  natCast := Nat.casesOn n ((↑) : ℕ → ℤ) fun n => ((↑) : ℕ → Fin n.succ)
+  toNatCast := instNatCast n
   natCast_zero := Nat.casesOn n (@Nat.cast_zero Int _) fun n => @Nat.cast_zero (Fin n.succ) _
   natCast_succ := Nat.casesOn n (@Nat.cast_succ Int _) fun n => @Nat.cast_succ (Fin n.succ) _
-  intCast := Nat.casesOn n ((↑) : ℤ → ℤ) fun n => ((↑) : ℤ → Fin n.succ)
+  toIntCast := instIntCast n
   intCast_ofNat := Nat.casesOn n (@Int.cast_ofNat Int _) fun n => @Int.cast_ofNat (Fin n.succ) _
   intCast_negSucc :=
     Nat.casesOn n (@Int.cast_negSucc Int _) fun n => @Int.cast_negSucc (Fin n.succ) _

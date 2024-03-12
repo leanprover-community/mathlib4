@@ -215,12 +215,16 @@ section Monoid
 
 variable [Monoid α] [MulDistribMulAction α M]
 
+/-- The `smul` on a submonoid corresponding to applying the action to every element. -/
+protected def pointwiseSMul : SMul α (Submonoid M) where
+  smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)
+
 -- todo: add `to_additive`?
 /-- The action on a submonoid corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction α (Submonoid M) where
-  smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)
+  toSMul := Submonoid.pointwiseSMul
   one_smul S := by
     change S.map _ = S
     simpa only [map_one] using S.map_id
@@ -350,11 +354,16 @@ section Monoid
 
 variable [Monoid α] [DistribMulAction α A]
 
+/-- The scalar multiplication on an additive submonoid corresponding to applying the
+action to every element.a -/
+protected def pointwiseSMul : SMul α (AddSubmonoid A) where
+  smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
+
 /-- The action on an additive submonoid corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction α (AddSubmonoid A) where
-  smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
+  toSMul := AddSubmonoid.pointwiseSMul
   one_smul S :=
     (congr_arg (fun f : AddMonoid.End A => S.map f) (MonoidHom.map_one _)).trans S.map_id
   mul_smul _ _ S :=
@@ -633,8 +642,6 @@ variable [NonAssocSemiring R]
 
 /-- A `MulOneClass` structure on additive submonoids of a (possibly, non-associative) semiring. -/
 protected def mulOneClass : MulOneClass (AddSubmonoid R) where
-  one := 1
-  mul := (· * ·)
   one_mul M := by rw [one_eq_closure_one_set, ← closure_eq M, closure_mul_closure, one_mul]
   mul_one M := by rw [one_eq_closure_one_set, ← closure_eq M, closure_mul_closure, mul_one]
 scoped[Pointwise] attribute [instance] AddSubmonoid.mulOneClass
@@ -647,7 +654,6 @@ variable [NonUnitalSemiring R]
 
 /-- Semigroup structure on additive submonoids of a (possibly, non-unital) semiring. -/
 protected def semigroup : Semigroup (AddSubmonoid R) where
-  mul := (· * ·)
   mul_assoc M N P :=
     le_antisymm
       (mul_le.2 fun _mn hmn p hp =>

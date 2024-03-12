@@ -659,10 +659,16 @@ section Automorphisms
 
 variable [Module R M]
 
-instance automorphismGroup : Group (M ≃ₗ[R] M) where
+instance instMul : Mul (M ≃ₗ[R] M) where
   mul f g := g.trans f
+
+instance instOne : One (M ≃ₗ[R] M) where
   one := LinearEquiv.refl R M
+
+instance instInv : Inv (M ≃ₗ[R] M) where
   inv f := f.symm
+
+instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_assoc f g h := rfl
   mul_one f := ext fun x => rfl
   one_mul f := ext fun x => rfl
@@ -694,11 +700,13 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
 #align linear_equiv.automorphism_group.to_linear_map_monoid_hom LinearEquiv.automorphismGroup.toLinearMapMonoidHom
 #align linear_equiv.automorphism_group.to_linear_map_monoid_hom_apply LinearEquiv.automorphismGroup.toLinearMapMonoidHom_apply
 
+instance instSMul : SMul (M ≃ₗ[R] M) M where
+  smul := (· <| ·)
+
 /-- The tautological action by `M ≃ₗ[R] M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
-  smul := (· <| ·)
   smul_zero := LinearEquiv.map_zero
   smul_add := LinearEquiv.map_add
   one_smul _ := rfl

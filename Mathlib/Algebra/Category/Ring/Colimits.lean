@@ -150,7 +150,6 @@ instance ColimitType.instNeg : Neg (ColimitType F) where
   neg := Quotient.map neg Relation.neg_1
 
 instance ColimitType.AddGroup : AddGroup (ColimitType F) where
-  neg := Quotient.map neg Relation.neg_1
   zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
   add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
   add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
@@ -163,12 +162,16 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
 instance InhabitedColimitType : Inhabited <| ColimitType F where
   default := 0
 
+instance ColimitType.instOne : One (ColimitType F) where one := Quotient.mk _ one
+
 instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
-  { ColimitType.AddGroup F with one := Quotient.mk _ one }
+  { ColimitType.AddGroup F with }
+
+instance ColimitType.instMul : Mul (ColimitType F) where
+  mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
 
 instance : CommRing (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
-    mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
     one_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.one_mul _
     mul_one := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_one _
     add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
