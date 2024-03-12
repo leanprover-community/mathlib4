@@ -152,7 +152,7 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
   obtain ⟨x⟩ := hj _ y'
   refine ⟨(map (colimit.ι F i)).obj (j i y'), ?_, ⟨?_⟩⟩
   · simp only [Set.mem_iUnion, Set.mem_image]
-    refine ⟨i, j i y', hjs _ _, rfl⟩
+    exact ⟨i, j i y', hjs _ _, rfl⟩
   · refine ?_ ≫ (map (colimit.ι F i)).map x
     refine homMk (𝟙 A.left) (yonedaEquiv.injective ?_)
     simp [-EmbeddingLike.apply_eq_iff_eq, hy, yonedaEquiv_comp, y']
