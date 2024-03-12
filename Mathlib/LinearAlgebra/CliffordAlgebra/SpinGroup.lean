@@ -25,9 +25,11 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 Here are some discussion about the latent ambiguity of definition :
 https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/172242
 
-The definition of the Lipschitz group `{𝑥 ∈ 𝐶𝑙(𝑉,𝑞) │ 𝑥 𝑖𝑠 𝑖𝑛𝑣𝑒𝑟𝑡𝑖𝑏𝑙𝑒 𝑎𝑛𝑑 𝑥𝑣𝑥⁻¹∈ 𝑉}` is given by:
-• [fulton2004][], Chapter 20.
-• https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
+The definition of the Lipschitz group $\\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \\}$ is given by:
+
+* [fulton2004][], Chapter 20
+* https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
+
 But they presumably form a group only in finite dimensions. So we define `lipschitzGroup` with
 closure of all the invertible elements in the form of `ι Q m`, and we show this definition is
 at least as large as the other definition (See `lipschitzGroup.mem_conjAct_le` and
