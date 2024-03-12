@@ -128,11 +128,12 @@ the sum of base `p` digits of `n`. -/
  theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
      (p - 1) * (multiplicity p n !).get (finite_nat_iff.mpr ⟨hp.ne_one, factorial_pos n⟩) =
      n - (p.digits n).sum := by
-  -- FIXME Adaptation note: `Finset.sum_Ico_add'` is not firing here because of a `0 + 1` vs `1` issue?
-  simp only [multiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
-      ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
-      ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
-  rfl
+  -- Adaptation note: (`nightly-2024-03-11`) `← Finset.sum_Ico_add'` is not firing here because of a
+  -- `0 + 1` vs `1` issue (hence `norm_cast; nth_rw 2 [← zero_add 1]`)
+  simp only [multiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n)]
+  norm_cast; nth_rw 2 [← zero_add 1]
+  simp only [← add_one, ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
+    ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
 /-- The multiplicity of `p` in `(p * (n + 1))!` is one more than the sum
   of the multiplicities of `p` in `(p * n)!` and `n + 1`. -/
