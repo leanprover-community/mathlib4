@@ -982,12 +982,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     · rfl
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_zero]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true]
-      -- FIXME adaptation for nightly-2024-03-11
-      -- Hacky proof, can someone please replace? Obvious simp lemmas seem to be missing.
-      simp only [Nat.bit_true, bit1_zero, Bool.false_eq]
-      erw [Nat.testBit_succ]
-      simp
+    · simp
     · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
     · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
