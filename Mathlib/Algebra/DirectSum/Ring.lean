@@ -183,6 +183,8 @@ def gMulHom {i j} : A i →+ A j →+ A (i + j) where
 #align direct_sum.gmul_hom DirectSum.gMulHom
 
 /-- The multiplication from the `Mul` instance, as a bundled homomorphism. -/
+-- See note [non-reducible instance]
+@[reducible]
 def mulHom : (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
   DirectSum.toAddMonoid fun _ =>
     AddMonoidHom.flip <|
