@@ -26,7 +26,7 @@ Here are some discussion about the latent ambiguity of definition :
 https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/172242
 
 The definition of the Lipschitz group `{𝑥 ∈ 𝐶𝑙(𝑉,𝑞) │ 𝑥 𝑖𝑠 𝑖𝑛𝑣𝑒𝑟𝑡𝑖𝑏𝑙𝑒 𝑎𝑛𝑑 𝑥𝑣𝑥⁻¹∈ 𝑉}` is given by:
-• Fulton, W. and Harris, J., 2004. Representation theory. New York: Springer, p.chapter 20.
+• [fulton2004][], Chapter 20.
 • https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
 But they presumably form a group only in finite dimensions. So we define `lipschitzGroup` with
 closure of all the invertible elements in the form of `ι Q m`, and we show this definition is
