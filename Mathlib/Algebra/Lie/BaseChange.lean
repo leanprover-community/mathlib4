@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import algebra.lie.base_change from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
 

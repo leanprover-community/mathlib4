@@ -169,6 +169,8 @@ instance : AddCommGroup (P ⟶ Q) where
   add_zero := by intros; ext1; simp only [add_app, zero_app, add_zero]
   add_comm := by intros; ext1; simp only [add_app]; apply add_comm
   sub_eq_add_neg := by intros; ext1; simp only [add_app, sub_app, neg_app, sub_eq_add_neg]
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 instance : Preadditive (PresheafOfModules R) where
   add_comp := by intros; ext1; simp only [comp_app, add_app, comp_add]

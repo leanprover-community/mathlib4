@@ -1044,10 +1044,9 @@ theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x 
 
 -- see Note [lower instance priority]
 /-- An emetric space is separated -/
-instance (priority := 100) to_separated : SeparatedSpace γ :=
-  separated_def.2 fun _ _ h =>
-    eq_of_forall_edist_le fun _ ε0 => le_of_lt (h _ (edist_mem_uniformity ε0))
-#align to_separated to_separated
+instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
+  t0 _ _ h := eq_of_edist_eq_zero <| inseparable_iff.1 h
+#align to_separated EMetricSpace.instT0Space
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
@@ -1164,30 +1163,24 @@ end EMetric
 ### Separation quotient
 -/
 
-instance [PseudoEMetricSpace X] : EDist (UniformSpace.SeparationQuotient X) where
-  edist x y := Quotient.liftOn₂' x y edist fun _ _ _ _ hx hy =>
-    edist_congr
-      (EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hx)
-      (EMetric.inseparable_iff.1 <| separationRel_iff_inseparable.1 hy)
+instance [PseudoEMetricSpace X] : EDist (SeparationQuotient X) where
+  edist := SeparationQuotient.lift₂ edist fun _ _ _ _ hx hy =>
+    edist_congr (EMetric.inseparable_iff.1 hx) (EMetric.inseparable_iff.1 hy)
 
-@[simp] theorem UniformSpace.SeparationQuotient.edist_mk [PseudoEMetricSpace X] (x y : X) :
-    @edist (UniformSpace.SeparationQuotient X) _ (Quot.mk _ x) (Quot.mk _ y) = edist x y :=
+@[simp] theorem SeparationQuotient.edist_mk [PseudoEMetricSpace X] (x y : X) :
+    edist (mk x) (mk y) = edist x y :=
   rfl
-#align uniform_space.separation_quotient.edist_mk UniformSpace.SeparationQuotient.edist_mk
+#align uniform_space.separation_quotient.edist_mk SeparationQuotient.edist_mk
 
-instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient X) :=
-  @EMetricSpace.ofT0PseudoEMetricSpace (UniformSpace.SeparationQuotient X)
-    { edist_self := fun x => Quotient.inductionOn' x edist_self,
-      edist_comm := fun x y => Quotient.inductionOn₂' x y edist_comm,
-      edist_triangle := fun x y z => Quotient.inductionOn₃' x y z edist_triangle,
+open SeparationQuotient in
+instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
+  @EMetricSpace.ofT0PseudoEMetricSpace (SeparationQuotient X)
+    { edist_self := surjective_mk.forall.2 edist_self,
+      edist_comm := surjective_mk.forall₂.2 edist_comm,
+      edist_triangle := surjective_mk.forall₃.2 edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans <| iInf_congr fun ε =>
-        iInf_congr fun _ => congr_arg 𝓟 <| by
-          ext ⟨⟨x⟩, ⟨y⟩⟩
-          refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩
-          rintro ⟨⟨x', y'⟩, h', h⟩
-          simp only [Prod.ext_iff] at h
-          rwa [← h.1, ← h.2] } _
+      uniformity_edist := comap_injective (surjective_mk.Prod_map surjective_mk) <| by
+        simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
 
 /-!
 ### `Additive`, `Multiplicative`
