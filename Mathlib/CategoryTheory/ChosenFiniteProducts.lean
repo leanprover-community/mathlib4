@@ -45,10 +45,12 @@ class ChosenFiniteProducts (C : Type u) [Category.{v} C] where
 
 namespace ChosenFiniteProducts
 
-instance (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] : MonoidalCategory C :=
+instance (priority := 100) (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] :
+    MonoidalCategory C :=
   monoidalOfChosenFiniteProducts terminal product
 
-instance (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] : SymmetricCategory C :=
+instance (priority := 100) (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] :
+    SymmetricCategory C :=
   symmetricOfChosenFiniteProducts _ _
 
 variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
@@ -118,7 +120,7 @@ def ofFiniteProducts
   product X Y := Limits.getLimitCone (Limits.pair X Y)
   terminal := Limits.getLimitCone (Functor.empty C)
 
-instance : Limits.HasFiniteProducts C :=
+instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : ∀ (X Y : C), Limits.HasLimit (Limits.pair X Y) := fun _ _ =>
     .mk <| ChosenFiniteProducts.product _ _
   letI : Limits.HasBinaryProducts C := Limits.hasBinaryProducts_of_hasLimit_pair _
