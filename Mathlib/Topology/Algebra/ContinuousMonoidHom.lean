@@ -430,50 +430,50 @@ theorem _root_.MonoidHom.isClosed_range (X Y : Type*) [Group X] [Group Y]
 theorem locallyCompactSpace_of_equicontinuousAt {X Y : Type*}
     [TopologicalSpace X] [Group X] [TopologicalGroup X]
     [UniformSpace Y] [CommGroup Y] [UniformGroup Y] [T0Space Y] [CompactSpace Y]
-    (U : Set X) (V : Set Y)
-    (hUc : IsCompact U)
-    (hVo : V ∈ nhds (1 : Y))
+    (U : Set X) (V : Set Y) (hU : IsCompact U) (hV : V ∈ nhds (1 : Y))
     (h : EquicontinuousAt (fun f : {f : X →* Y | Set.MapsTo f U V} ↦ (f : X → Y)) 1) :
     LocallyCompactSpace (ContinuousMonoidHom X Y) := by
-  obtain ⟨W, hWo, hWV, hWc⟩ := local_compact_nhds hVo
-  replace h : EquicontinuousAt (fun f : {f : X →* Y | Set.MapsTo f U W} ↦ (f : X → Y)) 1 := by
-    let g : {f : X →* Y | Set.MapsTo f U W} → {f : X →* Y | Set.MapsTo f U V} :=
-      fun f ↦ ⟨f, fun x hx ↦ hWV (f.2 hx)⟩
-    exact h.comp g
-  apply TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
+  obtain ⟨W, hWo, hWV, hWc⟩ := local_compact_nhds hV
+
   let S1 : Set (X →* Y) := {f | Set.MapsTo f U W}
   let S2 : Set (ContinuousMonoidHom X Y) := {f | Set.MapsTo f U W}
   let S3 : Set C(X, Y) := (↑) '' S2
   let S4 : Set (X → Y) := (↑) '' S3
-  replace h : Equicontinuous ((↑) : S1 → X → Y) := equicontinuous_of_equicontinuousAt_one _ h
-  have hS : S4 = (↑) '' S1 := by
+
+  replace h : Equicontinuous ((↑) : S1 → X → Y) := by
+    let g : {f : X →* Y | Set.MapsTo f U W} → {f : X →* Y | Set.MapsTo f U V} :=
+      fun f ↦ ⟨f, fun x hx ↦ hWV (f.2 hx)⟩
+    exact equicontinuous_of_equicontinuousAt_one _ (h.comp g)
+
+  have hS4 : S4 = (↑) '' S1 := by
     ext
     constructor
     · rintro ⟨-, ⟨f, hf, rfl⟩, rfl⟩
       exact ⟨f, hf, rfl⟩
     · rintro ⟨f, hf, rfl⟩
       exact ⟨⟨f, h.continuous ⟨f, hf⟩⟩, ⟨⟨f, h.continuous ⟨f, hf⟩⟩, hf, rfl⟩, rfl⟩
+
   replace h : Equicontinuous ((↑) : S3 → X → Y) := by
     rw [equicontinuous_iff_range, ← Set.image_eq_range] at h ⊢
-    rwa [← hS] at h
+    rwa [← hS4] at h
+
+  replace hS4 : S4 = Set.pi U (fun _ ↦ W) ∩ Set.range ((↑) : (X →* Y) → (X → Y)) := by
+    simp_rw [hS4, Set.ext_iff, Set.mem_image, S1, Set.mem_setOf_eq]
+    exact fun f ↦ ⟨fun ⟨g, hg, hf⟩ ↦ hf ▸ ⟨hg, g, rfl⟩, fun ⟨hg, g, hf⟩ ↦ ⟨g, hf ▸ hg, hf⟩⟩
+
+  replace hS4 : IsClosed S4 :=
+    hS4.symm ▸ (isClosed_set_pi (fun _ _ ↦ hWc.isClosed)).inter (MonoidHom.isClosed_range X Y)
+
   have hS2 : (interior S2).Nonempty := by
     let T : Set (ContinuousMonoidHom X Y) := {f | Set.MapsTo f U (interior W)}
-    have h1 : T ⊆ S2 :=
-      fun f hf ↦ Set.image_subset_iff.mp (Set.Subset.trans (Set.mapsTo'.mp hf) interior_subset)
-    have h2 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo hUc isOpen_interior)
-    have h3 : T.Nonempty := ⟨1, fun _ _ ↦ mem_interior_iff_mem_nhds.mpr hWo⟩
-    exact h3.mono (interior_maximal h1 h2)
-  suffices hS4 : IsClosed S4 from
+    have h1 : T.Nonempty := ⟨1, fun _ _ ↦ mem_interior_iff_mem_nhds.mpr hWo⟩
+    have h2 : T ⊆ S2 := fun f hf ↦ hf.mono_right interior_subset
+    have h3 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo hU isOpen_interior)
+    exact h1.mono (interior_maximal h2 h3)
+
+  exact TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
     ⟨⟨S2, (ContinuousMonoidHom.inducing_toContinuousMap X Y).isCompact_iff.mpr
       (arzela_ascoli S3 hS4.isCompact h)⟩, hS2⟩
-  replace hS : S4 = Set.pi U (fun _ ↦ W) ∩ Set.range ((↑) : (X →* Y) → (X → Y)) := by
-    rw [hS]
-    ext f
-    simp only [Set.mem_image, Set.mem_setOf_eq]
-    exact ⟨fun ⟨g, hg, hf⟩ ↦ hf ▸ ⟨hg, g, rfl⟩, fun ⟨hg, g, hf⟩ ↦ ⟨g,
-      show Set.MapsTo g U W from hf ▸ hg, hf⟩⟩
-  rw [hS]
-  exact (isClosed_set_pi (fun _ _ ↦ hWc.isClosed)).inter (MonoidHom.isClosed_range X Y)
 
 open Pointwise
 
