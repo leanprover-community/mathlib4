@@ -263,23 +263,20 @@ theorem comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
 #align has_compact_mul_support.comp_closed_embedding HasCompactMulSupport.comp_closedEmbedding
 #align has_compact_support.comp_closed_embedding HasCompactSupport.comp_closedEmbedding
 
--- FIXME nightly-testing
--- `@[to_additive]` is failing here with
--- application type mismatch
---   OfNat.ofNat 1
--- argument has type
---   OfNat (α → β) 0
--- but function has type
---   [self : OfNat (α → β) 1] → α → β
--- I'm removing `@[to_additive]` for now.
--- @[to_additive]
+@[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  filter_upwards [hf, hf₂] using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
+  /- Adaptation note: (`nightly-2024-03-11`) If we *either* (1) remove the type annotations on the
+  binders in the following `fun` or (2) revert `simp only` to `simp_rw`, `to_additive` fails
+  because an `OfNat.ofNat 1` is not replaced with `0`. Notably, as of this nightly, what used to
+  look like `OfNat.ofNat (nat_lit 1) x` in the proof term now looks like
+  `OfNat.ofNat (OfNat.ofNat (α := ℕ) (nat_lit 1)) x`, and this seems to trip up `to_additive`. -/
+  filter_upwards [hf, hf₂] using fun x (hx : f x = (1 : α → β) x) (hx₂ : f₂ x = (1 : α → γ) x) => by
+    simp only [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
--- #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
+#align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
 
 @[to_additive]
 lemma isCompact_preimage [TopologicalSpace β]
@@ -331,14 +328,11 @@ variable [TopologicalSpace α] [Monoid β]
 
 variable {f f' : α → β} {x : α}
 
--- FIXME nightly-testing
--- `@[to_additive]` is failing here.
--- I'm removing `@[to_additive]` for now.
--- @[to_additive]
+@[to_additive]
 theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
     HasCompactMulSupport (f * f') := hf.comp₂_left hf' (mul_one 1)
 #align has_compact_mul_support.mul HasCompactMulSupport.mul
--- #align has_compac/t_support.add HasCompactSupport.add
+#align has_compact_support.add HasCompactSupport.add
 
 end Monoid
 
