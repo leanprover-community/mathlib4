@@ -130,6 +130,9 @@ lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
 
+lemma sections_ext_iff {F : J ⥤ Type w} {x y : F.sections} : x = y ↔ ∀ j, x.val j = y.val j :=
+  Subtype.ext_iff.trans Function.funext_iff
+
 variable (J)
 
 /-- The functor which sends a functor to types to its sections. -/
