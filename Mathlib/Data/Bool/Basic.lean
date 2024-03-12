@@ -208,8 +208,6 @@ attribute [simp] xor_assoc
 
 #align bool.bxor_ff_left Bool.false_xor
 #align bool.bxor_ff_right Bool.xor_false
-#noalign bool.band_bxor_distrib_left
-#noalign bool.band_bxor_distrib_right
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 #align bool.bxor_iff_ne Bool.xor_iff_ne
