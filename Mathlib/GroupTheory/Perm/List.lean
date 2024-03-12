@@ -364,14 +364,16 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
     · refine' Eq.trans _ hx'
       congr
       simpa using hn
-    · have : k.succ = (k + 1) % (x' :: y' :: l').length := by
-        rw [← Nat.succ_eq_add_one, Nat.mod_eq_of_lt hk']
-      simp_rw [this]
-      rw [← formPerm_apply_nthLe _ hd' k (k.lt_succ_self.trans hk'), ←
-        IH (k.lt_succ_self.trans hk), ← h, formPerm_apply_nthLe _ hd]
-      congr 1
+    · have : k + 1 = (k + 1) % (x' :: y' :: l').length := Nat.mod_eq_of_lt hk' |>.symm
+      rw [nthLe_congr this, nthLe_congr (congrArg (fun p ↦ (p + n) % length (x :: y :: l)) this),
+          ← formPerm_apply_nthLe _ hd' k (k.lt_succ_self.trans hk'), ← IH (k.lt_succ_self.trans hk),
+          ← h, formPerm_apply_nthLe _ hd]
+      beta_reduce
+      apply nthLe_congr
       have h1 : 1 = 1 % (x' :: y' :: l').length := by simp
-      rw [hl, Nat.mod_eq_of_lt hk', h1, ← Nat.add_mod, Nat.succ_add, Nat.succ_eq_add_one]
+      rw [hl, Nat.mod_eq_of_lt hk', h1, ← Nat.add_mod]
+      congr 1
+      omega
 #align list.form_perm_ext_iff List.formPerm_ext_iff
 
 set_option linter.deprecated false in
