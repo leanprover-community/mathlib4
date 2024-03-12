@@ -24,8 +24,6 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance : One ℕ := ⟨Nat.succ Nat.zero⟩
-
 instance : AddMonoid ℕ where
   add_zero := Nat.add_zero
   zero_add := Nat.zero_add
