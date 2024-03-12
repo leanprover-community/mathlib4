@@ -26,7 +26,11 @@ that the underlying profinite space of a `LightProfinite` is light.
 * Prove the Stone duality theorem that `Profinite` is equivalent to the opposite category of
   boolean algebras. Then the property of being light says precisely that the corresponding
   boolean algebra is countable. Maybe constructions of limits and colimits in `LightProfinite`
+<<<<<<< HEAD
   becomes easier when transporting over this equivalence.
+=======
+  become easier when transporting over this equivalence.
+>>>>>>> d1d17722b8 (feat(LightProfinite): being light is a property of a profinite space (#10391))
 
 -/
 
@@ -36,13 +40,21 @@ open CategoryTheory Limits FintypeCat Opposite TopologicalSpace
 
 open scoped Classical
 
+<<<<<<< HEAD
 /-- A profinite space *is light* if it has countably many clopen subsets.  -/
 class Profinite.IsLight (S : Profinite) : Prop where
+=======
+namespace Profinite
+
+/-- A profinite space *is light* if it has countably many clopen subsets.  -/
+class IsLight (S : Profinite) : Prop where
+>>>>>>> d1d17722b8 (feat(LightProfinite): being light is a property of a profinite space (#10391))
   /-- The set of clopens is countable -/
   countable_clopens : Countable (Clopens S)
 
 attribute [instance] Profinite.IsLight.countable_clopens
 
+<<<<<<< HEAD
 instance (X Y : Profinite) [X.IsLight] [Y.IsLight] : (Profinite.of (X × Y)).IsLight where
   countable_clopens := Clopens.countable_prod
 
@@ -96,6 +108,16 @@ instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
         true_and, exists_exists_eq_and, Set.mem_preimage, Set.mem_singleton_iff, exists_eq_left',
         Quotient.eq'']
       exact ⟨d.iseqv.symm , d.iseqv.symm⟩
+=======
+instance instIsLightProd (X Y : Profinite) [X.IsLight] [Y.IsLight] :
+    (Profinite.of (X × Y)).IsLight where
+  countable_clopens := Clopens.countable_prod
+
+instance instCountableDiscreteQuotientOfIsLight (S : Profinite) [S.IsLight] :
+    Countable (DiscreteQuotient S) := (DiscreteQuotient.finsetClopens_inj S).countable
+
+end Profinite
+>>>>>>> d1d17722b8 (feat(LightProfinite): being light is a property of a profinite space (#10391))
 
 namespace LightProfinite
 
@@ -107,8 +129,12 @@ noncomputable def ofIsLight (S : Profinite.{u}) [S.IsLight] : LightProfinite.{u}
 
 instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
   countable_clopens := by
+<<<<<<< HEAD
     refine @Countable.of_equiv _ _ ?_
       ((LocallyConstant.equivClopens (X := S.toProfinite)).trans Clopens.equivSubtype.symm)
+=======
+    refine @Countable.of_equiv _ _ ?_ (LocallyConstant.equivClopens (X := S.toProfinite))
+>>>>>>> d1d17722b8 (feat(LightProfinite): being light is a property of a profinite space (#10391))
     refine @Function.Surjective.countable
       (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
     · apply @instCountableSigma _ _ _ ?_
@@ -188,7 +214,11 @@ def lightProfiniteConeOfHom_π_app (n : ℕᵒᵖ) :
 
 /-- The cone on `lightProfiniteDiagramOfHom` -/
 def lightProfiniteConeOfHom :
+<<<<<<< HEAD
     Cone ((lightProfiniteDiagramOfHom f) ⋙ FintypeCat.toProfinite) where
+=======
+    Cone (lightProfiniteDiagramOfHom f ⋙ FintypeCat.toProfinite) where
+>>>>>>> d1d17722b8 (feat(LightProfinite): being light is a property of a profinite space (#10391))
   pt := X
   π := {
     app := fun n ↦ lightProfiniteConeOfHom_π_app f n
@@ -214,15 +244,26 @@ instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOf
       FintypeCat.toProfinite)).pt ↦ f.val n at h
     erw [ContinuousMap.coe_mk, Subtype.ext_iff] at h
     exact h
+<<<<<<< HEAD
   · suffices : ∃ x, ∀ n, lightProfiniteConeOfHom_π_app f (op n) x = a.val (op n)
     · obtain ⟨x, h⟩ := this
+=======
+  · suffices ∃ x, ∀ n, lightProfiniteConeOfHom_π_app f (op n) x = a.val (op n) by
+      obtain ⟨x, h⟩ := this
+>>>>>>> d1d17722b8 (feat(LightProfinite): being light is a property of a profinite space (#10391))
       use x
       apply Subtype.ext
       apply funext
       intro n
       exact h (unop n)
+<<<<<<< HEAD
     have : Set.Nonempty (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
     · refine IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+=======
+    have : Set.Nonempty
+        (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)}) := by
+      refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
+>>>>>>> d1d17722b8 (feat(LightProfinite): being light is a property of a profinite space (#10391))
         (fun n ↦ (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
           (directed_of_isDirected_le ?_)
         (fun _ ↦ (Set.singleton_nonempty _).preimage fun ⟨a, ⟨b, hb⟩⟩ ↦ ⟨b, Subtype.ext hb⟩)
