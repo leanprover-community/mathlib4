@@ -18,6 +18,7 @@ example := @And.recOn
 example := @False.recOn
 example := @Empty.recOn
 
+example := @Nat.brecOn
 example := @List.brecOn
 example := @Fin2.brecOn
 
