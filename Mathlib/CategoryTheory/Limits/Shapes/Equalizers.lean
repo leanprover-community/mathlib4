@@ -714,13 +714,7 @@ def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
     (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
     (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' := by
   let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
-  refine (IsLimit.equivOfNatIsoOfIso i c c' (Cones.ext e ?_)) hc
-  rintro ⟨j⟩
-  · exact comm₃.symm
-  · simp only [i, Cones.postcompose_obj_pt, Functor.const_obj_obj, parallelPair_obj_one,
-      Cones.postcompose_obj_π, NatTrans.comp_app, Fork.app_one_eq_ι_comp_left,
-      parallelPair_obj_zero, parallelPair.ext_hom_app, Category.assoc]
-    rw [← comm₁, ← Category.assoc, ← comm₃, Category.assoc]
+  exact (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
 -/
