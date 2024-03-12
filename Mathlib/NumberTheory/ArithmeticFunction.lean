@@ -1064,10 +1064,10 @@ theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n =
   · rcases h with (h | h) <;> simp [h]
 #align nat.arithmetic_function.moebius_ne_zero_iff_eq_or ArithmeticFunction.moebius_ne_zero_iff_eq_or
 
-theorem moebius_sq_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
+theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
   rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
 
-theorem abs_moebius_of_squarefree {l : ℕ} (hl : Squarefree l) : |μ l| = 1 := by
+theorem abs_moebius_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : |μ l| = 1 := by
   simp only [moebius_apply_of_squarefree hl, abs_pow, abs_neg, abs_one, one_pow]
 
 theorem moebius_sq {n : ℕ} :
