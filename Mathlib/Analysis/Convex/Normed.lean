@@ -178,4 +178,63 @@ theorem mem_span_of_zero_mem_segment {x y : E} (hx : x ≠ 0) (h : (0 : E) ∈ [
   convert htxy using 2
   ring
 
+variable [TopologicalAddGroup E] [ContinuousSMul ℝ E]
+
+open AffineMap in
+/-- For `x` and `y` in a real vector space, if `x ≠ 0` and `y` is not on the line
+spanned by `x` then `x` and `y` can be joined by a path in the complement of `{0}`.  -/
+theorem joinedIn_compl_zero_of_not_mem_span {x y : E} (hx : x ≠ 0)
+    (hy : y ∉ Submodule.span ℝ ({x} : Set E)) : JoinedIn ({0}ᶜ : Set E) x y := by
+  refine JoinedIn.ofLine lineMap_continuous.continuousOn (lineMap_apply_zero _ _)
+    (lineMap_apply_one _ _) ?_
+  rw [← segment_eq_image_lineMap]
+  exact fun t ht (h' : t = 0) ↦ (mt (mem_span_of_zero_mem_segment hx) hy) (h' ▸ ht)
+
+/-- In a real vector space whose dimension is at least two,
+the complement of `{0}` is path-connected. -/
+theorem isPathConnected_compl_zero_of_two_le_dim (hdim : 2 ≤ Module.rank ℝ E) :
+    IsPathConnected ({0}ᶜ : Set E) := by
+  rw [isPathConnected_iff]
+  constructor
+  · suffices 0 < Module.rank ℝ E by rwa [rank_pos_iff_exists_ne_zero] at this
+    exact lt_of_lt_of_le (by norm_num) hdim
+  · intro x hx y hy
+    by_cases h : y ∈ Submodule.span ℝ ({x} : Set E)
+    · rsuffices ⟨z, hzx⟩ : ∃ z, z ∉ Submodule.span ℝ ({x} : Set E)
+      · have hzy : z ∉ Submodule.span ℝ ({y} : Set E) := fun h' ↦
+          hzx (Submodule.mem_span_singleton_trans h' h)
+        exact (joinedIn_compl_zero_of_not_mem_span hx hzx).trans
+          (joinedIn_compl_zero_of_not_mem_span hy hzy).symm
+      by_contra h'
+      push_neg at h'
+      rw [← Submodule.eq_top_iff'] at h'
+      rw [← rank_top ℝ, ← h'] at hdim
+      suffices (2 : Cardinal) ≤ 1 from not_le_of_lt (by norm_num) this
+      have := hdim.trans (rank_span_le _)
+      rwa [Cardinal.mk_singleton] at this
+    · exact joinedIn_compl_zero_of_not_mem_span hx h
+
+variable {E F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup F] [ContinuousSMul ℝ F]
+
+/-- Let `E` be a linear subspace in a real vector space. If `E` has codimension at
+least two then its complement is path-connected. -/
+theorem isPathConnected_compl_of_two_le_codim {E : Submodule ℝ F}
+    (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) : IsPathConnected (Eᶜ : Set F) := by
+  rcases E.exists_isCompl with ⟨E', hE'⟩
+  refine isPathConnected_compl_of_isPathConnected_compl_zero hE'.symm
+    (isPathConnected_compl_zero_of_two_le_dim ?_)
+  rwa [← (E.quotientEquivOfIsCompl E' hE').rank_eq]
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is connected. -/
+theorem isConnected_compl_of_two_le_codim {E : Submodule ℝ F} (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) :
+    IsConnected (Eᶜ : Set F) :=
+  (isPathConnected_compl_of_two_le_codim hcodim).isConnected
+
+theorem Submodule.connectedComponentIn_eq_self_of_two_le_codim (E : Submodule ℝ F)
+    (hcodim : 2 ≤ Module.rank ℝ (F ⧸ E)) {x : F} (hx : x ∉ E) :
+    connectedComponentIn ((E : Set F)ᶜ) x = (E : Set F)ᶜ :=
+  (isConnected_compl_of_two_le_codim hcodim).2.connectedComponentIn hx
+
 end
