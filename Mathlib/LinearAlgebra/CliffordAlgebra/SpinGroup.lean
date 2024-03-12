@@ -22,9 +22,6 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 
 ## Implementation Notes
 
-Here are some discussion about the latent ambiguity of definition :
-https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/172242
-
 The definition of the Lipschitz group
 $\\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \\}$ is given by:
 
@@ -36,6 +33,9 @@ closure of all the invertible elements in the form of `ι Q m`, and we show this
 at least as large as the other definition (See `lipschitzGroup.mem_conjAct_le` and
 `lipschitzGroup.mem_involute_le`). The reverse statement presumably being true only in finite
 dimensions.
+
+Here are some discussions about the latent ambiguity of definition :
+https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/172242
 
 ## TODO
 
