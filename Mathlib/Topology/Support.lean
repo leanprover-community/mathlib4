@@ -263,14 +263,23 @@ theorem comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
 #align has_compact_mul_support.comp_closed_embedding HasCompactMulSupport.comp_closedEmbedding
 #align has_compact_support.comp_closed_embedding HasCompactSupport.comp_closedEmbedding
 
-@[to_additive]
+-- FIXME nightly-testing
+-- `@[to_additive]` is failing here with
+-- application type mismatch
+--   OfNat.ofNat 1
+-- argument has type
+--   OfNat (α → β) 0
+-- but function has type
+--   [self : OfNat (α → β) 1] → α → β
+-- I'm removing `@[to_additive]` for now.
+-- @[to_additive]
 theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
   filter_upwards [hf, hf₂] using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
-#align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
+-- #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
 
 @[to_additive]
 lemma isCompact_preimage [TopologicalSpace β]
@@ -322,11 +331,14 @@ variable [TopologicalSpace α] [Monoid β]
 
 variable {f f' : α → β} {x : α}
 
-@[to_additive]
+-- FIXME nightly-testing
+-- `@[to_additive]` is failing here.
+-- I'm removing `@[to_additive]` for now.
+-- @[to_additive]
 theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
     HasCompactMulSupport (f * f') := hf.comp₂_left hf' (mul_one 1)
 #align has_compact_mul_support.mul HasCompactMulSupport.mul
-#align has_compact_support.add HasCompactSupport.add
+-- #align has_compac/t_support.add HasCompactSupport.add
 
 end Monoid
 
