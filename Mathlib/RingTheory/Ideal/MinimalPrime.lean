@@ -25,7 +25,8 @@ We provide various results concerning the minimal primes above an ideal
   preimage of some minimal prime over `I`.
 - `Ideal.minimalPrimes_eq_comap`: The minimal primes over `I` are precisely the preimages of
   minimal primes of `R ⧸ I`.
-
+- `Localization.AtPrime.prime_unique_of_minimal`: When localizing at a minimal prime ideal `I`, the resulting
+  ring only has a single prime ideal.
 
 -/
 
@@ -222,3 +223,36 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
 #align ideal.minimal_primes_eq_subsingleton_self Ideal.minimalPrimes_eq_subsingleton_self
 
 end
+
+namespace Localization.AtPrime
+
+variable {R : Type*} [CommSemiring R] {I : Ideal R} [hI : I.IsPrime] (hMin : I ∈ minimalPrimes R)
+
+theorem prime_unique_of_minimal (J : Ideal (Localization I.primeCompl)) [hPrime : J.IsPrime] :
+    J = LocalRing.maximalIdeal (Localization I.primeCompl) := by
+  let i_sub : {p : Ideal (Localization I.primeCompl) // Ideal.IsPrime p} :=
+    ⟨_, Ideal.IsMaximal.isPrime' <| LocalRing.maximalIdeal (Localization (Ideal.primeCompl I))⟩
+  let j_sub : {p : Ideal (Localization I.primeCompl) // Ideal.IsPrime p} := ⟨_, hPrime⟩
+  suffices h: j_sub ≤ i_sub → i_sub ≤ j_sub by
+    apply le_antisymm (LocalRing.le_maximalIdeal hPrime.ne_top)
+    rw [← Subtype.mk_le_mk]
+    apply h
+    exact LocalRing.le_maximalIdeal hPrime.ne_top
+  rw [← (IsLocalization.orderIsoOfPrime I.primeCompl (Localization I.primeCompl)).le_iff_le,
+     ← (IsLocalization.orderIsoOfPrime I.primeCompl (Localization I.primeCompl)).le_iff_le]
+  unfold IsLocalization.orderIsoOfPrime at *
+  simp only [RelIso.coe_fn_mk, Equiv.coe_fn_mk, Subtype.mk_le_mk,
+             Localization.AtPrime.comap_maximalIdeal] at *
+  exact hMin.2 ⟨Ideal.comap_isPrime (algebraMap R (Localization (Ideal.primeCompl I))) J, bot_le⟩
+
+theorem nilpotent_iff_mem_maximal_of_minimal {x : _} :
+    IsNilpotent x ↔ x ∈ LocalRing.maximalIdeal (Localization I.primeCompl) := by
+  rw [nilpotent_iff_mem_prime]
+  exact ⟨(· (LocalRing.maximalIdeal _) (Ideal.IsMaximal.isPrime' _)), fun _ J _ =>
+    by simpa [prime_unique_of_minimal hMin J]⟩
+
+theorem nilpotent_iff_not_unit_of_minimal {x : Localization I.primeCompl} :
+    IsNilpotent x ↔ x ∈ nonunits _ := by
+  simpa only [← LocalRing.mem_maximalIdeal] using nilpotent_iff_mem_maximal_of_minimal hMin
+
+end Localization.AtPrime
