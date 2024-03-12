@@ -228,11 +228,9 @@ elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
 
 end Mathlib.Util
 
--- Adaptation note: nightly-2024-03-11.
--- Currently we can't run `compile_inductive% Nat`,
--- as `Nat.rec` already has a `@[csimp]` lemma.
--- However this means that we don't generate code for `Nat.recOn` and `Nat.brecOn`.
--- compile_inductive% Nat
+-- `Nat.rec` already has a `@[csimp]` lemma in Lean.
+compile_def% Nat.recOn
+compile_def% Nat.brecOn
 compile_inductive% List
 compile_inductive% PUnit
 compile_inductive% PEmpty
