@@ -72,11 +72,7 @@ theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     exact ⟨⟨⟨g.1, hfg₁, hgf₁⟩⟩, ⟨⟨g.2, hfg₂, hgf₂⟩⟩⟩
   · rintro ⟨⟨g₁, hfg₁, hgf₁⟩, ⟨g₂, hfg₂, hgf₂⟩⟩
     dsimp at hfg₁ hgf₁ hfg₂ hgf₂
-    refine' ⟨⟨(g₁, g₂), _, _⟩⟩
-    all_goals
-      simp only [prod_Hom, prod_comp, prod_id, Prod.mk.injEq]
-      constructor <;>
-      assumption
+    exact ⟨⟨(g₁, g₂), by aesop, by aesop⟩⟩
 #align category_theory.is_iso_prod_iff CategoryTheory.isIso_prod_iff
 
 section
