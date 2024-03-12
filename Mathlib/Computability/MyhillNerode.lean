@@ -57,10 +57,8 @@ theorem leftQuotient_accepts' (M : DFA α σ) : leftQuotient M.accepts = M.accep
 theorem finite_leftQuotient_of_dfa [Finite σ] (M : DFA α σ) :
     Set.Finite (Set.range M.accepts.leftQuotient) :=
   leftQuotient_accepts' M ▸
-    Set.Finite.of_surjOn
-      M.acceptsFrom
-      (fun _ ⟨y, hy⟩ => ⟨M.eval y, Set.mem_univ _, hy⟩)
-      Set.finite_univ
+    Set.finite_of_finite_preimage (f := M.acceptsFrom) (Set.toFinite _)
+      fun _ ⟨y, hy⟩ => ⟨DFA.eval M y, hy⟩
 
 /-- The left quotients of a language are the states of an automaton that accepts the language. -/
 def toDFA : DFA α (Set.range L.leftQuotient) where
