@@ -589,7 +589,7 @@ theorem card_complex_embeddings :
       fun φ : { φ // ¬ ComplexEmbedding.IsReal φ } => mkComplex φ = w).card = 2 by
     rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ => mkComplex φ)]
     simp_rw [Finset.sum_const, this, smul_eq_mul, mul_one, Fintype.card, Finset.card_eq_sum_ones,
-      Finset.mul_sum]
+      Finset.mul_sum, Finset.sum_const, smul_eq_mul, mul_one]
   rintro ⟨w, hw⟩
   convert card_filter_mk_eq w
   · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
