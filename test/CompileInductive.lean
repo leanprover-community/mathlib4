@@ -9,7 +9,11 @@ example := @Fin2.rec
 example := @PUnit.rec
 example := @PEmpty.rec
 
-example := @Nat.recOn
+-- Adaptation note: nightly-2024-03-11.
+-- Currently we can't run `compile_inductive% Nat`,
+-- as `Nat.rec` already has a `@[csimp]` lemma.
+-- However this means that we don't generate code for `Nat.recOn` and `Nat.brecOn`.
+-- example := @Nat.recOn
 example := @List.recOn
 example := @Fin2.recOn
 example := @PUnit.recOn
@@ -18,7 +22,11 @@ example := @And.recOn
 example := @False.recOn
 example := @Empty.recOn
 
-example := @Nat.brecOn
+-- Adaptation note: nightly-2024-03-11.
+-- Currently we can't run `compile_inductive% Nat`,
+-- as `Nat.rec` already has a `@[csimp]` lemma.
+-- However this means that we don't generate code for `Nat.recOn` and `Nat.brecOn`.
+-- example := @Nat.brecOn
 example := @List.brecOn
 example := @Fin2.brecOn
 
