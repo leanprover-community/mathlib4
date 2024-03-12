@@ -315,7 +315,8 @@ theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f �
           Iso.inv_hom_id, comp_id, assoc, whiskerLeft_comp, whiskerLeft_rightUnitor_inv,
           bicategoricalComp, Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
           Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_id,
-          comp_whiskerLeft, Iso.inv_hom_id_assoc]; coherence
+          comp_whiskerLeft, Iso.inv_hom_id_assoc]
+      coherence
     _ = 𝟙 _ ⊗≫ f ◁ ε.inv ⊗≫ (η.hom ▷ (f ≫ g) ≫ (f ≫ g) ◁ η.inv) ▷ f ⊗≫ f ◁ ε.hom := by
       rw [← whisker_exchange η.hom (f ◁ ε.inv)]
       simp? [bicategoricalComp] says
@@ -324,9 +325,11 @@ theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f �
           Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_comp, id_whiskerLeft,
           whiskerRight_comp, assoc, id_whiskerRight, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc,
           comp_whiskerLeft, comp_whiskerRight, whisker_assoc, whiskerLeft_comp, pentagon_inv,
-          pentagon_assoc, Iso.cancel_iso_hom_left, Iso.cancel_iso_inv_left]; coherence
+          pentagon_assoc, Iso.cancel_iso_hom_left, Iso.cancel_iso_inv_left]
+      coherence
     _ = 𝟙 _ ⊗≫ f ◁ ε.inv ⊗≫ (η.inv ≫ η.hom) ▷ f ⊗≫ f ◁ ε.hom := by
-      rw [← whisker_exchange η.hom η.inv]; coherence
+      rw [← whisker_exchange η.hom η.inv]
+      coherence
     _ = 𝟙 _ ⊗≫ f ◁ (ε.inv ≫ ε.hom) := by
       rw [Iso.inv_hom_id]; simp [bicategoricalComp]
     _ = _ := by
