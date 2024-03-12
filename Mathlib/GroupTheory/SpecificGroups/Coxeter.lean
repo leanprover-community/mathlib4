@@ -493,7 +493,7 @@ def simpleReflection (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
 
 local prefix:100 "s" => cs.simpleReflection
 
-private lemma coxeterGroup_simpleReflection_mul_self (i : B) :
+private lemma coxeterGroup_simple_mul_self (i : B) :
     (QuotientGroup.mk ((FreeGroup.of i) * (FreeGroup.of i)) : CoxeterGroup M) = 1 := by
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ CoxeterGroup.Relations.toSet M := by
     use (i, i)
@@ -502,20 +502,20 @@ private lemma coxeterGroup_simpleReflection_mul_self (i : B) :
   apply (QuotientGroup.eq_one_iff _).mpr
   exact Subgroup.subset_normalClosure this
 
-@[simp] theorem simpleReflection_mul_self (i : B) : (s i) * (s i) = 1 := by
+@[simp] theorem simple_mul_self (i : B) : (s i) * (s i) = 1 := by
   dsimp [simpleReflection]
   rw [← _root_.map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul]
-  rw [cs.coxeterGroup_simpleReflection_mul_self i]
+  rw [cs.coxeterGroup_simple_mul_self i]
   simp
 
-@[simp] theorem simpleReflection_sqr (i : B) : (s i) ^ 2 = 1 := by
+@[simp] theorem simple_sqr (i : B) : (s i) ^ 2 = 1 := by
   rw [pow_two]
-  exact cs.simpleReflection_mul_self i
+  exact cs.simple_mul_self i
 
-@[simp] theorem simpleReflection_inv (i : B) : (s i)⁻¹ = s i :=
-  (eq_inv_of_mul_eq_one_right (cs.simpleReflection_mul_self i)).symm
+@[simp] theorem simple_inv (i : B) : (s i)⁻¹ = s i :=
+  (eq_inv_of_mul_eq_one_right (cs.simple_mul_self i)).symm
 
-@[simp] theorem simpleReflection_mul_pow (i i' : B) : ((s i) * (s i')) ^ M i i' = 1 := by
+@[simp] theorem simple_mul_pow (i i' : B) : ((s i) * (s i')) ^ M i i' = 1 := by
   dsimp [simpleReflection]
   rw [← _root_.map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
       ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow]
@@ -618,7 +618,7 @@ private lemma freeGroup_wordProd (ω : List (B × Bool)) :
       rw [PresentedGroup.of]
       apply eq_inv_of_mul_eq_one_right
       rw [← QuotientGroup.mk_mul]
-      exact cs.coxeterGroup_simpleReflection_mul_self i
+      exact cs.coxeterGroup_simple_mul_self i
     · rfl
 
 theorem wordProd_surjective : Surjective (cs.wordProd) := by
@@ -789,7 +789,7 @@ theorem length_mul_simple (w : W) (i : B) :
     · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
       contradiction
 
-  rcases Nat.ne_iff_lt_or_gt.mp h with less | more
+  rcases Nat.ne_iff_lt_or_gt.mp h with less | greater
   · right
     linarith
   · left
@@ -940,11 +940,11 @@ theorem standardBilinForm_symm (M : Matrix B B ℕ) : LinearMap.IsSymm (standard
 -/
 def orthoReflection (M : Matrix B B ℕ) (v : B →₀ ℝ) : (B →₀ ℝ) →ₗ[ℝ] (B →₀ ℝ) := sorry
 
-theorem reflection_sqr_eq_id (M : Matrix B B ℕ) (v : B →₀ ℝ) :
+theorem orthoReflection_sqr_eq_id (M : Matrix B B ℕ) (v : B →₀ ℝ) :
     (orthoReflection M v) * (orthoReflection M v) = LinearMap.id := by
   sorry
 
-theorem reflection_eq_iff (M : Matrix B B ℕ) (v v' : B →₀ ℝ) (hv : ⟪v, v⟫ ≠ 0):
+theorem orthoReflection_eq_iff (M : Matrix B B ℕ) (v v' : B →₀ ℝ) (hv : ⟪v, v⟫ ≠ 0):
     orthoReflection M v = orthoReflection M v' ↔ ∃ μ : ℝ, v' = μ • v := by
   sorry
 
@@ -955,10 +955,10 @@ def standardGeometricRepresentation (cs : CoxeterSystem M W) : Representation �
 
 alias SGR := standardGeometricRepresentation
 
-theorem SGR_simpleReflection (i : B) : cs.SGR (s i) = orthoReflection M (α i) := by
+theorem SGR_simple (i : B) : cs.SGR (s i) = orthoReflection M (α i) := by
   sorry
 
-theorem SGR_simpleReflection_simpleRoot (i : B) : cs.SGR (s i) (α i) = -α i := by
+theorem SGR_simple_simpleRoot (i : B) : cs.SGR (s i) (α i) = -α i := by
   sorry
 
 theorem SGR_bilin_eq_bilin (w : W) (v v' : B →₀ ℝ) : ⟪cs.SGR w v, cs.SGR w v'⟫ = ⟪v, v'⟫ := by
