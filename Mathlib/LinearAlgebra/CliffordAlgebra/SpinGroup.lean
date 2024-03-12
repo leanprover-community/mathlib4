@@ -25,7 +25,8 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 Here are some discussion about the latent ambiguity of definition :
 https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/172242
 
-The definition of the Lipschitz group $\\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \\}$ is given by:
+The definition of the Lipschitz group
+$\\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \\}$ is given by:
 
 * [fulton2004][], Chapter 20
 * https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
