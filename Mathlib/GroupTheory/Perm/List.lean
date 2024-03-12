@@ -364,16 +364,12 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
     · refine' Eq.trans _ hx'
       congr
       simpa using hn
-    · have : k + 1 = (k + 1) % (x' :: y' :: l').length := Nat.mod_eq_of_lt hk' |>.symm
-      rw [nthLe_congr this, nthLe_congr (congrArg (fun p ↦ (p + n) % length (x :: y :: l)) this),
-          ← formPerm_apply_nthLe _ hd' k (k.lt_succ_self.trans hk'), ← IH (k.lt_succ_self.trans hk),
-          ← h, formPerm_apply_nthLe _ hd]
-      beta_reduce
-      apply nthLe_congr
-      have h1 : 1 = 1 % (x' :: y' :: l').length := by simp
-      rw [hl, Nat.mod_eq_of_lt hk', h1, ← Nat.add_mod]
+    · conv => congr <;> · arg 2; rw [← Nat.mod_eq_of_lt hk']
+      rw [← formPerm_apply_nthLe _ hd' k (k.lt_succ_self.trans hk'),
+        ← IH (k.lt_succ_self.trans hk), ← h, formPerm_apply_nthLe _ hd]
       congr 1
-      omega
+      rw [hl, Nat.mod_eq_of_lt hk', add_right_comm]
+      apply Nat.add_mod
 #align list.form_perm_ext_iff List.formPerm_ext_iff
 
 set_option linter.deprecated false in
