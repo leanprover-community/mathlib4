@@ -26,12 +26,10 @@ We prove the following facts:
   is bounded.
 -/
 
-
 variable {ι : Type*} {E P : Type*}
 
 open Metric Set
-
-open Pointwise Convex
+open scoped Convex
 
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
 variable {s t : Set E}
@@ -155,3 +153,29 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
 #align is_connected_set_of_same_ray_and_ne_zero isConnected_setOf_sameRay_and_ne_zero
+
+section
+
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
+
+/-- For `x` and `y` in a real vector space, if `x ≠ 0` and `0` is in the segment from
+`x` to `y` then `y` is on the line spanned by `x`.  -/
+theorem mem_span_of_zero_mem_segment {x y : E} (hx : x ≠ 0) (h : (0 : E) ∈ [x -[ℝ] y]) :
+    y ∈ Submodule.span ℝ ({x} : Set E) := by
+  rw [segment_eq_image] at h
+  rcases h with ⟨t, -, htxy⟩
+  rw [Submodule.mem_span_singleton]
+  dsimp only at htxy
+  use (t - 1) / t
+  have : t ≠ 0 := by
+    intro h
+    rw [h] at htxy
+    refine hx ?_
+    simpa using htxy
+  rw [← smul_eq_zero_iff_right (neg_ne_zero.mpr <| inv_ne_zero this), smul_add, smul_smul, smul_smul,
+    ← neg_one_mul, mul_assoc, mul_assoc, inv_mul_cancel this, mul_one, neg_one_smul,
+    add_neg_eq_zero] at htxy
+  convert htxy using 2
+  ring
+
+end
