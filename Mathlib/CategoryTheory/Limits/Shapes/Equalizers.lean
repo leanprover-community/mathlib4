@@ -712,9 +712,9 @@ def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
     (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
     (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
     (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
-    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' := by
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
   let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
-  exact (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
+  (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
 -/
