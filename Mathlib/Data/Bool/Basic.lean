@@ -321,4 +321,7 @@ protected def carry (x y c : Bool) :=
   x && y || x && c || y && c
 #align bitvec.carry Bool.carry
 
+#align bool.band_bxor_distrib_left Bool.and_xor_distrib_left
+#align bool.band_bxor_distrib_right Bool.and_xor_distrib_right
+
 end Bool
