@@ -504,7 +504,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
 
 open Module
 
-/-- A `K`-basis of `E` that spans `L` over `ℤ`, see `Zlattice.basis_span`. -/
+/-- A basis of `E` that spans `L` over `ℤ`, see `Zlattice.basis_span`. -/
 def Zlattice.basis : Basis (Free.ChooseBasisIndex K E) K E := by
   have : Finite ℤ L := module_finite K hs
   have : Free ℤ L := module_free K hs
