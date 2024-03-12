@@ -1344,8 +1344,6 @@ theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
   ⟨fun h => Function.LeftInverse.injective of_to_int' h, congr_arg _⟩
 #align znum.to_int_inj ZNum.to_int_inj
 
--- false positive for `nonTerminalSimp`
-set_option linter.nonTerminalSimp false in
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
   | pos a, pos b => by

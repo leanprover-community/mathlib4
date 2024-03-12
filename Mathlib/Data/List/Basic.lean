@@ -1646,12 +1646,11 @@ theorem nthLe_insertNth_add_succ : ∀ (l : List α) (x : α) (n k : ℕ) (hk' :
   @get_insertNth_add_succ _
 #align list.nth_le_insert_nth_add_succ List.nthLe_insertNth_add_succ
 
-set_option linter.unnecessarySimpa false in
 theorem insertNth_injective (n : ℕ) (x : α) : Function.Injective (insertNth n x) := by
   induction' n with n IH
   · have : insertNth 0 x = cons x := funext fun _ => rfl
     simp [this]
-  · rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
+  · rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> aesop
 #align list.insert_nth_injective List.insertNth_injective
 
 end InsertNth

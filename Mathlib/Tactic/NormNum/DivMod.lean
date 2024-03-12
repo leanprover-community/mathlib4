@@ -25,8 +25,6 @@ open Qq
 lemma isInt_ediv_zero : ∀ {a b r : ℤ}, IsInt a r → IsNat b (nat_lit 0) → IsNat (a / b) (nat_lit 0)
   | _, _, _, ⟨rfl⟩, ⟨rfl⟩ => ⟨by simp [Int.ediv_zero]⟩
 
--- false positive for `nonTerminalSimp`
-set_option linter.nonTerminalSimp false in
 lemma isInt_ediv {a b q m a' : ℤ} {b' r : ℕ}
     (ha : IsInt a a') (hb : IsNat b b')
     (hm : q * b' = m) (h : r + m = a') (h₂ : Nat.blt r b' = true) :
@@ -89,8 +87,6 @@ where
 lemma isInt_emod_zero : ∀ {a b r : ℤ}, IsInt a r → IsNat b (nat_lit 0) → IsInt (a % b) r
   | _, _, _, e, ⟨rfl⟩ => by simp [e]
 
--- false positive for `nonTerminalSimp`
-set_option linter.nonTerminalSimp false in
 lemma isInt_emod {a b q m a' : ℤ} {b' r : ℕ}
     (ha : IsInt a a') (hb : IsNat b b')
     (hm : q * b' = m) (h : r + m = a') (h₂ : Nat.blt r b' = true) :
