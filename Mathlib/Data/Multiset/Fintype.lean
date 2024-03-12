@@ -70,12 +70,12 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 -- Porting note: syntactic equality
 #noalign multiset.fst_coe_eq_coe
 
-@[simp]
-theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
-  cases x
-  cases y
-  rfl
-#align multiset.coe_eq Multiset.coe_eq
+-- @[simp]
+-- theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
+--   cases x
+--   cases y
+--   rfl
+-- #align multiset.coe_eq Multiset.coe_eq
 
 -- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
