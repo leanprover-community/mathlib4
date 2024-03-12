@@ -7,7 +7,6 @@ This file is to a certain extent based on `quotient_module.lean` by Johannes Hö
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.GroupTheory.Subgroup.Pointwise
 
