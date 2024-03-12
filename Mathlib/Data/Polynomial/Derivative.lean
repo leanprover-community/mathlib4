@@ -309,7 +309,6 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
   simp only [Nat.add_succ_sub_one, add_tsub_cancel_right]
   rw [add_assoc, add_comm n 1]
 #align polynomial.derivative_mul Polynomial.derivative_mul
-#align polynomial.derivative_mul Polynomial.derivative_mul
 
 theorem derivative_eval (p : R[X]) (x : R) :
     p.derivative.eval x = p.sum fun n a => a * n * x ^ (n - 1) := by
