@@ -182,7 +182,7 @@ theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
   { ULift.one, ULift.addMonoid with
-      natCast := fun n => ⟨n⟩
+      natCast := (⟨·⟩)
       natCast_zero := congr_arg ULift.up Nat.cast_zero,
       natCast_succ := fun _ => congr_arg ULift.up (Nat.cast_succ _) }
 #align ulift.add_monoid_with_one ULift.addMonoidWithOne
@@ -222,7 +222,7 @@ instance commGroup [CommGroup α] : CommGroup (ULift α) :=
 
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
   { ULift.addMonoidWithOne, ULift.addGroup with
-      intCast := fun n => ⟨n⟩,
+      intCast := (⟨·⟩),
       intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_ofNat _),
       intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
 #align ulift.add_group_with_one ULift.addGroupWithOne
