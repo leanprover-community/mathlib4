@@ -41,15 +41,15 @@ universe u v
 section AddCharDef
 
 -- The domain of our additive characters
-variable (A : Type u) [AddMonoid A]
+variable (A : Type u) [AddZeroClass A]
 
 -- The target
-variable (M : Type v) [Monoid M]
+variable (M : Type v) [MulOneClass M]
 
 /-- Define `AddChar A M` as `(Multiplicative A) →* M`.
-The definition works for an additive monoid `A` and a monoid `M`,
-but we will restrict to the case that both are commutative rings for most applications.
-The trivial additive character (sending everything to `1`) is `(1 : AddChar A M).` -/
+We put only the typeclasses needed for the definition to work, although we will restrict to the
+case that both are commutative rings for most applications. The trivial additive character (sending
+everything to `1`) is `(1 : AddChar A M).` -/
 def AddChar : Type max u v :=
   Multiplicative A →* M
 #align add_char AddChar
@@ -61,33 +61,22 @@ namespace AddChar
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section DerivedInstances
 
-variable (A : Type u) [AddMonoid A] (M : Type v) [CommMonoid M]
+variable (A : Type u) (M : Type v)
 
-instance : CommMonoid (AddChar A M) :=
+instance [AddZeroClass A] [CommMonoid M] : CommMonoid (AddChar A M) :=
   inferInstanceAs (CommMonoid (Multiplicative A →* M))
 
-instance : Inhabited (AddChar A M) :=
+instance [AddZeroClass A] [Monoid M] : Inhabited (AddChar A M) :=
   inferInstanceAs (Inhabited (Multiplicative A →* M))
 
 end DerivedInstances
 
-section Constructor
-
-/-- Construct an `AddChar` from a function satisfying `f (a + b) = f a * f b` and `f 0 = 1`. -/
-def mk {A M : Type*} [AddMonoid A] [Monoid M] {f : A → M}
-    (map_add' : ∀ a b : A, f (a + b) = f a * f b) (map_zero' : f 0 = 1):
-    AddChar A M where
-  map_one' := map_zero'
-  map_mul' := map_add'
-
-end Constructor
-
 section CoeToFun
 
-variable {A : Type u} [AddMonoid A] {M : Type v} [CommMonoid M]
+variable {A : Type u} [AddMonoid A] {M : Type v}
 
 /-- Interpret an additive character as a monoid homomorphism. -/
-def toMonoidHom : AddChar A M → Multiplicative A →* M :=
+def toMonoidHom [Monoid M] : AddChar A M → Multiplicative A →* M :=
   id
 #align add_char.to_monoid_hom AddChar.toMonoidHom
 
@@ -96,48 +85,65 @@ open Multiplicative
 /-- Define coercion to a function so that it includes the move from `A` to `Multiplicative A`.
 After we have proved the API lemmas below, we don't need to worry about writing `ofAdd a`
 when we want to apply an additive character. -/
-instance instFunLike : FunLike (AddChar A M) A M :=
+instance instFunLike [Monoid M] : FunLike (AddChar A M) A M :=
   inferInstanceAs (FunLike (Multiplicative A →* M) A M)
 #noalign add_char.has_coe_to_fun
 
-theorem coe_to_fun_apply (ψ : AddChar A M) (a : A) : ψ a = ψ.toMonoidHom (ofAdd a) :=
+theorem coe_to_fun_apply [Monoid M] (ψ : AddChar A M) (a : A) : ψ a = ψ.toMonoidHom (ofAdd a) :=
   rfl
 #align add_char.coe_to_fun_apply AddChar.coe_to_fun_apply
 
 -- Porting note: added
-theorem mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a :=
+theorem mul_apply [CommMonoid M] (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a :=
   rfl
 
 -- Porting note: added
 @[simp]
-theorem one_apply (a : A) : (1 : AddChar A M) a = 1 := rfl
+theorem one_apply [CommMonoid M] (a : A) : (1 : AddChar A M) a = 1 := rfl
 
 -- this instance was a bad idea and conflicted with `instFunLike` above
 #noalign add_char.monoid_hom_class
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
 @[ext]
-theorem ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
+theorem ext [Monoid M] (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
   MonoidHom.ext h
 
 /-- An additive character maps `0` to `1`. -/
 @[simp]
-theorem map_zero_one (ψ : AddChar A M) : ψ 0 = 1 := by rw [coe_to_fun_apply, ofAdd_zero, map_one]
+theorem map_zero_one [Monoid M] (ψ : AddChar A M) : ψ 0 = 1 := by
+  rw [coe_to_fun_apply, ofAdd_zero, map_one]
 #align add_char.map_zero_one AddChar.map_zero_one
 
 /-- An additive character maps sums to products. -/
 @[simp]
-theorem map_add_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := by
+theorem map_add_mul [Monoid M] (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := by
   rw [coe_to_fun_apply, coe_to_fun_apply _ x, coe_to_fun_apply _ y, ofAdd_add, map_mul]
 #align add_char.map_add_mul AddChar.map_add_mul
 
 /-- An additive character maps multiples by natural numbers to powers. -/
 @[simp]
-theorem map_nsmul_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n := by
+theorem map_nsmul_pow [Monoid M] (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n := by
   rw [coe_to_fun_apply, coe_to_fun_apply _ x, ofAdd_nsmul, map_pow]
 #align add_char.map_nsmul_pow AddChar.map_nsmul_pow
 
 end CoeToFun
+
+section Constructor
+
+/-- Construct an `AddChar` from a function satisfying `f (a + b) = f a * f b` and `f 0 = 1`. -/
+def mk {A M : Type*} [AddMonoid A] [Monoid M] {f : A → M}
+    (map_add_mul' : ∀ a b : A, f (a + b) = f a * f b) (map_zero_one' : f 0 = 1) :
+    AddChar A M where
+  map_one' := map_zero_one'
+  map_mul' := map_add_mul'
+
+@[simp]
+lemma coe_mk {A M : Type*} [AddMonoid A] [Monoid M] {f : A → M}
+    (map_add_mul' : ∀ a b : A, f (a + b) = f a * f b) (map_zero_one' : f 0 = 1) :
+    (mk map_add_mul' map_zero_one' : A → M) = f := by rfl
+
+end Constructor
 
 section GroupStructure
 
