@@ -20,6 +20,12 @@ Given a category with such an instance, we also provide the associated
 symmetric monoidal structure so that one can write `X ⊗ Y` for the explicit
 binary product and `𝟙_ C` for the explicit terminal object.
 
+# Projects
+
+- Construct an instance of chosen finite products in the category of affine scheme, using
+  the tensor product.
+- Construct chosen finite products in other categories appearing "in nature".
+
 -/
 
 namespace CategoryTheory
@@ -42,7 +48,7 @@ class ChosenFiniteProducts (C : Type u) [Category.{v} C] where
 namespace ChosenFiniteProducts
 
 instance (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] : MonoidalCategory C :=
-  monoidalOfChosenFiniteProducts ChosenFiniteProducts.terminal ChosenFiniteProducts.product
+  monoidalOfChosenFiniteProducts terminal product
 
 instance (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] : SymmetricCategory C :=
   symmetricOfChosenFiniteProducts _ _
@@ -98,7 +104,7 @@ lemma lift_snd {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ snd _ _ = 
   simp [lift, snd]
 
 @[ext 1050]
-lemma lift_unique {T X Y : C} (f g : T ⟶ X ⊗ Y)
+lemma hom_ext {T X Y : C} (f g : T ⟶ X ⊗ Y)
     (h_fst : f ≫ fst _ _ = g ≫ fst _ _)
     (h_snd : f ≫ snd _ _ = g ≫ snd _ _) :
     f = g :=
