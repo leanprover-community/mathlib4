@@ -967,6 +967,9 @@ section LocalizationAtMinimal
 
 variable {I : Ideal R} [hI : I.IsPrime]
 
+/--
+Localizations at minimal primes have single-point prime spectra.
+-/
 def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) :
     Unique (PrimeSpectrum (Localization.AtPrime I)) where
   default :=
