@@ -19,9 +19,8 @@ is any primitive `3`-rd root of unity in `K`.
 
 * `IsCyclotomicExtension.Rat.Three.Units.mem.eq_one_or_neg_one_of_unit_of_congruent`: Given a unit
 `u : (𝓞 K)ˣ`, where `K` is a number field such that `IsCyclotomicExtension {3} ℚ K`, if `u` is
-congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
-
-This is a special case of the so-called *Kummer's lemma*.
+congruent to an integer modulo `3`, then `u = 1` or `u = -1`. This is a special case of the
+so-called *Kummer's lemma*.
 
 -/
 
