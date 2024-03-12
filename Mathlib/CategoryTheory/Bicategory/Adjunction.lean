@@ -115,7 +115,8 @@ theorem rightZigzag_idempotent_of_left_triangle
           leftZigzag, triangle]
       coherence
     _ = g ◁ η ⊗≫ ε ▷ g := by
-      rw [h]; simp? [bicategoricalComp] says
+      rw [h]
+      simp? [bicategoricalComp] says
         simp only [bicategoricalComp,
           Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
           Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_comp,
@@ -186,7 +187,8 @@ theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂)
     _ = 𝟙 _ ⊗≫
           (leftZigzag adj₁.unit adj₁.counit) ▷ f₂ ⊗≫
             f₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ⊗≫ 𝟙 _ := by
-      rw [← whisker_exchange]; simp? [bicategoricalComp] says
+      rw [← whisker_exchange]
+      simp? [bicategoricalComp] says
         simp only [bicategoricalComp,
           Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
           Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_whiskerRight, id_comp,
@@ -218,7 +220,8 @@ theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂
     _ = 𝟙 _ ⊗≫
           g₂ ◁ (rightZigzag adj₁.unit adj₁.counit) ⊗≫
             (rightZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ 𝟙 _ := by
-      rw [whisker_exchange]; simp? [bicategoricalComp] says
+      rw [whisker_exchange];
+      simp? [bicategoricalComp] says
         simp only [bicategoricalComp,
           Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
           Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_comp,
