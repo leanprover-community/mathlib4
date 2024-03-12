@@ -84,7 +84,7 @@ variable (X : GradedObject (I₁ × I₂) C)
 /-- Constructor for bicomplexes taking as inputs a graded object, horizontal differentials
 and vertical differentials satisfying suitable relations. -/
 @[simps]
-def ofGradedObject  :
+def ofGradedObject :
     HomologicalComplex₂ C c₁ c₂ where
   X i₁ :=
     { X := fun i₂ => X ⟨i₁, i₂⟩
