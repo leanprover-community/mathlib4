@@ -533,7 +533,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R] [@DecidableRel R[X] (·
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
       if h0 : p = 0 then 0 else (multiplicity (X - C a) p).get (multiplicity_X_sub_C_finite a h0) :=
-  by simp [multiplicity, rootMultiplicity, Part.Dom]; congr; funext; congr
+  by simp only [multiplicity, rootMultiplicity, Part.Dom]; congr; funext; congr
 #align polynomial.root_multiplicity_eq_multiplicity Polynomial.rootMultiplicity_eq_multiplicity
 
 @[simp]

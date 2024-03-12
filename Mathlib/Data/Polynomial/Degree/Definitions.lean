@@ -573,7 +573,7 @@ def nextCoeff (p : R[X]) : R :=
 
 lemma nextCoeff_eq_zero :
     p.nextCoeff = 0 ↔ p.natDegree = 0 ∨ 0 < p.natDegree ∧ p.coeff (p.natDegree - 1) = 0 := by
-  simp [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; aesop
+  rw [nextCoeff, or_iff_not_imp_left, pos_iff_ne_zero]; aesop
 
 lemma nextCoeff_ne_zero : p.nextCoeff ≠ 0 ↔ p.natDegree ≠ 0 ∧ p.coeff (p.natDegree - 1) ≠ 0 := by
   simp [nextCoeff]
@@ -614,10 +614,8 @@ theorem ne_zero_of_natDegree_gt {n : ℕ} (h : n < natDegree p) : p ≠ 0 := fun
 
 theorem degree_lt_degree (h : natDegree p < natDegree q) : degree p < degree q := by
   by_cases hp : p = 0
-  · simp [hp]
-    rw [bot_lt_iff_ne_bot]
-    intro hq
-    simp [hp, degree_eq_bot.mp hq, lt_irrefl] at h
+  · rw [hp, degree_zero, bot_lt_iff_ne_bot]
+    aesop
   · rwa [degree_eq_natDegree hp, degree_eq_natDegree <| ne_zero_of_natDegree_gt h, Nat.cast_lt]
 #align polynomial.degree_lt_degree Polynomial.degree_lt_degree
 

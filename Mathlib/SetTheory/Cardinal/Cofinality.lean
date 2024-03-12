@@ -273,9 +273,7 @@ theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o
       let ⟨⟨b⟩, bs, br⟩ := H ⟨a⟩
       ⟨b, bs, br⟩
   · rcases cof_eq r with ⟨S, H, e'⟩
-    have : #(ULift.down.{u, v} ⁻¹' S) ≤ Cardinal.lift.{u, v} #S :=
-      ⟨⟨fun ⟨⟨x⟩, h⟩ => ⟨⟨x, h⟩⟩, fun ⟨⟨x⟩, h₁⟩ ⟨⟨y⟩, h₂⟩ e => by
-          simp at e; congr⟩⟩
+    have : #(ULift.down.{u, v} ⁻¹' S) ≤ Cardinal.lift.{u, v} #S := by simp_all
     rw [e'] at this
     refine' (cof_type_le _).trans this
     exact fun ⟨a⟩ =>
@@ -525,9 +523,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
             Quotient.sound
               ⟨RelIso.ofSurjective (RelEmbedding.ofMonotone _ fun x y => _) fun x => _⟩⟩
       · apply Sum.rec <;> [exact Subtype.val; exact fun _ => a]
-      · rcases x with (x | ⟨⟨⟨⟩⟩⟩) <;> rcases y with (y | ⟨⟨⟨⟩⟩⟩) <;>
-          simp [Subrel, Order.Preimage, EmptyRelation]
-        exact x.2
+      · aesop
       · suffices r x a ∨ ∃ _ : PUnit.{u}, ↑a = x by
           convert this
           dsimp [RelEmbedding.ofMonotone]; simp
@@ -707,14 +703,13 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
   rcases zero_or_succ_or_limit o with (rfl | ⟨o, rfl⟩ | l)
   · simp [not_zero_isLimit, Cardinal.aleph0_ne_zero]
   · simp [not_succ_isLimit, Cardinal.one_lt_aleph0]
-  · simp [l]
+  · simp only [l, iff_true]
     refine' le_of_not_lt fun h => _
     cases' Cardinal.lt_aleph0.1 h with n e
     have := cof_cof o
     rw [e, ord_nat] at this
     cases n
-    · simp at e
-      simp [e, not_zero_isLimit] at l
+    · simp_all [e, not_zero_isLimit]
     · rw [nat_cast_succ, cof_succ] at this
       rw [← this, cof_eq_one_iff_is_succ] at e
       rcases e with ⟨a, rfl⟩
@@ -975,8 +970,8 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
   ⟨h.trans (le_succ c),
     succ_le_of_lt
       (by
-        cases' Quotient.exists_rep (@succ Cardinal _ _ c) with α αe; simp at αe
-        rcases ord_eq α with ⟨r, wo, re⟩; skip
+        cases' Quotient.exists_rep (@succ Cardinal _ _ c) with α αe; simp only [mk'_def] at αe
+        rcases ord_eq α with ⟨r, wo, re⟩
         have := ord_isLimit (h.trans (le_succ _))
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩

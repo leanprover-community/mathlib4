@@ -247,8 +247,8 @@ instance : Semiring (FreeAlgebra R X) where
   __ := instAddCommMonoid R X
   __ := instDistrib R X
   natCast n := Quot.mk _ (n : R)
-  natCast_zero := by simp; rfl
-  natCast_succ n := by simp; exact Quot.sound Rel.add_scalar
+  natCast_zero := by simp only [Nat.cast_zero]; rfl
+  natCast_succ n := by simpa using Quot.sound Rel.add_scalar
 
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
@@ -462,12 +462,7 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
     ((MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X)) (FreeMonoid.lift (ι R)))
     (by
       apply MonoidAlgebra.algHom_ext; intro x
-      refine FreeMonoid.recOn x ?_ ?_
-      · simp
-        rfl
-      · intro x y ih
-        simp at ih
-        simp [ih])
+      refine FreeMonoid.recOn x ?_ ?_ <;> aesop)
     (by
       ext
       simp)
@@ -584,7 +579,8 @@ theorem induction {C : FreeAlgebra R X → Prop}
   suffices a = lift R of a by
     rw [this]
     exact Subtype.prop (lift R of a)
-  simp [AlgHom.ext_iff] at of_id
+  simp only [AlgHom.ext_iff, AlgHom.coe_id, id_eq, AlgHom.coe_comp, Subalgebra.coe_val,
+    Function.comp_apply] at of_id
   exact of_id a
 #align free_algebra.induction FreeAlgebra.induction
 

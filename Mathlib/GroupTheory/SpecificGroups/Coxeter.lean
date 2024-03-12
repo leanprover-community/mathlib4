@@ -193,7 +193,7 @@ theorem ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
 theorem map_relations_eq_reindex_relations (e : B ≃ B') :
     (MulEquiv.toMonoidHom (FreeGroup.freeGroupCongr e)) '' CoxeterGroup.Relations.toSet M =
     CoxeterGroup.Relations.toSet (reindex e e M) := by
-  simp [CoxeterGroup.Relations.toSet, CoxeterGroup.Relations.ofMatrix]
+  simp only [CoxeterGroup.Relations.toSet, CoxeterGroup.Relations.ofMatrix]
   apply le_antisymm
   · rw [Set.le_iff_subset]; intro _
     simp only [Set.mem_image, Set.mem_range, Prod.exists, Function.uncurry_apply_pair,
@@ -266,8 +266,7 @@ abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
 
 theorem AₙIsCoxeter : IsCoxeter (Aₙ n) where
-  symmetric := by
-    simp [Matrix.IsSymm]; aesop
+  symmetric := by unfold Matrix.IsSymm; aesop
 
 /-- The Coxeter matrix of family Bₙ.
 
@@ -284,7 +283,7 @@ abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
 
 theorem BₙIsCoxeter : IsCoxeter (Bₙ n) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
+  symmetric := by unfold Matrix.IsSymm; aesop
 
 /-- The Coxeter matrix of family Dₙ.
 
@@ -304,7 +303,7 @@ abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
 
 theorem DₙIsCoxeter : IsCoxeter (Dₙ n) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
+  symmetric := by unfold Matrix.IsSymm; aesop
 
 /-- The Coxeter matrix of m-indexed family I₂(m).
 
@@ -318,7 +317,7 @@ abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
   Matrix.of fun i j => if i = j then 1 else m + 2
 
 theorem I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
+  symmetric := by unfold Matrix.IsSymm; aesop
 
 /-- The Coxeter matrix of system E₆.
 
@@ -338,7 +337,7 @@ def E₆ : Matrix (Fin 6) (Fin 6) ℕ :=
      2, 2, 2, 2, 3, 1]
 
 theorem E₆IsCoxeter : IsCoxeter E₆ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by unfold Matrix.IsSymm; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -361,7 +360,7 @@ def E₇ : Matrix (Fin 7) (Fin 7) ℕ :=
      2, 2, 2, 2, 2, 3, 1]
 
 theorem E₇IsCoxeter : IsCoxeter E₇ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by unfold Matrix.IsSymm; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -385,7 +384,7 @@ def E₈ : Matrix (Fin 8) (Fin 8) ℕ :=
      2, 2, 2, 2, 2, 2, 3, 1]
 
 theorem E₈IsCoxeter : IsCoxeter E₈ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by unfold Matrix.IsSymm; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -404,7 +403,7 @@ def F₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 2, 3, 1]
 
 theorem F₄IsCoxeter : IsCoxeter F₄ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by unfold Matrix.IsSymm; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -421,7 +420,7 @@ def G₂ : Matrix (Fin 2) (Fin 2) ℕ :=
      6, 1]
 
 theorem G₂IsCoxeter : IsCoxeter G₂ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by unfold Matrix.IsSymm; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -439,7 +438,7 @@ def H₃ : Matrix (Fin 3) (Fin 3) ℕ :=
      2, 5, 1]
 
 theorem H₃IsCoxeter : IsCoxeter H₃ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by unfold Matrix.IsSymm; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -458,7 +457,7 @@ def H₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 2, 5, 1]
 
 theorem H₄IsCoxeter : IsCoxeter H₄ where
-  symmetric := by simp [Matrix.IsSymm]; decide
+  symmetric := by unfold Matrix.IsSymm; decide
   diagonal := by decide
   off_diagonal := by decide
 

@@ -146,7 +146,7 @@ theorem induced_of_isLimit {F : J ⥤ TopCatMax.{v, u}} (C : Cone F) (hC : IsLim
   let homeo := homeoOfIso (hC.conePointUniqueUpToIso (limitConeInfiIsLimit F))
   refine' homeo.inducing.induced.trans _
   change induced homeo (⨅ j : J, _) = _
-  simp [induced_iInf, induced_compose]
+  simp only [induced_iInf, induced_compose]
   rfl
 #align Top.induced_of_is_limit TopCat.induced_of_isLimit
 
@@ -205,14 +205,16 @@ def prodIsoProd (X Y : TopCat.{u}) : X ⨯ Y ≅ TopCat.of (X × Y) :=
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_fst (X Y : TopCat.{u}) :
     (prodIsoProd X Y).hom ≫ prodFst = Limits.prod.fst := by
-  simp [← Iso.eq_inv_comp, prodIsoProd]
+  simp only [prodIsoProd, ← Iso.eq_inv_comp, limit.conePointUniqueUpToIso_inv_comp,
+    BinaryFan.π_app_left]
   rfl
 #align Top.prod_iso_prod_hom_fst TopCat.prodIsoProd_hom_fst
 
 @[reassoc (attr := simp)]
 theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
     (prodIsoProd X Y).hom ≫ prodSnd = Limits.prod.snd := by
-  simp [← Iso.eq_inv_comp, prodIsoProd]
+  simp only [prodIsoProd, ← Iso.eq_inv_comp, limit.conePointUniqueUpToIso_inv_comp,
+    BinaryFan.π_app_right]
   rfl
 #align Top.prod_iso_prod_hom_snd TopCat.prodIsoProd_hom_snd
 
@@ -244,7 +246,7 @@ theorem prod_topology {X Y : TopCat.{u}} :
   let homeo := homeoOfIso (prodIsoProd X Y)
   refine' homeo.inducing.induced.trans _
   change induced homeo (_ ⊓ _) = _
-  simp [induced_compose]
+  simp only [coe_of, induced_inf, induced_compose]
   rfl
 #align Top.prod_topology TopCat.prod_topology
 

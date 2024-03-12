@@ -258,7 +258,7 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
     natCast := fun n => single 1 n
     natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl
+    natCast_succ := fun _ => by aesop
     one_mul := fun f => by
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
@@ -340,8 +340,8 @@ instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G
     MonoidAlgebra.nonAssocSemiring with
     intCast := fun z => single 1 (z : k)
     -- Porting note: Both were `simpa`.
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
+    intCast_ofNat := fun n => by simp_rw [Int.cast_ofNat]; rfl
+    intCast_negSucc := fun n => by simp_rw [Int.cast_negSucc, single_neg]; rfl }
 #align monoid_algebra.non_assoc_ring MonoidAlgebra.nonAssocRing
 
 theorem int_cast_def [Ring k] [MulOneClass G] (z : ℤ) :
@@ -557,7 +557,7 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
         (HMul.hMul (β := MonoidAlgebra k G) f (single x r)) z =
             sum f fun a b => if a = y then b * r else 0 := by simp only [mul_apply, A, H]
         _ = if y ∈ f.support then f y * r else 0 := (f.support.sum_ite_eq' _ _)
-        _ = f y * r := by split_ifs with h <;> simp at h <;> simp [h]
+        _ = f y * r := by aesop
 #align monoid_algebra.mul_single_apply_aux MonoidAlgebra.mul_single_apply_aux
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
@@ -588,7 +588,7 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
           (mul_apply _ _ _).trans <| sum_single_index this
         _ = f.sum fun a b => ite (a = z) (r * b) 0 := by simp only [H]
         _ = if z ∈ f.support then r * f z else 0 := (f.support.sum_ite_eq' _ _)
-        _ = _ := by split_ifs with h <;> simp at h <;> simp [h]
+        _ = _ := by aesop
 #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
@@ -820,9 +820,7 @@ def singleOneAlgHom {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Mon
   { singleOneRingHom with
     commutes' := fun r => by
       -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun _ => ?_
-      simp
-      rfl }
+      refine Finsupp.ext fun _ => by aesop }
 #align monoid_algebra.single_one_alg_hom MonoidAlgebra.singleOneAlgHom
 #align monoid_algebra.single_one_alg_hom_apply MonoidAlgebra.singleOneAlgHom_apply
 
@@ -1406,7 +1404,7 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
   { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
     natCast := fun n => single 0 n
     natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl
+    natCast_succ := fun _ => by aesop
     one_mul := fun f => by
       simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
         one_mul, sum_single]
@@ -1489,8 +1487,8 @@ instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
     AddMonoidAlgebra.nonAssocSemiring with
     intCast := fun z => single 0 (z : k)
     -- Porting note: Both were `simpa`.
-    intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
+    intCast_ofNat := fun n => by simp_rw [Int.cast_ofNat]; rfl
+    intCast_negSucc := fun n => by simp_rw [Int.cast_negSucc, single_neg]; rfl }
 #align add_monoid_algebra.non_assoc_ring AddMonoidAlgebra.nonAssocRing
 
 theorem int_cast_def [Ring k] [AddZeroClass G] (z : ℤ) :
@@ -1952,9 +1950,7 @@ def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
   { singleZeroRingHom with
     commutes' := fun r => by
       -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun _ => ?_
-      simp
-      rfl }
+      refine Finsupp.ext fun _ => by aesop }
 #align add_monoid_algebra.single_zero_alg_hom AddMonoidAlgebra.singleZeroAlgHom
 #align add_monoid_algebra.single_zero_alg_hom_apply AddMonoidAlgebra.singleZeroAlgHom_apply
 

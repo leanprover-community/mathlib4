@@ -102,9 +102,9 @@ def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
     simp
   map_id x := by
     dsimp
-    simp [map_id_c_app, pushforwardObj_obj, op_obj, unop_op, pushforwardEq_hom_app, eqToHom_op,
-      id_eq, eqToHom_map, assoc, eqToHom_trans, eqToHom_refl, comp_id,
-      TopCat.Presheaf.Pushforward.id_inv_app']
+    simp only [map_id_c_app, pushforwardObj_obj, op_obj, unop_op, pushforwardEq_hom_app, eqToHom_op,
+      id_eq, eqToHom_map, map_id, id_base, Opens.map_id_obj, eqToHom_naturality, assoc,
+      eqToHom_trans_assoc, eqToHom_refl, id_comp]
     rw [TopCat.Presheaf.Pushforward.id_inv_app']
     simp only [Opens.carrier_eq_coe, Opens.mk_coe, map_id]
 set_option linter.uppercaseLean3 false in

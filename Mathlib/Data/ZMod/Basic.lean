@@ -271,7 +271,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
     (cast (a + b) : ℤ) =
       if (n : ℤ) ≤ cast a + cast b then (cast a + cast b - n : ℤ) else cast a + cast b := by
   cases' n with n
-  · simp; rfl
+  · aesop
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
   simp only [Fin.val_add_eq_ite, Int.ofNat_succ, Int.ofNat_le]
@@ -671,8 +671,8 @@ theorem val_add_of_le {n : ℕ} [NeZero n] {a b : ZMod n} (h : n ≤ a.val + b.v
 
 theorem val_add_le {n : ℕ} (a b : ZMod n) : (a + b).val ≤ a.val + b.val := by
   cases n
-  · simp [ZMod.val]; apply Int.natAbs_add_le
-  · simp [ZMod.val_add]; apply Nat.mod_le
+  · simpa [ZMod.val] using Int.natAbs_add_le _ _
+  · simpa [ZMod.val_add] using Nat.mod_le _ _
 
 theorem val_mul {n : ℕ} (a b : ZMod n) : (a * b).val = a.val * b.val % n := by
   cases n
@@ -918,7 +918,7 @@ theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
 #align zmod.neg_one_ne_one ZMod.neg_one_ne_one
 
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
-  fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]; rfl
+  fin_cases a <;> aesop
 #align zmod.neg_eq_self_mod_two ZMod.neg_eq_self_mod_two
 
 @[simp]

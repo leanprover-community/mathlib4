@@ -129,11 +129,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   constructor <;> intro H
   · rw [map_smulₛₗ, H, smul_zero]
   · rw [map_smulₛₗ, smul_eq_zero] at H
-    cases' H with H H
-    · simp at H
-      exfalso
-      exact ha H
-    · exact H
+    cases' H with H H <;> aesop
 #align linear_map.ortho_smul_right LinearMap.ortho_smul_right
 
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
