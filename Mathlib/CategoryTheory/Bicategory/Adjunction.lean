@@ -82,13 +82,47 @@ theorem rightZigzag_idempotent_of_left_triangle
   dsimp only [rightZigzag]
   calc
     _ = g ◁ η ⊗≫ ((ε ▷ g ▷ 𝟙 a) ≫ (𝟙 b ≫ g) ◁ η) ⊗≫ ε ▷ g := by
-      simp [bicategoricalComp]; coherence
+      simp? [bicategoricalComp] says
+        simp only [bicategoricalComp, Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_comp,
+          id_whiskerRight, id_comp, Iso.inv_hom_id, assoc, whiskerLeft_rightUnitor_inv,
+          whiskerLeft_comp, pentagon_hom_hom_inv_inv_hom, whiskerRight_id, Iso.inv_hom_id_assoc,
+          Iso.hom_inv_id, comp_id, comp_whiskerLeft, id_whiskerLeft]
+      coherence
     _ = 𝟙 _ ⊗≫ g ◁ (η ▷ 𝟙 a ≫ (f ≫ g) ◁ η) ⊗≫ (ε ▷ (g ≫ f) ≫ 𝟙 b ◁ ε) ▷ g ⊗≫ 𝟙 _ := by
-      rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+      rw [← whisker_exchange];
+      simp? [bicategoricalComp] says
+        simp only [bicategoricalComp,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_comp,
+          whiskerLeft_rightUnitor_inv, whiskerLeft_comp, assoc, pentagon_hom_hom_inv_inv_hom,
+          whiskerRight_id, Iso.inv_hom_id_assoc, Iso.hom_inv_id, comp_id, comp_whiskerLeft,
+          whiskerRight_comp, id_whiskerRight, Iso.inv_hom_id, unitors_inv_equal,
+          Iso.hom_inv_id_assoc, whiskerLeft_rightUnitor, id_whiskerLeft, comp_whiskerRight,
+          leftUnitor_whiskerRight, triangle_assoc_comp_right_inv_assoc, whiskerLeft_inv_hom_assoc]
+      coherence
     _ = g ◁ η ⊗≫ g ◁ leftZigzag η ε ▷ g ⊗≫ ε ▷ g := by
-      rw [← whisker_exchange,  ← whisker_exchange]; simp [leftZigzag, bicategoricalComp]; coherence
+      rw [← whisker_exchange,  ← whisker_exchange];
+      simp? [leftZigzag, bicategoricalComp] says
+        simp only [bicategoricalComp,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', unitors_inv_equal,
+          id_comp, whiskerLeft_rightUnitor_inv, Iso.hom_inv_id_assoc, id_whiskerLeft, unitors_equal,
+          whiskerRight_comp, assoc, whiskerLeft_comp, whiskerLeft_rightUnitor, id_whiskerRight,
+          Iso.inv_hom_id, comp_whiskerLeft, whiskerRight_id, comp_whiskerRight, whisker_assoc,
+          pentagon_inv_assoc, triangle_assoc_comp_right_assoc, Iso.inv_hom_id_assoc, pentagon_assoc,
+          Iso.hom_inv_id, comp_id, triangle_assoc_comp_right_inv_assoc, leftUnitor_inv_whiskerRight,
+          leftZigzag, triangle]
+      coherence
     _ = g ◁ η ⊗≫ ε ▷ g := by
-      rw [h]; simp [bicategoricalComp]; coherence
+      rw [h]; simp? [bicategoricalComp] says
+        simp only [bicategoricalComp,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_comp,
+          leftUnitor_inv_whiskerRight, whiskerLeft_comp, comp_whiskerRight, leftUnitor_whiskerRight,
+          assoc, comp_id, triangle, whiskerLeft_inv_hom_assoc, whiskerRight_comp, id_whiskerRight,
+          Iso.inv_hom_id]
+      coherence
 
 /-- Adjunction between two 1-morphisms. -/
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
@@ -140,11 +174,28 @@ theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂)
           adj₁.unit ▷ (f₁ ≫ f₂) ⊗≫
             f₁ ◁ (adj₂.unit ▷ (g₁ ≫ f₁) ≫ (f₂ ≫ g₂) ◁ adj₁.counit) ▷ f₂ ⊗≫
               (f₁ ≫ f₂) ◁ adj₂.counit ⊗≫ 𝟙 _ := by
-      simp [bicategoricalComp]; coherence
+      simp? [bicategoricalComp]
+        says simp only [leftZigzag, bicategoricalComp, compUnit,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_comp,
+          whiskerRight_comp, id_whiskerRight, Iso.inv_hom_id, comp_id, comp_whiskerRight,
+          whisker_assoc, leftUnitor_inv_whiskerRight, whiskerLeft_comp, assoc, Iso.inv_hom_id_assoc,
+          compCounit, comp_whiskerLeft, Iso.hom_inv_id, pentagon_inv, pentagon_assoc,
+          whiskerRight_id, whiskerLeft_inv_hom_assoc, pentagon_hom_hom_inv_hom_hom_assoc,
+          Iso.cancel_iso_inv_left]; coherence
     _ = 𝟙 _ ⊗≫
           (leftZigzag adj₁.unit adj₁.counit) ▷ f₂ ⊗≫
             f₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ⊗≫ 𝟙 _ := by
-      rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
+      rw [← whisker_exchange]; simp? [bicategoricalComp] says
+        simp only [bicategoricalComp,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_whiskerRight, id_comp,
+          Iso.hom_inv_id, whiskerRight_comp, Iso.inv_hom_id, assoc, whiskerLeft_comp,
+          id_whiskerLeft, unitors_inv_equal, whiskerRight_id, Iso.inv_hom_id_assoc,
+          comp_whiskerRight, leftUnitor_whiskerRight, comp_id, comp_whiskerLeft,
+          whiskerLeft_inv_hom_assoc, pentagon_hom_hom_inv_hom_hom_assoc,
+          leftUnitor_inv_whiskerRight, Iso.hom_inv_id_assoc, leftZigzag, whisker_assoc,
+          Iso.cancel_iso_inv_left]; coherence
     _ = _ := by
       simp_rw [left_triangle]; simp [bicategoricalComp]
 
@@ -155,11 +206,27 @@ theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂
           (g₂ ≫ g₁) ◁ adj₁.unit ⊗≫
             g₂ ◁ ((g₁ ≫ f₁) ◁ adj₂.unit ≫ adj₁.counit ▷ (f₂ ≫ g₂)) ▷ g₁ ⊗≫
               adj₂.counit ▷ (g₂ ≫ g₁) ⊗≫ 𝟙 _ := by
-      simp [bicategoricalComp]; coherence
+      simp? [bicategoricalComp] says
+        simp only [rightZigzag, bicategoricalComp, compUnit,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_comp,
+          whiskerRight_comp, id_whiskerRight, Iso.inv_hom_id, comp_id, whiskerLeft_comp,
+          comp_whiskerLeft, assoc, Iso.inv_hom_id_assoc, compCounit, comp_whiskerRight,
+          whisker_assoc, leftUnitor_whiskerRight, whiskerRight_id, Iso.hom_inv_id,
+          pentagon_inv_assoc, pentagon_assoc, pentagon_hom_inv_inv_inv_inv_assoc,
+          whiskerLeft_inv_hom_assoc, Iso.cancel_iso_hom_left]; coherence
     _ = 𝟙 _ ⊗≫
           g₂ ◁ (rightZigzag adj₁.unit adj₁.counit) ⊗≫
             (rightZigzag adj₂.unit adj₂.counit) ▷ g₁ ⊗≫ 𝟙 _ := by
-      rw [whisker_exchange]; simp [bicategoricalComp]; coherence
+      rw [whisker_exchange]; simp? [bicategoricalComp] says
+        simp only [bicategoricalComp,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_comp,
+          id_whiskerRight, whiskerRight_id, id_comp, Iso.hom_inv_id, Iso.inv_hom_id,
+          comp_whiskerLeft, assoc, whiskerLeft_comp, id_whiskerLeft, unitors_equal,
+          Iso.inv_hom_id_assoc, comp_whiskerRight, leftUnitor_inv_whiskerRight, comp_id,
+          pentagon_hom_inv_inv_inv_inv_assoc, whiskerLeft_inv_hom_assoc, rightZigzag, whisker_assoc,
+          Iso.cancel_iso_hom_left]; coherence
     _ = _ := by
       simp_rw [right_triangle]; simp [bicategoricalComp]
 
@@ -236,9 +303,21 @@ theorem adjointifyCounit_left_triangle (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f �
   calc
     _ = 𝟙 _ ⊗≫ (η.hom ▷ (f ≫ 𝟙 b) ≫ (f ≫ g) ◁ f ◁ ε.inv) ⊗≫
           f ◁ g ◁ η.inv ▷ f ⊗≫ f ◁ ε.hom := by
-      simp [bicategoricalComp]; coherence
+      simp? [bicategoricalComp] says
+        simp only [whiskerRight_comp, id_whiskerRight, id_comp,
+          Iso.inv_hom_id, comp_id, assoc, whiskerLeft_comp, whiskerLeft_rightUnitor_inv,
+          bicategoricalComp, Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_id,
+          comp_whiskerLeft, Iso.inv_hom_id_assoc]; coherence
     _ = 𝟙 _ ⊗≫ f ◁ ε.inv ⊗≫ (η.hom ▷ (f ≫ g) ≫ (f ≫ g) ◁ η.inv) ▷ f ⊗≫ f ◁ ε.hom := by
-      rw [← whisker_exchange η.hom (f ◁ ε.inv)]; simp [bicategoricalComp]; coherence
+      rw [← whisker_exchange η.hom (f ◁ ε.inv)]
+      simp? [bicategoricalComp] says
+        simp only [bicategoricalComp,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+          Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', id_comp, id_whiskerLeft,
+          whiskerRight_comp, assoc, id_whiskerRight, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc,
+          comp_whiskerLeft, comp_whiskerRight, whisker_assoc, whiskerLeft_comp, pentagon_inv,
+          pentagon_assoc, Iso.cancel_iso_hom_left, Iso.cancel_iso_inv_left]; coherence
     _ = 𝟙 _ ⊗≫ f ◁ ε.inv ⊗≫ (η.inv ≫ η.hom) ▷ f ⊗≫ f ◁ ε.hom := by
       rw [← whisker_exchange η.hom η.inv]; coherence
     _ = 𝟙 _ ⊗≫ f ◁ (ε.inv ≫ ε.hom) := by

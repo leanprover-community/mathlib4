@@ -52,7 +52,7 @@ theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd :=
 
 @[simp]
 theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
-  cases n <;> simp (config := {decide := true})
+  cases n <;> simp (config := { decide := true }) only [Nat.bodd_succ]
   rfl
 #align int.bodd_neg_of_nat Int.bodd_negOfNat
 
@@ -292,8 +292,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   cases' m with m m <;> cases' n with n n <;>
-  simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
-    bit_negSucc]
+  simp only [bitwise, bit_negSucc, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false]
   · by_cases h : f false false <;> simp (config := {decide := true}) [h]
   · by_cases h : f false true <;> simp (config := {decide := true}) [h]
   · by_cases h : f true false <;> simp (config := {decide := true}) [h]

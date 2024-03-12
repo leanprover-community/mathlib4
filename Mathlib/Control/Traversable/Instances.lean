@@ -36,8 +36,10 @@ theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α →
 
 theorem Option.comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Option α) :
     Option.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
-      Comp.mk (Option.traverse f <$> Option.traverse g x) :=
-  by cases x <;> simp! [functor_norm] <;> rfl
+      Comp.mk (Option.traverse f <$> Option.traverse g x) := by
+  cases x <;>
+  simp! only [Option.traverse, map_pure, Function.comp_apply, Comp.map_mk, Functor.map_map] <;>
+  rfl
 #align option.comp_traverse Option.comp_traverse
 
 theorem Option.traverse_eq_map_id {α β} (f : α → β) (x : Option α) :
@@ -75,17 +77,21 @@ variable [LawfulApplicative F] [LawfulApplicative G]
 open Applicative Functor List
 
 protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α → Id α) xs = xs := by
-  induction xs <;> simp! [*, List.traverse, functor_norm]; rfl
+  induction xs <;> simp! only [List.traverse, Id.pure_eq, Id.map_eq, *]; rfl
 #align list.id_traverse List.id_traverse
 
 protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : List α) :
-    List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x = Comp.mk (List.traverse f <$> List.traverse g x) :=
-  by induction x <;> simp! [*, functor_norm] <;> rfl
+    List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
+      Comp.mk (List.traverse f <$> List.traverse g x) := by
+  induction x <;>
+  simp! only [List.traverse, map_pure, Function.comp_apply, Comp.map_mk, Functor.map_map, Comp.seq_mk,
+       seq_map_assoc, map_seq, *] <;>
+  rfl
 #align list.comp_traverse List.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : List α) :
     List.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by
-  induction x <;> simp! [*, functor_norm]; rfl
+  induction x <;> simp! only [map_eq_map, map_cons, Id.pure_eq, map_nil, *]; rfl
 #align list.traverse_eq_map_id List.traverse_eq_map_id
 
 variable (η : ApplicativeTransformation F G)
@@ -127,7 +133,10 @@ variable [LawfulApplicative F]
 theorem traverse_append :
     ∀ as bs : List α', traverse f (as ++ bs) = (· ++ ·) <$> traverse f as <*> traverse f bs
   | [], bs => by simp [functor_norm]
-  | a :: as, bs => by simp [traverse_append as bs, functor_norm]; congr
+  | a :: as, bs => by
+    simp only [cons_append, traverse_cons, traverse_append as bs, seq_assoc, Functor.map_map,
+      seq_map_assoc, map_seq]
+    congr
 #align list.traverse_append List.traverse_append
 
 theorem mem_traverse {f : α' → Set β'} :
@@ -156,7 +165,7 @@ open Applicative Functor
 
 protected theorem traverse_map {α β γ : Type u} (g : α → β) (f : β → G γ) (x : σ ⊕ α) :
     Sum.traverse f (g <$> x) = Sum.traverse (f ∘ g) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> rfl
+  cases x <;> simp only [Sum.traverse, Function.comp_apply] <;> rfl
 #align sum.traverse_map Sum.traverse_map
 
 variable [LawfulApplicative F] [LawfulApplicative G]
@@ -168,17 +177,19 @@ protected theorem id_traverse {σ α} (x : σ ⊕ α) :
 protected theorem comp_traverse {α β γ : Type u} (f : β → F γ) (g : α → G β) (x : σ ⊕ α) :
     Sum.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
     Comp.mk.{u} (Sum.traverse f <$> Sum.traverse g x) := by
-  cases x <;> simp! [Sum.traverse, map_id, functor_norm] <;> rfl
+  cases x <;>
+    simp! only [Sum.traverse, Function.comp_apply, Comp.map_mk, Functor.map_map, map_pure] <;>
+    rfl
 #align sum.comp_traverse Sum.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : σ ⊕ α) :
     Sum.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by
-  induction x <;> simp! [*, functor_norm] <;> rfl
+  induction x <;> simp! only [Id.pure_eq] <;> rfl
 #align sum.traverse_eq_map_id Sum.traverse_eq_map_id
 
 protected theorem map_traverse {α β γ} (g : α → G β) (f : β → γ) (x : σ ⊕ α) :
     (f <$> ·) <$> Sum.traverse g x = Sum.traverse (f <$> g ·) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> congr
+  cases x <;> simp only [Sum.traverse, Functor.map_map, map_pure] <;> congr
 #align sum.map_traverse Sum.map_traverse
 
 variable (η : ApplicativeTransformation F G)

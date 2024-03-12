@@ -1791,9 +1791,16 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
     match c1, c2, h with
     | _, _, ⟨s, S, SS, rfl, rfl⟩ => by
       clear h
-      induction' s using WSeq.recOn with a s s <;> simp
-      · induction' S using WSeq.recOn with s S S <;> simp
-        · induction' SS using WSeq.recOn with S SS SS <;> simp
+      induction' s using WSeq.recOn with a s s <;>
+        simp only [nil_append, cons_append, destruct_cons, destruct_pure, liftRelAux_inl_inl,
+          LiftRelO, true_and, think_append, destruct_think, Computation.destruct_think,
+          liftRelAux_inr_inr]
+      · induction' S using WSeq.recOn with s S S <;>
+          simp only [nil_append, join_nil, cons_append, join_cons, destruct_think,
+            Computation.destruct_think, think_append, append_assoc, liftRelAux_inr_inr, join_think]
+        · induction' SS using WSeq.recOn with S SS SS <;>
+            simp only [join_nil, destruct_nil, destruct_pure, map_nil, liftRelAux_inl_inl, LiftRelO,
+              join_cons, join_think, destruct_think, Computation.destruct_think, map_cons]
           · refine' ⟨nil, S, SS, _, _⟩ <;> simp
           · refine' ⟨nil, nil, SS, _, _⟩ <;> simp
         · exact ⟨s, S, SS, rfl, rfl⟩

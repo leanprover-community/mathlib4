@@ -163,7 +163,8 @@ theorem Valuation.mk_implies {as ps} (as₁) : as = List.reverseAux as₁ ps →
     subst e; clear ih H
     suffices ∀ n n', n' = List.length as₁ + n →
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
-    induction as₁ with simp
+    induction as₁ with
+      simp only [List.length_nil, zero_add, List.reverseAux_nil, forall_eq, forall_const]
     | cons b as₁ ih => exact fun n bs ↦ ih (n+1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/

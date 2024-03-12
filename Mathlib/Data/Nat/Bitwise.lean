@@ -87,7 +87,8 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h3 x :     (x + x) / 2 = x := by rw [← two_mul, mul_comm]; apply mul_div_left _ zero_lt_two
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
-  cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs
+  cases a <;> cases b <;> simp only [↓reduceIte, add_eq_zero_iff, and_self, one_ne_zero, and_false,
+    h1, zero_ne_one, decide_False, h2, decide_True, h3, h4] <;> split_ifs
     <;> simp_all (config := {decide := true})
 #align nat.bitwise_bit Nat.bitwise_bit
 

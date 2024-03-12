@@ -97,7 +97,7 @@ open Function
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
     h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
   apply hf.seq_le_seq n <;> intros <;>
-    simp [iterate_succ', -iterate_succ, comp_apply, id_eq, le_refl]
+    simp only [comp_apply, id_eq, iterate_zero, iterate_succ', le_refl]
   case hx => exact H _
 #align monotone.le_iterate_comp_of_le Monotone.le_iterate_comp_of_le
 

@@ -419,7 +419,7 @@ def extract (a : α) (s : AList β) : Option (β a) × AList β :=
 
 @[simp]
 theorem extract_eq_lookup_erase (a : α) (s : AList β) : extract a s = (lookup a s, erase a s) := by
-  simp [extract]; constructor <;> rfl
+  simpa [extract] using ⟨rfl, rfl⟩
 #align alist.extract_eq_lookup_erase AList.extract_eq_lookup_erase
 
 /-! ### union -/
@@ -516,7 +516,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
     (s₁ ∪ s₂).entries ~ (s₂ ∪ s₁).entries :=
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by
-      intros; simp
+      intros; simp only [union_entries, Option.mem_def, dlookup_kunion_eq_some]
       constructor <;> intro h'
       · cases' h' with h' h'
         · right

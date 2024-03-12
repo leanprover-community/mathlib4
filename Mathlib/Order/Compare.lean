@@ -33,13 +33,15 @@ def cmpLE {α} [LE α] [@DecidableRel α (· ≤ ·)] (x y : α) : Ordering :=
 
 theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
-  by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp [cmpLE, *, Ordering.swap]
+  by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp only [Ordering.swap, cmpLE, ↓reduceIte, xy, yx]
   cases not_or_of_not xy yx (total_of _ _ _)
 #align cmp_le_swap cmpLE_swap
 
 theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)]
     [@DecidableRel α (· < ·)] (x y : α) : cmpLE x y = cmp x y := by
-  by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
+  by_cases xy:x ≤ y <;> by_cases yx:y ≤ x <;>
+    simp only [xy, yx, not_false_eq_true, and_self, cmpLE, ↓reduceIte, cmp, cmpUsing,
+      lt_iff_le_not_le, not_true_eq_false, and_false]
   cases not_or_of_not xy yx (total_of _ _ _)
 #align cmp_le_eq_cmp cmpLE_eq_cmp
 
@@ -176,7 +178,7 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
 @[simp]
 theorem cmp_swap [Preorder α] [@DecidableRel α (· < ·)] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing
-  by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
+  by_cases h : a < b <;> by_cases h₂ : b < a <;> simp only [swap, h, ↓reduceIte, h₂]
   exact lt_asymm h h₂
 #align cmp_swap cmp_swap
 
