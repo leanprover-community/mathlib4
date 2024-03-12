@@ -16,14 +16,11 @@ such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / 
 while `arg 0` defaults to `0`
 -/
 
-
-noncomputable section
+open Filter Metric Set
+open scoped ComplexConjugate Real Topology
 
 namespace Complex
-
-open ComplexConjugate Real Topology
-
-open Filter Set
+variable {a x z : ℂ}
 
 /-- `arg` returns values in the range (-π, π], such that for `x ≠ 0`,
   `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / x.abs`,
@@ -122,6 +119,14 @@ theorem arg_cos_add_sin_mul_I {θ : ℝ} (hθ : θ ∈ Set.Ioc (-π) π) : arg (
   rw [← one_mul (_ + _), ← ofReal_one, arg_mul_cos_add_sin_mul_I zero_lt_one hθ]
 set_option linter.uppercaseLean3 false in
 #align complex.arg_cos_add_sin_mul_I Complex.arg_cos_add_sin_mul_I
+
+lemma arg_exp_mul_I (θ : ℝ) :
+    arg (exp (θ * I)) = toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ := by
+  convert arg_cos_add_sin_mul_I (θ := toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ) _ using 2
+  · rw [← exp_mul_I, eq_sub_of_add_eq $ toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
+      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · convert toIocMod_mem_Ioc _ _ _
+    ring
 
 @[simp]
 theorem arg_zero : arg 0 = 0 := by simp [arg, le_refl]
@@ -347,6 +352,24 @@ theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
   · exact arg_real_mul (conj x) (by simp [hx])
 #align complex.arg_inv Complex.arg_inv
 
+@[simp] lemma abs_arg_inv (x : ℂ) : |x⁻¹.arg| = |x.arg| := by rw [arg_inv]; split_ifs <;> simp [*]
+
+-- TODO: Replace the next two lemmas by general facts about periodic functions
+lemma abs_eq_one_iff' : abs x = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * I) = x := by
+  rw [abs_eq_one_iff]
+  constructor
+  · rintro ⟨θ, rfl⟩
+    refine ⟨toIocMod (mul_pos two_pos Real.pi_pos) (-π) θ, ?_, ?_⟩
+    · convert toIocMod_mem_Ioc _ _ _
+      ring
+    · rw [eq_sub_of_add_eq $ toIocMod_add_toIocDiv_zsmul _ _ θ, ofReal_sub,
+      ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
+  · rintro ⟨θ, _, rfl⟩
+    exact ⟨θ, rfl⟩
+
+lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π) π = sphere 0 1 := by
+  ext; simpa using abs_eq_one_iff'.symm
+
 theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im z < 0 := by
   rcases le_or_lt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or_iff]
@@ -567,8 +590,6 @@ lemma slitPlane_arg_ne_pi {z : ℂ} (hz : z ∈ slitPlane) : z.arg ≠ Real.pi :
 end slitPlane
 
 section Continuity
-
-variable {x z : ℂ}
 
 theorem arg_eq_nhds_of_re_pos (hx : 0 < x.re) : arg =ᶠ[𝓝 x] fun x => Real.arcsin (x.im / abs x) :=
   ((continuous_re.tendsto _).eventually (lt_mem_nhds hx)).mono fun _ hy => arg_of_re_nonneg hy.le

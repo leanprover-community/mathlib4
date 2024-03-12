@@ -28,7 +28,8 @@ lemmas unconditional on the sum of the weights being `1`.
 
 open Set Function
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open BigOperators Pointwise
 
 universe u u'
 
@@ -306,7 +307,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
     refine' ⟨s ∪ s', W, _, hW₁, _⟩
     · rintro i -
       by_cases hi : i ∈ s <;> by_cases hi' : i ∈ s' <;>
-        simp [hi, hi', add_nonneg, mul_nonneg ha (hw₀ i _), mul_nonneg hb (hw₀' i _)]
+        simp [W, hi, hi', add_nonneg, mul_nonneg ha (hw₀ i _), mul_nonneg hb (hw₀' i _)]
     · simp_rw [affineCombination_eq_linear_combination (s ∪ s') v _ hW₁,
         affineCombination_eq_linear_combination s v w hw₁,
         affineCombination_eq_linear_combination s' v w' hw₁', add_smul, sum_add_distrib]
@@ -464,7 +465,7 @@ theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + c
 
 variable (R E)
 
--- porting note: needs `noncomputable` due to `OrderHom.toFun`!?
+-- Porting note: needs `noncomputable` due to `OrderHom.toFun`!?
 /-- `convexHull` is an additive monoid morphism under pointwise addition. -/
 @[simps]
 noncomputable def convexHullAddMonoidHom : Set E →+ Set E where
@@ -526,8 +527,7 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
   apply congr_arg
   simp_rw [Function.comp]
   convert Subtype.range_coe.symm
-  -- Porting note: Original proof didn't need to specify `(1 : R)`
-  simp [LinearMap.sum_apply, ite_smul _ _ (1 : R), Finset.filter_eq, Finset.mem_univ]
+  simp [LinearMap.sum_apply, ite_smul, Finset.filter_eq, Finset.mem_univ]
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
 /-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/
@@ -569,13 +569,13 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
   simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
   rintro x ⟨⟨w₁, h₁w₁, h₂w₁, h₃w₁⟩, w₂, -, h₂w₂, h₃w₂⟩
   let w (x : E) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
-  have h₁w : ∑ i in s, w i = 0 := by simp [Finset.inter_eq_right.2, *]
+  have h₁w : ∑ i in s, w i = 0 := by simp [w, Finset.inter_eq_right.2, *]
   replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w $ by
-    simp only [sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
+    simp only [w, sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
       Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht₁, Finset.inter_eq_right.2 ht₂, h₃w₂,
       sub_self]
   have ht (x) (hx₁ : x ∈ t₁) (hx₂ : x ∉ t₂) : w₁ x = 0 := by
-    simpa [hx₁, hx₂] using hs _ (ht₁ hx₁)
+    simpa [w, hx₁, hx₂] using hs _ (ht₁ hx₁)
   refine ⟨w₁, ?_, ?_, ?_⟩
   · simp only [and_imp, Finset.mem_inter]
     exact fun y hy₁ _ ↦ h₁w₁ y hy₁

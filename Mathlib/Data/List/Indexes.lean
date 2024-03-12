@@ -60,8 +60,8 @@ protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : �
 theorem list_reverse_induction (p : List α → Prop) (base : p [])
     (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
   let q := fun l ↦ p (reverse l)
-  have pq : ∀ l, p (reverse l) → q l := by simp only [reverse_reverse]; intro; exact id
-  have qp : ∀ l, q (reverse l) → p l := by simp only [reverse_reverse]; intro; exact id
+  have pq : ∀ l, p (reverse l) → q l := by simp only [q, reverse_reverse]; intro; exact id
+  have qp : ∀ l, q (reverse l) → p l := by simp only [q, reverse_reverse]; intro; exact id
   intro l
   apply qp
   generalize (reverse l) = l
