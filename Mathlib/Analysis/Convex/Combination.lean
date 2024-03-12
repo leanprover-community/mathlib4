@@ -527,8 +527,7 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
   apply congr_arg
   simp_rw [Function.comp]
   convert Subtype.range_coe.symm
-  -- Porting note: Original proof didn't need to specify `(1 : R)`
-  simp [LinearMap.sum_apply, ite_smul _ _ (1 : R), Finset.filter_eq, Finset.mem_univ]
+  simp [LinearMap.sum_apply, ite_smul, Finset.filter_eq, Finset.mem_univ]
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
 /-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/

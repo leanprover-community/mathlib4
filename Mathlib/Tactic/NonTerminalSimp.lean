@@ -4,34 +4,27 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
+import Lean.Linter.Util
+import Std.Data.Array.Basic
 
 /-!
 #  The non-terminal `simp` linter
 
 The non-terminal `simp` linter makes sure that `simp` is not used as a finishing tactic.
-If you want to use `simp [...]` followed by other tactics, then replace `simp [...]`
-by the output of `simp? [...]`, so that the final code contains `simp only [...]`.
+If you want to use `simp [...]` followed by other tactics, then replace `simp [...]` by
+* a `suffices \"expr after simp\" by simpa` line;
+* the output of `simp? [...]`, so that the final code contains `simp only [...]`;
+* something else that does not involve `simp`!
 
-Currently, the linter is conservative in catching non-terminal `simp`s.
-It only uses syntax information.
-In its current form, the linter can be fooled in at least two ways:
-```lean
-import Mathlib.Tactic.Basic
+The linter equates "non-terminal" with "does not strictly decrease the number of goals".
 
--- a false positive: `simp` is flagged, but it should not be
-example (x : Bool) : x = x := by
-  cases x <;> [simp; simp]  -- the first `simp` is considered "non-terminal"
+##  Implementation detail
 
--- a false negative: `simp` should be flagged, but is not
-example (n : Nat) (h : False) : n = n - 1 := by
-  cases n <;> simp  -- an actual non-terminal `simp` that is not flagged
-  exact h.elim
-```
-
-TODO: fix the linter so that the cases above are classified correctly!
+The code in this linter is just a very small modification of the code for the
+`unreachableTactic` linter.
 -/
 
-open Lean
+open Lean Elab
 
 namespace Mathlib.Linter
 
@@ -41,40 +34,60 @@ register_option linter.nonTerminalSimp : Bool := {
   descr := "enable the 'non-terminal `simp`' linter"
 }
 
-namespace nonTerminalSimpLinter
+namespace nonTerminalSimp
 
 /-- `onlyOrNotSimp stx` if `stx` is syntax for `simp` *without* `only`, then returns `false` else
-returchecks whether `stx` is `simp only -/
+returs `true`. -/
 def onlyOrNotSimp : Syntax → Bool
   | .node _info `Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal == "only"
   | _ => true
 
-variable {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m] in
-/-- `nonTerminalSimp stx` loops inside `stx` looking for nodes corresponding to `simp` calls
-that are not `simp only` calls.  Among those, it checks whether there are further tactics
-after the `simp`, and, if there are, then it emits a warning. -/
-partial
-def nonTerminalSimp : Syntax → m Unit
-  | .node _ _ args => do
-    match args.findIdx? (! onlyOrNotSimp ·) with
-      | none => default
-      | some n =>
-        for i in [n+1:args.size] do
-          if "Lean.Parser.Tactic".isPrefixOf args[i]!.getKind.toString then
-            logWarningAt args[n]!
-              "non-terminal simp: consider replacing it with\n\
-                * `suffices \"expr after simp\" by simpa`\n\
-                * the output of `simp?`\n\
-                [linter.nonTerminalSimp]"
-    let _ ← args.mapM nonTerminalSimp
-  | _ => default
+/-- The monad for collecting `simp`s that are not `simp only`. -/
+abbrev M := StateRefT (HashMap String.Range Syntax) IO
+
+mutual
+/-- Search for `simp`s that
+* are not `simp only` and
+* do not close a goal.
+
+Add such `simp`s to the state. -/
+partial def addNonSimpOnlysList (trees : PersistentArray InfoTree) : M Unit :=
+  trees.forM addNonSimpOnlys
+
+@[inherit_doc addNonSimpOnlysList]
+partial def addNonSimpOnlys : InfoTree → M Unit
+  | .node i c => do
+    if let .ofTacticInfo i := i then
+      let non_terminal_simp? := (! onlyOrNotSimp i.stx) &&
+                                (! i.goalsAfter.length < i.goalsBefore.length)
+      match i.stx.getRange? true, non_terminal_simp? with
+        | some r, true => modify (·.insert r i.stx)
+        | _, _ => pure ()
+    addNonSimpOnlysList c
+  | .context _ t => addNonSimpOnlys t
+  | .hole _ => pure ()
+
+end
 
 /-- Gets the value of the `linter.nonTerminalSimp` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.nonTerminalSimp o
 
-@[inherit_doc linter.nonTerminalSimp]
-def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun stx => do
-  if getLinterHash (← getOptions) then
-    nonTerminalSimp stx
+/-- The main entry point to the unreachable tactic linter. -/
+def nonTerminalSimpLinter : Linter where run := withSetOptionIn fun _stx => do
+  unless getLinterHash (← getOptions) && (← getInfoState).enabled do
+    return
+  if (← get).messages.hasErrors then
+    return
+  let (_, map) ← (addNonSimpOnlysList (← getInfoTrees)).run {}
+  let simps := map.toArray
+  let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
+  let mut last : String.Range := ⟨0, 0⟩
+  for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; simps.qsort (key ·.1 < key ·.1) do
+    if last.start ≤ r.start && r.stop ≤ last.stop then continue
+    Linter.logLint linter.nonTerminalSimp stx
+      "non-terminal simp: consider replacing it with\n\
+        * `suffices \"expr after simp\" by simpa`\n\
+        * the output of `simp?`\n"
+    last := r
 
 initialize addLinter nonTerminalSimpLinter
