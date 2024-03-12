@@ -227,7 +227,7 @@ theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] 
   rw [polynomialFunctions.eq_adjoin_X s]
   exact φ.adjoin_le_equalizer ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
 
-open StarSubalgebra
+open StarAlgebra
 
 theorem polynomialFunctions.starClosure_eq_adjoin_X [StarRing R] [ContinuousStar R] (s : Set R) :
     (polynomialFunctions s).starClosure = adjoin R {toContinuousMapOnAlgHom s X} := by
