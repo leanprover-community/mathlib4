@@ -38,8 +38,6 @@ namespace CategoryTheory
 
 open Category Limits
 
-section
-
 variable {C : Type u} [Category.{v₁} C]
 
 variable {D : Type u₂} [Category.{u} D]
@@ -77,10 +75,6 @@ def FunctorCategory.prodPreservesColimits [HasBinaryProducts D] [HasColimits D]
               apply prodComparison_natural ((evaluation C D).obj k) (𝟙 F) } ) }
 #align category_theory.functor_category.prod_preserves_colimits CategoryTheory.FunctorCategory.prodPreservesColimits
 
-end
-
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
-
 instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
     PreservesLimits ((whiskeringLeft C E D).obj F) :=
   ⟨fun {J} [hJ : Category J] =>
@@ -92,7 +86,8 @@ instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
         exact PreservesLimit.preserves hc⟩⟩⟩
 #align category_theory.whiskering_left_preserves_limits CategoryTheory.whiskeringLeftPreservesLimits
 
-instance whiskeringRightPreservesLimitsOfShape {J : Type*} [Category J]
+instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
