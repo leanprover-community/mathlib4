@@ -388,7 +388,7 @@ theorem sum_Ico_pow (n p : ℕ) :
   suffices (∑ k in Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ i in range p.succ.succ, f' i by convert this
   -- prove some algebraic facts that will make things easier for us later on
   have hle := Nat.le_add_left 1 n
-  have hne : (p + 1 + 1 : ℚ) ≠ 0 := by norm_cast; exact succ_ne_zero p.succ
+  have hne : (p + 1 + 1 : ℚ) ≠ 0 := by norm_cast
   have h1 : ∀ r : ℚ, r * (p + 1 + 1) * (n : ℚ) ^ p.succ / (p + 1 + 1 : ℚ) = r * (n : ℚ) ^ p.succ :=
       fun r => by rw [mul_div_right_comm, mul_div_cancel _ hne]
   have h2 : f 1 + (n : ℚ) ^ p.succ = 1 / 2 * (n : ℚ) ^ p.succ := by
