@@ -318,7 +318,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
           using (diff_union_of_subset <| subset_union_left _ _).symm
-      rw [Nat.succ_eq_add_one, this, f.additive]
+      rw [this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
         ((n + 1 : ℕ) : ℝ) * (ε / 2) = ε / 2 + n * (ε / 2) := by simp only [Nat.cast_succ]; ring
