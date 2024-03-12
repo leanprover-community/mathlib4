@@ -413,8 +413,8 @@ theorem isPathConnected_compl_of_isPathConnected_compl_zero [ContinuousSMul ℝ 
     rw [Path.cast_coe, Path.add_apply]
     change γ₁ t + (γ₂ t : E) ∉ q
     rw [← Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq, LinearMap.map_add,
-      Submodule.linearProjOfIsCompl_apply_right hpq, add_zero,
-      Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq]
+      Submodule.linearProjOfIsCompl_apply_right, add_zero,
+      Submodule.linearProjOfIsCompl_apply_eq_zero_iff]
     exact mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) (hγ₁ t)
 
 end ComplementsConnected
