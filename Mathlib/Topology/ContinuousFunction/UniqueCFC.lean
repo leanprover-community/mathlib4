@@ -68,14 +68,14 @@ lemma ContinuousMap.continuous_toNNReal : Continuous (ContinuousMap.toNNReal (X 
 @[simp]
 lemma ContinuousMap.toNNReal_apply (f : C(X, ℝ)) (x : X) : f.toNNReal x = (f x).toNNReal := rfl
 
-lemma ContinuousMap.toNNReal_add (f g : C(X, ℝ)) :
+lemma ContinuousMap.toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)) :
     (f + g).toNNReal + (-f).toNNReal + (-g).toNNReal =
       (-(f + g)).toNNReal + f.toNNReal + g.toNNReal := by
   ext x
   simp [max_neg_zero, -neg_add_rev]
   abel
 
-lemma ContinuousMap.toNNReal_mul (f g : C(X, ℝ)) :
+lemma ContinuousMap.toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)) :
     (f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal =
       (-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal := by
   ext x
@@ -105,13 +105,13 @@ noncomputable def StarAlgHom.realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →�
     all_goals ext x; simp
   map_zero' := by simp only [neg_zero, sub_self]
   map_mul' f g := by
-    have := congr(φ $(f.toNNReal_mul g))
+    have := congr(φ $(f.toNNReal_mul_add_neg_mul_add_mul_neg_eq g))
     simp only [map_add, map_mul, sub_mul, mul_sub] at this ⊢
     rw [← sub_eq_zero] at this ⊢
     convert this using 1
     abel
   map_add' f g := by
-    have := congr(φ $(f.toNNReal_add g))
+    have := congr(φ $(f.toNNReal_add_add_neg_add_neg_eq g))
     simp only [map_add] at this ⊢
     rw [← sub_eq_zero] at this ⊢
     convert this using 1
