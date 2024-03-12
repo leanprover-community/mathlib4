@@ -991,7 +991,7 @@ theorem bidirectionalRec_cons_append {motive : List α → Sort*}
   | cons x xs =>
   simp only [List.cons_append]
   congr
-  dsimp only [←List.cons_append]
+  dsimp only [← List.cons_append]
   suffices ∀ (ys init : List α) (hinit : init = ys) (last : α) (hlast : last = b),
       (cons_append a init last
         (bidirectionalRec nil singleton cons_append init)) =
