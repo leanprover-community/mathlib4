@@ -182,6 +182,9 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
 
 -- Adaptation note: nightly-2024-03-11
 -- We turn off simprocs here.
+-- Ideally someone will investigate whether `simp` lemmas can be rearranged
+-- so that this works without the `set_option`,
+-- *or* come up with a proposal regarding finer control of disabling simprocs.
 set_option simprocs false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=

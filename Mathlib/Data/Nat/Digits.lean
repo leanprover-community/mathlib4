@@ -271,7 +271,8 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
     · induction' n with n ih
       · rfl
       · rw [show 0 + 1 = 1 by rfl] at ih ⊢
-        simp only [Nat.succ_eq_add_one, ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
+        simp only [Nat.succ_eq_add_one, ih, add_comm 1, ofDigits_one_cons, Nat.cast_id,
+          digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n
       intro n h
@@ -567,7 +568,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
         have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
         rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
             ← this, sum_Ico_consecutive _  h₁ <| (le_add_right (List.length tl) 1)]
-        -- Adaptatin note: nightly-2024-03-07: this needs an `erw` only because of a `0 + 1` vs `1`.
+        -- Adaptation note: nightly-2024-03-07: this needs an `erw` only because of a `0 + 1` vs `1`.
         -- Can someone do it more cleanly?
         erw [← sum_Ico_add _ 0 tl.length 1]
         rw [Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
