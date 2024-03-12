@@ -48,13 +48,8 @@ end IsROrC
 section NNReal
 open NNReal
 
-variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalRing A]
 variable {X : Type*} [TopologicalSpace X]
 
-lemma max_neg_zero {α : Type*} [AddGroup α] [LinearOrder α] [CovariantClass α α (· + ·) (· ≤ ·)]
-    (a : α) : max (-a) 0 = -a + max a 0 := by
-  have := congr(-$(max_zero_sub_eq_self a))
-  rwa [neg_sub, sub_eq_iff_eq_add] at this
 namespace ContinuousMap
 
 /-- This map sends `f : C(X, ℝ)` to `Real.toNNReal ∘ f`, bundled as a continuous map `C(X, ℝ≥0)`. -/
@@ -97,6 +92,8 @@ lemma toNNReal_one : (1 : C(X, ℝ)).toNNReal = 1 := toNNReal_algebraMap 1
 lemma toNNReal_neg_one : (-1 : C(X, ℝ)).toNNReal = 0 := toNNReal_neg_algebraMap 1
 
 end ContinuousMap
+
+variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalRing A]
 
 namespace StarAlgHom
 
