@@ -166,15 +166,14 @@ properties that it is a continuous star algebra homomorphism mapping the (restri
 identity to `a`. This is the necessary tool used to establish `cfcHom_comp` and the more common
 variant `cfc_comp`.
 
-This class will have instances in each of the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of
-the Stone-Weierstrass theorem.
+This class has instances, which can be found in `Topology.ContinuousFunction.UniqueCFC`, in each of
+the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of the Stone-Weierstrass theorem, .
 
 This class is separate from `ContinuousFunctionalCalculus` primarily because we will later use
 `SpectrumRestricts` to derive an instance of `ContinuousFunctionalCalculus` on a scalar subring
 from one on a larger ring (i.e., to go from a continuous functional calculus over `ℂ` for normal
 elements to one over `ℝ` for selfadjoint elements), and proving this additional property is
-preserved would be burdensome or impossible.
- -/
+preserved would be burdensome or impossible. -/
 class UniqueContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] : Prop where
