@@ -315,7 +315,7 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     rw [Function.iterate_zero, zero_add]
     exact Finsupp.smul_single r j m
   | succ n hn =>
-    rw [Function.iterate_succ, Function.comp_apply,add_assoc, ← hn]
+    rw [Function.iterate_succ, Function.comp_apply, add_assoc, ← hn]
     congr 2
     rw [Nat.one_add]
     exact Finsupp.mapDomain_single
