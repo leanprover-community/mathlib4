@@ -30,7 +30,7 @@ https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_
 -/
 
 
-universe v₁ v₂ u u₂
+universe w w' v₁ v₂ u u₂
 
 noncomputable section
 
@@ -102,8 +102,10 @@ instance whiskeringRightPreservesLimitsOfShape {J : Type*} [Category J]
       exact PreservesLimit.preserves hc⟩⟩
 #align category_theory.whiskering_right_preserves_limits_of_shape CategoryTheory.whiskeringRightPreservesLimitsOfShape
 
-instance whiskeringRightPreservesLimits (F : D ⥤ E) [HasLimits D] [PreservesLimits F] :
-    PreservesLimits ((whiskeringRight C D E).obj F) :=
+instance whiskeringRightPreservesLimits {C : Type*} [Category C] {D : Type*} [Category D]
+    {E : Type*} [Category E] (F : D ⥤ E) [HasLimitsOfSize.{w, w'} D]
+    [PreservesLimitsOfSize.{w, w'} F] :
+    PreservesLimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
 #align category_theory.whiskering_right_preserves_limits CategoryTheory.whiskeringRightPreservesLimits
 
